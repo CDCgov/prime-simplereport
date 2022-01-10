@@ -9,6 +9,7 @@ import {
   useResendActivationEmailMutation,
   useUpdateUserNameMutation,
   useEditUserEmailMutation,
+  useResetUserMfaMutation,
   UserPermission,
 } from "../../../generated/graphql";
 
@@ -123,6 +124,7 @@ const ManageUsersContainer = () => {
   const [updateUserName] = useUpdateUserNameMutation();
   const [updateUserEmail] = useEditUserEmailMutation();
   const [resetPassword] = useMutation(RESET_USER_PASSWORD);
+  const [resetMfa] = useResetUserMfaMutation();
   const [resendUserActivationEmail] = useResendActivationEmailMutation();
 
   const {
@@ -154,6 +156,7 @@ const ManageUsersContainer = () => {
       updateUserName={updateUserName}
       updateUserEmail={updateUserEmail}
       resetUserPassword={resetPassword}
+      resetUserMfa={resetMfa}
       deleteUser={deleteUser}
       reactivateUser={reactivateUser}
       resendUserActivationEmail={resendUserActivationEmail}

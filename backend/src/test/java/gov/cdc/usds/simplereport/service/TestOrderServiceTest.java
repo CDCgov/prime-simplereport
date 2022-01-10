@@ -54,6 +54,7 @@ import org.junit.jupiter.api.Test;
 import org.mockito.ArgumentCaptor;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.mock.mockito.MockBean;
+import org.springframework.boot.test.mock.mockito.SpyBean;
 import org.springframework.security.access.AccessDeniedException;
 import org.springframework.test.context.TestPropertySource;
 
@@ -65,6 +66,7 @@ class TestOrderServiceTest extends BaseServiceTest<TestOrderService> {
   @Autowired private PersonService _personService;
   @Autowired private TestEventRepository _testEventRepository;
   @Autowired private TestDataFactory _dataFactory;
+  @SpyBean private PatientLinkService patientLinkService;
   @MockBean private TestResultsDeliveryService testResultsDeliveryService;
 
   private static final PersonName AMOS = new PersonName("Amos", null, "Quint", null);
@@ -132,6 +134,7 @@ class TestOrderServiceTest extends BaseServiceTest<TestOrderService> {
         _testEventRepository.findAllByPatientAndFacilities(p, List.of(facility));
     assertThat(testEvents).hasSize(1);
     assertThat(testEvents.get(0).getPatientHasPriorTests()).isFalse();
+    verify(patientLinkService).createPatientLink(any());
   }
 
   @Test

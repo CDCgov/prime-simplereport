@@ -145,9 +145,12 @@ export type Mutation = {
   removePatientFromQueue?: Maybe<Scalars["String"]>;
   resendActivationEmail?: Maybe<User>;
   resendToReportStream?: Maybe<Scalars["Boolean"]>;
+  resetUserMfa?: Maybe<User>;
   resetUserPassword?: Maybe<User>;
   sendPatientLinkEmail?: Maybe<Scalars["Boolean"]>;
+  sendPatientLinkEmailByTestEventId?: Maybe<Scalars["Boolean"]>;
   sendPatientLinkSms?: Maybe<Scalars["Boolean"]>;
+  sendPatientLinkSmsByTestEventId?: Maybe<Scalars["Boolean"]>;
   setCurrentUserTenantDataAccess?: Maybe<User>;
   setOrganizationIdentityVerified?: Maybe<Scalars["Boolean"]>;
   setPatientIsDeleted?: Maybe<Patient>;
@@ -396,6 +399,10 @@ export type MutationResendToReportStreamArgs = {
   testEventIds: Array<Scalars["ID"]>;
 };
 
+export type MutationResetUserMfaArgs = {
+  id: Scalars["ID"];
+};
+
 export type MutationResetUserPasswordArgs = {
   id: Scalars["ID"];
 };
@@ -404,8 +411,16 @@ export type MutationSendPatientLinkEmailArgs = {
   internalId: Scalars["ID"];
 };
 
+export type MutationSendPatientLinkEmailByTestEventIdArgs = {
+  testEventId: Scalars["ID"];
+};
+
 export type MutationSendPatientLinkSmsArgs = {
   internalId: Scalars["ID"];
+};
+
+export type MutationSendPatientLinkSmsByTestEventIdArgs = {
+  testEventId: Scalars["ID"];
 };
 
 export type MutationSetCurrentUserTenantDataAccessArgs = {
@@ -1275,6 +1290,15 @@ export type EditUserEmailMutation = {
   updateUserEmail?: Maybe<{ __typename?: "User"; id: string; email: string }>;
 };
 
+export type ResetUserMfaMutationVariables = Exact<{
+  id: Scalars["ID"];
+}>;
+
+export type ResetUserMfaMutation = {
+  __typename?: "Mutation";
+  resetUserMfa?: Maybe<{ __typename?: "User"; id: string }>;
+};
+
 export type GetTopLevelDashboardMetricsNewQueryVariables = Exact<{
   facilityId?: Maybe<Scalars["ID"]>;
   startDate?: Maybe<Scalars["DateTime"]>;
@@ -1995,10 +2019,6 @@ export type GetTestResultForTextQuery = {
   testResult?: Maybe<{
     __typename?: "TestResult";
     dateTested?: Maybe<any>;
-    patientLink?: Maybe<{
-      __typename?: "PatientLink";
-      internalId?: Maybe<string>;
-    }>;
     patient?: Maybe<{
       __typename?: "Patient";
       firstName?: Maybe<string>;
@@ -2024,7 +2044,7 @@ export type SendSmsMutationVariables = Exact<{
 
 export type SendSmsMutation = {
   __typename?: "Mutation";
-  sendPatientLinkSms?: Maybe<boolean>;
+  sendPatientLinkSmsByTestEventId?: Maybe<boolean>;
 };
 
 export type GetResultsCountByFacilityQueryVariables = Exact<{
@@ -2115,20 +2135,16 @@ export type GetTestResultForResendingEmailsQuery = {
       email?: Maybe<string>;
       emails?: Maybe<Array<Maybe<string>>>;
     }>;
-    patientLink?: Maybe<{
-      __typename?: "PatientLink";
-      internalId?: Maybe<string>;
-    }>;
   }>;
 };
 
 export type ResendTestResultsEmailMutationVariables = Exact<{
-  patientLinkId: Scalars["ID"];
+  testEventId: Scalars["ID"];
 }>;
 
 export type ResendTestResultsEmailMutation = {
   __typename?: "Mutation";
-  sendPatientLinkEmail?: Maybe<boolean>;
+  sendPatientLinkEmailByTestEventId?: Maybe<boolean>;
 };
 
 export const WhoAmIDocument = gql`
@@ -3350,6 +3366,55 @@ export type EditUserEmailMutationResult = Apollo.MutationResult<EditUserEmailMut
 export type EditUserEmailMutationOptions = Apollo.BaseMutationOptions<
   EditUserEmailMutation,
   EditUserEmailMutationVariables
+>;
+export const ResetUserMfaDocument = gql`
+  mutation ResetUserMfa($id: ID!) {
+    resetUserMfa(id: $id) {
+      id
+    }
+  }
+`;
+export type ResetUserMfaMutationFn = Apollo.MutationFunction<
+  ResetUserMfaMutation,
+  ResetUserMfaMutationVariables
+>;
+
+/**
+ * __useResetUserMfaMutation__
+ *
+ * To run a mutation, you first call `useResetUserMfaMutation` within a React component and pass it any options that fit your needs.
+ * When your component renders, `useResetUserMfaMutation` returns a tuple that includes:
+ * - A mutate function that you can call at any time to execute the mutation
+ * - An object with fields that represent the current status of the mutation's execution
+ *
+ * @param baseOptions options that will be passed into the mutation, supported options are listed on: https://www.apollographql.com/docs/react/api/react-hooks/#options-2;
+ *
+ * @example
+ * const [resetUserMfaMutation, { data, loading, error }] = useResetUserMfaMutation({
+ *   variables: {
+ *      id: // value for 'id'
+ *   },
+ * });
+ */
+export function useResetUserMfaMutation(
+  baseOptions?: Apollo.MutationHookOptions<
+    ResetUserMfaMutation,
+    ResetUserMfaMutationVariables
+  >
+) {
+  const options = { ...defaultOptions, ...baseOptions };
+  return Apollo.useMutation<
+    ResetUserMfaMutation,
+    ResetUserMfaMutationVariables
+  >(ResetUserMfaDocument, options);
+}
+export type ResetUserMfaMutationHookResult = ReturnType<
+  typeof useResetUserMfaMutation
+>;
+export type ResetUserMfaMutationResult = Apollo.MutationResult<ResetUserMfaMutation>;
+export type ResetUserMfaMutationOptions = Apollo.BaseMutationOptions<
+  ResetUserMfaMutation,
+  ResetUserMfaMutationVariables
 >;
 export const GetTopLevelDashboardMetricsNewDocument = gql`
   query GetTopLevelDashboardMetricsNew(
@@ -5589,9 +5654,6 @@ export type GetTestResultForPrintQueryResult = Apollo.QueryResult<
 export const GetTestResultForTextDocument = gql`
   query getTestResultForText($id: ID!) {
     testResult(id: $id) {
-      patientLink {
-        internalId
-      }
       dateTested
       patient {
         firstName
@@ -5659,7 +5721,7 @@ export type GetTestResultForTextQueryResult = Apollo.QueryResult<
 >;
 export const SendSmsDocument = gql`
   mutation sendSMS($id: ID!) {
-    sendPatientLinkSms(internalId: $id)
+    sendPatientLinkSmsByTestEventId(testEventId: $id)
   }
 `;
 export type SendSmsMutationFn = Apollo.MutationFunction<
@@ -5900,9 +5962,6 @@ export const GetTestResultForResendingEmailsDocument = gql`
         email
         emails
       }
-      patientLink {
-        internalId
-      }
     }
   }
 `;
@@ -5958,8 +6017,8 @@ export type GetTestResultForResendingEmailsQueryResult = Apollo.QueryResult<
   GetTestResultForResendingEmailsQueryVariables
 >;
 export const ResendTestResultsEmailDocument = gql`
-  mutation resendTestResultsEmail($patientLinkId: ID!) {
-    sendPatientLinkEmail(internalId: $patientLinkId)
+  mutation resendTestResultsEmail($testEventId: ID!) {
+    sendPatientLinkEmailByTestEventId(testEventId: $testEventId)
   }
 `;
 export type ResendTestResultsEmailMutationFn = Apollo.MutationFunction<
@@ -5980,7 +6039,7 @@ export type ResendTestResultsEmailMutationFn = Apollo.MutationFunction<
  * @example
  * const [resendTestResultsEmailMutation, { data, loading, error }] = useResendTestResultsEmailMutation({
  *   variables: {
- *      patientLinkId: // value for 'patientLinkId'
+ *      testEventId: // value for 'testEventId'
  *   },
  * });
  */
