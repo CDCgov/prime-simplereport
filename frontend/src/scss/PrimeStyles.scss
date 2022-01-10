@@ -1119,3 +1119,10 @@ $results-dropdown-spacing: #{units(4)} - #{units(2)} - 22px - #{units(4)}; // he
     padding-bottom: unset;
   }
 }
+
+.close-button {
+  display: block;
+  border: none;
+  background: transparent;
+  cursor: pointer;
+}
