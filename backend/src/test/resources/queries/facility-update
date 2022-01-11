@@ -1,5 +1,5 @@
 mutation updateFacility($facilityId: ID!, $deviceId: ID!) {
-    updateAndReturnFacility(
+    updateFacility(
         facilityId: $facilityId
         testingFacilityName: "Fake Facility"
         cliaNumber: "123457890987654321"

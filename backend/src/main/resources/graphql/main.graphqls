@@ -373,8 +373,6 @@ type Mutation {
     street: String!
     streetTwo: String
     city: String
-    county: String
-      @deprecated(reason: "county is derived from smarty streets lookup")
     state: String!
     zipCode: String!
     phone: String
@@ -392,18 +390,14 @@ type Mutation {
     orderingProviderState: String
     orderingProviderZipCode: String
     orderingProviderPhone: String
-    deviceTypes: [String]!
-    deviceSpecimenTypes: [ID]
-    defaultDevice: String!
-  ): String @requiredPermissions(allOf: ["EDIT_FACILITY"])
+    deviceIds: [ID]!
+  ): Facility @requiredPermissions(allOf: ["EDIT_FACILITY"])
   addFacility(
     testingFacilityName: String!
     cliaNumber: String
     street: String!
     streetTwo: String
     city: String
-    county: String
-      @deprecated(reason: "county is derived from smarty streets lookup")
     state: String!
     zipCode: String!
     phone: String
@@ -421,10 +415,8 @@ type Mutation {
     orderingProviderState: String
     orderingProviderZipCode: String
     orderingProviderPhone: String
-    deviceTypes: [String]!
-    deviceSpecimenTypes: [ID]
-    defaultDevice: String!
-  ): String @requiredPermissions(allOf: ["EDIT_FACILITY"])
+    deviceIds: [ID]!
+  ): Facility @requiredPermissions(allOf: ["EDIT_FACILITY"])
   addFacilityNew(
     testingFacilityName: String!
     cliaNumber: String
@@ -476,57 +468,6 @@ type Mutation {
     orderingProviderPhone: String
     deviceIds: [ID]!
   ): String @requiredPermissions(allOf: ["EDIT_FACILITY"])
-  addAndReturnFacility(
-    testingFacilityName: String!
-    cliaNumber: String
-    street: String!
-    streetTwo: String
-    city: String
-    state: String!
-    zipCode: String!
-    phone: String
-    email: String
-    orderingProviderFirstName: String
-    orderingProviderMiddleName: String
-    orderingProviderLastName: String
-    orderingProviderSuffix: String
-    orderingProviderNPI: String
-    orderingProviderStreet: String
-    orderingProviderStreetTwo: String
-    orderingProviderCity: String
-    orderingProviderCounty: String
-      @deprecated(reason: "county is derived from smarty streets lookup")
-    orderingProviderState: String
-    orderingProviderZipCode: String
-    orderingProviderPhone: String
-    deviceIds: [ID]!
-  ): Facility @requiredPermissions(allOf: ["EDIT_FACILITY"])
-  updateAndReturnFacility(
-    facilityId: ID!
-    testingFacilityName: String!
-    cliaNumber: String
-    street: String!
-    streetTwo: String
-    city: String
-    state: String!
-    zipCode: String!
-    phone: String
-    email: String
-    orderingProviderFirstName: String
-    orderingProviderMiddleName: String
-    orderingProviderLastName: String
-    orderingProviderSuffix: String
-    orderingProviderNPI: String
-    orderingProviderStreet: String
-    orderingProviderStreetTwo: String
-    orderingProviderCity: String
-    orderingProviderCounty: String
-      @deprecated(reason: "county is derived from smarty streets lookup")
-    orderingProviderState: String
-    orderingProviderZipCode: String
-    orderingProviderPhone: String
-    deviceIds: [ID]!
-  ): Facility @requiredPermissions(allOf: ["EDIT_FACILITY"])
   addUserToCurrentOrg(
     name: NameInput
     firstName: String
