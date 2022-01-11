@@ -124,8 +124,7 @@ export type Facility = {
 
 export type Mutation = {
   __typename?: "Mutation";
-  addAndReturnFacility?: Maybe<Facility>;
-  addFacility?: Maybe<Scalars["String"]>;
+  addFacility?: Maybe<Facility>;
   addFacilityNew?: Maybe<Scalars["String"]>;
   addPatient?: Maybe<Patient>;
   addPatientToQueue?: Maybe<Scalars["String"]>;
@@ -155,9 +154,8 @@ export type Mutation = {
   setPatientIsDeleted?: Maybe<Patient>;
   setRegistrationLinkIsDeleted?: Maybe<Scalars["String"]>;
   setUserIsDeleted?: Maybe<User>;
-  updateAndReturnFacility?: Maybe<Facility>;
   updateDeviceType?: Maybe<DeviceType>;
-  updateFacility?: Maybe<Scalars["String"]>;
+  updateFacility?: Maybe<Facility>;
   updateFacilityNew?: Maybe<Scalars["String"]>;
   updateOrganization?: Maybe<Scalars["String"]>;
   updatePatient?: Maybe<Patient>;
@@ -169,38 +167,10 @@ export type Mutation = {
   uploadPatients?: Maybe<Scalars["String"]>;
 };
 
-export type MutationAddAndReturnFacilityArgs = {
-  city?: Maybe<Scalars["String"]>;
-  cliaNumber?: Maybe<Scalars["String"]>;
-  deviceIds: Array<Maybe<Scalars["ID"]>>;
-  email?: Maybe<Scalars["String"]>;
-  orderingProviderCity?: Maybe<Scalars["String"]>;
-  orderingProviderCounty?: Maybe<Scalars["String"]>;
-  orderingProviderFirstName?: Maybe<Scalars["String"]>;
-  orderingProviderLastName?: Maybe<Scalars["String"]>;
-  orderingProviderMiddleName?: Maybe<Scalars["String"]>;
-  orderingProviderNPI?: Maybe<Scalars["String"]>;
-  orderingProviderPhone?: Maybe<Scalars["String"]>;
-  orderingProviderState?: Maybe<Scalars["String"]>;
-  orderingProviderStreet?: Maybe<Scalars["String"]>;
-  orderingProviderStreetTwo?: Maybe<Scalars["String"]>;
-  orderingProviderSuffix?: Maybe<Scalars["String"]>;
-  orderingProviderZipCode?: Maybe<Scalars["String"]>;
-  phone?: Maybe<Scalars["String"]>;
-  state: Scalars["String"];
-  street: Scalars["String"];
-  streetTwo?: Maybe<Scalars["String"]>;
-  testingFacilityName: Scalars["String"];
-  zipCode: Scalars["String"];
-};
-
 export type MutationAddFacilityArgs = {
   city?: Maybe<Scalars["String"]>;
   cliaNumber?: Maybe<Scalars["String"]>;
-  county?: Maybe<Scalars["String"]>;
-  defaultDevice: Scalars["String"];
-  deviceSpecimenTypes?: Maybe<Array<Maybe<Scalars["ID"]>>>;
-  deviceTypes: Array<Maybe<Scalars["String"]>>;
+  deviceIds: Array<Maybe<Scalars["ID"]>>;
   email?: Maybe<Scalars["String"]>;
   orderingProviderCity?: Maybe<Scalars["String"]>;
   orderingProviderCounty?: Maybe<Scalars["String"]>;
@@ -465,32 +435,6 @@ export type MutationSetUserIsDeletedArgs = {
   id: Scalars["ID"];
 };
 
-export type MutationUpdateAndReturnFacilityArgs = {
-  city?: Maybe<Scalars["String"]>;
-  cliaNumber?: Maybe<Scalars["String"]>;
-  deviceIds: Array<Maybe<Scalars["ID"]>>;
-  email?: Maybe<Scalars["String"]>;
-  facilityId: Scalars["ID"];
-  orderingProviderCity?: Maybe<Scalars["String"]>;
-  orderingProviderCounty?: Maybe<Scalars["String"]>;
-  orderingProviderFirstName?: Maybe<Scalars["String"]>;
-  orderingProviderLastName?: Maybe<Scalars["String"]>;
-  orderingProviderMiddleName?: Maybe<Scalars["String"]>;
-  orderingProviderNPI?: Maybe<Scalars["String"]>;
-  orderingProviderPhone?: Maybe<Scalars["String"]>;
-  orderingProviderState?: Maybe<Scalars["String"]>;
-  orderingProviderStreet?: Maybe<Scalars["String"]>;
-  orderingProviderStreetTwo?: Maybe<Scalars["String"]>;
-  orderingProviderSuffix?: Maybe<Scalars["String"]>;
-  orderingProviderZipCode?: Maybe<Scalars["String"]>;
-  phone?: Maybe<Scalars["String"]>;
-  state: Scalars["String"];
-  street: Scalars["String"];
-  streetTwo?: Maybe<Scalars["String"]>;
-  testingFacilityName: Scalars["String"];
-  zipCode: Scalars["String"];
-};
-
 export type MutationUpdateDeviceTypeArgs = {
   input: UpdateDeviceType;
 };
@@ -498,10 +442,7 @@ export type MutationUpdateDeviceTypeArgs = {
 export type MutationUpdateFacilityArgs = {
   city?: Maybe<Scalars["String"]>;
   cliaNumber?: Maybe<Scalars["String"]>;
-  county?: Maybe<Scalars["String"]>;
-  defaultDevice: Scalars["String"];
-  deviceSpecimenTypes?: Maybe<Array<Maybe<Scalars["ID"]>>>;
-  deviceTypes: Array<Maybe<Scalars["String"]>>;
+  deviceIds: Array<Maybe<Scalars["ID"]>>;
   email?: Maybe<Scalars["String"]>;
   facilityId: Scalars["ID"];
   orderingProviderCity?: Maybe<Scalars["String"]>;
@@ -1070,7 +1011,7 @@ export type GetFacilitiesQuery = {
   }>;
 };
 
-export type UpdateAndReturnFacilityMutationVariables = Exact<{
+export type UpdateFacilityMutationVariables = Exact<{
   facilityId: Scalars["ID"];
   testingFacilityName: Scalars["String"];
   cliaNumber?: Maybe<Scalars["String"]>;
@@ -1095,12 +1036,12 @@ export type UpdateAndReturnFacilityMutationVariables = Exact<{
   devices: Array<Maybe<Scalars["ID"]>> | Maybe<Scalars["ID"]>;
 }>;
 
-export type UpdateAndReturnFacilityMutation = {
+export type UpdateFacilityMutation = {
   __typename?: "Mutation";
-  updateAndReturnFacility?: Maybe<{ __typename?: "Facility"; id: string }>;
+  updateFacility?: Maybe<{ __typename?: "Facility"; id: string }>;
 };
 
-export type AddAndReturnFacilityMutationVariables = Exact<{
+export type AddFacilityMutationVariables = Exact<{
   testingFacilityName: Scalars["String"];
   cliaNumber?: Maybe<Scalars["String"]>;
   street: Scalars["String"];
@@ -1124,9 +1065,9 @@ export type AddAndReturnFacilityMutationVariables = Exact<{
   devices: Array<Maybe<Scalars["ID"]>> | Maybe<Scalars["ID"]>;
 }>;
 
-export type AddAndReturnFacilityMutation = {
+export type AddFacilityMutation = {
   __typename?: "Mutation";
-  addAndReturnFacility?: Maybe<{ __typename?: "Facility"; id: string }>;
+  addFacility?: Maybe<{ __typename?: "Facility"; id: string }>;
 };
 
 export type GetManagedFacilitiesQueryVariables = Exact<{
@@ -1142,43 +1083,6 @@ export type GetManagedFacilitiesQuery = {
       id: string;
       cliaNumber?: Maybe<string>;
       name: string;
-      street?: Maybe<string>;
-      streetTwo?: Maybe<string>;
-      city?: Maybe<string>;
-      state?: Maybe<string>;
-      zipCode?: Maybe<string>;
-      phone?: Maybe<string>;
-      email?: Maybe<string>;
-      defaultDeviceType?: Maybe<{
-        __typename?: "DeviceType";
-        internalId: string;
-      }>;
-      deviceTypes?: Maybe<
-        Array<Maybe<{ __typename?: "DeviceType"; internalId: string }>>
-      >;
-      deviceSpecimenTypes?: Maybe<
-        Array<
-          Maybe<{
-            __typename?: "DeviceSpecimenType";
-            deviceType: { __typename?: "DeviceType"; internalId: string };
-            specimenType: { __typename?: "SpecimenType"; internalId: string };
-          }>
-        >
-      >;
-      orderingProvider?: Maybe<{
-        __typename?: "Provider";
-        firstName?: Maybe<string>;
-        middleName?: Maybe<string>;
-        lastName?: Maybe<string>;
-        suffix?: Maybe<string>;
-        NPI?: Maybe<string>;
-        street?: Maybe<string>;
-        streetTwo?: Maybe<string>;
-        city?: Maybe<string>;
-        state?: Maybe<string>;
-        zipCode?: Maybe<string>;
-        phone?: Maybe<string>;
-      }>;
     }>;
   }>;
 };
@@ -2387,8 +2291,8 @@ export type GetFacilitiesQueryResult = Apollo.QueryResult<
   GetFacilitiesQuery,
   GetFacilitiesQueryVariables
 >;
-export const UpdateAndReturnFacilityDocument = gql`
-  mutation UpdateAndReturnFacility(
+export const UpdateFacilityDocument = gql`
+  mutation UpdateFacility(
     $facilityId: ID!
     $testingFacilityName: String!
     $cliaNumber: String
@@ -2412,7 +2316,7 @@ export const UpdateAndReturnFacilityDocument = gql`
     $orderingProviderPhone: String
     $devices: [ID]!
   ) {
-    updateAndReturnFacility(
+    updateFacility(
       facilityId: $facilityId
       testingFacilityName: $testingFacilityName
       cliaNumber: $cliaNumber
@@ -2440,23 +2344,23 @@ export const UpdateAndReturnFacilityDocument = gql`
     }
   }
 `;
-export type UpdateAndReturnFacilityMutationFn = Apollo.MutationFunction<
-  UpdateAndReturnFacilityMutation,
-  UpdateAndReturnFacilityMutationVariables
+export type UpdateFacilityMutationFn = Apollo.MutationFunction<
+  UpdateFacilityMutation,
+  UpdateFacilityMutationVariables
 >;
 
 /**
- * __useUpdateAndReturnFacilityMutation__
+ * __useUpdateFacilityMutation__
  *
- * To run a mutation, you first call `useUpdateAndReturnFacilityMutation` within a React component and pass it any options that fit your needs.
- * When your component renders, `useUpdateAndReturnFacilityMutation` returns a tuple that includes:
+ * To run a mutation, you first call `useUpdateFacilityMutation` within a React component and pass it any options that fit your needs.
+ * When your component renders, `useUpdateFacilityMutation` returns a tuple that includes:
  * - A mutate function that you can call at any time to execute the mutation
  * - An object with fields that represent the current status of the mutation's execution
  *
  * @param baseOptions options that will be passed into the mutation, supported options are listed on: https://www.apollographql.com/docs/react/api/react-hooks/#options-2;
  *
  * @example
- * const [updateAndReturnFacilityMutation, { data, loading, error }] = useUpdateAndReturnFacilityMutation({
+ * const [updateFacilityMutation, { data, loading, error }] = useUpdateFacilityMutation({
  *   variables: {
  *      facilityId: // value for 'facilityId'
  *      testingFacilityName: // value for 'testingFacilityName'
@@ -2483,28 +2387,28 @@ export type UpdateAndReturnFacilityMutationFn = Apollo.MutationFunction<
  *   },
  * });
  */
-export function useUpdateAndReturnFacilityMutation(
+export function useUpdateFacilityMutation(
   baseOptions?: Apollo.MutationHookOptions<
-    UpdateAndReturnFacilityMutation,
-    UpdateAndReturnFacilityMutationVariables
+    UpdateFacilityMutation,
+    UpdateFacilityMutationVariables
   >
 ) {
   const options = { ...defaultOptions, ...baseOptions };
   return Apollo.useMutation<
-    UpdateAndReturnFacilityMutation,
-    UpdateAndReturnFacilityMutationVariables
-  >(UpdateAndReturnFacilityDocument, options);
+    UpdateFacilityMutation,
+    UpdateFacilityMutationVariables
+  >(UpdateFacilityDocument, options);
 }
-export type UpdateAndReturnFacilityMutationHookResult = ReturnType<
-  typeof useUpdateAndReturnFacilityMutation
+export type UpdateFacilityMutationHookResult = ReturnType<
+  typeof useUpdateFacilityMutation
 >;
-export type UpdateAndReturnFacilityMutationResult = Apollo.MutationResult<UpdateAndReturnFacilityMutation>;
-export type UpdateAndReturnFacilityMutationOptions = Apollo.BaseMutationOptions<
-  UpdateAndReturnFacilityMutation,
-  UpdateAndReturnFacilityMutationVariables
+export type UpdateFacilityMutationResult = Apollo.MutationResult<UpdateFacilityMutation>;
+export type UpdateFacilityMutationOptions = Apollo.BaseMutationOptions<
+  UpdateFacilityMutation,
+  UpdateFacilityMutationVariables
 >;
-export const AddAndReturnFacilityDocument = gql`
-  mutation AddAndReturnFacility(
+export const AddFacilityDocument = gql`
+  mutation AddFacility(
     $testingFacilityName: String!
     $cliaNumber: String
     $street: String!
@@ -2527,7 +2431,7 @@ export const AddAndReturnFacilityDocument = gql`
     $orderingProviderPhone: String
     $devices: [ID]!
   ) {
-    addAndReturnFacility(
+    addFacility(
       testingFacilityName: $testingFacilityName
       cliaNumber: $cliaNumber
       street: $street
@@ -2554,23 +2458,23 @@ export const AddAndReturnFacilityDocument = gql`
     }
   }
 `;
-export type AddAndReturnFacilityMutationFn = Apollo.MutationFunction<
-  AddAndReturnFacilityMutation,
-  AddAndReturnFacilityMutationVariables
+export type AddFacilityMutationFn = Apollo.MutationFunction<
+  AddFacilityMutation,
+  AddFacilityMutationVariables
 >;
 
 /**
- * __useAddAndReturnFacilityMutation__
+ * __useAddFacilityMutation__
  *
- * To run a mutation, you first call `useAddAndReturnFacilityMutation` within a React component and pass it any options that fit your needs.
- * When your component renders, `useAddAndReturnFacilityMutation` returns a tuple that includes:
+ * To run a mutation, you first call `useAddFacilityMutation` within a React component and pass it any options that fit your needs.
+ * When your component renders, `useAddFacilityMutation` returns a tuple that includes:
  * - A mutate function that you can call at any time to execute the mutation
  * - An object with fields that represent the current status of the mutation's execution
  *
  * @param baseOptions options that will be passed into the mutation, supported options are listed on: https://www.apollographql.com/docs/react/api/react-hooks/#options-2;
  *
  * @example
- * const [addAndReturnFacilityMutation, { data, loading, error }] = useAddAndReturnFacilityMutation({
+ * const [addFacilityMutation, { data, loading, error }] = useAddFacilityMutation({
  *   variables: {
  *      testingFacilityName: // value for 'testingFacilityName'
  *      cliaNumber: // value for 'cliaNumber'
@@ -2596,25 +2500,25 @@ export type AddAndReturnFacilityMutationFn = Apollo.MutationFunction<
  *   },
  * });
  */
-export function useAddAndReturnFacilityMutation(
+export function useAddFacilityMutation(
   baseOptions?: Apollo.MutationHookOptions<
-    AddAndReturnFacilityMutation,
-    AddAndReturnFacilityMutationVariables
+    AddFacilityMutation,
+    AddFacilityMutationVariables
   >
 ) {
   const options = { ...defaultOptions, ...baseOptions };
-  return Apollo.useMutation<
-    AddAndReturnFacilityMutation,
-    AddAndReturnFacilityMutationVariables
-  >(AddAndReturnFacilityDocument, options);
+  return Apollo.useMutation<AddFacilityMutation, AddFacilityMutationVariables>(
+    AddFacilityDocument,
+    options
+  );
 }
-export type AddAndReturnFacilityMutationHookResult = ReturnType<
-  typeof useAddAndReturnFacilityMutation
+export type AddFacilityMutationHookResult = ReturnType<
+  typeof useAddFacilityMutation
 >;
-export type AddAndReturnFacilityMutationResult = Apollo.MutationResult<AddAndReturnFacilityMutation>;
-export type AddAndReturnFacilityMutationOptions = Apollo.BaseMutationOptions<
-  AddAndReturnFacilityMutation,
-  AddAndReturnFacilityMutationVariables
+export type AddFacilityMutationResult = Apollo.MutationResult<AddFacilityMutation>;
+export type AddFacilityMutationOptions = Apollo.BaseMutationOptions<
+  AddFacilityMutation,
+  AddFacilityMutationVariables
 >;
 export const GetManagedFacilitiesDocument = gql`
   query GetManagedFacilities {
@@ -2623,40 +2527,6 @@ export const GetManagedFacilitiesDocument = gql`
         id
         cliaNumber
         name
-        street
-        streetTwo
-        city
-        state
-        zipCode
-        phone
-        email
-        defaultDeviceType {
-          internalId
-        }
-        deviceTypes {
-          internalId
-        }
-        deviceSpecimenTypes {
-          deviceType {
-            internalId
-          }
-          specimenType {
-            internalId
-          }
-        }
-        orderingProvider {
-          firstName
-          middleName
-          lastName
-          suffix
-          NPI
-          street
-          streetTwo
-          city
-          state
-          zipCode
-          phone
-        }
       }
     }
   }

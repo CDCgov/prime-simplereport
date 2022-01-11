@@ -52,7 +52,7 @@ export const GET_FACILITY_QUERY = gql`
 `;
 
 export const UPDATE_FACILITY_MUTATION = gql`
-  mutation UpdateAndReturnFacility(
+  mutation UpdateFacility(
     $facilityId: ID!
     $testingFacilityName: String!
     $cliaNumber: String
@@ -76,7 +76,7 @@ export const UPDATE_FACILITY_MUTATION = gql`
     $orderingProviderPhone: String
     $devices: [ID]!
   ) {
-    updateAndReturnFacility(
+    updateFacility(
       facilityId: $facilityId
       testingFacilityName: $testingFacilityName
       cliaNumber: $cliaNumber
@@ -106,7 +106,7 @@ export const UPDATE_FACILITY_MUTATION = gql`
 `;
 
 export const ADD_FACILITY_MUTATION = gql`
-  mutation AddAndReturnFacility(
+  mutation AddFacility(
     $testingFacilityName: String!
     $cliaNumber: String
     $street: String!
@@ -129,7 +129,7 @@ export const ADD_FACILITY_MUTATION = gql`
     $orderingProviderPhone: String
     $devices: [ID]!
   ) {
-    addAndReturnFacility(
+    addFacility(
       testingFacilityName: $testingFacilityName
       cliaNumber: $cliaNumber
       street: $street
@@ -232,8 +232,8 @@ const FacilityFormContainer: any = (props: Props) => {
       ...facility,
       id:
         saveFacilityMutation === updateFacilityMutation
-          ? savedFacility.data.updateAndReturnFacility.id
-          : savedFacility.data.addAndReturnFacility.id,
+          ? savedFacility.data.updateFacility.id
+          : savedFacility.data.addFacility.id,
     }));
     const alert = (
       <Alert

@@ -4,40 +4,6 @@ query GetManagedFacilities {
       id
       cliaNumber
       name
-      street
-      streetTwo
-      city
-      state
-      zipCode
-      phone
-      email
-      defaultDeviceType {
-        internalId
-      }
-      deviceTypes {
-        internalId
-      }
-      deviceSpecimenTypes {
-        deviceType {
-          internalId
-        }
-        specimenType {
-          internalId
-        }
-      }
-      orderingProvider {
-        firstName
-        middleName
-        lastName
-        suffix
-        NPI
-        street
-        streetTwo
-        city
-        state
-        zipCode
-        phone
-      }
     }
   }
 }

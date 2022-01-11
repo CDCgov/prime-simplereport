@@ -149,7 +149,7 @@ const mocks = [
     },
     result: {
       data: {
-        updateAndReturnFacility: {
+        updateFacility: {
           id: mockFacility.id,
         },
       },
