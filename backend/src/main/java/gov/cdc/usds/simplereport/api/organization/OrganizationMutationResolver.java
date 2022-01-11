@@ -50,58 +50,6 @@ public class OrganizationMutationResolver implements GraphQLMutationResolver {
       String street,
       String streetTwo,
       String city,
-      String county,
-      String state,
-      String zipCode,
-      String phone,
-      String email,
-      String orderingProviderFirstName,
-      String orderingProviderMiddleName,
-      String orderingProviderLastName,
-      String orderingProviderSuffix,
-      String orderingProviderNPI,
-      String orderingProviderStreet,
-      String orderingProviderStreetTwo,
-      String orderingProviderCity,
-      String orderingProviderCounty,
-      String orderingProviderState,
-      String orderingProviderZipCode,
-      String orderingProviderTelephone,
-      List<String> deviceIds,
-      List<UUID> deviceSpecimenTypes,
-      String defaultDeviceId) {
-
-    return addFacilityNew(
-        testingFacilityName,
-        cliaNumber,
-        street,
-        streetTwo,
-        city,
-        state,
-        zipCode,
-        phone,
-        email,
-        orderingProviderFirstName,
-        orderingProviderMiddleName,
-        orderingProviderLastName,
-        orderingProviderSuffix,
-        orderingProviderNPI,
-        orderingProviderStreet,
-        orderingProviderStreetTwo,
-        orderingProviderCity,
-        orderingProviderCounty,
-        orderingProviderState,
-        orderingProviderZipCode,
-        orderingProviderTelephone,
-        getDeviceIdsFromDeviceSpecimenTypes(deviceSpecimenTypes));
-  }
-
-  public ApiFacility addFacilityNew(
-      String testingFacilityName,
-      String cliaNumber,
-      String street,
-      String streetTwo,
-      String city,
       String state,
       String zipCode,
       String phone,
@@ -159,14 +107,12 @@ public class OrganizationMutationResolver implements GraphQLMutationResolver {
     return new ApiFacility(created);
   }
 
-  public ApiFacility updateFacility(
-      UUID facilityId,
+  public ApiFacility addFacilityNew(
       String testingFacilityName,
       String cliaNumber,
       String street,
       String streetTwo,
       String city,
-      String county,
       String state,
       String zipCode,
       String phone,
@@ -183,12 +129,9 @@ public class OrganizationMutationResolver implements GraphQLMutationResolver {
       String orderingProviderState,
       String orderingProviderZipCode,
       String orderingProviderTelephone,
-      List<String> deviceIds,
-      List<UUID> deviceSpecimenTypes,
-      String defaultDeviceId) {
+      List<UUID> deviceIds) {
 
-    return updateFacilityNew(
-        facilityId,
+    return addFacility(
         testingFacilityName,
         cliaNumber,
         street,
@@ -210,10 +153,10 @@ public class OrganizationMutationResolver implements GraphQLMutationResolver {
         orderingProviderState,
         orderingProviderZipCode,
         orderingProviderTelephone,
-        getDeviceIdsFromDeviceSpecimenTypes(deviceSpecimenTypes));
+        deviceIds);
   }
 
-  public ApiFacility updateFacilityNew(
+  public ApiFacility updateFacility(
       UUID facilityId,
       String testingFacilityName,
       String cliaNumber,
@@ -276,6 +219,57 @@ public class OrganizationMutationResolver implements GraphQLMutationResolver {
             parsePhoneNumber(orderingProviderTelephone),
             deviceIds);
     return new ApiFacility(facility);
+  }
+
+  public ApiFacility updateFacilityNew(
+      UUID facilityId,
+      String testingFacilityName,
+      String cliaNumber,
+      String street,
+      String streetTwo,
+      String city,
+      String state,
+      String zipCode,
+      String phone,
+      String email,
+      String orderingProviderFirstName,
+      String orderingProviderMiddleName,
+      String orderingProviderLastName,
+      String orderingProviderSuffix,
+      String orderingProviderNPI,
+      String orderingProviderStreet,
+      String orderingProviderStreetTwo,
+      String orderingProviderCity,
+      String orderingProviderCounty,
+      String orderingProviderState,
+      String orderingProviderZipCode,
+      String orderingProviderTelephone,
+      List<UUID> deviceIds) {
+
+    return updateFacility(
+        facilityId,
+        testingFacilityName,
+        cliaNumber,
+        street,
+        streetTwo,
+        city,
+        state,
+        zipCode,
+        phone,
+        email,
+        orderingProviderFirstName,
+        orderingProviderMiddleName,
+        orderingProviderLastName,
+        orderingProviderSuffix,
+        orderingProviderNPI,
+        orderingProviderStreet,
+        orderingProviderStreetTwo,
+        orderingProviderCity,
+        orderingProviderCounty,
+        orderingProviderState,
+        orderingProviderZipCode,
+        orderingProviderTelephone,
+        deviceIds);
   }
 
   @AuthorizationConfiguration.RequireGlobalAdminUser

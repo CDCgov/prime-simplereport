@@ -124,7 +124,7 @@ export type Facility = {
 
 export type Mutation = {
   __typename?: "Mutation";
-  addFacility?: Maybe<Scalars["String"]>;
+  addFacility?: Maybe<Facility>;
   addFacilityNew?: Maybe<Scalars["String"]>;
   addPatient?: Maybe<Patient>;
   addPatientToQueue?: Maybe<Scalars["String"]>;
@@ -157,7 +157,7 @@ export type Mutation = {
   setRegistrationLinkIsDeleted?: Maybe<Scalars["String"]>;
   setUserIsDeleted?: Maybe<User>;
   updateDeviceType?: Maybe<DeviceType>;
-  updateFacility?: Maybe<Scalars["String"]>;
+  updateFacility?: Maybe<Facility>;
   updateFacilityNew?: Maybe<Scalars["String"]>;
   updateOrganization?: Maybe<Scalars["String"]>;
   updatePatient?: Maybe<Patient>;
@@ -172,10 +172,7 @@ export type Mutation = {
 export type MutationAddFacilityArgs = {
   city?: Maybe<Scalars["String"]>;
   cliaNumber?: Maybe<Scalars["String"]>;
-  county?: Maybe<Scalars["String"]>;
-  defaultDevice: Scalars["String"];
-  deviceSpecimenTypes?: Maybe<Array<Maybe<Scalars["ID"]>>>;
-  deviceTypes: Array<Maybe<Scalars["String"]>>;
+  deviceIds: Array<Maybe<Scalars["ID"]>>;
   email?: Maybe<Scalars["String"]>;
   orderingProviderCity?: Maybe<Scalars["String"]>;
   orderingProviderCounty?: Maybe<Scalars["String"]>;
@@ -455,10 +452,7 @@ export type MutationUpdateDeviceTypeArgs = {
 export type MutationUpdateFacilityArgs = {
   city?: Maybe<Scalars["String"]>;
   cliaNumber?: Maybe<Scalars["String"]>;
-  county?: Maybe<Scalars["String"]>;
-  defaultDevice: Scalars["String"];
-  deviceSpecimenTypes?: Maybe<Array<Maybe<Scalars["ID"]>>>;
-  deviceTypes: Array<Maybe<Scalars["String"]>>;
+  deviceIds: Array<Maybe<Scalars["ID"]>>;
   email?: Maybe<Scalars["String"]>;
   facilityId: Scalars["ID"];
   orderingProviderCity?: Maybe<Scalars["String"]>;
@@ -1054,7 +1048,7 @@ export type UpdateFacilityMutationVariables = Exact<{
 
 export type UpdateFacilityMutation = {
   __typename?: "Mutation";
-  updateFacilityNew?: Maybe<string>;
+  updateFacility?: Maybe<{ __typename?: "Facility"; id: string }>;
 };
 
 export type AddFacilityMutationVariables = Exact<{
@@ -1083,7 +1077,7 @@ export type AddFacilityMutationVariables = Exact<{
 
 export type AddFacilityMutation = {
   __typename?: "Mutation";
-  addFacilityNew?: Maybe<string>;
+  addFacility?: Maybe<{ __typename?: "Facility"; id: string }>;
 };
 
 export type GetManagedFacilitiesQueryVariables = Exact<{
@@ -1094,7 +1088,7 @@ export type GetManagedFacilitiesQuery = {
   __typename?: "Query";
   organization?: Maybe<{
     __typename?: "Organization";
-    testingFacility: Array<{
+    facilities: Array<{
       __typename?: "Facility";
       id: string;
       cliaNumber?: Maybe<string>;
@@ -2324,7 +2318,7 @@ export const UpdateFacilityDocument = gql`
     $orderingProviderPhone: String
     $devices: [ID]!
   ) {
-    updateFacilityNew(
+    updateFacility(
       facilityId: $facilityId
       testingFacilityName: $testingFacilityName
       cliaNumber: $cliaNumber
@@ -2347,7 +2341,9 @@ export const UpdateFacilityDocument = gql`
       orderingProviderZipCode: $orderingProviderZipCode
       orderingProviderPhone: $orderingProviderPhone
       deviceIds: $devices
-    )
+    ) {
+      id
+    }
   }
 `;
 export type UpdateFacilityMutationFn = Apollo.MutationFunction<
@@ -2437,7 +2433,7 @@ export const AddFacilityDocument = gql`
     $orderingProviderPhone: String
     $devices: [ID]!
   ) {
-    addFacilityNew(
+    addFacility(
       testingFacilityName: $testingFacilityName
       cliaNumber: $cliaNumber
       street: $street
@@ -2459,7 +2455,9 @@ export const AddFacilityDocument = gql`
       orderingProviderZipCode: $orderingProviderZipCode
       orderingProviderPhone: $orderingProviderPhone
       deviceIds: $devices
-    )
+    ) {
+      id
+    }
   }
 `;
 export type AddFacilityMutationFn = Apollo.MutationFunction<
@@ -2527,7 +2525,7 @@ export type AddFacilityMutationOptions = Apollo.BaseMutationOptions<
 export const GetManagedFacilitiesDocument = gql`
   query GetManagedFacilities {
     organization {
-      testingFacility {
+      facilities {
         id
         cliaNumber
         name
