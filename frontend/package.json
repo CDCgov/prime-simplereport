@@ -8,16 +8,16 @@
   },
   "dependencies": {
     "@apollo/client": "3.4.1",
-    "@craco/craco": "^6.1.2",
+    "@craco/craco": "^6.4.3",
     "@fortawesome/fontawesome-svg-core": "^1.2.36",
     "@fortawesome/free-solid-svg-icons": "^5.15.4",
     "@fortawesome/react-fontawesome": "^0.1.16",
     "@microsoft/applicationinsights-react-js": "^3.0.5",
     "@microsoft/applicationinsights-web": "^2.5.10",
     "@szhsin/react-menu": "^1.5.0",
-    "@testing-library/jest-dom": "^4.2.4",
-    "@testing-library/react": "^11.2.2",
-    "@testing-library/user-event": "^13.1.1",
+    "@testing-library/jest-dom": "^5.16.1",
+    "@testing-library/react": "^12.1.2",
+    "@testing-library/user-event": "^13.5.0",
     "@trussworks/react-uswds": "^1.16.0",
     "@types/google-libphonenumber": "^7.4.23",
     "@types/history": "^4.7.10",
@@ -40,7 +40,7 @@
     "react-redux": "^7.2.6",
     "react-router": "^5.2.0",
     "react-router-dom": "^5.2.0",
-    "react-scripts": "^4.0.3",
+    "react-scripts": "^5.0.0",
     "react-toastify": "^6.1.0",
     "react-transition-group": "^4.4.2",
     "react-uid": "^2.3.1",
@@ -86,13 +86,15 @@
     "singleQuote": false
   },
   "eslintConfig": {
+    "parser": "@typescript-eslint/parser",
     "extends": [
       "react-app",
       "prettier",
-      "plugin:import/errors",
-      "plugin:import/warnings"
+      "plugin:import/recommended",
+      "plugin:import/typescript"
     ],
     "plugins": [
+      "@typescript-eslint",
       "graphql",
       "testing-library",
       "unused-imports",
@@ -187,7 +189,7 @@
     "@types/apollo-upload-client": "^14.1.0",
     "@types/classnames": "^2.2.11",
     "@types/faker": "^5.5.9",
-    "@types/jest": "^26.0.22",
+    "@types/jest": "^27.4.0",
     "@types/node": "^14.14.10",
     "@types/react": "^17.0.38",
     "@types/react-csv": "^1.1.2",
@@ -197,6 +199,8 @@
     "@types/redux-mock-store": "^1.0.3",
     "@types/smartystreets-javascript-sdk": "^1.6.4",
     "@types/uuid": "^8.3.4",
+    "@typescript-eslint/eslint-plugin": "^5.9.1",
+    "@typescript-eslint/parser": "^5.9.1",
     "babel-loader": "8.1.0",
     "chromatic": "^5.8.3",
     "craco-sass-resources-loader": "^1.1.0",
@@ -207,10 +211,10 @@
     "eslint-config-prettier": "^8.3.0",
     "eslint-plugin-cypress": "^2.12.1",
     "eslint-plugin-graphql": "^4.0.0",
-    "eslint-plugin-import": "^2.22.1",
-    "eslint-plugin-jest-dom": "^3.9.2",
+    "eslint-plugin-import": "^2.25.4",
+    "eslint-plugin-jest-dom": "^4.0.1",
     "eslint-plugin-testing-library": "^5.0.3",
-    "eslint-plugin-unused-imports": "1.1.5",
+    "eslint-plugin-unused-imports": "2.0.0",
     "faker": "^5.5.3",
     "jest-fetch-mock": "^3.0.3",
     "mockdate": "^3.0.5",
@@ -222,7 +226,7 @@
     "redux-mock-store": "^1.5.4",
     "stylelint": "^13.12.0",
     "stylelint-config-standard": "^21.0.0",
-    "typescript": "^4.2.4"
+    "typescript": "^4.5.4"
   },
   "resolutions": {
     "@storybook/react/babel-loader": "8.1.0"
