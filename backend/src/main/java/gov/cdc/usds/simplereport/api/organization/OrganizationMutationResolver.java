@@ -12,9 +12,7 @@ import gov.cdc.usds.simplereport.api.model.ApiFacility;
 import gov.cdc.usds.simplereport.api.model.ApiOrganization;
 import gov.cdc.usds.simplereport.api.model.Role;
 import gov.cdc.usds.simplereport.config.AuthorizationConfiguration;
-import gov.cdc.usds.simplereport.db.model.DeviceSpecimenType;
 import gov.cdc.usds.simplereport.db.model.Facility;
-import gov.cdc.usds.simplereport.db.model.IdentifiedEntity;
 import gov.cdc.usds.simplereport.db.model.Organization;
 import gov.cdc.usds.simplereport.db.model.OrganizationQueueItem;
 import gov.cdc.usds.simplereport.db.model.auxiliary.PersonName;
@@ -26,7 +24,6 @@ import gov.cdc.usds.simplereport.service.OrganizationQueueService;
 import gov.cdc.usds.simplereport.service.OrganizationService;
 import graphql.kickstart.tools.GraphQLMutationResolver;
 import java.util.List;
-import java.util.Objects;
 import java.util.Optional;
 import java.util.UUID;
 import java.util.stream.Collectors;
@@ -399,18 +396,5 @@ public class OrganizationMutationResolver implements GraphQLMutationResolver {
   /** Support-only mutation to mark a facility as deleted. This is a soft deletion only. */
   public Facility markFacilityAsDeleted(UUID facilityId, boolean deleted) {
     return organizationService.markFacilityAsDeleted(facilityId, deleted);
-  }
-
-  private List<UUID> getDeviceIdsFromDeviceSpecimenTypes(List<UUID> deviceSpecimenTypes) {
-    return deviceSpecimenTypes.stream()
-        .map(
-            id ->
-                deviceSpecimenTypeRepository
-                    .findById(id)
-                    .map(DeviceSpecimenType::getDeviceType)
-                    .map(IdentifiedEntity::getInternalId)
-                    .orElse(null))
-        .filter(Objects::nonNull)
-        .collect(Collectors.toList());
   }
 }
