@@ -7,7 +7,7 @@ SOURCE_SLOT?=staging
 TARGET_SLOT?=production
 DEPLOYED_COMMIT?=$(shell git show --abbrev=7 -s --pretty=%h)
 RELEASE_TAG?=$(subst refs/tags/,,$(GITHUB_REF))
-CURL_TIMEOUT?=2
+CURL_TIMEOUT?=20
 
 # Internal DRYing (also overrideable if you are sufficiently desperate)
 API_NAME=simple-report-api-$*
