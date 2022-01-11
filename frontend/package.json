@@ -120,6 +120,7 @@
       ],
       "import/newline-after-import": 1,
       "import/no-commonjs": 0,
+      "import/no-named-as-default": 0,
       "no-unused-vars": "off",
       "unused-imports/no-unused-imports": "error",
       "unused-imports/no-unused-vars": [
