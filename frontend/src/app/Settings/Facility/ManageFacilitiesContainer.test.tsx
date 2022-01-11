@@ -86,7 +86,7 @@ const mock = [
       data: {
         organization: {
           internalId: "30b1d934-a877-4b1d-9565-575afd4d797e",
-          testingFacility: [
+          facilities: [
             {
               id: mockFacility.id,
               cliaNumber: mockFacility.cliaNumber,
