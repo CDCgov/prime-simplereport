@@ -43,8 +43,8 @@ api.tfvars: /dev/null
 	echo "deploy_actor=\"$(GITHUB_ACTOR)\"" >> $@;
 
 init-%: .valid-env-%
-	terraform -chdir=$*/persistent -upgrade init
-	terraform -chdir=$* -upgrade init
+	terraform -chdir=$*/persistent init -upgrade
+	terraform -chdir=$* init -upgrade
 
 plan-%: .valid-env-% api.tfvars
 	terraform -chdir=$*/persistent plan -lock-timeout=15m
