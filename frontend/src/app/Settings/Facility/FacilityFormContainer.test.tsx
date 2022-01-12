@@ -17,7 +17,7 @@ import FacilityFormContainer, {
   UPDATE_FACILITY_MUTATION,
 } from "./FacilityFormContainer";
 
-const deviceTypes: DeviceType[] = [
+export const deviceTypes: DeviceType[] = [
   {
     internalId: "bc0536ea-4564-4291-bbf3-0e7b0731f6e8",
     name: "Fake Device 1",
@@ -122,7 +122,7 @@ const facilityVariables: any = {
   orderingProviderState: mockFacility.orderingProvider.state,
   orderingProviderZipCode: mockFacility.orderingProvider.zipCode,
   orderingProviderPhone: mockFacility.orderingProvider.phone || null,
-  devices: mockFacility.deviceTypes,
+  devices: mockFacility.deviceTypes.map((d) => d.internalId),
 };
 
 const store = configureStore([])({
