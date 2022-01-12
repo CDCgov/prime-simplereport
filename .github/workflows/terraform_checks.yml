@@ -17,7 +17,7 @@ jobs:
       - uses: actions/checkout@v2
       - uses: hashicorp/setup-terraform@v1
         with:
-          terraform_version: 0.15.1
+          terraform_version: 1.0.11
       - name: Terraform fmt
         run: terraform fmt -check -recursive
 
@@ -32,7 +32,7 @@ jobs:
       - uses: actions/checkout@v2
       - uses: hashicorp/setup-terraform@v1
         with:
-          terraform_version: 0.15.1
+          terraform_version: 1.0.11
       - name: Terraform Init
         run: |
           for d in $TERRAFORM_DIRS
@@ -64,7 +64,7 @@ jobs:
           creds: ${{ secrets.AZURE_CREDENTIALS }}
       - uses: hashicorp/setup-terraform@v1
         with:
-          terraform_version: 0.15.1
+          terraform_version: 1.0.11
       - name: Terraform Init
         run: make init-prod 
       - name: Terraform plan
