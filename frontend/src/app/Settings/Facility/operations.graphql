@@ -1,0 +1,9 @@
+query GetManagedFacilities {
+  organization {
+    facilities {
+      id
+      cliaNumber
+      name
+    }
+  }
+}

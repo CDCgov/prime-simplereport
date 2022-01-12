@@ -12,21 +12,17 @@ import gov.cdc.usds.simplereport.api.model.ApiFacility;
 import gov.cdc.usds.simplereport.api.model.ApiOrganization;
 import gov.cdc.usds.simplereport.api.model.Role;
 import gov.cdc.usds.simplereport.config.AuthorizationConfiguration;
-import gov.cdc.usds.simplereport.db.model.DeviceSpecimenType;
 import gov.cdc.usds.simplereport.db.model.Facility;
-import gov.cdc.usds.simplereport.db.model.IdentifiedEntity;
 import gov.cdc.usds.simplereport.db.model.Organization;
 import gov.cdc.usds.simplereport.db.model.OrganizationQueueItem;
 import gov.cdc.usds.simplereport.db.model.auxiliary.PersonName;
 import gov.cdc.usds.simplereport.db.model.auxiliary.StreetAddress;
-import gov.cdc.usds.simplereport.db.repository.DeviceSpecimenTypeRepository;
 import gov.cdc.usds.simplereport.service.AddressValidationService;
 import gov.cdc.usds.simplereport.service.ApiUserService;
 import gov.cdc.usds.simplereport.service.OrganizationQueueService;
 import gov.cdc.usds.simplereport.service.OrganizationService;
 import graphql.kickstart.tools.GraphQLMutationResolver;
 import java.util.List;
-import java.util.Objects;
 import java.util.Optional;
 import java.util.UUID;
 import java.util.stream.Collectors;
@@ -42,61 +38,10 @@ public class OrganizationMutationResolver implements GraphQLMutationResolver {
   private final OrganizationQueueService organizationQueueService;
   private final AddressValidationService addressValidationService;
   private final ApiUserService apiUserService;
-  private final DeviceSpecimenTypeRepository deviceSpecimenTypeRepository;
 
+  /** addFacility is the latest iteration */
+  /** remove addFacilityNew at a later date */
   public ApiFacility addFacility(
-      String testingFacilityName,
-      String cliaNumber,
-      String street,
-      String streetTwo,
-      String city,
-      String county,
-      String state,
-      String zipCode,
-      String phone,
-      String email,
-      String orderingProviderFirstName,
-      String orderingProviderMiddleName,
-      String orderingProviderLastName,
-      String orderingProviderSuffix,
-      String orderingProviderNPI,
-      String orderingProviderStreet,
-      String orderingProviderStreetTwo,
-      String orderingProviderCity,
-      String orderingProviderCounty,
-      String orderingProviderState,
-      String orderingProviderZipCode,
-      String orderingProviderTelephone,
-      List<String> deviceIds,
-      List<UUID> deviceSpecimenTypes,
-      String defaultDeviceId) {
-
-    return addFacilityNew(
-        testingFacilityName,
-        cliaNumber,
-        street,
-        streetTwo,
-        city,
-        state,
-        zipCode,
-        phone,
-        email,
-        orderingProviderFirstName,
-        orderingProviderMiddleName,
-        orderingProviderLastName,
-        orderingProviderSuffix,
-        orderingProviderNPI,
-        orderingProviderStreet,
-        orderingProviderStreetTwo,
-        orderingProviderCity,
-        orderingProviderCounty,
-        orderingProviderState,
-        orderingProviderZipCode,
-        orderingProviderTelephone,
-        getDeviceIdsFromDeviceSpecimenTypes(deviceSpecimenTypes));
-  }
-
-  public ApiFacility addFacilityNew(
       String testingFacilityName,
       String cliaNumber,
       String street,
@@ -159,14 +104,15 @@ public class OrganizationMutationResolver implements GraphQLMutationResolver {
     return new ApiFacility(created);
   }
 
-  public ApiFacility updateFacility(
-      UUID facilityId,
+  /** addFacilityNew is being kept along side addFacility to ensure backwards compatibility */
+  /** addFacilityNew calls addFacility */
+  /** addFacilityNew should be removed at a future date */
+  public ApiFacility addFacilityNew(
       String testingFacilityName,
       String cliaNumber,
       String street,
       String streetTwo,
       String city,
-      String county,
       String state,
       String zipCode,
       String phone,
@@ -183,12 +129,9 @@ public class OrganizationMutationResolver implements GraphQLMutationResolver {
       String orderingProviderState,
       String orderingProviderZipCode,
       String orderingProviderTelephone,
-      List<String> deviceIds,
-      List<UUID> deviceSpecimenTypes,
-      String defaultDeviceId) {
+      List<UUID> deviceIds) {
 
-    return updateFacilityNew(
-        facilityId,
+    return addFacility(
         testingFacilityName,
         cliaNumber,
         street,
@@ -210,10 +153,12 @@ public class OrganizationMutationResolver implements GraphQLMutationResolver {
         orderingProviderState,
         orderingProviderZipCode,
         orderingProviderTelephone,
-        getDeviceIdsFromDeviceSpecimenTypes(deviceSpecimenTypes));
+        deviceIds);
   }
 
-  public ApiFacility updateFacilityNew(
+  /** updateFacility is the latest iteration */
+  /** remove updateFacilityNew at a later date */
+  public ApiFacility updateFacility(
       UUID facilityId,
       String testingFacilityName,
       String cliaNumber,
@@ -276,6 +221,60 @@ public class OrganizationMutationResolver implements GraphQLMutationResolver {
             parsePhoneNumber(orderingProviderTelephone),
             deviceIds);
     return new ApiFacility(facility);
+  }
+
+  /** updateFacilityNew is being kept along side updateFacility to ensure backwards compatibility */
+  /** updateFacilityNew calls updateFacility */
+  /** updateFacilityNew should be removed at a future date */
+  public ApiFacility updateFacilityNew(
+      UUID facilityId,
+      String testingFacilityName,
+      String cliaNumber,
+      String street,
+      String streetTwo,
+      String city,
+      String state,
+      String zipCode,
+      String phone,
+      String email,
+      String orderingProviderFirstName,
+      String orderingProviderMiddleName,
+      String orderingProviderLastName,
+      String orderingProviderSuffix,
+      String orderingProviderNPI,
+      String orderingProviderStreet,
+      String orderingProviderStreetTwo,
+      String orderingProviderCity,
+      String orderingProviderCounty,
+      String orderingProviderState,
+      String orderingProviderZipCode,
+      String orderingProviderTelephone,
+      List<UUID> deviceIds) {
+
+    return updateFacility(
+        facilityId,
+        testingFacilityName,
+        cliaNumber,
+        street,
+        streetTwo,
+        city,
+        state,
+        zipCode,
+        phone,
+        email,
+        orderingProviderFirstName,
+        orderingProviderMiddleName,
+        orderingProviderLastName,
+        orderingProviderSuffix,
+        orderingProviderNPI,
+        orderingProviderStreet,
+        orderingProviderStreetTwo,
+        orderingProviderCity,
+        orderingProviderCounty,
+        orderingProviderState,
+        orderingProviderZipCode,
+        orderingProviderTelephone,
+        deviceIds);
   }
 
   @AuthorizationConfiguration.RequireGlobalAdminUser
@@ -405,18 +404,5 @@ public class OrganizationMutationResolver implements GraphQLMutationResolver {
   /** Support-only mutation to mark a facility as deleted. This is a soft deletion only. */
   public Facility markFacilityAsDeleted(UUID facilityId, boolean deleted) {
     return organizationService.markFacilityAsDeleted(facilityId, deleted);
-  }
-
-  private List<UUID> getDeviceIdsFromDeviceSpecimenTypes(List<UUID> deviceSpecimenTypes) {
-    return deviceSpecimenTypes.stream()
-        .map(
-            id ->
-                deviceSpecimenTypeRepository
-                    .findById(id)
-                    .map(DeviceSpecimenType::getDeviceType)
-                    .map(IdentifiedEntity::getInternalId)
-                    .orElse(null))
-        .filter(Objects::nonNull)
-        .collect(Collectors.toList());
   }
 }
