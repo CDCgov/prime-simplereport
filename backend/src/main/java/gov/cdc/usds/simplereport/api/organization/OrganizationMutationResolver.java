@@ -39,6 +39,8 @@ public class OrganizationMutationResolver implements GraphQLMutationResolver {
   private final AddressValidationService addressValidationService;
   private final ApiUserService apiUserService;
 
+  /** addFacility is the latest iteration */
+  /** remove addFacilityNew at a later date */
   public ApiFacility addFacility(
       String testingFacilityName,
       String cliaNumber,
@@ -102,6 +104,9 @@ public class OrganizationMutationResolver implements GraphQLMutationResolver {
     return new ApiFacility(created);
   }
 
+  /** addFacilityNew is being kept along side addFacility to ensure backwards compatibility */
+  /** addFacilityNew calls addFacility */
+  /** addFacilityNew should be removed at a future date */
   public ApiFacility addFacilityNew(
       String testingFacilityName,
       String cliaNumber,
