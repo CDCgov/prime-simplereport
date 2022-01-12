@@ -70,7 +70,7 @@ resource "okta_auth_server_scope" "sr_env" {
 }
 
 resource "okta_trusted_origin" "sr_trusted_origin" {
-  name   = "example"
-  origin = "https://example.com"
-  scopes = ["CORS"]
+  name   = "simple_report_trusted_origin"
+  origin = "https://localhost.simplereport.gov"
+  scopes = ["CORS", "Redirect"]
 }
