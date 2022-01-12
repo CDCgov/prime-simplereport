@@ -17,7 +17,6 @@ import gov.cdc.usds.simplereport.db.model.Organization;
 import gov.cdc.usds.simplereport.db.model.OrganizationQueueItem;
 import gov.cdc.usds.simplereport.db.model.auxiliary.PersonName;
 import gov.cdc.usds.simplereport.db.model.auxiliary.StreetAddress;
-import gov.cdc.usds.simplereport.db.repository.DeviceSpecimenTypeRepository;
 import gov.cdc.usds.simplereport.service.AddressValidationService;
 import gov.cdc.usds.simplereport.service.ApiUserService;
 import gov.cdc.usds.simplereport.service.OrganizationQueueService;
@@ -39,7 +38,6 @@ public class OrganizationMutationResolver implements GraphQLMutationResolver {
   private final OrganizationQueueService organizationQueueService;
   private final AddressValidationService addressValidationService;
   private final ApiUserService apiUserService;
-  private final DeviceSpecimenTypeRepository deviceSpecimenTypeRepository;
 
   public ApiFacility addFacility(
       String testingFacilityName,
