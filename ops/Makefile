@@ -46,10 +46,6 @@ init-%: .valid-env-%
 	terraform -chdir=$*/persistent -upgrade init
 	terraform -chdir=$* -upgrade init
 
-plan-%: .valid-env-% api.tfvars
-	terraform -chdir=$*/persistent plan -lock-timeout=15m
-	terraform -chdir=$* plan -var-file=../api.tfvars -lock-timeout=15m
-
 deploy-%: .valid-env-% api.tfvars
 	terraform -chdir=$*/persistent apply -auto-approve -lock-timeout=15m
 	terraform -chdir=$* apply -auto-approve -var-file=../api.tfvars -lock-timeout=15m
