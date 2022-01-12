@@ -79,7 +79,7 @@ export function phoneNumberIsValid(input: any) {
   try {
     const number = phoneUtil.parseAndKeepRawInput(input, "US");
     return phoneUtil.isValidNumber(number);
-  } catch (e) {
+  } catch (e: any) {
     return false;
   }
 }

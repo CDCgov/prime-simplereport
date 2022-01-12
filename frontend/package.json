@@ -18,7 +18,7 @@
     "@testing-library/jest-dom": "^5.16.1",
     "@testing-library/react": "^12.1.2",
     "@testing-library/user-event": "^13.5.0",
-    "@trussworks/react-uswds": "^1.16.0",
+    "@trussworks/react-uswds": "^2.6.0",
     "@types/google-libphonenumber": "^7.4.23",
     "@types/history": "^4.7.10",
     "@types/react-router-dom": "^5.1.6",
@@ -48,7 +48,7 @@
     "sass": "^1.34.0",
     "sass-resources-loader": "^2.2.4",
     "smartystreets-javascript-sdk": "^1.6.3",
-    "uswds": "^2.11.2",
+    "uswds": "^2.13.0",
     "uuid": "^8.3.1",
     "yup": "^0.32.9"
   },

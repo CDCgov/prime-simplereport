@@ -24,7 +24,7 @@ export const MfaSelect = () => {
     let valid;
     try {
       valid = emailIsValid(emailAddress);
-    } catch (e) {
+    } catch (e: any) {
       valid = false;
     }
     if (!valid) {

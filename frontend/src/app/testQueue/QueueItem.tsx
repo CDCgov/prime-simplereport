@@ -404,7 +404,7 @@ const QueueItem = ({
       testResultsSubmitted(result);
       refetchQueue();
       removeTimer(internalId);
-    } catch (error) {
+    } catch (error: any) {
       setSaveState("error");
       updateMutationError(error);
     }

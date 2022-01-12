@@ -28,7 +28,7 @@ export const isFormValid = async <T>({
   try {
     await schema.validate(data, { abortEarly: false });
     return { valid: true };
-  } catch (e) {
+  } catch (e: any) {
     if (e instanceof yup.ValidationError) {
       return {
         valid: false,
@@ -61,7 +61,7 @@ export const isFieldValid = async <T>({
   try {
     await schema.validateAt(field as string, data);
     return { ...errors, [field]: undefined };
-  } catch (e) {
+  } catch (e: any) {
     if (e instanceof yup.ValidationError) {
       return { ...errors, [field]: e.message };
     } else {

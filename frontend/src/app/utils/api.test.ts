@@ -37,7 +37,7 @@ describe("FetchClient", () => {
       try {
         await sut.request(path, {});
         fail("Failed to throw");
-      } catch (e) {
+      } catch (e: any) {
         expect(e).toBeDefined();
       }
     });
@@ -61,7 +61,7 @@ describe("FetchClient", () => {
       try {
         await sut.request(path, {});
         fail("Failed to throw");
-      } catch (e) {
+      } catch (e: any) {
         expect(e).toBeDefined();
       }
     });
@@ -73,7 +73,7 @@ describe("FetchClient", () => {
     try {
       await sut.getRequest(path);
       fail("Failed to throw");
-    } catch (e) {
+    } catch (e: any) {
       expect(e).toBeDefined();
     }
   });

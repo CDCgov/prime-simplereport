@@ -17,7 +17,11 @@ describe("ChangeUser", () => {
     beforeAll(() => {
       jest.resetModules(); // Most important - it clears the cache
       process.env = { ...OLD_ENV }; // Make a copy
-      process.env.NODE_ENV = "development";
+      Object.defineProperty(process.env, "NODE_ENV", {
+        value: "development",
+        configurable: true,
+        writable: true,
+      });
     });
     afterAll(() => {
       process.env = OLD_ENV; // Restore old environment
