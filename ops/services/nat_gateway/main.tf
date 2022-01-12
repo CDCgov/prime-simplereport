@@ -39,8 +39,3 @@ resource "azurerm_subnet_nat_gateway_association" "outbound_lb" {
   subnet_id      = var.subnet_lb_id
   nat_gateway_id = azurerm_nat_gateway.outbound.id
 }
-
-resource "azurerm_subnet_nat_gateway_association" "outbound_vm" {
-  subnet_id      = var.subnet_vm_id
-  nat_gateway_id = azurerm_nat_gateway.outbound.id
-}
