@@ -9,10 +9,7 @@ import userEvent from "@testing-library/user-event";
 import { getAppInsights } from "../TelemetryService";
 import * as utils from "../utils/index";
 
-import QueueItem, {
-  EDIT_QUEUE_ITEM,
-  SUBMIT_TEST_RESULT,
-} from "./QueueItem";
+import QueueItem, { EDIT_QUEUE_ITEM, SUBMIT_TEST_RESULT } from "./QueueItem";
 
 jest.mock("../TelemetryService", () => ({
   getAppInsights: jest.fn(),
