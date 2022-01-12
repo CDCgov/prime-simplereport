@@ -157,7 +157,7 @@ const mocks = [
         orderingProviderState: mockFacility.orderingProvider.state,
         orderingProviderZipCode: mockFacility.orderingProvider.zipCode,
         orderingProviderPhone: mockFacility.orderingProvider.phone || null,
-        devices: mockFacility.deviceTypes.map((d) => d.internalId),
+        devices: mockFacility.deviceTypes,
       },
     },
     result: {
