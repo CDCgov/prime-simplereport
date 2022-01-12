@@ -140,7 +140,7 @@ public class DeviceTypeService {
       List<Facility> facilitiesToRemoveDefaultDeviceSpecimen =
           _facilityRepository.findAllByDefaultDeviceSpecimenIn(toBeDeletedDeviceSpecimenTypes);
 
-      facilitiesToRemoveDefaultDeviceSpecimen.forEach(fac -> fac.addDefaultDeviceSpecimen(null));
+      facilitiesToRemoveDefaultDeviceSpecimen.forEach(Facility::removeDefaultDeviceSpecimen);
 
       _deviceSpecimenRepo.deleteAll(toBeDeletedDeviceSpecimenTypes);
 

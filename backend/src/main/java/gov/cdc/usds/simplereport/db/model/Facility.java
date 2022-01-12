@@ -157,6 +157,14 @@ public class Facility extends OrganizationScopedEternalEntity implements Located
     defaultDeviceSpecimen = newDefault;
   }
 
+  public void removeDefaultDeviceSpecimen() {
+    if (defaultDeviceSpecimen != null) {
+      this.removeDeviceType(defaultDeviceSpecimen.getDeviceType());
+
+      defaultDeviceSpecimen = null;
+    }
+  }
+
   public void removeDeviceType(DeviceType deletedDevice) {
     initializeDeviceTypesSet();
     this.configuredDeviceTypes.remove(deletedDevice);

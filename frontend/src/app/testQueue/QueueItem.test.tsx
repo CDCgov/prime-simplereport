@@ -283,7 +283,7 @@ describe("QueueItem", () => {
       })
     );
 
-    await new Promise((resolve) => setTimeout(resolve, 501));
+    await new Promise((resolve) => setTimeout(resolve, 600));
 
     // `true` iff a valid replacement default device specimen type was
     // selected by the component

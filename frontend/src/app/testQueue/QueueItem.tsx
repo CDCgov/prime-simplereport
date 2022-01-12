@@ -255,13 +255,17 @@ const QueueItem = ({
 
     // If the device specimen type configured for an active test
     // has been deleted, set the selected value to another valid
-    // device specimen
+    // device specimen for the configured device
     if (!deviceSpecimenType) {
-      const deviceSpecimenTypesForDevice = deviceSpecimenTypes.filter(
+      const deviceSpecimenTypeForDevice = deviceSpecimenTypes.find(
         (dst) => dst.deviceType.internalId === selectedDeviceId
       );
 
-      updateDeviceSpecimenTypeId(deviceSpecimenTypesForDevice[0].internalId);
+      // If the configured device no longer has any specimen types,
+      // just grab any device specimen type available in state
+      updateDeviceSpecimenTypeId(
+        (deviceSpecimenTypeForDevice || deviceSpecimenTypes[0]).internalId
+      );
 
       return;
     }
