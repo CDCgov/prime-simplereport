@@ -70,7 +70,13 @@ class FetchClient {
       this.getOptions(method, body)
     );
     if (!res.ok) {
-      throw await res.text();
+      const errorText = await res.text();
+      if (String(errorText).includes("Session timeout")) {
+        window.location.href = "/app/session-timeout";
+        return;
+      } else {
+        throw errorText;
+      }
     }
     const contentType = res.headers.get("content-type");
     if (contentType && contentType.indexOf(JSON_CONTENT) !== -1) {
