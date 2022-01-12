@@ -978,32 +978,6 @@ $results-dropdown-spacing: #{units(4)} - #{units(2)} - 22px - #{units(4)}; // he
   }
 }
 
-.aoe-modal__footer {
-  margin: 0;
-  padding: 0;
-  width: 100%;
-  height: auto;
-
-  @include at-media(tablet) {
-    @include u-padding-y(units(1));
-    background: color("white");
-    border-bottom-left-radius: units(2px);
-    border-top: units(1px) solid color("base-lighter");
-    box-shadow: 0 units(-0.5) units(1) 0 rgba(0, 0, 0, 0.1);
-    margin-bottom:
-      calc(
-        #{units(-2)} + #{units(1px)}
-      ); // negative margin + border
-    margin-left: units(-2.5);
-    margin-right: units(-2.5);
-    width:
-      calc(
-        #{units("tablet")} - #{units(2)} - #{units(1px)}
-      ); // tablet - margin - border
-    padding-right: units(2);
-  }
-}
-
 .sr-time-of-test-buttons-footer {
   text-align: right;
 }
