@@ -65,6 +65,30 @@ describe("FetchClient", () => {
         expect(e).toBeDefined();
       }
     });
+
+    it("redirects to session timeout on session error", async () => {
+      // jest doesn't allow navigation changes, so we mock the window location
+      const mockResponse = jest.fn();
+      Object.defineProperty(window, "location", {
+        value: {
+          hash: {
+            endsWith: mockResponse,
+            includes: mockResponse,
+          },
+          assign: mockResponse,
+        },
+        writable: true,
+      });
+      const path = "some-path";
+      (fetch as FetchMock).mockResponseOnce("Session timeout", { status: 410 });
+      try {
+        await sut.request(path, {});
+        fail("Failed to throw");
+      } catch (e) {
+        expect(e).toBeDefined();
+        expect(window.location.href).toContain("session-timeout");
+      }
+    });
   });
 
   it("GET throws when the request fails", async () => {
