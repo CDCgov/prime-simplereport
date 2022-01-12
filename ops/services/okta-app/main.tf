@@ -68,3 +68,9 @@ resource "okta_auth_server_scope" "sr_env" {
   metadata_publish = "NO_CLIENTS"
   default          = false
 }
+
+resource "okta_trusted_origin" "sr_trusted_origin" {
+  name   = "example"
+  origin = "https://example.com"
+  scopes = ["CORS"]
+}

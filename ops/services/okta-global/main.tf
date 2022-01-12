@@ -53,9 +53,3 @@ resource "okta_policy_rule_signon" "app_mfa" {
   session_idle       = 720
   session_lifetime   = 720
 }
-
-resource "okta_trusted_origin" "sr_trusted_origin" {
-  name   = "example"
-  origin = "https://example.com"
-  scopes = ["CORS"]
-}
