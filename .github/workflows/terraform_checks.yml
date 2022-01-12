@@ -38,7 +38,7 @@ jobs:
           for d in $TERRAFORM_DIRS
           do
             echo "Initializing $d";
-            (cd $d && terraform init -backend=false)
+            (cd $d && terraform init -upgrade -backend=false)
           done
       - name: Terraform Validate
         run: |
