@@ -156,6 +156,8 @@ public class OrganizationMutationResolver implements GraphQLMutationResolver {
         deviceIds);
   }
 
+  /** updateFacility is the latest iteration */
+  /** remove updateFacilityNew at a later date */
   public ApiFacility updateFacility(
       UUID facilityId,
       String testingFacilityName,
@@ -221,6 +223,9 @@ public class OrganizationMutationResolver implements GraphQLMutationResolver {
     return new ApiFacility(facility);
   }
 
+  /** updateFacilityNew is being kept along side updateFacility to ensure backwards compatibility */
+  /** updateFacilityNew calls updateFacility */
+  /** updateFacilityNew should be removed at a future date */
   public ApiFacility updateFacilityNew(
       UUID facilityId,
       String testingFacilityName,
