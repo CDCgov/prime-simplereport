@@ -148,7 +148,9 @@ export type Mutation = {
   resetUserMfa?: Maybe<User>;
   resetUserPassword?: Maybe<User>;
   sendPatientLinkEmail?: Maybe<Scalars["Boolean"]>;
+  sendPatientLinkEmailByTestEventId?: Maybe<Scalars["Boolean"]>;
   sendPatientLinkSms?: Maybe<Scalars["Boolean"]>;
+  sendPatientLinkSmsByTestEventId?: Maybe<Scalars["Boolean"]>;
   setCurrentUserTenantDataAccess?: Maybe<User>;
   setOrganizationIdentityVerified?: Maybe<Scalars["Boolean"]>;
   setPatientIsDeleted?: Maybe<Patient>;
@@ -409,8 +411,16 @@ export type MutationSendPatientLinkEmailArgs = {
   internalId: Scalars["ID"];
 };
 
+export type MutationSendPatientLinkEmailByTestEventIdArgs = {
+  testEventId: Scalars["ID"];
+};
+
 export type MutationSendPatientLinkSmsArgs = {
   internalId: Scalars["ID"];
+};
+
+export type MutationSendPatientLinkSmsByTestEventIdArgs = {
+  testEventId: Scalars["ID"];
 };
 
 export type MutationSetCurrentUserTenantDataAccessArgs = {
@@ -2009,10 +2019,6 @@ export type GetTestResultForTextQuery = {
   testResult?: Maybe<{
     __typename?: "TestResult";
     dateTested?: Maybe<any>;
-    patientLink?: Maybe<{
-      __typename?: "PatientLink";
-      internalId?: Maybe<string>;
-    }>;
     patient?: Maybe<{
       __typename?: "Patient";
       firstName?: Maybe<string>;
@@ -2038,7 +2044,7 @@ export type SendSmsMutationVariables = Exact<{
 
 export type SendSmsMutation = {
   __typename?: "Mutation";
-  sendPatientLinkSms?: Maybe<boolean>;
+  sendPatientLinkSmsByTestEventId?: Maybe<boolean>;
 };
 
 export type GetResultsCountByFacilityQueryVariables = Exact<{
@@ -2129,20 +2135,16 @@ export type GetTestResultForResendingEmailsQuery = {
       email?: Maybe<string>;
       emails?: Maybe<Array<Maybe<string>>>;
     }>;
-    patientLink?: Maybe<{
-      __typename?: "PatientLink";
-      internalId?: Maybe<string>;
-    }>;
   }>;
 };
 
 export type ResendTestResultsEmailMutationVariables = Exact<{
-  patientLinkId: Scalars["ID"];
+  testEventId: Scalars["ID"];
 }>;
 
 export type ResendTestResultsEmailMutation = {
   __typename?: "Mutation";
-  sendPatientLinkEmail?: Maybe<boolean>;
+  sendPatientLinkEmailByTestEventId?: Maybe<boolean>;
 };
 
 export const WhoAmIDocument = gql`
@@ -5652,9 +5654,6 @@ export type GetTestResultForPrintQueryResult = Apollo.QueryResult<
 export const GetTestResultForTextDocument = gql`
   query getTestResultForText($id: ID!) {
     testResult(id: $id) {
-      patientLink {
-        internalId
-      }
       dateTested
       patient {
         firstName
@@ -5722,7 +5721,7 @@ export type GetTestResultForTextQueryResult = Apollo.QueryResult<
 >;
 export const SendSmsDocument = gql`
   mutation sendSMS($id: ID!) {
-    sendPatientLinkSms(internalId: $id)
+    sendPatientLinkSmsByTestEventId(testEventId: $id)
   }
 `;
 export type SendSmsMutationFn = Apollo.MutationFunction<
@@ -5963,9 +5962,6 @@ export const GetTestResultForResendingEmailsDocument = gql`
         email
         emails
       }
-      patientLink {
-        internalId
-      }
     }
   }
 `;
@@ -6021,8 +6017,8 @@ export type GetTestResultForResendingEmailsQueryResult = Apollo.QueryResult<
   GetTestResultForResendingEmailsQueryVariables
 >;
 export const ResendTestResultsEmailDocument = gql`
-  mutation resendTestResultsEmail($patientLinkId: ID!) {
-    sendPatientLinkEmail(internalId: $patientLinkId)
+  mutation resendTestResultsEmail($testEventId: ID!) {
+    sendPatientLinkEmailByTestEventId(testEventId: $testEventId)
   }
 `;
 export type ResendTestResultsEmailMutationFn = Apollo.MutationFunction<
@@ -6043,7 +6039,7 @@ export type ResendTestResultsEmailMutationFn = Apollo.MutationFunction<
  * @example
  * const [resendTestResultsEmailMutation, { data, loading, error }] = useResendTestResultsEmailMutation({
  *   variables: {
- *      patientLinkId: // value for 'patientLinkId'
+ *      testEventId: // value for 'testEventId'
  *   },
  * });
  */

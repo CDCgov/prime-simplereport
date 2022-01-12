@@ -7,7 +7,7 @@ SOURCE_SLOT?=staging
 TARGET_SLOT?=production
 DEPLOYED_COMMIT?=$(shell git show --abbrev=7 -s --pretty=%h)
 RELEASE_TAG?=$(subst refs/tags/,,$(GITHUB_REF))
-CURL_TIMEOUT?=2
+CURL_TIMEOUT?=20
 
 # Internal DRYing (also overrideable if you are sufficiently desperate)
 API_NAME=simple-report-api-$*
@@ -46,9 +46,13 @@ init-%: .valid-env-%
 	terraform -chdir=$*/persistent init
 	terraform -chdir=$* init
 
+plan-%: .valid-env-% api.tfvars
+	terraform -chdir=$*/persistent plan -lock-timeout=15m
+	terraform -chdir=$* plan -var-file=../api.tfvars -lock-timeout=15m
+
 deploy-%: .valid-env-% api.tfvars
-	terraform -chdir=$*/persistent apply -auto-approve
-	terraform -chdir=$* apply -auto-approve -var-file=../api.tfvars
+	terraform -chdir=$*/persistent apply -auto-approve -lock-timeout=15m
+	terraform -chdir=$* apply -auto-approve -var-file=../api.tfvars -lock-timeout=15m
 
 promote-%: .be-logged-in .valid-env-%
 	az webapp deployment slot swap -g prime-simple-report-$* -n $(API_NAME) --slot $(SOURCE_SLOT) --target-slot $(TARGET_SLOT)

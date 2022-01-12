@@ -83,4 +83,14 @@ public class TestResultsDeliveryService {
     List<SmsAPICallResult> smsSendResults = smsService.sendToPatientLink(patientLink, message);
     return smsSendResults.stream().allMatch(SmsAPICallResult::isSuccessful);
   }
+
+  public boolean smsTestResultsForTestEvent(UUID testEventId) {
+    PatientLink patientLink = patientLinkService.getPatientLinkForTestEvent(testEventId);
+    return this.smsTestResults(patientLink.getInternalId());
+  }
+
+  public boolean emailTestResultsForTestEvent(UUID testEventId) {
+    PatientLink patientLink = patientLinkService.getPatientLinkForTestEvent(testEventId);
+    return this.emailTestResults(patientLink.getInternalId());
+  }
 }
