@@ -1105,6 +1105,6 @@ $results-dropdown-spacing: #{units(4)} - #{units(2)} - 22px - #{units(4)}; // he
   box-shadow: 0 0 0 2px #71767a;
 }
 
-.usa-fieldset.prime-radios {
-  margin-bottom: 8px;
+.usa-radio__input--tile + .usa-radio__label {
+  border: 2px solid #dfe1e2;
 }
