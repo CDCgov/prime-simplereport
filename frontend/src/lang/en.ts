@@ -300,7 +300,7 @@ export const en = {
           difficultNewsURL:
             "cdc.gov/coronavirus/2019-ncov/daily-life-coping/managing-stress-anxiety.html",
           moreInformation:
-            "More information is available at cdc.gov/coronavirus/2019-ncov/if-you-are-sick.",
+            "More information is available at cdc.gov/coronavirus/2019-ncov/if-you-are-sick. Local laws may vary, always check your state and county health department guidelines.",
         },
         negative: {
           p0:
