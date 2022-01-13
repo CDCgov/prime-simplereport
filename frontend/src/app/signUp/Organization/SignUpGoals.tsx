@@ -47,6 +47,7 @@ const SignUpGoals = () => {
             To get you to the right place, tell us a little about yourself.
           </p>
           <RadioGroup
+            className="margin-bottom-1"
             wrapperClassName="margin-top-1"
             name="signUpGoal"
             buttons={[
