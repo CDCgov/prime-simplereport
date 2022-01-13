@@ -41,13 +41,12 @@ const SignUpGoals = () => {
   return (
     <CardBackground>
       <Card logo>
-        <div className="sign-up-goals-card usa-prose margin-bottom-2">
+        <div className="sign-up-goals-card usa-prose margin-bottom-3">
           <h3 className="margin-top-2">Sign up for SimpleReport</h3>
           <p className="subheader margin-bottom-0">
             To get you to the right place, tell us a little about yourself.
           </p>
           <RadioGroup
-            className="margin-bottom-1"
             wrapperClassName="margin-top-1"
             name="signUpGoal"
             buttons={[

@@ -1104,6 +1104,9 @@ $results-dropdown-spacing: #{units(4)} - #{units(2)} - 22px - #{units(4)}; // he
 .usa-checkbox__label::before,
 .usa-radio__label::before {
   box-shadow: 0 0 0 2px #71767a;
+  line-height: 1.25rem;
+  margin-right: 0.75rem;
+  text-indent: 0;
 }
 
 .usa-radio__input--tile + .usa-radio__label {
