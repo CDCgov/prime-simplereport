@@ -68,9 +68,3 @@ resource "okta_auth_server_scope" "sr_env" {
   metadata_publish = "NO_CLIENTS"
   default          = false
 }
-
-resource "okta_trusted_origin" "sr_trusted_origin" {
-  name   = "simple_report_trusted_origin"
-  origin = "https://localhost.simplereport.gov"
-  scopes = ["CORS", "Redirect"]
-}
