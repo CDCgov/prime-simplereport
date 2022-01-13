@@ -267,8 +267,8 @@ export const en = {
           guidelines: {
             li0: "Stay home when you are sick, except to get medical care.",
             li1:
-              "Stay home for 5 days." +
-              "If you have no symptoms or your symptoms are resolving after 5 days, you can leave your house." +
+              "Stay home for 5 days. " +
+              "If you have no symptoms or your symptoms are resolving after 5 days, you can leave your house. " +
               "Continue to wear a mask around others for 5 additional days.",
             li2:
               "If you are self isolating at home where others live, use a separate room and bathroom for sick household members (if possible). " +

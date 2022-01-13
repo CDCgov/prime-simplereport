@@ -281,9 +281,9 @@ export const es: LanguageConfig = {
             li0:
               "Quédese en casa cuando esté enfermo, excepto para recibir atención médica.",
             li1:
-              "Quédate en casa durante 5 días." +
-              "Si no tiene síntomas o sus síntomas se resuelven después de 5 días, puede salir de su casa." +
-              "Continúe usando una máscara alrededor de otras personas durante 5 días adicionales.",
+              "Quédate en casa durante 5 días. " +
+              "Si no tiene síntomas o sus síntomas se resuelven después de 5 días, puede salir de su casa. " +
+              "Continúe usando una máscara alrededor de otras personas durante 5 días adicionales. ",
             li2:
               "Si se autoaísla en su casa, donde viven otras personas, use una habitación y un baño separado para los miembros del grupo familiar que estan enfermos " +
               "(si es posible). Limpie las habitaciones compartidas según sea necesario, para evitar la transmisión del virus",
