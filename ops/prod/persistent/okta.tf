@@ -30,8 +30,8 @@ resource "azurerm_key_vault_secret" "okta_client_secret" {
 }
 
 resource "okta_trusted_origin" "sr_trusted_origin" {
-  count  = "${length(var.trusted_origin_urls)}"
-  name   = "${element(element(var.trusted_origin_urls, count.index), 0)}"
-  origin = "${element(element(var.trusted_origin_urls, count.index), 1)}"
-  scopes = "${element(element(var.trusted_origin_urls, count.index), 2)}"
+  count  = length(var.trusted_origin_urls)
+  name   = element(element(var.trusted_origin_urls, count.index), 0)
+  origin = element(element(var.trusted_origin_urls, count.index), 1)
+  scopes = element(element(var.trusted_origin_urls, count.index), 2)
 }
