@@ -31,7 +31,7 @@ variable "redirect_urls" {
 variable "trusted_origin_preview_urls" {
   description = "Trusted origin listing for the Okta Preview environment. Data format is [Name, URL, [Scopes]]"
   default = [
-    ["localhost", "https://localhost.simplereport.gov1", ["CORS, REDIRECT"]],
+    ["localhost", "https://localhost.simplereport.gov", ["CORS, REDIRECT"]],
   ]
 }
 
