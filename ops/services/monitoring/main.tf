@@ -17,5 +17,8 @@ resource "azurerm_application_insights" "app_insights" {
   name                = "prime-simple-report-${var.env}-insights"
   disable_ip_masking  = true
 
+  daily_data_cap_in_gb = var.ai_ingest_cap_gb
+  retention_in_days    = var.ai_retention_days
+
   tags = var.tags
 }
