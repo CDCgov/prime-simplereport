@@ -29,8 +29,8 @@ resource "azurerm_key_vault_secret" "okta_client_secret" {
 }
 
 resource "okta_trusted_origin" "sr_trusted_origin" {
-  count  = length(module.okta.trusted_origin_preview_urls)
-  name   = element(element(module.okta.trusted_origin_preview_urls, count.index), 0)
-  origin = element(element(module.okta.trusted_origin_preview_urls, count.index), 1)
-  scopes = element(element(module.okta.trusted_origin_preview_urls, count.index), 2)
+  count  = length(local.trusted_origin_preview_urls)
+  name   = element(element(local.trusted_origin_preview_urls, count.index), 0)
+  origin = element(element(local.trusted_origin_preview_urls, count.index), 1)
+  scopes = element(element(local.okta.trusted_origin_preview_urls, count.index), 2)
 }
