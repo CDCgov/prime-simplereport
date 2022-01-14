@@ -59,3 +59,49 @@ module "simple_report_api" {
     # SPRING_JPA_PROPERTIES_HIBERNATE_DEFAULT_SCHEMA = "public"
   }
 }
+
+resource "azurerm_monitor_autoscale_setting" "prod_autoscale" {
+  name                = "SimpleReport Autoscaling"
+  resource_group_name = module.simple_report_api.resource_group_name
+  location            = module.simple_report_api.resource_group_location
+  target_resource_id  = module.simple_report_api.app_service_plan_id
+  profile {
+    name = "Peak Hours"
+    capacity {
+      default = 4
+      minimum = 4
+      maximum = 4
+    }
+    rule {
+      scale_action {
+        direction = "Increase"
+        type      = "ExactCount"
+        value     = "4"
+        cooldown  = "PT1M"
+      }
+    }
+  }
+  profile {
+    name = "Weekends"
+    capacity {
+      default = 2
+      minimum = 2
+      maximum = 2
+    }
+    rule {
+      scale_action {
+        direction = "Decrease"
+        type      = "ExactCount"
+        value     = ""
+        cooldown  = "PT1M"
+      }
+    }
+    recurrence {
+      frequency = "Week"
+      timezone  = "Eastern Standard Time"
+      days      = ["Saturday", "Sunday"]
+      hours     = [0]
+      minutes   = [0]
+    }
+  }
+}
