@@ -72,13 +72,11 @@ resource "azurerm_monitor_autoscale_setting" "prod_autoscale" {
       minimum = 4
       maximum = 4
     }
-    rule {
-      scale_action {
-        direction = "Increase"
-        type      = "ExactCount"
-        value     = "4"
-        cooldown  = "PT1M"
-      }
+    recurrence {
+      timezone = "Eastern Standard Time"
+      days     = ["Monday", "Tuesday", "Wednesday", "Thursday", "Friday"]
+      hours    = [0]
+      minutes  = [0]
     }
   }
   profile {
@@ -87,14 +85,6 @@ resource "azurerm_monitor_autoscale_setting" "prod_autoscale" {
       default = 2
       minimum = 2
       maximum = 2
-    }
-    rule {
-      scale_action {
-        direction = "Decrease"
-        type      = "ExactCount"
-        value     = "2"
-        cooldown  = "PT1M"
-      }
     }
     recurrence {
       timezone = "Eastern Standard Time"
