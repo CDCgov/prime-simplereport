@@ -4,6 +4,7 @@ module "okta" {
   logout_redirect_uris = ["https://${local.env}.simplereport.gov"]
   app_url              = "https://${local.env}.simplereport.gov/app"
   redirect_urls        = []
+  trusted_origin_urls  = []
 }
 
 // Create the Okta secrets
@@ -26,4 +27,11 @@ resource "azurerm_key_vault_secret" "okta_client_secret" {
   lifecycle {
     ignore_changes = [value]
   }
+}
+
+resource "okta_trusted_origin" "sr_trusted_origin" {
+  count  = length(var.trusted_origin_urls)
+  name   = element(element(var.trusted_origin_urls, count.index), 0)
+  origin = element(element(var.trusted_origin_urls, count.index), 1)
+  scopes = element(element(var.trusted_origin_urls, count.index), 2)
 }

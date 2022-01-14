@@ -3,6 +3,7 @@ module "okta" {
   env                  = local.env
   app_url              = "https://www.simplereport.gov/app"
   logout_redirect_uris = ["https://simplereport.cdc.gov", "https://www.simplereport.gov"]
+  trusted_origin_urls  = []
 }
 
 // Create the Okta secrets
