@@ -24,7 +24,7 @@ module "monitoring" {
 
   app_url = "${local.env}.simplereport.gov"
 
-  daily_data_cap_in_gb = 200
+  ai_ingest_cap_gb = 200
 
   tags = local.management_tags
 }
