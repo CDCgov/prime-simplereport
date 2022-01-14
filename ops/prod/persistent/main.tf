@@ -85,38 +85,10 @@ resource "azurerm_monitor_autoscale_setting" "prod_autoscale" {
       maximum = 4
     }
     rule {
-      metric_trigger {
-        metric_name        = "CpuPercentage"
-        metric_resource_id = azurerm_app_service_plan.app-service-plan.id
-        time_grain         = "PT1M"
-        statistic          = "Average"
-        time_window        = "PT5M"
-        time_aggregation   = "Average"
-        operator           = "GreaterThan"
-        threshold          = 90
-      }
       scale_action {
         direction = "Increase"
-        type      = "ChangeCount"
-        value     = "1"
-        cooldown  = "PT1M"
-      }
-    }
-    rule {
-      metric_trigger {
-        metric_name        = "CpuPercentage"
-        metric_resource_id = azurerm_app_service_plan.app-service-plan.id
-        time_grain         = "PT1M"
-        statistic          = "Average"
-        time_window        = "PT5M"
-        time_aggregation   = "Average"
-        operator           = "LessThan"
-        threshold          = 10
-      }
-      scale_action {
-        direction = "Decrease"
-        type      = "ChangeCount"
-        value     = "1"
+        type      = "ExactCount"
+        value     = "4"
         cooldown  = "PT1M"
       }
     }
@@ -129,38 +101,10 @@ resource "azurerm_monitor_autoscale_setting" "prod_autoscale" {
       maximum = 2
     }
     rule {
-      metric_trigger {
-        metric_name        = "CpuPercentage"
-        metric_resource_id = azurerm_app_service_plan.app-service-plan.id
-        time_grain         = "PT1M"
-        statistic          = "Average"
-        time_window        = "PT5M"
-        time_aggregation   = "Average"
-        operator           = "GreaterThan"
-        threshold          = 90
-      }
-      scale_action {
-        direction = "Increase"
-        type      = "ChangeCount"
-        value     = "1"
-        cooldown  = "PT1M"
-      }
-    }
-    rule {
-      metric_trigger {
-        metric_name        = "CpuPercentage"
-        metric_resource_id = azurerm_app_service_plan.app-service-plan.id
-        time_grain         = "PT1M"
-        statistic          = "Average"
-        time_window        = "PT5M"
-        time_aggregation   = "Average"
-        operator           = "LessThan"
-        threshold          = 10
-      }
       scale_action {
         direction = "Decrease"
-        type      = "ChangeCount"
-        value     = "1"
+        type      = "ExactCount"
+        value     = ""
         cooldown  = "PT1M"
       }
     }
@@ -171,5 +115,5 @@ resource "azurerm_monitor_autoscale_setting" "prod_autoscale" {
       hours     = [0]
       minutes   = [0]
     }
-  }    
+  }
 }
