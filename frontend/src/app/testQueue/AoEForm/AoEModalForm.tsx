@@ -2,7 +2,7 @@ import Modal from "react-modal";
 
 import { displayFullName } from "../../utils";
 import { globalSymptomDefinitions } from "../../../patientApp/timeOfTest/constants";
-import iconClose from "../../../../node_modules/uswds/dist/img/usa-icons/close.svg";
+import iconClose from "../../../img/close.svg";
 
 import AoEForm from "./AoEForm";
 

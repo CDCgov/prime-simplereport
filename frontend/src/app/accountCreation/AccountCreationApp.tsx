@@ -50,7 +50,7 @@ const AccountCreationApp = () => {
       if (status === UserAccountStatus.PENDING_ACTIVATION && activationToken) {
         try {
           await AccountCreationApi.initialize(activationToken);
-        } catch (error) {
+        } catch (error: any) {
           setError(error || "Invalid activation token");
         }
         // Re-retrieve the status since it will have changed after activation

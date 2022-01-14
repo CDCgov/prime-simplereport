@@ -7,6 +7,7 @@ import configureStore from "redux-mock-store";
 import { GetManagedFacilitiesDocument } from "../../../generated/graphql";
 
 import ManageFacilitiesContainer from "./ManageFacilitiesContainer";
+import { deviceTypes } from "./FacilityFormContainer.test";
 
 const deviceSpecimenTypes: DeviceSpecimenType[] = [
   {
@@ -44,12 +45,7 @@ const mockFacility: Facility = {
   zipCode: "90000",
   phone: "(516) 432-1390",
   email: "testingsite@disorg.com",
-  defaultDevice: "bc0536ea-4564-4291-bbf3-0e7b0731f6e8",
-  deviceTypes: [
-    "bc0536ea-4564-4291-bbf3-0e7b0731f6e8",
-    "ee85bdfb-b6c9-4951-ae30-6c025be4580e",
-  ],
-  deviceSpecimenTypes: deviceSpecimenTypes,
+  deviceTypes,
   orderingProvider: {
     firstName: "Fred",
     middleName: null,
