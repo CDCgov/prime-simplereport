@@ -1,7 +1,5 @@
 locals {
   is_prod = var.env == "prod"
-  // This is commented out until we actually have production deployments. Right now, it's just set to test that simplereport.cdc.gov is running.
-  //  app_url = local.is_prod ? "simplereport.cdc.gov" : "${var.env}.simplereport.cdc.gov"
 }
 
 data "azurerm_log_analytics_workspace" "law" {
