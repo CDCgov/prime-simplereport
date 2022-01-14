@@ -141,7 +141,7 @@ class PatientManagementTest extends BaseGraphqlTest {
         "1-800-BIZ-NAME",
         "notbitter",
         Optional.empty(),
-        Optional.of("Current user does not have permission to request [/addPatient]"));
+        Optional.of("Current user does not have permission"));
   }
 
   @Test

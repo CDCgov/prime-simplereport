@@ -25,8 +25,12 @@ public class TenantDataAccessFilter implements Filter {
 
   @Autowired AuthorizationService _authService;
   @Autowired ApiUserService _apiUserService;
-  @Autowired CurrentTenantDataAccessContextHolder _currentTenantDataAccessContextHolder;
+  private CurrentTenantDataAccessContextHolder _currentTenantDataAccessContextHolder;
   @Autowired TenantDataAuthenticationProvider _tenantDataAuthProvider;
+
+  public void TenantDataAccessFilter() {
+    _currentTenantDataAccessContextHolder = new CurrentTenantDataAccessContextHolder();
+  }
 
   @Override
   public void doFilter(ServletRequest request, ServletResponse response, FilterChain chain)

@@ -1,9 +1,5 @@
 package gov.cdc.usds.simplereport.logging;
 
-import gov.cdc.usds.simplereport.config.authorization.ApiUserPrincipal;
-import gov.cdc.usds.simplereport.config.authorization.OrganizationPrincipal;
-import gov.cdc.usds.simplereport.config.authorization.SiteAdminPrincipal;
-import gov.cdc.usds.simplereport.config.authorization.UserPermission;
 import gov.cdc.usds.simplereport.db.model.auxiliary.GraphQlInputs;
 import gov.cdc.usds.simplereport.db.model.auxiliary.HttpRequestDetails;
 import gov.cdc.usds.simplereport.service.AuditService;
@@ -14,7 +10,6 @@ import graphql.execution.instrumentation.SimpleInstrumentation;
 import graphql.execution.instrumentation.SimpleInstrumentationContext;
 import graphql.execution.instrumentation.parameters.InstrumentationExecutionParameters;
 import graphql.kickstart.servlet.context.GraphQLServletContext;
-import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 import java.util.stream.Collectors;
@@ -82,7 +77,7 @@ public class AuditLoggingInstrumentation extends SimpleInstrumentation {
               .flatMap(List::stream)
               .map(Object::toString)
               .collect(Collectors.toList());
-      try {
+      /*try {
         _auditService.logGraphQlEvent(
             state,
             errorPaths,
@@ -99,8 +94,8 @@ public class AuditLoggingInstrumentation extends SimpleInstrumentation {
       } catch (Exception e) {
         // we don't 100% trust this error not to get swallowed by graphql-java
         log.error("Unexpected error saving audit event", e);
-        throw e;
-      }
+        //throw e;
+      }*/
     }
   }
 }

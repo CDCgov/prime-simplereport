@@ -362,7 +362,7 @@ class ApiUserManagementTest extends BaseGraphqlTest {
         "add-user-to-current-org",
         "addUserToCurrentOrgOp",
         variables,
-        "Current user does not have permission to request [/addUserToCurrentOrg]");
+        "Current user does not have permission");
   }
 
   @Test
@@ -485,11 +485,7 @@ class ApiUserManagementTest extends BaseGraphqlTest {
     useOrgUser();
 
     ObjectNode updateVariables = getUpdateUserVariables(id, "Ronda", "J", "Jones", "III");
-    runQuery(
-        "update-user",
-        "updateUser",
-        updateVariables,
-        "Current user does not have permission to request [/updateUser]");
+    runQuery("update-user", "updateUser", updateVariables, "Current user does not have permission");
   }
 
   @Test
@@ -547,7 +543,7 @@ class ApiUserManagementTest extends BaseGraphqlTest {
         "reset-user-password",
         "resetUserPassword",
         resetUserPasswordVariables,
-        "Current user does not have permission to request [/resetUserPassword]");
+        "Current user does not have permission");
   }
 
   @Test
@@ -584,7 +580,7 @@ class ApiUserManagementTest extends BaseGraphqlTest {
         "resend-activation-email",
         "resendActivationEmail",
         resendActivationEmailVariables,
-        "Current user does not have permission to request [/resendActivationEmail]");
+        "Current user does not have permission");
   }
 
   @Test
@@ -775,7 +771,7 @@ class ApiUserManagementTest extends BaseGraphqlTest {
     runQuery(
         "update-user-privileges",
         updatePrivilegesVariables,
-        "Current user does not have permission to request [/updateUserPrivileges]");
+        "Current user does not have permission");
   }
 
   @Test
@@ -791,7 +787,7 @@ class ApiUserManagementTest extends BaseGraphqlTest {
     runQuery(
         "update-user-privileges",
         updatePrivilegesVariables,
-        "Current user does not have permission to request [/updateUserPrivileges]");
+        "Current user does not have permission");
   }
 
   @Test
@@ -874,10 +870,7 @@ class ApiUserManagementTest extends BaseGraphqlTest {
 
     ObjectNode deleteVariables =
         JsonNodeFactory.instance.objectNode().put("id", id).put("deleted", true);
-    runQuery(
-        "set-user-is-deleted",
-        deleteVariables,
-        "Current user does not have permission to request [/setUserIsDeleted]");
+    runQuery("set-user-is-deleted", deleteVariables, "Current user does not have permission");
   }
 
   @Test
@@ -898,10 +891,7 @@ class ApiUserManagementTest extends BaseGraphqlTest {
 
     ObjectNode deleteVariables =
         JsonNodeFactory.instance.objectNode().put("id", id).put("deleted", true);
-    runQuery(
-        "set-user-is-deleted",
-        deleteVariables,
-        "Current user does not have permission to request [/setUserIsDeleted]");
+    runQuery("set-user-is-deleted", deleteVariables, "Current user does not have permission");
   }
 
   @Test
@@ -967,7 +957,7 @@ class ApiUserManagementTest extends BaseGraphqlTest {
 
   @Test
   void getUsers_orgUser_failure() {
-    runQuery("users-query", "Current user does not have permission to request [/users]");
+    runQuery("users-query", "Current user does not have permission");
   }
 
   @Test

@@ -1,6 +1,6 @@
 plugins {
-    id 'org.springframework.boot' version '2.6.1'
-    id 'org.liquibase.gradle' version '2.1.0'
+    id 'org.springframework.boot' version '2.6.2'
+    id 'org.liquibase.gradle' version '2.1.1'
     id 'io.spring.dependency-management' version '1.0.11.RELEASE'
     id 'java'
     id 'checkstyle'
@@ -26,8 +26,8 @@ dependencies {
     implementation 'org.springframework.boot:spring-boot-starter-web'
 
     // log4j vulnerability fixes (Dec 2021)
-    implementation 'org.apache.logging.log4j:log4j-api:2.15.0'
-    implementation 'org.apache.logging.log4j:log4j-to-slf4j:2.15.0'
+    implementation 'org.apache.logging.log4j:log4j-api:2.17.0'
+    implementation 'org.apache.logging.log4j:log4j-to-slf4j:2.17.0'
 
     // data layer dependencies
     implementation 'org.springframework.boot:spring-boot-starter-data-jpa'
@@ -38,8 +38,8 @@ dependencies {
     runtimeOnly 'org.postgresql:postgresql'
 
     // data validation
-    implementation 'com.googlecode.libphonenumber:libphonenumber:8.12.38'
-    implementation 'com.smartystreets.api:smartystreets-java-sdk:3.12.2'
+    implementation 'com.googlecode.libphonenumber:libphonenumber:8.12.40'
+    implementation 'com.smartystreets.api:smartystreets-java-sdk:3.12.3'
 
     // UI layer dependencies
     implementation "com.graphql-java-kickstart:graphql-spring-boot-starter:12.0.0"
@@ -51,28 +51,28 @@ dependencies {
     implementation 'org.springframework.boot:spring-boot-starter-thymeleaf'
 
     // Okta dependencies
-    implementation 'com.okta.spring:okta-spring-boot-starter:2.1.2'
-    implementation 'com.okta.sdk:okta-sdk-api:6.0.0'
-    runtimeOnly 'com.okta.sdk:okta-sdk-impl:6.0.0'
-    runtimeOnly 'com.okta.sdk:okta-sdk-httpclient:6.0.0'
+    implementation 'com.okta.spring:okta-spring-boot-starter:2.1.4'
+    implementation 'com.okta.sdk:okta-sdk-api:8.0.0'
+    runtimeOnly 'com.okta.sdk:okta-sdk-impl:8.0.0'
+    runtimeOnly 'com.okta.sdk:okta-sdk-httpclient:8.0.0'
 
     // SpringSession dependencies
     runtimeOnly 'org.springframework.session:spring-session-jdbc'
 
     // App insights instrumentation
-    implementation 'com.microsoft.azure:applicationinsights-core:2.6.3'
+    implementation 'com.microsoft.azure:applicationinsights-core:2.6.4'
 
     // Twilio for SMS
     implementation 'com.twilio.sdk:twilio:8.22.1'
 
     // SendGrid for Email
-    implementation 'com.sendgrid:sendgrid-java:4.8.0'
+    implementation 'com.sendgrid:sendgrid-java:4.8.1'
 
     // For local Email
     implementation 'org.springframework.boot:spring-boot-starter-mail'
 
     // JPA Hibernate static metamodel generation
-    compileOnly 'org.hibernate:hibernate-jpamodelgen:5.6.1.Final'
+    compileOnly 'org.hibernate:hibernate-jpamodelgen:5.6.3.Final'
     annotationProcessor'org.hibernate:hibernate-jpamodelgen'
 
     // graphql-java-extended-validation schema directives
@@ -103,19 +103,19 @@ dependencies {
     testAnnotationProcessor 'org.projectlombok:lombok:1.18.22'
 
     // WireMock (only used for testing)
-    testCompileOnly "com.github.tomakehurst:wiremock-jre8:2.31.0"
+    testCompileOnly 'com.github.tomakehurst:wiremock-jre8:2.32.0'
 
     // Forcing these version resolutions over the BOM of spring-cloud-dependencies below
-    runtimeOnly 'com.azure:azure-core-http-netty:1.11.3'
-    runtimeOnly 'com.azure:azure-core:1.23.0'
+    runtimeOnly 'com.azure:azure-core-http-netty:1.11.5'
+    runtimeOnly 'com.azure:azure-core:1.24.0'
     runtimeOnly 'com.azure:azure-storage-common:12.14.1'
     runtimeOnly "com.azure:azure-storage-queue:12.11.2"
 
-    runtimeOnly "io.zipkin.brave:brave-instrumentation-http:5.13.3"
-    runtimeOnly "io.zipkin.brave:brave:5.13.3"
+    runtimeOnly 'io.zipkin.brave:brave-instrumentation-http:5.13.6'
+    runtimeOnly 'io.zipkin.brave:brave:5.13.6'
     runtimeOnly "io.zipkin.reporter2:zipkin-reporter-brave:2.16.3"
     runtimeOnly "io.zipkin.reporter2:zipkin-reporter:2.16.3"
-    runtimeOnly "io.zipkin.zipkin2:zipkin:2.23.9"
+    runtimeOnly 'io.zipkin.zipkin2:zipkin:2.23.16'
 
 }
 

@@ -274,7 +274,7 @@ class TestResultTest extends BaseGraphqlTest {
         "organization-level-metrics",
         "GetOrganizationLevelDashboardMetrics",
         variables,
-        "Current user does not have permission to request [/organizationLevelDashboardMetrics]");
+        "Current user does not have permission");
   }
 
   @Test
@@ -333,7 +333,7 @@ class TestResultTest extends BaseGraphqlTest {
         "dashboard-metrics",
         "GetTopLevelDashboardMetrics",
         variables,
-        "Current user does not have permission to request [/topLevelDashboardMetrics]");
+        "Current user does not have permission");
   }
 
   private ObjectNode getFacilityScopedArguments() {

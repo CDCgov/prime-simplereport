@@ -53,7 +53,9 @@ class LiveOktaRepositoryTest {
   @BeforeEach
   public void setup() {
     when(_client.getApplication(MOCK_CLIENT_ID)).thenReturn(_app);
-    _repo = new LiveOktaRepository(MOCK_PROPS, _client, MOCK_CLIENT_ID, MOCK_EXTRACTOR, tenantDataAccessContextHolder);
+    _repo =
+        new LiveOktaRepository(
+            MOCK_PROPS, _client, MOCK_CLIENT_ID, MOCK_EXTRACTOR, tenantDataAccessContextHolder);
   }
 
   @Test

@@ -79,7 +79,7 @@ public class LiveOktaRepository implements OktaRepository {
           "Cannot find Okta application with id=" + oktaOAuth2ClientId, e);
     }
     _extractor = organizationExtractor;
-    _tenantDataContextHolder = tenantDataContextHolder; //new CurrentTenantDataAccessContextHolder();
+    _tenantDataContextHolder = tenantDataContextHolder;
   }
 
   @Autowired
