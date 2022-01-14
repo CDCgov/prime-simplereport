@@ -29,14 +29,14 @@ variable "redirect_urls" {
 }
 
 variable "trusted_origin_preview_urls" {
-  description = "[Name, URL, [Scopes]]"
+  description = "Trusted origin listing for the Okta Preview environment. Data format is [Name, URL, [Scopes]]"
   default = [
     ["localhost", "https://localhost.simplereport.gov1", ["CORS, REDIRECT"]],
   ]
 }
 
 variable "trusted_origin_urls" {
-  description = "[Name, URL, [Scopes]]"
+  description = "Trusted origin listing for the Okta Production environment. Data format is [Name, URL, [Scopes]]"
   default = [
     ["Localhost (DataHub)", "http://localhost:7071", ["CORS"]],
     ["DataHub (test)", "https://prime-data-hub-test.azurefd.net/", ["CORS"]],
