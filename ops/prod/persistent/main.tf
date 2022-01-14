@@ -71,3 +71,105 @@ module "vnet" {
   management_tags     = local.management_tags
   location            = local.rg_location
 }
+
+resource "azurerm_monitor_autoscale_setting" "prod_autoscale" {
+  name                = "SimpleReport Autoscaling"
+  resource_group_name = data.azurerm_resource_group.rg.name
+  location            = data.azurerm_resource_group.rg.location
+  target_resource_id  = module.simple_report_api.app_service_plan_id
+  profile {
+    name = "Peak Hours"
+    capacity {
+      default = 4
+      minimum = 4
+      maximum = 4
+    }
+    rule {
+      metric_trigger {
+        metric_name        = "CpuPercentage"
+        metric_resource_id = azurerm_app_service_plan.app-service-plan.id
+        time_grain         = "PT1M"
+        statistic          = "Average"
+        time_window        = "PT5M"
+        time_aggregation   = "Average"
+        operator           = "GreaterThan"
+        threshold          = 90
+      }
+      scale_action {
+        direction = "Increase"
+        type      = "ChangeCount"
+        value     = "1"
+        cooldown  = "PT1M"
+      }
+    }
+    rule {
+      metric_trigger {
+        metric_name        = "CpuPercentage"
+        metric_resource_id = azurerm_app_service_plan.app-service-plan.id
+        time_grain         = "PT1M"
+        statistic          = "Average"
+        time_window        = "PT5M"
+        time_aggregation   = "Average"
+        operator           = "LessThan"
+        threshold          = 10
+      }
+      scale_action {
+        direction = "Decrease"
+        type      = "ChangeCount"
+        value     = "1"
+        cooldown  = "PT1M"
+      }
+    }
+  }
+  profile {
+    name = "Weekends"
+    capacity {
+      default = 2
+      minimum = 2
+      maximum = 2
+    }
+    rule {
+      metric_trigger {
+        metric_name        = "CpuPercentage"
+        metric_resource_id = azurerm_app_service_plan.app-service-plan.id
+        time_grain         = "PT1M"
+        statistic          = "Average"
+        time_window        = "PT5M"
+        time_aggregation   = "Average"
+        operator           = "GreaterThan"
+        threshold          = 90
+      }
+      scale_action {
+        direction = "Increase"
+        type      = "ChangeCount"
+        value     = "1"
+        cooldown  = "PT1M"
+      }
+    }
+    rule {
+      metric_trigger {
+        metric_name        = "CpuPercentage"
+        metric_resource_id = azurerm_app_service_plan.app-service-plan.id
+        time_grain         = "PT1M"
+        statistic          = "Average"
+        time_window        = "PT5M"
+        time_aggregation   = "Average"
+        operator           = "LessThan"
+        threshold          = 10
+      }
+      scale_action {
+        direction = "Decrease"
+        type      = "ChangeCount"
+        value     = "1"
+        cooldown  = "PT1M"
+      }
+    }
+    recurrence {
+      frequency = "Week"
+      timezone  = "Eastern Standard Time"
+      days      = ["Saturday", "Sunday"]
+      hours     = [0]
+      minutes   = [0]
+    }
+  }    
+}
