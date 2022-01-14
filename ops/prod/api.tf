@@ -62,8 +62,8 @@ module "simple_report_api" {
 
 resource "azurerm_monitor_autoscale_setting" "prod_autoscale" {
   name                = "SimpleReport Autoscaling"
-  resource_group_name = module.simple_report_api.resource_group_name
-  location            = module.simple_report_api.resource_group_location
+  resource_group_name = data.azurerm_resource_group.rg.name
+  location            = data.azurerm_resource_group.rg.location
   target_resource_id  = module.simple_report_api.app_service_plan_id
   profile {
     name = "Peak Hours"
@@ -92,16 +92,15 @@ resource "azurerm_monitor_autoscale_setting" "prod_autoscale" {
       scale_action {
         direction = "Decrease"
         type      = "ExactCount"
-        value     = ""
+        value     = "2"
         cooldown  = "PT1M"
       }
     }
     recurrence {
-      frequency = "Week"
-      timezone  = "Eastern Standard Time"
-      days      = ["Saturday", "Sunday"]
-      hours     = [0]
-      minutes   = [0]
+      timezone = "Eastern Standard Time"
+      days     = ["Saturday", "Sunday"]
+      hours    = [0]
+      minutes  = [0]
     }
   }
 }
