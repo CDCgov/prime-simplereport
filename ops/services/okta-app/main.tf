@@ -1,5 +1,6 @@
 locals {
   is_prod = var.env == "prod"
+  is_preview = (var.env == "dev" || var.env == "test" || var.env == "pentest")
 }
 
 
@@ -67,4 +68,18 @@ resource "okta_auth_server_scope" "sr_env" {
   description      = "${upper(var.env)}-only OAUTH scope for Simple Report application"
   metadata_publish = "NO_CLIENTS"
   default          = false
+}
+
+resource "okta_trusted_origin" "sr_trusted_origin_preview" {
+  count  = var.is_preview ? length(var.trusted_origin_preview_urls) : 0
+  name   = element(element(var.trusted_origin_preview_urls, count.index), 0)
+  origin = element(element(var.trusted_origin_preview_urls, count.index), 1)
+  scopes = element(element(var.trusted_origin_preview_urls, count.index), 2)
+}
+
+resource "okta_trusted_origin" "sr_trusted_origin" {
+  count  = var.is_preview ? 0 : length(var.trusted_origin_urls)
+  name   = element(element(var.trusted_origin_urls, count.index), 0)
+  origin = element(element(var.trusted_origin_urls, count.index), 1)
+  scopes = element(element(var.trusted_origin_urls, count.index), 2)
 }
