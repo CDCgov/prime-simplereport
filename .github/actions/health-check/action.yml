@@ -1,0 +1,50 @@
+name: Run Cypress integration tests on a remote environment
+description: Run integration tests on a remote environment
+inputs:
+  deploy-env:
+    description: The environment being deployed (e.g. "prod" or "test")
+    required: true
+runs:
+  using: composite
+  steps:
+    - name: Use Node.js ${{env.NODE_VERSION}}
+      uses: actions/setup-node@v2.1.5
+      with:
+        node-version: 14
+    - name: Cache yarn
+      uses: actions/cache@v2
+      with:
+        path: ~/.cache/yarn
+        key: ${{ runner.os }}-yarn-${{ hashFiles('**/yarn.lock') }}
+        restore-keys: |
+          ${{ runner.os }}-yarn-
+    - name: Cache Cypress binary
+      uses: actions/cache@v2
+      with:
+        path: ~/.cache/Cypress
+        key: cypress-${{ runner.os }}-cypress-${{ hashFiles('**/package.json') }}
+        restore-keys: |
+          cypress-${{ runner.os }}-cypress-
+    - name: install dependencies and verify Cypress
+      shell: bash
+      working-directory: ./frontend
+      env:
+        # make sure every Cypress install prints minimal information
+        CI: 1
+      # print Cypress and OS info
+      run: |
+        yarn install --prefer-offline
+        yarn exec cypress verify
+        yarn exec cypress info
+        yarn exec cypress version
+        yarn exec cypress version --component package
+        yarn exec cypress version --component binary
+        yarn exec cypress version --component electron
+        yarn exec cypress version --component node
+    - name: Deploy health check
+      shell: bash
+      working-directory: ./frontend
+      run: |
+        echo "::group::Run Cypress health check"
+        ./e2e.sh -s cypress/integration/00-health_check.js -r https://${{ env.DEPLOY_ENV }}.simplereport.gov -f /app/health/commit
+        echo "::endgroup::"

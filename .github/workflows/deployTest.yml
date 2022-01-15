@@ -106,3 +106,7 @@ jobs:
         with:
           client-tarball: client.tgz
           deploy-env: ${{env.DEPLOY_ENV}}
+      - name: Run Cypress health check
+        uses: ./.github/actions/health-check
+        with:
+          deploy-env: ${{env.DEPLOY_ENV}}

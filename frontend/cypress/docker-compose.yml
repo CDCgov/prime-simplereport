@@ -8,7 +8,12 @@ services:
     env_file:
       - ./.env.e2e
     volumes:
-      - ../:/app
+      - ../cypress:/app/cypress
+      - ../cypress.json:/app/cypress.json
+      - ../e2e.sh:/app/e2e.sh
+      - ../cypress/.env.e2e:/app/cypress/.env.e2e
+      - ../cypress/screenshots:/app/cypress/screenshots
+      - ../cypress/videos:/app/cypress/videos
     expose:
       - "8088"
   db:

@@ -117,3 +117,8 @@ jobs:
         env:
             CURL_TIMEOUT: 5
         run: make check-${{env.DEPLOY_ENV}}-commit check-${{env.DEPLOY_ENV}}-readiness
+      - name: Run Cypress health check
+        uses: ./.github/actions/health-check
+        with:
+          deploy-env: ${{env.DEPLOY_ENV}}
+          
