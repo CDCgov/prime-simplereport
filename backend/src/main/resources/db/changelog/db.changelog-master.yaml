@@ -3264,3 +3264,43 @@ databaseChangeLog:
             remarks: Populate new `emails` column with value from patient `email`
             sql: |
               UPDATE person SET emails = ARRAY[email] WHERE email IS NOT NULL;
+  - changeSet:
+      id: add-specimen_type-to-test_event
+      author: zedd@skylight.digital
+      comment: add specimen_type_id to test event
+      changes:
+        - tagDatabase:
+            tag: add-specimen_type-to-test_event
+        - addColumn:
+            tableName: test_event
+            columns:
+              - column:
+                  name: specimen_type_id
+                  afterColumn: device_type_id
+                  valueComputed: (select specimen_type_id from ${database.defaultSchemaName}.device_specimen_type dst where dst.internal_id = device_specimen_type_id)
+                  remarks: The specimen type for this test event.
+                  type: uuid
+                  constraints:
+                    nullable: true
+                    foreignKeyName: fk__test_event__specimen_type
+                    references: specimen_type(internal_id)
+  - changeSet:
+      id: add-specimen_type-to-test_order
+      author: zedd@skylight.digital
+      comment: add specimen_type_id to test order
+      changes:
+        - tagDatabase:
+            tag: add-specimen_type-to-test_order
+        - addColumn:
+            tableName: test_order
+            columns:
+              - column:
+                  name: specimen_type_id
+                  afterColumn: device_type_id
+                  valueComputed: (select specimen_type_id from ${database.defaultSchemaName}.device_specimen_type dst where dst.internal_id = device_specimen_type_id)
+                  remarks: The specimen type for this test order.
+                  type: uuid
+                  constraints:
+                    nullable: true
+                    foreignKeyName: fk__test_order__specimen_type
+                    references: specimen_type(internal_id)
