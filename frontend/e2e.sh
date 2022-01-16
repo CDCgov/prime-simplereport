@@ -16,6 +16,7 @@ OPTIONS:
 EOF
 }
 
+SPEC_PATH="cypress/**"
 TEST_ENV="http://localhost.simplereport.gov"
 if [ -d ../.git ]; then
   CHECK_COMMIT="$(git rev-parse HEAD)"
@@ -51,6 +52,7 @@ while getopts "hs:r:c:b:f:" OPTION; do
   esac
 done
 
+echo
 [[ -n $SPEC_PATH ]] && echo "Running spec path--------$SPEC_PATH" || echo "Running all specs!"
 [[ -n $TEST_ENV ]] && echo "Testing against URL------$TEST_ENV"
 [[ -n $CHECK_COMMIT ]] && echo "Current commit-----------$CHECK_COMMIT"
@@ -97,8 +99,5 @@ echo
 echo 'App is online! Starting Cypress...'
 echo
 
-if [[ -z $SPEC_PATH ]]; then
-  yarn run cypress run --browser firefox --config baseUrl="$TEST_ENV" --env CHECK_COMMIT="$CHECK_COMMIT",CHECK_URL="$FRONTEND_URL_PATH"
-else
-  yarn run cypress run --browser firefox --spec "$SPEC_PATH" --config baseUrl="$TEST_ENV" --env CHECK_COMMIT="$CHECK_COMMIT",CHECK_URL="$FRONTEND_URL_PATH"
-fi
+yarn run cypress open
+# run --browser firefox --spec "$SPEC_PATH" --config baseUrl="$TEST_ENV" --env CHECK_COMMIT="$CHECK_COMMIT",CHECK_URL="$FRONTEND_URL_PATH"
