@@ -32,7 +32,7 @@ variable "redirect_urls" {
 //       not be added here.
 variable "trusted_origin_urls" {
   description = "Trusted origin listing for the Okta Production environment. Data format is [Name, URL, [Scopes]]"
-  default = []
+  default     = []
 }
 
 variable "app_url" {
