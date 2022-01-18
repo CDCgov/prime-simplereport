@@ -109,5 +109,5 @@ if [[ $RUN_OPEN = true ]]; then
   export CYPRESS_CHECK_URL="$FRONTEND_URL_PATH"
   yarn run cypress open
 else
-  yarn run cypress run --browser firefox --spec "$SPEC_PATH" --env CYPRESS_baseurl="$TEST_ENV",CHECK_COMMIT="$CHECK_COMMIT",CHECK_URL="$FRONTEND_URL_PATH"
+  yarn run cypress run --browser firefox --spec "$SPEC_PATH" --env CYPRESS_baseUrl="$TEST_ENV",CHECK_COMMIT="$CHECK_COMMIT",CHECK_URL="$FRONTEND_URL_PATH"
 fi;
