@@ -1,3 +1,5 @@
+// TODO - change these to azurerm_postgresql_flexible_server when removing the old DB config
+
 output "server_name" {
   value = azurerm_postgresql_server.db.name
 }

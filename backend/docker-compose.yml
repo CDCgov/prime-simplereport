@@ -1,6 +1,7 @@
 version: "3.5"
 services:
   db:
+    # TODO: change this when removing the old DB configuration (version will be upgraded)
     image: postgres:11-alpine
     ports:
       - "${SR_DB_PORT:-5432}:${SR_DB_PORT:-5432}"
@@ -16,9 +17,15 @@ services:
         source: ./db-setup/create-db.sh
         target: /docker-entrypoint-initdb.d/01-user-db-creation.sh
       - type: bind
+        source: ./db-setup/create-metabase-db.sh
+        target: /docker-entrypoint-initdb.d/02-metabase-db-creation.sh
+      - type: bind
         source: ./db-setup/reset-db.sql
         target: /usr/local/lib/reset-db.sql
-    command: -p ${SR_DB_PORT:-5432}
+      - type: bind
+        source: ./db-setup/reset-metabase-db.sql
+        target: /usr/local/lib/reset-metabase-db.sql
+    command: -p ${SR_DB_PORT:-5432}  -c log_statement=all -c log_connections=true
     networks:
       - dev-net
   api:
