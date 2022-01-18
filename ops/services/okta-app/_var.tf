@@ -35,30 +35,15 @@ variable "trusted_origin_preview_urls" {
   ]
 }
 
+// NOTE: These URLs reflect SimpleReport sites ONLY. Okta shares a unified console with ReportStream; those URLs should
+//       not be added here.
 variable "trusted_origin_urls" {
   description = "Trusted origin listing for the Okta Production environment. Data format is [Name, URL, [Scopes]]"
   default = [
-    ["Localhost (DataHub)", "http://localhost:7071", ["CORS"]],
-    ["DataHub (test)", "https://prime-data-hub-test.azurefd.net/", ["CORS"]],
-    ["https://prime.cdc.gov", "https://prime.cdc.gov", ["CORS"]],
-    ["Localhost", "http://localhost:8090", ["CORS"]],
-    ["Staging", "https://prime-data-hub-staging.azurefd.net", ["CORS"]],
-    ["Staging2", "https://staging.prime.cdc.gov", ["CORS"]],
-    ["http://localhost:8080", "	http://localhost:8080", ["CORS, REDIRECT"]],
-    ["Web Receiver - Staging", "https://pdhstagingpublic.z13.web.core.windows.net/", ["CORS"]],
-    ["Web Receiver - Production", "https://pdhprodpublic.z13.web.core.windows.net/", ["CORS"]],
-    ["ReportStream.gov", "https://reportstream.cdc.gov/", ["CORS"]],
-    ["ReportStream - RHEFT", "https://prime-data-hub-rheft.azurefd.net", ["CORS, REDIRECT"]],
-    ["Staging ReportStream", "	https://staging.reportstream.cdc.gov/", ["CORS"]],
-    ["Localhost 3000", "http://localhost:3000", ["CORS, REDIRECT"]],
     ["SimpleReport Test Env", "https://test.simplereport.gov/", ["CORS, REDIRECT"]],
     ["SimpleReport Staging Env", "https://stg.simplereport.gov", ["CORS, REDIRECT"]],
     ["SimpleReport Prod Env", "https://simplereport.gov", ["CORS, REDIRECT"]],
-    ["Localhost:8088", "http://localhost:8088", ["CORS"]],
-    ["http://localhost:8091 (Mo Dev)", "http://localhost:8091", ["CORS, REDIRECT"]],
-    ["SimpleReport Prod Env (www)", "https://www.simplereport.gov", ["CORS, REDIRECT"]],
-    ["ReportStream TEST - PRIME", "https://test.prime.cdc.gov", ["CORS, REDIRECT"]],
-    ["ReportStream TEST", "https://test.reportstream.cdc.gov", ["CORS, REDIRECT"]]
+    ["SimpleReport Prod Env (www)", "https://www.simplereport.gov", ["CORS, REDIRECT"]]
   ]
 }
 
