@@ -69,7 +69,7 @@ resource "okta_auth_server_scope" "sr_env" {
 }
 
 resource "okta_trusted_origin" "sr_trusted_origin" {
-  for_each = toset(var.trusted_origins)
+  for_each = { for origin in var.trusted_origins : origin.name => origin }
   name     = each.value["name"]
   origin   = each.value["origin"]
   scopes   = each.value["scopes"]
