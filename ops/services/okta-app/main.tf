@@ -71,6 +71,6 @@ resource "okta_auth_server_scope" "sr_env" {
 resource "okta_trusted_origin" "sr_trusted_origin" {
   for_each = { for origin in var.trusted_origins : origin.name => origin }
   name     = each.value.name
-  origin   = each.value.origin
+  origin   = each.value.url
   scopes   = each.value.scopes
 }
