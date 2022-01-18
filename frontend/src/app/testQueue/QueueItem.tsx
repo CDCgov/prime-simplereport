@@ -458,6 +458,11 @@ const QueueItem = ({
   const onDateTestedChange = (date: moment.Moment) => {
     const newDateTested = date.toISOString();
     const isValidDate = isValidCustomDateTested(newDateTested);
+    const currentTime = moment().toISOString();
+
+    if (moment().isAfter(currentTime)) {
+      console.log("DATE IS IN THE FUTURE");
+    }
 
     // the date string returned from the server is only precise to seconds; moment's
     // toISOString method returns millisecond precision. as a result, an onChange event
@@ -608,6 +613,24 @@ const QueueItem = ({
     </button>
   );
 
+  const handleDateChange = (date: string) => {
+    if (date) {
+      const newDate = moment(date)
+        .hour(selectedDate.hours())
+        .minute(selectedDate.minutes());
+      onDateTestedChange(newDate);
+    }
+  };
+
+  const handleTimeChange = (timeStamp: string) => {
+    const [hours, minutes] = timeStamp.split(":");
+    const newDate = moment(selectedDate)
+      .hours(parseInt(hours))
+      .minutes(parseInt(minutes));
+    console.log(newDate);
+    onDateTestedChange(newDate);
+  };
+
   const selectedDate = dateTested ? moment(dateTested) : moment();
 
   const timer = useTestTimer(internalId, deviceTestLength);
@@ -713,15 +736,9 @@ const QueueItem = ({
                         min={formatDate(new Date("Jan 1, 2020"))}
                         max={formatDate(moment().add(1, "days").toDate())}
                         defaultValue={formatDate(selectedDate.toDate())}
-                        onChange={(event) => {
-                          const date = event.target.value;
-                          if (date) {
-                            const newDate = moment(date)
-                              .hour(selectedDate.hours())
-                              .minute(selectedDate.minutes());
-                            onDateTestedChange(newDate);
-                          }
-                        }}
+                        onChange={(event) =>
+                          handleDateChange(event.target.value)
+                        }
                       />
                       <input
                         hidden={useCurrentDateTime !== "false"}
@@ -731,13 +748,7 @@ const QueueItem = ({
                         type="time"
                         step="60"
                         value={selectedDate.format("HH:mm")}
-                        onChange={(e) => {
-                          const [hours, minutes] = e.target.value.split(":");
-                          const newDate = moment(selectedDate)
-                            .hours(parseInt(hours))
-                            .minutes(parseInt(minutes));
-                          onDateTestedChange(newDate);
-                        }}
+                        onChange={(e) => handleTimeChange(e.target.value)}
                       />
 
                       <div className="check-box-container">
