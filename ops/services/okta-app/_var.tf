@@ -28,23 +28,11 @@ variable "redirect_urls" {
   ]
 }
 
-variable "trusted_origin_preview_urls" {
-  description = "Trusted origin listing for the Okta Preview environment. Data format is [Name, URL, [Scopes]]"
-  default = [
-    ["localhost", "https://localhost.simplereport.gov", ["CORS, REDIRECT"]],
-  ]
-}
-
 // NOTE: These URLs reflect SimpleReport sites ONLY. Okta shares a unified console with ReportStream; those URLs should
 //       not be added here.
 variable "trusted_origin_urls" {
   description = "Trusted origin listing for the Okta Production environment. Data format is [Name, URL, [Scopes]]"
-  default = [
-    ["SimpleReport Test Env", "https://test.simplereport.gov/", ["CORS, REDIRECT"]],
-    ["SimpleReport Staging Env", "https://stg.simplereport.gov", ["CORS, REDIRECT"]],
-    ["SimpleReport Prod Env", "https://simplereport.gov", ["CORS, REDIRECT"]],
-    ["SimpleReport Prod Env (www)", "https://www.simplereport.gov", ["CORS, REDIRECT"]]
-  ]
+  default = []
 }
 
 variable "app_url" {
