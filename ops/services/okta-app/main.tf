@@ -1,7 +1,6 @@
 locals {
-  is_prod    = var.env == "prod"
+  is_prod = var.env == "prod"
 }
-
 
 resource "okta_app_oauth" "app" {
   label = local.is_prod ? "Simple Report" : "Simple Report (${var.env})"
