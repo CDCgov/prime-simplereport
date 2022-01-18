@@ -91,7 +91,7 @@ export async function dequeueMessages(
         context.log("Done receiving messages");
         break;
       }
-    } catch (e) {
+    } catch (e: any) {
       context.log("Failed to dequeue messages", e);
     }
   }
@@ -105,7 +105,7 @@ export function convertToCsv(messages: DequeuedMessageItem[]) {
     .map((m) => {
       try {
         return JSON.parse(m.messageText);
-      } catch (e) {
+      } catch (e: any) {
         parseFailure[m.messageId] = true;
         parseFailureCount++;
         return undefined;
@@ -156,7 +156,7 @@ export async function deleteSuccessfullyParsedMessages(
       context.log(
         `Message ${message.messageId} deleted with request id ${deleteResponse.requestId}`
       );
-    } catch (e) {
+    } catch (e: any) {
       context.log(
         `Failed to delete message ${message.messageId} from the queue:`,
         e

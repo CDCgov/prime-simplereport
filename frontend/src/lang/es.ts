@@ -281,7 +281,9 @@ export const es: LanguageConfig = {
             li0:
               "Quédese en casa cuando esté enfermo, excepto para recibir atención médica.",
             li1:
-              "Autoaíslese durante 10 días completos después de que aparezcan los síntomas (o a partir del día siguiente a la realización de la prueba, si no tiene síntomas).",
+              "Quédate en casa durante 5 días. " +
+              "Si no tiene síntomas o sus síntomas se resuelven después de 5 días, puede salir de su casa. " +
+              "Continúe usando una máscara alrededor de otras personas durante 5 días adicionales. ",
             li2:
               "Si se autoaísla en su casa, donde viven otras personas, use una habitación y un baño separado para los miembros del grupo familiar que estan enfermos " +
               "(si es posible). Limpie las habitaciones compartidas según sea necesario, para evitar la transmisión del virus",
@@ -315,7 +317,7 @@ export const es: LanguageConfig = {
           difficultNewsURL:
             "espanol.cdc.gov/coronavirus/2019-ncov/daily-life-coping/managing-stress-anxiety.html",
           moreInformation:
-            "Para más información: espanol.cdc.gov/coronavirus/2019-ncov/if-you-are-sick/index.html.",
+            "Para más información: espanol.cdc.gov/coronavirus/2019-ncov/if-you-are-sick/index.html. Las leyes locales pueden variar, siempre consulte las pautas del departamento de salud de su estado y condado.",
         },
         negative: {
           p0:

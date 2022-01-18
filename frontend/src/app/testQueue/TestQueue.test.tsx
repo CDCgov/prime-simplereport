@@ -73,7 +73,13 @@ describe("TestQueue", () => {
     userEvent.click(removeButton);
     const confirmButton = await screen.findByText("Yes", { exact: false });
     userEvent.click(confirmButton);
-    await waitForElementToBeRemoved(() => screen.queryByText("Doe, John A"));
+    expect(
+      screen.getByText("Submitting test data for Doe, John A...")
+    ).toBeInTheDocument();
+    await waitForElementToBeRemoved(
+      () => screen.queryByText("Submitting test data for Doe, John A..."),
+      { timeout: 10000 }
+    );
     expect(screen.queryByText("Doe, John A")).not.toBeInTheDocument();
   });
 

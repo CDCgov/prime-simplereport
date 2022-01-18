@@ -27,6 +27,7 @@ const dummyTest = {
   result: "NEGATIVE" as TestResult,
   dateTested: "2020-01-01",
   deviceTypeModel: "MegaTester2000",
+  deviceTypeName: "BinaxNOW",
 };
 
 const mockPatient: Patient = {

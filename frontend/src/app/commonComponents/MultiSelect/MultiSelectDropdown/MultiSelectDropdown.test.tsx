@@ -794,7 +794,7 @@ describe("MultiSelectDropdown component", () => {
         </>
       );
 
-      userEvent.click(screen.getByTestId("multi-select-toggle"));
+      userEvent.click(screen.getByTestId("multi-select-input"));
       userEvent.click(screen.getByTestId("outside"));
       expect(screen.getByTestId("multi-select-input")).not.toHaveFocus();
     });

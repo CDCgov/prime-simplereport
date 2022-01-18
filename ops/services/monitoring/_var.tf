@@ -27,3 +27,13 @@ variable "app_url" {
   description = "test that the app_url is running."
   default     = "simplereport.cdc.gov"
 }
+
+variable "ai_ingest_cap_gb" {
+  description = "Cap for data ingested into Application Insights, per day."
+  default     = 50
+}
+
+variable "ai_retention_days" {
+  description = "Number of days to retain Application Insights data."
+  default     = 90
+}

@@ -98,55 +98,6 @@ interface PhoneNumber {
   number: string;
 }
 
-interface SettingsData {
-  organization: {
-    internalId: string;
-    name: string;
-    testingFacility: [
-      {
-        id: string;
-        cliaNumber: string;
-        name: string;
-        street: string;
-        streetTwo: string;
-        city: string;
-        county: string;
-        state: string;
-        zipCode: string;
-        phone: string;
-        email: string;
-        defaultDeviceSpecimen: string;
-        deviceTypes: [
-          {
-            name: string;
-            internalId: string;
-          }
-        ];
-        orderingProvider: {
-          firstName: string;
-          middleName: string;
-          lastName: string;
-          suffix: string;
-          NPI: string;
-          street: string;
-          streetTwo: string;
-          city: string;
-          county: string;
-          state: string;
-          zipCode: string;
-          phone: string;
-        };
-      }
-    ];
-  };
-  deviceTypes: [
-    {
-      internalId: string;
-      name: string;
-    }
-  ];
-}
-
 interface FacilityData {
   organization: {
     internalId: string;
