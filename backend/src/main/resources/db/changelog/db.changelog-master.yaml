@@ -3304,3 +3304,21 @@ databaseChangeLog:
                     nullable: true
                     foreignKeyName: fk__test_order__specimen_type
                     references: specimen_type(internal_id)
+  - changeSet:
+      id: add-default_specimen_type_id-to-facility
+      author: zedd@skylight.digital
+      comment: add specimen_type_id to facility
+      changes:
+        - tagDatabase:
+            tag: add-default_specimen_type_id-to-facility
+        - addColumn:
+            tableName: facility
+            columns:
+              - column:
+                  name: default_specimen_type_id
+                  remarks: The default specimen type (if any) for tests at this facility.
+                  type: uuid
+                  constraints:
+                    nullable: true
+                    foreignKeyName: fk__facility__default_specimen_type
+                    references: specimen_type(internal_id)
