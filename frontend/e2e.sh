@@ -99,5 +99,4 @@ echo
 echo 'App is online! Starting Cypress...'
 echo
 
-yarn run cypress open
-# run --browser firefox --spec "$SPEC_PATH" --config baseUrl="$TEST_ENV" --env CHECK_COMMIT="$CHECK_COMMIT",CHECK_URL="$FRONTEND_URL_PATH"
+yarn run cypress run --browser firefox --spec "$SPEC_PATH" --env CYPRESS_baseurl="$TEST_ENV",CHECK_COMMIT="$CHECK_COMMIT",CHECK_URL="$FRONTEND_URL_PATH"
