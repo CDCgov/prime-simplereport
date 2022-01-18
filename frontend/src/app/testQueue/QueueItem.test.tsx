@@ -354,7 +354,7 @@ describe("QueueItem", () => {
             variables: {
               patientId: internalId,
               deviceId: internalId,
-              deviceSpecimenTypeId: "device-specimen-1",
+              deviceSpecimenType: "device-specimen-1",
               result: "UNDETERMINED",
               dateTested: null,
             },
