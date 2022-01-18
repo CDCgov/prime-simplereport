@@ -69,8 +69,8 @@ resource "okta_auth_server_scope" "sr_env" {
 }
 
 resource "okta_trusted_origin" "sr_trusted_origin" {
-  count  = length(var.trusted_origin_urls)
-  name   = element(element(var.trusted_origin_urls, count.index), 0)
-  origin = element(element(var.trusted_origin_urls, count.index), 1)
-  scopes = element(element(var.trusted_origin_urls, count.index), 2)
+  for_each = var.trusted_origin_urls
+  name = each.name
+  origin = each.origin
+  scopes = each.scopes
 }
