@@ -11,7 +11,6 @@ services:
       - ../cypress:/app/cypress
       - ../cypress.json:/app/cypress.json
       - ../e2e.sh:/app/e2e.sh
-      - ../.env.local:/app/.env.local
       - ../cypress/screenshots:/app/cypress/screenshots
       - ../cypress/videos:/app/cypress/videos
     expose:

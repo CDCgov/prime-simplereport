@@ -74,7 +74,7 @@ while [[ $http_response != "200" && $polls -lt 240 ]]; do
   sleep 1
   http_response=$(curl -skL -w "%{http_code}" "${TEST_ENV}${BACKEND_URL_PATH}")
 done
-if [[ $result -ne 0 ]]; then
+if [[ $http_response -ne 200 ]]; then
   echo 'Backend never started. Exiting...'
   exit 1
 fi
@@ -89,7 +89,7 @@ while [[ $result -ne 1 && $polls -lt 240 ]]; do
   sleep 1
   result=$(curl -skL "${TEST_ENV}${FRONTEND_URL_PATH}" | grep -c '<title>SimpleReport</title>')
 done
-if [[ $result -ne 1 ]]; then
+if [[ $result = 0 ]]; then
   echo 'Frontend never started. Exiting...'
   exit 1
 fi
