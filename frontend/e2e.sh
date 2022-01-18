@@ -23,8 +23,9 @@ if [ -d ../.git ]; then
 fi
 BACKEND_URL_PATH="/api/health"
 FRONTEND_URL_PATH="/health/commit"
+RUN_OPEN=false
 
-while getopts "hs:r:c:b:f:" OPTION; do
+while getopts "hs:r:c:b:f:o:" OPTION; do
   case $OPTION in
   h)
     usage
@@ -44,6 +45,9 @@ while getopts "hs:r:c:b:f:" OPTION; do
     ;;
   f)
     FRONTEND_URL_PATH=$OPTARG
+    ;;
+  o)
+    RUN_OPEN=$OPTARG
     ;;
   ?)
     usage
@@ -89,7 +93,7 @@ while [[ $result -ne 1 && $polls -lt 240 ]]; do
   sleep 1
   result=$(curl -skL "${TEST_ENV}${FRONTEND_URL_PATH}" | grep -c '<title>SimpleReport</title>')
 done
-if [[ $result = 0 ]]; then
+if [[ $result -ne 1 ]]; then
   echo 'Frontend never started. Exiting...'
   exit 1
 fi
@@ -99,4 +103,11 @@ echo
 echo 'App is online! Starting Cypress...'
 echo
 
-yarn run cypress run --browser firefox --spec "$SPEC_PATH" --env CYPRESS_baseurl="$TEST_ENV",CHECK_COMMIT="$CHECK_COMMIT",CHECK_URL="$FRONTEND_URL_PATH"
+if [[ $RUN_OPEN = true ]]; then
+  export CYPRESS_baseurl="$TEST_ENV"
+  export CYPRESS_CHECK_COMMIT="$CHECK_COMMIT"
+  export CYPRESS_CHECK_URL="$FRONTEND_URL_PATH"
+  yarn run cypress open
+else
+  yarn run cypress run --browser firefox --spec "$SPEC_PATH" --env CYPRESS_baseurl="$TEST_ENV",CHECK_COMMIT="$CHECK_COMMIT",CHECK_URL="$FRONTEND_URL_PATH"
+fi;
