@@ -9,7 +9,6 @@ import static org.mockito.Mockito.verifyNoInteractions;
 import static org.mockito.Mockito.when;
 
 import gov.cdc.usds.simplereport.db.model.Facility;
-import gov.cdc.usds.simplereport.db.model.Organization;
 import gov.cdc.usds.simplereport.db.model.PatientLink;
 import gov.cdc.usds.simplereport.db.model.Person;
 import gov.cdc.usds.simplereport.db.model.TestOrder;
@@ -65,7 +64,6 @@ class TestResultsDeliveryServiceTest {
             EmailProviderTemplate.SIMPLE_REPORT_TEST_RESULT,
             Map.of(
                 "facility_name", "House of Gryffindor",
-                "organization_name", "Hogwarts",
                 "expiration_duration", "2 days",
                 "test_result_url", "https://simplereport.gov/pxp?plid=" + uuid));
   }
@@ -116,7 +114,6 @@ class TestResultsDeliveryServiceTest {
             EmailProviderTemplate.SIMPLE_REPORT_TEST_RESULT,
             Map.of(
                 "facility_name", "House of Gryffindor",
-                "organization_name", "Hogwarts",
                 "expiration_duration", "1 day",
                 "test_result_url", "https://simplereport.gov/pxp?plid=" + uuid));
   }
@@ -224,9 +221,6 @@ class TestResultsDeliveryServiceTest {
     Facility facility = mock(Facility.class);
     when(facility.getFacilityName()).thenReturn("House of Gryffindor");
 
-    Organization org = mock(Organization.class);
-    when(org.getOrganizationName()).thenReturn("Hogwarts");
-
     Person person = mock(Person.class);
     when(person.getEmail()).thenReturn("harry@hogwarts.edu");
     when(person.getEmails()).thenReturn(List.of("harry@hogwarts.edu"));
@@ -234,7 +228,6 @@ class TestResultsDeliveryServiceTest {
     TestOrder testOrder = mock(TestOrder.class);
     when(testOrder.getPatient()).thenReturn(person);
     when(testOrder.getFacility()).thenReturn(facility);
-    when(testOrder.getOrganization()).thenReturn(org);
 
     PatientLink patientLink = mock(PatientLink.class);
     when(patientLink.getInternalId()).thenReturn(internalId);

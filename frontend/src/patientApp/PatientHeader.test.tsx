@@ -7,88 +7,38 @@ import { Provider } from "react-redux";
 import PatientHeader from "./PatientHeader";
 
 describe("PatientHeader", () => {
-  let mockStore: any;
-  let store: any;
-
-  beforeEach(() => {
-    mockStore = configureStore([]);
+  const mockStore = configureStore([]);
+  const store = mockStore({
+    facilities: [{ id: "fake-id", name: "123" }],
   });
 
-  describe("internationalization", () => {
-    beforeEach(() => {
-      store = mockStore({
-        facilities: [{ id: "fake-id", name: "123" }],
-      });
-    });
+  it("contains language toggler", () => {
+    render(
+      <MemoryRouter>
+        <Provider store={store}>
+          <PatientHeader />
+        </Provider>
+      </MemoryRouter>
+    );
 
-    it("contains language toggler", () => {
-      render(
-        <MemoryRouter>
-          <Provider store={store}>
-            <PatientHeader />
-          </Provider>
-        </MemoryRouter>
-      );
-
-      expect(screen.getByText("Español")).toBeInTheDocument();
-      expect(screen.getByRole("button")).toBeInTheDocument();
-    });
-
-    it("language toggler switches display language when clicked", async () => {
-      render(
-        <MemoryRouter>
-          <Provider store={store}>
-            <PatientHeader />
-          </Provider>
-        </MemoryRouter>
-      );
-
-      expect(screen.getByText("Español")).toBeInTheDocument();
-
-      userEvent.click(screen.getByRole("button"));
-
-      expect(screen.queryByText("Español")).not.toBeInTheDocument();
-      expect(screen.getByText("English")).toBeInTheDocument();
-    });
+    expect(screen.getByText("Español")).toBeInTheDocument();
+    expect(screen.getByRole("button")).toBeInTheDocument();
   });
 
-  describe("banner text", () => {
-    it("does not include organization and facility name in test where not available", async () => {
-      render(
-        <MemoryRouter>
-          <Provider store={store}>
-            <PatientHeader />
-          </Provider>
-        </MemoryRouter>
-      );
+  it("language toggler switches display language when clicked", async () => {
+    render(
+      <MemoryRouter>
+        <Provider store={store}>
+          <PatientHeader />
+        </Provider>
+      </MemoryRouter>
+    );
 
-      expect(
-        await screen.findByTestId("banner-text", { exact: false })
-      ).toHaveTextContent("");
-    });
+    expect(screen.getByText("Español")).toBeInTheDocument();
 
-    it("includes organization and facility name", async () => {
-      store = mockStore({
-        facilities: [{ id: "fake-id", name: "123" }],
-        organization: { name: "Test Org" },
-        patient: {
-          lastTest: {
-            facilityName: "Test Facility",
-          },
-        },
-      });
+    userEvent.click(screen.getByRole("button"));
 
-      render(
-        <MemoryRouter>
-          <Provider store={store}>
-            <PatientHeader />
-          </Provider>
-        </MemoryRouter>
-      );
-
-      expect(
-        await screen.findByText("Test Org, Test Facility", { exact: false })
-      ).toBeInTheDocument();
-    });
+    expect(screen.queryByText("Español")).not.toBeInTheDocument();
+    expect(screen.getByText("English")).toBeInTheDocument();
   });
 });
