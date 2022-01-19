@@ -71,6 +71,32 @@ class TestResultsDeliveryServiceTest {
   }
 
   @Test
+  void emailTestResultTests_forTestEventId() throws IOException {
+
+    // GIVEN
+    UUID patientLinkId = UUID.randomUUID();
+    UUID testEventId = UUID.randomUUID();
+    PatientLink patientLink = getMockedPatientLink(patientLinkId);
+
+    when(patientLinkService.getPatientLinkForTestEvent(testEventId)).thenReturn(patientLink);
+    when(patientLinkService.getRefreshedPatientLink(patientLinkId)).thenReturn(patientLink);
+
+    // WHEN
+    boolean success = testResultsDeliveryService.emailTestResultsForTestEvent(testEventId);
+
+    // THEN
+    assertThat(success).isTrue();
+    verify(emailService)
+        .sendWithDynamicTemplate(
+            List.of("harry@hogwarts.edu"),
+            EmailProviderTemplate.SIMPLE_REPORT_TEST_RESULT,
+            Map.of(
+                "facility_name", "House of Gryffindor",
+                "expiration_duration", "2 days",
+                "test_result_url", "https://simplereport.gov/pxp?plid=" + patientLinkId));
+  }
+
+  @Test
   void emailTestResultTests_singleDayDuration() throws IOException {
 
     // GIVEN
@@ -126,6 +152,29 @@ class TestResultsDeliveryServiceTest {
 
     // THEN
     assertThat(success).isFalse();
+  }
+
+  @Test
+  void smsTextTestResultTest_forTestEventId() {
+    // GIVEN
+    UUID patientLinkId = UUID.randomUUID();
+    UUID testEventId = UUID.randomUUID();
+    PatientLink patientLink = getMockedPatientLink(patientLinkId);
+
+    when(patientLinkService.getPatientLinkForTestEvent(testEventId)).thenReturn(patientLink);
+    when(patientLinkService.getRefreshedPatientLink(patientLinkId)).thenReturn(patientLink);
+    when(smsService.sendToPatientLink(any(PatientLink.class), anyString()))
+        .thenReturn(List.of(SmsAPICallResult.builder().successful(true).build()));
+
+    // WHEN
+    boolean success = testResultsDeliveryService.smsTestResultsForTestEvent(testEventId);
+
+    // THEN
+    assertThat(success).isTrue();
+    String message =
+        "Your COVID-19 test result is ready to view. This link will expire after 2 days: https://simplereport.gov/pxp?plid="
+            + patientLinkId;
+    verify(smsService).sendToPatientLink(patientLink, message);
   }
 
   @Test

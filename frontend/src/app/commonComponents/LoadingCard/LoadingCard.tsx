@@ -1,6 +1,6 @@
 import { Card } from "../Card/Card";
 import { CardBackground } from "../CardBackground/CardBackground";
-import iconLoader from "../../../../node_modules/uswds/dist/img/loader.svg";
+import iconLoader from "../../../img/loader.svg";
 
 interface Props {
   message?: string;

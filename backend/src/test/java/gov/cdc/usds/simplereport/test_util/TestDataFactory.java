@@ -54,6 +54,7 @@ import org.springframework.stereotype.Component;
 import org.springframework.transaction.annotation.Propagation;
 import org.springframework.transaction.annotation.Transactional;
 
+@Transactional
 @Component
 public class TestDataFactory {
 
@@ -324,6 +325,7 @@ public class TestDataFactory {
   public TestEvent createTestEvent(Person p, Facility f, TestResult r, Boolean hasPriorTests) {
     TestOrder o = createTestOrder(p, f);
     o.setResult(r);
+    o = _testOrderRepo.save(o);
 
     TestEvent e = _testEventRepo.save(new TestEvent(o, hasPriorTests));
     o.setTestEventRef(e);

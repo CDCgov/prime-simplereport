@@ -19,7 +19,7 @@ export const MaintenanceBanner: React.FC = () => {
         try {
           const maintenanceJSON = await maintenance.json();
           setMaintenanceMode(maintenanceJSON);
-        } catch (e) {
+        } catch (e: any) {
           console.error(e);
         }
       }

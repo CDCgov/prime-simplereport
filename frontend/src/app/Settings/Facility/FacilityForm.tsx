@@ -48,7 +48,7 @@ export const useFacilityValidation = (facility: Facility) => {
             orderingProviderIsRequired: requiresOrderProvider(facility.state),
           },
         });
-      } catch (e) {
+      } catch (e: any) {
         const errorMessage =
           field === "state" && stateCodes.includes(facility[field])
             ? createStateError(facility.state)
@@ -71,7 +71,7 @@ export const useFacilityValidation = (facility: Facility) => {
         },
       });
       return "";
-    } catch (e) {
+    } catch (e: any) {
       const errors = e.inner.reduce(
         (
           acc: FacilityErrors,

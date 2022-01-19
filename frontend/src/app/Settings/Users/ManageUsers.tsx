@@ -249,7 +249,7 @@ const ManageUsers: React.FC<Props> = ({
       updateShowAddUserModal(false);
       setAddedUserId(addedUser);
       setIsUpdating(false);
-    } catch (e) {
+    } catch (e: any) {
       setIsUpdating(false);
     }
   };
@@ -277,7 +277,7 @@ const ManageUsers: React.FC<Props> = ({
         <Alert type="success" title={`User name changed to ${fullName}`} />
       );
       queryUserWithPermissions();
-    } catch (e) {
+    } catch (e: any) {
       setError(e);
     }
   };
@@ -298,7 +298,7 @@ const ManageUsers: React.FC<Props> = ({
         />
       );
       await getUsers();
-    } catch (e) {}
+    } catch (e: any) {}
   };
 
   const handleResetUserPassword = async (userId: string) => {
@@ -317,7 +317,7 @@ const ManageUsers: React.FC<Props> = ({
       showNotification(
         <Alert type="success" title={`Password reset for ${fullName}`} />
       );
-    } catch (e) {
+    } catch (e: any) {
       setError(e);
     }
   };
@@ -338,7 +338,7 @@ const ManageUsers: React.FC<Props> = ({
       showNotification(
         <Alert type="success" title={`MFA reset for ${fullName}`} />
       );
-    } catch (e) {
+    } catch (e: any) {
       setError(e);
     }
   };
@@ -362,7 +362,7 @@ const ManageUsers: React.FC<Props> = ({
         <Alert type="success" title={`User account removed for ${fullName}`} />
       );
       await getUsers();
-    } catch (e) {
+    } catch (e: any) {
       setError(e);
     }
   };
@@ -384,7 +384,7 @@ const ManageUsers: React.FC<Props> = ({
       showNotification(
         <Alert type="success" title={`${fullName} has been reactivated.`} />
       );
-    } catch (e) {
+    } catch (e: any) {
       setError(e);
     }
   };
@@ -408,7 +408,7 @@ const ManageUsers: React.FC<Props> = ({
           title={`${fullName} has been sent a new invitation.`}
         />
       );
-    } catch (e) {
+    } catch (e: any) {
       setError(e);
     }
   };

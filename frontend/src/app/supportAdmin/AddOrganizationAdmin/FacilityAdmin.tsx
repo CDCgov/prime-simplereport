@@ -27,7 +27,7 @@ export const useFacilityAdminValidation = (admin: FacilityAdmin) => {
       try {
         clearError(field);
         await facilityAdminSchema.validateAt(field, admin);
-      } catch (e) {
+      } catch (e: any) {
         setErrors((existingErrors) => ({
           ...existingErrors,
           [field]: e.errors?.join(", "),
@@ -41,7 +41,7 @@ export const useFacilityAdminValidation = (admin: FacilityAdmin) => {
     try {
       await facilityAdminSchema.validate(admin, { abortEarly: false });
       return "";
-    } catch (e) {
+    } catch (e: any) {
       const newErrors = e.inner.reduce(
         (
           acc: FacilityAdminErrors,

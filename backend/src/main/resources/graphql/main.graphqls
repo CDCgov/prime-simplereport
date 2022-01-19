@@ -373,8 +373,6 @@ type Mutation {
     street: String!
     streetTwo: String
     city: String
-    county: String
-      @deprecated(reason: "county is derived from smarty streets lookup")
     state: String!
     zipCode: String!
     phone: String
@@ -392,18 +390,14 @@ type Mutation {
     orderingProviderState: String
     orderingProviderZipCode: String
     orderingProviderPhone: String
-    deviceTypes: [String]!
-    deviceSpecimenTypes: [ID]
-    defaultDevice: String!
-  ): String @requiredPermissions(allOf: ["EDIT_FACILITY"])
+    deviceIds: [ID]!
+  ): Facility @requiredPermissions(allOf: ["EDIT_FACILITY"])
   addFacility(
     testingFacilityName: String!
     cliaNumber: String
     street: String!
     streetTwo: String
     city: String
-    county: String
-      @deprecated(reason: "county is derived from smarty streets lookup")
     state: String!
     zipCode: String!
     phone: String
@@ -421,10 +415,8 @@ type Mutation {
     orderingProviderState: String
     orderingProviderZipCode: String
     orderingProviderPhone: String
-    deviceTypes: [String]!
-    deviceSpecimenTypes: [ID]
-    defaultDevice: String!
-  ): String @requiredPermissions(allOf: ["EDIT_FACILITY"])
+    deviceIds: [ID]!
+  ): Facility @requiredPermissions(allOf: ["EDIT_FACILITY"])
   addFacilityNew(
     testingFacilityName: String!
     cliaNumber: String
@@ -621,7 +613,10 @@ type Mutation {
   ): String @requiredPermissions(allOf: ["UPDATE_TEST"])
   sendPatientLinkSms(internalId: ID!): Boolean
     @requiredPermissions(allOf: ["UPDATE_TEST"])
+  sendPatientLinkSmsByTestEventId(testEventId: ID!): Boolean
+  @requiredPermissions(allOf: ["UPDATE_TEST"])
   sendPatientLinkEmail(internalId: ID!): Boolean
+  sendPatientLinkEmailByTestEventId(testEventId: ID!): Boolean
   updateOrganization(type: String!): String
     @requiredPermissions(allOf: ["EDIT_ORGANIZATION"])
 }

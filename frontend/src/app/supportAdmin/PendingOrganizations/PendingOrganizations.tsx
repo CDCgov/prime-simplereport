@@ -75,7 +75,7 @@ const PendingOrganizations = ({
         },
       });
       updatedOrg = mutationResponse as EditOrgMutationResponse;
-    } catch (e) {
+    } catch (e: any) {
       console.error(e);
       return Promise.reject();
     }
@@ -123,7 +123,7 @@ const PendingOrganizations = ({
         externalNameToVerify = org.name;
       }
       await submitIdentityVerified(externalIdToVerify, externalNameToVerify);
-    } catch (e) {
+    } catch (e: any) {
       console.error(e);
       return Promise.reject();
     }
