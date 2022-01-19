@@ -78,6 +78,7 @@ const ConfirmDeleteOrgModal: React.FC<DeletionModalProps> = ({
             <Button
               className="margin-right-2"
               onClick={() => handleDelete(organization)}
+              id="confirm-deletion-button"
               label={isUpdating ? "Deleting..." : "Delete"}
               disabled={isUpdating}
             />

@@ -10,6 +10,7 @@ import {
   GetPendingOrganizationsDocument,
   SetOrgIdentityVerifiedDocument,
   EditPendingOrganizationDocument,
+  MarkPendingOrganizationAsDeletedDocument,
 } from "../../../generated/graphql";
 import Page from "../../commonComponents/Page/Page";
 
@@ -101,6 +102,7 @@ const submittedOrganizationsQueryOldOrgs = {
     },
   },
 };
+
 const oldOrganizationsVerificationMutation = {
   request: {
     query: SetOrgIdentityVerifiedDocument,
@@ -148,6 +150,7 @@ const EmptyOrganizationsQuery = {
     },
   },
 };
+
 const verificationMutation = {
   request: {
     query: SetOrgIdentityVerifiedDocument,
@@ -214,6 +217,22 @@ const editOrganizationsMutation = {
     data: {
       editPendingOrganization:
         "DC-Space-Camp-fg413d4-btc5-449f-98b0-2e02abb7aae0",
+    },
+  },
+};
+
+const deletePendingOrgsMutation = {
+  request: {
+    query: MarkPendingOrganizationAsDeletedDocument,
+    variables: {
+      orgExternalId: "DC-Space-Camp-f34183c4-b4c5-449f-98b0-2e02abb7aae0",
+      deleted: true,
+    },
+  },
+  result: {
+    data: {
+      markPendingOrganizationAsDeleted:
+        "DC-Space-Camp-f34183c4-b4c5-449f-98b0-2e02abb7aae0",
     },
   },
 };
@@ -561,6 +580,59 @@ describe("PendingOrganizationsContainer", () => {
       expect(
         await screen.findByText("Identity verified for DC Space Camp")
       ).toBeInTheDocument();
+    });
+  });
+  describe("deleting organizations", () => {
+    beforeEach(async () => {
+      render(
+        <Page>
+          <MockedProvider
+            mocks={[
+              organizationsQuery(
+                "Space Camp",
+                "DC-Space-Camp-f34183c4-b4c5-449f-98b0-2e02abb7aae0"
+              ),
+              deletePendingOrgsMutation,
+              submittedOrganizationQuery,
+            ]}
+          >
+            <PendingOrganizationsContainer />
+          </MockedProvider>
+        </Page>
+      );
+    });
+
+    it("Facility deletion button populates modal", async () => {
+      expect(
+        await screen.findByText("Space Camp", { exact: false })
+      ).toBeInTheDocument();
+      userEvent.click(Array.from(await screen.findAllByText("Delete Org"))[1]);
+      expect(
+        await screen.findByText("Confirm deletion of the following org", {
+          exact: false,
+        })
+      ).toBeInTheDocument();
+      expect(await screen.findByText("Cancel")).toBeInTheDocument();
+      expect(await screen.findByText("Delete", { exact: true })).toBeEnabled();
+    });
+    it("Facility deletion works", async () => {
+      expect(
+        await screen.findByText("Space Camp", { exact: false })
+      ).toBeInTheDocument();
+      userEvent.click(Array.from(await screen.findAllByText("Delete Org"))[1]);
+      expect(
+        await screen.findByText("Confirm deletion of the following org", {
+          exact: false,
+        })
+      ).toBeInTheDocument();
+      expect(await screen.findByText("Delete", { exact: true })).toBeEnabled();
+      userEvent.click(await screen.findByText("Delete", { exact: true }));
+      expect(
+        await screen.findByText("Space Camp successfully deleted", {
+          exact: true,
+        })
+      ).toBeInTheDocument();
+      expect(screen.queryByText("Space Camp")).not.toBeInTheDocument();
     });
   });
 });

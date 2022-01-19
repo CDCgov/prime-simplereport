@@ -210,7 +210,7 @@ const PendingOrganizations = ({
               setOrgToDelete(o);
             }}
           >
-            Delete
+            Delete Org
           </Button>
         </td>
       </tr>
