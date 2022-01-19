@@ -344,12 +344,12 @@ In order for `http://localhost.simplereport.gov` to route to your local applicat
 
 Finally, you'll need to run a reverse proxy like nginx to point port 80 at your application server. You can do this in a docker container with the following command:
 
-User to run nginx in a container on Mac
+Use to run nginx in a container on Mac
 ```bash
 docker build -t nginx -f cypress/support/nginx/Dockerfile.nginx.mac . && docker run -d -p 80:80 nginx:latest
 ```
 
-User to run nginx in a container on Linux
+Use to run nginx in a container on Linux
 ```bash
 docker build -t nginx -f cypress/support/nginx/Dockerfile.nginx.linux . && docker run -d -p 80:80 nginx:latest
 ```
@@ -358,11 +358,11 @@ If you are running nginx locally already, you can use the config located at `fro
 
 Once all of that is done, you are are ready for a test run! There are a few ways to run the tests (from the `frontend` dir):
 
-- `./e2e.sh`
+- `./e2e.sh` or `yarn e2e`
   - this will run cypress with reasonable defaults
 - `./e2e.sh -h`
   - this with return usage help
-- `./e2e.sh -o true`
+- `./e2e.sh -o true` or `yarn e2e:open`
   - this will open an interactive test runner that lets you select browsers and which test to run. tests will run headed by default
 
 To write new tests, see the [Cypress documentation](https://docs.cypress.io/api/table-of-contents). If you need to generate new Wiremock mappings for external services, see [this wiki page](https://github.com/CDCgov/prime-simplereport/wiki/WireMock).
