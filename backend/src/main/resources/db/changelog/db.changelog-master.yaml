@@ -3265,12 +3265,12 @@ databaseChangeLog:
             sql: |
               UPDATE person SET emails = ARRAY[email] WHERE email IS NOT NULL;
   - changeSet:
-      id: add-specimen_type-to-test_event
+      id: add-specimen_type_id-to-test_event
       author: zedd@skylight.digital
       comment: add specimen_type_id to test event
       changes:
         - tagDatabase:
-            tag: add-specimen_type-to-test_event
+            tag: add-specimen_type_id-to-test_event
         - addColumn:
             tableName: test_event
             columns:
@@ -3284,12 +3284,12 @@ databaseChangeLog:
                     foreignKeyName: fk__test_event__specimen_type
                     references: specimen_type(internal_id)
   - changeSet:
-      id: add-specimen_type-to-test_order
+      id: add-specimen_type_id-to-test_order
       author: zedd@skylight.digital
       comment: add specimen_type_id to test order
       changes:
         - tagDatabase:
-            tag: add-specimen_type-to-test_order
+            tag: add-specimen_type_id-to-test_order
         - addColumn:
             tableName: test_order
             columns:
