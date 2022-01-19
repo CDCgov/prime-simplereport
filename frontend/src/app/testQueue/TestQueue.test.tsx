@@ -122,6 +122,12 @@ describe("TestQueue", () => {
       expect(within(modal).getByText("8178675911")).toBeInTheDocument();
     });
   });
+
+  describe("device selection", () => {
+    it("should select another swab type for the selected device if configured swab not available", () => {});
+
+    it("should select another device if the configured device has no associated swab types", () => {});
+  });
 });
 
 const internalId = "f5c7658d-a0d5-4ec5-a1c9-eafc85fe7554";
@@ -260,6 +266,7 @@ const result = {
           internalId: internalId,
           model: "lumira",
           name: "LumiraDx",
+          testLength: 15,
           __typename: "DeviceType",
         },
         specimenType: {
@@ -275,6 +282,7 @@ const result = {
           internalId: "f8b9d9d6-c318-4c54-a516-76f0d9a25d32",
           model: "quidel",
           name: "Quidel Sofia 2",
+          testLength: 10,
           __typename: "DeviceType",
         },
         specimenType: {
@@ -290,6 +298,7 @@ const result = {
           internalId: "0f3d7426-3476-4800-97e7-3de8a93b090c",
           model: "quidel",
           name: "Quidel Sofia 2",
+          testLength: 10,
           __typename: "DeviceType",
         },
         specimenType: {

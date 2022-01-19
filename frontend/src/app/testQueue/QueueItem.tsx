@@ -249,27 +249,14 @@ const QueueItem = ({
 
   // Populate device+specimen state variables from selected device specimen type
   useEffect(() => {
+    // Asserting this type should be OK - the parent component is responsible
+    // for removing invalid or deleted device specimen types from the collection
+    // passed in as props
     const deviceSpecimenType = deviceSpecimenTypes.find(
       (dst) => dst.internalId === deviceSpecimenTypeId
-    );
+    ) as DeviceSpecimenType;
 
-    // If the device specimen type configured for an active test
-    // has been deleted, set the selected value to another valid
-    // device specimen for the configured device
-    if (!deviceSpecimenType) {
-      const deviceSpecimenTypeForDevice = deviceSpecimenTypes.find(
-        (dst) => dst.deviceType.internalId === selectedDeviceId
-      );
-
-      // If the configured device no longer has any specimen types,
-      // just grab any device specimen type available in state
-      updateDeviceSpecimenTypeId(
-        (deviceSpecimenTypeForDevice || deviceSpecimenTypes[0]).internalId
-      );
-
-      return;
-    }
-
+    updateDeviceSpecimenTypeId(deviceSpecimenType.internalId);
     updateDeviceId(deviceSpecimenType.deviceType.internalId);
     updateSpecimenId(deviceSpecimenType.specimenType.internalId);
   }, [deviceSpecimenTypes, deviceSpecimenTypeId, selectedDeviceId]);
