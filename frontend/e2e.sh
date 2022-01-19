@@ -11,8 +11,10 @@ OPTIONS:
    -s   Relative path to the spec that you desire to run
    -r   Environment to run against
    -c   Deployed commit hash
-   -b   Backend url path
+   -a   Backend url path
    -f   frontend url path
+   -o   Open Cypress for interactive testing
+   -b   Set the browser to test against: https://docs.cypress.io/guides/guides/launching-browsers#Browsers
 EOF
 }
 
@@ -24,8 +26,9 @@ fi
 BACKEND_URL_PATH="/api/health"
 FRONTEND_URL_PATH="/health/commit"
 RUN_OPEN=false
+BROWSER="firefox"
 
-while getopts "hs:r:c:b:f:o:" OPTION; do
+while getopts "hs:r:c:a:f:o:b:" OPTION; do
   case $OPTION in
   h)
     usage
@@ -40,7 +43,7 @@ while getopts "hs:r:c:b:f:o:" OPTION; do
   c)
     CHECK_COMMIT=$OPTARG
     ;;
-  b)
+  a)
     BACKEND_URL_PATH=$OPTARG
     ;;
   f)
@@ -48,6 +51,9 @@ while getopts "hs:r:c:b:f:o:" OPTION; do
     ;;
   o)
     RUN_OPEN=$OPTARG
+    ;;
+  b)
+    BROWSER=$OPTARG
     ;;
   ?)
     usage
@@ -58,10 +64,12 @@ done
 
 echo
 [[ -n $SPEC_PATH ]] && echo "Running spec path--------$SPEC_PATH" || echo "Running all specs!"
-[[ -n $TEST_ENV ]] && echo "Testing against URL------$TEST_ENV"
+[[ -n $BROWSER ]] && echo "Browser selected---------$BROWSER"
 [[ -n $CHECK_COMMIT ]] && echo "Current commit-----------$CHECK_COMMIT"
+[[ -n $TEST_ENV ]] && echo "Testing against URL------$TEST_ENV"
 [[ -n $BACKEND_URL_PATH ]] && echo "Backend health route-----$BACKEND_URL_PATH"
 [[ -n $FRONTEND_URL_PATH ]] && echo "Frontent health route----$FRONTEND_URL_PATH"
+[[ -n $RUN_OPEN ]] && echo "Run as interactive----$RUN_OPEN"
 echo 
 
 echo "Starting Wiremock for app bootup..."
@@ -109,5 +117,5 @@ if [[ $RUN_OPEN = true ]]; then
   export CYPRESS_CHECK_URL="$FRONTEND_URL_PATH"
   yarn run cypress open
 else
-  yarn run cypress run --browser firefox --spec "$SPEC_PATH" --config baseUrl="$TEST_ENV" --env CHECK_COMMIT="$CHECK_COMMIT",CHECK_URL="$FRONTEND_URL_PATH"
+  yarn run cypress run --browser "$BROWSER" --spec "$SPEC_PATH" --config baseUrl="$TEST_ENV" --env CHECK_COMMIT="$CHECK_COMMIT",CHECK_URL="$FRONTEND_URL_PATH"
 fi;
