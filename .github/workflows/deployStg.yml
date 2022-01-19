@@ -116,6 +116,6 @@ jobs:
     steps:
       - uses: actions/checkout@v2
       - name: Run health checks
-        uses: ./.github/actions/health-check
+        uses: ./.github/actions/verify-release
         with:
           deploy-env: ${{env.DEPLOY_ENV}}

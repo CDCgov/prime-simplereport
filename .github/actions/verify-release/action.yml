@@ -25,13 +25,16 @@ runs:
         key: cypress-${{ runner.os }}-cypress-${{ hashFiles('**/package.json') }}
         restore-keys: |
           cypress-${{ runner.os }}-cypress-
-    - name: Check that the current release is in the ${{env.DEPLOY_ENV}} environment
+    - name: Makefile deploy verification for backend in ${{env.DEPLOY_ENV}} environment
       shell: bash
       working-directory: ./ops
       env:
-          CURL_TIMEOUT: 5
-      run: make check-${{env.DEPLOY_ENV}}-commit check-${{env.DEPLOY_ENV}}-readiness
-    - name: install dependencies and verify Cypress
+          CURL_TIMEOUT: 5'
+      run: |
+        echo "::group::Run Makefile verification"
+        make check-${{env.DEPLOY_ENV}}-commit check-${{env.DEPLOY_ENV}}-readiness
+        echo "::endgroup::"
+      - name: install dependencies and verify Cypress
       shell: bash
       working-directory: ./frontend
       env:
@@ -47,10 +50,10 @@ runs:
         yarn exec cypress version --component binary
         yarn exec cypress version --component electron
         yarn exec cypress version --component node
-    - name: Deploy health check
+    - name: Cypress deploy verification for frontend in ${{env.DEPLOY_ENV}} environment
       shell: bash
       working-directory: ./frontend
       run: |
-        echo "::group::Run Cypress health check"
+        echo "::group::Run Cypress verification"
         ./e2e.sh -s cypress/integration/00-health_check.js -r https://${{ env.DEPLOY_ENV }}.simplereport.gov -f /app/health/commit
         echo "::endgroup::"
