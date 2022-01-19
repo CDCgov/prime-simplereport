@@ -13,8 +13,7 @@ import {
   EditOrgMutationResponse,
 } from "./utils";
 import "./PendingOrganizationsList.scss";
-import ConfirmOrgVerificationModal from "./modals/ConfirmOrgVerificationModal";
-import ConfirmDeleteOrgModal from "./modals/ConfirmDeleteOrgModal";
+import ConfirmOrgVerificationModal from "./ConfirmOrgVerificationModal";
 
 interface Props {
   organizations: PendingOrganization[];
@@ -40,10 +39,6 @@ const PendingOrganizations = ({
   showNotification,
 }: Props) => {
   const [orgToVerify, setOrgToVerify] = useState<PendingOrganization | null>(
-    null
-  );
-
-  const [orgToDelete, setOrgToDelete] = useState<PendingOrganization | null>(
     null
   );
   const [verifyInProgress, setVerifyInProgress] = useState<boolean>(false);
@@ -146,16 +141,8 @@ const PendingOrganizations = ({
   };
   const handleClose = () => {
     setOrgToVerify(null);
-    setOrgToDelete(null);
     setVerifyInProgress(false);
   };
-  const handleDeletion = async (o: PendingOrganization) => {
-    setIsUpdating(true);
-    await submitDeletion(o.externalId, true, o.name);
-    setIsUpdating(false);
-    return Promise.resolve();
-  };
-
   const orgRows = () => {
     if (loading) {
       return (
@@ -207,7 +194,7 @@ const PendingOrganizations = ({
           <Button
             className="sr-active-button"
             onClick={() => {
-              setOrgToDelete(o);
+              submitDeletion(o.externalId, true, o.name);
             }}
           >
             Delete
@@ -232,14 +219,13 @@ const PendingOrganizations = ({
                 isVerifying={verifyInProgress}
               />
             ) : null}
-            {orgToDelete ? (
-              <ConfirmDeleteOrgModal
+            {/* {orgToDelete ? (
+              <DeleteOrgVerificationModal
                 organization={orgToDelete}
-                handleClose={handleClose}
-                handleDelete={handleDeletion}
-                isUpdating={isUpdating}
+                handleVerify={handleConfirmOrg}
+                orgUsingOldSchema={checkIfOrgIsUsingOldOrgSchema(orgToVerify)}
               />
-            ) : null}
+            ) : null} */}
             <div className="usa-card__header">
               <h2 data-cy="pending-orgs-title">
                 Edit or verify organization identity

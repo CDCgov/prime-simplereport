@@ -150,9 +150,7 @@ const PendingOrganizations = ({
     setVerifyInProgress(false);
   };
   const handleDeletion = async (o: PendingOrganization) => {
-    setIsUpdating(true);
     await submitDeletion(o.externalId, true, o.name);
-    setIsUpdating(false);
     return Promise.resolve();
   };
 

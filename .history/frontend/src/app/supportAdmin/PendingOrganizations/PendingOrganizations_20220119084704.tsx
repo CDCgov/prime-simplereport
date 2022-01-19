@@ -146,13 +146,10 @@ const PendingOrganizations = ({
   };
   const handleClose = () => {
     setOrgToVerify(null);
-    setOrgToDelete(null);
     setVerifyInProgress(false);
   };
   const handleDeletion = async (o: PendingOrganization) => {
-    setIsUpdating(true);
     await submitDeletion(o.externalId, true, o.name);
-    setIsUpdating(false);
     return Promise.resolve();
   };
 
@@ -204,12 +201,7 @@ const PendingOrganizations = ({
           </Button>
         </td>
         <td>
-          <Button
-            className="sr-active-button"
-            onClick={() => {
-              setOrgToDelete(o);
-            }}
-          >
+          <Button className="sr-active-button" onClick={() => {}}>
             Delete
           </Button>
         </td>
@@ -237,7 +229,6 @@ const PendingOrganizations = ({
                 organization={orgToDelete}
                 handleClose={handleClose}
                 handleDelete={handleDeletion}
-                isUpdating={isUpdating}
               />
             ) : null}
             <div className="usa-card__header">
