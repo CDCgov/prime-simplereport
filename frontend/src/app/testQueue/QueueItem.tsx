@@ -396,7 +396,7 @@ const QueueItem = ({
         variables: {
           patientId: patient.internalId,
           deviceId: deviceId,
-          deviceSpecimenTypeId: deviceSpecimenTypeId,
+          deviceSpecimenType: deviceSpecimenTypeId,
           result: testResultValue,
           dateTested: shouldUseCurrentDateTime() ? null : dateTested,
         },

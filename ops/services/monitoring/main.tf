@@ -1,7 +1,5 @@
 locals {
   is_prod = var.env == "prod"
-  // This is commented out until we actually have production deployments. Right now, it's just set to test that simplereport.cdc.gov is running.
-  //  app_url = local.is_prod ? "simplereport.cdc.gov" : "${var.env}.simplereport.cdc.gov"
 }
 
 data "azurerm_log_analytics_workspace" "law" {
@@ -16,6 +14,9 @@ resource "azurerm_application_insights" "app_insights" {
   resource_group_name = var.rg_name
   name                = "prime-simple-report-${var.env}-insights"
   disable_ip_masking  = true
+
+  daily_data_cap_in_gb = var.ai_ingest_cap_gb
+  retention_in_days    = var.ai_retention_days
 
   tags = var.tags
 }
