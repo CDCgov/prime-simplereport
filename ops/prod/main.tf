@@ -119,3 +119,13 @@ module "nat_gateway" {
   subnet_vm_id            = data.terraform_remote_state.persistent_prod.outputs.subnet_vm_id
   tags                    = local.management_tags
 }
+
+module "web_application_firewall" {
+  source                  = "../services/web_application_firewall"
+  name                    = local.name
+  env                     = local.env
+  resource_group_location = data.azurerm_resource_group.rg.location
+  resource_group_name     = data.azurerm_resource_group.rg.name
+
+  tags = local.management_tags
+}
