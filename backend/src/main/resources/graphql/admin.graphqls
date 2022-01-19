@@ -70,6 +70,10 @@ extend type Mutation {
     adminEmail: String
     adminPhone: String
   ): String
+  markPendingOrganizationAsDeleted(
+    orgExternalId: String!
+    deleted: Boolean!
+  ): String
   createOrganizationRegistrationLink(
     organizationExternalId: String!
     link: String!

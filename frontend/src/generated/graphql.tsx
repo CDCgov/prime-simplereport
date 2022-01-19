@@ -141,6 +141,7 @@ export type Mutation = {
   editPendingOrganization?: Maybe<Scalars["String"]>;
   editQueueItem?: Maybe<TestOrder>;
   markFacilityAsDeleted?: Maybe<Scalars["String"]>;
+  markPendingOrganizationAsDeleted?: Maybe<Scalars["String"]>;
   reactivateUser?: Maybe<User>;
   removePatientFromQueue?: Maybe<Scalars["String"]>;
   resendActivationEmail?: Maybe<User>;
@@ -381,6 +382,11 @@ export type MutationEditQueueItemArgs = {
 export type MutationMarkFacilityAsDeletedArgs = {
   deleted: Scalars["Boolean"];
   facilityId: Scalars["ID"];
+};
+
+export type MutationMarkPendingOrganizationAsDeletedArgs = {
+  deleted: Scalars["Boolean"];
+  orgExternalId: Scalars["String"];
 };
 
 export type MutationReactivateUserArgs = {
@@ -1603,6 +1609,16 @@ export type SetOrgIdentityVerifiedMutationVariables = Exact<{
 export type SetOrgIdentityVerifiedMutation = {
   __typename?: "Mutation";
   setOrganizationIdentityVerified?: Maybe<boolean>;
+};
+
+export type MarkPendingOrganizationAsDeletedMutationVariables = Exact<{
+  orgExternalId: Scalars["String"];
+  deleted: Scalars["Boolean"];
+}>;
+
+export type MarkPendingOrganizationAsDeletedMutation = {
+  __typename?: "Mutation";
+  markPendingOrganizationAsDeleted?: Maybe<string>;
 };
 
 export type EditPendingOrganizationMutationVariables = Exact<{
@@ -4586,6 +4602,60 @@ export type SetOrgIdentityVerifiedMutationResult = Apollo.MutationResult<SetOrgI
 export type SetOrgIdentityVerifiedMutationOptions = Apollo.BaseMutationOptions<
   SetOrgIdentityVerifiedMutation,
   SetOrgIdentityVerifiedMutationVariables
+>;
+export const MarkPendingOrganizationAsDeletedDocument = gql`
+  mutation MarkPendingOrganizationAsDeleted(
+    $orgExternalId: String!
+    $deleted: Boolean!
+  ) {
+    markPendingOrganizationAsDeleted(
+      orgExternalId: $orgExternalId
+      deleted: $deleted
+    )
+  }
+`;
+export type MarkPendingOrganizationAsDeletedMutationFn = Apollo.MutationFunction<
+  MarkPendingOrganizationAsDeletedMutation,
+  MarkPendingOrganizationAsDeletedMutationVariables
+>;
+
+/**
+ * __useMarkPendingOrganizationAsDeletedMutation__
+ *
+ * To run a mutation, you first call `useMarkPendingOrganizationAsDeletedMutation` within a React component and pass it any options that fit your needs.
+ * When your component renders, `useMarkPendingOrganizationAsDeletedMutation` returns a tuple that includes:
+ * - A mutate function that you can call at any time to execute the mutation
+ * - An object with fields that represent the current status of the mutation's execution
+ *
+ * @param baseOptions options that will be passed into the mutation, supported options are listed on: https://www.apollographql.com/docs/react/api/react-hooks/#options-2;
+ *
+ * @example
+ * const [markPendingOrganizationAsDeletedMutation, { data, loading, error }] = useMarkPendingOrganizationAsDeletedMutation({
+ *   variables: {
+ *      orgExternalId: // value for 'orgExternalId'
+ *      deleted: // value for 'deleted'
+ *   },
+ * });
+ */
+export function useMarkPendingOrganizationAsDeletedMutation(
+  baseOptions?: Apollo.MutationHookOptions<
+    MarkPendingOrganizationAsDeletedMutation,
+    MarkPendingOrganizationAsDeletedMutationVariables
+  >
+) {
+  const options = { ...defaultOptions, ...baseOptions };
+  return Apollo.useMutation<
+    MarkPendingOrganizationAsDeletedMutation,
+    MarkPendingOrganizationAsDeletedMutationVariables
+  >(MarkPendingOrganizationAsDeletedDocument, options);
+}
+export type MarkPendingOrganizationAsDeletedMutationHookResult = ReturnType<
+  typeof useMarkPendingOrganizationAsDeletedMutation
+>;
+export type MarkPendingOrganizationAsDeletedMutationResult = Apollo.MutationResult<MarkPendingOrganizationAsDeletedMutation>;
+export type MarkPendingOrganizationAsDeletedMutationOptions = Apollo.BaseMutationOptions<
+  MarkPendingOrganizationAsDeletedMutation,
+  MarkPendingOrganizationAsDeletedMutationVariables
 >;
 export const EditPendingOrganizationDocument = gql`
   mutation EditPendingOrganization(

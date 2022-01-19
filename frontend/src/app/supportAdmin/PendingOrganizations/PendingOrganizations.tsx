@@ -18,6 +18,11 @@ import ConfirmOrgVerificationModal from "./ConfirmOrgVerificationModal";
 interface Props {
   organizations: PendingOrganization[];
   submitIdentityVerified: (externalId: string, name: string) => Promise<void>;
+  submitDeletion: (
+    externalId: string,
+    deleted: boolean,
+    name: string
+  ) => Promise<void>;
   loading: boolean;
   refetch: () => void;
   showNotification: (notif: JSX.Element) => void;
@@ -28,6 +33,7 @@ const phoneUtil = PhoneNumberUtil.getInstance();
 const PendingOrganizations = ({
   organizations,
   submitIdentityVerified,
+  submitDeletion,
   loading,
   refetch,
   showNotification,
@@ -184,6 +190,16 @@ const PendingOrganizations = ({
             Edit/Verify
           </Button>
         </td>
+        <td>
+          <Button
+            className="sr-active-button"
+            onClick={() => {
+              submitDeletion(o.externalId, true, o.name);
+            }}
+          >
+            Delete
+          </Button>
+        </td>
       </tr>
     ));
   };
@@ -203,6 +219,13 @@ const PendingOrganizations = ({
                 isVerifying={verifyInProgress}
               />
             ) : null}
+            {/* {orgToDelete ? (
+              <DeleteOrgVerificationModal
+                organization={orgToDelete}
+                handleVerify={handleConfirmOrg}
+                orgUsingOldSchema={checkIfOrgIsUsingOldOrgSchema(orgToVerify)}
+              />
+            ) : null} */}
             <div className="usa-card__header">
               <h2 data-cy="pending-orgs-title">
                 Edit or verify organization identity

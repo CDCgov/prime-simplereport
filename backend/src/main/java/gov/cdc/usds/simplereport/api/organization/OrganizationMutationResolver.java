@@ -402,6 +402,14 @@ public class OrganizationMutationResolver implements GraphQLMutationResolver {
     return editedItem.getExternalId();
   }
 
+  /**
+   * Support-only mutation to mark a PendingOrganization as deleted. This is a soft deletion only.
+   */
+  public OrganizationQueueItem markPendingOrganizationAsDeleted(
+      String orgExternalId, boolean deleted) {
+    return organizationQueueService.markPendingOrganizationAsDeleted(orgExternalId, deleted);
+  }
+
   /** Support-only mutation to mark a facility as deleted. This is a soft deletion only. */
   public Facility markFacilityAsDeleted(UUID facilityId, boolean deleted) {
     return organizationService.markFacilityAsDeleted(facilityId, deleted);
