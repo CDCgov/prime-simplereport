@@ -3320,3 +3320,40 @@ databaseChangeLog:
                     nullable: true
                     foreignKeyName: fk__facility__default_specimen_type
                     references: specimen_type(internal_id)
+  - changeSet:
+      id: populate-test_event-specimen_type_id
+      author: zedd@skylight.digital
+      changes:
+        - tagDatabase:
+            tag: populate-test_event-specimen_type_id
+        - sql:
+            remarks: Populate test_event.specimen_type_id from test_event.device_specimen_type
+            sql: |
+              update ${database.defaultSchemaName}.test_event
+              set specimen_type_id=(select specimen_type_id from ${database.defaultSchemaName}.device_specimen_type dst where dst.internal_id = device_specimen_type_id)
+              where test_event.device_specimen_type_id is not null and specimen_type_id is null
+  - changeSet:
+      id: populate-test_order-specimen_type_id
+      author: zedd@skylight.digital
+      changes:
+        - tagDatabase:
+            tag: populate-test_event-specimen_type_id
+        - sql:
+            remarks: Populate test_order.specimen_type_id from test_order.device_specimen_type
+            sql: |
+              update ${database.defaultSchemaName}.test_order
+              set specimen_type_id=(select specimen_type_id from ${database.defaultSchemaName}.device_specimen_type dst where dst.internal_id = device_specimen_type_id)
+              where test_order.device_specimen_type_id is not null and specimen_type_id is null
+  - changeSet:
+      id: populate-facility-default_specimen_type_id
+      author: zedd@skylight.digital
+      changes:
+        - tagDatabase:
+            tag: populate-test_event-specimen_type_id
+        - sql:
+            remarks: Populate test_order.specimen_type_id from test_order.device_specimen_type
+            sql: |
+              update ${database.defaultSchemaName}.facility
+              set default_specimen_type_id=(select specimen_type_id from ${database.defaultSchemaName}.device_specimen_type dst where dst.internal_id = default_device_specimen_type_id),
+                  default_device_type_id=(select device_type_id from ${database.defaultSchemaName}.device_specimen_type dst where dst.internal_id = default_device_specimen_type_id)
+              where facility.default_device_specimen_type_id is not null
