@@ -49,6 +49,6 @@ resource "azurerm_web_application_firewall_policy" "example" {
     mode                        = "Prevention" //Can use "Detection" for testing, to see which requests would be blocked.
     request_body_check          = true
     file_upload_limit_in_mb     = 100
-    max_request_body_size_in_kb = 1024
+    max_request_body_size_in_kb = 128 //Can go to 2000 in modern provider version. Proposed is 1024.
   }
 }
