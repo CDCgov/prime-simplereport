@@ -4,8 +4,6 @@ import { useTranslation } from "react-i18next";
 
 import siteLogo from "../img/simplereport-logomark-color.svg";
 import "../styles/fontAwesome";
-import { RootState } from "../app/store";
-import { Patient } from "../app/patients/ManagePatients";
 
 import LanguageToggler from "./LanguageToggler";
 
@@ -13,10 +11,6 @@ const PatientHeader = () => {
   const organization = useSelector(
     (state) => (state as any).organization as Organization
   );
-
-  const patient = useSelector<RootState, Patient>((state) => state.patient);
-  const organizationName = organization?.name;
-  const facilityName = patient?.lastTest?.facilityName;
 
   const { t } = useTranslation("translation");
 
@@ -36,13 +30,8 @@ const PatientHeader = () => {
                 alt="{process.env.REACT_APP_TITLE}"
               />
               <div className="logo-text margin-left-1 display-flex flex-column">
-                <span
-                  className="prime-organization-name margin-left-0 font-body-md text-primary-darker text-bold"
-                  data-testid="banner-text"
-                >
-                  {organizationName &&
-                    facilityName &&
-                    `${organizationName}, ${facilityName}`}
+                <span className="prime-organization-name margin-left-0 font-body-md text-primary-darker text-bold">
+                  {organization?.name}
                 </span>
                 <span className="prime-organization-name margin-left-0 margin-top-05 text-primary-darker">
                   {t("header")}
