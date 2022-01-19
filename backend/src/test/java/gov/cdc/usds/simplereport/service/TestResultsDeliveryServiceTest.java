@@ -92,6 +92,7 @@ class TestResultsDeliveryServiceTest {
             EmailProviderTemplate.SIMPLE_REPORT_TEST_RESULT,
             Map.of(
                 "facility_name", "House of Gryffindor",
+                "organization_name", "Hogwarts",
                 "expiration_duration", "2 days",
                 "test_result_url", "https://simplereport.gov/pxp?plid=" + patientLinkId));
   }
