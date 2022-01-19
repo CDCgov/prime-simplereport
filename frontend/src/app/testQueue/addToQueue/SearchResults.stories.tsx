@@ -15,6 +15,7 @@ const patient = {
   isDeleted: false,
   role: "somerole",
   lastTest: {
+    facilityName: "Whatever",
     dateAdded: "2020-01-01",
     result: "NEGATIVE" as TestResult,
     dateTested: "2020-01-01",

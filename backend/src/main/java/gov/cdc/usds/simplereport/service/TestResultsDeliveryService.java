@@ -45,6 +45,7 @@ public class TestResultsDeliveryService {
     Map<String, Object> templateVariables =
         Map.of(
             "facility_name", patientLink.getTestOrder().getFacility().getFacilityName(),
+            "organization_name", patientLink.getTestOrder().getOrganization().getOrganizationName(),
             "expiration_duration", getExpirationDuration(patientLink),
             "test_result_url", patientLinkUrl + patientLink.getInternalId());
 
