@@ -8,5 +8,5 @@ import java.util.UUID;
 public interface PhoneNumberRepository extends AuditedEntityRepository<PhoneNumber> {
   List<List<PhoneNumber>> findAllByPersonInternalIdIn(Collection<UUID> personIds);
 
-  List<PhoneNumber> findAllByInternalIdIn(Collection<UUID> phoneIds);
+  List<PhoneNumber> findAllByInternalIdIn(List<UUID> phoneIds);
 }
