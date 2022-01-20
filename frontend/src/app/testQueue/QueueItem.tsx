@@ -259,7 +259,7 @@ const QueueItem = ({
     updateDeviceSpecimenTypeId(deviceSpecimenType.internalId);
     updateDeviceId(deviceSpecimenType.deviceType.internalId);
     updateSpecimenId(deviceSpecimenType.specimenType.internalId);
-  }, [deviceSpecimenTypes, deviceSpecimenTypeId, selectedDeviceId]);
+  }, [deviceSpecimenTypes, deviceSpecimenTypeId]);
 
   const deviceTypes = deviceSpecimenTypes
     .map((d) => d.deviceType)
