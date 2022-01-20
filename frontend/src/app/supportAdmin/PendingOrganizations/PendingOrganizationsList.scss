@@ -1,5 +1,3 @@
-@import "../../../scss/settings/app-settings.scss";
-
 .grid-container.pending-orgs-wide-container {
   max-width: none;
 }
@@ -16,7 +14,11 @@
   }
 
   .sr-org-row:hover {
-    background: $theme-color-base-lightest;
+    background: #f0f0f0;
+
+    .sr-pending-org-delete-button {
+      background: #f0f0f0;
+    }
   }
 }
 
@@ -26,7 +28,7 @@
 }
 
 .sr-pending-org-delete-button:hover > svg > path {
-  fill: color($theme-color-primary);
+  fill: #162e51;
 }
 
 .sr-pending-org-delete-button:hover {
