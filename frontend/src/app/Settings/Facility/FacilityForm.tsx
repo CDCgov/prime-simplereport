@@ -12,6 +12,8 @@ import { getStateNameFromCode, requiresOrderProvider } from "../../utils/state";
 import {
   getBestSuggestion,
   suggestionIsCloseEnough,
+  isValidZipCodeForState,
+  getZipCodeData,
 } from "../../utils/smartyStreets";
 import {
   AddressConfirmationModal,
@@ -46,7 +48,7 @@ export const useFacilityValidation = (facility: Facility) => {
             orderingProviderIsRequired: requiresOrderProvider(facility.state),
           },
         });
-      } catch (e) {
+      } catch (e: any) {
         const errorMessage =
           field === "state" && stateCodes.includes(facility[field])
             ? createStateError(facility.state)
@@ -69,7 +71,7 @@ export const useFacilityValidation = (facility: Facility) => {
         },
       });
       return "";
-    } catch (e) {
+    } catch (e: any) {
       const errors = e.inner.reduce(
         (
           acc: FacilityErrors,
@@ -120,7 +122,7 @@ type AddressOptions = "facility" | "provider";
 
 export interface Props {
   facility: Facility;
-  deviceSpecimenTypeOptions: DeviceSpecimenType[];
+  deviceTypes: DeviceType[];
   saveFacility: (facility: Facility) => void;
   newOrg?: boolean;
 }
@@ -152,32 +154,10 @@ const FacilityForm: React.FC<Props> = (props) => {
     });
   };
 
-  const updateDeviceSpecimenTypes = (
-    deviceSpecimenTypes: DeviceSpecimenTypeIds[]
-  ) => {
-    const dst = deviceSpecimenTypes.map(({ deviceType, specimenType }) => {
-      const deviceSpecimenType = props.deviceSpecimenTypeOptions.find(
-        (options) => {
-          return (
-            options.deviceType.internalId === deviceType &&
-            options.specimenType.internalId === specimenType
-          );
-        }
-      );
-
-      return deviceSpecimenType || props.deviceSpecimenTypeOptions[0];
-    });
-
+  const updateSelectedDevices = (deviceTypes: DeviceType[]) => {
     updateForm((facility) => ({
       ...facility,
-      deviceSpecimenTypes: dst,
-    }));
-  };
-
-  const updateDefaultDevice = (defaultDevice: string) => {
-    updateForm((facility) => ({
-      ...facility,
-      defaultDevice,
+      deviceTypes,
     }));
   };
 
@@ -227,6 +207,27 @@ const FacilityForm: React.FC<Props> = (props) => {
 
   const validateFacilityAddresses = async () => {
     const originalFacilityAddress = getFacilityAddress(facility);
+
+    const zipCodeData = await getZipCodeData(originalFacilityAddress.zipCode);
+    const isValidZipForState = isValidZipCodeForState(
+      originalFacilityAddress.state,
+      zipCodeData
+    );
+
+    if (!isValidZipForState) {
+      const alert = (
+        <Alert
+          type="error"
+          title="Form Errors"
+          body="Invalid ZIP code for the selected state"
+        />
+      );
+
+      showNotification(alert);
+
+      return;
+    }
+
     const suggestedFacilityAddress = await getBestSuggestion(
       originalFacilityAddress
     );
@@ -369,16 +370,10 @@ const FacilityForm: React.FC<Props> = (props) => {
           validateField={validateField}
         />
         <ManageDevices
-          deviceSpecimenTypes={facility.deviceSpecimenTypes.map((dst) => ({
-            deviceType: dst.deviceType.internalId,
-            specimenType: dst.specimenType.internalId,
-          }))}
-          defaultDevice={facility.defaultDevice}
-          updateDeviceSpecimenTypes={updateDeviceSpecimenTypes}
-          updateDefaultDevice={updateDefaultDevice}
-          deviceSpecimenTypeOptions={props.deviceSpecimenTypeOptions}
+          deviceTypes={props.deviceTypes}
+          selectedDevices={facility.deviceTypes}
+          updateSelectedDevices={updateSelectedDevices}
           errors={errors}
-          validateField={validateField}
         />
         <div className="float-right margin-bottom-4 margin-top-4">
           <Button

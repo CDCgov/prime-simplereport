@@ -1,5 +1,6 @@
 package gov.cdc.usds.simplereport.service;
 
+import static graphql.Assert.assertNull;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertFalse;
@@ -21,8 +22,6 @@ import gov.cdc.usds.simplereport.db.repository.DeviceTypeRepository;
 import gov.cdc.usds.simplereport.db.repository.FacilityRepository;
 import gov.cdc.usds.simplereport.db.repository.OrganizationRepository;
 import gov.cdc.usds.simplereport.db.repository.PatientRegistrationLinkRepository;
-import gov.cdc.usds.simplereport.db.repository.SpecimenTypeRepository;
-import gov.cdc.usds.simplereport.service.model.DeviceSpecimenTypeHolder;
 import gov.cdc.usds.simplereport.test_util.SliceTestConfiguration.WithSimpleReportOrgAdminUser;
 import gov.cdc.usds.simplereport.test_util.SliceTestConfiguration.WithSimpleReportSiteAdminUser;
 import gov.cdc.usds.simplereport.test_util.TestDataFactory;
@@ -41,13 +40,12 @@ import org.springframework.test.context.TestPropertySource;
 @TestPropertySource(properties = "hibernate.query.interceptor.error-level=ERROR")
 class OrganizationServiceTest extends BaseServiceTest<OrganizationService> {
 
-  @Autowired private TestDataFactory _dataFactory;
-  @Autowired private PatientRegistrationLinkRepository _prlRepo;
+  @Autowired private TestDataFactory testDataFactory;
+  @Autowired private PatientRegistrationLinkRepository patientRegistrationLinkRepository;
   @Autowired private FacilityRepository facilityRepository;
   @Autowired private OrganizationRepository organizationRepository;
 
   @Autowired private DeviceTypeRepository deviceTypeRepository;
-  @Autowired private SpecimenTypeRepository specimenTypeRepository;
 
   @BeforeEach
   void setupData() {
@@ -55,16 +53,19 @@ class OrganizationServiceTest extends BaseServiceTest<OrganizationService> {
   }
 
   @Test
-  void findit() {
+  void getCurrentOrg_success() {
     Organization org = _service.getCurrentOrganization();
     assertNotNull(org);
     assertEquals("DIS_ORG", org.getExternalId());
   }
 
   @Test
-  void createOrganizationAndFacility_standardUser_error() {
-    DeviceSpecimenTypeHolder holder = getDeviceConfig();
-    PersonName bill = new PersonName("Bill", "Foo", "Nye", "");
+  void createOrganizationAndFacility_success() {
+    // GIVEN
+    DeviceSpecimenType dst = getDeviceConfig();
+    PersonName orderingProviderName = new PersonName("Bill", "Foo", "Nye", "");
+
+    // WHEN
     Organization org =
         _service.createOrganizationAndFacility(
             "Tim's org",
@@ -72,15 +73,15 @@ class OrganizationServiceTest extends BaseServiceTest<OrganizationService> {
             "d6b3951b-6698-4ee7-9d63-aaadee85bac0",
             "Facility 1",
             "12345",
-            _dataFactory.getAddress(),
+            testDataFactory.getAddress(),
             "123-456-7890",
             "test@foo.com",
-            holder,
-            bill,
-            _dataFactory.getAddress(),
+            List.of(dst.getDeviceType().getInternalId()),
+            orderingProviderName,
+            testDataFactory.getAddress(),
             "123-456-7890",
             "547329472");
-
+    // THEN
     assertEquals("Tim's org", org.getOrganizationName());
     assertFalse(org.getIdentityVerified());
     assertEquals("d6b3951b-6698-4ee7-9d63-aaadee85bac0", org.getExternalId());
@@ -90,66 +91,29 @@ class OrganizationServiceTest extends BaseServiceTest<OrganizationService> {
 
     Facility fac = facilities.get(0);
     assertEquals("Facility 1", fac.getFacilityName());
-    assertNotNull(fac.getDefaultDeviceType());
-    assertEquals("Bill", fac.getDefaultDeviceType().getName());
+    assertNull(fac.getDefaultDeviceType());
 
-    PatientSelfRegistrationLink orgLink = _prlRepo.findByOrganization(org).get();
-    PatientSelfRegistrationLink facLink = _prlRepo.findByFacility(fac).get();
+    PatientSelfRegistrationLink orgLink =
+        patientRegistrationLinkRepository.findByOrganization(org).get();
+    PatientSelfRegistrationLink facLink =
+        patientRegistrationLinkRepository.findByFacility(fac).get();
     assertEquals(5, orgLink.getLink().length());
     assertEquals(5, facLink.getLink().length());
   }
 
-  private DeviceSpecimenTypeHolder getDeviceConfig() {
-    DeviceType device = _dataFactory.createDeviceType("Bill", "Weasleys", "1", "12345-6", "E");
-    SpecimenType specimen = _dataFactory.getGenericSpecimen();
-    DeviceSpecimenType dst = _dataFactory.createDeviceSpecimen(device, specimen);
-    DeviceSpecimenTypeHolder holder = new DeviceSpecimenTypeHolder(dst, List.of(dst));
-    return holder;
+  private DeviceSpecimenType getDeviceConfig() {
+    DeviceType device =
+        testDataFactory.createDeviceType("Abbott ID Now", "Abbott", "1", "12345-6", "E");
+    SpecimenType specimen = testDataFactory.getGenericSpecimen();
+    return testDataFactory.createDeviceSpecimen(device, specimen);
   }
 
   @Test
-  @WithSimpleReportSiteAdminUser
-  void createOrganizationAndFacility_adminUser_success() {
-    DeviceSpecimenTypeHolder holder = getDeviceConfig();
-    PersonName bill = new PersonName("Bill", "Foo", "Nye", "");
-    Organization org =
-        _service.createOrganizationAndFacility(
-            "Tim's org",
-            "university",
-            "d6b3951b-6698-4ee7-9d63-aaadee85bac0",
-            "Facility 1",
-            "12345",
-            _dataFactory.getAddress(),
-            "123-456-7890",
-            "test@foo.com",
-            holder,
-            bill,
-            _dataFactory.getAddress(),
-            "123-456-7890",
-            "547329472");
-
-    assertEquals("Tim's org", org.getOrganizationName());
-    assertFalse(org.getIdentityVerified());
-    assertEquals("d6b3951b-6698-4ee7-9d63-aaadee85bac0", org.getExternalId());
-    List<Facility> facilities = _service.getFacilities(org);
-    assertNotNull(facilities);
-    assertEquals(1, facilities.size());
-    Facility fac = facilities.get(0);
-    assertEquals("Facility 1", fac.getFacilityName());
-    assertNotNull(fac.getDefaultDeviceType());
-    assertEquals("Bill", fac.getDefaultDeviceType().getName());
-
-    PatientSelfRegistrationLink orgLink = _prlRepo.findByOrganization(org).get();
-    PatientSelfRegistrationLink facLink = _prlRepo.findByFacility(fac).get();
-    assertEquals(5, orgLink.getLink().length());
-    assertEquals(5, facLink.getLink().length());
-  }
-
-  @Test
-  @WithSimpleReportSiteAdminUser
   void createOrganizationAndFacility_orderingProviderRequired_failure() {
-    DeviceSpecimenTypeHolder holder = getDeviceConfig();
-    PersonName bill = new PersonName("Bill", "Foo", "Nye", "");
+    // GIVEN
+    DeviceSpecimenType dst = getDeviceConfig();
+    PersonName orderProviderName = new PersonName("Bill", "Foo", "Nye", "");
+    // THEN
     assertThrows(
         OrderingProviderRequiredException.class,
         () -> {
@@ -162,8 +126,8 @@ class OrganizationServiceTest extends BaseServiceTest<OrganizationService> {
               _dataFactory.getAddress(),
               "123-456-7890",
               "test@foo.com",
-              holder,
-              bill,
+              List.of(dst.getDeviceType().getInternalId()),
+              orderProviderName,
               _dataFactory.getAddress(),
               null,
               null);
@@ -173,24 +137,28 @@ class OrganizationServiceTest extends BaseServiceTest<OrganizationService> {
   @Test
   @WithSimpleReportSiteAdminUser
   void getOrganizationsAndFacility_filterByIdentityVerified_success() {
-    Organization verifiedOrg = _dataFactory.createValidOrg();
-    Organization unverifiedOrg = _dataFactory.createUnverifiedOrg();
+    // GIVEN
+    Organization verifiedOrg = testDataFactory.createValidOrg();
+    Organization unverifiedOrg = testDataFactory.createUnverifiedOrg();
+
+    // WHEN
     List<Organization> allOrgs = _service.getOrganizations(null);
-    // initSampleData() creates other verified orgs besides our locally created orgs
+    List<Organization> verifiedOrgs = _service.getOrganizations(true);
+    List<Organization> unverifiedOrgs = _service.getOrganizations(false);
+
+    // THEN
     assertTrue(allOrgs.size() >= 2);
     Set<String> allOrgIds =
         allOrgs.stream().map(Organization::getExternalId).collect(Collectors.toSet());
     assertTrue(allOrgIds.contains(verifiedOrg.getExternalId()));
     assertTrue(allOrgIds.contains(unverifiedOrg.getExternalId()));
 
-    List<Organization> verifiedOrgs = _service.getOrganizations(true);
     assertTrue(verifiedOrgs.size() >= 1);
     Set<String> verifiedOrgIds =
         verifiedOrgs.stream().map(Organization::getExternalId).collect(Collectors.toSet());
     assertTrue(verifiedOrgIds.contains(verifiedOrg.getExternalId()));
     assertFalse(verifiedOrgIds.contains(unverifiedOrg.getExternalId()));
 
-    List<Organization> unverifiedOrgs = _service.getOrganizations(false);
     assertEquals(1, unverifiedOrgs.size());
     Set<String> unverifiedOrgIds =
         unverifiedOrgs.stream().map(Organization::getExternalId).collect(Collectors.toSet());
@@ -202,11 +170,14 @@ class OrganizationServiceTest extends BaseServiceTest<OrganizationService> {
   @DisplayName("it should allow global admins to mark facility as deleted")
   @WithSimpleReportSiteAdminUser
   void deleteFacilityTest_successful() {
-    Organization verifiedOrg = _dataFactory.createValidOrg();
+    // GIVEN
+    Organization verifiedOrg = testDataFactory.createValidOrg();
     Facility mistakeFacility =
-        _dataFactory.createValidFacility(verifiedOrg, "This facility is a mistake");
+        testDataFactory.createValidFacility(verifiedOrg, "This facility is a mistake");
+    // WHEN
     Facility deletedFacility =
         _service.markFacilityAsDeleted(mistakeFacility.getInternalId(), true);
+    // THEN
     assertThat(deletedFacility.isDeleted()).isTrue();
   }
 
@@ -233,7 +204,7 @@ class OrganizationServiceTest extends BaseServiceTest<OrganizationService> {
 
   @Test
   void verifyOrganizationNoPermissions_noUser_success() {
-    Organization org = _dataFactory.createUnverifiedOrg();
+    Organization org = testDataFactory.createUnverifiedOrg();
     _service.verifyOrganizationNoPermissions(org.getExternalId());
 
     org = _service.getOrganization(org.getExternalId());
@@ -242,7 +213,7 @@ class OrganizationServiceTest extends BaseServiceTest<OrganizationService> {
 
   @Test
   void verifyOrganizationNoPermissions_orgAlreadyVerified_failure() {
-    Organization org = _dataFactory.createValidOrg();
+    Organization org = testDataFactory.createValidOrg();
     String orgExternalId = org.getExternalId();
     IllegalStateException e =
         assertThrows(
@@ -257,12 +228,12 @@ class OrganizationServiceTest extends BaseServiceTest<OrganizationService> {
   class UpdateFacilityTest {
     private Facility facility;
     private List<DeviceType> devices;
-    private List<SpecimenType> specimenTypes;
     private StreetAddress newFacilityAddress;
     private StreetAddress newOrderingProviderAddress;
 
     @BeforeEach
     void beforeEach() {
+      // GIVEN
       List<Organization> disOrgs = organizationRepository.findAllByName("Dis Organization");
       assertThat(disOrgs).hasSize(1);
       Organization disOrg = disOrgs.get(0);
@@ -270,12 +241,13 @@ class OrganizationServiceTest extends BaseServiceTest<OrganizationService> {
       facility =
           facilityRepository.findByOrganizationAndFacilityName(disOrg, "Injection Site").get();
       assertThat(facility).isNotNull();
-
       devices = deviceTypeRepository.findAll();
-      specimenTypes = specimenTypeRepository.findAll();
 
       newFacilityAddress = new StreetAddress("0", "1", "2", "3", "4", "5");
       newOrderingProviderAddress = new StreetAddress("6", "7", "8", "9", "10", "11");
+      PersonName orderingProviderName = new PersonName("Bill", "Foo", "Nye", "Jr.");
+
+      // WHEN
       _service.updateFacility(
           facility.getInternalId(),
           "new name",
@@ -283,24 +255,18 @@ class OrganizationServiceTest extends BaseServiceTest<OrganizationService> {
           newFacilityAddress,
           "817-555-6666",
           "facility@dis.org",
-          "dr. provider",
-          "very",
-          "expensive",
-          "jr.",
-          "npi",
+          orderingProviderName,
           newOrderingProviderAddress,
+          "npi",
           "817-555-7777",
-          new DeviceSpecimenTypeHolder(
-              new DeviceSpecimenType(devices.get(0), specimenTypes.get(0)),
-              List.of(
-                  new DeviceSpecimenType(devices.get(0), specimenTypes.get(0)),
-                  new DeviceSpecimenType(devices.get(1), specimenTypes.get(0)))));
+          List.of(devices.get(0).getInternalId(), devices.get(1).getInternalId()));
     }
 
     @Test
     @DisplayName("it should update the facility with new values")
     @WithSimpleReportOrgAdminUser
     void updateFacilityTest() {
+      // THEN
       Facility updatedFacility = facilityRepository.findById(facility.getInternalId()).get();
 
       assertThat(updatedFacility).isNotNull();
@@ -311,56 +277,17 @@ class OrganizationServiceTest extends BaseServiceTest<OrganizationService> {
       assertThat(updatedFacility.getAddress()).isEqualTo(newFacilityAddress);
 
       assertThat(updatedFacility.getOrderingProvider().getNameInfo().getFirstName())
-          .isEqualTo("dr. provider");
+          .isEqualTo("Bill");
       assertThat(updatedFacility.getOrderingProvider().getNameInfo().getMiddleName())
-          .isEqualTo("very");
+          .isEqualTo("Foo");
       assertThat(updatedFacility.getOrderingProvider().getNameInfo().getLastName())
-          .isEqualTo("expensive");
-      assertThat(updatedFacility.getOrderingProvider().getNameInfo().getSuffix()).isEqualTo("jr.");
+          .isEqualTo("Nye");
+      assertThat(updatedFacility.getOrderingProvider().getNameInfo().getSuffix()).isEqualTo("Jr.");
       assertThat(updatedFacility.getOrderingProvider().getProviderId()).isEqualTo("npi");
       assertThat(updatedFacility.getOrderingProvider().getAddress())
           .isEqualTo(newOrderingProviderAddress);
 
-      assertThat(updatedFacility.getDeviceSpecimenTypes()).hasSize(2);
-    }
-
-    @Nested
-    @DisplayName("when changing default device")
-    class UpdatingDefaultDevice {
-      @BeforeEach
-      void beforeEach() {
-        _service.updateFacility(
-            facility.getInternalId(),
-            "new name",
-            "new clia",
-            new StreetAddress("", "", "", "", "", ""),
-            "817-555-6666",
-            "facility@dis.org",
-            "dr. provider",
-            "very",
-            "expensive",
-            "jr.",
-            "npi",
-            new StreetAddress("", "", "", "", "", ""),
-            "817-555-7777",
-            new DeviceSpecimenTypeHolder(
-                new DeviceSpecimenType(devices.get(1), specimenTypes.get(0)),
-                List.of(
-                    new DeviceSpecimenType(devices.get(0), specimenTypes.get(0)),
-                    new DeviceSpecimenType(devices.get(1), specimenTypes.get(0)))));
-      }
-
-      @Test
-      @DisplayName("it should update default device and retain deviceSepcimenTypes")
-      @WithSimpleReportOrgAdminUser
-      void updateDefaultDevice() {
-        Facility updatedFacility = facilityRepository.findById(facility.getInternalId()).get();
-        assertThat(updatedFacility.getDefaultDeviceSpecimen().getDeviceType().getInternalId())
-            .isEqualTo(devices.get(1).getInternalId());
-        assertThat(updatedFacility.getDefaultDeviceSpecimen().getSpecimenType().getInternalId())
-            .isEqualTo(specimenTypes.get(0).getInternalId());
-        assertThat(updatedFacility.getDeviceSpecimenTypes()).hasSize(2);
-      }
+      assertThat(updatedFacility.getDeviceTypes()).hasSize(2);
     }
   }
 }

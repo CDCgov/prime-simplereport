@@ -22,6 +22,7 @@ describe("Patient self registration", () => {
     cy.get('input[name="birthDate"]').type(patient.dobForInput);
     cy.get('input[name="number"]').type(patient.phone);
     cy.get('input[value="MOBILE"]+label').click();
+    cy.get('input[value="female"]+label').click();
     cy.get('input[name="street"]').type(patient.address);
     cy.get('select[name="state"]').select(patient.state);
     cy.get('input[name="zipCode"]').type(patient.zip);

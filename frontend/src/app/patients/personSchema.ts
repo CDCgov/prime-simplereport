@@ -36,7 +36,6 @@ type UpdateOptionalFields =
   | "county"
   | "race"
   | "ethnicity"
-  | "gender"
   | "tribalAffiliation"
   | "residentCongregateSetting"
   | "employedInHealthcare"
@@ -80,7 +79,7 @@ export function phoneNumberIsValid(input: any) {
   try {
     const number = phoneUtil.parseAndKeepRawInput(input, "US");
     return phoneUtil.isValidNumber(number);
-  } catch (e) {
+  } catch (e: any) {
     return false;
   }
 }
@@ -259,10 +258,8 @@ const updateFieldSchemata: (
     ),
   gender: yup
     .mixed()
-    .oneOf(
-      [...getValues(GENDER_VALUES), "", null],
-      t("patient.form.errors.gender")
-    ),
+    .oneOf(getValues(GENDER_VALUES))
+    .required(t("Sex assigned at birth is required")),
   residentCongregateSetting: yup.boolean().nullable(),
   employedInHealthcare: yup.boolean().nullable(),
   tribalAffiliation: yup

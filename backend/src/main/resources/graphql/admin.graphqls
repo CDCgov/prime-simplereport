@@ -8,12 +8,8 @@ extend type Query {
 extend type Mutation {
   uploadPatients(patientList: Upload!): String
   resendToReportStream(testEventIds: [ID!]!): Boolean
-  createDeviceType(
-    input: CreateDeviceType!
-  ): DeviceType
-  updateDeviceType(
-    input: UpdateDeviceType!
-  ): DeviceType
+  createDeviceType(input: CreateDeviceType!): DeviceType
+  updateDeviceType(input: UpdateDeviceType!): DeviceType
   addUser( # not actually used in the admin console (currently)
     name: NameInput
     firstName: String
@@ -73,7 +69,7 @@ extend type Mutation {
     adminLastName: String
     adminEmail: String
     adminPhone: String
-  ) : String
+  ): String
   createOrganizationRegistrationLink(
     organizationExternalId: String!
     link: String!

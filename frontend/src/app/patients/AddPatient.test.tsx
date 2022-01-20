@@ -130,7 +130,7 @@ describe("AddPatient", () => {
               county: "",
               race: null,
               ethnicity: null,
-              gender: null,
+              gender: "female",
               facilityId: mockFacilityID,
               preferredLanguage: null,
               testResultDelivery: "SMS",
@@ -174,7 +174,7 @@ describe("AddPatient", () => {
               county: "",
               race: null,
               ethnicity: null,
-              gender: null,
+              gender: "female",
               facilityId: mockFacilityID,
               preferredLanguage: null,
               testResultDelivery: null,
@@ -256,6 +256,11 @@ describe("AddPatient", () => {
               label: "Yes",
               value: "SMS",
               exact: false,
+            },
+            "Sex assigned at birth": {
+              label: "Female",
+              value: "female",
+              exact: true,
             },
           }
         );
@@ -340,6 +345,11 @@ describe("AddPatient", () => {
               label: "Yes",
               value: "SMS",
               exact: false,
+            },
+            "Sex assigned at birth": {
+              label: "Female",
+              value: "female",
+              exact: true,
             },
           }
         );

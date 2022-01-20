@@ -152,7 +152,7 @@ const PersonForm = (props: Props) => {
       try {
         await schema.validateAt(field, patient);
         clearError(field);
-      } catch (e) {
+      } catch (e: any) {
         setErrors((existingErrors) => ({
           ...existingErrors,
           [field]: getValidationError(e),
@@ -167,7 +167,7 @@ const PersonForm = (props: Props) => {
     Object.entries(errors).forEach(async ([field, message]) => {
       try {
         await schema.validateAt(field, patient);
-      } catch (e) {
+      } catch (e: any) {
         const error = getValidationError(e);
         if (message && error !== message) {
           setErrors((existing) => ({
@@ -240,7 +240,7 @@ const PersonForm = (props: Props) => {
     try {
       phoneNumberValidator.current?.();
       await schema.validate(patient, { abortEarly: false });
-    } catch (e) {
+    } catch (e: any) {
       const newErrors: PersonErrors = e.inner.reduce(
         (
           acc: PersonErrors,
@@ -552,6 +552,7 @@ const PersonForm = (props: Props) => {
           legend={t("patient.form.demographics.gender")}
           hintText={t("patient.form.demographics.genderHelpText")}
           name="gender"
+          required={view !== PersonFormView.PXP}
           buttons={GENDER_VALUES}
           selectedRadio={patient.gender}
           onChange={onPersonChange("gender")}

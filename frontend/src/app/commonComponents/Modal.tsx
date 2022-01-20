@@ -4,7 +4,7 @@ import classnames from "classnames";
 import { faExclamationCircle } from "@fortawesome/free-solid-svg-icons";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 
-import iconClose from "../../../node_modules/uswds/dist/img/usa-icons/close.svg";
+import iconClose from "../../img/close.svg";
 
 type ModalVariant = "warning";
 

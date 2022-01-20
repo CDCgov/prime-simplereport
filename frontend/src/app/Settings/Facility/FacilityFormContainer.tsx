@@ -1,7 +1,9 @@
-import React, { useState } from "react";
+import { useState } from "react";
 import { gql, useQuery, useMutation } from "@apollo/client";
 import { Redirect } from "react-router-dom";
+import { useDispatch } from "react-redux";
 
+import { updateFacility } from "../../store";
 import Alert from "../../commonComponents/Alert";
 import { showNotification } from "../../utils";
 import { getAppInsights } from "../../TelemetryService";
@@ -23,22 +25,9 @@ export const GET_FACILITY_QUERY = gql`
         zipCode
         phone
         email
-        defaultDeviceType {
-          internalId
-        }
         deviceTypes {
+          name
           internalId
-        }
-        deviceSpecimenTypes {
-          internalId
-          deviceType {
-            name
-            internalId
-          }
-          specimenType {
-            internalId
-            name
-          }
         }
         orderingProvider {
           firstName
@@ -55,24 +44,9 @@ export const GET_FACILITY_QUERY = gql`
         }
       }
     }
-    deviceType {
+    deviceTypes {
       internalId
       name
-    }
-    specimenType {
-      internalId
-      name
-    }
-    deviceSpecimenTypes {
-      internalId
-      deviceType {
-        internalId
-        name
-      }
-      specimenType {
-        internalId
-        name
-      }
     }
   }
 `;
@@ -100,9 +74,7 @@ export const UPDATE_FACILITY_MUTATION = gql`
     $orderingProviderState: String
     $orderingProviderZipCode: String
     $orderingProviderPhone: String
-    $devices: [String]!
-    $deviceSpecimenTypes: [ID]!
-    $defaultDevice: String!
+    $devices: [ID]!
   ) {
     updateFacility(
       facilityId: $facilityId
@@ -126,14 +98,14 @@ export const UPDATE_FACILITY_MUTATION = gql`
       orderingProviderState: $orderingProviderState
       orderingProviderZipCode: $orderingProviderZipCode
       orderingProviderPhone: $orderingProviderPhone
-      deviceTypes: $devices
-      deviceSpecimenTypes: $deviceSpecimenTypes
-      defaultDevice: $defaultDevice
-    )
+      deviceIds: $devices
+    ) {
+      id
+    }
   }
 `;
 
-const ADD_FACILITY_MUTATION = gql`
+export const ADD_FACILITY_MUTATION = gql`
   mutation AddFacility(
     $testingFacilityName: String!
     $cliaNumber: String
@@ -155,9 +127,7 @@ const ADD_FACILITY_MUTATION = gql`
     $orderingProviderState: String
     $orderingProviderZipCode: String
     $orderingProviderPhone: String
-    $devices: [String]!
-    $deviceSpecimenTypes: [ID]!
-    $defaultDevice: String!
+    $devices: [ID]!
   ) {
     addFacility(
       testingFacilityName: $testingFacilityName
@@ -180,10 +150,10 @@ const ADD_FACILITY_MUTATION = gql`
       orderingProviderState: $orderingProviderState
       orderingProviderZipCode: $orderingProviderZipCode
       orderingProviderPhone: $orderingProviderPhone
-      deviceTypes: $devices
-      deviceSpecimenTypes: $deviceSpecimenTypes
-      defaultDevice: $defaultDevice
-    )
+      deviceIds: $devices
+    ) {
+      id
+    }
   }
 `;
 
@@ -199,22 +169,25 @@ const FacilityFormContainer: any = (props: Props) => {
       fetchPolicy: "no-cache",
     }
   );
-  const appInsights = getAppInsights();
-  const [updateFacility] = useMutation(UPDATE_FACILITY_MUTATION);
-  const [addFacility] = useMutation(ADD_FACILITY_MUTATION);
-  const [saveSuccess, updateSaveSuccess] = useState(false);
 
+  const appInsights = getAppInsights();
+  const [updateFacilityMutation] = useMutation(UPDATE_FACILITY_MUTATION);
+  const [addFacilityMutation] = useMutation(ADD_FACILITY_MUTATION);
+
+  const [saveSuccess, updateSaveSuccess] = useState(false);
+  const [facilityData, setFacilityData] = useState<Facility | null>(null);
+  const dispatch = useDispatch();
   if (loading) {
     return <p> Loading... </p>;
   }
   if (error) {
     return error;
   }
-
-  if (data === undefined) {
+  if (!data) {
     return <p>Error: facility not found</p>;
   }
   if (saveSuccess) {
+    dispatch(updateFacility(facilityData));
     if (props.newOrg) {
       window.location.pathname = process.env.PUBLIC_URL || "";
     }
@@ -226,8 +199,10 @@ const FacilityFormContainer: any = (props: Props) => {
       appInsights.trackEvent({ name: "Save Settings" });
     }
     const provider = facility.orderingProvider;
-    const saveFacility = props.facilityId ? updateFacility : addFacility;
-    await saveFacility({
+    const saveFacilityMutation = props.facilityId
+      ? updateFacilityMutation
+      : addFacilityMutation;
+    const savedFacility = await saveFacilityMutation({
       variables: {
         facilityId: props.facilityId,
         testingFacilityName: facility.name,
@@ -250,14 +225,16 @@ const FacilityFormContainer: any = (props: Props) => {
         orderingProviderState: provider.state,
         orderingProviderZipCode: provider.zipCode,
         orderingProviderPhone: provider.phone || null,
-        devices: facility.deviceTypes,
-        deviceSpecimenTypes: facility.deviceSpecimenTypes.map(
-          (dst) => dst.internalId
-        ),
-        defaultDevice: facility.defaultDevice,
+        devices: facility.deviceTypes.map((d) => d.internalId),
       },
     });
-
+    setFacilityData(() => ({
+      ...facility,
+      id:
+        saveFacilityMutation === updateFacilityMutation
+          ? savedFacility.data.updateFacility.id
+          : savedFacility.data.addFacility.id,
+    }));
     const alert = (
       <Alert
         type="success"
@@ -275,19 +252,10 @@ const FacilityFormContainer: any = (props: Props) => {
       (f) => f.id === props.facilityId
     );
     if (facility) {
-      const deviceTypes = facility.deviceSpecimenTypes.map(
-        (dst) => dst.deviceType.internalId
-      );
-      return {
-        ...facility,
-        deviceTypes: deviceTypes,
-        deviceSpecimenTypes: facility.deviceSpecimenTypes,
-        defaultDevice: facility.defaultDeviceType
-          ? facility.defaultDeviceType.internalId
-          : "",
-      };
+      return facility;
     }
-    const dropdownDefaultDeviceSpecimen = data.deviceSpecimenTypes[0];
+
+    const dropdownDefaultDevice = data.deviceTypes[0];
 
     return {
       id: "",
@@ -313,16 +281,14 @@ const FacilityFormContainer: any = (props: Props) => {
         zipCode: "",
         phone: "",
       },
-      deviceTypes: [dropdownDefaultDeviceSpecimen.deviceType.internalId],
-      deviceSpecimenTypes: [dropdownDefaultDeviceSpecimen],
-      defaultDevice: dropdownDefaultDeviceSpecimen.deviceType.internalId,
+      deviceTypes: [dropdownDefaultDevice],
     };
   };
 
   return (
     <FacilityForm
       facility={getFacilityData()}
-      deviceSpecimenTypeOptions={data.deviceSpecimenTypes}
+      deviceTypes={data.deviceTypes}
       saveFacility={saveFacility}
       newOrg={props.newOrg}
     />

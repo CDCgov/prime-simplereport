@@ -41,7 +41,7 @@ export const MfaSendCodeToContact = (props: Props) => {
     let valid;
     try {
       valid = contactIsValid(contact);
-    } catch (e) {
+    } catch (e: any) {
       valid = false;
     }
 
@@ -58,7 +58,7 @@ export const MfaSendCodeToContact = (props: Props) => {
       try {
         await props.serviceEnroll(contact);
         setSubmitted(true);
-      } catch (error) {
+      } catch (error: any) {
         setContactError(
           error || "Unable to setup device, please try again later"
         );

@@ -30,8 +30,9 @@ type Facility {
   phone: String
   email: String
   deviceTypes: [DeviceType]
-  deviceSpecimenTypes: [DeviceSpecimenType]
-  defaultDeviceType: DeviceType
+  defaultDeviceSpecimen: ID
+  deviceSpecimenTypes: [DeviceSpecimenType] @deprecated(reason: "kept for compatibility")
+  defaultDeviceType: DeviceType @deprecated(reason: "kept for compatibility")
   orderingProvider: Provider
   patientSelfRegistrationLink: String
 }
@@ -372,8 +373,6 @@ type Mutation {
     street: String!
     streetTwo: String
     city: String
-    county: String
-      @deprecated(reason: "county is derived from smarty streets lookup")
     state: String!
     zipCode: String!
     phone: String
@@ -391,18 +390,14 @@ type Mutation {
     orderingProviderState: String
     orderingProviderZipCode: String
     orderingProviderPhone: String
-    deviceTypes: [String]!
-    deviceSpecimenTypes: [ID]
-    defaultDevice: String!
-  ): String @requiredPermissions(allOf: ["EDIT_FACILITY"])
+    deviceIds: [ID]!
+  ): Facility @requiredPermissions(allOf: ["EDIT_FACILITY"])
   addFacility(
     testingFacilityName: String!
     cliaNumber: String
     street: String!
     streetTwo: String
     city: String
-    county: String
-      @deprecated(reason: "county is derived from smarty streets lookup")
     state: String!
     zipCode: String!
     phone: String
@@ -420,9 +415,58 @@ type Mutation {
     orderingProviderState: String
     orderingProviderZipCode: String
     orderingProviderPhone: String
-    deviceTypes: [String]!
-    deviceSpecimenTypes: [ID]
-    defaultDevice: String!
+    deviceIds: [ID]!
+  ): Facility @requiredPermissions(allOf: ["EDIT_FACILITY"])
+  addFacilityNew(
+    testingFacilityName: String!
+    cliaNumber: String
+    street: String!
+    streetTwo: String
+    city: String
+    state: String!
+    zipCode: String!
+    phone: String
+    email: String
+    orderingProviderFirstName: String
+    orderingProviderMiddleName: String
+    orderingProviderLastName: String
+    orderingProviderSuffix: String
+    orderingProviderNPI: String
+    orderingProviderStreet: String
+    orderingProviderStreetTwo: String
+    orderingProviderCity: String
+    orderingProviderCounty: String
+      @deprecated(reason: "county is derived from smarty streets lookup")
+    orderingProviderState: String
+    orderingProviderZipCode: String
+    orderingProviderPhone: String
+    deviceIds: [ID]!
+  ): String @requiredPermissions(allOf: ["EDIT_FACILITY"])
+  updateFacilityNew(
+    facilityId: ID!
+    testingFacilityName: String!
+    cliaNumber: String
+    street: String!
+    streetTwo: String
+    city: String
+    state: String!
+    zipCode: String!
+    phone: String
+    email: String
+    orderingProviderFirstName: String
+    orderingProviderMiddleName: String
+    orderingProviderLastName: String
+    orderingProviderSuffix: String
+    orderingProviderNPI: String
+    orderingProviderStreet: String
+    orderingProviderStreetTwo: String
+    orderingProviderCity: String
+    orderingProviderCounty: String
+      @deprecated(reason: "county is derived from smarty streets lookup")
+    orderingProviderState: String
+    orderingProviderZipCode: String
+    orderingProviderPhone: String
+    deviceIds: [ID]!
   ): String @requiredPermissions(allOf: ["EDIT_FACILITY"])
   addUserToCurrentOrg(
     name: NameInput
@@ -448,6 +492,7 @@ type Mutation {
     role: Role!
   ): User @requiredPermissions(allOf: ["MANAGE_USERS"])
   resetUserPassword(id: ID!): User @requiredPermissions(allOf: ["MANAGE_USERS"])
+  resetUserMfa(id: ID!): User @requiredPermissions(allOf: ["MANAGE_USERS"])
   updateUserEmail(id: ID!, email: String): User @requiredPermissions(allOf: ["MANAGE_USERS"])
   setUserIsDeleted(id: ID!, deleted: Boolean!): User
     @requiredPermissions(allOf: ["MANAGE_USERS"])
@@ -568,7 +613,10 @@ type Mutation {
   ): String @requiredPermissions(allOf: ["UPDATE_TEST"])
   sendPatientLinkSms(internalId: ID!): Boolean
     @requiredPermissions(allOf: ["UPDATE_TEST"])
+  sendPatientLinkSmsByTestEventId(testEventId: ID!): Boolean
+  @requiredPermissions(allOf: ["UPDATE_TEST"])
   sendPatientLinkEmail(internalId: ID!): Boolean
+  sendPatientLinkEmailByTestEventId(testEventId: ID!): Boolean
   updateOrganization(type: String!): String
     @requiredPermissions(allOf: ["EDIT_ORGANIZATION"])
 }

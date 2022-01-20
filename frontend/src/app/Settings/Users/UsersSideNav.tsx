@@ -1,8 +1,8 @@
 import React from "react";
 import classnames from "classnames";
-import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
-import { faCircle } from "@fortawesome/free-solid-svg-icons";
 
+import { ReactComponent as DeactivatedIcon } from "../../../img/account-deactivated.svg";
+import { ReactComponent as PendingIcon } from "../../../img/account-pending.svg";
 import { displayFullName } from "../../utils";
 import { formatUserStatus } from "../../utils/text";
 
@@ -23,9 +23,39 @@ const UsersSideNav: React.FC<Props> = ({
 }) => {
   return (
     <div className="display-block users-sidenav">
-      <h3>Users</h3>
+      <h3 className="users-header">Users</h3>
       <ul className="usa-sidenav">
         {users.map((user: LimitedUser) => {
+          let statusText;
+          switch (user.status) {
+            case "ACTIVE":
+              statusText = (
+                <span className="sidenav-user-status padding-left-0"></span>
+              );
+              break;
+            case "PROVISIONED":
+              statusText = (
+                <>
+                  <PendingIcon />
+                  <span className="sidenav-user-status">
+                    {formatUserStatus(user.status)}
+                  </span>
+                </>
+              );
+              break;
+            case "SUSPENDED":
+              statusText = (
+                <>
+                  <DeactivatedIcon />
+                  <span className="sidenav-user-status">
+                    {formatUserStatus(user.status)}
+                  </span>
+                </>
+              );
+              break;
+            default:
+              statusText = "";
+          }
           return (
             <li
               className="usa-sidenav__item users-sidenav-item"
@@ -39,7 +69,7 @@ const UsersSideNav: React.FC<Props> = ({
                   "usa-button--unstyled",
                   "text-ink",
                   "text-no-underline",
-                  "padding-105 padding-right-2",
+                  "padding-105 padding-right-2 padding-left-3",
                   activeUserId === user.id && "usa-current"
                 )}
                 aria-selected={activeUserId === user.id}
@@ -49,39 +79,14 @@ const UsersSideNav: React.FC<Props> = ({
                   user.lastName
                 )}
               >
-                <span className="sidenav-user-name">
+                <div className="sidenav-user-name">
                   {displayFullName(
                     user.firstName,
                     user.middleName,
                     user.lastName
                   )}
-                  {user.status === "SUSPENDED" && (
-                    <span>
-                      {" "}
-                      <FontAwesomeIcon
-                        icon={faCircle}
-                        className={"prime-red-icon suspended-icon"}
-                      />
-                    </span>
-                  )}
-                  {user.status === "PROVISIONED" && (
-                    <span>
-                      {" "}
-                      <FontAwesomeIcon
-                        icon={faCircle}
-                        className={"prime-blue-icon suspended-icon"}
-                      />
-                    </span>
-                  )}
-                </span>
-                <br />
-                <span className="sidenav-user-email">{user.email}</span>
-                <br />
-                {user.status !== "ACTIVE" ? (
-                  <span className="sidenav-user-status">
-                    {formatUserStatus(user.status)}
-                  </span>
-                ) : null}
+                </div>
+                {statusText}
               </button>
             </li>
           );

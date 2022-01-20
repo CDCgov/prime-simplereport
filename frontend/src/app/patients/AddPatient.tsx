@@ -206,7 +206,7 @@ const AddPatient = () => {
     if (firstName && lastName && birthDate?.isValid()) {
       try {
         getPatientExists();
-      } catch (e) {
+      } catch (e: any) {
         // A failure to check duplicate shouldn't disrupt registration
         console.error(e);
       }

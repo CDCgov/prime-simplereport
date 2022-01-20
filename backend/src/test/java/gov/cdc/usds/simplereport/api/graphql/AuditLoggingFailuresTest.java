@@ -78,6 +78,7 @@ class AuditLoggingFailuresTest extends BaseGraphqlTest {
         () -> {
           Organization org = _orgService.getCurrentOrganizationNoCache();
           _base = _orgService.getFacilities(org).get(0);
+          _base.addDefaultDeviceSpecimen(_dataFactory.getGenericDeviceSpecimen());
           _patient = _dataFactory.createFullPerson(org);
           TestOrder order = _dataFactory.createTestOrder(_patient, _base);
           _link = _dataFactory.createPatientLink(order);

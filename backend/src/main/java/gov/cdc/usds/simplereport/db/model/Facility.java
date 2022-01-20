@@ -2,7 +2,6 @@ package gov.cdc.usds.simplereport.db.model;
 
 import gov.cdc.usds.simplereport.db.model.auxiliary.StreetAddress;
 import java.util.HashSet;
-import java.util.Iterator;
 import java.util.List;
 import java.util.Set;
 import java.util.UUID;
@@ -34,9 +33,17 @@ public class Facility extends OrganizationScopedEternalEntity implements Located
   @JoinColumn(name = "ordering_provider_id", nullable = false)
   private Provider orderingProvider;
 
-  @ManyToOne(optional = true, fetch = FetchType.LAZY)
+  @ManyToOne(optional = true, fetch = FetchType.EAGER)
   @JoinColumn(name = "default_device_specimen_type_id")
   private DeviceSpecimenType defaultDeviceSpecimen;
+
+  @ManyToOne(optional = true, fetch = FetchType.EAGER)
+  @JoinColumn(name = "default_device_type_id")
+  private DeviceType defaultDeviceType;
+
+  @ManyToOne(optional = true, fetch = FetchType.EAGER)
+  @JoinColumn(name = "default_specimen_type_id")
+  private SpecimenType defaultSpecimenType;
 
   @ManyToMany(fetch = FetchType.EAGER)
   @JoinTable(
@@ -44,6 +51,13 @@ public class Facility extends OrganizationScopedEternalEntity implements Located
       joinColumns = @JoinColumn(name = "facility_id"),
       inverseJoinColumns = @JoinColumn(name = "device_specimen_type_id"))
   private Set<DeviceSpecimenType> configuredDeviceSpecimenTypes = new HashSet<>();
+
+  @ManyToMany(fetch = FetchType.EAGER)
+  @JoinTable(
+      name = "facility_device_type",
+      joinColumns = @JoinColumn(name = "facility_id"),
+      inverseJoinColumns = @JoinColumn(name = "device_type_id"))
+  private Set<DeviceType> configuredDeviceTypes = new HashSet<>();
 
   protected Facility() {
     /* for hibernate */ }
@@ -57,7 +71,28 @@ public class Facility extends OrganizationScopedEternalEntity implements Located
       String email,
       Provider orderingProvider,
       DeviceSpecimenType defaultDeviceSpecimen,
-      List<DeviceSpecimenType> configuredDeviceSpecimens) {
+      List<DeviceType> configuredDevices) {
+    this(
+        org,
+        facilityName,
+        cliaNumber,
+        facilityAddress,
+        phone,
+        email,
+        orderingProvider,
+        configuredDevices);
+    this.addDefaultDeviceSpecimen(defaultDeviceSpecimen);
+  }
+
+  public Facility(
+      Organization org,
+      String facilityName,
+      String cliaNumber,
+      StreetAddress facilityAddress,
+      String phone,
+      String email,
+      Provider orderingProvider,
+      List<DeviceType> configuredDevices) {
     super(org);
     this.facilityName = facilityName;
     this.cliaNumber = cliaNumber;
@@ -65,11 +100,7 @@ public class Facility extends OrganizationScopedEternalEntity implements Located
     this.telephone = phone;
     this.email = email;
     this.orderingProvider = orderingProvider;
-    this.defaultDeviceSpecimen = defaultDeviceSpecimen;
-    if (defaultDeviceSpecimen != null) {
-      this.configuredDeviceSpecimenTypes.add(defaultDeviceSpecimen);
-    }
-    this.configuredDeviceSpecimenTypes.addAll(configuredDeviceSpecimens);
+    this.configuredDeviceTypes.addAll(configuredDevices);
   }
 
   public void setFacilityName(String facilityName) {
@@ -80,22 +111,18 @@ public class Facility extends OrganizationScopedEternalEntity implements Located
     return facilityName;
   }
 
-  public DeviceSpecimenType getDefaultDeviceSpecimen() {
-    return defaultDeviceSpecimen;
+  public DeviceType getDefaultDeviceType() {
+    return this.defaultDeviceSpecimen == null ? null : this.defaultDeviceSpecimen.getDeviceType();
   }
 
-  public DeviceType getDefaultDeviceType() {
-    return defaultDeviceSpecimen == null ? null : defaultDeviceSpecimen.getDeviceType();
+  public void addDeviceType(DeviceType device) {
+    initializeDeviceTypesSet();
+    configuredDeviceTypes.add(device);
   }
 
   public List<DeviceType> getDeviceTypes() {
-    // this might be better done on the DB side, but that seems like a recipe for
-    // weird behaviors
-    return configuredDeviceSpecimenTypes.stream()
-        .filter(e -> !e.isDeleted())
-        .map(DeviceSpecimenType::getDeviceType)
-        .filter(e -> !e.isDeleted())
-        .collect(Collectors.toList());
+    initializeDeviceTypesSet();
+    return configuredDeviceTypes.stream().filter(e -> !e.isDeleted()).collect(Collectors.toList());
   }
 
   public List<DeviceSpecimenType> getDeviceSpecimenTypes() {
@@ -108,31 +135,48 @@ public class Facility extends OrganizationScopedEternalEntity implements Located
         .collect(Collectors.toList());
   }
 
+  private void initializeDeviceTypesSet() {
+    if (this.configuredDeviceTypes.isEmpty()) {
+      Set<DeviceType> deviceTypesFromFacilityDeviceSpecimenTypes =
+          this.configuredDeviceSpecimenTypes.stream()
+              .map(DeviceSpecimenType::getDeviceType)
+              .filter(e -> !e.isDeleted())
+              .collect(Collectors.toSet());
+      if (!deviceTypesFromFacilityDeviceSpecimenTypes.isEmpty()) {
+        this.configuredDeviceTypes = deviceTypesFromFacilityDeviceSpecimenTypes;
+        this.configuredDeviceSpecimenTypes.clear();
+      }
+    }
+  }
+
   public void addDeviceSpecimenType(DeviceSpecimenType ds) {
     configuredDeviceSpecimenTypes.add(ds);
   }
 
+  public DeviceSpecimenType getDefaultDeviceSpecimen() {
+    return defaultDeviceSpecimen;
+  }
+
   public void addDefaultDeviceSpecimen(DeviceSpecimenType newDefault) {
-    addDeviceSpecimenType(newDefault);
+    if (newDefault != null) {
+      configuredDeviceTypes.add(newDefault.getDeviceType());
+      this.defaultDeviceType = newDefault.getDeviceType();
+      this.defaultSpecimenType = newDefault.getSpecimenType();
+    }
+
     defaultDeviceSpecimen = newDefault;
   }
 
-  public void removeDeviceSpecimenType(DeviceSpecimenType existing) {
-    configuredDeviceSpecimenTypes.remove(existing); // count on this being in one hibernate session
-  }
+  public void removeDeviceType(DeviceType deletedDevice) {
+    initializeDeviceTypesSet();
+    this.configuredDeviceTypes.remove(deletedDevice);
 
-  public void removeDeviceType(DeviceType existingDevice) {
-    Iterator<DeviceSpecimenType> i = configuredDeviceSpecimenTypes.iterator();
-    UUID removedId = existingDevice.getInternalId();
-    if (defaultDeviceSpecimen != null
-        && defaultDeviceSpecimen.getDeviceType().getInternalId().equals(removedId)) {
-      defaultDeviceSpecimen = null;
-    }
-    while (i != null && i.hasNext()) {
-      DeviceType d = i.next().getDeviceType();
-      if (d.getInternalId().equals(removedId)) {
-        i.remove();
-        break;
+    // If the corresponding device to a facility's default device swab type is removed,
+    // set default to null
+    if (this.getDefaultDeviceSpecimen() != null) {
+      UUID defaultDeviceTypeId = this.defaultDeviceSpecimen.getDeviceType().getInternalId();
+      if (defaultDeviceTypeId.equals(deletedDevice.getInternalId())) {
+        this.addDefaultDeviceSpecimen(null);
       }
     }
   }

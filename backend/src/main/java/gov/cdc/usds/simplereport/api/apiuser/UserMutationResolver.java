@@ -86,6 +86,11 @@ public class UserMutationResolver implements GraphQLMutationResolver {
     return new User(user);
   }
 
+  public User resetUserMfa(UUID id) {
+    UserInfo user = _us.resetUserMfa(id);
+    return new User(user);
+  }
+
   public User setUserIsDeleted(UUID id, boolean deleted) {
     UserInfo user = _us.setIsDeleted(id, deleted);
     return new User(user);

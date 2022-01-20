@@ -87,17 +87,6 @@ const deviceTypeSchema: yup.SchemaOf<DeviceType> = yup.object({
   testLength: yup.number().optional(),
 });
 
-const specimenTypeSchema: yup.SchemaOf<SpecimenType> = yup.object({
-  internalId: yup.string().required(),
-  name: yup.string().required(),
-});
-
-export const deviceSchema: yup.SchemaOf<DeviceSpecimenType> = yup.object({
-  internalId: yup.string().required(),
-  deviceType: deviceTypeSchema,
-  specimenType: specimenTypeSchema,
-});
-
 export const facilitySchema: yup.SchemaOf<RequiredFacilityFields> = yup.object({
   name: yup.string().required("Facility name is missing"),
   cliaNumber: yup
@@ -130,16 +119,9 @@ export const facilitySchema: yup.SchemaOf<RequiredFacilityFields> = yup.object({
   zipCode: yup.string().required("Facility zip code is missing"),
   deviceTypes: yup
     .array()
-    .of(yup.string().required())
+    .of(deviceTypeSchema)
     .min(1, "There must be at least one device")
     .required("There must be at least one device"),
-  deviceSpecimenTypes: yup.array().of(deviceSchema),
-  defaultDevice: yup.mixed().test(function (input) {
-    if (!input) {
-      return this.createError({ message: "A default device must be selected" });
-    }
-    return true;
-  }),
   orderingProvider: providerSchema.nullable(),
   phone: yup
     .string()
@@ -153,7 +135,7 @@ export const facilitySchema: yup.SchemaOf<RequiredFacilityFields> = yup.object({
         try {
           const number = phoneUtil.parseAndKeepRawInput(input, "US");
           return phoneUtil.isValidNumber(number);
-        } catch (e) {
+        } catch (e: any) {
           return false;
         }
       }

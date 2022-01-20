@@ -2,7 +2,7 @@ import { MockedProvider } from "@apollo/client/testing";
 import { Provider } from "react-redux";
 import { ToastContainer } from "react-toastify";
 import configureStore, { MockStoreEnhanced } from "redux-mock-store";
-import { render, screen } from "@testing-library/react";
+import { render, screen, waitFor } from "@testing-library/react";
 import moment from "moment";
 import userEvent from "@testing-library/user-event";
 
@@ -72,7 +72,7 @@ describe("QueueItem", () => {
             refetchQueue={testProps.refetchQueue}
             facilityId={testProps.facilityId}
             dateTestedProp={testProps.dateTestedProp}
-            patientLinkId={testProps.patientLinkId}
+            facilityName="Foo facility"
           />
         </Provider>
       </MockedProvider>
@@ -100,7 +100,7 @@ describe("QueueItem", () => {
             refetchQueue={testProps.refetchQueue}
             facilityId={testProps.facilityId}
             dateTestedProp={testProps.dateTestedProp}
-            patientLinkId={testProps.patientLinkId}
+            facilityName="Foo facility"
           />
         </Provider>
       </MockedProvider>
@@ -133,7 +133,7 @@ describe("QueueItem", () => {
             refetchQueue={testProps.refetchQueue}
             facilityId={testProps.facilityId}
             dateTestedProp={testProps.dateTestedProp}
-            patientLinkId={testProps.patientLinkId}
+            facilityName="Foo facility"
           />
         </Provider>
       </MockedProvider>
@@ -163,7 +163,7 @@ describe("QueueItem", () => {
             refetchQueue={testProps.refetchQueue}
             facilityId={testProps.facilityId}
             dateTestedProp={testProps.dateTestedProp}
-            patientLinkId={testProps.patientLinkId}
+            facilityName="Foo facility"
           />
         </Provider>
       </MockedProvider>
@@ -201,7 +201,7 @@ describe("QueueItem", () => {
             refetchQueue={testProps.refetchQueue}
             facilityId={testProps.facilityId}
             dateTestedProp={testProps.dateTestedProp}
-            patientLinkId={testProps.patientLinkId}
+            facilityName="Foo facility"
           />
         </Provider>
       </MockedProvider>
@@ -237,7 +237,7 @@ describe("QueueItem", () => {
             id: internalId,
             deviceSpecimenType: "device-specimen-2",
             deviceId: "lumira",
-            result: {},
+            result: "POSITIVE",
           },
         },
         result: () => {
@@ -283,7 +283,7 @@ describe("QueueItem", () => {
               refetchQueue={testProps.refetchQueue}
               facilityId={testProps.facilityId}
               dateTestedProp={testProps.dateTestedProp}
-              patientLinkId={testProps.patientLinkId}
+              facilityName="Foo facility"
             />
           </Provider>
         </MockedProvider>
@@ -301,11 +301,9 @@ describe("QueueItem", () => {
 
     // Change device type
     userEvent.selectOptions(deviceDropdown, "LumiraDX");
+    userEvent.click(screen.getByLabelText("Positive", { exact: false }));
 
-    // Wait for the genuinely long-running "edit queue" operation to finish
-    await new Promise((resolve) => setTimeout(resolve, 1000));
-
-    expect(editQueueMockIsDone).toBe(true);
+    await waitFor(() => expect(editQueueMockIsDone).toBe(true));
   });
 
   describe("SMS delivery failure", () => {
@@ -356,7 +354,7 @@ describe("QueueItem", () => {
             variables: {
               patientId: internalId,
               deviceId: internalId,
-              deviceSpecimenTypeId: "device-specimen-1",
+              deviceSpecimenType: "device-specimen-1",
               result: "UNDETERMINED",
               dateTested: null,
             },
@@ -396,7 +394,7 @@ describe("QueueItem", () => {
                 refetchQueue={testProps.refetchQueue}
                 facilityId={testProps.facilityId}
                 dateTestedProp={testProps.dateTestedProp}
-                patientLinkId={testProps.patientLinkId}
+                facilityName="Foo facility"
               />
             </Provider>
           </MockedProvider>
@@ -481,7 +479,7 @@ describe("QueueItem", () => {
             refetchQueue={testProps.refetchQueue}
             facilityId={testProps.facilityId}
             dateTestedProp={testProps.dateTestedProp}
-            patientLinkId={testProps.patientLinkId}
+            facilityName="Foo facility"
           />
         </Provider>
       </MockedProvider>
@@ -494,6 +492,73 @@ describe("QueueItem", () => {
     expect(timeInput).toBeInTheDocument();
     userEvent.type(dateInput, `${updatedDateString}T00:00`);
     userEvent.type(timeInput, updatedTimeString);
+  });
+
+  it("does not allow future date for test date", async () => {
+    render(
+      <>
+        <MockedProvider mocks={mocks} addTypename={false}>
+          <Provider store={store}>
+            <QueueItem
+              internalId={testProps.internalId}
+              patient={testProps.patient}
+              askOnEntry={testProps.askOnEntry}
+              selectedDeviceId={testProps.selectedDeviceId}
+              selectedDeviceTestLength={testProps.selectedDeviceTestLength}
+              selectedDeviceSpecimenTypeId={
+                testProps.selectedDeviceSpecimenTypeId
+              }
+              deviceSpecimenTypes={testProps.deviceSpecimenTypes}
+              selectedTestResult={testProps.selectedTestResult}
+              devices={testProps.devices}
+              refetchQueue={testProps.refetchQueue}
+              facilityId={testProps.facilityId}
+              dateTestedProp={testProps.dateTestedProp}
+              facilityName="Foo facility"
+            />
+          </Provider>
+        </MockedProvider>
+        <ToastContainer
+          autoClose={5000}
+          closeButton={false}
+          limit={2}
+          position="bottom-center"
+          hideProgressBar={true}
+        />
+      </>
+    );
+
+    const toggle = await screen.findByLabelText("Current date/time");
+    userEvent.click(toggle);
+    const dateInput = screen.getByTestId("test-date");
+    expect(dateInput).toBeInTheDocument();
+    const timeInput = screen.getByTestId("test-time");
+    expect(timeInput).toBeInTheDocument();
+
+    // Select result
+    userEvent.click(
+      screen.getByLabelText("Inconclusive", {
+        exact: false,
+      })
+    );
+
+    // There is a 500ms debounce on queue item update operations
+    await new Promise((resolve) => setTimeout(resolve, 501));
+
+    // Input invalid (future date) - can't submit
+    userEvent.type(dateInput, moment().add(5, "days").format("YYYY-MM-DD"));
+    dateInput.blur();
+
+    // 500ms debounce on queue item update operations
+    await new Promise((resolve) => setTimeout(resolve, 501));
+
+    // Submit test
+    userEvent.click(await screen.findByText("Submit"));
+
+    // Toast alert should appear
+    await waitFor(async () => {
+      expect(await screen.findByText("Invalid test date")).toBeInTheDocument();
+    });
   });
 
   it("displays person's mobile phone numbers", async () => {
@@ -515,7 +580,7 @@ describe("QueueItem", () => {
             refetchQueue={testProps.refetchQueue}
             facilityId={testProps.facilityId}
             dateTestedProp={testProps.dateTestedProp}
-            patientLinkId={testProps.patientLinkId}
+            facilityName="Foo facility"
           />
         </Provider>
       </MockedProvider>
@@ -554,7 +619,7 @@ describe("QueueItem", () => {
               refetchQueue={testProps.refetchQueue}
               facilityId={testProps.facilityId}
               dateTestedProp={testProps.dateTestedProp}
-              patientLinkId={testProps.patientLinkId}
+              facilityName="Foo facility"
             />
           </Provider>
         </MockedProvider>
@@ -574,12 +639,7 @@ describe("QueueItem", () => {
     it("tracks submitted test result as custom event", async () => {
       // Submit
       userEvent.click(screen.getByText("Submit"));
-
-      userEvent.click(
-        screen.getByText("Submit anyway", {
-          exact: false,
-        })
-      );
+      userEvent.click(screen.getByText("Submit anyway"));
 
       expect(trackEventMock).toHaveBeenCalledWith({
         name: "Submit Test Result",
@@ -638,18 +698,22 @@ const testProps = {
         type: "LANDLINE",
       },
     ],
+    email: "foo",
+    emails: ["foo"],
+    gender: "male" as Gender,
+    testResultDelivery: "sms",
   },
   devices: [deviceOne, deviceTwo],
   askOnEntry: {
     symptoms: "{}",
-  },
+  } as any,
   testResultPreference: "SMS",
   selectedDeviceId: internalId,
   selectedDeviceTestLength: 10,
   selectedDeviceSpecimenTypeId: "device-specimen-1",
-  selectedTestResult: {},
+  selectedTestResult: {} as any,
   dateTestedProp: "",
-  refetchQueue: {},
+  refetchQueue: () => null,
   facilityId: "Hogwarts+123",
   patientLinkId: "",
   deviceSpecimenTypes: [

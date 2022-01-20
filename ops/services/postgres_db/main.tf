@@ -4,7 +4,7 @@ resource "azurerm_postgresql_server" "db" {
   name                          = "simple-report-${var.env}-db"
   location                      = var.rg_location
   resource_group_name           = var.rg_name
-  sku_name                      = "GP_Gen5_8"
+  sku_name                      = var.env == "prod" ? "GP_Gen5_8" : "GP_Gen5_4"
   version                       = "11"
   ssl_enforcement_enabled       = var.tls_enabled
   public_network_access_enabled = false

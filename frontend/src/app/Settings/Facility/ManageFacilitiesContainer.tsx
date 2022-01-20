@@ -1,56 +1,21 @@
 import React from "react";
-import { gql, useQuery } from "@apollo/client";
+
+import { useGetManagedFacilitiesQuery } from "../../../generated/graphql";
 
 import ManageFacilities from "./ManageFacilities";
 
-const GET_FACILITIES = gql`
-  query GetManagedFacilities {
-    organization {
-      testingFacility {
-        id
-        cliaNumber
-        name
-        street
-        streetTwo
-        city
-        state
-        zipCode
-        phone
-        email
-        defaultDeviceType {
-          internalId
-        }
-        deviceTypes {
-          internalId
-        }
-        deviceSpecimenTypes {
-          deviceType {
-            internalId
-          }
-          specimenType {
-            internalId
-          }
-        }
-        orderingProvider {
-          firstName
-          middleName
-          lastName
-          suffix
-          NPI
-          street
-          streetTwo
-          city
-          state
-          zipCode
-          phone
-        }
-      }
-    }
-  }
-`;
-
 const ManageFacilitiesContainer: any = () => {
-  const { data, loading, error } = useQuery<SettingsData, {}>(GET_FACILITIES);
+  const { data, loading, error } = useGetManagedFacilitiesQuery({
+    fetchPolicy: "no-cache",
+  });
+
+  type SettingsData = {
+    organization: {
+      facilities: Facility[];
+    };
+  };
+
+  const settingsData = data as SettingsData;
 
   if (loading) {
     return <p> Loading... </p>;
@@ -58,20 +23,11 @@ const ManageFacilitiesContainer: any = () => {
   if (error) {
     return error;
   }
-
-  if (data === undefined) {
+  if (!settingsData || !settingsData.organization) {
     return <p>Error: facilities not found</p>;
   }
 
-  const facilities: Facility[] = data.organization.testingFacility.map((f) => {
-    return {
-      ...f,
-      defaultDevice: f.defaultDeviceType ? f.defaultDeviceType.internalId : "",
-      deviceTypes: Object.values(f.deviceTypes).map((d) => d.internalId),
-    };
-  });
-
-  return <ManageFacilities facilities={facilities} />;
+  return <ManageFacilities facilities={settingsData.organization.facilities} />;
 };
 
 export default ManageFacilitiesContainer;
