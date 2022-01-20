@@ -9,6 +9,7 @@ import static org.mockito.Mockito.when;
 
 import gov.cdc.usds.simplereport.db.model.Facility;
 import gov.cdc.usds.simplereport.db.model.Organization;
+import gov.cdc.usds.simplereport.db.model.OrganizationQueueItem;
 import gov.cdc.usds.simplereport.db.model.auxiliary.StreetAddress;
 import gov.cdc.usds.simplereport.service.AddressValidationService;
 import gov.cdc.usds.simplereport.service.ApiUserService;
@@ -44,6 +45,7 @@ class OrganizationMutationResolverTest extends BaseServiceTest<PersonService> {
 
   private Facility facility;
   private StreetAddress address;
+  private OrganizationQueueItem pendingOrg;
   private final UUID deviceId = UUID.randomUUID();
 
   @BeforeEach
@@ -51,9 +53,6 @@ class OrganizationMutationResolverTest extends BaseServiceTest<PersonService> {
     Organization org = _dataFactory.createValidOrg();
     facility = _dataFactory.createValidFacility(org);
     pendingOrg = _dataFactory.createOrganizationQueueItem();
-    genericDeviceSpecimen = _dataFactory.getGenericDeviceSpecimen();
-    DeviceType genericDevice = genericDeviceSpecimen.getDeviceType();
-    deviceId = genericDevice.getInternalId();
     address = facility.getAddress();
   }
 
