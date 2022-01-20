@@ -40,6 +40,10 @@
         opacity: 1;
       }
     }
+
+    &__error {
+      border-color: #b50909;
+    }
   }
 
   .card-dropdown {

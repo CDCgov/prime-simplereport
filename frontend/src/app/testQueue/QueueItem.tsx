@@ -668,7 +668,10 @@ const QueueItem = ({
 
   return (
     <React.Fragment>
-      <div className={containerClasses}>
+      <div
+        className={containerClasses}
+        data-testid={`test-card-${patient.internalId}`}
+      >
         <QueueItemSubmitLoader
           show={saveState === "saving"}
           name={patientFullName}
