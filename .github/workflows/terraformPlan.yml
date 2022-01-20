@@ -31,7 +31,7 @@ jobs:
           echo "OKTA_API_TOKEN=${{ secrets.OKTA_API_TOKEN }}" >> "$GITHUB_ENV"
       - uses: hashicorp/setup-terraform@v1
         with:
-          terraform_version: 0.15.1
+          terraform_version: 1.0.11
       - name: Terraform Init
         run: make init-${{ github.event.inputs.env }}
       - name: Terraform plan
