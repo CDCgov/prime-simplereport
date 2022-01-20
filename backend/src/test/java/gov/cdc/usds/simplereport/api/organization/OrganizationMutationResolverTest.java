@@ -12,6 +12,7 @@ import gov.cdc.usds.simplereport.db.model.DeviceSpecimenType;
 import gov.cdc.usds.simplereport.db.model.DeviceType;
 import gov.cdc.usds.simplereport.db.model.Facility;
 import gov.cdc.usds.simplereport.db.model.Organization;
+import gov.cdc.usds.simplereport.db.model.OrganizationQueueItem;
 import gov.cdc.usds.simplereport.db.model.auxiliary.StreetAddress;
 import gov.cdc.usds.simplereport.db.repository.DeviceSpecimenTypeRepository;
 import gov.cdc.usds.simplereport.service.AddressValidationService;
@@ -49,6 +50,7 @@ class OrganizationMutationResolverTest extends BaseServiceTest<PersonService> {
   @InjectMocks OrganizationMutationResolver organizationMutationResolver;
 
   private Facility facility;
+  private OrganizationQueueItem pendingOrg;
   private DeviceSpecimenType genericDeviceSpecimen;
   private UUID deviceId;
   private StreetAddress address;
@@ -57,6 +59,7 @@ class OrganizationMutationResolverTest extends BaseServiceTest<PersonService> {
   void setup() {
     Organization org = _dataFactory.createValidOrg();
     facility = _dataFactory.createValidFacility(org);
+    pendingOrg = _dataFactory.createOrganizationQueueItem();
     genericDeviceSpecimen = _dataFactory.getGenericDeviceSpecimen();
     DeviceType genericDevice = genericDeviceSpecimen.getDeviceType();
     deviceId = genericDevice.getInternalId();
@@ -319,5 +322,25 @@ class OrganizationMutationResolverTest extends BaseServiceTest<PersonService> {
 
     // THEN
     verify(mockedOrganizationService).markFacilityAsDeleted(facility.getInternalId(), false);
+  }
+
+  @Test
+  void markPendingOrgDeleted_false() {
+    // WHEN
+    organizationMutationResolver.markPendingOrganizationAsDeleted(
+        pendingOrg.getExternalId(), false);
+    // THEN
+    verify(mockedOrganizationQueueService)
+        .markPendingOrganizationAsDeleted(pendingOrg.getExternalId(), false);
+  }
+
+  @Test
+  void markPendingOrgDeleted_true() {
+    // WHEN
+    organizationMutationResolver.markPendingOrganizationAsDeleted(pendingOrg.getExternalId(), true);
+
+    // THEN
+    verify(mockedOrganizationQueueService)
+        .markPendingOrganizationAsDeleted(pendingOrg.getExternalId(), true);
   }
 }

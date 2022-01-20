@@ -1,11 +1,13 @@
 package gov.cdc.usds.simplereport.service;
 
+import static org.assertj.core.api.Assertions.assertThat;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
 import gov.cdc.usds.simplereport.api.model.accountrequest.OrganizationAccountRequest;
+import gov.cdc.usds.simplereport.api.model.errors.IllegalGraphqlArgumentException;
 import gov.cdc.usds.simplereport.db.model.ApiUser;
 import gov.cdc.usds.simplereport.db.model.Organization;
 import gov.cdc.usds.simplereport.db.model.OrganizationQueueItem;
@@ -162,5 +164,37 @@ class OrganizationQueueServiceTest extends BaseServiceTest<OrganizationQueueServ
     Optional<OrganizationQueueItem> optQueueItemAfter =
         _orgQueueRepo.findUnverifiedByExternalId(queueItem.getExternalId());
     assertTrue(optQueueItemAfter.isEmpty()); // the item has been linked to an organization
+  }
+
+  @Test
+  void deleteQueuedOrg_sucessful() {
+    OrganizationQueueItem createdQueueItem = _dataFactory.createOrganizationQueueItem();
+    OrganizationQueueItem deletedQueueItem =
+        _service.markPendingOrganizationAsDeleted(createdQueueItem.getExternalId(), true);
+
+    assertThat(deletedQueueItem.isDeleted()).isTrue();
+  }
+
+  @Test
+  void undeletionQueuedOrg_sucessful() {
+    OrganizationQueueItem createdQueueItem = _dataFactory.createOrganizationQueueItem();
+    OrganizationQueueItem deletedQueueItem =
+        _service.markPendingOrganizationAsDeleted(createdQueueItem.getExternalId(), true);
+
+    assertThat(deletedQueueItem.isDeleted()).isTrue();
+    OrganizationQueueItem undeletedItem =
+        _service.markPendingOrganizationAsDeleted(deletedQueueItem.getExternalId(), false);
+    assertThat(undeletedItem.isDeleted()).isFalse();
+  }
+
+  @Test
+  void deleteQueuedOrg_throwsErrorWhenOrgNotFound() {
+    IllegalGraphqlArgumentException caught =
+        assertThrows(
+            IllegalGraphqlArgumentException.class,
+            // fake external ID
+            () -> _service.markPendingOrganizationAsDeleted("some-nonexistent-id", true));
+    assertEquals(
+        "Requesting deletion on an organization that does not exist.", caught.getMessage());
   }
 }
