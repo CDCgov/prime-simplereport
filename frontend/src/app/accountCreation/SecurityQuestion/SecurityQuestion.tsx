@@ -56,7 +56,7 @@ export const SecurityQuestion = () => {
           securityAnswer
         );
         setSubmitted(true);
-      } catch (error) {
+      } catch (error: any) {
         setSecurityQuestionError(
           error || "Unable to setup security questions, please try again later"
         );

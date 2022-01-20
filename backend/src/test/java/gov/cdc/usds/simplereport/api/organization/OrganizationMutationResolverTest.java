@@ -1,6 +1,5 @@
 package gov.cdc.usds.simplereport.api.organization;
 
-import static java.util.Collections.emptyList;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.eq;
@@ -8,13 +7,9 @@ import static org.mockito.Mockito.doNothing;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
-import gov.cdc.usds.simplereport.db.model.DeviceSpecimenType;
-import gov.cdc.usds.simplereport.db.model.DeviceType;
 import gov.cdc.usds.simplereport.db.model.Facility;
 import gov.cdc.usds.simplereport.db.model.Organization;
-import gov.cdc.usds.simplereport.db.model.OrganizationQueueItem;
 import gov.cdc.usds.simplereport.db.model.auxiliary.StreetAddress;
-import gov.cdc.usds.simplereport.db.repository.DeviceSpecimenTypeRepository;
 import gov.cdc.usds.simplereport.service.AddressValidationService;
 import gov.cdc.usds.simplereport.service.ApiUserService;
 import gov.cdc.usds.simplereport.service.BaseServiceTest;
@@ -24,7 +19,6 @@ import gov.cdc.usds.simplereport.service.PersonService;
 import gov.cdc.usds.simplereport.test_util.SliceTestConfiguration.WithSimpleReportStandardUser;
 import gov.cdc.usds.simplereport.test_util.TestDataFactory;
 import java.util.List;
-import java.util.Optional;
 import java.util.UUID;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -46,14 +40,11 @@ class OrganizationMutationResolverTest extends BaseServiceTest<PersonService> {
   @Mock ApiUserService mockedApiUserService;
   @Mock OrganizationService mockedOrganizationService;
   @Mock OrganizationQueueService mockedOrganizationQueueService;
-  @Mock DeviceSpecimenTypeRepository mockedDeviceSpecimenTypeRepository;
   @InjectMocks OrganizationMutationResolver organizationMutationResolver;
 
   private Facility facility;
-  private OrganizationQueueItem pendingOrg;
-  private DeviceSpecimenType genericDeviceSpecimen;
-  private UUID deviceId;
   private StreetAddress address;
+  private final UUID deviceId = UUID.randomUUID();
 
   @BeforeEach
   void setup() {
@@ -82,7 +73,7 @@ class OrganizationMutationResolverTest extends BaseServiceTest<PersonService> {
         .thenReturn(address);
 
     // WHEN
-    organizationMutationResolver.addFacilityNew(
+    organizationMutationResolver.addFacility(
         facility.getFacilityName(),
         facility.getCliaNumber(),
         facility.getAddress().getStreetOne(),
@@ -125,7 +116,7 @@ class OrganizationMutationResolverTest extends BaseServiceTest<PersonService> {
   }
 
   @Test
-  void addFacility_withDeviceSpecimenType_backwardCompatible_success() {
+  void addFacilityNew_backwardCompatible_success() {
     // GIVEN
     doNothing()
         .when(mockedOrganizationService)
@@ -138,17 +129,14 @@ class OrganizationMutationResolverTest extends BaseServiceTest<PersonService> {
             address.getPostalCode(),
             "facility"))
         .thenReturn(address);
-    when(mockedDeviceSpecimenTypeRepository.findById(any()))
-        .thenReturn(Optional.of(genericDeviceSpecimen));
 
     // WHEN
-    organizationMutationResolver.addFacility(
+    organizationMutationResolver.addFacilityNew(
         facility.getFacilityName(),
         facility.getCliaNumber(),
         facility.getAddress().getStreetOne(),
         facility.getAddress().getStreetTwo(),
         facility.getAddress().getCity(),
-        facility.getAddress().getCounty(),
         facility.getAddress().getState(),
         facility.getAddress().getPostalCode(),
         facility.getTelephone(),
@@ -165,9 +153,7 @@ class OrganizationMutationResolverTest extends BaseServiceTest<PersonService> {
         facility.getOrderingProvider().getAddress().getState(),
         facility.getOrderingProvider().getAddress().getPostalCode(),
         facility.getOrderingProvider().getTelephone(),
-        List.of(deviceId.toString()),
-        List.of(genericDeviceSpecimen.getInternalId()),
-        deviceId.toString());
+        List.of(deviceId));
 
     // THEN
     verify(mockedOrganizationService)
@@ -200,7 +186,7 @@ class OrganizationMutationResolverTest extends BaseServiceTest<PersonService> {
         .thenReturn(address);
 
     // WHEN
-    organizationMutationResolver.updateFacilityNew(
+    organizationMutationResolver.updateFacility(
         facility.getInternalId(),
         facility.getFacilityName(),
         facility.getCliaNumber(),
@@ -245,7 +231,7 @@ class OrganizationMutationResolverTest extends BaseServiceTest<PersonService> {
   }
 
   @Test
-  void updateFacility_backwardCompatible_success() {
+  void updateFacilityNew_backwardsCompatible_success() {
     // GIVEN
     when(mockedAddressValidationService.getValidatedAddress(
             address.getStreetOne(),
@@ -255,18 +241,15 @@ class OrganizationMutationResolverTest extends BaseServiceTest<PersonService> {
             address.getPostalCode(),
             "facility"))
         .thenReturn(address);
-    when(mockedDeviceSpecimenTypeRepository.findById(any()))
-        .thenReturn(Optional.of(genericDeviceSpecimen));
 
     // WHEN
-    organizationMutationResolver.updateFacility(
+    organizationMutationResolver.updateFacilityNew(
         facility.getInternalId(),
         facility.getFacilityName(),
         facility.getCliaNumber(),
         facility.getAddress().getStreetOne(),
         facility.getAddress().getStreetTwo(),
         facility.getAddress().getCity(),
-        facility.getAddress().getCounty(),
         facility.getAddress().getState(),
         facility.getAddress().getPostalCode(),
         facility.getTelephone(),
@@ -283,9 +266,7 @@ class OrganizationMutationResolverTest extends BaseServiceTest<PersonService> {
         facility.getOrderingProvider().getAddress().getState(),
         facility.getOrderingProvider().getAddress().getPostalCode(),
         facility.getOrderingProvider().getTelephone(),
-        emptyList(),
-        List.of(genericDeviceSpecimen.getInternalId()),
-        null);
+        List.of(deviceId));
 
     // THEN
     verify(mockedOrganizationService)

@@ -72,7 +72,7 @@ describe("QueueItem", () => {
             refetchQueue={testProps.refetchQueue}
             facilityId={testProps.facilityId}
             dateTestedProp={testProps.dateTestedProp}
-            patientLinkId={testProps.patientLinkId}
+            facilityName="Foo facility"
           />
         </Provider>
       </MockedProvider>
@@ -100,7 +100,7 @@ describe("QueueItem", () => {
             refetchQueue={testProps.refetchQueue}
             facilityId={testProps.facilityId}
             dateTestedProp={testProps.dateTestedProp}
-            patientLinkId={testProps.patientLinkId}
+            facilityName="Foo facility"
           />
         </Provider>
       </MockedProvider>
@@ -133,7 +133,7 @@ describe("QueueItem", () => {
             refetchQueue={testProps.refetchQueue}
             facilityId={testProps.facilityId}
             dateTestedProp={testProps.dateTestedProp}
-            patientLinkId={testProps.patientLinkId}
+            facilityName="Foo facility"
           />
         </Provider>
       </MockedProvider>
@@ -163,7 +163,7 @@ describe("QueueItem", () => {
             refetchQueue={testProps.refetchQueue}
             facilityId={testProps.facilityId}
             dateTestedProp={testProps.dateTestedProp}
-            patientLinkId={testProps.patientLinkId}
+            facilityName="Foo facility"
           />
         </Provider>
       </MockedProvider>
@@ -201,7 +201,7 @@ describe("QueueItem", () => {
             refetchQueue={testProps.refetchQueue}
             facilityId={testProps.facilityId}
             dateTestedProp={testProps.dateTestedProp}
-            patientLinkId={testProps.patientLinkId}
+            facilityName="Foo facility"
           />
         </Provider>
       </MockedProvider>
@@ -237,7 +237,7 @@ describe("QueueItem", () => {
             id: internalId,
             deviceSpecimenType: "device-specimen-2",
             deviceId: "lumira",
-            result: {},
+            result: "POSITIVE",
           },
         },
         result: () => {
@@ -283,7 +283,7 @@ describe("QueueItem", () => {
               refetchQueue={testProps.refetchQueue}
               facilityId={testProps.facilityId}
               dateTestedProp={testProps.dateTestedProp}
-              patientLinkId={testProps.patientLinkId}
+              facilityName="Foo facility"
             />
           </Provider>
         </MockedProvider>
@@ -301,11 +301,9 @@ describe("QueueItem", () => {
 
     // Change device type
     userEvent.selectOptions(deviceDropdown, "LumiraDX");
+    userEvent.click(screen.getByLabelText("Positive", { exact: false }));
 
-    // Wait for the genuinely long-running "edit queue" operation to finish
-    await new Promise((resolve) => setTimeout(resolve, 1000));
-
-    expect(editQueueMockIsDone).toBe(true);
+    await waitFor(() => expect(editQueueMockIsDone).toBe(true));
   });
 
   describe("SMS delivery failure", () => {
@@ -356,7 +354,7 @@ describe("QueueItem", () => {
             variables: {
               patientId: internalId,
               deviceId: internalId,
-              deviceSpecimenTypeId: "device-specimen-1",
+              deviceSpecimenType: "device-specimen-1",
               result: "UNDETERMINED",
               dateTested: null,
             },
@@ -396,7 +394,7 @@ describe("QueueItem", () => {
                 refetchQueue={testProps.refetchQueue}
                 facilityId={testProps.facilityId}
                 dateTestedProp={testProps.dateTestedProp}
-                patientLinkId={testProps.patientLinkId}
+                facilityName="Foo facility"
               />
             </Provider>
           </MockedProvider>
@@ -481,7 +479,7 @@ describe("QueueItem", () => {
             refetchQueue={testProps.refetchQueue}
             facilityId={testProps.facilityId}
             dateTestedProp={testProps.dateTestedProp}
-            patientLinkId={testProps.patientLinkId}
+            facilityName="Foo facility"
           />
         </Provider>
       </MockedProvider>
@@ -516,7 +514,7 @@ describe("QueueItem", () => {
               refetchQueue={testProps.refetchQueue}
               facilityId={testProps.facilityId}
               dateTestedProp={testProps.dateTestedProp}
-              patientLinkId={testProps.patientLinkId}
+              facilityName="Foo facility"
             />
           </Provider>
         </MockedProvider>
@@ -582,7 +580,7 @@ describe("QueueItem", () => {
             refetchQueue={testProps.refetchQueue}
             facilityId={testProps.facilityId}
             dateTestedProp={testProps.dateTestedProp}
-            patientLinkId={testProps.patientLinkId}
+            facilityName="Foo facility"
           />
         </Provider>
       </MockedProvider>
@@ -621,7 +619,7 @@ describe("QueueItem", () => {
               refetchQueue={testProps.refetchQueue}
               facilityId={testProps.facilityId}
               dateTestedProp={testProps.dateTestedProp}
-              patientLinkId={testProps.patientLinkId}
+              facilityName="Foo facility"
             />
           </Provider>
         </MockedProvider>
@@ -641,12 +639,7 @@ describe("QueueItem", () => {
     it("tracks submitted test result as custom event", async () => {
       // Submit
       userEvent.click(screen.getByText("Submit"));
-
-      userEvent.click(
-        screen.getByText("Submit anyway", {
-          exact: false,
-        })
-      );
+      userEvent.click(screen.getByText("Submit anyway"));
 
       expect(trackEventMock).toHaveBeenCalledWith({
         name: "Submit Test Result",
@@ -705,18 +698,22 @@ const testProps = {
         type: "LANDLINE",
       },
     ],
+    email: "foo",
+    emails: ["foo"],
+    gender: "male" as Gender,
+    testResultDelivery: "sms",
   },
   devices: [deviceOne, deviceTwo],
   askOnEntry: {
     symptoms: "{}",
-  },
+  } as any,
   testResultPreference: "SMS",
   selectedDeviceId: internalId,
   selectedDeviceTestLength: 10,
   selectedDeviceSpecimenTypeId: "device-specimen-1",
-  selectedTestResult: {},
+  selectedTestResult: {} as any,
   dateTestedProp: "",
-  refetchQueue: {},
+  refetchQueue: () => null,
   facilityId: "Hogwarts+123",
   patientLinkId: "",
   deviceSpecimenTypes: [

@@ -10,12 +10,12 @@ import { Provider } from "react-redux";
 import { MemoryRouter } from "react-router-dom";
 import configureStore from "redux-mock-store";
 
+import "../../../i18n";
 import { displayFullName } from "../../utils";
-import { GetUserDocument } from "../../../generated/graphql";
+import { GetUserDocument, UserPermission } from "../../../generated/graphql";
 
 import ManageUsers, { SettingsUsers } from "./ManageUsers";
-
-import "../../../i18n";
+import { LimitedUser } from "./ManageUsersContainer";
 
 const organization = { testingFacility: [{ id: "a1", name: "Foo Org" }] };
 const allFacilities = [
@@ -57,7 +57,7 @@ const users: SettingsUsers[keyof SettingsUsers][] = [
     id: "a123",
     email: "john@arthur.org",
     organization: { testingFacility: [] },
-    permissions: ["READ_PATIENT_LIST"],
+    permissions: [UserPermission.ReadPatientList],
     roleDescription: "user",
     role: "USER",
     status: "ACTIVE",
@@ -80,7 +80,7 @@ const suspendedUsers: SettingsUsers[keyof SettingsUsers][] = [
     id: "b234",
     email: "sarah@abba.org",
     organization: { testingFacility: [] },
-    permissions: ["READ_PATIENT_LIST"],
+    permissions: [UserPermission.ReadPatientList],
     roleDescription: "user",
     role: "USER",
     status: "SUSPENDED",
@@ -103,7 +103,7 @@ const pendingActivationUsers: SettingsUsers[keyof SettingsUsers][] = [
     id: "c456",
     email: "michael@almond.com",
     organization: { testingFacility: [] },
-    permissions: ["READ_PATIENT_LIST"],
+    permissions: [UserPermission.ReadPatientList],
     roleDescription: "user",
     role: "USER",
     status: "PROVISIONED",
@@ -135,7 +135,7 @@ const mocks = [
           lastName: "Arthur",
           roleDescription: "user",
           role: "USER",
-          permissions: ["READ_PATIENT_LIST"],
+          permissions: [UserPermission.ReadPatientList],
           email: "john@example.com",
           organization: { testingFacility: [] },
         },
@@ -158,7 +158,7 @@ const mocks = [
           lastName: "Bobberoo",
           roleDescription: "admin",
           role: "ADMIN",
-          permissions: ["READ_PATIENT_LIST"],
+          permissions: [UserPermission.ReadPatientList],
           email: "bob@bobberoo.org",
           organization: { testingFacility: [] },
         },
@@ -181,7 +181,7 @@ const mocks = [
           lastName: "Abba",
           roleDescription: "user",
           role: "USER",
-          permissions: ["READ_PATIENT_LIST"],
+          permissions: [UserPermission.ReadPatientList],
           email: "sarah@abba.com",
           organization: { testingFacility: [] },
           status: "SUSPENDED",
@@ -205,7 +205,7 @@ const mocks = [
           lastName: "Almond",
           roleDescription: "user",
           role: "USER",
-          permissions: ["READ_PATIENT_LIST"],
+          permissions: [UserPermission.ReadPatientList],
           email: "michael@almond.com",
           organization: { testingFacility: [] },
           status: "PROVISIONED",
@@ -298,7 +298,7 @@ describe("ManageUsers", () => {
       render(
         <TestContainer>
           <ManageUsers
-            users={users}
+            users={users as LimitedUser[]}
             loggedInUser={loggedInUser}
             allFacilities={allFacilities}
             updateUserPrivileges={updateUserPrivileges}
@@ -622,6 +622,7 @@ describe("ManageUsers", () => {
             getUsers={getUsers}
             reactivateUser={reactivateUser}
             resetUserPassword={() => Promise.resolve()}
+            resetUserMfa={() => Promise.resolve()}
             resendUserActivationEmail={resendUserActivationEmail}
             updateUserName={() => Promise.resolve()}
             updateUserEmail={() => Promise.resolve()}
@@ -665,7 +666,7 @@ describe("ManageUsers", () => {
       render(
         <TestContainer>
           <ManageUsers
-            users={suspendedUsers}
+            users={suspendedUsers as LimitedUser[]}
             loggedInUser={loggedInUser}
             allFacilities={allFacilities}
             updateUserPrivileges={updateUserPrivileges}
@@ -674,6 +675,7 @@ describe("ManageUsers", () => {
             getUsers={getUsers}
             reactivateUser={reactivateUser}
             resetUserPassword={() => Promise.resolve()}
+            resetUserMfa={() => Promise.resolve()}
             resendUserActivationEmail={resendUserActivationEmail}
             updateUserName={() => Promise.resolve()}
             updateUserEmail={() => Promise.resolve()}
@@ -707,7 +709,7 @@ describe("ManageUsers", () => {
       render(
         <TestContainer>
           <ManageUsers
-            users={pendingActivationUsers}
+            users={pendingActivationUsers as LimitedUser[]}
             loggedInUser={loggedInUser}
             allFacilities={allFacilities}
             updateUserPrivileges={updateUserPrivileges}
@@ -716,6 +718,7 @@ describe("ManageUsers", () => {
             getUsers={getUsers}
             reactivateUser={reactivateUser}
             resetUserPassword={() => Promise.resolve()}
+            resetUserMfa={() => Promise.resolve()}
             resendUserActivationEmail={resendUserActivationEmail}
             updateUserName={() => Promise.resolve()}
             updateUserEmail={() => Promise.resolve()}
@@ -756,7 +759,7 @@ describe("ManageUsers", () => {
               suffix: "",
               roleDescription: "user",
               role: "USER",
-              permissions: ["READ_PATIENT_LIST"],
+              permissions: [UserPermission.ReadPatientList],
               email: "john@example.com",
               organization: {
                 testingFacility: [
@@ -784,7 +787,7 @@ describe("ManageUsers", () => {
               lastName: "Bobberoo",
               roleDescription: "admin",
               role: "ADMIN",
-              permissions: ["READ_PATIENT_LIST"],
+              permissions: [UserPermission.ReadPatientList],
               email: "bob@bobberoo.org",
               organization: {
                 testingFacility: [
@@ -802,7 +805,7 @@ describe("ManageUsers", () => {
         <Provider store={store}>
           <MockedProvider mocks={updatedMocks}>
             <ManageUsers
-              users={users}
+              users={users as LimitedUser[]}
               loggedInUser={loggedInUser}
               allFacilities={allFacilities}
               updateUserPrivileges={updateUserPrivileges}
@@ -811,6 +814,7 @@ describe("ManageUsers", () => {
               getUsers={getUsers}
               reactivateUser={reactivateUser}
               resetUserPassword={() => Promise.resolve()}
+              resetUserMfa={() => Promise.resolve()}
               resendUserActivationEmail={resendUserActivationEmail}
               updateUserName={() => Promise.resolve()}
               updateUserEmail={() => Promise.resolve()}

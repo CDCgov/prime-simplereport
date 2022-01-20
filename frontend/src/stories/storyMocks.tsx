@@ -114,13 +114,13 @@ const mocks = {
   duplicateRegistration: rest.post(
     `${BACKEND_URL}/pxp/register/existing-patient`,
     (_, rest, ctx) => {
-      return rest(ctx.status(200), ctx.json(true));
+      return rest(ctx.status(200), ctx.body("true"));
     }
   ),
   uniqueRegistration: rest.post(
     `${BACKEND_URL}/pxp/register/existing-patient`,
     (_, rest, ctx) => {
-      return rest(ctx.status(200), ctx.json(false));
+      return rest(ctx.status(200), ctx.body("false"));
     }
   ),
   register: rest.post(`${BACKEND_URL}/pxp/register`, (_, rest, ctx) => {
