@@ -19,3 +19,16 @@
     background: $theme-color-base-lightest;
   }
 }
+
+.sr-pending-org-delete-button {
+  border: none;
+  background-color: #fff;
+}
+
+.sr-pending-org-delete-button:hover > svg > path {
+  fill: color($theme-color-primary);
+}
+
+.sr-pending-org-delete-button:hover {
+  cursor: pointer;
+}

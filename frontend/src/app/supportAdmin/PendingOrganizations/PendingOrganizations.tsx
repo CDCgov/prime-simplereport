@@ -1,5 +1,6 @@
 import { PhoneNumberUtil, PhoneNumberFormat } from "google-libphonenumber";
 import { useState } from "react";
+import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 
 import Alert from "../../commonComponents/Alert";
 import Button from "../../commonComponents/Button/Button";
@@ -49,7 +50,7 @@ const PendingOrganizations = ({
   const [verifyInProgress, setVerifyInProgress] = useState<boolean>(false);
   const [isUpdating, setIsUpdating] = useState(false);
   const [editOrg] = useEditPendingOrganizationMutation();
-  // should be removed once mutation for deletion of pending orgs is written
+
   const checkIfOrgIsUsingOldOrgSchema = (
     orgToCheck: PendingOrganization | null
   ) => {
@@ -65,6 +66,7 @@ const PendingOrganizations = ({
       Date.parse(orgToCheck.createdAt) < Date.parse("2021-11-02T18:16:08Z");
     return requiredFieldNotSet || createdBeforeSchemaChangeDate;
   };
+
   const handleUpdateOrg = async (org: PendingOrganizationFormValues) => {
     const orgUsesOldSchema = checkIfOrgIsUsingOldOrgSchema(orgToVerify);
 
@@ -97,6 +99,7 @@ const PendingOrganizations = ({
     showNotification(<Alert type="success" title={updateMessage} body="" />);
     return Promise.resolve(updatedOrg);
   };
+
   const handleConfirmOrg = async (org: PendingOrganizationFormValues) => {
     if (orgToVerify === null) {
       return Promise.reject();
@@ -144,15 +147,18 @@ const PendingOrganizations = ({
 
     return Promise.resolve();
   };
+
   const handleClose = () => {
     setOrgToVerify(null);
     setOrgToDelete(null);
     setVerifyInProgress(false);
   };
-  const handleDeletion = async (o: PendingOrganization) => {
+
+  const handleDeletionOrg = async (o: PendingOrganization) => {
     setIsUpdating(true);
     await submitDeletion(o.externalId, true, o.name);
     setIsUpdating(false);
+    setOrgToDelete(null);
     return Promise.resolve();
   };
 
@@ -204,14 +210,15 @@ const PendingOrganizations = ({
           </Button>
         </td>
         <td>
-          <Button
-            className="sr-active-button"
+          <button
+            className="sr-pending-org-delete-button"
+            data-testid="delete-org-button"
             onClick={() => {
               setOrgToDelete(o);
             }}
           >
-            Delete Org
-          </Button>
+            <FontAwesomeIcon icon={"trash"} size="2x" />
+          </button>
         </td>
       </tr>
     ));
@@ -236,7 +243,7 @@ const PendingOrganizations = ({
               <ConfirmDeleteOrgModal
                 organization={orgToDelete}
                 handleClose={handleClose}
-                handleDelete={handleDeletion}
+                handleDelete={handleDeletionOrg}
                 isUpdating={isUpdating}
               />
             ) : null}

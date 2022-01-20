@@ -13,12 +13,12 @@ const ConfirmDeleteOrgModal: React.FC<DeletionModalProps> = ({
   handleDelete,
   isUpdating,
 }) => {
-  // text input fields are display only props
-  const onChange = () => {};
   const commonInputProps = {
     disabled: true,
     required: false,
-    onChange,
+    // don't do anything on change because input fields are for display purposes
+    // only
+    onChange: () => {},
   };
   return (
     <Modal

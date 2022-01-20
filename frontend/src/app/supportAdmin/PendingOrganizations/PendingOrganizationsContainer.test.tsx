@@ -606,20 +606,24 @@ describe("PendingOrganizationsContainer", () => {
       expect(
         await screen.findByText("Space Camp", { exact: false })
       ).toBeInTheDocument();
-      userEvent.click(Array.from(await screen.findAllByText("Delete Org"))[1]);
+      userEvent.click(
+        Array.from(await screen.findAllByTestId("delete-org-button"))[1]
+      );
       expect(
         await screen.findByText("Confirm deletion of the following org", {
           exact: false,
         })
       ).toBeInTheDocument();
       expect(await screen.findByText("Cancel")).toBeInTheDocument();
-      expect(await screen.findByText("Delete", { exact: true })).toBeEnabled();
+      expect(await screen.findByText("Delete")).toBeEnabled();
     });
     it("Facility deletion works", async () => {
       expect(
         await screen.findByText("Space Camp", { exact: false })
       ).toBeInTheDocument();
-      userEvent.click(Array.from(await screen.findAllByText("Delete Org"))[1]);
+      userEvent.click(
+        Array.from(await screen.findAllByTestId("delete-org-button"))[1]
+      );
       expect(
         await screen.findByText("Confirm deletion of the following org", {
           exact: false,
