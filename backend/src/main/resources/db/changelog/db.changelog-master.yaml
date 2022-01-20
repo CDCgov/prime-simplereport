@@ -3337,7 +3337,7 @@ databaseChangeLog:
       author: zedd@skylight.digital
       changes:
         - tagDatabase:
-            tag: populate-test_event-specimen_type_id
+            tag: populate-test_order-specimen_type_id
         - sql:
             remarks: Populate test_order.specimen_type_id from test_order.device_specimen_type
             sql: |
@@ -3349,7 +3349,7 @@ databaseChangeLog:
       author: zedd@skylight.digital
       changes:
         - tagDatabase:
-            tag: populate-test_event-specimen_type_id
+            tag: populate-facility-default_specimen_type_id
         - sql:
             remarks: Populate test_order.specimen_type_id from test_order.device_specimen_type
             sql: |
