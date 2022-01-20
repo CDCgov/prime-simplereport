@@ -215,14 +215,6 @@ const TestQueue: React.FC<Props> = ({ activeFacilityId }) => {
               ) || deviceSpecimenTypes[0];
           }
 
-          // Check that facility's default device specimen is still valid
-          // If not, select any valid device specimen to populate test initially
-          const defaultDeviceSpecimen = deviceSpecimenTypes.includes(
-            facility.defaultDeviceSpecimen
-          )
-            ? facility.defaultDeviceSpecimen
-            : deviceSpecimenTypes[0];
-
           return (
             <CSSTransition
               key={internalId}
@@ -234,16 +226,15 @@ const TestQueue: React.FC<Props> = ({ activeFacilityId }) => {
                 patient={patient}
                 askOnEntry={questions}
                 selectedDeviceSpecimenTypeId={
-                  selectedDeviceSpecimenType?.internalId ||
-                  defaultDeviceSpecimen.internalId
+                  selectedDeviceSpecimenType.internalId
                 }
                 selectedDeviceId={
-                  selectedDeviceSpecimenType?.deviceType.internalId ||
-                  defaultDeviceSpecimen.deviceType.internalId
+                  selectedDeviceSpecimenType.deviceType.internalId
                 }
                 selectedDeviceTestLength={
-                  selectedDeviceSpecimenType?.deviceType.testLength ||
-                  defaultDeviceSpecimen.deviceType.testLength
+                  // `testLength` is not nullable and is always returned by
+                  // the facility queue GraphQL query
+                  selectedDeviceSpecimenType.deviceType.testLength as number
                 }
                 selectedTestResult={result}
                 devices={facility.deviceTypes}
