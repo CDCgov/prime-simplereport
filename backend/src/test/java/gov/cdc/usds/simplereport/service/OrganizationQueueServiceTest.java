@@ -7,7 +7,6 @@ import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
 import gov.cdc.usds.simplereport.api.model.accountrequest.OrganizationAccountRequest;
-import gov.cdc.usds.simplereport.api.model.errors.IllegalGraphqlArgumentException;
 import gov.cdc.usds.simplereport.db.model.ApiUser;
 import gov.cdc.usds.simplereport.db.model.Organization;
 import gov.cdc.usds.simplereport.db.model.OrganizationQueueItem;
@@ -178,20 +177,18 @@ class OrganizationQueueServiceTest extends BaseServiceTest<OrganizationQueueServ
   @Test
   void undeletionQueuedOrg_sucessful() {
     OrganizationQueueItem createdQueueItem = _dataFactory.createOrganizationQueueItem();
-    OrganizationQueueItem deletedQueueItem =
-        _service.markPendingOrganizationAsDeleted(createdQueueItem.getExternalId(), true);
-
-    assertThat(deletedQueueItem.isDeleted()).isTrue();
+    createdQueueItem.setIsDeleted(true);
+    assertThat(createdQueueItem.isDeleted()).isTrue();
     OrganizationQueueItem undeletedItem =
-        _service.markPendingOrganizationAsDeleted(deletedQueueItem.getExternalId(), false);
+        _service.markPendingOrganizationAsDeleted(createdQueueItem.getExternalId(), false);
     assertThat(undeletedItem.isDeleted()).isFalse();
   }
 
   @Test
   void deleteQueuedOrg_throwsErrorWhenOrgNotFound() {
-    IllegalGraphqlArgumentException caught =
+    IllegalStateException caught =
         assertThrows(
-            IllegalGraphqlArgumentException.class,
+            IllegalStateException.class,
             // fake external ID
             () -> _service.markPendingOrganizationAsDeleted("some-nonexistent-id", true));
     assertEquals(
