@@ -9,7 +9,7 @@
 
 GREEN='\033[0;32m'
 PURPLE='\033[0;35m'
-
+BACKEND_PROFILE=${local:-$1}
 function prepend() { 
     NC='\033[0m' # No Color
     while read line; do 
@@ -54,5 +54,5 @@ cd ${BACKEND_DIR}
 ./gradlew --no-daemon -t build -x test -x checkstyleMain -x checkstyleTest -x spotlessCheck -x bootBuildInfo | prepend "backend" $PURPLE &
 # Wait for initial build to complete
 sleep 15
-# Start bootRun without build. It will live reload when the previous process rebuilds
-./gradlew --no-daemon -x build -x test -x checkstyleMain -x checkstyleTest -x spotlessCheck bootRun --args='--spring.profiles.active=local' | prepend "backend" $PURPLE
+# Start bootRun without build. It will live reload when the previous process rebuilds 
+./gradlew --no-daemon -x build -x test -x checkstyleMain -x checkstyleTest -x spotlessCheck bootRun --args='--spring.profiles.active=e2e' | prepend "backend" $PURPLE

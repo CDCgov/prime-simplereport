@@ -46,7 +46,6 @@ services:
       OKTA_TESTING_DISABLEHTTPSCHECK: "true"
     depends_on:
       - db
-      - cypress
     expose:
       - "8080"
   frontend:
@@ -62,6 +61,7 @@ services:
       REACT_APP_BACKEND_URL: http://localhost.simplereport.gov/api
       REACT_APP_OKTA_ENABLED: "true"
       REACT_APP_OKTA_URL: http://cypress:8088
+    command: ["yarn", "start-js"]
     volumes:
       - ../:/frontend/
       - ../../backend/src/main/resources/graphql:/backend/src/main/resources/graphql
@@ -77,6 +77,6 @@ services:
     depends_on:
       - frontend
       - api
-    expose:
-      - "80"
-      - "443"
+    ports:
+      - "80:80"
+      - "443:443"

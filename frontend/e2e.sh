@@ -18,7 +18,7 @@ OPTIONS:
 EOF
 }
 
-SPEC_PATH="cypress/**"
+SPEC_PATH="cypress/integration/00-*"
 TEST_ENV="http://localhost.simplereport.gov"
 if [ -d ../.git ]; then
   CHECK_COMMIT="$(git rev-parse HEAD)"
@@ -63,13 +63,13 @@ while getopts "hs:r:c:a:f:o:b:" OPTION; do
 done
 
 echo
-[[ -n $SPEC_PATH ]] && echo "Running spec path--------$SPEC_PATH" || echo "Running all specs!"
+[[ -n $SPEC_PATH ]] && echo "Running spec path--------$SPEC_PATH"
 [[ -n $BROWSER ]] && echo "Browser selected---------$BROWSER"
 [[ -n $CHECK_COMMIT ]] && echo "Current commit-----------$CHECK_COMMIT"
 [[ -n $TEST_ENV ]] && echo "Testing against URL------$TEST_ENV"
 [[ -n $BACKEND_URL_PATH ]] && echo "Backend health route-----$BACKEND_URL_PATH"
 [[ -n $FRONTEND_URL_PATH ]] && echo "Frontent health route----$FRONTEND_URL_PATH"
-[[ -n $RUN_OPEN ]] && echo "Run as interactive----$RUN_OPEN"
+[[ -n $RUN_OPEN ]] && echo "Run as interactive-------$RUN_OPEN"
 echo 
 
 echo "Starting Wiremock for app bootup..."

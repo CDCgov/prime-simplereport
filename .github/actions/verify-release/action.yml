@@ -34,7 +34,7 @@ runs:
         echo "::group::Run Makefile verification"
         make check-${{env.DEPLOY_ENV}}-commit check-${{env.DEPLOY_ENV}}-readiness
         echo "::endgroup::"
-      - name: install dependencies and verify Cypress
+    - name: install dependencies and verify Cypress
       shell: bash
       working-directory: ./frontend
       env:

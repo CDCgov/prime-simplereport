@@ -305,6 +305,7 @@ REACT_APP_BASE_URL=http://localhost.simplereport.gov
 REACT_APP_BACKEND_URL=http://localhost.simplereport.gov/api
 REACT_APP_OKTA_ENABLED=true
 REACT_APP_OKTA_URL=http://localhost:8088
+REACT_APP_CURRENT_COMMIT=auto_generated_when_running_yarn_e2e_commands
 ```
 
 You will need to run the backend with the `e2e` profile, and with the following environment variable:
