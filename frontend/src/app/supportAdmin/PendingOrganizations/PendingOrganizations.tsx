@@ -207,6 +207,7 @@ const PendingOrganizations = ({
         <td>{o.externalId}</td>
         <td className="verify-button-container">
           <Button
+            className="sr-pending-org-edit-verify"
             onClick={() => {
               setOrgToVerify(o);
             }}
