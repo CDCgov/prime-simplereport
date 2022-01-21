@@ -1,10 +1,5 @@
 import { useEffect, useState } from "react";
-import {
-  Route,
-  Switch,
-  BrowserRouter as Router,
-  useHistory,
-} from "react-router-dom";
+import { Route, Routes, useLocation, useNavigate } from "react-router-dom";
 
 import Page from "../commonComponents/Page/Page";
 import { getActivationTokenFromUrl } from "../utils/url";
@@ -37,7 +32,8 @@ const AccountCreationApp = () => {
   );
   const [error, setError] = useState("");
   // Used to reroute based on user's status
-  const history = useHistory();
+  const navigate = useNavigate();
+  const location = useLocation();
 
   // Runs once on app load
   useEffect(() => {
@@ -59,18 +55,17 @@ const AccountCreationApp = () => {
       // Get correct path based on status
       const newPath = routeFromStatus(status);
       // Check what current path is
-      const mount = history.location.pathname.split("/uac")[0];
-      const currentPath = history.location.pathname.split("/uac")[1];
+      const currentPath = location.pathname.split("/uac/")[1];
       // If new path is different, reroute
       if (newPath !== currentPath) {
-        history.push(`${mount}/uac${newPath}`);
+        navigate(newPath);
       }
       // Set the userAccountStatus state, triggering a rerender w/ the Router
       setUserAccountStatus(status);
     };
     const token = getActivationTokenFromUrl();
     getStatusAndActivate(token);
-  }, [history]);
+  }, [navigate, location]);
 
   // Show loading card while useEffect func is running
   if (userAccountStatus === UserAccountStatus.LOADING) {
@@ -112,29 +107,27 @@ const AccountCreationApp = () => {
 
   return (
     <Page>
-      <Router basename={`${process.env.PUBLIC_URL}/uac`}>
-        <Switch>
-          <Route path="/" exact component={PasswordForm} />
-          <Route path="/set-password" component={PasswordForm} />
-          <Route path="/set-recovery-question" component={SecurityQuestion} />
-          <Route path="/mfa-select" component={MfaSelect} />
-          <Route path="/mfa-sms/verify" component={MfaSmsVerify} />
-          <Route path="/mfa-sms" component={MfaSms} />
-          <Route path="/mfa-okta/verify" component={MfaOktaVerify} />
-          <Route path="/mfa-okta" component={MfaOkta} />
-          <Route
-            path="/mfa-google-auth/verify"
-            component={MfaGoogleAuthVerify}
-          />
-          <Route path="/mfa-google-auth" component={MfaGoogleAuth} />
-          <Route path="/mfa-security-key" component={MfaSecurityKey} />
-          <Route path="/mfa-phone/verify" component={MfaPhoneVerify} />
-          <Route path="/mfa-phone" component={MfaPhone} />
-          <Route path="/mfa-email/verify" component={MfaEmailVerify} />
-          <Route path="/success" component={MfaComplete} />
-          <Route path="/not-found" component={PageNotFound} />
-        </Switch>
-      </Router>
+      <Routes>
+        <Route path="/" element={<PasswordForm />} />
+        <Route path="set-password" element={<PasswordForm />} />
+        <Route path="set-recovery-question" element={<SecurityQuestion />} />
+        <Route path="mfa-select" element={<MfaSelect />} />
+        <Route path="mfa-sms/verify" element={<MfaSmsVerify />} />
+        <Route path="mfa-sms" element={<MfaSms />} />
+        <Route path="mfa-okta/verify" element={<MfaOktaVerify />} />
+        <Route path="mfa-okta" element={<MfaOkta />} />
+        <Route
+          path="mfa-google-auth/verify"
+          element={<MfaGoogleAuthVerify />}
+        />
+        <Route path="mfa-google-auth" element={<MfaGoogleAuth />} />
+        <Route path="mfa-security-key" element={<MfaSecurityKey />} />
+        <Route path="mfa-phone/verify" element={<MfaPhoneVerify />} />
+        <Route path="mfa-phone" element={<MfaPhone />} />
+        <Route path="mfa-email/verify" element={<MfaEmailVerify />} />
+        <Route path="success" element={<MfaComplete />} />
+        <Route path="not-found" element={<PageNotFound />} />
+      </Routes>
     </Page>
   );
 };

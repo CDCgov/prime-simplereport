@@ -1,4 +1,4 @@
-import { Route, RouteComponentProps, Switch } from "react-router-dom";
+import { Route, Routes, useParams } from "react-router-dom";
 
 import { useDocumentTitle } from "../utils/hooks";
 
@@ -9,43 +9,34 @@ import ManageUsersContainer from "./Users/ManageUsersContainer";
 import SettingsNav from "./SettingsNav";
 import { ManageSelfRegistrationLinksContainer } from "./ManageSelfRegistrationLinksContainer";
 
-interface Params {
-  facilityId: string;
-}
-
-const Settings: React.FC<RouteComponentProps<{}>> = ({ match }) => {
+const Settings = () => {
   useDocumentTitle("Settings");
+  const { facilityId } = useParams();
+
   return (
     <main className="prime-home">
       <div className="grid-container">
         <SettingsNav />
-        <Switch>
+        <Routes>
+          <Route path="facilities" element={<ManageFacilitiesContainer />} />
           <Route
-            path={match.url + "/facilities"}
-            component={ManageFacilitiesContainer}
+            path="facility/:facilityId"
+            element={<FacilityFormContainer facilityId={facilityId} />}
           />
           <Route
-            path={match.url + "/facility/:facilityId"}
-            render={({ match }: RouteComponentProps<Params>) => (
-              <FacilityFormContainer facilityId={match.params.facilityId} />
-            )}
+            path="add-facility/"
+            element={<FacilityFormContainer facilityId={facilityId} />}
           />
           <Route
-            path={match.url + "/add-facility/"}
-            render={({ match }: RouteComponentProps<Params>) => (
-              <FacilityFormContainer facilityId={match.params.facilityId} />
-            )}
+            path="organization"
+            element={<ManageOrganizationContainer />}
           />
           <Route
-            path={match.url + "/organization"}
-            component={ManageOrganizationContainer}
+            path={"self-registration"}
+            element={<ManageSelfRegistrationLinksContainer />}
           />
-          <Route
-            path={match.url + "/self-registration"}
-            component={ManageSelfRegistrationLinksContainer}
-          />
-          <Route component={ManageUsersContainer} />
-        </Switch>
+          <Route path="/" element={<ManageUsersContainer />} />
+        </Routes>
       </div>
     </main>
   );

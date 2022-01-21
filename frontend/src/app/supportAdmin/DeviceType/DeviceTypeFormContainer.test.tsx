@@ -33,7 +33,7 @@ jest.mock("../../../generated/graphql", () => {
 });
 
 jest.mock("react-router-dom", () => ({
-  Redirect: (props: any) => `Redirected to ${props.to}`,
+  Navigate: (props: any) => `Redirected to ${props.to}`,
 }));
 
 describe("DeviceTypeFormContainer", () => {

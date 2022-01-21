@@ -1,6 +1,6 @@
 import { useState } from "react";
 import { gql, useQuery, useMutation } from "@apollo/client";
-import { Redirect } from "react-router-dom";
+import { Navigate } from "react-router-dom";
 import { useDispatch } from "react-redux";
 
 import { updateFacility } from "../../store";
@@ -191,7 +191,7 @@ const FacilityFormContainer: any = (props: Props) => {
     if (props.newOrg) {
       window.location.pathname = process.env.PUBLIC_URL || "";
     }
-    return <Redirect push to={{ pathname: "/settings/facilities" }} />;
+    return <Navigate to={{ pathname: "/settings/facilities" }} />;
   }
 
   const saveFacility = async (facility: Facility) => {

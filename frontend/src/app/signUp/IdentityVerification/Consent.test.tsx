@@ -1,10 +1,10 @@
 import { render, screen } from "@testing-library/react";
-import { MemoryRouter } from "react-router";
+import { MemoryRouter } from "react-router-dom";
 
 import Consent from "./Consent";
 
 jest.mock("react-router-dom", () => ({
-  Redirect: (props: any) => `Redirected to ${props.to.pathname}`,
+  Navigate: (props: any) => `Redirected to ${props.to.pathname}`,
 }));
 
 describe("Consent", () => {

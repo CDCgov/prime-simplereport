@@ -1,5 +1,5 @@
 import { useState } from "react";
-import { Redirect } from "react-router-dom";
+import { Navigate } from "react-router-dom";
 
 import Alert from "../../commonComponents/Alert";
 import { showNotification } from "../../utils";
@@ -61,7 +61,7 @@ const TenantDataAccessFormContainer = () => {
   };
 
   if (submitted) {
-    return <Redirect to="/admin" />;
+    return <Navigate to="/admin" />;
   }
 
   return (

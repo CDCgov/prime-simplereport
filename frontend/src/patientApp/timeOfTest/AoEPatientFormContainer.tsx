@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from "react";
-import { Redirect } from "react-router-dom";
+import { Navigate } from "react-router-dom";
 import { connect, useSelector } from "react-redux";
 
 import AoEForm from "../../app/testQueue/AoEForm/AoEForm";
@@ -30,7 +30,7 @@ const AoEPatientFormContainer: React.FC = () => {
 
   if (nextPage) {
     return (
-      <Redirect
+      <Navigate
         to={{
           pathname: "/success",
           search: `?plid=${plid}`,

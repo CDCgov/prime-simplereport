@@ -4,7 +4,7 @@ import {
   waitForElementToBeRemoved,
 } from "@testing-library/react";
 import userEvent from "@testing-library/user-event";
-import { MemoryRouter, Route, Switch } from "react-router";
+import { MemoryRouter, Route, Routes } from "react-router-dom";
 
 import { MfaSmsVerify } from "../MfaSmsVerify/MfaSmsVerify";
 
@@ -30,10 +30,10 @@ describe("SMS MFA", () => {
           },
         ]}
       >
-        <Switch>
+        <Routes>
           <Route path="/mfa-sms" component={MfaSms} />
           <Route path="/mfa-sms/verify" component={MfaSmsVerify} />
-        </Switch>
+        </Routes>
       </MemoryRouter>
     );
   });

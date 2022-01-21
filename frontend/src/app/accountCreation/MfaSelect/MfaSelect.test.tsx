@@ -1,6 +1,6 @@
 import { render, screen } from "@testing-library/react";
 import userEvent from "@testing-library/user-event";
-import { MemoryRouter, Route, Switch } from "react-router";
+import { MemoryRouter, Route, Routes } from "react-router-dom";
 
 import { MfaEmailVerify } from "../MfaEmailVerify/MfaEmailVerify";
 import { MfaGoogleAuth } from "../MfaGoogleAuth/MfaGoogleAuth";
@@ -76,7 +76,7 @@ describe("MfaSelect routing", () => {
 
     render(
       <MemoryRouter initialEntries={["/mfa-select"]}>
-        <Switch>
+        <Routes>
           <Route path="/mfa-select" component={MfaSelect} />
           <Route path="/mfa-sms" component={MfaSms} />
           <Route path="/mfa-okta" component={MfaOkta} />
@@ -84,7 +84,7 @@ describe("MfaSelect routing", () => {
           <Route path="/mfa-security-key" component={MfaSecurityKey} />
           <Route path="/mfa-phone" component={MfaPhone} />
           <Route path="/mfa-email/verify" component={MfaEmailVerify} />
-        </Switch>
+        </Routes>
       </MemoryRouter>
     );
 

@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from "react";
 import { gql, useLazyQuery, useMutation } from "@apollo/client";
-import { Redirect } from "react-router-dom";
+import { Navigate } from "react-router-dom";
 import { useTranslation } from "react-i18next";
 import moment from "moment";
 import { useSelector } from "react-redux";
@@ -225,7 +225,7 @@ const AddPatient = () => {
   >(undefined);
 
   if (redirect) {
-    return <Redirect to={redirect} />;
+    return <Navigate to={redirect} />;
   }
 
   if (!activeFacilityId) {

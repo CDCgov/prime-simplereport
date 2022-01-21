@@ -1,5 +1,5 @@
 import { useCallback, useEffect, useState } from "react";
-import { Redirect } from "react-router";
+import { Navigate } from "react-router-dom";
 
 import { Card } from "../../commonComponents/Card/Card";
 import { CardBackground } from "../../commonComponents/CardBackground/CardBackground";
@@ -80,12 +80,11 @@ export const MfaSendCodeToContact = (props: Props) => {
 
   if (submitted) {
     return (
-      <Redirect
-        push
+      <Navigate
         to={{
           pathname: `${window.location.pathname.split("/uac")[1]}/verify`,
-          state: { contact },
         }}
+        state={contact}
       />
     );
   }

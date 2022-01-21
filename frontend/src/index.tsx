@@ -8,7 +8,7 @@ import {
   InMemoryCache,
   concat,
 } from "@apollo/client";
-import { Switch, Route, BrowserRouter as Router } from "react-router-dom";
+import { Route, BrowserRouter as Router, Routes } from "react-router-dom";
 import { createUploadLink } from "apollo-upload-client";
 import { ErrorResponse, onError } from "@apollo/client/link/error";
 import { ApplicationInsights } from "@microsoft/applicationinsights-web";
@@ -117,19 +117,19 @@ export const ReactApp = (
         <Router basename={process.env.PUBLIC_URL}>
           <TelemetryProvider>
             <PrimeErrorBoundary>
-              <Switch>
-                <Route path="/health" component={HealthChecks} />
-                <Route path="/pxp" component={PatientApp} />
-                <Route path="/uac" component={AccountCreationApp} />
-                <Route path="/sign-up" component={SignUpApp} />
+              <Routes>
+                <Route path="/health/*" element={<HealthChecks />} />
+                <Route path="/pxp/*" element={<PatientApp />} />
+                <Route path="/uac/*" element={<AccountCreationApp />} />
+                <Route path="/sign-up/*" element={<SignUpApp />} />
                 <Route
                   path="/register/:registrationLink"
-                  component={SelfRegistration}
+                  element={<SelfRegistration />}
                 />
-                <Route path="/session-timeout" component={SessionTimeout} />
-                <Route path="/" component={App} />
-                <Route component={() => <>Page not found</>} />
-              </Switch>
+                <Route path="/session-timeout" element={<SessionTimeout />} />
+                <Route path="/*" element={<App />} />
+                <Route element={<>Page not found</>} />
+              </Routes>
             </PrimeErrorBoundary>
           </TelemetryProvider>
         </Router>

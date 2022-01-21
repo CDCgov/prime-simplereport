@@ -1,18 +1,17 @@
 // this component removes all filter search params from the url
 import qs from "querystring";
 
-import { useHistory } from "react-router-dom";
-import React from "react";
+import { useNavigate } from "react-router-dom";
 
 import { useSelectedFacility } from "../facilitySelect/useSelectedFacility";
 
 const CleanTestResultsList = () => {
-  const history = useHistory();
+  const navigate = useNavigate();
   const [facility] = useSelectedFacility();
   const activeFacilityId = facility?.id || "";
 
-  if (activeFacilityId && history) {
-    history.push({
+  if (activeFacilityId && navigate) {
+    navigate({
       pathname: "/results/1",
       search: qs.stringify({
         facility: activeFacilityId,

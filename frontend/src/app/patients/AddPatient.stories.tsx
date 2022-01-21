@@ -1,7 +1,7 @@
 import { Story, Meta } from "@storybook/react";
 import { Provider } from "react-redux";
 import { MockedProvider } from "@apollo/client/testing";
-import { MemoryRouter } from "react-router";
+import { MemoryRouter } from "react-router-dom";
 import configureStore from "redux-mock-store";
 
 import AddPatient from "./AddPatient";

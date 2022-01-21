@@ -4,7 +4,7 @@ import {
   waitForElementToBeRemoved,
 } from "@testing-library/react";
 import userEvent from "@testing-library/user-event";
-import { MemoryRouter, Route, Switch } from "react-router";
+import { MemoryRouter, Route, Routes } from "react-router-dom";
 
 import { MfaComplete } from "../MfaComplete/MfaComplete";
 
@@ -39,10 +39,10 @@ describe("Verify Okta MFA", () => {
           },
         ]}
       >
-        <Switch>
+        <Routes>
           <Route path="/mfa-okta/verify" component={MfaOktaVerify} />
           <Route path="/success" component={MfaComplete} />
-        </Switch>
+        </Routes>
       </MemoryRouter>
     );
   });

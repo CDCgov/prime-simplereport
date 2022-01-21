@@ -1,6 +1,6 @@
 import qs from "querystring";
 
-import { useHistory } from "react-router-dom";
+import { useLocation, useNavigate, useParams } from "react-router-dom";
 import { gql, useLazyQuery, useQuery } from "@apollo/client";
 import React, {
   ChangeEventHandler,
@@ -629,10 +629,6 @@ export const testResultQuery = gql`
   }
 `;
 
-type TestResultsListProps = {
-  pageNumber: number;
-};
-
 export interface ResultsQueryVariables {
   patientId?: string | null;
   facilityId: string;
@@ -644,19 +640,21 @@ export interface ResultsQueryVariables {
   pageSize: number;
 }
 
-const TestResultsList = (props: TestResultsListProps) => {
+const TestResultsList = () => {
   useDocumentTitle("Results");
+  const params = useParams();
 
   const [facility] = useSelectedFacility();
   const activeFacilityId = facility?.id || "";
 
-  const history = useHistory();
+  const location = useLocation();
+  const navigate = useNavigate();
 
-  const patientId = getParameterFromUrl("patientId", history.location);
-  const startDate = getParameterFromUrl("startDate", history.location);
-  const endDate = getParameterFromUrl("endDate", history.location);
-  const role = getParameterFromUrl("role", history.location);
-  const result = getParameterFromUrl("result", history.location);
+  const patientId = getParameterFromUrl("patientId", location);
+  const startDate = getParameterFromUrl("startDate", location);
+  const endDate = getParameterFromUrl("endDate", location);
+  const role = getParameterFromUrl("role", location);
+  const result = getParameterFromUrl("result", location);
 
   const filterParams: FilterParams = {
     ...(patientId && { patientId: patientId }),
@@ -667,7 +665,7 @@ const TestResultsList = (props: TestResultsListProps) => {
   };
 
   const filter = (params: FilterParams) => {
-    history.push({
+    navigate({
       pathname: "/results/1",
       search: qs.stringify({
         facility: activeFacilityId,
@@ -681,16 +679,16 @@ const TestResultsList = (props: TestResultsListProps) => {
     filter({ [key]: val });
   };
 
-  const refetch = () => history.go(0);
+  const refetch = () => navigate(0);
 
   const clearFilterParams = () =>
-    history.push({
+    navigate({
       pathname: "/results/1",
       search: qs.stringify({ facility: activeFacilityId }),
     });
 
   const entriesPerPage = 20;
-  const pageNumber = props.pageNumber || 1;
+  const pageNumber = Number(params.pageNumber) || 1;
 
   const resultsQueryVariables: ResultsQueryVariables = {
     facilityId: activeFacilityId,

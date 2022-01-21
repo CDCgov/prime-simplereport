@@ -1,6 +1,5 @@
 import { useState } from "react";
-import { useLocation } from "react-router";
-import { Redirect } from "react-router-dom";
+import { useLocation, Navigate } from "react-router-dom";
 
 import { Card } from "../../commonComponents/Card/Card";
 import { CardBackground } from "../../commonComponents/CardBackground/CardBackground";
@@ -17,7 +16,7 @@ const Consent = () => {
   const [submitted, setSubmitted] = useState(false);
 
   if (!orgExternalId || !firstName || !lastName) {
-    return <Redirect to={{ pathname: "/sign-up" }} />;
+    return <Navigate to={{ pathname: "/sign-up" }} />;
   }
 
   if (submitted) {

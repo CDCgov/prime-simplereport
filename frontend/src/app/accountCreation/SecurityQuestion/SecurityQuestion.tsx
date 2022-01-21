@@ -1,5 +1,5 @@
 import { useState } from "react";
-import { Redirect } from "react-router";
+import { Navigate } from "react-router-dom";
 
 import { Card } from "../../commonComponents/Card/Card";
 import { CardBackground } from "../../commonComponents/CardBackground/CardBackground";
@@ -71,7 +71,7 @@ export const SecurityQuestion = () => {
   }
 
   if (submitted) {
-    return <Redirect push to="/mfa-select" />;
+    return <Navigate to="/mfa-select" />;
   }
 
   return (

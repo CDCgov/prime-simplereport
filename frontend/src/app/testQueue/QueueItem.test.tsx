@@ -15,11 +15,9 @@ jest.mock("../TelemetryService", () => ({
   getAppInsights: jest.fn(),
 }));
 
-const mockPush = jest.fn();
+const mockNavigate = jest.fn();
 jest.mock("react-router-dom", () => ({
-  useHistory: () => ({
-    push: mockPush,
-  }),
+  useNavigate: () => mockNavigate,
 }));
 
 const initialDateString = "2021-02-14";
@@ -108,7 +106,7 @@ describe("QueueItem", () => {
     const patientName = screen.getByText("Potter, Harry James");
     expect(patientName).toBeInTheDocument();
     userEvent.click(patientName);
-    expect(mockPush).toHaveBeenCalledWith({
+    expect(mockNavigate).toHaveBeenCalledWith({
       pathname: "/patient/f5c7658d-a0d5-4ec5-a1c9-eafc85fe7554",
       search: "?facility=Hogwarts+123",
     });

@@ -1,5 +1,5 @@
 import { ChangeEvent, useCallback, useEffect, useState } from "react";
-import { Redirect } from "react-router";
+import { Navigate } from "react-router-dom";
 
 import TextInput from "../../commonComponents/TextInput";
 import Button from "../../commonComponents/Button/Button";
@@ -166,7 +166,7 @@ export const PasswordForm = () => {
   }
 
   if (submitted) {
-    return <Redirect push to="/set-recovery-question" />;
+    return <Navigate to="/set-recovery-question" />;
   }
 
   return (

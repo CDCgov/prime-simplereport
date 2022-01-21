@@ -1,15 +1,16 @@
 import { useEffect } from "react";
-import { RouteComponentProps, withRouter } from "react-router";
+import { useLocation } from "react-router-dom";
 
 import { VersionService } from "./VersionService";
 
-const VersionEnforcer: React.FunctionComponent<RouteComponentProps> = (
-  props: RouteComponentProps
-) => {
+const VersionEnforcer = () => {
+  const location = useLocation();
+
   useEffect(() => {
     VersionService.enforce();
-  }, [props.location]);
+  }, [location]);
+
   return null;
 };
 
-export default withRouter(VersionEnforcer);
+export default VersionEnforcer;

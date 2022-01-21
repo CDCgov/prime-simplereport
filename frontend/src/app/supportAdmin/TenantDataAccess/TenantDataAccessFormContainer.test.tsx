@@ -4,7 +4,7 @@ import {
   waitForElementToBeRemoved,
 } from "@testing-library/react";
 import userEvent from "@testing-library/user-event";
-import { MemoryRouter } from "react-router";
+import { MemoryRouter } from "react-router-dom";
 import { Provider } from "react-redux";
 import { MockedProvider } from "@apollo/client/testing";
 import configureStore from "redux-mock-store";
@@ -40,7 +40,7 @@ jest.mock("./TenantDataAccessForm", () => {
   };
 });
 jest.mock("react-router-dom", () => ({
-  Redirect: () => <p>Redirected</p>,
+  Navigate: () => <p>Redirected</p>,
 }));
 
 const store = configureStore([])({

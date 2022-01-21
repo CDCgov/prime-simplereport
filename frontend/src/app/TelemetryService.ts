@@ -3,13 +3,12 @@ import {
   SeverityLevel,
 } from "@microsoft/applicationinsights-web";
 import { ReactPlugin } from "@microsoft/applicationinsights-react-js";
-import { useHistory } from "react-router";
 
 let reactPlugin: ReactPlugin | null = null;
 let appInsights: ApplicationInsights | null = null;
 
 const createTelemetryService = () => {
-  const initialize = (browserHistory?: ReturnType<typeof useHistory>) => {
+  const initialize = () => {
     const connectionString =
       process.env.REACT_APP_APPLICATIONINSIGHTS_CONNECTION_STRING;
 
@@ -31,11 +30,6 @@ const createTelemetryService = () => {
         enableAutoRouteTracking: true,
         loggingLevelTelemetry: 2,
         maxBatchInterval: 0,
-        extensionConfig: browserHistory
-          ? {
-              [reactPlugin.identifier]: { history: browserHistory },
-            }
-          : undefined,
       },
     });
 

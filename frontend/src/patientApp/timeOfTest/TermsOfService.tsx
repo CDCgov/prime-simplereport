@@ -1,8 +1,8 @@
 import React, { useState } from "react";
 import { useSelector } from "react-redux";
-import { Redirect } from "react-router";
 import classnames from "classnames";
 import { Trans, useTranslation } from "react-i18next";
+import { Navigate } from "react-router-dom";
 
 import Button from "../../app/commonComponents/Button/Button";
 
@@ -24,7 +24,7 @@ const TermsOfService: React.FunctionComponent<Props> = ({
 
   if (nextPage) {
     return (
-      <Redirect
+      <Navigate
         to={{
           pathname: "/birth-date-confirmation",
           search: `?plid=${plid}`,

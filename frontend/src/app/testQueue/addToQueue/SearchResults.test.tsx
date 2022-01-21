@@ -1,5 +1,5 @@
 import React from "react";
-import { MemoryRouter } from "react-router";
+import { MemoryRouter } from "react-router-dom";
 import { render, screen } from "@testing-library/react";
 import userEvent from "@testing-library/user-event";
 
@@ -57,7 +57,7 @@ const RouterWithFacility: React.FC = ({ children }) => (
 );
 
 jest.mock("react-router-dom", () => ({
-  Redirect: (props: any) => `Redirected to ${props.to}`,
+  Navigate: (props: any) => `Redirected to ${props.to}`,
 }));
 
 describe("SearchResults", () => {

@@ -1,6 +1,6 @@
 import { useEffect, useState } from "react";
 import { connect, useSelector, useDispatch } from "react-redux";
-import { Redirect, useHistory } from "react-router-dom";
+import { Navigate, useNavigate } from "react-router-dom";
 
 import { setPatient as reduxSetPatient } from "../../app/store";
 import { PxpApi } from "../../patientApp/PxpApiService";
@@ -13,7 +13,7 @@ import Alert from "../../app/commonComponents/Alert";
 import Button from "../../app/commonComponents/Button/Button";
 
 const PatientFormContainer = () => {
-  const history = useHistory();
+  const navigate = useNavigate();
   const [nextPage, setNextPage] = useState(false);
   const patient = useSelector((state: any) => state.patient);
 
@@ -28,7 +28,7 @@ const PatientFormContainer = () => {
 
   if (nextPage) {
     return (
-      <Redirect
+      <Navigate
         to={{
           pathname: "/patient-info-symptoms",
           search: `?plid=${plid}`,
@@ -100,7 +100,7 @@ const PatientFormContainer = () => {
                   className="margin-top-1 mobile-lg:margin-top-0 margin-right-0"
                   variant="outline"
                   label={"Back"}
-                  onClick={() => history.goBack()}
+                  onClick={() => navigate(-1)}
                 />
               </div>
             )}
