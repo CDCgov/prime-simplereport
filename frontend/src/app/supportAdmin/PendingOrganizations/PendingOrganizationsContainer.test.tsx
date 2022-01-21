@@ -616,11 +616,11 @@ describe("PendingOrganizationsContainer", () => {
         Array.from(await screen.findAllByTestId("delete-org-button"))[1]
       );
       expect(
-        await screen.findByText("Confirm deletion of the following org", {
+        await screen.findByText("Delete this organization?", {
           exact: false,
         })
       ).toBeInTheDocument();
-      expect(await screen.findByText("Cancel")).toBeInTheDocument();
+      expect(await screen.findByText("No, go back")).toBeInTheDocument();
       expect(await screen.findByText("Delete")).toBeEnabled();
     });
     it("Facility deletion works", async () => {
@@ -631,7 +631,7 @@ describe("PendingOrganizationsContainer", () => {
         Array.from(await screen.findAllByTestId("delete-org-button"))[1]
       );
       expect(
-        await screen.findByText("Confirm deletion of the following org", {
+        await screen.findByText("Delete this organization?", {
           exact: false,
         })
       ).toBeInTheDocument();

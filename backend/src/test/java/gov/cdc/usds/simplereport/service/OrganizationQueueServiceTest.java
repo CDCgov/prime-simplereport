@@ -191,7 +191,6 @@ class OrganizationQueueServiceTest extends BaseServiceTest<OrganizationQueueServ
             IllegalStateException.class,
             // fake external ID
             () -> _service.markPendingOrganizationAsDeleted("some-nonexistent-id", true));
-    assertEquals(
-        "Requesting deletion on an organization that does not exist.", caught.getMessage());
+    assertEquals("This organization doesn't exist", caught.getMessage());
   }
 }

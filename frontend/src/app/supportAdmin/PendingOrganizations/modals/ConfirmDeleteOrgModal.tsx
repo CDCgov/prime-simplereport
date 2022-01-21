@@ -3,7 +3,6 @@ import Modal from "react-modal";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 
 import Button from "../../../commonComponents/Button/Button";
-import TextInput from "../../../commonComponents/TextInput";
 
 import { DeletionModalProps } from "./modal_utils";
 
@@ -13,13 +12,8 @@ const ConfirmDeleteOrgModal: React.FC<DeletionModalProps> = ({
   handleDelete,
   isUpdating,
 }) => {
-  const commonInputProps = {
-    disabled: true,
-    required: false,
-    // don't do anything on change because input fields are for display purposes
-    // only
-    onChange: () => {},
-  };
+  const adminName =
+    organization.adminFirstName + " " + organization.adminLastName;
   return (
     <Modal
       isOpen={true}
@@ -37,7 +31,7 @@ const ConfirmDeleteOrgModal: React.FC<DeletionModalProps> = ({
       <div className="border-0 card-container">
         <div className="display-flex flex-justify">
           <h1 className="font-heading-lg margin-top-05 margin-bottom-0">
-            Confirm deletion of the following org
+            Delete this organization?
           </h1>
           <button
             onClick={handleClose}
@@ -53,18 +47,14 @@ const ConfirmDeleteOrgModal: React.FC<DeletionModalProps> = ({
         </div>
         <div className="border-top border-base-lighter margin-x-neg-205 margin-top-205"></div>
         <div>
-          <TextInput
-            {...commonInputProps}
-            label="Organization name"
-            name="Organization name"
-            value={organization.name}
-          />
-          <TextInput
-            {...commonInputProps}
-            name="Created at"
-            label="Created at"
-            value={organization.createdAt}
-          />
+          <p className="delete-modal-header">Organization name</p>
+          <p className="delete-modal-info">{organization.name}</p>
+          <p className="delete-modal-header">Admin name</p>
+          <p className="delete-modal-info">{adminName}</p>
+          <p className="delete-modal-header">Admin email</p>
+          <p className="delete-modal-info">
+            {organization.adminEmail ? organization.adminEmail : "null"}
+          </p>
         </div>
 
         <div className="border-top border-base-lighter margin-x-neg-205 margin-top-5 padding-top-205 text-right">
@@ -73,7 +63,7 @@ const ConfirmDeleteOrgModal: React.FC<DeletionModalProps> = ({
               className="margin-right-2"
               onClick={handleClose}
               variant="unstyled"
-              label="Cancel"
+              label="No, go back"
             />
             <Button
               className="margin-right-2"

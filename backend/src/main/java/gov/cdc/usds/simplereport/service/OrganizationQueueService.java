@@ -109,8 +109,7 @@ public class OrganizationQueueService {
         _orgQueueRepo.findUnverifiedByExternalId(orgExternalId);
 
     if (optionalQueueItem.isEmpty()) {
-      throw new IllegalStateException(
-          "Requesting deletion on an organization that does not exist.");
+      throw new IllegalStateException("This organization doesn't exist");
     }
 
     OrganizationQueueItem queueItem = optionalQueueItem.get();

@@ -205,9 +205,8 @@ const PendingOrganizations = ({
           {new Date(o.createdAt).toLocaleString()}
         </td>
         <td>{o.externalId}</td>
-        <td>
+        <td className="verify-button-container">
           <Button
-            className="sr-active-button"
             onClick={() => {
               setOrgToVerify(o);
             }}
@@ -262,7 +261,7 @@ const PendingOrganizations = ({
               <table className="usa-table usa-table--borderless width-full">
                 <thead>
                   <tr>
-                    <th scope="col">Name</th>
+                    <th scope="col">Organization name</th>
                     <th scope="row">Administrator</th>
                     <th scope="row">Contact information</th>
                     <th scope="row">Created</th>
