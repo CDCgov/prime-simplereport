@@ -7,38 +7,88 @@ import { Provider } from "react-redux";
 import PatientHeader from "./PatientHeader";
 
 describe("PatientHeader", () => {
-  const mockStore = configureStore([]);
-  const store = mockStore({
-    facilities: [{ id: "fake-id", name: "123" }],
+  let mockStore: any;
+  let store: any;
+
+  beforeEach(() => {
+    mockStore = configureStore([]);
   });
 
-  it("contains language toggler", () => {
-    render(
-      <MemoryRouter>
-        <Provider store={store}>
-          <PatientHeader />
-        </Provider>
-      </MemoryRouter>
-    );
+  describe("internationalization", () => {
+    beforeEach(() => {
+      store = mockStore({
+        facilities: [{ id: "fake-id", name: "123" }],
+      });
+    });
 
-    expect(screen.getByText("Español")).toBeInTheDocument();
-    expect(screen.getByRole("button")).toBeInTheDocument();
+    it("contains language toggler", () => {
+      render(
+        <MemoryRouter>
+          <Provider store={store}>
+            <PatientHeader />
+          </Provider>
+        </MemoryRouter>
+      );
+
+      expect(screen.getByText("Español")).toBeInTheDocument();
+      expect(screen.getByRole("button")).toBeInTheDocument();
+    });
+
+    it("language toggler switches display language when clicked", async () => {
+      render(
+        <MemoryRouter>
+          <Provider store={store}>
+            <PatientHeader />
+          </Provider>
+        </MemoryRouter>
+      );
+
+      expect(screen.getByText("Español")).toBeInTheDocument();
+
+      userEvent.click(screen.getByRole("button"));
+
+      expect(screen.queryByText("Español")).not.toBeInTheDocument();
+      expect(screen.getByText("English")).toBeInTheDocument();
+    });
   });
 
-  it("language toggler switches display language when clicked", async () => {
-    render(
-      <MemoryRouter>
-        <Provider store={store}>
-          <PatientHeader />
-        </Provider>
-      </MemoryRouter>
-    );
+  describe("banner text", () => {
+    it("does not include organization and facility name in test where not available", async () => {
+      render(
+        <MemoryRouter>
+          <Provider store={store}>
+            <PatientHeader />
+          </Provider>
+        </MemoryRouter>
+      );
 
-    expect(screen.getByText("Español")).toBeInTheDocument();
+      expect(
+        await screen.findByTestId("banner-text", { exact: false })
+      ).toHaveTextContent("");
+    });
 
-    userEvent.click(screen.getByRole("button"));
+    it("includes organization and facility name", async () => {
+      store = mockStore({
+        facilities: [{ id: "fake-id", name: "123" }],
+        organization: { name: "Test Org" },
+        patient: {
+          lastTest: {
+            facilityName: "Test Facility",
+          },
+        },
+      });
 
-    expect(screen.queryByText("Español")).not.toBeInTheDocument();
-    expect(screen.getByText("English")).toBeInTheDocument();
+      render(
+        <MemoryRouter>
+          <Provider store={store}>
+            <PatientHeader />
+          </Provider>
+        </MemoryRouter>
+      );
+
+      expect(
+        await screen.findByText("Test Org, Test Facility", { exact: false })
+      ).toBeInTheDocument();
+    });
   });
 });
