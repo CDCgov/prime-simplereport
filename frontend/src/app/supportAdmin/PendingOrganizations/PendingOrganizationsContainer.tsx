@@ -40,9 +40,6 @@ const PendingOrganizationsContainer = () => {
       })
       .catch((e) => {
         console.error(e);
-        showNotification(
-          <Alert type="error" title={`Identity verification failed`} body={e} />
-        );
         return Promise.reject("Organization verification failed");
       });
   };
@@ -73,13 +70,6 @@ const PendingOrganizationsContainer = () => {
       })
       .catch((e) => {
         console.error(e);
-        showNotification(
-          <Alert
-            type="error"
-            title={`Deletion process failed for ${name}`}
-            body={e}
-          />
-        );
         return Promise.reject("Organization deletion failed");
       });
   };
