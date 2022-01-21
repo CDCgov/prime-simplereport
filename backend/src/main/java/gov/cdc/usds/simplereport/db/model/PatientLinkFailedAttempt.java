@@ -10,7 +10,7 @@ import javax.persistence.OneToOne;
 
 @Entity
 public class PatientLinkFailedAttempt {
-  public static final byte LOCKOUT_THRESHOLD = 5;
+  public static final byte LOCKOUT_THRESHOLD = 10;
 
   @Id private UUID patientLinkInternalId;
 
