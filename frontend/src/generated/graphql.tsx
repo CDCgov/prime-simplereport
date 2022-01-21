@@ -2141,6 +2141,77 @@ export type ResendTestResultsEmailMutation = {
   sendPatientLinkEmailByTestEventId?: Maybe<boolean>;
 };
 
+export type GetFacilityResultsForCsvQueryVariables = Exact<{
+  facilityId?: Maybe<Scalars["ID"]>;
+  patientId?: Maybe<Scalars["ID"]>;
+  result?: Maybe<Scalars["String"]>;
+  role?: Maybe<Scalars["String"]>;
+  startDate?: Maybe<Scalars["DateTime"]>;
+  endDate?: Maybe<Scalars["DateTime"]>;
+  pageNumber?: Maybe<Scalars["Int"]>;
+  pageSize?: Maybe<Scalars["Int"]>;
+}>;
+
+export type GetFacilityResultsForCsvQuery = {
+  __typename?: "Query";
+  testResults?: Maybe<
+    Array<
+      Maybe<{
+        __typename?: "TestResult";
+        dateTested?: Maybe<any>;
+        result?: Maybe<string>;
+        correctionStatus?: Maybe<string>;
+        reasonForCorrection?: Maybe<string>;
+        symptoms?: Maybe<string>;
+        noSymptoms?: Maybe<boolean>;
+        symptomOnset?: Maybe<any>;
+        facility?: Maybe<{ __typename?: "Facility"; name: string }>;
+        deviceType?: Maybe<{
+          __typename?: "DeviceType";
+          name: string;
+          manufacturer: string;
+          model: string;
+          swabType?: Maybe<string>;
+        }>;
+        patient?: Maybe<{
+          __typename?: "Patient";
+          firstName?: Maybe<string>;
+          middleName?: Maybe<string>;
+          lastName?: Maybe<string>;
+          birthDate?: Maybe<any>;
+          gender?: Maybe<string>;
+          race?: Maybe<string>;
+          ethnicity?: Maybe<string>;
+          tribalAffiliation?: Maybe<Array<Maybe<string>>>;
+          lookupId?: Maybe<string>;
+          telephone?: Maybe<string>;
+          email?: Maybe<string>;
+          street?: Maybe<string>;
+          streetTwo?: Maybe<string>;
+          city?: Maybe<string>;
+          county?: Maybe<string>;
+          state?: Maybe<string>;
+          zipCode?: Maybe<string>;
+          country?: Maybe<string>;
+          role?: Maybe<string>;
+          residentCongregateSetting?: Maybe<boolean>;
+          employedInHealthcare?: Maybe<boolean>;
+          preferredLanguage?: Maybe<string>;
+        }>;
+        createdBy?: Maybe<{
+          __typename?: "ApiUser";
+          nameInfo?: Maybe<{
+            __typename?: "NameInfo";
+            firstName?: Maybe<string>;
+            middleName?: Maybe<string>;
+            lastName: string;
+          }>;
+        }>;
+      }>
+    >
+  >;
+};
+
 export const WhoAmIDocument = gql`
   query WhoAmI {
     whoami {
@@ -6060,4 +6131,133 @@ export type ResendTestResultsEmailMutationResult = Apollo.MutationResult<ResendT
 export type ResendTestResultsEmailMutationOptions = Apollo.BaseMutationOptions<
   ResendTestResultsEmailMutation,
   ResendTestResultsEmailMutationVariables
+>;
+export const GetFacilityResultsForCsvDocument = gql`
+  query GetFacilityResultsForCsv(
+    $facilityId: ID
+    $patientId: ID
+    $result: String
+    $role: String
+    $startDate: DateTime
+    $endDate: DateTime
+    $pageNumber: Int
+    $pageSize: Int
+  ) {
+    testResults(
+      facilityId: $facilityId
+      patientId: $patientId
+      result: $result
+      role: $role
+      startDate: $startDate
+      endDate: $endDate
+      pageNumber: $pageNumber
+      pageSize: $pageSize
+    ) {
+      facility {
+        name
+      }
+      dateTested
+      result
+      correctionStatus
+      reasonForCorrection
+      deviceType {
+        name
+        manufacturer
+        model
+        swabType
+      }
+      patient {
+        firstName
+        middleName
+        lastName
+        birthDate
+        gender
+        race
+        ethnicity
+        tribalAffiliation
+        lookupId
+        telephone
+        email
+        street
+        streetTwo
+        city
+        county
+        state
+        zipCode
+        country
+        role
+        residentCongregateSetting
+        employedInHealthcare
+        preferredLanguage
+      }
+      createdBy {
+        nameInfo {
+          firstName
+          middleName
+          lastName
+        }
+      }
+      symptoms
+      noSymptoms
+      symptomOnset
+    }
+  }
+`;
+
+/**
+ * __useGetFacilityResultsForCsvQuery__
+ *
+ * To run a query within a React component, call `useGetFacilityResultsForCsvQuery` and pass it any options that fit your needs.
+ * When your component renders, `useGetFacilityResultsForCsvQuery` returns an object from Apollo Client that contains loading, error, and data properties
+ * you can use to render your UI.
+ *
+ * @param baseOptions options that will be passed into the query, supported options are listed on: https://www.apollographql.com/docs/react/api/react-hooks/#options;
+ *
+ * @example
+ * const { data, loading, error } = useGetFacilityResultsForCsvQuery({
+ *   variables: {
+ *      facilityId: // value for 'facilityId'
+ *      patientId: // value for 'patientId'
+ *      result: // value for 'result'
+ *      role: // value for 'role'
+ *      startDate: // value for 'startDate'
+ *      endDate: // value for 'endDate'
+ *      pageNumber: // value for 'pageNumber'
+ *      pageSize: // value for 'pageSize'
+ *   },
+ * });
+ */
+export function useGetFacilityResultsForCsvQuery(
+  baseOptions?: Apollo.QueryHookOptions<
+    GetFacilityResultsForCsvQuery,
+    GetFacilityResultsForCsvQueryVariables
+  >
+) {
+  const options = { ...defaultOptions, ...baseOptions };
+  return Apollo.useQuery<
+    GetFacilityResultsForCsvQuery,
+    GetFacilityResultsForCsvQueryVariables
+  >(GetFacilityResultsForCsvDocument, options);
+}
+export function useGetFacilityResultsForCsvLazyQuery(
+  baseOptions?: Apollo.LazyQueryHookOptions<
+    GetFacilityResultsForCsvQuery,
+    GetFacilityResultsForCsvQueryVariables
+  >
+) {
+  const options = { ...defaultOptions, ...baseOptions };
+  return Apollo.useLazyQuery<
+    GetFacilityResultsForCsvQuery,
+    GetFacilityResultsForCsvQueryVariables
+  >(GetFacilityResultsForCsvDocument, options);
+}
+export type GetFacilityResultsForCsvQueryHookResult = ReturnType<
+  typeof useGetFacilityResultsForCsvQuery
+>;
+export type GetFacilityResultsForCsvLazyQueryHookResult = ReturnType<
+  typeof useGetFacilityResultsForCsvLazyQuery
+>;
+export type GetFacilityResultsForCsvQueryResult = Apollo.QueryResult<
+  GetFacilityResultsForCsvQuery,
+  GetFacilityResultsForCsvQueryVariables
 >;

@@ -37,6 +37,14 @@ public class Facility extends OrganizationScopedEternalEntity implements Located
   @JoinColumn(name = "default_device_specimen_type_id")
   private DeviceSpecimenType defaultDeviceSpecimen;
 
+  @ManyToOne(optional = true, fetch = FetchType.EAGER)
+  @JoinColumn(name = "default_device_type_id")
+  private DeviceType defaultDeviceType;
+
+  @ManyToOne(optional = true, fetch = FetchType.EAGER)
+  @JoinColumn(name = "default_specimen_type_id")
+  private SpecimenType defaultSpecimenType;
+
   @ManyToMany(fetch = FetchType.EAGER)
   @JoinTable(
       name = "facility_device_specimen_type",
@@ -152,6 +160,8 @@ public class Facility extends OrganizationScopedEternalEntity implements Located
   public void addDefaultDeviceSpecimen(DeviceSpecimenType newDefault) {
     if (newDefault != null) {
       configuredDeviceTypes.add(newDefault.getDeviceType());
+      this.defaultDeviceType = newDefault.getDeviceType();
+      this.defaultSpecimenType = newDefault.getSpecimenType();
     }
 
     defaultDeviceSpecimen = newDefault;
