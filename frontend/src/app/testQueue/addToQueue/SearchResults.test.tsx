@@ -1,5 +1,5 @@
 import React from "react";
-import { MemoryRouter } from "react-router-dom";
+import { MemoryRouter, Route, Routes } from "react-router-dom";
 import { render, screen } from "@testing-library/react";
 import userEvent from "@testing-library/user-event";
 
@@ -52,26 +52,35 @@ const patients: Patient[] = [
 const mockFacilityID = "facility-id-101";
 const RouterWithFacility: React.FC = ({ children }) => (
   <MemoryRouter initialEntries={[`/queue?facility=${mockFacilityID}`]}>
-    {children}
+    <Routes>{children}</Routes>
   </MemoryRouter>
 );
 
-jest.mock("react-router-dom", () => ({
-  Navigate: (props: any) => `Redirected to ${props.to}`,
-}));
+jest.mock("react-router-dom", () => {
+  const original = jest.requireActual("react-router-dom");
+  return {
+    ...original,
+    Navigate: (props: any) => `Redirected to ${props.to}`,
+  };
+});
 
 describe("SearchResults", () => {
   describe("No Results", () => {
     it("should say 'No Results' for no matches", () => {
       render(
         <RouterWithFacility>
-          <SearchResults
-            page="queue"
-            patients={[]}
-            patientsInQueue={[]}
-            onAddToQueue={jest.fn()}
-            shouldShowSuggestions={true}
-            loading={false}
+          <Route
+            path="/queue"
+            element={
+              <SearchResults
+                page="queue"
+                patients={[]}
+                patientsInQueue={[]}
+                onAddToQueue={jest.fn()}
+                shouldShowSuggestions={true}
+                loading={false}
+              />
+            }
           />
         </RouterWithFacility>
       );
@@ -82,13 +91,18 @@ describe("SearchResults", () => {
     it("should show add patient button", () => {
       render(
         <RouterWithFacility>
-          <SearchResults
-            page="queue"
-            patients={[]}
-            patientsInQueue={[]}
-            onAddToQueue={jest.fn()}
-            shouldShowSuggestions={true}
-            loading={false}
+          <Route
+            path="/queue"
+            element={
+              <SearchResults
+                page="queue"
+                patients={[]}
+                patientsInQueue={[]}
+                onAddToQueue={jest.fn()}
+                shouldShowSuggestions={true}
+                loading={false}
+              />
+            }
           />
         </RouterWithFacility>
       );
@@ -106,13 +120,18 @@ describe("SearchResults", () => {
   it("should show matching results", () => {
     render(
       <RouterWithFacility>
-        <SearchResults
-          page="queue"
-          patients={patients}
-          patientsInQueue={[]}
-          onAddToQueue={jest.fn()}
-          shouldShowSuggestions={true}
-          loading={false}
+        <Route
+          path="/queue"
+          element={
+            <SearchResults
+              page="queue"
+              patients={patients}
+              patientsInQueue={[]}
+              onAddToQueue={jest.fn()}
+              shouldShowSuggestions={true}
+              loading={false}
+            />
+          }
         />
       </RouterWithFacility>
     );
@@ -124,13 +143,18 @@ describe("SearchResults", () => {
     const addToQueue = jest.fn();
     render(
       <RouterWithFacility>
-        <SearchResults
-          page="queue"
-          patients={patients}
-          patientsInQueue={["a123", "c789"]}
-          onAddToQueue={addToQueue}
-          shouldShowSuggestions={true}
-          loading={false}
+        <Route
+          path="/queue"
+          element={
+            <SearchResults
+              page="queue"
+              patients={patients}
+              patientsInQueue={["a123", "c789"]}
+              onAddToQueue={addToQueue}
+              shouldShowSuggestions={true}
+              loading={false}
+            />
+          }
         />
       </RouterWithFacility>
     );
@@ -143,14 +167,19 @@ describe("SearchResults", () => {
     const addToQueue = jest.fn();
     render(
       <RouterWithFacility>
-        <SearchResults
-          page="queue"
-          patients={[]}
-          patientsInQueue={[]}
-          onAddToQueue={addToQueue}
-          shouldShowSuggestions={true}
-          loading={false}
-          selectedPatient={patients[0]}
+        <Route
+          path="/queue"
+          element={
+            <SearchResults
+              page="queue"
+              patients={[]}
+              patientsInQueue={[]}
+              onAddToQueue={addToQueue}
+              shouldShowSuggestions={true}
+              loading={false}
+              selectedPatient={patients[0]}
+            />
+          }
         />
       </RouterWithFacility>
     );

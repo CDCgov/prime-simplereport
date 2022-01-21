@@ -16,9 +16,13 @@ jest.mock("../TelemetryService", () => ({
 }));
 
 const mockNavigate = jest.fn();
-jest.mock("react-router-dom", () => ({
-  useNavigate: () => mockNavigate,
-}));
+jest.mock("react-router-dom", () => {
+  const original = jest.requireActual("react-router-dom");
+  return {
+    ...original,
+    useNavigate: () => mockNavigate,
+  };
+});
 
 const initialDateString = "2021-02-14";
 const updatedDateString = "2021-03-10";

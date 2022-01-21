@@ -8,7 +8,7 @@ import {
 import { MockedProvider } from "@apollo/client/testing";
 import { Provider } from "react-redux";
 import configureStore from "redux-mock-store";
-import { MemoryRouter, Route } from "react-router-dom";
+import { MemoryRouter, Route, Routes, useLocation } from "react-router-dom";
 import userEvent from "@testing-library/user-event";
 
 import AddPatient, { ADD_PATIENT, PATIENT_EXISTS } from "./AddPatient";
@@ -22,7 +22,7 @@ const store = mockStore({
 
 const RouterWithFacility: React.FC = ({ children }) => (
   <MemoryRouter initialEntries={[`/add-patient?facility=${mockFacilityID}`]}>
-    {children}
+    <Routes>{children}</Routes>
   </MemoryRouter>
 );
 
@@ -75,13 +75,15 @@ describe("AddPatient", () => {
   describe("No facility selected", () => {
     beforeEach(() => {
       render(
-        <MemoryRouter>
-          <Provider store={store}>
-            <MockedProvider mocks={[]} addTypename={false}>
-              <AddPatient />
-            </MockedProvider>
-          </Provider>
-        </MemoryRouter>
+        <Provider store={store}>
+          <MockedProvider mocks={[]} addTypename={false}>
+            <MemoryRouter>
+              <Routes>
+                <Route path="/" element={<AddPatient />} />
+              </Routes>
+            </MemoryRouter>
+          </MockedProvider>
+        </Provider>
       );
     });
     it("does not show the form title", () => {
@@ -191,16 +193,18 @@ describe("AddPatient", () => {
         },
       ];
 
+      const Queue = () => {
+        const location = useLocation();
+        return <p>Testing Queue! {location.search}</p>;
+      };
+
       render(
         <Provider store={store}>
           <MockedProvider mocks={mocks} addTypename={false}>
             <RouterWithFacility>
-              <Route component={AddPatient} path={"/add-patient"} />
-              <Route path={"/patients"} render={() => <p>Patients!</p>} />
-              <Route
-                path={"/queue"}
-                render={(p) => <p>Testing Queue! {p.location.search}</p>}
-              />
+              <Route element={<AddPatient />} path={"/add-patient"} />
+              <Route path={"/patients"} element={<p>Patients!</p>} />
+              <Route path={"/queue"} element={<Queue />} />
             </RouterWithFacility>
           </MockedProvider>
         </Provider>
@@ -420,8 +424,8 @@ describe("AddPatient", () => {
         <Provider store={store}>
           <MockedProvider mocks={mocks} addTypename={false}>
             <RouterWithFacility>
-              <Route component={AddPatient} path={"/add-patient/"} />
-              <Route path={"/patients"} render={() => <p>Patients!</p>} />
+              <Route element={<AddPatient />} path={"/add-patient/"} />
+              <Route path={"/patients"} element={<p>Patients!</p>} />
             </RouterWithFacility>
           </MockedProvider>
         </Provider>
@@ -478,8 +482,8 @@ describe("AddPatient", () => {
         <Provider store={store}>
           <MockedProvider mocks={mocks} addTypename={false}>
             <RouterWithFacility>
-              <Route component={AddPatient} path={"/add-patient/"} />
-              <Route path={"/patients"} render={() => <p>Patients!</p>} />
+              <Route element={<AddPatient />} path={"/add-patient/"} />
+              <Route path={"/patients"} element={<p>Patients!</p>} />
             </RouterWithFacility>
           </MockedProvider>
         </Provider>

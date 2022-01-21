@@ -3,20 +3,20 @@
 // Credit to @code-jongleur on GitHub: https://github.com/remix-run/react-router/issues/8139#issuecomment-1014746446
 
 import { useContext, useEffect, useCallback } from "react";
-import type { History } from "history";
+import { UNSAFE_NavigationContext as NavigationContext } from "react-router-dom";
 
-declare type Navigator = Pick<
-  History,
-  "go" | "push" | "replace" | "createHref" | "block"
->;
+// declare type Navigator = Pick<
+//   History,
+//   "go" | "push" | "replace" | "createHref" | "block"
+// >;
 
-interface NavigationContextObject {
-  basename: string;
-  navigator: Navigator;
-  static: boolean;
-}
+// interface NavigationContextObject {
+//   basename: string;
+//   navigator: Navigator;
+//   static: boolean;
+// }
 
-declare const NavigationContext: React.Context<NavigationContextObject>;
+// declare const NavigationContext: React.Context<NavigationContextObject>;
 
 /**
  * Blocks all navigation attempts. This is useful for preventing the page from

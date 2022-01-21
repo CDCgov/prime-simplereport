@@ -35,8 +35,8 @@ describe("Verify Email MFA", () => {
     render(
       <MemoryRouter initialEntries={["/mfa-email/verify"]}>
         <Routes>
-          <Route path="/mfa-email/verify" component={MfaEmailVerify} />
-          <Route path="/success" component={MfaComplete} />
+          <Route path="/mfa-email/verify" element={<MfaEmailVerify />} />
+          <Route path="/success" element={<MfaComplete />} />
         </Routes>
       </MemoryRouter>
     );

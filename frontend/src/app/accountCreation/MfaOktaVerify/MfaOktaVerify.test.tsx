@@ -40,8 +40,8 @@ describe("Verify Okta MFA", () => {
         ]}
       >
         <Routes>
-          <Route path="/mfa-okta/verify" component={MfaOktaVerify} />
-          <Route path="/success" component={MfaComplete} />
+          <Route path="/mfa-okta/verify" element={<MfaOktaVerify />} />
+          <Route path="/success" element={<MfaComplete />} />
         </Routes>
       </MemoryRouter>
     );

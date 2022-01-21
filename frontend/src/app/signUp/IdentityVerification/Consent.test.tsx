@@ -3,9 +3,13 @@ import { MemoryRouter } from "react-router-dom";
 
 import Consent from "./Consent";
 
-jest.mock("react-router-dom", () => ({
-  Navigate: (props: any) => `Redirected to ${props.to.pathname}`,
-}));
+jest.mock("react-router-dom", () => {
+  const original = jest.requireActual("react-router-dom");
+  return {
+    ...original,
+    Navigate: (props: any) => `Redirected to ${props.to.pathname}`,
+  };
+});
 
 describe("Consent", () => {
   beforeEach(() => {

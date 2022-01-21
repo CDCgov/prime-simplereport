@@ -1,5 +1,5 @@
 import { render, screen } from "@testing-library/react";
-import { MemoryRouter, Route } from "react-router-dom";
+import { MemoryRouter, Route, Routes } from "react-router-dom";
 
 import { MfaComplete } from "../MfaComplete/MfaComplete";
 
@@ -59,8 +59,10 @@ describe("MFA Security Key Successful", () => {
     // had touched their key and assert that they get to the success page.
     render(
       <MemoryRouter initialEntries={["/enroll-security-key-mfa"]}>
-        <Route path="/enroll-security-key-mfa" component={MfaSecurityKey} />
-        <Route path="/success" component={MfaComplete} />
+        <Routes>
+          <Route path="/enroll-security-key-mfa" element={<MfaSecurityKey />} />
+          <Route path="/success" element={<MfaComplete />} />
+        </Routes>
       </MemoryRouter>
     );
 

@@ -20,7 +20,7 @@ export const routeFromStatus = (userAccountStatus: UserAccountStatus) => {
   switch (userAccountStatus) {
     case UserAccountStatus.LOADING:
     case UserAccountStatus.PENDING_ACTIVATION:
-      return "..";
+      return "/";
     case UserAccountStatus.PASSWORD_RESET:
       return "set-password";
     case UserAccountStatus.SET_SECURITY_QUESTIONS:

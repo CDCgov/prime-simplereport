@@ -42,9 +42,9 @@ describe("Verify Google Auth MFA", () => {
         <Routes>
           <Route
             path="/mfa-google-auth/verify"
-            component={MfaGoogleAuthVerify}
+            element={<MfaGoogleAuthVerify />}
           />
-          <Route path="/success" component={MfaComplete} />
+          <Route path="/success" element={<MfaComplete />} />
         </Routes>
       </MemoryRouter>
     );

@@ -4,7 +4,7 @@ import {
   waitForElementToBeRemoved,
 } from "@testing-library/react";
 import userEvent from "@testing-library/user-event";
-import { MemoryRouter, Route } from "react-router-dom";
+import { MemoryRouter, Route, Routes } from "react-router-dom";
 
 import { SecurityQuestion } from "./SecurityQuestion";
 import "../../../i18n";
@@ -28,10 +28,13 @@ describe("SecurityQuestion", () => {
   beforeEach(() => {
     render(
       <MemoryRouter initialEntries={["/set-recovery-question"]}>
-        <Route path="/set-recovery-question" component={SecurityQuestion} />
-        <Route path="/mfa-select">
-          <p>Recovery question set successfully.</p>
-        </Route>
+        <Routes>
+          <Route path="/set-recovery-question" element={<SecurityQuestion />} />
+          <Route
+            path="/mfa-select"
+            element={<p>Recovery question set successfully.</p>}
+          />
+        </Routes>
       </MemoryRouter>
     );
   });

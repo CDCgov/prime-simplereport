@@ -31,8 +31,8 @@ describe("Phone call MFA", () => {
         ]}
       >
         <Routes>
-          <Route path="/mfa-phone" component={MfaPhone} />
-          <Route path="/mfa-phone/verify" component={MfaPhoneVerify} />
+          <Route path="/mfa-phone" element={<MfaPhone />} />
+          <Route path="/mfa-phone/verify" element={<MfaPhoneVerify />} />
         </Routes>
       </MemoryRouter>
     );

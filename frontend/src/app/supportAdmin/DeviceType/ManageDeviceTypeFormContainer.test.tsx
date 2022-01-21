@@ -78,9 +78,13 @@ jest.mock("../../../generated/graphql", () => {
   };
 });
 
-jest.mock("react-router-dom", () => ({
-  Navigate: (props: any) => `Redirected to ${props.to}`,
-}));
+jest.mock("react-router-dom", () => {
+  const original = jest.requireActual("react-router-dom");
+  return {
+    ...original,
+    Navigate: (props: any) => `Redirected to ${props.to}`,
+  };
+});
 
 describe("ManageDeviceTypeFormContainer", () => {
   beforeEach(() => {

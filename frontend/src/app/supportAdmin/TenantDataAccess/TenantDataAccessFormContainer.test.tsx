@@ -39,9 +39,13 @@ jest.mock("./TenantDataAccessForm", () => {
     );
   };
 });
-jest.mock("react-router-dom", () => ({
-  Navigate: () => <p>Redirected</p>,
-}));
+jest.mock("react-router-dom", () => {
+  const original = jest.requireActual("react-router-dom");
+  return {
+    ...original,
+    Navigate: () => <p>Redirected</p>,
+  };
+});
 
 const store = configureStore([])({
   organization: {
