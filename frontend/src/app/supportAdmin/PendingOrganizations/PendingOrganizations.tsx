@@ -156,16 +156,9 @@ const PendingOrganizations = ({
 
   const handleDeletionOrg = async (o: PendingOrganization) => {
     setIsUpdating(true);
-    try {
-      await submitDeletion(o.externalId, true, o.name);
-      setIsUpdating(false);
-      setOrgToDelete(null);
-    } catch (e) {
-      console.log(e);
-      setIsUpdating(false);
-      setOrgToDelete(null);
-      return Promise.reject();
-    }
+    await submitDeletion(o.externalId, true, o.name);
+    setIsUpdating(false);
+    setOrgToDelete(null);
     return Promise.resolve();
   };
 
