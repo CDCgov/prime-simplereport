@@ -190,7 +190,7 @@ const App = () => {
               }
             />
             <Route
-              path="settings"
+              path="settings/*"
               element={
                 <ProtectedRoute
                   requiredPermissions={appPermissions.settings.canView}
@@ -210,7 +210,7 @@ const App = () => {
               }
             />
             <Route
-              path="admin"
+              path="admin/*"
               element={<SupportAdminRoutes isAdmin={data.whoami.isAdmin} />}
             />
           </Routes>
