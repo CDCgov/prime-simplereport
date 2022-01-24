@@ -50,7 +50,9 @@ const PendingOrganizations = ({
   const [verifyInProgress, setVerifyInProgress] = useState<boolean>(false);
   const [isUpdating, setIsUpdating] = useState(false);
   const [editOrg] = useEditPendingOrganizationMutation();
-
+  //Updated 1/24/22 - legacy check to protect against deletion/editing of old orgs
+  // that will make the backend complain. Will write a custom job to delete them
+  // all at some point.
   const checkIfOrgIsUsingOldOrgSchema = (
     orgToCheck: PendingOrganization | null
   ) => {
