@@ -6,7 +6,7 @@ services:
       dockerfile: Dockerfile.dev
       args: 
         NODE_VER: 14
-        NODE_ENV: development
+        NODE_ENV: production
     volumes:
       - ./:/frontend/
       - ../backend/src/main/resources/graphql:/backend/src/main/resources/graphql
