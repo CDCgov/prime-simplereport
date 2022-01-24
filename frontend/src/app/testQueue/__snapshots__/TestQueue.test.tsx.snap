@@ -147,7 +147,7 @@ exports[`TestQueue should render the test queue 1`] = `
                   data-testid="timer"
                 >
                   <span>
-                    15:00
+                    10:00
                   </span>
                    
                   <svg
@@ -297,6 +297,11 @@ exports[`TestQueue should render the test queue 1`] = `
                         id="2"
                         name="swabType"
                       >
+                        <option
+                          value="6e4ccb35-d177-4ea0-9226-653358f1e081"
+                        >
+                          Nasopharyngeal swab
+                        </option>
                         <option
                           value="6aa957dc-add2-4938-8788-935aec3276d4"
                         >
@@ -503,7 +508,7 @@ exports[`TestQueue should render the test queue 1`] = `
                   data-testid="timer"
                 >
                   <span>
-                    15:00
+                    10:00
                   </span>
                    
                   <svg
@@ -653,6 +658,11 @@ exports[`TestQueue should render the test queue 1`] = `
                         id="5"
                         name="swabType"
                       >
+                        <option
+                          value="6e4ccb35-d177-4ea0-9226-653358f1e081"
+                        >
+                          Nasopharyngeal swab
+                        </option>
                         <option
                           value="6aa957dc-add2-4938-8788-935aec3276d4"
                         >
