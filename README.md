@@ -293,14 +293,13 @@ REACT_APP_BASE_URL=http://localhost.simplereport.gov
 REACT_APP_BACKEND_URL=http://localhost.simplereport.gov/api
 REACT_APP_OKTA_ENABLED=true
 REACT_APP_OKTA_URL=http://localhost:8088
-REACT_APP_CURRENT_COMMIT=auto_generated_when_running_yarn_e2e_commands
 ```
 
 The `frontend/.env.local` file has a template at `frontend/cypress/.env.e2e.sample`. Reach out to another developer to get proper values for these secrets.
 
 ```
 # /etc/hosts
-# add this line
+# add the following line
 127.0.0.1 localhost.simplereport.gov
 ```
 
@@ -310,14 +309,14 @@ Now that you have those files set up, you are ready for a test run! There are a 
 - `yarn e2e`
   - This will run cypress with default values and display Cypress logs.
 - `yarn e2e:open`
-  - this will open an interactive test runner that lets you select browsers
+  - This will open an interactive test runner that lets you select browsers
   - Additional requirement: To use this command you need to set the WIREMOCK_URL env var in your command line.
     - Set this for macOS
         - `WIREMOCK_URL=http://host.docker.internal:8088`
     - Set this for Linux operating systems (if you have a non standard networking setup, set it to whatever IP will point to your local machine).
         - `WIREMOCK_URL=http://172.17.0.1:8088`
 - `yarn e2e:verbose`
-  - this will run cypress with default values and display Cypress, API, DB, Frontend, and Nginx logs.
+  - This will run cypress with default values and display Cypress, API, DB, Frontend, and Nginx logs.
 
 See the [Cypress documentation](https://docs.cypress.io/api/table-of-contents) for writing new tests. If you need to generate new Wiremock mappings for external services, see [this wiki page](https://github.com/CDCgov/prime-simplereport/wiki/WireMock).
 
