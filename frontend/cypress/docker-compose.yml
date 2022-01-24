@@ -42,7 +42,7 @@ services:
     environment:
       SPRING_PROFILES_ACTIVE: e2e,db-dockerized
       SPRING_LIQUIBASE_ENABLED: "true"
-      WIREMOCK_URL: http://cypress:8088
+      WIREMOCK_URL: "${WIREMOCK_URL:-http://cypress:8088}"
       OKTA_TESTING_DISABLEHTTPSCHECK: "true"
     depends_on:
       - db
@@ -61,7 +61,6 @@ services:
       REACT_APP_BACKEND_URL: http://localhost.simplereport.gov/api
       REACT_APP_OKTA_ENABLED: "true"
       REACT_APP_OKTA_URL: http://cypress:8088
-    command: ["yarn", "start-js"]
     volumes:
       - ../:/frontend/
       - ../../backend/src/main/resources/graphql:/backend/src/main/resources/graphql

@@ -18,7 +18,7 @@ OPTIONS:
 EOF
 }
 
-SPEC_PATH="cypress/integration/00-*"
+SPEC_PATH="cypress/integration/**"
 TEST_ENV="http://localhost.simplereport.gov"
 if [ -d ../.git ]; then
   CHECK_COMMIT="$(git rev-parse HEAD)"

@@ -280,27 +280,15 @@ To edit React settings, create `frontend/.env.local` (also git ignored).
 
 E2E/Integration tests are available using [Cypress](https://www.cypress.io/).
 
-To get started, you'll need to get the secrets listed in `frontend/cypress/.env.e2e.sample`. Reach out to another developer if you don't have them already, and place them in `frontend/cypress/.env.e2e`.
+#### Requirements:
 
-To run the tests the easy way, simply run `yarn e2e`. This will spin up the app with all the necessary configuration in a docker compose network and run the tests headlessly in firefox. Screenshots and videos from the test will be saved to `frontend/cypress/screenshots` and `frontend/cypress/videos`.
-
-In order to run the tests locally, some modifications will need to be made to your local environment. Spring session requires the frontend and backend to be hosted on the same domain in order to properly authenticate.
-
-First, the tests run best on a clean database, so empty out your database prior to running.
-
-Next, before starting up the app, you'll need to start Wiremock:
+These files required to run integration tests.
+- `frontend/.env.local`
+- `frontend/cypress/.env.e2e`
+- `/etc/hosts`
 
 ```
-cd frontend
-./cypress/support/wiremock/download-wiremock.sh
-./cypress/support/wiremock/start-wiremock.sh orgSignUp
-```
-
-The following settings are needed for the frontend:
-
-`frontend/.env.local`:
-
-```
+# frontend/cypress/.env.e2e
 REACT_APP_BASE_URL=http://localhost.simplereport.gov
 REACT_APP_BACKEND_URL=http://localhost.simplereport.gov/api
 REACT_APP_OKTA_ENABLED=true
@@ -308,65 +296,38 @@ REACT_APP_OKTA_URL=http://localhost:8088
 REACT_APP_CURRENT_COMMIT=auto_generated_when_running_yarn_e2e_commands
 ```
 
-You will need to run the backend with the `e2e` profile, and with the following environment variable:
-
-```bash
-OKTA_TESTING_DISABLEHTTPSCHECK=true ./gradlew bootRun --args='--spring.profiles.active=e2e'
-```
-
-You will need to run the frontend locally:
+The `frontend/.env.local` file has a template at `frontend/cypress/.env.e2e.sample`. Reach out to another developer to get proper values for these secrets.
 
 ```
-yarn start
-```
-
-Or, if you are running with the `start.sh` script:
-
-`backend/src/main/resources/application-local.yaml`
-
-```
-spring.profiles.include: no-security, no-okta-mgmt, server-debug, create-sample-data
-server.servlet.session.cookie.domain: localhost.simplereport.gov
-okta.client.org-url: http://localhost:8088
-okta.client.token: foo
-```
-
-```bash
-OKTA_TESTING_DISABLEHTTPSCHECK=true ./start.sh
-```
-
-In order for `http://localhost.simplereport.gov` to route to your local application server, you'll need to make the following addition to your `/etc/hosts` file:
-
-`/etc/hosts`
-
-```
+# /etc/hosts
+# add this line
 127.0.0.1 localhost.simplereport.gov
 ```
 
-Finally, you'll need to run a reverse proxy like nginx to point port 80 at your application server. You can do this in a docker container with the following command:
+#### Running Cypress
+Now that you have those files set up, you are ready for a test run! There are a few ways to run the tests from the `frontend` directory:
 
-Use to run nginx in a container on Mac
-```bash
-docker build -t nginx -f cypress/support/nginx/Dockerfile.nginx.mac . && docker run -d -p 80:80 nginx:latest
+- `yarn e2e`
+  - This will run cypress with default values and display Cypress logs.
+- `yarn e2e:open`
+  - this will open an interactive test runner that lets you select browsers
+  - Additional requirement: To use this command you need to set the WIREMOCK_URL env var in your command line.
+    - Set this for macOS
+        - `WIREMOCK_URL=http://host.docker.internal:8088`
+    - Set this for Linux operating systems (if you have a non standard networking setup, set it to whatever IP will point to your local machine).
+        - `WIREMOCK_URL=http://172.17.0.1:8088`
+- `yarn e2e:verbose`
+  - this will run cypress with default values and display Cypress, API, DB, Frontend, and Nginx logs.
+
+See the [Cypress documentation](https://docs.cypress.io/api/table-of-contents) for writing new tests. If you need to generate new Wiremock mappings for external services, see [this wiki page](https://github.com/CDCgov/prime-simplereport/wiki/WireMock).
+
+#### Notes
+Make sure docker has access to enough resources on your local machine. You'll know it doesn't if you get an error from any of your containers similar to this:
+```
+"The build failed because the process exited too early. This probably means the system ran out of memory or someone called `kill -9` on the process."
 ```
 
-Use to run nginx in a container on Linux
-```bash
-docker build -t nginx -f cypress/support/nginx/Dockerfile.nginx.linux . && docker run -d -p 80:80 nginx:latest
-```
-
-If you are running nginx locally already, you can use the config located at `frontend/cypress/support/nginx/localhost.simplereport.gov`.
-
-Once all of that is done, you are are ready for a test run! There are a few ways to run the tests (from the `frontend` dir):
-
-- `./e2e.sh` or `yarn e2e`
-  - this will run cypress with reasonable defaults
-- `./e2e.sh -h`
-  - this with return usage help
-- `./e2e.sh -o true` or `yarn e2e:open`
-  - this will open an interactive test runner that lets you select browsers and which test to run. tests will run headed by default
-
-To write new tests, see the [Cypress documentation](https://docs.cypress.io/api/table-of-contents). If you need to generate new Wiremock mappings for external services, see [this wiki page](https://github.com/CDCgov/prime-simplereport/wiki/WireMock).
+How to update resources limits on your [Mac](https://docs.docker.com/desktop/mac/#resources), and [Windows](https://docs.docker.com/desktop/windows/#resources) machines.
 
 ### SchemaSpy
 

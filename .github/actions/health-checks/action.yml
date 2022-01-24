@@ -29,7 +29,7 @@ runs:
       shell: bash
       working-directory: ./ops
       env:
-          CURL_TIMEOUT: 5'
+          CURL_TIMEOUT: 5
       run: |
         echo "::group::Run Makefile verification"
         make check-${{env.DEPLOY_ENV}}-commit check-${{env.DEPLOY_ENV}}-readiness
