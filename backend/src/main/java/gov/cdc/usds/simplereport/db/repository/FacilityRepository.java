@@ -1,5 +1,6 @@
 package gov.cdc.usds.simplereport.db.repository;
 
+import gov.cdc.usds.simplereport.db.model.DeviceSpecimenType;
 import gov.cdc.usds.simplereport.db.model.Facility;
 import gov.cdc.usds.simplereport.db.model.Organization;
 import java.util.Collection;
@@ -32,4 +33,6 @@ public interface FacilityRepository extends EternalAuditedEntityRepository<Facil
       EternalAuditedEntityRepository.BASE_QUERY
           + " and e.organization = :org order by e.facilityName")
   List<Facility> findByOrganizationOrderByFacilityName(Organization org);
+
+  List<Facility> findAllByDefaultDeviceSpecimenIn(List<DeviceSpecimenType> dsts);
 }
