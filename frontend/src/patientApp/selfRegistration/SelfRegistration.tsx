@@ -23,7 +23,9 @@ enum RegistrationStep {
 }
 
 export const SelfRegistration = () => {
-  const { registrationLink } = useParams<{ registrationLink: string }>();
+  const { registrationLink } = useParams<{
+    registrationLink: string | undefined;
+  }>();
   const [step, setStep] = useState(RegistrationStep.TERMS);
   const [entityName, setEntityName] = useState("");
   const [personName, setPersonName] = useState("");

@@ -4,6 +4,12 @@
 
 import { useContext, useEffect, useCallback } from "react";
 import { UNSAFE_NavigationContext as NavigationContext } from "react-router-dom";
+import type { History } from "history";
+
+declare type Navigator = Pick<
+  History,
+  "go" | "push" | "replace" | "createHref" | "block"
+>;
 
 /**
  * Blocks all navigation attempts. This is useful for preventing the page from
@@ -18,10 +24,10 @@ export function useBlocker(blocker: any, when = true) {
 
   useEffect(() => {
     if (!when) {
-      return null;
+      return;
     }
 
-    const unblock = navigator.block((tx: any) => {
+    const unblock = (navigator as Navigator).block((tx: any) => {
       const autoUnblockingTx = {
         ...tx,
         retry() {

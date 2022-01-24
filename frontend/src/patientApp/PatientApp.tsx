@@ -1,12 +1,11 @@
 import { FunctionComponent, useEffect } from "react";
 import { useDispatch, connect, useSelector } from "react-redux";
-import { Route, Routes } from "react-router-dom";
+import { Route, Routes, useParams } from "react-router-dom";
 import { validate as isValidUUID } from "uuid";
 import { useTranslation } from "react-i18next";
 
 import Page from "../app/commonComponents/Page/Page";
 import { setInitialState } from "../app/store";
-import { getPatientLinkIdFromUrl } from "../app/utils/url";
 import PageNotFound from "../app/commonComponents/PageNotFound";
 import Alert from "../app/commonComponents/Alert";
 
@@ -42,11 +41,12 @@ const PatientApp = () => {
   const plid = useSelector((state: any) => state.plid);
   const patient = useSelector((state: any) => state.patient);
   const auth = patient.internalId !== "";
+  const urlParams = useParams();
 
   useEffect(() => {
     dispatch(
       setInitialState({
-        plid: getPatientLinkIdFromUrl(),
+        plid: urlParams.plid,
       })
     );
   });

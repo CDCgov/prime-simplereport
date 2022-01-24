@@ -7,11 +7,7 @@ describe("SignUpApp", () => {
   beforeEach(() => {
     render(
       <MemoryRouter>
-        <SignUpApp
-          match={{ path: "" } as any}
-          location={{} as any}
-          history={{} as any}
-        />
+        <SignUpApp />
       </MemoryRouter>
     );
   });

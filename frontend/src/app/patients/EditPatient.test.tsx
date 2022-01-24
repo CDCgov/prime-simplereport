@@ -423,9 +423,9 @@ describe("EditPatient", () => {
   describe("EditPatientContainer", () => {
     it("doesn't render if no facility is provided", async () => {
       render(
-        <MemoryRouter>
+        <MemoryRouter initialEntries={[{ search: "?patientId=5" }]}>
           <Provider store={configureStore()({ facilities: [] })}>
-            <EditPatientContainer patientId="5" />
+            <EditPatientContainer />
           </Provider>
         </MemoryRouter>
       );

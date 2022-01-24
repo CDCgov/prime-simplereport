@@ -167,7 +167,7 @@ const AddToQueueSearchBox = ({
   }, []);
 
   const { patientId: patientIdParam } =
-    useLocation<StartTestProps>().state || {};
+    (useLocation().state as StartTestProps) || {};
 
   useQuery<{ patient: Patient }>(QUERY_SINGLE_PATIENT, {
     fetchPolicy: "no-cache",

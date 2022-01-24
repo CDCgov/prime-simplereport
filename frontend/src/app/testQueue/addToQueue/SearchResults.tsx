@@ -1,13 +1,12 @@
 import React, { useEffect, useState } from "react";
 import moment from "moment";
-import { useLocation, Navigate } from "react-router-dom";
+import { Navigate, useParams } from "react-router-dom";
 
 import Button from "../../commonComponents/Button/Button";
 import AoEModalForm from "../AoEForm/AoEModalForm";
 import { displayFullName } from "../../utils";
 import { Patient } from "../../patients/ManagePatients";
 import { AoEAnswersDelivery } from "../AoEForm/AoEForm";
-import { getFacilityIdFromUrl } from "../../utils/url";
 
 interface SearchResultsProps {
   patients: Patient[];
@@ -45,7 +44,7 @@ const SearchResults = (props: QueueProps | TestResultsProps) => {
   const [canAddToQueue, setCanAddToQueue] = useState(false);
   const [redirect, setRedirect] = useState<string | undefined>(undefined);
 
-  const activeFacilityId = getFacilityIdFromUrl(useLocation());
+  const activeFacilityId = useParams().facility;
 
   useEffect(() => {
     if (selectedPatient) {

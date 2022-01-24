@@ -4,7 +4,6 @@ import { Navigate } from "react-router-dom";
 import { useTranslation } from "react-i18next";
 import moment from "moment";
 import { useSelector } from "react-redux";
-import { LocationDescriptor } from "history";
 
 import iconSprite from "../../../node_modules/uswds/dist/img/sprite.svg";
 import { PATIENT_TERM, PATIENT_TERM_CAP } from "../../config/constants";
@@ -221,7 +220,7 @@ const AddPatient = () => {
   const personPath = `/patients/?facility=${activeFacilityId}`;
 
   const [redirect, setRedirect] = useState<
-    string | LocationDescriptor | undefined
+    string | { pathname: string; search: string; state?: any } | undefined
   >(undefined);
 
   if (redirect) {

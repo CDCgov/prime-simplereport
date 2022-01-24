@@ -12,7 +12,7 @@ import PersonalDetailsForm, {
 const Consent = () => {
   // Get person name & org id from route state
   const { orgExternalId, firstName, middleName, lastName } =
-    useLocation<PersonalDetailsFormProps>().state || {};
+    (useLocation().state as PersonalDetailsFormProps) || {};
   const [submitted, setSubmitted] = useState(false);
 
   if (!orgExternalId || !firstName || !lastName) {
