@@ -13,7 +13,6 @@ exports[`SettingsNav displays the nav order correctly and defaults to 'Manage Us
         class="usa-nav__secondary-item"
       >
         <a
-          activeclassname="active"
           class=""
           href="/settings"
         >
@@ -24,7 +23,6 @@ exports[`SettingsNav displays the nav order correctly and defaults to 'Manage Us
         class="usa-nav__secondary-item"
       >
         <a
-          activeclassname="active"
           class=""
           href="/settings/facilities"
         >
@@ -35,7 +33,6 @@ exports[`SettingsNav displays the nav order correctly and defaults to 'Manage Us
         class="usa-nav__secondary-item"
       >
         <a
-          activeclassname="active"
           class=""
           href="/settings/organization"
         >
@@ -46,7 +43,6 @@ exports[`SettingsNav displays the nav order correctly and defaults to 'Manage Us
         class="usa-nav__secondary-item"
       >
         <a
-          activeclassname="active"
           class=""
           href="/settings/self-registration"
         >

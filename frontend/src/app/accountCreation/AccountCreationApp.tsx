@@ -1,17 +1,12 @@
 import { useEffect, useState } from "react";
-import {
-  Route,
-  Routes,
-  useLocation,
-  useNavigate,
-  useParams,
-} from "react-router-dom";
+import { Route, Routes, useLocation, useNavigate } from "react-router-dom";
 
 import Page from "../commonComponents/Page/Page";
 import { LoadingCard } from "../commonComponents/LoadingCard/LoadingCard";
 import PageNotFound from "../commonComponents/PageNotFound";
 import CardBackground from "../commonComponents/CardBackground/CardBackground";
 import Card from "../commonComponents/Card/Card";
+import { getActivationTokenFromUrl } from "../utils/url";
 
 import { SecurityQuestion } from "./SecurityQuestion/SecurityQuestion";
 import { MfaSelect } from "./MfaSelect/MfaSelect";
@@ -39,7 +34,6 @@ const AccountCreationApp = () => {
   // Used to reroute based on user's status
   const navigate = useNavigate();
   const location = useLocation();
-  const urlParams = useParams();
 
   // Runs once on app load
   useEffect(() => {
@@ -69,9 +63,9 @@ const AccountCreationApp = () => {
       // Set the userAccountStatus state, triggering a rerender w/ the Router
       setUserAccountStatus(status);
     };
-    const token = urlParams.activationToken;
+    const token = getActivationTokenFromUrl();
     getStatusAndActivate(token);
-  }, [navigate, location, urlParams.activationToken]);
+  }, [navigate, location]);
 
   // Show loading card while useEffect func is running
   if (userAccountStatus === UserAccountStatus.LOADING) {

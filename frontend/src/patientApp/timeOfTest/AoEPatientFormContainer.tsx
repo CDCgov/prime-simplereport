@@ -1,17 +1,18 @@
 import React, { useEffect, useState } from "react";
-import { Navigate, useParams } from "react-router-dom";
+import { Navigate } from "react-router-dom";
 import { connect, useSelector } from "react-redux";
 
 import AoEForm from "../../app/testQueue/AoEForm/AoEForm";
 import { showError } from "../../app/utils";
 import PatientTimeOfTestContainer from "../PatientTimeOfTestContainer";
 import { PxpApi } from "../PxpApiService";
+import { getPatientLinkIdFromUrl } from "../../app/utils/url";
 
 const AoEPatientFormContainer: React.FC = () => {
   const [nextPage, setNextPage] = useState(false);
   const patient = useSelector((state) => (state as any).patient as any);
-  const urlParams = useParams();
-  const plid = useSelector((state) => (state as any).plid) || urlParams.plid;
+  const plid =
+    useSelector((state) => (state as any).plid) || getPatientLinkIdFromUrl();
 
   useEffect(() => {
     window.scrollTo(0, 0);

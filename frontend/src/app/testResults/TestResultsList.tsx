@@ -1,6 +1,6 @@
 import qs from "querystring";
 
-import { useNavigate, useParams } from "react-router-dom";
+import { useLocation, useNavigate, useParams } from "react-router-dom";
 import { gql, useLazyQuery, useQuery } from "@apollo/client";
 import React, {
   ChangeEventHandler,
@@ -20,7 +20,7 @@ import { PATIENT_TERM_CAP } from "../../config/constants";
 import { displayFullName } from "../utils";
 import { isValidDate } from "../utils/date";
 import { ActionsMenu } from "../commonComponents/ActionsMenu";
-import { getUrl } from "../utils/url";
+import { getParameterFromUrl, getUrl } from "../utils/url";
 import { useDocumentTitle, useOutsideClick } from "../utils/hooks";
 import Pagination from "../commonComponents/Pagination";
 import {
@@ -648,8 +648,13 @@ const TestResultsList = () => {
   const activeFacilityId = facility?.id || "";
 
   const navigate = useNavigate();
+  const location = useLocation();
 
-  const { patientId, startDate, endDate, role, result } = urlParams;
+  const patientId = getParameterFromUrl("patientId", location);
+  const startDate = getParameterFromUrl("startDate", location);
+  const endDate = getParameterFromUrl("endDate", location);
+  const role = getParameterFromUrl("role", location);
+  const result = getParameterFromUrl("result", location);
 
   const filterParams: FilterParams = {
     ...(patientId && { patientId: patientId }),
