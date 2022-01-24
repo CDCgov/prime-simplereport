@@ -35,6 +35,10 @@ public abstract class BaseTestInfo extends AuditedEntity implements Organization
   @JoinColumn(name = "device_type_id")
   private DeviceType deviceType;
 
+  @ManyToOne(optional = false, fetch = FetchType.LAZY)
+  @JoinColumn(name = "specimen_type_id")
+  private SpecimenType specimenType;
+
   @Column(nullable = true)
   @Type(type = "pg_enum")
   @Enumerated(EnumType.STRING)
@@ -66,6 +70,7 @@ public abstract class BaseTestInfo extends AuditedEntity implements Organization
     this.organization = facility.getOrganization();
     this.deviceSpecimen = deviceSpecimen;
     this.deviceType = deviceSpecimen.getDeviceType();
+    this.specimenType = deviceSpecimen.getSpecimenType();
     this.result = result;
     this.correctionStatus = TestCorrectionStatus.ORIGINAL;
   }
@@ -98,6 +103,10 @@ public abstract class BaseTestInfo extends AuditedEntity implements Organization
     return deviceType;
   }
 
+  public SpecimenType getSpecimenType() {
+    return specimenType;
+  }
+
   public DeviceSpecimenType getDeviceSpecimen() {
     return deviceSpecimen;
   }
@@ -125,6 +134,7 @@ public abstract class BaseTestInfo extends AuditedEntity implements Organization
   protected void setDeviceSpecimen(DeviceSpecimenType deviceSpecimen) {
     this.deviceSpecimen = deviceSpecimen;
     this.deviceType = deviceSpecimen.getDeviceType();
+    this.specimenType = deviceSpecimen.getSpecimenType();
   }
 
   public TestCorrectionStatus getCorrectionStatus() {
