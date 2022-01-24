@@ -1,22 +1,9 @@
 // Reimplementation of <Prompt /> and usePrompt() from react-router-dom since they were removed for v6.
-// TODO: Remove this once react-router readds these at some point.
+// Remove this once react-router readds these at some point.
 // Credit to @code-jongleur on GitHub: https://github.com/remix-run/react-router/issues/8139#issuecomment-1014746446
 
 import { useContext, useEffect, useCallback } from "react";
 import { UNSAFE_NavigationContext as NavigationContext } from "react-router-dom";
-
-// declare type Navigator = Pick<
-//   History,
-//   "go" | "push" | "replace" | "createHref" | "block"
-// >;
-
-// interface NavigationContextObject {
-//   basename: string;
-//   navigator: Navigator;
-//   static: boolean;
-// }
-
-// declare const NavigationContext: React.Context<NavigationContextObject>;
 
 /**
  * Blocks all navigation attempts. This is useful for preventing the page from
@@ -30,15 +17,14 @@ export function useBlocker(blocker: any, when = true) {
   const { navigator } = useContext(NavigationContext);
 
   useEffect(() => {
-    if (!when) return;
+    if (!when) {
+      return null;
+    }
 
     const unblock = navigator.block((tx: any) => {
       const autoUnblockingTx = {
         ...tx,
         retry() {
-          // Automatically unblock the transition so it can play all the way
-          // through before retrying it. TODO: Figure out how to re-enable
-          // this block if the transition is cancelled for some reason.
           unblock();
           tx.retry();
         },
@@ -60,7 +46,9 @@ export function usePrompt(message: string, when = true) {
   const blocker = useCallback(
     (tx) => {
       // eslint-disable-next-line no-alert
-      if (window.confirm(message)) tx.retry();
+      if (window.confirm(message)) {
+        tx.retry();
+      }
     },
     [message]
   );

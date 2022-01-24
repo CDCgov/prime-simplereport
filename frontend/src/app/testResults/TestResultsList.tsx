@@ -642,7 +642,7 @@ export interface ResultsQueryVariables {
 
 const TestResultsList = () => {
   useDocumentTitle("Results");
-  const params = useParams();
+  const urlParams = useParams();
 
   const [facility] = useSelectedFacility();
   const activeFacilityId = facility?.id || "";
@@ -688,7 +688,7 @@ const TestResultsList = () => {
     });
 
   const entriesPerPage = 20;
-  const pageNumber = Number(params.pageNumber) || 1;
+  const pageNumber = Number(urlParams.pageNumber) || 1;
 
   const resultsQueryVariables: ResultsQueryVariables = {
     facilityId: activeFacilityId,
