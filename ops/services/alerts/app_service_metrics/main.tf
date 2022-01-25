@@ -261,12 +261,12 @@ resource "azurerm_monitor_scheduled_query_rules_alert" "db_query_duration_over_t
   query = <<-QUERY
 dependencies
 ${local.skip_on_weekends}
-| where timestamp >= ago(5m) and name has "SQL:" and duration > 1250
+| where timestamp >= ago(5m) and name startswith "SQL:" and duration > 1250 and data !startswith "insert into public.api_audit_event"
   QUERY
 
   trigger {
     operator  = "GreaterThan"
-    threshold = 10
+    threshold = 25
   }
 
   action {

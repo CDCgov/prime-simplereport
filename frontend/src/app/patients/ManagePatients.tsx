@@ -85,6 +85,7 @@ export interface Patient {
     dateTested: string;
     deviceTypeModel: string;
     deviceTypeName: string;
+    facilityName: string;
   };
 }
 

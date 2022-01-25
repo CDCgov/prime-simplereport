@@ -41,6 +41,7 @@ export const initialState = {
       dateTested: "",
       deviceTypeModel: "",
       deviceTypeName: "",
+      facilityName: "",
     },
   },
 };

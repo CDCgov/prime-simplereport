@@ -141,6 +141,7 @@ export type Mutation = {
   editPendingOrganization?: Maybe<Scalars["String"]>;
   editQueueItem?: Maybe<TestOrder>;
   markFacilityAsDeleted?: Maybe<Scalars["String"]>;
+  markPendingOrganizationAsDeleted?: Maybe<Scalars["String"]>;
   reactivateUser?: Maybe<User>;
   removePatientFromQueue?: Maybe<Scalars["String"]>;
   resendActivationEmail?: Maybe<User>;
@@ -378,6 +379,11 @@ export type MutationEditQueueItemArgs = {
 export type MutationMarkFacilityAsDeletedArgs = {
   deleted: Scalars["Boolean"];
   facilityId: Scalars["ID"];
+};
+
+export type MutationMarkPendingOrganizationAsDeletedArgs = {
+  deleted: Scalars["Boolean"];
+  orgExternalId: Scalars["String"];
 };
 
 export type MutationReactivateUserArgs = {
@@ -1599,6 +1605,16 @@ export type SetOrgIdentityVerifiedMutation = {
   setOrganizationIdentityVerified?: Maybe<boolean>;
 };
 
+export type MarkPendingOrganizationAsDeletedMutationVariables = Exact<{
+  orgExternalId: Scalars["String"];
+  deleted: Scalars["Boolean"];
+}>;
+
+export type MarkPendingOrganizationAsDeletedMutation = {
+  __typename?: "Mutation";
+  markPendingOrganizationAsDeleted?: Maybe<string>;
+};
+
 export type EditPendingOrganizationMutationVariables = Exact<{
   externalId: Scalars["String"];
   name?: Maybe<Scalars["String"]>;
@@ -1788,6 +1804,7 @@ export type GetFacilityQueueQuery = {
           __typename?: "DeviceType";
           internalId: string;
           name: string;
+          testLength?: Maybe<number>;
         };
         specimenType: {
           __typename?: "SpecimenType";
@@ -2139,6 +2156,77 @@ export type ResendTestResultsEmailMutationVariables = Exact<{
 export type ResendTestResultsEmailMutation = {
   __typename?: "Mutation";
   sendPatientLinkEmailByTestEventId?: Maybe<boolean>;
+};
+
+export type GetFacilityResultsForCsvQueryVariables = Exact<{
+  facilityId?: Maybe<Scalars["ID"]>;
+  patientId?: Maybe<Scalars["ID"]>;
+  result?: Maybe<Scalars["String"]>;
+  role?: Maybe<Scalars["String"]>;
+  startDate?: Maybe<Scalars["DateTime"]>;
+  endDate?: Maybe<Scalars["DateTime"]>;
+  pageNumber?: Maybe<Scalars["Int"]>;
+  pageSize?: Maybe<Scalars["Int"]>;
+}>;
+
+export type GetFacilityResultsForCsvQuery = {
+  __typename?: "Query";
+  testResults?: Maybe<
+    Array<
+      Maybe<{
+        __typename?: "TestResult";
+        dateTested?: Maybe<any>;
+        result?: Maybe<string>;
+        correctionStatus?: Maybe<string>;
+        reasonForCorrection?: Maybe<string>;
+        symptoms?: Maybe<string>;
+        noSymptoms?: Maybe<boolean>;
+        symptomOnset?: Maybe<any>;
+        facility?: Maybe<{ __typename?: "Facility"; name: string }>;
+        deviceType?: Maybe<{
+          __typename?: "DeviceType";
+          name: string;
+          manufacturer: string;
+          model: string;
+          swabType?: Maybe<string>;
+        }>;
+        patient?: Maybe<{
+          __typename?: "Patient";
+          firstName?: Maybe<string>;
+          middleName?: Maybe<string>;
+          lastName?: Maybe<string>;
+          birthDate?: Maybe<any>;
+          gender?: Maybe<string>;
+          race?: Maybe<string>;
+          ethnicity?: Maybe<string>;
+          tribalAffiliation?: Maybe<Array<Maybe<string>>>;
+          lookupId?: Maybe<string>;
+          telephone?: Maybe<string>;
+          email?: Maybe<string>;
+          street?: Maybe<string>;
+          streetTwo?: Maybe<string>;
+          city?: Maybe<string>;
+          county?: Maybe<string>;
+          state?: Maybe<string>;
+          zipCode?: Maybe<string>;
+          country?: Maybe<string>;
+          role?: Maybe<string>;
+          residentCongregateSetting?: Maybe<boolean>;
+          employedInHealthcare?: Maybe<boolean>;
+          preferredLanguage?: Maybe<string>;
+        }>;
+        createdBy?: Maybe<{
+          __typename?: "ApiUser";
+          nameInfo?: Maybe<{
+            __typename?: "NameInfo";
+            firstName?: Maybe<string>;
+            middleName?: Maybe<string>;
+            lastName: string;
+          }>;
+        }>;
+      }>
+    >
+  >;
 };
 
 export const WhoAmIDocument = gql`
@@ -4585,6 +4673,60 @@ export type SetOrgIdentityVerifiedMutationOptions = Apollo.BaseMutationOptions<
   SetOrgIdentityVerifiedMutation,
   SetOrgIdentityVerifiedMutationVariables
 >;
+export const MarkPendingOrganizationAsDeletedDocument = gql`
+  mutation MarkPendingOrganizationAsDeleted(
+    $orgExternalId: String!
+    $deleted: Boolean!
+  ) {
+    markPendingOrganizationAsDeleted(
+      orgExternalId: $orgExternalId
+      deleted: $deleted
+    )
+  }
+`;
+export type MarkPendingOrganizationAsDeletedMutationFn = Apollo.MutationFunction<
+  MarkPendingOrganizationAsDeletedMutation,
+  MarkPendingOrganizationAsDeletedMutationVariables
+>;
+
+/**
+ * __useMarkPendingOrganizationAsDeletedMutation__
+ *
+ * To run a mutation, you first call `useMarkPendingOrganizationAsDeletedMutation` within a React component and pass it any options that fit your needs.
+ * When your component renders, `useMarkPendingOrganizationAsDeletedMutation` returns a tuple that includes:
+ * - A mutate function that you can call at any time to execute the mutation
+ * - An object with fields that represent the current status of the mutation's execution
+ *
+ * @param baseOptions options that will be passed into the mutation, supported options are listed on: https://www.apollographql.com/docs/react/api/react-hooks/#options-2;
+ *
+ * @example
+ * const [markPendingOrganizationAsDeletedMutation, { data, loading, error }] = useMarkPendingOrganizationAsDeletedMutation({
+ *   variables: {
+ *      orgExternalId: // value for 'orgExternalId'
+ *      deleted: // value for 'deleted'
+ *   },
+ * });
+ */
+export function useMarkPendingOrganizationAsDeletedMutation(
+  baseOptions?: Apollo.MutationHookOptions<
+    MarkPendingOrganizationAsDeletedMutation,
+    MarkPendingOrganizationAsDeletedMutationVariables
+  >
+) {
+  const options = { ...defaultOptions, ...baseOptions };
+  return Apollo.useMutation<
+    MarkPendingOrganizationAsDeletedMutation,
+    MarkPendingOrganizationAsDeletedMutationVariables
+  >(MarkPendingOrganizationAsDeletedDocument, options);
+}
+export type MarkPendingOrganizationAsDeletedMutationHookResult = ReturnType<
+  typeof useMarkPendingOrganizationAsDeletedMutation
+>;
+export type MarkPendingOrganizationAsDeletedMutationResult = Apollo.MutationResult<MarkPendingOrganizationAsDeletedMutation>;
+export type MarkPendingOrganizationAsDeletedMutationOptions = Apollo.BaseMutationOptions<
+  MarkPendingOrganizationAsDeletedMutation,
+  MarkPendingOrganizationAsDeletedMutationVariables
+>;
 export const EditPendingOrganizationDocument = gql`
   mutation EditPendingOrganization(
     $externalId: String!
@@ -5023,6 +5165,7 @@ export const GetFacilityQueueDocument = gql`
       deviceType {
         internalId
         name
+        testLength
       }
       specimenType {
         internalId
@@ -6060,4 +6203,133 @@ export type ResendTestResultsEmailMutationResult = Apollo.MutationResult<ResendT
 export type ResendTestResultsEmailMutationOptions = Apollo.BaseMutationOptions<
   ResendTestResultsEmailMutation,
   ResendTestResultsEmailMutationVariables
+>;
+export const GetFacilityResultsForCsvDocument = gql`
+  query GetFacilityResultsForCsv(
+    $facilityId: ID
+    $patientId: ID
+    $result: String
+    $role: String
+    $startDate: DateTime
+    $endDate: DateTime
+    $pageNumber: Int
+    $pageSize: Int
+  ) {
+    testResults(
+      facilityId: $facilityId
+      patientId: $patientId
+      result: $result
+      role: $role
+      startDate: $startDate
+      endDate: $endDate
+      pageNumber: $pageNumber
+      pageSize: $pageSize
+    ) {
+      facility {
+        name
+      }
+      dateTested
+      result
+      correctionStatus
+      reasonForCorrection
+      deviceType {
+        name
+        manufacturer
+        model
+        swabType
+      }
+      patient {
+        firstName
+        middleName
+        lastName
+        birthDate
+        gender
+        race
+        ethnicity
+        tribalAffiliation
+        lookupId
+        telephone
+        email
+        street
+        streetTwo
+        city
+        county
+        state
+        zipCode
+        country
+        role
+        residentCongregateSetting
+        employedInHealthcare
+        preferredLanguage
+      }
+      createdBy {
+        nameInfo {
+          firstName
+          middleName
+          lastName
+        }
+      }
+      symptoms
+      noSymptoms
+      symptomOnset
+    }
+  }
+`;
+
+/**
+ * __useGetFacilityResultsForCsvQuery__
+ *
+ * To run a query within a React component, call `useGetFacilityResultsForCsvQuery` and pass it any options that fit your needs.
+ * When your component renders, `useGetFacilityResultsForCsvQuery` returns an object from Apollo Client that contains loading, error, and data properties
+ * you can use to render your UI.
+ *
+ * @param baseOptions options that will be passed into the query, supported options are listed on: https://www.apollographql.com/docs/react/api/react-hooks/#options;
+ *
+ * @example
+ * const { data, loading, error } = useGetFacilityResultsForCsvQuery({
+ *   variables: {
+ *      facilityId: // value for 'facilityId'
+ *      patientId: // value for 'patientId'
+ *      result: // value for 'result'
+ *      role: // value for 'role'
+ *      startDate: // value for 'startDate'
+ *      endDate: // value for 'endDate'
+ *      pageNumber: // value for 'pageNumber'
+ *      pageSize: // value for 'pageSize'
+ *   },
+ * });
+ */
+export function useGetFacilityResultsForCsvQuery(
+  baseOptions?: Apollo.QueryHookOptions<
+    GetFacilityResultsForCsvQuery,
+    GetFacilityResultsForCsvQueryVariables
+  >
+) {
+  const options = { ...defaultOptions, ...baseOptions };
+  return Apollo.useQuery<
+    GetFacilityResultsForCsvQuery,
+    GetFacilityResultsForCsvQueryVariables
+  >(GetFacilityResultsForCsvDocument, options);
+}
+export function useGetFacilityResultsForCsvLazyQuery(
+  baseOptions?: Apollo.LazyQueryHookOptions<
+    GetFacilityResultsForCsvQuery,
+    GetFacilityResultsForCsvQueryVariables
+  >
+) {
+  const options = { ...defaultOptions, ...baseOptions };
+  return Apollo.useLazyQuery<
+    GetFacilityResultsForCsvQuery,
+    GetFacilityResultsForCsvQueryVariables
+  >(GetFacilityResultsForCsvDocument, options);
+}
+export type GetFacilityResultsForCsvQueryHookResult = ReturnType<
+  typeof useGetFacilityResultsForCsvQuery
+>;
+export type GetFacilityResultsForCsvLazyQueryHookResult = ReturnType<
+  typeof useGetFacilityResultsForCsvLazyQuery
+>;
+export type GetFacilityResultsForCsvQueryResult = Apollo.QueryResult<
+  GetFacilityResultsForCsvQuery,
+  GetFacilityResultsForCsvQueryVariables
 >;

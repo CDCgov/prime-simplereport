@@ -443,6 +443,34 @@ describe("FacilityForm", () => {
         await validateAddress(saveFacility);
         expect(saveFacility).toBeCalledTimes(1);
       });
+
+      it("allows 32ZXXXXXXX pattern for NM", async () => {
+        const newMexicoFacility: Facility = validFacility;
+        newMexicoFacility.state = "NM";
+
+        render(
+          <MemoryRouter>
+            <FacilityForm
+              facility={newMexicoFacility}
+              deviceTypes={devices}
+              saveFacility={saveFacility}
+            />
+          </MemoryRouter>
+        );
+
+        const cliaInput = screen.getByLabelText("CLIA number", {
+          exact: false,
+        });
+
+        userEvent.clear(cliaInput);
+        userEvent.type(cliaInput, "32Z1234567");
+        userEvent.tab();
+
+        const saveButton = await screen.getAllByText("Save changes")[0];
+        userEvent.click(saveButton);
+        await validateAddress(saveFacility);
+        expect(saveFacility).toBeCalledTimes(1);
+      });
     });
   });
 

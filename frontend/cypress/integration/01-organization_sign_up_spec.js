@@ -36,7 +36,7 @@ describe("Organization sign up", () => {
     cy.get("[data-cy=pending-orgs-title]").should("be.visible");
   });
   it("verifies the org", () => {
-    cy.get(".sr-active-button").first().click();
+    cy.get(".sr-pending-org-edit-verify").first().click();
     cy.get("#verify-button").click();
     cy.contains("Identity verified for Beach Camp", { timeout: 30000 });
   });

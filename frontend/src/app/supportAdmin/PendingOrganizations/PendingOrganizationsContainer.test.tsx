@@ -10,6 +10,7 @@ import {
   GetPendingOrganizationsDocument,
   SetOrgIdentityVerifiedDocument,
   EditPendingOrganizationDocument,
+  MarkPendingOrganizationAsDeletedDocument,
 } from "../../../generated/graphql";
 import Page from "../../commonComponents/Page/Page";
 
@@ -101,6 +102,7 @@ const submittedOrganizationsQueryOldOrgs = {
     },
   },
 };
+
 const oldOrganizationsVerificationMutation = {
   request: {
     query: SetOrgIdentityVerifiedDocument,
@@ -148,6 +150,7 @@ const EmptyOrganizationsQuery = {
     },
   },
 };
+
 const verificationMutation = {
   request: {
     query: SetOrgIdentityVerifiedDocument,
@@ -214,6 +217,22 @@ const editOrganizationsMutation = {
     data: {
       editPendingOrganization:
         "DC-Space-Camp-fg413d4-btc5-449f-98b0-2e02abb7aae0",
+    },
+  },
+};
+
+const deletePendingOrgsMutation = {
+  request: {
+    query: MarkPendingOrganizationAsDeletedDocument,
+    variables: {
+      orgExternalId: "DC-Space-Camp-f34183c4-b4c5-449f-98b0-2e02abb7aae0",
+      deleted: true,
+    },
+  },
+  result: {
+    data: {
+      markPendingOrganizationAsDeleted:
+        "DC-Space-Camp-f34183c4-b4c5-449f-98b0-2e02abb7aae0",
     },
   },
 };
@@ -467,9 +486,7 @@ describe("PendingOrganizationsContainer", () => {
           await waitForElementToBeRemoved(
             screen.queryByText("Organization details")
           );
-          expect(
-            screen.getByText("DC Space Camp details updated")
-          ).toBeInTheDocument();
+          expect(screen.getByText("DC Space Camp")).toBeInTheDocument();
         });
       });
     });
@@ -503,37 +520,42 @@ describe("PendingOrganizationsContainer", () => {
           Array.from(await screen.findAllByText("Edit/Verify"))[1]
         );
         userEvent.click(screen.getByText("Verify"));
-        expect(
-          await screen.findByText("Identity verified for Space Camp")
-        ).toBeInTheDocument();
+        await waitForElementToBeRemoved(
+          screen.queryByLabelText("Organization name", {
+            exact: false,
+          })
+        );
         expect(
           await screen.findByText("A Real Hospital", { exact: false })
         ).toBeInTheDocument();
+        expect(
+          screen.queryByText(
+            "DC-Space-Camp-f34183c4-b4c5-449f-98b0-2e02abb7aae0"
+          )
+        ).not.toBeInTheDocument();
       });
     });
   });
   describe("submitting the form with edits without saving", () => {
     beforeEach(async () => {
       render(
-        <Page>
-          <MockedProvider
-            mocks={[
-              organizationsQuery(
-                "Space Camp",
-                "DC-Space-Camp-f34183c4-b4c5-449f-98b0-2e02abb7aae0"
-              ),
-              editOrganizationsInVerifyMutation,
-              organizationsQuery(
-                "DC Space Camp",
-                "DC-Space-Camp-f34183c4-b4c5-449f-98b0-2e02abb7aae0"
-              ),
-              inEditVerificationMutation,
-              submittedOrganizationQuery,
-            ]}
-          >
-            <PendingOrganizationsContainer />
-          </MockedProvider>
-        </Page>
+        <MockedProvider
+          mocks={[
+            organizationsQuery(
+              "Space Camp",
+              "DC-Space-Camp-f34183c4-b4c5-449f-98b0-2e02abb7aae0"
+            ),
+            editOrganizationsInVerifyMutation,
+            organizationsQuery(
+              "DC Space Camp",
+              "DC-Space-Camp-f34183c4-b4c5-449f-98b0-2e02abb7aae0"
+            ),
+            inEditVerificationMutation,
+            submittedOrganizationQuery,
+          ]}
+        >
+          <PendingOrganizationsContainer />
+        </MockedProvider>
       );
     });
     it("Space Camp submitted with new title", async () => {
@@ -558,9 +580,67 @@ describe("PendingOrganizationsContainer", () => {
         })
       ).toHaveValue("DC Space Camp");
       userEvent.click(screen.getByText("Verify"));
+      await waitForElementToBeRemoved(() =>
+        screen.queryByText("DC-Space-Camp-f34183c4-b4c5-449f-98b0-2e02abb7aae0")
+      );
       expect(
-        await screen.findByText("Identity verified for DC Space Camp")
+        screen.queryByText("DC-Space-Camp-f34183c4-b4c5-449f-98b0-2e02abb7aae0")
+      ).not.toBeInTheDocument();
+    });
+  });
+  describe("deleting organizations", () => {
+    beforeEach(async () => {
+      render(
+        <MockedProvider
+          mocks={[
+            organizationsQuery(
+              "Space Camp",
+              "DC-Space-Camp-f34183c4-b4c5-449f-98b0-2e02abb7aae0"
+            ),
+            deletePendingOrgsMutation,
+            submittedOrganizationQuery,
+          ]}
+        >
+          <PendingOrganizationsContainer />
+        </MockedProvider>
+      );
+    });
+
+    it("Facility deletion button populates modal", async () => {
+      expect(
+        await screen.findByText("Space Camp", { exact: false })
       ).toBeInTheDocument();
+      userEvent.click(
+        Array.from(await screen.findAllByTestId("delete-org-button"))[1]
+      );
+      expect(
+        await screen.findByText("Delete this organization?", {
+          exact: false,
+        })
+      ).toBeInTheDocument();
+      expect(await screen.findByText("No, go back")).toBeInTheDocument();
+      expect(await screen.findByText("Delete")).toBeEnabled();
+    });
+    it("Facility deletion works", async () => {
+      expect(
+        await screen.findByText("Space Camp", { exact: false })
+      ).toBeInTheDocument();
+      userEvent.click(
+        Array.from(await screen.findAllByTestId("delete-org-button"))[1]
+      );
+      expect(
+        await screen.findByText("Delete this organization?", {
+          exact: false,
+        })
+      ).toBeInTheDocument();
+      expect(await screen.findByText("Delete", { exact: true })).toBeEnabled();
+      userEvent.click(await screen.findByText("Delete", { exact: true }));
+      await waitForElementToBeRemoved(() =>
+        screen.queryByText("DC-Space-Camp-f34183c4-b4c5-449f-98b0-2e02abb7aae0")
+      );
+      expect(
+        screen.queryByText("DC-Space-Camp-f34183c4-b4c5-449f-98b0-2e02abb7aae0")
+      ).not.toBeInTheDocument();
     });
   });
 });
