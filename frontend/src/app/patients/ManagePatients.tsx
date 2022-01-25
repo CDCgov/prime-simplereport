@@ -131,7 +131,7 @@ export const DetachedManagePatients = ({
       setNamePrefixMatch(null);
     }
     navigate({
-      pathname: `../patients/1`,
+      pathname: `/patients/1`,
       search: `?facility=${activeFacilityId}`,
     });
   }, [queryString, setNamePrefixMatch, navigate, activeFacilityId]);

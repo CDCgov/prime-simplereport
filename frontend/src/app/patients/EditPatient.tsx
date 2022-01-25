@@ -184,7 +184,7 @@ const EditPatient = (props: Props) => {
     EditPatientParams
   >(UPDATE_PATIENT);
   const [redirect, setRedirect] = useState<string | undefined>(undefined);
-  const personPath = `../patients/?facility=${props.facilityId}`;
+  const personPath = `/patients/?facility=${props.facilityId}`;
 
   if (redirect) {
     return <Navigate to={redirect} />;

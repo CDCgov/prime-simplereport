@@ -106,7 +106,7 @@ const SearchResults = (props: QueueProps | TestResultsProps) => {
             className="margin-left-1"
             label="Add new patient"
             onClick={() => {
-              setRedirect(`../add-patient?facility=${activeFacilityId}`);
+              setRedirect(`/add-patient?facility=${activeFacilityId}`);
             }}
           />
         </div>

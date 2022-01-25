@@ -119,11 +119,11 @@ const App = () => {
   let homepagePath: string;
 
   if (isSupportAdmin) {
-    homepagePath = "admin";
+    homepagePath = "/admin";
   } else if (isOrgAdmin) {
-    homepagePath = "dashboard";
+    homepagePath = "/dashboard";
   } else {
-    homepagePath = "queue";
+    homepagePath = "/queue";
   }
 
   return (

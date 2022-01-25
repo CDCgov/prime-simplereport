@@ -110,7 +110,7 @@ const OrganizationForm = () => {
   if (orgExternalId) {
     return (
       <Navigate
-        to="../sign-up/identity-verification"
+        to="/sign-up/identity-verification"
         state={
           {
             orgExternalId: orgExternalId,

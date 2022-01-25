@@ -33,16 +33,17 @@ describe("Verify SMS MFA", () => {
   beforeEach(() => {
     render(
       <MemoryRouter
+        basename="/uac"
         initialEntries={[
           {
-            pathname: "/mfa-sms/verify",
+            pathname: "/uac/mfa-sms/verify",
             state: { contact: "530-867-5309" },
           },
         ]}
       >
         <Routes>
-          <Route path="/mfa-sms/verify" element={<MfaSmsVerify />} />
-          <Route path="/success" element={<MfaComplete />} />
+          <Route path="mfa-sms/verify" element={<MfaSmsVerify />} />
+          <Route path="success" element={<MfaComplete />} />
         </Routes>
       </MemoryRouter>
     );

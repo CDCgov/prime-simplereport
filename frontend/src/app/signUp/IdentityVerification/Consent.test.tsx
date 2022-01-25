@@ -41,6 +41,6 @@ describe("Consent", () => {
       </MemoryRouter>
     );
 
-    expect(screen.getByText("Redirected to ../sign-up")).toBeInTheDocument();
+    expect(screen.getByText("Redirected to /sign-up")).toBeInTheDocument();
   });
 });

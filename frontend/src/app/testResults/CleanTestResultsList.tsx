@@ -12,7 +12,7 @@ const CleanTestResultsList = () => {
 
   if (activeFacilityId && navigate) {
     navigate({
-      pathname: "../results/1",
+      pathname: "/results/1",
       search: qs.stringify({
         facility: activeFacilityId,
       }),

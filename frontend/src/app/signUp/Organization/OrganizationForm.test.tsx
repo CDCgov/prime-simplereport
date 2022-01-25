@@ -107,7 +107,7 @@ describe("OrganizationForm", () => {
     getSubmitButton().click();
 
     expect(
-      await screen.findByText("Redirected to ../sign-up/identity-verification")
+      await screen.findByText("Redirected to /sign-up/identity-verification")
     ).toBeInTheDocument();
   });
 

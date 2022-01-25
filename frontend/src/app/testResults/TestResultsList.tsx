@@ -666,7 +666,7 @@ const TestResultsList = () => {
 
   const filter = (params: FilterParams) => {
     navigate({
-      pathname: "../results/1",
+      pathname: "/results/1",
       search: qs.stringify({
         facility: activeFacilityId,
         ...filterParams,
@@ -683,7 +683,7 @@ const TestResultsList = () => {
 
   const clearFilterParams = () =>
     navigate({
-      pathname: "../results/1",
+      pathname: "/results/1",
       search: qs.stringify({ facility: activeFacilityId }),
     });
 

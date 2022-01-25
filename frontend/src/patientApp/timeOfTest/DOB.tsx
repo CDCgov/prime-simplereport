@@ -99,7 +99,7 @@ const DOB = () => {
     return (
       <Navigate
         to={{
-          pathname: "../test-result",
+          pathname: "/pxp/test-result",
           search: `?plid=${plid}`,
         }}
       />
@@ -108,7 +108,7 @@ const DOB = () => {
     return (
       <Navigate
         to={{
-          pathname: "../patient-info-confirm",
+          pathname: "/pxp/patient-info-confirm",
           search: `?plid=${plid}`,
         }}
       />

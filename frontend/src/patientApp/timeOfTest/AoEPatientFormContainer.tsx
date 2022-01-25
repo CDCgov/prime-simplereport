@@ -32,7 +32,7 @@ const AoEPatientFormContainer: React.FC = () => {
     return (
       <Navigate
         to={{
-          pathname: "../success",
+          pathname: "/pxp/success",
           search: `?plid=${plid}`,
         }}
       />

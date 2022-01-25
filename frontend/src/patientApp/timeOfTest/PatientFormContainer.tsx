@@ -30,7 +30,7 @@ const PatientFormContainer = () => {
     return (
       <Navigate
         to={{
-          pathname: "../patient-info-symptoms",
+          pathname: "/pxp/patient-info-symptoms",
           search: `?plid=${plid}`,
         }}
       />

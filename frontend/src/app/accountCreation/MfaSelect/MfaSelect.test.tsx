@@ -75,7 +75,7 @@ describe("MfaSelect routing", () => {
     });
 
     render(
-      <MemoryRouter initialEntries={["/mfa-select"]}>
+      <MemoryRouter basename="/uac" initialEntries={["/uac/mfa-select"]}>
         <Routes>
           <Route path="mfa-select" element={<MfaSelect />} />
           <Route path="mfa-sms" element={<MfaSms />} />

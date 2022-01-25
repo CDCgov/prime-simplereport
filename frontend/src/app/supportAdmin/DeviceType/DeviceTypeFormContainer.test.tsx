@@ -61,7 +61,7 @@ describe("DeviceTypeFormContainer", () => {
 
     userEvent.click(screen.getByText("Save changes"));
 
-    await screen.findByText("Redirected to ../admin");
+    await screen.findByText("Redirected to /admin");
 
     expect(mockCreateDeviceType).toBeCalledTimes(1);
     expect(mockCreateDeviceType).toHaveBeenCalledWith({
@@ -77,6 +77,6 @@ describe("DeviceTypeFormContainer", () => {
 
     await new Promise((resolve) => setTimeout(resolve, 0));
 
-    await screen.findByText("Redirected to ../admin");
+    await screen.findByText("Redirected to /admin");
   });
 });

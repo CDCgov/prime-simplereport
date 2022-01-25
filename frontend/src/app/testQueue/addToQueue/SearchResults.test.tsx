@@ -112,7 +112,7 @@ describe("SearchResults", () => {
       userEvent.click(screen.getByText("Add new patient"));
       expect(
         screen.getByText(
-          `Redirected to ../add-patient?facility=${mockFacilityID}`
+          `Redirected to /add-patient?facility=${mockFacilityID}`
         )
       ).toBeInTheDocument();
     });

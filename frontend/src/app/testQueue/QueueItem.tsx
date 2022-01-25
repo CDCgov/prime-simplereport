@@ -668,7 +668,7 @@ const QueueItem = ({
                     className="card-name"
                     onClick={() => {
                       navigate({
-                        pathname: `../patient/${patient.internalId}`,
+                        pathname: `/patient/${patient.internalId}`,
                         search: `?facility=${facilityId}`,
                       });
                     }}
