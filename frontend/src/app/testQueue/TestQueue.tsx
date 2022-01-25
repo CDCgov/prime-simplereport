@@ -93,6 +93,7 @@ export const queueQuery = gql`
       deviceType {
         internalId
         name
+        testLength
       }
       specimenType {
         internalId
