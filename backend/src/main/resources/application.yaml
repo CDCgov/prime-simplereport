@@ -40,6 +40,8 @@ graphql:
     enabled: true
     corsEnabled: true
     exception-handlers-enabled: true
+  playground:
+    enabled: false
   tools:
     schema-location-pattern: "**/*.graphqls"
   datetime:
