@@ -9,6 +9,7 @@ import static org.mockito.Mockito.when;
 
 import gov.cdc.usds.simplereport.db.model.Facility;
 import gov.cdc.usds.simplereport.db.model.Organization;
+import gov.cdc.usds.simplereport.db.model.OrganizationQueueItem;
 import gov.cdc.usds.simplereport.db.model.auxiliary.StreetAddress;
 import gov.cdc.usds.simplereport.service.AddressValidationService;
 import gov.cdc.usds.simplereport.service.ApiUserService;
@@ -44,12 +45,14 @@ class OrganizationMutationResolverTest extends BaseServiceTest<PersonService> {
 
   private Facility facility;
   private StreetAddress address;
+  private OrganizationQueueItem pendingOrg;
   private final UUID deviceId = UUID.randomUUID();
 
   @BeforeEach
   void setup() {
     Organization org = _dataFactory.createValidOrg();
     facility = _dataFactory.createValidFacility(org);
+    pendingOrg = _dataFactory.createOrganizationQueueItem();
     address = facility.getAddress();
   }
 
@@ -299,5 +302,25 @@ class OrganizationMutationResolverTest extends BaseServiceTest<PersonService> {
 
     // THEN
     verify(mockedOrganizationService).markFacilityAsDeleted(facility.getInternalId(), false);
+  }
+
+  @Test
+  void markPendingOrgDeleted_false() {
+    // WHEN
+    organizationMutationResolver.markPendingOrganizationAsDeleted(
+        pendingOrg.getExternalId(), false);
+    // THEN
+    verify(mockedOrganizationQueueService)
+        .markPendingOrganizationAsDeleted(pendingOrg.getExternalId(), false);
+  }
+
+  @Test
+  void markPendingOrgDeleted_true() {
+    // WHEN
+    organizationMutationResolver.markPendingOrganizationAsDeleted(pendingOrg.getExternalId(), true);
+
+    // THEN
+    verify(mockedOrganizationQueueService)
+        .markPendingOrganizationAsDeleted(pendingOrg.getExternalId(), true);
   }
 }

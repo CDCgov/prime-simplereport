@@ -4,6 +4,8 @@ ARG NODE_ENV
 FROM node:${NODE_VER}-alpine
 ENV NODE_ENV=${NODE_ENV}
 
+RUN apk add --no-cache git
+
 WORKDIR /frontend
 CMD ["yarn", "soft-start"]
 
