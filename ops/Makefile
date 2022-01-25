@@ -47,12 +47,12 @@ init-%: .valid-env-%
 	terraform -chdir=$* init
 
 plan-%: .valid-env-% api.tfvars
-	terraform -chdir=$*/persistent plan -lock-timeout=15m
-	terraform -chdir=$* plan -var-file=../api.tfvars -lock-timeout=15m
+	terraform -chdir=$*/persistent plan -lock-timeout=30m
+	terraform -chdir=$* plan -var-file=../api.tfvars -lock-timeout=30m
 
 deploy-%: .valid-env-% api.tfvars
-	terraform -chdir=$*/persistent apply -auto-approve -lock-timeout=15m
-	terraform -chdir=$* apply -auto-approve -var-file=../api.tfvars -lock-timeout=15m
+	terraform -chdir=$*/persistent apply -auto-approve -lock-timeout=30m
+	terraform -chdir=$* apply -auto-approve -var-file=../api.tfvars -lock-timeout=30m
 
 promote-%: .be-logged-in .valid-env-%
 	az webapp deployment slot swap -g prime-simple-report-$* -n $(API_NAME) --slot $(SOURCE_SLOT) --target-slot $(TARGET_SLOT)
