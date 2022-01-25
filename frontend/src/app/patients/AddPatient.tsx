@@ -217,7 +217,7 @@ const AddPatient = () => {
 
   const [startTest, setStartTest] = useState(false);
 
-  const personPath = `/patients/?facility=${activeFacilityId}`;
+  const personPath = `../patients/?facility=${activeFacilityId}`;
 
   const [redirect, setRedirect] = useState<
     string | { pathname: string; search: string; state?: any } | undefined
@@ -253,7 +253,7 @@ const AddPatient = () => {
     if (startTest) {
       const facility = data?.addPatient?.facility?.id || activeFacilityId;
       setRedirect({
-        pathname: "/queue",
+        pathname: "../queue",
         search: `?facility=${facility}`,
         state: {
           patientId: data?.addPatient.internalId,

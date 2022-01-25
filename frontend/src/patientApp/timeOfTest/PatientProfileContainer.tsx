@@ -17,7 +17,7 @@ const PatientProfileContainer = () => {
     return (
       <Navigate
         to={{
-          pathname: "/patient-info-edit",
+          pathname: "../patient-info-edit",
           search: `?plid=${plid}`,
         }}
       />
@@ -28,7 +28,7 @@ const PatientProfileContainer = () => {
     return (
       <Navigate
         to={{
-          pathname: "/patient-info-symptoms",
+          pathname: "../patient-info-symptoms",
           search: `?plid=${plid}`,
         }}
       />

@@ -15,7 +15,7 @@ const GuardedRoute = ({ auth, element }: Props) => {
     return (
       <Navigate
         to={{
-          pathname: "/",
+          pathname: "../",
           search: `?plid=${plid}`,
         }}
         replace

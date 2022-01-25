@@ -42,7 +42,7 @@ const ManageDeviceTypeFormContainer = () => {
   };
 
   if (submitted) {
-    return <Navigate to="/admin" />;
+    return <Navigate to="../admin" />;
   }
 
   if (deviceTypeResults && specimenTypesResults) {

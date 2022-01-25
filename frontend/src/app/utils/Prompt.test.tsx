@@ -6,7 +6,9 @@ import Prompt from "./Prompt";
 
 describe("A <Prompt>", () => {
   it("calls window.confirm with the prompt message", () => {
-    const confirmMock = jest.spyOn(window, "confirm").mockImplementation();
+    const confirmMock = jest
+      .spyOn(window, "confirm")
+      .mockImplementation(() => true);
 
     render(
       <MemoryRouter>

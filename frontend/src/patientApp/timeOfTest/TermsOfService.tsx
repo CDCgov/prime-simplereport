@@ -26,7 +26,7 @@ const TermsOfService: React.FunctionComponent<Props> = ({
     return (
       <Navigate
         to={{
-          pathname: "/birth-date-confirmation",
+          pathname: "../birth-date-confirmation",
           search: `?plid=${plid}`,
         }}
       />

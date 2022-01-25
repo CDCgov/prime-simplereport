@@ -21,7 +21,7 @@ const PatientProfile = ({ patient }: Props) => {
     return (
       <Navigate
         to={{
-          pathname: "/",
+          pathname: "../",
           search: `?plid=${plid}`,
         }}
       />

@@ -22,7 +22,7 @@ const ProtectedRoute: React.FC<Props> = ({
     );
   }
 
-  return hasAccess ? element : <Navigate to="/" />;
+  return hasAccess ? element : <Navigate to="../" />;
 };
 
 export default ProtectedRoute;

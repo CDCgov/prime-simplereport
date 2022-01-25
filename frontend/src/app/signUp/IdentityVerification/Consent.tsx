@@ -16,7 +16,7 @@ const Consent = () => {
   const [submitted, setSubmitted] = useState(false);
 
   if (!orgExternalId || !firstName || !lastName) {
-    return <Navigate to={{ pathname: "/sign-up" }} />;
+    return <Navigate to="../sign-up" />;
   }
 
   if (submitted) {

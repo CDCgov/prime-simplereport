@@ -191,7 +191,7 @@ const FacilityFormContainer: any = (props: Props) => {
     if (props.newOrg) {
       window.location.pathname = process.env.PUBLIC_URL || "";
     }
-    return <Navigate to={{ pathname: "/settings/facilities" }} />;
+    return <Navigate to="../settings/facilities" />;
   }
 
   const saveFacility = async (facility: Facility) => {

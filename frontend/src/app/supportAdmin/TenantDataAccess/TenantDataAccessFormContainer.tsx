@@ -61,7 +61,7 @@ const TenantDataAccessFormContainer = () => {
   };
 
   if (submitted) {
-    return <Navigate to="/admin" />;
+    return <Navigate to="../admin" />;
   }
 
   return (
