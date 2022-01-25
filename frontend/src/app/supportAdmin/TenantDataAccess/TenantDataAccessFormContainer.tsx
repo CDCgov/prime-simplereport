@@ -54,14 +54,11 @@ const TenantDataAccessFormContainer = () => {
       );
       showNotification(alert);
       setSubmitted(true);
-
-      // reload the page, in the future, this should just update state where appropriate
-      window.location.reload();
     });
   };
 
   if (submitted) {
-    return <Navigate to="/admin" />;
+    return <Navigate to="/admin" state={{ reload: true }} />;
   }
 
   return (

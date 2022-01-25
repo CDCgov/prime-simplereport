@@ -119,11 +119,11 @@ const App = () => {
   let homepagePath: string;
 
   if (isSupportAdmin) {
-    homepagePath = "/admin";
+    homepagePath = "admin";
   } else if (isOrgAdmin) {
-    homepagePath = "/dashboard";
+    homepagePath = "dashboard";
   } else {
-    homepagePath = "/queue";
+    homepagePath = "queue";
   }
 
   return (
@@ -137,7 +137,14 @@ const App = () => {
         <Page>
           <Header />
           <Routes>
-            <Route path="/" element={<Navigate to={homepagePath} />} />
+            <Route
+              path="/"
+              element={
+                <Navigate
+                  to={{ pathname: homepagePath, search: location.search }}
+                />
+              }
+            />
             <Route path="queue" element={<TestQueueContainer />} />
             <Route
               path="results/:pageNumber"
@@ -160,7 +167,17 @@ const App = () => {
               }
             />
             <Route
-              path="patients/:pageNumber?"
+              path="patients/:pageNumber"
+              element={
+                <ProtectedRoute
+                  requiredPermissions={appPermissions.people.canView}
+                  userPermissions={data.whoami.permissions}
+                  element={<ManagePatientsContainer />}
+                />
+              }
+            />
+            <Route
+              path="patients"
               element={
                 <ProtectedRoute
                   requiredPermissions={appPermissions.people.canView}

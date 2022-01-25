@@ -156,7 +156,9 @@ const Header: React.FC<{}> = () => {
                   to={`/dashboard`}
                   onClick={() => setMenuVisible(false)}
                   className={({ isActive }) =>
-                    isActive ? "active prime-nav-link" : "prime-nav-link"
+                    isActive
+                      ? "active-nav-item prime-nav-link"
+                      : "prime-nav-link"
                   }
                   style={({ isActive }) => ({ color: isActive ? "white" : "" })}
                 >
@@ -170,7 +172,9 @@ const Header: React.FC<{}> = () => {
                   to={`/queue`}
                   onClick={() => setMenuVisible(false)}
                   className={({ isActive }) =>
-                    isActive ? "active prime-nav-link" : "prime-nav-link"
+                    isActive
+                      ? "active-nav-item prime-nav-link"
+                      : "prime-nav-link"
                   }
                   style={({ isActive }) => ({ color: isActive ? "white" : "" })}
                 >
@@ -184,7 +188,9 @@ const Header: React.FC<{}> = () => {
                   to={`/results`}
                   onClick={() => setMenuVisible(false)}
                   className={({ isActive }) =>
-                    isActive ? "active prime-nav-link" : "prime-nav-link"
+                    isActive
+                      ? "active-nav-item prime-nav-link"
+                      : "prime-nav-link"
                   }
                   style={({ isActive }) => ({ color: isActive ? "white" : "" })}
                 >
@@ -198,7 +204,9 @@ const Header: React.FC<{}> = () => {
                   to={`/patients`}
                   onClick={() => setMenuVisible(false)}
                   className={({ isActive }) =>
-                    isActive ? "active prime-nav-link" : "prime-nav-link"
+                    isActive
+                      ? "active-nav-item prime-nav-link"
+                      : "prime-nav-link"
                   }
                   style={({ isActive }) => ({ color: isActive ? "white" : "" })}
                 >
@@ -247,7 +255,9 @@ const Header: React.FC<{}> = () => {
                 <LinkWithQuery
                   to={`/settings`}
                   onClick={() => setMenuVisible(false)}
-                  className={({ isActive }) => (isActive ? "active" : "")}
+                  className={({ isActive }) =>
+                    isActive ? "active-nav-item" : ""
+                  }
                   style={({ isActive }) => ({ color: isActive ? "white" : "" })}
                 >
                   <FontAwesomeIcon icon={"cog"} /> Settings
@@ -265,7 +275,9 @@ const Header: React.FC<{}> = () => {
                   to={`/dashboard`}
                   onClick={() => setMenuVisible(false)}
                   className={({ isActive }) =>
-                    isActive ? "active prime-nav-link" : "prime-nav-link"
+                    isActive
+                      ? "active-nav-item prime-nav-link"
+                      : "prime-nav-link"
                   }
                   id="dashboard-nav-link"
                   style={({ isActive }) => ({ color: isActive ? "white" : "" })}
@@ -280,7 +292,9 @@ const Header: React.FC<{}> = () => {
                   to={`/queue`}
                   onClick={() => setMenuVisible(false)}
                   className={({ isActive }) =>
-                    isActive ? "active prime-nav-link" : "prime-nav-link"
+                    isActive
+                      ? "active-nav-item prime-nav-link"
+                      : "prime-nav-link"
                   }
                   id="conduct-test-nav-link"
                   style={({ isActive }) => ({ color: isActive ? "white" : "" })}
@@ -295,7 +309,9 @@ const Header: React.FC<{}> = () => {
                   to={`/results`}
                   onClick={() => setMenuVisible(false)}
                   className={({ isActive }) =>
-                    isActive ? "active prime-nav-link" : "prime-nav-link"
+                    isActive
+                      ? "active-nav-item prime-nav-link"
+                      : "prime-nav-link"
                   }
                   id="results-nav-link"
                   style={({ isActive }) => ({ color: isActive ? "white" : "" })}
@@ -310,7 +326,9 @@ const Header: React.FC<{}> = () => {
                   to={`/patients`}
                   onClick={() => setMenuVisible(false)}
                   className={({ isActive }) =>
-                    isActive ? "active prime-nav-link" : "prime-nav-link"
+                    isActive
+                      ? "active-nav-item prime-nav-link"
+                      : "prime-nav-link"
                   }
                   id="patient-nav-link"
                   style={({ isActive }) => ({ color: isActive ? "white" : "" })}
@@ -342,7 +360,7 @@ const Header: React.FC<{}> = () => {
                 }}
                 className={() =>
                   staffDetailsVisible
-                    ? "active prime-nav-link"
+                    ? "active-nav-item prime-nav-link"
                     : "prime-nav-link"
                 }
                 data-testid="user-button"
@@ -398,7 +416,9 @@ const Header: React.FC<{}> = () => {
                 <LinkWithQuery
                   to={`/settings`}
                   onClick={() => setMenuVisible(false)}
-                  className={({ isActive }) => (isActive ? "active" : "")}
+                  className={({ isActive }) =>
+                    isActive ? "active-nav-item" : ""
+                  }
                   style={({ isActive }) => ({ color: isActive ? "white" : "" })}
                 >
                   <FontAwesomeIcon icon={"cog"} />

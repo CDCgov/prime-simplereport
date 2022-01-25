@@ -2,10 +2,12 @@ import { useSelector } from "react-redux";
 import { useNavigate, useLocation } from "react-router-dom";
 
 import { RootState } from "../store";
+import { getFacilityIdFromUrl } from "../utils/url";
 
 export function useSelectedFacility() {
   const navigate = useNavigate();
-  const facilityId = useQuery().get("facility");
+  const location = useLocation();
+  const facilityId = getFacilityIdFromUrl(location);
 
   const selectedFacility = useSelector<RootState, Facility | undefined>(
     (state) => state.facilities.find((f) => f.id === facilityId)
@@ -16,8 +18,4 @@ export function useSelectedFacility() {
   };
 
   return [selectedFacility, setSelectedFacility] as const;
-}
-
-function useQuery() {
-  return new URLSearchParams(useLocation().search);
 }
