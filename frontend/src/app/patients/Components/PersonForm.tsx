@@ -519,7 +519,6 @@ const PersonForm = (props: Props) => {
               </div>
             </div>
           ) : null}
-          {/*this is working on the frontend but it's not saving correctly - I assume there's some kind of auto-loader that checks the user's zip code and loads US based on that */}
           {patient.country === "CAN" ? (
             <div className="grid-row grid-gap">
               <div className="mobile-lg:grid-col-6">
