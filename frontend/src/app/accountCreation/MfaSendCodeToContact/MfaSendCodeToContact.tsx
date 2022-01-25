@@ -79,14 +79,7 @@ export const MfaSendCodeToContact = (props: Props) => {
   }
 
   if (submitted) {
-    return (
-      <Navigate
-        to={{
-          pathname: `${window.location.pathname.split("/uac")[1]}/verify`,
-        }}
-        state={contact}
-      />
-    );
+    return <Navigate to="verify" state={contact} />;
   }
 
   return (

@@ -166,7 +166,7 @@ export const PasswordForm = () => {
   }
 
   if (submitted) {
-    return <Navigate to="/set-recovery-question" />;
+    return <Navigate to="../set-recovery-question" />;
   }
 
   return (

@@ -65,7 +65,8 @@ const AccountCreationApp = () => {
     };
     const token = getActivationTokenFromUrl();
     getStatusAndActivate(token);
-  }, [navigate, location]);
+    /* eslint-disable react-hooks/exhaustive-deps */
+  }, []);
 
   // Show loading card while useEffect func is running
   if (userAccountStatus === UserAccountStatus.LOADING) {

@@ -36,19 +36,19 @@ export const MfaSelect = () => {
   if (submitted) {
     switch (mfaOption) {
       case "SMS":
-        return <Navigate to="/mfa-sms" />;
+        return <Navigate to="../mfa-sms" />;
       case "Okta":
-        return <Navigate to="/mfa-okta" />;
+        return <Navigate to="../mfa-okta" />;
       case "Google":
-        return <Navigate to="/mfa-google-auth" />;
+        return <Navigate to="../mfa-google-auth" />;
       case "FIDO":
-        return <Navigate to="/mfa-security-key" />;
+        return <Navigate to="../mfa-security-key" />;
       case "Phone":
-        return <Navigate to="/mfa-phone" />;
+        return <Navigate to="../mfa-phone" />;
       case "Email":
-        return <Navigate to="/mfa-email/verify" />;
+        return <Navigate to="../mfa-email/verify" />;
       default:
-        return <Navigate to="/" />;
+        return <Navigate to="../" />;
     }
   }
 

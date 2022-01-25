@@ -75,7 +75,7 @@ export const MfaSecurityKey = () => {
   }
 
   if (activated) {
-    return <Navigate to="/success" />;
+    return <Navigate to="../success" />;
   }
 
   return (

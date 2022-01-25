@@ -30,11 +30,7 @@ export const MfaTotp = ({ enrollFunction, totpType }: Props) => {
   }
 
   if (submitted) {
-    return (
-      <Navigate
-        to={{ pathname: `${window.location.pathname.split("/uac")[1]}/verify` }}
-      />
-    );
+    return <Navigate to="verify" />;
   }
 
   return (

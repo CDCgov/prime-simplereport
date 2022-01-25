@@ -63,7 +63,7 @@ export const MfaVerify = (props: Props) => {
   }
 
   if (submitted) {
-    return <Navigate to="/success" />;
+    return <Navigate to="../success" />;
   }
 
   const input = (

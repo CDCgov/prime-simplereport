@@ -71,7 +71,7 @@ export const SecurityQuestion = () => {
   }
 
   if (submitted) {
-    return <Navigate to="/mfa-select" />;
+    return <Navigate to="../mfa-select" />;
   }
 
   return (
