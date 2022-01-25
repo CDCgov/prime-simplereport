@@ -2,36 +2,22 @@ import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import React, { useState } from "react";
 import Modal from "react-modal";
 
-import Alert from "../../commonComponents/Alert";
-import { PendingOrganization } from "../../../generated/graphql";
-import Button from "../../commonComponents/Button/Button";
-import Input from "../../commonComponents/Input";
-import { isFieldValid, isFormValid } from "../../utils/yupHelpers";
-
+import Alert from "../../../commonComponents/Alert";
+import { PendingOrganization } from "../../../../generated/graphql";
+import Button from "../../../commonComponents/Button/Button";
+import Input from "../../../commonComponents/Input";
+import { isFieldValid, isFormValid } from "../../../utils/yupHelpers";
 import {
-  EditOrgMutationResponse,
   PendingOrganizationFormValues,
   pendingOrganizationSchema,
-} from "./utils";
+} from "../utils";
 
-interface ModalProps {
-  organization: PendingOrganization;
-  handleUpdate: (
-    organization: PendingOrganizationFormValues
-  ) => Promise<EditOrgMutationResponse>;
-  handleVerify: (organization: PendingOrganizationFormValues) => Promise<void>;
-  handleClose: () => void;
-  isUpdating: boolean;
-  isVerifying: boolean;
-  orgUsingOldSchema: boolean;
-}
+import {
+  VerficationModalProps,
+  PendingOrganizationErrors,
+} from "./modal_utils";
 
-type PendingOrganizationErrors = Record<
-  keyof PendingOrganizationFormValues,
-  string
->;
-
-const ConfirmOrgVerificationModal: React.FC<ModalProps> = ({
+const ConfirmOrgVerificationModal: React.FC<VerficationModalProps> = ({
   organization,
   handleUpdate,
   handleClose,
