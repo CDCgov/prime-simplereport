@@ -8,7 +8,7 @@ describe("A <Prompt>", () => {
   it("calls window.confirm with the prompt message", () => {
     const confirmMock = jest
       .spyOn(window, "confirm")
-      .mockImplementation(() => false);
+      .mockImplementation((_message) => false);
 
     render(
       <MemoryRouter>
@@ -56,7 +56,7 @@ describe("A <Prompt>", () => {
     it("does not call window.confirm", () => {
       const confirmMock = jest
         .spyOn(window, "confirm")
-        .mockImplementation(() => true);
+        .mockImplementation((_message) => true);
 
       render(
         <MemoryRouter>

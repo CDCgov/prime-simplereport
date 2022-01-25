@@ -58,7 +58,7 @@ const TenantDataAccessFormContainer = () => {
   };
 
   if (submitted) {
-    return <Navigate to="/admin" state={{ reload: true }} />;
+    return <Navigate to="/reload-app" />;
   }
 
   return (

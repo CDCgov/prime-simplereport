@@ -129,7 +129,9 @@ const App = () => {
   return (
     <>
       <VersionEnforcer />
-      <MaintenanceBanner />
+      {process.env.REACT_APP_DISABLE_MAINTENANCE_BANNER === "true" ? null : (
+        <MaintenanceBanner />
+      )}
       {process.env.REACT_APP_IS_TRAINING_SITE === "true" && (
         <TrainingNotification />
       )}

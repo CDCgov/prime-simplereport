@@ -1,7 +1,5 @@
 import React from "react";
-import { Navigate, Route, Routes, useLocation } from "react-router-dom";
-
-import reload from "../utils/reload";
+import { Navigate, Route, Routes } from "react-router-dom";
 
 import AddOrganizationAdminFormContainer from "./AddOrganizationAdmin/AddOrganizationAdminFormContainer";
 import DeviceTypeFormContainer from "./DeviceType/DeviceTypeFormContainer";
@@ -15,11 +13,6 @@ interface Props {
 }
 
 const SupportAdminRoutes: React.FC<Props> = ({ isAdmin }) => {
-  const location = useLocation();
-  if ((location.state as any)?.reload) {
-    reload();
-  }
-
   if (!isAdmin) {
     return <Navigate to="/queue" />;
   }

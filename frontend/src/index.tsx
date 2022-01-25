@@ -8,7 +8,12 @@ import {
   InMemoryCache,
   concat,
 } from "@apollo/client";
-import { Route, BrowserRouter as Router, Routes } from "react-router-dom";
+import {
+  Route,
+  BrowserRouter as Router,
+  Routes,
+  Navigate,
+} from "react-router-dom";
 import { createUploadLink } from "apollo-upload-client";
 import { ErrorResponse, onError } from "@apollo/client/link/error";
 import { ApplicationInsights } from "@microsoft/applicationinsights-web";
@@ -127,6 +132,7 @@ export const ReactApp = (
                   element={<SelfRegistration />}
                 />
                 <Route path="/session-timeout" element={<SessionTimeout />} />
+                <Route path="/reload-app" element={<Navigate to="/" />} />
                 <Route path="/*" element={<App />} />
                 <Route element={<>Page not found</>} />
               </Routes>
