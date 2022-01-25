@@ -7,7 +7,7 @@ const mfaRadios = {
   voice: 'input[value="Phone"]+label',
   email: 'input[value="Email"]+label',
 };
-const submitButton = "button.usa-button#submit-password-button";
+const submitButton = 'button[type="submit"]';
 
 // Define custom commands for this suite
 Cypress.Commands.add("setPassword", () => {
