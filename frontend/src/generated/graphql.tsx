@@ -1804,6 +1804,7 @@ export type GetFacilityQueueQuery = {
           __typename?: "DeviceType";
           internalId: string;
           name: string;
+          testLength?: Maybe<number>;
         };
         specimenType: {
           __typename?: "SpecimenType";
@@ -5164,6 +5165,7 @@ export const GetFacilityQueueDocument = gql`
       deviceType {
         internalId
         name
+        testLength
       }
       specimenType {
         internalId
