@@ -9,7 +9,6 @@ module "metric_alerts" {
   mem_threshold                  = 85
   cpu_window_size                = "PT1H"
   http_response_time_aggregation = "Minimum"
-  failed_http_2xx_threshold      = 14
   skip_on_weekends               = true
   disabled_alerts = [
     "frontend_error_boundary",
