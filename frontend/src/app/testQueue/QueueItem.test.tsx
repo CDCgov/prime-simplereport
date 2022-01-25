@@ -111,7 +111,7 @@ describe("QueueItem", () => {
     expect(patientName).toBeInTheDocument();
     userEvent.click(patientName);
     expect(mockNavigate).toHaveBeenCalledWith({
-      pathname: "/patient/f5c7658d-a0d5-4ec5-a1c9-eafc85fe7554",
+      pathname: "../patient/f5c7658d-a0d5-4ec5-a1c9-eafc85fe7554",
       search: "?facility=Hogwarts+123",
     });
   });

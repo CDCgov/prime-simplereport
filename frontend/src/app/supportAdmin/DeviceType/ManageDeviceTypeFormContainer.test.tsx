@@ -124,6 +124,8 @@ describe("ManageDeviceTypeFormContainer", () => {
       },
     });
 
-    expect(await screen.findByText("Redirected to /admin")).toBeInTheDocument();
+    expect(
+      await screen.findByText("Redirected to ../admin")
+    ).toBeInTheDocument();
   });
 });

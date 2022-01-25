@@ -7,7 +7,7 @@ jest.mock("react-router-dom", () => {
   const original = jest.requireActual("react-router-dom");
   return {
     ...original,
-    Navigate: (props: any) => `Redirected to ${props.to.pathname}`,
+    Navigate: (props: any) => `Redirected to ${props.to}`,
   };
 });
 
@@ -41,6 +41,6 @@ describe("Consent", () => {
       </MemoryRouter>
     );
 
-    expect(screen.getByText("Redirected to /sign-up")).toBeInTheDocument();
+    expect(screen.getByText("Redirected to ../sign-up")).toBeInTheDocument();
   });
 });

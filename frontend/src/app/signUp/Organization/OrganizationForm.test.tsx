@@ -53,8 +53,8 @@ jest.mock("../SignUpApi", () => ({
   },
 }));
 
-jest.mock("react-router", () => ({
-  Navigate: (props: any) => `Redirected to ${props.to.pathname}`,
+jest.mock("react-router-dom", () => ({
+  Navigate: (props: any) => `Redirected to ${props.to}`,
 }));
 
 window.scrollTo = jest.fn();
@@ -107,7 +107,7 @@ describe("OrganizationForm", () => {
     getSubmitButton().click();
 
     expect(
-      await screen.findByText("Redirected to /sign-up/identity-verification")
+      await screen.findByText("Redirected to ../sign-up/identity-verification")
     ).toBeInTheDocument();
   });
 

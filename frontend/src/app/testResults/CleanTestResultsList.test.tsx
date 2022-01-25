@@ -48,7 +48,7 @@ describe("CleanTestResultsList", () => {
 
     await waitFor(() => {
       expect(mockNavigate).toHaveBeenCalledWith({
-        pathname: "/results/1",
+        pathname: "../results/1",
         search: qs.stringify({
           facility: 1,
         }),
