@@ -11,14 +11,14 @@ terraform {
   required_providers {
     azurerm = {
       source  = "hashicorp/azurerm"
-      version = "~>2.84"
+      version = "~> 2.93"
     }
     okta = {
       source  = "okta/okta"
-      version = "~>3.19"
+      version = "~> 3.19"
     }
   }
-  required_version = "~>1.0.11"
+  required_version = "~> 1.1.4"
 }
 
 
