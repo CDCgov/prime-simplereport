@@ -196,7 +196,9 @@ exports[`TestQueue should render the test queue 1`] = `
                   <div
                     class="flex-col-container"
                   >
-                    <div>
+                    <div
+                      class=""
+                    >
                       Test date and time
                     </div>
                     <div
@@ -553,7 +555,9 @@ exports[`TestQueue should render the test queue 1`] = `
                   <div
                     class="flex-col-container"
                   >
-                    <div>
+                    <div
+                      class=""
+                    >
                       Test date and time
                     </div>
                     <div

@@ -42,7 +42,7 @@
     }
 
     &__error {
-      border-color: #b50909;
+      border-color: #d54309;
     }
   }
 
@@ -82,6 +82,11 @@
     align-items: center;
     flex-wrap: wrap;
     margin-top: 8px;
+  }
+
+  .queue-item-error-message {
+    color: #d54309;
+    display: block;
   }
 }
 

@@ -379,6 +379,7 @@ const QueueItem = ({
         <Alert type="error" title="Invalid test date" body={message} />
       );
 
+      setSaveState("error");
       return;
     }
 
@@ -629,7 +630,6 @@ const QueueItem = ({
     const newDate = moment(selectedDate)
       .hours(parseInt(hours))
       .minutes(parseInt(minutes));
-    console.log(newDate);
     onDateTestedChange(newDate);
   };
 
@@ -729,11 +729,20 @@ const QueueItem = ({
                   </div>
 
                   <div className="flex-col-container">
-                    <div>Test date and time</div>
+                    <div
+                      className={classnames(
+                        saveState === "error" && "queue-item-error-message"
+                      )}
+                    >
+                      Test date and time
+                    </div>
                     <div className="test-date-time-container">
                       <input
                         hidden={useCurrentDateTime !== "false"}
-                        className="card-test-input"
+                        className={classnames(
+                          "card-test-input",
+                          saveState === "error" && "card-test-input__error"
+                        )}
                         id="test-date"
                         data-testid="test-date"
                         name="test-date"
@@ -747,7 +756,10 @@ const QueueItem = ({
                       />
                       <input
                         hidden={useCurrentDateTime !== "false"}
-                        className="card-test-input"
+                        className={classnames(
+                          "card-test-input",
+                          saveState === "error" && "card-test-input__error"
+                        )}
                         name={"test-time"}
                         data-testid="test-time"
                         type="time"

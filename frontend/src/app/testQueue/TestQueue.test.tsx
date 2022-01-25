@@ -106,6 +106,7 @@ describe("TestQueue", () => {
       expect(dateInput).toBeInTheDocument();
       userEvent.type(dateInput, moment().add(5, "days").format("YYYY-MM-DD"));
       dateInput.blur();
+      await new Promise((resolve) => setTimeout(resolve, 600));
 
       // Select result
       userEvent.click(
@@ -114,10 +115,15 @@ describe("TestQueue", () => {
         })
       );
 
+      await new Promise((resolve) => setTimeout(resolve, 600));
+      userEvent.click(await within(testCard).findByText("Submit"));
+
       // TODO: this feels uncomfortably implementation-dependent but I'm not
       // yet sure what the best practice is here
       const updatedTestCard = await screen.findByTestId("test-card-abc");
       expect(updatedTestCard).toHaveClass("prime-queue-item__error");
+      const dateLabel = await within(testCard).findByText("Test date and time");
+      expect(dateLabel).toHaveClass("queue-item-error-message");
       const updatedDateInput = await within(testCard).findByTestId("test-date");
       expect(updatedDateInput).toHaveClass("card-test-input__error");
     });
