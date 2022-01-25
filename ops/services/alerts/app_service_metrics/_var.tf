@@ -68,7 +68,7 @@ variable "http_response_time_aggregation" {
 
 variable "failed_http_2xx_threshold" {
   // The resource that uses this value doesn't have a >= check, so we need n - 1 here
-  default = 9
+  default = 24
 }
 
 variable "skip_on_weekends" {
