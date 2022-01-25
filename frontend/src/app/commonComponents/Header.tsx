@@ -108,6 +108,14 @@ const Header: React.FC<{}> = () => {
     );
   };
 
+  const activeNavItem = "active-nav-item prime-nav-link";
+  const inactiveNavItem = "prime-nav-link";
+  const getNavItemClassName = ({ isActive }: { isActive: boolean }) =>
+    isActive ? activeNavItem : inactiveNavItem;
+  const getNavItemStyle = ({ isActive }: { isActive: boolean }) => ({
+    color: isActive ? "white" : "",
+  });
+
   return (
     <header className="usa-header usa-header--basic">
       <div className="usa-nav-container prime-header">
@@ -155,12 +163,8 @@ const Header: React.FC<{}> = () => {
                 <LinkWithQuery
                   to={`/dashboard`}
                   onClick={() => setMenuVisible(false)}
-                  className={({ isActive }) =>
-                    isActive
-                      ? "active-nav-item prime-nav-link"
-                      : "prime-nav-link"
-                  }
-                  style={({ isActive }) => ({ color: isActive ? "white" : "" })}
+                  className={getNavItemClassName}
+                  style={getNavItemStyle}
                 >
                   Dashboard
                 </LinkWithQuery>
@@ -171,12 +175,8 @@ const Header: React.FC<{}> = () => {
                 <LinkWithQuery
                   to={`/queue`}
                   onClick={() => setMenuVisible(false)}
-                  className={({ isActive }) =>
-                    isActive
-                      ? "active-nav-item prime-nav-link"
-                      : "prime-nav-link"
-                  }
-                  style={({ isActive }) => ({ color: isActive ? "white" : "" })}
+                  className={getNavItemClassName}
+                  style={getNavItemStyle}
                 >
                   Conduct tests
                 </LinkWithQuery>
@@ -187,12 +187,8 @@ const Header: React.FC<{}> = () => {
                 <LinkWithQuery
                   to={`/results`}
                   onClick={() => setMenuVisible(false)}
-                  className={({ isActive }) =>
-                    isActive
-                      ? "active-nav-item prime-nav-link"
-                      : "prime-nav-link"
-                  }
-                  style={({ isActive }) => ({ color: isActive ? "white" : "" })}
+                  className={getNavItemClassName}
+                  style={getNavItemStyle}
                 >
                   Results
                 </LinkWithQuery>
@@ -203,12 +199,8 @@ const Header: React.FC<{}> = () => {
                 <LinkWithQuery
                   to={`/patients`}
                   onClick={() => setMenuVisible(false)}
-                  className={({ isActive }) =>
-                    isActive
-                      ? "active-nav-item prime-nav-link"
-                      : "prime-nav-link"
-                  }
-                  style={({ isActive }) => ({ color: isActive ? "white" : "" })}
+                  className={getNavItemClassName}
+                  style={getNavItemStyle}
                 >
                   {PATIENT_TERM_PLURAL_CAP}
                 </LinkWithQuery>
@@ -274,13 +266,9 @@ const Header: React.FC<{}> = () => {
                 <LinkWithQuery
                   to={`/dashboard`}
                   onClick={() => setMenuVisible(false)}
-                  className={({ isActive }) =>
-                    isActive
-                      ? "active-nav-item prime-nav-link"
-                      : "prime-nav-link"
-                  }
+                  className={getNavItemClassName}
                   id="dashboard-nav-link"
-                  style={({ isActive }) => ({ color: isActive ? "white" : "" })}
+                  style={getNavItemStyle}
                 >
                   Dashboard
                 </LinkWithQuery>
@@ -291,13 +279,9 @@ const Header: React.FC<{}> = () => {
                 <LinkWithQuery
                   to={`/queue`}
                   onClick={() => setMenuVisible(false)}
-                  className={({ isActive }) =>
-                    isActive
-                      ? "active-nav-item prime-nav-link"
-                      : "prime-nav-link"
-                  }
+                  className={getNavItemClassName}
                   id="conduct-test-nav-link"
-                  style={({ isActive }) => ({ color: isActive ? "white" : "" })}
+                  style={getNavItemStyle}
                 >
                   Conduct tests
                 </LinkWithQuery>
@@ -308,13 +292,9 @@ const Header: React.FC<{}> = () => {
                 <LinkWithQuery
                   to={`/results`}
                   onClick={() => setMenuVisible(false)}
-                  className={({ isActive }) =>
-                    isActive
-                      ? "active-nav-item prime-nav-link"
-                      : "prime-nav-link"
-                  }
+                  className={getNavItemClassName}
                   id="results-nav-link"
-                  style={({ isActive }) => ({ color: isActive ? "white" : "" })}
+                  style={getNavItemStyle}
                 >
                   Results
                 </LinkWithQuery>
@@ -325,13 +305,9 @@ const Header: React.FC<{}> = () => {
                 <LinkWithQuery
                   to={`/patients`}
                   onClick={() => setMenuVisible(false)}
-                  className={({ isActive }) =>
-                    isActive
-                      ? "active-nav-item prime-nav-link"
-                      : "prime-nav-link"
-                  }
+                  className={getNavItemClassName}
                   id="patient-nav-link"
-                  style={({ isActive }) => ({ color: isActive ? "white" : "" })}
+                  style={getNavItemStyle}
                 >
                   {PATIENT_TERM_PLURAL_CAP}
                 </LinkWithQuery>
@@ -359,9 +335,7 @@ const Header: React.FC<{}> = () => {
                   setStaffDetailsVisible(!staffDetailsVisible);
                 }}
                 className={() =>
-                  staffDetailsVisible
-                    ? "active-nav-item prime-nav-link"
-                    : "prime-nav-link"
+                  staffDetailsVisible ? activeNavItem : inactiveNavItem
                 }
                 data-testid="user-button"
               >
