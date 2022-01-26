@@ -358,6 +358,7 @@ describe("EditPatient", () => {
       });
     });
   });
+
   describe("form validations", () => {
     beforeEach(async () => {
       render(

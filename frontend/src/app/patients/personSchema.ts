@@ -246,10 +246,7 @@ const updateFieldSchemata: (
   country: yup.string().required(t("patient.form.errors.country")),
   race: yup
     .mixed()
-    .oneOf(
-      [...getValues(RACE_VALUES), "", null],
-      t("patient.form.errors.race")
-    ),
+    .oneOf(getValues(RACE_VALUES), t("patient.form.errors.race")),
   ethnicity: yup
     .mixed()
     .oneOf(

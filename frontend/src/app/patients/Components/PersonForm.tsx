@@ -526,6 +526,7 @@ const PersonForm = (props: Props) => {
           buttons={RACE_VALUES}
           selectedRadio={patient.race}
           onChange={onPersonChange("race")}
+          required={true}
         />
         <div className="usa-form-group">
           <label className="usa-legend" htmlFor="tribal-affiliation">

@@ -188,7 +188,7 @@ export const en = {
           city: "City is incorrectly formatted",
           county: "County is incorrectly formatted",
           country: "Country is incorrectly formatted",
-          race: "Race is incorrectly formatted",
+          race: "Race is required",
           tribalAffiliation: "Tribal affiliation is incorrectly formatted",
           ethnicity: "Ethnicity is incorrectly formatted",
           gender: "Sex assigned at birth is incorrectly formatted",

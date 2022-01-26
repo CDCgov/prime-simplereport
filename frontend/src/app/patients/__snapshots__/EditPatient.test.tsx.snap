@@ -2069,6 +2069,13 @@ Object {
                         class="usa-legend"
                       >
                         Race
+                        <abbr
+                          class="usa-hint usa-hint--required"
+                          title="required"
+                        >
+                           
+                          *
+                        </abbr>
                       </legend>
                       <div
                         class=""
@@ -2078,7 +2085,7 @@ Object {
                         >
                           <input
                             class="usa-radio__input"
-                            data-required="false"
+                            data-required="true"
                             id="86-val-native"
                             name="race"
                             type="radio"
@@ -2096,7 +2103,7 @@ Object {
                         >
                           <input
                             class="usa-radio__input"
-                            data-required="false"
+                            data-required="true"
                             id="86-val-asian"
                             name="race"
                             type="radio"
@@ -2114,7 +2121,7 @@ Object {
                         >
                           <input
                             class="usa-radio__input"
-                            data-required="false"
+                            data-required="true"
                             id="86-val-black"
                             name="race"
                             type="radio"
@@ -2132,7 +2139,7 @@ Object {
                         >
                           <input
                             class="usa-radio__input"
-                            data-required="false"
+                            data-required="true"
                             id="86-val-pacific"
                             name="race"
                             type="radio"
@@ -2150,7 +2157,7 @@ Object {
                         >
                           <input
                             class="usa-radio__input"
-                            data-required="false"
+                            data-required="true"
                             id="86-val-white"
                             name="race"
                             type="radio"
@@ -2168,7 +2175,7 @@ Object {
                         >
                           <input
                             class="usa-radio__input"
-                            data-required="false"
+                            data-required="true"
                             id="86-val-other"
                             name="race"
                             type="radio"
@@ -2186,7 +2193,7 @@ Object {
                         >
                           <input
                             class="usa-radio__input"
-                            data-required="false"
+                            data-required="true"
                             id="86-val-refused"
                             name="race"
                             type="radio"
@@ -4634,6 +4641,13 @@ Object {
                       class="usa-legend"
                     >
                       Race
+                      <abbr
+                        class="usa-hint usa-hint--required"
+                        title="required"
+                      >
+                         
+                        *
+                      </abbr>
                     </legend>
                     <div
                       class=""
@@ -4643,7 +4657,7 @@ Object {
                       >
                         <input
                           class="usa-radio__input"
-                          data-required="false"
+                          data-required="true"
                           id="86-val-native"
                           name="race"
                           type="radio"
@@ -4661,7 +4675,7 @@ Object {
                       >
                         <input
                           class="usa-radio__input"
-                          data-required="false"
+                          data-required="true"
                           id="86-val-asian"
                           name="race"
                           type="radio"
@@ -4679,7 +4693,7 @@ Object {
                       >
                         <input
                           class="usa-radio__input"
-                          data-required="false"
+                          data-required="true"
                           id="86-val-black"
                           name="race"
                           type="radio"
@@ -4697,7 +4711,7 @@ Object {
                       >
                         <input
                           class="usa-radio__input"
-                          data-required="false"
+                          data-required="true"
                           id="86-val-pacific"
                           name="race"
                           type="radio"
@@ -4715,7 +4729,7 @@ Object {
                       >
                         <input
                           class="usa-radio__input"
-                          data-required="false"
+                          data-required="true"
                           id="86-val-white"
                           name="race"
                           type="radio"
@@ -4733,7 +4747,7 @@ Object {
                       >
                         <input
                           class="usa-radio__input"
-                          data-required="false"
+                          data-required="true"
                           id="86-val-other"
                           name="race"
                           type="radio"
@@ -4751,7 +4765,7 @@ Object {
                       >
                         <input
                           class="usa-radio__input"
-                          data-required="false"
+                          data-required="true"
                           id="86-val-refused"
                           name="race"
                           type="radio"
