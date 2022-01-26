@@ -86,6 +86,7 @@ export const MfaVerify = (props: Props) => {
       label={"Submit"}
       type={"submit"}
       onClick={handleSubmit}
+      id={"continue"}
     />
   );
 
@@ -95,6 +96,7 @@ export const MfaVerify = (props: Props) => {
       label={"Submit"}
       type={"submit"}
       onClick={handleSubmit}
+      id={"continue"}
     />
   );
 

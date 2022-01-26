@@ -109,6 +109,7 @@ export const SecurityQuestion = () => {
           label={"Continue"}
           type={"submit"}
           onClick={handleSubmit}
+          id={"continue"}
         />
       </Card>
     </CardBackground>

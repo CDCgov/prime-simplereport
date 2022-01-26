@@ -122,6 +122,7 @@ export const MfaSendCodeToContact = (props: Props) => {
           label={"Send code"}
           type={"submit"}
           onClick={handleSubmit}
+          id={"continue"}
         />
       </Card>
     </CardBackground>
