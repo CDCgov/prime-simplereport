@@ -146,6 +146,20 @@ class UploadServiceTest extends BaseServiceTest<UploadService> {
   }
 
   @Test
+  void testInvalidRace() {
+    // GIVEN
+    InputStream inputStream = loadCsv("test-upload-no-race.csv");
+
+    // WHEN
+    var error =
+        assertThrows(
+            IllegalArgumentException.class, () -> this._service.processPersonCSV(inputStream));
+
+    // THEN
+    assertThat(error.getMessage()).isEqualTo("Error on row 1; Race is required.");
+  }
+
+  @Test
   void testInvalidPhoneNumber() {
     // GIVEN
     InputStream inputStream = loadCsv("test-upload-invalid-phone.csv");

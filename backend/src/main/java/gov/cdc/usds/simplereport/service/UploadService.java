@@ -160,7 +160,7 @@ public class UploadService {
                         null, parsePhoneNumber((getRow(row, "PhoneNumber", true)))))),
             parsePersonRole(getRow(row, "Role", false), false),
             parseEmails(List.of(getRow(row, "Email", false))),
-            parseRaceDisplayValue(getRow(row, "Race", false)),
+            parseRaceDisplayValue(getRow(row, "Race", true)),
             parseEthnicity(getRow(row, "Ethnicity", false)),
             null,
             parseGender(getRow(row, "biologicalSex", true)),
