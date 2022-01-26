@@ -462,7 +462,7 @@ const mocks = [
     request: {
       query: REMOVE_PATIENT_FROM_QUEUE,
       variables: {
-        patientId: "31d42f7a-0a14-46b7-bc8a-38b3b1e78659",
+        patientId: "abc",
       },
     },
     result: {
