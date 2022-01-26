@@ -52,50 +52,95 @@ describe("A <Prompt>", () => {
     );
   });
 
-  describe("with when=false", () => {
-    it("does not call window.confirm", () => {
-      const confirmMock = jest
-        .spyOn(window, "confirm")
-        .mockImplementation((_message) => true);
+  it("calls window.confirm with the prompt message, and redirects when confirmed", () => {
+    const confirmMock = jest
+      .spyOn(window, "confirm")
+      .mockImplementation((_message) => true);
 
-      render(
-        <MemoryRouter>
-          <Routes>
+    render(
+      <MemoryRouter>
+        <Routes>
+          <Route
+            path="/"
+            element={
+              <>
+                <Prompt message="Are you sure?" when={true} />
+                <Outlet />
+              </>
+            }
+          >
             <Route
               path="/"
               element={
                 <>
-                  <Prompt message="Are you sure?" when={false} />
-                  <Outlet />
+                  <p>This is the first page</p>
+                  <Link to="some-new-route">Go to a new page</Link>
                 </>
               }
-            >
-              <Route
-                path="/"
-                element={
-                  <>
-                    <p>This is the first page</p>
-                    <Link to="some-new-route">Go to a new page</Link>
-                  </>
-                }
-              />
-              <Route
-                path="some-new-route"
-                element={<div>Went to a new page!</div>}
-              />
-            </Route>
-          </Routes>
-        </MemoryRouter>
-      );
-      expect(screen.getByText("This is the first page")).toBeInTheDocument();
+            />
+            <Route
+              path="some-new-route"
+              element={<div>Went to a new page!</div>}
+            />
+          </Route>
+        </Routes>
+      </MemoryRouter>
+    );
+    expect(screen.getByText("This is the first page")).toBeInTheDocument();
 
-      // WHEN
-      userEvent.click(screen.getByText("Go to a new page"));
+    // WHEN
+    userEvent.click(screen.getByText("Go to a new page"));
 
-      // THEN
-      expect(screen.getByText("Went to a new page!")).toBeInTheDocument();
+    // THEN
+    expect(confirmMock).toHaveBeenCalledWith(
+      expect.stringMatching("Are you sure?")
+    );
 
-      expect(confirmMock).not.toHaveBeenCalled();
-    });
+    expect(screen.getByText("Went to a new page!")).toBeInTheDocument();
+  });
+
+  it("does not call window.confirm with when=false", () => {
+    const confirmMock = jest
+      .spyOn(window, "confirm")
+      .mockImplementation((_message) => true);
+
+    render(
+      <MemoryRouter>
+        <Routes>
+          <Route
+            path="/"
+            element={
+              <>
+                <Prompt message="Are you sure?" when={false} />
+                <Outlet />
+              </>
+            }
+          >
+            <Route
+              path="/"
+              element={
+                <>
+                  <p>This is the first page</p>
+                  <Link to="some-new-route">Go to a new page</Link>
+                </>
+              }
+            />
+            <Route
+              path="some-new-route"
+              element={<div>Went to a new page!</div>}
+            />
+          </Route>
+        </Routes>
+      </MemoryRouter>
+    );
+    expect(screen.getByText("This is the first page")).toBeInTheDocument();
+
+    // WHEN
+    userEvent.click(screen.getByText("Go to a new page"));
+
+    // THEN
+    expect(screen.getByText("Went to a new page!")).toBeInTheDocument();
+
+    expect(confirmMock).not.toHaveBeenCalled();
   });
 });
