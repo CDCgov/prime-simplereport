@@ -112,9 +112,6 @@ const Header: React.FC<{}> = () => {
   const inactiveNavItem = "prime-nav-link";
   const getNavItemClassName = ({ isActive }: { isActive: boolean }) =>
     isActive ? activeNavItem : inactiveNavItem;
-  const getNavItemStyle = ({ isActive }: { isActive: boolean }) => ({
-    color: isActive ? "white" : "",
-  });
 
   return (
     <header className="usa-header usa-header--basic">
@@ -164,7 +161,6 @@ const Header: React.FC<{}> = () => {
                   to={`/dashboard`}
                   onClick={() => setMenuVisible(false)}
                   className={getNavItemClassName}
-                  style={getNavItemStyle}
                 >
                   Dashboard
                 </LinkWithQuery>
@@ -176,7 +172,6 @@ const Header: React.FC<{}> = () => {
                   to={`/queue`}
                   onClick={() => setMenuVisible(false)}
                   className={getNavItemClassName}
-                  style={getNavItemStyle}
                 >
                   Conduct tests
                 </LinkWithQuery>
@@ -188,7 +183,6 @@ const Header: React.FC<{}> = () => {
                   to={`/results`}
                   onClick={() => setMenuVisible(false)}
                   className={getNavItemClassName}
-                  style={getNavItemStyle}
                 >
                   Results
                 </LinkWithQuery>
@@ -200,7 +194,6 @@ const Header: React.FC<{}> = () => {
                   to={`/patients`}
                   onClick={() => setMenuVisible(false)}
                   className={getNavItemClassName}
-                  style={getNavItemStyle}
                 >
                   {PATIENT_TERM_PLURAL_CAP}
                 </LinkWithQuery>
@@ -268,7 +261,6 @@ const Header: React.FC<{}> = () => {
                   onClick={() => setMenuVisible(false)}
                   className={getNavItemClassName}
                   id="dashboard-nav-link"
-                  style={getNavItemStyle}
                 >
                   Dashboard
                 </LinkWithQuery>
@@ -281,7 +273,6 @@ const Header: React.FC<{}> = () => {
                   onClick={() => setMenuVisible(false)}
                   className={getNavItemClassName}
                   id="conduct-test-nav-link"
-                  style={getNavItemStyle}
                 >
                   Conduct tests
                 </LinkWithQuery>
@@ -294,7 +285,6 @@ const Header: React.FC<{}> = () => {
                   onClick={() => setMenuVisible(false)}
                   className={getNavItemClassName}
                   id="results-nav-link"
-                  style={getNavItemStyle}
                 >
                   Results
                 </LinkWithQuery>
@@ -307,7 +297,6 @@ const Header: React.FC<{}> = () => {
                   onClick={() => setMenuVisible(false)}
                   className={getNavItemClassName}
                   id="patient-nav-link"
-                  style={getNavItemStyle}
                 >
                   {PATIENT_TERM_PLURAL_CAP}
                 </LinkWithQuery>
