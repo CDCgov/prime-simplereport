@@ -108,7 +108,7 @@ public class ApiAuditEvent {
   @Type(type = "jsonb")
   private JsonNode session;
 
-  @Transient private static final String type = "auditLog";
+  @Transient private static final String TYPE = "auditLog";
 
   protected ApiAuditEvent() {
     // hibernate
@@ -220,6 +220,6 @@ public class ApiAuditEvent {
   }
 
   public String getType() {
-    return type;
+    return TYPE;
   }
 }
