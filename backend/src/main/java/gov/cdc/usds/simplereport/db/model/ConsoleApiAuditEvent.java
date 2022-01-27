@@ -6,22 +6,23 @@ import gov.cdc.usds.simplereport.db.model.auxiliary.GraphQlInputs;
 import gov.cdc.usds.simplereport.db.model.auxiliary.HttpRequestDetails;
 import java.util.List;
 import java.util.stream.Collectors;
+import lombok.Getter;
 import org.apache.http.HttpStatus;
 
+@Getter
 public class ConsoleApiAuditEvent {
-
-  private final String requestId;
   private final HttpRequestDetails httpRequestDetails;
-  private final int responseCode;
+  private static final String TYPE = "auditLog";
   private GraphQlInputs graphqlQueryDetails;
   private List<String> graphqlErrorPaths;
-  private final ApiUser user;
-  private Organization organization;
   private List<String> userPermissions;
-  private boolean isAdminUser;
+  private Organization organization;
   private PatientLink patientLink;
+  private final String requestId;
+  private final int responseCode;
+  private boolean isAdminUser;
+  private final ApiUser user;
   private JsonNode session;
-  private static final String TYPE = "auditLog";
 
   /** Constructor for graphql requests */
   public ConsoleApiAuditEvent(
@@ -33,16 +34,16 @@ public class ConsoleApiAuditEvent {
       List<UserPermission> permissions,
       boolean isAdmin,
       Organization org) {
-    this.requestId = requestId;
-    this.httpRequestDetails = httpRequestDetails;
+    this.responseCode = HttpStatus.SC_OK;
     this.graphqlQueryDetails = graphqlQueryDetails;
     this.graphqlErrorPaths = errorPaths;
-    this.user = apiUser;
-    this.organization = org;
-    this.isAdminUser = isAdmin;
     this.userPermissions =
         permissions.stream().map(UserPermission::name).sorted().collect(Collectors.toList());
-    this.responseCode = HttpStatus.SC_OK;
+    this.isAdminUser = isAdmin;
+    this.organization = org;
+    this.httpRequestDetails = httpRequestDetails;
+    this.requestId = requestId;
+    this.user = apiUser;
   }
 
   /** Constructor for REST (patient-experience) requests */
@@ -53,12 +54,12 @@ public class ConsoleApiAuditEvent {
       ApiUser user,
       Organization organization,
       PatientLink patientLink) {
-    this.requestId = requestId;
-    this.httpRequestDetails = httpRequestDetails;
-    this.responseCode = responseStatus;
-    this.user = user;
-    this.organization = organization;
     this.patientLink = patientLink;
+    this.organization = organization;
+    this.user = user;
+    this.responseCode = responseStatus;
+    this.httpRequestDetails = httpRequestDetails;
+    this.requestId = requestId;
   }
 
   /** Constructor for anonymous REST requests. */
@@ -68,58 +69,10 @@ public class ConsoleApiAuditEvent {
       int responseStatus,
       JsonNode userId,
       ApiUser user) {
-    this.requestId = requestId;
-    this.httpRequestDetails = httpRequestDetails;
-    this.responseCode = responseStatus;
-    this.session = userId;
     this.user = user;
-  }
-
-  public String getRequestId() {
-    return requestId;
-  }
-
-  public HttpRequestDetails getHttpRequestDetails() {
-    return httpRequestDetails;
-  }
-
-  public int getResponseCode() {
-    return responseCode;
-  }
-
-  public GraphQlInputs getGraphqlQueryDetails() {
-    return graphqlQueryDetails;
-  }
-
-  public List<String> getGraphqlErrorPaths() {
-    return graphqlErrorPaths;
-  }
-
-  public List<String> getUserPermissions() {
-    return userPermissions;
-  }
-
-  public ApiUser getUser() {
-    return user;
-  }
-
-  public Organization getOrganization() {
-    return organization;
-  }
-
-  public boolean isAdminUser() {
-    return isAdminUser;
-  }
-
-  public PatientLink getPatientLink() {
-    return patientLink;
-  }
-
-  public JsonNode getSession() {
-    return session;
-  }
-
-  public String getType() {
-    return TYPE;
+    this.session = userId;
+    this.responseCode = responseStatus;
+    this.httpRequestDetails = httpRequestDetails;
+    this.requestId = requestId;
   }
 }
