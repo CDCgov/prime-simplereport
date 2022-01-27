@@ -8,6 +8,7 @@ import com.fasterxml.jackson.databind.node.JsonNodeFactory;
 import gov.cdc.usds.simplereport.config.authorization.UserPermission;
 import gov.cdc.usds.simplereport.db.model.ApiAuditEvent;
 import gov.cdc.usds.simplereport.db.model.ApiUser;
+import gov.cdc.usds.simplereport.db.model.ConsoleApiAuditEvent;
 import gov.cdc.usds.simplereport.db.model.Organization;
 import gov.cdc.usds.simplereport.db.model.PatientLink;
 import gov.cdc.usds.simplereport.db.model.auxiliary.HttpRequestDetails;
@@ -55,7 +56,17 @@ public class AuditService {
       boolean isAdmin,
       Organization organization) {
     log.trace("Saving audit event for {}", state.getRequestId());
-    ApiAuditEvent apiAuditEvent =
+    logEvent(
+        new ConsoleApiAuditEvent(
+            state.getRequestId(),
+            state.getHttpDetails(),
+            state.getGraphqlDetails(),
+            errorPaths,
+            user,
+            permissions,
+            isAdmin,
+            organization));
+    _repo.save(
         new ApiAuditEvent(
             state.getRequestId(),
             state.getHttpDetails(),
@@ -64,9 +75,7 @@ public class AuditService {
             user,
             permissions,
             isAdmin,
-            organization);
-    _repo.save(apiAuditEvent);
-    logEvent(apiAuditEvent);
+            organization));
   }
 
   @Transactional(readOnly = false)
@@ -79,10 +88,9 @@ public class AuditService {
     log.trace("Saving audit event for {}", requestId);
     HttpRequestDetails reqDetails = new HttpRequestDetails(request);
     ApiUser userInfo = _userService.getCurrentApiUserInContainedTransaction();
-    ApiAuditEvent apiAuditEvent =
-        new ApiAuditEvent(requestId, reqDetails, responseCode, userInfo, org, patientLink);
-    _repo.save(apiAuditEvent);
-    logEvent(apiAuditEvent);
+    logEvent(
+        new ConsoleApiAuditEvent(requestId, reqDetails, responseCode, userInfo, org, patientLink));
+    _repo.save(new ApiAuditEvent(requestId, reqDetails, responseCode, userInfo, org, patientLink));
   }
 
   @Transactional(readOnly = false)
@@ -96,10 +104,8 @@ public class AuditService {
             ? null
             : JsonNodeFactory.instance.objectNode().put("userId", userIdObj.toString());
     ApiUser anonymousUser = _userService.getAnonymousApiUser();
-    ApiAuditEvent apiAuditEvent =
-        new ApiAuditEvent(requestId, reqDetails, responseCode, userId, anonymousUser);
-    _repo.save(apiAuditEvent);
-    logEvent(apiAuditEvent);
+    logEvent(new ConsoleApiAuditEvent(requestId, reqDetails, responseCode, userId, anonymousUser));
+    _repo.save(new ApiAuditEvent(requestId, reqDetails, responseCode, userId, anonymousUser));
   }
 
   @Transactional(readOnly = false)
@@ -112,13 +118,11 @@ public class AuditService {
             ? null
             : JsonNodeFactory.instance.objectNode().put("userId", userIdObj.toString());
     ApiUser webhookUser = _userService.getWebhookApiUser();
-    ApiAuditEvent apiAuditEvent =
-        new ApiAuditEvent(requestId, reqDetails, responseCode, userId, webhookUser);
-    _repo.save(apiAuditEvent);
-    logEvent(apiAuditEvent);
+    logEvent(new ConsoleApiAuditEvent(requestId, reqDetails, responseCode, userId, webhookUser));
+    _repo.save(new ApiAuditEvent(requestId, reqDetails, responseCode, userId, webhookUser));
   }
 
-  public void logEvent(ApiAuditEvent apiAuditEvent) {
+  public void logEvent(ConsoleApiAuditEvent apiAuditEvent) {
     try {
       String auditJson = objectMapper.writeValueAsString(apiAuditEvent);
       jsonLogger.info(auditJson);
