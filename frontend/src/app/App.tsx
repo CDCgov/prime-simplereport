@@ -130,15 +130,6 @@ const App = () => {
   const canViewPeople = appPermissions.people.canView;
   const canEditPeople = appPermissions.people.canEdit;
   const canViewSettings = appPermissions.settings.canView;
-  const userPermissions = data.whoami.permissions;
-
-  const ManagePatientsContainerProtectedRoute = () => (
-    <ProtectedRoute
-      requiredPermissions={canViewPeople}
-      userPermissions={userPermissions}
-      element={<ManagePatientsContainer />}
-    />
-  );
 
   return (
     <>
@@ -167,7 +158,7 @@ const App = () => {
               element={
                 <ProtectedRoute
                   requiredPermissions={canViewResults}
-                  userPermissions={userPermissions}
+                  userPermissions={data.whoami.permissions}
                   element={<TestResultsList />}
                 />
               }
@@ -177,25 +168,37 @@ const App = () => {
               element={
                 <ProtectedRoute
                   requiredPermissions={canViewResults}
-                  userPermissions={userPermissions}
+                  userPermissions={data.whoami.permissions}
                   element={<CleanTestResultsList />}
                 />
               }
             />
             <Route
               path="patients/:pageNumber"
-              element={<ManagePatientsContainerProtectedRoute />}
+              element={
+                <ProtectedRoute
+                  requiredPermissions={canViewPeople}
+                  userPermissions={data.whoami.permissions}
+                  element={<ManagePatientsContainer />}
+                />
+              }
             />
             <Route
               path="patients"
-              element={<ManagePatientsContainerProtectedRoute />}
+              element={
+                <ProtectedRoute
+                  requiredPermissions={canViewPeople}
+                  userPermissions={data.whoami.permissions}
+                  element={<ManagePatientsContainer />}
+                />
+              }
             />
             <Route
               path="patient/:patientId"
               element={
                 <ProtectedRoute
                   requiredPermissions={canEditPeople}
-                  userPermissions={userPermissions}
+                  userPermissions={data.whoami.permissions}
                   element={<EditPatientContainer />}
                 />
               }
@@ -205,7 +208,7 @@ const App = () => {
               element={
                 <ProtectedRoute
                   requiredPermissions={canEditPeople}
-                  userPermissions={userPermissions}
+                  userPermissions={data.whoami.permissions}
                   element={<AddPatient />}
                 />
               }
@@ -215,7 +218,7 @@ const App = () => {
               element={
                 <ProtectedRoute
                   requiredPermissions={canViewSettings}
-                  userPermissions={userPermissions}
+                  userPermissions={data.whoami.permissions}
                   element={<Settings />}
                 />
               }
@@ -225,7 +228,7 @@ const App = () => {
               element={
                 <ProtectedRoute
                   requiredPermissions={canViewSettings}
-                  userPermissions={userPermissions}
+                  userPermissions={data.whoami.permissions}
                   element={<Analytics />}
                 />
               }
