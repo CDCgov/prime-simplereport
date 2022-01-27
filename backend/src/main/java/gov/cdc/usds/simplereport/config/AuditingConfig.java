@@ -34,7 +34,7 @@ public class AuditingConfig {
   }
 
   @Bean
-  public Logger auditLogger(@Value("${logging.pattern.json-log}") String jsonPattern) {
+  public Logger jsonLogger(@Value("${logging.pattern.json-log}") String jsonPattern) {
     LoggerContext loggerContext = (LoggerContext) LoggerFactory.getILoggerFactory();
     PatternLayoutEncoder patternLayoutEncoder = new PatternLayoutEncoder();
 
