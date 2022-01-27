@@ -215,4 +215,8 @@ public class ApiAuditEvent {
   public JsonNode getSession() {
     return session;
   }
+
+  public String getType() {
+    return "auditLog";
+  }
 }
