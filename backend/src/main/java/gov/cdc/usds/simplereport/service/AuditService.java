@@ -16,7 +16,6 @@ import gov.cdc.usds.simplereport.db.repository.ApiAuditEventRepository;
 import gov.cdc.usds.simplereport.logging.GraphqlQueryState;
 import java.util.List;
 import javax.servlet.http.HttpServletRequest;
-import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.hibernate.validator.constraints.Range;
 import org.springframework.stereotype.Service;
@@ -28,15 +27,25 @@ import org.springframework.validation.annotation.Validated;
 @Transactional(readOnly = true)
 @Validated
 @Slf4j
-@RequiredArgsConstructor
 public class AuditService {
 
   public static final int MAX_EVENT_FETCH = 10;
 
-  private final Logger jsonLogger;
   private final ApiAuditEventRepository _repo;
   private final ApiUserService _userService;
   private final ObjectMapper objectMapper;
+  private final Logger jsonLogger;
+
+  public AuditService(
+      ApiAuditEventRepository repo,
+      ApiUserService userService,
+      ObjectMapper objectMapper,
+      Logger jsonLogger) {
+    this._repo = repo;
+    this._userService = userService;
+    this.objectMapper = objectMapper;
+    this.jsonLogger = jsonLogger;
+  }
 
   public List<ApiAuditEvent> getLastEvents(@Range(min = 1, max = MAX_EVENT_FETCH) int count) {
     List<ApiAuditEvent> events = _repo.findFirst10ByOrderByEventTimestampDesc();
