@@ -4,7 +4,11 @@ import { SchemaOf } from "yup";
 import { useTranslation } from "react-i18next";
 import { ComboBox } from "@trussworks/react-uswds";
 
-import { countryOptions, stateCodes } from "../../../config/constants";
+import {
+  canadianProvinceCodes,
+  countryOptions,
+  stateCodes,
+} from "../../../config/constants";
 import getLanguages from "../../utils/languages";
 import i18n from "../../../i18n";
 import {
@@ -188,6 +192,7 @@ const PersonForm = (props: Props) => {
     // If a patient has an international address, use special values for state and zip code
     if (field === "country") {
       setFormChanged(true);
+
       if (value !== "USA") {
         setPatient({
           ...patient,
@@ -493,6 +498,38 @@ const PersonForm = (props: Props) => {
                   name="state"
                   value={patient.state || ""}
                   options={stateCodes.map((c) => ({ label: c, value: c }))}
+                  defaultOption={t("common.defaultDropdownOption")}
+                  defaultSelect
+                  onChange={onPersonChange("state")}
+                  onBlur={() => {
+                    onBlurField("state");
+                  }}
+                  validationStatus={validationStatus("state")}
+                  errorMessage={errors.state}
+                  required
+                />
+              </div>
+              <div className="mobile-lg:grid-col-6">
+                <Input
+                  {...commonInputProps}
+                  field="zipCode"
+                  label={t("patient.form.contact.zip")}
+                  required
+                />
+              </div>
+            </div>
+          ) : null}
+          {patient.country === "CAN" ? (
+            <div className="grid-row grid-gap">
+              <div className="mobile-lg:grid-col-6">
+                <Select
+                  label={t("patient.form.contact.state")}
+                  name="state"
+                  value={patient.state || ""}
+                  options={canadianProvinceCodes.map((c) => ({
+                    label: c,
+                    value: c,
+                  }))}
                   defaultOption={t("common.defaultDropdownOption")}
                   defaultSelect
                   onChange={onPersonChange("state")}
