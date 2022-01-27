@@ -148,8 +148,16 @@ const DOB = () => {
   return (
     <main>
       <div className="grid-container maxw-tablet">
-        <p className="margin-top-3">{t("testResult.dob.enterDOB2")}</p>
-        <p>{t("testResult.dob.linkExpirationNotice")}</p>
+        <h1 className="font-heading-lg margin-top-3">Verify date of birth</h1>
+        {/* <p className="margin-top-3">{t("testResult.dob.enterDOB2")}</p> */}
+        <p className="margin-top-3">
+          Enter <strong>John Doe</strong>'s date of birth to access your
+          COVID-19 testing portal.
+        </p>
+
+        <p className="usa-hint">
+          <em>{t("testResult.dob.linkExpirationNotice")}</em>
+        </p>
         <DateInput
           className="width-mobile"
           label={t("testResult.dob.dateOfBirth")}
