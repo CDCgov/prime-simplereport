@@ -122,7 +122,7 @@ public class AuditService {
     try {
       jsonLogger.info(objectMapper.writeValueAsString(apiAuditEvent));
     } catch (JsonProcessingException e) {
-      e.printStackTrace();
+      log.info("error transforming to json {}", e.toString());
     }
   }
 }
