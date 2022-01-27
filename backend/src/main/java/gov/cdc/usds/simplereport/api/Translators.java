@@ -281,13 +281,16 @@ public class Translators {
           "MS", "MT", "NC", "ND", "NE", "NH", "NJ", "NM", "NV", "NY", "OH", "OK", "OR", "PA", "PR",
           "PW", "RI", "SC", "SD", "TN", "TX", "UT", "VA", "VI", "VT", "WA", "WI", "WV", "WY", "NA");
 
+  private static final Set<String> CANADIAN_STATE_CODES =
+      Set.of("AB", "BC", "MB", "NB", "NL", "NT", "NS", "NU", "ON", "PE", "QC", "SK", "YT");
+
   public static String parseState(String s) {
     String state = parseString(s);
     if (state == null) {
       return null;
     }
     state = state.toUpperCase();
-    if (STATE_CODES.contains(state)) {
+    if (STATE_CODES.contains(state) || CANADIAN_STATE_CODES.contains(state)) {
       return state;
     }
     throw IllegalGraphqlArgumentException.invalidInput(s, "state");

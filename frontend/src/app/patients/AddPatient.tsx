@@ -78,6 +78,7 @@ export const ADD_PATIENT = gql`
     $city: String
     $state: String!
     $zipCode: String!
+    $country: String!
     $telephone: String
     $phoneNumbers: [PhoneNumberInput!]
     $role: String
@@ -104,6 +105,7 @@ export const ADD_PATIENT = gql`
       city: $city
       state: $state
       zipCode: $zipCode
+      country: $country
       telephone: $telephone
       phoneNumbers: $phoneNumbers
       role: $role

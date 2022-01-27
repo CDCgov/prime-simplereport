@@ -225,10 +225,32 @@ describe("AddPatient", () => {
         expect(await screen.findByText("State")).toBeInTheDocument();
         expect(await screen.findByText("ZIP code")).toBeInTheDocument();
       });
-      it("should hide the state and zip code inputs for non-US countries", async () => {
+      it("should show the state and zip code inputs for Canada", async () => {
         userEvent.selectOptions(
           screen.getByLabelText("Country", { exact: false }),
           "CAN"
+        );
+        expect(await screen.findByText("State")).toBeInTheDocument();
+        expect(await screen.findByText("ZIP code")).toBeInTheDocument();
+      });
+      it("should show different states for Canada", async () => {
+        userEvent.selectOptions(
+          screen.getByLabelText("Country", { exact: false }),
+          "CAN"
+        );
+
+        let stateInput: HTMLSelectElement;
+        stateInput = screen.getByLabelText("State", {
+          exact: false,
+        }) as HTMLSelectElement;
+
+        userEvent.selectOptions(stateInput, "QC");
+        expect(stateInput.value).toBe("QC");
+      });
+      it("should hide the state and zip code inputs for non-US countries", async () => {
+        userEvent.selectOptions(
+          screen.getByLabelText("Country", { exact: false }),
+          "MEX"
         );
         expect(screen.queryByText("State")).not.toBeInTheDocument();
         expect(screen.queryByText("ZIP code")).not.toBeInTheDocument();
