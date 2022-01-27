@@ -108,7 +108,7 @@ public class ApiAuditEvent {
   @Type(type = "jsonb")
   private JsonNode session;
 
-  @Transient private final String type = "auditLog";
+  @Transient private static final String type = "auditLog";
 
   protected ApiAuditEvent() {
     // hibernate
