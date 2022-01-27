@@ -6,6 +6,7 @@ import gov.cdc.usds.simplereport.db.model.auxiliary.GraphQlInputs;
 import gov.cdc.usds.simplereport.db.model.auxiliary.HttpRequestDetails;
 import java.util.List;
 import java.util.stream.Collectors;
+import org.apache.http.HttpStatus;
 
 public class ConsoleApiAuditEvent {
 
@@ -41,7 +42,7 @@ public class ConsoleApiAuditEvent {
     this.isAdminUser = isAdmin;
     this.userPermissions =
         permissions.stream().map(UserPermission::name).sorted().collect(Collectors.toList());
-    this.responseCode = 200;
+    this.responseCode = HttpStatus.SC_OK;
   }
 
   /** Constructor for REST (patient-experience) requests */
