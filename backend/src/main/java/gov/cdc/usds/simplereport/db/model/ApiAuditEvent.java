@@ -17,7 +17,6 @@ import javax.persistence.JoinColumn;
 import javax.persistence.ManyToOne;
 import javax.persistence.Temporal;
 import javax.persistence.TemporalType;
-import javax.persistence.Transient;
 import org.hibernate.annotations.CreationTimestamp;
 import org.hibernate.annotations.Immutable;
 import org.hibernate.annotations.Parameter;
@@ -107,8 +106,6 @@ public class ApiAuditEvent {
   @Column(nullable = true)
   @Type(type = "jsonb")
   private JsonNode session;
-
-  @Transient private static final String TYPE = "auditLog";
 
   protected ApiAuditEvent() {
     // hibernate
@@ -217,9 +214,5 @@ public class ApiAuditEvent {
 
   public JsonNode getSession() {
     return session;
-  }
-
-  public String getType() {
-    return TYPE;
   }
 }
