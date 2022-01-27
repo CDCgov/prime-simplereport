@@ -120,7 +120,8 @@ public class AuditService {
 
   public void logEvent(ApiAuditEvent apiAuditEvent) {
     try {
-      jsonLogger.info(objectMapper.writeValueAsString(apiAuditEvent));
+      String auditJson = objectMapper.writeValueAsString(apiAuditEvent);
+      jsonLogger.info(auditJson);
     } catch (JsonProcessingException e) {
       log.info("error transforming to json {}", e.toString());
     }
