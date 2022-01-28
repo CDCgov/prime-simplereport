@@ -266,7 +266,8 @@ export const DetachedTestResultPrintModal = ({
         </main>
         <footer>
           <p>
-            {t("testResult.printed")}{" "}
+            {t("testResult.printed")}
+            {"  "}
             {hardcodedPrintDate || new Date().toLocaleString()}
           </p>
         </footer>
