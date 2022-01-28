@@ -171,6 +171,25 @@ class PatientExperienceControllerTest extends BaseFullStackTest {
   }
 
   @Test
+  void getObfuscatedPatientName_returnsName() throws Exception {
+    // GIVEN
+    TestUserIdentities.withStandardUser(
+        () -> patientLink = _dataFactory.expirePatientLink(patientLink));
+
+    // WHEN
+    MockHttpServletRequestBuilder builder =
+        get(ResourceLinks.GET_OBFUSCATED_PATIENT_NAME)
+            .characterEncoding("UTF-8")
+            .param("patientLink", patientLink.getInternalId().toString());
+
+    // THEN
+    this.mockMvc
+        .perform(builder)
+        .andExpect(status().isOk())
+        .andExpect(jsonPath("$", is("F. Astaire")));
+  }
+
+  @Test
   void verifyLinkSavesTimeOfConsent() throws Exception {
     // GIVEN
     String dob = person.getBirthDate().format(DateTimeFormatter.ofPattern("yyyy-MM-dd"));
