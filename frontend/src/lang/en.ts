@@ -568,7 +568,7 @@ export const en = {
         dateOfBirth: "Date of birth",
         enterDOB: "Enter your date of birth",
         enterDOB2:
-          "Enter your date of birth to access your COVID-19 testing portal.",
+          "Enter <0>{{personName}}</0>'s date of birth to access your COVID-19 testing portal.",
         linkExpirationNotice:
           "Note: this link will expire 10 days after the test result was recorded.",
         format: "MM/DD/YYYY",

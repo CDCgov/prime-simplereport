@@ -2,7 +2,7 @@ import { useEffect, useState, useRef } from "react";
 import { connect, useDispatch, useSelector } from "react-redux";
 import { Redirect } from "react-router-dom";
 import moment from "moment";
-import { useTranslation } from "react-i18next";
+import { Trans, useTranslation } from "react-i18next";
 import { validate as isValidUUID } from "uuid";
 
 import Button from "../../app/commonComponents/Button/Button";
@@ -15,8 +15,14 @@ import { dateFromStrings } from "../../app/utils/date";
 const DOB = () => {
   const { t } = useTranslation();
 
-  const dispatch = useDispatch();
   const plid = useSelector((state: any) => state.plid);
+
+  useEffect(() => {
+    PxpApi.getObfuscatedPatientName(plid).then(setPatientObfuscatedName);
+  }, [plid]);
+
+  const dispatch = useDispatch();
+  const [patientObfuscatedName, setPatientObfuscatedName] = useState("");
   const [birthMonth, setBirthMonth] = useState("");
   const [birthDay, setBirthDay] = useState("");
   const [birthYear, setBirthYear] = useState("");
@@ -149,12 +155,11 @@ const DOB = () => {
     <main>
       <div className="grid-container maxw-tablet">
         <h1 className="font-heading-lg margin-top-3">Verify date of birth</h1>
-        {/* <p className="margin-top-3">{t("testResult.dob.enterDOB2")}</p> */}
-        <p className="margin-top-3">
-          Enter <strong>John Doe</strong>'s date of birth to access your
-          COVID-19 testing portal.
-        </p>
-
+        <Trans t={t} i18nKey="testResult.dob.enterDOB2">
+          <span className="text-bold">
+            {{ personName: patientObfuscatedName }}
+          </span>
+        </Trans>
         <p className="usa-hint">
           <em>{t("testResult.dob.linkExpirationNotice")}</em>
         </p>

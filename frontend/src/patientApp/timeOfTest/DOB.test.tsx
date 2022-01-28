@@ -26,11 +26,22 @@ const validateDateOfBirthSpy = jest
   .mockImplementation(jest.fn());
 
 describe("DOB (valid UUID)", () => {
+  let getObfuscatedPatientNameSpy: jest.SpyInstance;
+
   beforeEach(() => {
     const store = mockStore({
       plid: uuid(),
     });
+
+    getObfuscatedPatientNameSpy = jest
+      .spyOn(PxpApi, "getObfuscatedPatientName")
+      .mockImplementation((_id) => Promise.resolve("J Doe"));
+
     render(mockContainer(store));
+  });
+
+  it("fetches obfuscated patient name from server on render", async () => {
+    expect(getObfuscatedPatientNameSpy).toHaveBeenCalled();
   });
 
   it("Checks to make sure it is actually a possible date", async () => {
@@ -187,6 +198,10 @@ describe("DOB (invalid UUID)", () => {
     const store = mockStore({
       plid: "this is totally not a valid UUID",
     });
+    jest
+      .spyOn(PxpApi, "getObfuscatedPatientName")
+      .mockImplementation((_id) => Promise.resolve("J Doe"));
+
     render(mockContainer(store));
 
     // WHEN
