@@ -199,8 +199,7 @@ export const es: LanguageConfig = {
           city: "La ciudad tiene un formato incorrecto",
           county: "El formato del condado es incorrecto",
           country: "El formato del país es incorrecto",
-          // TODO: update translation - "incorrect" -> "required"
-          race: "La raza tiene un formato incorrecto",
+          race: "La raza es obligatoria",
           tribalAffiliation: "La afiliación tribal tiene un formato incorrecto",
           ethnicity: "La etnia tiene un formato incorrecto",
           gender: "El sexo asignado al nacer tiene un formato incorrecto",
