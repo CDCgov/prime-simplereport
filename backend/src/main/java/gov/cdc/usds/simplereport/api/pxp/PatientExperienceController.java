@@ -96,7 +96,7 @@ public class PatientExperienceController {
 
   /**
    * Given a patient link ID, returns the name of the patient for whom the test was conducted, in
-   * lightly-obfuscated form (e.g. "John Doe" -> "J Doe").
+   * lightly-obfuscated form (e.g. "John Doe" -> "John D").
    *
    * <p>This endpoint is unauthorized and therefore does not return fully identifying data.
    *
@@ -114,7 +114,7 @@ public class PatientExperienceController {
     // Setting this enables audit logging for these operations
     _contextHolder.setContext(link, to, p);
 
-    return p.getFirstName().charAt(0) + ". " + p.getLastName();
+    return p.getFirstName() + " " + p.getLastName().charAt(0) + ".";
   }
 
   @PostMapping("/patient")

@@ -186,7 +186,7 @@ class PatientExperienceControllerTest extends BaseFullStackTest {
     this.mockMvc
         .perform(builder)
         .andExpect(status().isOk())
-        .andExpect(jsonPath("$", is("F. Astaire")));
+        .andExpect(jsonPath("$", is("Fred A.")));
   }
 
   @Test
