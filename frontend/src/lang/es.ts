@@ -201,7 +201,7 @@ export const es: LanguageConfig = {
           country: "El formato del país es incorrecto",
           race: "La raza es obligatoria",
           tribalAffiliation: "La afiliación tribal tiene un formato incorrecto",
-          ethnicity: "La etnia tiene un formato incorrecto",
+          ethnicity: "La etnia es obligatoria",
           gender: "El sexo asignado al nacer tiene un formato incorrecto",
           residentCongregateSetting:
             "¿Reside usted en un entorno compartido por muchas personas?  Se requiere una respuesta",

@@ -249,10 +249,7 @@ const updateFieldSchemata: (
     .oneOf(getValues(RACE_VALUES), t("patient.form.errors.race")),
   ethnicity: yup
     .mixed()
-    .oneOf(
-      [...getValues(ETHNICITY_VALUES), "", null],
-      t("patient.form.errors.ethnicity")
-    ),
+    .oneOf(getValues(ETHNICITY_VALUES), t("patient.form.errors.ethnicity")),
   gender: yup
     .mixed()
     .oneOf(getValues(GENDER_VALUES))

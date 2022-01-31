@@ -146,7 +146,37 @@ class UploadServiceTest extends BaseServiceTest<UploadService> {
   }
 
   @Test
-  void testInvalidRace() {
+  void testNoEthnicity() {
+    // GIVEN
+    InputStream inputStream = loadCsv("test-upload-no-ethnicity.csv");
+
+    // WHEN
+    var error =
+        assertThrows(
+            IllegalArgumentException.class, () -> this._service.processPersonCSV(inputStream));
+
+    // THEN
+    assertThat(error.getMessage()).isEqualTo("Error on row 1; Ethnicity is required.");
+  }
+
+  @Test
+  void testInvalidEthnicity() {
+    // GIVEN
+    InputStream inputStream = loadCsv("test-upload-invalid-ethnicity.csv");
+
+    // WHEN
+    var error =
+        assertThrows(
+            IllegalArgumentException.class, () -> this._service.processPersonCSV(inputStream));
+
+    // THEN
+    assertThat(error.getMessage())
+        .isEqualTo(
+            "Error on row 1; \"InvalidEthnicity\" must be one of [refused, hispanic, not_hispanic]");
+  }
+
+  @Test
+  void testNoRace() {
     // GIVEN
     InputStream inputStream = loadCsv("test-upload-no-race.csv");
 
@@ -157,6 +187,22 @@ class UploadServiceTest extends BaseServiceTest<UploadService> {
 
     // THEN
     assertThat(error.getMessage()).isEqualTo("Error on row 1; Race is required.");
+  }
+
+  @Test
+  void testInvalidRace() {
+    // GIVEN
+    InputStream inputStream = loadCsv("test-upload-invalid-race.csv");
+
+    // WHEN
+    var error =
+        assertThrows(
+            IllegalArgumentException.class, () -> this._service.processPersonCSV(inputStream));
+
+    // THEN
+    assertThat(error.getMessage())
+        .isEqualTo(
+            "Error on row 1; \"InvalidRace\" must be one of [unknown, white, black or african american, prefer not to answer, asian, other, american indian or alaskan native, native hawaiian or other pacific islander]");
   }
 
   @Test

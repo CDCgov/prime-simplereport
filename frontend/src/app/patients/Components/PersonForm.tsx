@@ -548,6 +548,7 @@ const PersonForm = (props: Props) => {
           buttons={ETHNICITY_VALUES}
           selectedRadio={patient.ethnicity}
           onChange={onPersonChange("ethnicity")}
+          required={true}
         />
         <RadioGroup
           legend={t("patient.form.demographics.gender")}

@@ -161,7 +161,7 @@ public class UploadService {
             parsePersonRole(getRow(row, "Role", false), false),
             parseEmails(List.of(getRow(row, "Email", false))),
             parseRaceDisplayValue(getRow(row, "Race", true)),
-            parseEthnicity(getRow(row, "Ethnicity", false)),
+            parseEthnicity(getRow(row, "Ethnicity", true)),
             null,
             parseGender(getRow(row, "biologicalSex", true)),
             parseYesNo(getRow(row, "residentCongregateSetting", true)),

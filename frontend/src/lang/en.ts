@@ -190,7 +190,7 @@ export const en = {
           country: "Country is incorrectly formatted",
           race: "Race is required",
           tribalAffiliation: "Tribal affiliation is incorrectly formatted",
-          ethnicity: "Ethnicity is incorrectly formatted",
+          ethnicity: "Ethnicity is required",
           gender: "Sex assigned at birth is incorrectly formatted",
           residentCongregateSetting:
             "Are you a resident in a congregate living setting? is required",
