@@ -32,7 +32,7 @@ jest.mock("../utils/smartyStreets", () => ({
   suggestionIsCloseEnough: () => false,
 }));
 
-export const fillOutForm = (
+const fillOutForm = (
   inputs: { [label: string]: string },
   dropdowns: { [label: string]: string },
   inputGroups: {
