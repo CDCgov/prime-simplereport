@@ -11,18 +11,20 @@ import org.apache.http.HttpStatus;
 
 @Getter
 public class ConsoleApiAuditEvent {
-  private final HttpRequestDetails httpRequestDetails;
-  private static final String TYPE = "auditLog";
+  private final String type = "auditLog";
+  private HttpRequestDetails httpRequestDetails;
   private GraphQlInputs graphqlQueryDetails;
   private List<String> graphqlErrorPaths;
   private List<String> userPermissions;
   private Organization organization;
   private PatientLink patientLink;
-  private final String requestId;
-  private final int responseCode;
+  private String requestId;
+  private int responseCode;
   private boolean isAdminUser;
-  private final ApiUser user;
+  private ApiUser user;
   private JsonNode session;
+
+  public ConsoleApiAuditEvent() {}
 
   /** Constructor for graphql requests */
   public ConsoleApiAuditEvent(
