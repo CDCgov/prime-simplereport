@@ -130,7 +130,7 @@ describe("AddPatient", () => {
               emails: ["foo@bar.org"],
               county: "",
               race: "other",
-              ethnicity: null,
+              ethnicity: "refused",
               gender: "female",
               facilityId: mockFacilityID,
               preferredLanguage: null,
@@ -174,7 +174,7 @@ describe("AddPatient", () => {
               emails: [],
               county: "",
               race: "other",
-              ethnicity: null,
+              ethnicity: "refused",
               gender: "female",
               facilityId: mockFacilityID,
               preferredLanguage: null,
@@ -270,6 +270,11 @@ describe("AddPatient", () => {
             Race: {
               label: "Other",
               value: "other",
+              exact: true,
+            },
+            "Are you Hispanic or Latino?": {
+              label: "Prefer not to answer",
+              value: "refused",
               exact: true,
             },
             "Sex assigned at birth": {
@@ -407,6 +412,11 @@ describe("AddPatient", () => {
             Race: {
               label: "Other",
               value: "other",
+              exact: true,
+            },
+            "Are you Hispanic or Latino?": {
+              label: "Prefer not to answer",
+              value: "refused",
               exact: true,
             },
             "Sex assigned at birth": {

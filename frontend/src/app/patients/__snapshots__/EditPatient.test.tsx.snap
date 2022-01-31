@@ -2229,6 +2229,13 @@ Object {
                         class="usa-legend"
                       >
                         Are you Hispanic or Latino?
+                        <abbr
+                          class="usa-hint usa-hint--required"
+                          title="required"
+                        >
+                           
+                          *
+                        </abbr>
                       </legend>
                       <div
                         class=""
@@ -2238,7 +2245,7 @@ Object {
                         >
                           <input
                             class="usa-radio__input"
-                            data-required="false"
+                            data-required="true"
                             id="87-val-hispanic"
                             name="ethnicity"
                             type="radio"
@@ -2256,7 +2263,7 @@ Object {
                         >
                           <input
                             class="usa-radio__input"
-                            data-required="false"
+                            data-required="true"
                             id="87-val-not_hispanic"
                             name="ethnicity"
                             type="radio"
@@ -2274,7 +2281,7 @@ Object {
                         >
                           <input
                             class="usa-radio__input"
-                            data-required="false"
+                            data-required="true"
                             id="87-val-refused"
                             name="ethnicity"
                             type="radio"
@@ -4801,6 +4808,13 @@ Object {
                       class="usa-legend"
                     >
                       Are you Hispanic or Latino?
+                      <abbr
+                        class="usa-hint usa-hint--required"
+                        title="required"
+                      >
+                         
+                        *
+                      </abbr>
                     </legend>
                     <div
                       class=""
@@ -4810,7 +4824,7 @@ Object {
                       >
                         <input
                           class="usa-radio__input"
-                          data-required="false"
+                          data-required="true"
                           id="87-val-hispanic"
                           name="ethnicity"
                           type="radio"
@@ -4828,7 +4842,7 @@ Object {
                       >
                         <input
                           class="usa-radio__input"
-                          data-required="false"
+                          data-required="true"
                           id="87-val-not_hispanic"
                           name="ethnicity"
                           type="radio"
@@ -4846,7 +4860,7 @@ Object {
                       >
                         <input
                           class="usa-radio__input"
-                          data-required="false"
+                          data-required="true"
                           id="87-val-refused"
                           name="ethnicity"
                           type="radio"
