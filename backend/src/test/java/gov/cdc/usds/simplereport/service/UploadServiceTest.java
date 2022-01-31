@@ -170,9 +170,8 @@ class UploadServiceTest extends BaseServiceTest<UploadService> {
             IllegalArgumentException.class, () -> this._service.processPersonCSV(inputStream));
 
     // THEN
-    assertThat(error.getMessage())
-        .isEqualTo(
-            "Error on row 1; \"InvalidEthnicity\" must be one of [refused, hispanic, not_hispanic]");
+    assertThat("Error on row 1; \"InvalidEthnicity\" must be one of")
+        .isSubstringOf(error.getMessage());
   }
 
   @Test
@@ -200,9 +199,7 @@ class UploadServiceTest extends BaseServiceTest<UploadService> {
             IllegalArgumentException.class, () -> this._service.processPersonCSV(inputStream));
 
     // THEN
-    assertThat(error.getMessage())
-        .isEqualTo(
-            "Error on row 1; \"InvalidRace\" must be one of [unknown, white, black or african american, prefer not to answer, asian, other, american indian or alaskan native, native hawaiian or other pacific islander]");
+    assertThat("Error on row 1; \"InvalidRace\" must be one of").isSubstringOf(error.getMessage());
   }
 
   @Test
