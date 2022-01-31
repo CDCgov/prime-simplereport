@@ -6,11 +6,15 @@ import { RootState } from "../../app/store";
 import { Patient } from "../../app/patients/ManagePatients";
 import { TestResult as TestResultType } from "../../app/testQueue/QueueItem";
 import { COVID_RESULTS } from "../../app/constants";
+import { formatDateWithTimeOption } from "../../app/utils/date";
 
 const TestResult = () => {
   const patient = useSelector<RootState, Patient>((state) => state.patient);
   const fullName = formatFullName(patient as any);
-  const dateTested = new Date(patient.lastTest.dateTested).toLocaleDateString();
+  const dateTested = formatDateWithTimeOption(
+    patient.lastTest.dateTested,
+    true
+  );
   const deviceType = patient.lastTest.deviceTypeName;
   const { t } = useTranslation();
 

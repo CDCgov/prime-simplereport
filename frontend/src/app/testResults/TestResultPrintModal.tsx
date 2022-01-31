@@ -1,7 +1,6 @@
 import React from "react";
 import { gql } from "@apollo/client";
 import Modal from "react-modal";
-import moment from "moment";
 import classnames from "classnames";
 import { Trans, useTranslation } from "react-i18next";
 
@@ -11,9 +10,7 @@ import "./TestResultPrintModal.scss";
 import logo from "../../img/simplereport-logo-black.svg";
 import { QueryWrapper } from "../commonComponents/QueryWrapper";
 import LanguageToggler from "../../patientApp/LanguageToggler";
-
-const formatDate = (date: string | undefined) =>
-  moment(date)?.format("MM/DD/yyyy");
+import { formatDateWithTimeOption } from "../utils/date";
 
 export const testQuery = gql`
   query getTestResultForPrint($id: ID!) {
@@ -115,7 +112,7 @@ export const DetachedTestResultPrintModal = ({
               </li>
               <li>
                 <b>{t("testResult.dob.dateOfBirth")}</b>
-                <div>{formatDate(patient.birthDate)}</div>
+                <div>{formatDateWithTimeOption(patient.birthDate)}</div>
               </li>
             </ul>
           </section>
@@ -177,7 +174,9 @@ export const DetachedTestResultPrintModal = ({
               </li>
               <li>
                 <b>{t("testResult.testDate")}</b>
-                <div>{formatDate(data.testResult.dateTested)}</div>
+                <div>
+                  {formatDateWithTimeOption(data.testResult.dateTested, true)}
+                </div>
               </li>
               <li>
                 <b>{t("testResult.testResult")}</b>

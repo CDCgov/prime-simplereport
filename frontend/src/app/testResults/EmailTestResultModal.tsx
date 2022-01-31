@@ -1,5 +1,4 @@
 import Modal from "react-modal";
-import moment from "moment";
 
 import Button from "../commonComponents/Button/Button";
 import { formatFullName } from "../utils/user";
@@ -10,10 +9,7 @@ import {
 } from "../../generated/graphql";
 import { showAlertNotification } from "../utils";
 import "./EmailTestResultModal.scss";
-
-const formatDate = (date: string | undefined) => {
-  return moment(date)?.format("MMMM Do, YYYY");
-};
+import { formatDateLong } from "../utils/date";
 
 interface Props {
   testResultId: string;
@@ -46,7 +42,7 @@ export const EmailTestResultModal = ({ closeModal, testResultId }: Props) => {
           <div className="body">
             <div className="text">
               {formatFullName(patient)}'s test result from{" "}
-              {formatDate(dateTested)} will be sent to the following emails:
+              {formatDateLong(dateTested)} will be sent to the following emails:
             </div>
             {patient.emails?.map((email: string) => (
               <div key={email}>{email}</div>

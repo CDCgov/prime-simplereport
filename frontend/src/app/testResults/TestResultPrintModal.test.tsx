@@ -6,7 +6,7 @@ import ReactDOM from "react-dom";
 import { DetachedTestResultPrintModal } from "./TestResultPrintModal";
 
 const testResult = {
-  dateTested: new Date("2021-08-20"),
+  dateTested: new Date("2022-01-28T17:56:48.143Z"),
   result: "NEGATIVE",
   correctionStatus: null,
   deviceType: {
@@ -70,5 +70,9 @@ describe("TestResultPrintModal", () => {
     userEvent.click(screen.getAllByText("Print")[1]);
 
     expect(printSpy).toBeCalled();
+  });
+
+  it("should render the test date and test time", () => {
+    expect(screen.getByText("01/28/2022 5:56pm")).toBeInTheDocument();
   });
 });
