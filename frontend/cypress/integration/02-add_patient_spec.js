@@ -29,6 +29,7 @@ describe("Adding a patient", () => {
     cy.get(".prime-edit-patient").contains("Student ID");
     cy.get('input[name="lookupId"]').type(patient.studentId);
     cy.get('input[name="race"][value="other"]+label').click();
+    cy.get('input[name="ethnicity"][value="refused"]+label').click();
     cy.get('input[name="residentCongregateSetting"][value="NO"]+label').click();
     cy.get('input[name="employedInHealthcare"][value="NO"]+label').click();
   });
