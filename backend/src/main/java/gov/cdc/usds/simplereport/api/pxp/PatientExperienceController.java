@@ -8,6 +8,7 @@ import static gov.cdc.usds.simplereport.api.Translators.parseRace;
 import static gov.cdc.usds.simplereport.api.Translators.parseString;
 
 import gov.cdc.usds.simplereport.api.model.PersonUpdate;
+import gov.cdc.usds.simplereport.api.model.errors.ExpiredPatientLinkException;
 import gov.cdc.usds.simplereport.api.model.pxp.PxpRequestWrapper;
 import gov.cdc.usds.simplereport.api.model.pxp.PxpVerifyResponse;
 import gov.cdc.usds.simplereport.db.model.PatientLink;
@@ -32,6 +33,7 @@ import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
 /**
@@ -104,10 +106,14 @@ public class PatientExperienceController {
    * @return an obfuscated patient name
    */
   @GetMapping("/patient-name")
-  public String getObfuscatedPatientNameFromLink(HttpServletRequest request) {
-    String patientLink = request.getParameter("patientLink");
-
+  public String getObfuscatedPatientNameFromLink(
+      @RequestParam("patientLink") String patientLink, HttpServletRequest request) {
     PatientLink link = _pls.getPatientLink(UUID.fromString(patientLink));
+
+    if (link.isExpired()) {
+      throw new ExpiredPatientLinkException();
+    }
+
     TestOrder to = link.getTestOrder();
     Person p = to.getPatient();
 
