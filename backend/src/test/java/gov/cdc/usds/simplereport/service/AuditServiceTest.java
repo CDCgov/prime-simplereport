@@ -1,9 +1,12 @@
 package gov.cdc.usds.simplereport.service;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.mockito.Mockito.atLeastOnce;
+import static org.mockito.Mockito.verify;
 
+import com.fasterxml.jackson.core.JsonProcessingException;
 import gov.cdc.usds.simplereport.config.authorization.UserPermission;
-import gov.cdc.usds.simplereport.db.model.ApiAuditEvent;
+import gov.cdc.usds.simplereport.db.model.ConsoleApiAuditEvent;
 import gov.cdc.usds.simplereport.db.model.auxiliary.GraphQlInputs;
 import gov.cdc.usds.simplereport.db.model.auxiliary.HttpRequestDetails;
 import gov.cdc.usds.simplereport.logging.GraphqlQueryState;
@@ -13,17 +16,22 @@ import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
 import org.junit.jupiter.api.Test;
+import org.mockito.ArgumentCaptor;
+import org.mockito.Captor;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.http.HttpStatus;
 import org.springframework.mock.web.MockHttpServletRequest;
 
 class AuditServiceTest extends BaseServiceTest<AuditService> {
 
   @Autowired private ApiUserService _userService;
+  @MockBean AuditLoggerService auditLoggerServiceSpy;
+  @Captor private ArgumentCaptor<ConsoleApiAuditEvent> auditLogCaptor;
 
   @Test
   @WithSimpleReportEntryOnlyUser
-  void smokeTestGraphqlAudit() {
+  void smokeTestGraphqlAudit() throws JsonProcessingException {
     initSampleData(); // need to have the org exist
     UserInfo userInfo = _userService.getCurrentUserInfo();
     GraphqlQueryState state = new GraphqlQueryState();
@@ -44,8 +52,11 @@ class AuditServiceTest extends BaseServiceTest<AuditService> {
         userInfo.getPermissions(),
         userInfo.getIsAdmin(),
         userInfo.getOrganization().orElse(null));
-    assertEquals(1L, _service.countAuditEvents());
-    ApiAuditEvent saved = _service.getLastEvents(1).get(0);
+
+    verify(auditLoggerServiceSpy, atLeastOnce()).logEvent(auditLogCaptor.capture());
+    ConsoleApiAuditEvent saved = auditLogCaptor.getValue();
+
+    assertEquals(1L, auditLogCaptor.getAllValues().size());
     assertEquals("ABCDE", saved.getRequestId());
     assertEquals("ftp", saved.getHttpRequestDetails().getForwardedProtocol());
     assertEquals("A", saved.getGraphqlQueryDetails().getOperationName());
@@ -65,6 +76,8 @@ class AuditServiceTest extends BaseServiceTest<AuditService> {
   void anonymousRequestAuditSaved() {
     MockHttpServletRequest request = new MockHttpServletRequest();
     _service.logAnonymousRestEvent("abc", request, HttpStatus.OK.value());
-    assertEquals(1L, _service.countAuditEvents());
+
+    verify(auditLoggerServiceSpy, atLeastOnce()).logEvent(auditLogCaptor.capture());
+    assertEquals(1L, auditLogCaptor.getAllValues().size());
   }
 }

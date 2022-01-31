@@ -1,16 +1,19 @@
 package gov.cdc.usds.simplereport.api;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertFalse;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.junit.jupiter.api.Assertions.assertNull;
-import static org.junit.jupiter.api.Assertions.assertTrue;
+import static org.mockito.Mockito.atLeastOnce;
+import static org.mockito.Mockito.reset;
+import static org.mockito.Mockito.verify;
+import static org.mockito.Mockito.verifyNoInteractions;
 
 import gov.cdc.usds.simplereport.config.authorization.UserPermission;
-import gov.cdc.usds.simplereport.db.model.ApiAuditEvent;
+import gov.cdc.usds.simplereport.db.model.ConsoleApiAuditEvent;
 import gov.cdc.usds.simplereport.db.model.auxiliary.HttpRequestDetails;
 import gov.cdc.usds.simplereport.idp.repository.DemoOktaRepository;
 import gov.cdc.usds.simplereport.logging.LoggingConstants;
-import gov.cdc.usds.simplereport.service.AuditService;
+import gov.cdc.usds.simplereport.service.AuditLoggerService;
 import gov.cdc.usds.simplereport.service.OrganizationService;
 import gov.cdc.usds.simplereport.test_util.DbTruncator;
 import gov.cdc.usds.simplereport.test_util.TestDataFactory;
@@ -19,6 +22,8 @@ import java.util.List;
 import java.util.Set;
 import java.util.stream.Collectors;
 import org.junit.jupiter.api.BeforeEach;
+import org.mockito.ArgumentCaptor;
+import org.mockito.Captor;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
 import org.springframework.boot.test.context.SpringBootTest;
@@ -43,23 +48,25 @@ public abstract class BaseFullStackTest {
 
   @Autowired private CurrentTenantDataAccessContextHolder _tenantDataAccessContextHolder;
   @Autowired private DbTruncator _truncator;
-  @Autowired private AuditService _auditService;
   @Autowired protected TestDataFactory _dataFactory;
   @SpyBean protected OrganizationService _orgService;
   @Autowired protected DemoOktaRepository _oktaRepo;
+  @SpyBean AuditLoggerService auditLoggerServiceSpy;
+  @Captor private ArgumentCaptor<ConsoleApiAuditEvent> auditLogCaptor;
 
   protected Date _testStart;
 
   @BeforeEach
   void initTestStart() {
     _testStart = new Date();
+    reset(auditLoggerServiceSpy);
   }
 
   protected void truncateDb() {
     _truncator.truncateAll();
   }
 
-  protected ApiAuditEvent assertLastAuditEntry(
+  protected ConsoleApiAuditEvent assertLastAuditEntry(
       String username,
       String operationName,
       Set<UserPermission> permissions,
@@ -67,13 +74,13 @@ public abstract class BaseFullStackTest {
     return assertLastAuditEntry(null, username, operationName, permissions, errorPaths);
   }
 
-  protected ApiAuditEvent assertLastAuditEntry(
+  protected ConsoleApiAuditEvent assertLastAuditEntry(
       String requestId,
       String username,
       String operationName,
       Set<UserPermission> permissions,
       List<String> errorPaths) {
-    ApiAuditEvent event = getTimeCheckedEvent();
+    ConsoleApiAuditEvent event = getTimeCheckedEvent();
     assertEquals(username, event.getUser().getLoginEmail());
     assertEquals(operationName, event.getGraphqlQueryDetails().getOperationName());
     if (requestId != null) {
@@ -93,9 +100,9 @@ public abstract class BaseFullStackTest {
   }
 
   /** REST audit event checker: includes "this is not graphql" checks" */
-  protected ApiAuditEvent assertLastAuditEntry(
+  protected ConsoleApiAuditEvent assertLastAuditEntry(
       HttpStatus status, String requestUri, String requestId) {
-    ApiAuditEvent event = getTimeCheckedEvent();
+    ConsoleApiAuditEvent event = getTimeCheckedEvent();
     assertNull(event.getGraphqlQueryDetails());
     assertNull(event.getGraphqlErrorPaths());
     HttpRequestDetails requestDetails = event.getHttpRequestDetails();
@@ -109,9 +116,9 @@ public abstract class BaseFullStackTest {
     return event;
   }
 
-  protected ApiAuditEvent assertLastAuditEntry(
+  protected ConsoleApiAuditEvent assertLastAuditEntry(
       String username, String organizationExternalId, Set<UserPermission> permissions) {
-    ApiAuditEvent event = getTimeCheckedEvent();
+    ConsoleApiAuditEvent event = getTimeCheckedEvent();
     assertEquals(username, event.getUser().getLoginEmail());
     if (organizationExternalId == null) {
       assertNull(event.getOrganization());
@@ -128,32 +135,14 @@ public abstract class BaseFullStackTest {
   }
 
   protected void assertNoAuditEvent() {
-    assertEquals(List.of(), _auditService.getLastEvents(AuditService.MAX_EVENT_FETCH));
+    verifyNoInteractions(auditLoggerServiceSpy);
   }
 
-  private ApiAuditEvent getTimeCheckedEvent() {
-    List<ApiAuditEvent> lastEvents = _auditService.getLastEvents(1);
-    assertEquals(1, lastEvents.size(), "should find exactly one event");
-    ApiAuditEvent event = lastEvents.get(0);
-    assertFalse(
-        _testStart.after(event.getEventTimestamp()),
-        "event must have been created during this test");
+  private ConsoleApiAuditEvent getTimeCheckedEvent() {
+    verify(auditLoggerServiceSpy, atLeastOnce()).logEvent(auditLogCaptor.capture());
+    ConsoleApiAuditEvent event = auditLogCaptor.getValue();
+    assertNotNull(event);
     return event;
-  }
-
-  protected void assertTimestampSanity(ApiAuditEvent event, Date beforeRequest) {
-    Date eventTimestamp = event.getEventTimestamp();
-    Date postQuery = new Date();
-    assertTrue(
-        beforeRequest.before(eventTimestamp) || beforeRequest.equals(eventTimestamp),
-        "event timestamp after test start");
-    assertTrue(
-        postQuery.after(eventTimestamp) || postQuery.equals(eventTimestamp),
-        "event timestamp before now");
-  }
-
-  protected void assertTimestampSanity(ApiAuditEvent event) {
-    assertTimestampSanity(event, _testStart);
   }
 
   protected MockHttpServletRequestBuilder withJsonContent(
