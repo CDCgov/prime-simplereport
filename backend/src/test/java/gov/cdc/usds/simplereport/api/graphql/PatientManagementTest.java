@@ -468,8 +468,8 @@ class PatientManagementTest extends BaseGraphqlTest {
             "patientId", "x".repeat(35), "/updatePatient/patientId size must be between 36 and 36"),
         Arguments.of(
             "firstName",
-            "x".repeat(500),
-            "/updatePatient/firstName size must be between 0 and 256"));
+            "x".repeat(5000),
+            "/updatePatient/firstName size must be between 0 and 4096"));
   }
 
   private JsonNode doCreateAndFetch(
