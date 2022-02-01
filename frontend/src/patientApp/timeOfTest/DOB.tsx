@@ -18,7 +18,11 @@ const DOB = () => {
   const plid = useSelector((state: any) => state.plid);
 
   useEffect(() => {
-    PxpApi.getObfuscatedPatientName(plid).then(setPatientObfuscatedName);
+    PxpApi.getObfuscatedPatientName(plid)
+      .then(setPatientObfuscatedName)
+      .catch(() => {
+        setLinkExpiredError(true);
+      });
   }, [plid]);
 
   const dispatch = useDispatch();
