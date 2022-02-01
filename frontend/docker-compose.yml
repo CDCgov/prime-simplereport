@@ -9,6 +9,7 @@ services:
         NODE_ENV: development
     volumes:
       - ./:/frontend/
+      - ../.git/:/frontend/.git/
       - ../backend/src/main/resources/graphql:/backend/src/main/resources/graphql
     ports:
       - "3000:3000"

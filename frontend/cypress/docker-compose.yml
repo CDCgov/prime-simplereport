@@ -63,6 +63,7 @@ services:
       REACT_APP_OKTA_URL: http://cypress:8088
     volumes:
       - ../:/frontend/
+      - ../../.git/:/frontend/.git
       - ../../backend/src/main/resources/graphql:/backend/src/main/resources/graphql
     expose:
       - "3000"
