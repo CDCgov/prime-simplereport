@@ -10,6 +10,7 @@ import { Provider } from "react-redux";
 import configureStore from "redux-mock-store";
 import { MemoryRouter, Route, Routes, useLocation } from "react-router-dom";
 import userEvent from "@testing-library/user-event";
+import { ToastContainer } from "react-toastify";
 
 import AddPatient, { ADD_PATIENT, PATIENT_EXISTS } from "./AddPatient";
 
@@ -57,7 +58,7 @@ const fillOutForm = (
   Object.entries(inputGroups).forEach(([legend, { label, exact }]) => {
     const fieldset = screen
       .getByText(legend, {
-        exact: false,
+        exact: true,
       })
       .closest("fieldset");
     if (fieldset === null) {
@@ -130,8 +131,8 @@ describe("AddPatient", () => {
               role: null,
               emails: ["foo@bar.org"],
               county: "",
-              race: null,
-              ethnicity: null,
+              race: "other",
+              ethnicity: "refused",
               gender: "female",
               facilityId: mockFacilityID,
               preferredLanguage: null,
@@ -174,8 +175,8 @@ describe("AddPatient", () => {
               role: "STUDENT",
               emails: [],
               county: "",
-              race: null,
-              ethnicity: null,
+              race: "other",
+              ethnicity: "refused",
               gender: "female",
               facilityId: mockFacilityID,
               preferredLanguage: null,
@@ -199,15 +200,24 @@ describe("AddPatient", () => {
       };
 
       render(
-        <Provider store={store}>
-          <MockedProvider mocks={mocks} addTypename={false}>
-            <RouterWithFacility>
-              <Route element={<AddPatient />} path={"/add-patient"} />
-              <Route path={"/patients"} element={<p>Patients!</p>} />
-              <Route path={"/queue"} element={<Queue />} />
-            </RouterWithFacility>
-          </MockedProvider>
-        </Provider>
+        <>
+          <Provider store={store}>
+            <MockedProvider mocks={mocks} addTypename={false}>
+              <RouterWithFacility>
+                <Route element={<AddPatient />} path={"/add-patient"} />
+                <Route path={"/patients"} element={<p>Patients!</p>} />
+                <Route path={"/queue"} element={<Queue />} />
+              </RouterWithFacility>
+            </MockedProvider>
+          </Provider>
+          <ToastContainer
+            autoClose={5000}
+            closeButton={false}
+            limit={2}
+            position="bottom-center"
+            hideProgressBar={true}
+          />
+        </>
       );
     });
     it("shows the form title", async () => {
@@ -278,10 +288,20 @@ describe("AddPatient", () => {
               value: "MOBILE",
               exact: true,
             },
-            "Would you like to receive your results via text message": {
+            "Would you like to receive your results via text message?": {
               label: "Yes",
               value: "SMS",
               exact: false,
+            },
+            Race: {
+              label: "Other",
+              value: "other",
+              exact: true,
+            },
+            "Are you Hispanic or Latino?": {
+              label: "Prefer not to answer",
+              value: "refused",
+              exact: true,
             },
             "Sex assigned at birth": {
               label: "Female",
@@ -318,6 +338,49 @@ describe("AddPatient", () => {
           screen.queryAllByText("Saving...")
         );
         expect(screen.getByText("Patients!")).toBeInTheDocument();
+      });
+
+      it("requires race field to be populated", async () => {
+        fillOutForm(
+          {
+            "First Name": "Alice",
+            "Last Name": "Hamilton",
+            "Date of birth": "1970-09-22",
+            "Primary phone number": "617-432-1000",
+            "Email address": "foo@bar.org",
+            "Street address 1": "25 Shattuck St",
+            City: "Boston",
+
+            "ZIP code": "02115",
+          },
+          { Facility: mockFacilityID, State: "MA", Country: "USA" },
+          {
+            "Phone type": {
+              label: "Mobile",
+              value: "MOBILE",
+              exact: true,
+            },
+            "Would you like to receive your results via text message?": {
+              label: "Yes",
+              value: "SMS",
+              exact: false,
+            },
+            "Sex assigned at birth": {
+              label: "Female",
+              value: "female",
+              exact: true,
+            },
+          }
+        );
+        userEvent.click(
+          screen.queryAllByText("Save Changes", {
+            exact: false,
+          })[0]
+        );
+
+        expect(
+          await screen.findByText("Race is required", { exact: false })
+        ).toBeInTheDocument();
       });
     });
 
@@ -367,10 +430,20 @@ describe("AddPatient", () => {
               value: "MOBILE",
               exact: true,
             },
-            "Would you like to receive your results via text message": {
+            "Would you like to receive your results via text message?": {
               label: "Yes",
               value: "SMS",
               exact: false,
+            },
+            Race: {
+              label: "Other",
+              value: "other",
+              exact: true,
+            },
+            "Are you Hispanic or Latino?": {
+              label: "Prefer not to answer",
+              value: "refused",
+              exact: true,
             },
             "Sex assigned at birth": {
               label: "Female",
