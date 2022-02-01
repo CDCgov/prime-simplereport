@@ -527,6 +527,7 @@ const PersonForm = (props: Props) => {
           selectedRadio={patient.race}
           onChange={onPersonChange("race")}
           required={true}
+          validationStatus={validationStatus("race")}
         />
         <div className="usa-form-group">
           <label className="usa-legend" htmlFor="tribal-affiliation">
@@ -549,6 +550,7 @@ const PersonForm = (props: Props) => {
           selectedRadio={patient.ethnicity}
           onChange={onPersonChange("ethnicity")}
           required={true}
+          validationStatus={validationStatus("ethnicity")}
         />
         <RadioGroup
           legend={t("patient.form.demographics.gender")}
