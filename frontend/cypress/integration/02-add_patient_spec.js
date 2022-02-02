@@ -52,7 +52,6 @@ describe("Adding a patient", () => {
     cy.get(".usa-card__header").contains("Showing");
   });
   it("shows the patient in the list", () => {
-    cy.reload();
     cy.get("#search-field-small").type(patient.lastName);
     cy.get(".prime-container").contains(patient.fullName);
   });
