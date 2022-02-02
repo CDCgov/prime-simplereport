@@ -1,17 +1,19 @@
 import React from "react";
-import { Navigate } from "react-router-dom";
+import { Redirect, Route } from "react-router-dom";
 
 import { UserPermission } from "../../generated/graphql";
 
 interface Props {
   requiredPermissions: UserPermission[];
   userPermissions: UserPermission[] | undefined;
-  element: any;
+  path: string;
+  component?: React.FC<any>;
+  render?: any;
 }
 const ProtectedRoute: React.FC<Props> = ({
   requiredPermissions,
   userPermissions,
-  element,
+  ...rest
 }) => {
   let hasAccess;
   if (!userPermissions) {
@@ -22,7 +24,7 @@ const ProtectedRoute: React.FC<Props> = ({
     );
   }
 
-  return hasAccess ? element : <Navigate to="/" />;
+  return hasAccess ? <Route {...rest} /> : <Redirect to={`/`} />;
 };
 
 export default ProtectedRoute;

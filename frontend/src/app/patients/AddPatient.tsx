@@ -1,9 +1,10 @@
 import React, { useEffect, useState } from "react";
 import { gql, useLazyQuery, useMutation } from "@apollo/client";
-import { Navigate } from "react-router-dom";
+import { Redirect } from "react-router-dom";
 import { useTranslation } from "react-i18next";
 import moment from "moment";
 import { useSelector } from "react-redux";
+import { LocationDescriptor } from "history";
 
 import iconSprite from "../../../node_modules/uswds/dist/img/sprite.svg";
 import { PATIENT_TERM, PATIENT_TERM_CAP } from "../../config/constants";
@@ -222,11 +223,11 @@ const AddPatient = () => {
   const personPath = `/patients/?facility=${activeFacilityId}`;
 
   const [redirect, setRedirect] = useState<
-    string | { pathname: string; search: string; state?: any } | undefined
+    string | LocationDescriptor | undefined
   >(undefined);
 
   if (redirect) {
-    return <Navigate to={redirect} />;
+    return <Redirect to={redirect} />;
   }
 
   if (!activeFacilityId) {

@@ -1,6 +1,7 @@
 import React, { useEffect, useState } from "react";
 import moment from "moment";
-import { Navigate, useLocation } from "react-router-dom";
+import { useLocation } from "react-router";
+import { Redirect } from "react-router-dom";
 
 import Button from "../../commonComponents/Button/Button";
 import AoEModalForm from "../AoEForm/AoEModalForm";
@@ -55,7 +56,7 @@ const SearchResults = (props: QueueProps | TestResultsProps) => {
   }, [selectedPatient]);
 
   if (redirect) {
-    return <Navigate to={redirect} />;
+    return <Redirect to={redirect} />;
   }
 
   const actionByPage = (patient: Patient, idx: Number) => {

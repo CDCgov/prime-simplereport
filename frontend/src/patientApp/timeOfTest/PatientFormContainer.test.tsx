@@ -11,15 +11,13 @@ jest.mock("@trussworks/react-uswds", () => ({
 }));
 const mockStore = configureStore([]);
 
-jest.mock("react-router-dom", () => {
-  const original = jest.requireActual("react-router-dom");
-  return {
-    ...original,
-    useNavigate: jest.fn(),
-  };
-});
-
-jest.mock("../../app/utils/Prompt", () => (_props: any) => null);
+jest.mock("react-router-dom", () => ({
+  Prompt: (_props: any) => <></>,
+  useHistory: () => ({
+    listen: jest.fn(),
+    push: jest.fn(),
+  }),
+}));
 
 describe("PatientFormContainer", () => {
   it("renders", () => {

@@ -1,5 +1,5 @@
 import { useState } from "react";
-import { Navigate } from "react-router-dom";
+import { Redirect } from "react-router";
 
 import { Card } from "../../commonComponents/Card/Card";
 import { CardBackground } from "../../commonComponents/CardBackground/CardBackground";
@@ -36,19 +36,19 @@ export const MfaSelect = () => {
   if (submitted) {
     switch (mfaOption) {
       case "SMS":
-        return <Navigate to="../mfa-sms" />;
+        return <Redirect push to="/mfa-sms" />;
       case "Okta":
-        return <Navigate to="../mfa-okta" />;
+        return <Redirect push to="/mfa-okta" />;
       case "Google":
-        return <Navigate to="../mfa-google-auth" />;
+        return <Redirect push to="/mfa-google-auth" />;
       case "FIDO":
-        return <Navigate to="../mfa-security-key" />;
+        return <Redirect push to="/mfa-security-key" />;
       case "Phone":
-        return <Navigate to="../mfa-phone" />;
+        return <Redirect push to="/mfa-phone" />;
       case "Email":
-        return <Navigate to="../mfa-email/verify" />;
+        return <Redirect push to="/mfa-email/verify" />;
       default:
-        return <Navigate to="../" />;
+        return <Redirect push to="/" />;
     }
   }
 

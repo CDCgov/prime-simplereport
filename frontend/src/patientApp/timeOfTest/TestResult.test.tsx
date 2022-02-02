@@ -1,5 +1,7 @@
 import { Provider } from "react-redux";
 import configureStore from "redux-mock-store";
+import { Router } from "react-router-dom";
+import { createMemoryHistory } from "history";
 import { render, screen } from "@testing-library/react";
 
 import TestResult from "./TestResult";
@@ -25,9 +27,11 @@ describe("TestResult", () => {
   it("should show the patient/device name", () => {
     const store = mockStore(getPatientLinkData("UNDETERMINED"));
     render(
-      <Provider store={store}>
-        <TestResult />
-      </Provider>
+      <Router history={createMemoryHistory()}>
+        <Provider store={store}>
+          <TestResult />
+        </Provider>
+      </Router>
     );
 
     expect(screen.getByText("SARS-CoV-2 result")).toBeInTheDocument();
@@ -38,9 +42,11 @@ describe("TestResult", () => {
   it("should show a positive result", () => {
     const store = mockStore(getPatientLinkData("POSITIVE"));
     render(
-      <Provider store={store}>
-        <TestResult />
-      </Provider>
+      <Router history={createMemoryHistory()}>
+        <Provider store={store}>
+          <TestResult />
+        </Provider>
+      </Router>
     );
 
     expect(screen.getByText("SARS-CoV-2 result")).toBeInTheDocument();
@@ -49,9 +55,11 @@ describe("TestResult", () => {
   it("should show a negative result", () => {
     const store = mockStore(getPatientLinkData("NEGATIVE"));
     render(
-      <Provider store={store}>
-        <TestResult />
-      </Provider>
+      <Router history={createMemoryHistory()}>
+        <Provider store={store}>
+          <TestResult />
+        </Provider>
+      </Router>
     );
 
     expect(screen.getByText("SARS-CoV-2 result")).toBeInTheDocument();
@@ -60,9 +68,11 @@ describe("TestResult", () => {
   it("should show an inconclusive result", () => {
     const store = mockStore(getPatientLinkData("UNDETERMINED"));
     render(
-      <Provider store={store}>
-        <TestResult />
-      </Provider>
+      <Router history={createMemoryHistory()}>
+        <Provider store={store}>
+          <TestResult />
+        </Provider>
+      </Router>
     );
 
     expect(screen.getByText("SARS-CoV-2 result")).toBeInTheDocument();

@@ -1,5 +1,4 @@
 import { useSelector } from "react-redux";
-import { useParams } from "react-router-dom";
 
 import { useSelectedFacility } from "../facilitySelect/useSelectedFacility";
 import { hasPermission, appPermissions } from "../permissions";
@@ -8,9 +7,8 @@ import { useDocumentTitle } from "../utils/hooks";
 
 import ManagePatients from "./ManagePatients";
 
-const ManagePatientsContainer = () => {
+const ManagePatientsContainer = (props: { page?: number }) => {
   useDocumentTitle("People");
-  const { pageNumber } = useParams();
   const [facility] = useSelectedFacility();
   const activeFacilityId = facility?.id || "";
   const user = useSelector<RootState, User>((state) => state.user);
@@ -34,7 +32,7 @@ const ManagePatientsContainer = () => {
       activeFacilityId={activeFacilityId}
       canEditUser={canEditUser}
       canDeleteUser={canDeleteUser}
-      currentPage={Number(pageNumber)}
+      currentPage={props.page}
       isAdmin={isAdmin}
     />
   );

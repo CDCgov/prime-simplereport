@@ -1,4 +1,5 @@
 import React, { useCallback, useState } from "react";
+import { Prompt } from "react-router-dom";
 
 import iconSprite from "../../../../node_modules/uswds/dist/img/sprite.svg";
 import Button from "../../commonComponents/Button/Button";
@@ -18,7 +19,6 @@ import {
   AddressConfirmationModal,
   AddressSuggestionConfig,
 } from "../../commonComponents/AddressConfirmationModal";
-import Prompt from "../../utils/Prompt";
 
 import ManageDevices from "./Components/ManageDevices";
 import OrderingProviderSettings from "./Components/OrderingProvider";

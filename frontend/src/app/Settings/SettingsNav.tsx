@@ -7,33 +7,24 @@ const SettingsNav = () => {
     <nav className="prime-secondary-nav" aria-label="Secondary navigation">
       <ul className="usa-nav__secondary-links prime-nav">
         <li className="usa-nav__secondary-item">
-          <LinkWithQuery
-            to={`/settings`}
-            className={({ isActive }) => (isActive ? "active" : "")}
-          >
+          <LinkWithQuery to={`/settings`} activeClassName="active" exact={true}>
             Manage users
           </LinkWithQuery>
         </li>
         <li className="usa-nav__secondary-item">
-          <LinkWithQuery
-            to={`/settings/facilities`}
-            className={({ isActive }) => (isActive ? "active" : "")}
-          >
+          <LinkWithQuery to={`/settings/facilities`} activeClassName="active">
             Manage facilities
           </LinkWithQuery>
         </li>
         <li className="usa-nav__secondary-item">
-          <LinkWithQuery
-            to={`/settings/organization`}
-            className={({ isActive }) => (isActive ? "active" : "")}
-          >
+          <LinkWithQuery to={`/settings/organization`} activeClassName="active">
             Manage organization
           </LinkWithQuery>
         </li>
         <li className="usa-nav__secondary-item">
           <LinkWithQuery
             to={`/settings/self-registration`}
-            className={({ isActive }) => (isActive ? "active" : "")}
+            activeClassName="active"
           >
             Patient self-registration
           </LinkWithQuery>

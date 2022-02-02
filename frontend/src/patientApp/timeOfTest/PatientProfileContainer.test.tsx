@@ -7,13 +7,12 @@ import PatientProfileContainer from "./PatientProfileContainer";
 
 const mockStore = configureStore([]);
 
-jest.mock("react-router-dom", () => {
-  const original = jest.requireActual("react-router-dom");
-  return {
-    ...original,
-    useNavigate: jest.fn(),
-  };
-});
+jest.mock("react-router-dom", () => ({
+  useHistory: () => ({
+    listen: jest.fn(),
+    push: jest.fn(),
+  }),
+}));
 
 describe("PatientProfileContainer", () => {
   it("renders", () => {

@@ -1,5 +1,5 @@
 import { useState } from "react";
-import { Navigate } from "react-router-dom";
+import { Redirect } from "react-router-dom";
 
 import {
   UpdateDeviceType,
@@ -42,7 +42,7 @@ const ManageDeviceTypeFormContainer = () => {
   };
 
   if (submitted) {
-    return <Navigate to="/admin" />;
+    return <Redirect to="/admin" />;
   }
 
   if (deviceTypeResults && specimenTypesResults) {

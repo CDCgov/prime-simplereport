@@ -11,7 +11,7 @@ import Modal from "react-modal";
 import classnames from "classnames";
 import moment from "moment";
 import { useSelector } from "react-redux";
-import { useNavigate } from "react-router-dom";
+import { useHistory } from "react-router-dom";
 
 import Alert from "../commonComponents/Alert";
 import Button from "../commonComponents/Button/Button";
@@ -207,7 +207,7 @@ const QueueItem = ({
   dateTestedProp,
 }: QueueItemProps) => {
   const appInsights = getAppInsights();
-  const navigate = useNavigate();
+  const history = useHistory();
 
   const trackRemovePatientFromQueue = () => {
     if (appInsights) {
@@ -667,7 +667,7 @@ const QueueItem = ({
                   <div
                     className="card-name"
                     onClick={() => {
-                      navigate({
+                      history.push({
                         pathname: `/patient/${patient.internalId}`,
                         search: `?facility=${facilityId}`,
                       });

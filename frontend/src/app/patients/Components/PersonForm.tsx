@@ -1,4 +1,5 @@
 import React, { useCallback, useState, useEffect, useRef } from "react";
+import { Prompt } from "react-router-dom";
 import { SchemaOf } from "yup";
 import { useTranslation } from "react-i18next";
 import { ComboBox } from "@trussworks/react-uswds";
@@ -37,7 +38,6 @@ import {
   getSelectedDeliveryPreferencesEmail,
   toggleDeliveryPreferenceEmail,
 } from "../../utils/deliveryPreferences";
-import Prompt from "../../utils/Prompt";
 
 import FacilitySelect from "./FacilitySelect";
 import ManagePhoneNumbers from "./ManagePhoneNumbers";

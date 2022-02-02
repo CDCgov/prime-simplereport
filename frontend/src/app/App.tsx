@@ -1,7 +1,7 @@
 import React, { useEffect } from "react";
 import { gql, useQuery } from "@apollo/client";
 import { useDispatch, connect } from "react-redux";
-import { Navigate, Route, Routes, useLocation } from "react-router-dom";
+import { Redirect, Route, Switch } from "react-router-dom";
 import { ApplicationInsights } from "@microsoft/applicationinsights-web";
 
 import ProtectedRoute from "./commonComponents/ProtectedRoute";
@@ -50,14 +50,13 @@ export const WHOAMI_QUERY = gql`
 const App = () => {
   const appInsights = getAppInsights();
   const dispatch = useDispatch();
-  const location = useLocation();
 
   // Check if the user is logged in, if not redirect to Okta
   if (process.env.REACT_APP_OKTA_ENABLED === "true") {
     const accessToken = localStorage.getItem("access_token");
     if (!accessToken) {
       // If Okta login has been attempted and returned to SR with an error, don't redirect back to Okta
-      const params = new URLSearchParams(location.hash.slice(1));
+      const params = new URLSearchParams(window.location.hash.slice(1));
       if (params.get("error")) {
         throw new Error(
           params.get("error_description") || "Unknown Okta error"
@@ -119,125 +118,100 @@ const App = () => {
   let homepagePath: string;
 
   if (isSupportAdmin) {
-    homepagePath = "admin";
+    homepagePath = "/admin";
   } else if (isOrgAdmin) {
-    homepagePath = "dashboard";
+    homepagePath = "/dashboard";
   } else {
-    homepagePath = "queue";
+    homepagePath = "/queue";
   }
-
-  const canViewResults = appPermissions.results.canView;
-  const canViewPeople = appPermissions.people.canView;
-  const canEditPeople = appPermissions.people.canEdit;
-  const canViewSettings = appPermissions.settings.canView;
 
   return (
     <>
       <VersionEnforcer />
-      {process.env.REACT_APP_DISABLE_MAINTENANCE_BANNER === "true" ? null : (
-        <MaintenanceBanner />
-      )}
+      <MaintenanceBanner />
       {process.env.REACT_APP_IS_TRAINING_SITE === "true" && (
         <TrainingNotification />
       )}
       <WithFacility>
         <Page>
           <Header />
-          <Routes>
+          <Switch>
+            <Route
+              path="/queue"
+              render={() => {
+                return <TestQueueContainer />;
+              }}
+            />
             <Route
               path="/"
-              element={
-                <Navigate
-                  to={{ pathname: homepagePath, search: location.search }}
+              exact
+              render={({ location }) => (
+                <Redirect
+                  to={{
+                    ...location,
+                    pathname: homepagePath,
+                  }}
                 />
-              }
+              )}
             />
-            <Route path="queue" element={<TestQueueContainer />} />
-            <Route
-              path="results/:pageNumber"
-              element={
-                <ProtectedRoute
-                  requiredPermissions={canViewResults}
-                  userPermissions={data.whoami.permissions}
-                  element={<TestResultsList />}
-                />
-              }
+            <ProtectedRoute
+              path="/results/:page"
+              render={({ match }: any) => {
+                return <TestResultsList pageNumber={match.params.page} />;
+              }}
+              requiredPermissions={appPermissions.results.canView}
+              userPermissions={data.whoami.permissions}
             />
-            <Route
-              path="results"
-              element={
-                <ProtectedRoute
-                  requiredPermissions={canViewResults}
-                  userPermissions={data.whoami.permissions}
-                  element={<CleanTestResultsList />}
-                />
-              }
+            <ProtectedRoute
+              path="/results/"
+              render={() => <CleanTestResultsList />}
+              requiredPermissions={appPermissions.results.canView}
+              userPermissions={data.whoami.permissions}
             />
-            <Route
-              path="patients/:pageNumber"
-              element={
-                <ProtectedRoute
-                  requiredPermissions={canViewPeople}
-                  userPermissions={data.whoami.permissions}
-                  element={<ManagePatientsContainer />}
-                />
-              }
+            <ProtectedRoute
+              path={`/patients/:page?`}
+              render={({ match }: any) => {
+                return <ManagePatientsContainer page={match.params.page} />;
+              }}
+              requiredPermissions={appPermissions.people.canView}
+              userPermissions={data.whoami.permissions}
             />
-            <Route
-              path="patients"
-              element={
-                <ProtectedRoute
-                  requiredPermissions={canViewPeople}
-                  userPermissions={data.whoami.permissions}
-                  element={<ManagePatientsContainer />}
-                />
-              }
+            <ProtectedRoute
+              path={`/patient/:patientId`}
+              render={({ match }: any) => (
+                <EditPatientContainer patientId={match.params.patientId} />
+              )}
+              requiredPermissions={appPermissions.people.canEdit}
+              userPermissions={data.whoami.permissions}
             />
-            <Route
-              path="patient/:patientId"
-              element={
-                <ProtectedRoute
-                  requiredPermissions={canEditPeople}
-                  userPermissions={data.whoami.permissions}
-                  element={<EditPatientContainer />}
-                />
-              }
+            <ProtectedRoute
+              path={`/add-patient/`}
+              render={() => <AddPatient />}
+              requiredPermissions={appPermissions.people.canEdit}
+              userPermissions={data.whoami.permissions}
             />
-            <Route
-              path="add-patient"
-              element={
-                <ProtectedRoute
-                  requiredPermissions={canEditPeople}
-                  userPermissions={data.whoami.permissions}
-                  element={<AddPatient />}
-                />
-              }
+            <ProtectedRoute
+              path="/settings"
+              component={Settings}
+              requiredPermissions={appPermissions.settings.canView}
+              userPermissions={data.whoami.permissions}
+            />
+            <ProtectedRoute
+              path="/dashboard"
+              component={Analytics}
+              requiredPermissions={appPermissions.settings.canView}
+              userPermissions={data.whoami.permissions}
             />
             <Route
-              path="settings/*"
-              element={
-                <ProtectedRoute
-                  requiredPermissions={canViewSettings}
-                  userPermissions={data.whoami.permissions}
-                  element={<Settings />}
+              path={"/admin"}
+              render={({ match }) => (
+                <SupportAdminRoutes
+                  match={match}
+                  isAdmin={data.whoami.isAdmin}
                 />
-              }
+              )}
             />
-            <Route
-              path="dashboard"
-              element={
-                <ProtectedRoute
-                  requiredPermissions={canViewSettings}
-                  userPermissions={data.whoami.permissions}
-                  element={<Analytics />}
-                />
-              }
-            />
-            <Route
-              path="admin/*"
-              element={<SupportAdminRoutes isAdmin={isSupportAdmin} />}
-            />
-          </Routes>
+          </Switch>
         </Page>
       </WithFacility>
     </>

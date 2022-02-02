@@ -1,5 +1,5 @@
 import { useState } from "react";
-import { Navigate } from "react-router-dom";
+import { Redirect } from "react-router-dom";
 import { connect, useSelector } from "react-redux";
 
 import Button from "../../app/commonComponents/Button/Button";
@@ -15,9 +15,10 @@ const PatientProfileContainer = () => {
 
   if (editPage) {
     return (
-      <Navigate
+      <Redirect
+        push
         to={{
-          pathname: "/pxp/patient-info-edit",
+          pathname: "/patient-info-edit",
           search: `?plid=${plid}`,
         }}
       />
@@ -26,9 +27,9 @@ const PatientProfileContainer = () => {
 
   if (nextPage) {
     return (
-      <Navigate
+      <Redirect
         to={{
-          pathname: "/pxp/patient-info-symptoms",
+          pathname: "/patient-info-symptoms",
           search: `?plid=${plid}`,
         }}
       />

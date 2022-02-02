@@ -1,5 +1,4 @@
 import { Story, Meta } from "@storybook/react";
-import { MemoryRouter } from "react-router-dom";
 
 import { MfaSmsVerify } from "./MfaSmsVerify";
 
@@ -7,13 +6,14 @@ export default {
   title: "App/Account set up/Step 3b: Verify SMS security code",
   component: MfaSmsVerify,
   argTypes: {},
+  args: {
+    location: { state: { contact: "(530) 867-5309" } },
+  },
 } as Meta;
 
-const Template: Story = (args) => (
-  <MemoryRouter initialEntries={[{ state: { contact: "(530) 867-5309" } }]}>
-    <MfaSmsVerify {...args} />
-  </MemoryRouter>
-);
+type Props = React.ComponentProps<typeof MfaSmsVerify>;
+
+const Template: Story<Props> = (args) => <MfaSmsVerify {...args} />;
 
 export const Default = Template.bind({});
 Default.args = {};

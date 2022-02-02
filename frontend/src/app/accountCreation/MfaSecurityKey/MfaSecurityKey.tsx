@@ -1,5 +1,5 @@
 import { useEffect, useState } from "react";
-import { Navigate } from "react-router-dom";
+import { Redirect } from "react-router";
 
 import { Card } from "../../commonComponents/Card/Card";
 import { CardBackground } from "../../commonComponents/CardBackground/CardBackground";
@@ -75,7 +75,7 @@ export const MfaSecurityKey = () => {
   }
 
   if (activated) {
-    return <Navigate to="../success" />;
+    return <Redirect push to="/success" />;
   }
 
   return (

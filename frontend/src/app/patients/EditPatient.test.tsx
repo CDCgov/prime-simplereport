@@ -9,7 +9,7 @@ import userEvent from "@testing-library/user-event";
 import { MockedProvider } from "@apollo/client/testing";
 import { Provider } from "react-redux";
 import configureStore from "redux-mock-store";
-import { MemoryRouter } from "react-router-dom";
+import { MemoryRouter } from "react-router";
 import { ToastContainer } from "react-toastify";
 
 import EditPatient, { GET_PATIENT } from "./EditPatient";
@@ -424,9 +424,9 @@ describe("EditPatient", () => {
   describe("EditPatientContainer", () => {
     it("doesn't render if no facility is provided", async () => {
       render(
-        <MemoryRouter initialEntries={[{ search: "?patientId=5" }]}>
+        <MemoryRouter>
           <Provider store={configureStore()({ facilities: [] })}>
-            <EditPatientContainer />
+            <EditPatientContainer patientId="5" />
           </Provider>
         </MemoryRouter>
       );

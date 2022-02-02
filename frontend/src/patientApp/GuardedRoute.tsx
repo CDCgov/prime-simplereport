@@ -1,27 +1,25 @@
 import { useSelector } from "react-redux";
-import { Navigate } from "react-router-dom";
+import { Route, Redirect } from "react-router-dom";
 
-interface Props {
-  auth: boolean;
-  element: any;
-}
-
-const GuardedRoute = ({ auth, element }: Props) => {
+const GuardedRoute = ({ component: Component, auth, ...rest }: any) => {
   const plid = useSelector((state: any) => state.plid);
-
-  if (auth) {
-    return element;
-  } else {
-    return (
-      <Navigate
-        to={{
-          pathname: "../",
-          search: `?plid=${plid}`,
-        }}
-        replace
-      />
-    );
-  }
+  return (
+    <Route
+      {...rest}
+      render={(props) =>
+        auth === true ? (
+          <Component {...props} />
+        ) : (
+          <Redirect
+            to={{
+              pathname: "/",
+              search: `?plid=${plid}`,
+            }}
+          />
+        )
+      }
+    />
+  );
 };
 
 export default GuardedRoute;

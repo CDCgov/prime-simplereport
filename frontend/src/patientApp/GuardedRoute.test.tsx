@@ -1,7 +1,7 @@
 import { render, screen } from "@testing-library/react";
 import { Provider } from "react-redux";
 import configureStore from "redux-mock-store";
-import { MemoryRouter, Route, Routes } from "react-router-dom";
+import { MemoryRouter, Route } from "react-router";
 
 import GuardedRoute from "./GuardedRoute";
 import TermsOfService from "./timeOfTest/TermsOfService";
@@ -12,17 +12,18 @@ const store = mockStore({
   plid: "foo",
 });
 const mockContainer = (auth: boolean) => (
-  <Provider store={store}>
-    <MemoryRouter initialEntries={["/terms-of-service"]}>
-      <Routes>
-        <Route
-          element={<GuardedRoute auth={auth} element={<TermsOfService />} />}
-          path="/terms-of-service"
-        />
-        <Route path="/" element={<p>This is some very specific text</p>} />
-      </Routes>
-    </MemoryRouter>
-  </Provider>
+  <MemoryRouter initialEntries={["/terms-of-service"]}>
+    <Provider store={store}>
+      <GuardedRoute
+        auth={auth}
+        component={TermsOfService}
+        path="/terms-of-service"
+      />
+      <Route exact path="/">
+        <p>This is some very specific text</p>
+      </Route>
+    </Provider>
+  </MemoryRouter>
 );
 
 describe("GuardedRoute", () => {

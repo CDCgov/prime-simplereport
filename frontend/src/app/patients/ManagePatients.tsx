@@ -4,7 +4,7 @@ import moment from "moment";
 import classnames from "classnames";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faSlidersH } from "@fortawesome/free-solid-svg-icons";
-import { useNavigate } from "react-router-dom";
+import { useHistory } from "react-router";
 
 import { displayFullName } from "../utils";
 import { PATIENT_TERM, PATIENT_TERM_PLURAL_CAP } from "../../config/constants";
@@ -115,7 +115,7 @@ export const DetachedManagePatients = ({
   activeFacilityId,
 }: Props) => {
   const [archivePerson, setArchivePerson] = useState<Patient | null>(null);
-  const navigate = useNavigate();
+  const history = useHistory();
 
   const [queryString, debounced, setDebounced] = useDebounce<string | null>(
     null,
@@ -130,11 +130,11 @@ export const DetachedManagePatients = ({
     } else if (!queryString) {
       setNamePrefixMatch(null);
     }
-    navigate({
+    history.push({
       pathname: `/patients/1`,
       search: `?facility=${activeFacilityId}`,
     });
-  }, [queryString, setNamePrefixMatch, navigate, activeFacilityId]);
+  }, [queryString, setNamePrefixMatch, history, activeFacilityId]);
 
   if (archivePerson) {
     return (

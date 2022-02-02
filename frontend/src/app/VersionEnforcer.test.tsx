@@ -1,6 +1,6 @@
-import { render, screen } from "@testing-library/react";
-import userEvent from "@testing-library/user-event";
-import { Link, MemoryRouter, Outlet, Route, Routes } from "react-router-dom";
+import { render } from "@testing-library/react";
+import { MemoryRouter, Router } from "react-router-dom";
+import { createMemoryHistory } from "history";
 
 import VersionEnforcer from "./VersionEnforcer";
 import { VersionService } from "./VersionService";
@@ -17,9 +17,7 @@ describe("VersionEnforcer", () => {
     // WHEN
     render(
       <MemoryRouter>
-        <Routes>
-          <Route path="/" element={<VersionEnforcer />} />
-        </Routes>
+        <VersionEnforcer />
       </MemoryRouter>
     );
 
@@ -29,42 +27,20 @@ describe("VersionEnforcer", () => {
 
   it("calls VersionService.enforce() on route change", async () => {
     // GIVEN
+    const history = createMemoryHistory();
+    const route = "/some-route";
+    history.push(route);
     render(
-      <MemoryRouter>
-        <Routes>
-          <Route
-            path="/"
-            element={
-              <>
-                <VersionEnforcer />
-                <Outlet />
-              </>
-            }
-          >
-            <Route
-              path="/"
-              element={
-                <>
-                  <p>This is the first page</p>
-                  <Link to="some-new-route">Go to a new page</Link>
-                </>
-              }
-            />
-            <Route
-              path="some-new-route"
-              element={<div>Went to a new page!</div>}
-            />
-          </Route>
-        </Routes>
-      </MemoryRouter>
+      <Router history={history}>
+        <VersionEnforcer />
+      </Router>
     );
-    expect(screen.getByText("This is the first page")).toBeInTheDocument();
 
     // WHEN
-    userEvent.click(screen.getByText("Go to a new page"));
+    history.push("/some-new-route");
+    await new Promise((resolve) => setTimeout(resolve, 0));
 
     // THEN
-    expect(screen.getByText("Went to a new page!")).toBeInTheDocument();
     expect(VersionService.enforce).toHaveBeenCalledTimes(2);
   });
 });
