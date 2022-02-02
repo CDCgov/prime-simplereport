@@ -54,11 +54,6 @@
       "name": "simple-report.azure-reporting-queue",
       "type": "gov.cdc.usds.simplereport.properties.AzureStorageQueueReportingProperties",
       "description": "Properties for Azure Storage Queue for Test Event reporting to ReportStream."
-    },
-    {
-      "name": "logging.pattern.json-log",
-      "type": "java.lang.String",
-      "description": "the patterns used for json message"
     }
   ]
 }
