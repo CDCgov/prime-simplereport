@@ -47,8 +47,12 @@ describe("Adding a patient", () => {
       '.modal__container input[name="addressSelect-person"][value="userAddress"]+label'
     ).click();
     cy.get(".modal__container #save-confirmed-address").click();
+
+    cy.get(".usa-card__header").contains("People");
+    cy.get(".usa-card__header").contains("Showing");
   });
   it("shows the patient in the list", () => {
+    cy.reload();
     cy.get("#search-field-small").type(patient.lastName);
     cy.get(".prime-container").contains(patient.fullName);
   });
