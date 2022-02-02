@@ -1,12 +1,12 @@
 import React, { useEffect, useState } from "react";
-import { Navigate } from "react-router-dom";
+import { Redirect } from "react-router-dom";
 import { connect, useSelector } from "react-redux";
 
 import AoEForm from "../../app/testQueue/AoEForm/AoEForm";
 import { showError } from "../../app/utils";
+import { getPatientLinkIdFromUrl } from "../../app/utils/url";
 import PatientTimeOfTestContainer from "../PatientTimeOfTestContainer";
 import { PxpApi } from "../PxpApiService";
-import { getPatientLinkIdFromUrl } from "../../app/utils/url";
 
 const AoEPatientFormContainer: React.FC = () => {
   const [nextPage, setNextPage] = useState(false);
@@ -30,9 +30,9 @@ const AoEPatientFormContainer: React.FC = () => {
 
   if (nextPage) {
     return (
-      <Navigate
+      <Redirect
         to={{
-          pathname: "/pxp/success",
+          pathname: "/success",
           search: `?plid=${plid}`,
         }}
       />

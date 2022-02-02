@@ -1,7 +1,6 @@
 import { Story, Meta } from "@storybook/react";
 import { uniqueId } from "lodash";
 import { Provider } from "react-redux";
-import { MemoryRouter } from "react-router-dom";
 import createMockStore from "redux-mock-store";
 
 import QueueItem, { QueueItemProps } from "../../app/testQueue/QueueItem";
@@ -40,11 +39,9 @@ const store = mockStore({
 
 const Template: Story<QueueItemProps> = (args) => {
   return (
-    <MemoryRouter>
-      <Provider store={store}>
-        <QueueItem {...args} />;
-      </Provider>
-    </MemoryRouter>
+    <Provider store={store}>
+      <QueueItem {...args} />;
+    </Provider>
   );
 };
 

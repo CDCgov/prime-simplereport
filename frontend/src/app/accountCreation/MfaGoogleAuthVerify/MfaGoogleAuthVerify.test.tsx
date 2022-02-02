@@ -4,7 +4,7 @@ import {
   waitForElementToBeRemoved,
 } from "@testing-library/react";
 import userEvent from "@testing-library/user-event";
-import { MemoryRouter, Route, Routes } from "react-router-dom";
+import { MemoryRouter, Route, Switch } from "react-router";
 
 import { MfaComplete } from "../MfaComplete/MfaComplete";
 
@@ -39,13 +39,13 @@ describe("Verify Google Auth MFA", () => {
           },
         ]}
       >
-        <Routes>
+        <Switch>
           <Route
             path="/mfa-google-auth/verify"
-            element={<MfaGoogleAuthVerify />}
+            component={MfaGoogleAuthVerify}
           />
-          <Route path="/success" element={<MfaComplete />} />
-        </Routes>
+          <Route path="/success" component={MfaComplete} />
+        </Switch>
       </MemoryRouter>
     );
   });

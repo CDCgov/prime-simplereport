@@ -1,5 +1,5 @@
 import { ReactElement, useState } from "react";
-import { Navigate } from "react-router-dom";
+import { Redirect } from "react-router";
 
 import { Card } from "../../commonComponents/Card/Card";
 import { CardBackground } from "../../commonComponents/CardBackground/CardBackground";
@@ -109,16 +109,16 @@ const OrganizationForm = () => {
 
   if (orgExternalId) {
     return (
-      <Navigate
-        to="/sign-up/identity-verification"
-        state={
-          {
+      <Redirect
+        to={{
+          pathname: "/sign-up/identity-verification",
+          state: {
             orgExternalId: orgExternalId,
             firstName: organization.firstName,
             middleName: organization.middleName,
             lastName: organization.lastName,
-          } as PersonalDetailsFormProps
-        }
+          } as PersonalDetailsFormProps,
+        }}
       />
     );
   }

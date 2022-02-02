@@ -1,23 +1,20 @@
-import { useParams } from "react-router-dom";
+import React from "react";
 
 import { useSelectedFacility } from "../facilitySelect/useSelectedFacility";
 
 import EditPatient from "./EditPatient";
 
-const EditPatientContainer = () => {
+interface Props {
+  patientId: string;
+}
+
+const EditPatientContainer: React.FC<Props> = ({ patientId }) => {
   const [facility] = useSelectedFacility();
   const activeFacilityId = facility?.id;
-  const params = useParams();
-  const patientId = params.patientId || "";
 
   if (!activeFacilityId) {
     return <div>"No facility selected"</div>;
   }
-
-  if (!patientId) {
-    return <div>No patient selected</div>;
-  }
-
   return <EditPatient facilityId={activeFacilityId} patientId={patientId} />;
 };
 

@@ -1,6 +1,6 @@
 import { useEffect, useState, useRef } from "react";
 import { connect, useDispatch, useSelector } from "react-redux";
-import { Navigate } from "react-router-dom";
+import { Redirect } from "react-router-dom";
 import moment from "moment";
 import { useTranslation } from "react-i18next";
 import { validate as isValidUUID } from "uuid";
@@ -97,18 +97,18 @@ const DOB = () => {
   }
   if (patient?.orderStatus === "COMPLETED") {
     return (
-      <Navigate
+      <Redirect
         to={{
-          pathname: "/pxp/test-result",
+          pathname: "/test-result",
           search: `?plid=${plid}`,
         }}
       />
     );
   } else if (patient?.firstName) {
     return (
-      <Navigate
+      <Redirect
         to={{
-          pathname: "/pxp/patient-info-confirm",
+          pathname: "/patient-info-confirm",
           search: `?plid=${plid}`,
         }}
       />

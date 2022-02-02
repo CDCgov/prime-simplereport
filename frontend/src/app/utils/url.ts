@@ -2,7 +2,7 @@ import { Location } from "history";
 
 export const getParameterFromUrl = (
   param: string,
-  location?: Location
+  location?: Location<unknown>
 ): string | null => {
   const queryParams = new URLSearchParams(
     location ? location.search : window.location.search
@@ -10,8 +10,9 @@ export const getParameterFromUrl = (
   return queryParams.has(param) ? queryParams.get(param) : null;
 };
 
-export const getFacilityIdFromUrl = (location?: Location): string | null =>
-  getParameterFromUrl("facility", location);
+export const getFacilityIdFromUrl = (
+  location?: Location<unknown>
+): string | null => getParameterFromUrl("facility", location);
 
 export const getPatientLinkIdFromUrl = (): string | null =>
   getParameterFromUrl("plid");

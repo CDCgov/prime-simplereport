@@ -1,6 +1,6 @@
 import qs from "querystring";
 
-import { useLocation, useNavigate, useParams } from "react-router-dom";
+import { useHistory } from "react-router-dom";
 import { gql, useLazyQuery, useQuery } from "@apollo/client";
 import React, {
   ChangeEventHandler,
@@ -629,6 +629,10 @@ export const testResultQuery = gql`
   }
 `;
 
+type TestResultsListProps = {
+  pageNumber: number;
+};
+
 export interface ResultsQueryVariables {
   patientId?: string | null;
   facilityId: string;
@@ -640,21 +644,19 @@ export interface ResultsQueryVariables {
   pageSize: number;
 }
 
-const TestResultsList = () => {
+const TestResultsList = (props: TestResultsListProps) => {
   useDocumentTitle("Results");
-  const urlParams = useParams();
 
   const [facility] = useSelectedFacility();
   const activeFacilityId = facility?.id || "";
 
-  const navigate = useNavigate();
-  const location = useLocation();
+  const history = useHistory();
 
-  const patientId = getParameterFromUrl("patientId", location);
-  const startDate = getParameterFromUrl("startDate", location);
-  const endDate = getParameterFromUrl("endDate", location);
-  const role = getParameterFromUrl("role", location);
-  const result = getParameterFromUrl("result", location);
+  const patientId = getParameterFromUrl("patientId", history.location);
+  const startDate = getParameterFromUrl("startDate", history.location);
+  const endDate = getParameterFromUrl("endDate", history.location);
+  const role = getParameterFromUrl("role", history.location);
+  const result = getParameterFromUrl("result", history.location);
 
   const filterParams: FilterParams = {
     ...(patientId && { patientId: patientId }),
@@ -665,7 +667,7 @@ const TestResultsList = () => {
   };
 
   const filter = (params: FilterParams) => {
-    navigate({
+    history.push({
       pathname: "/results/1",
       search: qs.stringify({
         facility: activeFacilityId,
@@ -679,16 +681,16 @@ const TestResultsList = () => {
     filter({ [key]: val });
   };
 
-  const refetch = () => navigate(0);
+  const refetch = () => history.go(0);
 
   const clearFilterParams = () =>
-    navigate({
+    history.push({
       pathname: "/results/1",
       search: qs.stringify({ facility: activeFacilityId }),
     });
 
   const entriesPerPage = 20;
-  const pageNumber = Number(urlParams.pageNumber) || 1;
+  const pageNumber = props.pageNumber || 1;
 
   const resultsQueryVariables: ResultsQueryVariables = {
     facilityId: activeFacilityId,

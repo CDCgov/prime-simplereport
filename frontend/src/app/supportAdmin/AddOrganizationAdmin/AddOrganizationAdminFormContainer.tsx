@@ -1,5 +1,5 @@
 import { useState } from "react";
-import { Navigate } from "react-router-dom";
+import { Redirect } from "react-router-dom";
 
 import Alert from "../../commonComponents/Alert";
 import { showNotification } from "../../utils";
@@ -59,7 +59,7 @@ const AddOrganizationAdminFormContainer = () => {
   };
 
   if (submitted) {
-    return <Navigate to="/admin" />;
+    return <Redirect to="/admin" />;
   }
 
   return (

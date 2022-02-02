@@ -4,7 +4,7 @@ import {
   waitForElementToBeRemoved,
 } from "@testing-library/react";
 import userEvent from "@testing-library/user-event";
-import { MemoryRouter, Route, Routes } from "react-router-dom";
+import { MemoryRouter, Route, Switch } from "react-router";
 
 import { MfaPhoneVerify } from "../MfaPhoneVerify/MfaPhoneVerify";
 
@@ -30,10 +30,10 @@ describe("Phone call MFA", () => {
           },
         ]}
       >
-        <Routes>
-          <Route path="/mfa-phone" element={<MfaPhone />} />
-          <Route path="/mfa-phone/verify" element={<MfaPhoneVerify />} />
-        </Routes>
+        <Switch>
+          <Route path="/mfa-phone" component={MfaPhone} />
+          <Route path="/mfa-phone/verify" component={MfaPhoneVerify} />
+        </Switch>
       </MemoryRouter>
     );
   });

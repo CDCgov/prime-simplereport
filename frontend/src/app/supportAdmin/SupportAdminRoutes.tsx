@@ -1,5 +1,5 @@
 import React from "react";
-import { Navigate, Route, Routes } from "react-router-dom";
+import { Redirect, Route } from "react-router-dom";
 
 import AddOrganizationAdminFormContainer from "./AddOrganizationAdmin/AddOrganizationAdminFormContainer";
 import DeviceTypeFormContainer from "./DeviceType/DeviceTypeFormContainer";
@@ -9,34 +9,45 @@ import PendingOrganizationsContainer from "./PendingOrganizations/PendingOrganiz
 import ManageDeviceTypeFormContainer from "./DeviceType/ManageDeviceTypeFormContainer";
 
 interface Props {
+  match: { url: string };
   isAdmin: boolean;
 }
 
-const SupportAdminRoutes: React.FC<Props> = ({ isAdmin }) => {
+const SupportAdminRoutes: React.FC<Props> = ({ match, isAdmin }) => {
   if (!isAdmin) {
-    return <Navigate to="/queue" />;
+    return (
+      <Route
+        path={match.url}
+        render={({ location }) => (
+          <Redirect to={{ ...location, pathname: "/queue" }} />
+        )}
+      />
+    );
   }
   return (
-    <Routes>
+    <>
       <Route
-        path="pending-organizations"
-        element={<PendingOrganizationsContainer />}
+        path={`${match.url}/pending-organizations`}
+        component={PendingOrganizationsContainer}
       />
       <Route
-        path="add-organization-admin"
-        element={<AddOrganizationAdminFormContainer />}
-      />
-      <Route path="create-device-type" element={<DeviceTypeFormContainer />} />
-      <Route
-        path="manage-devices"
-        element={<ManageDeviceTypeFormContainer />}
+        path={`${match.url}/add-organization-admin`}
+        component={AddOrganizationAdminFormContainer}
       />
       <Route
-        path="tenant-data-access"
-        element={<TenantDataAccessFormContainer />}
+        path={`${match.url}/create-device-type`}
+        component={DeviceTypeFormContainer}
       />
-      <Route path="/" element={<SupportAdmin />} />
-    </Routes>
+      <Route
+        path={`${match.url}/manage-devices`}
+        component={ManageDeviceTypeFormContainer}
+      />
+      <Route
+        path={`${match.url}/tenant-data-access`}
+        component={TenantDataAccessFormContainer}
+      />
+      <Route path={"/admin"} exact={true} component={SupportAdmin} />
+    </>
   );
 };
 

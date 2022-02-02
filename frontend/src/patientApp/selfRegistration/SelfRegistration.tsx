@@ -1,5 +1,5 @@
 import { useState } from "react";
-import { useParams } from "react-router-dom";
+import { useParams } from "react-router";
 import { ToastContainer } from "react-toastify";
 import moment from "moment";
 import "react-toastify/dist/ReactToastify.css";
@@ -23,9 +23,7 @@ enum RegistrationStep {
 }
 
 export const SelfRegistration = () => {
-  const { registrationLink } = useParams<{
-    registrationLink: string | undefined;
-  }>();
+  const { registrationLink } = useParams<{ registrationLink: string }>();
   const [step, setStep] = useState(RegistrationStep.TERMS);
   const [entityName, setEntityName] = useState("");
   const [personName, setPersonName] = useState("");

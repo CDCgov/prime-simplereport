@@ -1,5 +1,6 @@
 import React, { useState } from "react";
 import classnames from "classnames";
+import { Prompt } from "react-router";
 
 import { Role } from "../../permissions";
 import { displayFullName } from "../../utils";
@@ -7,7 +8,6 @@ import Button from "../../commonComponents/Button/Button";
 import { capitalizeText, formatUserStatus } from "../../utils/text";
 import { ReactComponent as DeactivatedIcon } from "../../../img/account-deactivated.svg";
 import { ReactComponent as PendingIcon } from "../../../img/account-pending.svg";
-import Prompt from "../../utils/Prompt";
 
 import { SettingsUser, UserFacilitySetting } from "./ManageUsersContainer";
 import { UpdateUser } from "./ManageUsers";

@@ -6,7 +6,7 @@ import {
 import userEvent from "@testing-library/user-event";
 import { MockedProvider } from "@apollo/client/testing";
 import { Provider } from "react-redux";
-import { MemoryRouter } from "react-router-dom";
+import { MemoryRouter } from "react-router";
 import configureStore from "redux-mock-store";
 
 import { getAppInsights } from "../../TelemetryService";
@@ -166,13 +166,10 @@ jest.mock("./FacilityForm", () => {
     );
   };
 });
-jest.mock("react-router-dom", () => {
-  const original = jest.requireActual("react-router-dom");
-  return {
-    ...original,
-    Navigate: () => <p>Redirected</p>,
-  };
-});
+jest.mock("react-router-dom", () => ({
+  Redirect: () => <p>Redirected</p>,
+}));
+
 jest.mock("../../TelemetryService", () => ({
   getAppInsights: jest.fn(),
 }));

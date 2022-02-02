@@ -1,5 +1,6 @@
 import { useState } from "react";
-import { useLocation, Navigate } from "react-router-dom";
+import { useLocation } from "react-router";
+import { Redirect } from "react-router-dom";
 
 import { Card } from "../../commonComponents/Card/Card";
 import { CardBackground } from "../../commonComponents/CardBackground/CardBackground";
@@ -12,11 +13,11 @@ import PersonalDetailsForm, {
 const Consent = () => {
   // Get person name & org id from route state
   const { orgExternalId, firstName, middleName, lastName } =
-    (useLocation().state as PersonalDetailsFormProps) || {};
+    useLocation<PersonalDetailsFormProps>().state || {};
   const [submitted, setSubmitted] = useState(false);
 
   if (!orgExternalId || !firstName || !lastName) {
-    return <Navigate to="/sign-up" />;
+    return <Redirect to={{ pathname: "/sign-up" }} />;
   }
 
   if (submitted) {

@@ -5,7 +5,7 @@ import {
   waitForElementToBeRemoved,
 } from "@testing-library/react";
 import { Provider } from "react-redux";
-import { MemoryRouter, Route, Routes } from "react-router-dom";
+import { MemoryRouter, Route } from "react-router";
 import createMockStore from "redux-mock-store";
 import faker from "faker";
 import "../../i18n";
@@ -54,12 +54,11 @@ describe("SelfRegistration", () => {
     render(
       <Provider store={store}>
         <MemoryRouter initialEntries={["/register/some-bad-link"]}>
-          <Routes>
-            <Route
-              path="/register/:registrationLink"
-              element={<SelfRegistration />}
-            />
-          </Routes>
+          <Route
+            exact
+            path="/register/:registrationLink"
+            component={SelfRegistration}
+          />
         </MemoryRouter>
       </Provider>
     );
@@ -73,12 +72,11 @@ describe("SelfRegistration", () => {
     render(
       <Provider store={store}>
         <MemoryRouter initialEntries={[`/register/${VALID_LINK}`]}>
-          <Routes>
-            <Route
-              path="/register/:registrationLink"
-              element={<SelfRegistration />}
-            />
-          </Routes>
+          <Route
+            exact
+            path="/register/:registrationLink"
+            component={SelfRegistration}
+          />
         </MemoryRouter>
       </Provider>
     );
@@ -109,12 +107,11 @@ describe("SelfRegistration", () => {
     render(
       <Provider store={store}>
         <MemoryRouter initialEntries={[`/register/${VALID_LINK}`]}>
-          <Routes>
-            <Route
-              path="/register/:registrationLink"
-              element={<SelfRegistration />}
-            />
-          </Routes>
+          <Route
+            exact
+            path="/register/:registrationLink"
+            component={SelfRegistration}
+          />
         </MemoryRouter>
       </Provider>
     );

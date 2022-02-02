@@ -1,5 +1,5 @@
 import { render, screen } from "@testing-library/react";
-import { MemoryRouter } from "react-router-dom";
+import { MemoryRouter } from "react-router";
 
 import SignUpApp from "./SignUpApp";
 
@@ -7,7 +7,11 @@ describe("SignUpApp", () => {
   beforeEach(() => {
     render(
       <MemoryRouter>
-        <SignUpApp />
+        <SignUpApp
+          match={{ path: "" } as any}
+          location={{} as any}
+          history={{} as any}
+        />
       </MemoryRouter>
     );
   });

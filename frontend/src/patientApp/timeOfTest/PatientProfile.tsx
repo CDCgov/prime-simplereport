@@ -1,5 +1,5 @@
 import moment from "moment";
-import { Navigate } from "react-router-dom";
+import { Redirect } from "react-router-dom";
 import { useSelector } from "react-redux";
 
 import { formatFullName } from "../../app/utils/user";
@@ -19,9 +19,9 @@ const PatientProfile = ({ patient }: Props) => {
   const plid = useSelector((state: any) => state.plid);
   if (!patient) {
     return (
-      <Navigate
+      <Redirect
         to={{
-          pathname: "/pxp",
+          pathname: "/",
           search: `?plid=${plid}`,
         }}
       />

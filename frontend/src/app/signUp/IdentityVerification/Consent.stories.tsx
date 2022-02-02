@@ -1,5 +1,5 @@
 import { Story, Meta } from "@storybook/react";
-import { MemoryRouter } from "react-router-dom";
+import { MemoryRouter } from "react-router";
 
 import Consent from "./Consent";
 
