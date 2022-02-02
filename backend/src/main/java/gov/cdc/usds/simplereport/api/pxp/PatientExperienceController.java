@@ -106,8 +106,12 @@ public class PatientExperienceController {
   @GetMapping("/patient-name")
   public String getObfuscatedPatientNameFromLink(
       @RequestParam("patientLink") String patientLink, HttpServletRequest request) {
-    UUID link = UUID.fromString(patientLink);
-    return _pls.getObfuscatedPatientNameFromLink(link);
+    try {
+      UUID link = UUID.fromString(patientLink);
+      return _pls.getObfuscatedPatientNameFromLink(link);
+    } catch (IllegalArgumentException e) {
+      throw e;
+    }
   }
 
   @PostMapping("/patient")
