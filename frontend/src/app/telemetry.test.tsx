@@ -1,9 +1,5 @@
 import { SeverityLevel } from "@microsoft/applicationinsights-web";
-import { render } from "@testing-library/react";
-import { MemoryRouter, useHistory } from "react-router-dom";
-import { useEffect } from "react";
 
-import TelemetryProvider from "./telemetry-provider";
 import { ai, getAppInsights, withInsights } from "./TelemetryService";
 
 jest.mock("@microsoft/applicationinsights-web", () => {
@@ -87,28 +83,6 @@ describe("telemetry", () => {
       properties: {
         additionalInformation: undefined,
       },
-    });
-  });
-
-  describe("Provider", () => {
-    it("provides history object to appInsights", async () => {
-      let history: ReturnType<typeof useHistory> | undefined = undefined;
-      const GetHistory = () => {
-        const h = useHistory();
-        useEffect(() => {
-          history = h;
-        }, [h]);
-        return <></>;
-      };
-
-      render(
-        <MemoryRouter>
-          <TelemetryProvider>
-            <GetHistory />
-          </TelemetryProvider>
-        </MemoryRouter>
-      );
-      expect(ai.initialize).toBeCalledWith(history);
     });
   });
 });

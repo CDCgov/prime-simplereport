@@ -5,13 +5,13 @@ import configureStore from "redux-mock-store";
 
 import AoEPatientFormContainer from "./AoEPatientFormContainer";
 
-jest.mock("react-router-dom", () => ({
-  useHistory: () => ({
-    listen: jest.fn(),
-    push: jest.fn(),
-  }),
-}));
-
+jest.mock("react-router-dom", () => {
+  const original = jest.requireActual("react-router-dom");
+  return {
+    ...original,
+    useNavigate: jest.fn(),
+  };
+});
 window.scrollTo = jest.fn();
 
 describe("AoEPatientFormContainer", () => {
