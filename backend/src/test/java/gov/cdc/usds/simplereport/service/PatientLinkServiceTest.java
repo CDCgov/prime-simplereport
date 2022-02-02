@@ -167,8 +167,10 @@ class PatientLinkServiceTest extends BaseServiceTest<PatientLinkService> {
   void getObfuscatedPatientName_thowsOnExpiredLink() throws Exception {
     _dataFactory.expirePatientLink(_patientLink);
 
+    UUID internalId = _patientLink.getInternalId();
+
     assertThrows(
         ExpiredPatientLinkException.class,
-        () -> _service.getObfuscatedPatientNameFromLink(_patientLink.getInternalId()));
+        () -> _service.getObfuscatedPatientNameFromLink(internalId));
   }
 }
