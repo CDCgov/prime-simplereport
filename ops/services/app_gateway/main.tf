@@ -1,14 +1,15 @@
 locals {
-  static_backend_pool          = "${var.name}-${var.env}-fe-static"
-  static_backend_http_setting  = "${var.name}-${var.env}-fe-static-http"
-  static_backend_https_setting = "${var.name}-${var.env}-fe-static-https"
-  api_backend_pool             = "${var.name}-${var.env}-be-api"
-  api_backend_http_setting     = "${var.name}-${var.env}-be-api-http"
-  api_backend_https_setting    = "${var.name}-${var.env}-be-api-https"
-  http_listener                = "${var.name}-http"
-  https_listener               = "${var.name}-https"
-  frontend_config              = "${var.name}-config"
-  redirect_rule                = "${var.name}-redirect"
+  static_backend_pool             = "${var.name}-${var.env}-fe-static"
+  static_backend_http_setting     = "${var.name}-${var.env}-fe-static-http"
+  static_backend_https_setting    = "${var.name}-${var.env}-fe-static-https"
+  api_backend_pool                = "${var.name}-${var.env}-be-api"
+  api_backend_http_setting        = "${var.name}-${var.env}-be-api-http"
+  api_backend_https_setting       = "${var.name}-${var.env}-be-api-https"
+  http_listener                   = "${var.name}-http"
+  https_listener                  = "${var.name}-https"
+  frontend_config                 = "${var.name}-config"
+  redirect_rule                   = "${var.name}-redirect"
+  redirect_self_registration_rule = "${var.name}-redirect-self-registration"
 }
 
 resource "azurerm_public_ip" "static_gateway" {
