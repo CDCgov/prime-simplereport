@@ -110,14 +110,15 @@ public class PatientLinkService {
   public String getObfuscatedPatientNameFromLink(UUID internalId)
       throws ExpiredPatientLinkException {
     PatientLink link = getPatientLink(internalId);
-    TestOrder to = link.getTestOrder();
-    Person p = to.getPatient();
-
-    contextHolder.setContext(link, to, p);
 
     if (link.isExpired()) {
       throw new ExpiredPatientLinkException();
     }
+
+    TestOrder to = link.getTestOrder();
+    Person p = to.getPatient();
+
+    contextHolder.setContext(link, to, p);
 
     return p.getFirstName() + " " + p.getLastName().charAt(0) + ".";
   }
