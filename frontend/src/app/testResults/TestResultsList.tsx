@@ -101,13 +101,14 @@ function testResultRows(
       });
     }
     actionItems.push({
-      name: "View details",
-      action: () => setDetailsModalId(r.internalId),
-    });
-    actionItems.push({
       name: "Text result",
       action: () => setTextModalId(r.internalId),
     });
+    actionItems.push({
+      name: "View details",
+      action: () => setDetailsModalId(r.internalId),
+    });
+
     const removed = r.correctionStatus === "REMOVED";
     if (!removed) {
       actionItems.push({
