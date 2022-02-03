@@ -4,7 +4,11 @@ import { SchemaOf } from "yup";
 import { useTranslation } from "react-i18next";
 import { ComboBox } from "@trussworks/react-uswds";
 
-import { countryOptions, stateCodes } from "../../../config/constants";
+import {
+  canadianProvinceCodes,
+  countryOptions,
+  stateCodes,
+} from "../../../config/constants";
 import getLanguages from "../../utils/languages";
 import i18n from "../../../i18n";
 import {
@@ -188,6 +192,7 @@ const PersonForm = (props: Props) => {
     // If a patient has an international address, use special values for state and zip code
     if (field === "country") {
       setFormChanged(true);
+
       if (value !== "USA") {
         setPatient({
           ...patient,
@@ -514,6 +519,38 @@ const PersonForm = (props: Props) => {
               </div>
             </div>
           ) : null}
+          {patient.country === "CAN" ? (
+            <div className="grid-row grid-gap">
+              <div className="mobile-lg:grid-col-6">
+                <Select
+                  label={t("patient.form.contact.state")}
+                  name="state"
+                  value={patient.state || ""}
+                  options={canadianProvinceCodes.map((c) => ({
+                    label: c,
+                    value: c,
+                  }))}
+                  defaultOption={t("common.defaultDropdownOption")}
+                  defaultSelect
+                  onChange={onPersonChange("state")}
+                  onBlur={() => {
+                    onBlurField("state");
+                  }}
+                  validationStatus={validationStatus("state")}
+                  errorMessage={errors.state}
+                  required
+                />
+              </div>
+              <div className="mobile-lg:grid-col-6">
+                <Input
+                  {...commonInputProps}
+                  field="zipCode"
+                  label={t("patient.form.contact.zip")}
+                  required
+                />
+              </div>
+            </div>
+          ) : null}
         </div>
       </FormGroup>
       <FormGroup title={t("patient.form.demographics.heading")}>
@@ -526,6 +563,8 @@ const PersonForm = (props: Props) => {
           buttons={RACE_VALUES}
           selectedRadio={patient.race}
           onChange={onPersonChange("race")}
+          required={true}
+          validationStatus={validationStatus("race")}
         />
         <div className="usa-form-group">
           <label className="usa-legend" htmlFor="tribal-affiliation">
@@ -547,6 +586,8 @@ const PersonForm = (props: Props) => {
           buttons={ETHNICITY_VALUES}
           selectedRadio={patient.ethnicity}
           onChange={onPersonChange("ethnicity")}
+          required={true}
+          validationStatus={validationStatus("ethnicity")}
         />
         <RadioGroup
           legend={t("patient.form.demographics.gender")}

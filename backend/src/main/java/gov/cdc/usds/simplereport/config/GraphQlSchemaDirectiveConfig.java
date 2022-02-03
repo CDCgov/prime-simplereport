@@ -12,7 +12,7 @@ import org.springframework.context.annotation.Configuration;
 @Configuration
 public class GraphQlSchemaDirectiveConfig {
   public static final String REQUIRED_PERMISSIONS_DIRECTIVE_NAME = "requiredPermissions";
-  public static final int MAXIMUM_SIZE = 256;
+  public static final int MAXIMUM_SIZE = 4096;
 
   @Bean
   public SchemaDirective getRequiredPermissionsWiring() {

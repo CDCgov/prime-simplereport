@@ -23,11 +23,7 @@ const faker = require("faker");
 const dayjs = require("dayjs");
 
 const getDobFormat = () => {
-  /* NOTE: DOB format is currently browser specific
-       - Firefox does not support <input type='date' /> and takes the format accepted by the app
-       - Chrome does support the date type and expects MM/DD/YYYY
-  */
-  return Cypress.browser.name === "chrome" ? "MM/DD/YYYY" : "YYYY-MM-DD";
+  return "YYYY-MM-DD";
 };
 
 // Generate a random patient
@@ -61,7 +57,7 @@ export const loginHooks = () => {
     cy.clearCookies();
     cy.clearLocalStorageSnapshot();
     // Login to Okta to get an access token
-    cy.login();
+    !Cypress.env("SKIP_OKTA") && cy.login();
   });
   beforeEach(() => {
     // Cypress clears cookies by default, but for these tests
