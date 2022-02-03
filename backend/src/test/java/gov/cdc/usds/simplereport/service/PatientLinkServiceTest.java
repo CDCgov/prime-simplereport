@@ -155,22 +155,4 @@ class PatientLinkServiceTest extends BaseServiceTest<PatientLinkService> {
     links.add(mostRecent);
     assertEquals(mostRecent, PatientLinkDataLoader.getMostRecentPatientLink(links));
   }
-
-  @Test
-  void getObfuscatedPatientName_returnsName() throws Exception {
-    String result = _service.getObfuscatedPatientNameFromLink(_patientLink.getInternalId());
-
-    assertEquals("Fred A.", result);
-  }
-
-  @Test
-  void getObfuscatedPatientName_thowsOnExpiredLink() throws Exception {
-    _dataFactory.expirePatientLink(_patientLink);
-
-    UUID internalId = _patientLink.getInternalId();
-
-    assertThrows(
-        ExpiredPatientLinkException.class,
-        () -> _service.getObfuscatedPatientNameFromLink(internalId));
-  }
 }

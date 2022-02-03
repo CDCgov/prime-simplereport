@@ -8,11 +8,13 @@ import static gov.cdc.usds.simplereport.api.Translators.parseRace;
 import static gov.cdc.usds.simplereport.api.Translators.parseString;
 
 import gov.cdc.usds.simplereport.api.model.PersonUpdate;
+import gov.cdc.usds.simplereport.api.model.errors.ExpiredPatientLinkException;
 import gov.cdc.usds.simplereport.api.model.pxp.PxpRequestWrapper;
 import gov.cdc.usds.simplereport.api.model.pxp.PxpVerifyResponse;
 import gov.cdc.usds.simplereport.db.model.PatientLink;
 import gov.cdc.usds.simplereport.db.model.Person;
 import gov.cdc.usds.simplereport.db.model.TestEvent;
+import gov.cdc.usds.simplereport.db.model.TestOrder;
 import gov.cdc.usds.simplereport.db.model.auxiliary.OrderStatus;
 import gov.cdc.usds.simplereport.db.model.auxiliary.StreetAddress;
 import gov.cdc.usds.simplereport.service.PatientLinkService;
@@ -105,8 +107,20 @@ public class PatientExperienceController {
    */
   @GetMapping("/patient-name")
   public String getObfuscatedPatientNameFromLink(
-      @RequestParam("patientLink") UUID patientLink, HttpServletRequest request) {
-    return _pls.getObfuscatedPatientNameFromLink(patientLink);
+      @RequestParam("patientLink") UUID patientLink, HttpServletRequest request)
+      throws ExpiredPatientLinkException {
+    var link = _pls.getPatientLink(patientLink);
+
+    if (link.isExpired()) {
+      throw new ExpiredPatientLinkException();
+    }
+
+    TestOrder to = link.getTestOrder();
+    Person p = to.getPatient();
+
+    _contextHolder.setContext(link, to, p);
+
+    return p.getFirstName() + " " + p.getLastName().charAt(0) + ".";
   }
 
   @PostMapping("/patient")
