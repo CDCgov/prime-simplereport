@@ -1337,6 +1337,7 @@ export type AddPatientMutationVariables = Exact<{
   city?: Maybe<Scalars["String"]>;
   state: Scalars["String"];
   zipCode: Scalars["String"];
+  country: Scalars["String"];
   telephone?: Maybe<Scalars["String"]>;
   phoneNumbers?: Maybe<Array<PhoneNumberInput> | PhoneNumberInput>;
   role?: Maybe<Scalars["String"]>;
@@ -3652,6 +3653,7 @@ export const AddPatientDocument = gql`
     $city: String
     $state: String!
     $zipCode: String!
+    $country: String!
     $telephone: String
     $phoneNumbers: [PhoneNumberInput!]
     $role: String
@@ -3678,6 +3680,7 @@ export const AddPatientDocument = gql`
       city: $city
       state: $state
       zipCode: $zipCode
+      country: $country
       telephone: $telephone
       phoneNumbers: $phoneNumbers
       role: $role
@@ -3728,6 +3731,7 @@ export type AddPatientMutationFn = Apollo.MutationFunction<
  *      city: // value for 'city'
  *      state: // value for 'state'
  *      zipCode: // value for 'zipCode'
+ *      country: // value for 'country'
  *      telephone: // value for 'telephone'
  *      phoneNumbers: // value for 'phoneNumbers'
  *      role: // value for 'role'

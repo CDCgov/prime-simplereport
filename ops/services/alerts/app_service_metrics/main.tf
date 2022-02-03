@@ -98,7 +98,7 @@ resource "azurerm_monitor_smart_detector_alert_rule" "failure_anomalies" {
 
 resource "azurerm_monitor_scheduled_query_rules_alert" "http_2xx_failed_requests" {
   name                = "${var.env}-api-2xx-failed-requests"
-  description         = "${local.env_title} HTTP Server 2xx Errors (where successful request == false) >= 10"
+  description         = "${local.env_title} HTTP Server 2xx Errors (where successful request == false) >= 25"
   location            = data.azurerm_resource_group.app.location
   resource_group_name = var.rg_name
   severity            = var.severity
@@ -126,7 +126,7 @@ ${local.skip_on_weekends}
 
 resource "azurerm_monitor_scheduled_query_rules_alert" "http_4xx_errors" {
   name                = "${var.env}-api-4xx-errors"
-  description         = "${local.env_title} HTTP Server 4xx Errors (excluding 401s and 410s) >= 10"
+  description         = "${local.env_title} HTTP Server 4xx Errors (excluding 401s and 410s) >= 25"
   location            = data.azurerm_resource_group.app.location
   resource_group_name = var.rg_name
   severity            = var.severity
@@ -154,7 +154,7 @@ ${local.skip_on_weekends}
 
   trigger {
     operator  = "GreaterThan"
-    threshold = 9
+    threshold = 24
   }
 
   action {
