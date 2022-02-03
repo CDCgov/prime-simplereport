@@ -44,7 +44,7 @@ interface Props {
   organizationOptions: OrganizationOption[];
 }
 
-const OrganizationDropDown: React.FC<Props> = ({
+const OrganizationComboDropDown: React.FC<Props> = ({
   selectedExternalId,
   updateSelectedExternalId,
   organizationOptions,
@@ -72,8 +72,8 @@ const OrganizationDropDown: React.FC<Props> = ({
       <div className="usa-card__body usa-form usa-form--large">
         <ComboBox
           options={dropdownOptions}
-          id="tenant-access-select"
-          name="tenantAccess"
+          id="org-dropdown-select"
+          name="orgSelect"
           defaultValue={selectedExternalId}
           onChange={(value) => {
             onOrganizationChange(value);
@@ -84,4 +84,4 @@ const OrganizationDropDown: React.FC<Props> = ({
   );
 };
 
-export default OrganizationDropDown;
+export default OrganizationComboDropDown;

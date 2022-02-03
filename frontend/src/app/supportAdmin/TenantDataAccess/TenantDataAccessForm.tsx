@@ -4,7 +4,7 @@ import { useSelector } from "react-redux";
 import Button from "../../commonComponents/Button/Button";
 import RequiredMessage from "../../commonComponents/RequiredMessage";
 import TextInput from "../../commonComponents/TextInput";
-import OrganizationDropDown, {
+import OrganizationComboDropDown, {
   useOrganizationDropDownValidation,
   OrganizationOption,
 } from "../Components/OrganizationComboDropdown";
@@ -64,7 +64,6 @@ const TenantDataAccessForm: React.FC<Props> = (props) => {
     selectedOrgExternalId
   );
 
-  // TODO: dry this up
   useEffect(() => {
     if (!justification || justification.length === 0) {
       updateFormIsValid(false);
@@ -103,7 +102,7 @@ const TenantDataAccessForm: React.FC<Props> = (props) => {
               </div>
             </div>
           </div>
-          <OrganizationDropDown
+          <OrganizationComboDropDown
             selectedExternalId={selectedOrgExternalId}
             updateSelectedExternalId={updateOrganizationExternalIdDropDown}
             organizationOptions={sortedOrganizationOptions}

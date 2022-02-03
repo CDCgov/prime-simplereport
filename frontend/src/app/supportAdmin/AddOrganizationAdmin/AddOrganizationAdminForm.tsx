@@ -1,9 +1,8 @@
 import { useMemo, useState } from "react";
-import { useSelector } from "react-redux";
 
 import Button from "../../commonComponents/Button/Button";
 import RequiredMessage from "../../commonComponents/RequiredMessage";
-import OrganizationDropDown, {
+import OrganizationComboDropDown, {
   useOrganizationDropDownValidation,
   OrganizationOption,
 } from "../Components/OrganizationComboDropdown";
@@ -32,27 +31,17 @@ const AddOrganizationAdminForm = (props: Props) => {
     () => sortOrganizationOptions(props.organizationOptions),
     [props.organizationOptions]
   );
-  const organization = useSelector(
-    (state) => (state as any).organization as Organization
-  );
-  const curAccessedOrgName =
-    organization.name === undefined ? "" : organization.name;
-  let mappedIdFromCurAccessedName = undefined;
-  sortedOrganizationOptions.forEach((org) => {
-    if (org.name === curAccessedOrgName)
-      mappedIdFromCurAccessedName = org.externalId;
-  });
 
   const [organizationExternalId, updateOrganizationExternalId] = useState<
     string | undefined
-  >(mappedIdFromCurAccessedName);
+  >("");
   const [formIsValid, updateFormIsValid] = useState<boolean>(false);
 
   const updateOrganizationExternalIdDropDown = (
     externalId: string | undefined
   ) => {
+    updateOrganizationExternalId(externalId);
     if (externalId !== undefined) {
-      updateOrganizationExternalId(externalId);
       updateFormIsValid(true);
     } else {
       updateFormIsValid(false);
@@ -79,6 +68,7 @@ const AddOrganizationAdminForm = (props: Props) => {
       return;
     }
     if ((await validateAdmin()) === "error") {
+      updateFormIsValid(false);
       return;
     }
     props.saveOrganizationAdmin(organizationExternalId, admin);
@@ -91,7 +81,7 @@ const AddOrganizationAdminForm = (props: Props) => {
           <div className="prime-container card-container">
             <div className="usa-card__header">
               <div>
-                <h2 className="font-heading-lg">Add Organization Admin</h2>
+                <h2 className="font-heading-lg">Add organization admin</h2>
                 <RequiredMessage />
               </div>
               <div
@@ -110,7 +100,7 @@ const AddOrganizationAdminForm = (props: Props) => {
               </div>
             </div>
           </div>
-          <OrganizationDropDown
+          <OrganizationComboDropDown
             selectedExternalId={organizationExternalId}
             updateSelectedExternalId={updateOrganizationExternalIdDropDown}
             organizationOptions={sortedOrganizationOptions}
