@@ -9,7 +9,6 @@ import gov.cdc.usds.simplereport.db.model.PhoneNumber;
 import gov.cdc.usds.simplereport.db.model.TestEvent;
 import gov.cdc.usds.simplereport.service.dataloader.PatientLastTestDataLoader;
 import gov.cdc.usds.simplereport.service.dataloader.PatientPhoneNumbersDataLoader;
-import gov.cdc.usds.simplereport.service.dataloader.PatientPrimaryPhoneDataLoader;
 import graphql.kickstart.tools.GraphQLResolver;
 import graphql.schema.DataFetchingEnvironment;
 import java.util.List;
@@ -20,15 +19,12 @@ import org.springframework.stereotype.Component;
 public class PatientDataResolver
     implements GraphQLResolver<Person>, PersonNameResolver<Person>, InternalIdResolver<Person> {
 
-  private final PatientPrimaryPhoneDataLoader _patientPrimaryPhoneDataLoader;
   private final PatientPhoneNumbersDataLoader _patientPhoneNumbersDataLoader;
   private final PatientLastTestDataLoader _patientLastTestDataLoader;
 
   PatientDataResolver(
-      PatientPrimaryPhoneDataLoader patientPrimaryPhoneDataLoader,
       PatientPhoneNumbersDataLoader patientPhoneNumbersDataLoader,
       PatientLastTestDataLoader patientLastTestDataLoader) {
-    _patientPrimaryPhoneDataLoader = patientPrimaryPhoneDataLoader;
     _patientPhoneNumbersDataLoader = patientPhoneNumbersDataLoader;
     _patientLastTestDataLoader = patientLastTestDataLoader;
   }
@@ -45,13 +41,5 @@ public class PatientDataResolver
   public CompletableFuture<List<PhoneNumber>> getPhoneNumbers(
       Person person, DataFetchingEnvironment dfe) {
     return _patientPhoneNumbersDataLoader.load(person.getInternalId(), dfe);
-  }
-
-  public CompletableFuture<String> getTelephone(Person person, DataFetchingEnvironment dfe) {
-    return _patientPrimaryPhoneDataLoader.load(person, dfe).thenApply(p -> getNumberOrNull(p));
-  }
-
-  private String getNumberOrNull(PhoneNumber phoneNumber) {
-    return phoneNumber == null ? null : phoneNumber.getNumber();
   }
 }
