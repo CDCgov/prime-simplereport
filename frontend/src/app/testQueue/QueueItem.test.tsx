@@ -601,7 +601,10 @@ describe("QueueItem", () => {
       })
     );
 
-    await new Promise((resolve) => setTimeout(resolve, 600));
+    await waitFor(async () =>
+      expect(await screen.findByText("Submit")).toBeEnabled()
+    );
+
     userEvent.click(await screen.findByText("Submit"));
 
     const updatedTestCard = await screen.findByTestId(
