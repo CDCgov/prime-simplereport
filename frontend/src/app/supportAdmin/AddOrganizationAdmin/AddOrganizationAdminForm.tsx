@@ -1,11 +1,12 @@
 import { useMemo, useState } from "react";
+import { useSelector } from "react-redux";
 
 import Button from "../../commonComponents/Button/Button";
 import RequiredMessage from "../../commonComponents/RequiredMessage";
 import OrganizationDropDown, {
   useOrganizationDropDownValidation,
   OrganizationOption,
-} from "../Components/OrganizationDropDown";
+} from "../Components/OrganizationComboDropdown";
 
 import FacilityAdmin, { useFacilityAdminValidation } from "./FacilityAdmin";
 
@@ -26,26 +27,42 @@ interface Props {
 
 const AddOrganizationAdminForm = (props: Props) => {
   const [admin, updateAdminFormData] = useState<FacilityAdmin>(props.admin);
-  const [
-    organizationExternalId,
-    updateOrganizationExternalId,
-  ] = useState<string>("");
-  const [formChanged, updateFormChanged] = useState<boolean>(false);
-
-  const updateOrganizationExternalIdDropDown = (externalId: string) => {
-    updateOrganizationExternalId(externalId);
-    updateFormChanged(true);
-  };
-
-  const updateAdminForm = (data: FacilityAdmin) => {
-    updateAdminFormData(data);
-    updateFormChanged(true);
-  };
 
   const sortedOrganizationOptions = useMemo(
     () => sortOrganizationOptions(props.organizationOptions),
     [props.organizationOptions]
   );
+  const organization = useSelector(
+    (state) => (state as any).organization as Organization
+  );
+  const curAccessedOrgName =
+    organization.name === undefined ? "" : organization.name;
+  let mappedIdFromCurAccessedName = undefined;
+  sortedOrganizationOptions.forEach((org) => {
+    if (org.name === curAccessedOrgName)
+      mappedIdFromCurAccessedName = org.externalId;
+  });
+
+  const [organizationExternalId, updateOrganizationExternalId] = useState<
+    string | undefined
+  >(mappedIdFromCurAccessedName);
+  const [formIsValid, updateFormIsValid] = useState<boolean>(false);
+
+  const updateOrganizationExternalIdDropDown = (
+    externalId: string | undefined
+  ) => {
+    if (externalId !== undefined) {
+      updateOrganizationExternalId(externalId);
+      updateFormIsValid(true);
+    } else {
+      updateFormIsValid(false);
+    }
+  };
+
+  const updateAdminForm = (data: FacilityAdmin) => {
+    updateAdminFormData(data);
+    updateFormIsValid(true);
+  };
 
   const { validateAdmin } = useFacilityAdminValidation(admin);
 
@@ -54,7 +71,11 @@ const AddOrganizationAdminForm = (props: Props) => {
   );
 
   const validateAndSaveOrganizationAdmin = async () => {
-    if (validateOrganizationDropDown() === "error") {
+    if (
+      validateOrganizationDropDown() === "error" ||
+      organizationExternalId === undefined
+    ) {
+      updateFormIsValid(false);
       return;
     }
     if ((await validateAdmin()) === "error") {
@@ -84,7 +105,7 @@ const AddOrganizationAdminForm = (props: Props) => {
                   type="button"
                   onClick={validateAndSaveOrganizationAdmin}
                   label="Save Changes"
-                  disabled={!formChanged}
+                  disabled={!formIsValid}
                 />
               </div>
             </div>

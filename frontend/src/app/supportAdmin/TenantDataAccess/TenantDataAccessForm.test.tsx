@@ -2,7 +2,7 @@ import { render, screen } from "@testing-library/react";
 import userEvent from "@testing-library/user-event";
 import { MemoryRouter } from "react-router";
 
-import { OrganizationOption } from "../Components/OrganizationDropDown";
+import { OrganizationOption } from "../Components/OrganizationComboDropdown";
 
 import TenantDataAccessForm from "./TenantDataAccessForm";
 
