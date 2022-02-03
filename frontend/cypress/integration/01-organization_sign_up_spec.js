@@ -42,12 +42,8 @@ describe("Organization sign up", () => {
   });
   it("spoofs into the org", () => {
     cy.visit("/admin/tenant-data-access");
-    // set force true flag to get around Trussworks combo box weirdness
-    cy.get("[data-testid='combo-box-select']")
-      .select("Beach Camp", {
-        force: true,
-      })
-      .blur();
+    cy.get("[data-testid='combo-box-toggle']").click();
+    cy.get("#org-dropdown-select--list--option-0").click();
     cy.get('input[name="justification"]').type("I am a test user").blur();
     cy.contains("Access data").click();
     cy.contains("Support Admin");
