@@ -42,8 +42,7 @@ describe("Organization sign up", () => {
   });
   it("spoofs into the org", () => {
     cy.visit("/admin/tenant-data-access");
-    cy.get("[data-testid='combo-box-select']").click();
-    cy.get("Beach Camp").click();
+    cy.get("[data-testid='combo-box-select']").select("Beach Camp");
     cy.get('input[name="justification"]').type("I am a test user");
     cy.contains("Access data").click();
     cy.contains("Support Admin");
