@@ -10,6 +10,8 @@ locals {
   frontend_config                 = "${var.name}-config"
   redirect_rule                   = "${var.name}-redirect"
   redirect_self_registration_rule = "${var.name}-redirect-self-registration"
+  url_prefix                      = var.env == "prod" ? "www" : var.env
+  app_url                         = "https://${local.url_prefix}.simplereport.gov/app"
 }
 
 resource "azurerm_public_ip" "static_gateway" {
@@ -230,7 +232,7 @@ resource "azurerm_application_gateway" "load_balancer" {
     include_path         = true
     include_query_string = true
     redirect_type        = "Permanent"
-    target_url           = "https://${var.env}.simplereport.gov/app"
+    target_url           = local.app_url
   }
 
   rewrite_rule_set {
