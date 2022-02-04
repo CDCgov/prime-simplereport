@@ -173,26 +173,28 @@ const App = () => {
                 />
               }
             />
-            <Route
-              path="patients/:pageNumber"
-              element={
-                <ProtectedRoute
-                  requiredPermissions={canViewPeople}
-                  userPermissions={data.whoami.permissions}
-                  element={<ManagePatientsContainer />}
-                />
-              }
-            />
-            <Route
-              path="patients"
-              element={
-                <ProtectedRoute
-                  requiredPermissions={canViewPeople}
-                  userPermissions={data.whoami.permissions}
-                  element={<ManagePatientsContainer />}
-                />
-              }
-            />
+            <Route path="patients">
+              <Route
+                path=":pageNumber"
+                element={
+                  <ProtectedRoute
+                    requiredPermissions={canViewPeople}
+                    userPermissions={data.whoami.permissions}
+                    element={<ManagePatientsContainer />}
+                  />
+                }
+              />
+              <Route
+                path=""
+                element={
+                  <ProtectedRoute
+                    requiredPermissions={canViewPeople}
+                    userPermissions={data.whoami.permissions}
+                    element={<ManagePatientsContainer />}
+                  />
+                }
+              />
+            </Route>
             <Route
               path="patient/:patientId"
               element={

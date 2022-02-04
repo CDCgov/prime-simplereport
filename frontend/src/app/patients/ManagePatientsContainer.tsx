@@ -11,6 +11,7 @@ import ManagePatients from "./ManagePatients";
 const ManagePatientsContainer = () => {
   useDocumentTitle("People");
   const { pageNumber } = useParams();
+  const currentPage = pageNumber ? +pageNumber : 1;
   const [facility] = useSelectedFacility();
   const activeFacilityId = facility?.id || "";
   const user = useSelector<RootState, User>((state) => state.user);
@@ -34,7 +35,7 @@ const ManagePatientsContainer = () => {
       activeFacilityId={activeFacilityId}
       canEditUser={canEditUser}
       canDeleteUser={canDeleteUser}
-      currentPage={Number(pageNumber)}
+      currentPage={currentPage}
       isAdmin={isAdmin}
     />
   );

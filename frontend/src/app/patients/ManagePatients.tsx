@@ -93,7 +93,7 @@ interface Props {
   activeFacilityId: string;
   canEditUser: boolean;
   canDeleteUser: boolean;
-  currentPage?: number;
+  currentPage: number;
   entriesPerPage: number;
   totalEntries?: number;
   showDeleted?: boolean;
@@ -106,7 +106,7 @@ interface Props {
 export const DetachedManagePatients = ({
   canEditUser,
   data,
-  currentPage = 1,
+  currentPage,
   entriesPerPage,
   totalEntries,
   refetch,
@@ -131,7 +131,6 @@ export const DetachedManagePatients = ({
       setNamePrefixMatch(null);
     }
     navigate({
-      pathname: `/patients/1`,
       search: `?facility=${activeFacilityId}`,
     });
   }, [queryString, setNamePrefixMatch, navigate, activeFacilityId]);
