@@ -85,6 +85,12 @@ export class PxpApi {
     );
   };
 
+  static getObfuscatedPatientName = async (
+    patientLink: string
+  ): Promise<string> => {
+    return api.getRequest(`/patient-name?patientLink=${patientLink}`);
+  };
+
   static selfRegister = async (person: SelfRegistrationData): Promise<void> => {
     return api.request("/register", person);
   };

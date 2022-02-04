@@ -52,6 +52,7 @@ describe("Conducting a test", () => {
     cy.get(".sr-test-result-row").then(($row) => {
       const patientLink = $row.attr("data-patient-link");
       cy.task("setPatientLink", patientLink);
+      cy.task("setPatientName", patientName);
     });
   });
 });
