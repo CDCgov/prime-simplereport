@@ -1,4 +1,4 @@
-import { Route, Routes, useParams } from "react-router-dom";
+import { Route, Routes } from "react-router-dom";
 
 import { useDocumentTitle } from "../utils/hooks";
 
@@ -11,7 +11,6 @@ import { ManageSelfRegistrationLinksContainer } from "./ManageSelfRegistrationLi
 
 const Settings = () => {
   useDocumentTitle("Settings");
-  const { facilityId } = useParams();
 
   return (
     <main className="prime-home">
@@ -21,12 +20,9 @@ const Settings = () => {
           <Route path="facilities" element={<ManageFacilitiesContainer />} />
           <Route
             path="facility/:facilityId"
-            element={<FacilityFormContainer facilityId={facilityId} />}
+            element={<FacilityFormContainer />}
           />
-          <Route
-            path="add-facility/"
-            element={<FacilityFormContainer facilityId={facilityId} />}
-          />
+          <Route path="add-facility" element={<FacilityFormContainer />} />
           <Route
             path="organization"
             element={<ManageOrganizationContainer />}
