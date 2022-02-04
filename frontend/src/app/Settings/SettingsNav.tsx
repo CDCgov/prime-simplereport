@@ -3,21 +3,21 @@ import React from "react";
 import { LinkWithQuery } from "../commonComponents/LinkWithQuery";
 
 const SettingsNav = () => {
+  const classNameByActive = ({ isActive }: { isActive: boolean }) =>
+    isActive ? "active" : "";
+
   return (
     <nav className="prime-secondary-nav" aria-label="Secondary navigation">
       <ul className="usa-nav__secondary-links prime-nav">
         <li className="usa-nav__secondary-item">
-          <LinkWithQuery
-            to={`/settings`}
-            className={({ isActive }) => (isActive ? "active" : "")}
-          >
+          <LinkWithQuery to={`/settings`} end className={classNameByActive}>
             Manage users
           </LinkWithQuery>
         </li>
         <li className="usa-nav__secondary-item">
           <LinkWithQuery
             to={`/settings/facilities`}
-            className={({ isActive }) => (isActive ? "active" : "")}
+            className={classNameByActive}
           >
             Manage facilities
           </LinkWithQuery>
@@ -25,7 +25,7 @@ const SettingsNav = () => {
         <li className="usa-nav__secondary-item">
           <LinkWithQuery
             to={`/settings/organization`}
-            className={({ isActive }) => (isActive ? "active" : "")}
+            className={classNameByActive}
           >
             Manage organization
           </LinkWithQuery>
@@ -33,7 +33,7 @@ const SettingsNav = () => {
         <li className="usa-nav__secondary-item">
           <LinkWithQuery
             to={`/settings/self-registration`}
-            className={({ isActive }) => (isActive ? "active" : "")}
+            className={classNameByActive}
           >
             Patient self-registration
           </LinkWithQuery>
