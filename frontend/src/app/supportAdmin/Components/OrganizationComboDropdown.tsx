@@ -20,7 +20,9 @@ export const useOrganizationDropDownValidation = (
   const validateOrganizationDropDown = () => {
     // ensure organizationExternalId is not undefined in the case where we're
     // not using a combo box
-    if (organizationExternalId === undefined) return "combo box cleared";
+    if (organizationExternalId === undefined) {
+      return "combo box cleared";
+    }
     if (organizationExternalId === null || organizationExternalId === "") {
       const alert = (
         <Alert

@@ -104,10 +104,6 @@ function testResultRows(
       name: "Text result",
       action: () => setTextModalId(r.internalId),
     });
-    actionItems.push({
-      name: "View details",
-      action: () => setDetailsModalId(r.internalId),
-    });
 
     const removed = r.correctionStatus === "REMOVED";
     if (!removed) {
@@ -116,6 +112,10 @@ function testResultRows(
         action: () => setMarkErrorId(r.internalId),
       });
     }
+    actionItems.push({
+      name: "View details",
+      action: () => setDetailsModalId(r.internalId),
+    });
     return (
       <tr
         key={r.internalId}

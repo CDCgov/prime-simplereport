@@ -47,8 +47,9 @@ const TenantDataAccessForm: React.FC<Props> = (props) => {
   const curAccessedOrgName =
     organization.name === undefined ? "" : organization.name;
   sortedOrganizationOptions.forEach((org) => {
-    if (org.name === curAccessedOrgName)
+    if (org.name === curAccessedOrgName) {
       mappedIdFromCurAccessedName = org.externalId;
+    }
   });
 
   const [selectedOrgExternalId, updateOrganizationExternalId] = useState<
