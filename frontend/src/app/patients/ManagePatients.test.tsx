@@ -28,6 +28,7 @@ describe("ManagePatients", () => {
     render(
       <TestContainer>
         <ManagePatients
+          currentPage={1}
           activeFacilityId="a1"
           canEditUser={true}
           canDeleteUser={true}
@@ -44,6 +45,7 @@ describe("ManagePatients", () => {
     render(
       <TestContainer>
         <ManagePatients
+          currentPage={1}
           activeFacilityId="a1"
           canEditUser={true}
           canDeleteUser={true}
