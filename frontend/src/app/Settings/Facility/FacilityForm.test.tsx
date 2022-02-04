@@ -3,13 +3,13 @@ import userEvent from "@testing-library/user-event";
 import { MemoryRouter } from "react-router-dom";
 import { ToastContainer } from "react-toastify";
 
-import * as clia from "../utils/clia";
-import * as state from "../utils/state";
-import * as smartyStreets from "../utils/smartyStreets";
+import * as clia from "../../utils/clia";
+import * as state from "../../utils/state";
+import * as smartyStreets from "../../utils/smartyStreets";
 
-import FacilityForm from "./Facility/FacilityForm";
+import FacilityForm from "./FacilityForm";
 
-import "../../i18n";
+import "../../../i18n";
 
 let saveFacility: jest.Mock;
 
