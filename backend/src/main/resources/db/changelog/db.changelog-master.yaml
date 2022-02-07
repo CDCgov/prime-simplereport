@@ -1930,15 +1930,7 @@ databaseChangeLog:
           tag: add-no-phi-role
         - sql:
           sql: |
-            DO
-            '
-            BEGIN
-              IF NOT EXISTS (SELECT FROM pg_catalog.pg_roles WHERE rolname = ''${noPhiUsername}'') THEN CREATE ROLE ${noPhiUsername} WITH LOGIN NOSUPERUSER ENCRYPTED PASSWORD ''${noPhiPassword}'';
-              END IF;
-            EXCEPTION WHEN insufficient_privilege THEN
-              RAISE NOTICE ''the migration user does not have permission to create the ${noPhiUsername} role -- skipping'';
-            END;
-            '
+            CREATE ROLE ${noPhiUsername} WITH LOGIN NOSUPERUSER ENCRYPTED PASSWORD '${noPhiPassword}';
       rollback:
         - sql:
           sql: |

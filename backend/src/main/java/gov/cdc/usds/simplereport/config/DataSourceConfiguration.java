@@ -13,6 +13,11 @@ import org.springframework.context.annotation.Primary;
 @Configuration
 public class DataSourceConfiguration {
 
+  // The reasoning for this file is a little confusing: Liquibase doesn't support
+  // multiple databases as part of the same migration. But we need to configure
+  // the no-PHI user for the `metabase` database. That means we need two data sources,
+  // each running a Liquibase migration - one for SR and one for Metabase.
+
   // SimpleReport data source
 
   @Bean
@@ -28,8 +33,7 @@ public class DataSourceConfiguration {
       dataSourceProperties.setPassword(dataSourceLiquibaseProperties.getPassword());
     }
 
-    HikariDataSource h = new HikariDataSource(dataSourceProperties);
-    return h;
+    return new HikariDataSource(dataSourceProperties);
   }
 
   @Bean
@@ -55,16 +59,12 @@ public class DataSourceConfiguration {
   }
 
   // Metabase data source
-  //
-  // This gets a little confusing: Liquibase doesn't support multiple databases
-  // as part of the same migration. But we need Liquibase to configure the no-PHI
-  // user for the `metabase` database. That means we need two data sources - one
-  // for SR and one for Metabase.
 
   @Bean
   @ConfigurationProperties(prefix = "spring.datasource.metabase")
   public DataSource metabaseDataSource(
       HikariConfig dataSourceProperties, LiquibaseProperties dataSourceLiquibaseProperties) {
+
     if (dataSourceLiquibaseProperties.getUser() != null) {
       dataSourceProperties.setUsername(dataSourceLiquibaseProperties.getUser());
     }

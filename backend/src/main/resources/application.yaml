@@ -32,7 +32,7 @@ spring:
       parameters:
         noPhiUsername: simple_report_no_phi
         # Local dev: since the simple_report_no_phi user is created via script outside of the migrations, the migration CREATE ROLE (and this password) will be skipped - it's just for placeholder purposes.
-        noPhiPassword: ${DB_PASSWORD_NO_PHI:dummy_password}
+        noPhiPassword: ${DB_PASSWORD_NO_PHI:nophi789}
     metabase:
       default-schema: ${spring.jpa.properties.hibernate.default_schema}
       parameters:
