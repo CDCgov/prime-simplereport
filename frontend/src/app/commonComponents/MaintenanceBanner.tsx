@@ -11,7 +11,7 @@ interface MaintenanceMode {
 export const MaintenanceBanner: React.FC = () => {
   const [maintenanceMode, setMaintenanceMode] = useState<MaintenanceMode>({
     active: false,
-    header: "SimpleReport alert.",
+    header: "SimpleReport alert:",
     message: "",
   });
   useEffect(() => {
