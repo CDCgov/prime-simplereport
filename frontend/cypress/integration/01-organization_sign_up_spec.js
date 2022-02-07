@@ -42,12 +42,9 @@ describe("Organization sign up", () => {
   });
   it("spoofs into the org", () => {
     cy.visit("/admin/tenant-data-access");
-    cy.get(".usa-card__container")
-      .first()
-      .within(() => {
-        cy.get("select.usa-select").select("Beach Camp");
-      });
-    cy.get('input[name="justification"]').type("I am a test user");
+    cy.get("[data-testid='combo-box-toggle']").click();
+    cy.get("#org-dropdown-select--list--option-0").click();
+    cy.get('input[name="justification"]').type("I am a test user").blur();
     cy.contains("Access data").click();
     cy.contains("Support Admin");
   });
