@@ -44,6 +44,7 @@ window.print = jest.fn();
 
 describe("TestResultPrintModal", () => {
   let printSpy: jest.SpyInstance;
+  let component: any;
 
   beforeEach(() => {
     ReactDOM.createPortal = jest.fn((element, _node) => {
@@ -53,7 +54,7 @@ describe("TestResultPrintModal", () => {
     printSpy = jest.spyOn(window, "print");
 
     MockDate.set("2021/01/01");
-    render(
+    component = render(
       <DetachedTestResultPrintModal
         data={{ testResult }}
         testResultId="id"
@@ -74,5 +75,9 @@ describe("TestResultPrintModal", () => {
 
   it("should render the test date and test time", () => {
     expect(screen.getByText("01/28/2022 5:56pm")).toBeInTheDocument();
+  });
+
+  it("matches screenshot", () => {
+    expect(component).toMatchSnapshot();
   });
 });
