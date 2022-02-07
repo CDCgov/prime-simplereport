@@ -11,6 +11,7 @@ services:
       - ../cypress:/app/cypress
       - ../cypress.json:/app/cypress.json
       - ../e2e.sh:/app/e2e.sh
+      - ../../.git/:/.git
       - ../cypress/screenshots:/app/cypress/screenshots
       - ../cypress/videos:/app/cypress/videos
     expose:
@@ -63,6 +64,7 @@ services:
       REACT_APP_OKTA_URL: http://cypress:8088
     volumes:
       - ../:/frontend/
+      - ../.env.e2e:/frontend/.env.local
       - ../../.git/:/frontend/.git
       - ../../backend/src/main/resources/graphql:/backend/src/main/resources/graphql
     expose:
