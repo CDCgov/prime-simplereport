@@ -334,16 +334,9 @@ public class TestDataFactory {
     return e;
   }
 
-  public TestEvent createTestEventCorrection(TestEvent te) {
-    TestOrder o = createTestOrder(te.getPatient(), te.getFacility());
-    o.setResult(te.getResult());
-
-    TestEvent te2 =
-        _testEventRepo.save(new TestEvent(te, TestCorrectionStatus.CORRECTED, "Corrected"));
-    o.setTestEventRef(te2);
-    o.markComplete();
-    _testOrderRepo.save(o);
-    return te2;
+  public TestEvent createTestEventCorrection(TestEvent originalTestEvent) {
+    return _testEventRepo.save(
+        new TestEvent(originalTestEvent, TestCorrectionStatus.CORRECTED, "Cold feet"));
   }
 
   public TestEvent doTest(TestOrder order, TestResult result) {
