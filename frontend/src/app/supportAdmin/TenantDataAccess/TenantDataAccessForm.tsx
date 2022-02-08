@@ -1,16 +1,17 @@
 import React, { useEffect, useMemo, useState } from "react";
+import { useSelector } from "react-redux";
 
 import Button from "../../commonComponents/Button/Button";
 import RequiredMessage from "../../commonComponents/RequiredMessage";
 import TextInput from "../../commonComponents/TextInput";
-import OrganizationDropDown, {
+import OrganizationComboDropDown, {
   useOrganizationDropDownValidation,
   OrganizationOption,
-} from "../Components/OrganizationDropDown";
+} from "../Components/OrganizationComboDropdown";
 
 const sortOrganizationOptions = (organizationOptions: OrganizationOption[]) =>
   Object.values(organizationOptions).sort((a, b) => {
-    return a.name > b.name ? 1 : -1;
+    return a.name.toLowerCase() > b.name.toLowerCase() ? 1 : -1;
   });
 
 export interface Props {
@@ -35,22 +36,33 @@ const TenantDataAccessForm: React.FC<Props> = (props) => {
     setJustification(e.target.value);
   };
 
-  const [
-    organizationExternalId,
-    updateOrganizationExternalId,
-  ] = useState<string>("");
-
-  const updateOrganizationExternalIdDropDown = (externalId: string) => {
-    updateOrganizationExternalId(externalId);
-  };
-
   const sortedOrganizationOptions = useMemo(
     () => sortOrganizationOptions(props.organizationOptions),
     [props.organizationOptions]
   );
+  let mappedIdFromCurAccessedName = undefined;
+  const organization = useSelector(
+    (state) => (state as any).organization as Organization
+  );
+  const curAccessedOrgName =
+    organization.name === undefined ? "" : organization.name;
+  sortedOrganizationOptions.forEach((org) => {
+    if (org.name === curAccessedOrgName) {
+      mappedIdFromCurAccessedName = org.externalId;
+    }
+  });
+
+  const [selectedOrgExternalId, updateOrganizationExternalId] = useState<
+    string | undefined
+  >(mappedIdFromCurAccessedName);
+  const updateOrganizationExternalIdDropDown = (
+    externalId: string | undefined
+  ) => {
+    updateOrganizationExternalId(externalId);
+  };
 
   const { validateOrganizationDropDown } = useOrganizationDropDownValidation(
-    organizationExternalId
+    selectedOrgExternalId
   );
 
   useEffect(() => {
@@ -58,13 +70,15 @@ const TenantDataAccessForm: React.FC<Props> = (props) => {
       updateFormIsValid(false);
     } else if (validateOrganizationDropDown() === "error") {
       updateFormIsValid(false);
+    } else if (validateOrganizationDropDown() === "combo box cleared") {
+      updateFormIsValid(false);
     } else {
       updateFormIsValid(true);
     }
-  }, [validateOrganizationDropDown, organizationExternalId, justification]);
+  }, [validateOrganizationDropDown, selectedOrgExternalId, justification]);
 
   const submitTenantDataAccessRequest = async () => {
-    props.saveTenantDataAccess(organizationExternalId, justification);
+    props.saveTenantDataAccess(selectedOrgExternalId, justification);
   };
 
   const submitCancellationRequest = async () => {
@@ -89,8 +103,8 @@ const TenantDataAccessForm: React.FC<Props> = (props) => {
               </div>
             </div>
           </div>
-          <OrganizationDropDown
-            selectedExternalId={organizationExternalId}
+          <OrganizationComboDropDown
+            selectedExternalId={selectedOrgExternalId}
             updateSelectedExternalId={updateOrganizationExternalIdDropDown}
             organizationOptions={sortedOrganizationOptions}
           />
