@@ -23,11 +23,11 @@ variable "tenant_id" {}
 
 # https://azure.microsoft.com/en-us/pricing/details/app-service/windows/
 variable "instance_tier" {
-  default = "PremiumV2"
+  default = "PremiumV3"
 }
 
 variable "instance_size" {
-  default = "P1v2"
+  default = "P1v3"
 }
 
 variable "instance_count" {
