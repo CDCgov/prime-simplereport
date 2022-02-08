@@ -124,7 +124,7 @@ export type Facility = {
 
 export type Mutation = {
   __typename?: "Mutation";
-  addFacility?: Maybe<Scalars["String"]>;
+  addFacility?: Maybe<Facility>;
   addFacilityNew?: Maybe<Scalars["String"]>;
   addPatient?: Maybe<Patient>;
   addPatientToQueue?: Maybe<Scalars["String"]>;
@@ -141,20 +141,24 @@ export type Mutation = {
   editPendingOrganization?: Maybe<Scalars["String"]>;
   editQueueItem?: Maybe<TestOrder>;
   markFacilityAsDeleted?: Maybe<Scalars["String"]>;
+  markPendingOrganizationAsDeleted?: Maybe<Scalars["String"]>;
   reactivateUser?: Maybe<User>;
   removePatientFromQueue?: Maybe<Scalars["String"]>;
   resendActivationEmail?: Maybe<User>;
   resendToReportStream?: Maybe<Scalars["Boolean"]>;
+  resetUserMfa?: Maybe<User>;
   resetUserPassword?: Maybe<User>;
   sendPatientLinkEmail?: Maybe<Scalars["Boolean"]>;
+  sendPatientLinkEmailByTestEventId?: Maybe<Scalars["Boolean"]>;
   sendPatientLinkSms?: Maybe<Scalars["Boolean"]>;
+  sendPatientLinkSmsByTestEventId?: Maybe<Scalars["Boolean"]>;
   setCurrentUserTenantDataAccess?: Maybe<User>;
   setOrganizationIdentityVerified?: Maybe<Scalars["Boolean"]>;
   setPatientIsDeleted?: Maybe<Patient>;
   setRegistrationLinkIsDeleted?: Maybe<Scalars["String"]>;
   setUserIsDeleted?: Maybe<User>;
   updateDeviceType?: Maybe<DeviceType>;
-  updateFacility?: Maybe<Scalars["String"]>;
+  updateFacility?: Maybe<Facility>;
   updateFacilityNew?: Maybe<Scalars["String"]>;
   updateOrganization?: Maybe<Scalars["String"]>;
   updatePatient?: Maybe<Patient>;
@@ -169,10 +173,7 @@ export type Mutation = {
 export type MutationAddFacilityArgs = {
   city?: Maybe<Scalars["String"]>;
   cliaNumber?: Maybe<Scalars["String"]>;
-  county?: Maybe<Scalars["String"]>;
-  defaultDevice: Scalars["String"];
-  deviceSpecimenTypes?: Maybe<Array<Maybe<Scalars["ID"]>>>;
-  deviceTypes: Array<Maybe<Scalars["String"]>>;
+  deviceIds: Array<Maybe<Scalars["ID"]>>;
   email?: Maybe<Scalars["String"]>;
   orderingProviderCity?: Maybe<Scalars["String"]>;
   orderingProviderCounty?: Maybe<Scalars["String"]>;
@@ -380,6 +381,11 @@ export type MutationMarkFacilityAsDeletedArgs = {
   facilityId: Scalars["ID"];
 };
 
+export type MutationMarkPendingOrganizationAsDeletedArgs = {
+  deleted: Scalars["Boolean"];
+  orgExternalId: Scalars["String"];
+};
+
 export type MutationReactivateUserArgs = {
   id: Scalars["ID"];
 };
@@ -396,6 +402,10 @@ export type MutationResendToReportStreamArgs = {
   testEventIds: Array<Scalars["ID"]>;
 };
 
+export type MutationResetUserMfaArgs = {
+  id: Scalars["ID"];
+};
+
 export type MutationResetUserPasswordArgs = {
   id: Scalars["ID"];
 };
@@ -404,8 +414,16 @@ export type MutationSendPatientLinkEmailArgs = {
   internalId: Scalars["ID"];
 };
 
+export type MutationSendPatientLinkEmailByTestEventIdArgs = {
+  testEventId: Scalars["ID"];
+};
+
 export type MutationSendPatientLinkSmsArgs = {
   internalId: Scalars["ID"];
+};
+
+export type MutationSendPatientLinkSmsByTestEventIdArgs = {
+  testEventId: Scalars["ID"];
 };
 
 export type MutationSetCurrentUserTenantDataAccessArgs = {
@@ -440,10 +458,7 @@ export type MutationUpdateDeviceTypeArgs = {
 export type MutationUpdateFacilityArgs = {
   city?: Maybe<Scalars["String"]>;
   cliaNumber?: Maybe<Scalars["String"]>;
-  county?: Maybe<Scalars["String"]>;
-  defaultDevice: Scalars["String"];
-  deviceSpecimenTypes?: Maybe<Array<Maybe<Scalars["ID"]>>>;
-  deviceTypes: Array<Maybe<Scalars["String"]>>;
+  deviceIds: Array<Maybe<Scalars["ID"]>>;
   email?: Maybe<Scalars["String"]>;
   facilityId: Scalars["ID"];
   orderingProviderCity?: Maybe<Scalars["String"]>;
@@ -1039,7 +1054,7 @@ export type UpdateFacilityMutationVariables = Exact<{
 
 export type UpdateFacilityMutation = {
   __typename?: "Mutation";
-  updateFacilityNew?: Maybe<string>;
+  updateFacility?: Maybe<{ __typename?: "Facility"; id: string }>;
 };
 
 export type AddFacilityMutationVariables = Exact<{
@@ -1068,7 +1083,7 @@ export type AddFacilityMutationVariables = Exact<{
 
 export type AddFacilityMutation = {
   __typename?: "Mutation";
-  addFacilityNew?: Maybe<string>;
+  addFacility?: Maybe<{ __typename?: "Facility"; id: string }>;
 };
 
 export type GetManagedFacilitiesQueryVariables = Exact<{
@@ -1079,7 +1094,7 @@ export type GetManagedFacilitiesQuery = {
   __typename?: "Query";
   organization?: Maybe<{
     __typename?: "Organization";
-    testingFacility: Array<{
+    facilities: Array<{
       __typename?: "Facility";
       id: string;
       cliaNumber?: Maybe<string>;
@@ -1275,6 +1290,15 @@ export type EditUserEmailMutation = {
   updateUserEmail?: Maybe<{ __typename?: "User"; id: string; email: string }>;
 };
 
+export type ResetUserMfaMutationVariables = Exact<{
+  id: Scalars["ID"];
+}>;
+
+export type ResetUserMfaMutation = {
+  __typename?: "Mutation";
+  resetUserMfa?: Maybe<{ __typename?: "User"; id: string }>;
+};
+
 export type GetTopLevelDashboardMetricsNewQueryVariables = Exact<{
   facilityId?: Maybe<Scalars["ID"]>;
   startDate?: Maybe<Scalars["DateTime"]>;
@@ -1313,6 +1337,7 @@ export type AddPatientMutationVariables = Exact<{
   city?: Maybe<Scalars["String"]>;
   state: Scalars["String"];
   zipCode: Scalars["String"];
+  country: Scalars["String"];
   telephone?: Maybe<Scalars["String"]>;
   phoneNumbers?: Maybe<Array<PhoneNumberInput> | PhoneNumberInput>;
   role?: Maybe<Scalars["String"]>;
@@ -1581,6 +1606,16 @@ export type SetOrgIdentityVerifiedMutation = {
   setOrganizationIdentityVerified?: Maybe<boolean>;
 };
 
+export type MarkPendingOrganizationAsDeletedMutationVariables = Exact<{
+  orgExternalId: Scalars["String"];
+  deleted: Scalars["Boolean"];
+}>;
+
+export type MarkPendingOrganizationAsDeletedMutation = {
+  __typename?: "Mutation";
+  markPendingOrganizationAsDeleted?: Maybe<string>;
+};
+
 export type EditPendingOrganizationMutationVariables = Exact<{
   externalId: Scalars["String"];
   name?: Maybe<Scalars["String"]>;
@@ -1770,6 +1805,7 @@ export type GetFacilityQueueQuery = {
           __typename?: "DeviceType";
           internalId: string;
           name: string;
+          testLength?: Maybe<number>;
         };
         specimenType: {
           __typename?: "SpecimenType";
@@ -1995,10 +2031,6 @@ export type GetTestResultForTextQuery = {
   testResult?: Maybe<{
     __typename?: "TestResult";
     dateTested?: Maybe<any>;
-    patientLink?: Maybe<{
-      __typename?: "PatientLink";
-      internalId?: Maybe<string>;
-    }>;
     patient?: Maybe<{
       __typename?: "Patient";
       firstName?: Maybe<string>;
@@ -2024,7 +2056,7 @@ export type SendSmsMutationVariables = Exact<{
 
 export type SendSmsMutation = {
   __typename?: "Mutation";
-  sendPatientLinkSms?: Maybe<boolean>;
+  sendPatientLinkSmsByTestEventId?: Maybe<boolean>;
 };
 
 export type GetResultsCountByFacilityQueryVariables = Exact<{
@@ -2115,20 +2147,87 @@ export type GetTestResultForResendingEmailsQuery = {
       email?: Maybe<string>;
       emails?: Maybe<Array<Maybe<string>>>;
     }>;
-    patientLink?: Maybe<{
-      __typename?: "PatientLink";
-      internalId?: Maybe<string>;
-    }>;
   }>;
 };
 
 export type ResendTestResultsEmailMutationVariables = Exact<{
-  patientLinkId: Scalars["ID"];
+  testEventId: Scalars["ID"];
 }>;
 
 export type ResendTestResultsEmailMutation = {
   __typename?: "Mutation";
-  sendPatientLinkEmail?: Maybe<boolean>;
+  sendPatientLinkEmailByTestEventId?: Maybe<boolean>;
+};
+
+export type GetFacilityResultsForCsvQueryVariables = Exact<{
+  facilityId?: Maybe<Scalars["ID"]>;
+  patientId?: Maybe<Scalars["ID"]>;
+  result?: Maybe<Scalars["String"]>;
+  role?: Maybe<Scalars["String"]>;
+  startDate?: Maybe<Scalars["DateTime"]>;
+  endDate?: Maybe<Scalars["DateTime"]>;
+  pageNumber?: Maybe<Scalars["Int"]>;
+  pageSize?: Maybe<Scalars["Int"]>;
+}>;
+
+export type GetFacilityResultsForCsvQuery = {
+  __typename?: "Query";
+  testResults?: Maybe<
+    Array<
+      Maybe<{
+        __typename?: "TestResult";
+        dateTested?: Maybe<any>;
+        result?: Maybe<string>;
+        correctionStatus?: Maybe<string>;
+        reasonForCorrection?: Maybe<string>;
+        symptoms?: Maybe<string>;
+        noSymptoms?: Maybe<boolean>;
+        symptomOnset?: Maybe<any>;
+        facility?: Maybe<{ __typename?: "Facility"; name: string }>;
+        deviceType?: Maybe<{
+          __typename?: "DeviceType";
+          name: string;
+          manufacturer: string;
+          model: string;
+          swabType?: Maybe<string>;
+        }>;
+        patient?: Maybe<{
+          __typename?: "Patient";
+          firstName?: Maybe<string>;
+          middleName?: Maybe<string>;
+          lastName?: Maybe<string>;
+          birthDate?: Maybe<any>;
+          gender?: Maybe<string>;
+          race?: Maybe<string>;
+          ethnicity?: Maybe<string>;
+          tribalAffiliation?: Maybe<Array<Maybe<string>>>;
+          lookupId?: Maybe<string>;
+          telephone?: Maybe<string>;
+          email?: Maybe<string>;
+          street?: Maybe<string>;
+          streetTwo?: Maybe<string>;
+          city?: Maybe<string>;
+          county?: Maybe<string>;
+          state?: Maybe<string>;
+          zipCode?: Maybe<string>;
+          country?: Maybe<string>;
+          role?: Maybe<string>;
+          residentCongregateSetting?: Maybe<boolean>;
+          employedInHealthcare?: Maybe<boolean>;
+          preferredLanguage?: Maybe<string>;
+        }>;
+        createdBy?: Maybe<{
+          __typename?: "ApiUser";
+          nameInfo?: Maybe<{
+            __typename?: "NameInfo";
+            firstName?: Maybe<string>;
+            middleName?: Maybe<string>;
+            lastName: string;
+          }>;
+        }>;
+      }>
+    >
+  >;
 };
 
 export const WhoAmIDocument = gql`
@@ -2308,7 +2407,7 @@ export const UpdateFacilityDocument = gql`
     $orderingProviderPhone: String
     $devices: [ID]!
   ) {
-    updateFacilityNew(
+    updateFacility(
       facilityId: $facilityId
       testingFacilityName: $testingFacilityName
       cliaNumber: $cliaNumber
@@ -2331,7 +2430,9 @@ export const UpdateFacilityDocument = gql`
       orderingProviderZipCode: $orderingProviderZipCode
       orderingProviderPhone: $orderingProviderPhone
       deviceIds: $devices
-    )
+    ) {
+      id
+    }
   }
 `;
 export type UpdateFacilityMutationFn = Apollo.MutationFunction<
@@ -2421,7 +2522,7 @@ export const AddFacilityDocument = gql`
     $orderingProviderPhone: String
     $devices: [ID]!
   ) {
-    addFacilityNew(
+    addFacility(
       testingFacilityName: $testingFacilityName
       cliaNumber: $cliaNumber
       street: $street
@@ -2443,7 +2544,9 @@ export const AddFacilityDocument = gql`
       orderingProviderZipCode: $orderingProviderZipCode
       orderingProviderPhone: $orderingProviderPhone
       deviceIds: $devices
-    )
+    ) {
+      id
+    }
   }
 `;
 export type AddFacilityMutationFn = Apollo.MutationFunction<
@@ -2511,7 +2614,7 @@ export type AddFacilityMutationOptions = Apollo.BaseMutationOptions<
 export const GetManagedFacilitiesDocument = gql`
   query GetManagedFacilities {
     organization {
-      testingFacility {
+      facilities {
         id
         cliaNumber
         name
@@ -3351,6 +3454,55 @@ export type EditUserEmailMutationOptions = Apollo.BaseMutationOptions<
   EditUserEmailMutation,
   EditUserEmailMutationVariables
 >;
+export const ResetUserMfaDocument = gql`
+  mutation ResetUserMfa($id: ID!) {
+    resetUserMfa(id: $id) {
+      id
+    }
+  }
+`;
+export type ResetUserMfaMutationFn = Apollo.MutationFunction<
+  ResetUserMfaMutation,
+  ResetUserMfaMutationVariables
+>;
+
+/**
+ * __useResetUserMfaMutation__
+ *
+ * To run a mutation, you first call `useResetUserMfaMutation` within a React component and pass it any options that fit your needs.
+ * When your component renders, `useResetUserMfaMutation` returns a tuple that includes:
+ * - A mutate function that you can call at any time to execute the mutation
+ * - An object with fields that represent the current status of the mutation's execution
+ *
+ * @param baseOptions options that will be passed into the mutation, supported options are listed on: https://www.apollographql.com/docs/react/api/react-hooks/#options-2;
+ *
+ * @example
+ * const [resetUserMfaMutation, { data, loading, error }] = useResetUserMfaMutation({
+ *   variables: {
+ *      id: // value for 'id'
+ *   },
+ * });
+ */
+export function useResetUserMfaMutation(
+  baseOptions?: Apollo.MutationHookOptions<
+    ResetUserMfaMutation,
+    ResetUserMfaMutationVariables
+  >
+) {
+  const options = { ...defaultOptions, ...baseOptions };
+  return Apollo.useMutation<
+    ResetUserMfaMutation,
+    ResetUserMfaMutationVariables
+  >(ResetUserMfaDocument, options);
+}
+export type ResetUserMfaMutationHookResult = ReturnType<
+  typeof useResetUserMfaMutation
+>;
+export type ResetUserMfaMutationResult = Apollo.MutationResult<ResetUserMfaMutation>;
+export type ResetUserMfaMutationOptions = Apollo.BaseMutationOptions<
+  ResetUserMfaMutation,
+  ResetUserMfaMutationVariables
+>;
 export const GetTopLevelDashboardMetricsNewDocument = gql`
   query GetTopLevelDashboardMetricsNew(
     $facilityId: ID
@@ -3501,6 +3653,7 @@ export const AddPatientDocument = gql`
     $city: String
     $state: String!
     $zipCode: String!
+    $country: String!
     $telephone: String
     $phoneNumbers: [PhoneNumberInput!]
     $role: String
@@ -3527,6 +3680,7 @@ export const AddPatientDocument = gql`
       city: $city
       state: $state
       zipCode: $zipCode
+      country: $country
       telephone: $telephone
       phoneNumbers: $phoneNumbers
       role: $role
@@ -3577,6 +3731,7 @@ export type AddPatientMutationFn = Apollo.MutationFunction<
  *      city: // value for 'city'
  *      state: // value for 'state'
  *      zipCode: // value for 'zipCode'
+ *      country: // value for 'country'
  *      telephone: // value for 'telephone'
  *      phoneNumbers: // value for 'phoneNumbers'
  *      role: // value for 'role'
@@ -4522,6 +4677,60 @@ export type SetOrgIdentityVerifiedMutationOptions = Apollo.BaseMutationOptions<
   SetOrgIdentityVerifiedMutation,
   SetOrgIdentityVerifiedMutationVariables
 >;
+export const MarkPendingOrganizationAsDeletedDocument = gql`
+  mutation MarkPendingOrganizationAsDeleted(
+    $orgExternalId: String!
+    $deleted: Boolean!
+  ) {
+    markPendingOrganizationAsDeleted(
+      orgExternalId: $orgExternalId
+      deleted: $deleted
+    )
+  }
+`;
+export type MarkPendingOrganizationAsDeletedMutationFn = Apollo.MutationFunction<
+  MarkPendingOrganizationAsDeletedMutation,
+  MarkPendingOrganizationAsDeletedMutationVariables
+>;
+
+/**
+ * __useMarkPendingOrganizationAsDeletedMutation__
+ *
+ * To run a mutation, you first call `useMarkPendingOrganizationAsDeletedMutation` within a React component and pass it any options that fit your needs.
+ * When your component renders, `useMarkPendingOrganizationAsDeletedMutation` returns a tuple that includes:
+ * - A mutate function that you can call at any time to execute the mutation
+ * - An object with fields that represent the current status of the mutation's execution
+ *
+ * @param baseOptions options that will be passed into the mutation, supported options are listed on: https://www.apollographql.com/docs/react/api/react-hooks/#options-2;
+ *
+ * @example
+ * const [markPendingOrganizationAsDeletedMutation, { data, loading, error }] = useMarkPendingOrganizationAsDeletedMutation({
+ *   variables: {
+ *      orgExternalId: // value for 'orgExternalId'
+ *      deleted: // value for 'deleted'
+ *   },
+ * });
+ */
+export function useMarkPendingOrganizationAsDeletedMutation(
+  baseOptions?: Apollo.MutationHookOptions<
+    MarkPendingOrganizationAsDeletedMutation,
+    MarkPendingOrganizationAsDeletedMutationVariables
+  >
+) {
+  const options = { ...defaultOptions, ...baseOptions };
+  return Apollo.useMutation<
+    MarkPendingOrganizationAsDeletedMutation,
+    MarkPendingOrganizationAsDeletedMutationVariables
+  >(MarkPendingOrganizationAsDeletedDocument, options);
+}
+export type MarkPendingOrganizationAsDeletedMutationHookResult = ReturnType<
+  typeof useMarkPendingOrganizationAsDeletedMutation
+>;
+export type MarkPendingOrganizationAsDeletedMutationResult = Apollo.MutationResult<MarkPendingOrganizationAsDeletedMutation>;
+export type MarkPendingOrganizationAsDeletedMutationOptions = Apollo.BaseMutationOptions<
+  MarkPendingOrganizationAsDeletedMutation,
+  MarkPendingOrganizationAsDeletedMutationVariables
+>;
 export const EditPendingOrganizationDocument = gql`
   mutation EditPendingOrganization(
     $externalId: String!
@@ -4960,6 +5169,7 @@ export const GetFacilityQueueDocument = gql`
       deviceType {
         internalId
         name
+        testLength
       }
       specimenType {
         internalId
@@ -5589,9 +5799,6 @@ export type GetTestResultForPrintQueryResult = Apollo.QueryResult<
 export const GetTestResultForTextDocument = gql`
   query getTestResultForText($id: ID!) {
     testResult(id: $id) {
-      patientLink {
-        internalId
-      }
       dateTested
       patient {
         firstName
@@ -5659,7 +5866,7 @@ export type GetTestResultForTextQueryResult = Apollo.QueryResult<
 >;
 export const SendSmsDocument = gql`
   mutation sendSMS($id: ID!) {
-    sendPatientLinkSms(internalId: $id)
+    sendPatientLinkSmsByTestEventId(testEventId: $id)
   }
 `;
 export type SendSmsMutationFn = Apollo.MutationFunction<
@@ -5900,9 +6107,6 @@ export const GetTestResultForResendingEmailsDocument = gql`
         email
         emails
       }
-      patientLink {
-        internalId
-      }
     }
   }
 `;
@@ -5958,8 +6162,8 @@ export type GetTestResultForResendingEmailsQueryResult = Apollo.QueryResult<
   GetTestResultForResendingEmailsQueryVariables
 >;
 export const ResendTestResultsEmailDocument = gql`
-  mutation resendTestResultsEmail($patientLinkId: ID!) {
-    sendPatientLinkEmail(internalId: $patientLinkId)
+  mutation resendTestResultsEmail($testEventId: ID!) {
+    sendPatientLinkEmailByTestEventId(testEventId: $testEventId)
   }
 `;
 export type ResendTestResultsEmailMutationFn = Apollo.MutationFunction<
@@ -5980,7 +6184,7 @@ export type ResendTestResultsEmailMutationFn = Apollo.MutationFunction<
  * @example
  * const [resendTestResultsEmailMutation, { data, loading, error }] = useResendTestResultsEmailMutation({
  *   variables: {
- *      patientLinkId: // value for 'patientLinkId'
+ *      testEventId: // value for 'testEventId'
  *   },
  * });
  */
@@ -6003,4 +6207,133 @@ export type ResendTestResultsEmailMutationResult = Apollo.MutationResult<ResendT
 export type ResendTestResultsEmailMutationOptions = Apollo.BaseMutationOptions<
   ResendTestResultsEmailMutation,
   ResendTestResultsEmailMutationVariables
+>;
+export const GetFacilityResultsForCsvDocument = gql`
+  query GetFacilityResultsForCsv(
+    $facilityId: ID
+    $patientId: ID
+    $result: String
+    $role: String
+    $startDate: DateTime
+    $endDate: DateTime
+    $pageNumber: Int
+    $pageSize: Int
+  ) {
+    testResults(
+      facilityId: $facilityId
+      patientId: $patientId
+      result: $result
+      role: $role
+      startDate: $startDate
+      endDate: $endDate
+      pageNumber: $pageNumber
+      pageSize: $pageSize
+    ) {
+      facility {
+        name
+      }
+      dateTested
+      result
+      correctionStatus
+      reasonForCorrection
+      deviceType {
+        name
+        manufacturer
+        model
+        swabType
+      }
+      patient {
+        firstName
+        middleName
+        lastName
+        birthDate
+        gender
+        race
+        ethnicity
+        tribalAffiliation
+        lookupId
+        telephone
+        email
+        street
+        streetTwo
+        city
+        county
+        state
+        zipCode
+        country
+        role
+        residentCongregateSetting
+        employedInHealthcare
+        preferredLanguage
+      }
+      createdBy {
+        nameInfo {
+          firstName
+          middleName
+          lastName
+        }
+      }
+      symptoms
+      noSymptoms
+      symptomOnset
+    }
+  }
+`;
+
+/**
+ * __useGetFacilityResultsForCsvQuery__
+ *
+ * To run a query within a React component, call `useGetFacilityResultsForCsvQuery` and pass it any options that fit your needs.
+ * When your component renders, `useGetFacilityResultsForCsvQuery` returns an object from Apollo Client that contains loading, error, and data properties
+ * you can use to render your UI.
+ *
+ * @param baseOptions options that will be passed into the query, supported options are listed on: https://www.apollographql.com/docs/react/api/react-hooks/#options;
+ *
+ * @example
+ * const { data, loading, error } = useGetFacilityResultsForCsvQuery({
+ *   variables: {
+ *      facilityId: // value for 'facilityId'
+ *      patientId: // value for 'patientId'
+ *      result: // value for 'result'
+ *      role: // value for 'role'
+ *      startDate: // value for 'startDate'
+ *      endDate: // value for 'endDate'
+ *      pageNumber: // value for 'pageNumber'
+ *      pageSize: // value for 'pageSize'
+ *   },
+ * });
+ */
+export function useGetFacilityResultsForCsvQuery(
+  baseOptions?: Apollo.QueryHookOptions<
+    GetFacilityResultsForCsvQuery,
+    GetFacilityResultsForCsvQueryVariables
+  >
+) {
+  const options = { ...defaultOptions, ...baseOptions };
+  return Apollo.useQuery<
+    GetFacilityResultsForCsvQuery,
+    GetFacilityResultsForCsvQueryVariables
+  >(GetFacilityResultsForCsvDocument, options);
+}
+export function useGetFacilityResultsForCsvLazyQuery(
+  baseOptions?: Apollo.LazyQueryHookOptions<
+    GetFacilityResultsForCsvQuery,
+    GetFacilityResultsForCsvQueryVariables
+  >
+) {
+  const options = { ...defaultOptions, ...baseOptions };
+  return Apollo.useLazyQuery<
+    GetFacilityResultsForCsvQuery,
+    GetFacilityResultsForCsvQueryVariables
+  >(GetFacilityResultsForCsvDocument, options);
+}
+export type GetFacilityResultsForCsvQueryHookResult = ReturnType<
+  typeof useGetFacilityResultsForCsvQuery
+>;
+export type GetFacilityResultsForCsvLazyQueryHookResult = ReturnType<
+  typeof useGetFacilityResultsForCsvLazyQuery
+>;
+export type GetFacilityResultsForCsvQueryResult = Apollo.QueryResult<
+  GetFacilityResultsForCsvQuery,
+  GetFacilityResultsForCsvQueryVariables
 >;

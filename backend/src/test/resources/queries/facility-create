@@ -1,5 +1,5 @@
 mutation addFac($deviceId: ID!) {
-  addFacilityNew(
+  addFacility(
     testingFacilityName: "Nice Place"
     cliaNumber: "123457890987654321"
     street: "123 Main Street"
@@ -19,5 +19,7 @@ mutation addFac($deviceId: ID!) {
     orderingProviderZipCode: "11801"
     orderingProviderPhone: "(646) 5432123"
     deviceIds: [$deviceId]
-  )
+  ) {
+    id
+  }
 }

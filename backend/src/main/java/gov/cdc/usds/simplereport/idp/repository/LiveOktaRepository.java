@@ -384,6 +384,16 @@ public class LiveOktaRepository implements OktaRepository {
     user.resetPassword(true);
   }
 
+  public void resetUserMfa(String username) {
+    UserList users = _client.listUsers(username, null, null, null, null);
+    if (users.stream().count() == 0) {
+      throw new IllegalGraphqlArgumentException(
+          "Cannot reset MFA for Okta user with unrecognized username");
+    }
+    User user = users.single();
+    user.resetFactors();
+  }
+
   public void setUserIsActive(String username, Boolean active) {
     UserList users = _client.listUsers(username, null, null, null, null);
     if (users.stream().count() == 0) {
@@ -461,8 +471,6 @@ public class LiveOktaRepository implements OktaRepository {
 
       log.info("Created Okta group={}", roleGroupName);
     }
-
-    _app.update();
   }
 
   private UserList getOrgAdminUsers(Organization org) {
@@ -528,8 +536,6 @@ public class LiveOktaRepository implements OktaRepository {
     _app.createApplicationGroupAssignment(g.getId());
 
     log.info("Created Okta group={}", facilityGroupName);
-
-    _app.update();
   }
 
   public void deleteFacility(Facility facility) {

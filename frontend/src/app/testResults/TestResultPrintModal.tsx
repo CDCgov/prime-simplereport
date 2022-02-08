@@ -67,7 +67,7 @@ export const DetachedTestResultPrintModal = ({
   const { t } = useTranslation();
 
   const buttonGroup = (
-    <div className="sr-result-print-buttons">
+    <div className="sr-result-print-buttons dont-print">
       <Button
         variant="unstyled"
         label={t("testResult.close")}
@@ -85,7 +85,7 @@ export const DetachedTestResultPrintModal = ({
       overlayClassName="sr-test-results-modal-overlay"
       contentLabel="Printable test result"
     >
-      <div className="display-flex flex-align-center maxw-tablet grid-container patient-header padding-x-0">
+      <div className="display-flex flex-align-center maxw-tablet grid-container patient-header padding-x-0 dont-print">
         <LanguageToggler />
         {buttonGroup}
       </div>
@@ -95,9 +95,9 @@ export const DetachedTestResultPrintModal = ({
           correctionStatus === "REMOVED" && "sr-removed-result"
         )}
       >
-        <header>
-          <img alt="SimpleReport logo" src={logo} className="sr-print-logo" />
+        <header className="display-flex flex-align-end flex-justify margin-bottom-1">
           <h1>{t("testResult.result")}</h1>
+          <img alt="SimpleReport logo" src={logo} className="sr-print-logo" />
         </header>
         <main>
           <section className="sr-result-section sr-result-patient-details">

@@ -47,10 +47,11 @@ import TestResultTextModal from "./TestResultTextModal";
 import EmailTestResultModal from "./EmailTestResultModal";
 import TestResultCorrectionModal from "./TestResultCorrectionModal";
 import TestResultDetailsModal from "./TestResultDetailsModal";
+import DownloadResultsCSVButton from "./DownloadResultsCsvButton";
 
-type Results = keyof typeof TEST_RESULT_DESCRIPTIONS;
+export type Results = keyof typeof TEST_RESULT_DESCRIPTIONS;
 
-function hasSymptoms(noSymptoms: boolean, symptoms: string) {
+export function hasSymptoms(noSymptoms: boolean, symptoms: string) {
   if (noSymptoms) {
     return "No";
   }
@@ -63,6 +64,13 @@ function hasSymptoms(noSymptoms: boolean, symptoms: string) {
   return "Unknown";
 }
 
+export const byDateTested = (a: any, b: any) => {
+  // ISO string dates sort nicely
+  if (a.dateTested === b.dateTested) return 0;
+  if (a.dateTested < b.dateTested) return 1;
+  return -1;
+};
+
 function testResultRows(
   testResults: any,
   setPrintModalId: SetStateAction<any>,
@@ -71,13 +79,6 @@ function testResultRows(
   setTextModalId: SetStateAction<any>,
   setEmailModalTestResultId: SetStateAction<any>
 ) {
-  const byDateTested = (a: any, b: any) => {
-    // ISO string dates sort nicely
-    if (a.dateTested === b.dateTested) return 0;
-    if (a.dateTested < b.dateTested) return 1;
-    return -1;
-  };
-
   if (testResults.length === 0) {
     return (
       <tr>
@@ -100,13 +101,10 @@ function testResultRows(
       });
     }
     actionItems.push({
-      name: "View details",
-      action: () => setDetailsModalId(r.internalId),
-    });
-    actionItems.push({
       name: "Text result",
       action: () => setTextModalId(r.internalId),
     });
+
     const removed = r.correctionStatus === "REMOVED";
     if (!removed) {
       actionItems.push({
@@ -114,6 +112,10 @@ function testResultRows(
         action: () => setMarkErrorId(r.internalId),
       });
     }
+    actionItems.push({
+      name: "View details",
+      action: () => setDetailsModalId(r.internalId),
+    });
     return (
       <tr
         key={r.internalId}
@@ -402,6 +404,11 @@ export const DetachedTestResultsList = ({
                 )}
               </h2>
               <div>
+                <DownloadResultsCSVButton
+                  filterParams={filterParams}
+                  totalEntries={totalEntries}
+                  facilityId={facilityId}
+                />
                 <Button
                   className="sr-active-button"
                   icon={faSlidersH}
@@ -627,6 +634,17 @@ type TestResultsListProps = {
   pageNumber: number;
 };
 
+export interface ResultsQueryVariables {
+  patientId?: string | null;
+  facilityId: string;
+  result?: string | null;
+  role?: string | null;
+  startDate?: string | null;
+  endDate?: string | null;
+  pageNumber: number;
+  pageSize: number;
+}
+
 const TestResultsList = (props: TestResultsListProps) => {
   useDocumentTitle("Results");
 
@@ -675,16 +693,7 @@ const TestResultsList = (props: TestResultsListProps) => {
   const entriesPerPage = 20;
   const pageNumber = props.pageNumber || 1;
 
-  const resultsQueryVariables: {
-    patientId?: string | null;
-    facilityId: string;
-    result?: string | null;
-    role?: string | null;
-    startDate?: string | null;
-    endDate?: string | null;
-    pageNumber: number;
-    pageSize: number;
-  } = {
+  const resultsQueryVariables: ResultsQueryVariables = {
     facilityId: activeFacilityId,
     pageNumber: pageNumber - 1,
     pageSize: entriesPerPage,

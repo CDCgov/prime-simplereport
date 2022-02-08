@@ -40,7 +40,7 @@ describe("ManagePatients", () => {
     expect(await screen.findByText(patients[2].lastName, { exact: false }));
   });
   it("filters a list of patients", async () => {
-    jest.useFakeTimers();
+    jest.useFakeTimers("modern");
     render(
       <TestContainer>
         <ManagePatients

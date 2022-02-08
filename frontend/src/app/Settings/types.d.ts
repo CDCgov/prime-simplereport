@@ -2,6 +2,12 @@ type Nullable<T> = { [P in keyof T]: T[P] | null };
 
 type ISODate = `${number}${number}${number}${number}-${number}${number}-${number}${number}`;
 
+type RequiredExceptFor<T, TOptional extends keyof T> = Pick<
+  T,
+  Exclude<keyof T, TOptional>
+> &
+  Partial<T>;
+
 interface DeviceType {
   internalId: string;
   name: string;
@@ -90,55 +96,6 @@ interface FlatOrganization {
 interface PhoneNumber {
   type: string;
   number: string;
-}
-
-interface SettingsData {
-  organization: {
-    internalId: string;
-    name: string;
-    testingFacility: [
-      {
-        id: string;
-        cliaNumber: string;
-        name: string;
-        street: string;
-        streetTwo: string;
-        city: string;
-        county: string;
-        state: string;
-        zipCode: string;
-        phone: string;
-        email: string;
-        defaultDeviceSpecimen: string;
-        deviceTypes: [
-          {
-            name: string;
-            internalId: string;
-          }
-        ];
-        orderingProvider: {
-          firstName: string;
-          middleName: string;
-          lastName: string;
-          suffix: string;
-          NPI: string;
-          street: string;
-          streetTwo: string;
-          city: string;
-          county: string;
-          state: string;
-          zipCode: string;
-          phone: string;
-        };
-      }
-    ];
-  };
-  deviceTypes: [
-    {
-      internalId: string;
-      name: string;
-    }
-  ];
 }
 
 interface FacilityData {

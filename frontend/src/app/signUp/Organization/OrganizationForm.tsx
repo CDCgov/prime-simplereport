@@ -84,7 +84,7 @@ const OrganizationForm = () => {
       try {
         const res = await SignUpApi.createOrganization(organization);
         setOrgExternalId(res.orgExternalId);
-      } catch (error) {
+      } catch (error: any) {
         const message = error.message || error;
         setBackendError(organizationBackendErrors(message));
         setLoading(false);

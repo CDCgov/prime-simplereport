@@ -199,9 +199,9 @@ export const es: LanguageConfig = {
           city: "La ciudad tiene un formato incorrecto",
           county: "El formato del condado es incorrecto",
           country: "El formato del país es incorrecto",
-          race: "La raza tiene un formato incorrecto",
+          race: "La raza es obligatoria",
           tribalAffiliation: "La afiliación tribal tiene un formato incorrecto",
-          ethnicity: "La etnia tiene un formato incorrecto",
+          ethnicity: "La etnia es obligatoria",
           gender: "El sexo asignado al nacer tiene un formato incorrecto",
           residentCongregateSetting:
             "¿Reside usted en un entorno compartido por muchas personas?  Se requiere una respuesta",
@@ -263,10 +263,9 @@ export const es: LanguageConfig = {
         name: "Nombre del centro",
         phone: "Teléfono del centro",
         address: "Dirección del centro",
-        clia:
-          "Número de Enmiendas para Mejoras de Laboratorios Clínicos (CLIA)",
+        clia: "Número de CLIA",
         orderingProvider: "Solicitado por",
-        npi: "Identificador de Proveedor Nacional (NPI)",
+        npi: "Número de NPI",
       },
       notes: {
         meaning:
@@ -282,7 +281,9 @@ export const es: LanguageConfig = {
             li0:
               "Quédese en casa cuando esté enfermo, excepto para recibir atención médica.",
             li1:
-              "Autoaíslese durante 10 días completos después de que aparezcan los síntomas (o a partir del día siguiente a la realización de la prueba, si no tiene síntomas).",
+              "Quédate en casa durante 5 días. " +
+              "Si no tiene síntomas o sus síntomas se resuelven después de 5 días, puede salir de su casa. " +
+              "Continúe usando una máscara alrededor de otras personas durante 5 días adicionales. ",
             li2:
               "Si se autoaísla en su casa, donde viven otras personas, use una habitación y un baño separado para los miembros del grupo familiar que estan enfermos " +
               "(si es posible). Limpie las habitaciones compartidas según sea necesario, para evitar la transmisión del virus",
@@ -316,7 +317,7 @@ export const es: LanguageConfig = {
           difficultNewsURL:
             "espanol.cdc.gov/coronavirus/2019-ncov/daily-life-coping/managing-stress-anxiety.html",
           moreInformation:
-            "Para más información: espanol.cdc.gov/coronavirus/2019-ncov/if-you-are-sick/index.html.",
+            "Para más información: espanol.cdc.gov/coronavirus/2019-ncov/if-you-are-sick/index.html. Las leyes locales pueden variar, siempre consulte las pautas del departamento de salud de su estado y condado.",
         },
         negative: {
           p0:
@@ -488,7 +489,7 @@ export const es: LanguageConfig = {
         enterDOB2:
           "Ingrese su fecha de nacimiento para acceder a su portal de pruebas de COVID-19.",
         linkExpirationNotice:
-          "Nota: este enlace caducará 5 días después de que se registró el resultado de la prueba.",
+          "Nota: este enlace caducará 10 días después de que se registró el resultado de la prueba.",
         format: "MM/DD/AAAA",
         invalidFormat:
           "La fecha de nacimiento debe estar en formato MM/DD/AAAA",

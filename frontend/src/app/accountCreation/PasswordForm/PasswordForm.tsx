@@ -114,7 +114,7 @@ export const PasswordForm = () => {
       try {
         await AccountCreationApi.setPassword(password);
         setSubmitted(true);
-      } catch (error) {
+      } catch (error: any) {
         setPasswordError(
           error || "Unable to setup password, please try again later"
         );

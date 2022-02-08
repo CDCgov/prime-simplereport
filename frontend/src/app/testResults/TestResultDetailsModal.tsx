@@ -2,8 +2,8 @@ import { gql } from "@apollo/client";
 import Modal from "react-modal";
 import moment from "moment";
 import classnames from "classnames";
-import iconClose from "uswds/dist/img/usa-icons/close.svg";
 
+import iconClose from "../../img/close.svg";
 import "./TestResultPrintModal.scss";
 import { QueryWrapper } from "../commonComponents/QueryWrapper";
 import { TestResult } from "../testQueue/QueueItem";

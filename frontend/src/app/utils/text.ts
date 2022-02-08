@@ -99,7 +99,7 @@ export function formatUserStatus(status?: string | null) {
   if (status === "SUSPENDED") {
     return "Account deactivated";
   } else if (status === "PROVISIONED") {
-    return "Pending account set up";
+    return "Account pending";
   } else {
     return capitalizeText(status);
   }

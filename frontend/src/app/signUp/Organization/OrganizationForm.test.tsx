@@ -7,8 +7,7 @@ import OrganizationForm, {
 
 const getOrgNameInput = () =>
   screen.getByRole("textbox", {
-    name:
-      "Organization name Organizations have multiple testing facilities or locations as part of their network. required",
+    name: "Organization name required",
   });
 const getOrgStateDropdown = () => screen.getByLabelText("Organization state *");
 const getOrgTypeDropdown = () => screen.getByLabelText("Organization type *");

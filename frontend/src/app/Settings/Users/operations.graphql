@@ -30,9 +30,7 @@ query GetUsersAndStatus {
 }
 
 mutation ResendActivationEmail($id: ID!) {
-  resendActivationEmail(
-    id: $id
-  ) {
+  resendActivationEmail(id: $id) {
     id
     firstName
     middleName
@@ -64,5 +62,11 @@ mutation EditUserEmail($id: ID!, $email: String) {
   updateUserEmail(id: $id, email: $email) {
     id
     email
+  }
+}
+
+mutation ResetUserMfa($id: ID!) {
+  resetUserMfa(id: $id) {
+    id
   }
 }

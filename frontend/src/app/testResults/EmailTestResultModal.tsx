@@ -30,7 +30,6 @@ export const EmailTestResultModal = ({ closeModal, testResultId }: Props) => {
 
   const patient = data?.testResult?.patient as Person;
   const dateTested = data?.testResult?.dateTested;
-  const patientLinkId = data?.testResult?.patientLink?.internalId || "";
 
   return (
     <Modal
@@ -59,9 +58,10 @@ export const EmailTestResultModal = ({ closeModal, testResultId }: Props) => {
               label="Send result"
               onClick={() => {
                 emailTestResult({
-                  variables: { patientLinkId },
+                  variables: { testEventId: testResultId },
                 }).then((response) => {
-                  const success = response.data?.sendPatientLinkEmail;
+                  const success =
+                    response.data?.sendPatientLinkEmailByTestEventId;
                   showAlertNotification(
                     success ? "success" : "error",
                     success

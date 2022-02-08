@@ -22,7 +22,7 @@ const AoEPatientFormContainer: React.FC = () => {
     try {
       await PxpApi.submitQuestions(plid as string, patient.birthDate, data);
       setNextPage(true);
-    } catch (e) {
+    } catch (e: any) {
       showError("There was an error submitting your responses");
       return;
     }

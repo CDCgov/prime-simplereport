@@ -264,6 +264,14 @@ public class TestEventExport {
     return "";
   }
 
+  @JsonProperty("Test_correction_reason")
+  public String getCorrectionReason() {
+    if (testEvent.getCorrectionStatus() != TestCorrectionStatus.ORIGINAL) {
+      return Optional.ofNullable(testEvent.getReasonForCorrection()).orElse("");
+    }
+    return "";
+  }
+
   // 27Jan2021 Updated to handle deleted tests
   @JsonProperty("Test_result_status")
   public String getTestResultStatus() {

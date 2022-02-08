@@ -9,14 +9,14 @@
 
 @media print {
   body {
-    .sr-result-print-buttons {
-      display: none;
+    .dont-print {
+      display: none !important;
     }
 
     .sr-test-results-modal-content {
       transform: none;
       max-height: none;
-      padding: none;
+      padding: 0;
     }
   }
 }
@@ -62,6 +62,11 @@
       float: right;
       width: 200px;
     }
+
+    h1 {
+      padding: 0;
+      margin: 0;
+    }
   }
 
   main {
@@ -70,14 +75,16 @@
   }
 
   footer {
-    margin: 1rem 0;
+    p {
+      margin-bottom: 0;
+    }
   }
 }
 
 .sr-result-section {
   width: 100%;
   border: 1px solid #767676;
-  margin: 0.5rem 0;
+  margin: 0.25rem 0;
 
   h2 {
     font-size: 100%;
@@ -114,6 +121,18 @@
 
 .sr-result-facility-details {
   margin-left: 2%;
+}
+
+.sr-result-test-details {
+  .sr-details-list {
+    li {
+      b {
+        width: unset !important;
+        min-width: 8rem;
+        max-width: 12rem;
+      }
+    }
+  }
 }
 
 .sr-details-list {

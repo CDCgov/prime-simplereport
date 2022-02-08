@@ -63,7 +63,7 @@ export const SelfRegistration = () => {
       await PxpApi.selfRegister(data);
       setPersonName(formatFullName(person) || "");
       setStep(RegistrationStep.FINISHED);
-    } catch (e) {
+    } catch (e: any) {
       showError(
         t("selfRegistration.form.error.heading"),
         t("selfRegistration.form.error.text")

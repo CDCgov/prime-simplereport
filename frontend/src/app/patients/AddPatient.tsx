@@ -79,6 +79,7 @@ export const ADD_PATIENT = gql`
     $city: String
     $state: String!
     $zipCode: String!
+    $country: String!
     $telephone: String
     $phoneNumbers: [PhoneNumberInput!]
     $role: String
@@ -105,6 +106,7 @@ export const ADD_PATIENT = gql`
       city: $city
       state: $state
       zipCode: $zipCode
+      country: $country
       telephone: $telephone
       phoneNumbers: $phoneNumbers
       role: $role
@@ -206,7 +208,7 @@ const AddPatient = () => {
     if (firstName && lastName && birthDate?.isValid()) {
       try {
         getPatientExists();
-      } catch (e) {
+      } catch (e: any) {
         // A failure to check duplicate shouldn't disrupt registration
         console.error(e);
       }

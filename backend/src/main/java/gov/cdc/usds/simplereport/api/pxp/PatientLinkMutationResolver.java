@@ -22,4 +22,12 @@ public class PatientLinkMutationResolver implements GraphQLMutationResolver {
   public boolean sendPatientLinkEmail(UUID patientLinkId) {
     return testResultsDeliveryService.emailTestResults(patientLinkId);
   }
+
+  public boolean sendPatientLinkSmsByTestEventId(UUID testEventId) {
+    return testResultsDeliveryService.smsTestResultsForTestEvent(testEventId);
+  }
+
+  public boolean sendPatientLinkEmailByTestEventId(UUID testEventId) {
+    return testResultsDeliveryService.emailTestResultsForTestEvent(testEventId);
+  }
 }

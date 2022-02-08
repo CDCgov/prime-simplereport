@@ -263,8 +263,8 @@ public class TestOrderService {
       _testEventReportingService.report(testEvent);
       ArrayList<Boolean> deliveryStatuses = new ArrayList<>();
 
+      PatientLink patientLink = _pls.createPatientLink(savedOrder.getInternalId());
       if (patientHasDeliveryPreference(savedOrder)) {
-        PatientLink patientLink = _pls.createPatientLink(savedOrder.getInternalId());
 
         if (smsDeliveryPreference(savedOrder) || smsAndEmailDeliveryPreference(savedOrder)) {
           boolean smsDeliveryStatus = testResultsDeliveryService.smsTestResults(patientLink);
@@ -424,6 +424,7 @@ public class TestOrderService {
     TestEvent newRemoveEvent =
         new TestEvent(event, TestCorrectionStatus.REMOVED, reasonForCorrection);
     _terepo.save(newRemoveEvent);
+    _testEventReportingService.report(newRemoveEvent);
 
     // order having reason text is way more useful when we allow actual corrections
     // not just

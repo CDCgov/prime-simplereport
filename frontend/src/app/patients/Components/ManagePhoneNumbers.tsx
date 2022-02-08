@@ -82,7 +82,7 @@ const ManagePhoneNumbers: React.FC<Props> = ({
           phoneNumbersOrDefault[idx]
         );
         clearError(idx, field);
-      } catch (e) {
+      } catch (e: any) {
         setErrors((existingErrors) => {
           const newErrors = [...existingErrors];
           newErrors[idx] = {
@@ -123,7 +123,7 @@ const ManagePhoneNumbers: React.FC<Props> = ({
             field,
             phoneNumbersOrDefault[idx]
           );
-        } catch (e) {
+        } catch (e: any) {
           const error = getValidationError(e);
           if (message && error !== message) {
             setErrors((existingErrors) => {

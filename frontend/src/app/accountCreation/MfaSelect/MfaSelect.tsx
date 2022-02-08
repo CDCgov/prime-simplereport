@@ -62,6 +62,7 @@ export const MfaSelect = () => {
         />
         <RadioGroup
           name="addressSelect"
+          className="margin-bottom-1"
           legend="Add a second layer of security to protect your account."
           buttons={[
             {

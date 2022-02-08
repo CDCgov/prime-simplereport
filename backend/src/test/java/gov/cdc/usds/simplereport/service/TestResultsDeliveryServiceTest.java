@@ -9,6 +9,7 @@ import static org.mockito.Mockito.verifyNoInteractions;
 import static org.mockito.Mockito.when;
 
 import gov.cdc.usds.simplereport.db.model.Facility;
+import gov.cdc.usds.simplereport.db.model.Organization;
 import gov.cdc.usds.simplereport.db.model.PatientLink;
 import gov.cdc.usds.simplereport.db.model.Person;
 import gov.cdc.usds.simplereport.db.model.TestOrder;
@@ -64,8 +65,36 @@ class TestResultsDeliveryServiceTest {
             EmailProviderTemplate.SIMPLE_REPORT_TEST_RESULT,
             Map.of(
                 "facility_name", "House of Gryffindor",
+                "organization_name", "Hogwarts",
                 "expiration_duration", "2 days",
                 "test_result_url", "https://simplereport.gov/pxp?plid=" + uuid));
+  }
+
+  @Test
+  void emailTestResultTests_forTestEventId() throws IOException {
+
+    // GIVEN
+    UUID patientLinkId = UUID.randomUUID();
+    UUID testEventId = UUID.randomUUID();
+    PatientLink patientLink = getMockedPatientLink(patientLinkId);
+
+    when(patientLinkService.getPatientLinkForTestEvent(testEventId)).thenReturn(patientLink);
+    when(patientLinkService.getRefreshedPatientLink(patientLinkId)).thenReturn(patientLink);
+
+    // WHEN
+    boolean success = testResultsDeliveryService.emailTestResultsForTestEvent(testEventId);
+
+    // THEN
+    assertThat(success).isTrue();
+    verify(emailService)
+        .sendWithDynamicTemplate(
+            List.of("harry@hogwarts.edu"),
+            EmailProviderTemplate.SIMPLE_REPORT_TEST_RESULT,
+            Map.of(
+                "facility_name", "House of Gryffindor",
+                "organization_name", "Hogwarts",
+                "expiration_duration", "2 days",
+                "test_result_url", "https://simplereport.gov/pxp?plid=" + patientLinkId));
   }
 
   @Test
@@ -88,6 +117,7 @@ class TestResultsDeliveryServiceTest {
             EmailProviderTemplate.SIMPLE_REPORT_TEST_RESULT,
             Map.of(
                 "facility_name", "House of Gryffindor",
+                "organization_name", "Hogwarts",
                 "expiration_duration", "1 day",
                 "test_result_url", "https://simplereport.gov/pxp?plid=" + uuid));
   }
@@ -123,6 +153,29 @@ class TestResultsDeliveryServiceTest {
 
     // THEN
     assertThat(success).isFalse();
+  }
+
+  @Test
+  void smsTextTestResultTest_forTestEventId() {
+    // GIVEN
+    UUID patientLinkId = UUID.randomUUID();
+    UUID testEventId = UUID.randomUUID();
+    PatientLink patientLink = getMockedPatientLink(patientLinkId);
+
+    when(patientLinkService.getPatientLinkForTestEvent(testEventId)).thenReturn(patientLink);
+    when(patientLinkService.getRefreshedPatientLink(patientLinkId)).thenReturn(patientLink);
+    when(smsService.sendToPatientLink(any(PatientLink.class), anyString()))
+        .thenReturn(List.of(SmsAPICallResult.builder().successful(true).build()));
+
+    // WHEN
+    boolean success = testResultsDeliveryService.smsTestResultsForTestEvent(testEventId);
+
+    // THEN
+    assertThat(success).isTrue();
+    String message =
+        "Your COVID-19 test result is ready to view. This link will expire after 2 days: https://simplereport.gov/pxp?plid="
+            + patientLinkId;
+    verify(smsService).sendToPatientLink(patientLink, message);
   }
 
   @Test
@@ -172,6 +225,9 @@ class TestResultsDeliveryServiceTest {
     Facility facility = mock(Facility.class);
     when(facility.getFacilityName()).thenReturn("House of Gryffindor");
 
+    Organization org = mock(Organization.class);
+    when(org.getOrganizationName()).thenReturn("Hogwarts");
+
     Person person = mock(Person.class);
     when(person.getEmail()).thenReturn("harry@hogwarts.edu");
     when(person.getEmails()).thenReturn(List.of("harry@hogwarts.edu"));
@@ -179,6 +235,7 @@ class TestResultsDeliveryServiceTest {
     TestOrder testOrder = mock(TestOrder.class);
     when(testOrder.getPatient()).thenReturn(person);
     when(testOrder.getFacility()).thenReturn(facility);
+    when(testOrder.getOrganization()).thenReturn(org);
 
     PatientLink patientLink = mock(PatientLink.class);
     when(patientLink.getInternalId()).thenReturn(internalId);

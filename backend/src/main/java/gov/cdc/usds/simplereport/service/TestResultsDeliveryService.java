@@ -45,6 +45,7 @@ public class TestResultsDeliveryService {
     Map<String, Object> templateVariables =
         Map.of(
             "facility_name", patientLink.getTestOrder().getFacility().getFacilityName(),
+            "organization_name", patientLink.getTestOrder().getOrganization().getOrganizationName(),
             "expiration_duration", getExpirationDuration(patientLink),
             "test_result_url", patientLinkUrl + patientLink.getInternalId());
 
@@ -82,5 +83,15 @@ public class TestResultsDeliveryService {
             getExpirationDuration(patientLink), patientLinkUrl + patientLink.getInternalId());
     List<SmsAPICallResult> smsSendResults = smsService.sendToPatientLink(patientLink, message);
     return smsSendResults.stream().allMatch(SmsAPICallResult::isSuccessful);
+  }
+
+  public boolean smsTestResultsForTestEvent(UUID testEventId) {
+    PatientLink patientLink = patientLinkService.getPatientLinkForTestEvent(testEventId);
+    return this.smsTestResults(patientLink.getInternalId());
+  }
+
+  public boolean emailTestResultsForTestEvent(UUID testEventId) {
+    PatientLink patientLink = patientLinkService.getPatientLinkForTestEvent(testEventId);
+    return this.emailTestResults(patientLink.getInternalId());
   }
 }

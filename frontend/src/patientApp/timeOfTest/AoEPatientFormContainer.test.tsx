@@ -33,7 +33,7 @@ describe("AoEPatientFormContainer", () => {
     render(
       <Provider store={store}>
         <MockedProvider mocks={[]} addTypename={false}>
-          <AoEPatientFormContainer page={""} />
+          <AoEPatientFormContainer />
         </MockedProvider>
       </Provider>
     );

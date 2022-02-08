@@ -12,6 +12,8 @@ import { getStateNameFromCode, requiresOrderProvider } from "../../utils/state";
 import {
   getBestSuggestion,
   suggestionIsCloseEnough,
+  isValidZipCodeForState,
+  getZipCodeData,
 } from "../../utils/smartyStreets";
 import {
   AddressConfirmationModal,
@@ -46,7 +48,7 @@ export const useFacilityValidation = (facility: Facility) => {
             orderingProviderIsRequired: requiresOrderProvider(facility.state),
           },
         });
-      } catch (e) {
+      } catch (e: any) {
         const errorMessage =
           field === "state" && stateCodes.includes(facility[field])
             ? createStateError(facility.state)
@@ -69,7 +71,7 @@ export const useFacilityValidation = (facility: Facility) => {
         },
       });
       return "";
-    } catch (e) {
+    } catch (e: any) {
       const errors = e.inner.reduce(
         (
           acc: FacilityErrors,
@@ -205,6 +207,27 @@ const FacilityForm: React.FC<Props> = (props) => {
 
   const validateFacilityAddresses = async () => {
     const originalFacilityAddress = getFacilityAddress(facility);
+
+    const zipCodeData = await getZipCodeData(originalFacilityAddress.zipCode);
+    const isValidZipForState = isValidZipCodeForState(
+      originalFacilityAddress.state,
+      zipCodeData
+    );
+
+    if (!isValidZipForState) {
+      const alert = (
+        <Alert
+          type="error"
+          title="Form Errors"
+          body="Invalid ZIP code for the selected state"
+        />
+      );
+
+      showNotification(alert);
+
+      return;
+    }
+
     const suggestedFacilityAddress = await getBestSuggestion(
       originalFacilityAddress
     );

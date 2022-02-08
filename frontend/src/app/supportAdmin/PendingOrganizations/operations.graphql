@@ -14,6 +14,16 @@ mutation SetOrgIdentityVerified($externalId: String!, $verified: Boolean!) {
   setOrganizationIdentityVerified(externalId: $externalId, verified: $verified)
 }
 
+mutation MarkPendingOrganizationAsDeleted(
+  $orgExternalId: String!
+  $deleted: Boolean!
+) {
+  markPendingOrganizationAsDeleted(
+    orgExternalId: $orgExternalId
+    deleted: $deleted
+  )
+}
+
 mutation EditPendingOrganization(
   $externalId: String!
   $name: String

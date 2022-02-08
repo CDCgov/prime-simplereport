@@ -9,21 +9,26 @@ import { SettingsUser } from "./ManageUsersContainer";
 interface RoleButton {
   value: Role;
   label: string;
+  labelDescription: string;
 }
 
 const ROLES: RoleButton[] = [
   {
     value: "ADMIN",
-    label: "Admin (full access)",
+    label: "Admin",
+    labelDescription:
+      "Full access: Conduct tests, manage test results and patient profiles,  manage account settings, users, and testing facilities. ",
   },
   {
     value: "USER",
-    label:
-      "Standard user (conduct tests, manage test results and patient profiles)",
+    label: "Standard user",
+    labelDescription:
+      "Conduct tests, manage test results, and patient profiles",
   },
   {
     value: "ENTRY_ONLY",
-    label: "Testing only (conduct tests)",
+    label: "Testing only",
+    labelDescription: "Conduct tests",
   },
 ];
 

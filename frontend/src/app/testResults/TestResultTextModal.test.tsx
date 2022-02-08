@@ -56,10 +56,6 @@ describe("TestResultTextModal", () => {
                   },
                 ],
               },
-              patientLink: {
-                internalId: "e4c1c27f-768e-44d2-b9d5-e047454c1d24",
-                __typename: "PatientLink",
-              },
               __typename: "TestResult",
             },
           }}
@@ -108,10 +104,6 @@ describe("TestResultTextModal", () => {
                   },
                 ],
               },
-              patientLink: {
-                internalId: "e4c1c27f-768e-44d2-b9d5-e047454c1d24",
-                __typename: "PatientLink",
-              },
               __typename: "TestResult",
             },
           },
@@ -121,7 +113,7 @@ describe("TestResultTextModal", () => {
         request: {
           query: SEND_SMS,
           variables: {
-            id: "e4c1c27f-768e-44d2-b9d5-e047454c1d24",
+            id: "super-fancy-id",
           },
         },
         result: () => {
@@ -129,7 +121,7 @@ describe("TestResultTextModal", () => {
 
           return {
             data: {
-              sendPatientLinkSms: true,
+              sendPatientLinkSmsByTestEventId: true,
             },
           };
         },

@@ -6,11 +6,14 @@ import gov.cdc.usds.simplereport.api.pxp.CurrentPatientContextHolder;
 import gov.cdc.usds.simplereport.db.model.PatientLink;
 import gov.cdc.usds.simplereport.db.model.PatientLinkFailedAttempt;
 import gov.cdc.usds.simplereport.db.model.Person;
+import gov.cdc.usds.simplereport.db.model.TestEvent;
 import gov.cdc.usds.simplereport.db.model.TestOrder;
 import gov.cdc.usds.simplereport.db.repository.PatientLinkFailedAttemptRepository;
 import gov.cdc.usds.simplereport.db.repository.PatientLinkRepository;
+import gov.cdc.usds.simplereport.db.repository.TestEventRepository;
 import gov.cdc.usds.simplereport.db.repository.TestOrderRepository;
 import java.time.LocalDate;
+import java.util.Optional;
 import java.util.UUID;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -30,10 +33,24 @@ public class PatientLinkService {
 
   @Autowired private TestOrderRepository torepo;
 
+  @Autowired private TestEventRepository testEventRepository;
+
   @Autowired private CurrentPatientContextHolder contextHolder;
 
   public PatientLink getPatientLink(UUID internalId) {
     return plrepo.findById(internalId).orElseThrow(InvalidPatientLinkException::new);
+  }
+
+  public PatientLink getPatientLinkForTestEvent(UUID testEventID) {
+    TestOrder testOrder =
+        testEventRepository.findById(testEventID).map(TestEvent::getTestOrder).orElse(null);
+
+    if (testOrder != null) {
+      Optional<PatientLink> firstByTestOrderInternalId = plrepo.findFirstByTestOrder(testOrder);
+      return firstByTestOrderInternalId.orElseGet(() -> plrepo.save(new PatientLink(testOrder)));
+    }
+
+    return null;
   }
 
   public PatientLink getRefreshedPatientLink(UUID internalId) {
@@ -84,20 +101,9 @@ public class PatientLinkService {
     }
   }
 
-  public Person getPatientFromLink(UUID internalId) {
-    PatientLink pl = getPatientLink(internalId);
-    return pl.getTestOrder().getPatient();
-  }
-
   public PatientLink createPatientLink(UUID testOrderUuid) {
     TestOrder to = torepo.findById(testOrderUuid).orElseThrow(InvalidPatientLinkException::new);
     PatientLink pl = new PatientLink(to);
-    return plrepo.save(pl);
-  }
-
-  public PatientLink expireMyPatientLink() {
-    PatientLink pl = contextHolder.getPatientLink();
-    pl.expire();
     return plrepo.save(pl);
   }
 }

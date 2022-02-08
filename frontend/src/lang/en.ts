@@ -42,7 +42,7 @@ export const en = {
       gender: {
         female: "Female",
         male: "Male",
-        other: "Non-binary",
+        other: "Other",
         refused: REFUSED,
       },
       ethnicity: {
@@ -188,9 +188,9 @@ export const en = {
           city: "City is incorrectly formatted",
           county: "County is incorrectly formatted",
           country: "Country is incorrectly formatted",
-          race: "Race is incorrectly formatted",
+          race: "Race is required",
           tribalAffiliation: "Tribal affiliation is incorrectly formatted",
-          ethnicity: "Ethnicity is incorrectly formatted",
+          ethnicity: "Ethnicity is required",
           gender: "Sex assigned at birth is incorrectly formatted",
           residentCongregateSetting:
             "Are you a resident in a congregate living setting? is required",
@@ -267,7 +267,9 @@ export const en = {
           guidelines: {
             li0: "Stay home when you are sick, except to get medical care.",
             li1:
-              "Self isolate for 10 full days after symptoms first appeared (or starting the day after you had your test, if you have no symptoms).",
+              "Stay home for 5 days. " +
+              "If you have no symptoms or your symptoms are resolving after 5 days, you can leave your house. " +
+              "Continue to wear a mask around others for 5 additional days.",
             li2:
               "If you are self isolating at home where others live, use a separate room and bathroom for sick household members (if possible). " +
               "Clean any shared rooms as needed, to avoid transmitting the virus.",
@@ -298,7 +300,7 @@ export const en = {
           difficultNewsURL:
             "cdc.gov/coronavirus/2019-ncov/daily-life-coping/managing-stress-anxiety.html",
           moreInformation:
-            "More information is available at cdc.gov/coronavirus/2019-ncov/if-you-are-sick.",
+            "More information is available at cdc.gov/coronavirus/2019-ncov/if-you-are-sick. Local laws may vary, always check your state and county health department guidelines.",
         },
         negative: {
           p0:
@@ -566,9 +568,9 @@ export const en = {
         dateOfBirth: "Date of birth",
         enterDOB: "Enter your date of birth",
         enterDOB2:
-          "Enter your date of birth to access your COVID-19 testing portal.",
+          "Enter <0>{{personName}}</0>'s date of birth to access your COVID-19 testing portal.",
         linkExpirationNotice:
-          "Note: this link will expire 5 days after the test result was recorded.",
+          "Note: this link will expire 10 days after the test result was recorded.",
         format: "MM/DD/YYYY",
         invalidFormat: "Date of birth must be in MM/DD/YYYY format",
         invalidYear:

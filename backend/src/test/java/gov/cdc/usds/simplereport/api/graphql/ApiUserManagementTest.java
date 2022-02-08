@@ -620,6 +620,38 @@ class ApiUserManagementTest extends BaseGraphqlTest {
   }
 
   @Test
+  void resetUserMfa_orgUser_success() {
+    useSuperUser();
+
+    ObjectNode addUser = runBoilerplateAddUser(Role.ADMIN);
+    String id = addUser.get("id").asText();
+
+    useOrgAdmin();
+
+    ObjectNode resetUserMfaVariables = JsonNodeFactory.instance.objectNode().put("id", id);
+    ObjectNode resp = runQuery("reset-user-mfa", "resetUserMfa", resetUserMfaVariables, null);
+    ObjectNode resetUserMfa = (ObjectNode) resp.get("resetUserMfa");
+    assertEquals(USERNAMES.get(0), resetUserMfa.get("email").asText());
+  }
+
+  @Test
+  void resetUserMfa_orgUser_failure() {
+    useSuperUser();
+
+    ObjectNode addUser = runBoilerplateAddUser(Role.ADMIN);
+    String id = addUser.get("id").asText();
+
+    useOrgUser();
+
+    ObjectNode resetUserMfaVariables = JsonNodeFactory.instance.objectNode().put("id", id);
+    runQuery(
+        "reset-user-mfa",
+        "resetUserMfa",
+        resetUserMfaVariables,
+        "Current user does not have permission to request [/resetUserMfa]");
+  }
+
+  @Test
   void resendActivationEmail_orgUser_success() {
     useSuperUser();
 

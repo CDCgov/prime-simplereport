@@ -50,7 +50,7 @@ const AccountCreationApp = () => {
       if (status === UserAccountStatus.PENDING_ACTIVATION && activationToken) {
         try {
           await AccountCreationApi.initialize(activationToken);
-        } catch (error) {
+        } catch (error: any) {
           setError(error || "Invalid activation token");
         }
         // Re-retrieve the status since it will have changed after activation
@@ -78,7 +78,31 @@ const AccountCreationApp = () => {
   }
 
   // Show error card if activation token is invalid
-  if (error) {
+  if (error && error.includes("activat")) {
+    return (
+      <CardBackground>
+        <Card
+          logo
+          bodyKicker={"Your SimpleReport account invitation has expired"}
+        >
+          <p>
+            Contact your organization administrator for a new account setup
+            email.
+          </p>
+
+          <p>
+            Not sure who your organization administrator is? Email{" "}
+            <a href="mailto:support@simplereport.gov">
+              support@simplereport.gov
+            </a>
+            .
+          </p>
+        </Card>
+      </CardBackground>
+    );
+  }
+  // show generic error card for other errors
+  else if (error) {
     return (
       <CardBackground>
         <Card logo bodyKicker={error} bodyKickerCentered={true}></Card>

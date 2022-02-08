@@ -79,7 +79,7 @@ const ManageOrganizationContainer: any = () => {
     try {
       await mutation();
       dispatch(updateOrganization({ name }));
-    } catch (e) {
+    } catch (e: any) {
       alertProps.type = "error";
       alertProps.title = "Error updating organization";
       alertProps.body =

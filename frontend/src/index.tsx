@@ -35,6 +35,7 @@ import getNodeEnv from "./app/utils/getNodeEnv";
 import PrimeErrorBoundary from "./app/PrimeErrorBoundary";
 import "./styles/App.css";
 import { getUrl } from "./app/utils/url";
+import SessionTimeout from "./app/accountCreation/SessionTimeout";
 
 // Initialize telemetry early
 ai.initialize();
@@ -125,6 +126,7 @@ export const ReactApp = (
                   path="/register/:registrationLink"
                   component={SelfRegistration}
                 />
+                <Route path="/session-timeout" component={SessionTimeout} />
                 <Route path="/" component={App} />
                 <Route component={() => <>Page not found</>} />
               </Switch>

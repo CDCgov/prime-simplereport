@@ -93,6 +93,7 @@ export const queueQuery = gql`
       deviceType {
         internalId
         name
+        testLength
       }
       specimenType {
         internalId
@@ -169,7 +170,9 @@ const TestQueue: React.FC<Props> = ({ activeFacilityId }) => {
     );
   }
 
-  const deviceIds = facility.deviceTypes.map((d: DeviceType) => d.internalId);
+  const deviceIds: string[] = facility.deviceTypes.map(
+    (d: DeviceType) => d.internalId
+  );
 
   let shouldRenderQueue =
     data.queue.length > 0 && facility.deviceTypes.length > 0;
@@ -190,16 +193,27 @@ const TestQueue: React.FC<Props> = ({ activeFacilityId }) => {
           // Get possible device specimen types for this facility
           const deviceSpecimenTypes: DeviceSpecimenType[] = data.deviceSpecimenTypes.filter(
             (d: DeviceSpecimenType) =>
-              deviceIds.includes(d.deviceType.internalId)
+              deviceIds.includes(d.deviceType.internalId) &&
+              // Facility may be configured with a device that does not have
+              // any associated swab types - remove them from the set of
+              // options
+              deviceIds.some((deviceId) => d.deviceType.internalId === deviceId)
           );
 
-          // a test may have been configured with a certain device/swab combo
-          // that could have since been removed from the facility
-          if (!deviceIds.includes(deviceType.internalId)) {
-            deviceType = facility.deviceTypes[0];
-            deviceSpecimenType = deviceSpecimenTypes.filter(
-              (dst) => dst.deviceType.internalId === deviceType.internalId
-            )[0];
+          // The `deviceSpecimenType` for a test queue entry does not carry full
+          // device and swab data - if the device specimen no longer exists, we'll
+          // get a server error trying to follow its associations, so we have to
+          // do this in-memory
+          let selectedDeviceSpecimenType = deviceSpecimenTypes.find(
+            (dst) => dst.internalId === deviceSpecimenType.internalId
+          );
+
+          // The selected device specimen type for a test has been removed by an admin
+          if (!selectedDeviceSpecimenType) {
+            selectedDeviceSpecimenType =
+              deviceSpecimenTypes.find(
+                (dst) => dst.deviceType.internalId === deviceType.internalId
+              ) || deviceSpecimenTypes[0];
           }
 
           return (
@@ -213,16 +227,15 @@ const TestQueue: React.FC<Props> = ({ activeFacilityId }) => {
                 patient={patient}
                 askOnEntry={questions}
                 selectedDeviceSpecimenTypeId={
-                  deviceSpecimenType?.internalId ||
-                  facility.defaultDeviceSpecimen.internalId
+                  selectedDeviceSpecimenType.internalId
                 }
                 selectedDeviceId={
-                  deviceType?.internalId ||
-                  facility.defaultDeviceSpecimen.deviceType.internalId
+                  selectedDeviceSpecimenType.deviceType.internalId
                 }
                 selectedDeviceTestLength={
-                  deviceType?.testLength ||
-                  facility.defaultDeviceSpecimen.deviceType.testLength
+                  // `testLength` is not nullable and is always returned by
+                  // the facility queue GraphQL query
+                  selectedDeviceSpecimenType.deviceType.testLength as number
                 }
                 selectedTestResult={result}
                 devices={facility.deviceTypes}
