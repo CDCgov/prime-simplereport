@@ -475,7 +475,7 @@ To do so manually:
 Example:
 
 ```Shell
-MAINTENANCE_MESSAGE='{"active": true, "message": "SimpleReport is currently experiencing service degradation"}' MAINTENANCE_ENV=dev yarn run maintenance:start
+MAINTENANCE_MESSAGE='{"active": true, "header" : "SimpleReport is currently experiencing an outage.", "message": "SimpleReport is currently experiencing service degradation"}' MAINTENANCE_ENV=dev yarn run maintenance:start
 ```
 
 Possible values for `MAINTENANCE_ENV`: `dev`, `test`, `pentest`, `training`, `demo`, `stg`, `prod`
