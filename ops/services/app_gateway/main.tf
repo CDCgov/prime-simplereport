@@ -1,14 +1,17 @@
 locals {
-  static_backend_pool          = "${var.name}-${var.env}-fe-static"
-  static_backend_http_setting  = "${var.name}-${var.env}-fe-static-http"
-  static_backend_https_setting = "${var.name}-${var.env}-fe-static-https"
-  api_backend_pool             = "${var.name}-${var.env}-be-api"
-  api_backend_http_setting     = "${var.name}-${var.env}-be-api-http"
-  api_backend_https_setting    = "${var.name}-${var.env}-be-api-https"
-  http_listener                = "${var.name}-http"
-  https_listener               = "${var.name}-https"
-  frontend_config              = "${var.name}-config"
-  redirect_rule                = "${var.name}-redirect"
+  static_backend_pool             = "${var.name}-${var.env}-fe-static"
+  static_backend_http_setting     = "${var.name}-${var.env}-fe-static-http"
+  static_backend_https_setting    = "${var.name}-${var.env}-fe-static-https"
+  api_backend_pool                = "${var.name}-${var.env}-be-api"
+  api_backend_http_setting        = "${var.name}-${var.env}-be-api-http"
+  api_backend_https_setting       = "${var.name}-${var.env}-be-api-https"
+  http_listener                   = "${var.name}-http"
+  https_listener                  = "${var.name}-https"
+  frontend_config                 = "${var.name}-config"
+  redirect_rule                   = "${var.name}-redirect"
+  redirect_self_registration_rule = "${var.name}-redirect-self-registration"
+  url_prefix                      = var.env == "prod" ? "www" : var.env
+  app_url                         = "https://${local.url_prefix}.simplereport.gov/app"
 }
 
 resource "azurerm_public_ip" "static_gateway" {
@@ -216,6 +219,20 @@ resource "azurerm_application_gateway" "load_balancer" {
       backend_address_pool_name  = local.static_backend_pool
       backend_http_settings_name = local.static_backend_https_setting
     }
+
+    path_rule {
+      name                        = "self-registration"
+      paths                       = ["/register/*"]
+      redirect_configuration_name = local.redirect_self_registration_rule
+    }
+  }
+  redirect_configuration {
+    name = local.redirect_self_registration_rule
+
+    include_path         = true
+    include_query_string = true
+    redirect_type        = "Permanent"
+    target_url           = local.app_url
   }
 
   rewrite_rule_set {
@@ -259,24 +276,7 @@ resource "azurerm_application_gateway" "load_balancer" {
         reroute      = true
       }
     }
-    rewrite_rule {
-      name          = "registration-link"
-      rule_sequence = 102
 
-      condition {
-        ignore_case = true
-        pattern     = "^/register/"
-        variable    = "var_uri_path"
-      }
-
-      url {
-        path = "/app"
-        # This is probably excessive, but it was happening anyway: see
-        # https://github.com/terraform-providers/terraform-provider-azurerm/issues/11563
-        query_string = ""
-        reroute      = true
-      }
-    }
     rewrite_rule {
       name          = "HSTS"
       rule_sequence = 101
