@@ -4,7 +4,6 @@ module "simple_report_api" {
   env    = local.env
 
   instance_count = 3
-  instace_tier   = "PremiumV2"
   instance_size  = "P2v2"
 
   resource_group_location = data.azurerm_resource_group.rg.location
