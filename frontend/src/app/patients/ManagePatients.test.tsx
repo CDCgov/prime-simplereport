@@ -6,7 +6,7 @@ import {
 } from "@testing-library/react";
 import userEvent from "@testing-library/user-event";
 import { Provider } from "react-redux";
-import { MemoryRouter } from "react-router";
+import { MemoryRouter, Route, Routes, useParams } from "react-router-dom";
 import createMockStore from "redux-mock-store";
 
 import ManagePatients, {
@@ -15,42 +15,41 @@ import ManagePatients, {
 } from "./ManagePatients";
 import ManagePatientsContainer from "./ManagePatientsContainer";
 
-const TestContainer: React.FC = ({ children }) => (
-  <MemoryRouter>
-    <MockedProvider mocks={mocks}>
-      <>{children}</>
-    </MockedProvider>
-  </MemoryRouter>
+const PageNumberContainer = () => {
+  const { pageNumber } = useParams();
+  return (
+    <ManagePatients
+      currentPage={pageNumber ? +pageNumber : 1}
+      activeFacilityId="a1"
+      canEditUser={true}
+      canDeleteUser={true}
+      isAdmin={false}
+    />
+  );
+};
+
+const TestContainer = () => (
+  <MockedProvider mocks={mocks}>
+    <MemoryRouter initialEntries={["/patients/1"]}>
+      <Routes>
+        <Route path="patients">
+          <Route path=":pageNumber" element={<PageNumberContainer />} />
+        </Route>
+      </Routes>
+    </MemoryRouter>
+  </MockedProvider>
 );
 
 describe("ManagePatients", () => {
   it("renders a list of patients", async () => {
-    render(
-      <TestContainer>
-        <ManagePatients
-          activeFacilityId="a1"
-          canEditUser={true}
-          canDeleteUser={true}
-          isAdmin={false}
-        />
-      </TestContainer>
-    );
+    render(<TestContainer />);
     expect(await screen.findByText(patients[0].lastName, { exact: false }));
     expect(await screen.findByText(patients[1].lastName, { exact: false }));
     expect(await screen.findByText(patients[2].lastName, { exact: false }));
   });
   it("filters a list of patients", async () => {
     jest.useFakeTimers("modern");
-    render(
-      <TestContainer>
-        <ManagePatients
-          activeFacilityId="a1"
-          canEditUser={true}
-          canDeleteUser={true}
-          isAdmin={false}
-        />
-      </TestContainer>
-    );
+    render(<TestContainer />);
     expect(await screen.findByText(patients[0].lastName, { exact: false }));
     const btn = await screen.findByText("Filter", { exact: false });
     userEvent.click(btn);
@@ -61,6 +60,14 @@ describe("ManagePatients", () => {
     );
     expect(await screen.findByText(patients[1].lastName, { exact: false }));
     expect(await screen.findByText(patients[2].lastName, { exact: false }));
+  });
+  it("can go to page 2", async () => {
+    jest.useFakeTimers("modern");
+    render(<TestContainer />);
+    expect(await screen.findByText(patients[0].lastName, { exact: false }));
+    const page2 = screen.getByRole("link", { name: "Page 2" });
+    userEvent.click(page2);
+    expect(await screen.findByText(patients[20].lastName, { exact: false }));
   });
   describe("ManagePatientsContainer", () => {
     it("Doesn't render if no facility is selected", async () => {
@@ -85,35 +92,245 @@ describe("ManagePatients", () => {
 
 const patients = [
   {
-    internalId: "5dc030af-2110-4149-bae6-7e8a062d62e3",
-    firstName: "Domenic",
+    internalId: "7b968f75-e2fb-43a5-ae8b-c7e0f4873d3a",
+    firstName: "Guy",
     lastName: "Abramcik",
-    middleName: "P",
-    birthDate: "1960-11-07",
+    middleName: "Christine Michael",
+    birthDate: "1992-11-26",
+    isDeleted: false,
+    role: "STAFF",
+    lastTest: null,
+    __typename: "Patient",
+  },
+  {
+    internalId: "47d80532-cc25-4204-829a-6ec7601ad0d9",
+    firstName: "Melanie",
+    lastName: "Alvarez",
+    middleName: "Wade Savage",
+    birthDate: "1930-08-01",
+    isDeleted: false,
+    role: "VISITOR",
+    lastTest: null,
+    __typename: "Patient",
+  },
+  {
+    internalId: "4a34fdcf-9490-444a-9a20-5ffeb661cb6a",
+    firstName: "Byron",
+    lastName: "Allan",
+    middleName: "Lesley Wells",
+    birthDate: "2018-09-05",
     isDeleted: false,
     role: "RESIDENT",
     lastTest: null,
     __typename: "Patient",
   },
   {
-    internalId: "8906b3c6-1168-4683-849e-2728c9573a47",
-    firstName: "Emmy",
-    lastName: "Alabaster",
-    middleName: "O",
-    birthDate: "1960-11-07",
+    internalId: "8ae24ce5-6d90-4c35-955b-ff61c5869e86",
+    firstName: "Katell",
+    lastName: "Britt",
+    middleName: "Lynn",
+    birthDate: "1999-07-22",
+    isDeleted: false,
+    role: "STUDENT",
+    lastTest: {
+      dateAdded: "2022-01-28 12:47:20.542",
+      __typename: "TestResult",
+    },
+    __typename: "Patient",
+  },
+  {
+    internalId: "fba92867-e628-44ca-b93b-b181a53543ab",
+    firstName: "Colt",
+    lastName: "Harper",
+    middleName: "Ria Fischer",
+    birthDate: "1994-08-02",
+    isDeleted: false,
+    role: "RESIDENT",
+    lastTest: null,
+    __typename: "Patient",
+  },
+  {
+    internalId: "28376ab5-31ec-427a-bc87-316932407829",
+    firstName: "Rose",
+    lastName: "Huffman",
+    middleName: "Coby Holden",
+    birthDate: "2021-06-27",
+    isDeleted: false,
+    role: "VISITOR",
+    lastTest: null,
+    __typename: "Patient",
+  },
+  {
+    internalId: "4012ec09-305f-44f0-b6bb-9d283f72285f",
+    firstName: "Hedley",
+    lastName: "Johnston",
+    middleName: "Jerome Bond",
+    birthDate: "1975-02-23",
+    isDeleted: false,
+    role: "STAFF",
+    lastTest: null,
+    __typename: "Patient",
+  },
+  {
+    internalId: "b1a0531f-0a85-4ea0-8ede-73f31c06cdc6",
+    firstName: "Lois",
+    lastName: "Joseph",
+    middleName: "Filbert",
+    birthDate: "2015-04-03",
+    isDeleted: false,
+    role: "STUDENT",
+    lastTest: { dateAdded: "2022-01-06 13:55:30.12", __typename: "TestResult" },
+    __typename: "Patient",
+  },
+  {
+    internalId: "405bd96b-a869-462f-b981-42d6fd76d880",
+    firstName: "Aspen",
+    lastName: "Joyce",
+    middleName: "Harriet Hubbard",
+    birthDate: "1962-06-21",
+    isDeleted: false,
+    role: "RESIDENT",
+    lastTest: null,
+    __typename: "Patient",
+  },
+  {
+    internalId: "0ff6521e-e44b-4711-a9e9-716902e1c20b",
+    firstName: "Venus",
+    lastName: "Madden",
+    middleName: "Fern",
+    birthDate: "1986-12-02",
+    isDeleted: false,
+    role: "STAFF",
+    lastTest: {
+      dateAdded: "2022-01-06 13:56:06.306",
+      __typename: "TestResult",
+    },
+    __typename: "Patient",
+  },
+  {
+    internalId: "21acbdde-75d2-40bb-99a6-2c16f165c586",
+    firstName: "Dustin",
+    lastName: "Malone",
+    middleName: "Hadassah Gamble",
+    birthDate: "1974-06-30",
+    isDeleted: false,
+    role: "RESIDENT",
+    lastTest: null,
+    __typename: "Patient",
+  },
+  {
+    internalId: "adb1f481-f4f7-4659-8554-9ad4c4e6cd25",
+    firstName: "Quincy",
+    lastName: "McDaniel",
+    middleName: null,
+    birthDate: "1951-09-28",
+    isDeleted: false,
+    role: "STAFF",
+    lastTest: {
+      dateAdded: "2022-01-06 13:56:20.255",
+      __typename: "TestResult",
+    },
+    __typename: "Patient",
+  },
+  {
+    internalId: "28babbe3-396a-42c1-8770-7be971a207f5",
+    firstName: "Dahlia",
+    lastName: "Meadows",
+    middleName: "Hadassah Glass",
+    birthDate: "1919-03-10",
+    isDeleted: false,
+    role: "VISITOR",
+    lastTest: null,
+    __typename: "Patient",
+  },
+  {
+    internalId: "cd9e2e5a-380b-43e5-a7d4-ff7a4cb2bdfe",
+    firstName: "Kieran",
+    lastName: "Moran",
+    middleName: "Celeste Oneil",
+    birthDate: "1963-12-03",
     isDeleted: false,
     role: "STUDENT",
     lastTest: null,
     __typename: "Patient",
   },
   {
-    internalId: "b905d1e4-67f9-45c8-8822-843ceff09186",
-    firstName: "Waite",
-    lastName: "Alleway",
-    middleName: "Morgen",
-    birthDate: "1960-11-07",
+    internalId: "b3310d7d-e905-469e-bcff-e95f1487f8fc",
+    firstName: "Macon",
+    lastName: "Morgan",
+    middleName: "Colleen Henson",
+    birthDate: "1960-11-26",
     isDeleted: false,
     role: "RESIDENT",
+    lastTest: null,
+    __typename: "Patient",
+  },
+  {
+    internalId: "9c6e3e70-410c-4b1c-b26d-26f0c8e7b19e",
+    firstName: "Gavin",
+    lastName: "Nielsen",
+    middleName: "Nathaniel Henderson",
+    birthDate: "1998-12-21",
+    isDeleted: false,
+    role: "RESIDENT",
+    lastTest: null,
+    __typename: "Patient",
+  },
+  {
+    internalId: "5ba9fd42-7d5e-4eb5-ad9c-ba0830f19c8e",
+    firstName: "Macon",
+    lastName: "Simpson",
+    middleName: null,
+    birthDate: "1923-03-19",
+    isDeleted: false,
+    role: "STUDENT",
+    lastTest: {
+      dateAdded: "2022-01-06 13:56:32.818",
+      __typename: "TestResult",
+    },
+    __typename: "Patient",
+  },
+  {
+    internalId: "117cd268-5ec7-41b4-a595-65ac9925e0a4",
+    firstName: "Xerxes",
+    lastName: "Vazquez",
+    middleName: "Octavius Klein",
+    birthDate: "1990-09-23",
+    isDeleted: false,
+    role: "RESIDENT",
+    lastTest: null,
+    __typename: "Patient",
+  },
+  {
+    internalId: "acf7e9d8-489d-4b4a-8d06-bd6e246a69e8",
+    firstName: "Noelle",
+    lastName: "Woodward",
+    middleName: "Robin French",
+    birthDate: "2011-07-24",
+    isDeleted: false,
+    role: "RESIDENT",
+    lastTest: null,
+    __typename: "Patient",
+  },
+  {
+    internalId: "a81a0a08-c125-4c97-b05d-dfd549f18bb7",
+    firstName: "Jenna",
+    lastName: "Workman",
+    middleName: "Cody Myers",
+    birthDate: "1976-03-19",
+    isDeleted: false,
+    role: "STUDENT",
+    lastTest: null,
+    __typename: "Patient",
+  },
+  {
+    internalId: "7fbd67d5-7ed1-4175-ab9b-f9ec144848b0",
+    firstName: "Paki",
+    lastName: "Yates",
+    middleName: "Bruce Coffey",
+    birthDate: "1917-12-29",
+    isDeleted: false,
+    role: "VISITOR",
     lastTest: null,
     __typename: "Patient",
   },
@@ -148,7 +365,22 @@ const mocks: MockedProviderProps["mocks"] = [
       },
     },
     result: {
-      data: { patients },
+      data: { patients: patients.slice(0, 20) },
+    },
+  },
+  {
+    request: {
+      query: patientQuery,
+      variables: {
+        facilityId: "a1",
+        pageNumber: 1,
+        pageSize: 20,
+        showDeleted: false,
+        namePrefixMatch: null,
+      },
+    },
+    result: {
+      data: { patients: patients.slice(20, 21) },
     },
   },
   // Search queries

@@ -6,7 +6,7 @@ import {
 import userEvent from "@testing-library/user-event";
 import { MockedProvider } from "@apollo/client/testing";
 import { Provider } from "react-redux";
-import { MemoryRouter } from "react-router";
+import { MemoryRouter, Route, Routes } from "react-router-dom";
 import configureStore from "redux-mock-store";
 
 import { getAppInsights } from "../../TelemetryService";
@@ -166,10 +166,13 @@ jest.mock("./FacilityForm", () => {
     );
   };
 });
-jest.mock("react-router-dom", () => ({
-  Redirect: () => <p>Redirected</p>,
-}));
-
+jest.mock("react-router-dom", () => {
+  const original = jest.requireActual("react-router-dom");
+  return {
+    ...original,
+    Navigate: () => <p>Redirected</p>,
+  };
+});
 jest.mock("../../TelemetryService", () => ({
   getAppInsights: jest.fn(),
 }));
@@ -182,13 +185,18 @@ describe("FacilityFormContainer", () => {
       trackEvent: trackEventMock,
     }));
     render(
-      <MemoryRouter>
-        <Provider store={store}>
-          <MockedProvider mocks={mocks}>
-            <FacilityFormContainer facilityId={mockFacility.id} />
-          </MockedProvider>
-        </Provider>
-      </MemoryRouter>
+      <Provider store={store}>
+        <MockedProvider mocks={mocks}>
+          <MemoryRouter initialEntries={[`/facility/${mockFacility.id}`]}>
+            <Routes>
+              <Route
+                path="facility/:facilityId"
+                element={<FacilityFormContainer />}
+              />
+            </Routes>
+          </MemoryRouter>
+        </MockedProvider>
+      </Provider>
     );
   });
 

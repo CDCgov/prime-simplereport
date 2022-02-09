@@ -8,7 +8,7 @@ import {
   within,
 } from "@testing-library/react";
 import { Provider } from "react-redux";
-import { MemoryRouter } from "react-router";
+import { MemoryRouter } from "react-router-dom";
 import configureStore from "redux-mock-store";
 import userEvent from "@testing-library/user-event";
 
@@ -1000,7 +1000,7 @@ describe("TestResultsList", () => {
       >
         <Provider store={store}>
           <MockedProvider mocks={localMocks}>
-            <TestResultsList pageNumber={1} />
+            <TestResultsList />
           </MockedProvider>
         </Provider>
       </MemoryRouter>
@@ -1047,7 +1047,7 @@ describe("TestResultsList", () => {
         <WithRouter>
           <Provider store={store}>
             <MockedProvider mocks={mocks}>
-              <TestResultsList pageNumber={1} />
+              <TestResultsList />
             </MockedProvider>
           </Provider>
         </WithRouter>
@@ -1332,7 +1332,7 @@ describe("TestResultsList", () => {
         <MemoryRouter>
           <Provider store={store}>
             <MockedProvider mocks={mocks}>
-              <TestResultsList pageNumber={1} />
+              <TestResultsList />
             </MockedProvider>
           </Provider>
         </MemoryRouter>
