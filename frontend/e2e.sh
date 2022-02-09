@@ -112,6 +112,7 @@ echo 'App is online! Starting Cypress...'
 echo
 
 if [[ $RUN_OPEN = true ]]; then
+  export $(cat cypress/.env.e2e | xargs)
   export CYPRESS_baseurl="$TEST_ENV"
   export CYPRESS_CHECK_COMMIT="$CHECK_COMMIT"
   export CYPRESS_CHECK_URL="$FRONTEND_URL_PATH"

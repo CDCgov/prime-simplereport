@@ -23,6 +23,9 @@ services:
       POSTGRES_PASSWORD: admin_password_for_local_dev_is_not_very_secure
     volumes:
       # Mount init scripts for first-run user/schema creation
+      - type: volume
+        source: simple-report-cypress-db-data
+        target: /var/lib/postgresql/data
       - type: bind
         source: ../../backend/db-setup/create-db.sh
         target: /docker-entrypoint-initdb.d/01-user-db-creation.sh
@@ -82,3 +85,5 @@ services:
     ports:
       - "80:80"
       - "443:443"
+volumes:
+  simple-report-cypress-db-data:
