@@ -1,5 +1,5 @@
 import { useState } from "react";
-import { Redirect } from "react-router-dom";
+import { Navigate } from "react-router-dom";
 
 import Alert from "../../commonComponents/Alert";
 import { showNotification } from "../../utils";
@@ -54,14 +54,11 @@ const TenantDataAccessFormContainer = () => {
       );
       showNotification(alert);
       setSubmitted(true);
-
-      // reload the page, in the future, this should just update state where appropriate
-      window.location.reload();
     });
   };
 
   if (submitted) {
-    return <Redirect to="/admin" />;
+    return <Navigate to="/reload-app" />;
   }
 
   return (

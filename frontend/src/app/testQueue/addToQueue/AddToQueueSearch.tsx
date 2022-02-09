@@ -6,7 +6,7 @@ import React, {
   useCallback,
 } from "react";
 import { gql, useMutation, useLazyQuery, useQuery } from "@apollo/client";
-import { useLocation } from "react-router";
+import { useLocation } from "react-router-dom";
 
 import Alert from "../../commonComponents/Alert";
 import {
@@ -167,7 +167,7 @@ const AddToQueueSearchBox = ({
   }, []);
 
   const { patientId: patientIdParam } =
-    useLocation<StartTestProps>().state || {};
+    (useLocation().state as StartTestProps) || {};
 
   useQuery<{ patient: Patient }>(QUERY_SINGLE_PATIENT, {
     fetchPolicy: "no-cache",

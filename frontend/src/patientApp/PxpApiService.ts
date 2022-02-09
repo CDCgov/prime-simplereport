@@ -36,7 +36,7 @@ export type SelfRegistrationData = Omit<
   "facilityId" | "address"
 > & {
   birthDate: ISODate;
-  registrationLink: string;
+  registrationLink: string | undefined;
   address: Omit<UpdatePatientData["address"], "zipCode"> & {
     postalCode: string | null;
   };
@@ -77,10 +77,18 @@ export class PxpApi {
     });
   }
 
-  static getEntityName = async (registrationLink: string): Promise<string> => {
+  static getEntityName = async (
+    registrationLink: string | undefined
+  ): Promise<string> => {
     return api.getRequest(
       `/register/entity-name?patientRegistrationLink=${registrationLink}`
     );
+  };
+
+  static getObfuscatedPatientName = async (
+    patientLink: string
+  ): Promise<string> => {
+    return api.getRequest(`/patient-name?patientLink=${patientLink}`);
   };
 
   static selfRegister = async (person: SelfRegistrationData): Promise<void> => {
@@ -91,7 +99,7 @@ export class PxpApi {
     firstName: string;
     lastName: string;
     birthDate: ISODate;
-    registrationLink: string;
+    registrationLink: string | undefined;
   }): Promise<boolean> => {
     const { registrationLink, ...body } = person;
 

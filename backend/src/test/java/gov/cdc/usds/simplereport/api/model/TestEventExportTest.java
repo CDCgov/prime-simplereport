@@ -14,7 +14,10 @@ import gov.cdc.usds.simplereport.test_util.SliceTestConfiguration.WithSimpleRepo
 import gov.cdc.usds.simplereport.test_util.TestDataFactory;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
+import java.time.LocalDate;
+import java.time.ZoneId;
 import java.util.Collections;
+import java.util.Date;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.jdbc.AutoConfigureTestDatabase;
@@ -167,5 +170,28 @@ class TestEventExportTest {
 
     assertEquals("20201215000000", sut.getTestDate());
     assertEquals("20201214234500", sut.getSpecimenCollectionDateTime());
+  }
+
+  @Test
+  void sendCorrectionReason() {
+    // GIVEN
+    Organization org = _dataFactory.createValidOrg();
+    Facility facility = _dataFactory.createValidFacility(org);
+    Person person = _dataFactory.createFullPerson(org);
+
+    LocalDate localDate = LocalDate.of(2020, 7, 23);
+    Date backTestedDate = Date.from(localDate.atStartOfDay(ZoneId.systemDefault()).toInstant());
+    TestEvent originalTestEvent =
+        _dataFactory.createTestEvent(person, facility, null, null, backTestedDate);
+    String originalEventId = originalTestEvent.getInternalId().toString();
+    TestEvent testEvent = _dataFactory.createTestEventCorrection(originalTestEvent);
+
+    // WHEN
+    TestEventExport exportedEvent = new TestEventExport(testEvent);
+
+    // THEN
+    assertEquals("20200723000000", exportedEvent.getTestDate());
+    assertEquals("Cold feet", exportedEvent.getCorrectionReason());
+    assertEquals(originalEventId, exportedEvent.getCorrectedResultId());
   }
 }

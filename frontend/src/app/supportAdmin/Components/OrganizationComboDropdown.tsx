@@ -1,9 +1,9 @@
 import React from "react";
+import { ComboBox } from "@trussworks/react-uswds";
 
+import Required from "../../commonComponents/Required";
 import Alert from "../../commonComponents/Alert";
 import { showNotification } from "../../utils";
-import Dropdown from "../../commonComponents/Dropdown";
-import Required from "../../commonComponents/Required";
 
 export interface OrganizationOption {
   name: string;
@@ -15,9 +15,14 @@ export interface OrganizationOptions {
 }
 
 export const useOrganizationDropDownValidation = (
-  organizationExternalId: string
+  organizationExternalId: string | undefined
 ) => {
   const validateOrganizationDropDown = () => {
+    // ensure organizationExternalId is not undefined in the case where we're
+    // not using a combo box
+    if (organizationExternalId === undefined) {
+      return "combo box cleared";
+    }
     if (organizationExternalId === null || organizationExternalId === "") {
       const alert = (
         <Alert
@@ -32,22 +37,23 @@ export const useOrganizationDropDownValidation = (
 
     return "";
   };
-
   return { validateOrganizationDropDown };
 };
 
 interface Props {
-  selectedExternalId: string;
-  updateSelectedExternalId: (externalId: string) => void;
+  selectedExternalId: string | undefined;
+  updateSelectedExternalId: (selectedId: string | undefined) => void;
   organizationOptions: OrganizationOption[];
 }
 
-const OrganizationDropDown: React.FC<Props> = ({
+const OrganizationComboDropDown: React.FC<Props> = ({
   selectedExternalId,
   updateSelectedExternalId,
   organizationOptions,
 }) => {
-  const onOrganizationChange = (newOrganizationExternalId: string) => {
+  const onOrganizationChange = (
+    newOrganizationExternalId: string | undefined
+  ) => {
     updateSelectedExternalId(newOrganizationExternalId);
   };
 
@@ -66,19 +72,18 @@ const OrganizationDropDown: React.FC<Props> = ({
         </h2>
       </div>
       <div className="usa-card__body usa-form usa-form--large">
-        <Dropdown
+        <ComboBox
           options={dropdownOptions}
-          selectedValue={selectedExternalId}
-          defaultSelect
-          required
-          onChange={(e) =>
-            onOrganizationChange((e.target as HTMLSelectElement).value)
-          }
-          data-testid="organization-dropdown"
+          id="org-dropdown-select"
+          name="orgSelect"
+          defaultValue={selectedExternalId}
+          onChange={(value) => {
+            onOrganizationChange(value);
+          }}
         />
       </div>
     </div>
   );
 };
 
-export default OrganizationDropDown;
+export default OrganizationComboDropDown;

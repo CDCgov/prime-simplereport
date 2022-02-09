@@ -1,5 +1,7 @@
 import { useQuery, gql } from "@apollo/client";
 
+import { getUrl } from "../utils/url";
+
 import { ManageSelfRegistrationLinks } from "./ManageSelfRegistrationLinks";
 
 type Data = {
@@ -55,7 +57,7 @@ export const ManageSelfRegistrationLinksContainer = () => {
 
   return (
     <ManageSelfRegistrationLinks
-      baseUrl={process.env.REACT_APP_BASE_URL || ""}
+      baseUrl={getUrl() || ""}
       organizationSlug={organizationSlug}
       facilitySlugs={facilitySlugs}
       howItWorksPath="/using-simplereport/manage-people-you-test/self-registration"
