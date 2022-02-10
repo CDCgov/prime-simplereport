@@ -303,3 +303,32 @@ ${local.skip_on_weekends}
     action_group = var.action_group_ids
   }
 }
+
+resource "azurerm_monitor_scheduled_query_rules_alert" "batched_uploader_function_not_triggering" {
+  name                = "${var.env}-batched-uploader-function-not-triggering"
+  description         = "QueueBatchedReportStreamUploader is not triggering on schedule"
+  location            = data.azurerm_resource_group.app.location
+  resource_group_name = var.rg_name
+  severity            = var.severity
+  frequency           = 5
+  time_window         = 5
+  enabled             = contains(var.disabled_alerts, "batched_uploader_function_not_triggering") ? false : true
+
+  data_source_id = var.app_insights_id
+
+  query = <<-QUERY
+dependencies
+${local.skip_on_weekends}
+| where timestamp >= ago(6m) 
+    and operation_Name =~ 'QueueBatchedReportStreamUploader'
+  QUERY
+
+  trigger {
+    operator  = "Equal"
+    threshold = 0
+  }
+
+  action {
+    action_group = var.action_group_ids
+  }
+}
