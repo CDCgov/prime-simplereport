@@ -235,18 +235,15 @@ describe("lib", () => {
       // GIVEN
       const warnings: ReportStreamError[] = [
         {
-          id: "1234",
-          details: "hello",
+          message: "hello",
           scope: "ITEM",
         },
         {
-          id: "1234",
-          details: "hello",
+          message: "hello",
           scope: "ITEM",
         },
         {
-          id: "1234",
-          details: "hello",
+          message: "hello",
           scope: "ITEM",
         },
       ];
@@ -273,30 +270,25 @@ describe("lib", () => {
       // GIVEN
       const warnings: ReportStreamError[] = [
         {
-          id: "1234",
-          details: "hello",
+          message: "hello",
           scope: "ITEM",
         },
         {
-          id: "1234",
-          details: "hello",
+          message: "hello",
           scope: "ITEM",
         },
         {
-          id: "1234",
-          details: "hello",
+          message: "hello",
           scope: "ITEM",
         },
       ];
       const errors: ReportStreamError[] = [
         {
-          id: "1234",
-          details: "hello",
+          message: "hello",
           scope: "ITEM",
         },
         {
-          id: "1234",
-          details: "hello",
+          message: "hello",
           scope: "ITEM",
         },
       ];
