@@ -281,7 +281,7 @@ resource "azurerm_monitor_scheduled_query_rules_alert" "batched_uploader_single_
   resource_group_name = var.rg_name
   severity            = var.severity
   frequency           = 5
-  time_window         = 5
+  time_window         = 7
   enabled             = contains(var.disabled_alerts, "batched_uploader_single_failure_detected") ? false : true
 
   data_source_id = var.app_insights_id
@@ -311,7 +311,7 @@ resource "azurerm_monitor_scheduled_query_rules_alert" "batched_uploader_functio
   resource_group_name = var.rg_name
   severity            = var.severity
   frequency           = 5
-  time_window         = 5
+  time_window         = 7
   enabled             = contains(var.disabled_alerts, "batched_uploader_function_not_triggering") ? false : true
 
   data_source_id = var.app_insights_id
