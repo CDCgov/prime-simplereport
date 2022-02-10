@@ -6,6 +6,10 @@ ENV NODE_ENV=${NODE_ENV}
 
 RUN apk add --no-cache git
 
+RUN groupadd -g 999 appuser && \
+    useradd -r -u 999 -g appuser appuser
+USER appuser
+
 WORKDIR /frontend
 CMD ["yarn", "soft-start"]
 
