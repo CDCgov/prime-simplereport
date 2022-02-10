@@ -273,3 +273,33 @@ ${local.skip_on_weekends}
     action_group = var.action_group_ids
   }
 }
+
+resource "azurerm_monitor_scheduled_query_rules_alert" "batched_uploader_single_failure_detected" {
+  name                = "${var.env}-batched-uploader-single-failure-detected"
+  description         = "QueueBatchedReportStreamUploader failed to successfully complete"
+  location            = data.azurerm_resource_group.app.location
+  resource_group_name = var.rg_name
+  severity            = var.severity
+  frequency           = 1
+  time_window         = 1
+  enabled             = contains(var.disabled_alerts, "batched_uploader_single_failure_detected") ? false : true
+
+  data_source_id = var.app_insights_id
+
+  query = <<-QUERY
+dependencies
+${local.skip_on_weekends}
+| where timestamp >= ago(5m) 
+    and operation_Name =~ 'QueueBatchedReportStreamUploader' 
+    and success != true
+  QUERY
+
+  trigger {
+    operator  = "GreaterThan"
+    threshold = 0
+  }
+
+  action {
+    action_group = var.action_group_ids
+  }
+}

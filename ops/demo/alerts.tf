@@ -13,6 +13,7 @@ module "metric_alerts" {
   skip_on_weekends               = true
   disabled_alerts = [
     "frontend_error_boundary",
+    "batched_uploader_single_failure_detected"
   ]
 
   action_group_ids = [
