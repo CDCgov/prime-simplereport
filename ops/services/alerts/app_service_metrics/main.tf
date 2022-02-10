@@ -280,8 +280,8 @@ resource "azurerm_monitor_scheduled_query_rules_alert" "batched_uploader_single_
   location            = data.azurerm_resource_group.app.location
   resource_group_name = var.rg_name
   severity            = var.severity
-  frequency           = 1
-  time_window         = 1
+  frequency           = 5
+  time_window         = 5
   enabled             = contains(var.disabled_alerts, "batched_uploader_single_failure_detected") ? false : true
 
   data_source_id = var.app_insights_id
