@@ -289,7 +289,7 @@ resource "azurerm_monitor_scheduled_query_rules_alert" "batched_uploader_single_
   query = <<-QUERY
 dependencies
 ${local.skip_on_weekends}
-| where timestamp >= ago(5m) 
+| where timestamp >= ago(7m) 
     and operation_Name =~ 'QueueBatchedReportStreamUploader' 
     and success != true
   QUERY
