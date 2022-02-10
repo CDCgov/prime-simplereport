@@ -40,6 +40,10 @@
         opacity: 1;
       }
     }
+
+    &__error {
+      border-color: #d54309;
+    }
   }
 
   .card-dropdown {
@@ -78,6 +82,11 @@
     align-items: center;
     flex-wrap: wrap;
     margin-top: 8px;
+  }
+
+  .queue-item-error-message {
+    color: #d54309;
+    display: block;
   }
 }
 
