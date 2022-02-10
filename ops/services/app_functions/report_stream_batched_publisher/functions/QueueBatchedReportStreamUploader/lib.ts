@@ -127,6 +127,7 @@ export async function uploadResult(body) {
     "content-type": "text/csv",
     client: "simple_report",
   });
+
   return fetch(REPORT_STREAM_URL, {
     method: "POST",
     headers,
@@ -174,16 +175,14 @@ export async function reportExceptions(
   context.log(`ReportStream response errors: ${response.errorCount}`);
   context.log(`ReportStream response warnings: ${response.warningCount}`);
   const payloads: SimpleReportReportStreamResponse[] = response.warnings
-    .map(({ id, details }) => ({
-      testEventInternalId: id,
+    .map(({ message }) => ({
       isError: false,
-      details,
+      details: message,
     }))
     .concat(
-      response.errors.map(({ id, details }) => ({
-        testEventInternalId: id,
+      response.errors.map(({ message }) => ({
         isError: true,
-        details,
+        details: message,
       }))
     );
   return Promise.all(

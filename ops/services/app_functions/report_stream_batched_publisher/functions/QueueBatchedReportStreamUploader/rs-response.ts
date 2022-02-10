@@ -2,14 +2,14 @@ interface ReportingDestination {
   organization: string;
   organization_id: string;
   service: string;
+  filteredReportRows: string[];
   sending_at: string;
   itemCount: number;
 }
 
 export interface ReportStreamError {
-  id: string;
   scope: "ITEM" | "REPORT";
-  details: string;
+  message: string;
 }
 
 export interface ReportStreamResponse {
@@ -17,8 +17,7 @@ export interface ReportStreamResponse {
   timestamp: string;
   topic: string;
   reportItemCount: number;
-  destinations: ReportingDestination[];
-  destinationCount: number;
+  sender: string;
   routing: [
     {
       reportIndex: number;
@@ -26,6 +25,8 @@ export interface ReportStreamResponse {
       destinations: string[];
     }
   ];
+  destinations: ReportingDestination[];
+  destinationCount: number;
   warningCount: number;
   errorCount: number;
   errors: ReportStreamError[];
@@ -33,7 +34,6 @@ export interface ReportStreamResponse {
 }
 
 export interface SimpleReportReportStreamResponse {
-  testEventInternalId: string;
   isError: boolean;
   details: string;
 }
