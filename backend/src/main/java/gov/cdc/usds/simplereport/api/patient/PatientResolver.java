@@ -60,6 +60,6 @@ public class PatientResolver implements GraphQLQueryResolver {
 
   @AuthorizationConfiguration.RequirePermissionSearchTargetPatient
   public Person getPatient(UUID patientId) {
-    return _ps.getPatientNoPermissionsCheck(patientId);
+    return _ps.getPatientNoPermissionsCheck(patientId, false);
   }
 }

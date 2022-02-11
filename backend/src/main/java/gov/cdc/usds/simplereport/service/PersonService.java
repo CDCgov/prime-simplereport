@@ -217,14 +217,14 @@ public class PersonService {
   }
 
   // NO PERMISSION CHECK (make sure the caller has one!) getPatient()
-  public Person getPatientNoPermissionsCheck(UUID id) {
-    return getPatientNoPermissionsCheck(id, _os.getCurrentOrganization());
+  public Person getPatientNoPermissionsCheck(UUID id, boolean showIsDeleted) {
+    return getPatientNoPermissionsCheck(id, _os.getCurrentOrganization(), showIsDeleted);
   }
 
   // NO PERMISSION CHECK (make sure the caller has one!)
-  public Person getPatientNoPermissionsCheck(UUID id, Organization org) {
+  public Person getPatientNoPermissionsCheck(UUID id, Organization org, boolean showIsDeleted) {
     return _repo
-        .findByIdAndOrganization(id, org, false)
+        .findByIdAndOrganization(id, org, showIsDeleted)
         .orElseThrow(
             () -> new IllegalGraphqlArgumentException("No patient with that ID was found"));
   }
@@ -453,7 +453,7 @@ public class PersonService {
       Boolean employedInHealthcare,
       String preferredLanguage,
       TestResultDeliveryPreference testResultDelivery) {
-    Person patientToUpdate = this.getPatientNoPermissionsCheck(patientId);
+    Person patientToUpdate = this.getPatientNoPermissionsCheck(patientId, false);
     patientToUpdate.updatePatient(
         lookupId,
         firstName,
@@ -487,7 +487,11 @@ public class PersonService {
 
   @AuthorizationConfiguration.RequirePermissionArchiveTargetPatient
   public Person setIsDeleted(UUID patientId, boolean deleted) {
-    Person person = this.getPatientNoPermissionsCheck(patientId);
+
+    // showIsDeleted in getPatientNoPermissionsCheck should be opposite the
+    // passed in "deleted" param since all patients eligible for deletion when
+    // deleted = true are deleted = false currently, and vice versa
+    Person person = this.getPatientNoPermissionsCheck(patientId, !deleted);
     person.setIsDeleted(deleted);
     return _repo.save(person);
   }
