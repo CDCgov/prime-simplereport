@@ -1,4 +1,4 @@
-import React, { useEffect } from "react";
+import { useEffect } from "react";
 import { gql, useQuery } from "@apollo/client";
 import { useDispatch, connect } from "react-redux";
 import { Navigate, Route, Routes, useLocation } from "react-router-dom";
