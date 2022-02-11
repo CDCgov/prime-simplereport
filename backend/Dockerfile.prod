@@ -25,8 +25,7 @@ EXPOSE 8080
 COPY --from=build /home/gradle/graphql-api/backend/build/libs/*.jar app.jar
 COPY --from=build  /home/gradle/graphql-api/backend/insights.jar insights.jar
 
-RUN groupadd -g 999 appuser && \
-    useradd -r -u 999 -g appuser appuser
+RUN addgroup -S appgroup && adduser -S appuser -G appgroup
 USER appuser
 
 ENTRYPOINT ["java", "-javaagent:insights.jar", "-jar", "app.jar"]

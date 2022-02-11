@@ -6,8 +6,7 @@ ENV NODE_ENV=${NODE_ENV}
 
 RUN apk add --no-cache git
 
-RUN groupadd -g 999 appuser && \
-    useradd -r -u 999 -g appuser appuser
+RUN addgroup -S appgroup && adduser -S appuser -G appgroup
 USER appuser
 
 WORKDIR /frontend
