@@ -241,9 +241,11 @@
   }
 
   &__error {
+    border-left-width: 0.25rem;
     border-color: color($theme-color-error);
 
     .prime-card-container {
+      border-left-width: 0.25rem;
       border-color: color($theme-color-error);
     }
   }

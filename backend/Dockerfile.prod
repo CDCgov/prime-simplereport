@@ -24,4 +24,8 @@ FROM adoptopenjdk/openjdk11:alpine-jre
 EXPOSE 8080
 COPY --from=build /home/gradle/graphql-api/backend/build/libs/*.jar app.jar
 COPY --from=build  /home/gradle/graphql-api/backend/insights.jar insights.jar
+
+RUN addgroup -S appgroup && adduser -S appuser -G appgroup
+USER appuser
+
 ENTRYPOINT ["java", "-javaagent:insights.jar", "-jar", "app.jar"]
