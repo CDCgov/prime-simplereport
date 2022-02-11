@@ -3,6 +3,7 @@ package gov.cdc.usds.simplereport.service.sms;
 import com.google.i18n.phonenumbers.NumberParseException;
 import com.google.i18n.phonenumbers.PhoneNumberUtil;
 import com.google.i18n.phonenumbers.PhoneNumberUtil.PhoneNumberFormat;
+import com.twilio.Twilio;
 import com.twilio.exception.ApiException;
 import com.twilio.exception.TwilioException;
 import com.twilio.type.PhoneNumber;
@@ -30,6 +31,9 @@ public class SmsService {
   @Value("${twilio.from-number}")
   private String rawFromNumber;
 
+  @Value("${twilio.messaging-service-sid}")
+  private String messagingServiceSid;
+
   @Autowired PatientLinkService pls;
 
   @Autowired SmsProviderWrapper sms;
@@ -40,10 +44,16 @@ public class SmsService {
 
   private final PhoneNumberUtil phoneUtil = PhoneNumberUtil.getInstance();
 
+  public static final String ACCOUNT_SID = System.getenv("TWILIO_ACCOUNT_SID");
+  public static final String AUTH_TOKEN = System.getenv("TWILIO_AUTH_TOKEN");
+
   @PostConstruct
   void init() throws NumberParseException {
-    this.fromNumber = new PhoneNumber(formatNumber(rawFromNumber));
-    log.debug("SmsService will send from {}", rawFromNumber);
+    System.out.println("TWILIO ENV VARS:" + ACCOUNT_SID + " " + AUTH_TOKEN);
+    Twilio.init(ACCOUNT_SID, AUTH_TOKEN);
+    com.twilio.rest.messaging.v1.Service service =
+        com.twilio.rest.messaging.v1.Service.fetcher(messagingServiceSid).fetch();
+    log.debug("SmsService will send from service {} ", service.getFriendlyName());
   }
 
   @AuthorizationConfiguration.RequirePermissionStartTestWithPatientLink
@@ -79,7 +89,9 @@ public class SmsService {
               try {
                 String msgId =
                     sms.send(
-                        new PhoneNumber(formatNumber(phoneNumber.getNumber())), fromNumber, text);
+                        new PhoneNumber(formatNumber(phoneNumber.getNumber())),
+                        messagingServiceSid,
+                        text);
                 log.debug("SMS send initiated {}", msgId);
 
                 return new SmsAPICallResult(phoneNumber.getNumber(), msgId, true);

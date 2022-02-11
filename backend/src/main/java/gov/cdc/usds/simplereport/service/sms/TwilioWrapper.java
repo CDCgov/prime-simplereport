@@ -28,9 +28,11 @@ public class TwilioWrapper implements SmsProviderWrapper {
   }
 
   @Override
-  public String send(PhoneNumber to, PhoneNumber from, String message) {
+  public String send(PhoneNumber to, String messagingServiceSid, String message) {
+    // We're sending using a messaging service rather than a from number:
+    // https://www.twilio.com/docs/messaging/services#send-a-message-with-a-messaging-service
     Message msg =
-        Message.creator(to, from, message)
+        Message.creator(to, messagingServiceSid, message)
             .setStatusCallback(URI.create(twilioCallbackUrl))
             .create();
     return msg.getSid();
