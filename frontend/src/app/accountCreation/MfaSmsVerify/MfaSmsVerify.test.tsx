@@ -4,7 +4,7 @@ import {
   waitForElementToBeRemoved,
 } from "@testing-library/react";
 import userEvent from "@testing-library/user-event";
-import { MemoryRouter, Route, Switch } from "react-router";
+import { MemoryRouter, Route, Routes } from "react-router-dom";
 
 import { MfaComplete } from "../MfaComplete/MfaComplete";
 
@@ -33,17 +33,18 @@ describe("Verify SMS MFA", () => {
   beforeEach(() => {
     render(
       <MemoryRouter
+        basename="/uac"
         initialEntries={[
           {
-            pathname: "/mfa-sms/verify",
+            pathname: "/uac/mfa-sms/verify",
             state: { contact: "530-867-5309" },
           },
         ]}
       >
-        <Switch>
-          <Route path="/mfa-sms/verify" component={MfaSmsVerify} />
-          <Route path="/success" component={MfaComplete} />
-        </Switch>
+        <Routes>
+          <Route path="mfa-sms/verify" element={<MfaSmsVerify />} />
+          <Route path="success" element={<MfaComplete />} />
+        </Routes>
       </MemoryRouter>
     );
   });

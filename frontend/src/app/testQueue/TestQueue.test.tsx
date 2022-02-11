@@ -252,7 +252,7 @@ const createPatient = ({
   symptomOnset: null,
   noSymptoms: false,
   patient: {
-    internalId: "31d42f7a-0a14-46b7-bc8a-38b3b1e78659",
+    internalId: resultId,
     telephone: "1234567890",
     birthDate,
     firstName: first,
@@ -416,7 +416,7 @@ const mocks = [
     request: {
       query: REMOVE_PATIENT_FROM_QUEUE,
       variables: {
-        patientId: "31d42f7a-0a14-46b7-bc8a-38b3b1e78659",
+        patientId: "abc",
       },
     },
     result: {
