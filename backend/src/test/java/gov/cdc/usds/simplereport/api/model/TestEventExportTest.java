@@ -242,7 +242,7 @@ class TestEventExportTest {
     // GIVEN
     Organization org = _dataFactory.createValidOrg();
     Facility facility = _dataFactory.createValidFacility(org);
-    Person person = _dataFactory.createFullPersonWithSpecificCountry(org, "Canada");
+    Person person = _dataFactory.createFullPersonWithSpecificCountry(org, "CAN");
     TestEvent testEvent =
         _dataFactory.createTestEvent(person, facility, TestResult.NEGATIVE, false);
 
@@ -250,6 +250,6 @@ class TestEventExportTest {
     TestEventExport exportedEvent = new TestEventExport(testEvent);
 
     // THEN
-    assertEquals("Canada", exportedEvent.getPatientCountry());
+    assertEquals("CAN", exportedEvent.getPatientCountry());
   }
 }
