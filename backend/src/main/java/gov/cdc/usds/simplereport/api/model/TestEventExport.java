@@ -36,8 +36,8 @@ import java.util.UUID;
  * practice.
  */
 public class TestEventExport {
-  public static final String CSV_API_VERSION = "05Aug2021"; // last time we changed something
   private static final int FALLBACK_DEFAULT_TEST_MINUTES = 15;
+  public static final String USA = "USA";
   private final TestEvent testEvent;
   private final Optional<Person> patient;
   private final Optional<AskOnEntrySurvey> survey;
@@ -199,6 +199,11 @@ public class TestEventExport {
   @JsonProperty("Patient_zip_code")
   public String getPatientZipCode() {
     return patient.map(Person::getZipCode).orElse(null);
+  }
+
+  @JsonProperty("Patient_country")
+  public String getPatientCountry() {
+    return patient.map(Person::getCountry).orElse(USA);
   }
 
   @JsonProperty("Patient_phone_number")
