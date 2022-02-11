@@ -206,11 +206,11 @@ public class TestDataFactory {
             org,
             "HELLOTHERE",
             "Fred",
-            null,
+            "M",
             "Astaire",
             null,
             DEFAULT_BDAY,
-            getAddress(),
+            getFullAddress(),
             "USA",
             PersonRole.RESIDENT,
             List.of("fred@astaire.com"),
@@ -424,6 +424,11 @@ public class TestDataFactory {
 
   public StreetAddress getAddress() {
     return new StreetAddress("736 Jackson PI NW", null, "Washington", "DC", "20503", "Washington");
+  }
+
+  public StreetAddress getFullAddress() {
+    return new StreetAddress(
+        "736 Jackson PI NW", "APT. 123", "Washington", "DC", "20503", "Washington");
   }
 
   public static List<PhoneNumber> getListOfOnePhoneNumber() {
