@@ -220,4 +220,36 @@ class TestEventExportTest {
     assertEquals("USA", exportedEvent.getPatientCountry());
     assertEquals("English", exportedEvent.getPatientPreferredLanguage());
   }
+
+  @Test
+  void sendPatientInfoWithCountryNull() {
+    // GIVEN
+    Organization org = _dataFactory.createValidOrg();
+    Facility facility = _dataFactory.createValidFacility(org);
+    Person person = _dataFactory.createFullPersonWithSpecificCountry(org, null);
+    TestEvent testEvent =
+        _dataFactory.createTestEvent(person, facility, TestResult.NEGATIVE, false);
+
+    // WHEN
+    TestEventExport exportedEvent = new TestEventExport(testEvent);
+
+    // THEN
+    assertEquals("USA", exportedEvent.getPatientCountry());
+  }
+
+  @Test
+  void sendPatientInfoWithNonUSACountry() {
+    // GIVEN
+    Organization org = _dataFactory.createValidOrg();
+    Facility facility = _dataFactory.createValidFacility(org);
+    Person person = _dataFactory.createFullPersonWithSpecificCountry(org, "Canada");
+    TestEvent testEvent =
+        _dataFactory.createTestEvent(person, facility, TestResult.NEGATIVE, false);
+
+    // WHEN
+    TestEventExport exportedEvent = new TestEventExport(testEvent);
+
+    // THEN
+    assertEquals("Canada", exportedEvent.getPatientCountry());
+  }
 }

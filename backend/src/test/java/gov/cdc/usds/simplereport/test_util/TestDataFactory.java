@@ -230,6 +230,34 @@ public class TestDataFactory {
   }
 
   @Transactional
+  public Person createFullPersonWithSpecificCountry(Organization org, String country) {
+    // consts are to keep style check happy othewise it complains about
+    // "magic numbers"
+    Person p =
+        new Person(
+            org,
+            "HELLOTHERE",
+            "Fred",
+            "M",
+            "Astaire",
+            null,
+            DEFAULT_BDAY,
+            getFullAddress(),
+            country,
+            PersonRole.RESIDENT,
+            List.of("fred@astaire.com"),
+            "white",
+            "not_hispanic",
+            null,
+            "male",
+            false,
+            false,
+            "English",
+            TestResultDeliveryPreference.SMS);
+    return _personRepo.save(p);
+  }
+
+  @Transactional
   public Person createFullPersonEmails(Organization org, List<String> emails) {
     // consts are to keep style check happy othewise it complains about
     // "magic numbers"
