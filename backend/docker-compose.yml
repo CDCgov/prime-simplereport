@@ -25,7 +25,7 @@ services:
       - type: bind
         source: ./db-setup/reset-metabase-db.sql
         target: /usr/local/lib/reset-metabase-db.sql
-    command: -p ${SR_DB_PORT:-5432}  -c log_statement=all -c log_connections=true
+    command: -p ${SR_DB_PORT:-5432}
     networks:
       - dev-net
   api:

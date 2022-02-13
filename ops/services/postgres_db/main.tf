@@ -74,7 +74,9 @@ resource "azurerm_postgresql_flexible_server" "db" {
   delegated_subnet_id = var.subnet_id
   private_dns_zone_id = var.dns_zone_id
 
-  administrator_login    = "simplereport"
+  // TODO: replace with commented-out line below when removing old DB config
+  administrator_login = "simple_report"
+  //administrator_login    = var.administrator_login
   administrator_password = data.azurerm_key_vault_secret.db_password.value
 
   storage_mb                   = 524288 // 512 GB

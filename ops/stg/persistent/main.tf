@@ -56,8 +56,9 @@ module "db" {
   old_subnet_id = module.vnet.subnet_vm_id
   subnet_id     = module.vnet.subnet_db_id
   // TODO: remove this when removing old DB config
-  dns_zone_id      = module.vnet.private_dns_zone_id
-  log_workspace_id = module.monitoring.log_analytics_workspace_id
+  dns_zone_id         = module.vnet.private_dns_zone_id
+  administrator_login = "simplereport"
+  log_workspace_id    = module.monitoring.log_analytics_workspace_id
   // TODO: remove this when removing old DB config
   nophi_user_password = random_password.random_nophi_password.result
 
