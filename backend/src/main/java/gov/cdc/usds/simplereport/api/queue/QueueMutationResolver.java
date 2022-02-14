@@ -86,7 +86,7 @@ public class QueueMutationResolver implements GraphQLMutationResolver {
     TestOrder to =
         _tos.addPatientToQueue(
             facilityID,
-            _ps.getPatientNoPermissionsCheck(patientID, false),
+            _ps.getPatientNoPermissionsCheck(patientID),
             pregnancy,
             symptomsMap,
             symptomOnset,

@@ -240,7 +240,7 @@ public class TestOrderService {
   public AddTestResultResponse addTestResult(
       UUID deviceSpecimenTypeId, TestResult result, UUID patientId, Date dateTested) {
     Organization org = _os.getCurrentOrganization();
-    Person person = _ps.getPatientNoPermissionsCheck(patientId, org, false);
+    Person person = _ps.getPatientNoPermissionsCheck(patientId, org);
     TestOrder order =
         _repo.fetchQueueItem(org, person).orElseThrow(TestOrderService::noSuchOrderFound);
 
@@ -390,7 +390,7 @@ public class TestOrderService {
 
   private TestOrder retrieveTestOrder(UUID patientId) {
     Organization org = _os.getCurrentOrganization();
-    Person patient = _ps.getPatientNoPermissionsCheck(patientId, org, false);
+    Person patient = _ps.getPatientNoPermissionsCheck(patientId, org);
     return _repo.fetchQueueItem(org, patient).orElseThrow(TestOrderService::noSuchOrderFound);
   }
 

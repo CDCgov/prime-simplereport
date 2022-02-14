@@ -215,13 +215,16 @@ public class PersonService {
     }
     return _repo.count(buildPersonSearchFilter(facilityId, isArchived, namePrefixMatch));
   }
-
   // NO PERMISSION CHECK (make sure the caller has one!) getPatient()
-  public Person getPatientNoPermissionsCheck(UUID id, boolean showIsDeleted) {
-    return getPatientNoPermissionsCheck(id, _os.getCurrentOrganization(), showIsDeleted);
+  public Person getPatientNoPermissionsCheck(UUID id) {
+    return getPatientNoPermissionsCheck(id, _os.getCurrentOrganization(), false);
   }
 
-  // NO PERMISSION CHECK (make sure the caller has one!)
+  // NO PERMISSION CHECK (make sure the caller has one!) getPatient()
+  public Person getPatientNoPermissionsCheck(UUID id, Organization org) {
+    return getPatientNoPermissionsCheck(id, org, false);
+  }
+
   public Person getPatientNoPermissionsCheck(UUID id, Organization org, boolean showIsDeleted) {
     return _repo
         .findByIdAndOrganization(id, org, showIsDeleted)
@@ -453,7 +456,7 @@ public class PersonService {
       Boolean employedInHealthcare,
       String preferredLanguage,
       TestResultDeliveryPreference testResultDelivery) {
-    Person patientToUpdate = this.getPatientNoPermissionsCheck(patientId, false);
+    Person patientToUpdate = this.getPatientNoPermissionsCheck(patientId);
     patientToUpdate.updatePatient(
         lookupId,
         firstName,
@@ -487,11 +490,11 @@ public class PersonService {
 
   @AuthorizationConfiguration.RequirePermissionArchiveTargetPatient
   public Person setIsDeleted(UUID patientId, boolean deleted) {
-
+    Organization patientOrg = _os.getCurrentOrganization();
     // showIsDeleted in getPatientNoPermissionsCheck should be opposite the
     // passed in "deleted" param since all patients eligible for deletion when
     // deleted = true are deleted = false currently, and vice versa
-    Person person = this.getPatientNoPermissionsCheck(patientId, !deleted);
+    Person person = this.getPatientNoPermissionsCheck(patientId, patientOrg, !deleted);
     person.setIsDeleted(deleted);
     return _repo.save(person);
   }
