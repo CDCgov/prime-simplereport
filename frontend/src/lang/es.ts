@@ -237,6 +237,7 @@ export const es: LanguageConfig = {
     },
     testResult: {
       result: "Resultado de SARS-CoV-2",
+      downloadResult: "Descargar resultado",
       patient: "Paciente",
       patientDetails: "Detalles del paciente",
       name: "Nombre",
