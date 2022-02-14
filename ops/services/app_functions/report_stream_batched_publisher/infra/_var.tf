@@ -42,5 +42,5 @@ variable "report_stream_batch_minimum" {
 
 variable "report_stream_batch_maximum" {
   type    = string
-  default = "500"
+  default = "300"
 }
