@@ -10,6 +10,10 @@ COPY --chown=gradle:gradle ./backend/config ./config
 COPY --chown=gradle:gradle ./backend/src ./src
 COPY --chown=gradle:gradle ./backend/gradle.properties gradle.properties
 
+RUN groupadd -g 999 appuser && \
+    useradd -r -u 999 -g appuser appuser
+USER appuser
+
 RUN gradle --no-daemon classes testClasses assemble
 
 # db will be running in another container, for purposes of this local file

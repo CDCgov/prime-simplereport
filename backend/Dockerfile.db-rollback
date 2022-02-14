@@ -11,5 +11,9 @@ COPY --chown=gradle:gradle ./backend/src ./src
 COPY --chown=gradle:gradle ./backend/gradle.properties gradle.properties
 COPY --chown=gradle:gradle ./backend/db_rollback_to_tag.sh ./db_rollback_to_tag.sh
 
+RUN groupadd -g 999 appuser && \
+    useradd -r -u 999 -g appuser appuser
+USER appuser
+
 # Indefinite keep-alive
 ENTRYPOINT ["./db_rollback_to_tag.sh"]

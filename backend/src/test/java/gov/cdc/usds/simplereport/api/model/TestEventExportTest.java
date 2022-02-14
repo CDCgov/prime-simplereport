@@ -194,4 +194,62 @@ class TestEventExportTest {
     assertEquals("Cold feet", exportedEvent.getCorrectionReason());
     assertEquals(originalEventId, exportedEvent.getCorrectedResultId());
   }
+
+  @Test
+  void sendPatientInfo() {
+    // GIVEN
+    Organization org = _dataFactory.createValidOrg();
+    Facility facility = _dataFactory.createValidFacility(org);
+    Person person = _dataFactory.createFullPerson(org);
+    TestEvent testEvent =
+        _dataFactory.createTestEvent(person, facility, TestResult.NEGATIVE, false);
+
+    // WHEN
+    TestEventExport exportedEvent = new TestEventExport(testEvent);
+
+    // THEN
+    assertEquals("Fred", exportedEvent.getPatientFirstName());
+    assertEquals("M", exportedEvent.getPatientMiddleName());
+    assertEquals("Astaire", exportedEvent.getPatientLastName());
+    assertEquals("736 Jackson PI NW", exportedEvent.getPatientStreet());
+    assertEquals("APT. 123", exportedEvent.getPatientStreetTwo());
+    assertEquals("Washington", exportedEvent.getPatientCity());
+    assertEquals("DC", exportedEvent.getPatientState());
+    assertEquals("20503", exportedEvent.getPatientZipCode());
+    assertEquals("Washington", exportedEvent.getPatientCounty());
+    assertEquals("USA", exportedEvent.getPatientCountry());
+    assertEquals("English", exportedEvent.getPatientPreferredLanguage());
+  }
+
+  @Test
+  void sendPatientInfoWithCountryNull() {
+    // GIVEN
+    Organization org = _dataFactory.createValidOrg();
+    Facility facility = _dataFactory.createValidFacility(org);
+    Person person = _dataFactory.createFullPersonWithSpecificCountry(org, null);
+    TestEvent testEvent =
+        _dataFactory.createTestEvent(person, facility, TestResult.NEGATIVE, false);
+
+    // WHEN
+    TestEventExport exportedEvent = new TestEventExport(testEvent);
+
+    // THEN
+    assertEquals("USA", exportedEvent.getPatientCountry());
+  }
+
+  @Test
+  void sendPatientInfoWithNonUSACountry() {
+    // GIVEN
+    Organization org = _dataFactory.createValidOrg();
+    Facility facility = _dataFactory.createValidFacility(org);
+    Person person = _dataFactory.createFullPersonWithSpecificCountry(org, "CAN");
+    TestEvent testEvent =
+        _dataFactory.createTestEvent(person, facility, TestResult.NEGATIVE, false);
+
+    // WHEN
+    TestEventExport exportedEvent = new TestEventExport(testEvent);
+
+    // THEN
+    assertEquals("CAN", exportedEvent.getPatientCountry());
+  }
 }
