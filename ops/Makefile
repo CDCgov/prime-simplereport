@@ -47,11 +47,11 @@ init-%: .valid-env-%
 	terraform -chdir=$* init
 
 plan-%: .valid-env-% api.tfvars
-	terraform -chdir=$*/persistent plan -lock-timeout=30m --target=module.bastion --target=module.vnet --target=module.db --target=module.monitoring
+	terraform -chdir=$*/persistent plan -lock-timeout=30m
 	terraform -chdir=$* plan -var-file=../api.tfvars -lock-timeout=30m
 
 deploy-%: .valid-env-% api.tfvars
-	terraform -chdir=$*/persistent apply -auto-approve -lock-timeout=30m --target=module.bastion --target=module.vnet --target=module.db --target=module.monitoring
+	terraform -chdir=$*/persistent apply -auto-approve -lock-timeout=30m
 	terraform -chdir=$* apply -auto-approve -var-file=../api.tfvars -lock-timeout=30m
 
 promote-%: .be-logged-in .valid-env-%
