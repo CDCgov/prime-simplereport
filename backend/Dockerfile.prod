@@ -24,4 +24,4 @@ FROM adoptopenjdk/openjdk11:alpine-jre
 EXPOSE 8080
 COPY --from=build /home/gradle/graphql-api/backend/build/libs/*.jar app.jar
 COPY --from=build  /home/gradle/graphql-api/backend/insights.jar insights.jar
-ENTRYPOINT ["java", "-javaagent:insights.jar", "-XshowSettings:vm", "-jar", "app.jar"]
+ENTRYPOINT ["java", "-javaagent:insights.jar", "-XX:MaxRAMPercentage=80", "-jar", "app.jar"]
