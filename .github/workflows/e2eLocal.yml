@@ -28,7 +28,7 @@ defaults:
     working-directory: .
 
 jobs:
-  test:
+  e2e-test:
     runs-on: ubuntu-latest
     services:
       test-db:

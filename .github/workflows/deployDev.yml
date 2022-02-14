@@ -118,6 +118,7 @@ jobs:
     steps:
       - uses: actions/checkout@v2
       - name: Run health checks
-        uses: ./.github/actions/health-checks
+        uses: ./.github/actions/run-e2e-checks
         with:
           deploy-env: ${{env.DEPLOY_ENV}}
+          spec-path: cypress/integration/00-health_check.js
