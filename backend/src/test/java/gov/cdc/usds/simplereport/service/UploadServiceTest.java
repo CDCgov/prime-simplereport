@@ -6,15 +6,15 @@ import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.when;
 
 import gov.cdc.usds.simplereport.db.model.Person;
-import gov.cdc.usds.simplereport.db.model.auxiliary.PersonRole;
+import gov.cdc.usds.simplereport.db.model.PhoneNumber;
+import gov.cdc.usds.simplereport.db.model.auxiliary.PhoneType;
 import gov.cdc.usds.simplereport.db.model.auxiliary.StreetAddress;
-import gov.cdc.usds.simplereport.db.model.auxiliary.TestResultDeliveryPreference;
+import gov.cdc.usds.simplereport.db.repository.PhoneNumberRepository;
 import gov.cdc.usds.simplereport.test_util.SliceTestConfiguration.Role;
 import gov.cdc.usds.simplereport.test_util.TestUserIdentities;
 import java.io.ByteArrayInputStream;
 import java.io.InputStream;
 import java.nio.charset.StandardCharsets;
-import java.time.LocalDate;
 import java.util.List;
 import java.util.Map;
 import org.junit.jupiter.api.BeforeEach;
@@ -33,7 +33,7 @@ class UploadServiceTest extends BaseServiceTest<UploadService> {
   public static final int PATIENT_PAGE_SIZE = 1000;
 
   @Autowired private PersonService personService;
-  @Autowired private OrganizationService organizationService;
+  @Autowired private PhoneNumberRepository _pnRepo;
   @MockBean protected AddressValidationService addressValidationService;
   private StreetAddress address;
 
@@ -66,28 +66,6 @@ class UploadServiceTest extends BaseServiceTest<UploadService> {
 
   @Test
   void testUploadValidCsv() {
-    Person expectedPatient =
-        new Person(
-            organizationService.getCurrentOrganization(),
-            "",
-            "Tim",
-            "",
-            "Best",
-            "",
-            LocalDate.parse("1933-05-11"),
-            new StreetAddress("123 Main Street", "", "Washington", "DC", "20008", ""),
-            "USA",
-            PersonRole.STAFF,
-            List.of("foo@example.com"),
-            "white",
-            "not_hispanic",
-            List.of(""),
-            "male",
-            false,
-            true,
-            "",
-            TestResultDeliveryPreference.NONE);
-
     // GIVEN
     InputStream inputStream = loadCsv("test-upload.csv");
 
@@ -96,8 +74,14 @@ class UploadServiceTest extends BaseServiceTest<UploadService> {
 
     // THEN
     assertThat(getPatients()).hasSize(1);
-    Person actualPatient = getPatients().get(0);
-    assertThat(actualPatient).usingRecursiveComparison().isEqualTo(expectedPatient);
+    Person p = getPatients().get(0);
+    assertThat(p.getLastName()).isEqualTo("Best");
+    assertThat(p.getAddress()).isEqualTo(address);
+    List<PhoneNumber> phoneNumbers = _pnRepo.findAllByPersonInternalId(p.getInternalId());
+    assertThat(phoneNumbers).hasSize(1);
+    PhoneNumber pn = phoneNumbers.get(0);
+    assertThat(pn.getNumber()).isEqualTo("(565) 666-7777");
+    assertThat(pn.getType()).isEqualTo(PhoneType.MOBILE);
   }
 
   @Test
