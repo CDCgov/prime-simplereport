@@ -70,7 +70,7 @@ module "db_alerting" {
   source  = "../../services/alerts/db_metrics"
   env     = local.env
   rg_name = local.rg_name
-  db_id   = module.db.server_id
+  db_id   = module.db.flexible_server_id
   action_group_ids = [
     data.terraform_remote_state.global.outputs.pagerduty_non_prod_action_id
   ]
