@@ -100,6 +100,39 @@ class UploadServiceTest extends BaseServiceTest<UploadService> {
   }
 
   @Test
+  void testInvalidPhoneType() {
+    // GIVEN
+    InputStream inputStream = loadCsv("test-upload-invalid-phone-type.csv");
+
+    // WHEN
+    var error =
+        assertThrows(
+            IllegalArgumentException.class, () -> this._service.processPersonCSV(inputStream));
+
+    // THEN
+    assertThat(error.getMessage()).isEqualTo("Error on row 1; Invalid PhoneType received");
+    assertThat(getPatients()).isEmpty();
+  }
+
+  @Test
+  void testNoPhoneType() {
+    // GIVEN
+    InputStream inputStream = loadCsv("test-upload-no-phone-type.csv");
+
+    // WHEN
+    this._service.processPersonCSV(inputStream);
+
+    // THEN
+    assertThat(getPatients()).hasSize(1);
+    Person p = getPatients().get(0);
+    List<PhoneNumber> phoneNumbers = _pnRepo.findAllByPersonInternalId(p.getInternalId());
+    assertThat(phoneNumbers).hasSize(1);
+    PhoneNumber pn = phoneNumbers.get(0);
+    assertThat(pn.getNumber()).isEqualTo("(565) 666-7777");
+    assertThat(pn.getType()).isNull();
+  }
+
+  @Test
   void testInsertNoCountry() {
     // GIVEN
     InputStream inputStream = loadCsv("test-upload-no-country.csv");
