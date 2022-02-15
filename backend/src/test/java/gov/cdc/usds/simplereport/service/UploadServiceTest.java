@@ -6,12 +6,15 @@ import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.when;
 
 import gov.cdc.usds.simplereport.db.model.Person;
+import gov.cdc.usds.simplereport.db.model.auxiliary.PersonRole;
 import gov.cdc.usds.simplereport.db.model.auxiliary.StreetAddress;
+import gov.cdc.usds.simplereport.db.model.auxiliary.TestResultDeliveryPreference;
 import gov.cdc.usds.simplereport.test_util.SliceTestConfiguration.Role;
 import gov.cdc.usds.simplereport.test_util.TestUserIdentities;
 import java.io.ByteArrayInputStream;
 import java.io.InputStream;
 import java.nio.charset.StandardCharsets;
+import java.time.LocalDate;
 import java.util.List;
 import java.util.Map;
 import org.junit.jupiter.api.BeforeEach;
@@ -30,6 +33,7 @@ class UploadServiceTest extends BaseServiceTest<UploadService> {
   public static final int PATIENT_PAGE_SIZE = 1000;
 
   @Autowired private PersonService personService;
+  @Autowired private OrganizationService organizationService;
   @MockBean protected AddressValidationService addressValidationService;
   private StreetAddress address;
 
@@ -62,6 +66,28 @@ class UploadServiceTest extends BaseServiceTest<UploadService> {
 
   @Test
   void testUploadValidCsv() {
+    Person expectedPatient =
+        new Person(
+            organizationService.getCurrentOrganization(),
+            "",
+            "Tim",
+            "",
+            "Best",
+            "",
+            LocalDate.parse("1933-05-11"),
+            new StreetAddress("123 Main Street", "", "Washington", "DC", "20008", ""),
+            "USA",
+            PersonRole.STAFF,
+            List.of("foo@example.com"),
+            "white",
+            "not_hispanic",
+            List.of(""),
+            "male",
+            false,
+            true,
+            "",
+            TestResultDeliveryPreference.NONE);
+
     // GIVEN
     InputStream inputStream = loadCsv("test-upload.csv");
 
@@ -70,8 +96,8 @@ class UploadServiceTest extends BaseServiceTest<UploadService> {
 
     // THEN
     assertThat(getPatients()).hasSize(1);
-    assertThat(getPatients().get(0).getLastName()).isEqualTo("Best");
-    assertThat(getPatients().get(0).getAddress()).isEqualTo(address);
+    Person actualPatient = getPatients().get(0);
+    assertThat(actualPatient).usingRecursiveComparison().isEqualTo(expectedPatient);
   }
 
   @Test
@@ -142,7 +168,7 @@ class UploadServiceTest extends BaseServiceTest<UploadService> {
         assertThrows(IllegalArgumentException.class, () -> this._service.processPersonCSV(bis));
 
     // THEN
-    assertThat(error.getMessage()).contains("Not enough column values: expected 21, found 1");
+    assertThat(error.getMessage()).contains("Not enough column values: expected 22, found 1");
   }
 
   @Test
