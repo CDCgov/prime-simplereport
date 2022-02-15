@@ -22,9 +22,21 @@ public class TwilioWrapper implements SmsProviderWrapper {
   @Value("${simple-report.twilio-callback-url:https://simplereport.gov/api/pxp/callback}")
   private String twilioCallbackUrl;
 
+  @Value("${twilio.messaging-service-sid}")
+  private String messagingServiceSid;
+
+  @Value("${TWILIO_ACCOUNT_SID}")
+  public String ACCOUNT_SID;
+
+  @Value("${TWILIO_AUTH_TOKEN}")
+  public String AUTH_TOKEN;
+
   @PostConstruct
   void init() {
     log.info("Twilio is enabled!");
+    com.twilio.rest.messaging.v1.Service service =
+        com.twilio.rest.messaging.v1.Service.fetcher(messagingServiceSid).fetch();
+    log.debug("SmsService will send from service {} ", service.getFriendlyName());
   }
 
   @Override

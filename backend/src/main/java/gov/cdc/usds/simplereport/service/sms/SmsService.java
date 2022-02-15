@@ -3,7 +3,6 @@ package gov.cdc.usds.simplereport.service.sms;
 import com.google.i18n.phonenumbers.NumberParseException;
 import com.google.i18n.phonenumbers.PhoneNumberUtil;
 import com.google.i18n.phonenumbers.PhoneNumberUtil.PhoneNumberFormat;
-import com.twilio.Twilio;
 import com.twilio.exception.ApiException;
 import com.twilio.exception.TwilioException;
 import com.twilio.type.PhoneNumber;
@@ -44,16 +43,16 @@ public class SmsService {
 
   private final PhoneNumberUtil phoneUtil = PhoneNumberUtil.getInstance();
 
-  public static final String ACCOUNT_SID = System.getenv("TWILIO_ACCOUNT_SID");
-  public static final String AUTH_TOKEN = System.getenv("TWILIO_AUTH_TOKEN");
-
   @PostConstruct
   void init() throws NumberParseException {
-    System.out.println("TWILIO ENV VARS:" + ACCOUNT_SID + " " + AUTH_TOKEN);
-    Twilio.init(ACCOUNT_SID, AUTH_TOKEN);
-    com.twilio.rest.messaging.v1.Service service =
-        com.twilio.rest.messaging.v1.Service.fetcher(messagingServiceSid).fetch();
-    log.debug("SmsService will send from service {} ", service.getFriendlyName());
+    //    Twilio.init(ACCOUNT_SID, AUTH_TOKEN);
+    // Twilio, it turns out, doesn't let you fetch the service with test account credentials.
+    // This puts us in a bit of a pickle because we do want to verify that we're sending from the
+    // correct place on app startup.
+    //    com.twilio.rest.messaging.v1.Service service =
+    //        com.twilio.rest.messaging.v1.Service.fetcher(messagingServiceSid).fetch();
+    //    log.debug("SmsService will send from service {} ", service.getFriendlyName());
+    log.debug("SmsService initialized");
   }
 
   @AuthorizationConfiguration.RequirePermissionStartTestWithPatientLink
