@@ -1,7 +1,7 @@
 locals {
   simple_report_callback_url = "https://${var.environment == "prod" ? "www" : var.environment}.simplereport.gov/api/reportstream/callback"
   resource_group_name        = "${var.resource_group_name_prefix}${var.environment}"
-  report_stream_url          = "https://${var.environment == "prod" ? "" : "staging."}prime.cdc.gov/api/reports?option=SkipInvalidItems&verbose=true"
+  report_stream_url          = "https://${var.environment == "prod" ? "" : "staging."}prime.cdc.gov/api/reports?option=SkipInvalidItems"
   function_app_source        = "${path.module}/../${var.function_app_source}"
   management_tags = {
     prime-app      = "simple-report"
@@ -36,7 +36,7 @@ resource "azurerm_app_service_plan" "asp" {
   }
 }
 
-resource "azurerm_key_vault_access_policy" "report_stream_token" {
+resource "azurerm_key_vault_access_policy" "functions" {
   key_vault_id = data.azurerm_key_vault.sr_global.id
   tenant_id    = var.tenant_id
 
@@ -86,7 +86,7 @@ resource "azurerm_function_app" "functions" {
     REPORT_STREAM_BATCH_MINIMUM    = var.report_stream_batch_minimum
     REPORT_STREAM_BATCH_MAXIMUM    = var.report_stream_batch_maximum
     SIMPLE_REPORT_CB_URL           = local.simple_report_callback_url
-    SIMPLE_REPORT_CB_TOKEN         = "@Microsoft.KeyVault(SecretUri=${data.azurerm_key_vault_secret.report_stream_callback_token.id})"
+    SIMPLE_REPORT_CB_TOKEN         = "@Microsoft.KeyVault(SecretUri=${data.azurerm_key_vault_secret.simple_report_callback_token.id})"
   }
 }
 

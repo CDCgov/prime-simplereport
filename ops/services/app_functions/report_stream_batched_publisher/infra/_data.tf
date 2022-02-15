@@ -1,5 +1,5 @@
 locals {
-  report_stream_token_secret_name = var.environment == "prod" ? "prod" : "test"
+  token_env_suffix = var.environment == "prod" ? "prod" : "test"
 }
 
 data "azurerm_resource_group" "rg_global" {
@@ -11,12 +11,12 @@ data "azurerm_key_vault" "sr_global" {
 }
 
 data "azurerm_key_vault_secret" "datahub_api_key" {
-  name         = "datahub-api-key-${local.report_stream_token_secret_name}"
+  name         = "datahub-api-key-${local.token_env_suffix}"
   key_vault_id = data.azurerm_key_vault.sr_global.id
 }
 
-data "azurerm_key_vault_secret" "report_stream_callback_token" {
-  name         = "report-stream-exception-callback-${local.report_stream_token_secret_name}"
+data "azurerm_key_vault_secret" "simple_report_callback_token" {
+  name         = "simple-report-callback-token-${local.token_env_suffix}"
   key_vault_id = data.azurerm_key_vault.sr_global.id
 }
 
