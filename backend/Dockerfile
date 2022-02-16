@@ -1,23 +1,20 @@
-FROM gradle:6.7.1-jdk11-hotspot
+FROM gradle:6.9.2-jdk11
 
-WORKDIR /home/gradle/graphql-api
-COPY --chown=gradle:gradle ./.git ./.git
+WORKDIR /app/backend
 
-WORKDIR /home/gradle/graphql-api/backend
-COPY --chown=gradle:gradle ./backend/gradle ./gradle
-COPY --chown=gradle:gradle ./backend/*.gradle ./
-COPY --chown=gradle:gradle ./backend/config ./config
-COPY --chown=gradle:gradle ./backend/src ./src
-COPY --chown=gradle:gradle ./backend/gradle.properties gradle.properties
+# Only copy dependency-related files
+COPY build.gradle gradle.properties settings.gradle /app/backend/
+RUN chown -R gradle:gradle /app
+USER gradle
 
-RUN groupadd -g 999 appuser && \
-    useradd -r -u 999 -g appuser appuser
-USER appuser
-
-RUN gradle --no-daemon classes testClasses assemble
+# Only download dependencies
+# Eat the expected build failure since no source code has been copied yet
+RUN gradle clean build --no-daemon > /dev/null 2>&1 || true
 
 # db will be running in another container, for purposes of this local file
-ENV SPRING_DATASOURCE_URL=jdbc:postgresql://db:5432/simple_report
+ARG SR_DB_PORT
+ENV SPRING_DATASOURCE_URL=jdbc:postgresql://db:$SR_DB_PORT/simple_report
 
-ENTRYPOINT ["gradle", "--info", "--no-daemon"]
-CMD ["tasks"]
+CMD ["./run.sh"]
+
+EXPOSE 8080

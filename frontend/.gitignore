@@ -16,3 +16,4 @@ maintenance.json
 diff.txt
 
 wiremock-jre8-standalone-2.29.1.jar
+yarn_cache/

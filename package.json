@@ -19,6 +19,7 @@
     "test:backend": "cd backend; ./gradlew test --info; cd ..",
     "e2e": "cd frontend; yarn e2e; cd ..",
     "spotless": "cd backend; ./gradlew spotlessApply; cd ..",
-    "db": "docker-compose -f backend/docker-compose.yml exec db psql -U postgres simple_report"
+    "start": "./start.sh",
+    "db": "docker-compose exec db psql -U postgres simple_report"
   }
 }

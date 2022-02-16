@@ -1,12 +1,15 @@
 FROM node:14-alpine
 
-RUN apk add --no-cache git
+# Add bash and git
+RUN apk add --no-cache bash git
 
-RUN addgroup -S appgroup && adduser -S appuser -G appgroup
-USER appuser
+# Create directory for app, grant ownership to node user
+RUN mkdir -p /app/frontend/node_modules
+RUN chown -R node:node /app
+WORKDIR /app/frontend
 
-WORKDIR /frontend
-
+# Run app as non-privileged user
+USER node
 CMD ["yarn", "start"]
 
 EXPOSE 3000
