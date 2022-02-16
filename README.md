@@ -41,6 +41,7 @@ For ease of local setup, we have created a docker-compose setup which builds doc
 1. Clone this repository: `git clone git@github.com:CDCgov/prime-simplereport.git`
 1. Run `yarn install` in the root of the repository to install pre-commit hooks using lefthook
 1. Run `cp .env.sample .env` in the root of the repository, then obtain the needed secrets from Azure or another developer. Be sure to set the `OKTA_API_KEY` environment variable. You can generate an API token for yourself by logging into the Okta Preview [admin panel](https://hhs-prime-admin.oktapreview.com) and going into Security > API > Tokens.
+1. Run `sudo vim /etc/hosts` (or use your editor of choice) and add a line to the bottom with the following contents and save: `127.0.0.1 localhost.simplereport.gov`
 1. Run `yarn start` in the root of the repository to start the app
 1. When the frontend and backend builds are complete, visit https://localhost.simplereport.gov/app
 
