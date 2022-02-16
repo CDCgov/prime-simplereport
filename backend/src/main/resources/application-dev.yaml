@@ -1,8 +1,13 @@
 spring:
   profiles.include: no-security, no-okta-mgmt, server-debug, create-sample-data, local, no-okta-auth
   liquibase:
-    user: simple_report_migrations
-    password: migrations456
+    simplereport:
+      user: simple_report_migrations
+      password: migrations456
+    metabase:
+      user: simple_report_migrations
+      password: migrations456
+      default-schema: public
   jpa:
     properties:
       hibernate:

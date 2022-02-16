@@ -281,11 +281,11 @@ public class TestEventExport {
   @JsonProperty("Test_result_status")
   public String getTestResultStatus() {
     // F Final results
-    // X No results available; Order canceled
+    // W Post original as wrong, e.g., transmitted for wrong patient
     // C Corrected, final (not yet supported
     switch (testEvent.getCorrectionStatus()) {
       case REMOVED:
-        return "X";
+        return "W";
       case CORRECTED:
         return "C";
       case ORIGINAL:
