@@ -11,10 +11,6 @@ USER gradle
 # Eat the expected build failure since no source code has been copied yet
 RUN gradle clean build --no-daemon > /dev/null 2>&1 || true
 
-# db will be running in another container, for purposes of this local file
-ARG SR_DB_PORT
-ENV SPRING_DATASOURCE_URL=jdbc:postgresql://db:$SR_DB_PORT/simple_report
-
 CMD ["./run.sh"]
 
 EXPOSE 8080
