@@ -1,0 +1,19 @@
+pre-commit:
+  parallel: true
+  commands:
+    spotless:
+      root: "backend/"
+      glob: "*.java"
+      run: docker run --rm -v ${PWD}:/app/backend prime-simplereport_backend sh -c "gradle spotlessApply" && git add {staged_files}
+    prettier:
+      root: "frontend/"
+      glob: "*.{js,ts,jsx,tsx}"
+      run: docker run --rm -v ${PWD}:/app/frontend prime-simplereport_frontend sh -c "npx prettier --config /app/frontend/package.json --write {staged_files}" && git add {staged_files}
+    eslint:
+      root: "frontend/"
+      glob: "*.{js,ts,jsx,tsx}"
+      run: docker run --rm -v ${PWD}:/app/frontend -v $(dirname $PWD)/backend/src/main/resources/graphql:/app/backend/src/main/resources/graphql prime-simplereport_frontend sh -c "npx eslint --config /app/frontend/package.json --resolve-plugins-relative-to /app/frontend --fix {staged_files}" && git add {staged_files}
+    stylelint:
+      root: "frontend/"
+      glob: "*.scss"
+      run: docker run --rm -v ${PWD}:/app/frontend prime-simplereport_frontend sh -c "npx stylelint --config /app/frontend/.stylelintrc.json --config-basedir /app/frontend --fix {staged_files}" && git add {staged_files}

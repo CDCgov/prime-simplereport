@@ -11,6 +11,7 @@ import gov.cdc.usds.simplereport.api.model.PersonUpdate;
 import gov.cdc.usds.simplereport.api.model.errors.ExpiredPatientLinkException;
 import gov.cdc.usds.simplereport.api.model.pxp.PxpRequestWrapper;
 import gov.cdc.usds.simplereport.api.model.pxp.PxpVerifyResponse;
+import gov.cdc.usds.simplereport.api.model.pxp.PxpVerifyResponseV2;
 import gov.cdc.usds.simplereport.db.model.PatientLink;
 import gov.cdc.usds.simplereport.db.model.Person;
 import gov.cdc.usds.simplereport.db.model.TestEvent;
@@ -94,6 +95,19 @@ public class PatientExperienceController {
     _tocs.storeTimeOfConsent(pl);
 
     return new PxpVerifyResponse(p, os, te);
+  }
+
+  /** Verify that the patient-provided DOB matches the patient on file for the patient link id. */
+  @PreAuthorize(
+      "@patientLinkService.verifyPatientLink(#body.getPatientLinkId(), #body.getDateOfBirth())")
+  @PostMapping("/link/verify/v2")
+  public PxpVerifyResponseV2 getPatientLinkVerifyV2(
+      @RequestBody PxpRequestWrapper<Void> body, HttpServletRequest request) {
+    Person patient = _contextHolder.getPatient();
+    TestEvent testEvent = _contextHolder.getLinkedOrder().getTestEvent();
+    _tocs.storeTimeOfConsent(_contextHolder.getPatientLink());
+
+    return new PxpVerifyResponseV2(patient, testEvent);
   }
 
   /**

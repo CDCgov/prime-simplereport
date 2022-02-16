@@ -51,6 +51,11 @@ data "azurerm_key_vault_secret" "sr_db_jdbc" {
   key_vault_id = data.azurerm_key_vault.global.id
 }
 
+data "azurerm_key_vault_secret" "metabase_db_uri" {
+  name         = "simple-report-${local.env}-db-metabase-uri"
+  key_vault_id = data.azurerm_key_vault.global.id
+}
+
 data "azurerm_key_vault_secret" "okta_api_key" {
   name         = "okta-api-key"
   key_vault_id = data.azurerm_key_vault.global.id
@@ -173,4 +178,9 @@ data "azurerm_log_analytics_workspace" "log_analytics" {
 data "azurerm_application_insights" "app_insights" {
   name                = "prime-simple-report-${local.env}-insights"
   resource_group_name = data.azurerm_resource_group.rg.name
+}
+
+data "azurerm_key_vault_secret" "db_password_no_phi" {
+  name         = "simple-report-${local.env}-db-password-no-phi"
+  key_vault_id = data.azurerm_key_vault.global.id
 }

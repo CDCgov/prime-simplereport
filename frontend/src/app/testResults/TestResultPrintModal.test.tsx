@@ -6,7 +6,7 @@ import ReactDOM from "react-dom";
 import { DetachedTestResultPrintModal } from "./TestResultPrintModal";
 
 const testResult = {
-  dateTested: new Date("2021-08-20"),
+  dateTested: new Date("2022-01-28T17:56:48.143Z"),
   result: "NEGATIVE",
   correctionStatus: null,
   deviceType: {
@@ -44,6 +44,7 @@ window.print = jest.fn();
 
 describe("TestResultPrintModal", () => {
   let printSpy: jest.SpyInstance;
+  let component: any;
 
   beforeEach(() => {
     ReactDOM.createPortal = jest.fn((element, _node) => {
@@ -53,7 +54,7 @@ describe("TestResultPrintModal", () => {
     printSpy = jest.spyOn(window, "print");
 
     MockDate.set("2021/01/01");
-    render(
+    component = render(
       <DetachedTestResultPrintModal
         data={{ testResult }}
         testResultId="id"
@@ -70,5 +71,13 @@ describe("TestResultPrintModal", () => {
     userEvent.click(screen.getAllByText("Print")[1]);
 
     expect(printSpy).toBeCalled();
+  });
+
+  it("should render the test date and test time", () => {
+    expect(screen.getByText("01/28/2022 5:56pm")).toBeInTheDocument();
+  });
+
+  it("matches screenshot", () => {
+    expect(component).toMatchSnapshot();
   });
 });

@@ -212,6 +212,7 @@ export const PasswordForm = () => {
           label={"Continue"}
           type={"submit"}
           onClick={handleSubmit}
+          id={"continue"}
         />
       </Card>
     </CardBackground>

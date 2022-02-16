@@ -1,0 +1,42 @@
+.pxp-test-results {
+  #section-to-print,
+  #section-to-print * {
+    visibility: hidden;
+  }
+
+  #section-to-print {
+    display: none;
+  }
+
+  @media print {
+    body * {
+      visibility: hidden;
+    }
+
+    .patient-app {
+      display: none;
+    }
+
+    #section-to-print,
+    #section-to-print * {
+      visibility: visible;
+    }
+
+    .print-area {
+      font-size: 80% !important;
+      background: #fff;
+      overflow: auto;
+      padding: 0.2in 0.4in 0 0.4in;
+      transform: none;
+      max-height: none;
+    }
+
+    #section-to-print {
+      display: unset;
+      top: 0;
+      left: 0;
+      height: 100%;
+      width: 100%;
+    }
+  }
+}

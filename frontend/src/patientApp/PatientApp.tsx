@@ -40,8 +40,8 @@ const PatientApp = () => {
   const { t } = useTranslation();
   const dispatch = useDispatch();
   const plid = useSelector((state: any) => state.plid);
-  const patient = useSelector((state: any) => state.patient);
-  const auth = patient.internalId !== "";
+  const testResult = useSelector((state: any) => state.testResult);
+  const auth = !!testResult.testEventId;
 
   useEffect(() => {
     dispatch(

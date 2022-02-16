@@ -1,5 +1,6 @@
 package gov.cdc.usds.simplereport.db.repository;
 
+import gov.cdc.usds.simplereport.config.DataSourceConfiguration;
 import gov.cdc.usds.simplereport.service.OrganizationInitializingService;
 import gov.cdc.usds.simplereport.test_util.DbTruncator;
 import gov.cdc.usds.simplereport.test_util.SliceTestConfiguration;
@@ -20,7 +21,7 @@ import org.springframework.context.annotation.Import;
  */
 @DataJpaTest
 @AutoConfigureTestDatabase(replace = Replace.NONE)
-@Import({SliceTestConfiguration.class, DbTruncator.class})
+@Import({SliceTestConfiguration.class, DbTruncator.class, DataSourceConfiguration.class})
 @WithSimpleReportStandardUser
 // this allows us to have a non-static @BeforeAll method, at the cost of having slightly less
 // isolation between test cases (data could be passed between tests using instance variables). Don't
