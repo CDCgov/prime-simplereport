@@ -1,6 +1,5 @@
 import { gql, useMutation } from "@apollo/client";
 import Modal from "react-modal";
-import moment from "moment";
 
 import Button from "../commonComponents/Button/Button";
 import { showAlertNotification } from "../utils";
@@ -10,6 +9,7 @@ import {
   InjectedQueryWrapperProps,
   QueryWrapper,
 } from "../commonComponents/QueryWrapper";
+import { formatDateLong } from "../utils/date";
 
 export const testQuery = gql`
   query getTestResultForText($id: ID!) {
@@ -28,12 +28,6 @@ export const testQuery = gql`
     }
   }
 `;
-
-const formatDate = (date: string | undefined, withTime?: boolean) => {
-  const dateFormat = "MMMM Do, YYYY";
-  const format = withTime ? `${dateFormat}` : dateFormat;
-  return moment(date)?.format(format);
-};
 
 export const SEND_SMS = gql`
   mutation sendSMS($id: ID!) {
@@ -97,8 +91,8 @@ export const DetachedTestResultTextModal = ({
       <h3>Text result?</h3>
       <p>
         {" "}
-        {formatFullName(patient)} test result from {formatDate(dateTested)} will
-        be sent to the following numbers:
+        {formatFullName(patient)} test result from {formatDateLong(dateTested)}{" "}
+        will be sent to the following numbers:
       </p>
       <table>
         <tbody>{mobilePhoneNumbers(patient.phoneNumbers)}</tbody>

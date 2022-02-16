@@ -17,7 +17,7 @@ type Props = {
   savePerson: (data: any) => void;
   onDuplicate: (person: Pick<PersonFormData, "firstName" | "lastName">) => void;
   entityName: string;
-  registrationLink: string;
+  registrationLink: string | undefined;
 };
 
 export const SelfRegistrationForm = ({

@@ -53,8 +53,8 @@ jest.mock("../SignUpApi", () => ({
   },
 }));
 
-jest.mock("react-router", () => ({
-  Redirect: (props: any) => `Redirected to ${props.to.pathname}`,
+jest.mock("react-router-dom", () => ({
+  Navigate: (props: any) => `Redirected to ${props.to}`,
 }));
 
 window.scrollTo = jest.fn();

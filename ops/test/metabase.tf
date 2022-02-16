@@ -1,5 +1,12 @@
-module "metabase" {
-  source = "../services/app_service/metabase"
+module "metabase_database" {
+  source = "../services/metabase/database"
+
+  resource_group_name  = data.azurerm_resource_group.rg.name
+  postgres_server_name = data.terraform_remote_state.persistent_test.outputs.postgres_server_name
+}
+
+module "metabase_service" {
+  source = "../services/metabase/service"
   name   = "${local.project}-${local.name}-${local.env}-metabase"
   env    = local.env
 
@@ -20,4 +27,8 @@ module "metabase" {
   postgres_server_name = data.terraform_remote_state.persistent_test.outputs.postgres_server_name
   postgres_url         = "@Microsoft.KeyVault(SecretUri=${data.azurerm_key_vault_secret.metabase_db_uri.id})"
   postgres_server_fqdn = data.terraform_remote_state.persistent_test.outputs.postgres_server_fqdn
+
+  depends_on = [
+    module.metabase_database
+  ]
 }

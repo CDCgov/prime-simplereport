@@ -108,6 +108,11 @@ const Header: React.FC<{}> = () => {
     );
   };
 
+  const activeNavItem = "active-nav-item prime-nav-link";
+  const inactiveNavItem = "prime-nav-link";
+  const getNavItemClassName = ({ isActive }: { isActive: boolean }) =>
+    isActive ? activeNavItem : inactiveNavItem;
+
   return (
     <header className="usa-header usa-header--basic">
       <div className="usa-nav-container prime-header">
@@ -155,11 +160,7 @@ const Header: React.FC<{}> = () => {
                 <LinkWithQuery
                   to={`/dashboard`}
                   onClick={() => setMenuVisible(false)}
-                  activeClassName="active-nav-item"
-                  className="prime-nav-link"
-                  activeStyle={{
-                    color: "white",
-                  }}
+                  className={getNavItemClassName}
                 >
                   Dashboard
                 </LinkWithQuery>
@@ -170,11 +171,7 @@ const Header: React.FC<{}> = () => {
                 <LinkWithQuery
                   to={`/queue`}
                   onClick={() => setMenuVisible(false)}
-                  activeClassName="active-nav-item"
-                  className="prime-nav-link"
-                  activeStyle={{
-                    color: "white",
-                  }}
+                  className={getNavItemClassName}
                 >
                   Conduct tests
                 </LinkWithQuery>
@@ -185,11 +182,7 @@ const Header: React.FC<{}> = () => {
                 <LinkWithQuery
                   to={`/results`}
                   onClick={() => setMenuVisible(false)}
-                  activeClassName="active-nav-item"
-                  className="prime-nav-link"
-                  activeStyle={{
-                    color: "white",
-                  }}
+                  className={getNavItemClassName}
                 >
                   Results
                 </LinkWithQuery>
@@ -200,11 +193,7 @@ const Header: React.FC<{}> = () => {
                 <LinkWithQuery
                   to={`/patients`}
                   onClick={() => setMenuVisible(false)}
-                  activeClassName="active-nav-item"
-                  className="prime-nav-link"
-                  activeStyle={{
-                    color: "white",
-                  }}
+                  className={getNavItemClassName}
                 >
                   {PATIENT_TERM_PLURAL_CAP}
                 </LinkWithQuery>
@@ -251,10 +240,10 @@ const Header: React.FC<{}> = () => {
                 <LinkWithQuery
                   to={`/settings`}
                   onClick={() => setMenuVisible(false)}
-                  activeClassName="active-nav-item"
-                  activeStyle={{
-                    color: "white",
-                  }}
+                  className={({ isActive }) =>
+                    isActive ? "active-nav-item" : ""
+                  }
+                  style={({ isActive }) => ({ color: isActive ? "white" : "" })}
                 >
                   <FontAwesomeIcon icon={"cog"} /> Settings
                 </LinkWithQuery>
@@ -270,12 +259,8 @@ const Header: React.FC<{}> = () => {
                 <LinkWithQuery
                   to={`/dashboard`}
                   onClick={() => setMenuVisible(false)}
-                  activeClassName="active-nav-item"
-                  className="prime-nav-link"
+                  className={getNavItemClassName}
                   id="dashboard-nav-link"
-                  activeStyle={{
-                    color: "white",
-                  }}
                 >
                   Dashboard
                 </LinkWithQuery>
@@ -286,12 +271,8 @@ const Header: React.FC<{}> = () => {
                 <LinkWithQuery
                   to={`/queue`}
                   onClick={() => setMenuVisible(false)}
-                  activeClassName="active-nav-item"
-                  className="prime-nav-link"
+                  className={getNavItemClassName}
                   id="conduct-test-nav-link"
-                  activeStyle={{
-                    color: "white",
-                  }}
                 >
                   Conduct tests
                 </LinkWithQuery>
@@ -302,12 +283,8 @@ const Header: React.FC<{}> = () => {
                 <LinkWithQuery
                   to={`/results`}
                   onClick={() => setMenuVisible(false)}
-                  activeClassName="active-nav-item"
-                  className="prime-nav-link"
+                  className={getNavItemClassName}
                   id="results-nav-link"
-                  activeStyle={{
-                    color: "white",
-                  }}
                 >
                   Results
                 </LinkWithQuery>
@@ -318,12 +295,8 @@ const Header: React.FC<{}> = () => {
                 <LinkWithQuery
                   to={`/patients`}
                   onClick={() => setMenuVisible(false)}
-                  activeClassName="active-nav-item"
-                  className="prime-nav-link"
+                  className={getNavItemClassName}
                   id="patient-nav-link"
-                  activeStyle={{
-                    color: "white",
-                  }}
                 >
                   {PATIENT_TERM_PLURAL_CAP}
                 </LinkWithQuery>
@@ -346,12 +319,13 @@ const Header: React.FC<{}> = () => {
             <li className="usa-nav__primary-item nav__primary-item-icon">
               <LinkWithQuery
                 to={`#`}
-                isActive={() => staffDetailsVisible}
                 onClick={(e) => {
                   e.preventDefault();
                   setStaffDetailsVisible(!staffDetailsVisible);
                 }}
-                activeClassName="active-nav-item"
+                className={() =>
+                  staffDetailsVisible ? activeNavItem : inactiveNavItem
+                }
                 data-testid="user-button"
               >
                 <FontAwesomeIcon
@@ -405,10 +379,10 @@ const Header: React.FC<{}> = () => {
                 <LinkWithQuery
                   to={`/settings`}
                   onClick={() => setMenuVisible(false)}
-                  activeClassName="active-nav-item"
-                  activeStyle={{
-                    color: "white",
-                  }}
+                  className={({ isActive }) =>
+                    isActive ? "active-nav-item" : ""
+                  }
+                  style={({ isActive }) => ({ color: isActive ? "white" : "" })}
                 >
                   <FontAwesomeIcon icon={"cog"} />
                 </LinkWithQuery>

@@ -4,7 +4,7 @@ import PageNotFound from "../../app/commonComponents/PageNotFound";
 import { PxpApi } from "../PxpApiService";
 
 type Props = {
-  registrationLink: string;
+  registrationLink: string | undefined;
   setEntityName: (name: string) => void;
 };
 

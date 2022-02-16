@@ -13,6 +13,7 @@ exports[`SettingsNav displays the nav order correctly and defaults to 'Manage Us
         class="usa-nav__secondary-item"
       >
         <a
+          class=""
           href="/settings"
         >
           Manage users
@@ -22,6 +23,7 @@ exports[`SettingsNav displays the nav order correctly and defaults to 'Manage Us
         class="usa-nav__secondary-item"
       >
         <a
+          class=""
           href="/settings/facilities"
         >
           Manage facilities
@@ -31,6 +33,7 @@ exports[`SettingsNav displays the nav order correctly and defaults to 'Manage Us
         class="usa-nav__secondary-item"
       >
         <a
+          class=""
           href="/settings/organization"
         >
           Manage organization
@@ -40,6 +43,7 @@ exports[`SettingsNav displays the nav order correctly and defaults to 'Manage Us
         class="usa-nav__secondary-item"
       >
         <a
+          class=""
           href="/settings/self-registration"
         >
           Patient self-registration

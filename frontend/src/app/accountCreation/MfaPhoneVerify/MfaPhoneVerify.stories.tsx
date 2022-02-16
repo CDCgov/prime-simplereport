@@ -1,4 +1,5 @@
 import { Story, Meta } from "@storybook/react";
+import { MemoryRouter } from "react-router-dom";
 
 import { MfaPhoneVerify } from "./MfaPhoneVerify";
 
@@ -6,14 +7,13 @@ export default {
   title: "App/Account set up/Step 3b: Verify Voice Call security code",
   component: MfaPhoneVerify,
   argTypes: {},
-  args: {
-    location: { state: { contact: "(530) 867-5309" } },
-  },
 } as Meta;
 
-type Props = React.ComponentProps<typeof MfaPhoneVerify>;
-
-const Template: Story<Props> = (args) => <MfaPhoneVerify {...args} />;
+const Template: Story = (args) => (
+  <MemoryRouter initialEntries={[{ state: { contact: "(530) 867-5309" } }]}>
+    <MfaPhoneVerify {...args} />
+  </MemoryRouter>
+);
 
 export const Default = Template.bind({});
 Default.args = {};

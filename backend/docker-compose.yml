@@ -1,6 +1,7 @@
 version: "3.5"
 services:
   db:
+    # TODO: change this when removing the old DB configuration (version will be upgraded)
     image: postgres:11-alpine
     ports:
       - "${SR_DB_PORT:-5432}:${SR_DB_PORT:-5432}"
@@ -16,8 +17,14 @@ services:
         source: ./db-setup/create-db.sh
         target: /docker-entrypoint-initdb.d/01-user-db-creation.sh
       - type: bind
+        source: ./db-setup/create-metabase-db.sh
+        target: /docker-entrypoint-initdb.d/02-metabase-db-creation.sh
+      - type: bind
         source: ./db-setup/reset-db.sql
         target: /usr/local/lib/reset-db.sql
+      - type: bind
+        source: ./db-setup/reset-metabase-db.sql
+        target: /usr/local/lib/reset-metabase-db.sql
     command: -p ${SR_DB_PORT:-5432}
     networks:
       - dev-net
@@ -37,20 +44,6 @@ services:
       - dev-net
     depends_on:
       - db
-  schemaspy:
-    build:
-      context: .
-      dockerfile: Dockerfile.schemaspy
-      network: dev-net
-    ports:
-      - "${SR_SCHEMASPY_PORT:-8081}:80"
-    environment:
-      HOST: dev-net
-    networks:
-      - dev-net
-    depends_on:
-    - db
-    - api
   mailhog:
     ports:
       - '1025:1025'

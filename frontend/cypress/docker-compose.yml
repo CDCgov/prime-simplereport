@@ -61,6 +61,7 @@ services:
       REACT_APP_BACKEND_URL: http://localhost.simplereport.gov/api
       REACT_APP_OKTA_ENABLED: "true"
       REACT_APP_OKTA_URL: http://cypress:8088
+      REACT_APP_DISABLE_MAINTENANCE_BANNER: "true"
     volumes:
       - ../:/frontend/
       - ../../backend/src/main/resources/graphql:/backend/src/main/resources/graphql

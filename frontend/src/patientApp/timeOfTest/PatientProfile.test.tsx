@@ -1,18 +1,18 @@
 import { Provider } from "react-redux";
 import configureStore from "redux-mock-store";
-import { MemoryRouter } from "react-router";
 import { render, screen } from "@testing-library/react";
 
 import PatientProfile from "./PatientProfile";
 
+jest.mock("react-router-dom", () => {
+  const original = jest.requireActual("react-router-dom");
+  return {
+    ...original,
+    Navigate: () => <p>Redirected</p>,
+  };
+});
+
 const mockStore = configureStore([]);
-const mockContainer = (store: any, patient: any) => (
-  <MemoryRouter>
-    <Provider store={store}>
-      <PatientProfile patient={patient} />
-    </Provider>
-  </MemoryRouter>
-);
 
 describe("PatientProfile", () => {
   it("renders", () => {
@@ -24,7 +24,11 @@ describe("PatientProfile", () => {
     const store = mockStore({
       plid: "foo",
     });
-    render(mockContainer(store, patient));
+    render(
+      <Provider store={store}>
+        <PatientProfile patient={patient} />
+      </Provider>
+    );
     expect(
       screen.getByText("General information", { exact: false })
     ).toBeInTheDocument();
@@ -33,8 +37,14 @@ describe("PatientProfile", () => {
     const store = mockStore({
       plid: "foo",
     });
-    render(mockContainer(store, null));
+    render(
+      <Provider store={store}>
+        <PatientProfile patient={null} />
+      </Provider>
+    );
     // eslint-disable-next-line no-restricted-globals
-    expect(location.pathname).toEqual("/");
+    expect(
+      screen.getByText("Redirected", { exact: false })
+    ).toBeInTheDocument();
   });
 });

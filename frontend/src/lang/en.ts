@@ -226,6 +226,7 @@ export const en = {
     },
     testResult: {
       result: "SARS-CoV-2 result",
+      downloadResult: "Download result",
       patient: "Patient",
       patientDetails: "Patient details",
       name: "Name",
