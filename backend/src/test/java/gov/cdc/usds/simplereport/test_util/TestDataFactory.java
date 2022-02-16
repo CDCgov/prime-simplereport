@@ -362,9 +362,9 @@ public class TestDataFactory {
     return e;
   }
 
-  public TestEvent createTestEventCorrection(TestEvent originalTestEvent) {
+  public TestEvent createTestEventRemoval(TestEvent originalTestEvent) {
     return _testEventRepo.save(
-        new TestEvent(originalTestEvent, TestCorrectionStatus.CORRECTED, "Cold feet"));
+        new TestEvent(originalTestEvent, TestCorrectionStatus.REMOVED, "Cold feet"));
   }
 
   public TestEvent doTest(TestOrder order, TestResult result) {

@@ -184,7 +184,7 @@ class TestEventExportTest {
     TestEvent originalTestEvent =
         _dataFactory.createTestEvent(person, facility, null, null, backTestedDate);
     String originalEventId = originalTestEvent.getInternalId().toString();
-    TestEvent testEvent = _dataFactory.createTestEventCorrection(originalTestEvent);
+    TestEvent testEvent = _dataFactory.createTestEventRemoval(originalTestEvent);
 
     // WHEN
     TestEventExport exportedEvent = new TestEventExport(testEvent);
