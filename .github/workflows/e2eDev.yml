@@ -1,0 +1,33 @@
+name: e2e Dev
+
+on:
+  push:
+    branches:
+      - main
+      - alis/1770-cypress
+
+env:
+  DEPLOY_ENV: dev
+  # E2E_SPEC_FILES: "00-*"
+
+  # CYPRESS_OKTA_USERNAME: ${{ secrets.CYPRESS_OKTA_USERNAME }}
+  # CYPRESS_OKTA_PASSWORD: ${{ secrets.CYPRESS_OKTA_PASSWORD }}
+  # CYPRESS_OKTA_SECRET: ${{ secrets.CYPRESS_OKTA_SECRET }}
+  # CYPRESS_SMARTY_AUTH_ID: ${{ secrets.CYPRESS_SMARTY_AUTH_ID }}
+  # CYPRESS_SMARTY_AUTH_TOKEN: ${{ secrets.CYPRESS_SMARTY_AUTH_TOKEN }}
+
+# concurrency:
+#   group: training-deploy
+
+jobs:
+  e2e-dev:
+    # if: ${{ github.event.workflow_run.conclusion == 'success' && if: "!contains(github.event.commits[0].message, '[skip e2e]')"}}
+    runs-on: ubuntu-latest
+    steps:
+      - name: "Checkout"
+        uses: actions/checkout@v2
+      - name: Run Cypress checks against the dev remote environment
+        uses: ./.github/actions/run-e2e-checks
+# merge to main
+# deploy to dev
+# run e2e against dev blocking prod deploy

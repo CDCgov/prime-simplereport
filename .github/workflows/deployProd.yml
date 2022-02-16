@@ -2,7 +2,7 @@ name: Deploy Prod
 
 on:
   workflow_run:
-    workflows: ["Deploy Stg"]
+    workflows: ["Deploy Stg", "Deploy Dev"]
     types:
       - completed
 

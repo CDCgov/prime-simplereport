@@ -7,6 +7,7 @@ on:
 
 env:
   DEPLOY_ENV: stg
+  E2E_SPEC_FILES: "00-*"
   NODE_VERSION: 14
 concurrency:
   group: stg-deploy
@@ -116,6 +117,4 @@ jobs:
     steps:
       - uses: actions/checkout@v2
       - name: Run health checks
-        uses: ./.github/actions/health-checks
-        with:
-          deploy-env: ${{env.DEPLOY_ENV}}
+        uses: ./.github/actions/run-e2e-checks

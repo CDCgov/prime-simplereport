@@ -1,13 +1,13 @@
 name: Deploy Dev
-
 on:
-  workflow_dispatch:
-
+  push:
+    branches:
+      - main
+      - alis/1770-cypress
 env:
   DEPLOY_ENV: dev
   NODE_VERSION: 14
-concurrency:
-  group: dev-deploy
+  # E2E_SPEC_FILES: "00-*"
 
 jobs:
   build-docker:
@@ -109,16 +109,11 @@ jobs:
         with:
           client-tarball: client.tgz
           deploy-env: ${{env.DEPLOY_ENV}}
-  verify-release:
+  e2e-dev:
+    if: "!contains(github.event.commits[0].message, '[skip e2e-dev]')"
     runs-on: ubuntu-latest
-    needs: [deploy]
-    defaults:
-      run:
-        working-directory: ./ops
     steps:
-      - uses: actions/checkout@v2
-      - name: Run health checks
+      - name: "Checkout"
+        uses: actions/checkout@v2
+      - name: Run Cypress checks against the dev remote environment
         uses: ./.github/actions/run-e2e-checks
-        with:
-          deploy-env: ${{env.DEPLOY_ENV}}
-          spec-path: cypress/integration/00-health_check.js
