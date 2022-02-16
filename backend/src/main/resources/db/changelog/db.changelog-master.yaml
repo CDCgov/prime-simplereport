@@ -1922,6 +1922,20 @@ databaseChangeLog:
               - column:
                   name: test_result_delivery
   - changeSet:
+      id: add-no-phi-role
+      author: josh@skylight.digital
+      comment: Add a role for a user with reduced DB permissions (e.g., for Metabase)
+      changes:
+        - tagDatabase:
+          tag: add-no-phi-role
+        - sql:
+          sql: |
+            CREATE ROLE ${noPhiUsername} WITH LOGIN NOSUPERUSER ENCRYPTED PASSWORD '${noPhiPassword}';
+      rollback:
+        - sql:
+          sql: |
+            DROP ROLE ${noPhiUsername};
+  - changeSet:
       id: add-no-phi-views
       author: josh@skylight.digital
       comment: Add views for some tables that omit columns containing PHI.

@@ -25,10 +25,6 @@ variable "db_vault_id" {
   type = string
 }
 
-variable "db_encryption_key_id" {
-  type = string
-}
-
 variable "log_workspace_id" {
   description = "ID of Log Analytics Workspace to send values to"
   type        = string
@@ -47,10 +43,16 @@ variable "tls_enabled" {
   default = false
 }
 
+// TODO: remove this when removing old DB config
+variable "old_subnet_id" {
+  type = string
+}
+
 variable "subnet_id" {
   type = string
 }
 
+// TODO: remove this when removing old DB config
 variable "dns_zone_id" {
   type = string
 }

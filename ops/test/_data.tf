@@ -201,3 +201,8 @@ data "azurerm_storage_account" "app" {
   name                = "simplereport${local.env}app"
   resource_group_name = data.azurerm_resource_group.rg.name
 }
+
+data "azurerm_key_vault_secret" "db_password_no_phi" {
+  name         = "simple-report-${local.env}-db-password-no-phi"
+  key_vault_id = data.azurerm_key_vault.sr_global.id
+}

@@ -21,6 +21,7 @@ resource "azurerm_app_service" "metabase" {
     linux_fx_version = "DOCKER|metabase/metabase"
   }
 
+  // TODO - need to change this when old DB config is removed (Flexible DB username format is different)
   app_settings = merge(local.app_setting_defaults, {
     "MB_DB_USER" = "${var.postgres_metabase_username}@${var.postgres_server_name}",
     "MB_DB_PASS" = var.postgres_metabase_password
@@ -38,9 +39,6 @@ resource "azurerm_app_service" "metabase" {
       }
     }
   }
-  depends_on = [
-    null_resource.add_metabase_permissions_for_no_phi_user
-  ]
 }
 
 resource "azurerm_key_vault_access_policy" "app_secret_access" {
@@ -62,12 +60,4 @@ resource "azurerm_key_vault_access_policy" "app_secret_access" {
 resource "azurerm_app_service_virtual_network_swift_connection" "metabase_vnet_integration" {
   app_service_id = azurerm_app_service.metabase.id
   subnet_id      = var.webapp_subnet_id
-}
-
-resource "azurerm_postgresql_database" "metabase" {
-  charset             = "UTF8"
-  collation           = "English_United States.1252"
-  name                = "metabase"
-  resource_group_name = var.resource_group_name
-  server_name         = var.postgres_server_name
 }
