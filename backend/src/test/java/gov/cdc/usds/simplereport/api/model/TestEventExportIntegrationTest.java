@@ -156,7 +156,7 @@ class TestEventExportIntegrationTest extends BaseGraphqlTest {
 
   @Test
   void testCorrectedEventSerialization() throws Exception {
-    TestEvent correctedTestEvent = _dataFactory.createTestEventCorrection(testEvent);
+    TestEvent correctedTestEvent = _dataFactory.createTestEventRemoval(testEvent);
     TestEventExport correctedTestEventExport = new TestEventExport(correctedTestEvent);
 
     String actualStr = objectMapper.writeValueAsString(correctedTestEventExport);
@@ -194,7 +194,7 @@ class TestEventExportIntegrationTest extends BaseGraphqlTest {
             + testEvent.getInternalId().toString()
             + "\","
             + "\"Test_correction_reason\":\"Cold feet\","
-            + "\"Test_result_status\":\"C\","
+            + "\"Test_result_status\":\"W\","
             + "\"Test_result_code\":\"260415000\","
             + "\"Specimen_collection_date_time\":\""
             + correctedTestEventExport.getSpecimenCollectionDateTime()
