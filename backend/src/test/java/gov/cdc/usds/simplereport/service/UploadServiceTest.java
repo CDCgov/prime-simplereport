@@ -33,7 +33,7 @@ class UploadServiceTest extends BaseServiceTest<UploadService> {
   public static final int PATIENT_PAGE_SIZE = 1000;
 
   @Autowired private PersonService personService;
-  @Autowired private PhoneNumberRepository _pnRepo;
+  @Autowired private PhoneNumberRepository phoneNumberRepository;
   @MockBean protected AddressValidationService addressValidationService;
   private StreetAddress address;
 
@@ -77,7 +77,8 @@ class UploadServiceTest extends BaseServiceTest<UploadService> {
     Person p = getPatients().get(0);
     assertThat(p.getLastName()).isEqualTo("Best");
     assertThat(p.getAddress()).isEqualTo(address);
-    List<PhoneNumber> phoneNumbers = _pnRepo.findAllByPersonInternalId(p.getInternalId());
+    List<PhoneNumber> phoneNumbers =
+        phoneNumberRepository.findAllByPersonInternalId(p.getInternalId());
     assertThat(phoneNumbers).hasSize(1);
     PhoneNumber pn = phoneNumbers.get(0);
     assertThat(pn.getNumber()).isEqualTo("(565) 666-7777");
@@ -125,7 +126,8 @@ class UploadServiceTest extends BaseServiceTest<UploadService> {
     // THEN
     assertThat(getPatients()).hasSize(1);
     Person p = getPatients().get(0);
-    List<PhoneNumber> phoneNumbers = _pnRepo.findAllByPersonInternalId(p.getInternalId());
+    List<PhoneNumber> phoneNumbers =
+        phoneNumberRepository.findAllByPersonInternalId(p.getInternalId());
     assertThat(phoneNumbers).hasSize(1);
     PhoneNumber pn = phoneNumbers.get(0);
     assertThat(pn.getNumber()).isEqualTo("(565) 666-7777");
