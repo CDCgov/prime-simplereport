@@ -66,18 +66,19 @@ class TestEventExportIntegrationTest extends BaseGraphqlTest {
         "{"
             + "\"Patient_last_name\":\"Astaire\","
             + "\"Patient_first_name\":\"Fred\","
-            + "\"Patient_middle_name\":null,"
+            + "\"Patient_middle_name\":\"M\","
             + "\"Patient_suffix\":null,"
             + "\"Patient_race\":\"2106-3\","
             + "\"Patient_DOB\":\"18990510\","
             + "\"Patient_gender\":\"M\","
             + "\"Patient_ethnicity\":\"N\","
             + "\"Patient_street\":\"736 Jackson PI NW\","
-            + "\"Patient_street_2\":\"\","
+            + "\"Patient_street_2\":\"APT. 123\","
             + "\"Patient_city\":\"Washington\","
             + "\"Patient_county\":\"Washington\","
             + "\"Patient_state\":\"DC\","
             + "\"Patient_zip_code\":\"20503\","
+            + "\"Patient_country\":\"USA\","
             + "\"Patient_phone_number\":\"202-123-4567\","
             + "\"Patient_email\":\"fred@astaire.com\","
             + "\"Patient_ID\":"
@@ -155,7 +156,7 @@ class TestEventExportIntegrationTest extends BaseGraphqlTest {
 
   @Test
   void testCorrectedEventSerialization() throws Exception {
-    TestEvent correctedTestEvent = _dataFactory.createTestEventCorrection(testEvent);
+    TestEvent correctedTestEvent = _dataFactory.createTestEventRemoval(testEvent);
     TestEventExport correctedTestEventExport = new TestEventExport(correctedTestEvent);
 
     String actualStr = objectMapper.writeValueAsString(correctedTestEventExport);
@@ -163,18 +164,19 @@ class TestEventExportIntegrationTest extends BaseGraphqlTest {
         "{"
             + "\"Patient_last_name\":\"Astaire\","
             + "\"Patient_first_name\":\"Fred\","
-            + "\"Patient_middle_name\":null,"
+            + "\"Patient_middle_name\":\"M\","
             + "\"Patient_suffix\":null,"
             + "\"Patient_race\":\"2106-3\","
             + "\"Patient_DOB\":\"18990510\","
             + "\"Patient_gender\":\"M\","
             + "\"Patient_ethnicity\":\"N\","
             + "\"Patient_street\":\"736 Jackson PI NW\","
-            + "\"Patient_street_2\":\"\","
+            + "\"Patient_street_2\":\"APT. 123\","
             + "\"Patient_city\":\"Washington\","
             + "\"Patient_county\":\"Washington\","
             + "\"Patient_state\":\"DC\","
             + "\"Patient_zip_code\":\"20503\","
+            + "\"Patient_country\":\"USA\","
             + "\"Patient_phone_number\":\"202-123-4567\","
             + "\"Patient_email\":\"fred@astaire.com\","
             + "\"Patient_ID\":"
@@ -192,7 +194,7 @@ class TestEventExportIntegrationTest extends BaseGraphqlTest {
             + testEvent.getInternalId().toString()
             + "\","
             + "\"Test_correction_reason\":\"Cold feet\","
-            + "\"Test_result_status\":\"C\","
+            + "\"Test_result_status\":\"W\","
             + "\"Test_result_code\":\"260415000\","
             + "\"Specimen_collection_date_time\":\""
             + correctedTestEventExport.getSpecimenCollectionDateTime()

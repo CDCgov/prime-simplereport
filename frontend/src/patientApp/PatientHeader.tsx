@@ -9,6 +9,8 @@ import { Patient } from "../app/patients/ManagePatients";
 
 import LanguageToggler from "./LanguageToggler";
 
+import "./PatientHeader.scss";
+
 const PatientHeader = () => {
   const organization = useSelector(
     (state) => (state as any).organization as Organization
@@ -21,7 +23,7 @@ const PatientHeader = () => {
   const { t } = useTranslation("translation");
 
   return (
-    <header className="border-bottom border-base-lighter">
+    <header className="header border-bottom border-base-lighter">
       <div className="display-flex flex-align-center maxw-tablet grid-container patient-header">
         <div className="padding-y-1">
           <div className="margin-bottom-0" id="basic-logo">

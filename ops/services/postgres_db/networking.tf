@@ -1,8 +1,11 @@
+// TODO: delete this when removing old DB configuration - Flexible
+// Server uses VNet injection instead of Private Link for non-
+// public connections so this is no longer needed.
 resource "azurerm_private_endpoint" "db" {
   name                = "${var.env}-db-privatelink"
   location            = var.rg_location
   resource_group_name = var.rg_name
-  subnet_id           = var.subnet_id
+  subnet_id           = var.old_subnet_id
 
   private_service_connection {
     name                           = "${var.env}-db-privatelink"

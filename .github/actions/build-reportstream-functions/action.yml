@@ -1,0 +1,31 @@
+name: Build ReportStream reporting functions
+description: Build the ReportStream uploader and exception handler functions
+inputs:
+  deploy-env:
+    description: The environment being deployed (e.g. "prod" or "test")
+    required: true
+runs:
+  using: composite
+  steps:
+    - name: Install dependencies
+      shell: bash
+      working-directory: ./ops/services/app_functions/report_stream_batched_publisher/functions
+      run: |
+        echo "::group::Install dependencies"
+        npm ci
+        echo "::endgroup::"
+    - name: Build function
+      shell: bash
+      working-directory: ./ops/services/app_functions/report_stream_batched_publisher/functions
+      run: |
+        echo "::group::Build function"
+        yarn prestart
+        npm prune --production
+        echo "::endgroup::"
+    - name: Build function .zip
+      shell: bash
+      working-directory: ./ops/services/app_functions/report_stream_batched_publisher/functions
+      run: |
+        echo "::group::Build function .zip"
+        yarn build:zip
+        echo "::endgroup::"

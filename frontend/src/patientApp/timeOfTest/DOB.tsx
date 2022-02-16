@@ -6,7 +6,7 @@ import { Trans, useTranslation } from "react-i18next";
 import { validate as isValidUUID } from "uuid";
 
 import Button from "../../app/commonComponents/Button/Button";
-import { setPatient, updateOrganization } from "../../app/store";
+import { setTestResult, updateOrganization } from "../../app/store";
 import { PxpApi } from "../PxpApiService";
 import Alert from "../../app/commonComponents/Alert";
 import { DateInput } from "../../app/commonComponents/DateInput";
@@ -41,7 +41,7 @@ const DOB = () => {
     !isValidUUID(plid)
   );
   const dobRef = useRef<HTMLInputElement>(null);
-  const patient = useSelector((state: any) => state.patient);
+  const testResult = useSelector((state: any) => state.testResult);
   const [loading, setLoading] = useState(false);
 
   useEffect(() => {
@@ -78,10 +78,10 @@ const DOB = () => {
       );
       dispatch(
         updateOrganization({
-          name: response.organizationName,
+          name: response.organization.name,
         })
       );
-      dispatch(setPatient(response));
+      dispatch(setTestResult(response));
     } catch (error: any) {
       let strError = String(error);
       if (error?.status === 410 || strError.includes("410")) {
@@ -110,20 +110,12 @@ const DOB = () => {
       </main>
     );
   }
-  if (patient?.orderStatus === "COMPLETED") {
+
+  if (testResult?.dateTested) {
     return (
       <Navigate
         to={{
           pathname: "/pxp/test-result",
-          search: `?plid=${plid}`,
-        }}
-      />
-    );
-  } else if (patient?.firstName) {
-    return (
-      <Navigate
-        to={{
-          pathname: "/pxp/patient-info-confirm",
           search: `?plid=${plid}`,
         }}
       />
