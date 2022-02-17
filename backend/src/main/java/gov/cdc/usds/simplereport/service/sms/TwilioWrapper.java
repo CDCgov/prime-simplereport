@@ -1,5 +1,6 @@
 package gov.cdc.usds.simplereport.service.sms;
 
+import com.twilio.exception.ApiException;
 import com.twilio.rest.api.v2010.account.Message;
 import com.twilio.rest.api.v2010.account.MessageCreator;
 import com.twilio.rest.messaging.v1.Service;
@@ -41,7 +42,7 @@ public class TwilioWrapper implements SmsProviderWrapper {
     }
     // figure out what kind of exception is thrown if the message sid doesn't exist and default to
     // the fromNumber send
-    catch (Exception e) {
+    catch (ApiException e) {
       sendFromService = false;
       log.debug(
           "Twilio messaging service not found. SmsService will send from {} ", fallbackFromNumber);
