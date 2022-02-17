@@ -1,26 +1,18 @@
 name: Run Cypress integration tests on a remote environment
 description: Run integration tests on a remote environment
 
-env:
-  NODE_VERSION: 14
-  CYPRESS_OKTA_USERNAME: ${{ secrets.CYPRESS_OKTA_USERNAME }}
-  CYPRESS_OKTA_PASSWORD: ${{ secrets.CYPRESS_OKTA_PASSWORD }}
-  CYPRESS_OKTA_SECRET: ${{ secrets.CYPRESS_OKTA_SECRET }}
-  CYPRESS_SMARTY_AUTH_ID: ${{ secrets.CYPRESS_SMARTY_AUTH_ID }}
-  CYPRESS_SMARTY_AUTH_TOKEN: ${{ secrets.CYPRESS_SMARTY_AUTH_TOKEN }}
-  E2E_SPEC_FILES: "**"
+# env vars required
+# CYPRESS_OKTA_USERNAME
+# CYPRESS_OKTA_PASSWORD
+# CYPRESS_OKTA_SECRET
+# SMARTY_AUTH_ID
+# SMARTY_AUTH_TOKEN
+# E2E_SPEC_FILES
+# DEPLOY_ENV
 
 runs:
   using: composite
   steps:
-    - run: |
-        sudo chown runner: /var/run/act/
-        sudo chmod u+w -R /var/run/act/
-        sudo chown runner: /home/alis/skylight/prime-simplereport/frontend/
-        sudo chmod u+w -R /home/alis/skylight/prime-simplereport/frontend/
-        sudo chown runner: /home/alis/skylight/prime-simplereport/frontend/cypress/
-        sudo chmod u+w -R /home/alis/skylight/prime-simplereport/frontend/cypress/
-      shell: bash
     - name: "Use Node.js ${{ env.NODE_VERSION }}"
       uses: "actions/setup-node@v2.1.5"
       with:
@@ -39,22 +31,20 @@ runs:
         key: cypress-${{ runner.os }}-cypress-${{ hashFiles('**/package.json') }}
         restore-keys: |
           cypress-${{ runner.os }}-cypress-
-    # - name: Makefile deploy verification for backend in ${{env.DEPLOY_ENV}} environment
-    #   shell: bash
-    #   working-directory: ./ops
-    #   env:
-    #       CURL_TIMEOUT: 5
-    #   run: |
-    #     echo "::group::Run Makefile verification"
-    #     make check-${{env.DEPLOY_ENV}}-commit check-${{env.DEPLOY_ENV}}-readiness
-    #     echo "::endgroup::"
+    - name: Makefile deploy verification for backend in ${{env.DEPLOY_ENV}} environment
+      shell: bash
+      working-directory: ./ops
+      env:
+          CURL_TIMEOUT: 5
+      run: |
+        echo "::group::Run Makefile verification"
+        make check-${{env.DEPLOY_ENV}}-commit check-${{env.DEPLOY_ENV}}-readiness
+        echo "::endgroup::"
     - name: install dependencies and verify Cypress
       shell: bash
       working-directory: ./frontend
       env:
-        # make sure every Cypress install prints minimal information
         CI: 1
-      # print Cypress and OS info
       run: |
         yarn install --prefer-offline
         yarn exec cypress verify
@@ -74,5 +64,5 @@ runs:
       working-directory: ./frontend
       run: |
         echo "::group::Run Cypress verification"
-        ./e2e.sh -s "cypress/integration/${{ env.E2E_SPEC_FILES }}" -r https://${{ env.DEPLOY_ENV }}.simplereport.gov -f /app/health/commit
+        ./e2e.sh -s "cypress/integration/${{ E2E_SPEC_FILES }}" -r https://${{ env.DEPLOY_ENV }}.simplereport.gov -f /app/health/commit
         echo "::endgroup::"

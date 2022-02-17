@@ -7,7 +7,6 @@ on:
 env:
   DEPLOY_ENV: dev
   NODE_VERSION: 14
-  # E2E_SPEC_FILES: "00-*"
 
 jobs:
   build-docker:
@@ -112,6 +111,13 @@ jobs:
   e2e-dev:
     if: "!contains(github.event.commits[0].message, '[skip e2e-dev]')"
     runs-on: ubuntu-latest
+    env:
+      E2E_SPEC_FILES: "**"
+      CYPRESS_OKTA_USERNAME: ${{ secrets.CYPRESS_OKTA_USERNAME }}
+      CYPRESS_OKTA_PASSWORD: ${{ secrets.CYPRESS_OKTA_PASSWORD }}
+      CYPRESS_OKTA_SECRET: ${{ secrets.CYPRESS_OKTA_SECRET }}
+      CYPRESS_SMARTY_AUTH_ID: ${{ secrets.CYPRESS_SMARTY_AUTH_ID }}
+      CYPRESS_SMARTY_AUTH_TOKEN: ${{ secrets.CYPRESS_SMARTY_AUTH_TOKEN }}
     steps:
       - name: "Checkout"
         uses: actions/checkout@v2
