@@ -115,7 +115,7 @@ jobs:
         with:
           client-tarball: client.tgz
           deploy-env: ${{env.DEPLOY_ENV}}
-  e2e-dev:
+  e2e:
     needs: [deploy]
     if: "!contains(github.event.commits[0].message, '[skip e2e-dev]')"
     runs-on: ubuntu-latest

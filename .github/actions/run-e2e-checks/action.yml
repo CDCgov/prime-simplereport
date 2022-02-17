@@ -55,12 +55,6 @@ runs:
         yarn exec cypress version --component node
     - name: Cypress deploy verification for frontend in ${{env.DEPLOY_ENV}} environment
       shell: bash
-      env:
-        CYPRESS_OKTA_USERNAME: ${{ secrets.CYPRESS_OKTA_USERNAME }}
-        CYPRESS_OKTA_PASSWORD: ${{ secrets.CYPRESS_OKTA_PASSWORD }}
-        CYPRESS_OKTA_SECRET: ${{ secrets.CYPRESS_OKTA_SECRET }}
-        SMARTY_AUTH_ID: ${{ secrets.SMARTY_AUTH_ID }}
-        SMARTY_AUTH_TOKEN: ${{ secrets.SMARTY_AUTH_TOKEN }}
       working-directory: ./frontend
       run: |
         echo "::group::Run Cypress verification"
