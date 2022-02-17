@@ -202,7 +202,7 @@ export const es: LanguageConfig = {
           race: "La raza es obligatoria",
           tribalAffiliation: "La afiliación tribal tiene un formato incorrecto",
           ethnicity: "La etnia es obligatoria",
-          gender: "El sexo asignado al nacer tiene un formato incorrecto",
+          gender: "El sexo asignado al nacer es obligatoria",
           residentCongregateSetting:
             "¿Reside usted en un entorno compartido por muchas personas?  Se requiere una respuesta",
           employedInHealthcare:

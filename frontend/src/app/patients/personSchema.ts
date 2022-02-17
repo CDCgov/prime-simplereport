@@ -252,8 +252,7 @@ const updateFieldSchemata: (
     .oneOf(getValues(ETHNICITY_VALUES), t("patient.form.errors.ethnicity")),
   gender: yup
     .mixed()
-    .oneOf(getValues(GENDER_VALUES))
-    .required(t("Sex assigned at birth is required")),
+    .oneOf(getValues(GENDER_VALUES), t("patient.form.errors.gender")),
   residentCongregateSetting: yup.boolean().nullable(),
   employedInHealthcare: yup.boolean().nullable(),
   tribalAffiliation: yup
