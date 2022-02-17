@@ -30,7 +30,6 @@ import org.springframework.scheduling.annotation.EnableScheduling;
   ExperianProperties.class,
   SmartyStreetsProperties.class,
   SendGridProperties.class,
-  //  TwilioProperties.class,
   OrderingProviderProperties.class,
   CorsProperties.class,
   AzureStorageQueueReportingProperties.class
