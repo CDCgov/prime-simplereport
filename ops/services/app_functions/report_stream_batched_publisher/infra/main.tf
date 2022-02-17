@@ -16,12 +16,15 @@ resource "azurerm_storage_container" "deployments" {
   container_access_type = "private"
 }
 
+// The Terraform deploy currently assumes that the .zip to be deployed already exists
 resource "azurerm_storage_blob" "appcode" {
   name                   = "functionapp.zip"
   storage_account_name   = data.azurerm_storage_account.app.name
   storage_container_name = azurerm_storage_container.deployments.name
   type                   = "Block"
   source                 = local.function_app_source
+  content_md5            = filemd5(local.function_app_source)
+  content_type           = "application/zip"
 }
 
 resource "azurerm_app_service_plan" "asp" {
@@ -72,7 +75,7 @@ resource "azurerm_function_app" "functions" {
     FUNCTIONS_WORKER_RUNTIME       = "node"
     WEBSITE_NODE_DEFAULT_VERSION   = "~14"
     FUNCTION_APP_EDIT_MODE         = "readonly"
-    HASH                           = "${base64encode(filesha256("${local.function_app_source}"))}"
+    HASH                           = azurerm_storage_blob.appcode.content_md5
     WEBSITE_RUN_FROM_PACKAGE       = "https://${data.azurerm_storage_account.app.name}.blob.core.windows.net/${azurerm_storage_container.deployments.name}/${azurerm_storage_blob.appcode.name}${data.azurerm_storage_account_sas.sas.sas}"
     APPINSIGHTS_INSTRUMENTATIONKEY = data.azurerm_application_insights.app.instrumentation_key
     AZ_STORAGE_QUEUE_SVC_URL       = "https://${data.azurerm_storage_account.app.name}.queue.core.windows.net/"
