@@ -2,7 +2,7 @@
 
 ###########
 # This script is used for local development only.
-# It will start a continuous build separately from booRun.
+# It will start a continuous build separately from bootRun.
 # This enables live reload of the backend for development.
 ###########
 

@@ -58,12 +58,6 @@ How to update resources limits on your [Mac](https://docs.docker.com/desktop/mac
 If you wish to run outside of docker-compose (bare metal), you'll need to install all the dependencies locally.
 See more [info here](https://github.com/CDCgov/prime-simplereport/wiki/Running-outside-of-docker).
 
-## Support admin
-
-You can make your user a support admin by assigning yourself the `SR-DEV-ADMINS` group in Okta Preview.
-
-Support admins can access the `/admin` paths and support admin APIs.
-
 ## Roles
 
 The available user role types are `ADMIN`, `USER`, `ENTRY_ONLY`, `ALL_FACILITIES`, and `NO_ACCESS`. You can check `backend/src/main/java/gov/cdc/usds/simplereport/config/authorization/OrganizationRole.java` for a list of available roles
@@ -72,9 +66,15 @@ The available user role types are `ADMIN`, `USER`, `ENTRY_ONLY`, `ALL_FACILITIES
 - `USER` - a site user the has access to everything in their organization but the gear icon
 - `ENTRY_ONLY` - a site user that only has access to the Conduct Test tab
 - `ALL_FACILITIES` - a site user that can access all facilities in their organization
-- `NO_ACCESS` - a member of an organization who has no permissions without possessing other roles
+- `NO_ACCESS` - a member of an organization who has no permissions without possessing other roles. Every member of an org has this role, so it is used to list all users in an organization
 
 These roles are controlled via Okta groups.
+
+## Support admin
+
+You can make your user a support admin by assigning yourself the `SR-DEV-ADMINS` group in Okta Preview.
+
+Support admins can access the `/admin` paths and support admin APIs.
 
 ## Database cleaning
 
@@ -116,7 +116,9 @@ If you are required to roll back a non-local database, you may generate the requ
 
 ## API testing
 
-You can make requests to the GraphQL API using [Insomnia](https://insomnia.rest/download) or a similar client. You would need to point the api endpoint to the backend at: `https://localhost.simplereport.gov/api/graphql` This gives you a preview to query/mutate the local database.
+You can make requests to the GraphQL API using [Insomnia](https://insomnia.rest/download) or a similar client. You would need to point the api endpoint to the backend at: `https://localhost.simplereport.gov/api/graphql` This gives you a preview to query/mutate the local database.  
+  
+When using Insomnia, you'll also need to pass your access_token in the `Authorization` header - this can be found in Application -> Local Storage -> Access Token on a Chrome browser, or by typing `localStorage.getItem("access_token")` into the console. Copy that value, then create an `Authorization` header with the value `Bearer ${access_token}`.
 
 ## Tests
 
