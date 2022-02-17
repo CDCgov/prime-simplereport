@@ -87,6 +87,7 @@ resource "azurerm_function_app" "functions" {
     REPORT_STREAM_BATCH_MAXIMUM    = var.report_stream_batch_maximum
     SIMPLE_REPORT_CB_URL           = local.simple_report_callback_url
     SIMPLE_REPORT_CB_TOKEN         = "@Microsoft.KeyVault(SecretUri=${data.azurerm_key_vault_secret.simple_report_callback_token.id})"
+    AzureWebJobs.ReportStreamExceptionHandler.Disabled = 1
   }
 }
 
