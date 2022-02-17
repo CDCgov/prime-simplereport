@@ -20,28 +20,28 @@ export const routeFromStatus = (userAccountStatus: UserAccountStatus) => {
   switch (userAccountStatus) {
     case UserAccountStatus.LOADING:
     case UserAccountStatus.PENDING_ACTIVATION:
-      return "/";
+      return "/uac";
     case UserAccountStatus.PASSWORD_RESET:
-      return "/set-password";
+      return "/uac/set-password";
     case UserAccountStatus.SET_SECURITY_QUESTIONS:
-      return "/set-recovery-question";
+      return "/uac/set-recovery-question";
     case UserAccountStatus.MFA_SELECT:
-      return "/mfa-select";
+      return "/uac/mfa-select";
     case UserAccountStatus.SMS_PENDING_ACTIVATION:
-      return "/mfa-sms/verify";
+      return "/uac/mfa-sms/verify";
     case UserAccountStatus.CALL_PENDING_ACTIVATION:
-      return "/mfa-phone/verify";
+      return "/uac/mfa-phone/verify";
     case UserAccountStatus.EMAIL_PENDING_ACTIVATION:
-      return "/mfa-email/verify";
+      return "/uac/mfa-email/verify";
     case UserAccountStatus.GOOGLE_PENDING_ACTIVATION:
-      return "/mfa-google-auth/verify";
+      return "/uac/mfa-google-auth/verify";
     case UserAccountStatus.OKTA_PENDING_ACTIVATION:
-      return "/mfa-okta/verify";
+      return "/uac/mfa-okta/verify";
     case UserAccountStatus.FIDO_PENDING_ACTIVATION:
-      return "/mfa-security-key";
+      return "/uac/mfa-security-key";
     case UserAccountStatus.ACTIVE:
-      return "/success";
+      return "/uac/success";
     default:
-      return "/not-found";
+      return "/uac/not-found";
   }
 };

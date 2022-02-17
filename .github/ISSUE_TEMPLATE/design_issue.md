@@ -8,14 +8,14 @@ assignees: ''
 ---
 
 ### Design challenge/problem statement
-describe the design challenge
+Describe the context leading up to this situation, the user and business goals, and the design challenge.
 
 ### Evidence (what do we know about this problem?)
-provide evidence (e.g. screenshots / user feedback)
+Provide evidence (e.g. screenshots / user feedback).
 
 ### Hypotheses
-state your hypotheses
+State your hypotheses.
 
 ### Action items
-- item 1
-- item 2
+- Item 1
+- Item 2

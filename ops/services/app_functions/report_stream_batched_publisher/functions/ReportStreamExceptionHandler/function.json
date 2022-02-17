@@ -1,4 +1,5 @@
 {
+  "disabled": true,
   "bindings": [
     {
       "name": "body",

@@ -1,14 +1,14 @@
 import { FunctionComponent, useEffect } from "react";
 import { useDispatch, connect, useSelector } from "react-redux";
-import { Route, Switch, BrowserRouter as Router } from "react-router-dom";
+import { Route, Routes } from "react-router-dom";
 import { validate as isValidUUID } from "uuid";
 import { useTranslation } from "react-i18next";
 
 import Page from "../app/commonComponents/Page/Page";
 import { setInitialState } from "../app/store";
-import { getPatientLinkIdFromUrl } from "../app/utils/url";
 import PageNotFound from "../app/commonComponents/PageNotFound";
 import Alert from "../app/commonComponents/Alert";
+import { getPatientLinkIdFromUrl } from "../app/utils/url";
 
 import PatientHeader from "./PatientHeader";
 import TermsOfService from "./timeOfTest/TermsOfService";
@@ -40,8 +40,8 @@ const PatientApp = () => {
   const { t } = useTranslation();
   const dispatch = useDispatch();
   const plid = useSelector((state: any) => state.plid);
-  const patient = useSelector((state: any) => state.patient);
-  const auth = patient.internalId !== "";
+  const testResult = useSelector((state: any) => state.testResult);
+  const auth = !!testResult.testEventId;
 
   useEffect(() => {
     dispatch(
@@ -73,38 +73,37 @@ const PatientApp = () => {
     <Page>
       <PatientHeader />
       <PatientLinkURL404Wrapper plid={plid}>
-        <Router basename={`${process.env.PUBLIC_URL}/pxp`}>
-          <Switch>
-            <Route path="/" exact component={TermsOfService} />
-            <Route path="/terms-of-service" component={TermsOfService} />
-            <Route path="/birth-date-confirmation" component={DOB} />
-            <GuardedRoute
-              auth={auth}
-              path="/patient-info-confirm"
-              component={PatientProfileContainer}
-            />
-            <GuardedRoute
-              auth={auth}
-              path="/patient-info-edit"
-              component={PatientFormContainer}
-            />
-            <GuardedRoute
-              auth={auth}
-              path="/patient-info-symptoms"
-              component={AoEPatientFormContainer}
-            />
-            <GuardedRoute
-              auth={auth}
-              path="/success"
-              component={PatientLanding}
-            />
-            <GuardedRoute
-              auth={auth}
-              path="/test-result"
-              component={TestResult}
-            />
-          </Switch>
-        </Router>
+        <Routes>
+          <Route path="/" element={<TermsOfService />} />
+          <Route path="terms-of-service" element={<TermsOfService />} />
+          <Route path="birth-date-confirmation" element={<DOB />} />
+          <Route
+            path="patient-info-confirm"
+            element={
+              <GuardedRoute auth={auth} element={<PatientProfileContainer />} />
+            }
+          />
+          <Route
+            path="patient-info-edit"
+            element={
+              <GuardedRoute auth={auth} element={<PatientFormContainer />} />
+            }
+          />
+          <Route
+            path="patient-info-symptoms"
+            element={
+              <GuardedRoute auth={auth} element={<AoEPatientFormContainer />} />
+            }
+          />
+          <Route
+            path="success"
+            element={<GuardedRoute auth={auth} element={<PatientLanding />} />}
+          />
+          <Route
+            path="test-result"
+            element={<GuardedRoute auth={auth} element={<TestResult />} />}
+          />
+        </Routes>
       </PatientLinkURL404Wrapper>
     </Page>
   );

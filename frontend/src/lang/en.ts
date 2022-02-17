@@ -226,6 +226,7 @@ export const en = {
     },
     testResult: {
       result: "SARS-CoV-2 result",
+      downloadResult: "Download result",
       patient: "Patient",
       patientDetails: "Patient details",
       name: "Name",
@@ -568,9 +569,9 @@ export const en = {
         dateOfBirth: "Date of birth",
         enterDOB: "Enter your date of birth",
         enterDOB2:
-          "Enter your date of birth to access your COVID-19 testing portal.",
+          "Enter <0>{{personName}}</0>'s date of birth to access your COVID-19 testing portal.",
         linkExpirationNotice:
-          "Note: this link will expire 5 days after the test result was recorded.",
+          "Note: this link will expire 10 days after the test result was recorded.",
         format: "MM/DD/YYYY",
         invalidFormat: "Date of birth must be in MM/DD/YYYY format",
         invalidYear:

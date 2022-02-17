@@ -241,9 +241,11 @@
   }
 
   &__error {
+    border-left-width: 0.25rem;
     border-color: color($theme-color-error);
 
     .prime-card-container {
+      border-left-width: 0.25rem;
       border-color: color($theme-color-error);
     }
   }
@@ -713,6 +715,7 @@ $results-dropdown-spacing: #{units(4)} - #{units(2)} - 22px - #{units(4)}; // he
 
 .active-nav-item {
   background-color: color($theme-color-primary-darker);
+  color: white !important;
 }
 
 .prime-nav-close-button {

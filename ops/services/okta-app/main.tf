@@ -25,6 +25,9 @@ resource "okta_app_oauth" "app" {
   hide_web                  = false
   login_mode                = "SPEC"
 
+  skip_users  = true
+  skip_groups = true
+
   lifecycle {
     ignore_changes = [
       groups
