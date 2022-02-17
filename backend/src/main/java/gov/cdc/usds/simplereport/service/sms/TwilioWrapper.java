@@ -25,22 +25,23 @@ public class TwilioWrapper implements SmsProviderWrapper {
   @Value("${twilio.messaging-service-sid}")
   private String messagingServiceSid;
 
-  @Value("${TWILIO_ACCOUNT_SID}")
-  public String ACCOUNT_SID;
-
-  @Value("${TWILIO_AUTH_TOKEN}")
-  public String AUTH_TOKEN;
+  //  @Value("${TWILIO_ACCOUNT_SID}")
+  //  public String ACCOUNT_SID;
+  //
+  //  @Value("${TWILIO_AUTH_TOKEN}")
+  //  public String AUTH_TOKEN;
 
   @PostConstruct
   void init() {
     log.info("Twilio is enabled!");
+    //    Twilio.init(ACCOUNT_SID, AUTH_TOKEN);
     com.twilio.rest.messaging.v1.Service service =
         com.twilio.rest.messaging.v1.Service.fetcher(messagingServiceSid).fetch();
     log.debug("SmsService will send from service {} ", service.getFriendlyName());
   }
 
   @Override
-  public String send(PhoneNumber to, String messagingServiceSid, String message) {
+  public String send(PhoneNumber to, String message) {
     // We're sending using a messaging service rather than a from number:
     // https://www.twilio.com/docs/messaging/services#send-a-message-with-a-messaging-service
     Message msg =
