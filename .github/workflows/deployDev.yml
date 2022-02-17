@@ -112,6 +112,10 @@ jobs:
     if: "!contains(github.event.commits[0].message, '[skip e2e-dev]')"
     runs-on: ubuntu-latest
     env:
+      CYPRESS_OKTA_USERNAME: ${{ secrets.CYPRESS_OKTA_USERNAME }}
+      CYPRESS_OKTA_PASSWORD: ${{ secrets.CYPRESS_OKTA_PASSWORD }}
+      CYPRESS_OKTA_SECRET: ${{ secrets.CYPRESS_OKTA_SECRET }}
+    env:
       E2E_SPEC_FILES: "**"
       CYPRESS_OKTA_USERNAME: ${{ secrets.CYPRESS_OKTA_USERNAME }}
       CYPRESS_OKTA_PASSWORD: ${{ secrets.CYPRESS_OKTA_PASSWORD }}
