@@ -38,13 +38,13 @@ public class TwilioWrapper implements SmsProviderWrapper {
     log.info("Twilio is enabled!");
     try {
       Service service = Service.fetcher(messagingServiceSid).fetch();
-      log.debug("SmsService will send from service {} ", service.getFriendlyName());
+      log.info("SmsService will send from service {} ", service.getFriendlyName());
     }
     // figure out what kind of exception is thrown if the message sid doesn't exist and default to
     // the fromNumber send
     catch (ApiException e) {
       sendFromService = false;
-      log.debug(
+      log.info(
           "Twilio messaging service not found. SmsService will send from {} ", fallbackFromNumber);
     }
   }
