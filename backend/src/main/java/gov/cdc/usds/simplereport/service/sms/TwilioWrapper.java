@@ -1,6 +1,5 @@
 package gov.cdc.usds.simplereport.service.sms;
 
-import com.twilio.Twilio;
 import com.twilio.rest.api.v2010.account.Message;
 import com.twilio.type.PhoneNumber;
 import java.net.URI;
@@ -26,16 +25,9 @@ public class TwilioWrapper implements SmsProviderWrapper {
   @Value("${twilio.messaging-service-sid}")
   private String messagingServiceSid;
 
-  @Value("${TWILIO_ACCOUNT_SID}")
-  public String ACCOUNT_SID;
-
-  @Value("${TWILIO_AUTH_TOKEN}")
-  public String AUTH_TOKEN;
-
   @PostConstruct
   void init() {
     log.info("Twilio is enabled!");
-    Twilio.init(ACCOUNT_SID, AUTH_TOKEN);
     com.twilio.rest.messaging.v1.Service service =
         com.twilio.rest.messaging.v1.Service.fetcher(messagingServiceSid).fetch();
     log.debug("SmsService will send from service {} ", service.getFriendlyName());

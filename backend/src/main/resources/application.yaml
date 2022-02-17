@@ -135,7 +135,7 @@ simple-report:
       - POST
 twilio:
   from-number: "+12023014570"
-  messaging-service-sid: ""
+  messaging-service-sid: "you need a real sid to send texts"
 logging:
   pattern:
     console: "{\"time\": \"%d{yyyy-MM-dd HH:mm:ss.SSS}\", \"level\": \"%p\", \"source\": \"%logger{39}:%L\", \"message\": \"%replace(%m%wEx){'[\r\n]+', '\\n'}%nopex\"}%n"
