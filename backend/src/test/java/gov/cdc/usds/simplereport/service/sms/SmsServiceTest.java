@@ -91,8 +91,7 @@ class SmsServiceTest extends BaseServiceTest<SmsService> {
     createTestOrderAndPatientLink(_person);
 
     // WHEN
-    when(mockTwilio.send(toNumber.capture(), messagingServiceSid.capture(), message.capture()))
-        .thenReturn("some-twilio-id-1");
+    when(mockTwilio.send(toNumber.capture(), message.capture())).thenReturn("some-twilio-id-1");
     _smsService.sendToPatientLink(_patientLink.getInternalId(), "yup here we are, testing stuff");
 
     // THEN
@@ -126,8 +125,7 @@ class SmsServiceTest extends BaseServiceTest<SmsService> {
     TestUserIdentities.setFacilityAuthorities(_site);
 
     // WHEN + THEN (confirm there is no exception thrown)
-    when(mockTwilio.send(toNumber.capture(), messagingServiceSid.capture(), message.capture()))
-        .thenReturn("some-twilio-id-2");
+    when(mockTwilio.send(toNumber.capture(), message.capture())).thenReturn("some-twilio-id-2");
     _smsService.sendToPatientLink(_patientLink.getInternalId(), "yup here we are, testing stuff");
   }
 
@@ -139,8 +137,7 @@ class SmsServiceTest extends BaseServiceTest<SmsService> {
     createTestOrderAndPatientLink(_person);
 
     // WHEN + THEN
-    when(mockTwilio.send(toNumber.capture(), messagingServiceSid.capture(), message.capture()))
-        .thenReturn("some-twilio-id-20");
+    when(mockTwilio.send(toNumber.capture(), message.capture())).thenReturn("some-twilio-id-20");
     var sut =
         _smsService.sendToPatientLink(
             _patientLink.getInternalId(), "yup here we are, testing stuff");
@@ -163,8 +160,7 @@ class SmsServiceTest extends BaseServiceTest<SmsService> {
     Date previousExpiry = _patientLink.getExpiresAt();
 
     // WHEN
-    when(mockTwilio.send(toNumber.capture(), messagingServiceSid.capture(), message.capture()))
-        .thenReturn("some-twilio-id-3");
+    when(mockTwilio.send(toNumber.capture(), message.capture())).thenReturn("some-twilio-id-3");
     _smsService.sendToPatientLink(_patientLink.getInternalId(), "ding, it's a text");
     PatientLink updatedPatientLink =
         _patientLinkService.getPatientLink(_patientLink.getInternalId());
@@ -181,8 +177,7 @@ class SmsServiceTest extends BaseServiceTest<SmsService> {
     createTestOrderAndPatientLink(_person);
 
     // WHEN
-    when(mockTwilio.send(any(), messagingServiceSid.capture(), message.capture()))
-        .thenReturn("some-twilio-id-10");
+    when(mockTwilio.send(any(), message.capture())).thenReturn("some-twilio-id-10");
 
     var sut = _smsService.sendToPatientLink(_patientLink.getInternalId(), "it's a test!");
 
@@ -204,7 +199,7 @@ class SmsServiceTest extends BaseServiceTest<SmsService> {
     createTestOrderAndPatientLink(_person);
 
     // WHEN
-    when(mockTwilio.send(any(), messagingServiceSid.capture(), message.capture()))
+    when(mockTwilio.send(any(), message.capture()))
         .thenAnswer(
             new Answer() {
               private int count = 0;
@@ -232,7 +227,7 @@ class SmsServiceTest extends BaseServiceTest<SmsService> {
     createTestOrderAndPatientLink(_person);
 
     // WHEN
-    when(mockTwilio.send(any(), messagingServiceSid.capture(), message.capture()))
+    when(mockTwilio.send(any(), message.capture()))
         .thenAnswer(
             new Answer() {
               private int count = 0;
