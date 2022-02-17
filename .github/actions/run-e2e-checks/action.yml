@@ -5,6 +5,7 @@ description: Run integration tests on a remote environment
 # CYPRESS_OKTA_USERNAME
 # CYPRESS_OKTA_PASSWORD
 # CYPRESS_OKTA_SECRET
+# CYPRESS_BASE_URL
 # SMARTY_AUTH_ID
 # SMARTY_AUTH_TOKEN
 # E2E_SPEC_FILES
@@ -58,5 +59,19 @@ runs:
       working-directory: ./frontend
       run: |
         echo "::group::Run Cypress verification"
-        ./e2e.sh -s "cypress/integration/${{ E2E_SPEC_FILES }}" -r https://${{ env.DEPLOY_ENV }}.simplereport.gov -f /app/health/commit
+        ./e2e.sh -s "cypress/integration/${{ env.E2E_SPEC_FILES }}" -r ${{ env.CYPRESS_BASE_URL }} -f /health/commit
         echo "::endgroup::"
+    - name: Archive cypress screenshots
+      uses: actions/upload-artifact@v2
+      if: failure()
+      working-directory: ./frontend/cypress
+      with:
+        name: cypress-screenshots
+        path: ./screenshots
+    - name: Archive cypress videos
+      uses: actions/upload-artifact@v2
+      if: failure()
+      working-directory: ./frontend/cypress
+      with:
+        name: cypress-videos
+        path: ./videos
