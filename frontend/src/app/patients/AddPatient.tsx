@@ -37,7 +37,12 @@ export const EMPTY_PERSON: Nullable<PersonFormData> = {
   tribalAffiliation: undefined,
   birthDate: "",
   telephone: null,
-  phoneNumbers: null,
+  phoneNumbers: [
+    {
+      number: "",
+      type: "",
+    },
+  ],
   county: null,
   emails: null,
   street: "",
