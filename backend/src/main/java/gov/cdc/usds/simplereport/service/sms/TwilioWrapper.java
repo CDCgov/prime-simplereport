@@ -1,8 +1,6 @@
 package gov.cdc.usds.simplereport.service.sms;
 
-import com.twilio.exception.ApiException;
 import com.twilio.rest.api.v2010.account.Message;
-import com.twilio.rest.api.v2010.account.MessageCreator;
 import com.twilio.rest.messaging.v1.Service;
 import com.twilio.type.PhoneNumber;
 import java.net.URI;
@@ -25,9 +23,6 @@ public class TwilioWrapper implements SmsProviderWrapper {
   @Value("${simple-report.twilio-callback-url:https://simplereport.gov/api/pxp/callback}")
   private String twilioCallbackUrl;
 
-  @Value("${twilio.from-number}")
-  private String fallbackFromNumber;
-
   @Value("${twilio.messaging-service-sid}")
   private String messagingServiceSid;
 
@@ -36,27 +31,18 @@ public class TwilioWrapper implements SmsProviderWrapper {
   @PostConstruct
   void init() {
     log.info("Twilio is enabled!");
-    try {
-      Service service = Service.fetcher(messagingServiceSid).fetch();
-      log.info("SmsService will send from service {} ", service.getFriendlyName());
-    } catch (ApiException e) {
-      sendFromService = false;
-      log.info(
-          "Twilio messaging service not found. SmsService will send from {} ", fallbackFromNumber);
-    }
+    Service service = Service.fetcher(messagingServiceSid).fetch();
+    log.info("SmsService will send from service {} ", service.getFriendlyName());
   }
 
   @Override
   public String send(PhoneNumber to, String message) {
     // We're sending using a messaging service rather than a from number:
     // https://www.twilio.com/docs/messaging/services#send-a-message-with-a-messaging-service
-    return sendFromService
-        ? send(Message.creator(to, messagingServiceSid, message))
-        : send(Message.creator(to, fallbackFromNumber, message));
-  }
-
-  private String send(MessageCreator creator) {
-    Message msg = creator.setStatusCallback(URI.create(twilioCallbackUrl)).create();
+    Message msg =
+        Message.creator(to, messagingServiceSid, message)
+            .setStatusCallback(URI.create(twilioCallbackUrl))
+            .create();
     return msg.getSid();
   }
 }
