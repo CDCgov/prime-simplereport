@@ -26,8 +26,6 @@ public class TwilioWrapper implements SmsProviderWrapper {
   @Value("${twilio.messaging-service-sid}")
   private String messagingServiceSid;
 
-  protected boolean sendFromService = true;
-
   @PostConstruct
   void init() {
     log.info("Twilio is enabled!");
