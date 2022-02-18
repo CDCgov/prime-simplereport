@@ -73,10 +73,6 @@ class SmsServiceTest extends BaseServiceTest<SmsService> {
     _patientLink = _dataFactory.createPatientLink(to);
   }
 
-  @Captor ArgumentCaptor<PhoneNumber> fromNumber;
-
-  @Captor ArgumentCaptor<String> messagingServiceSid;
-
   @Captor ArgumentCaptor<PhoneNumber> toNumber;
 
   @Captor ArgumentCaptor<String> message;
