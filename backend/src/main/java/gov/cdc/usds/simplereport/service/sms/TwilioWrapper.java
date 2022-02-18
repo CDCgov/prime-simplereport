@@ -31,7 +31,7 @@ public class TwilioWrapper implements SmsProviderWrapper {
   @Value("${twilio.messaging-service-sid}")
   private String messagingServiceSid;
 
-  private boolean sendFromService = true;
+  protected boolean sendFromService = true;
 
   @PostConstruct
   void init() {
@@ -39,10 +39,7 @@ public class TwilioWrapper implements SmsProviderWrapper {
     try {
       Service service = Service.fetcher(messagingServiceSid).fetch();
       log.info("SmsService will send from service {} ", service.getFriendlyName());
-    }
-    // figure out what kind of exception is thrown if the message sid doesn't exist and default to
-    // the fromNumber send
-    catch (ApiException e) {
+    } catch (ApiException e) {
       sendFromService = false;
       log.info(
           "Twilio messaging service not found. SmsService will send from {} ", fallbackFromNumber);
@@ -53,11 +50,9 @@ public class TwilioWrapper implements SmsProviderWrapper {
   public String send(PhoneNumber to, String message) {
     // We're sending using a messaging service rather than a from number:
     // https://www.twilio.com/docs/messaging/services#send-a-message-with-a-messaging-service
-    if (sendFromService) {
-      return send(Message.creator(to, messagingServiceSid, message));
-    } else {
-      return send(Message.creator(to, fallbackFromNumber, message));
-    }
+    return sendFromService
+        ? send(Message.creator(to, messagingServiceSid, message))
+        : send(Message.creator(to, fallbackFromNumber, message));
   }
 
   private String send(MessageCreator creator) {
