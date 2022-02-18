@@ -10,6 +10,7 @@ import gov.cdc.usds.simplereport.properties.ExperianProperties;
 import gov.cdc.usds.simplereport.properties.OrderingProviderProperties;
 import gov.cdc.usds.simplereport.properties.SendGridProperties;
 import gov.cdc.usds.simplereport.properties.SmartyStreetsProperties;
+import gov.cdc.usds.simplereport.properties.TwilioProperties;
 import gov.cdc.usds.simplereport.service.OrganizationInitializingService;
 import gov.cdc.usds.simplereport.service.ScheduledTasksService;
 import lombok.extern.slf4j.Slf4j;
@@ -34,6 +35,7 @@ import org.springframework.scheduling.annotation.EnableScheduling;
   ExperianProperties.class,
   SmartyStreetsProperties.class,
   SendGridProperties.class,
+  TwilioProperties.class,
   OrderingProviderProperties.class,
   CorsProperties.class,
   AzureStorageQueueReportingProperties.class
