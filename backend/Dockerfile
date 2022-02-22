@@ -1,4 +1,5 @@
 FROM gradle:6.9.2-jdk11
+LABEL org.opencontainers.image.source https://github.com/CDCgov/prime-simplereport
 
 WORKDIR /app/backend
 

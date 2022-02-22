@@ -91,19 +91,19 @@ The application uses the Liquibase plugin for Gradle to perform certain database
 To roll the database back to its state at a prior date:
 
 ```
-docker-compose run --rm backend ./gradlew liquibaseRollbackToDate -PliquibaseCommandValue=${date}
+docker-compose run --rm backend gradle liquibaseRollbackToDate -PliquibaseCommandValue=${date}
 ```
 
 To roll back a certain _number_ of migrations:
 
 ```
-docker-compose run --rm backend ./gradlew liquibaseRollbackCount -PliquibaseCommandValue=${n}
+docker-compose run --rm backend gradle liquibaseRollbackCount -PliquibaseCommandValue=${n}
 ```
 
 To roll back to a certain tag:
 
 ```
-docker-compose run --rm backend ./gradlew liquibaseUpdateToTag -PliquibaseCommandValue=${TAG}
+docker-compose run --rm backend gradle liquibaseUpdateToTag -PliquibaseCommandValue=${TAG}
 ```
 
 If you are required to roll back a non-local database, you may generate the required SQL to execute elsewhere. Use `liquibaseRollbackToDateSQL` or `liquibaseRollbackCountSQL` in the manner described above to write the rollback SQL to stdout.

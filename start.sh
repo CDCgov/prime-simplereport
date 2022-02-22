@@ -41,7 +41,8 @@ fi
 
 echo "Starting Docker Compose..."
 
-docker-compose up --build --quiet-pull -d
+docker-compose pull
+docker-compose up -d
 docker-compose logs -f
 
 trap "cleanup" EXIT

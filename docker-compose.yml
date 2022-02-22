@@ -20,6 +20,7 @@ services:
   backend:
     build:
       context: backend
+    image: ghcr.io/cdcgov/prime-simplereport/backend:latest
     container_name: backend
     env_file:
       - .env
@@ -37,6 +38,7 @@ services:
   frontend:
     build:
       context: frontend
+    image: ghcr.io/cdcgov/prime-simplereport/frontend:latest
     container_name: frontend
     environment:
       REACT_APP_BASE_URL: https://localhost.simplereport.gov
@@ -56,6 +58,7 @@ services:
   nginx:
     build:
       context: nginx
+    image: ghcr.io/cdcgov/prime-simplereport/nginx:latest
     container_name: nginx
     depends_on:
       - backend
