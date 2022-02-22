@@ -2,7 +2,7 @@ pre-commit:
   parallel: true
   commands:
     spotless:
-      root: "frontend/"
+      root: "backend/"
       glob: "*.java"
       run: docker-compose -f ../docker-compose.yml run --rm -v ${PWD}/backend:/app/backend backend sh -c "gradle spotlessApply" && git add {staged_files}
     prettier:
