@@ -80,15 +80,9 @@ Support admins can access the `/admin` paths and support admin APIs.
 
 When there are DB schema changes the backend may throw an error and fail to start.
 
-Restarting the docker way:
+To create a fresh database:
 
-1. `docker system prune --volumes`
-
-Restarting the SQL way:
-
-1. `yarn db` to open up a psql prompt
-1. `DROP DATABASE simple_report; CREATE DATABASE simple_report`
-1. Restart docker-compose
+1. `docker-compose down --volumes`
 
 ## Rollbacks
 
@@ -97,19 +91,19 @@ The application uses the Liquibase plugin for Gradle to perform certain database
 To roll the database back to its state at a prior date:
 
 ```
-docker-compose exec backend ./gradlew liquibaseRollbackToDate -PliquibaseCommandValue=${date}
+docker-compose run --rm backend ./gradlew liquibaseRollbackToDate -PliquibaseCommandValue=${date}
 ```
 
 To roll back a certain _number_ of migrations:
 
 ```
-docker-compose exec backend ./gradlew liquibaseRollbackCount -PliquibaseCommandValue=${n}
+docker-compose run --rm backend ./gradlew liquibaseRollbackCount -PliquibaseCommandValue=${n}
 ```
 
 To roll back to a certain tag:
 
 ```
-docker-compose exec backend ./gradlew liquibaseUpdateToTag -PliquibaseCommandValue=${TAG}
+docker-compose run --rm backend ./gradlew liquibaseUpdateToTag -PliquibaseCommandValue=${TAG}
 ```
 
 If you are required to roll back a non-local database, you may generate the required SQL to execute elsewhere. Use `liquibaseRollbackToDateSQL` or `liquibaseRollbackCountSQL` in the manner described above to write the rollback SQL to stdout.
