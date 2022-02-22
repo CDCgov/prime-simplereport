@@ -29,7 +29,6 @@ public class TwilioWrapper implements SmsProviderWrapper {
   @PostConstruct
   void init() {
     log.info("Twilio is enabled!");
-    log.info("Messaging service sid: {}", messagingServiceSid);
     Service service = Service.fetcher(messagingServiceSid).fetch();
     log.info("SmsService will send from service {} ", service.getFriendlyName());
   }
