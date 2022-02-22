@@ -2,18 +2,17 @@ pre-commit:
   parallel: true
   commands:
     spotless:
-      root: "backend/"
       glob: "*.java"
-      run: docker-compose -f ../docker-compose.yml run --rm -v ${PWD}/backend:/app/backend backend sh -c "gradle spotlessApply" && git add {staged_files}
+      run: docker-compose run --rm backend sh -c "gradle spotlessApply" && git add {staged_files}
     prettier:
       root: "frontend/"
       glob: "*.{js,ts,jsx,tsx}"
-      run: docker-compose -f ../docker-compose.yml run --rm -v ${PWD}:/app/frontend frontend sh -c "/app/frontend/.bin/prettier --config /app/frontend/package.json --write {staged_files}" && git add {staged_files}
+      run: docker-compose -f ../docker-compose.yml run --rm frontend sh -c "/app/frontend/.bin/prettier --config /app/frontend/package.json --write {staged_files}" && git add {staged_files}
     eslint:
       root: "frontend/"
       glob: "*.{js,ts,jsx,tsx}"
-      run: docker-compose -f ../docker-compose.yml run --rm -v ${PWD}:/app/frontend -v $(dirname $PWD)/backend/src/main/resources/graphql:/app/backend/src/main/resources/graphql frontend sh -c "/app/frontend/.bin/eslint --config /app/frontend/package.json --resolve-plugins-relative-to /app/frontend --fix {staged_files}" && git add {staged_files}
+      run: docker-compose -f ../docker-compose.yml run --rm frontend sh -c "/app/frontend/.bin/eslint --config /app/frontend/package.json --resolve-plugins-relative-to /app/frontend --fix {staged_files}" && git add {staged_files}
     stylelint:
       root: "frontend/"
       glob: "*.scss"
-      run: docker-compose -f ../docker-compose.yml run --rm -v ${PWD}:/app/frontend frontend sh -c "/app/frontend/.bin/stylelint --config /app/frontend/.stylelintrc.json --config-basedir /app/frontend --fix {staged_files}" && git add {staged_files}
+      run: docker-compose -f ../docker-compose.yml run --rm frontend sh -c "/app/frontend/.bin/stylelint --config /app/frontend/.stylelintrc.json --config-basedir /app/frontend --fix {staged_files}" && git add {staged_files}
