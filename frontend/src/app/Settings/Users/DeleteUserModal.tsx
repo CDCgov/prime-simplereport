@@ -50,7 +50,10 @@ const DeleteUserModal: React.FC<Props> = ({ onClose, onDeleteUser, user }) => {
             </strong>
             ?
           </p>
-          <p> Doing so will remove this person's access to SimpleReport.</p>
+          <p>
+            Doing so will remove this person's access to SimpleReport. It
+            doesn't reset their account settings or password.
+          </p>
         </div>
         <div className="border-top border-base-lighter margin-x-neg-205 margin-top-5 padding-top-205 text-right">
           <div className="display-flex flex-justify-end">

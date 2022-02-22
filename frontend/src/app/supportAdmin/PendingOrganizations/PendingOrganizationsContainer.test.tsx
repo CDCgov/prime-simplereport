@@ -297,7 +297,7 @@ describe("PendingOrganizationsContainer", () => {
       expect(
         screen.getByLabelText("Organization name", { exact: false })
       ).toBeDisabled();
-      expect(screen.getByText("Update only", { exact: false })).toBeDisabled();
+      expect(screen.getByText("Edit only", { exact: false })).toBeDisabled();
       expect(screen.getByText("Verify", { exact: true })).toBeInTheDocument();
       expect(screen.getByText("Verify", { exact: true })).toBeEnabled();
       expect(
@@ -312,7 +312,7 @@ describe("PendingOrganizationsContainer", () => {
       expect(
         screen.getByLabelText("Organization name", { exact: false })
       ).toBeDisabled();
-      expect(screen.getByText("Update only", { exact: false })).toBeDisabled();
+      expect(screen.getByText("Edit only", { exact: false })).toBeDisabled();
       expect(screen.getByText("Verify", { exact: true })).toBeInTheDocument();
       expect(screen.getByText("Verify", { exact: true })).toBeEnabled();
       expect(
@@ -336,10 +336,12 @@ describe("PendingOrganizationsContainer", () => {
       expect(
         screen.getByLabelText("Organization name", { exact: false })
       ).toBeDisabled();
-      expect(screen.getByText("Update only", { exact: false })).toBeDisabled();
+      expect(screen.getByText("Edit only", { exact: false })).toBeDisabled();
       userEvent.click(screen.getByText("Verify", { exact: true }));
+      userEvent.click(screen.getByText("Yes, I'm sure"));
+
       await waitForElementToBeRemoved(
-        screen.queryByText("Organization details")
+        screen.queryByText("Verify organization")
       );
       expect(
         await screen.findByText("An Old Schema Org with Date", {
@@ -479,7 +481,7 @@ describe("PendingOrganizationsContainer", () => {
           expect(
             screen.getByLabelText("Organization name", { exact: false })
           ).toHaveValue("DC Space Camp");
-          userEvent.click(screen.getByText("Update only", { exact: false }));
+          userEvent.click(screen.getByText("Edit only", { exact: false }));
           expect(
             screen.getByLabelText("Organization name", { exact: false })
           ).toHaveValue("DC Space Camp");
@@ -520,8 +522,10 @@ describe("PendingOrganizationsContainer", () => {
           Array.from(await screen.findAllByText("Edit/Verify"))[1]
         );
         userEvent.click(screen.getByText("Verify"));
+        userEvent.click(screen.getByText("Yes, I'm sure"));
+
         await waitForElementToBeRemoved(
-          screen.queryByLabelText("Organization name", {
+          screen.queryByLabelText("Verify organization", {
             exact: false,
           })
         );
@@ -580,12 +584,14 @@ describe("PendingOrganizationsContainer", () => {
         })
       ).toHaveValue("DC Space Camp");
       userEvent.click(screen.getByText("Verify"));
-      await waitForElementToBeRemoved(() =>
+      userEvent.click(screen.getByText("Yes, I'm sure"));
+
+      await waitForElementToBeRemoved(
+        screen.queryByText("Verify organization")
+      );
+      await waitForElementToBeRemoved(
         screen.queryByText("DC-Space-Camp-f34183c4-b4c5-449f-98b0-2e02abb7aae0")
       );
-      expect(
-        screen.queryByText("DC-Space-Camp-f34183c4-b4c5-449f-98b0-2e02abb7aae0")
-      ).not.toBeInTheDocument();
     });
   });
   describe("deleting organizations", () => {

@@ -38,6 +38,7 @@ describe("Organization sign up", () => {
   it("verifies the org", () => {
     cy.get(".sr-pending-org-edit-verify").first().click();
     cy.get("#verify-button").click();
+    cy.get("#verify-confirmation").click();
     cy.contains("Identity verified for Beach Camp", { timeout: 30000 });
   });
   it("spoofs into the org", () => {
