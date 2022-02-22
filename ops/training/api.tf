@@ -32,6 +32,7 @@ module "simple_report_api" {
     APPLICATIONINSIGHTS_CONNECTION_STRING         = data.azurerm_application_insights.app_insights.connection_string
     TWILIO_ACCOUNT_SID                            = "@Microsoft.KeyVault(SecretUri=${data.azurerm_key_vault_secret.twilio_account_sid.id})"
     TWILIO_AUTH_TOKEN                             = "@Microsoft.KeyVault(SecretUri=${data.azurerm_key_vault_secret.twilio_auth_token.id})"
+    TWILIO_MESSAGING_SID                          = "@Microsoft.KeyVault(SecretUri=${data.azurerm_key_vault_secret.twilio_messaging_sid.id})"
     SIMPLE_REPORT_SENDGRID_API_KEY                = "@Microsoft.KeyVault(SecretUri=${data.azurerm_key_vault_secret.sendgrid_api_key.id})"
     SMARTY_AUTH_ID                                = "@Microsoft.KeyVault(SecretUri=${data.azurerm_key_vault_secret.smarty_auth_id.id})"
     SMARTY_AUTH_TOKEN                             = "@Microsoft.KeyVault(SecretUri=${data.azurerm_key_vault_secret.smarty_auth_token.id})"
