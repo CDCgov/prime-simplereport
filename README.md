@@ -33,11 +33,17 @@ The Simple Report application stack consists of:
 - Java Spring Boot backend
 - React frontend
 
-For ease of local setup, we have created a docker-compose setup which builds docker images for all the necessary components. It also uses nginx and mkcert to host the app locally over HTTPS. You may also want to install Node.js locally to enable pre-commit hooks.
+For ease of local setup, we have created a docker-compose setup which builds docker images for all the necessary components. It also uses nginx and mkcert to host the app locally over HTTPS. 
+
+To use this, you'll need to install the following:
 
 1. Install [docker and docker-compose](https://docs.docker.com/get-docker/).
 1. Install [mkcert](https://github.com/FiloSottile/mkcert#installation)
-1. Install Node.js 14, either using [nvm](https://github.com/nvm-sh/nvm#installing-and-updating) or your preferred method
+1. Install Node.js 14, either using [nvm](https://github.com/nvm-sh/nvm#installing-and-updating) or your preferred method. This is used for yarn scripts and pre-commit hooks.
+1. Install AdoptOpenJDK 11, either using [jabba](https://github.com/shyiko/jabba) or your preferred method. This is useful for IDE integration (IntelliJ, VS Code, etc.)
+
+Once those dependencies are installed, follow these steps to get the app up and running:
+
 1. Clone this repository: `git clone git@github.com:CDCgov/prime-simplereport.git`
 1. Run `yarn install` in the root of the repository to install pre-commit hooks using lefthook
 1. Run `cp .env.sample .env` in the root of the repository, then obtain the needed secrets from Azure or another developer. Be sure to set the `OKTA_API_KEY` environment variable. You can generate an API token for yourself by logging into the Okta Preview [admin panel](https://hhs-prime-admin.oktapreview.com) and going into Security > API > Tokens.
@@ -116,12 +122,16 @@ When using Insomnia, you'll also need to pass your access_token in the `Authoriz
 
 ## Tests
 
-All the tests can be run with `gradle test`. Make sure that you do not have `SPRING_PROFILES_ACTIVE` set in your shell environment.
+Run frontend unit tests:
 
-Running a single test with a full stacktrace can be accomplished by supping the path to `gradle test`. Example
+```
+yarn test:frontend
+```
 
-```bash
-gradle test --tests gov.cdc.usds.simplereport.api.QueueManagementTest.updateItemInQueue --stacktrace
+Run backend unit tests:
+
+```
+yarn test:backend
 ```
 
 ## E2E tests

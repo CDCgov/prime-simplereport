@@ -10,3 +10,4 @@ node_modules
 *.rej
 /.env
 certs/
+yarn-error.log

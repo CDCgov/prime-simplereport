@@ -6,11 +6,11 @@
     "@arkweid/lefthook": "^0.7.7"
   },
   "scripts": {
-    "test:frontend": "cd frontend; yarn test; cd ..",
-    "test:backend": "cd backend; ./gradlew test --info; cd ..",
     "e2e": "cd frontend; yarn e2e; cd ..",
     "spotless": "cd backend; ./gradlew spotlessApply; cd ..",
     "start": "./start.sh",
-    "db": "docker-compose exec db psql -U postgres simple_report"
+    "db": "docker-compose exec db psql -U postgres simple_report",
+    "test:frontend": "docker-compose run --rm frontend yarn test",
+    "test:backend": "docker-compose run --rm backend gradle test"
   }
 }
