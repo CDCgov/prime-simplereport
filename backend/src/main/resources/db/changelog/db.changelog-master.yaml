@@ -3339,6 +3339,8 @@ databaseChangeLog:
       author: emma@skylight.digital
       comment: Add table to track which diseases SimpleReport supports
       changes:
+        - tagDatabase:
+            tag: add-supported-disease-table
         - createTable:
             tableName: supported_diseases
             columns:
@@ -3355,11 +3357,18 @@ databaseChangeLog:
                   name: loinc
                   type: text
                   remarks: Tracks the LOINC code for this disease
+        - sql: |
+            GRANT SELECT ON ${database.defaultSchemaName}.supported_diseases TO ${noPhiUsername};
+      rollback:
+          sql: |
+          DROP TABLE ${database.defaultSchemaName}.supported_diseases;
   - changeSet:
       id: populate-supported-diseases-table
       author: emma@skylight.digital
       comment: Populate the diseases that SimpleReport currently supports.
       changes:
+        - tagDatabase:
+            tag: populate-supported-disease-table
         - sql:
             comment: Add COVID-19, Flu A, and Flu B to the supported disease table
             sql: |
@@ -3380,3 +3389,6 @@ databaseChangeLog:
                    (gen_random_uuid(), migrations_user_id, now(), migrations_user_id, now(), 'COVID-19', '96741-4'),
                    (gen_random_uuid(), migrations_user_id, now(), migrations_user_id, now(), 'Flu A', 'LP14239-5'),
                    (gen_random_uuid(), migrations_user_id, now(), migrations_user_id, now(), 'Flu B', 'LP14240-3');
+      rollback:
+        sql: |
+          TRUNCATE TABLE ${database.defaultSchemaName}.supported_diseases;
