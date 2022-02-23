@@ -143,7 +143,8 @@ const ConfirmOrgVerificationModal: React.FC<VerficationModalProps> = ({
               label="No, go back"
             />
             <Button
-              className="margin-right-205 verify-confirmation"
+              className="margin-right-205"
+              id="verify-confirmation"
               label="Yes, I'm sure"
               onClick={onVerify}
             />
