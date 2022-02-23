@@ -10,7 +10,7 @@
     "spotless": "cd backend; ./gradlew spotlessApply; cd ..",
     "start": "./start.sh",
     "db": "docker-compose exec db psql -U postgres simple_report",
-    "test:frontend": "docker-compose run --rm frontend yarn test",
+    "test:frontend": "docker-compose run --rm -e REACT_APP_BASE_URL=https://simplereport.gov -e REACT_APP_BACKEND_URL=https://simplereport.gov/api -e REACT_APP_OKTA_ENABLED=false frontend yarn test",
     "test:backend": "docker-compose run --rm backend gradle test"
   }
 }
