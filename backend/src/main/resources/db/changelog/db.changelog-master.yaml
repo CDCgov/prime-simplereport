@@ -3334,3 +3334,14 @@ databaseChangeLog:
                     nullable: true
                     foreignKeyName: fk__facility__default_specimen_type
                     references: specimen_type(internal_id)
+  - changeSet:
+      id: allow-null-report-stream-response-test-event-internal-id
+      author: nathan@skylight.digital
+      comment: SimpleReport no longer has access to the test event associated with a warning or 
+        error returned by the ReportStream asynchronous endpoint. Make it nullable in the DB.
+      changes:
+        - tagDatabase:
+            tag: allow-null-report-stream-response-test-event-internal-id
+        - dropNotNullConstraint:
+            tableName: report_stream_response
+            columnName: test_event_internal_id
