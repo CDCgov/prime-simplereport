@@ -27,6 +27,7 @@ services:
     environment:
       SPRING_PROFILES_ACTIVE: okta-local,db-dockerized
       SPRING_LIQUIBASE_ENABLED: "true"
+      GIT_DISCOVERY_ACROSS_FILESYSTEM: 1
     volumes:
       - ./.git:/app/.git
       - ./backend:/app/backend/
@@ -46,6 +47,7 @@ services:
       PUBLIC_URL: /app/
       REACT_APP_OKTA_ENABLED: "true"
       REACT_APP_DISABLE_MAINTENANCE_BANNER: "true"
+      GIT_DISCOVERY_ACROSS_FILESYSTEM: 1
     volumes:
       - ./.git:/app/.git
       - ./frontend:/app/frontend/

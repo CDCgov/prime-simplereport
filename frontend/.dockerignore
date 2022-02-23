@@ -1,3 +1,4 @@
 Dockerfile
 cypress
 wiremock*.jar
+node_modules
