@@ -3337,58 +3337,55 @@ databaseChangeLog:
   - changeSet:
       id: add-disease-table
       author: emma@skylight.digital
-      comment: Add table to track which diseases SimpleReport supports
+      comment: Adds a non-audited table to track which diseases SimpleReport supports
       changes:
         - tagDatabase:
             tag: add-supported-disease-table
         - createTable:
             tableName: supported_diseases
             columns:
-              - - column: *pk_column
-                - column: *created_at_column
-                - column: *created_by_column
-                - column: *updated_at_column
-                - column: *updated_by_column
+              - column:
+                  name: internal_id
+                  type: uuid
+                  remarks: The internal database identifier for this entity
+                  constraints:
+                    primaryKey: true
+                    nullable: false
               - column:
                   name: name
                   type: text
                   remarks: Tracks the human-readable name for the disease
+                  constraints:
+                    nullable: false
               - column:
                   name: loinc
                   type: text
                   remarks: Tracks the LOINC code for this disease
+                  constraints:
+                    nullable: false
         - sql: |
             GRANT SELECT ON ${database.defaultSchemaName}.supported_diseases TO ${noPhiUsername};
       rollback:
           sql: |
             DROP TABLE ${database.defaultSchemaName}.supported_diseases;
-#  - changeSet:
-#      id: populate-supported-diseases-table
-#      author: emma@skylight.digital
-#      comment: Populate the diseases that SimpleReport currently supports.
-#      changes:
-#        - tagDatabase:
-#            tag: populate-supported-disease-table
-#        - sql:
-#            comment: Add COVID-19, Flu A, and Flu B to the supported disease table
-#            sql: |
-#              WITH migration_user as (
-#                   SELECT internal_id as migrations_user_id
-#                   FROM ${database.defaultSchemaName}.api_user
-#                   WHERE login_email = '${migrations_user_email}')
-#
-#              INSERT INTO ${database.defaultSchemaName}.supported_diseases (
-#                   internal_id,
-#                   created_at,
-#                   created_by,
-#                   updated_at,
-#                   updated_by,
-#                   name,
-#                   loinc)
-#              VALUES
-#                   (gen_random_uuid(), migrations_user_id, now(), migrations_user_id, now(), 'COVID-19', '96741-4'),
-#                   (gen_random_uuid(), migrations_user_id, now(), migrations_user_id, now(), 'Flu A', 'LP14239-5'),
-#                   (gen_random_uuid(), migrations_user_id, now(), migrations_user_id, now(), 'Flu B', 'LP14240-3');
-#      rollback:
-#        sql: |
-#          TRUNCATE TABLE ${database.defaultSchemaName}.supported_diseases;
+  - changeSet:
+      id: populate-supported-diseases-table
+      author: emma@skylight.digital
+      comment: Populate the diseases that SimpleReport currently supports.
+      changes:
+        - tagDatabase:
+            tag: populate-supported-disease-table
+        - sql:
+            comment: Add COVID-19, Flu A, and Flu B to the supported disease table
+            sql: |
+              INSERT INTO ${database.defaultSchemaName}.supported_diseases (
+                   internal_id,
+                   name,
+                   loinc)
+              VALUES
+                   (gen_random_uuid(), 'COVID-19', '96741-4'),
+                   (gen_random_uuid(), 'Flu A', 'LP14239-5'),
+                   (gen_random_uuid(), 'Flu B', 'LP14240-3');
+      rollback:
+        sql: |
+          TRUNCATE TABLE ${database.defaultSchemaName}.supported_diseases;
