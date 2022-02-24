@@ -3389,7 +3389,6 @@ databaseChangeLog:
       rollback:
         sql: |
           TRUNCATE TABLE ${database.defaultSchemaName}.supported_disease CASCADE;
-          TRUNCATE TABLE ${database.defaultSchemaName}.supported_disease;
   - changeSet:
       id: create-device-disease-join-table
       author: emma@skylight.digital
