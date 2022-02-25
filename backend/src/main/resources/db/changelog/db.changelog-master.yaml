@@ -3427,7 +3427,7 @@ databaseChangeLog:
                   constraints:
                     nullable: false
                     foreignKeyName: fk__device_supported_disease__supported_disease_type
-                    references: supported_diseases
+                    references: supported_disease
               - addUniqueConstraint:
                   tableName: device_supported_disease
                   constraintName: uk__device_supported_disease
