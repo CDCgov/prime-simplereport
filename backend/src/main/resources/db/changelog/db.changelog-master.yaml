@@ -3367,7 +3367,7 @@ databaseChangeLog:
             GRANT SELECT ON ${database.defaultSchemaName}.supported_disease TO ${noPhiUsername};
       rollback:
           sql: |
-            DROP TABLE ${database.defaultSchemaName}.supported_disease;
+            DROP TABLE ${database.defaultSchemaName}.supported_disease CASCADE;
   - changeSet:
       id: populate-supported-disease-table
       author: emma@skylight.digital
@@ -3388,4 +3388,4 @@ databaseChangeLog:
                    (gen_random_uuid(), 'Flu B', 'LP14240-3');
       rollback:
         sql: |
-          TRUNCATE TABLE ${database.defaultSchemaName}.supported_disease;
+          TRUNCATE TABLE ${database.defaultSchemaName}.supported_disease CASCADE;
