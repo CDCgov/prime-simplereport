@@ -3434,9 +3434,9 @@ databaseChangeLog:
                   columnNames: device_type_id, supported_disease_id
         - sql: |
             GRANT SELECT ON ${database.defaultSchemaName}.device_supported_disease TO ${noPhiUsername};
-        rollback:
-          sql: |
-            DROP TABLE ${database.defaultSchemaName}.device_supported_disease;
+      rollback:
+        sql: |
+          DROP TABLE ${database.defaultSchemaName}.device_supported_disease;
   - changeSet:
       id: create-result-table
       author: emma@skylight.digital
