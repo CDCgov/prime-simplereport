@@ -187,7 +187,6 @@ const EditPatient = (props: Props) => {
   >(UPDATE_PATIENT);
   const [activeFacility] = useSelectedFacility();
   const activeFacilityId = activeFacility?.id;
-  const [startTest, setStartTest] = useState(false);
   const [redirect, setRedirect] = useState<
     string | { pathname: string; search: string; state?: any } | undefined
   >(undefined);
@@ -200,21 +199,15 @@ const EditPatient = (props: Props) => {
   if (loading) {
     return <p>Loading...</p>;
   }
+
   if (error || data === undefined) {
     return <p>error loading patient with id {props.patientId}...</p>;
   }
-  if (startTest) {
-    const facility = data?.patient.facility?.id || activeFacilityId;
-    setRedirect({
-      pathname: "/queue",
-      search: `?facility=${facility}`,
-      state: {
-        patientId: props.patientId,
-      } as StartTestProps,
-    });
-  }
 
-  const savePerson = async (person: Nullable<PersonFormData>) => {
+  const savePerson = async (
+    person: Nullable<PersonFormData>,
+    startTest?: boolean
+  ) => {
     await updatePatient({
       variables: {
         patientId: props.patientId,
@@ -243,7 +236,18 @@ const EditPatient = (props: Props) => {
       />
     );
 
-    setRedirect(personPath);
+    if (startTest) {
+      const facility = data?.patient.facility?.id || activeFacilityId;
+      setRedirect({
+        pathname: "/queue",
+        search: `?facility=${facility}`,
+        state: {
+          patientId: props.patientId,
+        } as StartTestProps,
+      });
+    } else {
+      setRedirect(personPath);
+    }
   };
 
   const getTitle = (person: Nullable<PersonFormData>) =>
@@ -310,8 +314,7 @@ const EditPatient = (props: Props) => {
                       className="prime-save-patient-changes-start-test"
                       disabled={loading || !formChanged}
                       onClick={() => {
-                        setStartTest(true);
-                        onSave();
+                        onSave(true);
                       }}
                       variant="outline"
                       label={
@@ -323,7 +326,7 @@ const EditPatient = (props: Props) => {
                     <button
                       className="prime-save-patient-changes usa-button margin-right-0"
                       disabled={editPersonLoading || !formChanged}
-                      onClick={onSave}
+                      onClick={() => onSave(false)}
                     >
                       {editPersonLoading
                         ? `${t("common.button.saving")}...`
@@ -338,7 +341,7 @@ const EditPatient = (props: Props) => {
                     id="edit-patient-save-lower"
                     className="prime-save-patient-changes"
                     disabled={editPersonLoading || !formChanged}
-                    onClick={onSave}
+                    onClick={() => onSave(false)}
                     label={
                       editPersonLoading
                         ? `${t("common.button.saving")}...`
