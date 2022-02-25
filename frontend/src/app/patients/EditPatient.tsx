@@ -14,6 +14,8 @@ import Alert from "../commonComponents/Alert";
 import Button from "../commonComponents/Button/Button";
 import { LinkWithQuery } from "../commonComponents/LinkWithQuery";
 import { useDocumentTitle } from "../utils/hooks";
+import { StartTestProps } from "../testQueue/addToQueue/AddToQueueSearch";
+import { useSelectedFacility } from "../facilitySelect/useSelectedFacility";
 
 import { TestResultDeliveryPreference } from "./TestResultDeliveryPreference";
 import PersonForm from "./Components/PersonForm";
@@ -183,7 +185,12 @@ const EditPatient = (props: Props) => {
     EditPatientResponse,
     EditPatientParams
   >(UPDATE_PATIENT);
-  const [redirect, setRedirect] = useState<string | undefined>(undefined);
+  const [activeFacility] = useSelectedFacility();
+  const activeFacilityId = activeFacility?.id;
+  const [startTest, setStartTest] = useState(false);
+  const [redirect, setRedirect] = useState<
+    string | { pathname: string; search: string; state?: any } | undefined
+  >(undefined);
   const personPath = `/patients/?facility=${props.facilityId}`;
 
   if (redirect) {
@@ -195,6 +202,16 @@ const EditPatient = (props: Props) => {
   }
   if (error || data === undefined) {
     return <p>error loading patient with id {props.patientId}...</p>;
+  }
+  if (startTest) {
+    const facility = data?.patient.facility?.id || activeFacilityId;
+    setRedirect({
+      pathname: "/queue",
+      search: `?facility=${facility}`,
+      state: {
+        patientId: props.patientId,
+      } as StartTestProps,
+    });
   }
 
   const savePerson = async (person: Nullable<PersonFormData>) => {
@@ -288,6 +305,21 @@ const EditPatient = (props: Props) => {
                     </div>
                   </div>
                   <div className="display-flex flex-align-center">
+                    <Button
+                      id="edit-patient-save-lower"
+                      className="prime-save-patient-changes-start-test"
+                      disabled={loading || !formChanged}
+                      onClick={() => {
+                        setStartTest(true);
+                        onSave();
+                      }}
+                      variant="outline"
+                      label={
+                        loading
+                          ? `${t("common.button.saving")}...`
+                          : "Save and start test"
+                      }
+                    />
                     <button
                       className="prime-save-patient-changes usa-button margin-right-0"
                       disabled={editPersonLoading || !formChanged}
