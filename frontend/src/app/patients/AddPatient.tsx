@@ -230,10 +230,6 @@ const AddPatient = () => {
     string | { pathname: string; search: string; state?: any } | undefined
   >(undefined);
 
-  if (redirect) {
-    return <Navigate to={redirect} />;
-  }
-
   if (!activeFacilityId) {
     return <div>No facility selected</div>;
   }
@@ -242,10 +238,6 @@ const AddPatient = () => {
     person: Nullable<PersonFormData>,
     startTest?: boolean
   ) => {
-    console.log("==============================");
-    console.log("startTest");
-    console.log(startTest);
-    console.log("==============================");
     const { data } = await addPatient({
       variables: {
         ...person,
@@ -277,6 +269,19 @@ const AddPatient = () => {
       setRedirect(personPath);
     }
   };
+
+  if (redirect) {
+    const navProps: any = {};
+
+    if (typeof redirect === "string") {
+      navProps.to = redirect;
+    } else {
+      navProps.to = redirect.pathname + redirect.search;
+      navProps.state = redirect.state;
+    }
+
+    return <Navigate {...navProps} />;
+  }
 
   const getSaveButtons = (
     formChanged: boolean,

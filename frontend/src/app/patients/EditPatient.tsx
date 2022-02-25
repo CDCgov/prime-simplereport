@@ -169,6 +169,12 @@ interface EditPatientResponse {
   internalId: string;
 }
 
+interface RedirectSettings {
+  pathname: string;
+  search: string;
+  state?: any;
+}
+
 const EditPatient = (props: Props) => {
   useDocumentTitle("Edit Patient");
 
@@ -188,12 +194,21 @@ const EditPatient = (props: Props) => {
   const [activeFacility] = useSelectedFacility();
   const activeFacilityId = activeFacility?.id;
   const [redirect, setRedirect] = useState<
-    string | { pathname: string; search: string; state?: any } | undefined
+    string | RedirectSettings | undefined
   >(undefined);
   const personPath = `/patients/?facility=${props.facilityId}`;
 
   if (redirect) {
-    return <Navigate to={redirect} />;
+    const navProps: any = {};
+
+    if (typeof redirect === "string") {
+      navProps.to = redirect;
+    } else {
+      navProps.to = redirect.pathname + redirect.search;
+      navProps.state = redirect.state;
+    }
+
+    return <Navigate {...navProps} />;
   }
 
   if (loading) {
