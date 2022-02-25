@@ -4,9 +4,10 @@ on:
   push:
     branches:
       - main
-    paths:
-      - "frontend/package.json"
-      - "frontend/yarn.lock"
+      - nick/standardize-local-docker
+    # paths:
+    #   - "frontend/package.json"
+    #   - "frontend/yarn.lock"
 
 env:
   REGISTRY: ghcr.io

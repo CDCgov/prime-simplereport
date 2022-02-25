@@ -4,8 +4,9 @@ on:
   push:
     branches:
       - main
-    paths:
-      - "nginx/default.conf"
+      - nick/standardize-local-docker
+    # paths:
+    #   - "nginx/default.conf"
 
 env:
   REGISTRY: ghcr.io

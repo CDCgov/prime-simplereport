@@ -4,10 +4,11 @@ on:
   push:
     branches:
       - main
-    paths:
-      - "backend/build.gradle"
-      - "backend/settings.gradle"
-      - "backend/gradle.properties"
+      - nick/standardize-local-docker
+    # paths:
+    #   - "backend/build.gradle"
+    #   - "backend/settings.gradle"
+    #   - "backend/gradle.properties"
 
 env:
   REGISTRY: ghcr.io
