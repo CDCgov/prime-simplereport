@@ -134,7 +134,7 @@ simple-report:
       - HEAD
       - POST
 twilio:
-  from-number: "+12023014570"
+  messaging-service-sid: ${TWILIO_MESSAGING_SID}
 logging:
   pattern:
     console: "{\"time\": \"%d{yyyy-MM-dd HH:mm:ss.SSS}\", \"level\": \"%p\", \"source\": \"%logger{39}:%L\", \"message\": \"%replace(%m%wEx){'[\r\n]+', '\\n'}%nopex\"}%n"
