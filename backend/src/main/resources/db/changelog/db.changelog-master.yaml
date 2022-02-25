@@ -3432,3 +3432,8 @@ databaseChangeLog:
                   tableName: device_supported_disease
                   constraintName: uk__device_supported_disease
                   columnNames: device_type_id, supported_disease_id
+        - sql: |
+            GRANT SELECT ON ${database.defaultSchemaName}.device_supported_disease TO ${noPhiUsername};
+        rollback:
+          sql: |
+            DROP TABLE ${database.defaultSchemaName}.device_supported_disease;
