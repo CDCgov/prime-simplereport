@@ -29,7 +29,7 @@ const validateDateOfBirthSpy = jest
 describe("DOB (valid UUID)", () => {
   let getObfuscatedPatientNameSpy: jest.SpyInstance;
 
-  beforeEach(() => {
+  beforeEach(async () => {
     const store = mockStore({ plid });
 
     getObfuscatedPatientNameSpy = jest
@@ -37,6 +37,7 @@ describe("DOB (valid UUID)", () => {
       .mockImplementation((_plid) => Promise.resolve("John D."));
 
     render(mockContainer(store));
+    expect(await screen.findByText("John D.")).toBeInTheDocument();
   });
 
   it("fetches obfuscated patient name from server on render", async () => {

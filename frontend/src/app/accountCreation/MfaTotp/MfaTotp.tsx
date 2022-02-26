@@ -55,6 +55,7 @@ export const MfaTotp = ({ enrollFunction, totpType }: Props) => {
           label={"Continue"}
           type={"submit"}
           onClick={() => setSubmitted(true)}
+          id={"continue"}
         />
       </Card>
     </CardBackground>

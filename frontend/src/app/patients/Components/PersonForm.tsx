@@ -594,6 +594,7 @@ const PersonForm = (props: Props) => {
           hintText={t("patient.form.demographics.genderHelpText")}
           name="gender"
           required={view !== PersonFormView.PXP}
+          validationStatus={validationStatus("gender")}
           buttons={GENDER_VALUES}
           selectedRadio={patient.gender}
           onChange={onPersonChange("gender")}

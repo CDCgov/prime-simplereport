@@ -433,6 +433,55 @@ class PersonServiceTest extends BaseServiceTest<PersonService> {
 
   @Test
   @WithSimpleReportOrgAdminUser
+  void getPatientNoPermissionsCheck__success() {
+    Facility fac = _dataFactory.createValidFacility(_orgService.getCurrentOrganization());
+    UUID facilityId = fac.getInternalId();
+    Organization org = _orgService.getCurrentOrganization();
+
+    Person p =
+        _service.addPatient(
+            facilityId,
+            "FOO",
+            "Fred",
+            null,
+            "Fosbury",
+            "Sr.",
+            LocalDate.of(1865, 12, 25),
+            _dataFactory.getAddress(),
+            "USA",
+            TestDataFactory.getListOfOnePhoneNumber(),
+            PersonRole.STAFF,
+            null,
+            null,
+            null,
+            null,
+            null,
+            false,
+            false,
+            "German",
+            null);
+
+    assertEquals(
+        1, _service.getPatients(null, PATIENT_PAGEOFFSET, PATIENT_PAGESIZE, false, null).size());
+    Person deletedPerson = _service.setIsDeleted(p.getInternalId(), true);
+    Person foundPerson = _service.getPatientNoPermissionsCheck(p.getInternalId(), org, true);
+    assertEquals(foundPerson.getInternalId(), deletedPerson.getInternalId());
+  }
+
+  @Test
+  void getPatientNoPermissionsCheck_error() {
+    Organization org = _orgService.getCurrentOrganization();
+
+    IllegalGraphqlArgumentException caught =
+        assertThrows(
+            IllegalGraphqlArgumentException.class,
+            // fake UUID
+            () -> _service.getPatientNoPermissionsCheck(UUID.randomUUID(), org, true));
+    assertEquals("No patient with that ID was found", caught.getMessage());
+  }
+
+  @Test
+  @WithSimpleReportOrgAdminUser
   void getPatients_noFacility_allFetchedAndSorted() {
     makedata(false);
     // gets all patients across the org

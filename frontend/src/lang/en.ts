@@ -191,7 +191,7 @@ export const en = {
           race: "Race is required",
           tribalAffiliation: "Tribal affiliation is incorrectly formatted",
           ethnicity: "Ethnicity is required",
-          gender: "Sex assigned at birth is incorrectly formatted",
+          gender: "Sex assigned at birth is required",
           residentCongregateSetting:
             "Are you a resident in a congregate living setting? is required",
           employedInHealthcare: "Are you a health care worker? is required",
@@ -226,6 +226,7 @@ export const en = {
     },
     testResult: {
       result: "SARS-CoV-2 result",
+      downloadResult: "Download result",
       patient: "Patient",
       patientDetails: "Patient details",
       name: "Name",

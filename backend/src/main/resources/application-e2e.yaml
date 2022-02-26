@@ -2,8 +2,13 @@ spring:
   profiles:
     include: server-debug, create-sample-devices
   liquibase:
-    user: simple_report_migrations
-    password: migrations456
+    simplereport:
+      user: simple_report_migrations
+      password: migrations456
+    metabase:
+      user: simple_report_migrations
+      password: migrations456
+      default-schema: public
   jpa:
     properties:
       hibernate:

@@ -4,7 +4,6 @@ import static gov.cdc.usds.simplereport.api.Translators.parseEmails;
 import static gov.cdc.usds.simplereport.api.Translators.parseEthnicity;
 import static gov.cdc.usds.simplereport.api.Translators.parseGender;
 import static gov.cdc.usds.simplereport.api.Translators.parsePersonRole;
-import static gov.cdc.usds.simplereport.api.Translators.parsePhoneNumber;
 import static gov.cdc.usds.simplereport.api.Translators.parsePhoneNumbers;
 import static gov.cdc.usds.simplereport.api.Translators.parseRaceDisplayValue;
 import static gov.cdc.usds.simplereport.api.Translators.parseString;
@@ -157,7 +156,7 @@ public class UploadService {
             parsePhoneNumbers(
                 List.of(
                     new PhoneNumberInput(
-                        null, parsePhoneNumber((getRow(row, "PhoneNumber", true)))))),
+                        getRow(row, "PhoneNumberType", false), getRow(row, "PhoneNumber", true)))),
             parsePersonRole(getRow(row, "Role", false), false),
             parseEmails(List.of(getRow(row, "Email", false))),
             parseRaceDisplayValue(getRow(row, "Race", true)),
@@ -214,6 +213,7 @@ public class UploadService {
           .addColumn("ZipCode", CsvSchema.ColumnType.STRING)
           .addColumn("Country", CsvSchema.ColumnType.STRING)
           .addColumn("PhoneNumber", CsvSchema.ColumnType.STRING)
+          .addColumn("PhoneNumberType", CsvSchema.ColumnType.STRING)
           .addColumn("employedInHealthcare", CsvSchema.ColumnType.STRING)
           .addColumn("residentCongregateSetting", CsvSchema.ColumnType.STRING)
           .addColumn("Role", CsvSchema.ColumnType.STRING)

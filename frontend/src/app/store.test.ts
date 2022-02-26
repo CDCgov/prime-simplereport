@@ -1,3 +1,5 @@
+import { VerifyV2Response } from "../patientApp/PxpApiService";
+
 import reducers, {
   initialState,
   setInitialState,
@@ -52,6 +54,7 @@ describe("store", () => {
     facilities: [],
     organization: blankOrganization,
     patient: blankPatient,
+    testResult: {} as VerifyV2Response,
     user: blankUser,
   };
   setInitialStateState = {

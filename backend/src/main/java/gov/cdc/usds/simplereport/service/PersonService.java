@@ -215,16 +215,19 @@ public class PersonService {
     }
     return _repo.count(buildPersonSearchFilter(facilityId, isArchived, namePrefixMatch));
   }
-
   // NO PERMISSION CHECK (make sure the caller has one!) getPatient()
   public Person getPatientNoPermissionsCheck(UUID id) {
-    return getPatientNoPermissionsCheck(id, _os.getCurrentOrganization());
+    return getPatientNoPermissionsCheck(id, _os.getCurrentOrganization(), false);
   }
 
-  // NO PERMISSION CHECK (make sure the caller has one!)
+  // NO PERMISSION CHECK (make sure the caller has one!) getPatient()
   public Person getPatientNoPermissionsCheck(UUID id, Organization org) {
+    return getPatientNoPermissionsCheck(id, org, false);
+  }
+
+  public Person getPatientNoPermissionsCheck(UUID id, Organization org, boolean showIsDeleted) {
     return _repo
-        .findByIdAndOrganization(id, org, false)
+        .findByIdAndOrganization(id, org, showIsDeleted)
         .orElseThrow(
             () -> new IllegalGraphqlArgumentException("No patient with that ID was found"));
   }
@@ -487,7 +490,11 @@ public class PersonService {
 
   @AuthorizationConfiguration.RequirePermissionArchiveTargetPatient
   public Person setIsDeleted(UUID patientId, boolean deleted) {
-    Person person = this.getPatientNoPermissionsCheck(patientId);
+    Organization patientOrg = _os.getCurrentOrganization();
+    // showIsDeleted in getPatientNoPermissionsCheck should be opposite the
+    // passed in "deleted" param since all patients eligible for deletion when
+    // deleted = true are deleted = false currently, and vice versa
+    Person person = this.getPatientNoPermissionsCheck(patientId, patientOrg, !deleted);
     person.setIsDeleted(deleted);
     return _repo.save(person);
   }

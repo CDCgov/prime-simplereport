@@ -51,6 +51,11 @@ data "azurerm_key_vault_secret" "sr_dev_db_jdbc" {
   key_vault_id = data.azurerm_key_vault.sr_global.id
 }
 
+data "azurerm_key_vault_secret" "metabase_db_uri" {
+  name         = "simple-report-${local.env}-db-metabase-uri"
+  key_vault_id = data.azurerm_key_vault.sr_global.id
+}
+
 data "azurerm_key_vault_secret" "okta_api_key" {
   name         = "okta-api-key"
   key_vault_id = data.azurerm_key_vault.sr_global.id
@@ -78,6 +83,11 @@ data "azurerm_key_vault_secret" "twilio_account_sid" {
 
 data "azurerm_key_vault_secret" "twilio_auth_token" {
   name         = "twilio-auth-token"
+  key_vault_id = data.azurerm_key_vault.sr_global.id
+}
+
+data "azurerm_key_vault_secret" "twilio_messaging_sid" {
+  name         = "twilio-messaging-sid"
   key_vault_id = data.azurerm_key_vault.sr_global.id
 }
 
@@ -175,4 +185,9 @@ data "azurerm_application_insights" "app_insights" {
 data "azurerm_storage_account" "app" {
   name                = "simplereport${local.env}app"
   resource_group_name = data.azurerm_resource_group.rg.name
+}
+
+data "azurerm_key_vault_secret" "db_password_no_phi" {
+  name         = "simple-report-${local.env}-db-password-no-phi"
+  key_vault_id = data.azurerm_key_vault.sr_global.id
 }

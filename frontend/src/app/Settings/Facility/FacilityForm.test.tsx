@@ -108,6 +108,9 @@ describe("FacilityForm", () => {
     suggestionIsCloseEnoughSpy = jest
       .spyOn(smartyStreets, "suggestionIsCloseEnough")
       .mockReturnValue(false);
+    jest
+      .spyOn(smartyStreets, "getZipCodeData")
+      .mockReturnValue(Promise.resolve(undefined));
   });
 
   afterEach(() => {
