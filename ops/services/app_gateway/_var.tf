@@ -42,4 +42,5 @@ variable "log_workspace_uri" {
 variable "firewall_policy_id" {
   description = "Identifier corresponding to existing WAF policy to be associated with this application gateway."
   type        = string
+  default     = null
 }
