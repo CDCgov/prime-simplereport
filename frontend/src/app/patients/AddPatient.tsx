@@ -235,7 +235,7 @@ const AddPatient = () => {
 
   const savePerson = async (
     person: Nullable<PersonFormData>,
-    startTest?: boolean
+    startTest: boolean = false
   ) => {
     const { data } = await addPatient({
       variables: {

@@ -245,11 +245,11 @@ const PersonForm = (props: Props) => {
     }
   };
 
-  const validateForm = async (startTest?: boolean) => {
+  const validateForm = async (shouldStartTest: boolean = false) => {
     // The `startTest` param here originates from a child Add/Edit Patient form,
     // but we must also track it in state here to preserve the redirect throughout
     // address confirmation
-    if (startTest) {
+    if (shouldStartTest) {
       setStartTest(true);
     }
 
@@ -287,18 +287,21 @@ const PersonForm = (props: Props) => {
         JSON.stringify(getAddress(props.patient)) ||
       patient.country !== "USA"
     ) {
-      onSave(undefined, startTest);
+      onSave(undefined, shouldStartTest);
     } else {
       validatePatientAddress();
     }
   };
 
-  const onSave = (address?: AddressWithMetaData, startTest?: boolean) => {
+  const onSave = (
+    address?: AddressWithMetaData,
+    shouldStartTest: boolean = false
+  ) => {
     const person = address ? { ...patient, ...address } : patient;
     setPatient(person);
     setAddressModalOpen(false);
     setFormChanged(false);
-    props.savePerson(person, startTest);
+    props.savePerson(person, shouldStartTest);
   };
 
   const commonInputProps = {

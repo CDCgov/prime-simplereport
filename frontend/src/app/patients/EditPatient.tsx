@@ -224,7 +224,7 @@ const EditPatient = (props: Props) => {
 
   const savePerson = async (
     person: Nullable<PersonFormData>,
-    startTest?: boolean
+    startTest: boolean = false
   ) => {
     await updatePatient({
       variables: {
