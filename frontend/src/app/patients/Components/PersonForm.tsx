@@ -246,6 +246,9 @@ const PersonForm = (props: Props) => {
   };
 
   const validateForm = async (startTest?: boolean) => {
+    // The `startTest` param here originates from a child Add/Edit Patient form,
+    // but we must also track it in state here to preserve the redirect throughout
+    // address confirmation
     if (startTest) {
       setStartTest(true);
     }
