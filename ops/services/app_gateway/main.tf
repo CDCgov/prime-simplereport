@@ -300,8 +300,9 @@ resource "azurerm_application_gateway" "load_balancer" {
   ]
 
   tags               = var.tags
-  firewall_policy_id = var.firewall_policy_id
 
+
+  firewall_policy_id = try(var.firewall_policy_id, null)
 }
 
 
