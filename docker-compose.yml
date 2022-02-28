@@ -14,8 +14,10 @@ services:
       - ./backend/db-setup/reset-db.sql:/usr/local/lib/reset-db.sql
       - ./backend/db-setup/reset-metabase-db.sql:/usr/local/lib/reset-metabase-db.sql
     command: -p ${SR_DB_PORT:-5432}
-    expose: 
+    expose:
       - "${SR_DB_PORT:-5432}"
+    ports:
+      - "5432:5432"
   # Spring Boot backend
   backend:
     build:
@@ -70,7 +72,11 @@ services:
     ports:
       - "80:80"
       - "443:443"
-    
+  mailhog:
+    ports:
+      - '1025:1025'
+      - '8025:8025'
+    image: mailhog/mailhog
 volumes:
   db-data:
   node_modules:
