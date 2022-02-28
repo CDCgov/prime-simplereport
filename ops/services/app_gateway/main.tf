@@ -299,10 +299,9 @@ resource "azurerm_application_gateway" "load_balancer" {
     azurerm_key_vault_access_policy.gateway
   ]
 
-  tags               = var.tags
-
-
   firewall_policy_id = try(var.firewall_policy_id, null)
+
+  tags = var.tags
 }
 
 
