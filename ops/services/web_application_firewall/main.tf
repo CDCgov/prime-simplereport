@@ -1,25 +1,7 @@
-resource "azurerm_web_application_firewall_policy" "example" {
+resource "azurerm_web_application_firewall_policy" "sr_waf_policy" {
   name                = "${var.name}-wafpolicy"
   resource_group_name = var.resource_group_name
   location            = var.resource_group_location
-
-  /* custom_rules {
-    name      = "IP_Allow"
-    priority  = 1
-    rule_type = "MatchRule"
-
-    match_conditions {
-      match_variables {
-        variable_name = "RemoteAddr"
-      }
-
-      operator           = "IPMatch"
-      negation_condition = false
-      match_values       = ["192.168.1.0/24", "10.0.0.0/24"]
-    }
-
-    action = "Block"
-  } */
 
   custom_rules {
     name      = "US_Canada_Only"
@@ -49,6 +31,6 @@ resource "azurerm_web_application_firewall_policy" "example" {
     mode                        = "Detection" //Can use "Detection" for testing, to see which requests would be blocked. "Prevention" turns on active blocking.
     request_body_check          = true
     file_upload_limit_in_mb     = 100
-    max_request_body_size_in_kb = 128 //Can go to 2000 in modern provider version. Proposed is 1024.
+    max_request_body_size_in_kb = 1024 //Can go to 2000 in modern provider version. Proposed is 1024.
   }
 }
