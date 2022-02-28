@@ -153,7 +153,7 @@ jacocoTestReport {
 def dbConnectionString = System.getenv("SPRING_DATASOURCE_URL") ?: "jdbc:postgresql://127.0.0.1:${System.getenv("SR_DB_PORT") ?: 5432}/simple_report"
 // If SPRING_DATASOURCE_URL is provided, assume target DB is non-local and schema is "public"
 def defaultSchema = System.getenv("SPRING_DATASOURCE_URL") ? "public" : "simple_report"
-def noPhiPassword = System.getenv("DB_PASSWORD_NO_PHI") ? System.getenv("DB_PASSWORD_NO_PHI") : "nophi789"
+def noPhiPassword = System.getenv("DB_PASSWORD_NO_PHI") ?: "nophi789"
 
 liquibase {
     activities {
