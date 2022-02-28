@@ -6,6 +6,8 @@ const appInsightsHeaders = {
   "x-ms-session-id": "",
 };
 
+const backendUrl = process.env.REACT_APP_BACKEND_URL;
+
 describe("AccountCreationApi", () => {
   beforeEach(() => {
     (fetch as FetchMock).resetMocks();
@@ -18,7 +20,7 @@ describe("AccountCreationApi", () => {
     });
     it("calls getUserStatus with the correct data", () => {
       expect(fetch).toHaveBeenCalledWith(
-        "http://localhost:8080/user-account/user-status?activationToken=testActivationToken",
+        `${backendUrl}/user-account/user-status?activationToken=testActivationToken`,
         {
           body: undefined,
           headers: {
@@ -39,7 +41,7 @@ describe("AccountCreationApi", () => {
     });
     it("calls initialize with the correct data", () => {
       expect(fetch).toHaveBeenCalledWith(
-        "http://localhost:8080/user-account/initialize",
+        `${backendUrl}/user-account/initialize`,
         {
           body: '{"activationToken":"testActivationToken"}',
           headers: {
@@ -60,7 +62,7 @@ describe("AccountCreationApi", () => {
     });
     it("calls fetch with the correct data", () => {
       expect(fetch).toHaveBeenCalledWith(
-        "http://localhost:8080/user-account/set-password",
+        `${backendUrl}/user-account/set-password`,
         {
           body: '{"password":"DROWSSAP"}',
           headers: {
@@ -83,7 +85,7 @@ describe("AccountCreationApi", () => {
     });
     it("calls fetch with the correct data", () => {
       expect(fetch).toHaveBeenCalledWith(
-        "http://localhost:8080/user-account/set-recovery-question",
+        `${backendUrl}/user-account/set-recovery-question`,
         {
           body: '{"question":"Favorite Cat?","answer":"Savannah cat"}',
           headers: {
@@ -103,7 +105,7 @@ describe("AccountCreationApi", () => {
     });
     it("calls fetch with the correct data", () => {
       expect(fetch).toHaveBeenCalledWith(
-        "http://localhost:8080/user-account/enroll-sms-mfa",
+        `${backendUrl}/user-account/enroll-sms-mfa`,
         {
           body: '{"userInput":"1-800-273-8255"}',
           headers: {
@@ -123,7 +125,7 @@ describe("AccountCreationApi", () => {
     });
     it("calls fetch with the correct data", () => {
       expect(fetch).toHaveBeenCalledWith(
-        "http://localhost:8080/user-account/enroll-voice-call-mfa",
+        `${backendUrl}/user-account/enroll-voice-call-mfa`,
         {
           body: '{"userInput":"867-5309"}',
           headers: {
@@ -143,7 +145,7 @@ describe("AccountCreationApi", () => {
     });
     it("calls fetch with the correct data", () => {
       expect(fetch).toHaveBeenCalledWith(
-        "http://localhost:8080/user-account/enroll-email-mfa",
+        `${backendUrl}/user-account/enroll-email-mfa`,
         {
           headers: {
             Accept: "application/json, text/plain",
@@ -162,7 +164,7 @@ describe("AccountCreationApi", () => {
     });
     it("calls fetch with the correct data", () => {
       expect(fetch).toHaveBeenCalledWith(
-        "http://localhost:8080/user-account/authenticator-qr",
+        `${backendUrl}/user-account/authenticator-qr`,
         {
           body: '{"userInput":"Google"}',
           headers: {
@@ -182,7 +184,7 @@ describe("AccountCreationApi", () => {
     });
     it("calls fetch with the correct data", () => {
       expect(fetch).toHaveBeenCalledWith(
-        "http://localhost:8080/user-account/enroll-security-key-mfa",
+        `${backendUrl}/user-account/enroll-security-key-mfa`,
         {
           headers: {
             Accept: "application/json, text/plain",
@@ -201,7 +203,7 @@ describe("AccountCreationApi", () => {
     });
     it("calls fetch with the correct data", () => {
       expect(fetch).toHaveBeenCalledWith(
-        "http://localhost:8080/user-account/activate-security-key-mfa",
+        `${backendUrl}/user-account/activate-security-key-mfa`,
         {
           body: '{"attestation":"ABC","clientData":"123"}',
           headers: {
@@ -221,7 +223,7 @@ describe("AccountCreationApi", () => {
     });
     it("calls fetch with the correct data", () => {
       expect(fetch).toHaveBeenCalledWith(
-        "http://localhost:8080/user-account/verify-activation-passcode",
+        `${backendUrl}/user-account/verify-activation-passcode`,
         {
           body: '{"userInput":"789345"}',
           headers: {
@@ -241,7 +243,7 @@ describe("AccountCreationApi", () => {
     });
     it("calls fetch with the correct data", () => {
       expect(fetch).toHaveBeenCalledWith(
-        "http://localhost:8080/user-account/resend-activation-passcode",
+        `${backendUrl}/user-account/resend-activation-passcode`,
         {
           headers: {
             Accept: "application/json, text/plain",
