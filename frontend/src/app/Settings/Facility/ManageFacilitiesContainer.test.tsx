@@ -1,7 +1,7 @@
 import { render, screen, act } from "@testing-library/react";
 import { MockedProvider } from "@apollo/client/testing";
 import { Provider } from "react-redux";
-import { MemoryRouter } from "react-router";
+import { MemoryRouter, Route, Routes } from "react-router-dom";
 import configureStore from "redux-mock-store";
 
 import { GetManagedFacilitiesDocument } from "../../../generated/graphql";
@@ -130,13 +130,18 @@ const mock = [
 describe("ManageFacilitiesContainer", () => {
   beforeEach(() => {
     render(
-      <MemoryRouter>
-        <Provider store={store}>
-          <MockedProvider mocks={mock}>
-            <ManageFacilitiesContainer />
-          </MockedProvider>
-        </Provider>
-      </MemoryRouter>
+      <Provider store={store}>
+        <MockedProvider mocks={mock}>
+          <MemoryRouter initialEntries={["/facilities"]}>
+            <Routes>
+              <Route
+                path="facilities"
+                element={<ManageFacilitiesContainer />}
+              />
+            </Routes>
+          </MemoryRouter>
+        </MockedProvider>
+      </Provider>
     );
   });
 

@@ -8,8 +8,9 @@ import {
 import { MockedProvider } from "@apollo/client/testing";
 import { Provider } from "react-redux";
 import configureStore from "redux-mock-store";
-import { MemoryRouter, Route } from "react-router";
+import { MemoryRouter, Route, Routes, useLocation } from "react-router-dom";
 import userEvent from "@testing-library/user-event";
+import { ToastContainer } from "react-toastify";
 
 import AddPatient, { ADD_PATIENT, PATIENT_EXISTS } from "./AddPatient";
 
@@ -22,7 +23,7 @@ const store = mockStore({
 
 const RouterWithFacility: React.FC = ({ children }) => (
   <MemoryRouter initialEntries={[`/add-patient?facility=${mockFacilityID}`]}>
-    {children}
+    <Routes>{children}</Routes>
   </MemoryRouter>
 );
 
@@ -57,7 +58,7 @@ const fillOutForm = (
   Object.entries(inputGroups).forEach(([legend, { label, exact }]) => {
     const fieldset = screen
       .getByText(legend, {
-        exact: false,
+        exact: true,
       })
       .closest("fieldset");
     if (fieldset === null) {
@@ -75,13 +76,15 @@ describe("AddPatient", () => {
   describe("No facility selected", () => {
     beforeEach(() => {
       render(
-        <MemoryRouter>
-          <Provider store={store}>
-            <MockedProvider mocks={[]} addTypename={false}>
-              <AddPatient />
-            </MockedProvider>
-          </Provider>
-        </MemoryRouter>
+        <Provider store={store}>
+          <MockedProvider mocks={[]} addTypename={false}>
+            <MemoryRouter>
+              <Routes>
+                <Route path="/" element={<AddPatient />} />
+              </Routes>
+            </MemoryRouter>
+          </MockedProvider>
+        </Provider>
       );
     });
     it("does not show the form title", () => {
@@ -128,8 +131,8 @@ describe("AddPatient", () => {
               role: null,
               emails: ["foo@bar.org"],
               county: "",
-              race: null,
-              ethnicity: null,
+              race: "other",
+              ethnicity: "refused",
               gender: "female",
               facilityId: mockFacilityID,
               preferredLanguage: null,
@@ -172,8 +175,8 @@ describe("AddPatient", () => {
               role: "STUDENT",
               emails: [],
               county: "",
-              race: null,
-              ethnicity: null,
+              race: "other",
+              ethnicity: "refused",
               gender: "female",
               facilityId: mockFacilityID,
               preferredLanguage: null,
@@ -191,19 +194,30 @@ describe("AddPatient", () => {
         },
       ];
 
+      const Queue = () => {
+        const location = useLocation();
+        return <p>Testing Queue! {location.search}</p>;
+      };
+
       render(
-        <Provider store={store}>
-          <MockedProvider mocks={mocks} addTypename={false}>
-            <RouterWithFacility>
-              <Route component={AddPatient} path={"/add-patient"} />
-              <Route path={"/patients"} render={() => <p>Patients!</p>} />
-              <Route
-                path={"/queue"}
-                render={(p) => <p>Testing Queue! {p.location.search}</p>}
-              />
-            </RouterWithFacility>
-          </MockedProvider>
-        </Provider>
+        <>
+          <Provider store={store}>
+            <MockedProvider mocks={mocks} addTypename={false}>
+              <RouterWithFacility>
+                <Route element={<AddPatient />} path={"/add-patient"} />
+                <Route path={"/patients"} element={<p>Patients!</p>} />
+                <Route path={"/queue"} element={<Queue />} />
+              </RouterWithFacility>
+            </MockedProvider>
+          </Provider>
+          <ToastContainer
+            autoClose={5000}
+            closeButton={false}
+            limit={2}
+            position="bottom-center"
+            hideProgressBar={true}
+          />
+        </>
       );
     });
     it("shows the form title", async () => {
@@ -221,10 +235,32 @@ describe("AddPatient", () => {
         expect(await screen.findByText("State")).toBeInTheDocument();
         expect(await screen.findByText("ZIP code")).toBeInTheDocument();
       });
-      it("should hide the state and zip code inputs for non-US countries", async () => {
+      it("should show the state and zip code inputs for Canada", async () => {
         userEvent.selectOptions(
           screen.getByLabelText("Country", { exact: false }),
           "CAN"
+        );
+        expect(await screen.findByText("State")).toBeInTheDocument();
+        expect(await screen.findByText("ZIP code")).toBeInTheDocument();
+      });
+      it("should show different states for Canada", async () => {
+        userEvent.selectOptions(
+          screen.getByLabelText("Country", { exact: false }),
+          "CAN"
+        );
+
+        let stateInput: HTMLSelectElement;
+        stateInput = screen.getByLabelText("State", {
+          exact: false,
+        }) as HTMLSelectElement;
+
+        userEvent.selectOptions(stateInput, "QC");
+        expect(stateInput.value).toBe("QC");
+      });
+      it("should hide the state and zip code inputs for non-US countries", async () => {
+        userEvent.selectOptions(
+          screen.getByLabelText("Country", { exact: false }),
+          "MEX"
         );
         expect(screen.queryByText("State")).not.toBeInTheDocument();
         expect(screen.queryByText("ZIP code")).not.toBeInTheDocument();
@@ -252,10 +288,20 @@ describe("AddPatient", () => {
               value: "MOBILE",
               exact: true,
             },
-            "Would you like to receive your results via text message": {
+            "Would you like to receive your results via text message?": {
               label: "Yes",
               value: "SMS",
               exact: false,
+            },
+            Race: {
+              label: "Other",
+              value: "other",
+              exact: true,
+            },
+            "Are you Hispanic or Latino?": {
+              label: "Prefer not to answer",
+              value: "refused",
+              exact: true,
             },
             "Sex assigned at birth": {
               label: "Female",
@@ -292,6 +338,49 @@ describe("AddPatient", () => {
           screen.queryAllByText("Saving...")
         );
         expect(screen.getByText("Patients!")).toBeInTheDocument();
+      });
+
+      it("requires race field to be populated", async () => {
+        fillOutForm(
+          {
+            "First Name": "Alice",
+            "Last Name": "Hamilton",
+            "Date of birth": "1970-09-22",
+            "Primary phone number": "617-432-1000",
+            "Email address": "foo@bar.org",
+            "Street address 1": "25 Shattuck St",
+            City: "Boston",
+
+            "ZIP code": "02115",
+          },
+          { Facility: mockFacilityID, State: "MA", Country: "USA" },
+          {
+            "Phone type": {
+              label: "Mobile",
+              value: "MOBILE",
+              exact: true,
+            },
+            "Would you like to receive your results via text message?": {
+              label: "Yes",
+              value: "SMS",
+              exact: false,
+            },
+            "Sex assigned at birth": {
+              label: "Female",
+              value: "female",
+              exact: true,
+            },
+          }
+        );
+        userEvent.click(
+          screen.queryAllByText("Save Changes", {
+            exact: false,
+          })[0]
+        );
+
+        expect(
+          await screen.findByText("Race is required", { exact: false })
+        ).toBeInTheDocument();
       });
     });
 
@@ -341,10 +430,20 @@ describe("AddPatient", () => {
               value: "MOBILE",
               exact: true,
             },
-            "Would you like to receive your results via text message": {
+            "Would you like to receive your results via text message?": {
               label: "Yes",
               value: "SMS",
               exact: false,
+            },
+            Race: {
+              label: "Other",
+              value: "other",
+              exact: true,
+            },
+            "Are you Hispanic or Latino?": {
+              label: "Prefer not to answer",
+              value: "refused",
+              exact: true,
             },
             "Sex assigned at birth": {
               label: "Female",
@@ -420,8 +519,8 @@ describe("AddPatient", () => {
         <Provider store={store}>
           <MockedProvider mocks={mocks} addTypename={false}>
             <RouterWithFacility>
-              <Route component={AddPatient} path={"/add-patient/"} />
-              <Route path={"/patients"} render={() => <p>Patients!</p>} />
+              <Route element={<AddPatient />} path={"/add-patient/"} />
+              <Route path={"/patients"} element={<p>Patients!</p>} />
             </RouterWithFacility>
           </MockedProvider>
         </Provider>
@@ -478,8 +577,8 @@ describe("AddPatient", () => {
         <Provider store={store}>
           <MockedProvider mocks={mocks} addTypename={false}>
             <RouterWithFacility>
-              <Route component={AddPatient} path={"/add-patient/"} />
-              <Route path={"/patients"} render={() => <p>Patients!</p>} />
+              <Route element={<AddPatient />} path={"/add-patient/"} />
+              <Route path={"/patients"} element={<p>Patients!</p>} />
             </RouterWithFacility>
           </MockedProvider>
         </Provider>

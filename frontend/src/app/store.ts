@@ -2,11 +2,13 @@ import { createStore } from "redux";
 
 import { COVID_RESULTS } from "../app/constants";
 import { UserPermission } from "../generated/graphql";
+import { VerifyV2Response } from "../patientApp/PxpApiService";
 
 export const SET_INITIAL_STATE = "SET_INITIAL_STATE";
 export const UPDATE_ORGANIZATION = "UPDATE_ORGANIZATION";
 export const UPDATE_FACILITY = "UPDATE_FACILITY";
 export const SET_PATIENT = "SET_PATIENT";
+export const SET_TEST_RESULT = "SET_TEST_RESULT";
 
 // this should be the default value for a brand new org
 // TODO: get the fields from a schema or something; hard-coded fields are hard to maintain
@@ -41,8 +43,10 @@ export const initialState = {
       dateTested: "",
       deviceTypeModel: "",
       deviceTypeName: "",
+      facilityName: "",
     },
   },
+  testResult: {} as VerifyV2Response,
 };
 
 const reducers = (state = initialState, action: any) => {
@@ -80,6 +84,13 @@ const reducers = (state = initialState, action: any) => {
           ...action.payload,
         },
       };
+    case SET_TEST_RESULT:
+      return {
+        ...state,
+        testResult: {
+          ...action.payload,
+        },
+      };
     default:
       return state;
   }
@@ -110,6 +121,13 @@ export const setPatient = (patient: any) => {
   return {
     type: SET_PATIENT,
     payload: patient,
+  };
+};
+
+export const setTestResult = (testResult: VerifyV2Response) => {
+  return {
+    type: SET_TEST_RESULT,
+    payload: testResult,
   };
 };
 

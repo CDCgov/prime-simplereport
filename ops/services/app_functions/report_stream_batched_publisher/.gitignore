@@ -1,3 +1,10 @@
+# Local builds
+functions/build/
+
+# Terraform state
+.terraform/
+terraform.tfstate*
+
 # Logs
 logs
 *.log

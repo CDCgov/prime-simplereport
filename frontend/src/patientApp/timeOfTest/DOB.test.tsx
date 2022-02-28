@@ -14,6 +14,7 @@ import { PxpApi } from "../PxpApiService";
 
 import DOB from "./DOB";
 
+const plid = uuid();
 const mockStore = configureStore([]);
 const mockContainer = (store: any) => (
   <Provider store={store}>
@@ -26,11 +27,32 @@ const validateDateOfBirthSpy = jest
   .mockImplementation(jest.fn());
 
 describe("DOB (valid UUID)", () => {
-  beforeEach(() => {
-    const store = mockStore({
-      plid: uuid(),
-    });
+  let getObfuscatedPatientNameSpy: jest.SpyInstance;
+
+  beforeEach(async () => {
+    const store = mockStore({ plid });
+
+    getObfuscatedPatientNameSpy = jest
+      .spyOn(PxpApi, "getObfuscatedPatientName")
+      .mockImplementation((_plid) => Promise.resolve("John D."));
+
     render(mockContainer(store));
+    expect(await screen.findByText("John D.")).toBeInTheDocument();
+  });
+
+  it("fetches obfuscated patient name from server on render", async () => {
+    expect(getObfuscatedPatientNameSpy).toBeCalledWith(plid);
+  });
+
+  it("shows obfuscated patient name on verification screen", async () => {
+    // Text is broken up by multiple HTML elements
+    expect(await screen.findByText("John D.")).toBeInTheDocument();
+    expect(
+      await screen.findByText(
+        "'s date of birth to access your COVID-19 testing portal",
+        { exact: false }
+      )
+    ).toBeInTheDocument();
   });
 
   it("Checks to make sure it is actually a possible date", async () => {
@@ -187,6 +209,10 @@ describe("DOB (invalid UUID)", () => {
     const store = mockStore({
       plid: "this is totally not a valid UUID",
     });
+    jest
+      .spyOn(PxpApi, "getObfuscatedPatientName")
+      .mockImplementation((_id) => Promise.resolve("J Doe"));
+
     render(mockContainer(store));
 
     // WHEN

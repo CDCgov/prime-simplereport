@@ -199,10 +199,10 @@ export const es: LanguageConfig = {
           city: "La ciudad tiene un formato incorrecto",
           county: "El formato del condado es incorrecto",
           country: "El formato del país es incorrecto",
-          race: "La raza tiene un formato incorrecto",
+          race: "La raza es obligatoria",
           tribalAffiliation: "La afiliación tribal tiene un formato incorrecto",
-          ethnicity: "La etnia tiene un formato incorrecto",
-          gender: "El sexo asignado al nacer tiene un formato incorrecto",
+          ethnicity: "La etnia es obligatoria",
+          gender: "El sexo asignado al nacer es obligatoria",
           residentCongregateSetting:
             "¿Reside usted en un entorno compartido por muchas personas?  Se requiere una respuesta",
           employedInHealthcare:
@@ -237,6 +237,7 @@ export const es: LanguageConfig = {
     },
     testResult: {
       result: "Resultado de SARS-CoV-2",
+      downloadResult: "Descargar resultado",
       patient: "Paciente",
       patientDetails: "Detalles del paciente",
       name: "Nombre",
@@ -489,7 +490,7 @@ export const es: LanguageConfig = {
         enterDOB2:
           "Ingrese su fecha de nacimiento para acceder a su portal de pruebas de COVID-19.",
         linkExpirationNotice:
-          "Nota: este enlace caducará 5 días después de que se registró el resultado de la prueba.",
+          "Nota: este enlace caducará 10 días después de que se registró el resultado de la prueba.",
         format: "MM/DD/AAAA",
         invalidFormat:
           "La fecha de nacimiento debe estar en formato MM/DD/AAAA",

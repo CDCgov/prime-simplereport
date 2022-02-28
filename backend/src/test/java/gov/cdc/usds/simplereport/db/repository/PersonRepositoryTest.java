@@ -1,6 +1,7 @@
 package gov.cdc.usds.simplereport.db.repository;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 
 import gov.cdc.usds.simplereport.db.model.Organization;
 import gov.cdc.usds.simplereport.db.model.Person;
@@ -11,6 +12,8 @@ import gov.cdc.usds.simplereport.service.PersonService;
 import gov.cdc.usds.simplereport.test_util.TestDataFactory;
 import java.time.LocalDate;
 import java.util.List;
+import java.util.Optional;
+import java.util.UUID;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.PageRequest;
@@ -62,6 +65,18 @@ class PersonRepositoryTest extends BaseRepositoryTest {
                 PersonService.DEFAULT_PAGINATION_PAGESIZE));
     assertEquals(1, found.size());
     assertEquals("Joe", found.get(0).getFirstName());
+    Person createdPerson = found.get(0);
+    UUID personId = createdPerson.getInternalId();
+
+    Optional<Person> personFoundById = _repo.findByIdAndOrganization(personId, org, false);
+    assertTrue(personFoundById.isPresent());
+    assertEquals("Joe", personFoundById.get().getFirstName());
+
+    createdPerson.setIsDeleted(true);
+    Optional<Person> deletedPerson = _repo.findByIdAndOrganization(personId, org, true);
+    assertTrue(deletedPerson.isPresent());
+    assertTrue(deletedPerson.get().isDeleted());
+
     found =
         _repo.findAll(
             inWholeOrganizationFilter(other),

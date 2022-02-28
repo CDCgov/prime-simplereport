@@ -102,4 +102,18 @@ public class OrganizationQueueService {
   public List<OrganizationQueueItem> getUnverifiedQueuedOrganizations() {
     return _orgQueueRepo.findAllNotIdentityVerified();
   }
+
+  public OrganizationQueueItem markPendingOrganizationAsDeleted(
+      String orgExternalId, boolean deleted) {
+    Optional<OrganizationQueueItem> optionalQueueItem =
+        _orgQueueRepo.findUnverifiedByExternalId(orgExternalId);
+
+    if (optionalQueueItem.isEmpty()) {
+      throw new IllegalStateException("This organization doesn't exist");
+    }
+
+    OrganizationQueueItem queueItem = optionalQueueItem.get();
+    queueItem.setIsDeleted(deleted);
+    return _orgQueueRepo.save(queueItem);
+  }
 }

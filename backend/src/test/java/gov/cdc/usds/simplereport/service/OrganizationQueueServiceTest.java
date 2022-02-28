@@ -1,5 +1,6 @@
 package gov.cdc.usds.simplereport.service;
 
+import static org.assertj.core.api.Assertions.assertThat;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertThrows;
@@ -162,5 +163,34 @@ class OrganizationQueueServiceTest extends BaseServiceTest<OrganizationQueueServ
     Optional<OrganizationQueueItem> optQueueItemAfter =
         _orgQueueRepo.findUnverifiedByExternalId(queueItem.getExternalId());
     assertTrue(optQueueItemAfter.isEmpty()); // the item has been linked to an organization
+  }
+
+  @Test
+  void deleteQueuedOrg_sucessful() {
+    OrganizationQueueItem createdQueueItem = _dataFactory.createOrganizationQueueItem();
+    OrganizationQueueItem deletedQueueItem =
+        _service.markPendingOrganizationAsDeleted(createdQueueItem.getExternalId(), true);
+
+    assertThat(deletedQueueItem.isDeleted()).isTrue();
+  }
+
+  @Test
+  void undeletionQueuedOrg_sucessful() {
+    OrganizationQueueItem createdQueueItem = _dataFactory.createOrganizationQueueItem();
+    createdQueueItem.setIsDeleted(true);
+    assertThat(createdQueueItem.isDeleted()).isTrue();
+    OrganizationQueueItem undeletedItem =
+        _service.markPendingOrganizationAsDeleted(createdQueueItem.getExternalId(), false);
+    assertThat(undeletedItem.isDeleted()).isFalse();
+  }
+
+  @Test
+  void deleteQueuedOrg_throwsErrorWhenOrgNotFound() {
+    IllegalStateException caught =
+        assertThrows(
+            IllegalStateException.class,
+            // fake external ID
+            () -> _service.markPendingOrganizationAsDeleted("some-nonexistent-id", true));
+    assertEquals("This organization doesn't exist", caught.getMessage());
   }
 }

@@ -1,22 +1,37 @@
 import { useEffect, useState, useRef } from "react";
 import { connect, useDispatch, useSelector } from "react-redux";
-import { Redirect } from "react-router-dom";
+import { Navigate } from "react-router-dom";
 import moment from "moment";
-import { useTranslation } from "react-i18next";
+import { Trans, useTranslation } from "react-i18next";
 import { validate as isValidUUID } from "uuid";
 
 import Button from "../../app/commonComponents/Button/Button";
-import { setPatient, updateOrganization } from "../../app/store";
+import { setTestResult, updateOrganization } from "../../app/store";
 import { PxpApi } from "../PxpApiService";
 import Alert from "../../app/commonComponents/Alert";
 import { DateInput } from "../../app/commonComponents/DateInput";
 import { dateFromStrings } from "../../app/utils/date";
+import { LoadingCard } from "../../app/commonComponents/LoadingCard/LoadingCard";
 
 const DOB = () => {
   const { t } = useTranslation();
 
-  const dispatch = useDispatch();
   const plid = useSelector((state: any) => state.plid);
+
+  useEffect(() => {
+    PxpApi.getObfuscatedPatientName(plid)
+      .then((name) => {
+        setPatientObfuscatedName(name);
+        setIsLoading(false);
+      })
+      .catch(() => {
+        setLinkExpiredError(true);
+      });
+  }, [plid]);
+
+  const dispatch = useDispatch();
+  const [patientObfuscatedName, setPatientObfuscatedName] = useState("");
+  const [isLoading, setIsLoading] = useState(true);
   const [birthMonth, setBirthMonth] = useState("");
   const [birthDay, setBirthDay] = useState("");
   const [birthYear, setBirthYear] = useState("");
@@ -26,7 +41,7 @@ const DOB = () => {
     !isValidUUID(plid)
   );
   const dobRef = useRef<HTMLInputElement>(null);
-  const patient = useSelector((state: any) => state.patient);
+  const testResult = useSelector((state: any) => state.testResult);
   const [loading, setLoading] = useState(false);
 
   useEffect(() => {
@@ -63,10 +78,10 @@ const DOB = () => {
       );
       dispatch(
         updateOrganization({
-          name: response.organizationName,
+          name: response.organization.name,
         })
       );
-      dispatch(setPatient(response));
+      dispatch(setTestResult(response));
     } catch (error: any) {
       let strError = String(error);
       if (error?.status === 410 || strError.includes("410")) {
@@ -95,20 +110,12 @@ const DOB = () => {
       </main>
     );
   }
-  if (patient?.orderStatus === "COMPLETED") {
+
+  if (testResult?.dateTested) {
     return (
-      <Redirect
+      <Navigate
         to={{
-          pathname: "/test-result",
-          search: `?plid=${plid}`,
-        }}
-      />
-    );
-  } else if (patient?.firstName) {
-    return (
-      <Redirect
-        to={{
-          pathname: "/patient-info-confirm",
+          pathname: "/pxp/test-result",
           search: `?plid=${plid}`,
         }}
       />
@@ -145,37 +152,48 @@ const DOB = () => {
     );
   }
 
-  return (
-    <main>
-      <div className="grid-container maxw-tablet">
-        <p className="margin-top-3">{t("testResult.dob.enterDOB2")}</p>
-        <p>{t("testResult.dob.linkExpirationNotice")}</p>
-        <DateInput
-          className="width-mobile"
-          label={t("testResult.dob.dateOfBirth")}
-          name={"birthDate"}
-          monthName={"birthMonth"}
-          dayName={"birthDay"}
-          yearName={"birthYear"}
-          monthValue={birthMonth}
-          dayValue={birthDay}
-          yearValue={birthYear}
-          monthOnChange={(evt: any) => setBirthMonth(evt.currentTarget.value)}
-          dayOnChange={(evt: any) => setBirthDay(evt.currentTarget.value)}
-          yearOnChange={(evt: any) => setBirthYear(evt.currentTarget.value)}
-          errorMessage={birthDateError}
-          validationStatus={birthDateError ? "error" : undefined}
-        />
-        <Button
-          className="margin-top-2"
-          id="dob-submit-button"
-          data-testid="dob-submit-button"
-          label={t("testResult.dob.submit")}
-          onClick={confirmBirthDate}
-        />
-      </div>
-    </main>
-  );
+  if (isLoading) {
+    return <LoadingCard />;
+  } else {
+    return (
+      <main>
+        <div className="grid-container maxw-tablet">
+          <h1 className="font-heading-lg margin-top-3">Verify date of birth</h1>
+          <Trans t={t} i18nKey="testResult.dob.enterDOB2">
+            <span className="text-bold">
+              {{ personName: patientObfuscatedName }}
+            </span>
+          </Trans>
+          <p className="usa-hint">
+            <em>{t("testResult.dob.linkExpirationNotice")}</em>
+          </p>
+          <DateInput
+            className="width-mobile"
+            label={t("testResult.dob.dateOfBirth")}
+            name={"birthDate"}
+            monthName={"birthMonth"}
+            dayName={"birthDay"}
+            yearName={"birthYear"}
+            monthValue={birthMonth}
+            dayValue={birthDay}
+            yearValue={birthYear}
+            monthOnChange={(evt: any) => setBirthMonth(evt.currentTarget.value)}
+            dayOnChange={(evt: any) => setBirthDay(evt.currentTarget.value)}
+            yearOnChange={(evt: any) => setBirthYear(evt.currentTarget.value)}
+            errorMessage={birthDateError}
+            validationStatus={birthDateError ? "error" : undefined}
+          />
+          <Button
+            className="margin-top-2"
+            id="dob-submit-button"
+            data-testid="dob-submit-button"
+            label={t("testResult.dob.submit")}
+            onClick={confirmBirthDate}
+          />
+        </div>
+      </main>
+    );
+  }
 };
 
 export default connect()(DOB);

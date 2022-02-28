@@ -8,8 +8,8 @@
             %REACT_APP_CONTENT_SECURITY_POLICY_DEFAULT_SRC%
             %REACT_APP_CONTENT_SECURITY_POLICY_SCRIPT_SRC%
             style-src 'self' 'unsafe-inline';
-            img-src 'self' https://hhs-prime.okta.com data:;
-            connect-src 'self'  https://us-street.api.smartystreets.com https://us-zipcode.api.smartystreets.com www.google-analytics.com https://dc.services.visualstudio.com/v2/track https://*.applicationinsights.azure.com %REACT_APP_BACKEND_URL%/ ;
+            img-src 'self' https://touchpoints.app.cloud.gov https://hhs-prime.okta.com data:;
+            connect-src 'self'  https://us-street.api.smartystreets.com https://us-zipcode.api.smartystreets.com www.google-analytics.com https://touchpoints.app.cloud.gov https://dc.services.visualstudio.com/v2/track https://*.applicationinsights.azure.com %REACT_APP_BACKEND_URL%/ ;
         ">
         <% } %>
     <meta charset="utf-8" />
@@ -31,6 +31,7 @@
   <body>
     <noscript>You need to enable JavaScript to run this app.</noscript>
     <div id="root"></div>
+<!--     <script src="https://touchpoints.app.cloud.gov/touchpoints/5b1efe87.js" async></script> -->
     <!--
       This HTML file is a template.
       If you open it directly in the browser, you will see an empty page.

@@ -86,6 +86,26 @@ class PatientExperienceControllerTest extends BaseFullStackTest {
   }
 
   @Test
+  void preAuthorizerThrows403V2() throws Exception {
+    String dob = "1900-01-01";
+    String requestBody =
+        "{\"patientLinkId\":\"" + UUID.randomUUID() + "\",\"dateOfBirth\":\"" + dob + "\"}";
+
+    MockHttpServletRequestBuilder builder =
+        post(ResourceLinks.VERIFY_LINK_V2)
+            .contentType(MediaType.APPLICATION_JSON_VALUE)
+            .accept(MediaType.APPLICATION_JSON)
+            .characterEncoding("UTF-8")
+            .content(requestBody);
+
+    this.mockMvc
+        .perform(builder)
+        .andExpect(status().isForbidden())
+        .andExpect(header().exists(LoggingConstants.REQUEST_ID_HEADER));
+    assertNoAuditEvent();
+  }
+
+  @Test
   void preAuthorizerSucceeds() throws Exception {
     // GIVEN
     String dob = person.getBirthDate().format(DateTimeFormatter.ofPattern("yyyy-MM-dd"));
@@ -107,6 +127,30 @@ class PatientExperienceControllerTest extends BaseFullStackTest {
     // THEN
     String requestId = runBuilderReturningRequestId(mockMvc, builder, status().isOk());
     assertLastAuditEntry(HttpStatus.OK, ResourceLinks.VERIFY_LINK, requestId);
+  }
+
+  @Test
+  void preAuthorizerSucceedsV2() throws Exception {
+    // GIVEN
+    String dob = person.getBirthDate().format(DateTimeFormatter.ofPattern("yyyy-MM-dd"));
+    String requestBody =
+        "{\"patientLinkId\":\""
+            + patientLink.getInternalId()
+            + "\",\"dateOfBirth\":\""
+            + dob
+            + "\"}";
+
+    // WHEN
+    MockHttpServletRequestBuilder builder =
+        post(ResourceLinks.VERIFY_LINK_V2)
+            .contentType(MediaType.APPLICATION_JSON_VALUE)
+            .accept(MediaType.APPLICATION_JSON)
+            .characterEncoding("UTF-8")
+            .content(requestBody);
+
+    // THEN
+    String requestId = runBuilderReturningRequestId(mockMvc, builder, status().isOk());
+    assertLastAuditEntry(HttpStatus.OK, ResourceLinks.VERIFY_LINK_V2, requestId);
   }
 
   @Test
@@ -145,6 +189,60 @@ class PatientExperienceControllerTest extends BaseFullStackTest {
   }
 
   @Test
+  void verifyLinkV2ReturnsTestResultInfo() throws Exception {
+
+    // GIVEN
+    String dob = person.getBirthDate().format(DateTimeFormatter.ofPattern("yyyy-MM-dd"));
+    String requestBody =
+        "{\"patientLinkId\":\""
+            + patientLink.getInternalId()
+            + "\",\"dateOfBirth\":\""
+            + dob
+            + "\"}";
+
+    // WHEN
+    MockHttpServletRequestBuilder builder =
+        post(ResourceLinks.VERIFY_LINK_V2)
+            .contentType(MediaType.APPLICATION_JSON_VALUE)
+            .accept(MediaType.APPLICATION_JSON)
+            .characterEncoding("UTF-8")
+            .content(requestBody);
+
+    // THEN
+    String requestId =
+        mockMvc
+            .perform(builder)
+            .andExpect(status().isOk())
+            .andExpect(jsonPath("$.testEventId", is(testEvent.getInternalId().toString())))
+            .andExpect(jsonPath("$.result", is("NEGATIVE")))
+            .andExpect(jsonPath("$.correctionStatus", is("ORIGINAL")))
+            .andExpect(jsonPath("$.patient.firstName", is("Fred")))
+            .andExpect(jsonPath("$.patient.middleName", is("M")))
+            .andExpect(jsonPath("$.patient.lastName", is("Astaire")))
+            .andExpect(jsonPath("$.patient.birthDate", is("1899-05-10")))
+            .andExpect(jsonPath("$.organization.name", is("The Mall")))
+            .andExpect(jsonPath("$.facility.name", is("Imaginary Site")))
+            .andExpect(jsonPath("$.facility.cliaNumber", is("123456")))
+            .andExpect(jsonPath("$.facility.street", is("736 Jackson PI NW")))
+            .andExpect(jsonPath("$.facility.streetTwo", is("")))
+            .andExpect(jsonPath("$.facility.city", is("Washington")))
+            .andExpect(jsonPath("$.facility.state", is("DC")))
+            .andExpect(jsonPath("$.facility.zipCode", is("20503")))
+            .andExpect(jsonPath("$.facility.phone", is("555-867-5309")))
+            .andExpect(jsonPath("$.facility.orderingProvider.firstName", is("Doctor")))
+            .andExpect(jsonPath("$.facility.orderingProvider.middleName", is("")))
+            .andExpect(jsonPath("$.facility.orderingProvider.lastName", is("Doom")))
+            .andExpect(jsonPath("$.facility.orderingProvider.npi", is("DOOOOOOM")))
+            .andExpect(jsonPath("$.deviceType.name", is("Acme SuperFine")))
+            .andExpect(jsonPath("$.deviceType.model", is("SFN")))
+            .andReturn()
+            .getResponse()
+            .getHeader(LoggingConstants.REQUEST_ID_HEADER);
+
+    assertLastAuditEntry(HttpStatus.OK, ResourceLinks.VERIFY_LINK_V2, requestId);
+  }
+
+  @Test
   void verifyLinkReturns410forExpiredLinks() throws Exception {
     // GIVEN
     TestUserIdentities.withStandardUser(
@@ -168,6 +266,37 @@ class PatientExperienceControllerTest extends BaseFullStackTest {
     // THEN
     String requestId = runBuilderReturningRequestId(mockMvc, builder, status().isGone());
     assertLastAuditEntry(HttpStatus.GONE, ResourceLinks.VERIFY_LINK, requestId);
+  }
+
+  @Test
+  void getObfuscatedPatientName_returnsName() throws Exception {
+    // WHEN
+    MockHttpServletRequestBuilder builder =
+        get(ResourceLinks.GET_OBFUSCATED_PATIENT_NAME)
+            .characterEncoding("UTF-8")
+            .param("patientLink", patientLink.getInternalId().toString());
+
+    // THEN
+    this.mockMvc
+        .perform(builder)
+        .andExpect(status().isOk())
+        .andExpect(jsonPath("$", is("Fred A.")));
+  }
+
+  @Test
+  void getObfuscatedPatientName_thowsOnExpiredLink() throws Exception {
+    // GIVEN
+    TestUserIdentities.withStandardUser(
+        () -> patientLink = _dataFactory.expirePatientLink(patientLink));
+
+    // WHEN
+    MockHttpServletRequestBuilder builder =
+        get(ResourceLinks.GET_OBFUSCATED_PATIENT_NAME)
+            .characterEncoding("UTF-8")
+            .param("patientLink", patientLink.getInternalId().toString());
+
+    // THEN
+    this.mockMvc.perform(builder).andExpect(status().isGone());
   }
 
   @Test

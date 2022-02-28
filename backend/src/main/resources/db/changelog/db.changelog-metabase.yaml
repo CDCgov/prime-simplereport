@@ -1,0 +1,17 @@
+databaseChangeLog:
+  - changeSet:
+      id: no-phi-user-permissions
+      author: josh@skylight.digital
+      comment: Give configuration permissions on Metabase DB to no PHI user
+      changes:
+        - tagDatabase:
+            tag: no-phi-user-permissions
+        - sql:
+          sql: |
+            GRANT INSERT, SELECT, UPDATE, DELETE ON ALL TABLES IN SCHEMA ${database.defaultSchemaName} TO ${noPhiUsername};
+            GRANT USAGE ON ALL SEQUENCES IN SCHEMA ${database.defaultSchemaName} TO ${noPhiUsername};
+      rollback:
+        - sql:
+          sql: |
+            REVOKE INSERT, SELECT, UPDATE, DELETE ON ALL TABLES IN SCHEMA ${database.defaultSchemaName} TO ${noPhiUsername};
+            REVOKE USAGE ON ALL SEQUENCES IN SCHEMA ${database.defaultSchemaName} TO ${noPhiUsername};

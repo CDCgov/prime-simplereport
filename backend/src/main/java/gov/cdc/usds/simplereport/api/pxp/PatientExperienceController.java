@@ -8,11 +8,14 @@ import static gov.cdc.usds.simplereport.api.Translators.parseRace;
 import static gov.cdc.usds.simplereport.api.Translators.parseString;
 
 import gov.cdc.usds.simplereport.api.model.PersonUpdate;
+import gov.cdc.usds.simplereport.api.model.errors.ExpiredPatientLinkException;
 import gov.cdc.usds.simplereport.api.model.pxp.PxpRequestWrapper;
 import gov.cdc.usds.simplereport.api.model.pxp.PxpVerifyResponse;
+import gov.cdc.usds.simplereport.api.model.pxp.PxpVerifyResponseV2;
 import gov.cdc.usds.simplereport.db.model.PatientLink;
 import gov.cdc.usds.simplereport.db.model.Person;
 import gov.cdc.usds.simplereport.db.model.TestEvent;
+import gov.cdc.usds.simplereport.db.model.TestOrder;
 import gov.cdc.usds.simplereport.db.model.auxiliary.OrderStatus;
 import gov.cdc.usds.simplereport.db.model.auxiliary.StreetAddress;
 import gov.cdc.usds.simplereport.service.PatientLinkService;
@@ -27,9 +30,11 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.security.access.prepost.PostAuthorize;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.validation.annotation.Validated;
+import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
 /**
@@ -41,8 +46,6 @@ import org.springframework.web.bind.annotation.RestController;
  * Because of this, every handler method of this controller is required to have an {@link
  * HttpServletRequest} argument named {@code request}.
  */
-@PreAuthorize(
-    "@patientLinkService.verifyPatientLink(#body.getPatientLinkId(), #body.getDateOfBirth())")
 @PostAuthorize("@restAuditLogManager.logRestSuccess(#request, returnObject)")
 @RestController
 @RequestMapping("/pxp")
@@ -77,6 +80,8 @@ public class PatientExperienceController {
    * Verify that the patient-provided DOB matches the patient on file for the patient link id. It
    * returns the full patient object if so, otherwise it throws an exception
    */
+  @PreAuthorize(
+      "@patientLinkService.verifyPatientLink(#body.getPatientLinkId(), #body.getDateOfBirth())")
   @PostMapping("/link/verify")
   public PxpVerifyResponse getPatientLinkVerify(
       @RequestBody PxpRequestWrapper<Void> body, HttpServletRequest request) {
@@ -92,7 +97,49 @@ public class PatientExperienceController {
     return new PxpVerifyResponse(p, os, te);
   }
 
+  /** Verify that the patient-provided DOB matches the patient on file for the patient link id. */
+  @PreAuthorize(
+      "@patientLinkService.verifyPatientLink(#body.getPatientLinkId(), #body.getDateOfBirth())")
+  @PostMapping("/link/verify/v2")
+  public PxpVerifyResponseV2 getPatientLinkVerifyV2(
+      @RequestBody PxpRequestWrapper<Void> body, HttpServletRequest request) {
+    Person patient = _contextHolder.getPatient();
+    TestEvent testEvent = _contextHolder.getLinkedOrder().getTestEvent();
+    _tocs.storeTimeOfConsent(_contextHolder.getPatientLink());
+
+    return new PxpVerifyResponseV2(patient, testEvent);
+  }
+
+  /**
+   * Given a patient link ID, returns the name of the patient for whom the test was conducted, in
+   * lightly-obfuscated form (e.g. "John Doe" -> "John D").
+   *
+   * <p>This endpoint is unauthorized and therefore does not return fully identifying data.
+   *
+   * @param request
+   * @return an obfuscated patient name
+   */
+  @GetMapping("/patient-name")
+  public String getObfuscatedPatientNameFromLink(
+      @RequestParam("patientLink") UUID patientLink, HttpServletRequest request)
+      throws ExpiredPatientLinkException {
+    var link = _pls.getPatientLink(patientLink);
+
+    if (link.isExpired()) {
+      throw new ExpiredPatientLinkException();
+    }
+
+    TestOrder to = link.getTestOrder();
+    Person p = to.getPatient();
+
+    _contextHolder.setContext(link, to, p);
+
+    return p.getFirstName() + " " + p.getLastName().charAt(0) + ".";
+  }
+
   @PostMapping("/patient")
+  @PreAuthorize(
+      "@patientLinkService.verifyPatientLink(#body.getPatientLinkId(), #body.getDateOfBirth())")
   public PxpVerifyResponse updatePatient(
       @RequestBody PxpRequestWrapper<PersonUpdate> body, HttpServletRequest request) {
     PersonUpdate person = body.getData();

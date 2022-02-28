@@ -20,30 +20,23 @@ import java.util.stream.Collectors;
 import javax.annotation.PostConstruct;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 @Service
 @Slf4j
 public class SmsService {
-  @Value("${twilio.from-number}")
-  private String rawFromNumber;
-
   @Autowired PatientLinkService pls;
 
   @Autowired SmsProviderWrapper sms;
 
   @Autowired TextMessageSentRepository tmsRepo;
 
-  private PhoneNumber fromNumber;
-
   private final PhoneNumberUtil phoneUtil = PhoneNumberUtil.getInstance();
 
   @PostConstruct
   void init() throws NumberParseException {
-    this.fromNumber = new PhoneNumber(formatNumber(rawFromNumber));
-    log.debug("SmsService will send from {}", rawFromNumber);
+    log.debug("SmsService initialized");
   }
 
   @AuthorizationConfiguration.RequirePermissionStartTestWithPatientLink
@@ -78,8 +71,7 @@ public class SmsService {
             phoneNumber -> {
               try {
                 String msgId =
-                    sms.send(
-                        new PhoneNumber(formatNumber(phoneNumber.getNumber())), fromNumber, text);
+                    sms.send(new PhoneNumber(formatNumber(phoneNumber.getNumber())), text);
                 log.debug("SMS send initiated {}", msgId);
 
                 return new SmsAPICallResult(phoneNumber.getNumber(), msgId, true);

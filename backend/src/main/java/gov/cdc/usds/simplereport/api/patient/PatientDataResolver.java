@@ -48,6 +48,10 @@ public class PatientDataResolver
   }
 
   public CompletableFuture<String> getTelephone(Person person, DataFetchingEnvironment dfe) {
-    return _patientPrimaryPhoneDataLoader.load(person, dfe).thenApply(PhoneNumber::getNumber);
+    return _patientPrimaryPhoneDataLoader.load(person, dfe).thenApply(p -> getNumberOrNull(p));
+  }
+
+  private String getNumberOrNull(PhoneNumber phoneNumber) {
+    return phoneNumber == null ? null : phoneNumber.getNumber();
   }
 }

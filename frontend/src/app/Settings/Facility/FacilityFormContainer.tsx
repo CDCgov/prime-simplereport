@@ -1,6 +1,6 @@
 import { useState } from "react";
 import { gql, useQuery, useMutation } from "@apollo/client";
-import { Redirect } from "react-router-dom";
+import { Navigate, useParams } from "react-router-dom";
 import { useDispatch } from "react-redux";
 
 import { updateFacility } from "../../store";
@@ -158,11 +158,11 @@ export const ADD_FACILITY_MUTATION = gql`
 `;
 
 interface Props {
-  facilityId: string;
   newOrg?: boolean;
 }
 
 const FacilityFormContainer: any = (props: Props) => {
+  const { facilityId } = useParams();
   const { data, loading, error } = useQuery<FacilityData, {}>(
     GET_FACILITY_QUERY,
     {
@@ -191,7 +191,7 @@ const FacilityFormContainer: any = (props: Props) => {
     if (props.newOrg) {
       window.location.pathname = process.env.PUBLIC_URL || "";
     }
-    return <Redirect push to={{ pathname: "/settings/facilities" }} />;
+    return <Navigate to="/settings/facilities" />;
   }
 
   const saveFacility = async (facility: Facility) => {
@@ -199,12 +199,12 @@ const FacilityFormContainer: any = (props: Props) => {
       appInsights.trackEvent({ name: "Save Settings" });
     }
     const provider = facility.orderingProvider;
-    const saveFacilityMutation = props.facilityId
+    const saveFacilityMutation = facilityId
       ? updateFacilityMutation
       : addFacilityMutation;
     const savedFacility = await saveFacilityMutation({
       variables: {
-        facilityId: props.facilityId,
+        facilityId,
         testingFacilityName: facility.name,
         cliaNumber: facility.cliaNumber,
         street: facility.street,
@@ -249,7 +249,7 @@ const FacilityFormContainer: any = (props: Props) => {
 
   const getFacilityData = (): Facility => {
     const facility = data.organization.testingFacility.find(
-      (f) => f.id === props.facilityId
+      (f) => f.id === facilityId
     );
     if (facility) {
       return facility;

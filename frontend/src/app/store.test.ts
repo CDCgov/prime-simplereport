@@ -1,3 +1,5 @@
+import { VerifyV2Response } from "../patientApp/PxpApiService";
+
 import reducers, {
   initialState,
   setInitialState,
@@ -31,6 +33,7 @@ describe("store", () => {
       deviceTypeModel: "",
       deviceTypeName: "",
       result: "UNDETERMINED",
+      facilityName: "",
     },
     middleName: "",
     role: "",
@@ -51,6 +54,7 @@ describe("store", () => {
     facilities: [],
     organization: blankOrganization,
     patient: blankPatient,
+    testResult: {} as VerifyV2Response,
     user: blankUser,
   };
   setInitialStateState = {
@@ -129,6 +133,7 @@ describe("store", () => {
         dateTested: "2002-01-01",
         deviceTypeModel: "unknown",
         result: "CONTAGIOUS",
+        facilityName: "Fake Facility",
       },
       middleName: "The",
       role: "Star",

@@ -2,9 +2,6 @@ name: Reset Training Database
 
 on:
   workflow_dispatch:
-  schedule:
-    # Run this on a daily timer as well in order to reset the training DB
-    - cron: '0 9 * * *'
 
 env:
   DEPLOY_ENV: training

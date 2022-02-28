@@ -52,6 +52,7 @@ exports[`TestQueue should render the test queue 1`] = `
       </div>
       <div
         class="position-relative grid-container prime-container prime-queue-item card-container"
+        data-testid="test-card-abc"
       >
         <div
           aria-hidden="true"
@@ -147,7 +148,7 @@ exports[`TestQueue should render the test queue 1`] = `
                   data-testid="timer"
                 >
                   <span>
-                    15:00
+                    10:00
                   </span>
                    
                   <svg
@@ -195,7 +196,9 @@ exports[`TestQueue should render the test queue 1`] = `
                   <div
                     class="flex-col-container"
                   >
-                    <div>
+                    <div
+                      class=""
+                    >
                       Test date and time
                     </div>
                     <div
@@ -230,13 +233,13 @@ exports[`TestQueue should render the test queue 1`] = `
                           <input
                             checked=""
                             class="usa-checkbox__input margin"
-                            id="current-date-check-31d42f7a-0a14-46b7-bc8a-38b3b1e78659"
+                            id="current-date-check-abc"
                             type="checkbox"
                             value="true"
                           />
                           <label
                             class="usa-checkbox__label margin-0 margin-right-05em"
-                            for="current-date-check-31d42f7a-0a14-46b7-bc8a-38b3b1e78659"
+                            for="current-date-check-abc"
                           >
                             Current date/time
                           </label>
@@ -297,6 +300,11 @@ exports[`TestQueue should render the test queue 1`] = `
                         id="2"
                         name="swabType"
                       >
+                        <option
+                          value="6e4ccb35-d177-4ea0-9226-653358f1e081"
+                        >
+                          Nasopharyngeal swab
+                        </option>
                         <option
                           value="6aa957dc-add2-4938-8788-935aec3276d4"
                         >
@@ -408,6 +416,7 @@ exports[`TestQueue should render the test queue 1`] = `
       </div>
       <div
         class="position-relative grid-container prime-container prime-queue-item card-container"
+        data-testid="test-card-def"
       >
         <div
           aria-hidden="true"
@@ -503,7 +512,7 @@ exports[`TestQueue should render the test queue 1`] = `
                   data-testid="timer"
                 >
                   <span>
-                    15:00
+                    10:00
                   </span>
                    
                   <svg
@@ -551,7 +560,9 @@ exports[`TestQueue should render the test queue 1`] = `
                   <div
                     class="flex-col-container"
                   >
-                    <div>
+                    <div
+                      class=""
+                    >
                       Test date and time
                     </div>
                     <div
@@ -586,13 +597,13 @@ exports[`TestQueue should render the test queue 1`] = `
                           <input
                             checked=""
                             class="usa-checkbox__input margin"
-                            id="current-date-check-31d42f7a-0a14-46b7-bc8a-38b3b1e78659"
+                            id="current-date-check-def"
                             type="checkbox"
                             value="true"
                           />
                           <label
                             class="usa-checkbox__label margin-0 margin-right-05em"
-                            for="current-date-check-31d42f7a-0a14-46b7-bc8a-38b3b1e78659"
+                            for="current-date-check-def"
                           >
                             Current date/time
                           </label>
@@ -653,6 +664,11 @@ exports[`TestQueue should render the test queue 1`] = `
                         id="5"
                         name="swabType"
                       >
+                        <option
+                          value="6e4ccb35-d177-4ea0-9226-653358f1e081"
+                        >
+                          Nasopharyngeal swab
+                        </option>
                         <option
                           value="6aa957dc-add2-4938-8788-935aec3276d4"
                         >

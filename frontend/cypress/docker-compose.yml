@@ -8,7 +8,11 @@ services:
     env_file:
       - ./.env.e2e
     volumes:
-      - ../:/app
+      - ../cypress:/app/cypress
+      - ../cypress.json:/app/cypress.json
+      - ../e2e.sh:/app/e2e.sh
+      - ../cypress/screenshots:/app/cypress/screenshots
+      - ../cypress/videos:/app/cypress/videos
     expose:
       - "8088"
   db:
@@ -38,26 +42,22 @@ services:
     environment:
       SPRING_PROFILES_ACTIVE: e2e,db-dockerized
       SPRING_LIQUIBASE_ENABLED: "true"
-      WIREMOCK_URL: http://cypress:8088
+      WIREMOCK_URL: "${WIREMOCK_URL:-http://cypress:8088}"
       OKTA_TESTING_DISABLEHTTPSCHECK: "true"
     depends_on:
       - db
-      - cypress
     expose:
       - "8080"
   frontend:
     build:
       context: ../
-      dockerfile: Dockerfile.dev
-      args: 
-        NODE_VER: 14
-        NODE_ENV: development
     container_name: frontend
     environment:
       REACT_APP_BASE_URL: http://localhost.simplereport.gov
       REACT_APP_BACKEND_URL: http://localhost.simplereport.gov/api
       REACT_APP_OKTA_ENABLED: "true"
       REACT_APP_OKTA_URL: http://cypress:8088
+      REACT_APP_DISABLE_MAINTENANCE_BANNER: "true"
     volumes:
       - ../:/frontend/
       - ../../backend/src/main/resources/graphql:/backend/src/main/resources/graphql
@@ -73,6 +73,6 @@ services:
     depends_on:
       - frontend
       - api
-    expose:
-      - "80"
-      - "443"
+    ports:
+      - "80:80"
+      - "443:443"

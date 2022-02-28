@@ -36,8 +36,8 @@ import java.util.UUID;
  * practice.
  */
 public class TestEventExport {
-  public static final String CSV_API_VERSION = "05Aug2021"; // last time we changed something
   private static final int FALLBACK_DEFAULT_TEST_MINUTES = 15;
+  public static final String USA = "USA";
   private final TestEvent testEvent;
   private final Optional<Person> patient;
   private final Optional<AskOnEntrySurvey> survey;
@@ -201,6 +201,11 @@ public class TestEventExport {
     return patient.map(Person::getZipCode).orElse(null);
   }
 
+  @JsonProperty("Patient_country")
+  public String getPatientCountry() {
+    return patient.map(Person::getCountry).orElse(USA);
+  }
+
   @JsonProperty("Patient_phone_number")
   public String getPatientPhoneNumber() {
     return patient.map(Person::getTelephone).orElse(null);
@@ -264,15 +269,23 @@ public class TestEventExport {
     return "";
   }
 
+  @JsonProperty("Test_correction_reason")
+  public String getCorrectionReason() {
+    if (testEvent.getCorrectionStatus() != TestCorrectionStatus.ORIGINAL) {
+      return Optional.ofNullable(testEvent.getReasonForCorrection()).orElse("");
+    }
+    return "";
+  }
+
   // 27Jan2021 Updated to handle deleted tests
   @JsonProperty("Test_result_status")
   public String getTestResultStatus() {
     // F Final results
-    // X No results available; Order canceled
+    // W Post original as wrong, e.g., transmitted for wrong patient
     // C Corrected, final (not yet supported
     switch (testEvent.getCorrectionStatus()) {
       case REMOVED:
-        return "X";
+        return "W";
       case CORRECTED:
         return "C";
       case ORIGINAL:

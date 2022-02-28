@@ -6,7 +6,10 @@ import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.when;
 
 import gov.cdc.usds.simplereport.db.model.Person;
+import gov.cdc.usds.simplereport.db.model.PhoneNumber;
+import gov.cdc.usds.simplereport.db.model.auxiliary.PhoneType;
 import gov.cdc.usds.simplereport.db.model.auxiliary.StreetAddress;
+import gov.cdc.usds.simplereport.db.repository.PhoneNumberRepository;
 import gov.cdc.usds.simplereport.test_util.SliceTestConfiguration.Role;
 import gov.cdc.usds.simplereport.test_util.TestUserIdentities;
 import java.io.ByteArrayInputStream;
@@ -30,6 +33,7 @@ class UploadServiceTest extends BaseServiceTest<UploadService> {
   public static final int PATIENT_PAGE_SIZE = 1000;
 
   @Autowired private PersonService personService;
+  @Autowired private PhoneNumberRepository phoneNumberRepository;
   @MockBean protected AddressValidationService addressValidationService;
   private StreetAddress address;
 
@@ -70,8 +74,15 @@ class UploadServiceTest extends BaseServiceTest<UploadService> {
 
     // THEN
     assertThat(getPatients()).hasSize(1);
-    assertThat(getPatients().get(0).getLastName()).isEqualTo("Best");
-    assertThat(getPatients().get(0).getAddress()).isEqualTo(address);
+    Person p = getPatients().get(0);
+    assertThat(p.getLastName()).isEqualTo("Best");
+    assertThat(p.getAddress()).isEqualTo(address);
+    List<PhoneNumber> phoneNumbers =
+        phoneNumberRepository.findAllByPersonInternalId(p.getInternalId());
+    assertThat(phoneNumbers).hasSize(1);
+    PhoneNumber pn = phoneNumbers.get(0);
+    assertThat(pn.getNumber()).isEqualTo("(565) 666-7777");
+    assertThat(pn.getType()).isEqualTo(PhoneType.MOBILE);
   }
 
   @Test
@@ -87,6 +98,40 @@ class UploadServiceTest extends BaseServiceTest<UploadService> {
     // THEN
     assertThat(error.getMessage()).isEqualTo("Error on row 1; Invalid zip code");
     assertThat(getPatients()).isEmpty();
+  }
+
+  @Test
+  void testInvalidPhoneType() {
+    // GIVEN
+    InputStream inputStream = loadCsv("test-upload-invalid-phone-type.csv");
+
+    // WHEN
+    var error =
+        assertThrows(
+            IllegalArgumentException.class, () -> this._service.processPersonCSV(inputStream));
+
+    // THEN
+    assertThat(error.getMessage()).isEqualTo("Error on row 1; Invalid PhoneType received");
+    assertThat(getPatients()).isEmpty();
+  }
+
+  @Test
+  void testNoPhoneType() {
+    // GIVEN
+    InputStream inputStream = loadCsv("test-upload-no-phone-type.csv");
+
+    // WHEN
+    this._service.processPersonCSV(inputStream);
+
+    // THEN
+    assertThat(getPatients()).hasSize(1);
+    Person p = getPatients().get(0);
+    List<PhoneNumber> phoneNumbers =
+        phoneNumberRepository.findAllByPersonInternalId(p.getInternalId());
+    assertThat(phoneNumbers).hasSize(1);
+    PhoneNumber pn = phoneNumbers.get(0);
+    assertThat(pn.getNumber()).isEqualTo("(565) 666-7777");
+    assertThat(pn.getType()).isNull();
   }
 
   @Test
@@ -142,7 +187,63 @@ class UploadServiceTest extends BaseServiceTest<UploadService> {
         assertThrows(IllegalArgumentException.class, () -> this._service.processPersonCSV(bis));
 
     // THEN
-    assertThat(error.getMessage()).contains("Not enough column values: expected 21, found 1");
+    assertThat(error.getMessage()).contains("Not enough column values: expected 22, found 1");
+  }
+
+  @Test
+  void testNoEthnicity() {
+    // GIVEN
+    InputStream inputStream = loadCsv("test-upload-no-ethnicity.csv");
+
+    // WHEN
+    var error =
+        assertThrows(
+            IllegalArgumentException.class, () -> this._service.processPersonCSV(inputStream));
+
+    // THEN
+    assertThat(error.getMessage()).isEqualTo("Error on row 1; Ethnicity is required.");
+  }
+
+  @Test
+  void testInvalidEthnicity() {
+    // GIVEN
+    InputStream inputStream = loadCsv("test-upload-invalid-ethnicity.csv");
+
+    // WHEN
+    var error =
+        assertThrows(
+            IllegalArgumentException.class, () -> this._service.processPersonCSV(inputStream));
+
+    // THEN
+    assertThat(error.getMessage()).contains("Error on row 1; \"InvalidEthnicity\" must be one of");
+  }
+
+  @Test
+  void testNoRace() {
+    // GIVEN
+    InputStream inputStream = loadCsv("test-upload-no-race.csv");
+
+    // WHEN
+    var error =
+        assertThrows(
+            IllegalArgumentException.class, () -> this._service.processPersonCSV(inputStream));
+
+    // THEN
+    assertThat(error.getMessage()).isEqualTo("Error on row 1; Race is required.");
+  }
+
+  @Test
+  void testInvalidRace() {
+    // GIVEN
+    InputStream inputStream = loadCsv("test-upload-invalid-race.csv");
+
+    // WHEN
+    var error =
+        assertThrows(
+            IllegalArgumentException.class, () -> this._service.processPersonCSV(inputStream));
+
+    // THEN
+    assertThat(error.getMessage()).contains("Error on row 1; \"InvalidRace\" must be one of");
   }
 
   @Test

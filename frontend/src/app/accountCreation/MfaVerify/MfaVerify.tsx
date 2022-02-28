@@ -1,5 +1,5 @@
 import { ReactElement, useState } from "react";
-import { Redirect } from "react-router";
+import { Navigate } from "react-router-dom";
 
 import { Card } from "../../commonComponents/Card/Card";
 import { CardBackground } from "../../commonComponents/CardBackground/CardBackground";
@@ -63,7 +63,7 @@ export const MfaVerify = (props: Props) => {
   }
 
   if (submitted) {
-    return <Redirect push to="/success" />;
+    return <Navigate to="../success" />;
   }
 
   const input = (
@@ -86,6 +86,7 @@ export const MfaVerify = (props: Props) => {
       label={"Submit"}
       type={"submit"}
       onClick={handleSubmit}
+      id={"continue"}
     />
   );
 
@@ -95,6 +96,7 @@ export const MfaVerify = (props: Props) => {
       label={"Submit"}
       type={"submit"}
       onClick={handleSubmit}
+      id={"continue"}
     />
   );
 

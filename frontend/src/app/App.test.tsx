@@ -1,4 +1,9 @@
-import { BrowserRouter as Router, MemoryRouter, Route } from "react-router-dom";
+import {
+  BrowserRouter as Router,
+  MemoryRouter,
+  Route,
+  Routes,
+} from "react-router-dom";
 import { Provider } from "react-redux";
 import createMockStore, { MockStoreEnhanced } from "redux-mock-store";
 import { MockedProvider, MockedResponse } from "@apollo/client/testing";
@@ -199,7 +204,9 @@ const renderApp = (
       <Provider store={newStore}>
         <MockedProvider mocks={queryMocks} addTypename={false}>
           <Router>
-            <Route path="/" component={App} />
+            <Routes>
+              <Route path="/*" element={<App />} />
+            </Routes>
           </Router>
         </MockedProvider>
       </Provider>

@@ -1,4 +1,5 @@
 import {
+  act,
   fireEvent,
   render,
   screen,
@@ -162,7 +163,9 @@ describe("QuestionsFormContainer countdown", () => {
       />
     );
     expect(await screen.findByText("0:01")).toBeInTheDocument();
-    jest.advanceTimersByTime(1000);
+    await act(async () => {
+      jest.advanceTimersByTime(1000);
+    });
     expect(
       await screen.findByText("Experian was unable to verify your identity.", {
         exact: false,

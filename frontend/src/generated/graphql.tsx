@@ -2,6 +2,7 @@ import { gql } from "@apollo/client";
 import * as Apollo from "@apollo/client";
 
 export type Maybe<T> = T | null;
+export type InputMaybe<T> = Maybe<T>;
 export type Exact<T extends { [key: string]: unknown }> = {
   [K in keyof T]: T[K];
 };
@@ -9,7 +10,7 @@ export type MakeOptional<T, K extends keyof T> = Omit<T, K> &
   { [SubKey in K]?: Maybe<T[SubKey]> };
 export type MakeMaybe<T, K extends keyof T> = Omit<T, K> &
   { [SubKey in K]: Maybe<T[SubKey]> };
-const defaultOptions = {};
+const defaultOptions = {} as const;
 /** All built-in and custom scalars, mapped to their actual values */
 export type Scalars = {
   ID: string;
@@ -141,6 +142,7 @@ export type Mutation = {
   editPendingOrganization?: Maybe<Scalars["String"]>;
   editQueueItem?: Maybe<TestOrder>;
   markFacilityAsDeleted?: Maybe<Scalars["String"]>;
+  markPendingOrganizationAsDeleted?: Maybe<Scalars["String"]>;
   reactivateUser?: Maybe<User>;
   removePatientFromQueue?: Maybe<Scalars["String"]>;
   resendActivationEmail?: Maybe<User>;
@@ -170,130 +172,130 @@ export type Mutation = {
 };
 
 export type MutationAddFacilityArgs = {
-  city?: Maybe<Scalars["String"]>;
-  cliaNumber?: Maybe<Scalars["String"]>;
-  deviceIds: Array<Maybe<Scalars["ID"]>>;
-  email?: Maybe<Scalars["String"]>;
-  orderingProviderCity?: Maybe<Scalars["String"]>;
-  orderingProviderCounty?: Maybe<Scalars["String"]>;
-  orderingProviderFirstName?: Maybe<Scalars["String"]>;
-  orderingProviderLastName?: Maybe<Scalars["String"]>;
-  orderingProviderMiddleName?: Maybe<Scalars["String"]>;
-  orderingProviderNPI?: Maybe<Scalars["String"]>;
-  orderingProviderPhone?: Maybe<Scalars["String"]>;
-  orderingProviderState?: Maybe<Scalars["String"]>;
-  orderingProviderStreet?: Maybe<Scalars["String"]>;
-  orderingProviderStreetTwo?: Maybe<Scalars["String"]>;
-  orderingProviderSuffix?: Maybe<Scalars["String"]>;
-  orderingProviderZipCode?: Maybe<Scalars["String"]>;
-  phone?: Maybe<Scalars["String"]>;
+  city?: InputMaybe<Scalars["String"]>;
+  cliaNumber?: InputMaybe<Scalars["String"]>;
+  deviceIds: Array<InputMaybe<Scalars["ID"]>>;
+  email?: InputMaybe<Scalars["String"]>;
+  orderingProviderCity?: InputMaybe<Scalars["String"]>;
+  orderingProviderCounty?: InputMaybe<Scalars["String"]>;
+  orderingProviderFirstName?: InputMaybe<Scalars["String"]>;
+  orderingProviderLastName?: InputMaybe<Scalars["String"]>;
+  orderingProviderMiddleName?: InputMaybe<Scalars["String"]>;
+  orderingProviderNPI?: InputMaybe<Scalars["String"]>;
+  orderingProviderPhone?: InputMaybe<Scalars["String"]>;
+  orderingProviderState?: InputMaybe<Scalars["String"]>;
+  orderingProviderStreet?: InputMaybe<Scalars["String"]>;
+  orderingProviderStreetTwo?: InputMaybe<Scalars["String"]>;
+  orderingProviderSuffix?: InputMaybe<Scalars["String"]>;
+  orderingProviderZipCode?: InputMaybe<Scalars["String"]>;
+  phone?: InputMaybe<Scalars["String"]>;
   state: Scalars["String"];
   street: Scalars["String"];
-  streetTwo?: Maybe<Scalars["String"]>;
+  streetTwo?: InputMaybe<Scalars["String"]>;
   testingFacilityName: Scalars["String"];
   zipCode: Scalars["String"];
 };
 
 export type MutationAddFacilityNewArgs = {
-  city?: Maybe<Scalars["String"]>;
-  cliaNumber?: Maybe<Scalars["String"]>;
-  deviceIds: Array<Maybe<Scalars["ID"]>>;
-  email?: Maybe<Scalars["String"]>;
-  orderingProviderCity?: Maybe<Scalars["String"]>;
-  orderingProviderCounty?: Maybe<Scalars["String"]>;
-  orderingProviderFirstName?: Maybe<Scalars["String"]>;
-  orderingProviderLastName?: Maybe<Scalars["String"]>;
-  orderingProviderMiddleName?: Maybe<Scalars["String"]>;
-  orderingProviderNPI?: Maybe<Scalars["String"]>;
-  orderingProviderPhone?: Maybe<Scalars["String"]>;
-  orderingProviderState?: Maybe<Scalars["String"]>;
-  orderingProviderStreet?: Maybe<Scalars["String"]>;
-  orderingProviderStreetTwo?: Maybe<Scalars["String"]>;
-  orderingProviderSuffix?: Maybe<Scalars["String"]>;
-  orderingProviderZipCode?: Maybe<Scalars["String"]>;
-  phone?: Maybe<Scalars["String"]>;
+  city?: InputMaybe<Scalars["String"]>;
+  cliaNumber?: InputMaybe<Scalars["String"]>;
+  deviceIds: Array<InputMaybe<Scalars["ID"]>>;
+  email?: InputMaybe<Scalars["String"]>;
+  orderingProviderCity?: InputMaybe<Scalars["String"]>;
+  orderingProviderCounty?: InputMaybe<Scalars["String"]>;
+  orderingProviderFirstName?: InputMaybe<Scalars["String"]>;
+  orderingProviderLastName?: InputMaybe<Scalars["String"]>;
+  orderingProviderMiddleName?: InputMaybe<Scalars["String"]>;
+  orderingProviderNPI?: InputMaybe<Scalars["String"]>;
+  orderingProviderPhone?: InputMaybe<Scalars["String"]>;
+  orderingProviderState?: InputMaybe<Scalars["String"]>;
+  orderingProviderStreet?: InputMaybe<Scalars["String"]>;
+  orderingProviderStreetTwo?: InputMaybe<Scalars["String"]>;
+  orderingProviderSuffix?: InputMaybe<Scalars["String"]>;
+  orderingProviderZipCode?: InputMaybe<Scalars["String"]>;
+  phone?: InputMaybe<Scalars["String"]>;
   state: Scalars["String"];
   street: Scalars["String"];
-  streetTwo?: Maybe<Scalars["String"]>;
+  streetTwo?: InputMaybe<Scalars["String"]>;
   testingFacilityName: Scalars["String"];
   zipCode: Scalars["String"];
 };
 
 export type MutationAddPatientArgs = {
   birthDate: Scalars["LocalDate"];
-  city?: Maybe<Scalars["String"]>;
-  country?: Maybe<Scalars["String"]>;
-  county?: Maybe<Scalars["String"]>;
-  email?: Maybe<Scalars["String"]>;
-  emails?: Maybe<Array<Maybe<Scalars["String"]>>>;
-  employedInHealthcare?: Maybe<Scalars["Boolean"]>;
-  ethnicity?: Maybe<Scalars["String"]>;
-  facilityId?: Maybe<Scalars["ID"]>;
+  city?: InputMaybe<Scalars["String"]>;
+  country?: InputMaybe<Scalars["String"]>;
+  county?: InputMaybe<Scalars["String"]>;
+  email?: InputMaybe<Scalars["String"]>;
+  emails?: InputMaybe<Array<InputMaybe<Scalars["String"]>>>;
+  employedInHealthcare?: InputMaybe<Scalars["Boolean"]>;
+  ethnicity?: InputMaybe<Scalars["String"]>;
+  facilityId?: InputMaybe<Scalars["ID"]>;
   firstName: Scalars["String"];
-  gender?: Maybe<Scalars["String"]>;
+  gender?: InputMaybe<Scalars["String"]>;
   lastName: Scalars["String"];
-  lookupId?: Maybe<Scalars["String"]>;
-  middleName?: Maybe<Scalars["String"]>;
-  phoneNumbers?: Maybe<Array<PhoneNumberInput>>;
-  preferredLanguage?: Maybe<Scalars["String"]>;
-  race?: Maybe<Scalars["String"]>;
-  residentCongregateSetting?: Maybe<Scalars["Boolean"]>;
-  role?: Maybe<Scalars["String"]>;
+  lookupId?: InputMaybe<Scalars["String"]>;
+  middleName?: InputMaybe<Scalars["String"]>;
+  phoneNumbers?: InputMaybe<Array<PhoneNumberInput>>;
+  preferredLanguage?: InputMaybe<Scalars["String"]>;
+  race?: InputMaybe<Scalars["String"]>;
+  residentCongregateSetting?: InputMaybe<Scalars["Boolean"]>;
+  role?: InputMaybe<Scalars["String"]>;
   state: Scalars["String"];
   street: Scalars["String"];
-  streetTwo?: Maybe<Scalars["String"]>;
-  suffix?: Maybe<Scalars["String"]>;
-  telephone?: Maybe<Scalars["String"]>;
-  testResultDelivery?: Maybe<TestResultDeliveryPreference>;
-  tribalAffiliation?: Maybe<Scalars["String"]>;
+  streetTwo?: InputMaybe<Scalars["String"]>;
+  suffix?: InputMaybe<Scalars["String"]>;
+  telephone?: InputMaybe<Scalars["String"]>;
+  testResultDelivery?: InputMaybe<TestResultDeliveryPreference>;
+  tribalAffiliation?: InputMaybe<Scalars["String"]>;
   zipCode: Scalars["String"];
 };
 
 export type MutationAddPatientToQueueArgs = {
   facilityId: Scalars["ID"];
-  noSymptoms?: Maybe<Scalars["Boolean"]>;
+  noSymptoms?: InputMaybe<Scalars["Boolean"]>;
   patientId: Scalars["ID"];
-  pregnancy?: Maybe<Scalars["String"]>;
-  symptomOnset?: Maybe<Scalars["LocalDate"]>;
-  symptoms?: Maybe<Scalars["String"]>;
-  testResultDelivery?: Maybe<TestResultDeliveryPreference>;
+  pregnancy?: InputMaybe<Scalars["String"]>;
+  symptomOnset?: InputMaybe<Scalars["LocalDate"]>;
+  symptoms?: InputMaybe<Scalars["String"]>;
+  testResultDelivery?: InputMaybe<TestResultDeliveryPreference>;
 };
 
 export type MutationAddTestResultArgs = {
-  dateTested?: Maybe<Scalars["DateTime"]>;
+  dateTested?: InputMaybe<Scalars["DateTime"]>;
   deviceId: Scalars["String"];
-  deviceSpecimenType?: Maybe<Scalars["ID"]>;
+  deviceSpecimenType?: InputMaybe<Scalars["ID"]>;
   patientId: Scalars["ID"];
   result: Scalars["String"];
 };
 
 export type MutationAddTestResultNewArgs = {
-  dateTested?: Maybe<Scalars["DateTime"]>;
+  dateTested?: InputMaybe<Scalars["DateTime"]>;
   deviceId: Scalars["String"];
-  deviceSpecimenType?: Maybe<Scalars["ID"]>;
+  deviceSpecimenType?: InputMaybe<Scalars["ID"]>;
   patientId: Scalars["ID"];
   result: Scalars["String"];
 };
 
 export type MutationAddUserArgs = {
   email: Scalars["String"];
-  firstName?: Maybe<Scalars["String"]>;
-  lastName?: Maybe<Scalars["String"]>;
-  middleName?: Maybe<Scalars["String"]>;
-  name?: Maybe<NameInput>;
+  firstName?: InputMaybe<Scalars["String"]>;
+  lastName?: InputMaybe<Scalars["String"]>;
+  middleName?: InputMaybe<Scalars["String"]>;
+  name?: InputMaybe<NameInput>;
   organizationExternalId: Scalars["String"];
   role: Role;
-  suffix?: Maybe<Scalars["String"]>;
+  suffix?: InputMaybe<Scalars["String"]>;
 };
 
 export type MutationAddUserToCurrentOrgArgs = {
   email: Scalars["String"];
-  firstName?: Maybe<Scalars["String"]>;
-  lastName?: Maybe<Scalars["String"]>;
-  middleName?: Maybe<Scalars["String"]>;
-  name?: Maybe<NameInput>;
+  firstName?: InputMaybe<Scalars["String"]>;
+  lastName?: InputMaybe<Scalars["String"]>;
+  middleName?: InputMaybe<Scalars["String"]>;
+  name?: InputMaybe<NameInput>;
   role: Role;
-  suffix?: Maybe<Scalars["String"]>;
+  suffix?: InputMaybe<Scalars["String"]>;
 };
 
 export type MutationAdminUpdateOrganizationArgs = {
@@ -303,7 +305,7 @@ export type MutationAdminUpdateOrganizationArgs = {
 
 export type MutationCorrectTestMarkAsErrorArgs = {
   id: Scalars["ID"];
-  reason?: Maybe<Scalars["String"]>;
+  reason?: InputMaybe<Scalars["String"]>;
 };
 
 export type MutationCreateDeviceTypeArgs = {
@@ -318,36 +320,36 @@ export type MutationCreateFacilityRegistrationLinkArgs = {
 
 export type MutationCreateOrganizationArgs = {
   adminEmail: Scalars["String"];
-  adminFirstName?: Maybe<Scalars["String"]>;
-  adminLastName?: Maybe<Scalars["String"]>;
-  adminMiddleName?: Maybe<Scalars["String"]>;
-  adminName?: Maybe<NameInput>;
-  adminSuffix?: Maybe<Scalars["String"]>;
-  city?: Maybe<Scalars["String"]>;
-  cliaNumber?: Maybe<Scalars["String"]>;
-  county?: Maybe<Scalars["String"]>;
+  adminFirstName?: InputMaybe<Scalars["String"]>;
+  adminLastName?: InputMaybe<Scalars["String"]>;
+  adminMiddleName?: InputMaybe<Scalars["String"]>;
+  adminName?: InputMaybe<NameInput>;
+  adminSuffix?: InputMaybe<Scalars["String"]>;
+  city?: InputMaybe<Scalars["String"]>;
+  cliaNumber?: InputMaybe<Scalars["String"]>;
+  county?: InputMaybe<Scalars["String"]>;
   defaultDevice: Scalars["String"];
-  deviceTypes: Array<Maybe<Scalars["String"]>>;
-  email?: Maybe<Scalars["String"]>;
+  deviceTypes: Array<InputMaybe<Scalars["String"]>>;
+  email?: InputMaybe<Scalars["String"]>;
   externalId: Scalars["String"];
   name: Scalars["String"];
-  orderingProviderCity?: Maybe<Scalars["String"]>;
-  orderingProviderCounty?: Maybe<Scalars["String"]>;
-  orderingProviderFirstName?: Maybe<Scalars["String"]>;
-  orderingProviderLastName?: Maybe<Scalars["String"]>;
-  orderingProviderMiddleName?: Maybe<Scalars["String"]>;
-  orderingProviderNPI?: Maybe<Scalars["String"]>;
-  orderingProviderName?: Maybe<NameInput>;
-  orderingProviderPhone?: Maybe<Scalars["String"]>;
-  orderingProviderState?: Maybe<Scalars["String"]>;
-  orderingProviderStreet?: Maybe<Scalars["String"]>;
-  orderingProviderStreetTwo?: Maybe<Scalars["String"]>;
-  orderingProviderSuffix?: Maybe<Scalars["String"]>;
-  orderingProviderZipCode?: Maybe<Scalars["String"]>;
-  phone?: Maybe<Scalars["String"]>;
+  orderingProviderCity?: InputMaybe<Scalars["String"]>;
+  orderingProviderCounty?: InputMaybe<Scalars["String"]>;
+  orderingProviderFirstName?: InputMaybe<Scalars["String"]>;
+  orderingProviderLastName?: InputMaybe<Scalars["String"]>;
+  orderingProviderMiddleName?: InputMaybe<Scalars["String"]>;
+  orderingProviderNPI?: InputMaybe<Scalars["String"]>;
+  orderingProviderName?: InputMaybe<NameInput>;
+  orderingProviderPhone?: InputMaybe<Scalars["String"]>;
+  orderingProviderState?: InputMaybe<Scalars["String"]>;
+  orderingProviderStreet?: InputMaybe<Scalars["String"]>;
+  orderingProviderStreetTwo?: InputMaybe<Scalars["String"]>;
+  orderingProviderSuffix?: InputMaybe<Scalars["String"]>;
+  orderingProviderZipCode?: InputMaybe<Scalars["String"]>;
+  phone?: InputMaybe<Scalars["String"]>;
   state: Scalars["String"];
   street: Scalars["String"];
-  streetTwo?: Maybe<Scalars["String"]>;
+  streetTwo?: InputMaybe<Scalars["String"]>;
   testingFacilityName: Scalars["String"];
   type: Scalars["String"];
   zipCode: Scalars["String"];
@@ -359,25 +361,30 @@ export type MutationCreateOrganizationRegistrationLinkArgs = {
 };
 
 export type MutationEditPendingOrganizationArgs = {
-  adminEmail?: Maybe<Scalars["String"]>;
-  adminFirstName?: Maybe<Scalars["String"]>;
-  adminLastName?: Maybe<Scalars["String"]>;
-  adminPhone?: Maybe<Scalars["String"]>;
-  name?: Maybe<Scalars["String"]>;
+  adminEmail?: InputMaybe<Scalars["String"]>;
+  adminFirstName?: InputMaybe<Scalars["String"]>;
+  adminLastName?: InputMaybe<Scalars["String"]>;
+  adminPhone?: InputMaybe<Scalars["String"]>;
+  name?: InputMaybe<Scalars["String"]>;
   orgExternalId: Scalars["String"];
 };
 
 export type MutationEditQueueItemArgs = {
-  dateTested?: Maybe<Scalars["DateTime"]>;
-  deviceId?: Maybe<Scalars["String"]>;
-  deviceSpecimenType?: Maybe<Scalars["ID"]>;
+  dateTested?: InputMaybe<Scalars["DateTime"]>;
+  deviceId?: InputMaybe<Scalars["String"]>;
+  deviceSpecimenType?: InputMaybe<Scalars["ID"]>;
   id: Scalars["ID"];
-  result?: Maybe<Scalars["String"]>;
+  result?: InputMaybe<Scalars["String"]>;
 };
 
 export type MutationMarkFacilityAsDeletedArgs = {
   deleted: Scalars["Boolean"];
   facilityId: Scalars["ID"];
+};
+
+export type MutationMarkPendingOrganizationAsDeletedArgs = {
+  deleted: Scalars["Boolean"];
+  orgExternalId: Scalars["String"];
 };
 
 export type MutationReactivateUserArgs = {
@@ -421,8 +428,8 @@ export type MutationSendPatientLinkSmsByTestEventIdArgs = {
 };
 
 export type MutationSetCurrentUserTenantDataAccessArgs = {
-  justification?: Maybe<Scalars["String"]>;
-  organizationExternalId?: Maybe<Scalars["String"]>;
+  justification?: InputMaybe<Scalars["String"]>;
+  organizationExternalId?: InputMaybe<Scalars["String"]>;
 };
 
 export type MutationSetOrganizationIdentityVerifiedArgs = {
@@ -437,7 +444,7 @@ export type MutationSetPatientIsDeletedArgs = {
 
 export type MutationSetRegistrationLinkIsDeletedArgs = {
   deleted: Scalars["Boolean"];
-  link?: Maybe<Scalars["String"]>;
+  link?: InputMaybe<Scalars["String"]>;
 };
 
 export type MutationSetUserIsDeletedArgs = {
@@ -450,53 +457,53 @@ export type MutationUpdateDeviceTypeArgs = {
 };
 
 export type MutationUpdateFacilityArgs = {
-  city?: Maybe<Scalars["String"]>;
-  cliaNumber?: Maybe<Scalars["String"]>;
-  deviceIds: Array<Maybe<Scalars["ID"]>>;
-  email?: Maybe<Scalars["String"]>;
+  city?: InputMaybe<Scalars["String"]>;
+  cliaNumber?: InputMaybe<Scalars["String"]>;
+  deviceIds: Array<InputMaybe<Scalars["ID"]>>;
+  email?: InputMaybe<Scalars["String"]>;
   facilityId: Scalars["ID"];
-  orderingProviderCity?: Maybe<Scalars["String"]>;
-  orderingProviderCounty?: Maybe<Scalars["String"]>;
-  orderingProviderFirstName?: Maybe<Scalars["String"]>;
-  orderingProviderLastName?: Maybe<Scalars["String"]>;
-  orderingProviderMiddleName?: Maybe<Scalars["String"]>;
-  orderingProviderNPI?: Maybe<Scalars["String"]>;
-  orderingProviderPhone?: Maybe<Scalars["String"]>;
-  orderingProviderState?: Maybe<Scalars["String"]>;
-  orderingProviderStreet?: Maybe<Scalars["String"]>;
-  orderingProviderStreetTwo?: Maybe<Scalars["String"]>;
-  orderingProviderSuffix?: Maybe<Scalars["String"]>;
-  orderingProviderZipCode?: Maybe<Scalars["String"]>;
-  phone?: Maybe<Scalars["String"]>;
+  orderingProviderCity?: InputMaybe<Scalars["String"]>;
+  orderingProviderCounty?: InputMaybe<Scalars["String"]>;
+  orderingProviderFirstName?: InputMaybe<Scalars["String"]>;
+  orderingProviderLastName?: InputMaybe<Scalars["String"]>;
+  orderingProviderMiddleName?: InputMaybe<Scalars["String"]>;
+  orderingProviderNPI?: InputMaybe<Scalars["String"]>;
+  orderingProviderPhone?: InputMaybe<Scalars["String"]>;
+  orderingProviderState?: InputMaybe<Scalars["String"]>;
+  orderingProviderStreet?: InputMaybe<Scalars["String"]>;
+  orderingProviderStreetTwo?: InputMaybe<Scalars["String"]>;
+  orderingProviderSuffix?: InputMaybe<Scalars["String"]>;
+  orderingProviderZipCode?: InputMaybe<Scalars["String"]>;
+  phone?: InputMaybe<Scalars["String"]>;
   state: Scalars["String"];
   street: Scalars["String"];
-  streetTwo?: Maybe<Scalars["String"]>;
+  streetTwo?: InputMaybe<Scalars["String"]>;
   testingFacilityName: Scalars["String"];
   zipCode: Scalars["String"];
 };
 
 export type MutationUpdateFacilityNewArgs = {
-  city?: Maybe<Scalars["String"]>;
-  cliaNumber?: Maybe<Scalars["String"]>;
-  deviceIds: Array<Maybe<Scalars["ID"]>>;
-  email?: Maybe<Scalars["String"]>;
+  city?: InputMaybe<Scalars["String"]>;
+  cliaNumber?: InputMaybe<Scalars["String"]>;
+  deviceIds: Array<InputMaybe<Scalars["ID"]>>;
+  email?: InputMaybe<Scalars["String"]>;
   facilityId: Scalars["ID"];
-  orderingProviderCity?: Maybe<Scalars["String"]>;
-  orderingProviderCounty?: Maybe<Scalars["String"]>;
-  orderingProviderFirstName?: Maybe<Scalars["String"]>;
-  orderingProviderLastName?: Maybe<Scalars["String"]>;
-  orderingProviderMiddleName?: Maybe<Scalars["String"]>;
-  orderingProviderNPI?: Maybe<Scalars["String"]>;
-  orderingProviderPhone?: Maybe<Scalars["String"]>;
-  orderingProviderState?: Maybe<Scalars["String"]>;
-  orderingProviderStreet?: Maybe<Scalars["String"]>;
-  orderingProviderStreetTwo?: Maybe<Scalars["String"]>;
-  orderingProviderSuffix?: Maybe<Scalars["String"]>;
-  orderingProviderZipCode?: Maybe<Scalars["String"]>;
-  phone?: Maybe<Scalars["String"]>;
+  orderingProviderCity?: InputMaybe<Scalars["String"]>;
+  orderingProviderCounty?: InputMaybe<Scalars["String"]>;
+  orderingProviderFirstName?: InputMaybe<Scalars["String"]>;
+  orderingProviderLastName?: InputMaybe<Scalars["String"]>;
+  orderingProviderMiddleName?: InputMaybe<Scalars["String"]>;
+  orderingProviderNPI?: InputMaybe<Scalars["String"]>;
+  orderingProviderPhone?: InputMaybe<Scalars["String"]>;
+  orderingProviderState?: InputMaybe<Scalars["String"]>;
+  orderingProviderStreet?: InputMaybe<Scalars["String"]>;
+  orderingProviderStreetTwo?: InputMaybe<Scalars["String"]>;
+  orderingProviderSuffix?: InputMaybe<Scalars["String"]>;
+  orderingProviderZipCode?: InputMaybe<Scalars["String"]>;
+  phone?: InputMaybe<Scalars["String"]>;
   state: Scalars["String"];
   street: Scalars["String"];
-  streetTwo?: Maybe<Scalars["String"]>;
+  streetTwo?: InputMaybe<Scalars["String"]>;
   testingFacilityName: Scalars["String"];
   zipCode: Scalars["String"];
 };
@@ -507,32 +514,32 @@ export type MutationUpdateOrganizationArgs = {
 
 export type MutationUpdatePatientArgs = {
   birthDate: Scalars["LocalDate"];
-  city?: Maybe<Scalars["String"]>;
-  country?: Maybe<Scalars["String"]>;
-  county?: Maybe<Scalars["String"]>;
-  email?: Maybe<Scalars["String"]>;
-  emails?: Maybe<Array<Maybe<Scalars["String"]>>>;
-  employedInHealthcare?: Maybe<Scalars["Boolean"]>;
-  ethnicity?: Maybe<Scalars["String"]>;
-  facilityId?: Maybe<Scalars["ID"]>;
+  city?: InputMaybe<Scalars["String"]>;
+  country?: InputMaybe<Scalars["String"]>;
+  county?: InputMaybe<Scalars["String"]>;
+  email?: InputMaybe<Scalars["String"]>;
+  emails?: InputMaybe<Array<InputMaybe<Scalars["String"]>>>;
+  employedInHealthcare?: InputMaybe<Scalars["Boolean"]>;
+  ethnicity?: InputMaybe<Scalars["String"]>;
+  facilityId?: InputMaybe<Scalars["ID"]>;
   firstName: Scalars["String"];
-  gender?: Maybe<Scalars["String"]>;
+  gender?: InputMaybe<Scalars["String"]>;
   lastName: Scalars["String"];
-  lookupId?: Maybe<Scalars["String"]>;
-  middleName?: Maybe<Scalars["String"]>;
+  lookupId?: InputMaybe<Scalars["String"]>;
+  middleName?: InputMaybe<Scalars["String"]>;
   patientId: Scalars["ID"];
-  phoneNumbers?: Maybe<Array<PhoneNumberInput>>;
-  preferredLanguage?: Maybe<Scalars["String"]>;
-  race?: Maybe<Scalars["String"]>;
-  residentCongregateSetting?: Maybe<Scalars["Boolean"]>;
-  role?: Maybe<Scalars["String"]>;
+  phoneNumbers?: InputMaybe<Array<PhoneNumberInput>>;
+  preferredLanguage?: InputMaybe<Scalars["String"]>;
+  race?: InputMaybe<Scalars["String"]>;
+  residentCongregateSetting?: InputMaybe<Scalars["Boolean"]>;
+  role?: InputMaybe<Scalars["String"]>;
   state: Scalars["String"];
   street: Scalars["String"];
-  streetTwo?: Maybe<Scalars["String"]>;
-  suffix?: Maybe<Scalars["String"]>;
-  telephone?: Maybe<Scalars["String"]>;
-  testResultDelivery?: Maybe<TestResultDeliveryPreference>;
-  tribalAffiliation?: Maybe<Scalars["String"]>;
+  streetTwo?: InputMaybe<Scalars["String"]>;
+  suffix?: InputMaybe<Scalars["String"]>;
+  telephone?: InputMaybe<Scalars["String"]>;
+  testResultDelivery?: InputMaybe<TestResultDeliveryPreference>;
+  tribalAffiliation?: InputMaybe<Scalars["String"]>;
   zipCode: Scalars["String"];
 };
 
@@ -542,31 +549,31 @@ export type MutationUpdateRegistrationLinkArgs = {
 };
 
 export type MutationUpdateTimeOfTestQuestionsArgs = {
-  noSymptoms?: Maybe<Scalars["Boolean"]>;
+  noSymptoms?: InputMaybe<Scalars["Boolean"]>;
   patientId: Scalars["ID"];
-  pregnancy?: Maybe<Scalars["String"]>;
-  symptomOnset?: Maybe<Scalars["LocalDate"]>;
-  symptoms?: Maybe<Scalars["String"]>;
-  testResultDelivery?: Maybe<TestResultDeliveryPreference>;
+  pregnancy?: InputMaybe<Scalars["String"]>;
+  symptomOnset?: InputMaybe<Scalars["LocalDate"]>;
+  symptoms?: InputMaybe<Scalars["String"]>;
+  testResultDelivery?: InputMaybe<TestResultDeliveryPreference>;
 };
 
 export type MutationUpdateUserArgs = {
-  firstName?: Maybe<Scalars["String"]>;
+  firstName?: InputMaybe<Scalars["String"]>;
   id: Scalars["ID"];
-  lastName?: Maybe<Scalars["String"]>;
-  middleName?: Maybe<Scalars["String"]>;
-  name?: Maybe<NameInput>;
-  suffix?: Maybe<Scalars["String"]>;
+  lastName?: InputMaybe<Scalars["String"]>;
+  middleName?: InputMaybe<Scalars["String"]>;
+  name?: InputMaybe<NameInput>;
+  suffix?: InputMaybe<Scalars["String"]>;
 };
 
 export type MutationUpdateUserEmailArgs = {
-  email?: Maybe<Scalars["String"]>;
+  email?: InputMaybe<Scalars["String"]>;
   id: Scalars["ID"];
 };
 
 export type MutationUpdateUserPrivilegesArgs = {
   accessAllFacilities: Scalars["Boolean"];
-  facilities?: Maybe<Array<Scalars["ID"]>>;
+  facilities?: InputMaybe<Array<Scalars["ID"]>>;
   id: Scalars["ID"];
   role: Role;
 };
@@ -584,10 +591,10 @@ export type NameInfo = {
 };
 
 export type NameInput = {
-  firstName?: Maybe<Scalars["String"]>;
-  lastName?: Maybe<Scalars["String"]>;
-  middleName?: Maybe<Scalars["String"]>;
-  suffix?: Maybe<Scalars["String"]>;
+  firstName?: InputMaybe<Scalars["String"]>;
+  lastName?: InputMaybe<Scalars["String"]>;
+  middleName?: InputMaybe<Scalars["String"]>;
+  suffix?: InputMaybe<Scalars["String"]>;
 };
 
 export type Organization = {
@@ -677,8 +684,8 @@ export type PhoneNumber = {
 };
 
 export type PhoneNumberInput = {
-  number?: Maybe<Scalars["String"]>;
-  type?: Maybe<Scalars["String"]>;
+  number?: InputMaybe<Scalars["String"]>;
+  type?: InputMaybe<Scalars["String"]>;
 };
 
 export enum PhoneType {
@@ -739,7 +746,7 @@ export type QueryOrganizationLevelDashboardMetricsArgs = {
 };
 
 export type QueryOrganizationsArgs = {
-  identityVerified?: Maybe<Scalars["Boolean"]>;
+  identityVerified?: InputMaybe<Scalars["Boolean"]>;
 };
 
 export type QueryPatientArgs = {
@@ -748,7 +755,7 @@ export type QueryPatientArgs = {
 
 export type QueryPatientExistsArgs = {
   birthDate: Scalars["LocalDate"];
-  facilityId?: Maybe<Scalars["ID"]>;
+  facilityId?: InputMaybe<Scalars["ID"]>;
   firstName: Scalars["String"];
   lastName: Scalars["String"];
   zipCode: Scalars["String"];
@@ -756,23 +763,23 @@ export type QueryPatientExistsArgs = {
 
 export type QueryPatientExistsWithoutZipArgs = {
   birthDate: Scalars["LocalDate"];
-  facilityId?: Maybe<Scalars["ID"]>;
+  facilityId?: InputMaybe<Scalars["ID"]>;
   firstName: Scalars["String"];
   lastName: Scalars["String"];
 };
 
 export type QueryPatientsArgs = {
-  facilityId?: Maybe<Scalars["ID"]>;
-  namePrefixMatch?: Maybe<Scalars["String"]>;
-  pageNumber?: Maybe<Scalars["Int"]>;
-  pageSize?: Maybe<Scalars["Int"]>;
-  showDeleted?: Maybe<Scalars["Boolean"]>;
+  facilityId?: InputMaybe<Scalars["ID"]>;
+  namePrefixMatch?: InputMaybe<Scalars["String"]>;
+  pageNumber?: InputMaybe<Scalars["Int"]>;
+  pageSize?: InputMaybe<Scalars["Int"]>;
+  showDeleted?: InputMaybe<Scalars["Boolean"]>;
 };
 
 export type QueryPatientsCountArgs = {
-  facilityId?: Maybe<Scalars["ID"]>;
-  namePrefixMatch?: Maybe<Scalars["String"]>;
-  showDeleted?: Maybe<Scalars["Boolean"]>;
+  facilityId?: InputMaybe<Scalars["ID"]>;
+  namePrefixMatch?: InputMaybe<Scalars["String"]>;
+  showDeleted?: InputMaybe<Scalars["Boolean"]>;
 };
 
 export type QueryQueueArgs = {
@@ -784,29 +791,29 @@ export type QueryTestResultArgs = {
 };
 
 export type QueryTestResultsArgs = {
-  endDate?: Maybe<Scalars["DateTime"]>;
-  facilityId?: Maybe<Scalars["ID"]>;
-  pageNumber?: Maybe<Scalars["Int"]>;
-  pageSize?: Maybe<Scalars["Int"]>;
-  patientId?: Maybe<Scalars["ID"]>;
-  result?: Maybe<Scalars["String"]>;
-  role?: Maybe<Scalars["String"]>;
-  startDate?: Maybe<Scalars["DateTime"]>;
+  endDate?: InputMaybe<Scalars["DateTime"]>;
+  facilityId?: InputMaybe<Scalars["ID"]>;
+  pageNumber?: InputMaybe<Scalars["Int"]>;
+  pageSize?: InputMaybe<Scalars["Int"]>;
+  patientId?: InputMaybe<Scalars["ID"]>;
+  result?: InputMaybe<Scalars["String"]>;
+  role?: InputMaybe<Scalars["String"]>;
+  startDate?: InputMaybe<Scalars["DateTime"]>;
 };
 
 export type QueryTestResultsCountArgs = {
-  endDate?: Maybe<Scalars["DateTime"]>;
-  facilityId?: Maybe<Scalars["ID"]>;
-  patientId?: Maybe<Scalars["ID"]>;
-  result?: Maybe<Scalars["String"]>;
-  role?: Maybe<Scalars["String"]>;
-  startDate?: Maybe<Scalars["DateTime"]>;
+  endDate?: InputMaybe<Scalars["DateTime"]>;
+  facilityId?: InputMaybe<Scalars["ID"]>;
+  patientId?: InputMaybe<Scalars["ID"]>;
+  result?: InputMaybe<Scalars["String"]>;
+  role?: InputMaybe<Scalars["String"]>;
+  startDate?: InputMaybe<Scalars["DateTime"]>;
 };
 
 export type QueryTopLevelDashboardMetricsArgs = {
-  endDate?: Maybe<Scalars["DateTime"]>;
-  facilityId?: Maybe<Scalars["ID"]>;
-  startDate?: Maybe<Scalars["DateTime"]>;
+  endDate?: InputMaybe<Scalars["DateTime"]>;
+  facilityId?: InputMaybe<Scalars["ID"]>;
+  startDate?: InputMaybe<Scalars["DateTime"]>;
 };
 
 export type QueryUserArgs = {
@@ -847,7 +854,7 @@ export type TestDescription = {
 };
 
 export type TestDescriptionNameArgs = {
-  nameType?: Maybe<Scalars["String"]>;
+  nameType?: InputMaybe<Scalars["String"]>;
 };
 
 export type TestOrder = {
@@ -954,23 +961,26 @@ export type WhoAmIQuery = {
   whoami: {
     __typename?: "User";
     id: string;
-    firstName?: Maybe<string>;
-    middleName?: Maybe<string>;
+    firstName?: string | null | undefined;
+    middleName?: string | null | undefined;
     lastName: string;
-    suffix?: Maybe<string>;
+    suffix?: string | null | undefined;
     email: string;
-    isAdmin?: Maybe<boolean>;
+    isAdmin?: boolean | null | undefined;
     permissions: Array<UserPermission>;
     roleDescription: string;
-    organization?: Maybe<{
-      __typename?: "Organization";
-      name: string;
-      testingFacility: Array<{
-        __typename?: "Facility";
-        id: string;
-        name: string;
-      }>;
-    }>;
+    organization?:
+      | {
+          __typename?: "Organization";
+          name: string;
+          testingFacility: Array<{
+            __typename?: "Facility";
+            id: string;
+            name: string;
+          }>;
+        }
+      | null
+      | undefined;
   };
 };
 
@@ -978,42 +988,55 @@ export type GetFacilitiesQueryVariables = Exact<{ [key: string]: never }>;
 
 export type GetFacilitiesQuery = {
   __typename?: "Query";
-  organization?: Maybe<{
-    __typename?: "Organization";
-    internalId: string;
-    testingFacility: Array<{
-      __typename?: "Facility";
-      id: string;
-      cliaNumber?: Maybe<string>;
-      name: string;
-      street?: Maybe<string>;
-      streetTwo?: Maybe<string>;
-      city?: Maybe<string>;
-      state?: Maybe<string>;
-      zipCode?: Maybe<string>;
-      phone?: Maybe<string>;
-      email?: Maybe<string>;
-      deviceTypes?: Maybe<
-        Array<
-          Maybe<{ __typename?: "DeviceType"; name: string; internalId: string }>
-        >
-      >;
-      orderingProvider?: Maybe<{
-        __typename?: "Provider";
-        firstName?: Maybe<string>;
-        middleName?: Maybe<string>;
-        lastName?: Maybe<string>;
-        suffix?: Maybe<string>;
-        NPI?: Maybe<string>;
-        street?: Maybe<string>;
-        streetTwo?: Maybe<string>;
-        city?: Maybe<string>;
-        state?: Maybe<string>;
-        zipCode?: Maybe<string>;
-        phone?: Maybe<string>;
-      }>;
-    }>;
-  }>;
+  organization?:
+    | {
+        __typename?: "Organization";
+        internalId: string;
+        testingFacility: Array<{
+          __typename?: "Facility";
+          id: string;
+          cliaNumber?: string | null | undefined;
+          name: string;
+          street?: string | null | undefined;
+          streetTwo?: string | null | undefined;
+          city?: string | null | undefined;
+          state?: string | null | undefined;
+          zipCode?: string | null | undefined;
+          phone?: string | null | undefined;
+          email?: string | null | undefined;
+          deviceTypes?:
+            | Array<
+                | {
+                    __typename?: "DeviceType";
+                    name: string;
+                    internalId: string;
+                  }
+                | null
+                | undefined
+              >
+            | null
+            | undefined;
+          orderingProvider?:
+            | {
+                __typename?: "Provider";
+                firstName?: string | null | undefined;
+                middleName?: string | null | undefined;
+                lastName?: string | null | undefined;
+                suffix?: string | null | undefined;
+                NPI?: string | null | undefined;
+                street?: string | null | undefined;
+                streetTwo?: string | null | undefined;
+                city?: string | null | undefined;
+                state?: string | null | undefined;
+                zipCode?: string | null | undefined;
+                phone?: string | null | undefined;
+              }
+            | null
+            | undefined;
+        }>;
+      }
+    | null
+    | undefined;
   deviceTypes: Array<{
     __typename?: "DeviceType";
     internalId: string;
@@ -1024,60 +1047,60 @@ export type GetFacilitiesQuery = {
 export type UpdateFacilityMutationVariables = Exact<{
   facilityId: Scalars["ID"];
   testingFacilityName: Scalars["String"];
-  cliaNumber?: Maybe<Scalars["String"]>;
+  cliaNumber?: InputMaybe<Scalars["String"]>;
   street: Scalars["String"];
-  streetTwo?: Maybe<Scalars["String"]>;
-  city?: Maybe<Scalars["String"]>;
+  streetTwo?: InputMaybe<Scalars["String"]>;
+  city?: InputMaybe<Scalars["String"]>;
   state: Scalars["String"];
   zipCode: Scalars["String"];
-  phone?: Maybe<Scalars["String"]>;
-  email?: Maybe<Scalars["String"]>;
-  orderingProviderFirstName?: Maybe<Scalars["String"]>;
-  orderingProviderMiddleName?: Maybe<Scalars["String"]>;
-  orderingProviderLastName?: Maybe<Scalars["String"]>;
-  orderingProviderSuffix?: Maybe<Scalars["String"]>;
-  orderingProviderNPI?: Maybe<Scalars["String"]>;
-  orderingProviderStreet?: Maybe<Scalars["String"]>;
-  orderingProviderStreetTwo?: Maybe<Scalars["String"]>;
-  orderingProviderCity?: Maybe<Scalars["String"]>;
-  orderingProviderState?: Maybe<Scalars["String"]>;
-  orderingProviderZipCode?: Maybe<Scalars["String"]>;
-  orderingProviderPhone?: Maybe<Scalars["String"]>;
-  devices: Array<Maybe<Scalars["ID"]>> | Maybe<Scalars["ID"]>;
+  phone?: InputMaybe<Scalars["String"]>;
+  email?: InputMaybe<Scalars["String"]>;
+  orderingProviderFirstName?: InputMaybe<Scalars["String"]>;
+  orderingProviderMiddleName?: InputMaybe<Scalars["String"]>;
+  orderingProviderLastName?: InputMaybe<Scalars["String"]>;
+  orderingProviderSuffix?: InputMaybe<Scalars["String"]>;
+  orderingProviderNPI?: InputMaybe<Scalars["String"]>;
+  orderingProviderStreet?: InputMaybe<Scalars["String"]>;
+  orderingProviderStreetTwo?: InputMaybe<Scalars["String"]>;
+  orderingProviderCity?: InputMaybe<Scalars["String"]>;
+  orderingProviderState?: InputMaybe<Scalars["String"]>;
+  orderingProviderZipCode?: InputMaybe<Scalars["String"]>;
+  orderingProviderPhone?: InputMaybe<Scalars["String"]>;
+  devices: Array<InputMaybe<Scalars["ID"]>> | InputMaybe<Scalars["ID"]>;
 }>;
 
 export type UpdateFacilityMutation = {
   __typename?: "Mutation";
-  updateFacility?: Maybe<{ __typename?: "Facility"; id: string }>;
+  updateFacility?: { __typename?: "Facility"; id: string } | null | undefined;
 };
 
 export type AddFacilityMutationVariables = Exact<{
   testingFacilityName: Scalars["String"];
-  cliaNumber?: Maybe<Scalars["String"]>;
+  cliaNumber?: InputMaybe<Scalars["String"]>;
   street: Scalars["String"];
-  streetTwo?: Maybe<Scalars["String"]>;
-  city?: Maybe<Scalars["String"]>;
+  streetTwo?: InputMaybe<Scalars["String"]>;
+  city?: InputMaybe<Scalars["String"]>;
   state: Scalars["String"];
   zipCode: Scalars["String"];
-  phone?: Maybe<Scalars["String"]>;
-  email?: Maybe<Scalars["String"]>;
-  orderingProviderFirstName?: Maybe<Scalars["String"]>;
-  orderingProviderMiddleName?: Maybe<Scalars["String"]>;
-  orderingProviderLastName?: Maybe<Scalars["String"]>;
-  orderingProviderSuffix?: Maybe<Scalars["String"]>;
-  orderingProviderNPI?: Maybe<Scalars["String"]>;
-  orderingProviderStreet?: Maybe<Scalars["String"]>;
-  orderingProviderStreetTwo?: Maybe<Scalars["String"]>;
-  orderingProviderCity?: Maybe<Scalars["String"]>;
-  orderingProviderState?: Maybe<Scalars["String"]>;
-  orderingProviderZipCode?: Maybe<Scalars["String"]>;
-  orderingProviderPhone?: Maybe<Scalars["String"]>;
-  devices: Array<Maybe<Scalars["ID"]>> | Maybe<Scalars["ID"]>;
+  phone?: InputMaybe<Scalars["String"]>;
+  email?: InputMaybe<Scalars["String"]>;
+  orderingProviderFirstName?: InputMaybe<Scalars["String"]>;
+  orderingProviderMiddleName?: InputMaybe<Scalars["String"]>;
+  orderingProviderLastName?: InputMaybe<Scalars["String"]>;
+  orderingProviderSuffix?: InputMaybe<Scalars["String"]>;
+  orderingProviderNPI?: InputMaybe<Scalars["String"]>;
+  orderingProviderStreet?: InputMaybe<Scalars["String"]>;
+  orderingProviderStreetTwo?: InputMaybe<Scalars["String"]>;
+  orderingProviderCity?: InputMaybe<Scalars["String"]>;
+  orderingProviderState?: InputMaybe<Scalars["String"]>;
+  orderingProviderZipCode?: InputMaybe<Scalars["String"]>;
+  orderingProviderPhone?: InputMaybe<Scalars["String"]>;
+  devices: Array<InputMaybe<Scalars["ID"]>> | InputMaybe<Scalars["ID"]>;
 }>;
 
 export type AddFacilityMutation = {
   __typename?: "Mutation";
-  addFacility?: Maybe<{ __typename?: "Facility"; id: string }>;
+  addFacility?: { __typename?: "Facility"; id: string } | null | undefined;
 };
 
 export type GetManagedFacilitiesQueryVariables = Exact<{
@@ -1086,26 +1109,28 @@ export type GetManagedFacilitiesQueryVariables = Exact<{
 
 export type GetManagedFacilitiesQuery = {
   __typename?: "Query";
-  organization?: Maybe<{
-    __typename?: "Organization";
-    facilities: Array<{
-      __typename?: "Facility";
-      id: string;
-      cliaNumber?: Maybe<string>;
-      name: string;
-    }>;
-  }>;
+  organization?:
+    | {
+        __typename?: "Organization";
+        facilities: Array<{
+          __typename?: "Facility";
+          id: string;
+          cliaNumber?: string | null | undefined;
+          name: string;
+        }>;
+      }
+    | null
+    | undefined;
 };
 
 export type GetOrganizationQueryVariables = Exact<{ [key: string]: never }>;
 
 export type GetOrganizationQuery = {
   __typename?: "Query";
-  organization?: Maybe<{
-    __typename?: "Organization";
-    name: string;
-    type: string;
-  }>;
+  organization?:
+    | { __typename?: "Organization"; name: string; type: string }
+    | null
+    | undefined;
 };
 
 export type AdminSetOrganizationMutationVariables = Exact<{
@@ -1115,7 +1140,7 @@ export type AdminSetOrganizationMutationVariables = Exact<{
 
 export type AdminSetOrganizationMutation = {
   __typename?: "Mutation";
-  adminUpdateOrganization?: Maybe<string>;
+  adminUpdateOrganization?: string | null | undefined;
 };
 
 export type SetOrganizationMutationVariables = Exact<{
@@ -1124,7 +1149,7 @@ export type SetOrganizationMutationVariables = Exact<{
 
 export type SetOrganizationMutation = {
   __typename?: "Mutation";
-  updateOrganization?: Maybe<string>;
+  updateOrganization?: string | null | undefined;
 };
 
 export type AllSelfRegistrationLinksQueryVariables = Exact<{
@@ -1135,15 +1160,18 @@ export type AllSelfRegistrationLinksQuery = {
   __typename?: "Query";
   whoami: {
     __typename?: "User";
-    organization?: Maybe<{
-      __typename?: "Organization";
-      patientSelfRegistrationLink?: Maybe<string>;
-      facilities: Array<{
-        __typename?: "Facility";
-        name: string;
-        patientSelfRegistrationLink?: Maybe<string>;
-      }>;
-    }>;
+    organization?:
+      | {
+          __typename?: "Organization";
+          patientSelfRegistrationLink?: string | null | undefined;
+          facilities: Array<{
+            __typename?: "Facility";
+            name: string;
+            patientSelfRegistrationLink?: string | null | undefined;
+          }>;
+        }
+      | null
+      | undefined;
   };
 };
 
@@ -1156,7 +1184,7 @@ export type UpdateUserPrivilegesMutationVariables = Exact<{
 
 export type UpdateUserPrivilegesMutation = {
   __typename?: "Mutation";
-  updateUserPrivileges?: Maybe<{ __typename?: "User"; id: string }>;
+  updateUserPrivileges?: { __typename?: "User"; id: string } | null | undefined;
 };
 
 export type ResetUserPasswordMutationVariables = Exact<{
@@ -1165,7 +1193,7 @@ export type ResetUserPasswordMutationVariables = Exact<{
 
 export type ResetUserPasswordMutation = {
   __typename?: "Mutation";
-  resetUserPassword?: Maybe<{ __typename?: "User"; id: string }>;
+  resetUserPassword?: { __typename?: "User"; id: string } | null | undefined;
 };
 
 export type SetUserIsDeletedMutationVariables = Exact<{
@@ -1175,7 +1203,7 @@ export type SetUserIsDeletedMutationVariables = Exact<{
 
 export type SetUserIsDeletedMutation = {
   __typename?: "Mutation";
-  setUserIsDeleted?: Maybe<{ __typename?: "User"; id: string }>;
+  setUserIsDeleted?: { __typename?: "User"; id: string } | null | undefined;
 };
 
 export type ReactivateUserMutationVariables = Exact<{
@@ -1184,11 +1212,11 @@ export type ReactivateUserMutationVariables = Exact<{
 
 export type ReactivateUserMutation = {
   __typename?: "Mutation";
-  reactivateUser?: Maybe<{ __typename?: "User"; id: string }>;
+  reactivateUser?: { __typename?: "User"; id: string } | null | undefined;
 };
 
 export type AddUserToCurrentOrgMutationVariables = Exact<{
-  firstName?: Maybe<Scalars["String"]>;
+  firstName?: InputMaybe<Scalars["String"]>;
   lastName: Scalars["String"];
   email: Scalars["String"];
   role: Role;
@@ -1196,7 +1224,7 @@ export type AddUserToCurrentOrgMutationVariables = Exact<{
 
 export type AddUserToCurrentOrgMutation = {
   __typename?: "Mutation";
-  addUserToCurrentOrg?: Maybe<{ __typename?: "User"; id: string }>;
+  addUserToCurrentOrg?: { __typename?: "User"; id: string } | null | undefined;
 };
 
 export type GetUserQueryVariables = Exact<{
@@ -1205,43 +1233,50 @@ export type GetUserQueryVariables = Exact<{
 
 export type GetUserQuery = {
   __typename?: "Query";
-  user?: Maybe<{
-    __typename?: "User";
-    id: string;
-    firstName?: Maybe<string>;
-    middleName?: Maybe<string>;
-    lastName: string;
-    roleDescription: string;
-    role?: Maybe<Role>;
-    permissions: Array<UserPermission>;
-    email: string;
-    status?: Maybe<string>;
-    organization?: Maybe<{
-      __typename?: "Organization";
-      testingFacility: Array<{
-        __typename?: "Facility";
+  user?:
+    | {
+        __typename?: "User";
         id: string;
-        name: string;
-      }>;
-    }>;
-  }>;
+        firstName?: string | null | undefined;
+        middleName?: string | null | undefined;
+        lastName: string;
+        roleDescription: string;
+        role?: Role | null | undefined;
+        permissions: Array<UserPermission>;
+        email: string;
+        status?: string | null | undefined;
+        organization?:
+          | {
+              __typename?: "Organization";
+              testingFacility: Array<{
+                __typename?: "Facility";
+                id: string;
+                name: string;
+              }>;
+            }
+          | null
+          | undefined;
+      }
+    | null
+    | undefined;
 };
 
 export type GetUsersAndStatusQueryVariables = Exact<{ [key: string]: never }>;
 
 export type GetUsersAndStatusQuery = {
   __typename?: "Query";
-  usersWithStatus?: Maybe<
-    Array<{
-      __typename?: "ApiUserWithStatus";
-      id: string;
-      firstName?: Maybe<string>;
-      middleName?: Maybe<string>;
-      lastName: string;
-      email: string;
-      status?: Maybe<string>;
-    }>
-  >;
+  usersWithStatus?:
+    | Array<{
+        __typename?: "ApiUserWithStatus";
+        id: string;
+        firstName?: string | null | undefined;
+        middleName?: string | null | undefined;
+        lastName: string;
+        email: string;
+        status?: string | null | undefined;
+      }>
+    | null
+    | undefined;
 };
 
 export type ResendActivationEmailMutationVariables = Exact<{
@@ -1250,38 +1285,44 @@ export type ResendActivationEmailMutationVariables = Exact<{
 
 export type ResendActivationEmailMutation = {
   __typename?: "Mutation";
-  resendActivationEmail?: Maybe<{
-    __typename?: "User";
-    id: string;
-    firstName?: Maybe<string>;
-    middleName?: Maybe<string>;
-    lastName: string;
-    email: string;
-    status?: Maybe<string>;
-  }>;
+  resendActivationEmail?:
+    | {
+        __typename?: "User";
+        id: string;
+        firstName?: string | null | undefined;
+        middleName?: string | null | undefined;
+        lastName: string;
+        email: string;
+        status?: string | null | undefined;
+      }
+    | null
+    | undefined;
 };
 
 export type UpdateUserNameMutationVariables = Exact<{
   id: Scalars["ID"];
   firstName: Scalars["String"];
-  middleName?: Maybe<Scalars["String"]>;
+  middleName?: InputMaybe<Scalars["String"]>;
   lastName: Scalars["String"];
-  suffix?: Maybe<Scalars["String"]>;
+  suffix?: InputMaybe<Scalars["String"]>;
 }>;
 
 export type UpdateUserNameMutation = {
   __typename?: "Mutation";
-  updateUser?: Maybe<{ __typename?: "User"; id: string }>;
+  updateUser?: { __typename?: "User"; id: string } | null | undefined;
 };
 
 export type EditUserEmailMutationVariables = Exact<{
   id: Scalars["ID"];
-  email?: Maybe<Scalars["String"]>;
+  email?: InputMaybe<Scalars["String"]>;
 }>;
 
 export type EditUserEmailMutation = {
   __typename?: "Mutation";
-  updateUserEmail?: Maybe<{ __typename?: "User"; id: string; email: string }>;
+  updateUserEmail?:
+    | { __typename?: "User"; id: string; email: string }
+    | null
+    | undefined;
 };
 
 export type ResetUserMfaMutationVariables = Exact<{
@@ -1290,70 +1331,79 @@ export type ResetUserMfaMutationVariables = Exact<{
 
 export type ResetUserMfaMutation = {
   __typename?: "Mutation";
-  resetUserMfa?: Maybe<{ __typename?: "User"; id: string }>;
+  resetUserMfa?: { __typename?: "User"; id: string } | null | undefined;
 };
 
 export type GetTopLevelDashboardMetricsNewQueryVariables = Exact<{
-  facilityId?: Maybe<Scalars["ID"]>;
-  startDate?: Maybe<Scalars["DateTime"]>;
-  endDate?: Maybe<Scalars["DateTime"]>;
+  facilityId?: InputMaybe<Scalars["ID"]>;
+  startDate?: InputMaybe<Scalars["DateTime"]>;
+  endDate?: InputMaybe<Scalars["DateTime"]>;
 }>;
 
 export type GetTopLevelDashboardMetricsNewQuery = {
   __typename?: "Query";
-  topLevelDashboardMetrics?: Maybe<{
-    __typename?: "TopLevelDashboardMetrics";
-    positiveTestCount?: Maybe<number>;
-    totalTestCount?: Maybe<number>;
-  }>;
+  topLevelDashboardMetrics?:
+    | {
+        __typename?: "TopLevelDashboardMetrics";
+        positiveTestCount?: number | null | undefined;
+        totalTestCount?: number | null | undefined;
+      }
+    | null
+    | undefined;
 };
 
 export type PatientExistsQueryVariables = Exact<{
   firstName: Scalars["String"];
   lastName: Scalars["String"];
   birthDate: Scalars["LocalDate"];
-  facilityId?: Maybe<Scalars["ID"]>;
+  facilityId?: InputMaybe<Scalars["ID"]>;
 }>;
 
 export type PatientExistsQuery = {
   __typename?: "Query";
-  patientExistsWithoutZip?: Maybe<boolean>;
+  patientExistsWithoutZip?: boolean | null | undefined;
 };
 
 export type AddPatientMutationVariables = Exact<{
-  facilityId?: Maybe<Scalars["ID"]>;
+  facilityId?: InputMaybe<Scalars["ID"]>;
   firstName: Scalars["String"];
-  middleName?: Maybe<Scalars["String"]>;
+  middleName?: InputMaybe<Scalars["String"]>;
   lastName: Scalars["String"];
   birthDate: Scalars["LocalDate"];
   street: Scalars["String"];
-  streetTwo?: Maybe<Scalars["String"]>;
-  city?: Maybe<Scalars["String"]>;
+  streetTwo?: InputMaybe<Scalars["String"]>;
+  city?: InputMaybe<Scalars["String"]>;
   state: Scalars["String"];
   zipCode: Scalars["String"];
-  telephone?: Maybe<Scalars["String"]>;
-  phoneNumbers?: Maybe<Array<PhoneNumberInput> | PhoneNumberInput>;
-  role?: Maybe<Scalars["String"]>;
-  lookupId?: Maybe<Scalars["String"]>;
-  emails?: Maybe<Array<Maybe<Scalars["String"]>> | Maybe<Scalars["String"]>>;
-  county?: Maybe<Scalars["String"]>;
-  race?: Maybe<Scalars["String"]>;
-  ethnicity?: Maybe<Scalars["String"]>;
-  tribalAffiliation?: Maybe<Scalars["String"]>;
-  gender?: Maybe<Scalars["String"]>;
-  residentCongregateSetting?: Maybe<Scalars["Boolean"]>;
-  employedInHealthcare?: Maybe<Scalars["Boolean"]>;
-  preferredLanguage?: Maybe<Scalars["String"]>;
-  testResultDelivery?: Maybe<TestResultDeliveryPreference>;
+  country: Scalars["String"];
+  telephone?: InputMaybe<Scalars["String"]>;
+  phoneNumbers?: InputMaybe<Array<PhoneNumberInput> | PhoneNumberInput>;
+  role?: InputMaybe<Scalars["String"]>;
+  lookupId?: InputMaybe<Scalars["String"]>;
+  emails?: InputMaybe<
+    Array<InputMaybe<Scalars["String"]>> | InputMaybe<Scalars["String"]>
+  >;
+  county?: InputMaybe<Scalars["String"]>;
+  race?: InputMaybe<Scalars["String"]>;
+  ethnicity?: InputMaybe<Scalars["String"]>;
+  tribalAffiliation?: InputMaybe<Scalars["String"]>;
+  gender?: InputMaybe<Scalars["String"]>;
+  residentCongregateSetting?: InputMaybe<Scalars["Boolean"]>;
+  employedInHealthcare?: InputMaybe<Scalars["Boolean"]>;
+  preferredLanguage?: InputMaybe<Scalars["String"]>;
+  testResultDelivery?: InputMaybe<TestResultDeliveryPreference>;
 }>;
 
 export type AddPatientMutation = {
   __typename?: "Mutation";
-  addPatient?: Maybe<{
-    __typename?: "Patient";
-    internalId?: Maybe<string>;
-    facility?: Maybe<{ __typename?: "Facility"; id: string }>;
-  }>;
+  addPatient?:
+    | {
+        __typename?: "Patient";
+        internalId?: string | null | undefined;
+        facility?: { __typename?: "Facility"; id: string } | null | undefined;
+      }
+    | null
+    | undefined;
 };
 
 export type ArchivePersonMutationVariables = Exact<{
@@ -1363,10 +1413,10 @@ export type ArchivePersonMutationVariables = Exact<{
 
 export type ArchivePersonMutation = {
   __typename?: "Mutation";
-  setPatientIsDeleted?: Maybe<{
-    __typename?: "Patient";
-    internalId?: Maybe<string>;
-  }>;
+  setPatientIsDeleted?:
+    | { __typename?: "Patient"; internalId?: string | null | undefined }
+    | null
+    | undefined;
 };
 
 export type GetPatientDetailsQueryVariables = Exact<{
@@ -1375,118 +1425,135 @@ export type GetPatientDetailsQueryVariables = Exact<{
 
 export type GetPatientDetailsQuery = {
   __typename?: "Query";
-  patient?: Maybe<{
-    __typename?: "Patient";
-    firstName?: Maybe<string>;
-    middleName?: Maybe<string>;
-    lastName?: Maybe<string>;
-    birthDate?: Maybe<any>;
-    street?: Maybe<string>;
-    streetTwo?: Maybe<string>;
-    city?: Maybe<string>;
-    state?: Maybe<string>;
-    zipCode?: Maybe<string>;
-    telephone?: Maybe<string>;
-    role?: Maybe<string>;
-    lookupId?: Maybe<string>;
-    email?: Maybe<string>;
-    emails?: Maybe<Array<Maybe<string>>>;
-    county?: Maybe<string>;
-    country?: Maybe<string>;
-    race?: Maybe<string>;
-    ethnicity?: Maybe<string>;
-    tribalAffiliation?: Maybe<Array<Maybe<string>>>;
-    gender?: Maybe<string>;
-    residentCongregateSetting?: Maybe<boolean>;
-    employedInHealthcare?: Maybe<boolean>;
-    preferredLanguage?: Maybe<string>;
-    testResultDelivery?: Maybe<TestResultDeliveryPreference>;
-    phoneNumbers?: Maybe<
-      Array<
-        Maybe<{
-          __typename?: "PhoneNumber";
-          type?: Maybe<PhoneType>;
-          number?: Maybe<string>;
-        }>
-      >
-    >;
-    facility?: Maybe<{ __typename?: "Facility"; id: string }>;
-  }>;
+  patient?:
+    | {
+        __typename?: "Patient";
+        firstName?: string | null | undefined;
+        middleName?: string | null | undefined;
+        lastName?: string | null | undefined;
+        birthDate?: any | null | undefined;
+        street?: string | null | undefined;
+        streetTwo?: string | null | undefined;
+        city?: string | null | undefined;
+        state?: string | null | undefined;
+        zipCode?: string | null | undefined;
+        telephone?: string | null | undefined;
+        role?: string | null | undefined;
+        lookupId?: string | null | undefined;
+        email?: string | null | undefined;
+        emails?: Array<string | null | undefined> | null | undefined;
+        county?: string | null | undefined;
+        country?: string | null | undefined;
+        race?: string | null | undefined;
+        ethnicity?: string | null | undefined;
+        tribalAffiliation?: Array<string | null | undefined> | null | undefined;
+        gender?: string | null | undefined;
+        residentCongregateSetting?: boolean | null | undefined;
+        employedInHealthcare?: boolean | null | undefined;
+        preferredLanguage?: string | null | undefined;
+        testResultDelivery?: TestResultDeliveryPreference | null | undefined;
+        phoneNumbers?:
+          | Array<
+              | {
+                  __typename?: "PhoneNumber";
+                  type?: PhoneType | null | undefined;
+                  number?: string | null | undefined;
+                }
+              | null
+              | undefined
+            >
+          | null
+          | undefined;
+        facility?: { __typename?: "Facility"; id: string } | null | undefined;
+      }
+    | null
+    | undefined;
 };
 
 export type UpdatePatientMutationVariables = Exact<{
-  facilityId?: Maybe<Scalars["ID"]>;
+  facilityId?: InputMaybe<Scalars["ID"]>;
   patientId: Scalars["ID"];
   firstName: Scalars["String"];
-  middleName?: Maybe<Scalars["String"]>;
+  middleName?: InputMaybe<Scalars["String"]>;
   lastName: Scalars["String"];
   birthDate: Scalars["LocalDate"];
   street: Scalars["String"];
-  streetTwo?: Maybe<Scalars["String"]>;
-  city?: Maybe<Scalars["String"]>;
+  streetTwo?: InputMaybe<Scalars["String"]>;
+  city?: InputMaybe<Scalars["String"]>;
   state: Scalars["String"];
   zipCode: Scalars["String"];
-  telephone?: Maybe<Scalars["String"]>;
-  phoneNumbers?: Maybe<Array<PhoneNumberInput> | PhoneNumberInput>;
-  role?: Maybe<Scalars["String"]>;
-  lookupId?: Maybe<Scalars["String"]>;
-  emails?: Maybe<Array<Maybe<Scalars["String"]>> | Maybe<Scalars["String"]>>;
-  county?: Maybe<Scalars["String"]>;
-  country?: Maybe<Scalars["String"]>;
-  race?: Maybe<Scalars["String"]>;
-  ethnicity?: Maybe<Scalars["String"]>;
-  tribalAffiliation?: Maybe<Scalars["String"]>;
-  gender?: Maybe<Scalars["String"]>;
-  residentCongregateSetting?: Maybe<Scalars["Boolean"]>;
-  employedInHealthcare?: Maybe<Scalars["Boolean"]>;
-  preferredLanguage?: Maybe<Scalars["String"]>;
-  testResultDelivery?: Maybe<TestResultDeliveryPreference>;
+  telephone?: InputMaybe<Scalars["String"]>;
+  phoneNumbers?: InputMaybe<Array<PhoneNumberInput> | PhoneNumberInput>;
+  role?: InputMaybe<Scalars["String"]>;
+  lookupId?: InputMaybe<Scalars["String"]>;
+  emails?: InputMaybe<
+    Array<InputMaybe<Scalars["String"]>> | InputMaybe<Scalars["String"]>
+  >;
+  county?: InputMaybe<Scalars["String"]>;
+  country?: InputMaybe<Scalars["String"]>;
+  race?: InputMaybe<Scalars["String"]>;
+  ethnicity?: InputMaybe<Scalars["String"]>;
+  tribalAffiliation?: InputMaybe<Scalars["String"]>;
+  gender?: InputMaybe<Scalars["String"]>;
+  residentCongregateSetting?: InputMaybe<Scalars["Boolean"]>;
+  employedInHealthcare?: InputMaybe<Scalars["Boolean"]>;
+  preferredLanguage?: InputMaybe<Scalars["String"]>;
+  testResultDelivery?: InputMaybe<TestResultDeliveryPreference>;
 }>;
 
 export type UpdatePatientMutation = {
   __typename?: "Mutation";
-  updatePatient?: Maybe<{ __typename?: "Patient"; internalId?: Maybe<string> }>;
+  updatePatient?:
+    | { __typename?: "Patient"; internalId?: string | null | undefined }
+    | null
+    | undefined;
 };
 
 export type GetPatientsCountByFacilityQueryVariables = Exact<{
   facilityId: Scalars["ID"];
   showDeleted: Scalars["Boolean"];
-  namePrefixMatch?: Maybe<Scalars["String"]>;
+  namePrefixMatch?: InputMaybe<Scalars["String"]>;
 }>;
 
 export type GetPatientsCountByFacilityQuery = {
   __typename?: "Query";
-  patientsCount?: Maybe<number>;
+  patientsCount?: number | null | undefined;
 };
 
 export type GetPatientsByFacilityQueryVariables = Exact<{
   facilityId: Scalars["ID"];
   pageNumber: Scalars["Int"];
   pageSize: Scalars["Int"];
-  showDeleted?: Maybe<Scalars["Boolean"]>;
-  namePrefixMatch?: Maybe<Scalars["String"]>;
+  showDeleted?: InputMaybe<Scalars["Boolean"]>;
+  namePrefixMatch?: InputMaybe<Scalars["String"]>;
 }>;
 
 export type GetPatientsByFacilityQuery = {
   __typename?: "Query";
-  patients?: Maybe<
-    Array<
-      Maybe<{
-        __typename?: "Patient";
-        internalId?: Maybe<string>;
-        firstName?: Maybe<string>;
-        lastName?: Maybe<string>;
-        middleName?: Maybe<string>;
-        birthDate?: Maybe<any>;
-        isDeleted?: Maybe<boolean>;
-        role?: Maybe<string>;
-        lastTest?: Maybe<{
-          __typename?: "TestResult";
-          dateAdded?: Maybe<string>;
-        }>;
-      }>
-    >
-  >;
+  patients?:
+    | Array<
+        | {
+            __typename?: "Patient";
+            internalId?: string | null | undefined;
+            firstName?: string | null | undefined;
+            lastName?: string | null | undefined;
+            middleName?: string | null | undefined;
+            birthDate?: any | null | undefined;
+            isDeleted?: boolean | null | undefined;
+            role?: string | null | undefined;
+            lastTest?:
+              | {
+                  __typename?: "TestResult";
+                  dateAdded?: string | null | undefined;
+                }
+              | null
+              | undefined;
+          }
+        | null
+        | undefined
+      >
+    | null
+    | undefined;
 };
 
 export type UploadPatientsMutationVariables = Exact<{
@@ -1495,14 +1562,14 @@ export type UploadPatientsMutationVariables = Exact<{
 
 export type UploadPatientsMutation = {
   __typename?: "Mutation";
-  uploadPatients?: Maybe<string>;
+  uploadPatients?: string | null | undefined;
 };
 
 export type AddUserMutationVariables = Exact<{
-  firstName?: Maybe<Scalars["String"]>;
-  middleName?: Maybe<Scalars["String"]>;
-  lastName?: Maybe<Scalars["String"]>;
-  suffix?: Maybe<Scalars["String"]>;
+  firstName?: InputMaybe<Scalars["String"]>;
+  middleName?: InputMaybe<Scalars["String"]>;
+  lastName?: InputMaybe<Scalars["String"]>;
+  suffix?: InputMaybe<Scalars["String"]>;
   email: Scalars["String"];
   organizationExternalId: Scalars["String"];
   role: Role;
@@ -1510,7 +1577,7 @@ export type AddUserMutationVariables = Exact<{
 
 export type AddUserMutation = {
   __typename?: "Mutation";
-  addUser?: Maybe<{ __typename?: "User"; id: string }>;
+  addUser?: { __typename?: "User"; id: string } | null | undefined;
 };
 
 export type CreateDeviceTypeMutationVariables = Exact<{
@@ -1523,7 +1590,10 @@ export type CreateDeviceTypeMutationVariables = Exact<{
 
 export type CreateDeviceTypeMutation = {
   __typename?: "Mutation";
-  createDeviceType?: Maybe<{ __typename?: "DeviceType"; internalId: string }>;
+  createDeviceType?:
+    | { __typename?: "DeviceType"; internalId: string }
+    | null
+    | undefined;
 };
 
 export type UpdateDeviceTypeMutationVariables = Exact<{
@@ -1537,7 +1607,10 @@ export type UpdateDeviceTypeMutationVariables = Exact<{
 
 export type UpdateDeviceTypeMutation = {
   __typename?: "Mutation";
-  updateDeviceType?: Maybe<{ __typename?: "DeviceType"; internalId: string }>;
+  updateDeviceType?:
+    | { __typename?: "DeviceType"; internalId: string }
+    | null
+    | undefined;
 };
 
 export type GetSpecimenTypesQueryVariables = Exact<{ [key: string]: never }>;
@@ -1581,10 +1654,10 @@ export type GetPendingOrganizationsQuery = {
     __typename?: "PendingOrganization";
     externalId: string;
     name: string;
-    adminFirstName?: Maybe<string>;
-    adminLastName?: Maybe<string>;
-    adminEmail?: Maybe<string>;
-    adminPhone?: Maybe<string>;
+    adminFirstName?: string | null | undefined;
+    adminLastName?: string | null | undefined;
+    adminEmail?: string | null | undefined;
+    adminPhone?: string | null | undefined;
     createdAt: any;
   }>;
 };
@@ -1596,25 +1669,35 @@ export type SetOrgIdentityVerifiedMutationVariables = Exact<{
 
 export type SetOrgIdentityVerifiedMutation = {
   __typename?: "Mutation";
-  setOrganizationIdentityVerified?: Maybe<boolean>;
+  setOrganizationIdentityVerified?: boolean | null | undefined;
+};
+
+export type MarkPendingOrganizationAsDeletedMutationVariables = Exact<{
+  orgExternalId: Scalars["String"];
+  deleted: Scalars["Boolean"];
+}>;
+
+export type MarkPendingOrganizationAsDeletedMutation = {
+  __typename?: "Mutation";
+  markPendingOrganizationAsDeleted?: string | null | undefined;
 };
 
 export type EditPendingOrganizationMutationVariables = Exact<{
   externalId: Scalars["String"];
-  name?: Maybe<Scalars["String"]>;
-  adminFirstName?: Maybe<Scalars["String"]>;
-  adminLastName?: Maybe<Scalars["String"]>;
-  adminEmail?: Maybe<Scalars["String"]>;
-  adminPhone?: Maybe<Scalars["String"]>;
+  name?: InputMaybe<Scalars["String"]>;
+  adminFirstName?: InputMaybe<Scalars["String"]>;
+  adminLastName?: InputMaybe<Scalars["String"]>;
+  adminEmail?: InputMaybe<Scalars["String"]>;
+  adminPhone?: InputMaybe<Scalars["String"]>;
 }>;
 
 export type EditPendingOrganizationMutation = {
   __typename?: "Mutation";
-  editPendingOrganization?: Maybe<string>;
+  editPendingOrganization?: string | null | undefined;
 };
 
 export type GetOrganizationsQueryVariables = Exact<{
-  identityVerified?: Maybe<Scalars["Boolean"]>;
+  identityVerified?: InputMaybe<Scalars["Boolean"]>;
 }>;
 
 export type GetOrganizationsQuery = {
@@ -1627,24 +1710,26 @@ export type GetOrganizationsQuery = {
 };
 
 export type SetCurrentUserTenantDataAccessOpMutationVariables = Exact<{
-  organizationExternalId?: Maybe<Scalars["String"]>;
-  justification?: Maybe<Scalars["String"]>;
+  organizationExternalId?: InputMaybe<Scalars["String"]>;
+  justification?: InputMaybe<Scalars["String"]>;
 }>;
 
 export type SetCurrentUserTenantDataAccessOpMutation = {
   __typename?: "Mutation";
-  setCurrentUserTenantDataAccess?: Maybe<{
-    __typename?: "User";
-    id: string;
-    email: string;
-    permissions: Array<UserPermission>;
-    role?: Maybe<Role>;
-    organization?: Maybe<{
-      __typename?: "Organization";
-      name: string;
-      externalId: string;
-    }>;
-  }>;
+  setCurrentUserTenantDataAccess?:
+    | {
+        __typename?: "User";
+        id: string;
+        email: string;
+        permissions: Array<UserPermission>;
+        role?: Role | null | undefined;
+        organization?:
+          | { __typename?: "Organization"; name: string; externalId: string }
+          | null
+          | undefined;
+      }
+    | null
+    | undefined;
 };
 
 export type RemovePatientFromQueueMutationVariables = Exact<{
@@ -1653,56 +1738,71 @@ export type RemovePatientFromQueueMutationVariables = Exact<{
 
 export type RemovePatientFromQueueMutation = {
   __typename?: "Mutation";
-  removePatientFromQueue?: Maybe<string>;
+  removePatientFromQueue?: string | null | undefined;
 };
 
 export type EditQueueItemMutationVariables = Exact<{
   id: Scalars["ID"];
-  deviceId?: Maybe<Scalars["String"]>;
-  deviceSpecimenType?: Maybe<Scalars["ID"]>;
-  result?: Maybe<Scalars["String"]>;
-  dateTested?: Maybe<Scalars["DateTime"]>;
+  deviceId?: InputMaybe<Scalars["String"]>;
+  deviceSpecimenType?: InputMaybe<Scalars["ID"]>;
+  result?: InputMaybe<Scalars["String"]>;
+  dateTested?: InputMaybe<Scalars["DateTime"]>;
 }>;
 
 export type EditQueueItemMutation = {
   __typename?: "Mutation";
-  editQueueItem?: Maybe<{
-    __typename?: "TestOrder";
-    result?: Maybe<string>;
-    dateTested?: Maybe<any>;
-    deviceType?: Maybe<{
-      __typename?: "DeviceType";
-      internalId: string;
-      testLength?: Maybe<number>;
-    }>;
-    deviceSpecimenType?: Maybe<{
-      __typename?: "DeviceSpecimenType";
-      internalId: string;
-      deviceType: {
-        __typename?: "DeviceType";
-        internalId: string;
-        testLength?: Maybe<number>;
-      };
-      specimenType: { __typename?: "SpecimenType"; internalId: string };
-    }>;
-  }>;
+  editQueueItem?:
+    | {
+        __typename?: "TestOrder";
+        result?: string | null | undefined;
+        dateTested?: any | null | undefined;
+        deviceType?:
+          | {
+              __typename?: "DeviceType";
+              internalId: string;
+              testLength?: number | null | undefined;
+            }
+          | null
+          | undefined;
+        deviceSpecimenType?:
+          | {
+              __typename?: "DeviceSpecimenType";
+              internalId: string;
+              deviceType: {
+                __typename?: "DeviceType";
+                internalId: string;
+                testLength?: number | null | undefined;
+              };
+              specimenType: { __typename?: "SpecimenType"; internalId: string };
+            }
+          | null
+          | undefined;
+      }
+    | null
+    | undefined;
 };
 
 export type SubmitTestResultMutationVariables = Exact<{
   patientId: Scalars["ID"];
   deviceId: Scalars["String"];
-  deviceSpecimenType?: Maybe<Scalars["ID"]>;
+  deviceSpecimenType?: InputMaybe<Scalars["ID"]>;
   result: Scalars["String"];
-  dateTested?: Maybe<Scalars["DateTime"]>;
+  dateTested?: InputMaybe<Scalars["DateTime"]>;
 }>;
 
 export type SubmitTestResultMutation = {
   __typename?: "Mutation";
-  addTestResultNew?: Maybe<{
-    __typename?: "AddTestResultResponse";
-    deliverySuccess?: Maybe<boolean>;
-    testResult: { __typename?: "TestOrder"; internalId?: Maybe<string> };
-  }>;
+  addTestResultNew?:
+    | {
+        __typename?: "AddTestResultResponse";
+        deliverySuccess?: boolean | null | undefined;
+        testResult: {
+          __typename?: "TestOrder";
+          internalId?: string | null | undefined;
+        };
+      }
+    | null
+    | undefined;
 };
 
 export type GetFacilityQueueQueryVariables = Exact<{
@@ -1711,92 +1811,117 @@ export type GetFacilityQueueQueryVariables = Exact<{
 
 export type GetFacilityQueueQuery = {
   __typename?: "Query";
-  queue?: Maybe<
-    Array<
-      Maybe<{
-        __typename?: "TestOrder";
-        internalId?: Maybe<string>;
-        pregnancy?: Maybe<string>;
-        dateAdded?: Maybe<string>;
-        symptoms?: Maybe<string>;
-        symptomOnset?: Maybe<any>;
-        noSymptoms?: Maybe<boolean>;
-        result?: Maybe<string>;
-        dateTested?: Maybe<any>;
-        deviceType?: Maybe<{
-          __typename?: "DeviceType";
-          internalId: string;
-          name: string;
-          model: string;
-          testLength?: Maybe<number>;
+  queue?:
+    | Array<
+        | {
+            __typename?: "TestOrder";
+            internalId?: string | null | undefined;
+            pregnancy?: string | null | undefined;
+            dateAdded?: string | null | undefined;
+            symptoms?: string | null | undefined;
+            symptomOnset?: any | null | undefined;
+            noSymptoms?: boolean | null | undefined;
+            result?: string | null | undefined;
+            dateTested?: any | null | undefined;
+            deviceType?:
+              | {
+                  __typename?: "DeviceType";
+                  internalId: string;
+                  name: string;
+                  model: string;
+                  testLength?: number | null | undefined;
+                }
+              | null
+              | undefined;
+            deviceSpecimenType?:
+              | { __typename?: "DeviceSpecimenType"; internalId: string }
+              | null
+              | undefined;
+            patient?:
+              | {
+                  __typename?: "Patient";
+                  internalId?: string | null | undefined;
+                  telephone?: string | null | undefined;
+                  birthDate?: any | null | undefined;
+                  firstName?: string | null | undefined;
+                  middleName?: string | null | undefined;
+                  lastName?: string | null | undefined;
+                  gender?: string | null | undefined;
+                  testResultDelivery?:
+                    | TestResultDeliveryPreference
+                    | null
+                    | undefined;
+                  preferredLanguage?: string | null | undefined;
+                  email?: string | null | undefined;
+                  emails?: Array<string | null | undefined> | null | undefined;
+                  phoneNumbers?:
+                    | Array<
+                        | {
+                            __typename?: "PhoneNumber";
+                            type?: PhoneType | null | undefined;
+                            number?: string | null | undefined;
+                          }
+                        | null
+                        | undefined
+                      >
+                    | null
+                    | undefined;
+                }
+              | null
+              | undefined;
+          }
+        | null
+        | undefined
+      >
+    | null
+    | undefined;
+  organization?:
+    | {
+        __typename?: "Organization";
+        testingFacility: Array<{
+          __typename?: "Facility";
+          id: string;
+          defaultDeviceSpecimen?: string | null | undefined;
+          deviceTypes?:
+            | Array<
+                | {
+                    __typename?: "DeviceType";
+                    internalId: string;
+                    name: string;
+                    model: string;
+                    testLength?: number | null | undefined;
+                  }
+                | null
+                | undefined
+              >
+            | null
+            | undefined;
         }>;
-        deviceSpecimenType?: Maybe<{
-          __typename?: "DeviceSpecimenType";
-          internalId: string;
-        }>;
-        patient?: Maybe<{
-          __typename?: "Patient";
-          internalId?: Maybe<string>;
-          telephone?: Maybe<string>;
-          birthDate?: Maybe<any>;
-          firstName?: Maybe<string>;
-          middleName?: Maybe<string>;
-          lastName?: Maybe<string>;
-          gender?: Maybe<string>;
-          testResultDelivery?: Maybe<TestResultDeliveryPreference>;
-          preferredLanguage?: Maybe<string>;
-          email?: Maybe<string>;
-          emails?: Maybe<Array<Maybe<string>>>;
-          phoneNumbers?: Maybe<
-            Array<
-              Maybe<{
-                __typename?: "PhoneNumber";
-                type?: Maybe<PhoneType>;
-                number?: Maybe<string>;
-              }>
-            >
-          >;
-        }>;
-      }>
-    >
-  >;
-  organization?: Maybe<{
-    __typename?: "Organization";
-    testingFacility: Array<{
-      __typename?: "Facility";
-      id: string;
-      defaultDeviceSpecimen?: Maybe<string>;
-      deviceTypes?: Maybe<
-        Array<
-          Maybe<{
-            __typename?: "DeviceType";
+      }
+    | null
+    | undefined;
+  deviceSpecimenTypes?:
+    | Array<
+        | {
+            __typename?: "DeviceSpecimenType";
             internalId: string;
-            name: string;
-            model: string;
-            testLength?: Maybe<number>;
-          }>
-        >
-      >;
-    }>;
-  }>;
-  deviceSpecimenTypes?: Maybe<
-    Array<
-      Maybe<{
-        __typename?: "DeviceSpecimenType";
-        internalId: string;
-        deviceType: {
-          __typename?: "DeviceType";
-          internalId: string;
-          name: string;
-        };
-        specimenType: {
-          __typename?: "SpecimenType";
-          internalId: string;
-          name: string;
-        };
-      }>
-    >
-  >;
+            deviceType: {
+              __typename?: "DeviceType";
+              internalId: string;
+              name: string;
+              testLength?: number | null | undefined;
+            };
+            specimenType: {
+              __typename?: "SpecimenType";
+              internalId: string;
+              name: string;
+            };
+          }
+        | null
+        | undefined
+      >
+    | null
+    | undefined;
 };
 
 export type GetPatientQueryVariables = Exact<{
@@ -1805,90 +1930,105 @@ export type GetPatientQueryVariables = Exact<{
 
 export type GetPatientQuery = {
   __typename?: "Query";
-  patient?: Maybe<{
-    __typename?: "Patient";
-    internalId?: Maybe<string>;
-    firstName?: Maybe<string>;
-    lastName?: Maybe<string>;
-    middleName?: Maybe<string>;
-    birthDate?: Maybe<any>;
-    gender?: Maybe<string>;
-    telephone?: Maybe<string>;
-    testResultDelivery?: Maybe<TestResultDeliveryPreference>;
-    phoneNumbers?: Maybe<
-      Array<
-        Maybe<{
-          __typename?: "PhoneNumber";
-          type?: Maybe<PhoneType>;
-          number?: Maybe<string>;
-        }>
-      >
-    >;
-  }>;
+  patient?:
+    | {
+        __typename?: "Patient";
+        internalId?: string | null | undefined;
+        firstName?: string | null | undefined;
+        lastName?: string | null | undefined;
+        middleName?: string | null | undefined;
+        birthDate?: any | null | undefined;
+        gender?: string | null | undefined;
+        telephone?: string | null | undefined;
+        testResultDelivery?: TestResultDeliveryPreference | null | undefined;
+        phoneNumbers?:
+          | Array<
+              | {
+                  __typename?: "PhoneNumber";
+                  type?: PhoneType | null | undefined;
+                  number?: string | null | undefined;
+                }
+              | null
+              | undefined
+            >
+          | null
+          | undefined;
+      }
+    | null
+    | undefined;
 };
 
 export type GetPatientsByFacilityForQueueQueryVariables = Exact<{
   facilityId: Scalars["ID"];
-  namePrefixMatch?: Maybe<Scalars["String"]>;
+  namePrefixMatch?: InputMaybe<Scalars["String"]>;
 }>;
 
 export type GetPatientsByFacilityForQueueQuery = {
   __typename?: "Query";
-  patients?: Maybe<
-    Array<
-      Maybe<{
-        __typename?: "Patient";
-        internalId?: Maybe<string>;
-        firstName?: Maybe<string>;
-        lastName?: Maybe<string>;
-        middleName?: Maybe<string>;
-        birthDate?: Maybe<any>;
-        gender?: Maybe<string>;
-        telephone?: Maybe<string>;
-        email?: Maybe<string>;
-        emails?: Maybe<Array<Maybe<string>>>;
-        testResultDelivery?: Maybe<TestResultDeliveryPreference>;
-        phoneNumbers?: Maybe<
-          Array<
-            Maybe<{
-              __typename?: "PhoneNumber";
-              type?: Maybe<PhoneType>;
-              number?: Maybe<string>;
-            }>
-          >
-        >;
-      }>
-    >
-  >;
+  patients?:
+    | Array<
+        | {
+            __typename?: "Patient";
+            internalId?: string | null | undefined;
+            firstName?: string | null | undefined;
+            lastName?: string | null | undefined;
+            middleName?: string | null | undefined;
+            birthDate?: any | null | undefined;
+            gender?: string | null | undefined;
+            telephone?: string | null | undefined;
+            email?: string | null | undefined;
+            emails?: Array<string | null | undefined> | null | undefined;
+            testResultDelivery?:
+              | TestResultDeliveryPreference
+              | null
+              | undefined;
+            phoneNumbers?:
+              | Array<
+                  | {
+                      __typename?: "PhoneNumber";
+                      type?: PhoneType | null | undefined;
+                      number?: string | null | undefined;
+                    }
+                  | null
+                  | undefined
+                >
+              | null
+              | undefined;
+          }
+        | null
+        | undefined
+      >
+    | null
+    | undefined;
 };
 
 export type AddPatientToQueueMutationVariables = Exact<{
   facilityId: Scalars["ID"];
   patientId: Scalars["ID"];
-  symptoms?: Maybe<Scalars["String"]>;
-  symptomOnset?: Maybe<Scalars["LocalDate"]>;
-  pregnancy?: Maybe<Scalars["String"]>;
-  noSymptoms?: Maybe<Scalars["Boolean"]>;
-  testResultDelivery?: Maybe<TestResultDeliveryPreference>;
+  symptoms?: InputMaybe<Scalars["String"]>;
+  symptomOnset?: InputMaybe<Scalars["LocalDate"]>;
+  pregnancy?: InputMaybe<Scalars["String"]>;
+  noSymptoms?: InputMaybe<Scalars["Boolean"]>;
+  testResultDelivery?: InputMaybe<TestResultDeliveryPreference>;
 }>;
 
 export type AddPatientToQueueMutation = {
   __typename?: "Mutation";
-  addPatientToQueue?: Maybe<string>;
+  addPatientToQueue?: string | null | undefined;
 };
 
 export type UpdateAoeMutationVariables = Exact<{
   patientId: Scalars["ID"];
-  symptoms?: Maybe<Scalars["String"]>;
-  symptomOnset?: Maybe<Scalars["LocalDate"]>;
-  pregnancy?: Maybe<Scalars["String"]>;
-  noSymptoms?: Maybe<Scalars["Boolean"]>;
-  testResultDelivery?: Maybe<TestResultDeliveryPreference>;
+  symptoms?: InputMaybe<Scalars["String"]>;
+  symptomOnset?: InputMaybe<Scalars["LocalDate"]>;
+  pregnancy?: InputMaybe<Scalars["String"]>;
+  noSymptoms?: InputMaybe<Scalars["Boolean"]>;
+  testResultDelivery?: InputMaybe<TestResultDeliveryPreference>;
 }>;
 
 export type UpdateAoeMutation = {
   __typename?: "Mutation";
-  updateTimeOfTestQuestions?: Maybe<string>;
+  updateTimeOfTestQuestions?: string | null | undefined;
 };
 
 export type GetTestResultForCorrectionQueryVariables = Exact<{
@@ -1897,20 +2037,29 @@ export type GetTestResultForCorrectionQueryVariables = Exact<{
 
 export type GetTestResultForCorrectionQuery = {
   __typename?: "Query";
-  testResult?: Maybe<{
-    __typename?: "TestResult";
-    dateTested?: Maybe<any>;
-    result?: Maybe<string>;
-    correctionStatus?: Maybe<string>;
-    deviceType?: Maybe<{ __typename?: "DeviceType"; name: string }>;
-    patient?: Maybe<{
-      __typename?: "Patient";
-      firstName?: Maybe<string>;
-      middleName?: Maybe<string>;
-      lastName?: Maybe<string>;
-      birthDate?: Maybe<any>;
-    }>;
-  }>;
+  testResult?:
+    | {
+        __typename?: "TestResult";
+        dateTested?: any | null | undefined;
+        result?: string | null | undefined;
+        correctionStatus?: string | null | undefined;
+        deviceType?:
+          | { __typename?: "DeviceType"; name: string }
+          | null
+          | undefined;
+        patient?:
+          | {
+              __typename?: "Patient";
+              firstName?: string | null | undefined;
+              middleName?: string | null | undefined;
+              lastName?: string | null | undefined;
+              birthDate?: any | null | undefined;
+            }
+          | null
+          | undefined;
+      }
+    | null
+    | undefined;
 };
 
 export type MarkTestAsErrorMutationVariables = Exact<{
@@ -1920,10 +2069,10 @@ export type MarkTestAsErrorMutationVariables = Exact<{
 
 export type MarkTestAsErrorMutation = {
   __typename?: "Mutation";
-  correctTestMarkAsError?: Maybe<{
-    __typename?: "TestResult";
-    internalId?: Maybe<string>;
-  }>;
+  correctTestMarkAsError?:
+    | { __typename?: "TestResult"; internalId?: string | null | undefined }
+    | null
+    | undefined;
 };
 
 export type GetTestResultDetailsQueryVariables = Exact<{
@@ -1932,32 +2081,44 @@ export type GetTestResultDetailsQueryVariables = Exact<{
 
 export type GetTestResultDetailsQuery = {
   __typename?: "Query";
-  testResult?: Maybe<{
-    __typename?: "TestResult";
-    dateTested?: Maybe<any>;
-    result?: Maybe<string>;
-    correctionStatus?: Maybe<string>;
-    symptoms?: Maybe<string>;
-    symptomOnset?: Maybe<any>;
-    pregnancy?: Maybe<string>;
-    deviceType?: Maybe<{ __typename?: "DeviceType"; name: string }>;
-    patient?: Maybe<{
-      __typename?: "Patient";
-      firstName?: Maybe<string>;
-      middleName?: Maybe<string>;
-      lastName?: Maybe<string>;
-      birthDate?: Maybe<any>;
-    }>;
-    createdBy?: Maybe<{
-      __typename?: "ApiUser";
-      name: {
-        __typename?: "NameInfo";
-        firstName?: Maybe<string>;
-        middleName?: Maybe<string>;
-        lastName: string;
-      };
-    }>;
-  }>;
+  testResult?:
+    | {
+        __typename?: "TestResult";
+        dateTested?: any | null | undefined;
+        result?: string | null | undefined;
+        correctionStatus?: string | null | undefined;
+        symptoms?: string | null | undefined;
+        symptomOnset?: any | null | undefined;
+        pregnancy?: string | null | undefined;
+        deviceType?:
+          | { __typename?: "DeviceType"; name: string }
+          | null
+          | undefined;
+        patient?:
+          | {
+              __typename?: "Patient";
+              firstName?: string | null | undefined;
+              middleName?: string | null | undefined;
+              lastName?: string | null | undefined;
+              birthDate?: any | null | undefined;
+            }
+          | null
+          | undefined;
+        createdBy?:
+          | {
+              __typename?: "ApiUser";
+              name: {
+                __typename?: "NameInfo";
+                firstName?: string | null | undefined;
+                middleName?: string | null | undefined;
+                lastName: string;
+              };
+            }
+          | null
+          | undefined;
+      }
+    | null
+    | undefined;
 };
 
 export type GetTestResultForPrintQueryVariables = Exact<{
@@ -1966,42 +2127,53 @@ export type GetTestResultForPrintQueryVariables = Exact<{
 
 export type GetTestResultForPrintQuery = {
   __typename?: "Query";
-  testResult?: Maybe<{
-    __typename?: "TestResult";
-    dateTested?: Maybe<any>;
-    result?: Maybe<string>;
-    correctionStatus?: Maybe<string>;
-    deviceType?: Maybe<{
-      __typename?: "DeviceType";
-      name: string;
-      model: string;
-    }>;
-    patient?: Maybe<{
-      __typename?: "Patient";
-      firstName?: Maybe<string>;
-      middleName?: Maybe<string>;
-      lastName?: Maybe<string>;
-      birthDate?: Maybe<any>;
-    }>;
-    facility?: Maybe<{
-      __typename?: "Facility";
-      name: string;
-      cliaNumber?: Maybe<string>;
-      phone?: Maybe<string>;
-      street?: Maybe<string>;
-      streetTwo?: Maybe<string>;
-      city?: Maybe<string>;
-      state?: Maybe<string>;
-      zipCode?: Maybe<string>;
-      orderingProvider?: Maybe<{
-        __typename?: "Provider";
-        firstName?: Maybe<string>;
-        middleName?: Maybe<string>;
-        lastName?: Maybe<string>;
-        NPI?: Maybe<string>;
-      }>;
-    }>;
-  }>;
+  testResult?:
+    | {
+        __typename?: "TestResult";
+        dateTested?: any | null | undefined;
+        result?: string | null | undefined;
+        correctionStatus?: string | null | undefined;
+        deviceType?:
+          | { __typename?: "DeviceType"; name: string; model: string }
+          | null
+          | undefined;
+        patient?:
+          | {
+              __typename?: "Patient";
+              firstName?: string | null | undefined;
+              middleName?: string | null | undefined;
+              lastName?: string | null | undefined;
+              birthDate?: any | null | undefined;
+            }
+          | null
+          | undefined;
+        facility?:
+          | {
+              __typename?: "Facility";
+              name: string;
+              cliaNumber?: string | null | undefined;
+              phone?: string | null | undefined;
+              street?: string | null | undefined;
+              streetTwo?: string | null | undefined;
+              city?: string | null | undefined;
+              state?: string | null | undefined;
+              zipCode?: string | null | undefined;
+              orderingProvider?:
+                | {
+                    __typename?: "Provider";
+                    firstName?: string | null | undefined;
+                    middleName?: string | null | undefined;
+                    lastName?: string | null | undefined;
+                    NPI?: string | null | undefined;
+                  }
+                | null
+                | undefined;
+            }
+          | null
+          | undefined;
+      }
+    | null
+    | undefined;
 };
 
 export type GetTestResultForTextQueryVariables = Exact<{
@@ -2010,26 +2182,35 @@ export type GetTestResultForTextQueryVariables = Exact<{
 
 export type GetTestResultForTextQuery = {
   __typename?: "Query";
-  testResult?: Maybe<{
-    __typename?: "TestResult";
-    dateTested?: Maybe<any>;
-    patient?: Maybe<{
-      __typename?: "Patient";
-      firstName?: Maybe<string>;
-      middleName?: Maybe<string>;
-      lastName?: Maybe<string>;
-      birthDate?: Maybe<any>;
-      phoneNumbers?: Maybe<
-        Array<
-          Maybe<{
-            __typename?: "PhoneNumber";
-            type?: Maybe<PhoneType>;
-            number?: Maybe<string>;
-          }>
-        >
-      >;
-    }>;
-  }>;
+  testResult?:
+    | {
+        __typename?: "TestResult";
+        dateTested?: any | null | undefined;
+        patient?:
+          | {
+              __typename?: "Patient";
+              firstName?: string | null | undefined;
+              middleName?: string | null | undefined;
+              lastName?: string | null | undefined;
+              birthDate?: any | null | undefined;
+              phoneNumbers?:
+                | Array<
+                    | {
+                        __typename?: "PhoneNumber";
+                        type?: PhoneType | null | undefined;
+                        number?: string | null | undefined;
+                      }
+                    | null
+                    | undefined
+                  >
+                | null
+                | undefined;
+            }
+          | null
+          | undefined;
+      }
+    | null
+    | undefined;
 };
 
 export type SendSmsMutationVariables = Exact<{
@@ -2038,78 +2219,92 @@ export type SendSmsMutationVariables = Exact<{
 
 export type SendSmsMutation = {
   __typename?: "Mutation";
-  sendPatientLinkSmsByTestEventId?: Maybe<boolean>;
+  sendPatientLinkSmsByTestEventId?: boolean | null | undefined;
 };
 
 export type GetResultsCountByFacilityQueryVariables = Exact<{
-  facilityId?: Maybe<Scalars["ID"]>;
-  patientId?: Maybe<Scalars["ID"]>;
-  result?: Maybe<Scalars["String"]>;
-  role?: Maybe<Scalars["String"]>;
-  startDate?: Maybe<Scalars["DateTime"]>;
-  endDate?: Maybe<Scalars["DateTime"]>;
+  facilityId?: InputMaybe<Scalars["ID"]>;
+  patientId?: InputMaybe<Scalars["ID"]>;
+  result?: InputMaybe<Scalars["String"]>;
+  role?: InputMaybe<Scalars["String"]>;
+  startDate?: InputMaybe<Scalars["DateTime"]>;
+  endDate?: InputMaybe<Scalars["DateTime"]>;
 }>;
 
 export type GetResultsCountByFacilityQuery = {
   __typename?: "Query";
-  testResultsCount?: Maybe<number>;
+  testResultsCount?: number | null | undefined;
 };
 
 export type GetFacilityResultsQueryVariables = Exact<{
-  facilityId?: Maybe<Scalars["ID"]>;
-  patientId?: Maybe<Scalars["ID"]>;
-  result?: Maybe<Scalars["String"]>;
-  role?: Maybe<Scalars["String"]>;
-  startDate?: Maybe<Scalars["DateTime"]>;
-  endDate?: Maybe<Scalars["DateTime"]>;
-  pageNumber?: Maybe<Scalars["Int"]>;
-  pageSize?: Maybe<Scalars["Int"]>;
+  facilityId?: InputMaybe<Scalars["ID"]>;
+  patientId?: InputMaybe<Scalars["ID"]>;
+  result?: InputMaybe<Scalars["String"]>;
+  role?: InputMaybe<Scalars["String"]>;
+  startDate?: InputMaybe<Scalars["DateTime"]>;
+  endDate?: InputMaybe<Scalars["DateTime"]>;
+  pageNumber?: InputMaybe<Scalars["Int"]>;
+  pageSize?: InputMaybe<Scalars["Int"]>;
 }>;
 
 export type GetFacilityResultsQuery = {
   __typename?: "Query";
-  testResults?: Maybe<
-    Array<
-      Maybe<{
-        __typename?: "TestResult";
-        internalId?: Maybe<string>;
-        dateTested?: Maybe<any>;
-        result?: Maybe<string>;
-        correctionStatus?: Maybe<string>;
-        symptoms?: Maybe<string>;
-        noSymptoms?: Maybe<boolean>;
-        deviceType?: Maybe<{
-          __typename?: "DeviceType";
-          internalId: string;
-          name: string;
-        }>;
-        patient?: Maybe<{
-          __typename?: "Patient";
-          internalId?: Maybe<string>;
-          firstName?: Maybe<string>;
-          middleName?: Maybe<string>;
-          lastName?: Maybe<string>;
-          birthDate?: Maybe<any>;
-          gender?: Maybe<string>;
-          lookupId?: Maybe<string>;
-          email?: Maybe<string>;
-        }>;
-        createdBy?: Maybe<{
-          __typename?: "ApiUser";
-          nameInfo?: Maybe<{
-            __typename?: "NameInfo";
-            firstName?: Maybe<string>;
-            middleName?: Maybe<string>;
-            lastName: string;
-          }>;
-        }>;
-        patientLink?: Maybe<{
-          __typename?: "PatientLink";
-          internalId?: Maybe<string>;
-        }>;
-      }>
-    >
-  >;
+  testResults?:
+    | Array<
+        | {
+            __typename?: "TestResult";
+            internalId?: string | null | undefined;
+            dateTested?: any | null | undefined;
+            result?: string | null | undefined;
+            correctionStatus?: string | null | undefined;
+            symptoms?: string | null | undefined;
+            noSymptoms?: boolean | null | undefined;
+            deviceType?:
+              | { __typename?: "DeviceType"; internalId: string; name: string }
+              | null
+              | undefined;
+            patient?:
+              | {
+                  __typename?: "Patient";
+                  internalId?: string | null | undefined;
+                  firstName?: string | null | undefined;
+                  middleName?: string | null | undefined;
+                  lastName?: string | null | undefined;
+                  birthDate?: any | null | undefined;
+                  gender?: string | null | undefined;
+                  lookupId?: string | null | undefined;
+                  email?: string | null | undefined;
+                }
+              | null
+              | undefined;
+            createdBy?:
+              | {
+                  __typename?: "ApiUser";
+                  nameInfo?:
+                    | {
+                        __typename?: "NameInfo";
+                        firstName?: string | null | undefined;
+                        middleName?: string | null | undefined;
+                        lastName: string;
+                      }
+                    | null
+                    | undefined;
+                }
+              | null
+              | undefined;
+            patientLink?:
+              | {
+                  __typename?: "PatientLink";
+                  internalId?: string | null | undefined;
+                }
+              | null
+              | undefined;
+          }
+        | null
+        | undefined
+      >
+    | null
+    | undefined;
 };
 
 export type GetTestResultForResendingEmailsQueryVariables = Exact<{
@@ -2118,18 +2313,24 @@ export type GetTestResultForResendingEmailsQueryVariables = Exact<{
 
 export type GetTestResultForResendingEmailsQuery = {
   __typename?: "Query";
-  testResult?: Maybe<{
-    __typename?: "TestResult";
-    dateTested?: Maybe<any>;
-    patient?: Maybe<{
-      __typename?: "Patient";
-      firstName?: Maybe<string>;
-      middleName?: Maybe<string>;
-      lastName?: Maybe<string>;
-      email?: Maybe<string>;
-      emails?: Maybe<Array<Maybe<string>>>;
-    }>;
-  }>;
+  testResult?:
+    | {
+        __typename?: "TestResult";
+        dateTested?: any | null | undefined;
+        patient?:
+          | {
+              __typename?: "Patient";
+              firstName?: string | null | undefined;
+              middleName?: string | null | undefined;
+              lastName?: string | null | undefined;
+              email?: string | null | undefined;
+              emails?: Array<string | null | undefined> | null | undefined;
+            }
+          | null
+          | undefined;
+      }
+    | null
+    | undefined;
 };
 
 export type ResendTestResultsEmailMutationVariables = Exact<{
@@ -2138,7 +2339,99 @@ export type ResendTestResultsEmailMutationVariables = Exact<{
 
 export type ResendTestResultsEmailMutation = {
   __typename?: "Mutation";
-  sendPatientLinkEmailByTestEventId?: Maybe<boolean>;
+  sendPatientLinkEmailByTestEventId?: boolean | null | undefined;
+};
+
+export type GetFacilityResultsForCsvQueryVariables = Exact<{
+  facilityId?: InputMaybe<Scalars["ID"]>;
+  patientId?: InputMaybe<Scalars["ID"]>;
+  result?: InputMaybe<Scalars["String"]>;
+  role?: InputMaybe<Scalars["String"]>;
+  startDate?: InputMaybe<Scalars["DateTime"]>;
+  endDate?: InputMaybe<Scalars["DateTime"]>;
+  pageNumber?: InputMaybe<Scalars["Int"]>;
+  pageSize?: InputMaybe<Scalars["Int"]>;
+}>;
+
+export type GetFacilityResultsForCsvQuery = {
+  __typename?: "Query";
+  testResults?:
+    | Array<
+        | {
+            __typename?: "TestResult";
+            dateTested?: any | null | undefined;
+            result?: string | null | undefined;
+            correctionStatus?: string | null | undefined;
+            reasonForCorrection?: string | null | undefined;
+            symptoms?: string | null | undefined;
+            noSymptoms?: boolean | null | undefined;
+            symptomOnset?: any | null | undefined;
+            facility?:
+              | { __typename?: "Facility"; name: string }
+              | null
+              | undefined;
+            deviceType?:
+              | {
+                  __typename?: "DeviceType";
+                  name: string;
+                  manufacturer: string;
+                  model: string;
+                  swabType?: string | null | undefined;
+                }
+              | null
+              | undefined;
+            patient?:
+              | {
+                  __typename?: "Patient";
+                  firstName?: string | null | undefined;
+                  middleName?: string | null | undefined;
+                  lastName?: string | null | undefined;
+                  birthDate?: any | null | undefined;
+                  gender?: string | null | undefined;
+                  race?: string | null | undefined;
+                  ethnicity?: string | null | undefined;
+                  tribalAffiliation?:
+                    | Array<string | null | undefined>
+                    | null
+                    | undefined;
+                  lookupId?: string | null | undefined;
+                  telephone?: string | null | undefined;
+                  email?: string | null | undefined;
+                  street?: string | null | undefined;
+                  streetTwo?: string | null | undefined;
+                  city?: string | null | undefined;
+                  county?: string | null | undefined;
+                  state?: string | null | undefined;
+                  zipCode?: string | null | undefined;
+                  country?: string | null | undefined;
+                  role?: string | null | undefined;
+                  residentCongregateSetting?: boolean | null | undefined;
+                  employedInHealthcare?: boolean | null | undefined;
+                  preferredLanguage?: string | null | undefined;
+                }
+              | null
+              | undefined;
+            createdBy?:
+              | {
+                  __typename?: "ApiUser";
+                  nameInfo?:
+                    | {
+                        __typename?: "NameInfo";
+                        firstName?: string | null | undefined;
+                        middleName?: string | null | undefined;
+                        lastName: string;
+                      }
+                    | null
+                    | undefined;
+                }
+              | null
+              | undefined;
+          }
+        | null
+        | undefined
+      >
+    | null
+    | undefined;
 };
 
 export const WhoAmIDocument = gql`
@@ -3564,6 +3857,7 @@ export const AddPatientDocument = gql`
     $city: String
     $state: String!
     $zipCode: String!
+    $country: String!
     $telephone: String
     $phoneNumbers: [PhoneNumberInput!]
     $role: String
@@ -3590,6 +3884,7 @@ export const AddPatientDocument = gql`
       city: $city
       state: $state
       zipCode: $zipCode
+      country: $country
       telephone: $telephone
       phoneNumbers: $phoneNumbers
       role: $role
@@ -3640,6 +3935,7 @@ export type AddPatientMutationFn = Apollo.MutationFunction<
  *      city: // value for 'city'
  *      state: // value for 'state'
  *      zipCode: // value for 'zipCode'
+ *      country: // value for 'country'
  *      telephone: // value for 'telephone'
  *      phoneNumbers: // value for 'phoneNumbers'
  *      role: // value for 'role'
@@ -4585,6 +4881,60 @@ export type SetOrgIdentityVerifiedMutationOptions = Apollo.BaseMutationOptions<
   SetOrgIdentityVerifiedMutation,
   SetOrgIdentityVerifiedMutationVariables
 >;
+export const MarkPendingOrganizationAsDeletedDocument = gql`
+  mutation MarkPendingOrganizationAsDeleted(
+    $orgExternalId: String!
+    $deleted: Boolean!
+  ) {
+    markPendingOrganizationAsDeleted(
+      orgExternalId: $orgExternalId
+      deleted: $deleted
+    )
+  }
+`;
+export type MarkPendingOrganizationAsDeletedMutationFn = Apollo.MutationFunction<
+  MarkPendingOrganizationAsDeletedMutation,
+  MarkPendingOrganizationAsDeletedMutationVariables
+>;
+
+/**
+ * __useMarkPendingOrganizationAsDeletedMutation__
+ *
+ * To run a mutation, you first call `useMarkPendingOrganizationAsDeletedMutation` within a React component and pass it any options that fit your needs.
+ * When your component renders, `useMarkPendingOrganizationAsDeletedMutation` returns a tuple that includes:
+ * - A mutate function that you can call at any time to execute the mutation
+ * - An object with fields that represent the current status of the mutation's execution
+ *
+ * @param baseOptions options that will be passed into the mutation, supported options are listed on: https://www.apollographql.com/docs/react/api/react-hooks/#options-2;
+ *
+ * @example
+ * const [markPendingOrganizationAsDeletedMutation, { data, loading, error }] = useMarkPendingOrganizationAsDeletedMutation({
+ *   variables: {
+ *      orgExternalId: // value for 'orgExternalId'
+ *      deleted: // value for 'deleted'
+ *   },
+ * });
+ */
+export function useMarkPendingOrganizationAsDeletedMutation(
+  baseOptions?: Apollo.MutationHookOptions<
+    MarkPendingOrganizationAsDeletedMutation,
+    MarkPendingOrganizationAsDeletedMutationVariables
+  >
+) {
+  const options = { ...defaultOptions, ...baseOptions };
+  return Apollo.useMutation<
+    MarkPendingOrganizationAsDeletedMutation,
+    MarkPendingOrganizationAsDeletedMutationVariables
+  >(MarkPendingOrganizationAsDeletedDocument, options);
+}
+export type MarkPendingOrganizationAsDeletedMutationHookResult = ReturnType<
+  typeof useMarkPendingOrganizationAsDeletedMutation
+>;
+export type MarkPendingOrganizationAsDeletedMutationResult = Apollo.MutationResult<MarkPendingOrganizationAsDeletedMutation>;
+export type MarkPendingOrganizationAsDeletedMutationOptions = Apollo.BaseMutationOptions<
+  MarkPendingOrganizationAsDeletedMutation,
+  MarkPendingOrganizationAsDeletedMutationVariables
+>;
 export const EditPendingOrganizationDocument = gql`
   mutation EditPendingOrganization(
     $externalId: String!
@@ -5023,6 +5373,7 @@ export const GetFacilityQueueDocument = gql`
       deviceType {
         internalId
         name
+        testLength
       }
       specimenType {
         internalId
@@ -6060,4 +6411,133 @@ export type ResendTestResultsEmailMutationResult = Apollo.MutationResult<ResendT
 export type ResendTestResultsEmailMutationOptions = Apollo.BaseMutationOptions<
   ResendTestResultsEmailMutation,
   ResendTestResultsEmailMutationVariables
+>;
+export const GetFacilityResultsForCsvDocument = gql`
+  query GetFacilityResultsForCsv(
+    $facilityId: ID
+    $patientId: ID
+    $result: String
+    $role: String
+    $startDate: DateTime
+    $endDate: DateTime
+    $pageNumber: Int
+    $pageSize: Int
+  ) {
+    testResults(
+      facilityId: $facilityId
+      patientId: $patientId
+      result: $result
+      role: $role
+      startDate: $startDate
+      endDate: $endDate
+      pageNumber: $pageNumber
+      pageSize: $pageSize
+    ) {
+      facility {
+        name
+      }
+      dateTested
+      result
+      correctionStatus
+      reasonForCorrection
+      deviceType {
+        name
+        manufacturer
+        model
+        swabType
+      }
+      patient {
+        firstName
+        middleName
+        lastName
+        birthDate
+        gender
+        race
+        ethnicity
+        tribalAffiliation
+        lookupId
+        telephone
+        email
+        street
+        streetTwo
+        city
+        county
+        state
+        zipCode
+        country
+        role
+        residentCongregateSetting
+        employedInHealthcare
+        preferredLanguage
+      }
+      createdBy {
+        nameInfo {
+          firstName
+          middleName
+          lastName
+        }
+      }
+      symptoms
+      noSymptoms
+      symptomOnset
+    }
+  }
+`;
+
+/**
+ * __useGetFacilityResultsForCsvQuery__
+ *
+ * To run a query within a React component, call `useGetFacilityResultsForCsvQuery` and pass it any options that fit your needs.
+ * When your component renders, `useGetFacilityResultsForCsvQuery` returns an object from Apollo Client that contains loading, error, and data properties
+ * you can use to render your UI.
+ *
+ * @param baseOptions options that will be passed into the query, supported options are listed on: https://www.apollographql.com/docs/react/api/react-hooks/#options;
+ *
+ * @example
+ * const { data, loading, error } = useGetFacilityResultsForCsvQuery({
+ *   variables: {
+ *      facilityId: // value for 'facilityId'
+ *      patientId: // value for 'patientId'
+ *      result: // value for 'result'
+ *      role: // value for 'role'
+ *      startDate: // value for 'startDate'
+ *      endDate: // value for 'endDate'
+ *      pageNumber: // value for 'pageNumber'
+ *      pageSize: // value for 'pageSize'
+ *   },
+ * });
+ */
+export function useGetFacilityResultsForCsvQuery(
+  baseOptions?: Apollo.QueryHookOptions<
+    GetFacilityResultsForCsvQuery,
+    GetFacilityResultsForCsvQueryVariables
+  >
+) {
+  const options = { ...defaultOptions, ...baseOptions };
+  return Apollo.useQuery<
+    GetFacilityResultsForCsvQuery,
+    GetFacilityResultsForCsvQueryVariables
+  >(GetFacilityResultsForCsvDocument, options);
+}
+export function useGetFacilityResultsForCsvLazyQuery(
+  baseOptions?: Apollo.LazyQueryHookOptions<
+    GetFacilityResultsForCsvQuery,
+    GetFacilityResultsForCsvQueryVariables
+  >
+) {
+  const options = { ...defaultOptions, ...baseOptions };
+  return Apollo.useLazyQuery<
+    GetFacilityResultsForCsvQuery,
+    GetFacilityResultsForCsvQueryVariables
+  >(GetFacilityResultsForCsvDocument, options);
+}
+export type GetFacilityResultsForCsvQueryHookResult = ReturnType<
+  typeof useGetFacilityResultsForCsvQuery
+>;
+export type GetFacilityResultsForCsvLazyQueryHookResult = ReturnType<
+  typeof useGetFacilityResultsForCsvLazyQuery
+>;
+export type GetFacilityResultsForCsvQueryResult = Apollo.QueryResult<
+  GetFacilityResultsForCsvQuery,
+  GetFacilityResultsForCsvQueryVariables
 >;

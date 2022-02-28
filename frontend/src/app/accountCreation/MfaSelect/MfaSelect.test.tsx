@@ -1,6 +1,6 @@
 import { render, screen } from "@testing-library/react";
 import userEvent from "@testing-library/user-event";
-import { MemoryRouter, Route, Switch } from "react-router";
+import { MemoryRouter, Route, Routes } from "react-router-dom";
 
 import { MfaEmailVerify } from "../MfaEmailVerify/MfaEmailVerify";
 import { MfaGoogleAuth } from "../MfaGoogleAuth/MfaGoogleAuth";
@@ -75,16 +75,16 @@ describe("MfaSelect routing", () => {
     });
 
     render(
-      <MemoryRouter initialEntries={["/mfa-select"]}>
-        <Switch>
-          <Route path="/mfa-select" component={MfaSelect} />
-          <Route path="/mfa-sms" component={MfaSms} />
-          <Route path="/mfa-okta" component={MfaOkta} />
-          <Route path="/mfa-google-auth" component={MfaGoogleAuth} />
-          <Route path="/mfa-security-key" component={MfaSecurityKey} />
-          <Route path="/mfa-phone" component={MfaPhone} />
-          <Route path="/mfa-email/verify" component={MfaEmailVerify} />
-        </Switch>
+      <MemoryRouter basename="/uac" initialEntries={["/uac/mfa-select"]}>
+        <Routes>
+          <Route path="mfa-select" element={<MfaSelect />} />
+          <Route path="mfa-sms" element={<MfaSms />} />
+          <Route path="mfa-okta" element={<MfaOkta />} />
+          <Route path="mfa-google-auth" element={<MfaGoogleAuth />} />
+          <Route path="mfa-security-key" element={<MfaSecurityKey />} />
+          <Route path="mfa-phone" element={<MfaPhone />} />
+          <Route path="mfa-email/verify" element={<MfaEmailVerify />} />
+        </Routes>
       </MemoryRouter>
     );
 

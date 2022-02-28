@@ -1,10 +1,9 @@
 import React, { useEffect, useState } from "react";
 import { gql, useLazyQuery, useMutation } from "@apollo/client";
-import { Redirect } from "react-router-dom";
+import { Navigate } from "react-router-dom";
 import { useTranslation } from "react-i18next";
 import moment from "moment";
 import { useSelector } from "react-redux";
-import { LocationDescriptor } from "history";
 
 import iconSprite from "../../../node_modules/uswds/dist/img/sprite.svg";
 import { PATIENT_TERM, PATIENT_TERM_CAP } from "../../config/constants";
@@ -38,7 +37,12 @@ export const EMPTY_PERSON: Nullable<PersonFormData> = {
   tribalAffiliation: undefined,
   birthDate: "",
   telephone: null,
-  phoneNumbers: null,
+  phoneNumbers: [
+    {
+      number: "",
+      type: "",
+    },
+  ],
   county: null,
   emails: null,
   street: "",
@@ -79,6 +83,7 @@ export const ADD_PATIENT = gql`
     $city: String
     $state: String!
     $zipCode: String!
+    $country: String!
     $telephone: String
     $phoneNumbers: [PhoneNumberInput!]
     $role: String
@@ -105,6 +110,7 @@ export const ADD_PATIENT = gql`
       city: $city
       state: $state
       zipCode: $zipCode
+      country: $country
       telephone: $telephone
       phoneNumbers: $phoneNumbers
       role: $role
@@ -221,11 +227,11 @@ const AddPatient = () => {
   const personPath = `/patients/?facility=${activeFacilityId}`;
 
   const [redirect, setRedirect] = useState<
-    string | LocationDescriptor | undefined
+    string | { pathname: string; search: string; state?: any } | undefined
   >(undefined);
 
   if (redirect) {
-    return <Redirect to={redirect} />;
+    return <Navigate to={redirect} />;
   }
 
   if (!activeFacilityId) {
