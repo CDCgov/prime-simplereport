@@ -12,8 +12,7 @@ public interface DeviceSupportedDiseaseRepository
 
   @Override
   @EntityGraph(attributePaths = {"deviceType, supportedDisease"})
-  @Query(
-      BASE_QUERY + " and e.deviceType.isDeleted = false and e.supportedDisease.isDeleted = false")
+  @Query(BASE_QUERY + " and e.deviceType.isDeleted = false")
   List<DeviceSupportedDisease> findAll();
 
   @EntityGraph(attributePaths = {"deviceType", "supportedDisease"})
