@@ -106,7 +106,7 @@ module "app_gateway" {
   ]
 
   firewall_policy_id = module.web_application_firewall.web_application_firewall_id
-  tags = local.management_tags
+  tags               = local.management_tags
 }
 
 module "nat_gateway" {
