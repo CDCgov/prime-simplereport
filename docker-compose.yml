@@ -17,7 +17,7 @@ services:
     expose:
       - "${SR_DB_PORT:-5432}"
     ports:
-      - "5432:5432"
+      - "${SR_DB_PORT:-5432}:${SR_DB_PORT:-5432}"
   # Spring Boot backend
   backend:
     build:
