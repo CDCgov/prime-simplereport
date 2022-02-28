@@ -38,3 +38,8 @@ variable "log_workspace_uri" {
   description = "Full URI of log workspace to report to"
   type        = string
 }
+
+variable "firewall_policy_id" {
+  description = "Identifier corresponding to existing WAF policy to be associated with this application gateway."
+  type        = string
+}
