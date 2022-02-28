@@ -193,6 +193,20 @@ spotless {
     }
 }
 
+task testDbStart(type: Exec) {
+    environment "SR_DB_PORT", testDbPort
+    commandLine "docker-compose", "-p", "simple-report-tests", "up", "-d", "db"
+}
+
+task testDbStop(type: Exec) {
+    commandLine "docker-compose", "-p", "simple-report-tests", "down"
+}
+
+task testDbReset(type: Exec) {
+    environment "SR_DB_PORT", testDbPort
+    commandLine "db-setup/nuke-db.sh"
+}
+
 test {
     // people sometimes export this to run local dev more easily: don't let it break the tests
     environment "SPRING_PROFILES_ACTIVE", ""
@@ -205,7 +219,10 @@ test {
     // testLogging {
     //   events "started", "failed"
     // }
-    systemProperty "test-db-host", testDbHost
     systemProperty "test-db-port", testDbPort
+    if (System.getenv("CI") == null) {
+        dependsOn testDbStart
+        finalizedBy testDbStop
+    }
 }
 

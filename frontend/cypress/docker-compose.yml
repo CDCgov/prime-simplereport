@@ -51,6 +51,10 @@ services:
   frontend:
     build:
       context: ../
+      dockerfile: Dockerfile.dev
+      args: 
+        NODE_VER: 14
+        NODE_ENV: development
     container_name: frontend
     environment:
       REACT_APP_BASE_URL: http://localhost.simplereport.gov

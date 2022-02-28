@@ -1,0 +1,56 @@
+version: "3.5"
+services:
+  db:
+    # TODO: change this when removing the old DB configuration (version will be upgraded)
+    image: postgres:11-alpine
+    ports:
+      - "${SR_DB_PORT:-5432}:${SR_DB_PORT:-5432}"
+    environment:
+      POSTGRES_PASSWORD: admin_password_for_local_dev_is_not_very_secure
+    volumes:
+      # Create/use a named volume so that the database is not wiped if we recreate the container
+      - type: volume
+        source: simple-report-dev-db-data
+        target: /var/lib/postgresql/data
+      # Mount init scripts for first-run user/schema creation
+      - type: bind
+        source: ./db-setup/create-db.sh
+        target: /docker-entrypoint-initdb.d/01-user-db-creation.sh
+      - type: bind
+        source: ./db-setup/create-metabase-db.sh
+        target: /docker-entrypoint-initdb.d/02-metabase-db-creation.sh
+      - type: bind
+        source: ./db-setup/reset-db.sql
+        target: /usr/local/lib/reset-db.sql
+      - type: bind
+        source: ./db-setup/reset-metabase-db.sql
+        target: /usr/local/lib/reset-metabase-db.sql
+    command: -p ${SR_DB_PORT:-5432}
+    networks:
+      - dev-net
+  api:
+    build:
+      context: ..
+      dockerfile: backend/Dockerfile
+    image: simple-report-api-build
+    command: bootRun
+    environment:
+      SPRING_PROFILES_ACTIVE: dev,db-dockerized
+      SPRING_LIQUIBASE_ENABLED: "true"
+    ports:
+      # map SR_API_PORT on localhost to the API server in the container
+      - "${SR_API_PORT:-8080}:8080"
+    networks:
+      - dev-net
+    depends_on:
+      - db
+  mailhog:
+    ports:
+      - '1025:1025'
+      - '8025:8025'
+    image: mailhog/mailhog
+volumes:
+  simple-report-dev-db-data:
+networks:
+  dev-net:
+    name: dev-net

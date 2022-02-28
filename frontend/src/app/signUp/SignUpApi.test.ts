@@ -6,8 +6,6 @@ const appInsightsHeaders = {
   "x-ms-session-id": "",
 };
 
-const backendUrl = process.env.REACT_APP_BACKEND_URL;
-
 describe("SignUpApi", () => {
   beforeEach(() => {
     (fetch as FetchMock).resetMocks();
@@ -31,7 +29,7 @@ describe("SignUpApi", () => {
     });
     it("calls fetch with the correct data", () => {
       expect(fetch).toHaveBeenCalledWith(
-        `${backendUrl}/identity-verification/get-questions`,
+        "http://localhost:8080/identity-verification/get-questions",
         {
           body:
             '{"firstName":"John","lastName":"Doe","dateOfBirth":"08/30/1983","email":"john.doe@test.com","phoneNumber":"0123456789","streetAddress1":"Test Street","city":"Test City","state":"CA","zip":"TEST POSTCODE","orgExternalId":"1123-12213"}',
@@ -57,7 +55,7 @@ describe("SignUpApi", () => {
     });
     it("calls fetch with the correct data", () => {
       expect(fetch).toHaveBeenCalledWith(
-        `${backendUrl}/identity-verification/submit-answers`,
+        "http://localhost:8080/identity-verification/submit-answers",
         {
           body: '{"sessionId":"foo","orgExternalId":"bar","answers":[2,3,5]}',
           headers: {
@@ -86,7 +84,7 @@ describe("SignUpApi", () => {
     });
     it("calls fetch with the correct data", () => {
       expect(fetch).toHaveBeenCalledWith(
-        `${backendUrl}/account-request/organization-add-to-queue`,
+        "http://localhost:8080/account-request/organization-add-to-queue",
         {
           body:
             '{"firstName":"Laslo","lastName":"Dickens","email":"laslo@shadow.corp","name":"Shadow","type":"treatment_center","state":"NY","workPhoneNumber":"665-452-5484"}',
