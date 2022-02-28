@@ -101,6 +101,7 @@ interface Props {
 
 const PersonForm = (props: Props) => {
   const [formChanged, setFormChanged] = useState(false);
+  const [startTest, setStartTest] = useState(false);
   const [patient, setPatient] = useState(props.patient);
   // Default country to USA if it's not set
   if (patient.country === null) {
@@ -237,7 +238,7 @@ const PersonForm = (props: Props) => {
     const originalAddress = getAddress(patient);
     const suggestedAddress = await getBestSuggestion(originalAddress);
     if (suggestionIsCloseEnough(originalAddress, suggestedAddress)) {
-      onSave(suggestedAddress);
+      onSave(suggestedAddress, startTest);
     } else {
       setAddressSuggestion(suggestedAddress);
       setAddressModalOpen(true);
@@ -245,6 +246,10 @@ const PersonForm = (props: Props) => {
   };
 
   const validateForm = async (startTest?: boolean) => {
+    if (startTest) {
+      setStartTest(true);
+    }
+
     try {
       phoneNumberValidator.current?.();
       await schema.validate(patient, { abortEarly: false });
@@ -642,7 +647,7 @@ const PersonForm = (props: Props) => {
           },
         ]}
         showModal={addressModalOpen}
-        onConfirm={(data) => onSave(data.person)}
+        onConfirm={(data) => onSave(data.person, startTest)}
         onClose={() => setAddressModalOpen(false)}
       />
     </>

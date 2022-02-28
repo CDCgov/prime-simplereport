@@ -58,6 +58,14 @@ Object {
                     class="display-flex flex-align-center"
                   >
                     <button
+                      class="usa-button usa-button--outline usa-button-disabled prime-save-patient-changes-start-test"
+                      disabled=""
+                      id="edit-patient-save-lower"
+                      type="button"
+                    >
+                      Save and start test
+                    </button>
+                    <button
                       class="prime-save-patient-changes usa-button margin-right-0"
                       disabled=""
                     >
@@ -2636,6 +2644,14 @@ Object {
                 <div
                   class="display-flex flex-align-center"
                 >
+                  <button
+                    class="usa-button usa-button--outline usa-button-disabled prime-save-patient-changes-start-test"
+                    disabled=""
+                    id="edit-patient-save-lower"
+                    type="button"
+                  >
+                    Save and start test
+                  </button>
                   <button
                     class="prime-save-patient-changes usa-button margin-right-0"
                     disabled=""

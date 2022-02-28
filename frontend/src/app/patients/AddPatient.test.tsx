@@ -480,11 +480,13 @@ describe("AddPatient", () => {
         await waitForElementToBeRemoved(() =>
           screen.queryAllByText("Saving...")
         );
+
         expect(
-          screen.getByText("Testing Queue!", { exact: false })
+          await screen.findByText("Testing Queue!", { exact: false })
         ).toBeInTheDocument();
+
         expect(
-          screen.getByText("facility-id-001", { exact: false })
+          await screen.findByText("facility-id-001", { exact: false })
         ).toBeInTheDocument();
       });
     });

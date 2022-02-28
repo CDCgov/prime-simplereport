@@ -1,6 +1,6 @@
 import React, { useState } from "react";
 import { gql, useMutation, useQuery } from "@apollo/client";
-import { Navigate } from "react-router-dom";
+import { NavigateOptions, useNavigate } from "react-router-dom";
 import { useTranslation } from "react-i18next";
 
 import iconSprite from "../../../node_modules/uswds/dist/img/sprite.svg";
@@ -191,6 +191,7 @@ const EditPatient = (props: Props) => {
     EditPatientResponse,
     EditPatientParams
   >(UPDATE_PATIENT);
+  const navigate = useNavigate();
   const [activeFacility] = useSelectedFacility();
   const activeFacilityId = activeFacility?.id;
   const [redirect, setRedirect] = useState<
@@ -199,16 +200,18 @@ const EditPatient = (props: Props) => {
   const personPath = `/patients/?facility=${props.facilityId}`;
 
   if (redirect) {
-    const navProps: any = {};
+    const redirectTo =
+      typeof redirect === "string"
+        ? redirect
+        : redirect.pathname + redirect.search;
 
-    if (typeof redirect === "string") {
-      navProps.to = redirect;
-    } else {
-      navProps.to = redirect.pathname + redirect.search;
-      navProps.state = redirect.state;
+    const navOptions: NavigateOptions = {};
+
+    if (typeof redirect !== "string") {
+      navOptions.state = redirect.state;
     }
 
-    return <Navigate {...navProps} />;
+    navigate(redirectTo, navOptions);
   }
 
   if (loading) {
