@@ -2,7 +2,7 @@ services:
   # Postgresql database
   db:
     image: postgres:13-alpine
-    container_name: db
+    container_name: "${DB_NAME:-db}"
     environment:
       POSTGRES_PASSWORD: admin_password_for_local_dev_is_not_very_secure
     volumes:
@@ -17,7 +17,7 @@ services:
     expose:
       - "${SR_DB_PORT:-5432}"
     ports:
-      - "5432:5432"
+      - "${SR_DB_PORT:-5432}:${SR_DB_PORT:-5432}"
   # Spring Boot backend
   backend:
     build:
