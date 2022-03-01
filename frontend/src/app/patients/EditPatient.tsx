@@ -94,7 +94,7 @@ interface GetPatientResponse {
   };
 }
 
-const UPDATE_PATIENT = gql`
+export const UPDATE_PATIENT = gql`
   mutation UpdatePatient(
     $facilityId: ID
     $patientId: ID!

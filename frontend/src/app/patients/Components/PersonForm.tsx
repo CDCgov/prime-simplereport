@@ -280,6 +280,7 @@ const PersonForm = (props: Props) => {
         }
         showError(t("patient.form.errors.validationMsg"), error);
       });
+
       return;
     }
     if (
