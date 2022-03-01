@@ -12,7 +12,6 @@
     "build:zip": "zip -r build/batched-rs-publisher.zip . -x \"*.zip\" -x \".terraform\" -x \"terraform.*\" -x \"*.tf\" -x \"local.settings.json\" -x \"*.map\"",
     "build": "npm run clean && npm run build:compile",
     "predeploy": "npm run build:production",
-    "deploy": "terraform apply",
     "prestart": "npm run build && func extensions install",
     "start": "func start",
     "test": "jest --watch"
