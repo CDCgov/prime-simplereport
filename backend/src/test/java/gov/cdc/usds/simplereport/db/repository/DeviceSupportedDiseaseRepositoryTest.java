@@ -14,6 +14,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 public class DeviceSupportedDiseaseRepositoryTest extends BaseRepositoryTest {
 
   @Autowired private DeviceSupportedDiseaseRepository _repo;
+  @Autowired private DeviceTypeRepository _deviceRepo;
   @Autowired private SupportedDiseaseRepository _supportedDiseaseRepo;
   @Autowired private TestDataFactory _factory;
 
@@ -38,10 +39,11 @@ public class DeviceSupportedDiseaseRepositoryTest extends BaseRepositoryTest {
     //    FLU_A =  _factory.createSupportedDisease("Flu A", "2");
     //    FLU_B = _factory.createSupportedDisease("Flu B", "3");
 
-    BINAX_NOW = _factory.createDeviceType("BinaxNow", "Abbot", "BinaxNow", "123", "nasal");
-    LUMIRA = _factory.createDeviceType("LumiraDX", "Lumira", "DX", "111", "nasal");
-    SOFIA = _factory.createDeviceType("Sofia 2 Antigen", "Quidel", "Sofia 2", "456", "nasal");
-    ALINITY = _factory.createDeviceType("Alinity M", "Abbot", "Alinity M", "789", "nasal");
+    BINAX_NOW = _deviceRepo.save(new DeviceType("BinaxNow", "Abbot", "BinaxNow", "123", "nasal", 15));
+//    BINAX_NOW = _factory.createDeviceType("BinaxNow", "Abbot", "BinaxNow", "123", "nasal");
+//    LUMIRA = _factory.createDeviceType("LumiraDX", "Lumira", "DX", "111", "nasal");
+//    SOFIA = _factory.createDeviceType("Sofia 2 Antigen", "Quidel", "Sofia 2", "456", "nasal");
+//    ALINITY = _factory.createDeviceType("Alinity M", "Abbot", "Alinity M", "789", "nasal");
 
     _repo.save(new DeviceSupportedDisease(BINAX_NOW, COVID_19));
     _repo.save(new DeviceSupportedDisease(LUMIRA, COVID_19));

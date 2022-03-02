@@ -3509,8 +3509,41 @@ databaseChangeLog:
         - addColumn:
             tableName: supported_disease
             columns:
-              - column: *created_at_column
-              - column: *created_by_column
-              - column: *updated_at_column
-              - column: *updated_by_column
-              - column: *soft_delete_column
+              - column: &created_at_column
+                  name: created_at
+                  type: DATETIME
+                  remarks: The creation timestamp for this entity.
+                  defaultValueDate: current_timestamp
+                  valueDate: current_timestamp
+                  constraints:
+                    nullable: false
+              - column: &updated_at_column
+                  name: updated_at
+                  type: DATETIME
+                  remarks: The creation timestamp for this entity.
+                  defaultValueDate: current_timestamp
+                  valueDate: current_timestamp
+                  constraints:
+                    nullable: false
+#              - column: &created_by_column
+#                  name: created_by
+#                  type: uuid
+#                  remarks: The user who created this entity.
+#                  constraints:
+#                    nullable: false
+#                    foreignKeyName: fk__anyentity__created_by # normally we make these unique, but that's a lot of boilerpate
+#                    references: api_user
+#              - column: &updated_by_column
+#                  name: updated_by
+#                  type: uuid
+#                  remarks: The user who most recently updated this entity.
+#                  constraints:
+#                    nullable: false
+#                    references: api_user
+#                    foreignKeyName: fk__anyentity__updated_by
+              - column: &soft_delete_column
+                  name: is_deleted
+                  type: boolean
+                  remarks: Flag for soft-deletion of entities (false unless the entity has been deleted).
+                  constraints:
+                    nullable: false

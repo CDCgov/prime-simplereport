@@ -10,10 +10,10 @@ import org.springframework.data.jpa.domain.support.AuditingEntityListener;
 
 /** A disease that SimpleReport supports testing for. */
 @Entity
-@EntityListeners(AuditingEntityListener.class)
+//@EntityListeners(AuditingEntityListener.class)
 @NoArgsConstructor
 @Getter
-public class SupportedDisease extends EternalAuditedEntity {
+public class SupportedDisease extends SystemManagedEntity {
 
   @Column(nullable = false)
   private String name;
