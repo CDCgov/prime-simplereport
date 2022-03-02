@@ -21,6 +21,7 @@ import { displayFullName, showNotification } from "../utils";
 import { RootState } from "../store";
 import { getAppInsights } from "../TelemetryService";
 import { formatDate } from "../utils/date";
+import { TextWithTooltip } from "../commonComponents/TextWithTooltip";
 
 import { ALERT_CONTENT, QUEUE_NOTIFICATION_TYPES } from "./constants";
 import AskOnEntryTag, { areAnswersComplete } from "./AskOnEntryTag";
@@ -803,7 +804,16 @@ const QueueItem = ({
                           label: d.name,
                           value: d.internalId,
                         }))}
-                      label="Device"
+                      label={
+                        <>
+                          <span>Device</span>
+
+                          <TextWithTooltip
+                            tooltip="Don’t see the test you’re using? Ask your organization admin to add the correct test and it'll show up here."
+                            position="right"
+                          />
+                        </>
+                      }
                       name="testDevice"
                       selectedValue={deviceId}
                       onChange={onDeviceChange}

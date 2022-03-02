@@ -141,7 +141,10 @@ describe("QueueItem", () => {
       </MockedProvider>
     );
 
-    userEvent.type(screen.getByLabelText("Device", { exact: false }), "lumira");
+    userEvent.type(
+      screen.getAllByLabelText("Device", { exact: false })[1],
+      "lumira"
+    );
 
     expect(await screen.findByTestId("timer")).toHaveTextContent("10:00");
   });
@@ -171,7 +174,9 @@ describe("QueueItem", () => {
       </MockedProvider>
     );
 
-    const deviceDropdown = await screen.findByLabelText("Device");
+    const deviceDropdown = (
+      await screen.findAllByLabelText("Device", { exact: false })
+    )[1];
 
     userEvent.selectOptions(deviceDropdown, "Access Bio CareStart");
 
@@ -299,7 +304,9 @@ describe("QueueItem", () => {
       </>
     );
 
-    const deviceDropdown = await screen.findByLabelText("Device");
+    const deviceDropdown = (
+      await screen.findAllByLabelText("Device", { exact: false })
+    )[1];
 
     // Change device type
     userEvent.selectOptions(deviceDropdown, "LumiraDX");

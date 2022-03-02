@@ -183,6 +183,7 @@ const OrganizationForm = () => {
                   <TextWithTooltip
                     tooltip="Can be anyone that works at your organization. Adds testing facility locations; manages the account and user access."
                     text="Organization administrator"
+                    position="right"
                   />
                 </strong>
               </label>

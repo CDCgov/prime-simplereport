@@ -2,7 +2,6 @@ import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faInfoCircle } from "@fortawesome/free-solid-svg-icons";
 import { Tooltip } from "@trussworks/react-uswds";
 import React from "react";
-
 import "./TextWithTooltip.scss";
 
 type CustomButtonProps = React.PropsWithChildren<{
@@ -12,16 +11,16 @@ type CustomButtonProps = React.PropsWithChildren<{
   React.RefAttributes<HTMLButtonElement>;
 
 interface Props {
-  text: string;
   tooltip: string;
   position?: "top" | "bottom" | "left" | "right";
+  text?: string;
   className?: string;
 }
 
 export const TextWithTooltip = ({
-  text,
   tooltip,
   position,
+  text,
   className,
 }: Props) => {
   const CustomButton: React.ForwardRefExoticComponent<CustomButtonProps> = React.forwardRef(
@@ -47,12 +46,7 @@ export const TextWithTooltip = ({
       wrapperclasses="usa-text-with-tooltip"
     >
       {text}
-      <FontAwesomeIcon
-        className="info-circle-icon"
-        icon={faInfoCircle}
-        color="black"
-        size="xs"
-      />
+      <FontAwesomeIcon className="info-circle-icon" icon={faInfoCircle} />
     </Tooltip>
   );
 };
