@@ -3334,3 +3334,58 @@ databaseChangeLog:
                     nullable: true
                     foreignKeyName: fk__facility__default_specimen_type
                     references: specimen_type(internal_id)
+  - changeSet:
+      id: add-supported-disease-table
+      author: emma@skylight.digital
+      comment: Adds a non-audited table to track which diseases SimpleReport supports
+      changes:
+        - tagDatabase:
+            tag: add-supported-disease-table
+        - createTable:
+            tableName: supported_disease
+            columns:
+              - column:
+                  name: internal_id
+                  type: uuid
+                  remarks: The internal database identifier for this entity
+                  constraints:
+                    primaryKey: true
+                    nullable: false
+              - column:
+                  name: name
+                  type: text
+                  remarks: Tracks the human-readable name for the disease
+                  constraints:
+                    nullable: false
+              - column:
+                  name: loinc
+                  type: text
+                  remarks: Tracks the LOINC code for this disease
+                  constraints:
+                    nullable: false
+        - sql: |
+            GRANT SELECT ON ${database.defaultSchemaName}.supported_disease TO ${noPhiUsername};
+      rollback:
+          sql: |
+            DROP TABLE ${database.defaultSchemaName}.supported_disease CASCADE;
+  - changeSet:
+      id: populate-supported-disease-table
+      author: emma@skylight.digital
+      comment: Populate the diseases that SimpleReport currently supports.
+      changes:
+        - tagDatabase:
+            tag: populate-supported-disease-table
+        - sql:
+            comment: Add COVID-19, Flu A, and Flu B to the supported disease table
+            sql: |
+              INSERT INTO ${database.defaultSchemaName}.supported_disease (
+                   internal_id,
+                   name,
+                   loinc)
+              VALUES
+                   (gen_random_uuid(), 'COVID-19', '96741-4'),
+                   (gen_random_uuid(), 'Flu A', 'LP14239-5'),
+                   (gen_random_uuid(), 'Flu B', 'LP14240-3');
+      rollback:
+        sql: |
+          TRUNCATE TABLE ${database.defaultSchemaName}.supported_disease CASCADE;
