@@ -3499,3 +3499,18 @@ databaseChangeLog:
       rollback:
         sql: |
           DROP TABLE ${database.defaultSchemaName}.result;
+  - changeSet:
+      id: make-disease-auditable
+      author: emma@skylight.digital
+      comment: Add columns to make supported_disease auditable and backfill them.
+      changes:
+        - tagDatabase:
+            tag: make-disease-auditable
+        - addColumn:
+            tableName: supported_disease
+            columns:
+              - column: *created_at_column
+              - column: *created_by_column
+              - column: *updated_at_column
+              - column: *updated_by_column
+              - column: *soft_delete_column

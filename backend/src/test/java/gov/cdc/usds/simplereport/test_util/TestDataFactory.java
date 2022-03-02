@@ -1,21 +1,7 @@
 package gov.cdc.usds.simplereport.test_util;
 
 import gov.cdc.usds.simplereport.api.model.accountrequest.OrganizationAccountRequest;
-import gov.cdc.usds.simplereport.db.model.DeviceSpecimenType;
-import gov.cdc.usds.simplereport.db.model.DeviceType;
-import gov.cdc.usds.simplereport.db.model.Facility;
-import gov.cdc.usds.simplereport.db.model.Organization;
-import gov.cdc.usds.simplereport.db.model.OrganizationQueueItem;
-import gov.cdc.usds.simplereport.db.model.PatientAnswers;
-import gov.cdc.usds.simplereport.db.model.PatientLink;
-import gov.cdc.usds.simplereport.db.model.PatientSelfRegistrationLink;
-import gov.cdc.usds.simplereport.db.model.Person;
-import gov.cdc.usds.simplereport.db.model.Person_;
-import gov.cdc.usds.simplereport.db.model.PhoneNumber;
-import gov.cdc.usds.simplereport.db.model.Provider;
-import gov.cdc.usds.simplereport.db.model.SpecimenType;
-import gov.cdc.usds.simplereport.db.model.TestEvent;
-import gov.cdc.usds.simplereport.db.model.TestOrder;
+import gov.cdc.usds.simplereport.db.model.*;
 import gov.cdc.usds.simplereport.db.model.auxiliary.AskOnEntrySurvey;
 import gov.cdc.usds.simplereport.db.model.auxiliary.PersonName;
 import gov.cdc.usds.simplereport.db.model.auxiliary.PersonName_;
@@ -26,20 +12,7 @@ import gov.cdc.usds.simplereport.db.model.auxiliary.StreetAddress;
 import gov.cdc.usds.simplereport.db.model.auxiliary.TestCorrectionStatus;
 import gov.cdc.usds.simplereport.db.model.auxiliary.TestResult;
 import gov.cdc.usds.simplereport.db.model.auxiliary.TestResultDeliveryPreference;
-import gov.cdc.usds.simplereport.db.repository.DeviceSpecimenTypeRepository;
-import gov.cdc.usds.simplereport.db.repository.DeviceTypeRepository;
-import gov.cdc.usds.simplereport.db.repository.FacilityRepository;
-import gov.cdc.usds.simplereport.db.repository.OrganizationQueueRepository;
-import gov.cdc.usds.simplereport.db.repository.OrganizationRepository;
-import gov.cdc.usds.simplereport.db.repository.PatientAnswersRepository;
-import gov.cdc.usds.simplereport.db.repository.PatientLinkRepository;
-import gov.cdc.usds.simplereport.db.repository.PatientRegistrationLinkRepository;
-import gov.cdc.usds.simplereport.db.repository.PersonRepository;
-import gov.cdc.usds.simplereport.db.repository.PhoneNumberRepository;
-import gov.cdc.usds.simplereport.db.repository.ProviderRepository;
-import gov.cdc.usds.simplereport.db.repository.SpecimenTypeRepository;
-import gov.cdc.usds.simplereport.db.repository.TestEventRepository;
-import gov.cdc.usds.simplereport.db.repository.TestOrderRepository;
+import gov.cdc.usds.simplereport.db.repository.*;
 import gov.cdc.usds.simplereport.idp.repository.DemoOktaRepository;
 import java.time.LocalDate;
 import java.util.ArrayList;
@@ -81,6 +54,7 @@ public class TestDataFactory {
   @Autowired private PatientRegistrationLinkRepository _patientRegistrationLinkRepository;
   @Autowired private SpecimenTypeRepository _specimenRepo;
   @Autowired private DeviceSpecimenTypeRepository _deviceSpecimenRepo;
+  @Autowired private SupportedDiseaseRepository _supportedDiseaseRepo;
   @Autowired private DemoOktaRepository _oktaRepo;
 
   public Organization createValidOrg(
@@ -448,6 +422,10 @@ public class TestDataFactory {
 
   public DeviceSpecimenType createDeviceSpecimen(DeviceType device, SpecimenType specimen) {
     return _deviceSpecimenRepo.save(new DeviceSpecimenType(device, specimen));
+  }
+
+  public SupportedDisease createSupportedDisease(String name, String loinc) {
+    return _supportedDiseaseRepo.save(new SupportedDisease(name, loinc));
   }
 
   public StreetAddress getAddress() {
