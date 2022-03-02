@@ -196,7 +196,11 @@ describe("AddPatient", () => {
 
       const Queue = () => {
         const location = useLocation();
-        return <p>Testing Queue! {location.search}</p>;
+        return (
+          <p>
+            Testing Queue! {location.search} {location.state.patientId}
+          </p>
+        );
       };
 
       render(
@@ -487,6 +491,12 @@ describe("AddPatient", () => {
 
         expect(
           await screen.findByText("facility-id-001", { exact: false })
+        ).toBeInTheDocument();
+
+        expect(
+          screen.getByText("153f661f-b6ea-4711-b9ab-487b95198cce", {
+            exact: false,
+          })
         ).toBeInTheDocument();
       });
     });
