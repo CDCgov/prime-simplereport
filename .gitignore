@@ -9,3 +9,5 @@ node_modules
 *.orig
 *.rej
 /.env
+certs/
+yarn-error.log

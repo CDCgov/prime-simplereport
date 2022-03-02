@@ -1,8 +1,5 @@
-node_modules
-build
 .dockerignore
 Dockerfile
+Dockerfile.db-rollback
 Dockerfile.prod
-/frontend
-/ops
-
+build

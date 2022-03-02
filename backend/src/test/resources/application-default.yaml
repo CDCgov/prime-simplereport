@@ -3,12 +3,12 @@ spring:
   datasource:
     simplereport:
       hikari:
-        jdbc-url: jdbc:postgresql://localhost:${test-db-port:5444}/simple_report
+        jdbc-url: jdbc:postgresql://${test-db-host:localhost}:${test-db-port:5444}/simple_report
         minimum-idle: 2
         idle-timeout: 10000
     metabase:
       hikari:
-        jdbc-url: jdbc:postgresql://localhost:${test-db-port:5444}/metabase
+        jdbc-url: jdbc:postgresql://${test-db-host:localhost}:${test-db-port:5444}/metabase
         idle-timeout: 10000
         maximum-pool-size: 2
   liquibase:

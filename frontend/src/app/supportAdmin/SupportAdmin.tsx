@@ -8,7 +8,7 @@ const SupportAdmin = () => {
           <div className="prime-container card-container">
             <div className="usa-card__header">
               <div>
-                <h2>Support Admin</h2>
+                <h2>Support admin</h2>
               </div>
             </div>
             <div className="usa-card__body">
@@ -24,12 +24,12 @@ const SupportAdmin = () => {
               </div>
               <div>
                 <LinkWithQuery to="/admin/create-device-type">
-                  Create new device type
+                  Add a new testing device
                 </LinkWithQuery>
               </div>
               <div>
                 <LinkWithQuery to="/admin/manage-devices">
-                  Manage devices
+                  Edit existing testing device
                 </LinkWithQuery>
               </div>
               <div>
