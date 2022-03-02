@@ -153,6 +153,7 @@ jacocoTestReport {
 def dbConnectionString = System.getenv("SPRING_DATASOURCE_URL") ?: "jdbc:postgresql://127.0.0.1:${System.getenv("SR_DB_PORT") ?: 5432}/simple_report"
 // If SPRING_DATASOURCE_URL is provided, assume target DB is non-local and schema is "public"
 def defaultSchema = System.getenv("SPRING_DATASOURCE_URL") ? "public" : "simple_report"
+def noPhiPassword = System.getenv("DB_PASSWORD_NO_PHI") ?: "nophi789"
 
 liquibase {
     activities {
@@ -165,7 +166,7 @@ liquibase {
             defaultSchemaName defaultSchema
             classpath "src/main/resources"
             // this shadows application.yaml: should probably be in a shared properties file
-            changeLogParameters noPhiUsername: "simple_report_no_phi"
+            changeLogParameters ([noPhiUsername: "simple_report_no_phi", noPhiPassword: noPhiPassword])
         }
     }
 }
@@ -193,20 +194,6 @@ spotless {
     }
 }
 
-task testDbStart(type: Exec) {
-    environment "SR_DB_PORT", testDbPort
-    commandLine "docker-compose", "-p", "simple-report-tests", "up", "-d", "db"
-}
-
-task testDbStop(type: Exec) {
-    commandLine "docker-compose", "-p", "simple-report-tests", "down"
-}
-
-task testDbReset(type: Exec) {
-    environment "SR_DB_PORT", testDbPort
-    commandLine "db-setup/nuke-db.sh"
-}
-
 test {
     // people sometimes export this to run local dev more easily: don't let it break the tests
     environment "SPRING_PROFILES_ACTIVE", ""
@@ -219,10 +206,7 @@ test {
     // testLogging {
     //   events "started", "failed"
     // }
+    systemProperty "test-db-host", testDbHost
     systemProperty "test-db-port", testDbPort
-    if (System.getenv("CI") == null) {
-        dependsOn testDbStart
-        finalizedBy testDbStop
-    }
 }
 

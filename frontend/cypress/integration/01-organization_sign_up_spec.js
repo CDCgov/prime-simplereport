@@ -38,6 +38,7 @@ describe("Organization sign up", () => {
   it("verifies the org", () => {
     cy.get(".sr-pending-org-edit-verify").first().click();
     cy.get("#verify-button").click();
+    cy.get("#verify-confirmation").click();
     cy.contains("Identity verified for Beach Camp", { timeout: 30000 });
   });
   it("spoofs into the org", () => {
@@ -46,7 +47,7 @@ describe("Organization sign up", () => {
     cy.get("#org-dropdown-select--list--option-0").click();
     cy.get('input[name="justification"]').type("I am a test user").blur();
     cy.contains("Access data").click();
-    cy.contains("Support Admin");
+    cy.contains("Support admin");
   });
   it("navigates to the manage facilities page", () => {
     cy.visit("/settings/facilities");
