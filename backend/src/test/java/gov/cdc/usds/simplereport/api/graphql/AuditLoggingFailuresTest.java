@@ -13,7 +13,6 @@ import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.node.JsonNodeFactory;
 import com.fasterxml.jackson.databind.node.ObjectNode;
-import gov.cdc.usds.simplereport.api.CurrentTenantDataAccessContextHolder;
 import gov.cdc.usds.simplereport.api.ResourceLinks;
 import gov.cdc.usds.simplereport.db.model.ConsoleApiAuditEvent;
 import gov.cdc.usds.simplereport.db.model.Facility;
@@ -34,6 +33,7 @@ import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.mockito.ArgumentCaptor;
 import org.mockito.Captor;
+import org.opentest4j.AssertionFailedError;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.boot.test.web.client.TestRestTemplate;
@@ -60,8 +60,6 @@ class AuditLoggingFailuresTest extends BaseGraphqlTest {
 
   @Autowired private TestRestTemplate _restTemplate;
   @Autowired private OrganizationService _orgService;
-  @MockBean private CurrentTenantDataAccessContextHolder _tenantDataAccessContextHolder;
-
   @MockBean private AuditLoggerService auditLoggerServiceSpy;
   @MockBean private TestEventRepository _testEventRepo;
   @MockBean private TimeOfConsentService _consentService;
@@ -106,10 +104,9 @@ class AuditLoggingFailuresTest extends BaseGraphqlTest {
     useOrgUserAllFacilityAccess();
     ObjectNode args = patientArgs().put("symptoms", "{}").put("noSymptoms", true);
     String clientErrorMessage =
-        assertThrows(NullPointerException.class, () -> runQuery("update-time-of-test", args))
+        assertThrows(AssertionFailedError.class, () -> runQuery("update-time-of-test", args))
             .getMessage();
-    assertEquals( // I would characterize this as a bug in the test framework
-        "Body is empty with status 400", clientErrorMessage);
+    assertEquals("[{\"message\":\"naughty naughty\",\"locations\":[]}]", clientErrorMessage);
   }
 
   @Test

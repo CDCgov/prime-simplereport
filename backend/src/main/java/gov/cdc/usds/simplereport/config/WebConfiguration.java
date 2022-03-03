@@ -3,11 +3,8 @@ package gov.cdc.usds.simplereport.config;
 import gov.cdc.usds.simplereport.logging.PatientExperienceLoggingInterceptor;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnWebApplication;
-import org.springframework.boot.web.servlet.FilterRegistrationBean;
-import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.http.HttpStatus;
-import org.springframework.orm.jpa.support.OpenEntityManagerInViewFilter;
 import org.springframework.web.servlet.config.annotation.InterceptorRegistry;
 import org.springframework.web.servlet.config.annotation.ViewControllerRegistry;
 import org.springframework.web.servlet.config.annotation.WebMvcConfigurer;
@@ -45,8 +42,8 @@ public class WebConfiguration implements WebMvcConfigurer {
    *
    * @return
    */
-  @Bean
-  public FilterRegistrationBean<OpenEntityManagerInViewFilter> openInViewFilter() {
-    return new FilterRegistrationBean<>(new OpenEntityManagerInViewFilter());
-  }
+  //  @Bean
+  //  public FilterRegistrationBean<OpenEntityManagerInViewFilter> openInViewFilter() {
+  //    return new FilterRegistrationBean<>(new OpenEntityManagerInViewFilter());
+  //  }
 }

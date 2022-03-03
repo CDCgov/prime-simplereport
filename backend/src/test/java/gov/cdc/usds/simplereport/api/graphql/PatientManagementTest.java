@@ -6,7 +6,6 @@ import static org.junit.jupiter.api.Assertions.assertTrue;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.node.JsonNodeFactory;
 import com.fasterxml.jackson.databind.node.ObjectNode;
-import gov.cdc.usds.simplereport.api.CurrentTenantDataAccessContextHolder;
 import gov.cdc.usds.simplereport.api.model.Role;
 import gov.cdc.usds.simplereport.config.authorization.UserPermission;
 import gov.cdc.usds.simplereport.db.model.Facility;
@@ -27,7 +26,6 @@ import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.Arguments;
 import org.junit.jupiter.params.provider.MethodSource;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.test.context.TestPropertySource;
 
 @TestPropertySource(properties = "hibernate.query.interceptor.error-level=ERROR")
@@ -36,7 +34,6 @@ class PatientManagementTest extends BaseGraphqlTest {
 
   @Autowired private TestDataFactory _dataFactory;
   @Autowired private OrganizationService _orgService;
-  @MockBean private CurrentTenantDataAccessContextHolder _tenantDataAccessContextHolder;
 
   @Test
   void queryPatientWithFacility() throws Exception {
@@ -141,7 +138,7 @@ class PatientManagementTest extends BaseGraphqlTest {
         "1-800-BIZ-NAME",
         "notbitter",
         Optional.empty(),
-        Optional.of("Current user does not have permission to request [/addPatient]"));
+        Optional.of("Current user does not have permission for this action"));
   }
 
   @Test
@@ -379,10 +376,7 @@ class PatientManagementTest extends BaseGraphqlTest {
   @Test
   void queryingDeletedPatients_standardUser_fail() {
     useOrgUser();
-    runQuery(
-        "deleted-person-query",
-        null,
-        "Current user does not have permission to supply a non-default value for [showDeleted]");
+    runQuery("deleted-person-query", null, "Current user does not have permission for this action");
     assertLastAuditEntry(
         TestUserIdentities.STANDARD_USER,
         "getDeletedPatients",

@@ -4,15 +4,18 @@ import com.okta.sdk.error.Error;
 import com.okta.sdk.error.ErrorCause;
 import com.okta.sdk.resource.ResourceException;
 import com.okta.sdk.resource.user.UserStatus;
-import gov.cdc.usds.simplereport.api.CurrentTenantDataAccessContextHolder;
 import gov.cdc.usds.simplereport.api.model.errors.IllegalGraphqlArgumentException;
 import gov.cdc.usds.simplereport.config.BeanProfiles;
 import gov.cdc.usds.simplereport.config.authorization.OrganizationExtractor;
 import gov.cdc.usds.simplereport.config.authorization.OrganizationRole;
 import gov.cdc.usds.simplereport.config.authorization.OrganizationRoleClaims;
 import gov.cdc.usds.simplereport.config.authorization.PermissionHolder;
+import gov.cdc.usds.simplereport.db.model.ApiUser;
 import gov.cdc.usds.simplereport.db.model.Facility;
 import gov.cdc.usds.simplereport.db.model.Organization;
+import gov.cdc.usds.simplereport.db.model.TenantDataAccess;
+import gov.cdc.usds.simplereport.db.repository.ApiUserRepository;
+import gov.cdc.usds.simplereport.db.repository.TenantDataAccessRepository;
 import gov.cdc.usds.simplereport.service.model.IdentityAttributes;
 import java.util.Collection;
 import java.util.EnumSet;
@@ -36,8 +39,10 @@ import org.springframework.stereotype.Service;
 @Slf4j
 public class DemoOktaRepository implements OktaRepository {
 
+  private final TenantDataAccessRepository tenantDataAccessRepository;
+  private final ApiUserRepository apiUserRepository;
+
   private final OrganizationExtractor organizationExtractor;
-  private final CurrentTenantDataAccessContextHolder tenantDataContextHolder;
 
   Map<String, OrganizationRoleClaims> usernameOrgRolesMap;
   Map<String, Set<String>> orgUsernamesMap;
@@ -46,7 +51,9 @@ public class DemoOktaRepository implements OktaRepository {
   Set<String> allUsernames;
 
   public DemoOktaRepository(
-      OrganizationExtractor extractor, CurrentTenantDataAccessContextHolder contextHolder) {
+      OrganizationExtractor extractor,
+      TenantDataAccessRepository tenantDataAccessRepository,
+      ApiUserRepository apiUserRepository) {
     this.usernameOrgRolesMap = new HashMap<>();
     this.orgUsernamesMap = new HashMap<>();
     this.orgFacilitiesMap = new HashMap<>();
@@ -54,7 +61,8 @@ public class DemoOktaRepository implements OktaRepository {
     this.allUsernames = new HashSet<>();
 
     this.organizationExtractor = extractor;
-    this.tenantDataContextHolder = contextHolder;
+    this.apiUserRepository = apiUserRepository;
+    this.tenantDataAccessRepository = tenantDataAccessRepository;
 
     log.info("Done initializing Demo Okta repository.");
   }
@@ -308,14 +316,27 @@ public class DemoOktaRepository implements OktaRepository {
   }
 
   public Optional<OrganizationRoleClaims> getOrganizationRoleClaimsForUser(String username) {
-    // when accessing tenant data, bypass okta and get org from the altered authorities
-    if (tenantDataContextHolder.hasBeenPopulated()
-        && username.equals(tenantDataContextHolder.getUsername())) {
-      return getOrganizationRoleClaimsFromTenantDataAccess(
-          tenantDataContextHolder.getAuthorities());
+    Optional<ApiUser> optionalUser = apiUserRepository.findByLoginEmail(username);
+
+    if (optionalUser.isEmpty()) {
+      return Optional.ofNullable(usernameOrgRolesMap.get(username));
     }
 
-    return Optional.ofNullable(usernameOrgRolesMap.get(username));
+    List<TenantDataAccess> tenantDataAccessList =
+        tenantDataAccessRepository.findValidByApiUserId(optionalUser.get().getInternalId());
+
+    if (tenantDataAccessList.isEmpty()) {
+      return Optional.ofNullable(usernameOrgRolesMap.get(username));
+    }
+
+    Set<String> authorities = tenantDataAccessList.get(0).getPermissionsData().getAuthorities();
+    List<OrganizationRoleClaims> claims = organizationExtractor.convertClaims(authorities);
+
+    if (claims.isEmpty()) {
+      return Optional.ofNullable(usernameOrgRolesMap.get(username));
+    }
+
+    return Optional.of(claims.get(0));
   }
 
   public void reset() {

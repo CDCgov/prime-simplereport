@@ -4,7 +4,6 @@ import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.node.JsonNodeFactory;
 import com.fasterxml.jackson.databind.node.ObjectNode;
-import gov.cdc.usds.simplereport.api.CurrentTenantDataAccessContextHolder;
 import gov.cdc.usds.simplereport.api.graphql.BaseGraphqlTest;
 import gov.cdc.usds.simplereport.db.model.Facility;
 import gov.cdc.usds.simplereport.db.model.Organization;
@@ -20,7 +19,6 @@ import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.skyscreamer.jsonassert.JSONAssert;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.test.context.TestPropertySource;
 
 // added enable_lazy_load_no_trans=true because I couldn't figure out how to make the hibernate
@@ -35,7 +33,6 @@ class TestEventExportIntegrationTest extends BaseGraphqlTest {
   @Autowired protected TestDataFactory _dataFactory;
   @Autowired private TestEventService _testEventService;
   @Autowired private OrganizationService _orgService;
-  @MockBean private CurrentTenantDataAccessContextHolder _tenantDataAccessContextHolder;
   private final ObjectMapper objectMapper = new ObjectMapper();
 
   private TestEvent testEvent;

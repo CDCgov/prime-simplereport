@@ -1,6 +1,5 @@
 package gov.cdc.usds.simplereport.service;
 
-import gov.cdc.usds.simplereport.api.CurrentTenantDataAccessContextHolder;
 import gov.cdc.usds.simplereport.config.AuthorizationProperties;
 import gov.cdc.usds.simplereport.config.authorization.OrganizationExtractor;
 import gov.cdc.usds.simplereport.config.authorization.OrganizationRole;
@@ -28,7 +27,6 @@ public class TenantDataAccessService {
   private static final int VALID_MINUTES = 60;
 
   @Autowired private TenantDataAccessRepository _repo;
-  @Autowired private CurrentTenantDataAccessContextHolder _contextHolder;
   @Autowired private AuthorizationProperties _authProperties;
   @Autowired private OrganizationExtractor _extractor;
 
@@ -75,6 +73,5 @@ public class TenantDataAccessService {
 
   public void removeAllTenantDataAccess(ApiUser apiUser) {
     _repo.findValidByApiUserId(apiUser.getInternalId()).forEach(i -> i.setIsDeleted(true));
-    _contextHolder.reset();
   }
 }

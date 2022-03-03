@@ -4,10 +4,11 @@ import static org.assertj.core.api.Assertions.assertThat;
 import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.junit.jupiter.api.Assertions.assertTrue;
+import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 
-import gov.cdc.usds.simplereport.api.CurrentTenantDataAccessContextHolder;
 import gov.cdc.usds.simplereport.api.model.errors.IllegalGraphqlArgumentException;
 import gov.cdc.usds.simplereport.config.AuthorizationProperties;
 import gov.cdc.usds.simplereport.config.authorization.OrganizationExtractor;
@@ -15,7 +16,10 @@ import gov.cdc.usds.simplereport.config.authorization.OrganizationRole;
 import gov.cdc.usds.simplereport.config.authorization.OrganizationRoleClaims;
 import gov.cdc.usds.simplereport.db.model.Facility;
 import gov.cdc.usds.simplereport.db.model.Organization;
+import gov.cdc.usds.simplereport.db.repository.ApiUserRepository;
+import gov.cdc.usds.simplereport.db.repository.TenantDataAccessRepository;
 import gov.cdc.usds.simplereport.service.model.IdentityAttributes;
+import java.util.Collections;
 import java.util.Optional;
 import java.util.Set;
 import java.util.UUID;
@@ -41,15 +45,18 @@ class DemoOktaRepositoryTest {
   private static final AuthorizationProperties MOCK_PROPS =
       new AuthorizationProperties(null, "UNITTEST");
   private static final OrganizationExtractor MOCK_EXTRACTOR = new OrganizationExtractor(MOCK_PROPS);
-  private static final CurrentTenantDataAccessContextHolder tenantDataAccessContextHolder =
-      new CurrentTenantDataAccessContextHolder();
-
+  private static final TenantDataAccessRepository tenantDataAccessRepository =
+      mock(TenantDataAccessRepository.class);
+  private static final ApiUserRepository apiUserRepository = mock(ApiUserRepository.class);
   private DemoOktaRepository _repo =
-      new DemoOktaRepository(MOCK_EXTRACTOR, tenantDataAccessContextHolder);
+      new DemoOktaRepository(MOCK_EXTRACTOR, tenantDataAccessRepository, apiUserRepository);
 
   @BeforeEach
   public void setup() {
     _repo.reset();
+    when(apiUserRepository.findByLoginEmail(anyString())).thenReturn(Optional.empty());
+    when(tenantDataAccessRepository.findValidByApiUserId(any()))
+        .thenReturn(Collections.emptyList());
     createOrgAndFacilities();
   }
 

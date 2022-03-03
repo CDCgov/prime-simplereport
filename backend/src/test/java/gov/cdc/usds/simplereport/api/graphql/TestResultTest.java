@@ -9,7 +9,6 @@ import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.node.ArrayNode;
 import com.fasterxml.jackson.databind.node.JsonNodeFactory;
 import com.fasterxml.jackson.databind.node.ObjectNode;
-import gov.cdc.usds.simplereport.api.CurrentTenantDataAccessContextHolder;
 import gov.cdc.usds.simplereport.api.model.Role;
 import gov.cdc.usds.simplereport.db.model.DeviceType;
 import gov.cdc.usds.simplereport.db.model.Facility;
@@ -42,7 +41,6 @@ class TestResultTest extends BaseGraphqlTest {
   @Autowired private TestDataFactory _dataFactory;
   @Autowired private OrganizationService _orgService;
   @MockBean private SmsService _smsService;
-  @MockBean private CurrentTenantDataAccessContextHolder _tenantDataAccessContextHolder;
 
   private Organization _org;
   private Facility _site;
@@ -303,7 +301,7 @@ class TestResultTest extends BaseGraphqlTest {
         "organization-level-metrics",
         "GetOrganizationLevelDashboardMetrics",
         variables,
-        "Current user does not have permission to request [/organizationLevelDashboardMetrics]");
+        "Current user does not have permission for this action");
   }
 
   @Test
@@ -362,7 +360,7 @@ class TestResultTest extends BaseGraphqlTest {
         "dashboard-metrics",
         "GetTopLevelDashboardMetrics",
         variables,
-        "Current user does not have permission to request [/topLevelDashboardMetrics]");
+        "Current user does not have permission for this action");
   }
 
   private ObjectNode getFacilityScopedArguments() {
