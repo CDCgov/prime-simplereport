@@ -269,7 +269,7 @@ exports[`TestQueue should render the test queue 1`] = `
                           data-testid="tooltipWrapper"
                         >
                           <button
-                            aria-describedby="tooltip-734032"
+                            aria-describedby="tooltip-211111"
                             class="usa-button usa-button--unstyled usa-tooltip__trigger"
                             data-testid="triggerElement"
                             position="right"
@@ -297,7 +297,7 @@ exports[`TestQueue should render the test queue 1`] = `
                             aria-hidden="true"
                             class="usa-tooltip__body"
                             data-testid="tooltipBody"
-                            id="tooltip-734032"
+                            id="tooltip-211111"
                             role="tooltip"
                             title="Don’t see the test you’re using? Ask your organization admin to add the correct test and it'll show up here."
                           >
@@ -675,7 +675,7 @@ exports[`TestQueue should render the test queue 1`] = `
                           data-testid="tooltipWrapper"
                         >
                           <button
-                            aria-describedby="tooltip-323564"
+                            aria-describedby="tooltip-211111"
                             class="usa-button usa-button--unstyled usa-tooltip__trigger"
                             data-testid="triggerElement"
                             position="right"
@@ -703,7 +703,7 @@ exports[`TestQueue should render the test queue 1`] = `
                             aria-hidden="true"
                             class="usa-tooltip__body"
                             data-testid="tooltipBody"
-                            id="tooltip-323564"
+                            id="tooltip-211111"
                             role="tooltip"
                             title="Don’t see the test you’re using? Ask your organization admin to add the correct test and it'll show up here."
                           >
