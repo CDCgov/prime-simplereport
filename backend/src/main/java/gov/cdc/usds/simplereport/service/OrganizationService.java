@@ -1,6 +1,5 @@
 package gov.cdc.usds.simplereport.service;
 
-import gov.cdc.usds.simplereport.api.CurrentOrganizationRolesContextHolder;
 import gov.cdc.usds.simplereport.api.model.errors.IllegalGraphqlArgumentException;
 import gov.cdc.usds.simplereport.api.model.errors.MisconfiguredUserException;
 import gov.cdc.usds.simplereport.config.AuthorizationConfiguration;
@@ -41,21 +40,12 @@ public class OrganizationService {
   private final ProviderRepository providerRepository;
   private final AuthorizationService authorizationService;
   private final OktaRepository oktaRepository;
-  private final CurrentOrganizationRolesContextHolder organizationRolesContext;
   private final OrderingProviderRequiredValidator orderingProviderValidator;
   private final PatientSelfRegistrationLinkService patientSelfRegistrationLinkService;
   private final DeviceTypeRepository deviceTypeRepository;
 
-  public void resetOrganizationRolesContext() {
-    organizationRolesContext.reset();
-  }
-
   public Optional<OrganizationRoles> getCurrentOrganizationRoles() {
-    if (organizationRolesContext.hasBeenPopulated()) {
-      return organizationRolesContext.getOrganizationRoles();
-    }
     var result = fetchCurrentOrganizationRoles();
-    organizationRolesContext.setOrganizationRoles(result);
     return result;
   }
 

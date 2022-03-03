@@ -1,6 +1,5 @@
 package gov.cdc.usds.simplereport.config;
 
-import gov.cdc.usds.simplereport.api.CurrentTenantDataAccessContextHolder;
 import gov.cdc.usds.simplereport.api.model.errors.NonexistentUserException;
 import gov.cdc.usds.simplereport.config.authorization.TenantDataAuthenticationProvider;
 import gov.cdc.usds.simplereport.service.ApiUserService;
@@ -25,7 +24,6 @@ public class TenantDataAccessFilter implements Filter {
 
   @Autowired AuthorizationService _authService;
   @Autowired ApiUserService _apiUserService;
-  @Autowired CurrentTenantDataAccessContextHolder _currentTenantDataAccessContextHolder;
   @Autowired TenantDataAuthenticationProvider _tenantDataAuthProvider;
 
   @Override
@@ -44,8 +42,6 @@ public class TenantDataAccessFilter implements Filter {
 
           String username =
               _apiUserService.getCurrentApiUserInContainedTransaction().getLoginEmail();
-          _currentTenantDataAccessContextHolder.setTenantDataAccessAuthorities(
-              username, authorities);
 
           // overwrite authentication with a new token so that subsequent request processing
           // will see the authorities asserted by the active tenant data access rather than

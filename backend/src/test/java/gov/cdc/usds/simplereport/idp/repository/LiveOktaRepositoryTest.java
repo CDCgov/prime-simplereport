@@ -19,7 +19,6 @@ import com.okta.sdk.resource.user.User;
 import com.okta.sdk.resource.user.UserList;
 import com.okta.sdk.resource.user.UserProfile;
 import com.okta.sdk.resource.user.UserStatus;
-import gov.cdc.usds.simplereport.api.CurrentTenantDataAccessContextHolder;
 import gov.cdc.usds.simplereport.api.model.errors.IllegalGraphqlArgumentException;
 import gov.cdc.usds.simplereport.config.AuthorizationProperties;
 import gov.cdc.usds.simplereport.config.authorization.OrganizationExtractor;
@@ -43,8 +42,6 @@ class LiveOktaRepositoryTest {
   private static final AuthorizationProperties MOCK_PROPS =
       new AuthorizationProperties(null, "UNITTEST");
   private static final OrganizationExtractor MOCK_EXTRACTOR = new OrganizationExtractor(MOCK_PROPS);
-  private static final CurrentTenantDataAccessContextHolder tenantDataAccessContextHolder =
-      new CurrentTenantDataAccessContextHolder();
   private static final String MOCK_CLIENT_ID = "FAKE_CLIENT_ID";
   private Client _client = mock(Client.class);
   private Application _app = mock(Application.class);
@@ -53,9 +50,7 @@ class LiveOktaRepositoryTest {
   @BeforeEach
   public void setup() {
     when(_client.getApplication(MOCK_CLIENT_ID)).thenReturn(_app);
-    _repo =
-        new LiveOktaRepository(
-            MOCK_PROPS, _client, MOCK_CLIENT_ID, MOCK_EXTRACTOR, tenantDataAccessContextHolder);
+    _repo = new LiveOktaRepository(MOCK_PROPS, _client, MOCK_CLIENT_ID, MOCK_EXTRACTOR);
   }
 
   @Test
@@ -118,7 +113,39 @@ class LiveOktaRepositoryTest {
     authorities.add("SR-UNITTEST-TENANT:FAKE-ORG:NO_ACCESS");
     authorities.add("SR-UNITTEST-TENANT:FAKE-ORG:ADMIN");
 
-    tenantDataAccessContextHolder.setTenantDataAccessAuthorities(username, authorities);
+    UserList userList = mock(UserList.class);
+    User user = mock(User.class);
+    GroupList groupList = mock(GroupList.class);
+    Group group1 = mock(Group.class);
+    Group group2 = mock(Group.class);
+    Group group3 = mock(Group.class);
+    Group group4 = mock(Group.class);
+    GroupProfile groupProfile1 = mock(GroupProfile.class);
+    GroupProfile groupProfile2 = mock(GroupProfile.class);
+    GroupProfile groupProfile3 = mock(GroupProfile.class);
+    GroupProfile groupProfile4 = mock(GroupProfile.class);
+
+    when(_client.listUsers(username, null, null, null, null)).thenReturn(userList);
+    when(userList.stream()).thenReturn(Stream.of(user));
+    when(userList.single()).thenReturn(user);
+    when(user.listGroups()).thenReturn(groupList);
+    when(groupList.stream()).thenReturn(Stream.of(group1, group2, group3, group4));
+    when(group1.getType()).thenReturn(GroupType.OKTA_GROUP);
+    when(group1.getProfile()).thenReturn(groupProfile1);
+    when(groupProfile1.getName()).thenReturn("SR-UNITTEST-TENANT:FAKE-ORG:NO_ACCESS");
+    when(group2.getType()).thenReturn(GroupType.OKTA_GROUP);
+    when(group2.getProfile()).thenReturn(groupProfile2);
+    when(groupProfile2.getName()).thenReturn("SR-UNITTEST-TENANT:FAKE-ORG:ADMIN");
+    when(group3.getType()).thenReturn(GroupType.OKTA_GROUP);
+    when(group3.getProfile()).thenReturn(groupProfile3);
+    when(groupProfile3.getName())
+        .thenReturn(
+            "SR-UNITTEST-TENANT:FAKE-ORG:FACILITY_ACCESS:80d0c820-1dc5-418e-a61e-dc6dad8c5e49");
+    when(group4.getType()).thenReturn(GroupType.OKTA_GROUP);
+    when(group4.getProfile()).thenReturn(groupProfile4);
+    when(groupProfile4.getName())
+        .thenReturn(
+            "SR-UNITTEST-TENANT:FAKE-ORG:FACILITY_ACCESS:f49e8e27-dd41-4a9e-a29f-15ac74422923");
 
     Optional<OrganizationRoleClaims> optClaims = _repo.getOrganizationRoleClaimsForUser(username);
 

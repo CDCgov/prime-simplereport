@@ -15,7 +15,6 @@ import com.okta.sdk.resource.user.UserList;
 import com.okta.sdk.resource.user.UserProfile;
 import com.okta.sdk.resource.user.UserStatus;
 import com.okta.spring.boot.sdk.config.OktaClientProperties;
-import gov.cdc.usds.simplereport.api.CurrentTenantDataAccessContextHolder;
 import gov.cdc.usds.simplereport.api.model.errors.IllegalGraphqlArgumentException;
 import gov.cdc.usds.simplereport.config.AuthorizationProperties;
 import gov.cdc.usds.simplereport.config.BeanProfiles;
@@ -63,14 +62,12 @@ public class LiveOktaRepository implements OktaRepository {
   private Client _client;
   private Application _app;
   private OrganizationExtractor _extractor;
-  private CurrentTenantDataAccessContextHolder _tenantDataContextHolder;
 
   public LiveOktaRepository(
       AuthorizationProperties authorizationProperties,
       Client client,
       @Value("${okta.oauth2.client-id}") String oktaOAuth2ClientId,
-      OrganizationExtractor organizationExtractor,
-      CurrentTenantDataAccessContextHolder tenantDataContextHolder) {
+      OrganizationExtractor organizationExtractor) {
     _rolePrefix = authorizationProperties.getRolePrefix();
     _client = client;
     try {
@@ -80,7 +77,6 @@ public class LiveOktaRepository implements OktaRepository {
           "Cannot find Okta application with id=" + oktaOAuth2ClientId, e);
     }
     _extractor = organizationExtractor;
-    _tenantDataContextHolder = tenantDataContextHolder;
   }
 
   @Autowired
@@ -88,8 +84,7 @@ public class LiveOktaRepository implements OktaRepository {
       AuthorizationProperties authorizationProperties,
       OktaClientProperties oktaClientProperties,
       @Value("${okta.oauth2.client-id}") String oktaOAuth2ClientId,
-      OrganizationExtractor organizationExtractor,
-      CurrentTenantDataAccessContextHolder tenantDataContextHolder) {
+      OrganizationExtractor organizationExtractor) {
     _rolePrefix = authorizationProperties.getRolePrefix();
     _client =
         Clients.builder()
@@ -103,7 +98,6 @@ public class LiveOktaRepository implements OktaRepository {
           "Cannot find Okta application with id=" + oktaOAuth2ClientId, e);
     }
     _extractor = organizationExtractor;
-    _tenantDataContextHolder = tenantDataContextHolder;
   }
 
   public Optional<OrganizationRoleClaims> createUser(
@@ -560,10 +554,6 @@ public class LiveOktaRepository implements OktaRepository {
     // When a site admin is using tenant data access, bypass okta and get org from the altered
     // authorities.  If the site admin is getting the claims for another site admin who also has
     // active tenant data access, the reflect what is in Okta, not the temporary claims.
-    if (_tenantDataContextHolder.hasBeenPopulated()
-        && username.equals(_tenantDataContextHolder.getUsername())) {
-      return getOrganizationRoleClaimsFromAuthorities(_tenantDataContextHolder.getAuthorities());
-    }
 
     UserList users = _client.listUsers(username, null, null, null, null);
     if (users.stream().count() == 0) {

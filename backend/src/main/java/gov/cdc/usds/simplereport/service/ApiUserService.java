@@ -1,7 +1,6 @@
 package gov.cdc.usds.simplereport.service;
 
 import com.okta.sdk.resource.user.UserStatus;
-import gov.cdc.usds.simplereport.api.ApiUserContextHolder;
 import gov.cdc.usds.simplereport.api.CurrentAccountRequestContextHolder;
 import gov.cdc.usds.simplereport.api.WebhookContextHolder;
 import gov.cdc.usds.simplereport.api.model.ApiUserWithStatus;
@@ -65,8 +64,6 @@ public class ApiUserService {
   @Autowired private CurrentAccountRequestContextHolder _accountRequestContextHolder;
 
   @Autowired private WebhookContextHolder _webhookContextHolder;
-
-  @Autowired private ApiUserContextHolder _apiUserContextHolder;
 
   public boolean userExists(String username) {
     Optional<ApiUser> found =
@@ -492,12 +489,7 @@ public class ApiUserService {
       return getCurrentApiUserNoCache();
     }
 
-    if (_apiUserContextHolder.hasBeenPopulated()) {
-      log.debug("Retrieving user from request context");
-      return _apiUserContextHolder.getCurrentApiUser();
-    }
     ApiUser user = getCurrentApiUserNoCache();
-    _apiUserContextHolder.setCurrentApiUser(user);
     return user;
   }
 
@@ -594,7 +586,6 @@ public class ApiUserService {
   private UserInfo cancelCurrentUserTenantDataAccess() {
     ApiUser apiUser = getCurrentApiUser();
     _tenantService.removeAllTenantDataAccess(apiUser);
-    _orgService.resetOrganizationRolesContext();
     return getCurrentUserInfo();
   }
 
@@ -602,5 +593,15 @@ public class ApiUserService {
   public Set<String> getTenantDataAccessAuthoritiesForCurrentUser() {
     ApiUser apiUser = getCurrentApiUser();
     return _tenantService.getTenantDataAccessAuthorities(apiUser);
+  }
+
+  // to replace CurrentTenantDataAccessContextHolder.getUsername()
+  public String getUsername() {
+    return getCurrentApiUserInContainedTransaction().getLoginEmail();
+  }
+
+  // to replace CurrentTenantDataAccessContextHolder.getAuthorities()
+  public Set<String> getAuthorities() {
+    return getTenantDataAccessAuthoritiesForCurrentUser();
   }
 }

@@ -48,7 +48,6 @@ import org.springframework.test.web.servlet.request.MockHttpServletRequestBuilde
 @AutoConfigureMockMvc
 public abstract class BaseFullStackTest {
 
-  @Autowired private CurrentTenantDataAccessContextHolder _tenantDataAccessContextHolder;
   @Autowired private DbTruncator _truncator;
   @Autowired protected TestDataFactory _dataFactory;
   @SpyBean protected OrganizationService _orgService;

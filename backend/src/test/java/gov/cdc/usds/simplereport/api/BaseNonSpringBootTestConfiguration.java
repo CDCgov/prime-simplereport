@@ -9,6 +9,5 @@ public class BaseNonSpringBootTestConfiguration {
 
   // Dependencies of TenantDataAccessFilter
   @MockBean private ApiUserService _mockApiUserService;
-  @MockBean private CurrentTenantDataAccessContextHolder _mockContextHolder;
   @MockBean private DiseaseService _mockDiseaseService;
 }

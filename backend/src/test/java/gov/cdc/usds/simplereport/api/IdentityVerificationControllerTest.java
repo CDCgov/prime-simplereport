@@ -24,6 +24,8 @@ import gov.cdc.usds.simplereport.config.TemplateConfiguration;
 import gov.cdc.usds.simplereport.config.WebConfiguration;
 import gov.cdc.usds.simplereport.config.authorization.DemoAuthenticationConfiguration;
 import gov.cdc.usds.simplereport.db.model.OrganizationQueueItem;
+import gov.cdc.usds.simplereport.db.repository.ApiUserRepository;
+import gov.cdc.usds.simplereport.db.repository.TenantDataAccessRepository;
 import gov.cdc.usds.simplereport.idp.repository.DemoOktaRepository;
 import gov.cdc.usds.simplereport.logging.AuditLoggingAdvice;
 import gov.cdc.usds.simplereport.service.OrganizationQueueService;
@@ -69,6 +71,10 @@ class IdentityVerificationControllerTest extends BaseNonSpringBootTestConfigurat
   @Autowired private DemoExperianService _experianService;
   @MockBean private EmailService _emailService;
   @MockBean private OrganizationQueueService _orgQueueService;
+
+  // Dependencies of DemoOktaRepository
+  @MockBean private TenantDataAccessRepository tenantDataAccessRepository;
+  @MockBean private ApiUserRepository apiUserRepository;
 
   private static final String FAKE_ORG_EXTERNAL_ID = "FAKE_ORG_EXTERNAL_ID";
   private static final String FAKE_ORG_EXTERNAL_ID_DOES_NOT_EXIST = "DOES_NOT_EXIST";

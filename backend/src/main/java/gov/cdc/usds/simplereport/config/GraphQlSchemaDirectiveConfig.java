@@ -2,7 +2,7 @@ package gov.cdc.usds.simplereport.config;
 
 import gov.cdc.usds.simplereport.api.DefaultArgumentValidation;
 import gov.cdc.usds.simplereport.api.directives.RequiredPermissionsDirectiveWiring;
-import graphql.kickstart.tools.boot.SchemaDirective;
+import graphql.kickstart.autoconfigure.tools.SchemaDirective;
 import graphql.validation.rules.OnValidationErrorStrategy;
 import graphql.validation.rules.ValidationRules;
 import graphql.validation.schemawiring.ValidationSchemaWiring;

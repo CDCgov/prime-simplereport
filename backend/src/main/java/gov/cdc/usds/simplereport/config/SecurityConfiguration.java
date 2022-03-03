@@ -97,7 +97,9 @@ public class SecurityConfiguration extends WebSecurityConfigurerAdapter {
         // breaks the REST controller, so we disable it for most paths.
         // USER_ACCOUNT_REQUEST does use sessions, so CSRF is enabled there.
         .and()
-        .csrf()
+        .oauth2ResourceServer()
+        .jwt();
+    http.csrf()
         .requireCsrfProtectionMatcher(
             new AntPathRequestMatcher(WebConfiguration.USER_ACCOUNT_REQUEST));
 

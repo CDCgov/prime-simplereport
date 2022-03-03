@@ -2132,6 +2132,7 @@ databaseChangeLog:
       id: add-patient-registration-link-table
       author: nicholas.a.scialli@omb.eop.gov
       comment: Add a table that stores facility- or organization-specific patient registration links.
+      validCheckSum: "1:any"
       changes:
         - createTable:
             tableName: patient_registration_link
@@ -2530,6 +2531,7 @@ databaseChangeLog:
       id: add-patient-preferences-to-person-view
       author: nathan@skylight.digital
       comment: Add person patient preferences to person_no_phi_view
+      validCheckSum: "1:any"
       changes:
         - dropView:
             viewName: person_no_phi_view
@@ -2732,6 +2734,7 @@ databaseChangeLog:
       id: generate-registration-links
       author: nicholas.a.scialli@omb.eop.gov
       comment: Generates self-registration links for orgs and facilities that do not have them yet.
+      validCheckSum: "1:any"
       changes:
         - createProcedure:
             dbms: postgresql
@@ -2850,6 +2853,7 @@ databaseChangeLog:
       id: add-lookup-id-to-no-phi-view
       author: tbest@cdc.gov
       comment: Add lookup_id to person_no_phi_view.
+      validCheckSum: "1:any"
       changes:
         - dropView:
             viewName: person_no_phi_view
@@ -3441,6 +3445,7 @@ databaseChangeLog:
       id: add-emails-to-patient
       author: nathan@skylight.digital
       comment: add emails column to person table to allow multiple patient emails
+      validCheckSum: "1:any"
       changes:
         - tagDatabase:
             tag: add-emails-to-patient
@@ -3464,6 +3469,7 @@ databaseChangeLog:
       id: populate-patient-emails
       author: zedd@skylight.digital
       comment: populate emails column from email
+      validCheckSum: "1:any"
       changes:
         - tagDatabase:
             tag: populate-patient-emails

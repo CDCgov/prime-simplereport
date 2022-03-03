@@ -1,12 +1,12 @@
 plugins {
-    id 'org.springframework.boot' version '2.4.1'
+    id 'org.springframework.boot' version '2.6.4'
     id 'org.liquibase.gradle' version '2.0.4'
-    id 'io.spring.dependency-management' version '1.0.10.RELEASE'
+    id 'io.spring.dependency-management' version '1.0.11.RELEASE'
     id 'java'
     id 'checkstyle'
     id 'jacoco'
     id 'org.sonarqube' version '3.0'
-    id 'com.gorylenko.gradle-git-properties' version '2.2.0'
+    id 'com.gorylenko.gradle-git-properties' version '2.4.0'
     id "com.diffplug.spotless" version "5.14.0"
 }
 
@@ -15,35 +15,50 @@ version = '0.0.1-SNAPSHOT'
 sourceCompatibility = '11'
 
 ext {
-    kickstartVersion = '11.0.0'
+    kickstartVersion = '12.0.0'
     set('springCloudVersion', "Hoxton.SR11")
 }
+
+configurations {
+    compileOnly {
+        extendsFrom annotationProcessor
+    }
+}
+
 repositories {
     mavenCentral()
+}
+
+// new spring generates two jar files, which messes up the ci pipeline since it expects one jar in the build/libs dir
+// https://stackoverflow.com/questions/67663728/spring-boot-2-5-0-generates-plain-jar-file-can-i-remove-it
+jar {
+    enabled = false
 }
 
 dependencies {
     // core infrastructure
     implementation 'org.springframework.boot:spring-boot-starter-web'
+    implementation 'org.springframework.boot:spring-boot-actuator'
+    implementation 'org.springframework.boot:spring-boot-actuator-autoconfigure'
 
     // log4j vulnerability fixes (Dec 2021)
-    implementation 'org.apache.logging.log4j:log4j-api:2.17.0'
+    implementation 'org.apache.logging.log4j:log4j-api:2.17.1'
     implementation 'org.apache.logging.log4j:log4j-to-slf4j:2.17.0'
 
     // data layer dependencies
     implementation 'org.springframework.boot:spring-boot-starter-data-jpa'
     implementation 'org.springframework.boot:spring-boot-starter-validation'
-    implementation 'com.vladmihalcea:hibernate-types-52:2.10.0'
+    implementation 'com.vladmihalcea:hibernate-types-52:2.14.0'
     implementation 'org.liquibase:liquibase-core'
     runtimeOnly 'org.postgresql:postgresql'
 
     // data validation
-    implementation 'com.googlecode.libphonenumber:libphonenumber:8.12.15'
-    implementation 'com.smartystreets.api:smartystreets-java-sdk:3.7.2'
+    implementation 'com.googlecode.libphonenumber:libphonenumber:8.12.44'
+    implementation 'com.smartystreets.api:smartystreets-java-sdk:3.12.4'
 
     // UI layer dependencies
     implementation "com.graphql-java-kickstart:graphql-spring-boot-starter:${kickstartVersion}"
-    implementation "com.zhokhov.graphql:graphql-datetime-spring-boot-starter:4.0.0"
+    implementation 'com.zhokhov.graphql:graphql-datetime-spring-boot-starter:4.1.0'
     implementation 'org.json:json:20201115'
     implementation 'com.fasterxml.jackson.dataformat:jackson-dataformat-csv'
     implementation 'com.fasterxml.jackson.datatype:jackson-datatype-hibernate5'
@@ -65,17 +80,17 @@ dependencies {
     implementation group: "com.twilio.sdk", name: "twilio", version: "8.7.0"
 
     // SendGrid for Email
-    implementation 'com.sendgrid:sendgrid-java:4.7.2'
+    implementation 'com.sendgrid:sendgrid-java:4.8.3'
 
     // For local Email
     implementation 'org.springframework.boot:spring-boot-starter-mail'
 
     // JPA Hibernate static metamodel generation
-    compile 'org.hibernate:hibernate-jpamodelgen:5.4.27.Final'
-    annotationProcessor 'org.hibernate:hibernate-jpamodelgen'
+    implementation 'org.hibernate:hibernate-jpamodelgen:5.6.5.Final'
+    annotationProcessor'org.hibernate:hibernate-jpamodelgen'
 
     // graphql-java-extended-validation schema directives
-    compile 'com.graphql-java:graphql-java-extended-validation:16.0.0'
+    implementation 'com.graphql-java:graphql-java-extended-validation:17.0-hibernate-validator-6.2.0.Final'
 
     implementation 'com.azure:azure-storage-queue:12.12.+'
 
@@ -85,24 +100,28 @@ dependencies {
     }
     testImplementation "com.graphql-java-kickstart:graphql-spring-boot-starter-test:${kickstartVersion}"
     testImplementation 'org.springframework.security:spring-security-test'
-    testImplementation 'com.yannbriancon:spring-hibernate-query-utils:1.0.3'
+    testImplementation 'com.yannbriancon:spring-hibernate-query-utils:2.0.0'
 
     // used to autoconfigure WireMock for testing
     testImplementation 'org.springframework.cloud:spring-cloud-contract-wiremock'
     testImplementation 'org.springframework.cloud:spring-cloud-starter-contract-stub-runner'
-    testImplementation 'org.awaitility:awaitility:4.1.0'
+    testImplementation 'org.awaitility:awaitility:4.1.1'
 
     // dev tools
     developmentOnly 'org.springframework.boot:spring-boot-devtools'
 
+    // adding in MeterRegistry
+    runtimeOnly 'io.micrometer:micrometer-registry-prometheus'
+
+
     // Lombok
-    compileOnly 'org.projectlombok:lombok:1.18.20'
-    annotationProcessor 'org.projectlombok:lombok:1.18.20'
-    testCompileOnly 'org.projectlombok:lombok:1.18.20'
-    testAnnotationProcessor 'org.projectlombok:lombok:1.18.20'
+    compileOnly 'org.projectlombok:lombok'
+    annotationProcessor 'org.projectlombok:lombok'
+    testCompileOnly 'org.projectlombok:lombok'
+    testAnnotationProcessor 'org.projectlombok:lombok'
 
     // WireMock (only used for testing)
-    testCompile "com.github.tomakehurst:wiremock-jre8:2.28.1"
+    testImplementation 'com.github.tomakehurst:wiremock-jre8:2.32.0'
 
     // Forcing these version resolutions over the BOM of spring-cloud-dependencies below
     runtimeOnly 'com.azure:azure-core-http-netty:1.11.9'
@@ -110,11 +129,11 @@ dependencies {
     runtimeOnly 'com.azure:azure-storage-common:12.15.1'
     runtimeOnly "com.azure:azure-storage-queue:12.12.1"
 
-    runtimeOnly "io.zipkin.brave:brave-instrumentation-http:5.13.2"
+    runtimeOnly 'io.zipkin.brave:brave-instrumentation-http:5.13.7'
     runtimeOnly "io.zipkin.brave:brave:5.13.2"
     runtimeOnly "io.zipkin.reporter2:zipkin-reporter-brave:2.16.3"
     runtimeOnly "io.zipkin.reporter2:zipkin-reporter:2.16.1"
-    runtimeOnly "io.zipkin.zipkin2:zipkin:2.23.0"
+    runtimeOnly 'io.zipkin.zipkin2:zipkin:2.23.16'
 
 }
 
@@ -218,9 +237,9 @@ test {
     environment "OKTA_TESTING_DISABLEHTTPSCHECK", "true"
     useJUnitPlatform()
     // uncomment this to log to stdout when each test starts, so you can tell what's going on
-    // testLogging {
-    //   events "started", "failed"
-    // }
+    testLogging {
+        events "PASSED", "SKIPPED", "FAILED", "STANDARD_ERROR", "STANDARD_OUT"
+    }
     systemProperty "test-db-host", testDbHost
     systemProperty "test-db-port", testDbPort
     systemProperty "skip-db-setup", skipDbSetup

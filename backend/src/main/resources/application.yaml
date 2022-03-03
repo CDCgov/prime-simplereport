@@ -1,4 +1,7 @@
 spring:
+  mvc:
+    pathmatch:
+      matching-strategy: ant-path-matcher
   config:
     use-legacy-processing: true
   main:
@@ -22,9 +25,10 @@ spring:
   jpa:
     database: POSTGRESQL
     hibernate.ddl-auto: validate
-    open-in-view: false # this is misleading: we actually have a filter that does this instead
+    open-in-view: true # this is misleading: we actually have a filter that does this instead
     properties:
       hibernate:
+        enable_lazy_load_no_trans: true # removing in no session issues
         default_schema: public # Using the public schema for now, so we don't have to add a manual step to the deploy process
   liquibase:
     simplereport:
