@@ -196,30 +196,6 @@ describe("EditPatient", () => {
 
       userEvent.click(saveAndStartButton);
 
-      /*
-      expect(
-        await screen.findByText("Address validation", {
-          exact: false,
-        })
-      ).toBeInTheDocument();
-
-      const modal = screen.getByRole("dialog", {
-        exact: false,
-      });
-
-      userEvent.click(
-        within(modal).getByLabelText("Use address as entered", {
-          exact: false,
-        })
-      );
-      userEvent.click(
-        within(modal).getByText("Save changes", {
-          exact: false,
-        })
-      );
-
-      //await waitForElementToBeRemoved(() => screen.queryAllByText("Saving..."));
-*/
       await waitFor(() => {
         expect(
           screen.getByText("Testing Queue!", { exact: false })
