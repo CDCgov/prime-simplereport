@@ -14,6 +14,14 @@ import { ToastContainer } from "react-toastify";
 
 import AddPatient, { ADD_PATIENT, PATIENT_EXISTS } from "./AddPatient";
 
+interface LocationOptions {
+  search: string;
+  pathname: string;
+  state: {
+    patientId: string;
+  };
+}
+
 const mockFacilityID = "b0d2041f-93c9-4192-b19a-dd99c0044a7e";
 const mockStore = configureStore([]);
 const store = mockStore({
@@ -195,7 +203,8 @@ describe("AddPatient", () => {
       ];
 
       const Queue = () => {
-        const location = useLocation();
+        const location = useLocation() as LocationOptions;
+
         return (
           <p>
             Testing Queue! {location.search} {location.state.patientId}
