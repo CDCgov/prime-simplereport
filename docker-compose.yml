@@ -37,10 +37,6 @@ services:
       - db
     expose:
       - "8080"
-    deploy:
-      resources:
-        limits:
-          memory: 4G # 32G available in Prod, split between 8 total containers.
   # React frontend
   frontend:
     build:

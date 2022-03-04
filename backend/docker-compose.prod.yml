@@ -7,7 +7,3 @@ services:
     image: simple-report-api-build
     ports:
       - "8080:8080"
-    deploy:
-      resources:
-        limits:
-          memory: 4G # 32G available in Prod, split between 8 total containers.
