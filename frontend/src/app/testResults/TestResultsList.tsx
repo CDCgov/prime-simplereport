@@ -18,7 +18,7 @@ import { DatePicker, Label } from "@trussworks/react-uswds";
 
 import { PATIENT_TERM_CAP } from "../../config/constants";
 import { displayFullName } from "../utils";
-import { isValidDate } from "../utils/date";
+import { isValidDate, formatDateWithTimeOption } from "../utils/date";
 import { ActionsMenu } from "../commonComponents/ActionsMenu";
 import { getParameterFromUrl, getUrl } from "../utils/url";
 import { useDocumentTitle, useOutsideClick } from "../utils/hooks";
@@ -137,10 +137,10 @@ function testResultRows(
             r.patient.lastName
           )}
           <span className="display-block text-base font-ui-2xs">
-            DOB: {moment(r.patient.birthDate).format("MM/DD/YYYY")}
+            DOB: {formatDateWithTimeOption(r.patient.birthDate)}
           </span>
         </th>
-        <td>{moment(r.dateTested).format("MM/DD/YYYY h:mma")}</td>
+        <td>{formatDateWithTimeOption(r.dateTested, true)}</td>
         <td>{TEST_RESULT_DESCRIPTIONS[r.result as Results]}</td>
         <td>{r.deviceType.name}</td>
         <td>{hasSymptoms(r.noSymptoms, r.symptoms)}</td>

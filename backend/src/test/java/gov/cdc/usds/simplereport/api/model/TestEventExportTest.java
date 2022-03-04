@@ -8,9 +8,7 @@ import gov.cdc.usds.simplereport.db.model.Person;
 import gov.cdc.usds.simplereport.db.model.TestEvent;
 import gov.cdc.usds.simplereport.db.model.auxiliary.AskOnEntrySurvey;
 import gov.cdc.usds.simplereport.db.model.auxiliary.TestResult;
-import gov.cdc.usds.simplereport.test_util.DbTruncator;
-import gov.cdc.usds.simplereport.test_util.SliceTestConfiguration;
-import gov.cdc.usds.simplereport.test_util.SliceTestConfiguration.WithSimpleReportStandardUser;
+import gov.cdc.usds.simplereport.db.repository.BaseRepositoryTest;
 import gov.cdc.usds.simplereport.test_util.TestDataFactory;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
@@ -20,16 +18,8 @@ import java.util.Collections;
 import java.util.Date;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.test.autoconfigure.jdbc.AutoConfigureTestDatabase;
-import org.springframework.boot.test.autoconfigure.jdbc.AutoConfigureTestDatabase.Replace;
-import org.springframework.boot.test.autoconfigure.orm.jpa.DataJpaTest;
-import org.springframework.context.annotation.Import;
 
-@DataJpaTest
-@AutoConfigureTestDatabase(replace = Replace.NONE)
-@Import({SliceTestConfiguration.class, DbTruncator.class})
-@WithSimpleReportStandardUser
-class TestEventExportTest {
+class TestEventExportTest extends BaseRepositoryTest {
   @Autowired protected TestDataFactory _dataFactory;
 
   @Test
@@ -184,7 +174,7 @@ class TestEventExportTest {
     TestEvent originalTestEvent =
         _dataFactory.createTestEvent(person, facility, null, null, backTestedDate);
     String originalEventId = originalTestEvent.getInternalId().toString();
-    TestEvent testEvent = _dataFactory.createTestEventCorrection(originalTestEvent);
+    TestEvent testEvent = _dataFactory.createTestEventRemoval(originalTestEvent);
 
     // WHEN
     TestEventExport exportedEvent = new TestEventExport(testEvent);

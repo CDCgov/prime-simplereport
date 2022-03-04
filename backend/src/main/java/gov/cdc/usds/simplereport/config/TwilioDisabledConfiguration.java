@@ -20,7 +20,7 @@ class DisabledSmsWrapper implements SmsProviderWrapper {
   private static String DISABLED_MESSAGE_PREFIX = "twilio-is-disabled";
 
   @Override
-  public String send(PhoneNumber to, PhoneNumber from, String message) {
+  public String send(PhoneNumber to, String message) {
     return String.format("%s-%s", DISABLED_MESSAGE_PREFIX, UUID.randomUUID().toString());
   }
 }

@@ -1,1 +1,22 @@
-spring.datasource.url: jdbc:postgresql://db:${SR_DB_PORT:5432}/simple_report
+spring:
+  datasource:
+    simplereport:
+      hikari:
+        jdbc-url: jdbc:postgresql://db:${SR_DB_PORT:5432}/simple_report
+    metabase:
+      hikari:
+        jdbc-url: jdbc:postgresql://db:${SR_DB_PORT:5432}/metabase
+  liquibase:
+    simplereport:
+      user: simple_report_migrations
+      password: migrations456
+    metabase:
+      user: simple_report_migrations
+      password: migrations456
+      default-schema: public
+  jpa:
+    properties:
+      hibernate:
+        show_sql: true
+        format_sql: false # override this in application-local.yaml to get pretty-printed SQL all the time
+        default_schema: simple_report

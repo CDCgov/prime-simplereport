@@ -66,6 +66,10 @@ jobs:
         with:
           terraform_version: 1.1.4
       - name: Terraform Init
-        run: make init-prod 
+        run: make init-prod
+      - name: Build ReportStream function app
+        uses: ./.github/actions/build-reportstream-functions
+        with:
+          deploy-env: ${{env.DEPLOY_ENV}}
       - name: Terraform plan
         run: make plan-prod
