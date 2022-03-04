@@ -14,7 +14,7 @@ import org.hibernate.annotations.NaturalId;
 @NoArgsConstructor
 @Getter
 @Entity
-public class DeviceSupportedDisease extends EternalAuditedEntity {
+public class DeviceSupportedDisease extends IdentifiedEntity {
 
   @NaturalId
   @ManyToOne(optional = false)

@@ -2,18 +2,16 @@ package gov.cdc.usds.simplereport.db.model;
 
 import javax.persistence.Column;
 import javax.persistence.Entity;
-import javax.persistence.EntityListeners;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import org.springframework.boot.context.properties.ConstructorBinding;
-import org.springframework.data.jpa.domain.support.AuditingEntityListener;
 
 /** A disease that SimpleReport supports testing for. */
 @Entity
-//@EntityListeners(AuditingEntityListener.class)
+// @EntityListeners(AuditingEntityListener.class)
 @NoArgsConstructor
 @Getter
-public class SupportedDisease extends SystemManagedEntity {
+public class SupportedDisease extends IdentifiedEntity {
 
   @Column(nullable = false)
   private String name;
