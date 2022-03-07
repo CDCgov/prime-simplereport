@@ -325,7 +325,7 @@ ${local.skip_on_weekends}
 
   trigger {
     operator  = "Equal"
-    threshold = 0
+    threshold = 4
   }
 
   action {
