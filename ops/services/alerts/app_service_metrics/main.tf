@@ -281,7 +281,7 @@ resource "azurerm_monitor_scheduled_query_rules_alert" "batched_uploader_single_
   resource_group_name = var.rg_name
   severity            = var.severity
   frequency           = 5
-  time_window         = 7
+  time_window         = 10
   enabled             = contains(var.disabled_alerts, "batched_uploader_single_failure_detected") ? false : true
 
   data_source_id = var.app_insights_id
@@ -289,14 +289,14 @@ resource "azurerm_monitor_scheduled_query_rules_alert" "batched_uploader_single_
   query = <<-QUERY
 requests
 ${local.skip_on_weekends}
-| where timestamp >= ago(7m) 
+| where timestamp >= ago(10m) 
     and operation_Name =~ 'QueueBatchedReportStreamUploader' 
     and success != true
   QUERY
 
   trigger {
     operator  = "GreaterThan"
-    threshold = 0
+    threshold = 4
   }
 
   action {
@@ -325,7 +325,7 @@ ${local.skip_on_weekends}
 
   trigger {
     operator  = "Equal"
-    threshold = 4
+    threshold = 0
   }
 
   action {
