@@ -196,11 +196,11 @@ spotless {
 
 task testDbStart(type: Exec) {
     environment "SR_DB_PORT", testDbPort
-    commandLine "docker-compose", "-p", "simple-report-tests", "-f", "../docker-compose.yml", "up", "-d", "db"
+    commandLine "docker", "compose", "-p", "simple-report-tests", "-f", "../docker-compose.yml", "up", "-d", "db"
 }
 
 task testDbStop(type: Exec) {
-    commandLine "docker-compose", "-p", "simple-report-tests", "-f", "../docker-compose.yml", "down"
+    commandLine "docker", "compose", "-p", "simple-report-tests", "-f", "../docker-compose.yml", "down"
 }
 
 task testDbReset(type: Exec) {

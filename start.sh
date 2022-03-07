@@ -8,12 +8,12 @@
 # mounted into the frontend container.
 ###########
 
-# This function shuts down docker-compose on CTRL+C
+# This function shuts down docker compose on CTRL+C
 cleanup() {
     echo
     echo "App stopped, shutting down containers..."
-    docker-compose exec backend gradle clean --stop
-    docker-compose down
+    docker compose exec backend gradle clean --stop
+    docker compose down
     echo "Thanks for using Simple Report!"
 }
 
@@ -41,8 +41,8 @@ fi
 
 echo "Starting Docker Compose..."
 
-docker-compose pull
-docker-compose up -d
-docker-compose logs -f
+docker compose pull
+docker compose up -d
+docker compose logs -f
 
 trap "cleanup" EXIT
