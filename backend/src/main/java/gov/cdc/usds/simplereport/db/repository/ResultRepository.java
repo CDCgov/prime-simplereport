@@ -13,4 +13,8 @@ public interface ResultRepository extends EternalAuditedEntityRepository<Result>
   List<Result> findAllByTestOrder(TestOrder testOrder);
 
   List<Result> findAllByDisease(SupportedDisease disease);
+
+  Result findResultByTestEventAndDisease(TestEvent testEvent, SupportedDisease disease);
+
+  Result findResultByTestOrderAndDisease(TestOrder testOrder, SupportedDisease disease);
 }
