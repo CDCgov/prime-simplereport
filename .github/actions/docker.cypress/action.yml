@@ -1,0 +1,40 @@
+name: Run Cypress integration tests on a remote environment
+description: Run integration tests on a remote environment
+
+# env vars required
+# CYPRESS_OKTA_USERNAME
+# CYPRESS_OKTA_PASSWORD
+# CYPRESS_OKTA_SECRET
+# CYPRESS_BASE_URL
+# SMARTY_AUTH_ID
+# SMARTY_AUTH_TOKEN
+# E2E_SPEC_FILES
+# DEPLOY_ENV
+
+runs:
+  using: docker
+  image: ghcr.io/cdcgov/prime-simplereport/cypress:latest
+  args:
+    - -s "/cypress/integration/${{ env.E2E_SPEC_FILES }}" -r ${{ env.CYPRESS_BASE_URL }} -p /app -f /health/commit -c ${{ env.COMMIT_HASH }}
+
+  
+  
+  
+  # steps:
+  #   - name: Cypress deploy verification for frontend in ${{env.DEPLOY_ENV}} environment
+  #     shell: bash
+  #     working-directory: ./frontend
+  #     run: |
+  #       echo "::group::Run Cypress verification"
+  #       docker run -it -s "cypress/integration/${{ env.E2E_SPEC_FILES }}" -r ${{ env.CYPRESS_BASE_URL }} -f /health/commit
+  #       # docker run -it -v /home/runner/work/prime-simplereport/prime-simplereport/frontend/cypress/screenshots:/cypress/screenshots/ 97fd14dcf99e -s "/cypress/integration/${{ env.E2E_SPEC_FILES }}" -r ${{ env.CYPRESS_BASE_URL }} -p /app -f /health/commit -c ${{ env.COMMIT_HASH }}
+  #       echo "::endgroup::"
+  #   - name: Archive cypress screenshots and videos
+  #     uses: actions/upload-artifact@v3
+  #     if: failure()
+  #     with:
+  #       name: cypress-artifacts
+  #       path: |
+  #         ./frontend/cypress/screenshots/
+  #         ./frontend/cypress/videos/
+  #       retention-days: 5

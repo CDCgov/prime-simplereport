@@ -9,10 +9,10 @@ variable "subnet_id" {}
 
 # https://docs.microsoft.com/en-us/azure/application-gateway/application-gateway-autoscaling-zone-redundant
 variable "sku_tier" {
-  default = "Standard_v2"
+  default = "WAF_v2"
 }
 variable "sku_name" {
-  default = "Standard_v2"
+  default = "WAF_v2"
 }
 
 variable "autoscale_min" {
@@ -37,4 +37,10 @@ variable "key_vault_id" {}
 variable "log_workspace_uri" {
   description = "Full URI of log workspace to report to"
   type        = string
+}
+
+variable "firewall_policy_id" {
+  description = "Identifier corresponding to existing WAF policy to be associated with this application gateway."
+  type        = string
+  default     = null
 }

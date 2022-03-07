@@ -59,19 +59,14 @@ runs:
       working-directory: ./frontend
       run: |
         echo "::group::Run Cypress verification"
-        ./e2e.sh -s "cypress/integration/${{ env.E2E_SPEC_FILES }}" -r ${{ env.CYPRESS_BASE_URL }} -f /health/commit
+        ./e2e.sh -s "${{ env.E2E_SPEC_FILES }}" -r ${{ env.CYPRESS_BASE_URL }} -f /health/commit
         echo "::endgroup::"
-    - name: Archive cypress screenshots
-      uses: actions/upload-artifact@v2
+    - name: Archive cypress screenshots and videos
+      uses: actions/upload-artifact@v3
       if: failure()
-      working-directory: ./frontend/cypress
       with:
-        name: cypress-screenshots
-        path: ./screenshots
-    - name: Archive cypress videos
-      uses: actions/upload-artifact@v2
-      if: failure()
-      working-directory: ./frontend/cypress
-      with:
-        name: cypress-videos
-        path: ./videos
+        name: cypress-artifacts
+        path: |
+          ./frontend/cypress/screenshots/
+          ./frontend/cypress/videos/
+        retention-days: 5

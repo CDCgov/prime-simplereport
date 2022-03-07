@@ -1,4 +1,13 @@
-const { loginHooks } = require("../support");
+const {
+  loginHooks,
+  generateFacility,
+  generateOrganization,
+  generateUser,
+} = require("../support");
+
+const facility = generateFacility();
+const organization = generateOrganization();
+const user = generateUser();
 
 describe("Organization sign up", () => {
   loginHooks();
@@ -19,12 +28,12 @@ describe("Organization sign up", () => {
   });
   it("fills out the org info form", () => {
     cy.contains("Sign up for SimpleReport in three steps");
-    cy.get('input[name="name"]').type("Beach Camp");
+    cy.get('input[name="name"]').type(organization.name);
     cy.get('select[name="state"]').select("CA");
     cy.get('select[name="type"]').select("Camp");
     cy.get('input[name="firstName"]').type("Greg");
     cy.get('input[name="lastName"]').type("McTester");
-    cy.get('input[name="email"]').type("greg@mailinator.com");
+    cy.get('input[name="email"]').type(user.email);
     cy.get('input[name="workPhoneNumber"]').type("5308675309");
   });
   it("submits successfully", () => {
@@ -39,12 +48,14 @@ describe("Organization sign up", () => {
     cy.get(".sr-pending-org-edit-verify").first().click();
     cy.get("#verify-button").click();
     cy.get("#verify-confirmation").click();
-    cy.contains("Identity verified for Beach Camp", { timeout: 30000 });
+    cy.contains(`Identity verified for ${organization.name}`, {
+      timeout: 30000,
+    });
   });
   it("spoofs into the org", () => {
     cy.visit("/admin/tenant-data-access");
     cy.get("[data-testid='combo-box-toggle']").click();
-    cy.get("#org-dropdown-select--list--option-0").click();
+    cy.get("ul").select(organization.name);
     cy.get('input[name="justification"]').type("I am a test user").blur();
     cy.contains("Access data").click();
     cy.contains("Support admin");
@@ -56,7 +67,7 @@ describe("Organization sign up", () => {
     cy.contains("Testing facility information");
   });
   it("fills out the form for a new facility", () => {
-    cy.get('input[name="name"]').type("Lifeguard Stand 13");
+    cy.get('input[name="name"]').type(facility.name);
     cy.get('input[name="phone"]').first().type("5308675309");
     cy.get('input[name="street"]').first().type("123 Beach Way");
     cy.get('input[name="zipCode"]').first().type("90210");
