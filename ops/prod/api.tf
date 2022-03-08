@@ -68,38 +68,3 @@ module "report_stream_reporting_functions" {
   environment = local.env
   tenant_id   = data.azurerm_client_config.current.tenant_id
 }
-
-resource "azurerm_monitor_autoscale_setting" "prod_autoscale" {
-  name                = "prime-simple-report-appserviceplan-prod-Autoscale"
-  resource_group_name = data.azurerm_resource_group.rg.name
-  location            = data.azurerm_resource_group.rg.location
-  target_resource_id  = module.simple_report_api.app_service_plan_id
-  profile {
-    name = "Peak Hours"
-    capacity {
-      default = 4
-      minimum = 4
-      maximum = 4
-    }
-    recurrence {
-      timezone = "Eastern Standard Time"
-      days     = ["Monday", "Tuesday", "Wednesday", "Thursday", "Friday"]
-      hours    = [0]
-      minutes  = [0]
-    }
-  }
-  profile {
-    name = "Weekends"
-    capacity {
-      default = 2
-      minimum = 2
-      maximum = 2
-    }
-    recurrence {
-      timezone = "Eastern Standard Time"
-      days     = ["Saturday", "Sunday"]
-      hours    = [0]
-      minutes  = [0]
-    }
-  }
-}
