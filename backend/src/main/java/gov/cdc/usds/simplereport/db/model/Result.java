@@ -30,21 +30,28 @@ public class Result extends EternalAuditedEntity {
 
   // Stored as LOINC
   @Column(nullable = false)
-  private String testResult;
+  private String result;
+
+  public Result(TestEvent te, TestOrder to, SupportedDisease disease, TestResult testResult) {
+    this.testEvent = te;
+    this.testOrder = to;
+    this.disease = disease;
+    this.result = Translators.convertTestResultToLoinc(testResult);
+  }
 
   public TestResult getTestResult() {
-    return Translators.parseTestResult(this.testResult);
+    return Translators.convertLoincToResult(this.result);
   }
 
   public String getRawTestResult() {
-    return this.testResult;
+    return this.result;
   }
 
   public void setTestResult(TestResult result) {
-    this.testResult = Translators.convertTestResultToLoinc(result);
+    this.result = Translators.convertTestResultToLoinc(result);
   }
 
   public void setRawTestResult(String result) {
-    this.testResult = result;
+    this.result = result;
   }
 }

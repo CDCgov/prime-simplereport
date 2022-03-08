@@ -376,11 +376,25 @@ public class Translators {
     }
   }
 
-  public static TestResult parseTestResultFromLoinc(String loinc) {
-    return TestResult.POSITIVE;
+  public static TestResult convertLoincToResult(String loinc) {
+    switch (loinc) {
+      case "260373001":
+        return TestResult.POSITIVE;
+      case "260415000":
+        return TestResult.NEGATIVE;
+      default:
+        return TestResult.UNDETERMINED;
+    }
   }
 
   public static String convertTestResultToLoinc(TestResult result) {
-    return "";
+    switch (result) {
+      case POSITIVE:
+        return "260373001";
+      case NEGATIVE:
+        return "260415000";
+      default:
+        return "455371000124106";
+    }
   }
 }

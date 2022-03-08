@@ -3,6 +3,7 @@ package gov.cdc.usds.simplereport.db.repository;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 
 import gov.cdc.usds.simplereport.db.model.*;
+import gov.cdc.usds.simplereport.db.model.auxiliary.TestResult;
 import gov.cdc.usds.simplereport.test_util.TestDataFactory;
 import java.util.List;
 import org.junit.jupiter.api.BeforeEach;
@@ -42,9 +43,9 @@ class ResultRepositoryTest extends BaseRepositoryTest {
 
   @Test
   void fetchesAllResultsForMultiplexTestEvent() {
-    _repo.save(new Result(TEST_EVENT, TEST_ORDER, COVID, "POSITIVE"));
-    _repo.save(new Result(TEST_EVENT, TEST_ORDER, FLU_A, "NEGATIVE"));
-    _repo.save(new Result(TEST_EVENT, TEST_ORDER, FLU_B, "NEGATIVE"));
+    _repo.save(new Result(TEST_EVENT, TEST_ORDER, COVID, TestResult.POSITIVE));
+    _repo.save(new Result(TEST_EVENT, TEST_ORDER, FLU_A, TestResult.NEGATIVE));
+    _repo.save(new Result(TEST_EVENT, TEST_ORDER, FLU_B, TestResult.NEGATIVE));
 
     List<Result> results = _repo.findAllByTestEvent(TEST_EVENT);
     assertEquals(3, results.size());
@@ -52,38 +53,38 @@ class ResultRepositoryTest extends BaseRepositoryTest {
 
   @Test
   void fetchesAllResultsForCovidOnlyTest() {
-    _repo.save(new Result(TEST_EVENT, TEST_ORDER, COVID, "POSITIVE"));
+    _repo.save(new Result(TEST_EVENT, TEST_ORDER, COVID, TestResult.POSITIVE));
 
     List<Result> results = _repo.findAllByTestEvent(TEST_EVENT);
     assertEquals(1, results.size());
-    assertEquals("POSITIVE", results.get(0).getTestResult());
+    assertEquals(TestResult.POSITIVE, results.get(0).getTestResult());
   }
 
   @Test
   void fetchesSpecificResultGivenDiseaseAndTestEvent() {
-    _repo.save(new Result(TEST_EVENT, TEST_ORDER, COVID, "POSITIVE"));
-    _repo.save(new Result(TEST_EVENT, TEST_ORDER, FLU_A, "NEGATIVE"));
-    _repo.save(new Result(TEST_EVENT, TEST_ORDER, FLU_B, "NEGATIVE"));
+    _repo.save(new Result(TEST_EVENT, TEST_ORDER, COVID, TestResult.POSITIVE));
+    _repo.save(new Result(TEST_EVENT, TEST_ORDER, FLU_A, TestResult.NEGATIVE));
+    _repo.save(new Result(TEST_EVENT, TEST_ORDER, FLU_B, TestResult.NEGATIVE));
 
     Result result = _repo.findResultByTestEventAndDisease(TEST_EVENT, COVID);
-    assertEquals("POSITIVE", result.getTestResult());
+    assertEquals(TestResult.POSITIVE, result.getTestResult());
   }
 
   @Test
   void fetchesSpecificResultGivenDiseaseAndTestOrder() {
-    _repo.save(new Result(TEST_EVENT, TEST_ORDER, COVID, "POSITIVE"));
-    _repo.save(new Result(TEST_EVENT, TEST_ORDER, FLU_A, "NEGATIVE"));
-    _repo.save(new Result(TEST_EVENT, TEST_ORDER, FLU_B, "NEGATIVE"));
+    _repo.save(new Result(TEST_EVENT, TEST_ORDER, COVID, TestResult.POSITIVE));
+    _repo.save(new Result(TEST_EVENT, TEST_ORDER, FLU_A, TestResult.NEGATIVE));
+    _repo.save(new Result(TEST_EVENT, TEST_ORDER, FLU_B, TestResult.NEGATIVE));
 
     Result result = _repo.findResultByTestOrderAndDisease(TEST_ORDER, COVID);
-    assertEquals("POSITIVE", result.getTestResult());
+    assertEquals(TestResult.POSITIVE, result.getTestResult());
   }
 
   @Test
   void findAllByTestOrderSuccessful() {
-    _repo.save(new Result(TEST_EVENT, TEST_ORDER, COVID, "POSITIVE"));
-    _repo.save(new Result(TEST_EVENT, TEST_ORDER, FLU_A, "NEGATIVE"));
-    _repo.save(new Result(TEST_EVENT, TEST_ORDER, FLU_B, "NEGATIVE"));
+    _repo.save(new Result(TEST_EVENT, TEST_ORDER, COVID, TestResult.POSITIVE));
+    _repo.save(new Result(TEST_EVENT, TEST_ORDER, FLU_A, TestResult.NEGATIVE));
+    _repo.save(new Result(TEST_EVENT, TEST_ORDER, FLU_B, TestResult.NEGATIVE));
 
     List<Result> result = _repo.findAllByTestOrder(TEST_ORDER);
     assertEquals(3, result.size());
@@ -95,8 +96,8 @@ class ResultRepositoryTest extends BaseRepositoryTest {
     TestEvent te = _factory.createTestEvent(patient, FACILITY);
     TestOrder to = te.getTestOrder();
 
-    _repo.save(new Result(TEST_EVENT, TEST_ORDER, COVID, "POSITIVE"));
-    _repo.save(new Result(te, to, COVID, "NEGATIVE"));
+    _repo.save(new Result(TEST_EVENT, TEST_ORDER, COVID, TestResult.POSITIVE));
+    _repo.save(new Result(te, to, COVID, TestResult.NEGATIVE));
 
     List<Result> results = _repo.findAllByDisease(COVID);
     assertEquals(2, results.size());
