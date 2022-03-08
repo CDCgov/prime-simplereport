@@ -144,7 +144,7 @@ export const StaticTestResultModal = ({
           <h2>{t("testResult.testDetails")}</h2>
           <ul className="sr-details-list">
             <li>
-              <b>{t("testResult.specimen")}</b>
+              <b>{t("testResult.id")}</b>
               <div>{testResultId}</div>
             </li>
             <li>
