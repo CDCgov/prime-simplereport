@@ -375,4 +375,12 @@ public class Translators {
       return Optional.of(str);
     }
   }
+
+  public static TestResult parseTestResultFromLoinc(String loinc) {
+    return TestResult.POSITIVE;
+  }
+
+  public static String convertTestResultToLoinc(TestResult result) {
+    return "";
+  }
 }
