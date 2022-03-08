@@ -33,11 +33,11 @@ The Simple Report application stack consists of:
 - Java Spring Boot backend
 - React frontend
 
-For ease of local setup, we have created a docker-compose setup which builds docker images for all the necessary components. It also uses nginx and mkcert to host the app locally over HTTPS. 
+For ease of local setup, we have created a docker compose setup which builds docker images for all the necessary components. It also uses nginx and mkcert to host the app locally over HTTPS. 
 
 To use this, you'll need to install the following:
 
-1. Install [docker and docker-compose](https://docs.docker.com/get-docker/).
+1. Install [docker and docker compose](https://docs.docker.com/get-docker/).
 1. Install [mkcert](https://github.com/FiloSottile/mkcert#installation)
 1. Install Node.js 14, either using [nvm](https://github.com/nvm-sh/nvm#installing-and-updating) or your preferred method. This is used for yarn scripts and pre-commit hooks.
 1. Install AdoptOpenJDK 11, either using [jabba](https://github.com/shyiko/jabba) or your preferred method. This is useful for IDE integration (IntelliJ, VS Code, etc.)
@@ -45,12 +45,15 @@ To use this, you'll need to install the following:
 Once those dependencies are installed, follow these steps to get the app up and running:
 
 1. Clone this repository: `git clone git@github.com:CDCgov/prime-simplereport.git`
-1. Run `yarn install` in the root of the repository to install pre-commit hooks using lefthook
-1. Run `cp .env.sample .env` in the root of the repository, then obtain the needed secrets from Azure or another developer. Be sure to set the `OKTA_API_KEY` environment variable. You can generate an API token for yourself by logging into the Okta Preview [admin panel](https://hhs-prime-admin.oktapreview.com) and going into Security > API > Tokens.
-1. Run `sudo vim /etc/hosts` (or use your editor of choice) and add a line to the bottom with the following contents and save: `127.0.0.1 localhost.simplereport.gov`
-1. Follow these steps from GitHub for [authenticating to the container registry](https://docs.github.com/en/packages/working-with-a-github-packages-registry/working-with-the-container-registry#authenticating-to-the-container-registry).
-1. Run `yarn start` in the root of the repository to start the app
-1. When the frontend and backend builds are complete, visit https://localhost.simplereport.gov/app
+2. Run `yarn install` in the root of the repository to install pre-commit hooks using lefthook
+3. Run `cp .env.sample .env` in the root of the repository, then obtain the needed secrets from Azure or another developer. Be sure to set the `OKTA_API_KEY` environment variable. You can generate an API token for yourself by logging into the Okta Preview [admin panel](https://hhs-prime-admin.oktapreview.com) and going into Security > API > Tokens.
+4. Run `sudo vim /etc/hosts` (or use your editor of choice) and add a line to the bottom with the following contents and save: `127.0.0.1 localhost.simplereport.gov`
+5. Follow these steps from GitHub for [authenticating to the container registry](https://docs.github.com/en/packages/working-with-a-github-packages-registry/working-with-the-container-registry#authenticating-to-the-container-registry).
+6. Run `yarn start` in the root of the repository to start the app
+7. Make your user a support admin by assigning yourself the `SR-DEV-ADMINS` group in Okta Preview.
+8. When the frontend and backend builds are complete, visit https://localhost.simplereport.gov/app
+
+You should see the support admin page. The application does not yet start with any seed data, so you'll need to add your own organization and facilities. You can create your first org at https://localhost.simplereport.gov/app/sign-up.
 
 #### Notes
 Make sure docker has access to enough resources on your local machine. You'll know it doesn't if you get an error from any of your containers similar to this:
@@ -62,7 +65,7 @@ How to update resources limits on your [Mac](https://docs.docker.com/desktop/mac
 
 ## Running outside of docker
 
-If you wish to run outside of docker-compose (bare metal), you'll need to install all the dependencies locally.
+If you wish to run outside of docker compose (bare metal), you'll need to install all the dependencies locally.
 See more [info here](https://github.com/CDCgov/prime-simplereport/wiki/Running-outside-of-docker).
 
 ## Roles
@@ -89,7 +92,9 @@ When there are DB schema changes the backend may throw an error and fail to star
 
 To create a fresh database:
 
-1. `docker-compose down --volumes`
+1. `docker compose down --volumes`
+
+Note that until we create seed data, this will start you with an empty database, and you will need to manually create organizations and facilities again.
 
 ## Rollbacks
 
@@ -98,19 +103,19 @@ The application uses the Liquibase plugin for Gradle to perform certain database
 To roll the database back to its state at a prior date:
 
 ```
-docker-compose run --rm backend gradle liquibaseRollbackToDate -PliquibaseCommandValue=${date}
+docker compose run --rm backend gradle liquibaseRollbackToDate -PliquibaseCommandValue=${date}
 ```
 
 To roll back a certain _number_ of migrations:
 
 ```
-docker-compose run --rm backend gradle liquibaseRollbackCount -PliquibaseCommandValue=${n}
+docker compose run --rm backend gradle liquibaseRollbackCount -PliquibaseCommandValue=${n}
 ```
 
 To roll back to a certain tag:
 
 ```
-docker-compose run --rm backend gradle liquibaseUpdateToTag -PliquibaseCommandValue=${TAG}
+docker compose run --rm backend gradle liquibaseUpdateToTag -PliquibaseCommandValue=${TAG}
 ```
 
 If you are required to roll back a non-local database, you may generate the required SQL to execute elsewhere. Use `liquibaseRollbackToDateSQL` or `liquibaseRollbackCountSQL` in the manner described above to write the rollback SQL to stdout.
@@ -195,15 +200,7 @@ These can also be set by environment variable if desired.
 
 MailHog is an email-testing tool with a fake SMTP server underneath, we can use it to test sending emails locally.
 
-- Mailhog client runs on docker, `docker-compose up -d mailhog`
-- add the following to `application-local.yaml` to configure the backend to send email to mailhog client
-
-```yml
-spring:
-  mail:
-    host: localhost
-    port: 1025
-```
+- Mailhog client runs on docker, `docker compose up -d mailhog`
 
 - Access mailhog inbox on `http://localhost:8025/`
 

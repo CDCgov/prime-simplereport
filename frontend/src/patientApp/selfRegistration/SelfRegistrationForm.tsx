@@ -92,7 +92,7 @@ export const SelfRegistrationForm = ({
         getFooter={(onSave) => (
           <Button
             className="self-registration-button margin-top-3"
-            onClick={onSave}
+            onClick={() => onSave()}
           >
             {t("common.button.submit")}
           </Button>
