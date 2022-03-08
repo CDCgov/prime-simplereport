@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from "react";
 import { gql, useLazyQuery, useMutation } from "@apollo/client";
-import { useNavigate, NavigateOptions } from "react-router-dom";
+import { Navigate } from "react-router-dom";
 import { useTranslation } from "react-i18next";
 import moment from "moment";
 import { useSelector } from "react-redux";
@@ -219,9 +219,10 @@ const AddPatient = () => {
     }
   }, [identifyingData, getPatientExists]);
 
-  const navigate = useNavigate();
   const [activeFacility] = useSelectedFacility();
   const activeFacilityId = activeFacility?.id;
+
+  const [startTest, setStartTest] = useState(false);
 
   const personPath = `/patients/?facility=${activeFacilityId}`;
 
@@ -229,14 +230,15 @@ const AddPatient = () => {
     string | { pathname: string; search: string; state?: any } | undefined
   >(undefined);
 
+  if (redirect) {
+    return <Navigate to={redirect} />;
+  }
+
   if (!activeFacilityId) {
     return <div>No facility selected</div>;
   }
 
-  const savePerson = async (
-    person: Nullable<PersonFormData>,
-    startTest: boolean = false
-  ) => {
+  const savePerson = async (person: Nullable<PersonFormData>) => {
     const { data } = await addPatient({
       variables: {
         ...person,
@@ -248,7 +250,6 @@ const AddPatient = () => {
         emails: dedupeAndCompactStrings(person.emails || []),
       },
     });
-
     showNotification(
       <Alert
         type="success"
@@ -256,10 +257,8 @@ const AddPatient = () => {
         body="New information record has been created."
       />
     );
-
     if (startTest) {
       const facility = data?.addPatient?.facility?.id || activeFacilityId;
-
       setRedirect({
         pathname: "/queue",
         search: `?facility=${facility}`,
@@ -272,32 +271,15 @@ const AddPatient = () => {
     }
   };
 
-  if (redirect) {
-    const redirectTo =
-      typeof redirect === "string"
-        ? redirect
-        : redirect.pathname + redirect.search;
-
-    const navOptions: NavigateOptions = {};
-
-    if (typeof redirect !== "string") {
-      navOptions.state = redirect.state;
-    }
-
-    navigate(redirectTo, navOptions);
-  }
-
-  const getSaveButtons = (
-    formChanged: boolean,
-    onSave: (startTest?: boolean) => void
-  ) => (
+  const getSaveButtons = (formChanged: boolean, onSave: () => void) => (
     <>
       <Button
         id="edit-patient-save-lower"
         className="prime-save-patient-changes-start-test"
         disabled={loading || !formChanged}
         onClick={() => {
-          onSave(true);
+          setStartTest(true);
+          onSave();
         }}
         variant="outline"
         label={
@@ -309,7 +291,8 @@ const AddPatient = () => {
         className="prime-save-patient-changes"
         disabled={loading || !formChanged}
         onClick={() => {
-          onSave(false);
+          setStartTest(false);
+          onSave();
         }}
         label={
           loading ? `${t("common.button.saving")}...` : t("common.button.save")

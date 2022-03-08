@@ -14,14 +14,6 @@ import { ToastContainer } from "react-toastify";
 
 import AddPatient, { ADD_PATIENT, PATIENT_EXISTS } from "./AddPatient";
 
-interface LocationOptions {
-  search: string;
-  pathname: string;
-  state: {
-    patientId: string;
-  };
-}
-
 const mockFacilityID = "b0d2041f-93c9-4192-b19a-dd99c0044a7e";
 const mockStore = configureStore([]);
 const store = mockStore({
@@ -203,13 +195,8 @@ describe("AddPatient", () => {
       ];
 
       const Queue = () => {
-        const location = useLocation() as LocationOptions;
-
-        return (
-          <p>
-            Testing Queue! {location.search} {location.state.patientId}
-          </p>
-        );
+        const location = useLocation();
+        return <p>Testing Queue! {location.search}</p>;
       };
 
       render(
@@ -493,19 +480,11 @@ describe("AddPatient", () => {
         await waitForElementToBeRemoved(() =>
           screen.queryAllByText("Saving...")
         );
-
         expect(
-          await screen.findByText("Testing Queue!", { exact: false })
+          screen.getByText("Testing Queue!", { exact: false })
         ).toBeInTheDocument();
-
         expect(
-          await screen.findByText("facility-id-001", { exact: false })
-        ).toBeInTheDocument();
-
-        expect(
-          screen.getByText("153f661f-b6ea-4711-b9ab-487b95198cce", {
-            exact: false,
-          })
+          screen.getByText("facility-id-001", { exact: false })
         ).toBeInTheDocument();
       });
     });
