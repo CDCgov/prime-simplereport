@@ -40,6 +40,7 @@ const ConfirmOrgVerificationModal: React.FC<VerficationModalProps> = ({
     adminLastName: "",
     adminPhone: "",
   });
+  const [verifyConfirmation, setVerifyConfirmation] = useState(false);
 
   const validateField = async (field: keyof PendingOrganizationFormValues) => {
     setErrors(
@@ -94,7 +95,64 @@ const ConfirmOrgVerificationModal: React.FC<VerficationModalProps> = ({
     getValidationStatus,
   };
 
-  return (
+  return verifyConfirmation ? (
+    <Modal
+      isOpen={true}
+      style={{
+        content: {
+          maxHeight: "90vh",
+          width: "40em",
+          position: "initial",
+        },
+      }}
+      overlayClassName="prime-modal-overlay display-flex flex-align-center flex-justify-center"
+      contentLabel="Verify organization"
+    >
+      <div className="border-0 card-container">
+        <div className="display-flex flex-justify">
+          <h1 className="font-heading-lg margin-top-05 margin-bottom-0">
+            Verify organization
+          </h1>
+          <button
+            onClick={handleClose}
+            className="close-button"
+            aria-label="Close"
+          >
+            <span className="fa-layers">
+              <FontAwesomeIcon icon={"circle"} size="2x" inverse />
+              <FontAwesomeIcon icon={"times-circle"} size="2x" />
+            </span>
+          </button>
+        </div>
+        <div className="border-top border-base-lighter margin-x-neg-205 margin-top-205"></div>
+        <div className="grid-row grid-gap">
+          <p>
+            Are you sure you want to verify <strong>{org.name}</strong>?
+          </p>
+          <p>
+            Doing so will allow the organization to create an account and
+            conduct and submit tests.
+          </p>
+        </div>
+        <div className="border-top border-base-lighter margin-x-neg-205 margin-top-5 padding-top-205 text-right">
+          <div className="display-flex flex-justify-end">
+            <Button
+              className="margin-right-2"
+              onClick={() => setVerifyConfirmation(false)}
+              variant="unstyled"
+              label="No, go back"
+            />
+            <Button
+              className="margin-right-205"
+              id="verify-confirmation"
+              label="Yes, I'm sure"
+              onClick={onVerify}
+            />
+          </div>
+        </div>
+      </div>
+    </Modal>
+  ) : (
     <Modal
       isOpen={true}
       style={{
@@ -172,13 +230,13 @@ const ConfirmOrgVerificationModal: React.FC<VerficationModalProps> = ({
               className="margin-right-2"
               variant="outline"
               onClick={onSave}
-              label={isUpdating ? "Updating..." : "Update only"}
+              label={isUpdating ? "Updating..." : "Edit only"}
               disabled={isVerifying || isUpdating || orgUsingOldSchema}
             />
             <Button
               className="margin-right-205"
               id="verify-button"
-              onClick={onVerify}
+              onClick={() => setVerifyConfirmation(true)}
               label={isVerifying ? "Verifying..." : "Verify"}
               disabled={isVerifying || isUpdating}
             />

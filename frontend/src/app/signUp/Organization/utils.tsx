@@ -40,7 +40,7 @@ export const organizationFields = [
     <TextWithTooltip
       text="Organization name"
       tooltip="Organizations have multiple testing facilities or locations as part of their network."
-      position="top"
+      position="right"
     />,
     true,
     "",

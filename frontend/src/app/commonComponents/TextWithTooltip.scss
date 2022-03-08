@@ -1,7 +1,8 @@
 .usa-text-with-tooltip {
   .usa-tooltip__body {
-    margin-left: -240px !important;
-    margin-top: -60px !important;
+    white-space: pre-wrap;
+    min-width: 300px;
+    padding: 1em;
   }
 
   .info-circle-icon {

@@ -26,6 +26,8 @@ describe("TestQueue", () => {
   const mockStore = configureStore([]);
 
   beforeEach(() => {
+    jest.spyOn(global.Math, "random").mockReturnValue(0.123456789);
+
     store = mockStore({
       organization: {
         name: "Organization Name",
@@ -37,6 +39,10 @@ describe("TestQueue", () => {
         },
       ],
     });
+  });
+
+  afterEach(() => {
+    jest.spyOn(global.Math, "random").mockRestore();
   });
 
   it("should render the test queue", async () => {

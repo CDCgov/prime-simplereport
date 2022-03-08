@@ -2,7 +2,7 @@ services:
   # Postgresql database
   db:
     image: postgres:13-alpine
-    container_name: db
+    container_name: "${DB_NAME:-db}"
     environment:
       POSTGRES_PASSWORD: admin_password_for_local_dev_is_not_very_secure
     volumes:
@@ -14,8 +14,10 @@ services:
       - ./backend/db-setup/reset-db.sql:/usr/local/lib/reset-db.sql
       - ./backend/db-setup/reset-metabase-db.sql:/usr/local/lib/reset-metabase-db.sql
     command: -p ${SR_DB_PORT:-5432}
-    expose: 
+    expose:
       - "${SR_DB_PORT:-5432}"
+    ports:
+      - "${SR_DB_PORT:-5432}:${SR_DB_PORT:-5432}"
   # Spring Boot backend
   backend:
     build:
@@ -70,7 +72,11 @@ services:
     ports:
       - "80:80"
       - "443:443"
-    
+  mailhog:
+    ports:
+      - '1025:1025'
+      - '8025:8025'
+    image: mailhog/mailhog
 volumes:
   db-data:
   node_modules:
