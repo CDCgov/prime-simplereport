@@ -239,7 +239,7 @@ export const en = {
       undetermined: "Inconclusive",
       unknown: "Unknown",
       testDevice: "Test device",
-      specimen: "Specimen ID",
+      id: "Test ID",
       meaning: "What does my result mean?",
       information:
         "For more information, please visit the <0>Centers for Disease Control and Prevention (CDC) website</0> or contact your local health department.",

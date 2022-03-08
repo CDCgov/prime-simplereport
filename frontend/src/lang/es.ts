@@ -250,7 +250,7 @@ export const es: LanguageConfig = {
       undetermined: UNDETERMINED,
       unknown: UNKNOWN,
       testDevice: "Dispositivo de prueba",
-      specimen: "Identificación de la muestra",
+      id: "Número de identificación de la prueba",
       meaning: "¿Qué significa mi resultado?",
       information:
         "Para obtener más información, visite el <0>sitio web de los Centros para el Control y la Prevención de Enfermedades (CDC)</0> o comuníquese con su departamento de " +

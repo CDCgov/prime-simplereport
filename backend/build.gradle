@@ -196,11 +196,11 @@ spotless {
 
 task testDbStart(type: Exec) {
     environment "SR_DB_PORT", testDbPort
-    commandLine "docker", "compose", "-p", "simple-report-tests", "-f", "../docker-compose.yml", "up", "-d", "db"
+    commandLine "docker", "compose", "--env-file", "../.env.test", "-p", "simple-report-tests", "-f", "../docker-compose.yml", "up", "-d", "db"
 }
 
 task testDbStop(type: Exec) {
-    commandLine "docker", "compose", "-p", "simple-report-tests", "-f", "../docker-compose.yml", "down"
+    commandLine "docker", "compose", "--env-file", "../.env.test", "-p", "simple-report-tests", "-f", "../docker-compose.yml", "down"
 }
 
 task testDbReset(type: Exec) {
@@ -223,7 +223,7 @@ test {
     systemProperty "test-db-host", testDbHost
     systemProperty "test-db-port", testDbPort
     systemProperty "skip-db-setup", skipDbSetup
-    if (skipDbSetup == false) {
+    if (skipDbSetup == "false" && System.getenv("CI") == null) {
         dependsOn testDbStart
         finalizedBy testDbStop
     }
