@@ -3389,3 +3389,39 @@ databaseChangeLog:
       rollback:
         sql: |
           TRUNCATE TABLE ${database.defaultSchemaName}.supported_disease CASCADE;
+  - changeSet:
+      id: create-device-disease-join-table
+      author: emma@skylight.digital
+      comment: Add a new table that tracks which disease a given testing device will support.
+      changes:
+        - tagDatabase:
+            tag: create-device-disease-join-table
+        - createTable:
+            tableName: device_supported_disease
+            remarks: A usable combination of device type and supported diseases for that device.
+            columns:
+              - column:
+                  name: device_type_id
+                  remarks: The device type for this combination.
+                  type: uuid
+                  constraints:
+                    nullable: false
+                    foreignKeyName: fk__device_supported_disease__device_type
+                    references: device_type
+              - column:
+                  name: supported_disease_id
+                  remarks: The supported disease for this combination.
+                  type: uuid
+                  constraints:
+                    nullable: false
+                    foreignKeyName: fk__device_supported_disease__supported_disease_type
+                    references: supported_disease
+              - addUniqueConstraint:
+                  tableName: device_supported_disease
+                  constraintName: uk__device_supported_disease
+                  columnNames: device_type_id, supported_disease_id
+        - sql: |
+            GRANT SELECT ON ${database.defaultSchemaName}.device_supported_disease TO ${noPhiUsername};
+      rollback:
+        sql: |
+          DROP TABLE ${database.defaultSchemaName}.device_supported_disease;
