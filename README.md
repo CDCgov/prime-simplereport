@@ -184,6 +184,15 @@ Now that you have those files set up, you are ready for a test run! There are a 
 
 See the [Cypress documentation](https://docs.cypress.io/api/table-of-contents) for writing new tests. If you need to generate new Wiremock mappings for external services, see [this wiki page](https://github.com/CDCgov/prime-simplereport/wiki/WireMock).
 
+
+## Load Tests
+SimpleReport leverages Locust for running its load tests. Currently, Locust starts as part of the local development build, and spawns three separate worker containers for inundating the system.
+
+To access the Locust user interface, navigate to `http://localhost:8089/`.
+
+Tests can be configured by modifying `backend/locust/locustfile.py`.
+
+
 ## Twilio
 
 Twilio's Java SDK auto-configures based on two environment variables: `TWILIO_ACCOUNT_SID` and `TWILIO_AUTH_TOKEN`. SMS is also disabled by default, and can be enabled in application.yml:
