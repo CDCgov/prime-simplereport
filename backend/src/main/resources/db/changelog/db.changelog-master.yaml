@@ -3401,13 +3401,6 @@ databaseChangeLog:
             remarks: A usable combination of device type and supported diseases for that device.
             columns:
               - column:
-                  name: internal_id
-                  type: uuid
-                  remarks: The internal database identifier for this entity.
-                  constraints:
-                    primaryKey: true
-                    nullable: false
-              - column:
                   name: device_type_id
                   remarks: The device type for this combination.
                   type: uuid
