@@ -2,7 +2,13 @@ package gov.cdc.usds.simplereport.db.repository;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 
-import gov.cdc.usds.simplereport.db.model.*;
+import gov.cdc.usds.simplereport.db.model.Facility;
+import gov.cdc.usds.simplereport.db.model.Organization;
+import gov.cdc.usds.simplereport.db.model.Person;
+import gov.cdc.usds.simplereport.db.model.Result;
+import gov.cdc.usds.simplereport.db.model.SupportedDisease;
+import gov.cdc.usds.simplereport.db.model.TestEvent;
+import gov.cdc.usds.simplereport.db.model.TestOrder;
 import gov.cdc.usds.simplereport.db.model.auxiliary.TestResult;
 import gov.cdc.usds.simplereport.test_util.TestDataFactory;
 import java.util.List;
