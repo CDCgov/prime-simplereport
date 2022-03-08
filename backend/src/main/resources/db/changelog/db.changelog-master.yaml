@@ -3425,3 +3425,65 @@ databaseChangeLog:
       rollback:
         sql: |
           DROP TABLE ${database.defaultSchemaName}.device_supported_disease;
+  - changeSet:
+      id: create-result-table
+      author: emma@skylight.digital
+      comment: Add a table that joins a test event, disease, and a specific result.
+      changes:
+        - tagDatabase:
+            tag: create-result-table
+        - createTable:
+            tableName: result
+            remarks: A usable combination of test event, disease, and results (as LONIC).
+            columns:
+              - column:
+                  name: internal_id
+                  type: uuid
+                  remarks: The internal database identifier for this entity.
+                  constraints:
+                    primaryKey: true
+                    nullable: false
+              - column: *created_at_column
+              - column: *created_by_column
+              - column: *updated_at_column
+              - column: *updated_by_column
+              - column: *soft_delete_column
+              - column:
+                  name: test_event_id
+                  remarks: The test event for this combination.
+                  type: uuid
+                  constraints:
+                    nullable: false
+                    foreignKeyName: fk__result__test_event_id
+                    references: test_event
+              - column:
+                  name: test_order_id
+                  remarks: The test order for this combination.
+                  type: uuid
+                  constraints:
+                    nullable: false
+                    foreignKeyName: fk__result__test_order_id
+                    references: test_order
+              - column:
+                  name: disease_id
+                  remarks: The disease for this combination.
+                  type: uuid
+                  constraints:
+                    nullable: false
+                    foreignKeyName: fk__result__disease_id
+                    references: supported_disease
+              - column:
+                  name: result
+                  remarks: The result for this combination.
+                  type: text
+                  constraints:
+                    nullable: false
+              - addUniqueConstraint:
+                  tableName: result
+                  constraintName: uk__result
+                  columnNames: test_event_id, test_order_id, disease_id
+        - sql: |
+            GRANT SELECT ON ${database.defaultSchemaName}.result TO ${noPhiUsername};
+      rollback:
+        sql: |
+          DROP TABLE ${database.defaultSchemaName}.result;
