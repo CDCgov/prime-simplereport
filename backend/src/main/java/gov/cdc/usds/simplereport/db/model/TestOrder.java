@@ -1,19 +1,15 @@
 package gov.cdc.usds.simplereport.db.model;
 
+import gov.cdc.usds.simplereport.api.Translators;
 import gov.cdc.usds.simplereport.db.model.auxiliary.OrderStatus;
 import gov.cdc.usds.simplereport.db.model.auxiliary.TestCorrectionStatus;
 import gov.cdc.usds.simplereport.db.model.auxiliary.TestResult;
 import java.time.LocalDate;
 import java.util.Date;
+import java.util.Optional;
+import java.util.Set;
 import java.util.UUID;
-import javax.persistence.Column;
-import javax.persistence.Entity;
-import javax.persistence.EnumType;
-import javax.persistence.Enumerated;
-import javax.persistence.FetchType;
-import javax.persistence.JoinColumn;
-import javax.persistence.ManyToOne;
-import javax.persistence.OneToOne;
+import javax.persistence.*;
 import org.hibernate.annotations.Type;
 
 @Entity
@@ -41,6 +37,10 @@ public class TestOrder extends BaseTestInfo {
   @ManyToOne(fetch = FetchType.LAZY)
   @JoinColumn(name = "test_event_id")
   private TestEvent testEvent;
+
+  @OneToMany
+  @JoinColumn(name = "result")
+  private Set<Result> resultSet;
 
   protected TestOrder() {
     /* for hibernate */ }
@@ -73,7 +73,13 @@ public class TestOrder extends BaseTestInfo {
   }
 
   public TestResult getTestResult() {
-    return getResult();
+    Optional<Result> resultObject = this.resultSet.stream().findFirst();
+    // Backwards-compatibility: if result table isn't populated, fetch old result column
+    if (resultObject.isEmpty()) {
+      return this.getResult();
+    } else {
+      return Translators.convertLoincToResult(resultObject.get().getResult());
+    }
   }
 
   public void setResult(TestResult finalResult) {

@@ -37,7 +37,7 @@ public class TestEvent extends BaseTestInfo {
 
   @OneToMany
   @JoinColumn(name = "result")
-  private Set<Result> result;
+  private Set<Result> resultSet;
 
   @Column(columnDefinition = "uuid")
   private UUID priorCorrectedTestEventId; // used to chain events
@@ -149,5 +149,15 @@ public class TestEvent extends BaseTestInfo {
 
   public DeviceSpecimenType getDeviceSpecimenType() {
     return order.getDeviceSpecimen();
+  }
+
+  public TestResult getResult() {
+    Optional<Result> resultObject = this.resultSet.stream().findFirst();
+    // Backwards-compatibility: if result table isn't populated, fetch old result column
+    if (resultObject.isEmpty()) {
+      return this.getResult();
+    } else {
+      return Translators.convertLoincToResult(resultObject.get().getResult());
+    }
   }
 }
