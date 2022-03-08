@@ -9,7 +9,6 @@ import org.springframework.boot.context.properties.ConstructorBinding;
 
 /** A disease that SimpleReport supports testing for. */
 @Entity
-// @EntityListeners(AuditingEntityListener.class)
 @NoArgsConstructor
 @Getter
 public class SupportedDisease extends IdentifiedEntity {

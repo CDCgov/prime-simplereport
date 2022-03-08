@@ -84,20 +84,24 @@ const yesNoUnknownToBool = (
 interface Props {
   patient: Nullable<PersonFormData>;
   patientId?: string;
-  savePerson: (person: Nullable<PersonFormData>) => void;
+  savePerson: (person: Nullable<PersonFormData>, startTest?: boolean) => void;
   onBlur?: (person: Nullable<PersonFormData>) => void;
   hideFacilitySelect?: boolean;
   getHeader?: (
     person: Nullable<PersonFormData>,
-    onSave: () => void,
+    onSave: (startTest?: boolean) => void,
     formChanged: boolean
   ) => React.ReactNode;
-  getFooter: (onSave: () => void, formChanged: boolean) => React.ReactNode;
+  getFooter: (
+    onSave: (startTest?: boolean) => void,
+    formChanged: boolean
+  ) => React.ReactNode;
   view?: PersonFormView;
 }
 
 const PersonForm = (props: Props) => {
   const [formChanged, setFormChanged] = useState(false);
+  const [startTest, setStartTest] = useState(false);
   const [patient, setPatient] = useState(props.patient);
   // Default country to USA if it's not set
   if (patient.country === null) {
@@ -234,14 +238,21 @@ const PersonForm = (props: Props) => {
     const originalAddress = getAddress(patient);
     const suggestedAddress = await getBestSuggestion(originalAddress);
     if (suggestionIsCloseEnough(originalAddress, suggestedAddress)) {
-      onSave(suggestedAddress);
+      onSave(suggestedAddress, startTest);
     } else {
       setAddressSuggestion(suggestedAddress);
       setAddressModalOpen(true);
     }
   };
 
-  const validateForm = async () => {
+  const validateForm = async (shouldStartTest: boolean = false) => {
+    // The `startTest` param here originates from a child Add/Edit Patient form,
+    // but we must also track it in state here to preserve the redirect throughout
+    // address confirmation
+    if (shouldStartTest) {
+      setStartTest(true);
+    }
+
     try {
       phoneNumberValidator.current?.();
       await schema.validate(patient, { abortEarly: false });
@@ -269,6 +280,7 @@ const PersonForm = (props: Props) => {
         }
         showError(t("patient.form.errors.validationMsg"), error);
       });
+
       return;
     }
     if (
@@ -276,18 +288,21 @@ const PersonForm = (props: Props) => {
         JSON.stringify(getAddress(props.patient)) ||
       patient.country !== "USA"
     ) {
-      onSave();
+      onSave(undefined, shouldStartTest);
     } else {
       validatePatientAddress();
     }
   };
 
-  const onSave = (address?: AddressWithMetaData) => {
+  const onSave = (
+    address?: AddressWithMetaData,
+    shouldStartTest: boolean = false
+  ) => {
     const person = address ? { ...patient, ...address } : patient;
     setPatient(person);
     setAddressModalOpen(false);
     setFormChanged(false);
-    props.savePerson(person);
+    props.savePerson(person, shouldStartTest);
   };
 
   const commonInputProps = {
@@ -639,7 +654,7 @@ const PersonForm = (props: Props) => {
           },
         ]}
         showModal={addressModalOpen}
-        onConfirm={(data) => onSave(data.person)}
+        onConfirm={(data) => onSave(data.person, startTest)}
         onClose={() => setAddressModalOpen(false)}
       />
     </>

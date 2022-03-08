@@ -1,6 +1,6 @@
 import React, { useState } from "react";
 import { gql, useMutation, useQuery } from "@apollo/client";
-import { Navigate } from "react-router-dom";
+import { NavigateOptions, useNavigate } from "react-router-dom";
 import { useTranslation } from "react-i18next";
 
 import iconSprite from "../../../node_modules/uswds/dist/img/sprite.svg";
@@ -14,6 +14,8 @@ import Alert from "../commonComponents/Alert";
 import Button from "../commonComponents/Button/Button";
 import { LinkWithQuery } from "../commonComponents/LinkWithQuery";
 import { useDocumentTitle } from "../utils/hooks";
+import { StartTestProps } from "../testQueue/addToQueue/AddToQueueSearch";
+import { useSelectedFacility } from "../facilitySelect/useSelectedFacility";
 
 import { TestResultDeliveryPreference } from "./TestResultDeliveryPreference";
 import PersonForm from "./Components/PersonForm";
@@ -92,7 +94,7 @@ interface GetPatientResponse {
   };
 }
 
-const UPDATE_PATIENT = gql`
+export const UPDATE_PATIENT = gql`
   mutation UpdatePatient(
     $facilityId: ID
     $patientId: ID!
@@ -167,6 +169,12 @@ interface EditPatientResponse {
   internalId: string;
 }
 
+interface RedirectSettings {
+  pathname: string;
+  search: string;
+  state?: any;
+}
+
 const EditPatient = (props: Props) => {
   useDocumentTitle("Edit Patient");
 
@@ -183,21 +191,41 @@ const EditPatient = (props: Props) => {
     EditPatientResponse,
     EditPatientParams
   >(UPDATE_PATIENT);
-  const [redirect, setRedirect] = useState<string | undefined>(undefined);
+  const navigate = useNavigate();
+  const [activeFacility] = useSelectedFacility();
+  const activeFacilityId = activeFacility?.id;
+  const [redirect, setRedirect] = useState<
+    string | RedirectSettings | undefined
+  >(undefined);
   const personPath = `/patients/?facility=${props.facilityId}`;
 
   if (redirect) {
-    return <Navigate to={redirect} />;
+    const redirectTo =
+      typeof redirect === "string"
+        ? redirect
+        : redirect.pathname + redirect.search;
+
+    const navOptions: NavigateOptions = {};
+
+    if (typeof redirect !== "string") {
+      navOptions.state = redirect.state;
+    }
+
+    navigate(redirectTo, navOptions);
   }
 
   if (loading) {
     return <p>Loading...</p>;
   }
+
   if (error || data === undefined) {
     return <p>error loading patient with id {props.patientId}...</p>;
   }
 
-  const savePerson = async (person: Nullable<PersonFormData>) => {
+  const savePerson = async (
+    person: Nullable<PersonFormData>,
+    startTest: boolean = false
+  ) => {
     await updatePatient({
       variables: {
         patientId: props.patientId,
@@ -226,7 +254,18 @@ const EditPatient = (props: Props) => {
       />
     );
 
-    setRedirect(personPath);
+    if (startTest) {
+      const facility = data?.patient.facility?.id || activeFacilityId;
+      setRedirect({
+        pathname: "/queue",
+        search: `?facility=${facility}`,
+        state: {
+          patientId: props.patientId,
+        } as StartTestProps,
+      });
+    } else {
+      setRedirect(personPath);
+    }
   };
 
   const getTitle = (person: Nullable<PersonFormData>) =>
@@ -288,10 +327,24 @@ const EditPatient = (props: Props) => {
                     </div>
                   </div>
                   <div className="display-flex flex-align-center">
+                    <Button
+                      id="edit-patient-save-lower"
+                      className="prime-save-patient-changes-start-test"
+                      disabled={loading || !formChanged}
+                      onClick={() => {
+                        onSave(true);
+                      }}
+                      variant="outline"
+                      label={
+                        loading
+                          ? `${t("common.button.saving")}...`
+                          : "Save and start test"
+                      }
+                    />
                     <button
                       className="prime-save-patient-changes usa-button margin-right-0"
                       disabled={editPersonLoading || !formChanged}
-                      onClick={onSave}
+                      onClick={() => onSave(false)}
                     >
                       {editPersonLoading
                         ? `${t("common.button.saving")}...`
@@ -306,7 +359,7 @@ const EditPatient = (props: Props) => {
                     id="edit-patient-save-lower"
                     className="prime-save-patient-changes"
                     disabled={editPersonLoading || !formChanged}
-                    onClick={onSave}
+                    onClick={() => onSave(false)}
                     label={
                       editPersonLoading
                         ? `${t("common.button.saving")}...`

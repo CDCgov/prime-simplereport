@@ -299,8 +299,11 @@ resource "azurerm_application_gateway" "load_balancer" {
     azurerm_key_vault_access_policy.gateway
   ]
 
+  firewall_policy_id = var.firewall_policy_id
+
   tags = var.tags
 }
+
 
 // Gateway analytics
 resource "azurerm_monitor_diagnostic_setting" "logs_metrics" {
