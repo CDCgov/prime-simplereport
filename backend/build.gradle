@@ -223,7 +223,7 @@ test {
     systemProperty "test-db-host", testDbHost
     systemProperty "test-db-port", testDbPort
     systemProperty "skip-db-setup", skipDbSetup
-    if (skipDbSetup == "false") {
+    if (skipDbSetup == "false" && System.getenv("CI") == null) {
         dependsOn testDbStart
         finalizedBy testDbStop
     }
