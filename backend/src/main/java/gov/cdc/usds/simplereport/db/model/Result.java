@@ -32,7 +32,7 @@ public class Result extends EternalAuditedEntity {
   private SupportedDisease disease;
 
   @Column(nullable = false)
-  private String result;
+  private String testResult;
 
   @Override
   public boolean equals(Object o) {
@@ -46,11 +46,11 @@ public class Result extends EternalAuditedEntity {
     return Objects.equals(testEvent, that.testEvent)
         && Objects.equals(testOrder, that.testOrder)
         && Objects.equals(disease, that.disease)
-        && Objects.equals(result, that.result);
+        && Objects.equals(testResult, that.testResult);
   }
 
   @Override
   public int hashCode() {
-    return Objects.hash(testEvent, testOrder, disease, result);
+    return Objects.hash(testEvent, testOrder, disease, testResult);
   }
 }

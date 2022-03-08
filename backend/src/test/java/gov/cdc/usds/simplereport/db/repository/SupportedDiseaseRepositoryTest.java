@@ -6,13 +6,13 @@ import gov.cdc.usds.simplereport.db.model.SupportedDisease;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 
-public class SupportedDiseaseRepositoryTest extends BaseRepositoryTest {
+class SupportedDiseaseRepositoryTest extends BaseRepositoryTest {
 
   @Autowired private SupportedDiseaseRepository _repo;
 
   @Test
   void saveSupportedDisease_successful() {
     _repo.save(new SupportedDisease("COVID-19", "123"));
-    assertEquals(_repo.findAllByName("COVID-19").size(), 1);
+    assertEquals(1, _repo.findAllByName("COVID-19").size());
   }
 }

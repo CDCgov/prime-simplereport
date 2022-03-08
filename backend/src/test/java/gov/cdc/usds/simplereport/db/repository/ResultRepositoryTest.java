@@ -9,7 +9,7 @@ import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 
-public class ResultRepositoryTest extends BaseRepositoryTest {
+class ResultRepositoryTest extends BaseRepositoryTest {
 
   @Autowired TestDataFactory _factory;
   @Autowired ResultRepository _repo;
@@ -47,7 +47,7 @@ public class ResultRepositoryTest extends BaseRepositoryTest {
     _repo.save(new Result(TEST_EVENT, TEST_ORDER, FLU_B, "NEGATIVE"));
 
     List<Result> results = _repo.findAllByTestEvent(TEST_EVENT);
-    assertEquals(results.size(), 3);
+    assertEquals(3, results.size());
   }
 
   @Test
@@ -55,8 +55,8 @@ public class ResultRepositoryTest extends BaseRepositoryTest {
     _repo.save(new Result(TEST_EVENT, TEST_ORDER, COVID, "POSITIVE"));
 
     List<Result> results = _repo.findAllByTestEvent(TEST_EVENT);
-    assertEquals(results.size(), 1);
-    assertEquals(results.get(0).getResult(), "POSITIVE");
+    assertEquals(1, results.size());
+    assertEquals("POSITIVE", results.get(0).getTestResult());
   }
 
   @Test
@@ -66,7 +66,7 @@ public class ResultRepositoryTest extends BaseRepositoryTest {
     _repo.save(new Result(TEST_EVENT, TEST_ORDER, FLU_B, "NEGATIVE"));
 
     Result result = _repo.findResultByTestEventAndDisease(TEST_EVENT, COVID);
-    assertEquals(result.getResult(), "POSITIVE");
+    assertEquals("POSITIVE", result.getTestResult());
   }
 
   @Test
@@ -76,7 +76,7 @@ public class ResultRepositoryTest extends BaseRepositoryTest {
     _repo.save(new Result(TEST_EVENT, TEST_ORDER, FLU_B, "NEGATIVE"));
 
     Result result = _repo.findResultByTestOrderAndDisease(TEST_ORDER, COVID);
-    assertEquals(result.getResult(), "POSITIVE");
+    assertEquals("POSITIVE", result.getTestResult());
   }
 
   @Test
@@ -86,7 +86,7 @@ public class ResultRepositoryTest extends BaseRepositoryTest {
     _repo.save(new Result(TEST_EVENT, TEST_ORDER, FLU_B, "NEGATIVE"));
 
     List<Result> result = _repo.findAllByTestOrder(TEST_ORDER);
-    assertEquals(result.size(), 3);
+    assertEquals(3, result.size());
   }
 
   @Test
@@ -99,6 +99,6 @@ public class ResultRepositoryTest extends BaseRepositoryTest {
     _repo.save(new Result(te, to, COVID, "NEGATIVE"));
 
     List<Result> results = _repo.findAllByDisease(COVID);
-    assertEquals(results.size(), 2);
+    assertEquals(2, results.size());
   }
 }
