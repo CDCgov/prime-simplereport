@@ -8,6 +8,7 @@ import gov.cdc.usds.simplereport.db.model.DeviceType;
 import gov.cdc.usds.simplereport.db.model.SupportedDisease;
 import gov.cdc.usds.simplereport.test_util.TestDataFactory;
 import java.util.List;
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 
@@ -23,9 +24,20 @@ public class DeviceSupportedDiseaseRepositoryTest extends BaseRepositoryTest {
   private DeviceType BINAX_NOW;
   private DeviceType SOFIA;
 
+  // @BeforeAll is executed outside the context of a requesting thread, which breaks our JPA
+  // auditing, so we use a BeforeEach instead.
+  @BeforeEach
+  void createDiseaseAndDevices() {
+    COVID_19 = _factory.createSupportedDisease("COVID-19", "1");
+    FLU_A = _factory.createSupportedDisease("Flu A", "2");
+    FLU_B = _factory.createSupportedDisease("Flu B", "3");
+
+    BINAX_NOW = _factory.createDeviceType("BinaxNow", "Abbot", "BinaxNow", "123", "nasal");
+    SOFIA = _factory.createDeviceType("Sofia 2 Antigen", "Quidel", "Sofia 2", "456", "nasal");
+  }
+
   @Test
   void findAllSuccessfulWithDeviceType() {
-    createDiseaseAndDevices();
     _repo.save(new DeviceSupportedDisease(BINAX_NOW, COVID_19));
 
     List<DeviceSupportedDisease> binaxDiseases = _repo.findAllByDeviceType(BINAX_NOW);
@@ -34,7 +46,6 @@ public class DeviceSupportedDiseaseRepositoryTest extends BaseRepositoryTest {
 
   @Test
   void findAllDiseasesForADeviceType() {
-    createDiseaseAndDevices();
     _repo.save(new DeviceSupportedDisease(BINAX_NOW, COVID_19));
     _repo.save(new DeviceSupportedDisease(SOFIA, COVID_19));
     _repo.save(new DeviceSupportedDisease(SOFIA, FLU_A));
@@ -51,7 +62,6 @@ public class DeviceSupportedDiseaseRepositoryTest extends BaseRepositoryTest {
 
   @Test
   void findAllSuccessfulWithSupportedDisease() {
-    createDiseaseAndDevices();
     _repo.save(new DeviceSupportedDisease(BINAX_NOW, COVID_19));
     _repo.save(new DeviceSupportedDisease(SOFIA, COVID_19));
 
@@ -62,7 +72,6 @@ public class DeviceSupportedDiseaseRepositoryTest extends BaseRepositoryTest {
 
   @Test
   void findAllDevicesForASupportedDisease() {
-    createDiseaseAndDevices();
     _repo.save(new DeviceSupportedDisease(BINAX_NOW, COVID_19));
     _repo.save(new DeviceSupportedDisease(SOFIA, COVID_19));
     _repo.save(new DeviceSupportedDisease(SOFIA, FLU_A));
@@ -75,19 +84,5 @@ public class DeviceSupportedDiseaseRepositoryTest extends BaseRepositoryTest {
 
     List<DeviceType> fluDevices = _repo.findDevicesBySupportedDisease(FLU_A);
     assertEquals(fluDevices.size(), 1);
-  }
-
-  // This workaround is in place instead of a BeforeAll or BeforeEach because the @Before annotation
-  // is executed outside
-  // the request thread. This breaks our JPA auditing, which is expecting a user to be specified in
-  // the request.
-  // (This is why the BaseRepositoryTest has the @WithStandardUser annotation)
-  private void createDiseaseAndDevices() {
-    COVID_19 = _factory.createSupportedDisease("COVID-19", "1");
-    FLU_A = _factory.createSupportedDisease("Flu A", "2");
-    FLU_B = _factory.createSupportedDisease("Flu B", "3");
-
-    BINAX_NOW = _factory.createDeviceType("BinaxNow", "Abbot", "BinaxNow", "123", "nasal");
-    SOFIA = _factory.createDeviceType("Sofia 2 Antigen", "Quidel", "Sofia 2", "456", "nasal");
   }
 }
