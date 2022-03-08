@@ -173,7 +173,7 @@ export const StaticTestResultModal = ({
           </ul>
         </section>
         <section className="sr-result-section sr-result-next-steps">
-          <h2>{t("testResult.note")}</h2>
+          <h2>{t("testResult.moreInformation")}</h2>
           {result !== "POSITIVE" && (
             <>
               <p>{t("testResult.notes.negative.p0")}</p>
@@ -193,15 +193,23 @@ export const StaticTestResultModal = ({
                 parent="p"
                 i18nKey="testResult.information"
                 components={[
-                  <a href="https://www.cdc.gov/coronavirus/2019-ncov/if-you-are-sick/end-home-isolation.html">
-                    Centers for Disease Control and Prevention (CDC) website
-                  </a>,
+                  <a
+                    href={t("testResult.cdcLink")}
+                    target="_blank"
+                    rel="noopener noreferrer"
+                  />,
+                  <a
+                    href={t("testResult.countyCheckToolLink")}
+                    target="_blank"
+                    rel="noopener noreferrer"
+                  />,
                 ]}
               />
             </>
           )}
           {result === "POSITIVE" && (
             <>
+              <p>{t("testResult.notes.positive.p1")}</p>
               <ul>
                 <li>{t("testResult.notes.positive.guidelines.li0")}</li>
                 <li>{t("testResult.notes.positive.guidelines.li1")}</li>
@@ -210,7 +218,6 @@ export const StaticTestResultModal = ({
                 <li>{t("testResult.notes.positive.guidelines.li4")}</li>
                 <li>{t("testResult.notes.positive.guidelines.li5")}</li>
               </ul>
-              <p>{t("testResult.notes.positive.moreInformation")}</p>
               <Trans
                 t={t}
                 parent="p"
@@ -232,10 +239,18 @@ export const StaticTestResultModal = ({
               <Trans
                 t={t}
                 parent="p"
-                i18nKey="testResult.notes.positive.difficultNewsLink"
+                i18nKey="testResult.information"
                 components={[
-                  null,
-                  `: ${t("testResult.notes.positive.difficultNewsURL")}`,
+                  <a
+                    href={t("testResult.cdcLink")}
+                    target="_blank"
+                    rel="noopener noreferrer"
+                  />,
+                  <a
+                    href={t("testResult.countyCheckToolLink")}
+                    target="_blank"
+                    rel="noopener noreferrer"
+                  />,
                 ]}
               />
             </>

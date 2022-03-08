@@ -242,8 +242,11 @@ export const en = {
       id: "Test ID",
       meaning: "What does my result mean?",
       information:
-        "For more information, please visit the <0>Centers for Disease Control and Prevention (CDC) website</0> or contact your local health department.",
-      note: "Notes",
+        "For more information go to <0>CDC.gov</0> or call 1-800-CDC-INFO (1-800-232-4636). Use the <1>County Check Tool</1> (<1>cdc.gov/coronavirus/2019-ncov/your-health/covid-by-county</1>) to understand your Community Level (COVID-19 risk and hospital capacity in your area), tips for prevention, and how to find vaccine, testing, and treatment resources.",
+      cdcLink: "https://www.cdc.gov/",
+      countyCheckToolLink:
+        "https://www.cdc.gov/coronavirus/2019-ncov/your-health/covid-by-county.html",
+      moreInformation: "More information",
       printed: "Test result printed",
       print: "Print",
       close: "Close",
@@ -263,8 +266,7 @@ export const en = {
           "testing is needed especially if you experience any of these  symptoms.",
         positive: {
           p1:
-            "Most people who get COVID-19 will be able to recover at home. Make sure to follow CDC guidelines for people who are recovering at " +
-            "home and their caregivers, including:",
+            "Most people who get COVID-19 are able to recover at home. Make sure to follow CDC guidelines and local laws for people who are recovering at home and their caregivers, including:",
           guidelines: {
             li0: "Stay home when you are sick, except to get medical care.",
             li1:
@@ -296,12 +298,6 @@ export const en = {
           },
           p3:
             "Call 911 or call ahead to your local emergency room: Notify the operator that you are seeking care for someone who has or may have COVID-19.",
-          difficultNewsLink:
-            "Getting a positive COVID-19 test result can be difficult news, so it’s important to <0> take steps to cope with stress </0> during this time<1></1>. Reach out to your support system and make a phone or video appointment with a mental health professional if needed.",
-          difficultNewsURL:
-            "cdc.gov/coronavirus/2019-ncov/daily-life-coping/managing-stress-anxiety.html",
-          moreInformation:
-            "More information is available at cdc.gov/coronavirus/2019-ncov/if-you-are-sick. Local laws may vary, always check your state and county health department guidelines.",
         },
         negative: {
           p0:

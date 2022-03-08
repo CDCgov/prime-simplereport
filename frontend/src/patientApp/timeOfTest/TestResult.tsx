@@ -83,9 +83,16 @@ const TestResult = () => {
               parent="p"
               i18nKey="testResult.information"
               components={[
-                <a href="https://www.cdc.gov/coronavirus/2019-ncov/if-you-are-sick/end-home-isolation.html">
-                  Centers for Disease Control and Prevention (CDC) website
-                </a>,
+                <a
+                  href={t("testResult.cdcLink")}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                />,
+                <a
+                  href={t("testResult.countyCheckToolLink")}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                />,
               ]}
             />
           </div>
@@ -134,16 +141,6 @@ const TestResultNotes: React.FC<TestResultNotesProps> = (props) => {
             <li>{t("testResult.notes.positive.emergency.li4")}</li>
           </ul>
           <p>{t("testResult.notes.positive.p3")}</p>
-          <Trans
-            t={t}
-            parent="p"
-            i18nKey="testResult.notes.positive.difficultNewsLink"
-            components={[
-              <a href="https://www.cdc.gov/coronavirus/2019-ncov/daily-life-coping/managing-stress-anxiety.html">
-                take steps to cope with stress
-              </a>,
-            ]}
-          />
         </>
       );
     case COVID_RESULTS.NEGATIVE:
