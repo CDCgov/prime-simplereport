@@ -43,4 +43,8 @@ public class Result extends EternalAuditedEntity {
   public void setTestResult(TestResult result) {
     this.testResult = Translators.convertTestResultToLoinc(result);
   }
+
+  public void setRawTestResult(String result) {
+    this.testResult = result;
+  }
 }
