@@ -87,12 +87,16 @@ const TestResult = () => {
                   href={t("testResult.cdcLink")}
                   target="_blank"
                   rel="noopener noreferrer"
-                />,
+                >
+                  cdc.gov
+                </a>,
                 <a
                   href={t("testResult.countyCheckToolLink")}
                   target="_blank"
                   rel="noopener noreferrer"
-                />,
+                >
+                  county check tool
+                </a>,
               ]}
             />
           </div>
