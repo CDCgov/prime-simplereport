@@ -28,4 +28,4 @@ COPY --from=build  /home/gradle/graphql-api/backend/insights.jar insights.jar
 RUN addgroup -S appgroup && adduser -S appuser -G appgroup
 USER appuser
 
-ENTRYPOINT ["java", "-javaagent:insights.jar", "-jar", "app.jar"]
+ENTRYPOINT ["java", "-javaagent:insights.jar", "-XX:MaxRAMPercentage=75", "-XX:InitialRAMPercentage=40", "-jar", "app.jar"]
