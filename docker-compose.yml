@@ -76,7 +76,7 @@ services:
     ports:
       - '1025:1025'
       - '8025:8025'
-    image: mailhog/mailhog 
+    image: mailhog/mailhog
 volumes:
   db-data:
   node_modules:
