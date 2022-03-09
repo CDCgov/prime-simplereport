@@ -130,3 +130,17 @@ module "web_application_firewall" {
 
   tags = local.management_tags
 }
+
+module "app_service_autoscale" {
+  source                  = "../services/app_service_autoscale"
+  name                    = local.name
+  env                     = local.env
+  resource_group_location = data.azurerm_resource_group.rg.location
+  resource_group_name     = data.azurerm_resource_group.rg.name
+  target_resource_id      = module.simple_report_api.app_service_plan_id
+
+  tags = local.management_tags
+
+  peak_capacity_instances    = 4
+  weekend_capacity_instances = 2
+}
