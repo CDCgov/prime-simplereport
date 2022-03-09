@@ -3,7 +3,7 @@ package gov.cdc.usds.simplereport.db.model;
 import gov.cdc.usds.simplereport.db.model.auxiliary.TestCorrectionStatus;
 import gov.cdc.usds.simplereport.db.model.auxiliary.TestResult;
 import java.util.Date;
-import java.util.Set;
+import java.util.List;
 import javax.persistence.*;
 import org.hibernate.annotations.Type;
 
@@ -39,8 +39,10 @@ public abstract class BaseTestInfo extends AuditedEntity implements Organization
   @Enumerated(EnumType.STRING)
   private TestResult result;
 
+  // it doesn't like this: SQLGrammarException could not extract ResultSet
   @OneToMany(mappedBy = "result", fetch = FetchType.LAZY)
-  private Set<Result> results;
+  private List<Result> results;
+  //  private Set<Result> results;
 
   @Column private Date dateTestedBackdate;
 
@@ -110,7 +112,15 @@ public abstract class BaseTestInfo extends AuditedEntity implements Organization
   }
 
   public TestResult getResult() {
+    System.out.println(results);
     return result;
+    //    Optional<Result> resultObject = this.results.stream().findFirst();
+    //        // Backwards-compatibility: if result table isn't populated, fetch old result column
+    //    if (resultObject.isEmpty()) {
+    //      return result;
+    //    } else {
+    //      return Translators.convertLoincToResult(resultObject.get().getResult());
+    //    }
   }
 
   // FYI Setters shouldn't be allowed in TestEvent, so they are always *protected*
@@ -163,4 +173,12 @@ public abstract class BaseTestInfo extends AuditedEntity implements Organization
 // results for each.
 // That object gets passed in to TestEvent/TestOrder and we unwrap and store in the database
 // appropriately.
-//
+// We will likely also need getters/setters that fetch results for a specific disease, as well as a
+// default
+// that fetches covid. ( testOrder.getResultForDisease(SupportedDisease disease);
+// testOrder.getResult() )
+
+// most recent exceptions in postgres: ERROR:  operator does not exist: text = uuid
+// this would seem to indicate that I'm trying to pass in text when I should be passing UUID (or
+// vice versa)
+// this is likely why I'm getting the SQLGrammarException
