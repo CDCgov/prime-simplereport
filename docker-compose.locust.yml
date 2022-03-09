@@ -1,0 +1,24 @@
+services:
+  # The Locust engine is used for load testing purposes.  
+  locust-brain:
+    image: locustio/locust
+    ports:
+     - "8089:8089"
+    volumes:
+      - ./backend/locust:/mnt/locust
+    command: -f /mnt/locust/locustfile.py --master -H http://locust-brain:8089
+  locust-worker-1:
+    image: locustio/locust
+    volumes:
+      - ./backend/locust:/mnt/locust
+    command: -f /mnt/locust/locustfile.py --worker --master-host locust-brain
+  locust-worker-2:
+    image: locustio/locust
+    volumes:
+      - ./backend/locust:/mnt/locust
+    command: -f /mnt/locust/locustfile.py --worker --master-host locust-brain
+  locust-worker-3:
+    image: locustio/locust
+    volumes:
+      - ./backend/locust:/mnt/locust
+    command: -f /mnt/locust/locustfile.py --worker --master-host locust-brain   
