@@ -188,7 +188,9 @@ See the [Cypress documentation](https://docs.cypress.io/api/table-of-contents) f
 ## Load Tests
 SimpleReport leverages Locust for running its load tests. Currently, Locust starts as part of the local development build, and spawns three separate worker containers for inundating the system.
 
-To access the Locust user interface, navigate to `http://localhost:8089/`.
+To compose Locust with the rest of the development stack, run `yarn locust` instead of `yarn start`. *(NOTE: All other prerequisites listed above in "Developing locally" are still required for tests to function.)*
+
+To access the Locust user interface, navigate to `http://localhost:8089/`. Load tests will not kick off automatically; they must be manually invoked.
 
 Tests can be configured by modifying `backend/locust/locustfile.py`.
 
