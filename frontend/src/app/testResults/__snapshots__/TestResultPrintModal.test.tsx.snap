@@ -94,7 +94,7 @@ Object {
                       Name
                     </b>
                     <div>
-                      Last, First Middle
+                      First Middle Last
                     </div>
                   </li>
                   <li>
@@ -164,7 +164,7 @@ Object {
                       Ordering provider
                     </b>
                     <div>
-                      Provider, Ordering
+                      Ordering Provider
                     </div>
                   </li>
                   <li>
@@ -232,7 +232,7 @@ Object {
                 class="sr-result-section sr-result-next-steps"
               >
                 <h2>
-                  Notes
+                  More information
                 </h2>
                 <p>
                   Contact your health care provider to decide if additional testing is needed, especially if you experience any of these symptoms:
@@ -269,13 +269,23 @@ Object {
                   </li>
                 </ul>
                 <p>
-                  For more information, please visit the 
+                  For more information go to 
                   <a
-                    href="https://www.cdc.gov/coronavirus/2019-ncov/if-you-are-sick/end-home-isolation.html"
+                    href="https://www.cdc.gov/"
+                    rel="noopener noreferrer"
+                    target="_blank"
                   >
-                    Centers for Disease Control and Prevention (CDC) website
+                    CDC.gov
                   </a>
-                   or contact your local health department.
+                   or call 1-800-CDC-INFO (1-800-232-4636). Use the 
+                  <a
+                    href="https://www.cdc.gov/coronavirus/2019-ncov/your-health/covid-by-county.html"
+                    rel="noopener noreferrer"
+                    target="_blank"
+                  >
+                    County Check Tool
+                  </a>
+                   (cdc.gov/coronavirus/2019-ncov/your-health/covid-by-county.html) to understand your Community Level (COVID-19 risk and hospital capacity in your area), tips for prevention, and how to find vaccine, testing, and treatment resources.
                 </p>
               </section>
             </main>
@@ -397,7 +407,7 @@ Object {
                     Name
                   </b>
                   <div>
-                    Last, First Middle
+                    First Middle Last
                   </div>
                 </li>
                 <li>
@@ -467,7 +477,7 @@ Object {
                     Ordering provider
                   </b>
                   <div>
-                    Provider, Ordering
+                    Ordering Provider
                   </div>
                 </li>
                 <li>
@@ -535,7 +545,7 @@ Object {
               class="sr-result-section sr-result-next-steps"
             >
               <h2>
-                Notes
+                More information
               </h2>
               <p>
                 Contact your health care provider to decide if additional testing is needed, especially if you experience any of these symptoms:
@@ -572,13 +582,23 @@ Object {
                 </li>
               </ul>
               <p>
-                For more information, please visit the 
+                For more information go to 
                 <a
-                  href="https://www.cdc.gov/coronavirus/2019-ncov/if-you-are-sick/end-home-isolation.html"
+                  href="https://www.cdc.gov/"
+                  rel="noopener noreferrer"
+                  target="_blank"
                 >
-                  Centers for Disease Control and Prevention (CDC) website
+                  CDC.gov
                 </a>
-                 or contact your local health department.
+                 or call 1-800-CDC-INFO (1-800-232-4636). Use the 
+                <a
+                  href="https://www.cdc.gov/coronavirus/2019-ncov/your-health/covid-by-county.html"
+                  rel="noopener noreferrer"
+                  target="_blank"
+                >
+                  County Check Tool
+                </a>
+                 (cdc.gov/coronavirus/2019-ncov/your-health/covid-by-county.html) to understand your Community Level (COVID-19 risk and hospital capacity in your area), tips for prevention, and how to find vaccine, testing, and treatment resources.
               </p>
             </section>
           </main>

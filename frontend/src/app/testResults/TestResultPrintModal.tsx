@@ -89,7 +89,8 @@ export const StaticTestResultModal = ({
                 {displayFullName(
                   patient.firstName,
                   patient.middleName,
-                  patient.lastName
+                  patient.lastName,
+                  false
                 )}
               </div>
             </li>
@@ -130,7 +131,8 @@ export const StaticTestResultModal = ({
                 {displayFullName(
                   facility.orderingProvider.firstName,
                   facility.orderingProvider.middleName,
-                  facility.orderingProvider.lastName
+                  facility.orderingProvider.lastName,
+                  false
                 )}
               </div>
             </li>
@@ -173,7 +175,10 @@ export const StaticTestResultModal = ({
           </ul>
         </section>
         <section className="sr-result-section sr-result-next-steps">
-          <h2>{t("testResult.note")}</h2>
+          <h2>{t("testResult.moreInformation")}</h2>
+          {result === "UNDETERMINED" && (
+            <p>{t("testResult.notes.inconclusive.p0")}</p>
+          )}
           {result !== "POSITIVE" && (
             <>
               <p>{t("testResult.notes.negative.p0")}</p>
@@ -188,20 +193,11 @@ export const StaticTestResultModal = ({
                 <li>{t("testResult.notes.negative.symptoms.li9")}</li>
                 <li>{t("testResult.notes.negative.symptoms.li10")}</li>
               </ul>
-              <Trans
-                t={t}
-                parent="p"
-                i18nKey="testResult.information"
-                components={[
-                  <a href="https://www.cdc.gov/coronavirus/2019-ncov/if-you-are-sick/end-home-isolation.html">
-                    Centers for Disease Control and Prevention (CDC) website
-                  </a>,
-                ]}
-              />
             </>
           )}
           {result === "POSITIVE" && (
             <>
+              <p>{t("testResult.notes.positive.p1")}</p>
               <ul>
                 <li>{t("testResult.notes.positive.guidelines.li0")}</li>
                 <li>{t("testResult.notes.positive.guidelines.li1")}</li>
@@ -210,15 +206,18 @@ export const StaticTestResultModal = ({
                 <li>{t("testResult.notes.positive.guidelines.li4")}</li>
                 <li>{t("testResult.notes.positive.guidelines.li5")}</li>
               </ul>
-              <p>{t("testResult.notes.positive.moreInformation")}</p>
               <Trans
                 t={t}
                 parent="p"
                 i18nKey="testResult.notes.positive.p2"
                 components={[
-                  t("testResult.notes.positive.whenToSeek") +
-                    ": " +
-                    t("testResult.notes.positive.symptomsLink"),
+                  <a
+                    href={t("testResult.notes.positive.symptomsLink")}
+                    target="_blank"
+                    rel="noopener noreferrer"
+                  >
+                    symptoms link
+                  </a>,
                 ]}
               />
               <ul>
@@ -229,17 +228,29 @@ export const StaticTestResultModal = ({
                 <li>{t("testResult.notes.positive.emergency.li4")}</li>
               </ul>
               <p>{t("testResult.notes.positive.p3")}</p>
-              <Trans
-                t={t}
-                parent="p"
-                i18nKey="testResult.notes.positive.difficultNewsLink"
-                components={[
-                  null,
-                  `: ${t("testResult.notes.positive.difficultNewsURL")}`,
-                ]}
-              />
             </>
           )}
+          <Trans
+            t={t}
+            parent="p"
+            i18nKey="testResult.information"
+            components={[
+              <a
+                href={t("testResult.cdcLink")}
+                target="_blank"
+                rel="noopener noreferrer"
+              >
+                cdc.gov
+              </a>,
+              <a
+                href={t("testResult.countyCheckToolLink")}
+                target="_blank"
+                rel="noopener noreferrer"
+              >
+                county check tool
+              </a>,
+            ]}
+          />
         </section>
       </main>
       <footer>

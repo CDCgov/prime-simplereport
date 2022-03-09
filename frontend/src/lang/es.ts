@@ -253,9 +253,11 @@ export const es: LanguageConfig = {
       id: "Número de identificación de la prueba",
       meaning: "¿Qué significa mi resultado?",
       information:
-        "Para obtener más información, visite el <0>sitio web de los Centros para el Control y la Prevención de Enfermedades (CDC)</0> o comuníquese con su departamento de " +
-        "salud local.",
-      note: "Notas",
+        "Para obtener más información, visite <0>CDC.gov</0> o llame al 1-800-CDC-INFO (1-800-232-4636). Usa la <1>herramienta de verificación del condado</1> (espanol.cdc.gov/coronavirus/2019-ncov/your-health/covid-by-county.html) para comprender su nivel comunitario (riesgo de COVID-19 y capacidad hospitalaria en su área). ), consejos para la prevención y cómo encontrar vacunas, pruebas y recursos de tratamiento. ",
+      cdcLink: "https://espanol.cdc.gov/",
+      countyCheckToolLink:
+        "https://espanol.cdc.gov/coronavirus/2019-ncov/your-health/covid-by-county.html",
+      moreInformation: "Más información",
       printed: "Resultado de la prueba impreso",
       print: "Imprimir",
       close: "Cerrar",
@@ -298,11 +300,10 @@ export const es: LanguageConfig = {
               "casa.",
           },
           p2:
-            "Esté atento a los síntomas y <0> sepa cuándo buscar atención médica de emergencia</0>. Si alguien presenta alguno de estos síntomas, busque atención médica de " +
+            "Esté atento a los síntomas y sepa cuándo buscar atención médica de emergencia: <0>Síntomas del COVID-19</0> (espanol.cdc.gov/coronavirus/2019-ncov/symptoms-testing/symptoms.html). Si alguien presenta alguno de estos síntomas, busque atención médica de " +
             "emergencia de inmediato:",
-          whenToSeek: "sepa cuándo buscar atención médica de emergencia",
           symptomsLink:
-            "espanol.cdc.gov/coronavirus/2019-ncov/symptoms-testing/symptoms.html",
+            "https://espanol.cdc.gov/coronavirus/2019-ncov/symptoms-testing/symptoms.html",
           emergency: {
             li0: "Dificultad para respirar",
             li1: "Dolor o presión persistente en el pecho",
@@ -312,13 +313,6 @@ export const es: LanguageConfig = {
           },
           p3:
             "Llame al 911 o llame primero a su sala de emergencias local: dígale al operador que necesita atención para alguien que tiene o podría tener COVID-19.",
-          difficultNewsLink:
-            "Obtener un resultado positivo en la prueba de COVID-19 puede ser una noticia difícil, por lo que es importante tomar <0> medidas para sobrellevar el estrés </0> " +
-            "durante este periodo<1></1>. Comuníquese con su sistema de apoyo y programe una cita por teléfono o video con un profesional de salud mental si es necesario.",
-          difficultNewsURL:
-            "espanol.cdc.gov/coronavirus/2019-ncov/daily-life-coping/managing-stress-anxiety.html",
-          moreInformation:
-            "Para más información: espanol.cdc.gov/coronavirus/2019-ncov/if-you-are-sick/index.html. Las leyes locales pueden variar, siempre consulte las pautas del departamento de salud de su estado y condado.",
         },
         negative: {
           p0:
