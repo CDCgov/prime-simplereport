@@ -12,8 +12,8 @@
 cleanup() {
     echo
     echo "App stopped, shutting down containers..."
-    docker compose $fileFlag exec backend gradle clean --stop
-    docker compose $fileFlag down
+    docker compose -f docker-compose.yml $fileFlag exec backend gradle clean --stop
+    docker compose -f docker-compose.yml $fileFlag down
     echo "Thanks for using Simple Report!"
     exit
 }
@@ -55,8 +55,8 @@ do
   esac  
 done
 
-docker compose $fileFlag pull
-docker compose $fileFlag up -d
-docker compose $fileFlag logs -f
+docker compose -f docker-compose.yml $fileFlag pull
+docker compose -f docker-compose.yml $fileFlag up -d
+docker compose -f docker-compose.yml $fileFlag logs -f
 
 trap "cleanup" EXIT
