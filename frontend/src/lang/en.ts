@@ -242,7 +242,7 @@ export const en = {
       id: "Test ID",
       meaning: "What does my result mean?",
       information:
-        "For more information go to <0>CDC.gov</0> or call 1-800-CDC-INFO (1-800-232-4636). Use the <1>County Check Tool</1> (<1>https://www.cdc.gov/coronavirus/2019-ncov/your-health/covid-by-county.html</1>) to understand your Community Level (COVID-19 risk and hospital capacity in your area), tips for prevention, and how to find vaccine, testing, and treatment resources.",
+        "For more information go to <0>CDC.gov</0> or call 1-800-CDC-INFO (1-800-232-4636). Use the <1>County Check Tool</1> (cdc.gov/coronavirus/2019-ncov/your-health/covid-by-county.html) to understand your Community Level (COVID-19 risk and hospital capacity in your area), tips for prevention, and how to find vaccine, testing, and treatment resources.",
       cdcLink: "https://www.cdc.gov/",
       countyCheckToolLink:
         "https://www.cdc.gov/coronavirus/2019-ncov/your-health/covid-by-county.html",
@@ -285,7 +285,7 @@ export const en = {
               "Have a supply of clean, disposable face masks. Everyone, no matter their COVID-19 diagnosis, should wear face masks while in the home.",
           },
           p2:
-            "Watch for symptoms and learn when to seek emergency medical attention: <0>Symptoms of COVID-19</0> (<0>https://www.cdc.gov/coronavirus/2019-ncov/symptoms-testing/symptoms.html</0>). If someone is showing any of these signs, seek emergency medical care immediately:",
+            "Watch for symptoms and learn when to seek emergency medical attention: <0>Symptoms of COVID-19</0> (cdc.gov/coronavirus/2019-ncov/symptoms-testing/symptoms.html). If someone is showing any of these signs, seek emergency medical care immediately:",
           symptomsLink:
             "https://www.cdc.gov/coronavirus/2019-ncov/symptoms-testing/symptoms.html",
           emergency: {

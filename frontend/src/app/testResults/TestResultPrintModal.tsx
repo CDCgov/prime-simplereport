@@ -89,7 +89,8 @@ export const StaticTestResultModal = ({
                 {displayFullName(
                   patient.firstName,
                   patient.middleName,
-                  patient.lastName
+                  patient.lastName,
+                  false
                 )}
               </div>
             </li>
@@ -130,7 +131,8 @@ export const StaticTestResultModal = ({
                 {displayFullName(
                   facility.orderingProvider.firstName,
                   facility.orderingProvider.middleName,
-                  facility.orderingProvider.lastName
+                  facility.orderingProvider.lastName,
+                  false
                 )}
               </div>
             </li>

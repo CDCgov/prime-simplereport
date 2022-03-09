@@ -253,7 +253,7 @@ export const es: LanguageConfig = {
       id: "Número de identificación de la prueba",
       meaning: "¿Qué significa mi resultado?",
       information:
-        "Para obtener más información, visite <0>CDC.gov</0> o llame al 1-800-CDC-INFO (1-800-232-4636). Usa la <1>herramienta de verificación del condado</1> (<1>https://espanol.cdc.gov/coronavirus/2019-ncov/your-health/covid-by-county.html</1>) para comprender su nivel comunitario (riesgo de COVID-19 y capacidad hospitalaria en su área). ), consejos para la prevención y cómo encontrar vacunas, pruebas y recursos de tratamiento. ",
+        "Para obtener más información, visite <0>CDC.gov</0> o llame al 1-800-CDC-INFO (1-800-232-4636). Usa la <1>herramienta de verificación del condado</1> (espanol.cdc.gov/coronavirus/2019-ncov/your-health/covid-by-county.html) para comprender su nivel comunitario (riesgo de COVID-19 y capacidad hospitalaria en su área). ), consejos para la prevención y cómo encontrar vacunas, pruebas y recursos de tratamiento. ",
       cdcLink: "https://espanol.cdc.gov/",
       countyCheckToolLink:
         "https://espanol.cdc.gov/coronavirus/2019-ncov/your-health/covid-by-county.html",
@@ -300,7 +300,7 @@ export const es: LanguageConfig = {
               "casa.",
           },
           p2:
-            "Esté atento a los síntomas y sepa cuándo buscar atención médica de emergencia: <0>Síntomas del COVID-19</0> (<0>https://espanol.cdc.gov/coronavirus/2019-ncov/symptoms-testing/symptoms.html</0>). Si alguien presenta alguno de estos síntomas, busque atención médica de " +
+            "Esté atento a los síntomas y sepa cuándo buscar atención médica de emergencia: <0>Síntomas del COVID-19</0> (espanol.cdc.gov/coronavirus/2019-ncov/symptoms-testing/symptoms.html). Si alguien presenta alguno de estos síntomas, busque atención médica de " +
             "emergencia de inmediato:",
           symptomsLink:
             "https://espanol.cdc.gov/coronavirus/2019-ncov/symptoms-testing/symptoms.html",

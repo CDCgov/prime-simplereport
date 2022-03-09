@@ -94,7 +94,7 @@ Object {
                       Name
                     </b>
                     <div>
-                      Last, First Middle
+                      First Middle Last
                     </div>
                   </li>
                   <li>
@@ -164,7 +164,7 @@ Object {
                       Ordering provider
                     </b>
                     <div>
-                      Provider, Ordering
+                      Ordering Provider
                     </div>
                   </li>
                   <li>
@@ -285,15 +285,7 @@ Object {
                   >
                     County Check Tool
                   </a>
-                   (
-                  <a
-                    href="https://www.cdc.gov/coronavirus/2019-ncov/your-health/covid-by-county.html"
-                    rel="noopener noreferrer"
-                    target="_blank"
-                  >
-                    cdc.gov/coronavirus/2019-ncov/your-health/covid-by-county
-                  </a>
-                  ) to understand your Community Level (COVID-19 risk and hospital capacity in your area), tips for prevention, and how to find vaccine, testing, and treatment resources.
+                   (cdc.gov/coronavirus/2019-ncov/your-health/covid-by-county.html) to understand your Community Level (COVID-19 risk and hospital capacity in your area), tips for prevention, and how to find vaccine, testing, and treatment resources.
                 </p>
               </section>
             </main>
@@ -415,7 +407,7 @@ Object {
                     Name
                   </b>
                   <div>
-                    Last, First Middle
+                    First Middle Last
                   </div>
                 </li>
                 <li>
@@ -485,7 +477,7 @@ Object {
                     Ordering provider
                   </b>
                   <div>
-                    Provider, Ordering
+                    Ordering Provider
                   </div>
                 </li>
                 <li>
@@ -606,15 +598,7 @@ Object {
                 >
                   County Check Tool
                 </a>
-                 (
-                <a
-                  href="https://www.cdc.gov/coronavirus/2019-ncov/your-health/covid-by-county.html"
-                  rel="noopener noreferrer"
-                  target="_blank"
-                >
-                  cdc.gov/coronavirus/2019-ncov/your-health/covid-by-county
-                </a>
-                ) to understand your Community Level (COVID-19 risk and hospital capacity in your area), tips for prevention, and how to find vaccine, testing, and treatment resources.
+                 (cdc.gov/coronavirus/2019-ncov/your-health/covid-by-county.html) to understand your Community Level (COVID-19 risk and hospital capacity in your area), tips for prevention, and how to find vaccine, testing, and treatment resources.
               </p>
             </section>
           </main>
