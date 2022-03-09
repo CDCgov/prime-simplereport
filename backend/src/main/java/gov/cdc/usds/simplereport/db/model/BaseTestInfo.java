@@ -3,13 +3,8 @@ package gov.cdc.usds.simplereport.db.model;
 import gov.cdc.usds.simplereport.db.model.auxiliary.TestCorrectionStatus;
 import gov.cdc.usds.simplereport.db.model.auxiliary.TestResult;
 import java.util.Date;
-import javax.persistence.Column;
-import javax.persistence.EnumType;
-import javax.persistence.Enumerated;
-import javax.persistence.FetchType;
-import javax.persistence.JoinColumn;
-import javax.persistence.ManyToOne;
-import javax.persistence.MappedSuperclass;
+import java.util.Set;
+import javax.persistence.*;
 import org.hibernate.annotations.Type;
 
 @MappedSuperclass
@@ -43,6 +38,9 @@ public abstract class BaseTestInfo extends AuditedEntity implements Organization
   @Type(type = "pg_enum")
   @Enumerated(EnumType.STRING)
   private TestResult result;
+
+  @OneToMany(mappedBy = "result", fetch = FetchType.LAZY)
+  private Set<Result> results;
 
   @Column private Date dateTestedBackdate;
 
@@ -153,3 +151,16 @@ public abstract class BaseTestInfo extends AuditedEntity implements Organization
     this.reasonForCorrection = reasonForCorrection;
   }
 }
+
+// let's think out loud in the comments for a moment.
+// This base class supports both TestEvent and TestOrder.
+// TestOrder has getters/setters for both, while TestEvent only has getters.
+// To support multiple diseases, we'll need to pass in both the disease type and the result when
+// creating results.
+// Maybe an "addResult" instead of "setResult"?
+// It could also help to have some kind of result object that looks at the available diseases and
+// allows you to set
+// results for each.
+// That object gets passed in to TestEvent/TestOrder and we unwrap and store in the database
+// appropriately.
+//

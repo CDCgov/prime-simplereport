@@ -1,13 +1,10 @@
 package gov.cdc.usds.simplereport.db.model;
 
-import gov.cdc.usds.simplereport.api.Translators;
 import gov.cdc.usds.simplereport.db.model.auxiliary.OrderStatus;
 import gov.cdc.usds.simplereport.db.model.auxiliary.TestCorrectionStatus;
 import gov.cdc.usds.simplereport.db.model.auxiliary.TestResult;
 import java.time.LocalDate;
 import java.util.Date;
-import java.util.Optional;
-import java.util.Set;
 import java.util.UUID;
 import javax.persistence.*;
 import org.hibernate.annotations.Type;
@@ -38,9 +35,12 @@ public class TestOrder extends BaseTestInfo {
   @JoinColumn(name = "test_event_id")
   private TestEvent testEvent;
 
-  @OneToMany
-  @JoinColumn(name = "result")
-  private Set<Result> resultSet;
+  //  @OneToMany(mappedBy = "result", fetch = FetchType.LAZY)
+  //  private Set<Result> results;
+
+  //  @OneToMany
+  //  @JoinColumn(name = "test_order_id")
+  //  private Set<Result> result;
 
   protected TestOrder() {
     /* for hibernate */ }
@@ -73,14 +73,18 @@ public class TestOrder extends BaseTestInfo {
   }
 
   public TestResult getTestResult() {
-    Optional<Result> resultObject = this.resultSet.stream().findFirst();
-    // Backwards-compatibility: if result table isn't populated, fetch old result column
-    if (resultObject.isEmpty()) {
-      return this.getResult();
-    } else {
-      return Translators.convertLoincToResult(resultObject.get().getResult());
-    }
+    return getResult();
   }
+
+  //  public TestResult getTestResult() {
+  //    Optional<Result> resultObject = this.result.stream().findFirst();
+  //    // Backwards-compatibility: if result table isn't populated, fetch old result column
+  //    if (resultObject.isEmpty()) {
+  //      return this.getResult();
+  //    } else {
+  //      return Translators.convertLoincToResult(resultObject.get().getResult());
+  //    }
+  //  }
 
   public void setResult(TestResult finalResult) {
     super.setTestResult(finalResult);
