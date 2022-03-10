@@ -19,7 +19,6 @@ variable "disabled_alerts" {
     condition = length(setsubtract(var.disabled_alerts, [
       "cpu_util",
       "mem_util",
-      "http_response_time",
       "http_2xx_failed_requests",
       "http_4xx_errors",
       "http_401_410_errors",
