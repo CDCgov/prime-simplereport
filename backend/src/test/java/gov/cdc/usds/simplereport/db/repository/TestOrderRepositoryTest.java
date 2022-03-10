@@ -185,7 +185,7 @@ class TestOrderRepositoryTest extends BaseRepositoryTest {
             new TestEvent(
                 TestResult.NEGATIVE, site.getDefaultDeviceSpecimen(), patient0, site, order1));
     order1.setTestEventRef(didit);
-    order1.setResult(didit.getResult());
+    order1.setResult(_dataFactory.createCovidDiseaseResult(didit.getResult()));
     order1.markComplete();
     _repo.save(order1);
     flush();

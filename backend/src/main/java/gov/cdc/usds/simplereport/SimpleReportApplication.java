@@ -10,6 +10,7 @@ import gov.cdc.usds.simplereport.properties.ExperianProperties;
 import gov.cdc.usds.simplereport.properties.OrderingProviderProperties;
 import gov.cdc.usds.simplereport.properties.SendGridProperties;
 import gov.cdc.usds.simplereport.properties.SmartyStreetsProperties;
+import gov.cdc.usds.simplereport.service.DiseaseService;
 import gov.cdc.usds.simplereport.service.OrganizationInitializingService;
 import gov.cdc.usds.simplereport.service.ScheduledTasksService;
 import lombok.extern.slf4j.Slf4j;
@@ -42,6 +43,11 @@ import org.springframework.scheduling.annotation.EnableScheduling;
 public class SimpleReportApplication {
   public static void main(String[] args) {
     SpringApplication.run(SimpleReportApplication.class, args);
+  }
+
+  @Bean
+  public CommandLineRunner initDiseasesOnStartup(DiseaseService initService) {
+    return args -> initService.initDiseases();
   }
 
   @Bean

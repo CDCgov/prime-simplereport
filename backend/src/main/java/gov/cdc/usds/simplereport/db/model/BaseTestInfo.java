@@ -3,7 +3,6 @@ package gov.cdc.usds.simplereport.db.model;
 import gov.cdc.usds.simplereport.db.model.auxiliary.TestCorrectionStatus;
 import gov.cdc.usds.simplereport.db.model.auxiliary.TestResult;
 import java.util.Date;
-import java.util.List;
 import javax.persistence.*;
 import org.hibernate.annotations.Type;
 
@@ -38,11 +37,6 @@ public abstract class BaseTestInfo extends AuditedEntity implements Organization
   @Type(type = "pg_enum")
   @Enumerated(EnumType.STRING)
   private TestResult result;
-
-  // it doesn't like this: SQLGrammarException could not extract ResultSet
-  @OneToMany(mappedBy = "result", fetch = FetchType.LAZY)
-  private List<Result> results;
-  //  private Set<Result> results;
 
   @Column private Date dateTestedBackdate;
 
@@ -112,15 +106,7 @@ public abstract class BaseTestInfo extends AuditedEntity implements Organization
   }
 
   public TestResult getResult() {
-    System.out.println(results);
     return result;
-    //    Optional<Result> resultObject = this.results.stream().findFirst();
-    //        // Backwards-compatibility: if result table isn't populated, fetch old result column
-    //    if (resultObject.isEmpty()) {
-    //      return result;
-    //    } else {
-    //      return Translators.convertLoincToResult(resultObject.get().getResult());
-    //    }
   }
 
   // FYI Setters shouldn't be allowed in TestEvent, so they are always *protected*
@@ -161,24 +147,3 @@ public abstract class BaseTestInfo extends AuditedEntity implements Organization
     this.reasonForCorrection = reasonForCorrection;
   }
 }
-
-// let's think out loud in the comments for a moment.
-// This base class supports both TestEvent and TestOrder.
-// TestOrder has getters/setters for both, while TestEvent only has getters.
-// To support multiple diseases, we'll need to pass in both the disease type and the result when
-// creating results.
-// Maybe an "addResult" instead of "setResult"?
-// It could also help to have some kind of result object that looks at the available diseases and
-// allows you to set
-// results for each.
-// That object gets passed in to TestEvent/TestOrder and we unwrap and store in the database
-// appropriately.
-// We will likely also need getters/setters that fetch results for a specific disease, as well as a
-// default
-// that fetches covid. ( testOrder.getResultForDisease(SupportedDisease disease);
-// testOrder.getResult() )
-
-// most recent exceptions in postgres: ERROR:  operator does not exist: text = uuid
-// this would seem to indicate that I'm trying to pass in text when I should be passing UUID (or
-// vice versa)
-// this is likely why I'm getting the SQLGrammarException

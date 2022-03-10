@@ -340,7 +340,7 @@ public class TestDataFactory {
   public TestEvent createTestEvent(Person p, Facility f, AskOnEntrySurvey s, TestResult r, Date d) {
     TestOrder o = createTestOrder(p, f, s);
     o.setDateTestedBackdate(d);
-    o.setResult(r);
+    o.setResult(createCovidDiseaseResult(r));
 
     TestEvent e = _testEventRepo.save(new TestEvent(o));
     o.setTestEventRef(e);
@@ -355,7 +355,7 @@ public class TestDataFactory {
 
   public TestEvent createTestEvent(Person p, Facility f, TestResult r, Boolean hasPriorTests) {
     TestOrder o = createTestOrder(p, f);
-    o.setResult(r);
+    o.setResult(createCovidDiseaseResult(r));
     o = _testOrderRepo.save(o);
 
     TestEvent e = _testEventRepo.save(new TestEvent(o, hasPriorTests));
@@ -371,7 +371,7 @@ public class TestDataFactory {
   }
 
   public TestEvent doTest(TestOrder order, TestResult result) {
-    order.setResult(result);
+    order.setResult(createCovidDiseaseResult(result));
     TestEvent event = _testEventRepo.save(new TestEvent(order));
     order.setTestEventRef(event);
     order.markComplete();
@@ -455,6 +455,10 @@ public class TestDataFactory {
 
   public SupportedDisease createSupportedDisease(String name, String loinc) {
     return _supportedDiseaseRepo.save(new SupportedDisease(name, loinc));
+  }
+
+  public DiseaseResult createCovidDiseaseResult(TestResult result) {
+    return new DiseaseResult(createSupportedDisease("COVID-19", "123"), result);
   }
 
   public StreetAddress getAddress() {

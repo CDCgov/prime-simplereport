@@ -1,5 +1,6 @@
 package gov.cdc.usds.simplereport.db.model;
 
+import gov.cdc.usds.simplereport.api.Translators;
 import gov.cdc.usds.simplereport.db.model.auxiliary.AskOnEntrySurvey;
 import gov.cdc.usds.simplereport.db.model.auxiliary.TestCorrectionStatus;
 import gov.cdc.usds.simplereport.db.model.auxiliary.TestResult;
@@ -35,12 +36,8 @@ public class TestEvent extends BaseTestInfo {
   @JoinColumn(name = "test_order_id")
   private TestOrder order;
 
-  //  @OneToMany(mappedBy = "result", fetch = FetchType.LAZY)
-  //  private Set<Result> results;
-
-  //  @OneToMany
-  //  @JoinColumn(name = "test_event_id")
-  //  private Set<Result> resultSet;
+  @OneToMany(mappedBy = "testEvent", fetch = FetchType.LAZY)
+  private Set<Result> results;
 
   @Column(columnDefinition = "uuid")
   private UUID priorCorrectedTestEventId; // used to chain events
@@ -49,6 +46,8 @@ public class TestEvent extends BaseTestInfo {
 
   public TestEvent() {}
 
+  // need to create a new constructor that takes a list of DiseaseResults
+  // otherwise, assume the current constructors are submitting covid results
   public TestEvent(
       TestResult result,
       DeviceSpecimenType deviceType,
@@ -154,13 +153,42 @@ public class TestEvent extends BaseTestInfo {
     return order.getDeviceSpecimen();
   }
 
-  //  public TestResult getResult() {
-  //    Optional<Result> resultObject = this.resultSet.stream().findFirst();
-  //    // Backwards-compatibility: if result table isn't populated, fetch old result column
-  //    if (resultObject.isEmpty()) {
-  //      return this.getResult();
-  //    } else {
-  //      return Translators.convertLoincToResult(resultObject.get().getResult());
-  //    }
-  //  }
+  public TestResult getTestResult() {
+    Optional<Result> resultObject = this.results.stream().findFirst();
+    // Backwards-compatibility: if result table isn't populated, fetch old result column
+    if (resultObject.isEmpty()) {
+      return order.getResult();
+    } else {
+      return Translators.convertLoincToResult(resultObject.get().getResult());
+    }
+  }
 }
+
+// What we need:
+// X create a helper db model class that pairs a disease with a result
+// - update getters/setters on TestOrder to use the new result model
+// - update getters on TestEvent to use the new result model
+// - update constructor on TestEvent and TestOrder to use the new result model
+// - add a result column to SupportedDisease entity
+// - update repositories? will need to do this in tandem with updating the setters/constructors
+
+// let's think out loud in the comments for a moment.
+// This base class supports both TestEvent and TestOrder.
+// TestOrder has getters/setters for both, while TestEvent only has getters.
+// To support multiple diseases, we'll need to pass in both the disease type and the result when
+// creating results.
+// Maybe an "addResult" instead of "setResult"?
+// It could also help to have some kind of result object that looks at the available diseases and
+// allows you to set
+// results for each.
+// That object gets passed in to TestEvent/TestOrder and we unwrap and store in the database
+// appropriately.
+// We will likely also need getters/setters that fetch results for a specific disease, as well as a
+// default
+// that fetches covid. ( testOrder.getResultForDisease(SupportedDisease disease);
+// testOrder.getResult() )
+
+// most recent exceptions in postgres: ERROR:  operator does not exist: text = uuid
+// this would seem to indicate that I'm trying to pass in text when I should be passing UUID (or
+// vice versa)
+// this is likely why I'm getting the SQLGrammarException
