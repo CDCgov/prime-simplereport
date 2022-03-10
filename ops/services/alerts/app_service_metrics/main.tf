@@ -126,7 +126,7 @@ ${local.skip_on_weekends}
 
 resource "azurerm_monitor_scheduled_query_rules_alert" "http_4xx_errors" {
   name                = "${var.env}-api-4xx-errors"
-  description         = "${local.env_title} HTTP Server 4xx Errors (excluding 401s and 410s) >= 25"
+  description         = "${local.env_title} HTTP Server 4xx Errors (excluding 401s and 410s) >= 50"
   location            = data.azurerm_resource_group.app.location
   resource_group_name = var.rg_name
   severity            = var.severity
@@ -154,7 +154,7 @@ ${local.skip_on_weekends}
 
   trigger {
     operator  = "GreaterThan"
-    threshold = 24
+    threshold = 49
   }
 
   action {
