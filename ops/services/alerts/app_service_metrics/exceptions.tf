@@ -24,7 +24,7 @@ resource "azurerm_monitor_diagnostic_setting" "collect_appserviceconsolelogs" {
   }
 }
 
-# Add an alert for GraphQL query validation failures (more than 3 in a 5-minute window)
+# Add an alert for GraphQL query validation failures (more than 2 in a 5-minute window)
 data "azurerm_resource_group" "app" {
   name = var.rg_name
 }
@@ -52,7 +52,7 @@ AppServiceConsoleLogs
   time_window = 5
   trigger {
     operator  = "GreaterThan"
-    threshold = 0
+    threshold = 2
   }
 }
 
