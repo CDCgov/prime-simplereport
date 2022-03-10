@@ -12,6 +12,7 @@ OPTIONS:
    -r   Environment to run against
    -c   Deployed commit hash
    -a   Backend url path
+   -p   Public url
    -f   frontend url path
    -o   Open Cypress for interactive testing
    -b   Set the browser to test against: https://docs.cypress.io/guides/guides/launching-browsers#Browsers
@@ -24,11 +25,12 @@ if [ -d ../.git ]; then
   CHECK_COMMIT="$(git rev-parse HEAD)"
 fi
 BACKEND_URL_PATH="/api/health"
+PUBLIC_URL="/app"
 FRONTEND_URL_PATH="/health/commit"
 RUN_OPEN=false
 BROWSER="firefox"
 
-while getopts "hs:r:c:a:f:o:b:" OPTION; do
+while getopts "hs:r:c:a:p:f:o:b:" OPTION; do
   case $OPTION in
   h)
     usage
@@ -45,6 +47,9 @@ while getopts "hs:r:c:a:f:o:b:" OPTION; do
     ;;
   a)
     BACKEND_URL_PATH=$OPTARG
+    ;;
+  p)
+    PUBLIC_URL=$OPTARG
     ;;
   f)
     FRONTEND_URL_PATH=$OPTARG
@@ -68,6 +73,7 @@ echo
 [[ -n $CHECK_COMMIT ]] && echo "Current commit-----------$CHECK_COMMIT"
 [[ -n $TEST_ENV ]] && echo "Testing against URL------$TEST_ENV"
 [[ -n $BACKEND_URL_PATH ]] && echo "Backend health route-----$BACKEND_URL_PATH"
+[[ -n $PUBLIC_URL ]] && echo "Public url-----$PUBLIC_URL"
 [[ -n $FRONTEND_URL_PATH ]] && echo "Frontent health route----$FRONTEND_URL_PATH"
 [[ -n $RUN_OPEN ]] && echo "Run as interactive-------$RUN_OPEN"
 echo 
@@ -99,7 +105,7 @@ polls=0
 while [[ $result -ne 1 && $polls -lt 240 ]]; do
   ((polls++))
   sleep 1
-  result=$(curl -skL "${TEST_ENV}${FRONTEND_URL_PATH}" | grep -c '<title>SimpleReport</title>')
+  result=$(curl -skL "${TEST_ENV}${PUBLIC_URL}${FRONTEND_URL_PATH}" | grep -c '<title>SimpleReport</title>')
 done
 if [[ $result -ne 1 ]]; then
   echo 'Frontend never started. Exiting...'
@@ -112,10 +118,10 @@ echo 'App is online! Starting Cypress...'
 echo
 
 if [[ $RUN_OPEN = true ]]; then
-  export CYPRESS_baseurl="$TEST_ENV"
+  export CYPRESS_baseurl="$TEST_ENV$PUBLIC_URL"
   export CYPRESS_CHECK_COMMIT="$CHECK_COMMIT"
   export CYPRESS_CHECK_URL="$FRONTEND_URL_PATH"
   yarn run cypress open
 else
-  yarn run cypress run --browser "$BROWSER" --spec "$SPEC_PATH" --config baseUrl="$TEST_ENV" --env CHECK_COMMIT="$CHECK_COMMIT",CHECK_URL="$FRONTEND_URL_PATH"
+  yarn run cypress run --browser "$BROWSER" --spec "$SPEC_PATH" --config baseUrl="$TEST_ENV$PUBLIC_URL" --env CHECK_COMMIT="$CHECK_COMMIT",CHECK_URL="$FRONTEND_URL_PATH"
 fi;
