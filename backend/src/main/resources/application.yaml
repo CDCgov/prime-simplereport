@@ -138,4 +138,5 @@ twilio:
 logging:
   pattern:
     console: "{\"time\": \"%d{yyyy-MM-dd HH:mm:ss.SSS}\", \"level\": \"%p\", \"source\": \"%logger{39}:%L\", \"message\": \"%replace(%m%wEx){'[\r\n]+', '\\n'}%nopex\"}%n"
+    json-log: "{\"time\": \"%d{yyyy-MM-dd HH:mm:ss.SSS}\", \"level\": \"%p\", \"source\": \"%logger{39}:%L\", \"message\": %replace(%m%wEx){'[\r\n]+', '\\n'}%nopex}%n"
 hibernate.query.interceptor.error-level: ERROR
