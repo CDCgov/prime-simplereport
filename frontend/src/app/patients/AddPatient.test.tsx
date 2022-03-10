@@ -38,6 +38,8 @@ const RouterWithFacility: React.FC = ({ children }) => (
 jest.mock("../utils/smartyStreets", () => ({
   getBestSuggestion: jest.fn(),
   suggestionIsCloseEnough: () => false,
+  getZipCodeData: jest.fn(),
+  isValidZipCodeForState: () => true,
 }));
 
 const fillOutForm = (

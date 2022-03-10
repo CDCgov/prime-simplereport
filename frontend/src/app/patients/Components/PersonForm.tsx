@@ -16,7 +16,8 @@ import {
 } from "../../constants";
 import RadioGroup from "../../commonComponents/RadioGroup";
 import RequiredMessage from "../../commonComponents/RequiredMessage";
-import { showError } from "../../utils";
+import Alert from "../../commonComponents/Alert";
+import { showError, showNotification } from "../../utils";
 import FormGroup from "../../commonComponents/FormGroup";
 import {
   PersonErrors,
@@ -29,6 +30,8 @@ import Input from "../../commonComponents/Input";
 import Select from "../../commonComponents/Select";
 import {
   getBestSuggestion,
+  getZipCodeData,
+  isValidZipCodeForState,
   suggestionIsCloseEnough,
 } from "../../utils/smartyStreets";
 import { AddressConfirmationModal } from "../../commonComponents/AddressConfirmationModal";
@@ -236,6 +239,27 @@ const PersonForm = (props: Props) => {
 
   const validatePatientAddress = async () => {
     const originalAddress = getAddress(patient);
+
+    const zipCodeData = await getZipCodeData(originalAddress.zipCode);
+    const isValidZipForState = isValidZipCodeForState(
+      originalAddress.state,
+      zipCodeData
+    );
+
+    if (!isValidZipForState) {
+      const alert = (
+        <Alert
+          type="error"
+          title="Form Errors"
+          body="Invalid ZIP code for the selected state"
+        />
+      );
+
+      showNotification(alert);
+
+      return;
+    }
+
     const suggestedAddress = await getBestSuggestion(originalAddress);
     if (suggestionIsCloseEnough(originalAddress, suggestedAddress)) {
       onSave(suggestedAddress, startTest);
