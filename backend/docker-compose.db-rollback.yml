@@ -10,8 +10,10 @@ services:
     environment:
       LIQUIBASE_ROLLBACK_TAG: ${LIQUIBASE_ROLLBACK_TAG:-}
       SPRING_DATASOURCE_URL: ${SPRING_DATASOURCE_URL:-jdbc:postgresql://db:5432/simple_report}
+      GRADLE_USER_HOME: /home/gradle
     networks:
-      - dev-net
+      - default
 networks:
-  dev-net:
-    name: dev-net
+  default:
+    external: true
+    name: prime-simplereport_default

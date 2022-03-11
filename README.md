@@ -115,7 +115,7 @@ docker compose run --rm backend gradle liquibaseRollbackCount -PliquibaseCommand
 To roll back to a certain tag:
 
 ```
-docker compose run --rm backend gradle liquibaseUpdateToTag -PliquibaseCommandValue=${TAG}
+docker compose run --rm backend gradle liquibaseRollback -PliquibaseCommandValue=${TAG}
 ```
 
 If you are required to roll back a non-local database, you may generate the required SQL to execute elsewhere. Use `liquibaseRollbackToDateSQL` or `liquibaseRollbackCountSQL` in the manner described above to write the rollback SQL to stdout.
