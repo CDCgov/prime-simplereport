@@ -82,8 +82,16 @@ public class TestOrder extends BaseTestInfo {
     }
   }
 
+  public Set<Result> getResultSet() {
+    return this.results;
+  }
+
   public void addResult(DiseaseResult result) {
     results.add(new Result(this, result));
+  }
+
+  public void addResult(Result result) {
+    results.add(result);
   }
 
   // I wanted to default this to setting covid results, but...

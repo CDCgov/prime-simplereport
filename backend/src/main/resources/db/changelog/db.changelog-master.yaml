@@ -3487,10 +3487,13 @@ databaseChangeLog:
       rollback:
         sql: |
           DROP TABLE ${database.defaultSchemaName}.result;
-#  - changeSet:
-#      id: drop-null-constraint-for-test-event-on-results-table
-#        author: emma@skylight.digital
-#        comment: Drop not-nullable constraint on test events for the result table. Test orders are created before test
-#        changes:
-#          - tagDatabase:
-#              tag: drop-null-constraint-for-test-event-on-results-table
+  - changeSet:
+      id: drop-null-constraint-for-test-event-on-results-table
+        author: emma@skylight.digital
+        comment: Drop not-nullable constraint on test events for the result table. Test orders are created before test
+        changes:
+          - tagDatabase:
+              tag: drop-null-constraint-for-test-event-on-results-table
+          - dropNotNullConstraint:
+              - tableName: results
+              - columnName: test_event_id

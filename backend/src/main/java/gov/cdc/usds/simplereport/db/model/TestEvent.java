@@ -2,6 +2,7 @@ package gov.cdc.usds.simplereport.db.model;
 
 import gov.cdc.usds.simplereport.api.Translators;
 import gov.cdc.usds.simplereport.db.model.auxiliary.AskOnEntrySurvey;
+import gov.cdc.usds.simplereport.db.model.auxiliary.DiseaseResult;
 import gov.cdc.usds.simplereport.db.model.auxiliary.TestCorrectionStatus;
 import gov.cdc.usds.simplereport.db.model.auxiliary.TestResult;
 import java.util.Date;
@@ -58,13 +59,31 @@ public class TestEvent extends BaseTestInfo {
   }
 
   public TestEvent(
-      TestResult result,
+      DiseaseResult diseaseResult,
       DeviceSpecimenType deviceType,
       Person patient,
       Facility facility,
       TestOrder order,
       Boolean hasPriorTests) {
-    super(patient, facility, deviceType, result);
+    super(patient, facility, deviceType);
+    // need to use the addResult logic here!!
+    // We need to read the test order and see if there's already a result there
+    // if not, create new results
+    // also need to update other constructors to take a DiseaseResult instead of a regular result
+
+    if (order.getResultSet().isEmpty()) {
+      // need to create a new Result object
+      // we'll need to update this to accept multiple result objects
+      // but that can happen in the next PR
+      Result result = new Result(order, this, diseaseResult);
+      this.results.add(new Result(order, this, diseaseResult));
+      order.addResult(result);
+    } else {
+      // need to update the existing results objects to include the test event id
+      // it really feels like there should be a JPA way to do this...but I don't know what that is
+      order.getResultSet().forEach(r -> r.setTestEvent(this));
+    }
+
     // store a link, and *also* store the object as JSON
     // force load the lazy-loaded phone numbers so values are available to the object mapper
     // when serializing `patientData` (phoneNumbers is default lazy-loaded because of `OneToMany`)
