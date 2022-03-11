@@ -56,8 +56,7 @@ public abstract class BaseTestInfo extends AuditedEntity implements Organization
     this(orig.getPatient(), orig.getFacility(), orig.getDeviceSpecimen());
   }
 
-  protected BaseTestInfo(
-      Person patient, Facility facility, DeviceSpecimenType deviceSpecimen) {
+  protected BaseTestInfo(Person patient, Facility facility, DeviceSpecimenType deviceSpecimen) {
     super();
     this.patient = patient;
     this.facility = facility;
@@ -104,7 +103,8 @@ public abstract class BaseTestInfo extends AuditedEntity implements Organization
     return deviceSpecimen;
   }
 
-  // Result getters kept for backwards-compatibility, but setters are kept in TestEvent and TestOrder
+  // Result getters kept for backwards-compatibility, but setters are kept in TestEvent and
+  // TestOrder
   public TestResult getResult() {
     return result;
   }
@@ -121,9 +121,9 @@ public abstract class BaseTestInfo extends AuditedEntity implements Organization
     this.dateTestedBackdate = dateTestedBackdate;
   }
 
-//  protected void setTestResult(TestResult newResult) {
-//    result = newResult;
-//  }
+  //  protected void setTestResult(TestResult newResult) {
+  //    result = newResult;
+  //  }
 
   protected void setDeviceSpecimen(DeviceSpecimenType deviceSpecimen) {
     this.deviceSpecimen = deviceSpecimen;

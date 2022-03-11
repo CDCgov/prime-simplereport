@@ -9,5 +9,4 @@ public interface SupportedDiseaseRepository extends CrudRepository<SupportedDise
   List<SupportedDisease> findAllByName(String name);
 
   SupportedDisease findSupportedDiseaseByNameContains(String name);
-
 }

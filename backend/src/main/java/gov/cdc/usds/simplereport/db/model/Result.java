@@ -2,8 +2,6 @@ package gov.cdc.usds.simplereport.db.model;
 
 import gov.cdc.usds.simplereport.api.Translators;
 import gov.cdc.usds.simplereport.db.model.auxiliary.DiseaseResult;
-import java.util.Objects;
-import gov.cdc.usds.simplereport.api.Translators;
 import gov.cdc.usds.simplereport.db.model.auxiliary.TestResult;
 import javax.persistence.Column;
 import javax.persistence.Entity;
@@ -48,7 +46,7 @@ public class Result extends EternalAuditedEntity {
   }
 
   public Result(
-          TestEvent testEvent, TestOrder testOrder, SupportedDisease disease, TestResult testResult) {
+      TestEvent testEvent, TestOrder testOrder, SupportedDisease disease, TestResult testResult) {
     this.testEvent = testEvent;
     this.testOrder = testOrder;
     this.disease = disease;
