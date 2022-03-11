@@ -7,6 +7,4 @@ import org.springframework.data.repository.CrudRepository;
 
 public interface SupportedDiseaseRepository extends CrudRepository<SupportedDisease, UUID> {
   List<SupportedDisease> findAllByName(String name);
-
-  List<SupportedDisease> findAllByLoinc(String loinc);
 }

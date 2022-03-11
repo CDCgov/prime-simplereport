@@ -36,12 +36,4 @@ public class SupportedDisease extends IdentifiedEntity {
     this.name = name;
     this.loinc = loinc;
   }
-
-  public void addDevice(DeviceType deviceType) {
-    this.deviceTypes.add(deviceType);
-  }
-
-  public Set<DeviceType> getDevices() {
-    return this.deviceTypes;
-  }
 }
