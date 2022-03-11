@@ -51,12 +51,27 @@ public class TestEvent extends BaseTestInfo {
   // need to create a new constructor that takes a list of DiseaseResults
   // otherwise, assume the current constructors are submitting covid results
   public TestEvent(
-      TestResult result,
+      DiseaseResult diseaseResult,
       DeviceSpecimenType deviceType,
       Person patient,
       Facility facility,
       TestOrder testOrder) {
-    this(result, deviceType, patient, facility, testOrder, false);
+    this(diseaseResult, deviceType, patient, facility, testOrder, false);
+  }
+
+  // If this constructor is being called, the TestOrder passed must contain a Result.
+  // If it doesn't, throw an exception.
+  public TestEvent(
+      DeviceSpecimenType deviceType,
+      Person patient,
+      Facility facility,
+      TestOrder order,
+      Boolean hasPriorTests) {
+    super(patient, facility, deviceType);
+
+    if (order.getResultSet().isEmpty()) {
+      throw new IllegalArgumentException("TestOrder must contain a result");
+    }
   }
 
   public TestEvent(
@@ -112,9 +127,6 @@ public class TestEvent extends BaseTestInfo {
 
   public TestEvent(TestOrder testOrder, Boolean hasPriorTests) {
     this(
-        testOrder.getResult(),
-        // get the results set off the test order instead
-        //        testOrder.getRes
         testOrder.getDeviceSpecimen(),
         testOrder.getPatient(),
         testOrder.getFacility(),
