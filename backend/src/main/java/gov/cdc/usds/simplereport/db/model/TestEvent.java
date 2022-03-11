@@ -6,6 +6,7 @@ import gov.cdc.usds.simplereport.db.model.auxiliary.DiseaseResult;
 import gov.cdc.usds.simplereport.db.model.auxiliary.TestCorrectionStatus;
 import gov.cdc.usds.simplereport.db.model.auxiliary.TestResult;
 import java.util.Date;
+import java.util.Optional;
 import java.util.Set;
 import java.util.UUID;
 import javax.persistence.*;
@@ -112,6 +113,8 @@ public class TestEvent extends BaseTestInfo {
   public TestEvent(TestOrder testOrder, Boolean hasPriorTests) {
     this(
         testOrder.getResult(),
+        // get the results set off the test order instead
+        //        testOrder.getRes
         testOrder.getDeviceSpecimen(),
         testOrder.getPatient(),
         testOrder.getFacility(),
@@ -178,7 +181,7 @@ public class TestEvent extends BaseTestInfo {
     if (resultObject.isEmpty()) {
       return order.getResult();
     } else {
-      return Translators.convertLoincToResult(resultObject.get().getResult());
+      return Translators.convertLoincToResult(resultObject.get().getResultLOINC());
     }
   }
 }

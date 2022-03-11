@@ -78,7 +78,7 @@ public class TestOrder extends BaseTestInfo {
     if (resultObject.isEmpty()) {
       return getResult();
     } else {
-      return Translators.convertLoincToResult(resultObject.get().getResult());
+      return Translators.convertLoincToResult(resultObject.get().getResultLOINC());
     }
   }
 
