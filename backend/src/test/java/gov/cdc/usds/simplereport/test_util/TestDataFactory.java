@@ -316,18 +316,36 @@ public class TestDataFactory {
   }
 
   public TestOrder createTestOrder(Person p, Facility f) {
-    AskOnEntrySurvey survey = AskOnEntrySurvey.builder().symptoms(Collections.emptyMap()).build();
-    return createTestOrder(p, f, survey);
+    return createTestOrder(p, f, createEmptySurvey());
   }
 
   public TestOrder createTestOrder(Person p, Facility f, AskOnEntrySurvey s) {
-    PatientAnswers answers = new PatientAnswers(s);
-    _patientAnswerRepo.save(answers);
     TestOrder o = new TestOrder(p, f);
-    o.setAskOnEntrySurvey(answers);
+    o.setAskOnEntrySurvey(savePatientAnswers(s));
     var savedOrder = _testOrderRepo.save(o);
     _patientLinkRepository.save(new PatientLink(savedOrder));
     return savedOrder;
+  }
+
+  public TestOrder createCompletedTestOrder(Person patient, Facility facility, TestResult result) {
+    TestOrder order = new TestOrder(patient, facility);
+    order.setAskOnEntrySurvey(savePatientAnswers(createEmptySurvey()));
+    order.setDeviceSpecimen(facility.getDefaultDeviceSpecimen());
+    order.setResult(result);
+    order.markComplete();
+    TestOrder savedOrder = _testOrderRepo.save(order);
+    _patientLinkRepository.save(new PatientLink(savedOrder));
+    return order;
+  }
+
+  private AskOnEntrySurvey createEmptySurvey() {
+    return AskOnEntrySurvey.builder().symptoms(Collections.emptyMap()).build();
+  }
+
+  private PatientAnswers savePatientAnswers(AskOnEntrySurvey survey) {
+    PatientAnswers answers = new PatientAnswers(survey);
+    _patientAnswerRepo.save(answers);
+    return answers;
   }
 
   public TestEvent createTestEvent(Person p, Facility f) {
@@ -339,7 +357,7 @@ public class TestDataFactory {
     o.setDateTestedBackdate(d);
     o.setResult(r);
 
-    TestEvent e = _testEventRepo.save(new TestEvent(o));
+    TestEvent e = _testEventRepo.save(new TestEvent(o, false));
     o.setTestEventRef(e);
     o.markComplete();
     _testOrderRepo.save(o);
@@ -369,7 +387,7 @@ public class TestDataFactory {
 
   public TestEvent doTest(TestOrder order, TestResult result) {
     order.setResult(result);
-    TestEvent event = _testEventRepo.save(new TestEvent(order));
+    TestEvent event = _testEventRepo.save(new TestEvent(order, false));
     order.setTestEventRef(event);
     order.markComplete();
     _testOrderRepo.save(order);

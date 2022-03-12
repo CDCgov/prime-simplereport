@@ -2,7 +2,6 @@ package gov.cdc.usds.simplereport.db.model;
 
 import gov.cdc.usds.simplereport.db.model.auxiliary.AskOnEntrySurvey;
 import gov.cdc.usds.simplereport.db.model.auxiliary.TestCorrectionStatus;
-import gov.cdc.usds.simplereport.db.model.auxiliary.TestResult;
 import java.util.Date;
 import java.util.UUID;
 import javax.persistence.AttributeOverride;
@@ -46,31 +45,22 @@ public class TestEvent extends BaseTestInfo {
 
   public TestEvent() {}
 
-  public TestEvent(
-      TestResult result,
-      DeviceSpecimenType deviceType,
-      Person patient,
-      Facility facility,
-      TestOrder testOrder) {
-    this(result, deviceType, patient, facility, testOrder, false);
+  // Convenience constructor, only used in tests
+  public TestEvent(TestOrder testOrder) {
+    this(testOrder, false);
   }
 
-  public TestEvent(
-      TestResult result,
-      DeviceSpecimenType deviceType,
-      Person patient,
-      Facility facility,
-      TestOrder order,
-      Boolean hasPriorTests) {
-    super(patient, facility, deviceType, result);
+  public TestEvent(TestOrder order, Boolean hasPriorTests) {
+    super(order.getPatient(), order.getFacility(), order.getDeviceSpecimen(), order.getResult());
+
     // store a link, and *also* store the object as JSON
     // force load the lazy-loaded phone numbers so values are available to the object mapper
     // when serializing `patientData` (phoneNumbers is default lazy-loaded because of `OneToMany`)
-    Hibernate.initialize(patient.getPrimaryPhone());
-    Hibernate.initialize(patient.getTelephone());
-    Hibernate.initialize(patient.getPhoneNumbers());
+    Hibernate.initialize(getPatient().getPrimaryPhone());
+    Hibernate.initialize(getPatient().getTelephone());
+    Hibernate.initialize(getPatient().getPhoneNumbers());
 
-    this.patientData = patient;
+    this.patientData = getPatient();
     this.providerData = getFacility().getOrderingProvider();
     this.order = order;
     this.patientHasPriorTests = hasPriorTests;
@@ -82,20 +72,6 @@ public class TestEvent extends BaseTestInfo {
       // this can happen during unit tests, but never in prod.
       log.error("Order {} missing PatientAnswers", order.getInternalId());
     }
-  }
-
-  public TestEvent(TestOrder testOrder) {
-    this(testOrder, false);
-  }
-
-  public TestEvent(TestOrder testOrder, Boolean hasPriorTests) {
-    this(
-        testOrder.getResult(),
-        testOrder.getDeviceSpecimen(),
-        testOrder.getPatient(),
-        testOrder.getFacility(),
-        testOrder,
-        hasPriorTests);
   }
 
   // Constructor for creating corrections. Copy the original event
