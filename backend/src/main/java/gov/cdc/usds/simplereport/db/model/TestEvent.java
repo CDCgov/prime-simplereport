@@ -125,6 +125,7 @@ public class TestEvent extends BaseTestInfo {
     this(testOrder, false);
   }
 
+  // This one appears to actually be used in our submit test flow
   public TestEvent(TestOrder testOrder, Boolean hasPriorTests) {
     this(
         testOrder.getDeviceSpecimen(),
