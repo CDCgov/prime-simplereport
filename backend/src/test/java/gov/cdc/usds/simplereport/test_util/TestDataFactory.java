@@ -357,7 +357,7 @@ public class TestDataFactory {
     o.setDateTestedBackdate(d);
     o.setResult(r);
 
-    TestEvent e = _testEventRepo.save(new TestEvent(o, false));
+    TestEvent e = _testEventRepo.save(new TestEvent(o));
     o.setTestEventRef(e);
     o.markComplete();
     _testOrderRepo.save(o);
@@ -387,7 +387,7 @@ public class TestDataFactory {
 
   public TestEvent doTest(TestOrder order, TestResult result) {
     order.setResult(result);
-    TestEvent event = _testEventRepo.save(new TestEvent(order, false));
+    TestEvent event = _testEventRepo.save(new TestEvent(order));
     order.setTestEventRef(event);
     order.markComplete();
     _testOrderRepo.save(order);

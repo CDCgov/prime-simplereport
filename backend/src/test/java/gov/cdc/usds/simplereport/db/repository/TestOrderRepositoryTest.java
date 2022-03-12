@@ -114,11 +114,6 @@ class TestOrderRepositoryTest extends BaseRepositoryTest {
     flush();
     order.setResult(TestResult.POSITIVE);
     TestEvent ev = _events.save(new TestEvent(order));
-
-    //    TestEvent ev =
-    //        _events.save(
-    //            new TestEvent(TestResult.POSITIVE, site.getDefaultDeviceSpecimen(), hoya, site,
-    // order));
     assertNotNull(ev);
     order.setTestEventRef(ev);
     _repo.save(order);
