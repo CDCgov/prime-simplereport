@@ -100,7 +100,7 @@ class TestEventRepositoryTest extends BaseRepositoryTest {
     _repo.save(secondEvent);
     flush();
     TestEvent found = _repo.findFirst1ByPatientOrderByCreatedAtDesc(patient);
-    assertEquals(secondEvent.getResult(), TestResult.UNDETERMINED);
+    assertEquals(TestResult.UNDETERMINED, secondEvent.getResult());
     List<TestEvent> foundTestReports2 =
         _repo.queryMatchAllBetweenDates(d1, DATE_1MIN_FUTURE, Pageable.unpaged());
     assertEquals(2, foundTestReports2.size() - foundTestReports1.size());
