@@ -2,18 +2,12 @@ package gov.cdc.usds.simplereport.db.model;
 
 import gov.cdc.usds.simplereport.api.Translators;
 import gov.cdc.usds.simplereport.db.model.auxiliary.AskOnEntrySurvey;
-import gov.cdc.usds.simplereport.db.model.auxiliary.DiseaseResult;
 import gov.cdc.usds.simplereport.db.model.auxiliary.TestCorrectionStatus;
 import java.util.Date;
 import java.util.Optional;
 import java.util.Set;
 import java.util.UUID;
-import javax.persistence.AttributeOverride;
-import javax.persistence.Column;
-import javax.persistence.Entity;
-import javax.persistence.FetchType;
-import javax.persistence.JoinColumn;
-import javax.persistence.ManyToOne;
+import javax.persistence.*;
 import lombok.Getter;
 import lombok.extern.slf4j.Slf4j;
 import org.hibernate.Hibernate;
@@ -52,6 +46,7 @@ public class TestEvent extends BaseTestInfo {
 
   public TestEvent() {}
 
+  // TODO:
   // need to create a new constructor that takes a list of DiseaseResults
   // otherwise, assume the current constructors are submitting covid results
 
@@ -62,24 +57,13 @@ public class TestEvent extends BaseTestInfo {
 
   // If this constructor is being called, the TestOrder passed must contain a Result.
   // If it doesn't, throw an exception.
-  /*
-     if (order.getResultSet().isEmpty()) {
-     throw new IllegalArgumentException("TestOrder must contain a result");
-   }
-  */
-
   public TestEvent(TestOrder order, Boolean hasPriorTests) {
-    super(order.getPatient(), order.getFacility(), order.getDeviceSpecimen(), order.getResult());
-  }
+    super(order.getPatient(), order.getFacility(), order.getDeviceSpecimen());
 
-  public TestEvent(
-      DiseaseResult diseaseResult,
-      DeviceSpecimenType deviceType,
-      Person patient,
-      Facility facility,
-      TestOrder order,
-      Boolean hasPriorTests) {
-    super(patient, facility, deviceType);
+    if (order.getResultSet().isEmpty()) {
+      throw new IllegalArgumentException("TestOrder must contain a result");
+    }
+
     // need to use the addResult logic here!!
     // We need to read the test order and see if there's already a result there
     // if not, create new results
@@ -206,8 +190,3 @@ public class TestEvent extends BaseTestInfo {
 // default
 // that fetches covid. ( testOrder.getResultForDisease(SupportedDisease disease);
 // testOrder.getResult() )
-
-// most recent exceptions in postgres: ERROR:  operator does not exist: text = uuid
-// this would seem to indicate that I'm trying to pass in text when I should be passing UUID (or
-// vice versa)
-// this is likely why I'm getting the SQLGrammarException
