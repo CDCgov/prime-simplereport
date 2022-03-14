@@ -233,7 +233,6 @@ type TestResult {
   symptoms: String
   symptomOnset: LocalDate
   deviceType: DeviceType
-  deviceSpecimenType: DeviceSpecimenType
   result: String
   dateTested: DateTime
   testPerformed: TestDescription!

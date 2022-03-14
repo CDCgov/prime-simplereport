@@ -882,7 +882,6 @@ export type TestResult = {
   createdBy?: Maybe<ApiUser>;
   dateAdded?: Maybe<Scalars["String"]>;
   dateTested?: Maybe<Scalars["DateTime"]>;
-  deviceSpecimenType?: Maybe<DeviceSpecimenType>;
   deviceType?: Maybe<DeviceType>;
   facility?: Maybe<Facility>;
   internalId?: Maybe<Scalars["ID"]>;

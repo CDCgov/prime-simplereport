@@ -3,13 +3,11 @@ package gov.cdc.usds.simplereport.db.model;
 import gov.cdc.usds.simplereport.api.Translators;
 import gov.cdc.usds.simplereport.db.model.auxiliary.DiseaseResult;
 import gov.cdc.usds.simplereport.db.model.auxiliary.TestResult;
-import javax.persistence.Column;
-import javax.persistence.Entity;
-import javax.persistence.JoinColumn;
-import javax.persistence.ManyToOne;
+import javax.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
+import org.hibernate.annotations.Type;
 
 @AllArgsConstructor
 @NoArgsConstructor
@@ -31,6 +29,11 @@ public class Result extends EternalAuditedEntity {
 
   @Column(name = "result", nullable = false)
   private String resultLOINC;
+
+  @Column(name = "test_result", nullable = false)
+  @Type(type = "pg_enum")
+  @Enumerated(EnumType.STRING)
+  private TestResult testResult;
 
   public Result(TestOrder to, DiseaseResult dr) {
     this.testOrder = to;
@@ -63,5 +66,6 @@ public class Result extends EternalAuditedEntity {
 
   public void setTestResult(TestResult result) {
     this.resultLOINC = Translators.convertTestResultToLoinc(result);
+    this.testResult = testResult;
   }
 }

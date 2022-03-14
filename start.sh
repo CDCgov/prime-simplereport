@@ -12,9 +12,10 @@
 cleanup() {
     echo
     echo "App stopped, shutting down containers..."
-    docker compose exec backend gradle clean --stop
-    docker compose down
+    docker compose -f docker-compose.yml $fileFlag exec backend gradle clean --stop
+    docker compose -f docker-compose.yml $fileFlag down
     echo "Thanks for using Simple Report!"
+    exit
 }
 
 if ! [ -x "$(command -v mkcert)" ]; then
@@ -41,8 +42,21 @@ fi
 
 echo "Starting Docker Compose..."
 
-docker compose pull
-docker compose up -d
-docker compose logs -f
+while getopts ":l" opt;
+do
+  case $opt in
+    l)
+      echo "Composing with Locust!"
+      fileFlag="-f docker-compose.locust.yml"
+      ;;
+    \?)
+      echo "Invalid start option: -$OPTARG"
+      ;;
+  esac  
+done
+
+docker compose -f docker-compose.yml $fileFlag pull
+docker compose -f docker-compose.yml $fileFlag up -d
+docker compose -f docker-compose.yml $fileFlag logs -f
 
 trap "cleanup" EXIT
