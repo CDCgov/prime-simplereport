@@ -115,7 +115,7 @@ docker compose run --rm backend gradle liquibaseRollbackCount -PliquibaseCommand
 To roll back to a certain tag:
 
 ```
-docker compose run --rm backend gradle liquibaseUpdateToTag -PliquibaseCommandValue=${TAG}
+docker compose run --rm backend gradle liquibaseRollback -PliquibaseCommandValue=${TAG}
 ```
 
 If you are required to roll back a non-local database, you may generate the required SQL to execute elsewhere. Use `liquibaseRollbackToDateSQL` or `liquibaseRollbackCountSQL` in the manner described above to write the rollback SQL to stdout.
@@ -183,6 +183,17 @@ Now that you have those files set up, you are ready for a test run! There are a 
   - This will run cypress with default values and display Cypress, API, DB, Frontend, and Nginx logs.
 
 See the [Cypress documentation](https://docs.cypress.io/api/table-of-contents) for writing new tests. If you need to generate new Wiremock mappings for external services, see [this wiki page](https://github.com/CDCgov/prime-simplereport/wiki/WireMock).
+
+
+## Load Tests
+SimpleReport leverages Locust for running its load tests. Currently, Locust starts as part of the local development build, and spawns three separate worker containers for inundating the system.
+
+To compose Locust with the rest of the development stack, run `yarn locust` instead of `yarn start`. *(NOTE: All other prerequisites listed above in "Developing locally" are still required for tests to function.)*
+
+To access the Locust user interface, navigate to `http://localhost:8089/`. Load tests will not kick off automatically; they must be manually invoked.
+
+Tests can be configured by modifying `backend/locust/locustfile.py`.
+
 
 ## Twilio
 
