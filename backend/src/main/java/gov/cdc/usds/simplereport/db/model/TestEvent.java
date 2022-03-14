@@ -4,12 +4,16 @@ import gov.cdc.usds.simplereport.api.Translators;
 import gov.cdc.usds.simplereport.db.model.auxiliary.AskOnEntrySurvey;
 import gov.cdc.usds.simplereport.db.model.auxiliary.DiseaseResult;
 import gov.cdc.usds.simplereport.db.model.auxiliary.TestCorrectionStatus;
-import gov.cdc.usds.simplereport.db.model.auxiliary.TestResult;
 import java.util.Date;
 import java.util.Optional;
 import java.util.Set;
 import java.util.UUID;
-import javax.persistence.*;
+import javax.persistence.AttributeOverride;
+import javax.persistence.Column;
+import javax.persistence.Entity;
+import javax.persistence.FetchType;
+import javax.persistence.JoinColumn;
+import javax.persistence.ManyToOne;
 import lombok.Getter;
 import lombok.extern.slf4j.Slf4j;
 import org.hibernate.Hibernate;
@@ -50,28 +54,22 @@ public class TestEvent extends BaseTestInfo {
 
   // need to create a new constructor that takes a list of DiseaseResults
   // otherwise, assume the current constructors are submitting covid results
-  public TestEvent(
-      DiseaseResult diseaseResult,
-      DeviceSpecimenType deviceType,
-      Person patient,
-      Facility facility,
-      TestOrder testOrder) {
-    this(diseaseResult, deviceType, patient, facility, testOrder, false);
+
+  // Convenience constructor, only used in tests
+  public TestEvent(TestOrder testOrder) {
+    this(testOrder, false);
   }
 
   // If this constructor is being called, the TestOrder passed must contain a Result.
   // If it doesn't, throw an exception.
-  public TestEvent(
-      DeviceSpecimenType deviceType,
-      Person patient,
-      Facility facility,
-      TestOrder order,
-      Boolean hasPriorTests) {
-    super(patient, facility, deviceType);
+  /*
+     if (order.getResultSet().isEmpty()) {
+     throw new IllegalArgumentException("TestOrder must contain a result");
+   }
+  */
 
-    if (order.getResultSet().isEmpty()) {
-      throw new IllegalArgumentException("TestOrder must contain a result");
-    }
+  public TestEvent(TestOrder order, Boolean hasPriorTests) {
+    super(order.getPatient(), order.getFacility(), order.getDeviceSpecimen(), order.getResult());
   }
 
   public TestEvent(
@@ -103,11 +101,11 @@ public class TestEvent extends BaseTestInfo {
     // store a link, and *also* store the object as JSON
     // force load the lazy-loaded phone numbers so values are available to the object mapper
     // when serializing `patientData` (phoneNumbers is default lazy-loaded because of `OneToMany`)
-    Hibernate.initialize(patient.getPrimaryPhone());
-    Hibernate.initialize(patient.getTelephone());
-    Hibernate.initialize(patient.getPhoneNumbers());
+    Hibernate.initialize(getPatient().getPrimaryPhone());
+    Hibernate.initialize(getPatient().getTelephone());
+    Hibernate.initialize(getPatient().getPhoneNumbers());
 
-    this.patientData = patient;
+    this.patientData = getPatient();
     this.providerData = getFacility().getOrderingProvider();
     this.order = order;
     this.patientHasPriorTests = hasPriorTests;
@@ -119,20 +117,6 @@ public class TestEvent extends BaseTestInfo {
       // this can happen during unit tests, but never in prod.
       log.error("Order {} missing PatientAnswers", order.getInternalId());
     }
-  }
-
-  public TestEvent(TestOrder testOrder) {
-    this(testOrder, false);
-  }
-
-  // This one appears to actually be used in our submit test flow
-  public TestEvent(TestOrder testOrder, Boolean hasPriorTests) {
-    this(
-        testOrder.getDeviceSpecimen(),
-        testOrder.getPatient(),
-        testOrder.getFacility(),
-        testOrder,
-        hasPriorTests);
   }
 
   // Constructor for creating corrections. Copy the original event
