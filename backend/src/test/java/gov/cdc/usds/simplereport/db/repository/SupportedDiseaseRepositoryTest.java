@@ -15,4 +15,11 @@ class SupportedDiseaseRepositoryTest extends BaseRepositoryTest {
     _repo.save(new SupportedDisease("COVID-19", "123"));
     assertEquals(1, _repo.findAllByName("COVID-19").size());
   }
+
+  @Test
+  void findSupportedDiseaseByNameContains_successful() {
+    _repo.save(new SupportedDisease("COVID-19", "123"));
+    SupportedDisease covid = _repo.findSupportedDiseaseByNameContains("COVID");
+    assertEquals("123", covid.getLoinc());
+  }
 }

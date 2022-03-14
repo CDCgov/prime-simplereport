@@ -44,13 +44,7 @@ public class Result extends EternalAuditedEntity {
     this.testOrder = to;
     this.disease = dr.getDisease();
     this.resultLOINC = Translators.convertTestResultToLoinc(dr.getResult());
-  }
-
-  public Result(TestOrder to, TestEvent te, DiseaseResult dr) {
-    this.testOrder = to;
-    this.testEvent = te;
-    this.disease = dr.getDisease();
-    this.resultLOINC = Translators.convertTestResultToLoinc(dr.getResult());
+    this.testResult = dr.getResult();
   }
 
   public Result(
@@ -59,18 +53,10 @@ public class Result extends EternalAuditedEntity {
     this.testOrder = testOrder;
     this.disease = disease;
     this.resultLOINC = Translators.convertTestResultToLoinc(testResult);
+    this.testResult = testResult;
   }
 
   public void setTestEvent(TestEvent te) {
     this.testEvent = te;
-  }
-
-  public TestResult getTestResult() {
-    return Translators.convertLoincToResult(this.resultLOINC);
-  }
-
-  public void setTestResult(TestResult result) {
-    this.resultLOINC = Translators.convertTestResultToLoinc(result);
-    this.testResult = testResult;
   }
 }

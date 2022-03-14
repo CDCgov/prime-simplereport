@@ -68,10 +68,12 @@ class TestEventRepositoryTest extends BaseRepositoryTest {
     Facility place = _dataFactory.createValidFacility(org);
     Person patient = _dataFactory.createMinimalPerson(org);
     TestOrder order = _dataFactory.createTestOrder(patient, place);
-    order.setResult(TestResult.POSITIVE);
-    _repo.save(new TestEvent(order, false));
-    order.setResult(TestResult.NEGATIVE);
-    _repo.save(new TestEvent(order, false));
+    _repo.save(
+        new TestEvent(
+            TestResult.POSITIVE, place.getDefaultDeviceSpecimen(), patient, place, order));
+    _repo.save(
+        new TestEvent(
+            TestResult.UNDETERMINED, place.getDefaultDeviceSpecimen(), patient, place, order));
     flush();
     List<TestEvent> found = _repo.findAllByPatientAndFacilities(patient, Set.of(place));
     assertEquals(2, found.size());
@@ -87,26 +89,23 @@ class TestEventRepositoryTest extends BaseRepositoryTest {
     Organization org = _dataFactory.createValidOrg();
     Facility place = _dataFactory.createValidFacility(org);
     Person patient = _dataFactory.createMinimalPerson(org);
-
-    TestOrder firstOrder =
-        _dataFactory.createCompletedTestOrder(patient, place, TestResult.POSITIVE);
-    TestEvent firstEvent = new TestEvent(firstOrder);
-    _repo.save(firstEvent);
-
-    TestOrder secondOrder =
-        _dataFactory.createCompletedTestOrder(patient, place, TestResult.UNDETERMINED);
-    TestEvent secondEvent = new TestEvent(secondOrder);
-
-    _repo.save(secondEvent);
+    TestOrder order = _dataFactory.createTestOrder(patient, place);
+    TestEvent first =
+        new TestEvent(TestResult.POSITIVE, place.getDefaultDeviceSpecimen(), patient, place, order);
+    TestEvent second =
+        new TestEvent(
+            TestResult.UNDETERMINED, place.getDefaultDeviceSpecimen(), patient, place, order);
+    _repo.save(first);
+    _repo.save(second);
     flush();
     TestEvent found = _repo.findFirst1ByPatientOrderByCreatedAtDesc(patient);
-    assertEquals(TestResult.UNDETERMINED, secondEvent.getResult());
+    assertEquals(second.getResult(), TestResult.UNDETERMINED);
     List<TestEvent> foundTestReports2 =
         _repo.queryMatchAllBetweenDates(d1, DATE_1MIN_FUTURE, Pageable.unpaged());
     assertEquals(2, foundTestReports2.size() - foundTestReports1.size());
 
     testTestEventUnitTests(
-        firstOrder, firstEvent); // just leverage existing order, event to test on newer columns
+        order, first); // just leverage existing order, event to test on newer columns
   }
 
   @Test
@@ -224,31 +223,35 @@ class TestEventRepositoryTest extends BaseRepositoryTest {
     Facility place = _dataFactory.createValidFacility(org);
     Person patient = _dataFactory.createMinimalPerson(org);
 
-    TestOrder firstOrder =
-        _dataFactory.createCompletedTestOrder(patient, place, TestResult.POSITIVE);
-    TestEvent firstEvent = new TestEvent(firstOrder);
-
-    TestOrder secondOrder =
-        _dataFactory.createCompletedTestOrder(patient, place, TestResult.UNDETERMINED);
-    TestEvent secondEvent = new TestEvent(secondOrder);
-
-    _repo.save(firstEvent);
-    _repo.save(secondEvent);
+    TestOrder order = _dataFactory.createTestOrder(patient, place);
+    TestEvent first =
+        new TestEvent(TestResult.POSITIVE, place.getDefaultDeviceSpecimen(), patient, place, order);
+    TestEvent second =
+        new TestEvent(
+            TestResult.UNDETERMINED, place.getDefaultDeviceSpecimen(), patient, place, order);
+    _repo.save(first);
+    _repo.save(second);
 
     Facility otherPlace = _dataFactory.createValidFacility(org, "Other Place");
     Person otherPatient =
         _dataFactory.createMinimalPerson(org, otherPlace, "First", "Middle", "Last", "");
-
-    TestOrder firstOrderOtherPlace =
-        _dataFactory.createCompletedTestOrder(otherPatient, otherPlace, TestResult.NEGATIVE);
-    TestEvent firstEventOtherPlace = new TestEvent(firstOrderOtherPlace);
-
-    TestOrder secondOrderOtherPlace =
-        _dataFactory.createCompletedTestOrder(otherPatient, otherPlace, TestResult.POSITIVE);
-    TestEvent secondEventOtherPlace = new TestEvent(secondOrderOtherPlace);
-
-    _repo.save(firstEventOtherPlace);
-    _repo.save(secondEventOtherPlace);
+    TestOrder order2 = _dataFactory.createTestOrder(otherPatient, otherPlace);
+    TestEvent third =
+        new TestEvent(
+            TestResult.NEGATIVE,
+            otherPlace.getDefaultDeviceSpecimen(),
+            otherPatient,
+            otherPlace,
+            order2);
+    TestEvent fourth =
+        new TestEvent(
+            TestResult.POSITIVE,
+            otherPlace.getDefaultDeviceSpecimen(),
+            otherPatient,
+            otherPlace,
+            order2);
+    _repo.save(third);
+    _repo.save(fourth);
 
     return place;
   }

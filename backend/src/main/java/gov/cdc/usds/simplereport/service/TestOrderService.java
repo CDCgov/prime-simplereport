@@ -21,7 +21,12 @@ import gov.cdc.usds.simplereport.db.model.TestEvent;
 import gov.cdc.usds.simplereport.db.model.TestEvent_;
 import gov.cdc.usds.simplereport.db.model.TestOrder;
 import gov.cdc.usds.simplereport.db.model.TestOrder_;
-import gov.cdc.usds.simplereport.db.model.auxiliary.*;
+import gov.cdc.usds.simplereport.db.model.auxiliary.AskOnEntrySurvey;
+import gov.cdc.usds.simplereport.db.model.auxiliary.PersonRole;
+import gov.cdc.usds.simplereport.db.model.auxiliary.TestCorrectionStatus;
+import gov.cdc.usds.simplereport.db.model.auxiliary.TestResult;
+import gov.cdc.usds.simplereport.db.model.auxiliary.TestResultDeliveryPreference;
+import gov.cdc.usds.simplereport.db.model.auxiliary.TestResultWithCount;
 import gov.cdc.usds.simplereport.db.repository.AdvisoryLockManager;
 import gov.cdc.usds.simplereport.db.repository.PatientAnswersRepository;
 import gov.cdc.usds.simplereport.db.repository.TestEventRepository;
@@ -63,7 +68,6 @@ public class TestOrderService {
   private final TestEventReportingService _testEventReportingService;
   private final FacilityDeviceTypeService _facilityDeviceTypeService;
   private final TestResultsDeliveryService testResultsDeliveryService;
-  private final DiseaseService _diseaseService;
 
   public static final int DEFAULT_PAGINATION_PAGEOFFSET = 0;
   public static final int DEFAULT_PAGINATION_PAGESIZE = 5000;
@@ -221,10 +225,7 @@ public class TestOrderService {
         }
       }
 
-      order.setResult(
-          result == null
-              ? null
-              : new DiseaseResult(_diseaseService.covid(), TestResult.valueOf(result)));
+      order.setResult(result == null ? null : TestResult.valueOf(result));
 
       order.setDateTestedBackdate(dateTested);
 
@@ -248,7 +249,7 @@ public class TestOrderService {
     lockOrder(order.getInternalId());
     try {
       order.setDeviceSpecimen(deviceSpecimen);
-      order.setResult(new DiseaseResult(_diseaseService.covid(), result));
+      order.setResult(result);
       order.setDateTestedBackdate(dateTested);
       order.markComplete();
 
