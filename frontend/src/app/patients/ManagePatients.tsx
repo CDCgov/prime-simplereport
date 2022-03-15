@@ -4,7 +4,7 @@ import moment from "moment";
 import classnames from "classnames";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faSlidersH } from "@fortawesome/free-solid-svg-icons";
-import { useNavigate } from "react-router-dom";
+import { NavigateOptions, useNavigate } from "react-router-dom";
 
 import { displayFullName } from "../utils";
 import { PATIENT_TERM, PATIENT_TERM_PLURAL_CAP } from "../../config/constants";
@@ -27,6 +27,7 @@ import PatientUpload from "./PatientUpload";
 import ArchivePersonModal from "./ArchivePersonModal";
 
 import "./ManagePatients.scss";
+import { StartTestProps } from "../testQueue/addToQueue/AddToQueueSearch";
 
 export const patientsCountQuery = gql`
   query GetPatientsCountByFacility(
@@ -117,6 +118,9 @@ export const DetachedManagePatients = ({
   const [archivePerson, setArchivePerson] = useState<Patient | null>(null);
   const navigate = useNavigate();
 
+  const [redirect, setRedirect] = useState<
+    string | { pathname: string; search: string; state?: any } | undefined
+  >(undefined);
   const [queryString, debounced, setDebounced] = useDebounce<string | null>(
     null,
     {
@@ -145,6 +149,21 @@ export const DetachedManagePatients = ({
         }}
       />
     );
+  }
+
+  if (redirect) {
+    const redirectTo =
+      typeof redirect === "string"
+        ? redirect
+        : redirect.pathname + redirect.search;
+
+    const navOptions: NavigateOptions = {};
+
+    if (typeof redirect !== "string") {
+      navOptions.state = redirect.state;
+    }
+
+    navigate(redirectTo, navOptions);
   }
 
   const patientRows = (patients: Patient[]) => {
@@ -198,6 +217,17 @@ export const DetachedManagePatients = ({
                   {
                     name: "Archive record",
                     action: () => setArchivePerson(patient),
+                  },
+                  {
+                    name: "Start test",
+                    action: () =>
+                      setRedirect({
+                        pathname: "/queue",
+                        search: `?facility=${activeFacilityId}`,
+                        state: {
+                          patientId: patient.internalId,
+                        } as StartTestProps,
+                      }),
                   },
                 ]}
               />
