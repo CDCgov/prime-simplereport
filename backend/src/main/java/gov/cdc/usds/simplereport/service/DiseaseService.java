@@ -20,6 +20,7 @@ public class DiseaseService {
 
   public void initDiseases() {
     COVID = _supportedDiseaseRepo.findSupportedDiseaseByNameContains("COVID");
+    System.out.println("covid is: " + COVID);
     FLU_A = _supportedDiseaseRepo.findSupportedDiseaseByNameContains("Flu A");
     FLU_B = _supportedDiseaseRepo.findSupportedDiseaseByNameContains("Flu B");
   }

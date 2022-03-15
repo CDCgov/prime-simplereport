@@ -8,12 +8,15 @@ import gov.cdc.usds.simplereport.api.CurrentOrganizationRolesContextHolder;
 import gov.cdc.usds.simplereport.api.CurrentTenantDataAccessContextHolder;
 import gov.cdc.usds.simplereport.config.DataSourceConfiguration;
 import gov.cdc.usds.simplereport.config.authorization.TenantDataAuthenticationProvider;
+import gov.cdc.usds.simplereport.db.model.SupportedDisease;
+import gov.cdc.usds.simplereport.db.repository.SupportedDiseaseRepository;
 import gov.cdc.usds.simplereport.idp.repository.DemoOktaRepository;
 import gov.cdc.usds.simplereport.test_util.DbTruncator;
 import gov.cdc.usds.simplereport.test_util.SliceTestConfiguration;
 import gov.cdc.usds.simplereport.test_util.SliceTestConfiguration.WithSimpleReportStandardUser;
 import gov.cdc.usds.simplereport.test_util.TestDataFactory;
 import gov.cdc.usds.simplereport.test_util.TestUserIdentities;
+import java.util.List;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.function.Executable;
@@ -44,6 +47,7 @@ public abstract class BaseServiceTest<T> {
 
   @Autowired private DbTruncator _truncator;
   @Autowired private OrganizationInitializingService _initService;
+  @Autowired private DiseaseService _diseaseService;
   @MockBean private CurrentTenantDataAccessContextHolder _currentTenantDataAccessContextHolder;
   @MockBean private TenantDataAuthenticationProvider _tenantDataAuthProvider;
   @Autowired private DemoOktaRepository _oktaRepo;
@@ -52,13 +56,22 @@ public abstract class BaseServiceTest<T> {
   @Autowired protected HibernateQueryInterceptor _hibernateQueryInterceptor;
   @MockBean private CurrentOrganizationRolesContextHolder _currentOrganizationRolesContextHolder;
 
+  @Autowired private SupportedDiseaseRepository _supportedDiseaseRepo;
+
   private static final String SPRING_SECURITY_DENIED = "Access is denied";
 
   @BeforeEach
   protected void beforeEach() {
-    clearDb();
+    // where are my diseases!
+    // does Liquibase run the same migrations for tests as it does for prod?
+    // need to track that one down
+    List<SupportedDisease> diseases = (List<SupportedDisease>) _supportedDiseaseRepo.findAll();
+    System.out.println("Supported Diseases:");
+    diseases.forEach(System.out::println);
+    //    clearDb();
     resetOkta();
     initCurrentUser();
+    initDiseases();
     _hibernateQueryInterceptor.startQueryCount(); // also resets count
   }
 
@@ -83,6 +96,10 @@ public abstract class BaseServiceTest<T> {
 
   protected void initCurrentUser() {
     _initService.initCurrentUser();
+  }
+
+  protected void initDiseases() {
+    _diseaseService.initDiseases();
   }
 
   protected void reset() {

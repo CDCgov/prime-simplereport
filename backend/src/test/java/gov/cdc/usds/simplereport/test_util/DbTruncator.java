@@ -32,8 +32,9 @@ public class DbTruncator {
           + "    WHERE  relkind = 'r' "
           + // only tables
           "    AND relname not like 'databasechangelog%%' "
-          + // no liquibase
-          // tables!
+          + // keep supported_disease table (populated via liquibase)
+          "     AND relname not like 'supported_disease' "
+          + // no liquibase tables!
           "    AND    relnamespace = '%1$s'::regnamespace "
           + "   ); "
           + "END "
@@ -47,6 +48,6 @@ public class DbTruncator {
   @Transactional
   public void truncateAll() {
     log.info("Truncating all non-liquibase tables in {}", hibernateSchema);
-    jdbc.execute(String.format(TRUNCATE_FUNCTION_TEMPLATE, hibernateSchema));
+    //    jdbc.execute(String.format(TRUNCATE_FUNCTION_TEMPLATE, hibernateSchema));
   }
 }
