@@ -68,7 +68,7 @@ public abstract class BaseServiceTest<T> {
     List<SupportedDisease> diseases = (List<SupportedDisease>) _supportedDiseaseRepo.findAll();
     System.out.println("Supported Diseases:");
     diseases.forEach(System.out::println);
-    //    clearDb();
+    clearDb();
     resetOkta();
     initCurrentUser();
     initDiseases();
