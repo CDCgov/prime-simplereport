@@ -2041,7 +2041,7 @@ databaseChangeLog:
                     nullable: false
         - sql:
             remarks: Add constraint to allow for a facility or an organization.
-            sql: ALTER TABLE patient_registration_link ADD CONSTRAINT facility_or_organization CHECK (num_nonnulls(facility_id, organization_id) = 1)
+            sql: ALTER TABLE ${database.defaultSchemaName}.patient_registration_link ADD CONSTRAINT facility_or_organization CHECK (num_nonnulls(facility_id, organization_id) = 1)
   - changeSet:
         id: add-spring-session-jdbc-support
         author: emma@skylight.digital
@@ -2383,7 +2383,7 @@ databaseChangeLog:
                 pp.preferred_language,
                 pp.test_result_delivery
               FROM ${database.defaultSchemaName}.person p
-              JOIN patient_preferences pp on pp.internal_id=p.internal_id
+              JOIN ${database.defaultSchemaName}.patient_preferences pp on pp.internal_id=p.internal_id
         - sql: |
             GRANT SELECT ON ${database.defaultSchemaName}.person_no_phi_view TO ${noPhiUsername};
       rollback:
@@ -2560,7 +2560,7 @@ databaseChangeLog:
                   SELECT
                     o.internal_id AS organization_id, f.internal_id AS facility_id, m.migrations_user_id AS migrations_user_id
                   FROM
-                    facility AS f 
+                    ${database.defaultSchemaName}.facility AS f 
                     FULL OUTER JOIN ${database.defaultSchemaName}.patient_registration_link AS p ON f.internal_id = p.facility_id 
                     FULL OUTER JOIN ${database.defaultSchemaName}.organization AS o ON o.internal_id = p.organization_id
                     CROSS JOIN migration_user AS m
@@ -2694,7 +2694,7 @@ databaseChangeLog:
                 pp.preferred_language,
                 pp.test_result_delivery
               FROM ${database.defaultSchemaName}.person p
-              JOIN patient_preferences pp on pp.internal_id=p.internal_id
+              JOIN ${database.defaultSchemaName}.patient_preferences pp on pp.internal_id=p.internal_id
         - sql: |
             GRANT SELECT ON ${database.defaultSchemaName}.person_no_phi_view TO ${noPhiUsername};
       rollback:
@@ -3262,7 +3262,7 @@ databaseChangeLog:
         - sql:
             remarks: Populate new `emails` column with value from patient `email`
             sql: |
-              UPDATE person SET emails = ARRAY[email] WHERE email IS NOT NULL;
+              UPDATE ${database.defaultSchemaName}.person SET emails = ARRAY[email] WHERE email IS NOT NULL;
       rollback:
         - dropColumn:
             tableName: person
@@ -3277,7 +3277,7 @@ databaseChangeLog:
         - sql:
             remarks: Populate new `emails` column with value from patient `email`
             sql: |
-              UPDATE person SET emails = ARRAY[email] WHERE email IS NOT NULL;
+              UPDATE ${database.defaultSchemaName}.person SET emails = ARRAY[email] WHERE email IS NOT NULL;
   - changeSet:
       id: add-specimen_type_id-to-test_event
       author: zedd@skylight.digital
