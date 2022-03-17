@@ -324,12 +324,6 @@ class TestResultTest extends BaseGraphqlTest {
     return runQuery("add-test-result-mutation", variables, expectedError.orElse(null));
   }
 
-  private ObjectNode submitTestResultBackwardsCompatible(
-      ObjectNode variables, Optional<String> expectedError) {
-    return runQuery(
-        "add-test-result-mutation-backwards-compatible", variables, expectedError.orElse(null));
-  }
-
   private ArrayNode fetchTestResults(ObjectNode variables) {
     return (ArrayNode) runQuery("test-results-query", variables).get("testResults");
   }
