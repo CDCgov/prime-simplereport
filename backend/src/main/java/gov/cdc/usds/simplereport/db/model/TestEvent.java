@@ -1,13 +1,16 @@
 package gov.cdc.usds.simplereport.db.model;
 
-import gov.cdc.usds.simplereport.api.Translators;
 import gov.cdc.usds.simplereport.db.model.auxiliary.AskOnEntrySurvey;
 import gov.cdc.usds.simplereport.db.model.auxiliary.TestCorrectionStatus;
+import gov.cdc.usds.simplereport.db.model.auxiliary.TestResult;
 import java.util.Date;
-import java.util.Optional;
-import java.util.Set;
 import java.util.UUID;
-import javax.persistence.*;
+import javax.persistence.AttributeOverride;
+import javax.persistence.Column;
+import javax.persistence.Entity;
+import javax.persistence.FetchType;
+import javax.persistence.JoinColumn;
+import javax.persistence.ManyToOne;
 import lombok.Getter;
 import lombok.extern.slf4j.Slf4j;
 import org.hibernate.Hibernate;
@@ -36,9 +39,6 @@ public class TestEvent extends BaseTestInfo {
   @JoinColumn(name = "test_order_id")
   private TestOrder order;
 
-  @OneToMany(mappedBy = "testEvent", fetch = FetchType.LAZY)
-  private Set<Result> results;
-
   @Column(columnDefinition = "uuid")
   private UUID priorCorrectedTestEventId; // used to chain events
 
@@ -46,50 +46,31 @@ public class TestEvent extends BaseTestInfo {
 
   public TestEvent() {}
 
-  // TODO:
-  // need to create a new constructor that takes a list of DiseaseResults
-  // otherwise, assume the current constructors are submitting covid results
-
-  // Convenience constructor, only used in tests
-  public TestEvent(TestOrder testOrder) {
-    this(testOrder, false);
+  public TestEvent(
+      TestResult result,
+      DeviceSpecimenType deviceType,
+      Person patient,
+      Facility facility,
+      TestOrder testOrder) {
+    this(result, deviceType, patient, facility, testOrder, false);
   }
 
-  // If this constructor is being called, the TestOrder passed must contain a Result.
-  // If it doesn't, throw an exception.
-  public TestEvent(TestOrder order, Boolean hasPriorTests) {
-    super(order.getPatient(), order.getFacility(), order.getDeviceSpecimen());
-
-    if (order.getResultSet().isEmpty()) {
-      throw new IllegalArgumentException("TestOrder must contain a result");
-    }
-
-    // need to use the addResult logic here!!
-    // We need to read the test order and see if there's already a result there
-    // if not, create new results
-    // also need to update other constructors to take a DiseaseResult instead of a regular result
-
-    if (order.getResultSet().isEmpty()) {
-      // need to create a new Result object
-      // we'll need to update this to accept multiple result objects
-      // but that can happen in the next PR
-      Result result = new Result(order, this, diseaseResult);
-      this.results.add(new Result(order, this, diseaseResult));
-      order.addResult(result);
-    } else {
-      // need to update the existing results objects to include the test event id
-      // it really feels like there should be a JPA way to do this...but I don't know what that is
-      order.getResultSet().forEach(r -> r.setTestEvent(this));
-    }
-
+  public TestEvent(
+      TestResult result,
+      DeviceSpecimenType deviceType,
+      Person patient,
+      Facility facility,
+      TestOrder order,
+      Boolean hasPriorTests) {
+    super(patient, facility, deviceType, result);
     // store a link, and *also* store the object as JSON
     // force load the lazy-loaded phone numbers so values are available to the object mapper
     // when serializing `patientData` (phoneNumbers is default lazy-loaded because of `OneToMany`)
-    Hibernate.initialize(getPatient().getPrimaryPhone());
-    Hibernate.initialize(getPatient().getTelephone());
-    Hibernate.initialize(getPatient().getPhoneNumbers());
+    Hibernate.initialize(patient.getPrimaryPhone());
+    Hibernate.initialize(patient.getTelephone());
+    Hibernate.initialize(patient.getPhoneNumbers());
 
-    this.patientData = getPatient();
+    this.patientData = patient;
     this.providerData = getFacility().getOrderingProvider();
     this.order = order;
     this.patientHasPriorTests = hasPriorTests;
@@ -101,6 +82,20 @@ public class TestEvent extends BaseTestInfo {
       // this can happen during unit tests, but never in prod.
       log.error("Order {} missing PatientAnswers", order.getInternalId());
     }
+  }
+
+  public TestEvent(TestOrder testOrder) {
+    this(testOrder, false);
+  }
+
+  public TestEvent(TestOrder testOrder, Boolean hasPriorTests) {
+    this(
+        testOrder.getResult(),
+        testOrder.getDeviceSpecimen(),
+        testOrder.getPatient(),
+        testOrder.getFacility(),
+        testOrder,
+        hasPriorTests);
   }
 
   // Constructor for creating corrections. Copy the original event
@@ -155,38 +150,4 @@ public class TestEvent extends BaseTestInfo {
   public DeviceSpecimenType getDeviceSpecimenType() {
     return order.getDeviceSpecimen();
   }
-
-  public TestResult getTestResult() {
-    Optional<Result> resultObject = this.results.stream().findFirst();
-    // Backwards-compatibility: if result table isn't populated, fetch old result column
-    if (resultObject.isEmpty()) {
-      return order.getResult();
-    } else {
-      return Translators.convertLoincToResult(resultObject.get().getResultLOINC());
-    }
-  }
 }
-
-// What we need:
-// X create a helper db model class that pairs a disease with a result
-// - update getters/setters on TestOrder to use the new result model
-// - update getters on TestEvent to use the new result model
-// - update constructor on TestEvent and TestOrder to use the new result model
-// - add a result column to SupportedDisease entity
-// - update repositories? will need to do this in tandem with updating the setters/constructors
-
-// let's think out loud in the comments for a moment.
-// This base class supports both TestEvent and TestOrder.
-// TestOrder has getters/setters for both, while TestEvent only has getters.
-// To support multiple diseases, we'll need to pass in both the disease type and the result when
-// creating results.
-// Maybe an "addResult" instead of "setResult"?
-// It could also help to have some kind of result object that looks at the available diseases and
-// allows you to set
-// results for each.
-// That object gets passed in to TestEvent/TestOrder and we unwrap and store in the database
-// appropriately.
-// We will likely also need getters/setters that fetch results for a specific disease, as well as a
-// default
-// that fetches covid. ( testOrder.getResultForDisease(SupportedDisease disease);
-// testOrder.getResult() )

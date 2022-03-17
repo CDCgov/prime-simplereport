@@ -4,7 +4,6 @@ import gov.cdc.usds.simplereport.db.model.SupportedDisease;
 import gov.cdc.usds.simplereport.db.repository.SupportedDiseaseRepository;
 import javax.transaction.Transactional;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 @Service
@@ -12,27 +11,31 @@ import org.springframework.stereotype.Service;
 @Slf4j
 public class DiseaseService {
 
-  @Autowired SupportedDiseaseRepository _supportedDiseaseRepo;
+  SupportedDiseaseRepository _supportedDiseaseRepo;
 
-  private SupportedDisease COVID;
-  private SupportedDisease FLU_A;
-  private SupportedDisease FLU_B;
+  DiseaseService(SupportedDiseaseRepository repo) {
+    this._supportedDiseaseRepo = repo;
+  }
+
+  private SupportedDisease covid;
+  private SupportedDisease fluA;
+  private SupportedDisease fluB;
 
   public void initDiseases() {
-    COVID = _supportedDiseaseRepo.findSupportedDiseaseByNameContains("COVID");
-    FLU_A = _supportedDiseaseRepo.findSupportedDiseaseByNameContains("Flu A");
-    FLU_B = _supportedDiseaseRepo.findSupportedDiseaseByNameContains("Flu B");
+    covid = _supportedDiseaseRepo.findSupportedDiseaseByNameContains("COVID");
+    fluA = _supportedDiseaseRepo.findSupportedDiseaseByNameContains("Flu A");
+    fluB = _supportedDiseaseRepo.findSupportedDiseaseByNameContains("Flu B");
   }
 
   public SupportedDisease covid() {
-    return COVID;
+    return covid;
   }
 
   public SupportedDisease fluA() {
-    return FLU_A;
+    return fluA;
   }
 
   public SupportedDisease fluB() {
-    return FLU_B;
+    return fluB;
   }
 }

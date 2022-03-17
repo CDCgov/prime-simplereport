@@ -1,14 +1,10 @@
 package gov.cdc.usds.simplereport.db.model;
 
-import gov.cdc.usds.simplereport.api.Translators;
-import gov.cdc.usds.simplereport.db.model.auxiliary.DiseaseResult;
 import gov.cdc.usds.simplereport.db.model.auxiliary.OrderStatus;
 import gov.cdc.usds.simplereport.db.model.auxiliary.TestCorrectionStatus;
 import gov.cdc.usds.simplereport.db.model.auxiliary.TestResult;
 import java.time.LocalDate;
 import java.util.Date;
-import java.util.Optional;
-import java.util.Set;
 import java.util.UUID;
 import javax.persistence.Column;
 import javax.persistence.Entity;
@@ -46,9 +42,6 @@ public class TestOrder extends BaseTestInfo {
   @JoinColumn(name = "test_event_id")
   private TestEvent testEvent;
 
-  @OneToMany(mappedBy = "testOrder", fetch = FetchType.LAZY)
-  private Set<Result> results;
-
   protected TestOrder() {
     /* for hibernate */ }
 
@@ -80,32 +73,11 @@ public class TestOrder extends BaseTestInfo {
   }
 
   public TestResult getTestResult() {
-    Optional<Result> resultObject = this.results.stream().findFirst();
-    // Backwards-compatibility: if result table isn't populated, fetch old result column
-    if (resultObject.isEmpty()) {
-      return getResult();
-    } else {
-      return Translators.convertLoincToResult(resultObject.get().getResultLOINC());
-    }
+    return getResult();
   }
 
-  public Set<Result> getResultSet() {
-    return this.results;
-  }
-
-  public void addResult(DiseaseResult result) {
-    results.add(new Result(this, result));
-  }
-
-  public void addResult(Result result) {
-    results.add(result);
-  }
-
-  // I wanted to default this to setting covid results, but...
-  // - we don't want to perform a lookup on supported disease every time create a result
-  // - it's not possible to inject a service or spring property into these entity classes
-  public void setResult(DiseaseResult result) {
-    results.add(new Result(this, result));
+  public void setResult(TestResult finalResult) {
+    super.setTestResult(finalResult);
   }
 
   public void markComplete() {
