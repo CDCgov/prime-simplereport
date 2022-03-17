@@ -4,6 +4,7 @@ import gov.cdc.usds.simplereport.db.model.auxiliary.AskOnEntrySurvey;
 import gov.cdc.usds.simplereport.db.model.auxiliary.TestCorrectionStatus;
 import gov.cdc.usds.simplereport.db.model.auxiliary.TestResult;
 import java.util.Date;
+import java.util.Set;
 import java.util.UUID;
 import javax.persistence.AttributeOverride;
 import javax.persistence.Column;
@@ -11,6 +12,7 @@ import javax.persistence.Entity;
 import javax.persistence.FetchType;
 import javax.persistence.JoinColumn;
 import javax.persistence.ManyToOne;
+import javax.persistence.OneToMany;
 import lombok.Getter;
 import lombok.extern.slf4j.Slf4j;
 import org.hibernate.Hibernate;
@@ -38,6 +40,9 @@ public class TestEvent extends BaseTestInfo {
   @ManyToOne(optional = false, fetch = FetchType.LAZY)
   @JoinColumn(name = "test_order_id")
   private TestOrder order;
+
+  @OneToMany(mappedBy = "testEvent", fetch = FetchType.LAZY)
+  private Set<Result> results;
 
   @Column(columnDefinition = "uuid")
   private UUID priorCorrectedTestEventId; // used to chain events
