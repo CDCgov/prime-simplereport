@@ -3487,3 +3487,37 @@ databaseChangeLog:
       rollback:
         sql: |
           DROP TABLE ${database.defaultSchemaName}.result;
+  - changeSet:
+      id: make-test-event-nullable-on-results-table
+      author: emma@skylight.digital
+      comment: Make test event column on results table nullable.
+      changes:
+        - tagDatabase:
+            tag: make-test-event-nullable-on-results-table
+        - dropNotNullConstraint:
+            tableName: result
+            columnName: test_event_id
+  - changeSet:
+      id: add-test-result-column-to-result-table
+      author: emma@skylight.digital
+      comment: Add another test result column to result table to store results as enum. This preserves the original result even if the associated LOINC changes
+      changes:
+        - tagDatabase:
+          tag: add-test-result-column-to-result-table
+        - addColumn:
+            tableName: result
+            columns:
+              - column:
+                  name: test_result
+                  type: ${database.defaultSchemaName}.TEST_RESULT
+                  constraints:
+                    nullable: false
+              - addUniqueConstraint:
+                  tableName: result
+                  constraintName: uk__test_result
+                  columnNames: test_event_id, test_order_id, disease_id
+        - sql: |
+            GRANT SELECT ON ${database.defaultSchemaName}.result TO ${noPhiUsername};
+      rollback:
+        sql: |
+          ALTER TABLE ${database.defaultSchemaName}.result DROP COLUMN test_result;
