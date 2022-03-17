@@ -5,7 +5,7 @@ import static org.junit.jupiter.api.Assertions.assertNotNull;
 
 import org.junit.jupiter.api.Test;
 
-public class DiseaseServiceTest extends BaseServiceTest<DiseaseService> {
+class DiseaseServiceTest extends BaseServiceTest<DiseaseService> {
 
   @Test
   void retrievesCovid_successful() {

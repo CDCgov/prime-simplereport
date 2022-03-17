@@ -36,7 +36,7 @@ import org.springframework.test.web.servlet.request.MockHttpServletRequestBuilde
         @Filter(
             classes = {AuditLoggingAdvice.class, WebConfiguration.class},
             type = FilterType.ASSIGNABLE_TYPE))
-class UserAccountCreationControllerTest extends BaseNonSpringBootTest {
+class UserAccountCreationControllerTest extends BaseNonSpringBootTestConfiguration {
 
   @Autowired private MockMvc _mockMvc;
 

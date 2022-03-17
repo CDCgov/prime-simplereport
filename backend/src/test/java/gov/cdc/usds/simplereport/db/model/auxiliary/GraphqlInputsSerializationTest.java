@@ -4,7 +4,7 @@ import static org.assertj.core.api.Assertions.assertThat;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
 
-import gov.cdc.usds.simplereport.api.BaseNonSpringBootTest;
+import gov.cdc.usds.simplereport.api.BaseNonSpringBootTestConfiguration;
 import java.io.IOException;
 import java.util.Map;
 import org.junit.jupiter.api.Test;
@@ -14,7 +14,7 @@ import org.springframework.boot.test.json.JacksonTester;
 import org.springframework.boot.test.json.JsonContent;
 
 @JsonTest
-class GraphqlInputsSerializationTest extends BaseNonSpringBootTest {
+class GraphqlInputsSerializationTest extends BaseNonSpringBootTestConfiguration {
 
   @Autowired private JacksonTester<GraphQlInputs> _tester;
 

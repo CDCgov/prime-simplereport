@@ -5,7 +5,7 @@ import gov.cdc.usds.simplereport.service.DiseaseService;
 import org.springframework.boot.test.mock.mockito.MockBean;
 
 /** Base class to hold common beans required for application startup. */
-public class BaseNonSpringBootTest {
+public class BaseNonSpringBootTestConfiguration {
 
   // Dependencies of TenantDataAccessFilter
   @MockBean private ApiUserService _mockApiUserService;
