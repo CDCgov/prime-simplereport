@@ -8,7 +8,6 @@ import gov.cdc.usds.simplereport.api.CurrentOrganizationRolesContextHolder;
 import gov.cdc.usds.simplereport.api.CurrentTenantDataAccessContextHolder;
 import gov.cdc.usds.simplereport.config.DataSourceConfiguration;
 import gov.cdc.usds.simplereport.config.authorization.TenantDataAuthenticationProvider;
-import gov.cdc.usds.simplereport.db.model.SupportedDisease;
 import gov.cdc.usds.simplereport.db.repository.SupportedDiseaseRepository;
 import gov.cdc.usds.simplereport.idp.repository.DemoOktaRepository;
 import gov.cdc.usds.simplereport.test_util.DbTruncator;
@@ -16,7 +15,6 @@ import gov.cdc.usds.simplereport.test_util.SliceTestConfiguration;
 import gov.cdc.usds.simplereport.test_util.SliceTestConfiguration.WithSimpleReportStandardUser;
 import gov.cdc.usds.simplereport.test_util.TestDataFactory;
 import gov.cdc.usds.simplereport.test_util.TestUserIdentities;
-import java.util.List;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.function.Executable;
@@ -62,12 +60,6 @@ public abstract class BaseServiceTest<T> {
 
   @BeforeEach
   protected void beforeEach() {
-    // where are my diseases!
-    // does Liquibase run the same migrations for tests as it does for prod?
-    // need to track that one down
-    List<SupportedDisease> diseases = (List<SupportedDisease>) _supportedDiseaseRepo.findAll();
-    System.out.println("Supported Diseases:");
-    diseases.forEach(System.out::println);
     clearDb();
     resetOkta();
     initCurrentUser();
