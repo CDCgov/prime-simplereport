@@ -3,7 +3,12 @@ package gov.cdc.usds.simplereport.db.model;
 import gov.cdc.usds.simplereport.api.Translators;
 import gov.cdc.usds.simplereport.db.model.auxiliary.DiseaseResult;
 import gov.cdc.usds.simplereport.db.model.auxiliary.TestResult;
-import javax.persistence.*;
+import javax.persistence.Column;
+import javax.persistence.Entity;
+import javax.persistence.EnumType;
+import javax.persistence.Enumerated;
+import javax.persistence.JoinColumn;
+import javax.persistence.ManyToOne;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
@@ -67,5 +72,16 @@ public class Result extends EternalAuditedEntity {
   public void setTestResult(TestResult result) {
     this.resultLOINC = Translators.convertTestResultToLoinc(result);
     this.testResult = testResult;
+  }
+
+  public Result(TestOrder testOrder, SupportedDisease disease, TestResult testResult) {
+    this.testOrder = testOrder;
+    this.disease = disease;
+    this.resultLOINC = Translators.convertTestResultToLoinc(testResult);
+    this.testResult = testResult;
+  }
+
+  public void setTestEvent(TestEvent event) {
+    this.testEvent = event;
   }
 }
