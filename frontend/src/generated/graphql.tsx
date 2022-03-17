@@ -129,7 +129,6 @@ export type Mutation = {
   addFacilityNew?: Maybe<Scalars["String"]>;
   addPatient?: Maybe<Patient>;
   addPatientToQueue?: Maybe<Scalars["String"]>;
-  addTestResult?: Maybe<TestOrder>;
   addTestResultNew?: Maybe<AddTestResultResponse>;
   addUser?: Maybe<User>;
   addUserToCurrentOrg?: Maybe<User>;
@@ -259,14 +258,6 @@ export type MutationAddPatientToQueueArgs = {
   symptomOnset?: InputMaybe<Scalars["LocalDate"]>;
   symptoms?: InputMaybe<Scalars["String"]>;
   testResultDelivery?: InputMaybe<TestResultDeliveryPreference>;
-};
-
-export type MutationAddTestResultArgs = {
-  dateTested?: InputMaybe<Scalars["DateTime"]>;
-  deviceId: Scalars["String"];
-  deviceSpecimenType?: InputMaybe<Scalars["ID"]>;
-  patientId: Scalars["ID"];
-  result: Scalars["String"];
 };
 
 export type MutationAddTestResultNewArgs = {
