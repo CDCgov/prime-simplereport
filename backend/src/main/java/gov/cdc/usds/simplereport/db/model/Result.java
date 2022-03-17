@@ -47,4 +47,15 @@ public class Result extends EternalAuditedEntity {
     this.resultLOINC = Translators.convertTestResultToLoinc(testResult);
     this.testResult = testResult;
   }
+
+  public Result(TestOrder testOrder, SupportedDisease disease, TestResult testResult) {
+    this.testOrder = testOrder;
+    this.disease = disease;
+    this.resultLOINC = Translators.convertTestResultToLoinc(testResult);
+    this.testResult = testResult;
+  }
+
+  public void setTestEvent(TestEvent event) {
+    this.testEvent = event;
+  }
 }
