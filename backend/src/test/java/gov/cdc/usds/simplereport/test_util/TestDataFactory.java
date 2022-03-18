@@ -43,6 +43,7 @@ import gov.cdc.usds.simplereport.db.repository.SupportedDiseaseRepository;
 import gov.cdc.usds.simplereport.db.repository.TestEventRepository;
 import gov.cdc.usds.simplereport.db.repository.TestOrderRepository;
 import gov.cdc.usds.simplereport.idp.repository.DemoOktaRepository;
+import gov.cdc.usds.simplereport.service.DiseaseService;
 import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.Collections;
@@ -85,6 +86,7 @@ public class TestDataFactory {
   @Autowired private DeviceSpecimenTypeRepository _deviceSpecimenRepo;
   @Autowired private SupportedDiseaseRepository _supportedDiseaseRepo;
   @Autowired private DemoOktaRepository _oktaRepo;
+  @Autowired private DiseaseService _diseaseService;
 
   public Organization createValidOrg(
       String name, String type, String externalId, boolean identityVerified) {
@@ -319,18 +321,36 @@ public class TestDataFactory {
   }
 
   public TestOrder createTestOrder(Person p, Facility f) {
-    AskOnEntrySurvey survey = AskOnEntrySurvey.builder().symptoms(Collections.emptyMap()).build();
-    return createTestOrder(p, f, survey);
+    return createTestOrder(p, f, createEmptySurvey());
   }
 
   public TestOrder createTestOrder(Person p, Facility f, AskOnEntrySurvey s) {
-    PatientAnswers answers = new PatientAnswers(s);
-    _patientAnswerRepo.save(answers);
     TestOrder o = new TestOrder(p, f);
-    o.setAskOnEntrySurvey(answers);
+    o.setAskOnEntrySurvey(savePatientAnswers(s));
     var savedOrder = _testOrderRepo.save(o);
     _patientLinkRepository.save(new PatientLink(savedOrder));
     return savedOrder;
+  }
+
+  public TestOrder createCompletedTestOrder(Person patient, Facility facility, TestResult result) {
+    TestOrder order = new TestOrder(patient, facility);
+    order.setAskOnEntrySurvey(savePatientAnswers(createEmptySurvey()));
+    order.setDeviceSpecimen(facility.getDefaultDeviceSpecimen());
+    order.setResult(_diseaseService.covid(), result);
+    order.markComplete();
+    TestOrder savedOrder = _testOrderRepo.save(order);
+    _patientLinkRepository.save(new PatientLink(savedOrder));
+    return order;
+  }
+
+  private AskOnEntrySurvey createEmptySurvey() {
+    return AskOnEntrySurvey.builder().symptoms(Collections.emptyMap()).build();
+  }
+
+  private PatientAnswers savePatientAnswers(AskOnEntrySurvey survey) {
+    PatientAnswers answers = new PatientAnswers(survey);
+    _patientAnswerRepo.save(answers);
+    return answers;
   }
 
   public TestEvent createTestEvent(Person p, Facility f) {
@@ -340,7 +360,7 @@ public class TestDataFactory {
   public TestEvent createTestEvent(Person p, Facility f, AskOnEntrySurvey s, TestResult r, Date d) {
     TestOrder o = createTestOrder(p, f, s);
     o.setDateTestedBackdate(d);
-    o.setResult(r);
+    o.setResult(_diseaseService.covid(), r);
 
     TestEvent e = _testEventRepo.save(new TestEvent(o));
     o.setTestEventRef(e);
@@ -355,7 +375,7 @@ public class TestDataFactory {
 
   public TestEvent createTestEvent(Person p, Facility f, TestResult r, Boolean hasPriorTests) {
     TestOrder o = createTestOrder(p, f);
-    o.setResult(r);
+    o.setResult(_diseaseService.covid(), r);
     o = _testOrderRepo.save(o);
 
     TestEvent e = _testEventRepo.save(new TestEvent(o, hasPriorTests));
@@ -371,7 +391,7 @@ public class TestDataFactory {
   }
 
   public TestEvent doTest(TestOrder order, TestResult result) {
-    order.setResult(result);
+    order.setResult(_diseaseService.covid(), result);
     TestEvent event = _testEventRepo.save(new TestEvent(order));
     order.setTestEventRef(event);
     order.markComplete();

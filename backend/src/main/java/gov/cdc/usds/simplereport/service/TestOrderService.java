@@ -68,6 +68,7 @@ public class TestOrderService {
   private final TestEventReportingService _testEventReportingService;
   private final FacilityDeviceTypeService _facilityDeviceTypeService;
   private final TestResultsDeliveryService testResultsDeliveryService;
+  private final DiseaseService _diseaseService;
 
   public static final int DEFAULT_PAGINATION_PAGEOFFSET = 0;
   public static final int DEFAULT_PAGINATION_PAGESIZE = 5000;
@@ -225,7 +226,7 @@ public class TestOrderService {
         }
       }
 
-      order.setResult(result == null ? null : TestResult.valueOf(result));
+      order.setResult(result == null ? null : _diseaseService.covid(), TestResult.valueOf(result));
 
       order.setDateTestedBackdate(dateTested);
 
@@ -249,7 +250,7 @@ public class TestOrderService {
     lockOrder(order.getInternalId());
     try {
       order.setDeviceSpecimen(deviceSpecimen);
-      order.setResult(result);
+      order.setResult(_diseaseService.covid(), result);
       order.setDateTestedBackdate(dateTested);
       order.markComplete();
 

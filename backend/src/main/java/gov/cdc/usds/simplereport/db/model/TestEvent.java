@@ -1,9 +1,11 @@
 package gov.cdc.usds.simplereport.db.model;
 
+import gov.cdc.usds.simplereport.api.Translators;
 import gov.cdc.usds.simplereport.db.model.auxiliary.AskOnEntrySurvey;
 import gov.cdc.usds.simplereport.db.model.auxiliary.TestCorrectionStatus;
 import gov.cdc.usds.simplereport.db.model.auxiliary.TestResult;
 import java.util.Date;
+import java.util.Optional;
 import java.util.Set;
 import java.util.UUID;
 import javax.persistence.AttributeOverride;
@@ -51,31 +53,28 @@ public class TestEvent extends BaseTestInfo {
 
   public TestEvent() {}
 
-  public TestEvent(
-      TestResult result,
-      DeviceSpecimenType deviceType,
-      Person patient,
-      Facility facility,
-      TestOrder testOrder) {
-    this(result, deviceType, patient, facility, testOrder, false);
+  // Convenience constructor, only used in tests
+  public TestEvent(TestOrder testOrder) {
+    this(testOrder, false);
   }
 
-  public TestEvent(
-      TestResult result,
-      DeviceSpecimenType deviceType,
-      Person patient,
-      Facility facility,
-      TestOrder order,
-      Boolean hasPriorTests) {
-    super(patient, facility, deviceType, result);
+  public TestEvent(TestOrder order, Boolean hasPriorTests) {
+    super(order.getPatient(), order.getFacility(), order.getDeviceSpecimen());
+
+    if (order.getResultSet().isEmpty()) {
+      throw new IllegalArgumentException("TestOrder must contain a result");
+    }
+
+    order.getResultSet().forEach(result -> result.setTestEvent(this));
+
     // store a link, and *also* store the object as JSON
     // force load the lazy-loaded phone numbers so values are available to the object mapper
     // when serializing `patientData` (phoneNumbers is default lazy-loaded because of `OneToMany`)
-    Hibernate.initialize(patient.getPrimaryPhone());
-    Hibernate.initialize(patient.getTelephone());
-    Hibernate.initialize(patient.getPhoneNumbers());
+    Hibernate.initialize(getPatient().getPrimaryPhone());
+    Hibernate.initialize(getPatient().getTelephone());
+    Hibernate.initialize(getPatient().getPhoneNumbers());
 
-    this.patientData = patient;
+    this.patientData = getPatient();
     this.providerData = getFacility().getOrderingProvider();
     this.order = order;
     this.patientHasPriorTests = hasPriorTests;
@@ -89,20 +88,6 @@ public class TestEvent extends BaseTestInfo {
     }
   }
 
-  public TestEvent(TestOrder testOrder) {
-    this(testOrder, false);
-  }
-
-  public TestEvent(TestOrder testOrder, Boolean hasPriorTests) {
-    this(
-        testOrder.getResult(),
-        testOrder.getDeviceSpecimen(),
-        testOrder.getPatient(),
-        testOrder.getFacility(),
-        testOrder,
-        hasPriorTests);
-  }
-
   // Constructor for creating corrections. Copy the original event
   public TestEvent(
       TestEvent event, TestCorrectionStatus correctionStatus, String reasonForCorrection) {
@@ -114,6 +99,8 @@ public class TestEvent extends BaseTestInfo {
     this.surveyData = event.getSurveyData();
     setDateTestedBackdate(order.getDateTestedBackdate());
     this.priorCorrectedTestEventId = event.getInternalId();
+    // need to somehow deal with results here, I think
+    // unless results are supposed to be void for corrected testEvents
   }
 
   public UUID getPatientInternalID() {
@@ -155,4 +142,46 @@ public class TestEvent extends BaseTestInfo {
   public DeviceSpecimenType getDeviceSpecimenType() {
     return order.getDeviceSpecimen();
   }
+
+  // need to look into this and make sure it's correct
+  public TestResult getTestResult() {
+    Optional<Result> resultObject = this.results.stream().findFirst();
+    // Backwards-compatibility: if result table isn't populated, fetch old result column
+    if (resultObject.isEmpty()) {
+      return order.getResult();
+    } else {
+      // This logic will need to be updated later on in the multiplex process - this method is
+      // temporary
+      // Eventually, this method will be deprecated in favor of getResultSet()
+      return Translators.convertLoincToResult(resultObject.get().getResultLOINC());
+    }
+  }
+
+  public Set<Result> getTestResults() {
+    return this.results;
+  }
 }
+
+// What we need:
+// X create a helper db model class that pairs a disease with a result
+// - update getters/setters on TestOrder to use the new result model
+// - update getters on TestEvent to use the new result model
+// - update constructor on TestEvent and TestOrder to use the new result model
+// - add a result column to SupportedDisease entity
+// - update repositories? will need to do this in tandem with updating the setters/constructors
+
+// let's think out loud in the comments for a moment.
+// This base class supports both TestEvent and TestOrder.
+// TestOrder has getters/setters for both, while TestEvent only has getters.
+// To support multiple diseases, we'll need to pass in both the disease type and the result when
+// creating results.
+// Maybe an "addResult" instead of "setResult"?
+// It could also help to have some kind of result object that looks at the available diseases and
+// allows you to set
+// results for each.
+// That object gets passed in to TestEvent/TestOrder and we unwrap and store in the database
+// appropriately.
+// We will likely also need getters/setters that fetch results for a specific disease, as well as a
+// default
+// that fetches covid. ( testOrder.getResultForDisease(SupportedDisease disease);
+// testOrder.getResult() )}

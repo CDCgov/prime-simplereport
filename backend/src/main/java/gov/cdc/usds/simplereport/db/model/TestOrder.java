@@ -1,10 +1,14 @@
 package gov.cdc.usds.simplereport.db.model;
 
+import gov.cdc.usds.simplereport.api.Translators;
+import gov.cdc.usds.simplereport.db.model.auxiliary.DiseaseResult;
 import gov.cdc.usds.simplereport.db.model.auxiliary.OrderStatus;
 import gov.cdc.usds.simplereport.db.model.auxiliary.TestCorrectionStatus;
 import gov.cdc.usds.simplereport.db.model.auxiliary.TestResult;
 import java.time.LocalDate;
 import java.util.Date;
+import java.util.Optional;
+import java.util.Set;
 import java.util.UUID;
 import javax.persistence.Column;
 import javax.persistence.Entity;
@@ -13,6 +17,7 @@ import javax.persistence.Enumerated;
 import javax.persistence.FetchType;
 import javax.persistence.JoinColumn;
 import javax.persistence.ManyToOne;
+import javax.persistence.OneToMany;
 import javax.persistence.OneToOne;
 import org.hibernate.annotations.Type;
 
@@ -41,6 +46,9 @@ public class TestOrder extends BaseTestInfo {
   @ManyToOne(fetch = FetchType.LAZY)
   @JoinColumn(name = "test_event_id")
   private TestEvent testEvent;
+
+  @OneToMany(mappedBy = "testOrder", fetch = FetchType.LAZY)
+  private Set<Result> results;
 
   protected TestOrder() {
     /* for hibernate */ }
@@ -73,11 +81,38 @@ public class TestOrder extends BaseTestInfo {
   }
 
   public TestResult getTestResult() {
-    return getResult();
+    Optional<Result> resultObject = this.results.stream().findFirst();
+    // Backwards-compatibility: if result table isn't populated, fetch old result column
+    if (resultObject.isEmpty()) {
+      return getResult();
+    } else {
+      // This logic will need to be updated later on in the multiplex process - this method is
+      // temporary
+      // Eventually, this method will be deprecated in favor of getResultSet()
+      return Translators.convertLoincToResult(resultObject.get().getResultLOINC());
+    }
   }
 
-  public void setResult(TestResult finalResult) {
-    super.setTestResult(finalResult);
+  public Set<Result> getResultSet() {
+    return this.results;
+  }
+
+  public void addResult(DiseaseResult result) {
+    results.add(new Result(this, result));
+  }
+
+  public void addResult(Result result) {
+    results.add(result);
+  }
+
+  // You can't inject a service class into an entity, or this would default to covid using
+  // DiseaseService
+  //  public void setResult(DiseaseResult result) {
+  //    results.add(new Result(this, result));
+  //  }
+
+  public void setResult(SupportedDisease disease, TestResult result) {
+    results.add(new Result(this, disease, result));
   }
 
   public void markComplete() {

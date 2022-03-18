@@ -15,6 +15,7 @@ import gov.cdc.usds.simplereport.db.model.auxiliary.PersonRole;
 import gov.cdc.usds.simplereport.db.model.auxiliary.PhoneType;
 import gov.cdc.usds.simplereport.db.model.auxiliary.TestResult;
 import gov.cdc.usds.simplereport.db.model.auxiliary.TestResultDeliveryPreference;
+import gov.cdc.usds.simplereport.service.DiseaseService;
 import gov.cdc.usds.simplereport.test_util.TestDataFactory;
 import java.time.LocalDate;
 import java.util.List;
@@ -30,6 +31,7 @@ class TestOrderRepositoryTest extends BaseRepositoryTest {
   @Autowired private PhoneNumberRepository _phoneRepo;
   @Autowired private TestEventRepository _events;
   @Autowired private TestDataFactory _dataFactory;
+  @Autowired private DiseaseService _diseaseService;
 
   @Test
   void runChanges() {
@@ -112,9 +114,8 @@ class TestOrderRepositoryTest extends BaseRepositoryTest {
     TestOrder order = _repo.save(new TestOrder(hoya, site));
     assertNotNull(order);
     flush();
-    TestEvent ev =
-        _events.save(
-            new TestEvent(TestResult.POSITIVE, site.getDefaultDeviceSpecimen(), hoya, site, order));
+    order.setResult(_diseaseService.covid(), TestResult.POSITIVE);
+    TestEvent ev = _events.save(new TestEvent(order));
     assertNotNull(ev);
     order.setTestEventRef(ev);
     _repo.save(order);
@@ -180,12 +181,10 @@ class TestOrderRepositoryTest extends BaseRepositoryTest {
     TestOrder order1 = new TestOrder(patient0, site);
     _repo.save(order1);
     flush();
-    TestEvent didit =
-        _events.save(
-            new TestEvent(
-                TestResult.NEGATIVE, site.getDefaultDeviceSpecimen(), patient0, site, order1));
+    order1.setResult(_diseaseService.covid(), TestResult.NEGATIVE);
+    TestEvent didit = _events.save(new TestEvent(order1));
     order1.setTestEventRef(didit);
-    order1.setResult(didit.getResult());
+    order1.setResult(_diseaseService.covid(), didit.getResult());
     order1.markComplete();
     _repo.save(order1);
     flush();
