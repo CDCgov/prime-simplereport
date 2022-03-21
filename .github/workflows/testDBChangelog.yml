@@ -1,0 +1,45 @@
+name: Test Liquibase rollbacks
+
+# Run this on pushes to any branch that changes a Liquibase changelog
+on:
+  workflow_dispatch:
+  pull_request:
+    branches:
+      - "**"
+    paths:
+      - backend/src/main/resources/db/changelog/db.changelog-master.yaml
+  push:
+    branches:
+      - main
+    paths:
+      - backend/src/main/resources/db/changelog/db.changelog-master.yaml
+
+env:
+  JAVA_VERSION: 11
+
+defaults:
+  run:
+    working-directory: backend
+
+jobs:
+  test-db-rollback:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v2
+      - name: Set up JDK ${{env.JAVA_VERSION}}
+        uses: actions/setup-java@v1
+        with:
+          java-version: ${{env.JAVA_VERSION}}
+      - name: Cache Java Dependencies
+        uses: actions/cache@v2
+        with:
+          path: |
+            ~/.gradle/caches
+            ~/.gradle/wrapper
+          key: gradle-${{ hashFiles('*.gradle', 'gradle/dependency-locks/*') }}
+      - name: Start DB
+        run: touch ../.env && docker compose -f ../docker-compose.yml up -d db
+      - name: Run forward migrations
+        run: ./gradlew liquibaseUpdate
+      - name: Test rolling back all migrations
+        run: ./gradlew liquibaseRollbackCount -PliquibaseCommandValue=9999
