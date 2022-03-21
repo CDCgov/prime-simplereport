@@ -17,6 +17,7 @@ describe("ManageDeviceTypeForm", () => {
           { label: "eye", value: "456" },
           { label: "mouth", value: "789" },
         ]}
+        supportedDiseaseOptions={[{ label: "COVID-19", value: "123" }]}
         devices={[
           {
             internalId: "abc1",
