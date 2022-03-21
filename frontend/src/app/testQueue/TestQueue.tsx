@@ -107,7 +107,7 @@ interface Props {
   activeFacilityId: string;
 }
 
-interface QueueItemData extends AoEAnswers {
+export interface QueueItemData extends AoEAnswers {
   internalId: string;
   dateAdded: string;
   deviceType: {
