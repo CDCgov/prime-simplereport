@@ -2,7 +2,7 @@
   "id": "620031b5-0665-4d54-8427-7bf02e0f9827",
   "name": "api_v1_groups",
   "request": {
-    "urlPattern": "/api/v1/groups\\?q=SR-DEV-TENANT%3ACA-Beach-Camp-.*",
+    "urlPattern": "/api/v1/groups\\?q=SR-DEV-TENANT%3ACA-.*",
     "method": "GET"
   },
   "response": {

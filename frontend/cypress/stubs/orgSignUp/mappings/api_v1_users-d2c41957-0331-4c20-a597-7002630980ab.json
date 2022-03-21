@@ -5,14 +5,14 @@
     "url" : "/api/v1/users?activate=false",
     "method" : "POST",
     "bodyPatterns" : [ {
-      "equalToJson" : "{\"profile\":{\"firstName\":\"Greg\",\"lastName\":\"McTester\",\"login\":\"greg@mailinator.com\",\"email\":\"greg@mailinator.com\"},\"groupIds\":[\"00g228nyd7uuGaG1L1d7\",\"00g228nrj9QDJ10y61d7\"]}",
+      "equalToJson" : "{\"profile\":{\"firstName\":\"Greg\",\"lastName\":\"McTester\",\"login\":\"${json-unit.any-string}\",\"email\":\"${json-unit.any-string}\"},\"groupIds\":[\"00g228nyd7uuGaG1L1d7\",\"00g228nrj9QDJ10y61d7\"]}",
       "ignoreArrayOrder" : true,
       "ignoreExtraElements" : true
     } ]
   },
   "response" : {
     "status" : 200,
-    "body" : "{\"id\":\"00u228n97qLeXJKqT1d7\",\"status\":\"STAGED\",\"created\":\"2021-12-08T23:30:52.000Z\",\"activated\":null,\"statusChanged\":null,\"lastLogin\":null,\"lastUpdated\":\"2021-12-08T23:30:52.000Z\",\"passwordChanged\":null,\"type\":{\"id\":\"oty5z62va2Mf1H5jb1d6\"},\"profile\":{\"firstName\":\"Greg\",\"lastName\":\"McTester\",\"mobilePhone\":null,\"secondEmail\":null,\"login\":\"greg@mailinator.com\",\"email\":\"greg@mailinator.com\"},\"credentials\":{\"provider\":{\"type\":\"OKTA\",\"name\":\"OKTA\"}},\"_links\":{\"schema\":{\"href\":\"https://hhs-prime.oktapreview.com/api/v1/meta/schemas/user/osc5z62va2Mf1H5jb1d6\"},\"activate\":{\"href\":\"https://hhs-prime.oktapreview.com/api/v1/users/00u228n97qLeXJKqT1d7/lifecycle/activate\",\"method\":\"POST\"},\"self\":{\"href\":\"https://hhs-prime.oktapreview.com/api/v1/users/00u228n97qLeXJKqT1d7\"},\"type\":{\"href\":\"https://hhs-prime.oktapreview.com/api/v1/meta/types/user/oty5z62va2Mf1H5jb1d6\"}}}",
+    "body" : "{\"id\":\"00u228n97qLeXJKqT1d7\",\"status\":\"STAGED\",\"created\":\"2021-12-08T23:30:52.000Z\",\"activated\":null,\"statusChanged\":null,\"lastLogin\":null,\"lastUpdated\":\"2021-12-08T23:30:52.000Z\",\"passwordChanged\":null,\"type\":{\"id\":\"oty5z62va2Mf1H5jb1d6\"},\"profile\":{\"firstName\":\"Greg\",\"lastName\":\"McTester\",\"mobilePhone\":null,\"secondEmail\":null,\"login\":\"${json-unit.any-string}\",\"email\":\"${json-unit.any-string}\"},\"credentials\":{\"provider\":{\"type\":\"OKTA\",\"name\":\"OKTA\"}},\"_links\":{\"schema\":{\"href\":\"https://hhs-prime.oktapreview.com/api/v1/meta/schemas/user/osc5z62va2Mf1H5jb1d6\"},\"activate\":{\"href\":\"https://hhs-prime.oktapreview.com/api/v1/users/00u228n97qLeXJKqT1d7/lifecycle/activate\",\"method\":\"POST\"},\"self\":{\"href\":\"https://hhs-prime.oktapreview.com/api/v1/users/00u228n97qLeXJKqT1d7\"},\"type\":{\"href\":\"https://hhs-prime.oktapreview.com/api/v1/meta/types/user/oty5z62va2Mf1H5jb1d6\"}}}",
     "headers" : {
       "Date" : "Wed, 08 Dec 2021 23:30:52 GMT",
       "Content-Type" : "application/json",

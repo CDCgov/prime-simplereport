@@ -3,7 +3,7 @@
   "name": "api_v1_groups",
   "priority": 2,
   "request": {
-    "urlPattern": "/api/v1/groups\\?q=SR-DEV-TENANT%3ACA-Beach-Camp-.*%3AADMIN",
+    "urlPattern": "/api/v1/groups\\?q=SR-DEV-TENANT%3ACA-.*%3AADMIN",
     "method": "GET"
   },
   "response": {

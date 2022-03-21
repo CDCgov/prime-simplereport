@@ -12,6 +12,7 @@ OPTIONS:
    -r   Environment to run against
    -c   Deployed commit hash
    -a   Backend url path
+   -p   Public url
    -f   frontend url path
    -o   Open Cypress for interactive testing
    -b   Set the browser to test against: https://docs.cypress.io/guides/guides/launching-browsers#Browsers
@@ -20,15 +21,13 @@ EOF
 
 SPEC_PATH="cypress/integration/**"
 TEST_ENV="http://localhost.simplereport.gov"
-if [ -d ../.git ]; then
-  CHECK_COMMIT="$(git rev-parse HEAD)"
-fi
+CHECK_COMMIT="$(git rev-parse HEAD)"
 BACKEND_URL_PATH="/api/health"
 FRONTEND_URL_PATH="/health/commit"
 RUN_OPEN=false
 BROWSER="firefox"
 
-while getopts "hs:r:c:a:f:o:b:" OPTION; do
+while getopts "hs:r:c:a:p:f:o:b:" OPTION; do
   case $OPTION in
   h)
     usage
@@ -45,6 +44,9 @@ while getopts "hs:r:c:a:f:o:b:" OPTION; do
     ;;
   a)
     BACKEND_URL_PATH=$OPTARG
+    ;;
+  p)
+    PUBLIC_URL=$OPTARG
     ;;
   f)
     FRONTEND_URL_PATH=$OPTARG

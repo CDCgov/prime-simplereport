@@ -107,15 +107,17 @@ jobs:
         with:
           client-tarball: client.tgz
           deploy-env: ${{env.DEPLOY_ENV}}
-  verify-release:
-    runs-on: ubuntu-latest
+  e2e:
     needs: [deploy]
-    defaults:
-      run:
-        working-directory: ./ops
+    runs-on: ubuntu-latest
+    env:
+      E2E_SPEC_FILES: "cypress/integration/00*,cypress/integration/01*,cypress/integration/02*,cypress/integration/03*,cypress/integration/04*,cypress/integration/05*,cypress/integration/06*"
+      CYPRESS_OKTA_USERNAME: ${{ secrets.CYPRESS_OKTA_USERNAME }}
+      CYPRESS_OKTA_PASSWORD: ${{ secrets.CYPRESS_OKTA_PASSWORD }}
+      CYPRESS_OKTA_SECRET: ${{ secrets.CYPRESS_OKTA_SECRET }}
+      CYPRESS_BASE_URL: https://stg.simplereport.gov
     steps:
-      - uses: actions/checkout@v2
-      - name: Run health checks
-        uses: ./.github/actions/health-checks
-        with:
-          deploy-env: ${{env.DEPLOY_ENV}}
+      - name: "Checkout"
+        uses: actions/checkout@v2
+      - name: Run Cypress checks against the dev remote environment
+        uses: ./.github/actions/run-e2e-checks
