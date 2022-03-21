@@ -202,12 +202,12 @@ export const DetachedManagePatients = ({
           <span>{fullName}</span>
         );
 
-      const patientsInQueue = queueData.queue.map(
+      const patientsInQueue = queueData?.queue.map(
         (q: QueueItemData) => q.patient.internalId
       );
 
       const canAddToTestQueue =
-        patientsInQueue.indexOf(patient.internalId) === -1;
+        patientsInQueue?.indexOf(patient.internalId) === -1;
 
       let actionItems = [];
 
