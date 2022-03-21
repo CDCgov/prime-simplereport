@@ -22,13 +22,13 @@ import { SEARCH_DEBOUNCE_TIME } from "../testQueue/constants";
 import Button from "../commonComponents/Button/Button";
 import SearchInput from "../testQueue/addToQueue/SearchInput";
 import { TestResult as TestResultType } from "../../app/testQueue/QueueItem";
+import { StartTestProps } from "../testQueue/addToQueue/AddToQueueSearch";
+import { QueueItemData, queueQuery } from "../testQueue/TestQueue";
 
 import PatientUpload from "./PatientUpload";
 import ArchivePersonModal from "./ArchivePersonModal";
 
 import "./ManagePatients.scss";
-import { StartTestProps } from "../testQueue/addToQueue/AddToQueueSearch";
-import { QueueItemData, queueQuery } from "../testQueue/TestQueue";
 
 export const patientsCountQuery = gql`
   query GetPatientsCountByFacility(
