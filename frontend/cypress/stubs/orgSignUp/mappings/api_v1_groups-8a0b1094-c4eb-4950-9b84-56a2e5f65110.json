@@ -6,7 +6,7 @@
     "method": "POST",
     "bodyPatterns": [
       {
-        "matchesJsonPath": "$.profile[?(@.name =~ /SR-DEV-TENANT:CA-Beach-Camp.*/i)]"
+        "matchesJsonPath": "$.profile[?(@.name =~ /SR-DEV-TENANT:CA-.*/i)]"
       }
     ]
   },

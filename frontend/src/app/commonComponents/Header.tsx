@@ -382,6 +382,7 @@ const Header: React.FC<{}> = () => {
                   className={({ isActive }) =>
                     isActive ? "active-nav-item" : ""
                   }
+                  id="settings-nav-link"
                   style={({ isActive }) => ({ color: isActive ? "white" : "" })}
                 >
                   <FontAwesomeIcon icon={"cog"} />

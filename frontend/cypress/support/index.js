@@ -22,6 +22,10 @@ import "./commands";
 const faker = require("faker");
 const dayjs = require("dayjs");
 
+export const testNumber = () => {
+  return Math.round(Date.now() / 1000);
+};
+
 const getDobFormat = () => {
   return "YYYY-MM-DD";
 };
@@ -41,6 +45,24 @@ export const generatePatient = () => {
   patient.zip = "20503";
   patient.studentId = faker.datatype.uuid();
   return patient;
+};
+
+export const generateFacility = () => {
+  const facility = {};
+  facility.name = `${testNumber()}-${faker.company.companyName()}`;
+  return facility;
+};
+
+export const generateOrganization = () => {
+  const organization = {};
+  organization.name = `${testNumber()}-${faker.company.companyName()}`;
+  return organization;
+};
+
+export const generateUser = () => {
+  const user = {};
+  user.email = `${testNumber()}-${faker.internet.email()}`;
+  return user;
 };
 
 // Don't fail tests on redirect to Okta for login

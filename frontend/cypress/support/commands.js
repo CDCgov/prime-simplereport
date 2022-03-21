@@ -93,3 +93,17 @@ Cypress.Commands.add("restartWiremock", (stubDir) => {
   cy.task("stopWiremock");
   cy.task("startWiremock", { stubDir });
 });
+
+Cypress.Commands.add("selectFacility", () => {
+  cy.get("body").then(($body) => {
+    if (
+      $body
+        .text()
+        .includes(
+          "Please select the testing facility where you are working today."
+        )
+    ) {
+      cy.get(".usa-card__body").last().click();
+    }
+  });
+});
