@@ -576,28 +576,21 @@ type Mutation {
     ): Patient @requiredPermissions(allOf: ["EDIT_PATIENT"])
     setPatientIsDeleted(id: ID!, deleted: Boolean!): Patient
     @requiredPermissions(allOf: ["ARCHIVE_PATIENT"])
-    addTestResultNew(
-        deviceId: String!
-        deviceSpecimenType: ID
-        result: String!
-        patientId: ID!
-        dateTested: DateTime
-    ): AddTestResultResponse @requiredPermissions(allOf: ["SUBMIT_TEST"])
-    addTestResult(
-        deviceId: String!
-        deviceSpecimenType: ID
-        result: String!
-        patientId: ID!
-        dateTested: DateTime
-    ): TestOrder @requiredPermissions(allOf: ["SUBMIT_TEST"])
-    editQueueItem(
-        id: ID!
-        deviceId: String
-        deviceSpecimenType: ID
-        result: String
-        dateTested: DateTime
-    ): TestOrder @requiredPermissions(allOf: ["UPDATE_TEST"])
-    correctTestMarkAsError(id: ID!, reason: String): TestResult
+  addTestResultNew(
+    deviceId: String!
+    deviceSpecimenType: ID
+    result: String!
+    patientId: ID!
+    dateTested: DateTime
+  ): AddTestResultResponse @requiredPermissions(allOf: ["SUBMIT_TEST"])
+  editQueueItem(
+    id: ID!
+    deviceId: String
+    deviceSpecimenType: ID
+    result: String
+    dateTested: DateTime
+  ): TestOrder @requiredPermissions(allOf: ["UPDATE_TEST"])
+  correctTestMarkAsError(id: ID!, reason: String): TestResult
     @requiredPermissions(allOf: ["UPDATE_TEST"])
     addPatientToQueue(
         facilityId: ID!
