@@ -10,8 +10,12 @@ import { setTestResult, updateOrganization } from "../../app/store";
 import { PxpApi } from "../PxpApiService";
 import Alert from "../../app/commonComponents/Alert";
 import { DateInput } from "../../app/commonComponents/DateInput";
-import { dateFromStrings } from "../../app/utils/date";
+import {
+  dateFromStrings,
+  formatDateWithTimeOption,
+} from "../../app/utils/date";
 import { LoadingCard } from "../../app/commonComponents/LoadingCard/LoadingCard";
+import { formatPhoneNumber } from "../../app/utils/text";
 
 const DOB = () => {
   const { t } = useTranslation();
@@ -19,9 +23,11 @@ const DOB = () => {
   const plid = useSelector((state: any) => state.plid);
 
   useEffect(() => {
-    PxpApi.getObfuscatedPatientName(plid)
-      .then((name) => {
-        setPatientObfuscatedName(name);
+    PxpApi.getTestResultUnauthenticated(plid)
+      .then(({ patient, facility, expiresAt }) => {
+        setPatientObfuscatedName(patient.firstName + " " + patient.lastName);
+        setFacility(facility);
+        setExpiresAt(expiresAt);
         setIsLoading(false);
       })
       .catch(() => {
@@ -31,6 +37,11 @@ const DOB = () => {
 
   const dispatch = useDispatch();
   const [patientObfuscatedName, setPatientObfuscatedName] = useState("");
+  const [facility, setFacility] = useState<Pick<
+    Facility,
+    "name" | "phone"
+  > | null>(null);
+  const [expiresAt, setExpiresAt] = useState<Date | null>(null);
   const [isLoading, setIsLoading] = useState(true);
   const [birthMonth, setBirthMonth] = useState("");
   const [birthDay, setBirthDay] = useState("");
@@ -159,13 +170,21 @@ const DOB = () => {
       <main>
         <div className="grid-container maxw-tablet">
           <h1 className="font-heading-lg margin-top-3">Verify date of birth</h1>
-          <Trans t={t} i18nKey="testResult.dob.enterDOB2">
+          <Trans t={t} parent="p" i18nKey="testResult.dob.enterDOB2">
             <span className="text-bold">
               {{ personName: patientObfuscatedName }}
             </span>
           </Trans>
-          <p className="usa-hint">
-            <em>{t("testResult.dob.linkExpirationNotice")}</em>
+          <p>
+            <Trans t={t} i18nKey="testResult.dob.linkExpirationNotice">
+              {{ expirationDate: formatDateWithTimeOption(expiresAt, true) }}
+            </Trans>
+            <Trans t={t} i18nKey="testResult.dob.testingFacilityContact">
+              {{
+                facilityName: facility?.name,
+                facilityPhone: formatPhoneNumber(facility?.phone as string),
+              }}
+            </Trans>
           </p>
           <DateInput
             className="width-mobile"
