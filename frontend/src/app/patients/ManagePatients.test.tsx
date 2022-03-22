@@ -6,8 +6,16 @@ import {
 } from "@testing-library/react";
 import userEvent from "@testing-library/user-event";
 import { Provider } from "react-redux";
-import { MemoryRouter, Route, Routes, useParams } from "react-router-dom";
+import {
+  MemoryRouter,
+  Route,
+  Routes,
+  useLocation,
+  useParams,
+} from "react-router-dom";
 import createMockStore from "redux-mock-store";
+
+import { queueQuery } from "../testQueue/TestQueue";
 
 import ManagePatients, {
   patientQuery,
@@ -15,6 +23,13 @@ import ManagePatients, {
 } from "./ManagePatients";
 import ManagePatientsContainer from "./ManagePatientsContainer";
 
+interface LocationOptions {
+  search: string;
+  pathname: string;
+  state: {
+    patientId: string;
+  };
+}
 const PageNumberContainer = () => {
   const { pageNumber } = useParams();
   return (
@@ -28,13 +43,24 @@ const PageNumberContainer = () => {
   );
 };
 
+const Queue = () => {
+  const location = useLocation() as LocationOptions;
+
+  return (
+    <p>
+      Testing Queue! {location.search} {location.state.patientId}
+    </p>
+  );
+};
+
 const TestContainer = () => (
   <MockedProvider mocks={mocks}>
     <MemoryRouter initialEntries={["/patients/1"]}>
       <Routes>
-        <Route path="patients">
+        <Route path="/patients">
           <Route path=":pageNumber" element={<PageNumberContainer />} />
         </Route>
+        <Route path={"/queue"} element={<Queue />} />
       </Routes>
     </MemoryRouter>
   </MockedProvider>
@@ -69,6 +95,32 @@ describe("ManagePatients", () => {
     userEvent.click(page2);
     expect(await screen.findByText(patients[20].lastName, { exact: false }));
   });
+
+  describe("starting a test from the patient list", () => {
+    it("can start test if patient not in test queue", async () => {
+      render(<TestContainer />);
+      expect(
+        await screen.findByText(patients[0].lastName, { exact: false })
+      ).toBeInTheDocument();
+      const menu = (await screen.findAllByText("More actions"))[0];
+      userEvent.click(menu);
+
+      expect(await screen.findByText("Start test")).toBeInTheDocument();
+    });
+
+    it("can't start test for patient in test queue", async () => {
+      render(<TestContainer />);
+
+      expect(
+        await screen.findByText(patients[1].lastName, { exact: false })
+      ).toBeInTheDocument();
+      const menu = (await screen.findAllByText("More actions"))[1];
+      userEvent.click(menu);
+
+      expect(screen.queryByText("Start test")).not.toBeInTheDocument();
+    });
+  });
+
   describe("ManagePatientsContainer", () => {
     it("Doesn't render if no facility is selected", async () => {
       render(
@@ -412,6 +464,25 @@ const mocks: MockedProviderProps["mocks"] = [
     },
     result: {
       data: { patients: patients.slice(1) },
+    },
+  },
+  {
+    request: {
+      query: queueQuery,
+      variables: {
+        facilityId: "a1",
+      },
+    },
+    result: {
+      data: {
+        queue: [
+          {
+            patient: {
+              internalId: patients[1].internalId,
+            },
+          },
+        ],
+      },
     },
   },
 ];
