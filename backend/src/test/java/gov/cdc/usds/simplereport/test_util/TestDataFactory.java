@@ -14,6 +14,7 @@ import gov.cdc.usds.simplereport.db.model.Person_;
 import gov.cdc.usds.simplereport.db.model.PhoneNumber;
 import gov.cdc.usds.simplereport.db.model.Provider;
 import gov.cdc.usds.simplereport.db.model.SpecimenType;
+import gov.cdc.usds.simplereport.db.model.SupportedDisease;
 import gov.cdc.usds.simplereport.db.model.TestEvent;
 import gov.cdc.usds.simplereport.db.model.TestOrder;
 import gov.cdc.usds.simplereport.db.model.auxiliary.AskOnEntrySurvey;
@@ -38,6 +39,7 @@ import gov.cdc.usds.simplereport.db.repository.PersonRepository;
 import gov.cdc.usds.simplereport.db.repository.PhoneNumberRepository;
 import gov.cdc.usds.simplereport.db.repository.ProviderRepository;
 import gov.cdc.usds.simplereport.db.repository.SpecimenTypeRepository;
+import gov.cdc.usds.simplereport.db.repository.SupportedDiseaseRepository;
 import gov.cdc.usds.simplereport.db.repository.TestEventRepository;
 import gov.cdc.usds.simplereport.db.repository.TestOrderRepository;
 import gov.cdc.usds.simplereport.idp.repository.DemoOktaRepository;
@@ -81,6 +83,7 @@ public class TestDataFactory {
   @Autowired private PatientRegistrationLinkRepository _patientRegistrationLinkRepository;
   @Autowired private SpecimenTypeRepository _specimenRepo;
   @Autowired private DeviceSpecimenTypeRepository _deviceSpecimenRepo;
+  @Autowired private SupportedDiseaseRepository _supportedDiseaseRepo;
   @Autowired private DemoOktaRepository _oktaRepo;
 
   public Organization createValidOrg(
@@ -316,18 +319,36 @@ public class TestDataFactory {
   }
 
   public TestOrder createTestOrder(Person p, Facility f) {
-    AskOnEntrySurvey survey = AskOnEntrySurvey.builder().symptoms(Collections.emptyMap()).build();
-    return createTestOrder(p, f, survey);
+    return createTestOrder(p, f, createEmptySurvey());
   }
 
   public TestOrder createTestOrder(Person p, Facility f, AskOnEntrySurvey s) {
-    PatientAnswers answers = new PatientAnswers(s);
-    _patientAnswerRepo.save(answers);
     TestOrder o = new TestOrder(p, f);
-    o.setAskOnEntrySurvey(answers);
+    o.setAskOnEntrySurvey(savePatientAnswers(s));
     var savedOrder = _testOrderRepo.save(o);
     _patientLinkRepository.save(new PatientLink(savedOrder));
     return savedOrder;
+  }
+
+  public TestOrder createCompletedTestOrder(Person patient, Facility facility, TestResult result) {
+    TestOrder order = new TestOrder(patient, facility);
+    order.setAskOnEntrySurvey(savePatientAnswers(createEmptySurvey()));
+    order.setDeviceSpecimen(facility.getDefaultDeviceSpecimen());
+    order.setResult(result);
+    order.markComplete();
+    TestOrder savedOrder = _testOrderRepo.save(order);
+    _patientLinkRepository.save(new PatientLink(savedOrder));
+    return order;
+  }
+
+  private AskOnEntrySurvey createEmptySurvey() {
+    return AskOnEntrySurvey.builder().symptoms(Collections.emptyMap()).build();
+  }
+
+  private PatientAnswers savePatientAnswers(AskOnEntrySurvey survey) {
+    PatientAnswers answers = new PatientAnswers(survey);
+    _patientAnswerRepo.save(answers);
+    return answers;
   }
 
   public TestEvent createTestEvent(Person p, Facility f) {
@@ -448,6 +469,10 @@ public class TestDataFactory {
 
   public DeviceSpecimenType createDeviceSpecimen(DeviceType device, SpecimenType specimen) {
     return _deviceSpecimenRepo.save(new DeviceSpecimenType(device, specimen));
+  }
+
+  public SupportedDisease createSupportedDisease(String name, String loinc) {
+    return _supportedDiseaseRepo.save(new SupportedDisease(name, loinc));
   }
 
   public StreetAddress getAddress() {
