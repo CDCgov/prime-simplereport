@@ -79,6 +79,18 @@ export type VerifyV2Response = {
   };
 };
 
+export type TestResultUnauthenticated = {
+  patient: {
+    firstName: string;
+    lastName: string;
+  };
+  facility: {
+    name: string;
+    phone: string;
+  };
+  expiresAt: Date;
+};
+
 export class PxpApi {
   static validateDateOfBirth(
     patientLinkId: string,
@@ -126,6 +138,12 @@ export class PxpApi {
     patientLink: string
   ): Promise<string> => {
     return api.getRequest(`/patient-name?patientLink=${patientLink}`);
+  };
+
+  static getTestResultUnauthenticated = async (
+    patientLink: string
+  ): Promise<TestResultUnauthenticated> => {
+    return api.request(`/entity?patientLink=${patientLink}`, null, "GET");
   };
 
   static selfRegister = async (person: SelfRegistrationData): Promise<void> => {
