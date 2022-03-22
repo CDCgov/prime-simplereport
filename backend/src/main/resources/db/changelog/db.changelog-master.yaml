@@ -1003,7 +1003,7 @@ databaseChangeLog:
             columns:
               - column:
                   name: clia_number
-                  type: text # irony
+                  type: text
                   remarks: The CLIA number for the facility that is ordering (and presumably also conducting) the tests.
                   constraints:
                     nullable: false
@@ -1017,7 +1017,6 @@ databaseChangeLog:
               - column:
                   name: ordering_provider_id
                   type: uuid
-                  remarks: at what point does this blow up on me?
                   constraints:
                     nullable: false
                     foreignKeyName: fk__organization__ordering_provider
