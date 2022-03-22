@@ -1,7 +1,6 @@
 package gov.cdc.usds.simplereport.db.model;
 
 import gov.cdc.usds.simplereport.api.Translators;
-import gov.cdc.usds.simplereport.db.model.auxiliary.DiseaseResult;
 import gov.cdc.usds.simplereport.db.model.auxiliary.OrderStatus;
 import gov.cdc.usds.simplereport.db.model.auxiliary.TestCorrectionStatus;
 import gov.cdc.usds.simplereport.db.model.auxiliary.TestResult;
@@ -10,6 +9,7 @@ import java.util.Date;
 import java.util.Optional;
 import java.util.Set;
 import java.util.UUID;
+import javax.persistence.CascadeType;
 import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.EnumType;
@@ -47,7 +47,7 @@ public class TestOrder extends BaseTestInfo {
   @JoinColumn(name = "test_event_id")
   private TestEvent testEvent;
 
-  @OneToMany(mappedBy = "testOrder", fetch = FetchType.LAZY)
+  @OneToMany(mappedBy = "testOrder", fetch = FetchType.LAZY, cascade = CascadeType.ALL)
   private Set<Result> results;
 
   protected TestOrder() {
@@ -94,25 +94,23 @@ public class TestOrder extends BaseTestInfo {
   }
 
   public Set<Result> getResultSet() {
-    return this.results;
+    return results;
   }
 
-  public void addResult(DiseaseResult result) {
-    results.add(new Result(this, result));
+  public Set<Result> getResults() {
+    return results;
   }
 
   public void addResult(Result result) {
     results.add(result);
   }
 
-  // You can't inject a service class into an entity, or this would default to covid using
-  // DiseaseService
-  //  public void setResult(DiseaseResult result) {
-  //    results.add(new Result(this, result));
-  //  }
+  public void setResult(Result result) {
+    results.add(result);
+  }
 
-  public void setResult(SupportedDisease disease, TestResult result) {
-    results.add(new Result(this, disease, result));
+  public void setResult(Set<Result> results) {
+    this.results = results;
   }
 
   public void markComplete() {

@@ -65,6 +65,10 @@ public class TestEvent extends BaseTestInfo {
       throw new IllegalArgumentException("TestOrder must contain a result");
     }
 
+    // well you know the good news is that this works perfectly well
+    // which does kind of lead me to believe that there's some kind of threading weirdness happening
+    // because when debugging the result is set on the testOrder just fine
+    // it's only when we try to initially read it out that failures crop up
     order.getResultSet().forEach(result -> result.setTestEvent(this));
 
     // store a link, and *also* store the object as JSON

@@ -17,6 +17,7 @@ import gov.cdc.usds.simplereport.db.model.PatientAnswers;
 import gov.cdc.usds.simplereport.db.model.PatientLink;
 import gov.cdc.usds.simplereport.db.model.Person;
 import gov.cdc.usds.simplereport.db.model.Person_;
+import gov.cdc.usds.simplereport.db.model.Result;
 import gov.cdc.usds.simplereport.db.model.TestEvent;
 import gov.cdc.usds.simplereport.db.model.TestEvent_;
 import gov.cdc.usds.simplereport.db.model.TestOrder;
@@ -29,6 +30,7 @@ import gov.cdc.usds.simplereport.db.model.auxiliary.TestResultDeliveryPreference
 import gov.cdc.usds.simplereport.db.model.auxiliary.TestResultWithCount;
 import gov.cdc.usds.simplereport.db.repository.AdvisoryLockManager;
 import gov.cdc.usds.simplereport.db.repository.PatientAnswersRepository;
+import gov.cdc.usds.simplereport.db.repository.ResultRepository;
 import gov.cdc.usds.simplereport.db.repository.TestEventRepository;
 import gov.cdc.usds.simplereport.db.repository.TestOrderRepository;
 import java.time.LocalDate;
@@ -69,6 +71,7 @@ public class TestOrderService {
   private final FacilityDeviceTypeService _facilityDeviceTypeService;
   private final TestResultsDeliveryService testResultsDeliveryService;
   private final DiseaseService _diseaseService;
+  private final ResultRepository _resultRepo;
 
   public static final int DEFAULT_PAGINATION_PAGEOFFSET = 0;
   public static final int DEFAULT_PAGINATION_PAGESIZE = 5000;
@@ -226,7 +229,20 @@ public class TestOrderService {
         }
       }
 
-      order.setResult(result == null ? null : _diseaseService.covid(), TestResult.valueOf(result));
+      if (order.getResults().isEmpty()) {
+        Result resultObj = new Result(order, _diseaseService.covid(), TestResult.valueOf(result));
+        order.setResult(resultObj);
+      } else {
+        // This is one way to do this
+        order.getResults().stream()
+            .filter(r -> r.getDisease().equals(_diseaseService.covid()))
+            .forEach(r -> r.setResult(TestResult.valueOf(result)));
+        // This is the other way
+        // Result resultObj = _resultRepo.findResultByTestOrderAndDisease(order,
+        // _diseaseService.covid());
+        // resultObj.setResult(TestResult.valueOf(result));
+        // not sure if one is more efficient?
+      }
 
       order.setDateTestedBackdate(dateTested);
 
@@ -236,6 +252,10 @@ public class TestOrderService {
     }
   }
 
+  // We should be able to take the TestResult out of this method signature
+  // The order of operations is always editQueueItem -> addTestResult (this is now enforced in the
+  // UI)
+  // So by the time we get to this method, the testOrder has a source of truth about the result
   @AuthorizationConfiguration.RequirePermissionSubmitTestForPatient
   @Transactional(noRollbackFor = {TwilioException.class, ApiException.class})
   public AddTestResultResponse addTestResult(
@@ -250,7 +270,17 @@ public class TestOrderService {
     lockOrder(order.getInternalId());
     try {
       order.setDeviceSpecimen(deviceSpecimen);
-      order.setResult(_diseaseService.covid(), result);
+
+      //      Optional<Result> optionalResultEntity = order.getResults().stream().findFirst();
+      //      Result resultEntity;
+      //      if (optionalResultEntity.isPresent()) {
+      //        resultEntity = optionalResultEntity.get();
+      //        resultEntity.setResult(result);
+      //      } else {
+      //        resultEntity = new Result(order, _diseaseService.covid(), result);
+      //        order.setResult(resultEntity);
+      //      }
+
       order.setDateTestedBackdate(dateTested);
       order.markComplete();
 

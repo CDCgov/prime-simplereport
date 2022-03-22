@@ -13,6 +13,7 @@ import gov.cdc.usds.simplereport.db.model.Person;
 import gov.cdc.usds.simplereport.db.model.Person_;
 import gov.cdc.usds.simplereport.db.model.PhoneNumber;
 import gov.cdc.usds.simplereport.db.model.Provider;
+import gov.cdc.usds.simplereport.db.model.Result;
 import gov.cdc.usds.simplereport.db.model.SpecimenType;
 import gov.cdc.usds.simplereport.db.model.SupportedDisease;
 import gov.cdc.usds.simplereport.db.model.TestEvent;
@@ -336,7 +337,8 @@ public class TestDataFactory {
     TestOrder order = new TestOrder(patient, facility);
     order.setAskOnEntrySurvey(savePatientAnswers(createEmptySurvey()));
     order.setDeviceSpecimen(facility.getDefaultDeviceSpecimen());
-    order.setResult(_diseaseService.covid(), result);
+    Result resultEntity = new Result(order, _diseaseService.covid(), result);
+    order.setResult(resultEntity);
     order.markComplete();
     TestOrder savedOrder = _testOrderRepo.save(order);
     _patientLinkRepository.save(new PatientLink(savedOrder));
@@ -360,7 +362,8 @@ public class TestDataFactory {
   public TestEvent createTestEvent(Person p, Facility f, AskOnEntrySurvey s, TestResult r, Date d) {
     TestOrder o = createTestOrder(p, f, s);
     o.setDateTestedBackdate(d);
-    o.setResult(_diseaseService.covid(), r);
+    Result result = new Result(o, _diseaseService.covid(), r);
+    o.setResult(result);
 
     TestEvent e = _testEventRepo.save(new TestEvent(o));
     o.setTestEventRef(e);
@@ -375,7 +378,8 @@ public class TestDataFactory {
 
   public TestEvent createTestEvent(Person p, Facility f, TestResult r, Boolean hasPriorTests) {
     TestOrder o = createTestOrder(p, f);
-    o.setResult(_diseaseService.covid(), r);
+    Result result = new Result(o, _diseaseService.covid(), r);
+    o.setResult(result);
     o = _testOrderRepo.save(o);
 
     TestEvent e = _testEventRepo.save(new TestEvent(o, hasPriorTests));
@@ -391,7 +395,8 @@ public class TestDataFactory {
   }
 
   public TestEvent doTest(TestOrder order, TestResult result) {
-    order.setResult(_diseaseService.covid(), result);
+    Result resultEntity = new Result(order, _diseaseService.covid(), result);
+    order.setResult(resultEntity);
     TestEvent event = _testEventRepo.save(new TestEvent(order));
     order.setTestEventRef(event);
     order.markComplete();
