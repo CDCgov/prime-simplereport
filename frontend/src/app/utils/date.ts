@@ -18,7 +18,7 @@ export const formatDateLong = (date: string | undefined) => {
 };
 
 export const formatDateWithTimeOption = (
-  date: string | undefined,
+  date: string | Date | null | undefined,
   withTime?: boolean
 ) => {
   const dateFormat = "MM/DD/yyyy";
