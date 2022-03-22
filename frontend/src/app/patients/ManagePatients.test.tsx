@@ -2,6 +2,7 @@ import { MockedProvider, MockedProviderProps } from "@apollo/client/testing";
 import {
   render,
   screen,
+  waitFor,
   waitForElementToBeRemoved,
 } from "@testing-library/react";
 import userEvent from "@testing-library/user-event";
@@ -105,7 +106,16 @@ describe("ManagePatients", () => {
       const menu = (await screen.findAllByText("More actions"))[0];
       userEvent.click(menu);
 
-      expect(await screen.findByText("Start test")).toBeInTheDocument();
+      const startTestButton = await screen.findByText("Start test");
+      expect(startTestButton).toBeInTheDocument();
+
+      userEvent.click(startTestButton);
+
+      await waitFor(() => {
+        expect(
+          screen.getByText("Testing Queue!", { exact: false })
+        ).toBeInTheDocument();
+      });
     });
 
     it("can't start test for patient in test queue", async () => {
