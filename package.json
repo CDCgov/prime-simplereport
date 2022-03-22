@@ -6,7 +6,11 @@
     "@arkweid/lefthook": "^0.7.7"
   },
   "scripts": {
-    "e2e": "cd frontend; yarn e2e; cd ..",
+    "e2e": "docker-compose --env-file .env -f docker-compose.yml -f docker-compose.cypress.yml up --abort-on-container-exit --exit-code-from cypress",
+    "e2e:local": "CYPRESS_SKIP_OKTA=true cypress open --config-file ./cypress/cypress.json --config baseUrl=http://localhost:3000",
+    "e2e:local:okta": "cypress open --config-file ./cypress/cypress.json --config baseUrl=http://localhost:3000",
+    "e2e:nginx": "CYPRESS_SKIP_OKTA=true cypress open --config-file ./cypress/cypress.json --config baseUrl=https://localhost.simplereport.gov/app",
+    "e2e:nginx:okta": "cypress open --config-file ./cypress/cypress.json --config baseUrl=https://localhost.simplereport.gov/app",
     "spotless": "cd backend; ./gradlew spotlessApply; cd ..",
     "start": "./start.sh",
     "locust": "./start.sh -l",

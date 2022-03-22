@@ -32,6 +32,9 @@ import { authenticator } from "otplib";
 const username = Cypress.env("OKTA_USERNAME");
 const password = Cypress.env("OKTA_PASSWORD");
 const secret = Cypress.env("OKTA_SECRET");
+const scope = Cypress.env("OKTA_SCOPE") || "simple_report_dev";
+const clientId = Cypress.env("OKTA_CLIENT_ID") || "0oa1k0163nAwfVxNW1d7";
+const redirectUri = Cypress.env("OKTA_REDIRECT_URI") || "https%3A%2F%2Flocalhost.simplereport.gov%2F";
 
 Cypress.Commands.add("login", () => {
   cy.task("getAuth").then(({ id_token, access_token }) => {
@@ -64,7 +67,7 @@ Cypress.Commands.add("login", () => {
           const sessionToken = response.body.sessionToken;
           cy.request(
             "GET",
-            `https://hhs-prime.oktapreview.com/oauth2/default/v1/authorize?client_id=0oa1k0163nAwfVxNW1d7&redirect_uri=https%3A%2F%2Flocalhost.simplereport.gov%2F&response_type=token%20id_token&scope=openid%20simple_report%20simple_report_dev&nonce=thisisnotsafe&state=thisisbogus&sessionToken=${sessionToken}`
+            `https://hhs-prime.oktapreview.com/oauth2/default/v1/authorize?client_id=${clientId}&redirect_uri=${redirectUri}&response_type=token%20id_token&scope=openid%20simple_report%20${scope}&nonce=thisisnotsafe&state=thisisbogus&sessionToken=${sessionToken}`
           ).then((response) => {
             const redirect = response.redirects[0];
             const idTokenRegex = new RegExp(

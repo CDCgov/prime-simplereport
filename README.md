@@ -146,44 +146,67 @@ E2E/Integration tests are available using [Cypress](https://www.cypress.io/).
 
 #### Requirements:
 
-These files required to run integration tests.
-- `frontend/.env.local`
-- `frontend/cypress/.env.e2e`
-- `/etc/hosts`
+These files required to run integration tests. Please reach out to the engineering team if you're in need of the missing credentials.
+- `.env`
 
 ```
-# frontend/cypress/.env.e2e
-REACT_APP_BASE_URL=http://localhost.simplereport.gov
-REACT_APP_BACKEND_URL=http://localhost.simplereport.gov/api
+# .env
+
+# Docker settings
+DOCKER_CLIENT_TIMEOUT=180
+COMPOSE_HTTP_TIMEOUT=180
+
+# Backend settings
+SPRING_PROFILES_ACTIVE=e2e,db-dockerized
+WIREMOCK_URL=http://cypress:8088
+SPRING_LIQUIBASE_ENABLED="true"
+OKTA_TESTING_DISABLEHTTPSCHECK="true"
+
+OKTA_API_KEY=
+OKTA_OAUTH2_CLIENT_ID=
+SMARTY_AUTH_ID=
+SMARTY_AUTH_TOKEN=
+
+# Cypress settings
+SPEC_PATH="cypress/integration/*"
+
+CYPRESS_OKTA_USERNAME=
+CYPRESS_OKTA_PASSWORD=
+CYPRESS_OKTA_SECRET=
+
+# Frontend settings
+REACT_APP_BACKEND_URL=https://localhost.simplereport.gov/api
+PUBLIC_URL=/app/
 REACT_APP_OKTA_ENABLED=true
-REACT_APP_OKTA_URL=http://localhost:8088
+REACT_APP_DISABLE_MAINTENANCE_BANNER=true
+REACT_APP_OKTA_URL=http://cypress:8088
+REACT_APP_BASE_URL=https://localhost.simplereport.gov
+
+REACT_APP_OKTA_CLIENT_ID=
+
+# Shared settings (Backend, Frontend)
+GIT_DISCOVERY_ACROSS_FILESYSTEM=1
 ```
 
-The `frontend/.env.local` file has a template at `frontend/cypress/.env.e2e.sample`. Reach out to another developer to get proper values for these secrets.
-
-```
-# /etc/hosts
-# add the following line
-127.0.0.1 localhost.simplereport.gov
-```
+The `.env` file has a template at `.env.sample` for running cypress against your local setup. Please reach out to the engineering team if you're in need of the missing credentials.
 
 #### Running Cypress
-Now that you have those files set up, you are ready for a test run! There are a few ways to run the tests from the `frontend` directory:
+Now that you have those files set up, you are ready for a test run! There are a few ways to run the tests from the root directory:
 
-- `yarn e2e`
-  - This will run cypress with default values and display Cypress logs.
-- `yarn e2e:open`
-  - This will open an interactive test runner that lets you select browsers
-  - Additional requirement: To use this command you need to set the WIREMOCK_URL env var in your command line.
-    - Set this for macOS
-        - `WIREMOCK_URL=http://host.docker.internal:8088`
-    - Set this for Linux operating systems (if you have a non standard networking setup, set it to whatever IP will point to your local machine).
-        - `WIREMOCK_URL=http://172.17.0.1:8088`
-- `yarn e2e:verbose`
-  - This will run cypress with default values and display Cypress, API, DB, Frontend, and Nginx logs.
+- Run Cypress in docker. All apps startup using docker compose.
+  - `yarn e2e`
+- Run Cypress locally and open interactive mode. Do this if you're running the apps locally without docker-compose.
+  - `yarn e2e:local`
+- Run Cypress locally and open interactive mode. Do this if you're running the apps with the standard docker-compose.
+  - `yarn e2e:nginx`
+
+If you run outside the docker containers, don't forget to set your environment variables.
+
+Additionally, it's possible to run cypress interactively in a docker container but we don't currently support that.
+  - About half way down references how to run in Interactive mode: https://www.cypress.io/blog/2019/05/02/run-cypress-with-a-single-docker-command/
+  - A mac resource referenced in the above how-to: https://sourabhbajaj.com/blog/2017/02/07/gui-applications-docker-mac/
 
 See the [Cypress documentation](https://docs.cypress.io/api/table-of-contents) for writing new tests. If you need to generate new Wiremock mappings for external services, see [this wiki page](https://github.com/CDCgov/prime-simplereport/wiki/WireMock).
-
 
 ## Load Tests
 SimpleReport leverages Locust for running its load tests. Currently, Locust starts as part of the local development build, and spawns three separate worker containers for inundating the system.

@@ -1,166 +1,94 @@
-name: Run end-to-end tests
 
-# Run this on pushes to any branch that change a backend file or the workflow definition
+name: Run end-to-end tests
+# on:
+#   workflow_dispatch: # because sometimes you just want to force a branch to have tests run
+#   pull_request:
+#     branches:
+#       - "**"
 on:
-  workflow_dispatch: # because sometimes you just want to force a branch to have tests run
   push:
     branches:
       - "**"
-
-env:
-  NODE_VERSION: 14
-  JAVA_VERSION: 11
-  FIREFOX_VERSION: latest
-  PROJECT_ROOT: /home/runner/work/prime-simplereport/prime-simplereport # Hardcoding this here because env.WORKSPACE_ROOT gets overridden by one of the steps downstream. We only need this for Sonar.
-  REACT_APP_TEST_TRIBAL_AFFILIATION_BYPASS: true
-  SIMPLE_REPORT_TWILIO_ENABLED: false
-  TWILIO_ACCOUNT_SID: ${{secrets.TWILIO_TEST_ACCOUNT_SID }}
-  TWILIO_AUTH_TOKEN: ${{secrets.TWILIO_TEST_AUTH_TOKEN }}
-  SIMPLE_REPORT_SENDGRID_ENABLED: false
-  SIMPLE_REPORT_SENDGRID_FROM_EMAIL: admin@simplereport.gov
-  SIMPLE_REPORT_SENDGRID_ACCOUNT_REQUEST_RECIPIENT: usds@cdc.gov
-  REACT_APP_BASE_URL: http://localhost.simplereport.gov
-  REACT_APP_BACKEND_URL: http://localhost.simplereport.gov/api
-  REACT_APP_OKTA_ENABLED: true
-
-defaults:
-  run:
-    working-directory: .
-
 jobs:
-  e2e-test:
+
+  cypress-local-env:
     runs-on: ubuntu-latest
-    services:
-      test-db:
-        image: postgres:11-alpine
-        env:
-          POSTGRES_PASSWORD: this_is_a_super_secure_admin_password
-        # Set health checks to wait until postgres has started
-        options: >-
-          --health-cmd pg_isready
-          --health-interval 10s
-          --health-timeout 5s
-          --health-retries 5
-        ports:
-          - 5432:5432
     steps:
-      - uses: actions/checkout@v2
-        with:
-          fetch-depth: 0 # Disable shallow clones so Sonar can have all the data
-      - name: Set up JDK ${{env.JAVA_VERSION}}
-        uses: actions/setup-java@v1
-        with:
-          java-version: ${{env.JAVA_VERSION}}
-      - name: Cache Java Dependencies
-        uses: actions/cache@v2
-        with:
-          path: |
-            ~/.gradle/caches
-            ~/.gradle/wrapper
-          key: gradle-${{ hashFiles('*.gradle', 'gradle/dependency-locks/*') }}
-      - name: Set up postgresql sidecar
-        env:
-          PGHOST: localhost
-          PGPASSFILE: backend/db-setup/.pgpass_ci
-          POSTGRES_USER: postgres
-          POSTGRES_DB: postgres
-          LIB_DIR: backend/db-setup
-        run: |
-          chmod 0600 $PGPASSFILE
-          backend/db-setup/create-db.sh
-      - name: Set up /etc/hosts, nginx, and application-local
-        run: |
-          echo "127.0.0.1 localhost.simplereport.gov" | sudo tee -a /etc/hosts
-          sudo cp ./frontend/cypress/support/nginx/localhost.simplereport.gov /etc/nginx/sites-available
-          sudo ln -s /etc/nginx/sites-available/localhost.simplereport.gov /etc/nginx/sites-enabled/localhost.simplereport.gov
-          sudo systemctl start nginx
-          echo "server.servlet.session.cookie.domain: localhost.simplereport.gov" >> ./backend/src/main/resources/application-local.yaml
-          echo "okta.client.org-url: http://localhost:8088" >> ./backend/src/main/resources/application-local.yaml
-          echo "okta.client.token: foo" >> ./backend/src/main/resources/application-local.yaml
-          echo "okta.oauth2.issuer: https://hhs-prime.oktapreview.com/oauth2/default" >> ./backend/src/main/resources/application-local.yaml
-      - name: Run Wiremock
-        working-directory: ./frontend
-        run: |
-          ./cypress/support/wiremock/download-wiremock.sh
-          java -jar ./wiremock-jre8-standalone-2.29.1.jar --port 8088 --root-dir ./cypress/stubs/orgSignUp --verbose --local-response-templating &> ../wiremock-log.txt &
-      - name: Run API
-        env:
-          OKTA_API_KEY: ${{ secrets.OKTA_API_KEY }}
-          OKTA_OAUTH2_CLIENT_ID: 0oa1k0163nAwfVxNW1d7
-          SMARTY_AUTH_ID: ${{ secrets.SMARTY_AUTH_ID }}
-          SMARTY_AUTH_TOKEN: ${{ secrets.SMARTY_AUTH_TOKEN }}
-        working-directory: ./backend
-        run: OKTA_TESTING_DISABLEHTTPSCHECK=true ./gradlew bootRun --args='--spring.profiles.active=e2e,local' &> ../gradle-log.txt &
-      - name: Use Node.js ${{env.NODE_VERSION}}
-        uses: actions/setup-node@v2.1.5
-        with:
-          node-version: ${{env.NODE_VERSION}}
-      - name: Cache yarn
-        uses: actions/cache@v2
-        with:
-          path: ~/.cache/yarn
-          key: ${{ runner.os }}-yarn-${{ hashFiles('**/yarn.lock') }}
-          restore-keys: |
-            ${{ runner.os }}-yarn-
-      - name: Cache Cypress binary
-        uses: actions/cache@v2
-        with:
-          path: ~/.cache/Cypress
-          key: cypress-${{ runner.os }}-cypress-${{ hashFiles('**/package.json') }}
-          restore-keys: |
-            cypress-${{ runner.os }}-cypress-
-      - name: install dependencies and verify Cypress
-        working-directory: ./frontend
-        env:
-          # make sure every Cypress install prints minimal information
-          CI: 1
-        # print Cypress and OS info
-        run: |
-          yarn install --prefer-offline
-          yarn exec cypress verify
-          yarn exec cypress info
-          yarn exec cypress version
-          yarn exec cypress version --component package
-          yarn exec cypress version --component binary
-          yarn exec cypress version --component electron
-          yarn exec cypress version --component node
-      - name: Run frontend
-        working-directory: ./frontend
-        run: yarn start &> ../yarn-log.txt &
-      - name: Setup firefox
-        uses: browser-actions/setup-firefox@latest
-        with:
-          firefox-version: ${{ env.FIREFOX_VERSION }}
-      - name: Run e2e tests
-        working-directory: ./frontend
-        env:
-          CYPRESS_OKTA_USERNAME: ${{ secrets.CYPRESS_OKTA_USERNAME }}
-          CYPRESS_OKTA_PASSWORD: ${{ secrets.CYPRESS_OKTA_PASSWORD }}
-          CYPRESS_OKTA_SECRET: ${{ secrets.CYPRESS_OKTA_SECRET }}
-        run: ./e2e.sh
-      - name: Archive gradle logs
-        uses: actions/upload-artifact@v2
-        if: failure()
-        with:
-          name: gradle logs
-          path: gradle-log.txt
-      - name: Archive yarn logs
-        uses: actions/upload-artifact@v2
-        if: failure()
-        with:
-          name: yarn logs
-          path: yarn-log.txt
-      - name: Archive wiremock logs
-        uses: actions/upload-artifact@v2
-        if: failure()
-        with:
-          name: wiremock logs
-          path: wiremock-log.txt
-      - name: Archive cypress execution videos
-        if: failure()
-        uses: actions/upload-artifact@v2
-        with:
-          name: cypress-results
-          path: |
-            frontend/cypress/videos/*
-            frontend/cypress/screenshots/*
+    - name: Checkout
+      uses: actions/checkout@v1
+
+    # If we end up in a position where our github runners are out of memory we can increase our swap space or provision private runners.
+    # I've set our swap size to 10gb because running all the apps and cypress is a bit intensive and doing this prevents random hangups
+    # https://github.com/pierotofy/set-swap-space/blob/master/action.yml
+    - name: Set Swap Space
+      uses: pierotofy/set-swap-space@master
+      with:
+        swap-size-gb: 10
+
+    - name: Generate certs
+      run: |
+        sudo apt install libnss3-tools
+        brew install mkcert
+        mkcert -install
+        mkdir -p certs
+        cd certs
+        mkcert localhost.simplereport.gov
+        mv localhost.simplereport.gov.pem localhost.simplereport.gov.crt
+        mv localhost.simplereport.gov-key.pem localhost.simplereport.gov.key
+        cd ..
+
+    - name: Update files permissions
+      # Even though we don't use it, we need the .env file created here due to an issue similar to this one: https://github.com/mutagen-io/mutagen/issues/265
+      run: |
+        echo FAKE_ENV="true" >> .env
+        sudo chmod -R 777 backend
+        sudo chmod -R 777 frontend
+
+    - name: Run Cypress
+      env:
+        # CI settings
+        CI: 1
+        # docker settings
+        DOCKER_CLIENT_TIMEOUT: 180
+        COMPOSE_HTTP_TIMEOUT: 180
+        # backend settings
+        SPRING_PROFILES_ACTIVE: e2e,db-dockerized
+        OKTA_TESTING_DISABLEHTTPSCHECK: "true"
+        OKTA_API_KEY: ${{ secrets.OKTA_API_KEY }}
+        OKTA_OAUTH2_CLIENT_ID: 0oa1k0163nAwfVxNW1d7
+        SMARTY_AUTH_ID: ${{ secrets.SMARTY_AUTH_ID }}
+        SMARTY_AUTH_TOKEN: ${{ secrets.SMARTY_AUTH_TOKEN }}
+        SPRING_LIQUIBASE_ENABLED: "true"
+        GIT_DISCOVERY_ACROSS_FILESYSTEM: 1
+        # cypress settings
+        CYPRESS_OKTA_USERNAME: ${{ secrets.CYPRESS_OKTA_USERNAME }}
+        CYPRESS_OKTA_PASSWORD: ${{ secrets.CYPRESS_OKTA_PASSWORD }}
+        CYPRESS_OKTA_SECRET: ${{ secrets.CYPRESS_OKTA_SECRET }}
+        WIREMOCK_URL: "http://cypress:8088"
+        SPEC_PATH: "cypress/integration/*"
+        TEST_ENV: "https://localhost.simplereport.gov"
+        # frontend settings
+        REACT_APP_OKTA_URL: "http://cypress:8088"
+        REACT_APP_OKTA_CLIENT_ID: 0oa1k0163nAwfVxNW1d7
+        REACT_APP_BASE_URL: https://localhost.simplereport.gov
+        REACT_APP_BACKEND_URL: https://localhost.simplereport.gov/api
+        PUBLIC_URL: /app/
+        REACT_APP_OKTA_ENABLED: "true"
+        REACT_APP_DISABLE_MAINTENANCE_BANNER: "true"
+      shell: bash
+      run: |
+        docker-compose -f docker-compose.yml -f docker-compose.cypress.yml up --abort-on-container-exit --exit-code-from cypress
+
+    - name: Stop containers
+      if: always()
+      shell: bash
+      run: docker-compose -f "docker-compose.yml" -f "docker-compose.cypress.yml" down
+
+    - name: Archive cypress failures
+      if: failure()
+      uses: actions/upload-artifact@v2
+      with:
+        name: cypress-results
+        path: |
+          cypress/videos/*
+          cypress/screenshots/*

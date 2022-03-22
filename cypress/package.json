@@ -1,0 +1,16 @@
+{
+    "name": "simple-report-cypress",
+    "version": "0.1.0",
+    "private": true,
+    "devDependencies": {
+        "@types/faker": "^5.5.9",
+        "cypress": "^9.2.1",
+        "cypress-localstorage-commands": "^1.6.1",
+        "faker": "^5.5.3",
+        "otplib": "^12.0.1",
+        "eslint-plugin-cypress": "^2.12.1"
+    },
+    "scripts": {
+    }
+  }
+  
