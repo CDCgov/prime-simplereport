@@ -106,16 +106,15 @@ describe("ManagePatients", () => {
 
       const menu = (await screen.findAllByText("More actions"))[0];
       userEvent.click(menu);
+      userEvent.click(await screen.findByText("Archive record"));
 
-      const archiveButton = await screen.findByText("Archive record");
-      expect(archiveButton).toBeInTheDocument();
-      userEvent.click(archiveButton);
-
-      await waitFor(() => {
-        expect(
-          screen.getByText("Yes, I'm sure", { exact: false })
-        ).toBeInTheDocument();
-      });
+      expect(
+        screen.getByText("Yes, I'm sure", { exact: false })
+      ).toBeInTheDocument();
+      userEvent.click(screen.getByText("No, go back", { exact: false }));
+      expect(
+        await screen.findByText(patients[0].lastName, { exact: false })
+      ).toBeInTheDocument();
     });
 
     it("can start test if patient not in test queue", async () => {
@@ -496,6 +495,7 @@ const mocks: MockedProviderProps["mocks"] = [
       data: { patients: patients.slice(1) },
     },
   },
+  // queue query for start test flow
   {
     request: {
       query: queueQuery,
@@ -513,6 +513,37 @@ const mocks: MockedProviderProps["mocks"] = [
           },
         ],
       },
+    },
+  },
+  // landing from closing archive modal
+  {
+    request: {
+      query: patientsCountQuery,
+      variables: {
+        facilityId: "a1",
+        showDeleted: false,
+        namePrefixMatch: null,
+      },
+    },
+    result: {
+      data: {
+        patientsCount: patients.slice(1).length,
+      },
+    },
+  },
+  {
+    request: {
+      query: patientQuery,
+      variables: {
+        facilityId: "a1",
+        pageNumber: 0,
+        pageSize: 20,
+        showDeleted: false,
+        namePrefixMatch: null,
+      },
+    },
+    result: {
+      data: { patients: patients.slice(0, 20) },
     },
   },
 ];
