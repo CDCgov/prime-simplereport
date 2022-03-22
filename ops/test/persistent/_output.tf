@@ -27,6 +27,10 @@ output "postgres_server_fqdn" {
   value = module.db.server_fqdn
 }
 
+output "postgres_server_id" {
+  value = module.db.server_id
+}
+
 output "network_profile_id" {
   value = module.vnet.network_profile_id
 }
