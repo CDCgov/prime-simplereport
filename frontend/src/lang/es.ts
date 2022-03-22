@@ -485,6 +485,9 @@ export const es: LanguageConfig = {
           "Ingrese su fecha de nacimiento para acceder a su portal de pruebas de COVID-19.",
         linkExpirationNotice:
           "Nota: este enlace caducará 10 días después de que se registró el resultado de la prueba.",
+        // TODO: TRANSLATION REQ'D
+        testingFacilityContact:
+          "Please reach out to <0>{{facilityName}}</0> at <1>{{facilityPhone}}</1> if you have  issues accessing your result",
         format: "MM/DD/AAAA",
         invalidFormat:
           "La fecha de nacimiento debe estar en formato MM/DD/AAAA",
