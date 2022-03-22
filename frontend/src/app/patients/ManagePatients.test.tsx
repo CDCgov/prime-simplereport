@@ -97,7 +97,27 @@ describe("ManagePatients", () => {
     expect(await screen.findByText(patients[20].lastName, { exact: false }));
   });
 
-  describe("starting a test from the patient list", () => {
+  describe("using actions", () => {
+    it("archive modal appears on click", async () => {
+      render(<TestContainer />);
+      expect(
+        await screen.findByText(patients[0].lastName, { exact: false })
+      ).toBeInTheDocument();
+
+      const menu = (await screen.findAllByText("More actions"))[0];
+      userEvent.click(menu);
+
+      const archiveButton = await screen.findByText("Archive record");
+      expect(archiveButton).toBeInTheDocument();
+      userEvent.click(archiveButton);
+
+      await waitFor(() => {
+        expect(
+          screen.getByText("Yes, I'm sure", { exact: false })
+        ).toBeInTheDocument();
+      });
+    });
+
     it("can start test if patient not in test queue", async () => {
       render(<TestContainer />);
       expect(
