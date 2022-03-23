@@ -28,7 +28,7 @@ describe("Getting a test result from a patient link", () => {
     // library interpolates the patient name variable
     cy.contains("Enter ");
     cy.contains(`${patientObfuscatedName}'s`);
-    cy.contains("date of birth to access your COVID-19 testing portal.");
+    cy.contains("date of birth to access your COVID-19 testing results.");
     const dob = dayjs(patientDOB, "MM/DD/YYYY");
     // Month is zero-indexed, so add 1
     const birthMonth = dob.month() + 1;
