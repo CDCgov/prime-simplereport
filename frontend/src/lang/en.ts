@@ -6,7 +6,7 @@ const UNKNOWN = "Unknown";
 
 export const en = {
   translation: {
-    header: "COVID-19 Testing Portal",
+    header: "COVID-19 testing portal",
     banner: {
       dotGov: "The .gov means it’s official.",
       dotGovHelper:
