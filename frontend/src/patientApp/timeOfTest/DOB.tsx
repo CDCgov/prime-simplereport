@@ -24,10 +24,12 @@ const DOB = () => {
 
   useEffect(() => {
     PxpApi.getTestResultUnauthenticated(plid)
-      .then(({ patient, facility, expiresAt }) => {
-        setPatientObfuscatedName(patient.firstName + " " + patient.lastName);
-        setFacility(facility);
-        setExpiresAt(expiresAt);
+      .then((response) => {
+        setPatientObfuscatedName(
+          `${response.patient.firstName} ${response.patient.lastName}`
+        );
+        setFacility(response.facility);
+        setExpiresAt(response.expiresAt);
         setIsLoading(false);
       })
       .catch(() => {

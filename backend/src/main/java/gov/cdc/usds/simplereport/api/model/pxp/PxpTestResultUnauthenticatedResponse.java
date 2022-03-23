@@ -5,6 +5,7 @@ import gov.cdc.usds.simplereport.db.model.PatientLink;
 import gov.cdc.usds.simplereport.db.model.Person;
 import java.util.Date;
 import java.util.HashMap;
+import java.util.Map;
 
 public class PxpTestResultUnauthenticatedResponse {
   private Person person;
@@ -17,7 +18,7 @@ public class PxpTestResultUnauthenticatedResponse {
     this.pl = pl;
   }
 
-  public HashMap<String, String> getPatient() {
+  public Map<String, String> getPatient() {
     HashMap<String, String> patientMap = new HashMap<>();
     patientMap.put("firstName", person.getFirstName());
     patientMap.put("lastName", person.getLastName().charAt(0) + ".");
@@ -25,7 +26,7 @@ public class PxpTestResultUnauthenticatedResponse {
     return patientMap;
   }
 
-  public HashMap<String, String> getFacility() {
+  public Map<String, String> getFacility() {
     HashMap<String, String> facilityMap = new HashMap<>();
     facilityMap.put("name", facility.getFacilityName());
     facilityMap.put("phone", facility.getTelephone());

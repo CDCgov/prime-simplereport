@@ -1,11 +1,11 @@
 import moment from "moment";
 
+type DateInputFormat = Date | string | undefined | null;
+
 export function formatDate(date: string | Date): ISODate;
 export function formatDate(date: undefined | null): null;
-export function formatDate(
-  date: string | undefined | null | Date
-): ISODate | null;
-export function formatDate(date: string | undefined | null | Date) {
+export function formatDate(date: DateInputFormat): ISODate | null;
+export function formatDate(date: DateInputFormat) {
   if (!date) {
     return null;
   }
@@ -18,7 +18,7 @@ export const formatDateLong = (date: string | undefined) => {
 };
 
 export const formatDateTime = (dateFormat: string, timeFormat: string) => (
-  date: string | Date | null | undefined,
+  date: DateInputFormat,
   withTime?: boolean
 ) => {
   const format = withTime ? `${dateFormat} ${timeFormat}` : dateFormat;
