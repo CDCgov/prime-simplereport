@@ -80,15 +80,16 @@ public class TestOrder extends BaseTestInfo {
     super.setDateTestedBackdate(date);
   }
 
+  // This logic (specifically, findFirst) will need to be updated later on in the multiplex process
+  // - this method is
+  // temporary
+  // Eventually, this method will be deprecated in favor of getResultSet() or getResultForDisease()
   public TestResult getTestResult() {
     Optional<Result> resultObject = this.results.stream().findFirst();
     // Backwards-compatibility: if result table isn't populated, fetch old result column
     if (resultObject.isEmpty()) {
       return getResult();
     } else {
-      // This logic will need to be updated later on in the multiplex process - this method is
-      // temporary
-      // Eventually, this method will be deprecated in favor of getResultSet()
       return Translators.convertLoincToResult(resultObject.get().getResultLOINC());
     }
   }
@@ -99,6 +100,10 @@ public class TestOrder extends BaseTestInfo {
 
   public Set<Result> getResults() {
     return results;
+  }
+
+  public Optional<Result> getResultForDisease(SupportedDisease disease) {
+    return results.stream().filter(r -> r.getDisease().equals(disease)).findFirst();
   }
 
   public void addResult(Result result) {

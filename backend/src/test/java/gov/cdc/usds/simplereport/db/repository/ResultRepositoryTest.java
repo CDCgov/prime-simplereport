@@ -12,6 +12,7 @@ import gov.cdc.usds.simplereport.db.model.TestOrder;
 import gov.cdc.usds.simplereport.db.model.auxiliary.TestResult;
 import gov.cdc.usds.simplereport.test_util.TestDataFactory;
 import java.util.List;
+import java.util.Optional;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -72,8 +73,8 @@ class ResultRepositoryTest extends BaseRepositoryTest {
     _repo.save(new Result(TEST_EVENT, TEST_ORDER, FLU_A, TestResult.NEGATIVE));
     _repo.save(new Result(TEST_EVENT, TEST_ORDER, FLU_B, TestResult.NEGATIVE));
 
-    Result result = _repo.findResultByTestEventAndDisease(TEST_EVENT, COVID);
-    assertEquals(TestResult.POSITIVE, result.getTestResult());
+    Optional<Result> result = _repo.findResultByTestEventAndDisease(TEST_EVENT, COVID);
+    assertEquals(TestResult.POSITIVE, result.get().getTestResult());
   }
 
   @Test

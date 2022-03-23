@@ -1,6 +1,7 @@
 package gov.cdc.usds.simplereport.api.testresult;
 
 import gov.cdc.usds.simplereport.api.Translators;
+import gov.cdc.usds.simplereport.api.model.ApiTestResult;
 import gov.cdc.usds.simplereport.api.model.OrganizationLevelDashboardMetrics;
 import gov.cdc.usds.simplereport.api.model.TopLevelDashboardMetrics;
 import gov.cdc.usds.simplereport.db.model.TestEvent;
@@ -10,6 +11,7 @@ import graphql.kickstart.tools.GraphQLQueryResolver;
 import java.util.Date;
 import java.util.List;
 import java.util.UUID;
+import java.util.stream.Collectors;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
@@ -19,7 +21,7 @@ public class TestResultResolver implements GraphQLQueryResolver, GraphQLMutation
 
   @Autowired private TestOrderService tos;
 
-  public List<TestEvent> getTestResults(
+  public List<ApiTestResult> getTestResults(
       UUID facilityId,
       UUID patientId,
       String result,
@@ -35,15 +37,17 @@ public class TestResultResolver implements GraphQLQueryResolver, GraphQLMutation
       pageSize = TestOrderService.DEFAULT_PAGINATION_PAGESIZE;
     }
 
-    return tos.getTestEventsResults(
-        facilityId,
-        patientId,
-        Translators.parseTestResult(result),
-        Translators.parsePersonRole(role, true),
-        startDate,
-        endDate,
-        pageNumber,
-        pageSize);
+    List<TestEvent> testEvents =
+        tos.getTestEventsResults(
+            facilityId,
+            patientId,
+            Translators.parseTestResult(result),
+            Translators.parsePersonRole(role, true),
+            startDate,
+            endDate,
+            pageNumber,
+            pageSize);
+    return testEvents.stream().map(ApiTestResult::new).collect(Collectors.toList());
   }
 
   public int testResultsCount(
@@ -57,12 +61,13 @@ public class TestResultResolver implements GraphQLQueryResolver, GraphQLMutation
         endDate);
   }
 
-  public TestEvent correctTestMarkAsError(UUID id, String reasonForCorrection) {
-    return tos.correctTestMarkAsError(id, reasonForCorrection);
+  public ApiTestResult correctTestMarkAsError(UUID id, String reasonForCorrection) {
+    return new ApiTestResult(tos.correctTestMarkAsError(id, reasonForCorrection));
   }
 
-  public TestEvent getTestResult(UUID id) {
-    return tos.getTestResult(id);
+  public ApiTestResult getTestResult(UUID id) {
+    TestEvent event = tos.getTestResult(id);
+    return new ApiTestResult(event);
   }
 
   public OrganizationLevelDashboardMetrics getOrganizationLevelDashboardMetrics(

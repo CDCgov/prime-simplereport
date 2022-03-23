@@ -229,20 +229,7 @@ public class TestOrderService {
         }
       }
 
-      if (order.getResults().isEmpty()) {
-        Result resultObj = new Result(order, _diseaseService.covid(), TestResult.valueOf(result));
-        order.setResult(resultObj);
-      } else {
-        // This is one way to do this
-        order.getResults().stream()
-            .filter(r -> r.getDisease().equals(_diseaseService.covid()))
-            .forEach(r -> r.setResult(TestResult.valueOf(result)));
-        // This is the other way
-        // Result resultObj = _resultRepo.findResultByTestOrderAndDisease(order,
-        // _diseaseService.covid());
-        // resultObj.setResult(TestResult.valueOf(result));
-        // not sure if one is more efficient?
-      }
+      updateTestOrderCovidResult(order, TestResult.valueOf(result));
 
       order.setDateTestedBackdate(dateTested);
 
@@ -252,10 +239,6 @@ public class TestOrderService {
     }
   }
 
-  // We should be able to take the TestResult out of this method signature
-  // The order of operations is always editQueueItem -> addTestResult (this is now enforced in the
-  // UI)
-  // So by the time we get to this method, the testOrder has a source of truth about the result
   @AuthorizationConfiguration.RequirePermissionSubmitTestForPatient
   @Transactional(noRollbackFor = {TwilioException.class, ApiException.class})
   public AddTestResultResponse addTestResult(
@@ -271,15 +254,7 @@ public class TestOrderService {
     try {
       order.setDeviceSpecimen(deviceSpecimen);
 
-      //      Optional<Result> optionalResultEntity = order.getResults().stream().findFirst();
-      //      Result resultEntity;
-      //      if (optionalResultEntity.isPresent()) {
-      //        resultEntity = optionalResultEntity.get();
-      //        resultEntity.setResult(result);
-      //      } else {
-      //        resultEntity = new Result(order, _diseaseService.covid(), result);
-      //        order.setResult(resultEntity);
-      //      }
+      updateTestOrderCovidResult(order, result);
 
       order.setDateTestedBackdate(dateTested);
       order.markComplete();
@@ -425,6 +400,16 @@ public class TestOrderService {
     return _repo.fetchQueueItem(org, patient).orElseThrow(TestOrderService::noSuchOrderFound);
   }
 
+  private void updateTestOrderCovidResult(TestOrder order, TestResult result) {
+    Optional<Result> covidResult = order.getResultForDisease(_diseaseService.covid());
+    if (covidResult.isPresent()) {
+      covidResult.get().setResult(result);
+    } else {
+      Result resultEntity = new Result(order, _diseaseService.covid(), result);
+      order.setResult(resultEntity);
+    }
+  }
+
   @Transactional
   @AuthorizationConfiguration.RequirePermissionUpdateTestForTestEvent
   public TestEvent correctTestMarkAsError(UUID testEventId, String reasonForCorrection) {
@@ -485,6 +470,7 @@ public class TestOrderService {
     return newRemoveEvent;
   }
 
+  // Also gotta update this, I suspect
   @Transactional(readOnly = true)
   @AuthorizationConfiguration.RequirePermissionEditOrganization
   public OrganizationLevelDashboardMetrics getOrganizationLevelDashboardMetrics(

@@ -82,6 +82,12 @@ type DeviceType {
   testLength: Int
 }
 
+#type SupportedDisease {
+#  internalId: ID!
+#  name: String!
+#  loinc: String!
+#}
+
 type SpecimenType {
   internalId: ID!
   name: String!
@@ -221,6 +227,7 @@ type TestOrder {
   dateTested: DateTime
   correctionStatus: String
   reasonForCorrection: String
+#  results: [Result]
 }
 
 type TestResult {
@@ -240,7 +247,20 @@ type TestResult {
   reasonForCorrection: String
   createdBy: ApiUser
   patientLink: PatientLink
+#  results: [Result]
 }
+
+# We can't use this result type yet because we don't actually want the resultSet on the frontend.
+# We just want the existing result object to correctly return the new result, not just the ones off the old column.
+# Otherwise we're going to need to update a million graphQL references and I'd really rather avoid that at this stage.
+#type Result {
+#  internalId: ID
+##  testOrder: TestOrder
+##  testEvent: TestResult
+#  disease: SupportedDisease
+#  resultLOINC: String
+#  testResult: String
+#}
 
 type OrganizationLevelDashboardMetrics {
   organizationPositiveTestCount: Int

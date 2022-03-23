@@ -8,6 +8,7 @@ import gov.cdc.usds.simplereport.db.model.PatientLink;
 import gov.cdc.usds.simplereport.db.model.Person;
 import gov.cdc.usds.simplereport.db.model.TestEvent;
 import gov.cdc.usds.simplereport.db.model.auxiliary.AskOnEntrySurvey;
+import gov.cdc.usds.simplereport.db.model.auxiliary.TestResult;
 import gov.cdc.usds.simplereport.service.dataloader.PatientLinkDataLoader;
 import graphql.kickstart.execution.context.GraphQLContext;
 import graphql.kickstart.tools.GraphQLResolver;
@@ -23,6 +24,10 @@ import org.springframework.stereotype.Component;
 @Component
 public class TestResultDataResolver
     implements GraphQLResolver<TestEvent>, InternalIdResolver<TestEvent> {
+
+  private TestResult getResult(TestEvent testEvent) {
+    return testEvent.getTestResult();
+  }
 
   private AskOnEntrySurvey getSurvey(TestEvent testEvent) {
     return testEvent.getSurveyData();
