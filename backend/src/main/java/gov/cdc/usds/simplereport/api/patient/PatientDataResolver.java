@@ -3,10 +3,10 @@ package gov.cdc.usds.simplereport.api.patient;
 import gov.cdc.usds.simplereport.api.InternalIdResolver;
 import gov.cdc.usds.simplereport.api.PersonNameResolver;
 import gov.cdc.usds.simplereport.api.model.ApiFacility;
-import gov.cdc.usds.simplereport.api.model.ApiTestResult;
 import gov.cdc.usds.simplereport.db.model.Facility;
 import gov.cdc.usds.simplereport.db.model.Person;
 import gov.cdc.usds.simplereport.db.model.PhoneNumber;
+import gov.cdc.usds.simplereport.db.model.TestEvent;
 import gov.cdc.usds.simplereport.service.dataloader.PatientLastTestDataLoader;
 import gov.cdc.usds.simplereport.service.dataloader.PatientPhoneNumbersDataLoader;
 import gov.cdc.usds.simplereport.service.dataloader.PatientPrimaryPhoneDataLoader;
@@ -33,7 +33,7 @@ public class PatientDataResolver
     _patientLastTestDataLoader = patientLastTestDataLoader;
   }
 
-  public CompletableFuture<ApiTestResult> getLastTest(Person person, DataFetchingEnvironment dfe) {
+  public CompletableFuture<TestEvent> getLastTest(Person person, DataFetchingEnvironment dfe) {
     return _patientLastTestDataLoader.load(person.getInternalId(), dfe);
   }
 

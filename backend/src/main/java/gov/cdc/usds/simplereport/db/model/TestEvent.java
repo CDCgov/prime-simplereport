@@ -151,10 +151,15 @@ public class TestEvent extends BaseTestInfo {
     Optional<Result> resultObject = this.results.stream().findFirst();
     // Backwards-compatibility: if result table isn't populated, fetch old result column
     if (resultObject.isEmpty()) {
-      return order.getResult();
+      return super.getResult();
     } else {
       return Translators.convertLoincToResult(resultObject.get().getResultLOINC());
     }
+  }
+
+  @Override
+  public TestResult getResult() {
+    return getTestResult();
   }
 
   public Set<Result> getResults() {
