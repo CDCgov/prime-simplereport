@@ -148,12 +148,16 @@ public class TestEvent extends BaseTestInfo {
   // temporary
   // Eventually, this method will be deprecated in favor of getResultSet()
   public TestResult getTestResult() {
-    Optional<Result> resultObject = this.results.stream().findFirst();
-    // Backwards-compatibility: if result table isn't populated, fetch old result column
-    if (resultObject.isEmpty()) {
+    if (this.results == null) {
       return super.getResult();
     } else {
-      return Translators.convertLoincToResult(resultObject.get().getResultLOINC());
+      Optional<Result> resultObject = this.results.stream().findFirst();
+      // Backwards-compatibility: if result table isn't populated, fetch old result column
+      if (resultObject.isEmpty()) {
+        return super.getResult();
+      } else {
+        return Translators.convertLoincToResult(resultObject.get().getResultLOINC());
+      }
     }
   }
 

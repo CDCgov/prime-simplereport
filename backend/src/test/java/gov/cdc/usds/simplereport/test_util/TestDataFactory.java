@@ -39,6 +39,7 @@ import gov.cdc.usds.simplereport.db.repository.PatientRegistrationLinkRepository
 import gov.cdc.usds.simplereport.db.repository.PersonRepository;
 import gov.cdc.usds.simplereport.db.repository.PhoneNumberRepository;
 import gov.cdc.usds.simplereport.db.repository.ProviderRepository;
+import gov.cdc.usds.simplereport.db.repository.ResultRepository;
 import gov.cdc.usds.simplereport.db.repository.SpecimenTypeRepository;
 import gov.cdc.usds.simplereport.db.repository.SupportedDiseaseRepository;
 import gov.cdc.usds.simplereport.db.repository.TestEventRepository;
@@ -86,6 +87,7 @@ public class TestDataFactory {
   @Autowired private SpecimenTypeRepository _specimenRepo;
   @Autowired private DeviceSpecimenTypeRepository _deviceSpecimenRepo;
   @Autowired private SupportedDiseaseRepository _supportedDiseaseRepo;
+  @Autowired private ResultRepository _resultRepository;
   @Autowired private DemoOktaRepository _oktaRepo;
   @Autowired private DiseaseService _diseaseService;
 
