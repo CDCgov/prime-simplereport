@@ -9,6 +9,7 @@ public final class ResourceLinks {
   public static final String SELF_REGISTER = "/pxp/register";
   public static final String EXISTING_PATIENT = "/pxp/register/existing-patient";
   public static final String GET_OBFUSCATED_PATIENT_NAME = "/pxp/patient-name";
+  public static final String GET_TEST_RESULT_UNAUTHENTICATED = "/pxp/entity";
   public static final String ENTITY_NAME = "/pxp/register/entity-name";
 
   public static final String WAITLIST_REQUEST = "/account-request/waitlist";
