@@ -49,7 +49,7 @@ describe("DOB (valid UUID)", () => {
       );
 
     render(mockContainer(store));
-    expect(await screen.findByText("John D.")).toBeInTheDocument();
+    expect(await screen.findByText("John D.'s")).toBeInTheDocument();
   });
 
   it("fetches unauthenticated test result data from server on render", async () => {
@@ -58,10 +58,10 @@ describe("DOB (valid UUID)", () => {
 
   it("shows obfuscated patient name on verification screen", async () => {
     // Text is broken up by multiple HTML elements
-    expect(await screen.findByText("John D.")).toBeInTheDocument();
+    expect(await screen.findByText("John D.'s")).toBeInTheDocument();
     expect(
       await screen.findByText(
-        "'s date of birth to access your COVID-19 testing portal",
+        "date of birth to access your COVID-19 testing results.",
         { exact: false }
       )
     ).toBeInTheDocument();
@@ -83,7 +83,7 @@ describe("DOB (valid UUID)", () => {
       })
     ).toBeInTheDocument();
     expect(
-      await screen.findByText("01/01/3000 12:00am", { exact: false })
+      await screen.findByText("1/01/3000 12:00am", { exact: false })
     ).toBeInTheDocument();
   });
 
