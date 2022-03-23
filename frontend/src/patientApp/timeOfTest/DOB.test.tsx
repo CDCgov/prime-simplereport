@@ -27,21 +27,33 @@ const validateDateOfBirthSpy = jest
   .mockImplementation(jest.fn());
 
 describe("DOB (valid UUID)", () => {
-  let getObfuscatedPatientNameSpy: jest.SpyInstance;
+  let getTestResultUnauthenticatedSpy: jest.SpyInstance;
 
   beforeEach(async () => {
     const store = mockStore({ plid });
 
-    getObfuscatedPatientNameSpy = jest
-      .spyOn(PxpApi, "getObfuscatedPatientName")
-      .mockImplementation((_plid) => Promise.resolve("John D."));
+    getTestResultUnauthenticatedSpy = jest
+      .spyOn(PxpApi, "getTestResultUnauthenticated")
+      .mockImplementation((_plid) =>
+        Promise.resolve({
+          patient: {
+            firstName: "John",
+            lastName: "D.",
+          },
+          facility: {
+            name: "Testing Facility",
+            phone: "6318675309",
+          },
+          expiresAt: new Date("3000-01-01"),
+        })
+      );
 
     render(mockContainer(store));
     expect(await screen.findByText("John D.")).toBeInTheDocument();
   });
 
-  it("fetches obfuscated patient name from server on render", async () => {
-    expect(getObfuscatedPatientNameSpy).toBeCalledWith(plid);
+  it("fetches unauthenticated test result data from server on render", async () => {
+    expect(getTestResultUnauthenticatedSpy).toBeCalledWith(plid);
   });
 
   it("shows obfuscated patient name on verification screen", async () => {
@@ -52,6 +64,26 @@ describe("DOB (valid UUID)", () => {
         "'s date of birth to access your COVID-19 testing portal",
         { exact: false }
       )
+    ).toBeInTheDocument();
+  });
+
+  it("shows facility name and phone number on verification screen", async () => {
+    expect(
+      await screen.findByText("Testing Facility", { exact: false })
+    ).toBeInTheDocument();
+    expect(
+      await screen.findByText("631-867-5309", { exact: false })
+    ).toBeInTheDocument();
+  });
+
+  it("shows patient link expiration date on verification screen", async () => {
+    expect(
+      await screen.findByText("Note: this link will expire on ", {
+        exact: false,
+      })
+    ).toBeInTheDocument();
+    expect(
+      await screen.findByText("01/01/3000 12:00am", { exact: false })
     ).toBeInTheDocument();
   });
 
@@ -210,8 +242,20 @@ describe("DOB (invalid UUID)", () => {
       plid: "this is totally not a valid UUID",
     });
     jest
-      .spyOn(PxpApi, "getObfuscatedPatientName")
-      .mockImplementation((_id) => Promise.resolve("J Doe"));
+      .spyOn(PxpApi, "getTestResultUnauthenticated")
+      .mockImplementation((_plid) =>
+        Promise.resolve({
+          patient: {
+            firstName: "John",
+            lastName: "D.",
+          },
+          facility: {
+            name: "Testing Facility",
+            phone: "6318675309",
+          },
+          expiresAt: new Date("3000-01-01"),
+        })
+      );
 
     render(mockContainer(store));
 
