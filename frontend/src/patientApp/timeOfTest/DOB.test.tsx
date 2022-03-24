@@ -61,7 +61,7 @@ describe("DOB (valid UUID)", () => {
     expect(await screen.findByText("John D.'s")).toBeInTheDocument();
     expect(
       await screen.findByText(
-        "date of birth to access your COVID-19 testing results.",
+        "date of birth to access your COVID-19 test results.",
         { exact: false }
       )
     ).toBeInTheDocument();
