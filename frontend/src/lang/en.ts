@@ -566,6 +566,7 @@ export const en = {
         },
       },
       dob: {
+        header: "Verify date of birth",
         dateOfBirth: "Date of birth",
         enterDOB: "Enter your date of birth",
         enterDOB2:
@@ -573,7 +574,7 @@ export const en = {
         linkExpirationNotice:
           "Note: this link will expire on <0>{{expirationDate}}</0>. ",
         testingFacilityContact:
-          "Please reach out to <0>{{facilityName}}</0> at <1>{{facilityPhone}}</1> if you have issues accessing your result.",
+          "Please reach out to <0>{{facilityName}}</0> <1>{{facilityPhone}}</1> if you have issues accessing your result.",
         format: "MM/DD/YYYY",
         invalidFormat: "Date of birth must be in MM/DD/YYYY format",
         invalidYear:

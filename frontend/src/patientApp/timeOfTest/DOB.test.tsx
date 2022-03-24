@@ -72,7 +72,7 @@ describe("DOB (valid UUID)", () => {
       await screen.findByText("Testing Facility", { exact: false })
     ).toBeInTheDocument();
     expect(
-      await screen.findByText("631-867-5309", { exact: false })
+      await screen.findByText("(631) 867-5309", { exact: false })
     ).toBeInTheDocument();
   });
 
@@ -83,7 +83,7 @@ describe("DOB (valid UUID)", () => {
       })
     ).toBeInTheDocument();
     expect(
-      await screen.findByText("1/01/3000 12:00am", { exact: false })
+      await screen.findByText("1/1/3000 12:00 am", { exact: false })
     ).toBeInTheDocument();
   });
 

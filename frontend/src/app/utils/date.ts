@@ -27,8 +27,8 @@ export const formatDateTime = (dateFormat: string, timeFormat: string) => (
 
 export const formatDateWithTimeOption = formatDateTime("MM/DD/yyyy", "h:mma");
 export const formatShortDateWithTimeOption = formatDateTime(
-  "M/DD/yyyy",
-  "h:mma"
+  "M/D/yyyy",
+  "h:mm a"
 );
 
 export const daysSince = (date: moment.Moment): String => {

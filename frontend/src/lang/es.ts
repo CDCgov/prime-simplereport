@@ -484,6 +484,7 @@ export const es: LanguageConfig = {
         },
       },
       dob: {
+        header: "Verificar fecha de nacimiento",
         dateOfBirth: "Fecha de nacimiento",
         enterDOB: "Ingrese su fecha de nacimiento",
         enterDOB2:
