@@ -1,7 +1,6 @@
 package gov.cdc.usds.simplereport.db.model;
 
 import gov.cdc.usds.simplereport.api.Translators;
-import gov.cdc.usds.simplereport.db.model.auxiliary.DiseaseResult;
 import gov.cdc.usds.simplereport.db.model.auxiliary.TestResult;
 import java.util.Objects;
 import javax.persistence.Column;
@@ -40,21 +39,6 @@ public class Result extends EternalAuditedEntity {
   @Type(type = "pg_enum")
   @Enumerated(EnumType.STRING)
   private TestResult testResult;
-
-  public Result(TestOrder testOrder, DiseaseResult diseaseResult) {
-    this.testOrder = testOrder;
-    this.disease = diseaseResult.getDisease();
-    this.resultLOINC = Translators.convertTestResultToLoinc(diseaseResult.getResult());
-    this.testResult = diseaseResult.getResult();
-  }
-
-  public Result(TestOrder testOrder, TestEvent testEvent, DiseaseResult diseaseResult) {
-    this.testOrder = testOrder;
-    this.testEvent = testEvent;
-    this.disease = diseaseResult.getDisease();
-    this.resultLOINC = Translators.convertTestResultToLoinc(diseaseResult.getResult());
-    this.testResult = diseaseResult.getResult();
-  }
 
   public Result(
       TestEvent testEvent, TestOrder testOrder, SupportedDisease disease, TestResult testResult) {

@@ -9,6 +9,7 @@ import java.util.Optional;
 import java.util.Set;
 import java.util.UUID;
 import javax.persistence.AttributeOverride;
+import javax.persistence.CascadeType;
 import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.FetchType;
@@ -43,7 +44,7 @@ public class TestEvent extends BaseTestInfo {
   @JoinColumn(name = "test_order_id")
   private TestOrder order;
 
-  @OneToMany(mappedBy = "testEvent", fetch = FetchType.LAZY)
+  @OneToMany(mappedBy = "testEvent", fetch = FetchType.LAZY, cascade = CascadeType.ALL)
   private Set<Result> results;
 
   @Column(columnDefinition = "uuid")
@@ -66,6 +67,8 @@ public class TestEvent extends BaseTestInfo {
     }
 
     order.getResultSet().forEach(result -> result.setTestEvent(this));
+    // weirdly this only seems required for tests?
+    //    this.results = order.getResultSet();
 
     // store a link, and *also* store the object as JSON
     // force load the lazy-loaded phone numbers so values are available to the object mapper
@@ -148,16 +151,12 @@ public class TestEvent extends BaseTestInfo {
   // temporary
   // Eventually, this method will be deprecated in favor of getResultSet()
   public TestResult getTestResult() {
-    if (this.results == null) {
+    Optional<Result> resultObject = this.results.stream().findFirst();
+    // Backwards-compatibility: if result table isn't populated, fetch old result column
+    if (resultObject.isEmpty()) {
       return super.getResult();
     } else {
-      Optional<Result> resultObject = this.results.stream().findFirst();
-      // Backwards-compatibility: if result table isn't populated, fetch old result column
-      if (resultObject.isEmpty()) {
-        return super.getResult();
-      } else {
-        return Translators.convertLoincToResult(resultObject.get().getResultLOINC());
-      }
+      return Translators.convertLoincToResult(resultObject.get().getResultLOINC());
     }
   }
 
@@ -170,3 +169,9 @@ public class TestEvent extends BaseTestInfo {
     return this.results;
   }
 }
+
+/**
+ * Found shared references to a collection: gov.cdc.usds.simplereport.db.model.TestEvent.results;
+ * nested exception is org.hibernate.HibernateException: Found shared references to a collection:
+ * gov.cdc.usds.simplereport.db.model.TestEvent.results
+ */

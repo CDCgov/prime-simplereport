@@ -6,7 +6,6 @@ import gov.cdc.usds.simplereport.db.model.auxiliary.TestCorrectionStatus;
 import gov.cdc.usds.simplereport.db.model.auxiliary.TestResult;
 import java.time.LocalDate;
 import java.util.Date;
-import java.util.HashSet;
 import java.util.Optional;
 import java.util.Set;
 import java.util.UUID;
@@ -57,7 +56,6 @@ public class TestOrder extends BaseTestInfo {
   public TestOrder(Person patient, Facility facility) {
     super(patient, facility);
     this.orderStatus = OrderStatus.PENDING;
-    this.results = new HashSet<Result>();
   }
 
   public OrderStatus getOrderStatus() {
@@ -113,9 +111,6 @@ public class TestOrder extends BaseTestInfo {
   }
 
   public void setResult(Result result) {
-    //    if (results == null) {
-    //      results = new HashSet<Result>();
-    //    }
     results.add(result);
   }
 

@@ -22,6 +22,8 @@ spring:
   jpa:
     properties:
       hibernate:
+        show_sql: true
+        format_sql: true
         default_schema: simple_report
 okta:
   client:
@@ -40,7 +42,7 @@ logging:
     # Always have our own debug logging turned on in tests:
     gov.cdc.usds: DEBUG
     # Hibernate SQL query logging: basically the same as hibernate.show_sql but through slf4j
-    org.hibernate.SQL: DEBUG
+#    org.hibernate.SQL: DEBUG
     # NOTE: un-comment any of the below to turn on something potentially interesting
     # Hibernate input and output value logging: SUPER VERBOSE
     # org.hibernate.type: TRACE
@@ -48,6 +50,8 @@ logging:
     # com.okta: DEBUG
     # org.springframework.security: DEBUG
     org.springframework.web.client.RestTemplate: DEBUG
+  pattern:
+    console: "%clr(%d{yyyy-MM-dd HH:mm:ss.SSS}){faint} %clr(%5p) %clr(${PID:- }){magenta} %clr(---){faint} %clr([%15.15t]){faint} [Query: %X{graphql-query}] %clr(%-40.40logger{39}){cyan} %clr(:){faint} %m%n%wEx"
 simple-report:
   authorization:
     environment-name: "UNITTEST"
