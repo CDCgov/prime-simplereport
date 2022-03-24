@@ -106,7 +106,7 @@ describe("ManagePatients", () => {
 
       const menu = (await screen.findAllByText("More actions"))[0];
       userEvent.click(menu);
-      userEvent.click(await screen.findByText("Archive record"));
+      userEvent.click(await screen.findByText("Archive person"));
 
       expect(
         screen.getByText("Yes, I'm sure", { exact: false })
