@@ -321,7 +321,7 @@ export const DetachedManagePatients = ({
                   <tr>
                     <th scope="col">Name</th>
                     <th scope="col">Date of birth</th>
-                    <th scope="col">Type</th>
+                    <th scope="col">Role</th>
                     <th scope="col">Days since last test</th>
                     <th scope="col">Actions</th>
                   </tr>
