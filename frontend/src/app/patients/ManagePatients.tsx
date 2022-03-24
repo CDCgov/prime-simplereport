@@ -226,7 +226,7 @@ export const DetachedManagePatients = ({
       }
 
       actionItems.push({
-        name: "Archive record",
+        name: "Archive person",
         action: () => setArchivePerson(patient),
       });
 
