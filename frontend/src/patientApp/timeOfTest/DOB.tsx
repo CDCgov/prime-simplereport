@@ -184,10 +184,8 @@ const DOB = () => {
               }}
             </Trans>
             <Trans t={t} i18nKey="testResult.dob.testingFacilityContact">
-              {{
-                facilityName: facility?.name,
-                facilityPhone: formatPhoneNumber(facility?.phone as string),
-              }}
+              {{ facilityName: facility?.name }}
+              {{ facilityPhone: formatPhoneNumber(facility?.phone as string) }}
             </Trans>
           </p>
           <DateInput
