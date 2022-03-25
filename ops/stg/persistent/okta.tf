@@ -6,7 +6,7 @@ module "okta" {
   redirect_urls        = []
   trusted_origins = [
     {
-      name   = "SimpleReport Staging Env",
+      name   = "SimpleReport Staging Env [TF]",
       url    = "https://stg.simplereport.gov",
       scopes = ["CORS", "REDIRECT"]
     }
