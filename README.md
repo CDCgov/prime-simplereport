@@ -1,32 +1,23 @@
-# Simple Report
+![SimpleReport Logo](/.meta/SimpleReportLogo.svg)
 
-https://simplereport.gov/
+https://www.simplereport.gov/
 
-[![Latest release](https://shields.io/github/v/release/cdcgov/prime-simplereport)](https://github.com/CDCgov/prime-simplereport/releases/latest) [![Quality Gate Status](https://sonarcloud.io/api/project_badges/measure?project=CDCgov_prime-data-input-client&metric=alert_status)](https://sonarcloud.io/dashboard?id=CDCgov_prime-data-input-client) [![Sonar coverage](https://shields.io/sonar/coverage/CDCgov_prime-data-input-client?server=https://sonarcloud.io)](https://sonarcloud.io/dashboard?id=CDCgov_prime-data-input-client)
+[![Quality Gate Status](https://sonarcloud.io/api/project_badges/measure?project=CDCgov_prime-data-input-client&metric=alert_status)](https://sonarcloud.io/dashboard?id=CDCgov_prime-data-input-client) [![Sonar coverage](https://shields.io/sonar/coverage/CDCgov_prime-data-input-client?server=https://sonarcloud.io)](https://sonarcloud.io/dashboard?id=CDCgov_prime-data-input-client)
 
 ## Table of Contents
 
-- [Simple Report](#simple-report)
-  - [Table of Contents](#table-of-contents)
-  - [Setup](#setup)
-  - [Backend](#backend)
-    - [Backend-Setup](#backend-setup)
-    - [Running the app with Make or start.sh](#running-the-app-with-make-or-startsh)
-    - [Running locally with Okta](#running-locally-with-okta)
-    - [Updating user role](#updating-user-role)
-      - [Organization roles](#organization-roles)
-      - [Site roles](#site-roles)
-    - [Restart & Clean](#restart--clean)
-    - [Rollbacks](#rollbacks)
-    - [API Testing](#api-testing)
-    - [Tests](#tests)
-    - [E2E Tests](#e2e-tests)
-    - [Local Settings](#local-settings)
-    - [SchemaSpy](#schemaspy)
-    - [Twilio](#twilio)
-    - [MailHog](#MailHog)
+  - [Developing locally](#developing-locally)
+  - [Running outside of docker](#running-outside-of-docker)
+  - [Support admin](#support-admin)
+  - [Roles](#roles)
+  - [Database cleaning](#database-cleaning)
+  - [Rollbacks](#rollbacks)
+  - [API testing](#api-testing)
+  - [Tests](#tests)
+  - [E2E tests](#e2e-tests)
+  - [Twilio](#twilio)
+  - [MailHog](#mailhog)
   - [Frontend](#frontend)
-    - [Frontend-Setup](#frontend-setup)
     - [Linters](#linters)
     - [Storybook and Chromatic](#storybook-and-chromatic)
   - [PR Conventions](#pr-conventions)
@@ -35,343 +26,176 @@ https://simplereport.gov/
     - [Revert to a Previous Release](#revert-to-a-previous-release)
     - [Deploy With Action](#deploy-with-action)
 
-## Setup
+## Developing locally
 
-1. Install Docker and docker-compose
-   - You can install docker hub directly: https://hub.docker.com/. This is the preferred solution and should come with docker-compose
-   - Alternatively, you can install docker and run it as a daemon: `brew install docker docker-compose`.
+The Simple Report application stack consists of:
+- PostgreSQL database
+- Java Spring Boot backend
+- React frontend
 
-## Backend
+For ease of local setup, we have created a docker compose setup which builds docker images for all the necessary components. It also uses nginx and mkcert to host the app locally over HTTPS. 
 
-There are two major pieces:
+To use this, you'll need to install the following:
 
-- a Java Spring Boot application
-- a postgresql database
+1. Install [docker and docker compose](https://docs.docker.com/get-docker/).
+1. Install [mkcert](https://github.com/FiloSottile/mkcert#installation)
+1. Install Node.js 14, either using [nvm](https://github.com/nvm-sh/nvm#installing-and-updating) or your preferred method. This is used for yarn scripts and pre-commit hooks.
+1. Install AdoptOpenJDK 11, either using [jabba](https://github.com/shyiko/jabba) or your preferred method. This is useful for IDE integration (IntelliJ, VS Code, etc.)
 
-To run the service, you need a JDK and some way of running postgresql (most
-people choose to use Docker, but you can also just run it as a service on your
-development box.) To test the full authentication/authorization/user-management
-integration, you will also need Okta credentials, but that is not necessary
-most of the time.
+Once those dependencies are installed, follow these steps to get the app up and running:
 
-### Backend-Setup
+1. Clone this repository: `git clone git@github.com:CDCgov/prime-simplereport.git`
+2. Run `yarn install` in the root of the repository to install pre-commit hooks using lefthook
+3. Run `cp .env.sample .env` in the root of the repository, then obtain the needed secrets from Azure or another developer. Be sure to set the `OKTA_API_KEY` environment variable. You can generate an API token for yourself by logging into the Okta Preview [admin panel](https://hhs-prime-admin.oktapreview.com) and going into Security > API > Tokens.
+4. Run `sudo vim /etc/hosts` (or use your editor of choice) and add a line to the bottom with the following contents and save: `127.0.0.1 localhost.simplereport.gov`
+5. Follow these steps from GitHub for [authenticating to the container registry](https://docs.github.com/en/packages/working-with-a-github-packages-registry/working-with-the-container-registry#authenticating-to-the-container-registry).
+6. Run `yarn start` in the root of the repository to start the app
+7. Make your user a support admin by assigning yourself the `SR-DEV-ADMINS` group in Okta Preview.
+8. When the frontend and backend builds are complete, visit https://localhost.simplereport.gov/app
 
-If Java isn't installed on a Mac you can get it from `brew`:
+You should see the support admin page. The application does not yet start with any seed data, so you'll need to add your own organization and facilities. You can create your first org at https://localhost.simplereport.gov/app/sign-up.
 
-```sh
-brew tap adoptopenjdk/openjdk
-brew install --cask adoptopenjdk11
-brew install gradle
+#### Notes
+Make sure docker has access to enough resources on your local machine. You'll know it doesn't if you get an error from any of your containers similar to this:
+```
+"The build failed because the process exited too early. This probably means the system ran out of memory or someone called `kill -9` on the process."
 ```
 
-Another option (also compatible with Linux) is to install with [jabba](https://github.com/shyiko/jabba), the Java version manager:
+How to update resources limits on your [Mac](https://docs.docker.com/desktop/mac/#resources), and [Windows](https://docs.docker.com/desktop/windows/#resources) machines.
 
-```sh
-curl -sL https://github.com/shyiko/jabba/raw/master/install.sh | bash && . ~/.jabba/jabba.sh
-jabba install adopt@1.11-0
-jabba use adopt@1.11
-```
+## Running outside of docker
 
-Running with docker:
+If you wish to run outside of docker compose (bare metal), you'll need to install all the dependencies locally.
+See more [info here](https://github.com/CDCgov/prime-simplereport/wiki/Running-outside-of-docker).
 
-1. `cd backend`
-1. Run `docker-compose up --build`
-1. view site at http://localhost:8080
+## Roles
 
-Running spring app locally and db in docker
+The available user role types are `ADMIN`, `USER`, `ENTRY_ONLY`, `ALL_FACILITIES`, and `NO_ACCESS`. You can check `backend/src/main/java/gov/cdc/usds/simplereport/config/authorization/OrganizationRole.java` for a list of available roles
 
-1. `cd backend`
-1. Run `docker-compose up -d db`
-1. Run `./gradlew bootRun --args='--spring.profiles.active=dev'`
-1. view site at http://localhost:8080
+- `ADMIN` - an organization admin with full access to their organization
+- `USER` - a site user the has access to everything in their organization but the gear icon
+- `ENTRY_ONLY` - a site user that only has access to the Conduct Test tab
+- `ALL_FACILITIES` - a site user that can access all facilities in their organization
+- `NO_ACCESS` - a member of an organization who has no permissions without possessing other roles. Every member of an org has this role, so it is used to list all users in an organization
 
-Running spring app locally and db in docker on port 5433
+These roles are controlled via Okta groups.
 
-1. `cd backend`
-1. Run ` docker-compose --env-file .env.development up db`
-1. Run ` SR_DB_PORT=5433 ./gradlew bootRun --args='--spring.profiles.active=dev'`
-1. view site at http://localhost:8080
+## Support admin
 
-The GraphQL playground should load after replacing the default request url with
-`http://localhost:8080/graphql`
+You can make your user a support admin by assigning yourself the `SR-DEV-ADMINS` group in Okta Preview.
 
-### Running the app with Make or start.sh
+Support admins can access the `/admin` paths and support admin APIs.
 
-For development, it may be more convenient to start the front and backends simultaneously. This can be done by running the following command in the root directory of the project:
-
-```bash
-make # "make start" if you're nasty
-```
-
-This will start up both servers in "watch" mode, so that changes to the source
-code result in an immediate rebuild.
-
-If you'd like to use a local installation of PostgreSQL, run the following to create a local database:
-
-```bash
-# Run this to create or reset the local db. Assumes your $USER has superuser privileges.
-# If not, use POSTGRES_USER=postgres
-POSTGRES_USER=$USER LIB_DIR="$(pwd)/backend/db-setup" POSTGRES_DB=postgres ./backend/db-setup/create-db.sh
-```
-
-Then run this to start the app:
-
-```bash
-./start.sh
-```
-
-This will also start up both servers in "watch" mode. When using `start.sh`, any environment variables put
-in `.env` in the root directory will be available to the app. Press CTRL-C to exit and cleanup the servers cleanly.
-
-### Running locally with Okta
-
-You can run the app against the "Okta Preview" instance by running the backend with the `okta-local` Spring profile. Be sure to set the `OKTA_API_KEY` environment variable. You can generate an API token for yourself by logging into the Okta Preview [admin panel](https://hhs-prime-admin.oktapreview.com) and going into Security > API > Tokens.
-
-You also need to set the following in `frontend/.env.local`:
-
-```
-REACT_APP_BACKEND_URL=http://localhost:8080
-REACT_APP_BASE_URL=http://localhost:3000
-REACT_APP_OKTA_ENABLED=true
-```
-
-### Updating user role
-
-By default the local test user is an organization admin role. If you need to change this value to test out other permissions.
-It can be set in `application-local.yaml`. If you have not created one run:
-
-bash
-
-```
-touch backend/src/main/resources/application-local.yaml
-```
-
-#### Organization roles
-
-Organization roles can be set by adding the following to `application-local.yaml`:
-
-```
-simple-report:
-  demo-users:
-    default-user:
-      authorization:
-        granted-roles: ADMIN
-```
-
-current role types are `ADMIN`, `USER`, `ENTRY_ONLY`, `ALL_FACILITIES`, and `NO_ACCESS`. You can check `backend/src/main/java/gov/cdc/usds/simplereport/config/authorization/OrganizationRole.java` for a list of available roles
-
-`ADMIN` - an organization admin with full access to their organization
-`USER` - a site user the has access to everything in their organization but the gear icon
-`ENTRY_ONLY` - a site user that only has access to the Conduct Test tab
-`ALL_FACILITIES` - a site user that can access all facilities in their organization
-`NO_ACCESS` - a member of an organization who has no permissions without possessing other roles
-
-#### Site roles
-
-You can make the default user a site admin by adding the following to `application-local.yaml`:
-
-```
-simple-report:
-  demo-users:
-    site-admin-emails:
-      - bob@example.com
-```
-
-Site admins can access the `/admin` paths and site admin APIs
-
-### Restart & Clean
+## Database cleaning
 
 When there are DB schema changes the backend may throw an error and fail to start.
 
-Restarting the docker way:
+To create a fresh database:
 
-1. run `cd backend`
-1. Bring down the service by running `docker-compose down`
-1. Wipe the db by running `docker system prune && docker images prune && docker volume prune`
-1. Restart the service `docker-compose up --build`
+1. `docker compose down --volumes`
 
-Restarting the SQL way:
+Note that until we create seed data, this will start you with an empty database, and you will need to manually create organizations and facilities again.
 
-1. run `db-setup/nuke-db.sh`
-2. restart the spring app `gradle bootRun --args='--spring.profiles.active=dev'`
-
-### Rollbacks
+## Rollbacks
 
 The application uses the Liquibase plugin for Gradle to perform certain database management tasks.
 
 To roll the database back to its state at a prior date:
 
 ```
-$ ./gradlew liquibaseRollbackToDate -PliquibaseCommandValue=${date}
+docker compose run --rm backend gradle liquibaseRollbackToDate -PliquibaseCommandValue=${date}
 ```
 
 To roll back a certain _number_ of migrations:
 
 ```
-$ ./gradlew liquibaseRollbackCount -PliquibaseCommandValue=${n}
+docker compose run --rm backend gradle liquibaseRollbackCount -PliquibaseCommandValue=${n}
 ```
 
 To roll back to a certain tag:
 
 ```
-$ ./gradlew liquibaseUpdateToTag -PliquibaseCommandValue=${TAG}
+docker compose run --rm backend gradle liquibaseRollback -PliquibaseCommandValue=${TAG}
 ```
 
 If you are required to roll back a non-local database, you may generate the required SQL to execute elsewhere. Use `liquibaseRollbackToDateSQL` or `liquibaseRollbackCountSQL` in the manner described above to write the rollback SQL to stdout.
 
-### API Testing
+## API testing
 
-Go to `localhost:8080` to see interact with the graphql api. You would need to point the api endpoint to the backend at: `http://localhost:8080/graphql` This gives you a preview to query/mutate the local database.
+You can make requests to the GraphQL API using [Insomnia](https://insomnia.rest/download) or a similar client. You would need to point the api endpoint to the backend at: `https://localhost.simplereport.gov/api/graphql` This gives you a preview to query/mutate the local database.  
+  
+When using Insomnia, you'll also need to pass your access_token in the `Authorization` header - this can be found in Application -> Local Storage -> Access Token on a Chrome browser, or by typing `localStorage.getItem("access_token")` into the console. Copy that value, then create an `Authorization` header with the value `Bearer ${access_token}`.
 
-### Tests
+## Tests
 
-All the tests can be run with `gradle test`. Make sure that you do not have `SPRING_PROFILES_ACTIVE` set in your shell environment.
-
-Running a single test with a full stacktrace can be accomplished by supping the path to `gradle test`. Example
-
-```bash
-gradle test --tests gov.cdc.usds.simplereport.api.QueueManagementTest.updateItemInQueue --stacktrace
-```
-
-### Local Settings
-
-To edit Spring Boot settings for your local set up you must first create a `application-local.yaml`
-(note this file is git ignored):
-
-bash
+Run frontend unit tests:
 
 ```
-touch backend/src/main/resources/application-local.yaml
+yarn test:frontend
 ```
 
-Useful local settings
-
-- make the default user an admin
+Run backend unit tests:
 
 ```
-simple-report:
-  demo-users:
-    site-admin-emails:
-      - bob@example.com
+yarn test:backend
 ```
 
-- make SQL pretty
-
-```
-spring:
-  jpa:
-    properties:
-      hibernate:
-        format_sql: true
-```
-
-- set CORS allowed-origins (this can be useful for testing the Okta integration)
-
-```
-simple-report:
-  cors:
-    allowed-origins:
-      - http://localhost:3000
-```
-
-To edit React settings, create `frontend/.env.local` (also git ignored).
-
-### E2E Tests
+## E2E tests
 
 E2E/Integration tests are available using [Cypress](https://www.cypress.io/).
 
-To get started, you'll need to get the secrets listed in `frontend/cypress/.env.e2e.sample`. Reach out to another developer if you don't have them already, and place them in `frontend/cypress/.env.e2e`.
+#### Requirements:
 
-To run the tests the easy way, simply run `yarn e2e`. This will spin up the app with all the necessary configuration in a docker compose network and run the tests headlessly in firefox. Screenshots and videos from the test will be saved to `frontend/cypress/screenshots` and `frontend/cypress/videos`.
-
-In order to run the tests locally, some modifications will need to be made to your local environment. Spring session requires the frontend and backend to be hosted on the same domain in order to properly authenticate.
-
-First, the tests run best on a clean database, so empty out your database prior to running.
-
-Next, before starting up the app, you'll need to start Wiremock:
+These files required to run integration tests.
+- `frontend/.env.local`
+- `frontend/cypress/.env.e2e`
+- `/etc/hosts`
 
 ```
-cd frontend
-./cypress/support/wiremock/download-wiremock.sh
-./cypress/support/wiremock/start-wiremock.sh orgSignUp
-```
-
-The following settings are needed for the frontend:
-
-`frontend/.env.local`:
-
-```
+# frontend/cypress/.env.e2e
 REACT_APP_BASE_URL=http://localhost.simplereport.gov
 REACT_APP_BACKEND_URL=http://localhost.simplereport.gov/api
 REACT_APP_OKTA_ENABLED=true
 REACT_APP_OKTA_URL=http://localhost:8088
 ```
 
-You will need to run the backend with the `e2e` profile, and with the following environment variable:
-
-```bash
-OKTA_TESTING_DISABLEHTTPSCHECK=true ./gradlew bootRun --args='--spring.profiles.active=e2e'
-```
-
-Or, if you are running with the `start.sh` script:
-
-`backend/src/main/resources/application-local.yaml`
+The `frontend/.env.local` file has a template at `frontend/cypress/.env.e2e.sample`. Reach out to another developer to get proper values for these secrets.
 
 ```
-spring.profiles.include: no-security, no-okta-mgmt, server-debug, create-sample-data
-server.servlet.session.cookie.domain: localhost.simplereport.gov
-okta.client.org-url: http://localhost:8088
-okta.client.token: foo
-```
-
-```bash
-OKTA_TESTING_DISABLEHTTPSCHECK=true ./start.sh
-```
-
-In order for `http://localhost.simplereport.gov` to route to your local application server, you'll need to make the following addition to your `/etc/hosts` file:
-
-`/etc/hosts`
-
-```
+# /etc/hosts
+# add the following line
 127.0.0.1 localhost.simplereport.gov
 ```
 
-Finally, you'll need to run a reverse proxy like nginx to point port 80 at your application server. You can do this in a docker container with the following command:
+#### Running Cypress
+Now that you have those files set up, you are ready for a test run! There are a few ways to run the tests from the `frontend` directory:
 
-```bash
-docker build -t nginx -f .frontend/cypress/support/nginx/Dockerfile.nginx.docker . && docker run -d -p 80:80 nginx:latest
-```
+- `yarn e2e`
+  - This will run cypress with default values and display Cypress logs.
+- `yarn e2e:open`
+  - This will open an interactive test runner that lets you select browsers
+  - Additional requirement: To use this command you need to set the WIREMOCK_URL env var in your command line.
+    - Set this for macOS
+        - `WIREMOCK_URL=http://host.docker.internal:8088`
+    - Set this for Linux operating systems (if you have a non standard networking setup, set it to whatever IP will point to your local machine).
+        - `WIREMOCK_URL=http://172.17.0.1:8088`
+- `yarn e2e:verbose`
+  - This will run cypress with default values and display Cypress, API, DB, Frontend, and Nginx logs.
 
-If you are running nginx locally already, you can use the config located at `frontend/cypress/support/nginx/localhost.simplereport.gov`.
+See the [Cypress documentation](https://docs.cypress.io/api/table-of-contents) for writing new tests. If you need to generate new Wiremock mappings for external services, see [this wiki page](https://github.com/CDCgov/prime-simplereport/wiki/WireMock).
 
-Once all of that is done, you are are ready for a test run! There are a few ways to run the tests (from the `frontend` dir):
 
-- `yarn cypress open`
-  - this will open an interactive test runner that lets you select browsers and which test to run. tests will run headed by default
-- `yarn cypress run`
-  - this will run all the tests headlessly on the commandline using electron
-- `yarn cypress run --browser firefox`
-  - this will run all the tests headlessly on the commandline using firefox
-- `yarn cypress run --browser chrome --headed`
-  - this will run all the tests headed using chrome
+## Load Tests
+SimpleReport leverages Locust for running its load tests. Currently, Locust starts as part of the local development build, and spawns three separate worker containers for inundating the system.
 
-To write new tests, see the [Cypress documentation](https://docs.cypress.io/api/table-of-contents). If you need to generate new Wiremock mappings for external services, see [this wiki page](https://github.com/CDCgov/prime-simplereport/wiki/WireMock).
+To compose Locust with the rest of the development stack, run `yarn locust` instead of `yarn start`. *(NOTE: All other prerequisites listed above in "Developing locally" are still required for tests to function.)*
 
-### SchemaSpy
+To access the Locust user interface, navigate to `http://localhost:8089/`. Load tests will not kick off automatically; they must be manually invoked.
 
-http://schemaspy.org/
+Tests can be configured by modifying `backend/locust/locustfile.py`.
 
-```bash
-cd backend
-docker-compose up db
-docker-compose up --build schemaspy
-# to run on a different port than 8081
-SR_SCHEMASPY_PORT=8082 docker-compose up --build schemaspy
-```
 
-visit http://localhost:8081
-
-### Twilio
+## Twilio
 
 Twilio's Java SDK auto-configures based on two environment variables: `TWILIO_ACCOUNT_SID` and `TWILIO_AUTH_TOKEN`. SMS is also disabled by default, and can be enabled in application.yml:
 
@@ -383,19 +207,11 @@ twilio:
 
 These can also be set by environment variable if desired.
 
-### MailHog
+## MailHog
 
 MailHog is an email-testing tool with a fake SMTP server underneath, we can use it to test sending emails locally.
 
-- Mailhog client runs on docker, `docker-compose up -d mailhog`
-- add the following to `application-local.yaml` to configure the backend to send email to mailhog client
-
-```yml
-spring:
-  mail:
-    host: localhost
-    port: 1025
-```
+- Mailhog client runs on docker, `docker compose up -d mailhog`
 
 - Access mailhog inbox on `http://localhost:8025/`
 
@@ -403,14 +219,6 @@ spring:
 
 The front end is a React app. The app uses [Apollo](https://www.apollographql.com/) to manage the graphql API. For styling the app leverages the [U.S. Web Design System (USWDS)](https://designsystem.digital.gov/). Ensure your node version is version 14 in order for
 yarn to build packages correctly.
-
-### Frontend-Setup
-
-1. (optional) Install react developer tools extensions
-1. Install [yarn](https://classic.yarnpkg.com/en/docs/install)
-1. `cd frontend && yarn install && docker-compose up`
-1. view site at http://localhost:3000
-   - Note: frontend need the backend to be running to work
 
 ### Linters
 
@@ -504,7 +312,7 @@ To do so manually:
 Example:
 
 ```Shell
-MAINTENANCE_MESSAGE='{"active": true, "message": "SimpleReport is currently experiencing service degradation"}' MAINTENANCE_ENV=dev yarn run maintenance:start
+MAINTENANCE_MESSAGE='{"active": true, "header" : "SimpleReport is currently experiencing an outage.", "message": "SimpleReport is currently experiencing service degradation"}' MAINTENANCE_ENV=dev yarn run maintenance:start
 ```
 
 Possible values for `MAINTENANCE_ENV`: `dev`, `test`, `pentest`, `training`, `demo`, `stg`, `prod`

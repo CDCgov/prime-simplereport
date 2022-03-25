@@ -1,12 +1,18 @@
 import qs from "querystring";
 
 import { MockedProvider } from "@apollo/client/testing";
-import { render, screen, within } from "@testing-library/react";
+import {
+  render,
+  screen,
+  waitForElementToBeRemoved,
+  within,
+} from "@testing-library/react";
 import { Provider } from "react-redux";
-import { MemoryRouter } from "react-router";
+import { MemoryRouter } from "react-router-dom";
 import configureStore from "redux-mock-store";
 import userEvent from "@testing-library/user-event";
 
+import { GetFacilityResultsForCsvDocument } from "../../generated/graphql";
 import { QUERY_PATIENT } from "../testQueue/addToQueue/AddToQueueSearch";
 
 import { testResultDetailsQuery } from "./TestResultDetailsModal";
@@ -151,6 +157,169 @@ const testResults = [
     },
     noSymptoms: false,
     symptoms: '{"someSymptom":"true"}',
+    __typename: "TestResult",
+  },
+];
+
+const testResultsForCsv = [
+  {
+    facility: { name: "Central Middle School", __typename: "Facility" },
+    dateTested: "2022-01-19T16:45:11.446Z",
+    result: "NEGATIVE",
+    correctionStatus: "ORIGINAL",
+    reasonForCorrection: null,
+    deviceType: {
+      name: "Cue",
+      manufacturer: "CueTM",
+      model: "Cue COVID Test",
+      swabType: "45345873",
+      __typename: "DeviceType",
+    },
+    patient: {
+      internalId: "48c523e8-7c65-4047-955c-e3f65bb8b58a",
+      firstName: "Barb",
+      middleName: "Whitaker",
+      lastName: "Cragell",
+      birthDate: "1960-11-07",
+      gender: "male",
+      role: "RESIDENT",
+      race: "asian",
+      ethnicity: "not_hispanic",
+      tribalAffiliation: [null],
+      lookupId: null,
+      telephone: "(905) 594-3725",
+      email: "fimevusuwu@mailinator.com",
+      street: "67 White Oak Avenue",
+      streetTwo: "Voluptatem optio in",
+      city: "Magna ut corrupti s",
+      county: "Maiores et sunt et q",
+      state: "NA",
+      zipCode: "00000",
+      country: null,
+      residentCongregateSetting: null,
+      employedInHealthcare: null,
+      preferredLanguage: null,
+      __typename: "Patient",
+    },
+    createdBy: {
+      nameInfo: {
+        firstName: "Nathan",
+        middleName: null,
+        lastName: "Carter",
+        __typename: "NameInfo",
+      },
+      __typename: "ApiUser",
+    },
+    symptoms:
+      '{"64531003":"false","103001002":"false","84229001":"false","68235000":"false","426000000":"false","49727002":"false","68962001":"false","422587007":"false","267036007":"false","62315008":"false","43724002":"false","36955009":"false","44169009":"false","422400008":"false","230145002":"false","25064002":"false","162397003":"false"}',
+    noSymptoms: false,
+    symptomOnset: null,
+    __typename: "TestResult",
+  },
+  {
+    facility: { name: "Central Middle School", __typename: "Facility" },
+    dateTested: "2022-01-19T16:42:46.744Z",
+    result: "NEGATIVE",
+    correctionStatus: "ORIGINAL",
+    reasonForCorrection: null,
+    deviceType: {
+      name: "Cue",
+      manufacturer: "CueTM",
+      model: "Cue COVID Test",
+      swabType: "45345873",
+      __typename: "DeviceType",
+    },
+    patient: {
+      firstName: "Cadman",
+      middleName: "Burton Conner",
+      lastName: "Day",
+      birthDate: "1903-04-07",
+      gender: "male",
+      race: "asian",
+      ethnicity: "not_hispanic",
+      tribalAffiliation: [null],
+      lookupId: null,
+      telephone: "(905) 594-3725",
+      email: "fimevusuwu@mailinator.com",
+      street: "67 White Oak Avenue",
+      streetTwo: "Voluptatem optio in",
+      city: "Magna ut corrupti s",
+      county: "Maiores et sunt et q",
+      state: "NA",
+      zipCode: "00000",
+      country: null,
+      role: "STUDENT",
+      residentCongregateSetting: null,
+      employedInHealthcare: null,
+      preferredLanguage: null,
+      __typename: "Patient",
+    },
+    createdBy: {
+      nameInfo: {
+        firstName: "Nathan",
+        middleName: null,
+        lastName: "Carter",
+        __typename: "NameInfo",
+      },
+      __typename: "ApiUser",
+    },
+    symptoms:
+      '{"64531003":"false","103001002":"false","84229001":"false","68235000":"false","426000000":"false","49727002":"false","68962001":"false","422587007":"false","267036007":"false","62315008":"false","43724002":"false","36955009":"false","44169009":"false","422400008":"false","230145002":"false","25064002":"false","162397003":"false"}',
+    noSymptoms: false,
+    symptomOnset: null,
+    __typename: "TestResult",
+  },
+  {
+    facility: { name: "Central Middle School", __typename: "Facility" },
+    dateTested: "2022-01-13T22:44:52.193Z",
+    result: "POSITIVE",
+    correctionStatus: "ORIGINAL",
+    reasonForCorrection: null,
+    deviceType: {
+      name: "Cue",
+      manufacturer: "CueTM",
+      model: "Cue COVID Test",
+      swabType: "45345873",
+      __typename: "DeviceType",
+    },
+    patient: {
+      firstName: "Bob",
+      middleName: null,
+      lastName: "International",
+      birthDate: "1970-09-09",
+      gender: "male",
+      race: null,
+      ethnicity: null,
+      tribalAffiliation: [null],
+      lookupId: null,
+      telephone: "(530) 867-5309",
+      email: "zedd@skylight.digital",
+      street: "123 Main St",
+      streetTwo: "",
+      city: null,
+      county: null,
+      state: "CA",
+      zipCode: "95820",
+      country: "USA",
+      role: "UNKNOWN",
+      residentCongregateSetting: null,
+      employedInHealthcare: null,
+      preferredLanguage: null,
+      __typename: "Patient",
+    },
+    createdBy: {
+      nameInfo: {
+        firstName: "Zedd",
+        middleName: null,
+        lastName: "Shmais",
+        __typename: "NameInfo",
+      },
+      __typename: "ApiUser",
+    },
+    symptoms:
+      '{"64531003":"false","103001002":"false","84229001":"false","68235000":"false","426000000":"false","49727002":"false","68962001":"false","422587007":"false","267036007":"false","62315008":"false","43724002":"false","36955009":"false","44169009":"false","422400008":"false","230145002":"false","25064002":"false","162397003":"false"}',
+    noSymptoms: false,
+    symptomOnset: null,
     __typename: "TestResult",
   },
 ];
@@ -495,6 +664,21 @@ const mocks = [
   },
   {
     request: {
+      query: GetFacilityResultsForCsvDocument,
+      variables: {
+        facilityId: "1",
+        pageNumber: 0,
+        pageSize: 3,
+      },
+    },
+    result: {
+      data: {
+        testResults: testResultsForCsv,
+      },
+    },
+  },
+  {
+    request: {
       query: testResultDetailsQuery,
       variables: {
         id: testResults[0].internalId,
@@ -730,19 +914,21 @@ describe("TestResultsList", () => {
   it("should render a list of tests", async () => {
     const { container } = render(
       <WithRouter>
-        <DetachedTestResultsList
-          data={{ testResults }}
-          pageNumber={1}
-          entriesPerPage={20}
-          totalEntries={testResults.length}
-          filterParams={{}}
-          setFilterParams={() => () => {}}
-          clearFilterParams={() => {}}
-          facilityId={"1"}
-          loading={false}
-          loadingTotalResults={false}
-          refetch={() => {}}
-        />
+        <MockedProvider mocks={[]}>
+          <DetachedTestResultsList
+            data={{ testResults }}
+            pageNumber={1}
+            entriesPerPage={20}
+            totalEntries={testResults.length}
+            filterParams={{}}
+            setFilterParams={() => () => {}}
+            clearFilterParams={() => {}}
+            facilityId={"1"}
+            loading={false}
+            loadingTotalResults={false}
+            refetch={() => {}}
+          />
+        </MockedProvider>
       </WithRouter>
     );
 
@@ -814,7 +1000,7 @@ describe("TestResultsList", () => {
       >
         <Provider store={store}>
           <MockedProvider mocks={localMocks}>
-            <TestResultsList pageNumber={1} />
+            <TestResultsList />
           </MockedProvider>
         </Provider>
       </MemoryRouter>
@@ -855,303 +1041,305 @@ describe("TestResultsList", () => {
     expect(await row.findByText("Abbott IDNow")).toBeInTheDocument();
     expect(await row.findByText("User, Ursula")).toBeInTheDocument();
   });
-  it("should call appropriate gql endpoints for pagination", async () => {
-    render(
-      <WithRouter>
-        <Provider store={store}>
-          <MockedProvider mocks={mocks}>
-            <TestResultsList pageNumber={1} />
-          </MockedProvider>
-        </Provider>
-      </WithRouter>
-    );
-    expect(
-      await screen.findByText("Test Results", { exact: false })
-    ).toBeInTheDocument();
-    expect(
-      await screen.findByText("Cragell, Barb Whitaker")
-    ).toBeInTheDocument();
-  });
-
-  it("should be able to filter by patient", async () => {
-    render(
-      <WithRouter>
-        <Provider store={store}>
-          <MockedProvider mocks={mocks}>
-            <TestResultsList pageNumber={1} />
-          </MockedProvider>
-        </Provider>
-      </WithRouter>
-    );
-    expect(
-      await screen.findByText("Test Results", { exact: false })
-    ).toBeInTheDocument();
-    expect(
-      await screen.findByText("Cragell, Barb Whitaker")
-    ).toBeInTheDocument();
-    expect(await screen.findByText("Colleer, Barde X")).toBeInTheDocument();
-    expect(await screen.findByText("Search by name")).toBeInTheDocument();
-    userEvent.type(screen.getByRole("searchbox"), "Cragell");
-    expect(await screen.findByText("Filter")).toBeInTheDocument();
-    userEvent.click(screen.getByText("Filter"));
-    expect(
-      await screen.findByText("Cragell, Barb Whitaker")
-    ).toBeInTheDocument();
-    expect(screen.queryByText("Colleer, Barde X")).not.toBeInTheDocument();
-    expect(screen.getByRole("searchbox")).toHaveValue("Cragell, Barb Whitaker");
-  });
-  it("should be able to filter by result value", async () => {
-    render(
-      <WithRouter>
-        <Provider store={store}>
-          <MockedProvider mocks={mocks}>
-            <TestResultsList pageNumber={1} />
-          </MockedProvider>
-        </Provider>
-      </WithRouter>
-    );
-    expect(
-      await screen.findByText("Test Results", { exact: false })
-    ).toBeInTheDocument();
-    expect(
-      await screen.findByText("Cragell, Barb Whitaker")
-    ).toBeInTheDocument();
-    expect(await screen.findByText("Gerard, Sam G")).toBeInTheDocument();
-    expect(
-      await screen.findByRole("option", { name: "Negative" })
-    ).toBeInTheDocument();
-    userEvent.selectOptions(screen.getByLabelText("Result"), ["NEGATIVE"]);
-    expect(
-      await screen.findByText("Cragell, Barb Whitaker")
-    ).toBeInTheDocument();
-    expect(screen.queryByText("Gerard, Sam G")).not.toBeInTheDocument();
-  });
-  it("should be able to filter by role", async () => {
-    render(
-      <WithRouter>
-        <Provider store={store}>
-          <MockedProvider mocks={mocks}>
-            <TestResultsList pageNumber={1} />
-          </MockedProvider>
-        </Provider>
-      </WithRouter>
-    );
-    expect(
-      await screen.findByText("Test Results", { exact: false })
-    ).toBeInTheDocument();
-    expect(
-      await screen.findByText("Cragell, Barb Whitaker")
-    ).toBeInTheDocument();
-    expect(await screen.findByText("Colleer, Barde X")).toBeInTheDocument();
-    expect(
-      await screen.findByRole("option", { name: "Resident" })
-    ).toBeInTheDocument();
-    userEvent.selectOptions(screen.getByLabelText("Role"), ["RESIDENT"]);
-    expect(
-      await screen.findByText("Cragell, Barb Whitaker")
-    ).toBeInTheDocument();
-    expect(screen.queryByText("Colleer, Barde X")).not.toBeInTheDocument();
-  });
-  it("should be able to filter by date", async () => {
-    render(
-      <WithRouter>
-        <Provider store={store}>
-          <MockedProvider mocks={mocks}>
-            <TestResultsList pageNumber={1} />
-          </MockedProvider>
-        </Provider>
-      </WithRouter>
-    );
-    expect(
-      await screen.findByText("Test Results", { exact: false })
-    ).toBeInTheDocument();
-    expect(
-      await screen.findByText("Cragell, Barb Whitaker")
-    ).toBeInTheDocument();
-    expect(await screen.findByText("Colleer, Barde X")).toBeInTheDocument();
-    expect(await screen.findByText("Gerard, Sam G")).toBeInTheDocument();
-    expect(await screen.findByText("Date range (start)")).toBeInTheDocument();
-    expect(await screen.findByText("Date range (end)")).toBeInTheDocument();
-    userEvent.type(
-      screen.getAllByTestId("date-picker-external-input")[0],
-      "03/18/2021"
-    );
-    userEvent.tab();
-    expect(await screen.findByText("Colleer, Barde X")).toBeInTheDocument();
-    expect(await screen.findByText("Gerard, Sam G")).toBeInTheDocument();
-    expect(
-      screen.queryByText("Cragell, Barb Whitaker")
-    ).not.toBeInTheDocument();
-    userEvent.type(
-      screen.getAllByTestId("date-picker-external-input")[1],
-      "03/18/2021"
-    );
-    userEvent.tab();
-    expect(await screen.findByText("Colleer, Barde X")).toBeInTheDocument();
-    expect(screen.queryByText("Gerard, Sam G")).not.toBeInTheDocument();
-    expect(
-      screen.queryByText("Cragell, Barb Whitaker")
-    ).not.toBeInTheDocument();
-  });
-  it("should be able to clear patient filter", async () => {
-    render(
-      <WithRouter>
-        <Provider store={store}>
-          <MockedProvider mocks={mocks}>
-            <TestResultsList pageNumber={1} />
-          </MockedProvider>
-        </Provider>
-      </WithRouter>
-    );
-
-    expect(
-      await screen.findByText("Test Results", { exact: false })
-    ).toBeInTheDocument();
-
-    // Apply filter
-    expect(await screen.findByText("Search by name")).toBeInTheDocument();
-    userEvent.type(screen.getByRole("searchbox"), "Cragell");
-    expect(await screen.findByText("Filter")).toBeInTheDocument();
-    userEvent.click(screen.getByText("Filter"));
-
-    // Clear filter
-    expect(await screen.findByText("Clear filters")).toBeInTheDocument();
-    userEvent.click(screen.getByText("Clear filters"));
-
-    // All results, filter no longer applied
-    expect(
-      await screen.findByText("Cragell, Barb Whitaker")
-    ).toBeInTheDocument();
-    expect(await screen.findByText("Colleer, Barde X")).toBeInTheDocument();
-  });
-
-  it("should be able to clear date filters", async () => {
-    render(
-      <WithRouter>
-        <Provider store={store}>
-          <MockedProvider mocks={mocks}>
-            <TestResultsList pageNumber={1} />
-          </MockedProvider>
-        </Provider>
-      </WithRouter>
-    );
-
-    // Apply filter
-    userEvent.type(
-      screen.getAllByTestId("date-picker-external-input")[0],
-      "03/18/2021"
-    );
-
-    userEvent.tab();
-
-    // Filter applied
-    expect(await screen.findByText("Colleer, Barde X")).toBeInTheDocument();
-    expect(await screen.findByText("Gerard, Sam G")).toBeInTheDocument();
-    expect(
-      screen.queryByText("Cragell, Barb Whitaker")
-    ).not.toBeInTheDocument();
-
-    expect(screen.getAllByTestId("date-picker-external-input")[0]).toHaveValue(
-      "03/18/2021"
-    );
-    // Clear filter
-    expect(await screen.findByText("Clear filters")).toBeInTheDocument();
-    userEvent.click(screen.getByText("Clear filters"));
-
-    // Filter no longer applied
-    expect(
-      await screen.findByText("Cragell, Barb Whitaker")
-    ).toBeInTheDocument();
-
-    // Date picker no longer displays the selected date
-    expect(screen.getAllByTestId("date-picker-external-input")[0]).toHaveValue(
-      ""
-    );
-  });
-
-  it("opens the test detail view", async () => {
-    render(
-      <WithRouter>
-        <Provider store={store}>
-          <MockedProvider mocks={mocks}>
-            <TestResultsList pageNumber={1} />
-          </MockedProvider>
-        </Provider>
-      </WithRouter>
-    );
-    expect(await screen.findByText("Showing 1-3 of 3")).toBeInTheDocument();
-    expect(
-      await screen.findByText("Test Results", { exact: false })
-    ).toBeInTheDocument();
-    const moreActions = within(screen.getByRole("table")).getAllByRole(
-      "button"
-    )[0];
-    userEvent.click(moreActions);
-    const viewDetails = await screen.findByText("View details");
-    userEvent.click(viewDetails);
-    expect(screen.queryAllByText("Test details").length).toBe(2);
-  });
-
-  it("opens the email test results modal", async () => {
-    render(
-      <WithRouter>
-        <Provider store={store}>
-          <MockedProvider mocks={mocks}>
-            <TestResultsList pageNumber={1} />
-          </MockedProvider>
-        </Provider>
-      </WithRouter>
-    );
-
-    expect(await screen.findByText("Showing 1-3 of 3")).toBeInTheDocument();
-    expect(
-      screen.getByText("Test Results", { exact: false })
-    ).toBeInTheDocument();
-    const moreActions = within(screen.getByRole("table")).getAllByRole(
-      "button"
-    )[0];
-    userEvent.click(moreActions);
-    const emailResult = screen.getByText("Email result");
-    userEvent.click(emailResult);
-    expect(screen.getByText("Email result modal")).toBeInTheDocument();
-  });
-
-  describe("patient has no email", () => {
-    it("doesnt show the button to print results", async () => {
+  describe("with mocks", () => {
+    beforeEach(() => {
       render(
         <WithRouter>
           <Provider store={store}>
             <MockedProvider mocks={mocks}>
-              <TestResultsList pageNumber={1} />
+              <TestResultsList />
             </MockedProvider>
           </Provider>
         </WithRouter>
       );
+    });
 
+    it("should call appropriate gql endpoints for pagination", async () => {
+      expect(
+        await screen.findByText("Test Results", { exact: false })
+      ).toBeInTheDocument();
+      expect(
+        await screen.findByText("Cragell, Barb Whitaker")
+      ).toBeInTheDocument();
+    });
+
+    it("should be able to filter by patient", async () => {
+      expect(
+        await screen.findByText("Test Results", { exact: false })
+      ).toBeInTheDocument();
+      expect(
+        await screen.findByText("Cragell, Barb Whitaker")
+      ).toBeInTheDocument();
+      expect(await screen.findByText("Colleer, Barde X")).toBeInTheDocument();
+      expect(await screen.findByText("Search by name")).toBeInTheDocument();
+      userEvent.type(screen.getByRole("searchbox"), "Cragell");
+      expect(await screen.findByText("Filter")).toBeInTheDocument();
+      userEvent.click(screen.getByText("Filter"));
+      expect(
+        await screen.findByText("Cragell, Barb Whitaker")
+      ).toBeInTheDocument();
+      expect(screen.queryByText("Colleer, Barde X")).not.toBeInTheDocument();
+      expect(screen.getByRole("searchbox")).toHaveValue(
+        "Cragell, Barb Whitaker"
+      );
+    });
+    it("should be able to filter by result value", async () => {
+      expect(
+        await screen.findByText("Test Results", { exact: false })
+      ).toBeInTheDocument();
+      expect(
+        await screen.findByText("Cragell, Barb Whitaker")
+      ).toBeInTheDocument();
+      expect(await screen.findByText("Gerard, Sam G")).toBeInTheDocument();
+      expect(
+        await screen.findByRole("option", { name: "Negative" })
+      ).toBeInTheDocument();
+      userEvent.selectOptions(screen.getByLabelText("Result"), ["NEGATIVE"]);
+      expect(
+        await screen.findByText("Cragell, Barb Whitaker")
+      ).toBeInTheDocument();
+      expect(screen.queryByText("Gerard, Sam G")).not.toBeInTheDocument();
+    });
+    it("should be able to filter by role", async () => {
+      expect(
+        await screen.findByText("Test Results", { exact: false })
+      ).toBeInTheDocument();
+      expect(
+        await screen.findByText("Cragell, Barb Whitaker")
+      ).toBeInTheDocument();
+      expect(await screen.findByText("Colleer, Barde X")).toBeInTheDocument();
+      expect(
+        await screen.findByRole("option", { name: "Resident" })
+      ).toBeInTheDocument();
+      userEvent.selectOptions(screen.getByLabelText("Role"), ["RESIDENT"]);
+      expect(
+        await screen.findByText("Cragell, Barb Whitaker")
+      ).toBeInTheDocument();
+      expect(screen.queryByText("Colleer, Barde X")).not.toBeInTheDocument();
+    });
+    it("should be able to filter by date", async () => {
+      expect(
+        await screen.findByText("Test Results", { exact: false })
+      ).toBeInTheDocument();
+      expect(
+        await screen.findByText("Cragell, Barb Whitaker")
+      ).toBeInTheDocument();
+      expect(await screen.findByText("Colleer, Barde X")).toBeInTheDocument();
+      expect(await screen.findByText("Gerard, Sam G")).toBeInTheDocument();
+      expect(await screen.findByText("Date range (start)")).toBeInTheDocument();
+      expect(await screen.findByText("Date range (end)")).toBeInTheDocument();
+      userEvent.type(
+        screen.getAllByTestId("date-picker-external-input")[0],
+        "03/18/2021"
+      );
+      userEvent.tab();
+      expect(await screen.findByText("Colleer, Barde X")).toBeInTheDocument();
+      expect(await screen.findByText("Gerard, Sam G")).toBeInTheDocument();
+      expect(
+        screen.queryByText("Cragell, Barb Whitaker")
+      ).not.toBeInTheDocument();
+      userEvent.type(
+        screen.getAllByTestId("date-picker-external-input")[1],
+        "03/18/2021"
+      );
+      userEvent.tab();
+      expect(await screen.findByText("Colleer, Barde X")).toBeInTheDocument();
+      expect(screen.queryByText("Gerard, Sam G")).not.toBeInTheDocument();
+      expect(
+        screen.queryByText("Cragell, Barb Whitaker")
+      ).not.toBeInTheDocument();
+    });
+    it("should be able to clear patient filter", async () => {
+      expect(
+        await screen.findByText("Test Results", { exact: false })
+      ).toBeInTheDocument();
+
+      // Apply filter
+      expect(await screen.findByText("Search by name")).toBeInTheDocument();
+      userEvent.type(screen.getByRole("searchbox"), "Cragell");
+      expect(await screen.findByText("Filter")).toBeInTheDocument();
+      userEvent.click(screen.getByText("Filter"));
+
+      // Clear filter
+      expect(await screen.findByText("Clear filters")).toBeInTheDocument();
+      userEvent.click(screen.getByText("Clear filters"));
+
+      // All results, filter no longer applied
+      expect(
+        await screen.findByText("Cragell, Barb Whitaker")
+      ).toBeInTheDocument();
+      expect(await screen.findByText("Colleer, Barde X")).toBeInTheDocument();
+    });
+
+    it("should be able to clear date filters", async () => {
+      // Apply filter
+      userEvent.type(
+        screen.getAllByTestId("date-picker-external-input")[0],
+        "03/18/2021"
+      );
+
+      userEvent.tab();
+
+      // Filter applied
+      expect(await screen.findByText("Colleer, Barde X")).toBeInTheDocument();
+      expect(await screen.findByText("Gerard, Sam G")).toBeInTheDocument();
+      expect(
+        screen.queryByText("Cragell, Barb Whitaker")
+      ).not.toBeInTheDocument();
+
+      expect(
+        screen.getAllByTestId("date-picker-external-input")[0]
+      ).toHaveValue("03/18/2021");
+      // Clear filter
+      expect(await screen.findByText("Clear filters")).toBeInTheDocument();
+      userEvent.click(screen.getByText("Clear filters"));
+
+      // Filter no longer applied
+      expect(
+        await screen.findByText("Cragell, Barb Whitaker")
+      ).toBeInTheDocument();
+
+      // Date picker no longer displays the selected date
+      expect(
+        screen.getAllByTestId("date-picker-external-input")[0]
+      ).toHaveValue("");
+    });
+
+    it("opens the test detail view", async () => {
+      expect(await screen.findByText("Showing 1-3 of 3")).toBeInTheDocument();
+      expect(
+        await screen.findByText("Test Results", { exact: false })
+      ).toBeInTheDocument();
+      const moreActions = within(screen.getByRole("table")).getAllByRole(
+        "button"
+      )[0];
+      userEvent.click(moreActions);
+      const viewDetails = await screen.findByText("View details");
+      userEvent.click(viewDetails);
+      expect(screen.queryAllByText("Test details").length).toBe(2);
+    });
+
+    it("opens the email test results modal", async () => {
       expect(await screen.findByText("Showing 1-3 of 3")).toBeInTheDocument();
       expect(
         screen.getByText("Test Results", { exact: false })
       ).toBeInTheDocument();
       const moreActions = within(screen.getByRole("table")).getAllByRole(
         "button"
-      )[1];
+      )[0];
       userEvent.click(moreActions);
-      expect(screen.queryByText("Email result")).not.toBeInTheDocument();
+      const emailResult = screen.getByText("Email result");
+      userEvent.click(emailResult);
+      expect(screen.getByText("Email result modal")).toBeInTheDocument();
     });
-  });
 
-  it("doesn't display anything if no facility is selected", async () => {
-    render(
-      <MemoryRouter>
-        <Provider store={store}>
-          <MockedProvider mocks={mocks}>
-            <TestResultsList pageNumber={1} />
-          </MockedProvider>
-        </Provider>
-      </MemoryRouter>
-    );
-    expect(
-      await screen.findByText("No facility selected", { exact: false })
-    ).toBeInTheDocument();
+    it("opens the download test results modal and shows how many rows the csv will have", async () => {
+      expect(await screen.findByText("Showing 1-3 of 3")).toBeInTheDocument();
+      expect(
+        screen.getByText("Test Results", { exact: false })
+      ).toBeInTheDocument();
+      const downloadButton = screen.getByText("Download results", {
+        exact: false,
+      });
+      userEvent.click(downloadButton);
+      expect(
+        screen.getByText("Download results without any filters", {
+          exact: false,
+        })
+      ).toBeInTheDocument();
+      expect(
+        screen.getByText("The CSV file will include 3 rows", { exact: false })
+      ).toBeInTheDocument();
+    });
+
+    it("closes the download test results modal after downloading", async () => {
+      expect(await screen.findByText("Showing 1-3 of 3")).toBeInTheDocument();
+      expect(
+        screen.getByText("Test Results", { exact: false })
+      ).toBeInTheDocument();
+      const downloadButton = screen.getByText("Download results", {
+        exact: false,
+      });
+      userEvent.click(downloadButton);
+      expect(
+        screen.getByText("Download results without any filters", {
+          exact: false,
+        })
+      ).toBeInTheDocument();
+      expect(
+        screen.getByText("The CSV file will include 3 rows", { exact: false })
+      ).toBeInTheDocument();
+      const downloadButton2 = within(screen.getByRole("dialog")).getByRole(
+        "button",
+        {
+          name: "Download results",
+          exact: false,
+        }
+      );
+      userEvent.click(downloadButton2);
+      expect(
+        screen.getByText("Loading...", {
+          exact: false,
+        })
+      ).toBeInTheDocument();
+      await waitForElementToBeRemoved(() =>
+        screen.queryByText("Download results without any filters", {
+          exact: false,
+        })
+      );
+    });
+
+    it("opens the download test results modal after applying filters and shows how many rows the csv will have", async () => {
+      expect(await screen.findByText("Showing 1-3 of 3")).toBeInTheDocument();
+      expect(
+        screen.getByText("Test Results", { exact: false })
+      ).toBeInTheDocument();
+      userEvent.selectOptions(screen.getByLabelText("Result"), ["NEGATIVE"]);
+      expect(await screen.findByText("Showing 1-2 of 2")).toBeInTheDocument();
+      const downloadButton = screen.getByText("Download results", {
+        exact: false,
+      });
+      userEvent.click(downloadButton);
+      expect(
+        await screen.findByText(
+          "Download results with current filters applied",
+          {
+            exact: false,
+          }
+        )
+      ).toBeInTheDocument();
+      expect(
+        screen.getByText("The CSV file will include 2 rows", { exact: false })
+      ).toBeInTheDocument();
+    });
+
+    describe("patient has no email", () => {
+      it("doesnt show the button to print results", async () => {
+        expect(await screen.findByText("Showing 1-3 of 3")).toBeInTheDocument();
+        expect(
+          screen.getByText("Test Results", { exact: false })
+        ).toBeInTheDocument();
+        const moreActions = within(screen.getByRole("table")).getAllByRole(
+          "button"
+        )[1];
+        userEvent.click(moreActions);
+        expect(screen.queryByText("Email result")).not.toBeInTheDocument();
+      });
+    });
+
+    it("doesn't display anything if no facility is selected", async () => {
+      render(
+        <MemoryRouter>
+          <Provider store={store}>
+            <MockedProvider mocks={mocks}>
+              <TestResultsList />
+            </MockedProvider>
+          </Provider>
+        </MemoryRouter>
+      );
+      expect(
+        await screen.findByText("No facility selected", { exact: false })
+      ).toBeInTheDocument();
+    });
   });
 });

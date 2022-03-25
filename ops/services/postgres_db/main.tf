@@ -60,3 +60,68 @@ resource "azurerm_postgresql_configuration" "pgms_wait_sampling_query_capture_mo
   server_name         = azurerm_postgresql_server.db.name
   value               = "ALL"
 }
+
+### New Postgres Flexible Server configuration
+### TODO: delete the old configuration above once all environments have been cut
+### over to the new DBs so Terraform can clean up the old infrastructure.
+
+resource "azurerm_postgresql_flexible_server" "db" {
+  name                = "simple-report-${var.env}-flexible-db"
+  location            = var.rg_location
+  resource_group_name = var.rg_name
+  sku_name            = var.env == "prod" ? "MO_Standard_E8ds_v4" : "MO_Standard_E4ds_v4"
+  version             = "13"
+  delegated_subnet_id = var.subnet_id
+  private_dns_zone_id = var.dns_zone_id
+
+  // TODO: replace with commented-out line below when removing old DB config
+  administrator_login = "simple_report"
+  //administrator_login    = var.administrator_login
+  administrator_password = data.azurerm_key_vault_secret.db_password.value
+
+  storage_mb                   = 524288 // 512 GB
+  backup_retention_days        = 7
+  geo_redundant_backup_enabled = false
+
+  tags = var.tags
+
+  // Time is Eastern
+  maintenance_window {
+    day_of_week  = 0
+    start_hour   = 0
+    start_minute = 0
+  }
+
+  # See note at https://registry.terraform.io/providers/hashicorp/azurerm/latest/docs/resources/postgresql_flexible_server#high_availability
+  lifecycle {
+    ignore_changes = [
+      zone,
+      high_availability.0.standby_availability_zone
+    ]
+  }
+}
+
+resource "azurerm_postgresql_flexible_server_database" "simple_report" {
+  charset   = "UTF8"
+  collation = "en_US.utf8"
+  name      = var.db_table
+  server_id = azurerm_postgresql_flexible_server.db.id
+}
+
+resource "azurerm_postgresql_flexible_server_configuration" "log_autovacuum_min_duration" {
+  name      = "log_autovacuum_min_duration"
+  server_id = azurerm_postgresql_flexible_server.db.id
+  value     = 250
+}
+
+resource "azurerm_postgresql_flexible_server_configuration" "pg_qs_query_capture_mode" {
+  name      = "pg_qs.query_capture_mode"
+  server_id = azurerm_postgresql_flexible_server.db.id
+  value     = "TOP"
+}
+
+resource "azurerm_postgresql_flexible_server_configuration" "pgms_wait_sampling_query_capture_mode" {
+  name      = "pgms_wait_sampling.query_capture_mode"
+  server_id = azurerm_postgresql_flexible_server.db.id
+  value     = "ALL"
+}

@@ -59,7 +59,7 @@ const QuestionsFormContainer = ({
       }
       setQuestionSet(response.questionSet);
       setSessionId(response.sessionId);
-    } catch (error) {
+    } catch (error: any) {
       setIdentificationVerified(false);
     }
     setLoading(false);
@@ -83,7 +83,7 @@ const QuestionsFormContainer = ({
       setIdentificationVerified(response.passed);
       setEmail(response.email);
       setActivationToken(response.activationToken);
-    } catch (error) {
+    } catch (error: any) {
       setIdentificationVerified(false);
     }
     setLoading(false);

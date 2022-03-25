@@ -1,5 +1,5 @@
 mutation updateFacility($facilityId: ID!, $deviceId: ID!) {
-    updateFacilityNew(
+    updateFacility(
         facilityId: $facilityId
         testingFacilityName: "Fake Facility"
         cliaNumber: "123457890987654321"
@@ -20,5 +20,7 @@ mutation updateFacility($facilityId: ID!, $deviceId: ID!) {
         orderingProviderZipCode: "11801"
         orderingProviderPhone: "(646) 5432123"
         deviceIds: [$deviceId]
-    )
+    ) {
+        id
+    }
 }

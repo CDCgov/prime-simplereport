@@ -1,5 +1,6 @@
 import { render, screen } from "@testing-library/react";
 
+import { AoEAnswers } from "./AoEForm/AoEForm";
 import AskOnEntryTag from "./AskOnEntryTag";
 
 const expectedStates: {
@@ -67,7 +68,7 @@ const expectedStates: {
 describe("AskOnEntryTag", () => {
   expectedStates.forEach(({ testName, answers, result }) => {
     it(testName, () => {
-      render(<AskOnEntryTag aoeAnswers={answers} />);
+      render(<AskOnEntryTag aoeAnswers={answers as AoEAnswers} />);
       expect(screen.getByText(result)).toBeInTheDocument();
     });
   });

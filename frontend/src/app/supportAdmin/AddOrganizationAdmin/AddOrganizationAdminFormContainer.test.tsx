@@ -1,6 +1,6 @@
 import { render, screen, waitFor } from "@testing-library/react";
 import { MockedProvider } from "@apollo/client/testing";
-import { MemoryRouter } from "react-router";
+import { MemoryRouter } from "react-router-dom";
 import userEvent from "@testing-library/user-event";
 
 import {
@@ -24,6 +24,10 @@ const organizationsQuery = {
         {
           externalId: "DC-Space-Camp-f34183c4-b4c5-449f-98b0-2e02abb7aae0",
           name: "Space Camp",
+        },
+        {
+          externalId: "DC-Space-Camp-h3781038-b4c5-449f-98b0-2e02abb7aae0",
+          name: "Space Camp 2",
         },
       ],
     },
@@ -52,10 +56,13 @@ const addAdminMutation = {
     },
   },
 };
-
-jest.mock("react-router-dom", () => ({
-  Redirect: () => <p>Redirected</p>,
-}));
+jest.mock("react-router-dom", () => {
+  const original = jest.requireActual("react-router-dom");
+  return {
+    ...original,
+    Navigate: () => <p>Redirected</p>,
+  };
+});
 
 describe("AddOrganizationAdminFormContainer", () => {
   describe("loading organizations", () => {
@@ -78,7 +85,7 @@ describe("AddOrganizationAdminFormContainer", () => {
       let title: HTMLElement;
       beforeEach(async () => {
         await waitFor(() => {
-          title = screen.getByText("Add Organization Admin", { exact: false });
+          title = screen.getByText("Add organization admin", { exact: false });
         });
       });
       it("disables the form title", () => {
@@ -108,16 +115,47 @@ describe("AddOrganizationAdminFormContainer", () => {
           });
           it("shows the form title", () => {
             expect(
-              screen.getByText("Add Organization Admin")
+              screen.getByText("Add organization admin")
             ).toBeInTheDocument();
           });
         });
       });
+      describe("combo box <> save button interactions", () => {
+        it("selecting org enables save", () => {
+          userEvent.click(screen.getByTestId("combo-box-select"));
+          userEvent.click(
+            screen.getByTestId(
+              "combo-box-option-DC-Space-Camp-f34183c4-b4c5-449f-98b0-2e02abb7aae0"
+            )
+          );
+          expect(
+            screen.getByText("Save Changes", { exact: false })
+          ).toBeEnabled();
+        });
+        it("clearing org disables save", () => {
+          userEvent.click(screen.getByTestId("combo-box-select"));
+          userEvent.click(
+            screen.getByTestId(
+              "combo-box-option-DC-Space-Camp-f34183c4-b4c5-449f-98b0-2e02abb7aae0"
+            )
+          );
+          expect(
+            screen.getByText("Save Changes", { exact: false })
+          ).toBeEnabled();
+          userEvent.click(screen.getByTestId("combo-box-clear-button"));
+          expect(
+            screen.getByText("Save Changes", { exact: false })
+          ).toBeDisabled();
+        });
+      });
       describe("All required fields filled", () => {
         beforeEach(() => {
-          userEvent.selectOptions(
-            screen.getByTestId("organization-dropdown"),
-            "DC-Space-Camp-f34183c4-b4c5-449f-98b0-2e02abb7aae0"
+          // using the default test id that comes with the trusswork component
+          userEvent.click(screen.getByTestId("combo-box-select"));
+          userEvent.click(
+            screen.getByTestId(
+              "combo-box-option-DC-Space-Camp-f34183c4-b4c5-449f-98b0-2e02abb7aae0"
+            )
           );
           userEvent.type(
             screen.getByLabelText("First name", { exact: false }),
@@ -137,11 +175,12 @@ describe("AddOrganizationAdminFormContainer", () => {
             screen.getByText("Save Changes", { exact: false })
           ).toBeEnabled();
         });
-        describe("Form submission", () => {
-          it("User is redirected away from the form", async () => {
-            userEvent.click(screen.getByText("Save Changes"));
-            expect(await screen.findByText("Redirected")).toBeInTheDocument();
-          });
+        it("User is redirected away from the form", async () => {
+          expect(screen.getByTestId("combo-box-input")).toHaveValue(
+            "Space Camp"
+          );
+          userEvent.click(screen.getByText("Save Changes"));
+          expect(await screen.findByText("Redirected")).toBeInTheDocument();
         });
       });
     });

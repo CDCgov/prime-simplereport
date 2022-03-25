@@ -1,6 +1,7 @@
 import classNames from "classnames";
 import { CSSTransition } from "react-transition-group";
-import iconLoader from "uswds/dist/img/loader.svg";
+
+import iconLoader from "../../img/loader.svg";
 
 import "./QueueItemSubmitLoader.scss";
 

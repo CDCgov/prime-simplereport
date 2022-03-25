@@ -11,7 +11,7 @@ import Modal from "react-modal";
 import classnames from "classnames";
 import moment from "moment";
 import { useSelector } from "react-redux";
-import { useHistory } from "react-router-dom";
+import { useNavigate } from "react-router-dom";
 
 import Alert from "../commonComponents/Alert";
 import Button from "../commonComponents/Button/Button";
@@ -21,6 +21,7 @@ import { displayFullName, showNotification } from "../utils";
 import { RootState } from "../store";
 import { getAppInsights } from "../TelemetryService";
 import { formatDate } from "../utils/date";
+import { TextWithTooltip } from "../commonComponents/TextWithTooltip";
 
 import { ALERT_CONTENT, QUEUE_NOTIFICATION_TYPES } from "./constants";
 import AskOnEntryTag, { areAnswersComplete } from "./AskOnEntryTag";
@@ -207,7 +208,7 @@ const QueueItem = ({
   dateTestedProp,
 }: QueueItemProps) => {
   const appInsights = getAppInsights();
-  const history = useHistory();
+  const navigate = useNavigate();
 
   const trackRemovePatientFromQueue = () => {
     if (appInsights) {
@@ -249,14 +250,14 @@ const QueueItem = ({
 
   // Populate device+specimen state variables from selected device specimen type
   useEffect(() => {
+    // Asserting this type should be OK - the parent component is responsible
+    // for removing invalid or deleted device specimen types from the collection
+    // passed in as props
     const deviceSpecimenType = deviceSpecimenTypes.find(
       (dst) => dst.internalId === deviceSpecimenTypeId
-    );
+    ) as DeviceSpecimenType;
 
-    if (!deviceSpecimenType) {
-      return;
-    }
-
+    updateDeviceSpecimenTypeId(deviceSpecimenType.internalId);
     updateDeviceId(deviceSpecimenType.deviceType.internalId);
     updateSpecimenId(deviceSpecimenType.specimenType.internalId);
   }, [deviceSpecimenTypes, deviceSpecimenTypeId]);
@@ -379,6 +380,7 @@ const QueueItem = ({
         <Alert type="error" title="Invalid test date" body={message} />
       );
 
+      setSaveState("error");
       return;
     }
 
@@ -396,7 +398,7 @@ const QueueItem = ({
         variables: {
           patientId: patient.internalId,
           deviceId: deviceId,
-          deviceSpecimenTypeId: deviceSpecimenTypeId,
+          deviceSpecimenType: deviceSpecimenTypeId,
           result: testResultValue,
           dateTested: shouldUseCurrentDateTime() ? null : dateTested,
         },
@@ -404,7 +406,7 @@ const QueueItem = ({
       testResultsSubmitted(result);
       refetchQueue();
       removeTimer(internalId);
-    } catch (error) {
+    } catch (error: any) {
       setSaveState("error");
       updateMutationError(error);
     }
@@ -615,6 +617,23 @@ const QueueItem = ({
     </button>
   );
 
+  const handleDateChange = (date: string) => {
+    if (date) {
+      const newDate = moment(date)
+        .hour(selectedDate.hours())
+        .minute(selectedDate.minutes());
+      onDateTestedChange(newDate);
+    }
+  };
+
+  const handleTimeChange = (timeStamp: string) => {
+    const [hours, minutes] = timeStamp.split(":");
+    const newDate = moment(selectedDate)
+      .hours(parseInt(hours))
+      .minutes(parseInt(minutes));
+    onDateTestedChange(newDate);
+  };
+
   const selectedDate = dateTested ? moment(dateTested) : moment();
 
   const timer = useTestTimer(internalId, deviceTestLength);
@@ -650,7 +669,10 @@ const QueueItem = ({
 
   return (
     <React.Fragment>
-      <div className={containerClasses}>
+      <div
+        className={containerClasses}
+        data-testid={`test-card-${patient.internalId}`}
+      >
         <QueueItemSubmitLoader
           show={saveState === "saving"}
           name={patientFullName}
@@ -667,7 +689,7 @@ const QueueItem = ({
                   <div
                     className="card-name"
                     onClick={() => {
-                      history.push({
+                      navigate({
                         pathname: `/patient/${patient.internalId}`,
                         search: `?facility=${facilityId}`,
                       });
@@ -708,11 +730,20 @@ const QueueItem = ({
                   </div>
 
                   <div className="flex-col-container">
-                    <div>Test date and time</div>
+                    <div
+                      className={classnames(
+                        saveState === "error" && "queue-item-error-message"
+                      )}
+                    >
+                      Test date and time
+                    </div>
                     <div className="test-date-time-container">
                       <input
                         hidden={useCurrentDateTime !== "false"}
-                        className="card-test-input"
+                        className={classnames(
+                          "card-test-input",
+                          saveState === "error" && "card-test-input__error"
+                        )}
                         id="test-date"
                         data-testid="test-date"
                         name="test-date"
@@ -720,31 +751,22 @@ const QueueItem = ({
                         min={formatDate(new Date("Jan 1, 2020"))}
                         max={formatDate(moment().toDate())}
                         defaultValue={formatDate(selectedDate.toDate())}
-                        onChange={(event) => {
-                          const date = event.target.value;
-                          if (date) {
-                            const newDate = moment(date)
-                              .hour(selectedDate.hours())
-                              .minute(selectedDate.minutes());
-                            onDateTestedChange(newDate);
-                          }
-                        }}
+                        onChange={(event) =>
+                          handleDateChange(event.target.value)
+                        }
                       />
                       <input
                         hidden={useCurrentDateTime !== "false"}
-                        className="card-test-input"
+                        className={classnames(
+                          "card-test-input",
+                          saveState === "error" && "card-test-input__error"
+                        )}
                         name={"test-time"}
                         data-testid="test-time"
                         type="time"
                         step="60"
                         value={selectedDate.format("HH:mm")}
-                        onChange={(e) => {
-                          const [hours, minutes] = e.target.value.split(":");
-                          const newDate = moment(selectedDate)
-                            .hours(parseInt(hours))
-                            .minutes(parseInt(minutes));
-                          onDateTestedChange(newDate);
-                        }}
+                        onChange={(e) => handleTimeChange(e.target.value)}
                       />
 
                       <div className="check-box-container">
@@ -782,7 +804,16 @@ const QueueItem = ({
                           label: d.name,
                           value: d.internalId,
                         }))}
-                      label="Device"
+                      label={
+                        <>
+                          <span>Device</span>
+
+                          <TextWithTooltip
+                            tooltip="Don’t see the test you’re using? Ask your organization admin to add the correct test and it'll show up here."
+                            position="right"
+                          />
+                        </>
+                      }
                       name="testDevice"
                       selectedValue={deviceId}
                       onChange={onDeviceChange}

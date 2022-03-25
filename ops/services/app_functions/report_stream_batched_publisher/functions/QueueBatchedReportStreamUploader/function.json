@@ -4,7 +4,7 @@
       "name": "QueueBatchedReportStreamUploadTimer",
       "type": "timerTrigger",
       "direction": "in",
-      "schedule": "0 5/15 * * * *"
+      "schedule": "0 */2 * * * *"
     }
   ],
   "scriptFile": "../dist/QueueBatchedReportStreamUploader/index.js"

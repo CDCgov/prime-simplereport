@@ -44,7 +44,7 @@ describe("smartStreets", () => {
         smartyStreetsClients.buildClient(() => {});
 
         fail();
-      } catch (error) {
+      } catch (error: any) {
         expect(error).toBeInstanceOf(smartyStreetsClients.SmartyStreetsError);
       }
 

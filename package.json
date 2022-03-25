@@ -3,22 +3,15 @@
   "version": "0.1.0",
   "private": true,
   "devDependencies": {
-    "csv-parse": "^4.15.3",
-    "csv-stringify": "^5.6.2",
-    "husky": "4",
-    "lint-staged": "^10.5.4"
-  },
-  "husky": {
-    "hooks": {
-      "pre-commit": "yarn precommit"
-    }
+    "@arkweid/lefthook": "^0.7.7"
   },
   "scripts": {
-    "precommit": "lint-staged",
-    "test:frontend": "cd frontend; yarn test; cd ..",
-    "test:backend": "cd backend; ./gradlew test --info; cd ..",
     "e2e": "cd frontend; yarn e2e; cd ..",
     "spotless": "cd backend; ./gradlew spotlessApply; cd ..",
-    "db": "docker-compose -f backend/docker-compose.yml exec db psql -U postgres simple_report"
+    "start": "./start.sh",
+    "locust": "./start.sh -l",
+    "db": "docker compose exec db psql -U postgres simple_report",
+    "test:frontend": "docker compose run --rm -e REACT_APP_BASE_URL=https://simplereport.gov -e REACT_APP_BACKEND_URL=https://simplereport.gov/api -e REACT_APP_OKTA_ENABLED=false frontend yarn test",
+    "test:backend": "docker compose --env-file .env.test -p simple-report-tests up -d db; docker compose --env-file .env.test -p simple-report-tests run --rm backend gradle test -PskipDbSetup=true -PtestDbHost=db; docker compose -p simple-report-tests down -v"
   }
 }

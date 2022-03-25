@@ -15,12 +15,14 @@ jest.mock("../TelemetryService", () => ({
   getAppInsights: jest.fn(),
 }));
 
-const mockPush = jest.fn();
-jest.mock("react-router-dom", () => ({
-  useHistory: () => ({
-    push: mockPush,
-  }),
-}));
+const mockNavigate = jest.fn();
+jest.mock("react-router-dom", () => {
+  const original = jest.requireActual("react-router-dom");
+  return {
+    ...original,
+    useNavigate: () => mockNavigate,
+  };
+});
 
 const initialDateString = "2021-02-14";
 const updatedDateString = "2021-03-10";
@@ -72,7 +74,7 @@ describe("QueueItem", () => {
             refetchQueue={testProps.refetchQueue}
             facilityId={testProps.facilityId}
             dateTestedProp={testProps.dateTestedProp}
-            patientLinkId={testProps.patientLinkId}
+            facilityName="Foo facility"
           />
         </Provider>
       </MockedProvider>
@@ -100,7 +102,7 @@ describe("QueueItem", () => {
             refetchQueue={testProps.refetchQueue}
             facilityId={testProps.facilityId}
             dateTestedProp={testProps.dateTestedProp}
-            patientLinkId={testProps.patientLinkId}
+            facilityName="Foo facility"
           />
         </Provider>
       </MockedProvider>
@@ -108,7 +110,7 @@ describe("QueueItem", () => {
     const patientName = screen.getByText("Potter, Harry James");
     expect(patientName).toBeInTheDocument();
     userEvent.click(patientName);
-    expect(mockPush).toHaveBeenCalledWith({
+    expect(mockNavigate).toHaveBeenCalledWith({
       pathname: "/patient/f5c7658d-a0d5-4ec5-a1c9-eafc85fe7554",
       search: "?facility=Hogwarts+123",
     });
@@ -133,13 +135,16 @@ describe("QueueItem", () => {
             refetchQueue={testProps.refetchQueue}
             facilityId={testProps.facilityId}
             dateTestedProp={testProps.dateTestedProp}
-            patientLinkId={testProps.patientLinkId}
+            facilityName="Foo facility"
           />
         </Provider>
       </MockedProvider>
     );
 
-    userEvent.type(screen.getByLabelText("Device", { exact: false }), "lumira");
+    userEvent.type(
+      screen.getAllByLabelText("Device", { exact: false })[1],
+      "lumira"
+    );
 
     expect(await screen.findByTestId("timer")).toHaveTextContent("10:00");
   });
@@ -163,13 +168,15 @@ describe("QueueItem", () => {
             refetchQueue={testProps.refetchQueue}
             facilityId={testProps.facilityId}
             dateTestedProp={testProps.dateTestedProp}
-            patientLinkId={testProps.patientLinkId}
+            facilityName="Foo facility"
           />
         </Provider>
       </MockedProvider>
     );
 
-    const deviceDropdown = await screen.findByLabelText("Device");
+    const deviceDropdown = (
+      await screen.findAllByLabelText("Device", { exact: false })
+    )[1];
 
     userEvent.selectOptions(deviceDropdown, "Access Bio CareStart");
 
@@ -201,7 +208,7 @@ describe("QueueItem", () => {
             refetchQueue={testProps.refetchQueue}
             facilityId={testProps.facilityId}
             dateTestedProp={testProps.dateTestedProp}
-            patientLinkId={testProps.patientLinkId}
+            facilityName="Foo facility"
           />
         </Provider>
       </MockedProvider>
@@ -237,7 +244,7 @@ describe("QueueItem", () => {
             id: internalId,
             deviceSpecimenType: "device-specimen-2",
             deviceId: "lumira",
-            result: {},
+            result: "POSITIVE",
           },
         },
         result: () => {
@@ -283,7 +290,7 @@ describe("QueueItem", () => {
               refetchQueue={testProps.refetchQueue}
               facilityId={testProps.facilityId}
               dateTestedProp={testProps.dateTestedProp}
-              patientLinkId={testProps.patientLinkId}
+              facilityName="Foo facility"
             />
           </Provider>
         </MockedProvider>
@@ -297,15 +304,15 @@ describe("QueueItem", () => {
       </>
     );
 
-    const deviceDropdown = await screen.findByLabelText("Device");
+    const deviceDropdown = (
+      await screen.findAllByLabelText("Device", { exact: false })
+    )[1];
 
     // Change device type
     userEvent.selectOptions(deviceDropdown, "LumiraDX");
+    userEvent.click(screen.getByLabelText("Positive", { exact: false }));
 
-    // Wait for the genuinely long-running "edit queue" operation to finish
-    await new Promise((resolve) => setTimeout(resolve, 1000));
-
-    expect(editQueueMockIsDone).toBe(true);
+    await waitFor(() => expect(editQueueMockIsDone).toBe(true));
   });
 
   describe("SMS delivery failure", () => {
@@ -356,7 +363,7 @@ describe("QueueItem", () => {
             variables: {
               patientId: internalId,
               deviceId: internalId,
-              deviceSpecimenTypeId: "device-specimen-1",
+              deviceSpecimenType: "device-specimen-1",
               result: "UNDETERMINED",
               dateTested: null,
             },
@@ -396,7 +403,7 @@ describe("QueueItem", () => {
                 refetchQueue={testProps.refetchQueue}
                 facilityId={testProps.facilityId}
                 dateTestedProp={testProps.dateTestedProp}
-                patientLinkId={testProps.patientLinkId}
+                facilityName="Foo facility"
               />
             </Provider>
           </MockedProvider>
@@ -481,7 +488,7 @@ describe("QueueItem", () => {
             refetchQueue={testProps.refetchQueue}
             facilityId={testProps.facilityId}
             dateTestedProp={testProps.dateTestedProp}
-            patientLinkId={testProps.patientLinkId}
+            facilityName="Foo facility"
           />
         </Provider>
       </MockedProvider>
@@ -516,7 +523,7 @@ describe("QueueItem", () => {
               refetchQueue={testProps.refetchQueue}
               facilityId={testProps.facilityId}
               dateTestedProp={testProps.dateTestedProp}
-              patientLinkId={testProps.patientLinkId}
+              facilityName="Foo facility"
             />
           </Provider>
         </MockedProvider>
@@ -563,6 +570,62 @@ describe("QueueItem", () => {
     });
   });
 
+  it("highlights the test card where the validation failure occurs", async () => {
+    render(
+      <MockedProvider mocks={mocks}>
+        <Provider store={store}>
+          <QueueItem
+            internalId={testProps.internalId}
+            patient={testProps.patient}
+            askOnEntry={testProps.askOnEntry}
+            selectedDeviceId={testProps.selectedDeviceId}
+            selectedDeviceTestLength={testProps.selectedDeviceTestLength}
+            selectedDeviceSpecimenTypeId={
+              testProps.selectedDeviceSpecimenTypeId
+            }
+            deviceSpecimenTypes={testProps.deviceSpecimenTypes}
+            selectedTestResult={testProps.selectedTestResult}
+            devices={testProps.devices}
+            refetchQueue={testProps.refetchQueue}
+            facilityId={testProps.facilityId}
+            dateTestedProp={testProps.dateTestedProp}
+            facilityName="Foo facility"
+          />
+        </Provider>
+      </MockedProvider>
+    );
+
+    // Enter an invalid (future) date on the first test card
+    const toggle = await screen.findByLabelText("Current date/time");
+    userEvent.click(toggle);
+    const dateInput = await screen.findByTestId("test-date");
+    expect(dateInput).toBeInTheDocument();
+    userEvent.type(dateInput, moment().add(5, "days").format("YYYY-MM-DD"));
+    dateInput.blur();
+
+    // Select result
+    userEvent.click(
+      await screen.findByLabelText("Inconclusive", {
+        exact: false,
+      })
+    );
+
+    await waitFor(async () =>
+      expect(await screen.findByText("Submit")).toBeEnabled()
+    );
+
+    userEvent.click(await screen.findByText("Submit"));
+
+    const updatedTestCard = await screen.findByTestId(
+      `test-card-${internalId}`
+    );
+    expect(updatedTestCard).toHaveClass("prime-queue-item__error");
+    const dateLabel = await screen.findByText("Test date and time");
+    expect(dateLabel).toHaveClass("queue-item-error-message");
+    const updatedDateInput = await screen.findByTestId("test-date");
+    expect(updatedDateInput).toHaveClass("card-test-input__error");
+  });
+
   it("displays person's mobile phone numbers", async () => {
     render(
       <MockedProvider mocks={mocks} addTypename={false}>
@@ -582,7 +645,7 @@ describe("QueueItem", () => {
             refetchQueue={testProps.refetchQueue}
             facilityId={testProps.facilityId}
             dateTestedProp={testProps.dateTestedProp}
-            patientLinkId={testProps.patientLinkId}
+            facilityName="Foo facility"
           />
         </Provider>
       </MockedProvider>
@@ -621,7 +684,7 @@ describe("QueueItem", () => {
               refetchQueue={testProps.refetchQueue}
               facilityId={testProps.facilityId}
               dateTestedProp={testProps.dateTestedProp}
-              patientLinkId={testProps.patientLinkId}
+              facilityName="Foo facility"
             />
           </Provider>
         </MockedProvider>
@@ -641,12 +704,7 @@ describe("QueueItem", () => {
     it("tracks submitted test result as custom event", async () => {
       // Submit
       userEvent.click(screen.getByText("Submit"));
-
-      userEvent.click(
-        screen.getByText("Submit anyway", {
-          exact: false,
-        })
-      );
+      userEvent.click(screen.getByText("Submit anyway"));
 
       expect(trackEventMock).toHaveBeenCalledWith({
         name: "Submit Test Result",
@@ -705,18 +763,22 @@ const testProps = {
         type: "LANDLINE",
       },
     ],
+    email: "foo",
+    emails: ["foo"],
+    gender: "male" as Gender,
+    testResultDelivery: "sms",
   },
   devices: [deviceOne, deviceTwo],
   askOnEntry: {
     symptoms: "{}",
-  },
+  } as any,
   testResultPreference: "SMS",
   selectedDeviceId: internalId,
   selectedDeviceTestLength: 10,
   selectedDeviceSpecimenTypeId: "device-specimen-1",
-  selectedTestResult: {},
+  selectedTestResult: {} as any,
   dateTestedProp: "",
-  refetchQueue: {},
+  refetchQueue: () => null,
   facilityId: "Hogwarts+123",
   patientLinkId: "",
   deviceSpecimenTypes: [

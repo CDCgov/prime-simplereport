@@ -1,5 +1,5 @@
 import { useState } from "react";
-import { useParams } from "react-router";
+import { useParams } from "react-router-dom";
 import { ToastContainer } from "react-toastify";
 import moment from "moment";
 import "react-toastify/dist/ReactToastify.css";
@@ -23,7 +23,9 @@ enum RegistrationStep {
 }
 
 export const SelfRegistration = () => {
-  const { registrationLink } = useParams<{ registrationLink: string }>();
+  const { registrationLink } = useParams<{
+    registrationLink: string | undefined;
+  }>();
   const [step, setStep] = useState(RegistrationStep.TERMS);
   const [entityName, setEntityName] = useState("");
   const [personName, setPersonName] = useState("");
@@ -63,7 +65,7 @@ export const SelfRegistration = () => {
       await PxpApi.selfRegister(data);
       setPersonName(formatFullName(person) || "");
       setStep(RegistrationStep.FINISHED);
-    } catch (e) {
+    } catch (e: any) {
       showError(
         t("selfRegistration.form.error.heading"),
         t("selfRegistration.form.error.text")

@@ -31,8 +31,12 @@ jobs:
           echo "OKTA_API_TOKEN=${{ secrets.OKTA_API_TOKEN }}" >> "$GITHUB_ENV"
       - uses: hashicorp/setup-terraform@v1
         with:
-          terraform_version: 0.15.1
+          terraform_version: 1.1.4
       - name: Terraform Init
         run: make init-${{ github.event.inputs.env }}
+      - name: Build ReportStream function app
+        uses: ./.github/actions/build-reportstream-functions
+        with:
+          deploy-env: ${{env.DEPLOY_ENV}}
       - name: Terraform plan
         run: make plan-${{ github.event.inputs.env }}

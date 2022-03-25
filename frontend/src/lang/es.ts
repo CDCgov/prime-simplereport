@@ -199,10 +199,10 @@ export const es: LanguageConfig = {
           city: "La ciudad tiene un formato incorrecto",
           county: "El formato del condado es incorrecto",
           country: "El formato del país es incorrecto",
-          race: "La raza tiene un formato incorrecto",
+          race: "La raza es obligatoria",
           tribalAffiliation: "La afiliación tribal tiene un formato incorrecto",
-          ethnicity: "La etnia tiene un formato incorrecto",
-          gender: "El sexo asignado al nacer tiene un formato incorrecto",
+          ethnicity: "La etnia es obligatoria",
+          gender: "El sexo asignado al nacer es obligatoria",
           residentCongregateSetting:
             "¿Reside usted en un entorno compartido por muchas personas?  Se requiere una respuesta",
           employedInHealthcare:
@@ -237,6 +237,7 @@ export const es: LanguageConfig = {
     },
     testResult: {
       result: "Resultado de SARS-CoV-2",
+      downloadResult: "Descargar resultado",
       patient: "Paciente",
       patientDetails: "Detalles del paciente",
       name: "Nombre",
@@ -249,12 +250,14 @@ export const es: LanguageConfig = {
       undetermined: UNDETERMINED,
       unknown: UNKNOWN,
       testDevice: "Dispositivo de prueba",
-      specimen: "Identificación de la muestra",
+      id: "Número de identificación de la prueba",
       meaning: "¿Qué significa mi resultado?",
       information:
-        "Para obtener más información, visite el <0>sitio web de los Centros para el Control y la Prevención de Enfermedades (CDC)</0> o comuníquese con su departamento de " +
-        "salud local.",
-      note: "Notas",
+        "Para obtener más información, visite <0>CDC.gov</0> o llame al 1-800-CDC-INFO (1-800-232-4636). Usa la <1>herramienta de verificación del condado</1> (espanol.cdc.gov/coronavirus/2019-ncov/your-health/covid-by-county.html) para comprender su nivel comunitario (riesgo de COVID-19 y capacidad hospitalaria en su área). ), consejos para la prevención y cómo encontrar vacunas, pruebas y recursos de tratamiento. ",
+      cdcLink: "https://espanol.cdc.gov/",
+      countyCheckToolLink:
+        "https://espanol.cdc.gov/coronavirus/2019-ncov/your-health/covid-by-county.html",
+      moreInformation: "Más información",
       printed: "Resultado de la prueba impreso",
       print: "Imprimir",
       close: "Cerrar",
@@ -281,7 +284,9 @@ export const es: LanguageConfig = {
             li0:
               "Quédese en casa cuando esté enfermo, excepto para recibir atención médica.",
             li1:
-              "Autoaíslese durante 10 días completos después de que aparezcan los síntomas (o a partir del día siguiente a la realización de la prueba, si no tiene síntomas).",
+              "Quédate en casa durante 5 días. " +
+              "Si no tiene síntomas o sus síntomas se resuelven después de 5 días, puede salir de su casa. " +
+              "Continúe usando una máscara alrededor de otras personas durante 5 días adicionales. ",
             li2:
               "Si se autoaísla en su casa, donde viven otras personas, use una habitación y un baño separado para los miembros del grupo familiar que estan enfermos " +
               "(si es posible). Limpie las habitaciones compartidas según sea necesario, para evitar la transmisión del virus",
@@ -295,11 +300,10 @@ export const es: LanguageConfig = {
               "casa.",
           },
           p2:
-            "Esté atento a los síntomas y <0> sepa cuándo buscar atención médica de emergencia</0>. Si alguien presenta alguno de estos síntomas, busque atención médica de " +
+            "Esté atento a los síntomas y sepa cuándo buscar atención médica de emergencia: <0>Síntomas del COVID-19</0> (espanol.cdc.gov/coronavirus/2019-ncov/symptoms-testing/symptoms.html). Si alguien presenta alguno de estos síntomas, busque atención médica de " +
             "emergencia de inmediato:",
-          whenToSeek: "sepa cuándo buscar atención médica de emergencia",
           symptomsLink:
-            "espanol.cdc.gov/coronavirus/2019-ncov/symptoms-testing/symptoms.html",
+            "https://espanol.cdc.gov/coronavirus/2019-ncov/symptoms-testing/symptoms.html",
           emergency: {
             li0: "Dificultad para respirar",
             li1: "Dolor o presión persistente en el pecho",
@@ -309,13 +313,6 @@ export const es: LanguageConfig = {
           },
           p3:
             "Llame al 911 o llame primero a su sala de emergencias local: dígale al operador que necesita atención para alguien que tiene o podría tener COVID-19.",
-          difficultNewsLink:
-            "Obtener un resultado positivo en la prueba de COVID-19 puede ser una noticia difícil, por lo que es importante tomar <0> medidas para sobrellevar el estrés </0> " +
-            "durante este periodo<1></1>. Comuníquese con su sistema de apoyo y programe una cita por teléfono o video con un profesional de salud mental si es necesario.",
-          difficultNewsURL:
-            "espanol.cdc.gov/coronavirus/2019-ncov/daily-life-coping/managing-stress-anxiety.html",
-          moreInformation:
-            "Para más información: espanol.cdc.gov/coronavirus/2019-ncov/if-you-are-sick/index.html.",
         },
         negative: {
           p0:
@@ -487,7 +484,7 @@ export const es: LanguageConfig = {
         enterDOB2:
           "Ingrese su fecha de nacimiento para acceder a su portal de pruebas de COVID-19.",
         linkExpirationNotice:
-          "Nota: este enlace caducará 5 días después de que se registró el resultado de la prueba.",
+          "Nota: este enlace caducará 10 días después de que se registró el resultado de la prueba.",
         format: "MM/DD/AAAA",
         invalidFormat:
           "La fecha de nacimiento debe estar en formato MM/DD/AAAA",

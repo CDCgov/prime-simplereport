@@ -14,6 +14,7 @@ import gov.cdc.usds.simplereport.db.model.Person_;
 import gov.cdc.usds.simplereport.db.model.PhoneNumber;
 import gov.cdc.usds.simplereport.db.model.Provider;
 import gov.cdc.usds.simplereport.db.model.SpecimenType;
+import gov.cdc.usds.simplereport.db.model.SupportedDisease;
 import gov.cdc.usds.simplereport.db.model.TestEvent;
 import gov.cdc.usds.simplereport.db.model.TestOrder;
 import gov.cdc.usds.simplereport.db.model.auxiliary.AskOnEntrySurvey;
@@ -38,6 +39,7 @@ import gov.cdc.usds.simplereport.db.repository.PersonRepository;
 import gov.cdc.usds.simplereport.db.repository.PhoneNumberRepository;
 import gov.cdc.usds.simplereport.db.repository.ProviderRepository;
 import gov.cdc.usds.simplereport.db.repository.SpecimenTypeRepository;
+import gov.cdc.usds.simplereport.db.repository.SupportedDiseaseRepository;
 import gov.cdc.usds.simplereport.db.repository.TestEventRepository;
 import gov.cdc.usds.simplereport.db.repository.TestOrderRepository;
 import gov.cdc.usds.simplereport.idp.repository.DemoOktaRepository;
@@ -81,6 +83,7 @@ public class TestDataFactory {
   @Autowired private PatientRegistrationLinkRepository _patientRegistrationLinkRepository;
   @Autowired private SpecimenTypeRepository _specimenRepo;
   @Autowired private DeviceSpecimenTypeRepository _deviceSpecimenRepo;
+  @Autowired private SupportedDiseaseRepository _supportedDiseaseRepo;
   @Autowired private DemoOktaRepository _oktaRepo;
 
   public Organization createValidOrg(
@@ -206,11 +209,11 @@ public class TestDataFactory {
             org,
             "HELLOTHERE",
             "Fred",
-            null,
+            "M",
             "Astaire",
             null,
             DEFAULT_BDAY,
-            getAddress(),
+            getFullAddress(),
             "USA",
             PersonRole.RESIDENT,
             List.of("fred@astaire.com"),
@@ -226,6 +229,34 @@ public class TestDataFactory {
     PhoneNumber pn = new PhoneNumber(p, PhoneType.MOBILE, telephone);
     _phoneNumberRepo.save(pn);
     p.setPrimaryPhone(pn);
+    return _personRepo.save(p);
+  }
+
+  @Transactional
+  public Person createFullPersonWithSpecificCountry(Organization org, String country) {
+    // consts are to keep style check happy othewise it complains about
+    // "magic numbers"
+    Person p =
+        new Person(
+            org,
+            "HELLOTHERE",
+            "Fred",
+            "M",
+            "Astaire",
+            null,
+            DEFAULT_BDAY,
+            getFullAddress(),
+            country,
+            PersonRole.RESIDENT,
+            List.of("fred@astaire.com"),
+            "white",
+            "not_hispanic",
+            null,
+            "male",
+            false,
+            false,
+            "English",
+            TestResultDeliveryPreference.SMS);
     return _personRepo.save(p);
   }
 
@@ -288,18 +319,36 @@ public class TestDataFactory {
   }
 
   public TestOrder createTestOrder(Person p, Facility f) {
-    AskOnEntrySurvey survey = AskOnEntrySurvey.builder().symptoms(Collections.emptyMap()).build();
-    return createTestOrder(p, f, survey);
+    return createTestOrder(p, f, createEmptySurvey());
   }
 
   public TestOrder createTestOrder(Person p, Facility f, AskOnEntrySurvey s) {
-    PatientAnswers answers = new PatientAnswers(s);
-    _patientAnswerRepo.save(answers);
     TestOrder o = new TestOrder(p, f);
-    o.setAskOnEntrySurvey(answers);
+    o.setAskOnEntrySurvey(savePatientAnswers(s));
     var savedOrder = _testOrderRepo.save(o);
     _patientLinkRepository.save(new PatientLink(savedOrder));
     return savedOrder;
+  }
+
+  public TestOrder createCompletedTestOrder(Person patient, Facility facility, TestResult result) {
+    TestOrder order = new TestOrder(patient, facility);
+    order.setAskOnEntrySurvey(savePatientAnswers(createEmptySurvey()));
+    order.setDeviceSpecimen(facility.getDefaultDeviceSpecimen());
+    order.setResult(result);
+    order.markComplete();
+    TestOrder savedOrder = _testOrderRepo.save(order);
+    _patientLinkRepository.save(new PatientLink(savedOrder));
+    return order;
+  }
+
+  private AskOnEntrySurvey createEmptySurvey() {
+    return AskOnEntrySurvey.builder().symptoms(Collections.emptyMap()).build();
+  }
+
+  private PatientAnswers savePatientAnswers(AskOnEntrySurvey survey) {
+    PatientAnswers answers = new PatientAnswers(survey);
+    _patientAnswerRepo.save(answers);
+    return answers;
   }
 
   public TestEvent createTestEvent(Person p, Facility f) {
@@ -334,16 +383,9 @@ public class TestDataFactory {
     return e;
   }
 
-  public TestEvent createTestEventCorrection(TestEvent te) {
-    TestOrder o = createTestOrder(te.getPatient(), te.getFacility());
-    o.setResult(te.getResult());
-
-    TestEvent te2 =
-        _testEventRepo.save(new TestEvent(te, TestCorrectionStatus.CORRECTED, "Corrected"));
-    o.setTestEventRef(te2);
-    o.markComplete();
-    _testOrderRepo.save(o);
-    return te2;
+  public TestEvent createTestEventRemoval(TestEvent originalTestEvent) {
+    return _testEventRepo.save(
+        new TestEvent(originalTestEvent, TestCorrectionStatus.REMOVED, "Cold feet"));
   }
 
   public TestEvent doTest(TestOrder order, TestResult result) {
@@ -429,8 +471,17 @@ public class TestDataFactory {
     return _deviceSpecimenRepo.save(new DeviceSpecimenType(device, specimen));
   }
 
+  public SupportedDisease createSupportedDisease(String name, String loinc) {
+    return _supportedDiseaseRepo.save(new SupportedDisease(name, loinc));
+  }
+
   public StreetAddress getAddress() {
     return new StreetAddress("736 Jackson PI NW", null, "Washington", "DC", "20503", "Washington");
+  }
+
+  public StreetAddress getFullAddress() {
+    return new StreetAddress(
+        "736 Jackson PI NW", "APT. 123", "Washington", "DC", "20503", "Washington");
   }
 
   public static List<PhoneNumber> getListOfOnePhoneNumber() {

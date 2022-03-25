@@ -1,7 +1,6 @@
 import React from "react";
 import { gql } from "@apollo/client";
 import Modal from "react-modal";
-import moment from "moment";
 import classnames from "classnames";
 import { Trans, useTranslation } from "react-i18next";
 
@@ -11,9 +10,7 @@ import "./TestResultPrintModal.scss";
 import logo from "../../img/simplereport-logo-black.svg";
 import { QueryWrapper } from "../commonComponents/QueryWrapper";
 import LanguageToggler from "../../patientApp/LanguageToggler";
-
-const formatDate = (date: string | undefined) =>
-  moment(date)?.format("MM/DD/yyyy");
+import { formatDateWithTimeOption } from "../utils/date";
 
 export const testQuery = gql`
   query getTestResultForPrint($id: ID!) {
@@ -51,6 +48,221 @@ export const testQuery = gql`
   }
 `;
 
+interface StaticTestResultModalProps {
+  testResultId: string | undefined;
+  testResult: any;
+  hardcodedPrintDate?: string;
+}
+export const StaticTestResultModal = ({
+  testResultId,
+  testResult,
+  hardcodedPrintDate,
+}: StaticTestResultModalProps) => {
+  const { t } = useTranslation();
+  const {
+    patient,
+    facility,
+    deviceType,
+    correctionStatus,
+    result,
+    dateTested,
+  } = testResult;
+
+  return (
+    <div
+      className={classnames(
+        "sr-test-result-report",
+        correctionStatus === "REMOVED" && "sr-removed-result"
+      )}
+    >
+      <header className="display-flex flex-align-end flex-justify margin-bottom-1">
+        <h1>{t("testResult.result")}</h1>
+        <img alt="SimpleReport logo" src={logo} className="sr-print-logo" />
+      </header>
+      <main>
+        <section className="sr-result-section sr-result-patient-details">
+          <h2>{t("testResult.patientDetails")}</h2>
+          <ul className="sr-details-list">
+            <li>
+              <b>{t("testResult.name")}</b>
+              <div>
+                {displayFullName(
+                  patient.firstName,
+                  patient.middleName,
+                  patient.lastName,
+                  false
+                )}
+              </div>
+            </li>
+            <li>
+              <b>{t("testResult.dob.dateOfBirth")}</b>
+              <div>{formatDateWithTimeOption(patient.birthDate)}</div>
+            </li>
+          </ul>
+        </section>
+        <section className="sr-result-section sr-result-facility-details">
+          <h2>{t("testResult.testingFacility.details")}</h2>
+          <ul className="sr-details-list">
+            <li>
+              <b>{t("testResult.testingFacility.name")}</b>
+              <div>{facility.name}</div>
+            </li>
+            <li>
+              <b>{t("testResult.testingFacility.phone")}</b>
+              <div>{facility.phone}</div>
+            </li>
+            <li>
+              <b>{t("testResult.testingFacility.address")}</b>
+              <div className="sr-result-facility-details-address">
+                <span>{facility.street}</span>
+                {facility.streetTwo && <span>{facility.streetTwo}</span>}
+                <span>
+                  {facility.city}, {facility.state} {facility.zipCode}
+                </span>
+              </div>
+            </li>
+            <li>
+              <b>{t("testResult.testingFacility.clia")}</b>
+              <div>{facility.cliaNumber}</div>
+            </li>
+            <li>
+              <b>{t("testResult.testingFacility.orderingProvider")}</b>
+              <div>
+                {displayFullName(
+                  facility.orderingProvider.firstName,
+                  facility.orderingProvider.middleName,
+                  facility.orderingProvider.lastName,
+                  false
+                )}
+              </div>
+            </li>
+            <li>
+              <b>{t("testResult.testingFacility.npi")}</b>
+              <div>{facility.orderingProvider.NPI}</div>
+            </li>
+          </ul>
+        </section>
+        <section className="sr-result-section sr-result-test-details">
+          <h2>{t("testResult.testDetails")}</h2>
+          <ul className="sr-details-list">
+            <li>
+              <b>{t("testResult.id")}</b>
+              <div>{testResultId}</div>
+            </li>
+            <li>
+              <b>{t("testResult.testName")}</b>
+              <div>{deviceType.name}</div>
+            </li>
+            <li>
+              <b>{t("testResult.testDevice")}</b>
+              <div>{deviceType.model}</div>
+            </li>
+            <li>
+              <b>{t("testResult.testDate")}</b>
+              <div>{formatDateWithTimeOption(dateTested, true)}</div>
+            </li>
+            <li>
+              <b>{t("testResult.testResult")}</b>
+              <div>
+                <strong>
+                  {result === "POSITIVE" && t("constants.testResults.POSITIVE")}
+                  {result === "NEGATIVE" && t("constants.testResults.NEGATIVE")}
+                  {result === "UNDETERMINED" &&
+                    t("constants.testResults.UNDETERMINED")}
+                </strong>
+              </div>
+            </li>
+          </ul>
+        </section>
+        <section className="sr-result-section sr-result-next-steps">
+          <h2>{t("testResult.moreInformation")}</h2>
+          {result === "UNDETERMINED" && (
+            <p>{t("testResult.notes.inconclusive.p0")}</p>
+          )}
+          {result !== "POSITIVE" && (
+            <>
+              <p>{t("testResult.notes.negative.p0")}</p>
+              <ul className="sr-multi-column">
+                <li>{t("testResult.notes.negative.symptoms.li2")}</li>
+                <li>{t("testResult.notes.negative.symptoms.li3")}</li>
+                <li>{t("testResult.notes.negative.symptoms.li4")}</li>
+                <li>{t("testResult.notes.negative.symptoms.li5")}</li>
+                <li>{t("testResult.notes.negative.symptoms.li6")}</li>
+                <li>{t("testResult.notes.negative.symptoms.li7")}</li>
+                <li>{t("testResult.notes.negative.symptoms.li8")}</li>
+                <li>{t("testResult.notes.negative.symptoms.li9")}</li>
+                <li>{t("testResult.notes.negative.symptoms.li10")}</li>
+              </ul>
+            </>
+          )}
+          {result === "POSITIVE" && (
+            <>
+              <p>{t("testResult.notes.positive.p1")}</p>
+              <ul>
+                <li>{t("testResult.notes.positive.guidelines.li0")}</li>
+                <li>{t("testResult.notes.positive.guidelines.li1")}</li>
+                <li>{t("testResult.notes.positive.guidelines.li2")}</li>
+                <li>{t("testResult.notes.positive.guidelines.li3")}</li>
+                <li>{t("testResult.notes.positive.guidelines.li4")}</li>
+                <li>{t("testResult.notes.positive.guidelines.li5")}</li>
+              </ul>
+              <Trans
+                t={t}
+                parent="p"
+                i18nKey="testResult.notes.positive.p2"
+                components={[
+                  <a
+                    href={t("testResult.notes.positive.symptomsLink")}
+                    target="_blank"
+                    rel="noopener noreferrer"
+                  >
+                    symptoms link
+                  </a>,
+                ]}
+              />
+              <ul>
+                <li>{t("testResult.notes.positive.emergency.li0")}</li>
+                <li>{t("testResult.notes.positive.emergency.li1")}</li>
+                <li>{t("testResult.notes.positive.emergency.li2")}</li>
+                <li>{t("testResult.notes.positive.emergency.li3")}</li>
+                <li>{t("testResult.notes.positive.emergency.li4")}</li>
+              </ul>
+              <p>{t("testResult.notes.positive.p3")}</p>
+            </>
+          )}
+          <Trans
+            t={t}
+            parent="p"
+            i18nKey="testResult.information"
+            components={[
+              <a
+                href={t("testResult.cdcLink")}
+                target="_blank"
+                rel="noopener noreferrer"
+              >
+                cdc.gov
+              </a>,
+              <a
+                href={t("testResult.countyCheckToolLink")}
+                target="_blank"
+                rel="noopener noreferrer"
+              >
+                county check tool
+              </a>,
+            ]}
+          />
+        </section>
+      </main>
+      <footer>
+        <p>
+          {t("testResult.printed")}{" "}
+          {hardcodedPrintDate || new Date().toLocaleString()}
+        </p>
+      </footer>
+    </div>
+  );
+};
+
 export interface TestResultPrintModalProps {
   data: any; // testQuery result
   testResultId: string | undefined;
@@ -76,7 +288,6 @@ export const DetachedTestResultPrintModal = ({
       <Button label={t("testResult.print")} onClick={() => window.print()} />
     </div>
   );
-  const { patient, facility, deviceType, correctionStatus } = data.testResult;
 
   return (
     <Modal
@@ -89,188 +300,11 @@ export const DetachedTestResultPrintModal = ({
         <LanguageToggler />
         {buttonGroup}
       </div>
-      <div
-        className={classnames(
-          "sr-test-result-report",
-          correctionStatus === "REMOVED" && "sr-removed-result"
-        )}
-      >
-        <header className="display-flex flex-align-end flex-justify margin-bottom-1">
-          <h1>{t("testResult.result")}</h1>
-          <img alt="SimpleReport logo" src={logo} className="sr-print-logo" />
-        </header>
-        <main>
-          <section className="sr-result-section sr-result-patient-details">
-            <h2>{t("testResult.patientDetails")}</h2>
-            <ul className="sr-details-list">
-              <li>
-                <b>{t("testResult.name")}</b>
-                <div>
-                  {displayFullName(
-                    patient.firstName,
-                    patient.middleName,
-                    patient.lastName
-                  )}
-                </div>
-              </li>
-              <li>
-                <b>{t("testResult.dob.dateOfBirth")}</b>
-                <div>{formatDate(patient.birthDate)}</div>
-              </li>
-            </ul>
-          </section>
-          <section className="sr-result-section sr-result-facility-details">
-            <h2>{t("testResult.testingFacility.details")}</h2>
-            <ul className="sr-details-list">
-              <li>
-                <b>{t("testResult.testingFacility.name")}</b>
-                <div>{facility.name}</div>
-              </li>
-              <li>
-                <b>{t("testResult.testingFacility.phone")}</b>
-                <div>{facility.phone}</div>
-              </li>
-              <li>
-                <b>{t("testResult.testingFacility.address")}</b>
-                <div className="sr-result-facility-details-address">
-                  <span>{facility.street}</span>
-                  {facility.streetTwo && <span>{facility.streetTwo}</span>}
-                  <span>
-                    {facility.city}, {facility.state} {facility.zipCode}
-                  </span>
-                </div>
-              </li>
-              <li>
-                <b>{t("testResult.testingFacility.clia")}</b>
-                <div>{facility.cliaNumber}</div>
-              </li>
-              <li>
-                <b>{t("testResult.testingFacility.orderingProvider")}</b>
-                <div>
-                  {displayFullName(
-                    facility.orderingProvider.firstName,
-                    facility.orderingProvider.middleName,
-                    facility.orderingProvider.lastName
-                  )}
-                </div>
-              </li>
-              <li>
-                <b>{t("testResult.testingFacility.npi")}</b>
-                <div>{facility.orderingProvider.NPI}</div>
-              </li>
-            </ul>
-          </section>
-          <section className="sr-result-section sr-result-test-details">
-            <h2>{t("testResult.testDetails")}</h2>
-            <ul className="sr-details-list">
-              <li>
-                <b>{t("testResult.specimen")}</b>
-                <div>{testResultId}</div>
-              </li>
-              <li>
-                <b>{t("testResult.testName")}</b>
-                <div>{deviceType.name}</div>
-              </li>
-              <li>
-                <b>{t("testResult.testDevice")}</b>
-                <div>{deviceType.model}</div>
-              </li>
-              <li>
-                <b>{t("testResult.testDate")}</b>
-                <div>{formatDate(data.testResult.dateTested)}</div>
-              </li>
-              <li>
-                <b>{t("testResult.testResult")}</b>
-                <div>
-                  <strong>
-                    {data.testResult.result === "POSITIVE" &&
-                      t("constants.testResults.POSITIVE")}
-                    {data.testResult.result === "NEGATIVE" &&
-                      t("constants.testResults.NEGATIVE")}
-                    {data.testResult.result === "UNDETERMINED" &&
-                      t("constants.testResults.UNDETERMINED")}
-                  </strong>
-                </div>
-              </li>
-            </ul>
-          </section>
-          <section className="sr-result-section sr-result-next-steps">
-            <h2>{t("testResult.note")}</h2>
-            {data.testResult.result !== "POSITIVE" && (
-              <>
-                <p>{t("testResult.notes.negative.p0")}</p>
-                <ul className="sr-multi-column">
-                  <li>{t("testResult.notes.negative.symptoms.li2")}</li>
-                  <li>{t("testResult.notes.negative.symptoms.li3")}</li>
-                  <li>{t("testResult.notes.negative.symptoms.li4")}</li>
-                  <li>{t("testResult.notes.negative.symptoms.li5")}</li>
-                  <li>{t("testResult.notes.negative.symptoms.li6")}</li>
-                  <li>{t("testResult.notes.negative.symptoms.li7")}</li>
-                  <li>{t("testResult.notes.negative.symptoms.li8")}</li>
-                  <li>{t("testResult.notes.negative.symptoms.li9")}</li>
-                  <li>{t("testResult.notes.negative.symptoms.li10")}</li>
-                </ul>
-                <Trans
-                  t={t}
-                  parent="p"
-                  i18nKey="testResult.information"
-                  components={[
-                    <a href="https://www.cdc.gov/coronavirus/2019-ncov/if-you-are-sick/end-home-isolation.html">
-                      Centers for Disease Control and Prevention (CDC) website
-                    </a>,
-                  ]}
-                />
-              </>
-            )}
-            {data.testResult.result === "POSITIVE" && (
-              <>
-                <ul>
-                  <li>{t("testResult.notes.positive.guidelines.li0")}</li>
-                  <li>{t("testResult.notes.positive.guidelines.li1")}</li>
-                  <li>{t("testResult.notes.positive.guidelines.li2")}</li>
-                  <li>{t("testResult.notes.positive.guidelines.li3")}</li>
-                  <li>{t("testResult.notes.positive.guidelines.li4")}</li>
-                  <li>{t("testResult.notes.positive.guidelines.li5")}</li>
-                </ul>
-                <p>{t("testResult.notes.positive.moreInformation")}</p>
-                <Trans
-                  t={t}
-                  parent="p"
-                  i18nKey="testResult.notes.positive.p2"
-                  components={[
-                    t("testResult.notes.positive.whenToSeek") +
-                      ": " +
-                      t("testResult.notes.positive.symptomsLink"),
-                  ]}
-                />
-                <ul>
-                  <li>{t("testResult.notes.positive.emergency.li0")}</li>
-                  <li>{t("testResult.notes.positive.emergency.li1")}</li>
-                  <li>{t("testResult.notes.positive.emergency.li2")}</li>
-                  <li>{t("testResult.notes.positive.emergency.li3")}</li>
-                  <li>{t("testResult.notes.positive.emergency.li4")}</li>
-                </ul>
-                <p>{t("testResult.notes.positive.p3")}</p>
-                <Trans
-                  t={t}
-                  parent="p"
-                  i18nKey="testResult.notes.positive.difficultNewsLink"
-                  components={[
-                    null,
-                    `: ${t("testResult.notes.positive.difficultNewsURL")}`,
-                  ]}
-                />
-              </>
-            )}
-          </section>
-        </main>
-        <footer>
-          <p>
-            {t("testResult.printed")}{" "}
-            {hardcodedPrintDate || new Date().toLocaleString()}
-          </p>
-        </footer>
-      </div>
+      <StaticTestResultModal
+        testResultId={testResultId}
+        testResult={data.testResult}
+        hardcodedPrintDate={hardcodedPrintDate}
+      />
       {buttonGroup}
     </Modal>
   );

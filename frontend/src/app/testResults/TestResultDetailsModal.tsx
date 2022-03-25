@@ -1,9 +1,8 @@
 import { gql } from "@apollo/client";
 import Modal from "react-modal";
-import moment from "moment";
 import classnames from "classnames";
-import iconClose from "uswds/dist/img/usa-icons/close.svg";
 
+import iconClose from "../../img/close.svg";
 import "./TestResultPrintModal.scss";
 import { QueryWrapper } from "../commonComponents/QueryWrapper";
 import { TestResult } from "../testQueue/QueueItem";
@@ -13,6 +12,7 @@ import {
   PregnancyCode,
   pregnancyMap,
 } from "../../patientApp/timeOfTest/constants";
+import { formatDateWithTimeOption } from "../utils/date";
 
 type Result = {
   dateTested: string;
@@ -38,13 +38,6 @@ type Result = {
       lastName: string;
     };
   };
-};
-
-const formatDate = (date: string | undefined, withTime?: boolean) => {
-  const dateFormat = "MM/DD/yyyy";
-  const timeFormat = "h:mma";
-  const format = withTime ? `${dateFormat} ${timeFormat}` : dateFormat;
-  return moment(date)?.format(format);
 };
 
 export const testResultDetailsQuery = gql`
@@ -163,7 +156,9 @@ export const DetachedTestResultDetailsModal = ({ data, closeModal }: Props) => {
           <span
             className={classnames("font-sans-lg", removed && strikeClasses)}
           >
-            {patient?.birthDate ? formatDate(patient.birthDate) : "--"}
+            {patient?.birthDate
+              ? formatDateWithTimeOption(patient.birthDate)
+              : "--"}
           </span>
         </div>
       </div>
@@ -177,7 +172,7 @@ export const DetachedTestResultDetailsModal = ({ data, closeModal }: Props) => {
           />
           <DetailsRow
             label="Test date"
-            value={dateTested && formatDate(dateTested, true)}
+            value={dateTested && formatDateWithTimeOption(dateTested, true)}
             removed={removed}
           />
           <DetailsRow
@@ -194,7 +189,7 @@ export const DetachedTestResultDetailsModal = ({ data, closeModal }: Props) => {
           />
           <DetailsRow
             label="Symptom onset"
-            value={symptomOnset && formatDate(symptomOnset)}
+            value={symptomOnset && formatDateWithTimeOption(symptomOnset)}
             indent
             removed={removed}
           />

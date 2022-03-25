@@ -7,6 +7,7 @@ RUN apt-get update && \
     apt-get clean;
 
 COPY ./package.json /app/package.json
+
 WORKDIR /app
 
 RUN yarn install

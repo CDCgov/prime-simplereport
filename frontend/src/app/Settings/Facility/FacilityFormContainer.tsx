@@ -1,7 +1,9 @@
-import React, { useState } from "react";
+import { useState } from "react";
 import { gql, useQuery, useMutation } from "@apollo/client";
-import { Redirect } from "react-router-dom";
+import { Navigate, useParams } from "react-router-dom";
+import { useDispatch } from "react-redux";
 
+import { updateFacility } from "../../store";
 import Alert from "../../commonComponents/Alert";
 import { showNotification } from "../../utils";
 import { getAppInsights } from "../../TelemetryService";
@@ -74,7 +76,7 @@ export const UPDATE_FACILITY_MUTATION = gql`
     $orderingProviderPhone: String
     $devices: [ID]!
   ) {
-    updateFacilityNew(
+    updateFacility(
       facilityId: $facilityId
       testingFacilityName: $testingFacilityName
       cliaNumber: $cliaNumber
@@ -97,11 +99,13 @@ export const UPDATE_FACILITY_MUTATION = gql`
       orderingProviderZipCode: $orderingProviderZipCode
       orderingProviderPhone: $orderingProviderPhone
       deviceIds: $devices
-    )
+    ) {
+      id
+    }
   }
 `;
 
-const ADD_FACILITY_MUTATION = gql`
+export const ADD_FACILITY_MUTATION = gql`
   mutation AddFacility(
     $testingFacilityName: String!
     $cliaNumber: String
@@ -125,7 +129,7 @@ const ADD_FACILITY_MUTATION = gql`
     $orderingProviderPhone: String
     $devices: [ID]!
   ) {
-    addFacilityNew(
+    addFacility(
       testingFacilityName: $testingFacilityName
       cliaNumber: $cliaNumber
       street: $street
@@ -147,42 +151,47 @@ const ADD_FACILITY_MUTATION = gql`
       orderingProviderZipCode: $orderingProviderZipCode
       orderingProviderPhone: $orderingProviderPhone
       deviceIds: $devices
-    )
+    ) {
+      id
+    }
   }
 `;
 
 interface Props {
-  facilityId: string;
   newOrg?: boolean;
 }
 
 const FacilityFormContainer: any = (props: Props) => {
+  const { facilityId } = useParams();
   const { data, loading, error } = useQuery<FacilityData, {}>(
     GET_FACILITY_QUERY,
     {
       fetchPolicy: "no-cache",
     }
   );
-  const appInsights = getAppInsights();
-  const [updateFacility] = useMutation(UPDATE_FACILITY_MUTATION);
-  const [addFacility] = useMutation(ADD_FACILITY_MUTATION);
-  const [saveSuccess, updateSaveSuccess] = useState(false);
 
+  const appInsights = getAppInsights();
+  const [updateFacilityMutation] = useMutation(UPDATE_FACILITY_MUTATION);
+  const [addFacilityMutation] = useMutation(ADD_FACILITY_MUTATION);
+
+  const [saveSuccess, updateSaveSuccess] = useState(false);
+  const [facilityData, setFacilityData] = useState<Facility | null>(null);
+  const dispatch = useDispatch();
   if (loading) {
     return <p> Loading... </p>;
   }
   if (error) {
     return error;
   }
-
-  if (data === undefined) {
+  if (!data) {
     return <p>Error: facility not found</p>;
   }
   if (saveSuccess) {
+    dispatch(updateFacility(facilityData));
     if (props.newOrg) {
       window.location.pathname = process.env.PUBLIC_URL || "";
     }
-    return <Redirect push to={{ pathname: "/settings/facilities" }} />;
+    return <Navigate to="/settings/facilities" />;
   }
 
   const saveFacility = async (facility: Facility) => {
@@ -190,10 +199,12 @@ const FacilityFormContainer: any = (props: Props) => {
       appInsights.trackEvent({ name: "Save Settings" });
     }
     const provider = facility.orderingProvider;
-    const saveFacility = props.facilityId ? updateFacility : addFacility;
-    await saveFacility({
+    const saveFacilityMutation = facilityId
+      ? updateFacilityMutation
+      : addFacilityMutation;
+    const savedFacility = await saveFacilityMutation({
       variables: {
-        facilityId: props.facilityId,
+        facilityId,
         testingFacilityName: facility.name,
         cliaNumber: facility.cliaNumber,
         street: facility.street,
@@ -217,7 +228,13 @@ const FacilityFormContainer: any = (props: Props) => {
         devices: facility.deviceTypes.map((d) => d.internalId),
       },
     });
-
+    setFacilityData(() => ({
+      ...facility,
+      id:
+        saveFacilityMutation === updateFacilityMutation
+          ? savedFacility.data.updateFacility.id
+          : savedFacility.data.addFacility.id,
+    }));
     const alert = (
       <Alert
         type="success"
@@ -232,7 +249,7 @@ const FacilityFormContainer: any = (props: Props) => {
 
   const getFacilityData = (): Facility => {
     const facility = data.organization.testingFacility.find(
-      (f) => f.id === props.facilityId
+      (f) => f.id === facilityId
     );
     if (facility) {
       return facility;

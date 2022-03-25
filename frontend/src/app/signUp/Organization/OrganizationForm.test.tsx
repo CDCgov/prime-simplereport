@@ -7,8 +7,7 @@ import OrganizationForm, {
 
 const getOrgNameInput = () =>
   screen.getByRole("textbox", {
-    name:
-      "Organization name Organizations have multiple testing facilities or locations as part of their network. required",
+    name: "Organization name required",
   });
 const getOrgStateDropdown = () => screen.getByLabelText("Organization state *");
 const getOrgTypeDropdown = () => screen.getByLabelText("Organization type *");
@@ -54,8 +53,8 @@ jest.mock("../SignUpApi", () => ({
   },
 }));
 
-jest.mock("react-router", () => ({
-  Redirect: (props: any) => `Redirected to ${props.to.pathname}`,
+jest.mock("react-router-dom", () => ({
+  Navigate: (props: any) => `Redirected to ${props.to}`,
 }));
 
 window.scrollTo = jest.fn();

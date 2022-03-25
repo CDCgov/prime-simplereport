@@ -4,12 +4,14 @@ import Alert from "./Alert";
 
 interface MaintenanceMode {
   active: boolean;
+  header: string;
   message: string;
 }
 
 export const MaintenanceBanner: React.FC = () => {
   const [maintenanceMode, setMaintenanceMode] = useState<MaintenanceMode>({
     active: false,
+    header: "",
     message: "",
   });
   useEffect(() => {
@@ -19,7 +21,7 @@ export const MaintenanceBanner: React.FC = () => {
         try {
           const maintenanceJSON = await maintenance.json();
           setMaintenanceMode(maintenanceJSON);
-        } catch (e) {
+        } catch (e: any) {
           console.error(e);
         }
       }
@@ -32,7 +34,7 @@ export const MaintenanceBanner: React.FC = () => {
       {maintenanceMode.active ? (
         <div className="usa-site-alert usa-site-alert--emergency usa-site-alert--no-heading border-top border-base-lighter">
           <Alert type="emergency" role="alert">
-            <strong>SimpleReport is currently experiencing an outage.</strong>{" "}
+            <strong>{maintenanceMode.header || "SimpleReport alert:"}</strong>{" "}
             {maintenanceMode.message}
           </Alert>
         </div>

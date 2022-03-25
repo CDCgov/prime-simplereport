@@ -54,7 +54,8 @@ databaseChangeLog:
             sql: CREATE EXTENSION IF NOT EXISTS pgcrypto;
       rollback:
         - sql:
-            sql: DROP EXTENSION pgcrypto;
+            sql: -- DROP EXTENSION IF EXISTS pgcrypto;
+            comment: Dropping the extension requires superuser permissions, and we don't want to give that to the migration user, so we have to do nothing here.
   - changeSet:
       id: define-enum-types
       author: bwarfield@cdc.gov
@@ -903,6 +904,10 @@ databaseChangeLog:
                 ordering_provider_id,
                 default_device_type
               FROM ${database.defaultSchemaName}.organization;
+      rollback:
+        - sql:
+            sql: |
+              TRUNCATE TABLE ${database.defaultSchemaName}.facility;
   - changeSet:
       id: add-facility-relationships
       author: bwarfield@cdc.gov
@@ -992,6 +997,85 @@ databaseChangeLog:
                   name: default_device_type
               - column:
                   name: ordering_provider_id
+      rollback:
+        - addColumn:
+            tableName: organization
+            columns:
+              - column:
+                  name: clia_number
+                  type: text
+                  remarks: The CLIA number for the facility that is ordering (and presumably also conducting) the tests.
+                  constraints:
+                    nullable: false
+              - column:
+                  name: default_device_type
+                  remarks: The default device type (if any) for tests at this facility.
+                  type: uuid
+                  constraints:
+                    foreignKeyName: fk__organization__default_device_type
+                    referencedTableName: device_type
+              - column:
+                  name: ordering_provider_id
+                  type: uuid
+                  constraints:
+                    nullable: false
+                    foreignKeyName: fk__organization__ordering_provider
+                    referencedTableName: provider
+        - addColumn:
+            tableName: facility_device_type
+            columns:
+              - column:
+                  name: organization_id
+                  type: uuid
+                  remarks: The organization within which this request was performed (if applicable).
+                  constraints:
+                    nullable: true
+                    foreignKeyName: fk__api_audit_event__organization
+                    referencedTableName: organization
+        - dropNotNullConstraint:
+            tableName: facility_device_type
+            columnName: facility_id
+        - dropColumn:
+            tableName: facility_device_type
+            columns:
+              - column:
+                  name: facility_id
+        - dropNotNullConstraint:
+            tableName: test_order
+            columnName: facility_id
+        - dropColumn:
+            tableName: test_order
+            columns:
+              - column:
+                  name: facility_id
+        - dropNotNullConstraint:
+            tableName: test_event
+            columnName: facility_id
+        - dropColumn:
+            tableName: test_event
+            columns:
+              - column:
+                  name: facility_id
+        - dropColumn:
+            tableName: person
+            columns:
+              - column:
+                  name: facility_id
+        - dropUniqueConstraint:
+            tableName: organization
+            constraintName: uk__organization__organization_name
+            columnNames: organization_name
+        - renameColumn:
+            tableName: organization
+            oldColumnName: organization_name
+            newColumnName: facility_name
+            remarks: The human-readable name for this organization.
+        - addConstraint:
+            tableName: organization
+            constraintName: uk__facility__name
+            constraints:
+              nullable: false
+              unique: true
   - changeSet:
       id: date-tested-backdate
       author: tbest@cdc.gov
@@ -1025,9 +1109,6 @@ databaseChangeLog:
             remarks: Create the enumerations needed for DataHubUpload.
             sql: |
               CREATE TYPE ${database.defaultSchemaName}.DATA_HUB_UPLOAD_STATUS as ENUM('IN_PROGRESS', 'SUCCESS', 'FAIL');
-            rollback:
-              sql: |
-                DROP TYPE ${database.defaultSchemaName}.DATA_HUB_UPLOAD_STATUS;
         - createTable:
             tableName: data_hub_upload
             remarks: Track uploads and results of test_events to the data-hub.
@@ -1087,6 +1168,11 @@ databaseChangeLog:
               - column:
                   name: latest_recorded_timestamp
                   descending: true
+      rollback:
+        dropTable:
+          tableName: data_hub_upload
+        sql: |
+          DROP TYPE ${database.defaultSchemaName}.DATA_HUB_UPLOAD_STATUS;
   - changeSet:
       id: change-test-results-to-MST
       author: neil.s.sharma@omb.eop.gov
@@ -1097,6 +1183,12 @@ databaseChangeLog:
             sql: |
               UPDATE ${database.defaultSchemaName}.test_order
               SET date_tested_backdate = date_tested_backdate + interval '7' HOUR
+              WHERE date_tested_backdate is not null;
+      rollback:
+        - sql:
+          sql: |
+              UPDATE ${database.defaultSchemaName}.test_order
+              SET date_tested_backdate = date_tested_backdate - interval '7' HOUR
               WHERE date_tested_backdate is not null;
 
   - changeSet:
@@ -1133,9 +1225,6 @@ databaseChangeLog:
             remarks: Create the enumerations for corrections_status in test_event table.
             sql: |
               CREATE TYPE ${database.defaultSchemaName}.TEST_CORRECTION_STATUS as ENUM('ORIGINAL', 'CORRECTED', 'REMOVED');
-            rollback:
-              sql: |
-                DROP TYPE ${database.defaultSchemaName}.TEST_CORRECTION_STATUS;
         - addColumn:
             tableName: test_order
             columns:
@@ -1202,6 +1291,32 @@ databaseChangeLog:
         - addNotNullConstraint:
             tableName: test_event
             columnName: test_order_id
+      rollback:
+        - dropColumn:
+            tableName: test_order
+            columns:
+              - column:
+                  name: correction_status
+              - column:
+                  name: reason_for_correction
+        - dropColumn:
+            tableName: test_event
+            columns:
+              - column:
+                  name: survey_data
+              - column:
+                  name: date_tested_backdate
+              - column:
+                  name: test_order_id
+              - column:
+                  name: correction_status
+              - column:
+                  name: prior_corrected_test_event_id
+              - column:
+                  name: reason_for_correction
+        - sql:
+          sql: |
+            DROP TYPE ${database.defaultSchemaName}.TEST_CORRECTION_STATUS;
   - changeSet:
       id: add-patient-link-table
       author: nclyde@skylight.digital
@@ -1498,6 +1613,10 @@ databaseChangeLog:
                 gen_random_uuid(), now(), now(), false, null,
                 '${migrations_user_email}', 'Database Migration Process'
               )
+      rollback:
+        - sql:
+            sql: |
+              DELETE FROM ${database.defaultSchemaName}.api_user WHERE last_name='Database Migration Process'
   - changeSet:
       id: populate-specimen-tables
       author: bwarfield@cdc.gov
@@ -1582,6 +1701,12 @@ databaseChangeLog:
               SET device_specimen_type_id = ds.internal_id
               FROM ${database.defaultSchemaName}.device_specimen_type ds
               WHERE ds.device_type_id = t.device_type_id;
+      rollback:
+        - sql:
+            sql: |
+              TRUNCATE TABLE ${database.defaultSchemaName}.specimen_type CASCADE;
+              TRUNCATE TABLE ${database.defaultSchemaName}.device_specimen_type CASCADE;
+              TRUNCATE TABLE ${database.defaultSchemaName}.facility_device_specimen_type CASCADE;
   - changeSet:
       id: test-order-fixup
       author: bwarfield@cdc.gov
@@ -1603,6 +1728,10 @@ databaseChangeLog:
               FROM ${database.defaultSchemaName}.facility f
               WHERE f.internal_id = t.facility_id
               AND t.device_type_id is null
+      rollback:
+        - sql:
+            sql: -- do nothing;
+            comment: This is a one-way UPDATE and can't be rolled back
   - changeSet:
       id: complete-specimen-column-additions
       author: bwarfield@cdc.gov
@@ -1878,6 +2007,10 @@ databaseChangeLog:
               migrations_user_id updated_by
             FROM ${database.defaultSchemaName}.person CROSS JOIN migration_user
             WHERE test_result_delivery IS NOT NULL;
+      rollback:
+        - sql:
+          sql: |
+            TRUNCATE TABLE ${database.defaultSchemaName}.patient_preferences;
   - changeSet:
       id: add-org-verified
       author: jeremy.a.zitomer@omb.eop.gov
@@ -1921,6 +2054,29 @@ databaseChangeLog:
             columns:
               - column:
                   name: test_result_delivery
+      rollback:
+        - addColumn:
+            tableName: person
+            columns:
+              - column:
+                  name: test_result_delivery
+                  type: ${database.defaultSchemaName}.TEST_RESULT_DELIVERY
+                  remarks: Tracks the individual's preference for receiving test results
+  - changeSet:
+      id: add-no-phi-role
+      author: josh@skylight.digital
+      comment: Add a role for a user with reduced DB permissions (e.g., for Metabase)
+      changes:
+        - tagDatabase:
+          tag: add-no-phi-role
+        - sql:
+          sql: |
+            CREATE ROLE ${noPhiUsername} WITH LOGIN NOSUPERUSER ENCRYPTED PASSWORD '${noPhiPassword}';
+      rollback:
+        - sql:
+            sql: |
+              -- do nothing;
+            comment: We can't actually remove this role because the metabase DB will still be using it.
   - changeSet:
       id: add-no-phi-views
       author: josh@skylight.digital
@@ -2028,6 +2184,9 @@ databaseChangeLog:
         - sql:
             remarks: Add constraint to allow for a facility or an organization.
             sql: ALTER TABLE patient_registration_link ADD CONSTRAINT facility_or_organization CHECK (num_nonnulls(facility_id, organization_id) = 1)
+      rollback:
+        - dropTable:
+            tableName: patient_registration_link
   - changeSet:
         id: add-spring-session-jdbc-support
         author: emma@skylight.digital
@@ -2132,6 +2291,12 @@ databaseChangeLog:
               ALTER TABLE ${database.defaultSchemaName}.spring_session ALTER COLUMN creation_time TYPE bigint USING EXTRACT(EPOCH FROM creation_time);
               ALTER TABLE ${database.defaultSchemaName}.spring_session ALTER COLUMN last_access_time TYPE bigint USING EXTRACT(EPOCH FROM last_access_time);
               ALTER TABLE ${database.defaultSchemaName}.spring_session ALTER COLUMN expiry_time TYPE bigint USING EXTRACT(EPOCH FROM expiry_time);
+        rollback:
+          - sql:
+            sql: |
+              ALTER TABLE ${database.defaultSchemaName}.spring_session ALTER COLUMN creation_time TYPE TIMESTAMP WITHOUT TIME ZONE USING to_timestamp(creation_time);
+              ALTER TABLE ${database.defaultSchemaName}.spring_session ALTER COLUMN last_access_time TYPE TIMESTAMP WITHOUT TIME ZONE USING to_timestamp(last_access_time);
+              ALTER TABLE ${database.defaultSchemaName}.spring_session ALTER COLUMN expiry_time TYPE TIMESTAMP WITHOUT TIME ZONE USING to_timestamp(expiry_time);
   - changeSet:
       id: set-null-telephone-to-empty-string
       author: nclyde@skylight.digital
@@ -2161,9 +2326,6 @@ databaseChangeLog:
             remarks: Create the enumerations needed for tracking a phone number's type
             sql: |
               CREATE TYPE ${database.defaultSchemaName}.PHONE_TYPES as ENUM('MOBILE', 'LANDLINE');
-            rollback:
-              sql: |
-                DROP TYPE ${database.defaultSchemaName}.PHONE_TYPES;
           - createTable:
               tableName: phone_number
               remarks: A join table to Person that stores phone numbers with phone type
@@ -2239,6 +2401,17 @@ databaseChangeLog:
                   primary_phone_internal_id = pn.internal_id
                 FROM ${database.defaultSchemaName}.phone_number pn
                 WHERE p.internal_id=pn.person_internal_id;
+      rollback:
+        - dropColumn:
+            tableName: person
+            columns:
+              - column:
+                  name: primary_phone_internal_id
+        - dropTable:
+            tableName: phone_number
+        - sql:
+            sql: |
+              DROP TYPE ${database.defaultSchemaName}.PHONE_TYPES;
   - changeSet:
       id: actually-drop-organization-facility-name-constraint
       author: jeremy.a.zitomer@omb.eop.gov
@@ -2247,6 +2420,22 @@ databaseChangeLog:
         - dropUniqueConstraint:
             tableName: organization
             constraintName: uk__facility__name
+      rollback:
+        - addColumn:
+            tableName: organization
+            columns:
+              - column:
+                  name: facility_name
+                  type: text
+        - addUniqueConstraint:
+            tableName: organization
+            constraintName: uk__facility__name
+            columnNames: facility_name
+        - dropColumn:
+            tableName: organization
+            columns:
+              - column:
+                  name: facility_name
   - changeSet:
       id: add-census-dob-group-function
       author: josh@skylight.digital
@@ -2273,10 +2462,10 @@ databaseChangeLog:
               END;
               $$
               LANGUAGE plpgsql RETURNS NULL ON NULL INPUT;
-            rollback:
-              - dropProcedure:
-                  procedureName: get_census_dob_group
-                  schemaName: ${database.defaultSchemaName}
+      rollback:
+        - sql:
+            sql: |
+              DROP FUNCTION get_census_dob_group
   - changeSet:
       id: add-census-dob-group-column-to-person-view
       author: josh@skylight.digital
@@ -2288,15 +2477,15 @@ databaseChangeLog:
             replaceIfExists: true
             fullDefinition: false
             selectQuery: SELECT internal_id, created_at, created_by, updated_at, updated_by, is_deleted, organization_id, facility_id, race, gender, ethnicity, county, state, employed_in_healthcare, role, resident_congregate_setting, tribal_affiliation, get_census_dob_group(person.birth_date) AS census_dob_group FROM ${database.defaultSchemaName}.person
-            rollback:
-              - dropView:
-                  viewName: person_no_phi_view
-              - createView:
-                  viewName: person_no_phi_view
-                  remarks: A subset of the person table with columns containing PHI removed.
-                  replaceIfExists: true
-                  fullDefinition: false
-                  selectQuery: SELECT internal_id, created_at, created_by, updated_at, updated_by, is_deleted, organization_id, facility_id, race, gender, ethnicity, county, state, employed_in_healthcare, role, resident_congregate_setting, tribal_affiliation FROM ${database.defaultSchemaName}.person
+      rollback:
+        - dropView:
+            viewName: person_no_phi_view
+        - createView:
+            viewName: person_no_phi_view
+            remarks: A subset of the person table with columns containing PHI removed.
+            replaceIfExists: true
+            fullDefinition: false
+            selectQuery: SELECT internal_id, created_at, created_by, updated_at, updated_by, is_deleted, organization_id, facility_id, race, gender, ethnicity, county, state, employed_in_healthcare, role, resident_congregate_setting, tribal_affiliation FROM ${database.defaultSchemaName}.person
   - changeSet:
       id: add-email-back-to-api-user-view
       author: josh@skylight.digital
@@ -2308,15 +2497,15 @@ databaseChangeLog:
             replaceIfExists: true
             fullDefinition: false
             selectQuery: SELECT internal_id, created_at, updated_at, last_seen, is_deleted, login_email FROM ${database.defaultSchemaName}.api_user
-            rollback:
-              - dropView:
-                  viewName: api_user_no_phi_view
-              - createView:
-                  viewName: api_user_no_phi_view
-                  remarks: A subset of the api_user table with columns containing PHI removed.
-                  replaceIfExists: true
-                  fullDefinition: false
-                  selectQuery: SELECT internal_id, created_at, updated_at, last_seen, is_deleted FROM ${database.defaultSchemaName}.api_user
+      rollback:
+        - dropView:
+            viewName: api_user_no_phi_view
+        - createView:
+            viewName: api_user_no_phi_view
+            remarks: A subset of the api_user table with columns containing PHI removed.
+            replaceIfExists: true
+            fullDefinition: false
+            selectQuery: SELECT internal_id, created_at, updated_at, last_seen, is_deleted FROM ${database.defaultSchemaName}.api_user
   - changeSet:
       id: drop-person-phone
       author: adam@skylight.digital
@@ -2327,6 +2516,14 @@ databaseChangeLog:
             columns:
               - column:
                   name: telephone
+      rollback:
+        - addColumn:
+            tableName: person
+            columns:
+              - column:
+                  name: telephone
+                  remarks: The provider's contact phone number.
+                  type: text
   - changeSet:
       id: add-patient-reg-link-to-metabase
       author: adam@skylight.digital
@@ -2334,6 +2531,9 @@ databaseChangeLog:
       changes:
         sql: |
           GRANT SELECT ON TABLE ${database.defaultSchemaName}.patient_registration_link TO ${noPhiUsername};
+      rollback:
+        sql: |
+          REVOKE SELECT ON TABLE ${database.defaultSchemaName}.patient_registration_link FROM ${noPhiUsername};
   - changeSet:
       id: add-patient-preferences-to-person-view
       author: nathan@skylight.digital
@@ -2467,6 +2667,11 @@ databaseChangeLog:
                     nullable: false
         - sql: |
             GRANT SELECT ON TABLE ${database.defaultSchemaName}.tenant_data_access TO ${noPhiUsername};
+      rollback:
+        - sql: |
+            REVOKE SELECT ON TABLE ${database.defaultSchemaName}.tenant_data_access FROM ${noPhiUsername};
+        - dropTable:
+            tableName: tenant_data_access
   - changeSet:
       id: add-text-message-sent-table
       author: nicholas.a.scialli@omb.eop.gov
@@ -2504,6 +2709,11 @@ databaseChangeLog:
               - column: *updated_by_column
         - sql: |
             GRANT SELECT ON ${database.defaultSchemaName}.text_message_sent TO ${noPhiUsername};
+      rollback:
+        - sql: |
+            REVOKE SELECT ON ${database.defaultSchemaName}.text_message_sent FROM ${noPhiUsername};
+        - dropTable:
+            tableName: text_message_sent
   - changeSet:
       id: add-columns-to-provider-view
       author: josh@skylight.digital
@@ -3052,6 +3262,11 @@ databaseChangeLog:
               - column: *created_at_column
         - sql: |
             GRANT SELECT ON TABLE ${database.defaultSchemaName}.report_stream_response TO ${noPhiUsername};
+      rollback:
+        - sql: |
+            REVOKE SELECT ON TABLE ${database.defaultSchemaName}.report_stream_response FROM ${noPhiUsername};
+        - dropTable:
+            tableName: report_stream_response
   - changeSet:
       id: add-index-patient_link-test_order
       author: adam@skylight.digital
@@ -3142,13 +3357,6 @@ databaseChangeLog:
         - sql: |
             GRANT SELECT ON ${database.defaultSchemaName}.person_no_phi_view TO ${noPhiUsername};
       rollback:
-        - dropColumn:
-            tableName: person
-            columns:
-              - column:
-                  name: country
-                  type: text
-                  remarks: The country of a person's address
         - dropView:
             viewName: person_no_phi_view
         - createView:
@@ -3182,6 +3390,13 @@ databaseChangeLog:
               FROM ${database.defaultSchemaName}.person p
         - sql: |
             GRANT SELECT ON ${database.defaultSchemaName}.person_no_phi_view TO ${noPhiUsername};
+        - dropColumn:
+            tableName: person
+            columns:
+              - column:
+                  name: country
+                  type: text
+                  remarks: The country of a person's address
   - changeSet:
       id: add-email-all-to-test-result-delivery
       author: zedd@skylight.digital
@@ -3264,3 +3479,250 @@ databaseChangeLog:
             remarks: Populate new `emails` column with value from patient `email`
             sql: |
               UPDATE person SET emails = ARRAY[email] WHERE email IS NOT NULL;
+      rollback:
+        - sql:
+            sql: |
+              -- do nothing;
+  - changeSet:
+      id: add-specimen_type_id-to-test_event
+      author: zedd@skylight.digital
+      comment: add specimen_type_id to test event
+      changes:
+        - tagDatabase:
+            tag: add-specimen_type_id-to-test_event
+        - addColumn:
+            tableName: test_event
+            columns:
+              - column:
+                  name: specimen_type_id
+                  afterColumn: device_type_id
+                  remarks: The specimen type for this test event.
+                  type: uuid
+                  constraints:
+                    nullable: true
+                    foreignKeyName: fk__test_event__specimen_type
+                    references: specimen_type(internal_id)
+  - changeSet:
+      id: add-specimen_type_id-to-test_order
+      author: zedd@skylight.digital
+      comment: add specimen_type_id to test order
+      changes:
+        - tagDatabase:
+            tag: add-specimen_type_id-to-test_order
+        - addColumn:
+            tableName: test_order
+            columns:
+              - column:
+                  name: specimen_type_id
+                  afterColumn: device_type_id
+                  remarks: The specimen type for this test order.
+                  type: uuid
+                  constraints:
+                    nullable: true
+                    foreignKeyName: fk__test_order__specimen_type
+                    references: specimen_type(internal_id)
+  - changeSet:
+      id: add-default_specimen_type_id-to-facility
+      author: zedd@skylight.digital
+      comment: add specimen_type_id to facility
+      changes:
+        - tagDatabase:
+            tag: add-default_specimen_type_id-to-facility
+        - addColumn:
+            tableName: facility
+            columns:
+              - column:
+                  name: default_specimen_type_id
+                  remarks: The default specimen type (if any) for tests at this facility.
+                  type: uuid
+                  constraints:
+                    nullable: true
+                    foreignKeyName: fk__facility__default_specimen_type
+                    references: specimen_type(internal_id)
+  - changeSet:
+      id: add-supported-disease-table
+      author: emma@skylight.digital
+      comment: Adds a non-audited table to track which diseases SimpleReport supports
+      changes:
+        - tagDatabase:
+            tag: add-supported-disease-table
+        - createTable:
+            tableName: supported_disease
+            columns:
+              - column:
+                  name: internal_id
+                  type: uuid
+                  remarks: The internal database identifier for this entity
+                  constraints:
+                    primaryKey: true
+                    nullable: false
+              - column:
+                  name: name
+                  type: text
+                  remarks: Tracks the human-readable name for the disease
+                  constraints:
+                    nullable: false
+              - column:
+                  name: loinc
+                  type: text
+                  remarks: Tracks the LOINC code for this disease
+                  constraints:
+                    nullable: false
+        - sql: |
+            GRANT SELECT ON ${database.defaultSchemaName}.supported_disease TO ${noPhiUsername};
+      rollback:
+          sql: |
+            DROP TABLE ${database.defaultSchemaName}.supported_disease CASCADE;
+  - changeSet:
+      id: populate-supported-disease-table
+      author: emma@skylight.digital
+      comment: Populate the diseases that SimpleReport currently supports.
+      changes:
+        - tagDatabase:
+            tag: populate-supported-disease-table
+        - sql:
+            comment: Add COVID-19, Flu A, and Flu B to the supported disease table
+            sql: |
+              INSERT INTO ${database.defaultSchemaName}.supported_disease (
+                   internal_id,
+                   name,
+                   loinc)
+              VALUES
+                   (gen_random_uuid(), 'COVID-19', '96741-4'),
+                   (gen_random_uuid(), 'Flu A', 'LP14239-5'),
+                   (gen_random_uuid(), 'Flu B', 'LP14240-3');
+      rollback:
+        sql: |
+          TRUNCATE TABLE ${database.defaultSchemaName}.supported_disease CASCADE;
+  - changeSet:
+      id: create-device-disease-join-table
+      author: emma@skylight.digital
+      comment: Add a new table that tracks which disease a given testing device will support.
+      changes:
+        - tagDatabase:
+            tag: create-device-disease-join-table
+        - createTable:
+            tableName: device_supported_disease
+            remarks: A usable combination of device type and supported diseases for that device.
+            columns:
+              - column:
+                  name: device_type_id
+                  remarks: The device type for this combination.
+                  type: uuid
+                  constraints:
+                    nullable: false
+                    foreignKeyName: fk__device_supported_disease__device_type
+                    references: device_type
+              - column:
+                  name: supported_disease_id
+                  remarks: The supported disease for this combination.
+                  type: uuid
+                  constraints:
+                    nullable: false
+                    foreignKeyName: fk__device_supported_disease__supported_disease_type
+                    references: supported_disease
+              - addUniqueConstraint:
+                  tableName: device_supported_disease
+                  constraintName: uk__device_supported_disease
+                  columnNames: device_type_id, supported_disease_id
+        - sql: |
+            GRANT SELECT ON ${database.defaultSchemaName}.device_supported_disease TO ${noPhiUsername};
+      rollback:
+        sql: |
+          DROP TABLE ${database.defaultSchemaName}.device_supported_disease;
+  - changeSet:
+      id: create-result-table
+      author: emma@skylight.digital
+      comment: Add a table that joins a test event, disease, and a specific result.
+      changes:
+        - tagDatabase:
+            tag: create-result-table
+        - createTable:
+            tableName: result
+            remarks: A usable combination of test event, disease, and results (as LONIC).
+            columns:
+              - column:
+                  name: internal_id
+                  type: uuid
+                  remarks: The internal database identifier for this entity.
+                  constraints:
+                    primaryKey: true
+                    nullable: false
+              - column: *created_at_column
+              - column: *created_by_column
+              - column: *updated_at_column
+              - column: *updated_by_column
+              - column: *soft_delete_column
+              - column:
+                  name: test_event_id
+                  remarks: The test event for this combination.
+                  type: uuid
+                  constraints:
+                    nullable: false
+                    foreignKeyName: fk__result__test_event_id
+                    references: test_event
+              - column:
+                  name: test_order_id
+                  remarks: The test order for this combination.
+                  type: uuid
+                  constraints:
+                    nullable: false
+                    foreignKeyName: fk__result__test_order_id
+                    references: test_order
+              - column:
+                  name: disease_id
+                  remarks: The disease for this combination.
+                  type: uuid
+                  constraints:
+                    nullable: false
+                    foreignKeyName: fk__result__disease_id
+                    references: supported_disease
+              - column:
+                  name: result
+                  remarks: The result for this combination.
+                  type: text
+                  constraints:
+                    nullable: false
+              - addUniqueConstraint:
+                  tableName: result
+                  constraintName: uk__result
+                  columnNames: test_event_id, test_order_id, disease_id
+        - sql: |
+            GRANT SELECT ON ${database.defaultSchemaName}.result TO ${noPhiUsername};
+      rollback:
+        sql: |
+          DROP TABLE ${database.defaultSchemaName}.result;
+  - changeSet:
+      id: make-test-event-nullable-on-results-table
+      author: emma@skylight.digital
+      comment: Make test event column on results table nullable.
+      changes:
+        - tagDatabase:
+            tag: make-test-event-nullable-on-results-table
+        - dropNotNullConstraint:
+            tableName: result
+            columnName: test_event_id
+  - changeSet:
+      id: add-test-result-column-to-result-table
+      author: emma@skylight.digital
+      comment: Add another test result column to result table to store results as enum. This preserves the original result even if the associated LOINC changes
+      changes:
+        - tagDatabase:
+          tag: add-test-result-column-to-result-table
+        - addColumn:
+            tableName: result
+            columns:
+              - column:
+                  name: test_result
+                  type: ${database.defaultSchemaName}.TEST_RESULT
+                  constraints:
+                    nullable: false
+              - addUniqueConstraint:
+                  tableName: result
+                  constraintName: uk__test_result
+                  columnNames: test_event_id, test_order_id, disease_id
+        - sql: |
+            GRANT SELECT ON ${database.defaultSchemaName}.result TO ${noPhiUsername};
+      rollback:
+        sql: |
+          ALTER TABLE ${database.defaultSchemaName}.result DROP COLUMN test_result;

@@ -45,7 +45,7 @@ export const getBestSuggestion = async (
     const response = await client.send(lookup);
 
     return getAddress(response.lookups[0].result[0]);
-  } catch (error) {
+  } catch (error: any) {
     console.error("Unable to validate address:", error.message);
   }
 };
@@ -84,7 +84,7 @@ export async function getZipCodeData(
 
     const response = await client.send(lookup);
     return response.lookups[0].result[0] as ZipCodeResult;
-  } catch (error) {
+  } catch (error: any) {
     console.error("Unable to retrieve ZIP code data", error.message);
   }
 }

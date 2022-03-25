@@ -65,7 +65,7 @@ class PatientLinkServiceTest extends BaseServiceTest<PatientLinkService> {
 
   @Test
   void getPatientLinkSelfLife() {
-    assertEquals(5, _patientLink.getShelfLife());
+    assertEquals(10, _patientLink.getShelfLife());
   }
 
   @Test
@@ -133,6 +133,13 @@ class PatientLinkServiceTest extends BaseServiceTest<PatientLinkService> {
     assertFalse(failToVerify.getAsBoolean());
     assertFalse(failToVerify.getAsBoolean());
     assertFalse(failToVerify.getAsBoolean());
+
+    assertFalse(failToVerify.getAsBoolean());
+    assertFalse(failToVerify.getAsBoolean());
+    assertFalse(failToVerify.getAsBoolean());
+    assertFalse(failToVerify.getAsBoolean());
+    assertFalse(failToVerify.getAsBoolean());
+
     assertThrows(
         ExpiredPatientLinkException.class,
         () -> _service.verifyPatientLink(patientId, patientBirthDate));

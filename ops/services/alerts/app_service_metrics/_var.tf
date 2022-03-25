@@ -19,7 +19,6 @@ variable "disabled_alerts" {
     condition = length(setsubtract(var.disabled_alerts, [
       "cpu_util",
       "mem_util",
-      "http_response_time",
       "http_2xx_failed_requests",
       "http_4xx_errors",
       "http_401_410_errors",
@@ -30,6 +29,8 @@ variable "disabled_alerts" {
       "frontend_error_boundary",
       "db_query_duration",
       "db_query_duration_over_time_window",
+      "batched_uploader_single_failure_detected",
+      "batched_uploader_function_not_triggering"
     ])) == 0
     error_message = "One or more disabled_alert values are invalid."
   }
@@ -68,7 +69,7 @@ variable "http_response_time_aggregation" {
 
 variable "failed_http_2xx_threshold" {
   // The resource that uses this value doesn't have a >= check, so we need n - 1 here
-  default = 9
+  default = 24
 }
 
 variable "skip_on_weekends" {

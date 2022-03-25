@@ -56,32 +56,6 @@ resource "azurerm_monitor_metric_alert" "mem_util" {
   }
 }
 
-resource "azurerm_monitor_metric_alert" "http_response_time" {
-  name                = "${var.env}-api-http-response"
-  description         = "${local.env_title} network response >= 1000ms(1s)"
-  resource_group_name = var.rg_name
-  scopes              = [var.app_service_id]
-  frequency           = "PT1M"
-  window_size         = "PT15M"
-  severity            = var.severity
-  enabled             = contains(var.disabled_alerts, "http_response_time") ? false : true
-
-  criteria {
-    aggregation      = var.http_response_time_aggregation
-    metric_name      = "HttpResponseTime"
-    metric_namespace = "Microsoft.Web/sites"
-    operator         = "GreaterThanOrEqual"
-    threshold        = 1.000 #(1s/1000ms)
-  }
-
-  dynamic "action" {
-    for_each = var.action_group_ids
-    content {
-      action_group_id = action.value
-    }
-  }
-}
-
 resource "azurerm_monitor_smart_detector_alert_rule" "failure_anomalies" {
   name                = "${var.env}-failure-anomalies"
   description         = "${local.env_title} Failure Anomalies notifies you of an unusual rise in the rate of failed HTTP requests or dependency calls."
@@ -98,7 +72,7 @@ resource "azurerm_monitor_smart_detector_alert_rule" "failure_anomalies" {
 
 resource "azurerm_monitor_scheduled_query_rules_alert" "http_2xx_failed_requests" {
   name                = "${var.env}-api-2xx-failed-requests"
-  description         = "${local.env_title} HTTP Server 2xx Errors (where successful request == false) >= 10"
+  description         = "${local.env_title} HTTP Server 2xx Errors (where successful request == false) >= 25"
   location            = data.azurerm_resource_group.app.location
   resource_group_name = var.rg_name
   severity            = var.severity
@@ -126,7 +100,7 @@ ${local.skip_on_weekends}
 
 resource "azurerm_monitor_scheduled_query_rules_alert" "http_4xx_errors" {
   name                = "${var.env}-api-4xx-errors"
-  description         = "${local.env_title} HTTP Server 4xx Errors (excluding 401s and 410s) >= 10"
+  description         = "${local.env_title} HTTP Server 4xx Errors (excluding 401s and 410s) >= 50"
   location            = data.azurerm_resource_group.app.location
   resource_group_name = var.rg_name
   severity            = var.severity
@@ -154,7 +128,7 @@ ${local.skip_on_weekends}
 
   trigger {
     operator  = "GreaterThan"
-    threshold = 9
+    threshold = 49
   }
 
   action {
@@ -261,12 +235,71 @@ resource "azurerm_monitor_scheduled_query_rules_alert" "db_query_duration_over_t
   query = <<-QUERY
 dependencies
 ${local.skip_on_weekends}
-| where timestamp >= ago(5m) and name has "SQL:" and duration > 1250
+| where timestamp >= ago(5m) and name startswith "SQL:" and duration > 1250 and data !startswith "insert into public.api_audit_event"
   QUERY
 
   trigger {
     operator  = "GreaterThan"
-    threshold = 10
+    threshold = 25
+  }
+
+  action {
+    action_group = var.action_group_ids
+  }
+}
+
+resource "azurerm_monitor_scheduled_query_rules_alert" "batched_uploader_single_failure_detected" {
+  name                = "${var.env}-batched-uploader-single-failure-detected"
+  description         = "QueueBatchedReportStreamUploader failed to successfully complete"
+  location            = data.azurerm_resource_group.app.location
+  resource_group_name = var.rg_name
+  severity            = var.severity
+  frequency           = 5
+  time_window         = 11
+  enabled             = contains(var.disabled_alerts, "batched_uploader_single_failure_detected") ? false : true
+
+  data_source_id = var.app_insights_id
+
+  query = <<-QUERY
+requests
+${local.skip_on_weekends}
+| where timestamp >= ago(11m) 
+    and operation_Name =~ 'QueueBatchedReportStreamUploader' 
+    and success != true
+  QUERY
+
+  trigger {
+    operator  = "GreaterThan"
+    threshold = 4
+  }
+
+  action {
+    action_group = var.action_group_ids
+  }
+}
+
+resource "azurerm_monitor_scheduled_query_rules_alert" "batched_uploader_function_not_triggering" {
+  name                = "${var.env}-batched-uploader-function-not-triggering"
+  description         = "QueueBatchedReportStreamUploader is not triggering on schedule"
+  location            = data.azurerm_resource_group.app.location
+  resource_group_name = var.rg_name
+  severity            = var.severity
+  frequency           = 5
+  time_window         = 7
+  enabled             = contains(var.disabled_alerts, "batched_uploader_function_not_triggering") ? false : true
+
+  data_source_id = var.app_insights_id
+
+  query = <<-QUERY
+requests
+${local.skip_on_weekends}
+| where timestamp >= ago(7m) 
+    and operation_Name =~ 'QueueBatchedReportStreamUploader'
+  QUERY
+
+  trigger {
+    operator  = "Equal"
+    threshold = 0
   }
 
   action {

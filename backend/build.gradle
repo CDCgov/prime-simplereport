@@ -5,7 +5,7 @@ plugins {
     id 'java'
     id 'checkstyle'
     id 'jacoco'
-    id 'org.sonarqube'  version '3.0'
+    id 'org.sonarqube' version '3.0'
     id 'com.gorylenko.gradle-git-properties' version '2.2.0'
     id "com.diffplug.spotless" version "5.14.0"
 }
@@ -43,7 +43,6 @@ dependencies {
 
     // UI layer dependencies
     implementation "com.graphql-java-kickstart:graphql-spring-boot-starter:${kickstartVersion}"
-    implementation "com.graphql-java-kickstart:graphiql-spring-boot-starter:${kickstartVersion}"
     implementation "com.zhokhov.graphql:graphql-datetime-spring-boot-starter:4.0.0"
     implementation 'org.json:json:20201115'
     implementation 'com.fasterxml.jackson.dataformat:jackson-dataformat-csv'
@@ -73,7 +72,7 @@ dependencies {
 
     // JPA Hibernate static metamodel generation
     compile 'org.hibernate:hibernate-jpamodelgen:5.4.27.Final'
-    annotationProcessor'org.hibernate:hibernate-jpamodelgen'
+    annotationProcessor 'org.hibernate:hibernate-jpamodelgen'
 
     // graphql-java-extended-validation schema directives
     compile 'com.graphql-java:graphql-java-extended-validation:16.0.0'
@@ -140,7 +139,7 @@ configurations {
 }
 
 checkstyleTest {
-   configFile = file("config/checkstyle/checkstyleTest.xml")
+    configFile = file("config/checkstyle/checkstyleTest.xml")
 }
 
 jacocoTestReport {
@@ -150,10 +149,12 @@ jacocoTestReport {
     dependsOn test // tests are required to run before generating the report
 }
 
-// Prefer SPRING_DATASOURCE_URL if provided
+// Prefer SPRING_DATASOURCE_URL if provided, otherwise assume localhost
 def dbConnectionString = System.getenv("SPRING_DATASOURCE_URL") ?: "jdbc:postgresql://127.0.0.1:${System.getenv("SR_DB_PORT") ?: 5432}/simple_report"
-// If SPRING_DATASOURCE_URL is provided, assume target DB is non-local and schema is "public"
-def defaultSchema = System.getenv("SPRING_DATASOURCE_URL") ? "public" : "simple_report"
+def isLocalDB = dbConnectionString.contains("postgresql://db") || dbConnectionString.contains("postgresql://127")
+// Use "simple_report" schema for local DBs, and "public" for non-local
+def defaultSchema = isLocalDB ? "simple_report" : "public"
+def noPhiPassword = System.getenv("DB_PASSWORD_NO_PHI") ?: "nophi789"
 
 liquibase {
     activities {
@@ -166,7 +167,7 @@ liquibase {
             defaultSchemaName defaultSchema
             classpath "src/main/resources"
             // this shadows application.yaml: should probably be in a shared properties file
-            changeLogParameters noPhiUsername: "simple_report_no_phi"
+            changeLogParameters([noPhiUsername: "simple_report_no_phi", noPhiPassword: noPhiPassword])
         }
     }
 }
@@ -196,11 +197,11 @@ spotless {
 
 task testDbStart(type: Exec) {
     environment "SR_DB_PORT", testDbPort
-    commandLine "docker-compose", "-p", "simple-report-tests", "up", "-d", "db"
+    commandLine "docker", "compose", "--env-file", "../.env.test", "-p", "simple-report-tests", "-f", "../docker-compose.yml", "up", "-d", "db"
 }
 
 task testDbStop(type: Exec) {
-    commandLine "docker-compose", "-p", "simple-report-tests", "down"
+    commandLine "docker", "compose", "--env-file", "../.env.test", "-p", "simple-report-tests", "-f", "../docker-compose.yml", "down"
 }
 
 task testDbReset(type: Exec) {
@@ -220,8 +221,10 @@ test {
     // testLogging {
     //   events "started", "failed"
     // }
+    systemProperty "test-db-host", testDbHost
     systemProperty "test-db-port", testDbPort
-    if (System.getenv("CI") == null) {
+    systemProperty "skip-db-setup", skipDbSetup
+    if (skipDbSetup == "false" && System.getenv("CI") == null) {
         dependsOn testDbStart
         finalizedBy testDbStop
     }

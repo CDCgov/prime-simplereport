@@ -1,11 +1,11 @@
 import { useEffect, useState } from "react";
-import { Redirect } from "react-router";
+import { Navigate } from "react-router-dom";
 
 import { Card } from "../../commonComponents/Card/Card";
 import { CardBackground } from "../../commonComponents/CardBackground/CardBackground";
 import StepIndicator from "../../commonComponents/StepIndicator";
 import { accountCreationSteps } from "../../../config/constants";
-import iconLoader from "../../../../node_modules/uswds/dist/img/loader.svg";
+import iconLoader from "../../../img/loader.svg";
 import { AccountCreationApi } from "../AccountCreationApiService";
 import { strToBin, binToStr } from "../../utils/text";
 
@@ -50,7 +50,7 @@ export const MfaSecurityKey = () => {
       try {
         AccountCreationApi.activateSecurityKeyMfa(attestation, clientData);
         setActivated(true);
-      } catch (error) {
+      } catch (error: any) {
         console.error("Error trying to activate security key: ", error);
       }
     }
@@ -75,7 +75,7 @@ export const MfaSecurityKey = () => {
   }
 
   if (activated) {
-    return <Redirect push to="/success" />;
+    return <Navigate to="../success" />;
   }
 
   return (

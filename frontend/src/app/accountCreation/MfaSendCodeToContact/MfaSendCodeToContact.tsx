@@ -1,5 +1,5 @@
 import { useCallback, useEffect, useState } from "react";
-import { Redirect } from "react-router";
+import { Navigate } from "react-router-dom";
 
 import { Card } from "../../commonComponents/Card/Card";
 import { CardBackground } from "../../commonComponents/CardBackground/CardBackground";
@@ -41,7 +41,7 @@ export const MfaSendCodeToContact = (props: Props) => {
     let valid;
     try {
       valid = contactIsValid(contact);
-    } catch (e) {
+    } catch (e: any) {
       valid = false;
     }
 
@@ -58,7 +58,7 @@ export const MfaSendCodeToContact = (props: Props) => {
       try {
         await props.serviceEnroll(contact);
         setSubmitted(true);
-      } catch (error) {
+      } catch (error: any) {
         setContactError(
           error || "Unable to setup device, please try again later"
         );
@@ -79,15 +79,7 @@ export const MfaSendCodeToContact = (props: Props) => {
   }
 
   if (submitted) {
-    return (
-      <Redirect
-        push
-        to={{
-          pathname: `${window.location.pathname.split("/uac")[1]}/verify`,
-          state: { contact },
-        }}
-      />
-    );
+    return <Navigate to="verify" state={contact} />;
   }
 
   return (
@@ -122,6 +114,7 @@ export const MfaSendCodeToContact = (props: Props) => {
           label={"Send code"}
           type={"submit"}
           onClick={handleSubmit}
+          id={"continue"}
         />
       </Card>
     </CardBackground>

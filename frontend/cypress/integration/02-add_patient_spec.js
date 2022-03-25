@@ -28,6 +28,8 @@ describe("Adding a patient", () => {
     cy.get('select[name="role"]').select("STUDENT");
     cy.get(".prime-edit-patient").contains("Student ID");
     cy.get('input[name="lookupId"]').type(patient.studentId);
+    cy.get('input[name="race"][value="other"]+label').click();
+    cy.get('input[name="ethnicity"][value="refused"]+label').click();
     cy.get('input[name="residentCongregateSetting"][value="NO"]+label').click();
     cy.get('input[name="employedInHealthcare"][value="NO"]+label').click();
   });
@@ -45,6 +47,8 @@ describe("Adding a patient", () => {
       '.modal__container input[name="addressSelect-person"][value="userAddress"]+label'
     ).click();
     cy.get(".modal__container #save-confirmed-address").click();
+    cy.get(".usa-card__header").contains("People");
+    cy.get(".usa-card__header").contains("Showing");
   });
   it("shows the patient in the list", () => {
     cy.get("#search-field-small").type(patient.lastName);

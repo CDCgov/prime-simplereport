@@ -188,10 +188,10 @@ export const en = {
           city: "City is incorrectly formatted",
           county: "County is incorrectly formatted",
           country: "Country is incorrectly formatted",
-          race: "Race is incorrectly formatted",
+          race: "Race is required",
           tribalAffiliation: "Tribal affiliation is incorrectly formatted",
-          ethnicity: "Ethnicity is incorrectly formatted",
-          gender: "Sex assigned at birth is incorrectly formatted",
+          ethnicity: "Ethnicity is required",
+          gender: "Sex assigned at birth is required",
           residentCongregateSetting:
             "Are you a resident in a congregate living setting? is required",
           employedInHealthcare: "Are you a health care worker? is required",
@@ -226,6 +226,7 @@ export const en = {
     },
     testResult: {
       result: "SARS-CoV-2 result",
+      downloadResult: "Download result",
       patient: "Patient",
       patientDetails: "Patient details",
       name: "Name",
@@ -238,11 +239,14 @@ export const en = {
       undetermined: "Inconclusive",
       unknown: "Unknown",
       testDevice: "Test device",
-      specimen: "Specimen ID",
+      id: "Test ID",
       meaning: "What does my result mean?",
       information:
-        "For more information, please visit the <0>Centers for Disease Control and Prevention (CDC) website</0> or contact your local health department.",
-      note: "Notes",
+        "For more information go to <0>CDC.gov</0> or call 1-800-CDC-INFO (1-800-232-4636). Use the <1>County Check Tool</1> (cdc.gov/coronavirus/2019-ncov/your-health/covid-by-county.html) to understand your Community Level (COVID-19 risk and hospital capacity in your area), tips for prevention, and how to find vaccine, testing, and treatment resources.",
+      cdcLink: "https://www.cdc.gov/",
+      countyCheckToolLink:
+        "https://www.cdc.gov/coronavirus/2019-ncov/your-health/covid-by-county.html",
+      moreInformation: "More information",
       printed: "Test result printed",
       print: "Print",
       close: "Close",
@@ -262,12 +266,13 @@ export const en = {
           "testing is needed especially if you experience any of these  symptoms.",
         positive: {
           p1:
-            "Most people who get COVID-19 will be able to recover at home. Make sure to follow CDC guidelines for people who are recovering at " +
-            "home and their caregivers, including:",
+            "Most people who get COVID-19 are able to recover at home. Make sure to follow CDC guidelines and local laws for people who are recovering at home and their caregivers, including:",
           guidelines: {
             li0: "Stay home when you are sick, except to get medical care.",
             li1:
-              "Self isolate for 10 full days after symptoms first appeared (or starting the day after you had your test, if you have no symptoms).",
+              "Stay home for 5 days. " +
+              "If you have no symptoms or your symptoms are resolving after 5 days, you can leave your house. " +
+              "Continue to wear a mask around others for 5 additional days.",
             li2:
               "If you are self isolating at home where others live, use a separate room and bathroom for sick household members (if possible). " +
               "Clean any shared rooms as needed, to avoid transmitting the virus.",
@@ -280,10 +285,9 @@ export const en = {
               "Have a supply of clean, disposable face masks. Everyone, no matter their COVID-19 diagnosis, should wear face masks while in the home.",
           },
           p2:
-            "Watch for symptoms and <0>learn when to seek emergency medical attention</0>. If someone is showing any of these signs, seek emergency medical care immediately:",
-          whenToSeek: "learn when to seek emergency medical attention",
+            "Watch for symptoms and learn when to seek emergency medical attention: <0>Symptoms of COVID-19</0> (cdc.gov/coronavirus/2019-ncov/symptoms-testing/symptoms.html). If someone is showing any of these signs, seek emergency medical care immediately:",
           symptomsLink:
-            "cdc.gov/coronavirus/2019-ncov/symptoms-testing/symptoms.html",
+            "https://www.cdc.gov/coronavirus/2019-ncov/symptoms-testing/symptoms.html",
           emergency: {
             li0: "Trouble breathing",
             li1: "Persistent chest pain/pressure",
@@ -293,12 +297,6 @@ export const en = {
           },
           p3:
             "Call 911 or call ahead to your local emergency room: Notify the operator that you are seeking care for someone who has or may have COVID-19.",
-          difficultNewsLink:
-            "Getting a positive COVID-19 test result can be difficult news, so it’s important to <0> take steps to cope with stress </0> during this time<1></1>. Reach out to your support system and make a phone or video appointment with a mental health professional if needed.",
-          difficultNewsURL:
-            "cdc.gov/coronavirus/2019-ncov/daily-life-coping/managing-stress-anxiety.html",
-          moreInformation:
-            "More information is available at cdc.gov/coronavirus/2019-ncov/if-you-are-sick.",
         },
         negative: {
           p0:
@@ -566,9 +564,9 @@ export const en = {
         dateOfBirth: "Date of birth",
         enterDOB: "Enter your date of birth",
         enterDOB2:
-          "Enter your date of birth to access your COVID-19 testing portal.",
+          "Enter <0>{{personName}}</0>'s date of birth to access your COVID-19 testing portal.",
         linkExpirationNotice:
-          "Note: this link will expire 5 days after the test result was recorded.",
+          "Note: this link will expire 10 days after the test result was recorded.",
         format: "MM/DD/YYYY",
         invalidFormat: "Date of birth must be in MM/DD/YYYY format",
         invalidYear:

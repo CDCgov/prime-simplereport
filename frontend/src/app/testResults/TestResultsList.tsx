@@ -1,6 +1,6 @@
 import qs from "querystring";
 
-import { useHistory } from "react-router-dom";
+import { useLocation, useNavigate, useParams } from "react-router-dom";
 import { gql, useLazyQuery, useQuery } from "@apollo/client";
 import React, {
   ChangeEventHandler,
@@ -18,7 +18,7 @@ import { DatePicker, Label } from "@trussworks/react-uswds";
 
 import { PATIENT_TERM_CAP } from "../../config/constants";
 import { displayFullName } from "../utils";
-import { isValidDate } from "../utils/date";
+import { isValidDate, formatDateWithTimeOption } from "../utils/date";
 import { ActionsMenu } from "../commonComponents/ActionsMenu";
 import { getParameterFromUrl, getUrl } from "../utils/url";
 import { useDocumentTitle, useOutsideClick } from "../utils/hooks";
@@ -47,10 +47,11 @@ import TestResultTextModal from "./TestResultTextModal";
 import EmailTestResultModal from "./EmailTestResultModal";
 import TestResultCorrectionModal from "./TestResultCorrectionModal";
 import TestResultDetailsModal from "./TestResultDetailsModal";
+import DownloadResultsCSVButton from "./DownloadResultsCsvButton";
 
-type Results = keyof typeof TEST_RESULT_DESCRIPTIONS;
+export type Results = keyof typeof TEST_RESULT_DESCRIPTIONS;
 
-function hasSymptoms(noSymptoms: boolean, symptoms: string) {
+export function hasSymptoms(noSymptoms: boolean, symptoms: string) {
   if (noSymptoms) {
     return "No";
   }
@@ -63,6 +64,13 @@ function hasSymptoms(noSymptoms: boolean, symptoms: string) {
   return "Unknown";
 }
 
+export const byDateTested = (a: any, b: any) => {
+  // ISO string dates sort nicely
+  if (a.dateTested === b.dateTested) return 0;
+  if (a.dateTested < b.dateTested) return 1;
+  return -1;
+};
+
 function testResultRows(
   testResults: any,
   setPrintModalId: SetStateAction<any>,
@@ -71,13 +79,6 @@ function testResultRows(
   setTextModalId: SetStateAction<any>,
   setEmailModalTestResultId: SetStateAction<any>
 ) {
-  const byDateTested = (a: any, b: any) => {
-    // ISO string dates sort nicely
-    if (a.dateTested === b.dateTested) return 0;
-    if (a.dateTested < b.dateTested) return 1;
-    return -1;
-  };
-
   if (testResults.length === 0) {
     return (
       <tr>
@@ -100,13 +101,10 @@ function testResultRows(
       });
     }
     actionItems.push({
-      name: "View details",
-      action: () => setDetailsModalId(r.internalId),
-    });
-    actionItems.push({
       name: "Text result",
       action: () => setTextModalId(r.internalId),
     });
+
     const removed = r.correctionStatus === "REMOVED";
     if (!removed) {
       actionItems.push({
@@ -114,6 +112,10 @@ function testResultRows(
         action: () => setMarkErrorId(r.internalId),
       });
     }
+    actionItems.push({
+      name: "View details",
+      action: () => setDetailsModalId(r.internalId),
+    });
     return (
       <tr
         key={r.internalId}
@@ -135,10 +137,10 @@ function testResultRows(
             r.patient.lastName
           )}
           <span className="display-block text-base font-ui-2xs">
-            DOB: {moment(r.patient.birthDate).format("MM/DD/YYYY")}
+            DOB: {formatDateWithTimeOption(r.patient.birthDate)}
           </span>
         </th>
-        <td>{moment(r.dateTested).format("MM/DD/YYYY h:mma")}</td>
+        <td>{formatDateWithTimeOption(r.dateTested, true)}</td>
         <td>{TEST_RESULT_DESCRIPTIONS[r.result as Results]}</td>
         <td>{r.deviceType.name}</td>
         <td>{hasSymptoms(r.noSymptoms, r.symptoms)}</td>
@@ -402,6 +404,11 @@ export const DetachedTestResultsList = ({
                 )}
               </h2>
               <div>
+                <DownloadResultsCSVButton
+                  filterParams={filterParams}
+                  totalEntries={totalEntries}
+                  facilityId={facilityId}
+                />
                 <Button
                   className="sr-active-button"
                   icon={faSlidersH}
@@ -623,23 +630,32 @@ export const testResultQuery = gql`
   }
 `;
 
-type TestResultsListProps = {
+export interface ResultsQueryVariables {
+  patientId?: string | null;
+  facilityId: string;
+  result?: string | null;
+  role?: string | null;
+  startDate?: string | null;
+  endDate?: string | null;
   pageNumber: number;
-};
+  pageSize: number;
+}
 
-const TestResultsList = (props: TestResultsListProps) => {
+const TestResultsList = () => {
   useDocumentTitle("Results");
+  const urlParams = useParams();
 
   const [facility] = useSelectedFacility();
   const activeFacilityId = facility?.id || "";
 
-  const history = useHistory();
+  const navigate = useNavigate();
+  const location = useLocation();
 
-  const patientId = getParameterFromUrl("patientId", history.location);
-  const startDate = getParameterFromUrl("startDate", history.location);
-  const endDate = getParameterFromUrl("endDate", history.location);
-  const role = getParameterFromUrl("role", history.location);
-  const result = getParameterFromUrl("result", history.location);
+  const patientId = getParameterFromUrl("patientId", location);
+  const startDate = getParameterFromUrl("startDate", location);
+  const endDate = getParameterFromUrl("endDate", location);
+  const role = getParameterFromUrl("role", location);
+  const result = getParameterFromUrl("result", location);
 
   const filterParams: FilterParams = {
     ...(patientId && { patientId: patientId }),
@@ -650,7 +666,7 @@ const TestResultsList = (props: TestResultsListProps) => {
   };
 
   const filter = (params: FilterParams) => {
-    history.push({
+    navigate({
       pathname: "/results/1",
       search: qs.stringify({
         facility: activeFacilityId,
@@ -664,27 +680,18 @@ const TestResultsList = (props: TestResultsListProps) => {
     filter({ [key]: val });
   };
 
-  const refetch = () => history.go(0);
+  const refetch = () => navigate(0);
 
   const clearFilterParams = () =>
-    history.push({
+    navigate({
       pathname: "/results/1",
       search: qs.stringify({ facility: activeFacilityId }),
     });
 
   const entriesPerPage = 20;
-  const pageNumber = props.pageNumber || 1;
+  const pageNumber = Number(urlParams.pageNumber) || 1;
 
-  const resultsQueryVariables: {
-    patientId?: string | null;
-    facilityId: string;
-    result?: string | null;
-    role?: string | null;
-    startDate?: string | null;
-    endDate?: string | null;
-    pageNumber: number;
-    pageSize: number;
-  } = {
+  const resultsQueryVariables: ResultsQueryVariables = {
     facilityId: activeFacilityId,
     pageNumber: pageNumber - 1,
     pageSize: entriesPerPage,

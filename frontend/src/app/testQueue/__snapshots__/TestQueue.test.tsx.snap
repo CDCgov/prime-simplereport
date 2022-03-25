@@ -52,6 +52,7 @@ exports[`TestQueue should render the test queue 1`] = `
       </div>
       <div
         class="position-relative grid-container prime-container prime-queue-item card-container"
+        data-testid="test-card-abc"
       >
         <div
           aria-hidden="true"
@@ -147,7 +148,7 @@ exports[`TestQueue should render the test queue 1`] = `
                   data-testid="timer"
                 >
                   <span>
-                    15:00
+                    10:00
                   </span>
                    
                   <svg
@@ -195,7 +196,9 @@ exports[`TestQueue should render the test queue 1`] = `
                   <div
                     class="flex-col-container"
                   >
-                    <div>
+                    <div
+                      class=""
+                    >
                       Test date and time
                     </div>
                     <div
@@ -230,13 +233,13 @@ exports[`TestQueue should render the test queue 1`] = `
                           <input
                             checked=""
                             class="usa-checkbox__input margin"
-                            id="current-date-check-31d42f7a-0a14-46b7-bc8a-38b3b1e78659"
+                            id="current-date-check-abc"
                             type="checkbox"
                             value="true"
                           />
                           <label
                             class="usa-checkbox__label margin-0 margin-right-05em"
-                            for="current-date-check-31d42f7a-0a14-46b7-bc8a-38b3b1e78659"
+                            for="current-date-check-abc"
                           >
                             Current date/time
                           </label>
@@ -258,7 +261,49 @@ exports[`TestQueue should render the test queue 1`] = `
                         class="usa-label"
                         for="1"
                       >
-                        Device
+                        <span>
+                          Device
+                        </span>
+                        <span
+                          class="usa-tooltip usa-text-with-tooltip"
+                          data-testid="tooltipWrapper"
+                        >
+                          <button
+                            aria-describedby="tooltip-211111"
+                            class="usa-button usa-button--unstyled usa-tooltip__trigger"
+                            data-testid="triggerElement"
+                            position="right"
+                            tabindex="0"
+                            title=""
+                            wrapperclasses="usa-text-with-tooltip"
+                          >
+                            <svg
+                              aria-hidden="true"
+                              class="svg-inline--fa fa-info-circle fa-w-16 info-circle-icon"
+                              data-icon="info-circle"
+                              data-prefix="fas"
+                              focusable="false"
+                              role="img"
+                              viewBox="0 0 512 512"
+                              xmlns="http://www.w3.org/2000/svg"
+                            >
+                              <path
+                                d="M256 8C119.043 8 8 119.083 8 256c0 136.997 111.043 248 248 248s248-111.003 248-248C504 119.083 392.957 8 256 8zm0 110c23.196 0 42 18.804 42 42s-18.804 42-42 42-42-18.804-42-42 18.804-42 42-42zm56 254c0 6.627-5.373 12-12 12h-88c-6.627 0-12-5.373-12-12v-24c0-6.627 5.373-12 12-12h12v-64h-12c-6.627 0-12-5.373-12-12v-24c0-6.627 5.373-12 12-12h64c6.627 0 12 5.373 12 12v100h12c6.627 0 12 5.373 12 12v24z"
+                                fill="currentColor"
+                              />
+                            </svg>
+                          </button>
+                          <span
+                            aria-hidden="true"
+                            class="usa-tooltip__body"
+                            data-testid="tooltipBody"
+                            id="tooltip-211111"
+                            role="tooltip"
+                            title="Don’t see the test you’re using? Ask your organization admin to add the correct test and it'll show up here."
+                          >
+                            Don’t see the test you’re using? Ask your organization admin to add the correct test and it'll show up here.
+                          </span>
+                        </span>
                       </label>
                       <select
                         aria-required="false"
@@ -297,6 +342,11 @@ exports[`TestQueue should render the test queue 1`] = `
                         id="2"
                         name="swabType"
                       >
+                        <option
+                          value="6e4ccb35-d177-4ea0-9226-653358f1e081"
+                        >
+                          Nasopharyngeal swab
+                        </option>
                         <option
                           value="6aa957dc-add2-4938-8788-935aec3276d4"
                         >
@@ -408,6 +458,7 @@ exports[`TestQueue should render the test queue 1`] = `
       </div>
       <div
         class="position-relative grid-container prime-container prime-queue-item card-container"
+        data-testid="test-card-def"
       >
         <div
           aria-hidden="true"
@@ -503,7 +554,7 @@ exports[`TestQueue should render the test queue 1`] = `
                   data-testid="timer"
                 >
                   <span>
-                    15:00
+                    10:00
                   </span>
                    
                   <svg
@@ -551,7 +602,9 @@ exports[`TestQueue should render the test queue 1`] = `
                   <div
                     class="flex-col-container"
                   >
-                    <div>
+                    <div
+                      class=""
+                    >
                       Test date and time
                     </div>
                     <div
@@ -586,13 +639,13 @@ exports[`TestQueue should render the test queue 1`] = `
                           <input
                             checked=""
                             class="usa-checkbox__input margin"
-                            id="current-date-check-31d42f7a-0a14-46b7-bc8a-38b3b1e78659"
+                            id="current-date-check-def"
                             type="checkbox"
                             value="true"
                           />
                           <label
                             class="usa-checkbox__label margin-0 margin-right-05em"
-                            for="current-date-check-31d42f7a-0a14-46b7-bc8a-38b3b1e78659"
+                            for="current-date-check-def"
                           >
                             Current date/time
                           </label>
@@ -614,7 +667,49 @@ exports[`TestQueue should render the test queue 1`] = `
                         class="usa-label"
                         for="4"
                       >
-                        Device
+                        <span>
+                          Device
+                        </span>
+                        <span
+                          class="usa-tooltip usa-text-with-tooltip"
+                          data-testid="tooltipWrapper"
+                        >
+                          <button
+                            aria-describedby="tooltip-211111"
+                            class="usa-button usa-button--unstyled usa-tooltip__trigger"
+                            data-testid="triggerElement"
+                            position="right"
+                            tabindex="0"
+                            title=""
+                            wrapperclasses="usa-text-with-tooltip"
+                          >
+                            <svg
+                              aria-hidden="true"
+                              class="svg-inline--fa fa-info-circle fa-w-16 info-circle-icon"
+                              data-icon="info-circle"
+                              data-prefix="fas"
+                              focusable="false"
+                              role="img"
+                              viewBox="0 0 512 512"
+                              xmlns="http://www.w3.org/2000/svg"
+                            >
+                              <path
+                                d="M256 8C119.043 8 8 119.083 8 256c0 136.997 111.043 248 248 248s248-111.003 248-248C504 119.083 392.957 8 256 8zm0 110c23.196 0 42 18.804 42 42s-18.804 42-42 42-42-18.804-42-42 18.804-42 42-42zm56 254c0 6.627-5.373 12-12 12h-88c-6.627 0-12-5.373-12-12v-24c0-6.627 5.373-12 12-12h12v-64h-12c-6.627 0-12-5.373-12-12v-24c0-6.627 5.373-12 12-12h64c6.627 0 12 5.373 12 12v100h12c6.627 0 12 5.373 12 12v24z"
+                                fill="currentColor"
+                              />
+                            </svg>
+                          </button>
+                          <span
+                            aria-hidden="true"
+                            class="usa-tooltip__body"
+                            data-testid="tooltipBody"
+                            id="tooltip-211111"
+                            role="tooltip"
+                            title="Don’t see the test you’re using? Ask your organization admin to add the correct test and it'll show up here."
+                          >
+                            Don’t see the test you’re using? Ask your organization admin to add the correct test and it'll show up here.
+                          </span>
+                        </span>
                       </label>
                       <select
                         aria-required="false"
@@ -653,6 +748,11 @@ exports[`TestQueue should render the test queue 1`] = `
                         id="5"
                         name="swabType"
                       >
+                        <option
+                          value="6e4ccb35-d177-4ea0-9226-653358f1e081"
+                        >
+                          Nasopharyngeal swab
+                        </option>
                         <option
                           value="6aa957dc-add2-4938-8788-935aec3276d4"
                         >

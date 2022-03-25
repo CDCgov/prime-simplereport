@@ -54,7 +54,8 @@ module "app_gateway" {
     module.simple_report_api.app_hostname
   ]
 
-  tags = local.management_tags
+  firewall_policy_id = module.web_application_firewall.web_application_firewall_id
+  tags               = local.management_tags
 }
 
 module "nat_gateway" {
@@ -67,4 +68,25 @@ module "nat_gateway" {
   subnet_lb_id            = data.terraform_remote_state.persistent_dev.outputs.subnet_lbs_id
   subnet_vm_id            = data.terraform_remote_state.persistent_dev.outputs.subnet_vm_id
   tags                    = local.management_tags
+}
+
+module "web_application_firewall" {
+  source                  = "../services/web_application_firewall"
+  name                    = local.name
+  env                     = local.env
+  resource_group_location = data.azurerm_resource_group.rg.location
+  resource_group_name     = data.azurerm_resource_group.rg.name
+
+  tags = local.management_tags
+}
+
+module "app_service_autoscale" {
+  source                  = "../services/app_service_autoscale"
+  name                    = local.name
+  env                     = local.env
+  resource_group_location = data.azurerm_resource_group.rg.location
+  resource_group_name     = data.azurerm_resource_group.rg.name
+  target_resource_id      = module.simple_report_api.app_service_plan_id
+
+  tags = local.management_tags
 }

@@ -5,7 +5,7 @@ import {
   waitForElementToBeRemoved,
 } from "@testing-library/react";
 import { Provider } from "react-redux";
-import { MemoryRouter, Route } from "react-router";
+import { MemoryRouter, Route, Routes } from "react-router-dom";
 import createMockStore from "redux-mock-store";
 import faker from "faker";
 import "../../i18n";
@@ -54,11 +54,12 @@ describe("SelfRegistration", () => {
     render(
       <Provider store={store}>
         <MemoryRouter initialEntries={["/register/some-bad-link"]}>
-          <Route
-            exact
-            path="/register/:registrationLink"
-            component={SelfRegistration}
-          />
+          <Routes>
+            <Route
+              path="/register/:registrationLink"
+              element={<SelfRegistration />}
+            />
+          </Routes>
         </MemoryRouter>
       </Provider>
     );
@@ -72,11 +73,12 @@ describe("SelfRegistration", () => {
     render(
       <Provider store={store}>
         <MemoryRouter initialEntries={[`/register/${VALID_LINK}`]}>
-          <Route
-            exact
-            path="/register/:registrationLink"
-            component={SelfRegistration}
-          />
+          <Routes>
+            <Route
+              path="/register/:registrationLink"
+              element={<SelfRegistration />}
+            />
+          </Routes>
         </MemoryRouter>
       </Provider>
     );
@@ -93,6 +95,7 @@ describe("SelfRegistration", () => {
     screen.getAllByLabelText("No").forEach(fireEvent.click);
     fireEvent.click(screen.getByLabelText("Mobile"));
     fireEvent.click(screen.getByLabelText("Female"));
+    fireEvent.click(screen.getByText("Native Hawaiian/other Pacific Islander"));
     fireEvent.click(screen.getByText("Submit"));
     await screen.findByText("Address validation");
     fireEvent.click(screen.getByLabelText("Use address", { exact: false }));
@@ -106,11 +109,12 @@ describe("SelfRegistration", () => {
     render(
       <Provider store={store}>
         <MemoryRouter initialEntries={[`/register/${VALID_LINK}`]}>
-          <Route
-            exact
-            path="/register/:registrationLink"
-            component={SelfRegistration}
-          />
+          <Routes>
+            <Route
+              path="/register/:registrationLink"
+              element={<SelfRegistration />}
+            />
+          </Routes>
         </MemoryRouter>
       </Provider>
     );

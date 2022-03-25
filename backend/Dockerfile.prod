@@ -1,4 +1,4 @@
-FROM gradle:6.9-jdk11-hotspot AS build
+FROM gradle:6.9.2-jdk11 AS build
 WORKDIR /home/gradle/graphql-api
 COPY --chown=gradle:gradle ./.git ./.git
 WORKDIR /home/gradle/graphql-api/backend
@@ -24,4 +24,8 @@ FROM adoptopenjdk/openjdk11:alpine-jre
 EXPOSE 8080
 COPY --from=build /home/gradle/graphql-api/backend/build/libs/*.jar app.jar
 COPY --from=build  /home/gradle/graphql-api/backend/insights.jar insights.jar
-ENTRYPOINT ["java", "-javaagent:insights.jar", "-jar", "app.jar"]
+
+RUN addgroup -S appgroup && adduser -S appuser -G appgroup
+USER appuser
+
+ENTRYPOINT ["java", "-javaagent:insights.jar", "-XX:MaxRAMPercentage=75", "-XX:InitialRAMPercentage=40", "-jar", "app.jar"]

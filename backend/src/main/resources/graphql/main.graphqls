@@ -233,7 +233,6 @@ type TestResult {
   symptoms: String
   symptomOnset: LocalDate
   deviceType: DeviceType
-  deviceSpecimenType: DeviceSpecimenType
   result: String
   dateTested: DateTime
   testPerformed: TestDescription!
@@ -373,8 +372,6 @@ type Mutation {
     street: String!
     streetTwo: String
     city: String
-    county: String
-      @deprecated(reason: "county is derived from smarty streets lookup")
     state: String!
     zipCode: String!
     phone: String
@@ -392,18 +389,14 @@ type Mutation {
     orderingProviderState: String
     orderingProviderZipCode: String
     orderingProviderPhone: String
-    deviceTypes: [String]!
-    deviceSpecimenTypes: [ID]
-    defaultDevice: String!
-  ): String @requiredPermissions(allOf: ["EDIT_FACILITY"])
+    deviceIds: [ID]!
+  ): Facility @requiredPermissions(allOf: ["EDIT_FACILITY"])
   addFacility(
     testingFacilityName: String!
     cliaNumber: String
     street: String!
     streetTwo: String
     city: String
-    county: String
-      @deprecated(reason: "county is derived from smarty streets lookup")
     state: String!
     zipCode: String!
     phone: String
@@ -421,10 +414,8 @@ type Mutation {
     orderingProviderState: String
     orderingProviderZipCode: String
     orderingProviderPhone: String
-    deviceTypes: [String]!
-    deviceSpecimenTypes: [ID]
-    defaultDevice: String!
-  ): String @requiredPermissions(allOf: ["EDIT_FACILITY"])
+    deviceIds: [ID]!
+  ): Facility @requiredPermissions(allOf: ["EDIT_FACILITY"])
   addFacilityNew(
     testingFacilityName: String!
     cliaNumber: String
@@ -584,13 +575,6 @@ type Mutation {
     patientId: ID!
     dateTested: DateTime
   ): AddTestResultResponse @requiredPermissions(allOf: ["SUBMIT_TEST"])
-  addTestResult(
-    deviceId: String!
-    deviceSpecimenType: ID
-    result: String!
-    patientId: ID!
-    dateTested: DateTime
-  ): TestOrder @requiredPermissions(allOf: ["SUBMIT_TEST"])
   editQueueItem(
     id: ID!
     deviceId: String

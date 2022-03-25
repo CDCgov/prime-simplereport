@@ -6,6 +6,7 @@ import static org.junit.jupiter.api.Assertions.assertThrows;
 import com.yannbriancon.interceptor.HibernateQueryInterceptor;
 import gov.cdc.usds.simplereport.api.CurrentOrganizationRolesContextHolder;
 import gov.cdc.usds.simplereport.api.CurrentTenantDataAccessContextHolder;
+import gov.cdc.usds.simplereport.config.DataSourceConfiguration;
 import gov.cdc.usds.simplereport.config.authorization.TenantDataAuthenticationProvider;
 import gov.cdc.usds.simplereport.idp.repository.DemoOktaRepository;
 import gov.cdc.usds.simplereport.test_util.DbTruncator;
@@ -37,7 +38,7 @@ import org.springframework.security.access.AccessDeniedException;
       "simple-report.authorization.role-prefix=" + TestUserIdentities.TEST_ROLE_PREFIX,
       "hibernate.query.interceptor.error-level=EXCEPTION"
     })
-@Import(SliceTestConfiguration.class)
+@Import({SliceTestConfiguration.class, DataSourceConfiguration.class})
 @WithSimpleReportStandardUser
 public abstract class BaseServiceTest<T> {
 

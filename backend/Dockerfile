@@ -1,19 +1,17 @@
-FROM gradle:6.7.1-jdk11-hotspot
+FROM gradle:6.9.2-jdk11
+LABEL org.opencontainers.image.source https://github.com/CDCgov/prime-simplereport
 
-WORKDIR /home/gradle/graphql-api
-COPY --chown=gradle:gradle ./.git ./.git
+WORKDIR /app/backend
 
-WORKDIR /home/gradle/graphql-api/backend
-COPY --chown=gradle:gradle ./backend/gradle ./gradle
-COPY --chown=gradle:gradle ./backend/*.gradle ./
-COPY --chown=gradle:gradle ./backend/config ./config
-COPY --chown=gradle:gradle ./backend/src ./src
-COPY --chown=gradle:gradle ./backend/gradle.properties gradle.properties
+# Only copy dependency-related files
+COPY build.gradle gradle.properties settings.gradle /app/backend/
+RUN chown -R gradle:gradle /app
+USER gradle
 
-RUN gradle --no-daemon classes testClasses assemble
+# Only download dependencies
+# Eat the expected build failure since no source code has been copied yet
+RUN gradle clean build --no-daemon > /dev/null 2>&1 || true
 
-# db will be running in another container, for purposes of this local file
-ENV SPRING_DATASOURCE_URL=jdbc:postgresql://db:5432/simple_report
+CMD ["./run.sh"]
 
-ENTRYPOINT ["gradle", "--info", "--no-daemon"]
-CMD ["tasks"]
+EXPOSE 8080

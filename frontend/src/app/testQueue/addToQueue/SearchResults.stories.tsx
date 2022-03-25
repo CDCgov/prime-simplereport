@@ -1,5 +1,5 @@
 import React from "react";
-import { MemoryRouter } from "react-router";
+import { MemoryRouter } from "react-router-dom";
 import { Story, Meta } from "@storybook/react";
 
 import { TestResult } from "../QueueItem";
@@ -15,6 +15,7 @@ const patient = {
   isDeleted: false,
   role: "somerole",
   lastTest: {
+    facilityName: "Whatever",
     dateAdded: "2020-01-01",
     result: "NEGATIVE" as TestResult,
     dateTested: "2020-01-01",

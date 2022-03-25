@@ -4,15 +4,16 @@ import {
   fireEvent,
   within,
   waitFor,
+  waitForElementToBeRemoved,
 } from "@testing-library/react";
 import userEvent from "@testing-library/user-event";
 import { MockedProvider } from "@apollo/client/testing";
 import { Provider } from "react-redux";
 import configureStore from "redux-mock-store";
-import { MemoryRouter } from "react-router";
+import { MemoryRouter, Route, Routes, useLocation } from "react-router-dom";
 import { ToastContainer } from "react-toastify";
 
-import EditPatient, { GET_PATIENT } from "./EditPatient";
+import EditPatient, { GET_PATIENT, UPDATE_PATIENT } from "./EditPatient";
 import EditPatientContainer from "./EditPatientContainer";
 
 jest.mock("@trussworks/react-uswds", () => ({
@@ -20,13 +21,19 @@ jest.mock("@trussworks/react-uswds", () => ({
 }));
 const mockStore = configureStore([]);
 
-describe("EditPatient", () => {
-  const mockFacilityID = "b0d2041f-93c9-4192-b19a-dd99c0044a7e";
-  const mockPatientID = "555e8a40-0f95-458e-a038-6b500a0fc2ad";
-  const store = mockStore({
-    facilities: [{ id: mockFacilityID, name: "123" }],
-  });
+const mockFacilityID = "b0d2041f-93c9-4192-b19a-dd99c0044a7e";
+const mockPatientID = "555e8a40-0f95-458e-a038-6b500a0fc2ad";
+const store = mockStore({
+  facilities: [{ id: mockFacilityID, name: "123" }],
+});
 
+const RouterWithFacility: React.FC = ({ children }) => (
+  <MemoryRouter initialEntries={[`/patient?facility=${mockFacilityID}`]}>
+    <Routes>{children}</Routes>
+  </MemoryRouter>
+);
+
+describe("EditPatient", () => {
   describe("Waiting for network response", () => {
     beforeEach(() => {
       render(
@@ -46,6 +53,154 @@ describe("EditPatient", () => {
       expect(
         screen.getAllByText("loading...", { exact: false })[0]
       ).toBeInTheDocument();
+    });
+  });
+
+  describe("post-submit actions", () => {
+    const mocks = [
+      {
+        request: {
+          query: GET_PATIENT,
+          variables: {
+            id: mockPatientID,
+          },
+        },
+        result: {
+          data: {
+            patient: {
+              firstName: "Eugenia",
+              middleName: null,
+              lastName: "Franecki",
+              birthDate: "1939-10-11",
+              street: "736 Jackson PI NW",
+              streetTwo: "DC",
+              city: null,
+              state: "DC",
+              country: "USA",
+              zipCode: "12345",
+              telephone: "(270) 867-5309",
+              phoneNumbers: [
+                {
+                  type: "LANDLINE",
+                  number: "(631) 867-5309",
+                },
+                {
+                  type: "MOBILE",
+                  number: "(270) 867-5309",
+                },
+              ],
+              role: "UNKNOWN",
+              emails: ["foo@bar.com"],
+              county: null,
+              race: "white",
+              ethnicity: "hispanic",
+              gender: "male",
+              residentCongregateSetting: true,
+              employedInHealthcare: true,
+              facility: null,
+              testResultDelivery: null,
+              tribalAffiliation: [null],
+            },
+          },
+        },
+      },
+      {
+        request: {
+          query: UPDATE_PATIENT,
+          variables: {
+            patientId: "555e8a40-0f95-458e-a038-6b500a0fc2ad",
+            firstName: "Fake Name",
+            middleName: null,
+            lastName: "Franecki",
+            birthDate: "1939-10-11",
+            street: "736 Jackson PI NW",
+            streetTwo: "DC",
+            city: null,
+            state: "DC",
+            country: "USA",
+            zipCode: "12345",
+            telephone: "(270) 867-5309",
+            phoneNumbers: [
+              { number: "(270) 867-5309", type: "MOBILE" },
+              { number: "(631) 867-5309", type: "LANDLINE" },
+            ],
+            role: "UNKNOWN",
+            emails: ["foo@bar.com"],
+            county: null,
+            race: "white",
+            ethnicity: "hispanic",
+            gender: "male",
+            residentCongregateSetting: true,
+            employedInHealthcare: true,
+            facility: null,
+            testResultDelivery: null,
+            tribalAffiliation: undefined,
+            facilityId: null,
+          },
+        },
+        result: {
+          data: {
+            updatePatient: {
+              internalId: "153f661f-b6ea-4711-b9ab-487b95198cce",
+              facility: {
+                id: "facility-id-001",
+              },
+            },
+          },
+        },
+      },
+    ];
+
+    beforeEach(() => {
+      const Queue = () => {
+        const location = useLocation();
+        return <p>Testing Queue! {location.search}</p>;
+      };
+
+      render(
+        <Provider store={store}>
+          <MockedProvider mocks={mocks} addTypename={false}>
+            <RouterWithFacility>
+              <Route
+                element={
+                  <EditPatient
+                    facilityId={mockFacilityID}
+                    patientId={mockPatientID}
+                  />
+                }
+                path={"/patient/"}
+              />
+              <Route path={"/patients"} element={<p>Patients!</p>} />
+              <Route path={"/queue"} element={<Queue />} />
+            </RouterWithFacility>
+          </MockedProvider>
+        </Provider>
+      );
+    });
+
+    it("can redirect to the new test form upon save", async () => {
+      await waitForElementToBeRemoved(() =>
+        screen.queryAllByText("Loading...")
+      );
+      // Make an arbitrary change on the form to allow submission
+      const name = await screen.findByLabelText("First name", { exact: false });
+      // Error message on bad value
+      fireEvent.change(name, { target: { value: "Fake Name" } });
+      fireEvent.blur(name);
+
+      const saveAndStartButton = screen.getByText("Save and start test", {
+        exact: false,
+      });
+
+      expect(saveAndStartButton).toBeEnabled();
+
+      userEvent.click(saveAndStartButton);
+
+      await waitFor(() => {
+        expect(
+          screen.getByText("Testing Queue!", { exact: false })
+        ).toBeInTheDocument();
+      });
     });
   });
 
@@ -71,7 +226,7 @@ describe("EditPatient", () => {
                 city: null,
                 state: "DC",
                 zipCode: null,
-                telephone: "(634) 397-4114",
+                telephone: "(270) 867-5309",
                 phoneNumbers: [
                   {
                     type: "LANDLINE",
@@ -79,7 +234,7 @@ describe("EditPatient", () => {
                   },
                   {
                     type: "MOBILE",
-                    number: "(634) 397-4114",
+                    number: "(270) 867-5309",
                   },
                 ],
                 role: "UNKNOWN",
@@ -139,7 +294,7 @@ describe("EditPatient", () => {
       // In the GraphQL response, this was the second entry in the
       // phone numbers array, but the array should be sorted to place the
       // value matching `patient.telephone` first
-      expect(input.value).toBe("(634) 397-4114");
+      expect(input.value).toBe("(270) 867-5309");
     });
 
     it("displays a validation failure alert if phone type not entered", async () => {
@@ -194,11 +349,11 @@ describe("EditPatient", () => {
                 city: null,
                 state: "DC",
                 zipCode: null,
-                telephone: "(634) 397-4114",
+                telephone: "(270) 867-5309",
                 phoneNumbers: [
                   {
                     type: "MOBILE",
-                    number: "(634) 397-4114",
+                    number: "(270) 867-5309",
                   },
                 ],
                 role: "UNKNOWN",
@@ -287,11 +442,11 @@ describe("EditPatient", () => {
             city: null,
             state: "DC",
             zipCode: null,
-            telephone: "(634) 397-4114",
+            telephone: "(270) 867-5309",
             phoneNumbers: [
               {
                 type: "MOBILE",
-                number: "(634) 397-4114",
+                number: "(270) 867-5309",
               },
             ],
             role: "UNKNOWN",
@@ -358,6 +513,7 @@ describe("EditPatient", () => {
       });
     });
   });
+
   describe("form validations", () => {
     beforeEach(async () => {
       render(
@@ -423,9 +579,9 @@ describe("EditPatient", () => {
   describe("EditPatientContainer", () => {
     it("doesn't render if no facility is provided", async () => {
       render(
-        <MemoryRouter>
+        <MemoryRouter initialEntries={[{ search: "?patientId=5" }]}>
           <Provider store={configureStore()({ facilities: [] })}>
-            <EditPatientContainer patientId="5" />
+            <EditPatientContainer />
           </Provider>
         </MemoryRouter>
       );

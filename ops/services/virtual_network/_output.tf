@@ -10,6 +10,10 @@ output "subnet_webapp_id" {
   value = azurerm_subnet.webapp.id
 }
 
+output "subnet_db_id" {
+  value = azurerm_subnet.db.id
+}
+
 output "private_dns_zone_id" {
   value = azurerm_private_dns_zone.default.id
 }

@@ -1,10 +1,17 @@
 .usa-text-with-tooltip {
   .usa-tooltip__body {
-    margin-left: -240px !important;
-    margin-top: -60px !important;
+    white-space: pre-wrap;
+    min-width: 300px;
+    padding: 1em;
   }
 
   .info-circle-icon {
     margin-left: 5px;
+  }
+
+  svg {
+    display: inline-block !important;
+    overflow: visible !important;
+    vertical-align: -0.125em !important;
   }
 }

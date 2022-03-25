@@ -18,6 +18,10 @@ module "metric_alerts" {
 
   mem_threshold = 80
 
+  disabled_alerts = [
+    "mem_util"
+  ]
+
   action_group_ids = [
     data.terraform_remote_state.global.outputs.pagerduty_prod_action_id
   ]

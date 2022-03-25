@@ -38,7 +38,7 @@ export const ManageSelfRegistrationLinks = ({
     try {
       await navigator.clipboard.writeText(getRegistrationLink(baseUrl, slug));
       setCopiedSlug(slug);
-    } catch (e) {
+    } catch (e: any) {
       console.error(e);
     }
   }

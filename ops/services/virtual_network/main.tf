@@ -93,3 +93,21 @@ resource "azurerm_network_profile" "container_instances" {
     }
   }
 }
+
+# Subnet for Flexible DBs
+
+resource "azurerm_subnet" "db" {
+  name                 = "${var.env}-db"
+  resource_group_name  = var.resource_group_name
+  virtual_network_name = azurerm_virtual_network.vn.name
+  address_prefixes     = [cidrsubnet(var.network_address, 8, 102)] # X.X.102.0/24
+
+  delegation {
+    name = "${var.env}-db"
+
+    service_delegation {
+      name    = "Microsoft.DBforPostgreSQL/flexibleServers"
+      actions = ["Microsoft.Network/virtualNetworks/subnets/join/action"]
+    }
+  }
+}

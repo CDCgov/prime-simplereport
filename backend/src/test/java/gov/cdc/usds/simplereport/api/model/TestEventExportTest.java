@@ -8,25 +8,18 @@ import gov.cdc.usds.simplereport.db.model.Person;
 import gov.cdc.usds.simplereport.db.model.TestEvent;
 import gov.cdc.usds.simplereport.db.model.auxiliary.AskOnEntrySurvey;
 import gov.cdc.usds.simplereport.db.model.auxiliary.TestResult;
-import gov.cdc.usds.simplereport.test_util.DbTruncator;
-import gov.cdc.usds.simplereport.test_util.SliceTestConfiguration;
-import gov.cdc.usds.simplereport.test_util.SliceTestConfiguration.WithSimpleReportStandardUser;
+import gov.cdc.usds.simplereport.db.repository.BaseRepositoryTest;
 import gov.cdc.usds.simplereport.test_util.TestDataFactory;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
+import java.time.LocalDate;
+import java.time.ZoneId;
 import java.util.Collections;
+import java.util.Date;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.test.autoconfigure.jdbc.AutoConfigureTestDatabase;
-import org.springframework.boot.test.autoconfigure.jdbc.AutoConfigureTestDatabase.Replace;
-import org.springframework.boot.test.autoconfigure.orm.jpa.DataJpaTest;
-import org.springframework.context.annotation.Import;
 
-@DataJpaTest
-@AutoConfigureTestDatabase(replace = Replace.NONE)
-@Import({SliceTestConfiguration.class, DbTruncator.class})
-@WithSimpleReportStandardUser
-class TestEventExportTest {
+class TestEventExportTest extends BaseRepositoryTest {
   @Autowired protected TestDataFactory _dataFactory;
 
   @Test
@@ -167,5 +160,86 @@ class TestEventExportTest {
 
     assertEquals("20201215000000", sut.getTestDate());
     assertEquals("20201214234500", sut.getSpecimenCollectionDateTime());
+  }
+
+  @Test
+  void sendCorrectionReason() {
+    // GIVEN
+    Organization org = _dataFactory.createValidOrg();
+    Facility facility = _dataFactory.createValidFacility(org);
+    Person person = _dataFactory.createFullPerson(org);
+
+    LocalDate localDate = LocalDate.of(2020, 7, 23);
+    Date backTestedDate = Date.from(localDate.atStartOfDay(ZoneId.systemDefault()).toInstant());
+    TestEvent originalTestEvent =
+        _dataFactory.createTestEvent(person, facility, null, null, backTestedDate);
+    String originalEventId = originalTestEvent.getInternalId().toString();
+    TestEvent testEvent = _dataFactory.createTestEventRemoval(originalTestEvent);
+
+    // WHEN
+    TestEventExport exportedEvent = new TestEventExport(testEvent);
+
+    // THEN
+    assertEquals("20200723000000", exportedEvent.getTestDate());
+    assertEquals("Cold feet", exportedEvent.getCorrectionReason());
+    assertEquals(originalEventId, exportedEvent.getCorrectedResultId());
+  }
+
+  @Test
+  void sendPatientInfo() {
+    // GIVEN
+    Organization org = _dataFactory.createValidOrg();
+    Facility facility = _dataFactory.createValidFacility(org);
+    Person person = _dataFactory.createFullPerson(org);
+    TestEvent testEvent =
+        _dataFactory.createTestEvent(person, facility, TestResult.NEGATIVE, false);
+
+    // WHEN
+    TestEventExport exportedEvent = new TestEventExport(testEvent);
+
+    // THEN
+    assertEquals("Fred", exportedEvent.getPatientFirstName());
+    assertEquals("M", exportedEvent.getPatientMiddleName());
+    assertEquals("Astaire", exportedEvent.getPatientLastName());
+    assertEquals("736 Jackson PI NW", exportedEvent.getPatientStreet());
+    assertEquals("APT. 123", exportedEvent.getPatientStreetTwo());
+    assertEquals("Washington", exportedEvent.getPatientCity());
+    assertEquals("DC", exportedEvent.getPatientState());
+    assertEquals("20503", exportedEvent.getPatientZipCode());
+    assertEquals("Washington", exportedEvent.getPatientCounty());
+    assertEquals("USA", exportedEvent.getPatientCountry());
+    assertEquals("English", exportedEvent.getPatientPreferredLanguage());
+  }
+
+  @Test
+  void sendPatientInfoWithCountryNull() {
+    // GIVEN
+    Organization org = _dataFactory.createValidOrg();
+    Facility facility = _dataFactory.createValidFacility(org);
+    Person person = _dataFactory.createFullPersonWithSpecificCountry(org, null);
+    TestEvent testEvent =
+        _dataFactory.createTestEvent(person, facility, TestResult.NEGATIVE, false);
+
+    // WHEN
+    TestEventExport exportedEvent = new TestEventExport(testEvent);
+
+    // THEN
+    assertEquals("USA", exportedEvent.getPatientCountry());
+  }
+
+  @Test
+  void sendPatientInfoWithNonUSACountry() {
+    // GIVEN
+    Organization org = _dataFactory.createValidOrg();
+    Facility facility = _dataFactory.createValidFacility(org);
+    Person person = _dataFactory.createFullPersonWithSpecificCountry(org, "CAN");
+    TestEvent testEvent =
+        _dataFactory.createTestEvent(person, facility, TestResult.NEGATIVE, false);
+
+    // WHEN
+    TestEventExport exportedEvent = new TestEventExport(testEvent);
+
+    // THEN
+    assertEquals("CAN", exportedEvent.getPatientCountry());
   }
 }

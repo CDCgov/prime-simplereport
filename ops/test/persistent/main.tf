@@ -1,7 +1,8 @@
 locals {
-  project      = "prime"
-  name         = "simple-report"
-  env          = "test"
+  project = "prime"
+  name    = "simple-report"
+  env     = "test"
+
   network_cidr = "10.3.0.0/16"
   rg_name      = data.azurerm_resource_group.test.name
   rg_location  = data.azurerm_resource_group.test.location
@@ -48,15 +49,28 @@ module "db" {
   rg_location = local.rg_location
   rg_name     = local.rg_name
 
-  global_vault_id      = data.azurerm_key_vault.global.id
-  db_vault_id          = data.azurerm_key_vault.db_keys.id
-  db_encryption_key_id = data.azurerm_key_vault_key.db_encryption_key.id
-  subnet_id            = module.vnet.subnet_vm_id
-  dns_zone_id          = module.vnet.private_dns_zone_id
-  log_workspace_id     = module.monitoring.log_analytics_workspace_id
-  nophi_user_password  = random_password.random_nophi_password.result
+  global_vault_id = data.azurerm_key_vault.global.id
+  db_vault_id     = data.azurerm_key_vault.db_keys.id
+  // TODO: delete old_subnet_id when removing the old DB configuration
+  old_subnet_id = module.vnet.subnet_vm_id
+  subnet_id     = module.vnet.subnet_db_id
+  // TODO: remove this when removing old DB config
+  dns_zone_id      = module.vnet.private_dns_zone_id
+  log_workspace_id = module.monitoring.log_analytics_workspace_id
+  // TODO: remove this when removing old DB config
+  nophi_user_password = random_password.random_nophi_password.result
 
   tags = local.management_tags
+}
+
+module "db_alerting" {
+  source  = "../../services/alerts/db_metrics"
+  env     = local.env
+  rg_name = local.rg_name
+  db_id   = module.db.flexible_server_id
+  action_group_ids = [
+    data.terraform_remote_state.global.outputs.pagerduty_non_prod_action_id
+  ]
 }
 
 module "vnet" {

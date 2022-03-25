@@ -49,7 +49,7 @@ const EditUserEmailModal: React.FC<Props> = ({
     let valid;
     try {
       valid = emailIsValid(emailAddress);
-    } catch (e) {
+    } catch (e: any) {
       valid = false;
     }
 

@@ -9,3 +9,6 @@ node_modules
 *.orig
 *.rej
 /.env
+certs/
+yarn-error.log
+backend/locust/__pycache__/

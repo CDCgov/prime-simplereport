@@ -2,57 +2,61 @@
 
 ###########
 # This script is used for local development only.
-# It will spin up a create-react-app dev server and
-# a Spring Boot "bootRun" task, output server logs, and clean
-# up the processes when exited.
+# It will ensure certs are generated using mkcert and
+# the certs have the correct names for the nginx container.
+# It will also install node_modules so they are present to be
+# mounted into the frontend container.
 ###########
 
-GREEN='\033[0;32m'
-PURPLE='\033[0;35m'
-
-function prepend() { 
-    NC='\033[0m' # No Color
-    while read line; do 
-        echo -e "${2}${1}:${NC} ${line}" 
-    done
-}
-
-# This function kills the server processes when the script is interrupted
-# Takes the PID of the frontend server as an argument
+# This function shuts down docker compose on CTRL+C
 cleanup() {
     echo
-    echo "Script stopped, performing cleanup..."
-    kill $1 # kill frontend server
-    cd ${BACKEND_DIR}
-    ./gradlew --stop
-    ./gradlew clean
-
-    rm -rf ${BACKEND_DIR}/.gradle/daemon # Daemons _cannot_ survive script shutdown
-    echo "Cleanup complete!"
+    echo "App stopped, shutting down containers..."
+    docker compose -f docker-compose.yml $fileFlag exec backend gradle clean --stop
+    docker compose -f docker-compose.yml $fileFlag down
+    echo "Thanks for using Simple Report!"
+    exit
 }
 
-# Get environment variables
-set -o allexport
-source .env
+if ! [ -x "$(command -v mkcert)" ]; then
+  echo 'Error: mkcert is not installed. Please check the README for installation instructions.' >&2
+  exit 1
+fi
 
-# Get dir paths
-ROOT_DIR=$(pwd)
-FRONTEND_DIR=${ROOT_DIR}/frontend
-BACKEND_DIR=${ROOT_DIR}/backend
+echo "Checking for certs..."
 
-# Start frontend server
-cd ${FRONTEND_DIR}
-echo "Starting frontend server..."
-BROWSER=none yarn start | prepend "frontend" $GREEN &
-NPM_PID=$!
-echo "frontend server PID: ${NPM_PID}"
-trap "cleanup ${NPM_PID}" EXIT
+mkdir -p certs
 
-# Build backend
-cd ${BACKEND_DIR}
-# Start a continuous build process and send to background
-./gradlew --no-daemon -t build -x test -x checkstyleMain -x checkstyleTest -x spotlessCheck -x bootBuildInfo | prepend "backend" $PURPLE &
-# Wait for initial build to complete
-sleep 15
-# Start bootRun without build. It will live reload when the previous process rebuilds
-./gradlew --no-daemon -x build -x test -x checkstyleMain -x checkstyleTest -x spotlessCheck bootRun --args='--spring.profiles.active=local' | prepend "backend" $PURPLE
+if [ -n "$(ls -A certs 2>/dev/null)" ]; then
+  echo "Certs found! Skipping generation."
+else
+  echo "Certs missing, generating..."
+  mkcert -install
+  cd certs
+  mkcert localhost.simplereport.gov
+  mv localhost.simplereport.gov.pem localhost.simplereport.gov.crt
+  mv localhost.simplereport.gov-key.pem localhost.simplereport.gov.key
+  cd ..
+  echo "🎉 Certs generated!"
+fi
+
+echo "Starting Docker Compose..."
+
+while getopts ":l" opt;
+do
+  case $opt in
+    l)
+      echo "Composing with Locust!"
+      fileFlag="-f docker-compose.locust.yml"
+      ;;
+    \?)
+      echo "Invalid start option: -$OPTARG"
+      ;;
+  esac  
+done
+
+docker compose -f docker-compose.yml $fileFlag pull
+docker compose -f docker-compose.yml $fileFlag up -d
+docker compose -f docker-compose.yml $fileFlag logs -f
+
+trap "cleanup" EXIT

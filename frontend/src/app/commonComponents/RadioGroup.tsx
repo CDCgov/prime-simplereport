@@ -127,7 +127,7 @@ const RadioGroup = <T extends string>({
                         </span>
                       )}
                       {c.labelTag && (
-                        <div className="display-block margin-left-4 margin-top-1">
+                        <div className="display-block margin-top-1">
                           <span className="usa-tag bg-primary-darker">
                             {c.labelTag}
                           </span>

@@ -1,4 +1,5 @@
 import {
+  act,
   fireEvent,
   render,
   screen,
@@ -149,7 +150,7 @@ describe("QuestionsFormContainer", () => {
 describe("QuestionsFormContainer countdown", () => {
   let personalDetails: IdentityVerificationRequest;
   beforeEach(() => {
-    jest.useFakeTimers();
+    jest.useFakeTimers("modern");
   });
   it("redirects to failure page when countdown runs out", async () => {
     personalDetails = initPersonalDetails("foo", "Bob", "Bill", "Martínez");
@@ -162,6 +163,9 @@ describe("QuestionsFormContainer countdown", () => {
       />
     );
     expect(await screen.findByText("0:01")).toBeInTheDocument();
+    await act(async () => {
+      jest.advanceTimersByTime(1000);
+    });
     expect(
       await screen.findByText("Experian was unable to verify your identity.", {
         exact: false,

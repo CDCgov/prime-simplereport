@@ -1,5 +1,5 @@
 import { ChangeEvent, useCallback, useEffect, useState } from "react";
-import { Redirect } from "react-router";
+import { Navigate } from "react-router-dom";
 
 import TextInput from "../../commonComponents/TextInput";
 import Button from "../../commonComponents/Button/Button";
@@ -114,7 +114,7 @@ export const PasswordForm = () => {
       try {
         await AccountCreationApi.setPassword(password);
         setSubmitted(true);
-      } catch (error) {
+      } catch (error: any) {
         setPasswordError(
           error || "Unable to setup password, please try again later"
         );
@@ -166,7 +166,7 @@ export const PasswordForm = () => {
   }
 
   if (submitted) {
-    return <Redirect push to="/set-recovery-question" />;
+    return <Navigate to="../set-recovery-question" />;
   }
 
   return (
@@ -212,6 +212,7 @@ export const PasswordForm = () => {
           label={"Continue"}
           type={"submit"}
           onClick={handleSubmit}
+          id={"continue"}
         />
       </Card>
     </CardBackground>

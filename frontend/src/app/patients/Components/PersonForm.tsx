@@ -1,10 +1,13 @@
 import React, { useCallback, useState, useEffect, useRef } from "react";
-import { Prompt } from "react-router-dom";
 import { SchemaOf } from "yup";
 import { useTranslation } from "react-i18next";
 import { ComboBox } from "@trussworks/react-uswds";
 
-import { countryOptions, stateCodes } from "../../../config/constants";
+import {
+  canadianProvinceCodes,
+  countryOptions,
+  stateCodes,
+} from "../../../config/constants";
 import getLanguages from "../../utils/languages";
 import i18n from "../../../i18n";
 import {
@@ -34,6 +37,7 @@ import {
   getSelectedDeliveryPreferencesEmail,
   toggleDeliveryPreferenceEmail,
 } from "../../utils/deliveryPreferences";
+import Prompt from "../../utils/Prompt";
 
 import FacilitySelect from "./FacilitySelect";
 import ManagePhoneNumbers from "./ManagePhoneNumbers";
@@ -80,20 +84,24 @@ const yesNoUnknownToBool = (
 interface Props {
   patient: Nullable<PersonFormData>;
   patientId?: string;
-  savePerson: (person: Nullable<PersonFormData>) => void;
+  savePerson: (person: Nullable<PersonFormData>, startTest?: boolean) => void;
   onBlur?: (person: Nullable<PersonFormData>) => void;
   hideFacilitySelect?: boolean;
   getHeader?: (
     person: Nullable<PersonFormData>,
-    onSave: () => void,
+    onSave: (startTest?: boolean) => void,
     formChanged: boolean
   ) => React.ReactNode;
-  getFooter: (onSave: () => void, formChanged: boolean) => React.ReactNode;
+  getFooter: (
+    onSave: (startTest?: boolean) => void,
+    formChanged: boolean
+  ) => React.ReactNode;
   view?: PersonFormView;
 }
 
 const PersonForm = (props: Props) => {
   const [formChanged, setFormChanged] = useState(false);
+  const [startTest, setStartTest] = useState(false);
   const [patient, setPatient] = useState(props.patient);
   // Default country to USA if it's not set
   if (patient.country === null) {
@@ -152,7 +160,7 @@ const PersonForm = (props: Props) => {
       try {
         await schema.validateAt(field, patient);
         clearError(field);
-      } catch (e) {
+      } catch (e: any) {
         setErrors((existingErrors) => ({
           ...existingErrors,
           [field]: getValidationError(e),
@@ -167,7 +175,7 @@ const PersonForm = (props: Props) => {
     Object.entries(errors).forEach(async ([field, message]) => {
       try {
         await schema.validateAt(field, patient);
-      } catch (e) {
+      } catch (e: any) {
         const error = getValidationError(e);
         if (message && error !== message) {
           setErrors((existing) => ({
@@ -188,6 +196,7 @@ const PersonForm = (props: Props) => {
     // If a patient has an international address, use special values for state and zip code
     if (field === "country") {
       setFormChanged(true);
+
       if (value !== "USA") {
         setPatient({
           ...patient,
@@ -229,18 +238,25 @@ const PersonForm = (props: Props) => {
     const originalAddress = getAddress(patient);
     const suggestedAddress = await getBestSuggestion(originalAddress);
     if (suggestionIsCloseEnough(originalAddress, suggestedAddress)) {
-      onSave(suggestedAddress);
+      onSave(suggestedAddress, startTest);
     } else {
       setAddressSuggestion(suggestedAddress);
       setAddressModalOpen(true);
     }
   };
 
-  const validateForm = async () => {
+  const validateForm = async (shouldStartTest: boolean = false) => {
+    // The `startTest` param here originates from a child Add/Edit Patient form,
+    // but we must also track it in state here to preserve the redirect throughout
+    // address confirmation
+    if (shouldStartTest) {
+      setStartTest(true);
+    }
+
     try {
       phoneNumberValidator.current?.();
       await schema.validate(patient, { abortEarly: false });
-    } catch (e) {
+    } catch (e: any) {
       const newErrors: PersonErrors = e.inner.reduce(
         (
           acc: PersonErrors,
@@ -264,6 +280,7 @@ const PersonForm = (props: Props) => {
         }
         showError(t("patient.form.errors.validationMsg"), error);
       });
+
       return;
     }
     if (
@@ -271,18 +288,21 @@ const PersonForm = (props: Props) => {
         JSON.stringify(getAddress(props.patient)) ||
       patient.country !== "USA"
     ) {
-      onSave();
+      onSave(undefined, shouldStartTest);
     } else {
       validatePatientAddress();
     }
   };
 
-  const onSave = (address?: AddressWithMetaData) => {
+  const onSave = (
+    address?: AddressWithMetaData,
+    shouldStartTest: boolean = false
+  ) => {
     const person = address ? { ...patient, ...address } : patient;
     setPatient(person);
     setAddressModalOpen(false);
     setFormChanged(false);
-    props.savePerson(person);
+    props.savePerson(person, shouldStartTest);
   };
 
   const commonInputProps = {
@@ -514,6 +534,38 @@ const PersonForm = (props: Props) => {
               </div>
             </div>
           ) : null}
+          {patient.country === "CAN" ? (
+            <div className="grid-row grid-gap">
+              <div className="mobile-lg:grid-col-6">
+                <Select
+                  label={t("patient.form.contact.state")}
+                  name="state"
+                  value={patient.state || ""}
+                  options={canadianProvinceCodes.map((c) => ({
+                    label: c,
+                    value: c,
+                  }))}
+                  defaultOption={t("common.defaultDropdownOption")}
+                  defaultSelect
+                  onChange={onPersonChange("state")}
+                  onBlur={() => {
+                    onBlurField("state");
+                  }}
+                  validationStatus={validationStatus("state")}
+                  errorMessage={errors.state}
+                  required
+                />
+              </div>
+              <div className="mobile-lg:grid-col-6">
+                <Input
+                  {...commonInputProps}
+                  field="zipCode"
+                  label={t("patient.form.contact.zip")}
+                  required
+                />
+              </div>
+            </div>
+          ) : null}
         </div>
       </FormGroup>
       <FormGroup title={t("patient.form.demographics.heading")}>
@@ -526,6 +578,8 @@ const PersonForm = (props: Props) => {
           buttons={RACE_VALUES}
           selectedRadio={patient.race}
           onChange={onPersonChange("race")}
+          required={true}
+          validationStatus={validationStatus("race")}
         />
         <div className="usa-form-group">
           <label className="usa-legend" htmlFor="tribal-affiliation">
@@ -547,12 +601,15 @@ const PersonForm = (props: Props) => {
           buttons={ETHNICITY_VALUES}
           selectedRadio={patient.ethnicity}
           onChange={onPersonChange("ethnicity")}
+          required={true}
+          validationStatus={validationStatus("ethnicity")}
         />
         <RadioGroup
           legend={t("patient.form.demographics.gender")}
           hintText={t("patient.form.demographics.genderHelpText")}
           name="gender"
           required={view !== PersonFormView.PXP}
+          validationStatus={validationStatus("gender")}
           buttons={GENDER_VALUES}
           selectedRadio={patient.gender}
           onChange={onPersonChange("gender")}
@@ -597,7 +654,7 @@ const PersonForm = (props: Props) => {
           },
         ]}
         showModal={addressModalOpen}
-        onConfirm={(data) => onSave(data.person)}
+        onConfirm={(data) => onSave(data.person, startTest)}
         onClose={() => setAddressModalOpen(false)}
       />
     </>

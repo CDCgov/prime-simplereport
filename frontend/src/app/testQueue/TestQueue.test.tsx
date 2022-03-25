@@ -26,6 +26,8 @@ describe("TestQueue", () => {
   const mockStore = configureStore([]);
 
   beforeEach(() => {
+    jest.spyOn(global.Math, "random").mockReturnValue(0.123456789);
+
     store = mockStore({
       organization: {
         name: "Organization Name",
@@ -37,6 +39,10 @@ describe("TestQueue", () => {
         },
       ],
     });
+  });
+
+  afterEach(() => {
+    jest.spyOn(global.Math, "random").mockRestore();
   });
 
   it("should render the test queue", async () => {
@@ -73,7 +79,13 @@ describe("TestQueue", () => {
     userEvent.click(removeButton);
     const confirmButton = await screen.findByText("Yes", { exact: false });
     userEvent.click(confirmButton);
-    await waitForElementToBeRemoved(() => screen.queryByText("Doe, John A"));
+    expect(
+      screen.getByText("Submitting test data for Doe, John A...")
+    ).toBeInTheDocument();
+    await waitForElementToBeRemoved(
+      () => screen.queryByText("Submitting test data for Doe, John A..."),
+      { timeout: 10000 }
+    );
     expect(screen.queryByText("Doe, John A")).not.toBeInTheDocument();
   });
 
@@ -114,6 +126,92 @@ describe("TestQueue", () => {
       expect(within(modal).getByText("John@legacy.com")).toBeInTheDocument();
       expect(within(modal).getByText("8178675309")).toBeInTheDocument();
       expect(within(modal).getByText("8178675911")).toBeInTheDocument();
+    });
+  });
+
+  describe("device selection", () => {
+    it("should select another swab type for the selected device if configured swab not available", async () => {
+      const deviceSpecimenNotAvailableResult = { ...result };
+
+      // Default device specimen for facility is not a valid type in the `deviceSpecimenTypes` array
+      // returned by GraphQL. The component should select another of the facility's devices to
+      // populate the dropdown initially
+      deviceSpecimenNotAvailableResult.data.organization.testingFacility[0].defaultDeviceSpecimen =
+        "c0c7b042-9a4f-47cd-b280-46c0daa51c86";
+      deviceSpecimenNotAvailableResult.data.deviceSpecimenTypes.pop();
+
+      const mock = {
+        request: {
+          query: queueQuery,
+          variables: {
+            facilityId: "a1",
+          },
+        },
+        result: deviceSpecimenNotAvailableResult,
+      };
+
+      render(
+        <MemoryRouter>
+          <MockedProvider mocks={[mock]}>
+            <Provider store={store}>
+              <TestQueue activeFacilityId="a1" />
+            </Provider>
+          </MockedProvider>
+        </MemoryRouter>
+      );
+
+      expect(
+        ((await screen.findAllByText("Quidel Sofia 2"))[0] as HTMLOptionElement)
+          .selected
+      ).toBeTruthy();
+
+      expect(
+        ((
+          await screen.findAllByText("Nasopharyngeal swab")
+        )[0] as HTMLOptionElement).selected
+      ).toBeTruthy();
+    });
+
+    it("should select another device if the configured device has no associated swab types", async () => {
+      const deviceNotAvailableResult = { ...result };
+
+      // The device configured as the facility default has no associated swab types - dropdown
+      // should be populated with another valid device+swab type combo
+      deviceNotAvailableResult.data.queue[0].deviceType = {
+        internalId: internalId,
+        model: "lumira",
+        name: "LumiraDx",
+        testLength: 15,
+        __typename: "DeviceType",
+      };
+
+      deviceNotAvailableResult.data.deviceSpecimenTypes.shift();
+
+      const mock = {
+        request: {
+          query: queueQuery,
+          variables: {
+            facilityId: "a1",
+          },
+        },
+        result: deviceNotAvailableResult,
+      };
+
+      render(
+        <MemoryRouter>
+          <MockedProvider mocks={[mock]}>
+            <Provider store={store}>
+              <TestQueue activeFacilityId="a1" />
+            </Provider>
+          </MockedProvider>
+        </MemoryRouter>
+      );
+
+      // The facility's default device is "LumiraDx", but that device has no associated swabs
+      expect(
+        ((await screen.findAllByText("Quidel Sofia 2"))[0] as HTMLOptionElement)
+          .selected
+      ).toBeTruthy();
     });
   });
 });
@@ -160,7 +258,7 @@ const createPatient = ({
   symptomOnset: null,
   noSymptoms: false,
   patient: {
-    internalId: "31d42f7a-0a14-46b7-bc8a-38b3b1e78659",
+    internalId: resultId,
     telephone: "1234567890",
     birthDate,
     firstName: first,
@@ -184,10 +282,10 @@ const createPatient = ({
     __typename: "Patient",
   },
   deviceType: {
-    internalId,
-    testLength: 15,
-    model: "lumira",
-    name: "LumiraDX",
+    internalId: "0f3d7426-3476-4800-97e7-3de8a93b090c",
+    model: "quidel",
+    name: "Quidel Sofia 2",
+    testLength: 10,
     __typename: "DeviceType",
   },
   deviceSpecimenType: {
@@ -254,6 +352,7 @@ const result = {
           internalId: internalId,
           model: "lumira",
           name: "LumiraDx",
+          testLength: 15,
           __typename: "DeviceType",
         },
         specimenType: {
@@ -264,11 +363,12 @@ const result = {
         __typename: "DeviceSpecimenType",
       },
       {
-        internalId: "0f3d7426-3476-4800-97e7-3de8a93b090c",
+        internalId: "f8b9d9d6-c318-4c54-a516-76f0d9a25d32",
         deviceType: {
-          internalId: "f8b9d9d6-c318-4c54-a516-76f0d9a25d32",
+          internalId: "0f3d7426-3476-4800-97e7-3de8a93b090c",
           model: "quidel",
           name: "Quidel Sofia 2",
+          testLength: 10,
           __typename: "DeviceType",
         },
         specimenType: {
@@ -284,6 +384,7 @@ const result = {
           internalId: "0f3d7426-3476-4800-97e7-3de8a93b090c",
           model: "quidel",
           name: "Quidel Sofia 2",
+          testLength: 10,
           __typename: "DeviceType",
         },
         specimenType: {
@@ -321,7 +422,7 @@ const mocks = [
     request: {
       query: REMOVE_PATIENT_FROM_QUEUE,
       variables: {
-        patientId: "31d42f7a-0a14-46b7-bc8a-38b3b1e78659",
+        patientId: "abc",
       },
     },
     result: {

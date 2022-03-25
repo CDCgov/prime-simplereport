@@ -9,6 +9,7 @@ import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.junit.jupiter.api.Assertions.fail;
 import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.verifyNoInteractions;
 import static org.mockito.Mockito.when;
@@ -52,6 +53,7 @@ import java.util.stream.Collectors;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.mockito.ArgumentCaptor;
+import org.mockito.Captor;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.boot.test.mock.mockito.SpyBean;
@@ -68,6 +70,8 @@ class TestOrderServiceTest extends BaseServiceTest<TestOrderService> {
   @Autowired private TestDataFactory _dataFactory;
   @SpyBean private PatientLinkService patientLinkService;
   @MockBean private TestResultsDeliveryService testResultsDeliveryService;
+  @MockBean TestEventReportingService testEventReportingService;
+  @Captor ArgumentCaptor<TestEvent> testEventArgumentCaptor;
 
   private static final PersonName AMOS = new PersonName("Amos", null, "Quint", null);
   private static final PersonName BRAD = new PersonName("Bradley", "Z.", "Jones", "Jr.");
@@ -93,9 +97,10 @@ class TestOrderServiceTest extends BaseServiceTest<TestOrderService> {
   @Test
   @WithSimpleReportOrgAdminUser
   void roundTrip() {
+    // GIVEN
     Facility facility =
         _dataFactory.createValidFacility(_organizationService.getCurrentOrganization());
-    Person p =
+    Person patient =
         _personService.addPatient(
             (UUID) null,
             "FOO",
@@ -119,22 +124,36 @@ class TestOrderServiceTest extends BaseServiceTest<TestOrderService> {
             null);
 
     _service.addPatientToQueue(
-        facility.getInternalId(), p, "", Collections.emptyMap(), LocalDate.of(1865, 12, 25), false);
+        facility.getInternalId(),
+        patient,
+        "",
+        Collections.emptyMap(),
+        LocalDate.of(1865, 12, 25),
+        false);
+    DeviceSpecimenType devA = facility.getDefaultDeviceSpecimen();
 
     List<TestOrder> queue = _service.getQueue(facility.getInternalId());
     assertEquals(1, queue.size());
 
-    DeviceSpecimenType devA = facility.getDefaultDeviceSpecimen();
-    _service.addTestResult(devA.getInternalId(), TestResult.POSITIVE, p.getInternalId(), null);
+    // WHEN
+    _service.addTestResult(
+        devA.getInternalId(), TestResult.POSITIVE, patient.getInternalId(), null);
 
+    // THEN
     queue = _service.getQueue(facility.getInternalId());
     assertEquals(0, queue.size());
 
     List<TestEvent> testEvents =
-        _testEventRepository.findAllByPatientAndFacilities(p, List.of(facility));
+        _testEventRepository.findAllByPatientAndFacilities(patient, List.of(facility));
     assertThat(testEvents).hasSize(1);
     assertThat(testEvents.get(0).getPatientHasPriorTests()).isFalse();
     verify(patientLinkService).createPatientLink(any());
+
+    // make sure the corrected event is sent to storage queue
+    verify(testEventReportingService).report(testEventArgumentCaptor.capture());
+    TestEvent sentEvent = testEventArgumentCaptor.getValue();
+    assertThat(sentEvent.getPatient().getInternalId()).isEqualTo(patient.getInternalId());
+    assertThat(sentEvent.getResult()).isEqualTo(TestResult.POSITIVE);
   }
 
   @Test
@@ -173,6 +192,8 @@ class TestOrderServiceTest extends BaseServiceTest<TestOrderService> {
         p.getInternalId(),
         null);
 
+    verify(testEventReportingService, times(1)).report(any());
+
     List<TestEvent> testEvents =
         _testEventRepository.findAllByPatientAndFacilities(p, List.of(facility));
     assertThat(testEvents).hasSize(1);
@@ -190,6 +211,7 @@ class TestOrderServiceTest extends BaseServiceTest<TestOrderService> {
     assertThat(testEvents).hasSize(2);
     assertThat(testEvents.get(0).getPatientHasPriorTests()).isFalse();
     assertThat(testEvents.get(1).getPatientHasPriorTests()).isTrue();
+    verify(testEventReportingService, times(2)).report(any());
   }
 
   @Test
@@ -330,6 +352,7 @@ class TestOrderServiceTest extends BaseServiceTest<TestOrderService> {
 
     List<TestOrder> queue = _service.getQueue(facility.getInternalId());
     assertEquals(0, queue.size());
+    verify(testEventReportingService).report(any());
   }
 
   @Test
@@ -367,6 +390,7 @@ class TestOrderServiceTest extends BaseServiceTest<TestOrderService> {
 
     List<TestOrder> queue = _service.getQueue(facility.getInternalId());
     assertEquals(0, queue.size());
+    verify(testEventReportingService).report(any());
   }
 
   @Test
@@ -375,9 +399,6 @@ class TestOrderServiceTest extends BaseServiceTest<TestOrderService> {
     Facility facility1 =
         _dataFactory.createValidFacility(
             _organizationService.getCurrentOrganization(), "First One");
-    Facility facility2 =
-        _dataFactory.createValidFacility(
-            _organizationService.getCurrentOrganization(), "Second One");
 
     TestUserIdentities.setFacilityAuthorities(facility1);
 
@@ -458,15 +479,24 @@ class TestOrderServiceTest extends BaseServiceTest<TestOrderService> {
             _service.addTestResult(
                 devA.getInternalId(), TestResult.POSITIVE, p1.getInternalId(), null));
 
+    // make sure the nothing was sent to storage queue
+    verifyNoInteractions(testEventReportingService);
+
     TestUserIdentities.setFacilityAuthorities(facility1);
     _service.addTestResult(devA.getInternalId(), TestResult.POSITIVE, p1.getInternalId(), null);
     List<TestOrder> queue = _service.getQueue(facility1.getInternalId());
     assertEquals(1, queue.size());
 
+    // make sure the corrected event is sent to storage queue
+    verify(testEventReportingService).report(any());
+
     _service.addTestResult(devA.getInternalId(), TestResult.NEGATIVE, p2.getInternalId(), null);
 
     queue = _service.getQueue(facility1.getInternalId());
     assertEquals(0, queue.size());
+
+    // make sure the second event is sent to storage queue
+    verify(testEventReportingService, times(2)).report(any());
   }
 
   @Test
@@ -715,6 +745,7 @@ class TestOrderServiceTest extends BaseServiceTest<TestOrderService> {
     // THEN
     assertTrue(res.getDeliverySuccess());
     verifyNoInteractions(testResultsDeliveryService);
+    verify(testEventReportingService).report(any());
   }
 
   @Test
@@ -1069,6 +1100,10 @@ class TestOrderServiceTest extends BaseServiceTest<TestOrderService> {
     assertEquals(
         deleteMarkerEvent.getInternalId().toString(),
         events_after.get(0).getInternalId().toString());
+
+    // make sure the corrected event is sent to storage queue, which gets picked up to be delivered
+    // to report stream
+    verify(testEventReportingService).report(deleteMarkerEvent);
   }
 
   @Test
@@ -1396,9 +1431,14 @@ class TestOrderServiceTest extends BaseServiceTest<TestOrderService> {
         AccessDeniedException.class,
         () -> _service.getTestResult(_e.getInternalId()).getTestOrder());
 
+    // make sure the corrected event is not sent to storage queue
+    verifyNoInteractions(testEventReportingService);
+
     TestUserIdentities.setFacilityAuthorities(facility);
-    _service.correctTestMarkAsError(_e.getInternalId(), reasonMsg);
+    TestEvent correctedTestEvent = _service.correctTestMarkAsError(_e.getInternalId(), reasonMsg);
     _service.getTestEventsResults(facility.getInternalId(), null, null, null, null, null, 0, 10);
     _service.getTestResult(_e.getInternalId()).getTestOrder();
+    // make sure the corrected event is sent to storage queue
+    verify(testEventReportingService).report(correctedTestEvent);
   }
 }

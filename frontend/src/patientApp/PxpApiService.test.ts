@@ -6,6 +6,8 @@ const appInsightsHeaders = {
   "x-ms-session-id": "",
 };
 
+const backendUrl = process.env.REACT_APP_BACKEND_URL;
+
 describe("PxpApi", () => {
   beforeEach(() => {
     (fetch as FetchMock).resetMocks();
@@ -20,20 +22,17 @@ describe("PxpApi", () => {
       );
     });
     it("calls fetch with the correct data", () => {
-      expect(fetch).toHaveBeenCalledWith(
-        "http://localhost:8080/pxp/link/verify",
-        {
-          body:
-            '{"patientLinkId":"9b831f0b-40f2-4389-87b0-2c90fcd56732","dateOfBirth":"1947-08-21"}',
-          headers: {
-            Accept: "application/json, text/plain",
-            "Content-Type": "application/json",
-            ...appInsightsHeaders,
-          },
-          method: "POST",
-          mode: "cors",
-        }
-      );
+      expect(fetch).toHaveBeenCalledWith(`${backendUrl}/pxp/link/verify/v2`, {
+        body:
+          '{"patientLinkId":"9b831f0b-40f2-4389-87b0-2c90fcd56732","dateOfBirth":"1947-08-21"}',
+        headers: {
+          Accept: "application/json, text/plain",
+          "Content-Type": "application/json",
+          ...appInsightsHeaders,
+        },
+        method: "POST",
+        mode: "cors",
+      });
     });
   });
 
@@ -47,20 +46,17 @@ describe("PxpApi", () => {
       );
     });
     it("calls fetch with the correct data", () => {
-      expect(fetch).toHaveBeenCalledWith(
-        "http://localhost:8080/pxp/questions",
-        {
-          body:
-            '{"patientLinkId":"9b831f0b-40f2-4389-87b0-2c90fcd56732","dateOfBirth":"1947-08-21","data":{}}',
-          headers: {
-            Accept: "application/json, text/plain",
-            "Content-Type": "application/json",
-            ...appInsightsHeaders,
-          },
-          method: "POST",
-          mode: "cors",
-        }
-      );
+      expect(fetch).toHaveBeenCalledWith(`${backendUrl}/pxp/questions`, {
+        body:
+          '{"patientLinkId":"9b831f0b-40f2-4389-87b0-2c90fcd56732","dateOfBirth":"1947-08-21","data":{}}',
+        headers: {
+          Accept: "application/json, text/plain",
+          "Content-Type": "application/json",
+          ...appInsightsHeaders,
+        },
+        method: "POST",
+        mode: "cors",
+      });
     });
   });
 
@@ -74,7 +70,7 @@ describe("PxpApi", () => {
       );
     });
     it("calls fetch with the correct data", () => {
-      expect(fetch).toHaveBeenCalledWith("http://localhost:8080/pxp/patient", {
+      expect(fetch).toHaveBeenCalledWith(`${backendUrl}/pxp/patient`, {
         body:
           '{"patientLinkId":"9b831f0b-40f2-4389-87b0-2c90fcd56732","dateOfBirth":"1947-08-21","data":{}}',
         headers: {
@@ -95,7 +91,7 @@ describe("PxpApi", () => {
     });
     it("calls fetch with the correct data", () => {
       expect(fetch).toHaveBeenCalledWith(
-        "http://localhost:8080/pxp/register/entity-name?patientRegistrationLink=9b831f0b-40f2-4389-87b0-2c90fcd56732",
+        `${backendUrl}/pxp/register/entity-name?patientRegistrationLink=9b831f0b-40f2-4389-87b0-2c90fcd56732`,
         {
           method: "GET",
           mode: "cors",
@@ -110,7 +106,7 @@ describe("PxpApi", () => {
       await PxpApi.selfRegister({} as SelfRegistrationData);
     });
     it("calls fetch with the correct data", () => {
-      expect(fetch).toHaveBeenCalledWith("http://localhost:8080/pxp/register", {
+      expect(fetch).toHaveBeenCalledWith(`${backendUrl}/pxp/register`, {
         body: "{}",
         headers: {
           Accept: "application/json, text/plain",

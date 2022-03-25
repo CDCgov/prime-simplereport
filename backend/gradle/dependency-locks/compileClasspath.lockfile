@@ -31,7 +31,6 @@ com.google.http-client:google-http-client-jackson2:1.38.0
 com.google.http-client:google-http-client:1.38.0
 com.google.j2objc:j2objc-annotations:1.3
 com.googlecode.libphonenumber:libphonenumber:8.12.15
-com.graphql-java-kickstart:graphiql-spring-boot-starter:11.0.0
 com.graphql-java-kickstart:graphql-java-kickstart:11.0.0
 com.graphql-java-kickstart:graphql-java-servlet:11.0.0
 com.graphql-java-kickstart:graphql-java-tools:11.0.0
