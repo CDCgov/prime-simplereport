@@ -7,12 +7,12 @@ module "okta" {
     {
       name   = "SimpleReport Prod Env",
       url    = "https://simplereport.gov",
-      scopes = ["CORS, REDIRECT"]
+      scopes = ["CORS", "REDIRECT"]
     },
     {
       name   = "SimpleReport Prod Env (www)",
       url    = "https://www.simplereport.gov",
-      scopes = ["CORS, REDIRECT"]
+      scopes = ["CORS", "REDIRECT"]
     }
   ]
 }

@@ -8,7 +8,7 @@ module "okta" {
     {
       name   = "SimpleReport Staging Env",
       url    = "https://stg.simplereport.gov",
-      scopes = ["CORS, REDIRECT"]
+      scopes = ["CORS", "REDIRECT"]
     }
   ]
 }
