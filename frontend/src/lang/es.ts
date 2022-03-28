@@ -65,6 +65,11 @@ export const es: LanguageConfig = {
         NO,
         UNKNOWN,
       },
+      date: {
+        month: "Mes",
+        day: "Fecha",
+        year: "Año",
+      },
     },
     languages: {
       English: "Inglés",
@@ -479,12 +484,15 @@ export const es: LanguageConfig = {
         },
       },
       dob: {
+        header: "Verificar fecha de nacimiento",
         dateOfBirth: "Fecha de nacimiento",
         enterDOB: "Ingrese su fecha de nacimiento",
         enterDOB2:
-          "Ingrese su fecha de nacimiento para acceder a su portal de pruebas de COVID-19.",
+          "Ingrese la fecha de nacimiento de <0>{{personName}}</0> para acceder a su resultado de pruebas de COVID-19.",
         linkExpirationNotice:
-          "Nota: este enlace caducará 10 días después de que se registró el resultado de la prueba.",
+          "Nota: este enlace vencerá el <0>{{expirationDate}}</0>. ",
+        testingFacilityContact:
+          "Por favor comuníquese con <0>{{facilityName}}</0> al <1>{{facilityPhone}}</1> si tiene problemas para acceder a su resultado.",
         format: "MM/DD/AAAA",
         invalidFormat:
           "La fecha de nacimiento debe estar en formato MM/DD/AAAA",
@@ -497,6 +505,7 @@ export const es: LanguageConfig = {
           "Este enlace ha caducado. Comuníquese con su proveedor de prueba para generar un nuevo enlace.",
         linkNotFound:
           "Este enlace de resultado de la prueba no es válido. Vuelva a verificar el enlace o comuníquese con su proveedor de prueba para obtener el enlace correcto.",
+        exampleText: "Por ejemplo: 4 28 1986",
         submit: "Continuar",
       },
     },

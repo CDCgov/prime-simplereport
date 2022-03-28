@@ -10,8 +10,10 @@ import static gov.cdc.usds.simplereport.api.Translators.parseString;
 import gov.cdc.usds.simplereport.api.model.PersonUpdate;
 import gov.cdc.usds.simplereport.api.model.errors.ExpiredPatientLinkException;
 import gov.cdc.usds.simplereport.api.model.pxp.PxpRequestWrapper;
+import gov.cdc.usds.simplereport.api.model.pxp.PxpTestResultUnauthenticatedResponse;
 import gov.cdc.usds.simplereport.api.model.pxp.PxpVerifyResponse;
 import gov.cdc.usds.simplereport.api.model.pxp.PxpVerifyResponseV2;
+import gov.cdc.usds.simplereport.db.model.Facility;
 import gov.cdc.usds.simplereport.db.model.PatientLink;
 import gov.cdc.usds.simplereport.db.model.Person;
 import gov.cdc.usds.simplereport.db.model.TestEvent;
@@ -135,6 +137,31 @@ public class PatientExperienceController {
     _contextHolder.setContext(link, to, p);
 
     return p.getFirstName() + " " + p.getLastName().charAt(0) + ".";
+  }
+
+  /**
+   * Given a patient link ID, returns a minimum of information about the patient (obfuscated name)
+   * and facility (name and phone number) that may aid the end user in identify verification.
+   *
+   * <p>This endpoint is unauthorized and therefore does not return fully identifying data.
+   */
+  @GetMapping("/entity")
+  public PxpTestResultUnauthenticatedResponse getTestResultUnauthenticated(
+      @RequestParam("patientLink") UUID patientLink, HttpServletRequest request)
+      throws ExpiredPatientLinkException {
+    var link = _pls.getPatientLink(patientLink);
+
+    if (link.isExpired()) {
+      throw new ExpiredPatientLinkException();
+    }
+
+    TestOrder to = link.getTestOrder();
+    Person p = to.getPatient();
+    Facility f = to.getFacility();
+
+    _contextHolder.setContext(link, to, p);
+
+    return new PxpTestResultUnauthenticatedResponse(p, f, link);
   }
 
   @PostMapping("/patient")

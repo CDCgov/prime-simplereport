@@ -92,6 +92,22 @@ export function formatPhoneNumber(str: string) {
   return null;
 }
 
+/**
+ * Formats a US phone number to include dashes and parentheses,
+ * e.g. (123) 456-7890
+ *
+ * @param str a 10 digit phone number
+ * @returns formatted phone number
+ */
+export function formatPhoneNumberParens(str: string) {
+  var cleaned = ("" + str).replace(/\D/g, "");
+  var match = cleaned.match(/^(\d{3})(\d{3})(\d{4})$/);
+  if (match) {
+    return "(" + match[1] + ") " + match[2] + "-" + match[3];
+  }
+  return null;
+}
+
 export function formatUserStatus(status?: string | null) {
   if (!status) {
     return "Unknown";

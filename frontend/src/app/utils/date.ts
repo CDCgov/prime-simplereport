@@ -1,11 +1,11 @@
 import moment from "moment";
 
+type DateInputFormat = Date | string | undefined | null;
+
 export function formatDate(date: string | Date): ISODate;
 export function formatDate(date: undefined | null): null;
-export function formatDate(
-  date: string | undefined | null | Date
-): ISODate | null;
-export function formatDate(date: string | undefined | null | Date) {
+export function formatDate(date: DateInputFormat): ISODate | null;
+export function formatDate(date: DateInputFormat) {
   if (!date) {
     return null;
   }
@@ -17,15 +17,19 @@ export const formatDateLong = (date: string | undefined) => {
   return moment(date)?.format("MMMM Do, YYYY");
 };
 
-export const formatDateWithTimeOption = (
-  date: string | undefined,
+export const formatDateTime = (dateFormat: string, timeFormat: string) => (
+  date: DateInputFormat,
   withTime?: boolean
 ) => {
-  const dateFormat = "MM/DD/yyyy";
-  const timeFormat = "h:mma";
   const format = withTime ? `${dateFormat} ${timeFormat}` : dateFormat;
   return moment(date)?.format(format);
 };
+
+export const formatDateWithTimeOption = formatDateTime("MM/DD/yyyy", "h:mma");
+export const formatShortDateWithTimeOption = formatDateTime(
+  "M/D/yyyy",
+  "h:mm a"
+);
 
 export const daysSince = (date: moment.Moment): String => {
   const now = moment();
