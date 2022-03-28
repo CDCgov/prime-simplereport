@@ -801,6 +801,7 @@ $results-dropdown-spacing: #{units(4)} - #{units(2)} - 22px - #{units(4)}; // he
 
   a {
     text-decoration: underline !important;
+    padding-left: 0 !important;
 
     @include at-media("desktop") {
       padding-left: 0;

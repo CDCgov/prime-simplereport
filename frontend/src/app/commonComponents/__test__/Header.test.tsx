@@ -63,6 +63,14 @@ describe("Header.tsx", () => {
     userEvent.click(screen.getByTestId("support-link"));
     expect(trackEventMock).toHaveBeenCalledWith({ name: "Support" });
   });
+  it("displays new feature link correctly", async () => {
+    process.env.REACT_APP_IS_TRAINING_SITE = "false";
+    render(<WrappedHeader />);
+    userEvent.click(screen.getByTestId("user-button"));
+    expect(screen.getByTestId("new-feature-link")).toBeVisible();
+    userEvent.click(screen.getByTestId("new-feature-link"));
+    expect(trackEventMock).toHaveBeenCalledWith({ name: "New Feature Page" });
+  });
   it("it does not render login links", () => {
     expect(
       screen.queryByText("Login as", { exact: false })

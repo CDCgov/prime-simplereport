@@ -29,6 +29,12 @@ const Header: React.FC<{}> = () => {
     }
   };
 
+  const handleNewFeatureClick = () => {
+    if (appInsights) {
+      appInsights.trackEvent({ name: "New Feature Page" });
+    }
+  };
+
   const isSupportAdmin = useSelector<RootState, boolean>(
     (state) => state.user.isAdmin
   );
@@ -361,6 +367,17 @@ const Header: React.FC<{}> = () => {
                       data-testid="support-link"
                     >
                       Support
+                    </a>
+                  </li>
+                  <li className="usa-sidenav__item navlink__support">
+                    <a
+                      href="https://www.simplereport.gov/using-simplereport/new-features"
+                      target="_blank"
+                      rel="noreferrer"
+                      onClick={() => handleNewFeatureClick()}
+                      data-testid="new-feature-link"
+                    >
+                      New features
                     </a>
                   </li>
                   <li className="usa-sidenav__item margin-top-2">
