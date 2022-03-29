@@ -247,16 +247,8 @@ const PersonForm = (props: Props) => {
     );
 
     if (!isValidZipForState) {
-      const alert = (
-        <Alert
-          type="error"
-          title="Form Errors"
-          body="Invalid ZIP code for the selected state"
-        />
-      );
-
-      showNotification(alert);
-
+      showError(t("patient.form.errors.validationMsg"),
+          t("patient.form.errors.zipForState"));
       return;
     }
 

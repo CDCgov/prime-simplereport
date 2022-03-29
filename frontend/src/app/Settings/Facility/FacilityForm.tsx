@@ -219,7 +219,7 @@ const FacilityForm: React.FC<Props> = (props) => {
         <Alert
           type="error"
           title="Form Errors"
-          body="Invalid ZIP code for the selected state"
+          body="Invalid ZIP code for this state"
         />
       );
 

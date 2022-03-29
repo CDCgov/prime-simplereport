@@ -184,6 +184,7 @@ export const en = {
           street: "Street is missing",
           streetTwo: "Street 2 is incorrectly formatted",
           zipCode: "ZIP code is missing or incorrectly formatted",
+          zipForState: "Invalid ZIP code for this state",
           state: "State is missing or incorrectly formatted",
           city: "City is incorrectly formatted",
           county: "County is incorrectly formatted",
