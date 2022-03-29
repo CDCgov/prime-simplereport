@@ -58,6 +58,9 @@ const ManageDevicesForm: React.FC<Props> = ({
           manufacturer: device.manufacturer,
           model: device.model,
           swabTypes: device.swabTypes?.map((swab) => swab.internalId),
+          supportedDiseases:
+            device.supportedDiseases?.map((disease) => disease.internalId) ||
+            [],
           loincCode: device.loincCode,
         }
       : undefined;
@@ -175,7 +178,7 @@ const ManageDevicesForm: React.FC<Props> = ({
                       );
                     }}
                     options={supportedDiseaseOptions}
-                    // initialSelectedValues={selectedDevice?.supportedDiseases}
+                    initialSelectedValues={selectedDevice?.supportedDiseases}
                     disabled={!selectedDevice}
                     required
                   />

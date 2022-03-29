@@ -1,74 +1,78 @@
 mutation createDeviceType(
-    $name: String!
-    $manufacturer: String!
-    $model: String!
-    $loincCode: String!
-    $swabTypes: [ID!]!
+  $name: String!
+  $manufacturer: String!
+  $model: String!
+  $loincCode: String!
+  $swabTypes: [ID!]!
+  $supportedDiseases: [ID!]!
 ) {
-    createDeviceType(
-        input: {
-            name: $name
-            manufacturer: $manufacturer
-            model: $model
-            loincCode: $loincCode
-            swabTypes: $swabTypes
-        }
-    ) {
-        internalId
+  createDeviceType(
+    input: {
+      name: $name
+      manufacturer: $manufacturer
+      model: $model
+      loincCode: $loincCode
+      swabTypes: $swabTypes
+      supportedDiseases: $supportedDiseases
     }
+  ) {
+    internalId
+  }
 }
 
 mutation updateDeviceType(
-    $internalId: ID!
-    $name: String!
-    $manufacturer: String!
-    $model: String!
-    $loincCode: String!
-    $swabTypes: [ID!]!
+  $internalId: ID!
+  $name: String!
+  $manufacturer: String!
+  $model: String!
+  $loincCode: String!
+  $swabTypes: [ID!]!
+  $supportedDiseases: [ID!]!
 ) {
-    updateDeviceType(
-        input: {
-            internalId: $internalId
-            name: $name
-            manufacturer: $manufacturer
-            model: $model
-            loincCode: $loincCode
-            swabTypes: $swabTypes
-        }
-    ) {
-        internalId
+  updateDeviceType(
+    input: {
+      internalId: $internalId
+      name: $name
+      manufacturer: $manufacturer
+      model: $model
+      loincCode: $loincCode
+      swabTypes: $swabTypes
+      supportedDiseases: $supportedDiseases
     }
+  ) {
+    internalId
+  }
 }
 
 query getSpecimenTypes{
-    specimenTypes {
-        internalId,
-        name,
-        typeCode
-    }
+  specimenTypes {
+    internalId,
+    name,
+    typeCode
+  }
 }
 
 query getDeviceTypeList{
-    deviceTypes {
-        internalId,
-        name,
-        loincCode,
-        manufacturer,
-        model,
-        swabTypes {
-            internalId,
-            name
-        }
-        supportedDiseases {
-            internalId,
-            name
-        }
+  deviceTypes {
+    internalId,
+    name,
+    loincCode,
+    manufacturer,
+    model,
+    swabTypes {
+      internalId,
+      name
     }
+    supportedDiseases {
+      internalId,
+      name
+    }
+  }
 }
 
 query getSupportedDiseases {
-    supportedDiseases {
-        internalId,
-        name
-    }
+  supportedDiseases {
+    internalId,
+    name
+  }
 }
