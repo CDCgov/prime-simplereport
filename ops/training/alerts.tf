@@ -20,4 +20,6 @@ module "metric_alerts" {
   action_group_ids = [
     data.terraform_remote_state.global.outputs.pagerduty_non_prod_action_id
   ]
+
+  database_id = data.terraform_remote_state.persistent_training.outputs.postgres_server_id
 }

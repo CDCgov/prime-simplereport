@@ -20,6 +20,7 @@ module "metric_alerts" {
     "frontend_error_boundary",
     "db_query_duration",
     "db_query_duration_over_time_window",
+    "db_connection_exhaustion",
     "batched_uploader_single_failure_detected",
     "batched_uploader_function_not_triggering"
   ]
@@ -31,4 +32,5 @@ module "metric_alerts" {
 
   mem_threshold = 85
   cpu_threshold = 85
+  database_id   = data.terraform_remote_state.persistent_test.outputs.postgres_server_id
 }
