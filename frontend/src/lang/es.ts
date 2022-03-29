@@ -484,7 +484,7 @@ export const es: LanguageConfig = {
         },
       },
       dob: {
-        header: "Access your COVID-19 test result (translate me!)",
+        header: "Acceda al resultado de su prueba de COVID-19",
         dateOfBirth: "Fecha de nacimiento",
         enterDOB: "Ingrese su fecha de nacimiento",
         enterDOB2:
