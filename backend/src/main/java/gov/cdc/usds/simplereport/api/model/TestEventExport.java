@@ -294,6 +294,37 @@ public class TestEventExport {
     }
   }
 
+  @JsonProperty("Order_result_status")
+  public String getOrderResultStatus() {
+    // F Final results
+    // C Corrected to results (includes removal)
+    switch (testEvent.getCorrectionStatus()) {
+      case REMOVED:
+      case CORRECTED:
+        return "C";
+      case ORIGINAL:
+      default:
+        return "F";
+    }
+  }
+
+  // TODO: duplicate of Test_result_status for now
+  @JsonProperty("Observation_result_status")
+  public String getObservationResultStatus() {
+    // F Final results
+    // W Post original as wrong, e.g., transmitted for wrong patient
+    // C Corrected, final (not yet supported
+    switch (testEvent.getCorrectionStatus()) {
+      case REMOVED:
+        return "W";
+      case CORRECTED:
+        return "C";
+      case ORIGINAL:
+      default:
+        return "F";
+    }
+  }
+
   @JsonProperty("Test_result_code")
   public String getTestResult() {
     return testResultMap.get(testEvent.getResult());
