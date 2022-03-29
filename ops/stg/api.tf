@@ -4,13 +4,10 @@ module "simple_report_api" {
   env    = local.env
 
   instance_count = 3
-  instance_tier  = "PremiumV3"
-  instance_size  = "P2v3"
+  instance_tier  = "PremiumV2"
+  instance_size  = "P2v2"
 
-  // This is hard-coded due to a specific issue with the combination of our stg RG and East US
-  // not supporting V3 SKUs - other regions seem to work fine. This needs an Azure support ticket
-  // to get back to the correct region.
-  resource_group_location = "centralus"
+  resource_group_location = data.azurerm_resource_group.rg.location
   resource_group_name     = data.azurerm_resource_group.rg.name
 
   webapp_subnet_id = data.terraform_remote_state.persistent_stg.outputs.subnet_webapp_id
