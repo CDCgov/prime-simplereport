@@ -15,11 +15,8 @@ locals {
 }
 
 resource "azurerm_app_service_plan" "service_plan" {
-  name = "${var.az_account}-appserviceplan-${var.env}"
-  // This is hard-coded for stg due to a specific issue with the combination of our stg RG and East US
-  // not supporting V3 SKUs - other regions seem to work fine. This needs an Azure support ticket
-  // to get back to the correct region.
-  location            = var.env == "stg" ? "centralus" : var.resource_group_location
+  name                = "${var.az_account}-appserviceplan-${var.env}"
+  location            = var.resource_group_location
   resource_group_name = var.resource_group_name
 
   # Define Linux as Host OS
