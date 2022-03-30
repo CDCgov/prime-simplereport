@@ -207,7 +207,7 @@ const PersonForm = (props: Props) => {
           zipCode: "00000",
         });
       } else {
-        setPatient({ ...patient, [field]: value, state: null, zipCode: null });
+        setPatient({ ...patient, [field]: value, state: "", zipCode: "" });
       }
       return;
     }
