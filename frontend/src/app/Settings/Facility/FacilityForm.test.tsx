@@ -680,7 +680,7 @@ describe("FacilityForm", () => {
       // THEN
       // Toast alert appears
       expect(
-        await screen.findByText("Invalid ZIP code for the selected state", {
+        await screen.findByText("Invalid ZIP code for this state", {
           exact: false,
         })
       ).toBeInTheDocument();
