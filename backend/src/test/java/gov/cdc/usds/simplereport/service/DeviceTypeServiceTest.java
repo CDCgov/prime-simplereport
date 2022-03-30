@@ -11,8 +11,10 @@ import gov.cdc.usds.simplereport.api.model.CreateDeviceType;
 import gov.cdc.usds.simplereport.api.model.UpdateDeviceType;
 import gov.cdc.usds.simplereport.db.model.DeviceType;
 import gov.cdc.usds.simplereport.db.model.SpecimenType;
+import gov.cdc.usds.simplereport.db.model.SupportedDisease;
 import gov.cdc.usds.simplereport.db.repository.DeviceTypeRepository;
 import gov.cdc.usds.simplereport.db.repository.SpecimenTypeRepository;
+import gov.cdc.usds.simplereport.db.repository.SupportedDiseaseRepository;
 import gov.cdc.usds.simplereport.test_util.SliceTestConfiguration.WithSimpleReportSiteAdminUser;
 import java.util.List;
 import org.junit.jupiter.api.Test;
@@ -27,9 +29,11 @@ import org.springframework.test.context.TestPropertySource;
 class DeviceTypeServiceTest extends BaseServiceTest<DeviceTypeService> {
 
   private static final String FAKE_SWAB_TYPE = "012345678";
+  private static final String FAKE_SUPPORTED_DISEASE = "012345679";
   private static final int STANDARD_TEST_LENGTH = 15;
   @Autowired private DeviceTypeRepository _deviceTypeRepo;
   @Autowired private SpecimenTypeRepository specimenTypeRepository;
+  @Autowired private SupportedDiseaseRepository supportedDiseaseRepository;
 
   @Test
   void fetchDeviceTypes() {
@@ -56,6 +60,7 @@ class DeviceTypeServiceTest extends BaseServiceTest<DeviceTypeService> {
             .manufacturer("C")
             .loincCode("D")
             .swabTypes(emptyList())
+            .supportedDiseases(emptyList())
             .build());
 
     DeviceType deviceType = _service.fetchDeviceTypes().get(0);
@@ -75,6 +80,7 @@ class DeviceTypeServiceTest extends BaseServiceTest<DeviceTypeService> {
                     .manufacturer("C")
                     .loincCode("D")
                     .swabTypes(emptyList())
+                    .supportedDiseases(emptyList())
                     .build()));
   }
 
@@ -103,6 +109,10 @@ class DeviceTypeServiceTest extends BaseServiceTest<DeviceTypeService> {
     // GIVEN
     SpecimenType swab1 = specimenTypeRepository.save(new SpecimenType("Hair", "000111222"));
     SpecimenType swab2 = specimenTypeRepository.save(new SpecimenType("Mouth", "112233445"));
+    SupportedDisease disease1 =
+        supportedDiseaseRepository.save(new SupportedDisease("Disease1", "D1"));
+    SupportedDisease disease2 =
+        supportedDiseaseRepository.save(new SupportedDisease("Disease2", "D2"));
 
     // WHEN
     DeviceType devA =
@@ -113,6 +123,7 @@ class DeviceTypeServiceTest extends BaseServiceTest<DeviceTypeService> {
                 .manufacturer("C")
                 .loincCode("D")
                 .swabTypes(List.of(swab1.getInternalId()))
+                .supportedDiseases(List.of(disease1.getInternalId()))
                 .build());
     DeviceType devB =
         _service.createDeviceType(
@@ -122,6 +133,7 @@ class DeviceTypeServiceTest extends BaseServiceTest<DeviceTypeService> {
                 .manufacturer("H")
                 .loincCode("I")
                 .swabTypes(List.of(swab2.getInternalId()))
+                .supportedDiseases(List.of(disease2.getInternalId()))
                 .build());
 
     // THEN
@@ -133,6 +145,7 @@ class DeviceTypeServiceTest extends BaseServiceTest<DeviceTypeService> {
     assertEquals("B", devA.getModel());
     assertEquals("C", devA.getManufacturer());
     assertEquals("D", devA.getLoincCode());
+    assertEquals("Disease1", devA.getSupportedDiseases().get(0).getName());
     assertNull(devA.getSwabType());
     List<SpecimenType> devASwabTypes = devA.getSwabTypes();
     assertThat(devASwabTypes.size()).isEqualTo(1);
@@ -144,6 +157,7 @@ class DeviceTypeServiceTest extends BaseServiceTest<DeviceTypeService> {
     assertEquals("G", devB.getModel());
     assertEquals("H", devB.getManufacturer());
     assertEquals("I", devB.getLoincCode());
+    assertEquals("Disease2", devB.getSupportedDiseases().get(0).getName());
     assertNull(devB.getSwabType());
     List<SpecimenType> devBSwabTypes = devB.getSwabTypes();
     assertThat(devBSwabTypes.size()).isEqualTo(1);
@@ -162,6 +176,11 @@ class DeviceTypeServiceTest extends BaseServiceTest<DeviceTypeService> {
     // GIVEN
     SpecimenType swab1 = specimenTypeRepository.save(new SpecimenType("Nose", "111222333"));
     SpecimenType swab2 = specimenTypeRepository.save(new SpecimenType("Mouth", "555666444"));
+    SupportedDisease disease1 =
+        supportedDiseaseRepository.save(new SupportedDisease("Disease1", "D1"));
+    SupportedDisease disease2 =
+        supportedDiseaseRepository.save(new SupportedDisease("Disease2", "D2"));
+
     DeviceType device =
         _service.createDeviceType(
             CreateDeviceType.builder()
@@ -170,6 +189,7 @@ class DeviceTypeServiceTest extends BaseServiceTest<DeviceTypeService> {
                 .manufacturer("C")
                 .loincCode("D")
                 .swabTypes(List.of(swab1.getInternalId()))
+                .supportedDiseases(List.of(disease1.getInternalId()))
                 .build());
 
     // WHEN
@@ -182,6 +202,7 @@ class DeviceTypeServiceTest extends BaseServiceTest<DeviceTypeService> {
                 .manufacturer("X")
                 .loincCode("W")
                 .swabTypes(List.of(swab2.getInternalId()))
+                .supportedDiseases(List.of(disease2.getInternalId()))
                 .build());
 
     // THEN
@@ -190,6 +211,7 @@ class DeviceTypeServiceTest extends BaseServiceTest<DeviceTypeService> {
     assertEquals("Y", updatedDevice.getModel());
     assertEquals("X", updatedDevice.getManufacturer());
     assertEquals("W", updatedDevice.getLoincCode());
+    assertEquals("Disease2", updatedDevice.getSupportedDiseases().get(0).getName());
     assertNull(updatedDevice.getSwabType());
 
     List<SpecimenType> updatedSwabTypes = updatedDevice.getSwabTypes();
@@ -202,6 +224,8 @@ class DeviceTypeServiceTest extends BaseServiceTest<DeviceTypeService> {
   void updateDeviceTypeName_adminUser_success_no_changes() {
     // GIVEN
     SpecimenType swab1 = specimenTypeRepository.save(new SpecimenType("Nose", "111222333"));
+    SupportedDisease disease1 =
+        supportedDiseaseRepository.save(new SupportedDisease("Disease1", "D1"));
     DeviceType device =
         _service.createDeviceType(
             CreateDeviceType.builder()
@@ -210,6 +234,7 @@ class DeviceTypeServiceTest extends BaseServiceTest<DeviceTypeService> {
                 .manufacturer("C")
                 .loincCode("D")
                 .swabTypes(List.of(swab1.getInternalId()))
+                .supportedDiseases(List.of(disease1.getInternalId()))
                 .build());
 
     // WHEN
@@ -223,6 +248,7 @@ class DeviceTypeServiceTest extends BaseServiceTest<DeviceTypeService> {
     assertEquals("B", updatedDevice.getModel());
     assertEquals("C", updatedDevice.getManufacturer());
     assertEquals("D", updatedDevice.getLoincCode());
+    assertEquals("Disease1", updatedDevice.getSupportedDiseases().get(0).getName());
     assertNull(updatedDevice.getSwabType());
 
     List<SpecimenType> updatedSwabTypes = updatedDevice.getSwabTypes();
