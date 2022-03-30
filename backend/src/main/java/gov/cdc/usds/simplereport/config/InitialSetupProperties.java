@@ -9,6 +9,7 @@ import gov.cdc.usds.simplereport.db.model.Organization;
 import gov.cdc.usds.simplereport.db.model.PatientSelfRegistrationLink;
 import gov.cdc.usds.simplereport.db.model.Provider;
 import gov.cdc.usds.simplereport.db.model.SpecimenType;
+import gov.cdc.usds.simplereport.db.model.SupportedDisease;
 import gov.cdc.usds.simplereport.db.model.auxiliary.PersonName;
 import gov.cdc.usds.simplereport.db.model.auxiliary.StreetAddress;
 import java.util.List;
@@ -24,6 +25,7 @@ public class InitialSetupProperties {
   private Provider provider;
   private List<SpecimenType> specimenTypes;
   private List<? extends DeviceType> deviceTypes;
+  private List<SupportedDisease> supportedDiseases;
   private List<String> configuredDeviceTypes;
   private List<ConfigFacility> facilities;
   private List<ConfigPatientRegistrationLink> patientRegistrationLinks;
@@ -34,12 +36,14 @@ public class InitialSetupProperties {
       Provider provider,
       List<SpecimenType> specimenTypes,
       List<DeviceType> deviceTypes,
+      List<SupportedDisease> supportedDiseases,
       List<String> configuredDeviceTypes,
       List<ConfigPatientRegistrationLink> patientRegistrationLinks) {
     this.organizations = organizations;
     this.provider = provider;
     this.specimenTypes = specimenTypes;
     this.deviceTypes = deviceTypes;
+    this.supportedDiseases = supportedDiseases;
     this.configuredDeviceTypes = configuredDeviceTypes;
     this.facilities = facilities;
     this.patientRegistrationLinks = patientRegistrationLinks;
@@ -100,6 +104,12 @@ public class InitialSetupProperties {
                     d.getLoincCode(),
                     d.getSwabType(),
                     determineTestLength(d.getName())))
+        .collect(Collectors.toList());
+  }
+
+  public List<SupportedDisease> getSupportedDiseases() {
+    return supportedDiseases.stream()
+        .map(s -> new SupportedDisease(s.getName(), s.getLoinc()))
         .collect(Collectors.toList());
   }
 

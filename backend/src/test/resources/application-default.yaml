@@ -223,6 +223,13 @@ simple-report-initialization:
       model: LumiraDx SARS-CoV-2 Ag Test*
       loinc-code: "95209-3"
       swab-type: "445297001"
+  supported-diseases:
+    - name: COVID-19
+      loinc: "96741-4"
+    - name: Flu A
+      loinc: "LP14239-5"
+    - name: Flu B
+      loinc: "LP14240-3"
   patient-registration-links:
     - patient-registration-link: dis-org
       organization-external-id: DIS_ORG
