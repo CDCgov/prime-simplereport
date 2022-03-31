@@ -17,7 +17,6 @@ import gov.cdc.usds.simplereport.db.model.Organization;
 import gov.cdc.usds.simplereport.db.model.PatientSelfRegistrationLink;
 import gov.cdc.usds.simplereport.db.model.Provider;
 import gov.cdc.usds.simplereport.db.model.SpecimenType;
-import gov.cdc.usds.simplereport.db.model.SupportedDisease;
 import gov.cdc.usds.simplereport.db.repository.ApiUserRepository;
 import gov.cdc.usds.simplereport.db.repository.DeviceSpecimenTypeRepository;
 import gov.cdc.usds.simplereport.db.repository.DeviceTypeRepository;
@@ -69,8 +68,7 @@ public class OrganizationInitializingService {
     log.debug("Organization init called (again?)");
     Provider savedProvider = _providerRepo.save(_props.getProvider());
 
-    List<SupportedDisease> supportedDiseases =
-        (List<SupportedDisease>) _diseaseRepo.saveAll(_props.getSupportedDiseases());
+    _diseaseRepo.saveAll(_props.getSupportedDiseases());
 
     Map<String, DeviceSpecimenType> dsByDeviceName = initDevices();
 

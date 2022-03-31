@@ -38,19 +38,19 @@ public class DeviceTypeService {
   private DeviceTypeRepository _repo;
   private DeviceSpecimenTypeRepository _deviceSpecimenRepo;
   private SpecimenTypeRepository _specimenTypeRepo;
-  private FacilityRepository _facilityRepository;
+  private FacilityRepository _facilityRepo;
   private SupportedDiseaseRepository _supportedDiseaseRepo;
 
   public DeviceTypeService(
       DeviceTypeRepository repo,
       DeviceSpecimenTypeRepository deviceSpecimenRepo,
       SpecimenTypeRepository specimenTypeRepo,
-      FacilityRepository facilityRepository,
+      FacilityRepository facilityRepo,
       SupportedDiseaseRepository supportedDiseaseRepo) {
     _repo = repo;
     _deviceSpecimenRepo = deviceSpecimenRepo;
     _specimenTypeRepo = specimenTypeRepo;
-    _facilityRepository = facilityRepository;
+    _facilityRepo = facilityRepo;
     _supportedDiseaseRepo = supportedDiseaseRepo;
   }
 
@@ -143,7 +143,7 @@ public class DeviceTypeService {
 
       // Null out facilities' default device specimen if it was deleted
       List<Facility> facilitiesToRemoveDefaultDeviceSpecimen =
-          _facilityRepository.findAllByDefaultDeviceSpecimenIn(toBeDeletedDeviceSpecimenTypes);
+          _facilityRepo.findAllByDefaultDeviceSpecimenIn(toBeDeletedDeviceSpecimenTypes);
 
       facilitiesToRemoveDefaultDeviceSpecimen.forEach(Facility::removeDefaultDeviceSpecimen);
 
