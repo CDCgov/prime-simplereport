@@ -24,9 +24,13 @@ jobs:
   check-terraform-validity:
     runs-on: ubuntu-latest
     env:
+      # TODO: re-enable once stg is recreated
+      # dev dev/persistent test test/persistent demo demo/persistent training training/persistent
+      # stg stg/persistent pentest pentest/persistent prod prod/persistent
+      # global
       TERRAFORM_DIRS: |
           dev dev/persistent test test/persistent demo demo/persistent training training/persistent
-          stg stg/persistent pentest pentest/persistent prod prod/persistent
+          pentest pentest/persistent prod prod/persistent
           global
     steps:
       - uses: actions/checkout@v2
