@@ -16,7 +16,6 @@ import * as smartyStreets from "../utils/smartyStreets";
 
 import AddPatient, { ADD_PATIENT, PATIENT_EXISTS } from "./AddPatient";
 
-
 interface LocationOptions {
   search: string;
   pathname: string;
