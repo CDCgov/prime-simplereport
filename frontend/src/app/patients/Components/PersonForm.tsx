@@ -246,8 +246,10 @@ const PersonForm = (props: Props) => {
     );
 
     if (!isValidZipForState) {
-      showError(t("patient.form.errors.validationMsg"),
-          t("patient.form.errors.zipForState"));
+      showError(
+        t("patient.form.errors.validationMsg"),
+        t("patient.form.errors.zipForState")
+      );
       return;
     }
 

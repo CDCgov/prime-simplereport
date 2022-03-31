@@ -12,9 +12,10 @@ import { MemoryRouter, Route, Routes, useLocation } from "react-router-dom";
 import userEvent from "@testing-library/user-event";
 import { ToastContainer } from "react-toastify";
 
+import * as smartyStreets from "../utils/smartyStreets";
+
 import AddPatient, { ADD_PATIENT, PATIENT_EXISTS } from "./AddPatient";
 
-import * as smartyStreets from "../utils/smartyStreets";
 
 interface LocationOptions {
   search: string;
@@ -200,14 +201,14 @@ describe("AddPatient", () => {
         },
       ];
 
-      jest.spyOn(smartyStreets, "getBestSuggestion")
-          .mockImplementation();
-      jest.spyOn(smartyStreets, "suggestionIsCloseEnough")
-          .mockReturnValue(false);
-      jest.spyOn(smartyStreets, "getZipCodeData")
-          .mockResolvedValue(undefined);
-      zipCodeSpy = jest.spyOn(smartyStreets, "isValidZipCodeForState")
-          .mockReturnValue(true);
+      jest.spyOn(smartyStreets, "getBestSuggestion").mockImplementation();
+      jest
+        .spyOn(smartyStreets, "suggestionIsCloseEnough")
+        .mockReturnValue(false);
+      jest.spyOn(smartyStreets, "getZipCodeData").mockResolvedValue(undefined);
+      zipCodeSpy = jest
+        .spyOn(smartyStreets, "isValidZipCodeForState")
+        .mockReturnValue(true);
 
       const Queue = () => {
         const location = useLocation() as LocationOptions;
@@ -362,52 +363,54 @@ describe("AddPatient", () => {
       it("surfaces an error if invalid zip code for state", async () => {
         zipCodeSpy.mockReturnValue(false);
         fillOutForm(
-            {
-              "First Name": "Alice",
-              "Last Name": "Hamilton",
-              "Date of birth": "1970-09-22",
-              "Primary phone number": "617-432-1000",
-              "Email address": "foo@bar.org",
-              "Street address 1": "25 Shattuck St",
-              City: "Boston",
-              "ZIP code": "02115",
+          {
+            "First Name": "Alice",
+            "Last Name": "Hamilton",
+            "Date of birth": "1970-09-22",
+            "Primary phone number": "617-432-1000",
+            "Email address": "foo@bar.org",
+            "Street address 1": "25 Shattuck St",
+            City: "Boston",
+            "ZIP code": "02115",
+          },
+          { Facility: mockFacilityID, State: "MA", Country: "USA" },
+          {
+            "Phone type": {
+              label: "Mobile",
+              value: "MOBILE",
+              exact: true,
             },
-            { Facility: mockFacilityID, State: "MA", Country: "USA" },
-            {
-              "Phone type": {
-                label: "Mobile",
-                value: "MOBILE",
-                exact: true,
-              },
-              "Would you like to receive your results via text message?": {
-                label: "Yes",
-                value: "SMS",
-                exact: false,
-              },
-              Race: {
-                label: "Other",
-                value: "other",
-                exact: true,
-              },
-              "Are you Hispanic or Latino?": {
-                label: "Prefer not to answer",
-                value: "refused",
-                exact: true,
-              },
-              "Sex assigned at birth": {
-                label: "Female",
-                value: "female",
-                exact: true,
-              },
-            }
+            "Would you like to receive your results via text message?": {
+              label: "Yes",
+              value: "SMS",
+              exact: false,
+            },
+            Race: {
+              label: "Other",
+              value: "other",
+              exact: true,
+            },
+            "Are you Hispanic or Latino?": {
+              label: "Prefer not to answer",
+              value: "refused",
+              exact: true,
+            },
+            "Sex assigned at birth": {
+              label: "Female",
+              value: "female",
+              exact: true,
+            },
+          }
         );
         userEvent.click(
-            screen.queryAllByText("Save Changes", {
-              exact: false,
-            })[0]
+          screen.queryAllByText("Save Changes", {
+            exact: false,
+          })[0]
         );
         expect(
-            await screen.findByText("Invalid ZIP code for this state", { exact: false })
+          await screen.findByText("Invalid ZIP code for this state", {
+            exact: false,
+          })
         ).toBeInTheDocument();
       });
       it("requires race field to be populated", async () => {
