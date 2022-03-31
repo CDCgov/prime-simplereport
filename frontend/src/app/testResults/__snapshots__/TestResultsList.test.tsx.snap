@@ -6,7 +6,7 @@ exports[`TestResultsList should render a list of tests 1`] = `
     class="prime-home"
   >
     <div
-      class="grid-container"
+      class="grid-container results-wide-container"
     >
       <div
         class="grid-row"
