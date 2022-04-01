@@ -29,9 +29,9 @@ const Header: React.FC<{}> = () => {
     }
   };
 
-  const handleNewFeatureClick = () => {
+  const handleWhatsNewClick = () => {
     if (appInsights) {
-      appInsights.trackEvent({ name: "New Feature Page" });
+      appInsights.trackEvent({ name: "What's new" });
     }
   };
 
@@ -371,13 +371,13 @@ const Header: React.FC<{}> = () => {
                   </li>
                   <li className="usa-sidenav__item navlink__support">
                     <a
-                      href="https://www.simplereport.gov/using-simplereport/new-features"
+                      href="https://www.simplereport.gov/using-simplereport/whats-new"
                       target="_blank"
                       rel="noreferrer"
-                      onClick={() => handleNewFeatureClick()}
-                      data-testid="new-feature-link"
+                      onClick={() => handleWhatsNewClick()}
+                      data-testid="whats-new-link"
                     >
-                      New features
+                      What's new
                     </a>
                   </li>
                   <li className="usa-sidenav__item margin-top-2">

@@ -67,9 +67,9 @@ describe("Header.tsx", () => {
     process.env.REACT_APP_IS_TRAINING_SITE = "false";
     render(<WrappedHeader />);
     userEvent.click(screen.getByTestId("user-button"));
-    expect(screen.getByTestId("new-feature-link")).toBeVisible();
-    userEvent.click(screen.getByTestId("new-feature-link"));
-    expect(trackEventMock).toHaveBeenCalledWith({ name: "New Feature Page" });
+    expect(screen.getByTestId("whats-new-link")).toBeVisible();
+    userEvent.click(screen.getByTestId("whats-new-link"));
+    expect(trackEventMock).toHaveBeenCalledWith({ name: "What's new" });
   });
   it("it does not render login links", () => {
     expect(
