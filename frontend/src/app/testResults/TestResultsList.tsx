@@ -18,7 +18,7 @@ import { DatePicker, Label } from "@trussworks/react-uswds";
 
 import { PATIENT_TERM_CAP } from "../../config/constants";
 import { displayFullName } from "../utils";
-import { isValidDate, formatDateWithTimeOption } from "../utils/date";
+import { formatDateWithTimeOption, isValidDate } from "../utils/date";
 import { ActionsMenu } from "../commonComponents/ActionsMenu";
 import { getParameterFromUrl, getUrl } from "../utils/url";
 import { useDocumentTitle, useOutsideClick } from "../utils/hooks";
@@ -387,7 +387,7 @@ export const DetachedTestResultsList = ({
           }}
         />
       )}
-      <div className="grid-container">
+      <div className="grid-container results-wide-container">
         <div className="grid-row">
           <div className="prime-container card-container sr-test-results-list">
             <div className="usa-card__header">
