@@ -29,6 +29,7 @@ variable "disabled_alerts" {
       "frontend_error_boundary",
       "db_query_duration",
       "db_query_duration_over_time_window",
+      "db_connection_exhaustion",
       "batched_uploader_single_failure_detected",
       "batched_uploader_function_not_triggering"
     ])) == 0
@@ -82,3 +83,5 @@ variable "additional_uptime_test_urls" {
   type    = map(string)
   default = {}
 }
+
+variable "database_id" {}
