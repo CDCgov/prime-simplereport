@@ -1,13 +1,4 @@
 # To do log-based alerts, we need to make sure we're actually collecting AppServiceConsoleLogs from the API
-data "azurerm_resource_group" "management" {
-  name = "prime-simple-report-management"
-}
-
-data "azurerm_log_analytics_workspace" "global" {
-  name                = "simple-report-log-workspace-global"
-  resource_group_name = data.azurerm_resource_group.management.name
-}
-
 resource "azurerm_monitor_diagnostic_setting" "collect_appserviceconsolelogs" {
   name                       = "${local.env_title} API App Service console logs"
   target_resource_id         = var.app_service_id
@@ -25,10 +16,6 @@ resource "azurerm_monitor_diagnostic_setting" "collect_appserviceconsolelogs" {
 }
 
 # Add an alert for GraphQL query validation failures (more than 2 in a 5-minute window)
-data "azurerm_resource_group" "app" {
-  name = var.rg_name
-}
-
 resource "azurerm_monitor_scheduled_query_rules_alert" "graphql_query_validation_failures" {
   name                = "${var.env}-graphql-query-validation-failures"
   description         = "${local.env_title} GraphQL query validation failures"

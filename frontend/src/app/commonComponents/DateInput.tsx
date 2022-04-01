@@ -3,6 +3,7 @@ import {
   DateInput as TrussworksDateInput,
   DateInputGroup,
 } from "@trussworks/react-uswds";
+import { useTranslation } from "react-i18next";
 
 export type HTMLInputElementType =
   | "date"
@@ -61,6 +62,8 @@ export const DateInput = ({
   defaultValue,
   noHint,
 }: Props) => {
+  const { t } = useTranslation();
+
   return (
     <div
       className={classnames("usa-form-group", className, {
@@ -76,7 +79,9 @@ export const DateInput = ({
       >
         {label}
       </label>
-      {noHint ? null : <span className="usa-hint">For example: 4 28 1986</span>}
+      {noHint ? null : (
+        <span className="usa-hint">{t("testResult.dob.exampleText")}</span>
+      )}
       {validationStatus === "error" && (
         <span className="usa-error-message" id={`error_${name}`} role="alert">
           <span className="usa-sr-only">Error: </span>
@@ -90,7 +95,7 @@ export const DateInput = ({
           value={monthValue}
           required={true}
           defaultValue={defaultValue}
-          label={"Month"}
+          label={t("constants.date.month")}
           unit={"month"}
           maxLength={2}
           type={type || "text"}
@@ -102,7 +107,7 @@ export const DateInput = ({
           value={dayValue}
           required={true}
           defaultValue={defaultValue}
-          label={"Day"}
+          label={t("constants.date.day")}
           unit={"day"}
           maxLength={2}
           type={type || "text"}
@@ -114,7 +119,7 @@ export const DateInput = ({
           value={yearValue}
           required={true}
           defaultValue={defaultValue}
-          label={"Year"}
+          label={t("constants.date.year")}
           unit={"year"}
           maxLength={4}
           type={type || "text"}
