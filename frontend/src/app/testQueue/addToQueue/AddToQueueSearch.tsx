@@ -6,7 +6,7 @@ import React, {
   useCallback,
 } from "react";
 import { gql, useMutation, useLazyQuery, useQuery } from "@apollo/client";
-import { useLocation } from "react-router-dom";
+import { useLocation, useNavigate } from "react-router-dom";
 
 import Alert from "../../commonComponents/Alert";
 import {
@@ -16,7 +16,6 @@ import {
   SEARCH_DEBOUNCE_TIME,
 } from "../constants";
 import { showNotification } from "../../utils";
-import { useOutsideClick } from "../../utils/hooks";
 import { Patient } from "../../patients/ManagePatients";
 import { AoEAnswersDelivery } from "../AoEForm/AoEForm";
 import { getAppInsights } from "../../TelemetryService";
@@ -155,6 +154,9 @@ const AddToQueueSearchBox = ({
   const [addPatientToQueue] = useMutation(ADD_PATIENT_TO_QUEUE);
   const [updateAoe] = useMutation(UPDATE_AOE);
 
+  const navigate = useNavigate();
+  const location = useLocation();
+
   const allowQuery = debounced.length >= MIN_SEARCH_CHARACTER_COUNT;
   const showDropdown = useMemo(() => allowQuery && showSuggestion, [
     allowQuery,
@@ -166,7 +168,7 @@ const AddToQueueSearchBox = ({
     setShowSuggestion(false);
   }, []);
 
-  const { patientId: patientIdParam } =
+  let { patientId: patientIdParam } =
     (useLocation().state as StartTestProps) || {};
 
   useQuery<{ patient: Patient }>(QUERY_SINGLE_PATIENT, {
@@ -175,10 +177,8 @@ const AddToQueueSearchBox = ({
     onCompleted: (response) => {
       setSelectedPatient(response.patient);
     },
-    skip: !patientIdParam,
+    skip: !patientIdParam || patientsInQueue.includes(patientIdParam),
   });
-
-  useOutsideClick(dropDownRef, hideOnOutsideClick);
 
   useEffect(() => {
     if (queryString.trim() !== "") {
@@ -243,6 +243,8 @@ const AddToQueueSearchBox = ({
         const alert = <Alert type={type} title={title} body={body} />;
         showNotification(alert);
         refetchQueue();
+        //clear the state
+        navigate(location.pathname, { replace: true });
         if (createOrUpdate === "create") {
           return res.data.addPatientToQueue;
         }

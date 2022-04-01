@@ -23,7 +23,6 @@ import Button from "../commonComponents/Button/Button";
 import SearchInput from "../testQueue/addToQueue/SearchInput";
 import { TestResult as TestResultType } from "../../app/testQueue/QueueItem";
 import { StartTestProps } from "../testQueue/addToQueue/AddToQueueSearch";
-import { QueueItemData, queueQuery } from "../testQueue/TestQueue";
 
 import PatientUpload from "./PatientUpload";
 import ArchivePersonModal from "./ArchivePersonModal";
@@ -129,13 +128,6 @@ export const DetachedManagePatients = ({
     }
   );
 
-  const { data: queueData } = useQuery(queueQuery, {
-    fetchPolicy: "no-cache",
-    variables: {
-      facilityId: activeFacilityId,
-    },
-  });
-
   useEffect(() => {
     if (queryString && queryString.length > 1) {
       setNamePrefixMatch(queryString);
@@ -202,34 +194,6 @@ export const DetachedManagePatients = ({
           <span>{fullName}</span>
         );
 
-      const patientsInQueue = queueData?.queue.map(
-        (q: QueueItemData) => q.patient.internalId
-      );
-
-      const canAddToTestQueue =
-        patientsInQueue?.indexOf(patient.internalId) === -1;
-
-      let actionItems = [];
-
-      if (canAddToTestQueue) {
-        actionItems.push({
-          name: "Start test",
-          action: () =>
-            setRedirect({
-              pathname: "/queue",
-              search: `?facility=${activeFacilityId}`,
-              state: {
-                patientId: patient.internalId,
-              } as StartTestProps,
-            }),
-        });
-      }
-
-      actionItems.push({
-        name: "Archive person",
-        action: () => setArchivePerson(patient),
-      });
-
       return (
         <tr
           key={patient.internalId}
@@ -248,7 +212,25 @@ export const DetachedManagePatients = ({
           </td>
           <td>
             {canEditUser && !patient.isDeleted && (
-              <ActionsMenu items={actionItems} />
+              <ActionsMenu
+                items={[
+                  {
+                    name: "Start test",
+                    action: () =>
+                      setRedirect({
+                        pathname: "/queue",
+                        search: `?facility=${activeFacilityId}`,
+                        state: {
+                          patientId: patient.internalId,
+                        } as StartTestProps,
+                      }),
+                  },
+                  {
+                    name: "Archive person",
+                    action: () => setArchivePerson(patient),
+                  },
+                ]}
+              />
             )}
           </td>
         </tr>

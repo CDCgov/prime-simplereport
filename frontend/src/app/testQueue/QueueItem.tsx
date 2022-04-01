@@ -11,7 +11,7 @@ import Modal from "react-modal";
 import classnames from "classnames";
 import moment from "moment";
 import { useSelector } from "react-redux";
-import { useNavigate } from "react-router-dom";
+import { useLocation, useNavigate } from "react-router-dom";
 
 import Alert from "../commonComponents/Alert";
 import Button from "../commonComponents/Button/Button";
@@ -35,7 +35,7 @@ import AoEModalForm from "./AoEForm/AoEModalForm";
 import "./QueueItem.scss";
 import { AoEAnswers, TestQueuePerson } from "./AoEForm/AoEForm";
 import { QueueItemSubmitLoader } from "./QueueItemSubmitLoader";
-import { UPDATE_AOE } from "./addToQueue/AddToQueueSearch";
+import { StartTestProps, UPDATE_AOE } from "./addToQueue/AddToQueueSearch";
 
 export type TestResult = "POSITIVE" | "NEGATIVE" | "UNDETERMINED" | "UNKNOWN";
 
@@ -261,6 +261,9 @@ const QueueItem = ({
     updateDeviceId(deviceSpecimenType.deviceType.internalId);
     updateSpecimenId(deviceSpecimenType.specimenType.internalId);
   }, [deviceSpecimenTypes, deviceSpecimenTypeId]);
+
+  const { patientId: patientIdParam } =
+    (useLocation().state as StartTestProps) || {};
 
   const deviceTypes = deviceSpecimenTypes
     .map((d) => d.deviceType)
@@ -644,6 +647,9 @@ const QueueItem = ({
       return prefix + "error";
     }
     if (timer.countdown < 0 && testResultValue === "UNKNOWN") {
+      return prefix + "ready";
+    }
+    if (patientIdParam === patient.internalId) {
       return prefix + "ready";
     }
     return undefined;
