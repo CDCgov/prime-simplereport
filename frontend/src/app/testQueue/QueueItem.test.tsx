@@ -5,6 +5,7 @@ import configureStore, { MockStoreEnhanced } from "redux-mock-store";
 import { render, screen, waitFor } from "@testing-library/react";
 import moment from "moment";
 import userEvent from "@testing-library/user-event";
+import { MemoryRouter } from "react-router-dom";
 
 import { getAppInsights } from "../TelemetryService";
 import * as utils from "../utils/index";
@@ -57,27 +58,29 @@ describe("QueueItem", () => {
 
   it("correctly renders the test queue", () => {
     render(
-      <MockedProvider mocks={[]}>
-        <Provider store={store}>
-          <QueueItem
-            internalId={testProps.internalId}
-            patient={testProps.patient}
-            askOnEntry={testProps.askOnEntry}
-            selectedDeviceId={testProps.selectedDeviceId}
-            selectedDeviceTestLength={testProps.selectedDeviceTestLength}
-            selectedDeviceSpecimenTypeId={
-              testProps.selectedDeviceSpecimenTypeId
-            }
-            deviceSpecimenTypes={testProps.deviceSpecimenTypes}
-            selectedTestResult={testProps.selectedTestResult}
-            devices={testProps.devices}
-            refetchQueue={testProps.refetchQueue}
-            facilityId={testProps.facilityId}
-            dateTestedProp={testProps.dateTestedProp}
-            facilityName="Foo facility"
-          />
-        </Provider>
-      </MockedProvider>
+      <MemoryRouter>
+        <MockedProvider mocks={[]}>
+          <Provider store={store}>
+            <QueueItem
+              internalId={testProps.internalId}
+              patient={testProps.patient}
+              askOnEntry={testProps.askOnEntry}
+              selectedDeviceId={testProps.selectedDeviceId}
+              selectedDeviceTestLength={testProps.selectedDeviceTestLength}
+              selectedDeviceSpecimenTypeId={
+                testProps.selectedDeviceSpecimenTypeId
+              }
+              deviceSpecimenTypes={testProps.deviceSpecimenTypes}
+              selectedTestResult={testProps.selectedTestResult}
+              devices={testProps.devices}
+              refetchQueue={testProps.refetchQueue}
+              facilityId={testProps.facilityId}
+              dateTestedProp={testProps.dateTestedProp}
+              facilityName="Foo facility"
+            />
+          </Provider>
+        </MockedProvider>
+      </MemoryRouter>
     );
     expect(screen.getByText("Potter, Harry James")).toBeInTheDocument();
     expect(screen.getByTestId("timer")).toHaveTextContent("10:00");
@@ -86,25 +89,27 @@ describe("QueueItem", () => {
   it("navigates to edit the user when clicking their name", () => {
     render(
       <MockedProvider mocks={[]}>
-        <Provider store={store}>
-          <QueueItem
-            internalId={testProps.internalId}
-            patient={testProps.patient}
-            askOnEntry={testProps.askOnEntry}
-            selectedDeviceId={testProps.selectedDeviceId}
-            selectedDeviceTestLength={testProps.selectedDeviceTestLength}
-            selectedDeviceSpecimenTypeId={
-              testProps.selectedDeviceSpecimenTypeId
-            }
-            deviceSpecimenTypes={testProps.deviceSpecimenTypes}
-            selectedTestResult={testProps.selectedTestResult}
-            devices={testProps.devices}
-            refetchQueue={testProps.refetchQueue}
-            facilityId={testProps.facilityId}
-            dateTestedProp={testProps.dateTestedProp}
-            facilityName="Foo facility"
-          />
-        </Provider>
+        <MemoryRouter>
+          <Provider store={store}>
+            <QueueItem
+              internalId={testProps.internalId}
+              patient={testProps.patient}
+              askOnEntry={testProps.askOnEntry}
+              selectedDeviceId={testProps.selectedDeviceId}
+              selectedDeviceTestLength={testProps.selectedDeviceTestLength}
+              selectedDeviceSpecimenTypeId={
+                testProps.selectedDeviceSpecimenTypeId
+              }
+              deviceSpecimenTypes={testProps.deviceSpecimenTypes}
+              selectedTestResult={testProps.selectedTestResult}
+              devices={testProps.devices}
+              refetchQueue={testProps.refetchQueue}
+              facilityId={testProps.facilityId}
+              dateTestedProp={testProps.dateTestedProp}
+              facilityName="Foo facility"
+            />
+          </Provider>
+        </MemoryRouter>
       </MockedProvider>
     );
     const patientName = screen.getByText("Potter, Harry James");
@@ -118,27 +123,29 @@ describe("QueueItem", () => {
 
   it("updates the timer when a device is changed", async () => {
     render(
-      <MockedProvider mocks={mocks} addTypename={false}>
-        <Provider store={store}>
-          <QueueItem
-            internalId={testProps.internalId}
-            patient={testProps.patient}
-            askOnEntry={testProps.askOnEntry}
-            selectedDeviceId={testProps.selectedDeviceId}
-            selectedDeviceTestLength={testProps.selectedDeviceTestLength}
-            selectedDeviceSpecimenTypeId={
-              testProps.selectedDeviceSpecimenTypeId
-            }
-            deviceSpecimenTypes={testProps.deviceSpecimenTypes}
-            selectedTestResult={testProps.selectedTestResult}
-            devices={testProps.devices}
-            refetchQueue={testProps.refetchQueue}
-            facilityId={testProps.facilityId}
-            dateTestedProp={testProps.dateTestedProp}
-            facilityName="Foo facility"
-          />
-        </Provider>
-      </MockedProvider>
+      <MemoryRouter>
+        <MockedProvider mocks={mocks} addTypename={false}>
+          <Provider store={store}>
+            <QueueItem
+              internalId={testProps.internalId}
+              patient={testProps.patient}
+              askOnEntry={testProps.askOnEntry}
+              selectedDeviceId={testProps.selectedDeviceId}
+              selectedDeviceTestLength={testProps.selectedDeviceTestLength}
+              selectedDeviceSpecimenTypeId={
+                testProps.selectedDeviceSpecimenTypeId
+              }
+              deviceSpecimenTypes={testProps.deviceSpecimenTypes}
+              selectedTestResult={testProps.selectedTestResult}
+              devices={testProps.devices}
+              refetchQueue={testProps.refetchQueue}
+              facilityId={testProps.facilityId}
+              dateTestedProp={testProps.dateTestedProp}
+              facilityName="Foo facility"
+            />
+          </Provider>
+        </MockedProvider>
+      </MemoryRouter>
     );
 
     userEvent.type(
@@ -151,27 +158,29 @@ describe("QueueItem", () => {
 
   it("renders dropdown of device types", async () => {
     render(
-      <MockedProvider mocks={[]} addTypename={false}>
-        <Provider store={store}>
-          <QueueItem
-            internalId={testProps.internalId}
-            patient={testProps.patient}
-            askOnEntry={testProps.askOnEntry}
-            selectedDeviceId={testProps.selectedDeviceId}
-            selectedDeviceTestLength={testProps.selectedDeviceTestLength}
-            selectedDeviceSpecimenTypeId={
-              testProps.selectedDeviceSpecimenTypeId
-            }
-            deviceSpecimenTypes={testProps.deviceSpecimenTypes}
-            selectedTestResult={testProps.selectedTestResult}
-            devices={testProps.devices}
-            refetchQueue={testProps.refetchQueue}
-            facilityId={testProps.facilityId}
-            dateTestedProp={testProps.dateTestedProp}
-            facilityName="Foo facility"
-          />
-        </Provider>
-      </MockedProvider>
+      <MemoryRouter>
+        <MockedProvider mocks={[]} addTypename={false}>
+          <Provider store={store}>
+            <QueueItem
+              internalId={testProps.internalId}
+              patient={testProps.patient}
+              askOnEntry={testProps.askOnEntry}
+              selectedDeviceId={testProps.selectedDeviceId}
+              selectedDeviceTestLength={testProps.selectedDeviceTestLength}
+              selectedDeviceSpecimenTypeId={
+                testProps.selectedDeviceSpecimenTypeId
+              }
+              deviceSpecimenTypes={testProps.deviceSpecimenTypes}
+              selectedTestResult={testProps.selectedTestResult}
+              devices={testProps.devices}
+              refetchQueue={testProps.refetchQueue}
+              facilityId={testProps.facilityId}
+              dateTestedProp={testProps.dateTestedProp}
+              facilityName="Foo facility"
+            />
+          </Provider>
+        </MockedProvider>
+      </MemoryRouter>
     );
 
     const deviceDropdown = (
@@ -191,27 +200,29 @@ describe("QueueItem", () => {
 
   it("renders dropdown of swab types configured with selected device", async () => {
     render(
-      <MockedProvider mocks={[]} addTypename={false}>
-        <Provider store={store}>
-          <QueueItem
-            internalId={testProps.internalId}
-            patient={testProps.patient}
-            askOnEntry={testProps.askOnEntry}
-            selectedDeviceId={testProps.selectedDeviceId}
-            selectedDeviceTestLength={testProps.selectedDeviceTestLength}
-            selectedDeviceSpecimenTypeId={
-              testProps.selectedDeviceSpecimenTypeId
-            }
-            deviceSpecimenTypes={testProps.deviceSpecimenTypes}
-            selectedTestResult={testProps.selectedTestResult}
-            devices={testProps.devices}
-            refetchQueue={testProps.refetchQueue}
-            facilityId={testProps.facilityId}
-            dateTestedProp={testProps.dateTestedProp}
-            facilityName="Foo facility"
-          />
-        </Provider>
-      </MockedProvider>
+      <MemoryRouter>
+        <MockedProvider mocks={[]} addTypename={false}>
+          <Provider store={store}>
+            <QueueItem
+              internalId={testProps.internalId}
+              patient={testProps.patient}
+              askOnEntry={testProps.askOnEntry}
+              selectedDeviceId={testProps.selectedDeviceId}
+              selectedDeviceTestLength={testProps.selectedDeviceTestLength}
+              selectedDeviceSpecimenTypeId={
+                testProps.selectedDeviceSpecimenTypeId
+              }
+              deviceSpecimenTypes={testProps.deviceSpecimenTypes}
+              selectedTestResult={testProps.selectedTestResult}
+              devices={testProps.devices}
+              refetchQueue={testProps.refetchQueue}
+              facilityId={testProps.facilityId}
+              dateTestedProp={testProps.dateTestedProp}
+              facilityName="Foo facility"
+            />
+          </Provider>
+        </MockedProvider>
+      </MemoryRouter>
     );
     const swabDropdown = await screen.findByLabelText("Swab type");
 
@@ -273,27 +284,29 @@ describe("QueueItem", () => {
 
     render(
       <>
-        <MockedProvider mocks={editQueueMocks} addTypename={false}>
-          <Provider store={store}>
-            <QueueItem
-              internalId={testProps.internalId}
-              patient={testProps.patient}
-              askOnEntry={testProps.askOnEntry}
-              selectedDeviceId={testProps.selectedDeviceId}
-              selectedDeviceTestLength={testProps.selectedDeviceTestLength}
-              selectedDeviceSpecimenTypeId={
-                testProps.selectedDeviceSpecimenTypeId
-              }
-              deviceSpecimenTypes={testProps.deviceSpecimenTypes}
-              selectedTestResult={testProps.selectedTestResult}
-              devices={testProps.devices}
-              refetchQueue={testProps.refetchQueue}
-              facilityId={testProps.facilityId}
-              dateTestedProp={testProps.dateTestedProp}
-              facilityName="Foo facility"
-            />
-          </Provider>
-        </MockedProvider>
+        <MemoryRouter>
+          <MockedProvider mocks={editQueueMocks} addTypename={false}>
+            <Provider store={store}>
+              <QueueItem
+                internalId={testProps.internalId}
+                patient={testProps.patient}
+                askOnEntry={testProps.askOnEntry}
+                selectedDeviceId={testProps.selectedDeviceId}
+                selectedDeviceTestLength={testProps.selectedDeviceTestLength}
+                selectedDeviceSpecimenTypeId={
+                  testProps.selectedDeviceSpecimenTypeId
+                }
+                deviceSpecimenTypes={testProps.deviceSpecimenTypes}
+                selectedTestResult={testProps.selectedTestResult}
+                devices={testProps.devices}
+                refetchQueue={testProps.refetchQueue}
+                facilityId={testProps.facilityId}
+                dateTestedProp={testProps.dateTestedProp}
+                facilityName="Foo facility"
+              />
+            </Provider>
+          </MockedProvider>
+        </MemoryRouter>
         <ToastContainer
           autoClose={5000}
           closeButton={false}
@@ -386,27 +399,29 @@ describe("QueueItem", () => {
 
       render(
         <>
-          <MockedProvider mocks={submitTestResultMocks} addTypename={false}>
-            <Provider store={store}>
-              <QueueItem
-                internalId={testProps.internalId}
-                patient={testProps.patient}
-                askOnEntry={testProps.askOnEntry}
-                selectedDeviceId={testProps.selectedDeviceId}
-                selectedDeviceTestLength={testProps.selectedDeviceTestLength}
-                selectedDeviceSpecimenTypeId={
-                  testProps.selectedDeviceSpecimenTypeId
-                }
-                deviceSpecimenTypes={testProps.deviceSpecimenTypes}
-                selectedTestResult={testProps.selectedTestResult}
-                devices={testProps.devices}
-                refetchQueue={testProps.refetchQueue}
-                facilityId={testProps.facilityId}
-                dateTestedProp={testProps.dateTestedProp}
-                facilityName="Foo facility"
-              />
-            </Provider>
-          </MockedProvider>
+          <MemoryRouter>
+            <MockedProvider mocks={submitTestResultMocks} addTypename={false}>
+              <Provider store={store}>
+                <QueueItem
+                  internalId={testProps.internalId}
+                  patient={testProps.patient}
+                  askOnEntry={testProps.askOnEntry}
+                  selectedDeviceId={testProps.selectedDeviceId}
+                  selectedDeviceTestLength={testProps.selectedDeviceTestLength}
+                  selectedDeviceSpecimenTypeId={
+                    testProps.selectedDeviceSpecimenTypeId
+                  }
+                  deviceSpecimenTypes={testProps.deviceSpecimenTypes}
+                  selectedTestResult={testProps.selectedTestResult}
+                  devices={testProps.devices}
+                  refetchQueue={testProps.refetchQueue}
+                  facilityId={testProps.facilityId}
+                  dateTestedProp={testProps.dateTestedProp}
+                  facilityName="Foo facility"
+                />
+              </Provider>
+            </MockedProvider>
+          </MemoryRouter>
           <ToastContainer
             autoClose={5000}
             closeButton={false}
@@ -471,41 +486,7 @@ describe("QueueItem", () => {
 
   it("updates custom test date/time", async () => {
     render(
-      <MockedProvider mocks={mocks} addTypename={false}>
-        <Provider store={store}>
-          <QueueItem
-            internalId={testProps.internalId}
-            patient={testProps.patient}
-            askOnEntry={testProps.askOnEntry}
-            selectedDeviceId={testProps.selectedDeviceId}
-            selectedDeviceTestLength={testProps.selectedDeviceTestLength}
-            selectedDeviceSpecimenTypeId={
-              testProps.selectedDeviceSpecimenTypeId
-            }
-            deviceSpecimenTypes={testProps.deviceSpecimenTypes}
-            selectedTestResult={testProps.selectedTestResult}
-            devices={testProps.devices}
-            refetchQueue={testProps.refetchQueue}
-            facilityId={testProps.facilityId}
-            dateTestedProp={testProps.dateTestedProp}
-            facilityName="Foo facility"
-          />
-        </Provider>
-      </MockedProvider>
-    );
-    const toggle = await screen.findByLabelText("Current date/time");
-    userEvent.click(toggle);
-    const dateInput = screen.getByTestId("test-date");
-    expect(dateInput).toBeInTheDocument();
-    const timeInput = screen.getByTestId("test-time");
-    expect(timeInput).toBeInTheDocument();
-    userEvent.type(dateInput, `${updatedDateString}T00:00`);
-    userEvent.type(timeInput, updatedTimeString);
-  });
-
-  it("does not allow future date for test date", async () => {
-    render(
-      <>
+      <MemoryRouter>
         <MockedProvider mocks={mocks} addTypename={false}>
           <Provider store={store}>
             <QueueItem
@@ -527,6 +508,44 @@ describe("QueueItem", () => {
             />
           </Provider>
         </MockedProvider>
+      </MemoryRouter>
+    );
+    const toggle = await screen.findByLabelText("Current date/time");
+    userEvent.click(toggle);
+    const dateInput = screen.getByTestId("test-date");
+    expect(dateInput).toBeInTheDocument();
+    const timeInput = screen.getByTestId("test-time");
+    expect(timeInput).toBeInTheDocument();
+    userEvent.type(dateInput, `${updatedDateString}T00:00`);
+    userEvent.type(timeInput, updatedTimeString);
+  });
+
+  it("does not allow future date for test date", async () => {
+    render(
+      <>
+        <MemoryRouter>
+          <MockedProvider mocks={mocks} addTypename={false}>
+            <Provider store={store}>
+              <QueueItem
+                internalId={testProps.internalId}
+                patient={testProps.patient}
+                askOnEntry={testProps.askOnEntry}
+                selectedDeviceId={testProps.selectedDeviceId}
+                selectedDeviceTestLength={testProps.selectedDeviceTestLength}
+                selectedDeviceSpecimenTypeId={
+                  testProps.selectedDeviceSpecimenTypeId
+                }
+                deviceSpecimenTypes={testProps.deviceSpecimenTypes}
+                selectedTestResult={testProps.selectedTestResult}
+                devices={testProps.devices}
+                refetchQueue={testProps.refetchQueue}
+                facilityId={testProps.facilityId}
+                dateTestedProp={testProps.dateTestedProp}
+                facilityName="Foo facility"
+              />
+            </Provider>
+          </MockedProvider>
+        </MemoryRouter>
         <ToastContainer
           autoClose={5000}
           closeButton={false}
@@ -572,27 +591,29 @@ describe("QueueItem", () => {
 
   it("highlights the test card where the validation failure occurs", async () => {
     render(
-      <MockedProvider mocks={mocks}>
-        <Provider store={store}>
-          <QueueItem
-            internalId={testProps.internalId}
-            patient={testProps.patient}
-            askOnEntry={testProps.askOnEntry}
-            selectedDeviceId={testProps.selectedDeviceId}
-            selectedDeviceTestLength={testProps.selectedDeviceTestLength}
-            selectedDeviceSpecimenTypeId={
-              testProps.selectedDeviceSpecimenTypeId
-            }
-            deviceSpecimenTypes={testProps.deviceSpecimenTypes}
-            selectedTestResult={testProps.selectedTestResult}
-            devices={testProps.devices}
-            refetchQueue={testProps.refetchQueue}
-            facilityId={testProps.facilityId}
-            dateTestedProp={testProps.dateTestedProp}
-            facilityName="Foo facility"
-          />
-        </Provider>
-      </MockedProvider>
+      <MemoryRouter>
+        <MockedProvider mocks={mocks}>
+          <Provider store={store}>
+            <QueueItem
+              internalId={testProps.internalId}
+              patient={testProps.patient}
+              askOnEntry={testProps.askOnEntry}
+              selectedDeviceId={testProps.selectedDeviceId}
+              selectedDeviceTestLength={testProps.selectedDeviceTestLength}
+              selectedDeviceSpecimenTypeId={
+                testProps.selectedDeviceSpecimenTypeId
+              }
+              deviceSpecimenTypes={testProps.deviceSpecimenTypes}
+              selectedTestResult={testProps.selectedTestResult}
+              devices={testProps.devices}
+              refetchQueue={testProps.refetchQueue}
+              facilityId={testProps.facilityId}
+              dateTestedProp={testProps.dateTestedProp}
+              facilityName="Foo facility"
+            />
+          </Provider>
+        </MockedProvider>
+      </MemoryRouter>
     );
 
     // Enter an invalid (future) date on the first test card
@@ -628,45 +649,7 @@ describe("QueueItem", () => {
 
   it("displays person's mobile phone numbers", async () => {
     render(
-      <MockedProvider mocks={mocks} addTypename={false}>
-        <Provider store={store}>
-          <QueueItem
-            internalId={testProps.internalId}
-            patient={testProps.patient}
-            askOnEntry={testProps.askOnEntry}
-            selectedDeviceId={testProps.selectedDeviceId}
-            selectedDeviceTestLength={testProps.selectedDeviceTestLength}
-            selectedDeviceSpecimenTypeId={
-              testProps.selectedDeviceSpecimenTypeId
-            }
-            deviceSpecimenTypes={testProps.deviceSpecimenTypes}
-            selectedTestResult={testProps.selectedTestResult}
-            devices={testProps.devices}
-            refetchQueue={testProps.refetchQueue}
-            facilityId={testProps.facilityId}
-            dateTestedProp={testProps.dateTestedProp}
-            facilityName="Foo facility"
-          />
-        </Provider>
-      </MockedProvider>
-    );
-
-    const questionnaire = await screen.findByText("Test questionnaire");
-    userEvent.click(questionnaire);
-    await screen.findByText("Required fields are marked", { exact: false });
-    expect(
-      screen.getByText(testProps.patient.phoneNumbers[0].number, {
-        exact: false,
-      })
-    ).toBeInTheDocument();
-    expect(
-      screen.queryByText(testProps.patient.phoneNumbers[1].number)
-    ).not.toBeInTheDocument();
-  });
-
-  describe("telemetry", () => {
-    beforeEach(() => {
-      render(
+      <MemoryRouter>
         <MockedProvider mocks={mocks} addTypename={false}>
           <Provider store={store}>
             <QueueItem
@@ -688,6 +671,48 @@ describe("QueueItem", () => {
             />
           </Provider>
         </MockedProvider>
+      </MemoryRouter>
+    );
+
+    const questionnaire = await screen.findByText("Test questionnaire");
+    userEvent.click(questionnaire);
+    await screen.findByText("Required fields are marked", { exact: false });
+    expect(
+      screen.getByText(testProps.patient.phoneNumbers[0].number, {
+        exact: false,
+      })
+    ).toBeInTheDocument();
+    expect(
+      screen.queryByText(testProps.patient.phoneNumbers[1].number)
+    ).not.toBeInTheDocument();
+  });
+
+  describe("telemetry", () => {
+    beforeEach(() => {
+      render(
+        <MemoryRouter>
+          <MockedProvider mocks={mocks} addTypename={false}>
+            <Provider store={store}>
+              <QueueItem
+                internalId={testProps.internalId}
+                patient={testProps.patient}
+                askOnEntry={testProps.askOnEntry}
+                selectedDeviceId={testProps.selectedDeviceId}
+                selectedDeviceTestLength={testProps.selectedDeviceTestLength}
+                selectedDeviceSpecimenTypeId={
+                  testProps.selectedDeviceSpecimenTypeId
+                }
+                deviceSpecimenTypes={testProps.deviceSpecimenTypes}
+                selectedTestResult={testProps.selectedTestResult}
+                devices={testProps.devices}
+                refetchQueue={testProps.refetchQueue}
+                facilityId={testProps.facilityId}
+                dateTestedProp={testProps.dateTestedProp}
+                facilityName="Foo facility"
+              />
+            </Provider>
+          </MockedProvider>
+        </MemoryRouter>
       );
     });
 
