@@ -133,7 +133,7 @@ function testResultRows(
         <td>
           {displayFullName(
             r.createdBy.nameInfo.firstName,
-            r.createdBy.nameInfo.middleName,
+            null,
             r.createdBy.nameInfo.lastName
           )}
         </td>
@@ -476,7 +476,7 @@ export const DetachedTestResultsList = ({
                   />
                 </div>
                 <Select
-                  label="Result"
+                  label="Test result"
                   name="result"
                   value={filterParams.result || ""}
                   options={[
@@ -513,8 +513,8 @@ export const DetachedTestResultsList = ({
                     <th scope="col">{PATIENT_TERM_CAP}</th>
                     <th scope="col">Test date</th>
                     <th scope="col">Result</th>
-                    <th scope="col">Device</th>
-                    <th scope="col">Submitter</th>
+                    <th scope="col">Test device</th>
+                    <th scope="col">Submitted by</th>
                     <th scope="col">Actions</th>
                   </tr>
                 </thead>
@@ -592,7 +592,6 @@ export const testResultQuery = gql`
       patient {
         internalId
         firstName
-        middleName
         lastName
         birthDate
         gender
