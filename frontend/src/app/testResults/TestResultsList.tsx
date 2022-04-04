@@ -51,19 +51,6 @@ import DownloadResultsCSVButton from "./DownloadResultsCsvButton";
 
 export type Results = keyof typeof TEST_RESULT_DESCRIPTIONS;
 
-export function hasSymptoms(noSymptoms: boolean, symptoms: string) {
-  if (noSymptoms) {
-    return "No";
-  }
-  const symptomsList: Record<string, string> = JSON.parse(symptoms);
-  for (let key in symptomsList) {
-    if (symptomsList[key] === "true") {
-      return "Yes";
-    }
-  }
-  return "Unknown";
-}
-
 export const byDateTested = (a: any, b: any) => {
   // ISO string dates sort nicely
   if (a.dateTested === b.dateTested) return 0;
