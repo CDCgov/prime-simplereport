@@ -16,7 +16,6 @@ import {
 } from "react-router-dom";
 import createMockStore from "redux-mock-store";
 
-
 import ManagePatients, {
   patientQuery,
   patientsCountQuery,

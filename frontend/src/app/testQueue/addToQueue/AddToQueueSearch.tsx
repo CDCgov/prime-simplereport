@@ -16,6 +16,7 @@ import {
   SEARCH_DEBOUNCE_TIME,
 } from "../constants";
 import { showNotification } from "../../utils";
+import { useOutsideClick } from "../../utils/hooks";
 import { Patient } from "../../patients/ManagePatients";
 import { AoEAnswersDelivery } from "../AoEForm/AoEForm";
 import { getAppInsights } from "../../TelemetryService";
@@ -180,6 +181,7 @@ const AddToQueueSearchBox = ({
     skip: !patientIdParam || patientsInQueue.includes(patientIdParam),
   });
 
+  useOutsideClick(dropDownRef, hideOnOutsideClick);
   useEffect(() => {
     if (queryString.trim() !== "") {
       queryPatients();
