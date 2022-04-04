@@ -544,6 +544,46 @@ class TestOrderServiceTest extends BaseServiceTest<TestOrderService> {
 
   @Test
   @WithSimpleReportOrgAdminUser
+  void addTestResult_correction() {
+    Organization org = _organizationService.getCurrentOrganization();
+    Facility facility = _organizationService.getFacilities(org).get(0);
+    Person p = _dataFactory.createFullPerson(org);
+    _service.addPatientToQueue(
+        facility.getInternalId(), p, "", Collections.emptyMap(), LocalDate.of(1865, 12, 25), false);
+    DeviceSpecimenType devA = _dataFactory.getGenericDeviceSpecimen();
+    facility.addDefaultDeviceSpecimen(devA);
+
+    // Create test event for a later correction
+    _service.addTestResult(devA.getInternalId(), TestResult.POSITIVE, p.getInternalId(), null);
+    List<TestEvent> testEvents =
+        _testEventRepository.findAllByPatientAndFacilities(p, List.of(facility));
+    assertEquals(1, testEvents.size());
+
+    // Mark existing test order as "corrected", re-open as "pending" order status
+    TestEvent originalTestEvent = testEvents.get(0);
+    _service.correctTestMarkAsError(
+        originalTestEvent.getInternalId(), TestCorrectionStatus.CORRECTED, "Cold feet");
+
+    // Issue test correction
+    _service.addTestResult(devA.getInternalId(), TestResult.NEGATIVE, p.getInternalId(), null);
+
+    // Get newly-created correction event
+    TestEvent correctionTestEvent =
+        _testEventRepository.findAllByPatientAndFacilities(p, List.of(facility)).stream()
+            .filter(event -> event.getCorrectionStatus() == TestCorrectionStatus.CORRECTED)
+            .collect(Collectors.toList())
+            .get(0);
+
+    assertEquals(
+        originalTestEvent.getInternalId(), correctionTestEvent.getPriorCorrectedTestEventId());
+    assertEquals(TestCorrectionStatus.CORRECTED, correctionTestEvent.getCorrectionStatus());
+    assertEquals("Cold feet", correctionTestEvent.getReasonForCorrection());
+    assertEquals(TestResult.NEGATIVE, correctionTestEvent.getResult());
+    // think about the dates here - how's backdating look?
+  }
+
+  @Test
+  @WithSimpleReportOrgAdminUser
   void addTestResult_smsDelivery() {
     // GIVEN
     Organization org = _organizationService.getCurrentOrganization();
