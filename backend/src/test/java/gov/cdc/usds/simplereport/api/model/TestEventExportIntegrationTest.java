@@ -194,7 +194,6 @@ class TestEventExportIntegrationTest extends BaseGraphqlTest {
             + testEvent.getInternalId().toString()
             + "\","
             + "\"Test_correction_reason\":\"Cold feet\","
-            // + "\"Test_result_status\":\"W\","
             + "\"Order_result_status\":\"C\","
             + "\"Observation_result_status\":\"C\","
             + "\"Test_result_code\":\"260415000\","
@@ -296,7 +295,6 @@ class TestEventExportIntegrationTest extends BaseGraphqlTest {
             + testEvent.getInternalId().toString()
             + "\","
             + "\"Test_correction_reason\":\"Cold feet\","
-            // + "\"Test_result_status\":\"W\","
             + "\"Order_result_status\":\"C\","
             + "\"Observation_result_status\":\"W\","
             + "\"Test_result_code\":\"260415000\","

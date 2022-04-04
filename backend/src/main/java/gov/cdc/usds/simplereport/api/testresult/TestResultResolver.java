@@ -1,6 +1,5 @@
 package gov.cdc.usds.simplereport.api.testresult;
 
-import com.fasterxml.jackson.core.JsonProcessingException;
 import gov.cdc.usds.simplereport.api.Translators;
 import gov.cdc.usds.simplereport.api.model.OrganizationLevelDashboardMetrics;
 import gov.cdc.usds.simplereport.api.model.TopLevelDashboardMetrics;
@@ -59,13 +58,11 @@ public class TestResultResolver implements GraphQLQueryResolver, GraphQLMutation
         endDate);
   }
 
-  public TestEvent correctTestMarkAsError(UUID id, String reasonForCorrection)
-      throws JsonProcessingException {
+  public TestEvent correctTestMarkAsError(UUID id, String reasonForCorrection) {
     return tos.correctTestMarkAsError(id, TestCorrectionStatus.REMOVED, reasonForCorrection);
   }
 
-  public TestEvent correctTestMarkAsCorrection(UUID id, String reasonForCorrection)
-      throws JsonProcessingException {
+  public TestEvent correctTestMarkAsCorrection(UUID id, String reasonForCorrection) {
     return tos.correctTestMarkAsError(id, TestCorrectionStatus.CORRECTED, reasonForCorrection);
   }
 
