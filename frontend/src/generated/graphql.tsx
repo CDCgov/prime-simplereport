@@ -133,6 +133,7 @@ export type Mutation = {
   addUser?: Maybe<User>;
   addUserToCurrentOrg?: Maybe<User>;
   adminUpdateOrganization?: Maybe<Scalars["String"]>;
+  correctTestMarkAsCorrection?: Maybe<TestResult>;
   correctTestMarkAsError?: Maybe<TestResult>;
   createDeviceType?: Maybe<DeviceType>;
   createFacilityRegistrationLink?: Maybe<Scalars["String"]>;
@@ -292,6 +293,11 @@ export type MutationAddUserToCurrentOrgArgs = {
 export type MutationAdminUpdateOrganizationArgs = {
   name: Scalars["String"];
   type: Scalars["String"];
+};
+
+export type MutationCorrectTestMarkAsCorrectionArgs = {
+  id: Scalars["ID"];
+  reason?: InputMaybe<Scalars["String"]>;
 };
 
 export type MutationCorrectTestMarkAsErrorArgs = {
