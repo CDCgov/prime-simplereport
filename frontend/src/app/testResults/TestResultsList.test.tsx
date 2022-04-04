@@ -1024,7 +1024,7 @@ describe("TestResultsList", () => {
     expect(roleSelect.value).toEqual("STAFF");
 
     const resultSelect = (await screen.findByLabelText(
-      "Result"
+      "Test result"
     )) as HTMLSelectElement;
     expect(resultSelect).toBeInTheDocument();
     expect(resultSelect.value).toEqual("NEGATIVE");
@@ -1094,7 +1094,9 @@ describe("TestResultsList", () => {
       expect(
         await screen.findByRole("option", { name: "Negative" })
       ).toBeInTheDocument();
-      userEvent.selectOptions(screen.getByLabelText("Result"), ["NEGATIVE"]);
+      userEvent.selectOptions(screen.getByLabelText("Test result"), [
+        "NEGATIVE",
+      ]);
       expect(
         await screen.findByText("Cragell, Barb Whitaker")
       ).toBeInTheDocument();
@@ -1294,7 +1296,9 @@ describe("TestResultsList", () => {
       expect(
         screen.getByText("Test Results", { exact: false })
       ).toBeInTheDocument();
-      userEvent.selectOptions(screen.getByLabelText("Result"), ["NEGATIVE"]);
+      userEvent.selectOptions(screen.getByLabelText("Test result"), [
+        "NEGATIVE",
+      ]);
       expect(await screen.findByText("Showing 1-2 of 2")).toBeInTheDocument();
       const downloadButton = screen.getByText("Download results", {
         exact: false,
