@@ -238,8 +238,7 @@ public class TestOrderService {
   @AuthorizationConfiguration.RequirePermissionSubmitTestForPatient
   @Transactional(noRollbackFor = {TwilioException.class, ApiException.class})
   public AddTestResultResponse addTestResult(
-      UUID deviceSpecimenTypeId, TestResult result, UUID patientId, Date dateTested)
-      {
+      UUID deviceSpecimenTypeId, TestResult result, UUID patientId, Date dateTested) {
     Organization org = _os.getCurrentOrganization();
     Person person = _ps.getPatientNoPermissionsCheck(patientId, org);
     TestOrder order =
@@ -260,8 +259,7 @@ public class TestOrderService {
       TestEvent testEvent =
           order.getCorrectionStatus() == TestCorrectionStatus.ORIGINAL
               ? new TestEvent(order, hasPriorTests)
-              : new TestEvent(
-                  order, order.getCorrectionStatus(), order.getReasonForCorrection());
+              : new TestEvent(order, order.getCorrectionStatus(), order.getReasonForCorrection());
 
       _terepo.save(testEvent);
 
@@ -405,8 +403,7 @@ public class TestOrderService {
   @Transactional
   @AuthorizationConfiguration.RequirePermissionUpdateTestForTestEvent
   public TestEvent correctTestMarkAsError(
-      UUID testEventId, TestCorrectionStatus status, String reasonForCorrection)
-      {
+      UUID testEventId, TestCorrectionStatus status, String reasonForCorrection) {
     Organization org = _os.getCurrentOrganization(); // always check against org
     // The client sends us a TestEvent, we need to map back to the Order.
     TestEvent event = _terepo.findByOrganizationAndInternalId(org, testEventId);
