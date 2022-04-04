@@ -409,6 +409,8 @@ const QueueItem = ({
       testResultsSubmitted(result);
       refetchQueue();
       removeTimer(internalId);
+      //clear the state
+      navigate(window.location.pathname, { replace: true });
     } catch (error: any) {
       setSaveState("error");
       updateMutationError(error);

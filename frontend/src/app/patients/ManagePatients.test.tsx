@@ -16,7 +16,6 @@ import {
 } from "react-router-dom";
 import createMockStore from "redux-mock-store";
 
-import { queueQuery } from "../testQueue/TestQueue";
 
 import ManagePatients, {
   patientQuery,
@@ -117,7 +116,7 @@ describe("ManagePatients", () => {
       ).toBeInTheDocument();
     });
 
-    it("can start test if patient not in test queue", async () => {
+    it("can start test", async () => {
       render(<TestContainer />);
       expect(
         await screen.findByText(patients[0].lastName, { exact: false })
@@ -135,18 +134,6 @@ describe("ManagePatients", () => {
           screen.getByText("Testing Queue!", { exact: false })
         ).toBeInTheDocument();
       });
-    });
-
-    it("can't start test for patient in test queue", async () => {
-      render(<TestContainer />);
-
-      expect(
-        await screen.findByText(patients[1].lastName, { exact: false })
-      ).toBeInTheDocument();
-      const menu = (await screen.findAllByText("More actions"))[1];
-      userEvent.click(menu);
-
-      expect(screen.queryByText("Start test")).not.toBeInTheDocument();
     });
   });
 
@@ -493,26 +480,6 @@ const mocks: MockedProviderProps["mocks"] = [
     },
     result: {
       data: { patients: patients.slice(1) },
-    },
-  },
-  // queue query for start test flow
-  {
-    request: {
-      query: queueQuery,
-      variables: {
-        facilityId: "a1",
-      },
-    },
-    result: {
-      data: {
-        queue: [
-          {
-            patient: {
-              internalId: patients[1].internalId,
-            },
-          },
-        ],
-      },
     },
   },
   // landing from closing archive modal
