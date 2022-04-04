@@ -342,11 +342,6 @@ exports[`TestResultsList should render a list of tests 1`] = `
                   <th
                     scope="col"
                   >
-                    Symptoms
-                  </th>
-                  <th
-                    scope="col"
-                  >
                     Submitter
                   </th>
                   <th
@@ -381,9 +376,6 @@ exports[`TestResultsList should render a list of tests 1`] = `
                   </td>
                   <td>
                     Abbott IDNow
-                  </td>
-                  <td>
-                    Yes
                   </td>
                   <td>
                     Entry, Ethan
@@ -447,9 +439,6 @@ exports[`TestResultsList should render a list of tests 1`] = `
                     Abbott IDNow
                   </td>
                   <td>
-                    Unknown
-                  </td>
-                  <td>
                     User, Ursula
                   </td>
                   <td>
@@ -509,9 +498,6 @@ exports[`TestResultsList should render a list of tests 1`] = `
                   </td>
                   <td>
                     Abbott IDNow
-                  </td>
-                  <td>
-                    No
                   </td>
                   <td>
                     Admin, Arthur A
