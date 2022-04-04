@@ -1070,7 +1070,7 @@ class TestOrderServiceTest extends BaseServiceTest<TestOrderService> {
     TestOrder _o = _e.getTestOrder();
 
     String reasonMsg = "Testing correction marking as error " + LocalDateTime.now();
-    TestEvent deleteMarkerEvent = _service.correctTestMarkAsError(_e.getInternalId(), reasonMsg);
+    TestEvent deleteMarkerEvent = _service.correctTestMarkAsError(_e.getInternalId(), TestCorrectionStatus.REMOVED, reasonMsg);
     assertNotNull(deleteMarkerEvent);
 
     assertEquals(TestCorrectionStatus.REMOVED, deleteMarkerEvent.getCorrectionStatus());
@@ -1421,7 +1421,7 @@ class TestOrderServiceTest extends BaseServiceTest<TestOrderService> {
     String reasonMsg = "Testing correction marking as error " + LocalDateTime.now();
     assertThrows(
         AccessDeniedException.class,
-        () -> _service.correctTestMarkAsError(_e.getInternalId(), reasonMsg));
+        () -> _service.correctTestMarkAsError(_e.getInternalId(), TestCorrectionStatus.REMOVED, reasonMsg));
     assertThrows(
         AccessDeniedException.class,
         () ->
@@ -1435,7 +1435,7 @@ class TestOrderServiceTest extends BaseServiceTest<TestOrderService> {
     verifyNoInteractions(testEventReportingService);
 
     TestUserIdentities.setFacilityAuthorities(facility);
-    TestEvent correctedTestEvent = _service.correctTestMarkAsError(_e.getInternalId(), reasonMsg);
+    TestEvent correctedTestEvent = _service.correctTestMarkAsError(_e.getInternalId(), TestCorrectionStatus.REMOVED, reasonMsg);
     _service.getTestEventsResults(facility.getInternalId(), null, null, null, null, null, 0, 10);
     _service.getTestResult(_e.getInternalId()).getTestOrder();
     // make sure the corrected event is sent to storage queue

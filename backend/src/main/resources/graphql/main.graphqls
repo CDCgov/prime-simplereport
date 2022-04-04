@@ -31,7 +31,8 @@ type Facility {
   email: String
   deviceTypes: [DeviceType]
   defaultDeviceSpecimen: ID
-  deviceSpecimenTypes: [DeviceSpecimenType] @deprecated(reason: "kept for compatibility")
+  deviceSpecimenTypes: [DeviceSpecimenType]
+    @deprecated(reason: "kept for compatibility")
   defaultDeviceType: DeviceType @deprecated(reason: "kept for compatibility")
   orderingProvider: Provider
   patientSelfRegistrationLink: String
@@ -502,7 +503,8 @@ type Mutation {
   ): User @requiredPermissions(allOf: ["MANAGE_USERS"])
   resetUserPassword(id: ID!): User @requiredPermissions(allOf: ["MANAGE_USERS"])
   resetUserMfa(id: ID!): User @requiredPermissions(allOf: ["MANAGE_USERS"])
-  updateUserEmail(id: ID!, email: String): User @requiredPermissions(allOf: ["MANAGE_USERS"])
+  updateUserEmail(id: ID!, email: String): User
+    @requiredPermissions(allOf: ["MANAGE_USERS"])
   setUserIsDeleted(id: ID!, deleted: Boolean!): User
     @requiredPermissions(allOf: ["MANAGE_USERS"])
   reactivateUser(id: ID!): User @requiredPermissions(allOf: ["MANAGE_USERS"])
@@ -594,6 +596,8 @@ type Mutation {
   ): TestOrder @requiredPermissions(allOf: ["UPDATE_TEST"])
   correctTestMarkAsError(id: ID!, reason: String): TestResult
     @requiredPermissions(allOf: ["UPDATE_TEST"])
+  correctTestMarkAsCorrection(id: ID!, reason: String): TestResult
+    @requiredPermissions(allOf: ["UPDATE_TEST"])
   addPatientToQueue(
     facilityId: ID!
     patientId: ID!
@@ -616,7 +620,7 @@ type Mutation {
   sendPatientLinkSms(internalId: ID!): Boolean
     @requiredPermissions(allOf: ["UPDATE_TEST"])
   sendPatientLinkSmsByTestEventId(testEventId: ID!): Boolean
-  @requiredPermissions(allOf: ["UPDATE_TEST"])
+    @requiredPermissions(allOf: ["UPDATE_TEST"])
   sendPatientLinkEmail(internalId: ID!): Boolean
   sendPatientLinkEmailByTestEventId(testEventId: ID!): Boolean
   updateOrganization(type: String!): String
