@@ -308,7 +308,6 @@ public class TestEventExport {
     }
   }
 
-  // TODO: duplicate of Test_result_status for now
   @JsonProperty("Observation_result_status")
   public String getObservationResultStatus() {
     // F Final results
