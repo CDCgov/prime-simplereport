@@ -87,7 +87,6 @@ public class TestEvent extends BaseTestInfo {
     this.priorCorrectedTestEventId = event.getInternalId();
   }
 
-  // TODO: is there a better way of doing this?
   public TestEvent(
       TestOrder order, TestCorrectionStatus correctionStatus, String reasonForCorrection) {
     super(order, correctionStatus, reasonForCorrection);
