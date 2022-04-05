@@ -402,7 +402,7 @@ public class TestOrderService {
 
   @Transactional
   @AuthorizationConfiguration.RequirePermissionUpdateTestForTestEvent
-  public TestEvent correctTestMarkAsError(
+  public TestEvent correctTest(
       UUID testEventId, TestCorrectionStatus status, String reasonForCorrection) {
     Organization org = _os.getCurrentOrganization(); // always check against org
     // The client sends us a TestEvent, we need to map back to the Order.
@@ -443,32 +443,26 @@ public class TestOrderService {
     _terepo.save(newRemoveEvent);
     _testEventReportingService.report(newRemoveEvent);
 
-    // order having reason text is way more useful when we allow actual corrections
-    // not just
-    // deletes.
     order.setReasonForCorrection(reasonForCorrection);
     order.setTestEventRef(newRemoveEvent);
 
-    // order.setOrderStatus(OrderStatus.CANCELED); NO: this makes it disappear.
-
-    // We currently don't do anything special with this CorrectionStatus on the
-    // order, but in the
-    // next
-    // refactor, we will set this to TestCorrectionStatus.CORRECTED and it will go
-    // back into the
-    // queue to
-    // be corrected.
     order.setCorrectionStatus(TestCorrectionStatus.REMOVED);
 
-    // NOTE: WHEN we support actual corrections (versus just deleting). Make sure to
-    // think about the
-    // TestOrder.dateTestedBackdate field.
-    // For example: when viewing the list of past TestEvents, and you see a
-    // correction,
-    // what date should be shown if the original test being corrected was backdated?
     _repo.save(order);
 
     return newRemoveEvent;
+  }
+
+  @Transactional
+  @AuthorizationConfiguration.RequirePermissionUpdateTestForTestEvent
+  public TestEvent markAsError(UUID testEventId, String reasonForCorrection) {
+    return correctTest(testEventId, TestCorrectionStatus.REMOVED, reasonForCorrection);
+  }
+
+  @Transactional
+  @AuthorizationConfiguration.RequirePermissionUpdateTestForTestEvent
+  public TestEvent markAsCorrection(UUID testEventId, String reasonForCorrection) {
+    return correctTest(testEventId, TestCorrectionStatus.CORRECTED, reasonForCorrection);
   }
 
   @Transactional(readOnly = true)

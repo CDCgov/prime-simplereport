@@ -4,7 +4,6 @@ import gov.cdc.usds.simplereport.api.Translators;
 import gov.cdc.usds.simplereport.api.model.OrganizationLevelDashboardMetrics;
 import gov.cdc.usds.simplereport.api.model.TopLevelDashboardMetrics;
 import gov.cdc.usds.simplereport.db.model.TestEvent;
-import gov.cdc.usds.simplereport.db.model.auxiliary.TestCorrectionStatus;
 import gov.cdc.usds.simplereport.service.TestOrderService;
 import graphql.kickstart.tools.GraphQLMutationResolver;
 import graphql.kickstart.tools.GraphQLQueryResolver;
@@ -59,11 +58,11 @@ public class TestResultResolver implements GraphQLQueryResolver, GraphQLMutation
   }
 
   public TestEvent correctTestMarkAsError(UUID id, String reasonForCorrection) {
-    return tos.correctTestMarkAsError(id, TestCorrectionStatus.REMOVED, reasonForCorrection);
+    return tos.markAsError(id, reasonForCorrection);
   }
 
   public TestEvent correctTestMarkAsCorrection(UUID id, String reasonForCorrection) {
-    return tos.correctTestMarkAsError(id, TestCorrectionStatus.CORRECTED, reasonForCorrection);
+    return tos.markAsCorrection(id, reasonForCorrection);
   }
 
   public TestEvent getTestResult(UUID id) {
