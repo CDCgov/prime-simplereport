@@ -282,7 +282,7 @@ public class TestEventExport {
   public String getTestResultStatus() {
     // F Final results
     // W Post original as wrong, e.g., transmitted for wrong patient
-    // C Corrected, final (not yet supported
+    // C Corrected, final
     switch (testEvent.getCorrectionStatus()) {
       case REMOVED:
         return "W";
@@ -312,7 +312,7 @@ public class TestEventExport {
   public String getObservationResultStatus() {
     // F Final results
     // W Post original as wrong, e.g., transmitted for wrong patient
-    // C Corrected, final (not yet supported
+    // C Corrected, final
     switch (testEvent.getCorrectionStatus()) {
       case REMOVED:
         return "W";
