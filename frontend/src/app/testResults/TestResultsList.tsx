@@ -592,6 +592,7 @@ export const testResultQuery = gql`
       patient {
         internalId
         firstName
+        middleName
         lastName
         birthDate
         gender
@@ -601,7 +602,6 @@ export const testResultQuery = gql`
       createdBy {
         nameInfo {
           firstName
-          middleName
           lastName
         }
       }

@@ -2256,6 +2256,7 @@ export type GetFacilityResultsQuery = {
                   __typename?: "Patient";
                   internalId?: string | null | undefined;
                   firstName?: string | null | undefined;
+                  middleName?: string | null | undefined;
                   lastName?: string | null | undefined;
                   birthDate?: any | null | undefined;
                   gender?: string | null | undefined;
@@ -2271,7 +2272,6 @@ export type GetFacilityResultsQuery = {
                     | {
                         __typename?: "NameInfo";
                         firstName?: string | null | undefined;
-                        middleName?: string | null | undefined;
                         lastName: string;
                       }
                     | null
@@ -6207,6 +6207,7 @@ export const GetFacilityResultsDocument = gql`
       patient {
         internalId
         firstName
+        middleName
         lastName
         birthDate
         gender
@@ -6216,7 +6217,6 @@ export const GetFacilityResultsDocument = gql`
       createdBy {
         nameInfo {
           firstName
-          middleName
           lastName
         }
       }
