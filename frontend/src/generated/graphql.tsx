@@ -2278,8 +2278,6 @@ export type GetFacilityResultsQuery = {
             dateTested?: any | null | undefined;
             result?: string | null | undefined;
             correctionStatus?: string | null | undefined;
-            symptoms?: string | null | undefined;
-            noSymptoms?: boolean | null | undefined;
             deviceType?:
               | { __typename?: "DeviceType"; internalId: string; name: string }
               | null
@@ -6326,8 +6324,6 @@ export const GetFacilityResultsDocument = gql`
       patientLink {
         internalId
       }
-      symptoms
-      noSymptoms
     }
   }
 `;
