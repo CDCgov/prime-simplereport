@@ -8,10 +8,10 @@ import org.springframework.transaction.annotation.Transactional;
 
 @Service
 @Transactional(readOnly = true)
-public class SupportedDiseaseService {
+public class DiseaseService {
   public SupportedDiseaseRepository _repo;
 
-  public SupportedDiseaseService(SupportedDiseaseRepository repo) {
+  public DiseaseService(SupportedDiseaseRepository repo) {
     _repo = repo;
   }
 
