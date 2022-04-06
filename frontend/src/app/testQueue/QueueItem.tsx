@@ -271,7 +271,7 @@ const QueueItem = ({
     if (patientIdParam === patient.internalId) {
       testCardElement.current.scrollIntoView();
     }
-  }, []);
+  }, [patientIdParam, patient.internalId]);
 
   const deviceTypes = deviceSpecimenTypes
     .map((d) => d.deviceType)
