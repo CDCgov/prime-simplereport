@@ -236,7 +236,7 @@ exports[`TestResultsList should render a list of tests 1`] = `
                   class="usa-label"
                   for="1"
                 >
-                  Result
+                  Test result
                 </label>
                 <select
                   aria-required="false"
@@ -337,12 +337,12 @@ exports[`TestResultsList should render a list of tests 1`] = `
                   <th
                     scope="col"
                   >
-                    Device
+                    Test device
                   </th>
                   <th
                     scope="col"
                   >
-                    Submitter
+                    Submitted by
                   </th>
                   <th
                     scope="col"
@@ -500,7 +500,7 @@ exports[`TestResultsList should render a list of tests 1`] = `
                     Abbott IDNow
                   </td>
                   <td>
-                    Admin, Arthur A
+                    Admin, Arthur
                   </td>
                   <td>
                     <button
