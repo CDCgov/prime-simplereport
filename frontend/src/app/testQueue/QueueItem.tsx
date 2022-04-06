@@ -265,6 +265,14 @@ const QueueItem = ({
   const { patientId: patientIdParam } =
     (useLocation().state as StartTestProps) || {};
 
+  const testCardElement = useRef() as React.MutableRefObject<HTMLDivElement>;
+
+  useEffect(() => {
+    if (patientIdParam === patient.internalId) {
+      testCardElement.current.scrollIntoView();
+    }
+  }, []);
+
   const deviceTypes = deviceSpecimenTypes
     .map((d) => d.deviceType)
     .reduce((allDevices, device: DeviceType) => {
@@ -652,7 +660,7 @@ const QueueItem = ({
       return prefix + "ready";
     }
     if (patientIdParam === patient.internalId) {
-      return prefix + "ready";
+      return prefix + "info";
     }
     return undefined;
   }
@@ -685,7 +693,7 @@ const QueueItem = ({
           show={saveState === "saving"}
           name={patientFullName}
         />
-        <div className="prime-card-container">
+        <div className="prime-card-container" ref={testCardElement}>
           {saveState !== "saving" && closeButton}
           <div className="grid-row">
             <div className="tablet:grid-col-9">
