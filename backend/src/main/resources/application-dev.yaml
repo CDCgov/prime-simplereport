@@ -25,3 +25,6 @@ logging:
     gov.cdc.usds: DEBUG
 twilio:
   enabled: false
+smarty-streets:
+  id: 5fd1cc7a-9b6e-af9d-caec-720efe038282
+  token: yX4PfEN02sDYE8QE4Auz

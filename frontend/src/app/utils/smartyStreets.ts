@@ -94,7 +94,7 @@ export function isValidZipCodeForState(
   result: ZipCodeResult | undefined
 ): boolean {
   if (!result) {
-    // Failed to retrieve ZIP code data - don't block facility management
+    // Failed to retrieve ZIP code data - don't block facility/person management
     return true;
   }
 
