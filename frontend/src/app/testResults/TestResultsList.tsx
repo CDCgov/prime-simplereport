@@ -133,6 +133,7 @@ function testResultRows(
         <td className="test-result-cell">
           {TEST_RESULT_DESCRIPTIONS[r.result as Results]}
         </td>
+        <td className="test-facility-cell">{r.facility.name}</td>
         <td className="test-device-cell">{r.deviceType.name}</td>
         <td className="submitted-by-cell">
           {displayFullName(
@@ -523,6 +524,9 @@ export const DetachedTestResultsList = ({
                     <th scope="col" className="test-result-cell">
                       COVID-19
                     </th>
+                    <th scope="col" className="test-facility-cell">
+                      Facility
+                    </th>
                     <th scope="col" className="test-device-cell">
                       Test device
                     </th>
@@ -623,6 +627,9 @@ export const testResultQuery = gql`
       }
       patientLink {
         internalId
+      }
+      facility {
+        name
       }
     }
   }
