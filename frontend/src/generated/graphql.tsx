@@ -2303,7 +2303,6 @@ export type GetFacilityResultsQuery = {
                     | {
                         __typename?: "NameInfo";
                         firstName?: string | null | undefined;
-                        middleName?: string | null | undefined;
                         lastName: string;
                       }
                     | null
@@ -6317,7 +6316,6 @@ export const GetFacilityResultsDocument = gql`
       createdBy {
         nameInfo {
           firstName
-          middleName
           lastName
         }
       }
