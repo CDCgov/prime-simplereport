@@ -46,6 +46,7 @@ public abstract class BaseServiceTest<T> {
   @Autowired private DbTruncator _truncator;
   @Autowired private OrganizationInitializingService _initService;
   @Autowired private DiseaseService _diseaseService;
+  @Autowired private SupportedDiseaseRepository _supportedDiseaseRepo;
   @MockBean private CurrentTenantDataAccessContextHolder _currentTenantDataAccessContextHolder;
   @MockBean private TenantDataAuthenticationProvider _tenantDataAuthProvider;
   @Autowired private DemoOktaRepository _oktaRepo;
@@ -53,8 +54,6 @@ public abstract class BaseServiceTest<T> {
   @Autowired protected T _service;
   @Autowired protected HibernateQueryInterceptor _hibernateQueryInterceptor;
   @MockBean private CurrentOrganizationRolesContextHolder _currentOrganizationRolesContextHolder;
-
-  @Autowired private SupportedDiseaseRepository _supportedDiseaseRepo;
 
   private static final String SPRING_SECURITY_DENIED = "Access is denied";
 
