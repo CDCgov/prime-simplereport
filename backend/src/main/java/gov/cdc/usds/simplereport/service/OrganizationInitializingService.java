@@ -25,7 +25,6 @@ import gov.cdc.usds.simplereport.db.repository.OrganizationRepository;
 import gov.cdc.usds.simplereport.db.repository.PatientRegistrationLinkRepository;
 import gov.cdc.usds.simplereport.db.repository.ProviderRepository;
 import gov.cdc.usds.simplereport.db.repository.SpecimenTypeRepository;
-import gov.cdc.usds.simplereport.db.repository.SupportedDiseaseRepository;
 import gov.cdc.usds.simplereport.idp.repository.OktaRepository;
 import gov.cdc.usds.simplereport.service.model.IdentityAttributes;
 import java.util.HashMap;
@@ -50,7 +49,6 @@ public class OrganizationInitializingService {
   @Autowired private ProviderRepository _providerRepo;
   @Autowired private DeviceTypeRepository _deviceTypeRepo;
   @Autowired private SpecimenTypeRepository _specimenTypeRepo;
-  @Autowired private SupportedDiseaseRepository _diseaseRepo;
   @Autowired private DeviceSpecimenTypeRepository _deviceSpecimenRepo;
   @Autowired private FacilityRepository _facilityRepo;
   @Autowired private ApiUserRepository _apiUserRepo;
@@ -67,8 +65,6 @@ public class OrganizationInitializingService {
 
     log.debug("Organization init called (again?)");
     Provider savedProvider = _providerRepo.save(_props.getProvider());
-
-    _diseaseRepo.saveAll(_props.getSupportedDiseases());
 
     Map<String, DeviceSpecimenType> dsByDeviceName = initDevices();
 

@@ -2,6 +2,7 @@ package gov.cdc.usds.simplereport.service;
 
 import gov.cdc.usds.simplereport.db.model.SupportedDisease;
 import gov.cdc.usds.simplereport.db.repository.SupportedDiseaseRepository;
+import java.util.List;
 import javax.transaction.Transactional;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
