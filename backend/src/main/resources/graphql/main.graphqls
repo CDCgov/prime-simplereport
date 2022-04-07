@@ -10,7 +10,7 @@ type Organization {
   type: String!
   externalId: String!
   testingFacility: [Facility!]!
-  @deprecated(reason: "Use the one that makes sense")
+    @deprecated(reason: "Use the one that makes sense")
   facilities: [Facility!]!
   identityVerified: Boolean!
   patientSelfRegistrationLink: String
@@ -81,7 +81,7 @@ type DeviceType {
   loincCode: String!
   swabType: String
   swabTypes: [SpecimenType!]!
-  supportedDiseases: [SupportedDisease!]!
+  supportedDiseases: [ID!]!
   testLength: Int
 }
 
@@ -145,7 +145,7 @@ type ApiUser {
   id: ID
   name: NameInfo!
   nameInfo: NameInfo
-  @deprecated(reason: "needless connection of type to field name")
+    @deprecated(reason: "needless connection of type to field name")
   firstName: String
   middleName: String
   lastName: String!
@@ -167,9 +167,9 @@ type ApiUserWithStatus {
 # Patient and test types
 
 type Patient
-@requiredPermissions(
-  anyOf: ["READ_PATIENT_LIST", "SEARCH_PATIENTS", "UPDATE_TEST"]
-) {
+  @requiredPermissions(
+    anyOf: ["READ_PATIENT_LIST", "SEARCH_PATIENTS", "UPDATE_TEST"]
+  ) {
   id: ID
   internalId: ID @deprecated(reason: "alias for 'id'")
   facility: Facility
@@ -182,7 +182,7 @@ type Patient
   race: String @requiredPermissions(allOf: ["READ_PATIENT_LIST"])
   birthDate: LocalDate
   gender: String
-  @requiredPermissions(anyOf: ["READ_PATIENT_LIST", "UPDATE_TEST"])
+    @requiredPermissions(anyOf: ["READ_PATIENT_LIST", "UPDATE_TEST"])
   ethnicity: String @requiredPermissions(allOf: ["READ_PATIENT_LIST"])
   tribalAffiliation: [String] @requiredPermissions(allOf: ["READ_PATIENT_LIST"])
   address: AddressInfo @requiredPermissions(allOf: ["READ_PATIENT_LIST"])
@@ -194,25 +194,25 @@ type Patient
   state: String @requiredPermissions(allOf: ["READ_PATIENT_LIST"])
   zipCode: String @requiredPermissions(allOf: ["READ_PATIENT_LIST"])
   telephone: String
-  @requiredPermissions(anyOf: ["READ_PATIENT_LIST", "UPDATE_TEST"])
+    @requiredPermissions(anyOf: ["READ_PATIENT_LIST", "UPDATE_TEST"])
   phoneNumbers: [PhoneNumber]
-  @requiredPermissions(anyOf: ["READ_PATIENT_LIST", "UPDATE_TEST"])
+    @requiredPermissions(anyOf: ["READ_PATIENT_LIST", "UPDATE_TEST"])
   email: String
-  @requiredPermissions(anyOf: ["READ_PATIENT_LIST", "UPDATE_TEST"])
+    @requiredPermissions(anyOf: ["READ_PATIENT_LIST", "UPDATE_TEST"])
   emails: [String]
-  @requiredPermissions(anyOf: ["READ_PATIENT_LIST", "UPDATE_TEST"])
+    @requiredPermissions(anyOf: ["READ_PATIENT_LIST", "UPDATE_TEST"])
   role: String @requiredPermissions(allOf: ["READ_PATIENT_LIST"])
   isDeleted: Boolean @requiredPermissions(allOf: ["READ_PATIENT_LIST"])
   residentCongregateSetting: Boolean
-  @requiredPermissions(allOf: ["READ_PATIENT_LIST"])
+    @requiredPermissions(allOf: ["READ_PATIENT_LIST"])
   employedInHealthcare: Boolean
-  @requiredPermissions(allOf: ["READ_PATIENT_LIST"])
+    @requiredPermissions(allOf: ["READ_PATIENT_LIST"])
   lastTest: TestResult
-  @requiredPermissions(anyOf: ["READ_RESULT_LIST", "UPDATE_TEST"])
+    @requiredPermissions(anyOf: ["READ_RESULT_LIST", "UPDATE_TEST"])
   testResultDelivery: TestResultDeliveryPreference
-  @requiredPermissions(anyOf: ["READ_PATIENT_LIST", "UPDATE_TEST"])
+    @requiredPermissions(anyOf: ["READ_PATIENT_LIST", "UPDATE_TEST"])
   preferredLanguage: String
-  @requiredPermissions(anyOf: ["READ_PATIENT_LIST", "UPDATE_TEST"])
+    @requiredPermissions(anyOf: ["READ_PATIENT_LIST", "UPDATE_TEST"])
 }
 # TestResult and TestOrder should have the same properties
 type TestOrder {
@@ -296,11 +296,11 @@ type PendingOrganization {
 
 type Query {
   organization: Organization
-  @deprecated(
-    reason: "this information is already loaded from the 'whoami' endpoint"
-  )
+    @deprecated(
+      reason: "this information is already loaded from the 'whoami' endpoint"
+    )
   deviceType: [DeviceType!]!
-  @deprecated(reason: "use the pluralized form to reduce confusion")
+    @deprecated(reason: "use the pluralized form to reduce confusion")
   deviceTypes: [DeviceType!]!
   supportedDiseases: [SupportedDisease!]!
   specimenType: [SpecimenType]
@@ -310,14 +310,14 @@ type Query {
     pageNumber: Int
     pageSize: Int
     showDeleted: Boolean = false
-    @requiredPermissions(allOf: ["READ_ARCHIVED_PATIENT_LIST"])
+      @requiredPermissions(allOf: ["READ_ARCHIVED_PATIENT_LIST"])
     namePrefixMatch: String
   ): [Patient]
-  @requiredPermissions(anyOf: ["SEARCH_PATIENTS", "READ_PATIENT_LIST"])
+    @requiredPermissions(anyOf: ["SEARCH_PATIENTS", "READ_PATIENT_LIST"])
   patientsCount(
     facilityId: ID
     showDeleted: Boolean = false
-    @requiredPermissions(allOf: ["READ_ARCHIVED_PATIENT_LIST"])
+      @requiredPermissions(allOf: ["READ_ARCHIVED_PATIENT_LIST"])
     namePrefixMatch: String
   ): Int @requiredPermissions(anyOf: ["SEARCH_PATIENTS", "READ_PATIENT_LIST"])
   patient(id: ID!): Patient
@@ -335,7 +335,7 @@ type Query {
     facilityId: ID
   ): Boolean
   queue(facilityId: ID!): [TestOrder]
-  @requiredPermissions(anyOf: ["START_TEST", "UPDATE_TEST", "SUBMIT_TEST"])
+    @requiredPermissions(anyOf: ["START_TEST", "UPDATE_TEST", "SUBMIT_TEST"])
   specimenTypes: [SpecimenType!]!
   testResults(
     facilityId: ID
@@ -356,12 +356,12 @@ type Query {
     endDate: DateTime
   ): Int @requiredPermissions(allOf: ["READ_RESULT_LIST"])
   testResult(id: ID!): TestResult
-  @requiredPermissions(allOf: ["READ_RESULT_LIST"])
+    @requiredPermissions(allOf: ["READ_RESULT_LIST"])
   organizationLevelDashboardMetrics(
     startDate: DateTime!
     endDate: DateTime!
   ): OrganizationLevelDashboardMetrics
-  @requiredPermissions(allOf: ["EDIT_ORGANIZATION"])
+    @requiredPermissions(allOf: ["EDIT_ORGANIZATION"])
   topLevelDashboardMetrics(
     facilityId: ID
     startDate: DateTime
@@ -369,7 +369,7 @@ type Query {
   ): TopLevelDashboardMetrics @requiredPermissions(allOf: ["EDIT_ORGANIZATION"])
   users: [ApiUser] @requiredPermissions(allOf: ["MANAGE_USERS"])
   usersWithStatus: [ApiUserWithStatus!]
-  @requiredPermissions(allOf: ["MANAGE_USERS"])
+    @requiredPermissions(allOf: ["MANAGE_USERS"])
   user(id: ID!): User @requiredPermissions(allOf: ["MANAGE_USERS"])
   whoami: User!
 }
@@ -395,7 +395,7 @@ type Mutation {
     orderingProviderStreetTwo: String
     orderingProviderCity: String
     orderingProviderCounty: String
-    @deprecated(reason: "county is derived from smarty streets lookup")
+      @deprecated(reason: "county is derived from smarty streets lookup")
     orderingProviderState: String
     orderingProviderZipCode: String
     orderingProviderPhone: String
@@ -420,7 +420,7 @@ type Mutation {
     orderingProviderStreetTwo: String
     orderingProviderCity: String
     orderingProviderCounty: String
-    @deprecated(reason: "county is derived from smarty streets lookup")
+      @deprecated(reason: "county is derived from smarty streets lookup")
     orderingProviderState: String
     orderingProviderZipCode: String
     orderingProviderPhone: String
@@ -445,7 +445,7 @@ type Mutation {
     orderingProviderStreetTwo: String
     orderingProviderCity: String
     orderingProviderCounty: String
-    @deprecated(reason: "county is derived from smarty streets lookup")
+      @deprecated(reason: "county is derived from smarty streets lookup")
     orderingProviderState: String
     orderingProviderZipCode: String
     orderingProviderPhone: String
@@ -471,7 +471,7 @@ type Mutation {
     orderingProviderStreetTwo: String
     orderingProviderCity: String
     orderingProviderCounty: String
-    @deprecated(reason: "county is derived from smarty streets lookup")
+      @deprecated(reason: "county is derived from smarty streets lookup")
     orderingProviderState: String
     orderingProviderZipCode: String
     orderingProviderPhone: String
@@ -504,10 +504,10 @@ type Mutation {
   resetUserMfa(id: ID!): User @requiredPermissions(allOf: ["MANAGE_USERS"])
   updateUserEmail(id: ID!, email: String): User @requiredPermissions(allOf: ["MANAGE_USERS"])
   setUserIsDeleted(id: ID!, deleted: Boolean!): User
-  @requiredPermissions(allOf: ["MANAGE_USERS"])
+    @requiredPermissions(allOf: ["MANAGE_USERS"])
   reactivateUser(id: ID!): User @requiredPermissions(allOf: ["MANAGE_USERS"])
   resendActivationEmail(id: ID!): User
-  @requiredPermissions(allOf: ["MANAGE_USERS"])
+    @requiredPermissions(allOf: ["MANAGE_USERS"])
   setCurrentUserTenantDataAccess(
     organizationExternalId: String
     justification: String
@@ -554,12 +554,12 @@ type Mutation {
     streetTwo: String
     city: String
     state: String!
-    @Pattern(regexp: "[A-Z]{2}", message: "Use 2 letter state code")
+      @Pattern(regexp: "[A-Z]{2}", message: "Use 2 letter state code")
     zipCode: String!
-    @Pattern(
-      regexp: "[0-9]{5}(-[0-9]{4})?"
-      message: "Use ZIP or ZIP+4 format"
-    )
+      @Pattern(
+        regexp: "[0-9]{5}(-[0-9]{4})?"
+        message: "Use ZIP or ZIP+4 format"
+      )
     telephone: String
     phoneNumbers: [PhoneNumberInput!]
     role: String @Size(min: 0, max: 32)
@@ -577,7 +577,7 @@ type Mutation {
     testResultDelivery: TestResultDeliveryPreference
   ): Patient @requiredPermissions(allOf: ["EDIT_PATIENT"])
   setPatientIsDeleted(id: ID!, deleted: Boolean!): Patient
-  @requiredPermissions(allOf: ["ARCHIVE_PATIENT"])
+    @requiredPermissions(allOf: ["ARCHIVE_PATIENT"])
   addTestResultNew(
     deviceId: String!
     deviceSpecimenType: ID
@@ -593,7 +593,7 @@ type Mutation {
     dateTested: DateTime
   ): TestOrder @requiredPermissions(allOf: ["UPDATE_TEST"])
   correctTestMarkAsError(id: ID!, reason: String): TestResult
-  @requiredPermissions(allOf: ["UPDATE_TEST"])
+    @requiredPermissions(allOf: ["UPDATE_TEST"])
   addPatientToQueue(
     facilityId: ID!
     patientId: ID!
@@ -604,7 +604,7 @@ type Mutation {
     testResultDelivery: TestResultDeliveryPreference
   ): String @requiredPermissions(allOf: ["START_TEST"])
   removePatientFromQueue(patientId: ID!): String
-  @requiredPermissions(allOf: ["UPDATE_TEST"])
+    @requiredPermissions(allOf: ["UPDATE_TEST"])
   updateTimeOfTestQuestions(
     patientId: ID!
     pregnancy: String
@@ -614,11 +614,11 @@ type Mutation {
     testResultDelivery: TestResultDeliveryPreference
   ): String @requiredPermissions(allOf: ["UPDATE_TEST"])
   sendPatientLinkSms(internalId: ID!): Boolean
-  @requiredPermissions(allOf: ["UPDATE_TEST"])
+    @requiredPermissions(allOf: ["UPDATE_TEST"])
   sendPatientLinkSmsByTestEventId(testEventId: ID!): Boolean
   @requiredPermissions(allOf: ["UPDATE_TEST"])
   sendPatientLinkEmail(internalId: ID!): Boolean
   sendPatientLinkEmailByTestEventId(testEventId: ID!): Boolean
   updateOrganization(type: String!): String
-  @requiredPermissions(allOf: ["EDIT_ORGANIZATION"])
+    @requiredPermissions(allOf: ["EDIT_ORGANIZATION"])
 }
