@@ -25,6 +25,8 @@ spring:
     open-in-view: false # this is misleading: we actually have a filter that does this instead
     properties:
       hibernate:
+        show_sql: true
+        format_sql: true
         default_schema: public # Using the public schema for now, so we don't have to add a manual step to the deploy process
   liquibase:
     simplereport:

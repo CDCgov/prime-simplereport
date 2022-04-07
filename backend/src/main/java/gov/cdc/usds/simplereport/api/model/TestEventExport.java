@@ -55,6 +55,9 @@ public class TestEventExport {
     this.organization = Optional.ofNullable(testEvent.getOrganization());
 
     this.deviceSpecimenType = Optional.ofNullable(testEvent.getDeviceSpecimen());
+
+    System.out.println("In TestEventExport constructor");
+    System.out.println(this.testEvent.toString());
   }
 
   private String genderUnknown = "U";

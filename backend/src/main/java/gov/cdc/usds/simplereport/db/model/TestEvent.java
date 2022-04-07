@@ -44,7 +44,8 @@ public class TestEvent extends BaseTestInfo {
   @JoinColumn(name = "test_order_id")
   private TestOrder order;
 
-  @OneToMany(mappedBy = "testEvent", fetch = FetchType.LAZY, cascade = CascadeType.ALL)
+  // fetch = FetchType.LAZY,
+  @OneToMany(mappedBy = "testEvent", cascade = CascadeType.ALL)
   private Set<Result> results;
 
   @Column(columnDefinition = "uuid")
@@ -62,13 +63,18 @@ public class TestEvent extends BaseTestInfo {
   public TestEvent(TestOrder order, Boolean hasPriorTests) {
     super(order.getPatient(), order.getFacility(), order.getDeviceSpecimen());
 
+    Hibernate.initialize(order.getResultSet());
+
     if (order.getResultSet().isEmpty()) {
       throw new IllegalArgumentException("TestOrder must contain a result");
     }
 
+    // it could also be that this isn't working at all, and only seems to in debugging because it's
+    // force-loaded
     order.getResultSet().forEach(result -> result.setTestEvent(this));
-    // weirdly this only seems required for tests?
-    //    this.results = order.getResultSet();
+    // weirdly this only seems required for tests? It breaks with the below Hibernate exception in
+    // non-testing envs
+    // this.results = order.getResultSet();
 
     // store a link, and *also* store the object as JSON
     // force load the lazy-loaded phone numbers so values are available to the object mapper
