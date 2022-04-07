@@ -81,7 +81,7 @@ type DeviceType {
   loincCode: String!
   swabType: String
   swabTypes: [SpecimenType!]!
-  supportedDiseases: [ID!]!
+  supportedDiseases: [SupportedDisease!]!
   testLength: Int
 }
 
