@@ -5,6 +5,7 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.junit.jupiter.api.Assertions.assertNull;
 
+import gov.cdc.usds.simplereport.api.BaseNonSpringBootTestConfiguration;
 import gov.cdc.usds.simplereport.db.model.auxiliary.PhoneType;
 import gov.cdc.usds.simplereport.db.model.auxiliary.StreetAddress;
 import gov.cdc.usds.simplereport.db.model.auxiliary.TestResultDeliveryPreference;
@@ -21,7 +22,7 @@ import org.springframework.boot.test.json.JsonContent;
 import org.springframework.boot.test.json.ObjectContent;
 
 @JsonTest
-class PersonSerializationTest {
+class PersonSerializationTest extends BaseNonSpringBootTestConfiguration {
 
   private static final int BIRTH_YEAR = 2000;
   private static final int BIRTH_MONTH = 3;
