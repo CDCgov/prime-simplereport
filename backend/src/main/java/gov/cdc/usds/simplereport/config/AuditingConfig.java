@@ -1,5 +1,6 @@
 package gov.cdc.usds.simplereport.config;
 
+import ch.qos.logback.classic.AsyncAppender;
 import ch.qos.logback.classic.Logger;
 import ch.qos.logback.classic.LoggerContext;
 import ch.qos.logback.classic.encoder.PatternLayoutEncoder;
@@ -11,7 +12,6 @@ import gov.cdc.usds.simplereport.service.AuditService;
 import java.util.Optional;
 import lombok.extern.slf4j.Slf4j;
 import org.slf4j.LoggerFactory;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -22,7 +22,11 @@ import org.springframework.data.jpa.repository.config.EnableJpaAuditing;
 @EnableJpaAuditing
 @Slf4j
 public class AuditingConfig {
-  @Autowired private ApiUserService _userService;
+  private final ApiUserService _userService;
+
+  public AuditingConfig(ApiUserService userService) {
+    this._userService = userService;
+  }
 
   @Bean
   public AuditorAware<ApiUser> getCurrentApiUserProvider() {
@@ -47,8 +51,15 @@ public class AuditingConfig {
     consoleAppender.setContext(loggerContext);
     consoleAppender.start();
 
+    AsyncAppender asyncAppender = new AsyncAppender();
+    asyncAppender.setQueueSize(500); // value chosen based on this
+    // https://www.overops.com/blog/how-to-instantly-improve-your-java-logging-with-7-logback-tweaks/
+    asyncAppender.setContext(loggerContext);
+    asyncAppender.addAppender(consoleAppender);
+    asyncAppender.start();
+
     Logger logger = (Logger) LoggerFactory.getLogger(AuditService.class);
-    logger.addAppender(consoleAppender);
+    logger.addAppender(asyncAppender);
     logger.setAdditive(false);
     return logger;
   }
