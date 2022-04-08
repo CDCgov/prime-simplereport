@@ -14,7 +14,6 @@ import gov.cdc.usds.simplereport.db.model.SpecimenType;
 import gov.cdc.usds.simplereport.db.model.SupportedDisease;
 import gov.cdc.usds.simplereport.db.repository.DeviceTypeRepository;
 import gov.cdc.usds.simplereport.db.repository.SpecimenTypeRepository;
-import gov.cdc.usds.simplereport.db.repository.SupportedDiseaseRepository;
 import gov.cdc.usds.simplereport.test_util.SliceTestConfiguration.WithSimpleReportSiteAdminUser;
 import java.util.List;
 import org.junit.jupiter.api.Test;
@@ -29,11 +28,9 @@ import org.springframework.test.context.TestPropertySource;
 class DeviceTypeServiceTest extends BaseServiceTest<DeviceTypeService> {
 
   private static final String FAKE_SWAB_TYPE = "012345678";
-  private static final String FAKE_SUPPORTED_DISEASE = "012345679";
   private static final int STANDARD_TEST_LENGTH = 15;
   @Autowired private DeviceTypeRepository _deviceTypeRepo;
   @Autowired private SpecimenTypeRepository specimenTypeRepository;
-  @Autowired private SupportedDiseaseRepository supportedDiseaseRepository;
 
   @Test
   void fetchDeviceTypes() {
@@ -109,10 +106,8 @@ class DeviceTypeServiceTest extends BaseServiceTest<DeviceTypeService> {
     // GIVEN
     SpecimenType swab1 = specimenTypeRepository.save(new SpecimenType("Hair", "000111222"));
     SpecimenType swab2 = specimenTypeRepository.save(new SpecimenType("Mouth", "112233445"));
-    SupportedDisease disease1 =
-        supportedDiseaseRepository.save(new SupportedDisease("Disease1", "D1"));
-    SupportedDisease disease2 =
-        supportedDiseaseRepository.save(new SupportedDisease("Disease2", "D2"));
+    SupportedDisease disease1 = _diseaseService.covid();
+    SupportedDisease disease2 = _diseaseService.fluA();
 
     // WHEN
     DeviceType devA =
@@ -176,10 +171,8 @@ class DeviceTypeServiceTest extends BaseServiceTest<DeviceTypeService> {
     // GIVEN
     SpecimenType swab1 = specimenTypeRepository.save(new SpecimenType("Nose", "111222333"));
     SpecimenType swab2 = specimenTypeRepository.save(new SpecimenType("Mouth", "555666444"));
-    SupportedDisease disease1 =
-        supportedDiseaseRepository.save(new SupportedDisease("Disease1", "D1"));
-    SupportedDisease disease2 =
-        supportedDiseaseRepository.save(new SupportedDisease("Disease2", "D2"));
+    SupportedDisease disease1 = _diseaseService.covid();
+    SupportedDisease disease2 = _diseaseService.fluA();
 
     DeviceType device =
         _service.createDeviceType(
@@ -224,8 +217,7 @@ class DeviceTypeServiceTest extends BaseServiceTest<DeviceTypeService> {
   void updateDeviceTypeName_adminUser_success_no_changes() {
     // GIVEN
     SpecimenType swab1 = specimenTypeRepository.save(new SpecimenType("Nose", "111222333"));
-    SupportedDisease disease1 =
-        supportedDiseaseRepository.save(new SupportedDisease("Disease1", "D1"));
+    SupportedDisease disease1 = _diseaseService.covid();
     DeviceType device =
         _service.createDeviceType(
             CreateDeviceType.builder()
