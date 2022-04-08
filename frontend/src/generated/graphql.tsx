@@ -1819,6 +1819,8 @@ export type GetFacilityQueueQuery = {
             noSymptoms?: boolean | null | undefined;
             result?: string | null | undefined;
             dateTested?: any | null | undefined;
+            correctionStatus?: string | null | undefined;
+            reasonForCorrection?: string | null | undefined;
             deviceType?:
               | {
                   __typename?: "DeviceType";
@@ -5364,6 +5366,8 @@ export const GetFacilityQueueDocument = gql`
       }
       result
       dateTested
+      correctionStatus
+      reasonForCorrection
     }
     organization {
       testingFacility {
