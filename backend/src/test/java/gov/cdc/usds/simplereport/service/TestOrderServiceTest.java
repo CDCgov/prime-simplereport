@@ -578,7 +578,8 @@ class TestOrderServiceTest extends BaseServiceTest<TestOrderService> {
     assertEquals(TestCorrectionStatus.CORRECTED, correctionTestEvent.getCorrectionStatus());
     assertEquals("Cold feet", correctionTestEvent.getReasonForCorrection());
     assertEquals(TestResult.NEGATIVE, correctionTestEvent.getResult());
-    // think about the dates here - how's backdating look?
+    // Date of original test is overwritten by the new correction event
+    assertNotEquals(LocalDate.of(1865, 12, 25), correctionTestEvent.getDateTested());
   }
 
   @Test
