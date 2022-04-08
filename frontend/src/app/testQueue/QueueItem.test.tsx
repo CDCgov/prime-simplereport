@@ -8,6 +8,7 @@ import userEvent from "@testing-library/user-event";
 
 import { getAppInsights } from "../TelemetryService";
 import * as utils from "../utils/index";
+import { TestCorrectionReason } from "../testResults/TestResultCorrectionModal";
 
 import QueueItem, { EDIT_QUEUE_ITEM, SUBMIT_TEST_RESULT } from "./QueueItem";
 
@@ -647,7 +648,7 @@ describe("QueueItem", () => {
             dateTestedProp={testProps.dateTestedProp}
             facilityName="Foo facility"
             isCorrection={true}
-            reasonForCorrection={"INCORRECT_RESULT"}
+            reasonForCorrection={TestCorrectionReason.INCORRECT_RESULT}
           />
         </Provider>
       </MockedProvider>

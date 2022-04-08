@@ -12,27 +12,37 @@ import {
 import Alert from "../commonComponents/Alert";
 import Dropdown from "../commonComponents/Dropdown";
 import RadioGroup from "../commonComponents/RadioGroup";
+import Required from "../commonComponents/Required";
+
+export enum TestCorrectionReason {
+  DUPLICATE_TEST = "DUPLICATE_TEST",
+  INCORRECT_RESULT = "INCORRECT_RESULT",
+  INCORRECT_TEST_DATE = "INCORRECT_TEST_DATE",
+  OTHER = "OTHER",
+}
 
 export const TestCorrectionReasons = {
-  DUPLICATE_TEST: "Duplicate test",
-  INCORRECT_RESULT: "Incorrect test result",
-  INCORRECT_TEST_DATE: "Incorrect test date",
-  OTHER: "Reason not listed",
+  [TestCorrectionReason.DUPLICATE_TEST]: "Duplicate test",
+  [TestCorrectionReason.INCORRECT_RESULT]: "Incorrect test result",
+  [TestCorrectionReason.INCORRECT_TEST_DATE]: "Incorrect test date",
+  [TestCorrectionReason.OTHER]: "Reason not listed",
 };
 
-export type TestCorrectionReason = keyof typeof TestCorrectionReasons;
-
+export enum TestCorrectionAction {
+  MARK_AS_ERROR = "MARK_AS_ERROR",
+  CORRECT_RESULT = "CORRECT_RESULT",
+}
 export const TestCorrectionActions = {
-  MARK_AS_ERROR: "Mark result as an error",
-  CORRECT_RESULT: "Correct result",
+  [TestCorrectionAction.MARK_AS_ERROR]: "Mark result as an error",
+  [TestCorrectionAction.CORRECT_RESULT]: "Correct result",
 };
 
 export const TestCorrectionActionsDescriptions = {
-  MARK_AS_ERROR: "The test result will be marked as an error.",
-  CORRECT_RESULT: "Make a correction to the test result and submit.",
+  [TestCorrectionAction.MARK_AS_ERROR]:
+    "The test result will be marked as an error.",
+  [TestCorrectionAction.CORRECT_RESULT]:
+    "Make a correction to the test result and submit.",
 };
-
-export type TestCorrectionAction = keyof typeof TestCorrectionActions;
 
 export const testCorrectionReasonValues: {
   value: TestCorrectionReason;
@@ -106,8 +116,11 @@ export const DetachedTestResultCorrectionModal = ({
   const [markTestAsCorrection] = useMutation(MARK_TEST_AS_CORRECTION);
   const { patient } = data.testResult;
   // TODO: don't hardcode this
-  const [reason, setReason] = useState<TestCorrectionReason>("DUPLICATE_TEST");
+  const [reason, setReason] = useState<TestCorrectionReason>(
+    testCorrectionReasonValues[0].value
+  );
   const [action, setAction] = useState<TestCorrectionAction>();
+  const [correctionDetails, setCorrectionDetails] = useState("");
 
   const markAsError = () => {
     markTestAsError({
@@ -164,21 +177,26 @@ export const DetachedTestResultCorrectionModal = ({
         label="Please select a reason for correcting this test result."
         name="correctionReason"
         onChange={(e) => setReason(e.target.value as TestCorrectionReason)}
-        selectedValue={reason}
+        selectedValue={reason || testCorrectionReasonValues[0].value}
       />
-      {/* for "OTHER" correction reason, display sub-form */}
-      {reason === "OTHER" && (
+      {reason === TestCorrectionReason.OTHER && (
         <>
-          <p>Additional information:</p>
+          <p>
+            Additional information: <Required />
+          </p>
           <p>
             <textarea
               className="sr-test-correction-reason"
               name="correctionReason"
-              onChange={() => {}}
+              onChange={(e) => setCorrectionDetails(e.target.value)}
             ></textarea>
           </p>
-
           <RadioGroup
+            legend={
+              <>
+                <strong>Select an action:</strong> <Required />
+              </>
+            }
             buttons={testCorrectionActionValues}
             selectedRadio={action}
             onChange={(e) => {
@@ -192,15 +210,15 @@ export const DetachedTestResultCorrectionModal = ({
         <Button variant="unstyled" label="No, go back" onClick={closeModal} />
         <Button
           label="Yes, I'm sure"
-          //disabled={reason.trim().length < 4}
+          disabled={
+            reason === TestCorrectionReason.OTHER &&
+            (!action || correctionDetails.trim().length < 4)
+          }
           onClick={() => {
-            // Duplicate event reason OR Other reason -> mark as error
-            return TestCorrectionReasons[reason] ===
-              TestCorrectionReasons.DUPLICATE_TEST ||
-              (TestCorrectionReasons[reason] === TestCorrectionReasons.OTHER &&
+            return reason === TestCorrectionReason.DUPLICATE_TEST ||
+              (reason === TestCorrectionReason.OTHER &&
                 action &&
-                TestCorrectionActions[action] ===
-                  TestCorrectionActions.MARK_AS_ERROR)
+                action === TestCorrectionAction.MARK_AS_ERROR)
               ? markAsError()
               : markAsCorrection();
           }}
