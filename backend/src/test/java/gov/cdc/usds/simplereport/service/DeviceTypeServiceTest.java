@@ -140,7 +140,7 @@ class DeviceTypeServiceTest extends BaseServiceTest<DeviceTypeService> {
     assertEquals("B", devA.getModel());
     assertEquals("C", devA.getManufacturer());
     assertEquals("D", devA.getLoincCode());
-    assertEquals("Disease1", devA.getSupportedDiseases().get(0).getName());
+    assertEquals("COVID-19", devA.getSupportedDiseases().get(0).getName());
     assertNull(devA.getSwabType());
     List<SpecimenType> devASwabTypes = devA.getSwabTypes();
     assertThat(devASwabTypes.size()).isEqualTo(1);
@@ -152,7 +152,7 @@ class DeviceTypeServiceTest extends BaseServiceTest<DeviceTypeService> {
     assertEquals("G", devB.getModel());
     assertEquals("H", devB.getManufacturer());
     assertEquals("I", devB.getLoincCode());
-    assertEquals("Disease2", devB.getSupportedDiseases().get(0).getName());
+    assertEquals("Flu A", devB.getSupportedDiseases().get(0).getName());
     assertNull(devB.getSwabType());
     List<SpecimenType> devBSwabTypes = devB.getSwabTypes();
     assertThat(devBSwabTypes.size()).isEqualTo(1);
@@ -204,7 +204,7 @@ class DeviceTypeServiceTest extends BaseServiceTest<DeviceTypeService> {
     assertEquals("Y", updatedDevice.getModel());
     assertEquals("X", updatedDevice.getManufacturer());
     assertEquals("W", updatedDevice.getLoincCode());
-    assertEquals("Disease2", updatedDevice.getSupportedDiseases().get(0).getName());
+    assertEquals("Flu A", updatedDevice.getSupportedDiseases().get(0).getName());
     assertNull(updatedDevice.getSwabType());
 
     List<SpecimenType> updatedSwabTypes = updatedDevice.getSwabTypes();
@@ -240,7 +240,7 @@ class DeviceTypeServiceTest extends BaseServiceTest<DeviceTypeService> {
     assertEquals("B", updatedDevice.getModel());
     assertEquals("C", updatedDevice.getManufacturer());
     assertEquals("D", updatedDevice.getLoincCode());
-    assertEquals("Disease1", updatedDevice.getSupportedDiseases().get(0).getName());
+    assertEquals("COVID-19", updatedDevice.getSupportedDiseases().get(0).getName());
     assertNull(updatedDevice.getSwabType());
 
     List<SpecimenType> updatedSwabTypes = updatedDevice.getSwabTypes();
