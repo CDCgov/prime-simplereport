@@ -22,13 +22,13 @@ describe("Getting a test result from a patient link", () => {
     cy.contains("I agree").click();
   });
   it("enters the date of birth and submits", () => {
-    cy.contains("Verify date of birth");
+    cy.contains("Access your COVID-19 test result");
 
     // This sentence is broken into multiple lines due to how the i18n
     // library interpolates the patient name variable
     cy.contains("Enter ");
     cy.contains(`${patientObfuscatedName}'s`);
-    cy.contains("date of birth to access your COVID-19 test results.");
+    cy.contains("date of birth to access their COVID-19 test result.");
     const dob = dayjs(patientDOB, "MM/DD/YYYY");
     // Month is zero-indexed, so add 1
     const birthMonth = dob.month() + 1;

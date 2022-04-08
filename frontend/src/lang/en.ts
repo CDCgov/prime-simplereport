@@ -567,11 +567,11 @@ export const en = {
         },
       },
       dob: {
-        header: "Verify date of birth",
+        header: "Access your COVID-19 test result",
         dateOfBirth: "Date of birth",
         enterDOB: "Enter your date of birth",
         enterDOB2:
-          "Enter <0>{{personName}}'s</0> date of birth to access your COVID-19 test results.",
+          "Enter <0>{{personName}}'s</0> date of birth to access their COVID-19 test result.",
         linkExpirationNotice:
           "Note: this link will expire on <0>{{expirationDate}}</0>. ",
         testingFacilityContact:
