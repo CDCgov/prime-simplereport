@@ -885,8 +885,9 @@ const QueueItem = ({
                     </p>
                   ) : isCorrection === true ? (
                     <p>
-                      TODO: Rebecca to provide alternate copy for canceling a
-                      correction
+                      Are you sure you want to cancel <b>{patientFullName}'s</b>{" "}
+                      test correction? The original test result won’t be
+                      changed.
                     </p>
                   ) : (
                     <>
