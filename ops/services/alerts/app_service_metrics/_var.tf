@@ -27,7 +27,6 @@ variable "disabled_alerts" {
       "account_request_failures",
       "experian_auth_failures",
       "frontend_error_boundary",
-      "db_query_duration",
       "db_query_duration_over_time_window",
       "db_connection_exhaustion",
       "batched_uploader_single_failure_detected",
