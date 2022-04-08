@@ -2,7 +2,7 @@ import { MockedProvider } from "@apollo/client/testing";
 import { Provider } from "react-redux";
 import { ToastContainer } from "react-toastify";
 import configureStore, { MockStoreEnhanced } from "redux-mock-store";
-import { render, screen, waitFor } from "@testing-library/react";
+import { render, screen, waitFor, within } from "@testing-library/react";
 import moment from "moment";
 import userEvent from "@testing-library/user-event";
 
@@ -624,6 +624,44 @@ describe("QueueItem", () => {
     expect(dateLabel).toHaveClass("queue-item-error-message");
     const updatedDateInput = await screen.findByTestId("test-date");
     expect(updatedDateInput).toHaveClass("card-test-input__error");
+  });
+
+  it("highlights test corrections and includes corrector name and reason for correction", async () => {
+    render(
+      <MockedProvider mocks={mocks}>
+        <Provider store={store}>
+          <QueueItem
+            internalId={testProps.internalId}
+            patient={testProps.patient}
+            askOnEntry={testProps.askOnEntry}
+            selectedDeviceId={testProps.selectedDeviceId}
+            selectedDeviceTestLength={testProps.selectedDeviceTestLength}
+            selectedDeviceSpecimenTypeId={
+              testProps.selectedDeviceSpecimenTypeId
+            }
+            deviceSpecimenTypes={testProps.deviceSpecimenTypes}
+            selectedTestResult={testProps.selectedTestResult}
+            devices={testProps.devices}
+            refetchQueue={testProps.refetchQueue}
+            facilityId={testProps.facilityId}
+            dateTestedProp={testProps.dateTestedProp}
+            facilityName="Foo facility"
+            isCorrection={true}
+            reasonForCorrection={"INCORRECT_RESULT"}
+          />
+        </Provider>
+      </MockedProvider>
+    );
+    const testCard = await screen.findByTestId(`test-card-${internalId}`);
+
+    // Card is highlighted for visibility
+    expect(testCard).toHaveClass("prime-queue-item__ready");
+
+    expect(
+      await within(testCard).findByText("Incorrect test result", {
+        exact: false,
+      })
+    ).toBeInTheDocument();
   });
 
   it("displays person's mobile phone numbers", async () => {

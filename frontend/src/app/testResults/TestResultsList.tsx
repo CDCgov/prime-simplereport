@@ -74,6 +74,7 @@ export const byDateTested = (a: any, b: any) => {
 function testResultRows(
   testResults: any,
   setPrintModalId: SetStateAction<any>,
+  setMarkCorrectionId: SetStateAction<any>,
   setMarkErrorId: SetStateAction<any>,
   setDetailsModalId: SetStateAction<any>,
   setTextModalId: SetStateAction<any>,
@@ -105,6 +106,10 @@ function testResultRows(
       action: () => setTextModalId(r.internalId),
     });
 
+    actionItems.push({
+      name: "Correct result",
+      action: () => setMarkCorrectionId(r.internalId),
+    });
     const removed = r.correctionStatus === "REMOVED";
     if (!removed) {
       actionItems.push({
@@ -218,6 +223,7 @@ export const DetachedTestResultsList = ({
   clearFilterParams,
 }: DetachedTestResultsListProps) => {
   const [printModalId, setPrintModalId] = useState(undefined);
+  const [markCorrectionId, setMarkCorrectionId] = useState(undefined);
   const [markErrorId, setMarkErrorId] = useState(undefined);
   const [detailsModalId, setDetailsModalId] = useState<string>();
   const [textModalId, setTextModalId] = useState<string>();
@@ -318,6 +324,18 @@ export const DetachedTestResultsList = ({
       />
     );
   }
+  if (markCorrectionId) {
+    return (
+      <TestResultCorrectionModal
+        testResultId={markCorrectionId}
+        closeModal={() => {
+          setMarkCorrectionId(undefined);
+          refetch();
+        }}
+      />
+    );
+  }
+
   if (markErrorId) {
     return (
       <TestResultCorrectionModal
@@ -335,6 +353,7 @@ export const DetachedTestResultsList = ({
   const rows = testResultRows(
     testResults,
     setPrintModalId,
+    setMarkCorrectionId,
     setMarkErrorId,
     setDetailsModalId,
     setTextModalId,
