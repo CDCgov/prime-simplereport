@@ -133,8 +133,6 @@ function testResultRows(
         <td className="test-result-cell">
           {TEST_RESULT_DESCRIPTIONS[r.result as Results]}
         </td>
-        <td className="test-result-cell">N/A</td>
-        <td className="test-result-cell">N/A</td>
         <td className="test-device-cell">{r.deviceType.name}</td>
         <td className="submitted-by-cell">
           {displayFullName(
@@ -524,12 +522,6 @@ export const DetachedTestResultsList = ({
                     </th>
                     <th scope="col" className="test-result-cell">
                       COVID-19
-                    </th>
-                    <th scope="col" className="test-result-cell">
-                      Flu A
-                    </th>
-                    <th scope="col" className="test-result-cell">
-                      Flu B
                     </th>
                     <th scope="col" className="test-device-cell">
                       Test device

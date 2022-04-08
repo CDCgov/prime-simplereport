@@ -88,11 +88,11 @@
     thead th,
     .sr-test-result-row td {
       &.patient-name-cell {
-        width: 253px;
+        width: 410px;
       }
 
       &.test-date-cell {
-        width: 144px;
+        width: 178px;
       }
 
       &.test-result-cell {
@@ -100,20 +100,20 @@
       }
 
       &.test-device-cell {
-        width: 316px;
+        width: 419px;
       }
 
       &.submitted-by-cell {
-        width: 166px;
+        width: 190px;
       }
     }
   }
 
-  @media (min-width: 1200px) {
+  @media (max-width: 1399px) {
     thead th,
     .sr-test-result-row td {
       &.patient-name-cell {
-        width: 253px;
+        width: 226px;
       }
 
       &.test-date-cell {
@@ -125,13 +125,17 @@
       }
 
       &.test-device-cell {
-        width: 316px;
+        width: 320px;
       }
 
       &.submitted-by-cell {
-        width: 166px;
+        width: 198px;
       }
     }
+  }
+
+  .usa-table td {
+    border-color: #a9aeb1;
   }
 }
 
