@@ -18,7 +18,7 @@ import { DatePicker, Label } from "@trussworks/react-uswds";
 
 import { PATIENT_TERM_CAP } from "../../config/constants";
 import { displayFullName } from "../utils";
-import { isValidDate, formatDateWithTimeOption } from "../utils/date";
+import { formatDateWithTimeOption, isValidDate } from "../utils/date";
 import { ActionsMenu } from "../commonComponents/ActionsMenu";
 import { getParameterFromUrl, getUrl } from "../utils/url";
 import { useDocumentTitle, useOutsideClick } from "../utils/hooks";
@@ -50,19 +50,6 @@ import TestResultDetailsModal from "./TestResultDetailsModal";
 import DownloadResultsCSVButton from "./DownloadResultsCsvButton";
 
 export type Results = keyof typeof TEST_RESULT_DESCRIPTIONS;
-
-export function hasSymptoms(noSymptoms: boolean, symptoms: string) {
-  if (noSymptoms) {
-    return "No";
-  }
-  const symptomsList: Record<string, string> = JSON.parse(symptoms);
-  for (let key in symptomsList) {
-    if (symptomsList[key] === "true") {
-      return "Yes";
-    }
-  }
-  return "Unknown";
-}
 
 export const byDateTested = (a: any, b: any) => {
   // ISO string dates sort nicely
@@ -143,11 +130,10 @@ function testResultRows(
         <td>{formatDateWithTimeOption(r.dateTested, true)}</td>
         <td>{TEST_RESULT_DESCRIPTIONS[r.result as Results]}</td>
         <td>{r.deviceType.name}</td>
-        <td>{hasSymptoms(r.noSymptoms, r.symptoms)}</td>
         <td>
           {displayFullName(
             r.createdBy.nameInfo.firstName,
-            r.createdBy.nameInfo.middleName,
+            null,
             r.createdBy.nameInfo.lastName
           )}
         </td>
@@ -387,7 +373,7 @@ export const DetachedTestResultsList = ({
           }}
         />
       )}
-      <div className="grid-container">
+      <div className="grid-container results-wide-container">
         <div className="grid-row">
           <div className="prime-container card-container sr-test-results-list">
             <div className="usa-card__header">
@@ -490,7 +476,7 @@ export const DetachedTestResultsList = ({
                   />
                 </div>
                 <Select
-                  label="Result"
+                  label="Test result"
                   name="result"
                   value={filterParams.result || ""}
                   options={[
@@ -527,9 +513,8 @@ export const DetachedTestResultsList = ({
                     <th scope="col">{PATIENT_TERM_CAP}</th>
                     <th scope="col">Test date</th>
                     <th scope="col">Result</th>
-                    <th scope="col">Device</th>
-                    <th scope="col">Symptoms</th>
-                    <th scope="col">Submitter</th>
+                    <th scope="col">Test device</th>
+                    <th scope="col">Submitted by</th>
                     <th scope="col">Actions</th>
                   </tr>
                 </thead>
@@ -617,15 +602,12 @@ export const testResultQuery = gql`
       createdBy {
         nameInfo {
           firstName
-          middleName
           lastName
         }
       }
       patientLink {
         internalId
       }
-      symptoms
-      noSymptoms
     }
   }
 `;

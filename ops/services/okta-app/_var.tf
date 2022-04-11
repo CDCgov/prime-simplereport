@@ -28,6 +28,13 @@ variable "redirect_urls" {
   ]
 }
 
+// NOTE: These URLs reflect SimpleReport sites ONLY. Okta shares a unified console with ReportStream; those URLs should
+//       not be added here.
+variable "trusted_origins" {
+  description = "Trusted origin listing for the Okta Production environment. Data format is {name(string), url(string), [scopes](list)}"
+  default     = []
+}
+
 variable "app_url" {
   type = string
 }

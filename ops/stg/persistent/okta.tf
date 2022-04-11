@@ -4,6 +4,13 @@ module "okta" {
   logout_redirect_uris = ["https://${local.env}.simplereport.gov"]
   app_url              = "https://${local.env}.simplereport.gov/app"
   redirect_urls        = []
+  trusted_origins = [
+    {
+      name   = "SimpleReport Staging Env [TF]",
+      url    = "https://stg.simplereport.gov",
+      scopes = ["CORS", "REDIRECT"]
+    }
+  ]
 }
 
 // Create the Okta secrets

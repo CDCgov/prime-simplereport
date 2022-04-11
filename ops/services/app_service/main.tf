@@ -125,8 +125,52 @@ resource "azurerm_key_vault_access_policy" "staging_slot_secret_access" {
   ]
 }
 
+# Associate the App Service and staging slot with the environment's VNet:
+
+resource "azurerm_app_service_virtual_network_swift_connection" "app" {
+  app_service_id = azurerm_app_service.service.id
+  subnet_id      = var.webapp_subnet_id
+}
+
 resource "azurerm_app_service_slot_virtual_network_swift_connection" "staging" {
   slot_name      = azurerm_app_service_slot.staging.name
   app_service_id = azurerm_app_service.service.id
   subnet_id      = var.webapp_subnet_id
+}
+
+/*
+  1) Import the wildcard cert into the App Service
+  2) Assign a custom domain (api-ENV.simplereport.gov) to the App Service
+  3) Bind the wildcard cert from #1 to the custom domain from #2
+
+  IMPORTANT NOTE if the App Service gets recreated:
+
+  - If the static IP to the App Gateway changes, you will need to update the DNS A record
+    for origin-ENV.simplereport.gov
+  - If the imported certs change as part of the recreation, you will need perform the custom
+    domain SSL binding manually, then update the DNS CNAME record for api-ENV.simplereport.gov
+    and the associated TXT record with the new value (the console will tell you which ones),
+    and finally `terraform import` the azurerm_app_service_custom_hostname_binding manually.
+  - If the environment is using a CDN (e.g., Akamai) the CNAME will need to be changed temporarily
+    to allow Azure to verify ownership of the domain, and then changed BACK to the original value,
+    or the CDN will stop functioning correctly.
+*/
+
+resource "azurerm_app_service_certificate" "app" {
+  name                = "wildcard-simplereport-gov"
+  resource_group_name = var.resource_group_name
+  location            = var.resource_group_location
+  key_vault_secret_id = data.azurerm_key_vault_certificate.wildcard_simplereport_gov.id
+}
+
+resource "azurerm_app_service_custom_hostname_binding" "app" {
+  hostname            = "api-${var.env}.simplereport.gov"
+  app_service_name    = azurerm_app_service.service.name
+  resource_group_name = var.resource_group_name
+}
+
+resource "azurerm_app_service_certificate_binding" "app" {
+  hostname_binding_id = azurerm_app_service_custom_hostname_binding.app.id
+  certificate_id      = azurerm_app_service_certificate.app.id
+  ssl_state           = "SniEnabled"
 }

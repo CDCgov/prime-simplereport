@@ -15,7 +15,6 @@ import { GetFacilityResultsForCsvDocument } from "../../generated/graphql";
 import {
   byDateTested,
   FilterParams,
-  hasSymptoms,
   Results,
   ResultsQueryVariables,
 } from "./TestResultsList";
@@ -24,6 +23,19 @@ interface Props {
   filterParams: FilterParams;
   totalEntries: number;
   facilityId: string;
+}
+
+function hasSymptoms(noSymptoms: boolean, symptoms: string) {
+  if (noSymptoms) {
+    return "No";
+  }
+  const symptomsList: Record<string, string> = JSON.parse(symptoms);
+  for (let key in symptomsList) {
+    if (symptomsList[key] === "true") {
+      return "Yes";
+    }
+  }
+  return "Unknown";
 }
 
 const DownloadResultsCSVButton = ({

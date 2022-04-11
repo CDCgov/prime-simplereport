@@ -2,6 +2,7 @@ package gov.cdc.usds.simplereport.api.pxp;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.hamcrest.Matchers.is;
+import static org.hamcrest.Matchers.startsWith;
 import static org.junit.jupiter.api.Assertions.assertNotEquals;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
@@ -22,8 +23,11 @@ import gov.cdc.usds.simplereport.db.model.auxiliary.TestResult;
 import gov.cdc.usds.simplereport.logging.LoggingConstants;
 import gov.cdc.usds.simplereport.service.TimeOfConsentService;
 import gov.cdc.usds.simplereport.test_util.TestUserIdentities;
+import java.text.SimpleDateFormat;
 import java.time.format.DateTimeFormatter;
+import java.util.HashMap;
 import java.util.List;
+import java.util.TimeZone;
 import java.util.UUID;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -292,6 +296,51 @@ class PatientExperienceControllerTest extends BaseFullStackTest {
     // WHEN
     MockHttpServletRequestBuilder builder =
         get(ResourceLinks.GET_OBFUSCATED_PATIENT_NAME)
+            .characterEncoding("UTF-8")
+            .param("patientLink", patientLink.getInternalId().toString());
+
+    // THEN
+    this.mockMvc.perform(builder).andExpect(status().isGone());
+  }
+
+  @Test
+  void getTestResultUnauthenticated_returnsPartialTestResultData() throws Exception {
+    // WHEN
+    MockHttpServletRequestBuilder builder =
+        get(ResourceLinks.GET_TEST_RESULT_UNAUTHENTICATED)
+            .characterEncoding("UTF-8")
+            .param("patientLink", patientLink.getInternalId().toString());
+
+    var expectedPatient = new HashMap<String, String>();
+    expectedPatient.put("firstName", "Fred");
+    expectedPatient.put("lastName", "A.");
+
+    var expectedFacility = new HashMap<String, String>();
+    expectedFacility.put("name", "Imaginary Site");
+    expectedFacility.put("phone", "555-867-5309");
+
+    var dateFormatter = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss.SSS");
+    dateFormatter.setTimeZone(TimeZone.getTimeZone("GMT"));
+
+    // THEN
+    this.mockMvc
+        .perform(builder)
+        .andExpect(status().isOk())
+        .andExpect(jsonPath("$.patient").value(expectedPatient))
+        .andExpect(jsonPath("$.facility").value(expectedFacility))
+        .andExpect(
+            jsonPath("$.expiresAt", startsWith(dateFormatter.format(patientLink.getExpiresAt()))));
+  }
+
+  @Test
+  void getTestResultUnauthenticated_thowsOnExpiredLink() throws Exception {
+    // GIVEN
+    TestUserIdentities.withStandardUser(
+        () -> patientLink = _dataFactory.expirePatientLink(patientLink));
+
+    // WHEN
+    MockHttpServletRequestBuilder builder =
+        get(ResourceLinks.GET_TEST_RESULT_UNAUTHENTICATED)
             .characterEncoding("UTF-8")
             .param("patientLink", patientLink.getInternalId().toString());
 

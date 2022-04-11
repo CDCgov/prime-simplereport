@@ -65,6 +65,11 @@ export const es: LanguageConfig = {
         NO,
         UNKNOWN,
       },
+      date: {
+        month: "Mes",
+        day: "Fecha",
+        year: "Año",
+      },
     },
     languages: {
       English: "Inglés",
@@ -195,6 +200,7 @@ export const es: LanguageConfig = {
           street: "Falta el nombre de la calle",
           streetTwo: "Calle 2 tiene un formato incorrecto",
           zipCode: "Falta el código postal o tiene un formato incorrecto",
+          zipForState: "El código postal no es válido para este estado",
           state: "Falta el estado o tiene un formato incorrecto",
           city: "La ciudad tiene un formato incorrecto",
           county: "El formato del condado es incorrecto",
@@ -479,12 +485,15 @@ export const es: LanguageConfig = {
         },
       },
       dob: {
+        header: "Acceda al resultado de su prueba de COVID-19",
         dateOfBirth: "Fecha de nacimiento",
         enterDOB: "Ingrese su fecha de nacimiento",
         enterDOB2:
-          "Ingrese su fecha de nacimiento para acceder a su portal de pruebas de COVID-19.",
+          "Ingrese la fecha de nacimiento de <0>{{personName}}</0> para acceder a su resultado de pruebas de COVID-19.",
         linkExpirationNotice:
-          "Nota: este enlace caducará 10 días después de que se registró el resultado de la prueba.",
+          "Nota: este enlace vencerá el <0>{{expirationDate}}</0>. ",
+        testingFacilityContact:
+          "Por favor comuníquese con <0>{{facilityName}}</0> al <1>{{facilityPhone}}</1> si tiene problemas para acceder a su resultado.",
         format: "MM/DD/AAAA",
         invalidFormat:
           "La fecha de nacimiento debe estar en formato MM/DD/AAAA",
@@ -497,6 +506,7 @@ export const es: LanguageConfig = {
           "Este enlace ha caducado. Comuníquese con su proveedor de prueba para generar un nuevo enlace.",
         linkNotFound:
           "Este enlace de resultado de la prueba no es válido. Vuelva a verificar el enlace o comuníquese con su proveedor de prueba para obtener el enlace correcto.",
+        exampleText: "Por ejemplo: 4 28 1986",
         submit: "Continuar",
       },
     },

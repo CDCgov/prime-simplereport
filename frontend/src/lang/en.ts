@@ -6,7 +6,7 @@ const UNKNOWN = "Unknown";
 
 export const en = {
   translation: {
-    header: "COVID-19 Testing Portal",
+    header: "COVID-19 testing portal",
     banner: {
       dotGov: "The .gov means it’s official.",
       dotGovHelper:
@@ -58,6 +58,11 @@ export const en = {
         YES,
         NO,
         UNKNOWN,
+      },
+      date: {
+        month: "Month",
+        day: "Day",
+        year: "Year",
       },
     },
     languages: {
@@ -184,6 +189,7 @@ export const en = {
           street: "Street is missing",
           streetTwo: "Street 2 is incorrectly formatted",
           zipCode: "ZIP code is missing or incorrectly formatted",
+          zipForState: "Invalid ZIP code for this state",
           state: "State is missing or incorrectly formatted",
           city: "City is incorrectly formatted",
           county: "County is incorrectly formatted",
@@ -561,12 +567,15 @@ export const en = {
         },
       },
       dob: {
+        header: "Access your COVID-19 test result",
         dateOfBirth: "Date of birth",
         enterDOB: "Enter your date of birth",
         enterDOB2:
-          "Enter <0>{{personName}}</0>'s date of birth to access your COVID-19 testing portal.",
+          "Enter <0>{{personName}}'s</0> date of birth to access their COVID-19 test result.",
         linkExpirationNotice:
-          "Note: this link will expire 10 days after the test result was recorded.",
+          "Note: this link will expire on <0>{{expirationDate}}</0>. ",
+        testingFacilityContact:
+          "Please reach out to <0>{{facilityName}}</0> <1>{{facilityPhone}}</1> if you have issues accessing your result.",
         format: "MM/DD/YYYY",
         invalidFormat: "Date of birth must be in MM/DD/YYYY format",
         invalidYear:
@@ -578,6 +587,7 @@ export const en = {
           "This link has expired. Please contact your test provider to generate a new link.",
         linkNotFound:
           "This test result link is invalid. Please double check the URL or contact your test provider for the correct link.",
+        exampleText: "For example: 4 28 1986",
         submit: "Continue",
       },
     },

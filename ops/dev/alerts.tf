@@ -18,8 +18,8 @@ module "metric_alerts" {
     "account_request_failures",
     "experian_auth_failures",
     "frontend_error_boundary",
-    "db_query_duration",
     "db_query_duration_over_time_window",
+    "db_connection_exhaustion",
     "batched_uploader_single_failure_detected",
     "batched_uploader_function_not_triggering"
   ]
@@ -28,4 +28,5 @@ module "metric_alerts" {
     data.terraform_remote_state.global.outputs.pagerduty_non_prod_action_id
   ]
 
+  database_id = data.terraform_remote_state.persistent_dev.outputs.postgres_server_id
 }
