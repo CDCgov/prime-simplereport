@@ -85,7 +85,7 @@ export const testQuery = gql`
   }
 `;
 
-const MARK_TEST_AS_ERROR = gql`
+export const MARK_TEST_AS_ERROR = gql`
   mutation MarkTestAsError($id: ID!, $reason: String!) {
     correctTestMarkAsError(id: $id, reason: $reason) {
       internalId
@@ -93,7 +93,7 @@ const MARK_TEST_AS_ERROR = gql`
   }
 `;
 
-const MARK_TEST_AS_CORRECTION = gql`
+export const MARK_TEST_AS_CORRECTION = gql`
   mutation MarkTestAsCorrection($id: ID!, $reason: String!) {
     correctTestMarkAsCorrection(id: $id, reason: $reason) {
       internalId
@@ -181,21 +181,27 @@ export const DetachedTestResultCorrectionModal = ({
       {reason === TestCorrectionReason.OTHER && (
         <>
           <p>
-            Additional information: <Required />
-          </p>
-          <p>
+            <label
+              className="usa-label"
+              htmlFor="correction-additional-information"
+            >
+              Additional information: <Required />
+            </label>
             <textarea
+              data-testid="additionalInformation"
               className="sr-test-correction-reason"
-              name="correctionReason"
+              name="correction-additional-information"
+              id="correction-additional-information"
               onChange={(e) => setCorrectionDetails(e.target.value)}
             ></textarea>
           </p>
           <RadioGroup
             legend={
               <>
-                <strong>Select an action:</strong> <Required />
+                <strong>Select an action:</strong>
               </>
             }
+            required={true}
             buttons={testCorrectionActionValues}
             selectedRadio={action}
             onChange={(e) => {
