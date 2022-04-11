@@ -883,7 +883,7 @@ const QueueItem = ({
                       <b> {` ${patientFullName} `} </b> has not been completed.
                       Do you want to submit results anyway?
                     </p>
-                  ) : isCorrection === true ? (
+                  ) : isCorrection ? (
                     <p>
                       Are you sure you want to cancel <b>{patientFullName}'s</b>{" "}
                       test correction? The original test result won’t be

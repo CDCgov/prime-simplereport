@@ -47,13 +47,13 @@ export const TestCorrectionActionsDescriptions = {
 export const testCorrectionReasonValues: {
   value: TestCorrectionReason;
   label: string;
-}[] = Object.entries(TestCorrectionReasons).map(([k, v]: [string, string]) => ({
+}[] = Object.entries(TestCorrectionReasons).map(([k, v]) => ({
   value: k as TestCorrectionReason,
   label: v,
 }));
 
 const testCorrectionActionValues = Object.entries(TestCorrectionActions).map(
-  ([k, v]: [string, string]) => ({
+  ([k, v]) => ({
     label: (
       <>
         {v}
@@ -115,7 +115,6 @@ export const DetachedTestResultCorrectionModal = ({
   const [markTestAsError] = useMutation(MARK_TEST_AS_ERROR);
   const [markTestAsCorrection] = useMutation(MARK_TEST_AS_CORRECTION);
   const { patient } = data.testResult;
-  // TODO: don't hardcode this
   const [reason, setReason] = useState<TestCorrectionReason>(
     testCorrectionReasonValues[0].value
   );
@@ -177,7 +176,7 @@ export const DetachedTestResultCorrectionModal = ({
         label="Please select a reason for correcting this test result."
         name="correctionReason"
         onChange={(e) => setReason(e.target.value as TestCorrectionReason)}
-        selectedValue={reason || testCorrectionReasonValues[0].value}
+        selectedValue={reason}
       />
       {reason === TestCorrectionReason.OTHER && (
         <>
