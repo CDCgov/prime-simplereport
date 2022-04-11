@@ -602,11 +602,6 @@ const QueueItem = ({
       updateUseCurrentDateTime("true");
     }
   };
-  console.log("-------------------------");
-  console.log("QueueItem");
-  console.log("startTestPatientId");
-  console.log(startTestPatientId);
-  console.log("-------------------------");
 
   const deviceLookup: Map<DeviceType, SpecimenType[]> = useMemo(
     () =>
