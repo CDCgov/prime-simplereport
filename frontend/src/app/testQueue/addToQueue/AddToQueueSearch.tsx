@@ -130,6 +130,7 @@ interface Props {
   facilityId: string;
   patientsInQueue: string[];
   startTestPatientId: string | null;
+  setStartTestPatientId: any; //: () => React.Dispatch<React.SetStateAction<string | null>>;
 }
 
 const AddToQueueSearchBox = ({
@@ -137,6 +138,7 @@ const AddToQueueSearchBox = ({
   facilityId,
   patientsInQueue,
   startTestPatientId,
+  setStartTestPatientId,
 }: Props) => {
   const appInsights = getAppInsights();
 
@@ -153,7 +155,7 @@ const AddToQueueSearchBox = ({
   const [mutationError, updateMutationError] = useState(null);
   const [showSuggestion, setShowSuggestion] = useState(true);
   const [selectedPatient, setSelectedPatient] = useState<Patient>();
-  const [startTestPatient, setStartTestPatient] = useState(startTestPatientId);
+  //const [startTestPatient, setStartTestPatient] = useState(startTestPatientId);
 
   const [addPatientToQueue] = useMutation(ADD_PATIENT_TO_QUEUE);
   const [updateAoe] = useMutation(UPDATE_AOE);
@@ -188,8 +190,6 @@ const locationState =
   */
   console.log("-------------------------");
   console.log("addtoqueuesearch");
-  console.log("startTestPatient");
-  console.log(startTestPatient);
   console.log("startTestPatientId");
   console.log(startTestPatientId);
   console.log("-------------------------");
@@ -197,12 +197,12 @@ const locationState =
   useQuery<{ patient: Patient }>(QUERY_SINGLE_PATIENT, {
     fetchPolicy: "no-cache",
     //variables: { internalId: patientIdParam },
-    variables: { internalId: startTestPatient },
+    variables: { internalId: startTestPatientId },
     onCompleted: (response) => {
       setSelectedPatient(response.patient);
     },
     //skip: !patientIdParam || patientsInQueue.includes(patientIdParam),
-    skip: !startTestPatient || patientsInQueue.includes(startTestPatient),
+    skip: !startTestPatientId || patientsInQueue.includes(startTestPatientId),
   });
 
   useOutsideClick(dropDownRef, hideOnOutsideClick);
@@ -271,7 +271,7 @@ const locationState =
         refetchQueue();
         //clear the state
         //navigate(location.pathname, { replace: true });
-        setStartTestPatient(null);
+        setStartTestPatientId(null);
         if (createOrUpdate === "create") {
           return res.data.addPatientToQueue;
         }

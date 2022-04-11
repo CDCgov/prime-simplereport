@@ -168,6 +168,7 @@ export interface QueueItemProps {
   internalId: string;
   patient: TestQueuePerson;
   startTestPatientId: string | null;
+  setStartTestPatientId: any;
   devices: {
     name: string;
     internalId: string;
@@ -199,6 +200,7 @@ const QueueItem = ({
   internalId,
   patient,
   startTestPatientId,
+  setStartTestPatientId,
   deviceSpecimenTypes,
   askOnEntry,
   selectedDeviceId,
@@ -288,7 +290,7 @@ const QueueItem = ({
   const testCardElement = useRef() as React.MutableRefObject<HTMLDivElement>;
 
   useEffect(() => {
-    if (startTestPatient === patient.internalId) {
+    if (startTestPatientId === patient.internalId) {
       testCardElement.current.scrollIntoView();
     }
   });
@@ -373,7 +375,7 @@ const QueueItem = ({
 
   const [removePatientId, setRemovePatientId] = useState<string>();
 
-  const [startTestPatient, setStartTestPatient] = useState(startTestPatientId);
+  //const [startTestPatient, setStartTestPatient] = useState(startTestPatientId);
 
   if (mutationError) {
     // Don't do anything. These errors will propagate to AppInsights, and
@@ -448,7 +450,7 @@ const QueueItem = ({
       removeTimer(internalId);
       //clear the state
       //navigate(window.location.pathname, { replace: true });
-      setStartTestPatient(null);
+      setStartTestPatientId(null);
     } catch (error: any) {
       setSaveState("error");
       updateMutationError(error);
@@ -575,7 +577,7 @@ const QueueItem = ({
       },
     })
       .then(() => refetchQueue())
-      .then(() => setStartTestPatient(null))
+      .then(() => setStartTestPatientId(null))
       .then(() => removeTimer(internalId))
       .catch((error) => {
         updateMutationError(error);
@@ -695,7 +697,7 @@ const QueueItem = ({
     if (timer.countdown < 0 && testResultValue === "UNKNOWN") {
       return prefix + "ready";
     }
-    if (startTestPatient === patient.internalId) {
+    if (startTestPatientId === patient.internalId) {
       return prefix + "info";
     }
     return undefined;
