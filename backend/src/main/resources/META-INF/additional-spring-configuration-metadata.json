@@ -58,7 +58,12 @@
     {
       "name": "logging.pattern.json-log",
       "type": "java.lang.String",
-      "description": "the patterns used for json message"
+      "description": "Logging pattern for JSON logs"
+    },
+    {
+      "name": "logging.queueSize",
+      "type": "java.lang.Integer",
+      "description": "The number of asynchronous log messages that can be stored before forced to synchronous logging"
     }
   ]
 }
