@@ -129,12 +129,14 @@ interface Props {
   refetchQueue: () => void;
   facilityId: string;
   patientsInQueue: string[];
+  startTestPatientId: string | null;
 }
 
 const AddToQueueSearchBox = ({
   refetchQueue,
   facilityId,
   patientsInQueue,
+  startTestPatientId,
 }: Props) => {
   const appInsights = getAppInsights();
 
@@ -151,6 +153,7 @@ const AddToQueueSearchBox = ({
   const [mutationError, updateMutationError] = useState(null);
   const [showSuggestion, setShowSuggestion] = useState(true);
   const [selectedPatient, setSelectedPatient] = useState<Patient>();
+  const [startTestPatient, setStartTestPatient] = useState(startTestPatientId);
 
   const [addPatientToQueue] = useMutation(ADD_PATIENT_TO_QUEUE);
   const [updateAoe] = useMutation(UPDATE_AOE);
@@ -169,16 +172,37 @@ const AddToQueueSearchBox = ({
     setShowSuggestion(false);
   }, []);
 
-  let { patientId: patientIdParam } =
+  /*
+const locationState =
     (useLocation().state as StartTestProps) || {};
+    let { patientId: patientIdParam } = locationState;
+
+  useEffect(() => {
+  const locationState =
+    (location.state as StartTestProps) || {};
+    let { patientId: patientIdParam } = locationState;
+    if (patientIdParam) {
+      setStartTestPatientId(patientIdParam);
+    }
+  }, []);
+  */
+  console.log("-------------------------");
+  console.log("addtoqueuesearch");
+  console.log("startTestPatient");
+  console.log(startTestPatient);
+  console.log("startTestPatientId");
+  console.log(startTestPatientId);
+  console.log("-------------------------");
 
   useQuery<{ patient: Patient }>(QUERY_SINGLE_PATIENT, {
     fetchPolicy: "no-cache",
-    variables: { internalId: patientIdParam },
+    //variables: { internalId: patientIdParam },
+    variables: { internalId: startTestPatient },
     onCompleted: (response) => {
       setSelectedPatient(response.patient);
     },
-    skip: !patientIdParam || patientsInQueue.includes(patientIdParam),
+    //skip: !patientIdParam || patientsInQueue.includes(patientIdParam),
+    skip: !startTestPatient || patientsInQueue.includes(startTestPatient),
   });
 
   useOutsideClick(dropDownRef, hideOnOutsideClick);
@@ -246,7 +270,8 @@ const AddToQueueSearchBox = ({
         showNotification(alert);
         refetchQueue();
         //clear the state
-        navigate(location.pathname, { replace: true });
+        //navigate(location.pathname, { replace: true });
+        setStartTestPatient(null);
         if (createOrUpdate === "create") {
           return res.data.addPatientToQueue;
         }

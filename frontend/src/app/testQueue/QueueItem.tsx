@@ -35,7 +35,8 @@ import AoEModalForm from "./AoEForm/AoEModalForm";
 import "./QueueItem.scss";
 import { AoEAnswers, TestQueuePerson } from "./AoEForm/AoEForm";
 import { QueueItemSubmitLoader } from "./QueueItemSubmitLoader";
-import { StartTestProps, UPDATE_AOE } from "./addToQueue/AddToQueueSearch";
+//import { StartTestProps, UPDATE_AOE } from "./addToQueue/AddToQueueSearch";
+import { UPDATE_AOE } from "./addToQueue/AddToQueueSearch";
 
 export type TestResult = "POSITIVE" | "NEGATIVE" | "UNDETERMINED" | "UNKNOWN";
 
@@ -166,6 +167,7 @@ if (process.env.NODE_ENV !== "test") {
 export interface QueueItemProps {
   internalId: string;
   patient: TestQueuePerson;
+  startTestPatientId: string | null;
   devices: {
     name: string;
     internalId: string;
@@ -196,6 +198,7 @@ type SaveState = "idle" | "editing" | "saving" | "error";
 const QueueItem = ({
   internalId,
   patient,
+  startTestPatientId,
   deviceSpecimenTypes,
   askOnEntry,
   selectedDeviceId,
@@ -209,6 +212,7 @@ const QueueItem = ({
 }: QueueItemProps) => {
   const appInsights = getAppInsights();
   const navigate = useNavigate();
+  const location = useLocation();
 
   const trackRemovePatientFromQueue = () => {
     if (appInsights) {
@@ -234,6 +238,20 @@ const QueueItem = ({
     EditQueueItemResponse,
     EditQueueItemParams
   >(EDIT_QUEUE_ITEM);
+  //const [startTestPatientId, setStartTestPatientId] = useState<string | null>(null);
+
+  //const locationState = (useLocation().state as StartTestProps) || {};
+
+  /*
+  useEffect(() => {
+    const locationState = (location.state as StartTestProps) || {};
+    let { patientId: patientIdParam } = locationState;
+    if (patientIdParam) {
+      setStartTestPatientId(patientIdParam);
+    }
+  }, []);
+  */
+
   const [saveState, setSaveState] = useState<SaveState>("idle");
 
   const [isAoeModalOpen, updateIsAoeModalOpen] = useState(false);
@@ -262,16 +280,25 @@ const QueueItem = ({
     updateSpecimenId(deviceSpecimenType.specimenType.internalId);
   }, [deviceSpecimenTypes, deviceSpecimenTypeId]);
 
+  /*
   const { patientId: patientIdParam } =
     (useLocation().state as StartTestProps) || {};
+*/
 
   const testCardElement = useRef() as React.MutableRefObject<HTMLDivElement>;
 
+  useEffect(() => {
+    if (startTestPatient === patient.internalId) {
+      testCardElement.current.scrollIntoView();
+    }
+  });
+  /*
   useEffect(() => {
     if (patientIdParam === patient.internalId) {
       testCardElement.current.scrollIntoView();
     }
   }, [patientIdParam, patient.internalId]);
+  */
 
   const deviceTypes = deviceSpecimenTypes
     .map((d) => d.deviceType)
@@ -346,6 +373,8 @@ const QueueItem = ({
 
   const [removePatientId, setRemovePatientId] = useState<string>();
 
+  const [startTestPatient, setStartTestPatient] = useState(startTestPatientId);
+
   if (mutationError) {
     // Don't do anything. These errors will propagate to AppInsights, and
     // generate a user-facing toast error via ApolloClient's onError handler,
@@ -418,7 +447,8 @@ const QueueItem = ({
       refetchQueue();
       removeTimer(internalId);
       //clear the state
-      navigate(window.location.pathname, { replace: true });
+      //navigate(window.location.pathname, { replace: true });
+      setStartTestPatient(null);
     } catch (error: any) {
       setSaveState("error");
       updateMutationError(error);
@@ -545,6 +575,7 @@ const QueueItem = ({
       },
     })
       .then(() => refetchQueue())
+      .then(() => setStartTestPatient(null))
       .then(() => removeTimer(internalId))
       .catch((error) => {
         updateMutationError(error);
@@ -594,6 +625,11 @@ const QueueItem = ({
       updateUseCurrentDateTime("true");
     }
   };
+  console.log("-------------------------");
+  console.log("QueueItem");
+  console.log("startTestPatientId");
+  console.log(startTestPatientId);
+  console.log("-------------------------");
 
   const deviceLookup: Map<DeviceType, SpecimenType[]> = useMemo(
     () =>
@@ -659,7 +695,7 @@ const QueueItem = ({
     if (timer.countdown < 0 && testResultValue === "UNKNOWN") {
       return prefix + "ready";
     }
-    if (patientIdParam === patient.internalId) {
+    if (startTestPatient === patient.internalId) {
       return prefix + "info";
     }
     return undefined;
