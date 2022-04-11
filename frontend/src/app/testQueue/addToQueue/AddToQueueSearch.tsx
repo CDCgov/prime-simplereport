@@ -6,7 +6,6 @@ import React, {
   useCallback,
 } from "react";
 import { gql, useMutation, useLazyQuery, useQuery } from "@apollo/client";
-import { useLocation, useNavigate } from "react-router-dom";
 
 import Alert from "../../commonComponents/Alert";
 import {
@@ -130,6 +129,7 @@ interface Props {
   facilityId: string;
   patientsInQueue: string[];
   startTestPatientId: string | null;
+  setStartTestPatientId: any;
 }
 
 const AddToQueueSearchBox = ({
@@ -137,6 +137,7 @@ const AddToQueueSearchBox = ({
   facilityId,
   patientsInQueue,
   startTestPatientId,
+  setStartTestPatientId,
 }: Props) => {
   const appInsights = getAppInsights();
 
@@ -153,13 +154,9 @@ const AddToQueueSearchBox = ({
   const [mutationError, updateMutationError] = useState(null);
   const [showSuggestion, setShowSuggestion] = useState(true);
   const [selectedPatient, setSelectedPatient] = useState<Patient>();
-  const [startTestPatient, setStartTestPatient] = useState(startTestPatientId);
 
   const [addPatientToQueue] = useMutation(ADD_PATIENT_TO_QUEUE);
   const [updateAoe] = useMutation(UPDATE_AOE);
-
-  const navigate = useNavigate();
-  const location = useLocation();
 
   const allowQuery = debounced.length >= MIN_SEARCH_CHARACTER_COUNT;
   const showDropdown = useMemo(() => allowQuery && showSuggestion, [
@@ -172,37 +169,14 @@ const AddToQueueSearchBox = ({
     setShowSuggestion(false);
   }, []);
 
-  /*
-const locationState =
-    (useLocation().state as StartTestProps) || {};
-    let { patientId: patientIdParam } = locationState;
-
-  useEffect(() => {
-  const locationState =
-    (location.state as StartTestProps) || {};
-    let { patientId: patientIdParam } = locationState;
-    if (patientIdParam) {
-      setStartTestPatientId(patientIdParam);
-    }
-  }, []);
-  */
-  console.log("-------------------------");
-  console.log("addtoqueuesearch");
-  console.log("startTestPatient");
-  console.log(startTestPatient);
-  console.log("startTestPatientId");
-  console.log(startTestPatientId);
-  console.log("-------------------------");
-
   useQuery<{ patient: Patient }>(QUERY_SINGLE_PATIENT, {
     fetchPolicy: "no-cache",
     //variables: { internalId: patientIdParam },
-    variables: { internalId: startTestPatient },
+    variables: { internalId: startTestPatientId },
     onCompleted: (response) => {
       setSelectedPatient(response.patient);
     },
-    //skip: !patientIdParam || patientsInQueue.includes(patientIdParam),
-    skip: !startTestPatient || patientsInQueue.includes(startTestPatient),
+    skip: !startTestPatientId || patientsInQueue.includes(startTestPatientId),
   });
 
   useOutsideClick(dropDownRef, hideOnOutsideClick);
@@ -269,9 +243,7 @@ const locationState =
         const alert = <Alert type={type} title={title} body={body} />;
         showNotification(alert);
         refetchQueue();
-        //clear the state
-        //navigate(location.pathname, { replace: true });
-        setStartTestPatient(null);
+        setStartTestPatientId(null);
         if (createOrUpdate === "create") {
           return res.data.addPatientToQueue;
         }

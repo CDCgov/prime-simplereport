@@ -31,6 +31,8 @@ const updatedTimeString = "10:05";
 const fakeDate = Date.parse(initialDateString);
 const updatedDate = Date.parse(updatedDateString);
 
+const setStartTestPatientIdMock = jest.fn();
+
 describe("QueueItem", () => {
   let nowFn = Date.now;
   let store: MockStoreEnhanced<unknown, {}>;
@@ -77,6 +79,8 @@ describe("QueueItem", () => {
               facilityId={testProps.facilityId}
               dateTestedProp={testProps.dateTestedProp}
               facilityName="Foo facility"
+              setStartTestPatientId={setStartTestPatientIdMock}
+              startTestPatientId=""
             />
           </Provider>
         </MockedProvider>
@@ -107,6 +111,8 @@ describe("QueueItem", () => {
               facilityId={testProps.facilityId}
               dateTestedProp={testProps.dateTestedProp}
               facilityName="Foo facility"
+              setStartTestPatientId={setStartTestPatientIdMock}
+              startTestPatientId=""
             />
           </Provider>
         </MemoryRouter>
@@ -142,6 +148,8 @@ describe("QueueItem", () => {
               facilityId={testProps.facilityId}
               dateTestedProp={testProps.dateTestedProp}
               facilityName="Foo facility"
+              setStartTestPatientId={setStartTestPatientIdMock}
+              startTestPatientId=""
             />
           </Provider>
         </MockedProvider>
@@ -177,6 +185,8 @@ describe("QueueItem", () => {
               facilityId={testProps.facilityId}
               dateTestedProp={testProps.dateTestedProp}
               facilityName="Foo facility"
+              setStartTestPatientId={setStartTestPatientIdMock}
+              startTestPatientId=""
             />
           </Provider>
         </MockedProvider>
@@ -219,6 +229,8 @@ describe("QueueItem", () => {
               facilityId={testProps.facilityId}
               dateTestedProp={testProps.dateTestedProp}
               facilityName="Foo facility"
+              setStartTestPatientId={setStartTestPatientIdMock}
+              startTestPatientId=""
             />
           </Provider>
         </MockedProvider>
@@ -303,6 +315,8 @@ describe("QueueItem", () => {
                 facilityId={testProps.facilityId}
                 dateTestedProp={testProps.dateTestedProp}
                 facilityName="Foo facility"
+                setStartTestPatientId={setStartTestPatientIdMock}
+                startTestPatientId=""
               />
             </Provider>
           </MockedProvider>
@@ -418,6 +432,8 @@ describe("QueueItem", () => {
                   facilityId={testProps.facilityId}
                   dateTestedProp={testProps.dateTestedProp}
                   facilityName="Foo facility"
+                  setStartTestPatientId={setStartTestPatientIdMock}
+                  startTestPatientId=""
                 />
               </Provider>
             </MockedProvider>
@@ -505,6 +521,8 @@ describe("QueueItem", () => {
               facilityId={testProps.facilityId}
               dateTestedProp={testProps.dateTestedProp}
               facilityName="Foo facility"
+              setStartTestPatientId={setStartTestPatientIdMock}
+              startTestPatientId=""
             />
           </Provider>
         </MockedProvider>
@@ -542,6 +560,8 @@ describe("QueueItem", () => {
                 facilityId={testProps.facilityId}
                 dateTestedProp={testProps.dateTestedProp}
                 facilityName="Foo facility"
+                setStartTestPatientId={setStartTestPatientIdMock}
+                startTestPatientId=""
               />
             </Provider>
           </MockedProvider>
@@ -610,6 +630,8 @@ describe("QueueItem", () => {
               facilityId={testProps.facilityId}
               dateTestedProp={testProps.dateTestedProp}
               facilityName="Foo facility"
+              setStartTestPatientId={setStartTestPatientIdMock}
+              startTestPatientId=""
             />
           </Provider>
         </MockedProvider>
@@ -668,6 +690,8 @@ describe("QueueItem", () => {
               facilityId={testProps.facilityId}
               dateTestedProp={testProps.dateTestedProp}
               facilityName="Foo facility"
+              setStartTestPatientId={setStartTestPatientIdMock}
+              startTestPatientId=""
             />
           </Provider>
         </MockedProvider>
@@ -709,6 +733,8 @@ describe("QueueItem", () => {
                 facilityId={testProps.facilityId}
                 dateTestedProp={testProps.dateTestedProp}
                 facilityName="Foo facility"
+                setStartTestPatientId={setStartTestPatientIdMock}
+                startTestPatientId=""
               />
             </Provider>
           </MockedProvider>

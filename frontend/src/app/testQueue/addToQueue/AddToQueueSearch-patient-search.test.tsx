@@ -11,6 +11,7 @@ import { MemoryRouter } from "react-router-dom";
 import AddToQueueSearch, { QUERY_PATIENT } from "./AddToQueueSearch";
 
 let refetchQueueMock;
+let setStartTestPatientIdMock;
 
 const facilityId = "fake-facility-id";
 
@@ -70,6 +71,7 @@ const mocks = [
 describe("AddToSearchQueue", () => {
   beforeEach(async () => {
     refetchQueueMock = jest.fn();
+    setStartTestPatientIdMock = jest.fn();
 
     render(
       <MemoryRouter>
@@ -78,6 +80,8 @@ describe("AddToSearchQueue", () => {
             refetchQueue={refetchQueueMock}
             facilityId={facilityId}
             patientsInQueue={[patientInQueue.internalId]}
+            startTestPatientId=""
+            setStartTestPatientId={setStartTestPatientIdMock}
           />
         </MockedProvider>
       </MemoryRouter>

@@ -146,7 +146,7 @@ const TestQueue: React.FC<Props> = ({ activeFacilityId }) => {
     if (patientIdParam) {
       setStartTestPatientId(patientIdParam);
     }
-  }, []);
+  }, [location.state]);
 
   useEffect(() => {
     // Start polling on creation, stop on componenent teardown
@@ -241,6 +241,7 @@ const TestQueue: React.FC<Props> = ({ activeFacilityId }) => {
                 internalId={internalId}
                 patient={patient}
                 startTestPatientId={startTestPatientId}
+                setStartTestPatientId={setStartTestPatientId}
                 askOnEntry={questions}
                 selectedDeviceSpecimenTypeId={
                   selectedDeviceSpecimenType.internalId
@@ -300,6 +301,7 @@ const TestQueue: React.FC<Props> = ({ activeFacilityId }) => {
             facilityId={activeFacilityId}
             patientsInQueue={patientsInQueue}
             startTestPatientId={startTestPatientId}
+            setStartTestPatientId={setStartTestPatientId}
           />
         </div>
         {createQueueItems(data.queue)}
