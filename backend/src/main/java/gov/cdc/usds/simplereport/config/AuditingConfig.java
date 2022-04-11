@@ -24,6 +24,9 @@ import org.springframework.data.jpa.repository.config.EnableJpaAuditing;
 public class AuditingConfig {
   private final ApiUserService _userService;
 
+  @Value("${logging.queueSize}")
+  private int queueSize;
+
   public AuditingConfig(ApiUserService userService) {
     this._userService = userService;
   }
@@ -52,7 +55,7 @@ public class AuditingConfig {
     consoleAppender.start();
 
     AsyncAppender asyncAppender = new AsyncAppender();
-    asyncAppender.setQueueSize(500); // value chosen based on this
+    asyncAppender.setQueueSize(queueSize); // value chosen based on this
     // https://www.overops.com/blog/how-to-instantly-improve-your-java-logging-with-7-logback-tweaks/
     asyncAppender.setContext(loggerContext);
     asyncAppender.addAppender(consoleAppender);
