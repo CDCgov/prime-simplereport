@@ -241,7 +241,6 @@ const TestQueue: React.FC<Props> = ({ activeFacilityId }) => {
                 internalId={internalId}
                 patient={patient}
                 startTestPatientId={startTestPatientId}
-                setStartTestPatientId={setStartTestPatientId}
                 askOnEntry={questions}
                 selectedDeviceSpecimenTypeId={
                   selectedDeviceSpecimenType.internalId
@@ -301,7 +300,6 @@ const TestQueue: React.FC<Props> = ({ activeFacilityId }) => {
             facilityId={activeFacilityId}
             patientsInQueue={patientsInQueue}
             startTestPatientId={startTestPatientId}
-            setStartTestPatientId={setStartTestPatientId}
           />
         </div>
         {createQueueItems(data.queue)}
