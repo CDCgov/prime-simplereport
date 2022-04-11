@@ -55,8 +55,9 @@ public class AuditingConfig {
     consoleAppender.start();
 
     AsyncAppender asyncAppender = new AsyncAppender();
-    asyncAppender.setQueueSize(queueSize); // value chosen based on this
+    // queueSize value chosen based on this:
     // https://www.overops.com/blog/how-to-instantly-improve-your-java-logging-with-7-logback-tweaks/
+    asyncAppender.setQueueSize(queueSize);
     asyncAppender.setContext(loggerContext);
     asyncAppender.addAppender(consoleAppender);
     asyncAppender.start();
