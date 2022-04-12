@@ -58,7 +58,8 @@ const DownloadResultsCSVButton = ({
     filterParams.startDate ||
     filterParams.endDate ||
     filterParams.role ||
-    filterParams.result;
+    filterParams.result ||
+    filterParams.filterFacilityId;
 
   const variables: ResultsQueryVariables = {
     facilityId,

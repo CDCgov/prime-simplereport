@@ -308,6 +308,33 @@ exports[`TestResultsList should render a list of tests 1`] = `
                   </option>
                 </select>
               </div>
+              <div
+                class="usa-form-group prime-dropdown "
+              >
+                <label
+                  class="usa-label"
+                  for="3"
+                >
+                  Testing facility
+                </label>
+                <select
+                  aria-required="false"
+                  class="usa-select"
+                  id="3"
+                  name="facility"
+                >
+                  <option
+                    value="1"
+                  >
+                    Facility 1
+                  </option>
+                  <option
+                    value="2"
+                  >
+                    Facility 2
+                  </option>
+                </select>
+              </div>
             </div>
           </div>
           <div
@@ -336,6 +363,12 @@ exports[`TestResultsList should render a list of tests 1`] = `
                     scope="col"
                   >
                     COVID-19
+                  </th>
+                  <th
+                    class="test-facility-cell"
+                    scope="col"
+                  >
+                    Facility
                   </th>
                   <th
                     class="test-device-cell"
@@ -383,6 +416,11 @@ exports[`TestResultsList should render a list of tests 1`] = `
                     class="test-result-cell"
                   >
                     Positive
+                  </td>
+                  <td
+                    class="test-facility-cell"
+                  >
+                    Facility 1
                   </td>
                   <td
                     class="test-device-cell"
@@ -456,6 +494,11 @@ exports[`TestResultsList should render a list of tests 1`] = `
                     Negative
                   </td>
                   <td
+                    class="test-facility-cell"
+                  >
+                    Facility 1
+                  </td>
+                  <td
                     class="test-device-cell"
                   >
                     Abbott IDNow
@@ -525,6 +568,11 @@ exports[`TestResultsList should render a list of tests 1`] = `
                     class="test-result-cell"
                   >
                     Negative
+                  </td>
+                  <td
+                    class="test-facility-cell"
+                  >
+                    Facility 1
                   </td>
                   <td
                     class="test-device-cell"
