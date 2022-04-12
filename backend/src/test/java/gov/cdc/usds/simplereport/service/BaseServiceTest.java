@@ -45,8 +45,8 @@ public abstract class BaseServiceTest<T> {
 
   @Autowired private DbTruncator _truncator;
   @Autowired private OrganizationInitializingService _initService;
-  @Autowired private DiseaseService _diseaseService;
-  @Autowired private SupportedDiseaseRepository _supportedDiseaseRepo;
+  @Autowired protected DiseaseService _diseaseService;
+  @Autowired protected SupportedDiseaseRepository _supportedDiseaseRepo;
   @MockBean private CurrentTenantDataAccessContextHolder _currentTenantDataAccessContextHolder;
   @MockBean private TenantDataAuthenticationProvider _tenantDataAuthProvider;
   @Autowired private DemoOktaRepository _oktaRepo;

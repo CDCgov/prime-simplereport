@@ -1,7 +1,7 @@
 import { render, screen } from "@testing-library/react";
 import userEvent from "@testing-library/user-event";
 
-import { SpecimenType, DeviceType } from "../../../generated/graphql";
+import { DeviceType, SpecimenType } from "../../../generated/graphql";
 
 import ManageDeviceTypeFormContainer from "./ManageDeviceTypeFormContainer";
 import { addValue } from "./DeviceTypeForm.test";
@@ -39,6 +39,19 @@ jest.mock("../../../generated/graphql", () => {
         },
       };
     },
+    useGetSupportedDiseasesQuery: () => {
+      return {
+        data: {
+          supportedDiseases: [
+            {
+              internalId: "294729",
+              name: "COVID-19",
+              loinc: "4829",
+            },
+          ],
+        },
+      };
+    },
     useGetDeviceTypeListQuery: () => {
       return {
         data: {
@@ -52,6 +65,9 @@ jest.mock("../../../generated/graphql", () => {
               swabTypes: [
                 { internalId: "123", name: "nose", typeCode: "n123" },
               ],
+              supportedDiseases: [
+                { internalId: "294729", name: "COVID-19", loinc: "4829" },
+              ],
             },
             {
               internalId: "abc2",
@@ -60,6 +76,9 @@ jest.mock("../../../generated/graphql", () => {
               manufacturer: "Curentz",
               loincCode: "1234-2",
               swabTypes: [{ internalId: "456", name: "eye", typeCode: "e456" }],
+              supportedDiseases: [
+                { internalId: "294729", name: "COVID-19", loinc: "4829" },
+              ],
             },
             {
               internalId: "abc3",
@@ -69,6 +88,9 @@ jest.mock("../../../generated/graphql", () => {
               loincCode: "1234-3",
               swabTypes: [
                 { internalId: "789", name: "mouth", typeCode: "m789" },
+              ],
+              supportedDiseases: [
+                { internalId: "294729", name: "COVID-19", loinc: "4829" },
               ],
             },
           ] as DeviceType[],
@@ -121,6 +143,7 @@ describe("ManageDeviceTypeFormContainer", () => {
         manufacturer: "Vitamin Tox LLC",
         model: "Model CD",
         swabTypes: ["789"],
+        supportedDiseases: ["294729"],
       },
     });
 

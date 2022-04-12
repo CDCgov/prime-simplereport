@@ -60,6 +60,7 @@ input CreateDeviceType {
   model: String!
   loincCode: String!
   swabTypes: [ID!]!
+  supportedDiseases: [ID!]!
 }
 
 input UpdateDeviceType {
@@ -69,6 +70,7 @@ input UpdateDeviceType {
   model: String!
   loincCode: String!
   swabTypes: [ID!]!
+  supportedDiseases: [ID!]!
 }
 
 type DeviceType {
@@ -79,7 +81,14 @@ type DeviceType {
   loincCode: String!
   swabType: String
   swabTypes: [SpecimenType!]!
+  supportedDiseases: [SupportedDisease!]!
   testLength: Int
+}
+
+type SupportedDisease {
+  internalId: ID!
+  name: String!
+  loinc: String!
 }
 
 type SpecimenType {
@@ -293,6 +302,7 @@ type Query {
   deviceType: [DeviceType!]!
     @deprecated(reason: "use the pluralized form to reduce confusion")
   deviceTypes: [DeviceType!]!
+  supportedDiseases: [SupportedDisease!]!
   specimenType: [SpecimenType]
   deviceSpecimenTypes: [DeviceSpecimenType]
   patients(
