@@ -2247,8 +2247,6 @@ export type GetFacilityResultsQuery = {
             dateTested?: any | null | undefined;
             result?: string | null | undefined;
             correctionStatus?: string | null | undefined;
-            symptoms?: string | null | undefined;
-            noSymptoms?: boolean | null | undefined;
             deviceType?:
               | { __typename?: "DeviceType"; internalId: string; name: string }
               | null
@@ -2274,7 +2272,6 @@ export type GetFacilityResultsQuery = {
                     | {
                         __typename?: "NameInfo";
                         firstName?: string | null | undefined;
-                        middleName?: string | null | undefined;
                         lastName: string;
                       }
                     | null
@@ -6220,15 +6217,12 @@ export const GetFacilityResultsDocument = gql`
       createdBy {
         nameInfo {
           firstName
-          middleName
           lastName
         }
       }
       patientLink {
         internalId
       }
-      symptoms
-      noSymptoms
     }
   }
 `;

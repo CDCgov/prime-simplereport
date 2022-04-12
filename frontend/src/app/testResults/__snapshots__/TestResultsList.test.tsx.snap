@@ -6,7 +6,7 @@ exports[`TestResultsList should render a list of tests 1`] = `
     class="prime-home"
   >
     <div
-      class="grid-container"
+      class="grid-container results-wide-container"
     >
       <div
         class="grid-row"
@@ -236,7 +236,7 @@ exports[`TestResultsList should render a list of tests 1`] = `
                   class="usa-label"
                   for="1"
                 >
-                  Result
+                  Test result
                 </label>
                 <select
                   aria-required="false"
@@ -337,17 +337,12 @@ exports[`TestResultsList should render a list of tests 1`] = `
                   <th
                     scope="col"
                   >
-                    Device
+                    Test device
                   </th>
                   <th
                     scope="col"
                   >
-                    Symptoms
-                  </th>
-                  <th
-                    scope="col"
-                  >
-                    Submitter
+                    Submitted by
                   </th>
                   <th
                     scope="col"
@@ -381,9 +376,6 @@ exports[`TestResultsList should render a list of tests 1`] = `
                   </td>
                   <td>
                     Abbott IDNow
-                  </td>
-                  <td>
-                    Yes
                   </td>
                   <td>
                     Entry, Ethan
@@ -447,9 +439,6 @@ exports[`TestResultsList should render a list of tests 1`] = `
                     Abbott IDNow
                   </td>
                   <td>
-                    Unknown
-                  </td>
-                  <td>
                     User, Ursula
                   </td>
                   <td>
@@ -511,10 +500,7 @@ exports[`TestResultsList should render a list of tests 1`] = `
                     Abbott IDNow
                   </td>
                   <td>
-                    No
-                  </td>
-                  <td>
-                    Admin, Arthur A
+                    Admin, Arthur
                   </td>
                   <td>
                     <button

@@ -29,6 +29,8 @@ import Input from "../../commonComponents/Input";
 import Select from "../../commonComponents/Select";
 import {
   getBestSuggestion,
+  getZipCodeData,
+  isValidZipCodeForState,
   suggestionIsCloseEnough,
 } from "../../utils/smartyStreets";
 import { AddressConfirmationModal } from "../../commonComponents/AddressConfirmationModal";
@@ -205,7 +207,7 @@ const PersonForm = (props: Props) => {
           zipCode: "00000",
         });
       } else {
-        setPatient({ ...patient, [field]: value, state: null, zipCode: null });
+        setPatient({ ...patient, [field]: value, state: "", zipCode: "" });
       }
       return;
     }
@@ -236,6 +238,21 @@ const PersonForm = (props: Props) => {
 
   const validatePatientAddress = async () => {
     const originalAddress = getAddress(patient);
+
+    const zipCodeData = await getZipCodeData(originalAddress.zipCode);
+    const isValidZipForState = isValidZipCodeForState(
+      originalAddress.state,
+      zipCodeData
+    );
+
+    if (!isValidZipForState) {
+      showError(
+        t("patient.form.errors.validationMsg"),
+        t("patient.form.errors.zipForState")
+      );
+      return;
+    }
+
     const suggestedAddress = await getBestSuggestion(originalAddress);
     if (suggestionIsCloseEnough(originalAddress, suggestedAddress)) {
       onSave(suggestedAddress, startTest);
