@@ -90,7 +90,7 @@ describe("QueueItem", () => {
     expect(screen.getByTestId("timer")).toHaveTextContent("10:00");
   });
 
-  it("scroll to patient when startTestPatientId is present", () => {
+  it("scroll to patient and highlight when startTestPatientId is present", async () => {
     let scrollIntoViewMock = jest.fn();
     window.HTMLElement.prototype.scrollIntoView = scrollIntoViewMock;
 
@@ -121,8 +121,10 @@ describe("QueueItem", () => {
         </MockedProvider>
       </MemoryRouter>
     );
-    expect(screen.getByText("Potter, Harry James")).toBeInTheDocument();
-    expect(screen.getByTestId("timer")).toHaveTextContent("10:00");
+
+    const testCard = await screen.findByTestId(`test-card-${internalId}`);
+    expect(testCard).toHaveClass("prime-queue-item__info");
+    expect(testCard).toBeInTheDocument();
     expect(scrollIntoViewMock).toBeCalled();
   });
 
