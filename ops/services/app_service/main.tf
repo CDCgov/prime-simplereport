@@ -139,21 +139,32 @@ resource "azurerm_app_service_slot_virtual_network_swift_connection" "staging" {
 }
 
 /*
-  1) Import the wildcard cert into the App Service
-  2) Assign a custom domain (api-ENV.simplereport.gov) to the App Service
-  3) Bind the wildcard cert from #1 to the custom domain from #2
+  IMPORTANT APP SERVICE TLS/SSL INFORMATION
 
-  IMPORTANT NOTE if the App Service gets recreated:
+  (Note: if the static IP to the App Gateway changes, you will need to update the DNS A record
+  for origin-ENV.simplereport.gov)
 
-  - If the static IP to the App Gateway changes, you will need to update the DNS A record
-    for origin-ENV.simplereport.gov
-  - If the imported certs change as part of the recreation, you will need perform the custom
-    domain SSL binding manually, then update the DNS CNAME record for api-ENV.simplereport.gov
-    and the associated TXT record with the new value (the console will tell you which ones),
-    and finally `terraform import` the azurerm_app_service_custom_hostname_binding manually.
-  - If the environment is using a CDN (e.g., Akamai) the CNAME will need to be changed temporarily
-    to allow Azure to verify ownership of the domain, and then changed BACK to the original value,
-    or the CDN will stop functioning correctly.
+  For routing from the App Gateway to the App Service to work correctly, the App Service needs
+  a custom domain in the form of api-ENV.simplereport.gov. We can't create this domain in Terraform
+  without outside action, because part of the creation process requires proving ownership of the
+  underlying domain (simplereport.gov). Proving ownership requires updating the DNS CNAME and TXT
+  records associated with the custom domain (the correct values are provided by Azure).
+
+  So, the process is to create and bind this custom domain MANUALLY. Once you try to create the
+  custom domain, Azure will provide instructions on what DNS records to update and what the expected
+  values are. Once the records are changed, Azure will allow you to complete the custom domain
+  binding.
+
+  IMPORTANT: If the environment is using a CDN (e.g., Akamai) the CNAME will need to be changed
+  temporarily to allow Azure to verify ownership of the domain, and then changed BACK to the original
+  value, or the CDN will stop functioning correctly.
+
+  Once this process is complete, Terraform can be run as normal.
+
+  WHAT'S HAPPENING HERE:
+
+  1) The wildcard-simplereport-gov cert is being imported from Key Vault into the App Service
+  2) That cert is being bound to the custom domain created above, enabling HTTPS
 */
 
 resource "azurerm_app_service_certificate" "app" {
@@ -163,14 +174,11 @@ resource "azurerm_app_service_certificate" "app" {
   key_vault_secret_id = data.azurerm_key_vault_certificate.wildcard_simplereport_gov.id
 }
 
-resource "azurerm_app_service_custom_hostname_binding" "app" {
-  hostname            = "api-${var.env}.simplereport.gov"
-  app_service_name    = azurerm_app_service.service.name
-  resource_group_name = var.resource_group_name
-}
-
 resource "azurerm_app_service_certificate_binding" "app" {
-  hostname_binding_id = azurerm_app_service_custom_hostname_binding.app.id
+  # This is a bit magic because as of 4/2022 the TF Azure provider doesn't expose
+  # azurerm_app_service_custom_hostname_binding as a data source. This means we need to generate
+  # hostname_binding_id manually.
+  hostname_binding_id = "${azurerm_app_service.service.id}/hostNameBindings/api-${var.env}.simplereport.gov"
   certificate_id      = azurerm_app_service_certificate.app.id
   ssl_state           = "SniEnabled"
 }
