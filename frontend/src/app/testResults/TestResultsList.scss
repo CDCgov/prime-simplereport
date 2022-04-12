@@ -72,6 +72,38 @@
       max-width: 30rem;
     }
   }
+
+  thead th,
+  .sr-test-result-row td {
+    &.patient-name-cell {
+      padding-left: 8px;
+      width: 31%;
+    }
+
+    &.test-date-cell {
+      width: 14%;
+    }
+
+    &.test-result-cell {
+      width: 10%;
+    }
+
+    &.test-device-cell {
+      width: 31%;
+    }
+
+    &.submitted-by-cell {
+      width: 14%;
+    }
+
+    &.actions-cell {
+      padding-right: 8px;
+    }
+  }
+
+  .usa-table td {
+    border-color: #a9aeb1;
+  }
 }
 
 .sr-showing-results-on-page {
