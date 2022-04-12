@@ -142,7 +142,7 @@ const TestQueue: React.FC<Props> = ({ activeFacilityId }) => {
 
   useEffect(() => {
     const locationState = (location.state as StartTestProps) || {};
-    let { patientId: patientIdParam } = locationState;
+    const { patientId: patientIdParam } = locationState;
     if (patientIdParam) {
       setStartTestPatientId(patientIdParam);
     }
