@@ -267,16 +267,11 @@ const QueueItem = ({
     updateSpecimenId(deviceSpecimenType.specimenType.internalId);
   }, [deviceSpecimenTypes, deviceSpecimenTypeId]);
 
-  /*
-  const { patientId: patientIdParam } =
-    (useLocation().state as StartTestProps) || {};
-*/
-
   const testCardElement = useRef() as React.MutableRefObject<HTMLDivElement>;
 
   useEffect(() => {
     if (startTestPatientId === patient.internalId) {
-      testCardElement.current.scrollIntoView();
+      testCardElement.current.scrollIntoView({ behavior: "smooth" });
     }
   });
 

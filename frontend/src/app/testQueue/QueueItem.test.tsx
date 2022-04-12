@@ -90,6 +90,42 @@ describe("QueueItem", () => {
     expect(screen.getByTestId("timer")).toHaveTextContent("10:00");
   });
 
+  it("scroll to patient when startTestPatientId is present", () => {
+    let scrollIntoViewMock = jest.fn();
+    window.HTMLElement.prototype.scrollIntoView = scrollIntoViewMock;
+
+    render(
+      <MemoryRouter>
+        <MockedProvider mocks={[]}>
+          <Provider store={store}>
+            <QueueItem
+              internalId={testProps.internalId}
+              patient={testProps.patient}
+              askOnEntry={testProps.askOnEntry}
+              selectedDeviceId={testProps.selectedDeviceId}
+              selectedDeviceTestLength={testProps.selectedDeviceTestLength}
+              selectedDeviceSpecimenTypeId={
+                testProps.selectedDeviceSpecimenTypeId
+              }
+              deviceSpecimenTypes={testProps.deviceSpecimenTypes}
+              selectedTestResult={testProps.selectedTestResult}
+              devices={testProps.devices}
+              refetchQueue={testProps.refetchQueue}
+              facilityId={testProps.facilityId}
+              dateTestedProp={testProps.dateTestedProp}
+              facilityName="Foo facility"
+              setStartTestPatientId={setStartTestPatientIdMock}
+              startTestPatientId={testProps.internalId}
+            />
+          </Provider>
+        </MockedProvider>
+      </MemoryRouter>
+    );
+    expect(screen.getByText("Potter, Harry James")).toBeInTheDocument();
+    expect(screen.getByTestId("timer")).toHaveTextContent("10:00");
+    expect(scrollIntoViewMock).toBeCalled();
+  });
+
   it("navigates to edit the user when clicking their name", () => {
     render(
       <MockedProvider mocks={[]}>
