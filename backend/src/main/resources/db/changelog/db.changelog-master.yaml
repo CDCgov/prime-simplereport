@@ -3726,3 +3726,50 @@ databaseChangeLog:
       rollback:
         sql: |
           ALTER TABLE ${database.defaultSchemaName}.result DROP COLUMN test_result;
+  - changeSet:
+      id: add-test-correction-columns
+      author: nathan@skylight.digital
+      comment: Adds columns in support of test correction workflow
+      changes:
+        - tagDatabase:
+            tag: add-test-correction-columns
+        - addColumn:
+            tableName: test_order
+            columns:
+              - column:
+                  name: corrected_by
+                  type: uuid
+                  constraints:
+                    nullable: true
+                    foreignKeyName: fk__test_order__api_user
+                    references: api_user(internal_id)
+              - column:
+                  name: corrected_at
+                  type: DATETIME
+                  constraints:
+                    nullable: true
+              - column:
+                  name: additional_correction_information
+                  type: text
+                  constraints:
+                    nullable: true
+        - addColumn:
+            tableName: test_event
+            columns:
+              - column:
+                  name: corrected_by
+                  type: uuid
+                  constraints:
+                    nullable: true
+                    foreignKeyName: fk__test_event__api_user
+                    references: api_user(internal_id)
+              - column:
+                  name: corrected_at
+                  type: DATETIME
+                  constraints:
+                    nullable: true
+              - column:
+                  name: additional_correction_information
+                  type: text
+                  constraints:
+                    nullable: true
