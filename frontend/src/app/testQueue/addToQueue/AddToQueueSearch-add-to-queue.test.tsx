@@ -16,6 +16,7 @@ import AddToQueueSearch, {
 import { QueueProps } from "./SearchResults";
 
 let refetchQueueMock;
+let setStartTestPatientIdMock;
 
 jest.mock("../../TelemetryService", () => ({
   getAppInsights: jest.fn(),
@@ -126,6 +127,7 @@ describe("AddToSearchQueue - add to queue", () => {
 
   beforeEach(async () => {
     refetchQueueMock = jest.fn();
+    setStartTestPatientIdMock = jest.fn();
 
     (getAppInsights as jest.Mock).mockImplementation(() => ({
       trackEvent: trackEventMock,
@@ -138,6 +140,8 @@ describe("AddToSearchQueue - add to queue", () => {
             refetchQueue={refetchQueueMock}
             facilityId={facilityId}
             patientsInQueue={[]}
+            startTestPatientId="abc123"
+            setStartTestPatientId={setStartTestPatientIdMock}
           />
         </MockedProvider>
       </MemoryRouter>

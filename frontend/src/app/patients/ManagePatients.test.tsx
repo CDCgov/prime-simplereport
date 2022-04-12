@@ -2,11 +2,18 @@ import { MockedProvider, MockedProviderProps } from "@apollo/client/testing";
 import {
   render,
   screen,
+  waitFor,
   waitForElementToBeRemoved,
 } from "@testing-library/react";
 import userEvent from "@testing-library/user-event";
 import { Provider } from "react-redux";
-import { MemoryRouter, Route, Routes, useParams } from "react-router-dom";
+import {
+  MemoryRouter,
+  Route,
+  Routes,
+  useLocation,
+  useParams,
+} from "react-router-dom";
 import createMockStore from "redux-mock-store";
 
 import ManagePatients, {
@@ -15,6 +22,13 @@ import ManagePatients, {
 } from "./ManagePatients";
 import ManagePatientsContainer from "./ManagePatientsContainer";
 
+interface LocationOptions {
+  search: string;
+  pathname: string;
+  state: {
+    patientId: string;
+  };
+}
 const PageNumberContainer = () => {
   const { pageNumber } = useParams();
   return (
@@ -28,13 +42,24 @@ const PageNumberContainer = () => {
   );
 };
 
+const Queue = () => {
+  const location = useLocation() as LocationOptions;
+
+  return (
+    <p>
+      Testing Queue! {location.search} {location.state.patientId}
+    </p>
+  );
+};
+
 const TestContainer = () => (
   <MockedProvider mocks={mocks}>
     <MemoryRouter initialEntries={["/patients/1"]}>
       <Routes>
-        <Route path="patients">
+        <Route path="/patients">
           <Route path=":pageNumber" element={<PageNumberContainer />} />
         </Route>
+        <Route path={"/queue"} element={<Queue />} />
       </Routes>
     </MemoryRouter>
   </MockedProvider>
@@ -69,6 +94,48 @@ describe("ManagePatients", () => {
     userEvent.click(page2);
     expect(await screen.findByText(patients[20].lastName, { exact: false }));
   });
+
+  describe("using actions", () => {
+    it("archive modal appears on click", async () => {
+      render(<TestContainer />);
+      expect(
+        await screen.findByText(patients[0].lastName, { exact: false })
+      ).toBeInTheDocument();
+
+      const menu = (await screen.findAllByText("More actions"))[0];
+      userEvent.click(menu);
+      userEvent.click(await screen.findByText("Archive person"));
+
+      expect(
+        screen.getByText("Yes, I'm sure", { exact: false })
+      ).toBeInTheDocument();
+      userEvent.click(screen.getByText("No, go back", { exact: false }));
+      expect(
+        await screen.findByText(patients[0].lastName, { exact: false })
+      ).toBeInTheDocument();
+    });
+
+    it("can start test", async () => {
+      render(<TestContainer />);
+      expect(
+        await screen.findByText(patients[0].lastName, { exact: false })
+      ).toBeInTheDocument();
+      const menu = (await screen.findAllByText("More actions"))[0];
+      userEvent.click(menu);
+
+      const startTestButton = await screen.findByText("Start test");
+      expect(startTestButton).toBeInTheDocument();
+
+      userEvent.click(startTestButton);
+
+      await waitFor(() => {
+        expect(
+          screen.getByText("Testing Queue!", { exact: false })
+        ).toBeInTheDocument();
+      });
+    });
+  });
+
   describe("ManagePatientsContainer", () => {
     it("Doesn't render if no facility is selected", async () => {
       render(
@@ -412,6 +479,37 @@ const mocks: MockedProviderProps["mocks"] = [
     },
     result: {
       data: { patients: patients.slice(1) },
+    },
+  },
+  // landing from closing archive modal
+  {
+    request: {
+      query: patientsCountQuery,
+      variables: {
+        facilityId: "a1",
+        showDeleted: false,
+        namePrefixMatch: null,
+      },
+    },
+    result: {
+      data: {
+        patientsCount: patients.slice(1).length,
+      },
+    },
+  },
+  {
+    request: {
+      query: patientQuery,
+      variables: {
+        facilityId: "a1",
+        pageNumber: 0,
+        pageSize: 20,
+        showDeleted: false,
+        namePrefixMatch: null,
+      },
+    },
+    result: {
+      data: { patients: patients.slice(0, 20) },
     },
   },
 ];

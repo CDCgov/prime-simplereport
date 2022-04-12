@@ -61,6 +61,7 @@ jest.mock("./SearchInput", () => {
 });
 
 const getRefetchQueue = jest.fn();
+const setStartTestPatientIdMock = jest.fn();
 
 describe("AddToSearchQueue - new patient begin test", () => {
   beforeEach(() => {
@@ -80,6 +81,8 @@ describe("AddToSearchQueue - new patient begin test", () => {
             refetchQueue={getRefetchQueue}
             facilityId={facilityId}
             patientsInQueue={[]}
+            startTestPatientId="48c523e8-7c65-4047-955c-e3f65bb8b58a"
+            setStartTestPatientId={setStartTestPatientIdMock}
           />
         </MockedProvider>
       </MemoryRouter>
