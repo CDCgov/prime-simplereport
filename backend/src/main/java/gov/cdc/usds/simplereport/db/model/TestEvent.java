@@ -44,7 +44,6 @@ public class TestEvent extends BaseTestInfo {
   @JoinColumn(name = "test_order_id")
   private TestOrder order;
 
-  // fetch = FetchType.LAZY,
   @OneToMany(mappedBy = "testEvent", cascade = CascadeType.ALL)
   private Set<Result> results;
 
