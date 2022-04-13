@@ -1,6 +1,5 @@
 import { gql } from "@apollo/client";
 import * as Apollo from "@apollo/client";
-
 export type Maybe<T> = T | null;
 export type InputMaybe<T> = Maybe<T>;
 export type Exact<T extends { [key: string]: unknown }> = {
@@ -2315,6 +2314,10 @@ export type GetFacilityResultsQuery = {
                   __typename?: "PatientLink";
                   internalId?: string | null | undefined;
                 }
+              | null
+              | undefined;
+            facility?:
+              | { __typename?: "Facility"; name: string }
               | null
               | undefined;
           }
@@ -6321,6 +6324,9 @@ export const GetFacilityResultsDocument = gql`
       }
       patientLink {
         internalId
+      }
+      facility {
+        name
       }
     }
   }
