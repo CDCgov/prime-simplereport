@@ -189,6 +189,7 @@ export const en = {
           street: "Street is missing",
           streetTwo: "Street 2 is incorrectly formatted",
           zipCode: "ZIP code is missing or incorrectly formatted",
+          zipForState: "Invalid ZIP code for this state",
           state: "State is missing or incorrectly formatted",
           city: "City is incorrectly formatted",
           county: "County is incorrectly formatted",
@@ -566,11 +567,11 @@ export const en = {
         },
       },
       dob: {
-        header: "Verify date of birth",
+        header: "Access your COVID-19 test result",
         dateOfBirth: "Date of birth",
         enterDOB: "Enter your date of birth",
         enterDOB2:
-          "Enter <0>{{personName}}'s</0> date of birth to access your COVID-19 test results.",
+          "Enter <0>{{personName}}'s</0> date of birth to access their COVID-19 test result.",
         linkExpirationNotice:
           "Note: this link will expire on <0>{{expirationDate}}</0>. ",
         testingFacilityContact:

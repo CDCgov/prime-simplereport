@@ -233,7 +233,8 @@
   }
 
   &__error,
-  &__ready {
+  &__ready,
+  &__info {
     .prime-card-container .usa-card__header {
       margin-left: 0;
       padding-left: 0.75rem;
@@ -266,6 +267,14 @@
         color: color($theme-color-prime-gray-darkest);
         margin: 0 units(1);
       }
+    }
+  }
+
+  &__info {
+    border-color: color($theme-color-prime-blue);
+
+    .prime-card-container {
+      border-color: color($theme-color-prime-blue);
     }
   }
 

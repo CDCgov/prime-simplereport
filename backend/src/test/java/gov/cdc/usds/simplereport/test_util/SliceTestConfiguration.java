@@ -18,6 +18,7 @@ import gov.cdc.usds.simplereport.idp.repository.DemoOktaRepository;
 import gov.cdc.usds.simplereport.service.ApiUserService;
 import gov.cdc.usds.simplereport.service.AuthorizationService;
 import gov.cdc.usds.simplereport.service.BaseServiceTest;
+import gov.cdc.usds.simplereport.service.DiseaseService;
 import gov.cdc.usds.simplereport.service.LoggedInAuthorizationService;
 import gov.cdc.usds.simplereport.service.OrganizationInitializingService;
 import gov.cdc.usds.simplereport.service.OrganizationService;
@@ -85,6 +86,7 @@ import org.springframework.security.test.context.support.WithMockUser;
   OrganizationExtractor.class,
   OrganizationService.class,
   ApiUserService.class,
+  DiseaseService.class,
   OrganizationInitializingService.class,
   CurrentPatientContextHolder.class,
   CurrentAccountRequestContextHolder.class,

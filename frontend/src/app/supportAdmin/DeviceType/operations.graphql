@@ -4,6 +4,7 @@ mutation createDeviceType(
   $model: String!
   $loincCode: String!
   $swabTypes: [ID!]!
+  $supportedDiseases: [ID!]!
 ) {
   createDeviceType(
     input: {
@@ -12,6 +13,7 @@ mutation createDeviceType(
       model: $model
       loincCode: $loincCode
       swabTypes: $swabTypes
+      supportedDiseases: $supportedDiseases
     }
   ) {
     internalId
@@ -25,6 +27,7 @@ mutation updateDeviceType(
   $model: String!
   $loincCode: String!
   $swabTypes: [ID!]!
+  $supportedDiseases: [ID!]!
 ) {
   updateDeviceType(
     input: {
@@ -34,6 +37,7 @@ mutation updateDeviceType(
       model: $model
       loincCode: $loincCode
       swabTypes: $swabTypes
+      supportedDiseases: $supportedDiseases
     }
   ) {
     internalId
@@ -59,5 +63,16 @@ query getDeviceTypeList{
       internalId,
       name
     }
+    supportedDiseases {
+      internalId,
+      name
+    }
+  }
+}
+
+query getSupportedDiseases {
+  supportedDiseases {
+    internalId,
+    name
   }
 }

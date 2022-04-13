@@ -32,8 +32,9 @@ public class DbTruncator {
           + "    WHERE  relkind = 'r' "
           + // only tables
           "    AND relname not like 'databasechangelog%%' "
-          + // no liquibase
-          // tables!
+          + // keep supported_disease table (populated via a liquibase migration)
+          "     AND relname not like 'supported_disease' "
+          + // no liquibase tables!
           "    AND    relnamespace = '%1$s'::regnamespace "
           + "   ); "
           + "END "

@@ -170,6 +170,8 @@ if (process.env.NODE_ENV !== "test") {
 export interface QueueItemProps {
   internalId: string;
   patient: TestQueuePerson;
+  startTestPatientId: string | null;
+  setStartTestPatientId: any;
   devices: {
     name: string;
     internalId: string;
@@ -202,6 +204,8 @@ type SaveState = "idle" | "editing" | "saving" | "error";
 const QueueItem = ({
   internalId,
   patient,
+  startTestPatientId,
+  setStartTestPatientId,
   deviceSpecimenTypes,
   askOnEntry,
   selectedDeviceId,
@@ -242,6 +246,7 @@ const QueueItem = ({
     EditQueueItemResponse,
     EditQueueItemParams
   >(EDIT_QUEUE_ITEM);
+
   const [saveState, setSaveState] = useState<SaveState>("idle");
 
   const [isAoeModalOpen, updateIsAoeModalOpen] = useState(false);
@@ -269,6 +274,14 @@ const QueueItem = ({
     updateDeviceId(deviceSpecimenType.deviceType.internalId);
     updateSpecimenId(deviceSpecimenType.specimenType.internalId);
   }, [deviceSpecimenTypes, deviceSpecimenTypeId]);
+
+  const testCardElement = useRef() as React.MutableRefObject<HTMLDivElement>;
+
+  useEffect(() => {
+    if (startTestPatientId === patient.internalId) {
+      testCardElement.current.scrollIntoView({ behavior: "smooth" });
+    }
+  });
 
   const deviceTypes = deviceSpecimenTypes
     .map((d) => d.deviceType)
@@ -414,6 +427,7 @@ const QueueItem = ({
       testResultsSubmitted(result);
       refetchQueue();
       removeTimer(internalId);
+      setStartTestPatientId(null);
     } catch (error: any) {
       setSaveState("error");
       updateMutationError(error);
@@ -540,6 +554,7 @@ const QueueItem = ({
       },
     })
       .then(() => refetchQueue())
+      .then(() => setStartTestPatientId(null))
       .then(() => removeTimer(internalId))
       .catch((error) => {
         updateMutationError(error);
@@ -657,6 +672,9 @@ const QueueItem = ({
     if (timer.countdown < 0 && testResultValue === "UNKNOWN") {
       return prefix + "ready";
     }
+    if (startTestPatientId === patient.internalId) {
+      return prefix + "info";
+    }
     return undefined;
   }
 
@@ -688,7 +706,7 @@ const QueueItem = ({
           show={saveState === "saving"}
           name={patientFullName}
         />
-        <div className="prime-card-container">
+        <div className="prime-card-container" ref={testCardElement}>
           {saveState !== "saving" && closeButton}
           <div className="grid-row">
             {isCorrection && reasonForCorrection && (

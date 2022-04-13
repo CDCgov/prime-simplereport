@@ -200,6 +200,7 @@ export const es: LanguageConfig = {
           street: "Falta el nombre de la calle",
           streetTwo: "Calle 2 tiene un formato incorrecto",
           zipCode: "Falta el código postal o tiene un formato incorrecto",
+          zipForState: "El código postal no es válido para este estado",
           state: "Falta el estado o tiene un formato incorrecto",
           city: "La ciudad tiene un formato incorrecto",
           county: "El formato del condado es incorrecto",
@@ -484,7 +485,7 @@ export const es: LanguageConfig = {
         },
       },
       dob: {
-        header: "Verificar fecha de nacimiento",
+        header: "Acceda al resultado de su prueba de COVID-19",
         dateOfBirth: "Fecha de nacimiento",
         enterDOB: "Ingrese su fecha de nacimiento",
         enterDOB2:

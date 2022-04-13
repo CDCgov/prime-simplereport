@@ -5,6 +5,7 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.junit.jupiter.api.Assertions.assertNull;
 
+import gov.cdc.usds.simplereport.api.BaseNonSpringBootTestConfiguration;
 import java.io.IOException;
 import java.util.List;
 import org.junit.jupiter.api.Test;
@@ -15,7 +16,7 @@ import org.springframework.boot.test.json.JsonContent;
 import org.springframework.boot.test.json.ObjectContent;
 
 @JsonTest
-class HttpRequestDetailsSerializationTest {
+class HttpRequestDetailsSerializationTest extends BaseNonSpringBootTestConfiguration {
 
   @Autowired private JacksonTester<HttpRequestDetails> _tester;
 

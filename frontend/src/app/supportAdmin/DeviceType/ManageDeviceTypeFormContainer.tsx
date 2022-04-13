@@ -2,11 +2,12 @@ import { useState } from "react";
 import { Navigate } from "react-router-dom";
 
 import {
+  DeviceType,
   UpdateDeviceType,
   useGetDeviceTypeListQuery,
   useGetSpecimenTypesQuery,
+  useGetSupportedDiseasesQuery,
   useUpdateDeviceTypeMutation,
-  DeviceType,
 } from "../../../generated/graphql";
 import { LoadingCard } from "../../commonComponents/LoadingCard/LoadingCard";
 import { showNotification } from "../../utils";
@@ -21,6 +22,9 @@ const ManageDeviceTypeFormContainer = () => {
     fetchPolicy: "no-cache",
   });
   const { data: deviceTypeResults } = useGetDeviceTypeListQuery({
+    fetchPolicy: "no-cache",
+  });
+  const { data: supportedDiseaseResults } = useGetSupportedDiseasesQuery({
     fetchPolicy: "no-cache",
   });
 
@@ -45,11 +49,18 @@ const ManageDeviceTypeFormContainer = () => {
     return <Navigate to="/admin" />;
   }
 
-  if (deviceTypeResults && specimenTypesResults) {
+  if (deviceTypeResults && specimenTypesResults && supportedDiseaseResults) {
     const swabOptions = Array.from(
       specimenTypesResults.specimenTypes.map((type) => ({
         label: `${type?.name} (${type?.typeCode})`,
         value: type?.internalId,
+      }))
+    );
+
+    const supportedDiseaseOptions = Array.from(
+      supportedDiseaseResults.supportedDiseases.map((disease) => ({
+        label: disease.name,
+        value: disease.internalId,
       }))
     );
 
@@ -63,6 +74,7 @@ const ManageDeviceTypeFormContainer = () => {
       <ManageDevicesForm
         updateDeviceType={saveDeviceType}
         swabOptions={swabOptions}
+        supportedDiseaseOptions={supportedDiseaseOptions}
         devices={devices}
       />
     );

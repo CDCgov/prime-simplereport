@@ -26,8 +26,8 @@ export const formatDateTime = (dateFormat: string, timeFormat: string) => (
 };
 
 export const formatDateWithTimeOption = formatDateTime("MM/DD/yyyy", "h:mma");
-export const formatShortDateWithTimeOption = formatDateTime(
-  "M/D/yyyy",
+export const formatLongDateWithTimeOption = formatDateTime(
+  "MMMM D, yyyy [at] ",
   "h:mm a"
 );
 

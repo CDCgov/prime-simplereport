@@ -1,12 +1,15 @@
-import React, { useEffect } from "react";
+import React, { useEffect, useState } from "react";
 import { gql, useQuery } from "@apollo/client";
 import { TransitionGroup, CSSTransition } from "react-transition-group";
+import { useLocation } from "react-router-dom";
 
 import { showError } from "../utils";
 import { useSelectedFacility } from "../facilitySelect/useSelectedFacility";
 import { TestCorrectionReason } from "../testResults/TestResultCorrectionModal";
 
-import AddToQueueSearch from "./addToQueue/AddToQueueSearch";
+import AddToQueueSearch, {
+  StartTestProps,
+} from "./addToQueue/AddToQueueSearch";
 import QueueItem, { TestResult } from "./QueueItem";
 import { TestQueuePerson, AoEAnswers } from "./AoEForm/AoEForm";
 
@@ -110,7 +113,7 @@ interface Props {
   activeFacilityId: string;
 }
 
-interface QueueItemData extends AoEAnswers {
+export interface QueueItemData extends AoEAnswers {
   internalId: string;
   dateAdded: string;
   deviceType: {
@@ -136,7 +139,19 @@ const TestQueue: React.FC<Props> = ({ activeFacilityId }) => {
     }
   );
 
+  const location = useLocation();
   const [selectedFacility] = useSelectedFacility();
+  const [startTestPatientId, setStartTestPatientId] = useState<string | null>(
+    null
+  );
+
+  useEffect(() => {
+    const locationState = (location.state as StartTestProps) || {};
+    const { patientId: patientIdParam } = locationState;
+    if (patientIdParam) {
+      setStartTestPatientId(patientIdParam);
+    }
+  }, [location.state]);
 
   useEffect(() => {
     // Start polling on creation, stop on componenent teardown
@@ -232,6 +247,8 @@ const TestQueue: React.FC<Props> = ({ activeFacilityId }) => {
               <QueueItem
                 internalId={internalId}
                 patient={patient}
+                startTestPatientId={startTestPatientId}
+                setStartTestPatientId={setStartTestPatientId}
                 askOnEntry={questions}
                 selectedDeviceSpecimenTypeId={
                   selectedDeviceSpecimenType.internalId
@@ -292,6 +309,8 @@ const TestQueue: React.FC<Props> = ({ activeFacilityId }) => {
             refetchQueue={refetch}
             facilityId={activeFacilityId}
             patientsInQueue={patientsInQueue}
+            startTestPatientId={startTestPatientId}
+            setStartTestPatientId={setStartTestPatientId}
           />
         </div>
         {createQueueItems(data.queue)}

@@ -17,6 +17,7 @@ describe("ManageDeviceTypeForm", () => {
           { label: "eye", value: "456" },
           { label: "mouth", value: "789" },
         ]}
+        supportedDiseaseOptions={[{ label: "COVID-19", value: "123" }]}
         devices={[
           {
             internalId: "abc1",
@@ -25,6 +26,9 @@ describe("ManageDeviceTypeForm", () => {
             manufacturer: "Celoxitin",
             loincCode: "1234-1",
             swabTypes: [{ internalId: "123", name: "nose", typeCode: "n123" }],
+            supportedDiseases: [
+              { internalId: "123", name: "COVID-19", loinc: "1234-1" },
+            ],
           },
           {
             internalId: "abc2",
@@ -33,6 +37,9 @@ describe("ManageDeviceTypeForm", () => {
             manufacturer: "Curentz",
             loincCode: "1234-2",
             swabTypes: [{ internalId: "456", name: "eye", typeCode: "e456" }],
+            supportedDiseases: [
+              { internalId: "123", name: "COVID-19", loinc: "1234-1" },
+            ],
           },
           {
             internalId: "abc3",
@@ -41,6 +48,9 @@ describe("ManageDeviceTypeForm", () => {
             manufacturer: "Vitamin Tox",
             loincCode: "1234-3",
             swabTypes: [{ internalId: "789", name: "mouth", typeCode: "m789" }],
+            supportedDiseases: [
+              { internalId: "123", name: "COVID-19", loinc: "1234-1" },
+            ],
           },
         ]}
       />
@@ -59,7 +69,7 @@ describe("ManageDeviceTypeForm", () => {
     expect(
       screen.getByLabelText("LOINC code", { exact: false })
     ).toBeDisabled();
-    expect(screen.getByTestId("multi-select-toggle")).toBeDisabled();
+    expect(screen.getAllByTestId("multi-select-toggle")[0]).toBeDisabled();
   });
 
   it("shows a list of devices to select from", () => {
@@ -85,8 +95,8 @@ describe("ManageDeviceTypeForm", () => {
       const loincCodeInput = screen.getByLabelText("LOINC code", {
         exact: false,
       });
-      const snomedInput = screen.getByTestId("multi-select-toggle");
-      const pillContainer = screen.getByTestId("pill-container");
+      const snomedInput = screen.getAllByTestId("multi-select-toggle")[0];
+      const pillContainer = screen.getAllByTestId("pill-container")[0];
 
       expect(manufacturerInput).toBeEnabled();
       expect(modelInput).toBeEnabled();
@@ -100,7 +110,7 @@ describe("ManageDeviceTypeForm", () => {
     });
 
     it("displays a list of available snomeds", () => {
-      const snomedList = screen.getByTestId("multi-select-option-list");
+      const snomedList = screen.getAllByTestId("multi-select-option-list")[0];
 
       expect(within(snomedList).getByText("eye")).toBeInTheDocument();
       expect(within(snomedList).getByText("mouth")).toBeInTheDocument();
@@ -123,9 +133,9 @@ describe("ManageDeviceTypeForm", () => {
         const loincCodeInput = screen.getByLabelText("LOINC code", {
           exact: false,
         });
-        const pillContainer = screen.getByTestId("pill-container", {
+        const pillContainer = screen.getAllByTestId("pill-container", {
           exact: false,
-        });
+        })[0];
 
         expect(manufacturerInput).toHaveValue("Curentz");
         expect(modelInput).toHaveValue("Model B");
@@ -136,8 +146,8 @@ describe("ManageDeviceTypeForm", () => {
 
     describe("updating a device", () => {
       it("calls update device with the current values", () => {
-        const snomedInput = screen.getByTestId("multi-select-toggle");
-        const snomedList = screen.getByTestId("multi-select-option-list");
+        const snomedInput = screen.getAllByTestId("multi-select-toggle")[0];
+        const snomedList = screen.getAllByTestId("multi-select-option-list")[0];
 
         addValue("Manufacturer", " LLC");
         addValue("Model", "X");
@@ -153,6 +163,7 @@ describe("ManageDeviceTypeForm", () => {
           manufacturer: "Celoxitin LLC",
           loincCode: "1234-1234",
           swabTypes: ["123", "456"],
+          supportedDiseases: ["123"],
         });
         expect(saveDeviceType).toBeCalledTimes(1);
       });

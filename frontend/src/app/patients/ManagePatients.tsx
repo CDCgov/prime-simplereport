@@ -4,7 +4,7 @@ import moment from "moment";
 import classnames from "classnames";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faSlidersH } from "@fortawesome/free-solid-svg-icons";
-import { useNavigate } from "react-router-dom";
+import { NavigateOptions, useNavigate } from "react-router-dom";
 
 import { displayFullName } from "../utils";
 import { PATIENT_TERM, PATIENT_TERM_PLURAL_CAP } from "../../config/constants";
@@ -22,6 +22,7 @@ import { SEARCH_DEBOUNCE_TIME } from "../testQueue/constants";
 import Button from "../commonComponents/Button/Button";
 import SearchInput from "../testQueue/addToQueue/SearchInput";
 import { TestResult as TestResultType } from "../../app/testQueue/QueueItem";
+import { StartTestProps } from "../testQueue/addToQueue/AddToQueueSearch";
 
 import PatientUpload from "./PatientUpload";
 import ArchivePersonModal from "./ArchivePersonModal";
@@ -117,6 +118,9 @@ export const DetachedManagePatients = ({
   const [archivePerson, setArchivePerson] = useState<Patient | null>(null);
   const navigate = useNavigate();
 
+  const [redirect, setRedirect] = useState<
+    string | { pathname: string; search: string; state?: any } | undefined
+  >(undefined);
   const [queryString, debounced, setDebounced] = useDebounce<string | null>(
     null,
     {
@@ -145,6 +149,21 @@ export const DetachedManagePatients = ({
         }}
       />
     );
+  }
+
+  if (redirect) {
+    const redirectTo =
+      typeof redirect === "string"
+        ? redirect
+        : redirect.pathname + redirect.search;
+
+    const navOptions: NavigateOptions = {};
+
+    if (typeof redirect !== "string") {
+      navOptions.state = redirect.state;
+    }
+
+    navigate(redirectTo, navOptions);
   }
 
   const patientRows = (patients: Patient[]) => {
@@ -196,7 +215,18 @@ export const DetachedManagePatients = ({
               <ActionsMenu
                 items={[
                   {
-                    name: "Archive record",
+                    name: "Start test",
+                    action: () =>
+                      setRedirect({
+                        pathname: "/queue",
+                        search: `?facility=${activeFacilityId}`,
+                        state: {
+                          patientId: patient.internalId,
+                        } as StartTestProps,
+                      }),
+                  },
+                  {
+                    name: "Archive person",
                     action: () => setArchivePerson(patient),
                   },
                 ]}
@@ -273,7 +303,7 @@ export const DetachedManagePatients = ({
                   <tr>
                     <th scope="col">Name</th>
                     <th scope="col">Date of birth</th>
-                    <th scope="col">Type</th>
+                    <th scope="col">Role</th>
                     <th scope="col">Days since last test</th>
                     <th scope="col">Actions</th>
                   </tr>

@@ -11,15 +11,21 @@ import DeviceTypeReminderMessage from "./DeviceTypeReminderMessage";
 interface Props {
   saveDeviceType: (device: Device) => void;
   swabOptions: Array<MultiSelectDropdownOption>;
+  supportedDiseaseOptions: Array<MultiSelectDropdownOption>;
 }
 
-const DeviceTypeForm: React.FC<Props> = ({ saveDeviceType, swabOptions }) => {
+const DeviceTypeForm: React.FC<Props> = ({
+  saveDeviceType,
+  swabOptions,
+  supportedDiseaseOptions,
+}) => {
   const [device, updateDevice] = useState<Device>({
     name: "",
     manufacturer: "",
     model: "",
     loincCode: "",
     swabTypes: [],
+    supportedDiseases: [],
   });
   const [formChanged, updateFormChanged] = useState<boolean>(false);
 
@@ -98,10 +104,7 @@ const DeviceTypeForm: React.FC<Props> = ({ saveDeviceType, swabOptions }) => {
                 </div>
               </div>
               <div className="grid-row grid-gap">
-                <div
-                  className="tablet:grid-col"
-                  style={{ marginBottom: "56px" }}
-                >
+                <div className="tablet:grid-col">
                   <MultiSelect
                     label="SNOMED code for swab type(s)"
                     name="swabTypes"
@@ -109,6 +112,25 @@ const DeviceTypeForm: React.FC<Props> = ({ saveDeviceType, swabOptions }) => {
                       updateDeviceAttribute("swabTypes", swabTypes);
                     }}
                     options={swabOptions}
+                    required
+                  />
+                </div>
+              </div>
+              <div className="grid-row grid-gap">
+                <div
+                  className="tablet:grid-col"
+                  style={{ marginBottom: "56px" }}
+                >
+                  <MultiSelect
+                    label="Supported diseases"
+                    name="supportedDiseases"
+                    onChange={(supportedDiseases) => {
+                      updateDeviceAttribute(
+                        "supportedDiseases",
+                        supportedDiseases
+                      );
+                    }}
+                    options={supportedDiseaseOptions}
                     required
                   />
                 </div>
