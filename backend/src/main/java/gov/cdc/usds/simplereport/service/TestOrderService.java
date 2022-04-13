@@ -259,7 +259,11 @@ public class TestOrderService {
       TestEvent testEvent =
           order.getCorrectionStatus() == TestCorrectionStatus.ORIGINAL
               ? new TestEvent(order, hasPriorTests)
-              : new TestEvent(order, order.getCorrectionStatus(), order.getReasonForCorrection());
+              : new TestEvent(
+                  order,
+                  order.getCorrectionStatus(),
+                  order.getReasonForCorrection(),
+                  order.getAdditionalCorrectionInformation());
 
       _terepo.save(testEvent);
 
@@ -403,7 +407,10 @@ public class TestOrderService {
   @Transactional
   @AuthorizationConfiguration.RequirePermissionUpdateTestForTestEvent
   public TestEvent correctTest(
-      UUID testEventId, TestCorrectionStatus status, String reasonForCorrection) {
+      UUID testEventId,
+      TestCorrectionStatus status,
+      String reasonForCorrection,
+      String additionalInformation) {
     Organization org = _os.getCurrentOrganization(); // always check against org
     // The client sends us a TestEvent, we need to map back to the Order.
     TestEvent event = _terepo.findByOrganizationAndInternalId(org, testEventId);
@@ -430,6 +437,7 @@ public class TestOrderService {
     if (status == TestCorrectionStatus.CORRECTED) {
       order.setCorrectionStatus(status);
       order.setReasonForCorrection(reasonForCorrection);
+      order.setAdditionalCorrectionInformation(additionalInformation);
       order.markPending();
       _repo.save(order);
 
@@ -439,11 +447,13 @@ public class TestOrderService {
     // generate a duplicate test_event that just has a status of REMOVED and the
     // reason
     TestEvent newRemoveEvent =
-        new TestEvent(event, TestCorrectionStatus.REMOVED, reasonForCorrection);
+        new TestEvent(
+            event, TestCorrectionStatus.REMOVED, reasonForCorrection, additionalInformation);
     _terepo.save(newRemoveEvent);
     _testEventReportingService.report(newRemoveEvent);
 
     order.setReasonForCorrection(reasonForCorrection);
+    order.setAdditionalCorrectionInformation(additionalInformation);
     order.setTestEventRef(newRemoveEvent);
 
     order.setCorrectionStatus(TestCorrectionStatus.REMOVED);
@@ -453,16 +463,24 @@ public class TestOrderService {
     return newRemoveEvent;
   }
 
-  @Transactional
-  @AuthorizationConfiguration.RequirePermissionUpdateTestForTestEvent
-  public TestEvent markAsError(UUID testEventId, String reasonForCorrection) {
-    return correctTest(testEventId, TestCorrectionStatus.REMOVED, reasonForCorrection);
+  public TestEvent markAsError(
+      UUID testEventId, String reasonForCorrection, String additionalInformation) {
+    return correctTest(
+        testEventId, TestCorrectionStatus.REMOVED, reasonForCorrection, additionalInformation);
   }
 
-  @Transactional
-  @AuthorizationConfiguration.RequirePermissionUpdateTestForTestEvent
+  public TestEvent markAsCorrection(
+      UUID testEventId, String reasonForCorrection, String additionalInformation) {
+    return correctTest(
+        testEventId, TestCorrectionStatus.CORRECTED, reasonForCorrection, additionalInformation);
+  }
+
+  public TestEvent markAsError(UUID testEventId, String reasonForCorrection) {
+    return correctTest(testEventId, TestCorrectionStatus.REMOVED, reasonForCorrection, null);
+  }
+
   public TestEvent markAsCorrection(UUID testEventId, String reasonForCorrection) {
-    return correctTest(testEventId, TestCorrectionStatus.CORRECTED, reasonForCorrection);
+    return correctTest(testEventId, TestCorrectionStatus.CORRECTED, reasonForCorrection, null);
   }
 
   @Transactional(readOnly = true)

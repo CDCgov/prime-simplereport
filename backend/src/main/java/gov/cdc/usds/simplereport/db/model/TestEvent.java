@@ -74,10 +74,13 @@ public class TestEvent extends BaseTestInfo {
     }
   }
 
-  // Constructor for creating corrections. Copy the original event
+  // Constructors for creating test removals (mark as error). Copy the original event
   public TestEvent(
-      TestEvent event, TestCorrectionStatus correctionStatus, String reasonForCorrection) {
-    super(event, correctionStatus, reasonForCorrection);
+      TestEvent event,
+      TestCorrectionStatus correctionStatus,
+      String reasonForCorrection,
+      String additionalInformation) {
+    super(event, correctionStatus, reasonForCorrection, additionalInformation);
 
     this.patientData = event.getPatientData();
     this.providerData = event.getProviderData();
@@ -88,8 +91,17 @@ public class TestEvent extends BaseTestInfo {
   }
 
   public TestEvent(
-      TestOrder order, TestCorrectionStatus correctionStatus, String reasonForCorrection) {
-    super(order, correctionStatus, reasonForCorrection);
+      TestEvent event, TestCorrectionStatus correctionStatus, String reasonForCorrection) {
+    this(event, correctionStatus, reasonForCorrection, null);
+  }
+
+  // Constructors for creating test correction events
+  public TestEvent(
+      TestOrder order,
+      TestCorrectionStatus correctionStatus,
+      String reasonForCorrection,
+      String additionalInformation) {
+    super(order, correctionStatus, reasonForCorrection, additionalInformation);
 
     TestEvent event = order.getTestEvent();
 
@@ -99,6 +111,11 @@ public class TestEvent extends BaseTestInfo {
     this.surveyData = event.getSurveyData();
     setDateTestedBackdate(order.getDateTestedBackdate());
     this.priorCorrectedTestEventId = event.getInternalId();
+  }
+
+  public TestEvent(
+      TestOrder order, TestCorrectionStatus correctionStatus, String reasonForCorrection) {
+    this(order, correctionStatus, reasonForCorrection, null);
   }
 
   public UUID getPatientInternalID() {

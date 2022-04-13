@@ -584,10 +584,13 @@ type Mutation {
     result: String
     dateTested: DateTime
   ): TestOrder @requiredPermissions(allOf: ["UPDATE_TEST"])
-  correctTestMarkAsError(id: ID!, reason: String): TestResult
+  correctTestMarkAsError(id: ID!, reason: String, info: String): TestResult
     @requiredPermissions(allOf: ["UPDATE_TEST"])
-  correctTestMarkAsCorrection(id: ID!, reason: String): TestResult
-    @requiredPermissions(allOf: ["UPDATE_TEST"])
+  correctTestMarkAsCorrection(
+    id: ID!
+    reason: String
+    info: String
+  ): TestResult @requiredPermissions(allOf: ["UPDATE_TEST"])
   addPatientToQueue(
     facilityId: ID!
     patientId: ID!
