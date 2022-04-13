@@ -3733,6 +3733,10 @@ databaseChangeLog:
       changes:
         - tagDatabase:
             tag: add-test-correction-columns
+        - sql:
+            remarks: Create the enumerations needed for tracking test order correction reasons
+            sql: |
+              CREATE TYPE ${database.defaultSchemaName}.TEST_CORRECTION_REASON as ENUM('DUPLICATE_TEST', 'INCORRECT_RESULT', 'INCORRECT_TEST_DATE', 'OTHER');
         - addColumn:
             tableName: test_order
             columns:
@@ -3749,8 +3753,8 @@ databaseChangeLog:
                   constraints:
                     nullable: true
               - column:
-                  name: additional_correction_information
-                  type: text
+                  name: correction_reason
+                  type: ${database.defaultSchemaName}.TEST_CORRECTION_REASON
                   constraints:
                     nullable: true
         - addColumn:
@@ -3769,7 +3773,17 @@ databaseChangeLog:
                   constraints:
                     nullable: true
               - column:
-                  name: additional_correction_information
-                  type: text
+                  name: correction_reason
+                  type: ${database.defaultSchemaName}.TEST_CORRECTION_REASON
                   constraints:
                     nullable: true
+        - sql:
+            remarks: 
+            sql: |
+              UPDATE ${database.defaultSchemaName}.test_order SET correction_reason='OTHER' WHERE reason_for_correction IS NOT NULL;
+              GRANT SELECT ON ${database.defaultSchemaName}.result TO ${noPhiUsername};
+      rollback:
+          sql: |
+            ALTER TABLE ${database.defaultSchemaName}.test_order DROP COLUMN corrected_by, DROP COLUMN corrected_at, DROP COLUMN correction_reason;
+            ALTER TABLE ${database.defaultSchemaName}.test_event DROP COLUMN corrected_by, DROP COLUMN corrected_at, DROP COLUMN correction_reason;
+            DROP TYPE ${database.defaultSchemaName}.TEST_CORRECTION_REASON;
