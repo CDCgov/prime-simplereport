@@ -5,19 +5,21 @@ import TextInput from "../../commonComponents/TextInput";
 import MultiSelect from "../../commonComponents/MultiSelect/MultiSelect";
 import Select from "../../commonComponents/Select";
 import { MultiSelectDropdownOption } from "../../commonComponents/MultiSelect/MultiSelectDropdown/MultiSelectDropdown";
-import { UpdateDeviceType, DeviceType } from "../../../generated/graphql";
+import { DeviceType, UpdateDeviceType } from "../../../generated/graphql";
 
 import DeviceTypeReminderMessage from "./DeviceTypeReminderMessage";
 
 interface Props {
   updateDeviceType: (device: UpdateDeviceType) => void;
   swabOptions: Array<MultiSelectDropdownOption>;
+  supportedDiseaseOptions: Array<MultiSelectDropdownOption>;
   devices: DeviceType[];
 }
 
 const ManageDevicesForm: React.FC<Props> = ({
   updateDeviceType,
   swabOptions,
+  supportedDiseaseOptions,
   devices,
 }) => {
   const [selectedDevice, setSelectedDevice] = useState<
@@ -56,6 +58,9 @@ const ManageDevicesForm: React.FC<Props> = ({
           manufacturer: device.manufacturer,
           model: device.model,
           swabTypes: device.swabTypes?.map((swab) => swab.internalId),
+          supportedDiseases:
+            device.supportedDiseases?.map((disease) => disease.internalId) ||
+            [],
           loincCode: device.loincCode,
         }
       : undefined;
@@ -142,10 +147,7 @@ const ManageDevicesForm: React.FC<Props> = ({
                 </div>
               </div>
               <div className="grid-row grid-gap">
-                <div
-                  className="tablet:grid-col"
-                  style={{ marginBottom: "56px" }}
-                >
+                <div className="tablet:grid-col">
                   <MultiSelect
                     key={selectedDevice?.internalId}
                     label="SNOMED code for swab type(s)"
@@ -155,6 +157,28 @@ const ManageDevicesForm: React.FC<Props> = ({
                     }}
                     options={swabOptions}
                     initialSelectedValues={selectedDevice?.swabTypes}
+                    disabled={!selectedDevice}
+                    required
+                  />
+                </div>
+              </div>
+              <div className="grid-row grid-gap">
+                <div
+                  className="tablet:grid-col"
+                  style={{ marginBottom: "56px" }}
+                >
+                  <MultiSelect
+                    key={selectedDevice?.internalId}
+                    label="Supported diseases"
+                    name="supportedDiseases"
+                    onChange={(supportedDiseases) => {
+                      updateDeviceAttribute(
+                        "supportedDiseases",
+                        supportedDiseases
+                      );
+                    }}
+                    options={supportedDiseaseOptions}
+                    initialSelectedValues={selectedDevice?.supportedDiseases}
                     disabled={!selectedDevice}
                     required
                   />

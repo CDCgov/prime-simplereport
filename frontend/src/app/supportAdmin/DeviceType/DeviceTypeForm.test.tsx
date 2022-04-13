@@ -16,6 +16,7 @@ describe("DeviceTypeForm", () => {
       <DeviceTypeForm
         saveDeviceType={saveDeviceType}
         swabOptions={[{ label: "Swab (445297001)", value: "445297001" }]}
+        supportedDiseaseOptions={[{ label: "COVID-19", value: "3821904728" }]}
       />
     );
   });
@@ -48,6 +49,7 @@ describe("DeviceTypeForm", () => {
           model: "Accula SARS-Cov-2 Test*",
           name: "Accula",
           swabTypes: ["445297001"],
+          supportedDiseases: [],
         });
         expect(saveDeviceType).toBeCalledTimes(1);
       });
