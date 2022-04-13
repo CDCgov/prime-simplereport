@@ -266,22 +266,6 @@ public class TestOrderService {
       order.setTestEventRef(testEvent);
       TestOrder savedOrder = _repo.save(order);
 
-      System.out.println("PRINTING in addTestResultNew");
-      Result r = order.getResultForDisease(_diseaseService.covid()).get();
-      System.out.println(r.getTestResult());
-      System.out.println(r.getTestEvent());
-      System.out.println(testEvent.getResult());
-
-      // Joy of joys - I'm fairly certain we have some kind of race condition happening here.
-      // The results seem to save the testEvent properly when we're in debug mode, but not when
-      // running normally
-      // This is also why it's failing in the test environment, I suspect
-      // So, the trick here - how do we make sure the updated result is saving before moving along
-      // to the next thing?
-
-      // submitting results used to work and now it doesn't! Need to look deeper into what may have
-      // changed, it doesn't seem like anything has
-
       _testEventReportingService.report(testEvent);
       ArrayList<Boolean> deliveryStatuses = new ArrayList<>();
 

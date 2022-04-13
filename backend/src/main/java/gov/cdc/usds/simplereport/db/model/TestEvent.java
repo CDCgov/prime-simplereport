@@ -63,18 +63,11 @@ public class TestEvent extends BaseTestInfo {
   public TestEvent(TestOrder order, Boolean hasPriorTests) {
     super(order.getPatient(), order.getFacility(), order.getDeviceSpecimen());
 
-    Hibernate.initialize(order.getResultSet());
-
     if (order.getResultSet().isEmpty()) {
       throw new IllegalArgumentException("TestOrder must contain a result");
     }
 
-    // it could also be that this isn't working at all, and only seems to in debugging because it's
-    // force-loaded
     order.getResultSet().forEach(result -> result.setTestEvent(this));
-    // weirdly this only seems required for tests? It breaks with the below Hibernate exception in
-    // non-testing envs
-    // this.results = order.getResultSet();
 
     // store a link, and *also* store the object as JSON
     // force load the lazy-loaded phone numbers so values are available to the object mapper
@@ -175,9 +168,3 @@ public class TestEvent extends BaseTestInfo {
     return this.results;
   }
 }
-
-/**
- * Found shared references to a collection: gov.cdc.usds.simplereport.db.model.TestEvent.results;
- * nested exception is org.hibernate.HibernateException: Found shared references to a collection:
- * gov.cdc.usds.simplereport.db.model.TestEvent.results
- */
