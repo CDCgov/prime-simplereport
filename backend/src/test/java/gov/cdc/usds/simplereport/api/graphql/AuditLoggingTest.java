@@ -14,7 +14,7 @@ import gov.cdc.usds.simplereport.db.model.Facility;
 import gov.cdc.usds.simplereport.db.model.Organization;
 import gov.cdc.usds.simplereport.db.model.PatientLink;
 import gov.cdc.usds.simplereport.db.model.Person;
-import gov.cdc.usds.simplereport.db.model.TestOrder;
+import gov.cdc.usds.simplereport.db.model.TestEvent;
 import gov.cdc.usds.simplereport.db.model.auxiliary.HttpRequestDetails;
 import gov.cdc.usds.simplereport.test_util.TestDataFactory;
 import gov.cdc.usds.simplereport.test_util.TestUserIdentities;
@@ -120,10 +120,10 @@ class AuditLoggingTest extends BaseGraphqlTest {
             .put("dateOfBirth", TestDataFactory.DEFAULT_BDAY.toString())
             .toString();
     _mockMvc
-        .perform(withJsonContent(post(ResourceLinks.VERIFY_LINK), requestBody))
+        .perform(withJsonContent(post(ResourceLinks.VERIFY_LINK_V2), requestBody))
         .andExpect(status().isOk());
 
-    ApiAuditEvent event = assertLastAuditEntry(HttpStatus.OK, ResourceLinks.VERIFY_LINK, null);
+    ApiAuditEvent event = assertLastAuditEntry(HttpStatus.OK, ResourceLinks.VERIFY_LINK_V2, null);
     assertEquals(link.getInternalId(), event.getPatientLink().getInternalId(), "patient link");
     assertEquals(TestDataFactory.DEFAULT_ORG_ID, event.getOrganization().getExternalId());
 
@@ -144,8 +144,8 @@ class AuditLoggingTest extends BaseGraphqlTest {
           Organization org = _dataFactory.createValidOrg();
           Facility site = _dataFactory.createValidFacility(org);
           Person person = _dataFactory.createFullPerson(org);
-          TestOrder testOrder = _dataFactory.createTestOrder(person, site);
-          linkHolder.setValue(_dataFactory.createPatientLink(testOrder));
+          TestEvent testEvent = _dataFactory.createTestEvent(person, site);
+          linkHolder.setValue(_dataFactory.createPatientLink(testEvent.getTestOrder()));
         });
     return linkHolder.getValue();
   }
@@ -160,12 +160,12 @@ class AuditLoggingTest extends BaseGraphqlTest {
             .put("dateOfBirth", TestDataFactory.DEFAULT_BDAY.toString())
             .toString();
     MockHttpServletRequestBuilder req =
-        withJsonContent(post(ResourceLinks.VERIFY_LINK), requestBody)
+        withJsonContent(post(ResourceLinks.VERIFY_LINK_V2), requestBody)
             .header("X-forwarded-PROTO", "gopher")
             .header("x-ORIGINAL-HOST", "simplereport.simple")
             .header("x-forwarded-for", "192.168.153.128:80, 10.3.1.1:443");
     _mockMvc.perform(req).andExpect(status().isOk());
-    ApiAuditEvent event = assertLastAuditEntry(HttpStatus.OK, ResourceLinks.VERIFY_LINK, null);
+    ApiAuditEvent event = assertLastAuditEntry(HttpStatus.OK, ResourceLinks.VERIFY_LINK_V2, null);
     assertEquals(link.getInternalId(), event.getPatientLink().getInternalId(), "patient link");
     assertEquals(TestDataFactory.DEFAULT_ORG_ID, event.getOrganization().getExternalId());
 
