@@ -43,6 +43,7 @@ import gov.cdc.usds.simplereport.test_util.TestUserIdentities;
 import java.time.Instant;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
+import java.time.ZoneId;
 import java.util.Collections;
 import java.util.Date;
 import java.util.HashMap;
@@ -578,7 +579,11 @@ class TestOrderServiceTest extends BaseServiceTest<TestOrderService> {
     assertEquals(TestCorrectionStatus.CORRECTED, correctionTestEvent.getCorrectionStatus());
     assertEquals("Cold feet", correctionTestEvent.getReasonForCorrection());
     assertEquals(TestResult.NEGATIVE, correctionTestEvent.getResult());
-    // think about the dates here - how's backdating look?
+    // Date of original test is overwritten by the new correction event
+    assertNotEquals(
+        LocalDate.of(1865, 12, 25),
+        LocalDate.ofInstant(
+            correctionTestEvent.getDateTested().toInstant(), ZoneId.systemDefault()));
   }
 
   @Test
