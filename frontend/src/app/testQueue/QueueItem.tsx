@@ -714,7 +714,9 @@ const QueueItem = ({
                 className={classnames("tablet:grid-col-12", "card-correction")}
               >
                 <strong>Correction:</strong>{" "}
-                {TestCorrectionReasons[reasonForCorrection]}
+                {reasonForCorrection in TestCorrectionReasons
+                  ? TestCorrectionReasons[reasonForCorrection]
+                  : reasonForCorrection}
               </div>
             )}
             <div className="tablet:grid-col-9">
