@@ -730,6 +730,8 @@ describe("QueueItem", () => {
             facilityName="Foo facility"
             isCorrection={true}
             reasonForCorrection={TestCorrectionReason.INCORRECT_RESULT}
+            startTestPatientId={null}
+            setStartTestPatientId={() => {}}
           />
         </Provider>
       </MockedProvider>

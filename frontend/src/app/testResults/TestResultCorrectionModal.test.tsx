@@ -195,7 +195,7 @@ describe("TestResultCorrectionModal", () => {
           query: MARK_TEST_AS_ERROR,
           variables: {
             id: internalId,
-            reason: TestCorrectionReason.OTHER,
+            reason: "Some good reason",
           },
         },
         result: () => {
@@ -213,7 +213,7 @@ describe("TestResultCorrectionModal", () => {
           query: MARK_TEST_AS_CORRECTION,
           variables: {
             id: internalId,
-            reason: TestCorrectionReason.OTHER,
+            reason: "Some good reason",
           },
         },
         result: () => {

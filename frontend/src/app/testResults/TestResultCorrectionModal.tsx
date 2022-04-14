@@ -125,7 +125,7 @@ export const DetachedTestResultCorrectionModal = ({
     markTestAsError({
       variables: {
         id: testResultId,
-        reason,
+        reason: correctionDetails || reason,
       },
     })
       .then(() => {
@@ -143,7 +143,7 @@ export const DetachedTestResultCorrectionModal = ({
     markTestAsCorrection({
       variables: {
         id: testResultId,
-        reason,
+        reason: correctionDetails || reason,
       },
     })
       .then(() => {
