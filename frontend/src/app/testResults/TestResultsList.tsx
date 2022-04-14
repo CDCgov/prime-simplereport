@@ -548,7 +548,7 @@ export const DetachedTestResultsList = ({
                       COVID-19
                     </th>
                     <th scope="col" className="test-facility-cell">
-                      Facility
+                      Testing facility
                     </th>
                     <th scope="col" className="test-device-cell">
                       Test device

@@ -368,7 +368,7 @@ exports[`TestResultsList should render a list of tests 1`] = `
                     class="test-facility-cell"
                     scope="col"
                   >
-                    Facility
+                    Testing facility
                   </th>
                   <th
                     class="test-device-cell"

@@ -1372,7 +1372,7 @@ describe("TestResultsList", () => {
       });
       userEvent.click(downloadButton);
       expect(
-        screen.getByText("Download results without any filters", {
+        screen.getByText("Download results without any search filters", {
           exact: false,
         })
       ).toBeInTheDocument();
@@ -1391,7 +1391,7 @@ describe("TestResultsList", () => {
       });
       userEvent.click(downloadButton);
       expect(
-        screen.getByText("Download results without any filters", {
+        screen.getByText("Download results without any search filters", {
           exact: false,
         })
       ).toBeInTheDocument();
@@ -1412,7 +1412,7 @@ describe("TestResultsList", () => {
         })
       ).toBeInTheDocument();
       await waitForElementToBeRemoved(() =>
-        screen.queryByText("Download results without any filters", {
+        screen.queryByText("Download results without any search filters", {
           exact: false,
         })
       );
@@ -1433,7 +1433,7 @@ describe("TestResultsList", () => {
       userEvent.click(downloadButton);
       expect(
         await screen.findByText(
-          "Download results with current filters applied",
+          "Download results with current search filters applied",
           {
             exact: false,
           }
