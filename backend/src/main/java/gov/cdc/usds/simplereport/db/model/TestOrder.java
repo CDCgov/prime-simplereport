@@ -128,11 +128,6 @@ public class TestOrder extends BaseTestInfo {
     super.setReasonForCorrection(reasonForCorrection);
   }
 
-  @Override
-  public void setAdditionalCorrectionInformation(String additionalInfo) {
-    super.setAdditionalCorrectionInformation(additionalInfo);
-  }
-
   public UUID getPatientAnswersId() {
     return patientAnswersId;
   }

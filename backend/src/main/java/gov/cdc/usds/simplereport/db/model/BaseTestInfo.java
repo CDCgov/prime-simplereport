@@ -54,9 +54,6 @@ public abstract class BaseTestInfo extends AuditedEntity implements Organization
   @Column(nullable = true)
   private String reasonForCorrection;
 
-  @Column(nullable = true)
-  private String additionalCorrectionInformation;
-
   protected BaseTestInfo() {
     super();
   }
@@ -83,24 +80,10 @@ public abstract class BaseTestInfo extends AuditedEntity implements Organization
   }
 
   protected BaseTestInfo(
-      BaseTestInfo cloneInfo,
-      TestCorrectionStatus correctionStatus,
-      String reasonForCorrection,
-      String additionalCorrectionInformation) {
+      BaseTestInfo cloneInfo, TestCorrectionStatus correctionStatus, String reasonForCorrection) {
     this(cloneInfo);
     this.reasonForCorrection = reasonForCorrection;
     this.correctionStatus = correctionStatus;
-    this.additionalCorrectionInformation = additionalCorrectionInformation;
-  }
-
-  protected BaseTestInfo(
-      BaseTestInfo cloneInfo, TestCorrectionStatus correctionStatus, String reasonForCorrection) {
-    this(cloneInfo, correctionStatus, reasonForCorrection, null);
-    /*
-    this.reasonForCorrection = reasonForCorrection;
-    this.correctionStatus = correctionStatus;
-    this.additionalCorrectionInformation = null;
-    */
   }
 
   public Person getPatient() {
@@ -168,13 +151,5 @@ public abstract class BaseTestInfo extends AuditedEntity implements Organization
 
   protected void setReasonForCorrection(String reasonForCorrection) {
     this.reasonForCorrection = reasonForCorrection;
-  }
-
-  public String getAdditionalCorrectionInformation() {
-    return additionalCorrectionInformation;
-  }
-
-  protected void setAdditionalCorrectionInformation(String additionalCorrectionInformation) {
-    this.additionalCorrectionInformation = additionalCorrectionInformation;
   }
 }
