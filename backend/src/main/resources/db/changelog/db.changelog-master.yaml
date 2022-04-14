@@ -3788,3 +3788,69 @@ databaseChangeLog:
             ALTER TABLE ${database.defaultSchemaName}.test_order DROP COLUMN corrected_by, DROP COLUMN corrected_at, DROP COLUMN correction_type;
             ALTER TABLE ${database.defaultSchemaName}.test_event DROP COLUMN corrected_by, DROP COLUMN corrected_at, DROP COLUMN correction_type;
             DROP TYPE ${database.defaultSchemaName}.TEST_CORRECTION_TYPE;
+  - changeSet:
+      id: create-upload-table
+      author: dsass@skylight.digital
+      comment: Add a table that holds data about bulk test result uploads.
+      changes:
+        - tagDatabase:
+            tag: create-upload-table
+        - sql:
+            remarks: Create the enumerations for upload statuses
+            sql: |
+              CREATE TYPE ${database.defaultSchemaName}.UPLOAD_STATUS as ENUM('SUCCESS', 'FAILURE', 'PENDING');
+        - createTable:
+            tableName: upload
+            remarks: A collection of meta data for bulk uploads.
+            columns:
+              - column:
+                  name: report_id
+                  type: uuid
+                  remarks: The internal database identifier for this entity.
+                  constraints:
+                    primaryKey: true
+                    nullable: false
+              - column: *created_at_column
+              - column: *created_by_column
+              - column:
+                  name: records_count
+                  remarks: The number of records uploaded.
+                  type: int
+                  constraints:
+                    nullable: false
+              - column:
+                  name: status
+                  remarks: The status of the upload.
+                  type: ${database.defaultSchemaName}.UPLOAD_STATUS
+                  constraints:
+                    nullable: false
+              - column:
+                  name: org_id
+                  remarks: The organization id that uploaded the data.
+                  type: uuid
+                  constraints:
+                    nullable: false
+                    foreignKeyName: fk__upload__organization
+                    references: organization(internal_id)
+              - column:
+                  name: facility_id
+                  remarks: The facility id that uploaded the data.
+                  type: uuid
+                  constraints:
+                    nullable: false
+                    foreignKeyName: fk__upload__facility
+                    references: facility(internal_id)
+              - column:
+                  name: errors
+                  remarks: Any errors encountered when uploading.
+                  type: text
+              - column:
+                  name: warnings
+                  remarks: Any warnings encountered when uploading.
+                  type: text
+        - sql: |
+            GRANT SELECT ON ${database.defaultSchemaName}.upload TO ${noPhiUsername};
+      rollback:
+        sql: |
+          DROP TABLE ${database.defaultSchemaName}.upload;
+          DROP TYPE ${database.defaultSchemaName}.UPLOAD_STATUS;
