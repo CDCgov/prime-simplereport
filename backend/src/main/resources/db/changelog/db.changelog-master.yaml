@@ -772,20 +772,20 @@ databaseChangeLog:
             tableName: facility
             remarks: A site where testing occurs (may be called "site" in user-facing language).
             columns:
-              - column: 
+              - column:
                   name: internal_id
                   type: uuid
                   remarks: The internal database identifier for this entity.
                   constraints:
                     primaryKey: true
                     nullable: false
-              - column: 
+              - column:
                   name: created_at
                   type: DATETIME
                   remarks: The creation timestamp for this entity.
                   constraints:
                     nullable: false
-              - column: 
+              - column:
                   name: created_by
                   type: uuid
                   remarks: The user who created this entity.
@@ -793,13 +793,13 @@ databaseChangeLog:
                     nullable: false
                     foreignKeyName: fk__anyentity__created_by
                     references: api_user
-              - column: 
+              - column:
                   name: updated_at
                   type: DATETIME
                   remarks: The timestamp for the most recent update of this entity.
                   constraints:
                     nullable: false
-              - column: 
+              - column:
                   name: updated_by
                   type: uuid
                   remarks: The user who most recently updated this entity.
@@ -807,7 +807,7 @@ databaseChangeLog:
                     nullable: false
                     references: api_user
                     foreignKeyName: fk__anyentity__updated_by
-              - column: 
+              - column:
                   name: is_deleted
                   type: boolean
                   remarks: Flag for soft-deletion of entities (false unless the entity has been deleted).
@@ -1187,9 +1187,9 @@ databaseChangeLog:
       rollback:
         - sql:
           sql: |
-              UPDATE ${database.defaultSchemaName}.test_order
-              SET date_tested_backdate = date_tested_backdate - interval '7' HOUR
-              WHERE date_tested_backdate is not null;
+            UPDATE ${database.defaultSchemaName}.test_order
+            SET date_tested_backdate = date_tested_backdate - interval '7' HOUR
+            WHERE date_tested_backdate is not null;
 
   - changeSet:
       id: drop-not-null-last-seen-user
@@ -1326,20 +1326,20 @@ databaseChangeLog:
             tableName: patient_link
             remarks: Time-sensitive UUIDs granting patients access to answer time of test questions
             columns:
-              - column: 
+              - column:
                   name: internal_id
                   type: uuid
                   remarks: The internal database identifier for this entity.
                   constraints:
                     primaryKey: true
                     nullable: false
-              - column: 
+              - column:
                   name: created_at
                   type: DATETIME
                   remarks: The creation timestamp for this entity.
                   constraints:
                     nullable: false
-              - column: 
+              - column:
                   name: created_by
                   type: uuid
                   remarks: The user who created this entity.
@@ -1347,13 +1347,13 @@ databaseChangeLog:
                     nullable: false
                     foreignKeyName: fk__anyentity__created_by
                     references: api_user
-              - column: 
+              - column:
                   name: updated_at
                   type: DATETIME
                   remarks: The timestamp for the most recent update of this entity.
                   constraints:
                     nullable: false
-              - column: 
+              - column:
                   name: updated_by
                   type: uuid
                   remarks: The user who most recently updated this entity.
@@ -1361,7 +1361,7 @@ databaseChangeLog:
                     nullable: false
                     references: api_user
                     foreignKeyName: fk__anyentity__updated_by
-              - column: 
+              - column:
                   name: is_deleted
                   type: boolean
                   remarks: Flag for soft-deletion of entities (false unless the entity has been deleted).
@@ -1414,20 +1414,20 @@ databaseChangeLog:
             tableName: specimen_type
             remarks: A type of specimen collection from a patient.
             columns:
-              - column: 
+              - column:
                   name: internal_id
                   type: uuid
                   remarks: The internal database identifier for this entity.
                   constraints:
                     primaryKey: true
                     nullable: false
-              - column: 
+              - column:
                   name: created_at
                   type: DATETIME
                   remarks: The creation timestamp for this entity.
                   constraints:
                     nullable: false
-              - column: 
+              - column:
                   name: created_by
                   type: uuid
                   remarks: The user who created this entity.
@@ -1435,13 +1435,13 @@ databaseChangeLog:
                     nullable: false
                     foreignKeyName: fk__anyentity__created_by
                     references: api_user
-              - column: 
+              - column:
                   name: updated_at
                   type: DATETIME
                   remarks: The timestamp for the most recent update of this entity.
                   constraints:
                     nullable: false
-              - column: 
+              - column:
                   name: updated_by
                   type: uuid
                   remarks: The user who most recently updated this entity.
@@ -1449,7 +1449,7 @@ databaseChangeLog:
                     nullable: false
                     references: api_user
                     foreignKeyName: fk__anyentity__updated_by
-              - column: 
+              - column:
                   name: is_deleted
                   type: boolean
                   remarks: Flag for soft-deletion of entities (false unless the entity has been deleted).
@@ -1483,20 +1483,20 @@ databaseChangeLog:
             tableName: device_specimen_type
             remarks: A usable combination of device type and specimen type.
             columns:
-              - column: 
+              - column:
                   name: internal_id
                   type: uuid
                   remarks: The internal database identifier for this entity.
                   constraints:
                     primaryKey: true
                     nullable: false
-              - column: 
+              - column:
                   name: created_at
                   type: DATETIME
                   remarks: The creation timestamp for this entity.
                   constraints:
                     nullable: false
-              - column: 
+              - column:
                   name: created_by
                   type: uuid
                   remarks: The user who created this entity.
@@ -1504,13 +1504,13 @@ databaseChangeLog:
                     nullable: false
                     foreignKeyName: fk__anyentity__created_by
                     references: api_user
-              - column: 
+              - column:
                   name: updated_at
                   type: DATETIME
                   remarks: The timestamp for the most recent update of this entity.
                   constraints:
                     nullable: false
-              - column: 
+              - column:
                   name: updated_by
                   type: uuid
                   remarks: The user who most recently updated this entity.
@@ -1518,7 +1518,7 @@ databaseChangeLog:
                     nullable: false
                     references: api_user
                     foreignKeyName: fk__anyentity__updated_by
-              - column: 
+              - column:
                   name: is_deleted
                   type: boolean
                   remarks: Flag for soft-deletion of entities (false unless the entity has been deleted).
@@ -1752,20 +1752,20 @@ databaseChangeLog:
             tableName: time_of_consent
             remarks: This table stores the time at which patients accept the terms of consent for patient links
             columns:
-              - column: 
+              - column:
                   name: internal_id
                   type: uuid
                   remarks: The internal database identifier for this entity.
                   constraints:
                     primaryKey: true
                     nullable: false
-              - column: 
+              - column:
                   name: created_at
                   type: DATETIME
                   remarks: The creation timestamp for this entity.
                   constraints:
                     nullable: false
-              - column: 
+              - column:
                   name: updated_at
                   type: DATETIME
                   remarks: The timestamp for the most recent update of this entity.
@@ -2188,219 +2188,219 @@ databaseChangeLog:
         - dropTable:
             tableName: patient_registration_link
   - changeSet:
-        id: add-spring-session-jdbc-support
-        author: emma@skylight.digital
-        comment: Add a table to back spring sessions.
-        changes: 
-          - createTable:
-                tableName: spring_session
-                remarks: Data store for user sessions, as created by SpringSession.
-                columns:
-                  - column:
-                      name: primary_id
-                      type: char(36)
-                      remarks: The immutable internal key to identify this session.
-                      constraints:
-                        nullable: false
-                        primaryKey: true
-                        primaryKeyName: pk__spring_session
-                  - column:
-                      name: session_id
-                      type: char(36)
-                      remarks: A unique, externally visible string that identifies this session.
-                      constraints:
-                        nullable: false
-                        unique: true
-                        uniqueConstraintName: uk__spring_session
-                  - column:
-                      name: creation_time
-                      type: DATETIME
-                      remarks: The creation timestamp for the session id.
-                      constraints: 
-                        nullable: false
-                  - column:
-                      name: last_access_time
-                      type: DATETIME
-                      remarks: The last time the session id was used.
-                      constraints:
-                        nullable: false 
-                  - column:
-                      name: max_inactive_interval
-                      type: int
-                      remarks: The maximum inactive interval time before a session times out and is invalidated.
-                      constraints: 
-                        nullable: false
-                  - column:
-                      name: expiry_time
-                      type: DATETIME
-                      remarks: The time this session will expire (last_access_time + max_inactive_interval.)
-                      constraints: 
-                        nullable: false
-                  - column:
-                      name: principal_name
-                      type: text
-                      remarks: The name or UUID of the user for this session.
-          - createIndex:
-              tableName: spring_session
-              indexName: ix__spring_session_expiry_time
-              columns:
-                - column:
-                    name: expiry_time
-          - createIndex:
-              tableName: spring_session
-              indexName: ix__spring_session_principal_name
-              columns:
-                - column:
-                    name: principal_name
-          - createTable:
-                tableName: spring_session_attributes
-                remarks: Attribute store for user sessions.
-                columns:
-                  - column:
-                      name: session_primary_id
-                      type: char(36)
-                      remarks: The immutable internal key to identify this session.
-                      constraints:
-                        nullable: false
-                        foreignKeyName: fk__spring_session_attributes__spring_session
-                        references: spring_session
-                        deleteCascade: true
-                  - column:
-                      name: attribute_name
-                      type: text
-                      remarks: The unique name of this attribute.
-                      constraints: 
-                        nullable: false
-                  - column:
-                      name: attribute_bytes
-                      type: BYTEA
-                      remarks: The stored value of the attribute.
-                      constraints:
-                        nullable: false
-          - addPrimaryKey:
-              tableName: spring_session_attributes
-              columnNames: session_primary_id, attribute_name
+      id: add-spring-session-jdbc-support
+      author: emma@skylight.digital
+      comment: Add a table to back spring sessions.
+      changes:
+        - createTable:
+            tableName: spring_session
+            remarks: Data store for user sessions, as created by SpringSession.
+            columns:
+              - column:
+                  name: primary_id
+                  type: char(36)
+                  remarks: The immutable internal key to identify this session.
+                  constraints:
+                    nullable: false
+                    primaryKey: true
+                    primaryKeyName: pk__spring_session
+              - column:
+                  name: session_id
+                  type: char(36)
+                  remarks: A unique, externally visible string that identifies this session.
+                  constraints:
+                    nullable: false
+                    unique: true
+                    uniqueConstraintName: uk__spring_session
+              - column:
+                  name: creation_time
+                  type: DATETIME
+                  remarks: The creation timestamp for the session id.
+                  constraints:
+                    nullable: false
+              - column:
+                  name: last_access_time
+                  type: DATETIME
+                  remarks: The last time the session id was used.
+                  constraints:
+                    nullable: false
+              - column:
+                  name: max_inactive_interval
+                  type: int
+                  remarks: The maximum inactive interval time before a session times out and is invalidated.
+                  constraints:
+                    nullable: false
+              - column:
+                  name: expiry_time
+                  type: DATETIME
+                  remarks: The time this session will expire (last_access_time + max_inactive_interval.)
+                  constraints:
+                    nullable: false
+              - column:
+                  name: principal_name
+                  type: text
+                  remarks: The name or UUID of the user for this session.
+        - createIndex:
+            tableName: spring_session
+            indexName: ix__spring_session_expiry_time
+            columns:
+              - column:
+                  name: expiry_time
+        - createIndex:
+            tableName: spring_session
+            indexName: ix__spring_session_principal_name
+            columns:
+              - column:
+                  name: principal_name
+        - createTable:
+            tableName: spring_session_attributes
+            remarks: Attribute store for user sessions.
+            columns:
+              - column:
+                  name: session_primary_id
+                  type: char(36)
+                  remarks: The immutable internal key to identify this session.
+                  constraints:
+                    nullable: false
+                    foreignKeyName: fk__spring_session_attributes__spring_session
+                    references: spring_session
+                    deleteCascade: true
+              - column:
+                  name: attribute_name
+                  type: text
+                  remarks: The unique name of this attribute.
+                  constraints:
+                    nullable: false
+              - column:
+                  name: attribute_bytes
+                  type: BYTEA
+                  remarks: The stored value of the attribute.
+                  constraints:
+                    nullable: false
+        - addPrimaryKey:
+            tableName: spring_session_attributes
+            columnNames: session_primary_id, attribute_name
   - changeSet:
-        id: alter-spring-session-types
-        author: emma@skylight.digital
-        comment: Change the creation_time, last_access_time, and expiry_time columns to be of type bigint instead of DATETIME. Spring expects bigints for these columns.
-        # https://github.com/spring-projects/spring-session/blob/main/spring-session-jdbc/src/main/resources/org/springframework/session/jdbc/schema-postgresql.sql#L4
-        changes:
-          - sql:
-            sql: |
-              ALTER TABLE ${database.defaultSchemaName}.spring_session ALTER COLUMN creation_time TYPE bigint USING EXTRACT(EPOCH FROM creation_time);
-              ALTER TABLE ${database.defaultSchemaName}.spring_session ALTER COLUMN last_access_time TYPE bigint USING EXTRACT(EPOCH FROM last_access_time);
-              ALTER TABLE ${database.defaultSchemaName}.spring_session ALTER COLUMN expiry_time TYPE bigint USING EXTRACT(EPOCH FROM expiry_time);
-        rollback:
-          - sql:
-            sql: |
-              ALTER TABLE ${database.defaultSchemaName}.spring_session ALTER COLUMN creation_time TYPE TIMESTAMP WITHOUT TIME ZONE USING to_timestamp(creation_time);
-              ALTER TABLE ${database.defaultSchemaName}.spring_session ALTER COLUMN last_access_time TYPE TIMESTAMP WITHOUT TIME ZONE USING to_timestamp(last_access_time);
-              ALTER TABLE ${database.defaultSchemaName}.spring_session ALTER COLUMN expiry_time TYPE TIMESTAMP WITHOUT TIME ZONE USING to_timestamp(expiry_time);
+      id: alter-spring-session-types
+      author: emma@skylight.digital
+      comment: Change the creation_time, last_access_time, and expiry_time columns to be of type bigint instead of DATETIME. Spring expects bigints for these columns.
+      # https://github.com/spring-projects/spring-session/blob/main/spring-session-jdbc/src/main/resources/org/springframework/session/jdbc/schema-postgresql.sql#L4
+      changes:
+        - sql:
+          sql: |
+            ALTER TABLE ${database.defaultSchemaName}.spring_session ALTER COLUMN creation_time TYPE bigint USING EXTRACT(EPOCH FROM creation_time);
+            ALTER TABLE ${database.defaultSchemaName}.spring_session ALTER COLUMN last_access_time TYPE bigint USING EXTRACT(EPOCH FROM last_access_time);
+            ALTER TABLE ${database.defaultSchemaName}.spring_session ALTER COLUMN expiry_time TYPE bigint USING EXTRACT(EPOCH FROM expiry_time);
+      rollback:
+        - sql:
+          sql: |
+            ALTER TABLE ${database.defaultSchemaName}.spring_session ALTER COLUMN creation_time TYPE TIMESTAMP WITHOUT TIME ZONE USING to_timestamp(creation_time);
+            ALTER TABLE ${database.defaultSchemaName}.spring_session ALTER COLUMN last_access_time TYPE TIMESTAMP WITHOUT TIME ZONE USING to_timestamp(last_access_time);
+            ALTER TABLE ${database.defaultSchemaName}.spring_session ALTER COLUMN expiry_time TYPE TIMESTAMP WITHOUT TIME ZONE USING to_timestamp(expiry_time);
   - changeSet:
       id: set-null-telephone-to-empty-string
       author: nclyde@skylight.digital
       comment: Sets null values for telephone in the person table to empty string so that the next migration will run successfully
       changes:
-          - sql:
-            remarks: Sets null values for telephone in the person table to empty string
+        - sql:
+          remarks: Sets null values for telephone in the person table to empty string
+          sql: |
+            WITH migration_user as (
+              SELECT internal_id as migrations_user_id
+              FROM ${database.defaultSchemaName}.api_user
+              WHERE login_email = '${migrations_user_email}')
+            UPDATE ${database.defaultSchemaName}.person SET telephone='', updated_at=now(), updated_by=(SELECT migrations_user_id from migration_user) WHERE telephone IS NULL;
+          rollback:
             sql: |
               WITH migration_user as (
                 SELECT internal_id as migrations_user_id
                 FROM ${database.defaultSchemaName}.api_user
                 WHERE login_email = '${migrations_user_email}')
-              UPDATE ${database.defaultSchemaName}.person SET telephone='', updated_at=now(), updated_by=(SELECT migrations_user_id from migration_user) WHERE telephone IS NULL;
-            rollback:
-              sql: |
-                WITH migration_user as (
-                  SELECT internal_id as migrations_user_id
-                  FROM ${database.defaultSchemaName}.api_user
-                  WHERE login_email = '${migrations_user_email}')
-                UPDATE ${database.defaultSchemaName}.person SET telephone=null, updated_at=now(), updated_by=(SELECT migrations_user_id from migration_user) WHERE telephone='';
+              UPDATE ${database.defaultSchemaName}.person SET telephone=null, updated_at=now(), updated_by=(SELECT migrations_user_id from migration_user) WHERE telephone='';
   - changeSet:
       id: add-phone-number-table
       author: nathan@skylight.digital
       comment: Add table to track user phone numbers
       changes:
-          - sql:
-            remarks: Create the enumerations needed for tracking a phone number's type
+        - sql:
+          remarks: Create the enumerations needed for tracking a phone number's type
+          sql: |
+            CREATE TYPE ${database.defaultSchemaName}.PHONE_TYPES as ENUM('MOBILE', 'LANDLINE');
+        - createTable:
+            tableName: phone_number
+            remarks: A join table to Person that stores phone numbers with phone type
+            columns:
+              - column:
+                  name: internal_id
+                  type: uuid
+                  remarks: The internal database identifier for this entity
+                  constraints:
+                    primaryKey: true
+                    nullable: false
+              - column:
+                  name: person_internal_id
+                  type: uuid
+                  remarks: A foreign key to a person
+                  constraints:
+                    nullable: false
+                    foreignKeyName: fk__internal_id__person
+                    references: person
+              - column:
+                  name: type
+                  type: ${database.defaultSchemaName}.PHONE_TYPES
+                  remarks: Enumeration of phone type, or null
+                  defaultValue: null
+                  constraints:
+                    nullable: true
+              - column:
+                  name: number
+                  type: text
+                  remarks: A person's contact telephone number
+                  constraints:
+                    nullable: false
+              - column: *created_at_column
+              - column: *created_by_column
+              - column: *updated_at_column
+              - column: *updated_by_column
+        - addColumn:
+            tableName: person
+            columns:
+              - column:
+                  name: primary_phone_internal_id
+                  afterColumn: telephone
+                  type: uuid
+                  remarks: The identifier of the primary phone number for this patient
+                  constraints:
+                    nullable: true
+                    foreignKeyName: fk__primary__phone__number
+                    referencedTableName: phone_number
+        - sql:
+            remarks: Populate new `phone_number` table with existing `person.telephone` values
             sql: |
-              CREATE TYPE ${database.defaultSchemaName}.PHONE_TYPES as ENUM('MOBILE', 'LANDLINE');
-          - createTable:
-              tableName: phone_number
-              remarks: A join table to Person that stores phone numbers with phone type
-              columns:
-                 - column:
-                     name: internal_id
-                     type: uuid
-                     remarks: The internal database identifier for this entity
-                     constraints:
-                       primaryKey: true
-                       nullable: false
-                 - column:
-                     name: person_internal_id
-                     type: uuid
-                     remarks: A foreign key to a person
-                     constraints:
-                       nullable: false
-                       foreignKeyName: fk__internal_id__person
-                       references: person
-                 - column:
-                     name: type
-                     type: ${database.defaultSchemaName}.PHONE_TYPES
-                     remarks: Enumeration of phone type, or null
-                     defaultValue: null
-                     constraints:
-                       nullable: true
-                 - column:
-                     name: number
-                     type: text
-                     remarks: A person's contact telephone number
-                     constraints:
-                       nullable: false
-                 - column: *created_at_column
-                 - column: *created_by_column
-                 - column: *updated_at_column
-                 - column: *updated_by_column
-          - addColumn:
-              tableName: person
-              columns:
-                - column:
-                    name: primary_phone_internal_id
-                    afterColumn: telephone
-                    type: uuid
-                    remarks: The identifier of the primary phone number for this patient
-                    constraints:
-                      nullable: true
-                      foreignKeyName: fk__primary__phone__number
-                      referencedTableName: phone_number
-          - sql:
-              remarks: Populate new `phone_number` table with existing `person.telephone` values
-              sql: |
-                INSERT INTO ${database.defaultSchemaName}.phone_number (
-                  internal_id,
-                  person_internal_id,
-                  type,
-                  number,
-                  created_at,
-                  created_by,
-                  updated_at,
-                  updated_by
-                )
-                SELECT
-                  gen_random_uuid(),
-                  internal_id,
-                  null,
-                  telephone,
-                  NOW(),
-                  created_by,
-                  NOW(),
-                  updated_by
-                FROM ${database.defaultSchemaName}.person;
-                UPDATE ${database.defaultSchemaName}.person p SET
-                  primary_phone_internal_id = pn.internal_id
-                FROM ${database.defaultSchemaName}.phone_number pn
-                WHERE p.internal_id=pn.person_internal_id;
+              INSERT INTO ${database.defaultSchemaName}.phone_number (
+                internal_id,
+                person_internal_id,
+                type,
+                number,
+                created_at,
+                created_by,
+                updated_at,
+                updated_by
+              )
+              SELECT
+                gen_random_uuid(),
+                internal_id,
+                null,
+                telephone,
+                NOW(),
+                created_by,
+                NOW(),
+                updated_by
+              FROM ${database.defaultSchemaName}.person;
+              UPDATE ${database.defaultSchemaName}.person p SET
+                primary_phone_internal_id = pn.internal_id
+              FROM ${database.defaultSchemaName}.phone_number pn
+              WHERE p.internal_id=pn.person_internal_id;
       rollback:
         - dropColumn:
             tableName: person
@@ -2788,17 +2788,17 @@ databaseChangeLog:
               USING migration_user m
               WHERE created_by = m.migrations_user_id;
   - changeSet:
-        id: audit-http-session
-        author: emma@skylight.digital
-        comment: Add HTTP session column to api_audit_event.
-        changes:
-          - addColumn:
-              tableName: api_audit_event
-              columns:
-                - column:
-                    name: session
-                    type: jsonb
-                    remarks: The HTTP session information for this request (only applies to REST requests).
+      id: audit-http-session
+      author: emma@skylight.digital
+      comment: Add HTTP session column to api_audit_event.
+      changes:
+        - addColumn:
+            tableName: api_audit_event
+            columns:
+              - column:
+                  name: session
+                  type: jsonb
+                  remarks: The HTTP session information for this request (only applies to REST requests).
   - changeSet:
       id: add-no-phi-audit-log
       author: tbest@cdc.gov
@@ -3125,7 +3125,7 @@ databaseChangeLog:
       comment: This is to add patient_has_prior_tests test field to test event
       changes:
         - tagDatabase:
-            tag:  add-patient_has_prior_tests
+            tag: add-patient_has_prior_tests
         - addColumn:
             tableName: test_event
             columns:
@@ -3404,7 +3404,7 @@ databaseChangeLog:
       runInTransaction: false
       changes:
         - tagDatabase:
-              tag: add-email-all-to-test-result-delivery
+            tag: add-email-all-to-test-result-delivery
         - sql:
             remarks: Adds EMAIL and ALL to TEST_RESULT_DELIVERY enum
             sql: |
@@ -3571,8 +3571,8 @@ databaseChangeLog:
         - sql: |
             GRANT SELECT ON ${database.defaultSchemaName}.supported_disease TO ${noPhiUsername};
       rollback:
-          sql: |
-            DROP TABLE ${database.defaultSchemaName}.supported_disease CASCADE;
+        sql: |
+          DROP TABLE ${database.defaultSchemaName}.supported_disease CASCADE;
   - changeSet:
       id: populate-supported-disease-table
       author: emma@skylight.digital
@@ -3726,3 +3726,28 @@ databaseChangeLog:
       rollback:
         sql: |
           ALTER TABLE ${database.defaultSchemaName}.result DROP COLUMN test_result;
+  - changeSet:
+      id: add-foreign-key-indices-to-result-table
+      author: nclyde@skylight.digital
+      comment: Add indices to result table to speed up queries
+      changes:
+        - tagDatabase:
+          tag: add-foreign-key-indices-to-result-table
+        - createIndex:
+            tableName: result
+            indexName: idx__result__disease_id
+            columns:
+              - column:
+                  name: disease_id
+        - createIndex:
+            tableName: result
+            indexName: idx__result__test_event_id
+            columns:
+              - column:
+                  name: test_event_id
+        - createIndex:
+            tableName: result
+            indexName: idx__result__test_order_id
+            columns:
+              - column:
+                  name: test_order_id
