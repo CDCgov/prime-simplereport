@@ -240,7 +240,6 @@ public class TestOrderService {
   }
 
   @AuthorizationConfiguration.RequirePermissionSubmitTestForPatient
-  @Transactional(noRollbackFor = {TwilioException.class, ApiException.class})
   public AddTestResultResponse addTestResult(
       UUID deviceSpecimenTypeId, TestResult result, UUID patientId, Date dateTested) {
     Organization org = _os.getCurrentOrganization();
@@ -252,19 +251,9 @@ public class TestOrderService {
 
     lockOrder(order.getInternalId());
     try {
-      order.setDeviceSpecimen(deviceSpecimen);
-
-      updateTestOrderCovidResult(order, result);
-
-      order.setDateTestedBackdate(dateTested);
-      order.markComplete();
-
-      boolean hasPriorTests = _terepo.existsByPatient(person);
-      TestEvent testEvent = new TestEvent(order, hasPriorTests);
-      _terepo.save(testEvent);
-
-      order.setTestEventRef(testEvent);
-      TestOrder savedOrder = _repo.save(order);
+      TestOrder savedOrder =
+          saveTestResultToDatabase(person, deviceSpecimen, order, result, dateTested);
+      TestEvent testEvent = savedOrder.getTestEvent();
 
       _testEventReportingService.report(testEvent);
       ArrayList<Boolean> deliveryStatuses = new ArrayList<>();
@@ -289,6 +278,31 @@ public class TestOrderService {
     } finally {
       unlockOrder(order.getInternalId());
     }
+  }
+
+  @AuthorizationConfiguration.RequirePermissionSubmitTestForPatient
+  @Transactional(noRollbackFor = {TwilioException.class, ApiException.class})
+  protected TestOrder saveTestResultToDatabase(
+      Person person,
+      DeviceSpecimenType deviceSpecimen,
+      TestOrder order,
+      TestResult result,
+      Date dateTested) {
+    order.setDeviceSpecimen(deviceSpecimen);
+
+    updateTestOrderCovidResult(order, result);
+
+    order.setDateTestedBackdate(dateTested);
+    order.markComplete();
+
+    boolean hasPriorTests = _terepo.existsByPatient(person);
+    TestEvent testEvent = new TestEvent(order, hasPriorTests);
+    _terepo.save(testEvent);
+
+    order.setTestEventRef(testEvent);
+    TestOrder savedOrder = _repo.save(order);
+
+    return savedOrder;
   }
 
   private boolean patientHasDeliveryPreference(TestOrder savedOrder) {
