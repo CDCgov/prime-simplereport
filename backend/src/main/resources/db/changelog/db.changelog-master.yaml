@@ -3732,7 +3732,7 @@ databaseChangeLog:
       comment: Add indices to result table to speed up queries
       changes:
         - tagDatabase:
-          tag: add-foreign-key-indices-to-result-table
+            tag: add-foreign-key-indices-to-result-table
         - createIndex:
             tableName: result
             indexName: idx__result__disease_id
