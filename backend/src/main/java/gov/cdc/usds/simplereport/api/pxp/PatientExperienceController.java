@@ -78,27 +78,6 @@ public class PatientExperienceController {
     log.info("Patient Experience REST endpoints enabled");
   }
 
-  /**
-   * Verify that the patient-provided DOB matches the patient on file for the patient link id. It
-   * returns the full patient object if so, otherwise it throws an exception
-   */
-  @PreAuthorize(
-      "@patientLinkService.verifyPatientLink(#body.getPatientLinkId(), #body.getDateOfBirth())")
-  @PostMapping("/link/verify")
-  public PxpVerifyResponse getPatientLinkVerify(
-      @RequestBody PxpRequestWrapper<Void> body, HttpServletRequest request) {
-    PatientLink pl = _contextHolder.getPatientLink();
-    OrderStatus os = _contextHolder.getLinkedOrder().getOrderStatus();
-    Person p = _contextHolder.getPatient();
-    TestEvent te =
-        os == OrderStatus.COMPLETED
-            ? _contextHolder.getLinkedOrder().getTestEvent()
-            : _tes.getLastTestResultsForPatient(p);
-    _tocs.storeTimeOfConsent(pl);
-
-    return new PxpVerifyResponse(p, os, te);
-  }
-
   /** Verify that the patient-provided DOB matches the patient on file for the patient link id. */
   @PreAuthorize(
       "@patientLinkService.verifyPatientLink(#body.getPatientLinkId(), #body.getDateOfBirth())")

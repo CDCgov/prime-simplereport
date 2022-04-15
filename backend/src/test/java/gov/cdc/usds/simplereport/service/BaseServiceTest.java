@@ -8,6 +8,7 @@ import gov.cdc.usds.simplereport.api.CurrentOrganizationRolesContextHolder;
 import gov.cdc.usds.simplereport.api.CurrentTenantDataAccessContextHolder;
 import gov.cdc.usds.simplereport.config.DataSourceConfiguration;
 import gov.cdc.usds.simplereport.config.authorization.TenantDataAuthenticationProvider;
+import gov.cdc.usds.simplereport.db.repository.SupportedDiseaseRepository;
 import gov.cdc.usds.simplereport.idp.repository.DemoOktaRepository;
 import gov.cdc.usds.simplereport.test_util.DbTruncator;
 import gov.cdc.usds.simplereport.test_util.SliceTestConfiguration;
@@ -44,6 +45,8 @@ public abstract class BaseServiceTest<T> {
 
   @Autowired private DbTruncator _truncator;
   @Autowired private OrganizationInitializingService _initService;
+  @Autowired protected DiseaseService _diseaseService;
+  @Autowired protected SupportedDiseaseRepository _supportedDiseaseRepo;
   @MockBean private CurrentTenantDataAccessContextHolder _currentTenantDataAccessContextHolder;
   @MockBean private TenantDataAuthenticationProvider _tenantDataAuthProvider;
   @Autowired private DemoOktaRepository _oktaRepo;
@@ -59,6 +62,7 @@ public abstract class BaseServiceTest<T> {
     clearDb();
     resetOkta();
     initCurrentUser();
+    initDiseases();
     _hibernateQueryInterceptor.startQueryCount(); // also resets count
   }
 
@@ -83,6 +87,10 @@ public abstract class BaseServiceTest<T> {
 
   protected void initCurrentUser() {
     _initService.initCurrentUser();
+  }
+
+  protected void initDiseases() {
+    _diseaseService.initDiseases();
   }
 
   protected void reset() {

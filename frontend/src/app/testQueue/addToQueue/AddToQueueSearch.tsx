@@ -6,7 +6,6 @@ import React, {
   useCallback,
 } from "react";
 import { gql, useMutation, useLazyQuery, useQuery } from "@apollo/client";
-import { useLocation } from "react-router-dom";
 
 import Alert from "../../commonComponents/Alert";
 import {
@@ -129,12 +128,16 @@ interface Props {
   refetchQueue: () => void;
   facilityId: string;
   patientsInQueue: string[];
+  startTestPatientId: string | null;
+  setStartTestPatientId: any;
 }
 
 const AddToQueueSearchBox = ({
   refetchQueue,
   facilityId,
   patientsInQueue,
+  startTestPatientId,
+  setStartTestPatientId,
 }: Props) => {
   const appInsights = getAppInsights();
 
@@ -166,20 +169,17 @@ const AddToQueueSearchBox = ({
     setShowSuggestion(false);
   }, []);
 
-  const { patientId: patientIdParam } =
-    (useLocation().state as StartTestProps) || {};
-
   useQuery<{ patient: Patient }>(QUERY_SINGLE_PATIENT, {
     fetchPolicy: "no-cache",
-    variables: { internalId: patientIdParam },
+    //variables: { internalId: patientIdParam },
+    variables: { internalId: startTestPatientId },
     onCompleted: (response) => {
       setSelectedPatient(response.patient);
     },
-    skip: !patientIdParam,
+    skip: !startTestPatientId || patientsInQueue.includes(startTestPatientId),
   });
 
   useOutsideClick(dropDownRef, hideOnOutsideClick);
-
   useEffect(() => {
     if (queryString.trim() !== "") {
       queryPatients();
@@ -243,6 +243,7 @@ const AddToQueueSearchBox = ({
         const alert = <Alert type={type} title={title} body={body} />;
         showNotification(alert);
         refetchQueue();
+        setStartTestPatientId(null);
         if (createOrUpdate === "create") {
           return res.data.addPatientToQueue;
         }

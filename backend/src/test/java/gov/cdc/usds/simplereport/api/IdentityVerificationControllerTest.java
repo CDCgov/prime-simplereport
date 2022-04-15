@@ -26,7 +26,6 @@ import gov.cdc.usds.simplereport.config.authorization.DemoAuthenticationConfigur
 import gov.cdc.usds.simplereport.db.model.OrganizationQueueItem;
 import gov.cdc.usds.simplereport.idp.repository.DemoOktaRepository;
 import gov.cdc.usds.simplereport.logging.AuditLoggingAdvice;
-import gov.cdc.usds.simplereport.service.ApiUserService;
 import gov.cdc.usds.simplereport.service.OrganizationQueueService;
 import gov.cdc.usds.simplereport.service.email.EmailProviderTemplate;
 import gov.cdc.usds.simplereport.service.email.EmailService;
@@ -63,17 +62,13 @@ import org.springframework.test.web.servlet.request.MockHttpServletRequestBuilde
         @Filter(
             classes = {AuditLoggingAdvice.class, WebConfiguration.class},
             type = FilterType.ASSIGNABLE_TYPE))
-class IdentityVerificationControllerTest {
+class IdentityVerificationControllerTest extends BaseNonSpringBootTestConfiguration {
 
   @Autowired private MockMvc _mockMvc;
 
   @Autowired private DemoExperianService _experianService;
   @MockBean private EmailService _emailService;
   @MockBean private OrganizationQueueService _orgQueueService;
-
-  // Dependencies of TenantDataAccessFilter
-  @MockBean private ApiUserService _mockApiUserService;
-  @MockBean private CurrentTenantDataAccessContextHolder _mockContextHolder;
 
   private static final String FAKE_ORG_EXTERNAL_ID = "FAKE_ORG_EXTERNAL_ID";
   private static final String FAKE_ORG_EXTERNAL_ID_DOES_NOT_EXIST = "DOES_NOT_EXIST";

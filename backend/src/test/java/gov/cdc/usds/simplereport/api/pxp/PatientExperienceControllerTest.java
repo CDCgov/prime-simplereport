@@ -70,26 +70,6 @@ class PatientExperienceControllerTest extends BaseFullStackTest {
   }
 
   @Test
-  void preAuthorizerThrows403() throws Exception {
-    String dob = "1900-01-01";
-    String requestBody =
-        "{\"patientLinkId\":\"" + UUID.randomUUID() + "\",\"dateOfBirth\":\"" + dob + "\"}";
-
-    MockHttpServletRequestBuilder builder =
-        post(ResourceLinks.VERIFY_LINK)
-            .contentType(MediaType.APPLICATION_JSON_VALUE)
-            .accept(MediaType.APPLICATION_JSON)
-            .characterEncoding("UTF-8")
-            .content(requestBody);
-
-    this.mockMvc
-        .perform(builder)
-        .andExpect(status().isForbidden())
-        .andExpect(header().exists(LoggingConstants.REQUEST_ID_HEADER));
-    assertNoAuditEvent();
-  }
-
-  @Test
   void preAuthorizerThrows403V2() throws Exception {
     String dob = "1900-01-01";
     String requestBody =
@@ -107,30 +87,6 @@ class PatientExperienceControllerTest extends BaseFullStackTest {
         .andExpect(status().isForbidden())
         .andExpect(header().exists(LoggingConstants.REQUEST_ID_HEADER));
     assertNoAuditEvent();
-  }
-
-  @Test
-  void preAuthorizerSucceeds() throws Exception {
-    // GIVEN
-    String dob = person.getBirthDate().format(DateTimeFormatter.ofPattern("yyyy-MM-dd"));
-    String requestBody =
-        "{\"patientLinkId\":\""
-            + patientLink.getInternalId()
-            + "\",\"dateOfBirth\":\""
-            + dob
-            + "\"}";
-
-    // WHEN
-    MockHttpServletRequestBuilder builder =
-        post(ResourceLinks.VERIFY_LINK)
-            .contentType(MediaType.APPLICATION_JSON_VALUE)
-            .accept(MediaType.APPLICATION_JSON)
-            .characterEncoding("UTF-8")
-            .content(requestBody);
-
-    // THEN
-    String requestId = runBuilderReturningRequestId(mockMvc, builder, status().isOk());
-    assertLastAuditEntry(HttpStatus.OK, ResourceLinks.VERIFY_LINK, requestId);
   }
 
   @Test
@@ -155,41 +111,6 @@ class PatientExperienceControllerTest extends BaseFullStackTest {
     // THEN
     String requestId = runBuilderReturningRequestId(mockMvc, builder, status().isOk());
     assertLastAuditEntry(HttpStatus.OK, ResourceLinks.VERIFY_LINK_V2, requestId);
-  }
-
-  @Test
-  void verifyLinkReturnsPerson() throws Exception {
-    // GIVEN
-    String dob = person.getBirthDate().format(DateTimeFormatter.ofPattern("yyyy-MM-dd"));
-    String requestBody =
-        "{\"patientLinkId\":\""
-            + patientLink.getInternalId()
-            + "\",\"dateOfBirth\":\""
-            + dob
-            + "\"}";
-
-    // WHEN
-    MockHttpServletRequestBuilder builder =
-        post(ResourceLinks.VERIFY_LINK)
-            .contentType(MediaType.APPLICATION_JSON_VALUE)
-            .accept(MediaType.APPLICATION_JSON)
-            .characterEncoding("UTF-8")
-            .content(requestBody);
-
-    // THEN
-    String requestId =
-        mockMvc
-            .perform(builder)
-            .andExpect(status().isOk())
-            .andExpect(jsonPath("$.firstName", is(person.getFirstName())))
-            .andExpect(jsonPath("$.lastName", is(person.getLastName())))
-            .andExpect(jsonPath("$.lastTest.deviceTypeName", is("Acme SuperFine")))
-            .andExpect(jsonPath("$.lastTest.deviceTypeModel", is("SFN")))
-            .andReturn()
-            .getResponse()
-            .getHeader(LoggingConstants.REQUEST_ID_HEADER);
-
-    assertLastAuditEntry(HttpStatus.OK, ResourceLinks.VERIFY_LINK, requestId);
   }
 
   @Test
@@ -261,7 +182,7 @@ class PatientExperienceControllerTest extends BaseFullStackTest {
 
     // WHEN
     MockHttpServletRequestBuilder builder =
-        post(ResourceLinks.VERIFY_LINK)
+        post(ResourceLinks.VERIFY_LINK_V2)
             .contentType(MediaType.APPLICATION_JSON_VALUE)
             .accept(MediaType.APPLICATION_JSON)
             .characterEncoding("UTF-8")
@@ -269,7 +190,7 @@ class PatientExperienceControllerTest extends BaseFullStackTest {
 
     // THEN
     String requestId = runBuilderReturningRequestId(mockMvc, builder, status().isGone());
-    assertLastAuditEntry(HttpStatus.GONE, ResourceLinks.VERIFY_LINK, requestId);
+    assertLastAuditEntry(HttpStatus.GONE, ResourceLinks.VERIFY_LINK_V2, requestId);
   }
 
   @Test
@@ -288,7 +209,7 @@ class PatientExperienceControllerTest extends BaseFullStackTest {
   }
 
   @Test
-  void getObfuscatedPatientName_thowsOnExpiredLink() throws Exception {
+  void getObfuscatedPatientName_throwsOnExpiredLink() throws Exception {
     // GIVEN
     TestUserIdentities.withStandardUser(
         () -> patientLink = _dataFactory.expirePatientLink(patientLink));
@@ -333,7 +254,7 @@ class PatientExperienceControllerTest extends BaseFullStackTest {
   }
 
   @Test
-  void getTestResultUnauthenticated_thowsOnExpiredLink() throws Exception {
+  void getTestResultUnauthenticated_throwsOnExpiredLink() throws Exception {
     // GIVEN
     TestUserIdentities.withStandardUser(
         () -> patientLink = _dataFactory.expirePatientLink(patientLink));
@@ -361,7 +282,7 @@ class PatientExperienceControllerTest extends BaseFullStackTest {
 
     // WHEN
     MockHttpServletRequestBuilder builder =
-        post(ResourceLinks.VERIFY_LINK)
+        post(ResourceLinks.VERIFY_LINK_V2)
             .contentType(MediaType.APPLICATION_JSON_VALUE)
             .accept(MediaType.APPLICATION_JSON)
             .characterEncoding("UTF-8")

@@ -84,6 +84,10 @@ public class TestOrder extends BaseTestInfo {
     orderStatus = OrderStatus.COMPLETED;
   }
 
+  public void markPending() {
+    orderStatus = OrderStatus.PENDING;
+  }
+
   public void cancelOrder() {
     orderStatus = OrderStatus.CANCELED;
   }

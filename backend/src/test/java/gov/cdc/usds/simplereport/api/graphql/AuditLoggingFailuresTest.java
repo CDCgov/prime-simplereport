@@ -9,7 +9,6 @@ import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
-import com.fasterxml.jackson.databind.JsonMappingException;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.node.JsonNodeFactory;
@@ -68,20 +67,20 @@ class AuditLoggingFailuresTest extends BaseGraphqlTest {
   @MockBean private TimeOfConsentService _consentService;
   @Captor private ArgumentCaptor<ApiAuditEvent> _eventCaptor;
 
-  private Facility _base;
-  private Person _patient;
-  private PatientLink _link;
+  private Facility facility;
+  private Person patient;
+  private PatientLink patientLink;
 
   @BeforeEach
   void init() {
     TestUserIdentities.withStandardUser(
         () -> {
           Organization org = _orgService.getCurrentOrganizationNoCache();
-          _base = _orgService.getFacilities(org).get(0);
-          _base.addDefaultDeviceSpecimen(_dataFactory.getGenericDeviceSpecimen());
-          _patient = _dataFactory.createFullPerson(org);
-          TestOrder order = _dataFactory.createTestOrder(_patient, _base);
-          _link = _dataFactory.createPatientLink(order);
+          facility = _orgService.getFacilities(org).get(0);
+          facility.addDefaultDeviceSpecimen(_dataFactory.getGenericDeviceSpecimen());
+          patient = _dataFactory.createFullPerson(org);
+          TestOrder order = _dataFactory.createTestOrder(patient, facility);
+          patientLink = _dataFactory.createPatientLink(order);
         });
   }
 
@@ -91,7 +90,7 @@ class AuditLoggingFailuresTest extends BaseGraphqlTest {
     useOrgUserAllFacilityAccess();
     ObjectNode args =
         patientArgs()
-            .put("deviceId", _base.getDefaultDeviceType().getInternalId().toString())
+            .put("deviceId", facility.getDefaultDeviceType().getInternalId().toString())
             .put("result", "NEGATIVE");
     runQuery("submit-test", args, "ewww");
     verify(_auditRepo).save(_eventCaptor.capture());
@@ -120,40 +119,40 @@ class AuditLoggingFailuresTest extends BaseGraphqlTest {
     HttpEntity<JsonNode> requestEntity = new HttpEntity<JsonNode>(makeVerifyLinkArgs());
     ResponseEntity<String> resp =
         _restTemplate.exchange(
-            ResourceLinks.VERIFY_LINK, HttpMethod.POST, requestEntity, String.class);
+            ResourceLinks.VERIFY_LINK_V2, HttpMethod.POST, requestEntity, String.class);
     log.info("Response body is {}", resp.getBody());
     verify(_auditRepo).save(_eventCaptor.capture());
     assertThat(_eventCaptor.getValue())
         .as("Saved audit event")
-        .matches(e -> e.getHttpRequestDetails().getRequestUri().equals(ResourceLinks.VERIFY_LINK))
+        .matches(
+            e -> e.getHttpRequestDetails().getRequestUri().equals(ResourceLinks.VERIFY_LINK_V2))
         .hasFieldOrPropertyWithValue("responseCode", 500);
   }
 
   @Test
-  void restQuery_auditFailure_noDataReturned()
-      throws JsonMappingException, JsonProcessingException {
+  void restQuery_auditFailure_noDataReturned() throws JsonProcessingException {
     when(_auditRepo.save(_eventCaptor.capture())).thenThrow(HibernateException.class);
     HttpEntity<JsonNode> requestEntity = new HttpEntity<JsonNode>(makeVerifyLinkArgs());
     ResponseEntity<String> resp =
         _restTemplate.exchange(
-            ResourceLinks.VERIFY_LINK, HttpMethod.POST, requestEntity, String.class);
-    assertEquals(HttpStatus.BAD_REQUEST, resp.getStatusCode());
+            ResourceLinks.VERIFY_LINK_V2, HttpMethod.POST, requestEntity, String.class);
+    assertEquals(HttpStatus.INTERNAL_SERVER_ERROR, resp.getStatusCode());
     JsonNode responseJson = new ObjectMapper().readTree(resp.getBody());
-    assertEquals(400, responseJson.get("status").asInt());
-    assertEquals("Bad Request", responseJson.get("error").asText());
-    assertEquals(ResourceLinks.VERIFY_LINK, responseJson.get("path").asText());
+    assertEquals(500, responseJson.get("status").asInt());
+    assertEquals("Internal Server Error", responseJson.get("error").asText());
+    assertEquals(ResourceLinks.VERIFY_LINK_V2, responseJson.get("path").asText());
   }
 
   private ObjectNode makeVerifyLinkArgs() {
     return JsonNodeFactory.instance
         .objectNode()
-        .put("patientLinkId", _link.getInternalId().toString())
-        .put("dateOfBirth", _patient.getBirthDate().toString());
+        .put("patientLinkId", patientLink.getInternalId().toString())
+        .put("dateOfBirth", patient.getBirthDate().toString());
   }
 
   private ObjectNode patientArgs() {
     return JsonNodeFactory.instance
         .objectNode()
-        .put("patientId", _patient.getInternalId().toString());
+        .put("patientId", patient.getInternalId().toString());
   }
 }

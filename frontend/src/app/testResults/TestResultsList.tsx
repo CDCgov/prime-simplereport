@@ -117,7 +117,7 @@ function testResultRows(
             : null
         }
       >
-        <th scope="row">
+        <td className="patient-name-cell">
           {displayFullName(
             r.patient.firstName,
             r.patient.middleName,
@@ -126,18 +126,22 @@ function testResultRows(
           <span className="display-block text-base font-ui-2xs">
             DOB: {formatDateWithTimeOption(r.patient.birthDate)}
           </span>
-        </th>
-        <td>{formatDateWithTimeOption(r.dateTested, true)}</td>
-        <td>{TEST_RESULT_DESCRIPTIONS[r.result as Results]}</td>
-        <td>{r.deviceType.name}</td>
-        <td>
+        </td>
+        <td className="test-date-cell">
+          {formatDateWithTimeOption(r.dateTested, true)}
+        </td>
+        <td className="test-result-cell">
+          {TEST_RESULT_DESCRIPTIONS[r.result as Results]}
+        </td>
+        <td className="test-device-cell">{r.deviceType.name}</td>
+        <td className="submitted-by-cell">
           {displayFullName(
             r.createdBy.nameInfo.firstName,
-            r.createdBy.nameInfo.middleName,
+            null,
             r.createdBy.nameInfo.lastName
           )}
         </td>
-        <td>
+        <td className="actions-cell">
           <ActionsMenu items={actionItems} />
         </td>
       </tr>
@@ -476,7 +480,7 @@ export const DetachedTestResultsList = ({
                   />
                 </div>
                 <Select
-                  label="Result"
+                  label="Test result"
                   name="result"
                   value={filterParams.result || ""}
                   options={[
@@ -510,12 +514,24 @@ export const DetachedTestResultsList = ({
               <table className="usa-table usa-table--borderless width-full">
                 <thead>
                   <tr>
-                    <th scope="col">{PATIENT_TERM_CAP}</th>
-                    <th scope="col">Test date</th>
-                    <th scope="col">Result</th>
-                    <th scope="col">Device</th>
-                    <th scope="col">Submitter</th>
-                    <th scope="col">Actions</th>
+                    <th scope="col" className="patient-name-cell">
+                      {PATIENT_TERM_CAP}
+                    </th>
+                    <th scope="col" className="test-date-cell">
+                      Test date
+                    </th>
+                    <th scope="col" className="test-result-cell">
+                      COVID-19
+                    </th>
+                    <th scope="col" className="test-device-cell">
+                      Test device
+                    </th>
+                    <th scope="col" className="submitted-by-cell">
+                      Submitted by
+                    </th>
+                    <th scope="col" className="actions-cell">
+                      Actions
+                    </th>
                   </tr>
                 </thead>
                 <tbody>{rows}</tbody>
@@ -602,7 +618,6 @@ export const testResultQuery = gql`
       createdBy {
         nameInfo {
           firstName
-          middleName
           lastName
         }
       }

@@ -82,10 +82,22 @@ class DeviceManagementTest extends BaseGraphqlTest {
     return List.of(specimenId1, specimenId2);
   }
 
+  private List<String> fetchSupportedDiseaseIds() {
+    ArrayNode diseaseRecords =
+        (ArrayNode) runQuery("supported-disease-query").get("supportedDiseases");
+    String disease1 = diseaseRecords.get(0).findValue("internalId").asText();
+    String disease2 = diseaseRecords.get(1).findValue("internalId").asText();
+    String disease3 = diseaseRecords.get(2).findValue("internalId").asText();
+    return List.of(disease1, disease2, disease3);
+  }
+
   private ObjectNode getCreateDeviceTypeInput() {
 
     List<UUID> specimenTypeIds =
         fetchSpecimenTypeIds().stream().map(UUID::fromString).collect(Collectors.toList());
+
+    List<UUID> supportedDiseaseIds =
+        fetchSupportedDiseaseIds().stream().map(UUID::fromString).collect(Collectors.toList());
 
     CreateDeviceType input =
         CreateDeviceType.builder()
@@ -94,6 +106,7 @@ class DeviceManagementTest extends BaseGraphqlTest {
             .model("Test-A-Lot")
             .loincCode("123456")
             .swabTypes(specimenTypeIds)
+            .supportedDiseases(supportedDiseaseIds)
             .build();
 
     return JsonNodeFactory.instance.objectNode().putPOJO("input", input);
@@ -104,6 +117,9 @@ class DeviceManagementTest extends BaseGraphqlTest {
     List<UUID> specimenTypeIds =
         fetchSpecimenTypeIds().stream().map(UUID::fromString).collect(Collectors.toList());
 
+    List<UUID> supportedDiseaseIds =
+        fetchSupportedDiseaseIds().stream().map(UUID::fromString).collect(Collectors.toList());
+
     UpdateDeviceType input =
         UpdateDeviceType.builder()
             .internalId(internalId)
@@ -112,6 +128,7 @@ class DeviceManagementTest extends BaseGraphqlTest {
             .model("Test-A-Lot")
             .loincCode("123456")
             .swabTypes(specimenTypeIds)
+            .supportedDiseases(supportedDiseaseIds)
             .build();
 
     return JsonNodeFactory.instance.objectNode().putPOJO("input", input);

@@ -77,6 +77,7 @@ export type CreateDeviceType = {
   manufacturer: Scalars["String"];
   model: Scalars["String"];
   name: Scalars["String"];
+  supportedDiseases: Array<Scalars["ID"]>;
   swabTypes: Array<Scalars["ID"]>;
 };
 
@@ -94,6 +95,7 @@ export type DeviceType = {
   manufacturer: Scalars["String"];
   model: Scalars["String"];
   name: Scalars["String"];
+  supportedDiseases: Array<SupportedDisease>;
   swabType?: Maybe<Scalars["String"]>;
   swabTypes: Array<SpecimenType>;
   testLength?: Maybe<Scalars["Int"]>;
@@ -133,6 +135,7 @@ export type Mutation = {
   addUser?: Maybe<User>;
   addUserToCurrentOrg?: Maybe<User>;
   adminUpdateOrganization?: Maybe<Scalars["String"]>;
+  correctTestMarkAsCorrection?: Maybe<TestResult>;
   correctTestMarkAsError?: Maybe<TestResult>;
   createDeviceType?: Maybe<DeviceType>;
   createFacilityRegistrationLink?: Maybe<Scalars["String"]>;
@@ -292,6 +295,11 @@ export type MutationAddUserToCurrentOrgArgs = {
 export type MutationAdminUpdateOrganizationArgs = {
   name: Scalars["String"];
   type: Scalars["String"];
+};
+
+export type MutationCorrectTestMarkAsCorrectionArgs = {
+  id: Scalars["ID"];
+  reason?: InputMaybe<Scalars["String"]>;
 };
 
 export type MutationCorrectTestMarkAsErrorArgs = {
@@ -721,6 +729,7 @@ export type Query = {
   queue?: Maybe<Array<Maybe<TestOrder>>>;
   specimenType?: Maybe<Array<Maybe<SpecimenType>>>;
   specimenTypes: Array<SpecimenType>;
+  supportedDiseases: Array<SupportedDisease>;
   testResult?: Maybe<TestResult>;
   testResults?: Maybe<Array<Maybe<TestResult>>>;
   testResultsCount?: Maybe<Scalars["Int"]>;
@@ -832,6 +841,13 @@ export type SpecimenType = {
   typeCode: Scalars["String"];
 };
 
+export type SupportedDisease = {
+  __typename?: "SupportedDisease";
+  internalId: Scalars["ID"];
+  loinc: Scalars["String"];
+  name: Scalars["String"];
+};
+
 export enum TestCorrectionStatus {
   Corrected = "CORRECTED",
   Original = "ORIGINAL",
@@ -906,6 +922,7 @@ export type UpdateDeviceType = {
   manufacturer: Scalars["String"];
   model: Scalars["String"];
   name: Scalars["String"];
+  supportedDiseases: Array<Scalars["ID"]>;
   swabTypes: Array<Scalars["ID"]>;
 };
 
@@ -1576,6 +1593,7 @@ export type CreateDeviceTypeMutationVariables = Exact<{
   model: Scalars["String"];
   loincCode: Scalars["String"];
   swabTypes: Array<Scalars["ID"]> | Scalars["ID"];
+  supportedDiseases: Array<Scalars["ID"]> | Scalars["ID"];
 }>;
 
 export type CreateDeviceTypeMutation = {
@@ -1593,6 +1611,7 @@ export type UpdateDeviceTypeMutationVariables = Exact<{
   model: Scalars["String"];
   loincCode: Scalars["String"];
   swabTypes: Array<Scalars["ID"]> | Scalars["ID"];
+  supportedDiseases: Array<Scalars["ID"]> | Scalars["ID"];
 }>;
 
 export type UpdateDeviceTypeMutation = {
@@ -1631,6 +1650,24 @@ export type GetDeviceTypeListQuery = {
       internalId: string;
       name: string;
     }>;
+    supportedDiseases: Array<{
+      __typename?: "SupportedDisease";
+      internalId: string;
+      name: string;
+    }>;
+  }>;
+};
+
+export type GetSupportedDiseasesQueryVariables = Exact<{
+  [key: string]: never;
+}>;
+
+export type GetSupportedDiseasesQuery = {
+  __typename?: "Query";
+  supportedDiseases: Array<{
+    __typename?: "SupportedDisease";
+    internalId: string;
+    name: string;
   }>;
 };
 
@@ -2272,7 +2309,6 @@ export type GetFacilityResultsQuery = {
                     | {
                         __typename?: "NameInfo";
                         firstName?: string | null | undefined;
-                        middleName?: string | null | undefined;
                         lastName: string;
                       }
                     | null
@@ -4501,6 +4537,7 @@ export const CreateDeviceTypeDocument = gql`
     $model: String!
     $loincCode: String!
     $swabTypes: [ID!]!
+    $supportedDiseases: [ID!]!
   ) {
     createDeviceType(
       input: {
@@ -4509,6 +4546,7 @@ export const CreateDeviceTypeDocument = gql`
         model: $model
         loincCode: $loincCode
         swabTypes: $swabTypes
+        supportedDiseases: $supportedDiseases
       }
     ) {
       internalId
@@ -4538,6 +4576,7 @@ export type CreateDeviceTypeMutationFn = Apollo.MutationFunction<
  *      model: // value for 'model'
  *      loincCode: // value for 'loincCode'
  *      swabTypes: // value for 'swabTypes'
+ *      supportedDiseases: // value for 'supportedDiseases'
  *   },
  * });
  */
@@ -4569,6 +4608,7 @@ export const UpdateDeviceTypeDocument = gql`
     $model: String!
     $loincCode: String!
     $swabTypes: [ID!]!
+    $supportedDiseases: [ID!]!
   ) {
     updateDeviceType(
       input: {
@@ -4578,6 +4618,7 @@ export const UpdateDeviceTypeDocument = gql`
         model: $model
         loincCode: $loincCode
         swabTypes: $swabTypes
+        supportedDiseases: $supportedDiseases
       }
     ) {
       internalId
@@ -4608,6 +4649,7 @@ export type UpdateDeviceTypeMutationFn = Apollo.MutationFunction<
  *      model: // value for 'model'
  *      loincCode: // value for 'loincCode'
  *      swabTypes: // value for 'swabTypes'
+ *      supportedDiseases: // value for 'supportedDiseases'
  *   },
  * });
  */
@@ -4702,6 +4744,10 @@ export const GetDeviceTypeListDocument = gql`
         internalId
         name
       }
+      supportedDiseases {
+        internalId
+        name
+      }
     }
   }
 `;
@@ -4754,6 +4800,64 @@ export type GetDeviceTypeListLazyQueryHookResult = ReturnType<
 export type GetDeviceTypeListQueryResult = Apollo.QueryResult<
   GetDeviceTypeListQuery,
   GetDeviceTypeListQueryVariables
+>;
+export const GetSupportedDiseasesDocument = gql`
+  query getSupportedDiseases {
+    supportedDiseases {
+      internalId
+      name
+    }
+  }
+`;
+
+/**
+ * __useGetSupportedDiseasesQuery__
+ *
+ * To run a query within a React component, call `useGetSupportedDiseasesQuery` and pass it any options that fit your needs.
+ * When your component renders, `useGetSupportedDiseasesQuery` returns an object from Apollo Client that contains loading, error, and data properties
+ * you can use to render your UI.
+ *
+ * @param baseOptions options that will be passed into the query, supported options are listed on: https://www.apollographql.com/docs/react/api/react-hooks/#options;
+ *
+ * @example
+ * const { data, loading, error } = useGetSupportedDiseasesQuery({
+ *   variables: {
+ *   },
+ * });
+ */
+export function useGetSupportedDiseasesQuery(
+  baseOptions?: Apollo.QueryHookOptions<
+    GetSupportedDiseasesQuery,
+    GetSupportedDiseasesQueryVariables
+  >
+) {
+  const options = { ...defaultOptions, ...baseOptions };
+  return Apollo.useQuery<
+    GetSupportedDiseasesQuery,
+    GetSupportedDiseasesQueryVariables
+  >(GetSupportedDiseasesDocument, options);
+}
+export function useGetSupportedDiseasesLazyQuery(
+  baseOptions?: Apollo.LazyQueryHookOptions<
+    GetSupportedDiseasesQuery,
+    GetSupportedDiseasesQueryVariables
+  >
+) {
+  const options = { ...defaultOptions, ...baseOptions };
+  return Apollo.useLazyQuery<
+    GetSupportedDiseasesQuery,
+    GetSupportedDiseasesQueryVariables
+  >(GetSupportedDiseasesDocument, options);
+}
+export type GetSupportedDiseasesQueryHookResult = ReturnType<
+  typeof useGetSupportedDiseasesQuery
+>;
+export type GetSupportedDiseasesLazyQueryHookResult = ReturnType<
+  typeof useGetSupportedDiseasesLazyQuery
+>;
+export type GetSupportedDiseasesQueryResult = Apollo.QueryResult<
+  GetSupportedDiseasesQuery,
+  GetSupportedDiseasesQueryVariables
 >;
 export const GetPendingOrganizationsDocument = gql`
   query GetPendingOrganizations {
@@ -6218,7 +6322,6 @@ export const GetFacilityResultsDocument = gql`
       createdBy {
         nameInfo {
           firstName
-          middleName
           lastName
         }
       }

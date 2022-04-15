@@ -26,6 +26,7 @@ import gov.cdc.usds.simplereport.db.model.Person;
 import gov.cdc.usds.simplereport.db.model.TestEvent;
 import gov.cdc.usds.simplereport.db.model.TestOrder;
 import gov.cdc.usds.simplereport.db.model.auxiliary.AskOnEntrySurvey;
+import gov.cdc.usds.simplereport.db.model.auxiliary.OrderStatus;
 import gov.cdc.usds.simplereport.db.model.auxiliary.PersonName;
 import gov.cdc.usds.simplereport.db.model.auxiliary.PersonRole;
 import gov.cdc.usds.simplereport.db.model.auxiliary.TestCorrectionStatus;
@@ -42,6 +43,7 @@ import gov.cdc.usds.simplereport.test_util.TestUserIdentities;
 import java.time.Instant;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
+import java.time.ZoneId;
 import java.util.Collections;
 import java.util.Date;
 import java.util.HashMap;
@@ -539,6 +541,49 @@ class TestOrderServiceTest extends BaseServiceTest<TestOrderService> {
         () ->
             _service.addTestResult(
                 devA.getInternalId(), TestResult.POSITIVE, p.getInternalId(), null));
+  }
+
+  @Test
+  @WithSimpleReportOrgAdminUser
+  void addTestResult_correction() {
+    Organization org = _organizationService.getCurrentOrganization();
+    Facility facility = _organizationService.getFacilities(org).get(0);
+    Person p = _dataFactory.createFullPerson(org);
+    _service.addPatientToQueue(
+        facility.getInternalId(), p, "", Collections.emptyMap(), LocalDate.of(1865, 12, 25), false);
+    DeviceSpecimenType devA = _dataFactory.getGenericDeviceSpecimen();
+    facility.addDefaultDeviceSpecimen(devA);
+
+    // Create test event for a later correction
+    _service.addTestResult(devA.getInternalId(), TestResult.POSITIVE, p.getInternalId(), null);
+    List<TestEvent> testEvents =
+        _testEventRepository.findAllByPatientAndFacilities(p, List.of(facility));
+    assertEquals(1, testEvents.size());
+
+    // Mark existing test order as "corrected", re-open as "pending" order status
+    TestEvent originalTestEvent = testEvents.get(0);
+    _service.markAsCorrection(originalTestEvent.getInternalId(), "Cold feet");
+
+    // Issue test correction
+    _service.addTestResult(devA.getInternalId(), TestResult.NEGATIVE, p.getInternalId(), null);
+
+    // Get newly-created correction event
+    TestEvent correctionTestEvent =
+        _testEventRepository.findAllByPatientAndFacilities(p, List.of(facility)).stream()
+            .filter(event -> event.getCorrectionStatus() == TestCorrectionStatus.CORRECTED)
+            .collect(Collectors.toList())
+            .get(0);
+
+    assertEquals(
+        originalTestEvent.getInternalId(), correctionTestEvent.getPriorCorrectedTestEventId());
+    assertEquals(TestCorrectionStatus.CORRECTED, correctionTestEvent.getCorrectionStatus());
+    assertEquals("Cold feet", correctionTestEvent.getReasonForCorrection());
+    assertEquals(TestResult.NEGATIVE, correctionTestEvent.getResult());
+    // Date of original test is overwritten by the new correction event
+    assertNotEquals(
+        LocalDate.of(1865, 12, 25),
+        LocalDate.ofInstant(
+            correctionTestEvent.getDateTested().toInstant(), ZoneId.systemDefault()));
   }
 
   @Test
@@ -1060,7 +1105,7 @@ class TestOrderServiceTest extends BaseServiceTest<TestOrderService> {
 
   @Test
   @WithSimpleReportOrgAdminUser
-  void correctionsTest() {
+  void markAsErrorTest() {
     Organization org = _organizationService.getCurrentOrganization();
     Facility facility = _organizationService.getFacilities(org).get(0);
     DeviceSpecimenType device = _dataFactory.getGenericDeviceSpecimen();
@@ -1070,7 +1115,7 @@ class TestOrderServiceTest extends BaseServiceTest<TestOrderService> {
     TestOrder _o = _e.getTestOrder();
 
     String reasonMsg = "Testing correction marking as error " + LocalDateTime.now();
-    TestEvent deleteMarkerEvent = _service.correctTestMarkAsError(_e.getInternalId(), reasonMsg);
+    TestEvent deleteMarkerEvent = _service.markAsError(_e.getInternalId(), reasonMsg);
     assertNotNull(deleteMarkerEvent);
 
     assertEquals(TestCorrectionStatus.REMOVED, deleteMarkerEvent.getCorrectionStatus());
@@ -1104,6 +1149,38 @@ class TestOrderServiceTest extends BaseServiceTest<TestOrderService> {
     // make sure the corrected event is sent to storage queue, which gets picked up to be delivered
     // to report stream
     verify(testEventReportingService).report(deleteMarkerEvent);
+  }
+
+  @Test
+  @WithSimpleReportOrgAdminUser
+  void correctionsTest() {
+    Organization org = _organizationService.getCurrentOrganization();
+    Facility facility = _organizationService.getFacilities(org).get(0);
+    DeviceSpecimenType device = _dataFactory.getGenericDeviceSpecimen();
+    facility.addDefaultDeviceSpecimen(device);
+    Person p = _dataFactory.createFullPerson(org);
+    TestEvent e = _dataFactory.createTestEvent(p, facility);
+
+    String reasonMsg = "Testing correction marking as error " + LocalDateTime.now();
+
+    // A test correction call just returns the original TestEvent...
+    TestEvent originalEvent = _service.markAsCorrection(e.getInternalId(), reasonMsg);
+
+    // ...but re-opens the original TestOrder and updates correction status
+    TestOrder updatedOrder = originalEvent.getTestOrder();
+    assertEquals(TestCorrectionStatus.CORRECTED, updatedOrder.getCorrectionStatus());
+    assertEquals(reasonMsg, updatedOrder.getReasonForCorrection());
+    assertEquals(e.getInternalId(), updatedOrder.getTestEvent().getInternalId());
+    assertEquals(OrderStatus.PENDING, updatedOrder.getOrderStatus());
+
+    // Unlike marking a test as deleted, which immediately creates a second TestEvent
+    // that represents the removal, a test correction does not result in another
+    // TestEvent being generated and saved
+    long testEventCount = _testEventRepository.count();
+    assertEquals(1, testEventCount);
+
+    // Does not report to ReportStream
+    verify(testEventReportingService, times(0)).report(e);
   }
 
   @Test
@@ -1412,7 +1489,7 @@ class TestOrderServiceTest extends BaseServiceTest<TestOrderService> {
   }
 
   @Test
-  void correctionsTest_successDependsOnFacilityAccess() {
+  void markAsErrorTest_successDependsOnFacilityAccess() {
     Organization org = _organizationService.getCurrentOrganization();
     Facility facility = _dataFactory.createValidFacility(org);
     Person p = _dataFactory.createFullPerson(org);
@@ -1420,8 +1497,7 @@ class TestOrderServiceTest extends BaseServiceTest<TestOrderService> {
 
     String reasonMsg = "Testing correction marking as error " + LocalDateTime.now();
     assertThrows(
-        AccessDeniedException.class,
-        () -> _service.correctTestMarkAsError(_e.getInternalId(), reasonMsg));
+        AccessDeniedException.class, () -> _service.markAsError(_e.getInternalId(), reasonMsg));
     assertThrows(
         AccessDeniedException.class,
         () ->
@@ -1435,7 +1511,7 @@ class TestOrderServiceTest extends BaseServiceTest<TestOrderService> {
     verifyNoInteractions(testEventReportingService);
 
     TestUserIdentities.setFacilityAuthorities(facility);
-    TestEvent correctedTestEvent = _service.correctTestMarkAsError(_e.getInternalId(), reasonMsg);
+    TestEvent correctedTestEvent = _service.markAsError(_e.getInternalId(), reasonMsg);
     _service.getTestEventsResults(facility.getInternalId(), null, null, null, null, null, 0, 10);
     _service.getTestResult(_e.getInternalId()).getTestOrder();
     // make sure the corrected event is sent to storage queue

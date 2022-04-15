@@ -11,13 +11,11 @@ import gov.cdc.usds.simplereport.config.authorization.DemoAuthenticationConfigur
 import gov.cdc.usds.simplereport.idp.authentication.DemoOktaAuthentication;
 import gov.cdc.usds.simplereport.idp.repository.DemoOktaRepository;
 import gov.cdc.usds.simplereport.logging.AuditLoggingAdvice;
-import gov.cdc.usds.simplereport.service.ApiUserService;
 import javax.servlet.http.HttpSession;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
-import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.context.annotation.ComponentScan.Filter;
 import org.springframework.context.annotation.FilterType;
 import org.springframework.context.annotation.Import;
@@ -38,15 +36,11 @@ import org.springframework.test.web.servlet.request.MockHttpServletRequestBuilde
         @Filter(
             classes = {AuditLoggingAdvice.class, WebConfiguration.class},
             type = FilterType.ASSIGNABLE_TYPE))
-class UserAccountCreationControllerTest {
+class UserAccountCreationControllerTest extends BaseNonSpringBootTestConfiguration {
 
   @Autowired private MockMvc _mockMvc;
 
   @Autowired private DemoOktaAuthentication _oktaAuth;
-
-  // Dependencies of TenantDataAccessFilter
-  @MockBean private ApiUserService _mockApiUserService;
-  @MockBean private CurrentTenantDataAccessContextHolder _mockContextHolder;
 
   private static final String VALID_ACTIVATION_REQUEST =
       "{\"activationToken\":\"validActivationToken\"}";
