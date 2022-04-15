@@ -3746,7 +3746,6 @@ databaseChangeLog:
                   type: uuid
                   remarks: The internal database identifier for this entity.
                   constraints:
-                    primaryKey: true
                     nullable: false
               - column: *pk_column
               - column: *created_at_column
