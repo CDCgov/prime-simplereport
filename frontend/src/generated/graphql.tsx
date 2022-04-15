@@ -2323,6 +2323,10 @@ export type GetFacilityResultsQuery = {
                 }
               | null
               | undefined;
+            facility?:
+              | { __typename?: "Facility"; name: string }
+              | null
+              | undefined;
           }
         | null
         | undefined
@@ -6327,6 +6331,9 @@ export const GetFacilityResultsDocument = gql`
       }
       patientLink {
         internalId
+      }
+      facility {
+        name
       }
     }
   }

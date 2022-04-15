@@ -58,7 +58,8 @@ const DownloadResultsCSVButton = ({
     filterParams.startDate ||
     filterParams.endDate ||
     filterParams.role ||
-    filterParams.result;
+    filterParams.result ||
+    filterParams.filterFacilityId;
 
   const variables: ResultsQueryVariables = {
     facilityId,
@@ -181,9 +182,9 @@ const DownloadResultsCSVButton = ({
           <div className="border-top border-base-lighter margin-x-neg-205 margin-top-205"></div>
           <div className="grid-row grid-gap">
             {filtersPresent ? (
-              <p>Download results with current filters applied?</p>
+              <p>Download results with current search filters applied?</p>
             ) : (
-              <p>Download results without any filters applied?</p>
+              <p>Download results without any search filters applied?</p>
             )}
           </div>
           <div className="grid-row grid-gap">
