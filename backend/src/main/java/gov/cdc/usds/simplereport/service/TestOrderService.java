@@ -247,7 +247,7 @@ public class TestOrderService {
         saveTestResultToDatabase(deviceSpecimenTypeId, result, patientId, dateTested);
     TestEvent testEvent = savedOrder.getTestEvent();
 
-    _testEventReportingService.report(testEvent);
+    //    _testEventReportingService.report(testEvent);
     ArrayList<Boolean> deliveryStatuses = new ArrayList<>();
 
     PatientLink patientLink = _pls.createPatientLink(savedOrder.getInternalId());
@@ -266,7 +266,7 @@ public class TestOrderService {
 
     boolean deliveryStatus =
         deliveryStatuses.isEmpty() || deliveryStatuses.stream().anyMatch(status -> status);
-    return new AddTestResultResponse(savedOrder, deliveryStatus);
+    return new AddTestResultResponse(savedOrder, testEvent, deliveryStatus);
   }
 
   @AuthorizationConfiguration.RequirePermissionSubmitTestForPatient
@@ -291,9 +291,9 @@ public class TestOrderService {
 
       boolean hasPriorTests = _terepo.existsByPatient(person);
       TestEvent testEvent = new TestEvent(order, hasPriorTests);
-      _terepo.save(testEvent);
+      TestEvent savedEvent = _terepo.save(testEvent);
 
-      order.setTestEventRef(testEvent);
+      order.setTestEventRef(savedEvent);
       TestOrder savedOrder = _repo.save(order);
 
       return savedOrder;

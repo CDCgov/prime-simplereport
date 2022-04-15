@@ -5,6 +5,7 @@ import gov.cdc.usds.simplereport.db.model.auxiliary.AskOnEntrySurvey;
 import gov.cdc.usds.simplereport.db.model.auxiliary.TestCorrectionStatus;
 import gov.cdc.usds.simplereport.db.model.auxiliary.TestResult;
 import java.util.Date;
+import java.util.HashSet;
 import java.util.Optional;
 import java.util.Set;
 import java.util.UUID;
@@ -44,7 +45,7 @@ public class TestEvent extends BaseTestInfo {
   @JoinColumn(name = "test_order_id")
   private TestOrder order;
 
-  @OneToMany(mappedBy = "testEvent", cascade = CascadeType.ALL)
+  @OneToMany(mappedBy = "testEvent", cascade = CascadeType.ALL, fetch = FetchType.LAZY)
   private Set<Result> results;
 
   @Column(columnDefinition = "uuid")
@@ -67,6 +68,7 @@ public class TestEvent extends BaseTestInfo {
     }
 
     order.getResultSet().forEach(result -> result.setTestEvent(this));
+    this.results = new HashSet<>(order.getResultSet());
 
     // store a link, and *also* store the object as JSON
     // force load the lazy-loaded phone numbers so values are available to the object mapper
@@ -156,6 +158,10 @@ public class TestEvent extends BaseTestInfo {
     } else {
       return Translators.convertLoincToResult(resultObject.get().getResultLOINC());
     }
+  }
+
+  public String getTestResultLoinc() {
+    return this.results.stream().findFirst().get().getResultLOINC();
   }
 
   @Override
