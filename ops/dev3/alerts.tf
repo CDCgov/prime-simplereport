@@ -28,5 +28,5 @@ module "metric_alerts" {
     data.terraform_remote_state.global.outputs.pagerduty_non_prod_action_id
   ]
 
-  database_id = data.terraform_remote_state.persistent_dev.outputs.postgres_server_id
+  database_id = data.terraform_remote_state.persistent_dev3.outputs.postgres_server_id
 }

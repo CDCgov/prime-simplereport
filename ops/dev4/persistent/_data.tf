@@ -10,7 +10,8 @@ data "terraform_remote_state" "global" {
 
 # Resource Groups
 data "azurerm_resource_group" "dev4" {
-  name = "${local.project}-${local.name}-${local.env}"
+  # Since we have multiple environments in this resource group, we need to hard-code the group suffix here.
+  name = "${local.project}-${local.name}-dev"
 }
 
 data "azurerm_resource_group" "global" {
@@ -26,7 +27,7 @@ data "azurerm_client_config" "current" {}
 # Network
 data "azurerm_virtual_network" "dev4" {
   name                = "simple-report-${local.env}-network"
-  resource_group_name = data.azurerm_resource_group.dev.name
+  resource_group_name = data.azurerm_resource_group.dev4.name
 }
 
 # Secrets

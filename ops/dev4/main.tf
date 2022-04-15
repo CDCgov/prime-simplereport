@@ -1,11 +1,13 @@
 locals {
   project = "prime"
   name    = "simple-report"
-  env     = "dev"
+  env     = "dev4"
   management_tags = {
     prime-app      = "simple-report"
     environment    = local.env
-    resource_group = "${local.project}-${local.name}-${local.env}"
+    # Since we have multiple environments in this resource group, we need to hard-code the group suffix here.
+    resource_group = "${local.project}-${local.name}-dev"
+    //resource_group = "${local.project}-${local.name}-${local.env}"
   }
 }
 
@@ -46,7 +48,7 @@ module "app_gateway" {
   resource_group_name     = data.azurerm_resource_group.rg.name
 
   blob_endpoint     = azurerm_storage_account.app.primary_web_host
-  subnet_id         = data.terraform_remote_state.persistent_dev.outputs.subnet_lbs_id
+  subnet_id         = data.terraform_remote_state.persistent_dev4.outputs.subnet_lbs_id
   key_vault_id      = data.azurerm_key_vault.sr_global.id
   log_workspace_uri = data.azurerm_log_analytics_workspace.log_analytics.id
 
@@ -64,9 +66,9 @@ module "nat_gateway" {
   env                     = local.env
   resource_group_location = data.azurerm_resource_group.rg.location
   resource_group_name     = data.azurerm_resource_group.rg.name
-  subnet_webapp_id        = data.terraform_remote_state.persistent_dev.outputs.subnet_webapp_id
-  subnet_lb_id            = data.terraform_remote_state.persistent_dev.outputs.subnet_lbs_id
-  subnet_vm_id            = data.terraform_remote_state.persistent_dev.outputs.subnet_vm_id
+  subnet_webapp_id        = data.terraform_remote_state.persistent_dev4.outputs.subnet_webapp_id
+  subnet_lb_id            = data.terraform_remote_state.persistent_dev4.outputs.subnet_lbs_id
+  subnet_vm_id            = data.terraform_remote_state.persistent_dev4.outputs.subnet_vm_id
   tags                    = local.management_tags
 }
 

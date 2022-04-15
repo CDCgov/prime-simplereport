@@ -21,7 +21,8 @@ data "terraform_remote_state" "global" {
 
 # Resource Groups
 data "azurerm_resource_group" "rg" {
-  name = "${local.project}-${local.name}-${local.env}"
+  # Since we have multiple environments in this resource group, we need to hard-code the group suffix here.
+  name = "${local.project}-${local.name}-dev"
 }
 
 data "azurerm_resource_group" "rg_global" {

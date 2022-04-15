@@ -8,7 +8,7 @@ module "simple_report_api" {
   resource_group_location = data.azurerm_resource_group.rg.location
   resource_group_name     = data.azurerm_resource_group.rg.name
 
-  webapp_subnet_id = data.terraform_remote_state.persistent_dev.outputs.subnet_webapp_id
+  webapp_subnet_id = data.terraform_remote_state.persistent_dev4.outputs.subnet_webapp_id
 
   docker_image_uri = "DOCKER|simplereportacr.azurecr.io/api/simple-report-api-build:${var.acr_image_tag}"
   key_vault_id     = data.azurerm_key_vault.sr_global.id
@@ -26,7 +26,7 @@ module "simple_report_api" {
 
   app_settings = {
     SPRING_PROFILES_ACTIVE                        = "azure-dev"
-    SPRING_DATASOURCE_SIMPLEREPORT_HIKARI_JDBCURL = "@Microsoft.KeyVault(SecretUri=${data.azurerm_key_vault_secret.sr_dev_db_jdbc.id})"
+    SPRING_DATASOURCE_SIMPLEREPORT_HIKARI_JDBCURL = "@Microsoft.KeyVault(SecretUri=${data.azurerm_key_vault_secret.sr_dev4_db_jdbc.id})"
     SPRING_DATASOURCE_METABASE_HIKARI_JDBCURL     = "@Microsoft.KeyVault(SecretUri=${data.azurerm_key_vault_secret.metabase_db_uri.id})"
     DB_PASSWORD_NO_PHI                            = "@Microsoft.KeyVault(SecretUri=${data.azurerm_key_vault_secret.db_password_no_phi.id})"
     APPLICATIONINSIGHTS_CONNECTION_STRING         = data.azurerm_application_insights.app_insights.connection_string

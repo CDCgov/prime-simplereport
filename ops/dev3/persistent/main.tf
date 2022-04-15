@@ -4,8 +4,8 @@ locals {
   env     = "dev3"
 
   network_cidr = "10.1.0.0/16"
-  rg_name      = data.azurerm_resource_group.dev.name
-  rg_location  = data.azurerm_resource_group.dev.location
+  rg_name      = data.azurerm_resource_group.dev3.name
+  rg_location  = data.azurerm_resource_group.dev3.location
   management_tags = {
     prime-app      = "simple-report"
     environment    = local.env
