@@ -28,6 +28,9 @@ data "azurerm_client_config" "current" {}
 data "azurerm_virtual_network" "dev3" {
   name                = "simple-report-${local.env}-network"
   resource_group_name = data.azurerm_resource_group.dev3.name
+  depends_on = [
+    module.vnet
+  ]
 }
 
 # Secrets
