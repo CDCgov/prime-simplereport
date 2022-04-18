@@ -3744,7 +3744,7 @@ databaseChangeLog:
               - column:
                   name: report_id
                   type: uuid
-                  remarks: The internal database identifier for this entity.
+                  remarks: The Report Stream report Id.
                   constraints:
                     nullable: false
               - column: *pk_column
@@ -3789,7 +3789,7 @@ databaseChangeLog:
                   remarks: Any warnings encountered when uploading.
                   type: text
         - sql: |
-            GRANT SELECT ON ${database.defaultSchemaName}.upload TO ${noPhiUsername};
+            GRANT SELECT (internal_id, updated_at, created_by, updated_by, facility_id, org_id, status, records_count, report_id) ON ${database.defaultSchemaName}.upload TO ${noPhiUsername};
       rollback:
         sql: |
           DROP TABLE ${database.defaultSchemaName}.upload;
