@@ -13,6 +13,7 @@ import { symptomsStringToArray } from "../utils/symptoms";
 import { GetFacilityResultsForCsvDocument } from "../../generated/graphql";
 
 import {
+  ALL_FACILITIES_ID,
   byDateTested,
   FilterParams,
   Results,
@@ -22,7 +23,7 @@ import {
 interface Props {
   filterParams: FilterParams;
   totalEntries: number;
-  facilityId: string;
+  activeFacilityId: string;
 }
 
 function hasSymptoms(noSymptoms: boolean, symptoms: string) {
@@ -41,7 +42,7 @@ function hasSymptoms(noSymptoms: boolean, symptoms: string) {
 const DownloadResultsCSVButton = ({
   filterParams,
   totalEntries,
-  facilityId,
+  activeFacilityId,
 }: Props) => {
   const [modalIsOpen, setModalIsOpen] = useState(false);
   const [results, setResults] = useState([]);
@@ -59,10 +60,13 @@ const DownloadResultsCSVButton = ({
     filterParams.endDate ||
     filterParams.role ||
     filterParams.result ||
-    filterParams.filterFacilityId;
+    filterParams.filterFacilityId !== activeFacilityId;
 
   const variables: ResultsQueryVariables = {
-    facilityId,
+    facilityId:
+      filterParams.filterFacilityId === ALL_FACILITIES_ID
+        ? null
+        : filterParams.filterFacilityId || activeFacilityId,
     pageNumber: 0,
     pageSize: totalEntries,
     ...filterParams,
