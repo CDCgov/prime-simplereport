@@ -3789,7 +3789,7 @@ databaseChangeLog:
                   remarks: Any warnings encountered when uploading.
                   type: text
         - sql: |
-            GRANT SELECT (internal_id, updated_at, created_by, updated_by, facility_id, org_id, status, records_count, report_id) ON ${database.defaultSchemaName}.upload TO ${noPhiUsername};
+            GRANT SELECT ON ${database.defaultSchemaName}.upload TO ${noPhiUsername};
       rollback:
         sql: |
           DROP TABLE ${database.defaultSchemaName}.upload;
