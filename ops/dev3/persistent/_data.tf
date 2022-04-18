@@ -42,6 +42,6 @@ data "azurerm_key_vault" "db_keys" {
 }
 
 data "azurerm_key_vault_key" "db_encryption_key" {
-  name         = local.env
+  name         = local.env_level
   key_vault_id = data.azurerm_key_vault.db_keys.id
 }

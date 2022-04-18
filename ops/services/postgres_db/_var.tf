@@ -2,6 +2,10 @@ variable "env" {
   type = string
 }
 
+variable "env_level" {
+  type = string
+}
+
 variable "tags" {
   description = "tags for resources created"
   type        = map(string)

@@ -1,7 +1,8 @@
 locals {
-  project = "prime"
-  name    = "simple-report"
-  env     = "dev3"
+  project   = "prime"
+  name      = "simple-report"
+  env       = "dev3"
+  env_level = "dev"
 
   network_cidr = "10.1.0.0/16"
   rg_name      = data.azurerm_resource_group.dev3.name

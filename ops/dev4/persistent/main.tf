@@ -1,7 +1,8 @@
 locals {
-  project = "prime"
-  name    = "simple-report"
-  env     = "dev4"
+  project   = "prime"
+  name      = "simple-report"
+  env       = "dev4"
+  env_level = "dev"
 
   network_cidr = "10.1.0.0/16"
   rg_name      = data.azurerm_resource_group.dev4.name
@@ -9,7 +10,9 @@ locals {
   management_tags = {
     prime-app      = "simple-report"
     environment    = local.env
-    resource_group = "${local.project}-${local.name}-${local.env}"
+    # Resource groups can support multiple environments at the same level. Any resources that are shared between
+    # environments should use the "local.env_level" convention where possible.
+    resource_group = "${local.project}-${local.name}-${local.env_level}"
   }
 }
 

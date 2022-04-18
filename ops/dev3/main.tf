@@ -1,13 +1,14 @@
 locals {
-  project = "prime"
-  name    = "simple-report"
-  env     = "dev3"
+  project   = "prime"
+  name      = "simple-report"
+  env       = "dev3"
+  env_level = "dev"
   management_tags = {
     prime-app      = "simple-report"
     environment    = local.env
-    # Since we have multiple environments in this resource group, we need to hard-code the group suffix here.
-    resource_group = "${local.project}-${local.name}-dev"
-    //resource_group = "${local.project}-${local.name}-${local.env}"
+    # Resource groups can support multiple environments at the same level. Any resources that are shared between
+    # environments should use the "local.env_level" convention where possible.
+    resource_group = "${local.project}-${local.name}-${local.env_level}"
   }
 }
 
