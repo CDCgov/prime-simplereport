@@ -25,7 +25,7 @@ spring:
   jpa:
     database: POSTGRESQL
     hibernate.ddl-auto: validate
-    open-in-view: true # this is misleading: we actually have a filter that does this instead
+    open-in-view: false # this is misleading: we actually have a filter that does this instead
     properties:
       hibernate:
         enable_lazy_load_no_trans: true # removing in no session issues
