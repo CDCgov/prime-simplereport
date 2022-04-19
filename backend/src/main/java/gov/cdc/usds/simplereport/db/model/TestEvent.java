@@ -1,5 +1,6 @@
 package gov.cdc.usds.simplereport.db.model;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import gov.cdc.usds.simplereport.db.model.auxiliary.AskOnEntrySurvey;
 import gov.cdc.usds.simplereport.db.model.auxiliary.TestCorrectionStatus;
 import java.util.Date;
@@ -34,6 +35,7 @@ public class TestEvent extends BaseTestInfo {
   @Type(type = "jsonb")
   private AskOnEntrySurvey surveyData;
 
+  @JsonIgnore
   @ManyToOne(optional = false, fetch = FetchType.LAZY)
   @JoinColumn(name = "test_order_id")
   private TestOrder order;
@@ -125,6 +127,7 @@ public class TestEvent extends BaseTestInfo {
     return providerData;
   }
 
+  @JsonIgnore
   public TestOrder getTestOrder() {
     return order;
   }
