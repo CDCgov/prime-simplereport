@@ -237,9 +237,9 @@ test {
     environment "OKTA_TESTING_DISABLEHTTPSCHECK", "true"
     useJUnitPlatform()
     // uncomment this to log to stdout when each test starts, so you can tell what's going on
-    testLogging {
-        events "PASSED", "SKIPPED", "FAILED", "STANDARD_ERROR", "STANDARD_OUT"
-    }
+    // testLogging {
+    //   events "started", "failed"
+    // }
     systemProperty "test-db-host", testDbHost
     systemProperty "test-db-port", testDbPort
     systemProperty "skip-db-setup", skipDbSetup
