@@ -4,8 +4,8 @@ import classNames from "classnames";
 import { v4 as uuidv4 } from "uuid";
 import { useSelector, connect } from "react-redux";
 
-import { PATIENT_TERM_PLURAL_CAP } from "../../config/constants";
 import { formatFullName, formatRole } from "../utils/user";
+import { PATIENT_TERM_PLURAL_CAP } from "../../config/constants";
 import siteLogo from "../../img/simplereport-logo-color.svg";
 import { hasPermission, appPermissions } from "../permissions";
 import { RootState } from "../store";
@@ -16,9 +16,9 @@ import Button from "./Button/Button";
 import Dropdown from "./Dropdown";
 import useComponentVisible from "./ComponentVisible";
 import { LinkWithQuery } from "./LinkWithQuery";
-import ChangeUser from "./ChangeUser";
 
 import "./Header.scss";
+import ChangeUser from "./ChangeUser";
 
 const Header: React.FC<{}> = () => {
   const appInsights = getAppInsights();
@@ -49,6 +49,7 @@ const Header: React.FC<{}> = () => {
 
   const user = useSelector((state) => (state as any).user as User);
   const [menuVisible, setMenuVisible] = useState(false);
+
   const {
     ref: staffDefailsRef,
     isComponentVisible: staffDetailsVisible,
@@ -118,6 +119,142 @@ const Header: React.FC<{}> = () => {
   const inactiveNavItem = "prime-nav-link";
   const getNavItemClassName = ({ isActive }: { isActive: boolean }) =>
     isActive ? activeNavItem : inactiveNavItem;
+  const mainNavContent = [
+    {
+      url: "/dashboard",
+      displayText: "Dashboard",
+      displayPermissions: canViewSettings,
+      className: getNavItemClassName,
+      id: "dashboard-nav-link",
+    },
+    {
+      url: "/queue",
+      displayText: "Conduct tests",
+      displayPermissions: canViewTestQueue,
+      className: getNavItemClassName,
+      id: "conduct-test-nav-link",
+    },
+    {
+      url: "/results",
+      displayText: "Results",
+      displayPermissions: canViewResults,
+      className: getNavItemClassName,
+      id: "results-nav-link",
+    },
+    {
+      url: "/patients",
+      displayText: PATIENT_TERM_PLURAL_CAP,
+      displayPermissions: canViewPeople,
+      className: getNavItemClassName,
+      id: "patient-nav-link",
+    },
+  ];
+  const secondaryNavContent = [
+    {
+      url: "#",
+      displayPermissions: true,
+      onClick: (e: React.MouseEvent<HTMLAnchorElement>) => {
+        e.preventDefault();
+        setStaffDetailsVisible(!staffDetailsVisible);
+      },
+      className: staffDetailsVisible ? activeNavItem : inactiveNavItem,
+      id: "results-nav-link",
+      dataTestId: "user-button",
+      hasSubmenu: true,
+      icon: (
+        <FontAwesomeIcon
+          icon={"user-circle"}
+          style={{
+            color: staffDetailsVisible ? "white" : "",
+          }}
+        />
+      ),
+    },
+    {
+      url: "/settings",
+      displayPermissions: true,
+      onClick: () => setMenuVisible(false),
+      className: getNavItemClassName,
+      id: "results-nav-link",
+      dataTestId: "user-button",
+      icon: <FontAwesomeIcon icon={"cog"} />,
+      hasSubmenu: false,
+    },
+  ];
+
+  const secondaryNavSublist = (
+    <ul className="usa-sidenav__sublist">
+      <li className="usa-sidenav__item span-full-name">
+        {formatFullName(user)}
+      </li>
+      <li className="usa-sidenav__item">
+        <span>
+          <strong>Role: </strong>
+          {formatRole(user.roleDescription)}
+        </span>
+      </li>
+      <li className="usa-sidenav__item">{facility.name}</li>
+      <li className="usa-sidenav__item navlink__support">
+        <a
+          href="https://www.simplereport.gov/support"
+          target="none"
+          onClick={() => handleSupportClick()}
+          data-testid="support-link"
+        >
+          Support
+        </a>
+      </li>
+      <li className="usa-sidenav__item margin-top-2">
+        <Button variant="unstyled" label=" Log out" onClick={logout} />
+      </li>
+      <ChangeUser />
+    </ul>
+  );
+
+  const mainNavList = mainNavContent.map((item) => {
+    return (
+      <li key={item.id} className="usa-nav__primary-item">
+        {item.displayPermissions ? (
+          <LinkWithQuery
+            to={item.url}
+            onClick={() => setMenuVisible(false)}
+            className={item.className}
+            id={item.id}
+          >
+            {item.displayText}
+          </LinkWithQuery>
+        ) : null}
+      </li>
+    );
+  });
+
+  const secondaryNavList = secondaryNavContent.map((item) => {
+    return (
+      <li className="usa-nav__primary-item nav__primary-item-icon">
+        <LinkWithQuery
+          to={item.url}
+          onClick={item.onClick}
+          className={item.className}
+          data-testid={item.dataTestId}
+        >
+          {item.icon}
+        </LinkWithQuery>
+        {item.hasSubmenu && staffDetailsVisible ? (
+          <div
+            ref={staffDefailsRef}
+            aria-label="Primary navigation"
+            className={classNames("shadow-3", "prime-staff-infobox", {
+              "is-prime-staff-infobox-visible": staffDetailsVisible,
+            })}
+          >
+            {secondaryNavSublist}
+          </div>
+        ) : (
+          <></>
+        )}
+      </li>
+    );
+  });
 
   return (
     <header className="usa-header usa-header--basic">
@@ -133,182 +270,55 @@ const Header: React.FC<{}> = () => {
             </LinkWithQuery>
             <div className="prime-organization-name">{organization.name}</div>
           </div>
+
           <button
             onClick={() => setMenuVisible(!menuVisible)}
             className="usa-menu-btn"
           >
             Menu
           </button>
+
+          <nav
+            aria-label="Primary navigation"
+            className={classNames(
+              "usa-nav",
+              "prime-nav",
+              "desktop:display-none",
+              {
+                "is-visible": menuVisible,
+              }
+            )}
+          >
+            <button
+              className="fa-layers fa-fw fa-2x usa-nav__close prime-nav-close-button"
+              onClick={() => setMenuVisible(false)}
+              title={"close menu"}
+            >
+              <FontAwesomeIcon icon={"window-close"} />
+            </button>
+            <ul className="usa-nav__primary usa-accordion">{mainNavList}</ul>
+            <ul className="usa-nav__primary usa-accordion">
+              {secondaryNavContent.map((item) => {
+                return (
+                  <li className="usa-nav__primary-item nav__primary-item-icon">
+                    <LinkWithQuery
+                      to={item.url}
+                      onClick={item.onClick}
+                      className={item.className}
+                      data-testid={item.dataTestId}
+                    >
+                      {item.icon}
+                    </LinkWithQuery>
+                    {item.hasSubmenu ? secondaryNavSublist : <></>}
+                  </li>
+                );
+              })}
+            </ul>
+          </nav>
         </div>
 
-        <nav
-          aria-label="Primary navigation"
-          className={classNames(
-            "usa-nav",
-            "prime-nav",
-            "desktop:display-none",
-            {
-              "is-visible": menuVisible,
-            }
-          )}
-        >
-          <button
-            className="fa-layers fa-fw fa-2x usa-nav__close prime-nav-close-button"
-            onClick={() => setMenuVisible(false)}
-            title={"close menu"}
-          >
-            <FontAwesomeIcon icon={"window-close"} />
-          </button>
-
-          <ul className="usa-nav__primary usa-accordion">
-            {canViewSettings ? (
-              <li className="usa-nav__primary-item prime-staff-infobox-sidemenu prime-settings-hidden">
-                <LinkWithQuery
-                  to={`/dashboard`}
-                  onClick={() => setMenuVisible(false)}
-                  className={getNavItemClassName}
-                >
-                  Dashboard
-                </LinkWithQuery>
-              </li>
-            ) : null}
-            {canViewTestQueue ? (
-              <li className="usa-nav__primary-item prime-staff-infobox-sidemenu prime-settings-hidden">
-                <LinkWithQuery
-                  to={`/queue`}
-                  onClick={() => setMenuVisible(false)}
-                  className={getNavItemClassName}
-                >
-                  Conduct tests
-                </LinkWithQuery>
-              </li>
-            ) : null}
-            {canViewResults ? (
-              <li className="usa-nav__primary-item prime-staff-infobox-sidemenu prime-settings-hidden">
-                <LinkWithQuery
-                  to={`/results`}
-                  onClick={() => setMenuVisible(false)}
-                  className={getNavItemClassName}
-                >
-                  Results
-                </LinkWithQuery>
-              </li>
-            ) : null}
-            {canViewPeople ? (
-              <li className="usa-nav__primary-item prime-staff-infobox-sidemenu prime-settings-hidden">
-                <LinkWithQuery
-                  to={`/patients`}
-                  onClick={() => setMenuVisible(false)}
-                  className={getNavItemClassName}
-                >
-                  {PATIENT_TERM_PLURAL_CAP}
-                </LinkWithQuery>
-              </li>
-            ) : null}
-            <li className="usa-nav__primary-item prime-staff-infobox-sidemenu prime-settings-hidden">
-              <FontAwesomeIcon
-                icon={"user-circle"}
-                style={{
-                  fill: "white",
-                }}
-              />
-            </li>
-
-            <li className="usa-nav__primary-item usa-sidenav prime-staff-infobox-sidemenu prime-settings-hidden">
-              <ul className="usa-sidenav__sublist prime-sidenav_inset">
-                <li className="usa-sidenav__item span-full-name">
-                  {formatFullName(user)}
-                </li>
-                <li className="usa-sidenav__item">
-                  <span>
-                    <strong>Role: </strong>
-                    {formatRole(user.roleDescription)}
-                  </span>
-                </li>
-                <li className="usa-sidenav__item">{facility.name}</li>
-              </ul>
-            </li>
-            <div>
-              <div className="navlink__support">
-                <a
-                  href="https://www.simplereport.gov/support"
-                  target="none"
-                  onClick={() => handleSupportClick()}
-                >
-                  Support
-                </a>
-              </div>
-              <Button variant="unstyled" label="Log out" onClick={logout} />
-              <ChangeUser />
-            </div>
-            {canViewSettings ? (
-              <li className="usa-nav__primary-item prime-settings-hidden">
-                <LinkWithQuery
-                  to={`/settings`}
-                  onClick={() => setMenuVisible(false)}
-                  className={({ isActive }) =>
-                    isActive ? "active-nav-item" : ""
-                  }
-                  style={({ isActive }) => ({ color: isActive ? "white" : "" })}
-                >
-                  <FontAwesomeIcon icon={"cog"} /> Settings
-                </LinkWithQuery>
-              </li>
-            ) : null}
-          </ul>
-        </nav>
-
         <nav aria-label="Primary navigation" className="usa-nav prime-nav">
-          <ul className="usa-nav__primary usa-accordion">
-            {canViewSettings ? (
-              <li className="usa-nav__primary-item">
-                <LinkWithQuery
-                  to={`/dashboard`}
-                  onClick={() => setMenuVisible(false)}
-                  className={getNavItemClassName}
-                  id="dashboard-nav-link"
-                >
-                  Dashboard
-                </LinkWithQuery>
-              </li>
-            ) : null}
-            {canViewTestQueue ? (
-              <li className="usa-nav__primary-item">
-                <LinkWithQuery
-                  to={`/queue`}
-                  onClick={() => setMenuVisible(false)}
-                  className={getNavItemClassName}
-                  id="conduct-test-nav-link"
-                >
-                  Conduct tests
-                </LinkWithQuery>
-              </li>
-            ) : null}
-            {canViewResults ? (
-              <li className="usa-nav__primary-item">
-                <LinkWithQuery
-                  to={`/results`}
-                  onClick={() => setMenuVisible(false)}
-                  className={getNavItemClassName}
-                  id="results-nav-link"
-                >
-                  Results
-                </LinkWithQuery>
-              </li>
-            ) : null}
-            {canViewPeople ? (
-              <li className="usa-nav__primary-item">
-                <LinkWithQuery
-                  to={`/patients`}
-                  onClick={() => setMenuVisible(false)}
-                  className={getNavItemClassName}
-                  id="patient-nav-link"
-                >
-                  {PATIENT_TERM_PLURAL_CAP}
-                </LinkWithQuery>
-              </li>
-            ) : null}
-          </ul>
+          <ul className="usa-nav__primary usa-accordion">{mainNavList}</ul>
           {facilities && facilities.length > 0 ? (
             <div className="prime-facility-select">
               <Dropdown
@@ -322,89 +332,33 @@ const Header: React.FC<{}> = () => {
             </div>
           ) : null}
           <ul className="usa-nav__primary usa-accordion">
-            <li className="usa-nav__primary-item nav__primary-item-icon">
-              <LinkWithQuery
-                to={`#`}
-                onClick={(e) => {
-                  e.preventDefault();
-                  setStaffDetailsVisible(!staffDetailsVisible);
-                }}
-                className={() =>
-                  staffDetailsVisible ? activeNavItem : inactiveNavItem
-                }
-                data-testid="user-button"
-              >
-                <FontAwesomeIcon
-                  icon={"user-circle"}
-                  style={{
-                    color: staffDetailsVisible ? "white" : "",
-                  }}
-                />
-              </LinkWithQuery>
-              <div
-                ref={staffDefailsRef}
-                aria-label="Primary navigation"
-                className={classNames("shadow-3", "prime-staff-infobox", {
-                  "is-prime-staff-infobox-visible": staffDetailsVisible,
-                })}
-              >
-                <ul className="usa-sidenav__sublist">
-                  <li className="usa-sidenav__item span-full-name">
-                    {formatFullName(user)}
-                  </li>
-                  <li className="usa-sidenav__item">
-                    <span>
-                      <strong>Role: </strong>
-                      {formatRole(user.roleDescription)}
-                    </span>
-                  </li>
-                  <li className="usa-sidenav__item">{facility.name}</li>
-                  <li className="usa-sidenav__item navlink__support">
-                    <a
-                      href="https://www.simplereport.gov/support"
-                      target="none"
-                      onClick={() => handleSupportClick()}
-                      data-testid="support-link"
+            {secondaryNavContent.map((item) => {
+              return (
+                <li className="usa-nav__primary-item nav__primary-item-icon">
+                  <LinkWithQuery
+                    to={item.url}
+                    onClick={item.onClick}
+                    className={item.className}
+                    data-testid={item.dataTestId}
+                  >
+                    {item.icon}
+                  </LinkWithQuery>
+                  {item.hasSubmenu && staffDetailsVisible ? (
+                    <div
+                      ref={staffDefailsRef}
+                      aria-label="Primary navigation"
+                      className={classNames("shadow-3", "prime-staff-infobox", {
+                        "is-prime-staff-infobox-visible": staffDetailsVisible,
+                      })}
                     >
-                      Support
-                    </a>
-                  </li>
-                  <li className="usa-sidenav__item navlink__support">
-                    <a
-                      href="https://www.simplereport.gov/using-simplereport/whats-new"
-                      target="_blank"
-                      rel="noreferrer"
-                      onClick={() => handleWhatsNewClick()}
-                      data-testid="whats-new-link"
-                    >
-                      What's new
-                    </a>
-                  </li>
-                  <li className="usa-sidenav__item margin-top-2">
-                    <Button
-                      variant="unstyled"
-                      label=" Log out"
-                      onClick={logout}
-                    />
-                  </li>
-                  <ChangeUser />
-                </ul>
-              </div>
-            </li>
-            {canViewSettings ? (
-              <li className="usa-nav__primary-item nav__primary-item-icon">
-                <LinkWithQuery
-                  to={`/settings`}
-                  onClick={() => setMenuVisible(false)}
-                  className={({ isActive }) =>
-                    isActive ? "active-nav-item" : ""
-                  }
-                  style={({ isActive }) => ({ color: isActive ? "white" : "" })}
-                >
-                  <FontAwesomeIcon icon={"cog"} />
-                </LinkWithQuery>
-              </li>
-            ) : null}
+                      {secondaryNavSublist}
+                    </div>
+                  ) : (
+                    <></>
+                  )}
+                </li>
+              );
+            })}
           </ul>
         </nav>
       </div>

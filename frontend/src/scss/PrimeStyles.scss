@@ -767,21 +767,27 @@ $results-dropdown-spacing: #{units(4)} - #{units(2)} - 22px - #{units(4)}; // he
 
 .prime-staff-infobox {
   position: absolute;
-  right: 73px;
-  width: auto !important;
+  width: 15rem;
   border: 1px solid color("base-lighter");
   border-radius: 0.5rem;
   background-color: white; /* seems like this should be a theme */
   z-index: 10;
   visibility: hidden;
+  padding: 0.75rem 1rem;
 
   .usa-sidenav__sublist {
-    margin: units(2.5);
+    hr {
+      margin-bottom: 0.75rem;
+    }
   }
 
   li {
     border-top-color: transparent;
     margin-top: units(1);
+  }
+
+  li:first-of-type {
+    margin-top: 0;
   }
 
   /* Anchor in menu is rendered as a styled button. parent Nav forces it to look non-standard */
@@ -804,17 +810,31 @@ $results-dropdown-spacing: #{units(4)} - #{units(2)} - 22px - #{units(4)}; // he
 }
 
 .navlink__support {
-  @include at-media("desktop") {
-    margin-top: units(2.5) !important;
+  display: flex;
+  align-items: center;
+
+  button {
+    text-decoration: none;
   }
 
   a {
-    text-decoration: underline !important;
-    padding-left: 0 !important;
+    color: color($theme-link-color);
+    font-weight: 500;
 
     @include at-media("desktop") {
-      padding-left: 0;
+      padding: 0 !important;
     }
+  }
+
+  a:hover,
+  button:hover {
+    color: color($theme-link-color);
+    text-decoration: underline;
+    font-weight: 700;
+  }
+
+  a:visited {
+    color: color($theme-link-color);
   }
 }
 

@@ -17,4 +17,30 @@
   .usa-navbar {
     margin-right: 1rem;
   }
+
+  .role-tag {
+    // $theme-color-prime-gray:
+    color: #71767a;
+  }
+
+  .header-link-icon {
+    // $theme-color-primary
+    color: #005ea2;
+    width: 16px;
+    height: 16px;
+    margin-right: 4px;
+  }
+
+  .sparkle-icon-mask {
+    background-color: #005ea2;
+    mask: url("../../img/font-awesome-pro-icons/sparkles.svg") no-repeat center;
+  }
+
+  .ghost-user-link {
+    display: block;
+    padding: 0;
+    margin-top: 0.75rem;
+    // $theme-color-primary
+    color: #005ea2;
+  }
 }
