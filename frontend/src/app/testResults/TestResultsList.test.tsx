@@ -17,10 +17,12 @@ import { QUERY_PATIENT } from "../testQueue/addToQueue/AddToQueueSearch";
 
 import { testResultDetailsQuery } from "./TestResultDetailsModal";
 import TestResultsList, {
+  ALL_FACILITIES_ID,
   DetachedTestResultsList,
   resultsCountQuery,
   testResultQuery,
 } from "./TestResultsList";
+import {appPermissions} from "../permissions";
 
 const mockStore = configureStore([]);
 const store = mockStore({
@@ -30,6 +32,7 @@ const store = mockStore({
   user: {
     firstName: "Kim",
     lastName: "Mendoza",
+    permissions: appPermissions.settings.canView
   },
   facilities: [
     { id: "1", name: "Facility 1" },
@@ -691,6 +694,81 @@ const testResultsByFacility = [
   },
 ];
 
+const testResultsByAllFacility = [
+  {
+    internalId: "0969da96-b211-41cd-ba61-002181f0123a",
+    dateTested: "2021-04-12T12:40:33.381Z",
+    result: "NEGATIVE",
+    correctionStatus: "ORIGINAL",
+    deviceType: {
+      internalId: "8c1a8efe-8951-4f84-a4c9-dcea561d7fbb",
+      name: "Abbott IDNow",
+      __typename: "DeviceType",
+    },
+    patient: {
+      internalId: "48c523e8-7c65-4047-955c-e3f65bb8123a",
+      firstName: "Lewis",
+      middleName: "",
+      lastName: "Clarkson",
+      birthDate: "1958-08-25",
+      gender: "other",
+      role: "VISITOR",
+      lookupId: null,
+      __typename: "Patient",
+    },
+    createdBy: {
+      nameInfo: {
+        firstName: "Arthur",
+        middleName: "A",
+        lastName: "Admin",
+      },
+    },
+    patientLink: {
+      internalId: "68c543e8-7c65-4047-955c-e3f65bb8123a",
+    },
+    facility: {
+      name: "Facility 2",
+    },
+    __typename: "TestResult",
+  },
+  {
+    internalId: "0969da96-b211-41cd-ba61-002181f0918d",
+    dateTested: "2021-03-17T19:27:23.806Z",
+    result: "NEGATIVE",
+    correctionStatus: "ORIGINAL",
+    deviceType: {
+      internalId: "8c1a8efe-8951-4f84-a4c9-dcea561d7fbb",
+      name: "Abbott IDNow",
+      __typename: "DeviceType",
+    },
+    patient: {
+      internalId: "48c523e8-7c65-4047-955c-e3f65bb8b58a",
+      firstName: "Barb",
+      middleName: "Whitaker",
+      lastName: "Cragell",
+      birthDate: "1960-11-07",
+      gender: "male",
+      role: "RESIDENT",
+      lookupId: null,
+      __typename: "Patient",
+    },
+    createdBy: {
+      nameInfo: {
+        firstName: "Arthur",
+        middleName: "A",
+        lastName: "Admin",
+      },
+    },
+    patientLink: {
+      internalId: "68c543e8-7c65-4047-955c-e3f65bb8b58a",
+    },
+    facility: {
+      name: "Facility 1",
+    },
+    __typename: "TestResult",
+  },
+];
+
 const patients = [
   {
     internalId: "48c523e8-7c65-4047-955c-e3f65bb8b58a",
@@ -968,6 +1046,34 @@ const mocks = [
   },
   {
     request: {
+      query: resultsCountQuery,
+      variables: {
+        facilityId: null,
+      },
+    },
+    result: {
+      data: {
+        testResultsCount: testResultsByAllFacility.length,
+      },
+    },
+  },
+  {
+    request: {
+      query: testResultQuery,
+      variables: {
+        facilityId: null,
+        pageNumber: 0,
+        pageSize: 20,
+      },
+    },
+    result: {
+      data: {
+        testResults: testResultsByAllFacility,
+      },
+    },
+  },
+  {
+    request: {
       query: QUERY_PATIENT,
       variables: {
         facilityId: "1",
@@ -1237,7 +1343,7 @@ describe("TestResultsList", () => {
       ).toBeInTheDocument();
       expect(await screen.findByText("Colleer, Barde X")).toBeInTheDocument();
       expect(
-        await screen.findByRole("option", { name: "Facility 1" })
+        await screen.findByRole("option", { name: "Facility 2" })
       ).toBeInTheDocument();
       userEvent.selectOptions(screen.getByLabelText("Testing facility"), ["2"]);
       expect(await screen.findByText("Clarkson, Lewis")).toBeInTheDocument();
@@ -1246,6 +1352,22 @@ describe("TestResultsList", () => {
       ).not.toBeInTheDocument();
       expect(screen.queryByText("Colleer, Barde X")).not.toBeInTheDocument();
     });
+    it("should be able to filter by all facilities", async () => {
+      expect(
+          await screen.findByText("Test Results", { exact: false })
+      ).toBeInTheDocument();
+      expect(
+          await screen.findByText("Cragell, Barb Whitaker")
+      ).toBeInTheDocument();
+      expect(screen.queryByText("Clarkson, Lewis")).not.toBeInTheDocument();
+      expect(
+          await screen.findByRole("option", { name: "All facilities" })
+      ).toBeInTheDocument();
+      userEvent.selectOptions(screen.getByLabelText("Testing facility"), ALL_FACILITIES_ID);
+      expect(await screen.findByText("Clarkson, Lewis")).toBeInTheDocument();
+      expect(await screen.findByText("Cragell, Barb Whitaker")).toBeInTheDocument();
+    });
+
     it("should be able to filter by date", async () => {
       expect(
         await screen.findByText("Test Results", { exact: false })
@@ -1499,4 +1621,40 @@ describe("TestResultsList", () => {
 
     expect(screen.queryByLabelText("Testing facility")).not.toBeInTheDocument();
   });
+
+  it("should hide all facility option if user is not an admin", async () => {
+    const localStore = mockStore({
+      organization: {
+        name: "Organization Name",
+      },
+      user: {
+        firstName: "Kim",
+        lastName: "Mendoza",
+      },
+      facilities: [
+        { id: "1", name: "Facility 1" },
+        { id: "2", name: "Facility 2" },
+      ],
+      facility: { id: "1", name: "Facility 1" },
+    });
+
+    await render(
+        <WithRouter>
+          <Provider store={localStore}>
+            <MockedProvider mocks={mocks}>
+              <TestResultsList />
+            </MockedProvider>
+          </Provider>
+        </WithRouter>
+    );
+
+    expect(await screen.findByLabelText("Testing facility")).toBeInTheDocument();
+    expect(
+        await screen.findByRole("option", { name: "Facility 1" })
+    ).toBeInTheDocument();
+    expect(
+        screen.queryByRole("option", { name: "All facilities" })
+    ).not.toBeInTheDocument();
+  });
+
 });
