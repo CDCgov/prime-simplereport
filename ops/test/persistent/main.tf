@@ -1,7 +1,8 @@
 locals {
-  project = "prime"
-  name    = "simple-report"
-  env     = "test"
+  project   = "prime"
+  name      = "simple-report"
+  env       = "test"
+  env_level = "test"
 
   network_cidr = "10.3.0.0/16"
   rg_name      = data.azurerm_resource_group.test.name
@@ -46,6 +47,7 @@ resource "random_password" "random_nophi_password" {
 module "db" {
   source      = "../../services/postgres_db"
   env         = local.env
+  env_level   = local.env_level
   rg_location = local.rg_location
   rg_name     = local.rg_name
 

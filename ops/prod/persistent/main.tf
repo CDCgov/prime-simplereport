@@ -1,7 +1,8 @@
 locals {
-  project = "prime"
-  name    = "simple-report"
-  env     = "prod"
+  project   = "prime"
+  name      = "simple-report"
+  env       = "prod"
+  env_level = "prod"
 
   network_cidr = "10.5.0.0/16"
   rg_location  = data.azurerm_resource_group.prod.location
