@@ -134,12 +134,6 @@ export class PxpApi {
     );
   };
 
-  static getObfuscatedPatientName = async (
-    patientLink: string
-  ): Promise<string> => {
-    return api.getRequest(`/patient-name?patientLink=${patientLink}`);
-  };
-
   static getTestResultUnauthenticated = async (
     patientLink: string
   ): Promise<TestResultUnauthenticated> => {
