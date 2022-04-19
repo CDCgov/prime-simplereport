@@ -114,18 +114,6 @@ export class PxpApi {
     });
   }
 
-  static updatePatient(
-    patientLinkId: string,
-    dateOfBirth: string,
-    data: UpdatePatientData
-  ) {
-    return api.request("/patient", {
-      patientLinkId,
-      dateOfBirth,
-      data,
-    });
-  }
-
   static getEntityName = async (
     registrationLink: string | undefined
   ): Promise<string> => {
