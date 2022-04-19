@@ -3726,3 +3726,28 @@ databaseChangeLog:
       rollback:
         sql: |
           ALTER TABLE ${database.defaultSchemaName}.result DROP COLUMN test_result;
+  - changeSet:
+      id: add-foreign-key-indices-to-result-table
+      author: nclyde@skylight.digital
+      comment: Add indices to result table to speed up queries
+      changes:
+        - tagDatabase:
+            tag: add-foreign-key-indices-to-result-table
+        - createIndex:
+            tableName: result
+            indexName: idx__result__disease_id
+            columns:
+              - column:
+                  name: disease_id
+        - createIndex:
+            tableName: result
+            indexName: idx__result__test_event_id
+            columns:
+              - column:
+                  name: test_event_id
+        - createIndex:
+            tableName: result
+            indexName: idx__result__test_order_id
+            columns:
+              - column:
+                  name: test_order_id
