@@ -765,21 +765,25 @@ $results-dropdown-spacing: #{units(4)} - #{units(2)} - 22px - #{units(4)}; // he
   margin-left: units(4);
 }
 
+.usa-sidenav__sublist {
+  hr {
+    margin: 0.75rem -1rem 1rem;
+    background-color: color("base-lighter");
+    height: 1px;
+    border: none;
+  }
+}
+
 .prime-staff-infobox {
   position: absolute;
-  width: 15rem;
+  width: 13rem;
   border: 1px solid color("base-lighter");
   border-radius: 0.5rem;
   background-color: white; /* seems like this should be a theme */
   z-index: 10;
   visibility: hidden;
-  padding: 0.75rem 1rem;
-
-  .usa-sidenav__sublist {
-    hr {
-      margin-bottom: 0.75rem;
-    }
-  }
+  padding: 1rem;
+  box-shadow: 0 4px 8px 0 #00000029;
 
   li {
     border-top-color: transparent;
@@ -806,35 +810,6 @@ $results-dropdown-spacing: #{units(4)} - #{units(2)} - 22px - #{units(4)}; // he
     li {
       border-color: transparent;
     }
-  }
-}
-
-.navlink__support {
-  display: flex;
-  align-items: center;
-
-  button {
-    text-decoration: none;
-  }
-
-  a {
-    color: color($theme-link-color);
-    font-weight: 500;
-
-    @include at-media("desktop") {
-      padding: 0 !important;
-    }
-  }
-
-  a:hover,
-  button:hover {
-    color: color($theme-link-color);
-    text-decoration: underline;
-    font-weight: 700;
-  }
-
-  a:visited {
-    color: color($theme-link-color);
   }
 }
 

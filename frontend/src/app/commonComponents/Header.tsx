@@ -4,21 +4,20 @@ import classNames from "classnames";
 import { v4 as uuidv4 } from "uuid";
 import { useSelector, connect } from "react-redux";
 
-import { formatFullName, formatRole } from "../utils/user";
 import { PATIENT_TERM_PLURAL_CAP } from "../../config/constants";
 import siteLogo from "../../img/simplereport-logo-color.svg";
 import { hasPermission, appPermissions } from "../permissions";
 import { RootState } from "../store";
 import { useSelectedFacility } from "../facilitySelect/useSelectedFacility";
 import { getAppInsights } from "../TelemetryService";
+import { formatFullName, formatRole } from "../utils/user";
 
-import Button from "./Button/Button";
-import Dropdown from "./Dropdown";
 import useComponentVisible from "./ComponentVisible";
 import { LinkWithQuery } from "./LinkWithQuery";
-
 import "./Header.scss";
+import Button from "./Button/Button";
 import ChangeUser from "./ChangeUser";
+import Dropdown from "./Dropdown";
 
 const Header: React.FC<{}> = () => {
   const appInsights = getAppInsights();
@@ -125,30 +124,46 @@ const Header: React.FC<{}> = () => {
       displayText: "Dashboard",
       displayPermissions: canViewSettings,
       className: getNavItemClassName,
-      id: "dashboard-nav-link",
+      key: "dashboard-nav-link",
     },
     {
       url: "/queue",
       displayText: "Conduct tests",
       displayPermissions: canViewTestQueue,
       className: getNavItemClassName,
-      id: "conduct-test-nav-link",
+      key: "conduct-test-nav-link",
     },
     {
       url: "/results",
       displayText: "Results",
       displayPermissions: canViewResults,
       className: getNavItemClassName,
-      id: "results-nav-link",
+      key: "results-nav-link",
     },
     {
       url: "/patients",
       displayText: PATIENT_TERM_PLURAL_CAP,
       displayPermissions: canViewPeople,
       className: getNavItemClassName,
-      id: "patient-nav-link",
+      key: "patient-nav-link",
     },
   ];
+  const mainNavList = mainNavContent.map((item) => {
+    return (
+      <li key={item.key} className="usa-nav__primary-item">
+        {item.displayPermissions ? (
+          <LinkWithQuery
+            to={item.url}
+            onClick={() => setMenuVisible(false)}
+            className={item.className}
+            id={item.key}
+          >
+            {item.displayText}
+          </LinkWithQuery>
+        ) : null}
+      </li>
+    );
+  });
   const secondaryNavContent = [
     {
       url: "#",
@@ -158,43 +173,56 @@ const Header: React.FC<{}> = () => {
         setStaffDetailsVisible(!staffDetailsVisible);
       },
       className: staffDetailsVisible ? activeNavItem : inactiveNavItem,
-      id: "results-nav-link",
       dataTestId: "user-button",
       hasSubmenu: true,
       icon: (
         <FontAwesomeIcon
           icon={"user-circle"}
           style={{
-            color: staffDetailsVisible ? "white" : "",
+            color: staffDetailsVisible && !menuVisible ? "white" : "",
           }}
         />
       ),
+      mobileDisplay: false,
     },
     {
       url: "/settings",
       displayPermissions: true,
       onClick: () => setMenuVisible(false),
       className: getNavItemClassName,
-      id: "results-nav-link",
-      dataTestId: "user-button",
+      dataTestId: "settings-button",
       icon: <FontAwesomeIcon icon={"cog"} />,
+      mobileDisplay: true,
+      mobileDisplayText: "Settings",
       hasSubmenu: false,
     },
   ];
-
   const secondaryNavSublist = (
     <ul className="usa-sidenav__sublist">
       <li className="usa-sidenav__item span-full-name">
         {formatFullName(user)}
       </li>
-      <li className="usa-sidenav__item">
-        <span>
-          <strong>Role: </strong>
-          {formatRole(user.roleDescription)}
-        </span>
+      <li className="usa-sidenav__item role-tag">
+        {formatRole(user.roleDescription)}
       </li>
-      <li className="usa-sidenav__item">{facility.name}</li>
+      <hr />
       <li className="usa-sidenav__item navlink__support">
+        <div className="header-link-icon sparkle-icon-mask"></div>
+        <a
+          href="https://www.simplereport.gov/using-simplereport/whats-new"
+          target="_blank"
+          rel="noreferrer"
+          onClick={() => handleWhatsNewClick()}
+          data-testid="whats-new-link"
+        >
+          What's new
+        </a>
+      </li>
+      <li className="usa-sidenav__item navlink__support">
+        <FontAwesomeIcon
+          className={"header-link-icon"}
+          icon={"question-circle"}
+        />
         <a
           href="https://www.simplereport.gov/support"
           target="none"
@@ -204,38 +232,25 @@ const Header: React.FC<{}> = () => {
           Support
         </a>
       </li>
-      <li className="usa-sidenav__item margin-top-2">
+      <li className="usa-sidenav__item navlink__support">
+        <FontAwesomeIcon className={"header-link-icon"} icon={"sign-out-alt"} />
         <Button variant="unstyled" label=" Log out" onClick={logout} />
       </li>
       <ChangeUser />
     </ul>
   );
-
-  const mainNavList = mainNavContent.map((item) => {
+  const secondaryDesktopNav = secondaryNavContent.map((item) => {
     return (
-      <li key={item.id} className="usa-nav__primary-item">
-        {item.displayPermissions ? (
-          <LinkWithQuery
-            to={item.url}
-            onClick={() => setMenuVisible(false)}
-            className={item.className}
-            id={item.id}
-          >
-            {item.displayText}
-          </LinkWithQuery>
-        ) : null}
-      </li>
-    );
-  });
-
-  const secondaryNavList = secondaryNavContent.map((item) => {
-    return (
-      <li className="usa-nav__primary-item nav__primary-item-icon">
+      <li
+        key={`desktop-${item.dataTestId}`}
+        className="usa-nav__primary-item nav__primary-item-icon"
+      >
         <LinkWithQuery
           to={item.url}
           onClick={item.onClick}
           className={item.className}
           data-testid={item.dataTestId}
+          id={item.dataTestId}
         >
           {item.icon}
         </LinkWithQuery>
@@ -243,7 +258,7 @@ const Header: React.FC<{}> = () => {
           <div
             ref={staffDefailsRef}
             aria-label="Primary navigation"
-            className={classNames("shadow-3", "prime-staff-infobox", {
+            className={classNames("prime-staff-infobox", {
               "is-prime-staff-infobox-visible": staffDetailsVisible,
             })}
           >
@@ -255,6 +270,25 @@ const Header: React.FC<{}> = () => {
       </li>
     );
   });
+  const secondaryMobileNav = secondaryNavContent
+    .filter((item) => item.mobileDisplay)
+    .map((item) => {
+      return (
+        <li
+          key={`mobile-${item.dataTestId}`}
+          className="usa-nav__primary-item nav__primary-item-icon"
+        >
+          <LinkWithQuery
+            to={item.url}
+            onClick={item.onClick}
+            data-testid={item.dataTestId}
+            id={item.dataTestId}
+          >
+            {item.mobileDisplayText}
+          </LinkWithQuery>
+        </li>
+      );
+    });
 
   return (
     <header className="usa-header usa-header--basic">
@@ -286,7 +320,8 @@ const Header: React.FC<{}> = () => {
               "desktop:display-none",
               {
                 "is-visible": menuVisible,
-              }
+              },
+              "mobile-nav"
             )}
           >
             <button
@@ -296,28 +331,22 @@ const Header: React.FC<{}> = () => {
             >
               <FontAwesomeIcon icon={"window-close"} />
             </button>
-            <ul className="usa-nav__primary usa-accordion">{mainNavList}</ul>
-            <ul className="usa-nav__primary usa-accordion">
-              {secondaryNavContent.map((item) => {
-                return (
-                  <li className="usa-nav__primary-item nav__primary-item-icon">
-                    <LinkWithQuery
-                      to={item.url}
-                      onClick={item.onClick}
-                      className={item.className}
-                      data-testid={item.dataTestId}
-                    >
-                      {item.icon}
-                    </LinkWithQuery>
-                    {item.hasSubmenu ? secondaryNavSublist : <></>}
-                  </li>
-                );
-              })}
+            <ul className="usa-nav__primary usa-accordion mobile-main-nav-container">
+              {mainNavList}
             </ul>
+            <ul className="usa-nav__primary usa-accordion mobile-secondary-nav-container">
+              {secondaryMobileNav}
+            </ul>
+            <div className="usa-nav__primary mobile-sublist-container">
+              {secondaryNavSublist}
+            </div>
           </nav>
         </div>
 
-        <nav aria-label="Primary navigation" className="usa-nav prime-nav">
+        <nav
+          aria-label="Primary navigation"
+          className="usa-nav prime-nav desktop-nav"
+        >
           <ul className="usa-nav__primary usa-accordion">{mainNavList}</ul>
           {facilities && facilities.length > 0 ? (
             <div className="prime-facility-select">
@@ -332,33 +361,7 @@ const Header: React.FC<{}> = () => {
             </div>
           ) : null}
           <ul className="usa-nav__primary usa-accordion">
-            {secondaryNavContent.map((item) => {
-              return (
-                <li className="usa-nav__primary-item nav__primary-item-icon">
-                  <LinkWithQuery
-                    to={item.url}
-                    onClick={item.onClick}
-                    className={item.className}
-                    data-testid={item.dataTestId}
-                  >
-                    {item.icon}
-                  </LinkWithQuery>
-                  {item.hasSubmenu && staffDetailsVisible ? (
-                    <div
-                      ref={staffDefailsRef}
-                      aria-label="Primary navigation"
-                      className={classNames("shadow-3", "prime-staff-infobox", {
-                        "is-prime-staff-infobox-visible": staffDetailsVisible,
-                      })}
-                    >
-                      {secondaryNavSublist}
-                    </div>
-                  ) : (
-                    <></>
-                  )}
-                </li>
-              );
-            })}
+            {secondaryDesktopNav}
           </ul>
         </nav>
       </div>
