@@ -5,7 +5,7 @@ function ToS() {
 
   return (
     <>
-      <p>12/4/2020</p>
+      <p>10/18/2021</p>
       <Trans
         t={t}
         i18nKey="testResult.tos.document.intro.p0"

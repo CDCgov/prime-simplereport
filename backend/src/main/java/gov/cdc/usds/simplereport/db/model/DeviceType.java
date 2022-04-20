@@ -1,5 +1,6 @@
 package gov.cdc.usds.simplereport.db.model;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import java.util.List;
 import javax.persistence.Column;
 import javax.persistence.Entity;
@@ -8,6 +9,7 @@ import javax.persistence.JoinColumn;
 import javax.persistence.JoinTable;
 import javax.persistence.OneToMany;
 import lombok.Getter;
+import lombok.Setter;
 import org.springframework.boot.context.properties.ConstructorBinding;
 
 /** The durable (and non-deletable) representation of a POC test device model. */
@@ -37,9 +39,18 @@ public class DeviceType extends EternalAuditedEntity {
   @OneToMany(fetch = FetchType.LAZY)
   private List<SpecimenType> swabTypes;
 
+  @JoinTable(
+      name = "device_supported_disease",
+      joinColumns = @JoinColumn(name = "device_type_id"),
+      inverseJoinColumns = @JoinColumn(name = "supported_disease_id"))
+  @OneToMany(fetch = FetchType.LAZY)
+  @Setter
+  private List<SupportedDisease> supportedDiseases;
+
   @Column(nullable = false)
   private int testLength;
 
+  @JsonIgnore
   /** This relationship is necessary for DeviceTypeRepository.findAllByTestOrdersInternalIdIn */
   @OneToMany(mappedBy = "deviceType", fetch = FetchType.LAZY)
   List<TestOrder> testOrders;

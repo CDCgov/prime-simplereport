@@ -15,6 +15,7 @@ import moment from "moment";
 import classnames from "classnames";
 import { faSlidersH } from "@fortawesome/free-solid-svg-icons";
 import { DatePicker, Label } from "@trussworks/react-uswds";
+import { useSelector } from "react-redux";
 
 import { PATIENT_TERM_CAP } from "../../config/constants";
 import { displayFullName } from "../utils";
@@ -117,7 +118,7 @@ function testResultRows(
             : null
         }
       >
-        <th scope="row">
+        <td className="patient-name-cell">
           {displayFullName(
             r.patient.firstName,
             r.patient.middleName,
@@ -126,18 +127,23 @@ function testResultRows(
           <span className="display-block text-base font-ui-2xs">
             DOB: {formatDateWithTimeOption(r.patient.birthDate)}
           </span>
-        </th>
-        <td>{formatDateWithTimeOption(r.dateTested, true)}</td>
-        <td>{TEST_RESULT_DESCRIPTIONS[r.result as Results]}</td>
-        <td>{r.deviceType.name}</td>
-        <td>
+        </td>
+        <td className="test-date-cell">
+          {formatDateWithTimeOption(r.dateTested, true)}
+        </td>
+        <td className="test-result-cell">
+          {TEST_RESULT_DESCRIPTIONS[r.result as Results]}
+        </td>
+        <td className="test-facility-cell">{r.facility.name}</td>
+        <td className="test-device-cell">{r.deviceType.name}</td>
+        <td className="submitted-by-cell">
           {displayFullName(
             r.createdBy.nameInfo.firstName,
             null,
             r.createdBy.nameInfo.lastName
           )}
         </td>
-        <td>
+        <td className="actions-cell">
           <ActionsMenu items={actionItems} />
         </td>
       </tr>
@@ -151,6 +157,7 @@ export type FilterParams = {
   endDate?: string | null;
   role?: string | null;
   result?: string | null;
+  filterFacilityId?: string | null;
 };
 
 interface DetachedTestResultsListProps {
@@ -164,7 +171,7 @@ interface DetachedTestResultsListProps {
   filterParams: FilterParams;
   setFilterParams: (filter: keyof FilterParams) => (val: string | null) => void;
   clearFilterParams: () => void;
-  facilityId: string;
+  activeFacilityId: string;
 }
 
 const getResultCountText = (
@@ -198,7 +205,7 @@ export const DetachedTestResultsList = ({
   loading,
   loadingTotalResults,
   totalEntries,
-  facilityId,
+  activeFacilityId,
   filterParams,
   setFilterParams,
   clearFilterParams,
@@ -221,6 +228,10 @@ export const DetachedTestResultsList = ({
     runIf: (q) => q.length >= MIN_SEARCH_CHARACTER_COUNT,
   });
 
+  const validFacilities = useSelector(
+    (state) => ((state as any).facilities as Facility[]) || []
+  );
+
   const allowQuery = debounced.length >= MIN_SEARCH_CHARACTER_COUNT;
 
   const [
@@ -228,7 +239,10 @@ export const DetachedTestResultsList = ({
     { data: patientData, loading: patientLoading },
   ] = useLazyQuery(QUERY_PATIENT, {
     fetchPolicy: "no-cache",
-    variables: { facilityId, namePrefixMatch: queryString },
+    variables: {
+      facilityId: filterParams.filterFacilityId || activeFacilityId,
+      namePrefixMatch: queryString,
+    },
   });
 
   useEffect(() => {
@@ -393,7 +407,7 @@ export const DetachedTestResultsList = ({
                 <DownloadResultsCSVButton
                   filterParams={filterParams}
                   totalEntries={totalEntries}
-                  facilityId={facilityId}
+                  facilityId={filterParams.filterFacilityId || activeFacilityId}
                 />
                 <Button
                   className="sr-active-button"
@@ -504,18 +518,47 @@ export const DetachedTestResultsList = ({
                   defaultSelect
                   onChange={setFilterParams("role")}
                 />
+                {validFacilities && validFacilities.length > 1 ? (
+                  <Select
+                    label="Testing facility"
+                    name="facility"
+                    value={filterParams.filterFacilityId || activeFacilityId}
+                    options={validFacilities.map((facility) => {
+                      return {
+                        value: facility.id,
+                        label: facility.name,
+                      };
+                    })}
+                    onChange={setFilterParams("filterFacilityId")}
+                  />
+                ) : null}
               </div>
             </div>
             <div className="usa-card__body" title="filtered-result">
               <table className="usa-table usa-table--borderless width-full">
                 <thead>
                   <tr>
-                    <th scope="col">{PATIENT_TERM_CAP}</th>
-                    <th scope="col">Test date</th>
-                    <th scope="col">Result</th>
-                    <th scope="col">Test device</th>
-                    <th scope="col">Submitted by</th>
-                    <th scope="col">Actions</th>
+                    <th scope="col" className="patient-name-cell">
+                      {PATIENT_TERM_CAP}
+                    </th>
+                    <th scope="col" className="test-date-cell">
+                      Test date
+                    </th>
+                    <th scope="col" className="test-result-cell">
+                      COVID-19
+                    </th>
+                    <th scope="col" className="test-facility-cell">
+                      Testing facility
+                    </th>
+                    <th scope="col" className="test-device-cell">
+                      Test device
+                    </th>
+                    <th scope="col" className="submitted-by-cell">
+                      Submitted by
+                    </th>
+                    <th scope="col" className="actions-cell">
+                      Actions
+                    </th>
                   </tr>
                 </thead>
                 <tbody>{rows}</tbody>
@@ -608,6 +651,9 @@ export const testResultQuery = gql`
       patientLink {
         internalId
       }
+      facility {
+        name
+      }
     }
   }
 `;
@@ -638,13 +684,19 @@ const TestResultsList = () => {
   const endDate = getParameterFromUrl("endDate", location);
   const role = getParameterFromUrl("role", location);
   const result = getParameterFromUrl("result", location);
+  const filterFacilityId = getParameterFromUrl("filterFacilityId", location);
 
-  const filterParams: FilterParams = {
+  const queryParams = {
     ...(patientId && { patientId: patientId }),
     ...(startDate && { startDate: startDate }),
     ...(endDate && { endDate: endDate }),
     ...(result && { result: result }),
     ...(role && { role: role }),
+  };
+
+  const filterParams: FilterParams = {
+    ...queryParams,
+    ...(filterFacilityId && { filterFacilityId: filterFacilityId }),
   };
 
   const filter = (params: FilterParams) => {
@@ -674,10 +726,10 @@ const TestResultsList = () => {
   const pageNumber = Number(urlParams.pageNumber) || 1;
 
   const resultsQueryVariables: ResultsQueryVariables = {
-    facilityId: activeFacilityId,
+    facilityId: filterFacilityId || activeFacilityId,
     pageNumber: pageNumber - 1,
     pageSize: entriesPerPage,
-    ...filterParams,
+    ...queryParams,
   };
   const countQueryVariables: {
     patientId?: string | null;
@@ -687,8 +739,8 @@ const TestResultsList = () => {
     startDate?: string | null;
     endDate?: string | null;
   } = {
-    facilityId: activeFacilityId,
-    ...filterParams,
+    facilityId: filterFacilityId || activeFacilityId,
+    ...queryParams,
   };
 
   const count = useQuery(resultsCountQuery, {
@@ -721,7 +773,7 @@ const TestResultsList = () => {
       filterParams={filterParams}
       setFilterParams={setFilterParams}
       clearFilterParams={clearFilterParams}
-      facilityId={activeFacilityId}
+      activeFacilityId={activeFacilityId}
       refetch={refetch}
     />
   );

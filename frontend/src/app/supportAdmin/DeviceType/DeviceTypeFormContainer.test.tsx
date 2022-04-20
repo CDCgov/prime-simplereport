@@ -29,6 +29,19 @@ jest.mock("../../../generated/graphql", () => {
         },
       };
     },
+    useGetSupportedDiseasesQuery: () => {
+      return {
+        data: {
+          supportedDiseases: [
+            {
+              internalId: "294729",
+              name: "COVID-19",
+              loinc: "4829",
+            },
+          ],
+        },
+      };
+    },
   };
 });
 
@@ -55,9 +68,13 @@ describe("DeviceTypeFormContainer", () => {
     addValue("Model", "Accula SARS-Cov-2 Test*");
     addValue("LOINC code", "95409-9");
 
-    userEvent.click(screen.getByTestId("multi-select-input"));
+    userEvent.click(screen.getAllByTestId("multi-select-input")[0]);
 
     userEvent.click(screen.getByText("Cotton (5309)"));
+
+    userEvent.click(screen.getAllByTestId("multi-select-input")[1]);
+
+    userEvent.click(screen.getByText("COVID-19"));
 
     userEvent.click(screen.getByText("Save changes"));
 
@@ -72,6 +89,7 @@ describe("DeviceTypeFormContainer", () => {
         model: "Accula SARS-Cov-2 Test*",
         name: "Accula",
         swabTypes: ["887799"],
+        supportedDiseases: ["294729"],
       },
     });
 

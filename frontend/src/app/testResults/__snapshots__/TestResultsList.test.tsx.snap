@@ -308,6 +308,33 @@ exports[`TestResultsList should render a list of tests 1`] = `
                   </option>
                 </select>
               </div>
+              <div
+                class="usa-form-group prime-dropdown "
+              >
+                <label
+                  class="usa-label"
+                  for="3"
+                >
+                  Testing facility
+                </label>
+                <select
+                  aria-required="false"
+                  class="usa-select"
+                  id="3"
+                  name="facility"
+                >
+                  <option
+                    value="1"
+                  >
+                    Facility 1
+                  </option>
+                  <option
+                    value="2"
+                  >
+                    Facility 2
+                  </option>
+                </select>
+              </div>
             </div>
           </div>
           <div
@@ -320,31 +347,43 @@ exports[`TestResultsList should render a list of tests 1`] = `
               <thead>
                 <tr>
                   <th
+                    class="patient-name-cell"
                     scope="col"
                   >
                     Person
                   </th>
                   <th
+                    class="test-date-cell"
                     scope="col"
                   >
                     Test date
                   </th>
                   <th
+                    class="test-result-cell"
                     scope="col"
                   >
-                    Result
+                    COVID-19
                   </th>
                   <th
+                    class="test-facility-cell"
+                    scope="col"
+                  >
+                    Testing facility
+                  </th>
+                  <th
+                    class="test-device-cell"
                     scope="col"
                   >
                     Test device
                   </th>
                   <th
+                    class="submitted-by-cell"
                     scope="col"
                   >
                     Submitted by
                   </th>
                   <th
+                    class="actions-cell"
                     scope="col"
                   >
                     Actions
@@ -357,8 +396,8 @@ exports[`TestResultsList should render a list of tests 1`] = `
                   data-patient-link="https://simplereport.gov/pxp?plid=68c543e8-7c65-4047-955c-e3f65bb8b58a"
                   title=""
                 >
-                  <th
-                    scope="row"
+                  <td
+                    class="patient-name-cell"
                   >
                     Gerard, Sam G
                     <span
@@ -367,20 +406,35 @@ exports[`TestResultsList should render a list of tests 1`] = `
                       DOB: 
                       11/07/1960
                     </span>
-                  </th>
-                  <td>
+                  </td>
+                  <td
+                    class="test-date-cell"
+                  >
                     03/19/2021 7:27pm
                   </td>
-                  <td>
+                  <td
+                    class="test-result-cell"
+                  >
                     Positive
                   </td>
-                  <td>
+                  <td
+                    class="test-facility-cell"
+                  >
+                    Facility 1
+                  </td>
+                  <td
+                    class="test-device-cell"
+                  >
                     Abbott IDNow
                   </td>
-                  <td>
+                  <td
+                    class="submitted-by-cell"
+                  >
                     Entry, Ethan
                   </td>
-                  <td>
+                  <td
+                    class="actions-cell"
+                  >
                     <button
                       aria-expanded="false"
                       aria-haspopup="true"
@@ -418,8 +472,8 @@ exports[`TestResultsList should render a list of tests 1`] = `
                   data-patient-link="https://simplereport.gov/pxp?plid=68c543e8-7c65-4047-955c-e3f65bb8b58a"
                   title=""
                 >
-                  <th
-                    scope="row"
+                  <td
+                    class="patient-name-cell"
                   >
                     Colleer, Barde X
                     <span
@@ -428,20 +482,35 @@ exports[`TestResultsList should render a list of tests 1`] = `
                       DOB: 
                       11/07/1960
                     </span>
-                  </th>
-                  <td>
+                  </td>
+                  <td
+                    class="test-date-cell"
+                  >
                     03/18/2021 7:27pm
                   </td>
-                  <td>
+                  <td
+                    class="test-result-cell"
+                  >
                     Negative
                   </td>
-                  <td>
+                  <td
+                    class="test-facility-cell"
+                  >
+                    Facility 1
+                  </td>
+                  <td
+                    class="test-device-cell"
+                  >
                     Abbott IDNow
                   </td>
-                  <td>
+                  <td
+                    class="submitted-by-cell"
+                  >
                     User, Ursula
                   </td>
-                  <td>
+                  <td
+                    class="actions-cell"
+                  >
                     <button
                       aria-expanded="false"
                       aria-haspopup="true"
@@ -479,8 +548,8 @@ exports[`TestResultsList should render a list of tests 1`] = `
                   data-patient-link="https://simplereport.gov/pxp?plid=68c543e8-7c65-4047-955c-e3f65bb8b58a"
                   title=""
                 >
-                  <th
-                    scope="row"
+                  <td
+                    class="patient-name-cell"
                   >
                     Cragell, Barb Whitaker
                     <span
@@ -489,20 +558,35 @@ exports[`TestResultsList should render a list of tests 1`] = `
                       DOB: 
                       11/07/1960
                     </span>
-                  </th>
-                  <td>
+                  </td>
+                  <td
+                    class="test-date-cell"
+                  >
                     03/17/2021 7:27pm
                   </td>
-                  <td>
+                  <td
+                    class="test-result-cell"
+                  >
                     Negative
                   </td>
-                  <td>
+                  <td
+                    class="test-facility-cell"
+                  >
+                    Facility 1
+                  </td>
+                  <td
+                    class="test-device-cell"
+                  >
                     Abbott IDNow
                   </td>
-                  <td>
+                  <td
+                    class="submitted-by-cell"
+                  >
                     Admin, Arthur
                   </td>
-                  <td>
+                  <td
+                    class="actions-cell"
+                  >
                     <button
                       aria-expanded="false"
                       aria-haspopup="true"
