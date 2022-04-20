@@ -68,7 +68,7 @@ module "report_stream_reporting_functions" {
   environment = local.env
   env_level   = local.env_level
   tenant_id   = data.azurerm_client_config.current.tenant_id
-    depends_on = [
+  depends_on = [
     azurerm_storage_account.app
   ]
 }

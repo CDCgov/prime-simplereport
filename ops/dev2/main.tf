@@ -4,8 +4,8 @@ locals {
   env       = "dev2"
   env_level = "dev"
   management_tags = {
-    prime-app      = "simple-report"
-    environment    = local.env
+    prime-app   = "simple-report"
+    environment = local.env
     # Resource groups can support multiple environments at the same level. Any resources that are shared between
     # environments should use the "local.env_level" convention where possible.
     resource_group = "${local.project}-${local.name}-${local.env_level}"

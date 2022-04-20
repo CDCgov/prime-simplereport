@@ -21,7 +21,7 @@ data "terraform_remote_state" "global" {
 
 # Resource Groups
 data "azurerm_resource_group" "rg" {
-    # Environments are assembled into shared resource groups by environment level.
+  # Environments are assembled into shared resource groups by environment level.
   name = "${local.project}-${local.name}-${local.env_level}"
 }
 
