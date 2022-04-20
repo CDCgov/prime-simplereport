@@ -71,33 +71,6 @@ public class PatientExperienceController {
   }
 
   /**
-   * Given a patient link ID, returns the name of the patient for whom the test was conducted, in
-   * lightly-obfuscated form (e.g. "John Doe" -> "John D").
-   *
-   * <p>This endpoint is unauthorized and therefore does not return fully identifying data.
-   *
-   * @param request
-   * @return an obfuscated patient name
-   */
-  @GetMapping("/patient-name")
-  public String getObfuscatedPatientNameFromLink(
-      @RequestParam("patientLink") UUID patientLink, HttpServletRequest request)
-      throws ExpiredPatientLinkException {
-    var link = _pls.getPatientLink(patientLink);
-
-    if (link.isExpired()) {
-      throw new ExpiredPatientLinkException();
-    }
-
-    TestOrder to = link.getTestOrder();
-    Person p = to.getPatient();
-
-    _contextHolder.setContext(link, to, p);
-
-    return p.getFirstName() + " " + p.getLastName().charAt(0) + ".";
-  }
-
-  /**
    * Given a patient link ID, returns a minimum of information about the patient (obfuscated name)
    * and facility (name and phone number) that may aid the end user in identify verification.
    *
