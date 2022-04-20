@@ -339,6 +339,21 @@ const Header: React.FC<{}> = () => {
             </ul>
             <div className="usa-nav__primary mobile-sublist-container">
               {secondaryNavSublist}
+
+              <label id="mobile-facility-label" className="usa-label ">
+                Facility
+              </label>
+              <div className="prime-facility-select facility-select-mobile-container">
+                <Dropdown
+                  selectedValue={facility.id}
+                  onChange={onFacilitySelect}
+                  className={"mobile-facility-select"}
+                  options={facilities.map(({ name, id }) => ({
+                    label: name,
+                    value: id,
+                  }))}
+                />
+              </div>
             </div>
           </nav>
         </div>

@@ -627,6 +627,7 @@ $results-dropdown-spacing: #{units(4)} - #{units(2)} - 22px - #{units(4)}; // he
 .prime-facility-select {
   margin: 0 0 16px 0;
   width: 100%;
+  padding: 0;
 
   @include at-media("desktop") {
     display: flex;

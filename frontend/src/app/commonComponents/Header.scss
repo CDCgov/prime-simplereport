@@ -6,7 +6,11 @@
   }
 
   .prime-facility-select {
-    padding: 0 1.1rem;
+    @media (min-width: "desktop") {
+      .usa-sidenav__item {
+        padding: 0 1.1rem;
+      }
+    }
     margin: 0;
 
     select {
@@ -46,7 +50,6 @@
   }
 
   .ghost-user-link:hover {
-    font-weight: 700;
     background-color: #fff;
   }
 
@@ -57,7 +60,7 @@
   }
 
   .mobile-sublist-container {
-    margin-top: 0.75rem;
+    margin-top: 0;
     padding: 0.5rem 1rem;
   }
 
@@ -82,6 +85,14 @@
   .mobile-secondary-nav-container a,
   .mobile-main-nav-container a {
     padding: 0.75rem 1rem;
+  }
+
+  .mobile-facility-select {
+    margin-top: 0;
+  }
+
+  .mobile-facility-select select {
+    width: 100%;
   }
 
   .navlink__support {
@@ -112,5 +123,15 @@
     a:visited {
       color: #005ea2;
     }
+  }
+
+  .facility-select-mobile-container {
+    padding-bottom: 2rem;
+  }
+
+  #mobile-facility-label {
+    border-top: 1px solid #dfe1e2;
+    margin-top: 1rem;
+    padding-top: 0.5rem;
   }
 }
