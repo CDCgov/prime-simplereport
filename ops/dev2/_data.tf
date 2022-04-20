@@ -21,8 +21,8 @@ data "terraform_remote_state" "global" {
 
 # Resource Groups
 data "azurerm_resource_group" "rg" {
-  # Since we have multiple environments in this resource group, we need to hard-code the group suffix here.
-  name = "${local.project}-${local.name}-dev"
+  # Environments are assembled into shared resource groups by environment level.
+  name = "${local.project}-${local.name}-${local.env_level}"
 }
 
 data "azurerm_resource_group" "rg_global" {
@@ -186,6 +186,9 @@ data "azurerm_application_insights" "app_insights" {
 data "azurerm_storage_account" "app" {
   name                = "simplereport${local.env}app"
   resource_group_name = data.azurerm_resource_group.rg.name
+  depends_on = [
+    azurerm_storage_account.app
+  ]
 }
 
 data "azurerm_key_vault_secret" "db_password_no_phi" {

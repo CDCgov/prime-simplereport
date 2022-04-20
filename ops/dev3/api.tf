@@ -62,5 +62,9 @@ module "simple_report_api" {
 module "report_stream_reporting_functions" {
   source      = "../services/app_functions/report_stream_batched_publisher/infra"
   environment = local.env
+  env_level   = local.env_level
   tenant_id   = data.azurerm_client_config.current.tenant_id
+    depends_on = [
+    azurerm_storage_account.app
+  ]
 }

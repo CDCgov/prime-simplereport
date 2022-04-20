@@ -12,6 +12,10 @@ variable "environment" {
   type = string
 }
 
+variable "env_level" {
+  type = string
+}
+
 # Secret Access
 variable "tenant_id" {}
 
