@@ -4,7 +4,7 @@ variable "env" {
 
 variable "env_level" {
   description = "Pipeline level that this environment is a member of."
-  type = string
+  type        = string
 }
 
 variable "tags" {

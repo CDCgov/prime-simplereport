@@ -78,7 +78,7 @@ module "db_alerting" {
 module "vnet" {
   source              = "../../services/virtual_network"
   env                 = local.env
-  env_level   = local.env_level
+  env_level           = local.env_level
   resource_group_name = local.rg_name
   network_address     = local.network_cidr
   management_tags     = local.management_tags
