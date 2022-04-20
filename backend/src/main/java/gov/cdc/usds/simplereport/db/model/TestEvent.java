@@ -1,6 +1,5 @@
 package gov.cdc.usds.simplereport.db.model;
 
-import gov.cdc.usds.simplereport.api.Translators;
 import gov.cdc.usds.simplereport.db.model.auxiliary.AskOnEntrySurvey;
 import gov.cdc.usds.simplereport.db.model.auxiliary.TestCorrectionStatus;
 import gov.cdc.usds.simplereport.db.model.auxiliary.TestResult;
@@ -69,6 +68,9 @@ public class TestEvent extends BaseTestInfo {
 
     order.getResultSet().forEach(result -> result.setTestEvent(this));
     this.results = new HashSet<>(order.getResultSet());
+
+    // This is kept for the analytics dash but should be removed once those queries are updated
+    super.setTestResult(order.getResult());
 
     // store a link, and *also* store the object as JSON
     // force load the lazy-loaded phone numbers so values are available to the object mapper
@@ -146,22 +148,17 @@ public class TestEvent extends BaseTestInfo {
     return order.getDeviceSpecimen();
   }
 
-  // This logic (specifically, the findFirst) will need to be updated later on in the multiplex
-  // process - this method is
-  // temporary
+  // This logic (specifically, the findAny) will need to be updated later on in the multiplex
+  // process - this method is temporary
   // Eventually, this method will be deprecated in favor of getResultSet()
   public TestResult getTestResult() {
-    Optional<Result> resultObject = this.results.stream().findFirst();
-    // Backwards-compatibility: if result table isn't populated, fetch old result column
-    if (resultObject.isEmpty()) {
-      return super.getResult();
-    } else {
-      return Translators.convertLoincToResult(resultObject.get().getResultLOINC());
+    if (this.results != null) {
+      Optional<Result> resultObject = this.results.stream().findAny();
+      if (resultObject.isPresent()) {
+        return resultObject.get().getTestResult();
+      }
     }
-  }
-
-  public String getTestResultLoinc() {
-    return this.results.stream().findFirst().get().getResultLOINC();
+    return super.getResult();
   }
 
   @Override

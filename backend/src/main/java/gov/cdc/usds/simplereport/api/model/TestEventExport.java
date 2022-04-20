@@ -296,8 +296,7 @@ public class TestEventExport {
 
   @JsonProperty("Test_result_code")
   public String getTestResult() {
-    return testEvent.getTestResultLoinc();
-    //    return testResultMap.get(testEvent.getResult());
+    return testResultMap.get(testEvent.getResult());
   }
 
   @JsonProperty("Specimen_collection_date_time")

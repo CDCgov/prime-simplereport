@@ -55,7 +55,8 @@ class AzureTestEventReportingQueueConfiguration {
       log.warn(
           "No TestEventReportingService configured; defaulting to no-op reporting for TestEvent [{}]",
           testEvent.getInternalId());
-      toBuffer(testEvent);
+      String buffer = toBuffer(testEvent);
+      log.info("TestEvent serializes as: {}", buffer);
       return CompletableFuture.completedFuture(null);
     }
 

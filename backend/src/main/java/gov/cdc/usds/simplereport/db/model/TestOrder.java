@@ -1,6 +1,5 @@
 package gov.cdc.usds.simplereport.db.model;
 
-import gov.cdc.usds.simplereport.api.Translators;
 import gov.cdc.usds.simplereport.db.model.auxiliary.OrderStatus;
 import gov.cdc.usds.simplereport.db.model.auxiliary.TestCorrectionStatus;
 import gov.cdc.usds.simplereport.db.model.auxiliary.TestResult;
@@ -81,17 +80,16 @@ public class TestOrder extends BaseTestInfo {
   }
 
   // This logic (specifically, findFirst) will need to be updated later on in the multiplex process
-  // - this method is
-  // temporary
-  // Eventually, this method will be deprecated in favor of getResultSet() or getResultForDisease()
+  // - this method is temporary
+  // Eventually, this method will be deprecated in favor of getResultSet() and getResultForDisease
   public TestResult getTestResult() {
-    Optional<Result> resultObject = this.results.stream().findFirst();
-    // Backwards-compatibility: if result table isn't populated, fetch old result column
-    if (resultObject.isEmpty()) {
-      return getResult();
-    } else {
-      return Translators.convertLoincToResult(resultObject.get().getResultLOINC());
+    if (this.results != null) {
+      Optional<Result> resultObject = this.results.stream().findAny();
+      if (resultObject.isPresent()) {
+        return resultObject.get().getTestResult();
+      }
     }
+    return super.getResult();
   }
 
   public Set<Result> getResultSet() {
@@ -103,7 +101,10 @@ public class TestOrder extends BaseTestInfo {
   }
 
   public Optional<Result> getResultForDisease(SupportedDisease disease) {
-    return results.stream().filter(r -> r.getDisease().equals(disease)).findFirst();
+    if (results != null) {
+      return results.stream().filter(r -> r.getDisease().equals(disease)).findFirst();
+    }
+    return Optional.empty();
   }
 
   public void addResult(Result result) {
@@ -116,6 +117,10 @@ public class TestOrder extends BaseTestInfo {
 
   public void setResult(Set<Result> results) {
     this.results = results;
+  }
+
+  public void setResultColumn(TestResult result) {
+    super.setTestResult(result);
   }
 
   public void markComplete() {

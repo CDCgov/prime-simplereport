@@ -247,7 +247,8 @@ public class TestOrderService {
         saveTestResultToDatabase(deviceSpecimenTypeId, result, patientId, dateTested);
     TestEvent testEvent = savedOrder.getTestEvent();
 
-    //    _testEventReportingService.report(testEvent);
+    _testEventReportingService.report(testEvent);
+
     ArrayList<Boolean> deliveryStatuses = new ArrayList<>();
 
     PatientLink patientLink = _pls.createPatientLink(savedOrder.getInternalId());
@@ -266,7 +267,7 @@ public class TestOrderService {
 
     boolean deliveryStatus =
         deliveryStatuses.isEmpty() || deliveryStatuses.stream().anyMatch(status -> status);
-    return new AddTestResultResponse(savedOrder, testEvent, deliveryStatus);
+    return new AddTestResultResponse(savedOrder, deliveryStatus);
   }
 
   @AuthorizationConfiguration.RequirePermissionSubmitTestForPatient
@@ -419,6 +420,8 @@ public class TestOrderService {
       Result resultEntity = new Result(order, _diseaseService.covid(), result);
       order.setResult(resultEntity);
     }
+    // This is kept for the analytics dash but should be removed once those queries are updated
+    order.setResultColumn(result);
   }
 
   @Transactional

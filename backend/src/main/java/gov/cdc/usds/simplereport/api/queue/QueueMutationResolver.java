@@ -49,10 +49,8 @@ public class QueueMutationResolver implements GraphQLMutationResolver {
                 .getInternalId()
             : deviceSpecimenType;
 
-    AddTestResultResponse response =
-        _tos.addTestResult(deviceSpecimenTypeId, TestResult.valueOf(result), patientID, dateTested);
-    testEventReportingService.report(response.getTestEvent());
-    return response;
+    return _tos.addTestResult(
+        deviceSpecimenTypeId, TestResult.valueOf(result), patientID, dateTested);
   }
 
   public ApiTestOrder editQueueItem(

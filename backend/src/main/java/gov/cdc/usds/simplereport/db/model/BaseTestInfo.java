@@ -126,6 +126,10 @@ public abstract class BaseTestInfo extends AuditedEntity implements Organization
     this.dateTestedBackdate = dateTestedBackdate;
   }
 
+  protected void setTestResult(TestResult newResult) {
+    result = newResult;
+  }
+
   protected void setDeviceSpecimen(DeviceSpecimenType deviceSpecimen) {
     this.deviceSpecimen = deviceSpecimen;
     this.deviceType = deviceSpecimen.getDeviceType();
