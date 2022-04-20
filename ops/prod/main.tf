@@ -1,7 +1,8 @@
 locals {
-  project = "prime"
-  name    = "simple-report"
-  env     = "prod"
+  project   = "prime"
+  name      = "simple-report"
+  env       = "prod"
+  env_level = "prod"
   management_tags = {
     prime-app      = "simple-report"
     environment    = local.env
