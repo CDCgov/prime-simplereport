@@ -15,15 +15,15 @@ import com.fasterxml.jackson.databind.node.JsonNodeFactory;
 import com.fasterxml.jackson.databind.node.ObjectNode;
 import gov.cdc.usds.simplereport.api.CurrentTenantDataAccessContextHolder;
 import gov.cdc.usds.simplereport.api.ResourceLinks;
-import gov.cdc.usds.simplereport.db.model.ApiAuditEvent;
+import gov.cdc.usds.simplereport.db.model.ConsoleApiAuditEvent;
 import gov.cdc.usds.simplereport.db.model.Facility;
 import gov.cdc.usds.simplereport.db.model.Organization;
 import gov.cdc.usds.simplereport.db.model.PatientLink;
 import gov.cdc.usds.simplereport.db.model.Person;
 import gov.cdc.usds.simplereport.db.model.TestEvent;
 import gov.cdc.usds.simplereport.db.model.TestOrder;
-import gov.cdc.usds.simplereport.db.repository.ApiAuditEventRepository;
 import gov.cdc.usds.simplereport.db.repository.TestEventRepository;
+import gov.cdc.usds.simplereport.service.AuditLoggerService;
 import gov.cdc.usds.simplereport.service.OrganizationService;
 import gov.cdc.usds.simplereport.service.TimeOfConsentService;
 import gov.cdc.usds.simplereport.test_util.TestUserIdentities;
@@ -62,10 +62,10 @@ class AuditLoggingFailuresTest extends BaseGraphqlTest {
   @Autowired private OrganizationService _orgService;
   @MockBean private CurrentTenantDataAccessContextHolder _tenantDataAccessContextHolder;
 
-  @MockBean private ApiAuditEventRepository _auditRepo;
+  @MockBean private AuditLoggerService auditLoggerServiceSpy;
   @MockBean private TestEventRepository _testEventRepo;
   @MockBean private TimeOfConsentService _consentService;
-  @Captor private ArgumentCaptor<ApiAuditEvent> _eventCaptor;
+  @Captor private ArgumentCaptor<ConsoleApiAuditEvent> _eventCaptor;
 
   private Facility facility;
   private Person patient;
@@ -93,15 +93,16 @@ class AuditLoggingFailuresTest extends BaseGraphqlTest {
             .put("deviceId", facility.getDefaultDeviceType().getInternalId().toString())
             .put("result", "NEGATIVE");
     runQuery("submit-test", args, "ewww");
-    verify(_auditRepo).save(_eventCaptor.capture());
-    ApiAuditEvent event = _eventCaptor.getValue();
+    verify(auditLoggerServiceSpy).logEvent(_eventCaptor.capture());
+    ConsoleApiAuditEvent event = _eventCaptor.getValue();
     assertEquals(List.of("addTestResultNew"), event.getGraphqlErrorPaths());
   }
 
   @Test
   void graphqlQuery_auditFailure_noDataReturned() {
-    when(_auditRepo.save(_eventCaptor.capture()))
-        .thenThrow(new IllegalArgumentException("naughty naughty"));
+    doThrow(new IllegalArgumentException("naughty naughty"))
+        .when(auditLoggerServiceSpy)
+        .logEvent(_eventCaptor.capture());
     useOrgUserAllFacilityAccess();
     ObjectNode args = patientArgs().put("symptoms", "{}").put("noSymptoms", true);
     String clientErrorMessage =
@@ -121,7 +122,7 @@ class AuditLoggingFailuresTest extends BaseGraphqlTest {
         _restTemplate.exchange(
             ResourceLinks.VERIFY_LINK_V2, HttpMethod.POST, requestEntity, String.class);
     log.info("Response body is {}", resp.getBody());
-    verify(_auditRepo).save(_eventCaptor.capture());
+    verify(auditLoggerServiceSpy).logEvent(_eventCaptor.capture());
     assertThat(_eventCaptor.getValue())
         .as("Saved audit event")
         .matches(
@@ -131,7 +132,7 @@ class AuditLoggingFailuresTest extends BaseGraphqlTest {
 
   @Test
   void restQuery_auditFailure_noDataReturned() throws JsonProcessingException {
-    when(_auditRepo.save(_eventCaptor.capture())).thenThrow(HibernateException.class);
+    doThrow(HibernateException.class).when(auditLoggerServiceSpy).logEvent(_eventCaptor.capture());
     HttpEntity<JsonNode> requestEntity = new HttpEntity<JsonNode>(makeVerifyLinkArgs());
     ResponseEntity<String> resp =
         _restTemplate.exchange(

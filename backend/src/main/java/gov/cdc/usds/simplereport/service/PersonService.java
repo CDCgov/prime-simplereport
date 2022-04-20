@@ -338,50 +338,6 @@ public class PersonService {
     return savedPerson;
   }
 
-  // IMPLICIT AUTHORIZATION: this fetches the current patient after a patient link
-  // is verified, so there is no authorization check
-  public Person updateMe(
-      StreetAddress address,
-      String country,
-      List<PhoneNumber> phoneNumbers,
-      PersonRole role,
-      List<String> emails,
-      String race,
-      String ethnicity,
-      String tribalAffiliation,
-      String gender,
-      Boolean residentCongregateSetting,
-      Boolean employedInHealthcare,
-      String preferredLanguage) {
-    Person toUpdate = _patientContext.getLinkedOrder().getPatient();
-    toUpdate.updatePatient(
-        toUpdate.getLookupId(),
-        toUpdate.getFirstName(),
-        toUpdate.getMiddleName(),
-        toUpdate.getLastName(),
-        toUpdate.getSuffix(),
-        toUpdate.getBirthDate(),
-        address,
-        country,
-        role,
-        emails,
-        race,
-        ethnicity,
-        Arrays.asList(tribalAffiliation),
-        gender,
-        residentCongregateSetting,
-        employedInHealthcare,
-        preferredLanguage,
-        toUpdate.getTestResultDelivery());
-
-    if (!emails.isEmpty()) {
-      toUpdate.setPrimaryEmail(emails.get(0));
-    }
-
-    updatePhoneNumbers(toUpdate, phoneNumbers);
-    return _repo.save(toUpdate);
-  }
-
   /**
    * This method updates the PhoneNumbers provided by adding/deleting them from the
    * PhoneNumberRepository. It updates the PrimaryPhone on the Person, but does <em>not</em> save
