@@ -9,7 +9,7 @@ data "terraform_remote_state" "global" {
 }
 
 data "azurerm_subscription" "primary" {
-  
+
 }
 
 data "azurerm_key_vault_certificate" "wildcard_simplereport_gov" {

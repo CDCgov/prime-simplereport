@@ -168,11 +168,11 @@ resource "azurerm_app_service_slot_virtual_network_swift_connection" "staging" {
 */
 
 resource "azurerm_app_service_certificate" "app" {
-  count = var.env_index == 1 ? 1 : 0
-  name                  = "wildcard-simplereport-gov"
-  resource_group_name   = var.resource_group_name
-  location              = var.resource_group_location
-  key_vault_secret_id   = data.azurerm_key_vault_certificate.wildcard_simplereport_gov.id
+  count               = var.env_index == 1 ? 1 : 0
+  name                = "wildcard-simplereport-gov"
+  resource_group_name = var.resource_group_name
+  location            = var.resource_group_location
+  key_vault_secret_id = data.azurerm_key_vault_certificate.wildcard_simplereport_gov.id
 }
 
 resource "azurerm_app_service_certificate_binding" "app" {
@@ -181,6 +181,6 @@ resource "azurerm_app_service_certificate_binding" "app" {
   # hostname_binding_id manually.
   hostname_binding_id = "${azurerm_app_service.service.id}/hostNameBindings/api-${var.env}.simplereport.gov"
   #certificate_id      = azurerm_app_service_certificate.app.id
-  certificate_id      = "${data.azurerm_subscription.primary.id}/resourceGroups/${var.resource_group_name}/providers/Microsoft.Web/certificates/wildcard-simplereport-gov"
-  ssl_state           = "SniEnabled"
+  certificate_id = "${data.azurerm_subscription.primary.id}/resourceGroups/${var.resource_group_name}/providers/Microsoft.Web/certificates/wildcard-simplereport-gov"
+  ssl_state      = "SniEnabled"
 }

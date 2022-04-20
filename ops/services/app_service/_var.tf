@@ -4,7 +4,7 @@ variable "az_account" {
 variable "env" {}
 variable "env_index" {
   description = "A 1-indexed variable denoting which environment in the environment level these resources apply to."
-  default = 1
+  default     = 1
 }
 variable "name" {}
 variable "resource_group_name" {}
