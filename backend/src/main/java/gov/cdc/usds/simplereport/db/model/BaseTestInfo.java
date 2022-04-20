@@ -109,7 +109,6 @@ public abstract class BaseTestInfo extends AuditedEntity implements Organization
     return deviceSpecimen;
   }
 
-  // Getters kept for backwards-compatibility, but setters are in TestEvent and TestOrder
   public TestResult getResult() {
     return result;
   }

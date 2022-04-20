@@ -10,7 +10,6 @@ import gov.cdc.usds.simplereport.db.model.auxiliary.TestResult;
 import gov.cdc.usds.simplereport.db.model.auxiliary.TestResultDeliveryPreference;
 import gov.cdc.usds.simplereport.service.DeviceTypeService;
 import gov.cdc.usds.simplereport.service.PersonService;
-import gov.cdc.usds.simplereport.service.TestEventReportingService;
 import gov.cdc.usds.simplereport.service.TestOrderService;
 import graphql.kickstart.tools.GraphQLMutationResolver;
 import java.time.LocalDate;
@@ -27,17 +26,11 @@ public class QueueMutationResolver implements GraphQLMutationResolver {
   private final TestOrderService _tos;
   private final PersonService _ps;
   private final DeviceTypeService _dts;
-  private final TestEventReportingService testEventReportingService;
 
-  public QueueMutationResolver(
-      TestOrderService tos,
-      PersonService ps,
-      DeviceTypeService dts,
-      TestEventReportingService testEventReportingService) {
+  public QueueMutationResolver(TestOrderService tos, PersonService ps, DeviceTypeService dts) {
     _tos = tos;
     _ps = ps;
     _dts = dts;
-    this.testEventReportingService = testEventReportingService;
   }
 
   public AddTestResultResponse addTestResultNew(

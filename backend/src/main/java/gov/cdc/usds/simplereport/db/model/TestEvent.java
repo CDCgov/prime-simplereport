@@ -104,8 +104,6 @@ public class TestEvent extends BaseTestInfo {
     this.surveyData = event.getSurveyData();
     setDateTestedBackdate(order.getDateTestedBackdate());
     this.priorCorrectedTestEventId = event.getInternalId();
-    // need to somehow deal with results here, I think
-    // unless results are supposed to be void for corrected testEvents
   }
 
   public UUID getPatientInternalID() {

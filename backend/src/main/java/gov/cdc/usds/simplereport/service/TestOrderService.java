@@ -242,7 +242,6 @@ public class TestOrderService {
   @AuthorizationConfiguration.RequirePermissionSubmitTestForPatient
   public AddTestResultResponse addTestResult(
       UUID deviceSpecimenTypeId, TestResult result, UUID patientId, Date dateTested) {
-
     TestOrder savedOrder =
         saveTestResultToDatabase(deviceSpecimenTypeId, result, patientId, dateTested);
     TestEvent testEvent = savedOrder.getTestEvent();
@@ -484,7 +483,6 @@ public class TestOrderService {
     return newRemoveEvent;
   }
 
-  // Also gotta update this, I suspect
   @Transactional(readOnly = true)
   @AuthorizationConfiguration.RequirePermissionEditOrganization
   public OrganizationLevelDashboardMetrics getOrganizationLevelDashboardMetrics(
