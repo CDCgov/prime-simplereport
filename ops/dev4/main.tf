@@ -43,7 +43,7 @@ resource "azurerm_storage_queue" "test_event_exceptions_queue" {
 # Manually configured rules/rewrite sets
 module "app_gateway" {
   source                  = "../services/app_gateway"
-  name                    = local.name
+  name                    = "${local.name}-${local.env}"
   env                     = local.env
   resource_group_location = data.azurerm_resource_group.rg.location
   resource_group_name     = data.azurerm_resource_group.rg.name
@@ -63,7 +63,7 @@ module "app_gateway" {
 
 module "nat_gateway" {
   source                  = "../services/nat_gateway"
-  name                    = local.name
+  name                    = "${local.name}-${local.env}"
   env                     = local.env
   resource_group_location = data.azurerm_resource_group.rg.location
   resource_group_name     = data.azurerm_resource_group.rg.name
@@ -75,7 +75,7 @@ module "nat_gateway" {
 
 module "web_application_firewall" {
   source                  = "../services/web_application_firewall"
-  name                    = local.name
+  name                    = "${local.name}-${local.env}"
   env                     = local.env
   resource_group_location = data.azurerm_resource_group.rg.location
   resource_group_name     = data.azurerm_resource_group.rg.name
@@ -85,7 +85,7 @@ module "web_application_firewall" {
 
 module "app_service_autoscale" {
   source                  = "../services/app_service_autoscale"
-  name                    = local.name
+  name                    = "${local.name}-${local.env}"
   env                     = local.env
   resource_group_location = data.azurerm_resource_group.rg.location
   resource_group_name     = data.azurerm_resource_group.rg.name
