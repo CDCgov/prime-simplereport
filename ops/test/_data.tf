@@ -206,6 +206,9 @@ data "azurerm_application_insights" "app_insights" {
 data "azurerm_storage_account" "app" {
   name                = "simplereport${local.env}app"
   resource_group_name = data.azurerm_resource_group.rg.name
+  depends_on = [
+    azurerm_storage_account.app
+  ]
 }
 
 data "azurerm_key_vault_secret" "db_password_no_phi" {

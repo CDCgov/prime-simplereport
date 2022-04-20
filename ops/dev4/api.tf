@@ -1,7 +1,8 @@
 module "simple_report_api" {
-  source = "../services/app_service"
-  name   = "${local.name}-api"
-  env    = local.env
+  source    = "../services/app_service"
+  name      = "${local.name}-api"
+  env       = local.env
+  env_index = 4
 
   instance_count = 2
 
