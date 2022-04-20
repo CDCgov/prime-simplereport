@@ -281,7 +281,7 @@ SimpleReport uses a continuous deployment deployment (CD) process
 
 ### Revert to a Previous Release
 
-**Note:** A bad version can be rolled backed independent of the FE via the [rollback API actions](https://github.com/CDCgov/prime-simplereport/actions/workflows/rollbackProdAPI.yml)
+**Note:** A bad version can be rolled back independent of the FE via the [rollback API actions](https://github.com/CDCgov/prime-simplereport/actions/workflows/rollbackProdAPI.yml)
 
 1. checkout `main`
 2. create a new branch (example: `tim-best/revert-feature-A`)
