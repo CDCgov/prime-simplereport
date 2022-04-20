@@ -58,39 +58,12 @@ export const globalSymptomDefinitions = symptomOrder.map((value) => ({
   label: symptomsMap[value],
 }));
 
-export const getSymptomList = () => globalSymptomDefinitions;
-
-export const getTestTypes = () => [
-  { label: "Molecular", value: "1" },
-  { label: "Antigen", value: "2" },
-  { label: "Antibody/Serology", value: "3" },
-  { label: "Unknown", value: "4" },
-];
-
 type PregnancyResponses = {
   label: PregnancyDescription;
   value: PregnancyCode;
 }[];
 
-const pregancyOrder: PregnancyCode[] = ["77386006", "60001007", "261665006"];
+const pregnancyOrder: PregnancyCode[] = ["77386006", "60001007", "261665006"];
 
 export const getPregnancyResponses = (): PregnancyResponses =>
-  pregancyOrder.map((value) => ({ value, label: pregnancyMap[value] }));
-
-export const getTimeOfTestSteps = () => [
-  {
-    label: "Profile information",
-    value: "profile",
-    order: 0,
-  },
-  {
-    label: "Symptoms and history",
-    value: "symptoms",
-    order: 1,
-  },
-];
-
-export const getTestResultDeliveryPreferences = () => [
-  { label: "Text message", value: "SMS" },
-  { label: "None", value: "NONE" },
-];
+  pregnancyOrder.map((value) => ({ value, label: pregnancyMap[value] }));
