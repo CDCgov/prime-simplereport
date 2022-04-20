@@ -47,13 +47,6 @@ public class Facility extends OrganizationScopedEternalEntity implements Located
 
   @ManyToMany(fetch = FetchType.EAGER)
   @JoinTable(
-      name = "facility_device_specimen_type",
-      joinColumns = @JoinColumn(name = "facility_id"),
-      inverseJoinColumns = @JoinColumn(name = "device_specimen_type_id"))
-  private Set<DeviceSpecimenType> configuredDeviceSpecimenTypes = new HashSet<>();
-
-  @ManyToMany(fetch = FetchType.EAGER)
-  @JoinTable(
       name = "facility_device_type",
       joinColumns = @JoinColumn(name = "facility_id"),
       inverseJoinColumns = @JoinColumn(name = "device_type_id"))
@@ -116,41 +109,11 @@ public class Facility extends OrganizationScopedEternalEntity implements Located
   }
 
   public void addDeviceType(DeviceType device) {
-    initializeDeviceTypesSet();
     configuredDeviceTypes.add(device);
   }
 
   public List<DeviceType> getDeviceTypes() {
-    initializeDeviceTypesSet();
     return configuredDeviceTypes.stream().filter(e -> !e.isDeleted()).collect(Collectors.toList());
-  }
-
-  public List<DeviceSpecimenType> getDeviceSpecimenTypes() {
-    return configuredDeviceSpecimenTypes.stream()
-        .filter(
-            e ->
-                !(e.isDeleted()
-                    || e.getSpecimenType().isDeleted()
-                    || e.getDeviceType().isDeleted()))
-        .collect(Collectors.toList());
-  }
-
-  private void initializeDeviceTypesSet() {
-    if (this.configuredDeviceTypes.isEmpty()) {
-      Set<DeviceType> deviceTypesFromFacilityDeviceSpecimenTypes =
-          this.configuredDeviceSpecimenTypes.stream()
-              .map(DeviceSpecimenType::getDeviceType)
-              .filter(e -> !e.isDeleted())
-              .collect(Collectors.toSet());
-      if (!deviceTypesFromFacilityDeviceSpecimenTypes.isEmpty()) {
-        this.configuredDeviceTypes = deviceTypesFromFacilityDeviceSpecimenTypes;
-        this.configuredDeviceSpecimenTypes.clear();
-      }
-    }
-  }
-
-  public void addDeviceSpecimenType(DeviceSpecimenType ds) {
-    configuredDeviceSpecimenTypes.add(ds);
   }
 
   public DeviceSpecimenType getDefaultDeviceSpecimen() {
@@ -172,7 +135,6 @@ public class Facility extends OrganizationScopedEternalEntity implements Located
   }
 
   public void removeDeviceType(DeviceType deletedDevice) {
-    initializeDeviceTypesSet();
     this.configuredDeviceTypes.remove(deletedDevice);
 
     // If the corresponding device to a facility's default device swab type is removed,
