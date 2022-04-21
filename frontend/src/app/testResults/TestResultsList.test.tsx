@@ -14,6 +14,7 @@ import userEvent from "@testing-library/user-event";
 
 import { GetFacilityResultsForCsvDocument } from "../../generated/graphql";
 import { QUERY_PATIENT } from "../testQueue/addToQueue/AddToQueueSearch";
+import { appPermissions } from "../permissions";
 
 import { testResultDetailsQuery } from "./TestResultDetailsModal";
 import TestResultsList, {
@@ -22,7 +23,6 @@ import TestResultsList, {
   resultsCountQuery,
   testResultQuery,
 } from "./TestResultsList";
-import {appPermissions} from "../permissions";
 
 const mockStore = configureStore([]);
 const store = mockStore({
@@ -32,7 +32,7 @@ const store = mockStore({
   user: {
     firstName: "Kim",
     lastName: "Mendoza",
-    permissions: appPermissions.settings.canView
+    permissions: appPermissions.settings.canView,
   },
   facilities: [
     { id: "1", name: "Facility 1" },
@@ -1354,18 +1354,23 @@ describe("TestResultsList", () => {
     });
     it("should be able to filter by all facilities", async () => {
       expect(
-          await screen.findByText("Test Results", { exact: false })
+        await screen.findByText("Test Results", { exact: false })
       ).toBeInTheDocument();
       expect(
-          await screen.findByText("Cragell, Barb Whitaker")
+        await screen.findByText("Cragell, Barb Whitaker")
       ).toBeInTheDocument();
       expect(screen.queryByText("Clarkson, Lewis")).not.toBeInTheDocument();
       expect(
-          await screen.findByRole("option", { name: "All facilities" })
+        await screen.findByRole("option", { name: "All facilities" })
       ).toBeInTheDocument();
-      userEvent.selectOptions(screen.getByLabelText("Testing facility"), ALL_FACILITIES_ID);
+      userEvent.selectOptions(
+        screen.getByLabelText("Testing facility"),
+        ALL_FACILITIES_ID
+      );
       expect(await screen.findByText("Clarkson, Lewis")).toBeInTheDocument();
-      expect(await screen.findByText("Cragell, Barb Whitaker")).toBeInTheDocument();
+      expect(
+        await screen.findByText("Cragell, Barb Whitaker")
+      ).toBeInTheDocument();
     });
 
     it("should be able to filter by date", async () => {
@@ -1639,22 +1644,23 @@ describe("TestResultsList", () => {
     });
 
     await render(
-        <WithRouter>
-          <Provider store={localStore}>
-            <MockedProvider mocks={mocks}>
-              <TestResultsList />
-            </MockedProvider>
-          </Provider>
-        </WithRouter>
+      <WithRouter>
+        <Provider store={localStore}>
+          <MockedProvider mocks={mocks}>
+            <TestResultsList />
+          </MockedProvider>
+        </Provider>
+      </WithRouter>
     );
 
-    expect(await screen.findByLabelText("Testing facility")).toBeInTheDocument();
     expect(
-        await screen.findByRole("option", { name: "Facility 1" })
+      await screen.findByLabelText("Testing facility")
     ).toBeInTheDocument();
     expect(
-        screen.queryByRole("option", { name: "All facilities" })
+      await screen.findByRole("option", { name: "Facility 1" })
+    ).toBeInTheDocument();
+    expect(
+      screen.queryByRole("option", { name: "All facilities" })
     ).not.toBeInTheDocument();
   });
-
 });
