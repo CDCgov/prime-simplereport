@@ -60,7 +60,8 @@ const DownloadResultsCSVButton = ({
     filterParams.endDate ||
     filterParams.role ||
     filterParams.result ||
-      filterParams.filterFacilityId && filterParams.filterFacilityId !== activeFacilityId;
+    (filterParams.filterFacilityId &&
+      filterParams.filterFacilityId !== activeFacilityId);
 
   const variables: ResultsQueryVariables = {
     facilityId:
