@@ -45,7 +45,7 @@ describe("Conducting a test", () => {
     cy.get(".prime-home .grid-container").should("not.have.text", patientName);
   });
   it("shows the result on the results table", () => {
-    cy.get("#results-nav-link").click();
+    cy.get("#desktop-results-nav-link").click();
     cy.get(".usa-table").contains(patientName);
   });
   it("stores the patient link", () => {
