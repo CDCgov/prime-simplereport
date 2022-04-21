@@ -20,7 +20,8 @@ public enum UserPermission implements Principal {
   START_TEST,
   UPDATE_TEST,
   SUBMIT_TEST,
-  ACCESS_ALL_FACILITIES;
+  ACCESS_ALL_FACILITIES,
+  READ_ALL_FACILITY_RESULTS;
 
   @Override
   public String getName() {

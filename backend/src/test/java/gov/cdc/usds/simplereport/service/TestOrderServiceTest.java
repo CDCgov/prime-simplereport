@@ -950,6 +950,30 @@ class TestOrderServiceTest extends BaseServiceTest<TestOrderService> {
   }
 
   @Test
+  @WithSimpleReportOrgAdminUser
+  void fetchAllFacilityTestEventsResults_adminUser_ok() {
+    Organization org = _organizationService.getCurrentOrganization();
+    Facility facility = _dataFactory.createValidFacility(org);
+    Person p = _dataFactory.createMinimalPerson(org, facility);
+    _dataFactory.createTestEvent(p, facility);
+
+    _service.getAllFacilityTestEventsResults(null, null, null, null, null, 0, 10);
+  }
+
+  @Test
+  @WithSimpleReportStandardUser
+  void fetchAllFacilityTestEventsResults_standardUser_failure() {
+    Organization org = _organizationService.getCurrentOrganization();
+    Facility facility = _dataFactory.createValidFacility(org);
+    Person p = _dataFactory.createMinimalPerson(org, facility);
+    _dataFactory.createTestEvent(p, facility);
+
+    assertThrows(
+        AccessDeniedException.class,
+        () -> _service.getAllFacilityTestEventsResults(null, null, null, null, null, 0, 10));
+  }
+
+  @Test
   @WithSimpleReportStandardUser
   void fetchTestResults_standardUser_successDependsOnFacilityAccess() {
     Organization org = _organizationService.getCurrentOrganization();
