@@ -69,6 +69,9 @@ public class AuthorizationConfiguration {
   private static final String SPEL_HAS_PERMISSION_SUBMIT_TEST =
       SPEL_HAS_PERMISSION + "SUBMIT_TEST" + ")";
 
+  private static final String SPEL_HAS_PERMISSION_READ_ALL_FACILITY_RESULTS =
+      SPEL_HAS_PERMISSION + "READ_ALL_FACILITY_RESULTS" + ")";
+
   private static final String SPEL_HAS_PERMISSION_ACCESS_ALL_FACILITIES =
       SPEL_HAS_PERMISSION + "ACCESS_ALL_FACILITIES" + ")";
 
@@ -274,6 +277,15 @@ public class AuthorizationConfiguration {
   @Target(METHOD)
   @PreAuthorize(SPEL_IS_VALID + " && " + SPEL_HAS_PERMISSION_MANAGE_USERS)
   public @interface RequirePermissionManageUsers {}
+
+  /**
+   * Require the current user to have the {@link UserPermission#READ_ALL_FACILITY_RESULTS}
+   * permission.
+   */
+  @Retention(RUNTIME)
+  @Target(METHOD)
+  @PreAuthorize(SPEL_IS_VALID + " && " + SPEL_HAS_PERMISSION_READ_ALL_FACILITY_RESULTS)
+  public @interface RequirePermissionReadAllFacilityResults {}
 
   /**
    * Require the current user to have the {@link UserPermission#SEARCH_PATIENTS} permission for the

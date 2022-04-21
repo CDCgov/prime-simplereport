@@ -160,7 +160,7 @@ public class TestOrderService {
   }
 
   @Transactional(readOnly = true)
-  @AuthorizationConfiguration.RequireGlobalAdminUser
+  @AuthorizationConfiguration.RequirePermissionReadAllFacilityResults
   public List<TestEvent> getAllFacilityTestEventsResults(
       UUID patientId,
       TestResult result,
