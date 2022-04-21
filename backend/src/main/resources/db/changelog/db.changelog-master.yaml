@@ -1005,8 +1005,8 @@ databaseChangeLog:
                   name: clia_number
                   type: text
                   remarks: The CLIA number for the facility that is ordering (and presumably also conducting) the tests.
-                  constraints:
-                    nullable: false
+                  # constraints:
+                  #   nullable: false
               - column:
                   name: default_device_type
                   remarks: The default device type (if any) for tests at this facility.
@@ -1018,28 +1018,17 @@ databaseChangeLog:
                   name: ordering_provider_id
                   type: uuid
                   constraints:
-                    nullable: false
+                  #   nullable: false
                     foreignKeyName: fk__organization__ordering_provider
                     referencedTableName: provider
-        - addColumn:
-            tableName: facility_device_type
-            columns:
-              - column:
-                  name: organization_id
-                  type: uuid
-                  remarks: The organization within which this request was performed (if applicable).
-                  constraints:
-                    nullable: true
-                    foreignKeyName: fk__api_audit_event__organization
-                    referencedTableName: organization
         - dropNotNullConstraint:
             tableName: facility_device_type
             columnName: facility_id
-        - dropColumn:
+        - renameColumn:
             tableName: facility_device_type
-            columns:
-              - column:
-                  name: facility_id
+            oldColumnName: facility_id
+            newColumnName: organization_id
+            remarks: The human-readable name for this organization.
         - dropNotNullConstraint:
             tableName: test_order
             columnName: facility_id
@@ -1198,6 +1187,11 @@ databaseChangeLog:
       # Allows us to create a user without having to assign it a last-seen value (ie if user does not create themselves)
       changes:
         - dropNotNullConstraint:
+            tableName: api_user
+            columnName: last_seen
+      rollback:
+        - sql: UPDATE ${database.defaultSchemaName}.api_user SET last_seen=NOW() WHERE last_seen IS NULL;
+        - addNotNullConstraint:
             tableName: api_user
             columnName: last_seen
   - changeSet:
