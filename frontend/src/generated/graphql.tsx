@@ -958,6 +958,7 @@ export enum UserPermission {
   EditOrganization = "EDIT_ORGANIZATION",
   EditPatient = "EDIT_PATIENT",
   ManageUsers = "MANAGE_USERS",
+  ReadAllFacilityResults = "READ_ALL_FACILITY_RESULTS",
   ReadArchivedPatientList = "READ_ARCHIVED_PATIENT_LIST",
   ReadPatientList = "READ_PATIENT_LIST",
   ReadResultList = "READ_RESULT_LIST",

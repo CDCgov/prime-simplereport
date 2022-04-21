@@ -5,7 +5,7 @@ import java.security.Principal;
 /**
  * Permissions that a user may hold, usually via their {@link OrganizationRole}.
  *
- * <p>DO: Keep updated with UserPermission in schema.graphqls
+ * <p>DO: Keep updated with UserPermission in wiring.graphqls
  */
 public enum UserPermission implements Principal {
   READ_PATIENT_LIST,
