@@ -148,22 +148,23 @@ const Header: React.FC<{}> = () => {
       key: "patient-nav-link",
     },
   ];
-  const mainNavList = mainNavContent.map((item) => {
-    return (
-      <li key={item.key} className="usa-nav__primary-item">
-        {item.displayPermissions ? (
-          <LinkWithQuery
-            to={item.url}
-            onClick={() => setMenuVisible(false)}
-            className={item.className}
-            id={item.key}
-          >
-            {item.displayText}
-          </LinkWithQuery>
-        ) : null}
-      </li>
-    );
-  });
+  const mainNavList = (deviceType: string) =>
+    mainNavContent.map((item) => {
+      return (
+        <li key={item.key} className="usa-nav__primary-item">
+          {item.displayPermissions ? (
+            <LinkWithQuery
+              to={item.url}
+              onClick={() => setMenuVisible(false)}
+              className={item.className}
+              id={`${deviceType}-${item.key}`}
+            >
+              {item.displayText}
+            </LinkWithQuery>
+          ) : null}
+        </li>
+      );
+    });
   const secondaryNavContent = [
     {
       url: "#",
@@ -239,56 +240,43 @@ const Header: React.FC<{}> = () => {
       <ChangeUser />
     </ul>
   );
-  const secondaryDesktopNav = secondaryNavContent.map((item) => {
-    return (
-      <li
-        key={`desktop-${item.dataTestId}`}
-        className="usa-nav__primary-item nav__primary-item-icon"
-      >
-        <LinkWithQuery
-          to={item.url}
-          onClick={item.onClick}
-          className={item.className}
-          data-testid={item.dataTestId}
-          id={item.dataTestId}
-        >
-          {item.icon}
-        </LinkWithQuery>
-        {item.hasSubmenu && staffDetailsVisible ? (
-          <div
-            ref={staffDefailsRef}
-            aria-label="Primary navigation"
-            className={classNames("prime-staff-infobox", {
-              "is-prime-staff-infobox-visible": staffDetailsVisible,
-            })}
-          >
-            {secondaryNavSublist}
-          </div>
-        ) : (
-          <></>
-        )}
-      </li>
-    );
-  });
-  const secondaryMobileNav = secondaryNavContent
-    .filter((item) => item.mobileDisplay)
-    .map((item) => {
+  const secondaryNav = (deviceType: string) =>
+    secondaryNavContent.map((item) => {
       return (
         <li
-          key={`mobile-${item.dataTestId}`}
+          key={`${deviceType}-${item.dataTestId}`}
           className="usa-nav__primary-item nav__primary-item-icon"
         >
           <LinkWithQuery
             to={item.url}
             onClick={item.onClick}
+            className={item.className}
             data-testid={item.dataTestId}
-            id={item.dataTestId}
+            id={`${deviceType}-${item.dataTestId}`}
           >
-            {item.mobileDisplayText}
+            {item.icon}
           </LinkWithQuery>
+          {item.hasSubmenu &&
+          staffDetailsVisible &&
+          deviceType === "desktop" ? (
+            <div
+              ref={staffDefailsRef}
+              aria-label="Primary navigation"
+              className={classNames("prime-staff-infobox", {
+                "is-prime-staff-infobox-visible": staffDetailsVisible,
+              })}
+            >
+              {secondaryNavSublist}
+            </div>
+          ) : (
+            <></>
+          )}
         </li>
       );
     });
+
+  const secondaryDesktopNav = secondaryNav("desktop");
+  const secondaryMobileNav = secondaryNav("mobile");
 
   return (
     <header className="usa-header usa-header--basic">
@@ -332,7 +320,7 @@ const Header: React.FC<{}> = () => {
               <FontAwesomeIcon icon={"window-close"} />
             </button>
             <ul className="usa-nav__primary usa-accordion mobile-main-nav-container">
-              {mainNavList}
+              {mainNavList("mobile")}
             </ul>
             <ul className="usa-nav__primary usa-accordion mobile-secondary-nav-container">
               {secondaryMobileNav}
@@ -362,7 +350,9 @@ const Header: React.FC<{}> = () => {
           aria-label="Primary navigation"
           className="usa-nav prime-nav desktop-nav"
         >
-          <ul className="usa-nav__primary usa-accordion">{mainNavList}</ul>
+          <ul className="usa-nav__primary usa-accordion">
+            {mainNavList("desktop")}
+          </ul>
           {facilities && facilities.length > 0 ? (
             <div className="prime-facility-select">
               <Dropdown

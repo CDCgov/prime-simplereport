@@ -75,7 +75,7 @@ describe("Organization sign up", () => {
   });
   it("enables adding patients", () => {
     cy.visit("/");
-    cy.get("#patient-nav-link").click();
+    cy.get("#desktop-patient-nav-link").click();
     cy.contains("No results");
   });
 });

@@ -12,7 +12,7 @@ describe("Conducting a test", () => {
   it("searches for the patient", () => {
     cy.visit("/");
     cy.get(".usa-nav-container");
-    cy.get("#conduct-test-nav-link").click();
+    cy.get("#desktop-conduct-test-nav-link").click();
     cy.get("#search-field-small").type(lastName);
     cy.get(".results-dropdown").contains(lastName);
   });
