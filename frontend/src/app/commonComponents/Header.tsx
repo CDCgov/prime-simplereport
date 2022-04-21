@@ -251,7 +251,7 @@ const Header: React.FC<{}> = () => {
             to={item.url}
             onClick={item.onClick}
             className={item.className}
-            data-testid={item.dataTestId}
+            data-testid={`${deviceType}-${item.dataTestId}`}
             id={`${deviceType}-${item.dataTestId}`}
           >
             {item.icon}
