@@ -48,7 +48,7 @@ data "azurerm_key_vault" "sr_global" {
 }
 
 data "azurerm_key_vault_secret" "sr_dev4_db_jdbc" {
-  name         = "simple-report-dev4-db-jdbc"
+  name         = "simple-report-${local.env}-db-jdbc"
   key_vault_id = data.azurerm_key_vault.sr_global.id
 }
 
