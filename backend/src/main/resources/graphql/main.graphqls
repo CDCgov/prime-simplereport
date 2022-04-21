@@ -293,6 +293,12 @@ type PendingOrganization {
   createdAt: DateTime!
 }
 
+input MultiplexTestResult {
+  covid19: String!
+  fluA: String!
+  fluB: String!
+}
+
 # Queries and mutations for everyday use
 
 type Query {
@@ -584,6 +590,13 @@ type Mutation {
     deviceId: String!
     deviceSpecimenType: ID
     result: String!
+    patientId: ID!
+    dateTested: DateTime
+  ): AddTestResultResponse @requiredPermissions(allOf: ["SUBMIT_TEST"])
+  addTestResultMultiplex(
+    deviceId: String!
+    deviceSpecimenType: ID
+    results: MultiplexTestResult!
     patientId: ID!
     dateTested: DateTime
   ): AddTestResultResponse @requiredPermissions(allOf: ["SUBMIT_TEST"])

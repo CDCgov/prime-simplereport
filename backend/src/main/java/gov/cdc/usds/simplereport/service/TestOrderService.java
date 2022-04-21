@@ -23,6 +23,7 @@ import gov.cdc.usds.simplereport.db.model.TestEvent_;
 import gov.cdc.usds.simplereport.db.model.TestOrder;
 import gov.cdc.usds.simplereport.db.model.TestOrder_;
 import gov.cdc.usds.simplereport.db.model.auxiliary.AskOnEntrySurvey;
+import gov.cdc.usds.simplereport.db.model.auxiliary.MultiplexTestResult;
 import gov.cdc.usds.simplereport.db.model.auxiliary.PersonRole;
 import gov.cdc.usds.simplereport.db.model.auxiliary.TestCorrectionStatus;
 import gov.cdc.usds.simplereport.db.model.auxiliary.TestResult;
@@ -35,6 +36,7 @@ import gov.cdc.usds.simplereport.db.repository.TestEventRepository;
 import gov.cdc.usds.simplereport.db.repository.TestOrderRepository;
 import java.time.LocalDate;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Date;
 import java.util.List;
 import java.util.Map;
@@ -247,6 +249,53 @@ public class TestOrderService {
   @Transactional(noRollbackFor = {TwilioException.class, ApiException.class})
   public AddTestResultResponse addTestResult(
       UUID deviceSpecimenTypeId, TestResult result, UUID patientId, Date dateTested) {
+    TestOrder savedOrder =
+        saveTestResultToDatabase(deviceSpecimenTypeId, result, patientId, dateTested);
+    TestEvent testEvent = savedOrder.getTestEvent();
+
+    _testEventReportingService.report(testEvent);
+    return addTestResultPostSave(savedOrder, testEvent);
+  }
+
+  @AuthorizationConfiguration.RequirePermissionSubmitTestForPatient
+  public AddTestResultResponse addTestResultMultiplex(
+      UUID deviceSpecimenTypeId, MultiplexTestResult results, UUID patientId, Date dateTested) {
+
+    TestOrder savedOrder =
+        saveTestResultToDatabase(deviceSpecimenTypeId, results.getCovid19(), patientId, dateTested);
+    TestEvent testEvent = savedOrder.getTestEvent();
+    saveMultiplexResults(testEvent, savedOrder, results);
+
+    _testEventReportingService.report(testEvent);
+    return addTestResultPostSave(savedOrder, testEvent);
+  }
+
+  private AddTestResultResponse addTestResultPostSave(TestOrder savedOrder, TestEvent testEvent) {
+    ArrayList<Boolean> deliveryStatuses = new ArrayList<>();
+
+    PatientLink patientLink = _pls.createPatientLink(savedOrder.getInternalId());
+    if (patientHasDeliveryPreference(savedOrder)) {
+
+      if (smsDeliveryPreference(savedOrder) || smsAndEmailDeliveryPreference(savedOrder)) {
+        boolean smsDeliveryStatus = testResultsDeliveryService.smsTestResults(patientLink);
+        deliveryStatuses.add(smsDeliveryStatus);
+      }
+
+      if (emailDeliveryPreference(savedOrder) || smsAndEmailDeliveryPreference(savedOrder)) {
+        boolean emailDeliveryStatus = testResultsDeliveryService.emailTestResults(patientLink);
+        deliveryStatuses.add(emailDeliveryStatus);
+      }
+    }
+
+    boolean deliveryStatus =
+        deliveryStatuses.isEmpty() || deliveryStatuses.stream().anyMatch(status -> status);
+    return new AddTestResultResponse(savedOrder, deliveryStatus);
+  }
+
+  @AuthorizationConfiguration.RequirePermissionSubmitTestForPatient
+  @Transactional(noRollbackFor = {TwilioException.class, ApiException.class})
+  protected TestOrder saveTestResultToDatabase(
+      UUID deviceSpecimenTypeId, TestResult result, UUID patientId, Date dateTested) {
     Organization org = _os.getCurrentOrganization();
     Person person = _ps.getPatientNoPermissionsCheck(patientId, org);
     TestOrder order =
@@ -296,6 +345,13 @@ public class TestOrderService {
     } finally {
       unlockOrder(order.getInternalId());
     }
+  }
+
+  private void saveMultiplexResults(TestEvent event, TestOrder order, MultiplexTestResult results) {
+    Result covidResult = new Result(event, order, _diseaseService.covid(), results.getCovid19());
+    Result fluAResult = new Result(event, order, _diseaseService.fluA(), results.getFluA());
+    Result fluBResult = new Result(event, order, _diseaseService.fluB(), results.getFluB());
+    _resultRepo.saveAll(Arrays.asList(covidResult, fluAResult, fluBResult));
   }
 
   private boolean patientHasDeliveryPreference(TestOrder savedOrder) {
