@@ -18,9 +18,7 @@ const useComponentVisible = (initialIsVisible: boolean) => {
   const ref: LegacyRef<HTMLDivElement> | null = useRef(null);
 
   const handleClickOutside = (event: any) => {
-    console.log(event);
     if (ref.current && !ref.current.contains(event.target)) {
-      console.log("handling outside click");
       setIsComponentVisible(false);
     }
   };
