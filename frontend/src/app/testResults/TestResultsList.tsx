@@ -530,21 +530,20 @@ export const DetachedTestResultsList = ({
                     label="Testing facility"
                     name="facility"
                     value={filterParams.filterFacilityId || activeFacilityId}
-                    options={validFacilities
-                      .map((facility) => ({
+                    options={(isOrgAdmin
+                      ? [
+                          {
+                            label: "All facilities",
+                            value: ALL_FACILITIES_ID,
+                          },
+                        ]
+                      : []
+                    ).concat(
+                      validFacilities.map((facility) => ({
                         label: facility.name,
                         value: facility.id,
                       }))
-                      .concat([
-                        ...(isOrgAdmin
-                          ? [
-                              {
-                                label: "All facilities",
-                                value: ALL_FACILITIES_ID,
-                              },
-                            ]
-                          : []),
-                      ])}
+                    )}
                     onChange={setFilterParams("filterFacilityId")}
                   />
                 ) : null}

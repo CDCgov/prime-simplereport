@@ -324,6 +324,11 @@ exports[`TestResultsList should render a list of tests 1`] = `
                   name="facility"
                 >
                   <option
+                    value="all"
+                  >
+                    All facilities
+                  </option>
+                  <option
                     value="1"
                   >
                     Facility 1
@@ -332,11 +337,6 @@ exports[`TestResultsList should render a list of tests 1`] = `
                     value="2"
                   >
                     Facility 2
-                  </option>
-                  <option
-                    value="all"
-                  >
-                    All facilities
                   </option>
                 </select>
               </div>
