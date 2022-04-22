@@ -1,0 +1,42 @@
+.sr-showing-results-on-page {
+  margin-left: 2rem;
+  color: #555;
+  font-size: 50%;
+  vertical-align: middle;
+  font-weight: normal;
+}
+
+.test-date-time-container {
+  display: flex;
+  justify-content: flex-start;
+  align-items: center;
+  flex-wrap: wrap;
+  margin-top: 8px;
+}
+
+.card-test-input {
+  height: 34px;
+  margin-right: 12px;
+  max-width: 130px;
+  animation: 0.25s fadeIn;
+  animation-fill-mode: both;
+
+  @keyframes fadeIn {
+    0% {
+      opacity: 0;
+    }
+
+    100% {
+      visibility: visible;
+      opacity: 1;
+    }
+  }
+
+  &__error {
+    border-color: #d54309;
+  }
+}
+
+input[type="date"]::-webkit-calendar-picker-indicator {
+  margin-left: 0;
+}
