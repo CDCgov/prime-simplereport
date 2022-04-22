@@ -198,7 +198,7 @@ const Header: React.FC<{}> = () => {
       hasSubmenu: false,
     },
   ];
-  const secondaryNavSublist = (
+  const secondaryNavSublist = (deviceType: string) => (
     <ul className="usa-sidenav__sublist">
       <li className="usa-sidenav__item span-full-name">
         {formatFullName(user)}
@@ -214,7 +214,7 @@ const Header: React.FC<{}> = () => {
           target="_blank"
           rel="noreferrer"
           onClick={() => handleWhatsNewClick()}
-          data-testid="whats-new-link"
+          data-testid={`${deviceType}-whats-new-link`}
         >
           What's new
         </a>
@@ -228,7 +228,7 @@ const Header: React.FC<{}> = () => {
           href="https://www.simplereport.gov/support"
           target="none"
           onClick={() => handleSupportClick()}
-          data-testid="support-link"
+          data-testid={`${deviceType}-support-link`}
         >
           Support
         </a>
@@ -266,7 +266,7 @@ const Header: React.FC<{}> = () => {
                 "is-prime-staff-infobox-visible": staffDetailsVisible,
               })}
             >
-              {secondaryNavSublist}
+              {secondaryNavSublist("desktop")}
             </div>
           ) : (
             <></>
@@ -274,9 +274,6 @@ const Header: React.FC<{}> = () => {
         </li>
       );
     });
-
-  const secondaryDesktopNav = secondaryNav("desktop");
-  const secondaryMobileNav = secondaryNav("mobile");
 
   return (
     <header className="usa-header usa-header--basic">
@@ -323,10 +320,10 @@ const Header: React.FC<{}> = () => {
               {mainNavList("mobile")}
             </ul>
             <ul className="usa-nav__primary usa-accordion mobile-secondary-nav-container">
-              {secondaryMobileNav}
+              {secondaryNav("mobile")}
             </ul>
             <div className="usa-nav__primary mobile-sublist-container">
-              {secondaryNavSublist}
+              {secondaryNavSublist("mobile")}
 
               <label id="mobile-facility-label" className="usa-label ">
                 Facility
@@ -366,7 +363,7 @@ const Header: React.FC<{}> = () => {
             </div>
           ) : null}
           <ul className="usa-nav__primary usa-accordion">
-            {secondaryDesktopNav}
+            {secondaryNav("desktop")}
           </ul>
         </nav>
       </div>
