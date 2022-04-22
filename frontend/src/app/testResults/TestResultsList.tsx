@@ -384,23 +384,6 @@ export const DetachedTestResultsList = ({
     }
   };
 
-  //todo: make this cleaner or inline with component?
-  const getFacilityOptions = () => {
-    const ret = validFacilities.map((facility) => ({
-      label: facility.name,
-      value: facility.id,
-    }));
-    if (isOrgAdmin) {
-      return ret.concat([
-        {
-          label: "All facilities",
-          value: ALL_FACILITIES_ID,
-        },
-      ]);
-    }
-    return ret;
-  };
-
   return (
     <main className="prime-home">
       {detailsModalId && (
@@ -547,7 +530,21 @@ export const DetachedTestResultsList = ({
                     label="Testing facility"
                     name="facility"
                     value={filterParams.filterFacilityId || activeFacilityId}
-                    options={getFacilityOptions()}
+                    options={validFacilities
+                      .map((facility) => ({
+                        label: facility.name,
+                        value: facility.id,
+                      }))
+                      .concat([
+                        ...(isOrgAdmin
+                          ? [
+                              {
+                                label: "All facilities",
+                                value: ALL_FACILITIES_ID,
+                              },
+                            ]
+                          : []),
+                      ])}
                     onChange={setFilterParams("filterFacilityId")}
                   />
                 ) : null}
