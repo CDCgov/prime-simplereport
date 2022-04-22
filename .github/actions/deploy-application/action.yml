@@ -33,9 +33,6 @@ runs:
       run: |
         echo "::group::Deploy frontend app"
         az storage blob upload-batch -s client-build/ -d '$web' \
-          --account-name simplereport${{ inputs.deploy-env }}app \
-          --destination-path '/app' || \
-        az storage blob upload-batch -s client-build/ -d '$web' \
         --account-name simplereport${{ inputs.deploy-env }}app \
         --destination-path '/app' \
         --overwrite

@@ -1,5 +1,6 @@
 package gov.cdc.usds.simplereport.db.model;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import java.util.HashSet;
 import java.util.Objects;
 import java.util.Set;
@@ -24,6 +25,7 @@ public class SupportedDisease extends IdentifiedEntity {
   @Column(nullable = false)
   private String loinc;
 
+  @JsonIgnore
   @ManyToMany
   @JoinTable(
       name = "device_supported_disease",

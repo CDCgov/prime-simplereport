@@ -9,12 +9,12 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 import com.fasterxml.jackson.databind.node.JsonNodeFactory;
 import gov.cdc.usds.simplereport.api.ResourceLinks;
 import gov.cdc.usds.simplereport.config.authorization.UserPermission;
-import gov.cdc.usds.simplereport.db.model.ApiAuditEvent;
+import gov.cdc.usds.simplereport.db.model.ConsoleApiAuditEvent;
 import gov.cdc.usds.simplereport.db.model.Facility;
 import gov.cdc.usds.simplereport.db.model.Organization;
 import gov.cdc.usds.simplereport.db.model.PatientLink;
 import gov.cdc.usds.simplereport.db.model.Person;
-import gov.cdc.usds.simplereport.db.model.TestOrder;
+import gov.cdc.usds.simplereport.db.model.TestEvent;
 import gov.cdc.usds.simplereport.db.model.auxiliary.HttpRequestDetails;
 import gov.cdc.usds.simplereport.test_util.TestDataFactory;
 import gov.cdc.usds.simplereport.test_util.TestUserIdentities;
@@ -50,10 +50,9 @@ class AuditLoggingTest extends BaseGraphqlTest {
     useOrgUser();
     runQuery("current-user-query");
     String requestId = getGraphqlRequestIdHeader();
-    ApiAuditEvent event =
+    ConsoleApiAuditEvent event =
         assertLastAuditEntry(
             requestId, TestUserIdentities.STANDARD_USER, "whoDat", STANDARD_PERMS_TODAY, null);
-    assertTimestampSanity(event);
     assertEquals(TestUserIdentities.DEFAULT_ORGANIZATION, event.getOrganization().getExternalId());
 
     HttpRequestDetails httpDetails = event.getHttpRequestDetails();
@@ -75,10 +74,9 @@ class AuditLoggingTest extends BaseGraphqlTest {
     addHeader("x-ORIGINAL-host", "simplereport.ly");
     runQuery("current-user-query");
     String requestId = getGraphqlRequestIdHeader();
-    ApiAuditEvent event =
+    ConsoleApiAuditEvent event =
         assertLastAuditEntry(
             requestId, TestUserIdentities.STANDARD_USER, "whoDat", STANDARD_PERMS_TODAY, null);
-    assertTimestampSanity(event);
     assertEquals(TestUserIdentities.DEFAULT_ORGANIZATION, event.getOrganization().getExternalId());
 
     HttpRequestDetails httpDetails = event.getHttpRequestDetails();
@@ -91,14 +89,13 @@ class AuditLoggingTest extends BaseGraphqlTest {
   void auditableGraphqlRequest_nonStandardOrgUser_correctUserAndOrg() {
     useOutsideOrgAdmin();
     runQuery("current-user-query");
-    ApiAuditEvent event =
+    ConsoleApiAuditEvent event =
         assertLastAuditEntry(
             getGraphqlRequestIdHeader(),
             TestUserIdentities.OTHER_ORG_ADMIN,
             "whoDat",
             EnumSet.allOf(UserPermission.class),
             null);
-    assertTimestampSanity(event);
     assertEquals(
         "DAT_ORG", // this should be a constant
         event.getOrganization().getExternalId());
@@ -120,10 +117,11 @@ class AuditLoggingTest extends BaseGraphqlTest {
             .put("dateOfBirth", TestDataFactory.DEFAULT_BDAY.toString())
             .toString();
     _mockMvc
-        .perform(withJsonContent(post(ResourceLinks.VERIFY_LINK), requestBody))
+        .perform(withJsonContent(post(ResourceLinks.VERIFY_LINK_V2), requestBody))
         .andExpect(status().isOk());
 
-    ApiAuditEvent event = assertLastAuditEntry(HttpStatus.OK, ResourceLinks.VERIFY_LINK, null);
+    ConsoleApiAuditEvent event =
+        assertLastAuditEntry(HttpStatus.OK, ResourceLinks.VERIFY_LINK_V2, null);
     assertEquals(link.getInternalId(), event.getPatientLink().getInternalId(), "patient link");
     assertEquals(TestDataFactory.DEFAULT_ORG_ID, event.getOrganization().getExternalId());
 
@@ -144,8 +142,8 @@ class AuditLoggingTest extends BaseGraphqlTest {
           Organization org = _dataFactory.createValidOrg();
           Facility site = _dataFactory.createValidFacility(org);
           Person person = _dataFactory.createFullPerson(org);
-          TestOrder testOrder = _dataFactory.createTestOrder(person, site);
-          linkHolder.setValue(_dataFactory.createPatientLink(testOrder));
+          TestEvent testEvent = _dataFactory.createTestEvent(person, site);
+          linkHolder.setValue(_dataFactory.createPatientLink(testEvent.getTestOrder()));
         });
     return linkHolder.getValue();
   }
@@ -160,12 +158,14 @@ class AuditLoggingTest extends BaseGraphqlTest {
             .put("dateOfBirth", TestDataFactory.DEFAULT_BDAY.toString())
             .toString();
     MockHttpServletRequestBuilder req =
-        withJsonContent(post(ResourceLinks.VERIFY_LINK), requestBody)
+        withJsonContent(post(ResourceLinks.VERIFY_LINK_V2), requestBody)
             .header("X-forwarded-PROTO", "gopher")
             .header("x-ORIGINAL-HOST", "simplereport.simple")
             .header("x-forwarded-for", "192.168.153.128:80, 10.3.1.1:443");
     _mockMvc.perform(req).andExpect(status().isOk());
-    ApiAuditEvent event = assertLastAuditEntry(HttpStatus.OK, ResourceLinks.VERIFY_LINK, null);
+
+    ConsoleApiAuditEvent event =
+        assertLastAuditEntry(HttpStatus.OK, ResourceLinks.VERIFY_LINK_V2, null);
     assertEquals(link.getInternalId(), event.getPatientLink().getInternalId(), "patient link");
     assertEquals(TestDataFactory.DEFAULT_ORG_ID, event.getOrganization().getExternalId());
 

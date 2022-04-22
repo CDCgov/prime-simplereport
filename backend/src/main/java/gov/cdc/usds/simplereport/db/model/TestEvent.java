@@ -1,5 +1,6 @@
 package gov.cdc.usds.simplereport.db.model;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import gov.cdc.usds.simplereport.db.model.auxiliary.AskOnEntrySurvey;
 import gov.cdc.usds.simplereport.db.model.auxiliary.TestCorrectionStatus;
 import gov.cdc.usds.simplereport.db.model.auxiliary.TestResult;
@@ -40,6 +41,7 @@ public class TestEvent extends BaseTestInfo {
   @Type(type = "jsonb")
   private AskOnEntrySurvey surveyData;
 
+  @JsonIgnore
   @ManyToOne(optional = false, fetch = FetchType.LAZY)
   @JoinColumn(name = "test_order_id")
   private TestOrder order;
@@ -106,6 +108,20 @@ public class TestEvent extends BaseTestInfo {
     this.priorCorrectedTestEventId = event.getInternalId();
   }
 
+  public TestEvent(
+      TestOrder order, TestCorrectionStatus correctionStatus, String reasonForCorrection) {
+    super(order, correctionStatus, reasonForCorrection);
+
+    TestEvent event = order.getTestEvent();
+
+    this.patientData = event.getPatientData();
+    this.providerData = event.getProviderData();
+    this.order = order;
+    this.surveyData = event.getSurveyData();
+    setDateTestedBackdate(order.getDateTestedBackdate());
+    this.priorCorrectedTestEventId = event.getInternalId();
+  }
+
   public UUID getPatientInternalID() {
     return getPatient().getInternalId();
   }
@@ -130,6 +146,7 @@ public class TestEvent extends BaseTestInfo {
     return providerData;
   }
 
+  @JsonIgnore
   public TestOrder getTestOrder() {
     return order;
   }

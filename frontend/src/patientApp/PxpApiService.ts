@@ -114,30 +114,12 @@ export class PxpApi {
     });
   }
 
-  static updatePatient(
-    patientLinkId: string,
-    dateOfBirth: string,
-    data: UpdatePatientData
-  ) {
-    return api.request("/patient", {
-      patientLinkId,
-      dateOfBirth,
-      data,
-    });
-  }
-
   static getEntityName = async (
     registrationLink: string | undefined
   ): Promise<string> => {
     return api.getRequest(
       `/register/entity-name?patientRegistrationLink=${registrationLink}`
     );
-  };
-
-  static getObfuscatedPatientName = async (
-    patientLink: string
-  ): Promise<string> => {
-    return api.getRequest(`/patient-name?patientLink=${patientLink}`);
   };
 
   static getTestResultUnauthenticated = async (
