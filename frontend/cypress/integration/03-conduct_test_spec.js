@@ -12,7 +12,7 @@ describe("Conducting a test", () => {
   it("searches for the patient", () => {
     cy.visit("/");
     cy.get(".usa-nav-container");
-    cy.get("#conduct-test-nav-link").click();
+    cy.get("#desktop-conduct-test-nav-link").click();
     cy.get("#search-field-small").type(lastName);
     cy.get(".results-dropdown").contains(lastName);
   });
@@ -45,7 +45,7 @@ describe("Conducting a test", () => {
     cy.get(".prime-home .grid-container").should("not.have.text", patientName);
   });
   it("shows the result on the results table", () => {
-    cy.get("#results-nav-link").click();
+    cy.get("#desktop-results-nav-link").click();
     cy.get(".usa-table").contains(patientName);
   });
   it("stores the patient link", () => {
