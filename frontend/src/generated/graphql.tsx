@@ -125,12 +125,19 @@ export type Facility = {
   zipCode?: Maybe<Scalars["String"]>;
 };
 
+export type MultiplexTestResult = {
+  covid19: Scalars["String"];
+  fluA: Scalars["String"];
+  fluB: Scalars["String"];
+};
+
 export type Mutation = {
   __typename?: "Mutation";
   addFacility?: Maybe<Facility>;
   addFacilityNew?: Maybe<Scalars["String"]>;
   addPatient?: Maybe<Patient>;
   addPatientToQueue?: Maybe<Scalars["String"]>;
+  addTestResultMultiplex?: Maybe<AddTestResultResponse>;
   addTestResultNew?: Maybe<AddTestResultResponse>;
   addUser?: Maybe<User>;
   addUserToCurrentOrg?: Maybe<User>;
@@ -262,6 +269,14 @@ export type MutationAddPatientToQueueArgs = {
   symptomOnset?: InputMaybe<Scalars["LocalDate"]>;
   symptoms?: InputMaybe<Scalars["String"]>;
   testResultDelivery?: InputMaybe<TestResultDeliveryPreference>;
+};
+
+export type MutationAddTestResultMultiplexArgs = {
+  dateTested?: InputMaybe<Scalars["DateTime"]>;
+  deviceId: Scalars["String"];
+  deviceSpecimenType?: InputMaybe<Scalars["ID"]>;
+  patientId: Scalars["ID"];
+  results: MultiplexTestResult;
 };
 
 export type MutationAddTestResultNewArgs = {
