@@ -60,10 +60,7 @@ public class QueueMutationResolver implements GraphQLMutationResolver {
                 .getInternalId()
             : deviceSpecimenType;
 
-    AddTestResultResponse response =
-        _tos.addTestResultMultiplex(deviceSpecimenTypeId, results, patientID, dateTested);
-    testEventReportingService.report(response.getTestEvent());
-    return response;
+    return _tos.addTestResultMultiplex(deviceSpecimenTypeId, results, patientID, dateTested);
   }
 
   public ApiTestOrder editQueueItem(

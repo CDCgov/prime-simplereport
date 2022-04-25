@@ -254,23 +254,7 @@ public class TestOrderService {
     TestEvent testEvent = savedOrder.getTestEvent();
 
     _testEventReportingService.report(testEvent);
-    return addTestResultPostSave(savedOrder, testEvent);
-  }
 
-  @AuthorizationConfiguration.RequirePermissionSubmitTestForPatient
-  public AddTestResultResponse addTestResultMultiplex(
-      UUID deviceSpecimenTypeId, MultiplexTestResult results, UUID patientId, Date dateTested) {
-
-    TestOrder savedOrder =
-        saveTestResultToDatabase(deviceSpecimenTypeId, results.getCovid19(), patientId, dateTested);
-    TestEvent testEvent = savedOrder.getTestEvent();
-    saveMultiplexResults(testEvent, savedOrder, results);
-
-    _testEventReportingService.report(testEvent);
-    return addTestResultPostSave(savedOrder, testEvent);
-  }
-
-  private AddTestResultResponse addTestResultPostSave(TestOrder savedOrder, TestEvent testEvent) {
     ArrayList<Boolean> deliveryStatuses = new ArrayList<>();
 
     PatientLink patientLink = _pls.createPatientLink(savedOrder.getInternalId());
@@ -290,6 +274,19 @@ public class TestOrderService {
     boolean deliveryStatus =
         deliveryStatuses.isEmpty() || deliveryStatuses.stream().anyMatch(status -> status);
     return new AddTestResultResponse(savedOrder, deliveryStatus);
+  }
+
+  @AuthorizationConfiguration.RequirePermissionSubmitTestForPatient
+  public AddTestResultResponse addTestResultMultiplex(
+      UUID deviceSpecimenTypeId, MultiplexTestResult results, UUID patientId, Date dateTested) {
+    AddTestResultResponse response =
+        addTestResult(deviceSpecimenTypeId, results.getCovid19(), patientId, dateTested);
+    TestOrder savedOrder = response.getTestResult().getWrapped();
+    TestEvent savedEvent = savedOrder.getTestEvent();
+
+    saveMultiplexResults(savedEvent, savedOrder, results);
+
+    return response;
   }
 
   @AuthorizationConfiguration.RequirePermissionSubmitTestForPatient

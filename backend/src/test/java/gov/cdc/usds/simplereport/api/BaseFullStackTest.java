@@ -11,9 +11,11 @@ import static org.mockito.Mockito.verifyNoInteractions;
 import gov.cdc.usds.simplereport.config.authorization.UserPermission;
 import gov.cdc.usds.simplereport.db.model.ConsoleApiAuditEvent;
 import gov.cdc.usds.simplereport.db.model.auxiliary.HttpRequestDetails;
+import gov.cdc.usds.simplereport.db.repository.SupportedDiseaseRepository;
 import gov.cdc.usds.simplereport.idp.repository.DemoOktaRepository;
 import gov.cdc.usds.simplereport.logging.LoggingConstants;
 import gov.cdc.usds.simplereport.service.AuditLoggerService;
+import gov.cdc.usds.simplereport.service.DiseaseService;
 import gov.cdc.usds.simplereport.service.OrganizationService;
 import gov.cdc.usds.simplereport.test_util.DbTruncator;
 import gov.cdc.usds.simplereport.test_util.TestDataFactory;
@@ -53,6 +55,8 @@ public abstract class BaseFullStackTest {
   @Autowired protected DemoOktaRepository _oktaRepo;
   @SpyBean AuditLoggerService auditLoggerServiceSpy;
   @Captor private ArgumentCaptor<ConsoleApiAuditEvent> auditLogCaptor;
+  @Autowired private DiseaseService _diseaseService;
+  @Autowired private SupportedDiseaseRepository _diseaseRepo;
 
   protected Date _testStart;
 
@@ -60,6 +64,7 @@ public abstract class BaseFullStackTest {
   void initTestStart() {
     _testStart = new Date();
     reset(auditLoggerServiceSpy);
+    _diseaseService.initDiseases();
   }
 
   protected void truncateDb() {
