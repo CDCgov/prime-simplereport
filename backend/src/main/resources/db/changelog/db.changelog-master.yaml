@@ -1005,8 +1005,6 @@ databaseChangeLog:
                   name: clia_number
                   type: text
                   remarks: The CLIA number for the facility that is ordering (and presumably also conducting) the tests.
-                  # constraints:
-                  #   nullable: false
               - column:
                   name: default_device_type
                   remarks: The default device type (if any) for tests at this facility.
@@ -1018,7 +1016,6 @@ databaseChangeLog:
                   name: ordering_provider_id
                   type: uuid
                   constraints:
-                  #   nullable: false
                     foreignKeyName: fk__organization__ordering_provider
                     referencedTableName: provider
         - dropNotNullConstraint:
