@@ -62,6 +62,11 @@ export const byDateTested = (a: any, b: any) => {
   return -1;
 };
 
+//todo inline or nah?
+const facilityDisplayName = (name: String, isDeleted: boolean) => {
+  return `${name}${isDeleted ? " (Archived)" : ""}`;
+};
+
 function testResultRows(
   testResults: any,
   setPrintModalId: SetStateAction<any>,
@@ -137,7 +142,9 @@ function testResultRows(
         <td className="test-result-cell">
           {TEST_RESULT_DESCRIPTIONS[r.result as Results]}
         </td>
-        <td className="test-facility-cell">{r.facility.name}</td>
+        <td className="test-facility-cell">
+          {facilityDisplayName(r.facility.name, r.facility.isDeleted)}
+        </td>
         <td className="test-device-cell">{r.deviceType.name}</td>
         <td className="submitted-by-cell">
           {displayFullName(
@@ -668,6 +675,7 @@ export const testResultQuery = gql`
       }
       facility {
         name
+        isDeleted
       }
     }
   }

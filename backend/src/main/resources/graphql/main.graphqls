@@ -36,6 +36,7 @@ type Facility {
   defaultDeviceType: DeviceType @deprecated(reason: "kept for compatibility")
   orderingProvider: Provider
   patientSelfRegistrationLink: String
+  isDeleted: Boolean
 }
 
 type Provider {

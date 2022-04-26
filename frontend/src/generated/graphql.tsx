@@ -115,6 +115,7 @@ export type Facility = {
   deviceTypes?: Maybe<Array<Maybe<DeviceType>>>;
   email?: Maybe<Scalars["String"]>;
   id: Scalars["ID"];
+  isDeleted?: Maybe<Scalars["Boolean"]>;
   name: Scalars["String"];
   orderingProvider?: Maybe<Provider>;
   patientSelfRegistrationLink?: Maybe<Scalars["String"]>;
@@ -2346,7 +2347,11 @@ export type GetFacilityResultsQuery = {
               | null
               | undefined;
             facility?:
-              | { __typename?: "Facility"; name: string }
+              | {
+                  __typename?: "Facility";
+                  name: string;
+                  isDeleted?: boolean | null | undefined;
+                }
               | null
               | undefined;
           }
@@ -6408,6 +6413,7 @@ export const GetFacilityResultsDocument = gql`
       }
       facility {
         name
+        isDeleted
       }
     }
   }
