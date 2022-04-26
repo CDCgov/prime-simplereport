@@ -5,6 +5,7 @@ import { useLocation } from "react-router-dom";
 
 import { showError } from "../utils";
 import { useSelectedFacility } from "../facilitySelect/useSelectedFacility";
+import { TestCorrectionReason } from "../testResults/TestResultCorrectionModal";
 
 import AddToQueueSearch, {
   StartTestProps,
@@ -78,6 +79,8 @@ export const queueQuery = gql`
       }
       result
       dateTested
+      correctionStatus
+      reasonForCorrection
     }
     organization {
       testingFacility {
@@ -121,6 +124,8 @@ export interface QueueItemData extends AoEAnswers {
   patient: TestQueuePerson;
   result: TestResult;
   dateTested: string;
+  correctionStatus: string;
+  reasonForCorrection: TestCorrectionReason;
 }
 
 const TestQueue: React.FC<Props> = ({ activeFacilityId }) => {
@@ -203,6 +208,8 @@ const TestQueue: React.FC<Props> = ({ activeFacilityId }) => {
           patient,
           result,
           dateTested,
+          correctionStatus,
+          reasonForCorrection,
           ...questions
         }) => {
           // Get possible device specimen types for this facility
@@ -261,6 +268,8 @@ const TestQueue: React.FC<Props> = ({ activeFacilityId }) => {
                 facilityName={selectedFacility?.name}
                 facilityId={activeFacilityId}
                 dateTestedProp={dateTested}
+                isCorrection={correctionStatus === "CORRECTED"}
+                reasonForCorrection={reasonForCorrection}
               />
             </CSSTransition>
           );
