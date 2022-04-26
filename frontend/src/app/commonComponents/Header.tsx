@@ -329,6 +329,7 @@ const Header: React.FC<{}> = () => {
             </ul>
             <div className="usa-nav__primary mobile-sublist-container">
               {secondaryNavSublist("mobile")}
+              <hr />
 
               <label id="mobile-facility-label" className="usa-label ">
                 Facility
