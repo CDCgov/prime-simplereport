@@ -41,6 +41,7 @@ To use this, you'll need to install the following:
 1. Install [mkcert](https://github.com/FiloSottile/mkcert#installation)
 1. Install Node.js 14, either using [nvm](https://github.com/nvm-sh/nvm#installing-and-updating) or your preferred method. This is used for yarn scripts and pre-commit hooks.
 1. Install AdoptOpenJDK 11, either using [jabba](https://github.com/shyiko/jabba) or your preferred method. This is useful for IDE integration (IntelliJ, VS Code, etc.)
+1. Install yarn by running `npm install --global yarn`.
 
 Once those dependencies are installed, follow these steps to get the app up and running:
 
