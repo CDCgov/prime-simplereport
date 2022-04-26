@@ -1,6 +1,7 @@
 import React, { useState } from "react";
 import { gql, useMutation } from "@apollo/client";
 import Modal from "react-modal";
+import { useNavigate } from "react-router-dom";
 
 import Button from "../commonComponents/Button/Button";
 import { displayFullName, showNotification } from "../utils";
@@ -121,6 +122,8 @@ export const DetachedTestResultCorrectionModal = ({
   const [action, setAction] = useState<TestCorrectionAction>();
   const [correctionDetails, setCorrectionDetails] = useState("");
 
+  const navigate = useNavigate();
+
   const markAsError = () => {
     markTestAsError({
       variables: {
@@ -155,7 +158,9 @@ export const DetachedTestResultCorrectionModal = ({
         showNotification(alert);
       })
       .finally(() => {
-        closeModal();
+        setTimeout(() => {
+          navigate(`/queue`);
+        }, 1000);
       });
   };
 
