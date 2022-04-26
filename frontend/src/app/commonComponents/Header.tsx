@@ -246,37 +246,33 @@ const Header: React.FC<{}> = () => {
       content = secondaryNavContent.filter((item) => item.mobileDisplay);
     }
     return content.map((item) => {
-      return (
-        <li
-          key={`${deviceType}-${item.dataTestId}`}
-          className="usa-nav__primary-item nav__primary-item-icon"
+      <li
+        key={`${deviceType}-${item.dataTestId}`}
+        className="usa-nav__primary-item nav__primary-item-icon"
+      >
+        <LinkWithQuery
+          to={item.url}
+          onClick={item.onClick}
+          className={item.className}
+          data-testid={`${deviceType}-${item.dataTestId}`}
+          id={`${deviceType}-${item.dataTestId}`}
         >
-          <LinkWithQuery
-            to={item.url}
-            onClick={item.onClick}
-            className={item.className}
-            data-testid={`${deviceType}-${item.dataTestId}`}
-            id={`${deviceType}-${item.dataTestId}`}
+          {deviceType === "desktop" ? item.icon : item.mobileDisplayText}
+        </LinkWithQuery>
+        {item.hasSubmenu && staffDetailsVisible && deviceType === "desktop" ? (
+          <div
+            ref={staffDefailsRef}
+            aria-label="Primary navigation"
+            className={classNames("prime-staff-infobox", {
+              "is-prime-staff-infobox-visible": staffDetailsVisible,
+            })}
           >
-            {deviceType === "desktop" ? item.icon : item.mobileDisplayText}
-          </LinkWithQuery>
-          {item.hasSubmenu &&
-          staffDetailsVisible &&
-          deviceType === "desktop" ? (
-            <div
-              ref={staffDefailsRef}
-              aria-label="Primary navigation"
-              className={classNames("prime-staff-infobox", {
-                "is-prime-staff-infobox-visible": staffDetailsVisible,
-              })}
-            >
-              {secondaryNavSublist("desktop")}
-            </div>
-          ) : (
-            <></>
-          )}
-        </li>
-      );
+            {secondaryNavSublist("desktop")}
+          </div>
+        ) : (
+          <></>
+        )}
+      </li>;
     });
   };
 
