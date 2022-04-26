@@ -1,5 +1,6 @@
 import React from "react";
 import ReactDOM from "react-dom";
+import { MemoryRouter } from "react-router-dom";
 import { MockedProvider } from "@apollo/client/testing";
 import { render, screen, waitFor, within } from "@testing-library/react";
 import "./TestResultCorrectionModal.scss";
@@ -46,6 +47,14 @@ const testResult = {
   },
 };
 
+const mockedNavigate = jest.fn();
+jest.mock("react-router-dom", () => {
+  return {
+    ...jest.requireActual("react-router-dom"),
+    useNavigate: () => mockedNavigate,
+  };
+});
+
 describe("TestResultCorrectionModal", () => {
   let component: any;
 
@@ -58,11 +67,13 @@ describe("TestResultCorrectionModal", () => {
   it("renders the correction reason dropdown menu", async () => {
     render(
       <MockedProvider mocks={[]} addTypename={false}>
-        <DetachedTestResultCorrectionModal
-          data={testResult}
-          testResultId={internalId}
-          closeModal={() => {}}
-        />
+        <MemoryRouter>
+          <DetachedTestResultCorrectionModal
+            data={testResult}
+            testResultId={internalId}
+            closeModal={() => {}}
+          />
+        </MemoryRouter>
       </MockedProvider>
     );
 
@@ -82,11 +93,13 @@ describe("TestResultCorrectionModal", () => {
   it("matches snapshot", () => {
     component = render(
       <MockedProvider mocks={[]} addTypename={false}>
-        <DetachedTestResultCorrectionModal
-          data={testResult}
-          testResultId={internalId}
-          closeModal={() => {}}
-        />
+        <MemoryRouter>
+          <DetachedTestResultCorrectionModal
+            data={testResult}
+            testResultId={internalId}
+            closeModal={() => {}}
+          />
+        </MemoryRouter>
       </MockedProvider>
     );
 
@@ -119,11 +132,13 @@ describe("TestResultCorrectionModal", () => {
     beforeEach(() => {
       render(
         <MockedProvider mocks={mocks} addTypename={false}>
-          <DetachedTestResultCorrectionModal
-            data={testResult}
-            testResultId={internalId}
-            closeModal={() => {}}
-          />
+          <MemoryRouter>
+            <DetachedTestResultCorrectionModal
+              data={testResult}
+              testResultId={internalId}
+              closeModal={() => {}}
+            />
+          </MemoryRouter>
         </MockedProvider>
       );
     });
@@ -163,11 +178,13 @@ describe("TestResultCorrectionModal", () => {
     beforeEach(() => {
       render(
         <MockedProvider mocks={mocks} addTypename={false}>
-          <DetachedTestResultCorrectionModal
-            data={testResult}
-            testResultId={internalId}
-            closeModal={() => {}}
-          />
+          <MemoryRouter>
+            <DetachedTestResultCorrectionModal
+              data={testResult}
+              testResultId={internalId}
+              closeModal={() => {}}
+            />
+          </MemoryRouter>
         </MockedProvider>
       );
     });
@@ -182,6 +199,9 @@ describe("TestResultCorrectionModal", () => {
       userEvent.click(submitButton);
       await waitFor(() => {
         expect(markAsCorrectMockDidComplete).toBe(true);
+      });
+      await waitFor(() => {
+        expect(mockedNavigate).toHaveBeenCalledWith("/queue");
       });
     });
   });
@@ -230,11 +250,13 @@ describe("TestResultCorrectionModal", () => {
     beforeEach(async () => {
       render(
         <MockedProvider mocks={mocks} addTypename={false}>
-          <DetachedTestResultCorrectionModal
-            data={testResult}
-            testResultId={internalId}
-            closeModal={() => {}}
-          />
+          <MemoryRouter>
+            <DetachedTestResultCorrectionModal
+              data={testResult}
+              testResultId={internalId}
+              closeModal={() => {}}
+            />
+          </MemoryRouter>
         </MockedProvider>
       );
 
