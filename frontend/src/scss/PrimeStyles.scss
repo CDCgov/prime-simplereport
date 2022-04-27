@@ -635,7 +635,7 @@ $results-dropdown-spacing: #{units(4)} - #{units(2)} - 22px - #{units(4)}; // he
     justify-content: center;
     margin-bottom: 0;
     margin-left: units(7);
-    padding-right: units(2.5);
+    padding: 0 0.5rem;
   }
 
   .usa-form-group {
@@ -766,9 +766,10 @@ $results-dropdown-spacing: #{units(4)} - #{units(2)} - 22px - #{units(4)}; // he
   margin-left: units(4);
 }
 
-.usa-sidenav__sublist {
+.usa-sidenav__sublist,
+.mobile-sublist-container {
   hr {
-    margin: 0.75rem -1rem 1rem;
+    margin: 1rem -1rem 1rem;
     background-color: color("base-lighter");
     height: 1px;
     border: none;

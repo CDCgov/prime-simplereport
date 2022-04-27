@@ -240,8 +240,12 @@ const Header: React.FC<{}> = () => {
       <ChangeUser />
     </ul>
   );
-  const secondaryNav = (deviceType: string) =>
-    secondaryNavContent.map((item) => {
+  const secondaryNav = (deviceType: string) => {
+    let content = secondaryNavContent;
+    if (deviceType === "mobile") {
+      content = secondaryNavContent.filter((item) => item.mobileDisplay);
+    }
+    return content.map((item) => {
       return (
         <li
           key={`${deviceType}-${item.dataTestId}`}
@@ -254,7 +258,7 @@ const Header: React.FC<{}> = () => {
             data-testid={`${deviceType}-${item.dataTestId}`}
             id={`${deviceType}-${item.dataTestId}`}
           >
-            {item.icon}
+            {deviceType === "desktop" ? item.icon : item.mobileDisplayText}
           </LinkWithQuery>
           {item.hasSubmenu &&
           staffDetailsVisible &&
@@ -274,6 +278,7 @@ const Header: React.FC<{}> = () => {
         </li>
       );
     });
+  };
 
   return (
     <header className="usa-header usa-header--basic">
@@ -324,6 +329,7 @@ const Header: React.FC<{}> = () => {
             </ul>
             <div className="usa-nav__primary mobile-sublist-container">
               {secondaryNavSublist("mobile")}
+              <hr />
 
               <label id="mobile-facility-label" className="usa-label ">
                 Facility
