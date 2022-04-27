@@ -836,10 +836,10 @@ class TestOrderServiceTest extends BaseServiceTest<TestOrderService> {
         o.getInternalId(), devA.getInternalId(), TestResult.POSITIVE.toString(), null);
 
     List<TestOrder> queue = _service.getQueue(facility.getInternalId());
+    TestOrder order = queue.get(0);
     assertEquals(1, queue.size());
-    assertEquals(TestResult.POSITIVE, queue.get(0).getTestResult());
-    assertEquals(
-        devA.getDeviceType().getInternalId(), queue.get(0).getDeviceType().getInternalId());
+    assertEquals(TestResult.POSITIVE, order.getResult());
+    assertEquals(devA.getDeviceType().getInternalId(), order.getDeviceType().getInternalId());
   }
 
   @Test
@@ -894,10 +894,10 @@ class TestOrderServiceTest extends BaseServiceTest<TestOrderService> {
         o.getInternalId(), devA.getInternalId(), TestResult.POSITIVE.toString(), null);
 
     List<TestOrder> queue = _service.getQueue(facility.getInternalId());
+    TestOrder order = queue.get(0);
     assertEquals(1, queue.size());
-    assertEquals(TestResult.POSITIVE, queue.get(0).getTestResult());
-    assertEquals(
-        devA.getDeviceType().getInternalId(), queue.get(0).getDeviceType().getInternalId());
+    assertEquals(TestResult.POSITIVE, order.getResult());
+    assertEquals(devA.getDeviceType().getInternalId(), order.getDeviceType().getInternalId());
   }
 
   @Test

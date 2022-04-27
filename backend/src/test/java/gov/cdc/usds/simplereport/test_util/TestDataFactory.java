@@ -366,6 +366,7 @@ public class TestDataFactory {
     o.setDateTestedBackdate(d);
     Result result = new Result(o, _diseaseService.covid(), r);
     o.setResult(result);
+    o.setResultColumn(r);
 
     TestEvent e = _testEventRepo.save(new TestEvent(o));
     o.setTestEventRef(e);
@@ -391,6 +392,32 @@ public class TestDataFactory {
     o.markComplete();
     _testOrderRepo.save(o);
     return e;
+  }
+
+  public TestEvent createMultiplexTestEvent(
+      Person person,
+      Facility facility,
+      TestResult covidResult,
+      TestResult fluAResult,
+      TestResult fluBResult,
+      Boolean hasPriorTests) {
+    TestOrder order = createTestOrder(person, facility);
+    Result covid = new Result(order, _diseaseService.covid(), covidResult);
+    order.setResult(covid);
+    Result fluA = new Result(order, _diseaseService.fluA(), fluAResult);
+    order.setResult(fluA);
+    Result fluB = new Result(order, _diseaseService.fluB(), fluBResult);
+    order.setResult(fluB);
+    order = _testOrderRepo.save(order);
+
+    TestEvent event = new TestEvent(order, hasPriorTests);
+    _testEventRepo.save(event);
+
+    order.setTestEventRef(event);
+    order.markComplete();
+    _testOrderRepo.save(order);
+
+    return event;
   }
 
   public TestEvent createTestEventCorrected(TestEvent originalTestEvent) {

@@ -243,37 +243,6 @@ public class TestOrderService {
   @Transactional(noRollbackFor = {TwilioException.class, ApiException.class})
   public AddTestResultResponse addTestResult(
       UUID deviceSpecimenTypeId, TestResult result, UUID patientId, Date dateTested) {
-    TestOrder savedOrder =
-        saveTestResultToDatabase(deviceSpecimenTypeId, result, patientId, dateTested);
-    TestEvent testEvent = savedOrder.getTestEvent();
-
-    _testEventReportingService.report(testEvent);
-
-    ArrayList<Boolean> deliveryStatuses = new ArrayList<>();
-
-    PatientLink patientLink = _pls.createPatientLink(savedOrder.getInternalId());
-    if (patientHasDeliveryPreference(savedOrder)) {
-
-      if (smsDeliveryPreference(savedOrder) || smsAndEmailDeliveryPreference(savedOrder)) {
-        boolean smsDeliveryStatus = testResultsDeliveryService.smsTestResults(patientLink);
-        deliveryStatuses.add(smsDeliveryStatus);
-      }
-
-      if (emailDeliveryPreference(savedOrder) || smsAndEmailDeliveryPreference(savedOrder)) {
-        boolean emailDeliveryStatus = testResultsDeliveryService.emailTestResults(patientLink);
-        deliveryStatuses.add(emailDeliveryStatus);
-      }
-    }
-
-    boolean deliveryStatus =
-        deliveryStatuses.isEmpty() || deliveryStatuses.stream().anyMatch(status -> status);
-    return new AddTestResultResponse(savedOrder, deliveryStatus);
-  }
-
-  @AuthorizationConfiguration.RequirePermissionSubmitTestForPatient
-  @Transactional(noRollbackFor = {TwilioException.class, ApiException.class})
-  protected TestOrder saveTestResultToDatabase(
-      UUID deviceSpecimenTypeId, TestResult result, UUID patientId, Date dateTested) {
     Organization org = _os.getCurrentOrganization();
     Person person = _ps.getPatientNoPermissionsCheck(patientId, org);
     TestOrder order =
@@ -282,6 +251,7 @@ public class TestOrderService {
     DeviceSpecimenType deviceSpecimen = _dts.getDeviceSpecimenType(deviceSpecimenTypeId);
 
     lockOrder(order.getInternalId());
+
     try {
       order.setDeviceSpecimen(deviceSpecimen);
 
@@ -291,17 +261,79 @@ public class TestOrderService {
       order.markComplete();
 
       boolean hasPriorTests = _terepo.existsByPatient(person);
-      TestEvent testEvent = new TestEvent(order, hasPriorTests);
+
+      TestEvent testEvent =
+          order.getCorrectionStatus() == TestCorrectionStatus.ORIGINAL
+              ? new TestEvent(order, hasPriorTests)
+              : new TestEvent(order, order.getCorrectionStatus(), order.getReasonForCorrection());
+
       TestEvent savedEvent = _terepo.save(testEvent);
 
       order.setTestEventRef(savedEvent);
       TestOrder savedOrder = _repo.save(order);
 
-      return savedOrder;
+      //      TestOrder savedOrder =
+      //              saveTestResultToDatabase(deviceSpecimenTypeId, result, patientId, dateTested);
+      //      TestEvent testEvent = savedOrder.getTestEvent();
+
+      _testEventReportingService.report(savedEvent);
+
+      ArrayList<Boolean> deliveryStatuses = new ArrayList<>();
+
+      PatientLink patientLink = _pls.createPatientLink(savedOrder.getInternalId());
+      if (patientHasDeliveryPreference(savedOrder)) {
+
+        if (smsDeliveryPreference(savedOrder) || smsAndEmailDeliveryPreference(savedOrder)) {
+          boolean smsDeliveryStatus = testResultsDeliveryService.smsTestResults(patientLink);
+          deliveryStatuses.add(smsDeliveryStatus);
+        }
+
+        if (emailDeliveryPreference(savedOrder) || smsAndEmailDeliveryPreference(savedOrder)) {
+          boolean emailDeliveryStatus = testResultsDeliveryService.emailTestResults(patientLink);
+          deliveryStatuses.add(emailDeliveryStatus);
+        }
+      }
+
+      boolean deliveryStatus =
+          deliveryStatuses.isEmpty() || deliveryStatuses.stream().anyMatch(status -> status);
+      return new AddTestResultResponse(savedOrder, deliveryStatus);
     } finally {
       unlockOrder(order.getInternalId());
     }
   }
+
+  //  @AuthorizationConfiguration.RequirePermissionSubmitTestForPatient
+  //  @Transactional(noRollbackFor = {TwilioException.class, ApiException.class})
+  //  protected TestOrder saveTestResultToDatabase(
+  //      UUID deviceSpecimenTypeId, TestResult result, UUID patientId, Date dateTested) {
+  //    Organization org = _os.getCurrentOrganization();
+  //    Person person = _ps.getPatientNoPermissionsCheck(patientId, org);
+  //    TestOrder order =
+  //        _repo.fetchQueueItem(org, person).orElseThrow(TestOrderService::noSuchOrderFound);
+  //
+  //    DeviceSpecimenType deviceSpecimen = _dts.getDeviceSpecimenType(deviceSpecimenTypeId);
+  //
+  //    lockOrder(order.getInternalId());
+  //    try {
+  //      order.setDeviceSpecimen(deviceSpecimen);
+  //
+  //      updateTestOrderCovidResult(order, result);
+  //
+  //      order.setDateTestedBackdate(dateTested);
+  //      order.markComplete();
+  //
+  //      boolean hasPriorTests = _terepo.existsByPatient(person);
+  //      TestEvent testEvent = new TestEvent(order, hasPriorTests);
+  //      TestEvent savedEvent = _terepo.save(testEvent);
+  //
+  //      order.setTestEventRef(savedEvent);
+  //      TestOrder savedOrder = _repo.save(order);
+  //
+  //      return savedOrder;
+  //    } finally {
+  //      unlockOrder(order.getInternalId());
+  //    }
+  //  }
 
   private boolean patientHasDeliveryPreference(TestOrder savedOrder) {
     return TestResultDeliveryPreference.NONE != savedOrder.getPatient().getTestResultDelivery();
@@ -496,6 +528,8 @@ public class TestOrderService {
     Organization org = _os.getCurrentOrganization();
     List<UUID> facilityIds =
         _os.getFacilities(org).stream().map(Facility::getInternalId).collect(Collectors.toList());
+
+    List<TestEvent> events = (List<TestEvent>) _terepo.findAll();
 
     List<AggregateFacilityMetrics> facilityMetrics = new ArrayList<AggregateFacilityMetrics>();
 
