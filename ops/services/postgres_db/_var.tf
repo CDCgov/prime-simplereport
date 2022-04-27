@@ -48,17 +48,7 @@ variable "tls_enabled" {
   default = false
 }
 
-// TODO: remove this when removing old DB config
-variable "old_subnet_id" {
-  type = string
-}
-
 variable "subnet_id" {
-  type = string
-}
-
-// TODO: remove this when removing old DB config
-variable "dns_zone_id" {
   type = string
 }
 

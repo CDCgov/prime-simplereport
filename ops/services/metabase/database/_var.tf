@@ -1,9 +1,4 @@
-variable "resource_group_name" {
+variable "postgres_server_id" {
   type        = string
-  description = "Resource Group Name"
-}
-
-variable "postgres_server_name" {
-  type        = string
-  description = "PostgreSQL Server name"
+  description = "PostgreSQL Server id"
 }
