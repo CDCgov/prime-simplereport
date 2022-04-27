@@ -14,6 +14,7 @@ import Alert from "../commonComponents/Alert";
 import Dropdown from "../commonComponents/Dropdown";
 import RadioGroup from "../commonComponents/RadioGroup";
 import Required from "../commonComponents/Required";
+import { useSelectedFacility } from "../facilitySelect/useSelectedFacility";
 
 export enum TestCorrectionReason {
   DUPLICATE_TEST = "DUPLICATE_TEST",
@@ -123,6 +124,8 @@ export const DetachedTestResultCorrectionModal = ({
   const [correctionDetails, setCorrectionDetails] = useState("");
 
   const navigate = useNavigate();
+  const [activeFacility] = useSelectedFacility();
+  const activeFacilityId = activeFacility?.id;
 
   const markAsError = () => {
     markTestAsError({
@@ -159,7 +162,7 @@ export const DetachedTestResultCorrectionModal = ({
       })
       .finally(() => {
         setTimeout(() => {
-          navigate(`/queue`);
+          navigate(`/queue?facility=${activeFacilityId}`);
         }, 1000);
       });
   };

@@ -2,9 +2,11 @@ import React from "react";
 import ReactDOM from "react-dom";
 import { MemoryRouter } from "react-router-dom";
 import { MockedProvider } from "@apollo/client/testing";
+import { Provider } from "react-redux";
 import { render, screen, waitFor, within } from "@testing-library/react";
 import "./TestResultCorrectionModal.scss";
 import userEvent from "@testing-library/user-event";
+import configureStore from "redux-mock-store";
 
 import { TestResult } from "../testQueue/QueueItem";
 
@@ -46,6 +48,12 @@ const testResult = {
     },
   },
 };
+const mockFacilityID = "b0d2041f-93c9-4192-b19a-dd99c0044a7e";
+const mockStore = configureStore([]);
+const store = mockStore({
+  facilities: [{ id: mockFacilityID, name: "123" }],
+  organization: { name: "Test Organization" },
+});
 
 const mockedNavigate = jest.fn();
 jest.mock("react-router-dom", () => {
@@ -66,15 +74,17 @@ describe("TestResultCorrectionModal", () => {
 
   it("renders the correction reason dropdown menu", async () => {
     render(
-      <MockedProvider mocks={[]} addTypename={false}>
-        <MemoryRouter>
-          <DetachedTestResultCorrectionModal
-            data={testResult}
-            testResultId={internalId}
-            closeModal={() => {}}
-          />
-        </MemoryRouter>
-      </MockedProvider>
+      <Provider store={store}>
+        <MockedProvider mocks={[]} addTypename={false}>
+          <MemoryRouter>
+            <DetachedTestResultCorrectionModal
+              data={testResult}
+              testResultId={internalId}
+              closeModal={() => {}}
+            />
+          </MemoryRouter>
+        </MockedProvider>
+      </Provider>
     );
 
     const expectedCorrectionReasons = Object.values(TestCorrectionReasons);
@@ -92,15 +102,17 @@ describe("TestResultCorrectionModal", () => {
 
   it("matches snapshot", () => {
     component = render(
-      <MockedProvider mocks={[]} addTypename={false}>
-        <MemoryRouter>
-          <DetachedTestResultCorrectionModal
-            data={testResult}
-            testResultId={internalId}
-            closeModal={() => {}}
-          />
-        </MemoryRouter>
-      </MockedProvider>
+      <Provider store={store}>
+        <MockedProvider mocks={[]} addTypename={false}>
+          <MemoryRouter>
+            <DetachedTestResultCorrectionModal
+              data={testResult}
+              testResultId={internalId}
+              closeModal={() => {}}
+            />
+          </MemoryRouter>
+        </MockedProvider>
+      </Provider>
     );
 
     expect(component).toMatchSnapshot();
@@ -131,15 +143,17 @@ describe("TestResultCorrectionModal", () => {
 
     beforeEach(() => {
       render(
-        <MockedProvider mocks={mocks} addTypename={false}>
-          <MemoryRouter>
-            <DetachedTestResultCorrectionModal
-              data={testResult}
-              testResultId={internalId}
-              closeModal={() => {}}
-            />
-          </MemoryRouter>
-        </MockedProvider>
+        <Provider store={store}>
+          <MockedProvider mocks={mocks} addTypename={false}>
+            <MemoryRouter>
+              <DetachedTestResultCorrectionModal
+                data={testResult}
+                testResultId={internalId}
+                closeModal={() => {}}
+              />
+            </MemoryRouter>
+          </MockedProvider>
+        </Provider>
       );
     });
 
@@ -177,15 +191,19 @@ describe("TestResultCorrectionModal", () => {
 
     beforeEach(() => {
       render(
-        <MockedProvider mocks={mocks} addTypename={false}>
-          <MemoryRouter>
-            <DetachedTestResultCorrectionModal
-              data={testResult}
-              testResultId={internalId}
-              closeModal={() => {}}
-            />
-          </MemoryRouter>
-        </MockedProvider>
+        <Provider store={store}>
+          <MockedProvider mocks={mocks} addTypename={false}>
+            <MemoryRouter
+              initialEntries={[`/results/1?facility=${mockFacilityID}`]}
+            >
+              <DetachedTestResultCorrectionModal
+                data={testResult}
+                testResultId={internalId}
+                closeModal={() => {}}
+              />
+            </MemoryRouter>
+          </MockedProvider>
+        </Provider>
       );
     });
 
@@ -201,7 +219,9 @@ describe("TestResultCorrectionModal", () => {
         expect(markAsCorrectMockDidComplete).toBe(true);
       });
       await waitFor(() => {
-        expect(mockedNavigate).toHaveBeenCalledWith("/queue");
+        expect(mockedNavigate).toHaveBeenCalledWith(
+          `/queue?facility=${mockFacilityID}`
+        );
       });
     });
   });
@@ -249,15 +269,17 @@ describe("TestResultCorrectionModal", () => {
     ];
     beforeEach(async () => {
       render(
-        <MockedProvider mocks={mocks} addTypename={false}>
-          <MemoryRouter>
-            <DetachedTestResultCorrectionModal
-              data={testResult}
-              testResultId={internalId}
-              closeModal={() => {}}
-            />
-          </MemoryRouter>
-        </MockedProvider>
+        <Provider store={store}>
+          <MockedProvider mocks={mocks} addTypename={false}>
+            <MemoryRouter>
+              <DetachedTestResultCorrectionModal
+                data={testResult}
+                testResultId={internalId}
+                closeModal={() => {}}
+              />
+            </MemoryRouter>
+          </MockedProvider>
+        </Provider>
       );
 
       const dropdown = await screen.findByLabelText(
