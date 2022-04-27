@@ -565,14 +565,10 @@ class TestOrderServiceTest extends BaseServiceTest<TestOrderService> {
     _service.markAsCorrection(originalTestEvent.getInternalId(), "Cold feet");
 
     // Issue test correction
-    _service.addTestResult(devA.getInternalId(), TestResult.NEGATIVE, p.getInternalId(), null);
+    AddTestResultResponse response =
+        _service.addTestResult(devA.getInternalId(), TestResult.NEGATIVE, p.getInternalId(), null);
 
-    // Get newly-created correction event
-    TestEvent correctionTestEvent =
-        _testEventRepository.findAllByPatientAndFacilities(p, List.of(facility)).stream()
-            .filter(event -> event.getCorrectionStatus() == TestCorrectionStatus.CORRECTED)
-            .collect(Collectors.toList())
-            .get(0);
+    TestEvent correctionTestEvent = response.getTestOrder().getTestEvent();
 
     assertEquals(
         originalTestEvent.getInternalId(), correctionTestEvent.getPriorCorrectedTestEventId());
@@ -1353,10 +1349,9 @@ class TestOrderServiceTest extends BaseServiceTest<TestOrderService> {
 
     OrganizationLevelDashboardMetrics metrics =
         _service.getOrganizationLevelDashboardMetrics(startDate, endDate);
-    // these will need to be adjusted once the Date bug in makedata is fixed.
-    assertEquals(0, metrics.getOrganizationPositiveTestCount());
-    assertEquals(1, metrics.getOrganizationTotalTestCount());
-    assertEquals(1, metrics.getOrganizationNegativeTestCount());
+    assertEquals(3, metrics.getOrganizationPositiveTestCount());
+    assertEquals(12, metrics.getOrganizationTotalTestCount());
+    assertEquals(4, metrics.getOrganizationNegativeTestCount());
     assertEquals(4, metrics.getFacilityMetrics().size());
   }
 
@@ -1383,8 +1378,8 @@ class TestOrderServiceTest extends BaseServiceTest<TestOrderService> {
 
     TopLevelDashboardMetrics metrics =
         _service.getTopLevelDashboardMetrics(null, startDate, endDate);
-    assertEquals(0, metrics.getPositiveTestCount());
-    assertEquals(1, metrics.getTotalTestCount());
+    assertEquals(3, metrics.getPositiveTestCount());
+    assertEquals(12, metrics.getTotalTestCount());
   }
 
   @Test
@@ -1417,18 +1412,20 @@ class TestOrderServiceTest extends BaseServiceTest<TestOrderService> {
     patientsToResults.put(KACEY, TestResult.UNDETERMINED);
     patientsToResults.put(LEELOO, TestResult.UNDETERMINED);
 
-    Map<PersonName, Date> patientsToDates = new HashMap<>();
-    patientsToDates.put(AMOS, new Date(2021, 6, 1, 0, 0, 0));
-    patientsToDates.put(CHARLES, new Date(2021, 6, 1, 12, 0, 0));
-    patientsToDates.put(DEXTER, new Date(2021, 6, 2, 0, 0, 0));
-    patientsToDates.put(ELIZABETH, new Date(2021, 6, 2, 12, 0, 0));
-    patientsToDates.put(FRANK, new Date(2021, 6, 3, 0, 0, 0));
-    patientsToDates.put(GALE, new Date(2021, 6, 3, 12, 0, 0));
-    patientsToDates.put(HEINRICK, new Date(2021, 6, 4, 0, 0, 0));
-    patientsToDates.put(IAN, new Date(2021, 6, 4, 12, 0, 0));
-    patientsToDates.put(JANNELLE, new Date(2021, 6, 5, 0, 0, 0));
-    patientsToDates.put(KACEY, new Date(2021, 6, 5, 12, 0, 0));
-    patientsToDates.put(LEELOO, new Date(2021, 6, 6, 0, 0, 0));
+    LocalDate date = LocalDate.of(2021, 6, 1);
+
+    Map<PersonName, LocalDateTime> patientsToDates = new HashMap<>();
+    patientsToDates.put(AMOS, LocalDateTime.of(2021, 6, 1, 0, 0, 0));
+    patientsToDates.put(CHARLES, LocalDateTime.of(2021, 6, 1, 0, 0, 0));
+    patientsToDates.put(DEXTER, LocalDateTime.of(2021, 6, 2, 0, 0, 0));
+    patientsToDates.put(ELIZABETH, LocalDateTime.of(2021, 6, 2, 12, 0, 0));
+    patientsToDates.put(FRANK, LocalDateTime.of(2021, 6, 3, 0, 0, 0));
+    patientsToDates.put(GALE, LocalDateTime.of(2021, 6, 3, 12, 0, 0));
+    patientsToDates.put(HEINRICK, LocalDateTime.of(2021, 6, 4, 0, 0, 0));
+    patientsToDates.put(IAN, LocalDateTime.of(2021, 6, 4, 12, 0, 0));
+    patientsToDates.put(JANNELLE, LocalDateTime.of(2021, 6, 5, 0, 0, 0));
+    patientsToDates.put(KACEY, LocalDateTime.of(2021, 6, 5, 12, 0, 0));
+    patientsToDates.put(LEELOO, LocalDateTime.of(2021, 6, 6, 0, 0, 0));
 
     Map<PersonName, PersonRole> patientsToRoles = new HashMap<>();
     patientsToRoles.put(AMOS, PersonRole.RESIDENT);
@@ -1464,7 +1461,8 @@ class TestOrderServiceTest extends BaseServiceTest<TestOrderService> {
                   TestResult t = patientsToResults.get(n);
                   PersonRole r = patientsToRoles.get(n);
                   AskOnEntrySurvey s = patientsToSurveys.get(n);
-                  Date d = patientsToDates.get(n);
+                  Date d =
+                      Date.from(patientsToDates.get(n).atZone(ZoneId.systemDefault()).toInstant());
 
                   Person person = _dataFactory.createMinimalPerson(org, _site, p, r);
                   return _dataFactory.createTestEvent(person, _site, s, t, d);

@@ -49,7 +49,7 @@ public class TestEvent extends BaseTestInfo {
   // removing this for tests
   // not sure if it should really be here
   //  fetch = FetchType.LAZY
-  @OneToMany(mappedBy = "testEvent", cascade = CascadeType.ALL)
+  @OneToMany(mappedBy = "testEvent", cascade = CascadeType.ALL, fetch = FetchType.LAZY)
   private Set<Result> results;
 
   @Column(columnDefinition = "uuid")
@@ -103,6 +103,16 @@ public class TestEvent extends BaseTestInfo {
       TestEvent event, TestCorrectionStatus correctionStatus, String reasonForCorrection) {
     super(event, correctionStatus, reasonForCorrection);
 
+    if (order.getResultSet().isEmpty()) {
+      throw new IllegalArgumentException("TestOrder must contain a result");
+    }
+
+    order.getResultSet().forEach(result -> result.setTestEvent(this));
+    this.results = new HashSet<>(order.getResultSet());
+
+    // This is kept for the analytics dash but should be removed once those queries are updated
+    super.setTestResult(order.getResult());
+
     this.patientData = event.getPatientData();
     this.providerData = event.getProviderData();
     this.order = event.getTestOrder();
@@ -114,6 +124,16 @@ public class TestEvent extends BaseTestInfo {
   public TestEvent(
       TestOrder order, TestCorrectionStatus correctionStatus, String reasonForCorrection) {
     super(order, correctionStatus, reasonForCorrection);
+
+    if (order.getResultSet().isEmpty()) {
+      throw new IllegalArgumentException("TestOrder must contain a result");
+    }
+
+    order.getResultSet().forEach(result -> result.setTestEvent(this));
+    this.results = new HashSet<>(order.getResultSet());
+
+    // This is kept for the analytics dash but should be removed once those queries are updated
+    super.setTestResult(order.getResult());
 
     TestEvent event = order.getTestEvent();
 
