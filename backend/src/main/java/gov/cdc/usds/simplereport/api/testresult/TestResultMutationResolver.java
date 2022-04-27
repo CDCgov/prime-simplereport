@@ -31,12 +31,12 @@ public class TestResultMutationResolver implements GraphQLMutationResolver {
 
   public String uploadTestResultCSV(Part part) {
     try (InputStream resultsUpload = part.getInputStream()) {
-      try {
-        return testResultUploadService.processResultCSV(resultsUpload);
-      } catch (IllegalGraphqlArgumentException e) {
-        throw e;
-      }
+
+      return testResultUploadService.processResultCSV(resultsUpload);
+    } catch (IllegalGraphqlArgumentException e) {
+      throw e;
     } catch (IOException e) {
+      log.error("Test result CSV upload failed", e);
       throw new RuntimeException(e);
     }
   }
