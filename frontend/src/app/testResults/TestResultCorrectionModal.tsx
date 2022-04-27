@@ -1,6 +1,7 @@
 import React, { useState } from "react";
 import { gql, useMutation } from "@apollo/client";
 import Modal from "react-modal";
+import { useNavigate } from "react-router-dom";
 
 import Button from "../commonComponents/Button/Button";
 import { displayFullName, showNotification } from "../utils";
@@ -13,6 +14,7 @@ import Alert from "../commonComponents/Alert";
 import Dropdown from "../commonComponents/Dropdown";
 import RadioGroup from "../commonComponents/RadioGroup";
 import Required from "../commonComponents/Required";
+import { useSelectedFacility } from "../facilitySelect/useSelectedFacility";
 
 export enum TestCorrectionReason {
   DUPLICATE_TEST = "DUPLICATE_TEST",
@@ -121,6 +123,10 @@ export const DetachedTestResultCorrectionModal = ({
   const [action, setAction] = useState<TestCorrectionAction>();
   const [correctionDetails, setCorrectionDetails] = useState("");
 
+  const navigate = useNavigate();
+  const [activeFacility] = useSelectedFacility();
+  const activeFacilityId = activeFacility?.id;
+
   const markAsError = () => {
     markTestAsError({
       variables: {
@@ -155,7 +161,9 @@ export const DetachedTestResultCorrectionModal = ({
         showNotification(alert);
       })
       .finally(() => {
-        closeModal();
+        setTimeout(() => {
+          navigate(`/queue?facility=${activeFacilityId}`);
+        }, 1000);
       });
   };
 

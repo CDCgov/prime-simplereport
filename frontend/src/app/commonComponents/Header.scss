@@ -107,7 +107,7 @@
     }
 
     a {
-      color: #005ea2;
+      color: #005ea2 !important;
       font-weight: 500;
       padding: 0 !important;
     }
@@ -127,11 +127,5 @@
 
   .facility-select-mobile-container {
     padding-bottom: 2rem;
-  }
-
-  #mobile-facility-label {
-    border-top: 1px solid #dfe1e2;
-    margin-top: 1rem;
-    padding-top: 0.5rem;
   }
 }
