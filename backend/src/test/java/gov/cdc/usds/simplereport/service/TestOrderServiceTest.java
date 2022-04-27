@@ -1364,7 +1364,6 @@ class TestOrderServiceTest extends BaseServiceTest<TestOrderService> {
 
     OrganizationLevelDashboardMetrics metrics =
         _service.getOrganizationLevelDashboardMetrics(startDate, endDate);
-    // these will need to be adjusted once the Date bug in makedata is fixed.
     assertEquals(3, metrics.getOrganizationPositiveTestCount());
     assertEquals(12, metrics.getOrganizationTotalTestCount());
     assertEquals(5, metrics.getOrganizationNegativeTestCount());
