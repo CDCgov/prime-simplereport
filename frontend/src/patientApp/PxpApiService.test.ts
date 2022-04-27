@@ -60,30 +60,6 @@ describe("PxpApi", () => {
     });
   });
 
-  describe("updatePatient", () => {
-    beforeEach(async () => {
-      (fetch as FetchMock).mockResponseOnce(JSON.stringify({}));
-      await PxpApi.updatePatient(
-        "9b831f0b-40f2-4389-87b0-2c90fcd56732",
-        "1947-08-21",
-        {} as any
-      );
-    });
-    it("calls fetch with the correct data", () => {
-      expect(fetch).toHaveBeenCalledWith(`${backendUrl}/pxp/patient`, {
-        body:
-          '{"patientLinkId":"9b831f0b-40f2-4389-87b0-2c90fcd56732","dateOfBirth":"1947-08-21","data":{}}',
-        headers: {
-          Accept: "application/json, text/plain",
-          "Content-Type": "application/json",
-          ...appInsightsHeaders,
-        },
-        method: "POST",
-        mode: "cors",
-      });
-    });
-  });
-
   describe("getEntityName", () => {
     beforeEach(async () => {
       (fetch as FetchMock).mockResponseOnce(JSON.stringify({}));

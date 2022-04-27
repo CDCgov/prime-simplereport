@@ -1850,6 +1850,8 @@ export type GetFacilityQueueQuery = {
             noSymptoms?: boolean | null | undefined;
             result?: string | null | undefined;
             dateTested?: any | null | undefined;
+            correctionStatus?: string | null | undefined;
+            reasonForCorrection?: string | null | undefined;
             deviceType?:
               | {
                   __typename?: "DeviceType";
@@ -2097,6 +2099,19 @@ export type MarkTestAsErrorMutationVariables = Exact<{
 export type MarkTestAsErrorMutation = {
   __typename?: "Mutation";
   correctTestMarkAsError?:
+    | { __typename?: "TestResult"; internalId?: string | null | undefined }
+    | null
+    | undefined;
+};
+
+export type MarkTestAsCorrectionMutationVariables = Exact<{
+  id: Scalars["ID"];
+  reason: Scalars["String"];
+}>;
+
+export type MarkTestAsCorrectionMutation = {
+  __typename?: "Mutation";
+  correctTestMarkAsCorrection?:
     | { __typename?: "TestResult"; internalId?: string | null | undefined }
     | null
     | undefined;
@@ -5451,6 +5466,8 @@ export const GetFacilityQueueDocument = gql`
       }
       result
       dateTested
+      correctionStatus
+      reasonForCorrection
     }
     organization {
       testingFacility {
@@ -5930,6 +5947,56 @@ export type MarkTestAsErrorMutationResult = Apollo.MutationResult<MarkTestAsErro
 export type MarkTestAsErrorMutationOptions = Apollo.BaseMutationOptions<
   MarkTestAsErrorMutation,
   MarkTestAsErrorMutationVariables
+>;
+export const MarkTestAsCorrectionDocument = gql`
+  mutation MarkTestAsCorrection($id: ID!, $reason: String!) {
+    correctTestMarkAsCorrection(id: $id, reason: $reason) {
+      internalId
+    }
+  }
+`;
+export type MarkTestAsCorrectionMutationFn = Apollo.MutationFunction<
+  MarkTestAsCorrectionMutation,
+  MarkTestAsCorrectionMutationVariables
+>;
+
+/**
+ * __useMarkTestAsCorrectionMutation__
+ *
+ * To run a mutation, you first call `useMarkTestAsCorrectionMutation` within a React component and pass it any options that fit your needs.
+ * When your component renders, `useMarkTestAsCorrectionMutation` returns a tuple that includes:
+ * - A mutate function that you can call at any time to execute the mutation
+ * - An object with fields that represent the current status of the mutation's execution
+ *
+ * @param baseOptions options that will be passed into the mutation, supported options are listed on: https://www.apollographql.com/docs/react/api/react-hooks/#options-2;
+ *
+ * @example
+ * const [markTestAsCorrectionMutation, { data, loading, error }] = useMarkTestAsCorrectionMutation({
+ *   variables: {
+ *      id: // value for 'id'
+ *      reason: // value for 'reason'
+ *   },
+ * });
+ */
+export function useMarkTestAsCorrectionMutation(
+  baseOptions?: Apollo.MutationHookOptions<
+    MarkTestAsCorrectionMutation,
+    MarkTestAsCorrectionMutationVariables
+  >
+) {
+  const options = { ...defaultOptions, ...baseOptions };
+  return Apollo.useMutation<
+    MarkTestAsCorrectionMutation,
+    MarkTestAsCorrectionMutationVariables
+  >(MarkTestAsCorrectionDocument, options);
+}
+export type MarkTestAsCorrectionMutationHookResult = ReturnType<
+  typeof useMarkTestAsCorrectionMutation
+>;
+export type MarkTestAsCorrectionMutationResult = Apollo.MutationResult<MarkTestAsCorrectionMutation>;
+export type MarkTestAsCorrectionMutationOptions = Apollo.BaseMutationOptions<
+  MarkTestAsCorrectionMutation,
+  MarkTestAsCorrectionMutationVariables
 >;
 export const GetTestResultDetailsDocument = gql`
   query getTestResultDetails($id: ID!) {

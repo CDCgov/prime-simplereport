@@ -70,7 +70,7 @@ describe("Organization sign up", () => {
   it("navigates to the manage facilities page", () => {
     cy.visit("/admin");
     cy.contains("Support admin");
-    cy.get("#settings-nav-link").click();
+    cy.get("#desktop-settings-button").click();
     cy.contains("Manage facilities").click();
     cy.contains("+ New facility").click();
     cy.contains("Testing facility information");
@@ -95,7 +95,7 @@ describe("Organization sign up", () => {
   });
   it("enables adding patients", () => {
     cy.visit("/");
-    cy.get("#patient-nav-link").click();
+    cy.get("#desktop-patient-nav-link").click();
     cy.contains("No results");
   });
 });

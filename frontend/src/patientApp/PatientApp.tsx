@@ -13,10 +13,6 @@ import { getPatientLinkIdFromUrl } from "../app/utils/url";
 import PatientHeader from "./PatientHeader";
 import TermsOfService from "./timeOfTest/TermsOfService";
 import DOB from "./timeOfTest/DOB";
-import AoEPatientFormContainer from "./timeOfTest/AoEPatientFormContainer";
-import PatientLanding from "./timeOfTest/PatientLanding";
-import PatientProfileContainer from "./timeOfTest/PatientProfileContainer";
-import PatientFormContainer from "./timeOfTest/PatientFormContainer";
 import TestResult from "./timeOfTest/TestResult";
 import GuardedRoute from "./GuardedRoute";
 
@@ -77,28 +73,6 @@ const PatientApp = () => {
           <Route path="/" element={<TermsOfService />} />
           <Route path="terms-of-service" element={<TermsOfService />} />
           <Route path="birth-date-confirmation" element={<DOB />} />
-          <Route
-            path="patient-info-confirm"
-            element={
-              <GuardedRoute auth={auth} element={<PatientProfileContainer />} />
-            }
-          />
-          <Route
-            path="patient-info-edit"
-            element={
-              <GuardedRoute auth={auth} element={<PatientFormContainer />} />
-            }
-          />
-          <Route
-            path="patient-info-symptoms"
-            element={
-              <GuardedRoute auth={auth} element={<AoEPatientFormContainer />} />
-            }
-          />
-          <Route
-            path="success"
-            element={<GuardedRoute auth={auth} element={<PatientLanding />} />}
-          />
           <Route
             path="test-result"
             element={<GuardedRoute auth={auth} element={<TestResult />} />}

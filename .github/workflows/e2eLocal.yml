@@ -1,10 +1,6 @@
 
 name: Run end-to-end tests
-# on:
-#   workflow_dispatch: # because sometimes you just want to force a branch to have tests run
-#   pull_request:
-#     branches:
-#       - "**"
+
 on:
   push:
     branches:
@@ -17,11 +13,8 @@ jobs:
     - name: Checkout
       uses: actions/checkout@v1
 
-    # If we end up in a position where our github runners are out of memory we can increase our swap space or provision private runners.
-    # I've set our swap size to 10gb because running all the apps and cypress is a bit intensive and doing this prevents random hangups
-    # https://github.com/pierotofy/set-swap-space/blob/master/action.yml
     - name: Set Swap Space
-      uses: pierotofy/set-swap-space@master
+      uses: ./.github/actions/set-swap-space
       with:
         swap-size-gb: 10
 

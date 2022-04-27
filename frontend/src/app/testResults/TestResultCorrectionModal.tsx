@@ -10,6 +10,61 @@ import {
   QueryWrapper,
 } from "../commonComponents/QueryWrapper";
 import Alert from "../commonComponents/Alert";
+import Dropdown from "../commonComponents/Dropdown";
+import RadioGroup from "../commonComponents/RadioGroup";
+import Required from "../commonComponents/Required";
+
+export enum TestCorrectionReason {
+  DUPLICATE_TEST = "DUPLICATE_TEST",
+  INCORRECT_RESULT = "INCORRECT_RESULT",
+  INCORRECT_TEST_DATE = "INCORRECT_TEST_DATE",
+  OTHER = "OTHER",
+}
+
+export const TestCorrectionReasons = {
+  [TestCorrectionReason.DUPLICATE_TEST]: "Duplicate test",
+  [TestCorrectionReason.INCORRECT_RESULT]: "Incorrect test result",
+  [TestCorrectionReason.INCORRECT_TEST_DATE]: "Incorrect test date",
+  [TestCorrectionReason.OTHER]: "Reason not listed",
+};
+
+export enum TestCorrectionAction {
+  MARK_AS_ERROR = "MARK_AS_ERROR",
+  CORRECT_RESULT = "CORRECT_RESULT",
+}
+export const TestCorrectionActions = {
+  [TestCorrectionAction.MARK_AS_ERROR]: "Mark result as an error",
+  [TestCorrectionAction.CORRECT_RESULT]: "Correct result",
+};
+
+export const TestCorrectionActionsDescriptions = {
+  [TestCorrectionAction.MARK_AS_ERROR]:
+    "The test result will be marked as an error.",
+  [TestCorrectionAction.CORRECT_RESULT]:
+    "Make a correction to the test result and submit.",
+};
+
+export const testCorrectionReasonValues: {
+  value: TestCorrectionReason;
+  label: string;
+}[] = Object.entries(TestCorrectionReasons).map(([k, v]) => ({
+  value: k as TestCorrectionReason,
+  label: v,
+}));
+
+const testCorrectionActionValues = Object.entries(TestCorrectionActions).map(
+  ([k, v]) => ({
+    label: (
+      <>
+        {v}
+        <span className="usa-checkbox__label-description">
+          <p>{TestCorrectionActionsDescriptions[k as TestCorrectionAction]}</p>
+        </span>
+      </>
+    ),
+    value: k,
+  })
+);
 
 export const testQuery = gql`
   query getTestResultForCorrection($id: ID!) {
@@ -30,9 +85,17 @@ export const testQuery = gql`
   }
 `;
 
-const MARK_TEST_AS_ERROR = gql`
+export const MARK_TEST_AS_ERROR = gql`
   mutation MarkTestAsError($id: ID!, $reason: String!) {
     correctTestMarkAsError(id: $id, reason: $reason) {
+      internalId
+    }
+  }
+`;
+
+export const MARK_TEST_AS_CORRECTION = gql`
+  mutation MarkTestAsCorrection($id: ID!, $reason: String!) {
+    correctTestMarkAsCorrection(id: $id, reason: $reason) {
       internalId
     }
   }
@@ -50,13 +113,19 @@ export const DetachedTestResultCorrectionModal = ({
   closeModal,
 }: Props) => {
   const [markTestAsError] = useMutation(MARK_TEST_AS_ERROR);
+  const [markTestAsCorrection] = useMutation(MARK_TEST_AS_CORRECTION);
   const { patient } = data.testResult;
-  const [reason, setReason] = useState("");
+  const [reason, setReason] = useState<TestCorrectionReason>(
+    testCorrectionReasonValues[0].value
+  );
+  const [action, setAction] = useState<TestCorrectionAction>();
+  const [correctionDetails, setCorrectionDetails] = useState("");
+
   const markAsError = () => {
     markTestAsError({
       variables: {
         id: testResultId,
-        reason,
+        reason: correctionDetails || reason,
       },
     })
       .then(() => {
@@ -70,39 +139,94 @@ export const DetachedTestResultCorrectionModal = ({
       });
   };
 
+  const markAsCorrection = () => {
+    markTestAsCorrection({
+      variables: {
+        id: testResultId,
+        reason: correctionDetails || reason,
+      },
+    })
+      .then(() => {
+        const alert = (
+          // TODO: better text here, maybe indicating to user that the test should now
+          // be available in the queue
+          <Alert type="success" title="Result marked as correction" body="" />
+        );
+        showNotification(alert);
+      })
+      .finally(() => {
+        closeModal();
+      });
+  };
+
   return (
     <Modal
       isOpen={true}
       className="sr-test-correction-modal-content"
       overlayClassName="sr-test-correction-modal-overlay"
-      contentLabel="Printable test result"
+      contentLabel="Correct result"
     >
-      <p>
-        Are you sure you want to mark this test result for
-        <b>
-          {" "}
-          {displayFullName(
-            patient.firstName,
-            patient.middleName,
-            patient.lastName
-          )}{" "}
-        </b>
-        as an error?
-      </p>
-      <p>If so, please enter a reason.</p>
-      <p>
-        <textarea
-          className="sr-test-correction-reason"
-          name="correctionReason"
-          onChange={(e) => setReason(e.target.value)}
-        ></textarea>
-      </p>
+      <h3 className="modal__heading">
+        Correct result for{" "}
+        {displayFullName(patient.firstName, null, patient.lastName, true)}
+      </h3>
+
+      <Dropdown
+        options={testCorrectionReasonValues}
+        label="Please select a reason for correcting this test result."
+        name="correctionReason"
+        onChange={(e) => setReason(e.target.value as TestCorrectionReason)}
+        selectedValue={reason}
+      />
+      {reason === TestCorrectionReason.OTHER && (
+        <>
+          <p>
+            <label
+              className="usa-label"
+              htmlFor="correction-additional-information"
+            >
+              Additional information: <Required />
+            </label>
+            <textarea
+              data-testid="additionalInformation"
+              className="sr-test-correction-reason"
+              name="correction-additional-information"
+              id="correction-additional-information"
+              onChange={(e) => setCorrectionDetails(e.target.value)}
+            ></textarea>
+          </p>
+          <RadioGroup
+            legend={
+              <>
+                <strong>Select an action:</strong>
+              </>
+            }
+            required={true}
+            buttons={testCorrectionActionValues}
+            selectedRadio={action}
+            onChange={(e) => {
+              setAction(e as TestCorrectionAction);
+            }}
+          />
+        </>
+      )}
+      <br />
       <div className="sr-test-correction-buttons">
         <Button variant="unstyled" label="No, go back" onClick={closeModal} />
         <Button
           label="Yes, I'm sure"
-          disabled={reason.trim().length < 4}
-          onClick={markAsError}
+          disabled={
+            reason === TestCorrectionReason.OTHER &&
+            (!action || correctionDetails.trim().length < 4)
+          }
+          onClick={() => {
+            return reason === TestCorrectionReason.DUPLICATE_TEST ||
+              (reason === TestCorrectionReason.OTHER &&
+                action &&
+                action === TestCorrectionAction.MARK_AS_ERROR)
+              ? markAsError()
+              : markAsCorrection();
+          }}
         />
       </div>
     </Modal>

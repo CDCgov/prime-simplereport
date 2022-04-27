@@ -149,6 +149,7 @@ E2E/Integration tests are available using [Cypress](https://www.cypress.io/).
 These files required to run integration tests. Please reach out to the engineering team if you're in need of the missing credentials.
 - `.env`
 
+If you're running against your local apps you can use a setup like this one.
 ```
 # .env
 
@@ -188,7 +189,7 @@ REACT_APP_OKTA_CLIENT_ID=
 GIT_DISCOVERY_ACROSS_FILESYSTEM=1
 ```
 
-The `.env` file has a template at `.env.sample` for running cypress against your local setup. Please reach out to the engineering team if you're in need of the missing credentials.
+The `.env` file has a template at `.env.cypress.sample` for running cypress against your local setup or `.env.cypress.remote.sample` against a remote environment. Please reach out to the engineering team if you're in need of the missing credentials.
 
 #### Running Cypress
 Now that you have those files set up, you are ready for a test run! There are a few ways to run the tests from the root directory:

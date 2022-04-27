@@ -4,14 +4,12 @@ const ChangeUser = () => {
   }
 
   const getLink = (email: string, name: string) => (
-    <div style={{ marginTop: "10px" }}>
-      <a
-        href={`/#access_token=SR-DEMO-LOGIN%20${email}`}
-        style={{ padding: 0 }}
-      >
-        Login as {name}
-      </a>
-    </div>
+    <a
+      className="ghost-user-link"
+      href={`/#access_token=SR-DEMO-LOGIN%20${email}`}
+    >
+      Login as {name}
+    </a>
   );
 
   return (
@@ -19,7 +17,7 @@ const ChangeUser = () => {
       {getLink("jamar@example.com", "Jamar (Entry Only)")}
       {getLink("ruby@example.com", "Ruby (Basic User)")}
       {getLink("sarah@example.com", "Sarah (Admin)")}
-      {getLink("bob@example.com", "Bob (Super Admin)")}
+      {getLink("bob@example.com", "Bob (Support Admin)")}
     </>
   );
 };
