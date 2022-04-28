@@ -35,10 +35,22 @@ jobs:
     - name: Checkout
       uses: actions/checkout@v1
 
+    - name: Makefile deploy verification for backend in ${{env.DEPLOY_ENV}} environment
+      shell: bash
+      working-directory: ./ops
+      env:
+          CURL_TIMEOUT: 5
+      run: |
+        echo "::group::Run Makefile verification"
+        make check-${{env.DEPLOY_ENV}}-commit check-${{env.DEPLOY_ENV}}-readiness
+        echo "::endgroup::"
+        
     - name: Update files permissions
       # Even though we don't use it, we need the .env file created here due to an issue similar to this one: https://github.com/mutagen-io/mutagen/issues/265
       run: |
+        echo "::group::Create .env file"
         echo FAKE_ENV="true" >> .env
+        echo "::endgroup::"
 
     - name: Login to GitHub Container Registry
       uses: docker/login-action@v1
@@ -49,7 +61,9 @@ jobs:
 
     - name: pull apps - This will only run against stg after merge to main
       run: |
+        echo "::group::Pull Cypress image"
         docker-compose -f docker-compose.yml -f docker-compose.cypress.yml pull cypress
+        echo "::endgroup::"
 
     - name: Run Cypress
       env:
@@ -70,13 +84,18 @@ jobs:
         TEST_ENV: ${{ inputs.test_env }}
       shell: bash
       run: |
+        echo "::group::Run Cypress against Test"
         docker-compose -f docker-compose.yml -f docker-compose.cypress.yml up --exit-code-from cypress cypress
         exit $(echo $?)
+        echo "::endgroup::"
 
     - name: Stop containers
       if: always()
       shell: bash
-      run: docker-compose -f docker-compose.yml -f docker-compose.cypress.yml down
+      run: |
+        echo "::group::Stop docker containers"
+        docker-compose -f docker-compose.yml -f docker-compose.cypress.yml down
+        echo "::endgroup::"
 
     - name: Archive cypress failures
       if: failure()

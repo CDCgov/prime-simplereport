@@ -20,6 +20,7 @@ jobs:
 
     - name: Generate certs
       run: |
+        echo "::group::Generate ssl certs"
         sudo apt install libnss3-tools
         brew install mkcert
         mkcert -install
@@ -29,13 +30,16 @@ jobs:
         mv localhost.simplereport.gov.pem localhost.simplereport.gov.crt
         mv localhost.simplereport.gov-key.pem localhost.simplereport.gov.key
         cd ..
+        echo "::endgroup::"
 
     - name: Update files permissions
       # Even though we don't use it, we need the .env file created here due to an issue similar to this one: https://github.com/mutagen-io/mutagen/issues/265
       run: |
+        echo "::group::Update permissions"
         echo FAKE_ENV="true" >> .env
         sudo chmod -R 777 backend
         sudo chmod -R 777 frontend
+        echo "::endgroup::"
 
     - name: Run Cypress
       env:
@@ -70,12 +74,17 @@ jobs:
         REACT_APP_DISABLE_MAINTENANCE_BANNER: "true"
       shell: bash
       run: |
+        echo "::group::Run Cypress locally"
         docker-compose -f docker-compose.yml -f docker-compose.cypress.yml up --abort-on-container-exit --exit-code-from cypress
-
+        echo "::endgroup::"
+    
     - name: Stop containers
       if: always()
       shell: bash
-      run: docker-compose -f "docker-compose.yml" -f "docker-compose.cypress.yml" down
+      run: |
+        echo "::group::Stop Docker containers"
+        docker-compose -f "docker-compose.yml" -f "docker-compose.cypress.yml" down
+        echo "::endgroup::"
 
     - name: Archive cypress failures
       if: failure()

@@ -52,6 +52,6 @@ describe("Adding a patient", () => {
   });
   it("shows the patient in the list", () => {
     cy.get("#search-field-small").type(patient.lastName);
-    cy.get(".sr-patient-list").contains(patient.fullName);
+    cy.get(".sr-patient-edit-link").contains(patient.fullName);
   });
 });

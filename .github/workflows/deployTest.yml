@@ -3,7 +3,7 @@ name: Deploy Test
 on:
   push:
     branches:
-      - main
+      - alis/1770-3280
 
 concurrency:
   group: test-deploy
