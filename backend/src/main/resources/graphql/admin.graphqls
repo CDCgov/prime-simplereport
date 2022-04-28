@@ -87,4 +87,5 @@ extend type Mutation {
   setRegistrationLinkIsDeleted(link: String, deleted: Boolean!): String
   adminUpdateOrganization(name: String!, type: String!): String
   markFacilityAsDeleted(facilityId: ID!, deleted: Boolean!): String
+  markOrganizationAsDeleted(organizationId: ID!, deleted: Boolean!): String
 }
