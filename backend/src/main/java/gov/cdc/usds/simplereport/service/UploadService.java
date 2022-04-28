@@ -83,10 +83,8 @@ public class UploadService {
 
   public String getRow(Map<String, String> row, String name, boolean isRequired) {
     String value = row.get(name);
-    if (isRequired) {
-      if (value == null || value.trim().isEmpty()) {
-        throw new IllegalGraphqlArgumentException(name + " is required.");
-      }
+    if (isRequired && (value == null || value.trim().isEmpty())) {
+      throw new IllegalGraphqlArgumentException(name + " is required.");
     }
     return value;
   }
