@@ -70,6 +70,10 @@ public abstract class BaseFullStackTest {
     _truncator.truncateAll();
   }
 
+  protected void truncateSpringSession() {
+    _truncator.truncateSpringSession();
+  }
+
   protected ConsoleApiAuditEvent assertLastAuditEntry(
       String username,
       String operationName,

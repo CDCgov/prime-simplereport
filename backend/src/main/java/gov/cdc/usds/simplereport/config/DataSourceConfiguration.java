@@ -110,4 +110,9 @@ public class DataSourceConfiguration {
     liquibase.setDatabaseChangeLogLockTable(properties.getDatabaseChangeLogLockTable());
     return liquibase;
   }
+
+  //  @Bean
+  //  public PostgreSqlJdbcIndexedSessionRepositoryCustomizer sessionRepositoryCustomizer() {
+  //    return new PostgreSqlJdbcIndexedSessionRepositoryCustomizer();
+  //  }
 }
