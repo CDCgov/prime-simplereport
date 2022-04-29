@@ -252,6 +252,25 @@ type TestResult {
   patientLink: PatientLink
 }
 
+type TestResultMultiplex {
+  internalId: ID
+  facility: Facility
+  patient: Patient
+  dateAdded: String
+  pregnancy: String
+  noSymptoms: Boolean
+  symptoms: String
+  symptomOnset: LocalDate
+  deviceType: DeviceType
+  results: MultiplexTestResult
+  dateTested: DateTime
+  testPerformed: TestDescription!
+  correctionStatus: String
+  reasonForCorrection: String
+  createdBy: ApiUser
+  patientLink: PatientLink
+}
+
 type OrganizationLevelDashboardMetrics {
   organizationPositiveTestCount: Int
   organizationNegativeTestCount: Int
@@ -354,6 +373,16 @@ type Query {
     pageNumber: Int
     pageSize: Int
   ): [TestResult] @requiredPermissions(allOf: ["READ_RESULT_LIST"])
+  testResultsMultiplex(
+    facilityId: ID
+    patientId: ID
+    results: MultiplexTestResult
+    role: String
+    startDate: DateTime
+    endDate: DateTime
+    pageNumber: Int
+    pageSize: Int
+  ): [TestResultMultiplex] @requiredPermissions(allOf: ["READ_RESULT_LIST"])
   testResultsCount(
     facilityId: ID
     patientId: ID
@@ -362,7 +391,17 @@ type Query {
     startDate: DateTime
     endDate: DateTime
   ): Int @requiredPermissions(allOf: ["READ_RESULT_LIST"])
+  testResultsMultiplexCount(
+    facilityId: ID
+    patientId: ID
+    result: MultiplexTestResult
+    role: String
+    startDate: DateTime
+    endDate: DateTime
+  ): Int @requiredPermissions(allOf: ["READ_RESULT_LIST"])
   testResult(id: ID!): TestResult
+    @requiredPermissions(allOf: ["READ_RESULT_LIST"])
+  testResultMultiplex(id: ID!): TestResultMultiplex
     @requiredPermissions(allOf: ["READ_RESULT_LIST"])
   organizationLevelDashboardMetrics(
     startDate: DateTime!
