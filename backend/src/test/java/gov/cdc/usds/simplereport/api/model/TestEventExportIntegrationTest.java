@@ -11,6 +11,7 @@ import gov.cdc.usds.simplereport.db.model.Organization;
 import gov.cdc.usds.simplereport.db.model.Person;
 import gov.cdc.usds.simplereport.db.model.TestEvent;
 import gov.cdc.usds.simplereport.db.model.auxiliary.TestResult;
+import gov.cdc.usds.simplereport.service.DiseaseService;
 import gov.cdc.usds.simplereport.service.OrganizationService;
 import gov.cdc.usds.simplereport.service.TestEventService;
 import gov.cdc.usds.simplereport.test_util.SliceTestConfiguration.WithSimpleReportStandardUser;
@@ -35,6 +36,7 @@ class TestEventExportIntegrationTest extends BaseGraphqlTest {
   @Autowired protected TestDataFactory _dataFactory;
   @Autowired private TestEventService _testEventService;
   @Autowired private OrganizationService _orgService;
+  @Autowired private DiseaseService _diseaseService;
   @MockBean private CurrentTenantDataAccessContextHolder _tenantDataAccessContextHolder;
   private final ObjectMapper objectMapper = new ObjectMapper();
 
@@ -55,7 +57,7 @@ class TestEventExportIntegrationTest extends BaseGraphqlTest {
             .put("result", TestResult.NEGATIVE.toString())
             .put("dateTested", "2021-09-01T10:31:30.001Z");
     submitTestResult(variables, Optional.empty());
-    // getting the testEvent can be improve to use the same context as used by the uploader
+    // getting the testEvent can be improved to use the same context as used by the uploader
     testEvent = _testEventService.getLastTestResultsForPatient(patient);
   }
 

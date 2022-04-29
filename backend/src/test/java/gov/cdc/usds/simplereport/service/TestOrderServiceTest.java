@@ -1225,13 +1225,20 @@ class TestOrderServiceTest extends BaseServiceTest<TestOrderService> {
             null,
             null,
             null,
-            new Date(2021, 6, 1, 0, 0, 0),
-            new Date(2021, 6, 3, 23, 59, 59),
+            convertDate(LocalDateTime.of(2021, 6, 1, 0, 0, 0)),
+            convertDate(LocalDateTime.of(2021, 6, 3, 23, 59, 59)),
             0,
             10);
     List<TestEvent> priorToJune2Noon =
         _service.getTestEventsResults(
-            _site.getInternalId(), null, null, null, null, new Date(2021, 6, 2, 11, 59, 59), 0, 10);
+            _site.getInternalId(),
+            null,
+            null,
+            null,
+            null,
+            convertDate(LocalDateTime.of(2021, 6, 2, 11, 59, 59)),
+            0,
+            10);
     List<TestEvent> positivesAmos =
         _service.getTestEventsResults(
             _site.getInternalId(),
@@ -1258,8 +1265,8 @@ class TestOrderServiceTest extends BaseServiceTest<TestOrderService> {
             _dataFactory.getPersonByName(CHARLES).getInternalId(),
             TestResult.POSITIVE,
             PersonRole.RESIDENT,
-            new Date(2021, 6, 1, 0, 0, 0),
-            new Date(2021, 6, 1, 23, 59, 59),
+            convertDate(LocalDateTime.of(2021, 6, 1, 0, 0, 0)),
+            convertDate(LocalDateTime.of(2021, 6, 1, 23, 59, 59)),
             0,
             10);
 
@@ -1295,13 +1302,15 @@ class TestOrderServiceTest extends BaseServiceTest<TestOrderService> {
         testEvents.stream()
             .filter(
                 t ->
-                    !t.getDateTested().before(new Date(2021, 6, 1, 0, 0, 0))
-                        && !t.getDateTested().after(new Date(2021, 6, 3, 23, 59, 59)))
+                    !t.getDateTested().before(convertDate(LocalDateTime.of(2021, 6, 1, 0, 0, 0)))
+                        && !t.getDateTested()
+                            .after(convertDate(LocalDateTime.of(2021, 6, 3, 23, 59, 59))))
             .collect(Collectors.toList()));
     assertTestResultsList(
         priorToJune2Noon,
         testEvents.stream()
-            .filter(t -> t.getDateTested().before(new Date(2021, 6, 2, 12, 0, 0)))
+            .filter(
+                t -> t.getDateTested().before(convertDate(LocalDateTime.of(2021, 6, 2, 12, 0, 0))))
             .collect(Collectors.toList()));
     assertTestResultsList(
         positivesAmos,
@@ -1327,8 +1336,10 @@ class TestOrderServiceTest extends BaseServiceTest<TestOrderService> {
                     t.getPatient().getNameInfo().equals(CHARLES)
                         && t.getResult() == TestResult.POSITIVE
                         && t.getPatient().getRole() == PersonRole.RESIDENT
-                        && !t.getDateTested().before(new Date(2021, 6, 1, 0, 0, 0))
-                        && !t.getDateTested().after(new Date(2021, 6, 1, 23, 59, 59)))
+                        && !t.getDateTested()
+                            .before(convertDate(LocalDateTime.of(2021, 6, 1, 0, 0, 0)))
+                        && !t.getDateTested()
+                            .after(convertDate(LocalDateTime.of(2021, 6, 1, 23, 59, 59))))
             .collect(Collectors.toList()));
   }
 
@@ -1414,18 +1425,18 @@ class TestOrderServiceTest extends BaseServiceTest<TestOrderService> {
 
     LocalDate date = LocalDate.of(2021, 6, 1);
 
-    Map<PersonName, LocalDateTime> patientsToDates = new HashMap<>();
-    patientsToDates.put(AMOS, LocalDateTime.of(2021, 6, 1, 0, 0, 0));
-    patientsToDates.put(CHARLES, LocalDateTime.of(2021, 6, 1, 0, 0, 0));
-    patientsToDates.put(DEXTER, LocalDateTime.of(2021, 6, 2, 0, 0, 0));
-    patientsToDates.put(ELIZABETH, LocalDateTime.of(2021, 6, 2, 12, 0, 0));
-    patientsToDates.put(FRANK, LocalDateTime.of(2021, 6, 3, 0, 0, 0));
-    patientsToDates.put(GALE, LocalDateTime.of(2021, 6, 3, 12, 0, 0));
-    patientsToDates.put(HEINRICK, LocalDateTime.of(2021, 6, 4, 0, 0, 0));
-    patientsToDates.put(IAN, LocalDateTime.of(2021, 6, 4, 12, 0, 0));
-    patientsToDates.put(JANNELLE, LocalDateTime.of(2021, 6, 5, 0, 0, 0));
-    patientsToDates.put(KACEY, LocalDateTime.of(2021, 6, 5, 12, 0, 0));
-    patientsToDates.put(LEELOO, LocalDateTime.of(2021, 6, 6, 0, 0, 0));
+    Map<PersonName, Date> patientsToDates = new HashMap<>();
+    patientsToDates.put(AMOS, convertDate(LocalDateTime.of(2021, 6, 1, 0, 0, 0)));
+    patientsToDates.put(CHARLES, convertDate(LocalDateTime.of(2021, 6, 1, 12, 0, 0)));
+    patientsToDates.put(DEXTER, convertDate(LocalDateTime.of(2021, 6, 2, 0, 0, 0)));
+    patientsToDates.put(ELIZABETH, convertDate(LocalDateTime.of(2021, 6, 2, 12, 0, 0)));
+    patientsToDates.put(FRANK, convertDate(LocalDateTime.of(2021, 6, 3, 0, 0, 0)));
+    patientsToDates.put(GALE, convertDate(LocalDateTime.of(2021, 6, 3, 12, 0, 0)));
+    patientsToDates.put(HEINRICK, convertDate(LocalDateTime.of(2021, 6, 4, 0, 0, 0)));
+    patientsToDates.put(IAN, convertDate(LocalDateTime.of(2021, 6, 4, 12, 0, 0)));
+    patientsToDates.put(JANNELLE, convertDate(LocalDateTime.of(2021, 6, 5, 0, 0, 0)));
+    patientsToDates.put(KACEY, convertDate(LocalDateTime.of(2021, 6, 5, 12, 0, 0)));
+    patientsToDates.put(LEELOO, convertDate(LocalDateTime.of(2021, 6, 6, 0, 0, 0)));
 
     Map<PersonName, PersonRole> patientsToRoles = new HashMap<>();
     patientsToRoles.put(AMOS, PersonRole.RESIDENT);
@@ -1461,8 +1472,7 @@ class TestOrderServiceTest extends BaseServiceTest<TestOrderService> {
                   TestResult t = patientsToResults.get(n);
                   PersonRole r = patientsToRoles.get(n);
                   AskOnEntrySurvey s = patientsToSurveys.get(n);
-                  Date d =
-                      Date.from(patientsToDates.get(n).atZone(ZoneId.systemDefault()).toInstant());
+                  Date d = patientsToDates.get(n);
 
                   Person person = _dataFactory.createMinimalPerson(org, _site, p, r);
                   return _dataFactory.createTestEvent(person, _site, s, t, d);
@@ -1484,6 +1494,10 @@ class TestOrderServiceTest extends BaseServiceTest<TestOrderService> {
     if (expected.size() != found.size()) {
       fail("Expected " + expected.size() + " items but found " + found.size());
     }
+  }
+
+  private static Date convertDate(LocalDateTime dateTime) {
+    return Date.from(dateTime.atZone(ZoneId.systemDefault()).toInstant());
   }
 
   @Test

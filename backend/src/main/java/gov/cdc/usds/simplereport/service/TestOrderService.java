@@ -46,6 +46,7 @@ import javax.persistence.criteria.Join;
 import javax.persistence.criteria.Predicate;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.hibernate.Hibernate;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.jpa.domain.Specification;
 import org.springframework.stereotype.Service;
@@ -205,9 +206,12 @@ public class TestOrderService {
 
   @Transactional(readOnly = true)
   public TestOrder getTestOrder(Organization org, UUID id) {
-    return _repo
-        .fetchQueueItemByOrganizationAndId(org, id)
-        .orElseThrow(TestOrderService::noSuchOrderFound);
+    TestOrder order =
+        _repo
+            .fetchQueueItemByOrganizationAndId(org, id)
+            .orElseThrow(TestOrderService::noSuchOrderFound);
+    Hibernate.initialize(order.getResultSet());
+    return order;
   }
 
   @AuthorizationConfiguration.RequirePermissionUpdateTestForTestOrder
@@ -453,7 +457,7 @@ public class TestOrderService {
       order.setResult(resultEntity);
     }
     // This is kept for the analytics dash but should be removed once those queries are updated
-    order.setResultColumn(result);
+    //    order.setResultColumn(result);
   }
 
   @Transactional
@@ -476,7 +480,7 @@ public class TestOrderService {
       throw new IllegalGraphqlArgumentException("TestEvent: could not load the parent order");
     }
 
-    // sanity check that two different users can't deleting the same event and
+    // sanity check that two different users can't be deleting the same event and
     // delete it twice.
     if (order.getTestEvent() == null || !testEventId.equals(order.getTestEvent().getInternalId())) {
       throw new IllegalGraphqlArgumentException("TestEvent: already deleted?");
@@ -528,8 +532,6 @@ public class TestOrderService {
     Organization org = _os.getCurrentOrganization();
     List<UUID> facilityIds =
         _os.getFacilities(org).stream().map(Facility::getInternalId).collect(Collectors.toList());
-
-    List<TestEvent> events = (List<TestEvent>) _terepo.findAll();
 
     List<AggregateFacilityMetrics> facilityMetrics = new ArrayList<AggregateFacilityMetrics>();
 

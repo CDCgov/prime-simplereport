@@ -47,6 +47,7 @@ public class TestOrder extends BaseTestInfo {
   @JoinColumn(name = "test_event_id")
   private TestEvent testEvent;
 
+  //
   @OneToMany(mappedBy = "testOrder", fetch = FetchType.LAZY, cascade = CascadeType.ALL)
   private Set<Result> results;
 
@@ -107,15 +108,17 @@ public class TestOrder extends BaseTestInfo {
 
   public void setResult(Result result) {
     results.add(result);
+    // remove once backfill job is done
+    super.setTestResult(result.getTestResult());
   }
 
-  public void setResult(Set<Result> results) {
-    this.results = results;
-  }
+  //  public void setResult(Set<Result> results) {
+  //    this.results = results;
+  //  }
 
-  public void setResultColumn(TestResult result) {
-    super.setTestResult(result);
-  }
+  //  public void setResultColumn(TestResult result) {
+  //    super.setTestResult(result);
+  //  }
 
   public void markComplete() {
     orderStatus = OrderStatus.COMPLETED;

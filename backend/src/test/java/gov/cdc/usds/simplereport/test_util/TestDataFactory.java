@@ -366,7 +366,6 @@ public class TestDataFactory {
     o.setDateTestedBackdate(d);
     Result result = new Result(o, _diseaseService.covid(), r);
     o.setResult(result);
-    o.setResultColumn(r);
 
     TestEvent e = _testEventRepo.save(new TestEvent(o));
     o.setTestEventRef(e);

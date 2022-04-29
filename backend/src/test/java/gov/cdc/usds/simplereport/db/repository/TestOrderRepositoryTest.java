@@ -187,7 +187,6 @@ class TestOrderRepositoryTest extends BaseRepositoryTest {
     order1.setResult(result);
     TestEvent didit = _events.save(new TestEvent(order1));
     order1.setTestEventRef(didit);
-    order1.setResult(didit.getResults());
     order1.markComplete();
     _repo.save(order1);
     flush();
