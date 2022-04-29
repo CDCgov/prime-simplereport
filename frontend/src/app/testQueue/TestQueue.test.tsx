@@ -32,6 +32,9 @@ describe("TestQueue", () => {
       organization: {
         name: "Organization Name",
       },
+      user: {
+        roleDescription: "Standard user",
+      },
       facilities: [
         {
           id: "a1",

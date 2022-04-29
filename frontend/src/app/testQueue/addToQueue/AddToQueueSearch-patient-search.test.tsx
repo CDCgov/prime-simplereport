@@ -1,4 +1,5 @@
 import React from "react";
+import { Provider } from "react-redux";
 import {
   fireEvent,
   render,
@@ -7,8 +8,16 @@ import {
 } from "@testing-library/react";
 import { MockedProvider } from "@apollo/client/testing";
 import { MemoryRouter } from "react-router-dom";
+import createMockStore from "redux-mock-store";
 
 import AddToQueueSearch, { QUERY_PATIENT } from "./AddToQueueSearch";
+
+const mockStore = createMockStore([]);
+const store = mockStore({
+  user: {
+    roleDescription: "Standard user",
+  },
+});
 
 let refetchQueueMock;
 let setStartTestPatientIdMock;
@@ -74,17 +83,19 @@ describe("AddToSearchQueue", () => {
     setStartTestPatientIdMock = jest.fn();
 
     render(
-      <MemoryRouter>
-        <MockedProvider mocks={mocks} addTypename={false}>
-          <AddToQueueSearch
-            refetchQueue={refetchQueueMock}
-            facilityId={facilityId}
-            patientsInQueue={[patientInQueue.internalId]}
-            startTestPatientId=""
-            setStartTestPatientId={setStartTestPatientIdMock}
-          />
-        </MockedProvider>
-      </MemoryRouter>
+      <Provider store={store}>
+        <MemoryRouter>
+          <MockedProvider mocks={mocks} addTypename={false}>
+            <AddToQueueSearch
+              refetchQueue={refetchQueueMock}
+              facilityId={facilityId}
+              patientsInQueue={[patientInQueue.internalId]}
+              startTestPatientId=""
+              setStartTestPatientId={setStartTestPatientIdMock}
+            />
+          </MockedProvider>
+        </MemoryRouter>
+      </Provider>
     );
   });
 

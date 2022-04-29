@@ -1,6 +1,7 @@
 import React, { useEffect, useState } from "react";
 import moment from "moment";
 import { Navigate, useLocation } from "react-router-dom";
+import { useSelector } from "react-redux";
 
 import Button from "../../commonComponents/Button/Button";
 import AoEModalForm from "../AoEForm/AoEModalForm";
@@ -8,6 +9,7 @@ import { displayFullName } from "../../utils";
 import { Patient } from "../../patients/ManagePatients";
 import { AoEAnswersDelivery } from "../AoEForm/AoEForm";
 import { getFacilityIdFromUrl } from "../../utils/url";
+import { hasPermission, appPermissions } from "../../permissions";
 
 interface SearchResultsProps {
   patients: Patient[];
@@ -41,6 +43,7 @@ const SearchResults = (props: QueueProps | TestResultsProps) => {
     selectedPatient,
   } = props;
 
+  const user = useSelector((state) => (state as any).user as User);
   const [dialogPatient, setDialogPatient] = useState<Patient | null>(null);
   const [canAddToQueue, setCanAddToQueue] = useState(false);
   const [redirect, setRedirect] = useState<string | undefined>(undefined);
@@ -53,6 +56,11 @@ const SearchResults = (props: QueueProps | TestResultsProps) => {
       setCanAddToQueue(true);
     }
   }, [selectedPatient]);
+
+  const canEditPeople = hasPermission(
+    user.permissions,
+    appPermissions.people.canEdit
+  );
 
   if (redirect) {
     return <Navigate to={redirect} />;
@@ -101,14 +109,20 @@ const SearchResults = (props: QueueProps | TestResultsProps) => {
       >
         <div className="margin-bottom-105">No results found.</div>
         <div>
-          Check for spelling errors or
-          <Button
-            className="margin-left-1"
-            label="Add new patient"
-            onClick={() => {
-              setRedirect(`/add-patient?facility=${activeFacilityId}`);
-            }}
-          />
+          Check for spelling errors
+          {canEditPeople ? (
+            <>
+              {" "}
+              or
+              <Button
+                className="margin-left-1"
+                label="Add new patient"
+                onClick={() => {
+                  setRedirect(`/add-patient?facility=${activeFacilityId}`);
+                }}
+              />
+            </>
+          ) : null}
         </div>
       </div>
     );
