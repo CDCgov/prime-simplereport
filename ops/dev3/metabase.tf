@@ -18,14 +18,14 @@ module "metabase_service" {
   resource_group_name     = data.azurerm_resource_group.rg.name
 
   app_service_plan_id    = module.simple_report_api.app_service_plan_id
-  webapp_subnet_id       = data.terraform_remote_state.persistent_dev2.outputs.subnet_webapp_id
-  ai_instrumentation_key = data.terraform_remote_state.persistent_dev2.outputs.app_insights_instrumentation_key
+  webapp_subnet_id       = data.terraform_remote_state.persistent_dev3.outputs.subnet_webapp_id
+  ai_instrumentation_key = data.terraform_remote_state.persistent_dev3.outputs.app_insights_instrumentation_key
   key_vault_id           = data.azurerm_key_vault.sr_global.id
   tenant_id              = data.azurerm_client_config.current.tenant_id
 
-  postgres_server_name = data.terraform_remote_state.persistent_dev2.outputs.postgres_server_name
+  postgres_server_name = data.terraform_remote_state.persistent_dev3.outputs.postgres_server_name
   postgres_url         = "@Microsoft.KeyVault(SecretUri=${data.azurerm_key_vault_secret.metabase_db_uri.id})"
-  postgres_server_fqdn = data.terraform_remote_state.persistent_dev2.outputs.postgres_server_fqdn
+  postgres_server_fqdn = data.terraform_remote_state.persistent_dev3.outputs.postgres_server_fqdn
 
   depends_on = [
     module.metabase_database

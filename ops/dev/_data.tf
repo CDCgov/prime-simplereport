@@ -63,7 +63,7 @@ data "azurerm_key_vault_secret" "postgres_user" {
 }
 
 data "azurerm_key_vault_secret" "postgres_password" {
-  name         = "simple-report-${local.env_level}-db-password"
+  name         = "simple-report-${local.env}-db-password"
   key_vault_id = data.azurerm_key_vault.sr_global.id
 }
 
