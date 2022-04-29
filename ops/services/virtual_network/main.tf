@@ -58,7 +58,7 @@ resource "azurerm_subnet" "webapp" {
 
 # The name of the private DNS zone MUST be environment-specific to support multiple envs within the same resource group.
 resource "azurerm_private_dns_zone" "default" {
-  name                = "privatelink.${length(trimprefix(var.env, var.env_level)) > 0 ? "${var.env}." : ""}postgres.database.azure.com"
+  name                = "privatelink.${var.env == var.env_level ? "" : "${var.env}."}postgres.database.azure.com"
   resource_group_name = var.resource_group_name
 }
 
