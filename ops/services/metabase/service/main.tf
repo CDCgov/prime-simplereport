@@ -21,9 +21,8 @@ resource "azurerm_app_service" "metabase" {
     linux_fx_version = "DOCKER|metabase/metabase"
   }
 
-  // TODO - need to change this when old DB config is removed (Flexible DB username format is different)
   app_settings = merge(local.app_setting_defaults, {
-    "MB_DB_USER" = "${var.postgres_metabase_username}@${var.postgres_server_name}",
+    "MB_DB_USER" = var.postgres_metabase_username,
     "MB_DB_PASS" = var.postgres_metabase_password
   })
 

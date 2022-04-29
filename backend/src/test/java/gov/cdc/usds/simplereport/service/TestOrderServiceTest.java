@@ -1362,7 +1362,7 @@ class TestOrderServiceTest extends BaseServiceTest<TestOrderService> {
         _service.getOrganizationLevelDashboardMetrics(startDate, endDate);
     assertEquals(3, metrics.getOrganizationPositiveTestCount());
     assertEquals(12, metrics.getOrganizationTotalTestCount());
-    assertEquals(4, metrics.getOrganizationNegativeTestCount());
+    assertEquals(5, metrics.getOrganizationNegativeTestCount());
     assertEquals(4, metrics.getFacilityMetrics().size());
   }
 
@@ -1422,8 +1422,6 @@ class TestOrderServiceTest extends BaseServiceTest<TestOrderService> {
     patientsToResults.put(JANNELLE, TestResult.UNDETERMINED);
     patientsToResults.put(KACEY, TestResult.UNDETERMINED);
     patientsToResults.put(LEELOO, TestResult.UNDETERMINED);
-
-    LocalDate date = LocalDate.of(2021, 6, 1);
 
     Map<PersonName, Date> patientsToDates = new HashMap<>();
     patientsToDates.put(AMOS, convertDate(LocalDateTime.of(2021, 6, 1, 0, 0, 0)));

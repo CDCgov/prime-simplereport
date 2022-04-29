@@ -58,10 +58,18 @@ describe("Header.tsx", () => {
   it("displays the support link correctly", async () => {
     process.env.REACT_APP_IS_TRAINING_SITE = "false";
     render(<WrappedHeader />);
-    userEvent.click(screen.getByTestId("user-button"));
-    expect(screen.getByTestId("support-link")).toBeVisible();
-    userEvent.click(screen.getByTestId("support-link"));
+    userEvent.click(screen.getByTestId("desktop-user-button"));
+    expect(screen.getByTestId("desktop-support-link")).toBeVisible();
+    userEvent.click(screen.getByTestId("desktop-support-link"));
     expect(trackEventMock).toHaveBeenCalledWith({ name: "Support" });
+  });
+  it("displays new feature link correctly", async () => {
+    process.env.REACT_APP_IS_TRAINING_SITE = "false";
+    render(<WrappedHeader />);
+    userEvent.click(screen.getByTestId("desktop-user-button"));
+    expect(screen.getByTestId("desktop-whats-new-link")).toBeVisible();
+    userEvent.click(screen.getByTestId("desktop-whats-new-link"));
+    expect(trackEventMock).toHaveBeenCalledWith({ name: "What's new" });
   });
   it("it does not render login links", () => {
     expect(

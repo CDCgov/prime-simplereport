@@ -194,6 +194,31 @@ class OrganizationServiceTest extends BaseServiceTest<OrganizationService> {
   }
 
   @Test
+  @DisplayName("it should allow global admins to mark organizations as deleted")
+  @WithSimpleReportSiteAdminUser
+  void deleteOrganizationTest_successful() {
+    // GIVEN
+    Organization verifiedOrg = testDataFactory.createValidOrg();
+    // WHEN
+    Organization deletedOrganization =
+        _service.markOrganizationAsDeleted(verifiedOrg.getInternalId(), true);
+    // THEN
+    assertThat(deletedOrganization.isDeleted()).isTrue();
+  }
+
+  @Test
+  @DisplayName("it should not delete nonexistent organizations")
+  @WithSimpleReportSiteAdminUser
+  void deletedOrganizationTest_throwsErrorWhenOrganizationyNotFound() {
+    IllegalGraphqlArgumentException caught =
+        assertThrows(
+            IllegalGraphqlArgumentException.class,
+            // fake UUID
+            () -> _service.markOrganizationAsDeleted(UUID.randomUUID(), true));
+    assertEquals("Organization not found.", caught.getMessage());
+  }
+
+  @Test
   @WithSimpleReportOrgAdminUser
   void adminUpdateOrganization_not_allowed() {
     AccessDeniedException caught =

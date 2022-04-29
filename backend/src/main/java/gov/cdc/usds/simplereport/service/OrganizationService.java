@@ -387,4 +387,17 @@ public class OrganizationService {
     facility.setIsDeleted(deleted);
     return facilityRepository.save(facility);
   }
+
+  @Transactional(readOnly = false)
+  @AuthorizationConfiguration.RequireGlobalAdminUser
+  public Organization markOrganizationAsDeleted(UUID organizationId, boolean deleted) {
+    Optional<Organization> optionalOrganization = organizationRepository.findById(organizationId);
+    if (optionalOrganization.isEmpty()) {
+      throw new IllegalGraphqlArgumentException("Organization not found.");
+    }
+
+    Organization organization = optionalOrganization.get();
+    organization.setIsDeleted(deleted);
+    return organizationRepository.save(organization);
+  }
 }
