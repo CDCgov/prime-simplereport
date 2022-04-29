@@ -144,6 +144,7 @@ export type Mutation = {
   editPendingOrganization?: Maybe<Scalars["String"]>;
   editQueueItem?: Maybe<TestOrder>;
   markFacilityAsDeleted?: Maybe<Scalars["String"]>;
+  markOrganizationAsDeleted?: Maybe<Scalars["String"]>;
   markPendingOrganizationAsDeleted?: Maybe<Scalars["String"]>;
   reactivateUser?: Maybe<User>;
   removePatientFromQueue?: Maybe<Scalars["String"]>;
@@ -379,6 +380,11 @@ export type MutationEditQueueItemArgs = {
 export type MutationMarkFacilityAsDeletedArgs = {
   deleted: Scalars["Boolean"];
   facilityId: Scalars["ID"];
+};
+
+export type MutationMarkOrganizationAsDeletedArgs = {
+  deleted: Scalars["Boolean"];
+  organizationId: Scalars["ID"];
 };
 
 export type MutationMarkPendingOrganizationAsDeletedArgs = {

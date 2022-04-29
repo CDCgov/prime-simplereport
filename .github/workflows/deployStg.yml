@@ -1,9 +1,10 @@
 name: Deploy Stg
 
 on:
-  push:
-    branches:
-      - main
+  workflow_run:
+    workflows: ["Deploy Test"]
+    types:
+      - completed
 
 env:
   DEPLOY_ENV: stg

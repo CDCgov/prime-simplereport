@@ -19,6 +19,9 @@ on:
       test_env:
         required: true
         type: string
+      deploy_env:
+        required: true
+        type: string
     secrets:
       cypress_okta_username:
         required: true
@@ -35,14 +38,14 @@ jobs:
     - name: Checkout
       uses: actions/checkout@v1
 
-    - name: Makefile deploy verification for backend in ${{env.DEPLOY_ENV}} environment
+    - name: Makefile deploy verification for backend in ${{ inputs.deploy_env }} environment
       shell: bash
       working-directory: ./ops
       env:
           CURL_TIMEOUT: 5
       run: |
         echo "::group::Run Makefile verification"
-        make check-${{env.DEPLOY_ENV}}-commit check-${{env.DEPLOY_ENV}}-readiness
+        make check-${{ inputs.deploy_env }}-commit check-${{ inputs.deploy_env }}-readiness
         echo "::endgroup::"
         
     - name: Update files permissions

@@ -3,7 +3,7 @@ name: Deploy Test
 on:
   push:
     branches:
-      - alis/1770-3280
+      - main
 
 concurrency:
   group: test-deploy
@@ -123,6 +123,7 @@ jobs:
       cypress_okta_client_id: "0oa1khettjHnj3EPT1d7"
       spec_path: "cypress/integration/00*,cypress/integration/01*,cypress/integration/02*,cypress/integration/03*,cypress/integration/04*,cypress/integration/05*,cypress/integration/06*"
       test_env: "https://test.simplereport.gov"
+      deploy_env: test
     secrets:
       cypress_okta_username: ${{ secrets.CYPRESS_OKTA_USERNAME }}
       cypress_okta_password: ${{ secrets.CYPRESS_OKTA_PASSWORD }}
