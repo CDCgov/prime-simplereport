@@ -589,9 +589,6 @@ describe("PendingOrganizationsContainer", () => {
       await waitForElementToBeRemoved(
         screen.queryByText("Verify organization")
       );
-      await waitForElementToBeRemoved(
-        screen.queryByText("DC-Space-Camp-f34183c4-b4c5-449f-98b0-2e02abb7aae0")
-      );
     });
   });
   describe("deleting organizations", () => {

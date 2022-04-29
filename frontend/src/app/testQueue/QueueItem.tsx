@@ -22,6 +22,10 @@ import { RootState } from "../store";
 import { getAppInsights } from "../TelemetryService";
 import { formatDate } from "../utils/date";
 import { TextWithTooltip } from "../commonComponents/TextWithTooltip";
+import {
+  TestCorrectionReason,
+  TestCorrectionReasons,
+} from "../testResults/TestResultCorrectionModal";
 
 import { ALERT_CONTENT, QUEUE_NOTIFICATION_TYPES } from "./constants";
 import AskOnEntryTag, { areAnswersComplete } from "./AskOnEntryTag";
@@ -183,6 +187,8 @@ export interface QueueItemProps {
   refetchQueue: () => void;
   facilityName: string | undefined;
   facilityId: string;
+  isCorrection?: boolean;
+  reasonForCorrection?: TestCorrectionReason;
 }
 
 interface updateQueueItemProps {
@@ -210,6 +216,8 @@ const QueueItem = ({
   facilityName,
   facilityId,
   dateTestedProp,
+  isCorrection = false,
+  reasonForCorrection,
 }: QueueItemProps) => {
   const appInsights = getAppInsights();
   const navigate = useNavigate();
@@ -655,6 +663,9 @@ const QueueItem = ({
 
   function cardColorDisplay() {
     const prefix = "prime-queue-item__";
+    if (isCorrection) {
+      return prefix + "ready";
+    }
     if (saveState === "error") {
       return prefix + "error";
     }
@@ -698,6 +709,16 @@ const QueueItem = ({
         <div className="prime-card-container" ref={testCardElement}>
           {saveState !== "saving" && closeButton}
           <div className="grid-row">
+            {isCorrection && reasonForCorrection && (
+              <div
+                className={classnames("tablet:grid-col-12", "card-correction")}
+              >
+                <strong>Correction:</strong>{" "}
+                {reasonForCorrection in TestCorrectionReasons
+                  ? TestCorrectionReasons[reasonForCorrection]
+                  : reasonForCorrection}
+              </div>
+            )}
             <div className="tablet:grid-col-9">
               <div
                 className="grid-row prime-test-name usa-card__header"
@@ -881,6 +902,12 @@ const QueueItem = ({
                       The test questionnaire for{" "}
                       <b> {` ${patientFullName} `} </b> has not been completed.
                       Do you want to submit results anyway?
+                    </p>
+                  ) : isCorrection ? (
+                    <p>
+                      Are you sure you want to cancel <b>{patientFullName}'s</b>{" "}
+                      test correction? The original test result won’t be
+                      changed.
                     </p>
                   ) : (
                     <>
