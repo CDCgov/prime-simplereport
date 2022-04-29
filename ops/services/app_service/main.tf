@@ -185,6 +185,6 @@ resource "azurerm_app_service_certificate_binding" "app" {
   # in resource groups with multiple environments, we have to work around this by using this
   # prescribed value for certificate_id. 
   hostname_binding_id = "${azurerm_app_service.service.id}/hostNameBindings/api-${var.env}.simplereport.gov"
-  certificate_id = "${data.azurerm_subscription.primary.id}/resourceGroups/${var.resource_group_name}/providers/Microsoft.Web/certificates/wildcard-simplereport-gov"
-  ssl_state      = "SniEnabled"
+  certificate_id      = "${data.azurerm_subscription.primary.id}/resourceGroups/${var.resource_group_name}/providers/Microsoft.Web/certificates/wildcard-simplereport-gov"
+  ssl_state           = "SniEnabled"
 }
