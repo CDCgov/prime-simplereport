@@ -46,13 +46,11 @@ import org.springframework.http.HttpMethod;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
-import org.springframework.test.annotation.DirtiesContext;
 import org.springframework.util.LinkedMultiValueMap;
 import org.springframework.util.MultiValueMap;
 
 /** Base class for GraphQL API full-stack tests. */
 @Slf4j
-@DirtiesContext
 public abstract class BaseGraphqlTest extends BaseFullStackTest {
 
   protected static final String ACCESS_ERROR =
@@ -124,6 +122,7 @@ public abstract class BaseGraphqlTest extends BaseFullStackTest {
 
   @BeforeEach
   public void setup() {
+    truncateSpringSession();
     truncateDb();
     _oktaRepo.reset();
     when(_addressValidation.getValidatedAddress(any(), any()))
@@ -147,7 +146,9 @@ public abstract class BaseGraphqlTest extends BaseFullStackTest {
 
   @AfterEach
   public void cleanup() {
+    truncateSpringSession();
     truncateDb();
+
     _userName = null;
     _oktaRepo.reset();
 

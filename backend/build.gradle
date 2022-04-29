@@ -232,7 +232,7 @@ task testDbReset(type: Exec) {
     commandLine "db-setup/nuke-db.sh"
 }
 
-test {
+tasks.named('test') {
     // people sometimes export this to run local dev more easily: don't let it break the tests
     environment "SPRING_PROFILES_ACTIVE", ""
     // For some reason, setting this in application-default doesn't work, but it's needed
