@@ -385,7 +385,6 @@ public class TestDataFactory {
     o = _testOrderRepo.save(o);
 
     TestEvent e = new TestEvent(o, hasPriorTests);
-    // why isn't the result save being persisted here?
     _testEventRepo.save(e);
     o.setTestEventRef(e);
     o.markComplete();

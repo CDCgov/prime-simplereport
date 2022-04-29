@@ -46,9 +46,6 @@ public class TestEvent extends BaseTestInfo {
   @JoinColumn(name = "test_order_id")
   private TestOrder order;
 
-  // removing this for tests
-  // not sure if it should really be here
-  //  fetch = FetchType.LAZY
   @OneToMany(mappedBy = "testEvent", cascade = CascadeType.MERGE, fetch = FetchType.LAZY)
   private Set<Result> results;
 
@@ -67,16 +64,7 @@ public class TestEvent extends BaseTestInfo {
   public TestEvent(TestOrder order, Boolean hasPriorTests) {
     super(order.getPatient(), order.getFacility(), order.getDeviceSpecimen());
 
-    if (order.getResultSet().isEmpty()) {
-      throw new IllegalArgumentException("TestOrder must contain a result");
-    }
-
-    order.getResultSet().forEach(result -> result.setTestEvent(this));
-    this.results = new HashSet<>(order.getResultSet());
-
-    // This is kept for the analytics dash but should be removed once those queries are updated
-    super.setTestResult(order.getResult());
-
+    initResults(order);
     // store a link, and *also* store the object as JSON
     // force load the lazy-loaded phone numbers so values are available to the object mapper
     // when serializing `patientData` (phoneNumbers is default lazy-loaded because of `OneToMany`)
@@ -108,7 +96,7 @@ public class TestEvent extends BaseTestInfo {
       throw new IllegalArgumentException("TestOrder must contain a result");
     }
 
-    HashSet<Result> oldResults = new HashSet<>(event.getResults());
+    HashSet<Result> oldResults = new HashSet<>(event.getResultSet());
     oldResults.forEach(result -> result.setTestEvent(this));
     this.results = oldResults;
 
@@ -127,6 +115,18 @@ public class TestEvent extends BaseTestInfo {
       TestOrder order, TestCorrectionStatus correctionStatus, String reasonForCorrection) {
     super(order, correctionStatus, reasonForCorrection);
 
+    initResults(order);
+    TestEvent event = order.getTestEvent();
+
+    this.patientData = event.getPatientData();
+    this.providerData = event.getProviderData();
+    this.order = order;
+    this.surveyData = event.getSurveyData();
+    setDateTestedBackdate(order.getDateTestedBackdate());
+    this.priorCorrectedTestEventId = event.getInternalId();
+  }
+
+  private void initResults(TestOrder order) {
     if (order.getResultSet().isEmpty()) {
       throw new IllegalArgumentException("TestOrder must contain a result");
     }
@@ -136,15 +136,6 @@ public class TestEvent extends BaseTestInfo {
 
     // This is kept for the analytics dash but should be removed once those queries are updated
     super.setTestResult(order.getResult());
-
-    TestEvent event = order.getTestEvent();
-
-    this.patientData = event.getPatientData();
-    this.providerData = event.getProviderData();
-    this.order = order;
-    this.surveyData = event.getSurveyData();
-    setDateTestedBackdate(order.getDateTestedBackdate());
-    this.priorCorrectedTestEventId = event.getInternalId();
   }
 
   public UUID getPatientInternalID() {
@@ -206,7 +197,7 @@ public class TestEvent extends BaseTestInfo {
     return getTestResult();
   }
 
-  public Set<Result> getResults() {
+  public Set<Result> getResultSet() {
     return this.results;
   }
 }

@@ -258,9 +258,7 @@ public class TestOrderService {
 
     try {
       order.setDeviceSpecimen(deviceSpecimen);
-
       updateTestOrderCovidResult(order, result);
-
       order.setDateTestedBackdate(dateTested);
       order.markComplete();
 
@@ -272,14 +270,8 @@ public class TestOrderService {
               : new TestEvent(order, order.getCorrectionStatus(), order.getReasonForCorrection());
 
       TestEvent savedEvent = _terepo.save(testEvent);
-
       order.setTestEventRef(savedEvent);
       TestOrder savedOrder = _repo.save(order);
-
-      //      TestOrder savedOrder =
-      //              saveTestResultToDatabase(deviceSpecimenTypeId, result, patientId, dateTested);
-      //      TestEvent testEvent = savedOrder.getTestEvent();
-
       _testEventReportingService.report(savedEvent);
 
       ArrayList<Boolean> deliveryStatuses = new ArrayList<>();
@@ -305,39 +297,6 @@ public class TestOrderService {
       unlockOrder(order.getInternalId());
     }
   }
-
-  //  @AuthorizationConfiguration.RequirePermissionSubmitTestForPatient
-  //  @Transactional(noRollbackFor = {TwilioException.class, ApiException.class})
-  //  protected TestOrder saveTestResultToDatabase(
-  //      UUID deviceSpecimenTypeId, TestResult result, UUID patientId, Date dateTested) {
-  //    Organization org = _os.getCurrentOrganization();
-  //    Person person = _ps.getPatientNoPermissionsCheck(patientId, org);
-  //    TestOrder order =
-  //        _repo.fetchQueueItem(org, person).orElseThrow(TestOrderService::noSuchOrderFound);
-  //
-  //    DeviceSpecimenType deviceSpecimen = _dts.getDeviceSpecimenType(deviceSpecimenTypeId);
-  //
-  //    lockOrder(order.getInternalId());
-  //    try {
-  //      order.setDeviceSpecimen(deviceSpecimen);
-  //
-  //      updateTestOrderCovidResult(order, result);
-  //
-  //      order.setDateTestedBackdate(dateTested);
-  //      order.markComplete();
-  //
-  //      boolean hasPriorTests = _terepo.existsByPatient(person);
-  //      TestEvent testEvent = new TestEvent(order, hasPriorTests);
-  //      TestEvent savedEvent = _terepo.save(testEvent);
-  //
-  //      order.setTestEventRef(savedEvent);
-  //      TestOrder savedOrder = _repo.save(order);
-  //
-  //      return savedOrder;
-  //    } finally {
-  //      unlockOrder(order.getInternalId());
-  //    }
-  //  }
 
   private boolean patientHasDeliveryPreference(TestOrder savedOrder) {
     return TestResultDeliveryPreference.NONE != savedOrder.getPatient().getTestResultDelivery();
@@ -456,8 +415,6 @@ public class TestOrderService {
       Result resultEntity = new Result(order, _diseaseService.covid(), result);
       order.setResult(resultEntity);
     }
-    // This is kept for the analytics dash but should be removed once those queries are updated
-    //    order.setResultColumn(result);
   }
 
   @Transactional

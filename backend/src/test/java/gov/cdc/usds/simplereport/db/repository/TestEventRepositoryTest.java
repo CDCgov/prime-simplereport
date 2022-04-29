@@ -92,6 +92,7 @@ class TestEventRepositoryTest extends BaseRepositoryTest {
     Organization org = _dataFactory.createValidOrg();
     Facility place = _dataFactory.createValidFacility(org);
     Person patient = _dataFactory.createMinimalPerson(org);
+
     TestOrder firstOrder =
         _dataFactory.createCompletedTestOrder(patient, place, TestResult.POSITIVE);
     TestEvent firstEvent = new TestEvent(firstOrder);
@@ -242,6 +243,7 @@ class TestEventRepositoryTest extends BaseRepositoryTest {
     Facility otherPlace = _dataFactory.createValidFacility(org, "Other Place");
     Person otherPatient =
         _dataFactory.createMinimalPerson(org, otherPlace, "First", "Middle", "Last", "");
+
     TestOrder firstOrderOtherPlace =
         _dataFactory.createCompletedTestOrder(otherPatient, otherPlace, TestResult.NEGATIVE);
     TestEvent firstEventOtherPlace = new TestEvent(firstOrderOtherPlace);

@@ -50,8 +50,6 @@ public class Result extends EternalAuditedEntity {
   }
 
   public Result(TestOrder testOrder, SupportedDisease disease, TestResult testResult) {
-    // question - should this also update order?
-    // order.setResult = this? Or is it better to include that in the service/in the TestOrder?
     this.testOrder = testOrder;
     this.disease = disease;
     this.resultLOINC = Translators.convertTestResultToLoinc(testResult);
