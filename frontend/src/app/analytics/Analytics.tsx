@@ -61,7 +61,7 @@ export const Analytics = (props: Props) => {
     (state) => ((state as any).facilities as Facility[]) || []
   );
   const [facilityId, setFacilityId] = useState<string>("");
-  const [facilityName, setFacilityName] = useState<string>(organization.name);
+  const [facilityName, setFacilityName] = useState<string>("All facilities");
   const [dateRange, setDateRange] = useState<string>("week");
   const [startDate, setStartDate] = useState<string>(
     props.startDate || getStartDateStringFromDaysAgo(7)
@@ -232,7 +232,9 @@ export const Analytics = (props: Props) => {
                   </div>
                 </div>
               )}
-              <h3>{facilityName}</h3>
+              <h3>
+                {organization.name}: {facilityName}
+              </h3>
               <p className="margin-bottom-0">All people tested</p>
               <p className="padding-top-1">{`${startDate} \u2013 ${endDate}`}</p>
               <div className="grid-row grid-gap">

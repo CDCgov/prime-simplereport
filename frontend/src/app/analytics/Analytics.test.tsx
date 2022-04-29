@@ -316,4 +316,13 @@ describe("Analytics", () => {
     ]);
     expect(await screen.findByText("0.0%")).toBeInTheDocument();
   });
+  it("displays org and facility in subheader", async () => {
+    await screen.findByText("Central Schools: All facilities");
+    userEvent.selectOptions(screen.getByLabelText("Testing facility"), [
+      "Lincoln Middle School",
+    ]);
+    expect(
+      await screen.findByText("Central Schools: Lincoln Middle School")
+    ).toBeInTheDocument();
+  });
 });
