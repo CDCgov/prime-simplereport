@@ -20,7 +20,8 @@ public enum UserPermission implements Principal {
   START_TEST,
   UPDATE_TEST,
   SUBMIT_TEST,
-  ACCESS_ALL_FACILITIES;
+  ACCESS_ALL_FACILITIES,
+  SR_CSV_UPLOADER_PILOT;
 
   @Override
   public String getName() {

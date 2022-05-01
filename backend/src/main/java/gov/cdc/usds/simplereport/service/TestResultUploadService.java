@@ -1,6 +1,7 @@
 package gov.cdc.usds.simplereport.service;
 
 import gov.cdc.usds.simplereport.api.model.errors.IllegalGraphqlArgumentException;
+import gov.cdc.usds.simplereport.config.AuthorizationConfiguration;
 import gov.cdc.usds.simplereport.db.model.BulkTestResultUpload;
 import gov.cdc.usds.simplereport.db.model.Organization;
 import gov.cdc.usds.simplereport.db.repository.UploadRepository;
@@ -20,7 +21,7 @@ public class TestResultUploadService {
   private final DataHubClient _client;
   private final OrganizationService _orgService;
 
-  // todo auth annotation
+  @AuthorizationConfiguration.RequirePermissionCSVUpload
   public String processResultCSV(InputStream csvStream) throws IllegalGraphqlArgumentException {
 
     Organization org = _orgService.getCurrentOrganization();
