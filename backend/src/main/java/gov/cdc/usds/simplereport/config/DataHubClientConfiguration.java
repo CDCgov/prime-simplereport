@@ -6,8 +6,8 @@ import org.springframework.context.annotation.Bean;
 
 public class DataHubClientConfiguration {
 
-  @Value("${data-hub.token}")
-  private String token;
+  @Value("${data-hub.api-key}")
+  private String apiKey;
 
   private static final String CSV_API_VERSION = "05Aug2021";
   private static final String SIMPLE_REPORT_CLIENT_NAME = "simple_report";
@@ -17,7 +17,7 @@ public class DataHubClientConfiguration {
     return template -> {
       template.header("client", SIMPLE_REPORT_CLIENT_NAME);
       template.header("x-api-version", CSV_API_VERSION);
-      template.header("x-functions-key", token);
+      template.header("x-functions-key", apiKey);
     };
   }
 }
