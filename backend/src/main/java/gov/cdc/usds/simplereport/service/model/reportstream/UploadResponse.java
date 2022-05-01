@@ -1,11 +1,13 @@
 package gov.cdc.usds.simplereport.service.model.reportstream;
 
+import gov.cdc.usds.simplereport.db.model.auxiliary.UploadStatus;
 import java.util.Date;
+import java.util.UUID;
 
 public class UploadResponse {
-  public String id;
+  public UUID id;
   public String submissionId;
-  public String overallStatus; // enum?
+  public UploadStatus overallStatus;
   public Date timestamp;
   public Date plannedCompletionAt;
   public Date actualCompletionAt;

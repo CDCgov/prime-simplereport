@@ -25,7 +25,7 @@ public class BulkTestResultUpload extends AuditedEntity {
   @Column
   @Type(type = "pg_enum")
   @Enumerated(EnumType.STRING)
-  private UploadStatus Status;
+  private UploadStatus status;
 
   @Column private int recordsCount;
 
@@ -33,11 +33,30 @@ public class BulkTestResultUpload extends AuditedEntity {
   @JoinColumn(name = "org_id")
   private Organization organization;
 
-  @ManyToOne(optional = false, fetch = FetchType.LAZY)
+  @ManyToOne(optional = true, fetch = FetchType.LAZY)
   @JoinColumn(name = "facility_id")
   private Facility facility;
 
   @Column private String warnings;
 
   @Column private String errors;
+
+  protected BulkTestResultUpload() {}
+
+  public BulkTestResultUpload(
+      UUID reportId,
+      UploadStatus status,
+      int recordsCount,
+      Organization organization,
+      Facility facility,
+      String warnings,
+      String errors) {
+    this.reportId = reportId;
+    this.status = status;
+    this.recordsCount = recordsCount;
+    this.organization = organization;
+    this.facility = facility;
+    this.warnings = warnings;
+    this.errors = errors;
+  }
 }
