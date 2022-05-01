@@ -16,7 +16,7 @@ sourceCompatibility = '11'
 
 ext {
     kickstartVersion = '11.0.0'
-    set('springCloudVersion', "Hoxton.SR11")
+    set('springCloudVersion', "2020.0.5")
 }
 repositories {
     mavenCentral()
@@ -25,6 +25,10 @@ repositories {
 dependencies {
     // core infrastructure
     implementation 'org.springframework.boot:spring-boot-starter-web'
+
+    //Feign HTTP Client
+    implementation 'org.springframework.cloud:spring-cloud-starter-openfeign'
+    implementation 'org.springframework.cloud:spring-cloud-starter-loadbalancer'
 
     // log4j vulnerability fixes (Dec 2021)
     implementation 'org.apache.logging.log4j:log4j-api:2.17.0'
