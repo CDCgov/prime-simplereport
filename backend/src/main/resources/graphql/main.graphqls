@@ -626,4 +626,5 @@ type Mutation {
   updateOrganization(type: String!): String
     @requiredPermissions(allOf: ["EDIT_ORGANIZATION"])
   uploadTestResultCSV(testResultList: Upload!): String
+    @requiredPermissions(allOf: ["SR_CSV_UPLOADER_PILOT"])
 }
