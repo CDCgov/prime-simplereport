@@ -36,7 +36,6 @@ public class TestResultMutationResolver implements GraphQLMutationResolver {
     } catch (IllegalGraphqlArgumentException e) {
       throw e;
     } catch (IOException e) {
-      log.error("Test result CSV upload failed", e);
       throw new RuntimeException(e);
     }
   }
