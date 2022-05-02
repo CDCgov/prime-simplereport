@@ -1997,7 +1997,7 @@ export type GetPatientQuery = {
 };
 
 export type GetPatientsByFacilityForQueueQueryVariables = Exact<{
-  facilityId: Scalars["ID"];
+  facilityId?: InputMaybe<Scalars["ID"]>;
   namePrefixMatch?: InputMaybe<Scalars["String"]>;
 }>;
 
@@ -5651,7 +5651,7 @@ export type GetPatientQueryResult = Apollo.QueryResult<
 >;
 export const GetPatientsByFacilityForQueueDocument = gql`
   query GetPatientsByFacilityForQueue(
-    $facilityId: ID!
+    $facilityId: ID
     $namePrefixMatch: String
   ) {
     patients(
@@ -5697,7 +5697,7 @@ export const GetPatientsByFacilityForQueueDocument = gql`
  * });
  */
 export function useGetPatientsByFacilityForQueueQuery(
-  baseOptions: Apollo.QueryHookOptions<
+  baseOptions?: Apollo.QueryHookOptions<
     GetPatientsByFacilityForQueueQuery,
     GetPatientsByFacilityForQueueQueryVariables
   >

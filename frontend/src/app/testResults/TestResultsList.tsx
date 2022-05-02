@@ -250,7 +250,10 @@ export const DetachedTestResultsList = ({
   ] = useLazyQuery(QUERY_PATIENT, {
     fetchPolicy: "no-cache",
     variables: {
-      facilityId: filterParams.filterFacilityId || activeFacilityId,
+      facilityId:
+        filterParams.filterFacilityId === ALL_FACILITIES_ID
+          ? null
+          : filterParams.filterFacilityId || activeFacilityId,
       namePrefixMatch: queryString,
     },
   });

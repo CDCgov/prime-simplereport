@@ -50,7 +50,7 @@ export const QUERY_SINGLE_PATIENT = gql`
 
 export const QUERY_PATIENT = gql`
   query GetPatientsByFacilityForQueue(
-    $facilityId: ID!
+    $facilityId: ID
     $namePrefixMatch: String
   ) {
     patients(
