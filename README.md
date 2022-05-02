@@ -232,6 +232,8 @@ There are a few ways to manage this:
 1. Enable the optional pre-commit hook by running `yarn install` in the root dir
 1. Add extensions to your code editor that runs the linters for you on save, e.g. [prettier-vscode](https://marketplace.visualstudio.com/items?itemName=esbenp.prettier-vscode), [vscode-eslint](https://marketplace.visualstudio.com/items?itemName=dbaeumer.vscode-eslint), [vscode-google-java-format](https://marketplace.visualstudio.com/items?itemName=ilkka.google-java-format)
 
+You can also run the pre-commit hooks in docker using `yarn lefthook run in-docker`.
+
 ### Storybook and Chromatic
 
 [Storybook](https://storybook.js.org/) is an open source tool for developing UI components in isolation for React. It makes building UIs organized and efficient.
