@@ -1,12 +1,12 @@
 import { render, screen } from "@testing-library/react";
 import userEvent from "@testing-library/user-event";
 
-import YesNoNotSureRadioGroup, {
-  boolToYesNoNotSure,
-  yesNoNotSureToBool,
-} from "./YesNoNotSureRadioGroup";
+import YesNoRadioGroup, {
+  boolToYesNoUnknown,
+  yesNoUnknownToBool,
+} from "./YesNoRadioGroup";
 
-describe("Yes/No/Not Sure RadioGroup", () => {
+describe("Yes/No/Unknown RadioGroup", () => {
   const onChangeFn = jest.fn(() => {});
   const onBlurFn = jest.fn(() => {});
 
@@ -23,51 +23,49 @@ describe("Yes/No/Not Sure RadioGroup", () => {
 
   it("renders component with a hint text", () => {
     const hint = "You are a wizard Harry.";
-    render(<YesNoNotSureRadioGroup {...defaultArgs} hintText={hint} />);
+    render(<YesNoRadioGroup {...defaultArgs} hintText={hint} />);
     expect(screen.getByText(hint)).toBeInTheDocument();
   });
 
   it("renders with an error", () => {
-    render(
-      <YesNoNotSureRadioGroup {...defaultArgs} validationStatus="error" />
-    );
+    render(<YesNoRadioGroup {...defaultArgs} validationStatus="error" />);
     expect(screen.getByRole("alert")).toHaveTextContent(
       defaultArgs.errorMessage
     );
   });
 
   it("calls function on change with correct value", () => {
-    render(<YesNoNotSureRadioGroup {...defaultArgs} />);
+    render(<YesNoRadioGroup {...defaultArgs} />);
 
     userEvent.click(screen.getByLabelText("Yes"));
     expect(onChangeFn).toHaveBeenCalledWith("YES");
     userEvent.click(screen.getByLabelText("No"));
     expect(onChangeFn).toHaveBeenCalledWith("NO");
-    userEvent.click(screen.getByLabelText("Not sure"));
-    expect(onChangeFn).toHaveBeenCalledWith("NOT_SURE");
+    userEvent.click(screen.getByLabelText("Unknown"));
+    expect(onChangeFn).toHaveBeenCalledWith("UNKNOWN");
   });
 
   it("calls function on blur", () => {
-    render(<YesNoNotSureRadioGroup {...defaultArgs} />);
+    render(<YesNoRadioGroup {...defaultArgs} />);
 
     userEvent.click(screen.getByLabelText("Yes"));
     userEvent.click(screen.getByLabelText("No"));
     expect(onBlurFn).toHaveBeenCalled();
   });
 
-  describe("Yes/No/Not Sure utility methods", () => {
+  describe("Yes/No/Unknown utility methods", () => {
     it("converts value to bool", () => {
-      expect(yesNoNotSureToBool("YES")).toBeTruthy();
-      expect(yesNoNotSureToBool("NO")).toBeFalsy();
-      expect(yesNoNotSureToBool("NOT_SURE")).toBeNull();
+      expect(yesNoUnknownToBool("YES")).toBeTruthy();
+      expect(yesNoUnknownToBool("NO")).toBeFalsy();
+      expect(yesNoUnknownToBool("UNKNOWN")).toBeNull();
       // @ts-ignore
-      expect(yesNoNotSureToBool(undefined)).toBeUndefined();
+      expect(yesNoUnknownToBool(undefined)).toBeUndefined();
     });
     it("converts bool to value", () => {
-      expect(boolToYesNoNotSure(true)).toBe("YES");
-      expect(boolToYesNoNotSure(false)).toBe("NO");
-      expect(boolToYesNoNotSure(null)).toBe("NOT_SURE");
-      expect(boolToYesNoNotSure(undefined)).toBeUndefined();
+      expect(boolToYesNoUnknown(true)).toBe("YES");
+      expect(boolToYesNoUnknown(false)).toBe("NO");
+      expect(boolToYesNoUnknown(null)).toBe("UNKNOWN");
+      expect(boolToYesNoUnknown(undefined)).toBeUndefined();
     });
   });
 });
