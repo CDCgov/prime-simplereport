@@ -9,7 +9,7 @@ public class DataHubClientConfiguration {
   @Value("${data-hub.api-key}")
   private String apiKey;
 
-  private static final String CSV_API_VERSION = "05Aug2021";
+  private static final String CSV_API_VERSION = "2021-09-21";
   private static final String SIMPLE_REPORT_CLIENT_NAME = "simple_report";
 
   @Bean
