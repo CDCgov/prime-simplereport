@@ -172,6 +172,7 @@ export type Mutation = {
   updateUserEmail?: Maybe<User>;
   updateUserPrivileges?: Maybe<User>;
   uploadPatients?: Maybe<Scalars["String"]>;
+  uploadTestResultCSV?: Maybe<Scalars["String"]>;
 };
 
 export type MutationAddFacilityArgs = {
@@ -585,6 +586,10 @@ export type MutationUpdateUserPrivilegesArgs = {
 
 export type MutationUploadPatientsArgs = {
   patientList: Scalars["Upload"];
+};
+
+export type MutationUploadTestResultCsvArgs = {
+  testResultList: Scalars["Upload"];
 };
 
 export type NameInfo = {
