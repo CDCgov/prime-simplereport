@@ -8,21 +8,20 @@ describe("Yes/No/Not Sure RadioGroup", () => {
   const onBlurFn = jest.fn(() => {});
 
   const defaultArgs = {
-    legend: "Question with a Yes/No/Not Sure answer?",
-    name: "radioGroup1",
+    legend: "Are you a wizard?",
+    name: "hogwartsRadioGroup",
     value: undefined,
     onChange: onChangeFn,
     onBlur: onBlurFn,
     validationStatus: undefined,
-    errorMessage: "This is an error message.",
+    errorMessage: "Don’t let the Muggles get you down.",
     hintText: undefined,
   };
 
   it("renders component with a hint text", () => {
-    render(
-      <YesNoNotSureRadioGroup {...defaultArgs} hintText="This is a hint" />
-    );
-    expect(screen.getByText("This is a hint")).toBeInTheDocument();
+    const hint = "You are a wizard Harry.";
+    render(<YesNoNotSureRadioGroup {...defaultArgs} hintText={hint} />);
+    expect(screen.getByText(hint)).toBeInTheDocument();
   });
 
   it("renders with an error", () => {
