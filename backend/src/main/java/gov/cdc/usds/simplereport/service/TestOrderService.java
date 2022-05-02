@@ -251,9 +251,6 @@ public class TestOrderService {
       UUID deviceSpecimenTypeId, TestResult result, UUID patientId, Date dateTested) {
     TestOrder savedOrder =
         saveTestResultToDatabase(deviceSpecimenTypeId, result, patientId, dateTested);
-    TestEvent testEvent = savedOrder.getTestEvent();
-
-    _testEventReportingService.report(testEvent);
 
     ArrayList<Boolean> deliveryStatuses = new ArrayList<>();
 
@@ -320,25 +317,7 @@ public class TestOrderService {
       TestOrder savedOrder = _repo.save(order);
       _testEventReportingService.report(savedEvent);
 
-      ArrayList<Boolean> deliveryStatuses = new ArrayList<>();
-
-      PatientLink patientLink = _pls.createPatientLink(savedOrder.getInternalId());
-      if (patientHasDeliveryPreference(savedOrder)) {
-
-        if (smsDeliveryPreference(savedOrder) || smsAndEmailDeliveryPreference(savedOrder)) {
-          boolean smsDeliveryStatus = testResultsDeliveryService.smsTestResults(patientLink);
-          deliveryStatuses.add(smsDeliveryStatus);
-        }
-
-        if (emailDeliveryPreference(savedOrder) || smsAndEmailDeliveryPreference(savedOrder)) {
-          boolean emailDeliveryStatus = testResultsDeliveryService.emailTestResults(patientLink);
-          deliveryStatuses.add(emailDeliveryStatus);
-        }
-      }
-
-      boolean deliveryStatus =
-          deliveryStatuses.isEmpty() || deliveryStatuses.stream().anyMatch(status -> status);
-      return new AddTestResultResponse(savedOrder, deliveryStatus);
+      return savedOrder;
     } finally {
       unlockOrder(order.getInternalId());
     }
