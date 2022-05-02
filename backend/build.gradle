@@ -71,7 +71,7 @@ dependencies {
     runtimeOnly 'com.okta.sdk:okta-sdk-httpclient:3.0.2'
 
     // SpringSession dependencies
-    runtimeOnly 'org.springframework.session:spring-session-jdbc'
+    implementation 'org.springframework.session:spring-session-jdbc'
 
     // App insights instrumentation
     implementation 'com.microsoft.azure:applicationinsights-core:2.6.3'

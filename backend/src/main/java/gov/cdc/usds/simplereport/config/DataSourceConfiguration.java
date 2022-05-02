@@ -9,6 +9,7 @@ import org.springframework.boot.context.properties.ConfigurationProperties;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.Primary;
+import org.springframework.session.jdbc.PostgreSqlJdbcIndexedSessionRepositoryCustomizer;
 
 @Configuration
 public class DataSourceConfiguration {
@@ -111,8 +112,8 @@ public class DataSourceConfiguration {
     return liquibase;
   }
 
-  //  @Bean
-  //  public PostgreSqlJdbcIndexedSessionRepositoryCustomizer sessionRepositoryCustomizer() {
-  //    return new PostgreSqlJdbcIndexedSessionRepositoryCustomizer();
-  //  }
+  @Bean
+  public PostgreSqlJdbcIndexedSessionRepositoryCustomizer sessionRepositoryCustomizer() {
+    return new PostgreSqlJdbcIndexedSessionRepositoryCustomizer();
+  }
 }
