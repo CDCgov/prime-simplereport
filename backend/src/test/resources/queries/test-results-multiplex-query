@@ -1,0 +1,32 @@
+query GetFacilityResultsMultiplex($facilityId: ID!, $nameType: String = "long") {
+  testResultsMultiplex(facilityId: $facilityId) {
+    internalId
+    dateTested
+    results {
+      covid19
+      fluA
+      fluB
+    }
+    deviceType {
+      internalId
+      name
+    }
+    patient {
+      internalId
+      firstName
+      middleName
+      lastName
+      lookupId
+    }
+    testPerformed {
+      name(nameType: $nameType)
+    }
+    patientLink {
+      internalId
+    }
+    symptoms
+    noSymptoms
+    pregnancy
+    symptomOnset
+  }
+}

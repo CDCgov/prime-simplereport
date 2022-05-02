@@ -98,7 +98,7 @@ class TestResultTest extends BaseGraphqlTest {
   }
 
   @Test
-  void submitTestResultMultiplex() throws Exception {
+  void submitAndFetchTestResultMultiplex() throws Exception {
     Person p = _dataFactory.createFullPerson(_org);
     DeviceType d = _site.getDefaultDeviceType();
     _dataFactory.createTestOrder(p, _site);
@@ -112,14 +112,20 @@ class TestResultTest extends BaseGraphqlTest {
             .putPOJO(
                 "results",
                 new MultiplexTestResult(
-                    TestResult.NEGATIVE, TestResult.NEGATIVE, TestResult.NEGATIVE))
+                    TestResult.NEGATIVE, TestResult.POSITIVE, TestResult.UNDETERMINED))
             .put("dateTested", dateTested);
     submitTestResultMultiplex(variables, Optional.empty());
 
-    ArrayNode testResults = fetchTestResults(getFacilityScopedArguments());
+    ArrayNode testResults = fetchTestResultsMultiplex(getFacilityScopedArguments());
 
     assertTrue(testResults.has(0), "Has at least one submitted test result=");
     assertEquals(testResults.get(0).get("dateTested").asText(), dateTested);
+    assertEquals(
+        testResults.get(0).get("results").get("covid19").asText(), TestResult.NEGATIVE.toString());
+    assertEquals(
+        testResults.get(0).get("results").get("fluA").asText(), TestResult.POSITIVE.toString());
+    assertEquals(
+        testResults.get(0).get("results").get("fluB").asText(), TestResult.UNDETERMINED.toString());
   }
 
   @Test
@@ -357,6 +363,10 @@ class TestResultTest extends BaseGraphqlTest {
 
   private ArrayNode fetchTestResults(ObjectNode variables) {
     return (ArrayNode) runQuery("test-results-query", variables).get("testResults");
+  }
+
+  private ArrayNode fetchTestResultsMultiplex(ObjectNode variables) {
+    return (ArrayNode) runQuery("test-results-multiplex-query", variables).get("testResults");
   }
 
   private void fetchTestResultsWithError(ObjectNode variables, String expectedError) {

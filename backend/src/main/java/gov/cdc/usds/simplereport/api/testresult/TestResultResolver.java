@@ -4,6 +4,7 @@ import gov.cdc.usds.simplereport.api.Translators;
 import gov.cdc.usds.simplereport.api.model.OrganizationLevelDashboardMetrics;
 import gov.cdc.usds.simplereport.api.model.TopLevelDashboardMetrics;
 import gov.cdc.usds.simplereport.db.model.TestEvent;
+import gov.cdc.usds.simplereport.db.model.auxiliary.MultiplexTestResult;
 import gov.cdc.usds.simplereport.service.TestOrderService;
 import graphql.kickstart.tools.GraphQLMutationResolver;
 import graphql.kickstart.tools.GraphQLQueryResolver;
@@ -46,12 +47,55 @@ public class TestResultResolver implements GraphQLQueryResolver, GraphQLMutation
         pageSize);
   }
 
+  public List<TestEvent> getTestResultsMultiplex(
+      UUID facilityId,
+      UUID patientId,
+      MultiplexTestResult results,
+      String role,
+      Date startDate,
+      Date endDate,
+      int pageNumber,
+      int pageSize) {
+    if (pageNumber < 0) {
+      pageNumber = TestOrderService.DEFAULT_PAGINATION_PAGEOFFSET;
+    }
+    if (pageSize < 1) {
+      pageSize = TestOrderService.DEFAULT_PAGINATION_PAGESIZE;
+    }
+
+    return tos.getTestEventsResultsMultiplex(
+        facilityId,
+        patientId,
+        results,
+        Translators.parsePersonRole(role, true),
+        startDate,
+        endDate,
+        pageNumber,
+        pageSize);
+  }
+
   public int testResultsCount(
       UUID facilityId, UUID patientId, String result, String role, Date startDate, Date endDate) {
     return tos.getTestResultsCount(
         facilityId,
         patientId,
         Translators.parseTestResult(result),
+        Translators.parsePersonRole(role, true),
+        startDate,
+        endDate);
+  }
+
+  public int testResultsCountMultiplex(
+      UUID facilityId,
+      UUID patientId,
+      MultiplexTestResult results,
+      String role,
+      Date startDate,
+      Date endDate) {
+    return tos.getTestResultsCountMultiplex(
+        facilityId,
+        patientId,
+        results,
         Translators.parsePersonRole(role, true),
         startDate,
         endDate);
@@ -66,6 +110,10 @@ public class TestResultResolver implements GraphQLQueryResolver, GraphQLMutation
   }
 
   public TestEvent getTestResult(UUID id) {
+    return tos.getTestResult(id);
+  }
+
+  public TestEvent getTestResultMultiplex(UUID id) {
     return tos.getTestResult(id);
   }
 
