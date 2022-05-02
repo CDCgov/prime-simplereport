@@ -18,7 +18,7 @@ import { DatePicker, Label } from "@trussworks/react-uswds";
 import { useSelector } from "react-redux";
 
 import { PATIENT_TERM_CAP } from "../../config/constants";
-import { displayFullName } from "../utils";
+import { displayFullName, facilityDisplayName } from "../utils";
 import { formatDateWithTimeOption, isValidDate } from "../utils/date";
 import { ActionsMenu } from "../commonComponents/ActionsMenu";
 import { getParameterFromUrl, getUrl } from "../utils/url";
@@ -61,10 +61,6 @@ export const byDateTested = (a: any, b: any) => {
   if (a.dateTested === b.dateTested) return 0;
   if (a.dateTested < b.dateTested) return 1;
   return -1;
-};
-
-const facilityDisplayName = (name: String, isDeleted: boolean) => {
-  return `${name}${isDeleted ? " (Archived)" : ""}`;
 };
 
 function testResultRows(

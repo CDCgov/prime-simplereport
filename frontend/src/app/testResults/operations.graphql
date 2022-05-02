@@ -37,6 +37,7 @@ query GetFacilityResultsForCsv(
   ) {
     facility {
       name
+      isDeleted
     }
     dateTested
     result

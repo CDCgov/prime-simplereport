@@ -16,6 +16,13 @@ export const displayFullName = (
   return `${first || "?"} ${middle || ""} ${last || "?"}`.replace(/ +/g, " ");
 };
 
+export const facilityDisplayName = (
+  name: String,
+  isDeleted: boolean = false
+) => {
+  return `${name}${isDeleted ? " (Archived)" : ""}`;
+};
+
 export const isLocalHost = () =>
   Boolean(window.location.hostname === "localhost");
 

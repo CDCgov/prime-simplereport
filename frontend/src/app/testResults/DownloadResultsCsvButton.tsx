@@ -5,7 +5,7 @@ import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { CSVLink } from "react-csv";
 import moment from "moment";
 
-import { displayFullName, showError } from "../utils";
+import { displayFullName, facilityDisplayName, showError } from "../utils";
 import { useImperativeQuery } from "../utils/hooks";
 import Button from "../commonComponents/Button/Button";
 import { TEST_RESULT_DESCRIPTIONS } from "../constants";
@@ -104,7 +104,10 @@ const DownloadResultsCSVButton = ({
         "Symptoms present":
           symptomList.length > 0 ? symptomList.join(", ") : "No symptoms",
         "Symptom onset": moment(r.symptomOnset).format("MM/DD/YYYY"),
-        "Facility name": r.facility.name,
+        "Facility name": facilityDisplayName(
+          r.facility.name,
+          r.facility.isDeleted
+        ),
         Submitter: displayFullName(
           r.createdBy.nameInfo.firstName,
           r.createdBy.nameInfo.middleName,

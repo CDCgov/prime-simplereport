@@ -2423,7 +2423,11 @@ export type GetFacilityResultsForCsvQuery = {
             noSymptoms?: boolean | null | undefined;
             symptomOnset?: any | null | undefined;
             facility?:
-              | { __typename?: "Facility"; name: string }
+              | {
+                  __typename?: "Facility";
+                  name: string;
+                  isDeleted?: boolean | null | undefined;
+                }
               | null
               | undefined;
             deviceType?:
@@ -6631,6 +6635,7 @@ export const GetFacilityResultsForCsvDocument = gql`
     ) {
       facility {
         name
+        isDeleted
       }
       dateTested
       result
