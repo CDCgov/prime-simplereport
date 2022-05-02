@@ -84,3 +84,11 @@ query GetFacilityResultsForCsv(
     symptomOnset
   }
 }
+
+query GetAllFacilities {
+  facilities {
+    id
+    name
+    isDeleted
+  }
+}

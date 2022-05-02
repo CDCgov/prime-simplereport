@@ -150,6 +150,11 @@ public class OrganizationService {
     return facilityRepository.findAllByOrganizationAndInternalId(org, facilityIds);
   }
 
+  @AuthorizationConfiguration.RequirePermissionReadAllFacilityResults
+  public Set<Facility> getCurrentAndArchivedFacilities(Organization org) {
+    return facilityRepository.findAllByOrganizationAllowDeleted(org);
+  }
+
   public Facility getFacilityInCurrentOrg(UUID facilityId) {
     return getCurrentOrganizationRoles()
         .orElseThrow(MisconfiguredUserException::new)

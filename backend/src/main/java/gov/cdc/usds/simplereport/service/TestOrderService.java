@@ -143,6 +143,7 @@ public class TestOrderService {
 
   @Transactional(readOnly = true)
   @AuthorizationConfiguration.RequirePermissionReadResultListAtFacility
+  // todo fix auth here
   public List<TestEvent> getTestEventsResults(
       UUID facilityId,
       UUID patientId,
@@ -191,6 +192,7 @@ public class TestOrderService {
 
   @Transactional(readOnly = true)
   @AuthorizationConfiguration.RequirePermissionReadResultListForTestEvent
+  // todo fix auth here
   public TestEvent getTestResult(UUID testEventId) {
     Organization org = _os.getCurrentOrganization();
     return _terepo.findByOrganizationAndInternalId(org, testEventId);

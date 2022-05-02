@@ -307,6 +307,7 @@ type Query {
   supportedDiseases: [SupportedDisease!]!
   specimenType: [SpecimenType]
   deviceSpecimenTypes: [DeviceSpecimenType]
+  facilities: [Facility]
   patients(
     facilityId: ID
     pageNumber: Int

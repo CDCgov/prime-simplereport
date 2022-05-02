@@ -43,6 +43,7 @@ import SearchResults from "../testQueue/addToQueue/SearchResults";
 import Select from "../commonComponents/Select";
 import { useSelectedFacility } from "../facilitySelect/useSelectedFacility";
 import { appPermissions, hasPermission } from "../permissions";
+import { useGetAllFacilitiesQuery } from "../../generated/graphql";
 
 import TestResultPrintModal from "./TestResultPrintModal";
 import TestResultTextModal from "./TestResultTextModal";
@@ -62,7 +63,6 @@ export const byDateTested = (a: any, b: any) => {
   return -1;
 };
 
-//todo inline or nah?
 const facilityDisplayName = (name: String, isDeleted: boolean) => {
   return `${name}${isDeleted ? " (Archived)" : ""}`;
 };
@@ -238,6 +238,8 @@ export const DetachedTestResultsList = ({
     runIf: (q) => q.length >= MIN_SEARCH_CHARACTER_COUNT,
   });
 
+  const allowQuery = debounced.length >= MIN_SEARCH_CHARACTER_COUNT;
+
   const validFacilities = useSelector(
     (state) => ((state as any).facilities as Facility[]) || []
   );
@@ -245,8 +247,6 @@ export const DetachedTestResultsList = ({
     useSelector((state) => (state as any).user.permissions),
     appPermissions.settings.canView
   );
-
-  const allowQuery = debounced.length >= MIN_SEARCH_CHARACTER_COUNT;
 
   const [
     queryPatients,
@@ -257,6 +257,10 @@ export const DetachedTestResultsList = ({
       facilityId: filterParams.filterFacilityId || activeFacilityId,
       namePrefixMatch: queryString,
     },
+  });
+
+  const { data: facilitiesData } = useGetAllFacilitiesQuery({
+    fetchPolicy: "no-cache",
   });
 
   useEffect(() => {
@@ -390,6 +394,35 @@ export const DetachedTestResultsList = ({
       setFilterParams("endDate")("");
     }
   };
+
+  const allFacilities: any[] = (facilitiesData?.facilities || []).filter(
+    (e) => e != null
+  );
+
+  // org admins can see all facilities, including archived (sorted last); everyone else can only see valid facilities
+  // according to their role(s)
+  const facilityOptions = isOrgAdmin
+    ? [
+        {
+          label: "All facilities",
+          value: ALL_FACILITIES_ID,
+        },
+      ].concat(
+        allFacilities
+          .sort((a, b) => {
+            if (a.isDeleted && !b.isDeleted) return 1;
+            if (!a.isDeleted && b.isDeleted) return -1;
+            return 0;
+          })
+          .map((f) => ({
+            label: facilityDisplayName(f.name, !!f.isDeleted),
+            value: f.id,
+          }))
+      )
+    : validFacilities.map((f) => ({
+        label: f.name,
+        value: f.id,
+      }));
 
   return (
     <main className="prime-home">
@@ -532,25 +565,12 @@ export const DetachedTestResultsList = ({
                   defaultSelect
                   onChange={setFilterParams("role")}
                 />
-                {validFacilities && validFacilities.length > 1 ? (
+                {facilityOptions && facilityOptions.length > 1 ? (
                   <Select
                     label="Testing facility"
                     name="facility"
                     value={filterParams.filterFacilityId || activeFacilityId}
-                    options={(isOrgAdmin
-                      ? [
-                          {
-                            label: "All facilities",
-                            value: ALL_FACILITIES_ID,
-                          },
-                        ]
-                      : []
-                    ).concat(
-                      validFacilities.map((facility) => ({
-                        label: facility.name,
-                        value: facility.id,
-                      }))
-                    )}
+                    options={facilityOptions}
                     onChange={setFilterParams("filterFacilityId")}
                   />
                 ) : null}

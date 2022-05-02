@@ -133,6 +133,7 @@ public class UserAuthorizationVerifier {
             .equals(otherOrg.get().getExternalId());
   }
 
+  // todo update auth here
   public boolean userCanViewTestEvent(UUID testEventId) {
     if (testEventId == null) {
       return true;
@@ -185,6 +186,7 @@ public class UserAuthorizationVerifier {
     return userCanViewQueueItem(order.get());
   }
 
+  // todo update auth here
   public boolean userCanAccessFacility(UUID facilityId) {
     if (facilityId == null) {
       return true;
