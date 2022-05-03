@@ -4,11 +4,38 @@ import "./Submissions.scss";
 import moment from "moment";
 import { DatePicker, Label } from "@trussworks/react-uswds";
 
-import { PATIENT_TERM_CAP } from "../../../config/constants";
 import Pagination from "../../commonComponents/Pagination";
+import { formatDateWithTimeOption } from "../../utils/date";
 
 function Submissions() {
   const loading = false;
+
+  const SubmissionsTableRows = (submissions: any) => {
+    if (submissions.length === 0) {
+      return (
+        <tr>
+          <td>No results</td>
+        </tr>
+      );
+    }
+
+    // `sort` mutates the array, so make a copy
+    return [...submissions].map((r) => {
+      return (
+        <tr>
+          <td className="test-result-cell">
+            d35ac97b-ad02-4e74-a3ff-7cc7704128d5
+          </td>
+          <td className="test-date-cell">
+            {formatDateWithTimeOption(new Date(), true)}
+          </td>
+          <td className="test-result-cell"></td>
+          <td className="test-result-cell">2</td>
+          <td className="test-result-cell">Success</td>
+        </tr>
+      );
+    });
+  };
 
   return (
     <main className="prime-home">
@@ -70,29 +97,23 @@ function Submissions() {
                 <thead>
                   <tr>
                     <th scope="col" className="patient-name-cell">
-                      {PATIENT_TERM_CAP}
+                      Report ID
                     </th>
                     <th scope="col" className="test-date-cell">
-                      Test date
+                      Date/Time submitted
                     </th>
                     <th scope="col" className="test-result-cell">
-                      COVID-19
+                      File
                     </th>
                     <th scope="col" className="test-facility-cell">
-                      Testing facility
+                      Records
                     </th>
                     <th scope="col" className="test-device-cell">
-                      Test device
-                    </th>
-                    <th scope="col" className="submitted-by-cell">
-                      Submitted by
-                    </th>
-                    <th scope="col" className="actions-cell">
-                      Actions
+                      Status
                     </th>
                   </tr>
                 </thead>
-                <tbody></tbody>
+                <tbody>{SubmissionsTableRows([{}])}</tbody>
               </table>
             </div>
 

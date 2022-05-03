@@ -165,6 +165,16 @@ type ApiUserWithStatus {
   status: String
 }
 
+type UploadSubmission {
+  internalId: ID!
+  createdAt: DateTime!
+  reportId: ID!
+  status: UploadStatus!
+  recordsCount: String!
+  warnings: String
+  errors: String
+}
+
 # Patient and test types
 
 type Patient
@@ -373,6 +383,8 @@ type Query {
     @requiredPermissions(allOf: ["MANAGE_USERS"])
   user(id: ID!): User @requiredPermissions(allOf: ["MANAGE_USERS"])
   whoami: User!
+  getUploadSubmissions: [UploadSubmission!]
+    @requiredPermissions(allOf: ["SR_CSV_UPLOADER_PILOT"])
 }
 
 type Mutation {

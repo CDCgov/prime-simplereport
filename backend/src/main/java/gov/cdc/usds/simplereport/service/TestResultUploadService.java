@@ -8,6 +8,7 @@ import gov.cdc.usds.simplereport.db.repository.UploadRepository;
 import gov.cdc.usds.simplereport.service.model.reportstream.UploadResponse;
 import java.io.IOException;
 import java.io.InputStream;
+import java.util.List;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.json.JSONArray;
@@ -44,5 +45,10 @@ public class TestResultUploadService {
     }
 
     return "this area under construction";
+  }
+
+  public List<BulkTestResultUpload> getUploadSubmissions(){
+    Organization org = _orgService.getCurrentOrganization();
+    return _repo.findAllByOrganization(org);
   }
 }
