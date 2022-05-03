@@ -4,9 +4,9 @@ import { useTranslatedConstants } from "../constants";
 
 import RadioGroup from "./RadioGroup";
 
-export const boolToYesNoUnknown = (
+export const boolToYesNoNotSure = (
   value: boolean | null | undefined
-): YesNoUnknown | undefined => {
+): YesNoNotSure | undefined => {
   if (value) {
     return "YES";
   }
@@ -14,13 +14,13 @@ export const boolToYesNoUnknown = (
     return "NO";
   }
   if (value === null) {
-    return "UNKNOWN";
+    return "NOT_SURE";
   }
   return undefined;
 };
 
-export const yesNoUnknownToBool = (
-  value: YesNoUnknown
+export const yesNoNotSureToBool = (
+  value: YesNoNotSure
 ): boolean | null | undefined => {
   if (value === "YES") {
     return true;
@@ -28,7 +28,7 @@ export const yesNoUnknownToBool = (
   if (value === "NO") {
     return false;
   }
-  if (value === "UNKNOWN") {
+  if (value === "NOT_SURE") {
     return null;
   }
   return undefined;
@@ -37,8 +37,8 @@ export const yesNoUnknownToBool = (
 interface Props {
   name: string;
   legend: React.ReactNode;
-  value: YesNoUnknown | undefined;
-  onChange: (value: YesNoUnknown) => void;
+  value: YesNoNotSure | undefined;
+  onChange: (value: YesNoNotSure) => void;
   hintText?: string;
   onBlur?: (event: React.FocusEvent<HTMLInputElement>) => void;
   validationStatus?: "error" | "success";
@@ -46,7 +46,7 @@ interface Props {
   required?: boolean;
 }
 
-const YesNoRadioGroup: React.FC<Props> = ({
+const YesNoNotSureRadioGroup: React.FC<Props> = ({
   name,
   legend,
   value,
@@ -57,7 +57,7 @@ const YesNoRadioGroup: React.FC<Props> = ({
   errorMessage,
   required,
 }) => {
-  const { YES_NO_UNKNOWN_VALUES: values } = useTranslatedConstants();
+  const { YES_NO_NOT_SURE_VALUES: values } = useTranslatedConstants();
 
   return (
     <RadioGroup
@@ -75,4 +75,4 @@ const YesNoRadioGroup: React.FC<Props> = ({
   );
 };
 
-export default YesNoRadioGroup;
+export default YesNoNotSureRadioGroup;

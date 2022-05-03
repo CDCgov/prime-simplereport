@@ -467,7 +467,7 @@ describe("EditPatient", () => {
     },
   ];
 
-  describe("non-answer and unknown options", () => {
+  describe("non-answer and not sure options", () => {
     beforeEach(async () => {
       render(
         <MemoryRouter>
@@ -500,15 +500,15 @@ describe("EditPatient", () => {
         }
       );
     });
-    it("shows unknown answers", () => {
-      ["congregate", "health care"].forEach((legend) => {
+    it("shows not sure answers", () => {
+      ["group or shared housing facility", "health care"].forEach((legend) => {
         const fieldset = screen
           .getByText(legend, { exact: false })
           .closest("fieldset");
         if (fieldset === null) {
           throw Error(`Unable to corresponding fieldset for ${legend}`);
         }
-        const option = within(fieldset).getByLabelText("Unknown");
+        const option = within(fieldset).getByLabelText("Not sure");
         expect(option).toBeChecked();
       });
     });

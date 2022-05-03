@@ -24,7 +24,6 @@ import {
   usePersonSchemata,
 } from "../personSchema";
 import { TestResultDeliveryPreference } from "../TestResultDeliveryPreference";
-import YesNoRadioGroup from "../../commonComponents/YesNoRadioGroup";
 import Input from "../../commonComponents/Input";
 import Select from "../../commonComponents/Select";
 import {
@@ -40,6 +39,10 @@ import {
   toggleDeliveryPreferenceEmail,
 } from "../../utils/deliveryPreferences";
 import Prompt from "../../utils/Prompt";
+import YesNoNotSureRadioGroup, {
+  boolToYesNoNotSure,
+  yesNoNotSureToBool,
+} from "../../commonComponents/YesNoNotSureRadioGroup";
 
 import FacilitySelect from "./FacilitySelect";
 import ManagePhoneNumbers from "./ManagePhoneNumbers";
@@ -52,36 +55,6 @@ export enum PersonFormView {
   PXP,
   SELF_REGISTRATION,
 }
-
-const boolToYesNoUnknown = (
-  value: boolean | null | undefined
-): YesNoUnknown | undefined => {
-  if (value) {
-    return "YES";
-  }
-  if (value === false) {
-    return "NO";
-  }
-  if (value === null) {
-    return "UNKNOWN";
-  }
-  return undefined;
-};
-
-const yesNoUnknownToBool = (
-  value: YesNoUnknown
-): boolean | null | undefined => {
-  if (value === "YES") {
-    return true;
-  }
-  if (value === "NO") {
-    return false;
-  }
-  if (value === "UNKNOWN") {
-    return null;
-  }
-  return undefined;
-};
 
 interface Props {
   patient: Nullable<PersonFormData>;
@@ -633,13 +606,13 @@ const PersonForm = (props: Props) => {
         />
       </FormGroup>
       <FormGroup title={t("patient.form.other.heading")}>
-        <YesNoRadioGroup
+        <YesNoNotSureRadioGroup
           legend={t("patient.form.other.congregateLiving.heading")}
           hintText={t("patient.form.other.congregateLiving.helpText")}
           name="residentCongregateSetting"
-          value={boolToYesNoUnknown(patient.residentCongregateSetting)}
+          value={boolToYesNoNotSure(patient.residentCongregateSetting)}
           onChange={(v) =>
-            onPersonChange("residentCongregateSetting")(yesNoUnknownToBool(v))
+            onPersonChange("residentCongregateSetting")(yesNoNotSureToBool(v))
           }
           onBlur={() => {
             onBlurField("residentCongregateSetting");
@@ -647,12 +620,12 @@ const PersonForm = (props: Props) => {
           validationStatus={validationStatus("residentCongregateSetting")}
           errorMessage={errors.residentCongregateSetting}
         />
-        <YesNoRadioGroup
+        <YesNoNotSureRadioGroup
           legend={t("patient.form.other.healthcareWorker")}
           name="employedInHealthcare"
-          value={boolToYesNoUnknown(patient.employedInHealthcare)}
+          value={boolToYesNoNotSure(patient.employedInHealthcare)}
           onChange={(v) =>
-            onPersonChange("employedInHealthcare")(yesNoUnknownToBool(v))
+            onPersonChange("employedInHealthcare")(yesNoNotSureToBool(v))
           }
           onBlur={() => {
             onBlurField("employedInHealthcare");
