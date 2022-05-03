@@ -122,13 +122,19 @@ class TestResultTest extends BaseGraphqlTest {
     assertEquals(testResults.get(0).get("dateTested").asText(), dateTested);
     // covid-19 test result is the first one
     assertEquals(
+        testResults.get(0).get("results").get(0).get("disease").get("name").asText(), "COVID-19");
+    assertEquals(
         testResults.get(0).get("results").get(0).get("testResult").asText(),
         TestResult.NEGATIVE.toString());
     // fluA test result is the second one
     assertEquals(
+        testResults.get(0).get("results").get(1).get("disease").get("name").asText(), "Flu A");
+    assertEquals(
         testResults.get(0).get("results").get(1).get("testResult").asText(),
         TestResult.POSITIVE.toString());
     // fluB test result is the third one
+    assertEquals(
+        testResults.get(0).get("results").get(2).get("disease").get("name").asText(), "Flu B");
     assertEquals(
         testResults.get(0).get("results").get(2).get("testResult").asText(),
         TestResult.UNDETERMINED.toString());
