@@ -1,11 +1,12 @@
 query GetFacilityResultsMultiplex($facilityId: ID!, $nameType: String = "long") {
-  testResultsMultiplex(facilityId: $facilityId) {
+  testResults(facilityId: $facilityId) {
     internalId
     dateTested
     results {
-      covid19
-      fluA
-      fluB
+      disease {
+        name
+      }
+      testResult
     }
     deviceType {
       internalId

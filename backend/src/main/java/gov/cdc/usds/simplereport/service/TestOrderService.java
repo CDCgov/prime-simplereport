@@ -172,25 +172,6 @@ public class TestOrderService {
   }
 
   @Transactional(readOnly = true)
-  @AuthorizationConfiguration.RequirePermissionReadResultListAtFacility
-  public List<TestEvent> getTestEventsResultsMultiplex(
-      UUID facilityId,
-      UUID patientId,
-      MultiplexTestResult results,
-      PersonRole role,
-      Date startDate,
-      Date endDate,
-      int pageOffset,
-      int pageSize) {
-    return _terepo
-        .findAll(
-            buildTestEventSearchFilter(
-                facilityId, patientId, results.getCovid19(), role, startDate, endDate),
-            PageRequest.of(pageOffset, pageSize))
-        .toList();
-  }
-
-  @Transactional(readOnly = true)
   public int getTestResultsCount(
       UUID facilityId,
       UUID patientId,
@@ -201,20 +182,6 @@ public class TestOrderService {
     return (int)
         _terepo.count(
             buildTestEventSearchFilter(facilityId, patientId, result, role, startDate, endDate));
-  }
-
-  @Transactional(readOnly = true)
-  public int getTestResultsCountMultiplex(
-      UUID facilityId,
-      UUID patientId,
-      MultiplexTestResult results,
-      PersonRole role,
-      Date startDate,
-      Date endDate) {
-    return (int)
-        _terepo.count(
-            buildTestEventSearchFilter(
-                facilityId, patientId, results.getCovid19(), role, startDate, endDate));
   }
 
   @Transactional(readOnly = true)

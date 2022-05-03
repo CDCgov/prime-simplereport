@@ -6,6 +6,7 @@ import gov.cdc.usds.simplereport.api.model.TestDescription;
 import gov.cdc.usds.simplereport.api.model.errors.NoDataLoaderFoundException;
 import gov.cdc.usds.simplereport.db.model.PatientLink;
 import gov.cdc.usds.simplereport.db.model.Person;
+import gov.cdc.usds.simplereport.db.model.Result;
 import gov.cdc.usds.simplereport.db.model.TestEvent;
 import gov.cdc.usds.simplereport.db.model.auxiliary.AskOnEntrySurvey;
 import gov.cdc.usds.simplereport.service.dataloader.PatientLinkDataLoader;
@@ -14,6 +15,7 @@ import graphql.kickstart.tools.GraphQLResolver;
 import graphql.schema.DataFetchingEnvironment;
 import java.time.LocalDate;
 import java.util.Date;
+import java.util.Set;
 import java.util.UUID;
 import java.util.concurrent.CompletableFuture;
 import org.dataloader.DataLoader;
@@ -68,5 +70,9 @@ public class TestResultDataResolver
       throw new NoDataLoaderFoundException(PatientLinkDataLoader.KEY);
     }
     return loader.load(testEvent.getTestOrderId());
+  }
+
+  public Set<Result> getResults(TestEvent testEvent) {
+    return testEvent.getResultSet();
   }
 }
