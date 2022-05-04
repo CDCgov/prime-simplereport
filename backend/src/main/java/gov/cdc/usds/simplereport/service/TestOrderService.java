@@ -288,7 +288,7 @@ public class TestOrderService {
 
   @AuthorizationConfiguration.RequirePermissionSubmitTestForPatient
   @Transactional(noRollbackFor = {TwilioException.class, ApiException.class})
-  protected TestOrder saveTestResultToDatabase(
+  public TestOrder saveTestResultToDatabase(
       UUID deviceSpecimenTypeId, TestResult result, UUID patientId, Date dateTested) {
     Organization org = _os.getCurrentOrganization();
     Person person = _ps.getPatientNoPermissionsCheck(patientId, org);
