@@ -20,7 +20,7 @@ defaults:
     working-directory: backend
 
 jobs:
-  test:
+  backend-tests:
     runs-on: ubuntu-latest
     services:
       test-db:
@@ -36,9 +36,8 @@ jobs:
         ports:
           - 5432:5432
     steps:
-      - uses: actions/checkout@v2
-        with:
-          fetch-depth: 0 # Disable shallow clones so Sonar can have all the data
+      - name: Checkout
+        uses: actions/checkout@v2
       - name: Set up JDK ${{env.JAVA_VERSION}}
         uses: actions/setup-java@v1
         with:
@@ -66,13 +65,23 @@ jobs:
           TWILIO_ACCOUNT_SID: ${{secrets.TWILIO_TEST_ACCOUNT_SID }}
           TWILIO_AUTH_TOKEN: ${{secrets.TWILIO_TEST_AUTH_TOKEN }}
         run: ./gradlew jacocoTestReport -PtestDbPort=5432
-      - name: Archive Test Results
+      - name: Archive Coverage Results
+        uses: actions/upload-artifact@v2
+        with:
+          name: backend-build
+          path: backend/build/
+      - name: Archive Failed Test Results
         uses: actions/upload-artifact@v2
         if: failure()
         with:
-          name: test-report
+          name: backtest-report
           path: backend/build/reports/tests/test
           retention-days: 7
+  frontend-tests:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v2
       - name: Use Node.js ${{env.NODE_VERSION}}
         uses: actions/setup-node@v2.1.5
         with:
@@ -90,17 +99,61 @@ jobs:
       - name: Test
         working-directory: ./frontend
         run: yarn test:ci
+      - name: Archive Coverage Results
+        uses: actions/upload-artifact@v2
+        with:
+          name: frontend-coverage
+          path: frontend/coverage/
+  function-tests:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v2
+        if: ${{ github.actor != 'dependabot[bot]' }}
+        with:
+          fetch-depth: 0 # Disable shallow clones so Sonar can have all the data
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }} # Needed to get PR information, if any
+          SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }}
       - name: "Function Apps: npm install"
         working-directory: ./ops/services/app_functions/report_stream_batched_publisher/functions
         run: npm ci
       - name: "Function Apps: Test"
         working-directory: ./ops/services/app_functions/report_stream_batched_publisher/functions
         run: npm run coverage
-      - name: Sonar analysis
+      - name: Archive Coverage Results
+        uses: actions/upload-artifact@v2
+        with:
+          name: function-coverage
+          path: ops/services/app_functions/report_stream_batched_publisher/functions/coverage
+  sonar:
+    needs: [backend-tests, frontend-tests, function-tests]
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v2
         if: ${{ github.actor != 'dependabot[bot]' }}
+        with:
+          fetch-depth: 0 # Disable shallow clones so Sonar can have all the data
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }} # Needed to get PR information, if any
           SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }}
+      - name: Download backend artifact
+        uses: actions/download-artifact@v3
+        with:
+          name: backend-build
+          path: backend/build
+      - name: Download frontend artifact
+        uses: actions/download-artifact@v3
+        with:
+          name: frontend-coverage
+          path: frontend/coverage
+      - name: Download function artifact
+        uses: actions/download-artifact@v3
+        with:
+          name: function-coverage
+          path: ops/services/app_functions/report_stream_batched_publisher/functions/coverage
+      - name: Sonar analysis
         run: ./gradlew sonarqube -Dsonar.projectBaseDir=${{ env.PROJECT_ROOT }} --info
   build-jar:
     runs-on: ubuntu-latest
