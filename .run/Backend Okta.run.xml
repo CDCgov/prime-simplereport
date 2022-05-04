@@ -1,0 +1,13 @@
+<component name="ProjectRunConfigurationManager">
+  <configuration default="false" name="Backend Okta" type="SpringBootApplicationConfigurationType" factoryName="Spring Boot">
+    <option name="ACTIVE_PROFILES" value="okta-local,local" />
+    <envs>
+      <env name="OKTA_API_KEY" value="$OKTA_API_KEY" />
+    </envs>
+    <module name="simple-report.main" />
+    <option name="SPRING_BOOT_MAIN_CLASS" value="gov.cdc.usds.simplereport.SimpleReportApplication" />
+    <method v="2">
+      <option name="Make" enabled="true" />
+    </method>
+  </configuration>
+</component>
