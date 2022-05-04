@@ -3,6 +3,7 @@ package gov.cdc.usds.simplereport.service;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import gov.cdc.usds.simplereport.api.model.errors.IllegalGraphqlArgumentException;
+import gov.cdc.usds.simplereport.api.model.errors.InvalidBulkTestResultUploadException;
 import gov.cdc.usds.simplereport.config.AuthorizationConfiguration;
 import gov.cdc.usds.simplereport.db.model.Facility;
 import gov.cdc.usds.simplereport.db.model.Organization;
@@ -13,6 +14,7 @@ import gov.cdc.usds.simplereport.service.model.reportstream.ReportStreamStatus;
 import gov.cdc.usds.simplereport.service.model.reportstream.UploadResponse;
 import java.io.IOException;
 import java.io.InputStream;
+import java.util.List;
 import java.util.UUID;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -87,5 +89,28 @@ public class TestResultUploadService {
       default:
         return UploadStatus.FAILURE;
     }
+  }
+
+  public BulkTestResultUpload getUploadSubmission(UUID id) throws InvalidBulkTestResultUploadException {
+    Organization org = _orgService.getCurrentOrganization();
+
+    System.out.println("-----------------------------------");
+    _repo.findAll().forEach((t) -> {
+      System.out.println("internalId");
+      System.out.println("Expected:");
+      System.out.println(id);
+      System.out.println("Actual:");
+      System.out.println(t.getInternalId());
+      System.out.println("orgId");
+      System.out.println("Expected:");
+      System.out.println(org.getInternalId());
+      System.out.println("Actual:");
+      System.out.println(t.getOrganization().getInternalId());
+
+    });
+    System.out.println("-----------------------------------");
+    return _repo
+        .findByInternalIdAndOrganization(id, org)
+        .orElseThrow(InvalidBulkTestResultUploadException::new);
   }
 }
