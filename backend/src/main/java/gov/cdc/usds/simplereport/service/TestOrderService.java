@@ -98,6 +98,8 @@ public class TestOrderService {
                 p,
                 cb.equal(
                     root.get(BaseTestInfo_.facility).get(AuditedEntity_.internalId), facilityId));
+      } else {
+        p = cb.and(p, cb.equal(root.get(BaseTestInfo_.organization), _os.getCurrentOrganization()));
       }
       if (patientId != null) {
         p =
@@ -143,7 +145,7 @@ public class TestOrderService {
 
   @Transactional(readOnly = true)
   @AuthorizationConfiguration.RequirePermissionReadResultListAtFacility
-  // todo fix auth here
+  // todo fix auth here for when facilityId is for an archived facility
   public List<TestEvent> getTestEventsResults(
       UUID facilityId,
       UUID patientId,
@@ -192,7 +194,7 @@ public class TestOrderService {
 
   @Transactional(readOnly = true)
   @AuthorizationConfiguration.RequirePermissionReadResultListForTestEvent
-  // todo fix auth here
+  // todo fix auth here for when testEventId maps an event in an archived facility
   public TestEvent getTestResult(UUID testEventId) {
     Organization org = _os.getCurrentOrganization();
     return _terepo.findByOrganizationAndInternalId(org, testEventId);
