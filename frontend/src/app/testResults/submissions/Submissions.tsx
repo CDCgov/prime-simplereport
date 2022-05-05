@@ -1,5 +1,3 @@
-import "./Submissions.scss";
-
 import { useParams } from "react-router-dom";
 import moment from "moment";
 import { DatePicker, Label } from "@trussworks/react-uswds";
@@ -60,19 +58,16 @@ const Submissions = () => {
     <main className="prime-home">
       <div className="grid-container results-wide-container">
         <div className="grid-row">
-          <div className="prime-container card-container sr-test-results-list">
+          <div className="prime-container card-container">
             {/*Submission header*/}
             <div className="usa-card__header">
               <h2>COVID-19 Submissions</h2>
             </div>
 
             {/*filters*/}
-            <div
-              id="test-results-search-by-patient-input"
-              className="position-relative bg-base-lightest"
-            >
+            <div className="position-relative bg-base-lightest">
               <div className="display-flex grid-row grid-gap flex-row flex-align-end padding-x-3 padding-y-2">
-                <div className="usa-form-group date-filter-group">
+                <div>
                   <Label htmlFor="start-date">Submitted (Start Range)</Label>
                   <DatePicker
                     key={resetCount}
@@ -91,7 +86,7 @@ const Submissions = () => {
                   />
                 </div>
 
-                <div className="usa-form-group date-filter-group">
+                <div>
                   <Label htmlFor="start-date">Submitted (End Range)</Label>
                   <DatePicker
                     key={resetCount}
@@ -110,7 +105,6 @@ const Submissions = () => {
                   />
                 </div>
 
-                {/*<button className="usa-button">Filter</button>*/}
                 <button
                   className="usa-button usa-button--outline"
                   onClick={() => {
