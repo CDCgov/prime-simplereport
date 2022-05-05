@@ -6,6 +6,7 @@
     top: 0;
     background-color: inherit;
     z-index: 10;
+    box-shadow: 0 4px 12px rgb(0 0 0 / 20%);
 
     .usa-table {
       margin-bottom: 0;
@@ -14,7 +15,6 @@
         position: sticky;
         background-color: inherit;
         top: 195px;
-        box-shadow: 0 2px 2px -1px rgba(0, 0, 0, 0.4);
       }
     }
   }
