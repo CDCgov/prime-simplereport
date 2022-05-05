@@ -8,37 +8,26 @@ import Pagination from "../../commonComponents/Pagination";
 import { formatDateWithTimeOption } from "../../utils/date";
 import {
   GetUploadSubmissionsQuery,
-  useGetUploadSubmissionsCountQuery,
   useGetUploadSubmissionsQuery,
 } from "../../../generated/graphql";
 
 const Submissions = () => {
   const urlParams = useParams();
   const pageNumber = Number(urlParams.pageNumber) || 1;
-  const pageSize = 20;
+  const pageSize = 10;
 
-  const {
-    data: submissionsCount,
-    loading: loadingCount,
-  } = useGetUploadSubmissionsCountQuery({ fetchPolicy: "no-cache" });
-
-  const {
-    data: submissions,
-    loading: loadingSubmissions,
-  } = useGetUploadSubmissionsQuery({
+  const { data: submissions, loading } = useGetUploadSubmissionsQuery({
     fetchPolicy: "no-cache",
     variables: {
       pageSize,
-      pageNumber,
+      pageNumber: pageNumber - 1,
     },
   });
-
-  const loading = loadingCount || loadingSubmissions;
 
   const SubmissionsTableRows = (
     submissions: GetUploadSubmissionsQuery | undefined
   ) => {
-    if (!submissions || submissions.uploadSubmissions.length === 0) {
+    if (!submissions || submissions.uploadSubmissions.totalElements === 0) {
       return (
         <tr>
           <td>No results</td>
@@ -47,7 +36,7 @@ const Submissions = () => {
     }
 
     // `sort` mutates the array, so make a copy
-    return [...submissions.uploadSubmissions].map((submission) => {
+    return submissions.uploadSubmissions.content.map((submission) => {
       return (
         <tr>
           <td>{submission.reportId}</td>
@@ -137,7 +126,9 @@ const Submissions = () => {
                   baseRoute="/results/upload/submissions"
                   currentPage={pageNumber}
                   entriesPerPage={pageSize}
-                  totalEntries={submissionsCount?.uploadSubmissionsCount || 0}
+                  totalEntries={
+                    submissions?.uploadSubmissions.totalElements || 0
+                  }
                 />
               )}
             </div>

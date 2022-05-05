@@ -9,11 +9,12 @@ import gov.cdc.usds.simplereport.service.model.reportstream.UploadResponse;
 import java.io.IOException;
 import java.io.InputStream;
 import java.util.Date;
-import java.util.List;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.json.JSONArray;
+import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
 
 @Service
@@ -49,38 +50,12 @@ public class TestResultUploadService {
     return "this area under construction";
   }
 
-  public List<BulkTestResultUpload> getUploadSubmissions(
+  public Page<BulkTestResultUpload> getUploadSubmissions(
       Date startDate, Date endDate, int pageNumber, int pageSize) {
     Organization org = _orgService.getCurrentOrganization();
+    PageRequest pageRequest =
+        PageRequest.of(pageNumber, pageSize, Sort.by("createdAt").descending());
 
-    if (pageNumber < 0) {
-      pageNumber = TestOrderService.DEFAULT_PAGINATION_PAGEOFFSET;
-    }
-    if (pageSize < 1) {
-      pageSize = TestOrderService.DEFAULT_PAGINATION_PAGESIZE;
-    }
-    PageRequest pageRequest = PageRequest.of(pageNumber, pageSize);
-
-    if (startDate == null && endDate == null) {
-      return _repo.findAllByOrganizationOrderByCreatedAtDesc(org, pageRequest);
-    }
-
-    if (endDate == null) {
-      return _repo.findAllByOrganizationAndCreatedAtIsAfterOrderByCreatedAtDesc(
-          org, startDate, pageRequest);
-    }
-
-    if (startDate == null) {
-      return _repo.findAllByOrganizationAndCreatedAtIsBeforeOrderByCreatedAtDesc(
-          org, endDate, pageRequest);
-    }
-
-    return _repo.findAllByOrganizationAndCreatedAtIsAfterAndCreatedAtIsBeforeOrderByCreatedAtDesc(
-        org, startDate, endDate, pageRequest);
-  }
-
-  public int getUploadSubmissionsCount() {
-    Organization org = _orgService.getCurrentOrganization();
-    return _repo.countAllByOrganization(org);
+    return _repo.findAll(org, startDate, endDate, pageRequest);
   }
 }

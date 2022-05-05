@@ -5,16 +5,15 @@ query getUploadSubmissions(
     pageNumber: $pageNumber
     pageSize: $pageSize
   ) {
-    internalId,
-    reportId,
-    createdAt,
-    status,
-    recordsCount,
-    errors,
-    warnings
+    content {
+      internalId,
+      reportId,
+      createdAt,
+      status,
+      recordsCount,
+      errors,
+      warnings
+    }
+    totalElements
   }
-}
-
-query getUploadSubmissionsCount{
-  uploadSubmissionsCount
 }

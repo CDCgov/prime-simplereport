@@ -13,6 +13,7 @@ import java.util.Date;
 import java.util.List;
 import java.util.UUID;
 import lombok.RequiredArgsConstructor;
+import org.springframework.data.domain.Page;
 import org.springframework.stereotype.Component;
 
 @Component
@@ -83,12 +84,8 @@ public class TestResultResolver implements GraphQLQueryResolver, GraphQLMutation
     return tos.getTopLevelDashboardMetrics(facilityId, startDate, endDate);
   }
 
-  public List<BulkTestResultUpload> getUploadSubmissions(
+  public Page<BulkTestResultUpload> getUploadSubmissions(
       Date startDate, Date endDate, int pageNumber, int pageSize) {
     return testResultUploadService.getUploadSubmissions(startDate, endDate, pageNumber, pageSize);
-  }
-
-  public int getUploadSubmissionsCount() {
-    return testResultUploadService.getUploadSubmissionsCount();
   }
 }

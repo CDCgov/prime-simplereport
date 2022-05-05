@@ -22,6 +22,7 @@ import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.boot.test.mock.mockito.SpyBean;
 import org.springframework.data.auditing.AuditingHandler;
 import org.springframework.data.auditing.DateTimeProvider;
+import org.springframework.data.domain.Page;
 
 class TestResultUploadServiceTest extends BaseServiceTest<TestResultUploadService> {
 
@@ -70,11 +71,11 @@ class TestResultUploadServiceTest extends BaseServiceTest<TestResultUploadServic
   @Test
   public void getUploadSubmissions_happy_path() {
     // WHEN
-    List<BulkTestResultUpload> uploadSubmissions =
+    Page<BulkTestResultUpload> uploadSubmissions =
         testResultUploadService.getUploadSubmissions(null, null, 0, 5);
 
     // THEN
-    assertThat(uploadSubmissions).hasSize(3);
+    assertThat(uploadSubmissions.getTotalElements()).isEqualTo(3);
   }
 
   @Test
@@ -84,13 +85,15 @@ class TestResultUploadServiceTest extends BaseServiceTest<TestResultUploadServic
     Date endDate = getDate("2021-02-20 00:00");
 
     // WHEN
-    List<BulkTestResultUpload> uploadSubmissions =
+    Page<BulkTestResultUpload> uploadSubmissions =
         testResultUploadService.getUploadSubmissions(startDate, endDate, 0, 5);
 
     // THEN
-    assertThat(uploadSubmissions).hasSize(2);
-    assertThat(uploadSubmissions.get(0).getReportId()).isIn(List.of(REPORT_ID_1, REPORT_ID_2));
-    assertThat(uploadSubmissions.get(1).getReportId()).isIn(List.of(REPORT_ID_1, REPORT_ID_2));
+    assertThat(uploadSubmissions.getTotalElements()).isEqualTo(2);
+    assertThat(uploadSubmissions.getContent().get(0).getReportId())
+        .isIn(List.of(REPORT_ID_1, REPORT_ID_2));
+    assertThat(uploadSubmissions.getContent().get(1).getReportId())
+        .isIn(List.of(REPORT_ID_1, REPORT_ID_2));
   }
 
   @Test
@@ -99,12 +102,12 @@ class TestResultUploadServiceTest extends BaseServiceTest<TestResultUploadServic
     Date endDate = getDate("2021-02-16 00:00");
 
     // WHEN
-    List<BulkTestResultUpload> uploadSubmissions =
+    Page<BulkTestResultUpload> uploadSubmissions =
         testResultUploadService.getUploadSubmissions(null, endDate, 0, 5);
 
     // THEN
-    assertThat(uploadSubmissions).hasSize(1);
-    assertThat(uploadSubmissions.get(0).getReportId()).isEqualTo(REPORT_ID_1);
+    assertThat(uploadSubmissions.getTotalElements()).isEqualTo(1);
+    assertThat(uploadSubmissions.getContent().get(0).getReportId()).isEqualTo(REPORT_ID_1);
   }
 
   @Test
@@ -113,13 +116,15 @@ class TestResultUploadServiceTest extends BaseServiceTest<TestResultUploadServic
     Date startDate = getDate("2021-02-16 00:00");
 
     // WHEN
-    List<BulkTestResultUpload> uploadSubmissions =
+    Page<BulkTestResultUpload> uploadSubmissions =
         testResultUploadService.getUploadSubmissions(startDate, null, 0, 5);
 
     // THEN
-    assertThat(uploadSubmissions).hasSize(2);
-    assertThat(uploadSubmissions.get(0).getReportId()).isIn(List.of(REPORT_ID_2, REPORT_ID_3));
-    assertThat(uploadSubmissions.get(1).getReportId()).isIn(List.of(REPORT_ID_2, REPORT_ID_3));
+    assertThat(uploadSubmissions.getTotalElements()).isEqualTo(2);
+    assertThat(uploadSubmissions.getContent().get(0).getReportId())
+        .isIn(List.of(REPORT_ID_2, REPORT_ID_3));
+    assertThat(uploadSubmissions.getContent().get(1).getReportId())
+        .isIn(List.of(REPORT_ID_2, REPORT_ID_3));
   }
 
   private void mockCreationTime(String date) {

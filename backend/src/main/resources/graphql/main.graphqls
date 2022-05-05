@@ -175,6 +175,11 @@ type UploadSubmission {
   errors: String
 }
 
+type UploadSubmissionPage {
+  totalElements: Int!
+  content: [UploadSubmission!]!
+}
+
 # Patient and test types
 
 type Patient
@@ -388,11 +393,8 @@ type Query {
     endDate: DateTime
     pageNumber: Int
     pageSize: Int
-  ): [UploadSubmission!]!
+  ): UploadSubmissionPage!
     @requiredPermissions(allOf: ["SR_CSV_UPLOADER_PILOT"])
-  uploadSubmissionsCount: Int
-    @requiredPermissions(allOf: ["SR_CSV_UPLOADER_PILOT"])
-
 }
 
 type Mutation {
