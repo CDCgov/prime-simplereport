@@ -140,9 +140,7 @@ public class PersonService {
 
     // build up filter based on params
     Specification<Person> filter = inCurrentOrganizationFilter().and(isDeletedFilter(isArchived));
-    if (facilityId == null) {
-      filter = filter.and(inAccessibleFacilitiesFilter());
-    } else {
+    if (facilityId != null) {
       filter = filter.and(inFacilityFilter(facilityId));
     }
 
@@ -167,7 +165,8 @@ public class PersonService {
   }
 
   /**
-   * @param facilityId If null, then it means across whole organization
+   * @param facilityId If null, then it means across whole organization, including archived
+   *     facilities
    * @param pageOffset Pagination offset is zero based
    * @param pageSize How many results to return, zero will result in the default page size (large)
    * @param isArchived Default is false. true will ONLY show deleted users
@@ -175,7 +174,6 @@ public class PersonService {
    *     names that start with these characters. Case insenstive. If fewer than
    * @return A list of matching patients.
    */
-  // todo handle auth for null facilityId
   @AuthorizationConfiguration.RequireSpecificPatientSearchPermission
   public List<Person> getPatients(
       UUID facilityId, int pageOffset, int pageSize, boolean isArchived, String namePrefixMatch) {

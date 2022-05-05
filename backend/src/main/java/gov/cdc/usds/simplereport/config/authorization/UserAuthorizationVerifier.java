@@ -250,7 +250,7 @@ public class UserAuthorizationVerifier {
       return false;
     }
     if (facilityId == null) {
-      perms.add(UserPermission.ACCESS_ALL_FACILITIES);
+      perms.add(UserPermission.READ_ALL_FACILITY_RESULTS);
     }
     if (isArchived) {
       perms.add(UserPermission.READ_ARCHIVED_PATIENT_LIST);
