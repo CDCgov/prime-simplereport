@@ -1,6 +1,24 @@
 @import "../../scss/settings/app-settings.scss";
 
 .sr-test-results-list {
+  .sticky-heading {
+    position: sticky;
+    top: 0;
+    background-color: inherit;
+    z-index: 10;
+
+    .usa-table {
+      margin-bottom: 0;
+
+      thead {
+        position: sticky;
+        background-color: inherit;
+        top: 195px;
+        box-shadow: 0 2px 2px -1px rgba(0, 0, 0, 0.4);
+      }
+    }
+  }
+
   .sr-more-test-results {
     display: flex;
     justify-content: center;
@@ -79,17 +97,17 @@
     padding-right: 12px;
 
     &.patient-name-cell {
-      padding-left: 8px;
+      padding-left: 1.5rem;
       padding-right: 12px;
-      width: 20%;
+      width: 15%;
     }
 
     &.test-date-cell {
-      width: 9%;
+      width: 10%;
     }
 
     &.test-result-cell {
-      width: 9%;
+      width: 8%;
     }
 
     &.test-facility-cell {
@@ -97,7 +115,7 @@
     }
 
     &.test-device-cell {
-      width: 28%;
+      width: 25%;
     }
 
     &.submitted-by-cell {
@@ -105,8 +123,13 @@
     }
 
     &.actions-cell {
-      padding-right: 8px;
+      padding-right: 1.5rem;
+      width: 8%;
     }
+  }
+
+  div[title=filtered-result] .usa-table {
+    margin-top: 0;
   }
 
   .usa-table td {

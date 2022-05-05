@@ -59,6 +59,35 @@ export const byDateTested = (a: any, b: any) => {
   return -1;
 };
 
+/**
+ * Results Table
+ */
+const tableHeaders = (
+  <tr>
+    <th scope="col" className="patient-name-cell">
+      {PATIENT_TERM_CAP}
+    </th>
+    <th scope="col" className="test-date-cell">
+      Test date
+    </th>
+    <th scope="col" className="test-result-cell">
+      COVID-19
+    </th>
+    <th scope="col" className="test-facility-cell">
+      Testing facility
+    </th>
+    <th scope="col" className="test-device-cell">
+      Test device
+    </th>
+    <th scope="col" className="submitted-by-cell">
+      Submitted by
+    </th>
+    <th scope="col" className="actions-cell">
+      Actions
+    </th>
+  </tr>
+);
+
 function testResultRows(
   testResults: any,
   setPrintModalId: SetStateAction<any>,
@@ -151,6 +180,33 @@ function testResultRows(
   });
 }
 
+interface ResultsTableListProps {
+  rows: JSX.Element | JSX.Element[];
+}
+
+const ResultsTable = ({ rows }: ResultsTableListProps) => {
+  return (
+    <table className="usa-table usa-table--borderless width-full">
+      <thead className="sr-element__sr-only">{tableHeaders}</thead>
+      <tbody>{rows}</tbody>
+    </table>
+  );
+};
+
+/**
+ * DetachedTestResultsList
+ */
+const getResultCountText = (
+  totalEntries: number,
+  pageNumber: number,
+  entriesPerPage: number
+) => {
+  const from = totalEntries === 0 ? 0 : (pageNumber - 1) * entriesPerPage + 1;
+  const to = Math.min(entriesPerPage * pageNumber, totalEntries);
+
+  return `Showing ${from}-${to} of ${totalEntries}`;
+};
+
 export type FilterParams = {
   patientId?: string | null;
   startDate?: string | null;
@@ -173,17 +229,6 @@ interface DetachedTestResultsListProps {
   clearFilterParams: () => void;
   activeFacilityId: string;
 }
-
-const getResultCountText = (
-  totalEntries: number,
-  pageNumber: number,
-  entriesPerPage: number
-) => {
-  const from = totalEntries === 0 ? 0 : (pageNumber - 1) * entriesPerPage + 1;
-  const to = Math.min(entriesPerPage * pageNumber, totalEntries);
-
-  return `Showing ${from}-${to} of ${totalEntries}`;
-};
 
 const getFilteredPatientName = (params: FilterParams, data: any) => {
   const person = data?.testResults[0]?.patient;
@@ -390,179 +435,162 @@ export const DetachedTestResultsList = ({
       <div className="grid-container results-wide-container">
         <div className="grid-row">
           <div className="prime-container card-container sr-test-results-list">
-            <div className="usa-card__header">
-              <h2>
-                Test results
-                {!loadingTotalResults && (
-                  <span className="sr-showing-results-on-page">
-                    {getResultCountText(
-                      totalEntries,
-                      pageNumber,
-                      entriesPerPage
+            <div className="sticky-heading">
+              <div className="usa-card__header">
+                <h2>
+                  Test results
+                  {!loadingTotalResults && (
+                    <span className="sr-showing-results-on-page">
+                      {getResultCountText(
+                        totalEntries,
+                        pageNumber,
+                        entriesPerPage
+                      )}
+                    </span>
+                  )}
+                </h2>
+                <div>
+                  <DownloadResultsCSVButton
+                    filterParams={filterParams}
+                    totalEntries={totalEntries}
+                    facilityId={
+                      filterParams.filterFacilityId || activeFacilityId
+                    }
+                  />
+                  <Button
+                    className="sr-active-button"
+                    icon={faSlidersH}
+                    onClick={() => {
+                      setDebounced("");
+                      clearFilterParams();
+                      // The DatePicker component contains bits of state that represent the selected date
+                      // as represented internally to the component and displayed externally to the DOM. Directly
+                      // changing the value of the date via props does not cause the internal state to be updated.
+                      // This hack forces the DatePicker component to be fully re-mounted whenever the filters are
+                      // cleared, therefore resetting the external date display.
+                      setResetCount(resetCount + 1);
+                    }}
+                  >
+                    Clear filters
+                  </Button>
+                </div>
+              </div>
+              <div
+                id="test-results-search-by-patient-input"
+                className="position-relative bg-base-lightest"
+              >
+                <div className="display-flex grid-row grid-gap flex-row flex-align-end padding-x-3 padding-y-2">
+                  <div className="person-search">
+                    <SearchInput
+                      onInputChange={onInputChange}
+                      queryString={debounced}
+                      disabled={!allowQuery}
+                      label={"Search by name"}
+                      placeholder={""}
+                      className="usa-form-group search-input_without_submit_button"
+                      showSubmitButton={false}
+                    />
+                    <SearchResults
+                      page="test-results"
+                      patients={patientData?.patients || []}
+                      onPatientSelect={onPatientSelect}
+                      shouldShowSuggestions={showDropdown}
+                      loading={debounced !== queryString || patientLoading}
+                      dropDownRef={dropDownRef}
+                    />
+                  </div>
+                  <div className="usa-form-group date-filter-group">
+                    <Label htmlFor="start-date">Date range (start)</Label>
+                    {startDateError && (
+                      <span className="usa-error-message" role="alert">
+                        <span className="usa-sr-only">Error: </span>
+                        {startDateError}
+                      </span>
                     )}
-                  </span>
-                )}
-              </h2>
-              <div>
-                <DownloadResultsCSVButton
-                  filterParams={filterParams}
-                  totalEntries={totalEntries}
-                  facilityId={filterParams.filterFacilityId || activeFacilityId}
-                />
-                <Button
-                  className="sr-active-button"
-                  icon={faSlidersH}
-                  onClick={() => {
-                    setDebounced("");
-                    clearFilterParams();
-                    // The DatePicker component contains bits of state that represent the selected date
-                    // as represented internally to the component and displayed externally to the DOM. Directly
-                    // changing the value of the date via props does not cause the internal state to be updated.
-                    // This hack forces the DatePicker component to be fully re-mounted whenever the filters are
-                    // cleared, therefore resetting the external date display.
-                    setResetCount(resetCount + 1);
-                  }}
-                >
-                  Clear filters
-                </Button>
-              </div>
-            </div>
-            <div
-              id="test-results-search-by-patient-input"
-              className="position-relative bg-base-lightest"
-            >
-              <div className="display-flex grid-row grid-gap flex-row flex-align-end padding-x-3 padding-y-2">
-                <div className="person-search">
-                  <SearchInput
-                    onInputChange={onInputChange}
-                    queryString={debounced}
-                    disabled={!allowQuery}
-                    label={"Search by name"}
-                    placeholder={""}
-                    className="usa-form-group search-input_without_submit_button"
-                    showSubmitButton={false}
-                  />
-                  <SearchResults
-                    page="test-results"
-                    patients={patientData?.patients || []}
-                    onPatientSelect={onPatientSelect}
-                    shouldShowSuggestions={showDropdown}
-                    loading={debounced !== queryString || patientLoading}
-                    dropDownRef={dropDownRef}
-                  />
-                </div>
-                <div className="usa-form-group date-filter-group">
-                  <Label htmlFor="start-date">Date range (start)</Label>
-                  {startDateError && (
-                    <span className="usa-error-message" role="alert">
-                      <span className="usa-sr-only">Error: </span>
-                      {startDateError}
-                    </span>
-                  )}
-                  <DatePicker
-                    id="start-date"
-                    key={resetCount}
-                    name="start-date"
-                    defaultValue={filterParams.startDate || ""}
-                    data-testid="start-date"
-                    minDate="2000-01-01T00:00"
-                    maxDate={moment().format("YYYY-MM-DDThh:mm")}
-                    onChange={processStartDate}
-                  />
-                </div>
-                <div className="usa-form-group date-filter-group">
-                  <Label htmlFor="end-date">Date range (end)</Label>
-                  {endDateError && (
-                    <span className="usa-error-message" role="alert">
-                      <span className="usa-sr-only">Error: </span>
-                      {endDateError}
-                    </span>
-                  )}
-                  <DatePicker
-                    id="end-date"
-                    key={resetCount + 1}
-                    name="end-date"
-                    defaultValue={filterParams.endDate || ""}
-                    data-testid="end-date"
-                    minDate={filterParams.startDate || "2000-01-01T00:00"}
-                    maxDate={moment().format("YYYY-MM-DDThh:mm")}
-                    onChange={processEndDate}
-                  />
-                </div>
-                <Select
-                  label="Test result"
-                  name="result"
-                  value={filterParams.result || ""}
-                  options={[
-                    {
-                      value: COVID_RESULTS.POSITIVE,
-                      label: TEST_RESULT_DESCRIPTIONS.POSITIVE,
-                    },
-                    {
-                      value: COVID_RESULTS.NEGATIVE,
-                      label: TEST_RESULT_DESCRIPTIONS.NEGATIVE,
-                    },
-                    {
-                      value: COVID_RESULTS.INCONCLUSIVE,
-                      label: TEST_RESULT_DESCRIPTIONS.UNDETERMINED,
-                    },
-                  ]}
-                  defaultSelect
-                  onChange={setFilterParams("result")}
-                />
-                <Select
-                  label="Role"
-                  name="role"
-                  value={filterParams.role || ""}
-                  options={ROLE_VALUES}
-                  defaultSelect
-                  onChange={setFilterParams("role")}
-                />
-                {validFacilities && validFacilities.length > 1 ? (
+                    <DatePicker
+                      id="start-date"
+                      key={resetCount}
+                      name="start-date"
+                      defaultValue={filterParams.startDate || ""}
+                      data-testid="start-date"
+                      minDate="2000-01-01T00:00"
+                      maxDate={moment().format("YYYY-MM-DDThh:mm")}
+                      onChange={processStartDate}
+                    />
+                  </div>
+                  <div className="usa-form-group date-filter-group">
+                    <Label htmlFor="end-date">Date range (end)</Label>
+                    {endDateError && (
+                      <span className="usa-error-message" role="alert">
+                        <span className="usa-sr-only">Error: </span>
+                        {endDateError}
+                      </span>
+                    )}
+                    <DatePicker
+                      id="end-date"
+                      key={resetCount + 1}
+                      name="end-date"
+                      defaultValue={filterParams.endDate || ""}
+                      data-testid="end-date"
+                      minDate={filterParams.startDate || "2000-01-01T00:00"}
+                      maxDate={moment().format("YYYY-MM-DDThh:mm")}
+                      onChange={processEndDate}
+                    />
+                  </div>
                   <Select
-                    label="Testing facility"
-                    name="facility"
-                    value={filterParams.filterFacilityId || activeFacilityId}
-                    options={validFacilities.map((facility) => {
-                      return {
-                        value: facility.id,
-                        label: facility.name,
-                      };
-                    })}
-                    onChange={setFilterParams("filterFacilityId")}
+                    label="Test result"
+                    name="result"
+                    value={filterParams.result || ""}
+                    options={[
+                      {
+                        value: COVID_RESULTS.POSITIVE,
+                        label: TEST_RESULT_DESCRIPTIONS.POSITIVE,
+                      },
+                      {
+                        value: COVID_RESULTS.NEGATIVE,
+                        label: TEST_RESULT_DESCRIPTIONS.NEGATIVE,
+                      },
+                      {
+                        value: COVID_RESULTS.INCONCLUSIVE,
+                        label: TEST_RESULT_DESCRIPTIONS.UNDETERMINED,
+                      },
+                    ]}
+                    defaultSelect
+                    onChange={setFilterParams("result")}
                   />
-                ) : null}
+                  <Select
+                    label="Role"
+                    name="role"
+                    value={filterParams.role || ""}
+                    options={ROLE_VALUES}
+                    defaultSelect
+                    onChange={setFilterParams("role")}
+                  />
+                  {validFacilities && validFacilities.length > 1 ? (
+                    <Select
+                      label="Testing facility"
+                      name="facility"
+                      value={filterParams.filterFacilityId || activeFacilityId}
+                      options={validFacilities.map((facility) => {
+                        return {
+                          value: facility.id,
+                          label: facility.name,
+                        };
+                      })}
+                      onChange={setFilterParams("filterFacilityId")}
+                    />
+                  ) : null}
+                </div>
               </div>
-            </div>
-            <div className="usa-card__body" title="filtered-result">
-              <table className="usa-table usa-table--borderless width-full">
-                <thead>
-                  <tr>
-                    <th scope="col" className="patient-name-cell">
-                      {PATIENT_TERM_CAP}
-                    </th>
-                    <th scope="col" className="test-date-cell">
-                      Test date
-                    </th>
-                    <th scope="col" className="test-result-cell">
-                      COVID-19
-                    </th>
-                    <th scope="col" className="test-facility-cell">
-                      Testing facility
-                    </th>
-                    <th scope="col" className="test-device-cell">
-                      Test device
-                    </th>
-                    <th scope="col" className="submitted-by-cell">
-                      Submitted by
-                    </th>
-                    <th scope="col" className="actions-cell">
-                      Actions
-                    </th>
-                  </tr>
-                </thead>
-                <tbody>{rows}</tbody>
+              <table
+                className="usa-table usa-table--borderless width-full"
+                aria-hidden="true"
+              >
+                <thead>{tableHeaders}</thead>
               </table>
+            </div>
+            <div title="filtered-result">
+              <ResultsTable rows={rows} />
             </div>
             <div className="usa-card__footer">
               {loading ? (
