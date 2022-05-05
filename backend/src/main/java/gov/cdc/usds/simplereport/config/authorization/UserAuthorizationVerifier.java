@@ -249,6 +249,9 @@ public class UserAuthorizationVerifier {
     if (facilityId != null && !userCanAccessFacility(facilityId)) {
       return false;
     }
+    if (facilityId == null) {
+      perms.add(UserPermission.ACCESS_ALL_FACILITIES);
+    }
     if (isArchived) {
       perms.add(UserPermission.READ_ARCHIVED_PATIENT_LIST);
     }
