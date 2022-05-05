@@ -6773,7 +6773,7 @@ export type GetFacilityResultsForCsvQueryResult = Apollo.QueryResult<
   GetFacilityResultsForCsvQueryVariables
 >;
 export const GetUploadSubmissionsDocument = gql`
-  query getUploadSubmissions(
+  query GetUploadSubmissions(
     $startDate: DateTime
     $endDate: DateTime
     $pageNumber: Int

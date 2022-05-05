@@ -1,4 +1,4 @@
-query getUploadSubmissions(
+query GetUploadSubmissions(
   $startDate: DateTime
   $endDate: DateTime
   $pageNumber: Int

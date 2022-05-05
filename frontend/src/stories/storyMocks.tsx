@@ -15,6 +15,9 @@ import {
 } from "@apollo/client";
 
 import { exampleQuestionSet } from "../app/signUp/IdentityVerification/constants";
+import {
+  UploadSubmissionPage,
+} from "../generated/graphql";
 
 const BACKEND_URL = process.env.REACT_APP_BACKEND_URL;
 
@@ -77,6 +80,44 @@ const mocks = {
           },
         })
       )
+  ),
+  GetUploadSubmissions: graphql.query("GetUploadSubmissions", (req, res, ctx) =>
+    res(
+      ctx.data({
+        uploadSubmissions: {
+          content: [
+            {
+              internalId: "e70c3110-15b7-43a1-9014-f07b81c5fce1",
+              reportId: "e70c3110-15b7-43a1-9014-f07b81c5fce1",
+              createdAt: "2022-05-05T13:47:09Z",
+              status: "PENDING",
+              recordsCount: "15",
+              errors: null,
+              warnings: null,
+            },
+            {
+              internalId: "21bc0220-30d7-47a7-a22f-dfede0c04f19",
+              reportId: "21bc0220-30d7-47a7-a22f-dfede0c04f19",
+              createdAt: "2022-05-03T13:47:09Z",
+              status: "SUCCESS",
+              recordsCount: "15",
+              errors: null,
+              warnings: null,
+            },
+            {
+              internalId: "1e0c8e80-52e9-4f80-9973-841ecebc297a",
+              reportId: "1e0c8e80-52e9-4f80-9973-841ecebc297a",
+              createdAt: "2022-05-02T13:47:09Z",
+              status: "FAILURE",
+              recordsCount: "15",
+              errors: null,
+              warnings: null,
+            },
+          ],
+          totalElements: 3,
+        } as UploadSubmissionPage,
+      })
+    )
   ),
   enrollSecurityKeyMfa: rest.post(
     `${BACKEND_URL}/user-account/enroll-security-key-mfa`,

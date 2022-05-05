@@ -9,7 +9,11 @@ import {
   GetUploadSubmissionsQuery,
   useGetUploadSubmissionsQuery,
 } from "../../../generated/graphql";
-import { setEndTimeForDateRange } from "../../analytics/Analytics";
+import {
+  setEndTimeForDateRange,
+  setStartTimeForDateRange,
+} from "../../analytics/Analytics";
+import { LoadingCard } from "../../commonComponents/LoadingCard/LoadingCard";
 
 const Submissions = () => {
   const urlParams = useParams();
@@ -20,7 +24,7 @@ const Submissions = () => {
   const [endDate, setEndDate] = useState<Date | null>(null);
   const [resetCount, setResetCount] = useState<number>(0);
 
-  const { data: submissions, loading } = useGetUploadSubmissionsQuery({
+  const { data: submissions, loading, error } = useGetUploadSubmissionsQuery({
     fetchPolicy: "no-cache",
     variables: {
       pageSize,
@@ -29,6 +33,14 @@ const Submissions = () => {
       endDate,
     },
   });
+
+  if (loading) {
+    return <LoadingCard />;
+  }
+
+  if (error) {
+    throw error;
+  }
 
   const SubmissionsTableRows = (
     submissions: GetUploadSubmissionsQuery | undefined
@@ -44,7 +56,7 @@ const Submissions = () => {
     // `sort` mutates the array, so make a copy
     return submissions.uploadSubmissions.content.map((submission) => {
       return (
-        <tr>
+        <tr key={submission.internalId}>
           <td>{submission.reportId}</td>
           <td>{formatDateWithTimeOption(submission.createdAt, true)}</td>
           <td>{submission.recordsCount}</td>
@@ -80,7 +92,7 @@ const Submissions = () => {
                     onChange={(date?: string) => {
                       if (date && date.length === 10) {
                         const newDate = new Date(date);
-                        setStartDate(setEndTimeForDateRange(newDate));
+                        setStartDate(setStartTimeForDateRange(newDate));
                       }
                     }}
                   />
