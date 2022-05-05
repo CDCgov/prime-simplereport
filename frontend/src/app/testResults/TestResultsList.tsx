@@ -196,6 +196,16 @@ const ResultsTable = ({ rows }: ResultsTableListProps) => {
 /**
  * DetachedTestResultsList
  */
+
+export type FilterParams = {
+  patientId?: string | null;
+  startDate?: string | null;
+  endDate?: string | null;
+  role?: string | null;
+  result?: string | null;
+  filterFacilityId?: string | null;
+};
+
 const getResultCountText = (
   totalEntries: number,
   pageNumber: number,
@@ -205,15 +215,6 @@ const getResultCountText = (
   const to = Math.min(entriesPerPage * pageNumber, totalEntries);
 
   return `Showing ${from}-${to} of ${totalEntries}`;
-};
-
-export type FilterParams = {
-  patientId?: string | null;
-  startDate?: string | null;
-  endDate?: string | null;
-  role?: string | null;
-  result?: string | null;
-  filterFacilityId?: string | null;
 };
 
 interface DetachedTestResultsListProps {
