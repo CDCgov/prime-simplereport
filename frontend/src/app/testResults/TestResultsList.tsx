@@ -206,17 +206,6 @@ export type FilterParams = {
   filterFacilityId?: string | null;
 };
 
-const getResultCountText = (
-  totalEntries: number,
-  pageNumber: number,
-  entriesPerPage: number
-) => {
-  const from = totalEntries === 0 ? 0 : (pageNumber - 1) * entriesPerPage + 1;
-  const to = Math.min(entriesPerPage * pageNumber, totalEntries);
-
-  return `Showing ${from}-${to} of ${totalEntries}`;
-};
-
 interface DetachedTestResultsListProps {
   data: any;
   refetch: () => void;
@@ -230,6 +219,17 @@ interface DetachedTestResultsListProps {
   clearFilterParams: () => void;
   activeFacilityId: string;
 }
+
+const getResultCountText = (
+  totalEntries: number,
+  pageNumber: number,
+  entriesPerPage: number
+) => {
+  const from = totalEntries === 0 ? 0 : (pageNumber - 1) * entriesPerPage + 1;
+  const to = Math.min(entriesPerPage * pageNumber, totalEntries);
+
+  return `Showing ${from}-${to} of ${totalEntries}`;
+};
 
 const getFilteredPatientName = (params: FilterParams, data: any) => {
   const person = data?.testResults[0]?.patient;
