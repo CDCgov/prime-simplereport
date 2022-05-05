@@ -2,6 +2,11 @@ variable "env" {
   type = string
 }
 
+variable "env_level" {
+  description = "Pipeline level that this environment is a member of."
+  type        = string
+}
+
 variable "tags" {
   description = "tags for resources created"
   type        = map(string)

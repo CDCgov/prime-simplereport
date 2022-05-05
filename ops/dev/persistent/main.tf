@@ -1,7 +1,8 @@
 locals {
-  project = "prime"
-  name    = "simple-report"
-  env     = "dev"
+  project   = "prime"
+  name      = "simple-report"
+  env       = "dev"
+  env_level = "dev"
 
   network_cidr = "10.1.0.0/16"
   rg_name      = data.azurerm_resource_group.dev.name
@@ -9,7 +10,7 @@ locals {
   management_tags = {
     prime-app      = "simple-report"
     environment    = local.env
-    resource_group = "${local.project}-${local.name}-${local.env}"
+    resource_group = "${local.project}-${local.name}-${local.env_level}"
   }
 }
 
@@ -46,6 +47,7 @@ resource "random_password" "random_nophi_password" {
 module "db" {
   source      = "../../services/postgres_db"
   env         = local.env
+  env_level   = local.env_level
   rg_location = local.rg_location
   rg_name     = local.rg_name
 
@@ -72,6 +74,7 @@ module "db_alerting" {
 module "vnet" {
   source              = "../../services/virtual_network"
   env                 = local.env
+  env_level           = local.env_level
   resource_group_name = local.rg_name
   network_address     = local.network_cidr
   management_tags     = local.management_tags

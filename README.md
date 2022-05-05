@@ -232,6 +232,8 @@ There are a few ways to manage this:
 1. Enable the optional pre-commit hook by running `yarn install` in the root dir
 1. Add extensions to your code editor that runs the linters for you on save, e.g. [prettier-vscode](https://marketplace.visualstudio.com/items?itemName=esbenp.prettier-vscode), [vscode-eslint](https://marketplace.visualstudio.com/items?itemName=dbaeumer.vscode-eslint), [vscode-google-java-format](https://marketplace.visualstudio.com/items?itemName=ilkka.google-java-format)
 
+You can also run the pre-commit hooks in docker using `yarn lefthook run in-docker`.
+
 ### Storybook and Chromatic
 
 [Storybook](https://storybook.js.org/) is an open source tool for developing UI components in isolation for React. It makes building UIs organized and efficient.
@@ -266,11 +268,14 @@ We require two reviewers per changeset, and you cannot merge until all commits h
 | :------: | :-------------------------------------------------------------------------------: | :-----------------------------------------------------------------------: | :-----------------------------------: | :----------------------------------------------------------------------------: |
 |   prod   |     [/app/static/commit.txt](https://simplereport.gov/app/static/commit.txt)      |     [/api/actuator/info](https://simplereport.gov/api/actuator/info)      | Dispatched on success of `stg` deploy |                               Used by end users                                |
 |   demo   |   [/app/static/commit.txt](https://demo.simplereport.gov/app/static/commit.txt)   |   [/api/actuator/info](https://demo.simplereport.gov/api/actuator/info)   |  Worflow on success of `stg` deploy   |         Used internally to demo the application to potential end users         |
-| training | [/app/static/commit.txt](https://training.simplereport.gov/app/static/commit.txt) | [/api/actuator/info](https://training.simplereport.gov/api/actuator/info) | Dispatched on success of `stg` deploy | Used externally by potential users to get a better uderstanding of the product |
+| training | [/app/static/commit.txt](https://training.simplereport.gov/app/static/commit.txt) | [/api/actuator/info](https://training.simplereport.gov/api/actuator/info) | Dispatched on success of `stg` deploy | Used externally by potential users to get a better understanding of the product |
 |   stg    |   [/app/static/commit.txt](https://stg.simplereport.gov/app/static/commit.txt)    |   [/api/actuator/info](https://stg.simplereport.gov/api/actuator/info)    |            Push to `main`             |  To validate the application work in the cloud and works with prod like data   |
-|   dev    |   [/app/static/commit.txt](https://dev.simplereport.gov/app/static/commit.txt)    |   [/api/actuator/info](https://dev.simplereport.gov/api/actuator/info)    |     [Action](#deploy-with-action)     |                     To validate PRs before merging to main                     |
-|   test   |   [/app/static/commit.txt](https://test.simplereport.gov/app/static/commit.txt)   |   [/api/actuator/info](https://test.simplereport.gov/api/actuator/info)   |     [Action](#deploy-with-action)     |                     To validate PRs before merging to main                     |
-| pentest  | [/app/static/commit.txt](https://pentest.simplereport.gov/app/static/commit.txt)  | [/api/actuator/info](https://pentest.simplereport.gov/api/actuator/info)  |     [Action](#deploy-with-action)     |                     To validate PRs before merging to main                     |
+|   dev    |   [/app/static/commit.txt](https://dev.simplereport.gov/app/static/commit.txt)    |   [/api/actuator/info](https://dev.simplereport.gov/api/actuator/info)    |     [Action](#deploy-with-action)     |           Development testing/PR validation before merging to `main`           |
+|   dev2   |   [/app/static/commit.txt](https://dev2.simplereport.gov/app/static/commit.txt)   |   [/api/actuator/info](https://dev2.simplereport.gov/api/actuator/info)   |     [Action](#deploy-with-action)     |           Development testing/PR validation before merging to `main`           |
+|   dev3   |   [/app/static/commit.txt](https://dev3.simplereport.gov/app/static/commit.txt)   |   [/api/actuator/info](https://dev3.simplereport.gov/api/actuator/info)   |     [Action](#deploy-with-action)     |           Development testing/PR validation before merging to `main`           |
+|   dev4   |   [/app/static/commit.txt](https://dev4.simplereport.gov/app/static/commit.txt)   |   [/api/actuator/info](https://dev4.simplereport.gov/api/actuator/info)   |     [Action](#deploy-with-action)     |           Development testing/PR validation before merging to `main`           |
+|   test   |   [/app/static/commit.txt](https://test.simplereport.gov/app/static/commit.txt)   |   [/api/actuator/info](https://test.simplereport.gov/api/actuator/info)   |            Push to `main`             |                   Automated testing agsinst `main` (e2e/load)                  |
+|  pentest | [/app/static/commit.txt](https://pentest.simplereport.gov/app/static/commit.txt)  | [/api/actuator/info](https://pentest.simplereport.gov/api/actuator/info)  |     [Action](#deploy-with-action)     |                   Penetration testing (no alerting enabled)                    |
 
 ## Deploy
 
@@ -279,7 +284,7 @@ SimpleReport uses a continuous deployment deployment (CD) process
 
 ### Revert to a Previous Release
 
-**Note:** A bad version can be rolled backed independent of the FE via the [rollback API actions](https://github.com/CDCgov/prime-simplereport/actions/workflows/rollbackProdAPI.yml)
+**Note:** A bad version can be rolled back independent of the FE via the [rollback API actions](https://github.com/CDCgov/prime-simplereport/actions/workflows/rollbackProdAPI.yml)
 
 1. checkout `main`
 2. create a new branch (example: `tim-best/revert-feature-A`)

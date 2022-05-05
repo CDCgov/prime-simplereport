@@ -4,6 +4,36 @@ import { useTranslatedConstants } from "../constants";
 
 import RadioGroup from "./RadioGroup";
 
+export const boolToYesNoUnknown = (
+  value: boolean | null | undefined
+): YesNoUnknown | undefined => {
+  if (value) {
+    return "YES";
+  }
+  if (value === false) {
+    return "NO";
+  }
+  if (value === null) {
+    return "UNKNOWN";
+  }
+  return undefined;
+};
+
+export const yesNoUnknownToBool = (
+  value: YesNoUnknown
+): boolean | null | undefined => {
+  if (value === "YES") {
+    return true;
+  }
+  if (value === "NO") {
+    return false;
+  }
+  if (value === "UNKNOWN") {
+    return null;
+  }
+  return undefined;
+};
+
 interface Props {
   name: string;
   legend: React.ReactNode;
