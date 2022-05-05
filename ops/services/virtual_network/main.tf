@@ -56,13 +56,22 @@ resource "azurerm_subnet" "webapp" {
   }
 }
 
+# The name of the private DNS zone MUST be environment-specific to support multiple envs within the same resource group.
 resource "azurerm_private_dns_zone" "default" {
-  name                = "privatelink.postgres.database.azure.com"
+  name                = "privatelink.${var.env == var.env_level ? "" : "${var.env}."}postgres.database.azure.com"
   resource_group_name = var.resource_group_name
 }
 
-# Subnet + network profile for Azure Container Instances
+# DNS/VNet linkage for Flexible DB functionality
+# TODO: Import the existing links for each standing environment.
+resource "azurerm_private_dns_zone_virtual_network_link" "vnet_link" {
+  name                  = "${var.env}-vnet-dns-link"
+  resource_group_name   = var.resource_group_name
+  private_dns_zone_name = azurerm_private_dns_zone.default.name
+  virtual_network_id    = azurerm_virtual_network.vn.id
+}
 
+# Subnet + network profile for Azure Container Instances
 resource "azurerm_subnet" "container_instances" {
   name                 = "${var.env}-azure-container-instances"
   resource_group_name  = var.resource_group_name
@@ -95,7 +104,6 @@ resource "azurerm_network_profile" "container_instances" {
 }
 
 # Subnet for Flexible DBs
-
 resource "azurerm_subnet" "db" {
   name                 = "${var.env}-db"
   resource_group_name  = var.resource_group_name
