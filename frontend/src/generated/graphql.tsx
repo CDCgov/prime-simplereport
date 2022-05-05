@@ -2521,6 +2521,8 @@ export type GetFacilityResultsForCsvQuery = {
 };
 
 export type GetUploadSubmissionsQueryVariables = Exact<{
+  startDate?: InputMaybe<Scalars["DateTime"]>;
+  endDate?: InputMaybe<Scalars["DateTime"]>;
   pageNumber?: InputMaybe<Scalars["Int"]>;
   pageSize?: InputMaybe<Scalars["Int"]>;
 }>;
@@ -6771,8 +6773,18 @@ export type GetFacilityResultsForCsvQueryResult = Apollo.QueryResult<
   GetFacilityResultsForCsvQueryVariables
 >;
 export const GetUploadSubmissionsDocument = gql`
-  query getUploadSubmissions($pageNumber: Int, $pageSize: Int) {
-    uploadSubmissions(pageNumber: $pageNumber, pageSize: $pageSize) {
+  query getUploadSubmissions(
+    $startDate: DateTime
+    $endDate: DateTime
+    $pageNumber: Int
+    $pageSize: Int
+  ) {
+    uploadSubmissions(
+      startDate: $startDate
+      endDate: $endDate
+      pageNumber: $pageNumber
+      pageSize: $pageSize
+    ) {
       content {
         internalId
         reportId
@@ -6799,6 +6811,8 @@ export const GetUploadSubmissionsDocument = gql`
  * @example
  * const { data, loading, error } = useGetUploadSubmissionsQuery({
  *   variables: {
+ *      startDate: // value for 'startDate'
+ *      endDate: // value for 'endDate'
  *      pageNumber: // value for 'pageNumber'
  *      pageSize: // value for 'pageSize'
  *   },

@@ -1,7 +1,11 @@
 query getUploadSubmissions(
+  $startDate: DateTime
+  $endDate: DateTime
   $pageNumber: Int
   $pageSize: Int) {
   uploadSubmissions(
+    startDate: $startDate
+    endDate: $endDate
     pageNumber: $pageNumber
     pageSize: $pageSize
   ) {

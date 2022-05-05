@@ -3,6 +3,7 @@ import "./Submissions.scss";
 import { useParams } from "react-router-dom";
 import moment from "moment";
 import { DatePicker, Label } from "@trussworks/react-uswds";
+import { useState } from "react";
 
 import Pagination from "../../commonComponents/Pagination";
 import { formatDateWithTimeOption } from "../../utils/date";
@@ -10,17 +11,24 @@ import {
   GetUploadSubmissionsQuery,
   useGetUploadSubmissionsQuery,
 } from "../../../generated/graphql";
+import { setEndTimeForDateRange } from "../../analytics/Analytics";
 
 const Submissions = () => {
   const urlParams = useParams();
   const pageNumber = Number(urlParams.pageNumber) || 1;
   const pageSize = 10;
 
+  const [startDate, setStartDate] = useState<Date | null>(null);
+  const [endDate, setEndDate] = useState<Date | null>(null);
+  const [resetCount, setResetCount] = useState<number>(0);
+
   const { data: submissions, loading } = useGetUploadSubmissionsQuery({
     fetchPolicy: "no-cache",
     variables: {
       pageSize,
       pageNumber: pageNumber - 1,
+      startDate,
+      endDate,
     },
   });
 
@@ -55,14 +63,7 @@ const Submissions = () => {
           <div className="prime-container card-container sr-test-results-list">
             {/*Submission header*/}
             <div className="usa-card__header">
-              <h2>
-                COVID-19 Submissions
-                {
-                  <span className="sr-showing-results-on-page">
-                    All-In-One Health CSV lab report schema, California
-                  </span>
-                }
-              </h2>
+              <h2>COVID-19 Submissions</h2>
             </div>
 
             {/*filters*/}
@@ -74,29 +75,50 @@ const Submissions = () => {
                 <div className="usa-form-group date-filter-group">
                   <Label htmlFor="start-date">Submitted (Start Range)</Label>
                   <DatePicker
+                    key={resetCount}
                     id="start-date"
                     name="start-date"
                     defaultValue={""}
                     data-testid="start-date"
                     minDate="2000-01-01T00:00"
                     maxDate={moment().format("YYYY-MM-DDThh:mm")}
+                    onChange={(date?: string) => {
+                      if (date && date.length === 10) {
+                        const newDate = new Date(date);
+                        setStartDate(setEndTimeForDateRange(newDate));
+                      }
+                    }}
                   />
                 </div>
 
                 <div className="usa-form-group date-filter-group">
                   <Label htmlFor="start-date">Submitted (End Range)</Label>
                   <DatePicker
+                    key={resetCount}
                     id="start-date"
                     name="start-date"
                     defaultValue={""}
                     data-testid="start-date"
                     minDate="2000-01-01T00:00"
                     maxDate={moment().format("YYYY-MM-DDThh:mm")}
+                    onChange={(date?: string) => {
+                      if (date && date.length === 10) {
+                        const newDate = new Date(date);
+                        setEndDate(setEndTimeForDateRange(newDate));
+                      }
+                    }}
                   />
                 </div>
 
-                <button className="usa-button">Filter</button>
-                <button className="usa-button usa-button--outline">
+                {/*<button className="usa-button">Filter</button>*/}
+                <button
+                  className="usa-button usa-button--outline"
+                  onClick={() => {
+                    setStartDate(null);
+                    setEndDate(null);
+                    setResetCount(resetCount + 1);
+                  }}
+                >
                   Clear
                 </button>
               </div>
