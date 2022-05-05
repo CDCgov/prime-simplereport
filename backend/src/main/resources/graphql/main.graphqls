@@ -607,6 +607,13 @@ type Mutation {
     result: String
     dateTested: DateTime
   ): TestOrder @requiredPermissions(allOf: ["UPDATE_TEST"])
+  editQueueItemMultiplex(
+    id: ID!
+    deviceId: String
+    deviceSpecimenType: ID
+    results: MultiplexTestResult
+    dateTested: DateTime
+  ): TestOrder @requiredPermissions(allOf: ["UPDATE_TEST"])
   correctTestMarkAsError(id: ID!, reason: String): TestResult
     @requiredPermissions(allOf: ["UPDATE_TEST"])
   correctTestMarkAsCorrection(id: ID!, reason: String): TestResult

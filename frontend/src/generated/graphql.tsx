@@ -150,6 +150,7 @@ export type Mutation = {
   createOrganizationRegistrationLink?: Maybe<Scalars["String"]>;
   editPendingOrganization?: Maybe<Scalars["String"]>;
   editQueueItem?: Maybe<TestOrder>;
+  editQueueItemMultiplex?: Maybe<TestOrder>;
   markFacilityAsDeleted?: Maybe<Scalars["String"]>;
   markOrganizationAsDeleted?: Maybe<Scalars["String"]>;
   markPendingOrganizationAsDeleted?: Maybe<Scalars["String"]>;
@@ -390,6 +391,14 @@ export type MutationEditQueueItemArgs = {
   deviceSpecimenType?: InputMaybe<Scalars["ID"]>;
   id: Scalars["ID"];
   result?: InputMaybe<Scalars["String"]>;
+};
+
+export type MutationEditQueueItemMultiplexArgs = {
+  dateTested?: InputMaybe<Scalars["DateTime"]>;
+  deviceId?: InputMaybe<Scalars["String"]>;
+  deviceSpecimenType?: InputMaybe<Scalars["ID"]>;
+  id: Scalars["ID"];
+  results?: InputMaybe<MultiplexTestResult>;
 };
 
 export type MutationMarkFacilityAsDeletedArgs = {

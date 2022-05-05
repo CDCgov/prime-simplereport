@@ -1,7 +1,5 @@
 package gov.cdc.usds.simplereport.api.queue;
 
-import static gov.cdc.usds.simplereport.api.Translators.parseSymptoms;
-
 import com.google.i18n.phonenumbers.NumberParseException;
 import gov.cdc.usds.simplereport.api.model.AddTestResultResponse;
 import gov.cdc.usds.simplereport.api.model.ApiTestOrder;
@@ -13,12 +11,15 @@ import gov.cdc.usds.simplereport.service.DeviceTypeService;
 import gov.cdc.usds.simplereport.service.PersonService;
 import gov.cdc.usds.simplereport.service.TestOrderService;
 import graphql.kickstart.tools.GraphQLMutationResolver;
+import org.json.JSONException;
+import org.springframework.stereotype.Component;
+
 import java.time.LocalDate;
 import java.util.Date;
 import java.util.Map;
 import java.util.UUID;
-import org.json.JSONException;
-import org.springframework.stereotype.Component;
+
+import static gov.cdc.usds.simplereport.api.Translators.parseSymptoms;
 
 /** Mutations for creating and updating test queue entries. */
 @Component
@@ -72,6 +73,21 @@ public class QueueMutationResolver implements GraphQLMutationResolver {
             : deviceSpecimenType;
 
     return new ApiTestOrder(_tos.editQueueItem(id, dst, result, dateTested));
+  }
+
+  public ApiTestOrder editQueueItemMultiplex(
+      UUID id,
+      String deviceId,
+      UUID deviceSpecimenType,
+      MultiplexTestResult results,
+      Date dateTested) {
+    UUID dst =
+        deviceSpecimenType == null
+            ? _dts.getFirstDeviceSpecimenTypeForDeviceTypeId(UUID.fromString(deviceId))
+                .getInternalId()
+            : deviceSpecimenType;
+
+    return new ApiTestOrder(_tos.editQueueItemMultiplex(id, dst, results, dateTested));
   }
 
   public String addPatientToQueue(

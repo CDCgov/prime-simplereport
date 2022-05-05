@@ -1,8 +1,5 @@
 package gov.cdc.usds.simplereport.api.graphql;
 
-import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertNull;
-
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.node.ArrayNode;
 import com.fasterxml.jackson.databind.node.JsonNodeFactory;
@@ -14,20 +11,25 @@ import gov.cdc.usds.simplereport.db.model.Facility;
 import gov.cdc.usds.simplereport.db.model.Organization;
 import gov.cdc.usds.simplereport.db.model.Person;
 import gov.cdc.usds.simplereport.db.model.TestOrder;
+import gov.cdc.usds.simplereport.db.model.auxiliary.MultiplexTestResult;
 import gov.cdc.usds.simplereport.db.model.auxiliary.TestResult;
 import gov.cdc.usds.simplereport.service.OrganizationService;
 import gov.cdc.usds.simplereport.service.TestOrderService;
 import gov.cdc.usds.simplereport.test_util.SliceTestConfiguration.WithSimpleReportStandardUser;
 import gov.cdc.usds.simplereport.test_util.TestDataFactory;
-import java.io.IOException;
-import java.util.Optional;
-import java.util.Set;
-import java.util.UUID;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.test.context.TestPropertySource;
+
+import java.io.IOException;
+import java.util.Optional;
+import java.util.Set;
+import java.util.UUID;
+
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertNull;
 
 @TestPropertySource(properties = "hibernate.query.interceptor.error-level=ERROR")
 @WithSimpleReportStandardUser // this is ridiculously sneaky
@@ -89,6 +91,43 @@ class QueueManagementTest extends BaseGraphqlTest {
     assertEquals(
         deviceId, updatedTestOrder.getDeviceType().getInternalId().toString(), "device type ID");
     assertEquals(TestResult.POSITIVE, updatedTestOrder.getTestResult());
+    assertNull(updatedTestOrder.getTestEvent());
+
+    ObjectNode singleQueueEntry = (ObjectNode) fetchQueue().get(0);
+    assertEquals(orderId.toString(), singleQueueEntry.get("internalId").asText());
+    assertEquals(
+        p.getInternalId().toString(), singleQueueEntry.path("patient").path("internalId").asText());
+    assertEquals(dateTested, singleQueueEntry.path("dateTested").asText());
+  }
+
+  @Test
+  void updateItemInQueueMultiplex() throws Exception {
+    Person p = _dataFactory.createFullPerson(_org);
+    TestOrder o = _dataFactory.createTestOrder(p, _site);
+    UUID orderId = o.getInternalId();
+    DeviceType d = _dataFactory.getGenericDevice();
+    String deviceId = d.getInternalId().toString();
+    String dateTested = "2020-12-31T14:30:30Z";
+    ObjectNode variables =
+        JsonNodeFactory.instance
+            .objectNode()
+            .put("id", orderId.toString())
+            .put("deviceId", deviceId)
+            .putPOJO(
+                "results",
+                new MultiplexTestResult(
+                    TestResult.POSITIVE, TestResult.POSITIVE, TestResult.POSITIVE))
+            .put("dateTested", dateTested);
+
+    performQueueUpdateMultiplexMutation(variables, Optional.empty());
+
+    TestOrder updatedTestOrder = _testOrderService.getTestOrder(_org, orderId);
+    assertEquals(
+        deviceId, updatedTestOrder.getDeviceType().getInternalId().toString(), "device type ID");
+    assertEquals(TestResult.POSITIVE, updatedTestOrder.getTestResult());
+    updatedTestOrder
+        .getResultSet()
+        .forEach(result -> assertEquals(TestResult.POSITIVE, result.getTestResult()));
     assertNull(updatedTestOrder.getTestEvent());
 
     ObjectNode singleQueueEntry = (ObjectNode) fetchQueue().get(0);
@@ -220,5 +259,10 @@ class QueueManagementTest extends BaseGraphqlTest {
   private void performQueueUpdateMutation(ObjectNode variables, Optional<String> expectedError)
       throws IOException {
     runQuery("edit-queue-item", variables, expectedError.orElse(null));
+  }
+
+  private void performQueueUpdateMultiplexMutation(
+      ObjectNode variables, Optional<String> expectedError) throws IOException {
+    runQuery("edit-queue-item-multiplex", variables, expectedError.orElse(null));
   }
 }
