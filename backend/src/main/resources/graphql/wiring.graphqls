@@ -41,9 +41,9 @@ scalar LocalDate
 scalar Upload
 
 enum UploadStatus {
-  IN_PROGRESS
+  PENDING
   SUCCESS
-  FAIL
+  FAILURE
 }
 
 enum ResultValue {

@@ -1,17 +1,44 @@
-import React from "react";
-
 import "./Submissions.scss";
+
+import { useParams } from "react-router-dom";
 import moment from "moment";
 import { DatePicker, Label } from "@trussworks/react-uswds";
 
 import Pagination from "../../commonComponents/Pagination";
 import { formatDateWithTimeOption } from "../../utils/date";
+import {
+  GetUploadSubmissionsQuery,
+  useGetUploadSubmissionsCountQuery,
+  useGetUploadSubmissionsQuery,
+} from "../../../generated/graphql";
 
-function Submissions() {
-  const loading = false;
+const Submissions = () => {
+  const urlParams = useParams();
+  const pageNumber = Number(urlParams.pageNumber) || 1;
+  const pageSize = 20;
 
-  const SubmissionsTableRows = (submissions: any) => {
-    if (submissions.length === 0) {
+  const {
+    data: submissionsCount,
+    loading: loadingCount,
+  } = useGetUploadSubmissionsCountQuery({ fetchPolicy: "no-cache" });
+
+  const {
+    data: submissions,
+    loading: loadingSubmissions,
+  } = useGetUploadSubmissionsQuery({
+    fetchPolicy: "no-cache",
+    variables: {
+      pageSize,
+      pageNumber,
+    },
+  });
+
+  const loading = loadingCount || loadingSubmissions;
+
+  const SubmissionsTableRows = (
+    submissions: GetUploadSubmissionsQuery | undefined
+  ) => {
+    if (!submissions || submissions.uploadSubmissions.length === 0) {
       return (
         <tr>
           <td>No results</td>
@@ -20,18 +47,13 @@ function Submissions() {
     }
 
     // `sort` mutates the array, so make a copy
-    return [...submissions].map((r) => {
+    return [...submissions.uploadSubmissions].map((submission) => {
       return (
         <tr>
-          <td className="test-result-cell">
-            d35ac97b-ad02-4e74-a3ff-7cc7704128d5
-          </td>
-          <td className="test-date-cell">
-            {formatDateWithTimeOption(new Date(), true)}
-          </td>
-          <td className="test-result-cell"></td>
-          <td className="test-result-cell">2</td>
-          <td className="test-result-cell">Success</td>
+          <td>{submission.reportId}</td>
+          <td>{formatDateWithTimeOption(submission.createdAt, true)}</td>
+          <td>{submission.recordsCount}</td>
+          <td>{submission.status}</td>
         </tr>
       );
     });
@@ -96,24 +118,13 @@ function Submissions() {
               <table className="usa-table usa-table--borderless width-full">
                 <thead>
                   <tr>
-                    <th scope="col" className="patient-name-cell">
-                      Report ID
-                    </th>
-                    <th scope="col" className="test-date-cell">
-                      Date/Time submitted
-                    </th>
-                    <th scope="col" className="test-result-cell">
-                      File
-                    </th>
-                    <th scope="col" className="test-facility-cell">
-                      Records
-                    </th>
-                    <th scope="col" className="test-device-cell">
-                      Status
-                    </th>
+                    <th scope="col">Report ID</th>
+                    <th scope="col">Date/Time submitted</th>
+                    <th scope="col">Records</th>
+                    <th scope="col">Status</th>
                   </tr>
                 </thead>
-                <tbody>{SubmissionsTableRows([{}])}</tbody>
+                <tbody>{SubmissionsTableRows(submissions)}</tbody>
               </table>
             </div>
 
@@ -123,10 +134,10 @@ function Submissions() {
                 <p>Loading...</p>
               ) : (
                 <Pagination
-                  baseRoute="/results"
-                  currentPage={1}
-                  entriesPerPage={20}
-                  totalEntries={100}
+                  baseRoute="/results/upload/submissions"
+                  currentPage={pageNumber}
+                  entriesPerPage={pageSize}
+                  totalEntries={submissionsCount?.uploadSubmissionsCount || 0}
                 />
               )}
             </div>
@@ -135,6 +146,6 @@ function Submissions() {
       </div>
     </main>
   );
-}
+};
 
 export default Submissions;

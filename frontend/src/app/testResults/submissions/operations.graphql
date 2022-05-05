@@ -1,0 +1,20 @@
+query getUploadSubmissions(
+  $pageNumber: Int
+  $pageSize: Int) {
+  uploadSubmissions(
+    pageNumber: $pageNumber
+    pageSize: $pageSize
+  ) {
+    internalId,
+    reportId,
+    createdAt,
+    status,
+    recordsCount,
+    errors,
+    warnings
+  }
+}
+
+query getUploadSubmissionsCount{
+  uploadSubmissionsCount
+}

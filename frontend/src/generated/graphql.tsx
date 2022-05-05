@@ -745,6 +745,8 @@ export type Query = {
   testResults?: Maybe<Array<Maybe<TestResult>>>;
   testResultsCount?: Maybe<Scalars["Int"]>;
   topLevelDashboardMetrics?: Maybe<TopLevelDashboardMetrics>;
+  uploadSubmissions: Array<UploadSubmission>;
+  uploadSubmissionsCount?: Maybe<Scalars["Int"]>;
   user?: Maybe<User>;
   users?: Maybe<Array<Maybe<ApiUser>>>;
   usersWithStatus?: Maybe<Array<ApiUserWithStatus>>;
@@ -825,6 +827,11 @@ export type QueryTopLevelDashboardMetricsArgs = {
   endDate?: InputMaybe<Scalars["DateTime"]>;
   facilityId?: InputMaybe<Scalars["ID"]>;
   startDate?: InputMaybe<Scalars["DateTime"]>;
+};
+
+export type QueryUploadSubmissionsArgs = {
+  pageNumber?: InputMaybe<Scalars["Int"]>;
+  pageSize?: InputMaybe<Scalars["Int"]>;
 };
 
 export type QueryUserArgs = {
@@ -935,6 +942,23 @@ export type UpdateDeviceType = {
   name: Scalars["String"];
   supportedDiseases: Array<Scalars["ID"]>;
   swabTypes: Array<Scalars["ID"]>;
+};
+
+export enum UploadStatus {
+  Fail = "FAIL",
+  InProgress = "IN_PROGRESS",
+  Success = "SUCCESS",
+}
+
+export type UploadSubmission = {
+  __typename?: "UploadSubmission";
+  createdAt: Scalars["DateTime"];
+  errors?: Maybe<Scalars["String"]>;
+  internalId: Scalars["ID"];
+  recordsCount: Scalars["String"];
+  reportId: Scalars["ID"];
+  status: UploadStatus;
+  warnings?: Maybe<Scalars["String"]>;
 };
 
 export type User = {
@@ -2487,6 +2511,34 @@ export type GetFacilityResultsForCsvQuery = {
       >
     | null
     | undefined;
+};
+
+export type GetUploadSubmissionsQueryVariables = Exact<{
+  pageNumber?: InputMaybe<Scalars["Int"]>;
+  pageSize?: InputMaybe<Scalars["Int"]>;
+}>;
+
+export type GetUploadSubmissionsQuery = {
+  __typename?: "Query";
+  uploadSubmissions: Array<{
+    __typename?: "UploadSubmission";
+    internalId: string;
+    reportId: string;
+    createdAt: any;
+    status: UploadStatus;
+    recordsCount: string;
+    errors?: string | null | undefined;
+    warnings?: string | null | undefined;
+  }>;
+};
+
+export type GetUploadSubmissionsCountQueryVariables = Exact<{
+  [key: string]: never;
+}>;
+
+export type GetUploadSubmissionsCountQuery = {
+  __typename?: "Query";
+  uploadSubmissionsCount?: number | null | undefined;
 };
 
 export const WhoAmIDocument = gql`
@@ -6715,4 +6767,124 @@ export type GetFacilityResultsForCsvLazyQueryHookResult = ReturnType<
 export type GetFacilityResultsForCsvQueryResult = Apollo.QueryResult<
   GetFacilityResultsForCsvQuery,
   GetFacilityResultsForCsvQueryVariables
+>;
+export const GetUploadSubmissionsDocument = gql`
+  query getUploadSubmissions($pageNumber: Int, $pageSize: Int) {
+    uploadSubmissions(pageNumber: $pageNumber, pageSize: $pageSize) {
+      internalId
+      reportId
+      createdAt
+      status
+      recordsCount
+      errors
+      warnings
+    }
+  }
+`;
+
+/**
+ * __useGetUploadSubmissionsQuery__
+ *
+ * To run a query within a React component, call `useGetUploadSubmissionsQuery` and pass it any options that fit your needs.
+ * When your component renders, `useGetUploadSubmissionsQuery` returns an object from Apollo Client that contains loading, error, and data properties
+ * you can use to render your UI.
+ *
+ * @param baseOptions options that will be passed into the query, supported options are listed on: https://www.apollographql.com/docs/react/api/react-hooks/#options;
+ *
+ * @example
+ * const { data, loading, error } = useGetUploadSubmissionsQuery({
+ *   variables: {
+ *      pageNumber: // value for 'pageNumber'
+ *      pageSize: // value for 'pageSize'
+ *   },
+ * });
+ */
+export function useGetUploadSubmissionsQuery(
+  baseOptions?: Apollo.QueryHookOptions<
+    GetUploadSubmissionsQuery,
+    GetUploadSubmissionsQueryVariables
+  >
+) {
+  const options = { ...defaultOptions, ...baseOptions };
+  return Apollo.useQuery<
+    GetUploadSubmissionsQuery,
+    GetUploadSubmissionsQueryVariables
+  >(GetUploadSubmissionsDocument, options);
+}
+export function useGetUploadSubmissionsLazyQuery(
+  baseOptions?: Apollo.LazyQueryHookOptions<
+    GetUploadSubmissionsQuery,
+    GetUploadSubmissionsQueryVariables
+  >
+) {
+  const options = { ...defaultOptions, ...baseOptions };
+  return Apollo.useLazyQuery<
+    GetUploadSubmissionsQuery,
+    GetUploadSubmissionsQueryVariables
+  >(GetUploadSubmissionsDocument, options);
+}
+export type GetUploadSubmissionsQueryHookResult = ReturnType<
+  typeof useGetUploadSubmissionsQuery
+>;
+export type GetUploadSubmissionsLazyQueryHookResult = ReturnType<
+  typeof useGetUploadSubmissionsLazyQuery
+>;
+export type GetUploadSubmissionsQueryResult = Apollo.QueryResult<
+  GetUploadSubmissionsQuery,
+  GetUploadSubmissionsQueryVariables
+>;
+export const GetUploadSubmissionsCountDocument = gql`
+  query getUploadSubmissionsCount {
+    uploadSubmissionsCount
+  }
+`;
+
+/**
+ * __useGetUploadSubmissionsCountQuery__
+ *
+ * To run a query within a React component, call `useGetUploadSubmissionsCountQuery` and pass it any options that fit your needs.
+ * When your component renders, `useGetUploadSubmissionsCountQuery` returns an object from Apollo Client that contains loading, error, and data properties
+ * you can use to render your UI.
+ *
+ * @param baseOptions options that will be passed into the query, supported options are listed on: https://www.apollographql.com/docs/react/api/react-hooks/#options;
+ *
+ * @example
+ * const { data, loading, error } = useGetUploadSubmissionsCountQuery({
+ *   variables: {
+ *   },
+ * });
+ */
+export function useGetUploadSubmissionsCountQuery(
+  baseOptions?: Apollo.QueryHookOptions<
+    GetUploadSubmissionsCountQuery,
+    GetUploadSubmissionsCountQueryVariables
+  >
+) {
+  const options = { ...defaultOptions, ...baseOptions };
+  return Apollo.useQuery<
+    GetUploadSubmissionsCountQuery,
+    GetUploadSubmissionsCountQueryVariables
+  >(GetUploadSubmissionsCountDocument, options);
+}
+export function useGetUploadSubmissionsCountLazyQuery(
+  baseOptions?: Apollo.LazyQueryHookOptions<
+    GetUploadSubmissionsCountQuery,
+    GetUploadSubmissionsCountQueryVariables
+  >
+) {
+  const options = { ...defaultOptions, ...baseOptions };
+  return Apollo.useLazyQuery<
+    GetUploadSubmissionsCountQuery,
+    GetUploadSubmissionsCountQueryVariables
+  >(GetUploadSubmissionsCountDocument, options);
+}
+export type GetUploadSubmissionsCountQueryHookResult = ReturnType<
+  typeof useGetUploadSubmissionsCountQuery
+>;
+export type GetUploadSubmissionsCountLazyQueryHookResult = ReturnType<
+  typeof useGetUploadSubmissionsCountLazyQuery
+>;
+export type GetUploadSubmissionsCountQueryResult = Apollo.QueryResult<
+  GetUploadSubmissionsCountQuery,
+  GetUploadSubmissionsCountQueryVariables
 >;
