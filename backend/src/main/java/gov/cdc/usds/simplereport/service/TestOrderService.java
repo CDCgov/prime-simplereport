@@ -145,7 +145,6 @@ public class TestOrderService {
 
   @Transactional(readOnly = true)
   @AuthorizationConfiguration.RequirePermissionReadResultListAtFacility
-  // todo fix auth here for when facilityId is for an archived facility
   public List<TestEvent> getTestEventsResults(
       UUID facilityId,
       UUID patientId,

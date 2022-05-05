@@ -186,7 +186,6 @@ public class UserAuthorizationVerifier {
     return userCanViewQueueItem(order.get());
   }
 
-  // todo update auth here
   public boolean userCanAccessFacility(UUID facilityId) {
     if (facilityId == null) {
       return true;
@@ -195,7 +194,14 @@ public class UserAuthorizationVerifier {
     if (currentOrgRoles.isEmpty()) {
       return false;
     } else {
-      return currentOrgRoles.get().containsFacility(facilityId);
+      OrganizationRoles orgRoles = currentOrgRoles.get();
+      return orgRoles.containsFacility(facilityId)
+          || orgRoles.getGrantedPermissions().contains(UserPermission.READ_ALL_FACILITY_RESULTS)
+              && _facilityRepo
+                  .findByOrganizationAndInternalIdAllowDeleted(
+                      orgRoles.getOrganization(), facilityId)
+                  .get()
+                  .isDeleted();
     }
   }
 
