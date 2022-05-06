@@ -213,7 +213,6 @@
     "cypress": "^9.2.1",
     "cypress-localstorage-commands": "^1.6.1",
     "dayjs": "^1.10.7",
-    "depcheck": "^1.4.3",
     "eslint-config-prettier": "^8.3.0",
     "eslint-plugin-cypress": "^2.12.1",
     "eslint-plugin-graphql": "^4.0.0",
