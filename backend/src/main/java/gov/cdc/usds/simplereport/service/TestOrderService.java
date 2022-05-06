@@ -162,7 +162,7 @@ public class TestOrderService {
   }
 
   @Transactional(readOnly = true)
-  @AuthorizationConfiguration.RequirePermissionReadAllFacilityResults
+  @AuthorizationConfiguration.RequirePermissionViewAllFacilityResults
   public List<TestEvent> getAllFacilityTestEventsResults(
       UUID patientId,
       TestResult result,

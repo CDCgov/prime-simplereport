@@ -150,9 +150,9 @@ public class OrganizationService {
     return facilityRepository.findAllByOrganizationAndInternalId(org, facilityIds);
   }
 
-  @AuthorizationConfiguration.RequirePermissionReadAllFacilityResults
-  public Set<Facility> getCurrentAndArchivedFacilities(Organization org) {
-    return facilityRepository.findAllByOrganizationAllowDeleted(org);
+  @AuthorizationConfiguration.RequirePermissionViewArchivedFacilities
+  public Set<Facility> getArchivedFacilities(Organization org) {
+    return facilityRepository.findAllByOrganizationAndDeleted(org, true);
   }
 
   public Facility getFacilityInCurrentOrg(UUID facilityId) {

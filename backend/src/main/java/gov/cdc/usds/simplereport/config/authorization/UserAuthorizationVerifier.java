@@ -190,7 +190,7 @@ public class UserAuthorizationVerifier {
     } else {
       OrganizationRoles orgRoles = currentOrgRoles.get();
       return orgRoles.containsFacility(facilityId)
-          || orgRoles.getGrantedPermissions().contains(UserPermission.READ_ALL_FACILITY_RESULTS)
+          || orgRoles.getGrantedPermissions().contains(UserPermission.VIEW_ARCHIVED_FACILITIES)
               && _facilityRepo
                   .findByOrganizationAndInternalIdAllowDeleted(
                       orgRoles.getOrganization(), facilityId)
@@ -250,7 +250,8 @@ public class UserAuthorizationVerifier {
       return false;
     }
     if (facilityId == null) {
-      perms.add(UserPermission.READ_ALL_FACILITY_RESULTS);
+      perms.add(UserPermission.ACCESS_ALL_FACILITIES);
+      perms.add(UserPermission.VIEW_ARCHIVED_FACILITIES);
     }
     if (isArchived) {
       perms.add(UserPermission.READ_ARCHIVED_PATIENT_LIST);

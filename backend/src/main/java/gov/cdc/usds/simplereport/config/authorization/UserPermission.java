@@ -21,7 +21,6 @@ public enum UserPermission implements Principal {
   UPDATE_TEST,
   SUBMIT_TEST,
   ACCESS_ALL_FACILITIES,
-  READ_ALL_FACILITY_RESULTS,
   VIEW_ARCHIVED_FACILITIES;
 
   @Override

@@ -81,20 +81,23 @@ public class OrganizationResolver implements GraphQLQueryResolver {
   }
 
   /**
-   * Retrieves all facilities for the current org
+   * Retrieves all facilities for the current org that are accessible to the current user
    *
    * @param showArchived whether or not to include archived facilities
-   * @return list of facilities
+   * @return set of facilities
    */
   public Set<ApiFacility> getFacilities(Boolean showArchived) {
     Organization org = _organizationService.getCurrentOrganization();
+    Set<ApiFacility> facilities =
+        _organizationService.getAccessibleFacilities().stream()
+            .map(ApiFacility::new)
+            .collect(Collectors.toSet());
     if (showArchived) {
-      return _organizationService.getCurrentAndArchivedFacilities(org).stream()
-          .map(ApiFacility::new)
-          .collect(Collectors.toSet());
+      facilities.addAll(
+          _organizationService.getArchivedFacilities(org).stream()
+              .map(ApiFacility::new)
+              .collect(Collectors.toSet()));
     }
-    return _organizationService.getAccessibleFacilities().stream()
-        .map(ApiFacility::new)
-        .collect(Collectors.toSet());
+    return facilities;
   }
 }
