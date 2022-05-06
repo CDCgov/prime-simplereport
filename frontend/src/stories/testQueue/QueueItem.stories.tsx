@@ -99,6 +99,8 @@ const defaultProps: QueueItemProps = {
   refetchQueue: () => {},
   facilityName: "Facility Name",
   facilityId: "100",
+  setStartTestPatientId: () => {},
+  startTestPatientId: "",
 };
 
 export const Unstarted = Template.bind({});

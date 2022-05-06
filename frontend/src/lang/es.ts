@@ -5,6 +5,7 @@ const NO = "No";
 const OTHER = "Otra";
 const REFUSED = "Prefiero no responder";
 const UNKNOWN = "Desconocido";
+const NOT_SURE = "No estoy seguro/a";
 const POSITIVE = "Positivo";
 const NEGATIVE = "Negativo";
 const UNDETERMINED = "No concluyente";
@@ -64,6 +65,11 @@ export const es: LanguageConfig = {
         YES,
         NO,
         UNKNOWN,
+      },
+      yesNoNotSure: {
+        YES,
+        NO,
+        NOT_SURE,
       },
       date: {
         month: "Mes",
@@ -166,7 +172,7 @@ export const es: LanguageConfig = {
             "Por lo general, este es el género que está escrito en su certificado de nacimiento original.",
         },
         other: {
-          heading: "Otro",
+          heading: "Información adicional",
           congregateLiving: {
             heading:
               "¿Reside usted en un entorno compartido por muchas personas?",
@@ -485,7 +491,7 @@ export const es: LanguageConfig = {
         },
       },
       dob: {
-        header: "Verificar fecha de nacimiento",
+        header: "Acceda al resultado de su prueba de COVID-19",
         dateOfBirth: "Fecha de nacimiento",
         enterDOB: "Ingrese su fecha de nacimiento",
         enterDOB2:

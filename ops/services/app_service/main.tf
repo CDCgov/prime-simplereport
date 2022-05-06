@@ -125,8 +125,66 @@ resource "azurerm_key_vault_access_policy" "staging_slot_secret_access" {
   ]
 }
 
+# Associate the App Service and staging slot with the environment's VNet:
+
+resource "azurerm_app_service_virtual_network_swift_connection" "app" {
+  app_service_id = azurerm_app_service.service.id
+  subnet_id      = var.webapp_subnet_id
+}
+
 resource "azurerm_app_service_slot_virtual_network_swift_connection" "staging" {
   slot_name      = azurerm_app_service_slot.staging.name
   app_service_id = azurerm_app_service.service.id
   subnet_id      = var.webapp_subnet_id
+}
+
+/*
+  IMPORTANT APP SERVICE TLS/SSL INFORMATION
+
+  (Note: if the static IP to the App Gateway changes, you will need to update the DNS A record
+  for origin-ENV.simplereport.gov)
+
+  For routing from the App Gateway to the App Service to work correctly, the App Service needs
+  a custom domain in the form of api-ENV.simplereport.gov. We can't create this domain in Terraform
+  without outside action, because part of the creation process requires proving ownership of the
+  underlying domain (simplereport.gov). Proving ownership requires updating the DNS CNAME and TXT
+  records associated with the custom domain (the correct values are provided by Azure).
+
+  So, the process is to create and bind this custom domain MANUALLY. Once you try to create the
+  custom domain, Azure will provide instructions on what DNS records to update and what the expected
+  values are. Once the records are changed, Azure will allow you to complete the custom domain
+  binding.
+
+  IMPORTANT: If the environment is using a CDN (e.g., Akamai) the CNAME will need to be changed
+  temporarily to allow Azure to verify ownership of the domain, and then changed BACK to the original
+  value, or the CDN will stop functioning correctly.
+
+  Once this process is complete, Terraform can be run as normal.
+
+  WHAT'S HAPPENING HERE:
+
+  1) The wildcard-simplereport-gov cert is being imported from Key Vault into the App Service
+    [NOTE: This only takes place if this is the first environment being created in this environment level. Cert ownership is bound to the index-less environment!]
+  2) That cert is being bound to the custom domain created above, enabling HTTPS
+*/
+
+resource "azurerm_app_service_certificate" "app" {
+  count               = var.env_index == 1 ? 1 : 0
+  name                = "wildcard-simplereport-gov"
+  resource_group_name = var.resource_group_name
+  location            = var.resource_group_location
+  key_vault_secret_id = data.azurerm_key_vault_certificate.wildcard_simplereport_gov.id
+}
+
+resource "azurerm_app_service_certificate_binding" "app" {
+  # This is a bit magic because as of 4/2022 the TF Azure provider doesn't expose
+  # azurerm_app_service_custom_hostname_binding as a data source. This means we need to generate
+  # hostname_binding_id manually.
+  #
+  # Azure only allows for a single instance of a certificate fingerprint in a specific resource group.connection {
+  # in resource groups with multiple environments, we have to work around this by using this
+  # prescribed value for certificate_id. 
+  hostname_binding_id = "${azurerm_app_service.service.id}/hostNameBindings/api-${var.env}.simplereport.gov"
+  certificate_id      = "${data.azurerm_subscription.primary.id}/resourceGroups/${var.resource_group_name}/providers/Microsoft.Web/certificates/wildcard-simplereport-gov"
+  ssl_state           = "SniEnabled"
 }

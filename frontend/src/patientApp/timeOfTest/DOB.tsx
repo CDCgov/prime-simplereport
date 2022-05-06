@@ -12,7 +12,7 @@ import Alert from "../../app/commonComponents/Alert";
 import { DateInput } from "../../app/commonComponents/DateInput";
 import {
   dateFromStrings,
-  formatShortDateWithTimeOption,
+  formatLongDateWithTimeOption,
 } from "../../app/utils/date";
 import { LoadingCard } from "../../app/commonComponents/LoadingCard/LoadingCard";
 import { formatPhoneNumberParens } from "../../app/utils/text";
@@ -183,10 +183,7 @@ const DOB = () => {
             <em>
               <Trans t={t} i18nKey="testResult.dob.linkExpirationNotice">
                 {{
-                  expirationDate: formatShortDateWithTimeOption(
-                    expiresAt,
-                    true
-                  ),
+                  expirationDate: formatLongDateWithTimeOption(expiresAt, true),
                 }}
               </Trans>
               <Trans t={t} i18nKey="testResult.dob.testingFacilityContact">

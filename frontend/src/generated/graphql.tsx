@@ -77,6 +77,7 @@ export type CreateDeviceType = {
   manufacturer: Scalars["String"];
   model: Scalars["String"];
   name: Scalars["String"];
+  supportedDiseases: Array<Scalars["ID"]>;
   swabTypes: Array<Scalars["ID"]>;
 };
 
@@ -94,6 +95,7 @@ export type DeviceType = {
   manufacturer: Scalars["String"];
   model: Scalars["String"];
   name: Scalars["String"];
+  supportedDiseases: Array<SupportedDisease>;
   swabType?: Maybe<Scalars["String"]>;
   swabTypes: Array<SpecimenType>;
   testLength?: Maybe<Scalars["Int"]>;
@@ -133,6 +135,7 @@ export type Mutation = {
   addUser?: Maybe<User>;
   addUserToCurrentOrg?: Maybe<User>;
   adminUpdateOrganization?: Maybe<Scalars["String"]>;
+  correctTestMarkAsCorrection?: Maybe<TestResult>;
   correctTestMarkAsError?: Maybe<TestResult>;
   createDeviceType?: Maybe<DeviceType>;
   createFacilityRegistrationLink?: Maybe<Scalars["String"]>;
@@ -141,6 +144,7 @@ export type Mutation = {
   editPendingOrganization?: Maybe<Scalars["String"]>;
   editQueueItem?: Maybe<TestOrder>;
   markFacilityAsDeleted?: Maybe<Scalars["String"]>;
+  markOrganizationAsDeleted?: Maybe<Scalars["String"]>;
   markPendingOrganizationAsDeleted?: Maybe<Scalars["String"]>;
   reactivateUser?: Maybe<User>;
   removePatientFromQueue?: Maybe<Scalars["String"]>;
@@ -294,6 +298,11 @@ export type MutationAdminUpdateOrganizationArgs = {
   type: Scalars["String"];
 };
 
+export type MutationCorrectTestMarkAsCorrectionArgs = {
+  id: Scalars["ID"];
+  reason?: InputMaybe<Scalars["String"]>;
+};
+
 export type MutationCorrectTestMarkAsErrorArgs = {
   id: Scalars["ID"];
   reason?: InputMaybe<Scalars["String"]>;
@@ -371,6 +380,11 @@ export type MutationEditQueueItemArgs = {
 export type MutationMarkFacilityAsDeletedArgs = {
   deleted: Scalars["Boolean"];
   facilityId: Scalars["ID"];
+};
+
+export type MutationMarkOrganizationAsDeletedArgs = {
+  deleted: Scalars["Boolean"];
+  organizationId: Scalars["ID"];
 };
 
 export type MutationMarkPendingOrganizationAsDeletedArgs = {
@@ -721,6 +735,7 @@ export type Query = {
   queue?: Maybe<Array<Maybe<TestOrder>>>;
   specimenType?: Maybe<Array<Maybe<SpecimenType>>>;
   specimenTypes: Array<SpecimenType>;
+  supportedDiseases: Array<SupportedDisease>;
   testResult?: Maybe<TestResult>;
   testResults?: Maybe<Array<Maybe<TestResult>>>;
   testResultsCount?: Maybe<Scalars["Int"]>;
@@ -832,6 +847,13 @@ export type SpecimenType = {
   typeCode: Scalars["String"];
 };
 
+export type SupportedDisease = {
+  __typename?: "SupportedDisease";
+  internalId: Scalars["ID"];
+  loinc: Scalars["String"];
+  name: Scalars["String"];
+};
+
 export enum TestCorrectionStatus {
   Corrected = "CORRECTED",
   Original = "ORIGINAL",
@@ -906,6 +928,7 @@ export type UpdateDeviceType = {
   manufacturer: Scalars["String"];
   model: Scalars["String"];
   name: Scalars["String"];
+  supportedDiseases: Array<Scalars["ID"]>;
   swabTypes: Array<Scalars["ID"]>;
 };
 
@@ -1576,6 +1599,7 @@ export type CreateDeviceTypeMutationVariables = Exact<{
   model: Scalars["String"];
   loincCode: Scalars["String"];
   swabTypes: Array<Scalars["ID"]> | Scalars["ID"];
+  supportedDiseases: Array<Scalars["ID"]> | Scalars["ID"];
 }>;
 
 export type CreateDeviceTypeMutation = {
@@ -1593,6 +1617,7 @@ export type UpdateDeviceTypeMutationVariables = Exact<{
   model: Scalars["String"];
   loincCode: Scalars["String"];
   swabTypes: Array<Scalars["ID"]> | Scalars["ID"];
+  supportedDiseases: Array<Scalars["ID"]> | Scalars["ID"];
 }>;
 
 export type UpdateDeviceTypeMutation = {
@@ -1631,6 +1656,24 @@ export type GetDeviceTypeListQuery = {
       internalId: string;
       name: string;
     }>;
+    supportedDiseases: Array<{
+      __typename?: "SupportedDisease";
+      internalId: string;
+      name: string;
+    }>;
+  }>;
+};
+
+export type GetSupportedDiseasesQueryVariables = Exact<{
+  [key: string]: never;
+}>;
+
+export type GetSupportedDiseasesQuery = {
+  __typename?: "Query";
+  supportedDiseases: Array<{
+    __typename?: "SupportedDisease";
+    internalId: string;
+    name: string;
   }>;
 };
 
@@ -1813,6 +1856,8 @@ export type GetFacilityQueueQuery = {
             noSymptoms?: boolean | null | undefined;
             result?: string | null | undefined;
             dateTested?: any | null | undefined;
+            correctionStatus?: string | null | undefined;
+            reasonForCorrection?: string | null | undefined;
             deviceType?:
               | {
                   __typename?: "DeviceType";
@@ -2065,6 +2110,19 @@ export type MarkTestAsErrorMutation = {
     | undefined;
 };
 
+export type MarkTestAsCorrectionMutationVariables = Exact<{
+  id: Scalars["ID"];
+  reason: Scalars["String"];
+}>;
+
+export type MarkTestAsCorrectionMutation = {
+  __typename?: "Mutation";
+  correctTestMarkAsCorrection?:
+    | { __typename?: "TestResult"; internalId?: string | null | undefined }
+    | null
+    | undefined;
+};
+
 export type GetTestResultDetailsQueryVariables = Exact<{
   id: Scalars["ID"];
 }>;
@@ -2284,6 +2342,10 @@ export type GetFacilityResultsQuery = {
                   __typename?: "PatientLink";
                   internalId?: string | null | undefined;
                 }
+              | null
+              | undefined;
+            facility?:
+              | { __typename?: "Facility"; name: string }
               | null
               | undefined;
           }
@@ -4500,6 +4562,7 @@ export const CreateDeviceTypeDocument = gql`
     $model: String!
     $loincCode: String!
     $swabTypes: [ID!]!
+    $supportedDiseases: [ID!]!
   ) {
     createDeviceType(
       input: {
@@ -4508,6 +4571,7 @@ export const CreateDeviceTypeDocument = gql`
         model: $model
         loincCode: $loincCode
         swabTypes: $swabTypes
+        supportedDiseases: $supportedDiseases
       }
     ) {
       internalId
@@ -4537,6 +4601,7 @@ export type CreateDeviceTypeMutationFn = Apollo.MutationFunction<
  *      model: // value for 'model'
  *      loincCode: // value for 'loincCode'
  *      swabTypes: // value for 'swabTypes'
+ *      supportedDiseases: // value for 'supportedDiseases'
  *   },
  * });
  */
@@ -4568,6 +4633,7 @@ export const UpdateDeviceTypeDocument = gql`
     $model: String!
     $loincCode: String!
     $swabTypes: [ID!]!
+    $supportedDiseases: [ID!]!
   ) {
     updateDeviceType(
       input: {
@@ -4577,6 +4643,7 @@ export const UpdateDeviceTypeDocument = gql`
         model: $model
         loincCode: $loincCode
         swabTypes: $swabTypes
+        supportedDiseases: $supportedDiseases
       }
     ) {
       internalId
@@ -4607,6 +4674,7 @@ export type UpdateDeviceTypeMutationFn = Apollo.MutationFunction<
  *      model: // value for 'model'
  *      loincCode: // value for 'loincCode'
  *      swabTypes: // value for 'swabTypes'
+ *      supportedDiseases: // value for 'supportedDiseases'
  *   },
  * });
  */
@@ -4701,6 +4769,10 @@ export const GetDeviceTypeListDocument = gql`
         internalId
         name
       }
+      supportedDiseases {
+        internalId
+        name
+      }
     }
   }
 `;
@@ -4753,6 +4825,64 @@ export type GetDeviceTypeListLazyQueryHookResult = ReturnType<
 export type GetDeviceTypeListQueryResult = Apollo.QueryResult<
   GetDeviceTypeListQuery,
   GetDeviceTypeListQueryVariables
+>;
+export const GetSupportedDiseasesDocument = gql`
+  query getSupportedDiseases {
+    supportedDiseases {
+      internalId
+      name
+    }
+  }
+`;
+
+/**
+ * __useGetSupportedDiseasesQuery__
+ *
+ * To run a query within a React component, call `useGetSupportedDiseasesQuery` and pass it any options that fit your needs.
+ * When your component renders, `useGetSupportedDiseasesQuery` returns an object from Apollo Client that contains loading, error, and data properties
+ * you can use to render your UI.
+ *
+ * @param baseOptions options that will be passed into the query, supported options are listed on: https://www.apollographql.com/docs/react/api/react-hooks/#options;
+ *
+ * @example
+ * const { data, loading, error } = useGetSupportedDiseasesQuery({
+ *   variables: {
+ *   },
+ * });
+ */
+export function useGetSupportedDiseasesQuery(
+  baseOptions?: Apollo.QueryHookOptions<
+    GetSupportedDiseasesQuery,
+    GetSupportedDiseasesQueryVariables
+  >
+) {
+  const options = { ...defaultOptions, ...baseOptions };
+  return Apollo.useQuery<
+    GetSupportedDiseasesQuery,
+    GetSupportedDiseasesQueryVariables
+  >(GetSupportedDiseasesDocument, options);
+}
+export function useGetSupportedDiseasesLazyQuery(
+  baseOptions?: Apollo.LazyQueryHookOptions<
+    GetSupportedDiseasesQuery,
+    GetSupportedDiseasesQueryVariables
+  >
+) {
+  const options = { ...defaultOptions, ...baseOptions };
+  return Apollo.useLazyQuery<
+    GetSupportedDiseasesQuery,
+    GetSupportedDiseasesQueryVariables
+  >(GetSupportedDiseasesDocument, options);
+}
+export type GetSupportedDiseasesQueryHookResult = ReturnType<
+  typeof useGetSupportedDiseasesQuery
+>;
+export type GetSupportedDiseasesLazyQueryHookResult = ReturnType<
+  typeof useGetSupportedDiseasesLazyQuery
+>;
+export type GetSupportedDiseasesQueryResult = Apollo.QueryResult<
+  GetSupportedDiseasesQuery,
+  GetSupportedDiseasesQueryVariables
 >;
 export const GetPendingOrganizationsDocument = gql`
   query GetPendingOrganizations {
@@ -5342,6 +5472,8 @@ export const GetFacilityQueueDocument = gql`
       }
       result
       dateTested
+      correctionStatus
+      reasonForCorrection
     }
     organization {
       testingFacility {
@@ -5822,6 +5954,56 @@ export type MarkTestAsErrorMutationOptions = Apollo.BaseMutationOptions<
   MarkTestAsErrorMutation,
   MarkTestAsErrorMutationVariables
 >;
+export const MarkTestAsCorrectionDocument = gql`
+  mutation MarkTestAsCorrection($id: ID!, $reason: String!) {
+    correctTestMarkAsCorrection(id: $id, reason: $reason) {
+      internalId
+    }
+  }
+`;
+export type MarkTestAsCorrectionMutationFn = Apollo.MutationFunction<
+  MarkTestAsCorrectionMutation,
+  MarkTestAsCorrectionMutationVariables
+>;
+
+/**
+ * __useMarkTestAsCorrectionMutation__
+ *
+ * To run a mutation, you first call `useMarkTestAsCorrectionMutation` within a React component and pass it any options that fit your needs.
+ * When your component renders, `useMarkTestAsCorrectionMutation` returns a tuple that includes:
+ * - A mutate function that you can call at any time to execute the mutation
+ * - An object with fields that represent the current status of the mutation's execution
+ *
+ * @param baseOptions options that will be passed into the mutation, supported options are listed on: https://www.apollographql.com/docs/react/api/react-hooks/#options-2;
+ *
+ * @example
+ * const [markTestAsCorrectionMutation, { data, loading, error }] = useMarkTestAsCorrectionMutation({
+ *   variables: {
+ *      id: // value for 'id'
+ *      reason: // value for 'reason'
+ *   },
+ * });
+ */
+export function useMarkTestAsCorrectionMutation(
+  baseOptions?: Apollo.MutationHookOptions<
+    MarkTestAsCorrectionMutation,
+    MarkTestAsCorrectionMutationVariables
+  >
+) {
+  const options = { ...defaultOptions, ...baseOptions };
+  return Apollo.useMutation<
+    MarkTestAsCorrectionMutation,
+    MarkTestAsCorrectionMutationVariables
+  >(MarkTestAsCorrectionDocument, options);
+}
+export type MarkTestAsCorrectionMutationHookResult = ReturnType<
+  typeof useMarkTestAsCorrectionMutation
+>;
+export type MarkTestAsCorrectionMutationResult = Apollo.MutationResult<MarkTestAsCorrectionMutation>;
+export type MarkTestAsCorrectionMutationOptions = Apollo.BaseMutationOptions<
+  MarkTestAsCorrectionMutation,
+  MarkTestAsCorrectionMutationVariables
+>;
 export const GetTestResultDetailsDocument = gql`
   query getTestResultDetails($id: ID!) {
     testResult(id: $id) {
@@ -6222,6 +6404,9 @@ export const GetFacilityResultsDocument = gql`
       }
       patientLink {
         internalId
+      }
+      facility {
+        name
       }
     }
   }

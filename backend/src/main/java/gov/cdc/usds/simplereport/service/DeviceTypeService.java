@@ -10,10 +10,12 @@ import gov.cdc.usds.simplereport.db.model.DeviceSpecimenType;
 import gov.cdc.usds.simplereport.db.model.DeviceType;
 import gov.cdc.usds.simplereport.db.model.Facility;
 import gov.cdc.usds.simplereport.db.model.SpecimenType;
+import gov.cdc.usds.simplereport.db.model.SupportedDisease;
 import gov.cdc.usds.simplereport.db.repository.DeviceSpecimenTypeRepository;
 import gov.cdc.usds.simplereport.db.repository.DeviceTypeRepository;
 import gov.cdc.usds.simplereport.db.repository.FacilityRepository;
 import gov.cdc.usds.simplereport.db.repository.SpecimenTypeRepository;
+import gov.cdc.usds.simplereport.db.repository.SupportedDiseaseRepository;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
@@ -36,17 +38,20 @@ public class DeviceTypeService {
   private DeviceTypeRepository _repo;
   private DeviceSpecimenTypeRepository _deviceSpecimenRepo;
   private SpecimenTypeRepository _specimenTypeRepo;
-  private FacilityRepository _facilityRepository;
+  private FacilityRepository _facilityRepo;
+  private SupportedDiseaseRepository _supportedDiseaseRepo;
 
   public DeviceTypeService(
       DeviceTypeRepository repo,
       DeviceSpecimenTypeRepository deviceSpecimenRepo,
       SpecimenTypeRepository specimenTypeRepo,
-      FacilityRepository facilityRepository) {
+      FacilityRepository facilityRepo,
+      SupportedDiseaseRepository supportedDiseaseRepo) {
     _repo = repo;
     _deviceSpecimenRepo = deviceSpecimenRepo;
     _specimenTypeRepo = specimenTypeRepo;
-    _facilityRepository = facilityRepository;
+    _facilityRepo = facilityRepo;
+    _supportedDiseaseRepo = supportedDiseaseRepo;
   }
 
   @Transactional(readOnly = false)
@@ -138,7 +143,7 @@ public class DeviceTypeService {
 
       // Null out facilities' default device specimen if it was deleted
       List<Facility> facilitiesToRemoveDefaultDeviceSpecimen =
-          _facilityRepository.findAllByDefaultDeviceSpecimenIn(toBeDeletedDeviceSpecimenTypes);
+          _facilityRepo.findAllByDefaultDeviceSpecimenIn(toBeDeletedDeviceSpecimenTypes);
 
       facilitiesToRemoveDefaultDeviceSpecimen.forEach(Facility::removeDefaultDeviceSpecimen);
 
@@ -149,6 +154,15 @@ public class DeviceTypeService {
           new ArrayList<>(newDeviceSpecimenTypes);
       toBeAddedDeviceSpecimenTypes.removeAll(exitingDeviceSpecimenTypes);
       _deviceSpecimenRepo.saveAll(toBeAddedDeviceSpecimenTypes);
+    }
+    if (updateDevice.getSupportedDiseases() != null) {
+      List<SupportedDisease> supportedDiseases =
+          updateDevice.getSupportedDiseases().stream()
+              .map(uuid -> _supportedDiseaseRepo.findById(uuid))
+              .filter(Optional::isPresent)
+              .map(Optional::get)
+              .collect(Collectors.toList());
+      device.setSupportedDiseases(supportedDiseases);
     }
     return _repo.save(device);
   }
@@ -169,6 +183,13 @@ public class DeviceTypeService {
           }
         });
 
+    List<SupportedDisease> supportedDiseases =
+        createDevice.getSupportedDiseases().stream()
+            .map(uuid -> _supportedDiseaseRepo.findById(uuid))
+            .filter(Optional::isPresent)
+            .map(Optional::get)
+            .collect(Collectors.toList());
+
     DeviceType dt =
         _repo.save(
             new DeviceType(
@@ -182,6 +203,9 @@ public class DeviceTypeService {
     specimenTypes.stream()
         .map(specimenType -> new DeviceSpecimenType(dt, specimenType))
         .forEach(_deviceSpecimenRepo::save);
+
+    dt.setSupportedDiseases(supportedDiseases);
+    _repo.save(dt);
 
     return dt;
   }

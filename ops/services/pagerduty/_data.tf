@@ -5,3 +5,7 @@ data "pagerduty_service" "service" {
 data "pagerduty_vendor" "azure" {
   name = "Microsoft Azure"
 }
+
+data "pagerduty_vendor" "twilio" {
+  name = "Twilio"
+}

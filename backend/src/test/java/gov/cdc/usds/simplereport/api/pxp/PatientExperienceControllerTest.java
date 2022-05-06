@@ -70,26 +70,6 @@ class PatientExperienceControllerTest extends BaseFullStackTest {
   }
 
   @Test
-  void preAuthorizerThrows403() throws Exception {
-    String dob = "1900-01-01";
-    String requestBody =
-        "{\"patientLinkId\":\"" + UUID.randomUUID() + "\",\"dateOfBirth\":\"" + dob + "\"}";
-
-    MockHttpServletRequestBuilder builder =
-        post(ResourceLinks.VERIFY_LINK)
-            .contentType(MediaType.APPLICATION_JSON_VALUE)
-            .accept(MediaType.APPLICATION_JSON)
-            .characterEncoding("UTF-8")
-            .content(requestBody);
-
-    this.mockMvc
-        .perform(builder)
-        .andExpect(status().isForbidden())
-        .andExpect(header().exists(LoggingConstants.REQUEST_ID_HEADER));
-    assertNoAuditEvent();
-  }
-
-  @Test
   void preAuthorizerThrows403V2() throws Exception {
     String dob = "1900-01-01";
     String requestBody =
@@ -107,30 +87,6 @@ class PatientExperienceControllerTest extends BaseFullStackTest {
         .andExpect(status().isForbidden())
         .andExpect(header().exists(LoggingConstants.REQUEST_ID_HEADER));
     assertNoAuditEvent();
-  }
-
-  @Test
-  void preAuthorizerSucceeds() throws Exception {
-    // GIVEN
-    String dob = person.getBirthDate().format(DateTimeFormatter.ofPattern("yyyy-MM-dd"));
-    String requestBody =
-        "{\"patientLinkId\":\""
-            + patientLink.getInternalId()
-            + "\",\"dateOfBirth\":\""
-            + dob
-            + "\"}";
-
-    // WHEN
-    MockHttpServletRequestBuilder builder =
-        post(ResourceLinks.VERIFY_LINK)
-            .contentType(MediaType.APPLICATION_JSON_VALUE)
-            .accept(MediaType.APPLICATION_JSON)
-            .characterEncoding("UTF-8")
-            .content(requestBody);
-
-    // THEN
-    String requestId = runBuilderReturningRequestId(mockMvc, builder, status().isOk());
-    assertLastAuditEntry(HttpStatus.OK, ResourceLinks.VERIFY_LINK, requestId);
   }
 
   @Test
@@ -155,41 +111,6 @@ class PatientExperienceControllerTest extends BaseFullStackTest {
     // THEN
     String requestId = runBuilderReturningRequestId(mockMvc, builder, status().isOk());
     assertLastAuditEntry(HttpStatus.OK, ResourceLinks.VERIFY_LINK_V2, requestId);
-  }
-
-  @Test
-  void verifyLinkReturnsPerson() throws Exception {
-    // GIVEN
-    String dob = person.getBirthDate().format(DateTimeFormatter.ofPattern("yyyy-MM-dd"));
-    String requestBody =
-        "{\"patientLinkId\":\""
-            + patientLink.getInternalId()
-            + "\",\"dateOfBirth\":\""
-            + dob
-            + "\"}";
-
-    // WHEN
-    MockHttpServletRequestBuilder builder =
-        post(ResourceLinks.VERIFY_LINK)
-            .contentType(MediaType.APPLICATION_JSON_VALUE)
-            .accept(MediaType.APPLICATION_JSON)
-            .characterEncoding("UTF-8")
-            .content(requestBody);
-
-    // THEN
-    String requestId =
-        mockMvc
-            .perform(builder)
-            .andExpect(status().isOk())
-            .andExpect(jsonPath("$.firstName", is(person.getFirstName())))
-            .andExpect(jsonPath("$.lastName", is(person.getLastName())))
-            .andExpect(jsonPath("$.lastTest.deviceTypeName", is("Acme SuperFine")))
-            .andExpect(jsonPath("$.lastTest.deviceTypeModel", is("SFN")))
-            .andReturn()
-            .getResponse()
-            .getHeader(LoggingConstants.REQUEST_ID_HEADER);
-
-    assertLastAuditEntry(HttpStatus.OK, ResourceLinks.VERIFY_LINK, requestId);
   }
 
   @Test
@@ -261,7 +182,7 @@ class PatientExperienceControllerTest extends BaseFullStackTest {
 
     // WHEN
     MockHttpServletRequestBuilder builder =
-        post(ResourceLinks.VERIFY_LINK)
+        post(ResourceLinks.VERIFY_LINK_V2)
             .contentType(MediaType.APPLICATION_JSON_VALUE)
             .accept(MediaType.APPLICATION_JSON)
             .characterEncoding("UTF-8")
@@ -269,38 +190,7 @@ class PatientExperienceControllerTest extends BaseFullStackTest {
 
     // THEN
     String requestId = runBuilderReturningRequestId(mockMvc, builder, status().isGone());
-    assertLastAuditEntry(HttpStatus.GONE, ResourceLinks.VERIFY_LINK, requestId);
-  }
-
-  @Test
-  void getObfuscatedPatientName_returnsName() throws Exception {
-    // WHEN
-    MockHttpServletRequestBuilder builder =
-        get(ResourceLinks.GET_OBFUSCATED_PATIENT_NAME)
-            .characterEncoding("UTF-8")
-            .param("patientLink", patientLink.getInternalId().toString());
-
-    // THEN
-    this.mockMvc
-        .perform(builder)
-        .andExpect(status().isOk())
-        .andExpect(jsonPath("$", is("Fred A.")));
-  }
-
-  @Test
-  void getObfuscatedPatientName_thowsOnExpiredLink() throws Exception {
-    // GIVEN
-    TestUserIdentities.withStandardUser(
-        () -> patientLink = _dataFactory.expirePatientLink(patientLink));
-
-    // WHEN
-    MockHttpServletRequestBuilder builder =
-        get(ResourceLinks.GET_OBFUSCATED_PATIENT_NAME)
-            .characterEncoding("UTF-8")
-            .param("patientLink", patientLink.getInternalId().toString());
-
-    // THEN
-    this.mockMvc.perform(builder).andExpect(status().isGone());
+    assertLastAuditEntry(HttpStatus.GONE, ResourceLinks.VERIFY_LINK_V2, requestId);
   }
 
   @Test
@@ -333,7 +223,7 @@ class PatientExperienceControllerTest extends BaseFullStackTest {
   }
 
   @Test
-  void getTestResultUnauthenticated_thowsOnExpiredLink() throws Exception {
+  void getTestResultUnauthenticated_throwsOnExpiredLink() throws Exception {
     // GIVEN
     TestUserIdentities.withStandardUser(
         () -> patientLink = _dataFactory.expirePatientLink(patientLink));
@@ -361,7 +251,7 @@ class PatientExperienceControllerTest extends BaseFullStackTest {
 
     // WHEN
     MockHttpServletRequestBuilder builder =
-        post(ResourceLinks.VERIFY_LINK)
+        post(ResourceLinks.VERIFY_LINK_V2)
             .contentType(MediaType.APPLICATION_JSON_VALUE)
             .accept(MediaType.APPLICATION_JSON)
             .characterEncoding("UTF-8")
@@ -372,112 +262,6 @@ class PatientExperienceControllerTest extends BaseFullStackTest {
     List<TimeOfConsent> tocList = tocService.getTimeOfConsent(patientLink);
     assertNotNull(tocList);
     assertNotEquals(tocList.size(), 0);
-  }
-
-  @Test
-  void updatePatientReturnsUpdatedPerson() throws Exception {
-    // GIVEN
-    String dob = person.getBirthDate().format(DateTimeFormatter.ofPattern("yyyy-MM-dd"));
-    String newTelephone = "(212) 867-5309";
-    String newEmail = "fake@example.com";
-
-    String requestBody =
-        "{\"patientLinkId\":\""
-            + patientLink.getInternalId()
-            + "\",\"dateOfBirth\":\""
-            + dob
-            + "\",\"data\":{\"phoneNumbers\":"
-            + "[{\"type\":\"MOBILE\",\"number\":\""
-            + newTelephone
-            + "\"},{\"type\":\"LANDLINE\",\"number\":\"(631) 867-5309"
-            + "\"}],\"role\":\"UNKNOWN\",\"email\":\""
-            + newEmail
-            + "\",\"race\":\"refused\",\"ethnicity\":\"not_hispanic\",\"gender\":\"female\",\"residentCongregateSetting\":false,\"employedInHealthcare\":true,\"address\":{\"street\":[\"12 Someplace\",\"CA\"],\"city\":null,\"state\":\"CA\",\"county\":null,\"zipCode\":\"67890\"}}}";
-
-    // WHEN
-    MockHttpServletRequestBuilder builder =
-        post(ResourceLinks.UPDATE_PATIENT)
-            .contentType(MediaType.APPLICATION_JSON_VALUE)
-            .accept(MediaType.APPLICATION_JSON)
-            .characterEncoding("UTF-8")
-            .content(requestBody);
-
-    // THEN
-    mockMvc
-        .perform(builder)
-        .andExpect(status().isOk())
-        .andExpect(jsonPath("$.telephone", is(newTelephone)))
-        .andExpect(jsonPath("$.email", is(newEmail)));
-  }
-
-  @Test
-  void updatePatientAcceptsPostalOrZipCode() throws Exception {
-    // GIVEN
-    String dob = person.getBirthDate().format(DateTimeFormatter.ofPattern("yyyy-MM-dd"));
-    String newTelephone = "(212) 867-5309";
-    String newEmail = "fake@example.com";
-    String zipcode = "97209";
-
-    String requestBody =
-        "{\"patientLinkId\":\""
-            + patientLink.getInternalId()
-            + "\",\"dateOfBirth\":\""
-            + dob
-            + "\",\"data\":{\"phoneNumbers\":"
-            + "[{\"type\":\"MOBILE\",\"number\":\""
-            + newTelephone
-            + "\"},{\"type\":\"LANDLINE\",\"number\":\"(631) 867-5309"
-            + "\"}],\"role\":\"UNKNOWN\",\"emails\":[\""
-            + newEmail
-            + "\"],\"race\":\"refused\",\"ethnicity\":\"not_hispanic\",\"gender\":\"female\",\"residentCongregateSetting\":false,\"employedInHealthcare\":true,\"address\":{\"street\":[\"12 Someplace\",\"CA\"],\"city\":null,\"state\":\"CA\",\"county\":null,"
-            + "\"zipCode\":\""
-            + zipcode
-            + "\"}}}";
-
-    // WHEN
-    MockHttpServletRequestBuilder builder =
-        post(ResourceLinks.UPDATE_PATIENT)
-            .contentType(MediaType.APPLICATION_JSON_VALUE)
-            .accept(MediaType.APPLICATION_JSON)
-            .characterEncoding("UTF-8")
-            .content(requestBody);
-
-    // THEN
-    mockMvc
-        .perform(builder)
-        .andExpect(status().isOk())
-        .andExpect(jsonPath("$.zipCode", is(zipcode)));
-
-    String postalCode = "11561";
-    String requestBody2 =
-        "{\"patientLinkId\":\""
-            + patientLink.getInternalId()
-            + "\",\"dateOfBirth\":\""
-            + dob
-            + "\",\"data\":{\"phoneNumbers\":"
-            + "[{\"type\":\"MOBILE\",\"number\":\""
-            + newTelephone
-            + "\"},{\"type\":\"LANDLINE\",\"number\":\"(631) 867-5309"
-            + "\"}],\"role\":\"UNKNOWN\",\"emails\":[\""
-            + newEmail
-            + "\"],\"race\":\"refused\",\"ethnicity\":\"not_hispanic\",\"gender\":\"female\",\"residentCongregateSetting\":false,\"employedInHealthcare\":true,\"address\":{\"street\":[\"12 Someplace\",\"CA\"],\"city\":null,\"state\":\"CA\",\"county\":null,"
-            + "\"postalCode\":\""
-            + postalCode
-            + "\"}}}";
-
-    // WHEN
-    MockHttpServletRequestBuilder builder2 =
-        post(ResourceLinks.UPDATE_PATIENT)
-            .contentType(MediaType.APPLICATION_JSON_VALUE)
-            .accept(MediaType.APPLICATION_JSON)
-            .characterEncoding("UTF-8")
-            .content(requestBody2);
-
-    // THEN
-    mockMvc
-        .perform(builder2)
-        .andExpect(status().isOk())
-        .andExpect(jsonPath("$.zipCode", is(postalCode)));
   }
 
   @Test

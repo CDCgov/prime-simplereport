@@ -84,6 +84,9 @@ const testResults = [
     patientLink: {
       internalId: "68c543e8-7c65-4047-955c-e3f65bb8b58a",
     },
+    facility: {
+      name: "Facility 1",
+    },
     noSymptoms: true,
     symptoms: "{}",
     __typename: "TestResult",
@@ -118,6 +121,9 @@ const testResults = [
     },
     patientLink: {
       internalId: "68c543e8-7c65-4047-955c-e3f65bb8b58a",
+    },
+    facility: {
+      name: "Facility 1",
     },
     noSymptoms: false,
     symptoms: "{}",
@@ -154,6 +160,9 @@ const testResults = [
     },
     patientLink: {
       internalId: "68c543e8-7c65-4047-955c-e3f65bb8b58a",
+    },
+    facility: {
+      name: "Facility 1",
     },
     noSymptoms: false,
     symptoms: '{"someSymptom":"true"}',
@@ -356,6 +365,9 @@ const testResultsByPatient = [
     patientLink: {
       internalId: "68c543e8-7c65-4047-955c-e3f65bb8b58a",
     },
+    facility: {
+      name: "Facility 1",
+    },
     noSymptoms: true,
     symptoms: "{}",
     __typename: "TestResult",
@@ -394,6 +406,9 @@ const testResultsByResultValue = [
     patientLink: {
       internalId: "68c543e8-7c65-4047-955c-e3f65bb8b58a",
     },
+    facility: {
+      name: "Facility 1",
+    },
     noSymptoms: true,
     symptoms: "{}",
     __typename: "TestResult",
@@ -428,6 +443,9 @@ const testResultsByResultValue = [
     },
     patientLink: {
       internalId: "68c543e8-7c65-4047-955c-e3f65bb8b58a",
+    },
+    facility: {
+      name: "Facility 1",
     },
     noSymptoms: false,
     symptoms: "{}",
@@ -467,6 +485,9 @@ const testResultsByRole = [
     patientLink: {
       internalId: "68c543e8-7c65-4047-955c-e3f65bb8b58a",
     },
+    facility: {
+      name: "Facility 1",
+    },
     noSymptoms: true,
     symptoms: "{}",
     __typename: "TestResult",
@@ -501,6 +522,9 @@ const testResultsByRole = [
     },
     patientLink: {
       internalId: "68c543e8-7c65-4047-955c-e3f65bb8b58a",
+    },
+    facility: {
+      name: "Facility 1",
     },
     noSymptoms: false,
     symptoms: '{"someSymptom":"true"}',
@@ -540,6 +564,9 @@ const testResultsByStartDate = [
     patientLink: {
       internalId: "68c543e8-7c65-4047-955c-e3f65bb8b58a",
     },
+    facility: {
+      name: "Facility 1",
+    },
     noSymptoms: false,
     symptoms: "{}",
     __typename: "TestResult",
@@ -574,6 +601,9 @@ const testResultsByStartDate = [
     },
     patientLink: {
       internalId: "68c543e8-7c65-4047-955c-e3f65bb8b58a",
+    },
+    facility: {
+      name: "Facility 1",
     },
     noSymptoms: false,
     symptoms: '{"someSymptom":"true"}',
@@ -613,8 +643,50 @@ const testResultsByStartDateAndEndDate = [
     patientLink: {
       internalId: "68c543e8-7c65-4047-955c-e3f65bb8b58a",
     },
+    facility: {
+      name: "Facility 1",
+    },
     noSymptoms: false,
     symptoms: "{}",
+    __typename: "TestResult",
+  },
+];
+
+const testResultsByFacility = [
+  {
+    internalId: "0969da96-b211-41cd-ba61-002181f0123a",
+    dateTested: "2021-04-12T12:40:33.381Z",
+    result: "NEGATIVE",
+    correctionStatus: "ORIGINAL",
+    deviceType: {
+      internalId: "8c1a8efe-8951-4f84-a4c9-dcea561d7fbb",
+      name: "Abbott IDNow",
+      __typename: "DeviceType",
+    },
+    patient: {
+      internalId: "48c523e8-7c65-4047-955c-e3f65bb8123a",
+      firstName: "Lewis",
+      middleName: "",
+      lastName: "Clarkson",
+      birthDate: "1958-08-25",
+      gender: "other",
+      role: "VISITOR",
+      lookupId: null,
+      __typename: "Patient",
+    },
+    createdBy: {
+      nameInfo: {
+        firstName: "Arthur",
+        middleName: "A",
+        lastName: "Admin",
+      },
+    },
+    patientLink: {
+      internalId: "68c543e8-7c65-4047-955c-e3f65bb8123a",
+    },
+    facility: {
+      name: "Facility 2",
+    },
     __typename: "TestResult",
   },
 ];
@@ -868,6 +940,34 @@ const mocks = [
   },
   {
     request: {
+      query: resultsCountQuery,
+      variables: {
+        facilityId: "2",
+      },
+    },
+    result: {
+      data: {
+        testResultsCount: testResultsByFacility.length,
+      },
+    },
+  },
+  {
+    request: {
+      query: testResultQuery,
+      variables: {
+        facilityId: "2",
+        pageNumber: 0,
+        pageSize: 20,
+      },
+    },
+    result: {
+      data: {
+        testResults: testResultsByFacility,
+      },
+    },
+  },
+  {
+    request: {
       query: QUERY_PATIENT,
       variables: {
         facilityId: "1",
@@ -914,21 +1014,23 @@ describe("TestResultsList", () => {
   it("should render a list of tests", async () => {
     const { container } = render(
       <WithRouter>
-        <MockedProvider mocks={[]}>
-          <DetachedTestResultsList
-            data={{ testResults }}
-            pageNumber={1}
-            entriesPerPage={20}
-            totalEntries={testResults.length}
-            filterParams={{}}
-            setFilterParams={() => () => {}}
-            clearFilterParams={() => {}}
-            facilityId={"1"}
-            loading={false}
-            loadingTotalResults={false}
-            refetch={() => {}}
-          />
-        </MockedProvider>
+        <Provider store={store}>
+          <MockedProvider mocks={[]}>
+            <DetachedTestResultsList
+              data={{ testResults }}
+              pageNumber={1}
+              entriesPerPage={20}
+              totalEntries={testResults.length}
+              filterParams={{}}
+              setFilterParams={() => () => {}}
+              clearFilterParams={() => {}}
+              activeFacilityId={"1"}
+              loading={false}
+              loadingTotalResults={false}
+              refetch={() => {}}
+            />
+          </MockedProvider>
+        </Provider>
       </WithRouter>
     );
 
@@ -1029,6 +1131,12 @@ describe("TestResultsList", () => {
     expect(resultSelect).toBeInTheDocument();
     expect(resultSelect.value).toEqual("NEGATIVE");
 
+    const facilitySelect = (await screen.findByLabelText(
+      "Testing facility"
+    )) as HTMLSelectElement;
+    expect(facilitySelect).toBeInTheDocument();
+    expect(facilitySelect.value).toEqual("1");
+
     const searchBox = screen.getByLabelText(
       "Search by name"
     ) as HTMLInputElement;
@@ -1038,6 +1146,7 @@ describe("TestResultsList", () => {
     expect(await row.findByText("Colleer, Barde X")).toBeInTheDocument();
     expect(await row.findByText("DOB: 11/07/1960")).toBeInTheDocument();
     expect(await row.findByText("Negative")).toBeInTheDocument();
+    expect(await row.findByText("Facility 1")).toBeInTheDocument();
     expect(await row.findByText("Abbott IDNow")).toBeInTheDocument();
     expect(await row.findByText("User, Ursula")).toBeInTheDocument();
   });
@@ -1117,6 +1226,24 @@ describe("TestResultsList", () => {
       expect(
         await screen.findByText("Cragell, Barb Whitaker")
       ).toBeInTheDocument();
+      expect(screen.queryByText("Colleer, Barde X")).not.toBeInTheDocument();
+    });
+    it("should be able to filter by facility", async () => {
+      expect(
+        await screen.findByText("Test Results", { exact: false })
+      ).toBeInTheDocument();
+      expect(
+        await screen.findByText("Cragell, Barb Whitaker")
+      ).toBeInTheDocument();
+      expect(await screen.findByText("Colleer, Barde X")).toBeInTheDocument();
+      expect(
+        await screen.findByRole("option", { name: "Facility 1" })
+      ).toBeInTheDocument();
+      userEvent.selectOptions(screen.getByLabelText("Testing facility"), ["2"]);
+      expect(await screen.findByText("Clarkson, Lewis")).toBeInTheDocument();
+      expect(
+        screen.queryByText("Cragell, Barb Whitaker")
+      ).not.toBeInTheDocument();
       expect(screen.queryByText("Colleer, Barde X")).not.toBeInTheDocument();
     });
     it("should be able to filter by date", async () => {
@@ -1245,7 +1372,7 @@ describe("TestResultsList", () => {
       });
       userEvent.click(downloadButton);
       expect(
-        screen.getByText("Download results without any filters", {
+        screen.getByText("Download results without any search filters", {
           exact: false,
         })
       ).toBeInTheDocument();
@@ -1264,7 +1391,7 @@ describe("TestResultsList", () => {
       });
       userEvent.click(downloadButton);
       expect(
-        screen.getByText("Download results without any filters", {
+        screen.getByText("Download results without any search filters", {
           exact: false,
         })
       ).toBeInTheDocument();
@@ -1285,7 +1412,7 @@ describe("TestResultsList", () => {
         })
       ).toBeInTheDocument();
       await waitForElementToBeRemoved(() =>
-        screen.queryByText("Download results without any filters", {
+        screen.queryByText("Download results without any search filters", {
           exact: false,
         })
       );
@@ -1306,7 +1433,7 @@ describe("TestResultsList", () => {
       userEvent.click(downloadButton);
       expect(
         await screen.findByText(
-          "Download results with current filters applied",
+          "Download results with current search filters applied",
           {
             exact: false,
           }
@@ -1345,5 +1472,31 @@ describe("TestResultsList", () => {
         await screen.findByText("No facility selected", { exact: false })
       ).toBeInTheDocument();
     });
+  });
+
+  it("should hide facility filter if user can see only 1 facility", async () => {
+    const localStore = mockStore({
+      organization: {
+        name: "Organization Name",
+      },
+      user: {
+        firstName: "Kim",
+        lastName: "Mendoza",
+      },
+      facilities: [{ id: "1", name: "Facility 1" }],
+      facility: { id: "1", name: "Facility 1" },
+    });
+
+    await render(
+      <WithRouter>
+        <Provider store={localStore}>
+          <MockedProvider mocks={mocks}>
+            <TestResultsList />
+          </MockedProvider>
+        </Provider>
+      </WithRouter>
+    );
+
+    expect(screen.queryByLabelText("Testing facility")).not.toBeInTheDocument();
   });
 });

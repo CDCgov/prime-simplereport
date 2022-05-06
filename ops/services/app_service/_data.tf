@@ -7,3 +7,12 @@ data "terraform_remote_state" "global" {
     key                  = "global/terraform.tfstate"
   }
 }
+
+data "azurerm_subscription" "primary" {
+
+}
+
+data "azurerm_key_vault_certificate" "wildcard_simplereport_gov" {
+  key_vault_id = var.key_vault_id
+  name         = "wildcard-simplereport-gov"
+}

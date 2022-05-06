@@ -22,6 +22,10 @@ import { RootState } from "../store";
 import { getAppInsights } from "../TelemetryService";
 import { formatDate } from "../utils/date";
 import { TextWithTooltip } from "../commonComponents/TextWithTooltip";
+import {
+  TestCorrectionReason,
+  TestCorrectionReasons,
+} from "../testResults/TestResultCorrectionModal";
 
 import { ALERT_CONTENT, QUEUE_NOTIFICATION_TYPES } from "./constants";
 import AskOnEntryTag, { areAnswersComplete } from "./AskOnEntryTag";
@@ -166,6 +170,8 @@ if (process.env.NODE_ENV !== "test") {
 export interface QueueItemProps {
   internalId: string;
   patient: TestQueuePerson;
+  startTestPatientId: string | null;
+  setStartTestPatientId: any;
   devices: {
     name: string;
     internalId: string;
@@ -181,6 +187,8 @@ export interface QueueItemProps {
   refetchQueue: () => void;
   facilityName: string | undefined;
   facilityId: string;
+  isCorrection?: boolean;
+  reasonForCorrection?: TestCorrectionReason;
 }
 
 interface updateQueueItemProps {
@@ -196,6 +204,8 @@ type SaveState = "idle" | "editing" | "saving" | "error";
 const QueueItem = ({
   internalId,
   patient,
+  startTestPatientId,
+  setStartTestPatientId,
   deviceSpecimenTypes,
   askOnEntry,
   selectedDeviceId,
@@ -206,6 +216,8 @@ const QueueItem = ({
   facilityName,
   facilityId,
   dateTestedProp,
+  isCorrection = false,
+  reasonForCorrection,
 }: QueueItemProps) => {
   const appInsights = getAppInsights();
   const navigate = useNavigate();
@@ -234,6 +246,7 @@ const QueueItem = ({
     EditQueueItemResponse,
     EditQueueItemParams
   >(EDIT_QUEUE_ITEM);
+
   const [saveState, setSaveState] = useState<SaveState>("idle");
 
   const [isAoeModalOpen, updateIsAoeModalOpen] = useState(false);
@@ -261,6 +274,14 @@ const QueueItem = ({
     updateDeviceId(deviceSpecimenType.deviceType.internalId);
     updateSpecimenId(deviceSpecimenType.specimenType.internalId);
   }, [deviceSpecimenTypes, deviceSpecimenTypeId]);
+
+  const testCardElement = useRef() as React.MutableRefObject<HTMLDivElement>;
+
+  useEffect(() => {
+    if (startTestPatientId === patient.internalId) {
+      testCardElement.current.scrollIntoView({ behavior: "smooth" });
+    }
+  });
 
   const deviceTypes = deviceSpecimenTypes
     .map((d) => d.deviceType)
@@ -406,6 +427,7 @@ const QueueItem = ({
       testResultsSubmitted(result);
       refetchQueue();
       removeTimer(internalId);
+      setStartTestPatientId(null);
     } catch (error: any) {
       setSaveState("error");
       updateMutationError(error);
@@ -532,6 +554,7 @@ const QueueItem = ({
       },
     })
       .then(() => refetchQueue())
+      .then(() => setStartTestPatientId(null))
       .then(() => removeTimer(internalId))
       .catch((error) => {
         updateMutationError(error);
@@ -640,11 +663,17 @@ const QueueItem = ({
 
   function cardColorDisplay() {
     const prefix = "prime-queue-item__";
+    if (isCorrection) {
+      return prefix + "ready";
+    }
     if (saveState === "error") {
       return prefix + "error";
     }
     if (timer.countdown < 0 && testResultValue === "UNKNOWN") {
       return prefix + "ready";
+    }
+    if (startTestPatientId === patient.internalId) {
+      return prefix + "info";
     }
     return undefined;
   }
@@ -677,9 +706,19 @@ const QueueItem = ({
           show={saveState === "saving"}
           name={patientFullName}
         />
-        <div className="prime-card-container">
+        <div className="prime-card-container" ref={testCardElement}>
           {saveState !== "saving" && closeButton}
           <div className="grid-row">
+            {isCorrection && reasonForCorrection && (
+              <div
+                className={classnames("tablet:grid-col-12", "card-correction")}
+              >
+                <strong>Correction:</strong>{" "}
+                {reasonForCorrection in TestCorrectionReasons
+                  ? TestCorrectionReasons[reasonForCorrection]
+                  : reasonForCorrection}
+              </div>
+            )}
             <div className="tablet:grid-col-9">
               <div
                 className="grid-row prime-test-name usa-card__header"
@@ -863,6 +902,12 @@ const QueueItem = ({
                       The test questionnaire for{" "}
                       <b> {` ${patientFullName} `} </b> has not been completed.
                       Do you want to submit results anyway?
+                    </p>
+                  ) : isCorrection ? (
+                    <p>
+                      Are you sure you want to cancel <b>{patientFullName}'s</b>{" "}
+                      test correction? The original test result won’t be
+                      changed.
                     </p>
                   ) : (
                     <>

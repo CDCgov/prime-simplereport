@@ -1,0 +1,17 @@
+<component name="ProjectRunConfigurationManager">
+  <configuration default="false" name="Frontend with Okta" type="js.build_tools.npm">
+    <package-json value="$PROJECT_DIR$/frontend/package.json" />
+    <command value="run" />
+    <scripts>
+      <script value="start" />
+    </scripts>
+    <node-interpreter value="project" />
+    <envs>
+      <env name="REACT_APP_OKTA_ENABLED" value="true" />
+      <env name="REACT_APP_OKTA_URL" value="https://hhs-prime.oktapreview.com" />
+      <env name="REACT_APP_OKTA_CLIENT_ID" value="0oa1k0163nAwfVxNW1d7" />
+      <env name="REACT_APP_OKTA_SCOPE" value="simple_report_dev" />
+    </envs>
+    <method v="2" />
+  </configuration>
+</component>

@@ -12,6 +12,11 @@ variable "environment" {
   type = string
 }
 
+variable "env_level" {
+  description = "Pipeline level that this environment is a member of."
+  type        = string
+}
+
 # Secret Access
 variable "tenant_id" {}
 

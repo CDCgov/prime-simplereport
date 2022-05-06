@@ -3,6 +3,7 @@ const NO = "No";
 const OTHER = "Other";
 const REFUSED = "Prefer not to answer";
 const UNKNOWN = "Unknown";
+const NOT_SURE = "Not sure";
 
 export const en = {
   translation: {
@@ -58,6 +59,11 @@ export const en = {
         YES,
         NO,
         UNKNOWN,
+      },
+      yesNoNotSure: {
+        YES,
+        NO,
+        NOT_SURE,
       },
       date: {
         month: "Month",
@@ -122,7 +128,7 @@ export const en = {
         contact: {
           heading: "Contact information",
           helpText:
-            "You're responsible for entering the correct contact information, following applicable federal and state laws.",
+            "You're responsible for entering correct contact information, following applicable federal and state laws.",
           primaryPhoneNumber: "Primary phone number",
           additionalPhoneNumber: "Additional phone number",
           phoneType: "Phone type",
@@ -156,9 +162,10 @@ export const en = {
             "This is usually the gender that is written on your original birth certificate.",
         },
         other: {
-          heading: "Other",
+          heading: "Other information",
           congregateLiving: {
-            heading: "Are you a resident in a congregate living setting?",
+            heading:
+              "Are you a resident in a group or shared housing facility?",
             helpText:
               "For example: nursing home, group home, prison, jail, or military",
           },
@@ -567,11 +574,11 @@ export const en = {
         },
       },
       dob: {
-        header: "Verify date of birth",
+        header: "Access your COVID-19 test result",
         dateOfBirth: "Date of birth",
         enterDOB: "Enter your date of birth",
         enterDOB2:
-          "Enter <0>{{personName}}'s</0> date of birth to access your COVID-19 test results.",
+          "Enter <0>{{personName}}'s</0> date of birth to access their COVID-19 test result.",
         linkExpirationNotice:
           "Note: this link will expire on <0>{{expirationDate}}</0>. ",
         testingFacilityContact:

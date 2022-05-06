@@ -233,7 +233,8 @@
   }
 
   &__error,
-  &__ready {
+  &__ready,
+  &__info {
     .prime-card-container .usa-card__header {
       margin-left: 0;
       padding-left: 0.75rem;
@@ -266,6 +267,14 @@
         color: color($theme-color-prime-gray-darkest);
         margin: 0 units(1);
       }
+    }
+  }
+
+  &__info {
+    border-color: color($theme-color-prime-blue);
+
+    .prime-card-container {
+      border-color: color($theme-color-prime-blue);
     }
   }
 
@@ -618,6 +627,7 @@ $results-dropdown-spacing: #{units(4)} - #{units(2)} - 22px - #{units(4)}; // he
 .prime-facility-select {
   margin: 0 0 16px 0;
   width: 100%;
+  padding: 0;
 
   @include at-media("desktop") {
     display: flex;
@@ -625,7 +635,7 @@ $results-dropdown-spacing: #{units(4)} - #{units(2)} - 22px - #{units(4)}; // he
     justify-content: center;
     margin-bottom: 0;
     margin-left: units(7);
-    padding-right: units(2.5);
+    padding: 0 0.5rem;
   }
 
   .usa-form-group {
@@ -756,23 +766,34 @@ $results-dropdown-spacing: #{units(4)} - #{units(2)} - 22px - #{units(4)}; // he
   margin-left: units(4);
 }
 
+.usa-sidenav__sublist,
+.mobile-sublist-container {
+  hr {
+    margin: 1rem -1rem 1rem;
+    background-color: color("base-lighter");
+    height: 1px;
+    border: none;
+  }
+}
+
 .prime-staff-infobox {
   position: absolute;
-  right: 73px;
-  width: auto !important;
+  width: 13rem;
   border: 1px solid color("base-lighter");
   border-radius: 0.5rem;
   background-color: white; /* seems like this should be a theme */
   z-index: 10;
   visibility: hidden;
-
-  .usa-sidenav__sublist {
-    margin: units(2.5);
-  }
+  padding: 1rem;
+  box-shadow: 0 4px 8px 0 #00000029;
 
   li {
     border-top-color: transparent;
     margin-top: units(1);
+  }
+
+  li:first-of-type {
+    margin-top: 0;
   }
 
   /* Anchor in menu is rendered as a styled button. parent Nav forces it to look non-standard */
@@ -790,20 +811,6 @@ $results-dropdown-spacing: #{units(4)} - #{units(2)} - 22px - #{units(4)}; // he
   &-sidemenu {
     li {
       border-color: transparent;
-    }
-  }
-}
-
-.navlink__support {
-  @include at-media("desktop") {
-    margin-top: units(2.5) !important;
-  }
-
-  a {
-    text-decoration: underline !important;
-
-    @include at-media("desktop") {
-      padding-left: 0;
     }
   }
 }

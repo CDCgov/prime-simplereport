@@ -26,6 +26,7 @@ import gov.cdc.usds.simplereport.db.model.Person;
 import gov.cdc.usds.simplereport.db.model.TestEvent;
 import gov.cdc.usds.simplereport.db.model.TestOrder;
 import gov.cdc.usds.simplereport.db.model.auxiliary.AskOnEntrySurvey;
+import gov.cdc.usds.simplereport.db.model.auxiliary.OrderStatus;
 import gov.cdc.usds.simplereport.db.model.auxiliary.PersonName;
 import gov.cdc.usds.simplereport.db.model.auxiliary.PersonRole;
 import gov.cdc.usds.simplereport.db.model.auxiliary.TestCorrectionStatus;
@@ -42,6 +43,7 @@ import gov.cdc.usds.simplereport.test_util.TestUserIdentities;
 import java.time.Instant;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
+import java.time.ZoneId;
 import java.util.Collections;
 import java.util.Date;
 import java.util.HashMap;
@@ -539,6 +541,49 @@ class TestOrderServiceTest extends BaseServiceTest<TestOrderService> {
         () ->
             _service.addTestResult(
                 devA.getInternalId(), TestResult.POSITIVE, p.getInternalId(), null));
+  }
+
+  @Test
+  @WithSimpleReportOrgAdminUser
+  void addTestResult_correction() {
+    Organization org = _organizationService.getCurrentOrganization();
+    Facility facility = _organizationService.getFacilities(org).get(0);
+    Person p = _dataFactory.createFullPerson(org);
+    _service.addPatientToQueue(
+        facility.getInternalId(), p, "", Collections.emptyMap(), LocalDate.of(1865, 12, 25), false);
+    DeviceSpecimenType devA = _dataFactory.getGenericDeviceSpecimen();
+    facility.addDefaultDeviceSpecimen(devA);
+
+    // Create test event for a later correction
+    _service.addTestResult(devA.getInternalId(), TestResult.POSITIVE, p.getInternalId(), null);
+    List<TestEvent> testEvents =
+        _testEventRepository.findAllByPatientAndFacilities(p, List.of(facility));
+    assertEquals(1, testEvents.size());
+
+    // Mark existing test order as "corrected", re-open as "pending" order status
+    TestEvent originalTestEvent = testEvents.get(0);
+    _service.markAsCorrection(originalTestEvent.getInternalId(), "Cold feet");
+
+    // Issue test correction
+    _service.addTestResult(devA.getInternalId(), TestResult.NEGATIVE, p.getInternalId(), null);
+
+    // Get newly-created correction event
+    TestEvent correctionTestEvent =
+        _testEventRepository.findAllByPatientAndFacilities(p, List.of(facility)).stream()
+            .filter(event -> event.getCorrectionStatus() == TestCorrectionStatus.CORRECTED)
+            .collect(Collectors.toList())
+            .get(0);
+
+    assertEquals(
+        originalTestEvent.getInternalId(), correctionTestEvent.getPriorCorrectedTestEventId());
+    assertEquals(TestCorrectionStatus.CORRECTED, correctionTestEvent.getCorrectionStatus());
+    assertEquals("Cold feet", correctionTestEvent.getReasonForCorrection());
+    assertEquals(TestResult.NEGATIVE, correctionTestEvent.getResult());
+    // Date of original test is overwritten by the new correction event
+    assertNotEquals(
+        LocalDate.of(1865, 12, 25),
+        LocalDate.ofInstant(
+            correctionTestEvent.getDateTested().toInstant(), ZoneId.systemDefault()));
   }
 
   @Test
@@ -1060,7 +1105,7 @@ class TestOrderServiceTest extends BaseServiceTest<TestOrderService> {
 
   @Test
   @WithSimpleReportOrgAdminUser
-  void correctionsTest() {
+  void markAsErrorTest() {
     Organization org = _organizationService.getCurrentOrganization();
     Facility facility = _organizationService.getFacilities(org).get(0);
     DeviceSpecimenType device = _dataFactory.getGenericDeviceSpecimen();
@@ -1070,7 +1115,7 @@ class TestOrderServiceTest extends BaseServiceTest<TestOrderService> {
     TestOrder _o = _e.getTestOrder();
 
     String reasonMsg = "Testing correction marking as error " + LocalDateTime.now();
-    TestEvent deleteMarkerEvent = _service.correctTestMarkAsError(_e.getInternalId(), reasonMsg);
+    TestEvent deleteMarkerEvent = _service.markAsError(_e.getInternalId(), reasonMsg);
     assertNotNull(deleteMarkerEvent);
 
     assertEquals(TestCorrectionStatus.REMOVED, deleteMarkerEvent.getCorrectionStatus());
@@ -1104,6 +1149,38 @@ class TestOrderServiceTest extends BaseServiceTest<TestOrderService> {
     // make sure the corrected event is sent to storage queue, which gets picked up to be delivered
     // to report stream
     verify(testEventReportingService).report(deleteMarkerEvent);
+  }
+
+  @Test
+  @WithSimpleReportOrgAdminUser
+  void correctionsTest() {
+    Organization org = _organizationService.getCurrentOrganization();
+    Facility facility = _organizationService.getFacilities(org).get(0);
+    DeviceSpecimenType device = _dataFactory.getGenericDeviceSpecimen();
+    facility.addDefaultDeviceSpecimen(device);
+    Person p = _dataFactory.createFullPerson(org);
+    TestEvent e = _dataFactory.createTestEvent(p, facility);
+
+    String reasonMsg = "Testing correction marking as error " + LocalDateTime.now();
+
+    // A test correction call just returns the original TestEvent...
+    TestEvent originalEvent = _service.markAsCorrection(e.getInternalId(), reasonMsg);
+
+    // ...but re-opens the original TestOrder and updates correction status
+    TestOrder updatedOrder = originalEvent.getTestOrder();
+    assertEquals(TestCorrectionStatus.CORRECTED, updatedOrder.getCorrectionStatus());
+    assertEquals(reasonMsg, updatedOrder.getReasonForCorrection());
+    assertEquals(e.getInternalId(), updatedOrder.getTestEvent().getInternalId());
+    assertEquals(OrderStatus.PENDING, updatedOrder.getOrderStatus());
+
+    // Unlike marking a test as deleted, which immediately creates a second TestEvent
+    // that represents the removal, a test correction does not result in another
+    // TestEvent being generated and saved
+    long testEventCount = _testEventRepository.count();
+    assertEquals(1, testEventCount);
+
+    // Does not report to ReportStream
+    verify(testEventReportingService, times(0)).report(e);
   }
 
   @Test
@@ -1152,13 +1229,20 @@ class TestOrderServiceTest extends BaseServiceTest<TestOrderService> {
             null,
             null,
             null,
-            new Date(2021, 6, 1, 0, 0, 0),
-            new Date(2021, 6, 3, 23, 59, 59),
+            convertDate(LocalDateTime.of(2021, 6, 1, 0, 0, 0)),
+            convertDate(LocalDateTime.of(2021, 6, 3, 23, 59, 59)),
             0,
             10);
     List<TestEvent> priorToJune2Noon =
         _service.getTestEventsResults(
-            _site.getInternalId(), null, null, null, null, new Date(2021, 6, 2, 11, 59, 59), 0, 10);
+            _site.getInternalId(),
+            null,
+            null,
+            null,
+            null,
+            convertDate(LocalDateTime.of(2021, 6, 2, 11, 59, 59)),
+            0,
+            10);
     List<TestEvent> positivesAmos =
         _service.getTestEventsResults(
             _site.getInternalId(),
@@ -1185,8 +1269,8 @@ class TestOrderServiceTest extends BaseServiceTest<TestOrderService> {
             _dataFactory.getPersonByName(CHARLES).getInternalId(),
             TestResult.POSITIVE,
             PersonRole.RESIDENT,
-            new Date(2021, 6, 1, 0, 0, 0),
-            new Date(2021, 6, 1, 23, 59, 59),
+            convertDate(LocalDateTime.of(2021, 6, 1, 0, 0, 0)),
+            convertDate(LocalDateTime.of(2021, 6, 1, 23, 59, 59)),
             0,
             10);
 
@@ -1222,13 +1306,15 @@ class TestOrderServiceTest extends BaseServiceTest<TestOrderService> {
         testEvents.stream()
             .filter(
                 t ->
-                    !t.getDateTested().before(new Date(2021, 6, 1, 0, 0, 0))
-                        && !t.getDateTested().after(new Date(2021, 6, 3, 23, 59, 59)))
+                    !t.getDateTested().before(convertDate(LocalDateTime.of(2021, 6, 1, 0, 0, 0)))
+                        && !t.getDateTested()
+                            .after(convertDate(LocalDateTime.of(2021, 6, 3, 23, 59, 59))))
             .collect(Collectors.toList()));
     assertTestResultsList(
         priorToJune2Noon,
         testEvents.stream()
-            .filter(t -> t.getDateTested().before(new Date(2021, 6, 2, 12, 0, 0)))
+            .filter(
+                t -> t.getDateTested().before(convertDate(LocalDateTime.of(2021, 6, 2, 12, 0, 0))))
             .collect(Collectors.toList()));
     assertTestResultsList(
         positivesAmos,
@@ -1254,8 +1340,10 @@ class TestOrderServiceTest extends BaseServiceTest<TestOrderService> {
                     t.getPatient().getNameInfo().equals(CHARLES)
                         && t.getResult() == TestResult.POSITIVE
                         && t.getPatient().getRole() == PersonRole.RESIDENT
-                        && !t.getDateTested().before(new Date(2021, 6, 1, 0, 0, 0))
-                        && !t.getDateTested().after(new Date(2021, 6, 1, 23, 59, 59)))
+                        && !t.getDateTested()
+                            .before(convertDate(LocalDateTime.of(2021, 6, 1, 0, 0, 0)))
+                        && !t.getDateTested()
+                            .after(convertDate(LocalDateTime.of(2021, 6, 1, 23, 59, 59))))
             .collect(Collectors.toList()));
   }
 
@@ -1276,10 +1364,9 @@ class TestOrderServiceTest extends BaseServiceTest<TestOrderService> {
 
     OrganizationLevelDashboardMetrics metrics =
         _service.getOrganizationLevelDashboardMetrics(startDate, endDate);
-    // these will need to be adjusted once the Date bug in makedata is fixed.
-    assertEquals(0, metrics.getOrganizationPositiveTestCount());
-    assertEquals(1, metrics.getOrganizationTotalTestCount());
-    assertEquals(1, metrics.getOrganizationNegativeTestCount());
+    assertEquals(3, metrics.getOrganizationPositiveTestCount());
+    assertEquals(12, metrics.getOrganizationTotalTestCount());
+    assertEquals(5, metrics.getOrganizationNegativeTestCount());
     assertEquals(4, metrics.getFacilityMetrics().size());
   }
 
@@ -1306,8 +1393,8 @@ class TestOrderServiceTest extends BaseServiceTest<TestOrderService> {
 
     TopLevelDashboardMetrics metrics =
         _service.getTopLevelDashboardMetrics(null, startDate, endDate);
-    assertEquals(0, metrics.getPositiveTestCount());
-    assertEquals(1, metrics.getTotalTestCount());
+    assertEquals(3, metrics.getPositiveTestCount());
+    assertEquals(12, metrics.getTotalTestCount());
   }
 
   @Test
@@ -1341,17 +1428,17 @@ class TestOrderServiceTest extends BaseServiceTest<TestOrderService> {
     patientsToResults.put(LEELOO, TestResult.UNDETERMINED);
 
     Map<PersonName, Date> patientsToDates = new HashMap<>();
-    patientsToDates.put(AMOS, new Date(2021, 6, 1, 0, 0, 0));
-    patientsToDates.put(CHARLES, new Date(2021, 6, 1, 12, 0, 0));
-    patientsToDates.put(DEXTER, new Date(2021, 6, 2, 0, 0, 0));
-    patientsToDates.put(ELIZABETH, new Date(2021, 6, 2, 12, 0, 0));
-    patientsToDates.put(FRANK, new Date(2021, 6, 3, 0, 0, 0));
-    patientsToDates.put(GALE, new Date(2021, 6, 3, 12, 0, 0));
-    patientsToDates.put(HEINRICK, new Date(2021, 6, 4, 0, 0, 0));
-    patientsToDates.put(IAN, new Date(2021, 6, 4, 12, 0, 0));
-    patientsToDates.put(JANNELLE, new Date(2021, 6, 5, 0, 0, 0));
-    patientsToDates.put(KACEY, new Date(2021, 6, 5, 12, 0, 0));
-    patientsToDates.put(LEELOO, new Date(2021, 6, 6, 0, 0, 0));
+    patientsToDates.put(AMOS, convertDate(LocalDateTime.of(2021, 6, 1, 0, 0, 0)));
+    patientsToDates.put(CHARLES, convertDate(LocalDateTime.of(2021, 6, 1, 12, 0, 0)));
+    patientsToDates.put(DEXTER, convertDate(LocalDateTime.of(2021, 6, 2, 0, 0, 0)));
+    patientsToDates.put(ELIZABETH, convertDate(LocalDateTime.of(2021, 6, 2, 12, 0, 0)));
+    patientsToDates.put(FRANK, convertDate(LocalDateTime.of(2021, 6, 3, 0, 0, 0)));
+    patientsToDates.put(GALE, convertDate(LocalDateTime.of(2021, 6, 3, 12, 0, 0)));
+    patientsToDates.put(HEINRICK, convertDate(LocalDateTime.of(2021, 6, 4, 0, 0, 0)));
+    patientsToDates.put(IAN, convertDate(LocalDateTime.of(2021, 6, 4, 12, 0, 0)));
+    patientsToDates.put(JANNELLE, convertDate(LocalDateTime.of(2021, 6, 5, 0, 0, 0)));
+    patientsToDates.put(KACEY, convertDate(LocalDateTime.of(2021, 6, 5, 12, 0, 0)));
+    patientsToDates.put(LEELOO, convertDate(LocalDateTime.of(2021, 6, 6, 0, 0, 0)));
 
     Map<PersonName, PersonRole> patientsToRoles = new HashMap<>();
     patientsToRoles.put(AMOS, PersonRole.RESIDENT);
@@ -1411,8 +1498,12 @@ class TestOrderServiceTest extends BaseServiceTest<TestOrderService> {
     }
   }
 
+  private static Date convertDate(LocalDateTime dateTime) {
+    return Date.from(dateTime.atZone(ZoneId.systemDefault()).toInstant());
+  }
+
   @Test
-  void correctionsTest_successDependsOnFacilityAccess() {
+  void markAsErrorTest_successDependsOnFacilityAccess() {
     Organization org = _organizationService.getCurrentOrganization();
     Facility facility = _dataFactory.createValidFacility(org);
     Person p = _dataFactory.createFullPerson(org);
@@ -1420,8 +1511,7 @@ class TestOrderServiceTest extends BaseServiceTest<TestOrderService> {
 
     String reasonMsg = "Testing correction marking as error " + LocalDateTime.now();
     assertThrows(
-        AccessDeniedException.class,
-        () -> _service.correctTestMarkAsError(_e.getInternalId(), reasonMsg));
+        AccessDeniedException.class, () -> _service.markAsError(_e.getInternalId(), reasonMsg));
     assertThrows(
         AccessDeniedException.class,
         () ->
@@ -1435,7 +1525,7 @@ class TestOrderServiceTest extends BaseServiceTest<TestOrderService> {
     verifyNoInteractions(testEventReportingService);
 
     TestUserIdentities.setFacilityAuthorities(facility);
-    TestEvent correctedTestEvent = _service.correctTestMarkAsError(_e.getInternalId(), reasonMsg);
+    TestEvent correctedTestEvent = _service.markAsError(_e.getInternalId(), reasonMsg);
     _service.getTestEventsResults(facility.getInternalId(), null, null, null, null, null, 0, 10);
     _service.getTestResult(_e.getInternalId()).getTestOrder();
     // make sure the corrected event is sent to storage queue

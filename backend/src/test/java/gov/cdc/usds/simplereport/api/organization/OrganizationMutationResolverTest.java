@@ -45,12 +45,15 @@ class OrganizationMutationResolverTest extends BaseServiceTest<PersonService> {
 
   private Facility facility;
   private StreetAddress address;
+  private Organization organization;
+
   private OrganizationQueueItem pendingOrg;
   private final UUID deviceId = UUID.randomUUID();
 
   @BeforeEach
   void setup() {
     Organization org = _dataFactory.createValidOrg();
+    organization = org;
     facility = _dataFactory.createValidFacility(org);
     pendingOrg = _dataFactory.createOrganizationQueueItem();
     address = facility.getAddress();
@@ -302,6 +305,25 @@ class OrganizationMutationResolverTest extends BaseServiceTest<PersonService> {
 
     // THEN
     verify(mockedOrganizationService).markFacilityAsDeleted(facility.getInternalId(), false);
+  }
+
+  @Test
+  void markOrganizationAsDeleted_true() {
+    // WHEN
+    organizationMutationResolver.markOrganizationAsDeleted(organization.getInternalId(), true);
+
+    // THEN
+    verify(mockedOrganizationService).markOrganizationAsDeleted(organization.getInternalId(), true);
+  }
+
+  @Test
+  void markOrganizationAsDeleted_false() {
+    // WHEN
+    organizationMutationResolver.markOrganizationAsDeleted(organization.getInternalId(), false);
+
+    // THEN
+    verify(mockedOrganizationService)
+        .markOrganizationAsDeleted(organization.getInternalId(), false);
   }
 
   @Test
