@@ -209,7 +209,6 @@ public class TestOrderService {
         _repo
             .fetchQueueItemByOrganizationAndId(org, id)
             .orElseThrow(TestOrderService::noSuchOrderFound);
-    //    Hibernate.initialize(order.getResultSet());
     return order;
   }
 
