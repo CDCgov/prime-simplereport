@@ -2,6 +2,25 @@ pre-commit:
   parallel: true
   commands:
     spotless:
+      root: "backend/"
+      glob: "*.java"
+      run: ./gradlew spotlessApply && git add {staged_files}
+    prettier:
+      root: "frontend/"
+      glob: "*.{js,ts,jsx,tsx}"
+      run: ./node_modules/.bin/prettier  --write {staged_files} && git add {staged_files}
+    eslint:
+      root: "frontend/"
+      glob: "*.{js,ts,jsx,tsx}"
+      run: ./node_modules/.bin/eslint  --fix {staged_files} && git add {staged_files}
+    stylelint:
+      root: "frontend/"
+      glob: "*.scss"
+      run: ./node_modules/.bin/stylelint  --fix {staged_files} && git add {staged_files}
+in-docker:
+  parallel: true
+  commands:
+    spotless:
       glob: "*.java"
       run: docker compose run --rm backend sh -c "gradle spotlessApply" && git add {staged_files}
     prettier:
@@ -16,3 +35,4 @@ pre-commit:
       root: "frontend/"
       glob: "*.scss"
       run: docker compose -f ../docker-compose.yml run --rm frontend sh -c "/app/frontend/node_modules/.bin/stylelint --config /app/frontend/.stylelintrc.json --config-basedir /app/frontend --fix {staged_files}" && git add {staged_files}
+

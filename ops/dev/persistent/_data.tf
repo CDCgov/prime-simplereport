@@ -10,7 +10,8 @@ data "terraform_remote_state" "global" {
 
 # Resource Groups
 data "azurerm_resource_group" "dev" {
-  name = "${local.project}-${local.name}-${local.env}"
+  # Environments are assembled into shared resource groups by environment level.
+  name = "${local.project}-${local.name}-${local.env_level}"
 }
 
 data "azurerm_resource_group" "global" {
@@ -27,6 +28,9 @@ data "azurerm_client_config" "current" {}
 data "azurerm_virtual_network" "dev" {
   name                = "simple-report-${local.env}-network"
   resource_group_name = data.azurerm_resource_group.dev.name
+  depends_on = [
+    module.vnet
+  ]
 }
 
 # Secrets
