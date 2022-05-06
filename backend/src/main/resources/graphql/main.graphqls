@@ -307,7 +307,10 @@ type Query {
   supportedDiseases: [SupportedDisease!]!
   specimenType: [SpecimenType]
   deviceSpecimenTypes: [DeviceSpecimenType]
-  facilities: [Facility]
+  facilities(
+    showArchived: Boolean = false
+      @requiredPermissions(allOf: ["VIEW_ARCHIVED_FACILITIES"])
+  ): [Facility]
   patients(
     facilityId: ID
     pageNumber: Int

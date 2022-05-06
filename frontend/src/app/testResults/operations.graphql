@@ -86,8 +86,12 @@ query GetFacilityResultsForCsv(
   }
 }
 
-query GetAllFacilities {
-  facilities {
+query GetAllFacilities(
+  $showArchived: Boolean
+) {
+  facilities(
+    showArchived: $showArchived
+  ) {
     id
     name
     isDeleted

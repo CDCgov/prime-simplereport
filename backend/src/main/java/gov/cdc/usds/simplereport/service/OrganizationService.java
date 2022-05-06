@@ -150,7 +150,6 @@ public class OrganizationService {
     return facilityRepository.findAllByOrganizationAndInternalId(org, facilityIds);
   }
 
-  // todo fix auth here
   @AuthorizationConfiguration.RequirePermissionReadAllFacilityResults
   public Set<Facility> getCurrentAndArchivedFacilities(Organization org) {
     return facilityRepository.findAllByOrganizationAllowDeleted(org);

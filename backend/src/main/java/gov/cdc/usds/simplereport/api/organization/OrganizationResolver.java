@@ -81,14 +81,19 @@ public class OrganizationResolver implements GraphQLQueryResolver {
   }
 
   /**
-   * Retrieves all facilities for the current org, including deleted facilities Could be expanded in
-   * the future with an includeDeleted boolean param, if needed
+   * Retrieves all facilities for the current org
    *
-   * @return list of current and archived facilities
+   * @param showArchived whether or not to include archived facilities
+   * @return list of facilities
    */
-  public Set<ApiFacility> getFacilities() {
+  public Set<ApiFacility> getFacilities(Boolean showArchived) {
     Organization org = _organizationService.getCurrentOrganization();
-    return _organizationService.getCurrentAndArchivedFacilities(org).stream()
+    if (showArchived) {
+      return _organizationService.getCurrentAndArchivedFacilities(org).stream()
+          .map(ApiFacility::new)
+          .collect(Collectors.toSet());
+    }
+    return _organizationService.getAccessibleFacilities().stream()
         .map(ApiFacility::new)
         .collect(Collectors.toSet());
   }

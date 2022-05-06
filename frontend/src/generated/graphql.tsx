@@ -748,6 +748,10 @@ export type Query = {
   whoami: User;
 };
 
+export type QueryFacilitiesArgs = {
+  showArchived?: InputMaybe<Scalars["Boolean"]>;
+};
+
 export type QueryOrganizationLevelDashboardMetricsArgs = {
   endDate: Scalars["DateTime"];
   startDate: Scalars["DateTime"];
@@ -968,6 +972,7 @@ export enum UserPermission {
   StartTest = "START_TEST",
   SubmitTest = "SUBMIT_TEST",
   UpdateTest = "UPDATE_TEST",
+  ViewArchivedFacilities = "VIEW_ARCHIVED_FACILITIES",
 }
 
 export type WhoAmIQueryVariables = Exact<{ [key: string]: never }>;
@@ -2494,7 +2499,9 @@ export type GetFacilityResultsForCsvQuery = {
     | undefined;
 };
 
-export type GetAllFacilitiesQueryVariables = Exact<{ [key: string]: never }>;
+export type GetAllFacilitiesQueryVariables = Exact<{
+  showArchived?: InputMaybe<Scalars["Boolean"]>;
+}>;
 
 export type GetAllFacilitiesQuery = {
   __typename?: "Query";
@@ -6743,8 +6750,8 @@ export type GetFacilityResultsForCsvQueryResult = Apollo.QueryResult<
   GetFacilityResultsForCsvQueryVariables
 >;
 export const GetAllFacilitiesDocument = gql`
-  query GetAllFacilities {
-    facilities {
+  query GetAllFacilities($showArchived: Boolean) {
+    facilities(showArchived: $showArchived) {
       id
       name
       isDeleted
@@ -6764,6 +6771,7 @@ export const GetAllFacilitiesDocument = gql`
  * @example
  * const { data, loading, error } = useGetAllFacilitiesQuery({
  *   variables: {
+ *      showArchived: // value for 'showArchived'
  *   },
  * });
  */

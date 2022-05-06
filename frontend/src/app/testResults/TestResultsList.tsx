@@ -236,9 +236,6 @@ export const DetachedTestResultsList = ({
 
   const allowQuery = debounced.length >= MIN_SEARCH_CHARACTER_COUNT;
 
-  const validFacilities = useSelector(
-    (state) => ((state as any).facilities as Facility[]) || []
-  );
   const isOrgAdmin = hasPermission(
     useSelector((state) => (state as any).user.permissions),
     appPermissions.settings.canView
@@ -260,6 +257,9 @@ export const DetachedTestResultsList = ({
 
   const { data: facilitiesData } = useGetAllFacilitiesQuery({
     fetchPolicy: "no-cache",
+    variables: {
+      showArchived: isOrgAdmin,
+    },
   });
 
   useEffect(() => {
@@ -394,34 +394,30 @@ export const DetachedTestResultsList = ({
     }
   };
 
-  const allFacilities: any[] = (facilitiesData?.facilities || []).filter(
+  const viewableFacilities: any[] = (facilitiesData?.facilities || []).filter(
     (e) => e != null
   );
 
-  // org admins can see all facilities, including archived (sorted last); everyone else can only see valid facilities
-  // according to their role(s)
-  const facilityOptions = isOrgAdmin
+  const facilityOptions = (isOrgAdmin
     ? [
         {
           label: "All facilities",
           value: ALL_FACILITIES_ID,
         },
-      ].concat(
-        allFacilities
-          .sort((a, b) => {
-            if (a.isDeleted && !b.isDeleted) return 1;
-            if (!a.isDeleted && b.isDeleted) return -1;
-            return 0;
-          })
-          .map((f) => ({
-            label: facilityDisplayName(f.name, !!f.isDeleted),
-            value: f.id,
-          }))
-      )
-    : validFacilities.map((f) => ({
-        label: f.name,
+      ]
+    : []
+  ).concat(
+    viewableFacilities
+      .sort((a, b) => {
+        if (a.isDeleted && !b.isDeleted) return 1;
+        if (!a.isDeleted && b.isDeleted) return -1;
+        return 0;
+      })
+      .map((f) => ({
+        label: facilityDisplayName(f.name, !!f.isDeleted),
         value: f.id,
-      }));
+      }))
+  );
 
   return (
     <main className="prime-home">
