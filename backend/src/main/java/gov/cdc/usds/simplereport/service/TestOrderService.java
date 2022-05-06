@@ -271,6 +271,11 @@ public class TestOrderService {
 
       TestEvent savedEvent = _terepo.save(testEvent);
       order.setTestEventRef(savedEvent);
+
+      Set<Result> resultSet = order.getResultSet();
+      resultSet.forEach(r -> r.setTestEvent(savedEvent));
+      _resultRepo.saveAll(resultSet);
+
       TestOrder savedOrder = _repo.save(order);
       _testEventReportingService.report(savedEvent);
 
@@ -408,12 +413,15 @@ public class TestOrderService {
   }
 
   private void updateTestOrderCovidResult(TestOrder order, TestResult result) {
+    // TODO: Remove setResultsColumn as part of #3664
+    order.setResultColumn(result);
     Optional<Result> covidResult = order.getResultForDisease(_diseaseService.covid());
     if (covidResult.isPresent()) {
       covidResult.get().setResult(result);
+      _resultRepo.save(covidResult.get());
     } else {
       Result resultEntity = new Result(order, _diseaseService.covid(), result);
-      order.setResult(resultEntity);
+      _resultRepo.save(resultEntity);
     }
   }
 

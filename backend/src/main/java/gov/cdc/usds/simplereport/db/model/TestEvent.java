@@ -5,7 +5,6 @@ import gov.cdc.usds.simplereport.db.model.auxiliary.AskOnEntrySurvey;
 import gov.cdc.usds.simplereport.db.model.auxiliary.TestCorrectionStatus;
 import gov.cdc.usds.simplereport.db.model.auxiliary.TestResult;
 import java.util.Date;
-import java.util.HashSet;
 import java.util.Optional;
 import java.util.Set;
 import java.util.UUID;
@@ -46,7 +45,7 @@ public class TestEvent extends BaseTestInfo {
   @JoinColumn(name = "test_order_id")
   private TestOrder order;
 
-  @OneToMany(mappedBy = "testEvent", cascade = CascadeType.MERGE, fetch = FetchType.LAZY)
+  @OneToMany(mappedBy = "testEvent", cascade = CascadeType.MERGE, fetch = FetchType.EAGER)
   private Set<Result> results;
 
   @Column(columnDefinition = "uuid")
@@ -62,9 +61,7 @@ public class TestEvent extends BaseTestInfo {
   }
 
   public TestEvent(TestOrder order, Boolean hasPriorTests) {
-    super(order.getPatient(), order.getFacility(), order.getDeviceSpecimen());
-
-    initResults(order);
+    super(order.getPatient(), order.getFacility(), order.getDeviceSpecimen(), order.getResult());
     // store a link, and *also* store the object as JSON
     // force load the lazy-loaded phone numbers so values are available to the object mapper
     // when serializing `patientData` (phoneNumbers is default lazy-loaded because of `OneToMany`)
@@ -91,18 +88,6 @@ public class TestEvent extends BaseTestInfo {
       TestEvent event, TestCorrectionStatus correctionStatus, String reasonForCorrection) {
     super(event, correctionStatus, reasonForCorrection);
 
-    TestOrder order = event.getOrder();
-    if (order.getResultSet().isEmpty()) {
-      throw new IllegalArgumentException("TestOrder must contain a result");
-    }
-
-    HashSet<Result> oldResults = new HashSet<>(event.getResultSet());
-    oldResults.forEach(result -> result.setTestEvent(this));
-    this.results = oldResults;
-
-    // This is kept for the analytics dash but should be removed once those queries are updated
-    super.setTestResult(order.getResult());
-
     this.patientData = event.getPatientData();
     this.providerData = event.getProviderData();
     this.order = event.getTestOrder();
@@ -115,7 +100,6 @@ public class TestEvent extends BaseTestInfo {
       TestOrder order, TestCorrectionStatus correctionStatus, String reasonForCorrection) {
     super(order, correctionStatus, reasonForCorrection);
 
-    initResults(order);
     TestEvent event = order.getTestEvent();
 
     this.patientData = event.getPatientData();
@@ -124,18 +108,6 @@ public class TestEvent extends BaseTestInfo {
     this.surveyData = event.getSurveyData();
     setDateTestedBackdate(order.getDateTestedBackdate());
     this.priorCorrectedTestEventId = event.getInternalId();
-  }
-
-  private void initResults(TestOrder order) {
-    if (order.getResultSet().isEmpty()) {
-      throw new IllegalArgumentException("TestOrder must contain a result");
-    }
-
-    order.getResultSet().forEach(result -> result.setTestEvent(this));
-    this.results = new HashSet<>(order.getResultSet());
-
-    // This is kept for the analytics dash but should be removed once those queries are updated
-    super.setTestResult(order.getResult());
   }
 
   public UUID getPatientInternalID() {
@@ -195,9 +167,5 @@ public class TestEvent extends BaseTestInfo {
   @Override
   public TestResult getResult() {
     return getTestResult();
-  }
-
-  public Set<Result> getResultSet() {
-    return this.results;
   }
 }
