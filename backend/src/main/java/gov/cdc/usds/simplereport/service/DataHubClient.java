@@ -4,6 +4,8 @@ import feign.Param;
 import gov.cdc.usds.simplereport.config.DataHubClientConfiguration;
 import gov.cdc.usds.simplereport.service.model.reportstream.UploadResponse;
 import org.springframework.cloud.openfeign.FeignClient;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 
 @FeignClient(
@@ -17,4 +19,7 @@ public interface DataHubClient {
 
   @PostMapping(value = "/api/reports", consumes = "text/csv")
   UploadResponse uploadCSV(@Param("file") byte[] file);
+
+  @GetMapping(value = "/api/history/report/{id}", consumes = "application/text")
+  UploadResponse getSubmission(@PathVariable("id") String id);
 }

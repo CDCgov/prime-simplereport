@@ -3,6 +3,7 @@ package gov.cdc.usds.simplereport.api.testresult;
 import gov.cdc.usds.simplereport.api.Translators;
 import gov.cdc.usds.simplereport.api.model.OrganizationLevelDashboardMetrics;
 import gov.cdc.usds.simplereport.api.model.TopLevelDashboardMetrics;
+import gov.cdc.usds.simplereport.api.model.errors.InvalidBulkTestResultUploadException;
 import gov.cdc.usds.simplereport.db.model.BulkTestResultUpload;
 import gov.cdc.usds.simplereport.db.model.TestEvent;
 import gov.cdc.usds.simplereport.service.TestOrderService;
@@ -93,6 +94,10 @@ public class TestResultResolver implements GraphQLQueryResolver, GraphQLMutation
   }
 
   public BulkTestResultUpload getUploadSubmission(UUID id) {
-    return testResultUploadService.getUploadSubmission(id);
+    try {
+      return testResultUploadService.getUploadSubmission(id);
+    } catch (InvalidBulkTestResultUploadException e) {
+      throw e;
+    }
   }
 }

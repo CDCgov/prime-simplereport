@@ -11,23 +11,45 @@ import gov.cdc.usds.simplereport.db.model.TestResultUpload;
 import gov.cdc.usds.simplereport.db.model.auxiliary.UploadStatus;
 import gov.cdc.usds.simplereport.db.repository.TestResultUploadRepository;
 import gov.cdc.usds.simplereport.service.model.reportstream.ReportStreamStatus;
+import gov.cdc.usds.simplereport.db.model.BulkTestResultUpload;
+import gov.cdc.usds.simplereport.db.model.Facility;
+import gov.cdc.usds.simplereport.db.model.Organization;
+import gov.cdc.usds.simplereport.db.model.auxiliary.UploadStatus;
+import gov.cdc.usds.simplereport.db.repository.UploadRepository;
 import gov.cdc.usds.simplereport.service.model.reportstream.UploadResponse;
 import java.io.IOException;
 import java.io.InputStream;
-import java.util.List;
 import java.util.UUID;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 @Service
 @RequiredArgsConstructor
+@Transactional
 @Slf4j
 public class TestResultUploadService {
   private final TestResultUploadRepository _repo;
   private final DataHubClient _client;
   private final OrganizationService _orgService;
   private final ObjectMapper _mapper;
+
+  // TODO: see if we need this, hard to tell
+  private UploadStatus getUploadStatus(String status) {
+    UploadStatus uploadStatus;
+
+    switch (status) {
+      case "Received":
+        uploadStatus = UploadStatus.SUCCESS;
+        break;
+      default:
+        uploadStatus = UploadStatus.FAIL;
+        break;
+    }
+
+    return uploadStatus;
+  }
 
   @AuthorizationConfiguration.RequirePermissionCSVUpload
   public TestResultUpload processResultCSV(InputStream csvStream, UUID facilityId)
@@ -91,26 +113,24 @@ public class TestResultUploadService {
     }
   }
 
-  public BulkTestResultUpload getUploadSubmission(UUID id) throws InvalidBulkTestResultUploadException {
+  public BulkTestResultUpload getUploadSubmission(UUID id)
+      throws InvalidBulkTestResultUploadException {
     Organization org = _orgService.getCurrentOrganization();
 
-    System.out.println("-----------------------------------");
-    _repo.findAll().forEach((t) -> {
-      System.out.println("internalId");
-      System.out.println("Expected:");
-      System.out.println(id);
-      System.out.println("Actual:");
-      System.out.println(t.getInternalId());
-      System.out.println("orgId");
-      System.out.println("Expected:");
-      System.out.println(org.getInternalId());
-      System.out.println("Actual:");
-      System.out.println(t.getOrganization().getInternalId());
+    BulkTestResultUpload result =
+        _repo
+            .findByInternalIdAndOrganization(id, org)
+            .orElseThrow(InvalidBulkTestResultUploadException::new);
 
-    });
-    System.out.println("-----------------------------------");
-    return _repo
-        .findByInternalIdAndOrganization(id, org)
-        .orElseThrow(InvalidBulkTestResultUploadException::new);
+    UploadResponse response = _client.getSubmission(result.getReportId().toString());
+
+    return new BulkTestResultUpload(
+        response.id,
+        this.getUploadStatus(response.overallStatus),
+        response.reportItemCount,
+        org,
+        null,
+        new JSONArray(response.warnings).toString(),
+        new JSONArray(response.errors).toString());
   }
 }

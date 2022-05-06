@@ -47,8 +47,8 @@ spring:
     store-type: jdbc
     timeout: 15m
     jdbc:
-        initialize-schema: never
-        table-name: ${spring.jpa.properties.hibernate.default_schema}.spring_session
+      initialize-schema: never
+      table-name: ${spring.jpa.properties.hibernate.default_schema}.spring_session
 management:
   health.probes.enabled: true
 graphql:
@@ -142,5 +142,5 @@ logging:
     json-log: "{\"time\": \"%d{yyyy-MM-dd HH:mm:ss.SSS}\", \"level\": \"%p\", \"source\": \"%logger{39}:%L\", \"message\": %replace(%m%wEx){'[\r\n]+', '\\n'}%nopex}%n"
 hibernate.query.interceptor.error-level: ERROR
 data-hub:
-  url:
+  url: https://staging.prime.cdc.gov
   api-key:
