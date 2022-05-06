@@ -109,12 +109,13 @@ public class TestOrder extends BaseTestInfo {
     return Optional.empty();
   }
 
-  public void setResult(Result result) {
-    results.add(result);
-    // This should be removed once the backfill is complete and we're reading the new results table
-    // everywhere.
-    super.setTestResult(result.getTestResult());
-  }
+  //  public void setResult(Result result) {
+  //    results.add(result);
+  //    // This should be removed once the backfill is complete and we're reading the new results
+  // table
+  //    // everywhere.
+  //    super.setTestResult(result.getTestResult());
+  //  }
 
   // Remove after #3664
   public void setResultColumn(TestResult result) {

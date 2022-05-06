@@ -1058,7 +1058,7 @@ class TestOrderServiceTest extends BaseServiceTest<TestOrderService> {
     _dataFactory.createTestEvent(p, facility);
     _dataFactory.createTestEvent(p, facility);
 
-    // count queries again and make queries made didn't increase
+    // count queries again and make sure queries made didn't increase
     startQueryCount = _hibernateQueryInterceptor.getQueryCount();
     int secondQueryResults =
         _service

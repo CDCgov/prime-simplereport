@@ -70,6 +70,7 @@ public abstract class BaseTestInfo extends AuditedEntity implements Organization
     this.organization = facility.getOrganization();
     this.deviceSpecimen = deviceSpecimen;
     this.deviceType = deviceSpecimen.getDeviceType();
+    this.specimenType = deviceSpecimen.getSpecimenType();
     // TODO: Remove this call as part of #3664
     this.result = result;
     this.correctionStatus = TestCorrectionStatus.ORIGINAL;

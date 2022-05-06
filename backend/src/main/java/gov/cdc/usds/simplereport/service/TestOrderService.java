@@ -46,7 +46,6 @@ import javax.persistence.criteria.Join;
 import javax.persistence.criteria.Predicate;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.hibernate.Hibernate;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.jpa.domain.Specification;
 import org.springframework.stereotype.Service;
@@ -210,7 +209,7 @@ public class TestOrderService {
         _repo
             .fetchQueueItemByOrganizationAndId(org, id)
             .orElseThrow(TestOrderService::noSuchOrderFound);
-    Hibernate.initialize(order.getResultSet());
+    //    Hibernate.initialize(order.getResultSet());
     return order;
   }
 
@@ -258,7 +257,7 @@ public class TestOrderService {
 
     try {
       order.setDeviceSpecimen(deviceSpecimen);
-      updateTestOrderCovidResult(order, result);
+      Result resultEntity = updateTestOrderCovidResult(order, result);
       order.setDateTestedBackdate(dateTested);
       order.markComplete();
 
@@ -271,12 +270,10 @@ public class TestOrderService {
 
       TestEvent savedEvent = _terepo.save(testEvent);
       order.setTestEventRef(savedEvent);
-
-      Set<Result> resultSet = order.getResultSet();
-      resultSet.forEach(r -> r.setTestEvent(savedEvent));
-      _resultRepo.saveAll(resultSet);
-
       TestOrder savedOrder = _repo.save(order);
+
+      resultEntity.setTestEvent(savedEvent);
+      _resultRepo.save(resultEntity);
       _testEventReportingService.report(savedEvent);
 
       ArrayList<Boolean> deliveryStatuses = new ArrayList<>();
@@ -412,16 +409,16 @@ public class TestOrderService {
     return _repo.fetchQueueItem(org, patient).orElseThrow(TestOrderService::noSuchOrderFound);
   }
 
-  private void updateTestOrderCovidResult(TestOrder order, TestResult result) {
+  private Result updateTestOrderCovidResult(TestOrder order, TestResult result) {
     // TODO: Remove setResultsColumn as part of #3664
     order.setResultColumn(result);
     Optional<Result> covidResult = order.getResultForDisease(_diseaseService.covid());
     if (covidResult.isPresent()) {
       covidResult.get().setResult(result);
-      _resultRepo.save(covidResult.get());
+      return _resultRepo.save(covidResult.get());
     } else {
       Result resultEntity = new Result(order, _diseaseService.covid(), result);
-      _resultRepo.save(resultEntity);
+      return _resultRepo.save(resultEntity);
     }
   }
 
