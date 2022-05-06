@@ -36,14 +36,13 @@ jobs:
         ports:
           - 5432:5432
     steps:
-      - name: Checkout
-        uses: actions/checkout@v2
+      - uses: actions/checkout@v3
       - name: Set up JDK ${{env.JAVA_VERSION}}
         uses: actions/setup-java@v1
         with:
           java-version: ${{env.JAVA_VERSION}}
       - name: Cache Java Dependencies
-        uses: actions/cache@v2
+        uses: actions/cache@v3
         with:
           path: |
             ~/.gradle/caches
@@ -59,18 +58,19 @@ jobs:
         run: |
           chmod 0600 $PGPASSFILE
           db-setup/create-db.sh
-      - name: Run Java Tests
+      - name: Run tests
         env:
           OKTA_TESTING_DISABLEHTTPS: true
           TWILIO_ACCOUNT_SID: ${{secrets.TWILIO_TEST_ACCOUNT_SID }}
           TWILIO_AUTH_TOKEN: ${{secrets.TWILIO_TEST_AUTH_TOKEN }}
         run: ./gradlew jacocoTestReport -PtestDbPort=5432
-      - name: Archive Coverage Results
-        uses: actions/upload-artifact@v2
+      - name: Cache backend coverage results
+        uses: actions/cache@v3
         with:
-          name: backend-build
-          path: backend/build/
-      - name: Archive Failed Test Results
+          path: |
+            backend/build/**
+          key: backend-coverage-${{ hashFiles('backend/build/**') }}
+      - name: Archive failed test results
         uses: actions/upload-artifact@v2
         if: failure()
         with:
@@ -80,14 +80,13 @@ jobs:
   frontend-tests:
     runs-on: ubuntu-latest
     steps:
-      - name: Checkout
-        uses: actions/checkout@v2
+      - uses: actions/checkout@v3
       - name: Use Node.js ${{env.NODE_VERSION}}
         uses: actions/setup-node@v2.1.5
         with:
           node-version: ${{env.NODE_VERSION}}
       - name: Cache yarn
-        uses: actions/cache@v2
+        uses: actions/cache@v3
         with:
           path: ~/.cache/yarn
           key: ${{ runner.os }}-yarn-${{ hashFiles('**/yarn.lock') }}
@@ -96,32 +95,32 @@ jobs:
       - name: Node setup
         working-directory: ./frontend
         run: yarn install --prefer-offline
-      - name: Test
+      - name: Run tests
         working-directory: ./frontend
         run: yarn test:ci
-      - name: Archive Coverage Results
-        uses: actions/upload-artifact@v2
+      - name: Cache frontend coverage results
+        uses: actions/cache@v3
         with:
-          name: frontend-coverage
-          path: frontend/coverage/
+          path: |
+            frontend/coverage/**
+          key: frontend-coverage-${{ hashFiles('frontend/coverage/**') }}
   function-tests:
     runs-on: ubuntu-latest
     steps:
-      - name: Checkout
-        uses: actions/checkout@v2
-        if: ${{ github.actor != 'dependabot[bot]' }}
-        with:
-          fetch-depth: 0 # Disable shallow clones so Sonar can have all the data
-        env:
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }} # Needed to get PR information, if any
-          SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }}
+      - uses: actions/checkout@v3
       - name: "Function Apps: npm install"
         working-directory: ./ops/services/app_functions/report_stream_batched_publisher/functions
         run: npm ci
       - name: "Function Apps: Test"
         working-directory: ./ops/services/app_functions/report_stream_batched_publisher/functions
         run: npm run coverage
-      - name: Archive Coverage Results
+      - name: Cache function coverage results
+        uses: actions/cache@v3
+        with:
+          path: |
+            ops/services/app_functions/report_stream_batched_publisher/functions/coverage/**
+          key: function-coverage-${{ hashFiles('ops/services/app_functions/report_stream_batched_publisher/functions/coverage/**') }}
+      - name: Archive function coverage results
         uses: actions/upload-artifact@v2
         with:
           name: function-coverage
@@ -130,75 +129,79 @@ jobs:
     needs: [backend-tests, frontend-tests, function-tests]
     runs-on: ubuntu-latest
     steps:
-      - name: Checkout
-        uses: actions/checkout@v2
+      - uses: actions/checkout@v3
         if: ${{ github.actor != 'dependabot[bot]' }}
         with:
           fetch-depth: 0 # Disable shallow clones so Sonar can have all the data
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }} # Needed to get PR information, if any
-          SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }}
-      - name: Download backend artifact
-        uses: actions/download-artifact@v3
+      - name: Restore backend cache
+        uses: actions/cache@v3
         with:
-          name: backend-build
-          path: backend/build
-      - name: Download frontend artifact
-        uses: actions/download-artifact@v3
+          path: |
+            backend/build/**
+          key: backend-coverage-
+      - name: Restore frontend cache
+        uses: actions/cache@v3
         with:
-          name: frontend-coverage
-          path: frontend/coverage
-      - name: Download function artifact
-        uses: actions/download-artifact@v3
+          path: |
+            frontend/coverage/**
+          key: frontend-coverage-
+      - name: Restore functions cache
+        uses: actions/cache@v3
         with:
-          name: function-coverage
-          path: ops/services/app_functions/report_stream_batched_publisher/functions/coverage
+          path: |
+            ops/services/app_functions/report_stream_batched_publisher/functions/coverage/**
+          key: function-coverage-
       - name: Sonar analysis
+        if: ${{ github.actor != 'dependabot[bot]' }}
         run: ./gradlew sonarqube -Dsonar.projectBaseDir=${{ env.PROJECT_ROOT }} --info
+        env:
+          SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }}
   build-jar:
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v2
+      - uses: actions/checkout@v3
       - name: Set up JDK ${{env.JAVA_VERSION}}
         uses: actions/setup-java@v1
         with:
           java-version: ${{env.JAVA_VERSION}}
-      - name: Cache Java Dependencies
-        uses: actions/cache@v2
+      - name: Cache Java dependencies
+        uses: actions/cache@v3
         with:
           path: |
             ~/.gradle/caches
             ~/.gradle/wrapper
           key: gradle-${{ hashFiles('*.gradle', 'gradle/dependency-locks/*') }}
-      - name: Run Java Build
+      - name: Run Java build
         run: ./gradlew assemble
   backend-lint:
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v2
+      - uses: actions/checkout@v3
       - name: Set up JDK ${{env.JAVA_VERSION}}
         uses: actions/setup-java@v1
         with:
           java-version: ${{env.JAVA_VERSION}}
-      - name: Cache Java Dependencies
-        uses: actions/cache@v2
+      - name: Cache Java dependencies
+        uses: actions/cache@v3
         with:
           path: |
             ~/.gradle/caches
             ~/.gradle/wrapper
           key: gradle-${{ hashFiles('*.gradle', 'gradle/dependency-locks/*') }}
-      - name: Run Style checks
+      - name: Run style checks
         run: ./gradlew checkstyleMain checkstyleTest spotlessCheck --continue
   frontend-lint-and-build:
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v2
+      - uses: actions/checkout@v3
       - name: Use Node.js ${{env.NODE_VERSION}}
         uses: actions/setup-node@v2.1.5
         with:
           node-version: ${{env.NODE_VERSION}}
       - name: Cache yarn
-        uses: actions/cache@v2
+        uses: actions/cache@v3
         with:
           path: ~/.cache/yarn
           key: ${{ runner.os }}-yarn-${{ hashFiles('**/yarn.lock') }}
