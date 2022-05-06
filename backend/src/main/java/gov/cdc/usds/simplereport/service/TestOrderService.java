@@ -193,7 +193,6 @@ public class TestOrderService {
 
   @Transactional(readOnly = true)
   @AuthorizationConfiguration.RequirePermissionReadResultListForTestEvent
-  // todo fix auth here for when testEventId maps an event in an archived facility
   public TestEvent getTestResult(UUID testEventId) {
     Organization org = _os.getCurrentOrganization();
     return _terepo.findByOrganizationAndInternalId(org, testEventId);

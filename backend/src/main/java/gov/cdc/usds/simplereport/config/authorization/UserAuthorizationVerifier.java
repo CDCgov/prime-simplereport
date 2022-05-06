@@ -133,19 +133,13 @@ public class UserAuthorizationVerifier {
             .equals(otherOrg.get().getExternalId());
   }
 
-  // todo update auth here
   public boolean userCanViewTestEvent(UUID testEventId) {
     if (testEventId == null) {
       return true;
     }
-    Optional<OrganizationRoles> currentOrgRoles = _orgService.getCurrentOrganizationRoles();
-    if (currentOrgRoles.isEmpty()) {
-      return false;
-    } else {
-      Optional<TestEvent> testEvent = _testEventRepo.findById(testEventId);
-      return testEvent.isPresent()
-          && currentOrgRoles.get().containsFacility(testEvent.get().getFacility());
-    }
+    Optional<TestEvent> testEvent = _testEventRepo.findById(testEventId);
+    return testEvent.isPresent()
+        && userCanAccessFacility(testEvent.get().getFacility().getInternalId());
   }
 
   public boolean userCanViewQueueItem(UUID testOrderId) {
