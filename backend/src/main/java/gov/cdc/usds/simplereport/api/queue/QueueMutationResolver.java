@@ -74,6 +74,21 @@ public class QueueMutationResolver implements GraphQLMutationResolver {
     return new ApiTestOrder(_tos.editQueueItem(id, dst, result, dateTested));
   }
 
+  public ApiTestOrder editQueueItemMultiplex(
+      UUID id,
+      String deviceId,
+      UUID deviceSpecimenType,
+      MultiplexTestResult results,
+      Date dateTested) {
+    UUID dst =
+        deviceSpecimenType == null
+            ? _dts.getFirstDeviceSpecimenTypeForDeviceTypeId(UUID.fromString(deviceId))
+                .getInternalId()
+            : deviceSpecimenType;
+
+    return new ApiTestOrder(_tos.editQueueItemMultiplex(id, dst, results, dateTested));
+  }
+
   public String addPatientToQueue(
       UUID facilityID,
       UUID patientID,

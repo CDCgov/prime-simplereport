@@ -14,7 +14,8 @@ data "azurerm_resource_group" "global" {
 }
 
 data "azurerm_resource_group" "stg" {
-  name = "${local.project}-${local.name}-${local.env}"
+  # Environments are assembled into shared resource groups by environment level.
+  name = "${local.project}-${local.name}-${local.env_level}"
 }
 
 data "azurerm_client_config" "current" {}

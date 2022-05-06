@@ -1,6 +1,6 @@
 locals {
   simple_report_callback_url = "https://${var.environment == "prod" ? "www" : var.environment}.simplereport.gov/api/reportstream/callback"
-  resource_group_name        = "${var.resource_group_name_prefix}${var.environment}"
+  resource_group_name        = "${var.resource_group_name_prefix}${var.env_level}"
   report_stream_url          = "https://${var.environment == "prod" ? "" : "staging."}prime.cdc.gov/api/reports?option=SkipInvalidItems"
   function_app_source        = "${path.module}/../${var.function_app_source}"
   management_tags = {
@@ -102,9 +102,4 @@ terraform {
     }
   }
   required_version = "~> 1.1.4"
-}
-
-provider "azurerm" {
-  features {}
-  skip_provider_registration = true
 }

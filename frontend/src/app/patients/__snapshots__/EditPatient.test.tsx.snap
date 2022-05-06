@@ -225,7 +225,7 @@ Object {
                         class="usa-label"
                         for="99"
                       >
-                        Facility
+                        Testing facility
                         <abbr
                           class="usa-hint usa-hint--required"
                           title="required"
@@ -316,7 +316,7 @@ Object {
                   <p
                     class="usa-hint maxw-prose"
                   >
-                    You're responsible for entering the correct contact information, following applicable federal and state laws.
+                    You're responsible for entering correct contact information, following applicable federal and state laws.
                   </p>
                   <div
                     class="usa-form"
@@ -2417,7 +2417,7 @@ Object {
                   <legend
                     class="prime-formgroup-heading usa-legend"
                   >
-                    Other
+                    Other information
                   </legend>
                   <div
                     class="usa-form-group"
@@ -2428,7 +2428,7 @@ Object {
                       <legend
                         class="usa-legend"
                       >
-                        Are you a resident in a congregate living setting?
+                        Are you a resident in a group or shared housing facility?
                       </legend>
                       <span
                         class="usa-hint"
@@ -2481,16 +2481,16 @@ Object {
                           <input
                             class="usa-radio__input"
                             data-required="false"
-                            id="114-val-UNKNOWN"
+                            id="114-val-NOT_SURE"
                             name="residentCongregateSetting"
                             type="radio"
-                            value="UNKNOWN"
+                            value="NOT_SURE"
                           />
                           <label
                             class="usa-radio__label"
-                            for="114-val-UNKNOWN"
+                            for="114-val-NOT_SURE"
                           >
-                            Unknown
+                            Not sure
                           </label>
                         </div>
                       </div>
@@ -2553,16 +2553,16 @@ Object {
                           <input
                             class="usa-radio__input"
                             data-required="false"
-                            id="115-val-UNKNOWN"
+                            id="115-val-NOT_SURE"
                             name="employedInHealthcare"
                             type="radio"
-                            value="UNKNOWN"
+                            value="NOT_SURE"
                           />
                           <label
                             class="usa-radio__label"
-                            for="115-val-UNKNOWN"
+                            for="115-val-NOT_SURE"
                           >
-                            Unknown
+                            Not sure
                           </label>
                         </div>
                       </div>
@@ -2812,7 +2812,7 @@ Object {
                       class="usa-label"
                       for="99"
                     >
-                      Facility
+                      Testing facility
                       <abbr
                         class="usa-hint usa-hint--required"
                         title="required"
@@ -2903,7 +2903,7 @@ Object {
                 <p
                   class="usa-hint maxw-prose"
                 >
-                  You're responsible for entering the correct contact information, following applicable federal and state laws.
+                  You're responsible for entering correct contact information, following applicable federal and state laws.
                 </p>
                 <div
                   class="usa-form"
@@ -5004,7 +5004,7 @@ Object {
                 <legend
                   class="prime-formgroup-heading usa-legend"
                 >
-                  Other
+                  Other information
                 </legend>
                 <div
                   class="usa-form-group"
@@ -5015,7 +5015,7 @@ Object {
                     <legend
                       class="usa-legend"
                     >
-                      Are you a resident in a congregate living setting?
+                      Are you a resident in a group or shared housing facility?
                     </legend>
                     <span
                       class="usa-hint"
@@ -5068,16 +5068,16 @@ Object {
                         <input
                           class="usa-radio__input"
                           data-required="false"
-                          id="114-val-UNKNOWN"
+                          id="114-val-NOT_SURE"
                           name="residentCongregateSetting"
                           type="radio"
-                          value="UNKNOWN"
+                          value="NOT_SURE"
                         />
                         <label
                           class="usa-radio__label"
-                          for="114-val-UNKNOWN"
+                          for="114-val-NOT_SURE"
                         >
-                          Unknown
+                          Not sure
                         </label>
                       </div>
                     </div>
@@ -5140,16 +5140,16 @@ Object {
                         <input
                           class="usa-radio__input"
                           data-required="false"
-                          id="115-val-UNKNOWN"
+                          id="115-val-NOT_SURE"
                           name="employedInHealthcare"
                           type="radio"
-                          value="UNKNOWN"
+                          value="NOT_SURE"
                         />
                         <label
                           class="usa-radio__label"
-                          for="115-val-UNKNOWN"
+                          for="115-val-NOT_SURE"
                         >
-                          Unknown
+                          Not sure
                         </label>
                       </div>
                     </div>

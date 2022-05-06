@@ -1,0 +1,14 @@
+mutation EditQueueItemMultiplex($id: ID!, $deviceId: String, $results: MultiplexTestResult, $dateTested: DateTime) {
+    editQueueItemMultiplex(
+      id: $id,
+      deviceId: $deviceId,
+      results: $results,
+      dateTested: $dateTested
+    ) {
+      internalId,
+      result,
+      deviceType {
+        internalId
+      }
+    }
+  }

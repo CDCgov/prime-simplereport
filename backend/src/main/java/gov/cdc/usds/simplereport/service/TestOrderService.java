@@ -18,6 +18,7 @@ import gov.cdc.usds.simplereport.db.model.PatientLink;
 import gov.cdc.usds.simplereport.db.model.Person;
 import gov.cdc.usds.simplereport.db.model.Person_;
 import gov.cdc.usds.simplereport.db.model.Result;
+import gov.cdc.usds.simplereport.db.model.SupportedDisease;
 import gov.cdc.usds.simplereport.db.model.TestEvent;
 import gov.cdc.usds.simplereport.db.model.TestEvent_;
 import gov.cdc.usds.simplereport.db.model.TestOrder;
@@ -245,6 +246,18 @@ public class TestOrderService {
     }
   }
 
+  @AuthorizationConfiguration.RequirePermissionUpdateTestForTestOrder
+  public TestOrder editQueueItemMultiplex(
+      UUID testOrderId, UUID deviceSpecimenTypeId, MultiplexTestResult results, Date dateTested) {
+    TestOrder savedOrder =
+        editQueueItem(
+            testOrderId, deviceSpecimenTypeId, results.getCovid19().toString(), dateTested);
+
+    editMultiplexResults(savedOrder, results);
+
+    return savedOrder;
+  }
+
   @AuthorizationConfiguration.RequirePermissionSubmitTestForPatient
   @Transactional(noRollbackFor = {TwilioException.class, ApiException.class})
   public AddTestResultResponse addTestResult(
@@ -323,11 +336,27 @@ public class TestOrderService {
     }
   }
 
+  private void editMultiplexResults(TestOrder order, MultiplexTestResult newResults) {
+    Set<Result> resultsToUpdate = order.getResultSet();
+    resultsToUpdate.forEach(
+        result -> {
+          SupportedDisease disease = result.getDisease();
+          if (disease == _diseaseService.covid()) {
+            result.setResult(newResults.getCovid19());
+          } else if (disease == _diseaseService.fluA()) {
+            result.setResult(newResults.getFluA());
+          } else if (disease == _diseaseService.fluB()) {
+            result.setResult(newResults.getFluB());
+          }
+        });
+    _resultRepo.saveAll(resultsToUpdate);
+  }
+
   private void saveMultiplexResults(TestEvent event, TestOrder order, MultiplexTestResult results) {
-    Result covidResult = new Result(event, order, _diseaseService.covid(), results.getCovid19());
+    // Covid result already saved in saveTestResultToDatabase
     Result fluAResult = new Result(event, order, _diseaseService.fluA(), results.getFluA());
     Result fluBResult = new Result(event, order, _diseaseService.fluB(), results.getFluB());
-    _resultRepo.saveAll(Arrays.asList(covidResult, fluAResult, fluBResult));
+    _resultRepo.saveAll(Arrays.asList(fluAResult, fluBResult));
   }
 
   private boolean patientHasDeliveryPreference(TestOrder savedOrder) {
