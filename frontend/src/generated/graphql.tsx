@@ -782,6 +782,7 @@ export type QueryPatientExistsWithoutZipArgs = {
 
 export type QueryPatientsArgs = {
   facilityId?: InputMaybe<Scalars["ID"]>;
+  includeArchivedFacilities?: InputMaybe<Scalars["Boolean"]>;
   namePrefixMatch?: InputMaybe<Scalars["String"]>;
   pageNumber?: InputMaybe<Scalars["Int"]>;
   pageSize?: InputMaybe<Scalars["Int"]>;
@@ -964,7 +965,6 @@ export enum UserPermission {
   EditOrganization = "EDIT_ORGANIZATION",
   EditPatient = "EDIT_PATIENT",
   ManageUsers = "MANAGE_USERS",
-  ReadAllFacilityResults = "READ_ALL_FACILITY_RESULTS",
   ReadArchivedPatientList = "READ_ARCHIVED_PATIENT_LIST",
   ReadPatientList = "READ_PATIENT_LIST",
   ReadResultList = "READ_RESULT_LIST",
@@ -2004,6 +2004,7 @@ export type GetPatientQuery = {
 export type GetPatientsByFacilityForQueueQueryVariables = Exact<{
   facilityId?: InputMaybe<Scalars["ID"]>;
   namePrefixMatch?: InputMaybe<Scalars["String"]>;
+  includeArchivedFacilities?: InputMaybe<Scalars["Boolean"]>;
 }>;
 
 export type GetPatientsByFacilityForQueueQuery = {
@@ -5660,6 +5661,7 @@ export const GetPatientsByFacilityForQueueDocument = gql`
   query GetPatientsByFacilityForQueue(
     $facilityId: ID
     $namePrefixMatch: String
+    $includeArchivedFacilities: Boolean
   ) {
     patients(
       facilityId: $facilityId
@@ -5667,6 +5669,7 @@ export const GetPatientsByFacilityForQueueDocument = gql`
       pageSize: 100
       showDeleted: false
       namePrefixMatch: $namePrefixMatch
+      includeArchivedFacilities: $includeArchivedFacilities
     ) {
       internalId
       firstName
@@ -5700,6 +5703,7 @@ export const GetPatientsByFacilityForQueueDocument = gql`
  *   variables: {
  *      facilityId: // value for 'facilityId'
  *      namePrefixMatch: // value for 'namePrefixMatch'
+ *      includeArchivedFacilities: // value for 'includeArchivedFacilities'
  *   },
  * });
  */

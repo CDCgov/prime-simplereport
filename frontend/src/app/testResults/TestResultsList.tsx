@@ -252,6 +252,7 @@ export const DetachedTestResultsList = ({
           ? null
           : filterParams.filterFacilityId || activeFacilityId,
       namePrefixMatch: queryString,
+      includeArchivedFacilities: isOrgAdmin,
     },
   });
 

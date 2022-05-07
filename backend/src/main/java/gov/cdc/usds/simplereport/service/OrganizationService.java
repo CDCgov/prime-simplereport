@@ -151,7 +151,8 @@ public class OrganizationService {
   }
 
   @AuthorizationConfiguration.RequirePermissionViewArchivedFacilities
-  public Set<Facility> getArchivedFacilities(Organization org) {
+  public Set<Facility> getArchivedFacilities() {
+    Organization org = getCurrentOrganization();
     return facilityRepository.findAllByOrganizationAndDeleted(org, true);
   }
 

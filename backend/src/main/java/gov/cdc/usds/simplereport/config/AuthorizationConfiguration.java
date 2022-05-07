@@ -110,7 +110,7 @@ public class AuthorizationConfiguration {
   private static final String SPEL_CAN_EXECUTE_SPECIFIC_PATIENT_SEARCH =
       "@"
           + AUTHORIZER_BEAN
-          + ".userHasSpecificPatientSearchPermission(#facilityId, #isArchived, #namePrefixMatch)";
+          + ".userHasSpecificPatientSearchPermission(#facilityId, #isArchived, #namePrefixMatch, #includeArchivedFacilities)";
 
   /**
    * Apply this annotation if the method should only be called by site-wide administrative users
@@ -322,9 +322,11 @@ public class AuthorizationConfiguration {
    *
    * <p>- in the facility with UUID {@code facilityId};
    *
-   * <p>- whose archived status is {@code isArchived}; AND
+   * <p>- whose archived status is {@code isArchived};
    *
-   * <p>- whose name elements begin with {@code namePrefixMatch}.
+   * <p>- whose name elements begin with {@code namePrefixMatch}; AND
+   *
+   * <p>- who are in archived facilities (if {@code includeArchivedFacilities = true})
    *
    * <p>NOTE: any method with this annotation must have the parameters {@code facilityId}, {@code
    * isArchived} and {@code namePrefixMatch}.

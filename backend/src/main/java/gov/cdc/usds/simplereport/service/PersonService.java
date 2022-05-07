@@ -75,8 +75,11 @@ public class PersonService {
         cb.equal(root.get(SpecField.ORGANIZATION), _os.getCurrentOrganization());
   }
 
-  private Specification<Person> inAccessibleFacilitiesFilter() {
+  private Specification<Person> inAccessibleFacilitiesFilter(boolean includeArchived) {
     Set<Facility> facilities = _os.getAccessibleFacilities();
+    if (includeArchived) {
+      facilities.addAll(_os.getArchivedFacilities());
+    }
     Set<UUID> facilityUUIDs =
         facilities.stream().map(Facility::getInternalId).collect(Collectors.toSet());
     return (root, query, cb) ->
@@ -131,7 +134,10 @@ public class PersonService {
 
   // called by List function and Count function
   protected Specification<Person> buildPersonSearchFilter(
-      UUID facilityId, boolean isArchived, String namePrefixMatch) {
+      UUID facilityId,
+      boolean isArchived,
+      String namePrefixMatch,
+      boolean includeArchivedFacilities) {
 
     List<String> namePrefixMatchList =
         StringUtils.isEmpty(namePrefixMatch)
@@ -140,7 +146,9 @@ public class PersonService {
 
     // build up filter based on params
     Specification<Person> filter = inCurrentOrganizationFilter().and(isDeletedFilter(isArchived));
-    if (facilityId != null) {
+    if (facilityId == null) {
+      filter = filter.and(inAccessibleFacilitiesFilter(includeArchivedFacilities));
+    } else {
       filter = filter.and(inFacilityFilter(facilityId));
     }
 
@@ -165,18 +173,24 @@ public class PersonService {
   }
 
   /**
-   * @param facilityId If null, then it means across whole organization, including archived
-   *     facilities
+   * @param facilityId If null, then it means across accessible facilities in the whole organization
    * @param pageOffset Pagination offset is zero based
    * @param pageSize How many results to return, zero will result in the default page size (large)
    * @param isArchived Default is false. true will ONLY show deleted users
    * @param namePrefixMatch Null returns all users, any string will filter by first,middle,last
    *     names that start with these characters. Case insenstive. If fewer than
+   * @param includeArchivedFacilities setting to true will include patients in archived facilities,
+   *     ignored if facilityId is not null
    * @return A list of matching patients.
    */
   @AuthorizationConfiguration.RequireSpecificPatientSearchPermission
   public List<Person> getPatients(
-      UUID facilityId, int pageOffset, int pageSize, boolean isArchived, String namePrefixMatch) {
+      UUID facilityId,
+      int pageOffset,
+      int pageSize,
+      boolean isArchived,
+      String namePrefixMatch,
+      boolean includeArchivedFacilities) {
     if (pageOffset < 0) {
       pageOffset = DEFAULT_PAGINATION_PAGEOFFSET;
     }
@@ -189,7 +203,7 @@ public class PersonService {
     }
 
     return _repo.findAll(
-        buildPersonSearchFilter(facilityId, isArchived, namePrefixMatch),
+        buildPersonSearchFilter(facilityId, isArchived, namePrefixMatch, includeArchivedFacilities),
         PageRequest.of(pageOffset, pageSize, NAME_SORT));
   }
 
@@ -208,11 +222,15 @@ public class PersonService {
   }
 
   @AuthorizationConfiguration.RequireSpecificPatientSearchPermission
-  public long getPatientsCount(UUID facilityId, boolean isArchived, String namePrefixMatch) {
+  public long getPatientsCount(
+      UUID facilityId,
+      boolean isArchived,
+      String namePrefixMatch,
+      boolean includeArchivedFacilities) {
     if (namePrefixMatch != null && namePrefixMatch.trim().length() < MINIMUM_CHAR_FOR_SEARCH) {
       return 0;
     }
-    return _repo.count(buildPersonSearchFilter(facilityId, isArchived, namePrefixMatch));
+    return _repo.count(buildPersonSearchFilter(facilityId, isArchived, namePrefixMatch, false));
   }
   // NO PERMISSION CHECK (make sure the caller has one!) getPatient()
   public Person getPatientNoPermissionsCheck(UUID id) {
