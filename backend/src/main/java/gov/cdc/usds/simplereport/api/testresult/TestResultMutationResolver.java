@@ -1,5 +1,6 @@
 package gov.cdc.usds.simplereport.api.testresult;
 
+import gov.cdc.usds.simplereport.api.model.errors.CsvProcessingException;
 import gov.cdc.usds.simplereport.api.model.errors.IllegalGraphqlArgumentException;
 import gov.cdc.usds.simplereport.db.repository.TestEventRepository;
 import gov.cdc.usds.simplereport.service.TestEventReportingService;
@@ -36,7 +37,8 @@ public class TestResultMutationResolver implements GraphQLMutationResolver {
     } catch (IllegalGraphqlArgumentException e) {
       throw e;
     } catch (IOException e) {
-      throw new RuntimeException(e);
+      log.error("Test result CSV encountered an unexpected error", e);
+      throw new CsvProcessingException("Unable to process test result CSV upload");
     }
   }
 }
