@@ -12,7 +12,10 @@ import { MemoryRouter } from "react-router-dom";
 import configureStore from "redux-mock-store";
 import userEvent from "@testing-library/user-event";
 
-import { GetFacilityResultsForCsvDocument } from "../../generated/graphql";
+import {
+  GetAllFacilitiesDocument,
+  GetFacilityResultsForCsvDocument,
+} from "../../generated/graphql";
 import { QUERY_PATIENT } from "../testQueue/addToQueue/AddToQueueSearch";
 import { appPermissions } from "../permissions";
 
@@ -783,6 +786,19 @@ const patients = [
   },
 ];
 
+const facilities = [
+  {
+    id: "1",
+    name: "Facility 1",
+    isDeleted: false,
+  },
+  {
+    id: "2",
+    name: "Facility 2",
+    isDeleted: false,
+  },
+];
+
 const mocks = [
   {
     request: {
@@ -1078,6 +1094,7 @@ const mocks = [
       variables: {
         facilityId: "1",
         namePrefixMatch: "Cragell",
+        includeArchivedFacilities: true,
       },
     },
     result: {
@@ -1114,14 +1131,55 @@ const mocks = [
       },
     },
   },
+  {
+    request: {
+      query: GetAllFacilitiesDocument,
+      variables: {
+        showArchived: true,
+      },
+    },
+    result: {
+      data: {
+        facilities,
+      },
+    },
+  },
+  {
+    request: {
+      query: GetAllFacilitiesDocument,
+      variables: {
+        showArchived: false,
+      },
+    },
+    result: {
+      data: {
+        facilities,
+      },
+    },
+  },
 ];
 
 describe("TestResultsList", () => {
   it("should render a list of tests", async () => {
+    const localMock = [
+      {
+        request: {
+          query: GetAllFacilitiesDocument,
+          variables: {
+            showArchived: true,
+          },
+        },
+        result: {
+          data: {
+            facilities,
+          },
+        },
+      },
+    ];
     const { container } = render(
       <WithRouter>
         <Provider store={store}>
-          <MockedProvider mocks={[]}>
+          <MockedProvider mocks={localMock}>
             <DetachedTestResultsList
               data={{ testResults }}
               pageNumber={1}
@@ -1187,6 +1245,19 @@ describe("TestResultsList", () => {
         result: {
           data: {
             testResults: testResultsByStartDateAndEndDate,
+          },
+        },
+      },
+      {
+        request: {
+          query: GetAllFacilitiesDocument,
+          variables: {
+            showArchived: true,
+          },
+        },
+        result: {
+          data: {
+            facilities,
           },
         },
       },
