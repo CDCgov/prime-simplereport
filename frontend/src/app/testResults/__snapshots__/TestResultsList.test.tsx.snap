@@ -338,6 +338,11 @@ exports[`TestResultsList should render a list of tests 1`] = `
                   >
                     Facility 2
                   </option>
+                  <option
+                    value="3"
+                  >
+                    Facility 3 (Archived)
+                  </option>
                 </select>
               </div>
             </div>

@@ -37,10 +37,7 @@ const store = mockStore({
     lastName: "Mendoza",
     permissions: appPermissions.settings.canView,
   },
-  facilities: [
-    { id: "1", name: "Facility 1" },
-    { id: "2", name: "Facility 2" },
-  ],
+  facilities: [{ id: "1", name: "Facility 1" }],
   facility: { id: "1", name: "Facility 1" },
 });
 
@@ -799,6 +796,12 @@ const facilities = [
   },
 ];
 
+const facilitiesIncludeArchived = facilities.concat({
+  id: "3",
+  name: "Facility 3",
+  isDeleted: true,
+});
+
 const mocks = [
   {
     request: {
@@ -1140,7 +1143,7 @@ const mocks = [
     },
     result: {
       data: {
-        facilities,
+        facilities: facilitiesIncludeArchived,
       },
     },
   },
@@ -1171,7 +1174,7 @@ describe("TestResultsList", () => {
         },
         result: {
           data: {
-            facilities,
+            facilities: facilitiesIncludeArchived,
           },
         },
       },
@@ -1257,7 +1260,7 @@ describe("TestResultsList", () => {
         },
         result: {
           data: {
-            facilities,
+            facilities: facilitiesIncludeArchived,
           },
         },
       },
@@ -1685,10 +1688,26 @@ describe("TestResultsList", () => {
       facility: { id: "1", name: "Facility 1" },
     });
 
+    const localMock = mocks.slice(0, 2).concat([
+      {
+        request: {
+          query: GetAllFacilitiesDocument,
+          variables: {
+            showArchived: false,
+          },
+        },
+        result: {
+          data: {
+            facilities: facilities.slice(0, 1),
+          },
+        },
+      },
+    ]);
+
     await render(
       <WithRouter>
         <Provider store={localStore}>
-          <MockedProvider mocks={mocks}>
+          <MockedProvider mocks={localMock}>
             <TestResultsList />
           </MockedProvider>
         </Provider>
@@ -1707,10 +1726,7 @@ describe("TestResultsList", () => {
         firstName: "Kim",
         lastName: "Mendoza",
       },
-      facilities: [
-        { id: "1", name: "Facility 1" },
-        { id: "2", name: "Facility 2" },
-      ],
+      facilities: [{ id: "1", name: "Facility 1" }],
       facility: { id: "1", name: "Facility 1" },
     });
 
