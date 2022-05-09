@@ -151,9 +151,14 @@ public class OrganizationService {
   }
 
   @AuthorizationConfiguration.RequirePermissionViewArchivedFacilities
+  public Set<Facility> getArchivedFacilities(Organization org) {
+    return facilityRepository.findAllByOrganizationAndDeleted(org, true);
+  }
+
+  @AuthorizationConfiguration.RequirePermissionViewArchivedFacilities
   public Set<Facility> getArchivedFacilities() {
     Organization org = getCurrentOrganization();
-    return facilityRepository.findAllByOrganizationAndDeleted(org, true);
+    return getArchivedFacilities(org);
   }
 
   public Facility getFacilityInCurrentOrg(UUID facilityId) {
