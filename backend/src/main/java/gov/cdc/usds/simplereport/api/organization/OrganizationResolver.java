@@ -87,16 +87,10 @@ public class OrganizationResolver implements GraphQLQueryResolver {
    * @return set of facilities
    */
   public Set<ApiFacility> getFacilities(Boolean showArchived) {
-    Set<ApiFacility> facilities =
-        _organizationService.getAccessibleFacilities().stream()
-            .map(ApiFacility::new)
-            .collect(Collectors.toSet());
+    Set<Facility> facilities = _organizationService.getAccessibleFacilities();
     if (showArchived) {
-      facilities.addAll(
-          _organizationService.getArchivedFacilities().stream()
-              .map(ApiFacility::new)
-              .collect(Collectors.toSet()));
+      facilities.addAll(_organizationService.getArchivedFacilities());
     }
-    return facilities;
+    return facilities.stream().map(ApiFacility::new).collect(Collectors.toSet());
   }
 }
