@@ -59,6 +59,8 @@ class PersonServiceTest extends BaseServiceTest<PersonService> {
   private static final PersonName JANNELLE = new PersonName("Jannelle", "Martha", "Cromack", null);
   private static final PersonName KACEY = new PersonName("Kacey", "Cross", "Mathie", null);
   private static final PersonName LEELOO = new PersonName("Leeloo", "Dallas", "Multipass", null);
+  private static final PersonName MARGARET =
+      new PersonName("Margaret", "Mildred", "McAlister", null);
 
   @Autowired private OrganizationService _orgService;
   @Autowired private TestDataFactory _dataFactory;
@@ -559,7 +561,11 @@ class PersonServiceTest extends BaseServiceTest<PersonService> {
     UUID site1Id = _site1.getInternalId();
     UUID site2Id = _site2.getInternalId();
 
-    // delete some data to verify achived works as expepected
+    // create an archived facility
+    Facility site3 = _dataFactory.createArchivedFacility(_org, "Facility 3");
+    _dataFactory.createMinimalPerson(_org, site3, MARGARET);
+
+    // delete some data to verify archived works as expected
     // delete Charles (_site1)
     Person charles = _service.getPatients(null, 0, 5, false, null, false).get(0);
     _service.setIsDeleted(charles.getInternalId(), true);
@@ -587,8 +593,12 @@ class PersonServiceTest extends BaseServiceTest<PersonService> {
     patients = _service.getPatients(null, 0, 100, false, "MARTHA", false);
     assertPatientList(patients, JANNELLE, ELIZABETH);
 
-    assertEquals(0, _service.getPatientsCount(null, false, "M", false));
-    assertEquals(0, _service.getPatientsCount(null, false, "", false));
+    // all facilities, not deleted, "mar", include archived facilities
+    patients = _service.getPatients(null, 0, 100, false, "mar", true);
+    assertPatientList(patients, GALE, JANNELLE, MARGARET, ELIZABETH, HEINRICK);
+
+    assertEquals(0, _service.getPatientsCount(null, false, "M", true));
+    assertEquals(0, _service.getPatientsCount(null, false, "", true));
   }
 
   @Test
