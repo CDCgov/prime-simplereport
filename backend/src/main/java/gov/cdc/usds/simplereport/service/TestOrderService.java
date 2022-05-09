@@ -46,6 +46,7 @@ import javax.persistence.criteria.Join;
 import javax.persistence.criteria.Predicate;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.hibernate.Hibernate;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.jpa.domain.Specification;
 import org.springframework.stereotype.Service;
@@ -209,6 +210,7 @@ public class TestOrderService {
         _repo
             .fetchQueueItemByOrganizationAndId(org, id)
             .orElseThrow(TestOrderService::noSuchOrderFound);
+    Hibernate.initialize(order.getResultSet());
     return order;
   }
 
