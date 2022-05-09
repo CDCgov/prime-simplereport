@@ -37,7 +37,9 @@ runs:
       working-directory: ./frontend
       run: |
           echo "::group::Set build variables"
-          ENVLVL=${${{ inputs.deploy-env }}//[[:digit:]]/}
+          ENVLVL=${{inputs.deploy-env}}
+          echo "Environment level before replacement: $ENVLVL"
+          ENVLVL=${ENVLVL//[[:digit:]]/}
           echo "Environment level: $ENVLVL"
           az config set extension.use_dynamic_install=yes_without_prompt
           INSIGHTS_CONNECTION_STRING=$(
