@@ -1,0 +1,9 @@
+query GetUploadSubmission($id: ID!) {
+  uploadSubmission(id: $id) {
+    internalId
+    reportId
+    createdAt
+    status
+    recordsCount
+  }
+}
