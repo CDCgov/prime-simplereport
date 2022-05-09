@@ -411,7 +411,7 @@ public class TestOrderService {
   }
 
   private Result updateTestOrderCovidResult(TestOrder order, TestResult result) {
-    // TODO: Remove setResultsColumn as part of #3664
+    // Remove setResultsColumn as part of #3664
     order.setResultColumn(result);
     Optional<Result> covidResult = order.getResultForDisease(_diseaseService.covid());
     if (covidResult.isPresent()) {
