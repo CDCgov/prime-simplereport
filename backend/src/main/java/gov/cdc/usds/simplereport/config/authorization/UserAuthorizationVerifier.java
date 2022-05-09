@@ -5,12 +5,7 @@ import gov.cdc.usds.simplereport.api.model.errors.NonexistentQueueItemException;
 import gov.cdc.usds.simplereport.api.model.errors.NonexistentUserException;
 import gov.cdc.usds.simplereport.api.model.errors.UnidentifiedUserException;
 import gov.cdc.usds.simplereport.config.AuthorizationConfiguration;
-import gov.cdc.usds.simplereport.db.model.ApiUser;
-import gov.cdc.usds.simplereport.db.model.Organization;
-import gov.cdc.usds.simplereport.db.model.PatientLink;
-import gov.cdc.usds.simplereport.db.model.Person;
-import gov.cdc.usds.simplereport.db.model.TestEvent;
-import gov.cdc.usds.simplereport.db.model.TestOrder;
+import gov.cdc.usds.simplereport.db.model.*;
 import gov.cdc.usds.simplereport.db.repository.ApiUserRepository;
 import gov.cdc.usds.simplereport.db.repository.FacilityRepository;
 import gov.cdc.usds.simplereport.db.repository.PatientLinkRepository;
@@ -184,19 +179,21 @@ public class UserAuthorizationVerifier {
     if (facilityId == null) {
       return true;
     }
+
     Optional<OrganizationRoles> currentOrgRoles = _orgService.getCurrentOrganizationRoles();
-    if (currentOrgRoles.isEmpty()) {
-      return false;
-    } else {
+    if (currentOrgRoles.isPresent()) {
       OrganizationRoles orgRoles = currentOrgRoles.get();
-      return orgRoles.containsFacility(facilityId)
-          || orgRoles.getGrantedPermissions().contains(UserPermission.VIEW_ARCHIVED_FACILITIES)
-              && _facilityRepo
-                  .findByOrganizationAndInternalIdAllowDeleted(
-                      orgRoles.getOrganization(), facilityId)
-                  .get()
-                  .isDeleted();
+      if (orgRoles.containsFacility(facilityId)) {
+        return true;
+      }
+      if (orgRoles.grantsArchivedFacilityAccess()) {
+        Optional<Facility> fac =
+            _facilityRepo.findByOrganizationAndInternalIdAllowDeleted(
+                orgRoles.getOrganization(), facilityId);
+        return fac.isPresent() && fac.get().isDeleted();
+      }
     }
+    return false;
   }
 
   public boolean userCanViewPatient(Person patient) {
