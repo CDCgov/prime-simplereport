@@ -37,10 +37,11 @@ runs:
       working-directory: ./frontend
       run: |
           echo "::group::Set build variables"
+          ENVLVL=${${{ inputs.deploy-env }}//[[:digit:]]/} 
           az config set extension.use_dynamic_install=yes_without_prompt
           INSIGHTS_CONNECTION_STRING=$(
             az monitor app-insights component show \
-              -g prime-simple-report-${{inputs.deploy-env}} \
+              -g prime-simple-report-$ENVLVL \
               -a prime-simple-report-${{inputs.deploy-env}}-insights \
             | jq -r '.connectionString')
           echo "REACT_APP_APPLICATIONINSIGHTS_CONNECTION_STRING=${INSIGHTS_CONNECTION_STRING}" > .env.production.local
