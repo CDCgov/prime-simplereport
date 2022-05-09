@@ -817,12 +817,12 @@ class TestOrderServiceTest extends BaseServiceTest<TestOrderService> {
 
     // THEN
     List<Result> results = _resultRepository.findAllByTestOrder(res.getTestOrder());
-    assertEquals(results.size(), 1);
+    assertEquals(1, results.size());
 
     Result covidResult =
         _resultRepository.findResultByTestOrderAndDisease(
             res.getTestOrder(), _diseaseService.covid());
-    assertEquals(covidResult.getTestResult(), TestResult.POSITIVE);
+    assertEquals(TestResult.POSITIVE, covidResult.getTestResult());
     assertEquals(
         covidResult.getTestEvent().getInternalId(),
         res.getTestOrder().getTestEvent().getInternalId());
@@ -876,8 +876,8 @@ class TestOrderServiceTest extends BaseServiceTest<TestOrderService> {
     assertEquals(TestResult.POSITIVE, order.getResult());
     Result result =
         _resultRepository.findResultByTestOrderAndDisease(order, _diseaseService.covid());
-    assertEquals(result.getTestResult(), TestResult.POSITIVE);
-    assertEquals(result.getTestEvent(), null);
+    assertEquals(TestResult.POSITIVE, result.getTestResult());
+    assertEquals(null, result.getTestEvent());
     assertEquals(devA.getDeviceType().getInternalId(), order.getDeviceType().getInternalId());
   }
 
