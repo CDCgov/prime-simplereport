@@ -748,6 +748,7 @@ export type Query = {
   testResults?: Maybe<Array<Maybe<TestResult>>>;
   testResultsCount?: Maybe<Scalars["Int"]>;
   topLevelDashboardMetrics?: Maybe<TopLevelDashboardMetrics>;
+  uploadSubmission: UploadSubmission;
   user?: Maybe<User>;
   users?: Maybe<Array<Maybe<ApiUser>>>;
   usersWithStatus?: Maybe<Array<ApiUserWithStatus>>;
@@ -833,6 +834,10 @@ export type QueryTopLevelDashboardMetricsArgs = {
   endDate?: InputMaybe<Scalars["DateTime"]>;
   facilityId?: InputMaybe<Scalars["ID"]>;
   startDate?: InputMaybe<Scalars["DateTime"]>;
+};
+
+export type QueryUploadSubmissionArgs = {
+  id: Scalars["ID"];
 };
 
 export type QueryUserArgs = {
@@ -951,6 +956,23 @@ export type UploadResult = {
   recordsCount?: Maybe<Scalars["Int"]>;
   reportId?: Maybe<Scalars["ID"]>;
   status?: Maybe<Scalars["String"]>;
+  warnings?: Maybe<Scalars["String"]>;
+};
+
+export enum UploadStatus {
+  Fail = "FAIL",
+  InProgress = "IN_PROGRESS",
+  Success = "SUCCESS",
+}
+
+export type UploadSubmission = {
+  __typename?: "UploadSubmission";
+  createdAt: Scalars["DateTime"];
+  errors?: Maybe<Scalars["String"]>;
+  internalId: Scalars["ID"];
+  recordsCount: Scalars["String"];
+  reportId: Scalars["ID"];
+  status: UploadStatus;
   warnings?: Maybe<Scalars["String"]>;
 };
 
@@ -2555,6 +2577,22 @@ export type UploadTestResultCsvMutation = {
       }
     | null
     | undefined;
+};
+
+export type GetUploadSubmissionQueryVariables = Exact<{
+  id: Scalars["ID"];
+}>;
+
+export type GetUploadSubmissionQuery = {
+  __typename?: "Query";
+  uploadSubmission: {
+    __typename?: "UploadSubmission";
+    internalId: string;
+    reportId: string;
+    createdAt: any;
+    status: UploadStatus;
+    recordsCount: string;
+  };
 };
 
 export const WhoAmIDocument = gql`
@@ -6799,11 +6837,27 @@ export const GetAllFacilitiesDocument = gql`
   }
 `;
 
+export const GetUploadSubmissionDocument = gql`
+  query GetUploadSubmission($id: ID!) {
+    uploadSubmission(id: $id) {
+      internalId
+      reportId
+      createdAt
+      status
+      recordsCount
+    }
+  }
+`;
+
 /**
  * __useGetAllFacilitiesQuery__
  *
  * To run a query within a React component, call `useGetAllFacilitiesQuery` and pass it any options that fit your needs.
  * When your component renders, `useGetAllFacilitiesQuery` returns an object from Apollo Client that contains loading, error, and data properties
+ * __useGetUploadSubmissionQuery__
+ *
+ * To run a query within a React component, call `useGetUploadSubmissionQuery` and pass it any options that fit your needs.
+ * When your component renders, `useGetUploadSubmissionQuery` returns an object from Apollo Client that contains loading, error, and data properties
  * you can use to render your UI.
  *
  * @param baseOptions options that will be passed into the query, supported options are listed on: https://www.apollographql.com/docs/react/api/react-hooks/#options;
@@ -6831,6 +6885,28 @@ export function useGetAllFacilitiesLazyQuery(
   baseOptions?: Apollo.LazyQueryHookOptions<
     GetAllFacilitiesQuery,
     GetAllFacilitiesQueryVariables
+ * const { data, loading, error } = useGetUploadSubmissionQuery({
+ *   variables: {
+ *      id: // value for 'id'
+ *   },
+ * });
+ */
+export function useGetUploadSubmissionQuery(
+  baseOptions: Apollo.QueryHookOptions<
+    GetUploadSubmissionQuery,
+    GetUploadSubmissionQueryVariables
+  >
+) {
+  const options = { ...defaultOptions, ...baseOptions };
+  return Apollo.useQuery<
+    GetUploadSubmissionQuery,
+    GetUploadSubmissionQueryVariables
+  >(GetUploadSubmissionDocument, options);
+}
+export function useGetUploadSubmissionLazyQuery(
+  baseOptions?: Apollo.LazyQueryHookOptions<
+    GetUploadSubmissionQuery,
+    GetUploadSubmissionQueryVariables
   >
 ) {
   const options = { ...defaultOptions, ...baseOptions };
@@ -6905,4 +6981,17 @@ export type UploadTestResultCsvMutationResult = Apollo.MutationResult<UploadTest
 export type UploadTestResultCsvMutationOptions = Apollo.BaseMutationOptions<
   UploadTestResultCsvMutation,
   UploadTestResultCsvMutationVariables
+    GetUploadSubmissionQuery,
+    GetUploadSubmissionQueryVariables
+  >(GetUploadSubmissionDocument, options);
+}
+export type GetUploadSubmissionQueryHookResult = ReturnType<
+  typeof useGetUploadSubmissionQuery
+>;
+export type GetUploadSubmissionLazyQueryHookResult = ReturnType<
+  typeof useGetUploadSubmissionLazyQuery
+>;
+export type GetUploadSubmissionQueryResult = Apollo.QueryResult<
+  GetUploadSubmissionQuery,
+  GetUploadSubmissionQueryVariables
 >;
