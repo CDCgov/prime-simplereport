@@ -3926,15 +3926,13 @@ databaseChangeLog:
          - tagDatabase:
             tag: update-org-queue-view
          - createView:
-            viewName: organization_queue_no_phi_view
+            viewName: org_queue_no_phi_is_deleted
             remarks: A subset of the organization_queue table with columns containing PHI removed.
             replaceIfExists: true
             fullDefinition: false
             selectQuery: SELECT internal_id, created_at, updated_at, organization_name, organization_external_id, verified_organization_id, is_deleted FROM ${database.defaultSchemaName}.organization_queue
          - sql: 
-            sql: GRANT SELECT ON ${database.defaultSchemaName}.organization_queue_no_phi_view TO ${noPhiUsername};
+            sql: GRANT SELECT ON ${database.defaultSchemaName}.org_queue_no_phi_is_deleted TO ${noPhiUsername};
       rollback:
         - dropView:
-            viewName: organization_queue_no_phi_view
-        - dropTable:
-            tableName: organization_queue
+            viewName: org_queue_no_phi_is_deleted
