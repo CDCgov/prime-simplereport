@@ -951,7 +951,7 @@ class TestOrderServiceTest extends BaseServiceTest<TestOrderService> {
 
   @Test
   @WithSimpleReportOrgAdminUser
-  void fetchTestEventsAtArchivedFacility_adminUser_ok() {
+  void fetchTestEventsAtArchivedFacility_orgAdminUser_ok() {
     Organization org = _organizationService.getCurrentOrganization();
     Facility facility = _dataFactory.createArchivedFacility(org, "deleted facility");
     Person p = _dataFactory.createMinimalPerson(org, facility);
@@ -977,7 +977,7 @@ class TestOrderServiceTest extends BaseServiceTest<TestOrderService> {
 
   @Test
   @WithSimpleReportOrgAdminUser
-  void fetchAllFacilityTestEventsResults_adminUser_ok() {
+  void fetchAllFacilityTestEventsResults_orgAdminUser_ok() {
     Organization org = _organizationService.getCurrentOrganization();
     Facility facility = _dataFactory.createValidFacility(org);
     Person p = _dataFactory.createMinimalPerson(org, facility);

@@ -230,7 +230,9 @@ public class PersonService {
     if (namePrefixMatch != null && namePrefixMatch.trim().length() < MINIMUM_CHAR_FOR_SEARCH) {
       return 0;
     }
-    return _repo.count(buildPersonSearchFilter(facilityId, isArchived, namePrefixMatch, false));
+    return _repo.count(
+        buildPersonSearchFilter(
+            facilityId, isArchived, namePrefixMatch, includeArchivedFacilities));
   }
   // NO PERMISSION CHECK (make sure the caller has one!) getPatient()
   public Person getPatientNoPermissionsCheck(UUID id) {
