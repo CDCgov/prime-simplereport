@@ -10,17 +10,8 @@ import org.springframework.web.servlet.config.annotation.CorsRegistration;
 import org.springframework.web.servlet.config.annotation.CorsRegistry;
 import org.springframework.web.servlet.config.annotation.WebMvcConfigurer;
 
-/**
- * Live (with Okta integration) request-level security configuration. Not to be confused with {@link
- * AuthorizationConfiguration}, which is not environment-specific and handles method-level or
- * object-level security.
- */
 @Configuration
-@Profile(
-    "!"
-        + BeanProfiles.NO_SECURITY // Activate the "no-security" profile to disable security
-        + " & !"
-        + BeanProfiles.CREATE_SAMPLE_DEVICES) // If we're creating sample devices,
+@Profile("!" + BeanProfiles.NO_SECURITY)
 @ConditionalOnWebApplication
 @Slf4j
 public class CorsSecurityConfiguration implements WebMvcConfigurer {
