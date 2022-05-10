@@ -3940,5 +3940,6 @@ databaseChangeLog:
             replaceIfExists: true
             fullDefinition: false
             selectQuery: SELECT internal_id, created_at, updated_at, organization_name, organization_external_id, verified_organization_id FROM ${database.defaultSchemaName}.organization_queue
-         - sql: 
+        - sql: 
             sql: GRANT SELECT ON ${database.defaultSchemaName}.organization_queue_no_phi_view TO ${noPhiUsername};
+       
