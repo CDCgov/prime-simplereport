@@ -3934,12 +3934,7 @@ databaseChangeLog:
          - sql: 
             sql: GRANT SELECT ON ${database.defaultSchemaName}.organization_queue_no_phi_view TO ${noPhiUsername};
       rollback:
-        - createView:
+        - dropView:
             viewName: organization_queue_no_phi_view
-            remarks: A subset of the organization_queue table with columns containing PHI removed.
-            replaceIfExists: true
-            fullDefinition: false
-            selectQuery: SELECT internal_id, created_at, updated_at, organization_name, organization_external_id, verified_organization_id FROM ${database.defaultSchemaName}.organization_queue
-        - sql: 
-            sql: GRANT SELECT ON ${database.defaultSchemaName}.organization_queue_no_phi_view TO ${noPhiUsername};
-       
+        - dropTable:
+            tableName: organization_queue
