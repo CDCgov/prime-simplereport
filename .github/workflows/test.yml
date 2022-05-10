@@ -74,7 +74,7 @@ jobs:
         uses: actions/upload-artifact@v2
         if: failure()
         with:
-          name: backtest-report
+          name: backend-test-report
           path: backend/build/reports/tests/test
           retention-days: 7
   frontend-tests:

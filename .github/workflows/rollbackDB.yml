@@ -25,7 +25,7 @@ jobs:
       run:
         working-directory: ./backend
     steps:
-      - uses: actions/checkout@v2
+      - uses: actions/checkout@v3
       - uses: azure/login@v1
         with:
           creds: ${{ secrets.AZURE_CREDENTIALS }}
@@ -50,7 +50,7 @@ jobs:
       ARM_TENANT_ID: ${{ secrets.TERRAFORM_ARM_TENANT_ID }}
       OKTA_API_TOKEN: ${{ secrets.OKTA_API_TOKEN }}
     steps:
-      - uses: actions/checkout@v2
+      - uses: actions/checkout@v3
       - uses: azure/login@v1
         with:
           creds: ${{ secrets.AZURE_CREDENTIALS }}
