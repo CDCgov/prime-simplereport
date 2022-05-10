@@ -3916,23 +3916,23 @@ databaseChangeLog:
             replaceIfExists: true
             fullDefinition: false
             selectQuery: SELECT id, event_timestamp, request_id, api_user_id, is_admin_user, user_permissions, organization_id, patient_link_id, response_code FROM ${database.defaultSchemaName}.api_audit_event
-        - sql: |
+        - sql: 
             GRANT SELECT ON TABLE ${database.defaultSchemaName}.api_audit_event_no_phi TO ${noPhiUsername};
   - changeSet:
       id: update-no-phi-user-view-of-org-queue-table
       author: bob@skylight.digital
-      comment: Add the organization_queue's 'is_deleted' column to the view permissions of the no-phi-user so we can see it in metabase
+      comment: Add the organization_queue's is_deleted column to the view permissions of the no-phi-user so we can see it in metabase
       changes:
-        - tagDatabase:
-            tag: update-no-phi-user-view-of-org-queue-table
-        - createView:
+         - tagDatabase:
+            tag: update-org-queue-view
+         - createView:
             viewName: organization_queue_no_phi_view
             remarks: A subset of the organization_queue table with columns containing PHI removed.
             replaceIfExists: true
             fullDefinition: false
             selectQuery: SELECT internal_id, created_at, updated_at, organization_name, organization_external_id, verified_organization_id, is_deleted FROM ${database.defaultSchemaName}.organization_queue
-        - sql: |
-          GRANT SELECT ON ${database.defaultSchemaName}.organization_queue_no_phi_view TO ${noPhiUsername};
+         - sql: 
+            sql: GRANT SELECT ON ${database.defaultSchemaName}.organization_queue_no_phi_view TO ${noPhiUsername};
       rollback:
         - dropView:
             viewName: organization_queue_no_phi_view
