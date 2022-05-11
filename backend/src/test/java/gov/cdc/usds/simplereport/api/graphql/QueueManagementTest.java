@@ -21,6 +21,8 @@ import gov.cdc.usds.simplereport.service.TestOrderService;
 import gov.cdc.usds.simplereport.test_util.SliceTestConfiguration.WithSimpleReportStandardUser;
 import gov.cdc.usds.simplereport.test_util.TestDataFactory;
 import java.io.IOException;
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Optional;
 import java.util.Set;
 import java.util.UUID;
@@ -107,15 +109,16 @@ class QueueManagementTest extends BaseGraphqlTest {
     DeviceType d = _dataFactory.getGenericDevice();
     String deviceId = d.getInternalId().toString();
     String dateTested = "2020-12-31T14:30:30Z";
+    List<MultiplexTestResult> results = new ArrayList<>();
+    results.add(new MultiplexTestResult(_diseaseService.covid().getName(), TestResult.POSITIVE));
+    results.add(new MultiplexTestResult(_diseaseService.fluA().getName(), TestResult.POSITIVE));
+    results.add(new MultiplexTestResult(_diseaseService.fluB().getName(), TestResult.POSITIVE));
     ObjectNode variables =
         JsonNodeFactory.instance
             .objectNode()
             .put("id", orderId.toString())
             .put("deviceId", deviceId)
-            .putPOJO(
-                "results",
-                new MultiplexTestResult(
-                    TestResult.POSITIVE, TestResult.POSITIVE, TestResult.POSITIVE))
+            .putPOJO("results", results)
             .put("dateTested", dateTested);
 
     performQueueUpdateMultiplexMutation(variables, Optional.empty());

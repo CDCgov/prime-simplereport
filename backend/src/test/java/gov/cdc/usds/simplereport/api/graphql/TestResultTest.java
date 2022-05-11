@@ -22,7 +22,9 @@ import gov.cdc.usds.simplereport.test_util.SliceTestConfiguration.WithSimpleRepo
 import gov.cdc.usds.simplereport.test_util.TestDataFactory;
 import java.text.SimpleDateFormat;
 import java.time.Instant;
+import java.util.ArrayList;
 import java.util.Date;
+import java.util.List;
 import java.util.Optional;
 import java.util.Set;
 import java.util.UUID;
@@ -104,15 +106,17 @@ class TestResultTest extends BaseGraphqlTest {
     _dataFactory.createTestOrder(p, _site);
     String dateTested = "2020-12-31T14:30:30.001Z";
 
+    List<MultiplexTestResult> results = new ArrayList<>();
+    results.add(new MultiplexTestResult(_diseaseService.covid().getName(), TestResult.POSITIVE));
+    results.add(new MultiplexTestResult(_diseaseService.fluA().getName(), TestResult.POSITIVE));
+    results.add(new MultiplexTestResult(_diseaseService.fluB().getName(), TestResult.POSITIVE));
+
     ObjectNode variables =
         JsonNodeFactory.instance
             .objectNode()
             .put("deviceId", d.getInternalId().toString())
             .put("patientId", p.getInternalId().toString())
-            .putPOJO(
-                "results",
-                new MultiplexTestResult(
-                    TestResult.NEGATIVE, TestResult.NEGATIVE, TestResult.NEGATIVE))
+            .putPOJO("results", results)
             .put("dateTested", dateTested);
     submitTestResultMultiplex(variables, Optional.empty());
 

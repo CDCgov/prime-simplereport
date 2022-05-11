@@ -32,6 +32,17 @@ public class DiseaseService {
     return (List<SupportedDisease>) _supportedDiseaseRepo.findAll();
   }
 
+  public SupportedDisease getDiseaseByName(String name) {
+    if (name.contains("COVID")) {
+      return covid;
+    } else if (name.contains("Flu A")) {
+      return fluA;
+    } else if (name.contains("Flu B")) {
+      return fluB;
+    }
+    return _supportedDiseaseRepo.findSupportedDiseaseByNameContains(name);
+  }
+
   public SupportedDisease covid() {
     return covid;
   }
