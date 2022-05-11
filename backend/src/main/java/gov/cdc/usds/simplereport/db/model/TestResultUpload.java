@@ -18,7 +18,7 @@ import org.hibernate.annotations.Type;
 @Entity
 @Slf4j
 @Table(name = "upload")
-public class BulkTestResultUpload extends AuditedEntity {
+public class TestResultUpload extends AuditedEntity {
 
   @Column private UUID reportId;
 
@@ -41,9 +41,9 @@ public class BulkTestResultUpload extends AuditedEntity {
 
   @Column private String errors;
 
-  protected BulkTestResultUpload() {}
+  protected TestResultUpload() {}
 
-  public BulkTestResultUpload(
+  public TestResultUpload(
       UUID reportId,
       UploadStatus status,
       int recordsCount,
@@ -58,5 +58,9 @@ public class BulkTestResultUpload extends AuditedEntity {
     this.facility = facility;
     this.warnings = warnings;
     this.errors = errors;
+  }
+
+  public TestResultUpload(UploadStatus status) {
+    this.status = status;
   }
 }

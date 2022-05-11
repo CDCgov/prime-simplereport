@@ -30,10 +30,11 @@ public class TestResultMutationResolver implements GraphQLMutationResolver {
     return true;
   }
 
-  public String uploadTestResultCSV(Part part) {
+  public String uploadTestResultCSV(Part part, UUID facilityId) {
     try (InputStream resultsUpload = part.getInputStream()) {
       try {
-        return testResultUploadService.processResultCSV(resultsUpload);
+        var result = testResultUploadService.processResultCSV(resultsUpload, facilityId);
+        return result.getStatus().toString();
       } catch (IllegalGraphqlArgumentException e) {
         throw e;
       }

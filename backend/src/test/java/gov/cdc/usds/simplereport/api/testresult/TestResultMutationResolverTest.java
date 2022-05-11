@@ -7,6 +7,8 @@ import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
+import gov.cdc.usds.simplereport.db.model.TestResultUpload;
+import gov.cdc.usds.simplereport.db.model.auxiliary.UploadStatus;
 import gov.cdc.usds.simplereport.db.repository.TestEventRepository;
 import gov.cdc.usds.simplereport.service.TestEventReportingService;
 import gov.cdc.usds.simplereport.service.TestResultUploadService;
@@ -14,6 +16,7 @@ import graphql.ErrorType;
 import graphql.GraphQLError;
 import java.io.ByteArrayInputStream;
 import java.io.IOException;
+import java.util.UUID;
 import javax.servlet.http.Part;
 import org.assertj.core.api.InstanceOfAssertFactories;
 import org.junit.jupiter.api.Test;
@@ -34,7 +37,8 @@ public class TestResultMutationResolverTest {
     when(input.getInputStream()).thenThrow(new IOException("some network error"));
 
     var sut = new TestResultMutationResolver(_repo, _reportingSvc, _uploadSvc);
-    Throwable caught = assertThrows(Throwable.class, () -> sut.uploadTestResultCSV(input));
+    Throwable caught =
+        assertThrows(Throwable.class, () -> sut.uploadTestResultCSV(input, UUID.randomUUID()));
 
     assertThat(caught)
         .asInstanceOf(InstanceOfAssertFactories.type(GraphQLError.class))
@@ -45,9 +49,11 @@ public class TestResultMutationResolverTest {
   void uploadResults_upload_uploadServiceCalled() throws IOException {
     var input = mock(Part.class);
     when(input.getInputStream()).thenReturn(new ByteArrayInputStream(new byte[0]));
+    when(_uploadSvc.processResultCSV(any(), any()))
+        .thenReturn(new TestResultUpload(UploadStatus.SUCCESS));
 
     var sut = new TestResultMutationResolver(_repo, _reportingSvc, _uploadSvc);
-    sut.uploadTestResultCSV(input);
-    verify(_uploadSvc).processResultCSV(any());
+    sut.uploadTestResultCSV(input, UUID.randomUUID());
+    verify(_uploadSvc).processResultCSV(any(), any());
   }
 }

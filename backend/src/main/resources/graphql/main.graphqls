@@ -625,6 +625,6 @@ type Mutation {
   sendPatientLinkEmailByTestEventId(testEventId: ID!): Boolean
   updateOrganization(type: String!): String
     @requiredPermissions(allOf: ["EDIT_ORGANIZATION"])
-  uploadTestResultCSV(testResultList: Upload!): String
+  uploadTestResultCSV(testResultList: Upload!, facilityId: ID!): String
     @requiredPermissions(allOf: ["SR_CSV_UPLOADER_PILOT"])
 }
