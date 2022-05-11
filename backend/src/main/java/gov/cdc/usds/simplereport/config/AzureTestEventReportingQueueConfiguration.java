@@ -2,9 +2,7 @@ package gov.cdc.usds.simplereport.config;
 
 import com.azure.storage.queue.QueueAsyncClient;
 import com.azure.storage.queue.QueueClientBuilder;
-import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
-import gov.cdc.usds.simplereport.api.model.TestEventExport;
 import gov.cdc.usds.simplereport.db.model.TestEvent;
 import gov.cdc.usds.simplereport.properties.AzureStorageQueueReportingProperties;
 import gov.cdc.usds.simplereport.service.AzureStorageQueueTestEventReportingService;
@@ -55,23 +53,12 @@ class AzureTestEventReportingQueueConfiguration {
       log.warn(
           "No TestEventReportingService configured; defaulting to no-op reporting for TestEvent [{}]",
           testEvent.getInternalId());
-      String buffer = toBuffer(testEvent);
-      log.info("TestEvent serializes as: {}", buffer);
       return CompletableFuture.completedFuture(null);
     }
 
     @Override
     public void markTestEventsAsReported(Set<TestEvent> testEvents) {
       log.warn("No TestEventReportingService configured; defaulting to no-op reporting");
-    }
-
-    private String toBuffer(TestEvent testEvent) {
-      try {
-        ObjectMapper mapper = new ObjectMapper();
-        return mapper.writeValueAsString(new TestEventExport(testEvent));
-      } catch (JsonProcessingException e) {
-        throw new IllegalArgumentException("Failed to serialize test event", e);
-      }
     }
   }
 }
