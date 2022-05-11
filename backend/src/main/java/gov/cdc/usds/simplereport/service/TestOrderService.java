@@ -17,7 +17,6 @@ import gov.cdc.usds.simplereport.db.model.PatientAnswers;
 import gov.cdc.usds.simplereport.db.model.PatientLink;
 import gov.cdc.usds.simplereport.db.model.Person;
 import gov.cdc.usds.simplereport.db.model.Person_;
-import gov.cdc.usds.simplereport.db.model.Result;
 import gov.cdc.usds.simplereport.db.model.TestEvent;
 import gov.cdc.usds.simplereport.db.model.TestEvent_;
 import gov.cdc.usds.simplereport.db.model.TestOrder;
@@ -30,7 +29,6 @@ import gov.cdc.usds.simplereport.db.model.auxiliary.TestResultDeliveryPreference
 import gov.cdc.usds.simplereport.db.model.auxiliary.TestResultWithCount;
 import gov.cdc.usds.simplereport.db.repository.AdvisoryLockManager;
 import gov.cdc.usds.simplereport.db.repository.PatientAnswersRepository;
-import gov.cdc.usds.simplereport.db.repository.ResultRepository;
 import gov.cdc.usds.simplereport.db.repository.TestEventRepository;
 import gov.cdc.usds.simplereport.db.repository.TestOrderRepository;
 import java.time.LocalDate;
@@ -46,7 +44,6 @@ import javax.persistence.criteria.Join;
 import javax.persistence.criteria.Predicate;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.hibernate.Hibernate;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.jpa.domain.Specification;
 import org.springframework.stereotype.Service;
@@ -71,8 +68,6 @@ public class TestOrderService {
   private final TestEventReportingService _testEventReportingService;
   private final FacilityDeviceTypeService _facilityDeviceTypeService;
   private final TestResultsDeliveryService testResultsDeliveryService;
-  private final DiseaseService _diseaseService;
-  private final ResultRepository _resultRepo;
 
   public static final int DEFAULT_PAGINATION_PAGEOFFSET = 0;
   public static final int DEFAULT_PAGINATION_PAGESIZE = 5000;
@@ -206,12 +201,9 @@ public class TestOrderService {
 
   @Transactional(readOnly = true)
   public TestOrder getTestOrder(Organization org, UUID id) {
-    TestOrder order =
-        _repo
-            .fetchQueueItemByOrganizationAndId(org, id)
-            .orElseThrow(TestOrderService::noSuchOrderFound);
-    Hibernate.initialize(order.getResultSet());
-    return order;
+    return _repo
+        .fetchQueueItemByOrganizationAndId(org, id)
+        .orElseThrow(TestOrderService::noSuchOrderFound);
   }
 
   @AuthorizationConfiguration.RequirePermissionUpdateTestForTestOrder
@@ -233,7 +225,7 @@ public class TestOrderService {
         }
       }
 
-      updateTestOrderCovidResult(order, TestResult.valueOf(result));
+      order.setResult(result == null ? null : TestResult.valueOf(result));
 
       order.setDateTestedBackdate(dateTested);
 
@@ -258,7 +250,7 @@ public class TestOrderService {
 
     try {
       order.setDeviceSpecimen(deviceSpecimen);
-      Result resultEntity = updateTestOrderCovidResult(order, result);
+      order.setResult(result);
       order.setDateTestedBackdate(dateTested);
       order.markComplete();
 
@@ -269,14 +261,12 @@ public class TestOrderService {
               ? new TestEvent(order, hasPriorTests)
               : new TestEvent(order, order.getCorrectionStatus(), order.getReasonForCorrection());
 
-      TestEvent savedEvent = _terepo.save(testEvent);
-      order.setTestEventRef(savedEvent);
+      _terepo.save(testEvent);
+
+      order.setTestEventRef(testEvent);
       TestOrder savedOrder = _repo.save(order);
 
-      resultEntity.setTestEvent(savedEvent);
-      _resultRepo.save(resultEntity);
-      _testEventReportingService.report(savedEvent);
-
+      _testEventReportingService.report(testEvent);
       ArrayList<Boolean> deliveryStatuses = new ArrayList<>();
 
       PatientLink patientLink = _pls.createPatientLink(savedOrder.getInternalId());
@@ -410,19 +400,6 @@ public class TestOrderService {
     return _repo.fetchQueueItem(org, patient).orElseThrow(TestOrderService::noSuchOrderFound);
   }
 
-  private Result updateTestOrderCovidResult(TestOrder order, TestResult result) {
-    // Remove setResultsColumn as part of #3664
-    order.setResultColumn(result);
-    Optional<Result> covidResult = order.getResultForDisease(_diseaseService.covid());
-    if (covidResult.isPresent()) {
-      covidResult.get().setResult(result);
-      return _resultRepo.save(covidResult.get());
-    } else {
-      Result resultEntity = new Result(order, _diseaseService.covid(), result);
-      return _resultRepo.save(resultEntity);
-    }
-  }
-
   @Transactional
   @AuthorizationConfiguration.RequirePermissionUpdateTestForTestEvent
   public TestEvent correctTest(
@@ -443,7 +420,7 @@ public class TestOrderService {
       throw new IllegalGraphqlArgumentException("TestEvent: could not load the parent order");
     }
 
-    // sanity check that two different users can't be deleting the same event and
+    // sanity check that two different users can't deleting the same event and
     // delete it twice.
     if (order.getTestEvent() == null || !testEventId.equals(order.getTestEvent().getInternalId())) {
       throw new IllegalGraphqlArgumentException("TestEvent: already deleted?");

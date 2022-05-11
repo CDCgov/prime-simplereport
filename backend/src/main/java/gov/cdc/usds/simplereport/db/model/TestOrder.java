@@ -5,11 +5,7 @@ import gov.cdc.usds.simplereport.db.model.auxiliary.TestCorrectionStatus;
 import gov.cdc.usds.simplereport.db.model.auxiliary.TestResult;
 import java.time.LocalDate;
 import java.util.Date;
-import java.util.HashSet;
-import java.util.Optional;
-import java.util.Set;
 import java.util.UUID;
-import javax.persistence.CascadeType;
 import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.EnumType;
@@ -17,9 +13,7 @@ import javax.persistence.Enumerated;
 import javax.persistence.FetchType;
 import javax.persistence.JoinColumn;
 import javax.persistence.ManyToOne;
-import javax.persistence.OneToMany;
 import javax.persistence.OneToOne;
-import org.hibernate.Hibernate;
 import org.hibernate.annotations.Type;
 
 @Entity
@@ -48,16 +42,12 @@ public class TestOrder extends BaseTestInfo {
   @JoinColumn(name = "test_event_id")
   private TestEvent testEvent;
 
-  @OneToMany(mappedBy = "testOrder", fetch = FetchType.LAZY, cascade = CascadeType.ALL)
-  private Set<Result> results;
-
   protected TestOrder() {
     /* for hibernate */ }
 
   public TestOrder(Person patient, Facility facility) {
     super(patient, facility);
     this.orderStatus = OrderStatus.PENDING;
-    this.results = new HashSet<>();
   }
 
   public OrderStatus getOrderStatus() {
@@ -82,36 +72,12 @@ public class TestOrder extends BaseTestInfo {
     super.setDateTestedBackdate(date);
   }
 
-  // This logic (specifically, findFirst) will need to be updated later on in the multiplex process
-  // - this method is temporary
-  // Eventually, this method will be deprecated in favor of getResultSet() and getResultForDisease
   public TestResult getTestResult() {
-    Hibernate.initialize(this.results);
-    if (this.results != null) {
-      Optional<Result> resultObject = this.results.stream().findAny();
-      if (resultObject.isPresent()) {
-        return resultObject.get().getTestResult();
-      }
-    }
-    return super.getResult();
+    return getResult();
   }
 
-  public Set<Result> getResultSet() {
-    Hibernate.initialize(this.results);
-    return results;
-  }
-
-  public Optional<Result> getResultForDisease(SupportedDisease disease) {
-    Hibernate.initialize(this.results);
-    if (results != null) {
-      return results.stream().filter(r -> r.getDisease().equals(disease)).findFirst();
-    }
-    return Optional.empty();
-  }
-
-  // Remove after #3664
-  public void setResultColumn(TestResult result) {
-    super.setTestResult(result);
+  public void setResult(TestResult finalResult) {
+    super.setTestResult(finalResult);
   }
 
   public void markComplete() {
