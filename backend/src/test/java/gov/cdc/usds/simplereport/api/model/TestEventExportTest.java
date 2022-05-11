@@ -172,7 +172,7 @@ class TestEventExportTest extends BaseRepositoryTest {
     LocalDate localDate = LocalDate.of(2020, 7, 23);
     Date backTestedDate = Date.from(localDate.atStartOfDay(ZoneId.systemDefault()).toInstant());
     TestEvent originalTestEvent =
-        _dataFactory.createTestEvent(person, facility, null, null, backTestedDate);
+        _dataFactory.createTestEvent(person, facility, null, TestResult.NEGATIVE, backTestedDate);
     String originalEventId = originalTestEvent.getInternalId().toString();
     TestEvent testEvent = _dataFactory.createTestEventRemoval(originalTestEvent);
 
