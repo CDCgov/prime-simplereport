@@ -13,5 +13,8 @@ import org.springframework.web.bind.annotation.PostMapping;
 public interface DataHubClient {
 
   @PostMapping(value = "/api/waters", consumes = "text/csv")
+  UploadResponse uploadCSVV2(@Param("file") byte[] file);
+
+  @PostMapping(value = "/api/reports", consumes = "text/csv")
   UploadResponse uploadCSV(@Param("file") byte[] file);
 }

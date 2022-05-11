@@ -589,6 +589,7 @@ export type MutationUploadPatientsArgs = {
 };
 
 export type MutationUploadTestResultCsvArgs = {
+  facilityId: Scalars["ID"];
   testResultList: Scalars["Upload"];
 };
 
