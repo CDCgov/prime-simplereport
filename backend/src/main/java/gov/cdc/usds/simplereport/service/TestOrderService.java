@@ -233,7 +233,9 @@ public class TestOrderService {
         }
       }
 
-      updateTestOrderCovidResult(order, TestResult.valueOf(result));
+      if (result != null) {
+        updateTestOrderCovidResult(order, TestResult.valueOf(result));
+      }
 
       order.setDateTestedBackdate(dateTested);
 
