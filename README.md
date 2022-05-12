@@ -22,6 +22,7 @@ https://www.simplereport.gov/
     - [Storybook and Chromatic](#storybook-and-chromatic)
   - [PR Conventions](#pr-conventions)
   - [Cloud Environments](#cloud-environments)
+  - [Cloud Architecture](#cloud-architecture)
   - [Deploy](#deploy)
     - [Revert to a Previous Release](#revert-to-a-previous-release)
     - [Deploy With Action](#deploy-with-action)
@@ -276,6 +277,10 @@ We require two reviewers per changeset, and you cannot merge until all commits h
 |   dev4   |   [/app/static/commit.txt](https://dev4.simplereport.gov/app/static/commit.txt)   |   [/api/actuator/info](https://dev4.simplereport.gov/api/actuator/info)   |     [Action](#deploy-with-action)     |           Development testing/PR validation before merging to `main`           |
 |   test   |   [/app/static/commit.txt](https://test.simplereport.gov/app/static/commit.txt)   |   [/api/actuator/info](https://test.simplereport.gov/api/actuator/info)   |            Push to `main`             |                   Automated testing agsinst `main` (e2e/load)                  |
 |  pentest | [/app/static/commit.txt](https://pentest.simplereport.gov/app/static/commit.txt)  | [/api/actuator/info](https://pentest.simplereport.gov/api/actuator/info)  |     [Action](#deploy-with-action)     |                   Penetration testing (no alerting enabled)                    |
+
+## Cloud Architecture
+![Cloud architecture image](docs/SR_high_level_architecture.png)
+
 
 ## Deploy
 
