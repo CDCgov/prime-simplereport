@@ -45,7 +45,7 @@ public class SmsCallbackController {
 
   private SmsStatusCallback mapToTextMessageSent(MultiValueMap<String, String> paramMap) {
     HashMap<String, Object> newMap = new HashMap<>();
-    Arrays.asList(new String[] {"MessageSid", "MessageStatus", "ErrorCode", "To"})
+    Arrays.asList("MessageSid", "MessageStatus", "ErrorCode", "To")
         .forEach(
             k -> {
               if (paramMap.containsKey(k)) {
