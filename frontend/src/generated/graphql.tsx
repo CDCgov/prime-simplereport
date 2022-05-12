@@ -126,9 +126,8 @@ export type Facility = {
 };
 
 export type MultiplexTestResult = {
-  covid19: Scalars["String"];
-  fluA: Scalars["String"];
-  fluB: Scalars["String"];
+  diseaseName?: InputMaybe<Scalars["String"]>;
+  testResult?: InputMaybe<Scalars["String"]>;
 };
 
 export type Mutation = {
@@ -277,7 +276,7 @@ export type MutationAddTestResultMultiplexArgs = {
   deviceId: Scalars["String"];
   deviceSpecimenType?: InputMaybe<Scalars["ID"]>;
   patientId: Scalars["ID"];
-  results: MultiplexTestResult;
+  results: Array<InputMaybe<MultiplexTestResult>>;
 };
 
 export type MutationAddTestResultNewArgs = {
@@ -398,7 +397,7 @@ export type MutationEditQueueItemMultiplexArgs = {
   deviceId?: InputMaybe<Scalars["String"]>;
   deviceSpecimenType?: InputMaybe<Scalars["ID"]>;
   id: Scalars["ID"];
-  results?: InputMaybe<MultiplexTestResult>;
+  results?: InputMaybe<Array<InputMaybe<MultiplexTestResult>>>;
 };
 
 export type MutationMarkFacilityAsDeletedArgs = {
