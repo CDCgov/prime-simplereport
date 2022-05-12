@@ -30,6 +30,7 @@ class TestOrderRepositoryTest extends BaseRepositoryTest {
   @Autowired private TestOrderRepository _repo;
   @Autowired private PersonRepository _personRepo;
   @Autowired private PhoneNumberRepository _phoneRepo;
+  @Autowired private ResultRepository _resultRepo;
   @Autowired private TestEventRepository _events;
   @Autowired private TestDataFactory _dataFactory;
   @Autowired private DiseaseService _diseaseService;
@@ -116,7 +117,8 @@ class TestOrderRepositoryTest extends BaseRepositoryTest {
     assertNotNull(order);
     flush();
     Result result = new Result(order, _diseaseService.covid(), TestResult.POSITIVE);
-    order.setResult(result);
+    _resultRepo.save(result);
+    order.setResultColumn(TestResult.POSITIVE);
     TestEvent ev = _events.save(new TestEvent(order));
     assertNotNull(ev);
     order.setTestEventRef(ev);
@@ -184,7 +186,8 @@ class TestOrderRepositoryTest extends BaseRepositoryTest {
     _repo.save(order1);
     flush();
     Result result = new Result(order1, _diseaseService.covid(), TestResult.NEGATIVE);
-    order1.setResult(result);
+    _resultRepo.save(result);
+    order1.setResultColumn(TestResult.NEGATIVE);
     TestEvent didit = _events.save(new TestEvent(order1));
     order1.setTestEventRef(didit);
     order1.markComplete();

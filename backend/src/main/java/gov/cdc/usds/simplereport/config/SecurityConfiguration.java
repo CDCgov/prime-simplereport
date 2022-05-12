@@ -3,9 +3,7 @@ package gov.cdc.usds.simplereport.config;
 import com.okta.spring.boot.oauth.Okta;
 import gov.cdc.usds.simplereport.service.model.IdentityAttributes;
 import gov.cdc.usds.simplereport.service.model.IdentitySupplier;
-import java.util.List;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.actuate.autoconfigure.security.servlet.EndpointRequest;
 import org.springframework.boot.actuate.health.HealthEndpoint;
 import org.springframework.boot.actuate.info.InfoEndpoint;
@@ -20,9 +18,6 @@ import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.oauth2.core.oidc.user.OidcUser;
 import org.springframework.security.oauth2.jwt.Jwt;
 import org.springframework.security.web.util.matcher.AntPathRequestMatcher;
-import org.springframework.web.servlet.config.annotation.CorsRegistration;
-import org.springframework.web.servlet.config.annotation.CorsRegistry;
-import org.springframework.web.servlet.config.annotation.WebMvcConfigurer;
 
 /**
  * Live (with Okta integration) request-level security configuration. Not to be confused with {@link
@@ -38,10 +33,7 @@ import org.springframework.web.servlet.config.annotation.WebMvcConfigurer;
 // OktaLocalSecurityConfiguration is used instead
 @ConditionalOnWebApplication
 @Slf4j
-public class SecurityConfiguration extends WebSecurityConfigurerAdapter
-    implements WebMvcConfigurer {
-
-  @Autowired CorsProperties _corsProperties;
+public class SecurityConfiguration extends WebSecurityConfigurerAdapter {
 
   public static final String SAVED_REQUEST_HEADER = "SPRING_SECURITY_SAVED_REQUEST";
 
@@ -144,20 +136,5 @@ public class SecurityConfiguration extends WebSecurityConfigurerAdapter
       throw new RuntimeException(
           "Unexpected authentication principal of type " + principal.getClass());
     };
-  }
-
-  @Override
-  public void addCorsMappings(CorsRegistry registry) {
-    CorsRegistration reg = registry.addMapping("/**");
-
-    List<String> methods = _corsProperties.getAllowedMethods();
-    if (methods != null && !methods.isEmpty()) {
-      reg.allowedMethods(methods.toArray(String[]::new));
-    }
-
-    List<String> origins = _corsProperties.getAllowedOrigins();
-    if (origins != null && !origins.isEmpty()) {
-      reg.allowedOrigins(origins.toArray(String[]::new));
-    }
   }
 }

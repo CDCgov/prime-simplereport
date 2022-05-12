@@ -45,6 +45,7 @@ class TestEventRepositoryTest extends BaseRepositoryTest {
   @Autowired private TestDataFactory _dataFactory;
   @Autowired private OrganizationService _orgService;
   @Autowired private DiseaseService _diseaseService;
+  @Autowired private ResultRepository _resultRepo;
 
   private Specification<TestEvent> filter(UUID facilityId, TestResult result) {
     return (root, query, cb) -> {
@@ -72,10 +73,12 @@ class TestEventRepositoryTest extends BaseRepositoryTest {
     Person patient = _dataFactory.createMinimalPerson(org);
     TestOrder order = _dataFactory.createTestOrder(patient, place);
     Result positiveResult = new Result(order, _diseaseService.covid(), TestResult.POSITIVE);
-    order.setResult(positiveResult);
+    _resultRepo.save(positiveResult);
+    //    order.setResult(positiveResult);
     _repo.save(new TestEvent(order, false));
     Result negativeResult = new Result(order, _diseaseService.covid(), TestResult.NEGATIVE);
-    order.setResult(negativeResult);
+    _resultRepo.save(negativeResult);
+    //    order.setResult(negativeResult);
     _repo.save(new TestEvent(order, false));
     flush();
     List<TestEvent> found = _repo.findAllByPatientAndFacilities(patient, Set.of(place));

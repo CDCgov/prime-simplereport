@@ -235,7 +235,9 @@ public class TestOrderService {
         }
       }
 
-      updateTestOrderCovidResult(order, TestResult.valueOf(result));
+      if (result != null) {
+        updateTestOrderCovidResult(order, TestResult.valueOf(result));
+      }
 
       order.setDateTestedBackdate(dateTested);
 
@@ -331,7 +333,7 @@ public class TestOrderService {
 
     try {
       order.setDeviceSpecimen(deviceSpecimen);
-      updateTestOrderCovidResult(order, result);
+      Result resultEntity = updateTestOrderCovidResult(order, result);
       order.setDateTestedBackdate(dateTested);
       order.markComplete();
 
@@ -343,6 +345,8 @@ public class TestOrderService {
               : new TestEvent(order, order.getCorrectionStatus(), order.getReasonForCorrection());
 
       TestEvent savedEvent = _terepo.save(testEvent);
+      resultEntity.setTestEvent(savedEvent);
+      _resultRepo.save(resultEntity);
       order.setTestEventRef(savedEvent);
       TestOrder savedOrder = _repo.save(order);
       _testEventReportingService.report(savedEvent);
@@ -492,13 +496,16 @@ public class TestOrderService {
     return _repo.fetchQueueItem(org, patient).orElseThrow(TestOrderService::noSuchOrderFound);
   }
 
-  private void updateTestOrderCovidResult(TestOrder order, TestResult result) {
+  private Result updateTestOrderCovidResult(TestOrder order, TestResult result) {
+    // Remove setResultsColumn as part of #3664
+    order.setResultColumn(result);
     Optional<Result> covidResult = order.getResultForDisease(_diseaseService.covid());
     if (covidResult.isPresent()) {
       covidResult.get().setResult(result);
+      return _resultRepo.save(covidResult.get());
     } else {
       Result resultEntity = new Result(order, _diseaseService.covid(), result);
-      order.setResult(resultEntity);
+      return _resultRepo.save(resultEntity);
     }
   }
 

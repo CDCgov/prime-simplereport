@@ -23,9 +23,9 @@ public class DiseaseService {
   private SupportedDisease fluB;
 
   public void initDiseases() {
-    covid = _supportedDiseaseRepo.findSupportedDiseaseByNameContains("COVID");
-    fluA = _supportedDiseaseRepo.findSupportedDiseaseByNameContains("Flu A");
-    fluB = _supportedDiseaseRepo.findSupportedDiseaseByNameContains("Flu B");
+    covid = _supportedDiseaseRepo.findByName("COVID-19").orElse(null);
+    fluA = _supportedDiseaseRepo.findByName("Flu A").orElse(null);
+    fluB = _supportedDiseaseRepo.findByName("Flu B").orElse(null);
   }
 
   public List<SupportedDisease> fetchSupportedDiseases() {

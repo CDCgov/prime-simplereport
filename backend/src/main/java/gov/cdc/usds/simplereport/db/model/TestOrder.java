@@ -19,6 +19,7 @@ import javax.persistence.JoinColumn;
 import javax.persistence.ManyToOne;
 import javax.persistence.OneToMany;
 import javax.persistence.OneToOne;
+import org.hibernate.Hibernate;
 import org.hibernate.annotations.Type;
 
 @Entity
@@ -85,6 +86,7 @@ public class TestOrder extends BaseTestInfo {
   // - this method is temporary
   // Eventually, this method will be deprecated in favor of getResultSet() and getResultForDisease
   public TestResult getTestResult() {
+    Hibernate.initialize(this.results);
     if (this.results != null) {
       Optional<Result> resultObject = this.results.stream().findAny();
       if (resultObject.isPresent()) {
@@ -95,21 +97,21 @@ public class TestOrder extends BaseTestInfo {
   }
 
   public Set<Result> getResultSet() {
+    Hibernate.initialize(this.results);
     return results;
   }
 
   public Optional<Result> getResultForDisease(SupportedDisease disease) {
+    Hibernate.initialize(this.results);
     if (results != null) {
       return results.stream().filter(r -> r.getDisease().equals(disease)).findFirst();
     }
     return Optional.empty();
   }
 
-  public void setResult(Result result) {
-    results.add(result);
-    // This should be removed once the backfill is complete and we're reading the new results table
-    // everywhere.
-    super.setTestResult(result.getTestResult());
+  // Remove after #3664
+  public void setResultColumn(TestResult result) {
+    super.setTestResult(result);
   }
 
   public void markComplete() {

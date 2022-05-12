@@ -339,10 +339,13 @@ public class TestDataFactory {
     TestOrder order = new TestOrder(patient, facility);
     order.setAskOnEntrySurvey(savePatientAnswers(createEmptySurvey()));
     order.setDeviceSpecimen(facility.getDefaultDeviceSpecimen());
-    Result resultEntity = new Result(order, _diseaseService.covid(), result);
-    order.setResult(resultEntity);
+
+    order.setResultColumn(result); // remove after #3664
     order.markComplete();
     TestOrder savedOrder = _testOrderRepo.save(order);
+
+    Result resultEntity = new Result(order, _diseaseService.covid(), result);
+    _resultRepository.save(resultEntity);
     _patientLinkRepository.save(new PatientLink(savedOrder));
     return order;
   }
@@ -365,7 +368,8 @@ public class TestDataFactory {
     TestOrder o = createTestOrder(p, f, s);
     o.setDateTestedBackdate(d);
     Result result = new Result(o, _diseaseService.covid(), r);
-    o.setResult(result);
+    _resultRepository.save(result);
+    o.setResultColumn(r);
 
     TestEvent e = _testEventRepo.save(new TestEvent(o));
     o.setTestEventRef(e);
@@ -381,11 +385,14 @@ public class TestDataFactory {
   public TestEvent createTestEvent(Person p, Facility f, TestResult r, Boolean hasPriorTests) {
     TestOrder o = createTestOrder(p, f);
     Result result = new Result(o, _diseaseService.covid(), r);
-    o.setResult(result);
+    _resultRepository.save(result);
+    o.setResultColumn(r);
     o = _testOrderRepo.save(o);
 
     TestEvent e = new TestEvent(o, hasPriorTests);
     _testEventRepo.save(e);
+    result.setTestEvent(e);
+    _resultRepository.save(result);
     o.setTestEventRef(e);
     o.markComplete();
     _testOrderRepo.save(o);
@@ -401,15 +408,21 @@ public class TestDataFactory {
       Boolean hasPriorTests) {
     TestOrder order = createTestOrder(person, facility);
     Result covid = new Result(order, _diseaseService.covid(), covidResult);
-    order.setResult(covid);
+    _resultRepository.save(covid);
     Result fluA = new Result(order, _diseaseService.fluA(), fluAResult);
-    order.setResult(fluA);
+    _resultRepository.save(fluA);
     Result fluB = new Result(order, _diseaseService.fluB(), fluBResult);
-    order.setResult(fluB);
+    _resultRepository.save(fluB);
     order = _testOrderRepo.save(order);
 
     TestEvent event = new TestEvent(order, hasPriorTests);
     _testEventRepo.save(event);
+    covid.setTestEvent(event);
+    _resultRepository.save(covid);
+    fluA.setTestEvent(event);
+    _resultRepository.save(fluA);
+    fluB.setTestEvent(event);
+    _resultRepository.save(fluB);
 
     order.setTestEventRef(event);
     order.markComplete();
@@ -430,7 +443,8 @@ public class TestDataFactory {
 
   public TestEvent doTest(TestOrder order, TestResult result) {
     Result resultEntity = new Result(order, _diseaseService.covid(), result);
-    order.setResult(resultEntity);
+    _resultRepository.save(resultEntity);
+    order.setResultColumn(result);
     TestEvent event = _testEventRepo.save(new TestEvent(order));
     order.setTestEventRef(event);
     order.markComplete();

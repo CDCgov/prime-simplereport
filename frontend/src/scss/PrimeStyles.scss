@@ -1129,3 +1129,14 @@ $results-dropdown-spacing: #{units(4)} - #{units(2)} - 22px - #{units(4)}; // he
   box-shadow: 0 0 0 2px #c9c9c9;
   cursor: not-allowed;
 }
+
+.sr-element__sr-only {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  padding: 0;
+  margin: -1px;
+  overflow: hidden;
+  clip: rect(0, 0, 0, 0);
+  border: 0;
+}
