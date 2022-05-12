@@ -5,7 +5,7 @@ import lombok.Getter;
 
 @AllArgsConstructor
 @Getter
-public class MultiplexTestResult {
+public class DiseaseResult {
   private String diseaseName;
   private TestResult testResult;
 }

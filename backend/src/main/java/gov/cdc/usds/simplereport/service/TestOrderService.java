@@ -24,7 +24,7 @@ import gov.cdc.usds.simplereport.db.model.TestEvent_;
 import gov.cdc.usds.simplereport.db.model.TestOrder;
 import gov.cdc.usds.simplereport.db.model.TestOrder_;
 import gov.cdc.usds.simplereport.db.model.auxiliary.AskOnEntrySurvey;
-import gov.cdc.usds.simplereport.db.model.auxiliary.MultiplexTestResult;
+import gov.cdc.usds.simplereport.db.model.auxiliary.DiseaseResult;
 import gov.cdc.usds.simplereport.db.model.auxiliary.PersonRole;
 import gov.cdc.usds.simplereport.db.model.auxiliary.TestCorrectionStatus;
 import gov.cdc.usds.simplereport.db.model.auxiliary.TestResult;
@@ -40,6 +40,7 @@ import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 import java.util.Map;
+import java.util.Objects;
 import java.util.Optional;
 import java.util.Set;
 import java.util.UUID;
@@ -247,7 +248,7 @@ public class TestOrderService {
     }
   }
 
-  private TestResult getCovidResultFromMultiplexList(List<MultiplexTestResult> results) {
+  private TestResult getCovidResultFromMultiplexList(List<DiseaseResult> results) {
     return results.stream()
         .filter(result -> result.getDiseaseName().equals("COVID-19"))
         .findFirst()
@@ -257,10 +258,7 @@ public class TestOrderService {
 
   @AuthorizationConfiguration.RequirePermissionUpdateTestForTestOrder
   public TestOrder editQueueItemMultiplex(
-      UUID testOrderId,
-      UUID deviceSpecimenTypeId,
-      List<MultiplexTestResult> results,
-      Date dateTested) {
+      UUID testOrderId, UUID deviceSpecimenTypeId, List<DiseaseResult> results, Date dateTested) {
     TestOrder savedOrder =
         editQueueItem(
             testOrderId,
@@ -277,8 +275,39 @@ public class TestOrderService {
   @Transactional(noRollbackFor = {TwilioException.class, ApiException.class})
   public AddTestResultResponse addTestResult(
       UUID deviceSpecimenTypeId, TestResult result, UUID patientId, Date dateTested) {
-    TestOrder savedOrder =
-        saveTestResultToDatabase(deviceSpecimenTypeId, result, patientId, dateTested);
+    Organization org = _os.getCurrentOrganization();
+    Person person = _ps.getPatientNoPermissionsCheck(patientId, org);
+    TestOrder order =
+        _repo.fetchQueueItem(org, person).orElseThrow(TestOrderService::noSuchOrderFound);
+
+    DeviceSpecimenType deviceSpecimen = _dts.getDeviceSpecimenType(deviceSpecimenTypeId);
+
+    lockOrder(order.getInternalId());
+
+    TestOrder savedOrder = null;
+
+    try {
+      order.setDeviceSpecimen(deviceSpecimen);
+      Result resultEntity = updateTestOrderCovidResult(order, result);
+      order.setDateTestedBackdate(dateTested);
+      order.markComplete();
+
+      boolean hasPriorTests = _terepo.existsByPatient(person);
+
+      TestEvent testEvent =
+          order.getCorrectionStatus() == TestCorrectionStatus.ORIGINAL
+              ? new TestEvent(order, hasPriorTests)
+              : new TestEvent(order, order.getCorrectionStatus(), order.getReasonForCorrection());
+
+      TestEvent savedEvent = _terepo.save(testEvent);
+      resultEntity.setTestEvent(savedEvent);
+      _resultRepo.save(resultEntity);
+      order.setTestEventRef(savedEvent);
+      savedOrder = _repo.save(order);
+      _testEventReportingService.report(savedEvent);
+    } finally {
+      unlockOrder(order.getInternalId());
+    }
 
     ArrayList<Boolean> deliveryStatuses = new ArrayList<>();
 
@@ -303,10 +332,7 @@ public class TestOrderService {
 
   @AuthorizationConfiguration.RequirePermissionSubmitTestForPatient
   public AddTestResultResponse addTestResultMultiplex(
-      UUID deviceSpecimenTypeId,
-      List<MultiplexTestResult> results,
-      UUID patientId,
-      Date dateTested) {
+      UUID deviceSpecimenTypeId, List<DiseaseResult> results, UUID patientId, Date dateTested) {
     AddTestResultResponse response =
         addTestResult(
             deviceSpecimenTypeId, getCovidResultFromMultiplexList(results), patientId, dateTested);
@@ -318,46 +344,7 @@ public class TestOrderService {
     return response;
   }
 
-  @AuthorizationConfiguration.RequirePermissionSubmitTestForPatient
-  @Transactional(noRollbackFor = {TwilioException.class, ApiException.class})
-  public TestOrder saveTestResultToDatabase(
-      UUID deviceSpecimenTypeId, TestResult result, UUID patientId, Date dateTested) {
-    Organization org = _os.getCurrentOrganization();
-    Person person = _ps.getPatientNoPermissionsCheck(patientId, org);
-    TestOrder order =
-        _repo.fetchQueueItem(org, person).orElseThrow(TestOrderService::noSuchOrderFound);
-
-    DeviceSpecimenType deviceSpecimen = _dts.getDeviceSpecimenType(deviceSpecimenTypeId);
-
-    lockOrder(order.getInternalId());
-
-    try {
-      order.setDeviceSpecimen(deviceSpecimen);
-      Result resultEntity = updateTestOrderCovidResult(order, result);
-      order.setDateTestedBackdate(dateTested);
-      order.markComplete();
-
-      boolean hasPriorTests = _terepo.existsByPatient(person);
-
-      TestEvent testEvent =
-          order.getCorrectionStatus() == TestCorrectionStatus.ORIGINAL
-              ? new TestEvent(order, hasPriorTests)
-              : new TestEvent(order, order.getCorrectionStatus(), order.getReasonForCorrection());
-
-      TestEvent savedEvent = _terepo.save(testEvent);
-      resultEntity.setTestEvent(savedEvent);
-      _resultRepo.save(resultEntity);
-      order.setTestEventRef(savedEvent);
-      TestOrder savedOrder = _repo.save(order);
-      _testEventReportingService.report(savedEvent);
-
-      return savedOrder;
-    } finally {
-      unlockOrder(order.getInternalId());
-    }
-  }
-
-  private void editMultiplexResults(TestOrder order, List<MultiplexTestResult> newResults) {
+  private void editMultiplexResults(TestOrder order, List<DiseaseResult> newResults) {
     Set<Result> resultsToUpdate = order.getResultSet();
     resultsToUpdate.forEach(
         result -> {
@@ -370,10 +357,11 @@ public class TestOrderService {
     _resultRepo.saveAll(resultsToUpdate);
   }
 
-  private void saveMultiplexResults(
-      TestEvent event, TestOrder order, List<MultiplexTestResult> results) {
+  private void saveMultiplexResults(TestEvent event, TestOrder order, List<DiseaseResult> results) {
     List<Result> resultsToSave =
         results.stream()
+            // Covid result already saved in saveTestResultToDatabase
+            .filter(r -> !Objects.equals(r.getDiseaseName(), _diseaseService.covid().getName()))
             .map(
                 result ->
                     new Result(
@@ -382,8 +370,6 @@ public class TestOrderService {
                         _diseaseService.getDiseaseByName(result.getDiseaseName()),
                         result.getTestResult()))
             .collect(Collectors.toList());
-    // Covid result already saved in saveTestResultToDatabase
-    resultsToSave.removeIf(result -> result.getDisease() == _diseaseService.covid());
     _resultRepo.saveAll(resultsToSave);
   }
 
