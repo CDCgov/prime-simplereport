@@ -19,7 +19,7 @@ const NextSteps = () => {
         </p>
         <a
           className="usa-button width-full margin-top-3"
-          href="https://outlook.office365.com/owa/calendar/Helpdesk@HHSGOV.onmicrosoft.com/bookings/s/HOX7KgZruESJksIgC8qVxQ2"
+          href="https://calendly.com/simplereport-id-verification-sessions/simplereport-id-verification-sessions?back=1&month=2022-05"
         >
           Schedule identity verification
         </a>
