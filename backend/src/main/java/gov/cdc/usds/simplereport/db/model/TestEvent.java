@@ -3,14 +3,19 @@ package gov.cdc.usds.simplereport.db.model;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import gov.cdc.usds.simplereport.db.model.auxiliary.AskOnEntrySurvey;
 import gov.cdc.usds.simplereport.db.model.auxiliary.TestCorrectionStatus;
+import gov.cdc.usds.simplereport.db.model.auxiliary.TestResult;
 import java.util.Date;
+import java.util.Optional;
+import java.util.Set;
 import java.util.UUID;
 import javax.persistence.AttributeOverride;
+import javax.persistence.CascadeType;
 import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.FetchType;
 import javax.persistence.JoinColumn;
 import javax.persistence.ManyToOne;
+import javax.persistence.OneToMany;
 import lombok.Getter;
 import lombok.extern.slf4j.Slf4j;
 import org.hibernate.Hibernate;
@@ -40,6 +45,9 @@ public class TestEvent extends BaseTestInfo {
   @JoinColumn(name = "test_order_id")
   private TestOrder order;
 
+  @OneToMany(mappedBy = "testEvent", cascade = CascadeType.MERGE, fetch = FetchType.LAZY)
+  private Set<Result> results;
+
   @Column(columnDefinition = "uuid")
   private UUID priorCorrectedTestEventId; // used to chain events
 
@@ -54,7 +62,6 @@ public class TestEvent extends BaseTestInfo {
 
   public TestEvent(TestOrder order, Boolean hasPriorTests) {
     super(order.getPatient(), order.getFacility(), order.getDeviceSpecimen(), order.getResult());
-
     // store a link, and *also* store the object as JSON
     // force load the lazy-loaded phone numbers so values are available to the object mapper
     // when serializing `patientData` (phoneNumbers is default lazy-loaded because of `OneToMany`)
@@ -142,5 +149,23 @@ public class TestEvent extends BaseTestInfo {
 
   public DeviceSpecimenType getDeviceSpecimenType() {
     return order.getDeviceSpecimen();
+  }
+
+  // This logic (specifically, the findAny) will need to be updated later on in the multiplex
+  // process - this method is temporary
+  // Eventually, this method will be deprecated in favor of getResultSet()
+  public TestResult getTestResult() {
+    if (this.results != null) {
+      Optional<Result> resultObject = this.results.stream().findAny();
+      if (resultObject.isPresent()) {
+        return resultObject.get().getTestResult();
+      }
+    }
+    return super.getResult();
+  }
+
+  @Override
+  public TestResult getResult() {
+    return getTestResult();
   }
 }
