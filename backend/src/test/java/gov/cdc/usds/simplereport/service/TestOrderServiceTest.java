@@ -5,6 +5,7 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertNotEquals;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
+import static org.junit.jupiter.api.Assertions.assertNull;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.junit.jupiter.api.Assertions.fail;
@@ -968,6 +969,35 @@ class TestOrderServiceTest extends BaseServiceTest<TestOrderService> {
         () ->
             _service.editQueueItem(
                 o.getInternalId(), devA.getInternalId(), TestResult.POSITIVE.toString(), null));
+  }
+
+  @Test
+  @WithSimpleReportOrgAdminUser
+  void editQueueItem_worksWithoutResult() {
+    Organization org = _organizationService.getCurrentOrganization();
+    Facility facility = _organizationService.getFacilities(org).get(0);
+    Person patient = _dataFactory.createFullPerson(org);
+    _personService.updateTestResultDeliveryPreference(
+        patient.getInternalId(), TestResultDeliveryPreference.SMS);
+    TestOrder order =
+        _service.addPatientToQueue(
+            facility.getInternalId(),
+            patient,
+            "",
+            Collections.emptyMap(),
+            LocalDate.of(1865, 12, 25),
+            false);
+    DeviceSpecimenType devA = _dataFactory.getGenericDeviceSpecimen();
+    facility.addDefaultDeviceSpecimen(devA);
+
+    TestOrder updatedOrder =
+        _service.editQueueItem(
+            order.getInternalId(),
+            devA.getInternalId(),
+            null,
+            convertDate(LocalDateTime.of(2022, 5, 9, 12, 30, 0)));
+
+    assertNull(_service.getTestOrder(updatedOrder.getInternalId()).getResult());
   }
 
   @Test
