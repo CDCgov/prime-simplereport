@@ -90,10 +90,7 @@ public class TextMessageStatusService {
     List<PhoneNumber> phoneNumbers =
         _phoneRepo.findAllByNumberAndType(parsePhoneNumber(landlineNumber), PhoneType.MOBILE);
 
-    phoneNumbers.forEach(
-        phoneNumber -> {
-          phoneNumber.setType(PhoneType.LANDLINE);
-        });
+    phoneNumbers.forEach(phoneNumber -> phoneNumber.setType(PhoneType.LANDLINE));
     _phoneRepo.saveAll(phoneNumbers);
   }
 }
