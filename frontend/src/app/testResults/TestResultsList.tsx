@@ -18,7 +18,7 @@ import { DatePicker, Label } from "@trussworks/react-uswds";
 import { useSelector } from "react-redux";
 
 import { PATIENT_TERM_CAP } from "../../config/constants";
-import { displayFullName } from "../utils";
+import { displayFullName, facilityDisplayName } from "../utils";
 import { formatDateWithTimeOption, isValidDate } from "../utils/date";
 import { ActionsMenu } from "../commonComponents/ActionsMenu";
 import { getParameterFromUrl, getUrl } from "../utils/url";
@@ -42,6 +42,8 @@ import { Patient } from "../patients/ManagePatients";
 import SearchResults from "../testQueue/addToQueue/SearchResults";
 import Select from "../commonComponents/Select";
 import { useSelectedFacility } from "../facilitySelect/useSelectedFacility";
+import { appPermissions, hasPermission } from "../permissions";
+import { useGetAllFacilitiesQuery } from "../../generated/graphql";
 
 import TestResultPrintModal from "./TestResultPrintModal";
 import TestResultTextModal from "./TestResultTextModal";
@@ -49,6 +51,8 @@ import EmailTestResultModal from "./EmailTestResultModal";
 import TestResultCorrectionModal from "./TestResultCorrectionModal";
 import TestResultDetailsModal from "./TestResultDetailsModal";
 import DownloadResultsCSVButton from "./DownloadResultsCsvButton";
+
+export const ALL_FACILITIES_ID = "all";
 
 export type Results = keyof typeof TEST_RESULT_DESCRIPTIONS;
 
@@ -163,7 +167,9 @@ function testResultRows(
         <td className="test-result-cell">
           {TEST_RESULT_DESCRIPTIONS[r.result as Results]}
         </td>
-        <td className="test-facility-cell">{r.facility.name}</td>
+        <td className="test-facility-cell">
+          {facilityDisplayName(r.facility.name, r.facility.isDeleted)}
+        </td>
         <td className="test-device-cell">{r.deviceType.name}</td>
         <td className="submitted-by-cell">
           {displayFullName(
@@ -274,11 +280,12 @@ export const DetachedTestResultsList = ({
     runIf: (q) => q.length >= MIN_SEARCH_CHARACTER_COUNT,
   });
 
-  const validFacilities = useSelector(
-    (state) => ((state as any).facilities as Facility[]) || []
-  );
-
   const allowQuery = debounced.length >= MIN_SEARCH_CHARACTER_COUNT;
+
+  const isOrgAdmin = hasPermission(
+    useSelector((state) => (state as any).user.permissions),
+    appPermissions.settings.canView
+  );
 
   const [
     queryPatients,
@@ -286,8 +293,19 @@ export const DetachedTestResultsList = ({
   ] = useLazyQuery(QUERY_PATIENT, {
     fetchPolicy: "no-cache",
     variables: {
-      facilityId: filterParams.filterFacilityId || activeFacilityId,
+      facilityId:
+        filterParams.filterFacilityId === ALL_FACILITIES_ID
+          ? null
+          : filterParams.filterFacilityId || activeFacilityId,
       namePrefixMatch: queryString,
+      includeArchivedFacilities: isOrgAdmin,
+    },
+  });
+
+  const { data: facilitiesData } = useGetAllFacilitiesQuery({
+    fetchPolicy: "no-cache",
+    variables: {
+      showArchived: isOrgAdmin,
     },
   });
 
@@ -423,6 +441,31 @@ export const DetachedTestResultsList = ({
     }
   };
 
+  const viewableFacilities: any[] = (facilitiesData?.facilities || []).filter(
+    (e) => e != null
+  );
+
+  const facilityOptions = (isOrgAdmin
+    ? [
+        {
+          label: "All facilities",
+          value: ALL_FACILITIES_ID,
+        },
+      ]
+    : []
+  ).concat(
+    viewableFacilities
+      .sort((a, b) => {
+        if (a.isDeleted && !b.isDeleted) return 1;
+        if (!a.isDeleted && b.isDeleted) return -1;
+        return 0;
+      })
+      .map((f) => ({
+        label: facilityDisplayName(f.name, !!f.isDeleted),
+        value: f.id,
+      }))
+  );
+
   return (
     <main className="prime-home">
       {detailsModalId && (
@@ -454,9 +497,7 @@ export const DetachedTestResultsList = ({
                   <DownloadResultsCSVButton
                     filterParams={filterParams}
                     totalEntries={totalEntries}
-                    facilityId={
-                      filterParams.filterFacilityId || activeFacilityId
-                    }
+                    activeFacilityId={activeFacilityId}
                   />
                   <Button
                     className="sr-active-button"
@@ -567,17 +608,12 @@ export const DetachedTestResultsList = ({
                     defaultSelect
                     onChange={setFilterParams("role")}
                   />
-                  {validFacilities && validFacilities.length > 1 ? (
+                  {facilityOptions && facilityOptions.length > 1 ? (
                     <Select
                       label="Testing facility"
                       name="facility"
                       value={filterParams.filterFacilityId || activeFacilityId}
-                      options={validFacilities.map((facility) => {
-                        return {
-                          value: facility.id,
-                          label: facility.name,
-                        };
-                      })}
+                      options={facilityOptions}
                       onChange={setFilterParams("filterFacilityId")}
                     />
                   ) : null}
@@ -682,6 +718,7 @@ export const testResultQuery = gql`
       }
       facility {
         name
+        isDeleted
       }
     }
   }
@@ -689,7 +726,7 @@ export const testResultQuery = gql`
 
 export interface ResultsQueryVariables {
   patientId?: string | null;
-  facilityId: string;
+  facilityId: string | null;
   result?: string | null;
   role?: string | null;
   startDate?: string | null;
@@ -755,20 +792,26 @@ const TestResultsList = () => {
   const pageNumber = Number(urlParams.pageNumber) || 1;
 
   const resultsQueryVariables: ResultsQueryVariables = {
-    facilityId: filterFacilityId || activeFacilityId,
+    facilityId:
+      filterFacilityId === ALL_FACILITIES_ID
+        ? null
+        : filterFacilityId || activeFacilityId,
     pageNumber: pageNumber - 1,
     pageSize: entriesPerPage,
     ...queryParams,
   };
   const countQueryVariables: {
     patientId?: string | null;
-    facilityId: string;
+    facilityId: string | null;
     result?: string | null;
     role?: string | null;
     startDate?: string | null;
     endDate?: string | null;
   } = {
-    facilityId: filterFacilityId || activeFacilityId,
+    facilityId:
+      filterFacilityId === ALL_FACILITIES_ID
+        ? null
+        : filterFacilityId || activeFacilityId,
     ...queryParams,
   };
 

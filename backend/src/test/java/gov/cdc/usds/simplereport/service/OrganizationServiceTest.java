@@ -24,6 +24,7 @@ import gov.cdc.usds.simplereport.db.repository.OrganizationRepository;
 import gov.cdc.usds.simplereport.db.repository.PatientRegistrationLinkRepository;
 import gov.cdc.usds.simplereport.test_util.SliceTestConfiguration.WithSimpleReportOrgAdminUser;
 import gov.cdc.usds.simplereport.test_util.SliceTestConfiguration.WithSimpleReportSiteAdminUser;
+import gov.cdc.usds.simplereport.test_util.SliceTestConfiguration.WithSimpleReportStandardUser;
 import gov.cdc.usds.simplereport.test_util.TestDataFactory;
 import java.util.List;
 import java.util.Set;
@@ -164,6 +165,28 @@ class OrganizationServiceTest extends BaseServiceTest<OrganizationService> {
         unverifiedOrgs.stream().map(Organization::getExternalId).collect(Collectors.toSet());
     assertFalse(unverifiedOrgIds.contains(verifiedOrg.getExternalId()));
     assertTrue(unverifiedOrgIds.contains(unverifiedOrg.getExternalId()));
+  }
+
+  @Test
+  @WithSimpleReportOrgAdminUser
+  void viewArchivedFacilities_success() {
+    Organization org = testDataFactory.createValidOrg();
+    Facility deletedFacility = testDataFactory.createArchivedFacility(org, "Delete me");
+
+    Set<Facility> archivedFacilities = _service.getArchivedFacilities(org);
+
+    assertTrue(
+        archivedFacilities.stream()
+            .anyMatch(f -> f.getInternalId().equals(deletedFacility.getInternalId())));
+  }
+
+  @Test
+  @WithSimpleReportStandardUser
+  void viewArchivedFacilities_standardUser_failure() {
+    Organization org = testDataFactory.createValidOrg();
+    Facility deletedFacility = testDataFactory.createArchivedFacility(org, "Delete me");
+
+    assertThrows(AccessDeniedException.class, () -> _service.getArchivedFacilities());
   }
 
   @Test

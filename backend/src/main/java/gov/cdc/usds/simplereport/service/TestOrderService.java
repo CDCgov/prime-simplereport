@@ -77,8 +77,6 @@ public class TestOrderService {
   public static final int DEFAULT_PAGINATION_PAGEOFFSET = 0;
   public static final int DEFAULT_PAGINATION_PAGESIZE = 5000;
 
-  public static final String MISSING_ARG = "Must provide either facility ID or patient ID";
-
   @AuthorizationConfiguration.RequirePermissionStartTestAtFacility
   public List<TestOrder> getQueue(UUID facilityId) {
     Facility fac = _os.getFacilityInCurrentOrg(facilityId);
@@ -99,15 +97,14 @@ public class TestOrderService {
       query.orderBy(cb.desc(root.get(AuditedEntity_.createdAt)));
 
       Predicate p = cb.conjunction();
-      if (facilityId == null && patientId == null) {
-        throw new IllegalGraphqlArgumentException(MISSING_ARG);
-      }
       if (facilityId != null) {
         p =
             cb.and(
                 p,
                 cb.equal(
                     root.get(BaseTestInfo_.facility).get(AuditedEntity_.internalId), facilityId));
+      } else {
+        p = cb.and(p, cb.equal(root.get(BaseTestInfo_.organization), _os.getCurrentOrganization()));
       }
       if (patientId != null) {
         p =
@@ -165,6 +162,23 @@ public class TestOrderService {
     return _terepo
         .findAll(
             buildTestEventSearchFilter(facilityId, patientId, result, role, startDate, endDate),
+            PageRequest.of(pageOffset, pageSize))
+        .toList();
+  }
+
+  @Transactional(readOnly = true)
+  @AuthorizationConfiguration.RequirePermissionViewAllFacilityResults
+  public List<TestEvent> getAllFacilityTestEventsResults(
+      UUID patientId,
+      TestResult result,
+      PersonRole role,
+      Date startDate,
+      Date endDate,
+      int pageOffset,
+      int pageSize) {
+    return _terepo
+        .findAll(
+            buildTestEventSearchFilter(null, patientId, result, role, startDate, endDate),
             PageRequest.of(pageOffset, pageSize))
         .toList();
   }
