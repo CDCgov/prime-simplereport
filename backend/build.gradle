@@ -57,7 +57,11 @@ dependencies {
     implementation 'com.smartystreets.api:smartystreets-java-sdk:3.12.4'
 
     // UI layer dependencies
-    implementation "com.graphql-java-kickstart:graphql-spring-boot-starter:${kickstartVersion}"
+    implementation ("com.graphql-java-kickstart:graphql-spring-boot-starter:${kickstartVersion}"){
+        exclude group: "com.google.guava:guava", module: "guava"
+        exclude group: "org.springframework:spring-webflux", module: "spring-webflux"
+    }
+
     implementation 'com.zhokhov.graphql:graphql-datetime-spring-boot-starter:4.1.0'
     implementation 'org.json:json:20201115'
     implementation 'com.fasterxml.jackson.dataformat:jackson-dataformat-csv'
