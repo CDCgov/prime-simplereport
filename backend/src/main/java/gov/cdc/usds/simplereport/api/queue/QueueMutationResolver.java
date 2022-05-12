@@ -15,6 +15,7 @@ import gov.cdc.usds.simplereport.service.TestOrderService;
 import graphql.kickstart.tools.GraphQLMutationResolver;
 import java.time.LocalDate;
 import java.util.Date;
+import java.util.List;
 import java.util.Map;
 import java.util.UUID;
 import org.json.JSONException;
@@ -50,7 +51,7 @@ public class QueueMutationResolver implements GraphQLMutationResolver {
   public AddTestResultResponse addTestResultMultiplex(
       String deviceID,
       UUID deviceSpecimenType,
-      MultiplexTestResult results,
+      List<MultiplexTestResult> results,
       UUID patientID,
       Date dateTested)
       throws NumberParseException {
@@ -78,7 +79,7 @@ public class QueueMutationResolver implements GraphQLMutationResolver {
       UUID id,
       String deviceId,
       UUID deviceSpecimenType,
-      MultiplexTestResult results,
+      List<MultiplexTestResult> results,
       Date dateTested) {
     UUID dst =
         deviceSpecimenType == null

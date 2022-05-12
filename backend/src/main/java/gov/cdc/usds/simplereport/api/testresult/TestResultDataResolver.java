@@ -73,6 +73,6 @@ public class TestResultDataResolver
   }
 
   public Set<Result> getResults(TestEvent testEvent) {
-    return testEvent.getResultSet();
+    return testEvent.getResults();
   }
 }

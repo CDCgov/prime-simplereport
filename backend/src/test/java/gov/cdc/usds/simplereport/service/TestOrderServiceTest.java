@@ -5,6 +5,7 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertNotEquals;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
+import static org.junit.jupiter.api.Assertions.assertNull;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.junit.jupiter.api.Assertions.fail;
@@ -817,12 +818,12 @@ class TestOrderServiceTest extends BaseServiceTest<TestOrderService> {
 
     // THEN
     List<Result> results = _resultRepository.findAllByTestOrder(res.getTestOrder());
-    assertEquals(results.size(), 1);
+    assertEquals(1, results.size());
 
     Result covidResult =
         _resultRepository.findResultByTestOrderAndDisease(
             res.getTestOrder(), _diseaseService.covid());
-    assertEquals(covidResult.getTestResult(), TestResult.POSITIVE);
+    assertEquals(TestResult.POSITIVE, covidResult.getTestResult());
     assertEquals(
         covidResult.getTestEvent().getInternalId(),
         res.getTestOrder().getTestEvent().getInternalId());
@@ -876,8 +877,8 @@ class TestOrderServiceTest extends BaseServiceTest<TestOrderService> {
     assertEquals(TestResult.POSITIVE, order.getResult());
     Result result =
         _resultRepository.findResultByTestOrderAndDisease(order, _diseaseService.covid());
-    assertEquals(result.getTestResult(), TestResult.POSITIVE);
-    assertEquals(result.getTestEvent(), null);
+    assertEquals(TestResult.POSITIVE, result.getTestResult());
+    assertEquals(null, result.getTestEvent());
     assertEquals(devA.getDeviceType().getInternalId(), order.getDeviceType().getInternalId());
   }
 
@@ -971,6 +972,35 @@ class TestOrderServiceTest extends BaseServiceTest<TestOrderService> {
   }
 
   @Test
+  @WithSimpleReportOrgAdminUser
+  void editQueueItem_worksWithoutResult() {
+    Organization org = _organizationService.getCurrentOrganization();
+    Facility facility = _organizationService.getFacilities(org).get(0);
+    Person patient = _dataFactory.createFullPerson(org);
+    _personService.updateTestResultDeliveryPreference(
+        patient.getInternalId(), TestResultDeliveryPreference.SMS);
+    TestOrder order =
+        _service.addPatientToQueue(
+            facility.getInternalId(),
+            patient,
+            "",
+            Collections.emptyMap(),
+            LocalDate.of(1865, 12, 25),
+            false);
+    DeviceSpecimenType devA = _dataFactory.getGenericDeviceSpecimen();
+    facility.addDefaultDeviceSpecimen(devA);
+
+    TestOrder updatedOrder =
+        _service.editQueueItem(
+            order.getInternalId(),
+            devA.getInternalId(),
+            null,
+            convertDate(LocalDateTime.of(2022, 5, 9, 12, 30, 0)));
+
+    assertNull(_service.getTestOrder(updatedOrder.getInternalId()).getResult());
+  }
+
+  @Test
   @WithSimpleReportStandardUser
   void fetchTestEventsResults_standardUser_successDependsOnFacilityAccess() {
     Organization org = _organizationService.getCurrentOrganization();
@@ -1058,7 +1088,7 @@ class TestOrderServiceTest extends BaseServiceTest<TestOrderService> {
     _dataFactory.createTestEvent(p, facility);
     _dataFactory.createTestEvent(p, facility);
 
-    // count queries again and make queries made didn't increase
+    // count queries again and make sure queries made didn't increase
     startQueryCount = _hibernateQueryInterceptor.getQueryCount();
     int secondQueryResults =
         _service

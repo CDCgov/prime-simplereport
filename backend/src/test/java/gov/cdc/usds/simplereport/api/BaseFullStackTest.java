@@ -55,7 +55,7 @@ public abstract class BaseFullStackTest {
   @Autowired protected DemoOktaRepository _oktaRepo;
   @SpyBean AuditLoggerService auditLoggerServiceSpy;
   @Captor private ArgumentCaptor<ConsoleApiAuditEvent> auditLogCaptor;
-  @Autowired private DiseaseService _diseaseService;
+  @Autowired protected DiseaseService _diseaseService;
   @Autowired private SupportedDiseaseRepository _diseaseRepo;
 
   protected Date _testStart;

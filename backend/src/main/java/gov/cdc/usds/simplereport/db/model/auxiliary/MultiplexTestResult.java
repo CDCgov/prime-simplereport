@@ -6,7 +6,6 @@ import lombok.Getter;
 @AllArgsConstructor
 @Getter
 public class MultiplexTestResult {
-  private TestResult covid19;
-  private TestResult fluA;
-  private TestResult fluB;
+  private String diseaseName;
+  private TestResult testResult;
 }
