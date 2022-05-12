@@ -37,12 +37,23 @@ public class SmsCallbackController {
     webhookContextHolder.setIsWebhook(true);
     SmsStatusCallback body = mapToTextMessageSent(paramMap);
     statusService.saveTextMessageStatus(body.getMessageSid(), body.getMessageStatus());
+
+    if (body.getErrorCode().equals("30006")) {
+      statusService.handleLandlineError(body.getMessageSid(), body.getNumber());
+    }
   }
 
   private SmsStatusCallback mapToTextMessageSent(MultiValueMap<String, String> paramMap) {
     HashMap<String, Object> newMap = new HashMap<>();
-    Arrays.asList(new String[] {"MessageSid", "MessageStatus"})
-        .forEach(k -> newMap.put(k, paramMap.get(k).get(0)));
+    Arrays.asList(new String[] {"MessageSid", "MessageStatus", "ErrorCode", "To"})
+        .forEach(
+            k -> {
+              if (paramMap.containsKey(k)) {
+                newMap.put(k, paramMap.get(k).get(0));
+              } else {
+                newMap.put(k, "");
+              }
+            });
 
     return new ObjectMapper().convertValue(newMap, SmsStatusCallback.class);
   }
