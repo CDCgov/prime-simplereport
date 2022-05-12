@@ -33,14 +33,18 @@ public class DiseaseService {
   }
 
   public SupportedDisease getDiseaseByName(String name) {
-    if (name.contains("COVID")) {
-      return covid;
-    } else if (name.contains("Flu A")) {
-      return fluA;
-    } else if (name.contains("Flu B")) {
-      return fluB;
+    switch (name) {
+      case "COVID-19":
+        return covid;
+      case "Flu A":
+        return fluA;
+      case "Flu B":
+        return fluB;
+      default:
+        return _supportedDiseaseRepo
+            .findByName(name)
+            .orElseThrow(() -> new IllegalArgumentException("Disease not found"));
     }
-    return _supportedDiseaseRepo.findSupportedDiseaseByNameContains(name);
   }
 
   public SupportedDisease covid() {
