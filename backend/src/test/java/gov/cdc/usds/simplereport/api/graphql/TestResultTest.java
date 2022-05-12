@@ -14,7 +14,7 @@ import gov.cdc.usds.simplereport.db.model.DeviceType;
 import gov.cdc.usds.simplereport.db.model.Facility;
 import gov.cdc.usds.simplereport.db.model.Organization;
 import gov.cdc.usds.simplereport.db.model.Person;
-import gov.cdc.usds.simplereport.db.model.auxiliary.MultiplexTestResult;
+import gov.cdc.usds.simplereport.db.model.auxiliary.DiseaseResult;
 import gov.cdc.usds.simplereport.db.model.auxiliary.TestResult;
 import gov.cdc.usds.simplereport.service.OrganizationService;
 import gov.cdc.usds.simplereport.service.sms.SmsService;
@@ -106,10 +106,10 @@ class TestResultTest extends BaseGraphqlTest {
     _dataFactory.createTestOrder(p, _site);
     String dateTested = "2020-12-31T14:30:30.001Z";
 
-    List<MultiplexTestResult> results = new ArrayList<>();
-    results.add(new MultiplexTestResult(_diseaseService.covid().getName(), TestResult.POSITIVE));
-    results.add(new MultiplexTestResult(_diseaseService.fluA().getName(), TestResult.POSITIVE));
-    results.add(new MultiplexTestResult(_diseaseService.fluB().getName(), TestResult.POSITIVE));
+    List<DiseaseResult> results = new ArrayList<>();
+    results.add(new DiseaseResult(_diseaseService.covid().getName(), TestResult.POSITIVE));
+    results.add(new DiseaseResult(_diseaseService.fluA().getName(), TestResult.POSITIVE));
+    results.add(new DiseaseResult(_diseaseService.fluB().getName(), TestResult.POSITIVE));
 
     ObjectNode variables =
         JsonNodeFactory.instance

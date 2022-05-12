@@ -6,7 +6,7 @@ import com.google.i18n.phonenumbers.NumberParseException;
 import gov.cdc.usds.simplereport.api.model.AddTestResultResponse;
 import gov.cdc.usds.simplereport.api.model.ApiTestOrder;
 import gov.cdc.usds.simplereport.db.model.TestOrder;
-import gov.cdc.usds.simplereport.db.model.auxiliary.MultiplexTestResult;
+import gov.cdc.usds.simplereport.db.model.auxiliary.DiseaseResult;
 import gov.cdc.usds.simplereport.db.model.auxiliary.TestResult;
 import gov.cdc.usds.simplereport.db.model.auxiliary.TestResultDeliveryPreference;
 import gov.cdc.usds.simplereport.service.DeviceTypeService;
@@ -51,7 +51,7 @@ public class QueueMutationResolver implements GraphQLMutationResolver {
   public AddTestResultResponse addTestResultMultiplex(
       String deviceID,
       UUID deviceSpecimenType,
-      List<MultiplexTestResult> results,
+      List<DiseaseResult> results,
       UUID patientID,
       Date dateTested)
       throws NumberParseException {
@@ -79,7 +79,7 @@ public class QueueMutationResolver implements GraphQLMutationResolver {
       UUID id,
       String deviceId,
       UUID deviceSpecimenType,
-      List<MultiplexTestResult> results,
+      List<DiseaseResult> results,
       Date dateTested) {
     UUID dst =
         deviceSpecimenType == null

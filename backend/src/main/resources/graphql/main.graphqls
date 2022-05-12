@@ -293,7 +293,7 @@ type PendingOrganization {
   createdAt: DateTime!
 }
 
-input MultiplexTestResult {
+input DiseaseResult {
   diseaseName: String
   testResult: String
 }
@@ -595,7 +595,7 @@ type Mutation {
   addTestResultMultiplex(
     deviceId: String!
     deviceSpecimenType: ID
-    results: [MultiplexTestResult]!
+    results: [DiseaseResult]!
     patientId: ID!
     dateTested: DateTime
   ): AddTestResultResponse @requiredPermissions(allOf: ["SUBMIT_TEST"])
@@ -610,7 +610,7 @@ type Mutation {
     id: ID!
     deviceId: String
     deviceSpecimenType: ID
-    results: [MultiplexTestResult]
+    results: [DiseaseResult]
     dateTested: DateTime
   ): TestOrder @requiredPermissions(allOf: ["UPDATE_TEST"])
   correctTestMarkAsError(id: ID!, reason: String): TestResult
