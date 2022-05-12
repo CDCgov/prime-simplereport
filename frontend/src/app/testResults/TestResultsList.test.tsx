@@ -781,6 +781,7 @@ const mocks = [
           },
           symptoms: "{}",
           symptomOnset: null,
+          pregnancy: null,
           __typename: "TestResult",
         },
       },
@@ -1334,14 +1335,26 @@ describe("TestResultsList", () => {
       ).toHaveValue("");
     });
 
-    it("opens the test detail view", async () => {
+    it("opens the test detail modal from the patient's name", async () => {
+      expect(
+        await screen.findByText("Cragell, Barb Whitaker")
+      ).toBeInTheDocument();
+      const patientNameLink = await screen.findByText("Cragell, Barb Whitaker");
+      userEvent.click(patientNameLink);
+      expect(screen.queryAllByText("Test details").length).toBe(2);
+      expect(
+        await screen.findByText("Barb Whitaker Cragell")
+      ).toBeInTheDocument();
+    });
+
+    it("opens the test detail modal from the actions menu", async () => {
       expect(await screen.findByText("Showing 1-3 of 3")).toBeInTheDocument();
       expect(
         await screen.findByText("Test Results", { exact: false })
       ).toBeInTheDocument();
       const moreActions = within(screen.getByRole("table")).getAllByRole(
         "button"
-      )[0];
+      )[1];
       userEvent.click(moreActions);
       const viewDetails = await screen.findByText("View details");
       userEvent.click(viewDetails);
@@ -1355,7 +1368,7 @@ describe("TestResultsList", () => {
       ).toBeInTheDocument();
       const moreActions = within(screen.getByRole("table")).getAllByRole(
         "button"
-      )[0];
+      )[1];
       userEvent.click(moreActions);
       const emailResult = screen.getByText("Email result");
       userEvent.click(emailResult);
@@ -1452,7 +1465,7 @@ describe("TestResultsList", () => {
         ).toBeInTheDocument();
         const moreActions = within(screen.getByRole("table")).getAllByRole(
           "button"
-        )[1];
+        )[0];
         userEvent.click(moreActions);
         expect(screen.queryByText("Email result")).not.toBeInTheDocument();
       });
