@@ -32,18 +32,4 @@ public class WebConfiguration implements WebMvcConfigurer {
   public void addInterceptors(InterceptorRegistry registry) {
     registry.addInterceptor(_loggingInterceptor);
   }
-
-  /**
-   * We want (at least for now) to be able to lazy-load JPA relationships in the graphql resolver,
-   * even after exiting service-layer transactions.
-   *
-   * <p>Since the graphql servlet does not register a handler with Spring, the Spring
-   * HandlerInterceptor does not work: instead, register a servlet filter with the same effect.
-   *
-   * @return
-   */
-  //  @Bean
-  //  public FilterRegistrationBean<OpenEntityManagerInViewFilter> openInViewFilter() {
-  //    return new FilterRegistrationBean<>(new OpenEntityManagerInViewFilter());
-  //  }
 }

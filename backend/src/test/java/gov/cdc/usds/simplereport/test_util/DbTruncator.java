@@ -40,11 +40,6 @@ public class DbTruncator {
           + "END "
           + "$func$;";
 
-  private static final String TRUNCATE_SPRING_SESSION =
-      "truncate table simple_report.spring_session cascade;";
-  private static final String TRUNCATE_SPRING_SESSION_ATTRIBUTES =
-      "truncate table simple_report.spring_session_attributes cascade;";
-
   @Autowired private JdbcTemplate jdbc;
 
   /* (non-Javadoc)
@@ -54,11 +49,5 @@ public class DbTruncator {
   public void truncateAll() {
     log.info("Truncating all non-liquibase tables in {}", hibernateSchema);
     jdbc.execute(String.format(TRUNCATE_FUNCTION_TEMPLATE, hibernateSchema));
-  }
-
-  @Transactional
-  public void truncateSpringSession() {
-    jdbc.execute(TRUNCATE_SPRING_SESSION);
-    jdbc.execute(TRUNCATE_SPRING_SESSION_ATTRIBUTES);
   }
 }
