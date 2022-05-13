@@ -64,13 +64,6 @@ public interface TestEventRepository
 
   List<TestEvent> findAllByInternalIdIn(Collection<UUID> ids);
 
-  // @Query("FROM #{#entityName} q WHERE q.facility = :facility and q.createdAt >
-  // :newerThanDate
-  // ORDER BY q.createdAt DESC")
-  // @EntityGraph(attributePaths = {"patient", "order", "order.patientLink"})
-  // public List<TestEvent> getTestEventResults(Facility facility, Date
-  // newerThanDate);
-
   Page<TestEvent> findAll(Specification<TestEvent> searchSpec, Pageable p);
 
   long count(Specification<TestEvent> searchSpec);
