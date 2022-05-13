@@ -143,4 +143,6 @@ logging:
 hibernate.query.interceptor.error-level: ERROR
 data-hub:
   url: https://staging.prime.cdc.gov
+  organization: simple_report
   api-key:
+  signing-key:

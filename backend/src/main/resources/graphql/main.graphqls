@@ -167,7 +167,7 @@ type ApiUserWithStatus {
 }
 
 type UploadSubmission {
-  internalId: ID!
+  internalId: ID
   createdAt: DateTime!
   reportId: ID!
   status: UploadStatus!
