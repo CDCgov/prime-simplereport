@@ -594,14 +594,4 @@ public class ApiUserService {
     ApiUser apiUser = getCurrentApiUser();
     return _tenantService.getTenantDataAccessAuthorities(apiUser);
   }
-
-  // to replace CurrentTenantDataAccessContextHolder.getUsername()
-  public String getUsername() {
-    return getCurrentApiUserInContainedTransaction().getLoginEmail();
-  }
-
-  // to replace CurrentTenantDataAccessContextHolder.getAuthorities()
-  public Set<String> getAuthorities() {
-    return getTenantDataAccessAuthoritiesForCurrentUser();
-  }
 }
