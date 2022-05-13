@@ -122,7 +122,6 @@ public abstract class BaseGraphqlTest extends BaseFullStackTest {
 
   @BeforeEach
   public void setup() {
-    truncateSpringSession();
     truncateDb();
     _oktaRepo.reset();
     when(_addressValidation.getValidatedAddress(any(), any()))
@@ -146,9 +145,7 @@ public abstract class BaseGraphqlTest extends BaseFullStackTest {
 
   @AfterEach
   public void cleanup() {
-    truncateSpringSession();
     truncateDb();
-
     _userName = null;
     _oktaRepo.reset();
 

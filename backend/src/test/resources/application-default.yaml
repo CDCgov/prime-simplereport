@@ -23,9 +23,6 @@ spring:
     properties:
       hibernate:
         default_schema: simple_report
-        show_sql: true
-        use_sql_comments: true
-        format_sql: true
 okta:
   client:
     org-url: http://localhost:8088
@@ -51,7 +48,6 @@ logging:
     # com.okta: DEBUG
     # org.springframework.security: DEBUG
     org.springframework.web.client.RestTemplate: DEBUG
-    gov.cdc.usds.simplereport.service.AuditService: OFF
 simple-report:
   authorization:
     environment-name: "UNITTEST"
