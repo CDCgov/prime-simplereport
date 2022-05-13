@@ -1,36 +1,23 @@
 import { useParams } from "react-router-dom";
 import moment from "moment";
-
-//import { LoadingCard } from "../../commonComponents/LoadingCard/LoadingCard";
-//import { gql, useQuery } from "@apollo/client";
 import { useSelector } from "react-redux";
 
-import {
-  UploadStatus,
-  UploadSubmission,
-} from "../../../generated/graphql";
+import { LoadingCard } from "../../commonComponents/LoadingCard/LoadingCard";
+import { useGetUploadSubmissionQuery } from "../../../generated/graphql";
 
 const Submission = () => {
   const urlParams = useParams();
   const reportId = urlParams.id || "";
 
-  const submission: UploadSubmission = {
-    reportId: "12b86a9d-a9d6-4391-a555-6618e8ac66d9",
-    internalId: "barfoo",
-    status: UploadStatus.Success,
-    recordsCount: "2",
-    createdAt: Date.now(),
-  };
   const organization = useSelector(
     (state) => (state as any).organization as Organization
   );
 
-  /*
   const { data: submission, loading, error } = useGetUploadSubmissionQuery({
     fetchPolicy: "no-cache",
     variables: {
-      id: reportId
-    }
+      id: reportId,
+    },
   });
 
   if (loading) {
@@ -40,9 +27,8 @@ const Submission = () => {
   if (error) {
     throw error;
   }
-*/
 
-  const transmissionTimestamp = moment(submission?.createdAt);
+  const transmissionTimestamp = moment(submission?.uploadSubmission.createdAt);
   const transmissionDate = transmissionTimestamp.format("DD MMM YYYY");
   const transmissionTime = transmissionTimestamp.format("k:mm");
 
@@ -69,7 +55,7 @@ const Submission = () => {
             <div className="usa-card__body">
               <div className="display-flex flex-column margin-top-2 margin-bottom-2">
                 <span className="text-base">Report ID</span>
-                <td>{submission?.reportId}</td>
+                <td>{submission?.uploadSubmission.reportId}</td>
               </div>
               <div className="display-flex flex-column"></div>
               <h2>{organization.name}</h2>
@@ -88,7 +74,7 @@ const Submission = () => {
               </div>
               <div className="display-flex flex-column margin-bottom-4">
                 <span className="text-base">Records</span>
-                <span>{submission.recordsCount}</span>
+                <span>{submission?.uploadSubmission.recordsCount}</span>
               </div>
             </div>
           </div>
