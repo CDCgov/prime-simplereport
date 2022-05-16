@@ -3916,23 +3916,59 @@ databaseChangeLog:
             replaceIfExists: true
             fullDefinition: false
             selectQuery: SELECT id, event_timestamp, request_id, api_user_id, is_admin_user, user_permissions, organization_id, patient_link_id, response_code FROM ${database.defaultSchemaName}.api_audit_event
-        - sql: 
+        - sql: |
             GRANT SELECT ON TABLE ${database.defaultSchemaName}.api_audit_event_no_phi TO ${noPhiUsername};
   - changeSet:
-      id: update-no-phi-user-view-of-org-queue-table
-      author: bob@skylight.digital
-      comment: Add the organization_queue's is_deleted column to the view permissions of the no-phi-user so we can see it in metabase
+      id: modify-upload-table
+      author: dsass@skylight.digital
+      comment: remove facility id column and change data type of error and warning columns to json
       changes:
-         - tagDatabase:
-            tag: update-no-phi-user-view-of-org-queue-table
-         - createView:
-            viewName: org_queue_no_phi_is_deleted
-            remarks: A subset of the organization_queue table with columns containing PHI removed.
-            replaceIfExists: true
-            fullDefinition: false
-            selectQuery: SELECT internal_id, created_at, updated_at, organization_name, organization_external_id, verified_organization_id, is_deleted FROM ${database.defaultSchemaName}.organization_queue
-         - sql: 
-            sql: GRANT SELECT ON ${database.defaultSchemaName}.org_queue_no_phi_is_deleted TO ${noPhiUsername};
+        - tagDatabase:
+            tag: alter-upload-table
+        - dropColumn:
+            tableName: upload
+            columnName: facility_id
+        - modifyDataType:
+            tableName: upload
+            columnName: errors
+            newDataType: jsonb
+        - modifyDataType:
+            tableName: upload
+            columnName: warnings
+            newDataType: jsonb
       rollback:
-        - dropView:
-            viewName: org_queue_no_phi_is_deleted
+        - addColumn:
+            tableName: upload
+            columns:
+              - column:
+                  name: facility_id
+                  remarks: The facility id that uploaded the data.
+                  type: uuid
+                  constraints:
+                    nullable: false
+                    foreignKeyName: fk__upload__facility
+                    references: facility(internal_id)
+        - sql:
+            sql: |
+              ALTER TABLE ${database.defaultSchemaName}.upload ALTER COLUMN errors TYPE text;
+              ALTER TABLE ${database.defaultSchemaName}.upload ALTER COLUMN warnings TYPE text;
+  - changeSet:
+        id: update-no-phi-user-view-of-org-queue-table
+        author: bob@skylight.digital
+        comment: Add the organization_queue's is_deleted column to the view permissions of the no-phi-user so we can see it in metabase
+        changes:
+          - tagDatabase:
+              tag: update-no-phi-user-view-of-org-queue-table
+          - createView:
+              viewName: org_queue_no_phi_is_deleted
+              remarks: A subset of the organization_queue table with columns containing PHI removed.
+              replaceIfExists: true
+              fullDefinition: false
+              selectQuery: SELECT internal_id, created_at, updated_at, organization_name, organization_external_id, verified_organization_id, is_deleted FROM ${database.defaultSchemaName}.organization_queue
+          - sql: 
+              sql: GRANT SELECT ON ${database.defaultSchemaName}.org_queue_no_phi_is_deleted TO ${noPhiUsername};
+        rollback:
+          - dropView:
+              viewName: org_queue_no_phi_is_deleted
+          - sql: |
+              GRANT SELECT ON TABLE ${database.defaultSchemaName}.api_audit_event_no_phi TO ${noPhiUsername};
