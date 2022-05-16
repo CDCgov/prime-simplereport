@@ -71,6 +71,29 @@ class OrganizationFacilityTest extends BaseGraphqlTest {
   }
 
   @Test
+  void getFacilities_success() {
+    TestUserIdentities.withUser(
+        TestUserIdentities.ORG_ADMIN_USER,
+        () -> {
+          Organization org = _orgService.getCurrentOrganizationNoCache();
+          Facility validFacility = _orgService.getFacilities(org).get(0);
+          Facility archivedFacility = _dataFactory.createArchivedFacility(org, "archived facility");
+          ObjectNode variables = JsonNodeFactory.instance.objectNode().put("showArchived", true);
+          useOrgAdmin();
+          JsonNode showArchivedResult = runQuery("facilities-query", variables).get("facilities");
+          List<String> showArchivedResultIds = showArchivedResult.findValuesAsText("id");
+          assertTrue(showArchivedResultIds.contains(validFacility.getInternalId().toString()));
+          assertTrue(showArchivedResultIds.contains(archivedFacility.getInternalId().toString()));
+
+          variables.put("showArchived", false);
+          JsonNode noArchivedResult = runQuery("facilities-query", variables).get("facilities");
+          List<String> noArchivedResultIds = noArchivedResult.findValuesAsText("id");
+          assertTrue(noArchivedResultIds.contains(validFacility.getInternalId().toString()));
+          assertFalse(noArchivedResultIds.contains(archivedFacility.getInternalId().toString()));
+        });
+  }
+
+  @Test
   void createOrganization_orgUser_failure() {
     runQuery("organization-create", getDeviceArgs(), ACCESS_ERROR);
   }

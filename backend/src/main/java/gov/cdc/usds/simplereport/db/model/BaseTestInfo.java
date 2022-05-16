@@ -71,6 +71,7 @@ public abstract class BaseTestInfo extends AuditedEntity implements Organization
     this.deviceSpecimen = deviceSpecimen;
     this.deviceType = deviceSpecimen.getDeviceType();
     this.specimenType = deviceSpecimen.getSpecimenType();
+    // Remove this call as part of #3664
     this.result = result;
     this.correctionStatus = TestCorrectionStatus.ORIGINAL;
   }
@@ -128,7 +129,7 @@ public abstract class BaseTestInfo extends AuditedEntity implements Organization
   }
 
   protected void setTestResult(TestResult newResult) {
-    result = newResult;
+    this.result = newResult;
   }
 
   protected void setDeviceSpecimen(DeviceSpecimenType deviceSpecimen) {
