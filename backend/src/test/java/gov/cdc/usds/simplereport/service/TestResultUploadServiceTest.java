@@ -25,12 +25,11 @@ public class TestResultUploadServiceTest {
   @MockBean TestResultUploadRepository repo;
   @MockBean OrganizationService orgSvc;
   @MockBean TokenAuthenticationService tokenSvc;
-  @MockBean ObjectMapper mapper;
   private TestResultUploadService sut;
 
   @BeforeEach
   public void init() {
-    sut = new TestResultUploadService(repo, dataHubClient, orgSvc, mapper, tokenSvc);
+    sut = new TestResultUploadService(repo, dataHubClient, orgSvc, tokenSvc);
   }
 
   @Test

@@ -1,6 +1,5 @@
 package gov.cdc.usds.simplereport.service;
 
-import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import gov.cdc.usds.simplereport.api.model.errors.IllegalGraphqlArgumentException;
 import gov.cdc.usds.simplereport.api.model.errors.InvalidBulkTestResultUploadException;
@@ -21,7 +20,6 @@ import java.util.Map;
 import java.util.UUID;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.json.JSONArray;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -34,7 +32,6 @@ public class TestResultUploadService {
   private final TestResultUploadRepository _repo;
   private final DataHubClient _client;
   private final OrganizationService _orgService;
-  private final ObjectMapper _mapper;
   private final TokenAuthenticationService _tokenService;
 
   @Value("${data-hub.url}")
@@ -50,8 +47,6 @@ public class TestResultUploadService {
     TestResultUpload result = new TestResultUpload(UploadStatus.FAILURE);
 
     Organization org = _orgService.getCurrentOrganization();
-    Facility facility =
-        _orgService.getFacilityInCurrentOrg(facilityId); // todo maybe get rid of facility?
 
     byte[] content;
     try {
@@ -64,25 +59,18 @@ public class TestResultUploadService {
     if (content.length > 0) {
       response = _client.uploadCSV(content);
     }
-    String warnings = null, errors = null;
 
     if (response != null) {
-      try {
-        warnings = _mapper.writeValueAsString(response.getWarnings());
-        errors = _mapper.writeValueAsString(response.getErrors());
-      } catch (JsonProcessingException e) {
-        throw new RuntimeException(e);
-      }
       var status = parseStatus(response.getOverallStatus());
+
       result =
           new TestResultUpload(
               response.getId(),
               status,
               response.getReportItemCount(),
               org,
-              facility,
-              warnings,
-              errors);
+              response.getWarnings(),
+              response.getErrors());
 
       _repo.save(result);
     }
@@ -133,8 +121,7 @@ public class TestResultUploadService {
         this.parseStatus(response.getOverallStatus()),
         response.getReportItemCount(),
         org,
-        null,
-        new JSONArray(response.getWarnings()).toString(),
-        new JSONArray(response.getErrors()).toString());
+        response.getWarnings(),
+        response.getErrors());
   }
 }

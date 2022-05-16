@@ -1,6 +1,8 @@
 package gov.cdc.usds.simplereport.service.model.reportstream;
 
-public class FeedbackMessage {
+import java.io.Serializable;
+
+public class FeedbackMessage implements Serializable {
   public String scope;
   public String message;
 }
