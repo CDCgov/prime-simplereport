@@ -4,15 +4,13 @@ import gov.cdc.usds.simplereport.api.Translators;
 import gov.cdc.usds.simplereport.api.model.OrganizationLevelDashboardMetrics;
 import gov.cdc.usds.simplereport.api.model.TopLevelDashboardMetrics;
 import gov.cdc.usds.simplereport.api.model.errors.InvalidBulkTestResultUploadException;
-import gov.cdc.usds.simplereport.db.model.BulkTestResultUpload;
 import gov.cdc.usds.simplereport.db.model.TestEvent;
+import gov.cdc.usds.simplereport.db.model.TestResultUpload;
 import gov.cdc.usds.simplereport.service.TestOrderService;
 import gov.cdc.usds.simplereport.service.TestResultUploadService;
+import gov.cdc.usds.simplereport.service.errors.InvalidRSAPrivateKeyException;
 import graphql.kickstart.tools.GraphQLMutationResolver;
 import graphql.kickstart.tools.GraphQLQueryResolver;
-import java.io.IOException;
-import java.security.NoSuchAlgorithmException;
-import java.security.spec.InvalidKeySpecException;
 import java.util.Date;
 import java.util.List;
 import java.util.UUID;
@@ -96,13 +94,8 @@ public class TestResultResolver implements GraphQLQueryResolver, GraphQLMutation
     return tos.getTopLevelDashboardMetrics(facilityId, startDate, endDate);
   }
 
-  public BulkTestResultUpload getUploadSubmission(UUID id)
-      throws InvalidBulkTestResultUploadException, IOException, NoSuchAlgorithmException,
-          InvalidKeySpecException {
-    try {
-      return testResultUploadService.getUploadSubmission(id);
-    } catch (InvalidBulkTestResultUploadException e) {
-      throw e;
-    }
+  public TestResultUpload getUploadSubmission(UUID id)
+      throws InvalidBulkTestResultUploadException, InvalidRSAPrivateKeyException {
+    return testResultUploadService.getUploadSubmission(id);
   }
 }

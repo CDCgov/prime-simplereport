@@ -1,7 +1,5 @@
 package gov.cdc.usds.simplereport.service;
 
-import com.fasterxml.jackson.core.JsonProcessingException;
-import com.fasterxml.jackson.databind.ObjectMapper;
 import gov.cdc.usds.simplereport.api.model.errors.IllegalGraphqlArgumentException;
 import gov.cdc.usds.simplereport.api.model.errors.InvalidBulkTestResultUploadException;
 import gov.cdc.usds.simplereport.config.AuthorizationConfiguration;
@@ -14,27 +12,19 @@ import gov.cdc.usds.simplereport.service.model.reportstream.ReportStreamStatus;
 import gov.cdc.usds.simplereport.db.model.BulkTestResultUpload;
 import gov.cdc.usds.simplereport.db.model.Facility;
 import gov.cdc.usds.simplereport.db.model.Organization;
+import gov.cdc.usds.simplereport.db.model.TestResultUpload;
 import gov.cdc.usds.simplereport.db.model.auxiliary.UploadStatus;
-import gov.cdc.usds.simplereport.db.repository.UploadRepository;
+import gov.cdc.usds.simplereport.db.repository.TestResultUploadRepository;
+import gov.cdc.usds.simplereport.service.errors.InvalidRSAPrivateKeyException;
 import gov.cdc.usds.simplereport.service.model.reportstream.TokenResponse;
 import gov.cdc.usds.simplereport.service.model.reportstream.UploadResponse;
-import io.jsonwebtoken.Jwts;
 import java.io.IOException;
 import java.io.InputStream;
-import java.io.StringReader;
-import java.security.KeyFactory;
-import java.security.NoSuchAlgorithmException;
-import java.security.interfaces.RSAPrivateKey;
-import java.security.spec.InvalidKeySpecException;
-import java.security.spec.PKCS8EncodedKeySpec;
-import java.util.Date;
 import java.util.LinkedHashMap;
 import java.util.Map;
 import java.util.UUID;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.bouncycastle.openssl.PEMKeyPair;
-import org.bouncycastle.openssl.PEMParser;
 import org.json.JSONArray;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
@@ -49,15 +39,13 @@ public class TestResultUploadService {
   private final DataHubClient _client;
   private final OrganizationService _orgService;
   private final ObjectMapper _mapper;
+  private final TokenAuthenticationService _tokenService;
 
   @Value("${data-hub.url}")
   private String dataHubUrl;
 
   @Value("${data-hub.organization}")
   private String organization;
-
-  @Value("${data-hub.signing-key}")
-  private String signingKey;
 
   // TODO: see if we need this, hard to tell
   private UploadStatus getUploadStatus(String status) {
@@ -137,39 +125,18 @@ public class TestResultUploadService {
     }
   }
 
-  public BulkTestResultUpload getUploadSubmission(UUID id)
-      throws InvalidBulkTestResultUploadException, IOException, NoSuchAlgorithmException,
-          InvalidKeySpecException {
+  public TestResultUpload getUploadSubmission(UUID id)
+      throws InvalidBulkTestResultUploadException, InvalidRSAPrivateKeyException {
     Organization org = _orgService.getCurrentOrganization();
 
-    BulkTestResultUpload result =
+    TestResultUpload result =
         _repo
             .findByInternalIdAndOrganization(id, org)
             .orElseThrow(InvalidBulkTestResultUploadException::new);
 
-    // TODO: move this
-    PEMParser pemParser = new PEMParser(new StringReader(signingKey));
-    PEMKeyPair keypair = (PEMKeyPair) pemParser.readObject();
-    byte[] encoded = keypair.getPrivateKeyInfo().getEncoded();
-    var kf = KeyFactory.getInstance("RSA");
-    var spec = new PKCS8EncodedKeySpec(encoded);
-    var key = (RSAPrivateKey) kf.generatePrivate(spec);
+    var token = _tokenService.createDataHubSenderToken();
 
-    String scope = organization + ".default";
-    String reportingScope = scope + ".report";
-
-    var token =
-        Jwts.builder()
-            .setHeaderParam("kid", scope)
-            .setHeaderParam("typ", "JWT")
-            .setIssuer(scope)
-            .setSubject(scope)
-            .setAudience(dataHubUrl)
-            .setId(UUID.randomUUID().toString())
-            .setExpiration(new Date(System.currentTimeMillis() + 300 * 1000)) // exp - default 5 min
-            .setIssuedAt(new Date())
-            .signWith(key)
-            .compact();
+    String reportingScope = organization + ".default.report";
 
     Map<String, String> queryParams = new LinkedHashMap<>();
     queryParams.put("scope", reportingScope);
@@ -181,13 +148,13 @@ public class TestResultUploadService {
     UploadResponse response =
         _client.getSubmission(result.getReportId().toString(), r.access_token);
 
-    return new BulkTestResultUpload(
-      response.id,
-      this.getUploadStatus(response.overallStatus),
-      response.reportItemCount,
-      org,
-      null,
-      new JSONArray(response.warnings).toString(),
-      new JSONArray(response.errors).toString());
+    return new TestResultUpload(
+        response.id,
+        this.getUploadStatus(response.overallStatus),
+        response.reportItemCount,
+        org,
+        null,
+        new JSONArray(response.warnings).toString(),
+        new JSONArray(response.errors).toString());
   }
 }
