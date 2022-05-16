@@ -9,12 +9,14 @@ import gov.cdc.usds.simplereport.db.model.Facility;
 import gov.cdc.usds.simplereport.db.model.Organization;
 import gov.cdc.usds.simplereport.db.model.Person;
 import gov.cdc.usds.simplereport.db.model.PhoneNumber;
+import gov.cdc.usds.simplereport.db.model.Result;
 import gov.cdc.usds.simplereport.db.model.TestEvent;
 import gov.cdc.usds.simplereport.db.model.TestOrder;
 import gov.cdc.usds.simplereport.db.model.auxiliary.PersonRole;
 import gov.cdc.usds.simplereport.db.model.auxiliary.PhoneType;
 import gov.cdc.usds.simplereport.db.model.auxiliary.TestResult;
 import gov.cdc.usds.simplereport.db.model.auxiliary.TestResultDeliveryPreference;
+import gov.cdc.usds.simplereport.service.DiseaseService;
 import gov.cdc.usds.simplereport.test_util.TestDataFactory;
 import java.time.LocalDate;
 import java.util.List;
@@ -28,8 +30,10 @@ class TestOrderRepositoryTest extends BaseRepositoryTest {
   @Autowired private TestOrderRepository _repo;
   @Autowired private PersonRepository _personRepo;
   @Autowired private PhoneNumberRepository _phoneRepo;
+  @Autowired private ResultRepository _resultRepo;
   @Autowired private TestEventRepository _events;
   @Autowired private TestDataFactory _dataFactory;
+  @Autowired private DiseaseService _diseaseService;
 
   @Test
   void runChanges() {
@@ -112,7 +116,9 @@ class TestOrderRepositoryTest extends BaseRepositoryTest {
     TestOrder order = _repo.save(new TestOrder(hoya, site));
     assertNotNull(order);
     flush();
-    order.setResult(TestResult.POSITIVE);
+    Result result = new Result(order, _diseaseService.covid(), TestResult.POSITIVE);
+    _resultRepo.save(result);
+    order.setResultColumn(TestResult.POSITIVE);
     TestEvent ev = _events.save(new TestEvent(order));
     assertNotNull(ev);
     order.setTestEventRef(ev);
@@ -179,7 +185,9 @@ class TestOrderRepositoryTest extends BaseRepositoryTest {
     TestOrder order1 = new TestOrder(patient0, site);
     _repo.save(order1);
     flush();
-    order1.setResult(TestResult.NEGATIVE);
+    Result result = new Result(order1, _diseaseService.covid(), TestResult.NEGATIVE);
+    _resultRepo.save(result);
+    order1.setResultColumn(TestResult.NEGATIVE);
     TestEvent didit = _events.save(new TestEvent(order1));
     order1.setTestEventRef(didit);
     order1.markComplete();

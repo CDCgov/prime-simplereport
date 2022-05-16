@@ -40,6 +40,9 @@ public class DemoAuthenticationConfiguration {
   public static final String DEMO_AUTHORIZATION_FLAG = "SR-DEMO-LOGIN ";
   private static final String DEMO_BEARER_PREFIX = "Bearer " + DEMO_AUTHORIZATION_FLAG;
 
+  private static String CACHED_USER_NAME;
+  private static Authentication CACHED_AUTHENTICATION;
+
   /**
    * Creates and registers a {@link Filter} that runs before each request is processed by the
    * servlet. It checks for an Authorization header with a Bearer token that starts with {@link
@@ -55,14 +58,24 @@ public class DemoAuthenticationConfiguration {
           log.debug(
               "Processing request for demo authentication: current auth is {}",
               securityContext.getAuthentication());
-          HttpServletRequest req2 = (HttpServletRequest) request;
-          String authHeader = req2.getHeader("Authorization");
-          log.info("Auth type is {}, header is {}", req2.getAuthType(), authHeader);
+          HttpServletRequest httpServletRequest = (HttpServletRequest) request;
+          String authHeader = httpServletRequest.getHeader("Authorization");
+
+          log.info("Auth type is {}, header is {}", httpServletRequest.getAuthType(), authHeader);
           if (authHeader != null && authHeader.startsWith(DEMO_BEARER_PREFIX)) {
-            log.trace("Parsing authorization header [{}]", authHeader);
+            log.info("authHeader: {}", authHeader);
             String userName = authHeader.substring(DEMO_BEARER_PREFIX.length());
-            securityContext.setAuthentication(
-                new TestingAuthenticationToken(userName, null, List.of()));
+
+            if (!userName.equals(DemoAuthenticationConfiguration.CACHED_USER_NAME)) {
+              DemoAuthenticationConfiguration.CACHED_USER_NAME = userName;
+              DemoAuthenticationConfiguration.CACHED_AUTHENTICATION =
+                  new TestingAuthenticationToken(userName, null, List.of());
+              securityContext.setAuthentication(
+                  DemoAuthenticationConfiguration.CACHED_AUTHENTICATION);
+            }
+          } else {
+            DemoAuthenticationConfiguration.CACHED_USER_NAME = null;
+            DemoAuthenticationConfiguration.CACHED_AUTHENTICATION = null;
           }
           chain.doFilter(request, response);
         };
@@ -97,17 +110,26 @@ public class DemoAuthenticationConfiguration {
    */
   public static IdentitySupplier getCurrentDemoUserSupplier(DemoUserConfiguration config) {
     return () -> {
-      Authentication auth = SecurityContextHolder.getContext().getAuthentication();
+      Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+      Authentication auth =
+          authentication != null
+              ? authentication
+              : DemoAuthenticationConfiguration.CACHED_AUTHENTICATION;
       DemoUser found;
       if (auth == null) { // have to allow defaulting to work even when there is no authentication
         log.warn("No authentication found: current user will be default (if available)");
         found = config.getDefaultUser();
-      } else if (auth instanceof AnonymousAuthenticationToken) {
+      } else if (auth instanceof AnonymousAuthenticationToken
+          && DemoAuthenticationConfiguration.CACHED_USER_NAME == null) {
         log.info("Unauthenticated user in demo mode: current user will be default (if available)");
         found = config.getDefaultUser();
       } else {
+        String cachedUserName = DemoAuthenticationConfiguration.CACHED_USER_NAME;
         String userName = auth.getName();
-        found = config.getByUsername(userName);
+
+        DemoUser authUser = config.getByUsername(userName);
+        DemoUser cachedUser = config.getByUsername(cachedUserName);
+        found = authUser != null ? authUser : cachedUser;
         if (found == null) {
           log.error("Invalid user {} in demo mode", userName);
           throw new BadCredentialsException("Invalid username supplied.");

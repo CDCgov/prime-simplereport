@@ -36,6 +36,7 @@ type Facility {
   defaultDeviceType: DeviceType @deprecated(reason: "kept for compatibility")
   orderingProvider: Provider
   patientSelfRegistrationLink: String
+  isDeleted: Boolean
 }
 
 type Provider {
@@ -313,6 +314,10 @@ type Query {
   supportedDiseases: [SupportedDisease!]!
   specimenType: [SpecimenType]
   deviceSpecimenTypes: [DeviceSpecimenType]
+  facilities(
+    showArchived: Boolean = false
+      @requiredPermissions(allOf: ["VIEW_ARCHIVED_FACILITIES"])
+  ): [Facility]
   patients(
     facilityId: ID
     pageNumber: Int
@@ -320,6 +325,8 @@ type Query {
     showDeleted: Boolean = false
       @requiredPermissions(allOf: ["READ_ARCHIVED_PATIENT_LIST"])
     namePrefixMatch: String
+    includeArchivedFacilities: Boolean = false
+      @requiredPermissions(allOf: ["VIEW_ARCHIVED_FACILITIES"])
   ): [Patient]
     @requiredPermissions(anyOf: ["SEARCH_PATIENTS", "READ_PATIENT_LIST"])
   patientsCount(

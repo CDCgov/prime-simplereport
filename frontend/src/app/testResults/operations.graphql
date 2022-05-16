@@ -37,6 +37,7 @@ query GetFacilityResultsForCsv(
   ) {
     facility {
       name
+      isDeleted
     }
     dateTested
     result
@@ -82,5 +83,17 @@ query GetFacilityResultsForCsv(
     symptoms
     noSymptoms
     symptomOnset
+  }
+}
+
+query GetAllFacilities(
+  $showArchived: Boolean
+) {
+  facilities(
+    showArchived: $showArchived
+  ) {
+    id
+    name
+    isDeleted
   }
 }

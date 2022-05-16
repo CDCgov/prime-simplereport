@@ -9,6 +9,7 @@ import gov.cdc.usds.simplereport.db.model.Facility;
 import gov.cdc.usds.simplereport.db.model.Facility_;
 import gov.cdc.usds.simplereport.db.model.Organization;
 import gov.cdc.usds.simplereport.db.model.Person;
+import gov.cdc.usds.simplereport.db.model.Result;
 import gov.cdc.usds.simplereport.db.model.TestEvent;
 import gov.cdc.usds.simplereport.db.model.TestEvent_;
 import gov.cdc.usds.simplereport.db.model.TestOrder;
@@ -17,6 +18,7 @@ import gov.cdc.usds.simplereport.db.model.auxiliary.AskOnEntrySurvey;
 import gov.cdc.usds.simplereport.db.model.auxiliary.TestCorrectionStatus;
 import gov.cdc.usds.simplereport.db.model.auxiliary.TestResult;
 import gov.cdc.usds.simplereport.db.model.auxiliary.TestResultWithCount;
+import gov.cdc.usds.simplereport.service.DiseaseService;
 import gov.cdc.usds.simplereport.service.OrganizationService;
 import gov.cdc.usds.simplereport.test_util.TestDataFactory;
 import java.time.Instant;
@@ -42,6 +44,8 @@ class TestEventRepositoryTest extends BaseRepositoryTest {
   @Autowired private TestEventRepository _repo;
   @Autowired private TestDataFactory _dataFactory;
   @Autowired private OrganizationService _orgService;
+  @Autowired private DiseaseService _diseaseService;
+  @Autowired private ResultRepository _resultRepo;
 
   private Specification<TestEvent> filter(UUID facilityId, TestResult result) {
     return (root, query, cb) -> {
@@ -68,9 +72,13 @@ class TestEventRepositoryTest extends BaseRepositoryTest {
     Facility place = _dataFactory.createValidFacility(org);
     Person patient = _dataFactory.createMinimalPerson(org);
     TestOrder order = _dataFactory.createTestOrder(patient, place);
-    order.setResult(TestResult.POSITIVE);
+    Result positiveResult = new Result(order, _diseaseService.covid(), TestResult.POSITIVE);
+    _resultRepo.save(positiveResult);
+    //    order.setResult(positiveResult);
     _repo.save(new TestEvent(order, false));
-    order.setResult(TestResult.NEGATIVE);
+    Result negativeResult = new Result(order, _diseaseService.covid(), TestResult.NEGATIVE);
+    _resultRepo.save(negativeResult);
+    //    order.setResult(negativeResult);
     _repo.save(new TestEvent(order, false));
     flush();
     List<TestEvent> found = _repo.findAllByPatientAndFacilities(patient, Set.of(place));

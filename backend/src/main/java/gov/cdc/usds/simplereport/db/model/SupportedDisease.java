@@ -2,6 +2,7 @@ package gov.cdc.usds.simplereport.db.model;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import java.util.HashSet;
+import java.util.Objects;
 import java.util.Set;
 import javax.persistence.Column;
 import javax.persistence.Entity;
@@ -37,5 +38,22 @@ public class SupportedDisease extends IdentifiedEntity {
     this();
     this.name = name;
     this.loinc = loinc;
+  }
+
+  @Override
+  public boolean equals(Object o) {
+    if (this == o) {
+      return true;
+    }
+    if (o == null || getClass() != o.getClass()) {
+      return false;
+    }
+    SupportedDisease that = (SupportedDisease) o;
+    return Objects.equals(name, that.name) && Objects.equals(loinc, that.loinc);
+  }
+
+  @Override
+  public int hashCode() {
+    return Objects.hash(name, loinc);
   }
 }

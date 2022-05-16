@@ -167,7 +167,7 @@ export const organizationBackendErrors = (error: string): ReactElement => {
         <Alert type="error" title="Duplicate organization">
           Your organization is already registered with SimpleReport. To begin
           using it, schedule a time to complete our{" "}
-          <a href="https://outlook.office365.com/owa/calendar/Helpdesk@HHSGOV.onmicrosoft.com/bookings/s/HOX7KgZruESJksIgC8qVxQ2">
+          <a href="https://calendly.com/simplereport-id-verification-sessions/simplereport-id-verification-sessions?back=1&month=2022-05">
             online identity verification.
           </a>{" "}
         </Alert>
