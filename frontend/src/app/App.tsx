@@ -178,16 +178,15 @@ const App = () => {
             <Route
               path="results/upload"
               element={
-                <Uploads />
-                // <ProtectedRoute
-                //   requiredPermissions={canViewResults}
-                //   userPermissions={data.whoami.permissions}
-                //   element={<Uploads />}
-                // />
+                <ProtectedRoute
+                  requiredPermissions={canViewResults}
+                  userPermissions={data.whoami.permissions}
+                  element={<Uploads />}
+                />
               }
             />
             <Route
-              path={"results/upload/submissions/:id"}
+              path="results/upload/submissions/:id"
               element={
                 <ProtectedRoute
                   requiredPermissions={canViewResults}

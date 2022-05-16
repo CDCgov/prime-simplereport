@@ -8,8 +8,6 @@ import { getMocks, StoryGraphQLProvider } from "../../../stories/storyMocks";
 
 import Submission from "./Submission";
 
-type Props = {};
-
 const mockStore = createMockStore([]);
 const store = mockStore({
   organization: {
@@ -32,7 +30,7 @@ export default {
   ],
 } as Meta;
 
-const Template: Story<Props> = (args) => (
+const Template: Story = (args) => (
   <Provider store={store}>
     <MemoryRouter>
       <Submission {...args} />

@@ -1,15 +1,13 @@
 import moment from "moment";
 import { useSelector } from "react-redux";
+import { useParams } from "react-router-dom";
 
 import { LoadingCard } from "../../commonComponents/LoadingCard/LoadingCard";
 import { useGetUploadSubmissionQuery } from "../../../generated/graphql";
 
-type SubmissionProps = {
-  reportId: string;
-};
-
-const Submission = (submissionProps: SubmissionProps) => {
-  const reportId = submissionProps.reportId;
+const Submission = () => {
+  const urlParams = useParams();
+  const internalId = urlParams.id || "";
 
   const organization = useSelector(
     (state) => (state as any).organization as Organization
@@ -18,7 +16,7 @@ const Submission = (submissionProps: SubmissionProps) => {
   const { data: submission, loading, error } = useGetUploadSubmissionQuery({
     fetchPolicy: "no-cache",
     variables: {
-      id: reportId,
+      id: internalId,
     },
   });
 
