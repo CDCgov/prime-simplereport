@@ -293,6 +293,13 @@ type PendingOrganization {
   createdAt: DateTime!
 }
 
+type UploadResult {
+  reportId: ID
+  status: String
+  recordsCount: Int
+  warnings: String
+  errors: String
+}
 # Queries and mutations for everyday use
 
 type Query {
@@ -625,6 +632,6 @@ type Mutation {
   sendPatientLinkEmailByTestEventId(testEventId: ID!): Boolean
   updateOrganization(type: String!): String
     @requiredPermissions(allOf: ["EDIT_ORGANIZATION"])
-  uploadTestResultCSV(testResultList: Upload!, facilityId: ID!): String
+  uploadTestResultCSV(testResultList: Upload!, facilityId: ID!): UploadResult
     @requiredPermissions(allOf: ["SR_CSV_UPLOADER_PILOT"])
 }
