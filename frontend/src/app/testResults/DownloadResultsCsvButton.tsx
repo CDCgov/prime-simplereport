@@ -5,7 +5,7 @@ import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { CSVLink } from "react-csv";
 import moment from "moment";
 
-import { displayFullName, showError } from "../utils";
+import { displayFullName, facilityDisplayName, showError } from "../utils";
 import { useImperativeQuery } from "../utils/hooks";
 import Button from "../commonComponents/Button/Button";
 import { TEST_RESULT_DESCRIPTIONS } from "../constants";
@@ -13,6 +13,7 @@ import { symptomsStringToArray } from "../utils/symptoms";
 import { GetFacilityResultsForCsvDocument } from "../../generated/graphql";
 
 import {
+  ALL_FACILITIES_ID,
   byDateTested,
   FilterParams,
   Results,
@@ -22,7 +23,7 @@ import {
 interface Props {
   filterParams: FilterParams;
   totalEntries: number;
-  facilityId: string;
+  activeFacilityId: string;
 }
 
 function hasSymptoms(noSymptoms: boolean, symptoms: string) {
@@ -41,7 +42,7 @@ function hasSymptoms(noSymptoms: boolean, symptoms: string) {
 const DownloadResultsCSVButton = ({
   filterParams,
   totalEntries,
-  facilityId,
+  activeFacilityId,
 }: Props) => {
   const [modalIsOpen, setModalIsOpen] = useState(false);
   const [results, setResults] = useState([]);
@@ -59,10 +60,14 @@ const DownloadResultsCSVButton = ({
     filterParams.endDate ||
     filterParams.role ||
     filterParams.result ||
-    filterParams.filterFacilityId;
+    (filterParams.filterFacilityId &&
+      filterParams.filterFacilityId !== activeFacilityId);
 
   const variables: ResultsQueryVariables = {
-    facilityId,
+    facilityId:
+      filterParams.filterFacilityId === ALL_FACILITIES_ID
+        ? null
+        : filterParams.filterFacilityId || activeFacilityId,
     pageNumber: 0,
     pageSize: totalEntries,
     ...filterParams,
@@ -99,7 +104,10 @@ const DownloadResultsCSVButton = ({
         "Symptoms present":
           symptomList.length > 0 ? symptomList.join(", ") : "No symptoms",
         "Symptom onset": moment(r.symptomOnset).format("MM/DD/YYYY"),
-        "Facility name": r.facility.name,
+        "Facility name": facilityDisplayName(
+          r.facility.name,
+          r.facility.isDeleted
+        ),
         Submitter: displayFullName(
           r.createdBy.nameInfo.firstName,
           r.createdBy.nameInfo.middleName,

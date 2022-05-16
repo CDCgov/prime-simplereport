@@ -22,6 +22,7 @@ https://www.simplereport.gov/
     - [Storybook and Chromatic](#storybook-and-chromatic)
   - [PR Conventions](#pr-conventions)
   - [Cloud Environments](#cloud-environments)
+  - [Cloud Architecture](#cloud-architecture)
   - [Deploy](#deploy)
     - [Revert to a Previous Release](#revert-to-a-previous-release)
     - [Deploy With Action](#deploy-with-action)
@@ -229,7 +230,7 @@ GitHub Actions is configured to run these linters on every pull request, so you 
 There are a few ways to manage this:
 
 1. Run `yarn lint:write` in the `frontend/` dir, and `./gradlew spotlessApply` in the `backend/` dir, before every commit
-1. Enable the optional pre-commit hook by running `yarn install` in the root dir
+1. Enable the optional pre-commit hook by running `yarn lefthook install` in the root dir (install lefthook if you haven't already done so during setup by running `yarn install`)
 1. Add extensions to your code editor that runs the linters for you on save, e.g. [prettier-vscode](https://marketplace.visualstudio.com/items?itemName=esbenp.prettier-vscode), [vscode-eslint](https://marketplace.visualstudio.com/items?itemName=dbaeumer.vscode-eslint), [vscode-google-java-format](https://marketplace.visualstudio.com/items?itemName=ilkka.google-java-format)
 
 You can also run the pre-commit hooks in docker using `yarn lefthook run in-docker`.
@@ -276,6 +277,10 @@ We require two reviewers per changeset, and you cannot merge until all commits h
 |   dev4   |   [/app/static/commit.txt](https://dev4.simplereport.gov/app/static/commit.txt)   |   [/api/actuator/info](https://dev4.simplereport.gov/api/actuator/info)   |     [Action](#deploy-with-action)     |           Development testing/PR validation before merging to `main`           |
 |   test   |   [/app/static/commit.txt](https://test.simplereport.gov/app/static/commit.txt)   |   [/api/actuator/info](https://test.simplereport.gov/api/actuator/info)   |            Push to `main`             |                   Automated testing agsinst `main` (e2e/load)                  |
 |  pentest | [/app/static/commit.txt](https://pentest.simplereport.gov/app/static/commit.txt)  | [/api/actuator/info](https://pentest.simplereport.gov/api/actuator/info)  |     [Action](#deploy-with-action)     |                   Penetration testing (no alerting enabled)                    |
+
+## Cloud Architecture
+![Cloud architecture image](docs/SR_high_level_architecture.png)
+
 
 ## Deploy
 

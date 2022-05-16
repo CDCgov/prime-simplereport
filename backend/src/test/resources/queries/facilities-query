@@ -1,0 +1,11 @@
+query GetFacilities(
+  $showArchived: Boolean
+) {
+  facilities(
+    showArchived: $showArchived
+  ) {
+    id
+    name
+    isDeleted
+  }
+}

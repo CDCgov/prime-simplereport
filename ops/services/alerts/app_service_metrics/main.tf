@@ -72,7 +72,7 @@ resource "azurerm_monitor_smart_detector_alert_rule" "failure_anomalies" {
 
 resource "azurerm_monitor_scheduled_query_rules_alert" "http_2xx_failed_requests" {
   name                = "${var.env}-api-2xx-failed-requests"
-  description         = "${local.env_title} HTTP Server 2xx Errors (where successful request == false) >= 25"
+  description         = "${local.env_title} HTTP Server 2xx (requests where (failed requests * 100.00 / total requests) >= ${var.http_2xx_failure_rate_threshold}). This query finds all requests in our timeframe and transforms the failed requests into a percentage of total requests."
   location            = data.azurerm_resource_group.app.location
   resource_group_name = var.rg_name
   severity            = var.severity
@@ -85,12 +85,14 @@ resource "azurerm_monitor_scheduled_query_rules_alert" "http_2xx_failed_requests
   query = <<-QUERY
 requests
 ${local.skip_on_weekends}
-| where toint(resultCode) between (200 .. 299) and success == false and timestamp >= ago(5m)
+| where toint(resultCode) between (200 .. 299) and timestamp >= ago(5m)
+| sort by timestamp asc
+| summarize iff((todouble(sumif(1, success == false)) * 100 / todouble(count()) >= ${var.http_2xx_failure_rate_threshold}), 1, 0)
   QUERY
 
   trigger {
-    operator  = "GreaterThan"
-    threshold = var.failed_http_2xx_threshold
+    operator  = "Equal"
+    threshold = 1
   }
 
   action {
