@@ -30,6 +30,8 @@ public class TokenAuthenticationService {
   @Value("${data-hub.signing-key}")
   private String signingKey;
 
+  private int FIVE_MINUTES_MS = 300 * 1000;
+
   private RSAPrivateKey getRSAPrivateKey(String privateKey) throws InvalidRSAPrivateKeyException {
     try {
       PEMParser pemParser = new PEMParser(new StringReader(signingKey));
@@ -68,7 +70,7 @@ public class TokenAuthenticationService {
   }
 
   public String createDataHubSenderToken() throws InvalidRSAPrivateKeyException {
-    Date inFiveMinutes = new Date(System.currentTimeMillis() + 300 * 1000);
+    Date inFiveMinutes = new Date(System.currentTimeMillis() + FIVE_MINUTES_MS);
 
     return createJWT(
         organization + ".default", dataHubUrl, inFiveMinutes, getRSAPrivateKey(signingKey));
