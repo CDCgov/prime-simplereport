@@ -3970,5 +3970,3 @@ databaseChangeLog:
         rollback:
           - dropView:
               viewName: org_queue_no_phi_is_deleted
-          - sql: |
-              GRANT SELECT ON TABLE ${database.defaultSchemaName}.api_audit_event_no_phi TO ${noPhiUsername};
