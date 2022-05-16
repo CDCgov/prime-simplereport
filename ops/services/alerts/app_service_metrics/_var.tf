@@ -67,9 +67,9 @@ variable "http_response_time_aggregation" {
   default = "Average"
 }
 
-variable "http_2xx_failure_rate_threshold" {
-  # percentage of total requests allowed to fail
-  default = 1
+variable "failed_http_2xx_threshold" {
+  // The resource that uses this value doesn't have a >= check, so we need n - 1 here
+  default = 24
 }
 
 variable "skip_on_weekends" {
