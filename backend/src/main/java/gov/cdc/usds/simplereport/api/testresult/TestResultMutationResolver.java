@@ -2,6 +2,7 @@ package gov.cdc.usds.simplereport.api.testresult;
 
 import gov.cdc.usds.simplereport.api.model.errors.CsvProcessingException;
 import gov.cdc.usds.simplereport.api.model.errors.IllegalGraphqlArgumentException;
+import gov.cdc.usds.simplereport.db.model.TestResultUpload;
 import gov.cdc.usds.simplereport.db.repository.TestEventRepository;
 import gov.cdc.usds.simplereport.service.TestEventReportingService;
 import gov.cdc.usds.simplereport.service.TestResultUploadService;
@@ -30,12 +31,11 @@ public class TestResultMutationResolver implements GraphQLMutationResolver {
     return true;
   }
 
-  public String uploadTestResultCSV(Part part, UUID facilityId) {
+  public TestResultUpload uploadTestResultCSV(Part part, UUID facilityId) {
     try (InputStream resultsUpload = part.getInputStream()) {
 
       try {
-        var result = testResultUploadService.processResultCSV(resultsUpload, facilityId);
-        return result.getStatus().toString();
+        return testResultUploadService.processResultCSV(resultsUpload, facilityId);
       } catch (IllegalGraphqlArgumentException e) {
         throw e;
       }

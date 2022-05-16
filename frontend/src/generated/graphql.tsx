@@ -172,7 +172,7 @@ export type Mutation = {
   updateUserEmail?: Maybe<User>;
   updateUserPrivileges?: Maybe<User>;
   uploadPatients?: Maybe<Scalars["String"]>;
-  uploadTestResultCSV?: Maybe<Scalars["String"]>;
+  uploadTestResultCSV?: Maybe<UploadResult>;
 };
 
 export type MutationAddFacilityArgs = {
@@ -936,6 +936,15 @@ export type UpdateDeviceType = {
   name: Scalars["String"];
   supportedDiseases: Array<Scalars["ID"]>;
   swabTypes: Array<Scalars["ID"]>;
+};
+
+export type UploadResult = {
+  __typename?: "UploadResult";
+  errors?: Maybe<Scalars["String"]>;
+  recordsCount?: Maybe<Scalars["Int"]>;
+  reportId?: Maybe<Scalars["ID"]>;
+  status?: Maybe<Scalars["String"]>;
+  warnings?: Maybe<Scalars["String"]>;
 };
 
 export type User = {
@@ -2486,6 +2495,26 @@ export type GetFacilityResultsForCsvQuery = {
         | null
         | undefined
       >
+    | null
+    | undefined;
+};
+
+export type UploadTestResultCsvMutationVariables = Exact<{
+  facilityId: Scalars["ID"];
+  testResultList: Scalars["Upload"];
+}>;
+
+export type UploadTestResultCsvMutation = {
+  __typename?: "Mutation";
+  uploadTestResultCSV?:
+    | {
+        __typename?: "UploadResult";
+        reportId?: string | null | undefined;
+        status?: string | null | undefined;
+        recordsCount?: number | null | undefined;
+        warnings?: string | null | undefined;
+        errors?: string | null | undefined;
+      }
     | null
     | undefined;
 };
@@ -6716,4 +6745,61 @@ export type GetFacilityResultsForCsvLazyQueryHookResult = ReturnType<
 export type GetFacilityResultsForCsvQueryResult = Apollo.QueryResult<
   GetFacilityResultsForCsvQuery,
   GetFacilityResultsForCsvQueryVariables
+>;
+export const UploadTestResultCsvDocument = gql`
+  mutation UploadTestResultCSV($facilityId: ID!, $testResultList: Upload!) {
+    uploadTestResultCSV(
+      facilityId: $facilityId
+      testResultList: $testResultList
+    ) {
+      reportId
+      status
+      recordsCount
+      warnings
+      errors
+    }
+  }
+`;
+export type UploadTestResultCsvMutationFn = Apollo.MutationFunction<
+  UploadTestResultCsvMutation,
+  UploadTestResultCsvMutationVariables
+>;
+
+/**
+ * __useUploadTestResultCsvMutation__
+ *
+ * To run a mutation, you first call `useUploadTestResultCsvMutation` within a React component and pass it any options that fit your needs.
+ * When your component renders, `useUploadTestResultCsvMutation` returns a tuple that includes:
+ * - A mutate function that you can call at any time to execute the mutation
+ * - An object with fields that represent the current status of the mutation's execution
+ *
+ * @param baseOptions options that will be passed into the mutation, supported options are listed on: https://www.apollographql.com/docs/react/api/react-hooks/#options-2;
+ *
+ * @example
+ * const [uploadTestResultCsvMutation, { data, loading, error }] = useUploadTestResultCsvMutation({
+ *   variables: {
+ *      facilityId: // value for 'facilityId'
+ *      testResultList: // value for 'testResultList'
+ *   },
+ * });
+ */
+export function useUploadTestResultCsvMutation(
+  baseOptions?: Apollo.MutationHookOptions<
+    UploadTestResultCsvMutation,
+    UploadTestResultCsvMutationVariables
+  >
+) {
+  const options = { ...defaultOptions, ...baseOptions };
+  return Apollo.useMutation<
+    UploadTestResultCsvMutation,
+    UploadTestResultCsvMutationVariables
+  >(UploadTestResultCsvDocument, options);
+}
+export type UploadTestResultCsvMutationHookResult = ReturnType<
+  typeof useUploadTestResultCsvMutation
+>;
+export type UploadTestResultCsvMutationResult = Apollo.MutationResult<UploadTestResultCsvMutation>;
+export type UploadTestResultCsvMutationOptions = Apollo.BaseMutationOptions<
+  UploadTestResultCsvMutation,
+  UploadTestResultCsvMutationVariables
 >;
