@@ -6,7 +6,7 @@ import createMockStore from "redux-mock-store";
 import {
   GetUploadSubmissionDocument,
   UploadStatus,
-  UploadSubmission,
+  UploadResult,
 } from "../../../generated/graphql";
 
 import Submission from "./Submission";
@@ -19,12 +19,13 @@ const store = mockStore({
   },
 });
 
-const submission: UploadSubmission = {
+const submission: UploadResult = {
   reportId: "12b86a9d-a9d6-4391-a555-6618e8ac66d9",
-  internalId: "barfoo",
   status: UploadStatus.Success,
-  recordsCount: "2",
-  createdAt: 1652129265573,
+  recordsCount: 2,
+  createdAt: "2022-05-05T13:47:09Z",
+  errors: "[]",
+  warnings: "[]",
 };
 
 describe("Submission", () => {

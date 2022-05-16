@@ -23,11 +23,8 @@ import VersionEnforcer from "./VersionEnforcer";
 import { TrainingNotification } from "./commonComponents/TrainingNotification";
 import { MaintenanceBanner } from "./commonComponents/MaintenanceBanner";
 import { Analytics } from "./analytics/Analytics";
-<<<<<<< HEAD
 import Uploads from "./testResults/uploads/Uploads";
-=======
 import Submission from "./testResults/submissions/Submission";
->>>>>>> 4ee7f0e79 (Add route to submission detail view in React app)
 
 export const WHOAMI_QUERY = gql`
   query WhoAmI {
@@ -187,7 +184,8 @@ const App = () => {
                 //   userPermissions={data.whoami.permissions}
                 //   element={<Uploads />}
                 // />
-              }/>
+              }
+            />
             <Route
               path={"results/upload/submissions/:id"}
               element={

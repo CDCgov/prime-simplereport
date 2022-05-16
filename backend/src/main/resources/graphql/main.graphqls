@@ -167,21 +167,12 @@ type ApiUserWithStatus {
 }
 
 type UploadResult {
-  reportId: ID
-  status: String
-  recordsCount: Int
-  warnings: String
-  errors: String
-}
-
-type UploadSubmission {
-  internalId: ID
-  createdAt: DateTime!
   reportId: ID!
-  status: UploadStatus!
-  recordsCount: String!
-  warnings: String
-  errors: String
+  createdAt: String
+  status: String!
+  recordsCount: Int!
+  warnings: String!
+  errors: String!
 }
 
 # Patient and test types
@@ -311,14 +302,6 @@ type PendingOrganization {
   adminPhone: String
   createdAt: DateTime!
 }
-
-#type UploadResult {
-#reportId: ID
-#status: String
-#recordsCount: Int
-#warnings: String
-#errors: String
-#}
 
 # Queries and mutations for everyday use
 

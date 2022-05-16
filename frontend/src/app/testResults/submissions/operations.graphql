@@ -1,6 +1,7 @@
 query GetUploadSubmission($id: ID!) {
   uploadSubmission(id: $id) {
     reportId
+    createdAt
     status
     warnings
     errors
