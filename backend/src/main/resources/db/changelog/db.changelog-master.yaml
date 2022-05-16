@@ -3923,6 +3923,8 @@ databaseChangeLog:
       author: dsass@skylight.digital
       comment: remove facility id column and change data type of error and warning columns to json
       changes:
+        - tagDatabase:
+            tag: alter-upload-table
         - dropColumn:
             tableName: upload
             columnName: facility_id
