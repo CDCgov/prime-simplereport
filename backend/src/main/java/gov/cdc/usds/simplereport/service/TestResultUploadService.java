@@ -1,5 +1,7 @@
 package gov.cdc.usds.simplereport.service;
 
+import com.fasterxml.jackson.core.JsonProcessingException;
+import com.fasterxml.jackson.databind.ObjectMapper;
 import gov.cdc.usds.simplereport.api.model.errors.IllegalGraphqlArgumentException;
 import gov.cdc.usds.simplereport.api.model.errors.InvalidBulkTestResultUploadException;
 import gov.cdc.usds.simplereport.config.AuthorizationConfiguration;
@@ -8,14 +10,8 @@ import gov.cdc.usds.simplereport.db.model.Organization;
 import gov.cdc.usds.simplereport.db.model.TestResultUpload;
 import gov.cdc.usds.simplereport.db.model.auxiliary.UploadStatus;
 import gov.cdc.usds.simplereport.db.repository.TestResultUploadRepository;
-import gov.cdc.usds.simplereport.service.model.reportstream.ReportStreamStatus;
-import gov.cdc.usds.simplereport.db.model.BulkTestResultUpload;
-import gov.cdc.usds.simplereport.db.model.Facility;
-import gov.cdc.usds.simplereport.db.model.Organization;
-import gov.cdc.usds.simplereport.db.model.TestResultUpload;
-import gov.cdc.usds.simplereport.db.model.auxiliary.UploadStatus;
-import gov.cdc.usds.simplereport.db.repository.TestResultUploadRepository;
 import gov.cdc.usds.simplereport.service.errors.InvalidRSAPrivateKeyException;
+import gov.cdc.usds.simplereport.service.model.reportstream.ReportStreamStatus;
 import gov.cdc.usds.simplereport.service.model.reportstream.TokenResponse;
 import gov.cdc.usds.simplereport.service.model.reportstream.UploadResponse;
 import java.io.IOException;
@@ -46,22 +42,6 @@ public class TestResultUploadService {
 
   @Value("${data-hub.organization}")
   private String organization;
-
-  // TODO: see if we need this, hard to tell
-  private UploadStatus getUploadStatus(String status) {
-    UploadStatus uploadStatus;
-
-    switch (status) {
-      case "Received":
-        uploadStatus = UploadStatus.SUCCESS;
-        break;
-      default:
-        uploadStatus = UploadStatus.FAIL;
-        break;
-    }
-
-    return uploadStatus;
-  }
 
   @AuthorizationConfiguration.RequirePermissionCSVUpload
   public TestResultUpload processResultCSV(InputStream csvStream, UUID facilityId)
@@ -149,12 +129,12 @@ public class TestResultUploadService {
         _client.getSubmission(result.getReportId().toString(), r.access_token);
 
     return new TestResultUpload(
-        response.id,
-        this.getUploadStatus(response.overallStatus),
-        response.reportItemCount,
+        response.getId(),
+        this.parseStatus(response.getOverallStatus()),
+        response.getReportItemCount(),
         org,
         null,
-        new JSONArray(response.warnings).toString(),
-        new JSONArray(response.errors).toString());
+        new JSONArray(response.getWarnings()).toString(),
+        new JSONArray(response.getErrors()).toString());
   }
 }

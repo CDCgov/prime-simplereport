@@ -1,5 +1,6 @@
 package gov.cdc.usds.simplereport.service.model.reportstream;
 
+import java.util.Date;
 import java.util.UUID;
 import lombok.Getter;
 import lombok.Setter;
