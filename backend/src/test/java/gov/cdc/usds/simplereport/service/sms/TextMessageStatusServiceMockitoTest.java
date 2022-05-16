@@ -49,8 +49,7 @@ class TextMessageStatusServiceMockitoTest {
   void setup() {
     ReflectionTestUtils.setField(
         textMessageStatusService, "twilioCallbackUrl", "https://simplereport.gov/api/pxp/callback");
-    ReflectionTestUtils.setField(
-        textMessageStatusService, "validator", validator, RequestValidator.class);
+    ReflectionTestUtils.setField(textMessageStatusService, "validator", validator);
   }
 
   @Test
@@ -72,19 +71,19 @@ class TextMessageStatusServiceMockitoTest {
 
     ArgumentCaptor<String> messageIdCaptor = ArgumentCaptor.forClass(String.class);
     verify(sentRepo).findByTwilioMessageId(messageIdCaptor.capture());
-    assertEquals(messageIdCaptor.getValue(), messageId);
+    assertEquals(messageId, messageIdCaptor.getValue());
 
     ArgumentCaptor<TextMessageStatus> textMessageStatusCaptor =
         ArgumentCaptor.forClass(TextMessageStatus.class);
     verify(statusRepo).save(textMessageStatusCaptor.capture());
-    assertEquals(textMessageStatusCaptor.getValue().getStatus(), status);
+    assertEquals(status, textMessageStatusCaptor.getValue().getStatus());
   }
 
   @Test
   void validateSmsCallback_invalidTwilioCallback() {
     HttpServletRequest mockedRequest = mock(HttpServletRequest.class);
     when(validator.validate(anyString(), anyMap(), anyString()))
-        .thenThrow(new InvalidTwilioCallbackException());
+        .thenThrow(InvalidTwilioCallbackException.class);
     assertThrows(
         InvalidTwilioCallbackException.class,
         () -> textMessageStatusService.validateSmsCallback(mockedRequest));
@@ -106,7 +105,7 @@ class TextMessageStatusServiceMockitoTest {
     verify(_phoneRepo).findAllByNumberAndType(number, PhoneType.MOBILE);
     verify(_phoneRepo).saveAll(phoneNumbersCaptor.capture());
     List<PhoneNumber> modifiedNumbers = phoneNumbersCaptor.getValue();
-    assertEquals(modifiedNumbers.size(), 1);
-    assertEquals(modifiedNumbers.get(0).getType(), PhoneType.LANDLINE);
+    assertEquals(1, modifiedNumbers.size());
+    assertEquals(PhoneType.LANDLINE, modifiedNumbers.get(0).getType());
   }
 }
