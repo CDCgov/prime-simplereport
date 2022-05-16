@@ -61,11 +61,12 @@ describe("Submission", () => {
     render(
       <MockedProvider mocks={mocks}>
         <Provider store={store}>
-          <Submission />
+          <Submission reportId={submission.reportId} />
         </Provider>
       </MockedProvider>
     );
 
+    await new Promise((resolve) => setTimeout(resolve, 0));
     expect(mockIsDone).toBe(true);
   });
 
@@ -73,12 +74,14 @@ describe("Submission", () => {
     render(
       <MockedProvider mocks={mocks}>
         <Provider store={store}>
-          <Submission />
+          <Submission reportId={submission.reportId} />
         </Provider>
       </MockedProvider>
     );
 
-    expect(await screen.findByText("09 May 2022 16:48"));
+    await new Promise((resolve) => setTimeout(resolve, 0));
+
+    expect(await screen.findByText("05 May 2022 13:47"));
 
     expect(await screen.findByText("Report ID"));
     expect(await screen.findByText(submission.reportId));
@@ -87,10 +90,10 @@ describe("Submission", () => {
     expect(await screen.findByText("ELR"));
 
     expect(await screen.findByText("Transmission Date"));
-    expect(await screen.findByText("09 May 2022"));
+    expect(await screen.findByText("05 May 2022"));
 
     expect(await screen.findByText("Transmission Time"));
-    expect(await screen.findByText("16:48"));
+    expect(await screen.findByText("13:47"));
 
     expect(await screen.findByText("Records"));
     expect(await screen.findByText("2"));

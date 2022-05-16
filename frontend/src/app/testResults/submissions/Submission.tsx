@@ -1,13 +1,15 @@
-import { useParams } from "react-router-dom";
 import moment from "moment";
 import { useSelector } from "react-redux";
 
 import { LoadingCard } from "../../commonComponents/LoadingCard/LoadingCard";
 import { useGetUploadSubmissionQuery } from "../../../generated/graphql";
 
-const Submission = () => {
-  const urlParams = useParams();
-  const reportId = urlParams.id || "";
+type SubmissionProps = {
+  reportId: string;
+};
+
+const Submission = (submissionProps: SubmissionProps) => {
+  const reportId = submissionProps.reportId;
 
   const organization = useSelector(
     (state) => (state as any).organization as Organization
