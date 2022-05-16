@@ -3924,7 +3924,7 @@ databaseChangeLog:
       comment: Add the organization_queue's is_deleted column to the view permissions of the no-phi-user so we can see it in metabase
       changes:
          - tagDatabase:
-            tag: update-org-queue-view
+            tag: update-no-phi-user-view-of-org-queue-table
          - createView:
             viewName: org_queue_no_phi_is_deleted
             remarks: A subset of the organization_queue table with columns containing PHI removed.
