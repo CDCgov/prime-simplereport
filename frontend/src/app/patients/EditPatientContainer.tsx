@@ -1,6 +1,7 @@
 import { useParams } from "react-router-dom";
 
 import { useSelectedFacility } from "../facilitySelect/useSelectedFacility";
+import { getParameterFromUrl } from "../utils/url";
 
 import EditPatient from "./EditPatient";
 
@@ -9,6 +10,7 @@ const EditPatientContainer = () => {
   const activeFacilityId = facility?.id;
   const params = useParams();
   const patientId = params.patientId || "";
+  const fromQueue = getParameterFromUrl("fromQueue") === "true";
 
   if (!activeFacilityId) {
     return <div>"No facility selected"</div>;
@@ -18,7 +20,13 @@ const EditPatientContainer = () => {
     return <div>No patient selected</div>;
   }
 
-  return <EditPatient facilityId={activeFacilityId} patientId={patientId} />;
+  return (
+    <EditPatient
+      facilityId={activeFacilityId}
+      patientId={patientId}
+      fromQueue={fromQueue}
+    />
+  );
 };
 
 export default EditPatientContainer;
