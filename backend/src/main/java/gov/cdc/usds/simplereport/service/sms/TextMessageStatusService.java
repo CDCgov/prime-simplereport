@@ -86,7 +86,7 @@ public class TextMessageStatusService {
   }
 
   @Transactional
-  public void handleLandlineError(String msgSID, String landlineNumber) {
+  public void handleLandlineError(String landlineNumber) {
     List<PhoneNumber> phoneNumbers =
         _phoneRepo.findAllByNumberAndType(parsePhoneNumber(landlineNumber), PhoneType.MOBILE);
 

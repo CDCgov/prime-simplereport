@@ -39,7 +39,7 @@ public class SmsCallbackController {
     statusService.saveTextMessageStatus(body.getMessageSid(), body.getMessageStatus());
 
     if (body.getErrorCode().equals("30006")) {
-      statusService.handleLandlineError(body.getMessageSid(), body.getNumber());
+      statusService.handleLandlineError(body.getNumber());
     }
   }
 
