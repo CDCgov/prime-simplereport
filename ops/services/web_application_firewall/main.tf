@@ -14,6 +14,8 @@ resource "azurerm_web_application_firewall_policy" "sr_waf_policy" {
       }
       operator           = "GeoMatch"
       negation_condition = false
+
+      //Changes made here also need to be made to Okta!
       match_values = [
         "AF", //Afghanistan (ITAR)
         "AL", //Albania (OFAC)
