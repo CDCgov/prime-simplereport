@@ -66,6 +66,9 @@ dependencies {
         exclude group: "org.springframework:spring-webflux", module: "spring-webflux"
     }
 
+    implementation 'org.springframework:spring-webflux:5.3.20'
+    implementation 'com.google.guava:guava:31.1-jre'
+
     implementation 'com.zhokhov.graphql:graphql-datetime-spring-boot-starter:4.1.0'
     implementation 'org.json:json:20201115'
     implementation 'com.fasterxml.jackson.dataformat:jackson-dataformat-csv'
