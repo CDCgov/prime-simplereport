@@ -153,7 +153,11 @@ describe("EditPatient", () => {
       },
     ];
 
-    beforeEach(() => {
+    let renderWithRoutes = (
+      facilityId: string,
+      patientId: string,
+      fromQueue: boolean
+    ) => {
       const Queue = () => {
         const location = useLocation();
         return <p>Testing Queue! {location.search}</p>;
@@ -166,8 +170,9 @@ describe("EditPatient", () => {
               <Route
                 element={
                   <EditPatient
-                    facilityId={mockFacilityID}
-                    patientId={mockPatientID}
+                    facilityId={facilityId}
+                    patientId={patientId}
+                    fromQueue={fromQueue}
                   />
                 }
                 path={"/patient/"}
@@ -178,9 +183,10 @@ describe("EditPatient", () => {
           </MockedProvider>
         </Provider>
       );
-    });
+    };
 
     it("can redirect to the new test form upon save", async () => {
+      renderWithRoutes(mockFacilityID, mockPatientID, false);
       await waitForElementToBeRemoved(() =>
         screen.queryAllByText("Loading...")
       );
@@ -197,6 +203,31 @@ describe("EditPatient", () => {
       expect(saveAndStartButton).toBeEnabled();
 
       userEvent.click(saveAndStartButton);
+
+      await waitFor(() => {
+        expect(
+          screen.getByText("Testing Queue!", { exact: false })
+        ).toBeInTheDocument();
+      });
+    });
+    it("redirects to test queue on save when coming from Conduct tests page", async () => {
+      renderWithRoutes(mockFacilityID, mockPatientID, true);
+      await waitForElementToBeRemoved(() =>
+        screen.queryAllByText("Loading...")
+      );
+      // Make an arbitrary change on the form to allow submission
+      const name = await screen.findByLabelText("First name", { exact: false });
+
+      fireEvent.change(name, { target: { value: "Fake Name" } });
+      fireEvent.blur(name);
+
+      const saveButton = screen.getAllByText("Save changes", {
+        exact: false,
+      })[0];
+
+      expect(saveButton).toBeEnabled();
+
+      userEvent.click(saveButton);
 
       await waitFor(() => {
         expect(
@@ -611,7 +642,7 @@ describe("EditPatient", () => {
           ]}
         >
           <Provider store={store}>
-            <MockedProvider mocks={mocks}>
+            <MockedProvider mocks={mocks} addTypename={false}>
               <Routes>
                 <Route
                   path="/patient/:patientId"
@@ -634,7 +665,7 @@ describe("EditPatient", () => {
       render(
         <MemoryRouter>
           <Provider store={store}>
-            <MockedProvider mocks={mocks}>
+            <MockedProvider mocks={mocks} addTypename={false}>
               <EditPatient
                 facilityId={mockFacilityID}
                 patientId={mockPatientID}
