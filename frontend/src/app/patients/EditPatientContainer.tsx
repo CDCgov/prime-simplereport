@@ -1,4 +1,4 @@
-import { useParams } from "react-router-dom";
+import { useLocation, useParams } from "react-router-dom";
 
 import { useSelectedFacility } from "../facilitySelect/useSelectedFacility";
 import { getParameterFromUrl } from "../utils/url";
@@ -10,7 +10,7 @@ const EditPatientContainer = () => {
   const activeFacilityId = facility?.id;
   const params = useParams();
   const patientId = params.patientId || "";
-  const fromQueue = getParameterFromUrl("fromQueue") === "true";
+  const fromQueue = getParameterFromUrl("fromQueue", useLocation()) === "true";
 
   if (!activeFacilityId) {
     return <div>"No facility selected"</div>;

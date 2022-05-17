@@ -1,3 +1,5 @@
+import qs from "querystring";
+
 import {
   render,
   screen,
@@ -579,15 +581,74 @@ describe("EditPatient", () => {
   describe("EditPatientContainer", () => {
     it("doesn't render if no facility is provided", async () => {
       render(
-        <MemoryRouter initialEntries={[{ search: "?patientId=5" }]}>
-          <Provider store={configureStore()({ facilities: [] })}>
-            <EditPatientContainer />
+        <MemoryRouter initialEntries={[{ pathname: "/patient/5" }]}>
+          <Provider store={store}>
+            <Routes>
+              <Route
+                path="/patient/:patientId"
+                element={<EditPatientContainer />}
+              />
+            </Routes>
           </Provider>
         </MemoryRouter>
       );
       expect(
         await screen.findByText("No facility selected", { exact: false })
       ).toBeInTheDocument();
+    });
+    it("renders EditPatient with valid params", async () => {
+      const search = {
+        facility: mockFacilityID,
+        fromQueue: "true",
+      };
+      render(
+        <MemoryRouter
+          initialEntries={[
+            {
+              pathname: `/patient/${mockPatientID}`,
+              search: qs.stringify(search),
+            },
+          ]}
+        >
+          <Provider store={store}>
+            <MockedProvider mocks={mocks}>
+              <Routes>
+                <Route
+                  path="/patient/:patientId"
+                  element={<EditPatientContainer />}
+                />
+              </Routes>
+            </MockedProvider>
+          </Provider>
+        </MemoryRouter>
+      );
+      expect(
+        await screen.findByText("Franecki, Eugenia", { exact: false })
+      ).toBeInTheDocument();
+      expect(await screen.findByText("Conduct tests")).toBeInTheDocument();
+    });
+  });
+
+  describe("edit patient from conduct tests page", () => {
+    beforeEach(async () => {
+      render(
+        <MemoryRouter>
+          <Provider store={store}>
+            <MockedProvider mocks={mocks}>
+              <EditPatient
+                facilityId={mockFacilityID}
+                patientId={mockPatientID}
+                fromQueue={true}
+              />
+            </MockedProvider>
+          </Provider>
+        </MemoryRouter>
+      );
+    });
+    it("shows Conduct tests link and hides Save and start test button", async () => {
+      expect(await screen.findByText("Conduct tests")).toBeInTheDocument();
+      expect(screen.queryByText("People")).not.toBeInTheDocument();
+      expect(screen.queryByText("Save and start test")).not.toBeInTheDocument();
     });
   });
 });
