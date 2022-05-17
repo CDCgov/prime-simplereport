@@ -20,8 +20,14 @@ const UPLOAD_TEST_RESULT_CSV = gql`
       reportId
       status
       recordsCount
-      warnings
-      errors
+      warnings {
+        scope
+        message
+      }
+      errors {
+        scope
+        message
+      }
     }
   }
 `;

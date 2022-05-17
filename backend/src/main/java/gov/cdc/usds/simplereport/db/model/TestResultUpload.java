@@ -1,6 +1,7 @@
 package gov.cdc.usds.simplereport.db.model;
 
 import gov.cdc.usds.simplereport.db.model.auxiliary.UploadStatus;
+import gov.cdc.usds.simplereport.service.model.reportstream.FeedbackMessage;
 import java.util.UUID;
 import javax.persistence.Column;
 import javax.persistence.Entity;
@@ -11,10 +12,12 @@ import javax.persistence.JoinColumn;
 import javax.persistence.ManyToOne;
 import javax.persistence.Table;
 import lombok.Getter;
+import lombok.Setter;
 import lombok.extern.slf4j.Slf4j;
 import org.hibernate.annotations.Type;
 
 @Getter
+@Setter
 @Entity
 @Slf4j
 @Table(name = "upload")
@@ -33,13 +36,13 @@ public class TestResultUpload extends AuditedEntity {
   @JoinColumn(name = "org_id")
   private Organization organization;
 
-  @ManyToOne(optional = true, fetch = FetchType.LAZY)
-  @JoinColumn(name = "facility_id")
-  private Facility facility;
+  @Column()
+  @Type(type = "jsonb")
+  private FeedbackMessage[] warnings;
 
-  @Column private String warnings;
-
-  @Column private String errors;
+  @Column()
+  @Type(type = "jsonb")
+  private FeedbackMessage[] errors;
 
   protected TestResultUpload() {}
 
@@ -48,14 +51,12 @@ public class TestResultUpload extends AuditedEntity {
       UploadStatus status,
       int recordsCount,
       Organization organization,
-      Facility facility,
-      String warnings,
-      String errors) {
+      FeedbackMessage[] warnings,
+      FeedbackMessage[] errors) {
     this.reportId = reportId;
     this.status = status;
     this.recordsCount = recordsCount;
     this.organization = organization;
-    this.facility = facility;
     this.warnings = warnings;
     this.errors = errors;
   }

@@ -298,8 +298,13 @@ type UploadResult {
   reportId: ID
   status: String
   recordsCount: Int
-  warnings: String
-  errors: String
+  warnings: [FeedbackMessage]
+  errors: [FeedbackMessage]
+}
+
+type FeedbackMessage {
+  scope: String
+  message: String
 }
 # Queries and mutations for everyday use
 

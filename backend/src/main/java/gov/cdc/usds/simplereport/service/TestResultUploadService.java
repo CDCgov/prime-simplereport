@@ -1,10 +1,8 @@
 package gov.cdc.usds.simplereport.service;
 
-import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import gov.cdc.usds.simplereport.api.model.errors.IllegalGraphqlArgumentException;
 import gov.cdc.usds.simplereport.config.AuthorizationConfiguration;
-import gov.cdc.usds.simplereport.db.model.Facility;
 import gov.cdc.usds.simplereport.db.model.Organization;
 import gov.cdc.usds.simplereport.db.model.TestResultUpload;
 import gov.cdc.usds.simplereport.db.model.auxiliary.UploadStatus;
@@ -34,8 +32,6 @@ public class TestResultUploadService {
     TestResultUpload result = new TestResultUpload(UploadStatus.FAILURE);
 
     Organization org = _orgService.getCurrentOrganization();
-    Facility facility =
-        _orgService.getFacilityInCurrentOrg(facilityId); // todo maybe get rid of facility?
 
     byte[] content;
     try {
@@ -48,15 +44,9 @@ public class TestResultUploadService {
     if (content.length > 0) {
       response = _client.uploadCSV(content);
     }
-    String warnings = null, errors = null;
 
     if (response != null) {
-      try {
-        warnings = _mapper.writeValueAsString(response.getWarnings());
-        errors = _mapper.writeValueAsString(response.getErrors());
-      } catch (JsonProcessingException e) {
-        throw new RuntimeException(e);
-      }
+
       var status = parseStatus(response.getOverallStatus());
       result =
           new TestResultUpload(
@@ -64,9 +54,8 @@ public class TestResultUploadService {
               status,
               response.getReportItemCount(),
               org,
-              facility,
-              warnings,
-              errors);
+              response.getWarnings(),
+              response.getErrors());
 
       _repo.save(result);
     }

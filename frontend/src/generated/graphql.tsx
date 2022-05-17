@@ -126,6 +126,12 @@ export type Facility = {
   zipCode?: Maybe<Scalars["String"]>;
 };
 
+export type FeedbackMessage = {
+  __typename?: "FeedbackMessage";
+  message?: Maybe<Scalars["String"]>;
+  scope?: Maybe<Scalars["String"]>;
+};
+
 export type Mutation = {
   __typename?: "Mutation";
   addFacility?: Maybe<Facility>;
@@ -947,11 +953,11 @@ export type UpdateDeviceType = {
 
 export type UploadResult = {
   __typename?: "UploadResult";
-  errors?: Maybe<Scalars["String"]>;
+  errors?: Maybe<Array<Maybe<FeedbackMessage>>>;
   recordsCount?: Maybe<Scalars["Int"]>;
   reportId?: Maybe<Scalars["ID"]>;
   status?: Maybe<Scalars["String"]>;
-  warnings?: Maybe<Scalars["String"]>;
+  warnings?: Maybe<Array<Maybe<FeedbackMessage>>>;
 };
 
 export type User = {
@@ -2550,8 +2556,30 @@ export type UploadTestResultCsvMutation = {
         reportId?: string | null | undefined;
         status?: string | null | undefined;
         recordsCount?: number | null | undefined;
-        warnings?: string | null | undefined;
-        errors?: string | null | undefined;
+        warnings?:
+          | Array<
+              | {
+                  __typename?: "FeedbackMessage";
+                  scope?: string | null | undefined;
+                  message?: string | null | undefined;
+                }
+              | null
+              | undefined
+            >
+          | null
+          | undefined;
+        errors?:
+          | Array<
+              | {
+                  __typename?: "FeedbackMessage";
+                  scope?: string | null | undefined;
+                  message?: string | null | undefined;
+                }
+              | null
+              | undefined
+            >
+          | null
+          | undefined;
       }
     | null
     | undefined;
@@ -6858,8 +6886,14 @@ export const UploadTestResultCsvDocument = gql`
       reportId
       status
       recordsCount
-      warnings
-      errors
+      warnings {
+        scope
+        message
+      }
+      errors {
+        scope
+        message
+      }
     }
   }
 `;
