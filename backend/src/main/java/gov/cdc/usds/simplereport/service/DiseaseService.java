@@ -32,6 +32,21 @@ public class DiseaseService {
     return (List<SupportedDisease>) _supportedDiseaseRepo.findAll();
   }
 
+  public SupportedDisease getDiseaseByName(String name) {
+    switch (name) {
+      case "COVID-19":
+        return covid;
+      case "Flu A":
+        return fluA;
+      case "Flu B":
+        return fluB;
+      default:
+        return _supportedDiseaseRepo
+            .findByName(name)
+            .orElseThrow(() -> new IllegalArgumentException("Disease not found"));
+    }
+  }
+
   public SupportedDisease covid() {
     return covid;
   }

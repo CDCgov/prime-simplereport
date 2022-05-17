@@ -14,6 +14,7 @@ import gov.cdc.usds.simplereport.db.model.DeviceType;
 import gov.cdc.usds.simplereport.db.model.Facility;
 import gov.cdc.usds.simplereport.db.model.Organization;
 import gov.cdc.usds.simplereport.db.model.Person;
+import gov.cdc.usds.simplereport.db.model.auxiliary.DiseaseResult;
 import gov.cdc.usds.simplereport.db.model.auxiliary.TestResult;
 import gov.cdc.usds.simplereport.service.OrganizationService;
 import gov.cdc.usds.simplereport.service.sms.SmsService;
@@ -21,7 +22,9 @@ import gov.cdc.usds.simplereport.test_util.SliceTestConfiguration.WithSimpleRepo
 import gov.cdc.usds.simplereport.test_util.TestDataFactory;
 import java.text.SimpleDateFormat;
 import java.time.Instant;
+import java.util.ArrayList;
 import java.util.Date;
+import java.util.List;
 import java.util.Optional;
 import java.util.Set;
 import java.util.UUID;
@@ -89,6 +92,33 @@ class TestResultTest extends BaseGraphqlTest {
             .put("result", TestResult.NEGATIVE.toString())
             .put("dateTested", dateTested);
     submitTestResult(variables, Optional.empty());
+
+    ArrayNode testResults = fetchTestResults(getFacilityScopedArguments());
+
+    assertTrue(testResults.has(0), "Has at least one submitted test result=");
+    assertEquals(testResults.get(0).get("dateTested").asText(), dateTested);
+  }
+
+  @Test
+  void submitTestResultMultiplex() throws Exception {
+    Person p = _dataFactory.createFullPerson(_org);
+    DeviceType d = _site.getDefaultDeviceType();
+    _dataFactory.createTestOrder(p, _site);
+    String dateTested = "2020-12-31T14:30:30.001Z";
+
+    List<DiseaseResult> results = new ArrayList<>();
+    results.add(new DiseaseResult(_diseaseService.covid().getName(), TestResult.POSITIVE));
+    results.add(new DiseaseResult(_diseaseService.fluA().getName(), TestResult.POSITIVE));
+    results.add(new DiseaseResult(_diseaseService.fluB().getName(), TestResult.POSITIVE));
+
+    ObjectNode variables =
+        JsonNodeFactory.instance
+            .objectNode()
+            .put("deviceId", d.getInternalId().toString())
+            .put("patientId", p.getInternalId().toString())
+            .putPOJO("results", results)
+            .put("dateTested", dateTested);
+    submitTestResultMultiplex(variables, Optional.empty());
 
     ArrayNode testResults = fetchTestResults(getFacilityScopedArguments());
 
@@ -322,6 +352,11 @@ class TestResultTest extends BaseGraphqlTest {
 
   private ObjectNode submitTestResult(ObjectNode variables, Optional<String> expectedError) {
     return runQuery("add-test-result-mutation", variables, expectedError.orElse(null));
+  }
+
+  private ObjectNode submitTestResultMultiplex(
+      ObjectNode variables, Optional<String> expectedError) {
+    return runQuery("add-test-result-multiplex-mutation", variables, expectedError.orElse(null));
   }
 
   private ArrayNode fetchTestResults(ObjectNode variables) {
