@@ -17,7 +17,6 @@ import gov.cdc.usds.simplereport.db.model.TenantDataAccess;
 import gov.cdc.usds.simplereport.db.repository.ApiUserRepository;
 import gov.cdc.usds.simplereport.db.repository.TenantDataAccessRepository;
 import gov.cdc.usds.simplereport.service.model.IdentityAttributes;
-import java.util.Collection;
 import java.util.EnumSet;
 import java.util.HashMap;
 import java.util.HashSet;
@@ -302,17 +301,6 @@ public class DemoOktaRepository implements OktaRepository {
                       return new OrganizationRoleClaims(
                           orgExternalId, newFacilities, oldRoleClaims.getGrantedRoles());
                     }));
-  }
-
-  private Optional<OrganizationRoleClaims> getOrganizationRoleClaimsFromTenantDataAccess(
-      Collection<String> groupNames) {
-    List<OrganizationRoleClaims> claims = organizationExtractor.convertClaims(groupNames);
-
-    if (claims.size() != 1) {
-      log.warn("User is in {} Okta organizations, not 1", claims.size());
-      return Optional.empty();
-    }
-    return Optional.of(claims.get(0));
   }
 
   public Optional<OrganizationRoleClaims> getOrganizationRoleClaimsForUser(String username) {
