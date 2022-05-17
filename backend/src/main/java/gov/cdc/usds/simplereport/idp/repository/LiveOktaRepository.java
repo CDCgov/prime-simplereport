@@ -26,7 +26,6 @@ import gov.cdc.usds.simplereport.config.exceptions.MisconfiguredApplicationExcep
 import gov.cdc.usds.simplereport.db.model.Facility;
 import gov.cdc.usds.simplereport.db.model.Organization;
 import gov.cdc.usds.simplereport.service.model.IdentityAttributes;
-import java.util.Collection;
 import java.util.EnumSet;
 import java.util.HashMap;
 import java.util.HashSet;
@@ -561,17 +560,6 @@ public class LiveOktaRepository implements OktaRepository {
     }
     User user = users.single();
     return getOrganizationRoleClaimsForUser(user);
-  }
-
-  private Optional<OrganizationRoleClaims> getOrganizationRoleClaimsFromAuthorities(
-      Collection<String> authorities) {
-    List<OrganizationRoleClaims> claims = _extractor.convertClaims(authorities);
-
-    if (claims.size() != 1) {
-      log.warn("User's Tenant Data Access has claims in {} organizations, not 1", claims.size());
-      return Optional.empty();
-    }
-    return Optional.of(claims.get(0));
   }
 
   private Optional<OrganizationRoleClaims> getOrganizationRoleClaimsForUser(User user) {

@@ -45,8 +45,7 @@ public class OrganizationService {
   private final DeviceTypeRepository deviceTypeRepository;
 
   public Optional<OrganizationRoles> getCurrentOrganizationRoles() {
-    var result = fetchCurrentOrganizationRoles();
-    return result;
+    return fetchCurrentOrganizationRoles();
   }
 
   private Optional<OrganizationRoles> fetchCurrentOrganizationRoles() {
