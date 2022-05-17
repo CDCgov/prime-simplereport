@@ -177,12 +177,11 @@ const App = () => {
             <Route
               path="results/upload"
               element={
-                <Uploads />
-                // <ProtectedRoute
-                //   requiredPermissions={canViewResults}
-                //   userPermissions={data.whoami.permissions}
-                //   element={<Uploads />}
-                // />
+                <ProtectedRoute
+                  requiredPermissions={canViewResults}
+                  userPermissions={data.whoami.permissions}
+                  element={<Uploads />}
+                />
               }
             />
             <Route path="patients">

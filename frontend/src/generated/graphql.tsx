@@ -596,7 +596,6 @@ export type MutationUploadPatientsArgs = {
 };
 
 export type MutationUploadTestResultCsvArgs = {
-  facilityId: Scalars["ID"];
   testResultList: Scalars["Upload"];
 };
 
@@ -2544,7 +2543,6 @@ export type GetAllFacilitiesQuery = {
 };
 
 export type UploadTestResultCsvMutationVariables = Exact<{
-  facilityId: Scalars["ID"];
   testResultList: Scalars["Upload"];
 }>;
 
@@ -6878,11 +6876,8 @@ export type GetAllFacilitiesQueryResult = Apollo.QueryResult<
   GetAllFacilitiesQueryVariables
 >;
 export const UploadTestResultCsvDocument = gql`
-  mutation UploadTestResultCSV($facilityId: ID!, $testResultList: Upload!) {
-    uploadTestResultCSV(
-      facilityId: $facilityId
-      testResultList: $testResultList
-    ) {
+  mutation UploadTestResultCSV($testResultList: Upload!) {
+    uploadTestResultCSV(testResultList: $testResultList) {
       reportId
       status
       recordsCount
@@ -6915,7 +6910,6 @@ export type UploadTestResultCsvMutationFn = Apollo.MutationFunction<
  * @example
  * const [uploadTestResultCsvMutation, { data, loading, error }] = useUploadTestResultCsvMutation({
  *   variables: {
- *      facilityId: // value for 'facilityId'
  *      testResultList: // value for 'testResultList'
  *   },
  * });
