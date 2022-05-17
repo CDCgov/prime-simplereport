@@ -3,8 +3,10 @@ package gov.cdc.usds.simplereport.service.model.reportstream;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import java.util.Date;
 import lombok.Getter;
+import lombok.Setter;
 
 @Getter
+@Setter
 public class TokenResponse {
   public String sub;
 

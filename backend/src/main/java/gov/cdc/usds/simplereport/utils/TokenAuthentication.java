@@ -32,15 +32,13 @@ public class TokenAuthentication {
       var spec = new PKCS8EncodedKeySpec(encoded);
       var key = (RSAPrivateKey) kf.generatePrivate(spec);
       return key;
-    } catch (IOException e) {
-      log.trace("Failed to retrieve encoded private key");
+    } catch (IOException | NullPointerException e) {
+      log.trace("Invalid private key");
       throw new InvalidRSAPrivateKeyException(e);
-    } catch (NoSuchAlgorithmException e) {
-      log.trace("Given algorithm is not supported");
+    } catch (NoSuchAlgorithmException | InvalidKeySpecException e) {
       throw new InvalidRSAPrivateKeyException(e);
-    } catch (InvalidKeySpecException e) {
-      log.trace("Failed to generate private key from the given key spec");
-      throw new InvalidRSAPrivateKeyException(e);
+    } catch (Exception e) {
+      throw e;
     }
   }
 
