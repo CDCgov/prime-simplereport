@@ -32,6 +32,11 @@ const PAYLOAD_MAX_BYTES = 50 * 1000 * 1000;
 const REPORT_MAX_ITEMS = 10000;
 const REPORT_MAX_ITEM_COLUMNS = 2000;
 
+interface Message {
+  scope: String;
+  message: String;
+  rowList: String;
+}
 const Uploads = () => {
   const [fileInputResetValue, setFileInputResetValue] = useState(0);
   const [isSubmitting, setIsSubmitting] = useState(false);
@@ -39,7 +44,7 @@ const Uploads = () => {
 
   const [reportId, setReportId] = useState(null);
 
-  const [errors, setErrors] = useState([]);
+  const [errors, setErrors] = useState([] as Message[]);
   const [errorMessageText, setErrorMessageText] = useState(
     `Please resolve the errors below and upload your edited file. Your file has not been accepted.`
   );
@@ -112,7 +117,11 @@ const Uploads = () => {
     setReportId(null);
     setErrors([]);
 
-    if (file?.size === 0) {
+    if (!file || file.size === 0) {
+      setIsSubmitting(false);
+      let errorMessage = {} as Message;
+      errorMessage.message = "Invalid File";
+      setErrors([errorMessage]);
       return;
     }
 
