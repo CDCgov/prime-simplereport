@@ -37,6 +37,7 @@ query GetFacilityResultsForCsv(
   ) {
     facility {
       name
+      isDeleted
     }
     dateTested
     result
@@ -144,3 +145,10 @@ query GetFacilityResultsMultiplex(
   }
 }
 
+query GetAllFacilities($showArchived: Boolean) {
+  facilities(showArchived: $showArchived) {
+    id
+    name
+    isDeleted
+  }
+}

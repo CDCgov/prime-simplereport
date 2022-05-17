@@ -181,7 +181,7 @@ public class DemoOktaRepository implements OktaRepository {
   public void setUserIsActive(String username, Boolean active) {
     if (active) {
       inactiveUsernames.remove(username);
-    } else if (!active) {
+    } else {
       inactiveUsernames.add(username);
     }
   }

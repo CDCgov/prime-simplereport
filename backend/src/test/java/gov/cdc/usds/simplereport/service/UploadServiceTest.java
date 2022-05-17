@@ -279,6 +279,6 @@ class UploadServiceTest extends BaseServiceTest<UploadService> {
 
   private List<Person> getPatients() {
     return this.personService.getPatients(
-        null, PATIENT_PAGE_OFFSET, PATIENT_PAGE_SIZE, false, null);
+        null, PATIENT_PAGE_OFFSET, PATIENT_PAGE_SIZE, false, null, false);
   }
 }
