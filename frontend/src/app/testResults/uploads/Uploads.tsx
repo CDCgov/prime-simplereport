@@ -152,6 +152,7 @@ const Uploads = () => {
     }
 
     setFileInputResetValue(fileInputResetValue + 1);
+    setFile(undefined);
     setIsSubmitting(false);
   };
 

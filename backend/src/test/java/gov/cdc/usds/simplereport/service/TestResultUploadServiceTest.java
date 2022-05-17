@@ -4,14 +4,12 @@ import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 
-import com.fasterxml.jackson.databind.ObjectMapper;
 import gov.cdc.usds.simplereport.db.model.TestResultUpload;
 import gov.cdc.usds.simplereport.db.model.auxiliary.UploadStatus;
 import gov.cdc.usds.simplereport.db.repository.TestResultUploadRepository;
 import gov.cdc.usds.simplereport.service.model.reportstream.ReportStreamStatus;
 import gov.cdc.usds.simplereport.service.model.reportstream.UploadResponse;
 import java.io.InputStream;
-import java.util.UUID;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -24,12 +22,11 @@ public class TestResultUploadServiceTest {
   @MockBean DataHubClient dataHubClient;
   @MockBean TestResultUploadRepository repo;
   @MockBean OrganizationService orgSvc;
-  @MockBean ObjectMapper mapper;
   private TestResultUploadService sut;
 
   @BeforeEach
   public void init() {
-    sut = new TestResultUploadService(repo, dataHubClient, orgSvc, mapper);
+    sut = new TestResultUploadService(repo, dataHubClient, orgSvc);
   }
 
   @Test
@@ -41,7 +38,7 @@ public class TestResultUploadServiceTest {
     when(dataHubClient.uploadCSV(any())).thenReturn(uploadResponse);
     when(repo.save(any())).thenReturn(mock(TestResultUpload.class));
 
-    var response = sut.processResultCSV(input, UUID.randomUUID());
+    var response = sut.processResultCSV(input);
     assert (response != null && response.getStatus() == UploadStatus.PENDING);
   }
 

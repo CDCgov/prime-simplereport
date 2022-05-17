@@ -1,17 +1,17 @@
 package gov.cdc.usds.simplereport.service;
 
-import com.fasterxml.jackson.databind.ObjectMapper;
+import feign.FeignException;
 import gov.cdc.usds.simplereport.api.model.errors.IllegalGraphqlArgumentException;
 import gov.cdc.usds.simplereport.config.AuthorizationConfiguration;
 import gov.cdc.usds.simplereport.db.model.Organization;
 import gov.cdc.usds.simplereport.db.model.TestResultUpload;
 import gov.cdc.usds.simplereport.db.model.auxiliary.UploadStatus;
 import gov.cdc.usds.simplereport.db.repository.TestResultUploadRepository;
+import gov.cdc.usds.simplereport.service.model.reportstream.FeedbackMessage;
 import gov.cdc.usds.simplereport.service.model.reportstream.ReportStreamStatus;
 import gov.cdc.usds.simplereport.service.model.reportstream.UploadResponse;
 import java.io.IOException;
 import java.io.InputStream;
-import java.util.UUID;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
@@ -23,10 +23,9 @@ public class TestResultUploadService {
   private final TestResultUploadRepository _repo;
   private final DataHubClient _client;
   private final OrganizationService _orgService;
-  private final ObjectMapper _mapper;
 
   @AuthorizationConfiguration.RequirePermissionCSVUpload
-  public TestResultUpload processResultCSV(InputStream csvStream, UUID facilityId)
+  public TestResultUpload processResultCSV(InputStream csvStream)
       throws IllegalGraphqlArgumentException {
 
     TestResultUpload result = new TestResultUpload(UploadStatus.FAILURE);
@@ -42,7 +41,13 @@ public class TestResultUploadService {
 
     UploadResponse response = null;
     if (content.length > 0) {
-      response = _client.uploadCSV(content);
+      try {
+        response = _client.uploadCSV(content);
+      } catch (FeignException.BadRequest e) {
+        result.setErrors(new FeedbackMessage[] {new FeedbackMessage("api", "Bad Request")});
+      } catch (FeignException fe) {
+        result.setErrors(new FeedbackMessage[] {new FeedbackMessage("api", "Server Error")});
+      }
     }
 
     if (response != null) {
