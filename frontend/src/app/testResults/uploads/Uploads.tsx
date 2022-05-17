@@ -9,19 +9,21 @@ import {
 } from "@trussworks/react-uswds";
 
 import { showError } from "../../utils";
-import { useSelectedFacility } from "../../facilitySelect/useSelectedFacility";
 
 const UPLOAD_TEST_RESULT_CSV = gql`
-  mutation UploadTestResultCSV($facilityId: ID!, $testResultList: Upload!) {
-    uploadTestResultCSV(
-      facilityId: $facilityId
-      testResultList: $testResultList
-    ) {
+  mutation UploadTestResultCSV($testResultList: Upload!) {
+    uploadTestResultCSV(testResultList: $testResultList) {
       reportId
       status
       recordsCount
-      warnings
-      errors
+      warnings {
+        scope
+        message
+      }
+      errors {
+        scope
+        message
+      }
     }
   }
 `;
@@ -31,9 +33,6 @@ const REPORT_MAX_ITEMS = 10000;
 const REPORT_MAX_ITEM_COLUMNS = 2000;
 
 const Uploads = () => {
-  const [facility] = useSelectedFacility();
-  const activeFacilityId = facility?.id || "";
-
   const [fileInputResetValue, setFileInputResetValue] = useState(0);
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [file, setFile] = useState<File>();
@@ -120,7 +119,7 @@ const Uploads = () => {
     let queryResponse;
     try {
       queryResponse = await uploadTestResultCSV({
-        variables: { facilityId: activeFacilityId, testResultList: file },
+        variables: { testResultList: file },
       });
     } catch (error) {}
     const response = queryResponse?.data.uploadTestResultCSV;
@@ -153,6 +152,7 @@ const Uploads = () => {
     }
 
     setFileInputResetValue(fileInputResetValue + 1);
+    setFile(undefined);
     setIsSubmitting(false);
   };
 

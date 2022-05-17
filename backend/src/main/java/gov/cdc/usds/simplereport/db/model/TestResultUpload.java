@@ -12,10 +12,12 @@ import javax.persistence.JoinColumn;
 import javax.persistence.ManyToOne;
 import javax.persistence.Table;
 import lombok.Getter;
+import lombok.Setter;
 import lombok.extern.slf4j.Slf4j;
 import org.hibernate.annotations.Type;
 
 @Getter
+@Setter
 @Entity
 @Slf4j
 @Table(name = "upload")
@@ -34,12 +36,12 @@ public class TestResultUpload extends AuditedEntity {
   @JoinColumn(name = "org_id")
   private Organization organization;
 
+  @Column()
   @Type(type = "jsonb")
-  @Column
   private FeedbackMessage[] warnings;
 
+  @Column()
   @Type(type = "jsonb")
-  @Column
   private FeedbackMessage[] errors;
 
   protected TestResultUpload() {}

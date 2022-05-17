@@ -18,6 +18,7 @@ import gov.cdc.usds.simplereport.service.model.reportstream.UploadResponse;
 import gov.cdc.usds.simplereport.test_util.TestDataFactory;
 import java.io.InputStream;
 import java.util.UUID;
+
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -52,7 +53,7 @@ public class TestResultUploadServiceTest {
     when(dataHubClient.uploadCSV(any())).thenReturn(uploadResponse);
     when(repo.save(any())).thenReturn(mock(TestResultUpload.class));
 
-    var response = sut.processResultCSV(input, UUID.randomUUID());
+    var response = sut.processResultCSV(input);
     assert (response != null && response.getStatus() == UploadStatus.PENDING);
   }
 

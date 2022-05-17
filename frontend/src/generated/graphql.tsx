@@ -1,6 +1,5 @@
 import { gql } from "@apollo/client";
 import * as Apollo from "@apollo/client";
-
 export type Maybe<T> = T | null;
 export type InputMaybe<T> = Maybe<T>;
 export type Exact<T extends { [key: string]: unknown }> = {
@@ -124,6 +123,12 @@ export type Facility = {
   street?: Maybe<Scalars["String"]>;
   streetTwo?: Maybe<Scalars["String"]>;
   zipCode?: Maybe<Scalars["String"]>;
+};
+
+export type FeedbackMessage = {
+  __typename?: "FeedbackMessage";
+  message?: Maybe<Scalars["String"]>;
+  scope?: Maybe<Scalars["String"]>;
 };
 
 export type Mutation = {
@@ -590,7 +595,6 @@ export type MutationUploadPatientsArgs = {
 };
 
 export type MutationUploadTestResultCsvArgs = {
-  facilityId: Scalars["ID"];
   testResultList: Scalars["Upload"];
 };
 
@@ -748,7 +752,7 @@ export type Query = {
   testResults?: Maybe<Array<Maybe<TestResult>>>;
   testResultsCount?: Maybe<Scalars["Int"]>;
   topLevelDashboardMetrics?: Maybe<TopLevelDashboardMetrics>;
-  uploadSubmission: UploadResult;
+  uploadSubmission: UploadResponse;
   user?: Maybe<User>;
   users?: Maybe<Array<Maybe<ApiUser>>>;
   usersWithStatus?: Maybe<Array<ApiUserWithStatus>>;
@@ -950,14 +954,23 @@ export type UpdateDeviceType = {
   swabTypes: Array<Scalars["ID"]>;
 };
 
-export type UploadResult = {
-  __typename?: "UploadResult";
-  createdAt?: Maybe<Scalars["String"]>;
+export type UploadResponse = {
+  __typename?: "UploadResponse";
+  createdAt: Scalars["DateTime"];
   errors: Scalars["String"];
   recordsCount: Scalars["Int"];
   reportId: Scalars["ID"];
   status: Scalars["String"];
   warnings: Scalars["String"];
+};
+
+export type UploadResult = {
+  __typename?: "UploadResult";
+  errors?: Maybe<Array<Maybe<FeedbackMessage>>>;
+  recordsCount?: Maybe<Scalars["Int"]>;
+  reportId?: Maybe<Scalars["ID"]>;
+  status?: Maybe<Scalars["String"]>;
+  warnings?: Maybe<Array<Maybe<FeedbackMessage>>>;
 };
 
 export enum UploadStatus {
@@ -2556,9 +2569,9 @@ export type GetUploadSubmissionQueryVariables = Exact<{
 export type GetUploadSubmissionQuery = {
   __typename?: "Query";
   uploadSubmission: {
-    __typename?: "UploadResult";
+    __typename?: "UploadResponse";
     reportId: string;
-    createdAt?: string | null | undefined;
+    createdAt: any;
     status: string;
     warnings: string;
     errors: string;
@@ -2567,7 +2580,6 @@ export type GetUploadSubmissionQuery = {
 };
 
 export type UploadTestResultCsvMutationVariables = Exact<{
-  facilityId: Scalars["ID"];
   testResultList: Scalars["Upload"];
 }>;
 
@@ -2576,11 +2588,33 @@ export type UploadTestResultCsvMutation = {
   uploadTestResultCSV?:
     | {
         __typename?: "UploadResult";
-        reportId: string;
-        status: string;
-        recordsCount: number;
-        warnings: string;
-        errors: string;
+        reportId?: string | null | undefined;
+        status?: string | null | undefined;
+        recordsCount?: number | null | undefined;
+        warnings?:
+          | Array<
+              | {
+                  __typename?: "FeedbackMessage";
+                  scope?: string | null | undefined;
+                  message?: string | null | undefined;
+                }
+              | null
+              | undefined
+            >
+          | null
+          | undefined;
+        errors?:
+          | Array<
+              | {
+                  __typename?: "FeedbackMessage";
+                  scope?: string | null | undefined;
+                  message?: string | null | undefined;
+                }
+              | null
+              | undefined
+            >
+          | null
+          | undefined;
       }
     | null
     | undefined;
@@ -6942,16 +6976,19 @@ export type GetUploadSubmissionQueryResult = Apollo.QueryResult<
   GetUploadSubmissionQueryVariables
 >;
 export const UploadTestResultCsvDocument = gql`
-  mutation UploadTestResultCSV($facilityId: ID!, $testResultList: Upload!) {
-    uploadTestResultCSV(
-      facilityId: $facilityId
-      testResultList: $testResultList
-    ) {
+  mutation UploadTestResultCSV($testResultList: Upload!) {
+    uploadTestResultCSV(testResultList: $testResultList) {
       reportId
       status
       recordsCount
-      warnings
-      errors
+      warnings {
+        scope
+        message
+      }
+      errors {
+        scope
+        message
+      }
     }
   }
 `;
@@ -6973,7 +7010,6 @@ export type UploadTestResultCsvMutationFn = Apollo.MutationFunction<
  * @example
  * const [uploadTestResultCsvMutation, { data, loading, error }] = useUploadTestResultCsvMutation({
  *   variables: {
- *      facilityId: // value for 'facilityId'
  *      testResultList: // value for 'testResultList'
  *   },
  * });

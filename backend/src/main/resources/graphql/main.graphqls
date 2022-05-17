@@ -166,15 +166,6 @@ type ApiUserWithStatus {
   status: String
 }
 
-type UploadResult {
-  reportId: ID!
-  createdAt: DateTime!
-  status: String!
-  recordsCount: Int!
-  warnings: String!
-  errors: String!
-}
-
 type UploadResponse {
   reportId: ID!
   createdAt: DateTime!
@@ -312,6 +303,18 @@ type PendingOrganization {
   createdAt: DateTime!
 }
 
+type UploadResult {
+  reportId: ID
+  status: String
+  recordsCount: Int
+  warnings: [FeedbackMessage]
+  errors: [FeedbackMessage]
+}
+
+type FeedbackMessage {
+  scope: String
+  message: String
+}
 # Queries and mutations for everyday use
 
 type Query {
@@ -652,6 +655,6 @@ type Mutation {
   sendPatientLinkEmailByTestEventId(testEventId: ID!): Boolean
   updateOrganization(type: String!): String
     @requiredPermissions(allOf: ["EDIT_ORGANIZATION"])
-  uploadTestResultCSV(testResultList: Upload!, facilityId: ID!): UploadResult
+  uploadTestResultCSV(testResultList: Upload!): UploadResult
     @requiredPermissions(allOf: ["SR_CSV_UPLOADER_PILOT"])
 }
