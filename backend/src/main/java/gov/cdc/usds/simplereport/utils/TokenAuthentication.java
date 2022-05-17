@@ -19,7 +19,7 @@ import org.bouncycastle.openssl.PEMParser;
 @Slf4j
 public class TokenAuthentication {
   private TokenAuthentication() {
-    throw new IllegalStateException("OrganizationUtils is a utility class");
+    throw new IllegalStateException("TokenAuthentication is a utility class");
   }
 
   public static RSAPrivateKey getRSAPrivateKey(String privateKey)
