@@ -967,6 +967,7 @@ export type UploadResponse = {
 
 export type UploadResult = {
   __typename?: "UploadResult";
+  createdAt?: Maybe<Scalars["DateTime"]>;
   errors?: Maybe<Array<Maybe<FeedbackMessage>>>;
   recordsCount?: Maybe<Scalars["Int"]>;
   reportId?: Maybe<Scalars["ID"]>;

@@ -87,8 +87,8 @@ const mocks = {
         createdAt: "2022-05-05T13:47:09Z",
         status: "SUCCESS",
         recordsCount: 15,
-        errors: "[]",
-        warnings: "[]",
+        errors: [],
+        warnings: [],
       } as UploadResult)
     )
   ),

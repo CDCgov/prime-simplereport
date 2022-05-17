@@ -24,9 +24,9 @@ const submission: UploadResult = {
   reportId: "12b86a9d-a9d6-4391-a555-6618e8ac66d9",
   status: UploadStatus.Success,
   recordsCount: 2,
-  createdAt: "2022-05-05T13:47:09Z",
-  errors: "[]",
-  warnings: "[]",
+  createdAt: new Date("2022-05-05T13:47:09Z"),
+  errors: [],
+  warnings: [],
 };
 
 describe("Submission", () => {
@@ -88,7 +88,7 @@ describe("Submission", () => {
     expect(await screen.findByText("05 May 2022 13:47"));
 
     expect(await screen.findByText("Report ID"));
-    expect(await screen.findByText(submission.reportId));
+    expect(await screen.findByText("12b86a9d-a9d6-4391-a555-6618e8ac66d9"));
 
     expect(await screen.findByText("Data Stream"));
     expect(await screen.findByText("ELR"));

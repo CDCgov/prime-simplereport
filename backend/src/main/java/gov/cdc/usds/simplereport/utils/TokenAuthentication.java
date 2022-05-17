@@ -37,8 +37,6 @@ public class TokenAuthentication {
       throw new InvalidRSAPrivateKeyException(e);
     } catch (NoSuchAlgorithmException | InvalidKeySpecException e) {
       throw new InvalidRSAPrivateKeyException(e);
-    } catch (Exception e) {
-      throw e;
     }
   }
 

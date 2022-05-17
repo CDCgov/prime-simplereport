@@ -305,6 +305,7 @@ type PendingOrganization {
 
 type UploadResult {
   reportId: ID
+  createdAt: DateTime
   status: String
   recordsCount: Int
   warnings: [FeedbackMessage]
