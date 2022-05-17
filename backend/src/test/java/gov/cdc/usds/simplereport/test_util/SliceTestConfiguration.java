@@ -24,7 +24,6 @@ import gov.cdc.usds.simplereport.service.OrganizationInitializingService;
 import gov.cdc.usds.simplereport.service.OrganizationService;
 import gov.cdc.usds.simplereport.service.PatientSelfRegistrationLinkService;
 import gov.cdc.usds.simplereport.service.TenantDataAccessService;
-import gov.cdc.usds.simplereport.service.TestResultUploadService;
 import gov.cdc.usds.simplereport.service.model.IdentitySupplier;
 import gov.cdc.usds.simplereport.validators.OrderingProviderRequiredValidator;
 import java.lang.annotation.ElementType;
@@ -97,8 +96,7 @@ import org.springframework.security.test.context.support.WithMockUser;
   CurrentTenantDataAccessContextHolder.class,
   WebhookContextHolder.class,
   TenantDataAccessService.class,
-  PatientSelfRegistrationLinkService.class,
-  TestResultUploadService.class
+  PatientSelfRegistrationLinkService.class
 })
 @EnableConfigurationProperties({InitialSetupProperties.class, AuthorizationProperties.class})
 public class SliceTestConfiguration {
