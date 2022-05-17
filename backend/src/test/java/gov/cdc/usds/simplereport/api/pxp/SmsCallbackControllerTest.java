@@ -1,5 +1,9 @@
 package gov.cdc.usds.simplereport.api.pxp;
 
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
@@ -15,6 +19,7 @@ import gov.cdc.usds.simplereport.db.model.Person;
 import gov.cdc.usds.simplereport.db.model.TestOrder;
 import gov.cdc.usds.simplereport.db.model.TextMessageSent;
 import gov.cdc.usds.simplereport.db.repository.TextMessageSentRepository;
+import gov.cdc.usds.simplereport.service.sms.TextMessageStatusService;
 import gov.cdc.usds.simplereport.test_util.TestDataFactory;
 import java.nio.charset.StandardCharsets;
 import java.util.ArrayList;
@@ -23,15 +28,20 @@ import java.util.List;
 import java.util.Map;
 import javax.crypto.Mac;
 import javax.crypto.spec.SecretKeySpec;
+import javax.servlet.http.HttpServletRequest;
 import javax.xml.bind.DatatypeConverter;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
+import org.mockito.ArgumentCaptor;
+import org.mockito.Mock;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.http.MediaType;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.request.MockHttpServletRequestBuilder;
+import org.springframework.util.LinkedMultiValueMap;
+import org.springframework.util.MultiValueMap;
 
 class SmsCallbackControllerTest extends BaseFullStackTest {
 
@@ -49,9 +59,17 @@ class SmsCallbackControllerTest extends BaseFullStackTest {
   @Value("${TWILIO_AUTH_TOKEN:MISSING}")
   private String twilioAuthToken;
 
+  @Mock private TextMessageStatusService _textMessageStatusService;
+  @Mock private WebhookContextHolder _webhookContextHolder;
+  private SmsCallbackController _smsCallbackController;
+
   @BeforeEach
   void before() {
     truncateDb();
+
+    when(_textMessageStatusService.validateSmsCallback(any())).thenReturn(true);
+    this._smsCallbackController =
+        new SmsCallbackController(_textMessageStatusService, _webhookContextHolder);
   }
 
   @Test
@@ -134,5 +152,21 @@ class SmsCallbackControllerTest extends BaseFullStackTest {
     mac.init(new SecretKeySpec(token.getBytes(), "HmacSHA1"));
     byte[] rawHmac = mac.doFinal(builder.toString().getBytes(StandardCharsets.UTF_8));
     return DatatypeConverter.printBase64Binary(rawHmac);
+  }
+
+  @Test
+  void landlineErrorEventMsg() {
+    HttpServletRequest mockedRequest = mock(HttpServletRequest.class);
+    MultiValueMap<String, String> body = new LinkedMultiValueMap<>();
+    String twilioNumber = "+11234567890";
+    body.add("ErrorCode", "30006");
+    body.add("To", twilioNumber);
+    body.add("MessageStatus", "undelivered");
+    body.add("MessageId", "123");
+
+    ArgumentCaptor<String> phoneNumbersCaptor = ArgumentCaptor.forClass(String.class);
+    this._smsCallbackController.callback(body, mockedRequest);
+    verify(this._textMessageStatusService).handleLandlineError(phoneNumbersCaptor.capture());
+    assertEquals(twilioNumber, phoneNumbersCaptor.getValue());
   }
 }
