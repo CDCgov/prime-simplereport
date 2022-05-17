@@ -11,8 +11,10 @@ import gov.cdc.usds.simplereport.service.errors.InvalidRSAPrivateKeyException;
 import gov.cdc.usds.simplereport.service.model.reportstream.ReportStreamStatus;
 import gov.cdc.usds.simplereport.service.model.reportstream.TokenResponse;
 import gov.cdc.usds.simplereport.service.model.reportstream.UploadResponse;
+import gov.cdc.usds.simplereport.utils.TokenAuthentication;
 import java.io.IOException;
 import java.io.InputStream;
+import java.util.Date;
 import java.util.LinkedHashMap;
 import java.util.Map;
 import java.util.UUID;
@@ -30,13 +32,27 @@ public class TestResultUploadService {
   private final TestResultUploadRepository _repo;
   private final DataHubClient _client;
   private final OrganizationService _orgService;
-  private final TokenAuthenticationService _tokenService;
 
   @Value("${data-hub.url}")
   private String dataHubUrl;
 
   @Value("${data-hub.organization}")
   private String organization;
+
+  @Value("${data-hub.signing-key}")
+  private String signingKey;
+
+  private int FIVE_MINUTES_MS = 300 * 1000;
+
+  private String createDataHubSenderToken() throws InvalidRSAPrivateKeyException {
+    Date inFiveMinutes = new Date(System.currentTimeMillis() + FIVE_MINUTES_MS);
+
+    return TokenAuthentication.createJWT(
+        organization + ".default",
+        dataHubUrl,
+        inFiveMinutes,
+        TokenAuthentication.getRSAPrivateKey(signingKey));
+  }
 
   @AuthorizationConfiguration.RequirePermissionCSVUpload
   public TestResultUpload processResultCSV(InputStream csvStream, UUID facilityId)
@@ -91,7 +107,7 @@ public class TestResultUploadService {
     }
   }
 
-  public TestResultUpload getUploadSubmission(UUID id)
+  public UploadResponse getUploadSubmission(UUID id)
       throws InvalidBulkTestResultUploadException, InvalidRSAPrivateKeyException {
     Organization org = _orgService.getCurrentOrganization();
 
@@ -100,8 +116,6 @@ public class TestResultUploadService {
             .findByInternalIdAndOrganization(id, org)
             .orElseThrow(InvalidBulkTestResultUploadException::new);
 
-    var token = _tokenService.createDataHubSenderToken();
-
     String reportingScope = organization + ".default.report";
 
     Map<String, String> queryParams = new LinkedHashMap<>();
@@ -109,17 +123,10 @@ public class TestResultUploadService {
     queryParams.put("grant_type", "client_credentials");
     queryParams.put(
         "client_assertion_type", "urn:ietf:params:oauth:client-assertion-type:jwt-bearer");
-    queryParams.put("client_assertion", token);
-    TokenResponse r = _client.fetchAccessToken(queryParams);
-    UploadResponse response =
-        _client.getSubmission(result.getReportId().toString(), r.access_token);
+    queryParams.put("client_assertion", createDataHubSenderToken());
 
-    return new TestResultUpload(
-        response.getId(),
-        this.parseStatus(response.getOverallStatus()),
-        response.getReportItemCount(),
-        org,
-        response.getWarnings(),
-        response.getErrors());
+    TokenResponse r = _client.fetchAccessToken(queryParams);
+
+    return _client.getSubmission(result.getReportId().toString(), r.getAccessToken());
   }
 }

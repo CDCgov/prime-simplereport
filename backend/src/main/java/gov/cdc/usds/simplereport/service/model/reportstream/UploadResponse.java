@@ -24,4 +24,20 @@ public class UploadResponse {
   private String topic;
   private String externalName;
   private int destinationCount;
+
+  public UUID getReportId() {
+    return this.id;
+  }
+
+  public ReportStreamStatus getStatus() {
+    return this.overallStatus;
+  }
+
+  public Date getCreatedAt() {
+    return this.timestamp;
+  }
+
+  public int getRecordsCount() {
+    return this.reportItemCount;
+  }
 }

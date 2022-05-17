@@ -1,4 +1,4 @@
-package gov.cdc.usds.simplereport.service;
+package gov.cdc.usds.simplereport.utils;
 
 import gov.cdc.usds.simplereport.service.errors.InvalidRSAPrivateKeyException;
 import io.jsonwebtoken.Jwts;
@@ -15,26 +15,17 @@ import java.util.UUID;
 import lombok.extern.slf4j.Slf4j;
 import org.bouncycastle.openssl.PEMKeyPair;
 import org.bouncycastle.openssl.PEMParser;
-import org.springframework.beans.factory.annotation.Value;
-import org.springframework.stereotype.Service;
 
-@Service
 @Slf4j
-public class TokenAuthenticationService {
-  @Value("${data-hub.url}")
-  private String dataHubUrl;
+public class TokenAuthentication {
+  private TokenAuthentication() {
+    throw new IllegalStateException("OrganizationUtils is a utility class");
+  }
 
-  @Value("${data-hub.organization}")
-  private String organization;
-
-  @Value("${data-hub.signing-key}")
-  private String signingKey;
-
-  private int FIVE_MINUTES_MS = 300 * 1000;
-
-  private RSAPrivateKey getRSAPrivateKey(String privateKey) throws InvalidRSAPrivateKeyException {
+  public static RSAPrivateKey getRSAPrivateKey(String privateKey)
+      throws InvalidRSAPrivateKeyException {
     try {
-      PEMParser pemParser = new PEMParser(new StringReader(signingKey));
+      PEMParser pemParser = new PEMParser(new StringReader(privateKey));
       PEMKeyPair keypair = (PEMKeyPair) pemParser.readObject();
       byte[] encoded = keypair.getPrivateKeyInfo().getEncoded();
       var kf = KeyFactory.getInstance("RSA");
@@ -53,7 +44,7 @@ public class TokenAuthenticationService {
     }
   }
 
-  private String createJWT(String scope, String audience, Date exp, Key signingKey)
+  public static String createJWT(String scope, String audience, Date exp, Key signingKey)
       throws InvalidRSAPrivateKeyException {
 
     return Jwts.builder()
@@ -67,12 +58,5 @@ public class TokenAuthenticationService {
         .setIssuedAt(new Date())
         .signWith(signingKey)
         .compact();
-  }
-
-  public String createDataHubSenderToken() throws InvalidRSAPrivateKeyException {
-    Date inFiveMinutes = new Date(System.currentTimeMillis() + FIVE_MINUTES_MS);
-
-    return createJWT(
-        organization + ".default", dataHubUrl, inFiveMinutes, getRSAPrivateKey(signingKey));
   }
 }

@@ -23,12 +23,12 @@ public class TestResultUploadServiceTest {
   @MockBean DataHubClient dataHubClient;
   @MockBean TestResultUploadRepository repo;
   @MockBean OrganizationService orgSvc;
-  @MockBean TokenAuthenticationService tokenSvc;
+  // @MockBean TokenAuthentication tokenAuth;
   private TestResultUploadService sut;
 
   @BeforeEach
   public void init() {
-    sut = new TestResultUploadService(repo, dataHubClient, orgSvc, tokenSvc);
+    sut = new TestResultUploadService(repo, dataHubClient, orgSvc);
   }
 
   @Test
