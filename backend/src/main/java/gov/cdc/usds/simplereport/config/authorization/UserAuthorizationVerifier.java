@@ -6,6 +6,7 @@ import gov.cdc.usds.simplereport.api.model.errors.NonexistentUserException;
 import gov.cdc.usds.simplereport.api.model.errors.UnidentifiedUserException;
 import gov.cdc.usds.simplereport.config.AuthorizationConfiguration;
 import gov.cdc.usds.simplereport.db.model.ApiUser;
+import gov.cdc.usds.simplereport.db.model.Facility;
 import gov.cdc.usds.simplereport.db.model.Organization;
 import gov.cdc.usds.simplereport.db.model.PatientLink;
 import gov.cdc.usds.simplereport.db.model.Person;
@@ -137,14 +138,9 @@ public class UserAuthorizationVerifier {
     if (testEventId == null) {
       return true;
     }
-    Optional<OrganizationRoles> currentOrgRoles = _orgService.getCurrentOrganizationRoles();
-    if (currentOrgRoles.isEmpty()) {
-      return false;
-    } else {
-      Optional<TestEvent> testEvent = _testEventRepo.findById(testEventId);
-      return testEvent.isPresent()
-          && currentOrgRoles.get().containsFacility(testEvent.get().getFacility());
-    }
+    Optional<TestEvent> testEvent = _testEventRepo.findById(testEventId);
+    return testEvent.isPresent()
+        && userCanAccessFacility(testEvent.get().getFacility().getInternalId());
   }
 
   public boolean userCanViewQueueItem(UUID testOrderId) {
@@ -189,12 +185,21 @@ public class UserAuthorizationVerifier {
     if (facilityId == null) {
       return true;
     }
+
     Optional<OrganizationRoles> currentOrgRoles = _orgService.getCurrentOrganizationRoles();
-    if (currentOrgRoles.isEmpty()) {
-      return false;
-    } else {
-      return currentOrgRoles.get().containsFacility(facilityId);
+    if (currentOrgRoles.isPresent()) {
+      OrganizationRoles orgRoles = currentOrgRoles.get();
+      if (orgRoles.containsFacility(facilityId)) {
+        return true;
+      }
+      if (orgRoles.grantsArchivedFacilityAccess()) {
+        Optional<Facility> fac =
+            _facilityRepo.findByOrganizationAndInternalIdAllowDeleted(
+                orgRoles.getOrganization(), facilityId);
+        return fac.isPresent() && fac.get().isDeleted();
+      }
     }
+    return false;
   }
 
   public boolean userCanViewPatient(Person patient) {
@@ -241,7 +246,10 @@ public class UserAuthorizationVerifier {
   }
 
   public boolean userHasSpecificPatientSearchPermission(
-      UUID facilityId, boolean isArchived, String namePrefixMatch) {
+      UUID facilityId,
+      boolean isArchived,
+      String namePrefixMatch,
+      boolean includeArchivedFacilities) {
     Set<UserPermission> perms = new HashSet<>();
 
     if (facilityId != null && !userCanAccessFacility(facilityId)) {
@@ -249,6 +257,9 @@ public class UserAuthorizationVerifier {
     }
     if (isArchived) {
       perms.add(UserPermission.READ_ARCHIVED_PATIENT_LIST);
+    }
+    if (includeArchivedFacilities) {
+      perms.add(UserPermission.VIEW_ARCHIVED_FACILITIES);
     }
     if (namePrefixMatch != null) {
       perms.add(UserPermission.SEARCH_PATIENTS);

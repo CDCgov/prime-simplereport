@@ -158,3 +158,11 @@ simple-report:
         authorization:
           organization-external-id: DIS_ORG
           granted-roles: ADMIN
+      - identity:
+          username: megan@example.com
+          first-name: Megan
+          middle-name: Matilda
+          last-name: Mathison
+        authorization:
+          organization-external-id: DAT_ORG
+          granted-roles: ADMIN

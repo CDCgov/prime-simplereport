@@ -15,7 +15,6 @@ import org.springframework.stereotype.Component;
 
 @Component
 public class TestResultResolver implements GraphQLQueryResolver, GraphQLMutationResolver {
-  public static final String MISSING_ARG = "Must provide either facility ID or patient ID";
 
   @Autowired private TestOrderService tos;
 
@@ -35,6 +34,16 @@ public class TestResultResolver implements GraphQLQueryResolver, GraphQLMutation
       pageSize = TestOrderService.DEFAULT_PAGINATION_PAGESIZE;
     }
 
+    if (facilityId == null) {
+      return tos.getAllFacilityTestEventsResults(
+          patientId,
+          Translators.parseTestResult(result),
+          Translators.parsePersonRole(role, true),
+          startDate,
+          endDate,
+          pageNumber,
+          pageSize);
+    }
     return tos.getTestEventsResults(
         facilityId,
         patientId,
