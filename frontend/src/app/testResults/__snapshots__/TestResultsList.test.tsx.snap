@@ -336,6 +336,11 @@ exports[`TestResultsList should render a list of tests 1`] = `
                     >
                       Facility 2
                     </option>
+                    <option
+                      value="3"
+                    >
+                      Facility 3
+                    </option>
                   </select>
                 </div>
               </div>
@@ -450,6 +455,7 @@ exports[`TestResultsList should render a list of tests 1`] = `
                 <tr
                   class="sr-test-result-row"
                   data-patient-link="https://simplereport.gov/pxp?plid=68c543e8-7c65-4047-955c-e3f65bb8b58a"
+                  data-testid="test-result-7c768a5d-ef90-44cd-8050-b96dd7aaa1d5"
                   title=""
                 >
                   <td
@@ -469,7 +475,7 @@ exports[`TestResultsList should render a list of tests 1`] = `
                     03/19/2021 7:27pm
                   </td>
                   <td
-                    class="test-result-cell"
+                    class="test-result-cell covid-19-result"
                   >
                     Positive
                   </td>
@@ -526,6 +532,7 @@ exports[`TestResultsList should render a list of tests 1`] = `
                 <tr
                   class="sr-test-result-row"
                   data-patient-link="https://simplereport.gov/pxp?plid=68c543e8-7c65-4047-955c-e3f65bb8b58a"
+                  data-testid="test-result-7c768a5d-ef90-44cd-8050-b96dd77f51d5"
                   title=""
                 >
                   <td
@@ -545,7 +552,7 @@ exports[`TestResultsList should render a list of tests 1`] = `
                     03/18/2021 7:27pm
                   </td>
                   <td
-                    class="test-result-cell"
+                    class="test-result-cell covid-19-result"
                   >
                     Negative
                   </td>
@@ -602,6 +609,7 @@ exports[`TestResultsList should render a list of tests 1`] = `
                 <tr
                   class="sr-test-result-row"
                   data-patient-link="https://simplereport.gov/pxp?plid=68c543e8-7c65-4047-955c-e3f65bb8b58a"
+                  data-testid="test-result-0969da96-b211-41cd-ba61-002181f0918d"
                   title=""
                 >
                   <td
@@ -621,7 +629,7 @@ exports[`TestResultsList should render a list of tests 1`] = `
                     03/17/2021 7:27pm
                   </td>
                   <td
-                    class="test-result-cell"
+                    class="test-result-cell covid-19-result"
                   >
                     Negative
                   </td>
