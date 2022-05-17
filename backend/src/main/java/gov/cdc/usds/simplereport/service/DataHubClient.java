@@ -5,6 +5,7 @@ import gov.cdc.usds.simplereport.config.DataHubClientConfiguration;
 import gov.cdc.usds.simplereport.service.model.reportstream.TokenResponse;
 import gov.cdc.usds.simplereport.service.model.reportstream.UploadResponse;
 import java.util.Map;
+import java.util.UUID;
 import org.springframework.cloud.openfeign.FeignClient;
 import org.springframework.cloud.openfeign.SpringQueryMap;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -29,6 +30,6 @@ public interface DataHubClient {
 
   @GetMapping(value = "/api/waters/report/{id}/history", consumes = "application/text")
   UploadResponse getSubmission(
-      @PathVariable("id") String id,
+      @PathVariable("id") UUID id,
       @RequestHeader(value = "Authorization", required = true) String authorizationHeader);
 }

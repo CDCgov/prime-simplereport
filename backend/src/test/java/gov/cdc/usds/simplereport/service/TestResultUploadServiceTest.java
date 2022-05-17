@@ -4,6 +4,7 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyMap;
+import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
@@ -16,31 +17,36 @@ import gov.cdc.usds.simplereport.service.model.reportstream.ReportStreamStatus;
 import gov.cdc.usds.simplereport.service.model.reportstream.TokenResponse;
 import gov.cdc.usds.simplereport.service.model.reportstream.UploadResponse;
 import gov.cdc.usds.simplereport.test_util.TestDataFactory;
+import gov.cdc.usds.simplereport.utils.TokenAuthentication;
 import java.io.InputStream;
+import java.util.Date;
+import java.util.Optional;
 import java.util.UUID;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.ArgumentCaptor;
 import org.mockito.Captor;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.test.context.junit.jupiter.SpringExtension;
 
 @ExtendWith(SpringExtension.class)
-public class TestResultUploadServiceTest {
+public class TestResultUploadServiceTest extends BaseServiceTest<TestResultUploadService> {
 
   @MockBean DataHubClient dataHubClient;
   @MockBean TestResultUploadRepository repo;
   @MockBean OrganizationService orgSvc;
-  @MockBean TestDataFactory factory;
-  @Captor private ArgumentCaptor<String> reportIdCaptor;
+  @MockBean TokenAuthentication tokenAuth;
+  @Autowired private TestDataFactory factory;
+  @Captor private ArgumentCaptor<UUID> reportIdCaptor;
   @Captor private ArgumentCaptor<String> accessTokenCaptor;
 
   private TestResultUploadService sut;
 
   @BeforeEach
   public void init() {
-    sut = new TestResultUploadService(repo, dataHubClient, orgSvc);
+    sut = new TestResultUploadService(repo, dataHubClient, orgSvc, tokenAuth);
   }
 
   @Test
@@ -72,16 +78,24 @@ public class TestResultUploadServiceTest {
     UUID reportId = UUID.randomUUID();
 
     // GIVEN
-    factory.createTestResultUpload(reportId, UploadStatus.PENDING, orgSvc.getCurrentOrganization());
+    var testResultUpload =
+        factory.createTestResultUpload(
+            reportId, UploadStatus.PENDING, orgSvc.getCurrentOrganization());
 
-    // WHEN
+    when(tokenAuth.createRSAJWT(anyString(), anyString(), any(Date.class), anyString()))
+        .thenReturn("fake-rs-sender-token");
+    var dbResponse = Optional.of(testResultUpload);
+    when(repo.findByInternalIdAndOrganization(any(), any())).thenReturn(dbResponse);
     var tokenResponse = new TokenResponse();
-    tokenResponse.setAccessToken("fake-token");
+    tokenResponse.setAccessToken("fake-rs-access-token");
     when(dataHubClient.fetchAccessToken(anyMap())).thenReturn(tokenResponse);
 
+    // WHEN
+    sut.getUploadSubmission(testResultUpload.getInternalId());
+
     // THEN
-    verify(dataHubClient.getSubmission(reportIdCaptor.capture(), accessTokenCaptor.capture()));
+    verify(dataHubClient).getSubmission(reportIdCaptor.capture(), accessTokenCaptor.capture());
     assertEquals(reportId, reportIdCaptor.getValue());
-    assertEquals("fake-token", accessTokenCaptor.getValue());
+    assertEquals("fake-rs-access-token", accessTokenCaptor.getValue());
   }
 }

@@ -34,6 +34,7 @@ public class TestResultUploadService {
   private final TestResultUploadRepository _repo;
   private final DataHubClient _client;
   private final OrganizationService _orgService;
+  private final TokenAuthentication _tokenAuth;
 
   @Value("${data-hub.url}")
   private String dataHubUrl;
@@ -46,14 +47,11 @@ public class TestResultUploadService {
 
   private final int FIVE_MINUTES_MS = 300 * 1000;
 
-  private String createDataHubSenderToken() throws InvalidRSAPrivateKeyException {
+  public String createDataHubSenderToken(String privateKey) throws InvalidRSAPrivateKeyException {
     Date inFiveMinutes = new Date(System.currentTimeMillis() + FIVE_MINUTES_MS);
 
-    return TokenAuthentication.createJWT(
-        organization + ".default",
-        dataHubUrl,
-        inFiveMinutes,
-        TokenAuthentication.getRSAPrivateKey(signingKey));
+    return _tokenAuth.createRSAJWT(
+        organization + ".default", dataHubUrl, inFiveMinutes, privateKey);
   }
 
   @AuthorizationConfiguration.RequirePermissionCSVUpload
@@ -131,10 +129,10 @@ public class TestResultUploadService {
     queryParams.put("grant_type", "client_credentials");
     queryParams.put(
         "client_assertion_type", "urn:ietf:params:oauth:client-assertion-type:jwt-bearer");
-    queryParams.put("client_assertion", createDataHubSenderToken());
+    queryParams.put("client_assertion", createDataHubSenderToken(signingKey));
 
     TokenResponse r = _client.fetchAccessToken(queryParams);
 
-    return _client.getSubmission(result.getReportId().toString(), r.getAccessToken());
+    return _client.getSubmission(result.getReportId(), r.getAccessToken());
   }
 }

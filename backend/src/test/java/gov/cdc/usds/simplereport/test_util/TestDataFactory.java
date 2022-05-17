@@ -46,6 +46,7 @@ import gov.cdc.usds.simplereport.db.repository.SpecimenTypeRepository;
 import gov.cdc.usds.simplereport.db.repository.SupportedDiseaseRepository;
 import gov.cdc.usds.simplereport.db.repository.TestEventRepository;
 import gov.cdc.usds.simplereport.db.repository.TestOrderRepository;
+import gov.cdc.usds.simplereport.db.repository.TestResultUploadRepository;
 import gov.cdc.usds.simplereport.idp.repository.DemoOktaRepository;
 import gov.cdc.usds.simplereport.service.DiseaseService;
 import gov.cdc.usds.simplereport.service.model.reportstream.FeedbackMessage;
@@ -93,6 +94,7 @@ public class TestDataFactory {
   @Autowired private SupportedDiseaseRepository _supportedDiseaseRepo;
   @Autowired private ResultRepository _resultRepository;
   @Autowired private DemoOktaRepository _oktaRepo;
+  @Autowired private TestResultUploadRepository _testResultUploadRepo;
   @Autowired private DiseaseService _diseaseService;
 
   public Organization createValidOrg(
@@ -337,8 +339,9 @@ public class TestDataFactory {
       UUID reportId, UploadStatus status, Organization organization) {
     var warnings = (FeedbackMessage[]) Array.newInstance(FeedbackMessage.class, 0);
     var errors = (FeedbackMessage[]) Array.newInstance(FeedbackMessage.class, 0);
-
-    return new TestResultUpload(reportId, status, 0, organization, warnings, errors);
+    var upload = new TestResultUpload(reportId, status, 0, organization, warnings, errors);
+    _testResultUploadRepo.save(upload);
+    return upload;
   }
 
   public TestOrder createTestOrder(Person p, Facility f) {

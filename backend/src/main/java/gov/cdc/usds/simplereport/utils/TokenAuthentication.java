@@ -15,15 +15,12 @@ import java.util.UUID;
 import lombok.extern.slf4j.Slf4j;
 import org.bouncycastle.openssl.PEMKeyPair;
 import org.bouncycastle.openssl.PEMParser;
+import org.springframework.stereotype.Service;
 
+@Service
 @Slf4j
 public class TokenAuthentication {
-  private TokenAuthentication() {
-    throw new IllegalStateException("TokenAuthentication is a utility class");
-  }
-
-  public static RSAPrivateKey getRSAPrivateKey(String privateKey)
-      throws InvalidRSAPrivateKeyException {
+  public RSAPrivateKey getRSAPrivateKey(String privateKey) throws InvalidRSAPrivateKeyException {
     try {
       PEMParser pemParser = new PEMParser(new StringReader(privateKey));
       PEMKeyPair keypair = (PEMKeyPair) pemParser.readObject();
@@ -40,7 +37,7 @@ public class TokenAuthentication {
     }
   }
 
-  public static String createJWT(String scope, String audience, Date exp, Key signingKey)
+  private String createJWT(String scope, String audience, Date exp, Key signingKey)
       throws InvalidRSAPrivateKeyException {
 
     return Jwts.builder()
@@ -54,5 +51,9 @@ public class TokenAuthentication {
         .setIssuedAt(new Date())
         .signWith(signingKey)
         .compact();
+  }
+
+  public String createRSAJWT(String scope, String audience, Date exp, String signingKey) {
+    return createJWT(scope, audience, exp, getRSAPrivateKey(signingKey));
   }
 }

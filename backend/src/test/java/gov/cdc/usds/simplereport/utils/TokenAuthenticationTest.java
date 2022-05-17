@@ -9,6 +9,8 @@ import java.security.interfaces.RSAPrivateKey;
 import org.junit.jupiter.api.Test;
 
 public class TokenAuthenticationTest {
+  private final TokenAuthentication sut = new TokenAuthentication();
+
   String fakeSigningKey =
       "-----BEGIN RSA PRIVATE KEY-----\n"
           + "MIIBOgIBAAJBAKj34GkxFhD90vcNLYLInFEX6Ppy1tPf9Cnzj4p4WGeKLs1Pt8Qu\n"
@@ -23,13 +25,12 @@ public class TokenAuthenticationTest {
   @Test
   void getRSAPrivateKey_onInvalidKey_throws() {
     assertThrows(
-        InvalidRSAPrivateKeyException.class,
-        () -> TokenAuthentication.getRSAPrivateKey("fake-signing-key"));
+        InvalidRSAPrivateKeyException.class, () -> sut.getRSAPrivateKey("fake-signing-key"));
   }
 
   @Test
   void getRSAPrivateKey_onValidKey_returnsKey() {
-    assertDoesNotThrow(() -> TokenAuthentication.getRSAPrivateKey(fakeSigningKey));
-    assertTrue(TokenAuthentication.getRSAPrivateKey(fakeSigningKey) instanceof RSAPrivateKey);
+    assertDoesNotThrow(() -> sut.getRSAPrivateKey(fakeSigningKey));
+    assertTrue(sut.getRSAPrivateKey(fakeSigningKey) instanceof RSAPrivateKey);
   }
 }
