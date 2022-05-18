@@ -22,6 +22,8 @@ const TestResult = () => {
   const dateTested = formatDateWithTimeOption(testResult?.dateTested, true);
   const deviceType = testResult?.deviceType.name;
 
+  console.log(testResult);
+
   return (
     <div className="pxp-test-results">
       <div id="section-to-print">
