@@ -131,6 +131,12 @@ export type Facility = {
   zipCode?: Maybe<Scalars["String"]>;
 };
 
+export type MultiplexResult = {
+  __typename?: "MultiplexResult";
+  disease?: Maybe<SupportedDisease>;
+  testResult?: Maybe<Scalars["String"]>;
+};
+
 export type Mutation = {
   __typename?: "Mutation";
   addFacility?: Maybe<Facility>;
@@ -934,6 +940,7 @@ export type TestResult = {
   pregnancy?: Maybe<Scalars["String"]>;
   reasonForCorrection?: Maybe<Scalars["String"]>;
   result?: Maybe<Scalars["String"]>;
+  results?: Maybe<Array<Maybe<MultiplexResult>>>;
   symptomOnset?: Maybe<Scalars["LocalDate"]>;
   symptoms?: Maybe<Scalars["String"]>;
   testPerformed: TestDescription;
