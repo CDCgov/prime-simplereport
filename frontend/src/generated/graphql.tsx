@@ -101,6 +101,11 @@ export type DeviceType = {
   testLength?: Maybe<Scalars["Int"]>;
 };
 
+export type DiseaseResult = {
+  diseaseName?: InputMaybe<Scalars["String"]>;
+  testResult?: InputMaybe<Scalars["String"]>;
+};
+
 export type Facility = {
   __typename?: "Facility";
   address?: Maybe<AddressInfo>;
@@ -138,6 +143,7 @@ export type Mutation = {
   addFacilityNew?: Maybe<Scalars["String"]>;
   addPatient?: Maybe<Patient>;
   addPatientToQueue?: Maybe<Scalars["String"]>;
+  addTestResultMultiplex?: Maybe<AddTestResultResponse>;
   addTestResultNew?: Maybe<AddTestResultResponse>;
   addUser?: Maybe<User>;
   addUserToCurrentOrg?: Maybe<User>;
@@ -150,6 +156,7 @@ export type Mutation = {
   createOrganizationRegistrationLink?: Maybe<Scalars["String"]>;
   editPendingOrganization?: Maybe<Scalars["String"]>;
   editQueueItem?: Maybe<TestOrder>;
+  editQueueItemMultiplex?: Maybe<TestOrder>;
   markFacilityAsDeleted?: Maybe<Scalars["String"]>;
   markOrganizationAsDeleted?: Maybe<Scalars["String"]>;
   markPendingOrganizationAsDeleted?: Maybe<Scalars["String"]>;
@@ -272,6 +279,14 @@ export type MutationAddPatientToQueueArgs = {
   testResultDelivery?: InputMaybe<TestResultDeliveryPreference>;
 };
 
+export type MutationAddTestResultMultiplexArgs = {
+  dateTested?: InputMaybe<Scalars["DateTime"]>;
+  deviceId: Scalars["String"];
+  deviceSpecimenType?: InputMaybe<Scalars["ID"]>;
+  patientId: Scalars["ID"];
+  results: Array<InputMaybe<DiseaseResult>>;
+};
+
 export type MutationAddTestResultNewArgs = {
   dateTested?: InputMaybe<Scalars["DateTime"]>;
   deviceId: Scalars["String"];
@@ -383,6 +398,14 @@ export type MutationEditQueueItemArgs = {
   deviceSpecimenType?: InputMaybe<Scalars["ID"]>;
   id: Scalars["ID"];
   result?: InputMaybe<Scalars["String"]>;
+};
+
+export type MutationEditQueueItemMultiplexArgs = {
+  dateTested?: InputMaybe<Scalars["DateTime"]>;
+  deviceId?: InputMaybe<Scalars["String"]>;
+  deviceSpecimenType?: InputMaybe<Scalars["ID"]>;
+  id: Scalars["ID"];
+  results?: InputMaybe<Array<InputMaybe<DiseaseResult>>>;
 };
 
 export type MutationMarkFacilityAsDeletedArgs = {

@@ -306,6 +306,11 @@ type FeedbackMessage {
   scope: String
   message: String
 }
+input DiseaseResult {
+  diseaseName: String
+  testResult: String
+}
+
 # Queries and mutations for everyday use
 
 type Query {
@@ -606,11 +611,25 @@ type Mutation {
     patientId: ID!
     dateTested: DateTime
   ): AddTestResultResponse @requiredPermissions(allOf: ["SUBMIT_TEST"])
+  addTestResultMultiplex(
+    deviceId: String!
+    deviceSpecimenType: ID
+    results: [DiseaseResult]!
+    patientId: ID!
+    dateTested: DateTime
+  ): AddTestResultResponse @requiredPermissions(allOf: ["SUBMIT_TEST"])
   editQueueItem(
     id: ID!
     deviceId: String
     deviceSpecimenType: ID
     result: String
+    dateTested: DateTime
+  ): TestOrder @requiredPermissions(allOf: ["UPDATE_TEST"])
+  editQueueItemMultiplex(
+    id: ID!
+    deviceId: String
+    deviceSpecimenType: ID
+    results: [DiseaseResult]
     dateTested: DateTime
   ): TestOrder @requiredPermissions(allOf: ["UPDATE_TEST"])
   correctTestMarkAsError(id: ID!, reason: String): TestResult
