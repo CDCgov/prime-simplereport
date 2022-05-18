@@ -245,12 +245,18 @@ type TestResult {
   symptomOnset: LocalDate
   deviceType: DeviceType
   result: String
+  results: [MultiplexResult]
   dateTested: DateTime
   testPerformed: TestDescription!
   correctionStatus: String
   reasonForCorrection: String
   createdBy: ApiUser
   patientLink: PatientLink
+}
+
+type MultiplexResult {
+  disease: SupportedDisease
+  testResult: String
 }
 
 type OrganizationLevelDashboardMetrics {

@@ -3,6 +3,7 @@ package gov.cdc.usds.simplereport.api.graphql;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.junit.jupiter.api.Assertions.assertTrue;
+import static org.junit.jupiter.api.Assertions.fail;
 
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.node.ArrayNode;
@@ -100,16 +101,16 @@ class TestResultTest extends BaseGraphqlTest {
   }
 
   @Test
-  void submitTestResultMultiplex() throws Exception {
+  void submitAndFetchTestResultMultiplex() throws Exception {
     Person p = _dataFactory.createFullPerson(_org);
     DeviceType d = _site.getDefaultDeviceType();
     _dataFactory.createTestOrder(p, _site);
     String dateTested = "2020-12-31T14:30:30.001Z";
 
     List<DiseaseResult> results = new ArrayList<>();
-    results.add(new DiseaseResult(_diseaseService.covid().getName(), TestResult.POSITIVE));
+    results.add(new DiseaseResult(_diseaseService.covid().getName(), TestResult.NEGATIVE));
     results.add(new DiseaseResult(_diseaseService.fluA().getName(), TestResult.POSITIVE));
-    results.add(new DiseaseResult(_diseaseService.fluB().getName(), TestResult.POSITIVE));
+    results.add(new DiseaseResult(_diseaseService.fluB().getName(), TestResult.UNDETERMINED));
 
     ObjectNode variables =
         JsonNodeFactory.instance
@@ -120,10 +121,30 @@ class TestResultTest extends BaseGraphqlTest {
             .put("dateTested", dateTested);
     submitTestResultMultiplex(variables, Optional.empty());
 
-    ArrayNode testResults = fetchTestResults(getFacilityScopedArguments());
+    ArrayNode testResults = fetchTestResultsMultiplex(getFacilityScopedArguments());
 
     assertTrue(testResults.has(0), "Has at least one submitted test result=");
     assertEquals(testResults.get(0).get("dateTested").asText(), dateTested);
+    testResults
+        .get(0)
+        .get("results")
+        .elements()
+        .forEachRemaining(
+            r -> {
+              switch (r.get("disease").get("name").asText()) {
+                case "COVID-19":
+                  assertEquals(TestResult.NEGATIVE.toString(), r.get("testResult").asText());
+                  break;
+                case "Flu A":
+                  assertEquals(TestResult.POSITIVE.toString(), r.get("testResult").asText());
+                  break;
+                case "Flu B":
+                  assertEquals(TestResult.UNDETERMINED.toString(), r.get("testResult").asText());
+                  break;
+                default:
+                  fail("Unexpected disease=" + r.get("disease").get("name").asText());
+              }
+            });
   }
 
   @Test
@@ -361,6 +382,10 @@ class TestResultTest extends BaseGraphqlTest {
 
   private ArrayNode fetchTestResults(ObjectNode variables) {
     return (ArrayNode) runQuery("test-results-query", variables).get("testResults");
+  }
+
+  private ArrayNode fetchTestResultsMultiplex(ObjectNode variables) {
+    return (ArrayNode) runQuery("test-results-multiplex-query", variables).get("testResults");
   }
 
   private void fetchTestResultsWithError(ObjectNode variables, String expectedError) {
