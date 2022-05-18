@@ -32,7 +32,7 @@ import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.test.context.junit.jupiter.SpringExtension;
 
 @ExtendWith(SpringExtension.class)
-public class TestResultUploadServiceTest extends BaseServiceTest<TestResultUploadService> {
+class TestResultUploadServiceTest extends BaseServiceTest<TestResultUploadService> {
 
   @MockBean DataHubClient dataHubClient;
   @MockBean TestResultUploadRepository repo;
@@ -67,14 +67,14 @@ public class TestResultUploadServiceTest extends BaseServiceTest<TestResultUploa
   }
 
   @Test
-  public void uploadService_getUploadSubmission_throwsOnInvalid() {
-    assertThrows(
-        InvalidBulkTestResultUploadException.class,
-        () -> sut.getUploadSubmission(UUID.randomUUID()));
+  void uploadService_getUploadSubmission_throwsOnInvalid() {
+    var uuid = UUID.randomUUID();
+
+    assertThrows(InvalidBulkTestResultUploadException.class, () -> sut.getUploadSubmission(uuid));
   }
 
   @Test
-  public void uploadService_getUploadSubmission_rsClientOk() {
+  void uploadService_getUploadSubmission_rsClientOk() {
     UUID reportId = UUID.randomUUID();
 
     // GIVEN

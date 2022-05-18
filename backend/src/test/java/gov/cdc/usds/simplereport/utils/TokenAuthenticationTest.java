@@ -8,7 +8,7 @@ import gov.cdc.usds.simplereport.service.errors.InvalidRSAPrivateKeyException;
 import java.security.interfaces.RSAPrivateKey;
 import org.junit.jupiter.api.Test;
 
-public class TokenAuthenticationTest {
+class TokenAuthenticationTest {
   private final TokenAuthentication sut = new TokenAuthentication();
 
   String fakeSigningKey =

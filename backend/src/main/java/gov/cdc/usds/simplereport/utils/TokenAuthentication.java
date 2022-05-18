@@ -27,8 +27,7 @@ public class TokenAuthentication {
       byte[] encoded = keypair.getPrivateKeyInfo().getEncoded();
       var kf = KeyFactory.getInstance("RSA");
       var spec = new PKCS8EncodedKeySpec(encoded);
-      var key = (RSAPrivateKey) kf.generatePrivate(spec);
-      return key;
+      return (RSAPrivateKey) kf.generatePrivate(spec);
     } catch (IOException | NullPointerException e) {
       log.trace("Invalid private key");
       throw new InvalidRSAPrivateKeyException(e);

@@ -45,10 +45,10 @@ public class TestResultUploadService {
   @Value("${data-hub.signing-key}")
   private String signingKey;
 
-  private final int FIVE_MINUTES_MS = 300 * 1000;
+  private static final int fiveMinutesMs = 300 * 1000;
 
   public String createDataHubSenderToken(String privateKey) throws InvalidRSAPrivateKeyException {
-    Date inFiveMinutes = new Date(System.currentTimeMillis() + FIVE_MINUTES_MS);
+    Date inFiveMinutes = new Date(System.currentTimeMillis() + fiveMinutesMs);
 
     return _tokenAuth.createRSAJWT(
         organization + ".default", dataHubUrl, inFiveMinutes, privateKey);

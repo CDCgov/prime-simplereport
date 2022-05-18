@@ -8,19 +8,19 @@ import lombok.Setter;
 @Getter
 @Setter
 public class TokenResponse {
-  public String sub;
+  private String sub;
 
   @JsonProperty("access_token")
-  public String accessToken;
+  private String accessToken;
 
   @JsonProperty("token_type")
-  public String tokenType;
+  private String tokenType;
 
   @JsonProperty("expires_in")
-  public Number expiresIn;
+  private Number expiresIn;
 
   @JsonProperty("expires_at_seconds")
-  public Date expiresAtSeconds;
+  private Date expiresAtSeconds;
 
-  public String scope;
+  private String scope;
 }
