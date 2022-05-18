@@ -18,7 +18,7 @@ const validFileContents =
 const file = (text: BlobPart) => {
   const blob = new Blob([text]);
   const file = new File([blob], "values.csv", { type: "text/csv" });
-  File.prototype.text = jest.fn().mockResolvedValueOnce(validFileContents);
+  File.prototype.text = jest.fn().mockResolvedValueOnce(text);
   return file;
 };
 
@@ -52,9 +52,13 @@ describe("Uploads", () => {
     const emptyFile = file("");
 
     const input = screen.getByTestId("file-input-input");
-    await userEvent.upload(input, emptyFile);
+    userEvent.upload(input, emptyFile);
+    await new Promise((resolve) => setTimeout(resolve, 1000));
     expect(
-      await screen.findByText("Problems saving data to server")
+      //await screen.findByText("Problems saving data to server")
+      await screen.findByText(
+        "The file 'values.csv' doesn't contain any valid data. File should have a header line and at least one line of data."
+      )
     ).toBeInTheDocument();
   });
 
@@ -137,10 +141,12 @@ describe("Uploads", () => {
       const input = screen.getByTestId("file-input-input");
 
       userEvent.upload(input, file);
+      await new Promise((resolve) => setTimeout(resolve, 0));
 
       const button = screen.getByTestId("button");
 
       userEvent.click(button);
+      await new Promise((resolve) => setTimeout(resolve, 0));
 
       expect(await screen.findByText("Success: File Accepted"));
       expect(await screen.findByText("fake-id"));
