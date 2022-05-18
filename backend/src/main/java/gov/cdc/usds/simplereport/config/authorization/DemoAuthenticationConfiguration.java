@@ -70,6 +70,7 @@ public class DemoAuthenticationConfiguration {
               DemoAuthenticationConfiguration.CACHED_USER_NAME = userName;
               DemoAuthenticationConfiguration.CACHED_AUTHENTICATION =
                   new TestingAuthenticationToken(userName, null, List.of());
+              DemoAuthenticationConfiguration.CACHED_AUTHENTICATION.setAuthenticated(true);
               securityContext.setAuthentication(
                   DemoAuthenticationConfiguration.CACHED_AUTHENTICATION);
             }
