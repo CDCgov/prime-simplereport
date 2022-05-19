@@ -1,5 +1,6 @@
 package gov.cdc.usds.simplereport.service;
 
+import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
@@ -17,7 +18,7 @@ import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.test.context.junit.jupiter.SpringExtension;
 
 @ExtendWith(SpringExtension.class)
-public class TestResultUploadServiceTest {
+class TestResultUploadServiceTest {
 
   @MockBean DataHubClient dataHubClient;
   @MockBean TestResultUploadRepository repo;
@@ -25,12 +26,12 @@ public class TestResultUploadServiceTest {
   private TestResultUploadService sut;
 
   @BeforeEach
-  public void init() {
+  void init() {
     sut = new TestResultUploadService(repo, dataHubClient, orgSvc);
   }
 
   @Test
-  public void uploadService_processCSV_returnsExpectedResponse() {
+  void uploadService_processCSV_returnsExpectedResponse() {
     InputStream input = loadCsv("test-upload-test-results.csv");
 
     var uploadResponse = new UploadResponse();
@@ -39,7 +40,7 @@ public class TestResultUploadServiceTest {
     when(repo.save(any())).thenReturn(mock(TestResultUpload.class));
 
     var response = sut.processResultCSV(input);
-    assert (response != null && response.getStatus() == UploadStatus.PENDING);
+    assertEquals(response.getStatus(), UploadStatus.PENDING);
   }
 
   private InputStream loadCsv(String csvFile) {

@@ -34,11 +34,10 @@ public class TestResultMutationResolver implements GraphQLMutationResolver {
   public TestResultUpload uploadTestResultCSV(Part part) {
     try (InputStream resultsUpload = part.getInputStream()) {
 
-      try {
-        return testResultUploadService.processResultCSV(resultsUpload);
-      } catch (IllegalGraphqlArgumentException e) {
-        throw e;
-      }
+      return testResultUploadService.processResultCSV(resultsUpload);
+    } catch (IllegalGraphqlArgumentException e) {
+      log.error("Error Processing Test Result CSV Upload.", e);
+      throw e;
     } catch (IOException e) {
       log.error("Test result CSV encountered an unexpected error", e);
       throw new CsvProcessingException("Unable to process test result CSV upload");

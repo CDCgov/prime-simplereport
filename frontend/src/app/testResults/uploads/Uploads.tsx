@@ -27,16 +27,16 @@ const REPORT_MAX_ITEMS = 10000;
 const REPORT_MAX_ITEM_COLUMNS = 2000;
 
 interface Message {
-  scope: String;
-  message: String;
-  rowList: String;
+  scope: string;
+  message: string;
+  rowList: string;
 }
 const Uploads = () => {
   const [fileInputResetValue, setFileInputResetValue] = useState(0);
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [file, setFile] = useState<File>();
 
-  const [reportId, setReportId] = useState<String | null>(null);
+  const [reportId, setReportId] = useState<string | null>(null);
 
   const [errors, setErrors] = useState([] as Message[]);
   const [errorMessageText, setErrorMessageText] = useState(
@@ -52,32 +52,34 @@ const Uploads = () => {
       if (!event?.currentTarget?.files?.length) {
         return; //no files
       }
-      const file = event.currentTarget.files.item(0);
-      if (!file) return;
+      const currentFile = event.currentTarget.files.item(0);
+      if (!currentFile) {
+        return;
+      }
 
-      if (file.size > PAYLOAD_MAX_BYTES) {
+      if (currentFile.size > PAYLOAD_MAX_BYTES) {
         const maxKBytes = (PAYLOAD_MAX_BYTES / 1024).toLocaleString("en-US", {
           maximumFractionDigits: 2,
           minimumFractionDigits: 2,
         });
         showError(
-          `The file '${file.name}' is too large.  The maximum file size is ${maxKBytes}k`
+          `The file '${currentFile.name}' is too large.  The maximum file size is ${maxKBytes}k`
         );
         return;
       }
 
-      const fileText = await file.text();
+      const fileText = await currentFile.text();
       const lineCount = (fileText.match(/\n/g) || []).length + 1;
       if (lineCount > REPORT_MAX_ITEMS) {
         showError(
-          `The file '${file.name}' has too many rows. The maximum number of rows is ${REPORT_MAX_ITEMS}.`
+          `The file '${currentFile.name}' has too many rows. The maximum number of rows is ${REPORT_MAX_ITEMS}.`
         );
         return;
       }
 
       if (lineCount <= 1) {
         showError(
-          `The file '${file.name}' doesn't contain any valid data. File should have a header line and at least one line of data.`
+          `The file '${currentFile.name}' doesn't contain any valid data. File should have a header line and at least one line of data.`
         );
         return;
       }
@@ -92,12 +94,12 @@ const Uploads = () => {
 
       if (columnCount > REPORT_MAX_ITEM_COLUMNS) {
         showError(
-          `The file '${file.name}' has too many columns. The maximum number of allowed columns is ${REPORT_MAX_ITEM_COLUMNS}.`
+          `The file '${currentFile.name}' has too many columns. The maximum number of allowed columns is ${REPORT_MAX_ITEM_COLUMNS}.`
         );
         return;
       }
 
-      setFile(file);
+      setFile(currentFile);
     } catch (err: any) {
       showError(`An unexpected error happened: '${err.toString()}'`);
     }
@@ -112,7 +114,7 @@ const Uploads = () => {
 
     if (!file || file.size === 0) {
       setIsSubmitting(false);
-      let errorMessage = {} as Message;
+      const errorMessage = {} as Message;
       errorMessage.message = "Invalid File";
       setErrors([errorMessage]);
       return;

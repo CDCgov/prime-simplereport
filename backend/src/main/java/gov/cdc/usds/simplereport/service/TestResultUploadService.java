@@ -1,6 +1,7 @@
 package gov.cdc.usds.simplereport.service;
 
 import feign.FeignException;
+import gov.cdc.usds.simplereport.api.model.errors.CsvProcessingException;
 import gov.cdc.usds.simplereport.api.model.errors.IllegalGraphqlArgumentException;
 import gov.cdc.usds.simplereport.config.AuthorizationConfiguration;
 import gov.cdc.usds.simplereport.db.model.Organization;
@@ -36,7 +37,8 @@ public class TestResultUploadService {
     try {
       content = csvStream.readAllBytes();
     } catch (IOException e) {
-      throw new RuntimeException(e);
+      log.error("Error reading test result upload CSV", e);
+      throw new CsvProcessingException("Unable to read csv");
     }
 
     UploadResponse response = null;

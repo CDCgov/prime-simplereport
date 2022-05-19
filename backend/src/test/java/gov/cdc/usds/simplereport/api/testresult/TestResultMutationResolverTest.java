@@ -24,7 +24,7 @@ import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.test.context.junit.jupiter.SpringExtension;
 
 @ExtendWith(SpringExtension.class)
-public class TestResultMutationResolverTest {
+class TestResultMutationResolverTest {
 
   @MockBean private TestEventRepository _repo;
   @MockBean private TestEventReportingService _reportingSvc;
