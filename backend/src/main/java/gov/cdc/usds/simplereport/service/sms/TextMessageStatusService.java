@@ -88,9 +88,10 @@ public class TextMessageStatusService {
   }
 
   private String getNumberByMessageId(String messageId, String twilioNumber) {
-
+    final Integer PREFIX_START = 0;
+    final Integer PREFIX_END = 8;
     var phoneUtil = PhoneNumberUtil.getInstance();
-    String numberPrefix = twilioNumber.substring(0, 8);
+    String numberPrefix = twilioNumber.substring(PREFIX_START, PREFIX_END);
     TextMessageSent txtMsg = sentRepo.findByTwilioMessageId(messageId);
     List<PhoneNumber> patientNumbers =
         txtMsg.getPatientLink().getTestOrder().getPatient().getPhoneNumbers();
