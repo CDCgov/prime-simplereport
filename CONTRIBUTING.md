@@ -1,6 +1,6 @@
 # Welcome!
 Thank you for your interest in contributing to SimpleReport, part of the CDC's PRIME initiative. SimpleReport is an open-source application leveraged by organizations within the United States for collecting and reporting test results for various supported diseases. We're glad you are interested in contributing!
-There are many ways to contribute, from writing tutorials or blog posts, improving the documentation, submitting bug reports and feature requests, or writing code for PRIME itself.
+There are many ways to contribute, including writing tutorials or blog posts, improving the documentation, submitting bug reports and feature requests, and writing code for PRIME itself.
 
 Before contributing, we encourage you to also read or [LICENSE](LICENSE.md),
 [README](README.md), and
