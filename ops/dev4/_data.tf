@@ -218,10 +218,10 @@ data "azurerm_key_vault_secret" "db_password_no_phi" {
 
 data "azurerm_key_vault_secret" "datahub_api_key" {
   name         = "datahub-api-key-test"
-  key_vault_id = data.azurerm_key_vault.global.id
+  key_vault_id = data.azurerm_key_vault.sr_global.id
 }
 
 data "azurerm_key_vault_secret" "datahub_url" {
   name         = "datahub-url-test"
-  key_vault_id = data.azurerm_key_vault.global.id
+  key_vault_id = data.azurerm_key_vault.sr_global.id
 }
