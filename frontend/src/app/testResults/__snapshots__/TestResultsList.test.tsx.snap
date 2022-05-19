@@ -456,7 +456,7 @@ exports[`TestResultsList should render a list of tests 1`] = `
                     class="patient-name-cell"
                   >
                     <button
-                      class="usa-button usa-button--unstyled usa-button usa-button--unstyled text-bold"
+                      class="usa-button usa-button--unstyled sr-link__primary"
                       type="button"
                     >
                       Gerard, Sam G
@@ -537,7 +537,7 @@ exports[`TestResultsList should render a list of tests 1`] = `
                     class="patient-name-cell"
                   >
                     <button
-                      class="usa-button usa-button--unstyled usa-button usa-button--unstyled text-bold"
+                      class="usa-button usa-button--unstyled sr-link__primary"
                       type="button"
                     >
                       Colleer, Barde X
@@ -618,7 +618,7 @@ exports[`TestResultsList should render a list of tests 1`] = `
                     class="patient-name-cell"
                   >
                     <button
-                      class="usa-button usa-button--unstyled usa-button usa-button--unstyled text-bold"
+                      class="usa-button usa-button--unstyled sr-link__primary"
                       type="button"
                     >
                       Cragell, Barb Whitaker
