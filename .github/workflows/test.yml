@@ -67,9 +67,8 @@ jobs:
       - name: Cache backend coverage results
         uses: actions/cache@v3
         with:
-          path: |
-            backend/build/**
-          key: backend-coverage-${{ hashFiles('backend/build/**') }}
+          path: backend/build/**
+          key: ${{ runner.os }}-backend-coverage-${{ github.run_id }}-${{ github.run_attempt }}
       - name: Archive failed test results
         uses: actions/upload-artifact@v2
         if: failure()
@@ -90,8 +89,6 @@ jobs:
         with:
           path: ~/.cache/yarn
           key: ${{ runner.os }}-yarn-${{ hashFiles('**/yarn.lock') }}
-          restore-keys: |
-            ${{ runner.os }}-yarn-
       - name: Node setup
         working-directory: ./frontend
         run: yarn install --prefer-offline
@@ -103,7 +100,7 @@ jobs:
         with:
           path: |
             frontend/coverage/**
-          key: frontend-coverage-${{ hashFiles('frontend/coverage/**') }}
+          key: ${{ runner.os }}-frontend-coverage-${{ github.run_id }}-${{ github.run_attempt }}
   function-tests:
     runs-on: ubuntu-latest
     steps:
@@ -119,7 +116,7 @@ jobs:
         with:
           path: |
             ops/services/app_functions/report_stream_batched_publisher/functions/coverage/**
-          key: function-coverage-${{ hashFiles('ops/services/app_functions/report_stream_batched_publisher/functions/coverage/**') }}
+          key: ${{ runner.os }}-function-coverage-${{ github.run_id }}-${{ github.run_attempt }}
       - name: Archive function coverage results
         uses: actions/upload-artifact@v2
         with:
@@ -140,19 +137,19 @@ jobs:
         with:
           path: |
             backend/build/**
-          key: backend-coverage-
+          key: ${{ runner.os }}-backend-coverage-${{ github.run_id }}-${{ github.run_attempt }}
       - name: Restore frontend cache
         uses: actions/cache@v3
         with:
           path: |
             frontend/coverage/**
-          key: frontend-coverage-
+          key: ${{ runner.os }}-frontend-coverage-${{ github.run_id }}-${{ github.run_attempt }}
       - name: Restore functions cache
         uses: actions/cache@v3
         with:
           path: |
             ops/services/app_functions/report_stream_batched_publisher/functions/coverage/**
-          key: function-coverage-
+          key: ${{ runner.os }}-function-coverage-${{ github.run_id }}-${{ github.run_attempt }}
       - name: Sonar analysis
         if: ${{ github.actor != 'dependabot[bot]' }}
         run: ./gradlew sonarqube -Dsonar.projectBaseDir=${{ env.PROJECT_ROOT }} --info
