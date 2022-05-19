@@ -156,7 +156,7 @@ function testResultRows(
               r.patient.lastName
             )}
             onClick={() => setDetailsModalId(r.internalId)}
-            className="usa-button usa-button--unstyled text-bold"
+            className="sr-link__primary"
           />
           <span className="display-block text-base font-ui-2xs">
             DOB: {formatDateWithTimeOption(r.patient.birthDate)}
