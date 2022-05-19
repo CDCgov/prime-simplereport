@@ -1,16 +1,10 @@
 import { gql, useMutation } from "@apollo/client";
 import React, { useState } from "react";
-import {
-  Button,
-  Form,
-  FormGroup,
-  Label,
-  FileInput,
-} from "@trussworks/react-uswds";
+import { Button, FormGroup, Label, FileInput } from "@trussworks/react-uswds";
 
 import { showError } from "../../utils";
 
-const UPLOAD_TEST_RESULT_CSV = gql`
+export const UPLOAD_TEST_RESULT_CSV = gql`
   mutation UploadTestResultCSV($testResultList: Upload!) {
     uploadTestResultCSV(testResultList: $testResultList) {
       reportId
@@ -32,14 +26,19 @@ const PAYLOAD_MAX_BYTES = 50 * 1000 * 1000;
 const REPORT_MAX_ITEMS = 10000;
 const REPORT_MAX_ITEM_COLUMNS = 2000;
 
+interface Message {
+  scope: String;
+  message: String;
+  rowList: String;
+}
 const Uploads = () => {
   const [fileInputResetValue, setFileInputResetValue] = useState(0);
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [file, setFile] = useState<File>();
 
-  const [reportId, setReportId] = useState(null);
+  const [reportId, setReportId] = useState<String | null>(null);
 
-  const [errors, setErrors] = useState([]);
+  const [errors, setErrors] = useState([] as Message[]);
   const [errorMessageText, setErrorMessageText] = useState(
     `Please resolve the errors below and upload your edited file. Your file has not been accepted.`
   );
@@ -100,19 +99,22 @@ const Uploads = () => {
 
       setFile(file);
     } catch (err: any) {
-      console.error(err);
       showError(`An unexpected error happened: '${err.toString()}'`);
     }
   };
 
-  const handleSubmit = async (event: React.FormEvent<HTMLFormElement>) => {
+  const handleSubmit = async (event: React.FormEvent<HTMLButtonElement>) => {
     event.preventDefault();
 
     setIsSubmitting(true);
     setReportId(null);
     setErrors([]);
 
-    if (file?.size === 0) {
+    if (!file || file.size === 0) {
+      setIsSubmitting(false);
+      let errorMessage = {} as Message;
+      errorMessage.message = "Invalid File";
+      setErrors([errorMessage]);
       return;
     }
 
@@ -122,6 +124,7 @@ const Uploads = () => {
         variables: { testResultList: file },
       });
     } catch (error) {}
+
     const response = queryResponse?.data.uploadTestResultCSV;
 
     if (queryResponse?.errors?.length) {
@@ -129,10 +132,11 @@ const Uploads = () => {
         "There was a server error. Your file has not been accepted."
       );
     }
+
     if (response?.reportId) {
       setReportId(response?.reportId);
-      event.currentTarget?.reset();
     }
+
     if (response?.errors?.length) {
       setErrorMessageText(
         "Please resolve the errors below and upload your edited file. Your file has not been accepted."
@@ -215,37 +219,36 @@ const Uploads = () => {
                 </table>
               </div>
             )}
-            <Form onSubmit={(e) => handleSubmit(e)}>
-              <FormGroup className="margin-bottom-3">
-                <Label
-                  className="font-sans-xs"
-                  id="upload-csv-input-label"
-                  htmlFor="upload-csv-input"
-                >
-                  Upload your COVID-19 lab results as a .csv.
-                </Label>
-                <FileInput
-                  key={fileInputResetValue}
-                  id="upload-csv-input"
-                  name="upload-csv-input"
-                  aria-describedby="upload-csv-input-label"
-                  accept="text/csv, .csv"
-                  onChange={(e) => handleFileChange(e)}
-                  required
-                />
-              </FormGroup>
-              <Button
-                type="submit"
-                disabled={isSubmitting || file?.name?.length === 0}
+            <FormGroup className="margin-bottom-3">
+              <Label
+                className="font-sans-xs"
+                id="upload-csv-input-label"
+                htmlFor="upload-csv-input"
               >
-                {isSubmitting && (
-                  <span>
-                    <span>Processing file...</span>
-                  </span>
-                )}
-                {!isSubmitting && <span>Upload</span>}
-              </Button>
-            </Form>
+                Upload your COVID-19 lab results as a .csv.
+              </Label>
+              <FileInput
+                key={fileInputResetValue}
+                id="upload-csv-input"
+                name="upload-csv-input"
+                aria-describedby="upload-csv-input-label"
+                accept="text/csv, .csv"
+                onChange={(e) => handleFileChange(e)}
+                required
+              />
+            </FormGroup>
+            <Button
+              type="submit"
+              onClick={(e) => handleSubmit(e)}
+              disabled={isSubmitting || file?.name?.length === 0}
+            >
+              {isSubmitting && (
+                <span>
+                  <span>Processing file...</span>
+                </span>
+              )}
+              {!isSubmitting && <span>Upload</span>}
+            </Button>
           </div>
         </div>
       </div>
