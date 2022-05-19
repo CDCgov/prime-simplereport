@@ -132,10 +132,11 @@ const Uploads = () => {
         "There was a server error. Your file has not been accepted."
       );
     }
+
     if (response?.reportId) {
       setReportId(response?.reportId);
-      //event.currentTarget?.reset();
     }
+
     if (response?.errors?.length) {
       setErrorMessageText(
         "Please resolve the errors below and upload your edited file. Your file has not been accepted."

@@ -55,7 +55,6 @@ describe("Uploads", () => {
     userEvent.upload(input, emptyFile);
     await new Promise((resolve) => setTimeout(resolve, 1000));
     expect(
-      //await screen.findByText("Problems saving data to server")
       await screen.findByText(
         "The file 'values.csv' doesn't contain any valid data. File should have a header line and at least one line of data."
       )
