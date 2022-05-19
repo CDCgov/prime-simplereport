@@ -77,7 +77,7 @@ dependencies {
     // graphql-java-extended-validation schema directives
     compile 'com.graphql-java:graphql-java-extended-validation:16.0.0'
 
-    implementation 'com.azure:azure-storage-queue:12.8.+'
+    implementation 'com.azure:azure-storage-queue:12.12.+'
 
     // test/check dependencies
     testImplementation('org.springframework.boot:spring-boot-starter-test') {
@@ -105,10 +105,10 @@ dependencies {
     testCompile "com.github.tomakehurst:wiremock-jre8:2.28.1"
 
     // Forcing these version resolutions over the BOM of spring-cloud-dependencies below
-    runtimeOnly 'com.azure:azure-core-http-netty:1.10.2'
-    runtimeOnly 'com.azure:azure-core:1.19.0'
-    runtimeOnly 'com.azure:azure-storage-common:12.12.0'
-    runtimeOnly "com.azure:azure-storage-queue:12.9.1"
+    runtimeOnly 'com.azure:azure-core-http-netty:1.11.9'
+    runtimeOnly 'com.azure:azure-core:1.27.0'
+    runtimeOnly 'com.azure:azure-storage-common:12.15.1'
+    runtimeOnly "com.azure:azure-storage-queue:12.12.1"
 
     runtimeOnly "io.zipkin.brave:brave-instrumentation-http:5.13.2"
     runtimeOnly "io.zipkin.brave:brave:5.13.2"
@@ -201,7 +201,7 @@ task testDbStart(type: Exec) {
 }
 
 task testDbStop(type: Exec) {
-    commandLine "docker", "compose", "--env-file", "../.env.test", "-p", "simple-report-tests", "-f", "../docker-compose.yml", "down"
+    commandLine "docker", "compose", "--env-file", "../.env.test", "-p", "simple-report-tests", "-f", "../docker-compose.yml", "down", "-v"
 }
 
 task testDbReset(type: Exec) {
