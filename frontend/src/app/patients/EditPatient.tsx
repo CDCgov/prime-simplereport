@@ -337,7 +337,7 @@ const EditPatient = (props: Props) => {
                     </div>
                   </div>
                   <div className="display-flex flex-align-center">
-                    {props.fromQueue ? null : (
+                    {props.fromQueue != true && (
                       <Button
                         id="edit-patient-save-lower"
                         className="prime-save-patient-changes-start-test"
