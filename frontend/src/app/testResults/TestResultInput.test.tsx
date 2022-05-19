@@ -11,9 +11,10 @@ describe("TestResultInputForm", () => {
     render(
       <TestResultInputForm
         queueItemId={"5d315d18-82f8-4025-a051-1a509e15c880"}
-        testResultValue="POSITIVE"
+        covidResult="POSITIVE"
+        supportsMultipleDiseases={false}
         isSubmitDisabled={undefined}
-        onChange={jest.fn()}
+        onTestResultChange={jest.fn()}
         onSubmit={jest.fn()}
       />
     );
@@ -27,8 +28,9 @@ describe("TestResultInputForm", () => {
     render(
       <TestResultInputForm
         queueItemId={"5d315d18-82f8-4025-a051-1a509e15c880"}
-        testResultValue={undefined}
-        onChange={jest.fn()}
+        covidResult={undefined}
+        supportsMultipleDiseases={false}
+        onTestResultChange={jest.fn()}
         onSubmit={jest.fn()}
       />
     );
@@ -43,8 +45,9 @@ describe("TestResultInputForm", () => {
     render(
       <TestResultInputForm
         queueItemId={"5d315d18-82f8-4025-a051-1a509e15c880"}
-        testResultValue={undefined}
-        onChange={onChange}
+        covidResult={undefined}
+        supportsMultipleDiseases={false}
+        onTestResultChange={onChange}
         onSubmit={jest.fn()}
       />
     );
@@ -59,8 +62,9 @@ describe("TestResultInputForm", () => {
     render(
       <TestResultInputForm
         queueItemId={"5d315d18-82f8-4025-a051-1a509e15c880"}
-        testResultValue="POSITIVE"
-        onChange={onChange}
+        covidResult="POSITIVE"
+        supportsMultipleDiseases={false}
+        onTestResultChange={onChange}
         onSubmit={jest.fn()}
       />
     );
@@ -75,8 +79,9 @@ describe("TestResultInputForm", () => {
     render(
       <TestResultInputForm
         queueItemId={"5d315d18-82f8-4025-a051-1a509e15c880"}
-        testResultValue={undefined}
-        onChange={jest.fn()}
+        covidResult={undefined}
+        supportsMultipleDiseases={false}
+        onTestResultChange={jest.fn()}
         onSubmit={onSubmit}
       />
     );
@@ -91,9 +96,10 @@ describe("TestResultInputForm", () => {
     render(
       <TestResultInputForm
         queueItemId={"5d315d18-82f8-4025-a051-1a509e15c880"}
-        testResultValue="POSITIVE"
+        covidResult="POSITIVE"
+        supportsMultipleDiseases={false}
         isSubmitDisabled={true}
-        onChange={jest.fn()}
+        onTestResultChange={jest.fn()}
         onSubmit={onSubmit}
       />
     );
@@ -108,9 +114,10 @@ describe("TestResultInputForm", () => {
     render(
       <TestResultInputForm
         queueItemId={"5d315d18-82f8-4025-a051-1a509e15c880"}
-        testResultValue="POSITIVE"
+        covidResult="POSITIVE"
+        supportsMultipleDiseases={false}
         isSubmitDisabled={false}
-        onChange={jest.fn()}
+        onTestResultChange={jest.fn()}
         onSubmit={onSubmit}
       />
     );
@@ -125,8 +132,9 @@ describe("TestResultInputForm", () => {
     render(
       <TestResultInputForm
         queueItemId={"5d315d18-82f8-4025-a051-1a509e15c880"}
-        testResultValue="POSITIVE"
-        onChange={jest.fn()}
+        covidResult="POSITIVE"
+        supportsMultipleDiseases={false}
+        onTestResultChange={jest.fn()}
         onSubmit={onSubmit}
       />
     );

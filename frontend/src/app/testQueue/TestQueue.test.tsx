@@ -10,7 +10,9 @@ import { MemoryRouter } from "react-router-dom";
 import { Provider } from "react-redux";
 import configureStore, { MockStoreEnhanced } from "redux-mock-store";
 
-import TestQueue, { queueQuery } from "./TestQueue";
+import { GetFacilityQueueMultiplexDocument } from "../../generated/graphql";
+
+import TestQueue from "./TestQueue";
 import { REMOVE_PATIENT_FROM_QUEUE } from "./QueueItem";
 import { QUERY_PATIENT } from "./addToQueue/AddToQueueSearch";
 
@@ -142,7 +144,7 @@ describe("TestQueue", () => {
 
       const mock = {
         request: {
-          query: queueQuery,
+          query: GetFacilityQueueMultiplexDocument,
           variables: {
             facilityId: "a1",
           },
@@ -189,7 +191,7 @@ describe("TestQueue", () => {
 
       const mock = {
         request: {
-          query: queueQuery,
+          query: GetFacilityQueueMultiplexDocument,
           variables: {
             facilityId: "a1",
           },
@@ -401,7 +403,7 @@ const result = {
 const mocks = [
   {
     request: {
-      query: queueQuery,
+      query: GetFacilityQueueMultiplexDocument,
       variables: {
         facilityId: "a1",
       },
@@ -431,7 +433,7 @@ const mocks = [
   },
   {
     request: {
-      query: queueQuery,
+      query: GetFacilityQueueMultiplexDocument,
       variables: {
         facilityId: "a1",
       },

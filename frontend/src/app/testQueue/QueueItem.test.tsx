@@ -74,7 +74,7 @@ describe("QueueItem", () => {
                 testProps.selectedDeviceSpecimenTypeId
               }
               deviceSpecimenTypes={testProps.deviceSpecimenTypes}
-              selectedTestResult={testProps.selectedTestResult}
+              selectedTestResults={testProps.selectedTestResults}
               devices={testProps.devices}
               refetchQueue={testProps.refetchQueue}
               facilityId={testProps.facilityId}
@@ -109,7 +109,7 @@ describe("QueueItem", () => {
                 testProps.selectedDeviceSpecimenTypeId
               }
               deviceSpecimenTypes={testProps.deviceSpecimenTypes}
-              selectedTestResult={testProps.selectedTestResult}
+              selectedTestResults={testProps.selectedTestResults}
               devices={testProps.devices}
               refetchQueue={testProps.refetchQueue}
               facilityId={testProps.facilityId}
@@ -144,7 +144,7 @@ describe("QueueItem", () => {
                 testProps.selectedDeviceSpecimenTypeId
               }
               deviceSpecimenTypes={testProps.deviceSpecimenTypes}
-              selectedTestResult={testProps.selectedTestResult}
+              selectedTestResults={testProps.selectedTestResults}
               devices={testProps.devices}
               refetchQueue={testProps.refetchQueue}
               facilityId={testProps.facilityId}
@@ -181,7 +181,7 @@ describe("QueueItem", () => {
                 testProps.selectedDeviceSpecimenTypeId
               }
               deviceSpecimenTypes={testProps.deviceSpecimenTypes}
-              selectedTestResult={testProps.selectedTestResult}
+              selectedTestResults={testProps.selectedTestResults}
               devices={testProps.devices}
               refetchQueue={testProps.refetchQueue}
               facilityId={testProps.facilityId}
@@ -218,7 +218,7 @@ describe("QueueItem", () => {
                 testProps.selectedDeviceSpecimenTypeId
               }
               deviceSpecimenTypes={testProps.deviceSpecimenTypes}
-              selectedTestResult={testProps.selectedTestResult}
+              selectedTestResults={testProps.selectedTestResults}
               devices={testProps.devices}
               refetchQueue={testProps.refetchQueue}
               facilityId={testProps.facilityId}
@@ -262,7 +262,7 @@ describe("QueueItem", () => {
                 testProps.selectedDeviceSpecimenTypeId
               }
               deviceSpecimenTypes={testProps.deviceSpecimenTypes}
-              selectedTestResult={testProps.selectedTestResult}
+              selectedTestResults={testProps.selectedTestResults}
               devices={testProps.devices}
               refetchQueue={testProps.refetchQueue}
               facilityId={testProps.facilityId}
@@ -348,7 +348,7 @@ describe("QueueItem", () => {
                   testProps.selectedDeviceSpecimenTypeId
                 }
                 deviceSpecimenTypes={testProps.deviceSpecimenTypes}
-                selectedTestResult={testProps.selectedTestResult}
+                selectedTestResults={testProps.selectedTestResults}
                 devices={testProps.devices}
                 refetchQueue={testProps.refetchQueue}
                 facilityId={testProps.facilityId}
@@ -465,7 +465,7 @@ describe("QueueItem", () => {
                     testProps.selectedDeviceSpecimenTypeId
                   }
                   deviceSpecimenTypes={testProps.deviceSpecimenTypes}
-                  selectedTestResult={testProps.selectedTestResult}
+                  selectedTestResults={testProps.selectedTestResults}
                   devices={testProps.devices}
                   refetchQueue={testProps.refetchQueue}
                   facilityId={testProps.facilityId}
@@ -554,7 +554,7 @@ describe("QueueItem", () => {
                 testProps.selectedDeviceSpecimenTypeId
               }
               deviceSpecimenTypes={testProps.deviceSpecimenTypes}
-              selectedTestResult={testProps.selectedTestResult}
+              selectedTestResults={testProps.selectedTestResults}
               devices={testProps.devices}
               refetchQueue={testProps.refetchQueue}
               facilityId={testProps.facilityId}
@@ -593,7 +593,7 @@ describe("QueueItem", () => {
                   testProps.selectedDeviceSpecimenTypeId
                 }
                 deviceSpecimenTypes={testProps.deviceSpecimenTypes}
-                selectedTestResult={testProps.selectedTestResult}
+                selectedTestResults={testProps.selectedTestResults}
                 devices={testProps.devices}
                 refetchQueue={testProps.refetchQueue}
                 facilityId={testProps.facilityId}
@@ -663,7 +663,7 @@ describe("QueueItem", () => {
                 testProps.selectedDeviceSpecimenTypeId
               }
               deviceSpecimenTypes={testProps.deviceSpecimenTypes}
-              selectedTestResult={testProps.selectedTestResult}
+              selectedTestResults={testProps.selectedTestResults}
               devices={testProps.devices}
               refetchQueue={testProps.refetchQueue}
               facilityId={testProps.facilityId}
@@ -722,7 +722,7 @@ describe("QueueItem", () => {
               testProps.selectedDeviceSpecimenTypeId
             }
             deviceSpecimenTypes={testProps.deviceSpecimenTypes}
-            selectedTestResult={testProps.selectedTestResult}
+            selectedTestResults={testProps.selectedTestResults}
             devices={testProps.devices}
             refetchQueue={testProps.refetchQueue}
             facilityId={testProps.facilityId}
@@ -763,7 +763,7 @@ describe("QueueItem", () => {
                 testProps.selectedDeviceSpecimenTypeId
               }
               deviceSpecimenTypes={testProps.deviceSpecimenTypes}
-              selectedTestResult={testProps.selectedTestResult}
+              selectedTestResults={testProps.selectedTestResults}
               devices={testProps.devices}
               refetchQueue={testProps.refetchQueue}
               facilityId={testProps.facilityId}
@@ -806,7 +806,7 @@ describe("QueueItem", () => {
                   testProps.selectedDeviceSpecimenTypeId
                 }
                 deviceSpecimenTypes={testProps.deviceSpecimenTypes}
-                selectedTestResult={testProps.selectedTestResult}
+                selectedTestResults={testProps.selectedTestResults}
                 devices={testProps.devices}
                 refetchQueue={testProps.refetchQueue}
                 facilityId={testProps.facilityId}
@@ -906,7 +906,7 @@ const testProps = {
   selectedDeviceId: internalId,
   selectedDeviceTestLength: 10,
   selectedDeviceSpecimenTypeId: "device-specimen-1",
-  selectedTestResult: {} as any,
+  selectedTestResults: [] as any,
   dateTestedProp: "",
   refetchQueue: () => null,
   facilityId: "Hogwarts+123",

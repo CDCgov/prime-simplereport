@@ -4,30 +4,52 @@ import RadioGroup from "../commonComponents/RadioGroup";
 import Button from "../commonComponents/Button/Button";
 import { COVID_RESULTS, TEST_RESULT_DESCRIPTIONS } from "../constants";
 import { TestResult } from "../testQueue/QueueItem";
+import Checkboxes from "../commonComponents/Checkboxes";
+import { TextWithTooltip } from "../commonComponents/TextWithTooltip";
 
 interface Props {
   queueItemId: string;
-  testResultValue: TestResult | undefined;
+  covidResult: TestResult | undefined;
+  fluAResult?: TestResult | undefined;
+  fluBResult?: TestResult | undefined;
+  supportsMultipleDiseases: boolean;
   isSubmitDisabled?: boolean;
-  onChange: (value: TestResult | undefined) => void;
+  onTestResultChange: (
+    diseaseName: string
+  ) => (value: TestResult | undefined) => void;
   onSubmit: () => void;
 }
 
 const TestResultInputForm: React.FC<Props> = ({
   queueItemId,
-  testResultValue,
+  covidResult,
+  fluAResult,
+  fluBResult,
+  supportsMultipleDiseases,
   isSubmitDisabled,
   onSubmit,
-  onChange,
+  onTestResultChange,
 }) => {
-  const onResultClick = (value: TestResult) => {
-    if (value === testResultValue) {
-      onChange(undefined);
+  const onCovidResultClick = (value: TestResult) => {
+    if (value === covidResult) {
+      onTestResultChange("COVID-19")(undefined);
+    }
+  };
+
+  const onFluAResultClick = (value: TestResult) => {
+    if (value === fluAResult) {
+      onTestResultChange("Flu A")(undefined);
+    }
+  };
+
+  const onFluBResultClick = (value: TestResult) => {
+    if (value === fluBResult) {
+      onTestResultChange("Flu B")(undefined);
     }
   };
 
   const allowSubmit =
-    testResultValue && testResultValue !== "UNKNOWN" && !isSubmitDisabled;
+    covidResult && covidResult !== "UNKNOWN" && !isSubmitDisabled;
 
   const onResultSubmit = (event: React.FormEvent<HTMLButtonElement>) => {
     event.preventDefault();
@@ -37,33 +59,134 @@ const TestResultInputForm: React.FC<Props> = ({
   };
 
   return (
-    <form className="usa-form">
-      <h4 className="prime-radio__title">SARS-CoV-2 results</h4>
-      <React.Fragment>
-        <RadioGroup
-          legend="Test result"
-          legendSrOnly
-          onClick={onResultClick}
-          onChange={onChange}
-          buttons={[
-            {
-              value: COVID_RESULTS.POSITIVE,
-              label: `${TEST_RESULT_DESCRIPTIONS.POSITIVE} (+)`,
-            },
-            {
-              value: COVID_RESULTS.NEGATIVE,
-              label: `${TEST_RESULT_DESCRIPTIONS.NEGATIVE} (-)`,
-            },
-            {
-              value: COVID_RESULTS.INCONCLUSIVE,
-              label: `${TEST_RESULT_DESCRIPTIONS.UNDETERMINED}`,
-            },
-          ]}
-          name={`covid-test-result-${queueItemId}`}
-          selectedRadio={testResultValue}
-          wrapperClassName="prime-radio__group"
-        />
-        <div className="prime-test-result-submit">
+    <form className="usa-form maxw-none">
+      <>
+        {supportsMultipleDiseases ? (
+          <div className="grid-row">
+            <div className="grid-col-4">
+              <h4 className="prime-radio__title">COVID-19</h4>
+              <RadioGroup
+                legend="COVID-19 result"
+                legendSrOnly
+                onClick={onCovidResultClick}
+                onChange={onTestResultChange("COVID-19")}
+                buttons={[
+                  {
+                    value: COVID_RESULTS.POSITIVE,
+                    label: `${TEST_RESULT_DESCRIPTIONS.POSITIVE} (+)`,
+                  },
+                  {
+                    value: COVID_RESULTS.NEGATIVE,
+                    label: `${TEST_RESULT_DESCRIPTIONS.NEGATIVE} (-)`,
+                  },
+                ]}
+                name={`covid-test-result-${queueItemId}`}
+                selectedRadio={covidResult}
+                wrapperClassName="prime-radio__group"
+              />
+            </div>
+            <div className="grid-col-4">
+              <h4 className="prime-radio__title">Flu A</h4>
+              <RadioGroup
+                legend="Flu A result"
+                legendSrOnly
+                onClick={onFluAResultClick}
+                onChange={onTestResultChange("Flu A")}
+                buttons={[
+                  {
+                    value: COVID_RESULTS.POSITIVE,
+                    label: `${TEST_RESULT_DESCRIPTIONS.POSITIVE} (+)`,
+                  },
+                  {
+                    value: COVID_RESULTS.NEGATIVE,
+                    label: `${TEST_RESULT_DESCRIPTIONS.NEGATIVE} (-)`,
+                  },
+                ]}
+                name={`flu-a-test-result-${queueItemId}`}
+                selectedRadio={fluAResult}
+                wrapperClassName="prime-radio__group"
+              />
+            </div>
+            <div className="grid-col-4">
+              <h4 className="prime-radio__title">Flu B</h4>
+              <RadioGroup
+                legend="Flu B result"
+                legendSrOnly
+                onClick={onFluBResultClick}
+                onChange={onTestResultChange("Flu B")}
+                buttons={[
+                  {
+                    value: COVID_RESULTS.POSITIVE,
+                    label: `${TEST_RESULT_DESCRIPTIONS.POSITIVE} (+)`,
+                  },
+                  {
+                    value: COVID_RESULTS.NEGATIVE,
+                    label: `${TEST_RESULT_DESCRIPTIONS.NEGATIVE} (-)`,
+                  },
+                ]}
+                name={`flu-b-test-result-${queueItemId}`}
+                selectedRadio={fluBResult}
+                wrapperClassName="prime-radio__group"
+              />
+            </div>
+          </div>
+        ) : (
+          <>
+            <h4 className="prime-radio__title">COVID-19 results</h4>
+            <RadioGroup
+              legend="Test result"
+              legendSrOnly
+              onClick={onCovidResultClick}
+              onChange={onTestResultChange("COVID-19")}
+              buttons={[
+                {
+                  value: COVID_RESULTS.POSITIVE,
+                  label: `${TEST_RESULT_DESCRIPTIONS.POSITIVE} (+)`,
+                },
+                {
+                  value: COVID_RESULTS.NEGATIVE,
+                  label: `${TEST_RESULT_DESCRIPTIONS.NEGATIVE} (-)`,
+                },
+                {
+                  value: COVID_RESULTS.INCONCLUSIVE,
+                  label: `${TEST_RESULT_DESCRIPTIONS.UNDETERMINED}`,
+                },
+              ]}
+              name={`covid-test-result-${queueItemId}`}
+              selectedRadio={covidResult}
+              wrapperClassName="prime-radio__group"
+            />
+          </>
+        )}
+        <div
+          className={
+            supportsMultipleDiseases
+              ? "prime-multiplex-result-submit"
+              : "prime-test-result-submit"
+          }
+        >
+          {supportsMultipleDiseases && (
+            <>
+              <Checkboxes
+                onChange={() => null}
+                legend="Inconclusive tests"
+                legendSrOnly
+                name="inconclusive-tests"
+                boxes={[
+                  {
+                    value: "inconclusive",
+                    label: "Mark test as inconclusive",
+                    checked: covidResult === COVID_RESULTS.INCONCLUSIVE,
+                  },
+                ]}
+              />
+              <TextWithTooltip
+                className="float-right"
+                tooltip="COVID-19 results are reported to your public health department. Flu results are not reported at this time."
+                position="left"
+              />
+            </>
+          )}
           <Button
             onClick={onResultSubmit}
             type="submit"
@@ -72,7 +195,7 @@ const TestResultInputForm: React.FC<Props> = ({
             label="Submit"
           />
         </div>
-      </React.Fragment>
+      </>
     </form>
   );
 };
