@@ -1,5 +1,6 @@
 package gov.cdc.usds.simplereport.api.organization;
 
+import gov.cdc.usds.simplereport.api.model.ApiFacility;
 import gov.cdc.usds.simplereport.api.model.ApiOrganization;
 import gov.cdc.usds.simplereport.api.model.ApiPendingOrganization;
 import gov.cdc.usds.simplereport.db.model.Facility;
@@ -77,5 +78,19 @@ public class OrganizationResolver implements GraphQLQueryResolver {
 
     return Stream.concat(pendingOrgsAlreadyCreated.stream(), pendingOrgsInQueue.stream())
         .collect(Collectors.toList());
+  }
+
+  /**
+   * Retrieves all facilities for the current org that are accessible to the current user
+   *
+   * @param showArchived whether or not to include archived facilities
+   * @return set of facilities
+   */
+  public Set<ApiFacility> getFacilities(Boolean showArchived) {
+    Set<Facility> facilities = _organizationService.getAccessibleFacilities();
+    if (showArchived) {
+      facilities.addAll(_organizationService.getArchivedFacilities());
+    }
+    return facilities.stream().map(ApiFacility::new).collect(Collectors.toSet());
   }
 }

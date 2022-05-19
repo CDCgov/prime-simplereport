@@ -69,6 +69,9 @@ public class AuthorizationConfiguration {
   private static final String SPEL_HAS_PERMISSION_SUBMIT_TEST =
       SPEL_HAS_PERMISSION + "SUBMIT_TEST" + ")";
 
+  private static final String SPEL_HAS_PERMISSION_VIEW_ARCHIVED_FACILITIES =
+      SPEL_HAS_PERMISSION + "VIEW_ARCHIVED_FACILITIES" + ")";
+
   private static final String SPEL_HAS_PERMISSION_ACCESS_ALL_FACILITIES =
       SPEL_HAS_PERMISSION + "ACCESS_ALL_FACILITIES" + ")";
 
@@ -107,7 +110,7 @@ public class AuthorizationConfiguration {
   private static final String SPEL_CAN_EXECUTE_SPECIFIC_PATIENT_SEARCH =
       "@"
           + AUTHORIZER_BEAN
-          + ".userHasSpecificPatientSearchPermission(#facilityId, #isArchived, #namePrefixMatch)";
+          + ".userHasSpecificPatientSearchPermission(#facilityId, #isArchived, #namePrefixMatch, #includeArchivedFacilities)";
 
   /**
    * Apply this annotation if the method should only be called by site-wide administrative users
@@ -276,6 +279,29 @@ public class AuthorizationConfiguration {
   public @interface RequirePermissionManageUsers {}
 
   /**
+   * Require the current user to have the {@link UserPermission#VIEW_ARCHIVED_FACILITIES} permission
+   * and the {@link UserPermission#ACCESS_ALL_FACILITIES} permission.
+   */
+  @Retention(RUNTIME)
+  @Target(METHOD)
+  @PreAuthorize(
+      SPEL_IS_VALID
+          + " && "
+          + SPEL_HAS_PERMISSION_VIEW_ARCHIVED_FACILITIES
+          + " && "
+          + SPEL_HAS_PERMISSION_ACCESS_ALL_FACILITIES)
+  public @interface RequirePermissionViewAllFacilityResults {}
+
+  /**
+   * Require the current user to have the {@link UserPermission#VIEW_ARCHIVED_FACILITIES}
+   * permission.
+   */
+  @Retention(RUNTIME)
+  @Target(METHOD)
+  @PreAuthorize(SPEL_IS_VALID + " && " + SPEL_HAS_PERMISSION_VIEW_ARCHIVED_FACILITIES)
+  public @interface RequirePermissionViewArchivedFacilities {}
+
+  /**
    * Require the current user to have the {@link UserPermission#SEARCH_PATIENTS} permission for the
    * patient with UUID {@code patientId}.
    *
@@ -296,9 +322,11 @@ public class AuthorizationConfiguration {
    *
    * <p>- in the facility with UUID {@code facilityId};
    *
-   * <p>- whose archived status is {@code isArchived}; AND
+   * <p>- whose archived status is {@code isArchived};
    *
-   * <p>- whose name elements begin with {@code namePrefixMatch}.
+   * <p>- whose name elements begin with {@code namePrefixMatch}; AND
+   *
+   * <p>- who are in archived facilities (if {@code includeArchivedFacilities = true})
    *
    * <p>NOTE: any method with this annotation must have the parameters {@code facilityId}, {@code
    * isArchived} and {@code namePrefixMatch}.

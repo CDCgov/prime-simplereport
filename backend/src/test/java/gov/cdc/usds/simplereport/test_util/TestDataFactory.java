@@ -162,6 +162,12 @@ public class TestDataFactory {
     return save;
   }
 
+  public Facility createArchivedFacility(Organization org, String facilityName) {
+    Facility facility = createValidFacility(org, facilityName);
+    facility.setIsDeleted(true);
+    return _facilityRepo.save(facility);
+  }
+
   @Transactional
   public Person createMinimalPerson(Organization org) {
     return createMinimalPerson(org, null, "John", "Brown", "Boddie", "Jr.");
