@@ -3,6 +3,7 @@ package gov.cdc.usds.simplereport.api.graphql;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.junit.jupiter.api.Assertions.assertTrue;
+import static org.junit.jupiter.api.Assertions.fail;
 
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.node.ArrayNode;
@@ -14,6 +15,7 @@ import gov.cdc.usds.simplereport.db.model.DeviceType;
 import gov.cdc.usds.simplereport.db.model.Facility;
 import gov.cdc.usds.simplereport.db.model.Organization;
 import gov.cdc.usds.simplereport.db.model.Person;
+import gov.cdc.usds.simplereport.db.model.auxiliary.DiseaseResult;
 import gov.cdc.usds.simplereport.db.model.auxiliary.TestResult;
 import gov.cdc.usds.simplereport.service.OrganizationService;
 import gov.cdc.usds.simplereport.service.sms.SmsService;
@@ -21,7 +23,9 @@ import gov.cdc.usds.simplereport.test_util.SliceTestConfiguration.WithSimpleRepo
 import gov.cdc.usds.simplereport.test_util.TestDataFactory;
 import java.text.SimpleDateFormat;
 import java.time.Instant;
+import java.util.ArrayList;
 import java.util.Date;
+import java.util.List;
 import java.util.Optional;
 import java.util.Set;
 import java.util.UUID;
@@ -94,6 +98,53 @@ class TestResultTest extends BaseGraphqlTest {
 
     assertTrue(testResults.has(0), "Has at least one submitted test result=");
     assertEquals(testResults.get(0).get("dateTested").asText(), dateTested);
+  }
+
+  @Test
+  void submitAndFetchTestResultMultiplex() throws Exception {
+    Person p = _dataFactory.createFullPerson(_org);
+    DeviceType d = _site.getDefaultDeviceType();
+    _dataFactory.createTestOrder(p, _site);
+    String dateTested = "2020-12-31T14:30:30.001Z";
+
+    List<DiseaseResult> results = new ArrayList<>();
+    results.add(new DiseaseResult(_diseaseService.covid().getName(), TestResult.NEGATIVE));
+    results.add(new DiseaseResult(_diseaseService.fluA().getName(), TestResult.POSITIVE));
+    results.add(new DiseaseResult(_diseaseService.fluB().getName(), TestResult.UNDETERMINED));
+
+    ObjectNode variables =
+        JsonNodeFactory.instance
+            .objectNode()
+            .put("deviceId", d.getInternalId().toString())
+            .put("patientId", p.getInternalId().toString())
+            .putPOJO("results", results)
+            .put("dateTested", dateTested);
+    submitTestResultMultiplex(variables, Optional.empty());
+
+    ArrayNode testResults = fetchTestResultsMultiplex(getFacilityScopedArguments());
+
+    assertTrue(testResults.has(0), "Has at least one submitted test result=");
+    assertEquals(testResults.get(0).get("dateTested").asText(), dateTested);
+    testResults
+        .get(0)
+        .get("results")
+        .elements()
+        .forEachRemaining(
+            r -> {
+              switch (r.get("disease").get("name").asText()) {
+                case "COVID-19":
+                  assertEquals(TestResult.NEGATIVE.toString(), r.get("testResult").asText());
+                  break;
+                case "Flu A":
+                  assertEquals(TestResult.POSITIVE.toString(), r.get("testResult").asText());
+                  break;
+                case "Flu B":
+                  assertEquals(TestResult.UNDETERMINED.toString(), r.get("testResult").asText());
+                  break;
+                default:
+                  fail("Unexpected disease=" + r.get("disease").get("name").asText());
+              }
+            });
   }
 
   @Test
@@ -324,8 +375,17 @@ class TestResultTest extends BaseGraphqlTest {
     return runQuery("add-test-result-mutation", variables, expectedError.orElse(null));
   }
 
+  private ObjectNode submitTestResultMultiplex(
+      ObjectNode variables, Optional<String> expectedError) {
+    return runQuery("add-test-result-multiplex-mutation", variables, expectedError.orElse(null));
+  }
+
   private ArrayNode fetchTestResults(ObjectNode variables) {
     return (ArrayNode) runQuery("test-results-query", variables).get("testResults");
+  }
+
+  private ArrayNode fetchTestResultsMultiplex(ObjectNode variables) {
+    return (ArrayNode) runQuery("test-results-multiplex-query", variables).get("testResults");
   }
 
   private void fetchTestResultsWithError(ObjectNode variables, String expectedError) {

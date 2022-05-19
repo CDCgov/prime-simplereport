@@ -101,6 +101,11 @@ export type DeviceType = {
   testLength?: Maybe<Scalars["Int"]>;
 };
 
+export type DiseaseResult = {
+  diseaseName?: InputMaybe<Scalars["String"]>;
+  testResult?: InputMaybe<Scalars["String"]>;
+};
+
 export type Facility = {
   __typename?: "Facility";
   address?: Maybe<AddressInfo>;
@@ -115,6 +120,7 @@ export type Facility = {
   deviceTypes?: Maybe<Array<Maybe<DeviceType>>>;
   email?: Maybe<Scalars["String"]>;
   id: Scalars["ID"];
+  isDeleted?: Maybe<Scalars["Boolean"]>;
   name: Scalars["String"];
   orderingProvider?: Maybe<Provider>;
   patientSelfRegistrationLink?: Maybe<Scalars["String"]>;
@@ -125,12 +131,19 @@ export type Facility = {
   zipCode?: Maybe<Scalars["String"]>;
 };
 
+export type MultiplexResult = {
+  __typename?: "MultiplexResult";
+  disease?: Maybe<SupportedDisease>;
+  testResult?: Maybe<Scalars["String"]>;
+};
+
 export type Mutation = {
   __typename?: "Mutation";
   addFacility?: Maybe<Facility>;
   addFacilityNew?: Maybe<Scalars["String"]>;
   addPatient?: Maybe<Patient>;
   addPatientToQueue?: Maybe<Scalars["String"]>;
+  addTestResultMultiplex?: Maybe<AddTestResultResponse>;
   addTestResultNew?: Maybe<AddTestResultResponse>;
   addUser?: Maybe<User>;
   addUserToCurrentOrg?: Maybe<User>;
@@ -143,6 +156,7 @@ export type Mutation = {
   createOrganizationRegistrationLink?: Maybe<Scalars["String"]>;
   editPendingOrganization?: Maybe<Scalars["String"]>;
   editQueueItem?: Maybe<TestOrder>;
+  editQueueItemMultiplex?: Maybe<TestOrder>;
   markFacilityAsDeleted?: Maybe<Scalars["String"]>;
   markOrganizationAsDeleted?: Maybe<Scalars["String"]>;
   markPendingOrganizationAsDeleted?: Maybe<Scalars["String"]>;
@@ -264,6 +278,14 @@ export type MutationAddPatientToQueueArgs = {
   testResultDelivery?: InputMaybe<TestResultDeliveryPreference>;
 };
 
+export type MutationAddTestResultMultiplexArgs = {
+  dateTested?: InputMaybe<Scalars["DateTime"]>;
+  deviceId: Scalars["String"];
+  deviceSpecimenType?: InputMaybe<Scalars["ID"]>;
+  patientId: Scalars["ID"];
+  results: Array<InputMaybe<DiseaseResult>>;
+};
+
 export type MutationAddTestResultNewArgs = {
   dateTested?: InputMaybe<Scalars["DateTime"]>;
   deviceId: Scalars["String"];
@@ -375,6 +397,14 @@ export type MutationEditQueueItemArgs = {
   deviceSpecimenType?: InputMaybe<Scalars["ID"]>;
   id: Scalars["ID"];
   result?: InputMaybe<Scalars["String"]>;
+};
+
+export type MutationEditQueueItemMultiplexArgs = {
+  dateTested?: InputMaybe<Scalars["DateTime"]>;
+  deviceId?: InputMaybe<Scalars["String"]>;
+  deviceSpecimenType?: InputMaybe<Scalars["ID"]>;
+  id: Scalars["ID"];
+  results?: InputMaybe<Array<InputMaybe<DiseaseResult>>>;
 };
 
 export type MutationMarkFacilityAsDeletedArgs = {
@@ -722,6 +752,7 @@ export type Query = {
   /** @deprecated use the pluralized form to reduce confusion */
   deviceType: Array<DeviceType>;
   deviceTypes: Array<DeviceType>;
+  facilities?: Maybe<Array<Maybe<Facility>>>;
   /** @deprecated this information is already loaded from the 'whoami' endpoint */
   organization?: Maybe<Organization>;
   organizationLevelDashboardMetrics?: Maybe<OrganizationLevelDashboardMetrics>;
@@ -744,6 +775,10 @@ export type Query = {
   users?: Maybe<Array<Maybe<ApiUser>>>;
   usersWithStatus?: Maybe<Array<ApiUserWithStatus>>;
   whoami: User;
+};
+
+export type QueryFacilitiesArgs = {
+  showArchived?: InputMaybe<Scalars["Boolean"]>;
 };
 
 export type QueryOrganizationLevelDashboardMetricsArgs = {
@@ -776,6 +811,7 @@ export type QueryPatientExistsWithoutZipArgs = {
 
 export type QueryPatientsArgs = {
   facilityId?: InputMaybe<Scalars["ID"]>;
+  includeArchivedFacilities?: InputMaybe<Scalars["Boolean"]>;
   namePrefixMatch?: InputMaybe<Scalars["String"]>;
   pageNumber?: InputMaybe<Scalars["Int"]>;
   pageSize?: InputMaybe<Scalars["Int"]>;
@@ -904,6 +940,7 @@ export type TestResult = {
   pregnancy?: Maybe<Scalars["String"]>;
   reasonForCorrection?: Maybe<Scalars["String"]>;
   result?: Maybe<Scalars["String"]>;
+  results?: Maybe<Array<Maybe<MultiplexResult>>>;
   symptomOnset?: Maybe<Scalars["LocalDate"]>;
   symptoms?: Maybe<Scalars["String"]>;
   testPerformed: TestDescription;
@@ -965,6 +1002,7 @@ export enum UserPermission {
   StartTest = "START_TEST",
   SubmitTest = "SUBMIT_TEST",
   UpdateTest = "UPDATE_TEST",
+  ViewArchivedFacilities = "VIEW_ARCHIVED_FACILITIES",
 }
 
 export type WhoAmIQueryVariables = Exact<{ [key: string]: never }>;
@@ -1994,8 +2032,9 @@ export type GetPatientQuery = {
 };
 
 export type GetPatientsByFacilityForQueueQueryVariables = Exact<{
-  facilityId: Scalars["ID"];
+  facilityId?: InputMaybe<Scalars["ID"]>;
   namePrefixMatch?: InputMaybe<Scalars["String"]>;
+  includeArchivedFacilities?: InputMaybe<Scalars["Boolean"]>;
 }>;
 
 export type GetPatientsByFacilityForQueueQuery = {
@@ -2345,7 +2384,11 @@ export type GetFacilityResultsQuery = {
               | null
               | undefined;
             facility?:
-              | { __typename?: "Facility"; name: string }
+              | {
+                  __typename?: "Facility";
+                  name: string;
+                  isDeleted?: boolean | null | undefined;
+                }
               | null
               | undefined;
           }
@@ -2416,7 +2459,11 @@ export type GetFacilityResultsForCsvQuery = {
             noSymptoms?: boolean | null | undefined;
             symptomOnset?: any | null | undefined;
             facility?:
-              | { __typename?: "Facility"; name: string }
+              | {
+                  __typename?: "Facility";
+                  name: string;
+                  isDeleted?: boolean | null | undefined;
+                }
               | null
               | undefined;
             deviceType?:
@@ -2475,6 +2522,27 @@ export type GetFacilityResultsForCsvQuery = {
                 }
               | null
               | undefined;
+          }
+        | null
+        | undefined
+      >
+    | null
+    | undefined;
+};
+
+export type GetAllFacilitiesQueryVariables = Exact<{
+  showArchived?: InputMaybe<Scalars["Boolean"]>;
+}>;
+
+export type GetAllFacilitiesQuery = {
+  __typename?: "Query";
+  facilities?:
+    | Array<
+        | {
+            __typename?: "Facility";
+            id: string;
+            name: string;
+            isDeleted?: boolean | null | undefined;
           }
         | null
         | undefined
@@ -5621,8 +5689,9 @@ export type GetPatientQueryResult = Apollo.QueryResult<
 >;
 export const GetPatientsByFacilityForQueueDocument = gql`
   query GetPatientsByFacilityForQueue(
-    $facilityId: ID!
+    $facilityId: ID
     $namePrefixMatch: String
+    $includeArchivedFacilities: Boolean
   ) {
     patients(
       facilityId: $facilityId
@@ -5630,6 +5699,7 @@ export const GetPatientsByFacilityForQueueDocument = gql`
       pageSize: 100
       showDeleted: false
       namePrefixMatch: $namePrefixMatch
+      includeArchivedFacilities: $includeArchivedFacilities
     ) {
       internalId
       firstName
@@ -5663,11 +5733,12 @@ export const GetPatientsByFacilityForQueueDocument = gql`
  *   variables: {
  *      facilityId: // value for 'facilityId'
  *      namePrefixMatch: // value for 'namePrefixMatch'
+ *      includeArchivedFacilities: // value for 'includeArchivedFacilities'
  *   },
  * });
  */
 export function useGetPatientsByFacilityForQueueQuery(
-  baseOptions: Apollo.QueryHookOptions<
+  baseOptions?: Apollo.QueryHookOptions<
     GetPatientsByFacilityForQueueQuery,
     GetPatientsByFacilityForQueueQueryVariables
   >
@@ -6407,6 +6478,7 @@ export const GetFacilityResultsDocument = gql`
       }
       facility {
         name
+        isDeleted
       }
     }
   }
@@ -6604,6 +6676,7 @@ export const GetFacilityResultsForCsvDocument = gql`
     ) {
       facility {
         name
+        isDeleted
       }
       dateTested
       result
@@ -6709,4 +6782,64 @@ export type GetFacilityResultsForCsvLazyQueryHookResult = ReturnType<
 export type GetFacilityResultsForCsvQueryResult = Apollo.QueryResult<
   GetFacilityResultsForCsvQuery,
   GetFacilityResultsForCsvQueryVariables
+>;
+export const GetAllFacilitiesDocument = gql`
+  query GetAllFacilities($showArchived: Boolean) {
+    facilities(showArchived: $showArchived) {
+      id
+      name
+      isDeleted
+    }
+  }
+`;
+
+/**
+ * __useGetAllFacilitiesQuery__
+ *
+ * To run a query within a React component, call `useGetAllFacilitiesQuery` and pass it any options that fit your needs.
+ * When your component renders, `useGetAllFacilitiesQuery` returns an object from Apollo Client that contains loading, error, and data properties
+ * you can use to render your UI.
+ *
+ * @param baseOptions options that will be passed into the query, supported options are listed on: https://www.apollographql.com/docs/react/api/react-hooks/#options;
+ *
+ * @example
+ * const { data, loading, error } = useGetAllFacilitiesQuery({
+ *   variables: {
+ *      showArchived: // value for 'showArchived'
+ *   },
+ * });
+ */
+export function useGetAllFacilitiesQuery(
+  baseOptions?: Apollo.QueryHookOptions<
+    GetAllFacilitiesQuery,
+    GetAllFacilitiesQueryVariables
+  >
+) {
+  const options = { ...defaultOptions, ...baseOptions };
+  return Apollo.useQuery<GetAllFacilitiesQuery, GetAllFacilitiesQueryVariables>(
+    GetAllFacilitiesDocument,
+    options
+  );
+}
+export function useGetAllFacilitiesLazyQuery(
+  baseOptions?: Apollo.LazyQueryHookOptions<
+    GetAllFacilitiesQuery,
+    GetAllFacilitiesQueryVariables
+  >
+) {
+  const options = { ...defaultOptions, ...baseOptions };
+  return Apollo.useLazyQuery<
+    GetAllFacilitiesQuery,
+    GetAllFacilitiesQueryVariables
+  >(GetAllFacilitiesDocument, options);
+}
+export type GetAllFacilitiesQueryHookResult = ReturnType<
+  typeof useGetAllFacilitiesQuery
+>;
+export type GetAllFacilitiesLazyQueryHookResult = ReturnType<
+  typeof useGetAllFacilitiesLazyQuery
+>;
+export type GetAllFacilitiesQueryResult = Apollo.QueryResult<
+  GetAllFacilitiesQuery,
+  GetAllFacilitiesQueryVariables
 >;

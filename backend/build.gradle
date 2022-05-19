@@ -201,7 +201,7 @@ task testDbStart(type: Exec) {
 }
 
 task testDbStop(type: Exec) {
-    commandLine "docker", "compose", "--env-file", "../.env.test", "-p", "simple-report-tests", "-f", "../docker-compose.yml", "down"
+    commandLine "docker", "compose", "--env-file", "../.env.test", "-p", "simple-report-tests", "-f", "../docker-compose.yml", "down", "-v"
 }
 
 task testDbReset(type: Exec) {

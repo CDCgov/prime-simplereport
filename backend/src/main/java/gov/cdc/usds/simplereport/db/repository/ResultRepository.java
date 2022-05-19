@@ -5,6 +5,7 @@ import gov.cdc.usds.simplereport.db.model.SupportedDisease;
 import gov.cdc.usds.simplereport.db.model.TestEvent;
 import gov.cdc.usds.simplereport.db.model.TestOrder;
 import java.util.List;
+import java.util.Optional;
 
 public interface ResultRepository extends EternalAuditedEntityRepository<Result> {
 
@@ -14,7 +15,7 @@ public interface ResultRepository extends EternalAuditedEntityRepository<Result>
 
   List<Result> findAllByDisease(SupportedDisease disease);
 
-  Result findResultByTestEventAndDisease(TestEvent testEvent, SupportedDisease disease);
+  Optional<Result> findResultByTestEventAndDisease(TestEvent testEvent, SupportedDisease disease);
 
   Result findResultByTestOrderAndDisease(TestOrder testOrder, SupportedDisease disease);
 }

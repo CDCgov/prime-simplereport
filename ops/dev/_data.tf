@@ -21,7 +21,8 @@ data "terraform_remote_state" "global" {
 
 # Resource Groups
 data "azurerm_resource_group" "rg" {
-  name = "${local.project}-${local.name}-${local.env}"
+  # Environments are assembled into shared resource groups by environment level.
+  name = "${local.project}-${local.name}-${local.env_level}"
 }
 
 data "azurerm_resource_group" "rg_global" {
@@ -53,6 +54,26 @@ data "azurerm_key_vault_secret" "sr_dev_db_jdbc" {
 
 data "azurerm_key_vault_secret" "metabase_db_uri" {
   name         = "simple-report-${local.env}-db-metabase-uri"
+  key_vault_id = data.azurerm_key_vault.sr_global.id
+}
+
+data "azurerm_key_vault_secret" "postgres_user" {
+  name         = "simple-report-${local.env}-db-username"
+  key_vault_id = data.azurerm_key_vault.sr_global.id
+}
+
+data "azurerm_key_vault_secret" "postgres_password" {
+  name         = "simple-report-${local.env}-db-password"
+  key_vault_id = data.azurerm_key_vault.sr_global.id
+}
+
+data "azurerm_key_vault_secret" "postgres_nophi_user" {
+  name         = "simple-report-${local.env}-db-username-no-phi"
+  key_vault_id = data.azurerm_key_vault.sr_global.id
+}
+
+data "azurerm_key_vault_secret" "postgres_nophi_password" {
+  name         = "simple-report-${local.env}-db-password-no-phi"
   key_vault_id = data.azurerm_key_vault.sr_global.id
 }
 
@@ -185,6 +206,9 @@ data "azurerm_application_insights" "app_insights" {
 data "azurerm_storage_account" "app" {
   name                = "simplereport${local.env}app"
   resource_group_name = data.azurerm_resource_group.rg.name
+  depends_on = [
+    azurerm_storage_account.app
+  ]
 }
 
 data "azurerm_key_vault_secret" "db_password_no_phi" {

@@ -15,6 +15,10 @@ public class AddTestResultResponse {
     this._testOrder = testOrder;
   }
 
+  public TestOrder getTestOrder() {
+    return this._testOrder;
+  }
+
   public ApiTestOrder getTestResult() {
     return new ApiTestOrder(_testOrder);
   }
