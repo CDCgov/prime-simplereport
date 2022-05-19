@@ -8,7 +8,6 @@ import static org.junit.jupiter.api.Assertions.assertTrue;
 import gov.cdc.usds.simplereport.service.errors.InvalidRSAPrivateKeyException;
 import io.jsonwebtoken.Jwts;
 import java.security.interfaces.RSAPrivateKey;
-import java.util.Base64;
 import java.util.Date;
 import org.junit.jupiter.api.Test;
 
