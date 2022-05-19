@@ -3952,3 +3952,21 @@ databaseChangeLog:
             sql: |
               ALTER TABLE ${database.defaultSchemaName}.upload ALTER COLUMN errors TYPE text;
               ALTER TABLE ${database.defaultSchemaName}.upload ALTER COLUMN warnings TYPE text;
+  - changeSet:
+        id: update-no-phi-user-view-of-org-queue-table
+        author: bob@skylight.digital
+        comment: Add the organization_queue's is_deleted column to the view permissions of the no-phi-user so we can see it in metabase
+        changes:
+          - tagDatabase:
+              tag: update-no-phi-user-view-of-org-queue-table
+          - createView:
+              viewName: org_queue_no_phi_is_deleted
+              remarks: A subset of the organization_queue table with columns containing PHI removed.
+              replaceIfExists: true
+              fullDefinition: false
+              selectQuery: SELECT internal_id, created_at, updated_at, organization_name, organization_external_id, verified_organization_id, is_deleted FROM ${database.defaultSchemaName}.organization_queue
+          - sql: 
+              sql: GRANT SELECT ON ${database.defaultSchemaName}.org_queue_no_phi_is_deleted TO ${noPhiUsername};
+        rollback:
+          - dropView:
+              viewName: org_queue_no_phi_is_deleted
