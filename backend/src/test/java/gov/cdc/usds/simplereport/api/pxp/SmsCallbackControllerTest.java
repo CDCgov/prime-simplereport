@@ -159,14 +159,18 @@ class SmsCallbackControllerTest extends BaseFullStackTest {
     HttpServletRequest mockedRequest = mock(HttpServletRequest.class);
     MultiValueMap<String, String> body = new LinkedMultiValueMap<>();
     String twilioNumber = "+11234567890";
+    String messageId = "123";
     body.add("ErrorCode", "30006");
     body.add("To", twilioNumber);
     body.add("MessageStatus", "undelivered");
-    body.add("MessageId", "123");
+    body.add("MessageSid", messageId);
 
+    ArgumentCaptor<String> messageIdCaptor = ArgumentCaptor.forClass(String.class);
     ArgumentCaptor<String> phoneNumbersCaptor = ArgumentCaptor.forClass(String.class);
     this._smsCallbackController.callback(body, mockedRequest);
-    verify(this._textMessageStatusService).handleLandlineError(phoneNumbersCaptor.capture());
+    verify(this._textMessageStatusService)
+        .handleLandlineError(messageIdCaptor.capture(), phoneNumbersCaptor.capture());
     assertEquals(twilioNumber, phoneNumbersCaptor.getValue());
+    assertEquals(messageId, messageIdCaptor.getValue());
   }
 }

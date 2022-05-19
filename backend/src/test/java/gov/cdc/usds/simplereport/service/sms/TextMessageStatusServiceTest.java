@@ -5,6 +5,8 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyString;
+import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
@@ -111,23 +113,61 @@ class TextMessageStatusServiceTest extends BaseServiceTest<TextMessageStatusServ
         () -> textMessageStatusService.saveTextMessageStatus(null, "delivered"));
   }
 
+  TextMessageSent mockTextMessageSentWithNumbers(List<PhoneNumber> phoneNumbers) {
+    Person patient = mock(Person.class);
+    when(patient.getPhoneNumbers()).thenReturn(phoneNumbers);
+    TestOrder testOrder = mock(TestOrder.class);
+    when(testOrder.getPatient()).thenReturn(patient);
+    PatientLink patientLink = mock(PatientLink.class);
+    when(patientLink.getTestOrder()).thenReturn(testOrder);
+    TextMessageSent textSent = mock(TextMessageSent.class);
+    when(textSent.getPatientLink()).thenReturn(patientLink);
+    return textSent;
+  }
+
   @Test
   void checksHandleLandlineError() {
-    String toParam = "+11234567890";
+    String toParam = "+1123456XXXX";
+    String patientsNumber = "+11234567890";
+    String messageId = "123";
 
-    String number = parsePhoneNumber(toParam);
+    String number = parsePhoneNumber(patientsNumber);
     List<PhoneNumber> testNumbers = new ArrayList<PhoneNumber>();
     testNumbers.add(new PhoneNumber(PhoneType.MOBILE, number));
     when(_phoneRepo.findAllByNumberAndType(anyString(), any(PhoneType.class)))
         .thenReturn(testNumbers);
 
+    TextMessageSent textSent = mockTextMessageSentWithNumbers(testNumbers);
+    when(sentRepo.findByTwilioMessageId(anyString())).thenReturn(textSent);
+
     ArgumentCaptor<List> phoneNumbersCaptor = ArgumentCaptor.forClass(List.class);
-    textMessageStatusService.handleLandlineError(toParam);
+    textMessageStatusService.handleLandlineError(messageId, toParam);
 
     verify(_phoneRepo).findAllByNumberAndType(number, PhoneType.MOBILE);
     verify(_phoneRepo).saveAll(phoneNumbersCaptor.capture());
     List<PhoneNumber> modifiedNumbers = phoneNumbersCaptor.getValue();
     assertEquals(1, modifiedNumbers.size());
     assertEquals(PhoneType.LANDLINE, modifiedNumbers.get(0).getType());
+  }
+
+  @Test
+  void checksHandleLandlineError_numberNotFound() {
+    String toParam = "+1123456XXXX";
+    String patientsNumber = "+14445556666"; // number in the db that does not match
+    String messageId = "123";
+
+    String number = parsePhoneNumber(patientsNumber);
+    List<PhoneNumber> testNumbers = new ArrayList<PhoneNumber>();
+    testNumbers.add(new PhoneNumber(PhoneType.MOBILE, number));
+    when(_phoneRepo.findAllByNumberAndType(anyString(), any(PhoneType.class)))
+        .thenReturn(testNumbers);
+
+    TextMessageSent textSent = mockTextMessageSentWithNumbers(testNumbers);
+    when(sentRepo.findByTwilioMessageId(anyString())).thenReturn(textSent);
+
+    textMessageStatusService.handleLandlineError(messageId, toParam);
+
+    verify(_phoneRepo, never()).findAllByNumberAndType(number, PhoneType.MOBILE);
+    verify(_phoneRepo, never()).saveAll(new ArrayList<PhoneNumber>());
   }
 }

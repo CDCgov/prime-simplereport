@@ -2,6 +2,8 @@ package gov.cdc.usds.simplereport.service.sms;
 
 import static gov.cdc.usds.simplereport.api.Translators.parsePhoneNumber;
 
+import com.google.i18n.phonenumbers.NumberParseException;
+import com.google.i18n.phonenumbers.PhoneNumberUtil;
 import com.twilio.security.RequestValidator;
 import gov.cdc.usds.simplereport.api.model.errors.InvalidTwilioCallbackException;
 import gov.cdc.usds.simplereport.api.model.errors.InvalidTwilioMessageIdentifierException;
@@ -85,12 +87,42 @@ public class TextMessageStatusService {
     }
   }
 
-  @Transactional
-  public void handleLandlineError(String landlineNumber) {
-    List<PhoneNumber> phoneNumbers =
-        _phoneRepo.findAllByNumberAndType(parsePhoneNumber(landlineNumber), PhoneType.MOBILE);
+  private String getNumberByMessageId(String messageId, String twilioNumber) {
 
-    phoneNumbers.forEach(phoneNumber -> phoneNumber.setType(PhoneType.LANDLINE));
-    _phoneRepo.saveAll(phoneNumbers);
+    var phoneUtil = PhoneNumberUtil.getInstance();
+    String numberPrefix = twilioNumber.substring(0, 8);
+    TextMessageSent txtMsg = sentRepo.findByTwilioMessageId(messageId);
+    List<PhoneNumber> patientNumbers =
+        txtMsg.getPatientLink().getTestOrder().getPatient().getPhoneNumbers();
+
+    for (PhoneNumber phoneNumber : patientNumbers) {
+      try {
+        String convertedNumber =
+            phoneUtil.format(
+                phoneUtil.parse(phoneNumber.getNumber(), "US"),
+                PhoneNumberUtil.PhoneNumberFormat.E164);
+        if (convertedNumber.startsWith(numberPrefix)
+            && phoneNumber.getType().equals(PhoneType.MOBILE)) {
+          return phoneNumber.getNumber();
+        }
+      } catch (NumberParseException parseException) {
+        return "";
+      }
+    }
+
+    return "";
+  }
+
+  @Transactional
+  public void handleLandlineError(String messageId, String twilioNumber) {
+
+    String landlineNumber = getNumberByMessageId(messageId, twilioNumber);
+    if (!landlineNumber.isEmpty()) {
+      List<PhoneNumber> phoneNumbers =
+          _phoneRepo.findAllByNumberAndType(parsePhoneNumber(landlineNumber), PhoneType.MOBILE);
+
+      phoneNumbers.forEach(phoneNumber -> phoneNumber.setType(PhoneType.LANDLINE));
+      _phoneRepo.saveAll(phoneNumbers);
+    }
   }
 }
