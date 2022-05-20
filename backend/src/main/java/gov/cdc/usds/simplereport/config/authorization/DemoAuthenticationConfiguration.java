@@ -12,6 +12,7 @@ import java.util.List;
 import java.util.Optional;
 import java.util.Set;
 import java.util.stream.Collectors;
+import javax.annotation.PostConstruct;
 import javax.servlet.Filter;
 import javax.servlet.FilterChain;
 import javax.servlet.ServletRequest;
@@ -43,6 +44,11 @@ public class DemoAuthenticationConfiguration {
   private static String CACHED_USER_NAME;
   private static Authentication CACHED_AUTHENTICATION;
 
+  @PostConstruct
+  private void init() {
+    log.info("DemoAuthenticationConfiguration init");
+  }
+
   /**
    * Creates and registers a {@link Filter} that runs before each request is processed by the
    * servlet. It checks for an Authorization header with a Bearer token that starts with {@link
@@ -67,6 +73,7 @@ public class DemoAuthenticationConfiguration {
             String userName = authHeader.substring(DEMO_BEARER_PREFIX.length());
 
             if (!userName.equals(DemoAuthenticationConfiguration.CACHED_USER_NAME)) {
+              System.out.println("DemoAuthenticationConfiguration line 76");
               DemoAuthenticationConfiguration.CACHED_USER_NAME = userName;
               DemoAuthenticationConfiguration.CACHED_AUTHENTICATION =
                   new TestingAuthenticationToken(userName, null, List.of());
@@ -185,7 +192,12 @@ public class DemoAuthenticationConfiguration {
 
   @Bean
   public static TenantDataAuthenticationProvider getTenantDataAuthenticationProvider() {
-    return (String username, Authentication currentAuth, Set<GrantedAuthority> authorities) ->
-        new TestingAuthenticationToken(username, null, new ArrayList<>(authorities));
+    return (String username, Authentication currentAuth, Set<GrantedAuthority> authorities) -> {
+      if (username != null && username.equals(DemoAuthenticationConfiguration.CACHED_USER_NAME)) {
+        return DemoAuthenticationConfiguration.CACHED_AUTHENTICATION;
+      }
+      System.out.println("DemoAuthenticationConfiguration line 200");
+      return new TestingAuthenticationToken(username, null, new ArrayList<>(authorities));
+    };
   }
 }
