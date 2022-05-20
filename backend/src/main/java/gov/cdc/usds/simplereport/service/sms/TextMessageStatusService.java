@@ -18,6 +18,7 @@ import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
 import java.util.Map;
+import java.util.Optional;
 import java.util.stream.Collectors;
 import javax.servlet.http.HttpServletRequest;
 import org.springframework.beans.factory.annotation.Value;
@@ -87,7 +88,7 @@ public class TextMessageStatusService {
     }
   }
 
-  private String getNumberByMessageId(String messageId, String twilioNumber) {
+  private Optional<String> getNumberByMessageId(String messageId, String twilioNumber) {
     final Integer PREFIX_START = 0;
     final Integer PREFIX_END = 8;
     var phoneUtil = PhoneNumberUtil.getInstance();
@@ -104,23 +105,24 @@ public class TextMessageStatusService {
                 PhoneNumberUtil.PhoneNumberFormat.E164);
         if (convertedNumber.startsWith(numberPrefix)
             && phoneNumber.getType().equals(PhoneType.MOBILE)) {
-          return phoneNumber.getNumber();
+          return Optional.of(phoneNumber.getNumber());
         }
       } catch (NumberParseException parseException) {
-        return "";
+        return Optional.empty();
       }
     }
 
-    return "";
+    return Optional.empty();
   }
 
   @Transactional
   public void handleLandlineError(String messageId, String twilioNumber) {
 
-    String landlineNumber = getNumberByMessageId(messageId, twilioNumber);
+    Optional<String> landlineNumber = getNumberByMessageId(messageId, twilioNumber);
     if (!landlineNumber.isEmpty()) {
       List<PhoneNumber> phoneNumbers =
-          _phoneRepo.findAllByNumberAndType(parsePhoneNumber(landlineNumber), PhoneType.MOBILE);
+          _phoneRepo.findAllByNumberAndType(
+              parsePhoneNumber(landlineNumber.get()), PhoneType.MOBILE);
 
       phoneNumbers.forEach(phoneNumber -> phoneNumber.setType(PhoneType.LANDLINE));
       _phoneRepo.saveAll(phoneNumbers);
