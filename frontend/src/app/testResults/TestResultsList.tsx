@@ -152,11 +152,16 @@ function testResultRows(
         }
       >
         <td className="patient-name-cell">
-          {displayFullName(
-            r.patient.firstName,
-            r.patient.middleName,
-            r.patient.lastName
-          )}
+          <Button
+            variant="unstyled"
+            label={displayFullName(
+              r.patient.firstName,
+              r.patient.middleName,
+              r.patient.lastName
+            )}
+            onClick={() => setDetailsModalId(r.internalId)}
+            className="sr-link__primary"
+          />
           <span className="display-block text-base font-ui-2xs">
             DOB: {formatDateWithTimeOption(r.patient.birthDate)}
           </span>
