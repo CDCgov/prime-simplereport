@@ -47,6 +47,7 @@ dependencies {
     implementation 'org.json:json:20201115'
     implementation 'com.fasterxml.jackson.dataformat:jackson-dataformat-csv'
     implementation 'com.fasterxml.jackson.datatype:jackson-datatype-hibernate5'
+    implementation 'com.fasterxml.jackson.core:jackson-databind:2.12.6.1'
     implementation 'org.springframework.boot:spring-boot-starter-thymeleaf'
 
     // Okta dependencies
@@ -78,6 +79,7 @@ dependencies {
     compile 'com.graphql-java:graphql-java-extended-validation:16.0.0'
 
     implementation 'com.azure:azure-storage-queue:12.12.2'
+    implementation 'com.azure:azure-core:1.28.0'
 
     // test/check dependencies
     testImplementation('org.springframework.boot:spring-boot-starter-test') {
