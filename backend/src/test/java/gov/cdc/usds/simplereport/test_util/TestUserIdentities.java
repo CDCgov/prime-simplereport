@@ -38,6 +38,7 @@ public class TestUserIdentities {
       new IdentityAttributes(STANDARD_USER, "Bobbity", "Bob", "Bobberoo", null);
   public static final IdentityAttributes SITE_ADMIN_USER_ATTRIBUTES =
       new IdentityAttributes(SITE_ADMIN_USER, "Ruby", "Raven", "Reynolds", null);
+
   /**
    * Set the security context to hold a particular user, then run some code, then reset the user.
    *
@@ -48,7 +49,10 @@ public class TestUserIdentities {
     SecurityContext context = SecurityContextHolder.getContext();
     Authentication original = context.getAuthentication();
     try {
-      context.setAuthentication(new TestingAuthenticationToken(username, null, List.of()));
+      System.out.println("TestUserIdentities line 54");
+      if (original == null || !username.equals(original.getName())) {
+        context.setAuthentication(new TestingAuthenticationToken(username, null, List.of()));
+      }
       nested.run();
     } finally {
       context.setAuthentication(original);
@@ -81,6 +85,7 @@ public class TestUserIdentities {
     for (Facility f : facilities) {
       authorities.add(new SimpleGrantedAuthority(convertFacilityToAuthority(f)));
     }
+    System.out.println("TestUserIdentities line 88");
     SecurityContextHolder.getContext()
         .setAuthentication(new TestingAuthenticationToken(principal, null, authorities));
   }
