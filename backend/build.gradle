@@ -77,7 +77,7 @@ dependencies {
     // graphql-java-extended-validation schema directives
     compile 'com.graphql-java:graphql-java-extended-validation:16.0.0'
 
-    implementation 'com.azure:azure-storage-queue:12.12.+'
+    implementation 'com.azure:azure-storage-queue:12.12.2'
 
     // test/check dependencies
     testImplementation('org.springframework.boot:spring-boot-starter-test') {
@@ -106,9 +106,9 @@ dependencies {
 
     // Forcing these version resolutions over the BOM of spring-cloud-dependencies below
     runtimeOnly 'com.azure:azure-core-http-netty:1.11.9'
-    runtimeOnly 'com.azure:azure-core:1.27.0'
+    runtimeOnly 'com.azure:azure-core:1.28.0'
     runtimeOnly 'com.azure:azure-storage-common:12.15.1'
-    runtimeOnly "com.azure:azure-storage-queue:12.12.1"
+    runtimeOnly "com.azure:azure-storage-queue:12.12.2"
 
     runtimeOnly "io.zipkin.brave:brave-instrumentation-http:5.13.2"
     runtimeOnly "io.zipkin.brave:brave:5.13.2"
