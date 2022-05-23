@@ -13,8 +13,12 @@ import gov.cdc.usds.simplereport.service.model.reportstream.ReportStreamStatus;
 import gov.cdc.usds.simplereport.service.model.reportstream.UploadResponse;
 import java.io.IOException;
 import java.io.InputStream;
+import java.util.Date;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
 
 @Service
@@ -70,6 +74,15 @@ public class TestResultUploadService {
     }
 
     return result;
+  }
+
+  public Page<TestResultUpload> getUploadSubmissions(
+      Date startDate, Date endDate, int pageNumber, int pageSize) {
+    Organization org = _orgService.getCurrentOrganization();
+    PageRequest pageRequest =
+        PageRequest.of(pageNumber, pageSize, Sort.by("createdAt").descending());
+
+    return _repo.findAll(org, startDate, endDate, pageRequest);
   }
 
   private UploadStatus parseStatus(ReportStreamStatus status) {
