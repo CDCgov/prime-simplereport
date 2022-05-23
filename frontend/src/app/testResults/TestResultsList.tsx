@@ -1,7 +1,7 @@
 import qs from "querystring";
 
 import { useLocation, useNavigate, useParams } from "react-router-dom";
-import { gql, useLazyQuery, useQuery } from "@apollo/client";
+import { useLazyQuery, useQuery } from "@apollo/client";
 import React, {
   ChangeEventHandler,
   SetStateAction,
@@ -51,6 +51,7 @@ import EmailTestResultModal from "./EmailTestResultModal";
 import TestResultCorrectionModal from "./TestResultCorrectionModal";
 import TestResultDetailsModal from "./TestResultDetailsModal";
 import DownloadResultsCSVButton from "./DownloadResultsCsvButton";
+import { RESULTS_COUNT_QUERY, TEST_RESULT_QUERY } from "./queries";
 
 export const ALL_FACILITIES_ID = "all";
 
@@ -66,31 +67,39 @@ export const byDateTested = (a: any, b: any) => {
 /**
  * Results Table
  */
-const tableHeaders = (
-  <tr>
-    <th scope="col" className="patient-name-cell">
-      {PATIENT_TERM_CAP}
-    </th>
-    <th scope="col" className="test-date-cell">
-      Test date
-    </th>
-    <th scope="col" className="test-result-cell">
-      COVID-19
-    </th>
-    <th scope="col" className="test-facility-cell">
-      Testing facility
-    </th>
-    <th scope="col" className="test-device-cell">
-      Test device
-    </th>
-    <th scope="col" className="submitted-by-cell">
-      Submitted by
-    </th>
-    <th scope="col" className="actions-cell">
-      Actions
-    </th>
-  </tr>
-);
+interface TableHeadersListProps {
+  displayFacility: boolean;
+}
+function TableHeaders({ displayFacility }: TableHeadersListProps) {
+  return (
+    <tr>
+      <th scope="col" className="patient-name-cell">
+        {PATIENT_TERM_CAP}
+      </th>
+      <th scope="col" className="test-date-cell">
+        Test date
+      </th>
+      <th scope="col" className="test-result-cell">
+        COVID-19
+      </th>
+
+      <th scope="col" className="test-device-cell">
+        Test device
+      </th>
+      <th scope="col" className="submitted-by-cell">
+        Submitted by
+      </th>
+      {displayFacility && (
+        <th scope="col" className="test-facility-cell">
+          Facility
+        </th>
+      )}
+      <th scope="col" className="actions-cell">
+        Actions
+      </th>
+    </tr>
+  );
+}
 
 function testResultRows(
   testResults: any,
@@ -98,7 +107,8 @@ function testResultRows(
   setMarkCorrectionId: SetStateAction<any>,
   setDetailsModalId: SetStateAction<any>,
   setTextModalId: SetStateAction<any>,
-  setEmailModalTestResultId: SetStateAction<any>
+  setEmailModalTestResultId: SetStateAction<any>,
+  displayFacility: boolean
 ) {
   if (testResults.length === 0) {
     return (
@@ -172,9 +182,7 @@ function testResultRows(
         <td className="test-result-cell">
           {TEST_RESULT_DESCRIPTIONS[r.result as Results]}
         </td>
-        <td className="test-facility-cell">
-          {facilityDisplayName(r.facility.name, r.facility.isDeleted)}
-        </td>
+
         <td className="test-device-cell">{r.deviceType.name}</td>
         <td className="submitted-by-cell">
           {displayFullName(
@@ -183,6 +191,11 @@ function testResultRows(
             r.createdBy.nameInfo.lastName
           )}
         </td>
+        {displayFacility && (
+          <td className="test-facility-cell">
+            {facilityDisplayName(r.facility.name, r.facility.isDeleted)}
+          </td>
+        )}
         <td className="actions-cell">
           <ActionsMenu items={actionItems} />
         </td>
@@ -193,12 +206,15 @@ function testResultRows(
 
 interface ResultsTableListProps {
   rows: JSX.Element | JSX.Element[];
+  displayFacility: boolean;
 }
 
-const ResultsTable = ({ rows }: ResultsTableListProps) => {
+const ResultsTable = ({ rows, displayFacility }: ResultsTableListProps) => {
   return (
     <table className="usa-table usa-table--borderless width-full">
-      <thead className="sr-element__sr-only">{tableHeaders}</thead>
+      <thead className="sr-element__sr-only">
+        <TableHeaders displayFacility={displayFacility} />
+      </thead>
       <tbody>{rows}</tbody>
     </table>
   );
@@ -400,6 +416,9 @@ export const DetachedTestResultsList = ({
   }
 
   const testResults = data?.testResults || [];
+  const displayFacilityColumn =
+    filterParams.filterFacilityId === ALL_FACILITIES_ID ||
+    activeFacilityId === ALL_FACILITIES_ID;
 
   const rows = testResultRows(
     testResults,
@@ -407,7 +426,8 @@ export const DetachedTestResultsList = ({
     setMarkCorrectionId,
     setDetailsModalId,
     setTextModalId,
-    setEmailModalTestResultId
+    setEmailModalTestResultId,
+    displayFacilityColumn
   );
 
   const processStartDate = (value: string | undefined) => {
@@ -628,11 +648,16 @@ export const DetachedTestResultsList = ({
                 className="usa-table usa-table--borderless width-full"
                 aria-hidden="true"
               >
-                <thead>{tableHeaders}</thead>
+                <thead>
+                  <TableHeaders displayFacility={displayFacilityColumn} />
+                </thead>
               </table>
             </div>
             <div title="filtered-result">
-              <ResultsTable rows={rows} />
+              <ResultsTable
+                rows={rows}
+                displayFacility={displayFacilityColumn}
+              />
             </div>
             <div className="usa-card__footer">
               {loading ? (
@@ -652,82 +677,6 @@ export const DetachedTestResultsList = ({
     </main>
   );
 };
-
-export const resultsCountQuery = gql`
-  query GetResultsCountByFacility(
-    $facilityId: ID
-    $patientId: ID
-    $result: String
-    $role: String
-    $startDate: DateTime
-    $endDate: DateTime
-  ) {
-    testResultsCount(
-      facilityId: $facilityId
-      patientId: $patientId
-      result: $result
-      role: $role
-      startDate: $startDate
-      endDate: $endDate
-    )
-  }
-`;
-
-export const testResultQuery = gql`
-  query GetFacilityResults(
-    $facilityId: ID
-    $patientId: ID
-    $result: String
-    $role: String
-    $startDate: DateTime
-    $endDate: DateTime
-    $pageNumber: Int
-    $pageSize: Int
-  ) {
-    testResults(
-      facilityId: $facilityId
-      patientId: $patientId
-      result: $result
-      role: $role
-      startDate: $startDate
-      endDate: $endDate
-      pageNumber: $pageNumber
-      pageSize: $pageSize
-    ) {
-      internalId
-      dateTested
-      result
-      correctionStatus
-      deviceType {
-        internalId
-        name
-      }
-      patient {
-        internalId
-        firstName
-        middleName
-        lastName
-        birthDate
-        gender
-        lookupId
-        email
-      }
-      createdBy {
-        nameInfo {
-          firstName
-          lastName
-        }
-      }
-      patientLink {
-        internalId
-      }
-      facility {
-        name
-        isDeleted
-      }
-    }
-  }
-`;
 
 export interface ResultsQueryVariables {
   patientId?: string | null;
@@ -820,11 +769,11 @@ const TestResultsList = () => {
     ...queryParams,
   };
 
-  const count = useQuery(resultsCountQuery, {
+  const count = useQuery(RESULTS_COUNT_QUERY, {
     fetchPolicy: "no-cache",
     variables: countQueryVariables,
   });
-  const results = useQuery(testResultQuery, {
+  const results = useQuery(TEST_RESULT_QUERY, {
     fetchPolicy: "no-cache",
     variables: resultsQueryVariables,
   });

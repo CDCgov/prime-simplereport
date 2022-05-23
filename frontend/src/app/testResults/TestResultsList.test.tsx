@@ -23,9 +23,8 @@ import { testResultDetailsQuery } from "./TestResultDetailsModal";
 import TestResultsList, {
   ALL_FACILITIES_ID,
   DetachedTestResultsList,
-  resultsCountQuery,
-  testResultQuery,
 } from "./TestResultsList";
+import { RESULTS_COUNT_QUERY, TEST_RESULT_QUERY } from "./queries";
 
 const mockStore = configureStore([]);
 const store = mockStore({
@@ -805,7 +804,7 @@ const facilitiesIncludeArchived = facilities.concat({
 const mocks = [
   {
     request: {
-      query: resultsCountQuery,
+      query: RESULTS_COUNT_QUERY,
       variables: {
         facilityId: "1",
       },
@@ -818,7 +817,7 @@ const mocks = [
   },
   {
     request: {
-      query: testResultQuery,
+      query: TEST_RESULT_QUERY,
       variables: {
         facilityId: "1",
         pageNumber: 0,
@@ -886,7 +885,7 @@ const mocks = [
   },
   {
     request: {
-      query: resultsCountQuery,
+      query: RESULTS_COUNT_QUERY,
       variables: {
         facilityId: "1",
         patientId: "48c523e8-7c65-4047-955c-e3f65bb8b58a",
@@ -900,7 +899,7 @@ const mocks = [
   },
   {
     request: {
-      query: testResultQuery,
+      query: TEST_RESULT_QUERY,
       variables: {
         facilityId: "1",
         patientId: "48c523e8-7c65-4047-955c-e3f65bb8b58a",
@@ -916,7 +915,7 @@ const mocks = [
   },
   {
     request: {
-      query: resultsCountQuery,
+      query: RESULTS_COUNT_QUERY,
       variables: {
         facilityId: "1",
         result: "NEGATIVE",
@@ -930,7 +929,7 @@ const mocks = [
   },
   {
     request: {
-      query: testResultQuery,
+      query: TEST_RESULT_QUERY,
       variables: {
         facilityId: "1",
         result: "NEGATIVE",
@@ -946,7 +945,7 @@ const mocks = [
   },
   {
     request: {
-      query: resultsCountQuery,
+      query: RESULTS_COUNT_QUERY,
       variables: {
         facilityId: "1",
         role: "RESIDENT",
@@ -960,7 +959,7 @@ const mocks = [
   },
   {
     request: {
-      query: testResultQuery,
+      query: TEST_RESULT_QUERY,
       variables: {
         facilityId: "1",
         role: "RESIDENT",
@@ -976,7 +975,7 @@ const mocks = [
   },
   {
     request: {
-      query: resultsCountQuery,
+      query: RESULTS_COUNT_QUERY,
       variables: {
         facilityId: "1",
         startDate: "2021-03-18T00:00:00.000Z",
@@ -990,7 +989,7 @@ const mocks = [
   },
   {
     request: {
-      query: testResultQuery,
+      query: TEST_RESULT_QUERY,
       variables: {
         facilityId: "1",
         startDate: "2021-03-18T00:00:00.000Z",
@@ -1006,7 +1005,7 @@ const mocks = [
   },
   {
     request: {
-      query: resultsCountQuery,
+      query: RESULTS_COUNT_QUERY,
       variables: {
         facilityId: "1",
         startDate: "2021-03-18T00:00:00.000Z",
@@ -1021,7 +1020,7 @@ const mocks = [
   },
   {
     request: {
-      query: testResultQuery,
+      query: TEST_RESULT_QUERY,
       variables: {
         facilityId: "1",
         startDate: "2021-03-18T00:00:00.000Z",
@@ -1038,7 +1037,7 @@ const mocks = [
   },
   {
     request: {
-      query: resultsCountQuery,
+      query: RESULTS_COUNT_QUERY,
       variables: {
         facilityId: "2",
       },
@@ -1051,7 +1050,7 @@ const mocks = [
   },
   {
     request: {
-      query: testResultQuery,
+      query: TEST_RESULT_QUERY,
       variables: {
         facilityId: "2",
         pageNumber: 0,
@@ -1066,7 +1065,7 @@ const mocks = [
   },
   {
     request: {
-      query: resultsCountQuery,
+      query: RESULTS_COUNT_QUERY,
       variables: {
         facilityId: null,
       },
@@ -1079,7 +1078,7 @@ const mocks = [
   },
   {
     request: {
-      query: testResultQuery,
+      query: TEST_RESULT_QUERY,
       variables: {
         facilityId: null,
         pageNumber: 0,
@@ -1109,7 +1108,7 @@ const mocks = [
   },
   {
     request: {
-      query: resultsCountQuery,
+      query: RESULTS_COUNT_QUERY,
       variables: {
         facilityId: "1",
       },
@@ -1122,7 +1121,7 @@ const mocks = [
   },
   {
     request: {
-      query: testResultQuery,
+      query: TEST_RESULT_QUERY,
       variables: {
         facilityId: "1",
         pageNumber: 0,
@@ -1216,7 +1215,7 @@ describe("TestResultsList", () => {
     const localMocks = [
       {
         request: {
-          query: resultsCountQuery,
+          query: RESULTS_COUNT_QUERY,
           variables: {
             facilityId: "1",
             patientId: "48c523e8-7c65-4047-955c-e3f65bb8b58a",
@@ -1234,7 +1233,7 @@ describe("TestResultsList", () => {
       },
       {
         request: {
-          query: testResultQuery,
+          query: TEST_RESULT_QUERY,
           variables: {
             facilityId: "1",
             pageNumber: 0,
@@ -1327,7 +1326,6 @@ describe("TestResultsList", () => {
     expect(await row.findByText("Colleer, Barde X")).toBeInTheDocument();
     expect(await row.findByText("DOB: 11/07/1960")).toBeInTheDocument();
     expect(await row.findByText("Negative")).toBeInTheDocument();
-    expect(await row.findByText("Facility 1")).toBeInTheDocument();
     expect(await row.findByText("Abbott IDNow")).toBeInTheDocument();
     expect(await row.findByText("User, Ursula")).toBeInTheDocument();
   });
