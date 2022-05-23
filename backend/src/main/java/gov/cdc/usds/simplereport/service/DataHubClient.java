@@ -7,8 +7,8 @@ import org.springframework.cloud.openfeign.FeignClient;
 import org.springframework.web.bind.annotation.PostMapping;
 
 @FeignClient(
-    name = "data-hub",
-    url = "${data-hub.url}",
+    name = "datahub",
+    url = "${datahub.url}",
     configuration = DataHubClientConfiguration.class)
 public interface DataHubClient {
 
