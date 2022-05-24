@@ -77,6 +77,46 @@ const fillOutForm = (
   });
 };
 
+const addPatientRequestParams = {
+  firstName: "Alice",
+  middleName: null,
+  lastName: "Hamilton",
+  lookupId: null,
+  birthDate: "1970-09-22",
+  street: "25 Shattuck St",
+  streetTwo: null,
+  city: "Boston",
+  state: "MA",
+  zipCode: "02115",
+  country: "USA",
+  telephone: null,
+  phoneNumbers: [
+    {
+      type: "MOBILE",
+      number: "617-432-1000",
+    },
+  ],
+  role: null,
+  emails: ["foo@bar.org"],
+  county: "",
+  race: "other",
+  ethnicity: "refused",
+  gender: "female",
+  facilityId: mockFacilityID,
+  preferredLanguage: null,
+  testResultDelivery: "SMS",
+};
+
+const addPatientRequestNoDelivery = {
+  ...addPatientRequestParams,
+  testResultDelivery: null,
+};
+
+const addPatientRequestNoAddressValidation = {
+  ...addPatientRequestParams,
+  county: null,
+};
+
 describe("AddPatient", () => {
   describe("No facility selected", () => {
     beforeEach(() => {
@@ -110,40 +150,13 @@ describe("AddPatient", () => {
 
   describe("happy path", () => {
     let zipCodeSpy: jest.SpyInstance;
+
     beforeEach(async () => {
       const mocks = [
         {
           request: {
             query: ADD_PATIENT,
-            variables: {
-              firstName: "Alice",
-              middleName: null,
-              lastName: "Hamilton",
-              lookupId: null,
-              birthDate: "1970-09-22",
-              street: "25 Shattuck St",
-              streetTwo: null,
-              city: "Boston",
-              state: "MA",
-              zipCode: "02115",
-              country: "USA",
-              telephone: null,
-              phoneNumbers: [
-                {
-                  type: "MOBILE",
-                  number: "617-432-1000",
-                },
-              ],
-              role: null,
-              emails: ["foo@bar.org"],
-              county: "",
-              race: "other",
-              ethnicity: "refused",
-              gender: "female",
-              facilityId: mockFacilityID,
-              preferredLanguage: null,
-              testResultDelivery: "SMS",
-            },
+            variables: addPatientRequestParams,
           },
           result: {
             data: {
@@ -159,41 +172,31 @@ describe("AddPatient", () => {
         {
           request: {
             query: ADD_PATIENT,
-            variables: {
-              firstName: "Alice",
-              middleName: null,
-              lastName: "Hamilton",
-              lookupId: "student-123",
-              birthDate: "1970-09-22",
-              street: "25 Shattuck St",
-              streetTwo: null,
-              city: "Boston",
-              state: "MA",
-              zipCode: "02115",
-              country: "USA",
-              telephone: null,
-              phoneNumbers: [
-                {
-                  type: "MOBILE",
-                  number: "617-432-1000",
-                },
-              ],
-              role: "STUDENT",
-              emails: [],
-              county: "",
-              race: "other",
-              ethnicity: "refused",
-              gender: "female",
-              facilityId: mockFacilityID,
-              preferredLanguage: null,
-              testResultDelivery: null,
-            },
+            variables: addPatientRequestNoDelivery,
           },
           result: {
             data: {
-              internalId: "153f661f-b6ea-4711-b9ab-487b95198cce",
-              facility: {
-                id: "facility-id-001",
+              addPatient: {
+                internalId: "153f661f-b6ea-4711-b9ab-487b95198cce",
+                facility: {
+                  id: "facility-id-001",
+                },
+              },
+            },
+          },
+        },
+        {
+          request: {
+            query: ADD_PATIENT,
+            variables: addPatientRequestNoAddressValidation,
+          },
+          result: {
+            data: {
+              addPatient: {
+                internalId: "153f661f-b6ea-4711-b9ab-487b95198cce",
+                facility: {
+                  id: "facility-id-001",
+                },
               },
             },
           },
@@ -483,6 +486,71 @@ describe("AddPatient", () => {
     });
 
     describe("saving changes and starting a test", () => {
+      it("redirects to the queue after address validation", async () => {
+        fillOutForm(
+          {
+            "First Name": "Alice",
+            "Last Name": "Hamilton",
+            "Date of birth": "1970-09-22",
+            "Primary phone number": "617-432-1000",
+            "Email address": "foo@bar.org",
+            "Street address 1": "25 Shattuck St",
+            City: "Boston",
+
+            "ZIP code": "02115",
+          },
+          { Facility: mockFacilityID, State: "MA", Country: "USA" },
+          {
+            "Phone type": {
+              label: "Mobile",
+              value: "MOBILE",
+              exact: true,
+            },
+            "Would you like to receive your results via text message?": {
+              label: "Yes",
+              value: "SMS",
+              exact: false,
+            },
+            Race: {
+              label: "Other",
+              value: "other",
+              exact: true,
+            },
+            "Are you Hispanic or Latino?": {
+              label: "Prefer not to answer",
+              value: "refused",
+              exact: true,
+            },
+            "Sex assigned at birth": {
+              label: "Female",
+              value: "female",
+              exact: true,
+            },
+          }
+        );
+        jest
+          .spyOn(smartyStreets, "suggestionIsCloseEnough")
+          .mockReturnValue(true);
+
+        userEvent.click(
+          screen.queryAllByText("Save and start test", {
+            exact: false,
+          })[0]
+        );
+
+        await new Promise((resolve) => setTimeout(resolve, 0));
+
+        expect(
+          screen.queryByText("Address validation", {
+            exact: false,
+          })
+        ).not.toBeInTheDocument();
+
+        expect(
+          await screen.findByText("Testing Queue!", { exact: false })
+        ).toBeInTheDocument();
+      });
+
       it("redirects to the queue with a patient id and selected facility id", async () => {
         fillOutForm(
           {
