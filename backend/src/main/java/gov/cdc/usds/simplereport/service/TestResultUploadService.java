@@ -46,8 +46,10 @@ public class TestResultUploadService {
       try {
         response = _client.uploadCSV(content);
       } catch (FeignException.BadRequest e) {
+        log.warn("CSV upload bad request", e);
         result.setErrors(new FeedbackMessage[] {new FeedbackMessage("api", "Bad Request")});
       } catch (FeignException fe) {
+        log.error("Error connecting to Report Stream", fe);
         result.setErrors(new FeedbackMessage[] {new FeedbackMessage("api", "Server Error")});
       }
     }
