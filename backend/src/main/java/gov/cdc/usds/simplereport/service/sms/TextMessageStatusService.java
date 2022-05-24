@@ -1,24 +1,35 @@
 package gov.cdc.usds.simplereport.service.sms;
 
+import static gov.cdc.usds.simplereport.api.Translators.parsePhoneNumber;
+
+import com.google.i18n.phonenumbers.NumberParseException;
+import com.google.i18n.phonenumbers.PhoneNumberUtil;
 import com.twilio.security.RequestValidator;
 import gov.cdc.usds.simplereport.api.model.errors.InvalidTwilioCallbackException;
 import gov.cdc.usds.simplereport.api.model.errors.InvalidTwilioMessageIdentifierException;
+import gov.cdc.usds.simplereport.db.model.PhoneNumber;
 import gov.cdc.usds.simplereport.db.model.TextMessageSent;
 import gov.cdc.usds.simplereport.db.model.TextMessageStatus;
+import gov.cdc.usds.simplereport.db.model.auxiliary.PhoneType;
+import gov.cdc.usds.simplereport.db.repository.PhoneNumberRepository;
 import gov.cdc.usds.simplereport.db.repository.TextMessageSentRepository;
 import gov.cdc.usds.simplereport.db.repository.TextMessageStatusRepository;
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
 import java.util.Map;
+import java.util.Optional;
 import java.util.stream.Collectors;
 import javax.servlet.http.HttpServletRequest;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 @Service("textMessageStatusService")
+@Transactional
 public class TextMessageStatusService {
 
+  private PhoneNumberRepository _phoneRepo;
   private final RequestValidator validator;
   private TextMessageSentRepository sentRepo;
   private TextMessageStatusRepository statusRepo;
@@ -29,10 +40,12 @@ public class TextMessageStatusService {
   public TextMessageStatusService(
       @Value("${TWILIO_AUTH_TOKEN:MISSING}") String authToken,
       TextMessageSentRepository sentRepo,
-      TextMessageStatusRepository statusRepo) {
+      TextMessageStatusRepository statusRepo,
+      PhoneNumberRepository phoneRepo) {
     this.validator = new RequestValidator(authToken);
     this.sentRepo = sentRepo;
     this.statusRepo = statusRepo;
+    this._phoneRepo = phoneRepo;
   }
 
   public void saveTextMessageStatus(String messageId, String status) {
@@ -72,6 +85,47 @@ public class TextMessageStatusService {
       return Arrays.stream(queryString.split("&"))
           .map(pair -> pair.split("=")[0])
           .collect(Collectors.toList());
+    }
+  }
+
+  private Optional<String> getNumberByMessageId(String messageId, String twilioNumber) {
+    final Integer PREFIX_START = 0;
+    final Integer PREFIX_END = 8;
+    var phoneUtil = PhoneNumberUtil.getInstance();
+    String numberPrefix = twilioNumber.substring(PREFIX_START, PREFIX_END);
+    TextMessageSent txtMsg = sentRepo.findByTwilioMessageId(messageId);
+    List<PhoneNumber> patientNumbers =
+        txtMsg.getPatientLink().getTestOrder().getPatient().getPhoneNumbers();
+
+    for (PhoneNumber phoneNumber : patientNumbers) {
+      try {
+        String convertedNumber =
+            phoneUtil.format(
+                phoneUtil.parse(phoneNumber.getNumber(), "US"),
+                PhoneNumberUtil.PhoneNumberFormat.E164);
+        if (convertedNumber.startsWith(numberPrefix)
+            && phoneNumber.getType().equals(PhoneType.MOBILE)) {
+          return Optional.of(phoneNumber.getNumber());
+        }
+      } catch (NumberParseException parseException) {
+        return Optional.empty();
+      }
+    }
+
+    return Optional.empty();
+  }
+
+  @Transactional
+  public void handleLandlineError(String messageId, String twilioNumber) {
+
+    Optional<String> landlineNumber = getNumberByMessageId(messageId, twilioNumber);
+    if (!landlineNumber.isEmpty()) {
+      List<PhoneNumber> phoneNumbers =
+          _phoneRepo.findAllByNumberAndType(
+              parsePhoneNumber(landlineNumber.get()), PhoneType.MOBILE);
+
+      phoneNumbers.forEach(phoneNumber -> phoneNumber.setType(PhoneType.LANDLINE));
+      _phoneRepo.saveAll(phoneNumbers);
     }
   }
 }

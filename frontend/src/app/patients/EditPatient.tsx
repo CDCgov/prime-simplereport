@@ -1,6 +1,6 @@
 import React, { useState } from "react";
 import { gql, useMutation, useQuery } from "@apollo/client";
-import { NavigateOptions, useNavigate } from "react-router-dom";
+import { NavigateOptions, NavLink, useNavigate } from "react-router-dom";
 import { useTranslation } from "react-i18next";
 
 import iconSprite from "../../../node_modules/uswds/dist/img/sprite.svg";
@@ -159,6 +159,7 @@ export const UPDATE_PATIENT = gql`
 interface Props {
   facilityId: string;
   patientId: string;
+  fromQueue?: boolean;
 }
 
 interface EditPatientParams extends Nullable<Omit<PersonFormData, "lookupId">> {
@@ -313,12 +314,21 @@ const EditPatient = (props: Props) => {
                       >
                         <use xlinkHref={iconSprite + "#arrow_back"}></use>
                       </svg>
-                      <LinkWithQuery
-                        to={`/patients`}
-                        className="margin-left-05"
-                      >
-                        People
-                      </LinkWithQuery>
+                      {props.fromQueue ? (
+                        <NavLink
+                          to={`/queue?facility=${props.facilityId}`}
+                          className="margin-left-05"
+                        >
+                          Conduct tests
+                        </NavLink>
+                      ) : (
+                        <LinkWithQuery
+                          to={`/patients`}
+                          className="margin-left-05"
+                        >
+                          People
+                        </LinkWithQuery>
+                      )}
                     </div>
                     <div className="prime-edit-patient-heading margin-y-0">
                       <h1 className="font-heading-lg margin-top-1 margin-bottom-0">
@@ -327,24 +337,26 @@ const EditPatient = (props: Props) => {
                     </div>
                   </div>
                   <div className="display-flex flex-align-center">
-                    <Button
-                      id="edit-patient-save-lower"
-                      className="prime-save-patient-changes-start-test"
-                      disabled={loading || !formChanged}
-                      onClick={() => {
-                        onSave(true);
-                      }}
-                      variant="outline"
-                      label={
-                        loading
-                          ? `${t("common.button.saving")}...`
-                          : "Save and start test"
-                      }
-                    />
+                    {!props.fromQueue && (
+                      <Button
+                        id="edit-patient-save-lower"
+                        className="prime-save-patient-changes-start-test"
+                        disabled={loading || !formChanged}
+                        onClick={() => {
+                          onSave(true);
+                        }}
+                        variant="outline"
+                        label={
+                          loading
+                            ? `${t("common.button.saving")}...`
+                            : "Save and start test"
+                        }
+                      />
+                    )}
                     <button
                       className="prime-save-patient-changes usa-button margin-right-0"
                       disabled={editPersonLoading || !formChanged}
-                      onClick={() => onSave(false)}
+                      onClick={() => onSave(props.fromQueue)}
                     >
                       {editPersonLoading
                         ? `${t("common.button.saving")}...`
