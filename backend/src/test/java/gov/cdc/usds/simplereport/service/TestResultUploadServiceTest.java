@@ -25,6 +25,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.context.properties.EnableConfigurationProperties;
 import org.springframework.cloud.contract.spec.internal.HttpStatus;
 import org.springframework.security.access.AccessDeniedException;
+import org.springframework.test.annotation.DirtiesContext;
 import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.junit.jupiter.SpringExtension;
 
@@ -41,6 +42,7 @@ class TestResultUploadServiceTest extends BaseServiceTest<TestResultUploadServic
   }
 
   @Test
+  @DirtiesContext
   @SliceTestConfiguration.WithSimpleReportCsvUploadPilotUser
   void integrationTest_returnsSuccessfulResult() throws IOException {
     var responseFile =
@@ -87,6 +89,7 @@ class TestResultUploadServiceTest extends BaseServiceTest<TestResultUploadServic
   }
 
   @Test
+  @DirtiesContext
   @SliceTestConfiguration.WithSimpleReportCsvUploadPilotUser
   void feignBadRequest_returnsErrorMessage() throws IOException {
 
@@ -109,6 +112,7 @@ class TestResultUploadServiceTest extends BaseServiceTest<TestResultUploadServic
   }
 
   @Test
+  @DirtiesContext
   @SliceTestConfiguration.WithSimpleReportCsvUploadPilotUser
   void feignGeneralError_returnsGenericErrorMessage() throws IOException {
 
