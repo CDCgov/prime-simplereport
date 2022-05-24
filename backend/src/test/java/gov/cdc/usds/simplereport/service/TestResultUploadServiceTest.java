@@ -1,69 +1,144 @@
 package gov.cdc.usds.simplereport.service;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.mockito.ArgumentMatchers.any;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
+import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 
-import gov.cdc.usds.simplereport.db.model.TestResultUpload;
+import com.github.tomakehurst.wiremock.WireMockServer;
+import com.github.tomakehurst.wiremock.client.WireMock;
+import com.okta.commons.http.MediaType;
+import gov.cdc.usds.simplereport.api.model.errors.CsvProcessingException;
 import gov.cdc.usds.simplereport.db.model.auxiliary.UploadStatus;
-import gov.cdc.usds.simplereport.db.repository.TestResultUploadRepository;
-import gov.cdc.usds.simplereport.service.model.reportstream.FeedbackMessage;
-import gov.cdc.usds.simplereport.service.model.reportstream.ReportStreamStatus;
-import gov.cdc.usds.simplereport.service.model.reportstream.UploadResponse;
+import gov.cdc.usds.simplereport.test_util.SliceTestConfiguration;
+import gov.cdc.usds.simplereport.test_util.WireMockConfig;
+import java.io.IOException;
 import java.io.InputStream;
-import java.util.Date;
-import java.util.UUID;
+import java.nio.charset.StandardCharsets;
+import java.util.Arrays;
+import org.apache.commons.io.IOUtils;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
-import org.springframework.boot.test.mock.mockito.MockBean;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.boot.context.properties.EnableConfigurationProperties;
+import org.springframework.cloud.contract.spec.internal.HttpStatus;
+import org.springframework.security.access.AccessDeniedException;
+import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.junit.jupiter.SpringExtension;
 
+@EnableConfigurationProperties
 @ExtendWith(SpringExtension.class)
-class TestResultUploadServiceTest {
+@ContextConfiguration(classes = {WireMockConfig.class})
+class TestResultUploadServiceTest extends BaseServiceTest<TestResultUploadService> {
 
-  @MockBean DataHubClient dataHubClient;
-  @MockBean TestResultUploadRepository repo;
-  @MockBean OrganizationService orgSvc;
-  private TestResultUploadService sut;
+  @Autowired private WireMockServer wireMockServer;
 
-  @BeforeEach
-  void init() {
-    sut = new TestResultUploadService(repo, dataHubClient, orgSvc);
+  @BeforeEach()
+  public void init() {
+    initSampleData();
   }
 
   @Test
-  void uploadService_processCSV_returnsExpectedResponse() {
+  @SliceTestConfiguration.WithSimpleReportCsvUploadPilotUser
+  void integrationTest_returnsSuccessfulResult() throws IOException {
+    var responseFile =
+        TestResultUploadServiceTest.class
+            .getClassLoader()
+            .getResourceAsStream("responses/datahub-response.json");
+    var mockResponse = IOUtils.toString(responseFile, StandardCharsets.UTF_8);
+    wireMockServer.stubFor(
+        WireMock.post(WireMock.urlEqualTo("/api/reports"))
+            .willReturn(
+                WireMock.aResponse()
+                    .withStatus(HttpStatus.OK)
+                    .withHeader("Content-Type", MediaType.APPLICATION_JSON_VALUE)
+                    .withBody(mockResponse)));
     InputStream input = loadCsv("test-upload-test-results.csv");
 
-    var uploadResponse =
-        UploadResponse.builder()
-            .id(UUID.randomUUID())
-            .submissionId("1")
-            .overallStatus(ReportStreamStatus.WAITING_TO_DELIVER)
-            .timestamp(new Date())
-            .plannedCompletionAt(new Date())
-            .actualCompletionAt(new Date())
-            .sender("unit test")
-            .reportItemCount(1)
-            .errorCount(0)
-            .warningCount(4)
-            .httpStatus(200)
-            .errors(new FeedbackMessage[] {})
-            .warnings(new FeedbackMessage[] {})
-            .topic("cats")
-            .externalName("phil")
-            .destinationCount(1)
-            .build();
+    var output = this._service.processResultCSV(input);
+    assertEquals(UploadStatus.PENDING, output.getStatus());
+    assertEquals(14, output.getRecordsCount());
+    assertNotNull(output.getOrganization());
 
-    when(dataHubClient.uploadCSV(any())).thenReturn(uploadResponse);
-    when(repo.save(any())).thenReturn(mock(TestResultUpload.class));
+    var warningMessage = Arrays.stream(output.getWarnings()).findFirst().get();
+    assertNotNull(warningMessage.getMessage());
+    assertNotNull(warningMessage.getScope());
+    assertEquals(0, output.getErrors().length);
 
-    var response = sut.processResultCSV(input);
-    assertEquals(UploadStatus.PENDING, response.getStatus());
-    assertEquals(0, uploadResponse.getErrorCount());
-    assertEquals("1", uploadResponse.getSubmissionId());
+    assertNotNull(output.getCreatedAt());
+    assertNotNull(output.getUpdatedAt());
+    assertNotNull(output.getInternalId());
+  }
+
+  @Test
+  @SliceTestConfiguration.WithSimpleReportCsvUploadPilotUser
+  void ioException_CaughtAndThrowsCsvException() throws IOException {
+
+    var input = mock(InputStream.class);
+    when(input.readAllBytes()).thenThrow(IOException.class);
+
+    assertThrows(
+        CsvProcessingException.class,
+        () -> {
+          this._service.processResultCSV(input);
+        });
+  }
+
+  @Test
+  @SliceTestConfiguration.WithSimpleReportCsvUploadPilotUser
+  void feignBadRequest_returnsErrorMessage() throws IOException {
+
+    wireMockServer.stubFor(
+        WireMock.post(WireMock.urlEqualTo("/api/reports"))
+            .willReturn(
+                WireMock.aResponse()
+                    .withStatus(HttpStatus.BAD_REQUEST)
+                    .withHeader("Content-Type", MediaType.APPLICATION_JSON_VALUE)
+                    .withBody("you messed up")));
+    InputStream input = mock(InputStream.class);
+    when(input.readAllBytes()).thenReturn(new byte[] {45});
+
+    var response = this._service.processResultCSV(input);
+
+    assertEquals(1, response.getErrors().length);
+    var errorMessage = Arrays.stream(response.getErrors()).findFirst().get();
+
+    assertEquals("Bad Request", errorMessage.getMessage());
+  }
+
+  @Test
+  @SliceTestConfiguration.WithSimpleReportCsvUploadPilotUser
+  void feignGeneralError_returnsGenericErrorMessage() throws IOException {
+
+    wireMockServer.stubFor(
+        WireMock.post(WireMock.urlEqualTo("/api/reports"))
+            .willReturn(
+                WireMock.aResponse()
+                    .withStatus(HttpStatus.INTERNAL_SERVER_ERROR)
+                    .withHeader("Content-Type", MediaType.APPLICATION_JSON_VALUE)
+                    .withBody("you messed up")));
+    InputStream input = mock(InputStream.class);
+    when(input.readAllBytes()).thenReturn(new byte[] {45});
+
+    var response = this._service.processResultCSV(input);
+
+    assertEquals(1, response.getErrors().length);
+    var errorMessage = Arrays.stream(response.getErrors()).findFirst().get();
+
+    assertEquals("Server Error", errorMessage.getMessage());
+  }
+
+  @Test
+  @SliceTestConfiguration.WithSimpleReportStandardUser
+  void unauthorizedUser_NotAuthorizedResponse() {
+    InputStream input = loadCsv("test-upload-test-results.csv");
+    assertThrows(
+        AccessDeniedException.class,
+        () -> {
+          this._service.processResultCSV(input);
+        });
   }
 
   private InputStream loadCsv(String csvFile) {

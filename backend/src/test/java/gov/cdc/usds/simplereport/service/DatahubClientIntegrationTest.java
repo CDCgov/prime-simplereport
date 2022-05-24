@@ -20,9 +20,7 @@ import org.springframework.cloud.contract.spec.internal.HttpStatus;
 import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.junit.jupiter.SpringExtension;
 
-@SpringBootTest(
-    webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT,
-    properties = {"hibernate.query.interceptor.error-level=EXCEPTION"})
+@SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT)
 @EnableConfigurationProperties
 @ExtendWith(SpringExtension.class)
 @ContextConfiguration(classes = {WireMockConfig.class})
@@ -49,7 +47,7 @@ public class DatahubClientIntegrationTest {
   }
 
   @Test
-  void test() {
+  void integrationTest_deserializesCorrectly() {
     var response = dataHubClient.uploadCSV(new byte[] {});
     assertNotNull(response);
     assertEquals(14, response.getReportItemCount());
