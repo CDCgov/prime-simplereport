@@ -13,7 +13,6 @@ import gov.cdc.usds.simplereport.db.model.auxiliary.UploadStatus;
 import gov.cdc.usds.simplereport.db.repository.TestEventRepository;
 import gov.cdc.usds.simplereport.service.TestEventReportingService;
 import gov.cdc.usds.simplereport.service.TestResultUploadService;
-import gov.cdc.usds.simplereport.test_util.WireMockConfig;
 import graphql.ErrorType;
 import graphql.GraphQLError;
 import java.io.ByteArrayInputStream;
@@ -25,13 +24,11 @@ import org.junit.jupiter.api.extension.ExtendWith;
 import org.springframework.boot.context.properties.EnableConfigurationProperties;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
-import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.junit.jupiter.SpringExtension;
 
 @SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT)
 @EnableConfigurationProperties
 @ExtendWith(SpringExtension.class)
-@ContextConfiguration(classes = {WireMockConfig.class})
 class TestResultMutationResolverTest {
 
   @MockBean private TestEventRepository _mockRepo;
