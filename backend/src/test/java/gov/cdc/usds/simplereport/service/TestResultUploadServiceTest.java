@@ -1,18 +1,17 @@
 package gov.cdc.usds.simplereport.service;
 
+import static com.github.tomakehurst.wiremock.client.WireMock.stubFor;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 
-import com.github.tomakehurst.wiremock.WireMockServer;
 import com.github.tomakehurst.wiremock.client.WireMock;
 import com.okta.commons.http.MediaType;
 import gov.cdc.usds.simplereport.api.model.errors.CsvProcessingException;
 import gov.cdc.usds.simplereport.db.model.auxiliary.UploadStatus;
 import gov.cdc.usds.simplereport.test_util.SliceTestConfiguration;
-import gov.cdc.usds.simplereport.test_util.WireMockConfig;
 import java.io.IOException;
 import java.io.InputStream;
 import java.nio.charset.StandardCharsets;
@@ -21,20 +20,17 @@ import org.apache.commons.io.IOUtils;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.context.properties.EnableConfigurationProperties;
 import org.springframework.cloud.contract.spec.internal.HttpStatus;
+import org.springframework.cloud.contract.wiremock.AutoConfigureWireMock;
 import org.springframework.security.access.AccessDeniedException;
 import org.springframework.test.annotation.DirtiesContext;
-import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.junit.jupiter.SpringExtension;
 
 @EnableConfigurationProperties
 @ExtendWith(SpringExtension.class)
-@ContextConfiguration(classes = {WireMockConfig.class})
+@AutoConfigureWireMock(port = 9561)
 class TestResultUploadServiceTest extends BaseServiceTest<TestResultUploadService> {
-
-  @Autowired private WireMockServer wireMockServer;
 
   @BeforeEach()
   public void init() {
@@ -50,7 +46,7 @@ class TestResultUploadServiceTest extends BaseServiceTest<TestResultUploadServic
             .getClassLoader()
             .getResourceAsStream("responses/datahub-response.json");
     var mockResponse = IOUtils.toString(responseFile, StandardCharsets.UTF_8);
-    wireMockServer.stubFor(
+    stubFor(
         WireMock.post(WireMock.urlEqualTo("/api/reports"))
             .willReturn(
                 WireMock.aResponse()
@@ -93,7 +89,7 @@ class TestResultUploadServiceTest extends BaseServiceTest<TestResultUploadServic
   @SliceTestConfiguration.WithSimpleReportCsvUploadPilotUser
   void feignBadRequest_returnsErrorMessage() throws IOException {
 
-    wireMockServer.stubFor(
+    stubFor(
         WireMock.post(WireMock.urlEqualTo("/api/reports"))
             .willReturn(
                 WireMock.aResponse()
@@ -116,7 +112,7 @@ class TestResultUploadServiceTest extends BaseServiceTest<TestResultUploadServic
   @SliceTestConfiguration.WithSimpleReportCsvUploadPilotUser
   void feignGeneralError_returnsGenericErrorMessage() throws IOException {
 
-    wireMockServer.stubFor(
+    stubFor(
         WireMock.post(WireMock.urlEqualTo("/api/reports"))
             .willReturn(
                 WireMock.aResponse()
