@@ -245,12 +245,18 @@ type TestResult {
   symptomOnset: LocalDate
   deviceType: DeviceType
   result: String
+  results: [MultiplexResult]
   dateTested: DateTime
   testPerformed: TestDescription!
   correctionStatus: String
   reasonForCorrection: String
   createdBy: ApiUser
   patientLink: PatientLink
+}
+
+type MultiplexResult {
+  disease: SupportedDisease
+  testResult: String
 }
 
 type OrganizationLevelDashboardMetrics {
@@ -292,6 +298,11 @@ type PendingOrganization {
   adminEmail: String
   adminPhone: String
   createdAt: DateTime!
+}
+
+input DiseaseResult {
+  diseaseName: String
+  testResult: String
 }
 
 # Queries and mutations for everyday use
@@ -594,11 +605,25 @@ type Mutation {
     patientId: ID!
     dateTested: DateTime
   ): AddTestResultResponse @requiredPermissions(allOf: ["SUBMIT_TEST"])
+  addTestResultMultiplex(
+    deviceId: String!
+    deviceSpecimenType: ID
+    results: [DiseaseResult]!
+    patientId: ID!
+    dateTested: DateTime
+  ): AddTestResultResponse @requiredPermissions(allOf: ["SUBMIT_TEST"])
   editQueueItem(
     id: ID!
     deviceId: String
     deviceSpecimenType: ID
     result: String
+    dateTested: DateTime
+  ): TestOrder @requiredPermissions(allOf: ["UPDATE_TEST"])
+  editQueueItemMultiplex(
+    id: ID!
+    deviceId: String
+    deviceSpecimenType: ID
+    results: [DiseaseResult]
     dateTested: DateTime
   ): TestOrder @requiredPermissions(allOf: ["UPDATE_TEST"])
   correctTestMarkAsError(id: ID!, reason: String): TestResult

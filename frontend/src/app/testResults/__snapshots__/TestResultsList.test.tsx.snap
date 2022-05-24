@@ -465,7 +465,12 @@ exports[`TestResultsList should render a list of tests 1`] = `
                   <td
                     class="patient-name-cell"
                   >
-                    Gerard, Sam G
+                    <button
+                      class="usa-button usa-button--unstyled sr-link__primary"
+                      type="button"
+                    >
+                      Gerard, Sam G
+                    </button>
                     <span
                       class="display-block text-base font-ui-2xs"
                     >
@@ -541,7 +546,12 @@ exports[`TestResultsList should render a list of tests 1`] = `
                   <td
                     class="patient-name-cell"
                   >
-                    Colleer, Barde X
+                    <button
+                      class="usa-button usa-button--unstyled sr-link__primary"
+                      type="button"
+                    >
+                      Colleer, Barde X
+                    </button>
                     <span
                       class="display-block text-base font-ui-2xs"
                     >
@@ -617,7 +627,12 @@ exports[`TestResultsList should render a list of tests 1`] = `
                   <td
                     class="patient-name-cell"
                   >
-                    Cragell, Barb Whitaker
+                    <button
+                      class="usa-button usa-button--unstyled sr-link__primary"
+                      type="button"
+                    >
+                      Cragell, Barb Whitaker
+                    </button>
                     <span
                       class="display-block text-base font-ui-2xs"
                     >

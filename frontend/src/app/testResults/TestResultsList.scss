@@ -25,10 +25,6 @@
     background: inherit;
   }
 
-  .sr-test-result-row:hover {
-    background: $theme-color-base-lightest;
-  }
-
   .sr-test-result-row--removed {
     text-decoration: line-through;
   }
