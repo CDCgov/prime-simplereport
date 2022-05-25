@@ -10,7 +10,7 @@ com.azure:azure-storage-common:12.15.1
 com.azure:azure-storage-queue:12.12.2
 com.fasterxml.jackson.core:jackson-annotations:2.11.3
 com.fasterxml.jackson.core:jackson-core:2.11.3
-com.fasterxml.jackson.core:jackson-databind:2.12.1
+com.fasterxml.jackson.core:jackson-databind:2.13.3
 com.fasterxml.jackson.dataformat:jackson-dataformat-csv:2.11.3
 com.fasterxml.jackson.dataformat:jackson-dataformat-xml:2.11.3
 com.fasterxml.jackson.datatype:jackson-datatype-hibernate5:2.11.3
@@ -19,7 +19,7 @@ com.fasterxml.jackson.datatype:jackson-datatype-jsr310:2.11.3
 com.fasterxml.jackson.module:jackson-module-jaxb-annotations:2.11.3
 com.fasterxml.jackson.module:jackson-module-kotlin:2.11.3
 com.fasterxml.jackson.module:jackson-module-parameter-names:2.11.3
-com.fasterxml.jackson:jackson-bom:2.12.1
+com.fasterxml.jackson:jackson-bom:2.13.3
 com.fasterxml.woodstox:woodstox-core:6.2.1
 com.fasterxml:classmate:1.5.1
 com.github.stephenc.jcip:jcip-annotations:1.0-1
