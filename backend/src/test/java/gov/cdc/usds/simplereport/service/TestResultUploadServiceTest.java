@@ -4,6 +4,7 @@ import static com.github.tomakehurst.wiremock.client.WireMock.stubFor;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.junit.jupiter.api.Assertions.assertThrows;
+import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 
@@ -11,11 +12,17 @@ import com.github.tomakehurst.wiremock.client.WireMock;
 import com.okta.commons.http.MediaType;
 import gov.cdc.usds.simplereport.api.model.errors.CsvProcessingException;
 import gov.cdc.usds.simplereport.db.model.auxiliary.UploadStatus;
+import gov.cdc.usds.simplereport.db.repository.TestResultUploadRepository;
+import gov.cdc.usds.simplereport.service.model.reportstream.FeedbackMessage;
+import gov.cdc.usds.simplereport.service.model.reportstream.ReportStreamStatus;
+import gov.cdc.usds.simplereport.service.model.reportstream.UploadResponse;
 import gov.cdc.usds.simplereport.test_util.SliceTestConfiguration;
 import java.io.IOException;
 import java.io.InputStream;
 import java.nio.charset.StandardCharsets;
 import java.util.Arrays;
+import java.util.Date;
+import java.util.UUID;
 import org.apache.commons.io.IOUtils;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -139,6 +146,44 @@ class TestResultUploadServiceTest extends BaseServiceTest<TestResultUploadServic
         () -> {
           this._service.processResultCSV(input);
         });
+  }
+
+  @Test
+  void mockResponse_things() throws IOException {
+    var response =
+        UploadResponse.builder()
+            .id(UUID.randomUUID())
+            .submissionId("1")
+            .overallStatus(ReportStreamStatus.RECEIVED)
+            .timestamp(new Date())
+            .plannedCompletionAt(new Date())
+            .actualCompletionAt(new Date())
+            .sender("Marisa Tomei is an anagram for its a me mario")
+            .reportItemCount(5)
+            .errorCount(1)
+            .warningCount(2)
+            .httpStatus(418)
+            .errors(new FeedbackMessage[] {})
+            .warnings(new FeedbackMessage[] {})
+            .topic("covid")
+            .externalName("jim")
+            .destinationCount(1)
+            .build();
+
+    InputStream input = mock(InputStream.class);
+    when(input.readAllBytes()).thenReturn(new byte[] {45});
+
+    var dataHubMock = mock(DataHubClient.class);
+    var repoMock = mock(TestResultUploadRepository.class);
+    var orgServiceMock = mock(OrganizationService.class);
+
+    when(dataHubMock.uploadCSV(any())).thenReturn(response);
+
+    var sut = new TestResultUploadService(repoMock, dataHubMock, orgServiceMock);
+
+    var output = sut.processResultCSV(input);
+    assertNotNull(output.getReportId());
+    assertEquals(UploadStatus.PENDING, output.getStatus());
   }
 
   private InputStream loadCsv(String csvFile) {
