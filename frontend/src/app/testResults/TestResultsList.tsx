@@ -70,6 +70,7 @@ export const byDateTested = (a: any, b: any) => {
 /**
  * Results Table
  */
+
 const tableHeaders = (
   hasMultiplexResults: boolean,
   displayFacility: boolean
@@ -224,7 +225,6 @@ function testResultRows(
             {getResultCell("COVID-19")}
           </td>
         )}
-
         <td className="test-device-cell">{r.deviceType.name}</td>
         <td className="submitted-by-cell">
           {displayFullName(
