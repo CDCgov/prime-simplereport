@@ -452,9 +452,10 @@ const QueueItem = ({
     }
     setConfirmationType("none");
     try {
-      const results: DiseaseResult[] = [];
-      covidResult &&
-        results.push({ diseaseName: "COVID-19", testResult: covidResult });
+      const results: DiseaseResult[] = [
+        { diseaseName: "COVID-19", testResult: covidResult },
+      ];
+      covidResult && results.push();
       fluAResult &&
         results.push({ diseaseName: "Flu A", testResult: fluAResult });
       fluBResult &&

@@ -48,6 +48,12 @@ const TestResultInputForm: React.FC<Props> = ({
     }
   };
 
+  const onInconclusiveResultClick = () => {
+    onTestResultChange("COVID-19")(COVID_RESULTS.INCONCLUSIVE);
+    onTestResultChange("Flu A")(COVID_RESULTS.INCONCLUSIVE);
+    onTestResultChange("Flu B")(COVID_RESULTS.INCONCLUSIVE);
+  };
+
   const allowSubmit =
     covidResult && covidResult !== "UNKNOWN" && !isSubmitDisabled;
 
@@ -168,7 +174,7 @@ const TestResultInputForm: React.FC<Props> = ({
           {supportsMultipleDiseases && (
             <>
               <Checkboxes
-                onChange={() => null}
+                onChange={onInconclusiveResultClick}
                 legend="Inconclusive tests"
                 legendSrOnly
                 name="inconclusive-tests"

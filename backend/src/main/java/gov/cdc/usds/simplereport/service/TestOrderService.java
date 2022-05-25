@@ -264,21 +264,18 @@ public class TestOrderService {
 
   private TestResult getCovidResultFromMultiplexList(List<DiseaseResult> results) {
     return results.stream()
-        .filter(result -> result.getDiseaseName().equals("COVID-19"))
+        .filter(r -> r.getDiseaseName().equals("COVID-19"))
         .findFirst()
-        .orElseThrow(() -> new IllegalArgumentException("No COVID-19 test result found"))
-        .getTestResult();
+        .map(DiseaseResult::getTestResult)
+        .orElse(null);
   }
 
   @AuthorizationConfiguration.RequirePermissionUpdateTestForTestOrder
   public TestOrder editQueueItemMultiplex(
       UUID testOrderId, UUID deviceSpecimenTypeId, List<DiseaseResult> results, Date dateTested) {
-    TestOrder savedOrder =
-        editQueueItem(
-            testOrderId,
-            deviceSpecimenTypeId,
-            getCovidResultFromMultiplexList(results).toString(),
-            dateTested);
+    TestResult covidResult = getCovidResultFromMultiplexList(results);
+    String result = covidResult != null ? covidResult.toString() : null;
+    TestOrder savedOrder = editQueueItem(testOrderId, deviceSpecimenTypeId, result, dateTested);
 
     editMultiplexResults(savedOrder, results);
 
