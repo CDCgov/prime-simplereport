@@ -2309,20 +2309,6 @@ export type SendSmsMutation = {
   sendPatientLinkSmsByTestEventId?: boolean | null | undefined;
 };
 
-export type GetResultsCountByFacilityQueryVariables = Exact<{
-  facilityId?: InputMaybe<Scalars["ID"]>;
-  patientId?: InputMaybe<Scalars["ID"]>;
-  result?: InputMaybe<Scalars["String"]>;
-  role?: InputMaybe<Scalars["String"]>;
-  startDate?: InputMaybe<Scalars["DateTime"]>;
-  endDate?: InputMaybe<Scalars["DateTime"]>;
-}>;
-
-export type GetResultsCountByFacilityQuery = {
-  __typename?: "Query";
-  testResultsCount?: number | null | undefined;
-};
-
 export type GetTestResultForResendingEmailsQueryVariables = Exact<{
   id: Scalars["ID"];
 }>;
@@ -2562,80 +2548,18 @@ export type GetAllFacilitiesQuery = {
     | undefined;
 };
 
-export type GetFacilityResultsQueryVariables = Exact<{
+export type GetResultsCountByFacilityQueryVariables = Exact<{
   facilityId?: InputMaybe<Scalars["ID"]>;
   patientId?: InputMaybe<Scalars["ID"]>;
   result?: InputMaybe<Scalars["String"]>;
   role?: InputMaybe<Scalars["String"]>;
   startDate?: InputMaybe<Scalars["DateTime"]>;
   endDate?: InputMaybe<Scalars["DateTime"]>;
-  pageNumber?: InputMaybe<Scalars["Int"]>;
-  pageSize?: InputMaybe<Scalars["Int"]>;
 }>;
 
-export type GetFacilityResultsQuery = {
+export type GetResultsCountByFacilityQuery = {
   __typename?: "Query";
-  testResults?:
-    | Array<
-        | {
-            __typename?: "TestResult";
-            internalId?: string | null | undefined;
-            dateTested?: any | null | undefined;
-            result?: string | null | undefined;
-            correctionStatus?: string | null | undefined;
-            deviceType?:
-              | { __typename?: "DeviceType"; internalId: string; name: string }
-              | null
-              | undefined;
-            patient?:
-              | {
-                  __typename?: "Patient";
-                  internalId?: string | null | undefined;
-                  firstName?: string | null | undefined;
-                  middleName?: string | null | undefined;
-                  lastName?: string | null | undefined;
-                  birthDate?: any | null | undefined;
-                  gender?: string | null | undefined;
-                  lookupId?: string | null | undefined;
-                  email?: string | null | undefined;
-                }
-              | null
-              | undefined;
-            createdBy?:
-              | {
-                  __typename?: "ApiUser";
-                  nameInfo?:
-                    | {
-                        __typename?: "NameInfo";
-                        firstName?: string | null | undefined;
-                        lastName: string;
-                      }
-                    | null
-                    | undefined;
-                }
-              | null
-              | undefined;
-            patientLink?:
-              | {
-                  __typename?: "PatientLink";
-                  internalId?: string | null | undefined;
-                }
-              | null
-              | undefined;
-            facility?:
-              | {
-                  __typename?: "Facility";
-                  name: string;
-                  isDeleted?: boolean | null | undefined;
-                }
-              | null
-              | undefined;
-          }
-        | null
-        | undefined
-      >
-    | null
-    | undefined;
+  testResultsCount?: number | null | undefined;
 };
 
 export const WhoAmIDocument = gql`
@@ -6440,81 +6364,6 @@ export type SendSmsMutationOptions = Apollo.BaseMutationOptions<
   SendSmsMutation,
   SendSmsMutationVariables
 >;
-export const GetResultsCountByFacilityDocument = gql`
-  query GetResultsCountByFacility(
-    $facilityId: ID
-    $patientId: ID
-    $result: String
-    $role: String
-    $startDate: DateTime
-    $endDate: DateTime
-  ) {
-    testResultsCount(
-      facilityId: $facilityId
-      patientId: $patientId
-      result: $result
-      role: $role
-      startDate: $startDate
-      endDate: $endDate
-    )
-  }
-`;
-
-/**
- * __useGetResultsCountByFacilityQuery__
- *
- * To run a query within a React component, call `useGetResultsCountByFacilityQuery` and pass it any options that fit your needs.
- * When your component renders, `useGetResultsCountByFacilityQuery` returns an object from Apollo Client that contains loading, error, and data properties
- * you can use to render your UI.
- *
- * @param baseOptions options that will be passed into the query, supported options are listed on: https://www.apollographql.com/docs/react/api/react-hooks/#options;
- *
- * @example
- * const { data, loading, error } = useGetResultsCountByFacilityQuery({
- *   variables: {
- *      facilityId: // value for 'facilityId'
- *      patientId: // value for 'patientId'
- *      result: // value for 'result'
- *      role: // value for 'role'
- *      startDate: // value for 'startDate'
- *      endDate: // value for 'endDate'
- *   },
- * });
- */
-export function useGetResultsCountByFacilityQuery(
-  baseOptions?: Apollo.QueryHookOptions<
-    GetResultsCountByFacilityQuery,
-    GetResultsCountByFacilityQueryVariables
-  >
-) {
-  const options = { ...defaultOptions, ...baseOptions };
-  return Apollo.useQuery<
-    GetResultsCountByFacilityQuery,
-    GetResultsCountByFacilityQueryVariables
-  >(GetResultsCountByFacilityDocument, options);
-}
-export function useGetResultsCountByFacilityLazyQuery(
-  baseOptions?: Apollo.LazyQueryHookOptions<
-    GetResultsCountByFacilityQuery,
-    GetResultsCountByFacilityQueryVariables
-  >
-) {
-  const options = { ...defaultOptions, ...baseOptions };
-  return Apollo.useLazyQuery<
-    GetResultsCountByFacilityQuery,
-    GetResultsCountByFacilityQueryVariables
-  >(GetResultsCountByFacilityDocument, options);
-}
-export type GetResultsCountByFacilityQueryHookResult = ReturnType<
-  typeof useGetResultsCountByFacilityQuery
->;
-export type GetResultsCountByFacilityLazyQueryHookResult = ReturnType<
-  typeof useGetResultsCountByFacilityLazyQuery
->;
-export type GetResultsCountByFacilityQueryResult = Apollo.QueryResult<
-  GetResultsCountByFacilityQuery,
-  GetResultsCountByFacilityQueryVariables
->;
 export const GetTestResultForResendingEmailsDocument = gql`
   query getTestResultForResendingEmails($id: ID!) {
     testResult(id: $id) {
@@ -6935,73 +6784,37 @@ export type GetAllFacilitiesQueryResult = Apollo.QueryResult<
   GetAllFacilitiesQuery,
   GetAllFacilitiesQueryVariables
 >;
-export const GetFacilityResultsDocument = gql`
-  query GetFacilityResults(
+export const GetResultsCountByFacilityDocument = gql`
+  query GetResultsCountByFacility(
     $facilityId: ID
     $patientId: ID
     $result: String
     $role: String
     $startDate: DateTime
     $endDate: DateTime
-    $pageNumber: Int
-    $pageSize: Int
   ) {
-    testResults(
+    testResultsCount(
       facilityId: $facilityId
       patientId: $patientId
       result: $result
       role: $role
       startDate: $startDate
       endDate: $endDate
-      pageNumber: $pageNumber
-      pageSize: $pageSize
-    ) {
-      internalId
-      dateTested
-      result
-      correctionStatus
-      deviceType {
-        internalId
-        name
-      }
-      patient {
-        internalId
-        firstName
-        middleName
-        lastName
-        birthDate
-        gender
-        lookupId
-        email
-      }
-      createdBy {
-        nameInfo {
-          firstName
-          lastName
-        }
-      }
-      patientLink {
-        internalId
-      }
-      facility {
-        name
-        isDeleted
-      }
-    }
+    )
   }
 `;
 
 /**
- * __useGetFacilityResultsQuery__
+ * __useGetResultsCountByFacilityQuery__
  *
- * To run a query within a React component, call `useGetFacilityResultsQuery` and pass it any options that fit your needs.
- * When your component renders, `useGetFacilityResultsQuery` returns an object from Apollo Client that contains loading, error, and data properties
+ * To run a query within a React component, call `useGetResultsCountByFacilityQuery` and pass it any options that fit your needs.
+ * When your component renders, `useGetResultsCountByFacilityQuery` returns an object from Apollo Client that contains loading, error, and data properties
  * you can use to render your UI.
  *
  * @param baseOptions options that will be passed into the query, supported options are listed on: https://www.apollographql.com/docs/react/api/react-hooks/#options;
  *
  * @example
- * const { data, loading, error } = useGetFacilityResultsQuery({
+ * const { data, loading, error } = useGetResultsCountByFacilityQuery({
  *   variables: {
  *      facilityId: // value for 'facilityId'
  *      patientId: // value for 'patientId'
@@ -7009,42 +6822,40 @@ export const GetFacilityResultsDocument = gql`
  *      role: // value for 'role'
  *      startDate: // value for 'startDate'
  *      endDate: // value for 'endDate'
- *      pageNumber: // value for 'pageNumber'
- *      pageSize: // value for 'pageSize'
  *   },
  * });
  */
-export function useGetFacilityResultsQuery(
+export function useGetResultsCountByFacilityQuery(
   baseOptions?: Apollo.QueryHookOptions<
-    GetFacilityResultsQuery,
-    GetFacilityResultsQueryVariables
+    GetResultsCountByFacilityQuery,
+    GetResultsCountByFacilityQueryVariables
   >
 ) {
   const options = { ...defaultOptions, ...baseOptions };
   return Apollo.useQuery<
-    GetFacilityResultsQuery,
-    GetFacilityResultsQueryVariables
-  >(GetFacilityResultsDocument, options);
+    GetResultsCountByFacilityQuery,
+    GetResultsCountByFacilityQueryVariables
+  >(GetResultsCountByFacilityDocument, options);
 }
-export function useGetFacilityResultsLazyQuery(
+export function useGetResultsCountByFacilityLazyQuery(
   baseOptions?: Apollo.LazyQueryHookOptions<
-    GetFacilityResultsQuery,
-    GetFacilityResultsQueryVariables
+    GetResultsCountByFacilityQuery,
+    GetResultsCountByFacilityQueryVariables
   >
 ) {
   const options = { ...defaultOptions, ...baseOptions };
   return Apollo.useLazyQuery<
-    GetFacilityResultsQuery,
-    GetFacilityResultsQueryVariables
-  >(GetFacilityResultsDocument, options);
+    GetResultsCountByFacilityQuery,
+    GetResultsCountByFacilityQueryVariables
+  >(GetResultsCountByFacilityDocument, options);
 }
-export type GetFacilityResultsQueryHookResult = ReturnType<
-  typeof useGetFacilityResultsQuery
+export type GetResultsCountByFacilityQueryHookResult = ReturnType<
+  typeof useGetResultsCountByFacilityQuery
 >;
-export type GetFacilityResultsLazyQueryHookResult = ReturnType<
-  typeof useGetFacilityResultsLazyQuery
+export type GetResultsCountByFacilityLazyQueryHookResult = ReturnType<
+  typeof useGetResultsCountByFacilityLazyQuery
 >;
-export type GetFacilityResultsQueryResult = Apollo.QueryResult<
-  GetFacilityResultsQuery,
-  GetFacilityResultsQueryVariables
+export type GetResultsCountByFacilityQueryResult = Apollo.QueryResult<
+  GetResultsCountByFacilityQuery,
+  GetResultsCountByFacilityQueryVariables
 >;
