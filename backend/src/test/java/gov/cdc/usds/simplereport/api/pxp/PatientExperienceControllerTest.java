@@ -29,7 +29,6 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.TimeZone;
 import java.util.UUID;
-import org.hamcrest.core.IsNull;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -141,8 +140,8 @@ class PatientExperienceControllerTest extends BaseFullStackTest {
             .andExpect(status().isOk())
             .andExpect(jsonPath("$.testEventId", is(testEvent.getInternalId().toString())))
             .andExpect(jsonPath("$.result", is("NEGATIVE")))
-            .andExpect(jsonPath("$.fluAResult", is(IsNull.nullValue())))
-            .andExpect(jsonPath("$.fluBResult", is(IsNull.nullValue())))
+            .andExpect(jsonPath("$.fluAResult").doesNotExist())
+            .andExpect(jsonPath("$.fluBResult").doesNotExist())
             .andExpect(jsonPath("$.correctionStatus", is("ORIGINAL")))
             .andExpect(jsonPath("$.patient.firstName", is("Fred")))
             .andExpect(jsonPath("$.patient.middleName", is("M")))
