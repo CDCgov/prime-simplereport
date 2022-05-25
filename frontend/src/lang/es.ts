@@ -31,6 +31,15 @@ export const es: LanguageConfig = {
         UNDETERMINED,
         UNKNOWN,
       },
+      testResultsSymbols: {
+        POSITIVE: "(+)",
+        NEGATIVE: "(-)",
+      },
+      disease: {
+        COVID19: "COVID-19",
+        FLUA: "Flu A",
+        FLUB: "Flu B",
+      },
       role: {
         STAFF: "Personal",
         RESIDENT: "Residente",
@@ -351,6 +360,23 @@ export const es: LanguageConfig = {
           p1:
             "Programe una cita para que le realicen otra prueba lo antes posible. Si se ha realizado la prueba porque tiene síntomas de COVID-19, se recomienda que se " +
             "autoaísle hasta que obtenga los resultados de la nueva prueba.",
+        },
+      },
+      fluNotes: {
+        h1: "TODO: add flu A and B translation",
+        positive: {
+          p0:
+            "La mayoría de las personas con influenza (gripe) tienen un caso leve de la enfermedad y se pueden " +
+            "recuperar en casa. Quédate en casa y evita el contacto con los demás hasta por lo menos 24 horas " +
+            "después de que haya desaparecido la fiebre, excepto para obtener atención médica o para otras " +
+            "necesidades. Ponte una mascarilla si sales de casa, o cúbrete con un pañuelo desechable la nariz y la " +
+            "boca al toser y estornudar. Lávate las manos con frecuencia.",
+          p1:
+            "<0> Las personas con un riesgo mayor de presentar complicaciones relacionadas con la influenza </0> " +
+            "(https://espanol.cdc.gov/flu/highrisk/index.htm) deben contactar a un médico lo más pronto posible " +
+            "para ver si se recomienda el tratamiento antiviral.",
+          p2:
+            "Para obtener más información, visita <0> Influenza: qué hacer en caso de enfermarse </0> (https://espanol.cdc.gov/flu/treatment/takingcare.htm).",
         },
       },
       tos: {

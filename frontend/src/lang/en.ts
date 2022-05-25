@@ -25,6 +25,15 @@ export const en = {
         UNDETERMINED: "Inconclusive",
         UNKNOWN: UNKNOWN,
       },
+      testResultsSymbols: {
+        POSITIVE: "(+)",
+        NEGATIVE: "(-)",
+      },
+      disease: {
+        COVID19: "COVID-19",
+        FLUA: "Flu A",
+        FLUB: "Flu B",
+      },
       role: {
         STAFF: "Staff",
         RESIDENT: "Resident",
@@ -274,7 +283,7 @@ export const en = {
       },
       notes: {
         meaning:
-          "COVID-19 antigen tests can sometimes provid inaccurate or false results and follow up testing may be needed. Continue " +
+          "COVID-19 antigen tests can sometimes provide inaccurate or false results and follow up testing may be needed. Continue " +
           "social distancing and wearing a mask. Contact your health care provider to determine if additional " +
           "testing is needed especially if you experience any of these  symptoms.",
         positive: {
@@ -336,6 +345,17 @@ export const en = {
           p1:
             "Please make an appointment for another test as soon as possible. If you’ve gotten tested due to COVID-19 symptoms, it is " +
             "recommended that you self-isolate until you get your new test results.",
+        },
+      },
+      fluNotes: {
+        h1: "For Flu A and B:",
+        positive: {
+          p0:
+            "Most people with flu have mild illness and can recover at home. Stay at home and avoid contact with others until at least 24 hours after your fever is gone, except to get medical care or other necessities. Wear a face mask if you leave home, or cover coughs and sneezes with a tissue. Wash your hands often.",
+          p1:
+            "<0>People at Higher Risk of Developing Flu–Related Complications </0> (cdc.gov/flu/highrisk) should contact a doctor as soon as possible to see if antiviral treatment is recommended.",
+          p2:
+            "For more information, visit <0> Flu: What To Do If You Get Sick </0> (cdc.gov/flu/treatment/takingcare.htm).",
         },
       },
       tos: {
