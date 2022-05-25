@@ -86,12 +86,67 @@ query GetFacilityResultsForCsv(
   }
 }
 
-query GetAllFacilities(
-  $showArchived: Boolean
+query GetFacilityResultsMultiplex(
+  $facilityId: ID
+  $patientId: ID
+  $result: String
+  $role: String
+  $startDate: DateTime
+  $endDate: DateTime
+  $pageNumber: Int
+  $pageSize: Int
 ) {
-  facilities(
-    showArchived: $showArchived
+  testResults(
+    facilityId: $facilityId
+    patientId: $patientId
+    result: $result
+    role: $role
+    startDate: $startDate
+    endDate: $endDate
+    pageNumber: $pageNumber
+    pageSize: $pageSize
   ) {
+    internalId
+    dateTested
+    result
+    results {
+      disease {
+        name
+      }
+      testResult
+    }
+    correctionStatus
+    deviceType {
+      internalId
+      name
+    }
+    patient {
+      internalId
+      firstName
+      middleName
+      lastName
+      birthDate
+      gender
+      lookupId
+      email
+    }
+    createdBy {
+      nameInfo {
+        firstName
+        lastName
+      }
+    }
+    patientLink {
+      internalId
+    }
+    facility {
+      name
+    }
+  }
+}
+
+query GetAllFacilities($showArchived: Boolean) {
+  facilities(showArchived: $showArchived) {
     id
     name
     isDeleted

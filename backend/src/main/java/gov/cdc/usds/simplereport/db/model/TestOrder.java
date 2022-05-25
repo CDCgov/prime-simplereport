@@ -1,5 +1,6 @@
 package gov.cdc.usds.simplereport.db.model;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import gov.cdc.usds.simplereport.db.model.auxiliary.OrderStatus;
 import gov.cdc.usds.simplereport.db.model.auxiliary.TestCorrectionStatus;
 import gov.cdc.usds.simplereport.db.model.auxiliary.TestResult;
@@ -49,6 +50,7 @@ public class TestOrder extends BaseTestInfo {
   @JoinColumn(name = "test_event_id")
   private TestEvent testEvent;
 
+  @JsonIgnore
   @OneToMany(mappedBy = "testOrder", fetch = FetchType.LAZY, cascade = CascadeType.ALL)
   @Getter
   private Set<Result> results;
@@ -98,6 +100,7 @@ public class TestOrder extends BaseTestInfo {
     return super.getResult();
   }
 
+  @JsonIgnore
   public Set<Result> getResultSet() {
     Hibernate.initialize(this.results);
     return results;

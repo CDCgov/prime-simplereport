@@ -803,7 +803,7 @@ const QueueItem = ({
                     onClick={() => {
                       navigate({
                         pathname: `/patient/${patient.internalId}`,
-                        search: `?facility=${facilityId}`,
+                        search: `?facility=${facilityId}&fromQueue=true`,
                       });
                     }}
                   >

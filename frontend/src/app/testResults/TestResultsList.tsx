@@ -43,7 +43,10 @@ import SearchResults from "../testQueue/addToQueue/SearchResults";
 import Select from "../commonComponents/Select";
 import { useSelectedFacility } from "../facilitySelect/useSelectedFacility";
 import { appPermissions, hasPermission } from "../permissions";
-import { useGetAllFacilitiesQuery } from "../../generated/graphql";
+import {
+  useGetAllFacilitiesQuery,
+  useGetFacilityResultsMultiplexQuery,
+} from "../../generated/graphql";
 
 import TestResultPrintModal from "./TestResultPrintModal";
 import TestResultTextModal from "./TestResultTextModal";
@@ -66,7 +69,7 @@ export const byDateTested = (a: any, b: any) => {
 /**
  * Results Table
  */
-const tableHeaders = (
+const tableHeaders = (hasMultiplexResults: boolean) => (
   <tr>
     <th scope="col" className="patient-name-cell">
       {PATIENT_TERM_CAP}
@@ -77,6 +80,16 @@ const tableHeaders = (
     <th scope="col" className="test-result-cell">
       COVID-19
     </th>
+    {hasMultiplexResults ? (
+      <>
+        <th scope="col" className="test-result-cell">
+          Flu A
+        </th>
+        <th scope="col" className="test-result-cell">
+          Flu B
+        </th>
+      </>
+    ) : null}
     <th scope="col" className="test-facility-cell">
       Testing facility
     </th>
@@ -94,6 +107,7 @@ const tableHeaders = (
 
 function testResultRows(
   testResults: any,
+  hasMultiplexResults: boolean,
   setPrintModalId: SetStateAction<any>,
   setMarkCorrectionId: SetStateAction<any>,
   setDetailsModalId: SetStateAction<any>,
@@ -137,6 +151,21 @@ function testResultRows(
       name: "View details",
       action: () => setDetailsModalId(r.internalId),
     });
+    const getResultCell = (disease: string) => {
+      let result;
+      if (r.results && r.results.length > 1) {
+        result = r.results.find(
+          (result: any) => result.disease.name === disease
+        ).testResult;
+      }
+      if (result) {
+        return TEST_RESULT_DESCRIPTIONS[result as Results];
+      } else if (disease === "COVID-19") {
+        return TEST_RESULT_DESCRIPTIONS[r.result as Results];
+      } else {
+        return "N/A";
+      }
+    };
     return (
       <tr
         key={r.internalId}
@@ -145,6 +174,7 @@ function testResultRows(
           "sr-test-result-row",
           removed && "sr-test-result-row--removed"
         )}
+        data-testid={`test-result-${r.internalId}`}
         data-patient-link={
           r.patientLink
             ? `${getUrl()}pxp?plid=${r.patientLink.internalId}`
@@ -152,11 +182,16 @@ function testResultRows(
         }
       >
         <td className="patient-name-cell">
-          {displayFullName(
-            r.patient.firstName,
-            r.patient.middleName,
-            r.patient.lastName
-          )}
+          <Button
+            variant="unstyled"
+            label={displayFullName(
+              r.patient.firstName,
+              r.patient.middleName,
+              r.patient.lastName
+            )}
+            onClick={() => setDetailsModalId(r.internalId)}
+            className="sr-link__primary"
+          />
           <span className="display-block text-base font-ui-2xs">
             DOB: {formatDateWithTimeOption(r.patient.birthDate)}
           </span>
@@ -164,9 +199,24 @@ function testResultRows(
         <td className="test-date-cell">
           {formatDateWithTimeOption(r.dateTested, true)}
         </td>
-        <td className="test-result-cell">
-          {TEST_RESULT_DESCRIPTIONS[r.result as Results]}
-        </td>
+
+        {hasMultiplexResults ? (
+          <>
+            <td className="test-result-cell covid-19-result">
+              {getResultCell("COVID-19")}
+            </td>
+            <td className="test-result-cell flu-a-result">
+              {getResultCell("Flu A")}
+            </td>
+            <td className="test-result-cell flu-b-result">
+              {getResultCell("Flu B")}
+            </td>
+          </>
+        ) : (
+          <td className="test-result-cell covid-19-result">
+            {getResultCell("COVID-19")}
+          </td>
+        )}
         <td className="test-facility-cell">
           {facilityDisplayName(r.facility.name, r.facility.isDeleted)}
         </td>
@@ -188,12 +238,15 @@ function testResultRows(
 
 interface ResultsTableListProps {
   rows: JSX.Element | JSX.Element[];
+  hasMultiplexResults: boolean;
 }
 
-const ResultsTable = ({ rows }: ResultsTableListProps) => {
+const ResultsTable = ({ rows, hasMultiplexResults }: ResultsTableListProps) => {
   return (
     <table className="usa-table usa-table--borderless width-full">
-      <thead className="sr-element__sr-only">{tableHeaders}</thead>
+      <thead className="sr-element__sr-only">
+        {tableHeaders(hasMultiplexResults)}
+      </thead>
       <tbody>{rows}</tbody>
     </table>
   );
@@ -396,8 +449,14 @@ export const DetachedTestResultsList = ({
 
   const testResults = data?.testResults || [];
 
+  const hasMultiplexResults = testResults.some(
+    (result: any) =>
+      result.results?.length && result.results.diseaseName !== "COVID-19"
+  );
+
   const rows = testResultRows(
     testResults,
+    hasMultiplexResults,
     setPrintModalId,
     setMarkCorrectionId,
     setDetailsModalId,
@@ -623,11 +682,14 @@ export const DetachedTestResultsList = ({
                 className="usa-table usa-table--borderless width-full"
                 aria-hidden="true"
               >
-                <thead>{tableHeaders}</thead>
+                <thead>{tableHeaders(hasMultiplexResults)}</thead>
               </table>
             </div>
             <div title="filtered-result">
-              <ResultsTable rows={rows} />
+              <ResultsTable
+                rows={rows}
+                hasMultiplexResults={hasMultiplexResults}
+              />
             </div>
             <div className="usa-card__footer">
               {loading ? (
@@ -665,62 +727,6 @@ export const resultsCountQuery = gql`
       startDate: $startDate
       endDate: $endDate
     )
-  }
-`;
-
-export const testResultQuery = gql`
-  query GetFacilityResults(
-    $facilityId: ID
-    $patientId: ID
-    $result: String
-    $role: String
-    $startDate: DateTime
-    $endDate: DateTime
-    $pageNumber: Int
-    $pageSize: Int
-  ) {
-    testResults(
-      facilityId: $facilityId
-      patientId: $patientId
-      result: $result
-      role: $role
-      startDate: $startDate
-      endDate: $endDate
-      pageNumber: $pageNumber
-      pageSize: $pageSize
-    ) {
-      internalId
-      dateTested
-      result
-      correctionStatus
-      deviceType {
-        internalId
-        name
-      }
-      patient {
-        internalId
-        firstName
-        middleName
-        lastName
-        birthDate
-        gender
-        lookupId
-        email
-      }
-      createdBy {
-        nameInfo {
-          firstName
-          lastName
-        }
-      }
-      patientLink {
-        internalId
-      }
-      facility {
-        name
-        isDeleted
-      }
-    }
   }
 `;
 
@@ -819,7 +825,7 @@ const TestResultsList = () => {
     fetchPolicy: "no-cache",
     variables: countQueryVariables,
   });
-  const results = useQuery(testResultQuery, {
+  const results = useGetFacilityResultsMultiplexQuery({
     fetchPolicy: "no-cache",
     variables: resultsQueryVariables,
   });
