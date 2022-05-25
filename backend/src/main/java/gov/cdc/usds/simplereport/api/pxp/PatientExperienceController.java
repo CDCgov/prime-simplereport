@@ -6,10 +6,13 @@ import gov.cdc.usds.simplereport.api.model.pxp.PxpTestResultUnauthenticatedRespo
 import gov.cdc.usds.simplereport.api.model.pxp.PxpVerifyResponseV2;
 import gov.cdc.usds.simplereport.db.model.Facility;
 import gov.cdc.usds.simplereport.db.model.Person;
+import gov.cdc.usds.simplereport.db.model.Result;
 import gov.cdc.usds.simplereport.db.model.TestEvent;
 import gov.cdc.usds.simplereport.db.model.TestOrder;
+import gov.cdc.usds.simplereport.service.DiseaseService;
 import gov.cdc.usds.simplereport.service.PatientLinkService;
 import gov.cdc.usds.simplereport.service.TimeOfConsentService;
+import java.util.Optional;
 import java.util.UUID;
 import javax.annotation.PostConstruct;
 import javax.servlet.http.HttpServletRequest;
@@ -42,14 +45,17 @@ public class PatientExperienceController {
   private final PatientLinkService _pls;
   private final TimeOfConsentService _tocs;
   private final CurrentPatientContextHolder _contextHolder;
+  private final DiseaseService _diseaseService;
 
   public PatientExperienceController(
       PatientLinkService patientLinkService,
       TimeOfConsentService timeOfConsentService,
-      CurrentPatientContextHolder contextHolder) {
+      CurrentPatientContextHolder contextHolder,
+      DiseaseService diseaseService) {
     this._pls = patientLinkService;
     this._tocs = timeOfConsentService;
     this._contextHolder = contextHolder;
+    this._diseaseService = diseaseService;
   }
 
   @PostConstruct
@@ -67,7 +73,12 @@ public class PatientExperienceController {
     TestEvent testEvent = _contextHolder.getLinkedOrder().getTestEvent();
     _tocs.storeTimeOfConsent(_contextHolder.getPatientLink());
 
-    return new PxpVerifyResponseV2(patient, testEvent);
+    Result covidResult = testEvent.getResultForDisease(_diseaseService.covid()).orElseThrow();
+
+    Optional<Result> fluAResult = testEvent.getResultForDisease(_diseaseService.fluA());
+    Optional<Result> fluBResult = testEvent.getResultForDisease(_diseaseService.fluB());
+
+    return new PxpVerifyResponseV2(patient, testEvent, covidResult, fluAResult, fluBResult);
   }
 
   /**

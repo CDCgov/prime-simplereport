@@ -29,6 +29,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.TimeZone;
 import java.util.UUID;
+import org.hamcrest.core.IsNull;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -140,6 +141,77 @@ class PatientExperienceControllerTest extends BaseFullStackTest {
             .andExpect(status().isOk())
             .andExpect(jsonPath("$.testEventId", is(testEvent.getInternalId().toString())))
             .andExpect(jsonPath("$.result", is("NEGATIVE")))
+            .andExpect(jsonPath("$.fluAResult", is(IsNull.nullValue())))
+            .andExpect(jsonPath("$.fluBResult", is(IsNull.nullValue())))
+            .andExpect(jsonPath("$.correctionStatus", is("ORIGINAL")))
+            .andExpect(jsonPath("$.patient.firstName", is("Fred")))
+            .andExpect(jsonPath("$.patient.middleName", is("M")))
+            .andExpect(jsonPath("$.patient.lastName", is("Astaire")))
+            .andExpect(jsonPath("$.patient.birthDate", is("1899-05-10")))
+            .andExpect(jsonPath("$.organization.name", is("The Mall")))
+            .andExpect(jsonPath("$.facility.name", is("Imaginary Site")))
+            .andExpect(jsonPath("$.facility.cliaNumber", is("123456")))
+            .andExpect(jsonPath("$.facility.street", is("736 Jackson PI NW")))
+            .andExpect(jsonPath("$.facility.streetTwo", is("")))
+            .andExpect(jsonPath("$.facility.city", is("Washington")))
+            .andExpect(jsonPath("$.facility.state", is("DC")))
+            .andExpect(jsonPath("$.facility.zipCode", is("20503")))
+            .andExpect(jsonPath("$.facility.phone", is("555-867-5309")))
+            .andExpect(jsonPath("$.facility.orderingProvider.firstName", is("Doctor")))
+            .andExpect(jsonPath("$.facility.orderingProvider.middleName", is("")))
+            .andExpect(jsonPath("$.facility.orderingProvider.lastName", is("Doom")))
+            .andExpect(jsonPath("$.facility.orderingProvider.npi", is("DOOOOOOM")))
+            .andExpect(jsonPath("$.deviceType.name", is("Acme SuperFine")))
+            .andExpect(jsonPath("$.deviceType.model", is("SFN")))
+            .andReturn()
+            .getResponse()
+            .getHeader(LoggingConstants.REQUEST_ID_HEADER);
+
+    assertLastAuditEntry(HttpStatus.OK, ResourceLinks.VERIFY_LINK_V2, requestId);
+  }
+
+  @Test
+  void verifyLinkV2ReturnsTestResultInfo_multiplex() throws Exception {
+
+    TestUserIdentities.withStandardUser(
+        () -> {
+          testEvent =
+              _dataFactory.createMultiplexTestEvent(
+                  person,
+                  facility,
+                  TestResult.POSITIVE,
+                  TestResult.NEGATIVE,
+                  TestResult.NEGATIVE,
+                  false);
+          patientLink = _dataFactory.createPatientLink(testEvent.getTestOrder());
+        });
+
+    // GIVEN
+    String dob = person.getBirthDate().format(DateTimeFormatter.ofPattern("yyyy-MM-dd"));
+    String requestBody =
+        "{\"patientLinkId\":\""
+            + patientLink.getInternalId()
+            + "\",\"dateOfBirth\":\""
+            + dob
+            + "\"}";
+
+    // WHEN
+    MockHttpServletRequestBuilder builder =
+        post(ResourceLinks.VERIFY_LINK_V2)
+            .contentType(MediaType.APPLICATION_JSON_VALUE)
+            .accept(MediaType.APPLICATION_JSON)
+            .characterEncoding("UTF-8")
+            .content(requestBody);
+
+    // THEN
+    String requestId =
+        mockMvc
+            .perform(builder)
+            .andExpect(status().isOk())
+            .andExpect(jsonPath("$.testEventId", is(testEvent.getInternalId().toString())))
+            .andExpect(jsonPath("$.result", is("POSITIVE")))
+            .andExpect(jsonPath("$.fluAResult", is("NEGATIVE")))
+            .andExpect(jsonPath("$.fluBResult", is("NEGATIVE")))
             .andExpect(jsonPath("$.correctionStatus", is("ORIGINAL")))
             .andExpect(jsonPath("$.patient.firstName", is("Fred")))
             .andExpect(jsonPath("$.patient.middleName", is("M")))

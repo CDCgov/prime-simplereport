@@ -45,6 +45,7 @@ public class TestEvent extends BaseTestInfo {
   @JoinColumn(name = "test_order_id")
   private TestOrder order;
 
+  @JsonIgnore
   @OneToMany(mappedBy = "testEvent", cascade = CascadeType.MERGE, fetch = FetchType.LAZY)
   private Set<Result> results;
 
@@ -165,6 +166,14 @@ public class TestEvent extends BaseTestInfo {
       }
     }
     return super.getResult();
+  }
+
+  public Optional<Result> getResultForDisease(SupportedDisease disease) {
+    Hibernate.initialize(this.results);
+    if (results != null) {
+      return results.stream().filter(r -> r.getDisease().equals(disease)).findFirst();
+    }
+    return Optional.empty();
   }
 
   @Override
