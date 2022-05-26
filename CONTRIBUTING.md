@@ -2,7 +2,7 @@
 Thank you for your interest in contributing to SimpleReport, part of the CDC's PRIME initiative. SimpleReport is an open-source application leveraged by organizations within the United States for collecting and reporting test results for various supported diseases. We're glad you are interested in contributing!
 There are many ways to contribute, including writing tutorials or blog posts, improving the documentation, submitting bug reports and feature requests, and writing code for PRIME itself.
 
-Before contributing, we encourage you to also read or [LICENSE](LICENSE.md),
+Before contributing, we encourage you to also read our [LICENSE](LICENSE.md),
 [README](README.md), and
 [code-of-conduct](code-of-conduct.md)
 files, also found in this repository. If you have any inquiries or questions not
@@ -45,7 +45,7 @@ You will need to fork the main code or documentation repository and clone it to 
 
 Create a branch for your work. 
 
-If a you need to base your work on someone elses branch, talk to the branch owner and work something out.  
+If a you need to base your work on someone else's branch, talk to the branch owner and work something out.  
 
 ### Coding your changes
 
@@ -62,7 +62,7 @@ Once your changes and tests are ready to submit for review:
 
 2. **Rebase your changes**
 
-    Update your local repository with the most recent code from the principal repository, and rebase your branch on top of the latest master branch. We prefer your initial changes to be squashed into a single commit. Later, if we ask you to make changes, add the changes as separate commits.  This makes the changes easier to review.  
+    Update your local repository with the most recent code from the principal repository, and rebase your branch on top of the latest `main` branch. We prefer your initial changes to be squashed into a single commit. Later, if we ask you to make changes, add the changes as separate commits.  This makes the changes easier to review.  
 
 3. **Submit a pull request**
 
