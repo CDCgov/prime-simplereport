@@ -88,13 +88,13 @@ export const StaticTestResultModal = ({
     results?.length;
 
   const getCovidResults = () => {
-    return Object.values(results).filter((result: any) => {
+    return results.filter((result: any) => {
       return result.disease.name.includes("COVID-19");
     });
   };
 
   const hasPositiveFluResults = () => {
-    return Object.values(results).filter((result: any) => {
+    return results.filter((result: any) => {
       return (
         result.disease.name.includes("Flu") && result?.testResult === "POSITIVE"
       );
@@ -103,9 +103,11 @@ export const StaticTestResultModal = ({
 
   const setCovidGuidance = (result: string) => {
     return (
-      <>
+      <div className={hasMultiplexResults ? "sr-margin-bottom-28px" : ""}>
         {hasMultiplexResults && (
-          <p className="text-bold">{t("testResult.notes.h1")}</p>
+          <p className="text-bold sr-guidance-heading">
+            {t("testResult.notes.h1")}
+          </p>
         )}
         {result === "UNDETERMINED" && (
           <p>{t("testResult.notes.inconclusive.p0")}</p>
@@ -182,14 +184,16 @@ export const StaticTestResultModal = ({
             />
           </>
         )}
-      </>
+      </div>
     );
   };
 
   const setPositiveFluGuidance = () => {
     return (
       <>
-        <p className="text-bold">{t("testResult.fluNotes.h1")}</p>
+        <p className="text-bold sr-guidance-heading">
+          {t("testResult.fluNotes.h1")}
+        </p>
         <p>{t("testResult.fluNotes.positive.p0")}</p>
         <Trans
           t={t}
@@ -282,7 +286,11 @@ export const StaticTestResultModal = ({
       )}
     >
       <header className="display-flex flex-align-end flex-justify margin-bottom-1">
-        <h1>{t("testResult.result")}</h1>
+        <h1>
+          {hasMultiplexResults
+            ? t("testResult.multiplexResultHeader")
+            : t("testResult.covidResultHeader")}
+        </h1>
         <img alt="SimpleReport logo" src={logo} className="sr-print-logo" />
       </header>
       <main>
@@ -363,7 +371,7 @@ export const StaticTestResultModal = ({
               <b>{t("testResult.testDevice")}</b>
               <div>{deviceType.model}</div>
             </li>
-            <li>
+            <li className="sr-margin-bottom-28px">
               <b>{t("testResult.testDate")}</b>
               <div>{formatDateWithTimeOption(dateTested, true)}</div>
             </li>

@@ -258,6 +258,9 @@ export const es: LanguageConfig = {
     },
     testResult: {
       result: "Resultado de SARS-CoV-2",
+      covidResultHeader: "TODO: translation for Test result: COVID-19",
+      multiplexResultHeader:
+        "TODO: translation for Test results: COVID-19 and flu",
       downloadResult: "Descargar resultado",
       patient: "Paciente",
       patientDetails: "Detalles del paciente",
@@ -292,7 +295,7 @@ export const es: LanguageConfig = {
         npi: "Número de NPI",
       },
       notes: {
-        h1: "TODO: Spanish For COVID-19 translation",
+        h1: "TODO: Spanish For COVID-19 translation:",
         meaning:
           "Las pruebas de antígenos de COVID-19 a veces pueden arrojar resultados inexactos o falsos, y es posible que se " +
           "necesiten pruebas de seguimiento. Continúe practicando el distanciamiento social y usando mascarilla. Comuníquese " +
@@ -364,7 +367,7 @@ export const es: LanguageConfig = {
         },
       },
       fluNotes: {
-        h1: "TODO: add flu A and B translation",
+        h1: "TODO: add flu A and B translation:",
         positive: {
           p0:
             "La mayoría de las personas con influenza (gripe) tienen un caso leve de la enfermedad y se pueden " +
