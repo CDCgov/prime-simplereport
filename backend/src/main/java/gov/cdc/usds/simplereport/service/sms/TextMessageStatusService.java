@@ -104,7 +104,7 @@ public class TextMessageStatusService {
                 phoneUtil.parse(phoneNumber.getNumber(), "US"),
                 PhoneNumberUtil.PhoneNumberFormat.E164);
         if (convertedNumber.startsWith(numberPrefix)
-            && phoneNumber.getType().equals(PhoneType.MOBILE)) {
+            && (phoneNumber.getType() == null || phoneNumber.getType().equals(PhoneType.MOBILE))) {
           return Optional.of(phoneNumber.getNumber());
         }
       } catch (NumberParseException parseException) {
