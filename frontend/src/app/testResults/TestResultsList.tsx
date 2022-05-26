@@ -451,7 +451,8 @@ export const DetachedTestResultsList = ({
 
   const hasMultiplexResults = testResults.some(
     (result: any) =>
-      result.results?.length && result.results.diseaseName !== "COVID-19"
+      result.results?.length &&
+      result.results.some((r: any) => r.disease.name !== "COVID-19")
   );
 
   const rows = testResultRows(
