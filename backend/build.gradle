@@ -49,7 +49,7 @@ dependencies {
     implementation 'org.springframework.boot:spring-boot-starter-data-jpa'
     implementation 'org.springframework.boot:spring-boot-starter-validation'
     implementation 'com.vladmihalcea:hibernate-types-52:2.14.0'
-    implementation 'org.liquibase:liquibase-core:4.8.0'
+    implementation 'org.liquibase:liquibase-core'
     runtimeOnly 'org.postgresql:postgresql'
 
     // data validation
