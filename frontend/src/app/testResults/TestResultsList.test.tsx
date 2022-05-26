@@ -16,6 +16,7 @@ import {
   GetAllFacilitiesDocument,
   GetFacilityResultsForCsvDocument,
   GetFacilityResultsMultiplexDocument,
+  GetResultsCountByFacilityDocument,
 } from "../../generated/graphql";
 import { QUERY_PATIENT } from "../testQueue/addToQueue/AddToQueueSearch";
 import { appPermissions } from "../permissions";
@@ -25,7 +26,6 @@ import TestResultsList, {
   ALL_FACILITIES_ID,
   DetachedTestResultsList,
 } from "./TestResultsList";
-import { RESULTS_COUNT_QUERY as resultsCountQuery } from "./queries";
 
 const mockStore = configureStore([]);
 const store = mockStore({
@@ -938,7 +938,7 @@ const facilitiesIncludeArchived = facilities.concat({
 const mocks = [
   {
     request: {
-      query: resultsCountQuery,
+      query: GetResultsCountByFacilityDocument,
       variables: {
         facilityId: "1",
       },
@@ -1019,7 +1019,7 @@ const mocks = [
   },
   {
     request: {
-      query: resultsCountQuery,
+      query: GetResultsCountByFacilityDocument,
       variables: {
         facilityId: "1",
         patientId: "48c523e8-7c65-4047-955c-e3f65bb8b58a",
@@ -1049,7 +1049,7 @@ const mocks = [
   },
   {
     request: {
-      query: resultsCountQuery,
+      query: GetResultsCountByFacilityDocument,
       variables: {
         facilityId: "1",
         result: "NEGATIVE",
@@ -1079,7 +1079,7 @@ const mocks = [
   },
   {
     request: {
-      query: resultsCountQuery,
+      query: GetResultsCountByFacilityDocument,
       variables: {
         facilityId: "1",
         role: "RESIDENT",
@@ -1109,7 +1109,7 @@ const mocks = [
   },
   {
     request: {
-      query: resultsCountQuery,
+      query: GetResultsCountByFacilityDocument,
       variables: {
         facilityId: "1",
         startDate: "2021-03-18T00:00:00.000Z",
@@ -1139,7 +1139,7 @@ const mocks = [
   },
   {
     request: {
-      query: resultsCountQuery,
+      query: GetResultsCountByFacilityDocument,
       variables: {
         facilityId: "1",
         startDate: "2021-03-18T00:00:00.000Z",
@@ -1171,7 +1171,7 @@ const mocks = [
   },
   {
     request: {
-      query: resultsCountQuery,
+      query: GetResultsCountByFacilityDocument,
       variables: {
         facilityId: "2",
       },
@@ -1199,7 +1199,7 @@ const mocks = [
   },
   {
     request: {
-      query: resultsCountQuery,
+      query: GetResultsCountByFacilityDocument,
       variables: {
         facilityId: null,
       },
@@ -1242,7 +1242,7 @@ const mocks = [
   },
   {
     request: {
-      query: resultsCountQuery,
+      query: GetResultsCountByFacilityDocument,
       variables: {
         facilityId: "1",
       },
@@ -1270,7 +1270,7 @@ const mocks = [
   },
   {
     request: {
-      query: resultsCountQuery,
+      query: GetResultsCountByFacilityDocument,
       variables: {
         facilityId: "3",
       },
@@ -1377,7 +1377,7 @@ describe("TestResultsList", () => {
     const localMocks = [
       {
         request: {
-          query: resultsCountQuery,
+          query: GetResultsCountByFacilityDocument,
           variables: {
             facilityId: "1",
             patientId: "48c523e8-7c65-4047-955c-e3f65bb8b58a",
@@ -1488,7 +1488,7 @@ describe("TestResultsList", () => {
     expect(await row.findByText("Colleer, Barde X")).toBeInTheDocument();
     expect(await row.findByText("DOB: 11/07/1960")).toBeInTheDocument();
     expect(await row.findByText("Negative")).toBeInTheDocument();
-    expect(await row.findByText("Facility 1")).not.toBeInTheDocument();
+    expect(row.queryByText("Facility 1")).not.toBeInTheDocument();
     expect(await row.findByText("Abbott IDNow")).toBeInTheDocument();
     expect(await row.findByText("User, Ursula")).toBeInTheDocument();
   });

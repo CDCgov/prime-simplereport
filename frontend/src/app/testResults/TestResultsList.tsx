@@ -1,7 +1,7 @@
 import qs from "querystring";
 
 import { useLocation, useNavigate, useParams } from "react-router-dom";
-import { useLazyQuery, useQuery } from "@apollo/client";
+import { useLazyQuery } from "@apollo/client";
 import React, {
   ChangeEventHandler,
   SetStateAction,
@@ -46,9 +46,9 @@ import { appPermissions, hasPermission } from "../permissions";
 import {
   useGetAllFacilitiesQuery,
   useGetFacilityResultsMultiplexQuery,
+  useGetResultsCountByFacilityQuery,
 } from "../../generated/graphql";
 
-import { RESULTS_COUNT_QUERY } from "./queries";
 import TestResultPrintModal from "./TestResultPrintModal";
 import TestResultTextModal from "./TestResultTextModal";
 import EmailTestResultModal from "./EmailTestResultModal";
@@ -822,11 +822,14 @@ const TestResultsList = () => {
         : filterFacilityId || activeFacilityId,
     ...queryParams,
   };
-
-  const count = useQuery(RESULTS_COUNT_QUERY, {
+  const count = useGetResultsCountByFacilityQuery({
     fetchPolicy: "no-cache",
     variables: countQueryVariables,
   });
+  /*const count = useQuery(RESULTS_COUNT_QUERY, {
+    fetchPolicy: "no-cache",
+    variables: countQueryVariables,
+  });*/
   const results = useGetFacilityResultsMultiplexQuery({
     fetchPolicy: "no-cache",
     variables: resultsQueryVariables,
