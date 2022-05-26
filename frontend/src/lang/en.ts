@@ -282,6 +282,7 @@ export const en = {
         npi: "NPI",
       },
       notes: {
+        h1: "For COVID-19",
         meaning:
           "COVID-19 antigen tests can sometimes provide inaccurate or false results and follow up testing may be needed. Continue " +
           "social distancing and wearing a mask. Contact your health care provider to determine if additional " +
@@ -353,9 +354,11 @@ export const en = {
           p0:
             "Most people with flu have mild illness and can recover at home. Stay at home and avoid contact with others until at least 24 hours after your fever is gone, except to get medical care or other necessities. Wear a face mask if you leave home, or cover coughs and sneezes with a tissue. Wash your hands often.",
           p1:
-            "<0>People at Higher Risk of Developing Flu–Related Complications </0> (cdc.gov/flu/highrisk) should contact a doctor as soon as possible to see if antiviral treatment is recommended.",
+            "<0>People at Higher Risk of Developing Flu–Related Complications</0> (cdc.gov/flu/highrisk) should contact a doctor as soon as possible to see if antiviral treatment is recommended.",
           p2:
-            "For more information, visit <0> Flu: What To Do If You Get Sick </0> (cdc.gov/flu/treatment/takingcare.htm).",
+            "For more information, visit <0> Flu: What To Do If You Get Sick</0> (cdc.gov/flu/treatment/takingcare.htm).",
+          highRiskLink: "https://www.cdc.gov/flu/highrisk",
+          treatmentLink: "https://www.cdc.gov/flu/treatment/takingcare.htm",
         },
       },
       tos: {

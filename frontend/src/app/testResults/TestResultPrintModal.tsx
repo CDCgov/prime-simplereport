@@ -60,6 +60,7 @@ interface StaticTestResultModalProps {
   testResult: any;
   hardcodedPrintDate?: string;
 }
+
 export const StaticTestResultModal = ({
   testResultId,
   testResult,
@@ -76,124 +77,200 @@ export const StaticTestResultModal = ({
     dateTested,
   } = testResult;
 
+  const getSortedResults = () => {
+    return Object.values(results).sort((a: any, b: any) => {
+      return a.disease.name.localeCompare(b.disease.name);
+    });
+  };
+
   const hasMultiplexResults =
     results.some((result: any) => result?.disease.name !== "COVID-19") &&
     results?.length;
 
-  const testResultsList = (testResults: []) => {
-    let testResultsArray: any = [];
-    // TODO: order test results by disease name
-    testResults.forEach(
-      (testResult: { disease: { name: String }; testResult: String }) => {
-        testResultsArray.push(
-          <li>
-            <b>
-              {testResult.disease.name === "COVID-19" &&
-                t("constants.disease.COVID19")}
-              {testResult.disease.name === "Flu A" &&
-                t("constants.disease.FLUA")}
-              {testResult.disease.name === "Flu B" &&
-                t("constants.disease.FLUB")}
-            </b>
-            <div>
-              <strong>
-                <span>
-                  {testResult.testResult === "POSITIVE" &&
-                    t("constants.testResults.POSITIVE")}
-                  {testResult.testResult === "NEGATIVE" &&
-                    t("constants.testResults.NEGATIVE")}
-                  {result.testResult === "UNDETERMINED" &&
-                    t("constants.testResults.UNDETERMINED")}
-                </span>
-                <span>
-                  &nbsp;
-                  {testResult.testResult === "POSITIVE" &&
-                    t("constants.testResultsSymbols.POSITIVE")}
-                  {testResult.testResult === "NEGATIVE" &&
-                    t("constants.testResultsSymbols.NEGATIVE")}
-                </span>
-              </strong>
-            </div>
-          </li>
-        );
-      }
+  const getCovidResults = () => {
+    return Object.values(results).filter((result: any) => {
+      return result.disease.name.includes("COVID-19");
+    });
+  };
+
+  const hasPositiveFluResults = () => {
+    return Object.values(results).filter((result: any) => {
+      return (
+        result.disease.name.includes("Flu") && result?.testResult === "POSITIVE"
+      );
+    });
+  };
+
+  const setCovidGuidance = (result: string) => {
+    return (
+      <>
+        {hasMultiplexResults && (
+          <p className="text-bold">{t("testResult.notes.h1")}</p>
+        )}
+        {result === "UNDETERMINED" && (
+          <p>{t("testResult.notes.inconclusive.p0")}</p>
+        )}
+        {result !== "POSITIVE" && (
+          <>
+            <p>{t("testResult.notes.negative.p0")}</p>
+            <ul className="sr-multi-column">
+              <li>{t("testResult.notes.negative.symptoms.li2")}</li>
+              <li>{t("testResult.notes.negative.symptoms.li3")}</li>
+              <li>{t("testResult.notes.negative.symptoms.li4")}</li>
+              <li>{t("testResult.notes.negative.symptoms.li5")}</li>
+              <li>{t("testResult.notes.negative.symptoms.li6")}</li>
+              <li>{t("testResult.notes.negative.symptoms.li7")}</li>
+              <li>{t("testResult.notes.negative.symptoms.li8")}</li>
+              <li>{t("testResult.notes.negative.symptoms.li9")}</li>
+              <li>{t("testResult.notes.negative.symptoms.li10")}</li>
+            </ul>
+          </>
+        )}
+        {result === "POSITIVE" && (
+          <>
+            <p>{t("testResult.notes.positive.p1")}</p>
+            <ul>
+              <li>{t("testResult.notes.positive.guidelines.li0")}</li>
+              <li>{t("testResult.notes.positive.guidelines.li1")}</li>
+              <li>{t("testResult.notes.positive.guidelines.li2")}</li>
+              <li>{t("testResult.notes.positive.guidelines.li3")}</li>
+              <li>{t("testResult.notes.positive.guidelines.li4")}</li>
+              <li>{t("testResult.notes.positive.guidelines.li5")}</li>
+            </ul>
+            <Trans
+              t={t}
+              parent="p"
+              i18nKey="testResult.notes.positive.p2"
+              components={[
+                <a
+                  href={t("testResult.notes.positive.symptomsLink")}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                >
+                  symptoms link
+                </a>,
+              ]}
+            />
+            <ul>
+              <li>{t("testResult.notes.positive.emergency.li0")}</li>
+              <li>{t("testResult.notes.positive.emergency.li1")}</li>
+              <li>{t("testResult.notes.positive.emergency.li2")}</li>
+              <li>{t("testResult.notes.positive.emergency.li3")}</li>
+              <li>{t("testResult.notes.positive.emergency.li4")}</li>
+            </ul>
+            <p>{t("testResult.notes.positive.p3")}</p>
+            <Trans
+              t={t}
+              parent="p"
+              i18nKey="testResult.information"
+              components={[
+                <a
+                  href={t("testResult.cdcLink")}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                >
+                  cdc.gov
+                </a>,
+                <a
+                  href={t("testResult.countyCheckToolLink")}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                >
+                  county check tool
+                </a>,
+              ]}
+            />
+          </>
+        )}
+      </>
     );
+  };
+
+  const setPositiveFluGuidance = () => {
+    return (
+      <>
+        <p className="text-bold">{t("testResult.fluNotes.h1")}</p>
+        <p>{t("testResult.fluNotes.positive.p0")}</p>
+        <Trans
+          t={t}
+          parent="p"
+          i18nKey="testResult.fluNotes.positive.p1"
+          components={[
+            <a
+              href={t("testResult.fluNotes.positive.highRiskLink")}
+              target="_blank"
+              rel="noopener noreferrer"
+            >
+              flu high risk link
+            </a>,
+          ]}
+        />
+        <Trans
+          t={t}
+          parent="p"
+          i18nKey="testResult.fluNotes.positive.p2"
+          components={[
+            <a
+              href={t("testResult.fluNotes.positive.treatmentLink")}
+              target="_blank"
+              rel="noopener noreferrer"
+            >
+              flu treatment link
+            </a>,
+          ]}
+        />
+      </>
+    );
+  };
+
+  const testResultsList = () => {
+    let testResults = getSortedResults();
+    let testResultsArray: any = [];
+    testResults.forEach((testResult: any) => {
+      testResultsArray.push(
+        <li>
+          <b>
+            {testResult.disease.name === "COVID-19" &&
+              t("constants.disease.COVID19")}
+            {testResult.disease.name === "Flu A" && t("constants.disease.FLUA")}
+            {testResult.disease.name === "Flu B" && t("constants.disease.FLUB")}
+          </b>
+          <div>
+            <strong>
+              <span>
+                {testResult.testResult === "POSITIVE" &&
+                  t("constants.testResults.POSITIVE")}
+                {testResult.testResult === "NEGATIVE" &&
+                  t("constants.testResults.NEGATIVE")}
+                {result.testResult === "UNDETERMINED" &&
+                  t("constants.testResults.UNDETERMINED")}
+              </span>
+              <span>
+                &nbsp;
+                {testResult.testResult === "POSITIVE" &&
+                  t("constants.testResultsSymbols.POSITIVE")}
+                {testResult.testResult === "NEGATIVE" &&
+                  t("constants.testResultsSymbols.NEGATIVE")}
+              </span>
+            </strong>
+          </div>
+        </li>
+      );
+    });
     return testResultsArray;
   };
 
-  const testResultsGuidance = (testResults: []) => {
+  const testResultsGuidance = () => {
     let testGuidanceArray: any = [];
-    testResults.forEach(
-      (testResult: { disease: { name: String }; testResult: String }) => {
-        testGuidanceArray.push(
-          <>
-            {testResult.disease.name === "COVID-19" && (
-              <>
-                {result === "UNDETERMINED" && (
-                  <p>{t("testResult.notes.inconclusive.p0")}</p>
-                )}
-                {result !== "POSITIVE" && (
-                  <>
-                    <p>{t("testResult.notes.negative.p0")}</p>
-                    <ul className="sr-multi-column">
-                      <li>{t("testResult.notes.negative.symptoms.li2")}</li>
-                      <li>{t("testResult.notes.negative.symptoms.li3")}</li>
-                      <li>{t("testResult.notes.negative.symptoms.li4")}</li>
-                      <li>{t("testResult.notes.negative.symptoms.li5")}</li>
-                      <li>{t("testResult.notes.negative.symptoms.li6")}</li>
-                      <li>{t("testResult.notes.negative.symptoms.li7")}</li>
-                      <li>{t("testResult.notes.negative.symptoms.li8")}</li>
-                      <li>{t("testResult.notes.negative.symptoms.li9")}</li>
-                      <li>{t("testResult.notes.negative.symptoms.li10")}</li>
-                    </ul>
-                  </>
-                )}
-                {result === "POSITIVE" && (
-                  <>
-                    <p>{t("testResult.notes.positive.p1")}</p>
-                    <ul>
-                      <li>{t("testResult.notes.positive.guidelines.li0")}</li>
-                      <li>{t("testResult.notes.positive.guidelines.li1")}</li>
-                      <li>{t("testResult.notes.positive.guidelines.li2")}</li>
-                      <li>{t("testResult.notes.positive.guidelines.li3")}</li>
-                      <li>{t("testResult.notes.positive.guidelines.li4")}</li>
-                      <li>{t("testResult.notes.positive.guidelines.li5")}</li>
-                    </ul>
-                    <Trans
-                      t={t}
-                      parent="p"
-                      i18nKey="testResult.notes.positive.p2"
-                      components={[
-                        <a
-                          href={t("testResult.notes.positive.symptomsLink")}
-                          target="_blank"
-                          rel="noopener noreferrer"
-                        >
-                          symptoms link
-                        </a>,
-                      ]}
-                    />
-                    <ul>
-                      <li>{t("testResult.notes.positive.emergency.li0")}</li>
-                      <li>{t("testResult.notes.positive.emergency.li1")}</li>
-                      <li>{t("testResult.notes.positive.emergency.li2")}</li>
-                      <li>{t("testResult.notes.positive.emergency.li3")}</li>
-                      <li>{t("testResult.notes.positive.emergency.li4")}</li>
-                    </ul>
-                    <p>{t("testResult.notes.positive.p3")}</p>
-                  </>
-                )}
-              </>
-            )}
-            {hasMultiplexResults && testResult.testResult === "POSITIVE" && (
-              <>
-                <p className="text-bold">{t("testResult.fluNotes.h1")}</p>
-              </>
-            )}
-          </>
-        );
-      }
-    );
+    let covidResults: any = [];
+    covidResults = getCovidResults();
+    if (covidResults) {
+      let covidGuidanceElement = setCovidGuidance(covidResults[0].testResult);
+      testGuidanceArray.push(covidGuidanceElement);
+    }
+    if (hasPositiveFluResults().length > 0) {
+      testGuidanceArray.push(setPositiveFluGuidance());
+    }
     return testGuidanceArray;
   };
 
@@ -290,33 +367,12 @@ export const StaticTestResultModal = ({
               <b>{t("testResult.testDate")}</b>
               <div>{formatDateWithTimeOption(dateTested, true)}</div>
             </li>
-            {testResultsList(results)}
+            {testResultsList()}
           </ul>
         </section>
         <section className="sr-result-section sr-result-next-steps">
           <h2>{t("testResult.moreInformation")}</h2>
-          {testResultsGuidance(results)}
-          <Trans
-            t={t}
-            parent="p"
-            i18nKey="testResult.information"
-            components={[
-              <a
-                href={t("testResult.cdcLink")}
-                target="_blank"
-                rel="noopener noreferrer"
-              >
-                cdc.gov
-              </a>,
-              <a
-                href={t("testResult.countyCheckToolLink")}
-                target="_blank"
-                rel="noopener noreferrer"
-              >
-                county check tool
-              </a>,
-            ]}
-          />
+          {testResultsGuidance()}
         </section>
       </main>
       <footer>

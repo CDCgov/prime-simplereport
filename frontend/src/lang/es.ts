@@ -292,6 +292,7 @@ export const es: LanguageConfig = {
         npi: "Número de NPI",
       },
       notes: {
+        h1: "TODO: Spanish For COVID-19 translation",
         meaning:
           "Las pruebas de antígenos de COVID-19 a veces pueden arrojar resultados inexactos o falsos, y es posible que se " +
           "necesiten pruebas de seguimiento. Continúe practicando el distanciamiento social y usando mascarilla. Comuníquese " +
@@ -372,11 +373,13 @@ export const es: LanguageConfig = {
             "necesidades. Ponte una mascarilla si sales de casa, o cúbrete con un pañuelo desechable la nariz y la " +
             "boca al toser y estornudar. Lávate las manos con frecuencia.",
           p1:
-            "<0> Las personas con un riesgo mayor de presentar complicaciones relacionadas con la influenza </0> " +
+            "<0>Las personas con un riesgo mayor de presentar complicaciones relacionadas con la influenza</0> " +
             "(https://espanol.cdc.gov/flu/highrisk/index.htm) deben contactar a un médico lo más pronto posible " +
             "para ver si se recomienda el tratamiento antiviral.",
           p2:
-            "Para obtener más información, visita <0> Influenza: qué hacer en caso de enfermarse </0> (https://espanol.cdc.gov/flu/treatment/takingcare.htm).",
+            "Para obtener más información, visita <0>Influenza: qué hacer en caso de enfermarse</0> (https://espanol.cdc.gov/flu/treatment/takingcare.htm).",
+          highRiskLink: "https://espanol.cdc.gov/flu/highrisk/index.htm",
+          treatmentLink: "https://espanol.cdc.gov/flu/treatment/takingcare.htm",
         },
       },
       tos: {
