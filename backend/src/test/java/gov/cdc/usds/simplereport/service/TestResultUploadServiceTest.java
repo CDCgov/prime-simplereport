@@ -51,6 +51,7 @@ class TestResultUploadServiceTest extends BaseServiceTest<TestResultUploadServic
         TestResultUploadServiceTest.class
             .getClassLoader()
             .getResourceAsStream("responses/datahub-response.json");
+    assert responseFile != null;
     var mockResponse = IOUtils.toString(responseFile, StandardCharsets.UTF_8);
     stubFor(
         WireMock.post(WireMock.urlEqualTo("/api/reports"))
@@ -138,13 +139,10 @@ class TestResultUploadServiceTest extends BaseServiceTest<TestResultUploadServic
 
   @Test
   @SliceTestConfiguration.WithSimpleReportStandardUser
-  void unauthorizedUser_NotAuthorizedResponse() {
-    InputStream input = loadCsv("test-upload-test-results.csv");
-    assertThrows(
-        AccessDeniedException.class,
-        () -> {
-          this._service.processResultCSV(input);
-        });
+  void unauthorizedUser_NotAuthorizedResponse() throws IOException {
+    try (InputStream input = loadCsv("test-upload-test-results.csv")) {
+      assertThrows(AccessDeniedException.class, () -> this._service.processResultCSV(input));
+    }
   }
 
   @Test

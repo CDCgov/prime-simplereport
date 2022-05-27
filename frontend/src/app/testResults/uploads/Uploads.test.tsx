@@ -48,29 +48,66 @@ describe("Uploads", () => {
     expect(await screen.findByText("Drag file here or")).toBeInTheDocument();
   });
 
-  it("should display error toast when empty file is uploaded", async () => {
+  it("should display error toast when empty file is uploaded, button disabled", async () => {
     render(<TestContainer />);
 
     const emptyFile = file("");
-
     const input = screen.getByTestId("file-input-input");
     userEvent.upload(input, emptyFile);
-    await new Promise((resolve) => setTimeout(resolve, 1000));
     expect(
       await screen.findByText(
         "The file 'values.csv' doesn't contain any valid data. File should have a header line and at least one line of data."
       )
     ).toBeInTheDocument();
+    const button = screen.getByTestId("button");
+    expect(button).toBeDisabled();
   });
 
-  it("should disable button when empty file is selected", async () => {
+  it("max row validation displays error message", async () => {
     render(<TestContainer />);
+    const tooManyRows = file("\n".repeat(10001));
 
-    const emptyFile = file("");
     const input = screen.getByTestId("file-input-input");
-    await userEvent.upload(input, emptyFile);
-    const button = screen.getByTestId("button");
+    userEvent.upload(input, tooManyRows);
 
+    expect(
+      await screen.findByText(
+        "The file 'values.csv' has too many rows. The maximum number of rows is 10000."
+      )
+    ).toBeInTheDocument();
+    const button = screen.getByTestId("button");
+    expect(button).toBeDisabled();
+  });
+
+  it("max bytes validation displays error message", async () => {
+    render(<TestContainer />);
+    const tooBig = file("0".repeat(50 * 1000 * 1000 + 1));
+
+    const input = screen.getByTestId("file-input-input");
+    userEvent.upload(input, tooBig);
+
+    expect(
+      await screen.findByText(
+        "The file 'values.csv' is too large. The maximum file size is 48,828.13k"
+      )
+    ).toBeInTheDocument();
+    const button = screen.getByTestId("button");
+    expect(button).toBeDisabled();
+  });
+
+  it("max item columns validation displays error message", async () => {
+    render(<TestContainer />);
+    const tooManyColumns = file("a, ".repeat(2001) + "\n");
+
+    const input = screen.getByTestId("file-input-input");
+    userEvent.upload(input, tooManyColumns);
+
+    expect(
+      await screen.findByText(
+        "The file 'values.csv' has too many columns. The maximum number of allowed columns is 2000."
+      )
+    ).toBeInTheDocument();
+    const button = screen.getByTestId("button");
     expect(button).toBeDisabled();
   });
 
