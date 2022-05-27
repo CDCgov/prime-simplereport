@@ -21,7 +21,6 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.nio.charset.StandardCharsets;
 import java.util.Arrays;
-import java.util.Date;
 import java.util.UUID;
 import org.apache.commons.io.IOUtils;
 import org.junit.jupiter.api.BeforeEach;
@@ -153,21 +152,10 @@ class TestResultUploadServiceTest extends BaseServiceTest<TestResultUploadServic
     var response =
         UploadResponse.builder()
             .id(UUID.randomUUID())
-            .submissionId("1")
             .overallStatus(ReportStreamStatus.RECEIVED)
-            .timestamp(new Date())
-            .plannedCompletionAt(new Date())
-            .actualCompletionAt(new Date())
-            .sender("Marisa Tomei is an anagram for its a me mario")
             .reportItemCount(5)
-            .errorCount(1)
-            .warningCount(2)
-            .httpStatus(418)
             .errors(new FeedbackMessage[] {})
             .warnings(new FeedbackMessage[] {})
-            .topic("covid")
-            .externalName("jim")
-            .destinationCount(1)
             .build();
 
     InputStream input = mock(InputStream.class);
