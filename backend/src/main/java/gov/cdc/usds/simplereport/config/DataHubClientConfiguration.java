@@ -6,7 +6,7 @@ import org.springframework.context.annotation.Bean;
 
 public class DataHubClientConfiguration {
 
-  @Value("${data-hub.api-key}")
+  @Value("${datahub.api-key}")
   private String apiKey;
 
   private static final String CSV_API_VERSION = "2021-09-21";
