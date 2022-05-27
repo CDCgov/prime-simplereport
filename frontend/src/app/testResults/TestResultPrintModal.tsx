@@ -103,7 +103,13 @@ export const StaticTestResultModal = ({
 
   const setCovidGuidance = (result: string) => {
     return (
-      <div className={hasMultiplexResults ? "sr-margin-bottom-28px" : ""}>
+      <div
+        className={
+          hasMultiplexResults && hasPositiveFluResults().length > 0
+            ? "sr-margin-bottom-28px"
+            : ""
+        }
+      >
         {hasMultiplexResults && (
           <p className="text-bold sr-guidance-heading">
             {t("testResult.notes.h1")}
@@ -126,6 +132,20 @@ export const StaticTestResultModal = ({
               <li>{t("testResult.notes.negative.symptoms.li9")}</li>
               <li>{t("testResult.notes.negative.symptoms.li10")}</li>
             </ul>
+            <Trans
+              t={t}
+              parent="p"
+              i18nKey="testResult.notes.negative.moreInformation"
+              components={[
+                <a
+                  href={t("testResult.cdcLink")}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                >
+                  cdc.gov
+                </a>,
+              ]}
+            />
           </>
         )}
         {result === "POSITIVE" && (

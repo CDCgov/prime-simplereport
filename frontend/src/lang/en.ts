@@ -339,6 +339,8 @@ export const en = {
             li9: "Nausea or vomiting",
             li10: "Diarrhea",
           },
+          moreInformation:
+            "For more information, please visit the <0>Centers for Disease Control and Prevention (CDC) website</0> or contact your local health department.",
         },
         inconclusive: {
           p0:
