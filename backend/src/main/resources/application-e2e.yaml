@@ -72,5 +72,5 @@ simple-report-initialization:
       loinc-code: "94558-4"
       swab-type: "258500001"
 datahub:
-  url: "http:invalidhost:8080"
+  url: "http://invalidhost:8080"
   api-key: "placeholder"
