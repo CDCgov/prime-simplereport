@@ -146,7 +146,7 @@ class TestResultUploadServiceTest extends BaseServiceTest<TestResultUploadServic
   }
 
   @Test
-  void mockResponse_things() throws IOException {
+  void mockResponse_returnsPending() throws IOException {
     var response =
         UploadResponse.builder()
             .id(UUID.randomUUID())
