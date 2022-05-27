@@ -1,12 +1,10 @@
 package gov.cdc.usds.simplereport.api.model.pxp;
 
 import gov.cdc.usds.simplereport.db.model.Person;
-import gov.cdc.usds.simplereport.db.model.Result;
 import gov.cdc.usds.simplereport.db.model.TestEvent;
 import gov.cdc.usds.simplereport.db.model.auxiliary.TestResult;
 import java.time.LocalDate;
 import java.util.Date;
-import java.util.Optional;
 import java.util.UUID;
 import lombok.Builder;
 import lombok.Getter;
@@ -16,8 +14,6 @@ public class PxpVerifyResponseV2 {
 
   private final UUID testEventId;
   private final TestResult result;
-  private TestResult fluAResult = null;
-  private TestResult fluBResult = null;
   private final Date dateTested;
   private final String correctionStatus;
   private final Patient patient;
@@ -25,18 +21,10 @@ public class PxpVerifyResponseV2 {
   private final Facility facility;
   private final DeviceTypeWrapper deviceType;
 
-  public PxpVerifyResponseV2(
-      Person person,
-      TestEvent testEvent,
-      Result covidResult,
-      Optional<Result> fluAResult,
-      Optional<Result> fluBResult) {
-
-    this.result = covidResult.getTestResult();
-    fluAResult.ifPresent(value -> this.fluAResult = value.getTestResult());
-    fluBResult.ifPresent(value -> this.fluBResult = value.getTestResult());
+  public PxpVerifyResponseV2(Person person, TestEvent testEvent) {
 
     this.testEventId = testEvent.getInternalId();
+    this.result = testEvent.getResult();
     this.dateTested = testEvent.getDateTested();
     this.correctionStatus = testEvent.getCorrectionStatus().toString();
 

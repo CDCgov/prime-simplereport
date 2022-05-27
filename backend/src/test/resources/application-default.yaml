@@ -228,3 +228,6 @@ simple-report-initialization:
       organization-external-id: DIS_ORG
     - patient-registration-link: inj3ct
       facility-name: Injection Site
+datahub:
+  url: "https://test.example"
+  api-key: "super-secret-api-key"
