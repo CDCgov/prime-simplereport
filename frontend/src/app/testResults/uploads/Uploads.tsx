@@ -1,49 +1,32 @@
-import { gql, useMutation } from "@apollo/client";
 import React, { useState } from "react";
 import { Button, FormGroup, Label, FileInput } from "@trussworks/react-uswds";
 
 import { showError } from "../../utils";
-
-export const UPLOAD_TEST_RESULT_CSV = gql`
-  mutation UploadTestResultCSV($testResultList: Upload!) {
-    uploadTestResultCSV(testResultList: $testResultList) {
-      reportId
-      status
-      recordsCount
-      warnings {
-        scope
-        message
-      }
-      errors {
-        scope
-        message
-      }
-    }
-  }
-`;
+import {
+  FeedbackMessage,
+  useUploadTestResultCsvMutation,
+} from "../../../generated/graphql";
 
 const PAYLOAD_MAX_BYTES = 50 * 1000 * 1000;
 const REPORT_MAX_ITEMS = 10000;
 const REPORT_MAX_ITEM_COLUMNS = 2000;
 
-interface Message {
-  scope: string;
-  message: string;
-  rowList: string;
-}
 const Uploads = () => {
   const [fileInputResetValue, setFileInputResetValue] = useState(0);
+  const [buttonIsDisabled, setButtonIsDisabled] = useState(true);
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [file, setFile] = useState<File>();
 
   const [reportId, setReportId] = useState<string | null>(null);
 
-  const [errors, setErrors] = useState([] as Message[]);
+  const [errors, setErrors] = useState<
+    Array<FeedbackMessage | undefined | null>
+  >([]);
   const [errorMessageText, setErrorMessageText] = useState(
     `Please resolve the errors below and upload your edited file. Your file has not been accepted.`
   );
 
-  const [uploadTestResultCSV] = useMutation(UPLOAD_TEST_RESULT_CSV);
+  const [uploadTestResultCSV] = useUploadTestResultCsvMutation();
 
   const handleFileChange = async (
     event: React.ChangeEvent<HTMLInputElement>
@@ -98,8 +81,8 @@ const Uploads = () => {
         );
         return;
       }
-
       setFile(currentFile);
+      setButtonIsDisabled(false);
     } catch (err: any) {
       showError(`An unexpected error happened: '${err.toString()}'`);
     }
@@ -109,12 +92,13 @@ const Uploads = () => {
     event.preventDefault();
 
     setIsSubmitting(true);
+    setButtonIsDisabled(true);
     setReportId(null);
     setErrors([]);
 
     if (!file || file.size === 0) {
-      setIsSubmitting(false);
-      const errorMessage = {} as Message;
+      setButtonIsDisabled(false);
+      const errorMessage = {} as FeedbackMessage;
       errorMessage.message = "Invalid File";
       setErrors([errorMessage]);
       return;
@@ -127,7 +111,7 @@ const Uploads = () => {
       });
     } catch (error) {}
 
-    const response = queryResponse?.data.uploadTestResultCSV;
+    const response = queryResponse?.data?.uploadTestResultCSV;
 
     if (queryResponse?.errors?.length) {
       setErrorMessageText(
@@ -146,19 +130,12 @@ const Uploads = () => {
     }
 
     if (response?.errors && response.errors.length > 0) {
-      // Add a string to properly display the indices if available.
-      response.errors.map(
-        (errorMsg: any) =>
-          (errorMsg.rowList =
-            errorMsg.indices && errorMsg.indices.length > 0
-              ? errorMsg.indices.join(", ")
-              : "")
-      );
       setErrors(response.errors);
     }
 
     setFileInputResetValue(fileInputResetValue + 1);
     setFile(undefined);
+    setButtonIsDisabled(true);
     setIsSubmitting(false);
   };
 
@@ -191,7 +168,7 @@ const Uploads = () => {
                 </div>
               </div>
             )}
-            {errors.length > 0 && (
+            {errors && errors.length > 0 && (
               <div>
                 <div className="usa-alert usa-alert--error" role="alert">
                   <div className="usa-alert__body">
@@ -212,8 +189,8 @@ const Uploads = () => {
                     {errors.map((e, i) => {
                       return (
                         <tr key={"error_" + i}>
-                          <td>{e["message"]}</td>
-                          <td>Row(s): {e["rowList"]}</td>
+                          <td>{e ? ["message"] : ""} </td>
+                          <td>Row(s): {e ? ["indices"] : ""}</td>
                         </tr>
                       );
                     })}
@@ -242,7 +219,7 @@ const Uploads = () => {
             <Button
               type="submit"
               onClick={(e) => handleSubmit(e)}
-              disabled={isSubmitting || file?.name?.length === 0}
+              disabled={buttonIsDisabled || file?.name?.length === 0}
             >
               {isSubmitting && (
                 <span>

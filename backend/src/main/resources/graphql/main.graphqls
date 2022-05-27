@@ -311,6 +311,7 @@ type UploadResult {
 type FeedbackMessage {
   scope: String
   message: String
+  indices: [Int]
 }
 input DiseaseResult {
   diseaseName: String

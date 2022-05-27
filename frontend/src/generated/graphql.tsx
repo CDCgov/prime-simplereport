@@ -133,6 +133,7 @@ export type Facility = {
 
 export type FeedbackMessage = {
   __typename?: "FeedbackMessage";
+  indices?: Maybe<Array<Maybe<Scalars["Int"]>>>;
   message?: Maybe<Scalars["String"]>;
   scope?: Maybe<Scalars["String"]>;
 };
