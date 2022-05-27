@@ -277,9 +277,7 @@ public class TestOrderService {
     String result = covidResult != null ? covidResult.toString() : null;
     TestOrder savedOrder = editQueueItem(testOrderId, deviceSpecimenTypeId, result, dateTested);
 
-    editMultiplexResults(savedOrder, results);
-
-    return savedOrder;
+    return editMultiplexResults(savedOrder, results);
   }
 
   @AuthorizationConfiguration.RequirePermissionSubmitTestForPatient
@@ -355,7 +353,7 @@ public class TestOrderService {
     return response;
   }
 
-  private void editMultiplexResults(TestOrder order, List<DiseaseResult> newResults) {
+  private TestOrder editMultiplexResults(TestOrder order, List<DiseaseResult> newResults) {
     Set<Result> oldResults = order.getResultSet();
     Set<Result> resultsToUpdate = new HashSet<>();
     // iterate over submitted results
@@ -380,7 +378,8 @@ public class TestOrderService {
                     newResult.getTestResult()));
           }
         });
-    _resultRepo.saveAll(resultsToUpdate);
+    order.setResults(resultsToUpdate);
+    return _repo.save(order);
   }
 
   private void saveMultiplexResults(TestEvent event, TestOrder order, List<DiseaseResult> results) {

@@ -21,6 +21,7 @@ import javax.persistence.ManyToOne;
 import javax.persistence.OneToMany;
 import javax.persistence.OneToOne;
 import lombok.Getter;
+import lombok.Setter;
 import org.hibernate.Hibernate;
 import org.hibernate.annotations.Type;
 
@@ -53,6 +54,7 @@ public class TestOrder extends BaseTestInfo {
   @JsonIgnore
   @OneToMany(mappedBy = "testOrder", fetch = FetchType.LAZY, cascade = CascadeType.ALL)
   @Getter
+  @Setter
   private Set<Result> results;
 
   protected TestOrder() {

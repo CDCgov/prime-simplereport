@@ -49,13 +49,31 @@ const TestResultInputForm: React.FC<Props> = ({
   };
 
   const onInconclusiveResultClick = () => {
-    onTestResultChange("COVID-19")(COVID_RESULTS.INCONCLUSIVE);
-    onTestResultChange("Flu A")(COVID_RESULTS.INCONCLUSIVE);
-    onTestResultChange("Flu B")(COVID_RESULTS.INCONCLUSIVE);
+    if (
+      covidResult === COVID_RESULTS.INCONCLUSIVE &&
+      fluAResult === COVID_RESULTS.INCONCLUSIVE &&
+      fluBResult === COVID_RESULTS.INCONCLUSIVE
+    ) {
+      onTestResultChange("COVID-19")(undefined);
+      onTestResultChange("Flu A")(undefined);
+      onTestResultChange("Flu B")(undefined);
+    } else {
+      onTestResultChange("COVID-19")(COVID_RESULTS.INCONCLUSIVE);
+      onTestResultChange("Flu A")(COVID_RESULTS.INCONCLUSIVE);
+      onTestResultChange("Flu B")(COVID_RESULTS.INCONCLUSIVE);
+    }
   };
 
   const allowSubmit =
-    covidResult && covidResult !== "UNKNOWN" && !isSubmitDisabled;
+    covidResult &&
+    covidResult !== "UNKNOWN" &&
+    (supportsMultipleDiseases
+      ? fluAResult &&
+        fluAResult !== "UNKNOWN" &&
+        fluBResult &&
+        fluBResult !== "UNKNOWN"
+      : true) &&
+    !isSubmitDisabled;
 
   const onResultSubmit = (event: React.FormEvent<HTMLButtonElement>) => {
     event.preventDefault();
@@ -182,7 +200,10 @@ const TestResultInputForm: React.FC<Props> = ({
                   {
                     value: "inconclusive",
                     label: "Mark test as inconclusive",
-                    checked: covidResult === COVID_RESULTS.INCONCLUSIVE,
+                    checked:
+                      covidResult === COVID_RESULTS.INCONCLUSIVE &&
+                      fluAResult === COVID_RESULTS.INCONCLUSIVE &&
+                      fluBResult === COVID_RESULTS.INCONCLUSIVE,
                   },
                 ]}
               />

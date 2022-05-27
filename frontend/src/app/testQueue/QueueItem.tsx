@@ -286,13 +286,17 @@ const QueueItem = ({
       (dst) => dst.internalId === deviceSpecimenTypeId
     ) as DeviceSpecimenType;
 
-    let supportsMultipleDiseases = false;
+    let supportsMultipleDiseases;
     if (
       deviceSpecimenType.deviceType.supportedDiseases.filter(
         (d: any) => d.name !== "COVID-19"
       ).length > 0
     ) {
       supportsMultipleDiseases = true;
+    } else {
+      supportsMultipleDiseases = false;
+      updateFluAResult(undefined);
+      updateFluBResult(undefined);
     }
 
     updateDeviceSpecimenTypeId(deviceSpecimenType.internalId);
@@ -406,7 +410,7 @@ const QueueItem = ({
       ),
     };
 
-    if (response?.data?.addTestResultNew.deliverySuccess === false) {
+    if (response?.data?.addTestResultMultiplex.deliverySuccess === false) {
       let deliveryFailureAlert = (
         <Alert
           type="error"
@@ -474,6 +478,7 @@ const QueueItem = ({
       removeTimer(internalId);
       setStartTestPatientId(null);
     } catch (error: any) {
+      console.log(error);
       setSaveState("error");
       updateMutationError(error);
     }

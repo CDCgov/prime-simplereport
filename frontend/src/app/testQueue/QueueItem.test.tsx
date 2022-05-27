@@ -306,7 +306,7 @@ describe("QueueItem", () => {
             id: internalId,
             deviceSpecimenType: "device-specimen-2",
             deviceId: "lumira",
-            result: "POSITIVE",
+            results: [{ diseaseName: "COVID-19", testResult: "POSITIVE" }],
           },
         },
         result: () => {
@@ -402,13 +402,17 @@ describe("QueueItem", () => {
               id: internalId,
               deviceSpecimenType: "device-specimen-1",
               deviceId: internalId,
-              result: "UNDETERMINED",
+              results: [
+                { diseaseName: "COVID-19", testResult: "UNDETERMINED" },
+              ],
             },
           },
           result: {
             data: {
               editQueueItem: {
-                result: "UNDETERMINED",
+                results: [
+                  { disease: { name: "COVID-19" }, testResult: "UNDETERMINED" },
+                ],
                 dateTested: null,
                 deviceType: {
                   internalId: internalId,
@@ -430,7 +434,9 @@ describe("QueueItem", () => {
               patientId: internalId,
               deviceId: internalId,
               deviceSpecimenType: "device-specimen-1",
-              result: "UNDETERMINED",
+              results: [
+                { diseaseName: "COVID-19", testResult: "UNDETERMINED" },
+              ],
               dateTested: null,
             },
           },
@@ -438,7 +444,7 @@ describe("QueueItem", () => {
             submitTestMockIsDone = true;
             return {
               data: {
-                addTestResultNew: {
+                addTestResultMultiplex: {
                   testResult: {
                     internalId: internalId,
                   },
@@ -832,6 +838,16 @@ describe("QueueItem", () => {
     });
 
     it("tracks submitted test result as custom event", async () => {
+      // Select result
+      userEvent.click(
+        screen.getByLabelText("Inconclusive", {
+          exact: false,
+        })
+      );
+
+      // Wait for the genuinely long-running "edit queue" operation to finish
+      await new Promise((resolve) => setTimeout(resolve, 1000));
+
       // Submit
       userEvent.click(screen.getByText("Submit"));
       userEvent.click(screen.getByText("Submit anyway"));
@@ -866,12 +882,14 @@ const deviceOne = {
   name: "Access Bio CareStart",
   internalId: internalId,
   testLength: 10,
+  supportedDiseases: [{ internalId: "1", name: "COVID-19" }],
 };
 
 const deviceTwo = {
   name: "LumiraDX",
   internalId: "lumira",
   testLength: 15,
+  supportedDiseases: [{ internalId: "1", name: "COVID-19" }],
 };
 
 const testProps = {
@@ -1050,6 +1068,28 @@ const mocks = [
             deviceType: deviceOne,
             specimenType: {},
           },
+        },
+      },
+    },
+  },
+  {
+    request: {
+      query: SUBMIT_TEST_RESULT,
+      variables: {
+        patientId: internalId,
+        deviceId: internalId,
+        deviceSpecimenType: "device-specimen-1",
+        results: [{ diseaseName: "COVID-19", testResult: "UNDETERMINED" }],
+        dateTested: null,
+      },
+    },
+    result: {
+      data: {
+        addTestResultMultiplex: {
+          testResult: {
+            internalId: internalId,
+          },
+          deliverySuccess: false,
         },
       },
     },
