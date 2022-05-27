@@ -15,6 +15,7 @@ import userEvent from "@testing-library/user-event";
 import {
   GetAllFacilitiesDocument,
   GetFacilityResultsForCsvDocument,
+  GetFacilityResultsMultiplexDocument,
 } from "../../generated/graphql";
 import { QUERY_PATIENT } from "../testQueue/addToQueue/AddToQueueSearch";
 import { appPermissions } from "../permissions";
@@ -24,7 +25,6 @@ import TestResultsList, {
   ALL_FACILITIES_ID,
   DetachedTestResultsList,
   resultsCountQuery,
-  testResultQuery,
 } from "./TestResultsList";
 
 const mockStore = configureStore([]);
@@ -37,7 +37,11 @@ const store = mockStore({
     lastName: "Mendoza",
     permissions: appPermissions.settings.canView,
   },
-  facilities: [{ id: "1", name: "Facility 1" }],
+  facilities: [
+    { id: "1", name: "Facility 1" },
+    { id: "2", name: "Facility 2" },
+    { id: "3", name: "Facility 3" },
+  ],
   facility: { id: "1", name: "Facility 1" },
 });
 
@@ -60,6 +64,7 @@ const testResults = [
     internalId: "0969da96-b211-41cd-ba61-002181f0918d",
     dateTested: "2021-03-17T19:27:23.806Z",
     result: "NEGATIVE",
+    results: [{ disease: { name: "COVID-19" }, testResult: "NEGATIVE" }],
     correctionStatus: "ORIGINAL",
     deviceType: {
       internalId: "8c1a8efe-8951-4f84-a4c9-dcea561d7fbb",
@@ -98,6 +103,7 @@ const testResults = [
     internalId: "7c768a5d-ef90-44cd-8050-b96dd77f51d5",
     dateTested: "2021-03-18T19:27:21.052Z",
     result: "NEGATIVE",
+    results: [{ disease: { name: "COVID-19" }, testResult: "NEGATIVE" }],
     correctionStatus: "ORIGINAL",
     deviceType: {
       internalId: "8c1a8efe-8951-4f84-a4c9-dcea561d7fbb",
@@ -136,6 +142,7 @@ const testResults = [
     internalId: "7c768a5d-ef90-44cd-8050-b96dd7aaa1d5",
     dateTested: "2021-03-19T19:27:21.052Z",
     result: "POSITIVE",
+    results: [{ disease: { name: "COVID-19" }, testResult: "POSITIVE" }],
     correctionStatus: "ORIGINAL",
     deviceType: {
       internalId: "8c1a8efe-8951-4f84-a4c9-dcea561d7fbb",
@@ -147,6 +154,135 @@ const testResults = [
       firstName: "Sam",
       middleName: "G",
       lastName: "Gerard",
+      birthDate: "1960-11-07",
+      gender: "male",
+      role: "RESIDENT",
+      lookupId: null,
+      email: "sam@gerard.com",
+      __typename: "Patient",
+    },
+    createdBy: {
+      nameInfo: {
+        firstName: "Ethan",
+        middleName: "",
+        lastName: "Entry",
+      },
+    },
+    patientLink: {
+      internalId: "68c543e8-7c65-4047-955c-e3f65bb8b58a",
+    },
+    facility: {
+      name: "Facility 1",
+    },
+    noSymptoms: false,
+    symptoms: '{"someSymptom":"true"}',
+    __typename: "TestResult",
+  },
+];
+
+const testResultsMultiplex = [
+  {
+    internalId: "0969da96-b211-41cd-ba61-002181f0918d",
+    dateTested: "2021-03-17T19:27:23.806Z",
+    result: "NEGATIVE",
+    results: [
+      { disease: { name: "COVID-19" }, testResult: "NEGATIVE" },
+      { disease: { name: "Flu A" }, testResult: "POSITIVE" },
+      { disease: { name: "Flu B" }, testResult: "NEGATIVE" },
+    ],
+    correctionStatus: "ORIGINAL",
+    deviceType: {
+      internalId: "8c1a8efe-8951-4f84-a4c9-dcea561d7fbb",
+      name: "Abbott IDNow",
+      __typename: "DeviceType",
+    },
+    patient: {
+      internalId: "48c523e8-7c65-4047-955c-e3f65bb8b58b",
+      firstName: "Gruff",
+      middleName: "M",
+      lastName: "MacGuffin",
+      birthDate: "1960-11-07",
+      gender: "male",
+      role: "RESIDENT",
+      lookupId: null,
+      __typename: "Patient",
+    },
+    createdBy: {
+      nameInfo: {
+        firstName: "Arthur",
+        middleName: "A",
+        lastName: "Admin",
+      },
+    },
+    patientLink: {
+      internalId: "68c543e8-7c65-4047-955c-e3f65bb8b58a",
+    },
+    facility: {
+      name: "Facility 1",
+    },
+    noSymptoms: true,
+    symptoms: "{}",
+    __typename: "TestResult",
+  },
+  {
+    internalId: "7c768a5d-ef90-44cd-8050-b96dd77f51d5",
+    dateTested: "2021-03-18T19:27:21.052Z",
+    result: "NEGATIVE",
+    results: [
+      { disease: { name: "COVID-19" }, testResult: "NEGATIVE" },
+      { disease: { name: "Flu A" }, testResult: "NEGATIVE" },
+      { disease: { name: "Flu B" }, testResult: "POSITIVE" },
+    ],
+    correctionStatus: "ORIGINAL",
+    deviceType: {
+      internalId: "8c1a8efe-8951-4f84-a4c9-dcea561d7fbb",
+      name: "Abbott IDNow",
+      __typename: "DeviceType",
+    },
+    patient: {
+      internalId: "f74ad245-3a69-44b5-bb6d-efe06308bb85",
+      firstName: "Braisley",
+      middleName: "R",
+      lastName: "Adams",
+      birthDate: "1960-11-07",
+      gender: "female",
+      role: "STAFF",
+      lookupId: null,
+      __typename: "Patient",
+    },
+    createdBy: {
+      nameInfo: {
+        firstName: "Ursula",
+        middleName: "",
+        lastName: "User",
+      },
+    },
+    patientLink: {
+      internalId: "68c543e8-7c65-4047-955c-e3f65bb8b58a",
+    },
+    facility: {
+      name: "Facility 1",
+    },
+    noSymptoms: false,
+    symptoms: "{}",
+    __typename: "TestResult",
+  },
+  {
+    internalId: "7c768a5d-ef90-44cd-8050-b96dd7aaa1d5",
+    dateTested: "2021-03-19T19:27:21.052Z",
+    result: "POSITIVE",
+    results: [],
+    correctionStatus: "ORIGINAL",
+    deviceType: {
+      internalId: "8c1a8efe-8951-4f84-a4c9-dcea561d7fbb",
+      name: "Abbott IDNow",
+      __typename: "DeviceType",
+    },
+    patient: {
+      internalId: "f74ad245-3a69-44b5-bb6d-efe06308bb85",
+      firstName: "Rupert",
+      middleName: "G",
+      lastName: "Purrington",
       birthDate: "1960-11-07",
       gender: "male",
       role: "RESIDENT",
@@ -818,7 +954,7 @@ const mocks = [
   },
   {
     request: {
-      query: testResultQuery,
+      query: GetFacilityResultsMultiplexDocument,
       variables: {
         facilityId: "1",
         pageNumber: 0,
@@ -900,7 +1036,7 @@ const mocks = [
   },
   {
     request: {
-      query: testResultQuery,
+      query: GetFacilityResultsMultiplexDocument,
       variables: {
         facilityId: "1",
         patientId: "48c523e8-7c65-4047-955c-e3f65bb8b58a",
@@ -930,7 +1066,7 @@ const mocks = [
   },
   {
     request: {
-      query: testResultQuery,
+      query: GetFacilityResultsMultiplexDocument,
       variables: {
         facilityId: "1",
         result: "NEGATIVE",
@@ -960,7 +1096,7 @@ const mocks = [
   },
   {
     request: {
-      query: testResultQuery,
+      query: GetFacilityResultsMultiplexDocument,
       variables: {
         facilityId: "1",
         role: "RESIDENT",
@@ -990,7 +1126,7 @@ const mocks = [
   },
   {
     request: {
-      query: testResultQuery,
+      query: GetFacilityResultsMultiplexDocument,
       variables: {
         facilityId: "1",
         startDate: "2021-03-18T00:00:00.000Z",
@@ -1021,7 +1157,7 @@ const mocks = [
   },
   {
     request: {
-      query: testResultQuery,
+      query: GetFacilityResultsMultiplexDocument,
       variables: {
         facilityId: "1",
         startDate: "2021-03-18T00:00:00.000Z",
@@ -1051,7 +1187,7 @@ const mocks = [
   },
   {
     request: {
-      query: testResultQuery,
+      query: GetFacilityResultsMultiplexDocument,
       variables: {
         facilityId: "2",
         pageNumber: 0,
@@ -1079,7 +1215,7 @@ const mocks = [
   },
   {
     request: {
-      query: testResultQuery,
+      query: GetFacilityResultsMultiplexDocument,
       variables: {
         facilityId: null,
         pageNumber: 0,
@@ -1122,7 +1258,7 @@ const mocks = [
   },
   {
     request: {
-      query: testResultQuery,
+      query: GetFacilityResultsMultiplexDocument,
       variables: {
         facilityId: "1",
         pageNumber: 0,
@@ -1137,6 +1273,19 @@ const mocks = [
   },
   {
     request: {
+      query: resultsCountQuery,
+      variables: {
+        facilityId: "3",
+      },
+    },
+    result: {
+      data: {
+        testResultsCount: testResultsMultiplex.length,
+      },
+    },
+  },
+  {
+    request: {
       query: GetAllFacilitiesDocument,
       variables: {
         showArchived: true,
@@ -1145,6 +1294,21 @@ const mocks = [
     result: {
       data: {
         facilities: facilitiesIncludeArchived,
+      },
+    },
+  },
+  {
+    request: {
+      query: GetFacilityResultsMultiplexDocument,
+      variables: {
+        facilityId: "3",
+        pageNumber: 0,
+        pageSize: 20,
+      },
+    },
+    result: {
+      data: {
+        testResults: testResultsMultiplex,
       },
     },
   },
@@ -1234,7 +1398,7 @@ describe("TestResultsList", () => {
       },
       {
         request: {
-          query: testResultQuery,
+          query: GetFacilityResultsMultiplexDocument,
           variables: {
             facilityId: "1",
             pageNumber: 0,
@@ -1684,6 +1848,38 @@ describe("TestResultsList", () => {
       );
       expect(
         await screen.findByText("No facility selected", { exact: false })
+      ).toBeInTheDocument();
+    });
+
+    it("should not display Flu result columns if all rows with multiplex results are filtered", async () => {
+      // facility 1 has no multiplex results
+      expect(await screen.findByText("Gerard, Sam G")).toBeInTheDocument();
+      expect(screen.queryByText("Flu A")).not.toBeInTheDocument();
+    });
+
+    it("should show multiplex results", async () => {
+      expect(
+        await screen.findByRole("option", { name: "Facility 1" })
+      ).toBeInTheDocument();
+      userEvent.selectOptions(screen.getByLabelText("Testing facility"), ["3"]);
+      expect((await screen.findAllByText("Flu A"))[0]).toBeInTheDocument();
+    });
+
+    it("should default to column value and show N/A for Flu results for rows with no multiplex results", async () => {
+      expect(
+        await screen.findByRole("option", { name: "Facility 1" })
+      ).toBeInTheDocument();
+      userEvent.selectOptions(screen.getByLabelText("Testing facility"), ["3"]);
+      expect((await screen.findAllByText("Flu A"))[0]).toBeInTheDocument();
+      expect(
+        within(
+          screen.getByTestId("test-result-7c768a5d-ef90-44cd-8050-b96dd7aaa1d5")
+        ).getByText("Positive")
+      ).toBeInTheDocument();
+      expect(
+        within(
+          screen.getByTestId("test-result-7c768a5d-ef90-44cd-8050-b96dd7aaa1d5")
+        ).getAllByText("N/A")[0]
       ).toBeInTheDocument();
     });
   });
