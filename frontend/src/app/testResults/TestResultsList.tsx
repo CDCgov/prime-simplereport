@@ -826,10 +826,7 @@ const TestResultsList = () => {
     fetchPolicy: "no-cache",
     variables: countQueryVariables,
   });
-  /*const count = useQuery(RESULTS_COUNT_QUERY, {
-    fetchPolicy: "no-cache",
-    variables: countQueryVariables,
-  });*/
+
   const results = useGetFacilityResultsMultiplexQuery({
     fetchPolicy: "no-cache",
     variables: resultsQueryVariables,
