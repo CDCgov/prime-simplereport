@@ -98,6 +98,7 @@ public class TestOrder extends BaseTestInfo {
     return super.getResult();
   }
 
+  @JsonIgnore
   public Set<Result> getResultSet() {
     Hibernate.initialize(this.results);
     return results;
