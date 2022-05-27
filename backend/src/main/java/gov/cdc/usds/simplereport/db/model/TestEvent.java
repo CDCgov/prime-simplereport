@@ -45,6 +45,7 @@ public class TestEvent extends BaseTestInfo {
   @JoinColumn(name = "test_order_id")
   private TestOrder order;
 
+  @JsonIgnore
   @OneToMany(mappedBy = "testEvent", cascade = CascadeType.MERGE, fetch = FetchType.LAZY)
   private Set<Result> results;
 
@@ -151,17 +152,28 @@ public class TestEvent extends BaseTestInfo {
     return order.getDeviceSpecimen();
   }
 
-  // This logic (specifically, the findAny) will need to be updated later on in the multiplex
-  // process - this method is temporary
-  // Eventually, this method will be deprecated in favor of getResultSet()
+  // This method is temporary and eventually, this method will be deprecated in favor of
+  // getResultSet()
   public TestResult getTestResult() {
+    final String COVID_LOINC = "96741-4";
     if (this.results != null) {
-      Optional<Result> resultObject = this.results.stream().findAny();
+      Optional<Result> resultObject =
+          this.results.stream()
+              .filter(result -> COVID_LOINC.equals(result.getDisease().getLoinc()))
+              .findFirst();
       if (resultObject.isPresent()) {
         return resultObject.get().getTestResult();
       }
     }
     return super.getResult();
+  }
+
+  public Optional<Result> getResultForDisease(SupportedDisease disease) {
+    Hibernate.initialize(this.results);
+    if (results != null) {
+      return results.stream().filter(r -> r.getDisease().equals(disease)).findFirst();
+    }
+    return Optional.empty();
   }
 
   @Override

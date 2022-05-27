@@ -85,6 +85,7 @@
   .sr-test-result-row td {
     padding-left: 12px;
     padding-right: 12px;
+    word-wrap: anywhere;
 
     &.patient-name-cell {
       padding-left: 1.5rem;
@@ -93,28 +94,29 @@
     }
 
     &.test-date-cell {
-      width: 10%;
+      width: 9%;
     }
 
     &.test-result-cell {
-      width: 8%;
+      width: 9%;
     }
 
     &.test-facility-cell {
-      width: 20%;
+      width: 16%;
     }
 
     &.test-device-cell {
-      width: 25%;
+      width: 16%;
     }
 
     &.submitted-by-cell {
-      width: 14%;
+      width: 10%;
     }
 
     &.actions-cell {
       padding-right: 1.5rem;
-      width: 8%;
+      word-wrap: break-word;
+      width: 7%;
     }
   }
 
