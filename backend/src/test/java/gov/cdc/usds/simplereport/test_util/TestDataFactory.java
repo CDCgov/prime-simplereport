@@ -443,8 +443,19 @@ public class TestDataFactory {
   }
 
   public TestEvent createTestEventRemoval(TestEvent originalTestEvent) {
-    return _testEventRepo.save(
-        new TestEvent(originalTestEvent, TestCorrectionStatus.REMOVED, "Cold feet"));
+    TestEvent newRemoveEvent =
+        new TestEvent(originalTestEvent, TestCorrectionStatus.REMOVED, "Cold feet");
+    _testEventRepo.save(newRemoveEvent);
+
+    TestOrder order = originalTestEvent.getTestOrder();
+
+    order.setReasonForCorrection("Cold feet");
+    order.setTestEventRef(newRemoveEvent);
+    order.setCorrectionStatus(TestCorrectionStatus.REMOVED);
+
+    _testOrderRepo.save(order);
+
+    return newRemoveEvent;
   }
 
   public TestEvent doTest(TestOrder order, TestResult result) {
