@@ -6,10 +6,14 @@ import gov.cdc.usds.simplereport.api.model.pxp.PxpTestResultUnauthenticatedRespo
 import gov.cdc.usds.simplereport.api.model.pxp.PxpVerifyResponseV2;
 import gov.cdc.usds.simplereport.db.model.Facility;
 import gov.cdc.usds.simplereport.db.model.Person;
+import gov.cdc.usds.simplereport.db.model.Result;
 import gov.cdc.usds.simplereport.db.model.TestEvent;
 import gov.cdc.usds.simplereport.db.model.TestOrder;
+import gov.cdc.usds.simplereport.db.repository.TestEventRepository;
+import gov.cdc.usds.simplereport.service.DiseaseService;
 import gov.cdc.usds.simplereport.service.PatientLinkService;
 import gov.cdc.usds.simplereport.service.TimeOfConsentService;
+import java.util.Optional;
 import java.util.UUID;
 import javax.annotation.PostConstruct;
 import javax.servlet.http.HttpServletRequest;
@@ -42,14 +46,20 @@ public class PatientExperienceController {
   private final PatientLinkService _pls;
   private final TimeOfConsentService _tocs;
   private final CurrentPatientContextHolder _contextHolder;
+  private final DiseaseService _diseaseService;
+  private final TestEventRepository _testEventRepository;
 
   public PatientExperienceController(
       PatientLinkService patientLinkService,
       TimeOfConsentService timeOfConsentService,
-      CurrentPatientContextHolder contextHolder) {
+      CurrentPatientContextHolder contextHolder,
+      DiseaseService diseaseService,
+      TestEventRepository testEventRepository) {
     this._pls = patientLinkService;
     this._tocs = timeOfConsentService;
     this._contextHolder = contextHolder;
+    this._diseaseService = diseaseService;
+    this._testEventRepository = testEventRepository;
   }
 
   @PostConstruct
@@ -67,7 +77,29 @@ public class PatientExperienceController {
     TestEvent testEvent = _contextHolder.getLinkedOrder().getTestEvent();
     _tocs.storeTimeOfConsent(_contextHolder.getPatientLink());
 
-    return new PxpVerifyResponseV2(patient, testEvent);
+    Optional<Result> optionalResult = testEvent.getResultForDisease(_diseaseService.covid());
+    Result covidResult;
+    if (optionalResult.isEmpty()) {
+      Optional<TestEvent> originalEvent =
+          _testEventRepository.findById(testEvent.getPriorCorrectedTestEventId());
+      if (originalEvent.isPresent()) {
+        Optional<Result> originalResult =
+            originalEvent.get().getResultForDisease(_diseaseService.covid());
+        covidResult =
+            originalResult.orElseThrow(
+                () -> new IllegalStateException("No result found for COVID-19"));
+      } else {
+        throw new IllegalStateException(
+            "No result found for test event " + testEvent.getInternalId());
+      }
+    } else {
+      covidResult = optionalResult.get();
+    }
+
+    Optional<Result> fluAResult = testEvent.getResultForDisease(_diseaseService.fluA());
+    Optional<Result> fluBResult = testEvent.getResultForDisease(_diseaseService.fluB());
+
+    return new PxpVerifyResponseV2(patient, testEvent, covidResult, fluAResult, fluBResult);
   }
 
   /**
