@@ -293,7 +293,7 @@ const createPatient = ({
   deviceSpecimenType: {
     internalId,
   },
-  result: "",
+  results: [],
   dateTested: null,
   patientLink: {
     internalId: "7df95d14-c9ca-406e-bed7-85da05d5eea1",
@@ -355,6 +355,7 @@ const result = {
           model: "lumira",
           name: "LumiraDx",
           testLength: 15,
+          supportedDiseases: [{ internalId: "1", name: "COVID-19" }],
           __typename: "DeviceType",
         },
         specimenType: {
@@ -371,6 +372,7 @@ const result = {
           model: "quidel",
           name: "Quidel Sofia 2",
           testLength: 10,
+          supportedDiseases: [{ internalId: "1", name: "COVID-19" }],
           __typename: "DeviceType",
         },
         specimenType: {
@@ -387,6 +389,7 @@ const result = {
           model: "quidel",
           name: "Quidel Sofia 2",
           testLength: 10,
+          supportedDiseases: [{ internalId: "1", name: "COVID-19" }],
           __typename: "DeviceType",
         },
         specimenType: {
