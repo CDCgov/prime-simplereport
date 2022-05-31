@@ -612,7 +612,7 @@ const QueueItem = ({
       case "Flu B":
         return (result: TestResult | undefined) => updateFluBResult(result);
       default:
-        return (result: TestResult | undefined) => {};
+        return (_result: TestResult | undefined) => {};
     }
   };
 
