@@ -13,6 +13,7 @@ import gov.cdc.usds.simplereport.db.repository.TestEventRepository;
 import gov.cdc.usds.simplereport.service.DiseaseService;
 import gov.cdc.usds.simplereport.service.PatientLinkService;
 import gov.cdc.usds.simplereport.service.TimeOfConsentService;
+import java.util.NoSuchElementException;
 import java.util.Optional;
 import java.util.UUID;
 import javax.annotation.PostConstruct;
@@ -79,21 +80,17 @@ public class PatientExperienceController {
 
     Optional<Result> optionalResult = testEvent.getResultForDisease(_diseaseService.covid());
     Result covidResult;
-    if (optionalResult.isEmpty()) {
-      Optional<TestEvent> originalEvent =
-          _testEventRepository.findById(testEvent.getPriorCorrectedTestEventId());
-      if (originalEvent.isPresent()) {
-        Optional<Result> originalResult =
-            originalEvent.get().getResultForDisease(_diseaseService.covid());
-        covidResult =
-            originalResult.orElseThrow(
-                () -> new IllegalStateException("No result found for COVID-19"));
-      } else {
-        throw new IllegalStateException(
-            "No result found for test event " + testEvent.getInternalId());
-      }
-    } else {
+    if (optionalResult.isPresent()) {
       covidResult = optionalResult.get();
+    } else {
+      try {
+        Optional<TestEvent> originalEvent =
+            _testEventRepository.findById(testEvent.getPriorCorrectedTestEventId());
+        covidResult = originalEvent.get().getResultForDisease(_diseaseService.covid()).get();
+      } catch (NoSuchElementException | NullPointerException e) {
+        throw new IllegalStateException(
+            "No COVID-19 result found for test event: " + testEvent.getInternalId());
+      }
     }
 
     Optional<Result> fluAResult = testEvent.getResultForDisease(_diseaseService.fluA());
