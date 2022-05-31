@@ -84,8 +84,8 @@ export const StaticTestResultModal = ({
   };
 
   const hasMultiplexResults =
-    results.some((result: any) => result?.disease.name !== "COVID-19") &&
-    results?.length;
+    results?.length &&
+    results.some((result: any) => result?.disease.name !== "COVID-19");
 
   const getCovidResults = () => {
     return results.filter((result: any) => {

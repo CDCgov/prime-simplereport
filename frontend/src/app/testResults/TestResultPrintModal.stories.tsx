@@ -19,6 +19,7 @@ export default {
 const testResult = {
   dateTested: new Date("2021-08-20"),
   result: "NEGATIVE",
+  results: [{ disease: { name: "COVID-19" }, testResult: "NEGATIVE" }],
   correctionStatus: null,
   deviceType: {
     name: "Fake device",
