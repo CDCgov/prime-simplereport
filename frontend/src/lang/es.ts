@@ -258,7 +258,7 @@ export const es: LanguageConfig = {
     },
     testResult: {
       result: "Resultado de SARS-CoV-2",
-      covidResultHeader: "TODO: translation for Test result: COVID-19",
+      covidResultHeader: "Resultados: COVID-19",
       multiplexResultHeader:
         "Resultados de las pruebas: COVID-19 y la influenza",
       downloadResult: "Descargar resultado",
@@ -356,7 +356,7 @@ export const es: LanguageConfig = {
             li10: "Diarrea",
           },
           moreInformation:
-            "TODO: translate For more information, please visit the <0>Centers for Disease Control and Prevention (CDC) website</0> or contact your local health department.",
+            "Para más información, por favor visite la página <0>Centros para el Control y la Prevención de Enfermedades (CDC)</0> o contacta a tu departamento de salud pública local.",
         },
         inconclusive: {
           p0:
@@ -369,7 +369,7 @@ export const es: LanguageConfig = {
         },
       },
       fluNotes: {
-        h1: "TODO: add flu A and B translation:",
+        h1: "Para la gripe de tipo A y B:",
         positive: {
           p0:
             "La mayoría de las personas con influenza (gripe) tienen un caso leve de la enfermedad y se pueden " +

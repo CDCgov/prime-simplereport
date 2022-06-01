@@ -101,6 +101,11 @@ export const StaticTestResultModal = ({
     });
   };
 
+  const isMultiplexWithPositiveCovidOrNoFlu =
+    hasMultiplexResults &&
+    (hasPositiveFluResults().length === 0 ||
+      getCovidResults()[0].testResult === "POSITIVE");
+
   const setCovidGuidance = (result: string) => {
     return (
       <div
@@ -110,7 +115,7 @@ export const StaticTestResultModal = ({
             : ""
         }
       >
-        {hasMultiplexResults && (
+        {hasMultiplexResults && hasPositiveFluResults().length > 0 && (
           <p className="text-bold sr-guidance-heading">
             {t("testResult.notes.h1")}
           </p>
@@ -118,36 +123,37 @@ export const StaticTestResultModal = ({
         {result === "UNDETERMINED" && (
           <p>{t("testResult.notes.inconclusive.p0")}</p>
         )}
-        {result !== "POSITIVE" && (
-          <>
-            <p>{t("testResult.notes.negative.p0")}</p>
-            <ul className="sr-multi-column">
-              <li>{t("testResult.notes.negative.symptoms.li2")}</li>
-              <li>{t("testResult.notes.negative.symptoms.li3")}</li>
-              <li>{t("testResult.notes.negative.symptoms.li4")}</li>
-              <li>{t("testResult.notes.negative.symptoms.li5")}</li>
-              <li>{t("testResult.notes.negative.symptoms.li6")}</li>
-              <li>{t("testResult.notes.negative.symptoms.li7")}</li>
-              <li>{t("testResult.notes.negative.symptoms.li8")}</li>
-              <li>{t("testResult.notes.negative.symptoms.li9")}</li>
-              <li>{t("testResult.notes.negative.symptoms.li10")}</li>
-            </ul>
-            <Trans
-              t={t}
-              parent="p"
-              i18nKey="testResult.notes.negative.moreInformation"
-              components={[
-                <a
-                  href={t("testResult.cdcLink")}
-                  target="_blank"
-                  rel="noopener noreferrer"
-                >
-                  cdc.gov
-                </a>,
-              ]}
-            />
-          </>
-        )}
+        {result !== "POSITIVE" &&
+          (isMultiplexWithPositiveCovidOrNoFlu || !hasMultiplexResults) && (
+            <>
+              <p>{t("testResult.notes.negative.p0")}</p>
+              <ul className="sr-multi-column">
+                <li>{t("testResult.notes.negative.symptoms.li2")}</li>
+                <li>{t("testResult.notes.negative.symptoms.li3")}</li>
+                <li>{t("testResult.notes.negative.symptoms.li4")}</li>
+                <li>{t("testResult.notes.negative.symptoms.li5")}</li>
+                <li>{t("testResult.notes.negative.symptoms.li6")}</li>
+                <li>{t("testResult.notes.negative.symptoms.li7")}</li>
+                <li>{t("testResult.notes.negative.symptoms.li8")}</li>
+                <li>{t("testResult.notes.negative.symptoms.li9")}</li>
+                <li>{t("testResult.notes.negative.symptoms.li10")}</li>
+              </ul>
+              <Trans
+                t={t}
+                parent="p"
+                i18nKey="testResult.notes.negative.moreInformation"
+                components={[
+                  <a
+                    href={t("testResult.cdcLink")}
+                    target="_blank"
+                    rel="noopener noreferrer"
+                  >
+                    cdc.gov
+                  </a>,
+                ]}
+              />
+            </>
+          )}
         {result === "POSITIVE" && (
           <>
             <p>{t("testResult.notes.positive.p1")}</p>
@@ -211,9 +217,11 @@ export const StaticTestResultModal = ({
   const setPositiveFluGuidance = () => {
     return (
       <>
-        <p className="text-bold sr-guidance-heading">
-          {t("testResult.fluNotes.h1")}
-        </p>
+        {getCovidResults()[0].testResult === "POSITIVE" && (
+          <p className="text-bold sr-guidance-heading">
+            {t("testResult.fluNotes.h1")}
+          </p>
+        )}
         <p>{t("testResult.fluNotes.positive.p0")}</p>
         <Trans
           t={t}
@@ -286,9 +294,12 @@ export const StaticTestResultModal = ({
 
   const testResultsGuidance = () => {
     let testGuidanceArray: any = [];
-    let covidResults: any = [];
-    covidResults = getCovidResults();
-    if (covidResults) {
+    let covidResults = getCovidResults();
+
+    if (
+      covidResults &&
+      (isMultiplexWithPositiveCovidOrNoFlu || !hasMultiplexResults)
+    ) {
       let covidGuidanceElement = setCovidGuidance(covidResults[0].testResult);
       testGuidanceArray.push(covidGuidanceElement);
     }
