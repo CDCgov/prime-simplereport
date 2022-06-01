@@ -46,8 +46,6 @@ export type SelfRegistrationData = Omit<
 export type VerifyV2Response = {
   testEventId: string;
   result: TestResult;
-  fluAResult: TestResult | undefined;
-  fluBResult: TestResult | undefined;
   dateTested: string;
   correctionStatus: string;
   deviceType: {

@@ -2,6 +2,7 @@ import qs from "querystring";
 
 import { MockedProvider } from "@apollo/client/testing";
 import {
+  fireEvent,
   render,
   screen,
   waitForElementToBeRemoved,
@@ -16,6 +17,7 @@ import {
   GetAllFacilitiesDocument,
   GetFacilityResultsForCsvDocument,
   GetFacilityResultsMultiplexDocument,
+  GetResultsCountByFacilityDocument,
 } from "../../generated/graphql";
 import { QUERY_PATIENT } from "../testQueue/addToQueue/AddToQueueSearch";
 import { appPermissions } from "../permissions";
@@ -24,7 +26,6 @@ import { testResultDetailsQuery } from "./TestResultDetailsModal";
 import TestResultsList, {
   ALL_FACILITIES_ID,
   DetachedTestResultsList,
-  resultsCountQuery,
 } from "./TestResultsList";
 
 const mockStore = configureStore([]);
@@ -64,6 +65,7 @@ const testResults = [
     internalId: "0969da96-b211-41cd-ba61-002181f0918d",
     dateTested: "2021-03-17T19:27:23.806Z",
     result: "NEGATIVE",
+    results: [{ disease: { name: "COVID-19" }, testResult: "NEGATIVE" }],
     correctionStatus: "ORIGINAL",
     deviceType: {
       internalId: "8c1a8efe-8951-4f84-a4c9-dcea561d7fbb",
@@ -102,6 +104,7 @@ const testResults = [
     internalId: "7c768a5d-ef90-44cd-8050-b96dd77f51d5",
     dateTested: "2021-03-18T19:27:21.052Z",
     result: "NEGATIVE",
+    results: [{ disease: { name: "COVID-19" }, testResult: "NEGATIVE" }],
     correctionStatus: "ORIGINAL",
     deviceType: {
       internalId: "8c1a8efe-8951-4f84-a4c9-dcea561d7fbb",
@@ -140,6 +143,7 @@ const testResults = [
     internalId: "7c768a5d-ef90-44cd-8050-b96dd7aaa1d5",
     dateTested: "2021-03-19T19:27:21.052Z",
     result: "POSITIVE",
+    results: [{ disease: { name: "COVID-19" }, testResult: "POSITIVE" }],
     correctionStatus: "ORIGINAL",
     deviceType: {
       internalId: "8c1a8efe-8951-4f84-a4c9-dcea561d7fbb",
@@ -938,7 +942,7 @@ const facilitiesIncludeArchived = facilities.concat({
 const mocks = [
   {
     request: {
-      query: resultsCountQuery,
+      query: GetResultsCountByFacilityDocument,
       variables: {
         facilityId: "1",
       },
@@ -1019,7 +1023,7 @@ const mocks = [
   },
   {
     request: {
-      query: resultsCountQuery,
+      query: GetResultsCountByFacilityDocument,
       variables: {
         facilityId: "1",
         patientId: "48c523e8-7c65-4047-955c-e3f65bb8b58a",
@@ -1049,7 +1053,7 @@ const mocks = [
   },
   {
     request: {
-      query: resultsCountQuery,
+      query: GetResultsCountByFacilityDocument,
       variables: {
         facilityId: "1",
         result: "NEGATIVE",
@@ -1079,7 +1083,7 @@ const mocks = [
   },
   {
     request: {
-      query: resultsCountQuery,
+      query: GetResultsCountByFacilityDocument,
       variables: {
         facilityId: "1",
         role: "RESIDENT",
@@ -1109,7 +1113,7 @@ const mocks = [
   },
   {
     request: {
-      query: resultsCountQuery,
+      query: GetResultsCountByFacilityDocument,
       variables: {
         facilityId: "1",
         startDate: "2021-03-18T00:00:00.000Z",
@@ -1139,7 +1143,7 @@ const mocks = [
   },
   {
     request: {
-      query: resultsCountQuery,
+      query: GetResultsCountByFacilityDocument,
       variables: {
         facilityId: "1",
         startDate: "2021-03-18T00:00:00.000Z",
@@ -1171,7 +1175,7 @@ const mocks = [
   },
   {
     request: {
-      query: resultsCountQuery,
+      query: GetResultsCountByFacilityDocument,
       variables: {
         facilityId: "2",
       },
@@ -1199,7 +1203,7 @@ const mocks = [
   },
   {
     request: {
-      query: resultsCountQuery,
+      query: GetResultsCountByFacilityDocument,
       variables: {
         facilityId: null,
       },
@@ -1242,7 +1246,7 @@ const mocks = [
   },
   {
     request: {
-      query: resultsCountQuery,
+      query: GetResultsCountByFacilityDocument,
       variables: {
         facilityId: "1",
       },
@@ -1270,7 +1274,7 @@ const mocks = [
   },
   {
     request: {
-      query: resultsCountQuery,
+      query: GetResultsCountByFacilityDocument,
       variables: {
         facilityId: "3",
       },
@@ -1377,7 +1381,7 @@ describe("TestResultsList", () => {
     const localMocks = [
       {
         request: {
-          query: resultsCountQuery,
+          query: GetResultsCountByFacilityDocument,
           variables: {
             facilityId: "1",
             patientId: "48c523e8-7c65-4047-955c-e3f65bb8b58a",
@@ -1488,10 +1492,92 @@ describe("TestResultsList", () => {
     expect(await row.findByText("Colleer, Barde X")).toBeInTheDocument();
     expect(await row.findByText("DOB: 11/07/1960")).toBeInTheDocument();
     expect(await row.findByText("Negative")).toBeInTheDocument();
+    expect(row.queryByText("Facility 1")).not.toBeInTheDocument();
+    expect(await row.findByText("Abbott IDNow")).toBeInTheDocument();
+    expect(await row.findByText("User, Ursula")).toBeInTheDocument();
+  });
+
+  it("should display facility column when all facilities are selected in the filter", async () => {
+    const localMocks = [
+      {
+        request: {
+          query: GetResultsCountByFacilityDocument,
+          variables: {
+            facilityId: null,
+          },
+        },
+        result: {
+          data: {
+            testResultsCount: testResultsByStartDateAndEndDate.length,
+          },
+        },
+      },
+      {
+        request: {
+          query: GetFacilityResultsMultiplexDocument,
+          variables: {
+            facilityId: null,
+            pageNumber: 0,
+            pageSize: 20,
+          },
+        },
+        result: {
+          data: {
+            testResults: testResultsByStartDateAndEndDate,
+          },
+        },
+      },
+      {
+        request: {
+          query: GetAllFacilitiesDocument,
+          variables: {
+            showArchived: true,
+          },
+        },
+        result: {
+          data: {
+            facilities: facilitiesIncludeArchived,
+          },
+        },
+      },
+    ];
+    const search = {
+      facility: "1",
+      filterFacilityId: "all",
+    };
+
+    await render(
+      <MemoryRouter
+        initialEntries={[
+          { pathname: "/results/1", search: qs.stringify(search) },
+        ]}
+      >
+        <Provider store={store}>
+          <MockedProvider mocks={localMocks}>
+            <TestResultsList />
+          </MockedProvider>
+        </Provider>
+      </MemoryRouter>
+    );
+
+    expect(await screen.findByText("Showing 1-1 of 1")).toBeInTheDocument();
+
+    const facilitySelect = (await screen.findByLabelText(
+      "Testing facility"
+    )) as HTMLSelectElement;
+    expect(facilitySelect).toBeInTheDocument();
+
+    fireEvent.change(facilitySelect, { target: { value: ALL_FACILITIES_ID } });
+
+    const row = within(await screen.findByTitle("filtered-result"));
+    expect(await row.findByText("Colleer, Barde X")).toBeInTheDocument();
+    expect(await row.findByText("DOB: 11/07/1960")).toBeInTheDocument();
+    expect(await row.findByText("Negative")).toBeInTheDocument();
     expect(await row.findByText("Facility 1")).toBeInTheDocument();
     expect(await row.findByText("Abbott IDNow")).toBeInTheDocument();
     expect(await row.findByText("User, Ursula")).toBeInTheDocument();
   });
+
   describe("with mocks", () => {
     beforeEach(() => {
       render(
@@ -1850,6 +1936,7 @@ describe("TestResultsList", () => {
 
     it("should not display Flu result columns if all rows with multiplex results are filtered", async () => {
       // facility 1 has no multiplex results
+      expect(await screen.findByText("Gerard, Sam G")).toBeInTheDocument();
       expect(screen.queryByText("Flu A")).not.toBeInTheDocument();
     });
 
