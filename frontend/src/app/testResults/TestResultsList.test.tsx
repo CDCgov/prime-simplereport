@@ -2,6 +2,7 @@ import qs from "querystring";
 
 import { MockedProvider } from "@apollo/client/testing";
 import {
+  fireEvent,
   render,
   screen,
   waitForElementToBeRemoved,
@@ -1492,6 +1493,88 @@ describe("TestResultsList", () => {
     expect(await row.findByText("Abbott IDNow")).toBeInTheDocument();
     expect(await row.findByText("User, Ursula")).toBeInTheDocument();
   });
+
+  it("should display facility column when all facilities are selected in the filter", async () => {
+    const localMocks = [
+      {
+        request: {
+          query: GetResultsCountByFacilityDocument,
+          variables: {
+            facilityId: null,
+          },
+        },
+        result: {
+          data: {
+            testResultsCount: testResultsByStartDateAndEndDate.length,
+          },
+        },
+      },
+      {
+        request: {
+          query: GetFacilityResultsMultiplexDocument,
+          variables: {
+            facilityId: null,
+            pageNumber: 0,
+            pageSize: 20,
+          },
+        },
+        result: {
+          data: {
+            testResults: testResultsByStartDateAndEndDate,
+          },
+        },
+      },
+      {
+        request: {
+          query: GetAllFacilitiesDocument,
+          variables: {
+            showArchived: true,
+          },
+        },
+        result: {
+          data: {
+            facilities: facilitiesIncludeArchived,
+          },
+        },
+      },
+    ];
+    const search = {
+      facility: "1",
+      filterFacilityId: "all",
+    };
+
+    await render(
+      <MemoryRouter
+        initialEntries={[
+          { pathname: "/results/1", search: qs.stringify(search) },
+        ]}
+      >
+        <Provider store={store}>
+          <MockedProvider mocks={localMocks}>
+            <TestResultsList />
+          </MockedProvider>
+        </Provider>
+      </MemoryRouter>
+    );
+
+    expect(await screen.findByText("Showing 1-1 of 1")).toBeInTheDocument();
+
+    const facilitySelect = (await screen.findByLabelText(
+      "Testing facility"
+    )) as HTMLSelectElement;
+    expect(facilitySelect).toBeInTheDocument();
+
+    fireEvent.change(facilitySelect, { target: { value: ALL_FACILITIES_ID } });
+
+    const row = within(await screen.findByTitle("filtered-result"));
+    expect(await row.findByText("Colleer, Barde X")).toBeInTheDocument();
+    expect(await row.findByText("DOB: 11/07/1960")).toBeInTheDocument();
+    expect(await row.findByText("Negative")).toBeInTheDocument();
+    expect(await row.findByText("Facility 1")).toBeInTheDocument();
+    expect(await row.findByText("Abbott IDNow")).toBeInTheDocument();
+    expect(await row.findByText("User, Ursula")).toBeInTheDocument();
+  });
+
   describe("with mocks", () => {
     beforeEach(() => {
       render(

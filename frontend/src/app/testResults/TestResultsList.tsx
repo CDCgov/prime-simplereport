@@ -71,10 +71,7 @@ export const byDateTested = (a: any, b: any) => {
  * Results Table
  */
 
-const tableHeaders = (
-  hasMultiplexResults: boolean,
-  displayFacility: boolean
-) => (
+const tableHeaders = (hasMultiplexResults: boolean, hasFacility: boolean) => (
   <tr>
     <th scope="col" className="patient-name-cell">
       {PATIENT_TERM_CAP}
@@ -101,7 +98,7 @@ const tableHeaders = (
     <th scope="col" className="submitted-by-cell">
       Submitted by
     </th>
-    {displayFacility && (
+    {hasFacility && (
       <th scope="col" className="test-facility-cell">
         Facility
       </th>
@@ -115,7 +112,7 @@ const tableHeaders = (
 function testResultRows(
   testResults: any,
   hasMultiplexResults: boolean,
-  displayFacility: boolean,
+  hasFacility: boolean,
   setPrintModalId: SetStateAction<any>,
   setMarkCorrectionId: SetStateAction<any>,
   setDetailsModalId: SetStateAction<any>,
@@ -233,7 +230,7 @@ function testResultRows(
             r.createdBy.nameInfo.lastName
           )}
         </td>
-        {displayFacility && (
+        {hasFacility && (
           <td className="test-facility-cell">
             {facilityDisplayName(r.facility.name, r.facility.isDeleted)}
           </td>
@@ -249,18 +246,18 @@ function testResultRows(
 interface ResultsTableListProps {
   rows: JSX.Element | JSX.Element[];
   hasMultiplexResults: boolean;
-  displayFacility: boolean;
+  hasFacility: boolean;
 }
 
 const ResultsTable = ({
   rows,
   hasMultiplexResults,
-  displayFacility,
+  hasFacility,
 }: ResultsTableListProps) => {
   return (
     <table className="usa-table usa-table--borderless width-full">
       <thead className="sr-element__sr-only">
-        {tableHeaders(hasMultiplexResults, displayFacility)}
+        {tableHeaders(hasMultiplexResults, hasFacility)}
       </thead>
       <tbody>{rows}</tbody>
     </table>
@@ -710,7 +707,7 @@ export const DetachedTestResultsList = ({
               <ResultsTable
                 rows={rows}
                 hasMultiplexResults={hasMultiplexResults}
-                displayFacility={displayFacilityColumn}
+                hasFacility={displayFacilityColumn}
               />
             </div>
             <div className="usa-card__footer">
