@@ -1,5 +1,6 @@
 import { render, screen } from "@testing-library/react";
 import userEvent from "@testing-library/user-event";
+import { cloneDeep } from "lodash";
 import MockDate from "mockdate";
 import ReactDOM from "react-dom";
 
@@ -41,49 +42,16 @@ const testResult = {
   },
 };
 
-const multiplexTestResult = {
-  dateTested: new Date("2022-01-28T17:56:48.143Z"),
-  result: "NEGATIVE",
-  results: [
-    { disease: { name: "COVID-19" }, testResult: "NEGATIVE" },
-    { disease: { name: "Flu A" }, testResult: "POSITIVE" },
-    { disease: { name: "Flu B" }, testResult: "NEGATIVE" },
-  ],
-  correctionStatus: null,
-  deviceType: {
-    name: "Fake device",
-  },
-  patient: {
-    firstName: "First",
-    middleName: "Middle",
-    lastName: "Last",
-    birthDate: "08/07/1990",
-  },
-  facility: {
-    name: "Facility Name",
-    cliaNumber: "12D4567890",
-    phone: "6318675309",
-    street: "555 Fake St",
-    streetTwo: null,
-    city: "Raleigh",
-    state: "NC",
-    zipCode: "27601",
-    orderingProvider: {
-      firstName: "Ordering",
-      middleName: null,
-      lastName: "Provider",
-      NPI: "fake-npi",
-    },
-  },
-  testPerformed: {
-    name: "Name",
-    loincCode: "",
-  },
-};
+const multiplexTestResult = cloneDeep(testResult);
+multiplexTestResult.results = [
+  { disease: { name: "COVID-19" }, testResult: "NEGATIVE" },
+  { disease: { name: "Flu A" }, testResult: "POSITIVE" },
+  { disease: { name: "Flu B" }, testResult: "NEGATIVE" },
+];
 
 window.print = jest.fn();
 
-describe("TestResultPrintModal with no flu results", () => {
+describe("TestResultPrintModal with only COVID results", () => {
   let printSpy: jest.SpyInstance;
   let component: any;
 
@@ -148,23 +116,15 @@ describe("TestResultPrintModal with multiplex results", () => {
     );
   });
 
-  afterEach(() => {
-    printSpy.mockRestore();
-  });
-
-  it("should render the test result print view", async () => {
-    userEvent.click(screen.getAllByText("Print")[1]);
-
-    expect(printSpy).toBeCalled();
-  });
-
-  it("should render the test date and test time", () => {
-    expect(screen.getByText("01/28/2022 5:56pm")).toBeInTheDocument();
-  });
-
   it("should render flu information", () => {
     expect(
       screen.getByText("Test results: COVID-19 and flu")
+    ).toBeInTheDocument();
+    expect(screen.getByText("For flu:")).toBeInTheDocument();
+    expect(
+      screen.getByText(
+        "Most people with flu have mild illness and can recover at home."
+      )
     ).toBeInTheDocument();
   });
 

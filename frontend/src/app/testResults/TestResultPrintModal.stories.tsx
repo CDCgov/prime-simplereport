@@ -1,5 +1,5 @@
 import { Story, Meta } from "@storybook/react";
-import { uniqueId } from "lodash";
+import { uniqueId, cloneDeep } from "lodash";
 
 import {
   DetachedTestResultPrintModal,
@@ -59,9 +59,57 @@ const defaultProps: TestResultPrintModalProps = {
   hardcodedPrintDate: "8/24/2021, 9:44:25 AM",
 };
 
+const positiveCovidProps = cloneDeep(defaultProps);
+positiveCovidProps.data.testResult.results = [
+  { disease: { name: "COVID-19" }, testResult: "POSITIVE" },
+];
+
+const positiveFluMultiplexProps = cloneDeep(defaultProps);
+positiveFluMultiplexProps.data.testResult.results = [
+  { disease: { name: "COVID-19" }, testResult: "NEGATIVE" },
+  { disease: { name: "Flu A" }, testResult: "POSITIVE" },
+  { disease: { name: "Flu B" }, testResult: "NEGATIVE" },
+];
+
+const positiveCovidMultiplexProps = cloneDeep(defaultProps);
+positiveCovidMultiplexProps.data.testResult.results = [
+  { disease: { name: "COVID-19" }, testResult: "POSITIVE" },
+  { disease: { name: "Flu A" }, testResult: "NEGATIVE" },
+  { disease: { name: "Flu B" }, testResult: "NEGATIVE" },
+];
+
+const positiveAllMultiplexProps = cloneDeep(defaultProps);
+positiveAllMultiplexProps.data.testResult.results = [
+  { disease: { name: "COVID-19" }, testResult: "POSITIVE" },
+  { disease: { name: "Flu A" }, testResult: "POSITIVE" },
+  { disease: { name: "Flu B" }, testResult: "POSITIVE" },
+];
+
+const negativeAllMultiplexProps = cloneDeep(defaultProps);
+negativeAllMultiplexProps.data.testResult.results = [
+  { disease: { name: "COVID-19" }, testResult: "NEGATIVE" },
+  { disease: { name: "Flu A" }, testResult: "NEGATIVE" },
+  { disease: { name: "Flu B" }, testResult: "NEGATIVE" },
+];
+
 const Template: Story<TestResultPrintModalProps> = (args) => {
   return <DetachedTestResultPrintModal {...args} />;
 };
 
 export const Default = Template.bind({});
 Default.args = defaultProps;
+
+export const WithPositiveCovid = Template.bind({});
+WithPositiveCovid.args = positiveCovidProps;
+
+export const WithPositiveFluMultiplex = Template.bind({});
+WithPositiveFluMultiplex.args = positiveFluMultiplexProps;
+
+export const WithPositiveCovidMultiplex = Template.bind({});
+WithPositiveCovidMultiplex.args = positiveCovidMultiplexProps;
+
+export const WithPositiveAllMultiplex = Template.bind({});
+WithPositiveAllMultiplex.args = positiveAllMultiplexProps;
+
+export const WithNegativeAllMultiplex = Template.bind({});
+WithNegativeAllMultiplex.args = negativeAllMultiplexProps;
