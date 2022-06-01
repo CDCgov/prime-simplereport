@@ -72,11 +72,10 @@ resource "azurerm_web_application_firewall_policy" "sr_waf_policy" {
       version = "3.2"
 
       rule_group_override {
-        rule_group_name = "REQUEST-942-APPLICATION-ATTACK-SQLI"
+        rule_group_name = "REQUEST-920-PROTOCOL-ENFORCEMENT" //TODO: add exception for whoami
         disabled_rules = [
-          "942430",
-          "942260",
-          "942200"
+          "920300",
+          "920320"
         ]
       }
 
@@ -86,6 +85,15 @@ resource "azurerm_web_application_firewall_policy" "sr_waf_policy" {
           "932100",
           "932105",
           "932115"
+        ]
+      }
+
+      rule_group_override {
+        rule_group_name = "REQUEST-942-APPLICATION-ATTACK-SQLI"
+        disabled_rules = [
+          "942200",
+          "942260",
+          "942430"
         ]
       }
     }
