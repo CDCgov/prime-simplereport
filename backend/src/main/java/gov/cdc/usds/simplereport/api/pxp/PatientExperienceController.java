@@ -1,6 +1,7 @@
 package gov.cdc.usds.simplereport.api.pxp;
 
 import gov.cdc.usds.simplereport.api.model.errors.ExpiredPatientLinkException;
+import gov.cdc.usds.simplereport.api.model.errors.MissingDataPatientLinkException;
 import gov.cdc.usds.simplereport.api.model.pxp.PxpRequestWrapper;
 import gov.cdc.usds.simplereport.api.model.pxp.PxpTestResultUnauthenticatedResponse;
 import gov.cdc.usds.simplereport.api.model.pxp.PxpVerifyResponseV2;
@@ -84,12 +85,16 @@ public class PatientExperienceController {
       covidResult = optionalResult.get();
     } else {
       try {
-        Optional<TestEvent> originalEvent =
+        Optional<TestEvent> originalEventOptional =
             _testEventRepository.findById(testEvent.getPriorCorrectedTestEventId());
-        covidResult = originalEvent.get().getResultForDisease(_diseaseService.covid()).get();
+        TestEvent originalEvent =
+            originalEventOptional.orElseThrow(MissingDataPatientLinkException::new);
+        covidResult =
+            originalEvent
+                .getResultForDisease(_diseaseService.covid())
+                .orElseThrow(MissingDataPatientLinkException::new);
       } catch (NoSuchElementException | NullPointerException e) {
-        throw new IllegalStateException(
-            "No COVID-19 result found for test event: " + testEvent.getInternalId());
+        throw new MissingDataPatientLinkException();
       }
     }
 

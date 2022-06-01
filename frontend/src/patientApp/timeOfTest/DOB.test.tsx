@@ -233,6 +233,29 @@ describe("DOB (valid UUID)", () => {
     ).toBeInTheDocument();
     expect(validateDateOfBirthSpy).toHaveBeenCalled();
   });
+
+  it("Shows an error when invalid data is returned", async () => {
+    // GIVEN
+    validateDateOfBirthSpy.mockRejectedValue({ status: 500 });
+    userEvent.type(await screen.findByLabelText("Month"), "08");
+    userEvent.type(await screen.findByLabelText("Day"), "21");
+    userEvent.type(await screen.findByLabelText("Year"), "1987");
+
+    // WHEN
+    userEvent.click(await screen.findByText("Continue"));
+    await waitForElementToBeRemoved(() =>
+      screen.queryByText("Validating birth date...")
+    );
+
+    // THEN
+    expect(
+      await screen.findByText(
+        "This test result link is missing data. Please contact your test provider for your results.",
+        { exact: false }
+      )
+    ).toBeInTheDocument();
+    expect(validateDateOfBirthSpy).toHaveBeenCalled();
+  });
 });
 
 describe("DOB (invalid UUID)", () => {

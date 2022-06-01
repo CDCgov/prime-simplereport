@@ -594,6 +594,8 @@ export const en = {
           "This link has expired. Please contact your test provider to generate a new link.",
         linkNotFound:
           "This test result link is invalid. Please double check the URL or contact your test provider for the correct link.",
+        missingData:
+          "This test result link is missing data. Please contact your test provider for your results.",
         exampleText: "For example: 4 28 1986",
         submit: "Continue",
       },

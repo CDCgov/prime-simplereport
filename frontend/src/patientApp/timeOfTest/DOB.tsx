@@ -53,6 +53,7 @@ const DOB = () => {
   const [linkNotFoundError, setLinkNotFoundError] = useState(
     !isValidUUID(plid)
   );
+  const [missingDataError, setMissingDataError] = useState(false);
   const dobRef = useRef<HTMLInputElement>(null);
   const testResult = useSelector((state: any) => state.testResult);
   const [loading, setLoading] = useState(false);
@@ -108,6 +109,8 @@ const DOB = () => {
         strError.includes("401")
       ) {
         setBirthDateError(t("testResult.dob.error"));
+      } else if (error?.status === 500 || strError.includes("500")) {
+        setMissingDataError(true);
       }
     } finally {
       setLoading(false);
@@ -159,6 +162,21 @@ const DOB = () => {
             type="error"
             title="Page not found"
             body={t("testResult.dob.linkNotFound")}
+          />
+        </div>
+      </main>
+    );
+  }
+
+  if (missingDataError) {
+    return (
+      <main>
+        <div className="grid-container maxw-tablet">
+          <p></p>
+          <Alert
+            type="error"
+            title="Missing data"
+            body={t("testResult.dob.missingData")}
           />
         </div>
       </main>

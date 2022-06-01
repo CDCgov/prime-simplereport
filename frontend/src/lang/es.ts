@@ -512,6 +512,8 @@ export const es: LanguageConfig = {
           "Este enlace ha caducado. Comuníquese con su proveedor de prueba para generar un nuevo enlace.",
         linkNotFound:
           "Este enlace de resultado de la prueba no es válido. Vuelva a verificar el enlace o comuníquese con su proveedor de prueba para obtener el enlace correcto.",
+        missingData:
+          "This test result link is missing data. Please contact your test provider for your results.",
         exampleText: "Por ejemplo: 4 28 1986",
         submit: "Continuar",
       },
