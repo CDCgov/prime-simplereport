@@ -95,9 +95,11 @@ const tableHeaders = (hasMultiplexResults: boolean, hasFacility: boolean) => (
     <th scope="col" className="test-device-cell">
       Test device
     </th>
-    <th scope="col" className="submitted-by-cell">
-      Submitted by
-    </th>
+    {hasMultiplexResults && hasFacility ? null : (
+      <th scope="col" className="submitted-by-cell">
+        Submitted by
+      </th>
+    )}
     {hasFacility && (
       <th scope="col" className="test-facility-cell">
         Facility
@@ -223,13 +225,15 @@ function testResultRows(
           </td>
         )}
         <td className="test-device-cell">{r.deviceType.name}</td>
-        <td className="submitted-by-cell">
-          {displayFullName(
-            r.createdBy.nameInfo.firstName,
-            null,
-            r.createdBy.nameInfo.lastName
-          )}
-        </td>
+        {hasMultiplexResults && hasFacility ? null : (
+          <td className="submitted-by-cell">
+            {displayFullName(
+              r.createdBy.nameInfo.firstName,
+              null,
+              r.createdBy.nameInfo.lastName
+            )}
+          </td>
+        )}
         {hasFacility && (
           <td className="test-facility-cell">
             {facilityDisplayName(r.facility.name, r.facility.isDeleted)}
