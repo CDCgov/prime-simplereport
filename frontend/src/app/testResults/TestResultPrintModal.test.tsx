@@ -96,15 +96,12 @@ describe("TestResultPrintModal with only COVID results", () => {
 });
 
 describe("TestResultPrintModal with multiplex results", () => {
-  let printSpy: jest.SpyInstance;
   let component: any;
 
   beforeEach(() => {
     ReactDOM.createPortal = jest.fn((element, _node) => {
       return element;
     }) as any;
-
-    printSpy = jest.spyOn(window, "print");
 
     MockDate.set("2021/01/01");
     component = render(

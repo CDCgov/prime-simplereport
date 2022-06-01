@@ -12,7 +12,6 @@ import { QueryWrapper } from "../commonComponents/QueryWrapper";
 import LanguageToggler from "../../patientApp/LanguageToggler";
 import { formatDateWithTimeOption } from "../utils/date";
 
-// TODO: pull into own file
 export const testQuery = gql`
   query getTestResultForPrint($id: ID!) {
     testResult(id: $id) {
