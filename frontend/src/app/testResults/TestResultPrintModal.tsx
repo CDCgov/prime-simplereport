@@ -86,35 +86,30 @@ export const StaticTestResultModal = ({
     results?.length &&
     results.some((result: any) => result?.disease.name !== "COVID-19");
 
-  const getCovidResults = () => {
-    return results.filter((result: any) => {
-      return result.disease.name.includes("COVID-19");
-    });
-  };
+  const getCovidResult = results.filter((result: any) =>
+    result.disease.name.includes("COVID-19")
+  )[0];
 
-  const hasPositiveFluResults = () => {
-    return results.filter((result: any) => {
-      return (
+  const hasPositiveFluResults =
+    results.filter(
+      (result: any) =>
         result.disease.name.includes("Flu") && result?.testResult === "POSITIVE"
-      );
-    });
-  };
+    ).length > 0;
 
   const isMultiplexWithPositiveCovidOrNoFlu =
     hasMultiplexResults &&
-    (hasPositiveFluResults().length === 0 ||
-      getCovidResults()[0].testResult === "POSITIVE");
+    (!hasPositiveFluResults || getCovidResult.testResult === "POSITIVE");
 
   const setCovidGuidance = (result: string) => {
     return (
       <div
         className={
-          hasMultiplexResults && hasPositiveFluResults().length > 0
+          hasMultiplexResults && hasPositiveFluResults
             ? "sr-margin-bottom-28px"
             : ""
         }
       >
-        {hasMultiplexResults && hasPositiveFluResults().length > 0 && (
+        {hasMultiplexResults && hasPositiveFluResults && (
           <p className="text-bold sr-guidance-heading">
             {t("testResult.notes.h1")}
           </p>
@@ -216,7 +211,7 @@ export const StaticTestResultModal = ({
   const setPositiveFluGuidance = () => {
     return (
       <>
-        {getCovidResults()[0].testResult === "POSITIVE" && (
+        {getCovidResult.testResult === "POSITIVE" && (
           <p className="text-bold sr-guidance-heading">
             {t("testResult.fluNotes.h1")}
           </p>
@@ -293,16 +288,12 @@ export const StaticTestResultModal = ({
 
   const testResultsGuidance = () => {
     let testGuidanceArray: any = [];
-    let covidResults = getCovidResults();
 
-    if (
-      covidResults &&
-      (isMultiplexWithPositiveCovidOrNoFlu || !hasMultiplexResults)
-    ) {
-      let covidGuidanceElement = setCovidGuidance(covidResults[0].testResult);
+    if (isMultiplexWithPositiveCovidOrNoFlu || !hasMultiplexResults) {
+      let covidGuidanceElement = setCovidGuidance(getCovidResult.testResult);
       testGuidanceArray.push(covidGuidanceElement);
     }
-    if (hasPositiveFluResults().length > 0) {
+    if (hasPositiveFluResults) {
       testGuidanceArray.push(setPositiveFluGuidance());
     }
     return testGuidanceArray;
