@@ -1,5 +1,4 @@
 import React from "react";
-import { gql } from "@apollo/client";
 import Modal from "react-modal";
 import classnames from "classnames";
 import { Trans, useTranslation } from "react-i18next";
@@ -11,48 +10,7 @@ import logo from "../../img/simplereport-logo-black.svg";
 import { QueryWrapper } from "../commonComponents/QueryWrapper";
 import LanguageToggler from "../../patientApp/LanguageToggler";
 import { formatDateWithTimeOption } from "../utils/date";
-
-export const testQuery = gql`
-  query getTestResultForPrint($id: ID!) {
-    testResult(id: $id) {
-      dateTested
-      result
-      results {
-        disease {
-          name
-        }
-        testResult
-      }
-      correctionStatus
-      deviceType {
-        name
-        model
-      }
-      patient {
-        firstName
-        middleName
-        lastName
-        birthDate
-      }
-      facility {
-        name
-        cliaNumber
-        phone
-        street
-        streetTwo
-        city
-        state
-        zipCode
-        orderingProvider {
-          firstName
-          middleName
-          lastName
-          NPI
-        }
-      }
-    }
-  }
-`;
+import { GetTestResultForPrintDocument } from "../../generated/graphql";
 
 interface StaticTestResultModalProps {
   testResultId: string | undefined;
@@ -465,7 +423,7 @@ const TestResultPrintModal = (
   props: Omit<TestResultPrintModalProps, "data">
 ) => (
   <QueryWrapper<TestResultPrintModalProps>
-    query={testQuery}
+    query={GetTestResultForPrintDocument}
     queryOptions={{ variables: { id: props.testResultId } }}
     Component={DetachedTestResultPrintModal}
     componentProps={{ ...props }}
