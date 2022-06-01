@@ -44,9 +44,9 @@ const testResult = {
 
 const multiplexTestResult = cloneDeep(testResult);
 multiplexTestResult.results = [
-  { disease: { name: "COVID-19" }, testResult: "NEGATIVE" },
+  { disease: { name: "COVID-19" }, testResult: "POSITIVE" },
   { disease: { name: "Flu A" }, testResult: "POSITIVE" },
-  { disease: { name: "Flu B" }, testResult: "NEGATIVE" },
+  { disease: { name: "Flu B" }, testResult: "POSITIVE" },
 ];
 
 window.print = jest.fn();
@@ -120,12 +120,7 @@ describe("TestResultPrintModal with multiplex results", () => {
     expect(
       screen.getByText("Test results: COVID-19 and flu")
     ).toBeInTheDocument();
-    expect(screen.getByText("For flu:")).toBeInTheDocument();
-    expect(
-      screen.getByText(
-        "Most people with flu have mild illness and can recover at home."
-      )
-    ).toBeInTheDocument();
+    expect(screen.getByText("For flu A and B:")).toBeInTheDocument();
   });
 
   it("matches screenshot", () => {
