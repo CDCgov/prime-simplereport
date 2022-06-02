@@ -1,7 +1,7 @@
 import qs from "querystring";
 
 import { useLocation, useNavigate, useParams } from "react-router-dom";
-import { gql, useLazyQuery, useQuery } from "@apollo/client";
+import { useLazyQuery } from "@apollo/client";
 import React, {
   ChangeEventHandler,
   SetStateAction,
@@ -46,6 +46,7 @@ import { appPermissions, hasPermission } from "../permissions";
 import {
   useGetAllFacilitiesQuery,
   useGetFacilityResultsMultiplexQuery,
+  useGetResultsCountByFacilityQuery,
 } from "../../generated/graphql";
 
 import TestResultPrintModal from "./TestResultPrintModal";
@@ -69,7 +70,8 @@ export const byDateTested = (a: any, b: any) => {
 /**
  * Results Table
  */
-const tableHeaders = (hasMultiplexResults: boolean) => (
+
+const tableHeaders = (hasMultiplexResults: boolean, hasFacility: boolean) => (
   <tr>
     <th scope="col" className="patient-name-cell">
       {PATIENT_TERM_CAP}
@@ -90,15 +92,17 @@ const tableHeaders = (hasMultiplexResults: boolean) => (
         </th>
       </>
     ) : null}
-    <th scope="col" className="test-facility-cell">
-      Testing facility
-    </th>
     <th scope="col" className="test-device-cell">
       Test device
     </th>
     <th scope="col" className="submitted-by-cell">
       Submitted by
     </th>
+    {hasFacility && (
+      <th scope="col" className="test-facility-cell">
+        Facility
+      </th>
+    )}
     <th scope="col" className="actions-cell">
       Actions
     </th>
@@ -108,6 +112,7 @@ const tableHeaders = (hasMultiplexResults: boolean) => (
 function testResultRows(
   testResults: any,
   hasMultiplexResults: boolean,
+  hasFacility: boolean,
   setPrintModalId: SetStateAction<any>,
   setMarkCorrectionId: SetStateAction<any>,
   setDetailsModalId: SetStateAction<any>,
@@ -217,9 +222,6 @@ function testResultRows(
             {getResultCell("COVID-19")}
           </td>
         )}
-        <td className="test-facility-cell">
-          {facilityDisplayName(r.facility.name, r.facility.isDeleted)}
-        </td>
         <td className="test-device-cell">{r.deviceType.name}</td>
         <td className="submitted-by-cell">
           {displayFullName(
@@ -228,6 +230,11 @@ function testResultRows(
             r.createdBy.nameInfo.lastName
           )}
         </td>
+        {hasFacility && (
+          <td className="test-facility-cell">
+            {facilityDisplayName(r.facility.name, r.facility.isDeleted)}
+          </td>
+        )}
         <td className="actions-cell">
           <ActionsMenu items={actionItems} />
         </td>
@@ -239,13 +246,18 @@ function testResultRows(
 interface ResultsTableListProps {
   rows: JSX.Element | JSX.Element[];
   hasMultiplexResults: boolean;
+  hasFacility: boolean;
 }
 
-const ResultsTable = ({ rows, hasMultiplexResults }: ResultsTableListProps) => {
+const ResultsTable = ({
+  rows,
+  hasMultiplexResults,
+  hasFacility,
+}: ResultsTableListProps) => {
   return (
     <table className="usa-table usa-table--borderless width-full">
       <thead className="sr-element__sr-only">
-        {tableHeaders(hasMultiplexResults)}
+        {tableHeaders(hasMultiplexResults, hasFacility)}
       </thead>
       <tbody>{rows}</tbody>
     </table>
@@ -448,6 +460,9 @@ export const DetachedTestResultsList = ({
   }
 
   const testResults = data?.testResults || [];
+  const displayFacilityColumn =
+    filterParams.filterFacilityId === ALL_FACILITIES_ID ||
+    activeFacilityId === ALL_FACILITIES_ID;
 
   const hasMultiplexResults = testResults.some(
     (result: any) =>
@@ -458,6 +473,7 @@ export const DetachedTestResultsList = ({
   const rows = testResultRows(
     testResults,
     hasMultiplexResults,
+    displayFacilityColumn,
     setPrintModalId,
     setMarkCorrectionId,
     setDetailsModalId,
@@ -683,13 +699,16 @@ export const DetachedTestResultsList = ({
                 className="usa-table usa-table--borderless width-full"
                 aria-hidden="true"
               >
-                <thead>{tableHeaders(hasMultiplexResults)}</thead>
+                <thead>
+                  {tableHeaders(hasMultiplexResults, displayFacilityColumn)}
+                </thead>
               </table>
             </div>
             <div title="filtered-result">
               <ResultsTable
                 rows={rows}
                 hasMultiplexResults={hasMultiplexResults}
+                hasFacility={displayFacilityColumn}
               />
             </div>
             <div className="usa-card__footer">
@@ -710,26 +729,6 @@ export const DetachedTestResultsList = ({
     </main>
   );
 };
-
-export const resultsCountQuery = gql`
-  query GetResultsCountByFacility(
-    $facilityId: ID
-    $patientId: ID
-    $result: String
-    $role: String
-    $startDate: DateTime
-    $endDate: DateTime
-  ) {
-    testResultsCount(
-      facilityId: $facilityId
-      patientId: $patientId
-      result: $result
-      role: $role
-      startDate: $startDate
-      endDate: $endDate
-    )
-  }
-`;
 
 export interface ResultsQueryVariables {
   patientId?: string | null;
@@ -821,11 +820,11 @@ const TestResultsList = () => {
         : filterFacilityId || activeFacilityId,
     ...queryParams,
   };
-
-  const count = useQuery(resultsCountQuery, {
+  const count = useGetResultsCountByFacilityQuery({
     fetchPolicy: "no-cache",
     variables: countQueryVariables,
   });
+
   const results = useGetFacilityResultsMultiplexQuery({
     fetchPolicy: "no-cache",
     variables: resultsQueryVariables,

@@ -168,14 +168,6 @@ public class TestEvent extends BaseTestInfo {
     return super.getResult();
   }
 
-  public Optional<Result> getResultForDisease(SupportedDisease disease) {
-    Hibernate.initialize(this.results);
-    if (results != null) {
-      return results.stream().filter(r -> r.getDisease().equals(disease)).findFirst();
-    }
-    return Optional.empty();
-  }
-
   @Override
   public TestResult getResult() {
     return getTestResult();
