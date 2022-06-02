@@ -12,7 +12,7 @@ describe("Method generateTableHeaders", () => {
     </table>
   );
   it("checks basic headers", () => {
-    render(table(generateTableHeaders()));
+    render(table(generateTableHeaders(false, false)));
     expect(
       screen.getByRole("columnheader", {
         name: new RegExp(`${PATIENT_TERM_CAP}`, "i"),
