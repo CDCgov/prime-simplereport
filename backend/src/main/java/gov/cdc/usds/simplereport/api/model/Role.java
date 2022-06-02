@@ -26,6 +26,7 @@ public enum Role {
    * and view historical test results.
    */
   USER(OrganizationRole.USER),
+  TEST_RESULT_UPLOAD_USER(OrganizationRole.TEST_RESULT_UPLOAD_USER),
   /**
    * This is the organization admin role: if you have this role, then you have the ability to change
    * your role, so other roles you may have are moot.

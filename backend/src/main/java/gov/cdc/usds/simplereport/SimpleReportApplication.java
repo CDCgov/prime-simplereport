@@ -21,6 +21,7 @@ import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnSingleCandidate;
 import org.springframework.boot.context.properties.EnableConfigurationProperties;
 import org.springframework.boot.info.GitProperties;
+import org.springframework.cloud.openfeign.EnableFeignClients;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Profile;
 import org.springframework.scheduling.annotation.EnableScheduling;
@@ -40,6 +41,7 @@ import org.springframework.scheduling.annotation.EnableScheduling;
   AzureStorageQueueReportingProperties.class
 })
 @EnableScheduling
+@EnableFeignClients
 public class SimpleReportApplication {
   public static void main(String[] args) {
     SpringApplication.run(SimpleReportApplication.class, args);
