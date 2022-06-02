@@ -11,8 +11,8 @@ import { ActionsMenu } from "../../commonComponents/ActionsMenu";
 import { byDateTested, Results } from "../TestResultsList";
 
 export const generateTableHeaders = (
-  hasMultiplexResults: boolean = false,
-  hasFacility: boolean = false
+  hasMultiplexResults: boolean,
+  hasFacility: boolean
 ) => (
   <tr>
     <th scope="col" className="patient-name-cell">

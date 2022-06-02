@@ -20,7 +20,7 @@ import testResultsMultiplex from "./resultsMultiplex.mock";
 import { facilities, facilitiesIncludeArchived } from "./facilities.mock";
 import { patients } from "./patients.mock";
 
-const QUERIES = [
+export const mocks = [
   {
     request: {
       query: GetResultsCountByFacilityDocument,
@@ -409,4 +409,74 @@ const QUERIES = [
   },
 ];
 
-export default QUERIES;
+export const mocksWithMultiplex = [
+  {
+    request: {
+      query: GetResultsCountByFacilityDocument,
+      variables: {
+        facilityId: null,
+      },
+    },
+    result: {
+      data: {
+        testResultsCount: testResultsMultiplex.length,
+      },
+    },
+  },
+  {
+    request: {
+      query: GetFacilityResultsMultiplexDocument,
+      variables: {
+        facilityId: null,
+        pageNumber: 0,
+        pageSize: 20,
+      },
+    },
+    result: {
+      data: {
+        testResults: testResultsMultiplex,
+      },
+    },
+  },
+  {
+    request: {
+      query: GetAllFacilitiesDocument,
+      variables: {
+        showArchived: true,
+      },
+    },
+    result: {
+      data: {
+        facilities: facilitiesIncludeArchived,
+      },
+    },
+  },
+  {
+    request: {
+      query: GetResultsCountByFacilityDocument,
+      variables: {
+        facilityId: "1",
+      },
+    },
+    result: {
+      data: {
+        testResultsCount: testResultsMultiplex.length,
+      },
+    },
+  },
+  {
+    request: {
+      query: GetFacilityResultsMultiplexDocument,
+      variables: {
+        facilityId: "1",
+        pageNumber: 0,
+        pageSize: 20,
+      },
+    },
+    result: {
+      data: {
+        testResults: testResultsMultiplex,
+      },
+    },
+  },
+];

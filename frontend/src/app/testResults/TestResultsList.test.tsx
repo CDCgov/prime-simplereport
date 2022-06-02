@@ -2,7 +2,6 @@ import qs from "querystring";
 
 import { MockedProvider } from "@apollo/client/testing";
 import {
-  fireEvent,
   render,
   screen,
   waitForElementToBeRemoved,
@@ -24,10 +23,9 @@ import TestResultsList, {
   ALL_FACILITIES_ID,
   DetachedTestResultsList,
 } from "./TestResultsList";
-import testResultsMultiplex from "./mocks/resultsMultiplex.mock";
 import testResults from "./mocks/resultsCovid.mock";
 import testResultsByStartDateAndEndDate from "./mocks/resultsByStartAndEndDate.mock";
-import mocks from "./mocks/queries.mock";
+import { mocks, mocksWithMultiplex } from "./mocks/queries.mock";
 import { facilities, facilitiesIncludeArchived } from "./mocks/facilities.mock";
 
 const mockStore = configureStore([]);
@@ -231,49 +229,6 @@ describe("TestResultsList", () => {
   });
 
   it("should display facility column when all facilities are selected in the filter", async () => {
-    const localMocks = [
-      {
-        request: {
-          query: GetResultsCountByFacilityDocument,
-          variables: {
-            facilityId: null,
-          },
-        },
-        result: {
-          data: {
-            testResultsCount: testResultsByStartDateAndEndDate.length,
-          },
-        },
-      },
-      {
-        request: {
-          query: GetFacilityResultsMultiplexDocument,
-          variables: {
-            facilityId: null,
-            pageNumber: 0,
-            pageSize: 20,
-          },
-        },
-        result: {
-          data: {
-            testResults: testResultsByStartDateAndEndDate,
-          },
-        },
-      },
-      {
-        request: {
-          query: GetAllFacilitiesDocument,
-          variables: {
-            showArchived: true,
-          },
-        },
-        result: {
-          data: {
-            facilities: facilitiesIncludeArchived,
-          },
-        },
-      },
-    ];
     const search = {
       facility: "1",
       filterFacilityId: "all",
@@ -286,75 +241,21 @@ describe("TestResultsList", () => {
         ]}
       >
         <Provider store={store}>
-          <MockedProvider mocks={localMocks}>
+          <MockedProvider mocks={mocks}>
             <TestResultsList />
           </MockedProvider>
         </Provider>
       </MemoryRouter>
     );
 
-    expect(await screen.findByText("Showing 1-1 of 1")).toBeInTheDocument();
+    expect(await screen.findByText("Showing 1-2 of 2")).toBeInTheDocument();
 
-    const facilitySelect = (await screen.findByLabelText(
-      "Testing facility"
-    )) as HTMLSelectElement;
-    expect(facilitySelect).toBeInTheDocument();
-
-    fireEvent.change(facilitySelect, { target: { value: ALL_FACILITIES_ID } });
-
-    const row = within(await screen.findByTitle("filtered-result"));
-    expect(await row.findByText("Colleer, Barde X")).toBeInTheDocument();
-    expect(await row.findByText("DOB: 11/07/1960")).toBeInTheDocument();
-    expect(await row.findByText("Negative")).toBeInTheDocument();
-    expect(await row.findByText("Facility 1")).toBeInTheDocument();
-    expect(await row.findByText("Abbott IDNow")).toBeInTheDocument();
-    expect(await row.findByText("User, Ursula")).toBeInTheDocument();
+    expect(
+      screen.getByRole("columnheader", { name: /facility/i })
+    ).toBeInTheDocument();
   });
 
   it("Should not display submitted by column when multiplex and facility columns show", async () => {
-    const localMocks = [
-      {
-        request: {
-          query: GetResultsCountByFacilityDocument,
-          variables: {
-            facilityId: null,
-          },
-        },
-        result: {
-          data: {
-            testResultsCount: testResultsMultiplex.length,
-          },
-        },
-      },
-      {
-        request: {
-          query: GetFacilityResultsMultiplexDocument,
-          variables: {
-            facilityId: null,
-            pageNumber: 0,
-            pageSize: 20,
-          },
-        },
-        result: {
-          data: {
-            testResults: testResultsMultiplex,
-          },
-        },
-      },
-      {
-        request: {
-          query: GetAllFacilitiesDocument,
-          variables: {
-            showArchived: true,
-          },
-        },
-        result: {
-          data: {
-            facilities: facilitiesIncludeArchived,
-          },
-        },
-      },
-    ];
     const search = {
       facility: "1",
       filterFacilityId: "all",
@@ -367,7 +268,7 @@ describe("TestResultsList", () => {
         ]}
       >
         <Provider store={store}>
-          <MockedProvider mocks={localMocks}>
+          <MockedProvider mocks={mocksWithMultiplex}>
             <TestResultsList />
           </MockedProvider>
         </Provider>
@@ -391,50 +292,8 @@ describe("TestResultsList", () => {
       screen.queryByRole("columnheader", { name: /submitted by/i })
     ).not.toBeInTheDocument();
   });
+
   it("Should display submitted by column when there are not multiplex results", async () => {
-    const localMocks = [
-      {
-        request: {
-          query: GetResultsCountByFacilityDocument,
-          variables: {
-            facilityId: null,
-          },
-        },
-        result: {
-          data: {
-            testResultsCount: testResults.length,
-          },
-        },
-      },
-      {
-        request: {
-          query: GetFacilityResultsMultiplexDocument,
-          variables: {
-            facilityId: null,
-            pageNumber: 0,
-            pageSize: 20,
-          },
-        },
-        result: {
-          data: {
-            testResults: testResults,
-          },
-        },
-      },
-      {
-        request: {
-          query: GetAllFacilitiesDocument,
-          variables: {
-            showArchived: true,
-          },
-        },
-        result: {
-          data: {
-            facilities: facilitiesIncludeArchived,
-          },
-        },
-      },
-    ];
     const search = {
       facility: "1",
       filterFacilityId: "all",
@@ -447,14 +306,14 @@ describe("TestResultsList", () => {
         ]}
       >
         <Provider store={store}>
-          <MockedProvider mocks={localMocks}>
+          <MockedProvider mocks={mocks}>
             <TestResultsList />
           </MockedProvider>
         </Provider>
       </MemoryRouter>
     );
 
-    expect(await screen.findByText("Showing 1-3 of 3")).toBeInTheDocument();
+    expect(await screen.findByText("Showing 1-2 of 2")).toBeInTheDocument();
     expect(
       screen.getByRole("columnheader", { name: /covid-19/i })
     ).toBeInTheDocument();
@@ -472,49 +331,6 @@ describe("TestResultsList", () => {
     ).toBeInTheDocument();
   });
   it("Should display submitted by column when there are multiplex results but displays only one facility", async () => {
-    const localMocks = [
-      {
-        request: {
-          query: GetResultsCountByFacilityDocument,
-          variables: {
-            facilityId: "1",
-          },
-        },
-        result: {
-          data: {
-            testResultsCount: testResultsMultiplex.length,
-          },
-        },
-      },
-      {
-        request: {
-          query: GetFacilityResultsMultiplexDocument,
-          variables: {
-            facilityId: "1",
-            pageNumber: 0,
-            pageSize: 20,
-          },
-        },
-        result: {
-          data: {
-            testResults: testResultsMultiplex,
-          },
-        },
-      },
-      {
-        request: {
-          query: GetAllFacilitiesDocument,
-          variables: {
-            showArchived: true,
-          },
-        },
-        result: {
-          data: {
-            facilities: facilitiesIncludeArchived,
-          },
-        },
-      },
-    ];
     const search = {
       facility: "1",
     };
@@ -526,7 +342,7 @@ describe("TestResultsList", () => {
         ]}
       >
         <Provider store={store}>
-          <MockedProvider mocks={localMocks}>
+          <MockedProvider mocks={mocksWithMultiplex}>
             <TestResultsList />
           </MockedProvider>
         </Provider>
