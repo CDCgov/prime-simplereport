@@ -12,11 +12,7 @@ import { MemoryRouter } from "react-router-dom";
 import configureStore from "redux-mock-store";
 import userEvent from "@testing-library/user-event";
 
-import {
-  GetAllFacilitiesDocument,
-  GetFacilityResultsMultiplexDocument,
-  GetResultsCountByFacilityDocument,
-} from "../../generated/graphql";
+import { GetAllFacilitiesDocument } from "../../generated/graphql";
 import { appPermissions } from "../permissions";
 
 import TestResultsList, {
@@ -24,9 +20,8 @@ import TestResultsList, {
   DetachedTestResultsList,
 } from "./TestResultsList";
 import testResults from "./mocks/resultsCovid.mock";
-import testResultsByStartDateAndEndDate from "./mocks/resultsByStartAndEndDate.mock";
 import { mocks, mocksWithMultiplex } from "./mocks/queries.mock";
-import { facilities, facilitiesIncludeArchived } from "./mocks/facilities.mock";
+import { facilities } from "./mocks/facilities.mock";
 
 const mockStore = configureStore([]);
 const store = mockStore({
@@ -61,25 +56,10 @@ const WithRouter: React.FC = ({ children }) => (
 
 describe("TestResultsList", () => {
   it("should render a list of tests", async () => {
-    const localMock = [
-      {
-        request: {
-          query: GetAllFacilitiesDocument,
-          variables: {
-            showArchived: true,
-          },
-        },
-        result: {
-          data: {
-            facilities: facilitiesIncludeArchived,
-          },
-        },
-      },
-    ];
     const { container } = render(
       <WithRouter>
         <Provider store={store}>
-          <MockedProvider mocks={localMock}>
+          <MockedProvider mocks={mocks}>
             <DetachedTestResultsList
               data={{ testResults }}
               pageNumber={1}
@@ -109,59 +89,6 @@ describe("TestResultsList", () => {
     expect(container).toMatchSnapshot();
   });
   it("should be able to load filter params from url", async () => {
-    const localMocks = [
-      {
-        request: {
-          query: GetResultsCountByFacilityDocument,
-          variables: {
-            facilityId: "1",
-            patientId: "48c523e8-7c65-4047-955c-e3f65bb8b58a",
-            startDate: "2021-03-18T00:00:00.000Z",
-            endDate: "2021-03-19T23:59:59.999Z",
-            role: "STAFF",
-            result: "NEGATIVE",
-          },
-        },
-        result: {
-          data: {
-            testResultsCount: testResultsByStartDateAndEndDate.length,
-          },
-        },
-      },
-      {
-        request: {
-          query: GetFacilityResultsMultiplexDocument,
-          variables: {
-            facilityId: "1",
-            pageNumber: 0,
-            pageSize: 20,
-            patientId: "48c523e8-7c65-4047-955c-e3f65bb8b58a",
-            startDate: "2021-03-18T00:00:00.000Z",
-            endDate: "2021-03-19T23:59:59.999Z",
-            role: "STAFF",
-            result: "NEGATIVE",
-          },
-        },
-        result: {
-          data: {
-            testResults: testResultsByStartDateAndEndDate,
-          },
-        },
-      },
-      {
-        request: {
-          query: GetAllFacilitiesDocument,
-          variables: {
-            showArchived: true,
-          },
-        },
-        result: {
-          data: {
-            facilities: facilitiesIncludeArchived,
-          },
-        },
-      },
-    ];
     const search = {
       patientId: "48c523e8-7c65-4047-955c-e3f65bb8b58a",
       startDate: "2021-03-18T00:00:00.000Z",
@@ -178,7 +105,7 @@ describe("TestResultsList", () => {
         ]}
       >
         <Provider store={store}>
-          <MockedProvider mocks={localMocks}>
+          <MockedProvider mocks={mocks}>
             <TestResultsList />
           </MockedProvider>
         </Provider>

@@ -407,6 +407,44 @@ export const mocks = [
       },
     },
   },
+  {
+    request: {
+      query: GetResultsCountByFacilityDocument,
+      variables: {
+        facilityId: "1",
+        patientId: "48c523e8-7c65-4047-955c-e3f65bb8b58a",
+        startDate: "2021-03-18T00:00:00.000Z",
+        endDate: "2021-03-19T23:59:59.999Z",
+        role: "STAFF",
+        result: "NEGATIVE",
+      },
+    },
+    result: {
+      data: {
+        testResultsCount: testResultsByStartDateAndEndDate.length,
+      },
+    },
+  },
+  {
+    request: {
+      query: GetFacilityResultsMultiplexDocument,
+      variables: {
+        facilityId: "1",
+        pageNumber: 0,
+        pageSize: 20,
+        patientId: "48c523e8-7c65-4047-955c-e3f65bb8b58a",
+        startDate: "2021-03-18T00:00:00.000Z",
+        endDate: "2021-03-19T23:59:59.999Z",
+        role: "STAFF",
+        result: "NEGATIVE",
+      },
+    },
+    result: {
+      data: {
+        testResults: testResultsByStartDateAndEndDate,
+      },
+    },
+  },
 ];
 
 export const mocksWithMultiplex = [
