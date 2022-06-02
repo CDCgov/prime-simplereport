@@ -1578,6 +1578,247 @@ describe("TestResultsList", () => {
     expect(await row.findByText("User, Ursula")).toBeInTheDocument();
   });
 
+  it("Should not display submitted by column when multiplex and facility columns show", async () => {
+    const localMocks = [
+      {
+        request: {
+          query: GetResultsCountByFacilityDocument,
+          variables: {
+            facilityId: null,
+          },
+        },
+        result: {
+          data: {
+            testResultsCount: testResultsMultiplex.length,
+          },
+        },
+      },
+      {
+        request: {
+          query: GetFacilityResultsMultiplexDocument,
+          variables: {
+            facilityId: null,
+            pageNumber: 0,
+            pageSize: 20,
+          },
+        },
+        result: {
+          data: {
+            testResults: testResultsMultiplex,
+          },
+        },
+      },
+      {
+        request: {
+          query: GetAllFacilitiesDocument,
+          variables: {
+            showArchived: true,
+          },
+        },
+        result: {
+          data: {
+            facilities: facilitiesIncludeArchived,
+          },
+        },
+      },
+    ];
+    const search = {
+      facility: "1",
+      filterFacilityId: "all",
+    };
+
+    await render(
+      <MemoryRouter
+        initialEntries={[
+          { pathname: "/results/1", search: qs.stringify(search) },
+        ]}
+      >
+        <Provider store={store}>
+          <MockedProvider mocks={localMocks}>
+            <TestResultsList />
+          </MockedProvider>
+        </Provider>
+      </MemoryRouter>
+    );
+
+    expect(await screen.findByText("Showing 1-3 of 3")).toBeInTheDocument();
+    expect(
+      screen.getByRole("columnheader", { name: /covid-19/i })
+    ).toBeInTheDocument();
+    expect(
+      screen.getByRole("columnheader", { name: /flu a/i })
+    ).toBeInTheDocument();
+    expect(
+      screen.getByRole("columnheader", { name: /flu b/i })
+    ).toBeInTheDocument();
+    expect(
+      screen.getByRole("columnheader", { name: /facility/i })
+    ).toBeInTheDocument();
+    expect(
+      screen.queryByRole("columnheader", { name: /submitted by/i })
+    ).not.toBeInTheDocument();
+  });
+  it("Should display submitted by column when there are not multiplex results", async () => {
+    const localMocks = [
+      {
+        request: {
+          query: GetResultsCountByFacilityDocument,
+          variables: {
+            facilityId: null,
+          },
+        },
+        result: {
+          data: {
+            testResultsCount: testResults.length,
+          },
+        },
+      },
+      {
+        request: {
+          query: GetFacilityResultsMultiplexDocument,
+          variables: {
+            facilityId: null,
+            pageNumber: 0,
+            pageSize: 20,
+          },
+        },
+        result: {
+          data: {
+            testResults: testResults,
+          },
+        },
+      },
+      {
+        request: {
+          query: GetAllFacilitiesDocument,
+          variables: {
+            showArchived: true,
+          },
+        },
+        result: {
+          data: {
+            facilities: facilitiesIncludeArchived,
+          },
+        },
+      },
+    ];
+    const search = {
+      facility: "1",
+      filterFacilityId: "all",
+    };
+
+    await render(
+      <MemoryRouter
+        initialEntries={[
+          { pathname: "/results/1", search: qs.stringify(search) },
+        ]}
+      >
+        <Provider store={store}>
+          <MockedProvider mocks={localMocks}>
+            <TestResultsList />
+          </MockedProvider>
+        </Provider>
+      </MemoryRouter>
+    );
+
+    expect(await screen.findByText("Showing 1-3 of 3")).toBeInTheDocument();
+    expect(
+      screen.getByRole("columnheader", { name: /covid-19/i })
+    ).toBeInTheDocument();
+    expect(
+      screen.queryByRole("columnheader", { name: /flu a/i })
+    ).not.toBeInTheDocument();
+    expect(
+      screen.queryByRole("columnheader", { name: /flu b/i })
+    ).not.toBeInTheDocument();
+    expect(
+      screen.getByRole("columnheader", { name: /facility/i })
+    ).toBeInTheDocument();
+    expect(
+      screen.getByRole("columnheader", { name: /submitted by/i })
+    ).toBeInTheDocument();
+  });
+  it("Should display submitted by column when there are multiplex results but displays only one facility", async () => {
+    const localMocks = [
+      {
+        request: {
+          query: GetResultsCountByFacilityDocument,
+          variables: {
+            facilityId: "1",
+          },
+        },
+        result: {
+          data: {
+            testResultsCount: testResultsMultiplex.length,
+          },
+        },
+      },
+      {
+        request: {
+          query: GetFacilityResultsMultiplexDocument,
+          variables: {
+            facilityId: "1",
+            pageNumber: 0,
+            pageSize: 20,
+          },
+        },
+        result: {
+          data: {
+            testResults: testResultsMultiplex,
+          },
+        },
+      },
+      {
+        request: {
+          query: GetAllFacilitiesDocument,
+          variables: {
+            showArchived: true,
+          },
+        },
+        result: {
+          data: {
+            facilities: facilitiesIncludeArchived,
+          },
+        },
+      },
+    ];
+    const search = {
+      facility: "1",
+    };
+
+    await render(
+      <MemoryRouter
+        initialEntries={[
+          { pathname: "/results/1", search: qs.stringify(search) },
+        ]}
+      >
+        <Provider store={store}>
+          <MockedProvider mocks={localMocks}>
+            <TestResultsList />
+          </MockedProvider>
+        </Provider>
+      </MemoryRouter>
+    );
+
+    expect(await screen.findByText("Showing 1-3 of 3")).toBeInTheDocument();
+
+    expect(
+      screen.getByRole("columnheader", { name: /covid-19/i })
+    ).toBeInTheDocument();
+    expect(
+      screen.getByRole("columnheader", { name: /flu a/i })
+    ).toBeInTheDocument();
+    expect(
+      screen.getByRole("columnheader", { name: /flu b/i })
+    ).toBeInTheDocument();
+    expect(
+      screen.queryByRole("columnheader", { name: /facility/i })
+    ).not.toBeInTheDocument();
+    expect(
+      screen.getByRole("columnheader", { name: /submitted by/i })
+    ).toBeInTheDocument();
+  });
+
   describe("with mocks", () => {
     beforeEach(() => {
       render(
