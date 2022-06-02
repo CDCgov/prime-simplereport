@@ -10,6 +10,11 @@ const mockStore = configureStore([]);
 const getPatientLinkData = (result: string) => ({
   testEventId: "4606e571-8249-479e-94ab-e2f311713a5f",
   result: result,
+  results: [
+    { disease: { name: "COVID-19" }, testResult: result },
+    { disease: { name: "Flu A" }, testResult: "POSITIVE" },
+    { disease: { name: "Flu B" }, testResult: "POSITIVE" },
+  ],
   dateTested: "2022-02-11T21:16:26.404+00:00",
   correctionStatus: "ORIGINAL",
   patient: {
