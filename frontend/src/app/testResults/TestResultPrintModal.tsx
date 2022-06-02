@@ -29,7 +29,6 @@ export const StaticTestResultModal = ({
     facility,
     deviceType,
     correctionStatus,
-    result,
     results,
     dateTested,
   } = testResult;
