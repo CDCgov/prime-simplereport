@@ -40,18 +40,19 @@ export const StaticTestResultModal = ({
     });
   };
 
-  const hasMultiplexResults =
-    results?.length &&
-    results.some((result: any) => result?.disease.name !== "COVID-19");
+  const hasMultiplexResults = results.some(
+    (multiplexResult: any) => multiplexResult.disease.name !== "COVID-19"
+  );
 
-  const getCovidResult = results.filter((result: any) =>
-    result.disease.name.includes("COVID-19")
+  const getCovidResult = results.filter((multiplexResult: any) =>
+    multiplexResult.disease.name.includes("COVID-19")
   )[0];
 
   const hasPositiveFluResults =
     results.filter(
-      (result: any) =>
-        result.disease.name.includes("Flu") && result?.testResult === "POSITIVE"
+      (multiplexResult: any) =>
+        multiplexResult.disease.name.includes("Flu") &&
+        multiplexResult.testResult === "POSITIVE"
     ).length > 0;
 
   const isMultiplexWithPositiveCovidOrNoFlu =
@@ -208,32 +209,34 @@ export const StaticTestResultModal = ({
   };
 
   const testResultsList = () => {
-    let testResults = getSortedResults();
-    let testResultsArray: any = [];
-    testResults.forEach((testResult: any) => {
+    const sortedTestResults = getSortedResults();
+    const testResultsArray: any = [];
+    sortedTestResults.forEach((sortedTestResult: any) => {
       testResultsArray.push(
         <li>
           <b>
-            {testResult.disease.name === "COVID-19" &&
+            {sortedTestResult.disease.name === "COVID-19" &&
               t("constants.disease.COVID19")}
-            {testResult.disease.name === "Flu A" && t("constants.disease.FLUA")}
-            {testResult.disease.name === "Flu B" && t("constants.disease.FLUB")}
+            {sortedTestResult.disease.name === "Flu A" &&
+              t("constants.disease.FLUA")}
+            {sortedTestResult.disease.name === "Flu B" &&
+              t("constants.disease.FLUB")}
           </b>
           <div>
             <strong>
               <span>
-                {testResult.testResult === "POSITIVE" &&
+                {sortedTestResult.testResult === "POSITIVE" &&
                   t("constants.testResults.POSITIVE")}
-                {testResult.testResult === "NEGATIVE" &&
+                {sortedTestResult.testResult === "NEGATIVE" &&
                   t("constants.testResults.NEGATIVE")}
-                {result.testResult === "UNDETERMINED" &&
+                {sortedTestResult.testResult === "UNDETERMINED" &&
                   t("constants.testResults.UNDETERMINED")}
               </span>
               <span>
                 &nbsp;
-                {testResult.testResult === "POSITIVE" &&
+                {sortedTestResult.testResult === "POSITIVE" &&
                   t("constants.testResultsSymbols.POSITIVE")}
-                {testResult.testResult === "NEGATIVE" &&
+                {sortedTestResult.testResult === "NEGATIVE" &&
                   t("constants.testResultsSymbols.NEGATIVE")}
               </span>
             </strong>
