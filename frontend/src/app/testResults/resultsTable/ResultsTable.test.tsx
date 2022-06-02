@@ -1,7 +1,7 @@
 import { render, screen } from "@testing-library/react";
 
 import { PATIENT_TERM_CAP } from "../../../config/constants";
-import TEST_RESULTS_MULTIPLEX from "../mocks/resultsMultiplex";
+import TEST_RESULTS_MULTIPLEX from "../mocks/resultsMultiplex.mock";
 
 import ResultsTable, { generateTableHeaders } from "./ResultsTable";
 

@@ -7,18 +7,18 @@ import {
 import { testResultDetailsQuery } from "../TestResultDetailsModal";
 import { QUERY_PATIENT } from "../../testQueue/addToQueue/AddToQueueSearch";
 
-import testResults from "./resultsCovid";
-import testResultsForCsv from "./resultsCSV";
-import testResultsByRole from "./resultsByRole";
-import testResultsByFacility from "./resultsByFacility";
-import testResultsByAllFacility from "./resultsByAllFacilities";
-import testResultsByStartDate from "./resultsByStartDate";
-import testResultsByResultValue from "./resultsByResultValue";
-import testResultsByPatient from "./resultsByPatient";
-import testResultsByStartDateAndEndDate from "./resultsByStartAndEndDate";
-import testResultsMultiplex from "./resultsMultiplex";
-import { facilities, facilitiesIncludeArchived } from "./facilities";
-import { patients } from "./patients";
+import testResults from "./resultsCovid.mock";
+import testResultsForCsv from "./resultsCSV.mock";
+import testResultsByRole from "./resultsByRole.mock";
+import testResultsByFacility from "./resultsByFacility.mock";
+import testResultsByAllFacility from "./resultsByAllFacilities.mock";
+import testResultsByStartDate from "./resultsByStartDate.mock";
+import testResultsByResultValue from "./resultsByResultValue.mock";
+import testResultsByPatient from "./resultsByPatient.mock";
+import testResultsByStartDateAndEndDate from "./resultsByStartAndEndDate.mock";
+import testResultsMultiplex from "./resultsMultiplex.mock";
+import { facilities, facilitiesIncludeArchived } from "./facilities.mock";
+import { patients } from "./patients.mock";
 
 const QUERIES = [
   {

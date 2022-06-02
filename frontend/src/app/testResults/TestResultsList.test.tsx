@@ -24,11 +24,11 @@ import TestResultsList, {
   ALL_FACILITIES_ID,
   DetachedTestResultsList,
 } from "./TestResultsList";
-import testResultsMultiplex from "./mocks/resultsMultiplex";
-import testResults from "./mocks/resultsCovid";
-import testResultsByStartDateAndEndDate from "./mocks/resultsByStartAndEndDate";
-import mocks from "./mocks/queries";
-import { facilities, facilitiesIncludeArchived } from "./mocks/facilities";
+import testResultsMultiplex from "./mocks/resultsMultiplex.mock";
+import testResults from "./mocks/resultsCovid.mock";
+import testResultsByStartDateAndEndDate from "./mocks/resultsByStartAndEndDate.mock";
+import mocks from "./mocks/queries.mock";
+import { facilities, facilitiesIncludeArchived } from "./mocks/facilities.mock";
 
 const mockStore = configureStore([]);
 const store = mockStore({
