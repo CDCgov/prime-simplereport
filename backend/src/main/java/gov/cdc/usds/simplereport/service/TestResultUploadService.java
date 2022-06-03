@@ -78,7 +78,6 @@ public class TestResultUploadService {
 
   private UploadResponse parseFeignException(FeignException e) {
     try {
-      var body = e.contentUTF8();
       return mapper.readValue(e.contentUTF8(), UploadResponse.class);
     } catch (JsonProcessingException ex) {
       log.error("Unable to parse Report Stream response.", ex);
