@@ -286,19 +286,6 @@ public class TestOrderService {
     return savedOrder;
   }
 
-  // back it wayyyy up. What is the ideal flow here?
-  // Corrections
-  // 1. Call the correction mutation to reopen the test order
-  // 2. Update the test order on the UI
-  // 3. Call addTestResult mutation to save the changes and create a new TestEvent
-  // 4. Add mutation creates a new Result object that points to the new TestEvent and TestOrder, but
-  // preserves the
-  // existing TestOrder/original TestEvent.
-
-  // Removals
-  // 1. Call the removal mutation to reopen the test order
-  // 2. Create a new Result for the new TestEvent, but keep the old one available
-
   @AuthorizationConfiguration.RequirePermissionSubmitTestForPatient
   @Transactional(noRollbackFor = {TwilioException.class, ApiException.class})
   public AddTestResultResponse addTestResult(
@@ -569,7 +556,6 @@ public class TestOrderService {
 
     // generate a duplicate test_event that just has a status of REMOVED and the
     // reason
-    // this is where we have to create new Results for the removed event
     TestEvent newRemoveEvent =
         new TestEvent(event, TestCorrectionStatus.REMOVED, reasonForCorrection);
     _terepo.save(newRemoveEvent);
