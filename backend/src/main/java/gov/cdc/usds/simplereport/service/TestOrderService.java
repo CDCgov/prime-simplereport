@@ -38,6 +38,7 @@ import gov.cdc.usds.simplereport.db.repository.TestOrderRepository;
 import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.Date;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Objects;
@@ -285,6 +286,19 @@ public class TestOrderService {
     return savedOrder;
   }
 
+  // back it wayyyy up. What is the ideal flow here?
+  // Corrections
+  // 1. Call the correction mutation to reopen the test order
+  // 2. Update the test order on the UI
+  // 3. Call addTestResult mutation to save the changes and create a new TestEvent
+  // 4. Add mutation creates a new Result object that points to the new TestEvent and TestOrder, but
+  // preserves the
+  // existing TestOrder/original TestEvent.
+
+  // Removals
+  // 1. Call the removal mutation to reopen the test order
+  // 2. Create a new Result for the new TestEvent, but keep the old one available
+
   @AuthorizationConfiguration.RequirePermissionSubmitTestForPatient
   @Transactional(noRollbackFor = {TwilioException.class, ApiException.class})
   public AddTestResultResponse addTestResult(
@@ -314,8 +328,16 @@ public class TestOrderService {
               : new TestEvent(order, order.getCorrectionStatus(), order.getReasonForCorrection());
 
       TestEvent savedEvent = _terepo.save(testEvent);
-      resultEntity.setTestEvent(savedEvent);
-      _resultRepo.save(resultEntity);
+
+      if (order.getCorrectionStatus() == TestCorrectionStatus.ORIGINAL) {
+        resultEntity.setTestEvent(savedEvent);
+        _resultRepo.save(resultEntity);
+      } else {
+        // Create copy of the Result for corrections
+        Result copyResult = new Result(resultEntity, savedEvent);
+        _resultRepo.save(copyResult);
+      }
+
       order.setTestEventRef(savedEvent);
       savedOrder = _repo.save(order);
       _testEventReportingService.report(savedEvent);
@@ -547,9 +569,21 @@ public class TestOrderService {
 
     // generate a duplicate test_event that just has a status of REMOVED and the
     // reason
+    // this is where we have to create new Results for the removed event
     TestEvent newRemoveEvent =
         new TestEvent(event, TestCorrectionStatus.REMOVED, reasonForCorrection);
     _terepo.save(newRemoveEvent);
+
+    // Create new Results for the new removed event
+    Set<Result> copiedResults = new HashSet<>();
+    order
+        .getResultSet()
+        .forEach(
+            result -> {
+              copiedResults.add(new Result(result, newRemoveEvent));
+            });
+    _resultRepo.saveAll(copiedResults);
+
     _testEventReportingService.report(newRemoveEvent);
 
     order.setReasonForCorrection(reasonForCorrection);
