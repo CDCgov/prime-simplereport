@@ -46,7 +46,7 @@ public class TestEvent extends BaseTestInfo {
   private TestOrder order;
 
   @JsonIgnore
-  @OneToMany(mappedBy = "testEvent", cascade = CascadeType.MERGE)
+  @OneToMany(mappedBy = "testEvent", cascade = CascadeType.MERGE, fetch = FetchType.EAGER)
   private Set<Result> results;
 
   @Column(columnDefinition = "uuid")
