@@ -25,6 +25,3 @@ logging:
     gov.cdc.usds: DEBUG
 twilio:
   enabled: false
-datahub:
-  url: "http://localhost:8080/api/dummy/"
-  api_key: "dummy"
