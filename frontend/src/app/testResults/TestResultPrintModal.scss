@@ -9,7 +9,10 @@
 
 @media print {
   body {
-    .dont-print {
+    .dont-print,
+    .usa-header,
+    .usa-banner,
+    #root {
       display: none !important;
     }
 
