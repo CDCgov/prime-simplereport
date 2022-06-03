@@ -40,6 +40,12 @@ scalar DateTime
 scalar LocalDate
 scalar Upload
 
+enum UploadStatus {
+  PENDING
+  SUCCESS
+  FAILURE
+}
+
 enum ResultValue {
   POSITIVE
   NEGATIVE

@@ -783,6 +783,7 @@ export type Query = {
   testResults?: Maybe<Array<Maybe<TestResult>>>;
   testResultsCount?: Maybe<Scalars["Int"]>;
   topLevelDashboardMetrics?: Maybe<TopLevelDashboardMetrics>;
+  uploadSubmissions: UploadSubmissionPage;
   user?: Maybe<User>;
   users?: Maybe<Array<Maybe<ApiUser>>>;
   usersWithStatus?: Maybe<Array<ApiUserWithStatus>>;
@@ -867,6 +868,13 @@ export type QueryTestResultsCountArgs = {
 export type QueryTopLevelDashboardMetricsArgs = {
   endDate?: InputMaybe<Scalars["DateTime"]>;
   facilityId?: InputMaybe<Scalars["ID"]>;
+  startDate?: InputMaybe<Scalars["DateTime"]>;
+};
+
+export type QueryUploadSubmissionsArgs = {
+  endDate?: InputMaybe<Scalars["DateTime"]>;
+  pageNumber?: InputMaybe<Scalars["Int"]>;
+  pageSize?: InputMaybe<Scalars["Int"]>;
   startDate?: InputMaybe<Scalars["DateTime"]>;
 };
 
@@ -983,11 +991,25 @@ export type UpdateDeviceType = {
 
 export type UploadResult = {
   __typename?: "UploadResult";
+  createdAt: Scalars["DateTime"];
   errors?: Maybe<Array<Maybe<FeedbackMessage>>>;
-  recordsCount?: Maybe<Scalars["Int"]>;
+  internalId: Scalars["ID"];
+  recordsCount: Scalars["Int"];
   reportId?: Maybe<Scalars["ID"]>;
-  status?: Maybe<Scalars["String"]>;
+  status: UploadStatus;
   warnings?: Maybe<Array<Maybe<FeedbackMessage>>>;
+};
+
+export enum UploadStatus {
+  Failure = "FAILURE",
+  Pending = "PENDING",
+  Success = "SUCCESS",
+}
+
+export type UploadSubmissionPage = {
+  __typename?: "UploadSubmissionPage";
+  content: Array<UploadResult>;
+  totalElements: Scalars["Int"];
 };
 
 export type User = {
@@ -2594,8 +2616,8 @@ export type UploadTestResultCsvMutation = {
     | {
         __typename?: "UploadResult";
         reportId?: string | null | undefined;
-        status?: string | null | undefined;
-        recordsCount?: number | null | undefined;
+        status: UploadStatus;
+        recordsCount: number;
         warnings?:
           | Array<
               | {
