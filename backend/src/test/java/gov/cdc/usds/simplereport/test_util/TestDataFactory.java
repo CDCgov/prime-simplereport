@@ -456,13 +456,12 @@ public class TestDataFactory {
     order.setCorrectionStatus(TestCorrectionStatus.REMOVED);
     _testOrderRepo.save(order);
 
+    List<Result> originalResults = _resultRepository.findAllByTestOrder(order);
     Set<Result> copiedResults = new HashSet<>();
-    order
-        .getResultSet()
-        .forEach(
-            result -> {
-              copiedResults.add(new Result(result, newRemoveEvent));
-            });
+    originalResults.forEach(
+        result -> {
+          copiedResults.add(new Result(result, newRemoveEvent));
+        });
     _resultRepository.saveAll(copiedResults);
 
     return newRemoveEvent;
