@@ -1131,6 +1131,12 @@ Object {
                     class="sr-multi-column"
                   >
                     <li>
+                      Fever or chills
+                    </li>
+                    <li>
+                      Cough
+                    </li>
+                    <li>
                       Shortness of breath or difficulty breathing
                     </li>
                     <li>
@@ -1447,6 +1453,12 @@ Object {
                 <ul
                   class="sr-multi-column"
                 >
+                  <li>
+                    Fever or chills
+                  </li>
+                  <li>
+                    Cough
+                  </li>
                   <li>
                     Shortness of breath or difficulty breathing
                   </li>
