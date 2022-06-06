@@ -153,8 +153,16 @@ export async function deleteSuccessfullyParsedMessages(
         message.messageId,
         message.popReceipt
       );
+
+      if(message.dequeueCount > 1){
+        context.log(
+          `Message has been dequeued ${message.dequeueCount} times, possibly sent more than once to RS`
+        );
+      }
+
+      const testEventId = JSON.parse(message.messageText)['Result_ID'];
       context.log(
-        `Message ${message.messageId} deleted with request id ${deleteResponse.requestId}`
+        `Message ${message.messageId} deleted with request id ${deleteResponse.requestId} and has TestEvent id ${testEventId}`
       );
     } catch (e: any) {
       context.log(
