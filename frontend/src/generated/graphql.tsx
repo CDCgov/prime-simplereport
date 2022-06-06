@@ -2035,6 +2035,7 @@ export type GetPatientQuery = {
         birthDate?: any | null | undefined;
         gender?: string | null | undefined;
         telephone?: string | null | undefined;
+        emails?: Array<string | null | undefined> | null | undefined;
         testResultDelivery?: TestResultDeliveryPreference | null | undefined;
         phoneNumbers?:
           | Array<
@@ -5708,6 +5709,7 @@ export const GetPatientDocument = gql`
         type
         number
       }
+      emails
       testResultDelivery
     }
   }
