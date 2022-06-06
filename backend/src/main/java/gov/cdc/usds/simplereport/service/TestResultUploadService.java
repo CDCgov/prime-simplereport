@@ -1,6 +1,7 @@
 package gov.cdc.usds.simplereport.service;
 
 import feign.FeignException;
+import gov.cdc.usds.simplereport.api.model.errors.CsvProcessingException;
 import gov.cdc.usds.simplereport.api.model.errors.IllegalGraphqlArgumentException;
 import gov.cdc.usds.simplereport.api.model.errors.InvalidBulkTestResultUploadException;
 import gov.cdc.usds.simplereport.config.AuthorizationConfiguration;
@@ -23,12 +24,13 @@ import java.util.UUID;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
-import org.springframework.transaction.annotation.Transactional;
 
 @Service
 @RequiredArgsConstructor
-@Transactional
 @Slf4j
 public class TestResultUploadService {
   private final TestResultUploadRepository _repo;
@@ -66,7 +68,8 @@ public class TestResultUploadService {
     try {
       content = csvStream.readAllBytes();
     } catch (IOException e) {
-      throw new RuntimeException(e);
+      log.error("Error reading test result upload CSV", e);
+      throw new CsvProcessingException("Unable to read csv");
     }
 
     UploadResponse response = null;
@@ -74,15 +77,17 @@ public class TestResultUploadService {
       try {
         response = _client.uploadCSV(content);
       } catch (FeignException.BadRequest e) {
+        log.warn("CSV upload bad request", e);
         result.setErrors(new FeedbackMessage[] {new FeedbackMessage("api", "Bad Request")});
       } catch (FeignException fe) {
+        log.error("Error connecting to Report Stream", fe);
         result.setErrors(new FeedbackMessage[] {new FeedbackMessage("api", "Server Error")});
       }
     }
 
     if (response != null) {
-      var status = parseStatus(response.getOverallStatus());
 
+      var status = parseStatus(response.getOverallStatus());
       result =
           new TestResultUpload(
               response.getId(),
@@ -96,6 +101,15 @@ public class TestResultUploadService {
     }
 
     return result;
+  }
+
+  public Page<TestResultUpload> getUploadSubmissions(
+      Date startDate, Date endDate, int pageNumber, int pageSize) {
+    Organization org = _orgService.getCurrentOrganization();
+    PageRequest pageRequest =
+        PageRequest.of(pageNumber, pageSize, Sort.by("createdAt").descending());
+
+    return _repo.findAll(org, startDate, endDate, pageRequest);
   }
 
   private UploadStatus parseStatus(ReportStreamStatus status) {

@@ -3965,8 +3965,35 @@ databaseChangeLog:
               replaceIfExists: true
               fullDefinition: false
               selectQuery: SELECT internal_id, created_at, updated_at, organization_name, organization_external_id, verified_organization_id, is_deleted FROM ${database.defaultSchemaName}.organization_queue
-          - sql: 
+          - sql:
               sql: GRANT SELECT ON ${database.defaultSchemaName}.org_queue_no_phi_is_deleted TO ${noPhiUsername};
         rollback:
           - dropView:
               viewName: org_queue_no_phi_is_deleted
+  - changeSet:
+      id: backfill-results-table
+      author: emma@skylight.digital
+      comment: backfill the new results table with existing results from TestOrders
+      changes:
+        - tagDatabase:
+            tag: backfill-results-table
+        - sql:
+            sql: |
+              INSERT INTO ${database.defaultSchemaName}.result
+              SELECT
+                gen_random_uuid(),
+                t.created_at,
+                t.created_by,
+                t.updated_at,
+                t.updated_by,
+                FALSE,
+                t.test_event_id,
+                t.internal_id,
+                (SELECT d.internal_id from ${database.defaultSchemaName}.supported_disease d WHERE d.name='COVID-19'),
+                CASE WHEN t.result='POSITIVE' THEN '260373001' WHEN t.result='NEGATIVE' THEN '260415000' WHEN t.result='UNDETERMINED' THEN '455371000124106' END,
+                t.result
+              FROM ${database.defaultSchemaName}.test_order t
+              LEFT JOIN ${database.defaultSchemaName}.result ON t.internal_id=${database.defaultSchemaName}.result.test_order_id 
+              WHERE ${database.defaultSchemaName}.result.test_order_id IS NULL AND t.result IS NOT NULL;
+      rollback:
+        sql: SELECT 'foo';

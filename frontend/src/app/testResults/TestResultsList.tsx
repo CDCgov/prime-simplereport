@@ -1,10 +1,9 @@
 import qs from "querystring";
 
 import { useLocation, useNavigate, useParams } from "react-router-dom";
-import { gql, useLazyQuery, useQuery } from "@apollo/client";
+import { useLazyQuery } from "@apollo/client";
 import React, {
   ChangeEventHandler,
-  SetStateAction,
   useCallback,
   useEffect,
   useMemo,
@@ -12,16 +11,13 @@ import React, {
   useState,
 } from "react";
 import moment from "moment";
-import classnames from "classnames";
 import { faSlidersH } from "@fortawesome/free-solid-svg-icons";
 import { DatePicker, Label } from "@trussworks/react-uswds";
 import { useSelector } from "react-redux";
 
-import { PATIENT_TERM_CAP } from "../../config/constants";
 import { displayFullName, facilityDisplayName } from "../utils";
-import { formatDateWithTimeOption, isValidDate } from "../utils/date";
-import { ActionsMenu } from "../commonComponents/ActionsMenu";
-import { getParameterFromUrl, getUrl } from "../utils/url";
+import { isValidDate } from "../utils/date";
+import { getParameterFromUrl } from "../utils/url";
 import { useDocumentTitle, useOutsideClick } from "../utils/hooks";
 import Pagination from "../commonComponents/Pagination";
 import {
@@ -43,7 +39,11 @@ import SearchResults from "../testQueue/addToQueue/SearchResults";
 import Select from "../commonComponents/Select";
 import { useSelectedFacility } from "../facilitySelect/useSelectedFacility";
 import { appPermissions, hasPermission } from "../permissions";
-import { useGetAllFacilitiesQuery } from "../../generated/graphql";
+import {
+  useGetAllFacilitiesQuery,
+  useGetFacilityResultsMultiplexQuery,
+  useGetResultsCountByFacilityQuery,
+} from "../../generated/graphql";
 
 import TestResultPrintModal from "./TestResultPrintModal";
 import TestResultTextModal from "./TestResultTextModal";
@@ -51,6 +51,9 @@ import EmailTestResultModal from "./EmailTestResultModal";
 import TestResultCorrectionModal from "./TestResultCorrectionModal";
 import TestResultDetailsModal from "./TestResultDetailsModal";
 import DownloadResultsCSVButton from "./DownloadResultsCsvButton";
+import ResultsTable, {
+  generateTableHeaders,
+} from "./resultsTable/ResultsTable";
 
 export const ALL_FACILITIES_ID = "all";
 
@@ -61,142 +64,6 @@ export const byDateTested = (a: any, b: any) => {
   if (a.dateTested === b.dateTested) return 0;
   if (a.dateTested < b.dateTested) return 1;
   return -1;
-};
-
-/**
- * Results Table
- */
-const tableHeaders = (
-  <tr>
-    <th scope="col" className="patient-name-cell">
-      {PATIENT_TERM_CAP}
-    </th>
-    <th scope="col" className="test-date-cell">
-      Test date
-    </th>
-    <th scope="col" className="test-result-cell">
-      COVID-19
-    </th>
-    <th scope="col" className="test-facility-cell">
-      Testing facility
-    </th>
-    <th scope="col" className="test-device-cell">
-      Test device
-    </th>
-    <th scope="col" className="submitted-by-cell">
-      Submitted by
-    </th>
-    <th scope="col" className="actions-cell">
-      Actions
-    </th>
-  </tr>
-);
-
-function testResultRows(
-  testResults: any,
-  setPrintModalId: SetStateAction<any>,
-  setMarkCorrectionId: SetStateAction<any>,
-  setDetailsModalId: SetStateAction<any>,
-  setTextModalId: SetStateAction<any>,
-  setEmailModalTestResultId: SetStateAction<any>
-) {
-  if (testResults.length === 0) {
-    return (
-      <tr>
-        <td>No results</td>
-      </tr>
-    );
-  }
-
-  // `sort` mutates the array, so make a copy
-  return [...testResults].sort(byDateTested).map((r) => {
-    const actionItems = [];
-    actionItems.push({
-      name: "Print result",
-      action: () => setPrintModalId(r.internalId),
-    });
-    if (r.patient.email) {
-      actionItems.push({
-        name: "Email result",
-        action: () => setEmailModalTestResultId(r.internalId),
-      });
-    }
-    actionItems.push({
-      name: "Text result",
-      action: () => setTextModalId(r.internalId),
-    });
-
-    const removed = r.correctionStatus === "REMOVED";
-    if (!removed) {
-      actionItems.push({
-        name: "Correct result",
-        action: () => setMarkCorrectionId(r.internalId),
-      });
-    }
-    actionItems.push({
-      name: "View details",
-      action: () => setDetailsModalId(r.internalId),
-    });
-    return (
-      <tr
-        key={r.internalId}
-        title={removed ? "Marked as error" : ""}
-        className={classnames(
-          "sr-test-result-row",
-          removed && "sr-test-result-row--removed"
-        )}
-        data-patient-link={
-          r.patientLink
-            ? `${getUrl()}pxp?plid=${r.patientLink.internalId}`
-            : null
-        }
-      >
-        <td className="patient-name-cell">
-          {displayFullName(
-            r.patient.firstName,
-            r.patient.middleName,
-            r.patient.lastName
-          )}
-          <span className="display-block text-base font-ui-2xs">
-            DOB: {formatDateWithTimeOption(r.patient.birthDate)}
-          </span>
-        </td>
-        <td className="test-date-cell">
-          {formatDateWithTimeOption(r.dateTested, true)}
-        </td>
-        <td className="test-result-cell">
-          {TEST_RESULT_DESCRIPTIONS[r.result as Results]}
-        </td>
-        <td className="test-facility-cell">
-          {facilityDisplayName(r.facility.name, r.facility.isDeleted)}
-        </td>
-        <td className="test-device-cell">{r.deviceType.name}</td>
-        <td className="submitted-by-cell">
-          {displayFullName(
-            r.createdBy.nameInfo.firstName,
-            null,
-            r.createdBy.nameInfo.lastName
-          )}
-        </td>
-        <td className="actions-cell">
-          <ActionsMenu items={actionItems} />
-        </td>
-      </tr>
-    );
-  });
-}
-
-interface ResultsTableListProps {
-  rows: JSX.Element | JSX.Element[];
-}
-
-const ResultsTable = ({ rows }: ResultsTableListProps) => {
-  return (
-    <table className="usa-table usa-table--borderless width-full">
-      <thead className="sr-element__sr-only">{tableHeaders}</thead>
-      <tbody>{rows}</tbody>
-    </table>
-  );
 };
 
 /**
@@ -395,14 +262,14 @@ export const DetachedTestResultsList = ({
   }
 
   const testResults = data?.testResults || [];
+  const displayFacilityColumn =
+    filterParams.filterFacilityId === ALL_FACILITIES_ID ||
+    activeFacilityId === ALL_FACILITIES_ID;
 
-  const rows = testResultRows(
-    testResults,
-    setPrintModalId,
-    setMarkCorrectionId,
-    setDetailsModalId,
-    setTextModalId,
-    setEmailModalTestResultId
+  const hasMultiplexResults = testResults.some(
+    (result: any) =>
+      result.results?.length &&
+      result.results.some((r: any) => r.disease.name !== "COVID-19")
   );
 
   const processStartDate = (value: string | undefined) => {
@@ -623,11 +490,25 @@ export const DetachedTestResultsList = ({
                 className="usa-table usa-table--borderless width-full"
                 aria-hidden="true"
               >
-                <thead>{tableHeaders}</thead>
+                <thead>
+                  {generateTableHeaders(
+                    hasMultiplexResults,
+                    displayFacilityColumn
+                  )}
+                </thead>
               </table>
             </div>
             <div title="filtered-result">
-              <ResultsTable rows={rows} />
+              <ResultsTable
+                results={testResults}
+                setPrintModalId={setPrintModalId}
+                setMarkCorrectionId={setMarkCorrectionId}
+                setDetailsModalId={setDetailsModalId}
+                setTextModalId={setTextModalId}
+                setEmailModalTestResultId={setEmailModalTestResultId}
+                hasMultiplexResults={hasMultiplexResults}
+                hasFacility={displayFacilityColumn}
+              />
             </div>
             <div className="usa-card__footer">
               {loading ? (
@@ -647,82 +528,6 @@ export const DetachedTestResultsList = ({
     </main>
   );
 };
-
-export const resultsCountQuery = gql`
-  query GetResultsCountByFacility(
-    $facilityId: ID
-    $patientId: ID
-    $result: String
-    $role: String
-    $startDate: DateTime
-    $endDate: DateTime
-  ) {
-    testResultsCount(
-      facilityId: $facilityId
-      patientId: $patientId
-      result: $result
-      role: $role
-      startDate: $startDate
-      endDate: $endDate
-    )
-  }
-`;
-
-export const testResultQuery = gql`
-  query GetFacilityResults(
-    $facilityId: ID
-    $patientId: ID
-    $result: String
-    $role: String
-    $startDate: DateTime
-    $endDate: DateTime
-    $pageNumber: Int
-    $pageSize: Int
-  ) {
-    testResults(
-      facilityId: $facilityId
-      patientId: $patientId
-      result: $result
-      role: $role
-      startDate: $startDate
-      endDate: $endDate
-      pageNumber: $pageNumber
-      pageSize: $pageSize
-    ) {
-      internalId
-      dateTested
-      result
-      correctionStatus
-      deviceType {
-        internalId
-        name
-      }
-      patient {
-        internalId
-        firstName
-        middleName
-        lastName
-        birthDate
-        gender
-        lookupId
-        email
-      }
-      createdBy {
-        nameInfo {
-          firstName
-          lastName
-        }
-      }
-      patientLink {
-        internalId
-      }
-      facility {
-        name
-        isDeleted
-      }
-    }
-  }
-`;
 
 export interface ResultsQueryVariables {
   patientId?: string | null;
@@ -814,12 +619,12 @@ const TestResultsList = () => {
         : filterFacilityId || activeFacilityId,
     ...queryParams,
   };
-
-  const count = useQuery(resultsCountQuery, {
+  const count = useGetResultsCountByFacilityQuery({
     fetchPolicy: "no-cache",
     variables: countQueryVariables,
   });
-  const results = useQuery(testResultQuery, {
+
+  const results = useGetFacilityResultsMultiplexQuery({
     fetchPolicy: "no-cache",
     variables: resultsQueryVariables,
   });

@@ -81,7 +81,7 @@ dependencies {
     // graphql-java-extended-validation schema directives
     compile 'com.graphql-java:graphql-java-extended-validation:16.0.0'
 
-    implementation 'com.azure:azure-storage-queue:12.8.+'
+    implementation 'com.azure:azure-storage-queue:12.12.+'
 
     // test/check dependencies
     testImplementation('org.springframework.boot:spring-boot-starter-test') {
@@ -109,10 +109,10 @@ dependencies {
     testCompile "com.github.tomakehurst:wiremock-jre8:2.31.0"
 
     // Forcing these version resolutions over the BOM of spring-cloud-dependencies below
-    runtimeOnly 'com.azure:azure-core-http-netty:1.10.2'
-    runtimeOnly 'com.azure:azure-core:1.19.0'
-    runtimeOnly 'com.azure:azure-storage-common:12.12.0'
-    runtimeOnly "com.azure:azure-storage-queue:12.9.1"
+    runtimeOnly 'com.azure:azure-core-http-netty:1.11.9'
+    runtimeOnly 'com.azure:azure-core:1.27.0'
+    runtimeOnly 'com.azure:azure-storage-common:12.15.1'
+    runtimeOnly "com.azure:azure-storage-queue:12.12.1"
 
     runtimeOnly "io.zipkin.brave:brave-instrumentation-http:5.13.2"
     runtimeOnly "io.zipkin.brave:brave:5.13.2"
@@ -183,7 +183,7 @@ sonarqube {
         property "sonar.host.url", "https://sonarcloud.io"
         // In order to get both the frontend and backend code to report, we need to set the sonar project to the root directory.
         property "sonar.sources", "backend/src/main/java,frontend/src,ops/services/app_functions/"
-        property "sonar.exclusions", "backend/src/**/*Config*.java,frontend/src/**/*.test.*,frontend/src/stories/**/*,frontend/src/**/*.stories.tsx,frontend/src/generated/*.tsx,ops/services/app_functions/**/*.test.*,ops/services/app_functions/**/*config*"
+        property "sonar.exclusions", "backend/src/**/*Config*.java,frontend/src/**/*.test.*,frontend/src/stories/**/*,frontend/src/**/*.stories.tsx,frontend/src/**/*.mock.tsx,frontend/src/generated/*.tsx,ops/services/app_functions/**/*.test.*,ops/services/app_functions/**/*config*"
         property "sonar.coverage.exclusions", "frontend/src/setupTests.js"
         property "sonar.cpd.exclusions", "frontend/src/lang/*.ts"
         property "sonar.javascript.lcov.reportPaths", "frontend/coverage/lcov.info,ops/services/app_functions/report_stream_batched_publisher/functions/coverage/lcov.info"

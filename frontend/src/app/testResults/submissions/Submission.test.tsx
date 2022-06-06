@@ -21,6 +21,7 @@ const store = mockStore({
 });
 
 const submission: UploadResult = {
+  internalId: "fake-id",
   reportId: "12b86a9d-a9d6-4391-a555-6618e8ac66d9",
   status: UploadStatus.Success,
   recordsCount: 2,

@@ -7,6 +7,7 @@ import lombok.Getter;
 public class FeedbackMessage implements Serializable {
   private String scope;
   private String message;
+  private int[] indices;
 
   public FeedbackMessage(String scope, String message) {
     this.scope = scope;

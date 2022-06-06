@@ -5,6 +5,7 @@ import gov.cdc.usds.simplereport.api.model.OrganizationLevelDashboardMetrics;
 import gov.cdc.usds.simplereport.api.model.TopLevelDashboardMetrics;
 import gov.cdc.usds.simplereport.api.model.errors.InvalidBulkTestResultUploadException;
 import gov.cdc.usds.simplereport.db.model.TestEvent;
+import gov.cdc.usds.simplereport.db.model.TestResultUpload;
 import gov.cdc.usds.simplereport.service.TestOrderService;
 import gov.cdc.usds.simplereport.service.TestResultUploadService;
 import gov.cdc.usds.simplereport.service.errors.InvalidRSAPrivateKeyException;
@@ -15,6 +16,7 @@ import java.util.Date;
 import java.util.List;
 import java.util.UUID;
 import lombok.RequiredArgsConstructor;
+import org.springframework.data.domain.Page;
 import org.springframework.stereotype.Component;
 
 @Component
@@ -97,5 +99,10 @@ public class TestResultResolver implements GraphQLQueryResolver, GraphQLMutation
   public UploadResponse getUploadSubmission(UUID id)
       throws InvalidBulkTestResultUploadException, InvalidRSAPrivateKeyException {
     return testResultUploadService.getUploadSubmission(id);
+  }
+
+  public Page<TestResultUpload> getUploadSubmissions(
+      Date startDate, Date endDate, int pageNumber, int pageSize) {
+    return testResultUploadService.getUploadSubmissions(startDate, endDate, pageNumber, pageSize);
   }
 }

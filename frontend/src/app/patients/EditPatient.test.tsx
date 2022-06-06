@@ -1,3 +1,5 @@
+import qs from "querystring";
+
 import {
   render,
   screen,
@@ -151,7 +153,11 @@ describe("EditPatient", () => {
       },
     ];
 
-    beforeEach(() => {
+    let renderWithRoutes = (
+      facilityId: string,
+      patientId: string,
+      fromQueue: boolean
+    ) => {
       const Queue = () => {
         const location = useLocation();
         return <p>Testing Queue! {location.search}</p>;
@@ -164,8 +170,9 @@ describe("EditPatient", () => {
               <Route
                 element={
                   <EditPatient
-                    facilityId={mockFacilityID}
-                    patientId={mockPatientID}
+                    facilityId={facilityId}
+                    patientId={patientId}
+                    fromQueue={fromQueue}
                   />
                 }
                 path={"/patient/"}
@@ -176,9 +183,10 @@ describe("EditPatient", () => {
           </MockedProvider>
         </Provider>
       );
-    });
+    };
 
     it("can redirect to the new test form upon save", async () => {
+      renderWithRoutes(mockFacilityID, mockPatientID, false);
       await waitForElementToBeRemoved(() =>
         screen.queryAllByText("Loading...")
       );
@@ -195,6 +203,31 @@ describe("EditPatient", () => {
       expect(saveAndStartButton).toBeEnabled();
 
       userEvent.click(saveAndStartButton);
+
+      await waitFor(() => {
+        expect(
+          screen.getByText("Testing Queue!", { exact: false })
+        ).toBeInTheDocument();
+      });
+    });
+    it("redirects to test queue on save when coming from Conduct tests page", async () => {
+      renderWithRoutes(mockFacilityID, mockPatientID, true);
+      await waitForElementToBeRemoved(() =>
+        screen.queryAllByText("Loading...")
+      );
+      // Make an arbitrary change on the form to allow submission
+      const name = await screen.findByLabelText("First name", { exact: false });
+
+      fireEvent.change(name, { target: { value: "Fake Name" } });
+      fireEvent.blur(name);
+
+      const saveButton = screen.getAllByText("Save changes", {
+        exact: false,
+      })[0];
+
+      expect(saveButton).toBeEnabled();
+
+      userEvent.click(saveButton);
 
       await waitFor(() => {
         expect(
@@ -579,15 +612,74 @@ describe("EditPatient", () => {
   describe("EditPatientContainer", () => {
     it("doesn't render if no facility is provided", async () => {
       render(
-        <MemoryRouter initialEntries={[{ search: "?patientId=5" }]}>
-          <Provider store={configureStore()({ facilities: [] })}>
-            <EditPatientContainer />
+        <MemoryRouter initialEntries={[{ pathname: "/patient/5" }]}>
+          <Provider store={store}>
+            <Routes>
+              <Route
+                path="/patient/:patientId"
+                element={<EditPatientContainer />}
+              />
+            </Routes>
           </Provider>
         </MemoryRouter>
       );
       expect(
         await screen.findByText("No facility selected", { exact: false })
       ).toBeInTheDocument();
+    });
+    it("renders EditPatient with valid params", async () => {
+      const search = {
+        facility: mockFacilityID,
+        fromQueue: "true",
+      };
+      render(
+        <MemoryRouter
+          initialEntries={[
+            {
+              pathname: `/patient/${mockPatientID}`,
+              search: qs.stringify(search),
+            },
+          ]}
+        >
+          <Provider store={store}>
+            <MockedProvider mocks={mocks} addTypename={false}>
+              <Routes>
+                <Route
+                  path="/patient/:patientId"
+                  element={<EditPatientContainer />}
+                />
+              </Routes>
+            </MockedProvider>
+          </Provider>
+        </MemoryRouter>
+      );
+      expect(
+        await screen.findByText("Franecki, Eugenia", { exact: false })
+      ).toBeInTheDocument();
+      expect(await screen.findByText("Conduct tests")).toBeInTheDocument();
+    });
+  });
+
+  describe("edit patient from conduct tests page", () => {
+    beforeEach(async () => {
+      render(
+        <MemoryRouter>
+          <Provider store={store}>
+            <MockedProvider mocks={mocks} addTypename={false}>
+              <EditPatient
+                facilityId={mockFacilityID}
+                patientId={mockPatientID}
+                fromQueue={true}
+              />
+            </MockedProvider>
+          </Provider>
+        </MemoryRouter>
+      );
+    });
+    it("shows Conduct tests link and hides Save and start test button", async () => {
+      expect(await screen.findByText("Conduct tests")).toBeInTheDocument();
+      expect(screen.queryByText("People")).not.toBeInTheDocument();
+      expect(screen.queryByText("Save and start test")).not.toBeInTheDocument();
     });
   });
 });
