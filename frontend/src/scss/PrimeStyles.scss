@@ -921,6 +921,17 @@ $results-dropdown-spacing: #{units(4)} - #{units(2)} - 22px - #{units(4)}; // he
             margin-top: 0;
           }
         }
+        // The way USWDS was interacting with the two column layout
+        // in Chrome was causing checkboxes not to populate for some folks.
+        // Using this as a workaround
+        .usa-checkbox__label {
+          padding-left: 0;
+        }
+
+        .usa-checkbox__label::before {
+          position: relative;
+          float: left;
+        }
       }
 
       > .usa-checkbox {
