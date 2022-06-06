@@ -26,32 +26,34 @@ const CovidResultGuidance = (props: Props) => {
             <li>{t("testResult.notes.positive.guidelines.li4")}</li>
             <li>{t("testResult.notes.positive.guidelines.li5")}</li>
           </ul>
-          <Trans
-            t={t}
-            parent="p"
-            i18nKey="testResult.notes.positive.p2"
-            components={[
-              <a href="https://www.cdc.gov/coronavirus/2019-ncov/symptoms-testing/symptoms.html">
-                Watch for symptoms and learn when to seek emergency medical
-                attention
-              </a>,
-            ]}
-          />
-          <Trans
-            t={t}
-            parent="p"
-            i18nKey="testResult.notes.positive.p2"
-            components={[
-              <a
-                href={t("testResult.notes.positive.symptomsLink")}
-                target={isPatientApp ? "" : "_blank"}
-                rel={isPatientApp ? "" : "noopener noreferrer"}
-              >
-                Watch for symptoms and learn when to seek emergency medical
-                attention
-              </a>,
-            ]}
-          />
+          {isPatientApp ? (
+            <Trans
+              t={t}
+              parent="p"
+              i18nKey="testResult.notes.positive.p2"
+              components={[
+                <a href="https://www.cdc.gov/coronavirus/2019-ncov/symptoms-testing/symptoms.html">
+                  Watch for symptoms and learn when to seek emergency medical
+                  attention
+                </a>,
+              ]}
+            />
+          ) : (
+            <Trans
+              t={t}
+              parent="p"
+              i18nKey="testResult.notes.positive.p2"
+              components={[
+                <a
+                  href={t("testResult.notes.positive.symptomsLink")}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                >
+                  symptoms link
+                </a>,
+              ]}
+            />
+          )}
           <ul>
             <li>{t("testResult.notes.positive.emergency.li0")}</li>
             <li>{t("testResult.notes.positive.emergency.li1")}</li>
