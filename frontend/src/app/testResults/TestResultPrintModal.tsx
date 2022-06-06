@@ -4,6 +4,7 @@ import classnames from "classnames";
 import { Trans, useTranslation } from "react-i18next";
 
 import Button from "../commonComponents/Button/Button";
+import CovidResultGuidance from "../commonComponents/CovidResultGuidance";
 import { displayFullName } from "../utils";
 import "./TestResultPrintModal.scss";
 import logo from "../../img/simplereport-logo-black.svg";
@@ -69,22 +70,11 @@ export const StaticTestResultModal = ({
           </p>
         )}
         {result === "UNDETERMINED" && (
-          <p>{t("testResult.notes.inconclusive.p0")}</p>
+          <CovidResultGuidance result={"UNDETERMINED"} isPatientApp={false} />
         )}
         {result !== "POSITIVE" && (
           <>
-            <p>{t("testResult.notes.negative.p0")}</p>
-            <ul className="sr-multi-column">
-              <li>{t("testResult.notes.negative.symptoms.li2")}</li>
-              <li>{t("testResult.notes.negative.symptoms.li3")}</li>
-              <li>{t("testResult.notes.negative.symptoms.li4")}</li>
-              <li>{t("testResult.notes.negative.symptoms.li5")}</li>
-              <li>{t("testResult.notes.negative.symptoms.li6")}</li>
-              <li>{t("testResult.notes.negative.symptoms.li7")}</li>
-              <li>{t("testResult.notes.negative.symptoms.li8")}</li>
-              <li>{t("testResult.notes.negative.symptoms.li9")}</li>
-              <li>{t("testResult.notes.negative.symptoms.li10")}</li>
-            </ul>
+            <CovidResultGuidance result={"NEGATIVE"} isPatientApp={false} />
             <Trans
               t={t}
               parent="p"
@@ -103,37 +93,7 @@ export const StaticTestResultModal = ({
         )}
         {result === "POSITIVE" && (
           <>
-            <p>{t("testResult.notes.positive.p1")}</p>
-            <ul>
-              <li>{t("testResult.notes.positive.guidelines.li0")}</li>
-              <li>{t("testResult.notes.positive.guidelines.li1")}</li>
-              <li>{t("testResult.notes.positive.guidelines.li2")}</li>
-              <li>{t("testResult.notes.positive.guidelines.li3")}</li>
-              <li>{t("testResult.notes.positive.guidelines.li4")}</li>
-              <li>{t("testResult.notes.positive.guidelines.li5")}</li>
-            </ul>
-            <Trans
-              t={t}
-              parent="p"
-              i18nKey="testResult.notes.positive.p2"
-              components={[
-                <a
-                  href={t("testResult.notes.positive.symptomsLink")}
-                  target="_blank"
-                  rel="noopener noreferrer"
-                >
-                  symptoms link
-                </a>,
-              ]}
-            />
-            <ul>
-              <li>{t("testResult.notes.positive.emergency.li0")}</li>
-              <li>{t("testResult.notes.positive.emergency.li1")}</li>
-              <li>{t("testResult.notes.positive.emergency.li2")}</li>
-              <li>{t("testResult.notes.positive.emergency.li3")}</li>
-              <li>{t("testResult.notes.positive.emergency.li4")}</li>
-            </ul>
-            <p>{t("testResult.notes.positive.p3")}</p>
+            <CovidResultGuidance result={"POSITIVE"} isPatientApp={false} />
             <Trans
               t={t}
               parent="p"
