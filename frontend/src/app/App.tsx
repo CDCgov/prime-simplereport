@@ -23,6 +23,7 @@ import VersionEnforcer from "./VersionEnforcer";
 import { TrainingNotification } from "./commonComponents/TrainingNotification";
 import { MaintenanceBanner } from "./commonComponents/MaintenanceBanner";
 import { Analytics } from "./analytics/Analytics";
+import Uploads from "./testResults/uploads/Uploads";
 
 export const WHOAMI_QUERY = gql`
   query WhoAmI {
@@ -170,6 +171,16 @@ const App = () => {
                   requiredPermissions={canViewResults}
                   userPermissions={data.whoami.permissions}
                   element={<CleanTestResultsList />}
+                />
+              }
+            />
+            <Route
+              path="results/upload"
+              element={
+                <ProtectedRoute
+                  requiredPermissions={canViewResults}
+                  userPermissions={data.whoami.permissions}
+                  element={<Uploads />}
                 />
               }
             />

@@ -131,6 +131,13 @@ export type Facility = {
   zipCode?: Maybe<Scalars["String"]>;
 };
 
+export type FeedbackMessage = {
+  __typename?: "FeedbackMessage";
+  indices?: Maybe<Array<Maybe<Scalars["Int"]>>>;
+  message?: Maybe<Scalars["String"]>;
+  scope?: Maybe<Scalars["String"]>;
+};
+
 export type MultiplexResult = {
   __typename?: "MultiplexResult";
   disease?: Maybe<SupportedDisease>;
@@ -186,6 +193,7 @@ export type Mutation = {
   updateUserEmail?: Maybe<User>;
   updateUserPrivileges?: Maybe<User>;
   uploadPatients?: Maybe<Scalars["String"]>;
+  uploadTestResultCSV?: Maybe<UploadResult>;
 };
 
 export type MutationAddFacilityArgs = {
@@ -617,6 +625,10 @@ export type MutationUploadPatientsArgs = {
   patientList: Scalars["Upload"];
 };
 
+export type MutationUploadTestResultCsvArgs = {
+  testResultList: Scalars["Upload"];
+};
+
 export type NameInfo = {
   __typename?: "NameInfo";
   firstName?: Maybe<Scalars["String"]>;
@@ -969,6 +981,15 @@ export type UpdateDeviceType = {
   swabTypes: Array<Scalars["ID"]>;
 };
 
+export type UploadResult = {
+  __typename?: "UploadResult";
+  errors?: Maybe<Array<Maybe<FeedbackMessage>>>;
+  recordsCount?: Maybe<Scalars["Int"]>;
+  reportId?: Maybe<Scalars["ID"]>;
+  status?: Maybe<Scalars["String"]>;
+  warnings?: Maybe<Array<Maybe<FeedbackMessage>>>;
+};
+
 export type User = {
   __typename?: "User";
   email: Scalars["String"];
@@ -999,6 +1020,7 @@ export enum UserPermission {
   ReadPatientList = "READ_PATIENT_LIST",
   ReadResultList = "READ_RESULT_LIST",
   SearchPatients = "SEARCH_PATIENTS",
+  SrCsvUploaderPilot = "SR_CSV_UPLOADER_PILOT",
   StartTest = "START_TEST",
   SubmitTest = "SUBMIT_TEST",
   UpdateTest = "UPDATE_TEST",
@@ -2570,6 +2592,47 @@ export type GetTestResultForPrintQuery = {
                 | null
                 | undefined;
             }
+          | null
+          | undefined;
+      }
+    | null
+    | undefined;
+};
+
+export type UploadTestResultCsvMutationVariables = Exact<{
+  testResultList: Scalars["Upload"];
+}>;
+
+export type UploadTestResultCsvMutation = {
+  __typename?: "Mutation";
+  uploadTestResultCSV?:
+    | {
+        __typename?: "UploadResult";
+        reportId?: string | null | undefined;
+        status?: string | null | undefined;
+        recordsCount?: number | null | undefined;
+        warnings?:
+          | Array<
+              | {
+                  __typename?: "FeedbackMessage";
+                  scope?: string | null | undefined;
+                  message?: string | null | undefined;
+                }
+              | null
+              | undefined
+            >
+          | null
+          | undefined;
+        errors?:
+          | Array<
+              | {
+                  __typename?: "FeedbackMessage";
+                  scope?: string | null | undefined;
+                  message?: string | null | undefined;
+                }
+              | null
+              | undefined
+            >
           | null
           | undefined;
       }
@@ -6879,4 +6942,63 @@ export type GetTestResultForPrintLazyQueryHookResult = ReturnType<
 export type GetTestResultForPrintQueryResult = Apollo.QueryResult<
   GetTestResultForPrintQuery,
   GetTestResultForPrintQueryVariables
+>;
+export const UploadTestResultCsvDocument = gql`
+  mutation UploadTestResultCSV($testResultList: Upload!) {
+    uploadTestResultCSV(testResultList: $testResultList) {
+      reportId
+      status
+      recordsCount
+      warnings {
+        scope
+        message
+      }
+      errors {
+        scope
+        message
+      }
+    }
+  }
+`;
+export type UploadTestResultCsvMutationFn = Apollo.MutationFunction<
+  UploadTestResultCsvMutation,
+  UploadTestResultCsvMutationVariables
+>;
+
+/**
+ * __useUploadTestResultCsvMutation__
+ *
+ * To run a mutation, you first call `useUploadTestResultCsvMutation` within a React component and pass it any options that fit your needs.
+ * When your component renders, `useUploadTestResultCsvMutation` returns a tuple that includes:
+ * - A mutate function that you can call at any time to execute the mutation
+ * - An object with fields that represent the current status of the mutation's execution
+ *
+ * @param baseOptions options that will be passed into the mutation, supported options are listed on: https://www.apollographql.com/docs/react/api/react-hooks/#options-2;
+ *
+ * @example
+ * const [uploadTestResultCsvMutation, { data, loading, error }] = useUploadTestResultCsvMutation({
+ *   variables: {
+ *      testResultList: // value for 'testResultList'
+ *   },
+ * });
+ */
+export function useUploadTestResultCsvMutation(
+  baseOptions?: Apollo.MutationHookOptions<
+    UploadTestResultCsvMutation,
+    UploadTestResultCsvMutationVariables
+  >
+) {
+  const options = { ...defaultOptions, ...baseOptions };
+  return Apollo.useMutation<
+    UploadTestResultCsvMutation,
+    UploadTestResultCsvMutationVariables
+  >(UploadTestResultCsvDocument, options);
+}
+export type UploadTestResultCsvMutationHookResult = ReturnType<
+  typeof useUploadTestResultCsvMutation
+>;
+export type UploadTestResultCsvMutationResult = Apollo.MutationResult<UploadTestResultCsvMutation>;
+export type UploadTestResultCsvMutationOptions = Apollo.BaseMutationOptions<
+  UploadTestResultCsvMutation,
+  UploadTestResultCsvMutationVariables
 >;
