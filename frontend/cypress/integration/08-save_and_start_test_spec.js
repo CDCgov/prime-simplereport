@@ -39,7 +39,7 @@ describe("edit patient and save and start test", () => {
       "(There are no email addresses listed in your patient profile.)"
     );
   });
-  it("Complete AoE form and verify queue", () => {
+  it("completes AoE form and verifies queue", () => {
     cy.contains("New loss of taste").click();
     cy.contains("button", "Continue").click();
     cy.get(".prime-home").contains(patientName);
@@ -79,18 +79,25 @@ describe("add patient and save and start test", () => {
     cy.get(".modal__container #save-confirmed-address").click();
   });
   it("verifies patient contact info is correctly populated in the AoE form", () => {
-    cy.get('input[name="testResultDeliverySms"][value="SMS"').should(
+    cy.get('input[name="testResultDeliverySms"][value="SMS"]').should(
       "be.disabled"
     );
     cy.contains(
       "(There are no mobile phone numbers listed in your patient profile.)"
     );
-    // Uncomment once #3536 is fixed
-    // cy.get('input[name="testResultDeliveryEmail"][value="EMAIL"').click();
-    // cy.contains("Results will be sent to these email addresses:");
-    // cy.contains(patient.email);
+    cy.contains(
+      "fieldset",
+      "Would you like to receive a copy of your results via email?"
+    ).within(() => {
+      cy.get('input[name="testResultDeliveryEmail"][value="EMAIL"]').should(
+        "not.be.disabled"
+      );
+      cy.contains("Yes").click();
+      cy.contains("Results will be sent to these email addresses:");
+      cy.contains(patient.email);
+    });
   });
-  it("Complete AoE form and verify queue", () => {
+  it("completes AoE form and verifies queue", () => {
     cy.contains("New loss of taste").click();
     cy.contains("button", "Continue").click();
     cy.get(".prime-home").contains(patient.firstName);
