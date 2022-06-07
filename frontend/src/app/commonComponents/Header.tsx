@@ -345,6 +345,8 @@ const Header: React.FC<{}> = () => {
                   }))}
                 />
               </div>
+
+              {/* <TouchpointsButton mobileDisplay/> */}
             </div>
           </nav>
         </div>
