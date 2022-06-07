@@ -208,6 +208,7 @@ class TestResultUploadServiceTest extends BaseServiceTest<TestResultUploadServic
   }
 
   @Test
+  @DirtiesContext
   @SliceTestConfiguration.WithSimpleReportCsvUploadPilotUser
   void uploadService_getUploadSubmission_rsClientOk() {
     var dataHubMock = mock(DataHubClient.class);
@@ -220,6 +221,7 @@ class TestResultUploadServiceTest extends BaseServiceTest<TestResultUploadServic
     UUID reportId = UUID.randomUUID();
 
     // GIVEN
+    when(orgServiceMock.getCurrentOrganization()).thenReturn(factory.createValidOrg());
     var testResultUpload =
         factory.createTestResultUpload(
             reportId, UploadStatus.PENDING, orgServiceMock.getCurrentOrganization());
