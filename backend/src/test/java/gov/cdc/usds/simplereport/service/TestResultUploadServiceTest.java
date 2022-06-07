@@ -111,15 +111,13 @@ class TestResultUploadServiceTest extends BaseServiceTest<TestResultUploadServic
     var response = this._service.processResultCSV(input);
 
     assertEquals(6, response.getErrors().length);
-    var errorMessage = Arrays.stream(response.getErrors()).findFirst().get();
-
     assertEquals(UploadStatus.FAILURE, response.getStatus());
   }
 
   @Test
   @DirtiesContext
   @SliceTestConfiguration.WithSimpleReportCsvUploadPilotUser
-  void feignGeneralError_returnsGenericErrorMessage() throws IOException {
+  void feignGeneralError_returnsFailureStatus() throws IOException {
 
     stubFor(
         WireMock.post(WireMock.urlEqualTo("/api/reports"))
