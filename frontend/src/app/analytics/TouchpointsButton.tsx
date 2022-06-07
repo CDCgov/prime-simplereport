@@ -1,6 +1,6 @@
 import "./TouchpointsButton.scss";
 
-const TouchpointsButton: React.FC = ({}) => {
+const TouchpointsButton: React.FC = () => {
   return (
     <div className="touchpoints-wrapper" id="sr-app-touchpoints-button">
       {" "}
