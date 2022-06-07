@@ -235,19 +235,19 @@ describe("lib", () => {
       // GIVEN
       const warnings: ReportStreamError[] = [
         {
-          id: "1234",
-          details: "hello",
-          scope: "ITEM",
+          trackingIds: ["1234"],
+          message: "hello",
+          scope: "item",
         },
         {
-          id: "1234",
-          details: "hello",
-          scope: "ITEM",
+          trackingIds: ["1234"],
+          message: "hello",
+          scope: "item",
         },
         {
-          id: "1234",
-          details: "hello",
-          scope: "ITEM",
+          trackingIds: ["1234"],
+          message: "hello",
+          scope: "item",
         },
       ];
       const response: ReportStreamResponse = {
@@ -273,31 +273,31 @@ describe("lib", () => {
       // GIVEN
       const warnings: ReportStreamError[] = [
         {
-          id: "1234",
-          details: "hello",
-          scope: "ITEM",
+          trackingIds: ["1234"],
+          message: "hello",
+          scope: "item",
         },
         {
-          id: "1234",
-          details: "hello",
-          scope: "ITEM",
+          trackingIds: ["1234"],
+          message: "hello",
+          scope: "item",
         },
         {
-          id: "1234",
-          details: "hello",
-          scope: "ITEM",
+          trackingIds: ["1234"],
+          message: "hello",
+          scope: "item",
         },
       ];
       const errors: ReportStreamError[] = [
         {
-          id: "1234",
-          details: "hello",
-          scope: "ITEM",
+          trackingIds: ["1234"],
+          message: "hello",
+          scope: "item",
         },
         {
-          id: "1234",
-          details: "hello",
-          scope: "ITEM",
+          trackingIds: ["1234"],
+          message: "hello",
+          scope: "item",
         },
       ];
       const response: ReportStreamResponse = {
