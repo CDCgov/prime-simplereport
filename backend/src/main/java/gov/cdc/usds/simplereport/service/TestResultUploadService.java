@@ -87,6 +87,7 @@ public class TestResultUploadService {
       log.error("Unable to parse Report Stream response.", ex);
       return null;
     }
+  }
 
   public Page<TestResultUpload> getUploadSubmissions(
       Date startDate, Date endDate, int pageNumber, int pageSize) {
