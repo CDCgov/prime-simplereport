@@ -9,6 +9,7 @@ import * as csvStringify from "csv-stringify/lib/sync";
 import { ENV, uploaderVersion } from "../config";
 import fetch, { Headers } from "node-fetch";
 import {
+  ReportStreamError,
   ReportStreamResponse,
   SimpleReportReportStreamResponse,
 } from "./rs-response";
@@ -173,22 +174,26 @@ export async function reportExceptions(
 ) {
   context.log(`ReportStream response errors: ${response.errorCount}`);
   context.log(`ReportStream response warnings: ${response.warningCount}`);
-  const payloads: SimpleReportReportStreamResponse[] = response.warnings
-    .map(({ id, details }) => ({
-      testEventInternalId: id,
-      isError: false,
-      details,
-    }))
-    .concat(
-      response.errors.map(({ id, details }) => ({
-        testEventInternalId: id,
-        isError: true,
-        details,
-      }))
-    );
+  const payloads: SimpleReportReportStreamResponse[] = response.warnings.flatMap(w => responseFrom(w, false))
+      .concat(response.errors.flatMap(e => responseFrom(e, true)));
   return Promise.all(
     payloads.map((p) =>
       queueClient.sendMessage(Buffer.from(JSON.stringify(p)).toString("base64"))
     )
   );
 }
+
+const responseFrom = function(err: ReportStreamError, isError: boolean):SimpleReportReportStreamResponse[] {
+  if (err.scope === "report") {
+    return [{
+      testEventInternalId: null,
+      isError,
+      details: err.message
+    }];
+  }
+  return err.trackingIds.map(id => ({
+    testEventInternalId: id,
+    isError,
+    details: err.message
+  }));
+};
