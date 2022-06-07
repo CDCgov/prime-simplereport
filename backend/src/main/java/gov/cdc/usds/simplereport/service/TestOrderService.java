@@ -316,14 +316,8 @@ public class TestOrderService {
 
       TestEvent savedEvent = _terepo.save(testEvent);
 
-      if (order.getCorrectionStatus() == TestCorrectionStatus.ORIGINAL) {
-        resultEntity.setTestEvent(savedEvent);
-        _resultRepo.save(resultEntity);
-      } else {
-        // Create copy of the Result for corrections
-        Result copyResult = new Result(resultEntity, savedEvent);
-        _resultRepo.save(copyResult);
-      }
+      resultEntity.setTestEvent(savedEvent);
+      _resultRepo.save(resultEntity);
 
       order.setTestEventRef(savedEvent);
       savedOrder = _repo.save(order);
@@ -508,14 +502,15 @@ public class TestOrderService {
   private Result updateTestOrderCovidResult(TestOrder order, TestResult result) {
     // Remove setResultsColumn as part of #3664
     order.setResultColumn(result);
-    Optional<Result> covidResult = order.getResultForDisease(_diseaseService.covid());
-    if (covidResult.isPresent()) {
-      covidResult.get().setResult(result);
-      return _resultRepo.save(covidResult.get());
+    Optional<Result> pendingResult = _resultRepo.getPendingResult(order, _diseaseService.covid());
+    Result covidResult;
+    if (pendingResult.isPresent()) {
+      covidResult = pendingResult.get();
+      covidResult.setResult(result);
     } else {
-      Result resultEntity = new Result(order, _diseaseService.covid(), result);
-      return _resultRepo.save(resultEntity);
+      covidResult = new Result(order, _diseaseService.covid(), result);
     }
+    return _resultRepo.save(covidResult);
   }
 
   @Transactional
