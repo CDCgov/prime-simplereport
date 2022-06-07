@@ -10,7 +10,7 @@ const Page: React.FC<{}> = ({ children }) => {
   useEffect(() => {
     const script = document.createElement("script");
 
-    script.src = "https://touchpoints.app.cloud.gov/touchpoints/5b1efe87.js";
+    script.src = "/touchpoints.js";
     script.async = true;
 
     document.body.appendChild(script);

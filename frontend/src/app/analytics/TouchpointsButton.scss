@@ -12,14 +12,18 @@
   }
 }
 
-#sr-app-touchpoints-button:hover {
+.mobile-sublist-container .touchpoints-wrapper {
+  display: block;
+}
+
+.sr-app-touchpoints-button:hover {
   color: #fff;
   background-color: #1a4480;
   border-bottom: 0;
   text-decoration: none;
 }
 
-#sr-app-touchpoints-button {
+.sr-app-touchpoints-button {
 
   line-height: 0.9;
   -moz-osx-font-smoothing: grayscale;
@@ -41,5 +45,16 @@
     margin-right: 0.5rem;
     border-bottom-left-radius: 0;
     border-bottom-right-radius: 0;
+  }
+}
+
+@supports ((-webkit-mask: url()) or (mask: url())) {
+
+  // touchpoints banners had icons in the before pseudo element .
+  // when they shouldn't have removing them so that only the solid
+  // colors are there.
+  .wrapper .usa-alert::before {
+    -webkit-mask: none !important;
+    mask: none !important;
   }
 }
