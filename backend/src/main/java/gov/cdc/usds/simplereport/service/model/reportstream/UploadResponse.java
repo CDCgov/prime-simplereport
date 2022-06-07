@@ -12,6 +12,4 @@ public class UploadResponse {
   private int reportItemCount;
   private FeedbackMessage[] errors;
   private FeedbackMessage[] warnings;
-
-  public UploadResponse() {}
 }
