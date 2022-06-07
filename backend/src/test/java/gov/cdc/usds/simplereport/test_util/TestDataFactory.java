@@ -340,8 +340,8 @@ public class TestDataFactory {
     var warnings = (FeedbackMessage[]) Array.newInstance(FeedbackMessage.class, 0);
     var errors = (FeedbackMessage[]) Array.newInstance(FeedbackMessage.class, 0);
     var upload = new TestResultUpload(reportId, status, 0, organization, warnings, errors);
-    _testResultUploadRepo.save(upload);
-    return upload;
+    var saved = _testResultUploadRepo.save(upload);
+    return saved;
   }
 
   public TestOrder createTestOrder(Person p, Facility f) {

@@ -39,7 +39,6 @@ import org.mockito.ArgumentCaptor;
 import org.mockito.Captor;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.context.properties.EnableConfigurationProperties;
-import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.cloud.contract.spec.internal.HttpStatus;
 import org.springframework.cloud.contract.wiremock.AutoConfigureWireMock;
 import org.springframework.security.access.AccessDeniedException;
@@ -50,15 +49,9 @@ import org.springframework.test.context.junit.jupiter.SpringExtension;
 @ExtendWith(SpringExtension.class)
 @AutoConfigureWireMock(port = 9561)
 class TestResultUploadServiceTest extends BaseServiceTest<TestResultUploadService> {
-  @MockBean DataHubClient dataHubClient;
-  @MockBean TestResultUploadRepository repo;
-  @MockBean OrganizationService orgSvc;
-  @MockBean TokenAuthentication tokenAuth;
   @Autowired private TestDataFactory factory;
   @Captor private ArgumentCaptor<UUID> reportIdCaptor;
   @Captor private ArgumentCaptor<String> accessTokenCaptor;
-
-  private TestResultUploadService sut;
 
   @BeforeEach()
   public void init() {
@@ -200,34 +193,50 @@ class TestResultUploadServiceTest extends BaseServiceTest<TestResultUploadServic
   }
 
   @Test
+  @SliceTestConfiguration.WithSimpleReportCsvUploadPilotUser
   void uploadService_getUploadSubmission_throwsOnInvalid() {
+    var dataHubMock = mock(DataHubClient.class);
+    var repoMock = mock(TestResultUploadRepository.class);
+    var orgServiceMock = mock(OrganizationService.class);
+    var tokenAuthMock = mock(TokenAuthentication.class);
+
+    var sut = new TestResultUploadService(repoMock, dataHubMock, orgServiceMock, tokenAuthMock);
+
     var uuid = UUID.randomUUID();
 
     assertThrows(InvalidBulkTestResultUploadException.class, () -> sut.getUploadSubmission(uuid));
   }
 
   @Test
+  @SliceTestConfiguration.WithSimpleReportCsvUploadPilotUser
   void uploadService_getUploadSubmission_rsClientOk() {
+    var dataHubMock = mock(DataHubClient.class);
+    var repoMock = mock(TestResultUploadRepository.class);
+    var orgServiceMock = mock(OrganizationService.class);
+    var tokenAuthMock = mock(TokenAuthentication.class);
+
+    var sut = new TestResultUploadService(repoMock, dataHubMock, orgServiceMock, tokenAuthMock);
+
     UUID reportId = UUID.randomUUID();
 
     // GIVEN
     var testResultUpload =
         factory.createTestResultUpload(
-            reportId, UploadStatus.PENDING, orgSvc.getCurrentOrganization());
+            reportId, UploadStatus.PENDING, orgServiceMock.getCurrentOrganization());
 
-    when(tokenAuth.createRSAJWT(anyString(), anyString(), any(Date.class), anyString()))
+    when(tokenAuthMock.createRSAJWT(anyString(), anyString(), any(Date.class), anyString()))
         .thenReturn("fake-rs-sender-token");
     var dbResponse = Optional.of(testResultUpload);
-    when(repo.findByInternalIdAndOrganization(any(), any())).thenReturn(dbResponse);
+    when(repoMock.findByInternalIdAndOrganization(any(), any())).thenReturn(dbResponse);
     var tokenResponse = new TokenResponse();
     tokenResponse.setAccessToken("fake-rs-access-token");
-    when(dataHubClient.fetchAccessToken(anyMap())).thenReturn(tokenResponse);
+    when(dataHubMock.fetchAccessToken(anyMap())).thenReturn(tokenResponse);
 
     // WHEN
     sut.getUploadSubmission(testResultUpload.getInternalId());
 
     // THEN
-    verify(dataHubClient).getSubmission(reportIdCaptor.capture(), accessTokenCaptor.capture());
+    verify(dataHubMock).getSubmission(reportIdCaptor.capture(), accessTokenCaptor.capture());
     assertEquals(reportId, reportIdCaptor.getValue());
     assertEquals("fake-rs-access-token", accessTokenCaptor.getValue());
   }
