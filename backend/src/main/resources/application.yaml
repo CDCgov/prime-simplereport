@@ -144,3 +144,5 @@ hibernate.query.interceptor.error-level: ERROR
 datahub:
   url: ${DATAHUB_URL:http://localhost:9561}
   api-key: ${DATAHUB_API_KEY:super-secret-api-key}
+  api-version: "2021-09-21"
+  api-client: "simple_report"
