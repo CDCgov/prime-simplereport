@@ -229,6 +229,7 @@ type TestOrder {
   deviceType: DeviceType
   deviceSpecimenType: DeviceSpecimenType
   result: String
+  results: [MultiplexResult]
   dateTested: DateTime
   correctionStatus: String
   reasonForCorrection: String
@@ -301,9 +302,11 @@ type PendingOrganization {
 }
 
 type UploadResult {
+  internalId: ID!
   reportId: ID
-  status: String
-  recordsCount: Int
+  createdAt: DateTime!
+  status: UploadStatus!
+  recordsCount: Int!
   warnings: [FeedbackMessage]
   errors: [FeedbackMessage]
 }
@@ -313,6 +316,12 @@ type FeedbackMessage {
   message: String
   indices: [Int]
 }
+
+type UploadSubmissionPage {
+  totalElements: Int!
+  content: [UploadResult!]!
+}
+
 input DiseaseResult {
   diseaseName: String
   testResult: String
@@ -404,6 +413,13 @@ type Query {
     @requiredPermissions(allOf: ["MANAGE_USERS"])
   user(id: ID!): User @requiredPermissions(allOf: ["MANAGE_USERS"])
   whoami: User!
+  uploadSubmissions(
+    startDate: DateTime
+    endDate: DateTime
+    pageNumber: Int
+    pageSize: Int
+  ): UploadSubmissionPage!
+  @requiredPermissions(allOf: ["SR_CSV_UPLOADER_PILOT"])
 }
 
 type Mutation {

@@ -18,7 +18,6 @@ import gov.cdc.usds.simplereport.db.model.PatientLink;
 import gov.cdc.usds.simplereport.db.model.Person;
 import gov.cdc.usds.simplereport.db.model.Person_;
 import gov.cdc.usds.simplereport.db.model.Result;
-import gov.cdc.usds.simplereport.db.model.SupportedDisease;
 import gov.cdc.usds.simplereport.db.model.TestEvent;
 import gov.cdc.usds.simplereport.db.model.TestEvent_;
 import gov.cdc.usds.simplereport.db.model.TestOrder;
@@ -38,6 +37,7 @@ import gov.cdc.usds.simplereport.db.repository.TestOrderRepository;
 import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.Date;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Objects;
@@ -264,25 +264,20 @@ public class TestOrderService {
 
   private TestResult getCovidResultFromMultiplexList(List<DiseaseResult> results) {
     return results.stream()
-        .filter(result -> result.getDiseaseName().equals("COVID-19"))
+        .filter(r -> r.getDiseaseName().equals("COVID-19"))
         .findFirst()
-        .orElseThrow(() -> new IllegalArgumentException("No COVID-19 test result found"))
-        .getTestResult();
+        .map(DiseaseResult::getTestResult)
+        .orElse(null);
   }
 
   @AuthorizationConfiguration.RequirePermissionUpdateTestForTestOrder
   public TestOrder editQueueItemMultiplex(
       UUID testOrderId, UUID deviceSpecimenTypeId, List<DiseaseResult> results, Date dateTested) {
-    TestOrder savedOrder =
-        editQueueItem(
-            testOrderId,
-            deviceSpecimenTypeId,
-            getCovidResultFromMultiplexList(results).toString(),
-            dateTested);
+    TestResult covidResult = getCovidResultFromMultiplexList(results);
+    String result = covidResult != null ? covidResult.toString() : null;
+    TestOrder savedOrder = editQueueItem(testOrderId, deviceSpecimenTypeId, result, dateTested);
 
-    editMultiplexResults(savedOrder, results);
-
-    return savedOrder;
+    return editMultiplexResults(savedOrder, results);
   }
 
   @AuthorizationConfiguration.RequirePermissionSubmitTestForPatient
@@ -358,17 +353,33 @@ public class TestOrderService {
     return response;
   }
 
-  private void editMultiplexResults(TestOrder order, List<DiseaseResult> newResults) {
-    Set<Result> resultsToUpdate = order.getResultSet();
-    resultsToUpdate.forEach(
-        result -> {
-          SupportedDisease disease = result.getDisease();
-          newResults.stream()
-              .filter(r -> _diseaseService.getDiseaseByName(r.getDiseaseName()).equals(disease))
-              .findFirst()
-              .ifPresent(newResult -> result.setResult(newResult.getTestResult()));
+  private TestOrder editMultiplexResults(TestOrder order, List<DiseaseResult> newResults) {
+    Set<Result> oldResults = order.getResultSet();
+    Set<Result> resultsToUpdate = new HashSet<>();
+    // iterate over submitted results
+    newResults.forEach(
+        newResult -> {
+          // check if there is an existing result with the same disease
+          Optional<Result> resultToUpdate =
+              oldResults.stream()
+                  .filter(r -> r.getDisease().getName().equals(newResult.getDiseaseName()))
+                  .findFirst();
+          // if there is an existing result with the same disease, update it
+          if (resultToUpdate.isPresent()) {
+            Result updatedResult = resultToUpdate.get();
+            updatedResult.setResult(newResult.getTestResult());
+            resultsToUpdate.add(updatedResult);
+            // if there is no existing result with the same disease, create a new result
+          } else {
+            resultsToUpdate.add(
+                new Result(
+                    order,
+                    _diseaseService.getDiseaseByName(newResult.getDiseaseName()),
+                    newResult.getTestResult()));
+          }
         });
-    _resultRepo.saveAll(resultsToUpdate);
+    order.setResults(resultsToUpdate);
+    return _repo.save(order);
   }
 
   private void saveMultiplexResults(TestEvent event, TestOrder order, List<DiseaseResult> results) {
@@ -499,14 +510,15 @@ public class TestOrderService {
   private Result updateTestOrderCovidResult(TestOrder order, TestResult result) {
     // Remove setResultsColumn as part of #3664
     order.setResultColumn(result);
-    Optional<Result> covidResult = order.getResultForDisease(_diseaseService.covid());
-    if (covidResult.isPresent()) {
-      covidResult.get().setResult(result);
-      return _resultRepo.save(covidResult.get());
+    Optional<Result> pendingResult = _resultRepo.getPendingResult(order, _diseaseService.covid());
+    Result covidResult;
+    if (pendingResult.isPresent()) {
+      covidResult = pendingResult.get();
+      covidResult.setResult(result);
     } else {
-      Result resultEntity = new Result(order, _diseaseService.covid(), result);
-      return _resultRepo.save(resultEntity);
+      covidResult = new Result(order, _diseaseService.covid(), result);
     }
+    return _resultRepo.save(covidResult);
   }
 
   @Transactional
@@ -550,6 +562,17 @@ public class TestOrderService {
     TestEvent newRemoveEvent =
         new TestEvent(event, TestCorrectionStatus.REMOVED, reasonForCorrection);
     _terepo.save(newRemoveEvent);
+
+    // Create new Results for the new removed event
+    Set<Result> copiedResults = new HashSet<>();
+    order
+        .getResultSet()
+        .forEach(
+            result -> {
+              copiedResults.add(new Result(result, newRemoveEvent));
+            });
+    _resultRepo.saveAll(copiedResults);
+
     _testEventReportingService.report(newRemoveEvent);
 
     order.setReasonForCorrection(reasonForCorrection);

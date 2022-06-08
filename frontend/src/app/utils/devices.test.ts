@@ -7,10 +7,12 @@ describe("devices utilities", () => {
     deviceType: {
       internalId: `device-${x}`,
       name: `Device ${x}`,
+      supportedDiseases: [],
     },
     specimenType: {
       internalId: `fake-specimen-id-${x}`,
       name: `Fake Specimen ${x}`,
+      supportedDiseases: [],
     },
   }));
 
@@ -27,6 +29,7 @@ describe("devices utilities", () => {
       deviceType: {
         internalId: "device-1",
         name: "Device 1",
+        supportedDiseases: [],
       },
       specimenType: {
         internalId: "fake-specimen-id-4",

@@ -6,6 +6,7 @@ import gov.cdc.usds.simplereport.db.model.TestEvent;
 import gov.cdc.usds.simplereport.db.model.TestOrder;
 import java.util.List;
 import java.util.Optional;
+import org.springframework.data.jpa.repository.Query;
 
 public interface ResultRepository extends EternalAuditedEntityRepository<Result> {
 
@@ -18,4 +19,9 @@ public interface ResultRepository extends EternalAuditedEntityRepository<Result>
   Optional<Result> findResultByTestEventAndDisease(TestEvent testEvent, SupportedDisease disease);
 
   Result findResultByTestOrderAndDisease(TestOrder testOrder, SupportedDisease disease);
+
+  @Query(
+      EternalAuditedEntityRepository.BASE_QUERY
+          + "and e.testOrder = :order and e.disease = :disease and e.testEvent is null")
+  Optional<Result> getPendingResult(TestOrder order, SupportedDisease disease);
 }

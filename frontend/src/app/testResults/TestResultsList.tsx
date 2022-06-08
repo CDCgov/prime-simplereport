@@ -4,7 +4,6 @@ import { useLocation, useNavigate, useParams } from "react-router-dom";
 import { useLazyQuery } from "@apollo/client";
 import React, {
   ChangeEventHandler,
-  SetStateAction,
   useCallback,
   useEffect,
   useMemo,
@@ -12,16 +11,13 @@ import React, {
   useState,
 } from "react";
 import moment from "moment";
-import classnames from "classnames";
 import { faSlidersH } from "@fortawesome/free-solid-svg-icons";
 import { DatePicker, Label } from "@trussworks/react-uswds";
 import { useSelector } from "react-redux";
 
-import { PATIENT_TERM_CAP } from "../../config/constants";
 import { displayFullName, facilityDisplayName } from "../utils";
-import { formatDateWithTimeOption, isValidDate } from "../utils/date";
-import { ActionsMenu } from "../commonComponents/ActionsMenu";
-import { getParameterFromUrl, getUrl } from "../utils/url";
+import { isValidDate } from "../utils/date";
+import { getParameterFromUrl } from "../utils/url";
 import { useDocumentTitle, useOutsideClick } from "../utils/hooks";
 import Pagination from "../commonComponents/Pagination";
 import {
@@ -55,6 +51,9 @@ import EmailTestResultModal from "./EmailTestResultModal";
 import TestResultCorrectionModal from "./TestResultCorrectionModal";
 import TestResultDetailsModal from "./TestResultDetailsModal";
 import DownloadResultsCSVButton from "./DownloadResultsCsvButton";
+import ResultsTable, {
+  generateTableHeaders,
+} from "./resultsTable/ResultsTable";
 
 export const ALL_FACILITIES_ID = "all";
 
@@ -65,203 +64,6 @@ export const byDateTested = (a: any, b: any) => {
   if (a.dateTested === b.dateTested) return 0;
   if (a.dateTested < b.dateTested) return 1;
   return -1;
-};
-
-/**
- * Results Table
- */
-
-const tableHeaders = (hasMultiplexResults: boolean, hasFacility: boolean) => (
-  <tr>
-    <th scope="col" className="patient-name-cell">
-      {PATIENT_TERM_CAP}
-    </th>
-    <th scope="col" className="test-date-cell">
-      Test date
-    </th>
-    <th scope="col" className="test-result-cell">
-      COVID-19
-    </th>
-    {hasMultiplexResults ? (
-      <>
-        <th scope="col" className="test-result-cell">
-          Flu A
-        </th>
-        <th scope="col" className="test-result-cell">
-          Flu B
-        </th>
-      </>
-    ) : null}
-    <th scope="col" className="test-device-cell">
-      Test device
-    </th>
-    <th scope="col" className="submitted-by-cell">
-      Submitted by
-    </th>
-    {hasFacility && (
-      <th scope="col" className="test-facility-cell">
-        Facility
-      </th>
-    )}
-    <th scope="col" className="actions-cell">
-      Actions
-    </th>
-  </tr>
-);
-
-function testResultRows(
-  testResults: any,
-  hasMultiplexResults: boolean,
-  hasFacility: boolean,
-  setPrintModalId: SetStateAction<any>,
-  setMarkCorrectionId: SetStateAction<any>,
-  setDetailsModalId: SetStateAction<any>,
-  setTextModalId: SetStateAction<any>,
-  setEmailModalTestResultId: SetStateAction<any>
-) {
-  if (testResults.length === 0) {
-    return (
-      <tr>
-        <td>No results</td>
-      </tr>
-    );
-  }
-
-  // `sort` mutates the array, so make a copy
-  return [...testResults].sort(byDateTested).map((r) => {
-    const actionItems = [];
-    actionItems.push({
-      name: "Print result",
-      action: () => setPrintModalId(r.internalId),
-    });
-    if (r.patient.email) {
-      actionItems.push({
-        name: "Email result",
-        action: () => setEmailModalTestResultId(r.internalId),
-      });
-    }
-    actionItems.push({
-      name: "Text result",
-      action: () => setTextModalId(r.internalId),
-    });
-
-    const removed = r.correctionStatus === "REMOVED";
-    if (!removed) {
-      actionItems.push({
-        name: "Correct result",
-        action: () => setMarkCorrectionId(r.internalId),
-      });
-    }
-    actionItems.push({
-      name: "View details",
-      action: () => setDetailsModalId(r.internalId),
-    });
-    const getResultCell = (disease: string) => {
-      let result;
-      if (r.results && r.results.length > 1) {
-        result = r.results.find(
-          (result: any) => result.disease.name === disease
-        ).testResult;
-      }
-      if (result) {
-        return TEST_RESULT_DESCRIPTIONS[result as Results];
-      } else if (disease === "COVID-19") {
-        return TEST_RESULT_DESCRIPTIONS[r.result as Results];
-      } else {
-        return "N/A";
-      }
-    };
-    return (
-      <tr
-        key={r.internalId}
-        title={removed ? "Marked as error" : ""}
-        className={classnames(
-          "sr-test-result-row",
-          removed && "sr-test-result-row--removed"
-        )}
-        data-testid={`test-result-${r.internalId}`}
-        data-patient-link={
-          r.patientLink
-            ? `${getUrl()}pxp?plid=${r.patientLink.internalId}`
-            : null
-        }
-      >
-        <td className="patient-name-cell">
-          <Button
-            variant="unstyled"
-            label={displayFullName(
-              r.patient.firstName,
-              r.patient.middleName,
-              r.patient.lastName
-            )}
-            onClick={() => setDetailsModalId(r.internalId)}
-            className="sr-link__primary"
-          />
-          <span className="display-block text-base font-ui-2xs">
-            DOB: {formatDateWithTimeOption(r.patient.birthDate)}
-          </span>
-        </td>
-        <td className="test-date-cell">
-          {formatDateWithTimeOption(r.dateTested, true)}
-        </td>
-
-        {hasMultiplexResults ? (
-          <>
-            <td className="test-result-cell covid-19-result">
-              {getResultCell("COVID-19")}
-            </td>
-            <td className="test-result-cell flu-a-result">
-              {getResultCell("Flu A")}
-            </td>
-            <td className="test-result-cell flu-b-result">
-              {getResultCell("Flu B")}
-            </td>
-          </>
-        ) : (
-          <td className="test-result-cell covid-19-result">
-            {getResultCell("COVID-19")}
-          </td>
-        )}
-        <td className="test-device-cell">{r.deviceType.name}</td>
-        <td className="submitted-by-cell">
-          {displayFullName(
-            r.createdBy.nameInfo.firstName,
-            null,
-            r.createdBy.nameInfo.lastName
-          )}
-        </td>
-        {hasFacility && (
-          <td className="test-facility-cell">
-            {facilityDisplayName(r.facility.name, r.facility.isDeleted)}
-          </td>
-        )}
-        <td className="actions-cell">
-          <ActionsMenu items={actionItems} />
-        </td>
-      </tr>
-    );
-  });
-}
-
-interface ResultsTableListProps {
-  rows: JSX.Element | JSX.Element[];
-  hasMultiplexResults: boolean;
-  hasFacility: boolean;
-}
-
-const ResultsTable = ({
-  rows,
-  hasMultiplexResults,
-  hasFacility,
-}: ResultsTableListProps) => {
-  return (
-    <table className="usa-table usa-table--borderless width-full">
-      <thead className="sr-element__sr-only">
-        {tableHeaders(hasMultiplexResults, hasFacility)}
-      </thead>
-      <tbody>{rows}</tbody>
-    </table>
-  );
 };
 
 /**
@@ -468,17 +270,6 @@ export const DetachedTestResultsList = ({
     (result: any) =>
       result.results?.length &&
       result.results.some((r: any) => r.disease.name !== "COVID-19")
-  );
-
-  const rows = testResultRows(
-    testResults,
-    hasMultiplexResults,
-    displayFacilityColumn,
-    setPrintModalId,
-    setMarkCorrectionId,
-    setDetailsModalId,
-    setTextModalId,
-    setEmailModalTestResultId
   );
 
   const processStartDate = (value: string | undefined) => {
@@ -700,13 +491,21 @@ export const DetachedTestResultsList = ({
                 aria-hidden="true"
               >
                 <thead>
-                  {tableHeaders(hasMultiplexResults, displayFacilityColumn)}
+                  {generateTableHeaders(
+                    hasMultiplexResults,
+                    displayFacilityColumn
+                  )}
                 </thead>
               </table>
             </div>
             <div title="filtered-result">
               <ResultsTable
-                rows={rows}
+                results={testResults}
+                setPrintModalId={setPrintModalId}
+                setMarkCorrectionId={setMarkCorrectionId}
+                setDetailsModalId={setDetailsModalId}
+                setTextModalId={setTextModalId}
+                setEmailModalTestResultId={setEmailModalTestResultId}
                 hasMultiplexResults={hasMultiplexResults}
                 hasFacility={displayFacilityColumn}
               />

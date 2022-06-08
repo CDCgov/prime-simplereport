@@ -1,4 +1,4 @@
-import { render, screen, act } from "@testing-library/react";
+import { act, render, screen } from "@testing-library/react";
 import { MockedProvider } from "@apollo/client/testing";
 import { Provider } from "react-redux";
 import { MemoryRouter, Route, Routes } from "react-router-dom";
@@ -15,6 +15,7 @@ const deviceSpecimenTypes: DeviceSpecimenType[] = [
     deviceType: {
       internalId: "bc0536ea-4564-4291-bbf3-0e7b0731f6e8",
       name: "Fake Device 1",
+      supportedDiseases: [],
     },
     specimenType: {
       internalId: "fake-specimen-id-1",
@@ -26,6 +27,7 @@ const deviceSpecimenTypes: DeviceSpecimenType[] = [
     deviceType: {
       internalId: "ee85bdfb-b6c9-4951-ae30-6c025be4580e",
       name: "Fake Device 2",
+      supportedDiseases: [],
     },
     specimenType: {
       internalId: "fake-specimen-id-1",
