@@ -6,6 +6,7 @@ import gov.cdc.usds.simplereport.db.model.PatientAnswers;
 import gov.cdc.usds.simplereport.db.model.Person;
 import gov.cdc.usds.simplereport.db.model.Result;
 import gov.cdc.usds.simplereport.db.model.auxiliary.AskOnEntrySurvey;
+import gov.cdc.usds.simplereport.db.model.auxiliary.TestResult;
 import gov.cdc.usds.simplereport.service.dataloader.PatientAnswersDataLoader;
 import gov.cdc.usds.simplereport.service.dataloader.TestOrderDeviceTypeDataLoader;
 import gov.cdc.usds.simplereport.service.dataloader.TestOrderPatientDataLoader;
@@ -73,5 +74,9 @@ public class ApiTestOrderDataResolver implements GraphQLResolver<ApiTestOrder> {
 
   public Set<Result> getResults(ApiTestOrder apiTestOrder, DataFetchingEnvironment dfe) {
     return apiTestOrder.getWrapped().getResults();
+  }
+
+  public TestResult getResult(ApiTestOrder apiTestOrder, DataFetchingEnvironment dfe) {
+    return apiTestOrder.getWrapped().getResult();
   }
 }

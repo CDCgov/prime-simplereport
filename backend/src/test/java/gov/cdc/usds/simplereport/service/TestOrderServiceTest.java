@@ -584,6 +584,9 @@ class TestOrderServiceTest extends BaseServiceTest<TestOrderService> {
         LocalDate.of(1865, 12, 25),
         LocalDate.ofInstant(
             correctionTestEvent.getDateTested().toInstant(), ZoneId.systemDefault()));
+    assertEquals(2, _resultRepository.findAllByTestOrder(response.getTestOrder()).size());
+    assertEquals(1, _resultRepository.findAllByTestEvent(correctionTestEvent).size());
+    assertEquals(1, _resultRepository.findAllByTestEvent(originalTestEvent).size());
   }
 
   @Test
@@ -1264,6 +1267,11 @@ class TestOrderServiceTest extends BaseServiceTest<TestOrderService> {
     assertEquals(
         deleteMarkerEvent.getInternalId().toString(),
         events_after.get(0).getInternalId().toString());
+
+    // verify that a Result object is created for both the original and new TestEvent
+    assertEquals(2, _resultRepository.findAllByTestOrder(onlySavedOrder).size());
+    assertEquals(1, _resultRepository.findAllByTestEvent(mostRecentEvent).size());
+    assertEquals(1, _resultRepository.findAllByTestEvent(deleteMarkerEvent).size());
 
     // make sure the corrected event is sent to storage queue, which gets picked up to be delivered
     // to report stream

@@ -510,14 +510,15 @@ public class TestOrderService {
   private Result updateTestOrderCovidResult(TestOrder order, TestResult result) {
     // Remove setResultsColumn as part of #3664
     order.setResultColumn(result);
-    Optional<Result> covidResult = order.getResultForDisease(_diseaseService.covid());
-    if (covidResult.isPresent()) {
-      covidResult.get().setResult(result);
-      return _resultRepo.save(covidResult.get());
+    Optional<Result> pendingResult = _resultRepo.getPendingResult(order, _diseaseService.covid());
+    Result covidResult;
+    if (pendingResult.isPresent()) {
+      covidResult = pendingResult.get();
+      covidResult.setResult(result);
     } else {
-      Result resultEntity = new Result(order, _diseaseService.covid(), result);
-      return _resultRepo.save(resultEntity);
+      covidResult = new Result(order, _diseaseService.covid(), result);
     }
+    return _resultRepo.save(covidResult);
   }
 
   @Transactional
@@ -561,6 +562,17 @@ public class TestOrderService {
     TestEvent newRemoveEvent =
         new TestEvent(event, TestCorrectionStatus.REMOVED, reasonForCorrection);
     _terepo.save(newRemoveEvent);
+
+    // Create new Results for the new removed event
+    Set<Result> copiedResults = new HashSet<>();
+    order
+        .getResultSet()
+        .forEach(
+            result -> {
+              copiedResults.add(new Result(result, newRemoveEvent));
+            });
+    _resultRepo.saveAll(copiedResults);
+
     _testEventReportingService.report(newRemoveEvent);
 
     order.setReasonForCorrection(reasonForCorrection);
