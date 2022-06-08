@@ -9,6 +9,7 @@ type RequiredExceptFor<T, TOptional extends keyof T> = Pick<
   Partial<T>;
 
 interface DeviceType {
+  supportedDiseases: { internalId: string; name: string }[];
   internalId: string;
   name: string;
   testLength?: number | undefined;
@@ -17,6 +18,7 @@ interface DeviceType {
 interface DeviceTypes {
   deviceType: [DeviceType];
 }
+
 interface SpecimenType {
   internalId: string;
   name: string;
@@ -119,6 +121,12 @@ interface FacilityData {
           {
             name: string;
             internalId: string;
+            supportedDiseases: [
+              {
+                internalId: string;
+                name: string;
+              }
+            ];
           }
         ];
         orderingProvider: {
