@@ -16,7 +16,7 @@ sourceCompatibility = '11'
 
 ext {
     kickstartVersion = '12.0.0'
-    set('springCloudVersion', "2020.0.5")
+    set('springCloudVersion', "2021.0.3")
 }
 
 configurations {
@@ -103,7 +103,7 @@ dependencies {
     // graphql-java-extended-validation schema directives
     implementation 'com.graphql-java:graphql-java-extended-validation:17.0-hibernate-validator-6.2.0.Final'
 
-    implementation 'com.azure:azure-storage-queue:12.12.+'
+    implementation 'com.azure:azure-storage-queue:12.12.1'
 
     // test/check dependencies
     testImplementation('org.springframework.boot:spring-boot-starter-test') {
