@@ -65,7 +65,7 @@ positiveCovidProps.data.testResult.results = [
 ];
 
 const undeterminedCovidProps = cloneDeep(defaultProps);
-positiveCovidProps.data.testResult.results = [
+undeterminedCovidProps.data.testResult.results = [
   { disease: { name: "COVID-19" }, testResult: "UNDETERMINED" },
 ];
 
