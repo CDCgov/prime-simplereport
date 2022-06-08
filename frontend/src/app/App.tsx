@@ -132,6 +132,7 @@ const App = () => {
   const canViewPeople = appPermissions.people.canView;
   const canEditPeople = appPermissions.people.canEdit;
   const canViewSettings = appPermissions.settings.canView;
+  const canUseCsvUploaderPilot = appPermissions.featureFlags.SrCsvUploaderPilot;
 
   return (
     <>
@@ -179,7 +180,7 @@ const App = () => {
               path="results/upload"
               element={
                 <ProtectedRoute
-                  requiredPermissions={canViewResults}
+                  requiredPermissions={canUseCsvUploaderPilot}
                   userPermissions={data.whoami.permissions}
                   element={<Uploads />}
                 />
@@ -189,7 +190,7 @@ const App = () => {
               path={"results/upload/submissions"}
               element={
                 <ProtectedRoute
-                  requiredPermissions={canViewResults}
+                  requiredPermissions={canUseCsvUploaderPilot}
                   userPermissions={data.whoami.permissions}
                   element={<Submissions />}
                 />
@@ -199,7 +200,7 @@ const App = () => {
               path={"results/upload/submissions/:pageNumber"}
               element={
                 <ProtectedRoute
-                  requiredPermissions={canViewResults}
+                  requiredPermissions={canUseCsvUploaderPilot}
                   userPermissions={data.whoami.permissions}
                   element={<Submissions />}
                 />
