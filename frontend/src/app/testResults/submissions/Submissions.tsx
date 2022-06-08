@@ -10,7 +10,6 @@ import {
   useGetUploadSubmissionsQuery,
 } from "../../../generated/graphql";
 import { setStartTimeForDateRange } from "../../analytics/Analytics";
-import { LoadingCard } from "../../commonComponents/LoadingCard/LoadingCard";
 
 const Submissions = () => {
   const urlParams = useParams();
@@ -31,10 +30,6 @@ const Submissions = () => {
     },
   });
 
-  if (loading) {
-    return <LoadingCard />;
-  }
-
   if (error) {
     throw error;
   }
@@ -42,7 +37,13 @@ const Submissions = () => {
   const SubmissionsTableRows = (
     submissionsResult: GetUploadSubmissionsQuery | undefined
   ) => {
-    if (
+    if (loading) {
+      return (
+        <tr>
+          <td>Loading ...</td>
+        </tr>
+      );
+    } else if (
       !submissionsResult ||
       submissionsResult.uploadSubmissions.totalElements === 0
     ) {
@@ -148,18 +149,12 @@ const Submissions = () => {
 
             {/*pagination*/}
             <div className="usa-card__footer">
-              {loading ? (
-                <p>Loading...</p>
-              ) : (
-                <Pagination
-                  baseRoute="/results/upload/submissions"
-                  currentPage={pageNumber}
-                  entriesPerPage={pageSize}
-                  totalEntries={
-                    submissions?.uploadSubmissions.totalElements || 0
-                  }
-                />
-              )}
+              <Pagination
+                baseRoute="/results/upload/submissions"
+                currentPage={pageNumber}
+                entriesPerPage={pageSize}
+                totalEntries={submissions?.uploadSubmissions.totalElements || 0}
+              />
             </div>
           </div>
         </div>
