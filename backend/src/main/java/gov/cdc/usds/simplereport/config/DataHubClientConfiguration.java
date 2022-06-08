@@ -12,13 +12,13 @@ public class DataHubClientConfiguration {
   @Value("${datahub.api-version}")
   private String csvApiVersion;
 
-  @Value("${datahub.api-client}")
-  private String simpleReportClientName;
+  @Value("${datahub.csv-upload-api-client}")
+  private String simpleReportCsvUploadClientName;
 
   @Bean
   public RequestInterceptor headerRequestInterceptor() {
     return template -> {
-      template.header("client", simpleReportClientName);
+      template.header("client", simpleReportCsvUploadClientName);
       template.header("x-api-version", csvApiVersion);
       template.header("x-functions-key", apiKey);
     };
