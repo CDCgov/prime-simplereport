@@ -9,10 +9,7 @@ import {
   GetUploadSubmissionsQuery,
   useGetUploadSubmissionsQuery,
 } from "../../../generated/graphql";
-import {
-  // setEndTimeForDateRange,
-  setStartTimeForDateRange,
-} from "../../analytics/Analytics";
+import { setStartTimeForDateRange } from "../../analytics/Analytics";
 import { LoadingCard } from "../../commonComponents/LoadingCard/LoadingCard";
 
 const Submissions = () => {
@@ -33,8 +30,6 @@ const Submissions = () => {
       endDate,
     },
   });
-
-  console.log(submissions);
 
   if (loading) {
     return <LoadingCard />;
