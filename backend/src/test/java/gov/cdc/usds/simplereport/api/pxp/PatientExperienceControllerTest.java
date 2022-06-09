@@ -285,7 +285,7 @@ class PatientExperienceControllerTest extends BaseFullStackTest {
             .andExpect(jsonPath("$.testEventId", is(removedTestEvent.getInternalId().toString())))
             .andExpect(jsonPath("$.result", is("POSITIVE")))
             .andExpect(jsonPath("$.results", Matchers.hasSize(1)))
-            .andExpect(jsonPath("$.results[0].testResult", is("POSITIVE")))
+            .andExpect(jsonPath("$.results[0].result", is("POSITIVE")))
             .andExpect(jsonPath("$.results[0].disease.name", is("COVID-19")))
             .andExpect(jsonPath("$.correctionStatus", is("REMOVED")))
             .andExpect(jsonPath("$.patient.firstName", is("Fred")))
