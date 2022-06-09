@@ -103,10 +103,21 @@ export const DetachedTestResultDetailsModal = ({ data, closeModal }: Props) => {
 
   const removed = correctionStatus === "REMOVED";
   const symptomList = symptoms ? symptomsStringToArray(symptoms) : [];
-  const hasMultiplexResults = results?.some(
-    (e) => e.disease.name !== "COVID-19"
-  );
-  console.log(hasMultiplexResults);
+  const displayResult: { [diseaseResult: string]: TestResult | null } = {
+    covidResult: result,
+  };
+
+  const hasMultiplexResults = results && results.length > 1;
+
+  if (hasMultiplexResults) {
+    const multiplexResults = results as MultiplexResult[];
+    displayResult["fluAResult"] = multiplexResults.filter(
+      (d) => d.disease.name === "Flu A"
+    )[0].testResult;
+    displayResult["fluBResult"] = multiplexResults.filter(
+      (d) => d.disease.name === "Flu B"
+    )[0].testResult;
+  }
   return (
     <Modal
       isOpen={true}
@@ -178,9 +189,26 @@ export const DetachedTestResultDetailsModal = ({ data, closeModal }: Props) => {
         <tbody>
           <DetailsRow
             label="COVID-19 result"
-            value={result}
+            value={displayResult["covidResult"]}
             removed={removed}
           />
+
+          {hasMultiplexResults ? (
+            <>
+              <DetailsRow
+                label="Flu A result"
+                value={displayResult["fluAResult"]}
+                removed={removed}
+              />
+              <DetailsRow
+                label="Flu B result"
+                value={displayResult["fluBResult"]}
+                removed={removed}
+              />
+            </>
+          ) : (
+            <></>
+          )}
           <DetailsRow
             label="Test date"
             value={dateTested && formatDateWithTimeOption(dateTested, true)}
