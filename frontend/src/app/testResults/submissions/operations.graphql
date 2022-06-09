@@ -1,0 +1,29 @@
+query GetUploadSubmissions(
+  $startDate: DateTime
+  $endDate: DateTime
+  $pageNumber: Int
+  $pageSize: Int) {
+  uploadSubmissions(
+    startDate: $startDate
+    endDate: $endDate
+    pageNumber: $pageNumber
+    pageSize: $pageSize
+  ) {
+    content {
+      internalId,
+      reportId,
+      createdAt,
+      status,
+      recordsCount,
+      errors {
+        message,
+        scope
+      },
+      warnings {
+        message,
+        scope
+      }
+    }
+    totalElements
+  }
+}
