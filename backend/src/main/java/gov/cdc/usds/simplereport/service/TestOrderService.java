@@ -37,8 +37,8 @@ import gov.cdc.usds.simplereport.db.repository.TestEventRepository;
 import gov.cdc.usds.simplereport.db.repository.TestOrderRepository;
 import java.time.LocalDate;
 import java.util.ArrayList;
+import java.util.Comparator;
 import java.util.Date;
-import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Objects;
@@ -553,15 +553,23 @@ public class TestOrderService {
         new TestEvent(event, TestCorrectionStatus.REMOVED, reasonForCorrection);
     _terepo.save(newRemoveEvent);
 
-    // Create new Results for the new removed event
-    Set<Result> copiedResults = new HashSet<>();
-    order
-        .getResultSet()
+    // Get the most recent results for each disease
+    Map<SupportedDisease, Optional<Result>> latestResultsPerDisease =
+        order.getResultSet().stream()
+            .collect(
+                Collectors.groupingBy(
+                    Result::getDisease,
+                    Collectors.maxBy(Comparator.comparing(Result::getUpdatedAt))));
+
+    latestResultsPerDisease
+        .values()
         .forEach(
             result -> {
-              copiedResults.add(new Result(result, newRemoveEvent));
+              if (result.isPresent()) {
+                Result copyResult = new Result(result.get(), newRemoveEvent);
+                _resultRepo.save(copyResult);
+              }
             });
-    _resultRepo.saveAll(copiedResults);
 
     _testEventReportingService.report(newRemoveEvent);
 
