@@ -229,7 +229,6 @@ export const DetachedTestResultDetailsModal = ({ data, closeModal }: Props) => {
           <DetailsRow
             label="Symptom onset"
             value={symptomOnset && formatDateWithTimeOption(symptomOnset)}
-            indent
             removed={removed}
           />
           <DetailsRow
