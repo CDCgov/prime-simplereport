@@ -25,6 +25,7 @@ import { MaintenanceBanner } from "./commonComponents/MaintenanceBanner";
 import { Analytics } from "./analytics/Analytics";
 import Uploads from "./testResults/uploads/Uploads";
 import Submission from "./testResults/submissions/Submission";
+import Submissions from "./testResults/submissions/Submissions";
 
 export const WHOAMI_QUERY = gql`
   query WhoAmI {
@@ -132,6 +133,7 @@ const App = () => {
   const canViewPeople = appPermissions.people.canView;
   const canEditPeople = appPermissions.people.canEdit;
   const canViewSettings = appPermissions.settings.canView;
+  const canUseCsvUploaderPilot = appPermissions.featureFlags.SrCsvUploaderPilot;
 
   return (
     <>
@@ -179,7 +181,7 @@ const App = () => {
               path="results/upload"
               element={
                 <ProtectedRoute
-                  requiredPermissions={canViewResults}
+                  requiredPermissions={canUseCsvUploaderPilot}
                   userPermissions={data.whoami.permissions}
                   element={<Uploads />}
                 />
@@ -192,6 +194,26 @@ const App = () => {
                   requiredPermissions={canViewResults}
                   userPermissions={data.whoami.permissions}
                   element={<Submission />}
+                />
+              }
+            />
+            <Route
+              path={"results/upload/submissions"}
+              element={
+                <ProtectedRoute
+                  requiredPermissions={canUseCsvUploaderPilot}
+                  userPermissions={data.whoami.permissions}
+                  element={<Submissions />}
+                />
+              }
+            />
+            <Route
+              path={"results/upload/submissions/:pageNumber"}
+              element={
+                <ProtectedRoute
+                  requiredPermissions={canUseCsvUploaderPilot}
+                  userPermissions={data.whoami.permissions}
+                  element={<Submissions />}
                 />
               }
             />

@@ -2622,23 +2622,6 @@ export type GetResultsCountByFacilityQuery = {
   testResultsCount?: number | null | undefined;
 };
 
-export type GetUploadSubmissionQueryVariables = Exact<{
-  id: Scalars["ID"];
-}>;
-
-export type GetUploadSubmissionQuery = {
-  __typename?: "Query";
-  uploadSubmission: {
-    __typename?: "UploadResponse";
-    reportId: string;
-    createdAt: any;
-    status: string;
-    warnings: string;
-    errors: string;
-    recordsCount: number;
-  };
-};
-
 export type UploadTestResultCsvMutationVariables = Exact<{
   testResultList: Scalars["Upload"];
 }>;
@@ -6977,69 +6960,6 @@ export type GetResultsCountByFacilityLazyQueryHookResult = ReturnType<
 export type GetResultsCountByFacilityQueryResult = Apollo.QueryResult<
   GetResultsCountByFacilityQuery,
   GetResultsCountByFacilityQueryVariables
->;
-export const GetUploadSubmissionDocument = gql`
-  query GetUploadSubmission($id: ID!) {
-    uploadSubmission(id: $id) {
-      reportId
-      createdAt
-      status
-      warnings
-      errors
-      recordsCount
-    }
-  }
-`;
-
-/**
- * __useGetUploadSubmissionQuery__
- *
- * To run a query within a React component, call `useGetUploadSubmissionQuery` and pass it any options that fit your needs.
- * When your component renders, `useGetUploadSubmissionQuery` returns an object from Apollo Client that contains loading, error, and data properties
- * you can use to render your UI.
- *
- * @param baseOptions options that will be passed into the query, supported options are listed on: https://www.apollographql.com/docs/react/api/react-hooks/#options;
- *
- * @example
- * const { data, loading, error } = useGetUploadSubmissionQuery({
- *   variables: {
- *      id: // value for 'id'
- *   },
- * });
- */
-export function useGetUploadSubmissionQuery(
-  baseOptions: Apollo.QueryHookOptions<
-    GetUploadSubmissionQuery,
-    GetUploadSubmissionQueryVariables
-  >
-) {
-  const options = { ...defaultOptions, ...baseOptions };
-  return Apollo.useQuery<
-    GetUploadSubmissionQuery,
-    GetUploadSubmissionQueryVariables
-  >(GetUploadSubmissionDocument, options);
-}
-export function useGetUploadSubmissionLazyQuery(
-  baseOptions?: Apollo.LazyQueryHookOptions<
-    GetUploadSubmissionQuery,
-    GetUploadSubmissionQueryVariables
-  >
-) {
-  const options = { ...defaultOptions, ...baseOptions };
-  return Apollo.useLazyQuery<
-    GetUploadSubmissionQuery,
-    GetUploadSubmissionQueryVariables
-  >(GetUploadSubmissionDocument, options);
-}
-export type GetUploadSubmissionQueryHookResult = ReturnType<
-  typeof useGetUploadSubmissionQuery
->;
-export type GetUploadSubmissionLazyQueryHookResult = ReturnType<
-  typeof useGetUploadSubmissionLazyQuery
->;
-export type GetUploadSubmissionQueryResult = Apollo.QueryResult<
-  GetUploadSubmissionQuery,
-  GetUploadSubmissionQueryVariables
 >;
 export const UploadTestResultCsvDocument = gql`
   mutation UploadTestResultCSV($testResultList: Upload!) {
