@@ -6,13 +6,15 @@ query GetUploadSubmission($id: ID!) {
     warnings
     errors
     recordsCount
+  }
 }
 
 query GetUploadSubmissions(
   $startDate: DateTime
   $endDate: DateTime
   $pageNumber: Int
-  $pageSize: Int) {
+  $pageSize: Int
+) {
   uploadSubmissions(
     startDate: $startDate
     endDate: $endDate
@@ -20,17 +22,17 @@ query GetUploadSubmissions(
     pageSize: $pageSize
   ) {
     content {
-      internalId,
-      reportId,
-      createdAt,
-      status,
-      recordsCount,
+      internalId
+      reportId
+      createdAt
+      status
+      recordsCount
       errors {
-        message,
+        message
         scope
-      },
+      }
       warnings {
-        message,
+        message
         scope
       }
     }
