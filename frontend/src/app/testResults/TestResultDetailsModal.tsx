@@ -107,8 +107,8 @@ export const DetachedTestResultDetailsModal = ({ data, closeModal }: Props) => {
     covidResult: result,
   };
 
-  const hasMultiplexResults = results && results.length > 1;
-
+  const hasMultiplexResults =
+    results && results.some((d) => d.disease.name !== "COVID-19");
   if (hasMultiplexResults) {
     const multiplexResults = results as MultiplexResult[];
     displayResult["fluAResult"] = multiplexResults.filter(
