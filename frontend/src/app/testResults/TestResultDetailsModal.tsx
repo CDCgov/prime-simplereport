@@ -5,7 +5,7 @@ import classnames from "classnames";
 import iconClose from "../../img/close.svg";
 import "./TestResultPrintModal.scss";
 import { QueryWrapper } from "../commonComponents/QueryWrapper";
-import { TestResult } from "../testQueue/QueueItem";
+import { MultiplexResult, TestResult } from "../testQueue/QueueItem";
 import { formatFullName } from "../utils/user";
 import { symptomsStringToArray } from "../utils/symptoms";
 import {
@@ -17,6 +17,7 @@ import { formatDateWithTimeOption } from "../utils/date";
 type Result = {
   dateTested: string;
   result: TestResult;
+  results?: MultiplexResult[];
   correctionStatus: TestCorrectionStatus;
   noSymptoms: boolean;
   symptoms: string;
@@ -45,6 +46,12 @@ export const testResultDetailsQuery = gql`
     testResult(id: $id) {
       dateTested
       result
+      results {
+        disease {
+          name
+        }
+        testResult
+      }
       correctionStatus
       symptoms
       symptomOnset
@@ -84,6 +91,7 @@ export const DetachedTestResultDetailsModal = ({ data, closeModal }: Props) => {
   const {
     dateTested,
     result,
+    results,
     correctionStatus,
     symptoms,
     symptomOnset,
@@ -95,7 +103,10 @@ export const DetachedTestResultDetailsModal = ({ data, closeModal }: Props) => {
 
   const removed = correctionStatus === "REMOVED";
   const symptomList = symptoms ? symptomsStringToArray(symptoms) : [];
-
+  const hasMultiplexResults = results?.some(
+    (e) => e.disease.name !== "COVID-19"
+  );
+  console.log(hasMultiplexResults);
   return (
     <Modal
       isOpen={true}
@@ -166,7 +177,7 @@ export const DetachedTestResultDetailsModal = ({ data, closeModal }: Props) => {
       <table className={containerClasses}>
         <tbody>
           <DetailsRow
-            label="SARS-CoV-2 result"
+            label="COVID-19 result"
             value={result}
             removed={removed}
           />
