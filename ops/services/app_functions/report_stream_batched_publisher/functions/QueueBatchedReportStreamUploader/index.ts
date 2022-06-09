@@ -40,7 +40,7 @@ const QueueBatchedTestEventPublisher: AzureFunction = async function (
   });
 
   const { csvPayload, parseFailure, parseFailureCount, parseSuccessCount } =
-    convertToCsv(messages, context);
+    convertToCsv(messages);
 
   if (parseFailureCount > 0) {
     telemetry.trackEvent({

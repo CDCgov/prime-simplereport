@@ -99,7 +99,7 @@ export async function dequeueMessages(
   return messages;
 }
 
-export function convertToCsv(messages: DequeuedMessageItem[], context: Context) {
+export function convertToCsv(messages: DequeuedMessageItem[]) {
   const parseFailure: { [k: string]: boolean } = {};
   let parseFailureCount = 0;
   const messageTexts = messages
@@ -107,7 +107,6 @@ export function convertToCsv(messages: DequeuedMessageItem[], context: Context) 
       try {
         return JSON.parse(m.messageText);
       } catch (e: any) {
-        context.log("Failed to parse message JSON", e);
         parseFailure[m.messageId] = true;
         parseFailureCount++;
         return undefined;
