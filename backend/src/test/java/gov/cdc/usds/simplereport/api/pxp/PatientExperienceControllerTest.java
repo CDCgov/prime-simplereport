@@ -11,7 +11,6 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
-import com.fasterxml.jackson.databind.ObjectMapper;
 import gov.cdc.usds.simplereport.api.BaseFullStackTest;
 import gov.cdc.usds.simplereport.api.ResourceLinks;
 import gov.cdc.usds.simplereport.db.model.Facility;
@@ -20,7 +19,6 @@ import gov.cdc.usds.simplereport.db.model.PatientLink;
 import gov.cdc.usds.simplereport.db.model.Person;
 import gov.cdc.usds.simplereport.db.model.TestEvent;
 import gov.cdc.usds.simplereport.db.model.TimeOfConsent;
-import gov.cdc.usds.simplereport.db.model.auxiliary.SupportedDiseaseTestResult;
 import gov.cdc.usds.simplereport.db.model.auxiliary.TestResult;
 import gov.cdc.usds.simplereport.logging.LoggingConstants;
 import gov.cdc.usds.simplereport.service.TimeOfConsentService;
@@ -28,13 +26,10 @@ import gov.cdc.usds.simplereport.test_util.TestUserIdentities;
 import java.text.SimpleDateFormat;
 import java.time.format.DateTimeFormatter;
 import java.util.HashMap;
-import java.util.HashSet;
 import java.util.List;
-import java.util.Set;
 import java.util.TimeZone;
 import java.util.UUID;
 import org.hamcrest.Matchers;
-import org.json.JSONObject;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -148,7 +143,7 @@ class PatientExperienceControllerTest extends BaseFullStackTest {
             .andExpect(jsonPath("$.testEventId", is(testEvent.getInternalId().toString())))
             .andExpect(jsonPath("$.result", is("NEGATIVE")))
             .andExpect(jsonPath("$.results", Matchers.hasSize(1)))
-            .andExpect(jsonPath("$.results[0].testResult", is("NEGATIVE")))
+            .andExpect(jsonPath("$.results[0].result", is("NEGATIVE")))
             .andExpect(jsonPath("$.results[0].disease.name", is("COVID-19")))
             .andExpect(jsonPath("$.correctionStatus", is("ORIGINAL")))
             .andExpect(jsonPath("$.patient.firstName", is("Fred")))
@@ -179,7 +174,6 @@ class PatientExperienceControllerTest extends BaseFullStackTest {
 
   @Test
   void verifyLinkV2ReturnsTestResultInfo_multiplex() throws Exception {
-
     TestUserIdentities.withStandardUser(
         () -> {
           testEvent =
@@ -192,18 +186,6 @@ class PatientExperienceControllerTest extends BaseFullStackTest {
                   false);
           patientLink = _dataFactory.createPatientLink(testEvent.getTestOrder());
         });
-
-    Set<SupportedDiseaseTestResult> multiplexResults = new HashSet<>();
-    multiplexResults.add(
-        new SupportedDiseaseTestResult(_diseaseService.covid(), TestResult.POSITIVE));
-    multiplexResults.add(
-        new SupportedDiseaseTestResult(_diseaseService.fluA(), TestResult.NEGATIVE));
-    multiplexResults.add(
-        new SupportedDiseaseTestResult(_diseaseService.fluB(), TestResult.NEGATIVE));
-
-    ObjectMapper mapper = new ObjectMapper();
-    String multiplexResponse = mapper.writeValueAsString(multiplexResults);
-    JSONObject multiplexResponseJson = new JSONObject("results", multiplexResponse);
 
     // GIVEN
     String dob = person.getBirthDate().format(DateTimeFormatter.ofPattern("yyyy-MM-dd"));
@@ -229,15 +211,15 @@ class PatientExperienceControllerTest extends BaseFullStackTest {
             .andExpect(status().isOk())
             .andExpect(jsonPath("$.testEventId", is(testEvent.getInternalId().toString())))
             .andExpect(jsonPath("$.results", Matchers.hasSize(3)))
-            //            .andExpect(
-            //                jsonPath(
-            //                    "$.results[0]",
-            //                    Matchers.containsInAnyOrder(
-            //                        mapper.writeValueAsString(
-            //                            new SupportedDiseaseTestResult(
-            //                                _diseaseService.fluB(), TestResult.NEGATIVE)))))
-            //                    .andExpect(jsonPath("$.results",
-            // Matchers.containsInAnyOrder(multiplexResponseJson)))
+            .andExpect(
+                jsonPath("$.results[?(@.disease.name == \"COVID-19\" && @.result == \"POSITIVE\")]")
+                    .exists())
+            .andExpect(
+                jsonPath("$.results[?(@.disease.name == \"Flu A\" && @.result == \"NEGATIVE\")]")
+                    .exists())
+            .andExpect(
+                jsonPath("$.results[?(@.disease.name == \"Flu B\" && @.result == \"NEGATIVE\")]")
+                    .exists())
             .andExpect(jsonPath("$.correctionStatus", is("ORIGINAL")))
             .andExpect(jsonPath("$.patient.firstName", is("Fred")))
             .andExpect(jsonPath("$.patient.middleName", is("M")))
