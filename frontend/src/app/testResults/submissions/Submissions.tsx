@@ -10,6 +10,7 @@ import {
   useGetUploadSubmissionsQuery,
 } from "../../../generated/graphql";
 import { setStartTimeForDateRange } from "../../analytics/Analytics";
+import { LinkWithQuery } from "../../commonComponents/LinkWithQuery";
 
 const Submissions = () => {
   const urlParams = useParams();
@@ -57,7 +58,14 @@ const Submissions = () => {
     return submissionsResult.uploadSubmissions.content.map((submission) => {
       return (
         <tr key={submission.internalId}>
-          <td>{submission.reportId}</td>
+          <td>
+            <LinkWithQuery
+              to={`/results/upload/submissions/${submission.internalId}`}
+              className="sr-link__primary"
+            >
+              {submission.reportId}
+            </LinkWithQuery>
+          </td>
           <td>{formatDateWithTimeOption(submission.createdAt, true)}</td>
           <td>{submission.recordsCount}</td>
           <td>{submission.status}</td>

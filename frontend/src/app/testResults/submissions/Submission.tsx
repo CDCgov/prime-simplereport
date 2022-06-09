@@ -40,7 +40,7 @@ const Submission = () => {
             {/* Sub-heading */}
             <div className="usa-card__body text-normal font-body-xs text-base margin-bottom-0">
               <span>
-                <a href="/results/upload/submission">
+                <a href="/results/upload/submissions">
                   {organization.name} COVID-19 Submissions
                 </a>
               </span>
