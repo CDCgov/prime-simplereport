@@ -50,14 +50,9 @@ describe("Adding a patient", () => {
     cy.get(".modal__container #save-confirmed-address").click();
     cy.get(".usa-card__header").contains("People");
     cy.get(".usa-card__header").contains("Showing");
-    cy.task("log", "01 get header with Showing");
   });
-  // hanging here
   it("shows the patient in the list", () => {
-    cy.task("log", "02 entered show patient it block");
     cy.get("#search-field-small").type(patient.lastName);
-    cy.task("log", "03 typed patient name in search");
     cy.get(".prime-container").contains(patient.fullName);
-    cy.task("log", "04 find patient name on page");
   });
 });

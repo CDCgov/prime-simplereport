@@ -77,15 +77,11 @@ describe("add patient and save and start test", () => {
       '.modal__container input[name="addressSelect-person"][value="userAddress"]+label'
     ).click();
     cy.get(".modal__container #save-confirmed-address").click();
-    cy.task("log", "05 clicked confirmed address");
   });
-  // hangs here
   it("verifies patient contact info is correctly populated in the AoE form", () => {
-    cy.task("log", "06 entered verify AoE it block");
     cy.get('input[name="testResultDeliverySms"][value="SMS"]').should(
       "be.disabled"
     );
-    cy.task("log", "07 checked SMS radio is disabled");
     cy.contains(
       "(There are no mobile phone numbers listed in your patient profile.)"
     );
@@ -100,7 +96,6 @@ describe("add patient and save and start test", () => {
       cy.contains("Results will be sent to these email addresses:");
       cy.contains(patient.email);
     });
-    cy.task("log", "08 verified email on AoE");
   });
   it("completes AoE form and verifies queue", () => {
     cy.contains("New loss of taste").click();
@@ -121,15 +116,10 @@ describe("edit patient from test queue", () => {
     cy.get('input[value="female"]+label').click();
     cy.get(".prime-save-patient-changes").first().click();
     cy.get(".ReactModal__Content").should("not.exist");
-    cy.task("log", "09 verified AoE doesn't pop up");
   });
-  // hangs here
   it("verifies test queue page with test card highlighted", () => {
-    cy.task("log", "09 entered verify test queue it block");
     cy.url().should("include", "queue");
-    cy.task("log", "10 checked url");
     cy.get(".prime-queue-item__info").contains(patientName);
-    cy.task("log", "11 verified patient name in queue");
   });
 });
 

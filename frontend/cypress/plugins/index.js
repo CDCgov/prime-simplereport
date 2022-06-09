@@ -82,10 +82,6 @@ module.exports = (on, _config) => {
       }
       return null;
     },
-    log: (message) => {
-      console.log(message);
-      return null;
-    },
   });
   on("before:browser:launch", (browser, launchOptions) => {
     if (browser.name === "chrome" && browser.isHeadless) {
