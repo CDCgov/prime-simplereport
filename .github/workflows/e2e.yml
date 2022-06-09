@@ -158,7 +158,7 @@ jobs:
           name: wiremock logs
           path: wiremock-log.txt
       - name: Archive cypress execution videos
-        if: failure()
+        if: failure() || cancelled()
         uses: actions/upload-artifact@v2
         with:
           name: cypress-results
