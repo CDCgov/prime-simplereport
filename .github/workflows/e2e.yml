@@ -138,6 +138,7 @@ jobs:
           CYPRESS_OKTA_PASSWORD: ${{ secrets.CYPRESS_OKTA_PASSWORD }}
           CYPRESS_OKTA_SECRET: ${{ secrets.CYPRESS_OKTA_SECRET }}
         run: ./e2e.sh
+        timeout-minutes: 15
       - name: Archive gradle logs
         uses: actions/upload-artifact@v2
         if: failure()
