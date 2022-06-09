@@ -36,6 +36,7 @@ import gov.cdc.usds.simplereport.db.repository.TestEventRepository;
 import gov.cdc.usds.simplereport.db.repository.TestOrderRepository;
 import java.time.LocalDate;
 import java.util.ArrayList;
+import java.util.Comparator;
 import java.util.Date;
 import java.util.HashSet;
 import java.util.List;
@@ -510,14 +511,15 @@ public class TestOrderService {
   private Result updateTestOrderCovidResult(TestOrder order, TestResult result) {
     // Remove setResultsColumn as part of #3664
     order.setResultColumn(result);
-    Optional<Result> covidResult = order.getResultForDisease(_diseaseService.covid());
-    if (covidResult.isPresent()) {
-      covidResult.get().setResult(result);
-      return _resultRepo.save(covidResult.get());
+    Optional<Result> pendingResult = _resultRepo.getPendingResult(order, _diseaseService.covid());
+    Result covidResult;
+    if (pendingResult.isPresent()) {
+      covidResult = pendingResult.get();
+      covidResult.setResult(result);
     } else {
-      Result resultEntity = new Result(order, _diseaseService.covid(), result);
-      return _resultRepo.save(resultEntity);
+      covidResult = new Result(order, _diseaseService.covid(), result);
     }
+    return _resultRepo.save(covidResult);
   }
 
   @Transactional
@@ -561,6 +563,25 @@ public class TestOrderService {
     TestEvent newRemoveEvent =
         new TestEvent(event, TestCorrectionStatus.REMOVED, reasonForCorrection);
     _terepo.save(newRemoveEvent);
+
+    // Get the most recent results for each disease
+    Map<SupportedDisease, Optional<Result>> latestResultsPerDisease =
+        order.getResultSet().stream()
+            .collect(
+                Collectors.groupingBy(
+                    Result::getDisease,
+                    Collectors.maxBy(Comparator.comparing(Result::getUpdatedAt))));
+
+    latestResultsPerDisease
+        .values()
+        .forEach(
+            result -> {
+              if (result.isPresent()) {
+                Result copyResult = new Result(result.get(), newRemoveEvent);
+                _resultRepo.save(copyResult);
+              }
+            });
+
     _testEventReportingService.report(newRemoveEvent);
 
     order.setReasonForCorrection(reasonForCorrection);
