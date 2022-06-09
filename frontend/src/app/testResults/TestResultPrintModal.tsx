@@ -12,10 +12,24 @@ import { QueryWrapper } from "../commonComponents/QueryWrapper";
 import LanguageToggler from "../../patientApp/LanguageToggler";
 import { formatDateWithTimeOption } from "../utils/date";
 import { GetTestResultForPrintDocument } from "../../generated/graphql";
+import { Patient } from "../patients/ManagePatients";
+import { MultiplexResult } from "../testQueue/QueueItem";
+
+export interface TestResult {
+  correctionStatus: string;
+  dateTested: string;
+  deviceType: {
+    model: string;
+    name: string;
+  };
+  facility: Facility;
+  patient: Patient;
+  results: MultiplexResult[];
+}
 
 interface StaticTestResultModalProps {
   testResultId: string | undefined;
-  testResult: any;
+  testResult: TestResult;
   hardcodedPrintDate?: string;
 }
 
@@ -35,22 +49,25 @@ export const StaticTestResultModal = ({
   } = testResult;
 
   const getSortedResults = () => {
-    return Object.values(results).sort((a: any, b: any) => {
-      return a.disease.name.localeCompare(b.disease.name);
-    });
+    return Object.values(results).sort(
+      (a: MultiplexResult, b: MultiplexResult) => {
+        return a.disease.name.localeCompare(b.disease.name);
+      }
+    );
   };
 
   const hasMultiplexResults = results.some(
-    (multiplexResult: any) => multiplexResult.disease.name !== "COVID-19"
+    (multiplexResult: MultiplexResult) =>
+      multiplexResult.disease.name !== "COVID-19"
   );
 
-  const getCovidResult = results.filter((multiplexResult: any) =>
+  const getCovidResult = results.filter((multiplexResult: MultiplexResult) =>
     multiplexResult.disease.name.includes("COVID-19")
   )[0];
 
   const hasPositiveFluResults =
     results.filter(
-      (multiplexResult: any) =>
+      (multiplexResult: MultiplexResult) =>
         multiplexResult.disease.name.includes("Flu") &&
         multiplexResult.testResult === "POSITIVE"
     ).length > 0;
@@ -165,7 +182,7 @@ export const StaticTestResultModal = ({
   const testResultsList = () => {
     const sortedTestResults = getSortedResults();
     const testResultsArray: any = [];
-    sortedTestResults.forEach((sortedTestResult: any) => {
+    sortedTestResults.forEach((sortedTestResult: MultiplexResult) => {
       testResultsArray.push(
         <li>
           <b>
