@@ -51,6 +51,13 @@ module.exports = (on, _config) => {
     getPatientLink: () => {
       return global.patientLink;
     },
+    setPatientPhone: (phone) => {
+      global.patientPhone = phone;
+      return null;
+    },
+    getPatientPhone: () => {
+      return global.patientPhone;
+    },
     // These tasks are used to set up and run Wiremock
     downloadWiremock: () =>
       execSync("./cypress/support/wiremock/download-wiremock.sh"),

@@ -43,6 +43,7 @@ export const QUERY_SINGLE_PATIENT = gql`
         type
         number
       }
+      emails
       testResultDelivery
     }
   }

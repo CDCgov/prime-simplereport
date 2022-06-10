@@ -170,8 +170,15 @@ The `frontend/.env.local` file has a template at `frontend/cypress/.env.e2e.samp
 ```
 
 #### Running Cypress
-Now that you have those files set up, you are ready for a test run! There are a few ways to run the tests from the `frontend` directory:
+Now that you have those files set up, you are ready for a test run! There are a few ways to run the tests from the `frontend` directory, including:
 
+- `yarn e2e:local`
+  - This will open an interactive test runner that lets you select browsers and run your desired specs.
+  - Prerequisite(s): the app must be running locally with the frontend base URL set to `http://localhost:3000` and the _dev_ profile set for the backend
+- `yarn e2e:local:okta`
+  - Same as `yarn e2e:local`, except that specs with a login step will log in to Okta.
+  - Prerequisite(s): in addition to the prereqs for `yarn e2e:local`, the app must be running with Okta enabled
+<!-- Dockerized end-to-end tests are currently broken
 - `yarn e2e`
   - This will run cypress with default values and display Cypress logs.
 - `yarn e2e:open`
@@ -183,6 +190,9 @@ Now that you have those files set up, you are ready for a test run! There are a 
         - `WIREMOCK_URL=http://172.17.0.1:8088`
 - `yarn e2e:verbose`
   - This will run cypress with default values and display Cypress, API, DB, Frontend, and Nginx logs.
+-->
+
+Note that our Cypress tests expect there to only be 1 facility and will fail if there are multiple. Additionally, tests are expected to be run in order, so some spec files rely on data generated in previous specs.
 
 See the [Cypress documentation](https://docs.cypress.io/api/table-of-contents) for writing new tests. If you need to generate new Wiremock mappings for external services, see [this wiki page](https://github.com/CDCgov/prime-simplereport/wiki/WireMock).
 
