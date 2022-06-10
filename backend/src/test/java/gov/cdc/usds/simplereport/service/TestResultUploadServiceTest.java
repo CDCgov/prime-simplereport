@@ -3,6 +3,7 @@ package gov.cdc.usds.simplereport.service;
 import static com.github.tomakehurst.wiremock.client.WireMock.stubFor;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
+import static org.junit.jupiter.api.Assertions.assertNull;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.mock;
@@ -95,29 +96,28 @@ class TestResultUploadServiceTest extends BaseServiceTest<TestResultUploadServic
   @DirtiesContext
   @SliceTestConfiguration.WithSimpleReportCsvUploadPilotUser
   void feignBadRequest_returnsErrorMessage() throws IOException {
-
-    stubFor(
-        WireMock.post(WireMock.urlEqualTo("/api/reports"))
-            .willReturn(
-                WireMock.aResponse()
-                    .withStatus(HttpStatus.BAD_REQUEST)
-                    .withHeader("Content-Type", MediaType.APPLICATION_JSON_VALUE)
-                    .withBody("you messed up")));
+    try (var x = loadCsv("responses/datahub-error-response.json")) {
+      stubFor(
+          WireMock.post(WireMock.urlEqualTo("/api/reports"))
+              .willReturn(
+                  WireMock.aResponse()
+                      .withStatus(HttpStatus.BAD_REQUEST)
+                      .withHeader("Content-Type", MediaType.APPLICATION_JSON_VALUE)
+                      .withBody(x.readAllBytes())));
+    }
     InputStream input = mock(InputStream.class);
     when(input.readAllBytes()).thenReturn(new byte[] {45});
 
     var response = this._service.processResultCSV(input);
 
-    assertEquals(1, response.getErrors().length);
-    var errorMessage = Arrays.stream(response.getErrors()).findFirst().get();
-
-    assertEquals("Bad Request", errorMessage.getMessage());
+    assertEquals(6, response.getErrors().length);
+    assertEquals(UploadStatus.FAILURE, response.getStatus());
   }
 
   @Test
   @DirtiesContext
   @SliceTestConfiguration.WithSimpleReportCsvUploadPilotUser
-  void feignGeneralError_returnsGenericErrorMessage() throws IOException {
+  void feignGeneralError_returnsFailureStatus() throws IOException {
 
     stubFor(
         WireMock.post(WireMock.urlEqualTo("/api/reports"))
@@ -131,10 +131,8 @@ class TestResultUploadServiceTest extends BaseServiceTest<TestResultUploadServic
 
     var response = this._service.processResultCSV(input);
 
-    assertEquals(1, response.getErrors().length);
-    var errorMessage = Arrays.stream(response.getErrors()).findFirst().get();
-
-    assertEquals("Server Error", errorMessage.getMessage());
+    assertNull(response.getErrors());
+    assertEquals(UploadStatus.FAILURE, response.getStatus());
   }
 
   @Test
@@ -147,14 +145,12 @@ class TestResultUploadServiceTest extends BaseServiceTest<TestResultUploadServic
 
   @Test
   void mockResponse_returnsPending() throws IOException {
-    var response =
-        UploadResponse.builder()
-            .id(UUID.randomUUID())
-            .overallStatus(ReportStreamStatus.RECEIVED)
-            .reportItemCount(5)
-            .errors(new FeedbackMessage[] {})
-            .warnings(new FeedbackMessage[] {})
-            .build();
+    var response = new UploadResponse();
+    response.setId(UUID.randomUUID());
+    response.setOverallStatus(ReportStreamStatus.RECEIVED);
+    response.setReportItemCount(5);
+    response.setErrors(new FeedbackMessage[] {});
+    response.setWarnings(new FeedbackMessage[] {});
 
     InputStream input = mock(InputStream.class);
     when(input.readAllBytes()).thenReturn(new byte[] {45});
