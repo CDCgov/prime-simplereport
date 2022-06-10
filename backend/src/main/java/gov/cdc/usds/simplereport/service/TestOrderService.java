@@ -18,6 +18,7 @@ import gov.cdc.usds.simplereport.db.model.PatientLink;
 import gov.cdc.usds.simplereport.db.model.Person;
 import gov.cdc.usds.simplereport.db.model.Person_;
 import gov.cdc.usds.simplereport.db.model.Result;
+import gov.cdc.usds.simplereport.db.model.SupportedDisease;
 import gov.cdc.usds.simplereport.db.model.TestEvent;
 import gov.cdc.usds.simplereport.db.model.TestEvent_;
 import gov.cdc.usds.simplereport.db.model.TestOrder;
@@ -38,7 +39,6 @@ import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.Comparator;
 import java.util.Date;
-import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Objects;
@@ -274,11 +274,28 @@ public class TestOrderService {
   @AuthorizationConfiguration.RequirePermissionUpdateTestForTestOrder
   public TestOrder editQueueItemMultiplex(
       UUID testOrderId, UUID deviceSpecimenTypeId, List<DiseaseResult> results, Date dateTested) {
-    TestResult covidResult = getCovidResultFromMultiplexList(results);
-    String result = covidResult != null ? covidResult.toString() : null;
-    TestOrder savedOrder = editQueueItem(testOrderId, deviceSpecimenTypeId, result, dateTested);
+    lockOrder(testOrderId);
+    try {
+      TestOrder order = this.getTestOrder(testOrderId);
 
-    return editMultiplexResults(savedOrder, results);
+      if (deviceSpecimenTypeId != null) {
+        DeviceSpecimenType deviceSpecimenType = _dts.getDeviceSpecimenType(deviceSpecimenTypeId);
+
+        if (deviceSpecimenType != null) {
+          order.setDeviceSpecimen(deviceSpecimenType);
+          // Set the most-recently configured device specimen for a facility's
+          // test as facility default
+          order.getFacility().addDefaultDeviceSpecimen(deviceSpecimenType);
+        }
+      }
+      if (!results.isEmpty()) {
+        editResults(order, results);
+      }
+      order.setDateTestedBackdate(dateTested);
+      return _repo.save(order);
+    } finally {
+      unlockOrder(testOrderId);
+    }
   }
 
   @AuthorizationConfiguration.RequirePermissionSubmitTestForPatient
@@ -340,47 +357,57 @@ public class TestOrderService {
     return new AddTestResultResponse(savedOrder, deliveryStatus);
   }
 
+  // Edit this method to be a pretty straight port of addTestResult
+  // But handle all the Results at once, not in two batches
+
   @AuthorizationConfiguration.RequirePermissionSubmitTestForPatient
   public AddTestResultResponse addTestResultMultiplex(
       UUID deviceSpecimenTypeId, List<DiseaseResult> results, UUID patientId, Date dateTested) {
-    AddTestResultResponse response =
-        addTestResult(
-            deviceSpecimenTypeId, getCovidResultFromMultiplexList(results), patientId, dateTested);
-    TestOrder savedOrder = response.getTestResult().getWrapped();
-    TestEvent savedEvent = savedOrder.getTestEvent();
+    Organization org = _os.getCurrentOrganization();
+    Person person = _ps.getPatientNoPermissionsCheck(patientId, org);
+    TestOrder order =
+        _repo.fetchQueueItem(org, person).orElseThrow(TestOrderService::noSuchOrderFound);
 
-    saveMultiplexResults(savedEvent, savedOrder, results);
+    DeviceSpecimenType deviceSpeciment = _dts.getDeviceSpecimenType(deviceSpecimenTypeId);
 
-    return response;
+    //    AddTestResultResponse response =
+    //        addTestResult(
+    //            deviceSpecimenTypeId, getCovidResultFromMultiplexList(results), patientId,
+    // dateTested);
+    //    TestOrder savedOrder = response.getTestResult().getWrapped();
+    //    TestEvent savedEvent = savedOrder.getTestEvent();
+    //
+    //    saveMultiplexResults(savedEvent, savedOrder, results);
+    //
+    //    return response;
   }
 
-  private TestOrder editMultiplexResults(TestOrder order, List<DiseaseResult> newResults) {
-    Set<Result> oldResults = order.getResultSet();
-    Set<Result> resultsToUpdate = new HashSet<>();
-    // iterate over submitted results
+  private void editResults(TestOrder order, List<DiseaseResult> newResults) {
+    // For now - we still need to save the covid results to the result column
+    // To be removed in #3664
+    Optional<DiseaseResult> covidResult =
+        newResults.stream().filter(r -> r.getDiseaseName().equals("COVID-19")).findFirst();
+    covidResult.ifPresent(diseaseResult -> order.setResultColumn(diseaseResult.getTestResult()));
+
+    // For new results, check if there's already a pending result for the same test.
+    // If so, update it, if not, create a new one.
     newResults.forEach(
         newResult -> {
-          // check if there is an existing result with the same disease
-          Optional<Result> resultToUpdate =
-              oldResults.stream()
-                  .filter(r -> r.getDisease().getName().equals(newResult.getDiseaseName()))
-                  .findFirst();
-          // if there is an existing result with the same disease, update it
-          if (resultToUpdate.isPresent()) {
-            Result updatedResult = resultToUpdate.get();
-            updatedResult.setResult(newResult.getTestResult());
-            resultsToUpdate.add(updatedResult);
-            // if there is no existing result with the same disease, create a new result
+          Optional<Result> pendingResult =
+              _resultRepo.getPendingResult(
+                  order, _diseaseService.getDiseaseByName(newResult.getDiseaseName()));
+          if (pendingResult.isPresent()) {
+            pendingResult.get().setResult(newResult.getTestResult());
+            _resultRepo.save(pendingResult.get());
           } else {
-            resultsToUpdate.add(
+            Result result =
                 new Result(
                     order,
                     _diseaseService.getDiseaseByName(newResult.getDiseaseName()),
-                    newResult.getTestResult()));
+                    newResult.getTestResult());
+            _resultRepo.save(result);
           }
         });
-    order.setResults(resultsToUpdate);
-    return _repo.save(order);
   }
 
   private void saveMultiplexResults(TestEvent event, TestOrder order, List<DiseaseResult> results) {
