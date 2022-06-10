@@ -160,7 +160,7 @@ class TestResultUploadServiceTest extends BaseServiceTest<TestResultUploadServic
 
   @Test
   void mockResponse_returnsPending() throws IOException {
-    var response = new UploadResponse();
+    var response = UploadResponse.builder().build();
     response.setId(UUID.randomUUID());
     response.setOverallStatus(ReportStreamStatus.RECEIVED);
     response.setReportItemCount(5);
