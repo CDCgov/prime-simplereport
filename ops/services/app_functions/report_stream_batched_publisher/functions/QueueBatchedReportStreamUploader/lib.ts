@@ -184,16 +184,16 @@ export async function reportExceptions(
 }
 
 const responsesFrom = function(err: ReportStreamError, isError: boolean):SimpleReportReportStreamResponse[] {
-  if (err.scope === "report") {
-    return [{
-      testEventInternalId: null,
+  if (err.trackingIds) {
+    return err.trackingIds.map(id => ({
+      testEventInternalId: id,
       isError,
       details: err.message
-    }];
+    }));
   }
-  return err.trackingIds.map(id => ({
-    testEventInternalId: id,
+  return [{
+    testEventInternalId: null,
     isError,
     details: err.message
-  }));
+  }];
 };
