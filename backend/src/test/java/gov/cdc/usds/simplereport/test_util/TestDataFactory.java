@@ -50,7 +50,9 @@ import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Date;
+import java.util.HashSet;
 import java.util.List;
+import java.util.Set;
 import java.util.UUID;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.PageRequest;
@@ -443,8 +445,26 @@ public class TestDataFactory {
   }
 
   public TestEvent createTestEventRemoval(TestEvent originalTestEvent) {
-    return _testEventRepo.save(
-        new TestEvent(originalTestEvent, TestCorrectionStatus.REMOVED, "Cold feet"));
+    TestEvent newRemoveEvent =
+        new TestEvent(originalTestEvent, TestCorrectionStatus.REMOVED, "Cold feet");
+    _testEventRepo.save(newRemoveEvent);
+
+    TestOrder order = originalTestEvent.getTestOrder();
+
+    order.setReasonForCorrection("Cold feet");
+    order.setTestEventRef(newRemoveEvent);
+    order.setCorrectionStatus(TestCorrectionStatus.REMOVED);
+    _testOrderRepo.save(order);
+
+    List<Result> originalResults = _resultRepository.findAllByTestOrder(order);
+    Set<Result> copiedResults = new HashSet<>();
+    originalResults.forEach(
+        result -> {
+          copiedResults.add(new Result(result, newRemoveEvent));
+        });
+    _resultRepository.saveAll(copiedResults);
+
+    return newRemoveEvent;
   }
 
   public TestEvent doTest(TestOrder order, TestResult result) {
