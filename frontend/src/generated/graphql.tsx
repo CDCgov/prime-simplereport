@@ -997,11 +997,11 @@ export type UpdateDeviceType = {
 export type UploadResponse = {
   __typename?: "UploadResponse";
   createdAt: Scalars["DateTime"];
-  errors: Scalars["String"];
+  errors?: Maybe<Array<Maybe<FeedbackMessage>>>;
   recordsCount: Scalars["Int"];
   reportId: Scalars["ID"];
-  status: Scalars["String"];
-  warnings: Scalars["String"];
+  status: UploadStatus;
+  warnings?: Maybe<Array<Maybe<FeedbackMessage>>>;
 };
 
 export type UploadResult = {
@@ -2632,10 +2632,32 @@ export type GetUploadSubmissionQuery = {
     __typename?: "UploadResponse";
     reportId: string;
     createdAt: any;
-    status: string;
-    warnings: string;
-    errors: string;
+    status: UploadStatus;
     recordsCount: number;
+    warnings?:
+      | Array<
+          | {
+              __typename?: "FeedbackMessage";
+              message?: string | null | undefined;
+              scope?: string | null | undefined;
+            }
+          | null
+          | undefined
+        >
+      | null
+      | undefined;
+    errors?:
+      | Array<
+          | {
+              __typename?: "FeedbackMessage";
+              message?: string | null | undefined;
+              scope?: string | null | undefined;
+            }
+          | null
+          | undefined
+        >
+      | null
+      | undefined;
   };
 };
 
@@ -7031,9 +7053,15 @@ export const GetUploadSubmissionDocument = gql`
       reportId
       createdAt
       status
-      warnings
-      errors
       recordsCount
+      warnings {
+        message
+        scope
+      }
+      errors {
+        message
+        scope
+      }
     }
   }
 `;

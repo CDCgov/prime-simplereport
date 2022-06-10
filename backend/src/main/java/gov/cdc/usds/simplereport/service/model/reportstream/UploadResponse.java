@@ -1,5 +1,6 @@
 package gov.cdc.usds.simplereport.service.model.reportstream;
 
+import gov.cdc.usds.simplereport.db.model.auxiliary.UploadStatus;
 import java.util.Date;
 import java.util.UUID;
 import lombok.Builder;
@@ -17,12 +18,27 @@ public class UploadResponse {
   private FeedbackMessage[] errors;
   private FeedbackMessage[] warnings;
 
+  private UploadStatus parseStatus(ReportStreamStatus status) {
+    switch (status) {
+      case DELIVERED:
+        return UploadStatus.SUCCESS;
+      case RECEIVED:
+      case WAITING_TO_DELIVER:
+      case PARTIALLY_DELIVERED:
+        return UploadStatus.PENDING;
+      case ERROR:
+      case NOT_DELIVERING:
+      default:
+        return UploadStatus.FAILURE;
+    }
+  }
+
   public UUID getReportId() {
     return this.id;
   }
 
-  public ReportStreamStatus getStatus() {
-    return this.overallStatus;
+  public UploadStatus getStatus() {
+    return parseStatus(this.overallStatus);
   }
 
   public Date getCreatedAt() {

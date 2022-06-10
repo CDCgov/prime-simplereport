@@ -3,9 +3,15 @@ query GetUploadSubmission($id: ID!) {
     reportId
     createdAt
     status
-    warnings
-    errors
     recordsCount
+    warnings {
+      message
+      scope
+    }
+    errors {
+      message
+      scope
+    }
   }
 }
 

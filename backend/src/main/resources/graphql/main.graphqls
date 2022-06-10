@@ -166,15 +166,6 @@ type ApiUserWithStatus {
   status: String
 }
 
-type UploadResponse {
-  reportId: ID!
-  createdAt: DateTime!
-  status: String!
-  recordsCount: Int!
-  warnings: String!
-  errors: String!
-}
-
 # Patient and test types
 
 type Patient
@@ -312,6 +303,15 @@ type PendingOrganization {
 type UploadResult {
   internalId: ID!
   reportId: ID
+  createdAt: DateTime!
+  status: UploadStatus!
+  recordsCount: Int!
+  warnings: [FeedbackMessage]
+  errors: [FeedbackMessage]
+}
+
+type UploadResponse {
+  reportId: ID!
   createdAt: DateTime!
   status: UploadStatus!
   recordsCount: Int!

@@ -41,19 +41,29 @@ public class TestResultUploadService {
   @Value("${data-hub.url}")
   private String dataHubUrl;
 
-  @Value("${data-hub.organization}")
-  private String organization;
+  @Value("${data-hub.csv-upload-api-client}")
+  private String simpleReportCsvUploadClientName;
 
   @Value("${data-hub.signing-key}")
   private String signingKey;
 
   private static final int fiveMinutesMs = 300 * 1000;
+  private static final String defaultScope = "default";
+  private static final String reportingScope = "report";
+
+  private String createDefaultScope(String clientName) {
+    return String.join(".", clientName, defaultScope);
+  }
+
+  private String createReportingScope(String clientName) {
+    return String.join(".", clientName, defaultScope, reportingScope);
+  }
 
   public String createDataHubSenderToken(String privateKey) throws InvalidRSAPrivateKeyException {
     Date inFiveMinutes = new Date(System.currentTimeMillis() + fiveMinutesMs);
 
     return _tokenAuth.createRSAJWT(
-        organization + ".default", dataHubUrl, inFiveMinutes, privateKey);
+        createDefaultScope(simpleReportCsvUploadClientName), dataHubUrl, inFiveMinutes, privateKey);
   }
 
   @AuthorizationConfiguration.RequirePermissionCSVUpload
@@ -86,8 +96,8 @@ public class TestResultUploadService {
     }
 
     if (response != null) {
-
       var status = parseStatus(response.getOverallStatus());
+
       result =
           new TestResultUpload(
               response.getId(),
@@ -136,7 +146,7 @@ public class TestResultUploadService {
             .findByInternalIdAndOrganization(id, org)
             .orElseThrow(InvalidBulkTestResultUploadException::new);
 
-    String reportingScope = organization + ".default.report";
+    String reportingScope = createReportingScope(simpleReportCsvUploadClientName);
 
     Map<String, String> queryParams = new LinkedHashMap<>();
     queryParams.put("scope", reportingScope);
