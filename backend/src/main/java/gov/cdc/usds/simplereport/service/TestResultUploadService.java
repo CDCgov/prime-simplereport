@@ -47,20 +47,20 @@ public class TestResultUploadService {
   @Value("${data-hub.signing-key}")
   private String signingKey;
 
-  private static final int fiveMinutesMs = 300 * 1000;
-  private static final String defaultScope = "default";
-  private static final String reportingScope = "report";
+  private static final int FIVE_MINUTES_MS = 300 * 1000;
+  private static final String DEFAULT_SCOPE = "default";
+  private static final String REPORTING_SCOPE = "report";
 
   private String createDefaultScope(String clientName) {
-    return String.join(".", clientName, defaultScope);
+    return String.join(".", clientName, DEFAULT_SCOPE);
   }
 
   private String createReportingScope(String clientName) {
-    return String.join(".", clientName, defaultScope, reportingScope);
+    return String.join(".", clientName, DEFAULT_SCOPE, REPORTING_SCOPE);
   }
 
   public String createDataHubSenderToken(String privateKey) throws InvalidRSAPrivateKeyException {
-    Date inFiveMinutes = new Date(System.currentTimeMillis() + fiveMinutesMs);
+    Date inFiveMinutes = new Date(System.currentTimeMillis() + FIVE_MINUTES_MS);
 
     return _tokenAuth.createRSAJWT(
         createDefaultScope(simpleReportCsvUploadClientName), dataHubUrl, inFiveMinutes, privateKey);
