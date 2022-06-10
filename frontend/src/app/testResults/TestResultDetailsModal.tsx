@@ -106,9 +106,12 @@ export const DetachedTestResultDetailsModal = ({ data, closeModal }: Props) => {
   const displayResult: { [diseaseResult: string]: TestResult | null } = {
     covidResult: result,
   };
-
+  const multiplexFeatureFlagEnabled =
+    process.env.REACT_APP_MULTIPLEX_ENABLED !== "false";
   const hasMultiplexResults =
-    results && results.some((d) => d.disease.name !== "COVID-19");
+    multiplexFeatureFlagEnabled &&
+    results &&
+    results.some((d) => d.disease.name !== "COVID-19");
   if (hasMultiplexResults) {
     displayResult["fluAResult"] = results.filter(
       (d) => d.disease.name === "Flu A"
