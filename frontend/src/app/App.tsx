@@ -191,7 +191,7 @@ const App = () => {
               path="results/upload/submissions/:id"
               element={
                 <ProtectedRoute
-                  requiredPermissions={canViewResults}
+                  requiredPermissions={canUseCsvUploaderPilot}
                   userPermissions={data.whoami.permissions}
                   element={<Submission />}
                 />
