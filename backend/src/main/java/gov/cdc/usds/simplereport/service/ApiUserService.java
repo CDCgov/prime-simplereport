@@ -93,6 +93,23 @@ public class ApiUserService {
     return createUserHelper(username, name, org, role);
   }
 
+  @AuthorizationConfiguration.RequireGlobalAdminUser
+  public ApiUser createApiUserNoOkta(String email, PersonName name) {
+    Optional<ApiUser> found = _apiUserRepo.findByLoginEmailIncludeArchived(email.toLowerCase());
+    if (found.isPresent()) {
+      throw new IllegalGraphqlArgumentException("User already exists");
+    } else {
+      IdentityAttributes userIdentity = new IdentityAttributes(email, name);
+      ApiUser apiUser = _apiUserRepo.save(new ApiUser(email, userIdentity));
+      log.info(
+          "User with id={} created by user with id={}",
+          apiUser.getInternalId(),
+          getCurrentApiUser().getInternalId().toString());
+
+      return apiUser;
+    }
+  }
+
   private UserInfo reprovisionUser(ApiUser apiUser, PersonName name, Organization org, Role role) {
     if (!apiUser.isDeleted()) {
       // an enabled user with this email address exists (in some org)
