@@ -9,14 +9,17 @@ public class DataHubClientConfiguration {
   @Value("${datahub.api-key}")
   private String apiKey;
 
-  private static final String CSV_API_VERSION = "2021-09-21";
-  private static final String SIMPLE_REPORT_CLIENT_NAME = "simple_report";
+  @Value("${datahub.api-version}")
+  private String csvApiVersion;
+
+  @Value("${datahub.csv-upload-api-client}")
+  private String simpleReportCsvUploadClientName;
 
   @Bean
   public RequestInterceptor headerRequestInterceptor() {
     return template -> {
-      template.header("client", SIMPLE_REPORT_CLIENT_NAME);
-      template.header("x-api-version", CSV_API_VERSION);
+      template.header("client", simpleReportCsvUploadClientName);
+      template.header("x-api-version", csvApiVersion);
       template.header("x-functions-key", apiKey);
     };
   }

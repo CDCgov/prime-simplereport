@@ -26,6 +26,10 @@ public enum Role {
    * and view historical test results.
    */
   USER(OrganizationRole.USER),
+  /**
+   * This is a specific role for users who are in the test result bulk upload feature pilot and have
+   * the ability to submit test results as a CSV
+   */
   TEST_RESULT_UPLOAD_USER(OrganizationRole.TEST_RESULT_UPLOAD_USER),
   /**
    * This is the organization admin role: if you have this role, then you have the ability to change
