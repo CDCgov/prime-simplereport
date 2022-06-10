@@ -405,7 +405,21 @@ class PatientManagementTest extends BaseGraphqlTest {
     assertLastAuditEntry(
         TestUserIdentities.ORG_ADMIN_USER,
         "getDeletedPatients",
-        EnumSet.allOf(UserPermission.class),
+        EnumSet.of(
+            UserPermission.READ_PATIENT_LIST,
+            UserPermission.READ_ARCHIVED_PATIENT_LIST,
+            UserPermission.SEARCH_PATIENTS,
+            UserPermission.READ_RESULT_LIST,
+            UserPermission.EDIT_PATIENT,
+            UserPermission.ARCHIVE_PATIENT,
+            UserPermission.EDIT_FACILITY,
+            UserPermission.EDIT_ORGANIZATION,
+            UserPermission.MANAGE_USERS,
+            UserPermission.START_TEST,
+            UserPermission.UPDATE_TEST,
+            UserPermission.SUBMIT_TEST,
+            UserPermission.ACCESS_ALL_FACILITIES,
+            UserPermission.VIEW_ARCHIVED_FACILITIES),
         List.of());
   }
 
