@@ -3,7 +3,6 @@ package gov.cdc.usds.simplereport.service.model.reportstream;
 import gov.cdc.usds.simplereport.db.model.auxiliary.UploadStatus;
 import java.util.Date;
 import java.util.UUID;
-import lombok.Builder;
 import lombok.Getter;
 import lombok.Setter;
 

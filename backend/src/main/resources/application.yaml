@@ -146,5 +146,4 @@ datahub:
   api-key: ${DATAHUB_API_KEY:super-secret-api-key}
   api-version: "2021-09-21"
   csv-upload-api-client: simple_report
-  organization: simple_report
   signing-key: ${DATAHUB_SIGNING_KEY:super-secret-signing-key}
