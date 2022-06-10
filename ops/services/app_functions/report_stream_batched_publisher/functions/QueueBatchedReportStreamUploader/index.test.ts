@@ -130,7 +130,24 @@ describe("main function export", () => {
 
     // THEN
     expect(getQueueClientMock).toHaveBeenCalledTimes(2);
-    expect(appInsights.defaultClient.trackEvent).toHaveBeenCalled();
+    expect(appInsights.defaultClient.trackEvent).toHaveBeenCalledWith(expect.objectContaining({name: "Test Event Parse Failure"}));
     expect(deleteMessagesMock).toHaveBeenCalled();
+  });
+
+  it("aborts if no successfully parsed messages", async () => {
+    // GIVEN
+    prepareQueue([
+      { messageText: "this is not json at all" },
+    ]);
+
+    // WHEN
+    await fn(context);
+
+    // THEN
+    expect(dequeueMessagesMock).toHaveBeenCalled();
+    expect(appInsights.defaultClient.trackEvent).toHaveBeenCalledWith(expect.objectContaining({name: "Test Event Parse Failure"}));
+    expect(uploadResultMock).not.toHaveBeenCalled();
+    expect(reportExceptionsMock).not.toHaveBeenCalled();
+    expect(deleteMessagesMock).not.toHaveBeenCalled();
   });
 });
