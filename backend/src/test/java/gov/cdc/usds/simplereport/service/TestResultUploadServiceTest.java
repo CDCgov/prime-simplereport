@@ -235,11 +235,16 @@ class TestResultUploadServiceTest extends BaseServiceTest<TestResultUploadServic
     when(dataHubMock.fetchAccessToken(anyMap())).thenReturn(tokenResponse);
 
     // WHEN
-    sut.getUploadSubmission(testResultUpload.getInternalId());
+    UploadResponse result = sut.getUploadSubmission(testResultUpload.getInternalId());
 
     // THEN
     verify(dataHubMock).getSubmission(reportIdCaptor.capture(), accessTokenCaptor.capture());
     assertEquals(reportId, reportIdCaptor.getValue());
     assertEquals("fake-rs-access-token", accessTokenCaptor.getValue());
+
+    assertEquals(testResultUpload.getReportId(), result.getReportId());
+    assertEquals(testResultUpload.getStatus(), result.getStatus());
+    assertEquals(testResultUpload.getCreatedAt(), result.getCreatedAt());
+    assertEquals(testResultUpload.getRecordsCount(), result.getRecordsCount());
   }
 }
