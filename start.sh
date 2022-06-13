@@ -42,12 +42,16 @@ fi
 
 echo "Starting Docker Compose..."
 
-while getopts ":l" opt;
+while getopts ":l:b" opt;
 do
   case $opt in
     l)
       echo "Composing with Locust!"
       fileFlag="-f docker-compose.locust.yml"
+      ;;
+    b)
+      echo "Building any changes!"
+      buildFlag="--build"
       ;;
     \?)
       echo "Invalid start option: -$OPTARG"
@@ -56,7 +60,7 @@ do
 done
 
 docker compose -f docker-compose.yml $fileFlag pull
-docker compose -f docker-compose.yml $fileFlag up -d
+docker compose -f docker-compose.yml $fileFlag up $buildFlag -d
 docker compose -f docker-compose.yml $fileFlag logs -f
 
 trap "cleanup" EXIT

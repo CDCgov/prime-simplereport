@@ -47,3 +47,12 @@ restores from the last-modified SQL file in that directory. If that is not the
 desired behavior, you can explicitly tell it which snapshot file to use:
 
    SNAPSHOT=db-setup/snapshots/custom-snapshot.sql db-setup/restore-db.sh
+
+## Anonymize a database (WIP)
+
+1. Check for sensitive fields using the detect script from PostgreSQL Anonymizer (Our script is working, but PostgreSQL Anonymizer is not, I've reported a bug (here)[https://gitlab.com/dalibo/postgresql_anonymizer/-/issues/300])
+1. Generate fake data
+1. Create a db_dump from your source database
+1. Run the pg dump through our anonymize-db.sh script
+1. Restore anonymized database to a new database
+1. Sync/Create users in Okta and Non-production testing environment

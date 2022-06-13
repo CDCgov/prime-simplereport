@@ -14,4 +14,3 @@ fi
 echo Restoring from $input_file
 
 psql -h ${SR_DB_HOST:-localhost} -p ${SR_DB_PORT:-5432} -U postgres simple_report -f $input_file
-

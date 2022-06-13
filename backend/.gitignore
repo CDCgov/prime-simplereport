@@ -7,6 +7,7 @@ build/
 *.orig
 *.rej
 /db-setup/snapshots
+/db-setup/anon_dump.sql
 out.log
 .env.local
 
