@@ -1,0 +1,53 @@
+// Jest Snapshot v1, https://goo.gl/fbAQLP
+
+exports[`ResultsNav displays the nav order correctly and defaults to 'Test Results' 1`] = `
+<div>
+  <div
+    class="prime-home"
+  >
+    <div
+      class="grid-container"
+    >
+      <nav
+        aria-label="Secondary navigation"
+        class="prime-secondary-nav"
+      >
+        <ul
+          class="usa-nav__secondary-links prime-nav"
+        >
+          <li
+            class="usa-nav__secondary-item"
+          >
+            <a
+              class=""
+              href="/results/1"
+            >
+              Test results
+            </a>
+          </li>
+          <li
+            class="usa-nav__secondary-item"
+          >
+            <a
+              class=""
+              href="/results/upload"
+            >
+              CSV upload
+            </a>
+          </li>
+          <li
+            class="usa-nav__secondary-item"
+          >
+            <a
+              class=""
+              href="/results/upload/submissions"
+            >
+              CSV upload history
+            </a>
+          </li>
+        </ul>
+      </nav>
+    </div>
+  </div>
+</div>
+`;

@@ -26,6 +26,7 @@ import { Analytics } from "./analytics/Analytics";
 import Uploads from "./testResults/uploads/Uploads";
 import Submission from "./testResults/submissions/Submission";
 import Submissions from "./testResults/submissions/Submissions";
+import ResultsNavWrapper from "./testResults/ResultsNavWrapper";
 
 export const WHOAMI_QUERY = gql`
   query WhoAmI {
@@ -163,7 +164,13 @@ const App = () => {
                 <ProtectedRoute
                   requiredPermissions={canViewResults}
                   userPermissions={data.whoami.permissions}
-                  element={<TestResultsList />}
+                  element={
+                    <ResultsNavWrapper
+                      userPermissions={data.whoami.permissions}
+                    >
+                      <TestResultsList />
+                    </ResultsNavWrapper>
+                  }
                 />
               }
             />
@@ -173,7 +180,13 @@ const App = () => {
                 <ProtectedRoute
                   requiredPermissions={canViewResults}
                   userPermissions={data.whoami.permissions}
-                  element={<CleanTestResultsList />}
+                  element={
+                    <ResultsNavWrapper
+                      userPermissions={data.whoami.permissions}
+                    >
+                      <CleanTestResultsList />
+                    </ResultsNavWrapper>
+                  }
                 />
               }
             />
@@ -183,7 +196,13 @@ const App = () => {
                 <ProtectedRoute
                   requiredPermissions={canUseCsvUploaderPilot}
                   userPermissions={data.whoami.permissions}
-                  element={<Uploads />}
+                  element={
+                    <ResultsNavWrapper
+                      userPermissions={data.whoami.permissions}
+                    >
+                      <Uploads />
+                    </ResultsNavWrapper>
+                  }
                 />
               }
             />
@@ -203,7 +222,13 @@ const App = () => {
                 <ProtectedRoute
                   requiredPermissions={canUseCsvUploaderPilot}
                   userPermissions={data.whoami.permissions}
-                  element={<Submissions />}
+                  element={
+                    <ResultsNavWrapper
+                      userPermissions={data.whoami.permissions}
+                    >
+                      <Submissions />
+                    </ResultsNavWrapper>
+                  }
                 />
               }
             />
@@ -213,7 +238,13 @@ const App = () => {
                 <ProtectedRoute
                   requiredPermissions={canUseCsvUploaderPilot}
                   userPermissions={data.whoami.permissions}
-                  element={<Submissions />}
+                  element={
+                    <ResultsNavWrapper
+                      userPermissions={data.whoami.permissions}
+                    >
+                      <Submissions />
+                    </ResultsNavWrapper>
+                  }
                 />
               }
             />
