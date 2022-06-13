@@ -1,4 +1,3 @@
-import { gql } from "@apollo/client";
 import React, { useState } from "react";
 import { Button, FormGroup, Label, FileInput } from "@trussworks/react-uswds";
 
@@ -7,24 +6,6 @@ import {
   FeedbackMessage,
   useUploadTestResultCsvMutation,
 } from "../../../generated/graphql";
-
-export const UPLOAD_TEST_RESULT_CSV = gql`
-  mutation UploadTestResultCSV($testResultList: Upload!) {
-    uploadTestResultCSV(testResultList: $testResultList) {
-      reportId
-      status
-      recordsCount
-      warnings {
-        scope
-        message
-      }
-      errors {
-        scope
-        message
-      }
-    }
-  }
-`;
 
 const PAYLOAD_MAX_BYTES = 50 * 1000 * 1000;
 const REPORT_MAX_ITEMS = 10000;

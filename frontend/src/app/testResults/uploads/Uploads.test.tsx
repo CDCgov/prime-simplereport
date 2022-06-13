@@ -6,7 +6,9 @@ import { Provider } from "react-redux";
 import { MemoryRouter } from "react-router-dom";
 import { ToastContainer } from "react-toastify";
 
-import Uploads, { UPLOAD_TEST_RESULT_CSV } from "./Uploads";
+import { UploadTestResultCsvDocument } from "../../../generated/graphql";
+
+import Uploads from "./Uploads";
 
 const mockStore = createMockStore([]);
 const store = mockStore({});
@@ -120,7 +122,7 @@ describe("Uploads", () => {
       const mocks: MockedProviderProps["mocks"] = [
         {
           request: {
-            query: UPLOAD_TEST_RESULT_CSV,
+            query: UploadTestResultCsvDocument,
             variables: {
               testResultList: file,
             },
