@@ -98,7 +98,7 @@ public class TestResultUploadService {
     }
 
     if (response != null) {
-      var status = parseStatus(response.getOverallStatus());
+      var status = UploadResponse.parseStatus(response.getOverallStatus());
 
       result =
           new TestResultUpload(
@@ -133,21 +133,6 @@ public class TestResultUploadService {
         PageRequest.of(pageNumber, pageSize, Sort.by("createdAt").descending());
 
     return _repo.findAll(org, startDate, endDate, pageRequest);
-  }
-
-  private UploadStatus parseStatus(ReportStreamStatus status) {
-    switch (status) {
-      case DELIVERED:
-        return UploadStatus.SUCCESS;
-      case RECEIVED:
-      case WAITING_TO_DELIVER:
-      case PARTIALLY_DELIVERED:
-        return UploadStatus.PENDING;
-      case ERROR:
-      case NOT_DELIVERING:
-      default:
-        return UploadStatus.FAILURE;
-    }
   }
 
   public UploadResponse getUploadSubmission(UUID id)

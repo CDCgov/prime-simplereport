@@ -16,7 +16,7 @@ public class UploadResponse {
   private FeedbackMessage[] errors;
   private FeedbackMessage[] warnings;
 
-  private UploadStatus parseStatus(ReportStreamStatus status) {
+  public static UploadStatus parseStatus(ReportStreamStatus status) {
     switch (status) {
       case DELIVERED:
         return UploadStatus.SUCCESS;
