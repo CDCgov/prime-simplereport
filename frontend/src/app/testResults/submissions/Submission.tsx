@@ -4,6 +4,7 @@ import { useParams } from "react-router-dom";
 
 import { LoadingCard } from "../../commonComponents/LoadingCard/LoadingCard";
 import { useGetUploadSubmissionQuery } from "../../../generated/graphql";
+import { LinkWithQuery } from "../../commonComponents/LinkWithQuery";
 
 const Submission = () => {
   const urlParams = useParams();
@@ -40,9 +41,12 @@ const Submission = () => {
             {/* Sub-heading */}
             <div className="usa-card__body text-normal font-body-xs text-base margin-bottom-0">
               <span>
-                <a href="/results/upload/submissions">
+                <LinkWithQuery
+                  to={`/results/upload/submissions/`}
+                  className="sr-link__primary"
+                >
                   {organization.name} COVID-19 Submissions
-                </a>
+                </LinkWithQuery>
               </span>
             </div>
 
