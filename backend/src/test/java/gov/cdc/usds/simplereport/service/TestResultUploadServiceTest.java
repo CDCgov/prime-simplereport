@@ -160,7 +160,7 @@ class TestResultUploadServiceTest extends BaseServiceTest<TestResultUploadServic
 
   @Test
   void mockResponse_returnsPending() throws IOException {
-    var response = UploadResponse.builder().build();
+    var response = new UploadResponse();
     response.setId(UUID.randomUUID());
     response.setOverallStatus(ReportStreamStatus.RECEIVED);
     response.setReportItemCount(5);
@@ -229,16 +229,15 @@ class TestResultUploadServiceTest extends BaseServiceTest<TestResultUploadServic
     var tokenResponse = new TokenResponse();
     tokenResponse.setAccessToken("fake-rs-access-token");
     when(dataHubMock.fetchAccessToken(anyMap())).thenReturn(tokenResponse);
-    when(dataHubMock.getSubmission(any(UUID.class), anyString()))
-        .thenReturn(
-            UploadResponse.builder()
-                .id(testResultUpload.getReportId())
-                .overallStatus(ReportStreamStatus.WAITING_TO_DELIVER)
-                .timestamp(testResultUpload.getCreatedAt())
-                .reportItemCount(testResultUpload.getRecordsCount())
-                .errors(testResultUpload.getErrors())
-                .warnings(testResultUpload.getWarnings())
-                .build());
+    var uploadResponse = new UploadResponse();
+    uploadResponse.setId(testResultUpload.getReportId());
+    uploadResponse.setOverallStatus(ReportStreamStatus.WAITING_TO_DELIVER);
+    uploadResponse.setTimestamp(testResultUpload.getCreatedAt());
+    uploadResponse.setReportItemCount(testResultUpload.getRecordsCount());
+    uploadResponse.setErrors(testResultUpload.getErrors());
+    uploadResponse.setWarnings(testResultUpload.getWarnings());
+
+    when(dataHubMock.getSubmission(any(UUID.class), anyString())).thenReturn(uploadResponse);
 
     // WHEN
     UploadResponse result = sut.getUploadSubmission(testResultUpload.getInternalId());
