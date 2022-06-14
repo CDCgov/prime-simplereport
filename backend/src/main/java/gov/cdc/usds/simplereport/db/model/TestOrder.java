@@ -5,6 +5,7 @@ import gov.cdc.usds.simplereport.db.model.auxiliary.OrderStatus;
 import gov.cdc.usds.simplereport.db.model.auxiliary.TestCorrectionStatus;
 import gov.cdc.usds.simplereport.db.model.auxiliary.TestResult;
 import java.time.LocalDate;
+import java.util.Comparator;
 import java.util.Date;
 import java.util.HashSet;
 import java.util.Optional;
@@ -84,13 +85,14 @@ public class TestOrder extends BaseTestInfo {
     super.setDateTestedBackdate(date);
   }
 
-  // This logic (specifically, findFirst) will need to be updated later on in the multiplex process
+  // This logic will need to be updated later on in the multiplex process
   // - this method is temporary
-  // Eventually, this method will be deprecated in favor of getResultSet() and getResultForDisease
+  // Eventually, this method will be deprecated in favor of getResultSet() and getResultForDisease()
   public TestResult getTestResult() {
     Hibernate.initialize(this.results);
     if (this.results != null) {
-      Optional<Result> resultObject = this.results.stream().findAny();
+      Comparator<Result> resultDateComparator = Comparator.comparing(Result::getUpdatedAt);
+      Optional<Result> resultObject = this.results.stream().max(resultDateComparator);
       if (resultObject.isPresent()) {
         return resultObject.get().getTestResult();
       }
