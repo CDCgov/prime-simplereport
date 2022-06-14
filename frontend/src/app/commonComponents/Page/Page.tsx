@@ -12,10 +12,9 @@ const Page: React.FC<{}> = ({ children }) => {
     const script = document.createElement("script");
     const urlPrefix = getUrl(true);
 
-    script.src =
-      urlPrefix === process.env.PUBLIC_URL
-        ? `${urlPrefix}static/touchpoints.js`
-        : "touchpoints.js";
+    script.src = urlPrefix.includes(process.env.PUBLIC_URL)
+      ? `${urlPrefix}static/touchpoints.js`
+      : "touchpoints.js";
     script.async = true;
 
     document.body.appendChild(script);
