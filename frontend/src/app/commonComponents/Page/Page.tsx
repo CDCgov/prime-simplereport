@@ -3,14 +3,19 @@ import { ToastContainer } from "react-toastify";
 
 import "react-toastify/dist/ReactToastify.css";
 import TouchpointsButton from "../../analytics/TouchpointsButton";
+import { getUrl } from "../../utils/url";
 import USAGovBanner from "../USAGovBanner";
 
 const Page: React.FC<{}> = ({ children }) => {
   // load touchpoints script
   useEffect(() => {
     const script = document.createElement("script");
+    const urlPrefix = getUrl(true);
 
-    script.src = `${process.env.PUBLIC_URL}touchpoints.js`;
+    script.src =
+      urlPrefix === process.env.PUBLIC_URL
+        ? `${urlPrefix}static/touchpoints.js`
+        : "touchpoints.js";
     script.async = true;
 
     document.body.appendChild(script);

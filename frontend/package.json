@@ -57,7 +57,7 @@
     "start-js": "react-scripts start",
     "prebuild": "yarn compile-scss",
     "build": "INLINE_RUNTIME_CHUNK=false REACT_APP_CURRENT_COMMIT=$(git rev-parse HEAD) react-scripts build",
-    "postbuild": "echo 'pushstate: enabled' > build/Staticfile && echo $(git rev-parse HEAD) > build/static/commit.txt",
+    "postbuild": "echo 'pushstate: enabled' > build/Staticfile && echo $(git rev-parse HEAD) > build/static/commit.txt && cd build && mv *.js static/",
     "codegen": "graphql-codegen --config codegen.yml && prettier --write 'src/generated/graphql.tsx'",
     "codegen:watch": "yarn codegen --watch",
     "lint": "npm-run-all -p lint:eslint lint:prettier lint:stylelint",
