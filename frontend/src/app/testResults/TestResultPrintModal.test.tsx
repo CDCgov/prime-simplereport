@@ -1,5 +1,6 @@
 import { render, screen } from "@testing-library/react";
 import userEvent from "@testing-library/user-event";
+import { cloneDeep } from "lodash";
 import MockDate from "mockdate";
 import ReactDOM from "react-dom";
 
@@ -8,6 +9,7 @@ import { DetachedTestResultPrintModal } from "./TestResultPrintModal";
 const testResult = {
   dateTested: new Date("2022-01-28T17:56:48.143Z"),
   result: "NEGATIVE",
+  results: [{ disease: { name: "COVID-19" }, testResult: "NEGATIVE" }],
   correctionStatus: null,
   deviceType: {
     name: "Fake device",
@@ -42,7 +44,7 @@ const testResult = {
 
 window.print = jest.fn();
 
-describe("TestResultPrintModal", () => {
+describe("TestResultPrintModal with only COVID results", () => {
   let printSpy: jest.SpyInstance;
   let component: any;
 
@@ -77,7 +79,95 @@ describe("TestResultPrintModal", () => {
     expect(screen.getByText("01/28/2022 5:56pm")).toBeInTheDocument();
   });
 
+  it("should render only COVID information", () => {
+    expect(screen.getByText("Test result: COVID-19")).toBeInTheDocument();
+  });
+
   it("matches screenshot", () => {
     expect(component).toMatchSnapshot();
   });
 });
+
+if (process.env.MULTIPLEX_ENABLED === "true") {
+  describe("TestResultPrintModal with multiplex results in SimpleReport App", () => {
+    let component: any;
+
+    beforeEach(() => {
+      const multiplexTestResult = cloneDeep(testResult);
+      multiplexTestResult.results = [
+        { disease: { name: "Flu B" }, testResult: "POSITIVE" },
+        { disease: { name: "COVID-19" }, testResult: "POSITIVE" },
+        { disease: { name: "Flu A" }, testResult: "POSITIVE" },
+      ];
+
+      ReactDOM.createPortal = jest.fn((element, _node) => {
+        return element;
+      }) as any;
+
+      MockDate.set("2021/01/01");
+      component = render(
+        <DetachedTestResultPrintModal
+          data={{ testResult: multiplexTestResult }}
+          testResultId="id"
+          closeModal={() => {}}
+        />
+      );
+    });
+
+    it("should render flu information", () => {
+      expect(
+        screen.getByText("Test results: COVID-19 and flu")
+      ).toBeInTheDocument();
+      expect(screen.getByText("For flu A and B:")).toBeInTheDocument();
+    });
+
+    it("matches screenshot", () => {
+      expect(component).toMatchSnapshot();
+    });
+  });
+
+  describe("TestResultPrintModal with multiplex results in Pxp App", () => {
+    let component: any;
+
+    beforeEach(() => {
+      const multiplexPxpTestResult = cloneDeep(testResult);
+      multiplexPxpTestResult.results = [
+        // @ts-ignore
+        { disease: { name: "COVID-19" }, result: "NEGATIVE" },
+        // @ts-ignore
+        { disease: { name: "Flu A" }, result: "NEGATIVE" },
+        // @ts-ignore
+        { disease: { name: "Flu B" }, result: "NEGATIVE" },
+      ];
+      // @ts-ignore
+      multiplexPxpTestResult.facility.orderingProvider.NPI = undefined;
+      // @ts-ignore
+      multiplexPxpTestResult.facility.orderingProvider.npi = "fake npi for pxp";
+
+      ReactDOM.createPortal = jest.fn((element, _node) => {
+        return element;
+      }) as any;
+
+      MockDate.set("2021/01/01");
+      component = render(
+        <DetachedTestResultPrintModal
+          data={{ testResult: multiplexPxpTestResult }}
+          testResultId="id"
+          closeModal={() => {}}
+        />
+      );
+    });
+
+    it("should render information", () => {
+      expect(
+        screen.getByText("Test results: COVID-19 and flu")
+      ).toBeInTheDocument();
+      expect(screen.getByText("fake npi for pxp")).toBeInTheDocument();
+      expect(screen.getAllByText("Negative").length).toBe(3);
+    });
+
+    it("matches screenshot", () => {
+      expect(component).toMatchSnapshot();
+    });
+  });
+}
