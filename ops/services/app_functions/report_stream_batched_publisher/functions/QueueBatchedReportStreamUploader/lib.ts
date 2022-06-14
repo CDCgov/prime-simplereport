@@ -174,8 +174,8 @@ export async function reportExceptions(
 ) {
   context.log(`ReportStream response errors: ${response.errorCount}`);
   context.log(`ReportStream response warnings: ${response.warningCount}`);
-  const payloads: SimpleReportReportStreamResponse[] = response.warnings.flatMap(w => responsesFrom(w, false))
-      .concat(response.errors.flatMap(e => responsesFrom(e, true)));
+  const payloads: SimpleReportReportStreamResponse[] = response.warnings.flatMap(w => responsesFrom(context, w, false))
+      .concat(response.errors.flatMap(e => responsesFrom(context, e, true)));
   return Promise.all(
     payloads.map((p) =>
       queueClient.sendMessage(Buffer.from(JSON.stringify(p)).toString("base64"))
@@ -183,17 +183,15 @@ export async function reportExceptions(
   );
 }
 
-const responsesFrom = function(err: ReportStreamError, isError: boolean):SimpleReportReportStreamResponse[] {
+const responsesFrom = function(context: Context, err: ReportStreamError, isError: boolean):SimpleReportReportStreamResponse[] {
   if (err.trackingIds) {
     return err.trackingIds.map(id => ({
       testEventInternalId: id,
       isError,
       details: err.message
     }));
+  } else {
+    context.log(`ReportStream response ${err.scope} ${isError ? "error" : "warning"}: ${err.message}`);
+    return [];
   }
-  return [{
-    testEventInternalId: null,
-    isError,
-    details: err.message
-  }];
 };

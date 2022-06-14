@@ -319,7 +319,7 @@ describe("lib", () => {
       );
     });
 
-    it("sends multiple exception messages for a warning or error on multiple items", async () => {
+    it("sends messages per item for item-scoped exceptions and none for report-scoped exceptions", async () => {
       const warnings: ReportStreamError[] = [
         {
           trackingIds: ["1234", "5678"],
@@ -367,15 +367,13 @@ describe("lib", () => {
 
       // THEN
       expect(queueClientMock.sendMessage).toHaveBeenCalledTimes(
-          8
+          6
       );
       const expectedMessages = [
         `{"testEventInternalId":"1234","isError":false,"details":"goodbye"}`,
         `{"testEventInternalId":"5678","isError":false,"details":"goodbye"}`,
         `{"testEventInternalId":"1234","isError":false,"details":"au revoir"}`,
-        `{"testEventInternalId":null,"isError":false,"details":"ha det bra"}`,
         `{"testEventInternalId":"1234","isError":true,"details":"adios"}`,
-        `{"testEventInternalId":null,"isError":true,"details":"arrivederci"}`,
         `{"testEventInternalId":"1234","isError":true,"details":"auf wiedersehen"}`,
         `{"testEventInternalId":"91011","isError":true,"details":"auf wiedersehen"}`
       ];
