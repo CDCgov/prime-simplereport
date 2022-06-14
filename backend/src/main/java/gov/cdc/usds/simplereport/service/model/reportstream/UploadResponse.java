@@ -1,11 +1,11 @@
 package gov.cdc.usds.simplereport.service.model.reportstream;
 
 import java.util.UUID;
-import lombok.Builder;
 import lombok.Getter;
+import lombok.Setter;
 
 @Getter
-@Builder
+@Setter
 public class UploadResponse {
   private UUID id;
   private ReportStreamStatus overallStatus;
