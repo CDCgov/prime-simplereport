@@ -93,7 +93,7 @@ resource "azurerm_web_application_firewall_policy" "sr_waf_policy" {
     }
     exclusion {
       match_variable          = "RequestArgNames"
-      selector                = "street"  //Will need to turn on 942440 and 942110 if not effective.
+      selector                = "street" //Will need to turn on 942440 and 942110 if not effective.
       selector_match_operator = "Equals"
     }
     exclusion {
