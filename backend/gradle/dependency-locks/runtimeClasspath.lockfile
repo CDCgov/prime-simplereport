@@ -86,6 +86,8 @@ io.netty:netty-codec:4.1.73.Final
 io.netty:netty-common:4.1.73.Final
 io.netty:netty-handler-proxy:4.1.73.Final
 io.netty:netty-handler:4.1.73.Final
+io.netty:netty-resolver-dns-classes-macos:4.1.73.Final
+io.netty:netty-resolver-dns-native-macos:4.1.73.Final
 io.netty:netty-resolver-dns:4.1.73.Final
 io.netty:netty-resolver:4.1.73.Final
 io.netty:netty-tcnative-boringssl-static:2.0.47.Final
@@ -96,8 +98,7 @@ io.netty:netty-transport-native-epoll:4.1.73.Final
 io.netty:netty-transport-native-kqueue:4.1.73.Final
 io.netty:netty-transport-native-unix-common:4.1.73.Final
 io.netty:netty-transport:4.1.73.Final
-io.opencensus:opencensus-api:0.24.0
-io.opencensus:opencensus-contrib-http-util:0.24.0
+io.projectreactor.addons:reactor-extra:3.4.2
 io.projectreactor.netty:reactor-netty-core:1.0.3
 io.projectreactor.netty:reactor-netty-http:1.0.3
 io.projectreactor:reactor-core:3.4.2
