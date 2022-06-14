@@ -62,6 +62,14 @@ resource "azurerm_web_application_firewall_policy" "sr_waf_policy" {
   }
 
   managed_rules {
+
+    /*
+     * Exclusions for specific request components.
+     * Azure supports three specific values for match_variable:
+     *  - RequestArgNames
+     *  - RequestCookieNames
+     *  - RequestHeaderNames
+     */
     exclusion {
       match_variable          = "RequestCookieNames"
       selector                = "ai_session" //Part of Azure Application Insights
@@ -78,10 +86,33 @@ resource "azurerm_web_application_firewall_policy" "sr_waf_policy" {
       selector_match_operator = "Equals"
     }
 
+    exclusion {
+      match_variable          = "RequestArgNames"
+      selector                = "iss"
+      selector_match_operator = "Equals"
+    }
+    exclusion {
+      match_variable          = "RequestArgNames"
+      selector                = "street"  //Will need to turn on 942440 and 942110 if not effective.
+      selector_match_operator = "Equals"
+    }
+    exclusion {
+      match_variable          = "RequestArgNames"
+      selector                = "namePrefixMatch" //Will need to turn on 942330 if not effective
+      selector_match_operator = "Equals"
+    }
+
     managed_rule_set {
       type    = "OWASP"
       version = "3.2"
 
+      /*
+       * Each rule group in the OWASP ruleset can be overridden. These blocks contain a list of
+       * rules within each specific group that we've chosen to override, due to how the application
+       * is structured.
+       *
+       * These rules should be periodically reviewed for relevance.
+       */
       rule_group_override {
         rule_group_name = "REQUEST-920-PROTOCOL-ENFORCEMENT" //TODO: add exception for whoami
         disabled_rules = [
