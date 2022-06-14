@@ -50,22 +50,25 @@ public class TestResultUploadService {
   private String signingKey;
 
   private static final int FIVE_MINUTES_MS = 300 * 1000;
-  private static final String DEFAULT_SCOPE = "default";
+  private static final String CSV_UPLOAD_SCOPE = "csvuploader";
   private static final String REPORTING_SCOPE = "report";
 
-  private String createDefaultScope(String clientName) {
-    return String.join(".", clientName, DEFAULT_SCOPE);
+  private String createCSVUploadScope(String clientName) {
+    return String.join(".", clientName, CSV_UPLOAD_SCOPE);
   }
 
-  private String createReportingScope(String clientName) {
-    return String.join(".", clientName, DEFAULT_SCOPE, REPORTING_SCOPE);
+  private String createReportingScope(String scope) {
+    return String.join(".", scope, REPORTING_SCOPE);
   }
 
   public String createDataHubSenderToken(String privateKey) throws InvalidRSAPrivateKeyException {
     Date inFiveMinutes = new Date(System.currentTimeMillis() + FIVE_MINUTES_MS);
 
     return _tokenAuth.createRSAJWT(
-        createDefaultScope(simpleReportCsvUploadClientName), dataHubUrl, inFiveMinutes, privateKey);
+        createCSVUploadScope(simpleReportCsvUploadClientName),
+        dataHubUrl,
+        inFiveMinutes,
+        privateKey);
   }
 
   private static final ObjectMapper mapper =
@@ -144,7 +147,8 @@ public class TestResultUploadService {
             .findByInternalIdAndOrganization(id, org)
             .orElseThrow(InvalidBulkTestResultUploadException::new);
 
-    String reportingScope = createReportingScope(simpleReportCsvUploadClientName);
+    String reportingScope =
+        createReportingScope(createCSVUploadScope(simpleReportCsvUploadClientName));
 
     Map<String, String> queryParams = new LinkedHashMap<>();
     queryParams.put("scope", reportingScope);
