@@ -64,19 +64,29 @@ resource "azurerm_web_application_firewall_policy" "sr_waf_policy" {
   managed_rules {
     exclusion {
       match_variable          = "RequestCookieNames"
-      selector                = "ai_session"
+      selector                = "ai_session" //Part of Azure Application Insights
       selector_match_operator = "StartsWith"
     }
+    exclusion {
+      match_variable          = "RequestCookieNames"
+      selector                = "ai_user" //Part of Azure Application Insights
+      selector_match_operator = "StartsWith"
+    }
+    exclusion {
+      match_variable          = "RequestCookieNames"
+      selector                = "iss"
+      selector_match_operator = "Equals"
+    }
+
     managed_rule_set {
       type    = "OWASP"
       version = "3.2"
 
       rule_group_override {
-        rule_group_name = "REQUEST-942-APPLICATION-ATTACK-SQLI"
+        rule_group_name = "REQUEST-920-PROTOCOL-ENFORCEMENT" //TODO: add exception for whoami
         disabled_rules = [
-          "942430",
-          "942260",
-          "942200"
+          "920300",
+          "920320"
         ]
       }
 
@@ -86,6 +96,18 @@ resource "azurerm_web_application_firewall_policy" "sr_waf_policy" {
           "932100",
           "932105",
           "932115"
+        ]
+      }
+
+      rule_group_override {
+        rule_group_name = "REQUEST-942-APPLICATION-ATTACK-SQLI"
+        disabled_rules = [
+          "942150",
+          "942190",
+          "942200",
+          "942260",
+          "942410",
+          "942430"
         ]
       }
     }

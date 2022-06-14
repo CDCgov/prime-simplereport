@@ -75,6 +75,9 @@ public class AuthorizationConfiguration {
   private static final String SPEL_HAS_PERMISSION_ACCESS_ALL_FACILITIES =
       SPEL_HAS_PERMISSION + "ACCESS_ALL_FACILITIES" + ")";
 
+  private static final String SPEL_HAS_PERMISSION_UPLOADER_PILOT =
+      SPEL_HAS_PERMISSION + "SR_CSV_UPLOADER_PILOT" + ")";
+
   private static final String SPEL_IS_SITE_ADMIN =
       "@" + AUTHORIZER_BEAN + ".userHasSiteAdminRole()";
 
@@ -447,4 +450,13 @@ public class AuthorizationConfiguration {
           + " && "
           + SPEL_CAN_VIEW_QUEUE_ITEM_FOR_PATIENT)
   public @interface RequirePermissionSubmitTestForPatient {}
+
+  /**
+   * Require the current user to have the {@link UserPermission#SR_CSV_UPLOADER_PILOT} permission
+   * for the CSV Test Result Upload Pilot
+   */
+  @Retention(RUNTIME)
+  @Target(METHOD)
+  @PreAuthorize(SPEL_IS_VALID + " && " + SPEL_HAS_PERMISSION_UPLOADER_PILOT)
+  public @interface RequirePermissionCSVUpload {}
 }

@@ -209,7 +209,7 @@ const PersonForm = (props: Props) => {
     };
   };
 
-  const validatePatientAddress = async () => {
+  const validatePatientAddress = async (shouldStartTest = false) => {
     const originalAddress = getAddress(patient);
 
     const zipCodeData = await getZipCodeData(originalAddress.zipCode);
@@ -228,7 +228,7 @@ const PersonForm = (props: Props) => {
 
     const suggestedAddress = await getBestSuggestion(originalAddress);
     if (suggestionIsCloseEnough(originalAddress, suggestedAddress)) {
-      onSave(suggestedAddress, startTest);
+      onSave(suggestedAddress, shouldStartTest);
     } else {
       setAddressSuggestion(suggestedAddress);
       setAddressModalOpen(true);
@@ -273,6 +273,7 @@ const PersonForm = (props: Props) => {
 
       return;
     }
+
     if (
       JSON.stringify(getAddress(patient)) ===
         JSON.stringify(getAddress(props.patient)) ||
@@ -280,7 +281,7 @@ const PersonForm = (props: Props) => {
     ) {
       onSave(undefined, shouldStartTest);
     } else {
-      validatePatientAddress();
+      validatePatientAddress(shouldStartTest);
     }
   };
 

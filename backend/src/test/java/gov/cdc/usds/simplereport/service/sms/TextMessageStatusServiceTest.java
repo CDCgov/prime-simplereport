@@ -170,4 +170,29 @@ class TextMessageStatusServiceTest extends BaseServiceTest<TextMessageStatusServ
     verify(_phoneRepo, never()).findAllByNumberAndType(number, PhoneType.MOBILE);
     verify(_phoneRepo, never()).saveAll(new ArrayList<PhoneNumber>());
   }
+
+  @Test
+  void checksHandleLandlineError_numberWithNullType() {
+    String toParam = "+1123456XXXX";
+    String patientsNumber = "+11234567890";
+    String messageId = "123";
+
+    String number = parsePhoneNumber(patientsNumber);
+    List<PhoneNumber> testNumbers = new ArrayList<PhoneNumber>();
+    testNumbers.add(new PhoneNumber(null, number)); // number in the db  has a null type
+    when(_phoneRepo.findAllByNumberAndType(anyString(), any(PhoneType.class)))
+        .thenReturn(testNumbers);
+
+    TextMessageSent textSent = mockTextMessageSentWithNumbers(testNumbers);
+    when(sentRepo.findByTwilioMessageId(anyString())).thenReturn(textSent);
+
+    ArgumentCaptor<List> phoneNumbersCaptor = ArgumentCaptor.forClass(List.class);
+    textMessageStatusService.handleLandlineError(messageId, toParam);
+
+    verify(_phoneRepo).findAllByNumberAndType(number, PhoneType.MOBILE);
+    verify(_phoneRepo).saveAll(phoneNumbersCaptor.capture());
+    List<PhoneNumber> modifiedNumbers = phoneNumbersCaptor.getValue();
+    assertEquals(1, modifiedNumbers.size());
+    assertEquals(PhoneType.LANDLINE, modifiedNumbers.get(0).getType());
+  }
 }

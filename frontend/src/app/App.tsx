@@ -23,6 +23,9 @@ import VersionEnforcer from "./VersionEnforcer";
 import { TrainingNotification } from "./commonComponents/TrainingNotification";
 import { MaintenanceBanner } from "./commonComponents/MaintenanceBanner";
 import { Analytics } from "./analytics/Analytics";
+import Uploads from "./testResults/uploads/Uploads";
+import Submissions from "./testResults/submissions/Submissions";
+import ResultsNavWrapper from "./testResults/ResultsNavWrapper";
 
 export const WHOAMI_QUERY = gql`
   query WhoAmI {
@@ -130,6 +133,7 @@ const App = () => {
   const canViewPeople = appPermissions.people.canView;
   const canEditPeople = appPermissions.people.canEdit;
   const canViewSettings = appPermissions.settings.canView;
+  const canUseCsvUploaderPilot = appPermissions.featureFlags.SrCsvUploaderPilot;
 
   return (
     <>
@@ -159,7 +163,13 @@ const App = () => {
                 <ProtectedRoute
                   requiredPermissions={canViewResults}
                   userPermissions={data.whoami.permissions}
-                  element={<TestResultsList />}
+                  element={
+                    <ResultsNavWrapper
+                      userPermissions={data.whoami.permissions}
+                    >
+                      <TestResultsList />
+                    </ResultsNavWrapper>
+                  }
                 />
               }
             />
@@ -169,7 +179,61 @@ const App = () => {
                 <ProtectedRoute
                   requiredPermissions={canViewResults}
                   userPermissions={data.whoami.permissions}
-                  element={<CleanTestResultsList />}
+                  element={
+                    <ResultsNavWrapper
+                      userPermissions={data.whoami.permissions}
+                    >
+                      <CleanTestResultsList />
+                    </ResultsNavWrapper>
+                  }
+                />
+              }
+            />
+            <Route
+              path="results/upload"
+              element={
+                <ProtectedRoute
+                  requiredPermissions={canUseCsvUploaderPilot}
+                  userPermissions={data.whoami.permissions}
+                  element={
+                    <ResultsNavWrapper
+                      userPermissions={data.whoami.permissions}
+                    >
+                      <Uploads />
+                    </ResultsNavWrapper>
+                  }
+                />
+              }
+            />
+            <Route
+              path={"results/upload/submissions"}
+              element={
+                <ProtectedRoute
+                  requiredPermissions={canUseCsvUploaderPilot}
+                  userPermissions={data.whoami.permissions}
+                  element={
+                    <ResultsNavWrapper
+                      userPermissions={data.whoami.permissions}
+                    >
+                      <Submissions />
+                    </ResultsNavWrapper>
+                  }
+                />
+              }
+            />
+            <Route
+              path={"results/upload/submissions/:pageNumber"}
+              element={
+                <ProtectedRoute
+                  requiredPermissions={canUseCsvUploaderPilot}
+                  userPermissions={data.whoami.permissions}
+                  element={
+                    <ResultsNavWrapper
+                      userPermissions={data.whoami.permissions}
+                    >
+                      <Submissions />
+                    </ResultsNavWrapper>
+                  }
                 />
               }
             />

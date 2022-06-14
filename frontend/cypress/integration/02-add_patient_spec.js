@@ -7,6 +7,7 @@ describe("Adding a patient", () => {
   before("store patient info", () => {
     cy.task("setPatientName", patient.fullName);
     cy.task("setPatientDOB", patient.dobForPatientLink);
+    cy.task("setPatientPhone", patient.phone);
   });
   it("navigates to the add patient form", () => {
     cy.visit("/");
