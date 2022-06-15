@@ -4389,3 +4389,7 @@ img {
 .submit-button {
     margin-bottom: 2rem;
 }
+
+.question .usa-label {
+    max-width: none;
+}

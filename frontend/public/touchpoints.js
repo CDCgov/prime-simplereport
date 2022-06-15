@@ -57,10 +57,13 @@ function FBAform(d, N) {
       });
     },
     loadCss: function () {
+      const urlPrefix = String(window.location.href).includes("localhost")
+        ? ""
+        : "/app/static/";
       let link = document.createElement("link");
       link.rel = "stylesheet";
       link.type = "text/css";
-      link.href = "touchpoints.css";
+      link.href = `${urlPrefix}touchpoints.css`;
       link.media = "all";
       d.head.appendChild(link);
     },
