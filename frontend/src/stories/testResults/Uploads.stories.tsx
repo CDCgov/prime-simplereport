@@ -9,7 +9,7 @@ import Uploads from "../../app/testResults/uploads/Uploads";
 type Props = {};
 
 export default {
-  title: "Uploads",
+  title: "App/Test results/Upload CSV",
   component: Uploads,
   argTypes: {},
   args: {},
