@@ -4,9 +4,8 @@ import { MemoryRouter } from "react-router-dom";
 import { Provider } from "react-redux";
 import createMockStore from "redux-mock-store";
 
-import { getMocks, StoryGraphQLProvider } from "../../../stories/storyMocks";
-
-import Submission from "./Submission";
+import { getMocks, StoryGraphQLProvider } from "../../stories/storyMocks";
+import Submission from "../../app/testResults/submissions/Submission";
 
 const mockStore = createMockStore([]);
 const store = mockStore({

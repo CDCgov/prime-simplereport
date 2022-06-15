@@ -157,7 +157,7 @@ describe("Uploads", () => {
       );
     });
 
-    it("performs HTTP request to submit CSV file, displays result", async () => {
+    it("performs HTTP request to GraphQL endpoint to submit CSV file", async () => {
       const input = screen.getByTestId("file-input-input");
 
       userEvent.upload(input, file);
