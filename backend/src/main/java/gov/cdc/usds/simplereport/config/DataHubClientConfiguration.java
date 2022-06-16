@@ -29,7 +29,7 @@ public class DataHubClientConfiguration {
       //
       // As a hack, set an empty request body to force an accurate Content-Length
       // header.
-      if (template.method() == HttpMethod.POST.toString()) {
+      if (template.method() == HttpMethod.POST.toString() && template.body() == null) {
         template.body("{}");
       }
 
