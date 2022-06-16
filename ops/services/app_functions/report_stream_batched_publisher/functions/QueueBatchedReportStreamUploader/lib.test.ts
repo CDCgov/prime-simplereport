@@ -202,7 +202,7 @@ describe("lib", () => {
       expect(queueClientMock.deleteMessage).toHaveBeenCalledTimes(messages.length);
     });
 
-    it("does't call queueClient.deleteMessage for parse failures", async () => {
+    it("doesn't call queueClient.deleteMessage for parse failures", async () => {
       // GIVEN
       const queueClientMock: QueueClient = {
         deleteMessage: jest.fn().mockResolvedValue(true),
@@ -235,19 +235,19 @@ describe("lib", () => {
       // GIVEN
       const warnings: ReportStreamError[] = [
         {
-          id: "1234",
-          details: "hello",
-          scope: "ITEM",
+          trackingIds: ["1234"],
+          message: "hello",
+          scope: "item",
         },
         {
-          id: "1234",
-          details: "hello",
-          scope: "ITEM",
+          trackingIds: ["1234"],
+          message: "hello",
+          scope: "item",
         },
         {
-          id: "1234",
-          details: "hello",
-          scope: "ITEM",
+          trackingIds: ["1234"],
+          message: "hello",
+          scope: "item",
         },
       ];
       const response: ReportStreamResponse = {
@@ -273,31 +273,31 @@ describe("lib", () => {
       // GIVEN
       const warnings: ReportStreamError[] = [
         {
-          id: "1234",
-          details: "hello",
-          scope: "ITEM",
+          trackingIds: ["1234"],
+          message: "hello",
+          scope: "item",
         },
         {
-          id: "1234",
-          details: "hello",
-          scope: "ITEM",
+          trackingIds: ["1234"],
+          message: "hello",
+          scope: "item",
         },
         {
-          id: "1234",
-          details: "hello",
-          scope: "ITEM",
+          trackingIds: ["1234"],
+          message: "hello",
+          scope: "item",
         },
       ];
       const errors: ReportStreamError[] = [
         {
-          id: "1234",
-          details: "hello",
-          scope: "ITEM",
+          trackingIds: ["1234"],
+          message: "hello",
+          scope: "item",
         },
         {
-          id: "1234",
-          details: "hello",
-          scope: "ITEM",
+          trackingIds: ["1234"],
+          message: "hello",
+          scope: "item",
         },
       ];
       const response: ReportStreamResponse = {
@@ -317,6 +317,69 @@ describe("lib", () => {
       expect(queueClientMock.sendMessage).toHaveBeenCalledTimes(
         warnings.length + errors.length
       );
+    });
+
+    it("sends messages per item for item-scoped exceptions and none for report-scoped exceptions", async () => {
+      const warnings: ReportStreamError[] = [
+        {
+          trackingIds: ["1234", "5678"],
+          message: "goodbye",
+          scope: "item",
+        },
+        {
+          trackingIds: ["1234"],
+          message: "au revoir",
+          scope: "item",
+        },
+        {
+          message: "ha det bra",
+          scope: "report",
+        },
+      ];
+      const errors: ReportStreamError[] = [
+        {
+          trackingIds: ["1234"],
+          message: "adios",
+          scope: "item",
+        },
+        {
+          message: "arrivederci",
+          scope: "report",
+        },
+        {
+          trackingIds: ["1234", "91011"],
+          message: "auf wiedersehen",
+          scope: "item",
+        },
+      ];
+      const response: ReportStreamResponse = {
+        errorCount: errors.length,
+        errors,
+        warningCount: warnings.length,
+        warnings,
+      } as any;
+      const queueClientMock: QueueClient = {
+        sendMessage: jest.fn().mockResolvedValue(true),
+      } as any;
+
+      // WHEN
+      await reportExceptions(context, queueClientMock, response);
+
+      // THEN
+      expect(queueClientMock.sendMessage).toHaveBeenCalledTimes(
+          6
+      );
+      const expectedMessages = [
+        `{"testEventInternalId":"1234","isError":false,"details":"goodbye"}`,
+        `{"testEventInternalId":"5678","isError":false,"details":"goodbye"}`,
+        `{"testEventInternalId":"1234","isError":false,"details":"au revoir"}`,
+        `{"testEventInternalId":"1234","isError":true,"details":"adios"}`,
+        `{"testEventInternalId":"1234","isError":true,"details":"auf wiedersehen"}`,
+        `{"testEventInternalId":"91011","isError":true,"details":"auf wiedersehen"}`
+      ];
+      expectedMessages.forEach((em) => {
+        expect(queueClientMock.sendMessage).toHaveBeenCalledWith(Buffer.from(em).toString("base64"));
+      });
     });
   });
 });
