@@ -16,6 +16,7 @@ import gov.cdc.usds.simplereport.db.model.auxiliary.PersonRole;
 import gov.cdc.usds.simplereport.db.model.auxiliary.StreetAddress;
 import gov.cdc.usds.simplereport.db.model.auxiliary.TestCorrectionStatus;
 import gov.cdc.usds.simplereport.db.model.auxiliary.TestResult;
+import graphql.com.google.common.collect.ImmutableMap;
 import java.time.Duration;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
@@ -98,6 +99,76 @@ public class TestEventExport {
           "unknown", raceUnknown,
           "refused", "ASKU" // Asked, but unknown
           );
+
+  private Map<String, String> preferredLanguageMap =
+      ImmutableMap.<String, String>builder()
+          .put("English", "eng")
+          .put("Spanish", "spa")
+          .put("Unknown", "zxx")
+          .put("Afrikaans", "afr")
+          .put("Amaric", "amh")
+          .put("American Sign Language", "sgn")
+          .put("Arabic", "ara")
+          .put("Armenian", "arm")
+          .put("Aromanian; Arumanian; Macedo-Romanian", "rup")
+          .put("Bantu (other)", "bnt")
+          .put("Bengali", "ben")
+          .put("Burmese", "bur")
+          .put("Cantonese", "yue")
+          .put("Caucasian (other)", "cau")
+          .put("Cherokee", "chr")
+          .put("Chinese", "yue")
+          .put("Creoles and pidgins, French-based (Other)", "cpf")
+          .put("Cushitic (other)", "cus")
+          .put("Dakota", "dak")
+          .put("Fiji", "fij")
+          .put("Filipino; Pilipino", "fil")
+          .put("French", "fre")
+          .put("German", "ger")
+          .put("Gujarati", "guj")
+          .put("Hebrew", "heb")
+          .put("Hindi", "hin")
+          .put("Hmong", "hmn")
+          .put("Indonesian", "ind")
+          .put("Italian", "ita")
+          .put("Japanese", "jpn")
+          .put("Kannada", "kan")
+          .put("Korean", "kor")
+          .put("Kru languages", "kro")
+          .put("Kurdish", "kur")
+          .put("Laotian", "lao")
+          .put("Latin", "lat")
+          .put("Malayalam", "mal")
+          .put("Mandar", "mdr")
+          .put("Mandarin", "cmn")
+          .put("Marathi", "mar")
+          .put("Marshallese", "mah")
+          .put("Mon-Khmer (Other)", "mkh")
+          .put("Mongolian", "mon")
+          .put("Navajo", "nav")
+          .put("Nepali", "nep")
+          .put("Not Specified", "zxx")
+          .put("Pashto", "pus")
+          .put("Portuguese", "por")
+          .put("Punjabi", "pan")
+          .put("Rarotongan; Cook Islands Maori", "rar")
+          .put("Russian", "rus")
+          .put("Samoan", "smo")
+          .put("Sign Languages", "sgn")
+          .put("Somali", "som")
+          .put("Swahili", "swa")
+          .put("Tagalog", "tgl")
+          .put("Tahitian", "tah")
+          .put("Tamil", "tam")
+          .put("Tegulu", "tel")
+          .put("Thai", "tha")
+          .put("Tigrinya", "tir")
+          .put("Ukrainian", "ukr")
+          .put("Urdu", "urd")
+          .put("Vietnamese", "vie")
+          .put("Yiddish", "yid")
+          .put("Zapotec", "zap")
+          .build();
 
   private String boolToYesNoUnk(Boolean value) {
     if (value == null) {
@@ -242,7 +313,7 @@ public class TestEventExport {
 
   @JsonProperty("Patient_preferred_language")
   public String getPatientPreferredLanguage() {
-    return patient.map(Person::getPreferredLanguage).orElse("");
+    return patient.map(Person::getPreferredLanguage).map(preferredLanguageMap::get).orElse("");
   }
 
   @JsonProperty("Employed_in_healthcare")

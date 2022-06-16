@@ -208,7 +208,7 @@ class TestEventExportTest extends BaseRepositoryTest {
     assertEquals("20503", exportedEvent.getPatientZipCode());
     assertEquals("Washington", exportedEvent.getPatientCounty());
     assertEquals("USA", exportedEvent.getPatientCountry());
-    assertEquals("English", exportedEvent.getPatientPreferredLanguage());
+    assertEquals("eng", exportedEvent.getPatientPreferredLanguage());
   }
 
   @Test
