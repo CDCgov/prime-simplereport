@@ -91,16 +91,6 @@ resource "azurerm_web_application_firewall_policy" "sr_waf_policy" {
       selector                = "iss"
       selector_match_operator = "Equals"
     }
-    exclusion {
-      match_variable          = "RequestArgNames"
-      selector                = "street"  //Will need to turn on 942440 and 942110 if not effective.
-      selector_match_operator = "Equals"
-    }
-    exclusion {
-      match_variable          = "RequestArgNames"
-      selector                = "namePrefixMatch" //Will need to turn on 942330 if not effective
-      selector_match_operator = "Equals"
-    }
 
     managed_rule_set {
       type    = "OWASP"
@@ -133,12 +123,15 @@ resource "azurerm_web_application_firewall_policy" "sr_waf_policy" {
       rule_group_override {
         rule_group_name = "REQUEST-942-APPLICATION-ATTACK-SQLI"
         disabled_rules = [
+          "942110",
           "942150",
           "942190",
           "942200",
           "942260",
+          "942330",
           "942410",
-          "942430"
+          "942430",
+          "942440"
         ]
       }
     }
