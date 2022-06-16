@@ -36,9 +36,7 @@ public class TokenAuthentication {
     }
   }
 
-  private String createJWT(String scope, String audience, Date exp, Key signingKey)
-      throws InvalidRSAPrivateKeyException {
-
+  private String createJWT(String scope, String audience, Date exp, Key signingKey) {
     return Jwts.builder()
         .setHeaderParam("kid", scope)
         .setHeaderParam("typ", "JWT")
@@ -52,7 +50,8 @@ public class TokenAuthentication {
         .compact();
   }
 
-  public String createRSAJWT(String scope, String audience, Date exp, String signingKey) {
+  public String createRSAJWT(String scope, String audience, Date exp, String signingKey)
+      throws InvalidRSAPrivateKeyException {
     return createJWT(scope, audience, exp, getRSAPrivateKey(signingKey));
   }
 }

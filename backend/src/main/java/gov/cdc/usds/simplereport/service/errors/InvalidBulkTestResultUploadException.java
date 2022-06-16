@@ -1,4 +1,4 @@
-package gov.cdc.usds.simplereport.api.model.errors;
+package gov.cdc.usds.simplereport.service.errors;
 
 import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.ResponseStatus;
