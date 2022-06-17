@@ -310,6 +310,15 @@ type UploadResult {
   errors: [FeedbackMessage]
 }
 
+type UploadResponse {
+  reportId: ID!
+  createdAt: DateTime!
+  status: UploadStatus!
+  recordsCount: Int!
+  warnings: [FeedbackMessage]
+  errors: [FeedbackMessage]
+}
+
 type FeedbackMessage {
   scope: String
   message: String
@@ -412,13 +421,15 @@ type Query {
     @requiredPermissions(allOf: ["MANAGE_USERS"])
   user(id: ID!): User @requiredPermissions(allOf: ["MANAGE_USERS"])
   whoami: User!
+  uploadSubmission(id: ID!): UploadResponse!
+    @requiredPermissions(allOf: ["SR_CSV_UPLOADER_PILOT"])
   uploadSubmissions(
     startDate: DateTime
     endDate: DateTime
     pageNumber: Int
     pageSize: Int
   ): UploadSubmissionPage!
-  @requiredPermissions(allOf: ["SR_CSV_UPLOADER_PILOT"])
+    @requiredPermissions(allOf: ["SR_CSV_UPLOADER_PILOT"])
 }
 
 type Mutation {

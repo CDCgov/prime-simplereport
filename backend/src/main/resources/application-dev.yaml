@@ -27,6 +27,3 @@ twilio:
   enabled: false
 datahub:
   url: "https://staging.prime.cdc.gov/"
-  api-key: "not-a-valid-api-key"
-  api-version: "2021-09-21"
-  csv-upload-api-client: "simple_report"
