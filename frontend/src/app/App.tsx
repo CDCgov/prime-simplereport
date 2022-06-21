@@ -24,6 +24,7 @@ import { TrainingNotification } from "./commonComponents/TrainingNotification";
 import { MaintenanceBanner } from "./commonComponents/MaintenanceBanner";
 import { Analytics } from "./analytics/Analytics";
 import Uploads from "./testResults/uploads/Uploads";
+import Submission from "./testResults/submissions/Submission";
 import Submissions from "./testResults/submissions/Submissions";
 import ResultsNavWrapper from "./testResults/ResultsNavWrapper";
 
@@ -202,6 +203,16 @@ const App = () => {
                       <Uploads />
                     </ResultsNavWrapper>
                   }
+                />
+              }
+            />
+            <Route
+              path="results/upload/submissions/:id"
+              element={
+                <ProtectedRoute
+                  requiredPermissions={canUseCsvUploaderPilot}
+                  userPermissions={data.whoami.permissions}
+                  element={<Submission />}
                 />
               }
             />

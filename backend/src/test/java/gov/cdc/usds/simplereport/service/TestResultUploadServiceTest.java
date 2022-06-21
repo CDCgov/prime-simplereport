@@ -6,7 +6,10 @@ import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.junit.jupiter.api.Assertions.assertNull;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.ArgumentMatchers.anyMap;
+import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
 import com.github.tomakehurst.wiremock.client.WireMock;
@@ -14,19 +17,28 @@ import com.okta.commons.http.MediaType;
 import gov.cdc.usds.simplereport.api.model.errors.CsvProcessingException;
 import gov.cdc.usds.simplereport.db.model.auxiliary.UploadStatus;
 import gov.cdc.usds.simplereport.db.repository.TestResultUploadRepository;
+import gov.cdc.usds.simplereport.service.errors.InvalidBulkTestResultUploadException;
 import gov.cdc.usds.simplereport.service.model.reportstream.FeedbackMessage;
 import gov.cdc.usds.simplereport.service.model.reportstream.ReportStreamStatus;
+import gov.cdc.usds.simplereport.service.model.reportstream.TokenResponse;
 import gov.cdc.usds.simplereport.service.model.reportstream.UploadResponse;
 import gov.cdc.usds.simplereport.test_util.SliceTestConfiguration;
+import gov.cdc.usds.simplereport.test_util.TestDataFactory;
+import gov.cdc.usds.simplereport.utils.TokenAuthentication;
 import java.io.IOException;
 import java.io.InputStream;
 import java.nio.charset.StandardCharsets;
 import java.util.Arrays;
+import java.util.Date;
+import java.util.Optional;
 import java.util.UUID;
 import org.apache.commons.io.IOUtils;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
+import org.mockito.ArgumentCaptor;
+import org.mockito.Captor;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.context.properties.EnableConfigurationProperties;
 import org.springframework.cloud.contract.spec.internal.HttpStatus;
 import org.springframework.cloud.contract.wiremock.AutoConfigureWireMock;
@@ -38,6 +50,9 @@ import org.springframework.test.context.junit.jupiter.SpringExtension;
 @ExtendWith(SpringExtension.class)
 @AutoConfigureWireMock(port = 9561)
 class TestResultUploadServiceTest extends BaseServiceTest<TestResultUploadService> {
+  @Autowired private TestDataFactory factory;
+  @Captor private ArgumentCaptor<UUID> reportIdCaptor;
+  @Captor private ArgumentCaptor<String> accessTokenCaptor;
 
   @BeforeEach()
   public void init() {
@@ -158,10 +173,11 @@ class TestResultUploadServiceTest extends BaseServiceTest<TestResultUploadServic
     var dataHubMock = mock(DataHubClient.class);
     var repoMock = mock(TestResultUploadRepository.class);
     var orgServiceMock = mock(OrganizationService.class);
+    var tokenAuthMock = mock(TokenAuthentication.class);
 
     when(dataHubMock.uploadCSV(any())).thenReturn(response);
 
-    var sut = new TestResultUploadService(repoMock, dataHubMock, orgServiceMock);
+    var sut = new TestResultUploadService(repoMock, dataHubMock, orgServiceMock, tokenAuthMock);
 
     var output = sut.processResultCSV(input);
     assertNotNull(output.getReportId());
@@ -170,5 +186,70 @@ class TestResultUploadServiceTest extends BaseServiceTest<TestResultUploadServic
 
   private InputStream loadCsv(String csvFile) {
     return TestResultUploadService.class.getClassLoader().getResourceAsStream(csvFile);
+  }
+
+  @Test
+  @SliceTestConfiguration.WithSimpleReportCsvUploadPilotUser
+  void uploadService_getUploadSubmission_throwsOnInvalid() {
+    var dataHubMock = mock(DataHubClient.class);
+    var repoMock = mock(TestResultUploadRepository.class);
+    var orgServiceMock = mock(OrganizationService.class);
+    var tokenAuthMock = mock(TokenAuthentication.class);
+
+    var sut = new TestResultUploadService(repoMock, dataHubMock, orgServiceMock, tokenAuthMock);
+
+    var uuid = UUID.randomUUID();
+
+    assertThrows(InvalidBulkTestResultUploadException.class, () -> sut.getUploadSubmission(uuid));
+  }
+
+  @Test
+  @DirtiesContext
+  @SliceTestConfiguration.WithSimpleReportCsvUploadPilotUser
+  void uploadService_getUploadSubmission_rsClientOk() {
+    var dataHubMock = mock(DataHubClient.class);
+    var repoMock = mock(TestResultUploadRepository.class);
+    var orgServiceMock = mock(OrganizationService.class);
+    var tokenAuthMock = mock(TokenAuthentication.class);
+
+    var sut = new TestResultUploadService(repoMock, dataHubMock, orgServiceMock, tokenAuthMock);
+
+    UUID reportId = UUID.randomUUID();
+
+    // GIVEN
+    when(orgServiceMock.getCurrentOrganization()).thenReturn(factory.createValidOrg());
+    var testResultUpload =
+        factory.createTestResultUpload(
+            reportId, UploadStatus.PENDING, orgServiceMock.getCurrentOrganization());
+
+    when(tokenAuthMock.createRSAJWT(anyString(), anyString(), any(Date.class), anyString()))
+        .thenReturn("fake-rs-sender-token");
+    var dbResponse = Optional.of(testResultUpload);
+    when(repoMock.findByInternalIdAndOrganization(any(), any())).thenReturn(dbResponse);
+    var tokenResponse = new TokenResponse();
+    tokenResponse.setAccessToken("fake-rs-access-token");
+    when(dataHubMock.fetchAccessToken(anyMap())).thenReturn(tokenResponse);
+    var uploadResponse = new UploadResponse();
+    uploadResponse.setId(testResultUpload.getReportId());
+    uploadResponse.setOverallStatus(ReportStreamStatus.WAITING_TO_DELIVER);
+    uploadResponse.setTimestamp(testResultUpload.getCreatedAt());
+    uploadResponse.setReportItemCount(testResultUpload.getRecordsCount());
+    uploadResponse.setErrors(testResultUpload.getErrors());
+    uploadResponse.setWarnings(testResultUpload.getWarnings());
+
+    when(dataHubMock.getSubmission(any(UUID.class), anyString())).thenReturn(uploadResponse);
+
+    // WHEN
+    UploadResponse result = sut.getUploadSubmission(testResultUpload.getInternalId());
+
+    // THEN
+    verify(dataHubMock).getSubmission(reportIdCaptor.capture(), accessTokenCaptor.capture());
+    assertEquals(reportId, reportIdCaptor.getValue());
+    assertEquals("fake-rs-access-token", accessTokenCaptor.getValue());
+
+    assertEquals(testResultUpload.getReportId(), result.getReportId());
+    assertEquals(testResultUpload.getStatus(), result.getStatus());
+    assertEquals(testResultUpload.getCreatedAt(), result.getCreatedAt());
+    assertEquals(testResultUpload.getRecordsCount(), result.getRecordsCount());
   }
 }

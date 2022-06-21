@@ -4,11 +4,8 @@ import { MemoryRouter } from "react-router-dom";
 import { Provider } from "react-redux";
 import createMockStore from "redux-mock-store";
 
-import { getMocks, StoryGraphQLProvider } from "../../../stories/storyMocks";
-
-import Submissions from "./Submissions";
-
-type Props = {};
+import { getMocks, StoryGraphQLProvider } from "../../stories/storyMocks";
+import Submission from "../../app/testResults/submissions/Submission";
 
 const mockStore = createMockStore([]);
 const store = mockStore({
@@ -19,8 +16,8 @@ const store = mockStore({
 });
 
 export default {
-  title: "App/Test results/Submissions",
-  component: Submissions,
+  title: "Submission",
+  component: Submission,
   argTypes: {},
   args: {},
   decorators: [
@@ -32,22 +29,16 @@ export default {
   ],
 } as Meta;
 
-const Template: Story<Props> = (args) => (
+const Template: Story = (args) => (
   <Provider store={store}>
     <MemoryRouter>
-      <Submissions {...args} />
+      <Submission {...args} />
     </MemoryRouter>
   </Provider>
 );
 
-export const WithResults = Template.bind({});
-WithResults.parameters = {
-  msw: getMocks("GetUploadSubmissions"),
+export const Default = Template.bind({});
+Default.parameters = {
+  msw: getMocks("GetUploadSubmission"),
 };
-WithResults.args = {};
-
-export const NoResults = Template.bind({});
-NoResults.parameters = {
-  msw: getMocks("GetEmptyUploadSubmissions"),
-};
-NoResults.args = {};
+Default.args = {};
