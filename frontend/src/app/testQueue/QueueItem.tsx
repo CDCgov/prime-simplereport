@@ -319,10 +319,24 @@ const QueueItem = ({
     return dateTested > EARLIEST_TEST_DATE && dateTested < new Date();
   }
 
-  const diseaseResultsRef = useRef<DiseaseResult[]>([]);
-  diseaseResultsRef.current = convertFromMultiplexResponse(selectedTestResults);
-  const diseaseResults = diseaseResultsRef.current;
-  const covidResult = findResultByDiseaseName(diseaseResults, "COVID-19");
+  /***
+   * Handle caching of results
+   */
+
+  const [cacheTestResults, setCacheTestResults] = useState(
+    convertFromMultiplexResponse(selectedTestResults)
+  );
+  const diseaseResultsRef = useRef<DiseaseResult[]>(cacheTestResults); // persistent reference to use in Effect
+
+  useEffect(() => {
+    // update cache when selectedTestResults prop update
+    setCacheTestResults(convertFromMultiplexResponse(selectedTestResults));
+    diseaseResultsRef.current = convertFromMultiplexResponse(
+      selectedTestResults
+    );
+  }, [selectedTestResults]);
+
+  const covidResult = findResultByDiseaseName(cacheTestResults, "COVID-19");
   const [confirmationType, setConfirmationType] = useState<
     "submitResult" | "removeFromQueue" | "none"
   >("none");
@@ -388,7 +402,7 @@ const QueueItem = ({
     }
     setConfirmationType("none");
     try {
-      const results = Object.assign([], diseaseResults);
+      const results = Object.assign([], cacheTestResults);
 
       const result = await submitTestResult({
         variables: {
@@ -521,7 +535,7 @@ const QueueItem = ({
         deviceId: deviceId,
         results: resultsFromForm,
         dateTested: dateTested,
-        deviceSpecimenType: selectedDeviceSpecimenTypeId,
+        deviceSpecimenType: deviceSpecimenTypeId,
       } as EditQueueItemParams,
     })
       .then(() => {
@@ -530,6 +544,8 @@ const QueueItem = ({
       .catch(() => {
         // do not inform users that the unofficial test result was not saved
       });
+    setCacheTestResults(resultsFromForm);
+    diseaseResultsRef.current = Object.assign([], resultsFromForm);
   };
 
   const removeFromQueue = () => {
@@ -927,7 +943,7 @@ const QueueItem = ({
               {supportsMultipleDiseases ? (
                 <MultiplexResultInputForm
                   queueItemId={internalId}
-                  testResults={diseaseResults}
+                  testResults={cacheTestResults}
                   isSubmitDisabled={
                     loading || saveState === "editing" || saveState === "saving"
                   }
@@ -937,7 +953,7 @@ const QueueItem = ({
               ) : (
                 <CovidResultInputForm
                   queueItemId={internalId}
-                  testResults={diseaseResults}
+                  testResults={cacheTestResults}
                   isSubmitDisabled={
                     loading || saveState === "editing" || saveState === "saving"
                   }
