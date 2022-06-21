@@ -157,7 +157,7 @@ describe("Uploads", () => {
       );
     });
 
-    it("performs HTTP request to submit CSV file, displays result", async () => {
+    it("performs HTTP request to GraphQL endpoint to submit CSV file", async () => {
       const input = screen.getByTestId("file-input-input");
 
       userEvent.upload(input, file);
@@ -169,6 +169,19 @@ describe("Uploads", () => {
 
       await new Promise((resolve) => setTimeout(resolve, 0));
       expect(mockIsDone).toEqual(true);
+    });
+
+    it("displays a success message and the returned Report ID", async () => {
+      const input = screen.getByTestId("file-input-input");
+
+      userEvent.upload(input, file);
+      await new Promise((resolve) => setTimeout(resolve, 0));
+
+      const button = screen.getByTestId("button");
+
+      userEvent.click(button);
+      await new Promise((resolve) => setTimeout(resolve, 0));
+
       expect(await screen.findByText("Success: File Accepted"));
       expect(await screen.findByText("fake-id"));
     });

@@ -157,6 +157,7 @@ export type Mutation = {
   adminUpdateOrganization?: Maybe<Scalars["String"]>;
   correctTestMarkAsCorrection?: Maybe<TestResult>;
   correctTestMarkAsError?: Maybe<TestResult>;
+  createApiUserNoOkta?: Maybe<ApiUser>;
   createDeviceType?: Maybe<DeviceType>;
   createFacilityRegistrationLink?: Maybe<Scalars["String"]>;
   createOrganization?: Maybe<Organization>;
@@ -336,6 +337,15 @@ export type MutationCorrectTestMarkAsCorrectionArgs = {
 export type MutationCorrectTestMarkAsErrorArgs = {
   id: Scalars["ID"];
   reason?: InputMaybe<Scalars["String"]>;
+};
+
+export type MutationCreateApiUserNoOktaArgs = {
+  email?: InputMaybe<Scalars["String"]>;
+  firstName?: InputMaybe<Scalars["String"]>;
+  lastName?: InputMaybe<Scalars["String"]>;
+  middleName?: InputMaybe<Scalars["String"]>;
+  name?: InputMaybe<NameInput>;
+  suffix?: InputMaybe<Scalars["String"]>;
 };
 
 export type MutationCreateDeviceTypeArgs = {
@@ -783,6 +793,7 @@ export type Query = {
   testResults?: Maybe<Array<Maybe<TestResult>>>;
   testResultsCount?: Maybe<Scalars["Int"]>;
   topLevelDashboardMetrics?: Maybe<TopLevelDashboardMetrics>;
+  uploadSubmission: UploadResponse;
   uploadSubmissions: UploadSubmissionPage;
   user?: Maybe<User>;
   users?: Maybe<Array<Maybe<ApiUser>>>;
@@ -869,6 +880,10 @@ export type QueryTopLevelDashboardMetricsArgs = {
   endDate?: InputMaybe<Scalars["DateTime"]>;
   facilityId?: InputMaybe<Scalars["ID"]>;
   startDate?: InputMaybe<Scalars["DateTime"]>;
+};
+
+export type QueryUploadSubmissionArgs = {
+  id: Scalars["ID"];
 };
 
 export type QueryUploadSubmissionsArgs = {
@@ -987,6 +1002,16 @@ export type UpdateDeviceType = {
   name: Scalars["String"];
   supportedDiseases: Array<Scalars["ID"]>;
   swabTypes: Array<Scalars["ID"]>;
+};
+
+export type UploadResponse = {
+  __typename?: "UploadResponse";
+  createdAt: Scalars["DateTime"];
+  errors?: Maybe<Array<Maybe<FeedbackMessage>>>;
+  recordsCount: Scalars["Int"];
+  reportId: Scalars["ID"];
+  status: UploadStatus;
+  warnings?: Maybe<Array<Maybe<FeedbackMessage>>>;
 };
 
 export type UploadResult = {
@@ -2605,6 +2630,45 @@ export type GetResultsCountByFacilityQueryVariables = Exact<{
 export type GetResultsCountByFacilityQuery = {
   __typename?: "Query";
   testResultsCount?: number | null | undefined;
+};
+
+export type GetUploadSubmissionQueryVariables = Exact<{
+  id: Scalars["ID"];
+}>;
+
+export type GetUploadSubmissionQuery = {
+  __typename?: "Query";
+  uploadSubmission: {
+    __typename?: "UploadResponse";
+    reportId: string;
+    createdAt: any;
+    status: UploadStatus;
+    recordsCount: number;
+    warnings?:
+      | Array<
+          | {
+              __typename?: "FeedbackMessage";
+              message?: string | null | undefined;
+              scope?: string | null | undefined;
+            }
+          | null
+          | undefined
+        >
+      | null
+      | undefined;
+    errors?:
+      | Array<
+          | {
+              __typename?: "FeedbackMessage";
+              message?: string | null | undefined;
+              scope?: string | null | undefined;
+            }
+          | null
+          | undefined
+        >
+      | null
+      | undefined;
+  };
 };
 
 export type GetUploadSubmissionsQueryVariables = Exact<{
@@ -6992,6 +7056,75 @@ export type GetResultsCountByFacilityLazyQueryHookResult = ReturnType<
 export type GetResultsCountByFacilityQueryResult = Apollo.QueryResult<
   GetResultsCountByFacilityQuery,
   GetResultsCountByFacilityQueryVariables
+>;
+export const GetUploadSubmissionDocument = gql`
+  query GetUploadSubmission($id: ID!) {
+    uploadSubmission(id: $id) {
+      reportId
+      createdAt
+      status
+      recordsCount
+      warnings {
+        message
+        scope
+      }
+      errors {
+        message
+        scope
+      }
+    }
+  }
+`;
+
+/**
+ * __useGetUploadSubmissionQuery__
+ *
+ * To run a query within a React component, call `useGetUploadSubmissionQuery` and pass it any options that fit your needs.
+ * When your component renders, `useGetUploadSubmissionQuery` returns an object from Apollo Client that contains loading, error, and data properties
+ * you can use to render your UI.
+ *
+ * @param baseOptions options that will be passed into the query, supported options are listed on: https://www.apollographql.com/docs/react/api/react-hooks/#options;
+ *
+ * @example
+ * const { data, loading, error } = useGetUploadSubmissionQuery({
+ *   variables: {
+ *      id: // value for 'id'
+ *   },
+ * });
+ */
+export function useGetUploadSubmissionQuery(
+  baseOptions: Apollo.QueryHookOptions<
+    GetUploadSubmissionQuery,
+    GetUploadSubmissionQueryVariables
+  >
+) {
+  const options = { ...defaultOptions, ...baseOptions };
+  return Apollo.useQuery<
+    GetUploadSubmissionQuery,
+    GetUploadSubmissionQueryVariables
+  >(GetUploadSubmissionDocument, options);
+}
+export function useGetUploadSubmissionLazyQuery(
+  baseOptions?: Apollo.LazyQueryHookOptions<
+    GetUploadSubmissionQuery,
+    GetUploadSubmissionQueryVariables
+  >
+) {
+  const options = { ...defaultOptions, ...baseOptions };
+  return Apollo.useLazyQuery<
+    GetUploadSubmissionQuery,
+    GetUploadSubmissionQueryVariables
+  >(GetUploadSubmissionDocument, options);
+}
+export type GetUploadSubmissionQueryHookResult = ReturnType<
+  typeof useGetUploadSubmissionQuery
+>;
+export type GetUploadSubmissionLazyQueryHookResult = ReturnType<
+  typeof useGetUploadSubmissionLazyQuery
+>;
+export type GetUploadSubmissionQueryResult = Apollo.QueryResult<
+  GetUploadSubmissionQuery,
+  GetUploadSubmissionQueryVariables
 >;
 export const GetUploadSubmissionsDocument = gql`
   query GetUploadSubmissions(

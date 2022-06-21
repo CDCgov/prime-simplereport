@@ -53,6 +53,11 @@ const QueueBatchedTestEventPublisher: AzureFunction = async function (
     });
   }
 
+  if (parseSuccessCount < 1) {
+    context.log(`Successfully parsed message count of ${parseSuccessCount} is less than 1; aborting`);
+    return;
+  }
+
   const uploadStart = new Date().getTime();
   context.log(
     `Starting upload of ${parseSuccessCount} records to ReportStream`
