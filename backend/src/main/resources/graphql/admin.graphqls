@@ -20,7 +20,15 @@ extend type Mutation {
     organizationExternalId: String!
     role: Role!
   ): User
-  createOrganization(
+  createApiUserNoOkta(
+    name: NameInput
+    firstName: String
+    middleName: String
+    lastName: String
+    suffix: String
+    email: String
+  ): ApiUser
+    createOrganization(
     name: String!
     type: String!
     externalId: String!

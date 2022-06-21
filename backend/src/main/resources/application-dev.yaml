@@ -25,3 +25,5 @@ logging:
     gov.cdc.usds: DEBUG
 twilio:
   enabled: false
+datahub:
+  url: "https://staging.prime.cdc.gov/"

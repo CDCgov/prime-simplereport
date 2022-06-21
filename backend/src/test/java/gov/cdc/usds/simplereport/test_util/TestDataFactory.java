@@ -18,6 +18,7 @@ import gov.cdc.usds.simplereport.db.model.SpecimenType;
 import gov.cdc.usds.simplereport.db.model.SupportedDisease;
 import gov.cdc.usds.simplereport.db.model.TestEvent;
 import gov.cdc.usds.simplereport.db.model.TestOrder;
+import gov.cdc.usds.simplereport.db.model.TestResultUpload;
 import gov.cdc.usds.simplereport.db.model.auxiliary.AskOnEntrySurvey;
 import gov.cdc.usds.simplereport.db.model.auxiliary.PersonName;
 import gov.cdc.usds.simplereport.db.model.auxiliary.PersonName_;
@@ -28,6 +29,7 @@ import gov.cdc.usds.simplereport.db.model.auxiliary.StreetAddress;
 import gov.cdc.usds.simplereport.db.model.auxiliary.TestCorrectionStatus;
 import gov.cdc.usds.simplereport.db.model.auxiliary.TestResult;
 import gov.cdc.usds.simplereport.db.model.auxiliary.TestResultDeliveryPreference;
+import gov.cdc.usds.simplereport.db.model.auxiliary.UploadStatus;
 import gov.cdc.usds.simplereport.db.repository.DeviceSpecimenTypeRepository;
 import gov.cdc.usds.simplereport.db.repository.DeviceTypeRepository;
 import gov.cdc.usds.simplereport.db.repository.FacilityRepository;
@@ -44,8 +46,11 @@ import gov.cdc.usds.simplereport.db.repository.SpecimenTypeRepository;
 import gov.cdc.usds.simplereport.db.repository.SupportedDiseaseRepository;
 import gov.cdc.usds.simplereport.db.repository.TestEventRepository;
 import gov.cdc.usds.simplereport.db.repository.TestOrderRepository;
+import gov.cdc.usds.simplereport.db.repository.TestResultUploadRepository;
 import gov.cdc.usds.simplereport.idp.repository.DemoOktaRepository;
 import gov.cdc.usds.simplereport.service.DiseaseService;
+import gov.cdc.usds.simplereport.service.model.reportstream.FeedbackMessage;
+import java.lang.reflect.Array;
 import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.Collections;
@@ -89,6 +94,7 @@ public class TestDataFactory {
   @Autowired private SupportedDiseaseRepository _supportedDiseaseRepo;
   @Autowired private ResultRepository _resultRepository;
   @Autowired private DemoOktaRepository _oktaRepo;
+  @Autowired private TestResultUploadRepository _testResultUploadRepo;
   @Autowired private DiseaseService _diseaseService;
 
   public Organization createValidOrg(
@@ -327,6 +333,15 @@ public class TestDataFactory {
   public PhoneNumber addPhoneNumberToPerson(Person p, PhoneNumber pn) {
     pn.setPerson(p);
     return _phoneNumberRepo.save(pn);
+  }
+
+  public TestResultUpload createTestResultUpload(
+      UUID reportId, UploadStatus status, Organization organization) {
+    var warnings = (FeedbackMessage[]) Array.newInstance(FeedbackMessage.class, 0);
+    var errors = (FeedbackMessage[]) Array.newInstance(FeedbackMessage.class, 0);
+    var upload = new TestResultUpload(reportId, status, 0, organization, warnings, errors);
+    var saved = _testResultUploadRepo.save(upload);
+    return saved;
   }
 
   public TestOrder createTestOrder(Person p, Facility f) {

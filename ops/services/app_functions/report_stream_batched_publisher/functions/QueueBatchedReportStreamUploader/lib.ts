@@ -9,6 +9,7 @@ import * as csvStringify from "csv-stringify/lib/sync";
 import { ENV, uploaderVersion } from "../config";
 import fetch, { Headers } from "node-fetch";
 import {
+  ReportStreamError,
   ReportStreamResponse,
   SimpleReportReportStreamResponse,
 } from "./rs-response";
@@ -181,22 +182,24 @@ export async function reportExceptions(
 ) {
   context.log(`ReportStream response errors: ${response.errorCount}`);
   context.log(`ReportStream response warnings: ${response.warningCount}`);
-  const payloads: SimpleReportReportStreamResponse[] = response.warnings
-    .map(({ id, details }) => ({
-      testEventInternalId: id,
-      isError: false,
-      details,
-    }))
-    .concat(
-      response.errors.map(({ id, details }) => ({
-        testEventInternalId: id,
-        isError: true,
-        details,
-      }))
-    );
+  const payloads: SimpleReportReportStreamResponse[] = response.warnings.flatMap(w => responsesFrom(context, w, false))
+      .concat(response.errors.flatMap(e => responsesFrom(context, e, true)));
   return Promise.all(
     payloads.map((p) =>
       queueClient.sendMessage(Buffer.from(JSON.stringify(p)).toString("base64"))
     )
   );
 }
+
+const responsesFrom = function(context: Context, err: ReportStreamError, isError: boolean):SimpleReportReportStreamResponse[] {
+  if (err.trackingIds) {
+    return err.trackingIds.map(id => ({
+      testEventInternalId: id,
+      isError,
+      details: err.message
+    }));
+  } else {
+    context.log(`ReportStream response ${err.scope} ${isError ? "error" : "warning"}: ${err.message}`);
+    return [];
+  }
+};

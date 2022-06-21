@@ -952,9 +952,7 @@ describe("QueueItem", () => {
     });
   });
   describe("when a multiplex device is chosen", () => {
-    let editQueueMockIsDone = false;
     beforeEach(() => {
-      editQueueMockIsDone = false;
       const selectedTestResults: MultiplexResult[] = [
         {
           disease: { name: "COVID-19" },
@@ -982,8 +980,6 @@ describe("QueueItem", () => {
             },
           },
           result: () => {
-            editQueueMockIsDone = true;
-
             return {
               data: {
                 editQueueItemMultiplex: {
@@ -1034,8 +1030,6 @@ describe("QueueItem", () => {
             },
           },
           result: () => {
-            editQueueMockIsDone = true;
-
             return {
               data: {
                 editQueueItemMultiplex: {
@@ -1086,8 +1080,6 @@ describe("QueueItem", () => {
             },
           },
           result: () => {
-            editQueueMockIsDone = true;
-
             return {
               data: {
                 editQueueItemMultiplex: {
