@@ -85,20 +85,40 @@ resource "azurerm_web_application_firewall_policy" "sr_waf_policy" {
       selector                = "iss"
       selector_match_operator = "Equals"
     }
+    exclusion {
+        match_variable = "RequestCookieNames"
+        operator       = "Equals"
+        selector       = "ssm_au"
+    }
+    exclusion {
+        match_variable = "RequestCookieNames"
+        operator       = "Equals"
+        selector       = "ssm_au_c"
+    }
 
     exclusion {
       match_variable          = "RequestArgNames"
-      selector                = "street"  //Will need to turn on 942440 and 942110 if not effective.
-      selector_match_operator = "Equals"
+      selector                = "street"
+      selector_match_operator = "Contains"
     }
     exclusion {
       match_variable          = "RequestArgNames"
-      selector                = "iss"  //Will need to turn on 942440 and 942110 if not effective.
-      selector_match_operator = "Equals"
+      selector                = "phoneNumbers"
+      selector_match_operator = "Contains"
+    }
+    exclusion {
+      match_variable          = "RequestArgNames"
+      selector                = "phoneNumbers"
+      selector_match_operator = "number"
     }
     exclusion {
       match_variable          = "RequestArgNames"
       selector                = "iss"
+      selector_match_operator = "Equals"
+    }
+    exclusion {
+      match_variable          = "RequestArgNames"
+      selector                = "namePrefixMatch"
       selector_match_operator = "Equals"
     }
 
@@ -133,15 +153,12 @@ resource "azurerm_web_application_firewall_policy" "sr_waf_policy" {
       rule_group_override {
         rule_group_name = "REQUEST-942-APPLICATION-ATTACK-SQLI"
         disabled_rules = [
-          "942110",
           "942150",
           "942190",
           "942200",
           "942260",
-          "942330",
           "942410",
-          "942430",
-          "942440"
+          "942430"
         ]
       }
     }
