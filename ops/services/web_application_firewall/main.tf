@@ -78,6 +78,17 @@ resource "azurerm_web_application_firewall_policy" "sr_waf_policy" {
       selector_match_operator = "Equals"
     }
 
+    exclusion {
+      match_variable          = "RequestArgNames"
+      selector                = "street"  //Will need to turn on 942440 and 942110 if not effective.
+      selector_match_operator = "Equals"
+    }
+    exclusion {
+      match_variable          = "RequestArgNames"
+      selector                = "namePrefixMatch" //Will need to turn on 942330 if not effective
+      selector_match_operator = "Equals"
+    }
+
     managed_rule_set {
       type    = "OWASP"
       version = "3.2"
