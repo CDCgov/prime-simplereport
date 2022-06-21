@@ -319,7 +319,9 @@ const QueueItem = ({
     return dateTested > EARLIEST_TEST_DATE && dateTested < new Date();
   }
 
-  const diseaseResults = convertFromMultiplexResponse(selectedTestResults);
+  const diseaseResultsRef = useRef<DiseaseResult[]>([]);
+  diseaseResultsRef.current = convertFromMultiplexResponse(selectedTestResults);
+  const diseaseResults = diseaseResultsRef.current;
   const covidResult = findResultByDiseaseName(diseaseResults, "COVID-19");
   const [confirmationType, setConfirmationType] = useState<
     "submitResult" | "removeFromQueue" | "none"
@@ -483,7 +485,7 @@ const QueueItem = ({
   const DEBOUNCE_TIME = 300;
 
   useEffect(() => {
-    const results = Object.assign([], diseaseResults);
+    const results = Object.assign([], diseaseResultsRef.current);
 
     let debounceTimer: ReturnType<typeof setTimeout>;
     if (!isMounted.current) {
@@ -504,7 +506,13 @@ const QueueItem = ({
       clearTimeout(debounceTimer);
       setSaveState("idle");
     };
-  }, [deviceId, deviceSpecimenTypeId, dateTested, updateQueueItem]);
+  }, [
+    deviceId,
+    deviceSpecimenTypeId,
+    dateTested,
+    updateQueueItem,
+    diseaseResultsRef,
+  ]);
 
   const onTestResultChange = (resultsFromForm: DiseaseResult[]) => {
     editQueueItem({
