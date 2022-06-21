@@ -179,6 +179,9 @@ const QueueItem = ({
 }: QueueItemProps) => {
   const appInsights = getAppInsights();
   const navigate = useNavigate();
+  const multiplexFlag = JSON.parse(
+    process.env.REACT_APP_MULTIPLEX_ENABLED || "false"
+  );
 
   const trackRemovePatientFromQueue = () => {
     if (appInsights) {
@@ -233,6 +236,7 @@ const QueueItem = ({
 
     let supportsMultipleDiseases;
     if (
+      multiplexFlag &&
       deviceSpecimenType.deviceType.supportedDiseases.filter(
         (d: any) => d.name !== "COVID-19"
       ).length > 0
@@ -246,7 +250,7 @@ const QueueItem = ({
     updateDeviceId(deviceSpecimenType.deviceType.internalId);
     updateSpecimenId(deviceSpecimenType.specimenType.internalId);
     updateSupportsMultipleDiseases(supportsMultipleDiseases);
-  }, [deviceSpecimenTypes, deviceSpecimenTypeId]);
+  }, [deviceSpecimenTypes, deviceSpecimenTypeId, multiplexFlag]);
 
   const testCardElement = useRef() as React.MutableRefObject<HTMLDivElement>;
 
@@ -940,7 +944,7 @@ const QueueItem = ({
                   )}
                 </AreYouSure>
               )}
-              {supportsMultipleDiseases ? (
+              {multiplexFlag && supportsMultipleDiseases ? (
                 <MultiplexResultInputForm
                   queueItemId={internalId}
                   testResults={cacheTestResults}

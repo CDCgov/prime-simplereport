@@ -166,6 +166,26 @@ describe("TestResultInputForm", () => {
     userEvent.click(screen.getByText("Submit"));
     expect(onSubmitFn).toHaveBeenCalledTimes(0);
   });
+  it("should display submit button as disabled when diseases have a weird mix of UNDETERMINED an set values", () => {
+    render(
+      <MultiplexResultInputForm
+        queueItemId={"5d315d18-82f8-4025-a051-1a509e15c880"}
+        testResults={[
+          {
+            diseaseName: "COVID-19",
+            testResult: "POSITIVE",
+          },
+          { diseaseName: "Flu A", testResult: "UNDETERMINED" },
+          { diseaseName: "Flu B", testResult: "UNDETERMINED" },
+        ]}
+        onChange={onChangeFn}
+        onSubmit={onSubmitFn}
+      />
+    );
+    expect(screen.getByText("Submit")).toBeDisabled();
+    userEvent.click(screen.getByText("Submit"));
+    expect(onSubmitFn).toHaveBeenCalledTimes(0);
+  });
   it("should send results marked as inconclusive when checkbox is checked", async () => {
     render(
       <MultiplexResultInputForm
@@ -194,6 +214,39 @@ describe("TestResultInputForm", () => {
     userEvent.click(screen.getByLabelText("inconclusive", { exact: false }));
     expect(onChangeFn).toHaveBeenCalledWith([
       { diseaseName: "COVID-19", testResult: "UNDETERMINED" },
+      { diseaseName: "Flu A", testResult: "UNDETERMINED" },
+      { diseaseName: "Flu B", testResult: "UNDETERMINED" },
+    ]);
+  });
+  it("should submit correct test values when inconclusive checkbox is checked but user switches to positive/negative result", async () => {
+    render(
+      <MultiplexResultInputForm
+        queueItemId={"5d315d18-82f8-4025-a051-1a509e15c880"}
+        testResults={[
+          { diseaseName: "COVID-19", testResult: "UNDETERMINED" },
+          { diseaseName: "Flu A", testResult: "UNDETERMINED" },
+          { diseaseName: "Flu B", testResult: "UNDETERMINED" },
+        ]}
+        onChange={onChangeFn}
+        onSubmit={onSubmitFn}
+      />
+    );
+
+    expect(
+      screen.getByRole("checkbox", { name: /mark test as inconclusive/i })
+    ).toBeChecked();
+    expect(screen.getAllByLabelText("Positive (+)")[0]).not.toBeChecked();
+    expect(screen.getAllByLabelText("Positive (+)")[1]).not.toBeChecked();
+    expect(screen.getAllByLabelText("Positive (+)")[2]).not.toBeChecked();
+    expect(screen.getAllByLabelText("Negative (-)")[0]).not.toBeChecked();
+    expect(screen.getAllByLabelText("Negative (-)")[1]).not.toBeChecked();
+    expect(screen.getAllByLabelText("Negative (-)")[2]).not.toBeChecked();
+    userEvent.click(
+      screen.getAllByRole("radio", { name: /positive \(\+\)/i })[0]
+    );
+
+    expect(onChangeFn).toHaveBeenCalledWith([
+      { diseaseName: "COVID-19", testResult: "POSITIVE" },
       { diseaseName: "Flu A", testResult: "UNDETERMINED" },
       { diseaseName: "Flu B", testResult: "UNDETERMINED" },
     ]);
