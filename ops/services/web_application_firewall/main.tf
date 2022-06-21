@@ -98,27 +98,7 @@ resource "azurerm_web_application_firewall_policy" "sr_waf_policy" {
 
     exclusion {
       match_variable          = "RequestArgNames"
-      selector                = "street"
-      selector_match_operator = "Contains"
-    }
-    exclusion {
-      match_variable          = "RequestArgNames"
-      selector                = "phoneNumbers"
-      selector_match_operator = "Contains"
-    }
-    exclusion {
-      match_variable          = "RequestArgNames"
-      selector                = "phoneNumbers"
-      selector_match_operator = "number"
-    }
-    exclusion {
-      match_variable          = "RequestArgNames"
       selector                = "iss"
-      selector_match_operator = "Equals"
-    }
-    exclusion {
-      match_variable          = "RequestArgNames"
-      selector                = "namePrefixMatch"
       selector_match_operator = "Equals"
     }
 
@@ -153,12 +133,15 @@ resource "azurerm_web_application_firewall_policy" "sr_waf_policy" {
       rule_group_override {
         rule_group_name = "REQUEST-942-APPLICATION-ATTACK-SQLI"
         disabled_rules = [
+          "942110",
           "942150",
           "942190",
           "942200",
           "942260",
+          "942330",
           "942410",
-          "942430"
+          "942430",
+          "942440"
         ]
       }
     }
