@@ -62,15 +62,47 @@ resource "azurerm_web_application_firewall_policy" "sr_waf_policy" {
   }
 
   managed_rules {
+
+    /*
+     * Exclusions for specific request components.
+     * Azure supports three specific values for match_variable:
+     *  - RequestArgNames
+     *  - RequestCookieNames
+     *  - RequestHeaderNames
+     */
     exclusion {
       match_variable          = "RequestCookieNames"
-      selector                = "ai_session"
+      selector                = "ai_session" //Part of Azure Application Insights
       selector_match_operator = "StartsWith"
     }
+    exclusion {
+      match_variable          = "RequestCookieNames"
+      selector                = "ai_user" //Part of Azure Application Insights
+      selector_match_operator = "StartsWith"
+    }
+    exclusion {
+      match_variable          = "RequestCookieNames"
+      selector                = "iss"
+      selector_match_operator = "Equals"
+    }
+
+    exclusion {
+      match_variable          = "RequestArgNames"
+      selector                = "iss"
+      selector_match_operator = "Equals"
+    }
+
     managed_rule_set {
       type    = "OWASP"
       version = "3.2"
 
+      /*
+       * Each rule group in the OWASP ruleset can be overridden. These blocks contain a list of
+       * rules within each specific group that we've chosen to override, due to how the application
+       * is structured.
+       *
+       * These rules should be periodically reviewed for relevance.
+       */
       rule_group_override {
         rule_group_name = "REQUEST-920-PROTOCOL-ENFORCEMENT" //TODO: add exception for whoami
         disabled_rules = [
@@ -91,9 +123,15 @@ resource "azurerm_web_application_firewall_policy" "sr_waf_policy" {
       rule_group_override {
         rule_group_name = "REQUEST-942-APPLICATION-ATTACK-SQLI"
         disabled_rules = [
+          "942110",
+          "942150",
+          "942190",
           "942200",
           "942260",
-          "942430"
+          "942330",
+          "942410",
+          "942430",
+          "942440"
         ]
       }
     }

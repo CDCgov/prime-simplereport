@@ -37,8 +37,8 @@ import gov.cdc.usds.simplereport.db.repository.TestEventRepository;
 import gov.cdc.usds.simplereport.db.repository.TestOrderRepository;
 import java.time.LocalDate;
 import java.util.ArrayList;
+import java.util.Comparator;
 import java.util.Date;
-import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Objects;
@@ -315,16 +315,8 @@ public class TestOrderService {
               : new TestEvent(order, order.getCorrectionStatus(), order.getReasonForCorrection());
 
       TestEvent savedEvent = _terepo.save(testEvent);
-
-      if (order.getCorrectionStatus() == TestCorrectionStatus.ORIGINAL) {
-        resultEntity.setTestEvent(savedEvent);
-        _resultRepo.save(resultEntity);
-      } else {
-        // Create copy of the Result for corrections
-        Result copyResult = new Result(resultEntity, savedEvent);
-        _resultRepo.save(copyResult);
-      }
-
+      resultEntity.setTestEvent(savedEvent);
+      _resultRepo.save(resultEntity);
       order.setTestEventRef(savedEvent);
       savedOrder = _repo.save(order);
       _testEventReportingService.report(savedEvent);
@@ -508,14 +500,15 @@ public class TestOrderService {
   private Result updateTestOrderCovidResult(TestOrder order, TestResult result) {
     // Remove setResultsColumn as part of #3664
     order.setResultColumn(result);
-    Optional<Result> covidResult = order.getResultForDisease(_diseaseService.covid());
-    if (covidResult.isPresent()) {
-      covidResult.get().setResult(result);
-      return _resultRepo.save(covidResult.get());
+    Optional<Result> pendingResult = _resultRepo.getPendingResult(order, _diseaseService.covid());
+    Result covidResult;
+    if (pendingResult.isPresent()) {
+      covidResult = pendingResult.get();
+      covidResult.setResult(result);
     } else {
-      Result resultEntity = new Result(order, _diseaseService.covid(), result);
-      return _resultRepo.save(resultEntity);
+      covidResult = new Result(order, _diseaseService.covid(), result);
     }
+    return _resultRepo.save(covidResult);
   }
 
   @Transactional
@@ -560,15 +553,23 @@ public class TestOrderService {
         new TestEvent(event, TestCorrectionStatus.REMOVED, reasonForCorrection);
     _terepo.save(newRemoveEvent);
 
-    // Create new Results for the new removed event
-    Set<Result> copiedResults = new HashSet<>();
-    order
-        .getResultSet()
+    // Get the most recent results for each disease
+    Map<SupportedDisease, Optional<Result>> latestResultsPerDisease =
+        order.getResultSet().stream()
+            .collect(
+                Collectors.groupingBy(
+                    Result::getDisease,
+                    Collectors.maxBy(Comparator.comparing(Result::getUpdatedAt))));
+
+    latestResultsPerDisease
+        .values()
         .forEach(
             result -> {
-              copiedResults.add(new Result(result, newRemoveEvent));
+              if (result.isPresent()) {
+                Result copyResult = new Result(result.get(), newRemoveEvent);
+                _resultRepo.save(copyResult);
+              }
             });
-    _resultRepo.saveAll(copiedResults);
 
     _testEventReportingService.report(newRemoveEvent);
 

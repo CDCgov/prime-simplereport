@@ -2,15 +2,14 @@ import { Provider } from "react-redux";
 import { MemoryRouter } from "react-router-dom";
 import { Meta, Story } from "@storybook/react";
 
-import { store } from "../../store";
-import { StoryGraphQLProvider } from "../../../stories/storyMocks";
-
-import Uploads from "./Uploads";
+import { store } from "../../app/store";
+import { StoryGraphQLProvider } from "../../stories/storyMocks";
+import Uploads from "../../app/testResults/uploads/Uploads";
 
 type Props = {};
 
 export default {
-  title: "Uploads",
+  title: "App/Test results/Upload CSV",
   component: Uploads,
   argTypes: {},
   args: {},

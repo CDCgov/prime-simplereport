@@ -7,9 +7,9 @@ interface ReportingDestination {
 }
 
 export interface ReportStreamError {
-  id: string;
-  scope: "ITEM" | "REPORT";
-  details: string;
+  scope: "item" | "report";
+  trackingIds?: string[];
+  message: string;
 }
 
 export interface ReportStreamResponse {

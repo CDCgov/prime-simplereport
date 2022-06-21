@@ -1,0 +1,60 @@
+
+.touchpoints-wrapper {
+  display: none;
+  // desktop width / same with that collapsible menu appears
+  @media (min-width: 1024px) {
+    display: block;
+    bottom: 0;
+    padding: 5px 10px;
+    position: fixed;
+    right: 12px;
+    z-index: 9999;
+  }
+}
+
+.mobile-sublist-container .touchpoints-wrapper {
+  display: block;
+}
+
+.sr-app-touchpoints-button:hover {
+  color: #fff;
+  background-color: #1a4480;
+  border-bottom: 0;
+  text-decoration: none;
+}
+
+.sr-app-touchpoints-button {
+
+  line-height: 0.9;
+  -moz-osx-font-smoothing: grayscale;
+  -webkit-font-smoothing: antialiased;
+  color: #fff;
+  background-color: #005ea2;
+  -webkit-appearance: none;
+  -moz-appearance: none;
+  appearance: none;
+  border: 0;
+  border-radius: 0.25rem;
+  cursor: pointer;
+  font-weight: 700;
+  padding: 0.75rem 1.25rem;
+  text-align: center;
+  text-decoration: none;
+
+  @media (min-width: 1024px) {
+    margin-right: 0.5rem;
+    border-bottom-left-radius: 0;
+    border-bottom-right-radius: 0;
+  }
+}
+
+@supports ((-webkit-mask: url()) or (mask: url())) {
+
+  // touchpoints banners had icons in the before pseudo element .
+  // when they shouldn't have removing them so that only the solid
+  // colors are there.
+  .wrapper .usa-alert::before {
+    -webkit-mask: none !important;
+    mask: none !important;
+  }
+}
