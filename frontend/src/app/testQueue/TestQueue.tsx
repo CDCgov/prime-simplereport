@@ -252,11 +252,8 @@ const TestQueue: React.FC<Props> = ({ activeFacilityId }) => {
 
           let selectedTestResults: MultiplexResult[];
 
-          if (
-            results.filter(
-              (r: MultiplexResult) => r.disease?.name === "COVID-19"
-            ).length < 1
-          ) {
+          // backwards compatibility
+          if (!results && result) {
             selectedTestResults = [
               { disease: { name: "COVID-19" }, testResult: result },
             ];

@@ -6,18 +6,23 @@ import React, {
   useState,
 } from "react";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
-import { gql, useMutation } from "@apollo/client";
+import { useMutation } from "@apollo/client";
 import Modal from "react-modal";
 import classnames from "classnames";
 import moment from "moment";
 import { useSelector } from "react-redux";
 import { useNavigate } from "react-router-dom";
 
-import { DiseaseResult } from "../../generated/graphql";
+import {
+  DiseaseResult,
+  useRemovePatientFromQueueMutation,
+  useEditQueueItemMultiplexMutation,
+  useSubmitTestResultMultiplexMutation,
+} from "../../generated/graphql";
 import Alert from "../commonComponents/Alert";
 import Button from "../commonComponents/Button/Button";
 import Dropdown from "../commonComponents/Dropdown";
-import TestResultInputForm from "../testResults/TestResultInputForm";
+import CovidResultInputForm from "../testResults/CovidResultInputForm";
 import { displayFullName, showNotification } from "../utils";
 import { RootState } from "../store";
 import { getAppInsights } from "../TelemetryService";
@@ -27,6 +32,7 @@ import {
   TestCorrectionReason,
   TestCorrectionReasons,
 } from "../testResults/TestResultCorrectionModal";
+import MultiplexResultInputForm from "../testResults/MultiplexResultInputForm";
 
 import { ALERT_CONTENT, QUEUE_NOTIFICATION_TYPES } from "./constants";
 import AskOnEntryTag, { areAnswersComplete } from "./AskOnEntryTag";
@@ -53,52 +59,6 @@ export interface MultiplexResult {
 
 const EARLIEST_TEST_DATE = new Date("01/01/2020 12:00:00 AM");
 
-export const REMOVE_PATIENT_FROM_QUEUE = gql`
-  mutation RemovePatientFromQueue($patientId: ID!) {
-    removePatientFromQueue(patientId: $patientId)
-  }
-`;
-
-export const EDIT_QUEUE_ITEM = gql`
-  mutation EditQueueItemMultiplex(
-    $id: ID!
-    $deviceId: String
-    $deviceSpecimenType: ID
-    $results: [DiseaseResult]
-    $dateTested: DateTime
-  ) {
-    editQueueItemMultiplex(
-      id: $id
-      deviceId: $deviceId
-      deviceSpecimenType: $deviceSpecimenType
-      results: $results
-      dateTested: $dateTested
-    ) {
-      results {
-        disease {
-          name
-        }
-        testResult
-      }
-      dateTested
-      deviceType {
-        internalId
-        testLength
-      }
-      deviceSpecimenType {
-        internalId
-        deviceType {
-          internalId
-          testLength
-        }
-        specimenType {
-          internalId
-        }
-      }
-    }
-  }
-`;
-
 interface EditQueueItemParams {
   id: string;
   deviceId?: string;
@@ -106,38 +66,6 @@ interface EditQueueItemParams {
   results?: DiseaseResult[];
   dateTested?: string;
 }
-
-interface EditQueueItemResponse {
-  editQueueItemMultiplex: {
-    results: MultiplexResult[];
-    dateTested: string;
-    deviceType: { internalId: string; testLength: number };
-    deviceSpecimenType: DeviceSpecimenType;
-  };
-}
-
-export const SUBMIT_TEST_RESULT = gql`
-  mutation SubmitTestResultMultiplex(
-    $patientId: ID!
-    $deviceId: String!
-    $deviceSpecimenType: ID
-    $results: [DiseaseResult]!
-    $dateTested: DateTime
-  ) {
-    addTestResultMultiplex(
-      patientId: $patientId
-      deviceId: $deviceId
-      deviceSpecimenType: $deviceSpecimenType
-      results: $results
-      dateTested: $dateTested
-    ) {
-      testResult {
-        internalId
-      }
-      deliverySuccess
-    }
-  }
-`;
 
 interface AreYouSureProps {
   cancelText: string;
@@ -175,6 +103,23 @@ const AreYouSure: React.FC<AreYouSureProps> = ({
     </div>
   </Modal>
 );
+
+export const findResultByDiseaseName = (
+  results: DiseaseResult[],
+  name: string
+) =>
+  results.find((r: DiseaseResult) => r.diseaseName === name)?.testResult ??
+  null;
+
+const convertFromMultiplexResponse = (
+  responseResult: MultiplexResult[]
+): DiseaseResult[] => {
+  const diseaseResults: DiseaseResult[] = responseResult.map((result) => ({
+    diseaseName: result.disease.name,
+    testResult: result.testResult,
+  }));
+  return diseaseResults;
+};
 
 if (process.env.NODE_ENV !== "test") {
   Modal.setAppElement("#root");
@@ -252,13 +197,13 @@ const QueueItem = ({
   };
 
   const [mutationError, updateMutationError] = useState(null);
-  const [removePatientFromQueue] = useMutation(REMOVE_PATIENT_FROM_QUEUE);
-  const [submitTestResult, { loading }] = useMutation(SUBMIT_TEST_RESULT);
+  const [removePatientFromQueue] = useRemovePatientFromQueueMutation();
+  const [
+    submitTestResult,
+    { loading },
+  ] = useSubmitTestResultMultiplexMutation();
   const [updateAoe] = useMutation(UPDATE_AOE);
-  const [editQueueItem] = useMutation<
-    EditQueueItemResponse,
-    EditQueueItemParams
-  >(EDIT_QUEUE_ITEM);
+  const [editQueueItem] = useEditQueueItemMultiplexMutation();
 
   const [saveState, setSaveState] = useState<SaveState>("idle");
 
@@ -295,8 +240,6 @@ const QueueItem = ({
       supportsMultipleDiseases = true;
     } else {
       supportsMultipleDiseases = false;
-      updateFluAResult(undefined);
-      updateFluBResult(undefined);
     }
 
     updateDeviceSpecimenTypeId(deviceSpecimenType.internalId);
@@ -376,21 +319,8 @@ const QueueItem = ({
     return dateTested > EARLIEST_TEST_DATE && dateTested < new Date();
   }
 
-  const findResultByName = (results: MultiplexResult[], name: string) =>
-    results.find((r: MultiplexResult) => r.disease?.name === name)?.testResult;
-
-  const [covidResult, updateCovidResult] = useState<TestResult | undefined>(
-    findResultByName(selectedTestResults, "COVID-19") || undefined
-  );
-
-  const [fluAResult, updateFluAResult] = useState<TestResult | undefined>(
-    findResultByName(selectedTestResults, "Flu A") || undefined
-  );
-
-  const [fluBResult, updateFluBResult] = useState<TestResult | undefined>(
-    findResultByName(selectedTestResults, "Flu B") || undefined
-  );
-
+  const diseaseResults = convertFromMultiplexResponse(selectedTestResults);
+  const covidResult = findResultByDiseaseName(diseaseResults, "COVID-19");
   const [confirmationType, setConfirmationType] = useState<
     "submitResult" | "removeFromQueue" | "none"
   >("none");
@@ -456,14 +386,8 @@ const QueueItem = ({
     }
     setConfirmationType("none");
     try {
-      const results: DiseaseResult[] = [
-        { diseaseName: "COVID-19", testResult: covidResult },
-      ];
-      covidResult && results.push();
-      fluAResult &&
-        results.push({ diseaseName: "Flu A", testResult: fluAResult });
-      fluBResult &&
-        results.push({ diseaseName: "Flu B", testResult: fluBResult });
+      const results = Object.assign([], diseaseResults);
+
       const result = await submitTestResult({
         variables: {
           patientId: patient.internalId,
@@ -478,7 +402,6 @@ const QueueItem = ({
       removeTimer(internalId);
       setStartTestPatientId(null);
     } catch (error: any) {
-      console.log(error);
       setSaveState("error");
       updateMutationError(error);
     }
@@ -486,11 +409,6 @@ const QueueItem = ({
 
   const updateQueueItem = useCallback(
     (props: updateQueueItemProps) => {
-      const updateMultiplexResults = (results: MultiplexResult[]) => {
-        updateCovidResult(findResultByName(results, "COVID-19"));
-        updateFluAResult(findResultByName(results, "Flu A"));
-        updateFluBResult(findResultByName(results, "Flu B"));
-      };
       return editQueueItem({
         variables: {
           id: internalId,
@@ -503,20 +421,17 @@ const QueueItem = ({
         .then((response) => {
           if (!response.data) throw Error("updateQueueItem null response");
           updateDeviceSpecimenTypeId(
-            response.data.editQueueItemMultiplex.deviceSpecimenType.internalId
+            response?.data?.editQueueItemMultiplex?.deviceSpecimenType
+              ?.internalId ?? ""
           );
-          updateMultiplexResults(
-            response.data.editQueueItemMultiplex.results || undefined
-          );
-
           updateTimer(
             internalId,
-            response.data.editQueueItemMultiplex.deviceSpecimenType.deviceType
-              .testLength as number
+            response?.data?.editQueueItemMultiplex?.deviceSpecimenType
+              ?.deviceType.testLength as number
           );
           updateDeviceTestLength(
-            response.data.editQueueItemMultiplex.deviceSpecimenType.deviceType
-              .testLength as number
+            (response?.data?.editQueueItemMultiplex?.deviceSpecimenType
+              ?.deviceType?.testLength as number) ?? 0
           );
         })
         .catch(updateMutationError);
@@ -565,15 +480,11 @@ const QueueItem = ({
   };
 
   const isMounted = useRef(false);
-  const DEBOUNCE_TIME = 500;
+  const DEBOUNCE_TIME = 300;
+
   useEffect(() => {
-    const results: DiseaseResult[] = [];
-    covidResult &&
-      results.push({ diseaseName: "COVID-19", testResult: covidResult });
-    fluAResult &&
-      results.push({ diseaseName: "Flu A", testResult: fluAResult });
-    fluBResult &&
-      results.push({ diseaseName: "Flu B", testResult: fluBResult });
+    const results = Object.assign([], diseaseResults);
+
     let debounceTimer: ReturnType<typeof setTimeout>;
     if (!isMounted.current) {
       isMounted.current = true;
@@ -593,27 +504,24 @@ const QueueItem = ({
       clearTimeout(debounceTimer);
       setSaveState("idle");
     };
-  }, [
-    deviceId,
-    deviceSpecimenTypeId,
-    dateTested,
-    covidResult,
-    fluAResult,
-    fluBResult,
-    updateQueueItem,
-  ]);
+  }, [deviceId, deviceSpecimenTypeId, dateTested, updateQueueItem]);
 
-  const onTestResultChange = (diseaseName: string) => {
-    switch (diseaseName) {
-      case "COVID-19":
-        return (result: TestResult | undefined) => updateCovidResult(result);
-      case "Flu A":
-        return (result: TestResult | undefined) => updateFluAResult(result);
-      case "Flu B":
-        return (result: TestResult | undefined) => updateFluBResult(result);
-      default:
-        return (_result: TestResult | undefined) => {};
-    }
+  const onTestResultChange = (resultsFromForm: DiseaseResult[]) => {
+    editQueueItem({
+      variables: {
+        id: internalId,
+        deviceId: deviceId,
+        results: resultsFromForm,
+        dateTested: dateTested,
+        deviceSpecimenType: selectedDeviceSpecimenTypeId,
+      } as EditQueueItemParams,
+    })
+      .then(() => {
+        refetchQueue();
+      })
+      .catch(() => {
+        // do not inform users that the unofficial test result was not saved
+      });
   };
 
   const removeFromQueue = () => {
@@ -623,7 +531,7 @@ const QueueItem = ({
     }
     removePatientFromQueue({
       variables: {
-        patientId: removePatientId,
+        patientId: removePatientId ?? "",
       },
     })
       .then(() => refetchQueue())
@@ -662,7 +570,7 @@ const QueueItem = ({
         patientId: patient.internalId,
       },
     })
-      .then(refetchQueue)
+      .then(() => refetchQueue())
       .catch(updateMutationError);
   };
 
@@ -827,7 +735,7 @@ const QueueItem = ({
               </div>
               <div className="margin-top-2 margin-left-2 margin-bottom-2">
                 <div className="grid-row">
-                  <div className="grid-col-4 flex-col-container padding-right-2">
+                  <div className="grid-col flex-col-container padding-right-2">
                     <Button
                       variant="unstyled"
                       label="Test questionnaire"
@@ -847,7 +755,7 @@ const QueueItem = ({
                     </div>
                   </div>
 
-                  <div className="flex-col-container">
+                  <div className="tablet:grid-col-9 grid-col-7-sm flex-col-container">
                     <div
                       className={classnames(
                         saveState === "error" && "queue-item-error-message"
@@ -1008,18 +916,27 @@ const QueueItem = ({
                   )}
                 </AreYouSure>
               )}
-              <TestResultInputForm
-                queueItemId={internalId}
-                covidResult={covidResult}
-                fluAResult={fluAResult}
-                fluBResult={fluBResult}
-                supportsMultipleDiseases={supportsMultipleDiseases}
-                isSubmitDisabled={
-                  loading || saveState === "editing" || saveState === "saving"
-                }
-                onSubmit={onTestResultSubmit}
-                onTestResultChange={onTestResultChange}
-              />
+              {supportsMultipleDiseases ? (
+                <MultiplexResultInputForm
+                  queueItemId={internalId}
+                  testResults={diseaseResults}
+                  isSubmitDisabled={
+                    loading || saveState === "editing" || saveState === "saving"
+                  }
+                  onSubmit={onTestResultSubmit}
+                  onChange={onTestResultChange}
+                />
+              ) : (
+                <CovidResultInputForm
+                  queueItemId={internalId}
+                  testResults={diseaseResults}
+                  isSubmitDisabled={
+                    loading || saveState === "editing" || saveState === "saving"
+                  }
+                  onSubmit={onTestResultSubmit}
+                  onChange={onTestResultChange}
+                />
+              )}
             </div>
           </div>
         </div>

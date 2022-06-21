@@ -127,7 +127,28 @@
   }
 }
 
-.prime-test-result-submit .usa-button {
-  float: right;
-  width: unset !important;
+.prime-test-result-submit {
+  align-items: center;
+
+  .usa-button.prime-multiplex-btn {
+    width: 100px;
+  }
+
+  div.usa-form-group {
+    margin-top: 0;
+  }
+
+  .usa-tooltip {
+    margin-right: 7px;
+
+    .usa-tooltip__body {
+      right: 20px;
+
+      @media (max-width: 619px) {
+        right: -100px;
+        bottom: 8px;
+        width: calc(100% - 60px);
+      }
+    }
+  }
 }

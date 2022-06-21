@@ -10,10 +10,13 @@ import { MemoryRouter } from "react-router-dom";
 import { Provider } from "react-redux";
 import configureStore, { MockStoreEnhanced } from "redux-mock-store";
 
-import { GetFacilityQueueMultiplexDocument } from "../../generated/graphql";
+import {
+  GetFacilityQueueMultiplexDocument,
+  RemovePatientFromQueueDocument,
+} from "../../generated/graphql";
 
 import TestQueue from "./TestQueue";
-import { REMOVE_PATIENT_FROM_QUEUE } from "./QueueItem";
+// import { useRemovePatientFromQueueDocyment } from "./QueueItem";
 import { QUERY_PATIENT } from "./addToQueue/AddToQueueSearch";
 
 jest.mock("@microsoft/applicationinsights-react-js", () => {
@@ -425,7 +428,7 @@ const mocks = [
   },
   {
     request: {
-      query: REMOVE_PATIENT_FROM_QUEUE,
+      query: RemovePatientFromQueueDocument,
       variables: {
         patientId: "abc",
       },
