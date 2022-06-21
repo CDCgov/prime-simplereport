@@ -86,14 +86,14 @@ resource "azurerm_web_application_firewall_policy" "sr_waf_policy" {
       selector_match_operator = "Equals"
     }
     exclusion {
-      match_variable = "RequestCookieNames"
-      operator       = "Equals"
-      selector       = "ssm_au"
+      match_variable          = "RequestCookieNames"
+      selector                = "ssm_au"
+      selector_match_operator = "Equals"
     }
     exclusion {
-      match_variable = "RequestCookieNames"
-      operator       = "Equals"
-      selector       = "ssm_au_c"
+      match_variable          = "RequestCookieNames"
+      selector                = "ssm_au_c"
+      selector_match_operator = "Equals"
     }
 
     exclusion {
