@@ -21,17 +21,31 @@ def company(result):
 def email(result):
     return [[oid, result['faker'].unique.email()] for oid in range(result['lines'])]
 
-def lorem_ipsum(result):
-    return [[oid, result['faker'].unique.paragraph(nb_sentences=8)] for oid in range(result['lines'])]
+def skylight_admin_email(result):
+    emails = [""]
+    # if emails is less than lines (which is the number of records in our database), add more emails
+    # This is temporary, until we can pull emails from Okta
+    if len(emails) < result['lines']:
+        for i in range(result['lines'] - len(emails)):
+            emails.append(emails[0] + str(i))
+    return [[oid + 1, emails[oid]] for oid in range(result['lines'])]
 
+def skylight_valid_organization_external_id(result):
+    orgs = [""]
+    # if orgs is less than lines (which is the number of records in our database), add more orgs
+    # This is temporary, until we can pull orgs from Okta
+    if len(orgs) < result['lines']:
+        for i in range(result['lines'] - len(orgs)):
+            orgs.append(orgs[0] + str(i))
+    return [[oid + 1, orgs[oid]] for oid in range(result['lines'])]
 
 def postcode(result):
     return [[oid, result['faker'].unique.postcode()] for oid in range(result['lines'])]
 
 def main(args):
     generator_methods = [
-        'street_name', 'address', 'city', 'company', 'country', 'email', 
-        'first_name', 'iban', 'last_name', 'lorem_ipsum', 'postcode', 'siret'
+        'skylight_admin_email', 'skylight_valid_organization_external_id',
+        'address', 'city', 'company', 'email', 'postcode'
     ]
     parser = argparse.ArgumentParser()
     parser.add_argument(
@@ -45,10 +59,6 @@ def main(args):
         help='Number of rows to add to the table',
         type=int,
         default=1000
-    )
-    parser.add_argument(
-        '--seed',
-        help='Initializes the random generator'
     )
     parsed_args = parser.parse_args(args)
     requirements = dict();

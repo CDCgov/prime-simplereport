@@ -12,9 +12,14 @@
     "locust": "./start.sh -l",
     "build": "./start.sh -b",
     "db": "docker compose exec db psql -U postgres simple_report",
-    "db:detect": "./backend/db-setup/anonymize-detect.sh",
-    "db:generate": "./backend/db-setup/generate-db-data.sh",
-    "db:anonymize": "./backend/db-setup/anonymize-db.sh",
+    "db:user:app": "docker compose exec db psql -U simple_report_app simple_report",
+    "db:user:migrations": "docker compose exec db psql -U simple_report_migrations simple_report",
+    "anon:dump": "./backend/db-setup/anonymize-db.sh",
+    "anon:detect": "./backend/db-setup/anonymize-detect.sh",
+    "anon:restore": "docker cp backend/db-setup/anon_dump.sql db:/usr/local/lib/ && docker exec db /usr/local/lib/nuke-db.sh && docker exec -e SNAPSHOT=/usr/local/lib/anon_dump.sql -e SR_DB_USER=simple_report_migrations db /usr/local/lib/restore-db.sh",
+    "anon:dump:localdb": "./backend/db-setup/anonymize-db.sh -l",
+    "anon:detect:localdb": "./backend/db-setup/anonymize-detect.sh -l",
+    "anon:restore:localdb": "SNAPSHOT=backend/db-setup/anon_dump.sql ./backend/db-setup/restore-db.sh",
     "test:frontend": "docker compose run --rm -e REACT_APP_BASE_URL=https://simplereport.gov -e REACT_APP_BACKEND_URL=https://simplereport.gov/api -e REACT_APP_OKTA_ENABLED=false frontend yarn test",
     "test:backend": "docker compose --env-file .env.test -p simple-report-tests up -d db; docker compose --env-file .env.test -p simple-report-tests run --rm backend gradle test -PskipDbSetup=true -PtestDbHost=db; docker compose -p simple-report-tests down -v"
   }

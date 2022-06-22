@@ -63,32 +63,22 @@ $func$
 CREATE OR REPLACE FUNCTION sr_faker.group_name()
 RETURNS text AS
 $func$
-  SELECT CONCAT(anon.random_string(12), '-', anon.fake_company());
+  SELECT CONCAT(anon.random_string(12), '-', anon.fake_first_name(), '-', 'facility');
 $func$
   LANGUAGE SQL
   VOLATILE
 ;
 
--- organization_external_id | text
-CREATE OR REPLACE FUNCTION sr_faker.organization_external_id()
-RETURNS text AS
-$func$
-    SELECT CONCAT('AZ-', anon.fake_company(), '-', anon.random_string(36));
-$func$
-    LANGUAGE SQL
-    VOLATILE
-;
-
--- jsonb_updater | jsonb
-CREATE TYPE sr_json_vals as (path TEXT[], val JSONB);
-CREATE OR REPLACE FUNCTION sr_faker.jsonb_updater(sr_json_data jsonb, variadic sr_json_to_update sr_json_vals[])
+DROP TYPE IF EXISTS sr_faker.sr_json_vals;
+CREATE TYPE sr_faker.sr_json_vals AS (path text[], value jsonb);
+CREATE OR REPLACE FUNCTION sr_faker.jsonb_updater(sr_json_data jsonb, variadic sr_json_to_update sr_faker.sr_json_vals[])
     RETURNS JSONB
     LANGUAGE plpgsql
 AS $func$
-DECLARE sr_json_args sr_json_vals;
+DECLARE sr_json_args sr_faker.sr_json_vals;
 BEGIN
-    FOREACH sr_json_args IN array sr_json_to_update LOOP
-        sr_json_data := jsonb_set(sr_json_data, sr_json_args.path, sr_json_args.val, true);
+    FOREACH sr_json_args IN ARRAY sr_json_to_update LOOP
+        sr_json_data := jsonb_set(sr_json_data, sr_json_args.path, sr_json_args.value, true);
     END LOOP;
     RETURN sr_json_data;
 END $func$;
@@ -163,9 +153,54 @@ $func$
   VOLATILE
 ;
 
+-- result | POSITIVE || NEGATIVE || INCONCLUSIVE
+CREATE OR REPLACE FUNCTION sr_faker.test_result()
+RETURNS text AS
+$func$
+    SELECT result FROM unnest(enum_range(NULL::simple_report.test_result)) result ORDER BY random() LIMIT 1;
+$func$
+  LANGUAGE SQL
+  VOLATILE
+;
+
+-- login_email | text
+-- select users from api_user.login_email, if it is a skylight email (@skylight.digital) return it, otherwise return a fake email function
+CREATE OR REPLACE FUNCTION sr_faker.login_email(current_email text)
+RETURNS text AS
+$func$
+  select CASE WHEN current_email LIKE '%@skylight.digital%' 
+  THEN 
+    current_email 
+  ELSE 
+    anon.fake_email()
+  END;
+$func$
+  LANGUAGE SQL
+  VOLATILE
+;
+
+-- login_email | text
+-- select users from api_user.login_email, if it is a skylight email (@skylight.digital) return it, otherwise return a fake email function
+CREATE OR REPLACE FUNCTION sr_faker.organization_external_id(organization_external_id text)
+RETURNS text AS
+$func$
+  select CASE WHEN organization_external_id LIKE any (array['%DIS_ORG%', '%DAT_ORG%'])
+  THEN 
+    organization_external_id
+  ELSE 
+    anon.random_string(14)
+  END;
+$func$
+  LANGUAGE SQL
+  VOLATILE
+;
+
 --------------------------
 -- SIMPLE_REPORT TABLES --
 --------------------------
+--
+DROP TABLE simple_report.databasechangeloglock;
+update simple_report.databasechangelog set md5sum = '';
 --
 ----------------------------
 -- SIMPLE_REPORT.API_USER --
@@ -173,7 +208,7 @@ $func$
 
 -- login_email | text
 SECURITY LABEL FOR anon ON COLUMN api_user.login_email
-IS 'MASKED WITH FUNCTION sr_faker.email()';
+IS 'MASKED WITH FUNCTION sr_faker.login_email(login_email)';
 
 -- first_name | text
 SECURITY LABEL FOR anon ON COLUMN api_user.first_name
@@ -253,11 +288,7 @@ IS 'MASKED WITH FUNCTION sr_faker.group_name()';
 
 -- organization_external_id | text
 SECURITY LABEL FOR anon ON COLUMN organization.organization_external_id
-IS 'MASKED WITH FUNCTION sr_faker.organization_external_id()';
-
--- identity_verified | boolean
-SECURITY LABEL FOR anon ON COLUMN organization.identity_verified
-IS 'MASKED WITH VALUE ''f'' ';
+IS 'MASKED WITH FUNCTION sr_faker.organization_external_id(organization_external_id)';
 
 -- organization_type | text
 SECURITY LABEL FOR anon ON COLUMN organization.organization_type
@@ -273,7 +304,7 @@ IS 'MASKED WITH FUNCTION sr_faker.group_name()';
 
 -- organization_external_id | text
 SECURITY LABEL FOR anon ON COLUMN organization_queue.organization_external_id
-IS 'MASKED WITH FUNCTION sr_faker.organization_external_id()';
+IS 'MASKED WITH FUNCTION sr_faker.organization_external_id(organization_external_id)';
 
 -- request_data | jsonb
 SECURITY LABEL FOR anon ON COLUMN organization_queue.request_data
@@ -294,7 +325,7 @@ IS 'MASKED WITH FUNCTION sr_faker.jsonb_updater(request_data,'
 --  ask_on_entry | jsonb
 SECURITY LABEL FOR anon ON COLUMN patient_answers.ask_on_entry
 IS 'MASKED WITH FUNCTION sr_faker.jsonb_updater(ask_on_entry,'
-  '(''{symptoms,25064002}'', ''false''),'
+  '(''{symptoms,25064002}'', ''true''),'
   '(''{symptoms,36955009}'', ''false''),'
   '(''{symptoms,43724002}'', ''false''),'
   '(''{symptoms,44169009}'', ''false''),'
@@ -317,8 +348,16 @@ IS 'MASKED WITH FUNCTION sr_faker.jsonb_updater(ask_on_entry,'
   '(''{priorTestDate}'', ''null''),'
   '(''{priorTestType}'', ''null''),'
   '(''{priorTestResult}'', ''null''),'
-  '(''{symptomOnsetDate}'', ''null'')'
+  '(''{symptomOnsetDate}'', ''[2020, 1, 1]'')'
 ')';
+
+---------------------------------------------
+-- SIMPLE_REPORT.PATIENT_REGISTRATION_LINK --
+---------------------------------------------
+
+-- patient_registration_link | text
+SECURITY LABEL FOR anon ON COLUMN patient_registration_link.patient_registration_link
+IS 'MASKED WITH FUNCTION anon.random_string(15)';
 
 --------------------------
 -- SIMPLE_REPORT.PERSON --
@@ -389,8 +428,8 @@ SECURITY LABEL FOR anon ON COLUMN person.employed_in_healthcare
 IS 'MASKED WITH VALUE ''f'' ';
 
 -- role | text
-SECURITY LABEL FOR anon ON COLUMN person.role
-IS 'MASKED WITH VALUE ''STUDENT'' ';
+-- SECURITY LABEL FOR anon ON COLUMN person.role
+-- IS 'MASKED WITH VALUE ''ADMIN'' ';
 
 -- tribal_affiliation | jsonb
 SECURITY LABEL FOR anon ON COLUMN person.tribal_affiliation
@@ -469,6 +508,14 @@ SECURITY LABEL FOR anon ON COLUMN provider.telephone
 IS 'MASKED WITH FUNCTION sr_faker.phone_number()';
 
 ------------------------------
+-- SIMPLE_REPORT.RESULT --
+------------------------------
+
+-- result_data | text
+SECURITY LABEL FOR anon ON COLUMN result.result
+IS 'MASKED WITH VALUE sr_faker.test_result()';
+
+------------------------------
 -- SIMPLE_REPORT.TEST_EVENT --
 ------------------------------
 
@@ -497,10 +544,10 @@ IS 'MASKED WITH FUNCTION sr_faker.jsonb_updater(patient_data,'
   '(''{primaryPhone,type}'', ''"MOBILE"''),'
   '(''{primaryPhone,number}'', to_jsonb(sr_faker.phone_number())),'
   '(''{preferredLanguage}'', ''null''),'
-  '(''{tribalAffiliationuage}'', ''[null]''),'
+  '(''{tribalAffiliation}'', ''[null]''),'
   '(''{testResultDelivery}'', ''null''),'
-  '(''{employedInHealthcare}'', ''false''),'
-  '(''{residentCongregateSetting}'', ''false'')'
+  '(''{employedInHealthcare}'', ''null''),'
+  '(''{residentCongregateSetting}'', ''null'')'
 ')';
 
 -- provider_data | jsonb
@@ -518,6 +565,10 @@ IS 'MASKED WITH FUNCTION sr_faker.jsonb_updater(provider_data,'
   '(''{middleName}'', ''""''),'
   '(''{providerId}'', to_jsonb(anon.random_string(10)))'
 ')';
+
+-- result_data | text
+SECURITY LABEL FOR anon ON COLUMN test_event.result
+IS 'MASKED WITH VALUE sr_faker.test_result()';
 
 -- survey_data | jsonb
 SECURITY LABEL FOR anon ON COLUMN test_event.survey_data
@@ -545,5 +596,5 @@ IS 'MASKED WITH FUNCTION sr_faker.jsonb_updater(survey_data,'
   '(''{priorTestDate}'', ''null''),'
   '(''{priorTestType}'', ''null''),'
   '(''{priorTestResult}'', ''null''),'
-  '(''{symptomOnsetDate}'', ''null'')'
-')';
+  '(''{symptomOnsetDate}'', ''[2020, 1, 1]'')'
+')';	
