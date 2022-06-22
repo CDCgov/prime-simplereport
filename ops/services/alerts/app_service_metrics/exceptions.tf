@@ -129,7 +129,42 @@ ${local.skip_on_weekends}
 
 resource "azurerm_monitor_scheduled_query_rules_alert" "experian_auth_failures" {
   name                = "${var.env}-experian-auth-failures"
-  description         = "${local.env_title} alert when an ExperianAuthException is seen"
+  description         = "${local.env_title} alert when an ExperianAuthException is seen unless the details indicate the error is a 500"
+  location            = data.azurerm_resource_group.app.location
+  resource_group_name = var.rg_name
+
+  action {
+    action_group = var.action_group_ids
+  }
+
+  data_source_id = var.app_insights_id
+  enabled        = contains(var.disabled_alerts, "experian_auth_failures") ? false : true
+
+  query = <<-QUERY
+requests
+${local.skip_on_weekends}
+| where timestamp > ago(2h) and success == false
+| join kind= inner (
+    exceptions
+    | where timestamp > ago(2h) and details[0]["rawStack"] !contains "500 Internal Server Error"
+    )
+    on operation_Id
+| where type hassuffix "ExperianAuthException"
+| project timestamp, exceptionType = type, failedMethod = method, requestName = name
+  QUERY
+
+  severity    = 1
+  frequency   = 5
+  time_window = 5
+  trigger {
+    operator  = "GreaterThan"
+    threshold = 0
+  }
+}
+
+resource "azurerm_monitor_scheduled_query_rules_alert" "all_experian_auth_failures" {
+  name                = "${var.env}-all-experian-auth-failures"
+  description         = "${local.env_title} alert when two or more ExperianAuthExceptions are seen"
   location            = data.azurerm_resource_group.app.location
   resource_group_name = var.rg_name
 
@@ -158,7 +193,7 @@ ${local.skip_on_weekends}
   time_window = 5
   trigger {
     operator  = "GreaterThan"
-    threshold = 0
+    threshold = 1
   }
 }
 
