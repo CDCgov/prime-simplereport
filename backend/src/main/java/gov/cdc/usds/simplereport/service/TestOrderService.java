@@ -262,14 +262,6 @@ public class TestOrderService {
     }
   }
 
-  private TestResult getCovidResultFromMultiplexList(List<DiseaseResult> results) {
-    return results.stream()
-        .filter(r -> r.getDiseaseName().equals("COVID-19"))
-        .findFirst()
-        .map(DiseaseResult::getTestResult)
-        .orElse(null);
-  }
-
   @AuthorizationConfiguration.RequirePermissionUpdateTestForTestOrder
   public TestOrder editQueueItemMultiplex(
       UUID testOrderId, UUID deviceSpecimenTypeId, List<DiseaseResult> results, Date dateTested) {
