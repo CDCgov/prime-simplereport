@@ -77,6 +77,6 @@ public class ApiTestOrderDataResolver implements GraphQLResolver<ApiTestOrder> {
   }
 
   public Set<Result> getResults(ApiTestOrder apiTestOrder, DataFetchingEnvironment dfe) {
-    return apiTestOrder.getWrapped().getResults();
+    return apiTestOrder.getWrapped().getPendingResultSet();
   }
 }

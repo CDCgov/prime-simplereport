@@ -443,7 +443,10 @@ public class TestOrderService {
   }
 
   private void saveFinalResults(TestOrder order, TestEvent event) {
-    List<Result> results = _resultRepo.findAllByTestOrder(order);
+    // Only edit/save the pending results - don't change all Results to point towards the new
+    // TestEvent.
+    // Doing so would break the corrections/removal flow.
+    Set<Result> results = _resultRepo.getAllPendingResults(order);
     results.forEach(result -> result.setTestEvent(event));
     _resultRepo.saveAll(results);
   }
