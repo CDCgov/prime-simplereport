@@ -451,7 +451,7 @@ const QueueItem = ({
           );
           updateDeviceTestLength(
             (response?.data?.editQueueItemMultiplex?.deviceSpecimenType
-              ?.deviceType?.testLength as number) ?? 0
+              ?.deviceType?.testLength as number) ?? 15
           );
         })
         .catch(updateMutationError);

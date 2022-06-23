@@ -4,7 +4,7 @@ import userEvent from "@testing-library/user-event";
 
 import MultiplexResultInputForm from "./MultiplexResultInputForm";
 
-jest.mock("uuid");
+// jest.mock("uuid");
 
 describe("TestResultInputForm", () => {
   const onChangeFn = jest.fn();

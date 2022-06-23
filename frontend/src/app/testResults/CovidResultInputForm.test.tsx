@@ -6,8 +6,6 @@ import { DiseaseResult } from "../../generated/graphql";
 
 import CovidResultInputForm from "./CovidResultInputForm";
 
-jest.mock("uuid");
-
 describe("TestResultInputForm", () => {
   const positiveResult: DiseaseResult[] = [
     {

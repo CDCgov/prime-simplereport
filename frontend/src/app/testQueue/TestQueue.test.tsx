@@ -16,7 +16,6 @@ import {
 } from "../../generated/graphql";
 
 import TestQueue from "./TestQueue";
-// import { useRemovePatientFromQueueDocyment } from "./QueueItem";
 import { QUERY_PATIENT } from "./addToQueue/AddToQueueSearch";
 
 jest.mock("@microsoft/applicationinsights-react-js", () => {
