@@ -906,6 +906,7 @@ export enum ResultValue {
 export enum Role {
   Admin = "ADMIN",
   EntryOnly = "ENTRY_ONLY",
+  TestResultUploadUser = "TEST_RESULT_UPLOAD_USER",
   User = "USER",
 }
 
