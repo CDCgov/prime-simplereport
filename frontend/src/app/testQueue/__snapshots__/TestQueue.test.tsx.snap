@@ -175,7 +175,7 @@ exports[`TestQueue should render the test queue 1`] = `
                   class="grid-row"
                 >
                   <div
-                    class="grid-col flex-col-container padding-right-2"
+                    class="desktop:grid-col-4 flex-col-container padding-right-2"
                   >
                     <button
                       class="usa-button usa-button--unstyled test-questionnaire-btn"
@@ -194,7 +194,7 @@ exports[`TestQueue should render the test queue 1`] = `
                     </div>
                   </div>
                   <div
-                    class="tablet:grid-col-9 grid-col-7-sm flex-col-container"
+                    class="desktop:grid-col-fill flex-col-container"
                   >
                     <div
                       class=""
@@ -581,7 +581,7 @@ exports[`TestQueue should render the test queue 1`] = `
                   class="grid-row"
                 >
                   <div
-                    class="grid-col flex-col-container padding-right-2"
+                    class="desktop:grid-col-4 flex-col-container padding-right-2"
                   >
                     <button
                       class="usa-button usa-button--unstyled test-questionnaire-btn"
@@ -600,7 +600,7 @@ exports[`TestQueue should render the test queue 1`] = `
                     </div>
                   </div>
                   <div
-                    class="tablet:grid-col-9 grid-col-7-sm flex-col-container"
+                    class="desktop:grid-col-fill flex-col-container"
                   >
                     <div
                       class=""

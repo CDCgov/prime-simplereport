@@ -166,8 +166,8 @@ const MultiplexResultInputForm: React.FC<Props> = ({
   };
 
   return (
-    <form className="usa-form maxw-none">
-      <div className="grid-row">
+    <form className="usa-form maxw-none multiplex-result-form">
+      <div className="grid-row grid-gap-2">
         <div className="grid-col-4">
           <h4 className="prime-radio__title">COVID-19</h4>
           <RadioGroup

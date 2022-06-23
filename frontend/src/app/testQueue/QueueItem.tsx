@@ -731,7 +731,7 @@ const QueueItem = ({
             <div
               className={
                 supportsMultipleDiseases
-                  ? "tablet:grid-col-7"
+                  ? "tablet:grid-col-fill"
                   : "tablet:grid-col-9"
               }
             >
@@ -763,7 +763,7 @@ const QueueItem = ({
               </div>
               <div className="margin-top-2 margin-left-2 margin-bottom-2">
                 <div className="grid-row">
-                  <div className="grid-col flex-col-container padding-right-2">
+                  <div className="desktop:grid-col-4 flex-col-container padding-right-2">
                     <Button
                       variant="unstyled"
                       label="Test questionnaire"
@@ -783,7 +783,7 @@ const QueueItem = ({
                     </div>
                   </div>
 
-                  <div className="tablet:grid-col-9 grid-col-7-sm flex-col-container">
+                  <div className="desktop:grid-col-fill flex-col-container">
                     <div
                       className={classnames(
                         saveState === "error" && "queue-item-error-message"
@@ -897,7 +897,7 @@ const QueueItem = ({
             <div
               className={`prime-test-result ${
                 supportsMultipleDiseases
-                  ? "tablet:grid-col-5"
+                  ? "prime-test-result tablet:grid-col-5 desktop:grid-col-auto "
                   : "tablet:grid-col-3"
               }`}
             >
