@@ -897,7 +897,7 @@ const QueueItem = ({
             <div
               className={`prime-test-result ${
                 supportsMultipleDiseases
-                  ? "prime-test-result tablet:grid-col-5 desktop:grid-col-auto "
+                  ? "tablet:grid-col-5 desktop:grid-col-auto "
                   : "tablet:grid-col-3"
               }`}
             >

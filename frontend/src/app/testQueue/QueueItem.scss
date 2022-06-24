@@ -108,30 +108,6 @@
   flex-flow: column nowrap;
   justify-content: space-between;
   height: 100%;
-
-  .prime-multiplex-result-submit {
-    margin-top: 53px;
-
-    .usa-form-group,
-    .usa-form-group .usa-fieldset {
-      display: inline;
-    }
-
-    .usa-tooltip {
-      left: 79px;
-      top: 3px;
-      padding-right: 12px;
-
-      .usa-tooltip__body {
-        margin-right: 50px;
-      }
-    }
-
-    .usa-button {
-      float: right;
-      margin-top: 4px !important;
-    }
-  }
 }
 
 .prime-test-result-submit {
@@ -139,6 +115,7 @@
 
   .usa-button.prime-multiplex-btn {
     width: 100px;
+    margin: 0;
   }
 
   div.usa-form-group {
