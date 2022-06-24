@@ -533,39 +533,40 @@ const QueueItem = ({
     diseaseResultsRef,
   ]);
 
+  const editQueueItemService = (resultsFromForm: DiseaseResult[]) => {
+    editQueueItem({
+      variables: {
+        id: internalId,
+        deviceId: deviceId,
+        results: resultsFromForm,
+        dateTested: dateTested,
+        deviceSpecimenType: deviceSpecimenTypeId,
+      } as EditQueueItemParams,
+    });
+  };
+
   const throttleEditQueueItemService = useMemo(
     () =>
-      throttle((resultsFromForm: DiseaseResult[]) => {
-        editQueueItem({
-          variables: {
-            id: internalId,
-            deviceId: deviceId,
-            results: resultsFromForm,
-            dateTested: dateTested,
-            deviceSpecimenType: deviceSpecimenTypeId,
-          } as EditQueueItemParams,
-        })
-          .then(() => {
-            refetchQueue();
-          })
-          .catch(() => {
-            // do not inform users that the unofficial test result was not saved
-          });
-      }, 300),
+      throttle(
+        editQueueItemService,
+        // eslint-disable-next-line react-hooks/exhaustive-deps
+        500
+      ),
     []
   );
+
+  useEffect(() => {
+    return () => {
+      throttleEditQueueItemService.cancel();
+    };
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []);
 
   const onTestResultChange = (resultsFromForm: DiseaseResult[]) => {
     throttleEditQueueItemService(resultsFromForm);
     setCacheTestResults(resultsFromForm);
     diseaseResultsRef.current = Object.assign([], resultsFromForm);
   };
-
-  useEffect(() => {
-    return () => {
-      throttleEditQueueItemService.cancel();
-    };
-  }, []);
 
   const removeFromQueue = () => {
     setConfirmationType("none");
