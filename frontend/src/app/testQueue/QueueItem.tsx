@@ -12,6 +12,7 @@ import classnames from "classnames";
 import moment from "moment";
 import { useSelector } from "react-redux";
 import { useNavigate } from "react-router-dom";
+import { throttle } from "lodash";
 
 import {
   DiseaseResult,
@@ -532,25 +533,39 @@ const QueueItem = ({
     diseaseResultsRef,
   ]);
 
+  const throttleEditQueueItemService = useMemo(
+    () =>
+      throttle((resultsFromForm: DiseaseResult[]) => {
+        editQueueItem({
+          variables: {
+            id: internalId,
+            deviceId: deviceId,
+            results: resultsFromForm,
+            dateTested: dateTested,
+            deviceSpecimenType: deviceSpecimenTypeId,
+          } as EditQueueItemParams,
+        })
+          .then(() => {
+            refetchQueue();
+          })
+          .catch(() => {
+            // do not inform users that the unofficial test result was not saved
+          });
+      }, 300),
+    []
+  );
+
   const onTestResultChange = (resultsFromForm: DiseaseResult[]) => {
-    editQueueItem({
-      variables: {
-        id: internalId,
-        deviceId: deviceId,
-        results: resultsFromForm,
-        dateTested: dateTested,
-        deviceSpecimenType: deviceSpecimenTypeId,
-      } as EditQueueItemParams,
-    })
-      .then(() => {
-        refetchQueue();
-      })
-      .catch(() => {
-        // do not inform users that the unofficial test result was not saved
-      });
+    throttleEditQueueItemService(resultsFromForm);
     setCacheTestResults(resultsFromForm);
     diseaseResultsRef.current = Object.assign([], resultsFromForm);
   };
+
+  useEffect(() => {
+    return () => {
+      throttleEditQueueItemService.cancel();
+    };
+  }, []);
 
   const removeFromQueue = () => {
     setConfirmationType("none");
