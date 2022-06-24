@@ -262,14 +262,6 @@ public class TestOrderService {
     }
   }
 
-  private TestResult getCovidResultFromMultiplexList(List<DiseaseResult> results) {
-    return results.stream()
-        .filter(r -> r.getDiseaseName().equals("COVID-19"))
-        .findFirst()
-        .map(DiseaseResult::getTestResult)
-        .orElse(null);
-  }
-
   @AuthorizationConfiguration.RequirePermissionUpdateTestForTestOrder
   public TestOrder editQueueItemMultiplex(
       UUID testOrderId, UUID deviceSpecimenTypeId, List<DiseaseResult> results, Date dateTested) {
@@ -443,7 +435,10 @@ public class TestOrderService {
   }
 
   private void saveFinalResults(TestOrder order, TestEvent event) {
-    List<Result> results = _resultRepo.findAllByTestOrder(order);
+    // Only edit/save the pending results - don't change all Results to point towards the new
+    // TestEvent.
+    // Doing so would break the corrections/removal flow.
+    Set<Result> results = _resultRepo.getAllPendingResults(order);
     results.forEach(result -> result.setTestEvent(event));
     _resultRepo.saveAll(results);
   }

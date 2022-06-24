@@ -72,11 +72,11 @@ public class ApiTestOrderDataResolver implements GraphQLResolver<ApiTestOrder> {
     return _testOrderDeviceTypeDataLoader.load(apiTestOrder.getWrapped(), dfe);
   }
 
-  public TestResult getResult(ApiTestOrder apiTestOrder, DataFetchingEnvironment dfe) {
+  public TestResult getResult(ApiTestOrder apiTestOrder) {
     return apiTestOrder.getWrapped().getResult();
   }
 
-  public Set<Result> getResults(ApiTestOrder apiTestOrder, DataFetchingEnvironment dfe) {
-    return apiTestOrder.getWrapped().getResults();
+  public Set<Result> getResults(ApiTestOrder apiTestOrder) {
+    return apiTestOrder.getWrapped().getPendingResultSet();
   }
 }
