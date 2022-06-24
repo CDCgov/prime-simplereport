@@ -144,6 +144,7 @@ public class TestEventExport {
           .put("Marathi", "mar")
           .put("Marshallese", "mah")
           .put("Mon-Khmer (Other)", "mkh")
+          .put("Khmer", "khm")
           .put("Mongolian", "mon")
           .put("Navajo", "nav")
           .put("Nepali", "nep")
@@ -168,6 +169,13 @@ public class TestEventExport {
           .put("Vietnamese", "vie")
           .put("Yiddish", "yid")
           .put("Zapotec", "zap")
+          .put("Chaochow", "tws")
+          .put("Luganda", "lug")
+          .put("Mien", "ium")
+          .put("Morrocan Arabic", "ary")
+          .put("Sebuano", "ceb")
+          .put("Singhalese", "sin")
+          .put("Taiwanese", "oan")
           .build();
 
   private String boolToYesNoUnk(Boolean value) {
