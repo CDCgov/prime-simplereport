@@ -12,6 +12,7 @@ import classnames from "classnames";
 import moment from "moment";
 import { useSelector } from "react-redux";
 import { useNavigate } from "react-router-dom";
+import { throttle } from "lodash";
 
 import {
   DiseaseResult,
@@ -532,7 +533,7 @@ const QueueItem = ({
     diseaseResultsRef,
   ]);
 
-  const onTestResultChange = (resultsFromForm: DiseaseResult[]) => {
+  const editQueueItemService = (resultsFromForm: DiseaseResult[]) => {
     editQueueItem({
       variables: {
         id: internalId,
@@ -541,13 +542,28 @@ const QueueItem = ({
         dateTested: dateTested,
         deviceSpecimenType: deviceSpecimenTypeId,
       } as EditQueueItemParams,
-    })
-      .then(() => {
-        refetchQueue();
-      })
-      .catch(() => {
-        // do not inform users that the unofficial test result was not saved
-      });
+    });
+  };
+
+  const throttleEditQueueItemService = useMemo(
+    () =>
+      throttle(
+        editQueueItemService,
+        // eslint-disable-next-line react-hooks/exhaustive-deps
+        500
+      ),
+    []
+  );
+
+  useEffect(() => {
+    return () => {
+      throttleEditQueueItemService.cancel();
+    };
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []);
+
+  const onTestResultChange = (resultsFromForm: DiseaseResult[]) => {
+    throttleEditQueueItemService(resultsFromForm);
     setCacheTestResults(resultsFromForm);
     diseaseResultsRef.current = Object.assign([], resultsFromForm);
   };
@@ -897,7 +913,7 @@ const QueueItem = ({
             <div
               className={`prime-test-result ${
                 supportsMultipleDiseases
-                  ? "prime-test-result tablet:grid-col-5 desktop:grid-col-auto "
+                  ? "tablet:grid-col-5 desktop:grid-col-auto "
                   : "tablet:grid-col-3"
               }`}
             >
