@@ -6,8 +6,6 @@ import MultiplexResultInputForm from "./MultiplexResultInputForm";
 
 import spyOn = jest.spyOn;
 
-// jest.mock("uuid");
-
 describe("TestResultInputForm", () => {
   const onChangeFn = jest.fn();
   const onSubmitFn = jest.fn();
