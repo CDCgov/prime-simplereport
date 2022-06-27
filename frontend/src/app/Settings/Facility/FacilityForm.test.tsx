@@ -14,8 +14,16 @@ import "../../../i18n";
 let saveFacility: jest.Mock;
 
 const devices: DeviceType[] = [
-  { internalId: "device-1", name: "Device 1" },
-  { internalId: "device-2", name: "Device 2" },
+  {
+    internalId: "device-1",
+    name: "Device 1",
+    supportedDiseases: [],
+  },
+  {
+    internalId: "device-2",
+    name: "Device 2",
+    supportedDiseases: [],
+  },
 ];
 
 const validFacility: Facility = {
