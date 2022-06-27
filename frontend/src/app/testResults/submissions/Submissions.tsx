@@ -148,7 +148,7 @@ const Submissions = () => {
                     <th scope="col">Report ID</th>
                     <th scope="col">Date/Time submitted</th>
                     <th scope="col">Records</th>
-                    <th scope="col">Submission Status</th>
+                    <th scope="col">Submission status</th>
                   </tr>
                 </thead>
                 <tbody>{SubmissionsTableRows(submissions)}</tbody>
