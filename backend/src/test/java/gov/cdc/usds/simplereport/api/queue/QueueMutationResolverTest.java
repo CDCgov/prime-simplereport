@@ -6,6 +6,7 @@ import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
+import com.google.i18n.phonenumbers.NumberParseException;
 import gov.cdc.usds.simplereport.db.model.DeviceSpecimenType;
 import gov.cdc.usds.simplereport.db.model.DeviceType;
 import gov.cdc.usds.simplereport.db.model.Organization;
@@ -21,15 +22,14 @@ import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 import java.util.UUID;
-import lombok.SneakyThrows;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 
 @SliceTestConfiguration.WithSimpleReportStandardUser
-class QueueMutationResolverTest extends BaseServiceTest<PersonService> {
+// TODO: make own Base superclass for mutation tests
+class QueueMutationResolverTest extends BaseServiceTest<TestOrderService> {
   @Autowired private TestDataFactory _dataFactory;
-
   private UUID _patientId;
   private DeviceType _deviceType;
   private DeviceSpecimenType _deviceSpecimenType;
@@ -43,9 +43,9 @@ class QueueMutationResolverTest extends BaseServiceTest<PersonService> {
     _deviceSpecimenType = _dataFactory.getGenericDeviceSpecimen();
   }
 
-  @SneakyThrows
   @Test
-  void getDeviceSpecimenTypeId_callsGetDeviceSpecimenTypeId_whenNoDeviceSpecimenType() {
+  void getDeviceSpecimenTypeId_callsGetDeviceSpecimenTypeId_whenNoDeviceSpecimenType()
+      throws NumberParseException {
     var deviceTypeService = mock(DeviceTypeService.class);
     var personService = mock(PersonService.class);
     var testOrderService = mock(TestOrderService.class);
