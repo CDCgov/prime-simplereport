@@ -321,7 +321,11 @@ public class TestEventExport {
 
   @JsonProperty("Patient_preferred_language")
   public String getPatientPreferredLanguage() {
-    return patient.map(Person::getPreferredLanguage).map(preferredLanguageMap::get).orElse("");
+    String defaultLanguage = patient.isPresent() ? patient.get().getPreferredLanguage() : "";
+    return patient
+        .map(Person::getPreferredLanguage)
+        .map(preferredLanguageMap::get)
+        .orElse(defaultLanguage);
   }
 
   @JsonProperty("Employed_in_healthcare")
