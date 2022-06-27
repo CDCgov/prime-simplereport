@@ -144,7 +144,7 @@ public class TestEventExport {
           .put("Marathi", "mar")
           .put("Marshallese", "mah")
           .put("Mon-Khmer (Other)", "mkh")
-          .put("Khmer", "khm")
+          .put("Cambodian", "khm")
           .put("Mongolian", "mon")
           .put("Navajo", "nav")
           .put("Nepali", "nep")
