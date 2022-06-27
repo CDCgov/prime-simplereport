@@ -3997,3 +3997,30 @@ databaseChangeLog:
               WHERE ${database.defaultSchemaName}.result.test_order_id IS NULL AND t.result IS NOT NULL;
       rollback:
         sql: SELECT 'foo';
+  - changeSet:
+      id: backfill-results-table-with-removals-and-corrections
+      author: emma@skylight.digital
+      comment: backfill the new results table with TestEvents that have been removed or corrected
+      changes:
+        - tagDatabase:
+            tag: backfill-results-table-with-removals-and-corrections
+        - sql:
+            sql: |
+              INSERT INTO ${database.defaultSchemaName}.result
+              SELECT
+                gen_random_uuid(),
+                t.created_at,
+                t.created_by,
+                t.updated_at,
+                t.updated_by,
+                FALSE,
+                t.internal_id,
+                t.test_order_id,
+                (SELECT d.internal_id from ${database.defaultSchemaName}.supported_disease d WHERE d.name='COVID-19'),
+                CASE WHEN t.result='POSITIVE' THEN '260373001' WHEN t.result='NEGATIVE' THEN '260415000' WHEN t.result='UNDETERMINED' THEN '455371000124106' END,
+                t.result
+              FROM ${database.defaultSchemaName}.test_event t
+              LEFT JOIN ${database.defaultSchemaName}.result ON t.internal_id=${database.defaultSchemaName}.result.test_event_id 
+              WHERE ${database.defaultSchemaName}.result.test_event_id IS NULL AND t.result IS NOT NULL;
+      rollback:
+        sql: SELECT 'foo';
