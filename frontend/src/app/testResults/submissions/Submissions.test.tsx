@@ -230,7 +230,7 @@ describe("Submissions", () => {
     [result_1, result_2, result_3].forEach((result) => {
       expect(screen.getByText(result.reportId).closest("a")).toHaveAttribute(
         "href",
-        `/results/upload/submissions/${result.internalId}`
+        `/results/upload/submission/${result.internalId}`
       );
     });
   });
