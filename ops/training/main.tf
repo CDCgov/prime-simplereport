@@ -18,7 +18,7 @@ resource "azurerm_storage_account" "app" {
   name                      = "simplereport${local.env}app"
   resource_group_name       = data.azurerm_resource_group.rg.name
   location                  = data.azurerm_resource_group.rg.location
-  enable_https_traffic_only = false
+  enable_https_traffic_only = true
   min_tls_version           = "TLS1_2"
 
   static_website {
