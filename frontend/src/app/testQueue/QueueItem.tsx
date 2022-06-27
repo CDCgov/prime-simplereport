@@ -546,12 +546,8 @@ const QueueItem = ({
   };
 
   const throttleEditQueueItemService = useMemo(
-    () =>
-      throttle(
-        editQueueItemService,
-        // eslint-disable-next-line react-hooks/exhaustive-deps
-        500
-      ),
+    () => throttle(editQueueItemService, 500),
+    // eslint-disable-next-line react-hooks/exhaustive-deps
     []
   );
 

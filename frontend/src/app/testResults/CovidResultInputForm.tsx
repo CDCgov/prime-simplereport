@@ -52,9 +52,7 @@ const CovidResultInputForm: React.FC<Props> = ({
 
   const onResultSubmit = (event: React.FormEvent<HTMLButtonElement>) => {
     event.preventDefault();
-    if (allowSubmit) {
-      onSubmit();
-    }
+    onSubmit();
   };
   const convertAndSendResults = (covidResult: TestResult) => {
     const results = convertFromCovidResult(covidResult);

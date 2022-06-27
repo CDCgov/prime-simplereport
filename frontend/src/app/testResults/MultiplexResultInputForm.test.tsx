@@ -1,8 +1,10 @@
 import React from "react";
-import { render, screen } from "@testing-library/react";
+import { fireEvent, render, screen } from "@testing-library/react";
 import userEvent from "@testing-library/user-event";
 
 import MultiplexResultInputForm from "./MultiplexResultInputForm";
+
+import spyOn = jest.spyOn;
 
 // jest.mock("uuid");
 
@@ -43,6 +45,31 @@ describe("TestResultInputForm", () => {
     expect(screen.getAllByLabelText("Negative (-)")[0]).not.toBeChecked();
     expect(screen.getAllByLabelText("Negative (-)")[1]).toBeChecked();
     expect(screen.getAllByLabelText("Negative (-)")[2]).toBeChecked();
+    expect(
+      screen.getByLabelText("inconclusive", { exact: false })
+    ).not.toBeChecked();
+  });
+  it("should still render even if the testResults prop is mistakenly passed as null", () => {
+    render(
+      <MultiplexResultInputForm
+        queueItemId={"5d315d18-82f8-4025-a051-1a509e15c880"}
+        // @ts-ignore this is forcing a weird edge case on runtime
+        testResults={null}
+        isSubmitDisabled={undefined}
+        onChange={onChangeFn}
+        onSubmit={onSubmitFn}
+      />
+    );
+
+    expect(screen.getByText("Flu A")).toBeInTheDocument();
+    expect(screen.getByText("Flu B")).toBeInTheDocument();
+
+    expect(screen.getAllByLabelText("Positive (+)")[0]).not.toBeChecked();
+    expect(screen.getAllByLabelText("Positive (+)")[1]).not.toBeChecked();
+    expect(screen.getAllByLabelText("Positive (+)")[2]).not.toBeChecked();
+    expect(screen.getAllByLabelText("Negative (-)")[0]).not.toBeChecked();
+    expect(screen.getAllByLabelText("Negative (-)")[1]).not.toBeChecked();
+    expect(screen.getAllByLabelText("Negative (-)")[2]).not.toBeChecked();
     expect(
       screen.getByLabelText("inconclusive", { exact: false })
     ).not.toBeChecked();
@@ -144,10 +171,11 @@ describe("TestResultInputForm", () => {
     expect(screen.getAllByLabelText("Negative (-)")[1]).not.toBeChecked();
     expect(screen.getAllByLabelText("Negative (-)")[2]).not.toBeChecked();
     expect(
-      screen.getByLabelText("inconclusive", { exact: false })
+      screen.getByRole("checkbox", { name: /mark test as inconclusive/i })
     ).toBeChecked();
     expect(screen.getByText("Submit")).toBeEnabled();
   });
+
   it("should display submit button as disabled when diseases have unset values", () => {
     render(
       <MultiplexResultInputForm
@@ -218,7 +246,7 @@ describe("TestResultInputForm", () => {
       { diseaseName: "Flu B", testResult: "UNDETERMINED" },
     ]);
   });
-  it("should submit correct test values when inconclusive checkbox is checked but user switches to positive/negative result", async () => {
+  it("should send correct test values when inconclusive checkbox is checked but user switches to positive/negative result", async () => {
     render(
       <MultiplexResultInputForm
         queueItemId={"5d315d18-82f8-4025-a051-1a509e15c880"}
@@ -250,5 +278,29 @@ describe("TestResultInputForm", () => {
       { diseaseName: "Flu A", testResult: "UNDETERMINED" },
       { diseaseName: "Flu B", testResult: "UNDETERMINED" },
     ]);
+  });
+  it("should trigger submit for parent component when submit button is clicked", () => {
+    render(
+      <MultiplexResultInputForm
+        queueItemId={"5d315d18-82f8-4025-a051-1a509e15c880"}
+        testResults={[
+          { diseaseName: "COVID-19", testResult: "POSITIVE" },
+          { diseaseName: "Flu A", testResult: "POSITIVE" },
+          { diseaseName: "Flu B", testResult: "POSITIVE" },
+        ]}
+        onChange={onChangeFn}
+        onSubmit={onSubmitFn}
+      />
+    );
+    expect(screen.getByRole("button", { name: /submit/i })).toBeEnabled();
+    const clickEvent = new MouseEvent("click", {
+      bubbles: true,
+      cancelable: true,
+    });
+
+    const preventDefaultSpy = spyOn(clickEvent, "preventDefault");
+    fireEvent(screen.getByRole("button", { name: /submit/i }), clickEvent);
+    expect(preventDefaultSpy).toHaveBeenCalled();
+    expect(onSubmitFn).toHaveBeenCalled();
   });
 });

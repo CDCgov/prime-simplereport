@@ -1165,7 +1165,6 @@ describe("QueueItem", () => {
         "useEditQueueItemMultiplexMutation"
       );
       await waitFor(() => expect(editQueueSpy).toHaveBeenCalled());
-      await waitFor(() => expect(testProps.refetchQueue).toHaveBeenCalled());
     });
   });
 });
