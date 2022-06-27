@@ -74,6 +74,7 @@ enum Role {
   ENTRY_ONLY
   USER
   ADMIN
+  TEST_RESULT_UPLOAD_USER
 }
 
 enum TestCorrectionStatus {
