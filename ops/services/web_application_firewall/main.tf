@@ -106,6 +106,16 @@ resource "azurerm_web_application_firewall_policy" "sr_waf_policy" {
       selector                = "variables.testResultList"
       selector_match_operator = "Equals"
     }
+    exclusion {
+      match_variable          = "RequestArgNames"
+      selector                = "variables.namePrefixMatch"
+      selector_match_operator = "Equals"
+    }
+    exclusion {
+      match_variable          = "RequestArgNames"
+      selector                = "phoneNumbers.number"
+      selector_match_operator = "Contains"
+    }
 
     managed_rule_set {
       type    = "OWASP"
@@ -155,7 +165,7 @@ resource "azurerm_web_application_firewall_policy" "sr_waf_policy" {
 
   policy_settings {
     enabled                     = true
-    mode                        = "Detection" //Can use "Detection" for testing, to see which requests would be blocked. "Prevention" turns on active blocking.
+    mode                        = "Prevention" //Can use "Detection" for testing, to see which requests would be blocked. "Prevention" turns on active blocking.
     request_body_check          = true
     file_upload_limit_in_mb     = 100
     max_request_body_size_in_kb = 128 //Can go to 2000 in modern provider version. Proposed is 1024.
