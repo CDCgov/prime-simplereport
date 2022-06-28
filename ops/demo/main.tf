@@ -113,7 +113,7 @@ module "nat_gateway" {
   tags                    = local.management_tags
 }
 
-/* module "web_application_firewall" {
+module "web_application_firewall" {
   source                  = "../services/web_application_firewall"
   name                    = local.name
   env                     = local.env
@@ -121,7 +121,7 @@ module "nat_gateway" {
   resource_group_name     = data.azurerm_resource_group.rg.name
 
   tags = local.management_tags
-} */
+}
 
 module "app_service_autoscale" {
   source                  = "../services/app_service_autoscale"
