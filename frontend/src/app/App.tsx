@@ -207,7 +207,7 @@ const App = () => {
               }
             />
             <Route
-              path="results/upload/submissions/:id"
+              path="results/upload/submission/:id"
               element={
                 <ProtectedRoute
                   requiredPermissions={canUseCsvUploaderPilot}
