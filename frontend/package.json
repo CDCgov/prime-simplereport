@@ -96,11 +96,9 @@
     "extends": [
       "react-app",
       "prettier",
-      "plugin:import/recommended",
       "plugin:import/typescript"
     ],
     "plugins": [
-      "@typescript-eslint",
       "graphql",
       "testing-library",
       "unused-imports",
