@@ -232,7 +232,6 @@ const Uploads = () => {
                 </div>
               )}
               <FormGroup className="margin-bottom-3">
-                {/* TODO: should this be a hint? */}
                 <Label
                   className="font-sans-xs usa-hint"
                   id="upload-csv-input-label"

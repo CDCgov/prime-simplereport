@@ -133,17 +133,8 @@ const CsvSchemaDocumentation = () => {
                   <h3 className="usa-alert__heading font-body-md margin-top-05">
                     About CSV upload
                   </h3>
-                  This documentation will help you prepare a file for CSV upload
-                  {/* TODO
-{" "}
-                    <a
-                      href="https://reportstream.cdc.gov/assets/csv/ReportStream-StandardCSV-ExampleData-20220509.csv"
-                      className="usa-link"
-                    >
-                      CSV upload
-                    </a>
-*/}
-                  . This feature is currently being piloted in select
+                  This documentation will help you prepare a file for CSV
+                  upload. This feature is currently being piloted in select
                   jurisdictions with organizations or facilities that have
                   existing Electronic Medical Record (EMR) systems. Pilot
                   partners are selected by recommendation from jurisdictions.
