@@ -284,7 +284,7 @@ const CsvSchemaDocumentation = () => {
                             return (
                               <CsvSchemaDocumentationItem
                                 item={item}
-                                className="margin-top-8 rs-documentation__values"
+                                className="rs-documentation__values"
                               />
                             );
                           })}
