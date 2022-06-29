@@ -143,91 +143,122 @@ const Uploads = () => {
     <main className="prime-home">
       <div className="grid-container">
         <div className="grid-row">
-          <div className="prime-container">
+          <div className="prime-container card-container">
             <div className="usa-card__header">
-              <h2>COVID-19 CSV Uploads</h2>
+              <h2>Upload your results</h2>
             </div>
-            {reportId && (
-              <div>
-                <div className="usa-alert usa-alert--success">
-                  <div className="usa-alert__body">
-                    <h4 className="usa-alert__heading">
-                      Success: File Accepted
-                    </h4>
-                    <p className="usa-alert__text">
-                      Your file has been successfully transmitted to the
-                      department of health
-                    </p>
-                  </div>
-                </div>
+            <div className="usa-card__body">
+              <p>
+                Add and report results in bulk using a comma-separated values
+                (CSV) spreadsheet. To upload your spreadsheet:
+              </p>
+              <ul className="usa-list">
+                {/* TODO: port to SR static site */}
+                <li>
+                  <a href="https://reportstream.cdc.gov/assets/csv/ReportStream-StandardCSV-ExampleData-20220509.csv">
+                    Download the spreadsheet template
+                  </a>
+                </li>
+                <li>
+                  Add your data to the relevant fields in the template, or if
+                  you’re using your own spreadsheet, format column headers to
+                  match the template
+                </li>
+                <li>
+                  Make sure you include data for all fields marked “required” in
+                  row 2
+                </li>
+                <li>Once you’ve entered your data, delete all example data</li>
+                <li>Save your spreadsheet as a CSV file and upload it here</li>
+              </ul>
+              <p>
+                For more information about the spreadsheet, visit our{" "}
+                <a href="/getting-started/organizations-and-testing-facilities/csv-upload-guide">
+                  data template guide.
+                </a>
+              </p>
+              {reportId && (
                 <div>
-                  <p className="text-normal text-base margin-bottom-0">
-                    Confirmation Code
-                  </p>
-                  <p className="margin-top-05">{reportId}</p>
-                </div>
-              </div>
-            )}
-            {errors && errors.length > 0 && (
-              <div>
-                <div className="usa-alert usa-alert--error" role="alert">
-                  <div className="usa-alert__body">
-                    <h4 className="usa-alert__heading">
-                      Error: File not accepted
-                    </h4>
-                    <p className="usa-alert__text">{errorMessageText}</p>
+                  <div className="usa-alert usa-alert--success">
+                    <div className="usa-alert__body">
+                      <h4 className="usa-alert__heading">
+                        Success: File Accepted
+                      </h4>
+                      <p className="usa-alert__text">
+                        Your file has been successfully transmitted to the
+                        department of health
+                      </p>
+                    </div>
+                  </div>
+                  <div>
+                    <p className="text-normal text-base margin-bottom-0">
+                      Confirmation Code
+                    </p>
+                    <p className="margin-top-05">{reportId}</p>
                   </div>
                 </div>
-                <table className="usa-table usa-table--borderless">
-                  <thead>
-                    <tr>
-                      <th>Requested Edit</th>
-                      <th>Areas Containing the Requested Edit</th>
-                    </tr>
-                  </thead>
-                  <tbody>
-                    {errors.map((e, i) => {
-                      return (
-                        <tr key={"error_" + i}>
-                          <td>{e?.["message"]} </td>
-                          <td>Row(s): {e?.["indices"]}</td>
-                        </tr>
-                      );
-                    })}
-                  </tbody>
-                </table>
-              </div>
-            )}
-            <FormGroup className="margin-bottom-3">
-              <Label
-                className="font-sans-xs"
-                id="upload-csv-input-label"
-                htmlFor="upload-csv-input"
-              >
-                Upload your COVID-19 lab results as a .csv.
-              </Label>
-              <FileInput
-                key={fileInputResetValue}
-                id="upload-csv-input"
-                name="upload-csv-input"
-                aria-describedby="upload-csv-input-label"
-                accept="text/csv, .csv"
-                onChange={(e) => handleFileChange(e)}
-                required
-              />
-            </FormGroup>
-            <Button
-              type="submit"
-              onClick={(e) => handleSubmit(e)}
-              disabled={buttonIsDisabled || file?.name?.length === 0}
-            >
-              {isSubmitting && (
-                <span>
-                  <span>Processing file...</span>
-                </span>
               )}
-              {!isSubmitting && <span>Upload</span>}
-            </Button>
+              {errors && errors.length > 0 && (
+                <div>
+                  <div className="usa-alert usa-alert--error" role="alert">
+                    <div className="usa-alert__body">
+                      <h4 className="usa-alert__heading">
+                        Error: File not accepted
+                      </h4>
+                      <p className="usa-alert__text">{errorMessageText}</p>
+                    </div>
+                  </div>
+                  <table className="usa-table usa-table--borderless">
+                    <thead>
+                      <tr>
+                        <th>Requested Edit</th>
+                        <th>Areas Containing the Requested Edit</th>
+                      </tr>
+                    </thead>
+                    <tbody>
+                      {errors.map((e, i) => {
+                        return (
+                          <tr key={"error_" + i}>
+                            <td>{e?.["message"]} </td>
+                            <td>Row(s): {e?.["indices"]}</td>
+                          </tr>
+                        );
+                      })}
+                    </tbody>
+                  </table>
+                </div>
+              )}
+              <FormGroup className="margin-bottom-3">
+                <Label
+                  className="font-sans-xs"
+                  id="upload-csv-input-label"
+                  htmlFor="upload-csv-input"
+                >
+                  Upload your lab results as a .csv.
+                </Label>
+                <FileInput
+                  key={fileInputResetValue}
+                  id="upload-csv-input"
+                  name="upload-csv-input"
+                  aria-describedby="upload-csv-input-label"
+                  accept="text/csv, .csv"
+                  onChange={(e) => handleFileChange(e)}
+                  required
+                />
+              </FormGroup>
+              <Button
+                type="submit"
+                onClick={(e) => handleSubmit(e)}
+                disabled={buttonIsDisabled || file?.name?.length === 0}
+              >
+                {isSubmitting && (
+                  <span>
+                    <span>Processing file...</span>
+                  </span>
+                )}
+                {!isSubmitting && <span>Upload your spreadsheet</span>}
+              </Button>
+            </div>
           </div>
         </div>
       </div>
