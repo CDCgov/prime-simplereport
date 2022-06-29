@@ -6,12 +6,15 @@ import {
   FeedbackMessage,
   useUploadTestResultCsvMutation,
 } from "../../../generated/graphql";
+import { useDocumentTitle } from "../../utils/hooks";
 
 const PAYLOAD_MAX_BYTES = 50 * 1000 * 1000;
 const REPORT_MAX_ITEMS = 10000;
 const REPORT_MAX_ITEM_COLUMNS = 2000;
 
 const Uploads = () => {
+  useDocumentTitle("Upload spreadsheet");
+
   const [fileInputResetValue, setFileInputResetValue] = useState(0);
   const [buttonIsDisabled, setButtonIsDisabled] = useState(true);
   const [isSubmitting, setIsSubmitting] = useState(false);

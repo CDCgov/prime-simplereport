@@ -11,8 +11,11 @@ import {
 } from "../../../generated/graphql";
 import { setStartTimeForDateRange } from "../../analytics/Analytics";
 import { LinkWithQuery } from "../../commonComponents/LinkWithQuery";
+import { useDocumentTitle } from "../../utils/hooks";
 
 const Submissions = () => {
+  useDocumentTitle("View upload history");
+
   const urlParams = useParams();
   const pageNumber = Number(urlParams.pageNumber) || 1;
   const pageSize = 10;
