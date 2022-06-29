@@ -89,7 +89,7 @@ const CsvSchemaDocumentation = () => {
   return (
     <div className="prime-home">
       <div className="grid-container">
-        <div className="prime-container prime-container-padding card-container">
+        <div className="prime-container prime-container-padding-2x card-container">
           <div className="tablet:grid-col-8 usa-prose">
             <section id="anchor-top">
               <span className="text-base text-italic">

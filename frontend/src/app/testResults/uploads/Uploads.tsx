@@ -7,6 +7,7 @@ import {
   useUploadTestResultCsvMutation,
 } from "../../../generated/graphql";
 import { useDocumentTitle } from "../../utils/hooks";
+import { LinkWithQuery } from "../../commonComponents/LinkWithQuery";
 
 const PAYLOAD_MAX_BYTES = 50 * 1000 * 1000;
 const REPORT_MAX_ITEMS = 10000;
@@ -175,7 +176,9 @@ const Uploads = () => {
               </ul>
               <p>
                 For more information about the spreadsheet, visit our{" "}
-                <a href="results/upload/schema">data template guide.</a>
+                <LinkWithQuery to="/results/upload/schema">
+                  data template guide.
+                </LinkWithQuery>
               </p>
               {reportId && (
                 <div>
