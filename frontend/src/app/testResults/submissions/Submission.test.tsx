@@ -58,12 +58,12 @@ describe("Submission", () => {
         <Provider store={store}>
           <MemoryRouter
             initialEntries={[
-              "/results/upload/submission/12b86a9d-a9d6-4391-a555-6618e8ac66d9",
+              "/results/upload/submissions/12b86a9d-a9d6-4391-a555-6618e8ac66d9",
             ]}
           >
             <Routes>
               <Route
-                path={"/results/upload/submission/:id"}
+                path={"/results/upload/submissions/:id"}
                 element={<Submission />}
               ></Route>
             </Routes>
