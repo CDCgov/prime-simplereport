@@ -32,7 +32,7 @@ exports[`ResultsNav displays the nav order correctly and defaults to 'Test Resul
               class=""
               href="/results/upload"
             >
-              CSV upload
+              Upload spreadsheet
             </a>
           </li>
           <li
@@ -42,7 +42,7 @@ exports[`ResultsNav displays the nav order correctly and defaults to 'Test Resul
               class=""
               href="/results/upload/submissions"
             >
-              CSV upload history
+              View upload history
             </a>
           </li>
         </ul>

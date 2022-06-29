@@ -41,9 +41,11 @@ describe("Uploads", () => {
   it("should render the upload screen", async () => {
     render(<TestContainer />);
 
-    expect(await screen.findByText("COVID-19 CSV Uploads")).toBeInTheDocument();
+    expect(await screen.findByText("Upload your results")).toBeInTheDocument();
     expect(
-      await screen.findByText("Upload your COVID-19 lab results as a .csv.")
+      await screen.findByText("Upload your test results as a spreadsheet", {
+        exact: false,
+      })
     ).toBeInTheDocument();
     expect(await screen.findByText("Drag file here or")).toBeInTheDocument();
   });
