@@ -1,7 +1,6 @@
 package gov.cdc.usds.simplereport.db.model;
 
 import gov.cdc.usds.simplereport.api.Translators;
-import gov.cdc.usds.simplereport.db.model.auxiliary.SupportedDiseaseTestResult;
 import gov.cdc.usds.simplereport.db.model.auxiliary.TestResult;
 import java.util.Objects;
 import javax.persistence.Column;
@@ -73,10 +72,6 @@ public class Result extends EternalAuditedEntity {
   public void setResult(TestResult testResult) {
     this.resultLOINC = Translators.convertTestResultToLoinc(testResult);
     this.testResult = testResult;
-  }
-
-  public SupportedDiseaseTestResult getDiseaseResult() {
-    return new SupportedDiseaseTestResult(this.disease, this.testResult);
   }
 
   @Override

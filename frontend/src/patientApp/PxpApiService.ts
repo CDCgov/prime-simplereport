@@ -46,12 +46,6 @@ export type SelfRegistrationData = Omit<
 export type VerifyV2Response = {
   testEventId: string;
   result: TestResult;
-  results: {
-    disease: {
-      name: string;
-    };
-    testResult: TestResult;
-  };
   dateTested: string;
   correctionStatus: string;
   deviceType: {
