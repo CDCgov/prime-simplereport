@@ -175,7 +175,7 @@ const Uploads = () => {
               </ul>
               <p>
                 For more information about the spreadsheet, visit our{" "}
-                <a href="/results/upload/schema">data template guide.</a>
+                <a href="results/upload/schema">data template guide.</a>
               </p>
               {reportId && (
                 <div>
