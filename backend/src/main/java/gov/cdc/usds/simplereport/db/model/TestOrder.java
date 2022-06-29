@@ -11,7 +11,6 @@ import java.util.HashSet;
 import java.util.Optional;
 import java.util.Set;
 import java.util.UUID;
-import java.util.stream.Collectors;
 import javax.persistence.CascadeType;
 import javax.persistence.Column;
 import javax.persistence.Entity;
@@ -22,8 +21,6 @@ import javax.persistence.JoinColumn;
 import javax.persistence.ManyToOne;
 import javax.persistence.OneToMany;
 import javax.persistence.OneToOne;
-import lombok.Getter;
-import lombok.Setter;
 import org.hibernate.Hibernate;
 import org.hibernate.annotations.Type;
 
@@ -55,8 +52,6 @@ public class TestOrder extends BaseTestInfo {
 
   @JsonIgnore
   @OneToMany(mappedBy = "testOrder", fetch = FetchType.LAZY, cascade = CascadeType.ALL)
-  @Getter
-  @Setter
   private Set<Result> results;
 
   protected TestOrder() {
@@ -109,32 +104,6 @@ public class TestOrder extends BaseTestInfo {
   public Set<Result> getResultSet() {
     Hibernate.initialize(this.results);
     return results;
-  }
-
-  /**
-   * A helper method to only return pending results - those associated with a TestOrder, but not yet
-   * a TestEvent. This is used to display results while the test is in the queue.
-   */
-  @JsonIgnore
-  public Set<Result> getPendingResultSet() {
-    Hibernate.initialize(this.results);
-    Set<Result> pendingResults;
-    pendingResults =
-        this.results.stream().filter(r -> r.getTestEvent() == null).collect(Collectors.toSet());
-    // This is special logic for corrections.
-    // If the pending results are empty but the frontend is asking for them, it's because a test was
-    // reopened.
-    // We want to show the original results when a correction first opens, so we check to see if
-    // there's a testEvent associated and if so, show those results.
-    // Otherwise, the test will reopen with empty results.
-    if (pendingResults.isEmpty() && this.getTestEvent() != null) {
-      TestEvent canonicalEvent = this.getTestEvent();
-      pendingResults =
-          this.results.stream()
-              .filter(r -> r.getTestEvent().getInternalId().equals(canonicalEvent.getInternalId()))
-              .collect(Collectors.toSet());
-    }
-    return pendingResults;
   }
 
   public Optional<Result> getResultForDisease(SupportedDisease disease) {

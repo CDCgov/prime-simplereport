@@ -85,7 +85,6 @@ const deviceTypeSchema: yup.SchemaOf<DeviceType> = yup.object({
   internalId: yup.string().required(),
   name: yup.string().required(),
   testLength: yup.number().optional(),
-  supportedDiseases: yup.array().of(yup.string()).optional(),
 });
 
 export const facilitySchema: yup.SchemaOf<RequiredFacilityFields> = yup.object({

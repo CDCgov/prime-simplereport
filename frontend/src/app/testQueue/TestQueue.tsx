@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from "react";
 import { gql, useQuery } from "@apollo/client";
-import { CSSTransition, TransitionGroup } from "react-transition-group";
+import { TransitionGroup, CSSTransition } from "react-transition-group";
 import { useLocation } from "react-router-dom";
 
 import { showError } from "../utils";
@@ -10,9 +10,8 @@ import { TestCorrectionReason } from "../testResults/TestResultCorrectionModal";
 import AddToQueueSearch, {
   StartTestProps,
 } from "./addToQueue/AddToQueueSearch";
-import QueueItem, { MultiplexResult, TestResult } from "./QueueItem";
-import { AoEAnswers, TestQueuePerson } from "./AoEForm/AoEForm";
-import "./TestQueue.scss";
+import QueueItem, { TestResult } from "./QueueItem";
+import { TestQueuePerson, AoEAnswers } from "./AoEForm/AoEForm";
 
 const pollInterval = 10_000;
 
@@ -32,7 +31,7 @@ const onExiting = (node: HTMLElement) => {
 };
 
 const emptyQueueMessage = (
-  <div className="grid-container prime-center card-container queue-container-wide">
+  <div className="grid-container prime-center card-container">
     <div className="grid-row">
       <div className="usa-card__body">
         <p>
@@ -44,7 +43,7 @@ const emptyQueueMessage = (
 );
 
 export const queueQuery = gql`
-  query GetFacilityQueueMultiplex($facilityId: ID!) {
+  query GetFacilityQueue($facilityId: ID!) {
     queue(facilityId: $facilityId) {
       internalId
       pregnancy
@@ -79,12 +78,6 @@ export const queueQuery = gql`
         }
       }
       result
-      results {
-        disease {
-          name
-        }
-        testResult
-      }
       dateTested
       correctionStatus
       reasonForCorrection
@@ -107,9 +100,6 @@ export const queueQuery = gql`
         internalId
         name
         testLength
-        supportedDiseases {
-          name
-        }
       }
       specimenType {
         internalId
@@ -133,7 +123,6 @@ export interface QueueItemData extends AoEAnswers {
   deviceSpecimenType: DeviceSpecimenType;
   patient: TestQueuePerson;
   result: TestResult;
-  results: MultiplexResult[];
   dateTested: string;
   correctionStatus: string;
   reasonForCorrection: TestCorrectionReason;
@@ -165,7 +154,7 @@ const TestQueue: React.FC<Props> = ({ activeFacilityId }) => {
   }, [location.state]);
 
   useEffect(() => {
-    // Start polling on creation, stop on component teardown
+    // Start polling on creation, stop on componenent teardown
     startPolling(pollInterval);
     return stopPolling;
   }, [startPolling, stopPolling]);
@@ -218,7 +207,6 @@ const TestQueue: React.FC<Props> = ({ activeFacilityId }) => {
           deviceSpecimenType,
           patient,
           result,
-          results,
           dateTested,
           correctionStatus,
           reasonForCorrection,
@@ -250,17 +238,6 @@ const TestQueue: React.FC<Props> = ({ activeFacilityId }) => {
               ) || deviceSpecimenTypes[0];
           }
 
-          let selectedTestResults: MultiplexResult[];
-
-          // backwards compatibility
-          if (!results && result) {
-            selectedTestResults = [
-              { disease: { name: "COVID-19" }, testResult: result },
-            ];
-          } else {
-            selectedTestResults = results;
-          }
-
           return (
             <CSSTransition
               key={internalId}
@@ -284,7 +261,7 @@ const TestQueue: React.FC<Props> = ({ activeFacilityId }) => {
                   // the facility queue GraphQL query
                   selectedDeviceSpecimenType.deviceType.testLength as number
                 }
-                selectedTestResults={selectedTestResults}
+                selectedTestResult={result}
                 devices={facility.deviceTypes}
                 deviceSpecimenTypes={deviceSpecimenTypes}
                 refetchQueue={refetch}
@@ -326,7 +303,7 @@ const TestQueue: React.FC<Props> = ({ activeFacilityId }) => {
 
   return (
     <main className="prime-home">
-      <div className="grid-container queue-container-wide">
+      <div className="grid-container">
         <div className="position-relative">
           <AddToQueueSearch
             refetchQueue={refetch}

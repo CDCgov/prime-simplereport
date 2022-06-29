@@ -4,7 +4,6 @@ import gov.cdc.usds.simplereport.api.model.ApiTestOrder;
 import gov.cdc.usds.simplereport.db.model.DeviceType;
 import gov.cdc.usds.simplereport.db.model.PatientAnswers;
 import gov.cdc.usds.simplereport.db.model.Person;
-import gov.cdc.usds.simplereport.db.model.Result;
 import gov.cdc.usds.simplereport.db.model.auxiliary.AskOnEntrySurvey;
 import gov.cdc.usds.simplereport.db.model.auxiliary.TestResult;
 import gov.cdc.usds.simplereport.service.dataloader.PatientAnswersDataLoader;
@@ -13,7 +12,6 @@ import gov.cdc.usds.simplereport.service.dataloader.TestOrderPatientDataLoader;
 import graphql.kickstart.tools.GraphQLResolver;
 import graphql.schema.DataFetchingEnvironment;
 import java.time.LocalDate;
-import java.util.Set;
 import java.util.concurrent.CompletableFuture;
 import org.springframework.stereotype.Component;
 
@@ -72,11 +70,7 @@ public class ApiTestOrderDataResolver implements GraphQLResolver<ApiTestOrder> {
     return _testOrderDeviceTypeDataLoader.load(apiTestOrder.getWrapped(), dfe);
   }
 
-  public TestResult getResult(ApiTestOrder apiTestOrder) {
+  public TestResult getResult(ApiTestOrder apiTestOrder, DataFetchingEnvironment dfe) {
     return apiTestOrder.getWrapped().getResult();
-  }
-
-  public Set<Result> getResults(ApiTestOrder apiTestOrder) {
-    return apiTestOrder.getWrapped().getPendingResultSet();
   }
 }

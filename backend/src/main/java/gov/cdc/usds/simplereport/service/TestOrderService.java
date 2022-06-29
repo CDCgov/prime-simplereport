@@ -41,6 +41,7 @@ import java.util.Comparator;
 import java.util.Date;
 import java.util.List;
 import java.util.Map;
+import java.util.Objects;
 import java.util.Optional;
 import java.util.Set;
 import java.util.UUID;
@@ -262,34 +263,29 @@ public class TestOrderService {
     }
   }
 
+  private TestResult getCovidResultFromMultiplexList(List<DiseaseResult> results) {
+    return results.stream()
+        .filter(result -> result.getDiseaseName().equals("COVID-19"))
+        .findFirst()
+        .orElseThrow(() -> new IllegalArgumentException("No COVID-19 test result found"))
+        .getTestResult();
+  }
+
   @AuthorizationConfiguration.RequirePermissionUpdateTestForTestOrder
   public TestOrder editQueueItemMultiplex(
       UUID testOrderId, UUID deviceSpecimenTypeId, List<DiseaseResult> results, Date dateTested) {
-    lockOrder(testOrderId);
-    try {
-      TestOrder order = this.getTestOrder(testOrderId);
+    TestOrder savedOrder =
+        editQueueItem(
+            testOrderId,
+            deviceSpecimenTypeId,
+            getCovidResultFromMultiplexList(results).toString(),
+            dateTested);
 
-      if (deviceSpecimenTypeId != null) {
-        DeviceSpecimenType deviceSpecimenType = _dts.getDeviceSpecimenType(deviceSpecimenTypeId);
+    editMultiplexResults(savedOrder, results);
 
-        if (deviceSpecimenType != null) {
-          order.setDeviceSpecimen(deviceSpecimenType);
-          // Set the most-recently configured device specimen for a facility's
-          // test as facility default
-          order.getFacility().addDefaultDeviceSpecimen(deviceSpecimenType);
-        }
-      }
-      if (!results.isEmpty()) {
-        editResults(order, results);
-      }
-      order.setDateTestedBackdate(dateTested);
-      return _repo.save(order);
-    } finally {
-      unlockOrder(testOrderId);
-    }
+    return savedOrder;
   }
 
-  // Deprecated - remove this method after we've switched to the multiplex endpoints on frontend
   @AuthorizationConfiguration.RequirePermissionSubmitTestForPatient
   @Transactional(noRollbackFor = {TwilioException.class, ApiException.class})
   public AddTestResultResponse addTestResult(
@@ -352,95 +348,44 @@ public class TestOrderService {
   @AuthorizationConfiguration.RequirePermissionSubmitTestForPatient
   public AddTestResultResponse addTestResultMultiplex(
       UUID deviceSpecimenTypeId, List<DiseaseResult> results, UUID patientId, Date dateTested) {
-    Organization org = _os.getCurrentOrganization();
-    Person person = _ps.getPatientNoPermissionsCheck(patientId, org);
-    TestOrder order =
-        _repo.fetchQueueItem(org, person).orElseThrow(TestOrderService::noSuchOrderFound);
+    AddTestResultResponse response =
+        addTestResult(
+            deviceSpecimenTypeId, getCovidResultFromMultiplexList(results), patientId, dateTested);
+    TestOrder savedOrder = response.getTestResult().getWrapped();
+    TestEvent savedEvent = savedOrder.getTestEvent();
 
-    DeviceSpecimenType deviceSpecimenType = _dts.getDeviceSpecimenType(deviceSpecimenTypeId);
+    saveMultiplexResults(savedEvent, savedOrder, results);
 
-    lockOrder(order.getInternalId());
-
-    TestOrder savedOrder = null;
-
-    try {
-      order.setDeviceSpecimen(deviceSpecimenType);
-      editResults(order, results);
-      order.setDateTestedBackdate(dateTested);
-      order.markComplete();
-
-      boolean hasPriorTests = _terepo.existsByPatient(person);
-      TestEvent testEvent =
-          order.getCorrectionStatus() == TestCorrectionStatus.ORIGINAL
-              ? new TestEvent(order, hasPriorTests)
-              : new TestEvent(order, order.getCorrectionStatus(), order.getReasonForCorrection());
-
-      TestEvent savedEvent = _terepo.save(testEvent);
-      saveFinalResults(order, testEvent);
-
-      order.setTestEventRef(savedEvent);
-      savedOrder = _repo.save(order);
-      _testEventReportingService.report(savedEvent);
-    } finally {
-      unlockOrder(order.getInternalId());
-    }
-
-    ArrayList<Boolean> deliveryStatuses = new ArrayList<>();
-
-    PatientLink patientLink = _pls.createPatientLink(savedOrder.getInternalId());
-    if (patientHasDeliveryPreference(savedOrder)) {
-
-      if (smsDeliveryPreference(savedOrder) || smsAndEmailDeliveryPreference(savedOrder)) {
-        boolean smsDeliveryStatus = testResultsDeliveryService.smsTestResults(patientLink);
-        deliveryStatuses.add(smsDeliveryStatus);
-      }
-
-      if (emailDeliveryPreference(savedOrder) || smsAndEmailDeliveryPreference(savedOrder)) {
-        boolean emailDeliveryStatus = testResultsDeliveryService.emailTestResults(patientLink);
-        deliveryStatuses.add(emailDeliveryStatus);
-      }
-    }
-
-    boolean deliveryStatus =
-        deliveryStatuses.isEmpty() || deliveryStatuses.stream().anyMatch(status -> status);
-    return new AddTestResultResponse(savedOrder, deliveryStatus);
+    return response;
   }
 
-  private void editResults(TestOrder order, List<DiseaseResult> newResults) {
-    // For now - we still need to save the covid results to the result column
-    // To be removed in #3664
-    Optional<DiseaseResult> covidResult =
-        newResults.stream().filter(r -> r.getDiseaseName().equals("COVID-19")).findFirst();
-    covidResult.ifPresent(diseaseResult -> order.setResultColumn(diseaseResult.getTestResult()));
-
-    // For new results, check if there's already a pending result for the same test.
-    // If so, update it, if not, create a new one.
-    newResults.forEach(
-        newResult -> {
-          Optional<Result> pendingResult =
-              _resultRepo.getPendingResult(
-                  order, _diseaseService.getDiseaseByName(newResult.getDiseaseName()));
-          if (pendingResult.isPresent()) {
-            pendingResult.get().setResult(newResult.getTestResult());
-            _resultRepo.save(pendingResult.get());
-          } else {
-            Result result =
-                new Result(
-                    order,
-                    _diseaseService.getDiseaseByName(newResult.getDiseaseName()),
-                    newResult.getTestResult());
-            _resultRepo.save(result);
-          }
+  private void editMultiplexResults(TestOrder order, List<DiseaseResult> newResults) {
+    Set<Result> resultsToUpdate = order.getResultSet();
+    resultsToUpdate.forEach(
+        result -> {
+          SupportedDisease disease = result.getDisease();
+          newResults.stream()
+              .filter(r -> _diseaseService.getDiseaseByName(r.getDiseaseName()).equals(disease))
+              .findFirst()
+              .ifPresent(newResult -> result.setResult(newResult.getTestResult()));
         });
+    _resultRepo.saveAll(resultsToUpdate);
   }
 
-  private void saveFinalResults(TestOrder order, TestEvent event) {
-    // Only edit/save the pending results - don't change all Results to point towards the new
-    // TestEvent.
-    // Doing so would break the corrections/removal flow.
-    Set<Result> results = _resultRepo.getAllPendingResults(order);
-    results.forEach(result -> result.setTestEvent(event));
-    _resultRepo.saveAll(results);
+  private void saveMultiplexResults(TestEvent event, TestOrder order, List<DiseaseResult> results) {
+    List<Result> resultsToSave =
+        results.stream()
+            // Covid result already saved in saveTestResultToDatabase
+            .filter(r -> !Objects.equals(r.getDiseaseName(), _diseaseService.covid().getName()))
+            .map(
+                result ->
+                    new Result(
+                        event,
+                        order,
+                        _diseaseService.getDiseaseByName(result.getDiseaseName()),
+                        result.getTestResult()))
+            .collect(Collectors.toList());
+    _resultRepo.saveAll(resultsToSave);
   }
 
   private boolean patientHasDeliveryPreference(TestOrder savedOrder) {

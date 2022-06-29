@@ -7,7 +7,7 @@ exports[`TestQueue should render the test queue 1`] = `
     style="padding-top: 80px;"
   >
     <div
-      class="grid-container queue-container-wide"
+      class="grid-container"
     >
       <div
         class="position-relative"
@@ -51,7 +51,7 @@ exports[`TestQueue should render the test queue 1`] = `
         </div>
       </div>
       <div
-        class="position-relative grid-container prime-container prime-queue-item card-container queue-container-wide"
+        class="position-relative grid-container prime-container prime-queue-item card-container"
         data-testid="test-card-abc"
       >
         <div
@@ -175,7 +175,7 @@ exports[`TestQueue should render the test queue 1`] = `
                   class="grid-row"
                 >
                   <div
-                    class="desktop:grid-col-4 flex-col-container padding-right-2"
+                    class="grid-col-4 flex-col-container padding-right-2"
                   >
                     <button
                       class="usa-button usa-button--unstyled test-questionnaire-btn"
@@ -194,7 +194,7 @@ exports[`TestQueue should render the test queue 1`] = `
                     </div>
                   </div>
                   <div
-                    class="desktop:grid-col-fill flex-col-container"
+                    class="flex-col-container"
                   >
                     <div
                       class=""
@@ -359,15 +359,15 @@ exports[`TestQueue should render the test queue 1`] = `
               </div>
             </div>
             <div
-              class="prime-test-result tablet:grid-col-3"
+              class="tablet:grid-col-3 prime-test-result"
             >
               <form
-                class="usa-form maxw-none"
+                class="usa-form"
               >
                 <h4
                   class="prime-radio__title"
                 >
-                  COVID-19 results
+                  SARS-CoV-2 results
                 </h4>
                 <div
                   class="usa-form-group prime-radio__group"
@@ -457,7 +457,7 @@ exports[`TestQueue should render the test queue 1`] = `
         </div>
       </div>
       <div
-        class="position-relative grid-container prime-container prime-queue-item card-container queue-container-wide"
+        class="position-relative grid-container prime-container prime-queue-item card-container"
         data-testid="test-card-def"
       >
         <div
@@ -581,7 +581,7 @@ exports[`TestQueue should render the test queue 1`] = `
                   class="grid-row"
                 >
                   <div
-                    class="desktop:grid-col-4 flex-col-container padding-right-2"
+                    class="grid-col-4 flex-col-container padding-right-2"
                   >
                     <button
                       class="usa-button usa-button--unstyled test-questionnaire-btn"
@@ -600,7 +600,7 @@ exports[`TestQueue should render the test queue 1`] = `
                     </div>
                   </div>
                   <div
-                    class="desktop:grid-col-fill flex-col-container"
+                    class="flex-col-container"
                   >
                     <div
                       class=""
@@ -765,15 +765,15 @@ exports[`TestQueue should render the test queue 1`] = `
               </div>
             </div>
             <div
-              class="prime-test-result tablet:grid-col-3"
+              class="tablet:grid-col-3 prime-test-result"
             >
               <form
-                class="usa-form maxw-none"
+                class="usa-form"
               >
                 <h4
                   class="prime-radio__title"
                 >
-                  COVID-19 results
+                  SARS-CoV-2 results
                 </h4>
                 <div
                   class="usa-form-group prime-radio__group"

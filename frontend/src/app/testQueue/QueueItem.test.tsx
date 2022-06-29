@@ -10,13 +10,8 @@ import { MemoryRouter } from "react-router-dom";
 import { getAppInsights } from "../TelemetryService";
 import * as utils from "../utils/index";
 import { TestCorrectionReason } from "../testResults/TestResultCorrectionModal";
-import {
-  SubmitTestResultMultiplexDocument as SUBMIT_TEST_RESULT,
-  EditQueueItemMultiplexDocument as EDIT_QUEUE_ITEM,
-} from "../../generated/graphql";
-import * as generatedGraphql from "../../generated/graphql";
 
-import QueueItem, { MultiplexResult } from "./QueueItem";
+import QueueItem, { EDIT_QUEUE_ITEM, SUBMIT_TEST_RESULT } from "./QueueItem";
 
 jest.mock("../TelemetryService", () => ({
   getAppInsights: jest.fn(),
@@ -44,7 +39,6 @@ describe("QueueItem", () => {
   let store: MockStoreEnhanced<unknown, {}>;
   const mockStore = configureStore([]);
   const trackEventMock = jest.fn();
-  process.env.REACT_APP_MULTIPLEX_ENABLED = "true";
 
   beforeEach(() => {
     store = mockStore({
@@ -80,7 +74,7 @@ describe("QueueItem", () => {
                 testProps.selectedDeviceSpecimenTypeId
               }
               deviceSpecimenTypes={testProps.deviceSpecimenTypes}
-              selectedTestResults={testProps.selectedTestResults}
+              selectedTestResult={testProps.selectedTestResult}
               devices={testProps.devices}
               refetchQueue={testProps.refetchQueue}
               facilityId={testProps.facilityId}
@@ -115,7 +109,7 @@ describe("QueueItem", () => {
                 testProps.selectedDeviceSpecimenTypeId
               }
               deviceSpecimenTypes={testProps.deviceSpecimenTypes}
-              selectedTestResults={testProps.selectedTestResults}
+              selectedTestResult={testProps.selectedTestResult}
               devices={testProps.devices}
               refetchQueue={testProps.refetchQueue}
               facilityId={testProps.facilityId}
@@ -150,7 +144,7 @@ describe("QueueItem", () => {
                 testProps.selectedDeviceSpecimenTypeId
               }
               deviceSpecimenTypes={testProps.deviceSpecimenTypes}
-              selectedTestResults={testProps.selectedTestResults}
+              selectedTestResult={testProps.selectedTestResult}
               devices={testProps.devices}
               refetchQueue={testProps.refetchQueue}
               facilityId={testProps.facilityId}
@@ -187,7 +181,7 @@ describe("QueueItem", () => {
                 testProps.selectedDeviceSpecimenTypeId
               }
               deviceSpecimenTypes={testProps.deviceSpecimenTypes}
-              selectedTestResults={testProps.selectedTestResults}
+              selectedTestResult={testProps.selectedTestResult}
               devices={testProps.devices}
               refetchQueue={testProps.refetchQueue}
               facilityId={testProps.facilityId}
@@ -224,7 +218,7 @@ describe("QueueItem", () => {
                 testProps.selectedDeviceSpecimenTypeId
               }
               deviceSpecimenTypes={testProps.deviceSpecimenTypes}
-              selectedTestResults={testProps.selectedTestResults}
+              selectedTestResult={testProps.selectedTestResult}
               devices={testProps.devices}
               refetchQueue={testProps.refetchQueue}
               facilityId={testProps.facilityId}
@@ -268,7 +262,7 @@ describe("QueueItem", () => {
                 testProps.selectedDeviceSpecimenTypeId
               }
               deviceSpecimenTypes={testProps.deviceSpecimenTypes}
-              selectedTestResults={testProps.selectedTestResults}
+              selectedTestResult={testProps.selectedTestResult}
               devices={testProps.devices}
               refetchQueue={testProps.refetchQueue}
               facilityId={testProps.facilityId}
@@ -301,159 +295,90 @@ describe("QueueItem", () => {
     ).not.toBeInTheDocument();
   });
 
-  describe("on device specimen type change", () => {
+  it("updates test order on device specimen type change", async () => {
     let editQueueMockIsDone = false;
-    beforeEach(() => {
-      editQueueMockIsDone = false;
 
-      const editQueueMocks = [
-        {
-          request: {
-            query: EDIT_QUEUE_ITEM,
-            variables: {
-              id: internalId,
-              deviceSpecimenType: "device-specimen-2",
-              deviceId: "lumira",
-              results: [{ diseaseName: "COVID-19", testResult: "POSITIVE" }],
-            },
-          },
-          result: () => {
-            editQueueMockIsDone = true;
-
-            return {
-              data: {
-                editQueueItemMultiplex: {
-                  results: [
-                    {
-                      disease: { name: "COVID-19" },
-                      testResult: "POSITIVE",
-                    },
-                  ],
-                  dateTested: null,
-                  deviceType: {
-                    internalId: internalId,
-                    testLength: 10,
-                  },
-                  deviceSpecimenType: {
-                    internalId: "device-specimen-2",
-                    deviceType: deviceTwo,
-                    specimenType: {},
-                  },
-                },
-              },
-            };
+    const editQueueMocks = [
+      {
+        request: {
+          query: EDIT_QUEUE_ITEM,
+          variables: {
+            id: internalId,
+            deviceSpecimenType: "device-specimen-2",
+            deviceId: "lumira",
+            result: "POSITIVE",
           },
         },
-        {
-          request: {
-            query: EDIT_QUEUE_ITEM,
-            variables: {
-              id: internalId,
-              deviceSpecimenType: "device-specimen-3",
-              deviceId: "multiplex",
-              results: [{ diseaseName: "COVID-19", testResult: "POSITIVE" }],
-            },
-          },
-          result: () => {
-            editQueueMockIsDone = true;
+        result: () => {
+          editQueueMockIsDone = true;
 
-            return {
-              data: {
-                editQueueItemMultiplex: {
-                  results: [
-                    {
-                      disease: { name: "COVID-19" },
-                      testResult: "POSITIVE",
-                    },
-                  ],
-                  dateTested: null,
-                  deviceType: {
-                    internalId: internalId,
-                    testLength: 10,
-                  },
-                  deviceSpecimenType: {
-                    internalId: "device-specimen-3",
-                    deviceType: deviceThree,
-                    specimenType: {},
-                  },
+          return {
+            data: {
+              editQueueItem: {
+                result: "UNDETERMINED",
+                dateTested: null,
+                deviceType: {
+                  internalId: internalId,
+                  testLength: 10,
+                },
+                deviceSpecimenType: {
+                  internalId: "device-specimen-2",
+                  deviceType: deviceTwo,
+                  specimenType: {},
                 },
               },
-            };
-          },
+            },
+          };
         },
-      ];
+      },
+    ];
 
-      render(
-        <>
-          <MemoryRouter>
-            <MockedProvider mocks={editQueueMocks} addTypename={false}>
-              <Provider store={store}>
-                <QueueItem
-                  internalId={testProps.internalId}
-                  patient={testProps.patient}
-                  askOnEntry={testProps.askOnEntry}
-                  selectedDeviceId={testProps.selectedDeviceId}
-                  selectedDeviceTestLength={testProps.selectedDeviceTestLength}
-                  selectedDeviceSpecimenTypeId={
-                    testProps.selectedDeviceSpecimenTypeId
-                  }
-                  deviceSpecimenTypes={testProps.deviceSpecimenTypes}
-                  selectedTestResults={[
-                    {
-                      disease: { name: "COVID-19" },
-                      testResult: "POSITIVE",
-                    },
-                  ]}
-                  devices={testProps.devices}
-                  refetchQueue={testProps.refetchQueue}
-                  facilityId={testProps.facilityId}
-                  dateTestedProp={testProps.dateTestedProp}
-                  facilityName="Foo facility"
-                  setStartTestPatientId={setStartTestPatientIdMock}
-                  startTestPatientId=""
-                />
-              </Provider>
-            </MockedProvider>
-          </MemoryRouter>
-          <ToastContainer
-            autoClose={5000}
-            closeButton={false}
-            limit={2}
-            position="bottom-center"
-            hideProgressBar={true}
-          />
-        </>
-      );
-    });
-    it("updates test order on device specimen type change", async () => {
-      const deviceDropdown = (
-        await screen.findAllByLabelText("Device", { exact: false })
-      )[1];
+    render(
+      <>
+        <MemoryRouter>
+          <MockedProvider mocks={editQueueMocks} addTypename={false}>
+            <Provider store={store}>
+              <QueueItem
+                internalId={testProps.internalId}
+                patient={testProps.patient}
+                askOnEntry={testProps.askOnEntry}
+                selectedDeviceId={testProps.selectedDeviceId}
+                selectedDeviceTestLength={testProps.selectedDeviceTestLength}
+                selectedDeviceSpecimenTypeId={
+                  testProps.selectedDeviceSpecimenTypeId
+                }
+                deviceSpecimenTypes={testProps.deviceSpecimenTypes}
+                selectedTestResult={testProps.selectedTestResult}
+                devices={testProps.devices}
+                refetchQueue={testProps.refetchQueue}
+                facilityId={testProps.facilityId}
+                dateTestedProp={testProps.dateTestedProp}
+                facilityName="Foo facility"
+                setStartTestPatientId={setStartTestPatientIdMock}
+                startTestPatientId=""
+              />
+            </Provider>
+          </MockedProvider>
+        </MemoryRouter>
+        <ToastContainer
+          autoClose={5000}
+          closeButton={false}
+          limit={2}
+          position="bottom-center"
+          hideProgressBar={true}
+        />
+      </>
+    );
 
-      // Change device type
-      userEvent.selectOptions(deviceDropdown, "LumiraDX");
-      userEvent.click(screen.getByLabelText("Positive", { exact: false }));
+    const deviceDropdown = (
+      await screen.findAllByLabelText("Device", { exact: false })
+    )[1];
 
-      await waitFor(() => expect(editQueueMockIsDone).toBe(true));
-    });
-    it("adds radio buttons for Flu A and Flu B when a multiplex device is chosen", async () => {
-      expect(screen.queryByText("Flu A")).not.toBeInTheDocument();
-      expect(screen.queryByText("Flu B")).not.toBeInTheDocument();
-      const deviceDropdown = (
-        await screen.findAllByLabelText("Device", { exact: false })
-      )[1];
+    // Change device type
+    userEvent.selectOptions(deviceDropdown, "LumiraDX");
+    userEvent.click(screen.getByLabelText("Positive", { exact: false }));
 
-      // Change device type
-      userEvent.selectOptions(deviceDropdown, "MultiplexMate");
-      userEvent.click(
-        screen.getAllByLabelText("Positive", { exact: false })[0]
-      );
-
-      await waitFor(() => expect(editQueueMockIsDone).toBe(true));
-
-      expect(await screen.findByText("Flu A")).toBeInTheDocument();
-      expect(await screen.findByText("Flu B")).toBeInTheDocument();
-    });
+    await waitFor(() => expect(editQueueMockIsDone).toBe(true));
   });
 
   describe("SMS delivery failure", () => {
@@ -477,17 +402,13 @@ describe("QueueItem", () => {
               id: internalId,
               deviceSpecimenType: "device-specimen-1",
               deviceId: internalId,
-              results: [
-                { diseaseName: "COVID-19", testResult: "UNDETERMINED" },
-              ],
+              result: "UNDETERMINED",
             },
           },
           result: {
             data: {
               editQueueItem: {
-                results: [
-                  { disease: { name: "COVID-19" }, testResult: "UNDETERMINED" },
-                ],
+                result: "UNDETERMINED",
                 dateTested: null,
                 deviceType: {
                   internalId: internalId,
@@ -509,9 +430,7 @@ describe("QueueItem", () => {
               patientId: internalId,
               deviceId: internalId,
               deviceSpecimenType: "device-specimen-1",
-              results: [
-                { diseaseName: "COVID-19", testResult: "UNDETERMINED" },
-              ],
+              result: "UNDETERMINED",
               dateTested: null,
             },
           },
@@ -519,7 +438,7 @@ describe("QueueItem", () => {
             submitTestMockIsDone = true;
             return {
               data: {
-                addTestResultMultiplex: {
+                addTestResultNew: {
                   testResult: {
                     internalId: internalId,
                   },
@@ -546,12 +465,7 @@ describe("QueueItem", () => {
                     testProps.selectedDeviceSpecimenTypeId
                   }
                   deviceSpecimenTypes={testProps.deviceSpecimenTypes}
-                  selectedTestResults={[
-                    {
-                      disease: { name: "COVID-19" },
-                      testResult: "UNDETERMINED",
-                    },
-                  ]}
+                  selectedTestResult={testProps.selectedTestResult}
                   devices={testProps.devices}
                   refetchQueue={testProps.refetchQueue}
                   facilityId={testProps.facilityId}
@@ -640,7 +554,7 @@ describe("QueueItem", () => {
                 testProps.selectedDeviceSpecimenTypeId
               }
               deviceSpecimenTypes={testProps.deviceSpecimenTypes}
-              selectedTestResults={testProps.selectedTestResults}
+              selectedTestResult={testProps.selectedTestResult}
               devices={testProps.devices}
               refetchQueue={testProps.refetchQueue}
               facilityId={testProps.facilityId}
@@ -662,6 +576,7 @@ describe("QueueItem", () => {
     userEvent.type(dateInput, `${updatedDateString}T00:00`);
     userEvent.type(timeInput, updatedTimeString);
   });
+
   it("does not allow future date for test date", async () => {
     render(
       <>
@@ -678,9 +593,7 @@ describe("QueueItem", () => {
                   testProps.selectedDeviceSpecimenTypeId
                 }
                 deviceSpecimenTypes={testProps.deviceSpecimenTypes}
-                selectedTestResults={[
-                  { disease: { name: "COVID-19" }, testResult: "UNDETERMINED" },
-                ]}
+                selectedTestResult={testProps.selectedTestResult}
                 devices={testProps.devices}
                 refetchQueue={testProps.refetchQueue}
                 facilityId={testProps.facilityId}
@@ -750,9 +663,7 @@ describe("QueueItem", () => {
                 testProps.selectedDeviceSpecimenTypeId
               }
               deviceSpecimenTypes={testProps.deviceSpecimenTypes}
-              selectedTestResults={[
-                { disease: { name: "COVID-19" }, testResult: "UNDETERMINED" },
-              ]}
+              selectedTestResult={testProps.selectedTestResult}
               devices={testProps.devices}
               refetchQueue={testProps.refetchQueue}
               facilityId={testProps.facilityId}
@@ -773,6 +684,13 @@ describe("QueueItem", () => {
     expect(dateInput).toBeInTheDocument();
     userEvent.type(dateInput, moment().add(5, "days").format("YYYY-MM-DD"));
     dateInput.blur();
+
+    // Select result
+    userEvent.click(
+      await screen.findByLabelText("Inconclusive", {
+        exact: false,
+      })
+    );
 
     await waitFor(async () =>
       expect(await screen.findByText("Submit")).toBeEnabled()
@@ -804,7 +722,7 @@ describe("QueueItem", () => {
               testProps.selectedDeviceSpecimenTypeId
             }
             deviceSpecimenTypes={testProps.deviceSpecimenTypes}
-            selectedTestResults={testProps.selectedTestResults}
+            selectedTestResult={testProps.selectedTestResult}
             devices={testProps.devices}
             refetchQueue={testProps.refetchQueue}
             facilityId={testProps.facilityId}
@@ -845,7 +763,7 @@ describe("QueueItem", () => {
                 testProps.selectedDeviceSpecimenTypeId
               }
               deviceSpecimenTypes={testProps.deviceSpecimenTypes}
-              selectedTestResults={testProps.selectedTestResults}
+              selectedTestResult={testProps.selectedTestResult}
               devices={testProps.devices}
               refetchQueue={testProps.refetchQueue}
               facilityId={testProps.facilityId}
@@ -888,9 +806,7 @@ describe("QueueItem", () => {
                   testProps.selectedDeviceSpecimenTypeId
                 }
                 deviceSpecimenTypes={testProps.deviceSpecimenTypes}
-                selectedTestResults={[
-                  { disease: { name: "COVID-19" }, testResult: "UNDETERMINED" },
-                ]}
+                selectedTestResult={testProps.selectedTestResult}
                 devices={testProps.devices}
                 refetchQueue={testProps.refetchQueue}
                 facilityId={testProps.facilityId}
@@ -916,19 +832,10 @@ describe("QueueItem", () => {
     });
 
     it("tracks submitted test result as custom event", async () => {
-      // Select result
-      userEvent.click(
-        screen.getByLabelText("Inconclusive", {
-          exact: false,
-        })
-      );
-
-      // Wait for the genuinely long-running "edit queue" operation to finish
-      await new Promise((resolve) => setTimeout(resolve, 1000));
-
       // Submit
       userEvent.click(screen.getByText("Submit"));
-      userEvent.click(screen.getByText(/Submit anyway/i));
+      userEvent.click(screen.getByText("Submit anyway"));
+
       expect(trackEventMock).toHaveBeenCalledWith({
         name: "Submit Test Result",
       });
@@ -952,221 +859,6 @@ describe("QueueItem", () => {
       });
     });
   });
-  describe("when a multiplex device is chosen", () => {
-    beforeEach(() => {
-      const selectedTestResults: MultiplexResult[] = [
-        {
-          disease: { name: "COVID-19" },
-          testResult: "POSITIVE",
-        },
-        { disease: { name: "Flu A" }, testResult: "NEGATIVE" },
-        { disease: { name: "Flu B" }, testResult: "NEGATIVE" },
-      ];
-      const editQueueMocks = [
-        {
-          request: {
-            query: EDIT_QUEUE_ITEM,
-            variables: {
-              id: internalId,
-              deviceSpecimenType: "device-specimen-3",
-              deviceId: "multiplex",
-              results: [
-                { diseaseName: "COVID-19", testResult: "POSITIVE" },
-                {
-                  diseaseName: "Flu A",
-                  testResult: "POSITIVE",
-                },
-                { diseaseName: "Flu B", testResult: "NEGATIVE" },
-              ],
-            },
-          },
-          result: () => {
-            return {
-              data: {
-                editQueueItemMultiplex: {
-                  results: [
-                    {
-                      disease: { name: "COVID-19" },
-                      testResult: "POSITIVE",
-                    },
-                    {
-                      disease: { name: "Flu A" },
-                      testResult: "POSITIVE",
-                    },
-                    {
-                      disease: { name: "Flu B" },
-                      testResult: "NEGATIVE",
-                    },
-                  ],
-                  dateTested: null,
-                  deviceType: {
-                    internalId: internalId,
-                    testLength: 10,
-                  },
-                  deviceSpecimenType: {
-                    internalId: "device-specimen-3",
-                    deviceType: deviceThree,
-                    specimenType: {},
-                  },
-                },
-              },
-            };
-          },
-        },
-        {
-          request: {
-            query: EDIT_QUEUE_ITEM,
-            variables: {
-              id: internalId,
-              deviceSpecimenType: "device-specimen-3",
-              deviceId: "multiplex",
-              results: [
-                { diseaseName: "COVID-19", testResult: "POSITIVE" },
-                {
-                  diseaseName: "Flu A",
-                  testResult: "NEGATIVE",
-                },
-                { diseaseName: "Flu B", testResult: "POSITIVE" },
-              ],
-            },
-          },
-          result: () => {
-            return {
-              data: {
-                editQueueItemMultiplex: {
-                  results: [
-                    {
-                      disease: { name: "COVID-19" },
-                      testResult: "POSITIVE",
-                    },
-                    {
-                      disease: { name: "Flu A" },
-                      testResult: "NEGATIVE",
-                    },
-                    {
-                      disease: { name: "Flu B" },
-                      testResult: "POSITIVE",
-                    },
-                  ],
-                  dateTested: null,
-                  deviceType: {
-                    internalId: internalId,
-                    testLength: 10,
-                  },
-                  deviceSpecimenType: {
-                    internalId: "device-specimen-3",
-                    deviceType: deviceThree,
-                    specimenType: {},
-                  },
-                },
-              },
-            };
-          },
-        },
-        {
-          request: {
-            query: EDIT_QUEUE_ITEM,
-            variables: {
-              id: internalId,
-              deviceSpecimenType: "device-specimen-3",
-              deviceId: "multiplex",
-              results: [
-                { diseaseName: "COVID-19", testResult: "UNDETERMINED" },
-                {
-                  diseaseName: "Flu A",
-                  testResult: "UNDETERMINED",
-                },
-                { diseaseName: "Flu B", testResult: "UNDETERMINED" },
-              ],
-            },
-          },
-          result: () => {
-            return {
-              data: {
-                editQueueItemMultiplex: {
-                  results: [
-                    {
-                      disease: { name: "COVID-19" },
-                      testResult: "UNDETERMINED",
-                    },
-                    {
-                      disease: { name: "Flu A" },
-                      testResult: "UNDETERMINED",
-                    },
-                    {
-                      disease: { name: "Flu B" },
-                      testResult: "UNDETERMINED",
-                    },
-                  ],
-                  dateTested: null,
-                  deviceType: {
-                    internalId: internalId,
-                    testLength: 10,
-                  },
-                  deviceSpecimenType: {
-                    internalId: "device-specimen-3",
-                    deviceType: deviceThree,
-                    specimenType: {},
-                  },
-                },
-              },
-            };
-          },
-        },
-      ];
-      render(
-        <MemoryRouter>
-          <MockedProvider mocks={editQueueMocks} addTypename={false}>
-            <Provider store={store}>
-              <QueueItem
-                internalId={testProps.internalId}
-                patient={testProps.patient}
-                askOnEntry={testProps.askOnEntry}
-                selectedDeviceId="multiplex"
-                selectedDeviceTestLength={testProps.selectedDeviceTestLength}
-                selectedDeviceSpecimenTypeId="device-specimen-3"
-                deviceSpecimenTypes={testProps.deviceSpecimenTypes}
-                selectedTestResults={selectedTestResults}
-                devices={testProps.devices}
-                refetchQueue={testProps.refetchQueue}
-                facilityId={testProps.facilityId}
-                dateTestedProp={testProps.dateTestedProp}
-                facilityName="Foo facility"
-                setStartTestPatientId={setStartTestPatientIdMock}
-                startTestPatientId=""
-              />
-            </Provider>
-          </MockedProvider>
-        </MemoryRouter>
-      );
-    });
-
-    it("renders radio buttons with results for Flu A and Flu B", () => {
-      expect(screen.getByText("Flu A")).toBeInTheDocument();
-      expect(screen.getByText("Flu B")).toBeInTheDocument();
-
-      expect(screen.getAllByLabelText("Positive (+)")[0]).toBeChecked();
-      expect(screen.getAllByLabelText("Positive (+)")[1]).not.toBeChecked();
-      expect(screen.getAllByLabelText("Positive (+)")[2]).not.toBeChecked();
-      expect(screen.getAllByLabelText("Negative (-)")[0]).not.toBeChecked();
-      expect(screen.getAllByLabelText("Negative (-)")[1]).toBeChecked();
-      expect(screen.getAllByLabelText("Negative (-)")[2]).toBeChecked();
-      expect(
-        screen.getByLabelText("inconclusive", { exact: false })
-      ).not.toBeChecked();
-    });
-
-    it("updates the result when a new radio is clicked", async () => {
-      expect(screen.getAllByLabelText("Positive (+)")[1]).not.toBeChecked();
-      userEvent.click(screen.getAllByLabelText("Positive (+)")[1]);
-
-      const editQueueSpy = jest.spyOn(
-        generatedGraphql,
-        "useEditQueueItemMultiplexMutation"
-      );
-      await waitFor(() => expect(editQueueSpy).toHaveBeenCalled());
-    });
-  });
 });
 
 const internalId = "f5c7658d-a0d5-4ec5-a1c9-eafc85fe7554";
@@ -1174,28 +866,12 @@ const deviceOne = {
   name: "Access Bio CareStart",
   internalId: internalId,
   testLength: 10,
-  supportedDiseases: [{ internalId: "1", name: "COVID-19" }],
 };
 
 const deviceTwo = {
   name: "LumiraDX",
   internalId: "lumira",
   testLength: 15,
-  supportedDiseases: [{ internalId: "1", name: "COVID-19" }],
-};
-
-const deviceThree = {
-  name: "MultiplexMate",
-  internalId: "multiplex",
-  testLength: 15,
-  supportedDiseases: [
-    { internalId: "1", name: "COVID-19" },
-    { internalId: "2", name: "Flu A" },
-    {
-      internalId: "3",
-      name: "Flu B",
-    },
-  ],
 };
 
 const testProps = {
@@ -1230,9 +906,9 @@ const testProps = {
   selectedDeviceId: internalId,
   selectedDeviceTestLength: 10,
   selectedDeviceSpecimenTypeId: "device-specimen-1",
-  selectedTestResults: [] as any,
+  selectedTestResult: {} as any,
   dateTestedProp: "",
-  refetchQueue: jest.fn().mockReturnValue(null),
+  refetchQueue: () => null,
   facilityId: "Hogwarts+123",
   patientLinkId: "",
   deviceSpecimenTypes: [
@@ -1252,14 +928,6 @@ const testProps = {
         name: "Specimen 2",
       },
     },
-    {
-      internalId: "device-specimen-3",
-      deviceType: deviceThree,
-      specimenType: {
-        internalId: "specimen-3",
-        name: "Specimen 3",
-      },
-    },
   ] as DeviceSpecimenType[],
 };
 
@@ -1267,7 +935,6 @@ const nowUTC = moment(new Date(fakeDate))
   .seconds(0)
   .milliseconds(0)
   .toISOString();
-
 const updatedDateUTC = moment(new Date(updatedDate))
   .seconds(0)
   .milliseconds(0)
@@ -1285,13 +952,13 @@ const mocks = [
         id: internalId,
         deviceId: "lumira",
         deviceSpecimenType: "device-specimen-2",
-        results: [],
+        result: {},
       },
     },
     result: {
       data: {
         editQueueItem: {
-          results: [],
+          result: {},
           dateTested: null,
           deviceType: deviceTwo,
           deviceSpecimenType: {
@@ -1311,16 +978,14 @@ const mocks = [
         deviceId: internalId,
         deviceSpecimenType: "device-specimen-1",
         dateTested: nowUTC,
-        results: [{ diseaseName: "COVID-19", testResult: "UNDETERMINED" }],
+        result: {},
       },
     },
     result: {
       data: {
         editQueueItem: {
-          results: [
-            { disease: { name: "COVID-19" }, testResult: "UNDETERMINED" },
-          ],
-          dateTested: nowUTC,
+          result: {},
+          dateTested: null,
           deviceType: deviceOne,
           deviceSpecimenType: {
             internalId: "device-specimen-1",
@@ -1339,13 +1004,13 @@ const mocks = [
         deviceId: internalId,
         deviceSpecimenType: "device-specimen-1",
         dateTested: updatedDateUTC,
-        results: [],
+        result: {},
       },
     },
     result: {
       data: {
         editQueueItem: {
-          results: [],
+          result: {},
           dateTested: null,
           deviceType: {
             internalId: internalId,
@@ -1368,13 +1033,13 @@ const mocks = [
         deviceId: internalId,
         deviceSpecimenType: "device-specimen-1",
         dateTested: updatedDateTimeUTC,
-        results: [],
+        result: {},
       },
     },
     result: {
       data: {
         editQueueItem: {
-          results: [],
+          result: {},
           dateTested: null,
           deviceType: {
             internalId: internalId,
@@ -1385,28 +1050,6 @@ const mocks = [
             deviceType: deviceOne,
             specimenType: {},
           },
-        },
-      },
-    },
-  },
-  {
-    request: {
-      query: SUBMIT_TEST_RESULT,
-      variables: {
-        patientId: internalId,
-        deviceId: internalId,
-        deviceSpecimenType: "device-specimen-1",
-        results: [{ diseaseName: "COVID-19", testResult: "UNDETERMINED" }],
-        dateTested: null,
-      },
-    },
-    result: {
-      data: {
-        addTestResultMultiplex: {
-          testResult: {
-            internalId: internalId,
-          },
-          deliverySuccess: false,
         },
       },
     },

@@ -2,29 +2,19 @@ import React from "react";
 import { render, screen } from "@testing-library/react";
 import userEvent from "@testing-library/user-event";
 
-import { DiseaseResult } from "../../generated/graphql";
+import TestResultInputForm from "./TestResultInputForm";
 
-import CovidResultInputForm from "./CovidResultInputForm";
+jest.mock("uuid");
 
 describe("TestResultInputForm", () => {
-  const positiveResult: DiseaseResult[] = [
-    {
-      diseaseName: "COVID-19",
-      testResult: "POSITIVE",
-    },
-  ];
-
-  const onChangeFn = jest.fn();
-  const onSubmitFn = jest.fn();
-
   it("should render with a value", () => {
     render(
-      <CovidResultInputForm
+      <TestResultInputForm
         queueItemId={"5d315d18-82f8-4025-a051-1a509e15c880"}
-        testResults={positiveResult}
+        testResultValue="POSITIVE"
         isSubmitDisabled={undefined}
-        onChange={onChangeFn}
-        onSubmit={onSubmitFn}
+        onChange={jest.fn()}
+        onSubmit={jest.fn()}
       />
     );
 
@@ -35,11 +25,11 @@ describe("TestResultInputForm", () => {
 
   it("should render without a value", () => {
     render(
-      <CovidResultInputForm
+      <TestResultInputForm
         queueItemId={"5d315d18-82f8-4025-a051-1a509e15c880"}
-        testResults={[]}
-        onChange={onChangeFn}
-        onSubmit={onSubmitFn}
+        testResultValue={undefined}
+        onChange={jest.fn()}
+        onSubmit={jest.fn()}
       />
     );
 
@@ -48,77 +38,101 @@ describe("TestResultInputForm", () => {
     expect(screen.getByLabelText("Inconclusive")).not.toBeChecked();
   });
 
-  it("should pass back the result value when clicked", async () => {
+  it("should pass back the result value when clicked", () => {
+    const onChange = jest.fn();
     render(
-      <CovidResultInputForm
+      <TestResultInputForm
         queueItemId={"5d315d18-82f8-4025-a051-1a509e15c880"}
-        testResults={[]}
-        onChange={onChangeFn}
-        onSubmit={onSubmitFn}
+        testResultValue={undefined}
+        onChange={onChange}
+        onSubmit={jest.fn()}
       />
     );
 
     userEvent.click(screen.getByLabelText("Negative (-)"));
-    expect(onChangeFn).toBeCalledWith([
-      { diseaseName: "COVID-19", testResult: "NEGATIVE" },
-    ]);
+
+    expect(onChange).toBeCalledWith("NEGATIVE");
+  });
+
+  it("should remove value when it is already selected", () => {
+    const onChange = jest.fn();
+    render(
+      <TestResultInputForm
+        queueItemId={"5d315d18-82f8-4025-a051-1a509e15c880"}
+        testResultValue="POSITIVE"
+        onChange={onChange}
+        onSubmit={jest.fn()}
+      />
+    );
+
+    userEvent.click(screen.getByLabelText("Positive (+)"));
+
+    expect(onChange).toBeCalledWith(undefined);
   });
 
   it("should not submit when there is no value", () => {
+    const onSubmit = jest.fn();
     render(
-      <CovidResultInputForm
+      <TestResultInputForm
         queueItemId={"5d315d18-82f8-4025-a051-1a509e15c880"}
-        testResults={[]}
-        onChange={onChangeFn}
-        onSubmit={onSubmitFn}
+        testResultValue={undefined}
+        onChange={jest.fn()}
+        onSubmit={onSubmit}
       />
     );
-    expect(screen.getByText("Submit")).toBeDisabled();
+
     userEvent.click(screen.getByText("Submit"));
-    expect(onSubmitFn).toHaveBeenCalledTimes(0);
+
+    expect(onSubmit).toHaveBeenCalledTimes(0);
   });
 
   it("should not submit when there is a value but isSubmit is disabled", () => {
+    const onSubmit = jest.fn();
     render(
-      <CovidResultInputForm
+      <TestResultInputForm
         queueItemId={"5d315d18-82f8-4025-a051-1a509e15c880"}
-        testResults={positiveResult}
+        testResultValue="POSITIVE"
         isSubmitDisabled={true}
-        onChange={onChangeFn}
-        onSubmit={onSubmitFn}
+        onChange={jest.fn()}
+        onSubmit={onSubmit}
       />
     );
-    expect(screen.getByText("Submit")).toBeDisabled();
+
     userEvent.click(screen.getByText("Submit"));
-    expect(onSubmitFn).toHaveBeenCalledTimes(0);
+
+    expect(onSubmit).toHaveBeenCalledTimes(0);
   });
 
   it("should submit when there is a value but isSubmit is enabled", () => {
+    const onSubmit = jest.fn();
     render(
-      <CovidResultInputForm
+      <TestResultInputForm
         queueItemId={"5d315d18-82f8-4025-a051-1a509e15c880"}
-        testResults={positiveResult}
+        testResultValue="POSITIVE"
         isSubmitDisabled={false}
-        onChange={onChangeFn}
-        onSubmit={onSubmitFn}
+        onChange={jest.fn()}
+        onSubmit={onSubmit}
       />
     );
-    expect(screen.getByText("Submit")).toBeEnabled();
+
     userEvent.click(screen.getByText("Submit"));
-    expect(onSubmitFn).toHaveBeenCalledTimes(1);
+
+    expect(onSubmit).toHaveBeenCalledTimes(1);
   });
 
-  it("should submit when isSubmitDisabled is not passed as prop", () => {
+  it("should submit when there is a value", () => {
+    const onSubmit = jest.fn();
     render(
-      <CovidResultInputForm
+      <TestResultInputForm
         queueItemId={"5d315d18-82f8-4025-a051-1a509e15c880"}
-        testResults={positiveResult}
-        onChange={onChangeFn}
-        onSubmit={onSubmitFn}
+        testResultValue="POSITIVE"
+        onChange={jest.fn()}
+        onSubmit={onSubmit}
       />
     );
-    expect(screen.getByText("Submit")).toBeEnabled();
+
     userEvent.click(screen.getByText("Submit"));
-    expect(onSubmitFn).toHaveBeenCalledTimes(1);
+
+    expect(onSubmit).toHaveBeenCalledTimes(1);
   });
 });

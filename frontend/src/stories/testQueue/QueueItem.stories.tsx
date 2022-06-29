@@ -1,4 +1,4 @@
-import { Meta, Story } from "@storybook/react";
+import { Story, Meta } from "@storybook/react";
 import { uniqueId } from "lodash";
 import { Provider } from "react-redux";
 import { MemoryRouter } from "react-router-dom";
@@ -52,7 +52,6 @@ const device = {
   name: "TestPro 4000",
   internalId: "tp4000",
   testLength: 0.1,
-  supportedDiseases: [{ internalId: "d1", name: "COVID-19", loinc: "12345" }],
 };
 
 const defaultProps: QueueItemProps = {
@@ -95,9 +94,7 @@ const defaultProps: QueueItemProps = {
   } as any,
   selectedDeviceId: "tp4000",
   selectedDeviceTestLength: 0.1,
-  selectedTestResults: [
-    { disease: { name: "COVID-19" }, testResult: "UNKNOWN" },
-  ],
+  selectedTestResult: "UNKNOWN",
   dateTestedProp: "",
   refetchQueue: () => {},
   facilityName: "Facility Name",
@@ -144,9 +141,7 @@ CompletedIndicator.args = {
     pregnancy: "no",
     symptoms: "{}",
   } as any,
-  selectedTestResults: [
-    { disease: { name: "COVID-19" }, testResult: "NEGATIVE" },
-  ],
+  selectedTestResult: "NEGATIVE",
 };
 
 export const FailOnSubmit = Template.bind({});
@@ -158,9 +153,7 @@ FailOnSubmit.args = {
     pregnancy: "no",
     symptoms: "{}",
   } as any,
-  selectedTestResults: [
-    { disease: { name: "COVID-19" }, testResult: "NEGATIVE" },
-  ],
+  selectedTestResult: "NEGATIVE",
   patient: {
     ...defaultProps.patient,
     internalId: "this-should-fail",
