@@ -26,7 +26,7 @@ const ResultsNav = () => {
                 end
                 className={classNameByActive}
               >
-                CSV upload
+                Upload spreadsheet
               </LinkWithQuery>
             </li>
             <li className="usa-nav__secondary-item">
@@ -34,7 +34,7 @@ const ResultsNav = () => {
                 to={`/results/upload/submissions`}
                 className={classNameByActive}
               >
-                CSV upload history
+                View upload history
               </LinkWithQuery>
             </li>
           </ul>

@@ -153,7 +153,6 @@ const Uploads = () => {
                 (CSV) spreadsheet. To upload your spreadsheet:
               </p>
               <ul className="usa-list">
-                {/* TODO: port to SR static site */}
                 <li>
                   <a href="https://reportstream.cdc.gov/assets/csv/ReportStream-StandardCSV-ExampleData-20220509.csv">
                     Download the spreadsheet template
@@ -173,9 +172,7 @@ const Uploads = () => {
               </ul>
               <p>
                 For more information about the spreadsheet, visit our{" "}
-                <a href="/getting-started/organizations-and-testing-facilities/csv-upload-guide">
-                  data template guide.
-                </a>
+                <a href="/results/upload/schema">data template guide.</a>
               </p>
               {reportId && (
                 <div>
@@ -229,12 +226,15 @@ const Uploads = () => {
                 </div>
               )}
               <FormGroup className="margin-bottom-3">
+                {/* TODO: should this be a hint? */}
                 <Label
-                  className="font-sans-xs"
+                  className="font-sans-xs usa-hint"
                   id="upload-csv-input-label"
                   htmlFor="upload-csv-input"
                 >
-                  Upload your lab results as a .csv.
+                  Upload your test results as a spreadsheet. You can create a
+                  .csv file in any spreadsheet application like Excel or Google
+                  Sheets
                 </Label>
                 <FileInput
                   key={fileInputResetValue}
