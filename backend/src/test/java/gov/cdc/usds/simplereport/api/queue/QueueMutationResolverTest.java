@@ -27,7 +27,7 @@ import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 
 @SliceTestConfiguration.WithSimpleReportStandardUser
-// TODO: make own Base superclass for mutation tests
+// make own Base superclass for mutation tests (#3935)
 class QueueMutationResolverTest extends BaseServiceTest<TestOrderService> {
   @Autowired private TestDataFactory _dataFactory;
   private UUID _patientId;
