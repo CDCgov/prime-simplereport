@@ -35,14 +35,16 @@ public class QueueMutationResolver implements GraphQLMutationResolver {
     _dts = dts;
   }
 
+  private UUID getDeviceSpecimenTypeId(String deviceID, UUID deviceSpecimenType) {
+    return deviceSpecimenType == null
+        ? _dts.getFirstDeviceSpecimenTypeForDeviceTypeId(UUID.fromString(deviceID)).getInternalId()
+        : deviceSpecimenType;
+  }
+
   public AddTestResultResponse addTestResultNew(
       String deviceID, UUID deviceSpecimenType, String result, UUID patientID, Date dateTested)
       throws NumberParseException {
-    UUID deviceSpecimenTypeId =
-        deviceSpecimenType == null
-            ? _dts.getFirstDeviceSpecimenTypeForDeviceTypeId(UUID.fromString(deviceID))
-                .getInternalId()
-            : deviceSpecimenType;
+    UUID deviceSpecimenTypeId = getDeviceSpecimenTypeId(deviceID, deviceSpecimenType);
 
     return _tos.addTestResult(
         deviceSpecimenTypeId, TestResult.valueOf(result), patientID, dateTested);
@@ -55,22 +57,14 @@ public class QueueMutationResolver implements GraphQLMutationResolver {
       UUID patientID,
       Date dateTested)
       throws NumberParseException {
-    UUID deviceSpecimenTypeId =
-        deviceSpecimenType == null
-            ? _dts.getFirstDeviceSpecimenTypeForDeviceTypeId(UUID.fromString(deviceID))
-                .getInternalId()
-            : deviceSpecimenType;
+    UUID deviceSpecimenTypeId = getDeviceSpecimenTypeId(deviceID, deviceSpecimenType);
 
     return _tos.addTestResultMultiplex(deviceSpecimenTypeId, results, patientID, dateTested);
   }
 
   public ApiTestOrder editQueueItem(
       UUID id, String deviceId, UUID deviceSpecimenType, String result, Date dateTested) {
-    UUID dst =
-        deviceSpecimenType == null
-            ? _dts.getFirstDeviceSpecimenTypeForDeviceTypeId(UUID.fromString(deviceId))
-                .getInternalId()
-            : deviceSpecimenType;
+    UUID dst = getDeviceSpecimenTypeId(deviceId, deviceSpecimenType);
 
     return new ApiTestOrder(_tos.editQueueItem(id, dst, result, dateTested));
   }
@@ -81,11 +75,7 @@ public class QueueMutationResolver implements GraphQLMutationResolver {
       UUID deviceSpecimenType,
       List<DiseaseResult> results,
       Date dateTested) {
-    UUID dst =
-        deviceSpecimenType == null
-            ? _dts.getFirstDeviceSpecimenTypeForDeviceTypeId(UUID.fromString(deviceId))
-                .getInternalId()
-            : deviceSpecimenType;
+    UUID dst = getDeviceSpecimenTypeId(deviceId, deviceSpecimenType);
 
     return new ApiTestOrder(_tos.editQueueItemMultiplex(id, dst, results, dateTested));
   }
