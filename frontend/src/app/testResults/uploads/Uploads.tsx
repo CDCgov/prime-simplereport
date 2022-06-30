@@ -159,7 +159,7 @@ const Uploads = () => {
               <ul className="usa-list">
                 <li>
                   <a href="https://reportstream.cdc.gov/assets/csv/ReportStream-StandardCSV-ExampleData-20220509.csv">
-                    Download the spreadsheet template
+                    Download the spreadsheet template and open it in Excel or another spreadsheet application
                   </a>
                 </li>
                 <li>
