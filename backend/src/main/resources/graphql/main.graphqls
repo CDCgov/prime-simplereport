@@ -229,6 +229,7 @@ type TestOrder {
   deviceType: DeviceType
   deviceSpecimenType: DeviceSpecimenType
   result: String
+  results: [MultiplexResult]
   dateTested: DateTime
   correctionStatus: String
   reasonForCorrection: String

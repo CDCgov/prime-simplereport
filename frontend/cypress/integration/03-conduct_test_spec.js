@@ -34,7 +34,7 @@ describe("Conducting a test", () => {
     });
     cy.get(".prime-home").contains(patientName);
     queueCard = "div.prime-queue-item:last-of-type";
-    cy.get(queueCard).contains("SARS-CoV-2 results");
+    cy.get(queueCard).contains("COVID-19 results");
   });
   it("completes the test", () => {
     cy.get(queueCard).within(() => {

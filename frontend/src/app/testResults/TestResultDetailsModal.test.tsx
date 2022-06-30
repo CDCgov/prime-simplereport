@@ -5,9 +5,16 @@ import { TestResult } from "../testQueue/QueueItem";
 
 import { DetachedTestResultDetailsModal } from "./TestResultDetailsModal";
 
-const testResult = {
+const nonMultiplexTestResult = {
   dateTested: "2022-01-28T17:56:48.143Z",
   result: "NEGATIVE" as TestResult,
+  results: [
+    {
+      disease: { __typename: "SupportedDisease", name: "COVID-19" },
+      testResult: "NEGATIVE" as TestResult,
+      __typename: "MultiplexResult",
+    },
+  ],
   correctionStatus: null,
   noSymptoms: false,
   symptoms: '{"00000":"false"}',
@@ -31,9 +38,28 @@ const testResult = {
   },
 };
 
+const multiplexTestResult = JSON.parse(JSON.stringify(nonMultiplexTestResult));
+multiplexTestResult["results"] = [
+  {
+    disease: { __typename: "SupportedDisease", name: "COVID-19" },
+    testResult: "POSITIVE" as TestResult,
+    __typename: "MultiplexResult",
+  },
+  {
+    disease: { __typename: "SupportedDisease", name: "Flu A" },
+    testResult: "NEGATIVE" as TestResult,
+    __typename: "MultiplexResult",
+  },
+  {
+    disease: { __typename: "SupportedDisease", name: "Flu B" },
+    testResult: "POSITIVE" as TestResult,
+    __typename: "MultiplexResult",
+  },
+];
+
 window.print = jest.fn();
 
-describe("TestResultDetailsModal", () => {
+describe("non-multiplex TestResultDetailsModal", () => {
   let component: any;
 
   beforeEach(() => {
@@ -43,7 +69,7 @@ describe("TestResultDetailsModal", () => {
 
     component = render(
       <DetachedTestResultDetailsModal
-        data={{ testResult }}
+        data={{ testResult: nonMultiplexTestResult }}
         testResultId="id"
         closeModal={() => {}}
       />
@@ -54,7 +80,45 @@ describe("TestResultDetailsModal", () => {
     expect(screen.getByText("01/28/2022 5:56pm")).toBeInTheDocument();
   });
 
+  it("shouldn't have flu A or B result rows", () => {
+    expect(screen.queryByText("Flu A result")).not.toBeInTheDocument();
+    expect(screen.queryByText("Flu B result")).not.toBeInTheDocument();
+  });
+
   it("matches screenshot", () => {
     expect(component).toMatchSnapshot();
   });
 });
+
+if (process.env.REACT_APP_MULTIPLEX_ENABLE) {
+  describe("Multiplex TestResultDetailsModal", () => {
+    let component: any;
+
+    beforeEach(() => {
+      ReactDOM.createPortal = jest.fn((element, _node) => {
+        return element;
+      }) as any;
+
+      component = render(
+        <DetachedTestResultDetailsModal
+          data={{ testResult: multiplexTestResult }}
+          testResultId="id"
+          closeModal={() => {}}
+        />
+      );
+    });
+
+    it("should render the test date and test time", () => {
+      expect(screen.getByText("01/28/2022 5:56pm")).toBeInTheDocument();
+    });
+
+    it("should have flu A or B result rows", () => {
+      expect(screen.getByText("Flu A result")).toBeInTheDocument();
+      expect(screen.getByText("Flu B result")).toBeInTheDocument();
+    });
+
+    it("matches screenshot", () => {
+      expect(component).toMatchSnapshot();
+    });
+  });
+}

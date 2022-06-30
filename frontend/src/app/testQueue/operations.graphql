@@ -1,0 +1,63 @@
+
+mutation RemovePatientFromQueue($patientId: ID!) {
+    removePatientFromQueue(patientId: $patientId)
+  }
+
+mutation EditQueueItemMultiplex(
+    $id: ID!
+    $deviceId: String
+    $deviceSpecimenType: ID
+    $results: [DiseaseResult]
+    $dateTested: DateTime
+  ) {
+    editQueueItemMultiplex(
+      id: $id
+      deviceId: $deviceId
+      deviceSpecimenType: $deviceSpecimenType
+      results: $results
+      dateTested: $dateTested
+    ) {
+      results {
+        disease {
+          name
+        }
+        testResult
+      }
+      dateTested
+      deviceType {
+        internalId
+        testLength
+      }
+      deviceSpecimenType {
+        internalId
+        deviceType {
+          internalId
+          testLength
+        }
+        specimenType {
+          internalId
+        }
+      }
+    }
+  }
+
+mutation SubmitTestResultMultiplex(
+    $patientId: ID!
+    $deviceId: String!
+    $deviceSpecimenType: ID
+    $results: [DiseaseResult]!
+    $dateTested: DateTime
+  ) {
+    addTestResultMultiplex(
+      patientId: $patientId
+      deviceId: $deviceId
+      deviceSpecimenType: $deviceSpecimenType
+      results: $results
+      dateTested: $dateTested
+    ) {
+      testResult {
+        internalId
+      }
+      deliverySuccess
+    }
+  }
