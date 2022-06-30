@@ -19,8 +19,8 @@ const CsvUploadGuide = () => {
                 </span>
               </h2>
               <p className="usa-intro text-base margin-bottom-4">
-                Step-by-step instructions and guidance for preparing and
-                uploading test results via a comma-separated values (CSV) file.
+                Step-by-step guidance for preparing and
+                uploading test results via a standard comma-separated values (CSV) spreadsheet.
               </p>
               <p>
                 Use a simple online tool to submit a CSV file with a{" "}
