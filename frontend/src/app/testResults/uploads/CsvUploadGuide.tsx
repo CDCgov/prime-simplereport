@@ -145,12 +145,12 @@ const CsvUploadGuide = () => {
                     Enter values into your CSV file
                   </h4>
                   <p>
-                    Using the{" "}
+                    Following the{" "}
                     <a href="/getting-started/testing-facilities/csv-schema">
                       {" "}
-                      CSV schema documentation
+                      CSV template guide
                     </a>{" "}
-                    as a guide, enter properly formatted values in the relevant
+                   , enter properly formatted values in the relevant
                     fields.
                   </p>
                 </li>
