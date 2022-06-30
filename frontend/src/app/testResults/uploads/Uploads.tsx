@@ -1,5 +1,5 @@
 import React, { useState } from "react";
-import { Button, FormGroup, Label, FileInput } from "@trussworks/react-uswds";
+import { Button, FormGroup, FileInput } from "@trussworks/react-uswds";
 
 import { showError } from "../../utils";
 import {
@@ -237,15 +237,6 @@ const Uploads = () => {
                 </div>
               )}
               <FormGroup className="margin-bottom-3">
-                <Label
-                  className="font-sans-xs usa-hint"
-                  id="upload-csv-input-label"
-                  htmlFor="upload-csv-input"
-                >
-                  Upload your test results as a spreadsheet. You can create a
-                  .csv file in any spreadsheet application like Excel or Google
-                  Sheets
-                </Label>
                 <FileInput
                   key={fileInputResetValue}
                   id="upload-csv-input"
