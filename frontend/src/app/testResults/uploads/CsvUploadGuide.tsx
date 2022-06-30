@@ -134,20 +134,7 @@ const CsvUploadGuide = () => {
                 Uploading a CSV file
               </h3>
               <ol className="usa-process-list">
-                <li className="usa-process-list__item">
-                  <h4 className="usa-process-list__heading">
-                    Log in to SimpleReport
-                  </h4>
-                  <ul className="margin-top-2">
-                    <li>
-                      Go to{" "}
-                      <a href="/login">https://SimpleReport.cdc.gov/login</a>
-                    </li>
-                    <li>Enter username</li>
-                    <li>Enter password</li>
-                    <li>Click "Sign in"</li>
-                  </ul>
-                </li>
+         
                 <li className="usa-process-list__item">
                   <h4 className="usa-process-list__heading">
                     Navigate to "Upload spreadsheet"
