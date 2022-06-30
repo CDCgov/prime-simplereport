@@ -5,7 +5,7 @@ import classnames from "classnames";
 import iconClose from "../../img/close.svg";
 import "./TestResultPrintModal.scss";
 import { QueryWrapper } from "../commonComponents/QueryWrapper";
-import { TestResult } from "../testQueue/QueueItem";
+import { MultiplexResult, TestResult } from "../testQueue/QueueItem";
 import { formatFullName } from "../utils/user";
 import { symptomsStringToArray } from "../utils/symptoms";
 import {
@@ -17,6 +17,7 @@ import { formatDateWithTimeOption } from "../utils/date";
 type Result = {
   dateTested: string;
   result: TestResult;
+  results?: MultiplexResult[];
   correctionStatus: TestCorrectionStatus;
   noSymptoms: boolean;
   symptoms: string;
@@ -45,6 +46,12 @@ export const testResultDetailsQuery = gql`
     testResult(id: $id) {
       dateTested
       result
+      results {
+        disease {
+          name
+        }
+        testResult
+      }
       correctionStatus
       symptoms
       symptomOnset
@@ -84,6 +91,7 @@ export const DetachedTestResultDetailsModal = ({ data, closeModal }: Props) => {
   const {
     dateTested,
     result,
+    results,
     correctionStatus,
     symptoms,
     symptomOnset,
@@ -95,7 +103,23 @@ export const DetachedTestResultDetailsModal = ({ data, closeModal }: Props) => {
 
   const removed = correctionStatus === "REMOVED";
   const symptomList = symptoms ? symptomsStringToArray(symptoms) : [];
-
+  const displayResult: { [diseaseResult: string]: TestResult | null } = {
+    covidResult: result,
+  };
+  const multiplexFeatureFlagEnabled =
+    process.env.REACT_APP_MULTIPLEX_ENABLED !== "false";
+  const hasMultiplexResults =
+    multiplexFeatureFlagEnabled &&
+    results &&
+    results.some((d) => d.disease.name !== "COVID-19");
+  if (hasMultiplexResults) {
+    displayResult["fluAResult"] = results.filter(
+      (d) => d.disease.name === "Flu A"
+    )[0].testResult;
+    displayResult["fluBResult"] = results.filter(
+      (d) => d.disease.name === "Flu B"
+    )[0].testResult;
+  }
   return (
     <Modal
       isOpen={true}
@@ -166,10 +190,27 @@ export const DetachedTestResultDetailsModal = ({ data, closeModal }: Props) => {
       <table className={containerClasses}>
         <tbody>
           <DetailsRow
-            label="SARS-CoV-2 result"
-            value={result}
+            label="COVID-19 result"
+            value={displayResult["covidResult"]}
             removed={removed}
           />
+
+          {hasMultiplexResults ? (
+            <>
+              <DetailsRow
+                label="Flu A result"
+                value={displayResult["fluAResult"]}
+                removed={removed}
+              />
+              <DetailsRow
+                label="Flu B result"
+                value={displayResult["fluBResult"]}
+                removed={removed}
+              />
+            </>
+          ) : (
+            <></>
+          )}
           <DetailsRow
             label="Test date"
             value={dateTested && formatDateWithTimeOption(dateTested, true)}
@@ -190,7 +231,6 @@ export const DetachedTestResultDetailsModal = ({ data, closeModal }: Props) => {
           <DetailsRow
             label="Symptom onset"
             value={symptomOnset && formatDateWithTimeOption(symptomOnset)}
-            indent
             removed={removed}
           />
           <DetailsRow
