@@ -191,10 +191,10 @@ const CsvUploadGuide = () => {
                 </li>
                 <li className="usa-process-list__item">
                   <h4 className="usa-process-list__heading">
-                    Navigate to "Upload"
+                    Navigate to "Upload spreadsheet"
                   </h4>
                   <p className="margin-top-2">
-                    "Upload" can be found in the main site navigation at the top
+                    You can find "Upload spreadsheet" under "Results" in the main site navigation at the top
                     of the page.
                   </p>
                 </li>
