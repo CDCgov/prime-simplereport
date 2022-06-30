@@ -14,15 +14,17 @@ import {
 } from "@testing-library/react";
 import userEvent from "@testing-library/user-event";
 
-import { GetTopLevelDashboardMetricsNewDocument } from "../generated/graphql";
+import {
+  GetFacilityQueueMultiplexDocument,
+  GetTopLevelDashboardMetricsNewDocument,
+} from "../generated/graphql";
 
 import App, { WHOAMI_QUERY } from "./App";
-import { queueQuery } from "./testQueue/TestQueue";
 import PrimeErrorBoundary from "./PrimeErrorBoundary";
 import { TRAINING_PURPOSES_ONLY } from "./commonComponents/TrainingNotification";
 import {
-  getStartDateFromDaysAgo,
   getEndDateFromDaysAgo,
+  getStartDateFromDaysAgo,
 } from "./analytics/Analytics";
 
 jest.mock("uuid");
@@ -131,7 +133,7 @@ const WhoAmIQueryMock = {
 };
 const facilityQueryMock = {
   request: {
-    query: queueQuery,
+    query: GetFacilityQueueMultiplexDocument,
     fetchPolicy: "no-cache",
     variables: {
       facilityId: "fec4de56-f4cc-4c61-b3d5-76869ca71296",

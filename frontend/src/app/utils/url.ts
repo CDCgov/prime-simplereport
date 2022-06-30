@@ -19,9 +19,11 @@ export const getPatientLinkIdFromUrl = (): string | null =>
 export const getActivationTokenFromUrl = (): string | null =>
   getParameterFromUrl("activationToken");
 
-export function getUrl(): string {
+export function getUrl(relative = false): string {
   if (process.env.REACT_APP_BASE_URL) {
-    const url = process.env.REACT_APP_BASE_URL + process.env.PUBLIC_URL;
+    const url = relative
+      ? process.env.PUBLIC_URL
+      : process.env.REACT_APP_BASE_URL + process.env.PUBLIC_URL;
     return url.charAt(url.length - 1) === "/" ? url : url + "/";
   }
   return "http://localhost:3000/";

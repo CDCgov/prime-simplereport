@@ -213,4 +213,25 @@ describe("Submissions", () => {
     expect(screen.getByText("reportId_2")).toBeInTheDocument();
     expect(screen.queryByText("reportId_3")).not.toBeInTheDocument();
   });
+
+  it("links to submission detail view", async () => {
+    render(
+      <Provider store={store}>
+        <MockedProvider mocks={getMocks()}>
+          <MemoryRouter>
+            <Submissions />
+          </MemoryRouter>
+        </MockedProvider>
+      </Provider>
+    );
+
+    await new Promise((resolve) => setTimeout(resolve, 0));
+
+    [result_1, result_2, result_3].forEach((result) => {
+      expect(screen.getByText(result.reportId).closest("a")).toHaveAttribute(
+        "href",
+        `/results/upload/submission/${result.internalId}`
+      );
+    });
+  });
 });

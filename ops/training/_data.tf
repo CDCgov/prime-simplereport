@@ -200,3 +200,8 @@ data "azurerm_key_vault_secret" "datahub_url" {
   name         = "datahub-url-test"
   key_vault_id = data.azurerm_key_vault.global.id
 }
+
+data "azurerm_key_vault_secret" "datahub_signing_key" {
+  name         = "datahub-signing-key-test"
+  key_vault_id = data.azurerm_key_vault.global.id
+}

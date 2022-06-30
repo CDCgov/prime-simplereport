@@ -10,8 +10,12 @@ import { MemoryRouter } from "react-router-dom";
 import { Provider } from "react-redux";
 import configureStore, { MockStoreEnhanced } from "redux-mock-store";
 
-import TestQueue, { queueQuery } from "./TestQueue";
-import { REMOVE_PATIENT_FROM_QUEUE } from "./QueueItem";
+import {
+  GetFacilityQueueMultiplexDocument,
+  RemovePatientFromQueueDocument,
+} from "../../generated/graphql";
+
+import TestQueue from "./TestQueue";
 import { QUERY_PATIENT } from "./addToQueue/AddToQueueSearch";
 
 jest.mock("@microsoft/applicationinsights-react-js", () => {
@@ -142,7 +146,7 @@ describe("TestQueue", () => {
 
       const mock = {
         request: {
-          query: queueQuery,
+          query: GetFacilityQueueMultiplexDocument,
           variables: {
             facilityId: "a1",
           },
@@ -189,7 +193,7 @@ describe("TestQueue", () => {
 
       const mock = {
         request: {
-          query: queueQuery,
+          query: GetFacilityQueueMultiplexDocument,
           variables: {
             facilityId: "a1",
           },
@@ -291,7 +295,7 @@ const createPatient = ({
   deviceSpecimenType: {
     internalId,
   },
-  result: "",
+  results: [],
   dateTested: null,
   patientLink: {
     internalId: "7df95d14-c9ca-406e-bed7-85da05d5eea1",
@@ -353,6 +357,7 @@ const result = {
           model: "lumira",
           name: "LumiraDx",
           testLength: 15,
+          supportedDiseases: [{ internalId: "1", name: "COVID-19" }],
           __typename: "DeviceType",
         },
         specimenType: {
@@ -369,6 +374,7 @@ const result = {
           model: "quidel",
           name: "Quidel Sofia 2",
           testLength: 10,
+          supportedDiseases: [{ internalId: "1", name: "COVID-19" }],
           __typename: "DeviceType",
         },
         specimenType: {
@@ -385,6 +391,7 @@ const result = {
           model: "quidel",
           name: "Quidel Sofia 2",
           testLength: 10,
+          supportedDiseases: [{ internalId: "1", name: "COVID-19" }],
           __typename: "DeviceType",
         },
         specimenType: {
@@ -401,7 +408,7 @@ const result = {
 const mocks = [
   {
     request: {
-      query: queueQuery,
+      query: GetFacilityQueueMultiplexDocument,
       variables: {
         facilityId: "a1",
       },
@@ -420,7 +427,7 @@ const mocks = [
   },
   {
     request: {
-      query: REMOVE_PATIENT_FROM_QUEUE,
+      query: RemovePatientFromQueueDocument,
       variables: {
         patientId: "abc",
       },
@@ -431,7 +438,7 @@ const mocks = [
   },
   {
     request: {
-      query: queueQuery,
+      query: GetFacilityQueueMultiplexDocument,
       variables: {
         facilityId: "a1",
       },
