@@ -206,6 +206,27 @@ const CsvSchemaDocumentation = () => {
               >
                 General formatting guidelines
               </h3>
+              <p>
+                The SimpleReport standard CSV template is a blend of the
+                Department of Health and Human Science's (HHS){" "}
+                <a
+                  href="https://www.hhs.gov/coronavirus/testing/covid-19-diagnostic-data-reporting/index.html"
+                  target="_blank"
+                  rel="noreferrer noopener"
+                  className="usa-link"
+                >
+                  requirements for COVID-19 test data
+                </a>{" "}
+                as well as those of numerous jurisdictions. This standard schema
+                will be accepted by state, tribal, local, or territorial (STLT)
+                 {" "}
+                <a
+                  href="/getting-started/organizations-and-testing-facilities/where-does-simplereport-work"
+                  className="usa-link"
+                >health departments
+                  partnered
+                with SimpleReport.</a>{" "}
+              </p>
 
               <h4 className="margin-top-4">Column headers and order</h4>
               <ul>
