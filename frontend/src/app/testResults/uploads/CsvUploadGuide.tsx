@@ -228,16 +228,16 @@ const CsvUploadGuide = () => {
                     </strong>
                   </p>
                   <p>
-                    SimpleReport validates all uploaded files against a{" "}
+                    SimpleReport checks all uploaded files against a{" "}
                     <a
                       href="/getting-started/testing-facilities/csv-schema"
                       className="usa-link"
                     >
-                      standard CSV schema
+                      standard CSV schema, or data structure..
                     </a>
-                    . If any errors are detected with a file's format or data,
-                    the application will alert you to specific changes you need
-                    to make before the file can be submitted.
+                    . If it detects any errors in a file's format or data,
+                    the application will alert you to the specific changes you need
+                    to make before submitting.
                   </p>
                   <p>Resolving errors with a CSV:</p>
                   <ul>
