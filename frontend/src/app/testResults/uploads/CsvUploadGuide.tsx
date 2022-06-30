@@ -239,7 +239,7 @@ const CsvUploadGuide = () => {
                     the application will alert you to the specific changes you need
                     to make before submitting.
                   </p>
-                  <p>Resolving errors with a CSV:</p>
+                  <p>To resolve errors in a CSV:</p>
                   <ul>
                     <li>
                       Review the list of errors and recommended changes
@@ -248,9 +248,9 @@ const CsvUploadGuide = () => {
                         href="/getting-started/testing-facilities/csv-schema"
                         className="usa-link"
                       >
-                        CSV schema documentation
+                        CSV template guide
                       </a>{" "}
-                      again for any adjustments to column headers or values.
+                      again for any adjustments you need to make to column headers or values.
                     </li>
                     <li>
                       Make the recommended changes to the file and re-export it
