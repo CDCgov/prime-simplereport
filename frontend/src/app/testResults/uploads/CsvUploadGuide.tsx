@@ -99,7 +99,7 @@ const CsvUploadGuide = () => {
               <ol className="usa-process-list">
                 <li className="usa-process-list__item">
                   <h4 className="usa-process-list__heading">
-                    Download the SimpleReport reference CSV and review the
+                    Download the SimpleReport CSV template and review the
                     documentation
                   </h4>
                   <p className="margin-top-05">
