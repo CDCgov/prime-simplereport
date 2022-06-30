@@ -15,3 +15,17 @@ export const symptomsStringToArray = (symptomString: string): SymptomName[] => {
     return acc;
   }, [] as SymptomName[]);
 };
+
+// symptoms should be a JSON string
+export function hasSymptomsForView(noSymptoms: boolean, symptoms: string) {
+  if (noSymptoms) {
+    return "No";
+  }
+  const symptomsList: Record<string, string> = JSON.parse(symptoms);
+  for (let key in symptomsList) {
+    if (symptomsList[key] === "true") {
+      return "Yes";
+    }
+  }
+  return "Unknown";
+}
