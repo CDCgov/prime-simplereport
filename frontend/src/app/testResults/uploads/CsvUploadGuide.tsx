@@ -224,7 +224,7 @@ const CsvUploadGuide = () => {
                   </ul>
                   <p>
                     <strong>
-                      Optional: If you receive errors after clicking "Upload"
+                      Optional: Fix any errors
                     </strong>
                   </p>
                   <p>
