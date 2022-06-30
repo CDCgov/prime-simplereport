@@ -42,11 +42,6 @@ describe("Uploads", () => {
     render(<TestContainer />);
 
     expect(await screen.findByText("Upload your results")).toBeInTheDocument();
-    expect(
-      await screen.findByText("Upload your test results as a spreadsheet", {
-        exact: false,
-      })
-    ).toBeInTheDocument();
     expect(await screen.findByText("Drag file here or")).toBeInTheDocument();
   });
 

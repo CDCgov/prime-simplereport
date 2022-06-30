@@ -120,7 +120,7 @@
     }
   }
 
-  div[title=filtered-result] .usa-table {
+  div[title="filtered-result"] .usa-table {
     margin-top: 0;
   }
 
@@ -144,5 +144,5 @@
 }
 
 .grid-container.results-wide-container {
-  max-width: 1400px;
+  max-width: 1024;
 }

@@ -6,7 +6,7 @@ exports[`ResultsNav displays the nav order correctly and defaults to 'Test Resul
     class="prime-home"
   >
     <div
-      class="grid-container"
+      class="grid-container results-wide-container"
     >
       <nav
         aria-label="Secondary navigation"
@@ -22,7 +22,7 @@ exports[`ResultsNav displays the nav order correctly and defaults to 'Test Resul
               class=""
               href="/results/1"
             >
-              Test results
+              View test results
             </a>
           </li>
           <li
