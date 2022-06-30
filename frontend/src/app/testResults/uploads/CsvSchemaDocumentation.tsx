@@ -102,8 +102,7 @@ const CsvSchemaDocumentation = () => {
                 </span>
               </h2>
               <p className="usa-intro text-base">
-                How to format data for submission to SimpleReport via CSV
-                upload.
+                How to format a CSV spreadsheet for submission to public health departments through SimpleReport.
               </p>
               <p>
                 The SimpleReport standard CSV schema is a blend of the
