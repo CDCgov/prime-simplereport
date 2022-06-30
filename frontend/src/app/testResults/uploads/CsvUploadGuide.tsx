@@ -109,7 +109,7 @@ const CsvUploadGuide = () => {
                       href="https://SimpleReport.cdc.gov/assets/csv/SimpleReport-StandardCSV-ExampleData-20220509.csv"
                       className="usa-link"
                     >
-                      standard CSV file
+                      CSV template file
                     </a>{" "}
                     and{" "}
                     <a href="/getting-started/testing-facilities/csv-schema">
