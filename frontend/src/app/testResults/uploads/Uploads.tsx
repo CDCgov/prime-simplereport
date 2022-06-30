@@ -159,8 +159,9 @@ const Uploads = () => {
               <ul className="usa-list">
                 <li>
                   <a href="https://reportstream.cdc.gov/assets/csv/ReportStream-StandardCSV-ExampleData-20220509.csv">
-                    Download the spreadsheet template and open it in Excel or another spreadsheet application
-                  </a>
+                    Download the spreadsheet template
+                  </a>{" "}
+                  and open it in Excel or another spreadsheet application
                 </li>
                 <li>
                   Add your data to the relevant fields in the template, or if
@@ -175,9 +176,13 @@ const Uploads = () => {
                 <li>Save your spreadsheet as a CSV file and upload it here</li>
               </ul>
               <p>
-                For more information about the spreadsheet, visit our{" "}
+                For more information about this process, visit our{" "}
                 <LinkWithQuery to="/results/upload/schema">
-                  data template guide.
+                  data template guide
+                </LinkWithQuery>{" "}
+                or{" "}
+                <LinkWithQuery to="/results/upload/guide">
+                  upload guide.
                 </LinkWithQuery>
               </p>
               {reportId && (

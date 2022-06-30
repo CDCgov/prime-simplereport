@@ -6,7 +6,7 @@ const CsvUploadGuide = () => {
   return (
     <div className="prime-home">
       <div className="grid-container">
-        <div className="prime-container card-container">
+        <div className="prime-container prime-container-padding-2x card-container prose">
           <div className="tablet:grid-col-8 usa-prose">
             <section id="anchor-top">
               <span className="text-base text-italic">
@@ -19,50 +19,10 @@ const CsvUploadGuide = () => {
                 </span>
               </h2>
               <p className="usa-intro text-base margin-bottom-4">
-                Step-by-step guidance for preparing and
-                uploading test results via a standard comma-separated values (CSV) spreadsheet.
+                Step-by-step guidance for preparing and uploading test results
+                via a standard comma-separated values (CSV) spreadsheet.
               </p>
-              <p>
-                Use a simple online tool to submit a CSV file with a{" "}
-                <a
-                  href="/getting-started/testing-facilities/csv-schema"
-                  className="usa-link"
-                >
-                  standard schema
-                </a>
-                . Receive real-time validation and feedback on file format and
-                field values before submission.
-              </p>
-              <div className="usa-alert usa-alert--info margin-y-6">
-                <div className="usa-alert__body">
-                  <h3 className="usa-alert__heading font-body-md margin-top-05">
-                    About CSV upload
-                  </h3>
-                  This feature is currently being piloted in select
-                  jurisdictions with organizations or facilities that have
-                  existing Electronic Medical Record (EMR) systems. Pilot
-                  partners are selected by recommendation from jurisdictions.
-                  Find out if your jurisdiction is{" "}
-                  <a href="/how-it-works/where-were-live" className="usa-link">
-                    partnered
-                  </a>{" "}
-                  with SimpleReport and{" "}
-                  <a
-                    href={
-                      "mailto:" +
-                      "TODO" +
-                      "?subject=Getting started with SimpleReport"
-                    }
-                    className="usa-link"
-                  >
-                    contact us
-                  </a>{" "}
-                  to learn more.
-                </div>
-              </div>
-              <p>
-                <strong>In this guide</strong>
-              </p>
+              <strong>In this guide</strong>
               <ul>
                 <li>
                   <a href="#preparing-a-csv" className="usa-link">
@@ -150,8 +110,7 @@ const CsvUploadGuide = () => {
                       {" "}
                       CSV template guide
                     </a>{" "}
-                   , enter properly formatted values in the relevant
-                    fields.
+                    , enter properly formatted values in the relevant fields.
                   </p>
                 </li>
                 <li className="usa-process-list__item">
@@ -194,8 +153,8 @@ const CsvUploadGuide = () => {
                     Navigate to "Upload spreadsheet"
                   </h4>
                   <p className="margin-top-2">
-                    You can find "Upload spreadsheet" under "Results" in the main site navigation at the top
-                    of the page.
+                    You can find "Upload spreadsheet" under "Results" in the
+                    main site navigation at the top of the page.
                   </p>
                 </li>
                 <li className="usa-process-list__item">
@@ -223,9 +182,7 @@ const CsvUploadGuide = () => {
                     </li>
                   </ul>
                   <p>
-                    <strong>
-                      Optional: Fix any errors
-                    </strong>
+                    <strong>Optional: Fix any errors</strong>
                   </p>
                   <p>
                     SimpleReport checks all uploaded files against a{" "}
@@ -235,8 +192,8 @@ const CsvUploadGuide = () => {
                     >
                       standard CSV schema, or data structure..
                     </a>
-                    . If it detects any errors in a file's format or data,
-                    the application will alert you to the specific changes you need
+                    . If it detects any errors in a file's format or data, the
+                    application will alert you to the specific changes you need
                     to make before submitting.
                   </p>
                   <p>To resolve errors in a CSV:</p>
@@ -250,7 +207,8 @@ const CsvUploadGuide = () => {
                       >
                         CSV template guide
                       </a>{" "}
-                      again for any adjustments you need to make to column headers or values.
+                      again for any adjustments you need to make to column
+                      headers or values.
                     </li>
                     <li>
                       Make the recommended changes to the file and re-export it

@@ -102,63 +102,9 @@ const CsvSchemaDocumentation = () => {
                 </span>
               </h2>
               <p className="usa-intro text-base">
-                How to format a CSV spreadsheet for submission to public health departments through SimpleReport.
+                How to format a CSV spreadsheet for submission to public health
+                departments through SimpleReport.
               </p>
-              <p>
-                The SimpleReport standard CSV schema is a blend of the
-                Department of Health and Human Science's (HHS){" "}
-                <a
-                  href="https://www.hhs.gov/coronavirus/testing/covid-19-diagnostic-data-reporting/index.html"
-                  target="_blank"
-                  rel="noreferrer noopener"
-                  className="usa-link"
-                >
-                  requirements for COVID-19 test data
-                </a>{" "}
-                as well as those of numerous jurisdictions. This standard schema
-                will be accepted by state, tribal, local, or territorial (STLT)
-                health departments{" "}
-                <a
-                  href="/getting-started/organizations-and-testing-facilities/where-does-simplereport-work"
-                  className="usa-link"
-                >
-                  partnered
-                </a>{" "}
-                with SimpleReport.{" "}
-              </p>
-
-              <div className="usa-alert usa-alert--info margin-y-6">
-                <div className="usa-alert__body">
-                  <h3 className="usa-alert__heading font-body-md margin-top-05">
-                    About CSV upload
-                  </h3>
-                  This documentation will help you prepare a file for CSV
-                  upload. This feature is currently being piloted in select
-                  jurisdictions with organizations or facilities that have
-                  existing Electronic Medical Record (EMR) systems. Pilot
-                  partners are selected by recommendation from jurisdictions.
-                  Find out if your jurisdiction is{" "}
-                  <a
-                    href="/getting-started/organizations-and-testing-facilities/where-does-simplereport-work"
-                    className="usa-link"
-                  >
-                    partnered
-                  </a>{" "}
-                  with SimpleReport and{" "}
-                  <a
-                    href={
-                      "mailto:" +
-                      "support@simplereport.gov" +
-                      "?subject=Getting started with SimpleReport"
-                    }
-                    className="usa-link"
-                  >
-                    contact us
-                  </a>{" "}
-                  to learn more.
-                </div>
-              </div>
-
               <p>
                 <strong>In this guide</strong>
               </p>
@@ -218,14 +164,13 @@ const CsvSchemaDocumentation = () => {
                   requirements for COVID-19 test data
                 </a>{" "}
                 as well as those of numerous jurisdictions. This standard schema
-                will be accepted by state, tribal, local, or territorial (STLT)
-                 {" "}
+                will be accepted by state, tribal, local, or territorial (STLT){" "}
                 <a
                   href="/getting-started/organizations-and-testing-facilities/where-does-simplereport-work"
                   className="usa-link"
-                >health departments
-                  partnered
-                with SimpleReport.</a>{" "}
+                >
+                  health departments partnered with SimpleReport.
+                </a>{" "}
               </p>
 
               <h4 className="margin-top-4">Column headers and order</h4>
