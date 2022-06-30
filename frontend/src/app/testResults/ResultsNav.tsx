@@ -8,7 +8,7 @@ const ResultsNav = () => {
 
   return (
     <div className="prime-home">
-      <div className="grid-container">
+      <div className="grid-container results-wide-container">
         <nav className="prime-secondary-nav" aria-label="Secondary navigation">
           <ul className="usa-nav__secondary-links prime-nav">
             <li className="usa-nav__secondary-item">
@@ -17,7 +17,7 @@ const ResultsNav = () => {
                 end
                 className={classNameByActive}
               >
-                Test results
+                View test results
               </LinkWithQuery>
             </li>
             <li className="usa-nav__secondary-item">

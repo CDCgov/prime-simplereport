@@ -84,7 +84,7 @@ const Submissions = () => {
           <div className="prime-container card-container">
             {/*Submission header*/}
             <div className="usa-card__header">
-              <h2>COVID-19 Submissions</h2>
+              <h2>Upload history</h2>
             </div>
 
             {/*filters*/}

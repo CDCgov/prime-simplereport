@@ -145,7 +145,7 @@ const Uploads = () => {
 
   return (
     <main className="prime-home">
-      <div className="grid-container">
+      <div className="grid-container results-wide-container">
         <div className="grid-row">
           <div className="prime-container card-container">
             <div className="usa-card__header">
