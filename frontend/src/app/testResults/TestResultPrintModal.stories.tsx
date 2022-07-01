@@ -65,7 +65,7 @@ positiveCovidProps.data.testResult.results = [
 ];
 
 const undeterminedCovidProps = cloneDeep(defaultProps);
-positiveCovidProps.data.testResult.results = [
+undeterminedCovidProps.data.testResult.results = [
   { disease: { name: "COVID-19" }, testResult: "UNDETERMINED" },
 ];
 
@@ -100,8 +100,15 @@ negativeAllMultiplexProps.data.testResult.results = [
 const undeterminedCovidMultiplexProps = cloneDeep(defaultProps);
 undeterminedCovidMultiplexProps.data.testResult.results = [
   { disease: { name: "COVID-19" }, testResult: "UNDETERMINED" },
-  { disease: { name: "Flu A" }, testResult: "NEGATIVE" },
+  { disease: { name: "Flu A" }, testResult: "POSITIVE" },
   { disease: { name: "Flu B" }, testResult: "NEGATIVE" },
+];
+
+const undeterminedAllMultiplexProps = cloneDeep(defaultProps);
+undeterminedAllMultiplexProps.data.testResult.results = [
+  { disease: { name: "COVID-19" }, testResult: "UNDETERMINED" },
+  { disease: { name: "Flu A" }, testResult: "UNDETERMINED" },
+  { disease: { name: "Flu B" }, testResult: "UNDETERMINED" },
 ];
 
 const Template: Story<TestResultPrintModalProps> = (args) => {
@@ -131,3 +138,6 @@ WithNegativeAllMultiplex.args = negativeAllMultiplexProps;
 
 export const WithUndeterminedCovidMultiplex = Template.bind({});
 WithUndeterminedCovidMultiplex.args = undeterminedCovidMultiplexProps;
+
+export const WithUndeterminedAllMultiplex = Template.bind({});
+WithUndeterminedAllMultiplex.args = undeterminedAllMultiplexProps;
