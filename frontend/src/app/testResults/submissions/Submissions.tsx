@@ -71,7 +71,6 @@ const Submissions = () => {
           </td>
           <td>{formatDateWithTimeOption(submission.createdAt, true)}</td>
           <td>{submission.recordsCount}</td>
-          <td>{submission.status}</td>
         </tr>
       );
     });
@@ -149,7 +148,6 @@ const Submissions = () => {
                 <th scope="col">Report ID</th>
                 <th scope="col">Date/Time submitted</th>
                 <th scope="col">Records</th>
-                <th scope="col">Status</th>
               </tr>
             </thead>
             <tbody>{SubmissionsTableRows(submissions)}</tbody>

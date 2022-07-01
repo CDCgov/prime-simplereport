@@ -2284,6 +2284,21 @@ export type GetTestResultDetailsQuery = {
         symptoms?: string | null | undefined;
         symptomOnset?: any | null | undefined;
         pregnancy?: string | null | undefined;
+        results?:
+          | Array<
+              | {
+                  __typename?: "MultiplexResult";
+                  testResult?: string | null | undefined;
+                  disease?:
+                    | { __typename?: "SupportedDisease"; name: string }
+                    | null
+                    | undefined;
+                }
+              | null
+              | undefined
+            >
+          | null
+          | undefined;
         deviceType?:
           | { __typename?: "DeviceType"; name: string }
           | null
@@ -2481,6 +2496,21 @@ export type GetFacilityResultsForCsvQuery = {
                   name: string;
                   isDeleted?: boolean | null | undefined;
                 }
+              | null
+              | undefined;
+            results?:
+              | Array<
+                  | {
+                      __typename?: "MultiplexResult";
+                      testResult?: string | null | undefined;
+                      disease?:
+                        | { __typename?: "SupportedDisease"; name: string }
+                        | null
+                        | undefined;
+                    }
+                  | null
+                  | undefined
+                >
               | null
               | undefined;
             deviceType?:
@@ -6340,6 +6370,12 @@ export const GetTestResultDetailsDocument = gql`
     testResult(id: $id) {
       dateTested
       result
+      results {
+        disease {
+          name
+        }
+        testResult
+      }
       correctionStatus
       symptoms
       symptomOnset
@@ -6752,6 +6788,12 @@ export const GetFacilityResultsForCsvDocument = gql`
       }
       dateTested
       result
+      results {
+        disease {
+          name
+        }
+        testResult
+      }
       correctionStatus
       reasonForCorrection
       deviceType {

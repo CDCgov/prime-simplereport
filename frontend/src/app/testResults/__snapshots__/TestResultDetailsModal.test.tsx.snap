@@ -1,6 +1,6 @@
 // Jest Snapshot v1, https://goo.gl/fbAQLP
 
-exports[`TestResultDetailsModal matches screenshot 1`] = `
+exports[`non-multiplex TestResultDetailsModal matches screenshot 1`] = `
 Object {
   "asFragment": [Function],
   "baseElement": <body
@@ -99,7 +99,7 @@ Object {
                 <th
                   class="text-bold text-no-strike text-ink padding-y-3 border-bottom-1px border-base-lighter width-card-lg text-left"
                 >
-                  SARS-CoV-2 result
+                  COVID-19 result
                 </th>
                 <td
                   class="padding-y-3 border-bottom-1px border-base-lighter"
@@ -145,7 +145,7 @@ Object {
               </tr>
               <tr>
                 <th
-                  class="text-bold text-no-strike text-ink padding-y-3 border-bottom-1px border-base-lighter width-card-lg text-left font-sans-sm padding-left-2"
+                  class="text-bold text-no-strike text-ink padding-y-3 border-bottom-1px border-base-lighter width-card-lg text-left"
                 >
                   Symptom onset
                 </th>
@@ -281,7 +281,7 @@ Object {
               <th
                 class="text-bold text-no-strike text-ink padding-y-3 border-bottom-1px border-base-lighter width-card-lg text-left"
               >
-                SARS-CoV-2 result
+                COVID-19 result
               </th>
               <td
                 class="padding-y-3 border-bottom-1px border-base-lighter"
@@ -327,7 +327,7 @@ Object {
             </tr>
             <tr>
               <th
-                class="text-bold text-no-strike text-ink padding-y-3 border-bottom-1px border-base-lighter width-card-lg text-left font-sans-sm padding-left-2"
+                class="text-bold text-no-strike text-ink padding-y-3 border-bottom-1px border-base-lighter width-card-lg text-left"
               >
                 Symptom onset
               </th>
