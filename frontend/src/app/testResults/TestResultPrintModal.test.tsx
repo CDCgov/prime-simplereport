@@ -4,12 +4,16 @@ import { cloneDeep } from "lodash";
 import MockDate from "mockdate";
 import ReactDOM from "react-dom";
 
+import { MultiplexResult } from "../testQueue/QueueItem";
+
 import { DetachedTestResultPrintModal } from "./TestResultPrintModal";
 
 const testResult = {
   dateTested: new Date("2022-01-28T17:56:48.143Z"),
   result: "NEGATIVE",
-  results: [{ disease: { name: "COVID-19" }, testResult: "NEGATIVE" }],
+  results: [
+    { disease: { name: "COVID-19" }, testResult: "NEGATIVE" },
+  ] as MultiplexResult[],
   correctionStatus: null,
   deviceType: {
     name: "Fake device",
@@ -33,7 +37,8 @@ const testResult = {
       firstName: "Ordering",
       middleName: null,
       lastName: "Provider",
-      NPI: "fake-npi",
+      NPI: "fake-npi" as string | undefined,
+      npi: undefined as string | undefined,
     },
   },
   testPerformed: {
@@ -132,16 +137,14 @@ if (process.env.MULTIPLEX_ENABLED === "true") {
     beforeEach(() => {
       const multiplexPxpTestResult = cloneDeep(testResult);
       multiplexPxpTestResult.results = [
-        // @ts-ignore
-        { disease: { name: "COVID-19" }, result: "NEGATIVE" },
-        // @ts-ignore
-        { disease: { name: "Flu A" }, result: "NEGATIVE" },
-        // @ts-ignore
-        { disease: { name: "Flu B" }, result: "NEGATIVE" },
+        {
+          disease: { name: "COVID-19" },
+          result: "NEGATIVE",
+        } as MultiplexResult,
+        { disease: { name: "Flu A" }, result: "NEGATIVE" } as MultiplexResult,
+        { disease: { name: "Flu B" }, result: "NEGATIVE" } as MultiplexResult,
       ];
-      // @ts-ignore
       multiplexPxpTestResult.facility.orderingProvider.NPI = undefined;
-      // @ts-ignore
       multiplexPxpTestResult.facility.orderingProvider.npi = "fake npi for pxp";
 
       ReactDOM.createPortal = jest.fn((element, _node) => {
