@@ -170,7 +170,7 @@ const Uploads = () => {
                 </li>
                 <li>
                   Make sure you include data for all fields marked “required” in
-                  row 2
+                  the CSV template guide
                 </li>
                 <li>Once you’ve entered your data, delete all example data</li>
                 <li>Save your spreadsheet as a CSV file and upload it here</li>
