@@ -7,40 +7,32 @@ const ResultsNav = () => {
     isActive ? "active" : "";
 
   return (
-    <div className="prime-home">
-      <div className="grid-container results-wide-container">
-        <nav className="prime-secondary-nav" aria-label="Secondary navigation">
-          <ul className="usa-nav__secondary-links prime-nav">
-            <li className="usa-nav__secondary-item">
-              <LinkWithQuery
-                to={`/results/1`}
-                end
-                className={classNameByActive}
-              >
-                View test results
-              </LinkWithQuery>
-            </li>
-            <li className="usa-nav__secondary-item">
-              <LinkWithQuery
-                to={`/results/upload`}
-                end
-                className={classNameByActive}
-              >
-                Upload spreadsheet
-              </LinkWithQuery>
-            </li>
-            <li className="usa-nav__secondary-item">
-              <LinkWithQuery
-                to={`/results/upload/submissions`}
-                className={classNameByActive}
-              >
-                View upload history
-              </LinkWithQuery>
-            </li>
-          </ul>
-        </nav>
-      </div>
-    </div>
+    <nav className="prime-secondary-nav" aria-label="Secondary navigation">
+      <ul className="usa-nav__secondary-links prime-nav">
+        <li className="usa-nav__secondary-item">
+          <LinkWithQuery to={`/results/1`} end className={classNameByActive}>
+            View test results
+          </LinkWithQuery>
+        </li>
+        <li className="usa-nav__secondary-item">
+          <LinkWithQuery
+            to={`/results/upload`}
+            end
+            className={classNameByActive}
+          >
+            Upload spreadsheet
+          </LinkWithQuery>
+        </li>
+        <li className="usa-nav__secondary-item">
+          <LinkWithQuery
+            to={`/results/upload/submissions`}
+            className={classNameByActive}
+          >
+            View upload history
+          </LinkWithQuery>
+        </li>
+      </ul>
+    </nav>
   );
 };
 
