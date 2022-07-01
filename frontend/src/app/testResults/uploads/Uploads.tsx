@@ -151,7 +151,7 @@ const Uploads = () => {
             <div className="usa-card__header">
               <h2>Upload your results</h2>
             </div>
-            <div className="usa-card__body">
+            <div className="usa-card__body padding-y-2 maxw-prose">
               <p>
                 Add and report results in bulk using a comma-separated values
                 (CSV) spreadsheet. To upload your spreadsheet:
