@@ -82,6 +82,9 @@ dependencies {
     compile 'com.graphql-java:graphql-java-extended-validation:16.0.0'
 
     implementation 'com.azure:azure-storage-queue:12.12.+'
+    implementation 'com.azure:azure-core-http-netty:1.11.9'
+    implementation 'com.azure:azure-core:1.27.0'
+    implementation 'com.azure:azure-storage-common:12.15.1'
 
     implementation 'io.netty:netty-codec:4.1.73.Final'
     implementation 'io.netty:netty-codec-dns:4.1.73.Final'
@@ -126,11 +129,6 @@ dependencies {
 
     // WireMock (only used for testing)
     testCompile "com.github.tomakehurst:wiremock-jre8:2.31.0"
-
-    // Forcing these version resolutions over the BOM of spring-cloud-dependencies below
-    runtimeOnly 'com.azure:azure-core-http-netty:1.11.9'
-    runtimeOnly 'com.azure:azure-core:1.27.0'
-    runtimeOnly 'com.azure:azure-storage-common:12.15.1'
 
     runtimeOnly "io.zipkin.brave:brave-instrumentation-http:5.13.2"
     runtimeOnly "io.zipkin.brave:brave:5.13.2"

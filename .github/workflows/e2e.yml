@@ -130,7 +130,7 @@ jobs:
       - name: Setup firefox
         uses: browser-actions/setup-firefox@latest
         with:
-          firefox-version: ${{ env.FIREFOX_VERSION }}
+          firefox-version: 101.0.1
       - name: Run e2e tests
         working-directory: ./frontend
         env:

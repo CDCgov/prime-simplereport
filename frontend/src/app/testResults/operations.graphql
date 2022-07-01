@@ -41,6 +41,12 @@ query GetFacilityResultsForCsv(
     }
     dateTested
     result
+    results {
+      disease {
+        name
+      }
+      testResult
+    }
     correctionStatus
     reasonForCorrection
     deviceType {
