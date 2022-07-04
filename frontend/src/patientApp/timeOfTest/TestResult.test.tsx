@@ -7,10 +7,9 @@ import "../../i18n";
 
 const mockStore = configureStore([]);
 
-const getPatientLinkData = (result: string) => ({
+let getPatientLinkData = (results: PxpMultiplexResult[]) => ({
   testEventId: "4606e571-8249-479e-94ab-e2f311713a5f",
-  result: result,
-  results: [{ disease: { name: "COVID-19" }, result: result }],
+  results: results as PxpMultiplexResult[],
   dateTested: "2022-02-11T21:16:26.404+00:00",
   correctionStatus: "ORIGINAL",
   patient: {
@@ -44,9 +43,12 @@ const getPatientLinkData = (result: string) => ({
   },
 });
 
-describe("TestResult", () => {
+describe("TestResult - COVID-19 only", () => {
   it("should show the patient/device name", () => {
-    const store = mockStore({ testResult: getPatientLinkData("UNDETERMINED") });
+    const results = [
+      { disease: { name: "COVID-19" }, result: "UNDETERMINED" },
+    ] as PxpMultiplexResult[];
+    const store = mockStore({ testResult: getPatientLinkData(results) });
     render(
       <Provider store={store}>
         <TestResult />
@@ -56,17 +58,20 @@ describe("TestResult", () => {
     const patientApp = screen.getByTestId("patient-app");
 
     expect(
-      within(patientApp).getByText("SARS-CoV-2 result")
+      within(patientApp).getByText("Test result: COVID-19")
     ).toBeInTheDocument();
     expect(
       within(patientApp).getByText("Abbott BinaxNOW (Antigen)")
     ).toBeInTheDocument();
     expect(within(patientApp).getByText("Bob M Barker")).toBeInTheDocument();
-    expect(within(patientApp).getByText("Test result")).toBeInTheDocument();
+    expect(within(patientApp).getByText("COVID-19")).toBeInTheDocument();
     expect(within(patientApp).getByText("Download result")).toBeInTheDocument();
   });
   it("should show a positive result", () => {
-    const store = mockStore({ testResult: getPatientLinkData("POSITIVE") });
+    const results = [
+      { disease: { name: "COVID-19" }, result: "POSITIVE" },
+    ] as PxpMultiplexResult[];
+    const store = mockStore({ testResult: getPatientLinkData(results) });
     render(
       <Provider store={store}>
         <TestResult />
@@ -76,12 +81,15 @@ describe("TestResult", () => {
     const patientApp = screen.getByTestId("patient-app");
 
     expect(
-      within(patientApp).getByText("SARS-CoV-2 result")
+      within(patientApp).getByText("Test result: COVID-19")
     ).toBeInTheDocument();
     expect(within(patientApp).getByText("Positive")).toBeInTheDocument();
   });
   it("should show a negative result", () => {
-    const store = mockStore({ testResult: getPatientLinkData("NEGATIVE") });
+    const results = [
+      { disease: { name: "COVID-19" }, result: "NEGATIVE" },
+    ] as PxpMultiplexResult[];
+    const store = mockStore({ testResult: getPatientLinkData(results) });
     render(
       <Provider store={store}>
         <TestResult />
@@ -91,12 +99,15 @@ describe("TestResult", () => {
     const patientApp = screen.getByTestId("patient-app");
 
     expect(
-      within(patientApp).getByText("SARS-CoV-2 result")
+      within(patientApp).getByText("Test result: COVID-19")
     ).toBeInTheDocument();
     expect(within(patientApp).getByText("Negative")).toBeInTheDocument();
   });
   it("should show an inconclusive result", () => {
-    const store = mockStore({ testResult: getPatientLinkData("UNDETERMINED") });
+    const results = [
+      { disease: { name: "COVID-19" }, result: "UNDETERMINED" },
+    ] as PxpMultiplexResult[];
+    const store = mockStore({ testResult: getPatientLinkData(results) });
     render(
       <Provider store={store}>
         <TestResult />
@@ -106,8 +117,87 @@ describe("TestResult", () => {
     const patientApp = screen.getByTestId("patient-app");
 
     expect(
-      within(patientApp).getByText("SARS-CoV-2 result")
+      within(patientApp).getByText("Test result: COVID-19")
     ).toBeInTheDocument();
     expect(within(patientApp).getByText("Inconclusive")).toBeInTheDocument();
   });
 });
+
+if (process.env.REACT_APP_MULTIPLEX_ENABLE) {
+  describe("TestResult - Multiplex", () => {
+    it("should show the results for positive COVID-19 and negative Flu", () => {
+      const results = [
+        { disease: { name: "Flu B" }, result: "NEGATIVE" },
+        { disease: { name: "Flu A" }, result: "NEGATIVE" },
+        { disease: { name: "COVID-19" }, result: "POSITIVE" },
+      ] as PxpMultiplexResult[];
+      const store = mockStore({ testResult: getPatientLinkData(results) });
+      render(
+        <Provider store={store}>
+          <TestResult />
+        </Provider>
+      );
+
+      const patientApp = screen.getByTestId("patient-app");
+      expect(
+        within(patientApp).getByText("Test results: COVID-19 and flu")
+      ).toBeInTheDocument();
+      expect(within(patientApp).getByText("COVID-19")).toBeInTheDocument();
+      expect(within(patientApp).getByText("Flu A")).toBeInTheDocument();
+      expect(within(patientApp).getByText("Flu B")).toBeInTheDocument();
+      expect(within(patientApp).getByText("Positive")).toBeInTheDocument();
+      expect(within(patientApp).getAllByText("Negative")).toHaveLength(2);
+    });
+
+    it("should show the results for negative COVID-19 and positive Flu", () => {
+      const results = [
+        { disease: { name: "Flu B" }, result: "POSITIVE" },
+        { disease: { name: "Flu A" }, result: "POSITIVE" },
+        { disease: { name: "COVID-19" }, result: "NEGATIVE" },
+      ] as PxpMultiplexResult[];
+      const store = mockStore({ testResult: getPatientLinkData(results) });
+      render(
+        <Provider store={store}>
+          <TestResult />
+        </Provider>
+      );
+
+      const patientApp = screen.getByTestId("patient-app");
+      expect(
+        within(patientApp).getByText("Test results: COVID-19 and flu")
+      ).toBeInTheDocument();
+      expect(within(patientApp).getByText("COVID-19")).toBeInTheDocument();
+      expect(within(patientApp).getByText("Flu A")).toBeInTheDocument();
+      expect(within(patientApp).getByText("Flu B")).toBeInTheDocument();
+      expect(within(patientApp).getAllByText("Positive")).toHaveLength(2);
+      expect(within(patientApp).getByText("Negative")).toBeInTheDocument();
+      expect(within(patientApp).getByText("For COVID-19:")).toBeInTheDocument();
+      expect(
+        within(patientApp).getByText("For flu A and B:")
+      ).toBeInTheDocument();
+    });
+
+    it("should show the results for undetermined COVID-19 and Flu", () => {
+      const results = [
+        { disease: { name: "Flu B" }, result: "UNDETERMINED" },
+        { disease: { name: "Flu A" }, result: "UNDETERMINED" },
+        { disease: { name: "COVID-19" }, result: "UNDETERMINED" },
+      ] as PxpMultiplexResult[];
+      const store = mockStore({ testResult: getPatientLinkData(results) });
+      render(
+        <Provider store={store}>
+          <TestResult />
+        </Provider>
+      );
+
+      const patientApp = screen.getByTestId("patient-app");
+      expect(
+        within(patientApp).getByText("Test results: COVID-19 and flu")
+      ).toBeInTheDocument();
+      expect(within(patientApp).getByText("COVID-19")).toBeInTheDocument();
+      expect(within(patientApp).getByText("Flu A")).toBeInTheDocument();
+      expect(within(patientApp).getByText("Flu B")).toBeInTheDocument();
+      expect(within(patientApp).getAllByText("Inconclusive")).toHaveLength(3);
+    });
+  });
+}

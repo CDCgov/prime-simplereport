@@ -3,12 +3,11 @@ import React from "react";
 import RadioGroup from "../commonComponents/RadioGroup";
 import Button from "../commonComponents/Button/Button";
 import { COVID_RESULTS, TEST_RESULT_DESCRIPTIONS } from "../constants";
-import { findResultByDiseaseName, TestResult } from "../testQueue/QueueItem";
+import { findResultByDiseaseName } from "../testQueue/QueueItem";
 import { TextWithTooltip } from "../commonComponents/TextWithTooltip";
 import Checkboxes from "../commonComponents/Checkboxes";
 import { DiseaseResult } from "../../generated/graphql";
 
-type MultiplexDisease = "COVID-19" | "Flu A" | "Flu B";
 const MULTIPLEX_DISEASE_TYPE = {
   COVID: "COVID-19" as MultiplexDisease,
   FLU_A: "Flu A" as MultiplexDisease,
