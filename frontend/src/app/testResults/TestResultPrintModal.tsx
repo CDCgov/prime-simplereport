@@ -210,7 +210,8 @@ export const StaticTestResultModal = ({
       : getCovidResult;
     const testResultsArray: any = [];
     sortedTestResults.forEach((sortedTestResult: MultiplexResult) => {
-      let sortedResult = sortedTestResult.testResult || sortedTestResult.result;
+      const sortedResult =
+        sortedTestResult.testResult || sortedTestResult.result;
       testResultsArray.push(
         <li>
           <b>
