@@ -151,37 +151,28 @@ const Uploads = () => {
         </div>
         <div className="usa-card__body padding-y-2 maxw-prose">
           <p>
-            Add and report results in bulk using a comma-separated values (CSV)
+           Report results in bulk using a comma-separated values (CSV)
             spreadsheet. To upload your spreadsheet:
           </p>
-          <ul className="usa-list">
+          <ol className="usa-list">
             <li>
               <a href="https://reportstream.cdc.gov/assets/csv/ReportStream-StandardCSV-ExampleData-20220509.csv">
                 Download the spreadsheet template
               </a>{" "}
-              and open it in Excel or another spreadsheet application
             </li>
             <li>
-              Add your data to the relevant fields in the template, or if you’re
-              using your own spreadsheet, format column headers to match the
-              template
+              Format and add your data following the template and upload guide
             </li>
             <li>
-              Make sure you include data for all fields marked “required” in row
-              2
+              Save your spreadsheet as a CSV
             </li>
-            <li>Once you’ve entered your data, delete all example data</li>
-            <li>Save your spreadsheet as a CSV file and upload it here</li>
-          </ul>
+            <li>Upload your CSV here</li>
+          </ol>
           <p>
-            For more information about this process, visit our{" "}
+            For more information about preparing your spreadsheet, visit our{" "}
             <LinkWithQuery to="/results/upload/schema">
-              data template guide
+              spreadsheet upload guide
             </LinkWithQuery>{" "}
-            or{" "}
-            <LinkWithQuery to="/results/upload/guide">
-              upload guide.
-            </LinkWithQuery>
           </p>
           {reportId && (
             <div>
