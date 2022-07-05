@@ -212,7 +212,13 @@ const App = () => {
                 <ProtectedRoute
                   requiredPermissions={canUseCsvUploaderPilot}
                   userPermissions={data.whoami.permissions}
-                  element={<Submission />}
+                  element={
+                    <ResultsNavWrapper
+                      userPermissions={data.whoami.permissions}
+                    >
+                      <Submission />
+                    </ResultsNavWrapper>
+                  }
                 />
               }
             />

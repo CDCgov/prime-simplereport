@@ -1,18 +1,12 @@
-import moment from "moment";
-import { useSelector } from "react-redux";
 import { useParams } from "react-router-dom";
 
-import { LoadingCard } from "../../commonComponents/LoadingCard/LoadingCard";
 import { useGetUploadSubmissionQuery } from "../../../generated/graphql";
 import { LinkWithQuery } from "../../commonComponents/LinkWithQuery";
+import { formatDateWithTimeOption } from "../../utils/date";
 
 const Submission = () => {
   const urlParams = useParams();
   const internalId = urlParams.id || "";
-
-  const organization = useSelector(
-    (state) => (state as any).organization as Organization
-  );
 
   const { data: submission, loading, error } = useGetUploadSubmissionQuery({
     fetchPolicy: "no-cache",
@@ -22,16 +16,23 @@ const Submission = () => {
   });
 
   if (loading) {
-    return <LoadingCard />;
+    return (
+      <main className="prime-home">
+        <div className="grid-container">
+          <p> Loading... </p>
+        </div>
+      </main>
+    );
   }
 
   if (error) {
     throw error;
   }
 
-  const transmissionTimestamp = moment(submission?.uploadSubmission.createdAt);
-  const transmissionDate = transmissionTimestamp.format("DD MMM YYYY");
-  const transmissionTime = transmissionTimestamp.format("k:mm");
+  const transmissionDate = formatDateWithTimeOption(
+    submission?.uploadSubmission.createdAt,
+    true
+  );
 
   return (
     <main className="prime-home">
@@ -45,36 +46,29 @@ const Submission = () => {
                   to={`/results/upload/submissions/`}
                   className="sr-link__primary"
                 >
-                  {organization.name} COVID-19 Submissions
+                  Result submissions
                 </LinkWithQuery>
               </span>
             </div>
 
             {/* Submission result header */}
             <div className="usa-card__body">
-              <h1>{[transmissionDate, transmissionTime].join(" ")}</h1>
+              <h1>{transmissionDate}</h1>
             </div>
 
             {/* Submission detail */}
             <div className="usa-card__body">
-              <div className="display-flex flex-column margin-top-2 margin-bottom-2">
+              <div className="display-flex flex-column margin-top-2 margin-bottom-4">
                 <span className="text-base">Report ID</span>
                 <td>{submission?.uploadSubmission.reportId}</td>
               </div>
-              <div className="display-flex flex-column"></div>
-              <h2>{organization.name}</h2>
               <div className="display-flex flex-column margin-bottom-4">
-                <span className="text-base">Data Stream</span>
+                <span className="text-base">Data stream</span>
                 <span>ELR</span>
               </div>
               <div className="display-flex flex-column margin-bottom-4">
-                <span className="text-base">Transmission Date</span>
+                <span className="text-base">Transmission date</span>
                 <span>{transmissionDate}</span>
-              </div>
-
-              <div className="display-flex flex-column margin-bottom-4">
-                <span className="text-base">Transmission Time</span>
-                <span>{transmissionTime}</span>
               </div>
               <div className="display-flex flex-column margin-bottom-4">
                 <span className="text-base">Records</span>
