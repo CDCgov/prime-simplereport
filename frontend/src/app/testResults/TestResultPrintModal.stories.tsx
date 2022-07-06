@@ -1,5 +1,5 @@
 import { Story, Meta } from "@storybook/react";
-import { uniqueId } from "lodash";
+import { uniqueId, cloneDeep } from "lodash";
 
 import {
   DetachedTestResultPrintModal,
@@ -19,6 +19,7 @@ export default {
 const testResult = {
   dateTested: new Date("2021-08-20"),
   result: "NEGATIVE",
+  results: [{ disease: { name: "COVID-19" }, testResult: "NEGATIVE" }],
   correctionStatus: null,
   deviceType: {
     name: "Fake device",
@@ -58,9 +59,85 @@ const defaultProps: TestResultPrintModalProps = {
   hardcodedPrintDate: "8/24/2021, 9:44:25 AM",
 };
 
+const positiveCovidProps = cloneDeep(defaultProps);
+positiveCovidProps.data.testResult.results = [
+  { disease: { name: "COVID-19" }, testResult: "POSITIVE" },
+];
+
+const undeterminedCovidProps = cloneDeep(defaultProps);
+undeterminedCovidProps.data.testResult.results = [
+  { disease: { name: "COVID-19" }, testResult: "UNDETERMINED" },
+];
+
+const positiveFluMultiplexProps = cloneDeep(defaultProps);
+positiveFluMultiplexProps.data.testResult.results = [
+  { disease: { name: "COVID-19" }, testResult: "NEGATIVE" },
+  { disease: { name: "Flu A" }, testResult: "POSITIVE" },
+  { disease: { name: "Flu B" }, testResult: "NEGATIVE" },
+];
+
+const positiveCovidMultiplexProps = cloneDeep(defaultProps);
+positiveCovidMultiplexProps.data.testResult.results = [
+  { disease: { name: "COVID-19" }, testResult: "POSITIVE" },
+  { disease: { name: "Flu A" }, testResult: "NEGATIVE" },
+  { disease: { name: "Flu B" }, testResult: "NEGATIVE" },
+];
+
+const positiveAllMultiplexProps = cloneDeep(defaultProps);
+positiveAllMultiplexProps.data.testResult.results = [
+  { disease: { name: "COVID-19" }, testResult: "POSITIVE" },
+  { disease: { name: "Flu A" }, testResult: "POSITIVE" },
+  { disease: { name: "Flu B" }, testResult: "POSITIVE" },
+];
+
+const negativeAllMultiplexProps = cloneDeep(defaultProps);
+negativeAllMultiplexProps.data.testResult.results = [
+  { disease: { name: "COVID-19" }, testResult: "NEGATIVE" },
+  { disease: { name: "Flu A" }, testResult: "NEGATIVE" },
+  { disease: { name: "Flu B" }, testResult: "NEGATIVE" },
+];
+
+const undeterminedCovidMultiplexProps = cloneDeep(defaultProps);
+undeterminedCovidMultiplexProps.data.testResult.results = [
+  { disease: { name: "COVID-19" }, testResult: "UNDETERMINED" },
+  { disease: { name: "Flu A" }, testResult: "POSITIVE" },
+  { disease: { name: "Flu B" }, testResult: "NEGATIVE" },
+];
+
+const undeterminedAllMultiplexProps = cloneDeep(defaultProps);
+undeterminedAllMultiplexProps.data.testResult.results = [
+  { disease: { name: "COVID-19" }, testResult: "UNDETERMINED" },
+  { disease: { name: "Flu A" }, testResult: "UNDETERMINED" },
+  { disease: { name: "Flu B" }, testResult: "UNDETERMINED" },
+];
+
 const Template: Story<TestResultPrintModalProps> = (args) => {
   return <DetachedTestResultPrintModal {...args} />;
 };
 
 export const Default = Template.bind({});
 Default.args = defaultProps;
+
+export const WithPositiveCovid = Template.bind({});
+WithPositiveCovid.args = positiveCovidProps;
+
+export const WithUndeterminedCovid = Template.bind({});
+WithUndeterminedCovid.args = undeterminedCovidProps;
+
+export const WithPositiveFluMultiplex = Template.bind({});
+WithPositiveFluMultiplex.args = positiveFluMultiplexProps;
+
+export const WithPositiveCovidMultiplex = Template.bind({});
+WithPositiveCovidMultiplex.args = positiveCovidMultiplexProps;
+
+export const WithPositiveAllMultiplex = Template.bind({});
+WithPositiveAllMultiplex.args = positiveAllMultiplexProps;
+
+export const WithNegativeAllMultiplex = Template.bind({});
+WithNegativeAllMultiplex.args = negativeAllMultiplexProps;
+
+export const WithUndeterminedCovidMultiplex = Template.bind({});
+WithUndeterminedCovidMultiplex.args = undeterminedCovidMultiplexProps;
+
+export const WithUndeterminedAllMultiplex = Template.bind({});
+WithUndeterminedAllMultiplex.args = undeterminedAllMultiplexProps;

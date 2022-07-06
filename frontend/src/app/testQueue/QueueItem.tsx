@@ -55,7 +55,8 @@ export interface MultiplexResult {
   disease: {
     name: string;
   };
-  testResult: TestResult;
+  testResult?: TestResult;
+  result?: TestResult;
 }
 
 const EARLIEST_TEST_DATE = new Date("01/01/2020 12:00:00 AM");

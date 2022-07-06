@@ -4,11 +4,10 @@ import React from "react";
 
 import { formatFullName } from "../../app/utils/user";
 import { RootState } from "../../app/store";
-import { TestResult as TestResultType } from "../../app/testQueue/QueueItem";
-import { COVID_RESULTS } from "../../app/constants";
 import { VerifyV2Response } from "../PxpApiService";
 import { StaticTestResultModal } from "../../app/testResults/TestResultPrintModal";
 import Button from "../../app/commonComponents/Button/Button";
+import CovidResultGuidance from "../../app/commonComponents/CovidResultGuidance";
 import { formatDateWithTimeOption } from "../../app/utils/date";
 
 import "./TestResult.scss";
@@ -77,7 +76,10 @@ const TestResult = () => {
             <h2 className="font-heading-sm">{t("testResult.testDevice")}</h2>
             <p className="margin-top-05">{deviceType}</p>
             <h2 className="font-heading-sm">{t("testResult.meaning")}</h2>
-            <TestResultNotes result={testResult.result} />
+            <CovidResultGuidance
+              result={testResult.result}
+              isPatientApp={true}
+            />
             <Trans
               t={t}
               parent="p"
@@ -104,76 +106,6 @@ const TestResult = () => {
       </main>
     </div>
   );
-};
-
-interface TestResultNotesProps {
-  result: TestResultType;
-}
-
-const TestResultNotes: React.FC<TestResultNotesProps> = (props) => {
-  const { t } = useTranslation();
-
-  switch (props.result) {
-    case COVID_RESULTS.POSITIVE:
-      return (
-        <>
-          <p>{t("testResult.notes.positive.p1")}</p>
-          <ul>
-            <li>{t("testResult.notes.positive.guidelines.li0")}</li>
-            <li>{t("testResult.notes.positive.guidelines.li1")}</li>
-            <li>{t("testResult.notes.positive.guidelines.li2")}</li>
-            <li>{t("testResult.notes.positive.guidelines.li3")}</li>
-            <li>{t("testResult.notes.positive.guidelines.li4")}</li>
-            <li>{t("testResult.notes.positive.guidelines.li5")}</li>
-          </ul>
-          <Trans
-            t={t}
-            parent="p"
-            i18nKey="testResult.notes.positive.p2"
-            components={[
-              <a href="https://www.cdc.gov/coronavirus/2019-ncov/symptoms-testing/symptoms.html">
-                Watch for symptoms and learn when to seek emergency medical
-                attention
-              </a>,
-            ]}
-          />
-          <ul>
-            <li>{t("testResult.notes.positive.emergency.li0")}</li>
-            <li>{t("testResult.notes.positive.emergency.li1")}</li>
-            <li>{t("testResult.notes.positive.emergency.li2")}</li>
-            <li>{t("testResult.notes.positive.emergency.li3")}</li>
-            <li>{t("testResult.notes.positive.emergency.li4")}</li>
-          </ul>
-          <p>{t("testResult.notes.positive.p3")}</p>
-        </>
-      );
-    case COVID_RESULTS.NEGATIVE:
-      return (
-        <>
-          <p>{t("testResult.notes.negative.p0")}</p>
-          <ul>
-            <li>{t("testResult.notes.negative.symptoms.li0")}</li>
-            <li>{t("testResult.notes.negative.symptoms.li1")}</li>
-            <li>{t("testResult.notes.negative.symptoms.li2")}</li>
-            <li>{t("testResult.notes.negative.symptoms.li3")}</li>
-            <li>{t("testResult.notes.negative.symptoms.li4")}</li>
-            <li>{t("testResult.notes.negative.symptoms.li5")}</li>
-            <li>{t("testResult.notes.negative.symptoms.li6")}</li>
-            <li>{t("testResult.notes.negative.symptoms.li7")}</li>
-            <li>{t("testResult.notes.negative.symptoms.li8")}</li>
-            <li>{t("testResult.notes.negative.symptoms.li9")}</li>
-            <li>{t("testResult.notes.negative.symptoms.li10")}</li>
-          </ul>
-        </>
-      );
-    default:
-      return (
-        <>
-          <p>{t("testResult.notes.inconclusive.p0")}</p>
-          <p>{t("testResult.notes.inconclusive.p1")}</p>
-        </>
-      );
-  }
 };
 
 export default TestResult;
