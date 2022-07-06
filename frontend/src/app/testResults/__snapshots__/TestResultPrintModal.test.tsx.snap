@@ -1,6 +1,6 @@
 // Jest Snapshot v1, https://goo.gl/fbAQLP
 
-exports[`TestResultPrintModal matches screenshot 1`] = `
+exports[`TestResultPrintModal with only COVID results matches screenshot 1`] = `
 Object {
   "asFragment": [Function],
   "baseElement": <body
@@ -71,7 +71,7 @@ Object {
               class="display-flex flex-align-end flex-justify margin-bottom-1"
             >
               <h1>
-                SARS-CoV-2 result
+                Test result: COVID-19
               </h1>
               <img
                 alt="SimpleReport logo"
@@ -208,7 +208,9 @@ Object {
                     </b>
                     <div />
                   </li>
-                  <li>
+                  <li
+                    class="sr-margin-bottom-28px"
+                  >
                     <b>
                       Test date
                     </b>
@@ -218,11 +220,17 @@ Object {
                   </li>
                   <li>
                     <b>
-                      Test result
+                      COVID-19
                     </b>
                     <div>
                       <strong>
-                        Negative
+                        <span>
+                          Negative
+                        </span>
+                        <span>
+                           
+                          (-)
+                        </span>
                       </strong>
                     </div>
                   </li>
@@ -234,59 +242,62 @@ Object {
                 <h2>
                   More information
                 </h2>
-                <p>
-                  Contact your health care provider to decide if additional testing is needed, especially if you experience any of these symptoms:
-                </p>
-                <ul
-                  class="sr-multi-column"
+                <div
+                  class=""
                 >
-                  <li>
-                    Shortness of breath or difficulty breathing
-                  </li>
-                  <li>
-                    Fatigue
-                  </li>
-                  <li>
-                    Muscle or body aches
-                  </li>
-                  <li>
-                    Headache
-                  </li>
-                  <li>
-                    Loss of taste or smell
-                  </li>
-                  <li>
-                    Sore throat
-                  </li>
-                  <li>
-                    Congestion or runny nose
-                  </li>
-                  <li>
-                    Nausea or vomiting
-                  </li>
-                  <li>
-                    Diarrhea
-                  </li>
-                </ul>
-                <p>
-                  For more information go to 
-                  <a
-                    href="https://www.cdc.gov/"
-                    rel="noopener noreferrer"
-                    target="_blank"
+                  <p>
+                    Contact your health care provider to decide if additional testing is needed, especially if you experience any of these symptoms:
+                  </p>
+                  <ul
+                    class="sr-multi-column"
                   >
-                    CDC.gov
-                  </a>
-                   or call 1-800-CDC-INFO (1-800-232-4636). Use the 
-                  <a
-                    href="https://www.cdc.gov/coronavirus/2019-ncov/your-health/covid-by-county.html"
-                    rel="noopener noreferrer"
-                    target="_blank"
-                  >
-                    County Check Tool
-                  </a>
-                   (cdc.gov/coronavirus/2019-ncov/your-health/covid-by-county.html) to understand your Community Level (COVID-19 risk and hospital capacity in your area), tips for prevention, and how to find vaccine, testing, and treatment resources.
-                </p>
+                    <li>
+                      Fever or chills
+                    </li>
+                    <li>
+                      Cough
+                    </li>
+                    <li>
+                      Shortness of breath or difficulty breathing
+                    </li>
+                    <li>
+                      Fatigue
+                    </li>
+                    <li>
+                      Muscle or body aches
+                    </li>
+                    <li>
+                      Headache
+                    </li>
+                    <li>
+                      Loss of taste or smell
+                    </li>
+                    <li>
+                      Sore throat
+                    </li>
+                    <li>
+                      Congestion or runny nose
+                    </li>
+                    <li>
+                      Nausea or vomiting
+                    </li>
+                    <li>
+                      Diarrhea
+                    </li>
+                  </ul>
+                  <p>
+                    For more information, please visit the 
+                    <a
+                      href="https://www.cdc.gov/"
+                      rel="noopener noreferrer"
+                      target="_blank"
+                    >
+                      Centers for Disease Control and Prevention (CDC)
+                    </a>
+                     website or contact
+your local health department.
+                  </p>
+                </div>
               </section>
             </main>
             <footer>
@@ -384,7 +395,7 @@ Object {
             class="display-flex flex-align-end flex-justify margin-bottom-1"
           >
             <h1>
-              SARS-CoV-2 result
+              Test result: COVID-19
             </h1>
             <img
               alt="SimpleReport logo"
@@ -521,7 +532,9 @@ Object {
                   </b>
                   <div />
                 </li>
-                <li>
+                <li
+                  class="sr-margin-bottom-28px"
+                >
                   <b>
                     Test date
                   </b>
@@ -531,11 +544,17 @@ Object {
                 </li>
                 <li>
                   <b>
-                    Test result
+                    COVID-19
                   </b>
                   <div>
                     <strong>
-                      Negative
+                      <span>
+                        Negative
+                      </span>
+                      <span>
+                         
+                        (-)
+                      </span>
                     </strong>
                   </div>
                 </li>
@@ -547,59 +566,62 @@ Object {
               <h2>
                 More information
               </h2>
-              <p>
-                Contact your health care provider to decide if additional testing is needed, especially if you experience any of these symptoms:
-              </p>
-              <ul
-                class="sr-multi-column"
+              <div
+                class=""
               >
-                <li>
-                  Shortness of breath or difficulty breathing
-                </li>
-                <li>
-                  Fatigue
-                </li>
-                <li>
-                  Muscle or body aches
-                </li>
-                <li>
-                  Headache
-                </li>
-                <li>
-                  Loss of taste or smell
-                </li>
-                <li>
-                  Sore throat
-                </li>
-                <li>
-                  Congestion or runny nose
-                </li>
-                <li>
-                  Nausea or vomiting
-                </li>
-                <li>
-                  Diarrhea
-                </li>
-              </ul>
-              <p>
-                For more information go to 
-                <a
-                  href="https://www.cdc.gov/"
-                  rel="noopener noreferrer"
-                  target="_blank"
+                <p>
+                  Contact your health care provider to decide if additional testing is needed, especially if you experience any of these symptoms:
+                </p>
+                <ul
+                  class="sr-multi-column"
                 >
-                  CDC.gov
-                </a>
-                 or call 1-800-CDC-INFO (1-800-232-4636). Use the 
-                <a
-                  href="https://www.cdc.gov/coronavirus/2019-ncov/your-health/covid-by-county.html"
-                  rel="noopener noreferrer"
-                  target="_blank"
-                >
-                  County Check Tool
-                </a>
-                 (cdc.gov/coronavirus/2019-ncov/your-health/covid-by-county.html) to understand your Community Level (COVID-19 risk and hospital capacity in your area), tips for prevention, and how to find vaccine, testing, and treatment resources.
-              </p>
+                  <li>
+                    Fever or chills
+                  </li>
+                  <li>
+                    Cough
+                  </li>
+                  <li>
+                    Shortness of breath or difficulty breathing
+                  </li>
+                  <li>
+                    Fatigue
+                  </li>
+                  <li>
+                    Muscle or body aches
+                  </li>
+                  <li>
+                    Headache
+                  </li>
+                  <li>
+                    Loss of taste or smell
+                  </li>
+                  <li>
+                    Sore throat
+                  </li>
+                  <li>
+                    Congestion or runny nose
+                  </li>
+                  <li>
+                    Nausea or vomiting
+                  </li>
+                  <li>
+                    Diarrhea
+                  </li>
+                </ul>
+                <p>
+                  For more information, please visit the 
+                  <a
+                    href="https://www.cdc.gov/"
+                    rel="noopener noreferrer"
+                    target="_blank"
+                  >
+                    Centers for Disease Control and Prevention (CDC)
+                  </a>
+                   website or contact
+your local health department.
+                </p>
+              </div>
             </section>
           </main>
           <footer>

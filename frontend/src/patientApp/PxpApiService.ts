@@ -51,7 +51,7 @@ export type VerifyV2Response = {
       name: string;
     };
     testResult: TestResult;
-  };
+  }[];
   dateTested: string;
   correctionStatus: string;
   deviceType: {
