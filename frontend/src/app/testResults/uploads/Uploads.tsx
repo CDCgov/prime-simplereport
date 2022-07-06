@@ -229,6 +229,7 @@ const Uploads = () => {
               aria-describedby="upload-csv-input-label"
               accept="text/csv, .csv"
               onChange={(e) => handleFileChange(e)}
+              placeholder={"hi"}
               required
             />
           </FormGroup>

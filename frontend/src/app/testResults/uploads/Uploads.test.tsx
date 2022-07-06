@@ -42,7 +42,7 @@ describe("Uploads", () => {
     render(<TestContainer />);
 
     expect(await screen.findByText("Upload your CSV")).toBeInTheDocument();
-    expect(await screen.findByText("Drag CSV here or")).toBeInTheDocument();
+    expect(await screen.findByText("Drag file here or")).toBeInTheDocument();
   });
 
   it("should display error toast when empty file is uploaded, button disabled", async () => {

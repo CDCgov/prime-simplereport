@@ -99,7 +99,7 @@ const CsvSchemaDocumentation = () => {
           </h2>
           <p className="usa-intro text-base">
             How to format and upload a CSV file to report test results in bulk
-            through SimpleReport.```
+            through SimpleReport.
           </p>
           <p>
             <strong>In this guide</strong>

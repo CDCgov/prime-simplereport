@@ -88,7 +88,7 @@ exports[`CsvSchemaDocumentation tests CsvSchemaDocumentaton matches snapshot 1`]
         <p
           class="usa-intro text-base"
         >
-          How to format a CSV spreadsheet for submission to public health departments through SimpleReport.
+          How to format and upload a CSV file to report test results in bulk through SimpleReport.
         </p>
         <p>
           <strong>
@@ -184,10 +184,103 @@ exports[`CsvSchemaDocumentation tests CsvSchemaDocumentaton matches snapshot 1`]
               class="usa-link"
               href="/getting-started/testing-facilities/csv-schema"
             >
-              Standard schema with example data
+              Standard CSV template with example data
             </a>
           </li>
         </ul>
+      </section>
+      <section
+        class="border-top-1px border-ink margin-top-9"
+      >
+        <h3
+          class="font-body-lg margin-y-1"
+          id="formatting-guidelines"
+        >
+          Preparing and uploading a spreadsheet
+        </h3>
+        <ol
+          class="usa-process-list"
+        >
+          <li
+            class="usa-process-list__item"
+          >
+            <h4
+              class="usa-process-list__heading"
+            >
+              Create or export your spreadsheet
+            </h4>
+            <p
+              class="margin-top-05"
+            >
+              If your organization already uses a set spreadsheet format for results, you may have to adjust it to match the SimpleReport template. If you don’t have one, use the
+               
+              <a
+                class="usa-link"
+                href="https://SimpleReport.cdc.gov/assets/csv/SimpleReport-StandardCSV-ExampleData-20220509.csv"
+              >
+                spreadsheet template file
+              </a>
+               
+              as a starting point.
+            </p>
+          </li>
+          <li
+            class="usa-process-list__item"
+          >
+            <h4
+              class="usa-process-list__heading"
+            >
+              Format using the SimpleReport template
+            </h4>
+            <p>
+              In your spreadsheet, include all column headers in the spreadsheet template and guidelines below, with no extras. Copy column header names exactly. Be sure to include every column in the template, even if you don’t have data for every field.
+            </p>
+          </li>
+          <li
+            class="usa-process-list__item"
+          >
+            <h4
+              class="usa-process-list__heading"
+            >
+              Enter your data
+            </h4>
+            <p>
+              Following the spreadsheet guidelines below, enter properly formatted values in the relevant fields. Some fields require data, while others don’t.
+            </p>
+          </li>
+          <li
+            class="usa-process-list__item"
+          >
+            <h4
+              class="usa-process-list__heading"
+            >
+              Export or save your data
+            </h4>
+            <p>
+              Make sure your spreadsheet is in a CSV format. SimpleReport doesn’t accept XLS, XLXS, or any other formats.
+            </p>
+          </li>
+          <li
+            class="usa-process-list__item"
+          >
+            <h4
+              class="usa-process-list__heading"
+            >
+              Use the uploader on SimpleReport
+            </h4>
+            <p>
+              Visit the “[Upload spreadsheet](url)” tab under “Results” in the main SimpleReport navigation. Select your CSV by dragging the file from a folder to the upload area, or browse your computer to find and open it. Once you click Upload your CSV, SimpleReport will check your file to see if it matches the template. If it accepts the file, you’ll see a confirmation message.
+            </p>
+            <h4
+              class="usa-process-list__heading"
+            >
+              Fix any errors
+            </h4>
+            <p>
+              If SimpleReport finds any errors in the spreadsheet formatting or data, it will recommend how to fix them. Once you’ve made the recommended changes in your spreadsheet, save it, and then upload it again.
+            </p>
+          </li>
+        </ol>
       </section>
       <section
         class="border-top-1px border-ink margin-top-9"
