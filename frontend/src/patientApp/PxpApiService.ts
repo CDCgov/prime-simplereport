@@ -1,5 +1,4 @@
 import FetchClient from "../app/utils/api";
-import { TestResult } from "../app/testQueue/QueueItem";
 
 const api = new FetchClient("/pxp", { mode: "cors" });
 
