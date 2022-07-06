@@ -12,7 +12,7 @@ function getResultByDiseaseName(
   results: MultiplexResult[],
   diseaseName: string
 ) {
-  const resultObj = results.find((result: MultiplexResult) => {
+  const resultObj = results?.find((result: MultiplexResult) => {
     return result.disease.name.includes(diseaseName);
   });
   if (resultObj) {
