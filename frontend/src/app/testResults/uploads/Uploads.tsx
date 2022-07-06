@@ -244,7 +244,7 @@ const Uploads = () => {
                 <span>Processing file...</span>
               </span>
             )}
-            {!isSubmitting && <span>Upload your spreadsheet</span>}
+            {!isSubmitting && <span>Upload your CSV</span>}
           </Button>
         </div>
       </div>
