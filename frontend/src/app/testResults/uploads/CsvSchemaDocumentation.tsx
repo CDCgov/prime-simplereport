@@ -84,7 +84,7 @@ export const CsvSchemaDocumentationItem: React.FC<CsvSchemaItemProps> = ({
 
 /* eslint-disable jsx-a11y/anchor-has-content */
 const CsvSchemaDocumentation = () => {
-  useDocumentTitle("CSV Schema Documentation");
+  useDocumentTitle("Spreadsheet upload guide");
 
   return (
     <div className="prime-container prime-container-padding-2x card-container">
@@ -98,7 +98,8 @@ const CsvSchemaDocumentation = () => {
             </span>
           </h2>
           <p className="usa-intro text-base">
-            How to format and upload a CSV file to report test results in bulk through SimpleReport.```
+            How to format and upload a CSV file to report test results in bulk
+            through SimpleReport.```
           </p>
           <p>
             <strong>In this guide</strong>
@@ -139,9 +140,9 @@ const CsvSchemaDocumentation = () => {
             </li>
           </ul>
         </section>
- <section className="border-top-1px border-ink margin-top-9">
+        <section className="border-top-1px border-ink margin-top-9">
           <h3 id="formatting-guidelines" className="font-body-lg margin-y-1">
-          Preparing and uploading a spreadsheet
+            Preparing and uploading a spreadsheet
           </h3>
           <ol className="usa-process-list">
             <li className="usa-process-list__item">
@@ -149,13 +150,16 @@ const CsvSchemaDocumentation = () => {
                 Create or export your spreadsheet
               </h4>
               <p className="margin-top-05">
-               If your organization already uses a set spreadsheet format for results, you may have to adjust it to match the SimpleReport template. If you don’t have one, use the {" "}
+                If your organization already uses a set spreadsheet format for
+                results, you may have to adjust it to match the SimpleReport
+                template. If you don’t have one, use the{" "}
                 <a
                   href="https://SimpleReport.cdc.gov/assets/csv/SimpleReport-StandardCSV-ExampleData-20220509.csv"
                   className="usa-link"
                 >
                   spreadsheet template file
-                </a>{" "} as a starting point. 
+                </a>{" "}
+                as a starting point.
               </p>
             </li>
             <li className="usa-process-list__item">
@@ -163,26 +167,49 @@ const CsvSchemaDocumentation = () => {
                 Format using the SimpleReport template
               </h4>
               <p>
-                In your spreadsheet, include all column headers in the spreadsheet template and guidelines below, with no extras. Copy column header names exactly. Be sure to include every column in the template, even if you don’t have data for every field. 
+                In your spreadsheet, include all column headers in the
+                spreadsheet template and guidelines below, with no extras. Copy
+                column header names exactly. Be sure to include every column in
+                the template, even if you don’t have data for every field.
+              </p>
+            </li>
+            <li className="usa-process-list__item">
+              <h4 className="usa-process-list__heading">Enter your data</h4>
+              <p>
+                Following the spreadsheet guidelines below, enter properly
+                formatted values in the relevant fields. Some fields require
+                data, while others don’t.
               </p>
             </li>
             <li className="usa-process-list__item">
               <h4 className="usa-process-list__heading">
-                Enter your data</h4>
+                Export or save your data
+              </h4>
               <p>
-               Following the spreadsheet guidelines below, enter properly formatted values in the relevant fields. Some fields require data, while others don’t.
+                Make sure your spreadsheet is in a CSV format. SimpleReport
+                doesn’t accept XLS, XLXS, or any other formats.
               </p>
             </li>
             <li className="usa-process-list__item">
-              <h4 className="usa-process-list__heading">Export or save your data</h4>
-              <p>Make sure your spreadsheet is in a CSV format. SimpleReport doesn’t accept XLS, XLXS, or any other formats.</p>
-            </li>
-            <li className="usa-process-list__item">
-              <h4 className="usa-process-list__heading">Use the uploader on SimpleReport</h4>
-              <p>Visit the “[Upload spreadsheet](url)” tab under “Results” in the main SimpleReport navigation. Select your CSV by dragging the file from a folder to the upload area, or browse your computer to find and open it. Once you click Upload your CSV, SimpleReport will check your file to see if it matches the template. If it accepts the file, you’ll see a confirmation message.</p>
+              <h4 className="usa-process-list__heading">
+                Use the uploader on SimpleReport
+              </h4>
+              <p>
+                Visit the “[Upload spreadsheet](url)” tab under “Results” in the
+                main SimpleReport navigation. Select your CSV by dragging the
+                file from a folder to the upload area, or browse your computer
+                to find and open it. Once you click Upload your CSV,
+                SimpleReport will check your file to see if it matches the
+                template. If it accepts the file, you’ll see a confirmation
+                message.
+              </p>
               <h4 className="usa-process-list__heading">Fix any errors</h4>
-              <p>If SimpleReport finds any errors in the spreadsheet formatting or data, it will recommend how to fix them. Once you’ve made the recommended changes in your spreadsheet, save it, and then upload it again. 
-</p>
+              <p>
+                If SimpleReport finds any errors in the spreadsheet formatting
+                or data, it will recommend how to fix them. Once you’ve made the
+                recommended changes in your spreadsheet, save it, and then
+                upload it again.
+              </p>
             </li>
           </ol>
         </section>

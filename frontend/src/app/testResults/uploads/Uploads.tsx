@@ -151,7 +151,7 @@ const Uploads = () => {
         </div>
         <div className="usa-card__body padding-y-2 maxw-prose">
           <p>
-           Report results in bulk using a comma-separated values (CSV)
+            Report results in bulk using a comma-separated values (CSV)
             spreadsheet. To upload your spreadsheet:
           </p>
           <ol className="usa-list">
@@ -163,14 +163,12 @@ const Uploads = () => {
             <li>
               Format and add your data following the template and upload guide
             </li>
-            <li>
-              Save your spreadsheet as a CSV
-            </li>
+            <li>Save your spreadsheet as a CSV</li>
             <li>Upload your CSV here</li>
           </ol>
           <p>
             For more information about preparing your spreadsheet, visit our{" "}
-            <LinkWithQuery to="/results/upload/schema">
+            <LinkWithQuery to="/results/upload/guide">
               spreadsheet upload guide
             </LinkWithQuery>{" "}
           </p>
