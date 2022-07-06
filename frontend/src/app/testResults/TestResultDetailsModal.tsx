@@ -114,9 +114,11 @@ export const DetachedTestResultDetailsModal = ({ data, closeModal }: Props) => {
     results.some((d) => d.disease.name !== "COVID-19");
   if (hasMultiplexResults) {
     displayResult["fluAResult"] =
-      results.filter((d) => d.disease.name === "Flu A")[0]?.testResult || null;
+      results?.filter((d) => d.disease.name === "Flu A")?.[0]?.testResult ||
+      null;
     displayResult["fluBResult"] =
-      results.filter((d) => d.disease.name === "Flu B")[0]?.testResult || null;
+      results?.filter((d) => d.disease.name === "Flu B")?.[0]?.testResult ||
+      null;
   }
   return (
     <Modal

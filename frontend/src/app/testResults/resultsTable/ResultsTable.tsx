@@ -103,9 +103,9 @@ const generateResultRows = (
     const getResultCell = (disease: string) => {
       let result;
       if (r.results && r.results.length > 1) {
-        result = r.results.find(
+        result = r.results?.find(
           (result: any) => result.disease.name === disease
-        ).testResult;
+        )?.testResult;
       }
       if (result) {
         return TEST_RESULT_DESCRIPTIONS[result as Results];
