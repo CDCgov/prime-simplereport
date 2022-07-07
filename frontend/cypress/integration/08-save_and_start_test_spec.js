@@ -77,6 +77,7 @@ describe("add patient and save and start test", () => {
       '.modal__container input[name="addressSelect-person"][value="userAddress"]+label'
     ).click();
     cy.get(".modal__container #save-confirmed-address").click();
+    cy.url().should("include", "queue");
   });
   it("verifies patient contact info is correctly populated in the AoE form", () => {
     cy.get('input[name="testResultDeliverySms"][value="SMS"]').should(
@@ -116,9 +117,9 @@ describe("edit patient from test queue", () => {
     cy.get('input[value="female"]+label').click();
     cy.get(".prime-save-patient-changes").first().click();
     cy.get(".ReactModal__Content").should("not.exist");
+    cy.url().should("include", "queue");
   });
   it("verifies test queue page with test card highlighted", () => {
-    cy.url().should("include", "queue");
     cy.get(".prime-queue-item__info").contains(patientName);
   });
 });
