@@ -46,7 +46,7 @@ const Submission = () => {
                   to={`/results/upload/submissions/`}
                   className="sr-link__primary"
                 >
-                  Result submissions
+                  Return to spreadsheet upload history
                 </LinkWithQuery>
               </span>
             </div>
