@@ -5,7 +5,6 @@ import classnames from "classnames";
 import iconClose from "../../img/close.svg";
 import "./TestResultPrintModal.scss";
 import { QueryWrapper } from "../commonComponents/QueryWrapper";
-import { MultiplexResult, TestResult } from "../testQueue/QueueItem";
 import { formatFullName } from "../utils/user";
 import { symptomsStringToArray } from "../utils/symptoms";
 import {
@@ -17,7 +16,7 @@ import { formatDateWithTimeOption } from "../utils/date";
 type Result = {
   dateTested: string;
   result: TestResult;
-  results?: MultiplexResult[];
+  results: SRMultiplexResult[];
   correctionStatus: TestCorrectionStatus;
   noSymptoms: boolean;
   symptoms: string;

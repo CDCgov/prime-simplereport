@@ -275,7 +275,6 @@ export const es: LanguageConfig = {
       unknown: UNKNOWN,
       testDevice: "Dispositivo de prueba",
       id: "Número de identificación de la prueba",
-      meaning: "¿Qué significa mi resultado?",
       information:
         "Para obtener más información, visite <0>CDC.gov</0> o llame al 1-800-CDC-INFO (1-800-232-4636). Usa la <1>herramienta de verificación del condado</1> (espanol.cdc.gov/coronavirus/2019-ncov/your-health/covid-by-county.html) para comprender su nivel comunitario (riesgo de COVID-19 y capacidad hospitalaria en su área). ), consejos para la prevención y cómo encontrar vacunas, pruebas y recursos de tratamiento. ",
       cdcLink: "https://espanol.cdc.gov/",

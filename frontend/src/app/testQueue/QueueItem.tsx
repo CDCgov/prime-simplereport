@@ -49,16 +49,6 @@ import { AoEAnswers, TestQueuePerson } from "./AoEForm/AoEForm";
 import { QueueItemSubmitLoader } from "./QueueItemSubmitLoader";
 import { UPDATE_AOE } from "./addToQueue/AddToQueueSearch";
 
-export type TestResult = "POSITIVE" | "NEGATIVE" | "UNDETERMINED" | "UNKNOWN";
-
-export interface MultiplexResult {
-  disease: {
-    name: string;
-  };
-  testResult?: TestResult;
-  result?: TestResult;
-}
-
 const EARLIEST_TEST_DATE = new Date("01/01/2020 12:00:00 AM");
 
 interface EditQueueItemParams {
@@ -114,7 +104,7 @@ export const findResultByDiseaseName = (
   null;
 
 const convertFromMultiplexResponse = (
-  responseResult: MultiplexResult[]
+  responseResult: SRMultiplexResult[]
 ): DiseaseResult[] => {
   const diseaseResults: DiseaseResult[] = responseResult.map((result) => ({
     diseaseName: result.disease.name,
@@ -142,7 +132,7 @@ export interface QueueItemProps {
   selectedDeviceId: string;
   selectedDeviceSpecimenTypeId: string;
   selectedDeviceTestLength: number;
-  selectedTestResults: MultiplexResult[];
+  selectedTestResults: SRMultiplexResult[];
   dateTestedProp: string;
   refetchQueue: () => void;
   facilityName: string | undefined;

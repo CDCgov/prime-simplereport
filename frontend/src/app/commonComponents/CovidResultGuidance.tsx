@@ -4,15 +4,16 @@ import { Trans, useTranslation } from "react-i18next";
 import { COVID_RESULTS } from "../constants";
 
 interface Props {
-  result: string;
+  result: TestResult;
   isPatientApp: boolean;
+  needsHeading: boolean;
 }
 
-const CovidResultGuidance = (props: Props) => {
-  const result = props.result;
-  const isPatientApp = props.isPatientApp;
-  const { t } = useTranslation();
-
+const setCovidResultInfo = (
+  result: TestResult,
+  isPatientApp: boolean,
+  t: translateFn
+) => {
   switch (result) {
     case COVID_RESULTS.POSITIVE:
       return (
@@ -62,6 +63,27 @@ const CovidResultGuidance = (props: Props) => {
             <li>{t("testResult.notes.positive.emergency.li4")}</li>
           </ul>
           <p>{t("testResult.notes.positive.p3")}</p>
+          <Trans
+            t={t}
+            parent="p"
+            i18nKey="testResult.information"
+            components={[
+              <a
+                href={t("testResult.cdcLink")}
+                target="_blank"
+                rel="noopener noreferrer"
+              >
+                cdc.gov
+              </a>,
+              <a
+                href={t("testResult.countyCheckToolLink")}
+                target="_blank"
+                rel="noopener noreferrer"
+              >
+                county check tool
+              </a>,
+            ]}
+          />
         </>
       );
     case COVID_RESULTS.NEGATIVE:
@@ -81,6 +103,20 @@ const CovidResultGuidance = (props: Props) => {
             <li>{t("testResult.notes.negative.symptoms.li9")}</li>
             <li>{t("testResult.notes.negative.symptoms.li10")}</li>
           </ul>
+          <Trans
+            t={t}
+            parent="p"
+            i18nKey="testResult.notes.negative.moreInformation"
+            components={[
+              <a
+                href={t("testResult.cdcLink")}
+                target="_blank"
+                rel="noopener noreferrer"
+              >
+                cdc.gov
+              </a>,
+            ]}
+          />
         </>
       );
     default:
@@ -93,4 +129,31 @@ const CovidResultGuidance = (props: Props) => {
   }
 };
 
+const CovidResultGuidance = (props: Props) => {
+  const result = props.result;
+  const isPatientApp = props.isPatientApp;
+  const needsHeading = props.needsHeading;
+  const { t } = useTranslation();
+  const covidGuidanceArray: any = [];
+
+  if (needsHeading) {
+    covidGuidanceArray.push(
+      <p className="text-bold sr-guidance-heading">
+        {t("testResult.notes.h1")}
+      </p>
+    );
+  }
+  if (result === "UNDETERMINED" || result === "UNKNOWN") {
+    covidGuidanceArray.push(
+      setCovidResultInfo("UNDETERMINED", isPatientApp, t)
+    );
+  }
+  if (result !== "POSITIVE") {
+    covidGuidanceArray.push(setCovidResultInfo("NEGATIVE", isPatientApp, t));
+  }
+  if (result === "POSITIVE") {
+    covidGuidanceArray.push(setCovidResultInfo("POSITIVE", isPatientApp, t));
+  }
+  return covidGuidanceArray;
+};
 export default CovidResultGuidance;
