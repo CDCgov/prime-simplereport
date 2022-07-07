@@ -151,6 +151,7 @@ E2E/Integration tests are available using [Cypress](https://www.cypress.io/).
 These files required to run integration tests.
 - `frontend/.env.local`
 - `frontend/cypress/.env.e2e`
+  - only used when running the end-to-end tests with Docker
 - `/etc/hosts`
 
 ```
@@ -174,10 +175,14 @@ Now that you have those files set up, you are ready for a test run! There are a 
 
 - `yarn e2e:local`
   - This will open an interactive test runner that lets you select browsers and run your desired specs.
-  - Prerequisite(s): the app must be running locally with the frontend base URL set to `http://localhost:3000` and the _dev_ profile set for the backend
+  - Prerequisite(s):
+    - the app must be running locally with the frontend base URL set to `http://localhost:3000` and the _dev_ profile set for the backend
+    - `REACT_APP_OKTA_ENABLED=false` in `frontend/.env.local`
 - `yarn e2e:local:okta`
-  - Same as `yarn e2e:local`, except that specs with a login step will log in to Okta.
-  - Prerequisite(s): in addition to the prereqs for `yarn e2e:local`, the app must be running with Okta enabled
+  - Same as `yarn e2e:local`, except that specs with a login step will log in to Okta using the credentials from `.env.local`.
+  - Prerequisite(s):
+    - the app must be running locally with the frontend base URL set to `http://localhost:3000` and the _okta_local_ and _local_ profiles set for the backend
+    - `REACT_APP_OKTA_ENABLED=true` in `frontend/.env.local`
 <!-- Dockerized end-to-end tests are currently broken
 - `yarn e2e`
   - This will run cypress with default values and display Cypress logs.
