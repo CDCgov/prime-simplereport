@@ -140,7 +140,14 @@ const ManageDevices: React.FC<Props> = ({
           ))}
         </ul>
       )}
-      <div className="usa-card__body">{renderDevicesTable()}</div>
+      <div className="usa-card__body">
+        <p className="usa-hint padding-bottom-2 padding-top-1">
+          If you don&rsquo;t see a device you&rsquo;re using, please contact{" "}
+          <a href="mailto:support@simplereport.gov">support@simplereport.gov</a>{" "}
+          and request to add a new one.
+        </p>
+        {renderDevicesTable()}
+      </div>
       <div className="usa-card__footer">
         <Button
           onClick={onAddDevice}
