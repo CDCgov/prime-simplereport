@@ -94,17 +94,17 @@ exports[`CsvSchemaDocumentation tests CsvSchemaDocumentaton matches snapshot 1`]
           <li>
             <a
               class="usa-link"
-              href="#formatting-guidelines"
+              href="#preparing-upload"
             >
-              General formatting guidelines
+              Preparing and uploading a spreadsheet
             </a>
           </li>
           <li>
             <a
               class="usa-link"
-              href="#preparing-upload"
+              href="#formatting-guidelines"
             >
-              Preparing and uploading a spreadsheet
+              General formatting guidelines
             </a>
           </li>
           <div

@@ -104,7 +104,7 @@ const CsvSchemaDocumentation = () => {
             <strong>In this guide</strong>
           </p>
           <ul>
-             <li>
+            <li>
               <a href="#preparing-upload" className="usa-link">
                 Preparing and uploading a spreadsheet
               </a>
