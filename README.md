@@ -148,11 +148,18 @@ E2E/Integration tests are available using [Cypress](https://www.cypress.io/).
 
 #### Requirements:
 
-These files required to run integration tests.
+To run the integration tests locally, you'll need:
 - `frontend/.env.local`
 - `frontend/cypress/.env.e2e`
-  - only used when running the end-to-end tests with Docker
+  - only required when running the end-to-end tests with Docker
 - `/etc/hosts`
+- `frontend/cypress.env.json`
+  - only required if running with Okta
+
+```
+# frontend/.env.local
+
+```
 
 ```
 # frontend/cypress/.env.e2e
@@ -162,13 +169,21 @@ REACT_APP_OKTA_ENABLED=true
 REACT_APP_OKTA_URL=http://localhost:8088
 ```
 
-The `frontend/.env.local` file has a template at `frontend/cypress/.env.e2e.sample`. Reach out to another developer to get proper values for these secrets.
-
 ```
 # /etc/hosts
 # add the following line
 127.0.0.1 localhost.simplereport.gov
 ```
+
+```
+# frontend/cypresss.env.json
+{
+  "OKTA_USERNAME": "",
+  "OKTA_PASSWORD": "",
+  "OKTA_SECRET": ""
+}
+```
+Ask another developer for the Okta secrets to populate this file.
 
 #### Running Cypress
 Now that you have those files set up, you are ready for a test run! There are a few ways to run the tests from the `frontend` directory, including:
@@ -179,7 +194,7 @@ Now that you have those files set up, you are ready for a test run! There are a 
     - the app must be running locally with the frontend base URL set to `http://localhost:3000` and the _dev_ profile set for the backend
     - `REACT_APP_OKTA_ENABLED=false` in `frontend/.env.local`
 - `yarn e2e:local:okta`
-  - Same as `yarn e2e:local`, except that specs with a login step will log in to Okta using the credentials from `.env.local`.
+  - Same as `yarn e2e:local`, except that specs with a login step will log in to Okta
   - Prerequisite(s):
     - the app must be running locally with the frontend base URL set to `http://localhost:3000` and the _okta_local_ and _local_ profiles set for the backend
     - `REACT_APP_OKTA_ENABLED=true` in `frontend/.env.local`
@@ -197,7 +212,14 @@ Now that you have those files set up, you are ready for a test run! There are a 
   - This will run cypress with default values and display Cypress, API, DB, Frontend, and Nginx logs.
 -->
 
-Note that our Cypress tests expect there to only be 1 facility and will fail if there are multiple. Additionally, tests are expected to be run in order, so some spec files rely on data generated in previous specs.
+#### Caveats and known gotchas
+Our e2e are currently very state-dependent, so here are some things to keep in mind when running:
+- tests are expected to be run in order and some specs are dependent on the state produced by previous specs, for example:
+  - `03-conduct_test_spec.js` uses the patient created in `02-add_patient_spec.js`
+  - `04-get_result_from_patient_link_spec.js` uses the patient link generated in `03-conduct_test_spec.js`
+- our tests expect there to only be 1 facility and will fail if there are multiple facilities for whatever org the test user is authenticated into
+- `00-health_check.js` is used in our CI to check that the app is up but fails when running locally with either of the commands listed here
+- `01-organization_sign_up_spec.js` is not re-runnable
 
 See the [Cypress documentation](https://docs.cypress.io/api/table-of-contents) for writing new tests. If you need to generate new Wiremock mappings for external services, see [this wiki page](https://github.com/CDCgov/prime-simplereport/wiki/WireMock).
 
