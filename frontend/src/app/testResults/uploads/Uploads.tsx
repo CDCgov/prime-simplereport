@@ -170,7 +170,8 @@ const Uploads = () => {
             For more information about preparing your spreadsheet, visit our{" "}
             <LinkWithQuery to="/results/upload/guide">
               <strong>spreadsheet upload guide</strong>
-            </LinkWithQuery>{" "}
+            </LinkWithQuery>
+            .
           </p>
           {reportId && (
             <div>

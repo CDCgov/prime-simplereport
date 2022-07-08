@@ -1,3 +1,4 @@
+import { LinkWithQuery } from "../../commonComponents/LinkWithQuery";
 import { useDocumentTitle } from "../../utils/hooks";
 
 import schema from "./schema.json";
@@ -89,6 +90,16 @@ const CsvSchemaDocumentation = () => {
   return (
     <div className="prime-container prime-container-padding-2x card-container">
       <div className="tablet:grid-col-8 usa-prose">
+        <div className="text-normal font-body-xs text-base margin-bottom-1">
+          <span>
+            <LinkWithQuery
+              to={`/results/upload/submissions/`}
+              className="sr-link__primary"
+            >
+              {"< Return to upload spreadsheet"}
+            </LinkWithQuery>
+          </span>
+        </div>
         <section id="anchor-top">
           <h2 className="margin-top-0 ">
             CSV template guide{" "}
