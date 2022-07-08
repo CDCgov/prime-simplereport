@@ -1,4 +1,5 @@
 import { render, screen, within } from "@testing-library/react";
+import { MemoryRouter } from "react-router-dom";
 
 import CsvSchemaDocumentation, {
   CsvSchemaDocumentationItem,
@@ -62,7 +63,12 @@ describe("CsvSchemaDocumentation tests", () => {
 
   describe("CsvSchemaDocumentaton", () => {
     it("matches snapshot", () => {
-      const { container } = render(<CsvSchemaDocumentation />);
+      const { container } = render(
+        <MemoryRouter>
+          <CsvSchemaDocumentation />
+        </MemoryRouter>
+      );
+
       expect(container).toMatchSnapshot();
     });
   });

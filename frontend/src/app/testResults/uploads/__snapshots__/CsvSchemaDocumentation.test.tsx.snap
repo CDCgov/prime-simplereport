@@ -65,6 +65,18 @@ exports[`CsvSchemaDocumentation tests CsvSchemaDocumentaton matches snapshot 1`]
     <div
       class="tablet:grid-col-8 usa-prose"
     >
+      <div
+        class="text-normal font-body-xs text-base margin-bottom-1"
+      >
+        <span>
+          <a
+            class="sr-link__primary"
+            href="/results/upload/submissions/"
+          >
+            &lt; Return to upload spreadsheet
+          </a>
+        </span>
+      </div>
       <section
         id="anchor-top"
       >
