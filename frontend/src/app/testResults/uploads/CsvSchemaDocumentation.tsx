@@ -104,14 +104,14 @@ const CsvSchemaDocumentation = () => {
             <strong>In this guide</strong>
           </p>
           <ul>
-            <li>
-              <a href="#formatting-guidelines" className="usa-link">
-                General formatting guidelines
+             <li>
+              <a href="#preparing-upload" className="usa-link">
+                Preparing and uploading a spreadsheet
               </a>
             </li>
             <li>
-              <a href="#preparing-upload" className="usa-link">
-                Preparing and uploading a spreadsheet
+              <a href="#formatting-guidelines" className="usa-link">
+                General formatting guidelines
               </a>
             </li>
             {schema.fields.map((field, fieldIndex) => {
