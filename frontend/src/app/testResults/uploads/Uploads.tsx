@@ -169,7 +169,7 @@ const Uploads = () => {
           <p>
             For more information about preparing your spreadsheet, visit our{" "}
             <LinkWithQuery to="/results/upload/guide">
-              spreadsheet upload guide
+              <strong>spreadsheet upload guide</strong>
             </LinkWithQuery>{" "}
           </p>
           {reportId && (
@@ -229,7 +229,6 @@ const Uploads = () => {
               aria-describedby="upload-csv-input-label"
               accept="text/csv, .csv"
               onChange={(e) => handleFileChange(e)}
-              placeholder={"hi"}
               required
             />
           </FormGroup>

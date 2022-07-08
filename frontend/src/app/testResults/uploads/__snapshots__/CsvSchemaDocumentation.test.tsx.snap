@@ -68,11 +68,6 @@ exports[`CsvSchemaDocumentation tests CsvSchemaDocumentaton matches snapshot 1`]
       <section
         id="anchor-top"
       >
-        <span
-          class="text-base text-italic"
-        >
-          Updated: May 9, 2022
-        </span>
         <h2
           class="margin-top-0 "
         >
@@ -102,6 +97,14 @@ exports[`CsvSchemaDocumentation tests CsvSchemaDocumentaton matches snapshot 1`]
               href="#formatting-guidelines"
             >
               General formatting guidelines
+            </a>
+          </li>
+          <li>
+            <a
+              class="usa-link"
+              href="#preparing-upload"
+            >
+              Preparing and uploading a spreadsheet
             </a>
           </li>
           <div
@@ -194,7 +197,7 @@ exports[`CsvSchemaDocumentation tests CsvSchemaDocumentaton matches snapshot 1`]
       >
         <h3
           class="font-body-lg margin-y-1"
-          id="formatting-guidelines"
+          id="preparing-upload"
         >
           Preparing and uploading a spreadsheet
         </h3>

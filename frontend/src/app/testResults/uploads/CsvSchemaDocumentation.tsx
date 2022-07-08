@@ -90,7 +90,6 @@ const CsvSchemaDocumentation = () => {
     <div className="prime-container prime-container-padding-2x card-container">
       <div className="tablet:grid-col-8 usa-prose">
         <section id="anchor-top">
-          <span className="text-base text-italic">Updated: May 9, 2022</span>
           <h2 className="margin-top-0 ">
             CSV template guide{" "}
             <span className="text-secondary bg-white border-1px border-secondary font-body-3xs padding-x-1 padding-y-05 text-secondary margin-left-2 text-ttbottom">
@@ -108,6 +107,11 @@ const CsvSchemaDocumentation = () => {
             <li>
               <a href="#formatting-guidelines" className="usa-link">
                 General formatting guidelines
+              </a>
+            </li>
+            <li>
+              <a href="#preparing-upload" className="usa-link">
+                Preparing and uploading a spreadsheet
               </a>
             </li>
             {schema.fields.map((field, fieldIndex) => {
@@ -141,7 +145,7 @@ const CsvSchemaDocumentation = () => {
           </ul>
         </section>
         <section className="border-top-1px border-ink margin-top-9">
-          <h3 id="formatting-guidelines" className="font-body-lg margin-y-1">
+          <h3 id="preparing-upload" className="font-body-lg margin-y-1">
             Preparing and uploading a spreadsheet
           </h3>
           <ol className="usa-process-list">
