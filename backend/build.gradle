@@ -86,6 +86,25 @@ dependencies {
     implementation 'com.azure:azure-core:1.27.0'
     implementation 'com.azure:azure-storage-common:12.15.1'
 
+    implementation 'io.netty:netty-codec:4.1.73.Final'
+    implementation 'io.netty:netty-codec-dns:4.1.73.Final'
+    implementation 'io.netty:netty-common:4.1.73.Final'
+    implementation 'io.netty:netty-resolver:4.1.73.Final'
+    implementation 'io.netty:netty-resolver-dns:4.1.73.Final'
+    implementation 'io.netty:netty-resolver-dns-native-macos:4.1.73.Final'
+    implementation 'io.netty:netty-transport:4.1.73.Final'
+    implementation 'io.netty:netty-buffer:4.1.73.Final'
+    implementation 'io.netty:netty-codec-http2:4.1.73.Final'
+    implementation 'io.netty:netty-codec-http:4.1.73.Final'
+    implementation 'io.netty:netty-handler:4.1.73.Final'
+    implementation 'io.netty:netty-handler-proxy:4.1.73.Final'
+    implementation 'io.netty:netty-transport-native-epoll:4.1.73.Final'
+    implementation 'io.netty:netty-transport-native-kqueue:4.1.73.Final'
+    implementation 'io.netty:netty-transport-native-unix-common:4.1.73.Final'
+    implementation 'io.netty:netty-codec-socks:4.1.73.Final'
+
+    implementation 'io.netty:netty-tcnative-boringssl-static:2.0.47.Final'
+
     // test/check dependencies
     testImplementation('org.springframework.boot:spring-boot-starter-test') {
         exclude group: 'org.junit.vintage', module: 'junit-vintage-engine'
