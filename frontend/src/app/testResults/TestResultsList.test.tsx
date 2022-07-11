@@ -560,6 +560,7 @@ describe("TestResultsList", () => {
     });
 
     it("closes the download test results modal after downloading", async () => {
+      process.env.REACT_APP_MULTIPLEX_ENABLED = "false";
       expect(await screen.findByText("Showing 1-3 of 3")).toBeInTheDocument();
       expect(
         screen.getByText("Test Results", { exact: false })
