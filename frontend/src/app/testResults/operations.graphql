@@ -41,6 +41,12 @@ query GetFacilityResultsForCsv(
     }
     dateTested
     result
+    results {
+      disease {
+        name
+      }
+      testResult
+    }
     correctionStatus
     reasonForCorrection
     deviceType {
@@ -170,3 +176,43 @@ query GetResultsCountByFacility(
       endDate: $endDate
     )
   }
+
+query GetTestResultForPrint($id: ID!) {
+  testResult(id: $id) {
+    dateTested
+    result
+    results {
+      disease {
+        name
+      }
+      testResult
+    }
+    correctionStatus
+    deviceType {
+      name
+      model
+    }
+    patient {
+      firstName
+      middleName
+      lastName
+      birthDate
+    }
+    facility {
+      name
+      cliaNumber
+      phone
+      street
+      streetTwo
+      city
+      state
+      zipCode
+      orderingProvider {
+        firstName
+        middleName
+        lastName
+        NPI
+      }
+    }
+  }
+}

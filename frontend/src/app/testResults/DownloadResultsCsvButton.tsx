@@ -3,20 +3,16 @@ import Modal from "react-modal";
 import { faDownload } from "@fortawesome/free-solid-svg-icons";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { CSVLink } from "react-csv";
-import moment from "moment";
 
-import { displayFullName, facilityDisplayName, showError } from "../utils";
+import { showError } from "../utils";
 import { useImperativeQuery } from "../utils/hooks";
+import { parseDataForCSV } from "../utils/testResultCSV";
 import Button from "../commonComponents/Button/Button";
-import { TEST_RESULT_DESCRIPTIONS } from "../constants";
-import { symptomsStringToArray } from "../utils/symptoms";
 import { GetFacilityResultsForCsvDocument } from "../../generated/graphql";
 
 import {
   ALL_FACILITIES_ID,
-  byDateTested,
   FilterParams,
-  Results,
   ResultsQueryVariables,
 } from "./TestResultsList";
 
@@ -24,19 +20,6 @@ interface Props {
   filterParams: FilterParams;
   totalEntries: number;
   activeFacilityId: string;
-}
-
-function hasSymptoms(noSymptoms: boolean, symptoms: string) {
-  if (noSymptoms) {
-    return "No";
-  }
-  const symptomsList: Record<string, string> = JSON.parse(symptoms);
-  for (let key in symptomsList) {
-    if (symptomsList[key] === "true") {
-      return "Yes";
-    }
-  }
-  return "Unknown";
 }
 
 const DownloadResultsCSVButton = ({
@@ -50,7 +33,7 @@ const DownloadResultsCSVButton = ({
   const csvLink = useRef<
     CSVLink & HTMLAnchorElement & { link: HTMLAnchorElement }
   >(null);
-
+  const multiplexEnabled = process.env.REACT_APP_MULTIPLEX_ENABLED === "true";
   const openModal = () => setModalIsOpen(true);
   const closeModal = () => setModalIsOpen(false);
 
@@ -77,64 +60,6 @@ const DownloadResultsCSVButton = ({
     fetchPolicy: "no-cache",
   });
 
-  const parseDataForCSV = (data: any) =>
-    data.sort(byDateTested).map((r: any) => {
-      const symptomList = r.symptoms ? symptomsStringToArray(r.symptoms) : [];
-      return {
-        "Patient first name": r.patient.firstName,
-        "Patient middle name": r.patient.middleName,
-        "Patient last name": r.patient.lastName,
-        "Patient full name": displayFullName(
-          r.patient.firstName,
-          r.patient.middleName,
-          r.patient.lastName
-        ),
-        "Patient date of birth": moment(r.patient.birthDate).format(
-          "MM/DD/YYYY"
-        ),
-        "Test date": moment(r.dateTested).format("MM/DD/YYYY h:mma"),
-        "Test result": TEST_RESULT_DESCRIPTIONS[r.result as Results],
-        "Test correction status": r.correctionStatus,
-        "Test correction reason": r.reasonForCorrection,
-        "Device name": r.deviceType.name,
-        "Device manufacturer": r.deviceType.manufacturer,
-        "Device model": r.deviceType.model,
-        "Device swab type": r.deviceType.swabType,
-        "Has symptoms": hasSymptoms(r.noSymptoms, r.symptoms),
-        "Symptoms present":
-          symptomList.length > 0 ? symptomList.join(", ") : "No symptoms",
-        "Symptom onset": moment(r.symptomOnset).format("MM/DD/YYYY"),
-        "Facility name": facilityDisplayName(
-          r.facility.name,
-          r.facility.isDeleted
-        ),
-        Submitter: displayFullName(
-          r.createdBy.nameInfo.firstName,
-          r.createdBy.nameInfo.middleName,
-          r.createdBy.nameInfo.lastName
-        ),
-        "Patient role": r.patient.role,
-        "Patient ID (Student ID, Employee ID, etc.)": r.patient.lookupId,
-        "Patient preferred language": r.patient.preferredLanguage,
-        "Patient phone number": r.patient.telephone,
-        "Patient email": r.patient.email,
-        "Patient street address": r.patient.street,
-        "Patient street address 2": r.patient.streetTwo,
-        "Patient city": r.patient.city,
-        "Patient state": r.patient.state,
-        "Patient zip code": r.patient.zipCode,
-        "Patient county": r.patient.county,
-        "Patient country": r.patient.country,
-        "Patient gender": r.patient.gender,
-        "Patient race": r.patient.race,
-        "Patient ethnicity": r.patient.ethnicity,
-        "Patient tribal affiliation": r.patient.tribalAffiliation.join(", "),
-        "Patient is a resident in a congregate setting":
-          r.patient.residentCongregateSetting,
-        "Patient is employed in healthcare": r.patient.employedInHealthcare,
-      };
-    });
-
   const downloadResults = async () => {
     setLoading(true);
     const { data, error } = await getResults(variables);
@@ -142,7 +67,7 @@ const DownloadResultsCSVButton = ({
       showError("Error downloading results", error.message);
       setLoading(false);
     } else {
-      const results = parseDataForCSV(data.testResults);
+      const results = parseDataForCSV(data.testResults, multiplexEnabled);
       setResults(results);
       setLoading(false);
       csvLink?.current?.link.click();

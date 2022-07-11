@@ -378,7 +378,7 @@ const PersonForm = (props: Props) => {
               {t("patient.form.general.preferredLanguage")}
             </label>
             <ComboBox
-              id="preferred-language-wrapper"
+              id="preferred-language"
               defaultValue={patient.preferredLanguage || undefined}
               inputProps={{ id: "preferred-language" }}
               name="preferredLanguage"

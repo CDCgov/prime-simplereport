@@ -4,9 +4,21 @@ import userEvent from "@testing-library/user-event";
 
 import ManageDevices from "./ManageDevices";
 
-const deviceA = { internalId: "device-a", name: "Device A" };
-const deviceB = { internalId: "device-b", name: "Device B" };
-const deviceC = { internalId: "device-c", name: "Device C" };
+const deviceA = {
+  internalId: "device-a",
+  name: "Device A",
+  supportedDiseases: [],
+};
+const deviceB = {
+  internalId: "device-b",
+  name: "Device B",
+  supportedDiseases: [],
+};
+const deviceC = {
+  internalId: "device-c",
+  name: "Device C",
+  supportedDiseases: [],
+};
 
 const devices: DeviceType[] = [deviceA, deviceB, deviceC];
 const selectedDevices: DeviceType[] = [deviceA, deviceB];

@@ -103,7 +103,7 @@ ${local.skip_on_weekends}
 
 resource "azurerm_monitor_scheduled_query_rules_alert" "http_4xx_errors" {
   name                = "${var.env}-api-4xx-errors"
-  description         = "${local.env_title} HTTP Server 4xx Errors (excluding 401s and 410s) >= 50"
+  description         = "${local.env_title} HTTP Server 4xx Errors (excluding 401s, 403s, and 410s) >= 50"
   location            = data.azurerm_resource_group.app.location
   resource_group_name = var.rg_name
   severity            = var.severity
@@ -118,7 +118,7 @@ requests
 ${local.skip_on_weekends}
 | where toint(resultCode) >= 400
     and toint(resultCode) < 500
-    and (set_has_element(dynamic([401, 410]), toint(resultCode)) == false)
+    and (set_has_element(dynamic([401, 403, 410]), toint(resultCode)) == false)
     and timestamp >= ago(5m)
 | join kind= leftsemi (
     exceptions
