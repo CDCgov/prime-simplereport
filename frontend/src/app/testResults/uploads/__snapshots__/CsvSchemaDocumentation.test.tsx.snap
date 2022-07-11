@@ -71,7 +71,7 @@ exports[`CsvSchemaDocumentation tests CsvSchemaDocumentaton matches snapshot 1`]
         <span>
           <a
             class="sr-link__primary"
-            href="/results/upload/submissions/"
+            href="/results/upload/"
           >
             &lt; Return to upload spreadsheet
           </a>
@@ -81,7 +81,7 @@ exports[`CsvSchemaDocumentation tests CsvSchemaDocumentaton matches snapshot 1`]
         id="anchor-top"
       >
         <h2
-          class="margin-top-0 "
+          class="margin-top-0"
         >
           CSV template guide
            
@@ -231,7 +231,7 @@ exports[`CsvSchemaDocumentation tests CsvSchemaDocumentaton matches snapshot 1`]
                
               <a
                 class="usa-link"
-                href="https://SimpleReport.cdc.gov/assets/csv/SimpleReport-StandardCSV-ExampleData-20220509.csv"
+                href="https://reportstream.cdc.gov/assets/csv/ReportStream-StandardCSV-ExampleData-20220509.csv"
               >
                 spreadsheet template file
               </a>
@@ -284,7 +284,16 @@ exports[`CsvSchemaDocumentation tests CsvSchemaDocumentaton matches snapshot 1`]
               Use the uploader on SimpleReport
             </h4>
             <p>
-              Visit the “[Upload spreadsheet](url)” tab under “Results” in the main SimpleReport navigation. Select your CSV by dragging the file from a folder to the upload area, or browse your computer to find and open it. Once you click Upload your CSV, SimpleReport will check your file to see if it matches the template. If it accepts the file, you’ll see a confirmation message.
+              Visit the
+               
+              <a
+                class=""
+                href="/results/upload"
+              >
+                "upload spreadsheet"
+              </a>
+               
+              tab under “Results” in the main SimpleReport navigation. Select your CSV by dragging the file from a folder to the upload area, or browse your computer to find and open it. Once you click Upload your CSV, SimpleReport will check your file to see if it matches the template. If it accepts the file, you’ll see a confirmation message.
             </p>
             <h4
               class="usa-process-list__heading"
