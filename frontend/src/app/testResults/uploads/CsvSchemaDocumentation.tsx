@@ -92,16 +92,13 @@ const CsvSchemaDocumentation = () => {
       <div className="tablet:grid-col-8 usa-prose">
         <div className="text-normal font-body-xs text-base margin-bottom-1">
           <span>
-            <LinkWithQuery
-              to={`/results/upload/submissions/`}
-              className="sr-link__primary"
-            >
+            <LinkWithQuery to={`/results/upload/`} className="sr-link__primary">
               {"< Return to upload spreadsheet"}
             </LinkWithQuery>
           </span>
         </div>
         <section id="anchor-top">
-          <h2 className="margin-top-0 ">
+          <h2 className="margin-top-0">
             CSV template guide{" "}
             <span className="text-secondary bg-white border-1px border-secondary font-body-3xs padding-x-1 padding-y-05 text-secondary margin-left-2 text-ttbottom">
               Pilot program{" "}
@@ -169,7 +166,7 @@ const CsvSchemaDocumentation = () => {
                 results, you may have to adjust it to match the SimpleReport
                 template. If you don’t have one, use the{" "}
                 <a
-                  href="https://SimpleReport.cdc.gov/assets/csv/SimpleReport-StandardCSV-ExampleData-20220509.csv"
+                  href="https://reportstream.cdc.gov/assets/csv/ReportStream-StandardCSV-ExampleData-20220509.csv"
                   className="usa-link"
                 >
                   spreadsheet template file
@@ -210,14 +207,18 @@ const CsvSchemaDocumentation = () => {
                 Use the uploader on SimpleReport
               </h4>
               <p>
-                Visit the “[Upload spreadsheet](url)” tab under “Results” in the
-                main SimpleReport navigation. Select your CSV by dragging the
-                file from a folder to the upload area, or browse your computer
-                to find and open it. Once you click Upload your CSV,
-                SimpleReport will check your file to see if it matches the
-                template. If it accepts the file, you’ll see a confirmation
-                message.
+                Visit the{" "}
+                <LinkWithQuery to={"/results/upload"}>
+                  "upload spreadsheet"
+                </LinkWithQuery>{" "}
+                tab under “Results” in the main SimpleReport navigation. Select
+                your CSV by dragging the file from a folder to the upload area,
+                or browse your computer to find and open it. Once you click
+                Upload your CSV, SimpleReport will check your file to see if it
+                matches the template. If it accepts the file, you’ll see a
+                confirmation message.
               </p>
+
               <h4 className="usa-process-list__heading">Fix any errors</h4>
               <p>
                 If SimpleReport finds any errors in the spreadsheet formatting

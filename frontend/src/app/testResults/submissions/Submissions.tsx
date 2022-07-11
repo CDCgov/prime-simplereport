@@ -88,7 +88,7 @@ const Submissions = () => {
         <div className="position-relative bg-base-lightest">
           <div className="display-flex grid-row grid-gap flex-row flex-align-end padding-x-3 padding-y-2">
             <div>
-              <Label htmlFor="start-date">Submitted (Start Range)</Label>
+              <Label htmlFor="start-date">Date range (start)</Label>
               <DatePicker
                 key={resetCount}
                 id="start-date"
@@ -109,7 +109,7 @@ const Submissions = () => {
             </div>
 
             <div>
-              <Label htmlFor="end-date">Submitted (End Range)</Label>
+              <Label htmlFor="end-date">Date range (end)</Label>
               <DatePicker
                 key={resetCount}
                 id="end-date"
