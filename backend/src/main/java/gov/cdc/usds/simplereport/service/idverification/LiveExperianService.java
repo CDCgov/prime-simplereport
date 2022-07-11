@@ -110,7 +110,7 @@ public class LiveExperianService
         // retry.
         // For more details:
         // https://github.com/CDCgov/prime-simplereport/wiki/Alert-Response#prod-alert-when-an-experianauthexception-is-seen
-        int RETRY_SERVER_ERROR_CODE = 500;
+        final int RETRY_SERVER_ERROR_CODE = 500;
         if (e.getRawStatusCode() == RETRY_SERVER_ERROR_CODE) {
           if (retryOn500AuthCounter == MAX_REFETCH_TRIES) {
             String description =
