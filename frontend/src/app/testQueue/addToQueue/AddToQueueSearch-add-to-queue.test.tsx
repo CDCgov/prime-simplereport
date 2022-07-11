@@ -6,7 +6,6 @@ import { MemoryRouter } from "react-router-dom";
 
 import { AoEAnswersDelivery } from "../AoEForm/AoEForm";
 import { Patient } from "../../patients/ManagePatients";
-import { TestResult } from "../QueueItem";
 import { getAppInsights } from "../../TelemetryService";
 
 import AddToQueueSearch, {

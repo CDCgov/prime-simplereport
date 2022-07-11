@@ -2,7 +2,6 @@
 import { TFunction } from "i18next";
 import { useTranslation } from "react-i18next";
 
-import { TestResult } from "../testQueue/QueueItem";
 import {
   TestResultDeliveryPreference,
   TestResultDeliveryPreferences,

@@ -4,7 +4,6 @@ import { render, screen } from "@testing-library/react";
 import userEvent from "@testing-library/user-event";
 
 import { Patient } from "../../patients/ManagePatients";
-import { TestResult } from "../QueueItem";
 
 import SearchResults from "./SearchResults";
 

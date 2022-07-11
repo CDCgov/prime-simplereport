@@ -8,8 +8,6 @@ import "./TestResultCorrectionModal.scss";
 import userEvent from "@testing-library/user-event";
 import configureStore from "redux-mock-store";
 
-import { TestResult } from "../testQueue/QueueItem";
-
 import {
   TestCorrectionReasons,
   DetachedTestResultCorrectionModal,

@@ -5,7 +5,6 @@ import classnames from "classnames";
 import iconClose from "../../img/close.svg";
 import "./TestResultPrintModal.scss";
 import { QueryWrapper } from "../commonComponents/QueryWrapper";
-import { MultiplexResult, TestResult } from "../testQueue/QueueItem";
 import { formatFullName } from "../utils/user";
 import { symptomsStringToArray } from "../utils/symptoms";
 import {
@@ -17,7 +16,7 @@ import { formatDateWithTimeOption } from "../utils/date";
 type Result = {
   dateTested: string;
   result: TestResult;
-  results?: MultiplexResult[];
+  results: SRMultiplexResult[];
   correctionStatus: TestCorrectionStatus;
   noSymptoms: boolean;
   symptoms: string;
@@ -113,12 +112,12 @@ export const DetachedTestResultDetailsModal = ({ data, closeModal }: Props) => {
     results &&
     results.some((d) => d.disease.name !== "COVID-19");
   if (hasMultiplexResults) {
-    displayResult["fluAResult"] = results.filter(
-      (d) => d.disease.name === "Flu A"
-    )[0].testResult;
-    displayResult["fluBResult"] = results.filter(
-      (d) => d.disease.name === "Flu B"
-    )[0].testResult;
+    displayResult["fluAResult"] =
+      results?.filter((d) => d.disease.name === "Flu A")?.[0]?.testResult ||
+      null;
+    displayResult["fluBResult"] =
+      results?.filter((d) => d.disease.name === "Flu B")?.[0]?.testResult ||
+      null;
   }
   return (
     <Modal

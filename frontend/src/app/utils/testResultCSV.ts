@@ -2,25 +2,11 @@ import moment from "moment";
 
 import { byDateTested, Results } from "../testResults/TestResultsList";
 import { TEST_RESULT_DESCRIPTIONS } from "../constants";
-import { MultiplexResult } from "../testQueue/QueueItem";
 
 import { symptomsStringToArray, hasSymptomsForView } from "./symptoms";
+import { getResultByDiseaseName } from "./testResults";
 
 import { displayFullName, facilityDisplayName } from "./index";
-
-function getResultByDiseaseName(
-  results: MultiplexResult[],
-  diseaseName: string
-) {
-  const resultObj = results.find((result: MultiplexResult) => {
-    return result.disease.name.includes(diseaseName);
-  });
-  if (resultObj) {
-    return resultObj.testResult;
-  } else {
-    return "N/A";
-  }
-}
 
 export function parseDataForCSV(data: any, multiplexEnabled: boolean) {
   return data.sort(byDateTested).map((r: any) => {
