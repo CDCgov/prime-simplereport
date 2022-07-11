@@ -161,7 +161,7 @@ To run the integration tests locally, you'll need the following files set up:
 ```
 
 ```
-# frontend/cypresss.env.json
+# frontend/cypress.env.json
 {
   "OKTA_USERNAME": "",
   "OKTA_PASSWORD": "",
@@ -169,9 +169,9 @@ To run the integration tests locally, you'll need the following files set up:
 }
 ```
 
-You'll also need address validation through Smarty to be working:
-- `REACT_APP_SMARTY_STREETS_KEY` must be set in `frontend/.env.local`
-- your backend configuration needs to have the environment variables `SMARTY_AUTH_ID` and `SMARTY_AUTH_TOKEN` set
+You'll also need the following environment variables set for the backend configuration:
+- `SMARTY_AUTH_ID`
+- `SMARTY_AUTH_TOKEN`
 
 Ask another developer for the Okta and Smarty secrets to populate the environment variables.
 
