@@ -193,7 +193,7 @@ ${local.skip_on_weekends}
   time_window = 5
   trigger {
     operator  = "GreaterThan"
-    threshold = 1
+    threshold = 2
   }
 }
 
