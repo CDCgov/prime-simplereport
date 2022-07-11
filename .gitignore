@@ -12,3 +12,4 @@ node_modules
 certs/
 yarn-error.log
 backend/locust/__pycache__/
+frontend/cypress.env.json

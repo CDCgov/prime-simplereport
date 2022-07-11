@@ -51,11 +51,6 @@ const Submission = () => {
               </span>
             </div>
 
-            {/* Submission result header */}
-            <div className="usa-card__body">
-              <h1>{transmissionDate}</h1>
-            </div>
-
             {/* Submission detail */}
             <div className="usa-card__body">
               <div className="display-flex flex-column margin-top-2 margin-bottom-4">
