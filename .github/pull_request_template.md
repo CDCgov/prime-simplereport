@@ -26,6 +26,7 @@
 - [ ] Changes comply with the SimpleReport Style Guide
 - [ ] Changes with security implications have been approved by a security engineer (changes to  authentication, encryption, handling of PII, etc.)
 - [ ] Any dependencies introduced have been vetted and discussed
+- [ ] Any changes to the startup configuration have been documented in the README
 
 ----
 
@@ -55,6 +56,7 @@
 - [ ] Any changes to tables that have custom no-PHI views are accompanied by changes to those views (including re-granting permission to the no-PHI user if need be)
 - [ ] Each new changeset has a corresponding [tag](https://docs.liquibase.com/change-types/community/tag-database.html)
 - [ ] Rollback has been verifed locally and in a deployed environment
+- [ ] Any changes to the startup configuration have been documented in the README
 
 ----
 
@@ -86,10 +88,12 @@
 - [ ] Changes with security implications have been approved by a security engineer (changes to  authentication, encryption, handling of PII, etc.)
 - [ ] Any dependencies introduced have been vetted and discussed
 
-## Cloud
+### Cloud
 - [ ] Oncall has been notified if this change is going in after-hours
 - [ ] If there are changes that cannot be tested locally, this has been deployed to our Azure `test`, `dev`, or `pentest` environment for verification
 
+### Documentation
+- [ ] Any changes to the startup configuration have been documented in the README
 ----
 
 # FRONTEND PULL REQUEST
@@ -131,3 +135,6 @@
 ### Security
 - [ ] Changes with security implications have been approved by a security engineer (changes to  authentication, encryption, handling of PII, etc.)
 - [ ] Any dependencies introduced have been vetted and discussed
+
+### Documentation
+- [ ] Any changes to the startup configuration have been documented in the README

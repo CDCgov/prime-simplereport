@@ -2284,6 +2284,21 @@ export type GetTestResultDetailsQuery = {
         symptoms?: string | null | undefined;
         symptomOnset?: any | null | undefined;
         pregnancy?: string | null | undefined;
+        results?:
+          | Array<
+              | {
+                  __typename?: "MultiplexResult";
+                  testResult?: string | null | undefined;
+                  disease?:
+                    | { __typename?: "SupportedDisease"; name: string }
+                    | null
+                    | undefined;
+                }
+              | null
+              | undefined
+            >
+          | null
+          | undefined;
         deviceType?:
           | { __typename?: "DeviceType"; name: string }
           | null
@@ -2307,61 +2322,6 @@ export type GetTestResultDetailsQuery = {
                 middleName?: string | null | undefined;
                 lastName: string;
               };
-            }
-          | null
-          | undefined;
-      }
-    | null
-    | undefined;
-};
-
-export type GetTestResultForPrintQueryVariables = Exact<{
-  id: Scalars["ID"];
-}>;
-
-export type GetTestResultForPrintQuery = {
-  __typename?: "Query";
-  testResult?:
-    | {
-        __typename?: "TestResult";
-        dateTested?: any | null | undefined;
-        result?: string | null | undefined;
-        correctionStatus?: string | null | undefined;
-        deviceType?:
-          | { __typename?: "DeviceType"; name: string; model: string }
-          | null
-          | undefined;
-        patient?:
-          | {
-              __typename?: "Patient";
-              firstName?: string | null | undefined;
-              middleName?: string | null | undefined;
-              lastName?: string | null | undefined;
-              birthDate?: any | null | undefined;
-            }
-          | null
-          | undefined;
-        facility?:
-          | {
-              __typename?: "Facility";
-              name: string;
-              cliaNumber?: string | null | undefined;
-              phone?: string | null | undefined;
-              street?: string | null | undefined;
-              streetTwo?: string | null | undefined;
-              city?: string | null | undefined;
-              state?: string | null | undefined;
-              zipCode?: string | null | undefined;
-              orderingProvider?:
-                | {
-                    __typename?: "Provider";
-                    firstName?: string | null | undefined;
-                    middleName?: string | null | undefined;
-                    lastName?: string | null | undefined;
-                    NPI?: string | null | undefined;
-                  }
-                | null
-                | undefined;
             }
           | null
           | undefined;
@@ -2481,6 +2441,21 @@ export type GetFacilityResultsForCsvQuery = {
                   name: string;
                   isDeleted?: boolean | null | undefined;
                 }
+              | null
+              | undefined;
+            results?:
+              | Array<
+                  | {
+                      __typename?: "MultiplexResult";
+                      testResult?: string | null | undefined;
+                      disease?:
+                        | { __typename?: "SupportedDisease"; name: string }
+                        | null
+                        | undefined;
+                    }
+                  | null
+                  | undefined
+                >
               | null
               | undefined;
             deviceType?:
@@ -2667,6 +2642,76 @@ export type GetResultsCountByFacilityQueryVariables = Exact<{
 export type GetResultsCountByFacilityQuery = {
   __typename?: "Query";
   testResultsCount?: number | null | undefined;
+};
+
+export type GetTestResultForPrintQueryVariables = Exact<{
+  id: Scalars["ID"];
+}>;
+
+export type GetTestResultForPrintQuery = {
+  __typename?: "Query";
+  testResult?:
+    | {
+        __typename?: "TestResult";
+        dateTested?: any | null | undefined;
+        result?: string | null | undefined;
+        correctionStatus?: string | null | undefined;
+        results?:
+          | Array<
+              | {
+                  __typename?: "MultiplexResult";
+                  testResult?: string | null | undefined;
+                  disease?:
+                    | { __typename?: "SupportedDisease"; name: string }
+                    | null
+                    | undefined;
+                }
+              | null
+              | undefined
+            >
+          | null
+          | undefined;
+        deviceType?:
+          | { __typename?: "DeviceType"; name: string; model: string }
+          | null
+          | undefined;
+        patient?:
+          | {
+              __typename?: "Patient";
+              firstName?: string | null | undefined;
+              middleName?: string | null | undefined;
+              lastName?: string | null | undefined;
+              birthDate?: any | null | undefined;
+            }
+          | null
+          | undefined;
+        facility?:
+          | {
+              __typename?: "Facility";
+              name: string;
+              cliaNumber?: string | null | undefined;
+              phone?: string | null | undefined;
+              street?: string | null | undefined;
+              streetTwo?: string | null | undefined;
+              city?: string | null | undefined;
+              state?: string | null | undefined;
+              zipCode?: string | null | undefined;
+              orderingProvider?:
+                | {
+                    __typename?: "Provider";
+                    firstName?: string | null | undefined;
+                    middleName?: string | null | undefined;
+                    lastName?: string | null | undefined;
+                    NPI?: string | null | undefined;
+                  }
+                | null
+                | undefined;
+            }
+          | null
+          | undefined;
+      }
+    | null
+    | undefined;
 };
 
 export type GetUploadSubmissionQueryVariables = Exact<{
@@ -6340,6 +6385,12 @@ export const GetTestResultDetailsDocument = gql`
     testResult(id: $id) {
       dateTested
       result
+      results {
+        disease {
+          name
+        }
+        testResult
+      }
       correctionStatus
       symptoms
       symptomOnset
@@ -6413,92 +6464,6 @@ export type GetTestResultDetailsLazyQueryHookResult = ReturnType<
 export type GetTestResultDetailsQueryResult = Apollo.QueryResult<
   GetTestResultDetailsQuery,
   GetTestResultDetailsQueryVariables
->;
-export const GetTestResultForPrintDocument = gql`
-  query getTestResultForPrint($id: ID!) {
-    testResult(id: $id) {
-      dateTested
-      result
-      correctionStatus
-      deviceType {
-        name
-        model
-      }
-      patient {
-        firstName
-        middleName
-        lastName
-        birthDate
-      }
-      facility {
-        name
-        cliaNumber
-        phone
-        street
-        streetTwo
-        city
-        state
-        zipCode
-        orderingProvider {
-          firstName
-          middleName
-          lastName
-          NPI
-        }
-      }
-    }
-  }
-`;
-
-/**
- * __useGetTestResultForPrintQuery__
- *
- * To run a query within a React component, call `useGetTestResultForPrintQuery` and pass it any options that fit your needs.
- * When your component renders, `useGetTestResultForPrintQuery` returns an object from Apollo Client that contains loading, error, and data properties
- * you can use to render your UI.
- *
- * @param baseOptions options that will be passed into the query, supported options are listed on: https://www.apollographql.com/docs/react/api/react-hooks/#options;
- *
- * @example
- * const { data, loading, error } = useGetTestResultForPrintQuery({
- *   variables: {
- *      id: // value for 'id'
- *   },
- * });
- */
-export function useGetTestResultForPrintQuery(
-  baseOptions: Apollo.QueryHookOptions<
-    GetTestResultForPrintQuery,
-    GetTestResultForPrintQueryVariables
-  >
-) {
-  const options = { ...defaultOptions, ...baseOptions };
-  return Apollo.useQuery<
-    GetTestResultForPrintQuery,
-    GetTestResultForPrintQueryVariables
-  >(GetTestResultForPrintDocument, options);
-}
-export function useGetTestResultForPrintLazyQuery(
-  baseOptions?: Apollo.LazyQueryHookOptions<
-    GetTestResultForPrintQuery,
-    GetTestResultForPrintQueryVariables
-  >
-) {
-  const options = { ...defaultOptions, ...baseOptions };
-  return Apollo.useLazyQuery<
-    GetTestResultForPrintQuery,
-    GetTestResultForPrintQueryVariables
-  >(GetTestResultForPrintDocument, options);
-}
-export type GetTestResultForPrintQueryHookResult = ReturnType<
-  typeof useGetTestResultForPrintQuery
->;
-export type GetTestResultForPrintLazyQueryHookResult = ReturnType<
-  typeof useGetTestResultForPrintLazyQuery
->;
-export type GetTestResultForPrintQueryResult = Apollo.QueryResult<
-  GetTestResultForPrintQuery,
-  GetTestResultForPrintQueryVariables
 >;
 export const GetTestResultForTextDocument = gql`
   query getTestResultForText($id: ID!) {
@@ -6752,6 +6717,12 @@ export const GetFacilityResultsForCsvDocument = gql`
       }
       dateTested
       result
+      results {
+        disease {
+          name
+        }
+        testResult
+      }
       correctionStatus
       reasonForCorrection
       deviceType {
@@ -7107,6 +7078,98 @@ export type GetResultsCountByFacilityLazyQueryHookResult = ReturnType<
 export type GetResultsCountByFacilityQueryResult = Apollo.QueryResult<
   GetResultsCountByFacilityQuery,
   GetResultsCountByFacilityQueryVariables
+>;
+export const GetTestResultForPrintDocument = gql`
+  query GetTestResultForPrint($id: ID!) {
+    testResult(id: $id) {
+      dateTested
+      result
+      results {
+        disease {
+          name
+        }
+        testResult
+      }
+      correctionStatus
+      deviceType {
+        name
+        model
+      }
+      patient {
+        firstName
+        middleName
+        lastName
+        birthDate
+      }
+      facility {
+        name
+        cliaNumber
+        phone
+        street
+        streetTwo
+        city
+        state
+        zipCode
+        orderingProvider {
+          firstName
+          middleName
+          lastName
+          NPI
+        }
+      }
+    }
+  }
+`;
+
+/**
+ * __useGetTestResultForPrintQuery__
+ *
+ * To run a query within a React component, call `useGetTestResultForPrintQuery` and pass it any options that fit your needs.
+ * When your component renders, `useGetTestResultForPrintQuery` returns an object from Apollo Client that contains loading, error, and data properties
+ * you can use to render your UI.
+ *
+ * @param baseOptions options that will be passed into the query, supported options are listed on: https://www.apollographql.com/docs/react/api/react-hooks/#options;
+ *
+ * @example
+ * const { data, loading, error } = useGetTestResultForPrintQuery({
+ *   variables: {
+ *      id: // value for 'id'
+ *   },
+ * });
+ */
+export function useGetTestResultForPrintQuery(
+  baseOptions: Apollo.QueryHookOptions<
+    GetTestResultForPrintQuery,
+    GetTestResultForPrintQueryVariables
+  >
+) {
+  const options = { ...defaultOptions, ...baseOptions };
+  return Apollo.useQuery<
+    GetTestResultForPrintQuery,
+    GetTestResultForPrintQueryVariables
+  >(GetTestResultForPrintDocument, options);
+}
+export function useGetTestResultForPrintLazyQuery(
+  baseOptions?: Apollo.LazyQueryHookOptions<
+    GetTestResultForPrintQuery,
+    GetTestResultForPrintQueryVariables
+  >
+) {
+  const options = { ...defaultOptions, ...baseOptions };
+  return Apollo.useLazyQuery<
+    GetTestResultForPrintQuery,
+    GetTestResultForPrintQueryVariables
+  >(GetTestResultForPrintDocument, options);
+}
+export type GetTestResultForPrintQueryHookResult = ReturnType<
+  typeof useGetTestResultForPrintQuery
+>;
+export type GetTestResultForPrintLazyQueryHookResult = ReturnType<
+  typeof useGetTestResultForPrintLazyQuery
+>;
+export type GetTestResultForPrintQueryResult = Apollo.QueryResult<
+  GetTestResultForPrintQuery,
+  GetTestResultForPrintQueryVariables
 >;
 export const GetUploadSubmissionDocument = gql`
   query GetUploadSubmission($id: ID!) {

@@ -1,23 +1,42 @@
+@media print {
+  body {
+    // ensures extra content is not printed in results page
+    &.ReactModal__Body--open {
+      #root {
+        display: none !important;
+      }
+    }
+
+    // ensures overflow content prints on next page
+    .sr-test-results-modal-overlay {
+      display: block;
+      overflow: visible;
+      position: static;
+    }
+
+    // ensures extra content is not printed
+    .dont-print,
+    .usa-header,
+    .usa-banner {
+      display: none !important;
+    }
+
+    .sr-test-results-modal-content {
+      margin: 0 auto;
+      max-height: none;
+      padding: 0;
+      transform: none;
+      width: 8.5in;
+    }
+  }
+}
+
 .sr-result-print-buttons {
   display: flex;
   justify-content: flex-end;
 
   & button {
     margin: 0 0 0 1.5rem;
-  }
-}
-
-@media print {
-  body {
-    .dont-print {
-      display: none !important;
-    }
-
-    .sr-test-results-modal-content {
-      transform: none;
-      max-height: none;
-      padding: 0;
-    }
   }
 }
 
@@ -111,6 +130,14 @@
 
   p {
     margin: 0.75rem 1rem;
+  }
+
+  .sr-guidance-heading {
+    margin-bottom: 0.625rem;
+  }
+
+  .sr-margin-bottom-28px {
+    margin-bottom: 1.75rem;
   }
 }
 

@@ -3,7 +3,7 @@ import React from "react";
 import RadioGroup from "../commonComponents/RadioGroup";
 import Button from "../commonComponents/Button/Button";
 import { COVID_RESULTS, TEST_RESULT_DESCRIPTIONS } from "../constants";
-import { findResultByDiseaseName, TestResult } from "../testQueue/QueueItem";
+import { findResultByDiseaseName } from "../testQueue/QueueItem";
 import { DiseaseResult } from "../../generated/graphql";
 
 interface CovidResult {
