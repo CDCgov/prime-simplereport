@@ -106,6 +106,8 @@ simple-report-initialization:
       organization-external-id: DIS_ORG
     - patient-registration-link: t37ft
       facility-name: Testing Site
+    - patient-registration-link: dat-org
+      organization-external-id: DAT_ORG
 simple-report:
   demo-users:
     site-admin-emails:
