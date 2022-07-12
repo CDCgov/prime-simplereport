@@ -200,7 +200,7 @@ class LiveExperianServiceTest {
             () -> {
               _service.getQuestions(request);
             });
-    assertEquals("The activation token could not be retrieved after 2 attemps.", e.getMessage());
+    assertEquals("The activation token could not be retrieved after 2 attempts.", e.getMessage());
 
     verify(_mockRestTemplate, Mockito.times(3))
         .postForObject(eq(FAKE_PROPERTIES.getTokenEndpoint()), any(), eq(ObjectNode.class));

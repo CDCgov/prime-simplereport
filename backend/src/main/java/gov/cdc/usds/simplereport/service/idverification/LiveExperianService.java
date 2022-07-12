@@ -115,7 +115,7 @@ public class LiveExperianService
           if (retryOn500AuthCounter == MAX_REFETCH_TRIES) {
             String description =
                 String.format(
-                    "The activation token could not be retrieved after %d attemps.",
+                    "The activation token could not be retrieved after %d attempts.",
                     MAX_REFETCH_TRIES);
             throw new ExperianAuthException(description, e);
           }
