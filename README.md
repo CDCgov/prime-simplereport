@@ -148,11 +148,49 @@ E2E/Integration tests are available using [Cypress](https://www.cypress.io/).
 
 #### Requirements:
 
-These files required to run integration tests.
+To run the integration tests locally, you'll need the following files set up:
 - `frontend/.env.local`
-- `frontend/cypress/.env.e2e`
 - `/etc/hosts`
+- `frontend/cypress.env.json`
+  - only required if running with Okta
+  
+```
+# /etc/hosts
+# add the following line if running with Okta
+127.0.0.1 localhost.simplereport.gov
+```
 
+```
+# frontend/cypress.env.json
+{
+  "OKTA_USERNAME": "",
+  "OKTA_PASSWORD": "",
+  "OKTA_SECRET": ""
+}
+```
+
+You'll also need the following environment variables set for the backend configuration:
+- `SMARTY_AUTH_ID`
+- `SMARTY_AUTH_TOKEN`
+
+Ask another developer for the Okta and Smarty secrets to populate the environment variables.
+
+#### Running Cypress
+Now that you have your environment set up, you are ready for a test run! There are a few ways to run the tests from the `frontend` directory, including:
+
+- `yarn e2e:local`
+  - This will open an interactive test runner that lets you select browsers and run your desired specs.
+  - Prerequisite(s):
+    - the app must be running locally with the frontend base URL set to `http://localhost:3000` and backend running with the _dev_ profile
+    - `REACT_APP_OKTA_ENABLED=false` in `frontend/.env.local`
+- `yarn e2e:local:okta`
+  - Same as `yarn e2e:local`, except that specs with a login step will log in to Okta. This is more similar to how the tests run in our GitHub PR workflow.
+  - Prerequisite(s):
+    - the app must be running [locally with Okta](https://github.com/CDCgov/prime-simplereport/wiki/Running-outside-of-docker#running-locally-with-okta) with the frontend base URL set to `http://localhost:3000` and the backend running with the _okta-local_ and _local_ profiles
+    - `REACT_APP_OKTA_ENABLED=true` in `frontend/.env.local`
+
+<!-- Dockerized end-to-end tests are currently broken
+Dockerized end-to-end tests require the following file:
 ```
 # frontend/cypress/.env.e2e
 REACT_APP_BASE_URL=http://localhost.simplereport.gov
@@ -161,24 +199,7 @@ REACT_APP_OKTA_ENABLED=true
 REACT_APP_OKTA_URL=http://localhost:8088
 ```
 
-The `frontend/.env.local` file has a template at `frontend/cypress/.env.e2e.sample`. Reach out to another developer to get proper values for these secrets.
-
-```
-# /etc/hosts
-# add the following line
-127.0.0.1 localhost.simplereport.gov
-```
-
-#### Running Cypress
-Now that you have those files set up, you are ready for a test run! There are a few ways to run the tests from the `frontend` directory, including:
-
-- `yarn e2e:local`
-  - This will open an interactive test runner that lets you select browsers and run your desired specs.
-  - Prerequisite(s): the app must be running locally with the frontend base URL set to `http://localhost:3000` and the _dev_ profile set for the backend
-- `yarn e2e:local:okta`
-  - Same as `yarn e2e:local`, except that specs with a login step will log in to Okta.
-  - Prerequisite(s): in addition to the prereqs for `yarn e2e:local`, the app must be running with Okta enabled
-<!-- Dockerized end-to-end tests are currently broken
+To run the end-to-end tests in Docker:
 - `yarn e2e`
   - This will run cypress with default values and display Cypress logs.
 - `yarn e2e:open`
@@ -192,7 +213,17 @@ Now that you have those files set up, you are ready for a test run! There are a 
   - This will run cypress with default values and display Cypress, API, DB, Frontend, and Nginx logs.
 -->
 
-Note that our Cypress tests expect there to only be 1 facility and will fail if there are multiple. Additionally, tests are expected to be run in order, so some spec files rely on data generated in previous specs.
+#### Troubleshooting
+Our e2e tests are currently very state-dependent, so here are some things to keep in mind when running:
+- tests are expected to be run in order and some specs are dependent on the state produced by previous specs, for example:
+  - `03-conduct_test_spec.js` uses the patient created in `02-add_patient_spec.js`
+  - `04-get_result_from_patient_link_spec.js` uses the patient link generated in `03-conduct_test_spec.js`
+  - `08-save_and_start_test_spec.js` uses the patient created in `02-add_patient_spec.js` and expects them to not have any tests in progress
+- our tests expect there to only be 1 facility and will fail if there are multiple facilities for whatever org the test user is authenticated into
+  - when running the tests with Okta, the test user Cypress McTestUser has admin access to an org with external ID `DAT_ORG`, which with our default sample data will have 2 facilities
+- `00-health_check.js` is used in our CI to check that the app is up but fails when running locally with either of the commands listed here
+- `01-organization_sign_up_spec.js` is not re-runnable
+- `05-self_registration_spec.js` expects the org your test user is in to have a patient registration link generated
 
 See the [Cypress documentation](https://docs.cypress.io/api/table-of-contents) for writing new tests. If you need to generate new Wiremock mappings for external services, see [this wiki page](https://github.com/CDCgov/prime-simplereport/wiki/WireMock).
 

@@ -4,8 +4,6 @@ import { cloneDeep } from "lodash";
 import MockDate from "mockdate";
 import ReactDOM from "react-dom";
 
-import { MultiplexResult } from "../testQueue/QueueItem";
-
 import { DetachedTestResultPrintModal } from "./TestResultPrintModal";
 
 const testResult = {

@@ -1,8 +1,6 @@
 import { render, screen } from "@testing-library/react";
 import ReactDOM from "react-dom";
 
-import { TestResult } from "../testQueue/QueueItem";
-
 import { DetachedTestResultDetailsModal } from "./TestResultDetailsModal";
 
 const nonMultiplexTestResult = {
@@ -10,7 +8,7 @@ const nonMultiplexTestResult = {
   result: "NEGATIVE" as TestResult,
   results: [
     {
-      disease: { __typename: "SupportedDisease", name: "COVID-19" },
+      disease: { name: "COVID-19" as MultiplexDisease },
       testResult: "NEGATIVE" as TestResult,
       __typename: "MultiplexResult",
     },
@@ -41,17 +39,17 @@ const nonMultiplexTestResult = {
 const multiplexTestResult = JSON.parse(JSON.stringify(nonMultiplexTestResult));
 multiplexTestResult["results"] = [
   {
-    disease: { __typename: "SupportedDisease", name: "COVID-19" },
+    disease: { name: "COVID-19" as MultiplexDisease },
     testResult: "POSITIVE" as TestResult,
     __typename: "MultiplexResult",
   },
   {
-    disease: { __typename: "SupportedDisease", name: "Flu A" },
+    disease: { name: "Flu A" as MultiplexDisease },
     testResult: "NEGATIVE" as TestResult,
     __typename: "MultiplexResult",
   },
   {
-    disease: { __typename: "SupportedDisease", name: "Flu B" },
+    disease: { name: "Flu B" as MultiplexDisease },
     testResult: "POSITIVE" as TestResult,
     __typename: "MultiplexResult",
   },

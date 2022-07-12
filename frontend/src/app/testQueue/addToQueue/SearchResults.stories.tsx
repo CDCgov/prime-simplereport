@@ -2,8 +2,6 @@ import React from "react";
 import { MemoryRouter } from "react-router-dom";
 import { Story, Meta } from "@storybook/react";
 
-import { TestResult } from "../QueueItem";
-
 import SearchResults, { QueueProps, TestResultsProps } from "./SearchResults";
 
 const patient = {
