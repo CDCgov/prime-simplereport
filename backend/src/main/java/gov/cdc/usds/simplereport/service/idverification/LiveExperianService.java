@@ -50,6 +50,8 @@ public class LiveExperianService
   private static final String PID_FINAL_DECISION_PATH =
       "/clientResponsePayload/decisionElements/0/decisions/2/value";
 
+  private final int RETRY_SERVER_ERROR_CODE = 500;
+
   private static final String SUCCESS_DECISION = "ACCEPT";
   private static final String SUCCESS_DECISION_SHORT = "ACC";
   private static final int KBA_SUCCESS_RESULT_CODE = 0;
@@ -111,8 +113,7 @@ public class LiveExperianService
         // retry.
         // For more details:
         // https://github.com/CDCgov/prime-simplereport/wiki/Alert-Response#prod-alert-when-an-experianauthexception-is-seen
-        final int RETRY_SERVER_ERROR_CODE = 500;
-        if (e.getRawStatusCode() == RETRY_SERVER_ERROR_CODE) {
+        if (e.getRawStatusCode() >= RETRY_SERVER_ERROR_CODE) {
           log.error("EXPERIAN TOKEN FETCH RETURNED 500 ERROR", e);
 
           if (retryOn500AuthCounter == MAX_REFETCH_TRIES) {
