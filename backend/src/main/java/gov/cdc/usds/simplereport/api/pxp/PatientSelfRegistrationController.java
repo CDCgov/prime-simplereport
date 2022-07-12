@@ -21,6 +21,7 @@ import gov.cdc.usds.simplereport.service.model.PatientEmailsHolder;
 import java.util.List;
 import java.util.Optional;
 import javax.servlet.http.HttpServletRequest;
+import javax.validation.Valid;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.security.access.prepost.PostAuthorize;
 import org.springframework.security.access.prepost.PreAuthorize;
@@ -112,7 +113,7 @@ public class PatientSelfRegistrationController {
 
   @GetMapping("/entity-name")
   public String getEntityName(
-      @Valid @RequestParam String patientRegistrationLink, HttpServletRequest request) {
+      @RequestParam @Valid String patientRegistrationLink, HttpServletRequest request) {
     PatientSelfRegistrationLink link =
         _patientRegLinkService.getPatientRegistrationLink(patientRegistrationLink);
     if (link.getFacility() != null) {
