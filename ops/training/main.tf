@@ -18,7 +18,7 @@ resource "azurerm_storage_account" "app" {
   name                      = "simplereport${local.env}app"
   resource_group_name       = data.azurerm_resource_group.rg.name
   location                  = data.azurerm_resource_group.rg.location
-  enable_https_traffic_only = false
+  enable_https_traffic_only = true
   min_tls_version           = "TLS1_2"
 
   static_website {
@@ -97,7 +97,8 @@ module "app_gateway" {
     module.simple_report_api.app_hostname
   ]
 
-  tags = local.management_tags
+  firewall_policy_id = module.web_application_firewall.web_application_firewall_id
+  tags               = local.management_tags
 }
 
 module "nat_gateway" {
@@ -112,7 +113,7 @@ module "nat_gateway" {
   tags                    = local.management_tags
 }
 
-/* module "web_application_firewall" {
+module "web_application_firewall" {
   source                  = "../services/web_application_firewall"
   name                    = local.name
   env                     = local.env
@@ -120,7 +121,7 @@ module "nat_gateway" {
   resource_group_name     = data.azurerm_resource_group.rg.name
 
   tags = local.management_tags
-} */
+}
 
 module "app_service_autoscale" {
   source                  = "../services/app_service_autoscale"

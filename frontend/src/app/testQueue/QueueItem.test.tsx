@@ -16,7 +16,7 @@ import {
 } from "../../generated/graphql";
 import * as generatedGraphql from "../../generated/graphql";
 
-import QueueItem, { MultiplexResult } from "./QueueItem";
+import QueueItem from "./QueueItem";
 
 jest.mock("../TelemetryService", () => ({
   getAppInsights: jest.fn(),
@@ -954,7 +954,7 @@ describe("QueueItem", () => {
   });
   describe("when a multiplex device is chosen", () => {
     beforeEach(() => {
-      const selectedTestResults: MultiplexResult[] = [
+      const selectedTestResults: SRMultiplexResult[] = [
         {
           disease: { name: "COVID-19" },
           testResult: "POSITIVE",

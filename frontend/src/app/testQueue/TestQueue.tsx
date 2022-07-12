@@ -10,7 +10,7 @@ import { TestCorrectionReason } from "../testResults/TestResultCorrectionModal";
 import AddToQueueSearch, {
   StartTestProps,
 } from "./addToQueue/AddToQueueSearch";
-import QueueItem, { MultiplexResult, TestResult } from "./QueueItem";
+import QueueItem from "./QueueItem";
 import { AoEAnswers, TestQueuePerson } from "./AoEForm/AoEForm";
 import "./TestQueue.scss";
 
@@ -133,7 +133,7 @@ export interface QueueItemData extends AoEAnswers {
   deviceSpecimenType: DeviceSpecimenType;
   patient: TestQueuePerson;
   result: TestResult;
-  results: MultiplexResult[];
+  results: SRMultiplexResult[];
   dateTested: string;
   correctionStatus: string;
   reasonForCorrection: TestCorrectionReason;
@@ -250,7 +250,7 @@ const TestQueue: React.FC<Props> = ({ activeFacilityId }) => {
               ) || deviceSpecimenTypes[0];
           }
 
-          let selectedTestResults: MultiplexResult[];
+          let selectedTestResults: SRMultiplexResult[];
 
           // backwards compatibility
           if (!results && result) {

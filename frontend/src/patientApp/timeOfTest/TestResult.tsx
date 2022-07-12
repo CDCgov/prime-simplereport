@@ -1,5 +1,5 @@
 import { useSelector } from "react-redux";
-import { Trans, useTranslation } from "react-i18next";
+import { useTranslation } from "react-i18next";
 import React from "react";
 
 import { formatFullName } from "../../app/utils/user";
@@ -7,8 +7,10 @@ import { RootState } from "../../app/store";
 import { VerifyV2Response } from "../PxpApiService";
 import { StaticTestResultModal } from "../../app/testResults/TestResultPrintModal";
 import Button from "../../app/commonComponents/Button/Button";
-import CovidResultGuidance from "../../app/commonComponents/CovidResultGuidance";
+import MultiplexResultsGuidance from "../../app/commonComponents/MultiplexResultsGuidance";
+import TestResultsList from "../../app/commonComponents/TestResultsList";
 import { formatDateWithTimeOption } from "../../app/utils/date";
+import { hasMultiplexResults } from "../../app/utils/testResults";
 
 import "./TestResult.scss";
 
@@ -17,6 +19,8 @@ const TestResult = () => {
   const testResult = useSelector<RootState, VerifyV2Response>(
     (state) => state.testResult
   );
+  const multiplexEnabled = process.env.REACT_APP_MULTIPLEX_ENABLED === "true";
+  const isMultiplex = hasMultiplexResults(testResult.results);
   const fullName = formatFullName(testResult?.patient as any);
   const dateTested = formatDateWithTimeOption(testResult?.dateTested, true);
   const deviceType = testResult?.deviceType.name;
@@ -38,68 +42,48 @@ const TestResult = () => {
       >
         <div className="grid-container maxw-tablet">
           <div className="card usa-prose">
-            <h1 className="font-heading-lg">{t("testResult.result")}</h1>
+            <h1 className="font-heading-lg">
+              {multiplexEnabled && isMultiplex
+                ? t("testResult.multiplexResultHeader")
+                : t("testResult.covidResultHeader")}
+            </h1>
             <Button
               className="usa-button--unstyled"
               label={t("testResult.downloadResult")}
               onClick={() => window.print()}
             />
-
-            <h2 className="font-heading-sm">{t("testResult.patient")}</h2>
-            <p className="margin-top-05">{fullName}</p>
-            <div className="grid-row">
-              <div className="grid-col usa-prose">
-                <h2 className="font-heading-sm">
-                  {t("testResult.testResult")}
+            {}
+            <div className="grid-row margin-top-105">
+              <div className="grid-col">
+                <h2 className="font-heading-sm margin-0">
+                  {t("testResult.patient")}
                 </h2>
-                <p className="margin-top-05">
-                  {(() => {
-                    switch (testResult.result) {
-                      case "POSITIVE":
-                        return t("testResult.positive");
-                      case "NEGATIVE":
-                        return t("testResult.negative");
-                      case "UNDETERMINED":
-                        return t("testResult.undetermined");
-                      case "UNKNOWN":
-                      default:
-                        return t("testResult.unknown");
-                    }
-                  })()}
-                </p>
+                <p className="margin-top-0">{fullName}</p>
               </div>
               <div className="grid-col usa-prose">
                 <h2 className="font-heading-sm">{t("testResult.testDate")}</h2>
                 <p className="margin-top-05">{dateTested}</p>
               </div>
             </div>
+
+            <div className="grid-row">
+              <div className="grid-col usa-prose">
+                <TestResultsList
+                  results={testResult.results}
+                  multiplexEnabled={multiplexEnabled}
+                  isPatientApp={true}
+                />
+              </div>
+            </div>
             <h2 className="font-heading-sm">{t("testResult.testDevice")}</h2>
             <p className="margin-top-05">{deviceType}</p>
-            <h2 className="font-heading-sm">{t("testResult.meaning")}</h2>
-            <CovidResultGuidance
-              result={testResult.result}
+            <h2 className="font-heading-sm">
+              {t("testResult.moreInformation")}
+            </h2>
+            <MultiplexResultsGuidance
+              results={testResult.results}
               isPatientApp={true}
-            />
-            <Trans
-              t={t}
-              parent="p"
-              i18nKey="testResult.information"
-              components={[
-                <a
-                  href={t("testResult.cdcLink")}
-                  target="_blank"
-                  rel="noopener noreferrer"
-                >
-                  cdc.gov
-                </a>,
-                <a
-                  href={t("testResult.countyCheckToolLink")}
-                  target="_blank"
-                  rel="noopener noreferrer"
-                >
-                  county check tool
-                </a>,
-              ]}
+              multiplexEnabled={multiplexEnabled}
             />
           </div>
         </div>
