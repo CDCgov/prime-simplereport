@@ -1,10 +1,13 @@
 import { useParams } from "react-router-dom";
 
+import iconSprite from "../../../../node_modules/uswds/dist/img/sprite.svg";
 import { useGetUploadSubmissionQuery } from "../../../generated/graphql";
 import { LinkWithQuery } from "../../commonComponents/LinkWithQuery";
 import { formatDateWithTimeOption } from "../../utils/date";
+import { useDocumentTitle } from "../../utils/hooks";
 
 const Submission = () => {
+  useDocumentTitle("View upload details");
   const urlParams = useParams();
   const internalId = urlParams.id || "";
 
@@ -32,15 +35,23 @@ const Submission = () => {
     <div className="grid-row">
       <div className="prime-container card-container">
         {/* Sub-heading */}
-        <div className="usa-card__body text-normal font-body-xs text-base margin-bottom-0">
-          <span>
+        <div className="usa-card__header">
+          <div className="display-flex flex-align-center">
+            <svg
+              className="usa-icon text-base margin-left-neg-2px"
+              aria-hidden="true"
+              focusable="false"
+              role="img"
+            >
+              <use xlinkHref={iconSprite + "#arrow_back"}></use>
+            </svg>
             <LinkWithQuery
               to={`/results/upload/submissions/`}
-              className="sr-link__primary"
+              className="margin-left-05"
             >
-              Return to spreadsheet upload history
+              Upload history
             </LinkWithQuery>
-          </span>
+          </div>
         </div>
 
         {/* Submission detail */}
@@ -57,7 +68,7 @@ const Submission = () => {
             <span className="text-base">Transmission date</span>
             <span>{transmissionDate}</span>
           </div>
-          <div className="display-flex flex-column margin-bottom-4">
+          <div className="display-flex flex-column margin-bottom-2">
             <span className="text-base">Records</span>
             <span>{submission?.uploadSubmission.recordsCount}</span>
           </div>
