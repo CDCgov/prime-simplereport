@@ -101,6 +101,7 @@ public class LiveExperianService
                 _experianProperties.getTokenEndpoint(), entity, ObjectNode.class);
 
         if (responseBody == null) {
+          log.error("EXPERIAN TOKEN FETCH RETURNED NULL", requestBody);
           throw new ExperianAuthException("The Experian token request returned a null response.");
         }
 
@@ -112,6 +113,8 @@ public class LiveExperianService
         // https://github.com/CDCgov/prime-simplereport/wiki/Alert-Response#prod-alert-when-an-experianauthexception-is-seen
         final int RETRY_SERVER_ERROR_CODE = 500;
         if (e.getRawStatusCode() == RETRY_SERVER_ERROR_CODE) {
+          log.error("EXPERIAN TOKEN FETCH RETURNED 500 ERROR", e);
+
           if (retryOn500AuthCounter == MAX_REFETCH_TRIES) {
             String description =
                 String.format(
