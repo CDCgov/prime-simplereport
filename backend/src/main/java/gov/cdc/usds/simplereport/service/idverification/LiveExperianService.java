@@ -120,8 +120,9 @@ public class LiveExperianService
             throw new ExperianAuthException(description, e);
           }
           retryOn500AuthCounter++;
+        } else {
+          throw new ExperianAuthException("The activation token could not be retrieved.", e);
         }
-        throw new ExperianAuthException("The activation token could not be retrieved.", e);
       }
     }
   }
