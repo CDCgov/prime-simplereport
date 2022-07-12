@@ -112,7 +112,7 @@ public class PatientSelfRegistrationController {
 
   @GetMapping("/entity-name")
   public String getEntityName(
-      @RequestParam String patientRegistrationLink, HttpServletRequest request) {
+      @Valid @RequestParam String patientRegistrationLink, HttpServletRequest request) {
     PatientSelfRegistrationLink link =
         _patientRegLinkService.getPatientRegistrationLink(patientRegistrationLink);
     if (link.getFacility() != null) {
