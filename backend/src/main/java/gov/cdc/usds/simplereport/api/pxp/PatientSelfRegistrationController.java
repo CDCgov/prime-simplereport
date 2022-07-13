@@ -113,7 +113,7 @@ public class PatientSelfRegistrationController {
 
   @GetMapping("/entity-name")
   public String getEntityName(
-      @RequestParam @Pattern(regexp = "[2346789abcdefghjkmnpqrtuvwxyz]{5}")
+      @RequestParam @Pattern(regexp = "(?i)[2346789abcdefghjkmnpqrtuvwxyz]{5}")
           String patientRegistrationLink,
       HttpServletRequest request) {
     PatientSelfRegistrationLink link =
