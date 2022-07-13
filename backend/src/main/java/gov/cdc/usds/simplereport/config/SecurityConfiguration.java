@@ -72,6 +72,10 @@ public class SecurityConfiguration extends WebSecurityConfigurerAdapter {
         .antMatchers(HttpMethod.POST, WebConfiguration.TWILIO_CALLBACK)
         .permitAll()
 
+        // Feature Flags that apply at app level
+        .antMatchers(HttpMethod.GET, WebConfiguration.FEATURE_FLAGS)
+        .permitAll()
+
         // ReportStreamResponse callback authorization is handled in the controller
         .antMatchers(HttpMethod.POST, WebConfiguration.RS_QUEUE_CALLBACK)
         .permitAll()

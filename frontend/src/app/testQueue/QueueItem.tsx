@@ -13,6 +13,7 @@ import moment from "moment";
 import { useSelector } from "react-redux";
 import { useNavigate } from "react-router-dom";
 import { throttle } from "lodash";
+import { useFeature } from "flagged";
 
 import {
   DiseaseResult,
@@ -171,9 +172,7 @@ const QueueItem = ({
 }: QueueItemProps) => {
   const appInsights = getAppInsights();
   const navigate = useNavigate();
-  const multiplexFlag = JSON.parse(
-    process.env.REACT_APP_MULTIPLEX_ENABLED || "false"
-  );
+  const multiplexFlag = useFeature("multiplexEnabled");
 
   const trackRemovePatientFromQueue = () => {
     if (appInsights) {

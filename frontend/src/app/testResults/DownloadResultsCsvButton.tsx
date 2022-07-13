@@ -3,6 +3,7 @@ import Modal from "react-modal";
 import { faDownload } from "@fortawesome/free-solid-svg-icons";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { CSVLink } from "react-csv";
+import { useFeature } from "flagged";
 
 import { showError } from "../utils";
 import { useImperativeQuery } from "../utils/hooks";
@@ -33,7 +34,9 @@ const DownloadResultsCSVButton = ({
   const csvLink = useRef<
     CSVLink & HTMLAnchorElement & { link: HTMLAnchorElement }
   >(null);
-  const multiplexEnabled = process.env.REACT_APP_MULTIPLEX_ENABLED === "true";
+
+  const multiplexEnabled = useFeature("multiplexEnabled") as boolean;
+
   const openModal = () => setModalIsOpen(true);
   const closeModal = () => setModalIsOpen(false);
 

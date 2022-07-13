@@ -4024,3 +4024,64 @@ databaseChangeLog:
               WHERE ${database.defaultSchemaName}.result.test_event_id IS NULL AND t.result IS NOT NULL;
       rollback:
         sql: SELECT 'foo';
+  - changeSet:
+      id: create-feature-flag-table
+      author: johanna@skylight.digital
+      comment: creates the feature flag table which will host feature flags feature flags to control visibility of features at the application level
+      changes:
+        - tagDatabase:
+            tag: create-feature-flag-table
+        - createTable:
+            tableName: feature_flag
+            remarks: feature flags to control visibility of features at the application level.
+            columns:
+              - column:
+                  name: internal_id
+                  type: uuid
+                  remarks: The internal database identifier for this entity.
+                  constraints:
+                    primaryKey: true
+                    nullable: false
+              - column:
+                  name: name
+                  type: text
+                  remarks: The name of the flag. It should describe the feature it represents.
+                  constraints:
+                    nullable: false
+              - column:
+                  name: value
+                  type: boolean
+                  remarks: The value of the flag. It indicates if the feature is enable or disable for the app.
+                  constraints:
+                    nullable: false
+              - column:
+                  name: created_at
+                  type: DATETIME
+                  remarks: The creation timestamp for this entity.
+                  constraints:
+                    nullable: false
+              - column:
+                  name: created_by
+                  type: uuid
+                  remarks: The user who created this entity.
+                  constraints:
+                    nullable: false
+                    foreignKeyName: fk__anyentity__created_by
+                    references: api_user
+              - column:
+                  name: updated_at
+                  type: DATETIME
+                  remarks: The timestamp for the most recent update of this entity.
+                  constraints:
+                    nullable: false
+              - column:
+                  name: updated_by
+                  type: uuid
+                  remarks: The user who most recently updated this entity.
+                  constraints:
+                    nullable: false
+                    references: api_user
+                    foreignKeyName: fk__anyentity__updated_by
+      rollback:
+        dropTable:
+          tableName: feature_flag
