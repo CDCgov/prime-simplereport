@@ -16,6 +16,7 @@ import gov.cdc.usds.simplereport.api.ResourceLinks;
 import gov.cdc.usds.simplereport.db.model.Facility;
 import gov.cdc.usds.simplereport.db.model.Organization;
 import gov.cdc.usds.simplereport.db.model.PatientLink;
+import gov.cdc.usds.simplereport.db.model.PatientSelfRegistrationLink;
 import gov.cdc.usds.simplereport.db.model.Person;
 import gov.cdc.usds.simplereport.db.model.TestEvent;
 import gov.cdc.usds.simplereport.db.model.TimeOfConsent;
@@ -414,7 +415,7 @@ class PatientExperienceControllerTest extends BaseFullStackTest {
 
   @Test
   void badRegistrationLinkThrows404() throws Exception {
-    String link = UUID.randomUUID().toString();
+    String link = PatientSelfRegistrationLink.buildPatientLink();
 
     MockHttpServletRequestBuilder builder =
         get(ResourceLinks.ENTITY_NAME).param("patientRegistrationLink", link);

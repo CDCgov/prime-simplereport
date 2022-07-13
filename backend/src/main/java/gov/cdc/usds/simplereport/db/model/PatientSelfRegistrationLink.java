@@ -6,10 +6,14 @@ import javax.persistence.FetchType;
 import javax.persistence.JoinColumn;
 import javax.persistence.OneToOne;
 import javax.persistence.Table;
+import org.apache.commons.lang3.RandomStringUtils;
 
 @Entity
 @Table(name = "patient_registration_link")
 public class PatientSelfRegistrationLink extends EternalAuditedEntity {
+  public static final int LINK_LENGTH = 5;
+  public static final String LINK_CHARACTERS = "2346789abcdefghjkmnpqrtuvwxyz";
+
   @OneToOne(optional = true, fetch = FetchType.LAZY)
   @JoinColumn(name = "facility_id")
   private Facility facility;
@@ -50,5 +54,9 @@ public class PatientSelfRegistrationLink extends EternalAuditedEntity {
 
   public void setLink(String link) {
     this.patientRegistrationLink = link;
+  }
+
+  public static String buildPatientLink() {
+    return RandomStringUtils.random(LINK_LENGTH, LINK_CHARACTERS);
   }
 }

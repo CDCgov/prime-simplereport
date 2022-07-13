@@ -169,11 +169,7 @@ class PatientSelfRegistrationLinkServiceTest
     _psrlService.createRegistrationLink(_fac, "abcde");
 
     _rsl = mockStatic(RandomStringUtils.class);
-    _rsl.when(
-            () ->
-                RandomStringUtils.random(
-                    PatientSelfRegistrationLinkService.LINK_LENGTH,
-                    PatientSelfRegistrationLinkService.LINK_CHARACTERS))
+    _rsl.when(() -> PatientSelfRegistrationLink.buildPatientLink())
         .thenReturn("abcde")
         .thenReturn("uniqe");
 
@@ -187,11 +183,7 @@ class PatientSelfRegistrationLinkServiceTest
     _psrlService.createRegistrationLink(_org, "abcde");
 
     _rsl = mockStatic(RandomStringUtils.class);
-    _rsl.when(
-            () ->
-                RandomStringUtils.random(
-                    PatientSelfRegistrationLinkService.LINK_LENGTH,
-                    PatientSelfRegistrationLinkService.LINK_CHARACTERS))
+    _rsl.when(() -> PatientSelfRegistrationLink.buildPatientLink())
         .thenReturn("abcde")
         .thenReturn("uniqe");
 
@@ -205,11 +197,7 @@ class PatientSelfRegistrationLinkServiceTest
     _psrlService.createRegistrationLink(_fac, "abcde");
 
     _rsl = mockStatic(RandomStringUtils.class);
-    _rsl.when(
-            () ->
-                RandomStringUtils.random(
-                    PatientSelfRegistrationLinkService.LINK_LENGTH,
-                    PatientSelfRegistrationLinkService.LINK_CHARACTERS))
+    _rsl.when(() -> PatientSelfRegistrationLink.buildPatientLink())
         .thenReturn("abcde")
         .thenReturn("abcde")
         .thenReturn("uniqe");
@@ -224,11 +212,7 @@ class PatientSelfRegistrationLinkServiceTest
     _psrlService.createRegistrationLink(_org, "abcde");
 
     _rsl = mockStatic(RandomStringUtils.class);
-    _rsl.when(
-            () ->
-                RandomStringUtils.random(
-                    PatientSelfRegistrationLinkService.LINK_LENGTH,
-                    PatientSelfRegistrationLinkService.LINK_CHARACTERS))
+    _rsl.when(() -> PatientSelfRegistrationLink.buildPatientLink())
         .thenReturn("abcde")
         .thenReturn("abcde")
         .thenReturn("uniqe");

@@ -508,14 +508,14 @@ public class TestDataFactory {
 
   @Transactional
   public PatientSelfRegistrationLink createPatientRegistrationLink(Organization org) {
-    String link = UUID.randomUUID().toString();
+    String link = PatientSelfRegistrationLink.buildPatientLink();
     PatientSelfRegistrationLink prl = new PatientSelfRegistrationLink(org, link);
     return _patientRegistrationLinkRepository.save(prl);
   }
 
   @Transactional
   public PatientSelfRegistrationLink createPatientRegistrationLink(Facility fac) {
-    String link = UUID.randomUUID().toString();
+    String link = PatientSelfRegistrationLink.buildPatientLink();
     PatientSelfRegistrationLink prl = new PatientSelfRegistrationLink(fac, link);
     return _patientRegistrationLinkRepository.save(prl);
   }

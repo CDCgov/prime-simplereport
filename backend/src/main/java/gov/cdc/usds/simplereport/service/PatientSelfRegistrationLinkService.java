@@ -7,7 +7,6 @@ import gov.cdc.usds.simplereport.db.model.Facility;
 import gov.cdc.usds.simplereport.db.model.Organization;
 import gov.cdc.usds.simplereport.db.model.PatientSelfRegistrationLink;
 import gov.cdc.usds.simplereport.db.repository.PatientRegistrationLinkRepository;
-import org.apache.commons.lang3.RandomStringUtils;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -19,8 +18,6 @@ public class PatientSelfRegistrationLinkService {
 
   private PatientRegistrationLinkRepository prlrepo;
   private CurrentPatientContextHolder contextHolder;
-  public static final int LINK_LENGTH = 5;
-  public static final String LINK_CHARACTERS = "2346789abcdefghjkmnpqrtuvwxyz";
 
   PatientSelfRegistrationLinkService(
       PatientRegistrationLinkRepository prlrepo,
@@ -100,6 +97,6 @@ public class PatientSelfRegistrationLinkService {
   }
 
   private static String generateRandomLink() {
-    return RandomStringUtils.random(LINK_LENGTH, LINK_CHARACTERS);
+    return PatientSelfRegistrationLink.buildPatientLink();
   }
 }
