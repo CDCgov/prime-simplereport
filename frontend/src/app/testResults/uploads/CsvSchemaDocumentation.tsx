@@ -101,7 +101,10 @@ const CsvSchemaDocumentation = () => {
             >
               <use xlinkHref={iconSprite + "#arrow_back"}></use>
             </svg>
-            <LinkWithQuery to={`/results/upload/`} className="margin-left-05">
+            <LinkWithQuery
+              to={`/results/upload/submit`}
+              className="margin-left-05"
+            >
               Upload spreadsheet
             </LinkWithQuery>
           </div>

@@ -192,7 +192,7 @@ const App = () => {
               }
             />
             <Route
-              path="results/upload"
+              path="results/upload/submit"
               element={
                 <ProtectedRoute
                   requiredPermissions={canUseCsvUploaderPilot}
@@ -208,7 +208,7 @@ const App = () => {
               }
             />
             <Route
-              path="results/upload/guide"
+              path="results/upload/submit/guide"
               element={
                 <ProtectedRoute
                   requiredPermissions={canUseCsvUploaderPilot}

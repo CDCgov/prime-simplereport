@@ -81,7 +81,7 @@ exports[`CsvSchemaDocumentation tests CsvSchemaDocumentaton matches snapshot 1`]
           </svg>
           <a
             class="margin-left-05"
-            href="/results/upload/"
+            href="/results/upload/submit"
           >
             Upload spreadsheet
           </a>

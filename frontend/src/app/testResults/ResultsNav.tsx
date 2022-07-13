@@ -16,8 +16,7 @@ const ResultsNav = () => {
         </li>
         <li className="usa-nav__secondary-item">
           <LinkWithQuery
-            to={`/results/upload`}
-            end
+            to={`/results/upload/submit`}
             className={classNameByActive}
           >
             Upload spreadsheet
