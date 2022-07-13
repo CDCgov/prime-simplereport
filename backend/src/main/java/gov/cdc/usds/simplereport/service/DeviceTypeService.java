@@ -104,6 +104,9 @@ public class DeviceTypeService {
       device.setName(updateDevice.getName());
       device.setTestLength((determineTestLength(updateDevice.getName())));
     }
+    if (updateDevice.getTestLength() > 0) {
+      device.setTestLength(updateDevice.getTestLength());
+    }
     if (updateDevice.getManufacturer() != null) {
       device.setManufacturer(updateDevice.getManufacturer());
     }
