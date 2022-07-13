@@ -50,7 +50,8 @@ public class LiveExperianService
   private static final String PID_FINAL_DECISION_PATH =
       "/clientResponsePayload/decisionElements/0/decisions/2/value";
 
-  private final int RETRY_SERVER_ERROR_CODE = 500;
+  private static final int RETRY_SERVER_ERROR_CODE = 500;
+  private static final int MAX_REFETCH_TRIES = 2;
 
   private static final String SUCCESS_DECISION = "ACCEPT";
   private static final String SUCCESS_DECISION_SHORT = "ACC";
@@ -95,7 +96,6 @@ public class LiveExperianService
 
     HttpEntity<ObjectNode> entity = new HttpEntity<>(requestBody, headers);
     int retryOn500AuthCounter = 0;
-    int MAX_REFETCH_TRIES = 2;
     while (true) {
       try {
         ObjectNode responseBody =
