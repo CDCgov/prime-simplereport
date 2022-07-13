@@ -6,6 +6,7 @@ import { render, screen, waitFor, within } from "@testing-library/react";
 import moment from "moment";
 import userEvent from "@testing-library/user-event";
 import { MemoryRouter } from "react-router-dom";
+import * as flaggedMock from "flagged";
 
 import { getAppInsights } from "../TelemetryService";
 import * as utils from "../utils/index";
@@ -15,7 +16,6 @@ import {
   EditQueueItemMultiplexDocument as EDIT_QUEUE_ITEM,
 } from "../../generated/graphql";
 import * as generatedGraphql from "../../generated/graphql";
-import WithFeatureFlags from "../featureFlags/withFeatureFlags";
 
 import QueueItem from "./QueueItem";
 
@@ -70,29 +70,27 @@ describe("QueueItem", () => {
     render(
       <MemoryRouter>
         <MockedProvider mocks={[]}>
-          <WithFeatureFlags>
-            <Provider store={store}>
-              <QueueItem
-                internalId={testProps.internalId}
-                patient={testProps.patient}
-                askOnEntry={testProps.askOnEntry}
-                selectedDeviceId={testProps.selectedDeviceId}
-                selectedDeviceTestLength={testProps.selectedDeviceTestLength}
-                selectedDeviceSpecimenTypeId={
-                  testProps.selectedDeviceSpecimenTypeId
-                }
-                deviceSpecimenTypes={testProps.deviceSpecimenTypes}
-                selectedTestResults={testProps.selectedTestResults}
-                devices={testProps.devices}
-                refetchQueue={testProps.refetchQueue}
-                facilityId={testProps.facilityId}
-                dateTestedProp={testProps.dateTestedProp}
-                facilityName="Foo facility"
-                setStartTestPatientId={setStartTestPatientIdMock}
-                startTestPatientId=""
-              />
-            </Provider>
-          </WithFeatureFlags>
+          <Provider store={store}>
+            <QueueItem
+              internalId={testProps.internalId}
+              patient={testProps.patient}
+              askOnEntry={testProps.askOnEntry}
+              selectedDeviceId={testProps.selectedDeviceId}
+              selectedDeviceTestLength={testProps.selectedDeviceTestLength}
+              selectedDeviceSpecimenTypeId={
+                testProps.selectedDeviceSpecimenTypeId
+              }
+              deviceSpecimenTypes={testProps.deviceSpecimenTypes}
+              selectedTestResults={testProps.selectedTestResults}
+              devices={testProps.devices}
+              refetchQueue={testProps.refetchQueue}
+              facilityId={testProps.facilityId}
+              dateTestedProp={testProps.dateTestedProp}
+              facilityName="Foo facility"
+              setStartTestPatientId={setStartTestPatientIdMock}
+              startTestPatientId=""
+            />
+          </Provider>
         </MockedProvider>
       </MemoryRouter>
     );
@@ -107,29 +105,27 @@ describe("QueueItem", () => {
     render(
       <MemoryRouter>
         <MockedProvider mocks={[]}>
-          <WithFeatureFlags>
-            <Provider store={store}>
-              <QueueItem
-                internalId={testProps.internalId}
-                patient={testProps.patient}
-                askOnEntry={testProps.askOnEntry}
-                selectedDeviceId={testProps.selectedDeviceId}
-                selectedDeviceTestLength={testProps.selectedDeviceTestLength}
-                selectedDeviceSpecimenTypeId={
-                  testProps.selectedDeviceSpecimenTypeId
-                }
-                deviceSpecimenTypes={testProps.deviceSpecimenTypes}
-                selectedTestResults={testProps.selectedTestResults}
-                devices={testProps.devices}
-                refetchQueue={testProps.refetchQueue}
-                facilityId={testProps.facilityId}
-                dateTestedProp={testProps.dateTestedProp}
-                facilityName="Foo facility"
-                setStartTestPatientId={setStartTestPatientIdMock}
-                startTestPatientId={testProps.internalId}
-              />
-            </Provider>
-          </WithFeatureFlags>
+          <Provider store={store}>
+            <QueueItem
+              internalId={testProps.internalId}
+              patient={testProps.patient}
+              askOnEntry={testProps.askOnEntry}
+              selectedDeviceId={testProps.selectedDeviceId}
+              selectedDeviceTestLength={testProps.selectedDeviceTestLength}
+              selectedDeviceSpecimenTypeId={
+                testProps.selectedDeviceSpecimenTypeId
+              }
+              deviceSpecimenTypes={testProps.deviceSpecimenTypes}
+              selectedTestResults={testProps.selectedTestResults}
+              devices={testProps.devices}
+              refetchQueue={testProps.refetchQueue}
+              facilityId={testProps.facilityId}
+              dateTestedProp={testProps.dateTestedProp}
+              facilityName="Foo facility"
+              setStartTestPatientId={setStartTestPatientIdMock}
+              startTestPatientId={testProps.internalId}
+            />
+          </Provider>
         </MockedProvider>
       </MemoryRouter>
     );
@@ -181,29 +177,27 @@ describe("QueueItem", () => {
     render(
       <MemoryRouter>
         <MockedProvider mocks={mocks} addTypename={false}>
-          <WithFeatureFlags>
-            <Provider store={store}>
-              <QueueItem
-                internalId={testProps.internalId}
-                patient={testProps.patient}
-                askOnEntry={testProps.askOnEntry}
-                selectedDeviceId={testProps.selectedDeviceId}
-                selectedDeviceTestLength={testProps.selectedDeviceTestLength}
-                selectedDeviceSpecimenTypeId={
-                  testProps.selectedDeviceSpecimenTypeId
-                }
-                deviceSpecimenTypes={testProps.deviceSpecimenTypes}
-                selectedTestResults={testProps.selectedTestResults}
-                devices={testProps.devices}
-                refetchQueue={testProps.refetchQueue}
-                facilityId={testProps.facilityId}
-                dateTestedProp={testProps.dateTestedProp}
-                facilityName="Foo facility"
-                setStartTestPatientId={setStartTestPatientIdMock}
-                startTestPatientId=""
-              />
-            </Provider>
-          </WithFeatureFlags>
+          <Provider store={store}>
+            <QueueItem
+              internalId={testProps.internalId}
+              patient={testProps.patient}
+              askOnEntry={testProps.askOnEntry}
+              selectedDeviceId={testProps.selectedDeviceId}
+              selectedDeviceTestLength={testProps.selectedDeviceTestLength}
+              selectedDeviceSpecimenTypeId={
+                testProps.selectedDeviceSpecimenTypeId
+              }
+              deviceSpecimenTypes={testProps.deviceSpecimenTypes}
+              selectedTestResults={testProps.selectedTestResults}
+              devices={testProps.devices}
+              refetchQueue={testProps.refetchQueue}
+              facilityId={testProps.facilityId}
+              dateTestedProp={testProps.dateTestedProp}
+              facilityName="Foo facility"
+              setStartTestPatientId={setStartTestPatientIdMock}
+              startTestPatientId=""
+            />
+          </Provider>
         </MockedProvider>
       </MemoryRouter>
     );
@@ -220,29 +214,27 @@ describe("QueueItem", () => {
     render(
       <MemoryRouter>
         <MockedProvider mocks={[]} addTypename={false}>
-          <WithFeatureFlags>
-            <Provider store={store}>
-              <QueueItem
-                internalId={testProps.internalId}
-                patient={testProps.patient}
-                askOnEntry={testProps.askOnEntry}
-                selectedDeviceId={testProps.selectedDeviceId}
-                selectedDeviceTestLength={testProps.selectedDeviceTestLength}
-                selectedDeviceSpecimenTypeId={
-                  testProps.selectedDeviceSpecimenTypeId
-                }
-                deviceSpecimenTypes={testProps.deviceSpecimenTypes}
-                selectedTestResults={testProps.selectedTestResults}
-                devices={testProps.devices}
-                refetchQueue={testProps.refetchQueue}
-                facilityId={testProps.facilityId}
-                dateTestedProp={testProps.dateTestedProp}
-                facilityName="Foo facility"
-                setStartTestPatientId={setStartTestPatientIdMock}
-                startTestPatientId=""
-              />
-            </Provider>
-          </WithFeatureFlags>
+          <Provider store={store}>
+            <QueueItem
+              internalId={testProps.internalId}
+              patient={testProps.patient}
+              askOnEntry={testProps.askOnEntry}
+              selectedDeviceId={testProps.selectedDeviceId}
+              selectedDeviceTestLength={testProps.selectedDeviceTestLength}
+              selectedDeviceSpecimenTypeId={
+                testProps.selectedDeviceSpecimenTypeId
+              }
+              deviceSpecimenTypes={testProps.deviceSpecimenTypes}
+              selectedTestResults={testProps.selectedTestResults}
+              devices={testProps.devices}
+              refetchQueue={testProps.refetchQueue}
+              facilityId={testProps.facilityId}
+              dateTestedProp={testProps.dateTestedProp}
+              facilityName="Foo facility"
+              setStartTestPatientId={setStartTestPatientIdMock}
+              startTestPatientId=""
+            />
+          </Provider>
         </MockedProvider>
       </MemoryRouter>
     );
@@ -266,29 +258,27 @@ describe("QueueItem", () => {
     render(
       <MemoryRouter>
         <MockedProvider mocks={[]} addTypename={false}>
-          <WithFeatureFlags>
-            <Provider store={store}>
-              <QueueItem
-                internalId={testProps.internalId}
-                patient={testProps.patient}
-                askOnEntry={testProps.askOnEntry}
-                selectedDeviceId={testProps.selectedDeviceId}
-                selectedDeviceTestLength={testProps.selectedDeviceTestLength}
-                selectedDeviceSpecimenTypeId={
-                  testProps.selectedDeviceSpecimenTypeId
-                }
-                deviceSpecimenTypes={testProps.deviceSpecimenTypes}
-                selectedTestResults={testProps.selectedTestResults}
-                devices={testProps.devices}
-                refetchQueue={testProps.refetchQueue}
-                facilityId={testProps.facilityId}
-                dateTestedProp={testProps.dateTestedProp}
-                facilityName="Foo facility"
-                setStartTestPatientId={setStartTestPatientIdMock}
-                startTestPatientId=""
-              />
-            </Provider>
-          </WithFeatureFlags>
+          <Provider store={store}>
+            <QueueItem
+              internalId={testProps.internalId}
+              patient={testProps.patient}
+              askOnEntry={testProps.askOnEntry}
+              selectedDeviceId={testProps.selectedDeviceId}
+              selectedDeviceTestLength={testProps.selectedDeviceTestLength}
+              selectedDeviceSpecimenTypeId={
+                testProps.selectedDeviceSpecimenTypeId
+              }
+              deviceSpecimenTypes={testProps.deviceSpecimenTypes}
+              selectedTestResults={testProps.selectedTestResults}
+              devices={testProps.devices}
+              refetchQueue={testProps.refetchQueue}
+              facilityId={testProps.facilityId}
+              dateTestedProp={testProps.dateTestedProp}
+              facilityName="Foo facility"
+              setStartTestPatientId={setStartTestPatientIdMock}
+              startTestPatientId=""
+            />
+          </Provider>
         </MockedProvider>
       </MemoryRouter>
     );
@@ -398,36 +388,32 @@ describe("QueueItem", () => {
         <>
           <MemoryRouter>
             <MockedProvider mocks={editQueueMocks} addTypename={false}>
-              <WithFeatureFlags>
-                <Provider store={store}>
-                  <QueueItem
-                    internalId={testProps.internalId}
-                    patient={testProps.patient}
-                    askOnEntry={testProps.askOnEntry}
-                    selectedDeviceId={testProps.selectedDeviceId}
-                    selectedDeviceTestLength={
-                      testProps.selectedDeviceTestLength
-                    }
-                    selectedDeviceSpecimenTypeId={
-                      testProps.selectedDeviceSpecimenTypeId
-                    }
-                    deviceSpecimenTypes={testProps.deviceSpecimenTypes}
-                    selectedTestResults={[
-                      {
-                        disease: { name: "COVID-19" },
-                        testResult: "POSITIVE",
-                      },
-                    ]}
-                    devices={testProps.devices}
-                    refetchQueue={testProps.refetchQueue}
-                    facilityId={testProps.facilityId}
-                    dateTestedProp={testProps.dateTestedProp}
-                    facilityName="Foo facility"
-                    setStartTestPatientId={setStartTestPatientIdMock}
-                    startTestPatientId=""
-                  />
-                </Provider>
-              </WithFeatureFlags>
+              <Provider store={store}>
+                <QueueItem
+                  internalId={testProps.internalId}
+                  patient={testProps.patient}
+                  askOnEntry={testProps.askOnEntry}
+                  selectedDeviceId={testProps.selectedDeviceId}
+                  selectedDeviceTestLength={testProps.selectedDeviceTestLength}
+                  selectedDeviceSpecimenTypeId={
+                    testProps.selectedDeviceSpecimenTypeId
+                  }
+                  deviceSpecimenTypes={testProps.deviceSpecimenTypes}
+                  selectedTestResults={[
+                    {
+                      disease: { name: "COVID-19" },
+                      testResult: "POSITIVE",
+                    },
+                  ]}
+                  devices={testProps.devices}
+                  refetchQueue={testProps.refetchQueue}
+                  facilityId={testProps.facilityId}
+                  dateTestedProp={testProps.dateTestedProp}
+                  facilityName="Foo facility"
+                  setStartTestPatientId={setStartTestPatientIdMock}
+                  startTestPatientId=""
+                />
+              </Provider>
             </MockedProvider>
           </MemoryRouter>
           <ToastContainer
@@ -452,6 +438,8 @@ describe("QueueItem", () => {
       await waitFor(() => expect(editQueueMockIsDone).toBe(true));
     });
     it("adds radio buttons for Flu A and Flu B when a multiplex device is chosen", async () => {
+      jest.spyOn(flaggedMock, "useFeature").mockReturnValue(true);
+
       expect(screen.queryByText("Flu A")).not.toBeInTheDocument();
       expect(screen.queryByText("Flu B")).not.toBeInTheDocument();
       const deviceDropdown = (
@@ -468,6 +456,8 @@ describe("QueueItem", () => {
 
       expect(await screen.findByText("Flu A")).toBeInTheDocument();
       expect(await screen.findByText("Flu B")).toBeInTheDocument();
+
+      jest.resetAllMocks();
     });
   });
 
@@ -550,36 +540,32 @@ describe("QueueItem", () => {
         <>
           <MemoryRouter>
             <MockedProvider mocks={submitTestResultMocks} addTypename={false}>
-              <WithFeatureFlags>
-                <Provider store={store}>
-                  <QueueItem
-                    internalId={testProps.internalId}
-                    patient={testProps.patient}
-                    askOnEntry={testProps.askOnEntry}
-                    selectedDeviceId={testProps.selectedDeviceId}
-                    selectedDeviceTestLength={
-                      testProps.selectedDeviceTestLength
-                    }
-                    selectedDeviceSpecimenTypeId={
-                      testProps.selectedDeviceSpecimenTypeId
-                    }
-                    deviceSpecimenTypes={testProps.deviceSpecimenTypes}
-                    selectedTestResults={[
-                      {
-                        disease: { name: "COVID-19" },
-                        testResult: "UNDETERMINED",
-                      },
-                    ]}
-                    devices={testProps.devices}
-                    refetchQueue={testProps.refetchQueue}
-                    facilityId={testProps.facilityId}
-                    dateTestedProp={testProps.dateTestedProp}
-                    facilityName="Foo facility"
-                    setStartTestPatientId={setStartTestPatientIdMock}
-                    startTestPatientId=""
-                  />
-                </Provider>
-              </WithFeatureFlags>
+              <Provider store={store}>
+                <QueueItem
+                  internalId={testProps.internalId}
+                  patient={testProps.patient}
+                  askOnEntry={testProps.askOnEntry}
+                  selectedDeviceId={testProps.selectedDeviceId}
+                  selectedDeviceTestLength={testProps.selectedDeviceTestLength}
+                  selectedDeviceSpecimenTypeId={
+                    testProps.selectedDeviceSpecimenTypeId
+                  }
+                  deviceSpecimenTypes={testProps.deviceSpecimenTypes}
+                  selectedTestResults={[
+                    {
+                      disease: { name: "COVID-19" },
+                      testResult: "UNDETERMINED",
+                    },
+                  ]}
+                  devices={testProps.devices}
+                  refetchQueue={testProps.refetchQueue}
+                  facilityId={testProps.facilityId}
+                  dateTestedProp={testProps.dateTestedProp}
+                  facilityName="Foo facility"
+                  setStartTestPatientId={setStartTestPatientIdMock}
+                  startTestPatientId=""
+                />
+              </Provider>
             </MockedProvider>
           </MemoryRouter>
           <ToastContainer
@@ -648,29 +634,27 @@ describe("QueueItem", () => {
     render(
       <MemoryRouter>
         <MockedProvider mocks={mocks} addTypename={false}>
-          <WithFeatureFlags>
-            <Provider store={store}>
-              <QueueItem
-                internalId={testProps.internalId}
-                patient={testProps.patient}
-                askOnEntry={testProps.askOnEntry}
-                selectedDeviceId={testProps.selectedDeviceId}
-                selectedDeviceTestLength={testProps.selectedDeviceTestLength}
-                selectedDeviceSpecimenTypeId={
-                  testProps.selectedDeviceSpecimenTypeId
-                }
-                deviceSpecimenTypes={testProps.deviceSpecimenTypes}
-                selectedTestResults={testProps.selectedTestResults}
-                devices={testProps.devices}
-                refetchQueue={testProps.refetchQueue}
-                facilityId={testProps.facilityId}
-                dateTestedProp={testProps.dateTestedProp}
-                facilityName="Foo facility"
-                setStartTestPatientId={setStartTestPatientIdMock}
-                startTestPatientId=""
-              />
-            </Provider>
-          </WithFeatureFlags>
+          <Provider store={store}>
+            <QueueItem
+              internalId={testProps.internalId}
+              patient={testProps.patient}
+              askOnEntry={testProps.askOnEntry}
+              selectedDeviceId={testProps.selectedDeviceId}
+              selectedDeviceTestLength={testProps.selectedDeviceTestLength}
+              selectedDeviceSpecimenTypeId={
+                testProps.selectedDeviceSpecimenTypeId
+              }
+              deviceSpecimenTypes={testProps.deviceSpecimenTypes}
+              selectedTestResults={testProps.selectedTestResults}
+              devices={testProps.devices}
+              refetchQueue={testProps.refetchQueue}
+              facilityId={testProps.facilityId}
+              dateTestedProp={testProps.dateTestedProp}
+              facilityName="Foo facility"
+              setStartTestPatientId={setStartTestPatientIdMock}
+              startTestPatientId=""
+            />
+          </Provider>
         </MockedProvider>
       </MemoryRouter>
     );
@@ -688,34 +672,29 @@ describe("QueueItem", () => {
       <>
         <MemoryRouter>
           <MockedProvider mocks={mocks} addTypename={false}>
-            <WithFeatureFlags>
-              <Provider store={store}>
-                <QueueItem
-                  internalId={testProps.internalId}
-                  patient={testProps.patient}
-                  askOnEntry={testProps.askOnEntry}
-                  selectedDeviceId={testProps.selectedDeviceId}
-                  selectedDeviceTestLength={testProps.selectedDeviceTestLength}
-                  selectedDeviceSpecimenTypeId={
-                    testProps.selectedDeviceSpecimenTypeId
-                  }
-                  deviceSpecimenTypes={testProps.deviceSpecimenTypes}
-                  selectedTestResults={[
-                    {
-                      disease: { name: "COVID-19" },
-                      testResult: "UNDETERMINED",
-                    },
-                  ]}
-                  devices={testProps.devices}
-                  refetchQueue={testProps.refetchQueue}
-                  facilityId={testProps.facilityId}
-                  dateTestedProp={testProps.dateTestedProp}
-                  facilityName="Foo facility"
-                  setStartTestPatientId={setStartTestPatientIdMock}
-                  startTestPatientId=""
-                />
-              </Provider>
-            </WithFeatureFlags>
+            <Provider store={store}>
+              <QueueItem
+                internalId={testProps.internalId}
+                patient={testProps.patient}
+                askOnEntry={testProps.askOnEntry}
+                selectedDeviceId={testProps.selectedDeviceId}
+                selectedDeviceTestLength={testProps.selectedDeviceTestLength}
+                selectedDeviceSpecimenTypeId={
+                  testProps.selectedDeviceSpecimenTypeId
+                }
+                deviceSpecimenTypes={testProps.deviceSpecimenTypes}
+                selectedTestResults={[
+                  { disease: { name: "COVID-19" }, testResult: "UNDETERMINED" },
+                ]}
+                devices={testProps.devices}
+                refetchQueue={testProps.refetchQueue}
+                facilityId={testProps.facilityId}
+                dateTestedProp={testProps.dateTestedProp}
+                facilityName="Foo facility"
+                setStartTestPatientId={setStartTestPatientIdMock}
+                startTestPatientId=""
+              />
+            </Provider>
           </MockedProvider>
         </MemoryRouter>
         <ToastContainer
@@ -765,31 +744,29 @@ describe("QueueItem", () => {
     render(
       <MemoryRouter>
         <MockedProvider mocks={mocks}>
-          <WithFeatureFlags>
-            <Provider store={store}>
-              <QueueItem
-                internalId={testProps.internalId}
-                patient={testProps.patient}
-                askOnEntry={testProps.askOnEntry}
-                selectedDeviceId={testProps.selectedDeviceId}
-                selectedDeviceTestLength={testProps.selectedDeviceTestLength}
-                selectedDeviceSpecimenTypeId={
-                  testProps.selectedDeviceSpecimenTypeId
-                }
-                deviceSpecimenTypes={testProps.deviceSpecimenTypes}
-                selectedTestResults={[
-                  { disease: { name: "COVID-19" }, testResult: "UNDETERMINED" },
-                ]}
-                devices={testProps.devices}
-                refetchQueue={testProps.refetchQueue}
-                facilityId={testProps.facilityId}
-                dateTestedProp={testProps.dateTestedProp}
-                facilityName="Foo facility"
-                setStartTestPatientId={setStartTestPatientIdMock}
-                startTestPatientId=""
-              />
-            </Provider>
-          </WithFeatureFlags>
+          <Provider store={store}>
+            <QueueItem
+              internalId={testProps.internalId}
+              patient={testProps.patient}
+              askOnEntry={testProps.askOnEntry}
+              selectedDeviceId={testProps.selectedDeviceId}
+              selectedDeviceTestLength={testProps.selectedDeviceTestLength}
+              selectedDeviceSpecimenTypeId={
+                testProps.selectedDeviceSpecimenTypeId
+              }
+              deviceSpecimenTypes={testProps.deviceSpecimenTypes}
+              selectedTestResults={[
+                { disease: { name: "COVID-19" }, testResult: "UNDETERMINED" },
+              ]}
+              devices={testProps.devices}
+              refetchQueue={testProps.refetchQueue}
+              facilityId={testProps.facilityId}
+              dateTestedProp={testProps.dateTestedProp}
+              facilityName="Foo facility"
+              setStartTestPatientId={setStartTestPatientIdMock}
+              startTestPatientId=""
+            />
+          </Provider>
         </MockedProvider>
       </MemoryRouter>
     );
@@ -821,31 +798,29 @@ describe("QueueItem", () => {
   it("highlights test corrections and includes corrector name and reason for correction", async () => {
     render(
       <MockedProvider mocks={mocks}>
-        <WithFeatureFlags>
-          <Provider store={store}>
-            <QueueItem
-              internalId={testProps.internalId}
-              patient={testProps.patient}
-              askOnEntry={testProps.askOnEntry}
-              selectedDeviceId={testProps.selectedDeviceId}
-              selectedDeviceTestLength={testProps.selectedDeviceTestLength}
-              selectedDeviceSpecimenTypeId={
-                testProps.selectedDeviceSpecimenTypeId
-              }
-              deviceSpecimenTypes={testProps.deviceSpecimenTypes}
-              selectedTestResults={testProps.selectedTestResults}
-              devices={testProps.devices}
-              refetchQueue={testProps.refetchQueue}
-              facilityId={testProps.facilityId}
-              dateTestedProp={testProps.dateTestedProp}
-              facilityName="Foo facility"
-              isCorrection={true}
-              reasonForCorrection={TestCorrectionReason.INCORRECT_RESULT}
-              startTestPatientId={null}
-              setStartTestPatientId={() => {}}
-            />
-          </Provider>
-        </WithFeatureFlags>
+        <Provider store={store}>
+          <QueueItem
+            internalId={testProps.internalId}
+            patient={testProps.patient}
+            askOnEntry={testProps.askOnEntry}
+            selectedDeviceId={testProps.selectedDeviceId}
+            selectedDeviceTestLength={testProps.selectedDeviceTestLength}
+            selectedDeviceSpecimenTypeId={
+              testProps.selectedDeviceSpecimenTypeId
+            }
+            deviceSpecimenTypes={testProps.deviceSpecimenTypes}
+            selectedTestResults={testProps.selectedTestResults}
+            devices={testProps.devices}
+            refetchQueue={testProps.refetchQueue}
+            facilityId={testProps.facilityId}
+            dateTestedProp={testProps.dateTestedProp}
+            facilityName="Foo facility"
+            isCorrection={true}
+            reasonForCorrection={TestCorrectionReason.INCORRECT_RESULT}
+            startTestPatientId={null}
+            setStartTestPatientId={() => {}}
+          />
+        </Provider>
       </MockedProvider>
     );
     const testCard = await screen.findByTestId(`test-card-${internalId}`);
@@ -864,29 +839,27 @@ describe("QueueItem", () => {
     render(
       <MemoryRouter>
         <MockedProvider mocks={mocks} addTypename={false}>
-          <WithFeatureFlags>
-            <Provider store={store}>
-              <QueueItem
-                internalId={testProps.internalId}
-                patient={testProps.patient}
-                askOnEntry={testProps.askOnEntry}
-                selectedDeviceId={testProps.selectedDeviceId}
-                selectedDeviceTestLength={testProps.selectedDeviceTestLength}
-                selectedDeviceSpecimenTypeId={
-                  testProps.selectedDeviceSpecimenTypeId
-                }
-                deviceSpecimenTypes={testProps.deviceSpecimenTypes}
-                selectedTestResults={testProps.selectedTestResults}
-                devices={testProps.devices}
-                refetchQueue={testProps.refetchQueue}
-                facilityId={testProps.facilityId}
-                dateTestedProp={testProps.dateTestedProp}
-                facilityName="Foo facility"
-                setStartTestPatientId={setStartTestPatientIdMock}
-                startTestPatientId=""
-              />
-            </Provider>
-          </WithFeatureFlags>
+          <Provider store={store}>
+            <QueueItem
+              internalId={testProps.internalId}
+              patient={testProps.patient}
+              askOnEntry={testProps.askOnEntry}
+              selectedDeviceId={testProps.selectedDeviceId}
+              selectedDeviceTestLength={testProps.selectedDeviceTestLength}
+              selectedDeviceSpecimenTypeId={
+                testProps.selectedDeviceSpecimenTypeId
+              }
+              deviceSpecimenTypes={testProps.deviceSpecimenTypes}
+              selectedTestResults={testProps.selectedTestResults}
+              devices={testProps.devices}
+              refetchQueue={testProps.refetchQueue}
+              facilityId={testProps.facilityId}
+              dateTestedProp={testProps.dateTestedProp}
+              facilityName="Foo facility"
+              setStartTestPatientId={setStartTestPatientIdMock}
+              startTestPatientId=""
+            />
+          </Provider>
         </MockedProvider>
       </MemoryRouter>
     );
@@ -909,34 +882,29 @@ describe("QueueItem", () => {
       render(
         <MemoryRouter>
           <MockedProvider mocks={mocks} addTypename={false}>
-            <WithFeatureFlags>
-              <Provider store={store}>
-                <QueueItem
-                  internalId={testProps.internalId}
-                  patient={testProps.patient}
-                  askOnEntry={testProps.askOnEntry}
-                  selectedDeviceId={testProps.selectedDeviceId}
-                  selectedDeviceTestLength={testProps.selectedDeviceTestLength}
-                  selectedDeviceSpecimenTypeId={
-                    testProps.selectedDeviceSpecimenTypeId
-                  }
-                  deviceSpecimenTypes={testProps.deviceSpecimenTypes}
-                  selectedTestResults={[
-                    {
-                      disease: { name: "COVID-19" },
-                      testResult: "UNDETERMINED",
-                    },
-                  ]}
-                  devices={testProps.devices}
-                  refetchQueue={testProps.refetchQueue}
-                  facilityId={testProps.facilityId}
-                  dateTestedProp={testProps.dateTestedProp}
-                  facilityName="Foo facility"
-                  setStartTestPatientId={setStartTestPatientIdMock}
-                  startTestPatientId=""
-                />
-              </Provider>
-            </WithFeatureFlags>
+            <Provider store={store}>
+              <QueueItem
+                internalId={testProps.internalId}
+                patient={testProps.patient}
+                askOnEntry={testProps.askOnEntry}
+                selectedDeviceId={testProps.selectedDeviceId}
+                selectedDeviceTestLength={testProps.selectedDeviceTestLength}
+                selectedDeviceSpecimenTypeId={
+                  testProps.selectedDeviceSpecimenTypeId
+                }
+                deviceSpecimenTypes={testProps.deviceSpecimenTypes}
+                selectedTestResults={[
+                  { disease: { name: "COVID-19" }, testResult: "UNDETERMINED" },
+                ]}
+                devices={testProps.devices}
+                refetchQueue={testProps.refetchQueue}
+                facilityId={testProps.facilityId}
+                dateTestedProp={testProps.dateTestedProp}
+                facilityName="Foo facility"
+                setStartTestPatientId={setStartTestPatientIdMock}
+                startTestPatientId=""
+              />
+            </Provider>
           </MockedProvider>
         </MemoryRouter>
       );
@@ -991,6 +959,8 @@ describe("QueueItem", () => {
   });
   describe("when a multiplex device is chosen", () => {
     beforeEach(() => {
+      jest.spyOn(flaggedMock, "useFeature").mockReturnValue(true);
+
       const selectedTestResults: SRMultiplexResult[] = [
         {
           disease: { name: "COVID-19" },
@@ -1154,30 +1124,31 @@ describe("QueueItem", () => {
       render(
         <MemoryRouter>
           <MockedProvider mocks={editQueueMocks} addTypename={false}>
-            <WithFeatureFlags>
-              <Provider store={store}>
-                <QueueItem
-                  internalId={testProps.internalId}
-                  patient={testProps.patient}
-                  askOnEntry={testProps.askOnEntry}
-                  selectedDeviceId="multiplex"
-                  selectedDeviceTestLength={testProps.selectedDeviceTestLength}
-                  selectedDeviceSpecimenTypeId="device-specimen-3"
-                  deviceSpecimenTypes={testProps.deviceSpecimenTypes}
-                  selectedTestResults={selectedTestResults}
-                  devices={testProps.devices}
-                  refetchQueue={testProps.refetchQueue}
-                  facilityId={testProps.facilityId}
-                  dateTestedProp={testProps.dateTestedProp}
-                  facilityName="Foo facility"
-                  setStartTestPatientId={setStartTestPatientIdMock}
-                  startTestPatientId=""
-                />
-              </Provider>
-            </WithFeatureFlags>
+            <Provider store={store}>
+              <QueueItem
+                internalId={testProps.internalId}
+                patient={testProps.patient}
+                askOnEntry={testProps.askOnEntry}
+                selectedDeviceId="multiplex"
+                selectedDeviceTestLength={testProps.selectedDeviceTestLength}
+                selectedDeviceSpecimenTypeId="device-specimen-3"
+                deviceSpecimenTypes={testProps.deviceSpecimenTypes}
+                selectedTestResults={selectedTestResults}
+                devices={testProps.devices}
+                refetchQueue={testProps.refetchQueue}
+                facilityId={testProps.facilityId}
+                dateTestedProp={testProps.dateTestedProp}
+                facilityName="Foo facility"
+                setStartTestPatientId={setStartTestPatientIdMock}
+                startTestPatientId=""
+              />
+            </Provider>
           </MockedProvider>
         </MemoryRouter>
       );
+    });
+    afterEach(() => {
+      jest.resetAllMocks();
     });
 
     it("renders radio buttons with results for Flu A and Flu B", () => {
