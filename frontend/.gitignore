@@ -14,5 +14,6 @@ build-storybook.log
 /storybook_public
 maintenance.json
 diff.txt
+cypress.env.json
 
 wiremock*.jar

@@ -4,7 +4,6 @@ import { useDispatch, connect } from "react-redux";
 import { Navigate, Route, Routes, useLocation } from "react-router-dom";
 import { ApplicationInsights } from "@microsoft/applicationinsights-web";
 
-import WithFeatureFlags from "./featureFlags/withFeatureFlags";
 import ProtectedRoute from "./commonComponents/ProtectedRoute";
 import Header from "./commonComponents/Header";
 import Page from "./commonComponents/Page/Page";
@@ -25,9 +24,11 @@ import { TrainingNotification } from "./commonComponents/TrainingNotification";
 import { MaintenanceBanner } from "./commonComponents/MaintenanceBanner";
 import { Analytics } from "./analytics/Analytics";
 import Uploads from "./testResults/uploads/Uploads";
+import Schema from "./testResults/uploads/CsvSchemaDocumentation";
 import Submission from "./testResults/submissions/Submission";
 import Submissions from "./testResults/submissions/Submissions";
 import ResultsNavWrapper from "./testResults/ResultsNavWrapper";
+import WithFeatureFlags from "./featureFlags/withFeatureFlags";
 
 export const WHOAMI_QUERY = gql`
   query WhoAmI {
@@ -208,6 +209,23 @@ const App = () => {
                   />
                 }
               />
+              <Route
+                path="results/upload/guide"
+                element={
+                  <ProtectedRoute
+                    requiredPermissions={canUseCsvUploaderPilot}
+                    userPermissions={data.whoami.permissions}
+                    element={
+                      <ResultsNavWrapper
+                        userPermissions={data.whoami.permissions}
+                      >
+                        <Schema />
+                      </ResultsNavWrapper>
+                    }
+                  />
+                }
+              />
+
               <Route
                 path="results/upload/submission/:id"
                 element={

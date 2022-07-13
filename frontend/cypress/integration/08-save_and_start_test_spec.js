@@ -77,6 +77,7 @@ describe("add patient and save and start test", () => {
       '.modal__container input[name="addressSelect-person"][value="userAddress"]+label'
     ).click();
     cy.get(".modal__container #save-confirmed-address").click();
+    cy.url().should("include", "queue");
   });
   it("verifies patient contact info is correctly populated in the AoE form", () => {
     cy.get('input[name="testResultDeliverySms"][value="SMS"]').should(
@@ -106,25 +107,25 @@ describe("add patient and save and start test", () => {
 });
 
 describe("edit patient from test queue", () => {
-  it("navigates to test queue and clicks on patient name", () => {
+  it("navigates to test queue and edits patient", () => {
     cy.visit("/");
     cy.get(".usa-nav-container");
     cy.get("#desktop-conduct-test-nav-link").click();
     cy.get(".card-name").contains(patientName).click();
-  });
-  it("edits the patient and clicks save changes", () => {
     cy.get('input[value="female"]+label').click();
+  });
+  it("clicks save changes and verifies test queue redirect", () => {
     cy.get(".prime-save-patient-changes").first().click();
     cy.get(".ReactModal__Content").should("not.exist");
-  });
-  it("verifies test queue page with test card highlighted", () => {
     cy.url().should("include", "queue");
+  });
+  it("verifies test card highlighted", () => {
     cy.get(".prime-queue-item__info").contains(patientName);
   });
 });
 
 describe("start test from people page for patient already in queue", () => {
-  it("navigates to people page and selects Start test", () => {
+  it("navigates to people page, selects Start test, and verifies link to test queue", () => {
     cy.visit("/");
     cy.get(".usa-nav-container");
     cy.get("#desktop-patient-nav-link").click();
@@ -132,9 +133,9 @@ describe("start test from people page for patient already in queue", () => {
     cy.contains("tr", patientName).find(".sr-actions-menu").click();
     cy.contains("Start test").click();
     cy.get(".ReactModal__Content").should("not.exist");
-  });
-  it("verifies test queue page with test card highlighted", () => {
     cy.url().should("include", "queue");
+  });
+  it("verifies test card highlighted", () => {
     cy.get(".prime-queue-item__info").contains(patientName);
   });
 });
