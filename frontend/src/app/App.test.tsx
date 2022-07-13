@@ -39,6 +39,9 @@ jest.mock("./testResults/CleanTestResultsList", () => {
 jest.mock("./testResults/TestResultsList", () => {
   return () => <p>TestResultsList</p>;
 });
+jest.mock("./featureFlags/withFeatureFlags", () => {
+  return ({ children }: any): JSX.Element => <>{children}</>;
+});
 
 const mockStore = createMockStore([]);
 const mockDispatch = jest.fn();
