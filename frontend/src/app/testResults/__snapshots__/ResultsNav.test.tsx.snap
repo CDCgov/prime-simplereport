@@ -2,52 +2,44 @@
 
 exports[`ResultsNav displays the nav order correctly and defaults to 'Test Results' 1`] = `
 <div>
-  <div
-    class="prime-home"
+  <nav
+    aria-label="Secondary navigation"
+    class="prime-secondary-nav"
   >
-    <div
-      class="grid-container"
+    <ul
+      class="usa-nav__secondary-links prime-nav"
     >
-      <nav
-        aria-label="Secondary navigation"
-        class="prime-secondary-nav"
+      <li
+        class="usa-nav__secondary-item"
       >
-        <ul
-          class="usa-nav__secondary-links prime-nav"
+        <a
+          class=""
+          href="/results/1"
         >
-          <li
-            class="usa-nav__secondary-item"
-          >
-            <a
-              class=""
-              href="/results/1"
-            >
-              Test results
-            </a>
-          </li>
-          <li
-            class="usa-nav__secondary-item"
-          >
-            <a
-              class=""
-              href="/results/upload"
-            >
-              CSV upload
-            </a>
-          </li>
-          <li
-            class="usa-nav__secondary-item"
-          >
-            <a
-              class=""
-              href="/results/upload/submissions"
-            >
-              CSV upload history
-            </a>
-          </li>
-        </ul>
-      </nav>
-    </div>
-  </div>
+          View test results
+        </a>
+      </li>
+      <li
+        class="usa-nav__secondary-item"
+      >
+        <a
+          class=""
+          href="/results/upload"
+        >
+          Upload spreadsheet
+        </a>
+      </li>
+      <li
+        class="usa-nav__secondary-item"
+      >
+        <a
+          class=""
+          href="/results/upload/submissions"
+        >
+          View upload history
+        </a>
+      </li>
+    </ul>
+  </nav>
 </div>
 `;
