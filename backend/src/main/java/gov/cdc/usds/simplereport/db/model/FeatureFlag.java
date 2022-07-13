@@ -15,5 +15,7 @@ public class FeatureFlag extends AuditedEntity {
   @Column(nullable = false)
   private Boolean value;
 
-  public FeatureFlag() {}
+  public FeatureFlag() {
+    /* required for hibernate*/
+  }
 }
