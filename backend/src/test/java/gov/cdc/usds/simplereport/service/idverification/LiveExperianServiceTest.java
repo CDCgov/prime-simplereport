@@ -7,6 +7,7 @@ import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
@@ -27,7 +28,9 @@ import gov.cdc.usds.simplereport.service.errors.ExperianSubmitAnswersException;
 import java.util.Arrays;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
+import org.mockito.Mockito;
 import org.springframework.web.client.RestClientException;
+import org.springframework.web.client.RestClientResponseException;
 import org.springframework.web.client.RestTemplate;
 
 class LiveExperianServiceTest {
@@ -106,7 +109,7 @@ class LiveExperianServiceTest {
   void getQuestions_remoteConnectionFails_failure() {
     when(_mockRestTemplate.postForObject(
             eq(FAKE_PROPERTIES.getInitialRequestEndpoint()), any(), eq(ObjectNode.class)))
-        .thenThrow(RestClientException.class);
+        .thenThrow(RestClientResponseException.class);
 
     IdentityVerificationQuestionsRequest request = createValidQuestionsRequest();
 
@@ -176,12 +179,19 @@ class LiveExperianServiceTest {
   }
 
   @Test
-  void getQuestions_authFailure_failure() {
-    // somehow failed to get an access token from experian
-    when(_mockRestTemplate.postForObject(
-            eq(FAKE_PROPERTIES.getTokenEndpoint()), any(), eq(ObjectNode.class)))
-        .thenThrow(RestClientException.class);
+  void getQuestions_authFailureRetry_failure() {
 
+    // Throw a 500 response on the first try, mocking intermittent Experian behavior
+    RestClientResponseException mock500AuthException =
+        new RestClientResponseException("mock error", 500, "mock status text", null, null, null);
+
+    Mockito.when(
+            _mockRestTemplate.postForObject(
+                eq(FAKE_PROPERTIES.getTokenEndpoint()), any(), eq(ObjectNode.class)))
+        .thenThrow(mock500AuthException)
+        .thenThrow(mock500AuthException);
+
+    // somehow failed to get an access token from experian
     IdentityVerificationQuestionsRequest request = createValidQuestionsRequest();
 
     ExperianAuthException e =
@@ -190,7 +200,42 @@ class LiveExperianServiceTest {
             () -> {
               _service.getQuestions(request);
             });
-    assertEquals("The activation token could not be retrieved.", e.getMessage());
+    assertEquals("The activation token could not be retrieved after 2 attempts.", e.getMessage());
+
+    verify(_mockRestTemplate, Mockito.times(3))
+        .postForObject(eq(FAKE_PROPERTIES.getTokenEndpoint()), any(), eq(ObjectNode.class));
+  }
+
+  @Test
+  void getQuestions_authFailureRetry_success() throws JsonProcessingException {
+
+    // Throw a 500 response on the first try, mocking intermittent Experian behavior,
+    // but then return the expected token response on the second.
+    RestClientResponseException mock500AuthException =
+        new RestClientResponseException("mock error", 500, "mock status text", null, null, null);
+    JsonNodeFactory factory = JsonNodeFactory.instance;
+    ObjectNode fakeTokenResponse = factory.objectNode();
+    fakeTokenResponse.put("access_token", "fake_token_value");
+
+    Mockito.when(
+            _mockRestTemplate.postForObject(
+                eq(FAKE_PROPERTIES.getTokenEndpoint()), any(), eq(ObjectNode.class)))
+        .thenThrow(mock500AuthException)
+        .thenThrow(mock500AuthException)
+        .thenReturn(fakeTokenResponse);
+    setExperianMockResponse(EXPERIAN_QUESTIONS_SAMPLE_RESPONSE);
+
+    IdentityVerificationQuestionsRequest request = createValidQuestionsRequest();
+    IdentityVerificationQuestionsResponse response = _service.getQuestions(request);
+
+    assertTrue(response.getQuestionSet().size() > 0);
+    assertTrue(response.getQuestionSet().get(0).has("questionType"));
+    assertTrue(response.getQuestionSet().get(0).has("questionText"));
+    assertTrue(response.getQuestionSet().get(0).has("questionSelect"));
+
+    assertEquals(SAMPLE_SESSION_ID, response.getSessionId());
+    verify(_mockRestTemplate, Mockito.times(3))
+        .postForObject(eq(FAKE_PROPERTIES.getTokenEndpoint()), any(), eq(ObjectNode.class));
   }
 
   @Test
