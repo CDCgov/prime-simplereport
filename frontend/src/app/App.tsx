@@ -28,7 +28,7 @@ import Schema from "./testResults/uploads/CsvSchemaDocumentation";
 import Submission from "./testResults/submissions/Submission";
 import Submissions from "./testResults/submissions/Submissions";
 import ResultsNavWrapper from "./testResults/ResultsNavWrapper";
-import WithFeatureFlags from "./featureFlags/withFeatureFlags";
+import WithFeatureFlags from "./featureFlags/WithFeatureFlags";
 
 export const WHOAMI_QUERY = gql`
   query WhoAmI {

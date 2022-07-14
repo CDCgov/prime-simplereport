@@ -7,10 +7,10 @@ type WithFeatureFlagsProps = {
   children: JSX.Element;
 };
 
-const api = new FetchClient();
+const SR_APP_FEATURES = "sr-app-features";
+const api = new FetchClient(undefined, { mode: "cors" });
 
 const WithFeatureFlags = ({ children }: WithFeatureFlagsProps): JSX.Element => {
-  const SR_APP_FEATURES = "sr-app-features";
   // flags default to false when not defined
   const [featureFlags, setFeatureFlags] = useState<Record<string, boolean>>({});
 
@@ -20,6 +20,7 @@ const WithFeatureFlags = ({ children }: WithFeatureFlagsProps): JSX.Element => {
   useEffect(() => {
     try {
       const cacheFeatureFlags = localStorage.getItem(SR_APP_FEATURES);
+
       if (cacheFeatureFlags) {
         setFeatureFlags(JSON.parse(cacheFeatureFlags));
       }

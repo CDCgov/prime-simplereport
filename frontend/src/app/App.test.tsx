@@ -39,7 +39,7 @@ jest.mock("./testResults/CleanTestResultsList", () => {
 jest.mock("./testResults/TestResultsList", () => {
   return () => <p>TestResultsList</p>;
 });
-jest.mock("./featureFlags/withFeatureFlags", () => {
+jest.mock("./featureFlags/WithFeatureFlags", () => {
   return ({ children }: any): JSX.Element => <>{children}</>;
 });
 
