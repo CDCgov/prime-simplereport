@@ -4030,7 +4030,7 @@ databaseChangeLog:
       comment: creates the feature flag table which will host feature flags feature flags to control visibility of features at the application level
       changes:
         - tagDatabase:
-            tag: create-feature-flag-table
+            tag: create-feature-flag-table and insert multiplex flag
         - createTable:
             tableName: feature_flag
             remarks: feature flags to control visibility of features at the application level.
@@ -4082,6 +4082,27 @@ databaseChangeLog:
                     nullable: false
                     references: api_user
                     foreignKeyName: fk__anyentity__updated_by
+        - sql: |
+            GRANT SELECT ON ${database.defaultSchemaName}.feature_flag TO ${noPhiUsername};
+        - sql:
+            remarks: Insert multiplexEnabled flag with value equal true.
+            sql: |
+              WITH migration_user as (
+                 SELECT internal_id as migration_user_id
+                 FROM ${database.defaultSchemaName}.api_user
+                 WHERE login_email = '${migrations_user_email}'
+               )
+              INSERT INTO ${database.defaultSchemaName}.feature_flag (internal_id, name, value,
+              created_at, created_by, updated_at, updated_by)
+              SELECT
+                gen_random_uuid(),
+                'multiplexEnabled',
+                true,
+                now(),
+                migration_user_id,
+                now(),
+                migration_user_id
+              FROM migration_user
       rollback:
         dropTable:
-          tableName: feature_flag
+          tableName: ${database.defaultSchemaName}.feature_flag
