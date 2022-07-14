@@ -121,7 +121,7 @@ describe("ManageDeviceTypeFormContainer", () => {
     await new Promise((resolve) => setTimeout(resolve, 0));
 
     userEvent.selectOptions(
-      screen.getByLabelText("Device name", { exact: false }),
+      screen.getByLabelText("Select device", { exact: false }),
       "Covalent Observer"
     );
 
@@ -144,6 +144,7 @@ describe("ManageDeviceTypeFormContainer", () => {
         model: "Model CD",
         swabTypes: ["789"],
         supportedDiseases: ["294729"],
+        testLength: 15,
       },
     });
 
