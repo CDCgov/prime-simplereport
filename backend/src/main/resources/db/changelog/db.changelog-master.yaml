@@ -4027,10 +4027,10 @@ databaseChangeLog:
   - changeSet:
       id: create-feature-flag-table
       author: johanna@skylight.digital
-      comment: creates the feature flag table which will host feature flags feature flags to control visibility of features at the application level
+      comment: creates the feature flag table which will host flags that control visibility of features at the application level
       changes:
         - tagDatabase:
-            tag: create-feature-flag-table and insert multiplex flag
+            tag: create-feature-flag-table-with-multiplex flag
         - createTable:
             tableName: feature_flag
             remarks: feature flags to control visibility of features at the application level.
@@ -4105,4 +4105,4 @@ databaseChangeLog:
               FROM migration_user
       rollback:
         dropTable:
-          tableName: ${database.defaultSchemaName}.feature_flag
+          tableName: feature_flag
