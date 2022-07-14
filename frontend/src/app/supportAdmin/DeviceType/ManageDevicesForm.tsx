@@ -62,7 +62,7 @@ const ManageDevicesForm: React.FC<Props> = ({
             device.supportedDiseases?.map((disease) => disease.internalId) ||
             [],
           loincCode: device.loincCode,
-          testLength: device.testLength ? device.testLength : 0,
+          testLength: device.testLength ? device.testLength : 15,
         }
       : undefined;
   };
@@ -119,7 +119,7 @@ const ManageDevicesForm: React.FC<Props> = ({
                 <div className="tablet:grid-col">
                   <TextInput
                     label="Device name"
-                    name="deviceName"
+                    name="name"
                     value={selectedDevice?.name}
                     onChange={onChange}
                     disabled={!selectedDevice}
