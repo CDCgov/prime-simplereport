@@ -77,7 +77,7 @@ describe("OrganizationForm", () => {
   });
 
   it("displays form errors when submitting invalid input", async () => {
-    fillInDropDown(getOrgStateDropdown(), "IN");
+    fillInDropDown(getOrgStateDropdown(), "VI");
     getSubmitButton().click();
 
     expect(
