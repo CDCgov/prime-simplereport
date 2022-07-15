@@ -41,6 +41,11 @@ resource "azurerm_app_service" "service" {
     linux_fx_version = var.docker_image_uri
     always_on        = "true"
     min_tls_version  = "1.2"
+
+    ip_restriction {
+      virtual_network_subnet_id = var.lb_subnet_id
+      action                    = "Allow"
+    }
   }
 
   app_settings = local.all_app_settings
@@ -48,11 +53,6 @@ resource "azurerm_app_service" "service" {
 
   identity {
     type = "SystemAssigned"
-  }
-
-  ip_restriction {
-    virtual_network_subnet_id = var.lb_subnet_id
-    action = "Allow"
   }
 
   logs {
