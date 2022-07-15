@@ -15,17 +15,12 @@ describe("WithFeatureFlags Component", () => {
     return <p data-testid="inner-component">{JSON.stringify(flags)}</p>;
   };
 
-  let mockLocalStorage: any = {};
-
   beforeAll(() => {
-    global.Storage.prototype.setItem = jest.fn((key, value) => {
-      mockLocalStorage[key] = value;
-    });
-    global.Storage.prototype.getItem = jest.fn((key) => mockLocalStorage[key]);
+    global.Storage.prototype.setItem = jest.fn();
+    global.Storage.prototype.getItem = jest.fn();
   });
 
   beforeEach(async () => {
-    mockLocalStorage = {} as any;
     (fetch as FetchMock).doMock();
     const mockRequest: MockResponseInit = {
       body: JSON.stringify({ flag1: true }),
@@ -79,12 +74,22 @@ describe("WithFeatureFlags Component", () => {
     );
 
     await screen.findByText(/flag1/i);
-    expect(global.Storage.prototype.setItem).toHaveBeenCalledWith(
+    expect(localStorage.setItem).toHaveBeenCalledWith(
       "sr-app-features",
       '{"flag1":true}'
     );
-    expect(global.Storage.prototype.getItem).toHaveBeenCalledWith(
-      "sr-app-features"
+    expect(localStorage.getItem).toHaveBeenCalledWith("sr-app-features");
+  });
+
+  it("checks that component tries to load features from localStorage on first load", async () => {
+    global.Storage.prototype.getItem = jest
+      .fn()
+      .mockReturnValueOnce(JSON.stringify({ oldFlag: true }));
+    render(
+      <WithFeatureFlags>
+        <InnerComponent />
+      </WithFeatureFlags>
     );
+    await screen.findByText(/oldFlag/i);
   });
 });
