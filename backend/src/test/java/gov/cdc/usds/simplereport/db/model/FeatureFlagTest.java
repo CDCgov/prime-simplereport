@@ -1,28 +1,27 @@
 package gov.cdc.usds.simplereport.db.model;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertFalse;
-import static org.junit.jupiter.api.Assertions.assertTrue;
+import static org.junit.jupiter.api.Assertions.assertNotEquals;
 
 import java.util.List;
 import org.junit.jupiter.api.Test;
 
-public class FeatureFlagTest {
+class FeatureFlagTest {
   FeatureFlag featureFlag = new FeatureFlag();
 
   @Test
   void equals_sameObject_returnsTrue() {
-    assertTrue(featureFlag.equals(featureFlag));
+    assertEquals(featureFlag, featureFlag);
   }
 
   @Test
   void equals_isNull_returnsFalse() {
-    assertFalse(featureFlag.equals(null));
+    assertNotEquals(null, featureFlag);
   }
 
   @Test
   void equals_classNotEqual_returnsFalse() {
-    assertFalse(featureFlag.equals(List.of(1)));
+    assertNotEquals(List.of(1), featureFlag);
   }
 
   @Test
