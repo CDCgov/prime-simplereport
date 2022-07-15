@@ -50,6 +50,11 @@ resource "azurerm_app_service" "service" {
     type = "SystemAssigned"
   }
 
+  ip_restriction {
+    virtual_network_subnet_id = var.lb_subnet_id
+    action = "Allow"
+  }
+
   logs {
     http_logs {
       file_system {
