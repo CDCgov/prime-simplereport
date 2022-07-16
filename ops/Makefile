@@ -108,11 +108,11 @@ check-%-slot-readiness: .valid-env-%
 
 check-%-readiness: .valid-env-%
 	@echo Checking the readiness probe for $*
-	if [[ $* == "prod"]]
+	if [[ $* == "prod"]];
 		$(PROD_APP_READY)
-	else	
+	else;	
 		$(APP_READY)
-	fi
+	fi;
 
 # DEPRECATED: This is too greedy a match, replacing it
 wait-for-%: .valid-env-%
