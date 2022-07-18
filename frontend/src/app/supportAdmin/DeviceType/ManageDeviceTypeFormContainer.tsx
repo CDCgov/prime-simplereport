@@ -29,20 +29,30 @@ const ManageDeviceTypeFormContainer = () => {
   });
 
   const saveDeviceType = (device: UpdateDeviceType) => {
-    updateDeviceType({
-      variables: device,
-      fetchPolicy: "no-cache",
-    }).then(() => {
-      const alert = (
+    if ((device.testLength as number) <= 0) {
+      showNotification(
         <Alert
-          type="success"
-          title="Created Device"
-          body="The device has been created"
+          type="error"
+          title="Update device failed"
+          body="Failed to update device. Invalid test length"
         />
       );
-      showNotification(alert);
-      setSubmitted(true);
-    });
+    } else {
+      updateDeviceType({
+        variables: device,
+        fetchPolicy: "no-cache",
+      }).then(() => {
+        const alert = (
+          <Alert
+            type="success"
+            title="Updated device"
+            body="The device has been updated"
+          />
+        );
+        showNotification(alert);
+        setSubmitted(true);
+      });
+    }
   };
 
   if (submitted) {
