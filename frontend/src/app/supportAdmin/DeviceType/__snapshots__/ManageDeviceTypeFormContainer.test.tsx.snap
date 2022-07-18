@@ -278,7 +278,7 @@ exports[`ManageDeviceTypeFormContainer renders the Manage Device Type Form Conta
                   class="usa-label"
                   for="14"
                 >
-                  Test Length
+                  Test length (minutes)
                   <abbr
                     class="usa-hint usa-hint--required"
                     title="required"
