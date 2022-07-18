@@ -10,7 +10,7 @@ import Alert from "../../commonComponents/Alert";
 import { showNotification } from "../../utils";
 import { LoadingCard } from "../../commonComponents/LoadingCard/LoadingCard";
 
-import NewDeviceTypeForm from "./NewDeviceTypeForm";
+import DeviceForm from "./DeviceForm";
 
 export interface Device {
   internalId?: string;
@@ -73,7 +73,7 @@ const DeviceTypeFormContainer = () => {
       }))
     );
     return (
-      <NewDeviceTypeForm
+      <DeviceForm
         formTitle="Device Type"
         saveDeviceType={saveDeviceType}
         initialDevice={{

@@ -19,7 +19,7 @@ interface Props {
   deviceOptions?: DeviceType[];
 }
 
-const NewDeviceTypeForm = (props: Props) => {
+const DeviceForm = (props: Props) => {
   const [device, updateDevice] = useState<Device | undefined>(
     props.initialDevice
   );
@@ -208,4 +208,4 @@ const NewDeviceTypeForm = (props: Props) => {
   );
 };
 
-export default NewDeviceTypeForm;
+export default DeviceForm;

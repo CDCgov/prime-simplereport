@@ -14,7 +14,7 @@ import { showNotification } from "../../utils";
 import Alert from "../../commonComponents/Alert";
 
 import { Device } from "./DeviceTypeFormContainer";
-import NewDeviceTypeForm from "./NewDeviceTypeForm";
+import DeviceForm from "./DeviceForm";
 
 const ManageDeviceTypeFormContainer = () => {
   const [submitted, setSubmitted] = useState(false);
@@ -89,7 +89,7 @@ const ManageDeviceTypeFormContainer = () => {
     );
 
     return (
-      <NewDeviceTypeForm
+      <DeviceForm
         formTitle="Manage devices"
         saveDeviceType={saveDevice}
         swabOptions={swabOptions}
