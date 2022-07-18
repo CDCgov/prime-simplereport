@@ -10,6 +10,7 @@ import gov.cdc.usds.simplereport.db.model.Facility_;
 import gov.cdc.usds.simplereport.db.model.Organization;
 import gov.cdc.usds.simplereport.db.model.Person;
 import gov.cdc.usds.simplereport.db.model.Result;
+import gov.cdc.usds.simplereport.db.model.Result_;
 import gov.cdc.usds.simplereport.db.model.TestEvent;
 import gov.cdc.usds.simplereport.db.model.TestEvent_;
 import gov.cdc.usds.simplereport.db.model.TestOrder;
@@ -49,6 +50,7 @@ class TestEventRepositoryTest extends BaseRepositoryTest {
 
   private Specification<TestEvent> filter(UUID facilityId, TestResult result) {
     return (root, query, cb) -> {
+      Join<TestEvent, Result> resultJoin = root.join(TestEvent_.results);
       Join<TestEvent, TestOrder> order = root.join(TestEvent_.order);
       order.on(cb.equal(root.get(TestEvent_.internalId), order.get(TestOrder_.testEvent)));
       query.orderBy(cb.desc(root.get(TestEvent_.createdAt)));
@@ -60,7 +62,7 @@ class TestEventRepositoryTest extends BaseRepositoryTest {
                 p, cb.equal(root.get(TestEvent_.facility).get(Facility_.internalId), facilityId));
       }
       if (result != null) {
-        p = cb.and(p, cb.equal(root.get(TestEvent_.result), result));
+        p = cb.and(p, cb.equal(resultJoin.get(Result_.testResult), result));
       }
       return p;
     };
