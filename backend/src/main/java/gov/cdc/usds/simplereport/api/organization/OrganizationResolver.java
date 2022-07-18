@@ -13,7 +13,6 @@ import java.util.List;
 import java.util.Optional;
 import java.util.Set;
 import java.util.stream.Collectors;
-import java.util.stream.Stream;
 import org.springframework.stereotype.Component;
 
 /** Resolver for {@link Organization} related queries */
@@ -66,17 +65,8 @@ public class OrganizationResolver implements GraphQLQueryResolver {
    * @return a list of pending organizations
    */
   public List<ApiPendingOrganization> getPendingOrganizations() {
-    List<ApiPendingOrganization> pendingOrgsAlreadyCreated =
-        _organizationService.getOrganizations(false).stream()
-            .map(ApiPendingOrganization::new)
-            .collect(Collectors.toList());
-
-    List<ApiPendingOrganization> pendingOrgsInQueue =
-        _organizationQueueService.getUnverifiedQueuedOrganizations().stream()
-            .map(ApiPendingOrganization::new)
-            .collect(Collectors.toList());
-
-    return Stream.concat(pendingOrgsAlreadyCreated.stream(), pendingOrgsInQueue.stream())
+    return _organizationQueueService.getUnverifiedQueuedOrganizations().stream()
+        .map(ApiPendingOrganization::new)
         .collect(Collectors.toList());
   }
 
