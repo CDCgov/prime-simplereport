@@ -73,6 +73,12 @@ describe("ManageDeviceTypeForm", () => {
     expect(
       screen.getByLabelText("LOINC code", { exact: false })
     ).toBeDisabled();
+    expect(
+      screen.getByLabelText("Device name", { exact: false })
+    ).toBeDisabled();
+    expect(
+      screen.getByLabelText("Test length", { exact: false })
+    ).toBeDisabled();
     expect(screen.getAllByTestId("multi-select-toggle")[0]).toBeDisabled();
   });
 

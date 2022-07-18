@@ -165,7 +165,7 @@ const ManageDevicesForm: React.FC<Props> = ({
                 <div className="tablet:grid-col">
                   <TextInput
                     type={"number"}
-                    label="Test Length"
+                    label="Test length (minutes)"
                     name="testLength"
                     min={0}
                     max={60}
