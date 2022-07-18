@@ -488,7 +488,12 @@ describe("PendingOrganizationsContainer", () => {
           await waitForElementToBeRemoved(
             screen.queryByText("Organization details")
           );
-          expect(screen.getByText("DC Space Camp")).toBeInTheDocument();
+
+          expect(
+            screen.getByRole("heading", {
+              name: /dc space camp details updated/i,
+            })
+          ).toBeInTheDocument();
         });
       });
     });
