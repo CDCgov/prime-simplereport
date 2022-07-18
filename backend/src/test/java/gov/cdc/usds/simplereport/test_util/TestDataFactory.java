@@ -484,10 +484,10 @@ public class TestDataFactory {
   }
 
   public TestEvent doTest(TestOrder order, TestResult result) {
-    Result resultEntity = new Result(order, _diseaseService.covid(), result);
-    _resultRepository.save(resultEntity);
     order.setResultColumn(result);
     TestEvent event = _testEventRepo.save(new TestEvent(order));
+    Result resultEntity = new Result(event, order, _diseaseService.covid(), result);
+    _resultRepository.save(resultEntity);
     order.setTestEventRef(event);
     order.markComplete();
     _testOrderRepo.save(order);
