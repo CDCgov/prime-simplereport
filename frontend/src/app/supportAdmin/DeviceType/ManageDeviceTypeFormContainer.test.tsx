@@ -108,13 +108,14 @@ jest.mock("react-router-dom", () => {
   };
 });
 
+let container: any;
+
 describe("ManageDeviceTypeFormContainer", () => {
   beforeEach(() => {
-    render(<ManageDeviceTypeFormContainer />);
+    container = render(<ManageDeviceTypeFormContainer />);
   });
 
   it("renders the Manage Device Type Form Container item", () => {
-    const { container } = render(<ManageDeviceTypeFormContainer />);
     expect(container.firstChild).toMatchSnapshot();
   });
 
