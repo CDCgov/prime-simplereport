@@ -13,7 +13,8 @@ import { LoadingCard } from "../../commonComponents/LoadingCard/LoadingCard";
 import { showNotification } from "../../utils";
 import Alert from "../../commonComponents/Alert";
 
-import ManageDevicesForm from "./ManageDevicesForm";
+import { Device } from "./DeviceTypeFormContainer";
+import NewDeviceTypeForm from "./NewDeviceTypeForm";
 
 const ManageDeviceTypeFormContainer = () => {
   const [submitted, setSubmitted] = useState(false);
@@ -28,21 +29,38 @@ const ManageDeviceTypeFormContainer = () => {
     fetchPolicy: "no-cache",
   });
 
-  const saveDeviceType = (device: UpdateDeviceType) => {
-    updateDeviceType({
-      variables: device,
-      fetchPolicy: "no-cache",
-    }).then(() => {
-      const alert = (
-        <Alert
-          type="success"
-          title="Created Device"
-          body="The device has been created"
-        />
+  const saveDevice = (device: Device) => {
+    if (device.internalId) {
+      const variables: UpdateDeviceType = {
+        internalId: device.internalId,
+        name: device.name,
+        manufacturer: device.manufacturer,
+        model: device.model,
+        swabTypes: device.swabTypes,
+        supportedDiseases: device.supportedDiseases,
+        loincCode: device.loincCode,
+        testLength: device.testLength,
+      };
+      updateDeviceType({
+        variables,
+        fetchPolicy: "no-cache",
+      }).then(() => {
+        const alert = (
+          <Alert
+            type="success"
+            title="Updated Device"
+            body="The device has been updated"
+          />
+        );
+        showNotification(alert);
+        setSubmitted(true);
+      });
+    } else {
+      //todo: make this better
+      console.log(
+        "internal id for saving a device is undefined and your code is bad; aborting"
       );
-      showNotification(alert);
-      setSubmitted(true);
-    });
+    }
   };
 
   if (submitted) {
@@ -71,11 +89,12 @@ const ManageDeviceTypeFormContainer = () => {
     );
 
     return (
-      <ManageDevicesForm
-        updateDeviceType={saveDeviceType}
+      <NewDeviceTypeForm
+        formTitle="Manage devices"
+        saveDeviceType={saveDevice}
         swabOptions={swabOptions}
         supportedDiseaseOptions={supportedDiseaseOptions}
-        devices={devices}
+        deviceOptions={devices}
       />
     );
   } else {

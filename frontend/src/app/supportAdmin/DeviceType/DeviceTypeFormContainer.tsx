@@ -10,15 +10,17 @@ import Alert from "../../commonComponents/Alert";
 import { showNotification } from "../../utils";
 import { LoadingCard } from "../../commonComponents/LoadingCard/LoadingCard";
 
-import DeviceTypeForm from "./DeviceTypeForm";
+import NewDeviceTypeForm from "./NewDeviceTypeForm";
 
 export interface Device {
+  internalId?: string;
   name: string;
   manufacturer: string;
   model: string;
   loincCode: string;
   swabTypes: Array<string>;
   supportedDiseases: Array<string>;
+  testLength?: number | null;
 }
 
 const DeviceTypeFormContainer = () => {
@@ -32,6 +34,11 @@ const DeviceTypeFormContainer = () => {
   });
 
   const saveDeviceType = (device: Device) => {
+    if (device.internalId) {
+      // todo: make this better?
+      console.log("internal Id for saving device is non-null, aborting");
+      return;
+    }
     createDeviceType({
       variables: device,
       fetchPolicy: "no-cache",
@@ -66,8 +73,18 @@ const DeviceTypeFormContainer = () => {
       }))
     );
     return (
-      <DeviceTypeForm
+      <NewDeviceTypeForm
+        formTitle="Device Type"
         saveDeviceType={saveDeviceType}
+        initialDevice={{
+          name: "",
+          manufacturer: "",
+          model: "",
+          loincCode: "",
+          swabTypes: [],
+          supportedDiseases: [],
+          testLength: null,
+        }}
         swabOptions={swabOptions}
         supportedDiseaseOptions={supportedDiseaseOptions}
       />
