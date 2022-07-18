@@ -113,6 +113,11 @@ describe("ManageDeviceTypeFormContainer", () => {
     render(<ManageDeviceTypeFormContainer />);
   });
 
+  it("renders the Manage Device Type Form Container item", () => {
+    const { container } = render(<ManageDeviceTypeFormContainer />);
+    expect(container.firstChild).toMatchSnapshot();
+  });
+
   it("should show the device type form", async () => {
     expect(await screen.findByText("Manage devices")).toBeInTheDocument();
   });

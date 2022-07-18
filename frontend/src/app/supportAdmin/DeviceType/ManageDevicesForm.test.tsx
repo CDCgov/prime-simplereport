@@ -6,10 +6,10 @@ import { addValue } from "./DeviceTypeForm.test";
 
 describe("ManageDeviceTypeForm", () => {
   let saveDeviceType: jest.Mock;
-
+  let container: any;
   beforeEach(() => {
     saveDeviceType = jest.fn();
-    render(
+    container = render(
       <ManageDevicesForm
         updateDeviceType={saveDeviceType}
         swabOptions={[
@@ -55,6 +55,10 @@ describe("ManageDeviceTypeForm", () => {
         ]}
       />
     );
+  });
+
+  it("renders the Manage Device Type Form Container item", () => {
+    expect(container.firstChild).toMatchSnapshot();
   });
 
   it("Disables the save button", () => {
