@@ -235,10 +235,13 @@ class TestEventRepositoryTest extends BaseRepositoryTest {
     TestOrder firstOrder =
         _dataFactory.createCompletedTestOrder(patient, place, TestResult.POSITIVE);
     TestEvent firstEvent = new TestEvent(firstOrder);
+    _dataFactory.createResult(firstEvent, firstOrder, _diseaseService.covid(), TestResult.POSITIVE);
 
     TestOrder secondOrder =
         _dataFactory.createCompletedTestOrder(patient, place, TestResult.UNDETERMINED);
     TestEvent secondEvent = new TestEvent(secondOrder);
+    _dataFactory.createResult(
+        secondEvent, secondOrder, _diseaseService.covid(), TestResult.UNDETERMINED);
 
     _repo.save(firstEvent);
     _repo.save(secondEvent);
@@ -250,14 +253,17 @@ class TestEventRepositoryTest extends BaseRepositoryTest {
     TestOrder firstOrderOtherPlace =
         _dataFactory.createCompletedTestOrder(otherPatient, otherPlace, TestResult.NEGATIVE);
     TestEvent firstEventOtherPlace = new TestEvent(firstOrderOtherPlace);
+    _dataFactory.createResult(
+        firstEventOtherPlace, firstOrderOtherPlace, _diseaseService.covid(), TestResult.NEGATIVE);
 
     TestOrder secondOrderOtherPlace =
         _dataFactory.createCompletedTestOrder(otherPatient, otherPlace, TestResult.POSITIVE);
     TestEvent secondEventOtherPlace = new TestEvent(secondOrderOtherPlace);
+    _dataFactory.createResult(
+        secondEventOtherPlace, secondOrderOtherPlace, _diseaseService.covid(), TestResult.POSITIVE);
 
     _repo.save(firstEventOtherPlace);
     _repo.save(secondEventOtherPlace);
-
     return place;
   }
 
