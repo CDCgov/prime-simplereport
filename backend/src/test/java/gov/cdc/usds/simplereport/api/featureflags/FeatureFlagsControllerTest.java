@@ -7,7 +7,7 @@ import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.springframework.test.util.ReflectionTestUtils;
 
-public class FeatureFlagsControllerTest {
+class FeatureFlagsControllerTest {
 
   private FeatureFlagsController featureFlagsController;
   private FeatureFlagsConfig _mockFeatureFlagConfig = new FeatureFlagsConfig();
