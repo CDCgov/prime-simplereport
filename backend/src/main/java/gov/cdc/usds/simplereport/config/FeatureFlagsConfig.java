@@ -24,7 +24,7 @@ public class FeatureFlagsConfig {
 
   private boolean multiplexEnabled;
 
-  @Scheduled(fixedRateString = "300000") // 5 mins
+  @Scheduled(fixedRateString = "60000") // 1 min
   private void loadFeatureFlagsFromDB() {
     Iterable<FeatureFlag> flags = _repo.findAll();
     flags.forEach(

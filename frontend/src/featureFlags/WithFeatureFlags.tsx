@@ -1,7 +1,7 @@
 import { useEffect, useState } from "react";
 import { FlagsProvider } from "flagged";
 
-import FetchClient from "../utils/api";
+import FetchClient from "../app/utils/api";
 
 type WithFeatureFlagsProps = {
   children: JSX.Element;
