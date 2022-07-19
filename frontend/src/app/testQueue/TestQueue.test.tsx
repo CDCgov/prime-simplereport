@@ -129,7 +129,7 @@ describe("TestQueue", () => {
 
     expect(
       screen.getByRole("link", { name: "Upload spreadsheet" })
-    ).toHaveAttribute("href", `/results/upload`);
+    ).toHaveAttribute("href", `/results/upload/submit`);
   });
 
   describe("clicking on test questionnaire", () => {

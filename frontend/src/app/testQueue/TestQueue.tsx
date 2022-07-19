@@ -41,7 +41,7 @@ const emptyQueueMessage = (
         </p>
         <p>
           To add results in bulk using a CSV file, go to{" "}
-          <LinkWithQuery to="/results/upload">
+          <LinkWithQuery to="/results/upload/submit">
             <strong>Upload spreadsheet</strong>
           </LinkWithQuery>
           .
