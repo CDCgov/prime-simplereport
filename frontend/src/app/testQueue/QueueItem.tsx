@@ -166,7 +166,7 @@ const QueueItem = ({
   facilityName,
   facilityId,
   dateTestedProp,
-  isCorrection,
+  isCorrection = false,
   reasonForCorrection,
 }: QueueItemProps) => {
   const appInsights = getAppInsights();
