@@ -6,6 +6,7 @@ import { useLocation } from "react-router-dom";
 import { showError } from "../utils";
 import { useSelectedFacility } from "../facilitySelect/useSelectedFacility";
 import { TestCorrectionReason } from "../testResults/TestResultCorrectionModal";
+import { LinkWithQuery } from "../commonComponents/LinkWithQuery";
 
 import AddToQueueSearch, {
   StartTestProps,
@@ -36,7 +37,14 @@ const emptyQueueMessage = (
     <div className="grid-row">
       <div className="usa-card__body">
         <p>
-          There are no tests running. Search for a person to start their test{" "}
+          There are no tests running. Search for a person to start their test.
+        </p>
+        <p>
+          To add results in bulk using a CSV file, go to{" "}
+          <LinkWithQuery to="/results/upload">
+            <strong>Upload spreadsheet</strong>
+          </LinkWithQuery>
+          .
         </p>
       </div>
     </div>
