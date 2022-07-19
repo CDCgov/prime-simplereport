@@ -1,5 +1,6 @@
 import { LinkWithQuery } from "../../commonComponents/LinkWithQuery";
 import { useDocumentTitle } from "../../utils/hooks";
+import iconSprite from "../../../../node_modules/uswds/dist/img/sprite.svg";
 
 import schema from "./schema.json";
 
@@ -88,22 +89,37 @@ const CsvSchemaDocumentation = () => {
   useDocumentTitle("Spreadsheet upload guide");
 
   return (
-    <div className="prime-container prime-container-padding-2x card-container">
-      <div className="tablet:grid-col-8 usa-prose">
-        <div className="text-normal font-body-xs text-base margin-bottom-1">
-          <span>
-            <LinkWithQuery to={`/results/upload/`} className="sr-link__primary">
-              {"< Return to upload spreadsheet"}
+    <div className="prime-container card-container">
+      <div className="usa-card__header">
+        <div>
+          <div className="display-flex flex-align-center">
+            <svg
+              className="usa-icon text-base margin-left-neg-2px"
+              aria-hidden="true"
+              focusable="false"
+              role="img"
+            >
+              <use xlinkHref={iconSprite + "#arrow_back"}></use>
+            </svg>
+            <LinkWithQuery
+              to={`/results/upload/submit`}
+              className="margin-left-05"
+            >
+              Upload spreadsheet
             </LinkWithQuery>
-          </span>
+          </div>
+          <div>
+            <h2 className="margin-top-2">
+              CSV template guide{" "}
+              <span className="text-secondary bg-white border-1px border-secondary font-body-3xs padding-x-1 padding-y-05 text-secondary margin-left-2 text-ttbottom">
+                Pilot program{" "}
+              </span>
+            </h2>
+          </div>
         </div>
+      </div>
+      <div className="tablet:grid-col-8 usa-prose usa-card__body">
         <section id="anchor-top">
-          <h2 className="margin-top-0">
-            CSV template guide{" "}
-            <span className="text-secondary bg-white border-1px border-secondary font-body-3xs padding-x-1 padding-y-05 text-secondary margin-left-2 text-ttbottom">
-              Pilot program{" "}
-            </span>
-          </h2>
           <p className="usa-intro text-base">
             How to format and upload a CSV file to report test results in bulk
             through SimpleReport.

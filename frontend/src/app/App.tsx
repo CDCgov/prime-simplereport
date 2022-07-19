@@ -192,7 +192,7 @@ const App = () => {
               }
             />
             <Route
-              path="results/upload"
+              path="results/upload/submit"
               element={
                 <ProtectedRoute
                   requiredPermissions={canUseCsvUploaderPilot}
@@ -208,7 +208,7 @@ const App = () => {
               }
             />
             <Route
-              path="results/upload/guide"
+              path="results/upload/submit/guide"
               element={
                 <ProtectedRoute
                   requiredPermissions={canUseCsvUploaderPilot}
@@ -225,12 +225,18 @@ const App = () => {
             />
 
             <Route
-              path="results/upload/submission/:id"
+              path="results/upload/submissions/submission/:id"
               element={
                 <ProtectedRoute
                   requiredPermissions={canUseCsvUploaderPilot}
                   userPermissions={data.whoami.permissions}
-                  element={<Submission />}
+                  element={
+                    <ResultsNavWrapper
+                      userPermissions={data.whoami.permissions}
+                    >
+                      <Submission />
+                    </ResultsNavWrapper>
+                  }
                 />
               }
             />
