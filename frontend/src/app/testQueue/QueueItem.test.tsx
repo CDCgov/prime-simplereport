@@ -33,6 +33,7 @@ jest.mock("react-router-dom", () => {
 
 const initialDateString = "2021-02-14";
 const updatedDateString = "2021-03-10";
+const dateStringBeforeWarningThreshold = "2001-01-01";
 const updatedTimeString = "10:05";
 const fakeDate = Date.parse(initialDateString);
 const updatedDate = Date.parse(updatedDateString);
@@ -733,6 +734,46 @@ describe("QueueItem", () => {
     await waitFor(async () => {
       expect(await screen.findByText("Invalid test date")).toBeInTheDocument();
     });
+  });
+
+  it("formats card with warning state if selected date input is more than six months ago", async () => {
+    render(
+      <MemoryRouter>
+        <MockedProvider mocks={mocks} addTypename={false}>
+          <Provider store={store}>
+            <QueueItem
+              internalId={testProps.internalId}
+              patient={testProps.patient}
+              askOnEntry={testProps.askOnEntry}
+              selectedDeviceId={testProps.selectedDeviceId}
+              selectedDeviceTestLength={testProps.selectedDeviceTestLength}
+              selectedDeviceSpecimenTypeId={
+                testProps.selectedDeviceSpecimenTypeId
+              }
+              deviceSpecimenTypes={testProps.deviceSpecimenTypes}
+              selectedTestResults={testProps.selectedTestResults}
+              devices={testProps.devices}
+              refetchQueue={testProps.refetchQueue}
+              facilityId={testProps.facilityId}
+              dateTestedProp={testProps.dateTestedProp}
+              facilityName="Foo facility"
+              setStartTestPatientId={setStartTestPatientIdMock}
+              startTestPatientId=""
+            />
+          </Provider>
+        </MockedProvider>
+      </MemoryRouter>
+    );
+    const dateInput = screen.getByTestId("test-date");
+    const timeInput = screen.getByTestId("test-time");
+
+    userEvent.type(dateInput, `${dateStringBeforeWarningThreshold}T00:00`);
+    const testCard = await screen.findByTestId(`test-card-${internalId}`);
+
+    expect(testCard).toHaveClass("prime-queue-item__ready");
+    expect(dateInput).toHaveClass("card-correction-input");
+    expect(timeInput).toHaveClass("card-correction-input");
+    expect(screen.getByTestId("test-correction-header")).toBeInTheDocument();
   });
 
   it("highlights the test card where the validation failure occurs", async () => {
