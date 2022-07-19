@@ -609,6 +609,12 @@ const QueueItem = ({
     // if we want to use a custom date
     if (shouldUseCurrentDateTime()) {
       updateUseCurrentDateTime("false");
+
+      // reset the date fields to their default values
+      const defaultDateString = formatDate(moment().toDate());
+      (document.getElementById(
+        "test-date"
+      ) as HTMLInputElement).value = defaultDateString;
     }
     // if we want to use the current date time
     else {
@@ -689,8 +695,6 @@ const QueueItem = ({
     onDateTestedChange(newDate);
   };
 
-  const selectedDate = dateTested ? moment(dateTested) : moment();
-
   const timer = useTestTimer(internalId, deviceTestLength);
 
   function cardColorDisplay() {
@@ -730,6 +734,7 @@ const QueueItem = ({
     patientId: patient.internalId,
     testOrderId: internalId,
   };
+  const selectedDate = dateTested ? moment(dateTested) : moment();
 
   return (
     <React.Fragment>
