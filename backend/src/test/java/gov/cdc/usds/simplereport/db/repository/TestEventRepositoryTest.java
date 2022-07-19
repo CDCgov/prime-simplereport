@@ -244,6 +244,8 @@ class TestEventRepositoryTest extends BaseRepositoryTest {
     TestEvent secondEvent = new TestEvent(secondOrder);
     _dataFactory.createResult(
         secondEvent, secondOrder, _diseaseService.covid(), TestResult.UNDETERMINED);
+    _dataFactory.createResult(
+        secondEvent, secondOrder, _diseaseService.fluA(), TestResult.UNDETERMINED);
 
     _repo.save(firstEvent);
     _repo.save(secondEvent);
