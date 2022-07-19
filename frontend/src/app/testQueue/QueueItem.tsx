@@ -489,6 +489,7 @@ const QueueItem = ({
     // Save any date given as input to React state, valid or otherwise. Validation
     // is performed on submit
     updateDateTested(newDateTested);
+    setSelectedDate(date);
   };
 
   const isMounted = useRef(false);
@@ -608,13 +609,8 @@ const QueueItem = ({
   const onUseCurrentDateChange = () => {
     // if we want to use a custom date
     if (shouldUseCurrentDateTime()) {
+      setSelectedDate(moment());
       updateUseCurrentDateTime("false");
-
-      // reset the date fields to their default values
-      const defaultDateString = formatDate(moment().toDate());
-      (document.getElementById(
-        "test-date"
-      ) as HTMLInputElement).value = defaultDateString;
     }
     // if we want to use the current date time
     else {
@@ -666,6 +662,11 @@ const QueueItem = ({
   const [dateBeforeWarnThreshold, setBeforeDateWarning] = useState(
     isBeforeDateWarningThreshold(moment(dateTested))
   );
+
+  const [selectedDate, setSelectedDate] = useState(
+    dateTested ? moment(dateTested) : moment()
+  );
+
   const handleDateChange = (date: string) => {
     if (date) {
       const newDate = moment(date)
@@ -682,7 +683,6 @@ const QueueItem = ({
       ) {
         setBeforeDateWarning(false);
       }
-
       onDateTestedChange(newDate);
     }
   };
@@ -734,7 +734,6 @@ const QueueItem = ({
     patientId: patient.internalId,
     testOrderId: internalId,
   };
-  const selectedDate = dateTested ? moment(dateTested) : moment();
 
   return (
     <React.Fragment>
@@ -847,7 +846,7 @@ const QueueItem = ({
                         type="date"
                         min={formatDate(new Date("Jan 1, 2020"))}
                         max={formatDate(moment().toDate())}
-                        defaultValue={formatDate(selectedDate.toDate())}
+                        value={formatDate(selectedDate.toDate())}
                         onChange={(event) =>
                           handleDateChange(event.target.value)
                         }
