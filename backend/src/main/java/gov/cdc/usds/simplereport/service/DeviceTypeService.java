@@ -198,7 +198,7 @@ public class DeviceTypeService {
                 createDevice.getModel(),
                 createDevice.getLoincCode(),
                 null,
-                determineTestLength(createDevice.getName())));
+                createDevice.getTestLength()));
 
     specimenTypes.stream()
         .map(specimenType -> new DeviceSpecimenType(dt, specimenType))
