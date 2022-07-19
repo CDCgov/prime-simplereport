@@ -45,7 +45,6 @@ describe("QueueItem", () => {
   let store: MockStoreEnhanced<unknown, {}>;
   const mockStore = configureStore([]);
   const trackEventMock = jest.fn();
-  process.env.REACT_APP_MULTIPLEX_ENABLED = "true";
 
   beforeEach(() => {
     store = mockStore({
