@@ -21,11 +21,14 @@ import gov.cdc.usds.simplereport.service.model.PatientEmailsHolder;
 import java.util.List;
 import java.util.Optional;
 import javax.servlet.http.HttpServletRequest;
+import javax.validation.ConstraintViolationException;
 import javax.validation.constraints.Pattern;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PostAuthorize;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.validation.annotation.Validated;
+import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
@@ -122,5 +125,10 @@ public class PatientSelfRegistrationController {
       return link.getFacility().getFacilityName();
     }
     return link.getOrganization().getOrganizationName();
+  }
+
+  @ExceptionHandler(ConstraintViolationException.class)
+  public ResponseEntity<String> handleConstraintViolationException(HttpServletRequest request) {
+    return ResponseEntity.badRequest().body("Malformed patient registration link");
   }
 }

@@ -224,7 +224,7 @@ simple-report-initialization:
       loinc-code: "95209-3"
       swab-type: "445297001"
   patient-registration-links:
-    - patient-registration-link: dis-org
+    - patient-registration-link: dd2kn
       organization-external-id: DIS_ORG
     - patient-registration-link: inj3ct
       facility-name: Injection Site

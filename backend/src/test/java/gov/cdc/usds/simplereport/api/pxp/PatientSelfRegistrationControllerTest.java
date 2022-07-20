@@ -99,7 +99,10 @@ class PatientSelfRegistrationControllerTest extends BaseFullStackTest {
             + firstName
             + "\",\"lastName\":\""
             + lastName
-            + "\",\"role\":\"STUDENT\",\"telephone\":\"(800) 232-4636\",\"email\":\"foo@bar.com\",\"testResultDelivery\":null,\"preferredLanguage\":null,\"race\":null,\"ethnicity\":null,\"gender\":null,\"residentCongregateSetting\":true,\"employedInHealthcare\":true,\"lookupId\":\"21a6b50a-3b3f-4689-a9a3-6879e51a471d\",\"suffix\":null,\"address\":{\"street\":[\"736 Jackson PI NW\",\"CA\"],\"city\":null,\"state\":\"CA\",\"county\":\"\",\"zipCode\":\"92037\"}}";
+            + "\",\"role\":\"STUDENT\",\"telephone\":\"(800)"
+            + " 232-4636\",\"email\":\"foo@bar.com\",\"testResultDelivery\":null,\"preferredLanguage\":null,\"race\":null,\"ethnicity\":null,\"gender\":null,\"residentCongregateSetting\":true,\"employedInHealthcare\":true,\"lookupId\":\"21a6b50a-3b3f-4689-a9a3-6879e51a471d\",\"suffix\":null,\"address\":{\"street\":[\"736"
+            + " Jackson PI"
+            + " NW\",\"CA\"],\"city\":null,\"state\":\"CA\",\"county\":\"\",\"zipCode\":\"92037\"}}";
 
     MockHttpServletRequestBuilder builder =
         post(ResourceLinks.SELF_REGISTER)
@@ -148,5 +151,21 @@ class PatientSelfRegistrationControllerTest extends BaseFullStackTest {
             .getHeader(LoggingConstants.REQUEST_ID_HEADER);
 
     assertLastAuditEntry(HttpStatus.OK, ResourceLinks.EXISTING_PATIENT, requestId);
+  }
+
+  @Test
+  void invalidLinkFormatThrows404() throws Exception {
+    // UUIDs are not valid registration links
+    String link = "malformed-patient-link";
+
+    MockHttpServletRequestBuilder builder =
+        get(ResourceLinks.ENTITY_NAME).param("patientRegistrationLink", link);
+
+    _mockMvc
+        .perform(builder)
+        .andExpect(status().isBadRequest())
+        .andExpect(header().exists(LoggingConstants.REQUEST_ID_HEADER));
+
+    assertNoAuditEvent();
   }
 }

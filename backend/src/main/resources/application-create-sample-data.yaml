@@ -102,11 +102,11 @@ simple-report-initialization:
       loinc-code: "94558-4"
       swab-type: "258500001"
   patient-registration-links:
-    - patient-registration-link: dis-org
+    - patient-registration-link: dd2kn
       organization-external-id: DIS_ORG
     - patient-registration-link: t37ft
       facility-name: Testing Site
-    - patient-registration-link: dat-org
+    - patient-registration-link: dk2n9
       organization-external-id: DAT_ORG
 simple-report:
   demo-users:
