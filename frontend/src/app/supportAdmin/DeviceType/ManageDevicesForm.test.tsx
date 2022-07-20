@@ -58,7 +58,7 @@ describe("ManageDeviceTypeForm", () => {
   });
 
   it("renders the Manage Device Type Form Container item", () => {
-    expect(container.firstChild).toMatchSnapshot();
+    expect(container).toMatchSnapshot();
   });
 
   it("Disables the save button", () => {

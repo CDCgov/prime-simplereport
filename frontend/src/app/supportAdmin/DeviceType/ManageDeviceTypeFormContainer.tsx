@@ -29,7 +29,7 @@ const ManageDeviceTypeFormContainer = () => {
   });
 
   const saveDeviceType = (device: UpdateDeviceType) => {
-    if ((device.testLength as number) <= 0) {
+    if (device.testLength <= 0 || device.testLength > 999) {
       showNotification(
         <Alert
           type="error"

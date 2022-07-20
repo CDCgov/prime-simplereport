@@ -128,7 +128,7 @@ describe("ManageDeviceTypeFormContainer", () => {
   });
 
   it("renders the Manage Device Type Form Container item", () => {
-    expect(container.firstChild).toMatchSnapshot();
+    expect(container).toMatchSnapshot();
   });
 
   it("should show the device type form", async () => {
