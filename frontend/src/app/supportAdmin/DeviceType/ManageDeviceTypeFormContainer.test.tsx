@@ -1,5 +1,6 @@
 import { render, screen } from "@testing-library/react";
 import userEvent from "@testing-library/user-event";
+import { ToastContainer } from "react-toastify";
 
 import { DeviceType, SpecimenType } from "../../../generated/graphql";
 
@@ -112,7 +113,18 @@ let container: any;
 
 describe("ManageDeviceTypeFormContainer", () => {
   beforeEach(() => {
-    container = render(<ManageDeviceTypeFormContainer />);
+    container = render(
+      <>
+        <ManageDeviceTypeFormContainer />
+        <ToastContainer
+          autoClose={5000}
+          closeButton={false}
+          limit={2}
+          position="bottom-center"
+          hideProgressBar={true}
+        />
+      </>
+    );
   });
 
   it("renders the Manage Device Type Form Container item", () => {
@@ -155,5 +167,27 @@ describe("ManageDeviceTypeFormContainer", () => {
     });
 
     expect(await screen.findByText("Redirected to /admin")).toBeInTheDocument();
+  });
+
+  it("should display error when update fails", async () => {
+    await new Promise((resolve) => setTimeout(resolve, 0));
+
+    userEvent.selectOptions(
+      screen.getByLabelText("Select device", { exact: false }),
+      "Covalent Observer"
+    );
+
+    await new Promise((resolve) => setTimeout(resolve, 0));
+
+    addValue("Manufacturer", " LLC");
+    addValue("Model", "D");
+    addValue("Test length", "invalid value");
+
+    userEvent.click(screen.getByText("Save changes"));
+
+    expect(mockUpdateDeviceType).toBeCalledTimes(0);
+    expect(
+      await screen.findByText("Failed to update device. Invalid test length")
+    ).toBeInTheDocument();
   });
 });
