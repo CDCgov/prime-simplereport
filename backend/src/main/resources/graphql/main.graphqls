@@ -73,7 +73,6 @@ input UpdateDeviceType {
   loincCode: String!
   swabTypes: [ID!]!
   supportedDiseases: [ID!]!
-  testLength: Int!
 }
 
 type DeviceType {

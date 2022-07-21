@@ -28,7 +28,6 @@ mutation updateDeviceType(
   $loincCode: String!
   $swabTypes: [ID!]!
   $supportedDiseases: [ID!]!
-  $testLength: Int!
 ) {
   updateDeviceType(
     input: {
@@ -39,7 +38,6 @@ mutation updateDeviceType(
       loincCode: $loincCode
       swabTypes: $swabTypes
       supportedDiseases: $supportedDiseases
-      testLength: $testLength
     }
   ) {
     internalId
