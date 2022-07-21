@@ -18,8 +18,8 @@ import { AoEAnswers, TestQueuePerson } from "./AoEForm/AoEForm";
 import "./TestQueue.scss";
 
 const pollInterval = 10_000;
-const transitionDuration = 1000;
 
+const transitionDuration = 1000;
 const onEmptyQueueEntering = (node: HTMLElement) => {
   node.style.opacity = "1";
 };
