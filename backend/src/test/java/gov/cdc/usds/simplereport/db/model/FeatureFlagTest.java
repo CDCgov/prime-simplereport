@@ -6,13 +6,8 @@ import static org.junit.jupiter.api.Assertions.assertNotEquals;
 import java.util.List;
 import org.junit.jupiter.api.Test;
 
-class FeatureFlagTest {
-  FeatureFlag featureFlag = new FeatureFlag();
-
-  @Test
-  void equals_sameObject_returnsTrue() {
-    assertEquals(featureFlag, featureFlag);
-  }
+public class FeatureFlagTest {
+  private FeatureFlag featureFlag = new FeatureFlag();
 
   @Test
   void equals_isNull_returnsFalse() {

@@ -3,7 +3,6 @@ package gov.cdc.usds.simplereport.config;
 import gov.cdc.usds.simplereport.db.model.FeatureFlag;
 import gov.cdc.usds.simplereport.db.repository.FeatureFlagRepository;
 import lombok.AccessLevel;
-import lombok.Data;
 import lombok.Getter;
 import lombok.Setter;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -15,7 +14,8 @@ import org.springframework.stereotype.Component;
 @Component
 @ConfigurationProperties(prefix = "features")
 @EnableScheduling
-@Data
+@Setter
+@Getter
 public class FeatureFlagsConfig {
   @Autowired
   @Getter(AccessLevel.NONE)
