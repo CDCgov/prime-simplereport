@@ -14,6 +14,7 @@ import {
   GetFacilityQueueMultiplexDocument,
   RemovePatientFromQueueDocument,
 } from "../../generated/graphql";
+import { appPermissions } from "../permissions";
 
 import TestQueue from "./TestQueue";
 import { QUERY_PATIENT } from "./addToQueue/AddToQueueSearch";
@@ -42,6 +43,9 @@ describe("TestQueue", () => {
           name: "Fake Facility",
         },
       ],
+      user: {
+        permissions: [],
+      },
     });
   });
 
@@ -108,6 +112,9 @@ describe("TestQueue", () => {
                   name: "Other Fake Facility",
                 },
               ],
+              user: {
+                permissions: appPermissions.featureFlags.SrCsvUploaderPilot,
+              },
             })}
           >
             <TestQueue activeFacilityId="a2" />
@@ -130,6 +137,42 @@ describe("TestQueue", () => {
     expect(
       screen.getByRole("link", { name: "Upload spreadsheet" })
     ).toHaveAttribute("href", `/results/upload/submit`);
+  });
+
+  it("should render the empty queue message if no tests in the queue (no csv permissions)", async () => {
+    render(
+      <MemoryRouter>
+        <MockedProvider mocks={mocks}>
+          <Provider
+            store={mockStore({
+              organization: {
+                name: "Organization Name",
+              },
+              facilities: [
+                {
+                  id: "a2",
+                  name: "Other Fake Facility",
+                },
+              ],
+              user: {
+                permissions: [],
+              },
+            })}
+          >
+            <TestQueue activeFacilityId="a2" />
+          </Provider>
+        </MockedProvider>
+      </MemoryRouter>
+    );
+
+    expect(
+      await screen.findByText(
+        "There are no tests running. Search for a person to start their test."
+      )
+    ).toBeInTheDocument();
+    expect(
+      screen.queryByText("To add results in bulk", { exact: false })
+    ).not.toBeInTheDocument();
   });
 
   describe("clicking on test questionnaire", () => {
