@@ -1,20 +1,33 @@
+---
+name: Accessibility Ticket
+about: Create a new work item for accessibility issues
+title: ""
+labels: Accessibility
+assignees: ""
+---
+
 ## Area or Component
-[Where is this happening? The navigation bar, the patient experience, static site, etc?]: #
+
+[where is this happening? the navigation bar, the patient experience, static site, etc?]: #
 
 ## Quick Summary
-[What's wrong here?]: #
+
+[what's wrong here?]: #
 
 ### How to Replicate
 
 ## Accessibility Violation
-[Why is this inaccessible? Include Deque link if available.]: #
+
+[why is this inaccessible? include deque link if available.]: #
 
 ## Action Requested
-[How can we fix this?]: #
+
+[how can we fix this?]: #
 
 ## Screenshots (optional)
 
 ## Source Code (optional)
-[Which file or line is the issue attached to?]: #
+
+[which file or line is the issue attached to?]: #
 
 ## Original Deque Issue
