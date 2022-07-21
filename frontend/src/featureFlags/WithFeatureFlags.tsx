@@ -1,14 +1,13 @@
 import { useEffect, useState } from "react";
 import { FlagsProvider } from "flagged";
 
-import FetchClient from "../app/utils/api";
+import { FeatureFlagsApiService } from "./FeatureFlagsApiService";
 
 type WithFeatureFlagsProps = {
   children: JSX.Element;
 };
 
 const SR_APP_FEATURES = "sr-app-features";
-const api = new FetchClient(undefined, { mode: "cors" });
 
 const WithFeatureFlags = ({ children }: WithFeatureFlagsProps): JSX.Element => {
   // flags default to false when not defined
@@ -25,12 +24,12 @@ const WithFeatureFlags = ({ children }: WithFeatureFlagsProps): JSX.Element => {
         setFeatureFlags(JSON.parse(cacheFeatureFlags));
       }
 
-      api
-        .request("/feature-flags", null, "GET", "")
-        .then((flags: Record<string, boolean>) => {
+      FeatureFlagsApiService.featureFlags().then(
+        (flags: Record<string, boolean>) => {
           localStorage.setItem(SR_APP_FEATURES, JSON.stringify(flags));
           setFeatureFlags(flags);
-        });
+        }
+      );
     } catch (e) {
       /*app will not break if it fails to load the flags*/
     }

@@ -1,13 +1,8 @@
-import { FetchMock, MockResponseInit } from "jest-fetch-mock/types";
 import { render, screen } from "@testing-library/react";
 import { useFeatures } from "flagged";
 
+import { FeatureFlagsApiService } from "./FeatureFlagsApiService";
 import WithFeatureFlags from "./WithFeatureFlags";
-
-const backendUrl = process.env.REACT_APP_BACKEND_URL;
-const appInsightsHeaders = {
-  "x-ms-session-id": "",
-};
 
 describe("WithFeatureFlags Component", () => {
   const InnerComponent = (): JSX.Element => {
@@ -20,21 +15,10 @@ describe("WithFeatureFlags Component", () => {
     global.Storage.prototype.getItem = jest.fn();
   });
 
-  beforeEach(async () => {
-    (fetch as FetchMock).doMock();
-    const mockRequest: MockResponseInit = {
-      body: JSON.stringify({ flag1: true }),
-      headers: { "content-type": "application/json" },
-    };
-    (fetch as FetchMock).mockResponseOnce(() => Promise.resolve(mockRequest));
-  });
-
-  afterEach(() => {
-    (fetch as FetchMock).resetMocks();
-  });
-
-  afterAll(() => {
-    jest.resetAllMocks();
+  beforeEach(() => {
+    jest
+      .spyOn(FeatureFlagsApiService, "featureFlags")
+      .mockResolvedValue({ flag1: true });
   });
 
   it("checks that renders children and inner component receives the flag", async () => {
@@ -47,23 +31,14 @@ describe("WithFeatureFlags Component", () => {
     await screen.findByText(/flag1/i);
   });
 
-  it("checks that flags are retrieved from the endpoint and store in localStorage", async () => {
+  it("checks that flags are retrieved from the endpoint through FeatureFlagsApiService", async () => {
     render(
       <WithFeatureFlags>
         <InnerComponent />
       </WithFeatureFlags>
     );
     await screen.findByText(/flag1/i);
-    expect(fetch).toHaveBeenCalledWith(`${backendUrl}/feature-flags`, {
-      body: undefined,
-      headers: {
-        Accept: "application/json, text/plain",
-        "Content-Type": "application/json",
-        ...appInsightsHeaders,
-      },
-      method: "GET",
-      mode: "cors",
-    });
+    expect(FeatureFlagsApiService.featureFlags).toHaveBeenCalled();
   });
 
   it("checks that localStorage is being called during loading and after getting response from endpoint", async () => {
