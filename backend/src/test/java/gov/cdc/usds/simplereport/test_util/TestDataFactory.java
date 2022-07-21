@@ -390,13 +390,14 @@ public class TestDataFactory {
   public TestEvent createTestEvent(Person p, Facility f, AskOnEntrySurvey s, TestResult r, Date d) {
     TestOrder o = createTestOrder(p, f, s);
     o.setDateTestedBackdate(d);
-    Result result = new Result(o, _diseaseService.covid(), r);
-    _resultRepository.save(result);
     o.setResultColumn(r);
 
     TestEvent e = _testEventRepo.save(new TestEvent(o));
     o.setTestEventRef(e);
     o.markComplete();
+
+    Result result = new Result(e, o, _diseaseService.covid(), r);
+    _resultRepository.save(result);
     _testOrderRepo.save(o);
     return e;
   }
@@ -483,10 +484,10 @@ public class TestDataFactory {
   }
 
   public TestEvent doTest(TestOrder order, TestResult result) {
-    Result resultEntity = new Result(order, _diseaseService.covid(), result);
-    _resultRepository.save(resultEntity);
     order.setResultColumn(result);
     TestEvent event = _testEventRepo.save(new TestEvent(order));
+    Result resultEntity = new Result(event, order, _diseaseService.covid(), result);
+    _resultRepository.save(resultEntity);
     order.setTestEventRef(event);
     order.markComplete();
     _testOrderRepo.save(order);
@@ -586,5 +587,11 @@ public class TestDataFactory {
 
   public static List<PhoneNumberInput> getListOfOnePhoneNumberInput() {
     return List.of(new PhoneNumberInput("MOBILE", "(503) 867-5309"));
+  }
+
+  public void createResult(
+      TestEvent testEvent, TestOrder testOrder, SupportedDisease disease, TestResult testResult) {
+    var res = new Result(testEvent, testOrder, disease, testResult);
+    _resultRepository.save(res);
   }
 }
