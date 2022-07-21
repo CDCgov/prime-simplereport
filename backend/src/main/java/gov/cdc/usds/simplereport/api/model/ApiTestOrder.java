@@ -27,6 +27,10 @@ public class ApiTestOrder extends WrappedEntity<TestOrder> {
     return wrapped.getDateTestedBackdate();
   }
 
+  public Date getDateUpdated() {
+    return wrapped.getUpdatedAt();
+  }
+
   public TestCorrectionStatus getCorrectionStatus() {
     return wrapped.getCorrectionStatus();
   }
