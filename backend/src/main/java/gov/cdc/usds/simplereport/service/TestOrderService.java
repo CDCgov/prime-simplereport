@@ -18,7 +18,6 @@ import gov.cdc.usds.simplereport.db.model.PatientLink;
 import gov.cdc.usds.simplereport.db.model.Person;
 import gov.cdc.usds.simplereport.db.model.Person_;
 import gov.cdc.usds.simplereport.db.model.Result;
-import gov.cdc.usds.simplereport.db.model.Result_;
 import gov.cdc.usds.simplereport.db.model.SupportedDisease;
 import gov.cdc.usds.simplereport.db.model.TestEvent;
 import gov.cdc.usds.simplereport.db.model.TestEvent_;
@@ -96,7 +95,6 @@ public class TestOrderService {
       Date startDate,
       Date endDate) {
     return (root, query, cb) -> {
-      Join<TestEvent, Result> resultJoin = root.join(TestEvent_.results);
       Join<TestEvent, TestOrder> order = root.join(TestEvent_.order);
       order.on(cb.equal(root.get(AuditedEntity_.internalId), order.get(TestOrder_.testEvent)));
       query.orderBy(cb.desc(root.get(AuditedEntity_.createdAt)));
@@ -119,7 +117,7 @@ public class TestOrderService {
                     root.get(BaseTestInfo_.patient).get(AuditedEntity_.internalId), patientId));
       }
       if (result != null) {
-        p = cb.and(p, cb.equal(resultJoin.get(Result_.testResult), result));
+        p = cb.and(p, cb.equal(root.get(BaseTestInfo_.result), result));
       }
       if (role != null) {
         p = cb.and(p, cb.equal(root.get(BaseTestInfo_.patient).get(Person_.role), role));
