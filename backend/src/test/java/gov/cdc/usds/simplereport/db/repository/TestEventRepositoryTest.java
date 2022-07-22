@@ -203,6 +203,32 @@ class TestEventRepositoryTest extends BaseRepositoryTest {
   }
 
   @Test
+  void countByResultByFacility_singleFacility_onlyCountsCovid() {
+    Date d1 = Date.from(Instant.parse("2000-01-01T00:00:00Z"));
+    final Date DATE_1MIN_FUTURE =
+        new Date(System.currentTimeMillis() + TimeUnit.MINUTES.toMillis(3));
+    Organization org = _dataFactory.createValidOrg();
+    Facility place = createTestEventsForMetricsTests(org);
+    var p = _dataFactory.createMinimalPerson(org);
+    _dataFactory.createMultiplexTestEvent(
+        p, place, TestResult.POSITIVE, TestResult.NEGATIVE, TestResult.UNDETERMINED, false);
+
+    List<TestResultWithCount> results =
+        _repo.countByResultByFacility(Set.of(place.getInternalId()), d1, DATE_1MIN_FUTURE);
+
+    assertEquals(2, results.size());
+
+    Map<TestResult, Long> resultMap =
+        results.stream()
+            .collect(
+                Collectors.toMap(TestResultWithCount::getResult, TestResultWithCount::getCount));
+
+    assertEquals(2L, resultMap.get(TestResult.POSITIVE));
+    assertEquals(1L, resultMap.get(TestResult.UNDETERMINED));
+    assertNull(resultMap.get(TestResult.NEGATIVE));
+  }
+
+  @Test
   void countByResultByFacility_entireOrganization_success() {
     Date d1 = Date.from(Instant.parse("2000-01-01T00:00:00Z"));
     final Date DATE_1MIN_FUTURE =

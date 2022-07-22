@@ -96,10 +96,12 @@ public class TestOrderService {
       Date startDate,
       Date endDate) {
     return (root, query, cb) -> {
+      // DOES NOT ADD RESULT FROM RESULT TABLE -> STILL USES RESULT COLUMN!!!!!!!!
       Join<TestEvent, Result> resultJoin = root.join(TestEvent_.results);
       Join<TestEvent, TestOrder> order = root.join(TestEvent_.order);
       order.on(cb.equal(root.get(AuditedEntity_.internalId), order.get(TestOrder_.testEvent)));
       query.orderBy(cb.desc(root.get(AuditedEntity_.createdAt)));
+      query.distinct(true);
 
       Predicate p = cb.conjunction();
       if (facilityId != null) {
