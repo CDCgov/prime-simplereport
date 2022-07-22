@@ -10,7 +10,6 @@ import gov.cdc.usds.simplereport.db.model.Facility_;
 import gov.cdc.usds.simplereport.db.model.Organization;
 import gov.cdc.usds.simplereport.db.model.Person;
 import gov.cdc.usds.simplereport.db.model.Result;
-import gov.cdc.usds.simplereport.db.model.Result_;
 import gov.cdc.usds.simplereport.db.model.TestEvent;
 import gov.cdc.usds.simplereport.db.model.TestEvent_;
 import gov.cdc.usds.simplereport.db.model.TestOrder;
@@ -50,7 +49,6 @@ class TestEventRepositoryTest extends BaseRepositoryTest {
 
   private Specification<TestEvent> filter(UUID facilityId, TestResult result) {
     return (root, query, cb) -> {
-      Join<TestEvent, Result> resultJoin = root.join(TestEvent_.results);
       Join<TestEvent, TestOrder> order = root.join(TestEvent_.order);
       order.on(cb.equal(root.get(TestEvent_.internalId), order.get(TestOrder_.testEvent)));
       query.orderBy(cb.desc(root.get(TestEvent_.createdAt)));
@@ -62,7 +60,7 @@ class TestEventRepositoryTest extends BaseRepositoryTest {
                 p, cb.equal(root.get(TestEvent_.facility).get(Facility_.internalId), facilityId));
       }
       if (result != null) {
-        p = cb.and(p, cb.equal(resultJoin.get(Result_.testResult), result));
+        p = cb.and(p, cb.equal(root.get(TestEvent_.result), result));
       }
       return p;
     };
@@ -237,15 +235,10 @@ class TestEventRepositoryTest extends BaseRepositoryTest {
     TestOrder firstOrder =
         _dataFactory.createCompletedTestOrder(patient, place, TestResult.POSITIVE);
     TestEvent firstEvent = new TestEvent(firstOrder);
-    _dataFactory.createResult(firstEvent, firstOrder, _diseaseService.covid(), TestResult.POSITIVE);
 
     TestOrder secondOrder =
         _dataFactory.createCompletedTestOrder(patient, place, TestResult.UNDETERMINED);
     TestEvent secondEvent = new TestEvent(secondOrder);
-    _dataFactory.createResult(
-        secondEvent, secondOrder, _diseaseService.covid(), TestResult.UNDETERMINED);
-    _dataFactory.createResult(
-        secondEvent, secondOrder, _diseaseService.fluA(), TestResult.UNDETERMINED);
 
     _repo.save(firstEvent);
     _repo.save(secondEvent);
@@ -257,17 +250,14 @@ class TestEventRepositoryTest extends BaseRepositoryTest {
     TestOrder firstOrderOtherPlace =
         _dataFactory.createCompletedTestOrder(otherPatient, otherPlace, TestResult.NEGATIVE);
     TestEvent firstEventOtherPlace = new TestEvent(firstOrderOtherPlace);
-    _dataFactory.createResult(
-        firstEventOtherPlace, firstOrderOtherPlace, _diseaseService.covid(), TestResult.NEGATIVE);
 
     TestOrder secondOrderOtherPlace =
         _dataFactory.createCompletedTestOrder(otherPatient, otherPlace, TestResult.POSITIVE);
     TestEvent secondEventOtherPlace = new TestEvent(secondOrderOtherPlace);
-    _dataFactory.createResult(
-        secondEventOtherPlace, secondOrderOtherPlace, _diseaseService.covid(), TestResult.POSITIVE);
 
     _repo.save(firstEventOtherPlace);
     _repo.save(secondEventOtherPlace);
+
     return place;
   }
 

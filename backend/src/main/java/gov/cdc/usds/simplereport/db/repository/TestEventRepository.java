@@ -70,27 +70,23 @@ public interface TestEventRepository
 
   @Query(
       value =
-          "SELECT new gov.cdc.usds.simplereport.db.model.auxiliary.TestResultWithCount(res.testResult, COUNT(res)) "
+          "SELECT new gov.cdc.usds.simplereport.db.model.auxiliary.TestResultWithCount(te.result, COUNT(te)) "
               + "FROM TestEvent te "
               + "         LEFT JOIN TestEvent corrected_te ON corrected_te.priorCorrectedTestEventId = te.internalId "
-              + "         LEFT JOIN Result res ON res.testEvent = te "
-              + "         LEFT JOIN SupportedDisease disease ON res.disease = disease "
               + "WHERE te.facility.internalId IN :facilityIds AND COALESCE(te.dateTestedBackdate, te.createdAt) BETWEEN :startDate AND :endDate AND "
-              + "    te.correctionStatus = 'ORIGINAL' AND corrected_te.priorCorrectedTestEventId IS NULL AND disease.loinc = '96741-4' "
-              + "GROUP BY res.testResult")
+              + "    te.correctionStatus = 'ORIGINAL' AND corrected_te.priorCorrectedTestEventId IS NULL "
+              + "GROUP BY te.result")
   List<TestResultWithCount> countByResultByFacility(
       Collection<UUID> facilityIds, Date startDate, Date endDate);
 
   @Query(
       value =
-          "SELECT new gov.cdc.usds.simplereport.db.model.auxiliary.TestResultWithCount(res.testResult, COUNT(res)) "
+          "SELECT new gov.cdc.usds.simplereport.db.model.auxiliary.TestResultWithCount(te.result, COUNT(te)) "
               + "FROM TestEvent te "
               + "         LEFT JOIN TestEvent corrected_te ON corrected_te.priorCorrectedTestEventId = te.internalId "
-              + "         LEFT JOIN Result res ON res.testEvent = te "
-              + "         LEFT JOIN SupportedDisease disease ON res.disease = disease "
               + "WHERE te.facility.internalId = :facilityId AND COALESCE(te.dateTestedBackdate, te.createdAt) BETWEEN :startDate AND :endDate AND "
-              + "    te.correctionStatus = 'ORIGINAL' AND corrected_te.priorCorrectedTestEventId IS NULL AND disease.loinc = '96741-4' "
-              + "GROUP BY res.testResult")
+              + "    te.correctionStatus = 'ORIGINAL' AND corrected_te.priorCorrectedTestEventId IS NULL "
+              + "GROUP BY te.result")
   List<TestResultWithCount> countByResultForFacility(UUID facilityId, Date startDate, Date endDate);
 
   boolean existsByPatient(Person person);
