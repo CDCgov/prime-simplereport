@@ -72,7 +72,7 @@ $func$
 DROP TYPE IF EXISTS sr_faker.sr_json_vals;
 CREATE TYPE sr_faker.sr_json_vals AS (path text[], value jsonb);
 CREATE OR REPLACE FUNCTION sr_faker.jsonb_updater(sr_json_data jsonb, variadic sr_json_to_update sr_faker.sr_json_vals[])
-    RETURNS JSONB
+    RETURNS JSON
     LANGUAGE plpgsql
 AS $func$
 DECLARE sr_json_args sr_faker.sr_json_vals;
@@ -80,7 +80,7 @@ BEGIN
     FOREACH sr_json_args IN ARRAY sr_json_to_update LOOP
         sr_json_data := jsonb_set(sr_json_data, sr_json_args.path, sr_json_args.value, true);
     END LOOP;
-    RETURN sr_json_data;
+    RETURN to_json(sr_json_data);
 END $func$;
 
 -- clia_number | text
@@ -325,7 +325,7 @@ IS 'MASKED WITH FUNCTION sr_faker.jsonb_updater(request_data,'
 --  ask_on_entry | jsonb
 SECURITY LABEL FOR anon ON COLUMN patient_answers.ask_on_entry
 IS 'MASKED WITH FUNCTION sr_faker.jsonb_updater(ask_on_entry,'
-  '(''{symptoms,25064002}'', ''true''),'
+  '(''{symptoms,25064002}'', ''false''),'
   '(''{symptoms,36955009}'', ''false''),'
   '(''{symptoms,43724002}'', ''false''),'
   '(''{symptoms,44169009}'', ''false''),'
@@ -524,18 +524,18 @@ SECURITY LABEL FOR anon ON COLUMN test_event.patient_data
 IS 'MASKED WITH FUNCTION sr_faker.jsonb_updater(patient_data,'
   '(''{race}'', ''"other"''),'
   '(''{role}'', ''"STUDENT"''),'
-  '(''{email}'', ''null''),'
+  '(''{email}'', to_jsonb(sr_faker.email())),'
   '(''{emails}'', ''[]''),'
   '(''{gender}'', ''"female"''),'
   '(''{suffix}'', ''null''),'
-  '(''{address,city}'', ''null''),'
-  '(''{address,state}'', ''"DC"''),'
-  '(''{address,county}'', ''null''),'
-  '(''{address,street}'', to_jsonb(sr_faker.street())),'
+  '(''{address,city}'', to_jsonb(anon.fake_city())),'
+  '(''{address,state}'', ''"OR"''),'
+  '(''{address,county}'', to_jsonb(sr_faker.county())),'
+  '(''{address,street}'', ''[]''),'
   '(''{address,postalCode}'', to_jsonb(anon.random_zip())),'
   '(''{country}'', ''"USA"''),'
   '(''{lastName}'', to_jsonb(sr_faker.last_name())),'
-  '(''{birthDate}'', to_jsonb(sr_faker.test_event_patient_data_birthday())),'
+  '(''{birthDate}'', ''[]''),'
   '(''{ethnicity}'', ''"refused"''),'
   '(''{firstName}'', to_jsonb(sr_faker.first_name())),'
   '(''{telephone}'', to_jsonb(sr_faker.phone_number())),'
@@ -546,8 +546,8 @@ IS 'MASKED WITH FUNCTION sr_faker.jsonb_updater(patient_data,'
   '(''{preferredLanguage}'', ''null''),'
   '(''{tribalAffiliation}'', ''[null]''),'
   '(''{testResultDelivery}'', ''null''),'
-  '(''{employedInHealthcare}'', ''null''),'
-  '(''{residentCongregateSetting}'', ''null'')'
+  '(''{employedInHealthcare}'', ''false''),'
+  '(''{residentCongregateSetting}'', ''false'')'
 ')';
 
 -- provider_data | jsonb
