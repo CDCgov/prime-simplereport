@@ -968,7 +968,6 @@ export type TestResult = {
   createdBy?: Maybe<ApiUser>;
   dateAdded?: Maybe<Scalars["String"]>;
   dateTested?: Maybe<Scalars["DateTime"]>;
-  dateUpdated?: Maybe<Scalars["DateTime"]>;
   deviceType?: Maybe<DeviceType>;
   facility?: Maybe<Facility>;
   internalId?: Maybe<Scalars["ID"]>;
@@ -2430,7 +2429,6 @@ export type GetFacilityResultsForCsvQuery = {
         | {
             __typename?: "TestResult";
             dateTested?: any | null | undefined;
-            dateUpdated?: any | null | undefined;
             result?: string | null | undefined;
             correctionStatus?: string | null | undefined;
             reasonForCorrection?: string | null | undefined;
@@ -6718,7 +6716,6 @@ export const GetFacilityResultsForCsvDocument = gql`
         isDeleted
       }
       dateTested
-      dateUpdated
       result
       results {
         disease {

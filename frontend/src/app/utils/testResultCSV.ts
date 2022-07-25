@@ -41,7 +41,6 @@ export function parseDataForCSV(data: any, multiplexEnabled: boolean) {
         : {
             "COVID-19 result": TEST_RESULT_DESCRIPTIONS[r.result as Results],
           }),
-      "Result reported date": moment(r.dateUpdated).format("MM/DD/YYYY h:mma"),
       "Test correction status": r.correctionStatus,
       "Test correction reason": r.reasonForCorrection,
       "Device name": r.deviceType.name,

@@ -240,7 +240,6 @@ type TestResult {
   facility: Facility
   patient: Patient
   dateAdded: String
-  dateUpdated: DateTime
   pregnancy: String
   noSymptoms: Boolean
   symptoms: String
