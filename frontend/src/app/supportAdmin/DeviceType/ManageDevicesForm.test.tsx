@@ -6,10 +6,10 @@ import { addValue } from "./DeviceTypeForm.test";
 
 describe("ManageDeviceTypeForm", () => {
   let saveDeviceType: jest.Mock;
-
+  let container: any;
   beforeEach(() => {
     saveDeviceType = jest.fn();
-    render(
+    container = render(
       <ManageDevicesForm
         updateDeviceType={saveDeviceType}
         swabOptions={[
@@ -57,6 +57,10 @@ describe("ManageDeviceTypeForm", () => {
     );
   });
 
+  it("renders the Manage Device Type Form Container item", () => {
+    expect(container).toMatchSnapshot();
+  });
+
   it("Disables the save button", () => {
     expect(screen.getByText("Save changes")).toBeDisabled();
   });
@@ -69,11 +73,17 @@ describe("ManageDeviceTypeForm", () => {
     expect(
       screen.getByLabelText("LOINC code", { exact: false })
     ).toBeDisabled();
+    expect(
+      screen.getByLabelText("Device name", { exact: false })
+    ).toBeDisabled();
+    expect(
+      screen.getByLabelText("Test length", { exact: false })
+    ).toBeDisabled();
     expect(screen.getAllByTestId("multi-select-toggle")[0]).toBeDisabled();
   });
 
   it("shows a list of devices to select from", () => {
-    userEvent.click(screen.getByLabelText("Device name", { exact: false }));
+    userEvent.click(screen.getByLabelText("Select device", { exact: false }));
     expect(screen.getByText("Tesla Emitter")).toBeInTheDocument();
     expect(screen.getByText("Fission Energizer")).toBeInTheDocument();
     expect(screen.getByText("Covalent Observer")).toBeInTheDocument();
@@ -82,7 +92,7 @@ describe("ManageDeviceTypeForm", () => {
   describe("When selecting a device", () => {
     beforeEach(() => {
       userEvent.selectOptions(
-        screen.getByLabelText("Device name", { exact: false }),
+        screen.getByLabelText("Select device", { exact: false }),
         "Tesla Emitter"
       );
     });
@@ -120,7 +130,7 @@ describe("ManageDeviceTypeForm", () => {
     describe("selecting another device", () => {
       beforeEach(() => {
         userEvent.selectOptions(
-          screen.getByLabelText("Device name", { exact: false }),
+          screen.getByLabelText("Select device", { exact: false }),
           "Fission Energizer"
         );
       });
@@ -164,6 +174,7 @@ describe("ManageDeviceTypeForm", () => {
           loincCode: "1234-1234",
           swabTypes: ["123", "456"],
           supportedDiseases: ["123"],
+          testLength: 15,
         });
         expect(saveDeviceType).toBeCalledTimes(1);
       });
