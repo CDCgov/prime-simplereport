@@ -36,6 +36,17 @@ class TestEventExportTest extends BaseRepositoryTest {
   }
 
   @Test
+  void json_property_preferredLang_mapping() {
+    Organization o = _dataFactory.createValidOrg();
+    Facility f = _dataFactory.createValidFacility(o);
+    Person p = _dataFactory.createFullPersonWithPreferredLanguage(o, "will-be-default-value");
+    TestEvent te = _dataFactory.createTestEvent(p, f);
+
+    TestEventExport sut = new TestEventExport(te);
+    assertEquals("will-be-default-value", sut.getPatientPreferredLanguage());
+  }
+
+  @Test
   void json_property_ethnicity_mapping() {
     Organization o = _dataFactory.createValidOrg();
     Facility f = _dataFactory.createValidFacility(o);
@@ -208,7 +219,7 @@ class TestEventExportTest extends BaseRepositoryTest {
     assertEquals("20503", exportedEvent.getPatientZipCode());
     assertEquals("Washington", exportedEvent.getPatientCounty());
     assertEquals("USA", exportedEvent.getPatientCountry());
-    assertEquals("English", exportedEvent.getPatientPreferredLanguage());
+    assertEquals("eng", exportedEvent.getPatientPreferredLanguage());
   }
 
   @Test
