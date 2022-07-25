@@ -1,6 +1,6 @@
 {
   "name": "simple-report",
-  "version": "0.1.0",
+  "version": "1.22.18",
   "private": true,
   "devDependencies": {
     "@arkweid/lefthook": "^0.7.7"
