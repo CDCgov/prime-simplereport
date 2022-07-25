@@ -234,6 +234,14 @@ const PersonForm = (props: Props) => {
       setAddressModalOpen(true);
     }
   };
+  const getSchemaNameOrder = () => {
+    const schemaInfo = schema.describe();
+    const schemaOrder: { [key: string]: number } = {};
+    Object.keys(schemaInfo.fields).forEach((schemaName, idx) => {
+      schemaOrder[schemaName] = idx;
+    });
+    return schemaOrder;
+  };
 
   const validateForm = async (shouldStartTest: boolean = false) => {
     // The `startTest` param here originates from a child Add/Edit Patient form,
@@ -259,17 +267,63 @@ const PersonForm = (props: Props) => {
       );
       setErrors(newErrors);
       let focusedOnError = false;
-
-      Object.entries(newErrors).forEach(([name, error]) => {
+      const schemaOrder = getSchemaNameOrder();
+      Object.values(newErrors).forEach((error) => {
         if (!error) {
           return;
         }
-        if (!focusedOnError) {
-          document.getElementsByName(name)[0]?.focus();
-          focusedOnError = true;
-        }
         showError(t("patient.form.errors.validationMsg"), error);
       });
+
+      if (!focusedOnError) {
+        let earliestErrorIndex = Number.POSITIVE_INFINITY;
+        let earliestErrorName = "";
+        let earliestErrorMessage = "";
+        Object.entries(newErrors).forEach(([name, error]) => {
+          const errorOrder = schemaOrder[name];
+          if (earliestErrorIndex > errorOrder) {
+            earliestErrorIndex = errorOrder;
+            earliestErrorName = name;
+            earliestErrorMessage = error;
+          }
+        });
+        // handle error refocus in the cases where we may have
+        // multiple form elements for email and phone
+        const translatedErrorMessages = t("patient.form.errors", {
+          returnObjects: true,
+        });
+        const messageToErrorTypeDict = Object.fromEntries(
+          Object.entries(translatedErrorMessages).map((a) => a.reverse())
+        );
+
+        if (earliestErrorName === "phoneNumbers") {
+          const phoneErrorType = messageToErrorTypeDict[earliestErrorMessage];
+          const classSelector = `${phoneErrorType}FormElement`;
+          console.log(classSelector);
+          console.log(phoneErrorType);
+
+          const elementsToCheck = Array.from(
+            document.getElementsByClassName(classSelector)
+          );
+          for (let i = 0; i < elementsToCheck.length; i++) {
+            if (
+              elementsToCheck[i].classList.contains("usa-form-group--error")
+            ) {
+              const selectorName = classSelector.match("Numbers")
+                ? "number"
+                : `phoneType-${i}`;
+              console.log(selectorName);
+              document.getElementsByName(selectorName)[i]?.focus();
+              break;
+            }
+          }
+        } else if (earliestErrorName === "emails") {
+        } else {
+          document.getElementsByName(earliestErrorName)[0]?.focus();
+        }
+
+        focusedOnError = true;
+      }
 
       return;
     }
@@ -311,7 +365,6 @@ const PersonForm = (props: Props) => {
     ROLE_VALUES,
     TEST_RESULT_DELIVERY_PREFERENCE_VALUES_EMAIL,
   } = useTranslatedConstants();
-
   return (
     <>
       <Prompt when={formChanged} message={t("patient.form.errors.unsaved")} />
@@ -569,7 +622,7 @@ const PersonForm = (props: Props) => {
           buttons={RACE_VALUES}
           selectedRadio={patient.race}
           onChange={onPersonChange("race")}
-          required={true}
+          required
           validationStatus={validationStatus("race")}
         />
         <div className="usa-form-group">
@@ -592,7 +645,7 @@ const PersonForm = (props: Props) => {
           buttons={ETHNICITY_VALUES}
           selectedRadio={patient.ethnicity}
           onChange={onPersonChange("ethnicity")}
-          required={true}
+          required
           validationStatus={validationStatus("ethnicity")}
         />
         <RadioGroup

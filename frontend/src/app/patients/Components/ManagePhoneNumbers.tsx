@@ -192,7 +192,7 @@ const ManagePhoneNumbers: React.FC<Props> = ({
         <div key={idx}>
           <div className="display-flex">
             <Input
-              className="flex-fill"
+              className="flex-fill phoneNumbersFormElement"
               field="number"
               label={
                 isPrimary
@@ -220,7 +220,7 @@ const ManagePhoneNumbers: React.FC<Props> = ({
           </div>
           <RadioGroup
             name={`phoneType-${idx}`}
-            className="margin-top-3"
+            className="margin-top-3 phoneNumbersTypeFormElement"
             legend={t("patient.form.contact.phoneType")}
             buttons={PHONE_TYPE_VALUES}
             selectedRadio={phoneNumber.type}
