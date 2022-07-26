@@ -15,6 +15,7 @@ services:
       - ./backend/db-setup/create-metabase-db.sh:/docker-entrypoint-initdb.d/02-metabase-db-creation.sh
       - ./backend/db-setup/reset-db.sql:/usr/local/lib/reset-db.sql
       - ./backend/db-setup/anonymize-detect.sh:/usr/local/lib/anonymize-detect.sh
+      - ./backend/db-setup/remove-anon.sh:/usr/local/lib/remove-anon.sh
       - ./backend/db-setup/anonymize-db.sql:/usr/local/lib/anonymize-db.sql
       - ./backend/db-setup/reset-metabase-db.sql:/usr/local/lib/reset-metabase-db.sql
       - ./backend/db-setup/restore-db.sh:/usr/local/lib/restore-db.sh

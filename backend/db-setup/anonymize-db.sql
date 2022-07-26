@@ -199,8 +199,8 @@ $func$
 -- SIMPLE_REPORT TABLES --
 --------------------------
 --
-DROP TABLE simple_report.databasechangeloglock;
-update simple_report.databasechangelog set md5sum = '';
+-- DROP TABLE simple_report.databasechangeloglock;
+-- update simple_report.databasechangelog set md5sum = '';
 --
 ----------------------------
 -- SIMPLE_REPORT.API_USER --
