@@ -221,7 +221,7 @@ const ManagePhoneNumbers: React.FC<Props> = ({
           </div>
           <RadioGroup
             name={`phoneType-${idx}`}
-            className={`margin-top-3 phoneNumberFormElement phoneType${idx}`}
+            className={`margin-top-3 phoneNumberFormElement`}
             legend={t("patient.form.contact.phoneType")}
             buttons={PHONE_TYPE_VALUES}
             selectedRadio={phoneNumber.type}

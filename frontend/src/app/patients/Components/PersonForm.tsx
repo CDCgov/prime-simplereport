@@ -266,7 +266,6 @@ const PersonForm = (props: Props) => {
         {} as PersonErrors
       );
       setErrors(newErrors);
-      let focusedOnError = false;
       const schemaOrder = getSchemaNameOrder();
       Object.values(newErrors).forEach((error) => {
         if (!error) {
@@ -275,39 +274,35 @@ const PersonForm = (props: Props) => {
         showError(t("patient.form.errors.validationMsg"), error);
       });
 
-      if (!focusedOnError) {
-        let earliestErrorIndex = Number.POSITIVE_INFINITY;
-        let earliestErrorName = "";
-        Object.keys(newErrors).forEach((name) => {
-          const errorOrder = schemaOrder[name];
-          if (earliestErrorIndex > errorOrder) {
-            earliestErrorIndex = errorOrder;
-            earliestErrorName = name;
-          }
-        });
-        // phone numbers potentially have multiple entries, so we need to handle
-        // those error refocuses differently
-        if (earliestErrorName === "phoneNumbers") {
-          const elementsToCheck = Array.from(
-            document.getElementsByClassName("phoneNumberFormElement")
-          ) as HTMLElement[];
-          for (let i = 0; i < elementsToCheck.length; i++) {
-            const errorContent = elementsToCheck[i].textContent;
-            if (errorContent && errorContent.match("Error")) {
-              // the parent div element isn't in the tabindex and therefore isn't focusable,
-              // so grab the closest input child element
-              document
-                .getElementById(elementsToCheck[i].id)
-                ?.getElementsByTagName("input")[0]
-                .focus();
-              break;
-            }
-          }
-        } else {
-          document.getElementsByName(earliestErrorName)[0]?.focus();
+      let earliestErrorIndex = Number.POSITIVE_INFINITY;
+      let earliestErrorName = "";
+      Object.keys(newErrors).forEach((name) => {
+        const errorOrder = schemaOrder[name];
+        if (earliestErrorIndex > errorOrder) {
+          earliestErrorIndex = errorOrder;
+          earliestErrorName = name;
         }
-
-        focusedOnError = true;
+      });
+      // phone numbers potentially have multiple entries, so we need to handle
+      // those error refocuses differently
+      if (earliestErrorName === "phoneNumbers") {
+        const elementsToCheck = Array.from(
+          document.getElementsByClassName("phoneNumberFormElement")
+        ) as HTMLElement[];
+        for (let i = 0; i < elementsToCheck.length; i++) {
+          const errorContent = elementsToCheck[i].textContent;
+          if (errorContent && errorContent.match("Error")) {
+            // the parent div element isn't in the tabindex and therefore isn't focusable,
+            // so grab the closest input child element
+            document
+              .getElementById(elementsToCheck[i].id)
+              ?.getElementsByTagName("input")[0]
+              .focus();
+            break;
+          }
+        }
+      } else {
+        document.getElementsByName(earliestErrorName)[0]?.focus();
       }
 
       return;
