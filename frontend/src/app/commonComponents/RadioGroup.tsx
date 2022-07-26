@@ -68,7 +68,10 @@ const RadioGroup = <T extends string>({
         validationStatus === "error" && "usa-form-group--error"
       )}
     >
-      <fieldset className={classnames("usa-fieldset prime-radios", className)}>
+      <fieldset
+        className={classnames("usa-fieldset prime-radios", className)}
+        id={name}
+      >
         {legend && (
           <legend
             className={classnames(

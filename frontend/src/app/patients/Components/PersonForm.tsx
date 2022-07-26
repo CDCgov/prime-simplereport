@@ -278,46 +278,31 @@ const PersonForm = (props: Props) => {
       if (!focusedOnError) {
         let earliestErrorIndex = Number.POSITIVE_INFINITY;
         let earliestErrorName = "";
-        let earliestErrorMessage = "";
-        Object.entries(newErrors).forEach(([name, error]) => {
+        Object.keys(newErrors).forEach((name) => {
           const errorOrder = schemaOrder[name];
           if (earliestErrorIndex > errorOrder) {
             earliestErrorIndex = errorOrder;
             earliestErrorName = name;
-            earliestErrorMessage = error;
           }
         });
-        // handle error refocus in the cases where we may have
-        // multiple form elements for email and phone
-        const translatedErrorMessages = t("patient.form.errors", {
-          returnObjects: true,
-        });
-        const messageToErrorTypeDict = Object.fromEntries(
-          Object.entries(translatedErrorMessages).map((a) => a.reverse())
-        );
-
+        // phone numbers potentially have multiple entries, so we need to handle
+        // those error refocuses differently
         if (earliestErrorName === "phoneNumbers") {
-          const phoneErrorType = messageToErrorTypeDict[earliestErrorMessage];
-          const classSelector = `${phoneErrorType}FormElement`;
-          console.log(classSelector);
-          console.log(phoneErrorType);
-
           const elementsToCheck = Array.from(
-            document.getElementsByClassName(classSelector)
-          );
+            document.getElementsByClassName("phoneNumberFormElement")
+          ) as HTMLElement[];
           for (let i = 0; i < elementsToCheck.length; i++) {
-            if (
-              elementsToCheck[i].classList.contains("usa-form-group--error")
-            ) {
-              const selectorName = classSelector.match("Numbers")
-                ? "number"
-                : `phoneType-${i}`;
-              console.log(selectorName);
-              document.getElementsByName(selectorName)[i]?.focus();
+            const errorContent = elementsToCheck[i].textContent;
+            if (errorContent && errorContent.match("Error")) {
+              // the parent div element isn't in the tabindex and therefore isn't focusable,
+              // so grab the closest input child element
+              document
+                .getElementById(elementsToCheck[i].id)
+                ?.getElementsByTagName("input")[0]
+                .focus();
               break;
             }
           }
-        } else if (earliestErrorName === "emails") {
         } else {
           document.getElementsByName(earliestErrorName)[0]?.focus();
         }

@@ -21,6 +21,7 @@ export type HTMLInputElementType =
 
 interface Props {
   name: string;
+  idString?: string;
   type?: HTMLInputElementType;
   label?: React.ReactNode;
   labelSrOnly?: boolean;
@@ -48,6 +49,7 @@ type InputProps = JSX.IntrinsicElements["input"];
 
 export const TextInput = ({
   name,
+  idString,
   type,
   label,
   labelSrOnly,
