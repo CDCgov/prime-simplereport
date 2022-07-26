@@ -83,6 +83,7 @@ export const TextInput = ({
             className,
             validationStatus === "error" && "usa-form-group--error"
           )}
+          id={idString}
         >
           <label
             className={classnames(
