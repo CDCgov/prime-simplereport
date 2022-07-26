@@ -2573,6 +2573,18 @@ export type GetFacilityResultsMultiplexQuery = {
                   gender?: string | null | undefined;
                   lookupId?: string | null | undefined;
                   email?: string | null | undefined;
+                  phoneNumbers?:
+                    | Array<
+                        | {
+                            __typename?: "PhoneNumber";
+                            type?: PhoneType | null | undefined;
+                            number?: string | null | undefined;
+                          }
+                        | null
+                        | undefined
+                      >
+                    | null
+                    | undefined;
                 }
               | null
               | undefined;
@@ -6870,6 +6882,10 @@ export const GetFacilityResultsMultiplexDocument = gql`
         gender
         lookupId
         email
+        phoneNumbers {
+          type
+          number
+        }
       }
       createdBy {
         nameInfo {

@@ -172,5 +172,60 @@ describe("Component ResultsTable", () => {
         expect(screen.queryByText("Text result")).not.toBeInTheDocument();
       });
     });
+    describe("email result action", () => {
+      it("includes `Email result` if patient email address", () => {
+        const testResultPatientEmail = [TEST_RESULTS_MULTIPLEX[0]];
+
+        render(
+          <ResultsTable
+            results={testResultPatientEmail}
+            setPrintModalId={setPrintModalIdFn}
+            setMarkCorrectionId={setMarkCorrectionIdFn}
+            setDetailsModalId={setDetailsModalIdFn}
+            setTextModalId={setTextModalIdFn}
+            setEmailModalTestResultId={setEmailModalTestResultIdFn}
+            hasMultiplexResults={false}
+            hasFacility={false}
+          />
+        );
+
+        const moreActions = within(screen.getByRole("table")).getAllByRole(
+          "button"
+        )[1];
+
+        userEvent.click(moreActions);
+
+        // Action menu is open
+        expect(screen.getByText("Print result")).toBeInTheDocument();
+        expect(screen.getByText("Email result")).toBeInTheDocument();
+      });
+
+      it("does not include `Email result` if no patient email address", () => {
+        const testResultPatientNoEmail = [TEST_RESULTS_MULTIPLEX[1]];
+
+        render(
+          <ResultsTable
+            results={testResultPatientNoEmail}
+            setPrintModalId={setPrintModalIdFn}
+            setMarkCorrectionId={setMarkCorrectionIdFn}
+            setDetailsModalId={setDetailsModalIdFn}
+            setTextModalId={setTextModalIdFn}
+            setEmailModalTestResultId={setEmailModalTestResultIdFn}
+            hasMultiplexResults={false}
+            hasFacility={false}
+          />
+        );
+
+        const moreActions = within(screen.getByRole("table")).getAllByRole(
+          "button"
+        )[1];
+
+        userEvent.click(moreActions);
+
+        // Action menu is open
+        expect(screen.getByText("Print result")).toBeInTheDocument();
+        expect(screen.queryByText("Email result")).not.toBeInTheDocument();
+      });
+    });
   });
 });
