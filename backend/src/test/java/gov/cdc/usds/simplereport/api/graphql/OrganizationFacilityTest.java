@@ -187,7 +187,7 @@ class OrganizationFacilityTest extends BaseGraphqlTest {
   void getRegistrationLinks_success() {
     ObjectNode org = (ObjectNode) runQuery("org-links-query").get("whoami");
     String orgLink = org.get("organization").get("patientSelfRegistrationLink").asText();
-    assertEquals("dis-org", orgLink);
+    assertEquals("dd2kn", orgLink);
     String facilityLink =
         org.get("organization")
             .get("facilities")
