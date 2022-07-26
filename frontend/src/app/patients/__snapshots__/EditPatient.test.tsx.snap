@@ -326,7 +326,8 @@ Object {
                         class="display-flex"
                       >
                         <div
-                          class="usa-form-group flex-fill"
+                          class="usa-form-group flex-fill phoneNumberFormElement"
+                          id="phoneInput-0"
                         >
                           <label
                             class="usa-label"
@@ -355,7 +356,8 @@ Object {
                         class="usa-form-group"
                       >
                         <fieldset
-                          class="usa-fieldset prime-radios margin-top-3"
+                          class="usa-fieldset prime-radios margin-top-3 phoneNumberFormElement"
+                          id="phoneType-0"
                         >
                           <legend
                             class="usa-legend"
@@ -439,6 +441,7 @@ Object {
                     >
                       <fieldset
                         class="usa-fieldset prime-radios"
+                        id="testResultDeliveryText"
                       >
                         <legend
                           class="usa-legend"
@@ -570,6 +573,7 @@ Object {
                     >
                       <fieldset
                         class="usa-fieldset prime-radios"
+                        id="testResultDeliveryEmail"
                       >
                         <legend
                           class="usa-legend"
@@ -2072,6 +2076,7 @@ Object {
                   >
                     <fieldset
                       class="usa-fieldset prime-radios"
+                      id="race"
                     >
                       <legend
                         class="usa-legend"
@@ -2232,6 +2237,7 @@ Object {
                   >
                     <fieldset
                       class="usa-fieldset prime-radios"
+                      id="ethnicity"
                     >
                       <legend
                         class="usa-legend"
@@ -2310,6 +2316,7 @@ Object {
                   >
                     <fieldset
                       class="usa-fieldset prime-radios"
+                      id="gender"
                     >
                       <legend
                         class="usa-legend"
@@ -2424,6 +2431,7 @@ Object {
                   >
                     <fieldset
                       class="usa-fieldset prime-radios"
+                      id="residentCongregateSetting"
                     >
                       <legend
                         class="usa-legend"
@@ -2501,6 +2509,7 @@ Object {
                   >
                     <fieldset
                       class="usa-fieldset prime-radios"
+                      id="employedInHealthcare"
                     >
                       <legend
                         class="usa-legend"
@@ -2913,7 +2922,8 @@ Object {
                       class="display-flex"
                     >
                       <div
-                        class="usa-form-group flex-fill"
+                        class="usa-form-group flex-fill phoneNumberFormElement"
+                        id="phoneInput-0"
                       >
                         <label
                           class="usa-label"
@@ -2942,7 +2952,8 @@ Object {
                       class="usa-form-group"
                     >
                       <fieldset
-                        class="usa-fieldset prime-radios margin-top-3"
+                        class="usa-fieldset prime-radios margin-top-3 phoneNumberFormElement"
+                        id="phoneType-0"
                       >
                         <legend
                           class="usa-legend"
@@ -3026,6 +3037,7 @@ Object {
                   >
                     <fieldset
                       class="usa-fieldset prime-radios"
+                      id="testResultDeliveryText"
                     >
                       <legend
                         class="usa-legend"
@@ -3157,6 +3169,7 @@ Object {
                   >
                     <fieldset
                       class="usa-fieldset prime-radios"
+                      id="testResultDeliveryEmail"
                     >
                       <legend
                         class="usa-legend"
@@ -4659,6 +4672,7 @@ Object {
                 >
                   <fieldset
                     class="usa-fieldset prime-radios"
+                    id="race"
                   >
                     <legend
                       class="usa-legend"
@@ -4819,6 +4833,7 @@ Object {
                 >
                   <fieldset
                     class="usa-fieldset prime-radios"
+                    id="ethnicity"
                   >
                     <legend
                       class="usa-legend"
@@ -4897,6 +4912,7 @@ Object {
                 >
                   <fieldset
                     class="usa-fieldset prime-radios"
+                    id="gender"
                   >
                     <legend
                       class="usa-legend"
@@ -5011,6 +5027,7 @@ Object {
                 >
                   <fieldset
                     class="usa-fieldset prime-radios"
+                    id="residentCongregateSetting"
                   >
                     <legend
                       class="usa-legend"
@@ -5088,6 +5105,7 @@ Object {
                 >
                   <fieldset
                     class="usa-fieldset prime-radios"
+                    id="employedInHealthcare"
                   >
                     <legend
                       class="usa-legend"
