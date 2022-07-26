@@ -66,6 +66,12 @@ const TEST_RESULTS_MULTIPLEX = [
       gender: "female",
       role: "STAFF",
       lookupId: null,
+      phoneNumbers: [
+        {
+          type: "MOBILE",
+          number: "2708675309",
+        },
+      ],
       __typename: "Patient",
     },
     createdBy: {
