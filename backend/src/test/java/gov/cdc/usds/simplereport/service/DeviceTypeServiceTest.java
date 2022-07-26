@@ -196,6 +196,7 @@ class DeviceTypeServiceTest extends BaseServiceTest<DeviceTypeService> {
                 .loincCode("W")
                 .swabTypes(List.of(swab2.getInternalId()))
                 .supportedDiseases(List.of(disease2.getInternalId()))
+                .testLength(22)
                 .build());
 
     // THEN
@@ -205,6 +206,7 @@ class DeviceTypeServiceTest extends BaseServiceTest<DeviceTypeService> {
     assertEquals("X", updatedDevice.getManufacturer());
     assertEquals("W", updatedDevice.getLoincCode());
     assertEquals("Flu A", updatedDevice.getSupportedDiseases().get(0).getName());
+    assertEquals(22, updatedDevice.getTestLength());
     assertNull(updatedDevice.getSwabType());
 
     List<SpecimenType> updatedSwabTypes = updatedDevice.getSwabTypes();

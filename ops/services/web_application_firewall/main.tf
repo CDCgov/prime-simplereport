@@ -118,6 +118,11 @@ resource "azurerm_web_application_firewall_policy" "sr_waf_policy" {
     }
     exclusion {
       match_variable          = "RequestArgNames"
+      selector                = "variables.orderingProviderStreet"
+      selector_match_operator = "Equals"
+    }
+    exclusion {
+      match_variable          = "RequestArgNames"
       selector                = "operations"
       selector_match_operator = "Equals"
     }

@@ -58,12 +58,12 @@ describe("Submission", () => {
         <Provider store={store}>
           <MemoryRouter
             initialEntries={[
-              "/results/upload/submission/12b86a9d-a9d6-4391-a555-6618e8ac66d9",
+              "/results/upload/submissions/submission/12b86a9d-a9d6-4391-a555-6618e8ac66d9",
             ]}
           >
             <Routes>
               <Route
-                path={"/results/upload/submission/:id"}
+                path={"/results/upload/submissions/submission/:id"}
                 element={<Submission />}
               ></Route>
             </Routes>
@@ -86,19 +86,14 @@ describe("Submission", () => {
   it("renders the bulk test result upload submission view", async () => {
     await new Promise((resolve) => setTimeout(resolve, 0));
 
-    expect(await screen.findByText("05 May 2022 13:47"));
-
     expect(await screen.findByText("Report ID"));
     expect(await screen.findByText("12b86a9d-a9d6-4391-a555-6618e8ac66d9"));
 
-    expect(await screen.findByText("Data Stream"));
+    expect(await screen.findByText("Data stream"));
     expect(await screen.findByText("ELR"));
 
-    expect(await screen.findByText("Transmission Date"));
-    expect(await screen.findByText("05 May 2022"));
-
-    expect(await screen.findByText("Transmission Time"));
-    expect(await screen.findByText("13:47"));
+    expect(await screen.findByText("Transmission date"));
+    expect(await screen.findByText("05/05/2022 1:47pm"));
 
     expect(await screen.findByText("Records"));
     expect(await screen.findByText("2"));
