@@ -1,18 +1,15 @@
-import moment from "moment";
-import { useSelector } from "react-redux";
 import { useParams } from "react-router-dom";
 
-import { LoadingCard } from "../../commonComponents/LoadingCard/LoadingCard";
+import iconSprite from "../../../../node_modules/uswds/dist/img/sprite.svg";
 import { useGetUploadSubmissionQuery } from "../../../generated/graphql";
 import { LinkWithQuery } from "../../commonComponents/LinkWithQuery";
+import { formatDateWithTimeOption } from "../../utils/date";
+import { useDocumentTitle } from "../../utils/hooks";
 
 const Submission = () => {
+  useDocumentTitle("View upload details");
   const urlParams = useParams();
   const internalId = urlParams.id || "";
-
-  const organization = useSelector(
-    (state) => (state as any).organization as Organization
-  );
 
   const { data: submission, loading, error } = useGetUploadSubmissionQuery({
     fetchPolicy: "no-cache",
@@ -22,69 +19,62 @@ const Submission = () => {
   });
 
   if (loading) {
-    return <LoadingCard />;
+    return <p> Loading... </p>;
   }
 
   if (error) {
     throw error;
   }
 
-  const transmissionTimestamp = moment(submission?.uploadSubmission.createdAt);
-  const transmissionDate = transmissionTimestamp.format("DD MMM YYYY");
-  const transmissionTime = transmissionTimestamp.format("k:mm");
+  const transmissionDate = formatDateWithTimeOption(
+    submission?.uploadSubmission.createdAt,
+    true
+  );
 
   return (
-    <main className="prime-home">
-      <div className="grid-container">
-        <div className="grid-row">
-          <div className="prime-container card-container">
-            {/* Sub-heading */}
-            <div className="usa-card__body text-normal font-body-xs text-base margin-bottom-0">
-              <span>
-                <LinkWithQuery
-                  to={`/results/upload/submissions/`}
-                  className="sr-link__primary"
-                >
-                  {organization.name} COVID-19 Submissions
-                </LinkWithQuery>
-              </span>
-            </div>
+    <div className="grid-row">
+      <div className="prime-container card-container">
+        {/* Sub-heading */}
+        <div className="usa-card__header">
+          <div className="display-flex flex-align-center">
+            <svg
+              className="usa-icon text-base margin-left-neg-2px"
+              aria-hidden="true"
+              focusable="false"
+              role="img"
+            >
+              <use xlinkHref={iconSprite + "#arrow_back"}></use>
+            </svg>
+            <LinkWithQuery
+              to={`/results/upload/submissions/`}
+              className="margin-left-05"
+            >
+              Upload history
+            </LinkWithQuery>
+          </div>
+        </div>
 
-            {/* Submission result header */}
-            <div className="usa-card__body">
-              <h1>{[transmissionDate, transmissionTime].join(" ")}</h1>
-            </div>
-
-            {/* Submission detail */}
-            <div className="usa-card__body">
-              <div className="display-flex flex-column margin-top-2 margin-bottom-2">
-                <span className="text-base">Report ID</span>
-                <td>{submission?.uploadSubmission.reportId}</td>
-              </div>
-              <div className="display-flex flex-column"></div>
-              <h2>{organization.name}</h2>
-              <div className="display-flex flex-column margin-bottom-4">
-                <span className="text-base">Data Stream</span>
-                <span>ELR</span>
-              </div>
-              <div className="display-flex flex-column margin-bottom-4">
-                <span className="text-base">Transmission Date</span>
-                <span>{transmissionDate}</span>
-              </div>
-
-              <div className="display-flex flex-column margin-bottom-4">
-                <span className="text-base">Transmission Time</span>
-                <span>{transmissionTime}</span>
-              </div>
-              <div className="display-flex flex-column margin-bottom-4">
-                <span className="text-base">Records</span>
-                <span>{submission?.uploadSubmission.recordsCount}</span>
-              </div>
-            </div>
+        {/* Submission detail */}
+        <div className="usa-card__body">
+          <div className="display-flex flex-column margin-top-2 margin-bottom-4">
+            <span className="text-base">Report ID</span>
+            <td>{submission?.uploadSubmission.reportId}</td>
+          </div>
+          <div className="display-flex flex-column margin-bottom-4">
+            <span className="text-base">Data stream</span>
+            <span>ELR</span>
+          </div>
+          <div className="display-flex flex-column margin-bottom-4">
+            <span className="text-base">Transmission date</span>
+            <span>{transmissionDate}</span>
+          </div>
+          <div className="display-flex flex-column margin-bottom-2">
+            <span className="text-base">Records</span>
+            <span>{submission?.uploadSubmission.recordsCount}</span>
           </div>
         </div>
       </div>
-    </main>
+    </div>
   );
 };
 

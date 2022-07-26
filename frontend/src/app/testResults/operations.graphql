@@ -40,6 +40,7 @@ query GetFacilityResultsForCsv(
       isDeleted
     }
     dateTested
+    dateUpdated
     result
     results {
       disease {

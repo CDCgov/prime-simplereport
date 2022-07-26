@@ -2,10 +2,13 @@ import React, { useEffect, useState } from "react";
 import { gql, useQuery } from "@apollo/client";
 import { CSSTransition, TransitionGroup } from "react-transition-group";
 import { useLocation } from "react-router-dom";
+import { useSelector } from "react-redux";
 
 import { showError } from "../utils";
 import { useSelectedFacility } from "../facilitySelect/useSelectedFacility";
 import { TestCorrectionReason } from "../testResults/TestResultCorrectionModal";
+import { LinkWithQuery } from "../commonComponents/LinkWithQuery";
+import { appPermissions, hasPermission } from "../permissions";
 
 import AddToQueueSearch, {
   StartTestProps,
@@ -31,17 +34,28 @@ const onExiting = (node: HTMLElement) => {
   node.style.pointerEvents = "none";
 };
 
-const emptyQueueMessage = (
-  <div className="grid-container prime-center card-container queue-container-wide">
-    <div className="grid-row">
-      <div className="usa-card__body">
-        <p>
-          There are no tests running. Search for a person to start their test{" "}
-        </p>
+const emptyQueueMessage = (canUseCsvUploader: boolean) => {
+  return (
+    <div className="grid-container prime-center card-container queue-container-wide">
+      <div className="grid-row">
+        <div className="usa-card__body">
+          <p>
+            There are no tests running. Search for a person to start their test.
+          </p>
+          {canUseCsvUploader && (
+            <p>
+              To add results in bulk using a CSV file, go to{" "}
+              <LinkWithQuery to="/results/upload/submit">
+                <strong>Upload spreadsheet</strong>
+              </LinkWithQuery>
+              .
+            </p>
+          )}
+        </div>
       </div>
     </div>
-  </div>
-);
+  );
+};
 
 export const queueQuery = gql`
   query GetFacilityQueueMultiplex($facilityId: ID!) {
@@ -154,6 +168,10 @@ const TestQueue: React.FC<Props> = ({ activeFacilityId }) => {
   const [selectedFacility] = useSelectedFacility();
   const [startTestPatientId, setStartTestPatientId] = useState<string | null>(
     null
+  );
+  const canUseCsvUploader = hasPermission(
+    useSelector((state) => (state as any).user.permissions),
+    appPermissions.featureFlags.SrCsvUploaderPilot
   );
 
   useEffect(() => {
@@ -313,7 +331,7 @@ const TestQueue: React.FC<Props> = ({ activeFacilityId }) => {
             onExiting={onEmptyQueueExiting}
             timeout={transitionDuration}
           >
-            {emptyQueueMessage}
+            {emptyQueueMessage(canUseCsvUploader)}
           </CSSTransition>
         )}
       </TransitionGroup>

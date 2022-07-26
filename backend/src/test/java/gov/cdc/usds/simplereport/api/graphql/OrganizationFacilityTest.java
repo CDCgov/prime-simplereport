@@ -168,18 +168,16 @@ class OrganizationFacilityTest extends BaseGraphqlTest {
     TestUserIdentities.withUser(
         TestUserIdentities.SITE_ADMIN_USER,
         () -> {
-          Organization org = _dataFactory.createUnverifiedOrg();
+          _dataFactory.createUnverifiedOrg();
           OrganizationQueueItem orgQueueItem = _dataFactory.createOrganizationQueueItem();
           useSuperUser();
 
-          // Get all pending orgs and queue items
+          // Get all queue items
           ObjectNode result = runQuery("get-pending-organizations");
           ArrayNode pendingOrgs = (ArrayNode) result.path("pendingOrganizations");
-          assertEquals(2, pendingOrgs.size());
+          assertEquals(1, pendingOrgs.size());
           JsonNode firstEntry = pendingOrgs.get(0);
-          JsonNode secondEntry = pendingOrgs.get(1);
-          assertEquals(org.getExternalId(), firstEntry.path("externalId").asText());
-          assertEquals(orgQueueItem.getExternalId(), secondEntry.path("externalId").asText());
+          assertEquals(orgQueueItem.getExternalId(), firstEntry.path("externalId").asText());
         });
   }
 

@@ -220,6 +220,38 @@ public class TestDataFactory {
   }
 
   @Transactional
+  public Person createFullPersonWithPreferredLanguage(Organization org, String language) {
+    // consts are to keep style check happy othewise it complains about
+    // "magic numbers"
+    Person p =
+        new Person(
+            org,
+            "HELLOTHERE",
+            "Fred",
+            "M",
+            "Astaire",
+            null,
+            DEFAULT_BDAY,
+            getFullAddress(),
+            "USA",
+            PersonRole.RESIDENT,
+            List.of("fred@astaire.com"),
+            "white",
+            "not_hispanic",
+            null,
+            "male",
+            false,
+            false,
+            language,
+            TestResultDeliveryPreference.SMS);
+    _personRepo.save(p);
+    PhoneNumber pn = new PhoneNumber(p, PhoneType.MOBILE, "216-555-1234");
+    _phoneNumberRepo.save(pn);
+    p.setPrimaryPhone(pn);
+    return _personRepo.save(p);
+  }
+
+  @Transactional
   public Person createFullPersonWithTelephone(Organization org, String telephone) {
     // consts are to keep style check happy othewise it complains about
     // "magic numbers"

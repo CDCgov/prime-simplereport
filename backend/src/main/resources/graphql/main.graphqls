@@ -73,6 +73,7 @@ input UpdateDeviceType {
   loincCode: String!
   swabTypes: [ID!]!
   supportedDiseases: [ID!]!
+  testLength: Int!
 }
 
 type DeviceType {
@@ -240,6 +241,7 @@ type TestResult {
   facility: Facility
   patient: Patient
   dateAdded: String
+  dateUpdated: DateTime
   pregnancy: String
   noSymptoms: Boolean
   symptoms: String

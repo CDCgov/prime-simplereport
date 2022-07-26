@@ -9,6 +9,7 @@ const data = [
       isDeleted: false,
     },
     dateTested: "2022-06-13T19:24:31.187Z",
+    dateUpdated: "2022-03-13T19:24:31.187Z",
     result: "NEGATIVE",
     results: [
       {
@@ -96,6 +97,7 @@ const result = [
     "Patient street address 2": "",
     "Patient tribal affiliation": "",
     "Patient zip code": "90210",
+    "Result reported date": "03/13/2022 7:24pm",
     Submitter: "Doe, Jane",
     "Symptom onset": "Invalid date",
     "Symptoms present": "No symptoms",

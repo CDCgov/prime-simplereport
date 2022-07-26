@@ -168,7 +168,7 @@ const Uploads = () => {
           </ol>
           <p>
             For more information about preparing your spreadsheet, visit our{" "}
-            <LinkWithQuery to="/results/upload/guide">
+            <LinkWithQuery to="/results/upload/submit/guide">
               <strong>spreadsheet upload guide</strong>
             </LinkWithQuery>
             .
