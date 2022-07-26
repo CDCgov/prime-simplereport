@@ -489,11 +489,7 @@ describe("PendingOrganizationsContainer", () => {
             screen.queryByText("Organization details")
           );
 
-          expect(
-            screen.getByRole("heading", {
-              name: /dc space camp details updated/i,
-            })
-          ).toBeInTheDocument();
+          expect(await screen.findByText("DC Space Camp")).toBeInTheDocument();
         });
       });
     });
