@@ -7,6 +7,7 @@ import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.springframework.test.util.ReflectionTestUtils;
 
+/** ToDo Remove public modifiers from this test class once Spring for GraphQL migration is done */
 class FeatureFlagsControllerTest {
 
   private FeatureFlagsController featureFlagsController;
