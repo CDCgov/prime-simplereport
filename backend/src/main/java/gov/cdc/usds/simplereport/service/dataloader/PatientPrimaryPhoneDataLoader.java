@@ -3,6 +3,7 @@ package gov.cdc.usds.simplereport.service.dataloader;
 import gov.cdc.usds.simplereport.db.model.Person;
 import gov.cdc.usds.simplereport.db.model.PhoneNumber;
 import gov.cdc.usds.simplereport.db.repository.PhoneNumberRepository;
+import java.util.HashMap;
 import java.util.Map;
 import java.util.UUID;
 import java.util.concurrent.CompletableFuture;
@@ -18,6 +19,8 @@ public class PatientPrimaryPhoneDataLoader extends KeyedDataLoaderFactory<Person
     return KEY;
   }
 
+  private static final int limit = 5000;
+
   PatientPrimaryPhoneDataLoader(PhoneNumberRepository phoneNumberRepository) {
     super(
         patients ->
@@ -29,12 +32,20 @@ public class PatientPrimaryPhoneDataLoader extends KeyedDataLoaderFactory<Person
                           .map(PhoneNumber::getInternalId)
                           .collect(Collectors.toList());
 
-                  Map<UUID, PhoneNumber> found =
-                      phoneNumberRepository.findAllByInternalIdIn(phoneIds).stream()
-                          .collect(Collectors.toMap(PhoneNumber::getInternalId, s -> s));
+                  var res = new HashMap<UUID, PhoneNumber>();
+                  var processed = 0;
+                  while (processed < phoneIds.size()) {
+                    var window = Math.min(limit, phoneIds.size() - processed);
+                    processed += window;
+                    var subList = phoneIds.subList(res.size(), res.size() + window);
+                    Map<UUID, PhoneNumber> found =
+                        phoneNumberRepository.findAllByInternalIdIn(subList).stream()
+                            .collect(Collectors.toMap(PhoneNumber::getInternalId, s -> s));
+                    res.putAll(found);
+                  }
 
                   return patients.stream()
-                      .map(p -> found.getOrDefault(p.getPrimaryPhone().getInternalId(), null))
+                      .map(p -> res.getOrDefault(p.getPrimaryPhone().getInternalId(), null))
                       .collect(Collectors.toList());
                 }));
   }
