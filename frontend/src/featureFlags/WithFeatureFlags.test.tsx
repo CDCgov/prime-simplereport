@@ -10,11 +10,6 @@ describe("WithFeatureFlags Component", () => {
     return <p data-testid="inner-component">{JSON.stringify(flags)}</p>;
   };
 
-  beforeAll(() => {
-    global.Storage.prototype.setItem = jest.fn();
-    global.Storage.prototype.getItem = jest.fn();
-  });
-
   beforeEach(() => {
     jest
       .spyOn(FeatureFlagsApiService, "featureFlags")
@@ -39,32 +34,5 @@ describe("WithFeatureFlags Component", () => {
     );
     await screen.findByText(/flag1/i);
     expect(FeatureFlagsApiService.featureFlags).toHaveBeenCalled();
-  });
-
-  it("checks that localStorage is being called during loading and after getting response from endpoint", async () => {
-    render(
-      <WithFeatureFlags>
-        <InnerComponent />
-      </WithFeatureFlags>
-    );
-
-    await screen.findByText(/flag1/i);
-    expect(localStorage.setItem).toHaveBeenCalledWith(
-      "sr-app-features",
-      '{"flag1":true}'
-    );
-    expect(localStorage.getItem).toHaveBeenCalledWith("sr-app-features");
-  });
-
-  it("checks that component tries to load features from localStorage on first load", async () => {
-    global.Storage.prototype.getItem = jest
-      .fn()
-      .mockReturnValueOnce(JSON.stringify({ oldFlag: true }));
-    render(
-      <WithFeatureFlags>
-        <InnerComponent />
-      </WithFeatureFlags>
-    );
-    await screen.findByText(/oldFlag/i);
   });
 });
