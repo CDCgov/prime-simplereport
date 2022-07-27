@@ -15,15 +15,13 @@ const WithFeatureFlags = ({ children }: WithFeatureFlagsProps): JSX.Element => {
    * Initialization
    */
   useEffect(() => {
-    try {
-      FeatureFlagsApiService.featureFlags().then(
-        (flags: Record<string, boolean>) => {
-          setFeatureFlags(flags);
-        }
-      );
-    } catch (e) {
-      /*app will not break if it fails to load the flags*/
-    }
+    FeatureFlagsApiService.featureFlags()
+      .then((flags: Record<string, boolean>) => {
+        setFeatureFlags(flags);
+      })
+      .catch(() => {
+        /*app will not break if it fails to load the flags*/
+      });
   }, []);
 
   return <FlagsProvider features={featureFlags}>{children}</FlagsProvider>;
