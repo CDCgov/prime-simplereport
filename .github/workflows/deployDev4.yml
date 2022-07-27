@@ -92,7 +92,7 @@ jobs:
   deploy:
     runs-on: ubuntu-latest
     environment:
-      name: Dev
+      name: Dev4
       url: https://${{env.DEPLOY_ENV}}.simplereport.gov
     needs: [build-frontend, prerelease-backend]
     steps:
