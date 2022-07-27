@@ -128,7 +128,7 @@ export const TextInput = ({
             data-format-message={formatMessage}
             {...inputProps}
             {...(validationStatus === "error"
-              ? { "aria-describedby": `error_${id}` }
+              ? { "aria-describedby": `error_${id}`, "aria-invalid": true }
               : null)}
           />
         </div>

@@ -283,17 +283,22 @@ const PersonForm = (props: Props) => {
           earliestErrorName = name;
         }
       });
-      // phone numbers potentially have multiple entries, so we need to handle
-      // those error refocuses differently
-      if (earliestErrorName === "phoneNumbers") {
+      // phone/email fields might have multiple entries, so handle those elements
+      // via their field ID's
+      if (
+        earliestErrorName === "phoneNumbers" ||
+        earliestErrorName === "emails"
+      ) {
+        const elementClassPrefix =
+          earliestErrorName === "phoneNumbers" ? "phoneNumber" : "email";
         const elementsToCheck = Array.from(
-          document.getElementsByClassName("phoneNumberFormElement")
+          document.getElementsByClassName(`${elementClassPrefix}FormElement`)
         ) as HTMLElement[];
         for (let i = 0; i < elementsToCheck.length; i++) {
           const errorContent = elementsToCheck[i].textContent;
           if (errorContent && errorContent.match("Error")) {
-            // the parent div element isn't in the tabindex and therefore isn't focusable,
-            // so grab the closest input child element
+            // the parent div element isn't in the tabindex and
+            // therefore isn't focusable, so grab the closest input child element
             document
               .getElementById(elementsToCheck[i].id)
               ?.getElementsByTagName("input")[0]
