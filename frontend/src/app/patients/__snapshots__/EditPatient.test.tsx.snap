@@ -503,7 +503,8 @@ Object {
                           class="display-flex"
                         >
                           <div
-                            class="usa-form-group flex-fill"
+                            class="usa-form-group flex-fill emailFormElement"
+                            id="email-0"
                           >
                             <label
                               class="usa-label"
@@ -3099,7 +3100,8 @@ Object {
                         class="display-flex"
                       >
                         <div
-                          class="usa-form-group flex-fill"
+                          class="usa-form-group flex-fill emailFormElement"
+                          id="email-0"
                         >
                           <label
                             class="usa-label"
