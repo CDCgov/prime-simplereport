@@ -10,7 +10,8 @@ RELEASE_TAG?=$(subst refs/tags/,,$(GITHUB_REF))
 CURL_TIMEOUT?=20
 
 # Internal DRYing (also overrideable if you are sufficiently desperate)
-API_NAME=simple-report-api-$*
+ENVLEVEL=$*
+API_NAME=simple-report-api-${ENVLEVEL}
 INFO_ENDPOINT=https://$(API_NAME).azurewebsites.net/actuator/info
 SLOT_INFO_ENDPOINT=https://$(API_NAME)-$(SOURCE_SLOT).azurewebsites.net/actuator/info
 CURL:=curl --silent --fail --max-time $(CURL_TIMEOUT)
@@ -55,7 +56,7 @@ deploy-%: .valid-env-% api.tfvars
 	terraform -chdir=$* apply -auto-approve -var-file=../api.tfvars -lock-timeout=30m
 
 promote-%: .be-logged-in .valid-env-%
-	az webapp deployment slot swap -g prime-simple-report-${$*//[[:digit:]]/} -n $(API_NAME) --slot $(SOURCE_SLOT) --target-slot $(TARGET_SLOT)
+	az webapp deployment slot swap -g prime-simple-report-${ENVLVL//[[:digit:]]/} -n $(API_NAME) --slot $(SOURCE_SLOT) --target-slot $(TARGET_SLOT)
 
 wait-for-%-slot-commit: .valid-env-%
 	@echo "Starting wait for commit $(DEPLOYED_COMMIT) in $(SOURCE_SLOT) slot of $* at `date`"
