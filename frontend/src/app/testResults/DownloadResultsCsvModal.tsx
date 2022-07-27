@@ -27,6 +27,7 @@ export const DownloadResultsCsvModal = ({
   totalEntries,
   activeFacilityId,
 }: DownloadResultsCsvModalProps) => {
+  const rowsMaxLimit = 20000;
   const [loading, setLoading] = useState(false);
   const [results, setResults] = useState([]);
   const csvLink = useRef<
@@ -34,7 +35,7 @@ export const DownloadResultsCsvModal = ({
   >(null);
   const multiplexEnabled = process.env.REACT_APP_MULTIPLEX_ENABLED === "true";
   // Disable downloads because backend will hang on over 20k results (#3953)
-  const disableDownload = totalEntries > 20000;
+  const disableDownload = totalEntries > rowsMaxLimit;
 
   const filtersPresent =
     filterParams.patientId ||
@@ -66,12 +67,16 @@ export const DownloadResultsCsvModal = ({
       showError("Error downloading results", error.message);
       setLoading(false);
     } else {
-      const results = parseDataForCSV(data.testResults, multiplexEnabled);
-      setResults(results);
+      const csvResults = parseDataForCSV(data.testResults, multiplexEnabled);
+      setResults(csvResults);
       setLoading(false);
       csvLink?.current?.link.click();
       closeModal();
     }
+  };
+
+  const pluralizeRows = (entriesCount: number) => {
+    return entriesCount > 1 ? "s" : "";
   };
 
   return (
@@ -117,16 +122,16 @@ export const DownloadResultsCsvModal = ({
         ) : (
           <>
             <div className="grid-row grid-gap">
-              {filtersPresent ? (
-                <p>Download results with current search filters applied?</p>
-              ) : (
-                <p>Download results without any search filters applied?</p>
-              )}
+              <p>
+                {filtersPresent
+                  ? "Download results with current search filters applied?"
+                  : "Download results without any search filters applied?"}
+              </p>
             </div>
             <div className="grid-row grid-gap">
-              <p id="sr-download-results-csv-text">
+              <p>
                 The CSV file will include {totalEntries} row
-                {totalEntries > 1 ? "s" : ""}.
+                {pluralizeRows(totalEntries)}.
               </p>
             </div>
           </>

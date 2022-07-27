@@ -87,9 +87,7 @@ Object {
             <div
               class="grid-row grid-gap"
             >
-              <p
-                id="sr-download-results-csv-text"
-              >
+              <p>
                 The CSV file will include 
                 15
                  row
@@ -227,9 +225,7 @@ Object {
           <div
             class="grid-row grid-gap"
           >
-            <p
-              id="sr-download-results-csv-text"
-            >
+            <p>
               The CSV file will include 
               15
                row
@@ -423,9 +419,7 @@ Object {
             <div
               class="grid-row grid-gap"
             >
-              <p
-                id="sr-download-results-csv-text"
-              >
+              <p>
                 The CSV file will include 
                 1
                  row
@@ -563,9 +557,7 @@ Object {
           <div
             class="grid-row grid-gap"
           >
-            <p
-              id="sr-download-results-csv-text"
-            >
+            <p>
               The CSV file will include 
               1
                row
