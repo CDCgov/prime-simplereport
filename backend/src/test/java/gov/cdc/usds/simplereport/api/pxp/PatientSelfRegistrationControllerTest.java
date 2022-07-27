@@ -155,7 +155,6 @@ class PatientSelfRegistrationControllerTest extends BaseFullStackTest {
 
   @Test
   void invalidLinkFormatThrows404() throws Exception {
-    // UUIDs are not valid registration links
     String link = "malformed-patient-link";
 
     MockHttpServletRequestBuilder builder =
@@ -165,7 +164,5 @@ class PatientSelfRegistrationControllerTest extends BaseFullStackTest {
         .perform(builder)
         .andExpect(status().isBadRequest())
         .andExpect(header().exists(LoggingConstants.REQUEST_ID_HEADER));
-
-    assertNoAuditEvent();
   }
 }
