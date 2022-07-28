@@ -17,11 +17,14 @@ import gov.cdc.usds.simplereport.db.model.PatientAnswers;
 import gov.cdc.usds.simplereport.db.model.PatientLink;
 import gov.cdc.usds.simplereport.db.model.Person;
 import gov.cdc.usds.simplereport.db.model.Person_;
+import gov.cdc.usds.simplereport.db.model.Result;
+import gov.cdc.usds.simplereport.db.model.SupportedDisease;
 import gov.cdc.usds.simplereport.db.model.TestEvent;
 import gov.cdc.usds.simplereport.db.model.TestEvent_;
 import gov.cdc.usds.simplereport.db.model.TestOrder;
 import gov.cdc.usds.simplereport.db.model.TestOrder_;
 import gov.cdc.usds.simplereport.db.model.auxiliary.AskOnEntrySurvey;
+import gov.cdc.usds.simplereport.db.model.auxiliary.DiseaseResult;
 import gov.cdc.usds.simplereport.db.model.auxiliary.PersonRole;
 import gov.cdc.usds.simplereport.db.model.auxiliary.TestCorrectionStatus;
 import gov.cdc.usds.simplereport.db.model.auxiliary.TestResult;
@@ -29,10 +32,12 @@ import gov.cdc.usds.simplereport.db.model.auxiliary.TestResultDeliveryPreference
 import gov.cdc.usds.simplereport.db.model.auxiliary.TestResultWithCount;
 import gov.cdc.usds.simplereport.db.repository.AdvisoryLockManager;
 import gov.cdc.usds.simplereport.db.repository.PatientAnswersRepository;
+import gov.cdc.usds.simplereport.db.repository.ResultRepository;
 import gov.cdc.usds.simplereport.db.repository.TestEventRepository;
 import gov.cdc.usds.simplereport.db.repository.TestOrderRepository;
 import java.time.LocalDate;
 import java.util.ArrayList;
+import java.util.Comparator;
 import java.util.Date;
 import java.util.List;
 import java.util.Map;
@@ -44,6 +49,7 @@ import javax.persistence.criteria.Join;
 import javax.persistence.criteria.Predicate;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.hibernate.Hibernate;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.jpa.domain.Specification;
 import org.springframework.stereotype.Service;
@@ -68,11 +74,11 @@ public class TestOrderService {
   private final TestEventReportingService _testEventReportingService;
   private final FacilityDeviceTypeService _facilityDeviceTypeService;
   private final TestResultsDeliveryService testResultsDeliveryService;
+  private final DiseaseService _diseaseService;
+  private final ResultRepository _resultRepo;
 
   public static final int DEFAULT_PAGINATION_PAGEOFFSET = 0;
   public static final int DEFAULT_PAGINATION_PAGESIZE = 5000;
-
-  public static final String MISSING_ARG = "Must provide either facility ID or patient ID";
 
   @AuthorizationConfiguration.RequirePermissionStartTestAtFacility
   public List<TestOrder> getQueue(UUID facilityId) {
@@ -94,15 +100,14 @@ public class TestOrderService {
       query.orderBy(cb.desc(root.get(AuditedEntity_.createdAt)));
 
       Predicate p = cb.conjunction();
-      if (facilityId == null && patientId == null) {
-        throw new IllegalGraphqlArgumentException(MISSING_ARG);
-      }
       if (facilityId != null) {
         p =
             cb.and(
                 p,
                 cb.equal(
                     root.get(BaseTestInfo_.facility).get(AuditedEntity_.internalId), facilityId));
+      } else {
+        p = cb.and(p, cb.equal(root.get(BaseTestInfo_.organization), _os.getCurrentOrganization()));
       }
       if (patientId != null) {
         p =
@@ -165,6 +170,23 @@ public class TestOrderService {
   }
 
   @Transactional(readOnly = true)
+  @AuthorizationConfiguration.RequirePermissionViewAllFacilityResults
+  public List<TestEvent> getAllFacilityTestEventsResults(
+      UUID patientId,
+      TestResult result,
+      PersonRole role,
+      Date startDate,
+      Date endDate,
+      int pageOffset,
+      int pageSize) {
+    return _terepo
+        .findAll(
+            buildTestEventSearchFilter(null, patientId, result, role, startDate, endDate),
+            PageRequest.of(pageOffset, pageSize))
+        .toList();
+  }
+
+  @Transactional(readOnly = true)
   public int getTestResultsCount(
       UUID facilityId,
       UUID patientId,
@@ -201,9 +223,12 @@ public class TestOrderService {
 
   @Transactional(readOnly = true)
   public TestOrder getTestOrder(Organization org, UUID id) {
-    return _repo
-        .fetchQueueItemByOrganizationAndId(org, id)
-        .orElseThrow(TestOrderService::noSuchOrderFound);
+    TestOrder order =
+        _repo
+            .fetchQueueItemByOrganizationAndId(org, id)
+            .orElseThrow(TestOrderService::noSuchOrderFound);
+    Hibernate.initialize(order.getResultSet());
+    return order;
   }
 
   @AuthorizationConfiguration.RequirePermissionUpdateTestForTestOrder
@@ -225,7 +250,9 @@ public class TestOrderService {
         }
       }
 
-      order.setResult(result == null ? null : TestResult.valueOf(result));
+      if (result != null) {
+        updateTestOrderCovidResult(order, TestResult.valueOf(result));
+      }
 
       order.setDateTestedBackdate(dateTested);
 
@@ -235,6 +262,34 @@ public class TestOrderService {
     }
   }
 
+  @AuthorizationConfiguration.RequirePermissionUpdateTestForTestOrder
+  public TestOrder editQueueItemMultiplex(
+      UUID testOrderId, UUID deviceSpecimenTypeId, List<DiseaseResult> results, Date dateTested) {
+    lockOrder(testOrderId);
+    try {
+      TestOrder order = this.getTestOrder(testOrderId);
+
+      if (deviceSpecimenTypeId != null) {
+        DeviceSpecimenType deviceSpecimenType = _dts.getDeviceSpecimenType(deviceSpecimenTypeId);
+
+        if (deviceSpecimenType != null) {
+          order.setDeviceSpecimen(deviceSpecimenType);
+          // Set the most-recently configured device specimen for a facility's
+          // test as facility default
+          order.getFacility().addDefaultDeviceSpecimen(deviceSpecimenType);
+        }
+      }
+      if (!results.isEmpty()) {
+        editResults(order, results);
+      }
+      order.setDateTestedBackdate(dateTested);
+      return _repo.save(order);
+    } finally {
+      unlockOrder(testOrderId);
+    }
+  }
+
+  // Deprecated - remove this method after we've switched to the multiplex endpoints on frontend
   @AuthorizationConfiguration.RequirePermissionSubmitTestForPatient
   @Transactional(noRollbackFor = {TwilioException.class, ApiException.class})
   public AddTestResultResponse addTestResult(
@@ -248,9 +303,11 @@ public class TestOrderService {
 
     lockOrder(order.getInternalId());
 
+    TestOrder savedOrder = null;
+
     try {
       order.setDeviceSpecimen(deviceSpecimen);
-      order.setResult(result);
+      Result resultEntity = updateTestOrderCovidResult(order, result);
       order.setDateTestedBackdate(dateTested);
       order.markComplete();
 
@@ -261,34 +318,129 @@ public class TestOrderService {
               ? new TestEvent(order, hasPriorTests)
               : new TestEvent(order, order.getCorrectionStatus(), order.getReasonForCorrection());
 
-      _terepo.save(testEvent);
-
-      order.setTestEventRef(testEvent);
-      TestOrder savedOrder = _repo.save(order);
-
-      _testEventReportingService.report(testEvent);
-      ArrayList<Boolean> deliveryStatuses = new ArrayList<>();
-
-      PatientLink patientLink = _pls.createPatientLink(savedOrder.getInternalId());
-      if (patientHasDeliveryPreference(savedOrder)) {
-
-        if (smsDeliveryPreference(savedOrder) || smsAndEmailDeliveryPreference(savedOrder)) {
-          boolean smsDeliveryStatus = testResultsDeliveryService.smsTestResults(patientLink);
-          deliveryStatuses.add(smsDeliveryStatus);
-        }
-
-        if (emailDeliveryPreference(savedOrder) || smsAndEmailDeliveryPreference(savedOrder)) {
-          boolean emailDeliveryStatus = testResultsDeliveryService.emailTestResults(patientLink);
-          deliveryStatuses.add(emailDeliveryStatus);
-        }
-      }
-
-      boolean deliveryStatus =
-          deliveryStatuses.isEmpty() || deliveryStatuses.stream().anyMatch(status -> status);
-      return new AddTestResultResponse(savedOrder, deliveryStatus);
+      TestEvent savedEvent = _terepo.save(testEvent);
+      resultEntity.setTestEvent(savedEvent);
+      _resultRepo.save(resultEntity);
+      order.setTestEventRef(savedEvent);
+      savedOrder = _repo.save(order);
+      _testEventReportingService.report(savedEvent);
     } finally {
       unlockOrder(order.getInternalId());
     }
+
+    ArrayList<Boolean> deliveryStatuses = new ArrayList<>();
+
+    PatientLink patientLink = _pls.createPatientLink(savedOrder.getInternalId());
+    if (patientHasDeliveryPreference(savedOrder)) {
+
+      if (smsDeliveryPreference(savedOrder) || smsAndEmailDeliveryPreference(savedOrder)) {
+        boolean smsDeliveryStatus = testResultsDeliveryService.smsTestResults(patientLink);
+        deliveryStatuses.add(smsDeliveryStatus);
+      }
+
+      if (emailDeliveryPreference(savedOrder) || smsAndEmailDeliveryPreference(savedOrder)) {
+        boolean emailDeliveryStatus = testResultsDeliveryService.emailTestResults(patientLink);
+        deliveryStatuses.add(emailDeliveryStatus);
+      }
+    }
+
+    boolean deliveryStatus =
+        deliveryStatuses.isEmpty() || deliveryStatuses.stream().anyMatch(status -> status);
+    return new AddTestResultResponse(savedOrder, deliveryStatus);
+  }
+
+  @AuthorizationConfiguration.RequirePermissionSubmitTestForPatient
+  public AddTestResultResponse addTestResultMultiplex(
+      UUID deviceSpecimenTypeId, List<DiseaseResult> results, UUID patientId, Date dateTested) {
+    Organization org = _os.getCurrentOrganization();
+    Person person = _ps.getPatientNoPermissionsCheck(patientId, org);
+    TestOrder order =
+        _repo.fetchQueueItem(org, person).orElseThrow(TestOrderService::noSuchOrderFound);
+
+    DeviceSpecimenType deviceSpecimenType = _dts.getDeviceSpecimenType(deviceSpecimenTypeId);
+
+    lockOrder(order.getInternalId());
+
+    TestOrder savedOrder = null;
+
+    try {
+      order.setDeviceSpecimen(deviceSpecimenType);
+      editResults(order, results);
+      order.setDateTestedBackdate(dateTested);
+      order.markComplete();
+
+      boolean hasPriorTests = _terepo.existsByPatient(person);
+      TestEvent testEvent =
+          order.getCorrectionStatus() == TestCorrectionStatus.ORIGINAL
+              ? new TestEvent(order, hasPriorTests)
+              : new TestEvent(order, order.getCorrectionStatus(), order.getReasonForCorrection());
+
+      TestEvent savedEvent = _terepo.save(testEvent);
+      saveFinalResults(order, testEvent);
+
+      order.setTestEventRef(savedEvent);
+      savedOrder = _repo.save(order);
+      _testEventReportingService.report(savedEvent);
+    } finally {
+      unlockOrder(order.getInternalId());
+    }
+
+    ArrayList<Boolean> deliveryStatuses = new ArrayList<>();
+
+    PatientLink patientLink = _pls.createPatientLink(savedOrder.getInternalId());
+    if (patientHasDeliveryPreference(savedOrder)) {
+
+      if (smsDeliveryPreference(savedOrder) || smsAndEmailDeliveryPreference(savedOrder)) {
+        boolean smsDeliveryStatus = testResultsDeliveryService.smsTestResults(patientLink);
+        deliveryStatuses.add(smsDeliveryStatus);
+      }
+
+      if (emailDeliveryPreference(savedOrder) || smsAndEmailDeliveryPreference(savedOrder)) {
+        boolean emailDeliveryStatus = testResultsDeliveryService.emailTestResults(patientLink);
+        deliveryStatuses.add(emailDeliveryStatus);
+      }
+    }
+
+    boolean deliveryStatus =
+        deliveryStatuses.isEmpty() || deliveryStatuses.stream().anyMatch(status -> status);
+    return new AddTestResultResponse(savedOrder, deliveryStatus);
+  }
+
+  private void editResults(TestOrder order, List<DiseaseResult> newResults) {
+    // For now - we still need to save the covid results to the result column
+    // To be removed in #3664
+    Optional<DiseaseResult> covidResult =
+        newResults.stream().filter(r -> r.getDiseaseName().equals("COVID-19")).findFirst();
+    covidResult.ifPresent(diseaseResult -> order.setResultColumn(diseaseResult.getTestResult()));
+
+    // For new results, check if there's already a pending result for the same test.
+    // If so, update it, if not, create a new one.
+    newResults.forEach(
+        newResult -> {
+          Optional<Result> pendingResult =
+              _resultRepo.getPendingResult(
+                  order, _diseaseService.getDiseaseByName(newResult.getDiseaseName()));
+          if (pendingResult.isPresent()) {
+            pendingResult.get().setResult(newResult.getTestResult());
+            _resultRepo.save(pendingResult.get());
+          } else {
+            Result result =
+                new Result(
+                    order,
+                    _diseaseService.getDiseaseByName(newResult.getDiseaseName()),
+                    newResult.getTestResult());
+            _resultRepo.save(result);
+          }
+        });
+  }
+
+  private void saveFinalResults(TestOrder order, TestEvent event) {
+    // Only edit/save the pending results - don't change all Results to point towards the new
+    // TestEvent.
+    // Doing so would break the corrections/removal flow.
+    Set<Result> results = _resultRepo.getAllPendingResults(order);
+    results.forEach(result -> result.setTestEvent(event));
+    _resultRepo.saveAll(results);
   }
 
   private boolean patientHasDeliveryPreference(TestOrder savedOrder) {
@@ -400,6 +552,20 @@ public class TestOrderService {
     return _repo.fetchQueueItem(org, patient).orElseThrow(TestOrderService::noSuchOrderFound);
   }
 
+  private Result updateTestOrderCovidResult(TestOrder order, TestResult result) {
+    // Remove setResultsColumn as part of #3664
+    order.setResultColumn(result);
+    Optional<Result> pendingResult = _resultRepo.getPendingResult(order, _diseaseService.covid());
+    Result covidResult;
+    if (pendingResult.isPresent()) {
+      covidResult = pendingResult.get();
+      covidResult.setResult(result);
+    } else {
+      covidResult = new Result(order, _diseaseService.covid(), result);
+    }
+    return _resultRepo.save(covidResult);
+  }
+
   @Transactional
   @AuthorizationConfiguration.RequirePermissionUpdateTestForTestEvent
   public TestEvent correctTest(
@@ -420,7 +586,7 @@ public class TestOrderService {
       throw new IllegalGraphqlArgumentException("TestEvent: could not load the parent order");
     }
 
-    // sanity check that two different users can't deleting the same event and
+    // sanity check that two different users can't be deleting the same event and
     // delete it twice.
     if (order.getTestEvent() == null || !testEventId.equals(order.getTestEvent().getInternalId())) {
       throw new IllegalGraphqlArgumentException("TestEvent: already deleted?");
@@ -441,6 +607,25 @@ public class TestOrderService {
     TestEvent newRemoveEvent =
         new TestEvent(event, TestCorrectionStatus.REMOVED, reasonForCorrection);
     _terepo.save(newRemoveEvent);
+
+    // Get the most recent results for each disease
+    Map<SupportedDisease, Optional<Result>> latestResultsPerDisease =
+        order.getResultSet().stream()
+            .collect(
+                Collectors.groupingBy(
+                    Result::getDisease,
+                    Collectors.maxBy(Comparator.comparing(Result::getUpdatedAt))));
+
+    latestResultsPerDisease
+        .values()
+        .forEach(
+            result -> {
+              if (result.isPresent()) {
+                Result copyResult = new Result(result.get(), newRemoveEvent);
+                _resultRepo.save(copyResult);
+              }
+            });
+
     _testEventReportingService.report(newRemoveEvent);
 
     order.setReasonForCorrection(reasonForCorrection);

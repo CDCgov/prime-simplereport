@@ -14,7 +14,7 @@ jobs:
   check-terraform-formatting:
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v2
+      - uses: actions/checkout@v3
       - uses: hashicorp/setup-terraform@v1
         with:
           terraform_version: 1.1.4
@@ -25,11 +25,12 @@ jobs:
     runs-on: ubuntu-latest
     env:
       TERRAFORM_DIRS: |
-          dev dev/persistent test test/persistent demo demo/persistent training training/persistent
+          dev dev/persistent dev2 dev2/persistent dev3 dev3/persistent dev4 dev4/persistent 
+          test test/persistent demo demo/persistent training training/persistent
           stg stg/persistent pentest pentest/persistent prod prod/persistent
           global
     steps:
-      - uses: actions/checkout@v2
+      - uses: actions/checkout@v3
       - uses: hashicorp/setup-terraform@v1
         with:
           terraform_version: 1.1.4
@@ -58,7 +59,7 @@ jobs:
       ARM_TENANT_ID: ${{ secrets.TERRAFORM_ARM_TENANT_ID }}
       OKTA_API_TOKEN: ${{ secrets.OKTA_API_TOKEN }}
     steps:
-      - uses: actions/checkout@v2
+      - uses: actions/checkout@v3
       - uses: azure/login@v1
         with:
           creds: ${{ secrets.AZURE_CREDENTIALS }}

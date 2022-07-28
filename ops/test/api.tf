@@ -50,6 +50,10 @@ module "simple_report_api" {
     EXPERIAN_PID_USERNAME                         = "@Microsoft.KeyVault(SecretUri=${data.azurerm_key_vault_secret.experian_preciseid_username.id})"
     EXPERIAN_PID_PASSWORD                         = "@Microsoft.KeyVault(SecretUri=${data.azurerm_key_vault_secret.experian_preciseid_password.id})"
     RS_QUEUE_CALLBACK_TOKEN                       = "@Microsoft.KeyVault(SecretUri=${data.azurerm_key_vault_secret.report_stream_exception_callback_token.id})"
+    DATAHUB_URL                                   = "@Microsoft.KeyVault(SecretUri=${data.azurerm_key_vault_secret.datahub_url.id})"
+    DATAHUB_API_KEY                               = "@Microsoft.KeyVault(SecretUri=${data.azurerm_key_vault_secret.datahub_api_key.id})"
+    DATAHUB_SIGNING_KEY                           = "@Microsoft.KeyVault(SecretUri=${data.azurerm_key_vault_secret.datahub_signing_key.id})"
+
     # true by default, can be disabled quickly here
     # SPRING_LIQUIBASE_ENABLED                       = "true"
     # this shadows/overrides an identical declaration in application.yaml
@@ -60,5 +64,9 @@ module "simple_report_api" {
 module "report_stream_reporting_functions" {
   source      = "../services/app_functions/report_stream_batched_publisher/infra"
   environment = local.env
+  env_level   = local.env_level
   tenant_id   = data.azurerm_client_config.current.tenant_id
+  depends_on = [
+    azurerm_storage_account.app
+  ]
 }

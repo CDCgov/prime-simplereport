@@ -27,7 +27,7 @@ services:
     env_file:
       - .env
     environment:
-      SPRING_PROFILES_ACTIVE: okta-local,db-dockerized
+      SPRING_PROFILES_ACTIVE: okta-local,db-dockerized,create-sample-data
       SPRING_LIQUIBASE_ENABLED: "true"
       GIT_DISCOVERY_ACROSS_FILESYSTEM: 1
     volumes:

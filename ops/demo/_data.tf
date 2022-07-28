@@ -21,7 +21,8 @@ data "terraform_remote_state" "global" {
 
 # Resource Groups
 data "azurerm_resource_group" "rg" {
-  name = "${local.project}-${local.name}-${local.env}"
+  # Environments are assembled into shared resource groups by environment level.
+  name = "${local.project}-${local.name}-${local.env_level}"
 }
 
 data "azurerm_resource_group" "rg_global" {
@@ -159,5 +160,20 @@ data "azurerm_application_insights" "app_insights" {
 
 data "azurerm_key_vault_secret" "db_password_no_phi" {
   name         = "simple-report-${local.env}-db-password-no-phi"
+  key_vault_id = data.azurerm_key_vault.global.id
+}
+
+data "azurerm_key_vault_secret" "datahub_api_key" {
+  name         = "datahub-api-key-test"
+  key_vault_id = data.azurerm_key_vault.global.id
+}
+
+data "azurerm_key_vault_secret" "datahub_url" {
+  name         = "datahub-url-test"
+  key_vault_id = data.azurerm_key_vault.global.id
+}
+
+data "azurerm_key_vault_secret" "datahub_signing_key" {
+  name         = "datahub-signing-key-test"
   key_vault_id = data.azurerm_key_vault.global.id
 }

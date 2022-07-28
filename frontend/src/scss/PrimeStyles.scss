@@ -302,6 +302,10 @@
   padding: 1rem;
 }
 
+.prime-container-padding-2x {
+  padding: 2rem;
+}
+
 .prime-previous-test-display {
   border-left: units(0.5) solid color("base-lighter");
   padding-left: units(1.5);
@@ -593,6 +597,11 @@ $results-dropdown-spacing: #{units(4)} - #{units(2)} - 22px - #{units(4)}; // he
 
 .prime-secondary-nav {
   margin-top: units(1);
+}
+
+.prime-secondary-nav.results {
+  background-color: color("base-lightest");
+  padding-top: units(2);
 }
 
 .prime-nav.usa-nav__secondary-links {
@@ -921,6 +930,17 @@ $results-dropdown-spacing: #{units(4)} - #{units(2)} - 22px - #{units(4)}; // he
             margin-top: 0;
           }
         }
+        // The way USWDS was interacting with the two column layout
+        // in Chrome was causing checkboxes not to populate for some folks.
+        // Using this as a workaround
+        .usa-checkbox__label {
+          padding-left: 0;
+        }
+
+        .usa-checkbox__label::before {
+          position: relative;
+          float: left;
+        }
       }
 
       > .usa-checkbox {
@@ -1128,4 +1148,15 @@ $results-dropdown-spacing: #{units(4)} - #{units(2)} - 22px - #{units(4)}; // he
   background: #e6e6e6;
   box-shadow: 0 0 0 2px #c9c9c9;
   cursor: not-allowed;
+}
+
+.sr-element__sr-only {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  padding: 0;
+  margin: -1px;
+  overflow: hidden;
+  clip: rect(0, 0, 0, 0);
+  border: 0;
 }

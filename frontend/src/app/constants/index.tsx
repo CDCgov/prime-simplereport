@@ -2,7 +2,6 @@
 import { TFunction } from "i18next";
 import { useTranslation } from "react-i18next";
 
-import { TestResult } from "../testQueue/QueueItem";
 import {
   TestResultDeliveryPreference,
   TestResultDeliveryPreferences,
@@ -133,6 +132,18 @@ const yesNoUnkownValues = (
   return [
     ...yesNoValues(i18n.t),
     { value: "UNKNOWN", label: i18n.t("constants.yesNoUnk.UNKNOWN") },
+  ];
+};
+
+const yesNoNotSureValues = (
+  t: TFunction
+): {
+  value: YesNoNotSure;
+  label: string;
+}[] => {
+  return [
+    ...yesNoValues(i18n.t),
+    { value: "NOT_SURE", label: i18n.t("constants.yesNoNotSure.NOT_SURE") },
   ];
 };
 
@@ -762,5 +773,6 @@ export const useTranslatedConstants = () => {
     PHONE_TYPE_VALUES: phoneTypeValues(t),
     YES_NO_VALUES: yesNoValues(t),
     YES_NO_UNKNOWN_VALUES: yesNoUnkownValues(t),
+    YES_NO_NOT_SURE_VALUES: yesNoNotSureValues(t),
   };
 };

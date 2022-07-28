@@ -37,7 +37,7 @@ const FacilitySelect: React.FC<Props> = (props) => {
 
   return (
     <Select
-      label="Facility"
+      label="Testing facility"
       name={NAME}
       value={props.facilityId === null ? ALL_FACILITIES : props.facilityId}
       onChange={onChange}

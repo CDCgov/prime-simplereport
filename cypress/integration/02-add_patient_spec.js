@@ -7,6 +7,7 @@ describe("Adding a patient", () => {
   before("store patient info", () => {
     cy.task("setPatientName", patient.fullName);
     cy.task("setPatientDOB", patient.dobForPatientLink);
+    cy.task("setPatientPhone", patient.phone);
   });
   it("navigates to the add patient form", () => {
     cy.visit("/");
@@ -49,9 +50,10 @@ describe("Adding a patient", () => {
     cy.get(".modal__container #save-confirmed-address").click();
     cy.get(".usa-card__header").contains("People");
     cy.get(".usa-card__header").contains("Showing");
+    cy.wait(5)
   });
   it("shows the patient in the list", () => {
     cy.get("#search-field-small").type(patient.lastName);
-    cy.get(".sr-patient-edit-link").contains(patient.fullName);
+    cy.get(".prime-container").contains(patient.fullName);
   });
 });

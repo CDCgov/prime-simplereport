@@ -36,6 +36,17 @@ class TestEventExportTest extends BaseRepositoryTest {
   }
 
   @Test
+  void json_property_preferredLang_mapping() {
+    Organization o = _dataFactory.createValidOrg();
+    Facility f = _dataFactory.createValidFacility(o);
+    Person p = _dataFactory.createFullPersonWithPreferredLanguage(o, "will-be-default-value");
+    TestEvent te = _dataFactory.createTestEvent(p, f);
+
+    TestEventExport sut = new TestEventExport(te);
+    assertEquals("will-be-default-value", sut.getPatientPreferredLanguage());
+  }
+
+  @Test
   void json_property_ethnicity_mapping() {
     Organization o = _dataFactory.createValidOrg();
     Facility f = _dataFactory.createValidFacility(o);
@@ -172,7 +183,7 @@ class TestEventExportTest extends BaseRepositoryTest {
     LocalDate localDate = LocalDate.of(2020, 7, 23);
     Date backTestedDate = Date.from(localDate.atStartOfDay(ZoneId.systemDefault()).toInstant());
     TestEvent originalTestEvent =
-        _dataFactory.createTestEvent(person, facility, null, null, backTestedDate);
+        _dataFactory.createTestEvent(person, facility, null, TestResult.NEGATIVE, backTestedDate);
     String originalEventId = originalTestEvent.getInternalId().toString();
     TestEvent testEvent = _dataFactory.createTestEventRemoval(originalTestEvent);
 
@@ -208,7 +219,7 @@ class TestEventExportTest extends BaseRepositoryTest {
     assertEquals("20503", exportedEvent.getPatientZipCode());
     assertEquals("Washington", exportedEvent.getPatientCounty());
     assertEquals("USA", exportedEvent.getPatientCountry());
-    assertEquals("English", exportedEvent.getPatientPreferredLanguage());
+    assertEquals("eng", exportedEvent.getPatientPreferredLanguage());
   }
 
   @Test

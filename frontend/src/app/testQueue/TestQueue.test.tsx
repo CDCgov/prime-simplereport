@@ -10,8 +10,13 @@ import { MemoryRouter } from "react-router-dom";
 import { Provider } from "react-redux";
 import configureStore, { MockStoreEnhanced } from "redux-mock-store";
 
-import TestQueue, { queueQuery } from "./TestQueue";
-import { REMOVE_PATIENT_FROM_QUEUE } from "./QueueItem";
+import {
+  GetFacilityQueueMultiplexDocument,
+  RemovePatientFromQueueDocument,
+} from "../../generated/graphql";
+import { appPermissions } from "../permissions";
+
+import TestQueue from "./TestQueue";
 import { QUERY_PATIENT } from "./addToQueue/AddToQueueSearch";
 
 jest.mock("@microsoft/applicationinsights-react-js", () => {
@@ -38,6 +43,9 @@ describe("TestQueue", () => {
           name: "Fake Facility",
         },
       ],
+      user: {
+        permissions: [],
+      },
     });
   });
 
@@ -87,6 +95,84 @@ describe("TestQueue", () => {
       { timeout: 10000 }
     );
     expect(screen.queryByText("Doe, John A")).not.toBeInTheDocument();
+  });
+
+  it("should render the empty queue message if no tests in the queue", async () => {
+    render(
+      <MemoryRouter>
+        <MockedProvider mocks={mocks}>
+          <Provider
+            store={mockStore({
+              organization: {
+                name: "Organization Name",
+              },
+              facilities: [
+                {
+                  id: "a2",
+                  name: "Other Fake Facility",
+                },
+              ],
+              user: {
+                permissions: appPermissions.featureFlags.SrCsvUploaderPilot,
+              },
+            })}
+          >
+            <TestQueue activeFacilityId="a2" />
+          </Provider>
+        </MockedProvider>
+      </MemoryRouter>
+    );
+
+    expect(
+      await screen.findByText(
+        "There are no tests running. Search for a person to start their test."
+      )
+    ).toBeInTheDocument();
+    expect(
+      screen.getByText("To add results in bulk", { exact: false })
+    ).toHaveTextContent(
+      "To add results in bulk using a CSV file, go to Upload spreadsheet."
+    );
+
+    expect(
+      screen.getByRole("link", { name: "Upload spreadsheet" })
+    ).toHaveAttribute("href", `/results/upload/submit`);
+  });
+
+  it("should render the empty queue message if no tests in the queue (no csv permissions)", async () => {
+    render(
+      <MemoryRouter>
+        <MockedProvider mocks={mocks}>
+          <Provider
+            store={mockStore({
+              organization: {
+                name: "Organization Name",
+              },
+              facilities: [
+                {
+                  id: "a2",
+                  name: "Other Fake Facility",
+                },
+              ],
+              user: {
+                permissions: [],
+              },
+            })}
+          >
+            <TestQueue activeFacilityId="a2" />
+          </Provider>
+        </MockedProvider>
+      </MemoryRouter>
+    );
+
+    expect(
+      await screen.findByText(
+        "There are no tests running. Search for a person to start their test."
+      )
+    ).toBeInTheDocument();
+    expect(
+      screen.queryByText("To add results in bulk", { exact: false })
+    ).not.toBeInTheDocument();
   });
 
   describe("clicking on test questionnaire", () => {
@@ -142,7 +228,7 @@ describe("TestQueue", () => {
 
       const mock = {
         request: {
-          query: queueQuery,
+          query: GetFacilityQueueMultiplexDocument,
           variables: {
             facilityId: "a1",
           },
@@ -189,7 +275,7 @@ describe("TestQueue", () => {
 
       const mock = {
         request: {
-          query: queueQuery,
+          query: GetFacilityQueueMultiplexDocument,
           variables: {
             facilityId: "a1",
           },
@@ -291,7 +377,7 @@ const createPatient = ({
   deviceSpecimenType: {
     internalId,
   },
-  result: "",
+  results: [],
   dateTested: null,
   patientLink: {
     internalId: "7df95d14-c9ca-406e-bed7-85da05d5eea1",
@@ -342,6 +428,20 @@ const result = {
           defaultDeviceSpecimen: internalId,
           __typename: "Facility",
         },
+        {
+          id: "a2",
+          deviceTypes: [
+            {
+              internalId,
+              testLength: 15,
+              model: "lumira",
+              name: "LumiraDX",
+              __typename: "DeviceType",
+            },
+          ],
+          defaultDeviceSpecimen: internalId,
+          __typename: "Facility",
+        },
       ],
       __typename: "Organization",
     },
@@ -353,6 +453,7 @@ const result = {
           model: "lumira",
           name: "LumiraDx",
           testLength: 15,
+          supportedDiseases: [{ internalId: "1", name: "COVID-19" }],
           __typename: "DeviceType",
         },
         specimenType: {
@@ -369,6 +470,7 @@ const result = {
           model: "quidel",
           name: "Quidel Sofia 2",
           testLength: 10,
+          supportedDiseases: [{ internalId: "1", name: "COVID-19" }],
           __typename: "DeviceType",
         },
         specimenType: {
@@ -385,6 +487,7 @@ const result = {
           model: "quidel",
           name: "Quidel Sofia 2",
           testLength: 10,
+          supportedDiseases: [{ internalId: "1", name: "COVID-19" }],
           __typename: "DeviceType",
         },
         specimenType: {
@@ -401,7 +504,7 @@ const result = {
 const mocks = [
   {
     request: {
-      query: queueQuery,
+      query: GetFacilityQueueMultiplexDocument,
       variables: {
         facilityId: "a1",
       },
@@ -420,7 +523,7 @@ const mocks = [
   },
   {
     request: {
-      query: REMOVE_PATIENT_FROM_QUEUE,
+      query: RemovePatientFromQueueDocument,
       variables: {
         patientId: "abc",
       },
@@ -431,7 +534,7 @@ const mocks = [
   },
   {
     request: {
-      query: queueQuery,
+      query: GetFacilityQueueMultiplexDocument,
       variables: {
         facilityId: "a1",
       },
@@ -440,6 +543,20 @@ const mocks = [
       data: {
         ...result.data,
         queue: result.data.queue.slice(1),
+      },
+    },
+  },
+  {
+    request: {
+      query: GetFacilityQueueMultiplexDocument,
+      variables: {
+        facilityId: "a2",
+      },
+    },
+    result: {
+      data: {
+        ...result.data,
+        queue: [],
       },
     },
   },

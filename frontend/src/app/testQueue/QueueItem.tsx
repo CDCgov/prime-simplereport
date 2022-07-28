@@ -1,22 +1,29 @@
 import React, {
-  useState,
-  useEffect,
   useCallback,
+  useEffect,
   useMemo,
   useRef,
+  useState,
 } from "react";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
-import { gql, useMutation } from "@apollo/client";
+import { useMutation } from "@apollo/client";
 import Modal from "react-modal";
 import classnames from "classnames";
-import moment from "moment";
+import moment, { Moment } from "moment";
 import { useSelector } from "react-redux";
 import { useNavigate } from "react-router-dom";
+import { throttle } from "lodash";
 
+import {
+  DiseaseResult,
+  useRemovePatientFromQueueMutation,
+  useEditQueueItemMultiplexMutation,
+  useSubmitTestResultMultiplexMutation,
+} from "../../generated/graphql";
 import Alert from "../commonComponents/Alert";
 import Button from "../commonComponents/Button/Button";
 import Dropdown from "../commonComponents/Dropdown";
-import TestResultInputForm from "../testResults/TestResultInputForm";
+import CovidResultInputForm from "../testResults/CovidResultInputForm";
 import { displayFullName, showNotification } from "../utils";
 import { RootState } from "../store";
 import { getAppInsights } from "../TelemetryService";
@@ -26,6 +33,7 @@ import {
   TestCorrectionReason,
   TestCorrectionReasons,
 } from "../testResults/TestResultCorrectionModal";
+import MultiplexResultInputForm from "../testResults/MultiplexResultInputForm";
 
 import { ALERT_CONTENT, QUEUE_NOTIFICATION_TYPES } from "./constants";
 import AskOnEntryTag, { areAnswersComplete } from "./AskOnEntryTag";
@@ -41,90 +49,15 @@ import { AoEAnswers, TestQueuePerson } from "./AoEForm/AoEForm";
 import { QueueItemSubmitLoader } from "./QueueItemSubmitLoader";
 import { UPDATE_AOE } from "./addToQueue/AddToQueueSearch";
 
-export type TestResult = "POSITIVE" | "NEGATIVE" | "UNDETERMINED" | "UNKNOWN";
-
 const EARLIEST_TEST_DATE = new Date("01/01/2020 12:00:00 AM");
-
-export const REMOVE_PATIENT_FROM_QUEUE = gql`
-  mutation RemovePatientFromQueue($patientId: ID!) {
-    removePatientFromQueue(patientId: $patientId)
-  }
-`;
-
-export const EDIT_QUEUE_ITEM = gql`
-  mutation EditQueueItem(
-    $id: ID!
-    $deviceId: String
-    $deviceSpecimenType: ID
-    $result: String
-    $dateTested: DateTime
-  ) {
-    editQueueItem(
-      id: $id
-      deviceId: $deviceId
-      deviceSpecimenType: $deviceSpecimenType
-      result: $result
-      dateTested: $dateTested
-    ) {
-      result
-      dateTested
-      deviceType {
-        internalId
-        testLength
-      }
-      deviceSpecimenType {
-        internalId
-        deviceType {
-          internalId
-          testLength
-        }
-        specimenType {
-          internalId
-        }
-      }
-    }
-  }
-`;
 
 interface EditQueueItemParams {
   id: string;
   deviceId?: string;
   deviceSpecimenType: string;
-  result?: TestResult;
+  results?: DiseaseResult[];
   dateTested?: string;
 }
-
-interface EditQueueItemResponse {
-  editQueueItem: {
-    result: TestResult;
-    dateTested: string;
-    deviceType: { internalId: string; testLength: number };
-    deviceSpecimenType: DeviceSpecimenType;
-  };
-}
-
-export const SUBMIT_TEST_RESULT = gql`
-  mutation SubmitTestResult(
-    $patientId: ID!
-    $deviceId: String!
-    $deviceSpecimenType: ID
-    $result: String!
-    $dateTested: DateTime
-  ) {
-    addTestResultNew(
-      patientId: $patientId
-      deviceId: $deviceId
-      deviceSpecimenType: $deviceSpecimenType
-      result: $result
-      dateTested: $dateTested
-    ) {
-      testResult {
-        internalId
-      }
-      deliverySuccess
-    }
-  }
-`;
 
 interface AreYouSureProps {
   cancelText: string;
@@ -163,6 +96,23 @@ const AreYouSure: React.FC<AreYouSureProps> = ({
   </Modal>
 );
 
+export const findResultByDiseaseName = (
+  results: DiseaseResult[],
+  name: string
+) =>
+  results.find((r: DiseaseResult) => r.diseaseName === name)?.testResult ??
+  null;
+
+const convertFromMultiplexResponse = (
+  responseResult: SRMultiplexResult[]
+): DiseaseResult[] => {
+  const diseaseResults: DiseaseResult[] = responseResult.map((result) => ({
+    diseaseName: result.disease.name,
+    testResult: result.testResult,
+  }));
+  return diseaseResults;
+};
+
 if (process.env.NODE_ENV !== "test") {
   Modal.setAppElement("#root");
 }
@@ -182,7 +132,7 @@ export interface QueueItemProps {
   selectedDeviceId: string;
   selectedDeviceSpecimenTypeId: string;
   selectedDeviceTestLength: number;
-  selectedTestResult: TestResult;
+  selectedTestResults: SRMultiplexResult[];
   dateTestedProp: string;
   refetchQueue: () => void;
   facilityName: string | undefined;
@@ -195,7 +145,7 @@ interface updateQueueItemProps {
   deviceId?: string;
   deviceSpecimenType: string;
   testLength?: number;
-  result?: TestResult;
+  results?: DiseaseResult[];
   dateTested?: string;
 }
 
@@ -211,7 +161,7 @@ const QueueItem = ({
   selectedDeviceId,
   selectedDeviceSpecimenTypeId,
   selectedDeviceTestLength,
-  selectedTestResult,
+  selectedTestResults,
   refetchQueue,
   facilityName,
   facilityId,
@@ -221,6 +171,9 @@ const QueueItem = ({
 }: QueueItemProps) => {
   const appInsights = getAppInsights();
   const navigate = useNavigate();
+  const multiplexFlag = JSON.parse(
+    process.env.REACT_APP_MULTIPLEX_ENABLED || "false"
+  );
 
   const trackRemovePatientFromQueue = () => {
     if (appInsights) {
@@ -239,13 +192,13 @@ const QueueItem = ({
   };
 
   const [mutationError, updateMutationError] = useState(null);
-  const [removePatientFromQueue] = useMutation(REMOVE_PATIENT_FROM_QUEUE);
-  const [submitTestResult, { loading }] = useMutation(SUBMIT_TEST_RESULT);
+  const [removePatientFromQueue] = useRemovePatientFromQueueMutation();
+  const [
+    submitTestResult,
+    { loading },
+  ] = useSubmitTestResultMultiplexMutation();
   const [updateAoe] = useMutation(UPDATE_AOE);
-  const [editQueueItem] = useMutation<
-    EditQueueItemResponse,
-    EditQueueItemParams
-  >(EDIT_QUEUE_ITEM);
+  const [editQueueItem] = useEditQueueItemMultiplexMutation();
 
   const [saveState, setSaveState] = useState<SaveState>("idle");
 
@@ -260,6 +213,9 @@ const QueueItem = ({
   const [deviceSpecimenTypeId, updateDeviceSpecimenTypeId] = useState(
     selectedDeviceSpecimenTypeId
   );
+  const [supportsMultipleDiseases, updateSupportsMultipleDiseases] = useState(
+    false
+  );
 
   // Populate device+specimen state variables from selected device specimen type
   useEffect(() => {
@@ -270,10 +226,23 @@ const QueueItem = ({
       (dst) => dst.internalId === deviceSpecimenTypeId
     ) as DeviceSpecimenType;
 
+    let supportsMultipleDiseases;
+    if (
+      multiplexFlag &&
+      deviceSpecimenType.deviceType.supportedDiseases.filter(
+        (d: any) => d.name !== "COVID-19"
+      ).length > 0
+    ) {
+      supportsMultipleDiseases = true;
+    } else {
+      supportsMultipleDiseases = false;
+    }
+
     updateDeviceSpecimenTypeId(deviceSpecimenType.internalId);
     updateDeviceId(deviceSpecimenType.deviceType.internalId);
     updateSpecimenId(deviceSpecimenType.specimenType.internalId);
-  }, [deviceSpecimenTypes, deviceSpecimenTypeId]);
+    updateSupportsMultipleDiseases(supportsMultipleDiseases);
+  }, [deviceSpecimenTypes, deviceSpecimenTypeId, multiplexFlag]);
 
   const testCardElement = useRef() as React.MutableRefObject<HTMLDivElement>;
 
@@ -346,10 +315,24 @@ const QueueItem = ({
     return dateTested > EARLIEST_TEST_DATE && dateTested < new Date();
   }
 
-  const [testResultValue, updateTestResultValue] = useState<
-    TestResult | undefined
-  >(selectedTestResult || undefined);
+  /***
+   * Handle caching of results
+   */
 
+  const [cacheTestResults, setCacheTestResults] = useState(
+    convertFromMultiplexResponse(selectedTestResults)
+  );
+  const diseaseResultsRef = useRef<DiseaseResult[]>(cacheTestResults); // persistent reference to use in Effect
+
+  useEffect(() => {
+    // update cache when selectedTestResults prop update
+    setCacheTestResults(convertFromMultiplexResponse(selectedTestResults));
+    diseaseResultsRef.current = convertFromMultiplexResponse(
+      selectedTestResults
+    );
+  }, [selectedTestResults]);
+
+  const covidResult = findResultByDiseaseName(cacheTestResults, "COVID-19");
   const [confirmationType, setConfirmationType] = useState<
     "submitResult" | "removeFromQueue" | "none"
   >("none");
@@ -369,7 +352,7 @@ const QueueItem = ({
       ),
     };
 
-    if (response?.data?.addTestResultNew.deliverySuccess === false) {
+    if (response?.data?.addTestResultMultiplex.deliverySuccess === false) {
       let deliveryFailureAlert = (
         <Alert
           type="error"
@@ -415,12 +398,14 @@ const QueueItem = ({
     }
     setConfirmationType("none");
     try {
+      const results = Object.assign([], cacheTestResults);
+
       const result = await submitTestResult({
         variables: {
           patientId: patient.internalId,
           deviceId: deviceId,
           deviceSpecimenType: deviceSpecimenTypeId,
-          result: testResultValue,
+          results,
           dateTested: shouldUseCurrentDateTime() ? null : dateTested,
         },
       });
@@ -440,7 +425,7 @@ const QueueItem = ({
         variables: {
           id: internalId,
           deviceId: props.deviceId,
-          result: props.result,
+          results: props.results,
           dateTested: props.dateTested,
           deviceSpecimenType: props.deviceSpecimenType,
         },
@@ -448,20 +433,17 @@ const QueueItem = ({
         .then((response) => {
           if (!response.data) throw Error("updateQueueItem null response");
           updateDeviceSpecimenTypeId(
-            response.data.editQueueItem.deviceSpecimenType.internalId
+            response?.data?.editQueueItemMultiplex?.deviceSpecimenType
+              ?.internalId ?? ""
           );
-          updateTestResultValue(
-            response.data.editQueueItem.result || undefined
-          );
-
           updateTimer(
             internalId,
-            response.data.editQueueItem.deviceSpecimenType.deviceType
-              .testLength as number
+            response?.data?.editQueueItemMultiplex?.deviceSpecimenType
+              ?.deviceType.testLength as number
           );
           updateDeviceTestLength(
-            response.data.editQueueItem.deviceSpecimenType.deviceType
-              .testLength as number
+            (response?.data?.editQueueItemMultiplex?.deviceSpecimenType
+              ?.deviceType?.testLength as number) ?? 15
           );
         })
         .catch(updateMutationError);
@@ -507,11 +489,15 @@ const QueueItem = ({
     // Save any date given as input to React state, valid or otherwise. Validation
     // is performed on submit
     updateDateTested(newDateTested);
+    setSelectedDate(date);
   };
 
   const isMounted = useRef(false);
-  const DEBOUNCE_TIME = 500;
+  const DEBOUNCE_TIME = 300;
+
   useEffect(() => {
+    const results = Object.assign([], diseaseResultsRef.current);
+
     let debounceTimer: ReturnType<typeof setTimeout>;
     if (!isMounted.current) {
       isMounted.current = true;
@@ -522,7 +508,7 @@ const QueueItem = ({
           deviceId,
           dateTested,
           deviceSpecimenType: deviceSpecimenTypeId,
-          result: testResultValue,
+          results,
         });
         setSaveState("idle");
       }, DEBOUNCE_TIME);
@@ -535,12 +521,39 @@ const QueueItem = ({
     deviceId,
     deviceSpecimenTypeId,
     dateTested,
-    testResultValue,
     updateQueueItem,
+    diseaseResultsRef,
   ]);
 
-  const onTestResultChange = (result: TestResult | undefined) => {
-    updateTestResultValue(result);
+  const editQueueItemService = (resultsFromForm: DiseaseResult[]) => {
+    editQueueItem({
+      variables: {
+        id: internalId,
+        deviceId: deviceId,
+        results: resultsFromForm,
+        dateTested: dateTested,
+        deviceSpecimenType: deviceSpecimenTypeId,
+      } as EditQueueItemParams,
+    });
+  };
+
+  const throttleEditQueueItemService = useMemo(
+    () => throttle(editQueueItemService, 500),
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+    []
+  );
+
+  useEffect(() => {
+    return () => {
+      throttleEditQueueItemService.cancel();
+    };
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []);
+
+  const onTestResultChange = (resultsFromForm: DiseaseResult[]) => {
+    throttleEditQueueItemService(resultsFromForm);
+    setCacheTestResults(resultsFromForm);
+    diseaseResultsRef.current = Object.assign([], resultsFromForm);
   };
 
   const removeFromQueue = () => {
@@ -550,7 +563,7 @@ const QueueItem = ({
     }
     removePatientFromQueue({
       variables: {
-        patientId: removePatientId,
+        patientId: removePatientId ?? "",
       },
     })
       .then(() => refetchQueue())
@@ -589,18 +602,20 @@ const QueueItem = ({
         patientId: patient.internalId,
       },
     })
-      .then(refetchQueue)
+      .then(() => refetchQueue())
       .catch(updateMutationError);
   };
 
   const onUseCurrentDateChange = () => {
     // if we want to use a custom date
     if (shouldUseCurrentDateTime()) {
+      setSelectedDate(moment());
       updateUseCurrentDateTime("false");
     }
     // if we want to use the current date time
     else {
       updateDateTested(undefined);
+      setBeforeDateWarning(false);
       updateUseCurrentDateTime("true");
     }
   };
@@ -640,11 +655,34 @@ const QueueItem = ({
     </button>
   );
 
+  const isBeforeDateWarningThreshold = (date: Moment) => {
+    return date < moment().subtract(6, "months");
+  };
+
+  const [dateBeforeWarnThreshold, setBeforeDateWarning] = useState(
+    isBeforeDateWarningThreshold(moment(dateTested))
+  );
+
+  const [selectedDate, setSelectedDate] = useState(
+    dateTested ? moment(dateTested) : moment()
+  );
+
   const handleDateChange = (date: string) => {
     if (date) {
       const newDate = moment(date)
         .hour(selectedDate.hours())
         .minute(selectedDate.minutes());
+
+      if (isBeforeDateWarningThreshold(newDate)) {
+        setBeforeDateWarning(true);
+      }
+      // unset warning state
+      else if (
+        !isBeforeDateWarningThreshold(newDate) &&
+        dateBeforeWarnThreshold
+      ) {
+        setBeforeDateWarning(false);
+      }
       onDateTestedChange(newDate);
     }
   };
@@ -657,8 +695,6 @@ const QueueItem = ({
     onDateTestedChange(newDate);
   };
 
-  const selectedDate = dateTested ? moment(dateTested) : moment();
-
   const timer = useTestTimer(internalId, deviceTestLength);
 
   function cardColorDisplay() {
@@ -669,11 +705,14 @@ const QueueItem = ({
     if (saveState === "error") {
       return prefix + "error";
     }
-    if (timer.countdown < 0 && testResultValue === "UNKNOWN") {
+    if (timer.countdown < 0 && covidResult === "UNKNOWN") {
       return prefix + "ready";
     }
     if (startTestPatientId === patient.internalId) {
       return prefix + "info";
+    }
+    if (dateBeforeWarnThreshold) {
+      return prefix + "ready";
     }
     return undefined;
   }
@@ -682,9 +721,9 @@ const QueueItem = ({
     "position-relative",
     "grid-container",
     "prime-container",
-    "prime-queue-item card-container",
+    "prime-queue-item card-container queue-container-wide",
     timer.countdown < 0 &&
-      testResultValue !== "UNKNOWN" &&
+      covidResult !== "UNKNOWN" &&
       "prime-queue-item__completed",
     cardColorDisplay()
   );
@@ -709,6 +748,16 @@ const QueueItem = ({
         <div className="prime-card-container" ref={testCardElement}>
           {saveState !== "saving" && closeButton}
           <div className="grid-row">
+            {dateBeforeWarnThreshold && (
+              <div
+                className={classnames("tablet:grid-col-12", "card-correction")}
+                data-testid="test-correction-header"
+              >
+                <strong>Check test date:</strong> The date you selected is more
+                than six months ago. Please make sure it's correct before
+                submitting.
+              </div>
+            )}
             {isCorrection && reasonForCorrection && (
               <div
                 className={classnames("tablet:grid-col-12", "card-correction")}
@@ -719,7 +768,13 @@ const QueueItem = ({
                   : reasonForCorrection}
               </div>
             )}
-            <div className="tablet:grid-col-9">
+            <div
+              className={
+                supportsMultipleDiseases
+                  ? "tablet:grid-col-fill"
+                  : "tablet:grid-col-9"
+              }
+            >
               <div
                 className="grid-row prime-test-name usa-card__header"
                 id="patient-name-header"
@@ -730,7 +785,7 @@ const QueueItem = ({
                     onClick={() => {
                       navigate({
                         pathname: `/patient/${patient.internalId}`,
-                        search: `?facility=${facilityId}`,
+                        search: `?facility=${facilityId}&fromQueue=true`,
                       });
                     }}
                   >
@@ -748,7 +803,7 @@ const QueueItem = ({
               </div>
               <div className="margin-top-2 margin-left-2 margin-bottom-2">
                 <div className="grid-row">
-                  <div className="grid-col-4 flex-col-container padding-right-2">
+                  <div className="desktop:grid-col-4 flex-col-container padding-right-2">
                     <Button
                       variant="unstyled"
                       label="Test questionnaire"
@@ -768,10 +823,11 @@ const QueueItem = ({
                     </div>
                   </div>
 
-                  <div className="flex-col-container">
+                  <div className="desktop:grid-col-fill flex-col-container">
                     <div
                       className={classnames(
-                        saveState === "error" && "queue-item-error-message"
+                        saveState === "error" && "queue-item-error-message",
+                        dateBeforeWarnThreshold && "card-correction-label"
                       )}
                     >
                       Test date and time
@@ -781,7 +837,8 @@ const QueueItem = ({
                         hidden={useCurrentDateTime !== "false"}
                         className={classnames(
                           "card-test-input",
-                          saveState === "error" && "card-test-input__error"
+                          saveState === "error" && "card-test-input__error",
+                          dateBeforeWarnThreshold && "card-correction-input"
                         )}
                         id="test-date"
                         data-testid="test-date"
@@ -789,7 +846,7 @@ const QueueItem = ({
                         type="date"
                         min={formatDate(new Date("Jan 1, 2020"))}
                         max={formatDate(moment().toDate())}
-                        defaultValue={formatDate(selectedDate.toDate())}
+                        value={formatDate(selectedDate.toDate())}
                         onChange={(event) =>
                           handleDateChange(event.target.value)
                         }
@@ -798,7 +855,8 @@ const QueueItem = ({
                         hidden={useCurrentDateTime !== "false"}
                         className={classnames(
                           "card-test-input",
-                          saveState === "error" && "card-test-input__error"
+                          saveState === "error" && "card-test-input__error",
+                          dateBeforeWarnThreshold && "card-correction-input"
                         )}
                         name={"test-time"}
                         data-testid="test-time"
@@ -879,7 +937,13 @@ const QueueItem = ({
                 </div>
               </div>
             </div>
-            <div className="tablet:grid-col-3 prime-test-result">
+            <div
+              className={`prime-test-result ${
+                supportsMultipleDiseases
+                  ? "tablet:grid-col-5 desktop:grid-col-auto "
+                  : "tablet:grid-col-3"
+              }`}
+            >
               {confirmationType !== "none" && (
                 <AreYouSure
                   cancelText="No, go back"
@@ -923,15 +987,27 @@ const QueueItem = ({
                   )}
                 </AreYouSure>
               )}
-              <TestResultInputForm
-                queueItemId={internalId}
-                testResultValue={testResultValue}
-                isSubmitDisabled={
-                  loading || saveState === "editing" || saveState === "saving"
-                }
-                onSubmit={onTestResultSubmit}
-                onChange={onTestResultChange}
-              />
+              {multiplexFlag && supportsMultipleDiseases ? (
+                <MultiplexResultInputForm
+                  queueItemId={internalId}
+                  testResults={cacheTestResults}
+                  isSubmitDisabled={
+                    loading || saveState === "editing" || saveState === "saving"
+                  }
+                  onSubmit={onTestResultSubmit}
+                  onChange={onTestResultChange}
+                />
+              ) : (
+                <CovidResultInputForm
+                  queueItemId={internalId}
+                  testResults={cacheTestResults}
+                  isSubmitDisabled={
+                    loading || saveState === "editing" || saveState === "saving"
+                  }
+                  onSubmit={onTestResultSubmit}
+                  onChange={onTestResultChange}
+                />
+              )}
             </div>
           </div>
         </div>

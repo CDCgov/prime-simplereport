@@ -1,5 +1,6 @@
 package gov.cdc.usds.simplereport.api.organization;
 
+import gov.cdc.usds.simplereport.api.model.ApiFacility;
 import gov.cdc.usds.simplereport.api.model.ApiOrganization;
 import gov.cdc.usds.simplereport.api.model.ApiPendingOrganization;
 import gov.cdc.usds.simplereport.db.model.Facility;
@@ -12,7 +13,6 @@ import java.util.List;
 import java.util.Optional;
 import java.util.Set;
 import java.util.stream.Collectors;
-import java.util.stream.Stream;
 import org.springframework.stereotype.Component;
 
 /** Resolver for {@link Organization} related queries */
@@ -65,17 +65,22 @@ public class OrganizationResolver implements GraphQLQueryResolver {
    * @return a list of pending organizations
    */
   public List<ApiPendingOrganization> getPendingOrganizations() {
-    List<ApiPendingOrganization> pendingOrgsAlreadyCreated =
-        _organizationService.getOrganizations(false).stream()
-            .map(ApiPendingOrganization::new)
-            .collect(Collectors.toList());
-
-    List<ApiPendingOrganization> pendingOrgsInQueue =
-        _organizationQueueService.getUnverifiedQueuedOrganizations().stream()
-            .map(ApiPendingOrganization::new)
-            .collect(Collectors.toList());
-
-    return Stream.concat(pendingOrgsAlreadyCreated.stream(), pendingOrgsInQueue.stream())
+    return _organizationQueueService.getUnverifiedQueuedOrganizations().stream()
+        .map(ApiPendingOrganization::new)
         .collect(Collectors.toList());
+  }
+
+  /**
+   * Retrieves all facilities for the current org that are accessible to the current user
+   *
+   * @param showArchived whether or not to include archived facilities
+   * @return set of facilities
+   */
+  public Set<ApiFacility> getFacilities(Boolean showArchived) {
+    Set<Facility> facilities = _organizationService.getAccessibleFacilities();
+    if (showArchived) {
+      facilities.addAll(_organizationService.getArchivedFacilities());
+    }
+    return facilities.stream().map(ApiFacility::new).collect(Collectors.toSet());
   }
 }

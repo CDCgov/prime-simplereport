@@ -9,6 +9,7 @@ import * as csvStringify from "csv-stringify/lib/sync";
 import { ENV, uploaderVersion } from "../config";
 import fetch, { Headers } from "node-fetch";
 import {
+  ReportStreamError,
   ReportStreamResponse,
   SimpleReportReportStreamResponse,
 } from "./rs-response";
@@ -153,8 +154,16 @@ export async function deleteSuccessfullyParsedMessages(
         message.messageId,
         message.popReceipt
       );
+
+      if(message.dequeueCount > 1){
+        context.log(
+          `Message has been dequeued ${message.dequeueCount} times, possibly sent more than once to RS`
+        );
+      }
+
+      const testEventId = JSON.parse(message.messageText)['Result_ID'];
       context.log(
-        `Message ${message.messageId} deleted with request id ${deleteResponse.requestId}`
+        `Message ${message.messageId} deleted with request id ${deleteResponse.requestId} and has TestEvent id ${testEventId}`
       );
     } catch (e: any) {
       context.log(
@@ -173,22 +182,24 @@ export async function reportExceptions(
 ) {
   context.log(`ReportStream response errors: ${response.errorCount}`);
   context.log(`ReportStream response warnings: ${response.warningCount}`);
-  const payloads: SimpleReportReportStreamResponse[] = response.warnings
-    .map(({ id, details }) => ({
-      testEventInternalId: id,
-      isError: false,
-      details,
-    }))
-    .concat(
-      response.errors.map(({ id, details }) => ({
-        testEventInternalId: id,
-        isError: true,
-        details,
-      }))
-    );
+  const payloads: SimpleReportReportStreamResponse[] = response.warnings.flatMap(w => responsesFrom(context, w, false))
+      .concat(response.errors.flatMap(e => responsesFrom(context, e, true)));
   return Promise.all(
     payloads.map((p) =>
       queueClient.sendMessage(Buffer.from(JSON.stringify(p)).toString("base64"))
     )
   );
 }
+
+const responsesFrom = function(context: Context, err: ReportStreamError, isError: boolean):SimpleReportReportStreamResponse[] {
+  if (err.trackingIds) {
+    return err.trackingIds.map(id => ({
+      testEventInternalId: id,
+      isError,
+      details: err.message
+    }));
+  } else {
+    context.log(`ReportStream response ${err.scope} ${isError ? "error" : "warning"}: ${err.message}`);
+    return [];
+  }
+};

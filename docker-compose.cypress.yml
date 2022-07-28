@@ -15,10 +15,17 @@ services:
       SPEC_PATH: $SPEC_PATH
       TEST_ENV: $TEST_ENV
     volumes:
+      - ./cypress/fixtures/:/app/cypress/fixtures/
       - ./cypress/integration/:/app/cypress/integration/
+      - ./cypress/node_modules/:/app/cypress/node_modules/
+      - ./cypress/plugins/:/app/cypress/plugins/
       - ./cypress/screenshots/:/app/cypress/screenshots/
+      - ./cypress/stubs/:/app/cypress/stubs/
+      - ./cypress/support/:/app/cypress/support/
       - ./cypress/videos/:/app/cypress/videos/
       - ./cypress/cypress.json:/app/cypress.json
+      - ./cypress/package.json:/app/package.json
+      - ./cypress/yarn.lock:/app/yarn.lock
       - ./cypress/e2e.sh:/app/e2e.sh
       - ./.git/:/app/.git/
     expose:

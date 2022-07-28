@@ -4,20 +4,27 @@ import gov.cdc.usds.simplereport.api.Translators;
 import gov.cdc.usds.simplereport.api.model.OrganizationLevelDashboardMetrics;
 import gov.cdc.usds.simplereport.api.model.TopLevelDashboardMetrics;
 import gov.cdc.usds.simplereport.db.model.TestEvent;
+import gov.cdc.usds.simplereport.db.model.TestResultUpload;
 import gov.cdc.usds.simplereport.service.TestOrderService;
+import gov.cdc.usds.simplereport.service.TestResultUploadService;
+import gov.cdc.usds.simplereport.service.errors.InvalidBulkTestResultUploadException;
+import gov.cdc.usds.simplereport.service.errors.InvalidRSAPrivateKeyException;
+import gov.cdc.usds.simplereport.service.model.reportstream.UploadResponse;
 import graphql.kickstart.tools.GraphQLMutationResolver;
 import graphql.kickstart.tools.GraphQLQueryResolver;
 import java.util.Date;
 import java.util.List;
 import java.util.UUID;
-import org.springframework.beans.factory.annotation.Autowired;
+import lombok.RequiredArgsConstructor;
+import org.springframework.data.domain.Page;
 import org.springframework.stereotype.Component;
 
 @Component
+@RequiredArgsConstructor
 public class TestResultResolver implements GraphQLQueryResolver, GraphQLMutationResolver {
-  public static final String MISSING_ARG = "Must provide either facility ID or patient ID";
 
-  @Autowired private TestOrderService tos;
+  private final TestOrderService tos;
+  private final TestResultUploadService testResultUploadService;
 
   public List<TestEvent> getTestResults(
       UUID facilityId,
@@ -35,6 +42,16 @@ public class TestResultResolver implements GraphQLQueryResolver, GraphQLMutation
       pageSize = TestOrderService.DEFAULT_PAGINATION_PAGESIZE;
     }
 
+    if (facilityId == null) {
+      return tos.getAllFacilityTestEventsResults(
+          patientId,
+          Translators.parseTestResult(result),
+          Translators.parsePersonRole(role, true),
+          startDate,
+          endDate,
+          pageNumber,
+          pageSize);
+    }
     return tos.getTestEventsResults(
         facilityId,
         patientId,
@@ -77,5 +94,15 @@ public class TestResultResolver implements GraphQLQueryResolver, GraphQLMutation
   public TopLevelDashboardMetrics getTopLevelDashboardMetrics(
       UUID facilityId, Date startDate, Date endDate) {
     return tos.getTopLevelDashboardMetrics(facilityId, startDate, endDate);
+  }
+
+  public UploadResponse getUploadSubmission(UUID id)
+      throws InvalidBulkTestResultUploadException, InvalidRSAPrivateKeyException {
+    return testResultUploadService.getUploadSubmission(id);
+  }
+
+  public Page<TestResultUpload> getUploadSubmissions(
+      Date startDate, Date endDate, int pageNumber, int pageSize) {
+    return testResultUploadService.getUploadSubmissions(startDate, endDate, pageNumber, pageSize);
   }
 }

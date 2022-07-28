@@ -49,6 +49,23 @@ class ApiUserManagementTest extends BaseGraphqlTest {
   private static final List<String> USERNAMES =
       List.of("rjj@gmail.com", "rjjones@gmail.com", "jaredholler@msn.com", "janicek90@yahoo.com");
 
+  private static final EnumSet<UserPermission> ADMIN_PERMISSIONS =
+      EnumSet.of(
+          UserPermission.READ_PATIENT_LIST,
+          UserPermission.READ_ARCHIVED_PATIENT_LIST,
+          UserPermission.SEARCH_PATIENTS,
+          UserPermission.READ_RESULT_LIST,
+          UserPermission.EDIT_PATIENT,
+          UserPermission.ARCHIVE_PATIENT,
+          UserPermission.EDIT_FACILITY,
+          UserPermission.EDIT_ORGANIZATION,
+          UserPermission.MANAGE_USERS,
+          UserPermission.START_TEST,
+          UserPermission.UPDATE_TEST,
+          UserPermission.SUBMIT_TEST,
+          UserPermission.ACCESS_ALL_FACILITIES,
+          UserPermission.VIEW_ARCHIVED_FACILITIES);
+
   @SpyBean private OktaRepository _oktaRepo;
 
   @BeforeEach
@@ -145,7 +162,7 @@ class ApiUserManagementTest extends BaseGraphqlTest {
     assertFalse(who.get("isAdmin").asBoolean());
     assertEquals(who.get("role").asText(), Role.ADMIN.name());
     assertEquals(Set.of(Role.ADMIN), extractRolesFromUser(who));
-    assertEquals(EnumSet.allOf(UserPermission.class), extractPermissionsFromUser(who));
+    assertEquals(ADMIN_PERMISSIONS, extractPermissionsFromUser(who));
     assertUserCanAccessAllFacilities(who);
   }
 
@@ -206,7 +223,23 @@ class ApiUserManagementTest extends BaseGraphqlTest {
         user.get("organization").get("externalId").asText());
     assertEquals(user.get("role").asText(), Role.ADMIN.name());
     assertEquals(Set.of(Role.ADMIN), extractRolesFromUser(user));
-    assertEquals(EnumSet.allOf(UserPermission.class), extractPermissionsFromUser(user));
+    assertEquals(
+        EnumSet.of(
+            UserPermission.READ_PATIENT_LIST,
+            UserPermission.READ_ARCHIVED_PATIENT_LIST,
+            UserPermission.SEARCH_PATIENTS,
+            UserPermission.READ_RESULT_LIST,
+            UserPermission.EDIT_PATIENT,
+            UserPermission.ARCHIVE_PATIENT,
+            UserPermission.EDIT_FACILITY,
+            UserPermission.EDIT_ORGANIZATION,
+            UserPermission.MANAGE_USERS,
+            UserPermission.START_TEST,
+            UserPermission.UPDATE_TEST,
+            UserPermission.SUBMIT_TEST,
+            UserPermission.ACCESS_ALL_FACILITIES,
+            UserPermission.VIEW_ARCHIVED_FACILITIES),
+        extractPermissionsFromUser(user));
 
     assertUserCanAccessAllFacilities(user);
 
@@ -304,10 +337,7 @@ class ApiUserManagementTest extends BaseGraphqlTest {
             UserPermission.SEARCH_PATIENTS),
         extractPermissionsFromUser(user));
     assertLastAuditEntry(
-        TestUserIdentities.ORG_ADMIN_USER,
-        operation,
-        EnumSet.allOf(UserPermission.class),
-        List.of());
+        TestUserIdentities.ORG_ADMIN_USER, operation, ADMIN_PERMISSIONS, List.of());
     assertUserCanAccessExactFacilities(user, Set.of());
 
     verify(_oktaRepo)
@@ -470,7 +500,7 @@ class ApiUserManagementTest extends BaseGraphqlTest {
     assertEquals(USERNAMES.get(0), updateUser.get("email").asText());
     assertEquals(updateUser.get("role").asText(), Role.ADMIN.name());
     assertEquals(Set.of(Role.ADMIN), extractRolesFromUser(updateUser));
-    assertEquals(EnumSet.allOf(UserPermission.class), extractPermissionsFromUser(updateUser));
+    assertEquals(ADMIN_PERMISSIONS, extractPermissionsFromUser(updateUser));
 
     assertUserCanAccessAllFacilities(updateUser);
   }
@@ -513,7 +543,7 @@ class ApiUserManagementTest extends BaseGraphqlTest {
     assertEquals("Ronda", updateUser.get("firstName").asText());
     assertEquals(TestUserIdentities.ORG_ADMIN_USER, updateUser.get("email").asText());
     assertEquals(Set.of(Role.ADMIN), extractRolesFromUser(updateUser));
-    assertEquals(EnumSet.allOf(UserPermission.class), extractPermissionsFromUser(updateUser));
+    assertEquals(ADMIN_PERMISSIONS, extractPermissionsFromUser(updateUser));
     assertUserCanAccessAllFacilities(updateUser);
   }
 
@@ -724,7 +754,7 @@ class ApiUserManagementTest extends BaseGraphqlTest {
     assertEquals("Admin user", updateUser.get("roleDescription").asText());
     assertEquals(updateUser.get("role").asText(), Role.ADMIN.name());
     assertEquals(Set.of(Role.ADMIN), extractRolesFromUser(updateUser));
-    assertEquals(EnumSet.allOf(UserPermission.class), extractPermissionsFromUser(updateUser));
+    assertEquals(ADMIN_PERMISSIONS, extractPermissionsFromUser(updateUser));
     assertUserCanAccessAllFacilities(updateUser);
 
     // Update 3: USER, Access to 2 facilities
@@ -1089,15 +1119,13 @@ class ApiUserManagementTest extends BaseGraphqlTest {
                 .get("setCurrentUserTenantDataAccess");
     assertEquals("ruby@example.com", user.get("email").asText());
     assertEquals(Role.ADMIN, Role.valueOf(user.get("role").asText()));
-    Set<UserPermission> allPermissions =
-        Arrays.stream(UserPermission.values()).collect(Collectors.toSet());
-    assertEquals(allPermissions, extractPermissionsFromUser(user));
+    assertEquals(ADMIN_PERMISSIONS, extractPermissionsFromUser(user));
     assertLastAuditEntry("ruby@example.com", null, null);
 
     // run query using tenant data access
     runQuery("current-user-query").get("whoami");
     assertLastAuditEntry(
-        "ruby@example.com", TestUserIdentities.DEFAULT_ORGANIZATION, allPermissions);
+        "ruby@example.com", TestUserIdentities.DEFAULT_ORGANIZATION, ADMIN_PERMISSIONS);
   }
 
   @Test
@@ -1156,14 +1184,12 @@ class ApiUserManagementTest extends BaseGraphqlTest {
                       .get("setCurrentUserTenantDataAccess");
           assertEquals("ruby@example.com", user.get("email").asText());
           assertEquals(Role.ADMIN, Role.valueOf(user.get("role").asText()));
-          Set<UserPermission> allPermissions =
-              Arrays.stream(UserPermission.values()).collect(Collectors.toSet());
-          assertEquals(allPermissions, extractPermissionsFromUser(user));
+          assertEquals(ADMIN_PERMISSIONS, extractPermissionsFromUser(user));
           assertLastAuditEntry("ruby@example.com", null, null);
 
           // run query using tenant data access
           runQuery("current-user-query").get("whoami");
-          assertLastAuditEntry("ruby@example.com", "dc-with-trailing-space ", allPermissions);
+          assertLastAuditEntry("ruby@example.com", "dc-with-trailing-space ", ADMIN_PERMISSIONS);
         });
   }
 

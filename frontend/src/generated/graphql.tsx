@@ -101,6 +101,11 @@ export type DeviceType = {
   testLength?: Maybe<Scalars["Int"]>;
 };
 
+export type DiseaseResult = {
+  diseaseName?: InputMaybe<Scalars["String"]>;
+  testResult?: InputMaybe<Scalars["String"]>;
+};
+
 export type Facility = {
   __typename?: "Facility";
   address?: Maybe<AddressInfo>;
@@ -115,6 +120,7 @@ export type Facility = {
   deviceTypes?: Maybe<Array<Maybe<DeviceType>>>;
   email?: Maybe<Scalars["String"]>;
   id: Scalars["ID"];
+  isDeleted?: Maybe<Scalars["Boolean"]>;
   name: Scalars["String"];
   orderingProvider?: Maybe<Provider>;
   patientSelfRegistrationLink?: Maybe<Scalars["String"]>;
@@ -125,24 +131,40 @@ export type Facility = {
   zipCode?: Maybe<Scalars["String"]>;
 };
 
+export type FeedbackMessage = {
+  __typename?: "FeedbackMessage";
+  indices?: Maybe<Array<Maybe<Scalars["Int"]>>>;
+  message?: Maybe<Scalars["String"]>;
+  scope?: Maybe<Scalars["String"]>;
+};
+
+export type MultiplexResult = {
+  __typename?: "MultiplexResult";
+  disease?: Maybe<SupportedDisease>;
+  testResult?: Maybe<Scalars["String"]>;
+};
+
 export type Mutation = {
   __typename?: "Mutation";
   addFacility?: Maybe<Facility>;
   addFacilityNew?: Maybe<Scalars["String"]>;
   addPatient?: Maybe<Patient>;
   addPatientToQueue?: Maybe<Scalars["String"]>;
+  addTestResultMultiplex?: Maybe<AddTestResultResponse>;
   addTestResultNew?: Maybe<AddTestResultResponse>;
   addUser?: Maybe<User>;
   addUserToCurrentOrg?: Maybe<User>;
   adminUpdateOrganization?: Maybe<Scalars["String"]>;
   correctTestMarkAsCorrection?: Maybe<TestResult>;
   correctTestMarkAsError?: Maybe<TestResult>;
+  createApiUserNoOkta?: Maybe<ApiUser>;
   createDeviceType?: Maybe<DeviceType>;
   createFacilityRegistrationLink?: Maybe<Scalars["String"]>;
   createOrganization?: Maybe<Organization>;
   createOrganizationRegistrationLink?: Maybe<Scalars["String"]>;
   editPendingOrganization?: Maybe<Scalars["String"]>;
   editQueueItem?: Maybe<TestOrder>;
+  editQueueItemMultiplex?: Maybe<TestOrder>;
   markFacilityAsDeleted?: Maybe<Scalars["String"]>;
   markOrganizationAsDeleted?: Maybe<Scalars["String"]>;
   markPendingOrganizationAsDeleted?: Maybe<Scalars["String"]>;
@@ -172,6 +194,7 @@ export type Mutation = {
   updateUserEmail?: Maybe<User>;
   updateUserPrivileges?: Maybe<User>;
   uploadPatients?: Maybe<Scalars["String"]>;
+  uploadTestResultCSV?: Maybe<UploadResult>;
 };
 
 export type MutationAddFacilityArgs = {
@@ -264,6 +287,14 @@ export type MutationAddPatientToQueueArgs = {
   testResultDelivery?: InputMaybe<TestResultDeliveryPreference>;
 };
 
+export type MutationAddTestResultMultiplexArgs = {
+  dateTested?: InputMaybe<Scalars["DateTime"]>;
+  deviceId: Scalars["String"];
+  deviceSpecimenType?: InputMaybe<Scalars["ID"]>;
+  patientId: Scalars["ID"];
+  results: Array<InputMaybe<DiseaseResult>>;
+};
+
 export type MutationAddTestResultNewArgs = {
   dateTested?: InputMaybe<Scalars["DateTime"]>;
   deviceId: Scalars["String"];
@@ -306,6 +337,15 @@ export type MutationCorrectTestMarkAsCorrectionArgs = {
 export type MutationCorrectTestMarkAsErrorArgs = {
   id: Scalars["ID"];
   reason?: InputMaybe<Scalars["String"]>;
+};
+
+export type MutationCreateApiUserNoOktaArgs = {
+  email?: InputMaybe<Scalars["String"]>;
+  firstName?: InputMaybe<Scalars["String"]>;
+  lastName?: InputMaybe<Scalars["String"]>;
+  middleName?: InputMaybe<Scalars["String"]>;
+  name?: InputMaybe<NameInput>;
+  suffix?: InputMaybe<Scalars["String"]>;
 };
 
 export type MutationCreateDeviceTypeArgs = {
@@ -375,6 +415,14 @@ export type MutationEditQueueItemArgs = {
   deviceSpecimenType?: InputMaybe<Scalars["ID"]>;
   id: Scalars["ID"];
   result?: InputMaybe<Scalars["String"]>;
+};
+
+export type MutationEditQueueItemMultiplexArgs = {
+  dateTested?: InputMaybe<Scalars["DateTime"]>;
+  deviceId?: InputMaybe<Scalars["String"]>;
+  deviceSpecimenType?: InputMaybe<Scalars["ID"]>;
+  id: Scalars["ID"];
+  results?: InputMaybe<Array<InputMaybe<DiseaseResult>>>;
 };
 
 export type MutationMarkFacilityAsDeletedArgs = {
@@ -587,6 +635,10 @@ export type MutationUploadPatientsArgs = {
   patientList: Scalars["Upload"];
 };
 
+export type MutationUploadTestResultCsvArgs = {
+  testResultList: Scalars["Upload"];
+};
+
 export type NameInfo = {
   __typename?: "NameInfo";
   firstName?: Maybe<Scalars["String"]>;
@@ -722,6 +774,7 @@ export type Query = {
   /** @deprecated use the pluralized form to reduce confusion */
   deviceType: Array<DeviceType>;
   deviceTypes: Array<DeviceType>;
+  facilities?: Maybe<Array<Maybe<Facility>>>;
   /** @deprecated this information is already loaded from the 'whoami' endpoint */
   organization?: Maybe<Organization>;
   organizationLevelDashboardMetrics?: Maybe<OrganizationLevelDashboardMetrics>;
@@ -740,10 +793,16 @@ export type Query = {
   testResults?: Maybe<Array<Maybe<TestResult>>>;
   testResultsCount?: Maybe<Scalars["Int"]>;
   topLevelDashboardMetrics?: Maybe<TopLevelDashboardMetrics>;
+  uploadSubmission: UploadResponse;
+  uploadSubmissions: UploadSubmissionPage;
   user?: Maybe<User>;
   users?: Maybe<Array<Maybe<ApiUser>>>;
   usersWithStatus?: Maybe<Array<ApiUserWithStatus>>;
   whoami: User;
+};
+
+export type QueryFacilitiesArgs = {
+  showArchived?: InputMaybe<Scalars["Boolean"]>;
 };
 
 export type QueryOrganizationLevelDashboardMetricsArgs = {
@@ -776,6 +835,7 @@ export type QueryPatientExistsWithoutZipArgs = {
 
 export type QueryPatientsArgs = {
   facilityId?: InputMaybe<Scalars["ID"]>;
+  includeArchivedFacilities?: InputMaybe<Scalars["Boolean"]>;
   namePrefixMatch?: InputMaybe<Scalars["String"]>;
   pageNumber?: InputMaybe<Scalars["Int"]>;
   pageSize?: InputMaybe<Scalars["Int"]>;
@@ -822,6 +882,17 @@ export type QueryTopLevelDashboardMetricsArgs = {
   startDate?: InputMaybe<Scalars["DateTime"]>;
 };
 
+export type QueryUploadSubmissionArgs = {
+  id: Scalars["ID"];
+};
+
+export type QueryUploadSubmissionsArgs = {
+  endDate?: InputMaybe<Scalars["DateTime"]>;
+  pageNumber?: InputMaybe<Scalars["Int"]>;
+  pageSize?: InputMaybe<Scalars["Int"]>;
+  startDate?: InputMaybe<Scalars["DateTime"]>;
+};
+
 export type QueryUserArgs = {
   id: Scalars["ID"];
 };
@@ -835,6 +906,7 @@ export enum ResultValue {
 export enum Role {
   Admin = "ADMIN",
   EntryOnly = "ENTRY_ONLY",
+  TestResultUploadUser = "TEST_RESULT_UPLOAD_USER",
   User = "USER",
 }
 
@@ -885,6 +957,7 @@ export type TestOrder = {
   pregnancy?: Maybe<Scalars["String"]>;
   reasonForCorrection?: Maybe<Scalars["String"]>;
   result?: Maybe<Scalars["String"]>;
+  results?: Maybe<Array<Maybe<MultiplexResult>>>;
   symptomOnset?: Maybe<Scalars["LocalDate"]>;
   symptoms?: Maybe<Scalars["String"]>;
 };
@@ -895,6 +968,7 @@ export type TestResult = {
   createdBy?: Maybe<ApiUser>;
   dateAdded?: Maybe<Scalars["String"]>;
   dateTested?: Maybe<Scalars["DateTime"]>;
+  dateUpdated?: Maybe<Scalars["DateTime"]>;
   deviceType?: Maybe<DeviceType>;
   facility?: Maybe<Facility>;
   internalId?: Maybe<Scalars["ID"]>;
@@ -904,6 +978,7 @@ export type TestResult = {
   pregnancy?: Maybe<Scalars["String"]>;
   reasonForCorrection?: Maybe<Scalars["String"]>;
   result?: Maybe<Scalars["String"]>;
+  results?: Maybe<Array<Maybe<MultiplexResult>>>;
   symptomOnset?: Maybe<Scalars["LocalDate"]>;
   symptoms?: Maybe<Scalars["String"]>;
   testPerformed: TestDescription;
@@ -930,6 +1005,40 @@ export type UpdateDeviceType = {
   name: Scalars["String"];
   supportedDiseases: Array<Scalars["ID"]>;
   swabTypes: Array<Scalars["ID"]>;
+  testLength: Scalars["Int"];
+};
+
+export type UploadResponse = {
+  __typename?: "UploadResponse";
+  createdAt: Scalars["DateTime"];
+  errors?: Maybe<Array<Maybe<FeedbackMessage>>>;
+  recordsCount: Scalars["Int"];
+  reportId: Scalars["ID"];
+  status: UploadStatus;
+  warnings?: Maybe<Array<Maybe<FeedbackMessage>>>;
+};
+
+export type UploadResult = {
+  __typename?: "UploadResult";
+  createdAt: Scalars["DateTime"];
+  errors?: Maybe<Array<Maybe<FeedbackMessage>>>;
+  internalId: Scalars["ID"];
+  recordsCount: Scalars["Int"];
+  reportId?: Maybe<Scalars["ID"]>;
+  status: UploadStatus;
+  warnings?: Maybe<Array<Maybe<FeedbackMessage>>>;
+};
+
+export enum UploadStatus {
+  Failure = "FAILURE",
+  Pending = "PENDING",
+  Success = "SUCCESS",
+}
+
+export type UploadSubmissionPage = {
+  __typename?: "UploadSubmissionPage";
+  content: Array<UploadResult>;
+  totalElements: Scalars["Int"];
 };
 
 export type User = {
@@ -962,9 +1071,11 @@ export enum UserPermission {
   ReadPatientList = "READ_PATIENT_LIST",
   ReadResultList = "READ_RESULT_LIST",
   SearchPatients = "SEARCH_PATIENTS",
+  SrCsvUploaderPilot = "SR_CSV_UPLOADER_PILOT",
   StartTest = "START_TEST",
   SubmitTest = "SUBMIT_TEST",
   UpdateTest = "UPDATE_TEST",
+  ViewArchivedFacilities = "VIEW_ARCHIVED_FACILITIES",
 }
 
 export type WhoAmIQueryVariables = Exact<{ [key: string]: never }>;
@@ -1618,6 +1729,7 @@ export type UpdateDeviceTypeMutationVariables = Exact<{
   loincCode: Scalars["String"];
   swabTypes: Array<Scalars["ID"]> | Scalars["ID"];
   supportedDiseases: Array<Scalars["ID"]> | Scalars["ID"];
+  testLength: Scalars["Int"];
 }>;
 
 export type UpdateDeviceTypeMutation = {
@@ -1651,6 +1763,7 @@ export type GetDeviceTypeListQuery = {
     loincCode: string;
     manufacturer: string;
     model: string;
+    testLength?: number | null | undefined;
     swabTypes: Array<{
       __typename?: "SpecimenType";
       internalId: string;
@@ -1765,84 +1878,11 @@ export type SetCurrentUserTenantDataAccessOpMutation = {
     | undefined;
 };
 
-export type RemovePatientFromQueueMutationVariables = Exact<{
-  patientId: Scalars["ID"];
-}>;
-
-export type RemovePatientFromQueueMutation = {
-  __typename?: "Mutation";
-  removePatientFromQueue?: string | null | undefined;
-};
-
-export type EditQueueItemMutationVariables = Exact<{
-  id: Scalars["ID"];
-  deviceId?: InputMaybe<Scalars["String"]>;
-  deviceSpecimenType?: InputMaybe<Scalars["ID"]>;
-  result?: InputMaybe<Scalars["String"]>;
-  dateTested?: InputMaybe<Scalars["DateTime"]>;
-}>;
-
-export type EditQueueItemMutation = {
-  __typename?: "Mutation";
-  editQueueItem?:
-    | {
-        __typename?: "TestOrder";
-        result?: string | null | undefined;
-        dateTested?: any | null | undefined;
-        deviceType?:
-          | {
-              __typename?: "DeviceType";
-              internalId: string;
-              testLength?: number | null | undefined;
-            }
-          | null
-          | undefined;
-        deviceSpecimenType?:
-          | {
-              __typename?: "DeviceSpecimenType";
-              internalId: string;
-              deviceType: {
-                __typename?: "DeviceType";
-                internalId: string;
-                testLength?: number | null | undefined;
-              };
-              specimenType: { __typename?: "SpecimenType"; internalId: string };
-            }
-          | null
-          | undefined;
-      }
-    | null
-    | undefined;
-};
-
-export type SubmitTestResultMutationVariables = Exact<{
-  patientId: Scalars["ID"];
-  deviceId: Scalars["String"];
-  deviceSpecimenType?: InputMaybe<Scalars["ID"]>;
-  result: Scalars["String"];
-  dateTested?: InputMaybe<Scalars["DateTime"]>;
-}>;
-
-export type SubmitTestResultMutation = {
-  __typename?: "Mutation";
-  addTestResultNew?:
-    | {
-        __typename?: "AddTestResultResponse";
-        deliverySuccess?: boolean | null | undefined;
-        testResult: {
-          __typename?: "TestOrder";
-          internalId?: string | null | undefined;
-        };
-      }
-    | null
-    | undefined;
-};
-
-export type GetFacilityQueueQueryVariables = Exact<{
+export type GetFacilityQueueMultiplexQueryVariables = Exact<{
   facilityId: Scalars["ID"];
 }>;
 
-export type GetFacilityQueueQuery = {
+export type GetFacilityQueueMultiplexQuery = {
   __typename?: "Query";
   queue?:
     | Array<
@@ -1904,6 +1944,21 @@ export type GetFacilityQueueQuery = {
                 }
               | null
               | undefined;
+            results?:
+              | Array<
+                  | {
+                      __typename?: "MultiplexResult";
+                      testResult?: string | null | undefined;
+                      disease?:
+                        | { __typename?: "SupportedDisease"; name: string }
+                        | null
+                        | undefined;
+                    }
+                  | null
+                  | undefined
+                >
+              | null
+              | undefined;
           }
         | null
         | undefined
@@ -1945,6 +2000,10 @@ export type GetFacilityQueueQuery = {
               internalId: string;
               name: string;
               testLength?: number | null | undefined;
+              supportedDiseases: Array<{
+                __typename?: "SupportedDisease";
+                name: string;
+              }>;
             };
             specimenType: {
               __typename?: "SpecimenType";
@@ -1975,6 +2034,7 @@ export type GetPatientQuery = {
         birthDate?: any | null | undefined;
         gender?: string | null | undefined;
         telephone?: string | null | undefined;
+        emails?: Array<string | null | undefined> | null | undefined;
         testResultDelivery?: TestResultDeliveryPreference | null | undefined;
         phoneNumbers?:
           | Array<
@@ -1994,8 +2054,9 @@ export type GetPatientQuery = {
 };
 
 export type GetPatientsByFacilityForQueueQueryVariables = Exact<{
-  facilityId: Scalars["ID"];
+  facilityId?: InputMaybe<Scalars["ID"]>;
   namePrefixMatch?: InputMaybe<Scalars["String"]>;
+  includeArchivedFacilities?: InputMaybe<Scalars["Boolean"]>;
 }>;
 
 export type GetPatientsByFacilityForQueueQuery = {
@@ -2064,6 +2125,95 @@ export type UpdateAoeMutationVariables = Exact<{
 export type UpdateAoeMutation = {
   __typename?: "Mutation";
   updateTimeOfTestQuestions?: string | null | undefined;
+};
+
+export type RemovePatientFromQueueMutationVariables = Exact<{
+  patientId: Scalars["ID"];
+}>;
+
+export type RemovePatientFromQueueMutation = {
+  __typename?: "Mutation";
+  removePatientFromQueue?: string | null | undefined;
+};
+
+export type EditQueueItemMultiplexMutationVariables = Exact<{
+  id: Scalars["ID"];
+  deviceId?: InputMaybe<Scalars["String"]>;
+  deviceSpecimenType?: InputMaybe<Scalars["ID"]>;
+  results?: InputMaybe<
+    Array<InputMaybe<DiseaseResult>> | InputMaybe<DiseaseResult>
+  >;
+  dateTested?: InputMaybe<Scalars["DateTime"]>;
+}>;
+
+export type EditQueueItemMultiplexMutation = {
+  __typename?: "Mutation";
+  editQueueItemMultiplex?:
+    | {
+        __typename?: "TestOrder";
+        dateTested?: any | null | undefined;
+        results?:
+          | Array<
+              | {
+                  __typename?: "MultiplexResult";
+                  testResult?: string | null | undefined;
+                  disease?:
+                    | { __typename?: "SupportedDisease"; name: string }
+                    | null
+                    | undefined;
+                }
+              | null
+              | undefined
+            >
+          | null
+          | undefined;
+        deviceType?:
+          | {
+              __typename?: "DeviceType";
+              internalId: string;
+              testLength?: number | null | undefined;
+            }
+          | null
+          | undefined;
+        deviceSpecimenType?:
+          | {
+              __typename?: "DeviceSpecimenType";
+              internalId: string;
+              deviceType: {
+                __typename?: "DeviceType";
+                internalId: string;
+                testLength?: number | null | undefined;
+              };
+              specimenType: { __typename?: "SpecimenType"; internalId: string };
+            }
+          | null
+          | undefined;
+      }
+    | null
+    | undefined;
+};
+
+export type SubmitTestResultMultiplexMutationVariables = Exact<{
+  patientId: Scalars["ID"];
+  deviceId: Scalars["String"];
+  deviceSpecimenType?: InputMaybe<Scalars["ID"]>;
+  results: Array<InputMaybe<DiseaseResult>> | InputMaybe<DiseaseResult>;
+  dateTested?: InputMaybe<Scalars["DateTime"]>;
+}>;
+
+export type SubmitTestResultMultiplexMutation = {
+  __typename?: "Mutation";
+  addTestResultMultiplex?:
+    | {
+        __typename?: "AddTestResultResponse";
+        deliverySuccess?: boolean | null | undefined;
+        testResult: {
+          __typename?: "TestOrder";
+          internalId?: string | null | undefined;
+        };
+      }
+    | null
+    | undefined;
 };
 
 export type GetTestResultForCorrectionQueryVariables = Exact<{
@@ -2138,6 +2288,21 @@ export type GetTestResultDetailsQuery = {
         symptoms?: string | null | undefined;
         symptomOnset?: any | null | undefined;
         pregnancy?: string | null | undefined;
+        results?:
+          | Array<
+              | {
+                  __typename?: "MultiplexResult";
+                  testResult?: string | null | undefined;
+                  disease?:
+                    | { __typename?: "SupportedDisease"; name: string }
+                    | null
+                    | undefined;
+                }
+              | null
+              | undefined
+            >
+          | null
+          | undefined;
         deviceType?:
           | { __typename?: "DeviceType"; name: string }
           | null
@@ -2161,61 +2326,6 @@ export type GetTestResultDetailsQuery = {
                 middleName?: string | null | undefined;
                 lastName: string;
               };
-            }
-          | null
-          | undefined;
-      }
-    | null
-    | undefined;
-};
-
-export type GetTestResultForPrintQueryVariables = Exact<{
-  id: Scalars["ID"];
-}>;
-
-export type GetTestResultForPrintQuery = {
-  __typename?: "Query";
-  testResult?:
-    | {
-        __typename?: "TestResult";
-        dateTested?: any | null | undefined;
-        result?: string | null | undefined;
-        correctionStatus?: string | null | undefined;
-        deviceType?:
-          | { __typename?: "DeviceType"; name: string; model: string }
-          | null
-          | undefined;
-        patient?:
-          | {
-              __typename?: "Patient";
-              firstName?: string | null | undefined;
-              middleName?: string | null | undefined;
-              lastName?: string | null | undefined;
-              birthDate?: any | null | undefined;
-            }
-          | null
-          | undefined;
-        facility?:
-          | {
-              __typename?: "Facility";
-              name: string;
-              cliaNumber?: string | null | undefined;
-              phone?: string | null | undefined;
-              street?: string | null | undefined;
-              streetTwo?: string | null | undefined;
-              city?: string | null | undefined;
-              state?: string | null | undefined;
-              zipCode?: string | null | undefined;
-              orderingProvider?:
-                | {
-                    __typename?: "Provider";
-                    firstName?: string | null | undefined;
-                    middleName?: string | null | undefined;
-                    lastName?: string | null | undefined;
-                    NPI?: string | null | undefined;
-                  }
-                | null
-                | undefined;
             }
           | null
           | undefined;
@@ -2268,92 +2378,6 @@ export type SendSmsMutationVariables = Exact<{
 export type SendSmsMutation = {
   __typename?: "Mutation";
   sendPatientLinkSmsByTestEventId?: boolean | null | undefined;
-};
-
-export type GetResultsCountByFacilityQueryVariables = Exact<{
-  facilityId?: InputMaybe<Scalars["ID"]>;
-  patientId?: InputMaybe<Scalars["ID"]>;
-  result?: InputMaybe<Scalars["String"]>;
-  role?: InputMaybe<Scalars["String"]>;
-  startDate?: InputMaybe<Scalars["DateTime"]>;
-  endDate?: InputMaybe<Scalars["DateTime"]>;
-}>;
-
-export type GetResultsCountByFacilityQuery = {
-  __typename?: "Query";
-  testResultsCount?: number | null | undefined;
-};
-
-export type GetFacilityResultsQueryVariables = Exact<{
-  facilityId?: InputMaybe<Scalars["ID"]>;
-  patientId?: InputMaybe<Scalars["ID"]>;
-  result?: InputMaybe<Scalars["String"]>;
-  role?: InputMaybe<Scalars["String"]>;
-  startDate?: InputMaybe<Scalars["DateTime"]>;
-  endDate?: InputMaybe<Scalars["DateTime"]>;
-  pageNumber?: InputMaybe<Scalars["Int"]>;
-  pageSize?: InputMaybe<Scalars["Int"]>;
-}>;
-
-export type GetFacilityResultsQuery = {
-  __typename?: "Query";
-  testResults?:
-    | Array<
-        | {
-            __typename?: "TestResult";
-            internalId?: string | null | undefined;
-            dateTested?: any | null | undefined;
-            result?: string | null | undefined;
-            correctionStatus?: string | null | undefined;
-            deviceType?:
-              | { __typename?: "DeviceType"; internalId: string; name: string }
-              | null
-              | undefined;
-            patient?:
-              | {
-                  __typename?: "Patient";
-                  internalId?: string | null | undefined;
-                  firstName?: string | null | undefined;
-                  middleName?: string | null | undefined;
-                  lastName?: string | null | undefined;
-                  birthDate?: any | null | undefined;
-                  gender?: string | null | undefined;
-                  lookupId?: string | null | undefined;
-                  email?: string | null | undefined;
-                }
-              | null
-              | undefined;
-            createdBy?:
-              | {
-                  __typename?: "ApiUser";
-                  nameInfo?:
-                    | {
-                        __typename?: "NameInfo";
-                        firstName?: string | null | undefined;
-                        lastName: string;
-                      }
-                    | null
-                    | undefined;
-                }
-              | null
-              | undefined;
-            patientLink?:
-              | {
-                  __typename?: "PatientLink";
-                  internalId?: string | null | undefined;
-                }
-              | null
-              | undefined;
-            facility?:
-              | { __typename?: "Facility"; name: string }
-              | null
-              | undefined;
-          }
-        | null
-        | undefined
-      >
-    | null
-    | undefined;
 };
 
 export type GetTestResultForResendingEmailsQueryVariables = Exact<{
@@ -2409,6 +2433,7 @@ export type GetFacilityResultsForCsvQuery = {
         | {
             __typename?: "TestResult";
             dateTested?: any | null | undefined;
+            dateUpdated?: any | null | undefined;
             result?: string | null | undefined;
             correctionStatus?: string | null | undefined;
             reasonForCorrection?: string | null | undefined;
@@ -2416,7 +2441,26 @@ export type GetFacilityResultsForCsvQuery = {
             noSymptoms?: boolean | null | undefined;
             symptomOnset?: any | null | undefined;
             facility?:
-              | { __typename?: "Facility"; name: string }
+              | {
+                  __typename?: "Facility";
+                  name: string;
+                  isDeleted?: boolean | null | undefined;
+                }
+              | null
+              | undefined;
+            results?:
+              | Array<
+                  | {
+                      __typename?: "MultiplexResult";
+                      testResult?: string | null | undefined;
+                      disease?:
+                        | { __typename?: "SupportedDisease"; name: string }
+                        | null
+                        | undefined;
+                    }
+                  | null
+                  | undefined
+                >
               | null
               | undefined;
             deviceType?:
@@ -2479,6 +2523,325 @@ export type GetFacilityResultsForCsvQuery = {
         | null
         | undefined
       >
+    | null
+    | undefined;
+};
+
+export type GetFacilityResultsMultiplexQueryVariables = Exact<{
+  facilityId?: InputMaybe<Scalars["ID"]>;
+  patientId?: InputMaybe<Scalars["ID"]>;
+  result?: InputMaybe<Scalars["String"]>;
+  role?: InputMaybe<Scalars["String"]>;
+  startDate?: InputMaybe<Scalars["DateTime"]>;
+  endDate?: InputMaybe<Scalars["DateTime"]>;
+  pageNumber?: InputMaybe<Scalars["Int"]>;
+  pageSize?: InputMaybe<Scalars["Int"]>;
+}>;
+
+export type GetFacilityResultsMultiplexQuery = {
+  __typename?: "Query";
+  testResults?:
+    | Array<
+        | {
+            __typename?: "TestResult";
+            internalId?: string | null | undefined;
+            dateTested?: any | null | undefined;
+            result?: string | null | undefined;
+            correctionStatus?: string | null | undefined;
+            results?:
+              | Array<
+                  | {
+                      __typename?: "MultiplexResult";
+                      testResult?: string | null | undefined;
+                      disease?:
+                        | { __typename?: "SupportedDisease"; name: string }
+                        | null
+                        | undefined;
+                    }
+                  | null
+                  | undefined
+                >
+              | null
+              | undefined;
+            deviceType?:
+              | { __typename?: "DeviceType"; internalId: string; name: string }
+              | null
+              | undefined;
+            patient?:
+              | {
+                  __typename?: "Patient";
+                  internalId?: string | null | undefined;
+                  firstName?: string | null | undefined;
+                  middleName?: string | null | undefined;
+                  lastName?: string | null | undefined;
+                  birthDate?: any | null | undefined;
+                  gender?: string | null | undefined;
+                  lookupId?: string | null | undefined;
+                  email?: string | null | undefined;
+                }
+              | null
+              | undefined;
+            createdBy?:
+              | {
+                  __typename?: "ApiUser";
+                  nameInfo?:
+                    | {
+                        __typename?: "NameInfo";
+                        firstName?: string | null | undefined;
+                        lastName: string;
+                      }
+                    | null
+                    | undefined;
+                }
+              | null
+              | undefined;
+            patientLink?:
+              | {
+                  __typename?: "PatientLink";
+                  internalId?: string | null | undefined;
+                }
+              | null
+              | undefined;
+            facility?:
+              | { __typename?: "Facility"; name: string }
+              | null
+              | undefined;
+          }
+        | null
+        | undefined
+      >
+    | null
+    | undefined;
+};
+
+export type GetAllFacilitiesQueryVariables = Exact<{
+  showArchived?: InputMaybe<Scalars["Boolean"]>;
+}>;
+
+export type GetAllFacilitiesQuery = {
+  __typename?: "Query";
+  facilities?:
+    | Array<
+        | {
+            __typename?: "Facility";
+            id: string;
+            name: string;
+            isDeleted?: boolean | null | undefined;
+          }
+        | null
+        | undefined
+      >
+    | null
+    | undefined;
+};
+
+export type GetResultsCountByFacilityQueryVariables = Exact<{
+  facilityId?: InputMaybe<Scalars["ID"]>;
+  patientId?: InputMaybe<Scalars["ID"]>;
+  result?: InputMaybe<Scalars["String"]>;
+  role?: InputMaybe<Scalars["String"]>;
+  startDate?: InputMaybe<Scalars["DateTime"]>;
+  endDate?: InputMaybe<Scalars["DateTime"]>;
+}>;
+
+export type GetResultsCountByFacilityQuery = {
+  __typename?: "Query";
+  testResultsCount?: number | null | undefined;
+};
+
+export type GetTestResultForPrintQueryVariables = Exact<{
+  id: Scalars["ID"];
+}>;
+
+export type GetTestResultForPrintQuery = {
+  __typename?: "Query";
+  testResult?:
+    | {
+        __typename?: "TestResult";
+        dateTested?: any | null | undefined;
+        result?: string | null | undefined;
+        correctionStatus?: string | null | undefined;
+        results?:
+          | Array<
+              | {
+                  __typename?: "MultiplexResult";
+                  testResult?: string | null | undefined;
+                  disease?:
+                    | { __typename?: "SupportedDisease"; name: string }
+                    | null
+                    | undefined;
+                }
+              | null
+              | undefined
+            >
+          | null
+          | undefined;
+        deviceType?:
+          | { __typename?: "DeviceType"; name: string; model: string }
+          | null
+          | undefined;
+        patient?:
+          | {
+              __typename?: "Patient";
+              firstName?: string | null | undefined;
+              middleName?: string | null | undefined;
+              lastName?: string | null | undefined;
+              birthDate?: any | null | undefined;
+            }
+          | null
+          | undefined;
+        facility?:
+          | {
+              __typename?: "Facility";
+              name: string;
+              cliaNumber?: string | null | undefined;
+              phone?: string | null | undefined;
+              street?: string | null | undefined;
+              streetTwo?: string | null | undefined;
+              city?: string | null | undefined;
+              state?: string | null | undefined;
+              zipCode?: string | null | undefined;
+              orderingProvider?:
+                | {
+                    __typename?: "Provider";
+                    firstName?: string | null | undefined;
+                    middleName?: string | null | undefined;
+                    lastName?: string | null | undefined;
+                    NPI?: string | null | undefined;
+                  }
+                | null
+                | undefined;
+            }
+          | null
+          | undefined;
+      }
+    | null
+    | undefined;
+};
+
+export type GetUploadSubmissionQueryVariables = Exact<{
+  id: Scalars["ID"];
+}>;
+
+export type GetUploadSubmissionQuery = {
+  __typename?: "Query";
+  uploadSubmission: {
+    __typename?: "UploadResponse";
+    reportId: string;
+    createdAt: any;
+    status: UploadStatus;
+    recordsCount: number;
+    warnings?:
+      | Array<
+          | {
+              __typename?: "FeedbackMessage";
+              message?: string | null | undefined;
+              scope?: string | null | undefined;
+            }
+          | null
+          | undefined
+        >
+      | null
+      | undefined;
+    errors?:
+      | Array<
+          | {
+              __typename?: "FeedbackMessage";
+              message?: string | null | undefined;
+              scope?: string | null | undefined;
+            }
+          | null
+          | undefined
+        >
+      | null
+      | undefined;
+  };
+};
+
+export type GetUploadSubmissionsQueryVariables = Exact<{
+  startDate?: InputMaybe<Scalars["DateTime"]>;
+  endDate?: InputMaybe<Scalars["DateTime"]>;
+  pageNumber?: InputMaybe<Scalars["Int"]>;
+  pageSize?: InputMaybe<Scalars["Int"]>;
+}>;
+
+export type GetUploadSubmissionsQuery = {
+  __typename?: "Query";
+  uploadSubmissions: {
+    __typename?: "UploadSubmissionPage";
+    totalElements: number;
+    content: Array<{
+      __typename?: "UploadResult";
+      internalId: string;
+      reportId?: string | null | undefined;
+      createdAt: any;
+      status: UploadStatus;
+      recordsCount: number;
+      errors?:
+        | Array<
+            | {
+                __typename?: "FeedbackMessage";
+                message?: string | null | undefined;
+                scope?: string | null | undefined;
+              }
+            | null
+            | undefined
+          >
+        | null
+        | undefined;
+      warnings?:
+        | Array<
+            | {
+                __typename?: "FeedbackMessage";
+                message?: string | null | undefined;
+                scope?: string | null | undefined;
+              }
+            | null
+            | undefined
+          >
+        | null
+        | undefined;
+    }>;
+  };
+};
+
+export type UploadTestResultCsvMutationVariables = Exact<{
+  testResultList: Scalars["Upload"];
+}>;
+
+export type UploadTestResultCsvMutation = {
+  __typename?: "Mutation";
+  uploadTestResultCSV?:
+    | {
+        __typename?: "UploadResult";
+        reportId?: string | null | undefined;
+        status: UploadStatus;
+        recordsCount: number;
+        warnings?:
+          | Array<
+              | {
+                  __typename?: "FeedbackMessage";
+                  scope?: string | null | undefined;
+                  message?: string | null | undefined;
+                }
+              | null
+              | undefined
+            >
+          | null
+          | undefined;
+        errors?:
+          | Array<
+              | {
+                  __typename?: "FeedbackMessage";
+                  scope?: string | null | undefined;
+                  message?: string | null | undefined;
+                }
+              | null
+              | undefined
+            >
+          | null
+          | undefined;
+      }
     | null
     | undefined;
 };
@@ -4634,6 +4997,7 @@ export const UpdateDeviceTypeDocument = gql`
     $loincCode: String!
     $swabTypes: [ID!]!
     $supportedDiseases: [ID!]!
+    $testLength: Int!
   ) {
     updateDeviceType(
       input: {
@@ -4644,6 +5008,7 @@ export const UpdateDeviceTypeDocument = gql`
         loincCode: $loincCode
         swabTypes: $swabTypes
         supportedDiseases: $supportedDiseases
+        testLength: $testLength
       }
     ) {
       internalId
@@ -4675,6 +5040,7 @@ export type UpdateDeviceTypeMutationFn = Apollo.MutationFunction<
  *      loincCode: // value for 'loincCode'
  *      swabTypes: // value for 'swabTypes'
  *      supportedDiseases: // value for 'supportedDiseases'
+ *      testLength: // value for 'testLength'
  *   },
  * });
  */
@@ -4765,6 +5131,7 @@ export const GetDeviceTypeListDocument = gql`
       loincCode
       manufacturer
       model
+      testLength
       swabTypes {
         internalId
         name
@@ -5240,203 +5607,8 @@ export type SetCurrentUserTenantDataAccessOpMutationOptions = Apollo.BaseMutatio
   SetCurrentUserTenantDataAccessOpMutation,
   SetCurrentUserTenantDataAccessOpMutationVariables
 >;
-export const RemovePatientFromQueueDocument = gql`
-  mutation RemovePatientFromQueue($patientId: ID!) {
-    removePatientFromQueue(patientId: $patientId)
-  }
-`;
-export type RemovePatientFromQueueMutationFn = Apollo.MutationFunction<
-  RemovePatientFromQueueMutation,
-  RemovePatientFromQueueMutationVariables
->;
-
-/**
- * __useRemovePatientFromQueueMutation__
- *
- * To run a mutation, you first call `useRemovePatientFromQueueMutation` within a React component and pass it any options that fit your needs.
- * When your component renders, `useRemovePatientFromQueueMutation` returns a tuple that includes:
- * - A mutate function that you can call at any time to execute the mutation
- * - An object with fields that represent the current status of the mutation's execution
- *
- * @param baseOptions options that will be passed into the mutation, supported options are listed on: https://www.apollographql.com/docs/react/api/react-hooks/#options-2;
- *
- * @example
- * const [removePatientFromQueueMutation, { data, loading, error }] = useRemovePatientFromQueueMutation({
- *   variables: {
- *      patientId: // value for 'patientId'
- *   },
- * });
- */
-export function useRemovePatientFromQueueMutation(
-  baseOptions?: Apollo.MutationHookOptions<
-    RemovePatientFromQueueMutation,
-    RemovePatientFromQueueMutationVariables
-  >
-) {
-  const options = { ...defaultOptions, ...baseOptions };
-  return Apollo.useMutation<
-    RemovePatientFromQueueMutation,
-    RemovePatientFromQueueMutationVariables
-  >(RemovePatientFromQueueDocument, options);
-}
-export type RemovePatientFromQueueMutationHookResult = ReturnType<
-  typeof useRemovePatientFromQueueMutation
->;
-export type RemovePatientFromQueueMutationResult = Apollo.MutationResult<RemovePatientFromQueueMutation>;
-export type RemovePatientFromQueueMutationOptions = Apollo.BaseMutationOptions<
-  RemovePatientFromQueueMutation,
-  RemovePatientFromQueueMutationVariables
->;
-export const EditQueueItemDocument = gql`
-  mutation EditQueueItem(
-    $id: ID!
-    $deviceId: String
-    $deviceSpecimenType: ID
-    $result: String
-    $dateTested: DateTime
-  ) {
-    editQueueItem(
-      id: $id
-      deviceId: $deviceId
-      deviceSpecimenType: $deviceSpecimenType
-      result: $result
-      dateTested: $dateTested
-    ) {
-      result
-      dateTested
-      deviceType {
-        internalId
-        testLength
-      }
-      deviceSpecimenType {
-        internalId
-        deviceType {
-          internalId
-          testLength
-        }
-        specimenType {
-          internalId
-        }
-      }
-    }
-  }
-`;
-export type EditQueueItemMutationFn = Apollo.MutationFunction<
-  EditQueueItemMutation,
-  EditQueueItemMutationVariables
->;
-
-/**
- * __useEditQueueItemMutation__
- *
- * To run a mutation, you first call `useEditQueueItemMutation` within a React component and pass it any options that fit your needs.
- * When your component renders, `useEditQueueItemMutation` returns a tuple that includes:
- * - A mutate function that you can call at any time to execute the mutation
- * - An object with fields that represent the current status of the mutation's execution
- *
- * @param baseOptions options that will be passed into the mutation, supported options are listed on: https://www.apollographql.com/docs/react/api/react-hooks/#options-2;
- *
- * @example
- * const [editQueueItemMutation, { data, loading, error }] = useEditQueueItemMutation({
- *   variables: {
- *      id: // value for 'id'
- *      deviceId: // value for 'deviceId'
- *      deviceSpecimenType: // value for 'deviceSpecimenType'
- *      result: // value for 'result'
- *      dateTested: // value for 'dateTested'
- *   },
- * });
- */
-export function useEditQueueItemMutation(
-  baseOptions?: Apollo.MutationHookOptions<
-    EditQueueItemMutation,
-    EditQueueItemMutationVariables
-  >
-) {
-  const options = { ...defaultOptions, ...baseOptions };
-  return Apollo.useMutation<
-    EditQueueItemMutation,
-    EditQueueItemMutationVariables
-  >(EditQueueItemDocument, options);
-}
-export type EditQueueItemMutationHookResult = ReturnType<
-  typeof useEditQueueItemMutation
->;
-export type EditQueueItemMutationResult = Apollo.MutationResult<EditQueueItemMutation>;
-export type EditQueueItemMutationOptions = Apollo.BaseMutationOptions<
-  EditQueueItemMutation,
-  EditQueueItemMutationVariables
->;
-export const SubmitTestResultDocument = gql`
-  mutation SubmitTestResult(
-    $patientId: ID!
-    $deviceId: String!
-    $deviceSpecimenType: ID
-    $result: String!
-    $dateTested: DateTime
-  ) {
-    addTestResultNew(
-      patientId: $patientId
-      deviceId: $deviceId
-      deviceSpecimenType: $deviceSpecimenType
-      result: $result
-      dateTested: $dateTested
-    ) {
-      testResult {
-        internalId
-      }
-      deliverySuccess
-    }
-  }
-`;
-export type SubmitTestResultMutationFn = Apollo.MutationFunction<
-  SubmitTestResultMutation,
-  SubmitTestResultMutationVariables
->;
-
-/**
- * __useSubmitTestResultMutation__
- *
- * To run a mutation, you first call `useSubmitTestResultMutation` within a React component and pass it any options that fit your needs.
- * When your component renders, `useSubmitTestResultMutation` returns a tuple that includes:
- * - A mutate function that you can call at any time to execute the mutation
- * - An object with fields that represent the current status of the mutation's execution
- *
- * @param baseOptions options that will be passed into the mutation, supported options are listed on: https://www.apollographql.com/docs/react/api/react-hooks/#options-2;
- *
- * @example
- * const [submitTestResultMutation, { data, loading, error }] = useSubmitTestResultMutation({
- *   variables: {
- *      patientId: // value for 'patientId'
- *      deviceId: // value for 'deviceId'
- *      deviceSpecimenType: // value for 'deviceSpecimenType'
- *      result: // value for 'result'
- *      dateTested: // value for 'dateTested'
- *   },
- * });
- */
-export function useSubmitTestResultMutation(
-  baseOptions?: Apollo.MutationHookOptions<
-    SubmitTestResultMutation,
-    SubmitTestResultMutationVariables
-  >
-) {
-  const options = { ...defaultOptions, ...baseOptions };
-  return Apollo.useMutation<
-    SubmitTestResultMutation,
-    SubmitTestResultMutationVariables
-  >(SubmitTestResultDocument, options);
-}
-export type SubmitTestResultMutationHookResult = ReturnType<
-  typeof useSubmitTestResultMutation
->;
-export type SubmitTestResultMutationResult = Apollo.MutationResult<SubmitTestResultMutation>;
-export type SubmitTestResultMutationOptions = Apollo.BaseMutationOptions<
-  SubmitTestResultMutation,
-  SubmitTestResultMutationVariables
->;
-export const GetFacilityQueueDocument = gql`
-  query GetFacilityQueue($facilityId: ID!) {
+export const GetFacilityQueueMultiplexDocument = gql`
+  query GetFacilityQueueMultiplex($facilityId: ID!) {
     queue(facilityId: $facilityId) {
       internalId
       pregnancy
@@ -5471,6 +5643,12 @@ export const GetFacilityQueueDocument = gql`
         }
       }
       result
+      results {
+        disease {
+          name
+        }
+        testResult
+      }
       dateTested
       correctionStatus
       reasonForCorrection
@@ -5493,6 +5671,9 @@ export const GetFacilityQueueDocument = gql`
         internalId
         name
         testLength
+        supportedDiseases {
+          name
+        }
       }
       specimenType {
         internalId
@@ -5503,54 +5684,54 @@ export const GetFacilityQueueDocument = gql`
 `;
 
 /**
- * __useGetFacilityQueueQuery__
+ * __useGetFacilityQueueMultiplexQuery__
  *
- * To run a query within a React component, call `useGetFacilityQueueQuery` and pass it any options that fit your needs.
- * When your component renders, `useGetFacilityQueueQuery` returns an object from Apollo Client that contains loading, error, and data properties
+ * To run a query within a React component, call `useGetFacilityQueueMultiplexQuery` and pass it any options that fit your needs.
+ * When your component renders, `useGetFacilityQueueMultiplexQuery` returns an object from Apollo Client that contains loading, error, and data properties
  * you can use to render your UI.
  *
  * @param baseOptions options that will be passed into the query, supported options are listed on: https://www.apollographql.com/docs/react/api/react-hooks/#options;
  *
  * @example
- * const { data, loading, error } = useGetFacilityQueueQuery({
+ * const { data, loading, error } = useGetFacilityQueueMultiplexQuery({
  *   variables: {
  *      facilityId: // value for 'facilityId'
  *   },
  * });
  */
-export function useGetFacilityQueueQuery(
+export function useGetFacilityQueueMultiplexQuery(
   baseOptions: Apollo.QueryHookOptions<
-    GetFacilityQueueQuery,
-    GetFacilityQueueQueryVariables
+    GetFacilityQueueMultiplexQuery,
+    GetFacilityQueueMultiplexQueryVariables
   >
 ) {
   const options = { ...defaultOptions, ...baseOptions };
-  return Apollo.useQuery<GetFacilityQueueQuery, GetFacilityQueueQueryVariables>(
-    GetFacilityQueueDocument,
-    options
-  );
+  return Apollo.useQuery<
+    GetFacilityQueueMultiplexQuery,
+    GetFacilityQueueMultiplexQueryVariables
+  >(GetFacilityQueueMultiplexDocument, options);
 }
-export function useGetFacilityQueueLazyQuery(
+export function useGetFacilityQueueMultiplexLazyQuery(
   baseOptions?: Apollo.LazyQueryHookOptions<
-    GetFacilityQueueQuery,
-    GetFacilityQueueQueryVariables
+    GetFacilityQueueMultiplexQuery,
+    GetFacilityQueueMultiplexQueryVariables
   >
 ) {
   const options = { ...defaultOptions, ...baseOptions };
   return Apollo.useLazyQuery<
-    GetFacilityQueueQuery,
-    GetFacilityQueueQueryVariables
-  >(GetFacilityQueueDocument, options);
+    GetFacilityQueueMultiplexQuery,
+    GetFacilityQueueMultiplexQueryVariables
+  >(GetFacilityQueueMultiplexDocument, options);
 }
-export type GetFacilityQueueQueryHookResult = ReturnType<
-  typeof useGetFacilityQueueQuery
+export type GetFacilityQueueMultiplexQueryHookResult = ReturnType<
+  typeof useGetFacilityQueueMultiplexQuery
 >;
-export type GetFacilityQueueLazyQueryHookResult = ReturnType<
-  typeof useGetFacilityQueueLazyQuery
+export type GetFacilityQueueMultiplexLazyQueryHookResult = ReturnType<
+  typeof useGetFacilityQueueMultiplexLazyQuery
 >;
-export type GetFacilityQueueQueryResult = Apollo.QueryResult<
-  GetFacilityQueueQuery,
-  GetFacilityQueueQueryVariables
+export type GetFacilityQueueMultiplexQueryResult = Apollo.QueryResult<
+  GetFacilityQueueMultiplexQuery,
+  GetFacilityQueueMultiplexQueryVariables
 >;
 export const GetPatientDocument = gql`
   query GetPatient($internalId: ID!) {
@@ -5566,6 +5747,7 @@ export const GetPatientDocument = gql`
         type
         number
       }
+      emails
       testResultDelivery
     }
   }
@@ -5621,8 +5803,9 @@ export type GetPatientQueryResult = Apollo.QueryResult<
 >;
 export const GetPatientsByFacilityForQueueDocument = gql`
   query GetPatientsByFacilityForQueue(
-    $facilityId: ID!
+    $facilityId: ID
     $namePrefixMatch: String
+    $includeArchivedFacilities: Boolean
   ) {
     patients(
       facilityId: $facilityId
@@ -5630,6 +5813,7 @@ export const GetPatientsByFacilityForQueueDocument = gql`
       pageSize: 100
       showDeleted: false
       namePrefixMatch: $namePrefixMatch
+      includeArchivedFacilities: $includeArchivedFacilities
     ) {
       internalId
       firstName
@@ -5663,11 +5847,12 @@ export const GetPatientsByFacilityForQueueDocument = gql`
  *   variables: {
  *      facilityId: // value for 'facilityId'
  *      namePrefixMatch: // value for 'namePrefixMatch'
+ *      includeArchivedFacilities: // value for 'includeArchivedFacilities'
  *   },
  * });
  */
 export function useGetPatientsByFacilityForQueueQuery(
-  baseOptions: Apollo.QueryHookOptions<
+  baseOptions?: Apollo.QueryHookOptions<
     GetPatientsByFacilityForQueueQuery,
     GetPatientsByFacilityForQueueQueryVariables
   >
@@ -5834,6 +6019,206 @@ export type UpdateAoeMutationResult = Apollo.MutationResult<UpdateAoeMutation>;
 export type UpdateAoeMutationOptions = Apollo.BaseMutationOptions<
   UpdateAoeMutation,
   UpdateAoeMutationVariables
+>;
+export const RemovePatientFromQueueDocument = gql`
+  mutation RemovePatientFromQueue($patientId: ID!) {
+    removePatientFromQueue(patientId: $patientId)
+  }
+`;
+export type RemovePatientFromQueueMutationFn = Apollo.MutationFunction<
+  RemovePatientFromQueueMutation,
+  RemovePatientFromQueueMutationVariables
+>;
+
+/**
+ * __useRemovePatientFromQueueMutation__
+ *
+ * To run a mutation, you first call `useRemovePatientFromQueueMutation` within a React component and pass it any options that fit your needs.
+ * When your component renders, `useRemovePatientFromQueueMutation` returns a tuple that includes:
+ * - A mutate function that you can call at any time to execute the mutation
+ * - An object with fields that represent the current status of the mutation's execution
+ *
+ * @param baseOptions options that will be passed into the mutation, supported options are listed on: https://www.apollographql.com/docs/react/api/react-hooks/#options-2;
+ *
+ * @example
+ * const [removePatientFromQueueMutation, { data, loading, error }] = useRemovePatientFromQueueMutation({
+ *   variables: {
+ *      patientId: // value for 'patientId'
+ *   },
+ * });
+ */
+export function useRemovePatientFromQueueMutation(
+  baseOptions?: Apollo.MutationHookOptions<
+    RemovePatientFromQueueMutation,
+    RemovePatientFromQueueMutationVariables
+  >
+) {
+  const options = { ...defaultOptions, ...baseOptions };
+  return Apollo.useMutation<
+    RemovePatientFromQueueMutation,
+    RemovePatientFromQueueMutationVariables
+  >(RemovePatientFromQueueDocument, options);
+}
+export type RemovePatientFromQueueMutationHookResult = ReturnType<
+  typeof useRemovePatientFromQueueMutation
+>;
+export type RemovePatientFromQueueMutationResult = Apollo.MutationResult<RemovePatientFromQueueMutation>;
+export type RemovePatientFromQueueMutationOptions = Apollo.BaseMutationOptions<
+  RemovePatientFromQueueMutation,
+  RemovePatientFromQueueMutationVariables
+>;
+export const EditQueueItemMultiplexDocument = gql`
+  mutation EditQueueItemMultiplex(
+    $id: ID!
+    $deviceId: String
+    $deviceSpecimenType: ID
+    $results: [DiseaseResult]
+    $dateTested: DateTime
+  ) {
+    editQueueItemMultiplex(
+      id: $id
+      deviceId: $deviceId
+      deviceSpecimenType: $deviceSpecimenType
+      results: $results
+      dateTested: $dateTested
+    ) {
+      results {
+        disease {
+          name
+        }
+        testResult
+      }
+      dateTested
+      deviceType {
+        internalId
+        testLength
+      }
+      deviceSpecimenType {
+        internalId
+        deviceType {
+          internalId
+          testLength
+        }
+        specimenType {
+          internalId
+        }
+      }
+    }
+  }
+`;
+export type EditQueueItemMultiplexMutationFn = Apollo.MutationFunction<
+  EditQueueItemMultiplexMutation,
+  EditQueueItemMultiplexMutationVariables
+>;
+
+/**
+ * __useEditQueueItemMultiplexMutation__
+ *
+ * To run a mutation, you first call `useEditQueueItemMultiplexMutation` within a React component and pass it any options that fit your needs.
+ * When your component renders, `useEditQueueItemMultiplexMutation` returns a tuple that includes:
+ * - A mutate function that you can call at any time to execute the mutation
+ * - An object with fields that represent the current status of the mutation's execution
+ *
+ * @param baseOptions options that will be passed into the mutation, supported options are listed on: https://www.apollographql.com/docs/react/api/react-hooks/#options-2;
+ *
+ * @example
+ * const [editQueueItemMultiplexMutation, { data, loading, error }] = useEditQueueItemMultiplexMutation({
+ *   variables: {
+ *      id: // value for 'id'
+ *      deviceId: // value for 'deviceId'
+ *      deviceSpecimenType: // value for 'deviceSpecimenType'
+ *      results: // value for 'results'
+ *      dateTested: // value for 'dateTested'
+ *   },
+ * });
+ */
+export function useEditQueueItemMultiplexMutation(
+  baseOptions?: Apollo.MutationHookOptions<
+    EditQueueItemMultiplexMutation,
+    EditQueueItemMultiplexMutationVariables
+  >
+) {
+  const options = { ...defaultOptions, ...baseOptions };
+  return Apollo.useMutation<
+    EditQueueItemMultiplexMutation,
+    EditQueueItemMultiplexMutationVariables
+  >(EditQueueItemMultiplexDocument, options);
+}
+export type EditQueueItemMultiplexMutationHookResult = ReturnType<
+  typeof useEditQueueItemMultiplexMutation
+>;
+export type EditQueueItemMultiplexMutationResult = Apollo.MutationResult<EditQueueItemMultiplexMutation>;
+export type EditQueueItemMultiplexMutationOptions = Apollo.BaseMutationOptions<
+  EditQueueItemMultiplexMutation,
+  EditQueueItemMultiplexMutationVariables
+>;
+export const SubmitTestResultMultiplexDocument = gql`
+  mutation SubmitTestResultMultiplex(
+    $patientId: ID!
+    $deviceId: String!
+    $deviceSpecimenType: ID
+    $results: [DiseaseResult]!
+    $dateTested: DateTime
+  ) {
+    addTestResultMultiplex(
+      patientId: $patientId
+      deviceId: $deviceId
+      deviceSpecimenType: $deviceSpecimenType
+      results: $results
+      dateTested: $dateTested
+    ) {
+      testResult {
+        internalId
+      }
+      deliverySuccess
+    }
+  }
+`;
+export type SubmitTestResultMultiplexMutationFn = Apollo.MutationFunction<
+  SubmitTestResultMultiplexMutation,
+  SubmitTestResultMultiplexMutationVariables
+>;
+
+/**
+ * __useSubmitTestResultMultiplexMutation__
+ *
+ * To run a mutation, you first call `useSubmitTestResultMultiplexMutation` within a React component and pass it any options that fit your needs.
+ * When your component renders, `useSubmitTestResultMultiplexMutation` returns a tuple that includes:
+ * - A mutate function that you can call at any time to execute the mutation
+ * - An object with fields that represent the current status of the mutation's execution
+ *
+ * @param baseOptions options that will be passed into the mutation, supported options are listed on: https://www.apollographql.com/docs/react/api/react-hooks/#options-2;
+ *
+ * @example
+ * const [submitTestResultMultiplexMutation, { data, loading, error }] = useSubmitTestResultMultiplexMutation({
+ *   variables: {
+ *      patientId: // value for 'patientId'
+ *      deviceId: // value for 'deviceId'
+ *      deviceSpecimenType: // value for 'deviceSpecimenType'
+ *      results: // value for 'results'
+ *      dateTested: // value for 'dateTested'
+ *   },
+ * });
+ */
+export function useSubmitTestResultMultiplexMutation(
+  baseOptions?: Apollo.MutationHookOptions<
+    SubmitTestResultMultiplexMutation,
+    SubmitTestResultMultiplexMutationVariables
+  >
+) {
+  const options = { ...defaultOptions, ...baseOptions };
+  return Apollo.useMutation<
+    SubmitTestResultMultiplexMutation,
+    SubmitTestResultMultiplexMutationVariables
+  >(SubmitTestResultMultiplexDocument, options);
+}
+export type SubmitTestResultMultiplexMutationHookResult = ReturnType<
+  typeof useSubmitTestResultMultiplexMutation
+>;
+export type SubmitTestResultMultiplexMutationResult = Apollo.MutationResult<SubmitTestResultMultiplexMutation>;
+export type SubmitTestResultMultiplexMutationOptions = Apollo.BaseMutationOptions<
+  SubmitTestResultMultiplexMutation,
+  SubmitTestResultMultiplexMutationVariables
 >;
 export const GetTestResultForCorrectionDocument = gql`
   query getTestResultForCorrection($id: ID!) {
@@ -6009,6 +6394,12 @@ export const GetTestResultDetailsDocument = gql`
     testResult(id: $id) {
       dateTested
       result
+      results {
+        disease {
+          name
+        }
+        testResult
+      }
       correctionStatus
       symptoms
       symptomOnset
@@ -6082,92 +6473,6 @@ export type GetTestResultDetailsLazyQueryHookResult = ReturnType<
 export type GetTestResultDetailsQueryResult = Apollo.QueryResult<
   GetTestResultDetailsQuery,
   GetTestResultDetailsQueryVariables
->;
-export const GetTestResultForPrintDocument = gql`
-  query getTestResultForPrint($id: ID!) {
-    testResult(id: $id) {
-      dateTested
-      result
-      correctionStatus
-      deviceType {
-        name
-        model
-      }
-      patient {
-        firstName
-        middleName
-        lastName
-        birthDate
-      }
-      facility {
-        name
-        cliaNumber
-        phone
-        street
-        streetTwo
-        city
-        state
-        zipCode
-        orderingProvider {
-          firstName
-          middleName
-          lastName
-          NPI
-        }
-      }
-    }
-  }
-`;
-
-/**
- * __useGetTestResultForPrintQuery__
- *
- * To run a query within a React component, call `useGetTestResultForPrintQuery` and pass it any options that fit your needs.
- * When your component renders, `useGetTestResultForPrintQuery` returns an object from Apollo Client that contains loading, error, and data properties
- * you can use to render your UI.
- *
- * @param baseOptions options that will be passed into the query, supported options are listed on: https://www.apollographql.com/docs/react/api/react-hooks/#options;
- *
- * @example
- * const { data, loading, error } = useGetTestResultForPrintQuery({
- *   variables: {
- *      id: // value for 'id'
- *   },
- * });
- */
-export function useGetTestResultForPrintQuery(
-  baseOptions: Apollo.QueryHookOptions<
-    GetTestResultForPrintQuery,
-    GetTestResultForPrintQueryVariables
-  >
-) {
-  const options = { ...defaultOptions, ...baseOptions };
-  return Apollo.useQuery<
-    GetTestResultForPrintQuery,
-    GetTestResultForPrintQueryVariables
-  >(GetTestResultForPrintDocument, options);
-}
-export function useGetTestResultForPrintLazyQuery(
-  baseOptions?: Apollo.LazyQueryHookOptions<
-    GetTestResultForPrintQuery,
-    GetTestResultForPrintQueryVariables
-  >
-) {
-  const options = { ...defaultOptions, ...baseOptions };
-  return Apollo.useLazyQuery<
-    GetTestResultForPrintQuery,
-    GetTestResultForPrintQueryVariables
-  >(GetTestResultForPrintDocument, options);
-}
-export type GetTestResultForPrintQueryHookResult = ReturnType<
-  typeof useGetTestResultForPrintQuery
->;
-export type GetTestResultForPrintLazyQueryHookResult = ReturnType<
-  typeof useGetTestResultForPrintLazyQuery
->;
-export type GetTestResultForPrintQueryResult = Apollo.QueryResult<
-  GetTestResultForPrintQuery,
-  GetTestResultForPrintQueryVariables
 >;
 export const GetTestResultForTextDocument = gql`
   query getTestResultForText($id: ID!) {
@@ -6281,193 +6586,6 @@ export type SendSmsMutationResult = Apollo.MutationResult<SendSmsMutation>;
 export type SendSmsMutationOptions = Apollo.BaseMutationOptions<
   SendSmsMutation,
   SendSmsMutationVariables
->;
-export const GetResultsCountByFacilityDocument = gql`
-  query GetResultsCountByFacility(
-    $facilityId: ID
-    $patientId: ID
-    $result: String
-    $role: String
-    $startDate: DateTime
-    $endDate: DateTime
-  ) {
-    testResultsCount(
-      facilityId: $facilityId
-      patientId: $patientId
-      result: $result
-      role: $role
-      startDate: $startDate
-      endDate: $endDate
-    )
-  }
-`;
-
-/**
- * __useGetResultsCountByFacilityQuery__
- *
- * To run a query within a React component, call `useGetResultsCountByFacilityQuery` and pass it any options that fit your needs.
- * When your component renders, `useGetResultsCountByFacilityQuery` returns an object from Apollo Client that contains loading, error, and data properties
- * you can use to render your UI.
- *
- * @param baseOptions options that will be passed into the query, supported options are listed on: https://www.apollographql.com/docs/react/api/react-hooks/#options;
- *
- * @example
- * const { data, loading, error } = useGetResultsCountByFacilityQuery({
- *   variables: {
- *      facilityId: // value for 'facilityId'
- *      patientId: // value for 'patientId'
- *      result: // value for 'result'
- *      role: // value for 'role'
- *      startDate: // value for 'startDate'
- *      endDate: // value for 'endDate'
- *   },
- * });
- */
-export function useGetResultsCountByFacilityQuery(
-  baseOptions?: Apollo.QueryHookOptions<
-    GetResultsCountByFacilityQuery,
-    GetResultsCountByFacilityQueryVariables
-  >
-) {
-  const options = { ...defaultOptions, ...baseOptions };
-  return Apollo.useQuery<
-    GetResultsCountByFacilityQuery,
-    GetResultsCountByFacilityQueryVariables
-  >(GetResultsCountByFacilityDocument, options);
-}
-export function useGetResultsCountByFacilityLazyQuery(
-  baseOptions?: Apollo.LazyQueryHookOptions<
-    GetResultsCountByFacilityQuery,
-    GetResultsCountByFacilityQueryVariables
-  >
-) {
-  const options = { ...defaultOptions, ...baseOptions };
-  return Apollo.useLazyQuery<
-    GetResultsCountByFacilityQuery,
-    GetResultsCountByFacilityQueryVariables
-  >(GetResultsCountByFacilityDocument, options);
-}
-export type GetResultsCountByFacilityQueryHookResult = ReturnType<
-  typeof useGetResultsCountByFacilityQuery
->;
-export type GetResultsCountByFacilityLazyQueryHookResult = ReturnType<
-  typeof useGetResultsCountByFacilityLazyQuery
->;
-export type GetResultsCountByFacilityQueryResult = Apollo.QueryResult<
-  GetResultsCountByFacilityQuery,
-  GetResultsCountByFacilityQueryVariables
->;
-export const GetFacilityResultsDocument = gql`
-  query GetFacilityResults(
-    $facilityId: ID
-    $patientId: ID
-    $result: String
-    $role: String
-    $startDate: DateTime
-    $endDate: DateTime
-    $pageNumber: Int
-    $pageSize: Int
-  ) {
-    testResults(
-      facilityId: $facilityId
-      patientId: $patientId
-      result: $result
-      role: $role
-      startDate: $startDate
-      endDate: $endDate
-      pageNumber: $pageNumber
-      pageSize: $pageSize
-    ) {
-      internalId
-      dateTested
-      result
-      correctionStatus
-      deviceType {
-        internalId
-        name
-      }
-      patient {
-        internalId
-        firstName
-        middleName
-        lastName
-        birthDate
-        gender
-        lookupId
-        email
-      }
-      createdBy {
-        nameInfo {
-          firstName
-          lastName
-        }
-      }
-      patientLink {
-        internalId
-      }
-      facility {
-        name
-      }
-    }
-  }
-`;
-
-/**
- * __useGetFacilityResultsQuery__
- *
- * To run a query within a React component, call `useGetFacilityResultsQuery` and pass it any options that fit your needs.
- * When your component renders, `useGetFacilityResultsQuery` returns an object from Apollo Client that contains loading, error, and data properties
- * you can use to render your UI.
- *
- * @param baseOptions options that will be passed into the query, supported options are listed on: https://www.apollographql.com/docs/react/api/react-hooks/#options;
- *
- * @example
- * const { data, loading, error } = useGetFacilityResultsQuery({
- *   variables: {
- *      facilityId: // value for 'facilityId'
- *      patientId: // value for 'patientId'
- *      result: // value for 'result'
- *      role: // value for 'role'
- *      startDate: // value for 'startDate'
- *      endDate: // value for 'endDate'
- *      pageNumber: // value for 'pageNumber'
- *      pageSize: // value for 'pageSize'
- *   },
- * });
- */
-export function useGetFacilityResultsQuery(
-  baseOptions?: Apollo.QueryHookOptions<
-    GetFacilityResultsQuery,
-    GetFacilityResultsQueryVariables
-  >
-) {
-  const options = { ...defaultOptions, ...baseOptions };
-  return Apollo.useQuery<
-    GetFacilityResultsQuery,
-    GetFacilityResultsQueryVariables
-  >(GetFacilityResultsDocument, options);
-}
-export function useGetFacilityResultsLazyQuery(
-  baseOptions?: Apollo.LazyQueryHookOptions<
-    GetFacilityResultsQuery,
-    GetFacilityResultsQueryVariables
-  >
-) {
-  const options = { ...defaultOptions, ...baseOptions };
-  return Apollo.useLazyQuery<
-    GetFacilityResultsQuery,
-    GetFacilityResultsQueryVariables
-  >(GetFacilityResultsDocument, options);
-}
-export type GetFacilityResultsQueryHookResult = ReturnType<
-  typeof useGetFacilityResultsQuery
->;
-export type GetFacilityResultsLazyQueryHookResult = ReturnType<
-  typeof useGetFacilityResultsLazyQuery
->;
-export type GetFacilityResultsQueryResult = Apollo.QueryResult<
-  GetFacilityResultsQuery,
-  GetFacilityResultsQueryVariables
 >;
 export const GetTestResultForResendingEmailsDocument = gql`
   query getTestResultForResendingEmails($id: ID!) {
@@ -6604,9 +6722,17 @@ export const GetFacilityResultsForCsvDocument = gql`
     ) {
       facility {
         name
+        isDeleted
       }
       dateTested
+      dateUpdated
       result
+      results {
+        disease {
+          name
+        }
+        testResult
+      }
       correctionStatus
       reasonForCorrection
       deviceType {
@@ -6709,4 +6835,563 @@ export type GetFacilityResultsForCsvLazyQueryHookResult = ReturnType<
 export type GetFacilityResultsForCsvQueryResult = Apollo.QueryResult<
   GetFacilityResultsForCsvQuery,
   GetFacilityResultsForCsvQueryVariables
+>;
+export const GetFacilityResultsMultiplexDocument = gql`
+  query GetFacilityResultsMultiplex(
+    $facilityId: ID
+    $patientId: ID
+    $result: String
+    $role: String
+    $startDate: DateTime
+    $endDate: DateTime
+    $pageNumber: Int
+    $pageSize: Int
+  ) {
+    testResults(
+      facilityId: $facilityId
+      patientId: $patientId
+      result: $result
+      role: $role
+      startDate: $startDate
+      endDate: $endDate
+      pageNumber: $pageNumber
+      pageSize: $pageSize
+    ) {
+      internalId
+      dateTested
+      result
+      results {
+        disease {
+          name
+        }
+        testResult
+      }
+      correctionStatus
+      deviceType {
+        internalId
+        name
+      }
+      patient {
+        internalId
+        firstName
+        middleName
+        lastName
+        birthDate
+        gender
+        lookupId
+        email
+      }
+      createdBy {
+        nameInfo {
+          firstName
+          lastName
+        }
+      }
+      patientLink {
+        internalId
+      }
+      facility {
+        name
+      }
+    }
+  }
+`;
+
+/**
+ * __useGetFacilityResultsMultiplexQuery__
+ *
+ * To run a query within a React component, call `useGetFacilityResultsMultiplexQuery` and pass it any options that fit your needs.
+ * When your component renders, `useGetFacilityResultsMultiplexQuery` returns an object from Apollo Client that contains loading, error, and data properties
+ * you can use to render your UI.
+ *
+ * @param baseOptions options that will be passed into the query, supported options are listed on: https://www.apollographql.com/docs/react/api/react-hooks/#options;
+ *
+ * @example
+ * const { data, loading, error } = useGetFacilityResultsMultiplexQuery({
+ *   variables: {
+ *      facilityId: // value for 'facilityId'
+ *      patientId: // value for 'patientId'
+ *      result: // value for 'result'
+ *      role: // value for 'role'
+ *      startDate: // value for 'startDate'
+ *      endDate: // value for 'endDate'
+ *      pageNumber: // value for 'pageNumber'
+ *      pageSize: // value for 'pageSize'
+ *   },
+ * });
+ */
+export function useGetFacilityResultsMultiplexQuery(
+  baseOptions?: Apollo.QueryHookOptions<
+    GetFacilityResultsMultiplexQuery,
+    GetFacilityResultsMultiplexQueryVariables
+  >
+) {
+  const options = { ...defaultOptions, ...baseOptions };
+  return Apollo.useQuery<
+    GetFacilityResultsMultiplexQuery,
+    GetFacilityResultsMultiplexQueryVariables
+  >(GetFacilityResultsMultiplexDocument, options);
+}
+export function useGetFacilityResultsMultiplexLazyQuery(
+  baseOptions?: Apollo.LazyQueryHookOptions<
+    GetFacilityResultsMultiplexQuery,
+    GetFacilityResultsMultiplexQueryVariables
+  >
+) {
+  const options = { ...defaultOptions, ...baseOptions };
+  return Apollo.useLazyQuery<
+    GetFacilityResultsMultiplexQuery,
+    GetFacilityResultsMultiplexQueryVariables
+  >(GetFacilityResultsMultiplexDocument, options);
+}
+export type GetFacilityResultsMultiplexQueryHookResult = ReturnType<
+  typeof useGetFacilityResultsMultiplexQuery
+>;
+export type GetFacilityResultsMultiplexLazyQueryHookResult = ReturnType<
+  typeof useGetFacilityResultsMultiplexLazyQuery
+>;
+export type GetFacilityResultsMultiplexQueryResult = Apollo.QueryResult<
+  GetFacilityResultsMultiplexQuery,
+  GetFacilityResultsMultiplexQueryVariables
+>;
+export const GetAllFacilitiesDocument = gql`
+  query GetAllFacilities($showArchived: Boolean) {
+    facilities(showArchived: $showArchived) {
+      id
+      name
+      isDeleted
+    }
+  }
+`;
+
+/**
+ * __useGetAllFacilitiesQuery__
+ *
+ * To run a query within a React component, call `useGetAllFacilitiesQuery` and pass it any options that fit your needs.
+ * When your component renders, `useGetAllFacilitiesQuery` returns an object from Apollo Client that contains loading, error, and data properties
+ * you can use to render your UI.
+ *
+ * @param baseOptions options that will be passed into the query, supported options are listed on: https://www.apollographql.com/docs/react/api/react-hooks/#options;
+ *
+ * @example
+ * const { data, loading, error } = useGetAllFacilitiesQuery({
+ *   variables: {
+ *      showArchived: // value for 'showArchived'
+ *   },
+ * });
+ */
+export function useGetAllFacilitiesQuery(
+  baseOptions?: Apollo.QueryHookOptions<
+    GetAllFacilitiesQuery,
+    GetAllFacilitiesQueryVariables
+  >
+) {
+  const options = { ...defaultOptions, ...baseOptions };
+  return Apollo.useQuery<GetAllFacilitiesQuery, GetAllFacilitiesQueryVariables>(
+    GetAllFacilitiesDocument,
+    options
+  );
+}
+export function useGetAllFacilitiesLazyQuery(
+  baseOptions?: Apollo.LazyQueryHookOptions<
+    GetAllFacilitiesQuery,
+    GetAllFacilitiesQueryVariables
+  >
+) {
+  const options = { ...defaultOptions, ...baseOptions };
+  return Apollo.useLazyQuery<
+    GetAllFacilitiesQuery,
+    GetAllFacilitiesQueryVariables
+  >(GetAllFacilitiesDocument, options);
+}
+export type GetAllFacilitiesQueryHookResult = ReturnType<
+  typeof useGetAllFacilitiesQuery
+>;
+export type GetAllFacilitiesLazyQueryHookResult = ReturnType<
+  typeof useGetAllFacilitiesLazyQuery
+>;
+export type GetAllFacilitiesQueryResult = Apollo.QueryResult<
+  GetAllFacilitiesQuery,
+  GetAllFacilitiesQueryVariables
+>;
+export const GetResultsCountByFacilityDocument = gql`
+  query GetResultsCountByFacility(
+    $facilityId: ID
+    $patientId: ID
+    $result: String
+    $role: String
+    $startDate: DateTime
+    $endDate: DateTime
+  ) {
+    testResultsCount(
+      facilityId: $facilityId
+      patientId: $patientId
+      result: $result
+      role: $role
+      startDate: $startDate
+      endDate: $endDate
+    )
+  }
+`;
+
+/**
+ * __useGetResultsCountByFacilityQuery__
+ *
+ * To run a query within a React component, call `useGetResultsCountByFacilityQuery` and pass it any options that fit your needs.
+ * When your component renders, `useGetResultsCountByFacilityQuery` returns an object from Apollo Client that contains loading, error, and data properties
+ * you can use to render your UI.
+ *
+ * @param baseOptions options that will be passed into the query, supported options are listed on: https://www.apollographql.com/docs/react/api/react-hooks/#options;
+ *
+ * @example
+ * const { data, loading, error } = useGetResultsCountByFacilityQuery({
+ *   variables: {
+ *      facilityId: // value for 'facilityId'
+ *      patientId: // value for 'patientId'
+ *      result: // value for 'result'
+ *      role: // value for 'role'
+ *      startDate: // value for 'startDate'
+ *      endDate: // value for 'endDate'
+ *   },
+ * });
+ */
+export function useGetResultsCountByFacilityQuery(
+  baseOptions?: Apollo.QueryHookOptions<
+    GetResultsCountByFacilityQuery,
+    GetResultsCountByFacilityQueryVariables
+  >
+) {
+  const options = { ...defaultOptions, ...baseOptions };
+  return Apollo.useQuery<
+    GetResultsCountByFacilityQuery,
+    GetResultsCountByFacilityQueryVariables
+  >(GetResultsCountByFacilityDocument, options);
+}
+export function useGetResultsCountByFacilityLazyQuery(
+  baseOptions?: Apollo.LazyQueryHookOptions<
+    GetResultsCountByFacilityQuery,
+    GetResultsCountByFacilityQueryVariables
+  >
+) {
+  const options = { ...defaultOptions, ...baseOptions };
+  return Apollo.useLazyQuery<
+    GetResultsCountByFacilityQuery,
+    GetResultsCountByFacilityQueryVariables
+  >(GetResultsCountByFacilityDocument, options);
+}
+export type GetResultsCountByFacilityQueryHookResult = ReturnType<
+  typeof useGetResultsCountByFacilityQuery
+>;
+export type GetResultsCountByFacilityLazyQueryHookResult = ReturnType<
+  typeof useGetResultsCountByFacilityLazyQuery
+>;
+export type GetResultsCountByFacilityQueryResult = Apollo.QueryResult<
+  GetResultsCountByFacilityQuery,
+  GetResultsCountByFacilityQueryVariables
+>;
+export const GetTestResultForPrintDocument = gql`
+  query GetTestResultForPrint($id: ID!) {
+    testResult(id: $id) {
+      dateTested
+      result
+      results {
+        disease {
+          name
+        }
+        testResult
+      }
+      correctionStatus
+      deviceType {
+        name
+        model
+      }
+      patient {
+        firstName
+        middleName
+        lastName
+        birthDate
+      }
+      facility {
+        name
+        cliaNumber
+        phone
+        street
+        streetTwo
+        city
+        state
+        zipCode
+        orderingProvider {
+          firstName
+          middleName
+          lastName
+          NPI
+        }
+      }
+    }
+  }
+`;
+
+/**
+ * __useGetTestResultForPrintQuery__
+ *
+ * To run a query within a React component, call `useGetTestResultForPrintQuery` and pass it any options that fit your needs.
+ * When your component renders, `useGetTestResultForPrintQuery` returns an object from Apollo Client that contains loading, error, and data properties
+ * you can use to render your UI.
+ *
+ * @param baseOptions options that will be passed into the query, supported options are listed on: https://www.apollographql.com/docs/react/api/react-hooks/#options;
+ *
+ * @example
+ * const { data, loading, error } = useGetTestResultForPrintQuery({
+ *   variables: {
+ *      id: // value for 'id'
+ *   },
+ * });
+ */
+export function useGetTestResultForPrintQuery(
+  baseOptions: Apollo.QueryHookOptions<
+    GetTestResultForPrintQuery,
+    GetTestResultForPrintQueryVariables
+  >
+) {
+  const options = { ...defaultOptions, ...baseOptions };
+  return Apollo.useQuery<
+    GetTestResultForPrintQuery,
+    GetTestResultForPrintQueryVariables
+  >(GetTestResultForPrintDocument, options);
+}
+export function useGetTestResultForPrintLazyQuery(
+  baseOptions?: Apollo.LazyQueryHookOptions<
+    GetTestResultForPrintQuery,
+    GetTestResultForPrintQueryVariables
+  >
+) {
+  const options = { ...defaultOptions, ...baseOptions };
+  return Apollo.useLazyQuery<
+    GetTestResultForPrintQuery,
+    GetTestResultForPrintQueryVariables
+  >(GetTestResultForPrintDocument, options);
+}
+export type GetTestResultForPrintQueryHookResult = ReturnType<
+  typeof useGetTestResultForPrintQuery
+>;
+export type GetTestResultForPrintLazyQueryHookResult = ReturnType<
+  typeof useGetTestResultForPrintLazyQuery
+>;
+export type GetTestResultForPrintQueryResult = Apollo.QueryResult<
+  GetTestResultForPrintQuery,
+  GetTestResultForPrintQueryVariables
+>;
+export const GetUploadSubmissionDocument = gql`
+  query GetUploadSubmission($id: ID!) {
+    uploadSubmission(id: $id) {
+      reportId
+      createdAt
+      status
+      recordsCount
+      warnings {
+        message
+        scope
+      }
+      errors {
+        message
+        scope
+      }
+    }
+  }
+`;
+
+/**
+ * __useGetUploadSubmissionQuery__
+ *
+ * To run a query within a React component, call `useGetUploadSubmissionQuery` and pass it any options that fit your needs.
+ * When your component renders, `useGetUploadSubmissionQuery` returns an object from Apollo Client that contains loading, error, and data properties
+ * you can use to render your UI.
+ *
+ * @param baseOptions options that will be passed into the query, supported options are listed on: https://www.apollographql.com/docs/react/api/react-hooks/#options;
+ *
+ * @example
+ * const { data, loading, error } = useGetUploadSubmissionQuery({
+ *   variables: {
+ *      id: // value for 'id'
+ *   },
+ * });
+ */
+export function useGetUploadSubmissionQuery(
+  baseOptions: Apollo.QueryHookOptions<
+    GetUploadSubmissionQuery,
+    GetUploadSubmissionQueryVariables
+  >
+) {
+  const options = { ...defaultOptions, ...baseOptions };
+  return Apollo.useQuery<
+    GetUploadSubmissionQuery,
+    GetUploadSubmissionQueryVariables
+  >(GetUploadSubmissionDocument, options);
+}
+export function useGetUploadSubmissionLazyQuery(
+  baseOptions?: Apollo.LazyQueryHookOptions<
+    GetUploadSubmissionQuery,
+    GetUploadSubmissionQueryVariables
+  >
+) {
+  const options = { ...defaultOptions, ...baseOptions };
+  return Apollo.useLazyQuery<
+    GetUploadSubmissionQuery,
+    GetUploadSubmissionQueryVariables
+  >(GetUploadSubmissionDocument, options);
+}
+export type GetUploadSubmissionQueryHookResult = ReturnType<
+  typeof useGetUploadSubmissionQuery
+>;
+export type GetUploadSubmissionLazyQueryHookResult = ReturnType<
+  typeof useGetUploadSubmissionLazyQuery
+>;
+export type GetUploadSubmissionQueryResult = Apollo.QueryResult<
+  GetUploadSubmissionQuery,
+  GetUploadSubmissionQueryVariables
+>;
+export const GetUploadSubmissionsDocument = gql`
+  query GetUploadSubmissions(
+    $startDate: DateTime
+    $endDate: DateTime
+    $pageNumber: Int
+    $pageSize: Int
+  ) {
+    uploadSubmissions(
+      startDate: $startDate
+      endDate: $endDate
+      pageNumber: $pageNumber
+      pageSize: $pageSize
+    ) {
+      content {
+        internalId
+        reportId
+        createdAt
+        status
+        recordsCount
+        errors {
+          message
+          scope
+        }
+        warnings {
+          message
+          scope
+        }
+      }
+      totalElements
+    }
+  }
+`;
+
+/**
+ * __useGetUploadSubmissionsQuery__
+ *
+ * To run a query within a React component, call `useGetUploadSubmissionsQuery` and pass it any options that fit your needs.
+ * When your component renders, `useGetUploadSubmissionsQuery` returns an object from Apollo Client that contains loading, error, and data properties
+ * you can use to render your UI.
+ *
+ * @param baseOptions options that will be passed into the query, supported options are listed on: https://www.apollographql.com/docs/react/api/react-hooks/#options;
+ *
+ * @example
+ * const { data, loading, error } = useGetUploadSubmissionsQuery({
+ *   variables: {
+ *      startDate: // value for 'startDate'
+ *      endDate: // value for 'endDate'
+ *      pageNumber: // value for 'pageNumber'
+ *      pageSize: // value for 'pageSize'
+ *   },
+ * });
+ */
+export function useGetUploadSubmissionsQuery(
+  baseOptions?: Apollo.QueryHookOptions<
+    GetUploadSubmissionsQuery,
+    GetUploadSubmissionsQueryVariables
+  >
+) {
+  const options = { ...defaultOptions, ...baseOptions };
+  return Apollo.useQuery<
+    GetUploadSubmissionsQuery,
+    GetUploadSubmissionsQueryVariables
+  >(GetUploadSubmissionsDocument, options);
+}
+export function useGetUploadSubmissionsLazyQuery(
+  baseOptions?: Apollo.LazyQueryHookOptions<
+    GetUploadSubmissionsQuery,
+    GetUploadSubmissionsQueryVariables
+  >
+) {
+  const options = { ...defaultOptions, ...baseOptions };
+  return Apollo.useLazyQuery<
+    GetUploadSubmissionsQuery,
+    GetUploadSubmissionsQueryVariables
+  >(GetUploadSubmissionsDocument, options);
+}
+export type GetUploadSubmissionsQueryHookResult = ReturnType<
+  typeof useGetUploadSubmissionsQuery
+>;
+export type GetUploadSubmissionsLazyQueryHookResult = ReturnType<
+  typeof useGetUploadSubmissionsLazyQuery
+>;
+export type GetUploadSubmissionsQueryResult = Apollo.QueryResult<
+  GetUploadSubmissionsQuery,
+  GetUploadSubmissionsQueryVariables
+>;
+export const UploadTestResultCsvDocument = gql`
+  mutation UploadTestResultCSV($testResultList: Upload!) {
+    uploadTestResultCSV(testResultList: $testResultList) {
+      reportId
+      status
+      recordsCount
+      warnings {
+        scope
+        message
+      }
+      errors {
+        scope
+        message
+      }
+    }
+  }
+`;
+export type UploadTestResultCsvMutationFn = Apollo.MutationFunction<
+  UploadTestResultCsvMutation,
+  UploadTestResultCsvMutationVariables
+>;
+
+/**
+ * __useUploadTestResultCsvMutation__
+ *
+ * To run a mutation, you first call `useUploadTestResultCsvMutation` within a React component and pass it any options that fit your needs.
+ * When your component renders, `useUploadTestResultCsvMutation` returns a tuple that includes:
+ * - A mutate function that you can call at any time to execute the mutation
+ * - An object with fields that represent the current status of the mutation's execution
+ *
+ * @param baseOptions options that will be passed into the mutation, supported options are listed on: https://www.apollographql.com/docs/react/api/react-hooks/#options-2;
+ *
+ * @example
+ * const [uploadTestResultCsvMutation, { data, loading, error }] = useUploadTestResultCsvMutation({
+ *   variables: {
+ *      testResultList: // value for 'testResultList'
+ *   },
+ * });
+ */
+export function useUploadTestResultCsvMutation(
+  baseOptions?: Apollo.MutationHookOptions<
+    UploadTestResultCsvMutation,
+    UploadTestResultCsvMutationVariables
+  >
+) {
+  const options = { ...defaultOptions, ...baseOptions };
+  return Apollo.useMutation<
+    UploadTestResultCsvMutation,
+    UploadTestResultCsvMutationVariables
+  >(UploadTestResultCsvDocument, options);
+}
+export type UploadTestResultCsvMutationHookResult = ReturnType<
+  typeof useUploadTestResultCsvMutation
+>;
+export type UploadTestResultCsvMutationResult = Apollo.MutationResult<UploadTestResultCsvMutation>;
+export type UploadTestResultCsvMutationOptions = Apollo.BaseMutationOptions<
+  UploadTestResultCsvMutation,
+  UploadTestResultCsvMutationVariables
 >;

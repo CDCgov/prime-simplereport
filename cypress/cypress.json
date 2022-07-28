@@ -3,7 +3,7 @@
   "viewportWidth": 1200,
   "viewportHeight": 800,
   "defaultCommandTimeout": 10000,
-  "video": true,
+  "video": false,
   "videoUploadOnPasses": false,
   "retries": {
     "runMode": 2,

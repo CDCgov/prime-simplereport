@@ -5,6 +5,7 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertNotEquals;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
+import static org.junit.jupiter.api.Assertions.assertNull;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.junit.jupiter.api.Assertions.fail;
@@ -23,16 +24,20 @@ import gov.cdc.usds.simplereport.db.model.Facility;
 import gov.cdc.usds.simplereport.db.model.Organization;
 import gov.cdc.usds.simplereport.db.model.PatientLink;
 import gov.cdc.usds.simplereport.db.model.Person;
+import gov.cdc.usds.simplereport.db.model.Result;
 import gov.cdc.usds.simplereport.db.model.TestEvent;
 import gov.cdc.usds.simplereport.db.model.TestOrder;
 import gov.cdc.usds.simplereport.db.model.auxiliary.AskOnEntrySurvey;
+import gov.cdc.usds.simplereport.db.model.auxiliary.DiseaseResult;
 import gov.cdc.usds.simplereport.db.model.auxiliary.OrderStatus;
 import gov.cdc.usds.simplereport.db.model.auxiliary.PersonName;
 import gov.cdc.usds.simplereport.db.model.auxiliary.PersonRole;
 import gov.cdc.usds.simplereport.db.model.auxiliary.TestCorrectionStatus;
 import gov.cdc.usds.simplereport.db.model.auxiliary.TestResult;
 import gov.cdc.usds.simplereport.db.model.auxiliary.TestResultDeliveryPreference;
+import gov.cdc.usds.simplereport.db.repository.ResultRepository;
 import gov.cdc.usds.simplereport.db.repository.TestEventRepository;
+import gov.cdc.usds.simplereport.db.repository.TestOrderRepository;
 import gov.cdc.usds.simplereport.test_util.SliceTestConfiguration.WithSimpleReportEntryOnlyAllFacilitiesUser;
 import gov.cdc.usds.simplereport.test_util.SliceTestConfiguration.WithSimpleReportEntryOnlyUser;
 import gov.cdc.usds.simplereport.test_util.SliceTestConfiguration.WithSimpleReportOrgAdminUser;
@@ -69,6 +74,8 @@ class TestOrderServiceTest extends BaseServiceTest<TestOrderService> {
   @Autowired private OrganizationService _organizationService;
   @Autowired private PersonService _personService;
   @Autowired private TestEventRepository _testEventRepository;
+  @Autowired private TestOrderRepository _testOrderRepository;
+  @Autowired private ResultRepository _resultRepository;
   @Autowired private TestDataFactory _dataFactory;
   @SpyBean private PatientLinkService patientLinkService;
   @MockBean private TestResultsDeliveryService testResultsDeliveryService;
@@ -88,12 +95,15 @@ class TestOrderServiceTest extends BaseServiceTest<TestOrderService> {
   private static final PersonName JANNELLE = new PersonName("Jannelle", "Martha", "Cromack", null);
   private static final PersonName KACEY = new PersonName("Kacey", "L", "Mathie", null);
   private static final PersonName LEELOO = new PersonName("Leeloo", "Dallas", "Multipass", null);
+
+  private DeviceSpecimenType DEVICE_A = null;
   private Facility _site;
   private Facility _otherSite;
 
   @BeforeEach
   void setupData() {
     initSampleData();
+    DEVICE_A = _dataFactory.getGenericDeviceSpecimen();
   }
 
   @Test
@@ -565,14 +575,10 @@ class TestOrderServiceTest extends BaseServiceTest<TestOrderService> {
     _service.markAsCorrection(originalTestEvent.getInternalId(), "Cold feet");
 
     // Issue test correction
-    _service.addTestResult(devA.getInternalId(), TestResult.NEGATIVE, p.getInternalId(), null);
+    AddTestResultResponse response =
+        _service.addTestResult(devA.getInternalId(), TestResult.NEGATIVE, p.getInternalId(), null);
 
-    // Get newly-created correction event
-    TestEvent correctionTestEvent =
-        _testEventRepository.findAllByPatientAndFacilities(p, List.of(facility)).stream()
-            .filter(event -> event.getCorrectionStatus() == TestCorrectionStatus.CORRECTED)
-            .collect(Collectors.toList())
-            .get(0);
+    TestEvent correctionTestEvent = response.getTestOrder().getTestEvent();
 
     assertEquals(
         originalTestEvent.getInternalId(), correctionTestEvent.getPriorCorrectedTestEventId());
@@ -584,6 +590,9 @@ class TestOrderServiceTest extends BaseServiceTest<TestOrderService> {
         LocalDate.of(1865, 12, 25),
         LocalDate.ofInstant(
             correctionTestEvent.getDateTested().toInstant(), ZoneId.systemDefault()));
+    assertEquals(2, _resultRepository.findAllByTestOrder(response.getTestOrder()).size());
+    assertEquals(1, _resultRepository.findAllByTestEvent(correctionTestEvent).size());
+    assertEquals(1, _resultRepository.findAllByTestEvent(originalTestEvent).size());
   }
 
   @Test
@@ -794,6 +803,42 @@ class TestOrderServiceTest extends BaseServiceTest<TestOrderService> {
   }
 
   @Test
+  @WithSimpleReportOrgAdminUser
+  void addTestResult_savesResults() {
+    // GIVEN
+    Organization org = _organizationService.getCurrentOrganization();
+    Facility facility = _organizationService.getFacilities(org).get(0);
+    Person patient = _dataFactory.createFullPerson(org);
+
+    _service.addPatientToQueue(
+        facility.getInternalId(),
+        patient,
+        "",
+        Collections.emptyMap(),
+        LocalDate.of(1865, 12, 25),
+        false);
+    DeviceSpecimenType devA = _dataFactory.getGenericDeviceSpecimen();
+    facility.addDefaultDeviceSpecimen(devA);
+
+    // WHEN
+    AddTestResultResponse res =
+        _service.addTestResult(
+            devA.getInternalId(), TestResult.POSITIVE, patient.getInternalId(), null);
+
+    // THEN
+    List<Result> results = _resultRepository.findAllByTestOrder(res.getTestOrder());
+    assertEquals(1, results.size());
+
+    Result covidResult =
+        _resultRepository.findResultByTestOrderAndDisease(
+            res.getTestOrder(), _diseaseService.covid());
+    assertEquals(TestResult.POSITIVE, covidResult.getTestResult());
+    assertEquals(
+        covidResult.getTestEvent().getInternalId(),
+        res.getTestOrder().getTestEvent().getInternalId());
+  }
+
+  @Test
   @WithSimpleReportStandardAllFacilitiesUser
   void editTestResult_standardAllFacilitiesUser_ok() {
     Organization org = _organizationService.getCurrentOrganization();
@@ -836,10 +881,14 @@ class TestOrderServiceTest extends BaseServiceTest<TestOrderService> {
         o.getInternalId(), devA.getInternalId(), TestResult.POSITIVE.toString(), null);
 
     List<TestOrder> queue = _service.getQueue(facility.getInternalId());
+    TestOrder order = queue.get(0);
     assertEquals(1, queue.size());
-    assertEquals(TestResult.POSITIVE, queue.get(0).getTestResult());
-    assertEquals(
-        devA.getDeviceType().getInternalId(), queue.get(0).getDeviceType().getInternalId());
+    assertEquals(TestResult.POSITIVE, order.getResult());
+    Result result =
+        _resultRepository.findResultByTestOrderAndDisease(order, _diseaseService.covid());
+    assertEquals(TestResult.POSITIVE, result.getTestResult());
+    assertEquals(null, result.getTestEvent());
+    assertEquals(devA.getDeviceType().getInternalId(), order.getDeviceType().getInternalId());
   }
 
   @Test
@@ -894,10 +943,10 @@ class TestOrderServiceTest extends BaseServiceTest<TestOrderService> {
         o.getInternalId(), devA.getInternalId(), TestResult.POSITIVE.toString(), null);
 
     List<TestOrder> queue = _service.getQueue(facility.getInternalId());
+    TestOrder order = queue.get(0);
     assertEquals(1, queue.size());
-    assertEquals(TestResult.POSITIVE, queue.get(0).getTestResult());
-    assertEquals(
-        devA.getDeviceType().getInternalId(), queue.get(0).getDeviceType().getInternalId());
+    assertEquals(TestResult.POSITIVE, order.getResult());
+    assertEquals(devA.getDeviceType().getInternalId(), order.getDeviceType().getInternalId());
   }
 
   @Test
@@ -932,6 +981,225 @@ class TestOrderServiceTest extends BaseServiceTest<TestOrderService> {
   }
 
   @Test
+  @WithSimpleReportOrgAdminUser
+  void editQueueItem_worksWithoutResult() {
+    Organization org = _organizationService.getCurrentOrganization();
+    Facility facility = _organizationService.getFacilities(org).get(0);
+    Person patient = _dataFactory.createFullPerson(org);
+    _personService.updateTestResultDeliveryPreference(
+        patient.getInternalId(), TestResultDeliveryPreference.SMS);
+    TestOrder order =
+        _service.addPatientToQueue(
+            facility.getInternalId(),
+            patient,
+            "",
+            Collections.emptyMap(),
+            LocalDate.of(1865, 12, 25),
+            false);
+    DeviceSpecimenType devA = _dataFactory.getGenericDeviceSpecimen();
+    facility.addDefaultDeviceSpecimen(devA);
+
+    TestOrder updatedOrder =
+        _service.editQueueItem(
+            order.getInternalId(),
+            devA.getInternalId(),
+            null,
+            convertDate(LocalDateTime.of(2022, 5, 9, 12, 30, 0)));
+
+    assertNull(_service.getTestOrder(updatedOrder.getInternalId()).getResult());
+  }
+
+  @Test
+  @WithSimpleReportOrgAdminUser
+  void editQueueItemMultiplex_worksWithSingleResult() {
+    TestOrder order = addTestToQueue();
+
+    DiseaseResult covidResult = new DiseaseResult("COVID-19", TestResult.POSITIVE);
+
+    TestOrder updatedOrder =
+        _service.editQueueItemMultiplex(
+            order.getInternalId(),
+            DEVICE_A.getInternalId(),
+            List.of(covidResult),
+            convertDate(LocalDateTime.of(2022, 6, 5, 10, 10, 10, 10)));
+
+    assertEquals(
+        1, _service.getTestOrder(updatedOrder.getInternalId()).getPendingResultSet().size());
+  }
+
+  @Test
+  @WithSimpleReportOrgAdminUser
+  void editQueueItemMultiplex_worksWithMultipleResults() {
+    TestOrder order = addTestToQueue();
+
+    DiseaseResult covidResult = new DiseaseResult("COVID-19", TestResult.POSITIVE);
+    DiseaseResult fluAResult = new DiseaseResult("Flu A", TestResult.NEGATIVE);
+    DiseaseResult fluBResult = new DiseaseResult("Flu B", TestResult.NEGATIVE);
+
+    TestOrder updatedOrder =
+        _service.editQueueItemMultiplex(
+            order.getInternalId(),
+            DEVICE_A.getInternalId(),
+            List.of(covidResult, fluAResult, fluBResult),
+            convertDate(LocalDateTime.of(2022, 6, 5, 10, 10, 10, 10)));
+
+    assertEquals(
+        3, _service.getTestOrder(updatedOrder.getInternalId()).getPendingResultSet().size());
+  }
+
+  @Test
+  @WithSimpleReportOrgAdminUser
+  void editQueueItemMultiplex_worksWithEmptyResults() {
+    TestOrder order = addTestToQueue();
+
+    TestOrder updatedOrder =
+        _service.editQueueItemMultiplex(
+            order.getInternalId(),
+            DEVICE_A.getInternalId(),
+            List.of(),
+            convertDate(LocalDateTime.of(2022, 6, 5, 10, 10, 10, 10)));
+
+    assertTrue(_service.getTestOrder(updatedOrder.getInternalId()).getPendingResultSet().isEmpty());
+  }
+
+  @Test
+  @WithSimpleReportOrgAdminUser
+  void addTestResultMultiplex_multipleEditsBeforeSubmissionSuccessful() {
+    TestOrder order = addTestToQueue();
+
+    DiseaseResult covidResult = new DiseaseResult("COVID-19", TestResult.POSITIVE);
+    DiseaseResult fluAResult = new DiseaseResult("Flu A", TestResult.NEGATIVE);
+    DiseaseResult fluBResult = new DiseaseResult("Flu B", TestResult.NEGATIVE);
+
+    _service.editQueueItemMultiplex(
+        order.getInternalId(),
+        DEVICE_A.getInternalId(),
+        List.of(covidResult, fluAResult, fluBResult),
+        convertDate(LocalDateTime.of(2022, 6, 5, 10, 10, 10, 10)));
+
+    DiseaseResult updatedCovidResult = new DiseaseResult("COVID-19", TestResult.NEGATIVE);
+    TestOrder updatedOrder =
+        _service.editQueueItemMultiplex(
+            order.getInternalId(),
+            DEVICE_A.getInternalId(),
+            List.of(updatedCovidResult, fluAResult, fluBResult),
+            convertDate(LocalDateTime.of(2022, 6, 5, 10, 10, 10, 10)));
+
+    assertEquals(
+        3, _service.getTestOrder(updatedOrder.getInternalId()).getPendingResultSet().size());
+
+    AddTestResultResponse response =
+        _service.addTestResultMultiplex(
+            updatedOrder.getDeviceSpecimen().getInternalId(),
+            List.of(updatedCovidResult, fluAResult, fluBResult),
+            order.getPatient().getInternalId(),
+            convertDate(LocalDateTime.of(2022, 6, 5, 10, 10, 10, 10)));
+
+    assertEquals(3, _resultRepository.findAllByTestOrder(response.getTestOrder()).size());
+  }
+
+  @Test
+  @WithSimpleReportOrgAdminUser
+  void multiplexMutations_covidOnlyCorrectionSuccessful() {
+    TestOrder order = addTestToQueue();
+    AddTestResultResponse response =
+        _service.addTestResultMultiplex(
+            order.getDeviceSpecimen().getInternalId(),
+            List.of(new DiseaseResult("COVID-19", TestResult.POSITIVE)),
+            order.getPatient().getInternalId(),
+            convertDate(LocalDateTime.of(2022, 6, 5, 10, 10, 10, 10)));
+
+    TestEvent originalEvent = response.getTestOrder().getTestEvent();
+
+    _service.markAsCorrection(originalEvent.getInternalId(), "Incorrect result");
+
+    AddTestResultResponse correctedResponse =
+        _service.addTestResultMultiplex(
+            order.getDeviceSpecimen().getInternalId(),
+            List.of(new DiseaseResult("COVID-19", TestResult.NEGATIVE)),
+            order.getPatient().getInternalId(),
+            convertDate(LocalDateTime.of(2022, 6, 5, 10, 10, 10, 10)));
+
+    assertEquals(2, _resultRepository.findAllByTestOrder(order).size());
+    assertEquals(
+        1,
+        _resultRepository
+            .findAllByTestEvent(correctedResponse.getTestOrder().getTestEvent())
+            .size());
+    assertEquals(1, _resultRepository.findAllByTestEvent(originalEvent).size());
+  }
+
+  @Test
+  @WithSimpleReportOrgAdminUser
+  void multiplexMutations_multiplexCorrectionSuccessful() {
+
+    List<DiseaseResult> originalResults =
+        List.of(
+            new DiseaseResult("COVID-19", TestResult.NEGATIVE),
+            new DiseaseResult("Flu A", TestResult.POSITIVE),
+            new DiseaseResult("Flu B", TestResult.NEGATIVE));
+
+    TestOrder order = addTestToQueue();
+    AddTestResultResponse response =
+        _service.addTestResultMultiplex(
+            order.getDeviceSpecimen().getInternalId(),
+            originalResults,
+            order.getPatient().getInternalId(),
+            convertDate(LocalDateTime.of(2022, 6, 5, 10, 10, 10, 10)));
+
+    TestEvent originalEvent = response.getTestOrder().getTestEvent();
+
+    _service.markAsCorrection(originalEvent.getInternalId(), "Incorrect result");
+
+    List<DiseaseResult> correctedResults =
+        List.of(
+            new DiseaseResult("COVID-19", TestResult.NEGATIVE),
+            new DiseaseResult("Flu A", TestResult.NEGATIVE),
+            new DiseaseResult("Flu B", TestResult.NEGATIVE));
+
+    AddTestResultResponse correctedResponse =
+        _service.addTestResultMultiplex(
+            order.getDeviceSpecimen().getInternalId(),
+            correctedResults,
+            order.getPatient().getInternalId(),
+            convertDate(LocalDateTime.of(2022, 6, 5, 10, 10, 10, 10)));
+
+    assertEquals(6, _resultRepository.findAllByTestOrder(order).size());
+    assertEquals(
+        3,
+        _resultRepository
+            .findAllByTestEvent(correctedResponse.getTestOrder().getTestEvent())
+            .size());
+    assertEquals(3, _resultRepository.findAllByTestEvent(originalEvent).size());
+  }
+
+  @Test
+  @WithSimpleReportOrgAdminUser
+  void multiplexMutations_removalSuccessful() {
+    List<DiseaseResult> originalResults =
+        List.of(
+            new DiseaseResult("COVID-19", TestResult.NEGATIVE),
+            new DiseaseResult("Flu A", TestResult.POSITIVE),
+            new DiseaseResult("Flu B", TestResult.NEGATIVE));
+
+    TestOrder order = addTestToQueue();
+    AddTestResultResponse response =
+        _service.addTestResultMultiplex(
+            order.getDeviceSpecimen().getInternalId(),
+            originalResults,
+            order.getPatient().getInternalId(),
+            convertDate(LocalDateTime.of(2022, 6, 5, 10, 10, 10, 10)));
+
+    TestEvent originalEvent = response.getTestOrder().getTestEvent();
+
+    TestEvent removedEvent = _service.markAsError(originalEvent.getInternalId(), "Duplicate test");
+
+    assertEquals(6, _resultRepository.findAllByTestOrder(order).size());
+    assertEquals(3, _resultRepository.findAllByTestEvent(removedEvent).size());
+    assertEquals(3, _resultRepository.findAllByTestEvent(originalEvent).size());
+  }
+
+  @Test
   @WithSimpleReportStandardUser
   void fetchTestEventsResults_standardUser_successDependsOnFacilityAccess() {
     Organization org = _organizationService.getCurrentOrganization();
@@ -947,6 +1215,56 @@ class TestOrderServiceTest extends BaseServiceTest<TestOrderService> {
 
     TestUserIdentities.setFacilityAuthorities(facility);
     _service.getTestEventsResults(facility.getInternalId(), null, null, null, null, null, 0, 10);
+  }
+
+  @Test
+  @WithSimpleReportOrgAdminUser
+  void fetchTestEventsAtArchivedFacility_orgAdminUser_ok() {
+    Organization org = _organizationService.getCurrentOrganization();
+    Facility facility = _dataFactory.createArchivedFacility(org, "deleted facility");
+    Person p = _dataFactory.createMinimalPerson(org, facility);
+    _dataFactory.createTestEvent(p, facility);
+
+    _service.getTestEventsResults(facility.getInternalId(), null, null, null, null, null, 0, 10);
+  }
+
+  @Test
+  @WithSimpleReportStandardUser
+  void fetchTestEventsAtArchivedFacility_standardUser_failure() {
+    Organization org = _organizationService.getCurrentOrganization();
+    Facility facility = _dataFactory.createArchivedFacility(org, "deleted facility");
+    Person p = _dataFactory.createMinimalPerson(org, facility);
+    _dataFactory.createTestEvent(p, facility);
+
+    assertThrows(
+        AccessDeniedException.class,
+        () ->
+            _service.getTestEventsResults(
+                facility.getInternalId(), null, null, null, null, null, 0, 10));
+  }
+
+  @Test
+  @WithSimpleReportOrgAdminUser
+  void fetchAllFacilityTestEventsResults_orgAdminUser_ok() {
+    Organization org = _organizationService.getCurrentOrganization();
+    Facility facility = _dataFactory.createValidFacility(org);
+    Person p = _dataFactory.createMinimalPerson(org, facility);
+    _dataFactory.createTestEvent(p, facility);
+
+    _service.getAllFacilityTestEventsResults(null, null, null, null, null, 0, 10);
+  }
+
+  @Test
+  @WithSimpleReportStandardUser
+  void fetchAllFacilityTestEventsResults_standardUser_failure() {
+    Organization org = _organizationService.getCurrentOrganization();
+    Facility facility = _dataFactory.createValidFacility(org);
+    Person p = _dataFactory.createMinimalPerson(org, facility);
+    _dataFactory.createTestEvent(p, facility);
+
+    assertThrows(
+        AccessDeniedException.class,
+        () -> _service.getAllFacilityTestEventsResults(null, null, null, null, null, 0, 10));
   }
 
   @Test
@@ -1019,7 +1337,7 @@ class TestOrderServiceTest extends BaseServiceTest<TestOrderService> {
     _dataFactory.createTestEvent(p, facility);
     _dataFactory.createTestEvent(p, facility);
 
-    // count queries again and make queries made didn't increase
+    // count queries again and make sure queries made didn't increase
     startQueryCount = _hibernateQueryInterceptor.getQueryCount();
     int secondQueryResults =
         _service
@@ -1146,6 +1464,11 @@ class TestOrderServiceTest extends BaseServiceTest<TestOrderService> {
         deleteMarkerEvent.getInternalId().toString(),
         events_after.get(0).getInternalId().toString());
 
+    // verify that a Result object is created for both the original and new TestEvent
+    assertEquals(2, _resultRepository.findAllByTestOrder(onlySavedOrder).size());
+    assertEquals(1, _resultRepository.findAllByTestEvent(mostRecentEvent).size());
+    assertEquals(1, _resultRepository.findAllByTestEvent(deleteMarkerEvent).size());
+
     // make sure the corrected event is sent to storage queue, which gets picked up to be delivered
     // to report stream
     verify(testEventReportingService).report(deleteMarkerEvent);
@@ -1181,6 +1504,51 @@ class TestOrderServiceTest extends BaseServiceTest<TestOrderService> {
 
     // Does not report to ReportStream
     verify(testEventReportingService, times(0)).report(e);
+  }
+
+  @Test
+  @WithSimpleReportOrgAdminUser
+  void removeACorrectedTest_success() {
+    Organization org = _organizationService.getCurrentOrganization();
+    Facility facility = _organizationService.getFacilities(org).get(0);
+    DeviceSpecimenType device = _dataFactory.getGenericDeviceSpecimen();
+    facility.addDefaultDeviceSpecimen(device);
+    Person p = _dataFactory.createFullPerson(org);
+    TestEvent e = _dataFactory.createTestEvent(p, facility);
+
+    // Re-open the original test as a correction
+    String reasonMsg = "Testing correction marking as error " + LocalDateTime.now();
+    _service.markAsCorrection(e.getInternalId(), reasonMsg);
+
+    // Re-submit the corrected test
+    AddTestResultResponse response =
+        _service.addTestResult(
+            device.getInternalId(), TestResult.UNDETERMINED, p.getInternalId(), null);
+    TestEvent correctedEvent = response.getTestOrder().getTestEvent();
+
+    assertEquals(
+        2, _testEventRepository.findAllByPatientAndFacilities(p, List.of(facility)).size());
+    assertEquals(1, _testOrderRepository.fetchPastResults(org, facility).size());
+
+    // Now mark the corrected test as an error
+    String removalMsg = "I changed my mind, remove this test " + LocalDateTime.now();
+    TestEvent deleteCorrectedEvent =
+        _service.markAsError(correctedEvent.getInternalId(), removalMsg);
+
+    // There should only be a single TestOrder, but three TestEvents - the original, the corrected,
+    // and the removed
+    // There should also be exactly three Result objects for the order, one per TestEvent
+    assertEquals(
+        3, _testEventRepository.findAllByPatientAndFacilities(p, List.of(facility)).size());
+    assertEquals(1, _testOrderRepository.fetchPastResults(org, facility).size());
+    assertEquals(3, _resultRepository.findAllByTestOrder(response.getTestOrder()).size());
+    assertEquals(1, _resultRepository.findAllByTestEvent(deleteCorrectedEvent).size());
+
+    TestOrder order = deleteCorrectedEvent.getTestOrder();
+    assertEquals(TestCorrectionStatus.REMOVED, order.getCorrectionStatus());
+    assertEquals(removalMsg, order.getReasonForCorrection());
+    assertEquals(deleteCorrectedEvent.getInternalId(), order.getTestEvent().getInternalId());
+    assertEquals(OrderStatus.COMPLETED, order.getOrderStatus());
   }
 
   @Test
@@ -1500,6 +1868,31 @@ class TestOrderServiceTest extends BaseServiceTest<TestOrderService> {
 
   private static Date convertDate(LocalDateTime dateTime) {
     return Date.from(dateTime.atZone(ZoneId.systemDefault()).toInstant());
+  }
+
+  private TestOrder addTestToQueue() {
+    Organization org = _organizationService.getCurrentOrganization();
+    Person patient = _dataFactory.createFullPerson(org);
+    return addTestToQueue(org, patient);
+  }
+
+  private TestOrder addTestToQueue(Organization org, Person patient) {
+    Facility facility = _organizationService.getFacilities(org).get(0);
+    _personService.updateTestResultDeliveryPreference(
+        patient.getInternalId(), TestResultDeliveryPreference.SMS);
+
+    TestOrder order =
+        _service.addPatientToQueue(
+            facility.getInternalId(),
+            patient,
+            "",
+            Collections.emptyMap(),
+            LocalDate.of(2022, 06, 05),
+            false);
+
+    facility.addDefaultDeviceSpecimen(DEVICE_A);
+
+    return order;
   }
 
   @Test

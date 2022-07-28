@@ -21,7 +21,7 @@ jobs:
       run:
         working-directory: ./backend
     steps:
-      - uses: actions/checkout@v2
+      - uses: actions/checkout@v3
       - name: Set up Docker Buildx
         uses: docker/setup-buildx-action@v1
       - name: Login to ACR
@@ -41,7 +41,7 @@ jobs:
       ARM_TENANT_ID: ${{ secrets.TERRAFORM_ARM_TENANT_ID }}
       OKTA_API_TOKEN: ${{ secrets.OKTA_API_TOKEN_NONPROD }}
     steps:
-      - uses: actions/checkout@v2
+      - uses: actions/checkout@v3
       - uses: azure/login@v1
         with:
           creds: ${{ secrets.AZURE_CREDENTIALS }}
@@ -65,7 +65,7 @@ jobs:
   build-frontend:
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v2
+      - uses: actions/checkout@v3
       - uses: actions/setup-node@v2.1.5
         with:
           node-version: ${{env.NODE_VERSION}}
@@ -101,7 +101,7 @@ jobs:
       url: https://test.simplereport.gov
     needs: [build-frontend, prerelease-backend]
     steps:
-      - uses: actions/checkout@v2
+      - uses: actions/checkout@v3
       - uses: azure/login@v1
         with:
           creds: ${{ secrets.AZURE_CREDENTIALS }}

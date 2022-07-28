@@ -4,10 +4,11 @@ import { UserPermission } from "../generated/graphql";
 export type RoleDescription =
   | "Admin user"
   | "Standard user"
-  | "Test-entry user";
+  | "Test-entry user"
+  | "test-result-upload-pilot user";
 
 // when changing a user's role, the server expects one of these values as the roleDescription. It's annoying how its not consistent with RoleDescription
-export type Role = "ADMIN" | "USER" | "ENTRY_ONLY";
+export type Role = "ADMIN" | "USER" | "ENTRY_ONLY" | "TEST_RESULT_UPLOAD_USER";
 
 /* 
     TODO: this is a quick v0
@@ -65,6 +66,15 @@ const appPermissions = {
     canStart: [UserPermission.StartTest],
     canUpdate: [UserPermission.UpdateTest],
     canSubmit: [UserPermission.SubmitTest],
+  },
+  featureFlags: {
+    SrCsvUploaderPilot: [
+      UserPermission.SrCsvUploaderPilot,
+      UserPermission.StartTest,
+      UserPermission.UpdateTest,
+      UserPermission.SubmitTest,
+      UserPermission.ReadResultList,
+    ],
   },
 };
 

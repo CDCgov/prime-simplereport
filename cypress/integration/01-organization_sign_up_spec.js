@@ -41,8 +41,9 @@ describe("Organization sign up", () => {
     cy.contains("Identity verification consent");
   });
   it("navigates to the support pending org table and verifies the org", () => {
+    cy.removeOrganizationAccess();
+    cy.wait(5)
     cy.visit("/admin");
-    cy.selectFacility();
     cy.contains("Organizations pending identify verification").click();
     cy.get("[data-cy=pending-orgs-title]").should("be.visible");
     cy.contains("td", `${organization.name}`)
@@ -57,7 +58,6 @@ describe("Organization sign up", () => {
   });
   it("spoofs into the org", () => {
     cy.visit("/admin");
-    cy.selectFacility();
     cy.contains("Organization data").click();
     cy.get("[data-testid='combo-box-input']").clear();
     cy.get("[data-testid='combo-box-input']").type(

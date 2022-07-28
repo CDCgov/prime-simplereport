@@ -1,5 +1,4 @@
 import FetchClient from "../app/utils/api";
-import { TestResult } from "../app/testQueue/QueueItem";
 
 const api = new FetchClient("/pxp", { mode: "cors" });
 
@@ -46,6 +45,7 @@ export type SelfRegistrationData = Omit<
 export type VerifyV2Response = {
   testEventId: string;
   result: TestResult;
+  results: PxpMultiplexResult[];
   dateTested: string;
   correctionStatus: string;
   deviceType: {

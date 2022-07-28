@@ -40,6 +40,12 @@ scalar DateTime
 scalar LocalDate
 scalar Upload
 
+enum UploadStatus {
+  PENDING
+  SUCCESS
+  FAILURE
+}
+
 enum ResultValue {
   POSITIVE
   NEGATIVE
@@ -60,12 +66,15 @@ enum UserPermission {
   UPDATE_TEST
   SUBMIT_TEST
   ACCESS_ALL_FACILITIES
+  SR_CSV_UPLOADER_PILOT
+  VIEW_ARCHIVED_FACILITIES
 }
 
 enum Role {
   ENTRY_ONLY
   USER
   ADMIN
+  TEST_RESULT_UPLOAD_USER
 }
 
 enum TestCorrectionStatus {

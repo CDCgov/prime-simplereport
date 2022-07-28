@@ -1598,6 +1598,7 @@ databaseChangeLog:
         - sql:
             remarks: Create migrations user to indicate records created by migration rather than by a human.
             sql: |
+              SET search_path TO ${database.defaultSchemaName};
               INSERT INTO ${database.defaultSchemaName}.api_user
               (internal_id, created_at, updated_at, is_deleted, last_seen, login_email, last_name)
               VALUES (
@@ -2174,7 +2175,7 @@ databaseChangeLog:
                     nullable: false
         - sql:
             remarks: Add constraint to allow for a facility or an organization.
-            sql: ALTER TABLE patient_registration_link ADD CONSTRAINT facility_or_organization CHECK (num_nonnulls(facility_id, organization_id) = 1)
+            sql: ALTER TABLE  ${database.defaultSchemaName}.patient_registration_link ADD CONSTRAINT facility_or_organization CHECK (num_nonnulls(facility_id, organization_id) = 1)
       rollback:
         - dropTable:
             tableName: patient_registration_link
@@ -2560,7 +2561,7 @@ databaseChangeLog:
                 pp.preferred_language,
                 pp.test_result_delivery
               FROM ${database.defaultSchemaName}.person p
-              JOIN patient_preferences pp on pp.internal_id=p.internal_id
+              JOIN ${database.defaultSchemaName}.patient_preferences pp on pp.internal_id=p.internal_id
         - sql: |
             GRANT SELECT ON ${database.defaultSchemaName}.person_no_phi_view TO ${noPhiUsername};
       rollback:
@@ -2747,7 +2748,7 @@ databaseChangeLog:
                   SELECT
                     o.internal_id AS organization_id, f.internal_id AS facility_id, m.migrations_user_id AS migrations_user_id
                   FROM
-                    facility AS f 
+                    ${database.defaultSchemaName}.facility AS f 
                     FULL OUTER JOIN ${database.defaultSchemaName}.patient_registration_link AS p ON f.internal_id = p.facility_id 
                     FULL OUTER JOIN ${database.defaultSchemaName}.organization AS o ON o.internal_id = p.organization_id
                     CROSS JOIN migration_user AS m
@@ -2881,7 +2882,7 @@ databaseChangeLog:
                 pp.preferred_language,
                 pp.test_result_delivery
               FROM ${database.defaultSchemaName}.person p
-              JOIN patient_preferences pp on pp.internal_id=p.internal_id
+              JOIN ${database.defaultSchemaName}.patient_preferences pp on pp.internal_id=p.internal_id
         - sql: |
             GRANT SELECT ON ${database.defaultSchemaName}.person_no_phi_view TO ${noPhiUsername};
       rollback:
@@ -3454,7 +3455,7 @@ databaseChangeLog:
         - sql:
             remarks: Populate new `emails` column with value from patient `email`
             sql: |
-              UPDATE person SET emails = ARRAY[email] WHERE email IS NOT NULL;
+              UPDATE ${database.defaultSchemaName}.person SET emails = ARRAY[email] WHERE email IS NOT NULL;
       rollback:
         - dropColumn:
             tableName: person
@@ -3469,7 +3470,7 @@ databaseChangeLog:
         - sql:
             remarks: Populate new `emails` column with value from patient `email`
             sql: |
-              UPDATE person SET emails = ARRAY[email] WHERE email IS NOT NULL;
+              UPDATE ${database.defaultSchemaName}.person SET emails = ARRAY[email] WHERE email IS NOT NULL;
       rollback:
         - sql:
             sql: |
@@ -3917,3 +3918,201 @@ databaseChangeLog:
             selectQuery: SELECT id, event_timestamp, request_id, api_user_id, is_admin_user, user_permissions, organization_id, patient_link_id, response_code FROM ${database.defaultSchemaName}.api_audit_event
         - sql: |
             GRANT SELECT ON TABLE ${database.defaultSchemaName}.api_audit_event_no_phi TO ${noPhiUsername};
+  - changeSet:
+      id: modify-upload-table
+      author: dsass@skylight.digital
+      comment: remove facility id column and change data type of error and warning columns to json
+      changes:
+        - tagDatabase:
+            tag: alter-upload-table
+        - dropColumn:
+            tableName: upload
+            columnName: facility_id
+        - modifyDataType:
+            tableName: upload
+            columnName: errors
+            newDataType: jsonb
+        - modifyDataType:
+            tableName: upload
+            columnName: warnings
+            newDataType: jsonb
+      rollback:
+        - addColumn:
+            tableName: upload
+            columns:
+              - column:
+                  name: facility_id
+                  remarks: The facility id that uploaded the data.
+                  type: uuid
+                  constraints:
+                    nullable: false
+                    foreignKeyName: fk__upload__facility
+                    references: facility(internal_id)
+        - sql:
+            sql: |
+              ALTER TABLE ${database.defaultSchemaName}.upload ALTER COLUMN errors TYPE text;
+              ALTER TABLE ${database.defaultSchemaName}.upload ALTER COLUMN warnings TYPE text;
+  - changeSet:
+        id: update-no-phi-user-view-of-org-queue-table
+        author: bob@skylight.digital
+        comment: Add the organization_queue's is_deleted column to the view permissions of the no-phi-user so we can see it in metabase
+        changes:
+          - tagDatabase:
+              tag: update-no-phi-user-view-of-org-queue-table
+          - createView:
+              viewName: org_queue_no_phi_is_deleted
+              remarks: A subset of the organization_queue table with columns containing PHI removed.
+              replaceIfExists: true
+              fullDefinition: false
+              selectQuery: SELECT internal_id, created_at, updated_at, organization_name, organization_external_id, verified_organization_id, is_deleted FROM ${database.defaultSchemaName}.organization_queue
+          - sql:
+              sql: GRANT SELECT ON ${database.defaultSchemaName}.org_queue_no_phi_is_deleted TO ${noPhiUsername};
+        rollback:
+          - dropView:
+              viewName: org_queue_no_phi_is_deleted
+  - changeSet:
+      id: backfill-results-table
+      author: emma@skylight.digital
+      comment: backfill the new results table with existing results from TestOrders
+      changes:
+        - tagDatabase:
+            tag: backfill-results-table
+        - sql:
+            sql: |
+              INSERT INTO ${database.defaultSchemaName}.result
+              SELECT
+                gen_random_uuid(),
+                t.created_at,
+                t.created_by,
+                t.updated_at,
+                t.updated_by,
+                FALSE,
+                t.test_event_id,
+                t.internal_id,
+                (SELECT d.internal_id from ${database.defaultSchemaName}.supported_disease d WHERE d.name='COVID-19'),
+                CASE WHEN t.result='POSITIVE' THEN '260373001' WHEN t.result='NEGATIVE' THEN '260415000' WHEN t.result='UNDETERMINED' THEN '455371000124106' END,
+                t.result
+              FROM ${database.defaultSchemaName}.test_order t
+              LEFT JOIN ${database.defaultSchemaName}.result ON t.internal_id=${database.defaultSchemaName}.result.test_order_id 
+              WHERE ${database.defaultSchemaName}.result.test_order_id IS NULL AND t.result IS NOT NULL;
+      rollback:
+        sql: SELECT 'foo';
+  - changeSet:
+      id: backfill-results-table-with-removals-and-corrections
+      author: emma@skylight.digital
+      comment: backfill the new results table with TestEvents that have been removed or corrected
+      changes:
+        - tagDatabase:
+            tag: backfill-results-table-with-removals-and-corrections
+        - sql:
+            sql: |
+              INSERT INTO ${database.defaultSchemaName}.result
+              SELECT
+                gen_random_uuid(),
+                t.created_at,
+                t.created_by,
+                t.updated_at,
+                t.updated_by,
+                FALSE,
+                t.internal_id,
+                t.test_order_id,
+                (SELECT d.internal_id from ${database.defaultSchemaName}.supported_disease d WHERE d.name='COVID-19'),
+                CASE WHEN t.result='POSITIVE' THEN '260373001' WHEN t.result='NEGATIVE' THEN '260415000' WHEN t.result='UNDETERMINED' THEN '455371000124106' END,
+                t.result
+              FROM ${database.defaultSchemaName}.test_event t
+              LEFT JOIN ${database.defaultSchemaName}.result ON t.internal_id=${database.defaultSchemaName}.result.test_event_id 
+              WHERE ${database.defaultSchemaName}.result.test_event_id IS NULL AND t.result IS NOT NULL;
+      rollback:
+        sql: SELECT 'foo';
+  - changeSet:
+      id: create-feature-flag-table
+      author: johanna@skylight.digital
+      comment: creates the feature flag table which will host flags that control visibility of features at the application level
+      changes:
+        - tagDatabase:
+            tag: create-feature-flag-table
+        - createTable:
+            tableName: feature_flag
+            remarks: feature flags to control visibility of features at the application level.
+            columns:
+              - column:
+                  name: internal_id
+                  type: uuid
+                  remarks: The internal database identifier for this entity.
+                  constraints:
+                    primaryKey: true
+                    nullable: false
+              - column:
+                  name: name
+                  type: text
+                  remarks: The name of the flag. It should describe the feature it represents.
+                  constraints:
+                    nullable: false
+              - column:
+                  name: value
+                  type: boolean
+                  remarks: The value of the flag. It indicates if the feature is enable or disable for the app.
+                  constraints:
+                    nullable: false
+              - column:
+                  name: created_at
+                  type: DATETIME
+                  remarks: The creation timestamp for this entity.
+                  constraints:
+                    nullable: false
+              - column:
+                  name: created_by
+                  type: uuid
+                  remarks: The user who created this entity.
+                  constraints:
+                    nullable: false
+                    foreignKeyName: fk__anyentity__created_by
+                    references: api_user
+              - column:
+                  name: updated_at
+                  type: DATETIME
+                  remarks: The timestamp for the most recent update of this entity.
+                  constraints:
+                    nullable: false
+              - column:
+                  name: updated_by
+                  type: uuid
+                  remarks: The user who most recently updated this entity.
+                  constraints:
+                    nullable: false
+                    references: api_user
+                    foreignKeyName: fk__anyentity__updated_by
+        - sql: |
+            GRANT SELECT ON ${database.defaultSchemaName}.feature_flag TO ${noPhiUsername};
+      rollback:
+        dropTable:
+          tableName: feature_flag
+  - changeSet:
+      id: insert-multiplex-flag
+      author: johanna@skylight.digital
+      comment: inserts multiplex flag in table
+      changes:
+        - tagDatabase:
+            tag: insert-multiplex-flag
+        - sql:
+            remarks: Insert multiplexEnabled flag with value equal true.
+            sql: |
+              WITH migration_user as (
+                 SELECT internal_id as migration_user_id
+                 FROM ${database.defaultSchemaName}.api_user
+                 WHERE login_email = '${migrations_user_email}'
+               )
+              INSERT INTO ${database.defaultSchemaName}.feature_flag (internal_id, name, value,
+              created_at, created_by, updated_at, updated_by)
+              SELECT
+                gen_random_uuid(),
+                'multiplexEnabled',
+                true,
+                now(),
+                migration_user_id,
+                now(),
+                migration_user_id
+              FROM migration_user
+      rollback:
+        truncateTable:
+          tableName: feature_flag

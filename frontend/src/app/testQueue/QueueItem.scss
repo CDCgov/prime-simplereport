@@ -30,6 +30,14 @@
     padding: 0.5rem 0 0.5rem 15px;
   }
 
+  .card-correction-label {
+    color: #ffbe2e;
+  }
+
+  .card-correction-input {
+    border: 1px solid #ffbe2e;
+  }
+
   .card-test-input {
     height: 34px;
     margin-right: 12px;
@@ -101,4 +109,38 @@
   height: 40px;
   width: 200px;
   margin-top: 8px;
+}
+
+.multiplex-result-form {
+  display: flex;
+  flex-flow: column nowrap;
+  justify-content: space-between;
+  height: 100%;
+}
+
+.prime-test-result-submit {
+  align-items: center;
+
+  .usa-button.prime-multiplex-btn {
+    width: 100px;
+    margin: 0;
+  }
+
+  div.usa-form-group {
+    margin-top: 0;
+  }
+
+  .usa-tooltip {
+    margin-right: 7px;
+
+    .usa-tooltip__body {
+      right: 20px;
+
+      @media (max-width: 619px) {
+        right: -100px;
+        bottom: 8px;
+        width: calc(100% - 60px);
+      }
+    }
+  }
 }

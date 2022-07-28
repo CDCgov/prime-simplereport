@@ -110,3 +110,9 @@ Cypress.Commands.add("selectFacility", () => {
     }
   });
 });
+
+Cypress.Commands.add("removeOrganizationAccess", () => {
+  cy.visit("/admin/tenant-data-access");
+  cy.contains("Cancel access").click();
+  cy.wait(5)
+});

@@ -5,6 +5,7 @@ const NO = "No";
 const OTHER = "Otra";
 const REFUSED = "Prefiero no responder";
 const UNKNOWN = "Desconocido";
+const NOT_SURE = "No estoy seguro/a";
 const POSITIVE = "Positivo";
 const NEGATIVE = "Negativo";
 const UNDETERMINED = "No concluyente";
@@ -29,6 +30,15 @@ export const es: LanguageConfig = {
         NEGATIVE,
         UNDETERMINED,
         UNKNOWN,
+      },
+      testResultsSymbols: {
+        POSITIVE: "(+)",
+        NEGATIVE: "(-)",
+      },
+      disease: {
+        COVID19: "COVID-19",
+        FLUA: "Flu A",
+        FLUB: "Flu B",
       },
       role: {
         STAFF: "Personal",
@@ -64,6 +74,11 @@ export const es: LanguageConfig = {
         YES,
         NO,
         UNKNOWN,
+      },
+      yesNoNotSure: {
+        YES,
+        NO,
+        NOT_SURE,
       },
       date: {
         month: "Mes",
@@ -166,7 +181,7 @@ export const es: LanguageConfig = {
             "Por lo general, este es el género que está escrito en su certificado de nacimiento original.",
         },
         other: {
-          heading: "Otro",
+          heading: "Información adicional",
           congregateLiving: {
             heading:
               "¿Reside usted en un entorno compartido por muchas personas?",
@@ -243,6 +258,9 @@ export const es: LanguageConfig = {
     },
     testResult: {
       result: "Resultado de SARS-CoV-2",
+      covidResultHeader: "Resultado de la prueba: COVID-19",
+      multiplexResultHeader:
+        "Resultados de las pruebas: COVID-19 y la influenza",
       downloadResult: "Descargar resultado",
       patient: "Paciente",
       patientDetails: "Detalles del paciente",
@@ -257,7 +275,6 @@ export const es: LanguageConfig = {
       unknown: UNKNOWN,
       testDevice: "Dispositivo de prueba",
       id: "Número de identificación de la prueba",
-      meaning: "¿Qué significa mi resultado?",
       information:
         "Para obtener más información, visite <0>CDC.gov</0> o llame al 1-800-CDC-INFO (1-800-232-4636). Usa la <1>herramienta de verificación del condado</1> (espanol.cdc.gov/coronavirus/2019-ncov/your-health/covid-by-county.html) para comprender su nivel comunitario (riesgo de COVID-19 y capacidad hospitalaria en su área). ), consejos para la prevención y cómo encontrar vacunas, pruebas y recursos de tratamiento. ",
       cdcLink: "https://espanol.cdc.gov/",
@@ -277,6 +294,7 @@ export const es: LanguageConfig = {
         npi: "Número de NPI",
       },
       notes: {
+        h1: "Para el COVID-19:",
         meaning:
           "Las pruebas de antígenos de COVID-19 a veces pueden arrojar resultados inexactos o falsos, y es posible que se " +
           "necesiten pruebas de seguimiento. Continúe practicando el distanciamiento social y usando mascarilla. Comuníquese " +
@@ -336,6 +354,9 @@ export const es: LanguageConfig = {
             li9: "Náuseas o vómitos",
             li10: "Diarrea",
           },
+          moreInformation:
+            "Para obtener más información, por favor visite el sitio web de los <0>Centros para el Control y la Prevención de\n" +
+            "Enfermedades (CDC)</0> o comuníquese con su departamento de salud local.",
         },
         inconclusive: {
           p0:
@@ -345,6 +366,25 @@ export const es: LanguageConfig = {
           p1:
             "Programe una cita para que le realicen otra prueba lo antes posible. Si se ha realizado la prueba porque tiene síntomas de COVID-19, se recomienda que se " +
             "autoaísle hasta que obtenga los resultados de la nueva prueba.",
+        },
+      },
+      fluNotes: {
+        h1: "Para influenza A y B:",
+        positive: {
+          p0:
+            "La mayoría de las personas con influenza (gripe) tienen un caso leve de la enfermedad y se pueden " +
+            "recuperar en casa. Quédate en casa y evita el contacto con los demás hasta por lo menos 24 horas " +
+            "después de que haya desaparecido la fiebre, excepto para obtener atención médica o para otras " +
+            "necesidades. Ponte una mascarilla si sales de casa, o cúbrete con un pañuelo desechable la nariz y la " +
+            "boca al toser y estornudar. Lávate las manos con frecuencia.",
+          p1:
+            "<0>Las personas con un riesgo mayor de presentar complicaciones relacionadas con la influenza</0> " +
+            "(https://espanol.cdc.gov/flu/highrisk/index.htm) deben contactar a un médico lo más pronto posible " +
+            "para ver si se recomienda el tratamiento antiviral.",
+          p2:
+            "Para obtener más información, visita <0>Influenza: qué hacer en caso de enfermarse</0> (https://espanol.cdc.gov/flu/treatment/takingcare.htm).",
+          highRiskLink: "https://espanol.cdc.gov/flu/highrisk/index.htm",
+          treatmentLink: "https://espanol.cdc.gov/flu/treatment/takingcare.htm",
         },
       },
       tos: {

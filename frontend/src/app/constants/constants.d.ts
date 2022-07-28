@@ -12,6 +12,7 @@ type YesNo = "YES" | "NO";
 type Role = "STAFF" | "RESIDENT" | "STUDENT" | "VISITOR" | "";
 type PhoneType = "MOBILE" | "LANDLINE" | "UNKNOWN";
 type YesNoUnknown = YesNo | "UNKNOWN";
+type YesNoNotSure = YesNo | "NOT_SURE";
 type TribalAffiliation =
   | "1"
   | "2"
@@ -625,7 +626,7 @@ type Language =
   | "Aromanian; Arumanian; Macedo-Romanian"
   | "Bantu (other)"
   | "Bengali"
-  | "Braile"
+  | "Braille"
   | "Burmese"
   | "Cambodian"
   | "Cantonese"

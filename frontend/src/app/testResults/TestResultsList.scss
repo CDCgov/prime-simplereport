@@ -1,6 +1,18 @@
 @import "../../scss/settings/app-settings.scss";
 
 .sr-test-results-list {
+  .sticky-heading {
+    position: sticky;
+    top: 0;
+    background-color: inherit;
+    z-index: 10;
+    box-shadow: 0 4px 12px rgb(0 0 0 / 20%);
+
+    .usa-table {
+      margin-bottom: 0;
+    }
+  }
+
   .sr-more-test-results {
     display: flex;
     justify-content: center;
@@ -11,10 +23,6 @@
   .sr-test-result-row td {
     /* override USWDS force-white */
     background: inherit;
-  }
-
-  .sr-test-result-row:hover {
-    background: $theme-color-base-lightest;
   }
 
   .sr-test-result-row--removed {
@@ -77,11 +85,12 @@
   .sr-test-result-row td {
     padding-left: 12px;
     padding-right: 12px;
+    word-wrap: anywhere;
 
     &.patient-name-cell {
-      padding-left: 8px;
+      padding-left: 1.5rem;
       padding-right: 12px;
-      width: 20%;
+      width: 15%;
     }
 
     &.test-date-cell {
@@ -93,20 +102,26 @@
     }
 
     &.test-facility-cell {
-      width: 20%;
+      width: 16%;
     }
 
     &.test-device-cell {
-      width: 28%;
+      width: 16%;
     }
 
     &.submitted-by-cell {
-      width: 14%;
+      width: 10%;
     }
 
     &.actions-cell {
-      padding-right: 8px;
+      padding-right: 1.5rem;
+      word-wrap: break-word;
+      width: 7%;
     }
+  }
+
+  div[title="filtered-result"] .usa-table {
+    margin-top: 0;
   }
 
   .usa-table td {

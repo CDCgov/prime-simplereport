@@ -3,6 +3,7 @@ const NO = "No";
 const OTHER = "Other";
 const REFUSED = "Prefer not to answer";
 const UNKNOWN = "Unknown";
+const NOT_SURE = "Not sure";
 
 export const en = {
   translation: {
@@ -23,6 +24,15 @@ export const en = {
         NEGATIVE: "Negative",
         UNDETERMINED: "Inconclusive",
         UNKNOWN: UNKNOWN,
+      },
+      testResultsSymbols: {
+        POSITIVE: "(+)",
+        NEGATIVE: "(-)",
+      },
+      disease: {
+        COVID19: "COVID-19",
+        FLUA: "Flu A",
+        FLUB: "Flu B",
       },
       role: {
         STAFF: "Staff",
@@ -58,6 +68,11 @@ export const en = {
         YES,
         NO,
         UNKNOWN,
+      },
+      yesNoNotSure: {
+        YES,
+        NO,
+        NOT_SURE,
       },
       date: {
         month: "Month",
@@ -122,7 +137,7 @@ export const en = {
         contact: {
           heading: "Contact information",
           helpText:
-            "You're responsible for entering the correct contact information, following applicable federal and state laws.",
+            "You're responsible for entering correct contact information, following applicable federal and state laws.",
           primaryPhoneNumber: "Primary phone number",
           additionalPhoneNumber: "Additional phone number",
           phoneType: "Phone type",
@@ -156,9 +171,10 @@ export const en = {
             "This is usually the gender that is written on your original birth certificate.",
         },
         other: {
-          heading: "Other",
+          heading: "Other information",
           congregateLiving: {
-            heading: "Are you a resident in a congregate living setting?",
+            heading:
+              "Are you a resident in a group or shared housing facility?",
             helpText:
               "For example: nursing home, group home, prison, jail, or military",
           },
@@ -232,6 +248,8 @@ export const en = {
     },
     testResult: {
       result: "SARS-CoV-2 result",
+      covidResultHeader: "Test result: COVID-19",
+      multiplexResultHeader: "Test results: COVID-19 and flu",
       downloadResult: "Download result",
       patient: "Patient",
       patientDetails: "Patient details",
@@ -246,7 +264,6 @@ export const en = {
       unknown: "Unknown",
       testDevice: "Test device",
       id: "Test ID",
-      meaning: "What does my result mean?",
       information:
         "For more information go to <0>CDC.gov</0> or call 1-800-CDC-INFO (1-800-232-4636). Use the <1>County Check Tool</1> (cdc.gov/coronavirus/2019-ncov/your-health/covid-by-county.html) to understand your Community Level (COVID-19 risk and hospital capacity in your area), tips for prevention, and how to find vaccine, testing, and treatment resources.",
       cdcLink: "https://www.cdc.gov/",
@@ -266,8 +283,9 @@ export const en = {
         npi: "NPI",
       },
       notes: {
+        h1: "For COVID-19:",
         meaning:
-          "COVID-19 antigen tests can sometimes provid inaccurate or false results and follow up testing may be needed. Continue " +
+          "COVID-19 antigen tests can sometimes provide inaccurate or false results and follow up testing may be needed. Continue " +
           "social distancing and wearing a mask. Contact your health care provider to determine if additional " +
           "testing is needed especially if you experience any of these  symptoms.",
         positive: {
@@ -320,6 +338,9 @@ export const en = {
             li9: "Nausea or vomiting",
             li10: "Diarrhea",
           },
+          moreInformation:
+            "For more information, please visit the <0>Centers for Disease Control and Prevention (CDC)</0> website or contact\n" +
+            "your local health department.",
         },
         inconclusive: {
           p0:
@@ -329,6 +350,19 @@ export const en = {
           p1:
             "Please make an appointment for another test as soon as possible. If you’ve gotten tested due to COVID-19 symptoms, it is " +
             "recommended that you self-isolate until you get your new test results.",
+        },
+      },
+      fluNotes: {
+        h1: "For flu A and B:",
+        positive: {
+          p0:
+            "Most people with flu have mild illness and can recover at home. Stay at home and avoid contact with others until at least 24 hours after your fever is gone, except to get medical care or other necessities. Wear a face mask if you leave home, or cover coughs and sneezes with a tissue. Wash your hands often.",
+          p1:
+            "<0>People at Higher Risk of Developing Flu–Related Complications</0> (cdc.gov/flu/highrisk) should contact a doctor as soon as possible to see if antiviral treatment is recommended.",
+          p2:
+            "For more information, visit <0> Flu: What To Do If You Get Sick</0> (cdc.gov/flu/treatment/takingcare.htm).",
+          highRiskLink: "https://www.cdc.gov/flu/highrisk",
+          treatmentLink: "https://www.cdc.gov/flu/treatment/takingcare.htm",
         },
       },
       tos: {

@@ -1,17 +1,21 @@
 import React, { useEffect, useState } from "react";
 import { gql, useQuery } from "@apollo/client";
-import { TransitionGroup, CSSTransition } from "react-transition-group";
+import { CSSTransition, TransitionGroup } from "react-transition-group";
 import { useLocation } from "react-router-dom";
+import { useSelector } from "react-redux";
 
 import { showError } from "../utils";
 import { useSelectedFacility } from "../facilitySelect/useSelectedFacility";
 import { TestCorrectionReason } from "../testResults/TestResultCorrectionModal";
+import { LinkWithQuery } from "../commonComponents/LinkWithQuery";
+import { appPermissions, hasPermission } from "../permissions";
 
 import AddToQueueSearch, {
   StartTestProps,
 } from "./addToQueue/AddToQueueSearch";
-import QueueItem, { TestResult } from "./QueueItem";
-import { TestQueuePerson, AoEAnswers } from "./AoEForm/AoEForm";
+import QueueItem from "./QueueItem";
+import { AoEAnswers, TestQueuePerson } from "./AoEForm/AoEForm";
+import "./TestQueue.scss";
 
 const pollInterval = 10_000;
 
@@ -30,20 +34,31 @@ const onExiting = (node: HTMLElement) => {
   node.style.pointerEvents = "none";
 };
 
-const emptyQueueMessage = (
-  <div className="grid-container prime-center card-container">
-    <div className="grid-row">
-      <div className="usa-card__body">
-        <p>
-          There are no tests running. Search for a person to start their test{" "}
-        </p>
+const emptyQueueMessage = (canUseCsvUploader: boolean) => {
+  return (
+    <div className="grid-container prime-center card-container queue-container-wide">
+      <div className="grid-row">
+        <div className="usa-card__body">
+          <p>
+            There are no tests running. Search for a person to start their test.
+          </p>
+          {canUseCsvUploader && (
+            <p>
+              To add results in bulk using a CSV file, go to{" "}
+              <LinkWithQuery to="/results/upload/submit">
+                <strong>Upload spreadsheet</strong>
+              </LinkWithQuery>
+              .
+            </p>
+          )}
+        </div>
       </div>
     </div>
-  </div>
-);
+  );
+};
 
 export const queueQuery = gql`
-  query GetFacilityQueue($facilityId: ID!) {
+  query GetFacilityQueueMultiplex($facilityId: ID!) {
     queue(facilityId: $facilityId) {
       internalId
       pregnancy
@@ -78,6 +93,12 @@ export const queueQuery = gql`
         }
       }
       result
+      results {
+        disease {
+          name
+        }
+        testResult
+      }
       dateTested
       correctionStatus
       reasonForCorrection
@@ -100,6 +121,9 @@ export const queueQuery = gql`
         internalId
         name
         testLength
+        supportedDiseases {
+          name
+        }
       }
       specimenType {
         internalId
@@ -123,6 +147,7 @@ export interface QueueItemData extends AoEAnswers {
   deviceSpecimenType: DeviceSpecimenType;
   patient: TestQueuePerson;
   result: TestResult;
+  results: SRMultiplexResult[];
   dateTested: string;
   correctionStatus: string;
   reasonForCorrection: TestCorrectionReason;
@@ -144,6 +169,10 @@ const TestQueue: React.FC<Props> = ({ activeFacilityId }) => {
   const [startTestPatientId, setStartTestPatientId] = useState<string | null>(
     null
   );
+  const canUseCsvUploader = hasPermission(
+    useSelector((state) => (state as any).user.permissions),
+    appPermissions.featureFlags.SrCsvUploaderPilot
+  );
 
   useEffect(() => {
     const locationState = (location.state as StartTestProps) || {};
@@ -154,7 +183,7 @@ const TestQueue: React.FC<Props> = ({ activeFacilityId }) => {
   }, [location.state]);
 
   useEffect(() => {
-    // Start polling on creation, stop on componenent teardown
+    // Start polling on creation, stop on component teardown
     startPolling(pollInterval);
     return stopPolling;
   }, [startPolling, stopPolling]);
@@ -207,6 +236,7 @@ const TestQueue: React.FC<Props> = ({ activeFacilityId }) => {
           deviceSpecimenType,
           patient,
           result,
+          results,
           dateTested,
           correctionStatus,
           reasonForCorrection,
@@ -238,6 +268,17 @@ const TestQueue: React.FC<Props> = ({ activeFacilityId }) => {
               ) || deviceSpecimenTypes[0];
           }
 
+          let selectedTestResults: SRMultiplexResult[];
+
+          // backwards compatibility
+          if (!results && result) {
+            selectedTestResults = [
+              { disease: { name: "COVID-19" }, testResult: result },
+            ];
+          } else {
+            selectedTestResults = results;
+          }
+
           return (
             <CSSTransition
               key={internalId}
@@ -261,7 +302,7 @@ const TestQueue: React.FC<Props> = ({ activeFacilityId }) => {
                   // the facility queue GraphQL query
                   selectedDeviceSpecimenType.deviceType.testLength as number
                 }
-                selectedTestResult={result}
+                selectedTestResults={selectedTestResults}
                 devices={facility.deviceTypes}
                 deviceSpecimenTypes={deviceSpecimenTypes}
                 refetchQueue={refetch}
@@ -290,7 +331,7 @@ const TestQueue: React.FC<Props> = ({ activeFacilityId }) => {
             onExiting={onEmptyQueueExiting}
             timeout={transitionDuration}
           >
-            {emptyQueueMessage}
+            {emptyQueueMessage(canUseCsvUploader)}
           </CSSTransition>
         )}
       </TransitionGroup>
@@ -303,7 +344,7 @@ const TestQueue: React.FC<Props> = ({ activeFacilityId }) => {
 
   return (
     <main className="prime-home">
-      <div className="grid-container">
+      <div className="grid-container queue-container-wide">
         <div className="position-relative">
           <AddToQueueSearch
             refetchQueue={refetch}

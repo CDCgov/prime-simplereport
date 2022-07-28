@@ -36,6 +36,7 @@ type Facility {
   defaultDeviceType: DeviceType @deprecated(reason: "kept for compatibility")
   orderingProvider: Provider
   patientSelfRegistrationLink: String
+  isDeleted: Boolean
 }
 
 type Provider {
@@ -72,6 +73,7 @@ input UpdateDeviceType {
   loincCode: String!
   swabTypes: [ID!]!
   supportedDiseases: [ID!]!
+  testLength: Int!
 }
 
 type DeviceType {
@@ -228,6 +230,7 @@ type TestOrder {
   deviceType: DeviceType
   deviceSpecimenType: DeviceSpecimenType
   result: String
+  results: [MultiplexResult]
   dateTested: DateTime
   correctionStatus: String
   reasonForCorrection: String
@@ -238,18 +241,25 @@ type TestResult {
   facility: Facility
   patient: Patient
   dateAdded: String
+  dateUpdated: DateTime
   pregnancy: String
   noSymptoms: Boolean
   symptoms: String
   symptomOnset: LocalDate
   deviceType: DeviceType
   result: String
+  results: [MultiplexResult]
   dateTested: DateTime
   testPerformed: TestDescription!
   correctionStatus: String
   reasonForCorrection: String
   createdBy: ApiUser
   patientLink: PatientLink
+}
+
+type MultiplexResult {
+  disease: SupportedDisease
+  testResult: String
 }
 
 type OrganizationLevelDashboardMetrics {
@@ -293,6 +303,41 @@ type PendingOrganization {
   createdAt: DateTime!
 }
 
+type UploadResult {
+  internalId: ID!
+  reportId: ID
+  createdAt: DateTime!
+  status: UploadStatus!
+  recordsCount: Int!
+  warnings: [FeedbackMessage]
+  errors: [FeedbackMessage]
+}
+
+type UploadResponse {
+  reportId: ID!
+  createdAt: DateTime!
+  status: UploadStatus!
+  recordsCount: Int!
+  warnings: [FeedbackMessage]
+  errors: [FeedbackMessage]
+}
+
+type FeedbackMessage {
+  scope: String
+  message: String
+  indices: [Int]
+}
+
+type UploadSubmissionPage {
+  totalElements: Int!
+  content: [UploadResult!]!
+}
+
+input DiseaseResult {
+  diseaseName: String
+  testResult: String
+}
+
 # Queries and mutations for everyday use
 
 type Query {
@@ -306,6 +351,10 @@ type Query {
   supportedDiseases: [SupportedDisease!]!
   specimenType: [SpecimenType]
   deviceSpecimenTypes: [DeviceSpecimenType]
+  facilities(
+    showArchived: Boolean = false
+      @requiredPermissions(allOf: ["VIEW_ARCHIVED_FACILITIES"])
+  ): [Facility]
   patients(
     facilityId: ID
     pageNumber: Int
@@ -313,6 +362,8 @@ type Query {
     showDeleted: Boolean = false
       @requiredPermissions(allOf: ["READ_ARCHIVED_PATIENT_LIST"])
     namePrefixMatch: String
+    includeArchivedFacilities: Boolean = false
+      @requiredPermissions(allOf: ["VIEW_ARCHIVED_FACILITIES"])
   ): [Patient]
     @requiredPermissions(anyOf: ["SEARCH_PATIENTS", "READ_PATIENT_LIST"])
   patientsCount(
@@ -373,6 +424,15 @@ type Query {
     @requiredPermissions(allOf: ["MANAGE_USERS"])
   user(id: ID!): User @requiredPermissions(allOf: ["MANAGE_USERS"])
   whoami: User!
+  uploadSubmission(id: ID!): UploadResponse!
+    @requiredPermissions(allOf: ["SR_CSV_UPLOADER_PILOT"])
+  uploadSubmissions(
+    startDate: DateTime
+    endDate: DateTime
+    pageNumber: Int
+    pageSize: Int
+  ): UploadSubmissionPage!
+    @requiredPermissions(allOf: ["SR_CSV_UPLOADER_PILOT"])
 }
 
 type Mutation {
@@ -587,11 +647,25 @@ type Mutation {
     patientId: ID!
     dateTested: DateTime
   ): AddTestResultResponse @requiredPermissions(allOf: ["SUBMIT_TEST"])
+  addTestResultMultiplex(
+    deviceId: String!
+    deviceSpecimenType: ID
+    results: [DiseaseResult]!
+    patientId: ID!
+    dateTested: DateTime
+  ): AddTestResultResponse @requiredPermissions(allOf: ["SUBMIT_TEST"])
   editQueueItem(
     id: ID!
     deviceId: String
     deviceSpecimenType: ID
     result: String
+    dateTested: DateTime
+  ): TestOrder @requiredPermissions(allOf: ["UPDATE_TEST"])
+  editQueueItemMultiplex(
+    id: ID!
+    deviceId: String
+    deviceSpecimenType: ID
+    results: [DiseaseResult]
     dateTested: DateTime
   ): TestOrder @requiredPermissions(allOf: ["UPDATE_TEST"])
   correctTestMarkAsError(id: ID!, reason: String): TestResult
@@ -625,4 +699,6 @@ type Mutation {
   sendPatientLinkEmailByTestEventId(testEventId: ID!): Boolean
   updateOrganization(type: String!): String
     @requiredPermissions(allOf: ["EDIT_ORGANIZATION"])
+  uploadTestResultCSV(testResultList: Upload!): UploadResult
+    @requiredPermissions(allOf: ["SR_CSV_UPLOADER_PILOT"])
 }

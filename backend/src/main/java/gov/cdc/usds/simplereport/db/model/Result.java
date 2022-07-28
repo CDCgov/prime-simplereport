@@ -1,7 +1,9 @@
 package gov.cdc.usds.simplereport.db.model;
 
 import gov.cdc.usds.simplereport.api.Translators;
+import gov.cdc.usds.simplereport.db.model.auxiliary.SupportedDiseaseTestResult;
 import gov.cdc.usds.simplereport.db.model.auxiliary.TestResult;
+import java.util.Objects;
 import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.EnumType;
@@ -19,7 +21,7 @@ import org.hibernate.annotations.Type;
 @Entity
 public class Result extends EternalAuditedEntity {
 
-  @ManyToOne(optional = false)
+  @ManyToOne
   @JoinColumn(name = "test_event_id")
   private TestEvent testEvent;
 
@@ -55,7 +57,46 @@ public class Result extends EternalAuditedEntity {
     this.testResult = testResult;
   }
 
+  /* Copy constructor, used for corrections and removals */
+  public Result(Result originalResult, TestEvent testEvent) {
+    this.testEvent = testEvent;
+    this.testOrder = originalResult.testOrder;
+    this.disease = originalResult.disease;
+    this.resultLOINC = originalResult.resultLOINC;
+    this.testResult = originalResult.testResult;
+  }
+
   public void setTestEvent(TestEvent event) {
     this.testEvent = event;
+  }
+
+  public void setResult(TestResult testResult) {
+    this.resultLOINC = Translators.convertTestResultToLoinc(testResult);
+    this.testResult = testResult;
+  }
+
+  public SupportedDiseaseTestResult getDiseaseResult() {
+    return new SupportedDiseaseTestResult(this.disease, this.testResult);
+  }
+
+  @Override
+  public boolean equals(Object o) {
+    if (this == o) {
+      return true;
+    }
+    if (o == null || getClass() != o.getClass()) {
+      return false;
+    }
+    Result that = (Result) o;
+    return Objects.equals(testEvent, that.testEvent)
+        && Objects.equals(testOrder, that.testOrder)
+        && Objects.equals(disease, that.disease)
+        && Objects.equals(resultLOINC, that.resultLOINC)
+        && Objects.equals(testResult, that.testResult);
+  }
+
+  @Override
+  public int hashCode() {
+    return Objects.hash(testEvent, testOrder, disease, resultLOINC, testResult);
   }
 }

@@ -1,10 +1,9 @@
 import qs from "querystring";
 
 import { useLocation, useNavigate, useParams } from "react-router-dom";
-import { gql, useLazyQuery, useQuery } from "@apollo/client";
+import { useLazyQuery } from "@apollo/client";
 import React, {
   ChangeEventHandler,
-  SetStateAction,
   useCallback,
   useEffect,
   useMemo,
@@ -12,16 +11,13 @@ import React, {
   useState,
 } from "react";
 import moment from "moment";
-import classnames from "classnames";
 import { faSlidersH } from "@fortawesome/free-solid-svg-icons";
 import { DatePicker, Label } from "@trussworks/react-uswds";
 import { useSelector } from "react-redux";
 
-import { PATIENT_TERM_CAP } from "../../config/constants";
-import { displayFullName } from "../utils";
-import { formatDateWithTimeOption, isValidDate } from "../utils/date";
-import { ActionsMenu } from "../commonComponents/ActionsMenu";
-import { getParameterFromUrl, getUrl } from "../utils/url";
+import { displayFullName, facilityDisplayName } from "../utils";
+import { isValidDate } from "../utils/date";
+import { getParameterFromUrl } from "../utils/url";
 import { useDocumentTitle, useOutsideClick } from "../utils/hooks";
 import Pagination from "../commonComponents/Pagination";
 import {
@@ -42,6 +38,12 @@ import { Patient } from "../patients/ManagePatients";
 import SearchResults from "../testQueue/addToQueue/SearchResults";
 import Select from "../commonComponents/Select";
 import { useSelectedFacility } from "../facilitySelect/useSelectedFacility";
+import { appPermissions, hasPermission } from "../permissions";
+import {
+  useGetAllFacilitiesQuery,
+  useGetFacilityResultsMultiplexQuery,
+  useGetResultsCountByFacilityQuery,
+} from "../../generated/graphql";
 
 import TestResultPrintModal from "./TestResultPrintModal";
 import TestResultTextModal from "./TestResultTextModal";
@@ -49,6 +51,11 @@ import EmailTestResultModal from "./EmailTestResultModal";
 import TestResultCorrectionModal from "./TestResultCorrectionModal";
 import TestResultDetailsModal from "./TestResultDetailsModal";
 import DownloadResultsCSVButton from "./DownloadResultsCsvButton";
+import ResultsTable, {
+  generateTableHeaders,
+} from "./resultsTable/ResultsTable";
+
+export const ALL_FACILITIES_ID = "all";
 
 export type Results = keyof typeof TEST_RESULT_DESCRIPTIONS;
 
@@ -59,97 +66,9 @@ export const byDateTested = (a: any, b: any) => {
   return -1;
 };
 
-function testResultRows(
-  testResults: any,
-  setPrintModalId: SetStateAction<any>,
-  setMarkCorrectionId: SetStateAction<any>,
-  setDetailsModalId: SetStateAction<any>,
-  setTextModalId: SetStateAction<any>,
-  setEmailModalTestResultId: SetStateAction<any>
-) {
-  if (testResults.length === 0) {
-    return (
-      <tr>
-        <td>No results</td>
-      </tr>
-    );
-  }
-
-  // `sort` mutates the array, so make a copy
-  return [...testResults].sort(byDateTested).map((r) => {
-    const actionItems = [];
-    actionItems.push({
-      name: "Print result",
-      action: () => setPrintModalId(r.internalId),
-    });
-    if (r.patient.email) {
-      actionItems.push({
-        name: "Email result",
-        action: () => setEmailModalTestResultId(r.internalId),
-      });
-    }
-    actionItems.push({
-      name: "Text result",
-      action: () => setTextModalId(r.internalId),
-    });
-
-    const removed = r.correctionStatus === "REMOVED";
-    if (!removed) {
-      actionItems.push({
-        name: "Correct result",
-        action: () => setMarkCorrectionId(r.internalId),
-      });
-    }
-    actionItems.push({
-      name: "View details",
-      action: () => setDetailsModalId(r.internalId),
-    });
-    return (
-      <tr
-        key={r.internalId}
-        title={removed ? "Marked as error" : ""}
-        className={classnames(
-          "sr-test-result-row",
-          removed && "sr-test-result-row--removed"
-        )}
-        data-patient-link={
-          r.patientLink
-            ? `${getUrl()}pxp?plid=${r.patientLink.internalId}`
-            : null
-        }
-      >
-        <td className="patient-name-cell">
-          {displayFullName(
-            r.patient.firstName,
-            r.patient.middleName,
-            r.patient.lastName
-          )}
-          <span className="display-block text-base font-ui-2xs">
-            DOB: {formatDateWithTimeOption(r.patient.birthDate)}
-          </span>
-        </td>
-        <td className="test-date-cell">
-          {formatDateWithTimeOption(r.dateTested, true)}
-        </td>
-        <td className="test-result-cell">
-          {TEST_RESULT_DESCRIPTIONS[r.result as Results]}
-        </td>
-        <td className="test-facility-cell">{r.facility.name}</td>
-        <td className="test-device-cell">{r.deviceType.name}</td>
-        <td className="submitted-by-cell">
-          {displayFullName(
-            r.createdBy.nameInfo.firstName,
-            null,
-            r.createdBy.nameInfo.lastName
-          )}
-        </td>
-        <td className="actions-cell">
-          <ActionsMenu items={actionItems} />
-        </td>
-      </tr>
-    );
-  });
-}
+/**
+ * DetachedTestResultsList
+ */
 
 export type FilterParams = {
   patientId?: string | null;
@@ -228,11 +147,12 @@ export const DetachedTestResultsList = ({
     runIf: (q) => q.length >= MIN_SEARCH_CHARACTER_COUNT,
   });
 
-  const validFacilities = useSelector(
-    (state) => ((state as any).facilities as Facility[]) || []
-  );
-
   const allowQuery = debounced.length >= MIN_SEARCH_CHARACTER_COUNT;
+
+  const isOrgAdmin = hasPermission(
+    useSelector((state) => (state as any).user.permissions),
+    appPermissions.settings.canView
+  );
 
   const [
     queryPatients,
@@ -240,8 +160,19 @@ export const DetachedTestResultsList = ({
   ] = useLazyQuery(QUERY_PATIENT, {
     fetchPolicy: "no-cache",
     variables: {
-      facilityId: filterParams.filterFacilityId || activeFacilityId,
+      facilityId:
+        filterParams.filterFacilityId === ALL_FACILITIES_ID
+          ? null
+          : filterParams.filterFacilityId || activeFacilityId,
       namePrefixMatch: queryString,
+      includeArchivedFacilities: isOrgAdmin,
+    },
+  });
+
+  const { data: facilitiesData } = useGetAllFacilitiesQuery({
+    fetchPolicy: "no-cache",
+    variables: {
+      showArchived: isOrgAdmin,
     },
   });
 
@@ -331,14 +262,14 @@ export const DetachedTestResultsList = ({
   }
 
   const testResults = data?.testResults || [];
+  const displayFacilityColumn =
+    filterParams.filterFacilityId === ALL_FACILITIES_ID ||
+    activeFacilityId === ALL_FACILITIES_ID;
 
-  const rows = testResultRows(
-    testResults,
-    setPrintModalId,
-    setMarkCorrectionId,
-    setDetailsModalId,
-    setTextModalId,
-    setEmailModalTestResultId
+  const hasMultiplexResults = testResults.some(
+    (result: any) =>
+      result.results?.length &&
+      result.results.some((r: any) => r.disease.name !== "COVID-19")
   );
 
   const processStartDate = (value: string | undefined) => {
@@ -377,8 +308,33 @@ export const DetachedTestResultsList = ({
     }
   };
 
+  const viewableFacilities: any[] = (facilitiesData?.facilities || []).filter(
+    (e) => e != null
+  );
+
+  const facilityOptions = (isOrgAdmin
+    ? [
+        {
+          label: "All facilities",
+          value: ALL_FACILITIES_ID,
+        },
+      ]
+    : []
+  ).concat(
+    viewableFacilities
+      .sort((a, b) => {
+        if (a.isDeleted && !b.isDeleted) return 1;
+        if (!a.isDeleted && b.isDeleted) return -1;
+        return 0;
+      })
+      .map((f) => ({
+        label: facilityDisplayName(f.name, !!f.isDeleted),
+        value: f.id,
+      }))
+  );
+
   return (
-    <main className="prime-home">
+    <>
       {detailsModalId && (
         <TestResultDetailsModal
           testResultId={detailsModalId}
@@ -387,9 +343,9 @@ export const DetachedTestResultsList = ({
           }}
         />
       )}
-      <div className="grid-container results-wide-container">
-        <div className="grid-row">
-          <div className="prime-container card-container sr-test-results-list">
+      <div className="grid-row">
+        <div className="prime-container card-container sr-test-results-list">
+          <div className="sticky-heading">
             <div className="usa-card__header">
               <h2>
                 Test results
@@ -407,7 +363,7 @@ export const DetachedTestResultsList = ({
                 <DownloadResultsCSVButton
                   filterParams={filterParams}
                   totalEntries={totalEntries}
-                  facilityId={filterParams.filterFacilityId || activeFacilityId}
+                  activeFacilityId={activeFacilityId}
                 />
                 <Button
                   className="sr-active-button"
@@ -518,149 +474,62 @@ export const DetachedTestResultsList = ({
                   defaultSelect
                   onChange={setFilterParams("role")}
                 />
-                {validFacilities && validFacilities.length > 1 ? (
+                {facilityOptions && facilityOptions.length > 1 ? (
                   <Select
                     label="Testing facility"
                     name="facility"
                     value={filterParams.filterFacilityId || activeFacilityId}
-                    options={validFacilities.map((facility) => {
-                      return {
-                        value: facility.id,
-                        label: facility.name,
-                      };
-                    })}
+                    options={facilityOptions}
                     onChange={setFilterParams("filterFacilityId")}
                   />
                 ) : null}
               </div>
             </div>
-            <div className="usa-card__body" title="filtered-result">
-              <table className="usa-table usa-table--borderless width-full">
-                <thead>
-                  <tr>
-                    <th scope="col" className="patient-name-cell">
-                      {PATIENT_TERM_CAP}
-                    </th>
-                    <th scope="col" className="test-date-cell">
-                      Test date
-                    </th>
-                    <th scope="col" className="test-result-cell">
-                      COVID-19
-                    </th>
-                    <th scope="col" className="test-facility-cell">
-                      Testing facility
-                    </th>
-                    <th scope="col" className="test-device-cell">
-                      Test device
-                    </th>
-                    <th scope="col" className="submitted-by-cell">
-                      Submitted by
-                    </th>
-                    <th scope="col" className="actions-cell">
-                      Actions
-                    </th>
-                  </tr>
-                </thead>
-                <tbody>{rows}</tbody>
-              </table>
-            </div>
-            <div className="usa-card__footer">
-              {loading ? (
-                <p>Loading...</p>
-              ) : (
-                <Pagination
-                  baseRoute="/results"
-                  currentPage={pageNumber}
-                  entriesPerPage={entriesPerPage}
-                  totalEntries={totalEntries}
-                />
-              )}
-            </div>
+            <table
+              className="usa-table usa-table--borderless width-full"
+              aria-hidden="true"
+            >
+              <thead>
+                {generateTableHeaders(
+                  hasMultiplexResults,
+                  displayFacilityColumn
+                )}
+              </thead>
+            </table>
+          </div>
+          <div title="filtered-result">
+            <ResultsTable
+              results={testResults}
+              setPrintModalId={setPrintModalId}
+              setMarkCorrectionId={setMarkCorrectionId}
+              setDetailsModalId={setDetailsModalId}
+              setTextModalId={setTextModalId}
+              setEmailModalTestResultId={setEmailModalTestResultId}
+              hasMultiplexResults={hasMultiplexResults}
+              hasFacility={displayFacilityColumn}
+            />
+          </div>
+          <div className="usa-card__footer">
+            {loading ? (
+              <p>Loading...</p>
+            ) : (
+              <Pagination
+                baseRoute="/results"
+                currentPage={pageNumber}
+                entriesPerPage={entriesPerPage}
+                totalEntries={totalEntries}
+              />
+            )}
           </div>
         </div>
       </div>
-    </main>
+    </>
   );
 };
 
-export const resultsCountQuery = gql`
-  query GetResultsCountByFacility(
-    $facilityId: ID
-    $patientId: ID
-    $result: String
-    $role: String
-    $startDate: DateTime
-    $endDate: DateTime
-  ) {
-    testResultsCount(
-      facilityId: $facilityId
-      patientId: $patientId
-      result: $result
-      role: $role
-      startDate: $startDate
-      endDate: $endDate
-    )
-  }
-`;
-
-export const testResultQuery = gql`
-  query GetFacilityResults(
-    $facilityId: ID
-    $patientId: ID
-    $result: String
-    $role: String
-    $startDate: DateTime
-    $endDate: DateTime
-    $pageNumber: Int
-    $pageSize: Int
-  ) {
-    testResults(
-      facilityId: $facilityId
-      patientId: $patientId
-      result: $result
-      role: $role
-      startDate: $startDate
-      endDate: $endDate
-      pageNumber: $pageNumber
-      pageSize: $pageSize
-    ) {
-      internalId
-      dateTested
-      result
-      correctionStatus
-      deviceType {
-        internalId
-        name
-      }
-      patient {
-        internalId
-        firstName
-        middleName
-        lastName
-        birthDate
-        gender
-        lookupId
-        email
-      }
-      createdBy {
-        nameInfo {
-          firstName
-          lastName
-        }
-      }
-      patientLink {
-        internalId
-      }
-      facility {
-        name
-      }
-    }
-  }
-`;
-
 export interface ResultsQueryVariables {
   patientId?: string | null;
-  facilityId: string;
+  facilityId: string | null;
   result?: string | null;
   role?: string | null;
   startDate?: string | null;
@@ -726,28 +595,34 @@ const TestResultsList = () => {
   const pageNumber = Number(urlParams.pageNumber) || 1;
 
   const resultsQueryVariables: ResultsQueryVariables = {
-    facilityId: filterFacilityId || activeFacilityId,
+    facilityId:
+      filterFacilityId === ALL_FACILITIES_ID
+        ? null
+        : filterFacilityId || activeFacilityId,
     pageNumber: pageNumber - 1,
     pageSize: entriesPerPage,
     ...queryParams,
   };
   const countQueryVariables: {
     patientId?: string | null;
-    facilityId: string;
+    facilityId: string | null;
     result?: string | null;
     role?: string | null;
     startDate?: string | null;
     endDate?: string | null;
   } = {
-    facilityId: filterFacilityId || activeFacilityId,
+    facilityId:
+      filterFacilityId === ALL_FACILITIES_ID
+        ? null
+        : filterFacilityId || activeFacilityId,
     ...queryParams,
   };
-
-  const count = useQuery(resultsCountQuery, {
+  const count = useGetResultsCountByFacilityQuery({
     fetchPolicy: "no-cache",
     variables: countQueryVariables,
   });
-  const results = useQuery(testResultQuery, {
+
+  const results = useGetFacilityResultsMultiplexQuery({
     fetchPolicy: "no-cache",
     variables: resultsQueryVariables,
   });
