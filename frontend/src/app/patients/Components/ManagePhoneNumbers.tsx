@@ -54,22 +54,31 @@ const ManagePhoneNumbers: React.FC<Props> = ({
   );
 
   const clearError = useCallback(
-    (idx: number, field: keyof PhoneNumberErrors) => {
+    (
+      idx: number,
+      field: keyof PhoneNumberErrors,
+      secondaryField?: keyof PhoneNumberErrors
+    ) => {
       const newErrors = errors.map((error, i) => {
         if (i !== idx) {
           return error;
         }
-
-        return {
-          ...error,
-          [field]: "",
-        };
+        const newFieldValues = secondaryField
+          ? {
+              ...error,
+              [field]: "",
+              [secondaryField]: "",
+            }
+          : {
+              ...error,
+              [field]: "",
+            };
+        return newFieldValues;
       });
       setErrors(newErrors);
     },
     [errors]
   );
-
   const validationStatus = (idx: number, name: keyof PhoneNumberErrors) => {
     return errors[idx] && errors[idx][name] ? "error" : undefined;
   };
@@ -171,6 +180,7 @@ const ManagePhoneNumbers: React.FC<Props> = ({
 
   const onPhoneNumberRemove = (index: number) => {
     const newPhoneNumbers = Array.from(phoneNumbersOrDefault);
+    clearError(index, "type", "number");
     newPhoneNumbers.splice(index, 1);
     updatePhoneNumbers(newPhoneNumbers);
   };
@@ -204,7 +214,10 @@ const ManagePhoneNumbers: React.FC<Props> = ({
               formObject={phoneNumber}
               validate={(field) => validateField(idx, field)}
               getValidationStatus={() => validationStatus(idx, "number")}
-              onChange={(_) => (value) => onPhoneNumberChange(idx, value)}
+              onChange={(_) => (value) => {
+                onPhoneNumberChange(idx, value);
+                validateField(idx, "type");
+              }}
               errors={errors[idx] || {}}
             />
             {!isPrimary && (

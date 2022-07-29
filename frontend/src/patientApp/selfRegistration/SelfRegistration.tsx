@@ -43,7 +43,6 @@ export const SelfRegistration = () => {
       birthDate,
       ...withoutAddress
     } = person;
-
     const formattedBirthDate = moment(birthDate).format(
       "YYYY-MM-DD"
     ) as ISODate;

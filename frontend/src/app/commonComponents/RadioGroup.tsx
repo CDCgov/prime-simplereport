@@ -60,6 +60,10 @@ const RadioGroup = <T extends string>({
     variant === "horizontal" && "prime-radio--horizontal__container"
   );
 
+  if (name === "phoneType-1") {
+    console.log("here");
+  }
+
   return (
     <div
       className={classnames(

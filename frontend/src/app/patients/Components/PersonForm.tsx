@@ -283,6 +283,7 @@ const PersonForm = (props: Props) => {
           earliestErrorName = name;
         }
       });
+
       // phone/email fields might have multiple entries, so handle those elements
       // via their field ID's
       if (
@@ -329,6 +330,10 @@ const PersonForm = (props: Props) => {
     shouldStartTest: boolean = false
   ) => {
     const person = address ? { ...patient, ...address } : patient;
+    // in the case where we have an empty additional phone number, filter it out
+    person.phoneNumbers = person.phoneNumbers
+      ? person.phoneNumbers.filter((pn) => pn.number && pn.type)
+      : person.phoneNumbers;
     setPatient(person);
     setAddressModalOpen(false);
     setFormChanged(false);
