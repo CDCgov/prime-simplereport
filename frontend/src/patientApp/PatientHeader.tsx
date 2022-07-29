@@ -29,8 +29,7 @@ const PatientHeader = () => {
           <div className="margin-bottom-0" id="basic-logo">
             <div
               className="display-flex flex-align-center"
-              title="Home"
-              aria-label="Home"
+              title="SimpleReport"
             >
               <img
                 className="width-4"
