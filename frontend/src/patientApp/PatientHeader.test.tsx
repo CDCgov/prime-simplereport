@@ -90,5 +90,19 @@ describe("PatientHeader", () => {
         await screen.findByText("Test Org, Test Facility", { exact: false })
       ).toBeInTheDocument();
     });
+
+    it("correctly displays the SimpleReport logo", async () => {
+      render(
+        <MemoryRouter>
+          <Provider store={store}>
+            <PatientHeader />
+          </Provider>
+        </MemoryRouter>
+      );
+
+      expect(
+        await screen.findByAltText("SimpleReport", { exact: false })
+      ).toBeInTheDocument();
+    });
   });
 });
