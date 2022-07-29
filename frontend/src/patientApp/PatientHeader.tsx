@@ -35,7 +35,7 @@ const PatientHeader = () => {
               <img
                 className="width-4"
                 src={siteLogo}
-                alt="{process.env.REACT_APP_TITLE}"
+                alt={process.env.REACT_APP_TITLE}
               />
               <div className="logo-text margin-left-1 display-flex flex-column">
                 <span

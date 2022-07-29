@@ -290,7 +290,7 @@ const Header: React.FC<{}> = () => {
               <img
                 className="width-card desktop:width-full"
                 src={siteLogo}
-                alt="{process.env.REACT_APP_TITLE}"
+                alt={process.env.REACT_APP_TITLE}
               />
             </LinkWithQuery>
             <div className="prime-organization-name">{organization.name}</div>
