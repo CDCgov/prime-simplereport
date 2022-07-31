@@ -81,7 +81,7 @@ jobs:
           client-tarball: ./client.tgz
           okta-enabled: true
           okta-url: https://hhs-prime.oktapreview.com
-          okta-client-id: 0oa1khbp5n2wTfe281d7
+          okta-client-id: 0oa3j1kbqp4ip5Osz1d7
       - name: Save compiled frontend application
         uses: actions/upload-artifact@v2
         if: success()
@@ -92,7 +92,7 @@ jobs:
   deploy:
     runs-on: ubuntu-latest
     environment:
-      name: Dev
+      name: Dev4
       url: https://${{env.DEPLOY_ENV}}.simplereport.gov
     needs: [build-frontend, prerelease-backend]
     steps:

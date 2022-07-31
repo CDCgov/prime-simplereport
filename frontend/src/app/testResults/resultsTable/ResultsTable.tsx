@@ -84,10 +84,17 @@ const generateResultRows = (
         action: () => setEmailModalTestResultId(r.internalId),
       });
     }
-    actionItems.push({
-      name: "Text result",
-      action: () => setTextModalId(r.internalId),
-    });
+
+    if (
+      (r.patient?.phoneNumbers || []).some(
+        (pn: PhoneNumber) => pn.type === "MOBILE"
+      )
+    ) {
+      actionItems.push({
+        name: "Text result",
+        action: () => setTextModalId(r.internalId),
+      });
+    }
 
     const removed = r.correctionStatus === "REMOVED";
     if (!removed) {

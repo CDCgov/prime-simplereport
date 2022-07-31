@@ -1,7 +1,8 @@
 services:
   cypress:
     build:
-      context: cypress
+      context: ./
+      dockerfile: cypress/Dockerfile
     image: ghcr.io/cdcgov/prime-simplereport/cypress:latest
     container_name: cypress
     restart: "no"
@@ -23,7 +24,7 @@ services:
       - ./cypress/stubs/:/app/cypress/stubs/
       - ./cypress/support/:/app/cypress/support/
       - ./cypress/videos/:/app/cypress/videos/
-      - ./cypress/cypress.json:/app/cypress.json
+      - ./cypress.json:/app/cypress.json
       - ./cypress/package.json:/app/package.json
       - ./cypress/yarn.lock:/app/yarn.lock
       - ./cypress/e2e.sh:/app/e2e.sh
@@ -52,6 +53,7 @@ services:
       REACT_APP_OKTA_ENABLED: "true"
       REACT_APP_DISABLE_MAINTENANCE_BANNER: "true"
       GIT_DISCOVERY_ACROSS_FILESYSTEM: 1
+    command: ["./ci-git-fix.sh"]
   nginx:
     hostname: localhost.simplereport.gov
   mailhog:

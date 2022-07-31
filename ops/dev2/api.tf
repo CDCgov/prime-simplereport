@@ -26,7 +26,7 @@ module "simple_report_api" {
   }
 
   app_settings = {
-    SPRING_PROFILES_ACTIVE                        = "azure-dev"
+    SPRING_PROFILES_ACTIVE                        = "azure-dev2"
     SPRING_DATASOURCE_SIMPLEREPORT_HIKARI_JDBCURL = "@Microsoft.KeyVault(SecretUri=${data.azurerm_key_vault_secret.sr_dev2_db_jdbc.id})"
     SPRING_DATASOURCE_METABASE_HIKARI_JDBCURL     = "@Microsoft.KeyVault(SecretUri=${data.azurerm_key_vault_secret.metabase_db_uri.id})"
     DB_PASSWORD_NO_PHI                            = "@Microsoft.KeyVault(SecretUri=${data.azurerm_key_vault_secret.db_password_no_phi.id})"

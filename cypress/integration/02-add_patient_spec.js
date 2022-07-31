@@ -40,7 +40,7 @@ describe("Adding a patient", () => {
     cy.get(".prime-edit-patient").contains("Last name is required");
     cy.get(".prime-edit-patient").contains("Testing facility is required");
   });
-  it("fills out the remaining fields and submits", () => {
+  it("fills out the remaining fields, submits and checks for the patient", () => {
     cy.get('input[name="lastName"]').type(patient.lastName);
     cy.get('select[name="facilityId"]').select("All facilities");
     cy.get(".prime-save-patient-changes").first().click();
@@ -50,9 +50,6 @@ describe("Adding a patient", () => {
     cy.get(".modal__container #save-confirmed-address").click();
     cy.get(".usa-card__header").contains("People");
     cy.get(".usa-card__header").contains("Showing");
-    cy.wait(5)
-  });
-  it("shows the patient in the list", () => {
     cy.get("#search-field-small").type(patient.lastName);
     cy.get(".prime-container").contains(patient.fullName);
   });

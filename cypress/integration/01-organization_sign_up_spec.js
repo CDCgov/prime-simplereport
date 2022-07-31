@@ -42,7 +42,6 @@ describe("Organization sign up", () => {
   });
   it("navigates to the support pending org table and verifies the org", () => {
     cy.removeOrganizationAccess();
-    cy.wait(5)
     cy.visit("/admin");
     cy.contains("Organizations pending identify verification").click();
     cy.get("[data-cy=pending-orgs-title]").should("be.visible");

@@ -7,17 +7,17 @@ RUN apt-get update && \
     apt-get install -y ant && \
     apt-get clean;
 
-ADD ./ /app/cypress
+ADD ./cypress /app/cypress
 RUN mkdir -p /app/cypress/screenshots
 RUN mkdir -p /app/cypress/videos
 COPY ./cypress.json /app/cypress.json
-COPY ./package.json /app/package.json
-COPY ./yarn.lock /app/yarn.lock
+COPY ./cypress/package.json /app/package.json
+COPY ./cypress/yarn.lock /app/yarn.lock
 
 WORKDIR /app
 
 RUN yarn install
 
-COPY ./e2e.sh /app/e2e.sh
+COPY ./cypress/e2e.sh /app/e2e.sh
 
 ENTRYPOINT [ "./e2e.sh" ]

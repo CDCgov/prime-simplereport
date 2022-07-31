@@ -20,14 +20,12 @@ describe("edit patient and save and start test", () => {
     cy.get("#search-field-small").type(lastName);
     cy.get(".sr-patient-list").contains(lastName).click();
   });
-  it("edits the patient and clicks save and start test", () => {
+  it("edits the patient and clicks save and start test and verifies AoE form is correctly filled in", () => {
     cy.get('input[value="male"]+label').click();
     cy.get(".prime-save-patient-changes-start-test").click();
     cy.get(".ReactModal__Content").contains(
       "Are you experiencing any of the following symptoms?"
     );
-  });
-  it("verifies patient contact info is correctly populated in the AoE form", () => {
     // patient created in 02-add-patient_spec.js has phone number but no email defined
     cy.contains("Yes, text all mobile numbers on file").click();
     cy.contains("Results will be sent to these numbers:");
@@ -58,7 +56,7 @@ describe("add patient and save and start test", () => {
     cy.get("#add-patient-button").click();
     cy.get(".prime-edit-patient").contains("Add new person");
   });
-  it("fills out form fields and clicks save and start test", () => {
+  it("fills out form fields and clicks save and start test and verifies AoE form is correctly filled in", () => {
     cy.get('input[name="firstName"]').type(patient.firstName);
     cy.get('input[name="lastName"]').type(patient.lastName);
     cy.get('select[name="facilityId"]').select("All facilities");
@@ -78,8 +76,6 @@ describe("add patient and save and start test", () => {
     ).click();
     cy.get(".modal__container #save-confirmed-address").click();
     cy.url().should("include", "queue");
-  });
-  it("verifies patient contact info is correctly populated in the AoE form", () => {
     cy.get('input[name="testResultDeliverySms"][value="SMS"]').should(
       "be.disabled"
     );

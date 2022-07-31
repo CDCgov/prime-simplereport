@@ -11,6 +11,10 @@
         "eslint-plugin-cypress": "^2.12.1"
     },
     "scripts": {
+        "e2e:local": "env $(cat ./../.env | grep -v \"#\" | xargs) CYPRESS_SKIP_OKTA=true cypress open --project ./../ --config-file ./../cypress.json --config baseUrl=http://localhost:3000",
+        "e2e:local:okta": "env $(cat ./../.env | grep -v \"#\" | xargs) cypress open --project ./../ --config-file ./../cypress.json --config baseUrl=http://localhost:3000",
+        "e2e:nginx": "env $(cat ./../.env | grep -v \"#\" | xargs) CYPRESS_SKIP_OKTA=true cypress open --project ./../ --config-file ./../cypress.json --config baseUrl=https://localhost.simplereport.gov/app",
+        "e2e:nginx:okta": "env $(cat ./../.env | grep -v \"#\" | xargs) cypress open --project ./../ --config-file ./../cypress.json --config baseUrl=https://localhost.simplereport.gov/app"
     }
   }
   
