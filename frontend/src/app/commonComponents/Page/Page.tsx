@@ -57,8 +57,8 @@ const Page: React.FC<Props> = ({ header, children, isPatientApp }) => {
           position="bottom-center"
           hideProgressBar={true}
         />
+        <TouchpointsButton />
       </div>
-      <TouchpointsButton />
     </div>
   );
 };
