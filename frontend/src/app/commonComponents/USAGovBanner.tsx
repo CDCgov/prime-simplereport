@@ -75,37 +75,37 @@ class USAGovBanner extends React.Component<Props, State> {
 
   render() {
     return (
-      <div className="usa-banner">
+      <div className="usa-banner usa-banner__header">
         <div className="usa-accordion">
-          <header className="usa-banner__header">
-            <div className="usa-banner__inner">
-              <div className="grid-col-auto">
-                <img
-                  className="usa-banner__header-flag"
-                  src={usFlagSmall}
-                  alt="U.S. flag"
-                />
-              </div>
-              <div className="grid-col-fill tablet:grid-col-auto">
-                <p className="usa-banner__header-text">
-                  {i18n.t("banner.officialWebsite")}
-                </p>
-                <p className="usa-banner__header-action" aria-hidden="true">
-                  {i18n.t("banner.howYouKnow")}
-                </p>
-              </div>
-              <button
-                className="usa-accordion__button usa-banner__button"
-                aria-expanded={this.state.contentVisible}
-                aria-controls="gov-banner"
-                onClick={this.toggleDetails.bind(this)}
-              >
-                <span className="usa-banner__button-text">
-                  {i18n.t("banner.howYouKnow")}
-                </span>
-              </button>
+          <div className="usa-banner__inner">
+            <div className="grid-col-auto">
+              <img
+                className="usa-banner__header-flag"
+                src={usFlagSmall}
+                alt="U.S. flag"
+              />
             </div>
-          </header>
+            <div className="grid-col-fill tablet:grid-col-auto">
+              <p className="usa-banner__header-text">
+                {i18n.t("banner.officialWebsite")}
+              </p>
+              <p className="usa-banner__header-action" aria-hidden="true">
+                {i18n.t("banner.howYouKnow")}
+              </p>
+            </div>
+            <button
+              className="usa-accordion__button usa-banner__button"
+              aria-expanded={this.state.contentVisible}
+              aria-controls="gov-banner"
+              aria-label={"Here's how you know this is an official website"}
+              type="button"
+              onClick={this.toggleDetails.bind(this)}
+            >
+              <span className="usa-banner__button-text" aria-hidden={true}>
+                {i18n.t("banner.howYouKnow")}
+              </span>
+            </button>
+          </div>
           {this.renderAccordionContent()}
         </div>
       </div>
