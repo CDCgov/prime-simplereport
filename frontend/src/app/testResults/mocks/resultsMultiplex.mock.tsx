@@ -23,6 +23,7 @@ const TEST_RESULTS_MULTIPLEX = [
       gender: "male",
       role: "RESIDENT",
       lookupId: null,
+      email: "totally.cool@email.com",
       __typename: "Patient",
     },
     createdBy: {
@@ -66,6 +67,12 @@ const TEST_RESULTS_MULTIPLEX = [
       gender: "female",
       role: "STAFF",
       lookupId: null,
+      phoneNumbers: [
+        {
+          type: "MOBILE",
+          number: "2708675309",
+        },
+      ],
       __typename: "Patient",
     },
     createdBy: {

@@ -29,13 +29,12 @@ const PatientHeader = () => {
           <div className="margin-bottom-0" id="basic-logo">
             <div
               className="display-flex flex-align-center"
-              title="Home"
-              aria-label="Home"
+              title="SimpleReport"
             >
               <img
                 className="width-4"
                 src={siteLogo}
-                alt="{process.env.REACT_APP_TITLE}"
+                alt={process.env.REACT_APP_TITLE}
               />
               <div className="logo-text margin-left-1 display-flex flex-column">
                 <span
