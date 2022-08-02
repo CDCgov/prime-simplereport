@@ -44,7 +44,6 @@ import {
   useGetFacilityResultsMultiplexQuery,
   useGetResultsCountByFacilityQuery,
 } from "../../generated/graphql";
-import { setDocumentLanguage } from "../utils/languages";
 
 import TestResultPrintModal from "./TestResultPrintModal";
 import TestResultTextModal from "./TestResultTextModal";
@@ -221,10 +220,7 @@ export const DetachedTestResultsList = ({
     return (
       <TestResultPrintModal
         testResultId={printModalId}
-        closeModal={() => {
-          setDocumentLanguage("en");
-          setPrintModalId(undefined);
-        }}
+        closeModal={() => setPrintModalId(undefined)}
       />
     );
   }
