@@ -22,7 +22,7 @@ import java.util.Set;
 import java.util.UUID;
 import java.util.stream.Collectors;
 import java.util.stream.IntStream;
-import org.apache.commons.lang3.StringUtils;
+import liquibase.repackaged.org.apache.commons.lang3.StringUtils;
 import org.json.JSONObject;
 
 /**

@@ -13,7 +13,6 @@ import graphql.execution.instrumentation.InstrumentationState;
 import graphql.execution.instrumentation.SimpleInstrumentation;
 import graphql.execution.instrumentation.SimpleInstrumentationContext;
 import graphql.execution.instrumentation.parameters.InstrumentationExecutionParameters;
-import graphql.kickstart.servlet.context.GraphQLServletContext;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
@@ -39,6 +38,8 @@ public class AuditLoggingInstrumentation extends SimpleInstrumentation {
     return state;
   }
 
+  /*
+
   @Override
   @SuppressWarnings("checkstyle:IllegalCatch")
   public InstrumentationContext<ExecutionResult> beginExecution(
@@ -60,6 +61,7 @@ public class AuditLoggingInstrumentation extends SimpleInstrumentation {
       throw e;
     }
   }
+   */
 
   private class /* not static! */ ExecutionResultContext
       extends SimpleInstrumentationContext<ExecutionResult> {

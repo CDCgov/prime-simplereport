@@ -10,7 +10,6 @@ import gov.cdc.usds.simplereport.db.model.auxiliary.TestResult;
 import gov.cdc.usds.simplereport.service.dataloader.PatientAnswersDataLoader;
 import gov.cdc.usds.simplereport.service.dataloader.TestOrderDeviceTypeDataLoader;
 import gov.cdc.usds.simplereport.service.dataloader.TestOrderPatientDataLoader;
-import graphql.kickstart.tools.GraphQLResolver;
 import graphql.schema.DataFetchingEnvironment;
 import java.time.LocalDate;
 import java.util.Set;
@@ -18,7 +17,7 @@ import java.util.concurrent.CompletableFuture;
 import org.springframework.stereotype.Component;
 
 @Component
-public class ApiTestOrderDataResolver implements GraphQLResolver<ApiTestOrder> {
+public class ApiTestOrderDataResolver {
   private final TestOrderPatientDataLoader _testOrderPatientDataLoader;
   private final TestOrderDeviceTypeDataLoader _testOrderDeviceTypeDataLoader;
   private final PatientAnswersDataLoader _patientAnswersDataLoader;

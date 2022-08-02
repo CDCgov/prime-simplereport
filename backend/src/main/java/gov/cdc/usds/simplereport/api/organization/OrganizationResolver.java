@@ -8,7 +8,6 @@ import gov.cdc.usds.simplereport.db.model.Organization;
 import gov.cdc.usds.simplereport.service.OrganizationQueueService;
 import gov.cdc.usds.simplereport.service.OrganizationService;
 import gov.cdc.usds.simplereport.service.model.OrganizationRoles;
-import graphql.kickstart.tools.GraphQLQueryResolver;
 import java.util.List;
 import java.util.Optional;
 import java.util.Set;
@@ -17,7 +16,7 @@ import org.springframework.stereotype.Component;
 
 /** Resolver for {@link Organization} related queries */
 @Component
-public class OrganizationResolver implements GraphQLQueryResolver {
+public class OrganizationResolver {
 
   private OrganizationService _organizationService;
   private OrganizationQueueService _organizationQueueService;

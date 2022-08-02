@@ -21,7 +21,6 @@ import gov.cdc.usds.simplereport.service.AddressValidationService;
 import gov.cdc.usds.simplereport.service.ApiUserService;
 import gov.cdc.usds.simplereport.service.OrganizationQueueService;
 import gov.cdc.usds.simplereport.service.OrganizationService;
-import graphql.kickstart.tools.GraphQLMutationResolver;
 import java.util.List;
 import java.util.Optional;
 import java.util.UUID;
@@ -32,7 +31,7 @@ import org.springframework.stereotype.Component;
 /** Created by nickrobison on 11/17/20 */
 @Component
 @RequiredArgsConstructor
-public class OrganizationMutationResolver implements GraphQLMutationResolver {
+public class OrganizationMutationResolver {
 
   private final OrganizationService organizationService;
   private final OrganizationQueueService organizationQueueService;

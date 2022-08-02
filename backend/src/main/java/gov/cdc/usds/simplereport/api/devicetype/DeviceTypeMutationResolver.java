@@ -5,11 +5,10 @@ import gov.cdc.usds.simplereport.api.model.UpdateDeviceType;
 import gov.cdc.usds.simplereport.api.model.errors.IllegalGraphqlArgumentException;
 import gov.cdc.usds.simplereport.db.model.DeviceType;
 import gov.cdc.usds.simplereport.service.DeviceTypeService;
-import graphql.kickstart.tools.GraphQLMutationResolver;
 import org.springframework.stereotype.Component;
 
 @Component
-public class DeviceTypeMutationResolver implements GraphQLMutationResolver {
+public class DeviceTypeMutationResolver {
 
   private final DeviceTypeService _dts;
 

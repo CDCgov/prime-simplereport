@@ -520,6 +520,8 @@ public class ApiUserService {
 
   private ApiUser getCurrentApiUserNoCache() {
     IdentityAttributes userIdentity = _supplier.get();
+    System.out.println("============");
+    System.out.println(userIdentity.getUsername());
     Optional<ApiUser> nonOktaUser = getCurrentNonOktaUser(userIdentity);
     return nonOktaUser.orElseGet(() -> getCurrentApiUserFromIdentity(userIdentity));
   }

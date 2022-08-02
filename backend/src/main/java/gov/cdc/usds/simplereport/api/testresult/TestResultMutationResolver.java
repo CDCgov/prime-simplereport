@@ -6,7 +6,6 @@ import gov.cdc.usds.simplereport.db.model.TestResultUpload;
 import gov.cdc.usds.simplereport.db.repository.TestEventRepository;
 import gov.cdc.usds.simplereport.service.TestEventReportingService;
 import gov.cdc.usds.simplereport.service.TestResultUploadService;
-import graphql.kickstart.tools.GraphQLMutationResolver;
 import java.io.IOException;
 import java.io.InputStream;
 import java.util.List;
@@ -19,7 +18,7 @@ import org.springframework.stereotype.Component;
 @Component
 @RequiredArgsConstructor
 @Slf4j
-public class TestResultMutationResolver implements GraphQLMutationResolver {
+public class TestResultMutationResolver {
   private final TestEventRepository testEventRepository;
   private final TestEventReportingService testEventReportingService;
   private final TestResultUploadService testResultUploadService;

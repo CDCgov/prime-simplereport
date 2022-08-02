@@ -10,15 +10,13 @@ import gov.cdc.usds.simplereport.db.model.TestEvent;
 import gov.cdc.usds.simplereport.service.dataloader.PatientLastTestDataLoader;
 import gov.cdc.usds.simplereport.service.dataloader.PatientPhoneNumbersDataLoader;
 import gov.cdc.usds.simplereport.service.dataloader.PatientPrimaryPhoneDataLoader;
-import graphql.kickstart.tools.GraphQLResolver;
 import graphql.schema.DataFetchingEnvironment;
 import java.util.List;
 import java.util.concurrent.CompletableFuture;
 import org.springframework.stereotype.Component;
 
 @Component
-public class PatientDataResolver
-    implements GraphQLResolver<Person>, PersonNameResolver<Person>, InternalIdResolver<Person> {
+public class PatientDataResolver implements PersonNameResolver<Person>, InternalIdResolver<Person> {
 
   private final PatientPrimaryPhoneDataLoader _patientPrimaryPhoneDataLoader;
   private final PatientPhoneNumbersDataLoader _patientPhoneNumbersDataLoader;

@@ -8,7 +8,6 @@ import gov.cdc.usds.simplereport.db.model.ApiUser;
 import gov.cdc.usds.simplereport.db.model.auxiliary.PersonName;
 import gov.cdc.usds.simplereport.service.ApiUserService;
 import gov.cdc.usds.simplereport.service.model.UserInfo;
-import graphql.kickstart.tools.GraphQLMutationResolver;
 import java.util.Arrays;
 import java.util.HashSet;
 import java.util.Set;
@@ -18,7 +17,7 @@ import org.springframework.stereotype.Component;
 
 @Component
 @Slf4j
-public class UserMutationResolver implements GraphQLMutationResolver {
+public class UserMutationResolver {
 
   private final ApiUserService _us;
 
