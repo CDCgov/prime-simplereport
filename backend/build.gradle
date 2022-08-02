@@ -1,12 +1,12 @@
 plugins {
-    id 'org.springframework.boot' version '2.4.2'
+    id 'org.springframework.boot' version '2.7.2'
     id 'org.liquibase.gradle' version '2.0.4'
-    id 'io.spring.dependency-management' version '1.0.10.RELEASE'
+    id 'io.spring.dependency-management' version '1.0.12.RELEASE'
     id 'java'
     id 'checkstyle'
     id 'jacoco'
     id 'org.sonarqube' version '3.0'
-    id 'com.gorylenko.gradle-git-properties' version '2.2.0'
+    id 'com.gorylenko.gradle-git-properties' version '2.4.0'
     id "com.diffplug.spotless" version "5.14.0"
 }
 
@@ -15,8 +15,7 @@ version = '0.0.1-SNAPSHOT'
 sourceCompatibility = '11'
 
 ext {
-    kickstartVersion = '11.0.0'
-    set('springCloudVersion', "2020.0.5")
+    set('springCloudVersion', "2021.0.3")
 }
 repositories {
     mavenCentral()
@@ -25,6 +24,13 @@ repositories {
 dependencies {
     // core infrastructure
     implementation 'org.springframework.boot:spring-boot-starter-web'
+    implementation 'org.springframework.boot:spring-boot-actuator'
+    implementation 'org.springframework.boot:spring-boot-actuator-autoconfigure'
+
+    // graphql
+    implementation 'org.springframework.boot:spring-boot-starter-graphql'
+    testImplementation 'org.springframework:spring-webflux'
+    testImplementation 'org.springframework.graphql:spring-graphql-test'
 
     //Feign HTTP Client
     implementation 'org.springframework.cloud:spring-cloud-starter-openfeign'
@@ -71,8 +77,8 @@ dependencies {
     implementation 'com.smartystreets.api:smartystreets-java-sdk:3.7.2'
 
     // UI layer dependencies
-    implementation "com.graphql-java-kickstart:graphql-spring-boot-starter:${kickstartVersion}"
-    implementation "com.zhokhov.graphql:graphql-datetime-spring-boot-starter:4.0.0"
+//    implementation "com.graphql-java-kickstart:graphql-spring-boot-starter:${kickstartVersion}"
+//    implementation "com.zhokhov.graphql:graphql-datetime-spring-boot-starter:4.0.0"
     implementation 'org.json:json:20201115'
     implementation 'com.fasterxml.jackson.dataformat:jackson-dataformat-csv'
     implementation 'com.fasterxml.jackson.datatype:jackson-datatype-hibernate5'
@@ -100,11 +106,13 @@ dependencies {
     implementation 'org.springframework.boot:spring-boot-starter-mail'
 
     // JPA Hibernate static metamodel generation
-    compile 'org.hibernate:hibernate-jpamodelgen:5.4.27.Final'
+    implementation 'org.hibernate:hibernate-jpamodelgen:5.4.27.Final'
     annotationProcessor 'org.hibernate:hibernate-jpamodelgen'
 
     // graphql-java-extended-validation schema directives
-    compile 'com.graphql-java:graphql-java-extended-validation:16.0.0'
+    implementation 'com.graphql-java:graphql-java-extended-validation:16.0.0'
+    // graphql-java-extended-scalars
+    implementation 'com.graphql-java:graphql-java-extended-scalars:18.1'
 
     implementation 'com.azure:azure-storage-queue:12.12.+'
     implementation 'com.azure:azure-core-http-netty:1.11.9'
@@ -134,7 +142,7 @@ dependencies {
     testImplementation('org.springframework.boot:spring-boot-starter-test') {
         exclude group: 'org.junit.vintage', module: 'junit-vintage-engine'
     }
-    testImplementation "com.graphql-java-kickstart:graphql-spring-boot-starter-test:${kickstartVersion}"
+//    testImplementation "com.graphql-java-kickstart:graphql-spring-boot-starter-test:${kickstartVersion}"
     testImplementation 'org.springframework.security:spring-security-test'
     testImplementation 'com.yannbriancon:spring-hibernate-query-utils:1.0.3'
 
@@ -153,7 +161,7 @@ dependencies {
     testAnnotationProcessor 'org.projectlombok:lombok:1.18.20'
 
     // WireMock (only used for testing)
-    testCompile "com.github.tomakehurst:wiremock-jre8:2.31.0"
+    testImplementation "com.github.tomakehurst:wiremock-jre8:2.31.0"
 
     runtimeOnly "io.zipkin.brave:brave-instrumentation-http:5.13.2"
     runtimeOnly "io.zipkin.brave:brave:5.13.2"
@@ -254,7 +262,7 @@ task testDbReset(type: Exec) {
     commandLine "db-setup/nuke-db.sh"
 }
 
-test {
+tasks.named('test') {
     // people sometimes export this to run local dev more easily: don't let it break the tests
     environment "SPRING_PROFILES_ACTIVE", ""
     // For some reason, setting this in application-default doesn't work, but it's needed

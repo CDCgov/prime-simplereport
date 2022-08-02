@@ -20,7 +20,6 @@ import gov.cdc.usds.simplereport.db.model.auxiliary.TestResultDeliveryPreference
 import gov.cdc.usds.simplereport.service.PersonService;
 import gov.cdc.usds.simplereport.service.UploadService;
 import gov.cdc.usds.simplereport.service.model.PatientEmailsHolder;
-import graphql.kickstart.tools.GraphQLMutationResolver;
 import java.io.IOException;
 import java.io.InputStream;
 import java.time.LocalDate;
@@ -33,7 +32,7 @@ import org.springframework.stereotype.Component;
 /** Mutations for creating and updating patient records. */
 @Component
 @Slf4j
-public class PatientMutationResolver implements GraphQLMutationResolver {
+public class PatientMutationResolver {
   private final PersonService _ps;
   private final UploadService _us;
 

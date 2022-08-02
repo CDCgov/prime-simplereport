@@ -1,4 +1,4 @@
-package gov.cdc.usds.simplereport.api;
+package gov.cdc.usds.simplereport.config.scalars;
 
 import graphql.language.StringValue;
 import graphql.schema.Coercing;
@@ -9,8 +9,6 @@ import graphql.schema.GraphQLScalarType;
 import java.time.LocalDate;
 import java.time.Period;
 import java.time.format.DateTimeFormatter;
-import org.springframework.context.annotation.Bean;
-import org.springframework.context.annotation.Configuration;
 
 class FlexibleDateCoercion implements Coercing<Object, Object> {
   private static final DateTimeFormatter US_DASHDATE_FORMATTER = DateTimeFormatter.ISO_LOCAL_DATE;
@@ -71,14 +69,11 @@ class FlexibleDateCoercion implements Coercing<Object, Object> {
   }
 }
 
-@Configuration
-public class FlexibleDateScalarType {
-  @Bean
-  public GraphQLScalarType FlexibleDateScalar() {
-    return GraphQLScalarType.newScalar()
-        .name("LocalDate")
-        .description("a scalar for multiple date formats. currently yyyy-MM-dd and MM/dd/yyyy")
-        .coercing(new FlexibleDateCoercion())
-        .build();
-  }
+
+public class LocalDateScalar {
+  public static final GraphQLScalarType localDate = GraphQLScalarType.newScalar()
+      .name("LocalDate")
+      .description("a scalar for multiple date formats. currently yyyy-MM-dd and MM/dd/yyyy")
+      .coercing(new FlexibleDateCoercion())
+      .build();
 }

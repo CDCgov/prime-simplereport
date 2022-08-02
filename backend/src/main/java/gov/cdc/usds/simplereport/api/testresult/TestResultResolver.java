@@ -10,18 +10,18 @@ import gov.cdc.usds.simplereport.service.TestResultUploadService;
 import gov.cdc.usds.simplereport.service.errors.InvalidBulkTestResultUploadException;
 import gov.cdc.usds.simplereport.service.errors.InvalidRSAPrivateKeyException;
 import gov.cdc.usds.simplereport.service.model.reportstream.UploadResponse;
-import graphql.kickstart.tools.GraphQLMutationResolver;
-import graphql.kickstart.tools.GraphQLQueryResolver;
 import java.util.Date;
 import java.util.List;
 import java.util.UUID;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
+import org.springframework.graphql.data.method.annotation.QueryMapping;
 import org.springframework.stereotype.Component;
+import org.springframework.stereotype.Controller;
 
-@Component
+@Controller
 @RequiredArgsConstructor
-public class TestResultResolver implements GraphQLQueryResolver, GraphQLMutationResolver {
+public class TestResultResolver {
 
   private final TestOrderService tos;
   private final TestResultUploadService testResultUploadService;
@@ -91,7 +91,8 @@ public class TestResultResolver implements GraphQLQueryResolver, GraphQLMutation
     return tos.getOrganizationLevelDashboardMetrics(startDate, endDate);
   }
 
-  public TopLevelDashboardMetrics getTopLevelDashboardMetrics(
+  @QueryMapping
+  public TopLevelDashboardMetrics topLevelDashboardMetrics(
       UUID facilityId, Date startDate, Date endDate) {
     return tos.getTopLevelDashboardMetrics(facilityId, startDate, endDate);
   }

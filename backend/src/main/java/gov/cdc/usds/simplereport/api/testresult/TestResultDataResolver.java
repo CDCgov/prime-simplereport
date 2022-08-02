@@ -10,8 +10,6 @@ import gov.cdc.usds.simplereport.db.model.Result;
 import gov.cdc.usds.simplereport.db.model.TestEvent;
 import gov.cdc.usds.simplereport.db.model.auxiliary.AskOnEntrySurvey;
 import gov.cdc.usds.simplereport.service.dataloader.PatientLinkDataLoader;
-import graphql.kickstart.execution.context.GraphQLContext;
-import graphql.kickstart.tools.GraphQLResolver;
 import graphql.schema.DataFetchingEnvironment;
 import java.time.LocalDate;
 import java.util.Date;
@@ -21,10 +19,11 @@ import java.util.concurrent.CompletableFuture;
 import org.dataloader.DataLoader;
 import org.dataloader.DataLoaderRegistry;
 import org.springframework.stereotype.Component;
+import org.springframework.stereotype.Controller;
 
 @Component
-public class TestResultDataResolver
-    implements GraphQLResolver<TestEvent>, InternalIdResolver<TestEvent> {
+@Controller
+public class TestResultDataResolver {
 
   private AskOnEntrySurvey getSurvey(TestEvent testEvent) {
     return testEvent.getSurveyData();
@@ -66,15 +65,15 @@ public class TestResultDataResolver
     return new ApiFacility(testEvent.getFacility());
   }
 
-  public CompletableFuture<PatientLink> getPatientLink(
-      TestEvent testEvent, DataFetchingEnvironment dfe) {
-    DataLoaderRegistry registry = ((GraphQLContext) dfe.getContext()).getDataLoaderRegistry();
-    DataLoader<UUID, PatientLink> loader = registry.getDataLoader(PatientLinkDataLoader.KEY);
-    if (loader == null) {
-      throw new NoDataLoaderFoundException(PatientLinkDataLoader.KEY);
-    }
-    return loader.load(testEvent.getTestOrderId());
-  }
+//  public CompletableFuture<PatientLink> getPatientLink(
+//      TestEvent testEvent, DataFetchingEnvironment dfe) {
+//    DataLoaderRegistry registry = ((GraphQLContext) dfe.getContext()).getDataLoaderRegistry();
+//    DataLoader<UUID, PatientLink> loader = registry.getDataLoader(PatientLinkDataLoader.KEY);
+//    if (loader == null) {
+//      throw new NoDataLoaderFoundException(PatientLinkDataLoader.KEY);
+//    }
+//    return loader.load(testEvent.getTestOrderId());
+//  }
 
   public Set<Result> getResults(TestEvent testEvent) {
     return testEvent.getResults();

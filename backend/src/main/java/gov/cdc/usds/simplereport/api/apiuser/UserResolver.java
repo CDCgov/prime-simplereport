@@ -4,14 +4,16 @@ import gov.cdc.usds.simplereport.api.model.ApiUserWithStatus;
 import gov.cdc.usds.simplereport.api.model.User;
 import gov.cdc.usds.simplereport.db.model.ApiUser;
 import gov.cdc.usds.simplereport.service.ApiUserService;
-import graphql.kickstart.tools.GraphQLQueryResolver;
 import java.util.List;
 import java.util.UUID;
+
+import org.springframework.graphql.data.method.annotation.QueryMapping;
 import org.springframework.stereotype.Component;
+import org.springframework.stereotype.Controller;
 
 /** Resolver for the graphql User type */
-@Component
-public class UserResolver implements GraphQLQueryResolver {
+@Controller
+public class UserResolver {
 
   private ApiUserService _userService;
 
@@ -19,7 +21,8 @@ public class UserResolver implements GraphQLQueryResolver {
     _userService = userService;
   }
 
-  public User getWhoami() {
+  @QueryMapping
+  public User whoami() {
     return new User(_userService.getCurrentUserInfo());
   }
 

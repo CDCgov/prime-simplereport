@@ -1,7 +1,6 @@
 package gov.cdc.usds.simplereport.api.pxp;
 
 import gov.cdc.usds.simplereport.service.TestResultsDeliveryService;
-import graphql.kickstart.tools.GraphQLMutationResolver;
 import java.util.UUID;
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Value;
@@ -9,7 +8,7 @@ import org.springframework.stereotype.Component;
 
 @RequiredArgsConstructor
 @Component
-public class PatientLinkMutationResolver implements GraphQLMutationResolver {
+public class PatientLinkMutationResolver {
   private final TestResultsDeliveryService testResultsDeliveryService;
 
   @Value("${simple-report.patient-link-url:https://simplereport.gov/pxp?plid=}")

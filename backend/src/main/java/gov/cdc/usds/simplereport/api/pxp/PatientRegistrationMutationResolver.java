@@ -4,13 +4,12 @@ import gov.cdc.usds.simplereport.db.model.Facility;
 import gov.cdc.usds.simplereport.db.model.Organization;
 import gov.cdc.usds.simplereport.service.OrganizationService;
 import gov.cdc.usds.simplereport.service.PatientSelfRegistrationLinkService;
-import graphql.kickstart.tools.GraphQLMutationResolver;
 import java.util.Arrays;
 import java.util.UUID;
 import org.springframework.stereotype.Component;
 
 @Component
-public class PatientRegistrationMutationResolver implements GraphQLMutationResolver {
+public class PatientRegistrationMutationResolver {
 
   private PatientSelfRegistrationLinkService _prls;
   private OrganizationService _os;

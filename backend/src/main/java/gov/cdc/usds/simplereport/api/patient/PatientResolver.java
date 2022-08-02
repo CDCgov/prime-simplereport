@@ -6,7 +6,6 @@ import gov.cdc.usds.simplereport.db.model.Organization;
 import gov.cdc.usds.simplereport.db.model.Person;
 import gov.cdc.usds.simplereport.service.OrganizationService;
 import gov.cdc.usds.simplereport.service.PersonService;
-import graphql.kickstart.tools.GraphQLQueryResolver;
 import java.time.LocalDate;
 import java.util.List;
 import java.util.Optional;
@@ -15,7 +14,7 @@ import org.springframework.stereotype.Component;
 
 /** Created by nickrobison on 11/17/20 */
 @Component
-public class PatientResolver implements GraphQLQueryResolver {
+public class PatientResolver {
   private final PersonService _ps;
   private final OrganizationService _os;
 

@@ -12,7 +12,6 @@ import gov.cdc.usds.simplereport.db.model.auxiliary.TestResultDeliveryPreference
 import gov.cdc.usds.simplereport.service.DeviceTypeService;
 import gov.cdc.usds.simplereport.service.PersonService;
 import gov.cdc.usds.simplereport.service.TestOrderService;
-import graphql.kickstart.tools.GraphQLMutationResolver;
 import java.time.LocalDate;
 import java.util.Date;
 import java.util.List;
@@ -23,7 +22,7 @@ import org.springframework.stereotype.Component;
 
 /** Mutations for creating and updating test queue entries. */
 @Component
-public class QueueMutationResolver implements GraphQLMutationResolver {
+public class QueueMutationResolver {
 
   private final TestOrderService _tos;
   private final PersonService _ps;
