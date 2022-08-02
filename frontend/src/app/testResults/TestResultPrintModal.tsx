@@ -14,7 +14,7 @@ import { GetTestResultForPrintDocument } from "../../generated/graphql";
 import { displayFullName } from "../utils";
 import { formatDateWithTimeOption } from "../utils/date";
 import { hasMultiplexResults } from "../utils/testResults";
-import { setDocumentLanguage } from "../utils/languages";
+import { setLanguage } from "../utils/languages";
 
 interface OrderingProvider {
   firstName: string;
@@ -220,7 +220,7 @@ export const DetachedTestResultPrintModal = ({
         label={t("testResult.close")}
         onClick={() => {
           closeModal();
-          setDocumentLanguage("en");
+          setLanguage("en");
         }}
       />
       <Button label={t("testResult.print")} onClick={() => window.print()} />

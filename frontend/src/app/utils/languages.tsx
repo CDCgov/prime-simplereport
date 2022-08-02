@@ -1,7 +1,8 @@
 import { languages } from "../../config/constants";
 import i18n from "../../i18n";
 
-export function setDocumentLanguage(displayLanguage: string) {
+export function setLanguage(displayLanguage: string) {
+  i18n.changeLanguage(displayLanguage);
   document.documentElement.setAttribute("lang", displayLanguage);
 }
 
