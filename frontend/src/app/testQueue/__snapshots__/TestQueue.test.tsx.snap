@@ -126,11 +126,12 @@ exports[`TestQueue should render the test queue 1`] = `
                 <div
                   class="card-header"
                 >
-                  <div
-                    class="card-name"
+                  <button
+                    class="usa-button usa-button--unstyled card-name"
+                    type="button"
                   >
                     Doe, John A
-                  </div>
+                  </button>
                   <div
                     class="card-dob"
                   >
@@ -532,11 +533,12 @@ exports[`TestQueue should render the test queue 1`] = `
                 <div
                   class="card-header"
                 >
-                  <div
-                    class="card-name"
+                  <button
+                    class="usa-button usa-button--unstyled card-name"
+                    type="button"
                   >
                     Smith, Jane
-                  </div>
+                  </button>
                   <div
                     class="card-dob"
                   >

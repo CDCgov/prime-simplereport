@@ -780,7 +780,8 @@ const QueueItem = ({
                 id="patient-name-header"
               >
                 <div className="card-header">
-                  <div
+                  <Button
+                    variant="unstyled"
                     className="card-name"
                     onClick={() => {
                       navigate({
@@ -790,7 +791,7 @@ const QueueItem = ({
                     }}
                   >
                     {patientFullName}
-                  </div>
+                  </Button>
                   <div className="card-dob">
                     Date of birth:
                     <span className="card-date">
