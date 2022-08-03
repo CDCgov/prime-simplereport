@@ -345,6 +345,7 @@ Object {
                           <input
                             aria-required="true"
                             class="usa-input"
+                            data-testid="phoneInput-0"
                             id="126"
                             name="number"
                             type="text"
@@ -515,6 +516,7 @@ Object {
                             <input
                               aria-required="false"
                               class="usa-input"
+                              data-testid="email-0"
                               id="129"
                               name="email-0"
                               type="text"
@@ -2942,6 +2944,7 @@ Object {
                         <input
                           aria-required="true"
                           class="usa-input"
+                          data-testid="phoneInput-0"
                           id="126"
                           name="number"
                           type="text"
@@ -3112,6 +3115,7 @@ Object {
                           <input
                             aria-required="false"
                             class="usa-input"
+                            data-testid="email-0"
                             id="129"
                             name="email-0"
                             type="text"

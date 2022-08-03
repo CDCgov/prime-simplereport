@@ -110,6 +110,7 @@ export const TextInput = ({
               validationStatus === "error" && "usa-input--error"
             )}
             id={id}
+            data-testid={idString}
             name={name}
             value={value || ""}
             type={type || "text"}

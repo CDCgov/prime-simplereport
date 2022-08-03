@@ -60,10 +60,6 @@ const RadioGroup = <T extends string>({
     variant === "horizontal" && "prime-radio--horizontal__container"
   );
 
-  if (name === "phoneType-1") {
-    console.log("here");
-  }
-
   return (
     <div
       className={classnames(
@@ -93,7 +89,7 @@ const RadioGroup = <T extends string>({
         )}
         {hintText && <span className="usa-hint">{hintText}</span>}
         {validationStatus === "error" && (
-          <div className="usa-error-message" role="alert">
+          <div className="usa-error-message" role="alert" id={`error_${name}`}>
             <span className="usa-sr-only">Error: </span>
             {errorMessage}
           </div>
@@ -104,6 +100,9 @@ const RadioGroup = <T extends string>({
               className={classnames(
                 variant === "horizontal" && "prime-radio--horizontal"
               )}
+              {...(validationStatus === "error"
+                ? { "aria-describedby": `error_${name}`, "aria-invalid": true }
+                : null)}
             >
               {buttons.map((c) => {
                 const labelClasses = classnames(
