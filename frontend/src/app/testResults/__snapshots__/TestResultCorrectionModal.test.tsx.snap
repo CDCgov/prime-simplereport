@@ -78,6 +78,7 @@ Object {
               No, go back
             </button>
             <button
+              aria-disabled="false"
               class="usa-button"
               type="button"
             >
@@ -162,6 +163,7 @@ Object {
             No, go back
           </button>
           <button
+            aria-disabled="false"
             class="usa-button"
             type="button"
           >

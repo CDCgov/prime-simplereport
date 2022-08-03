@@ -445,6 +445,7 @@ exports[`TestQueue should render the test queue 1`] = `
                   class="prime-test-result-submit"
                 >
                   <button
+                    aria-disabled="true"
                     class="usa-button usa-button--outline usa-button-disabled"
                     disabled=""
                     type="submit"
@@ -852,6 +853,7 @@ exports[`TestQueue should render the test queue 1`] = `
                   class="prime-test-result-submit"
                 >
                   <button
+                    aria-disabled="true"
                     class="usa-button usa-button--outline usa-button-disabled"
                     disabled=""
                     type="submit"
