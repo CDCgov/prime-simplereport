@@ -337,18 +337,8 @@ describe("EditPatient", () => {
         })[0]
       );
       // Do not enter phone type for additional number
-      userEvent.click(screen.getByTestId("phoneInput-2"));
-      userEvent.keyboard("6");
-
-      userEvent.click(screen.getAllByText("Save changes")[0]);
-      expect(
-        await screen.findByText("Phone number is missing or invalid", {
-          exact: false,
-        })
-      ).toBeInTheDocument();
-      userEvent.click(screen.getByTestId("phoneInput-2"));
-      userEvent.keyboard("6378908987");
-      userEvent.click(screen.getAllByText("Save changes")[0]);
+      userEvent.type(await screen.findByTestId("phoneInput-2"), "6378908987");
+      userEvent.click((await screen.findAllByText("Save changes"))[0]);
 
       expect(
         await screen.findByText("Phone type is required", {
