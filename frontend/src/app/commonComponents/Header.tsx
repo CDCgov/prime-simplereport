@@ -361,6 +361,7 @@ const Header: React.FC<{}> = () => {
         {facilities && facilities.length > 0 ? (
           <div className="prime-facility-select">
             <Dropdown
+              aria-label={"Select facility"}
               selectedValue={facility.id}
               onChange={onFacilitySelect}
               options={facilities.map(({ name, id }) => ({
