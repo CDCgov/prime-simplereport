@@ -336,17 +336,9 @@ describe("EditPatient", () => {
           exact: false,
         })[0]
       );
-
       // Do not enter phone type for additional number
-      const number = screen.getAllByLabelText("Additional phone number", {
-        exact: false,
-      })[1] as HTMLInputElement;
-
-      fireEvent.change(number, {
-        target: { value: "6318675309" },
-      });
-
-      userEvent.click(screen.getAllByText("Save changes")[0]);
+      userEvent.type(await screen.findByTestId("phoneInput-2"), "6378908987");
+      userEvent.click((await screen.findAllByText("Save changes"))[0]);
 
       expect(
         await screen.findByText("Phone type is required", {

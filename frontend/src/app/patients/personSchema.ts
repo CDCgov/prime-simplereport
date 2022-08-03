@@ -289,7 +289,10 @@ const updatePhoneNumberSchemata: (
     .required(),
   type: yup
     .mixed()
-    .oneOf(getValues(PHONE_TYPE_VALUES), "Phone type is missing or invalid"),
+    .oneOf(
+      getValues(PHONE_TYPE_VALUES),
+      t("patient.form.errors.phoneNumbersType")
+    ),
 });
 
 const translateUpdateEmailSchemata = (t: TFunction) => {
