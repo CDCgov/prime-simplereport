@@ -7,8 +7,9 @@
 ###########
 
 # Start a continuous build process and send to background
-gradle --no-daemon -t build -x test -x checkstyleMain -x checkstyleTest -x spotlessCheck -x bootBuildInfo &
-# Wait for initial build to complete
-sleep 15
+echo "Starting continuous build..."
+gradle --no-daemon -t build -x test -x checkstyleMain -x checkstyleTest -x spotlessCheck -x bootBuildInfo & sleep 15
+echo "Continuous build started."
 # Start bootRun without build. It will live reload when the previous process rebuilds
+echo "Starting bootRun..."
 gradle --no-daemon -x build -x test -x checkstyleMain -x checkstyleTest -x spotlessCheck bootRun
