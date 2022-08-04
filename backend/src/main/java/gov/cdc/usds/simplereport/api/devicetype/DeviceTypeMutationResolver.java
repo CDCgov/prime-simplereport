@@ -5,9 +5,11 @@ import gov.cdc.usds.simplereport.api.model.UpdateDeviceType;
 import gov.cdc.usds.simplereport.api.model.errors.IllegalGraphqlArgumentException;
 import gov.cdc.usds.simplereport.db.model.DeviceType;
 import gov.cdc.usds.simplereport.service.DeviceTypeService;
-import org.springframework.stereotype.Component;
+import org.springframework.graphql.data.method.annotation.Argument;
+import org.springframework.graphql.data.method.annotation.MutationMapping;
+import org.springframework.stereotype.Controller;
 
-@Component
+@Controller
 public class DeviceTypeMutationResolver {
 
   private final DeviceTypeService _dts;
@@ -16,12 +18,14 @@ public class DeviceTypeMutationResolver {
     _dts = dts;
   }
 
-  public DeviceType createDeviceType(CreateDeviceType input)
+  @MutationMapping
+  public DeviceType createDeviceType(@Argument CreateDeviceType input)
       throws IllegalGraphqlArgumentException {
     return _dts.createDeviceType(input);
   }
 
-  public DeviceType updateDeviceType(UpdateDeviceType input)
+  @MutationMapping
+  public DeviceType updateDeviceType(@Argument UpdateDeviceType input)
       throws IllegalGraphqlArgumentException {
     return _dts.updateDeviceType(input);
   }
