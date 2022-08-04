@@ -646,7 +646,7 @@ const QueueItem = ({
         setConfirmationType("removeFromQueue");
       }}
       className="prime-close-button"
-      aria-label="Close"
+      aria-label={`Close test for ${patientFullName}`}
     >
       <span className="fa-layers">
         <FontAwesomeIcon icon={"circle"} size="2x" inverse />
