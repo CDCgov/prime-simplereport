@@ -12,10 +12,12 @@ import java.util.List;
 import java.util.Optional;
 import java.util.Set;
 import java.util.stream.Collectors;
-import org.springframework.stereotype.Component;
+import org.springframework.graphql.data.method.annotation.Argument;
+import org.springframework.graphql.data.method.annotation.QueryMapping;
+import org.springframework.stereotype.Controller;
 
 /** Resolver for {@link Organization} related queries */
-@Component
+@Controller
 public class OrganizationResolver {
 
   private OrganizationService _organizationService;
@@ -26,7 +28,8 @@ public class OrganizationResolver {
     _organizationQueueService = oqs;
   }
 
-  public Optional<ApiOrganization> getOrganization() {
+  @QueryMapping
+  public Optional<ApiOrganization> organization() {
     Optional<OrganizationRoles> roles = _organizationService.getCurrentOrganizationRoles();
     return roles.map(
         r -> {
@@ -43,7 +46,8 @@ public class OrganizationResolver {
    *     no filter is applied and all organizations are returned
    * @return a list of organizations
    */
-  public List<ApiOrganization> getOrganizations(Boolean identityVerified) {
+  @QueryMapping
+  public List<ApiOrganization> organizations(@Argument Boolean identityVerified) {
     // This is used to populate the list of organizations in a dropdown on some frontend admin
     // pages (such as tenant data access).  The only uses of it so far query for the org name and
     // external id.  To get around some n+1 problems, for now this will not return facilities even
@@ -63,7 +67,8 @@ public class OrganizationResolver {
    *
    * @return a list of pending organizations
    */
-  public List<ApiPendingOrganization> getPendingOrganizations() {
+  @QueryMapping
+  public List<ApiPendingOrganization> pendingOrganizations() {
     return _organizationQueueService.getUnverifiedQueuedOrganizations().stream()
         .map(ApiPendingOrganization::new)
         .collect(Collectors.toList());
@@ -75,7 +80,8 @@ public class OrganizationResolver {
    * @param showArchived whether or not to include archived facilities
    * @return set of facilities
    */
-  public Set<ApiFacility> getFacilities(Boolean showArchived) {
+  @QueryMapping
+  public Set<ApiFacility> facilities(@Argument Boolean showArchived) {
     Set<Facility> facilities = _organizationService.getAccessibleFacilities();
     if (showArchived) {
       facilities.addAll(_organizationService.getArchivedFacilities());

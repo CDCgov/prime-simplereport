@@ -6,9 +6,11 @@ import java.util.List;
 import java.util.UUID;
 import java.util.stream.Collectors;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.stereotype.Component;
+import org.springframework.graphql.data.method.annotation.Argument;
+import org.springframework.graphql.data.method.annotation.QueryMapping;
+import org.springframework.stereotype.Controller;
 
-@Component
+@Controller
 @Slf4j
 public class QueueResolver {
   private final TestOrderService _testOrderService;
@@ -17,7 +19,8 @@ public class QueueResolver {
     _testOrderService = testOrderService;
   }
 
-  public List<ApiTestOrder> getQueue(UUID facilityId) {
+  @QueryMapping
+  public List<ApiTestOrder> queue(@Argument("facilityId") UUID facilityId) {
     var queue =
         _testOrderService.getQueue(facilityId).stream()
             .map(ApiTestOrder::new)

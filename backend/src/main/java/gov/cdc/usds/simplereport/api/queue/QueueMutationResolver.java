@@ -18,10 +18,12 @@ import java.util.List;
 import java.util.Map;
 import java.util.UUID;
 import org.json.JSONException;
-import org.springframework.stereotype.Component;
+import org.springframework.graphql.data.method.annotation.Argument;
+import org.springframework.graphql.data.method.annotation.MutationMapping;
+import org.springframework.stereotype.Controller;
 
 /** Mutations for creating and updating test queue entries. */
-@Component
+@Controller
 public class QueueMutationResolver {
 
   private final TestOrderService _tos;
@@ -40,8 +42,13 @@ public class QueueMutationResolver {
         : deviceSpecimenType;
   }
 
+  @MutationMapping
   public AddTestResultResponse addTestResultNew(
-      String deviceID, UUID deviceSpecimenType, String result, UUID patientID, Date dateTested)
+      @Argument String deviceID,
+      @Argument UUID deviceSpecimenType,
+      @Argument String result,
+      @Argument UUID patientID,
+      @Argument Date dateTested)
       throws NumberParseException {
     UUID deviceSpecimenTypeId = getDeviceSpecimenTypeId(deviceID, deviceSpecimenType);
 
@@ -49,74 +56,84 @@ public class QueueMutationResolver {
         deviceSpecimenTypeId, TestResult.valueOf(result), patientID, dateTested);
   }
 
+  @MutationMapping
   public AddTestResultResponse addMultiplexResult(
-      String deviceID,
-      UUID deviceSpecimenType,
-      List<MultiplexResultInput> results,
-      UUID patientID,
-      Date dateTested)
+      @Argument String deviceID,
+      @Argument UUID deviceSpecimenType,
+      @Argument List<MultiplexResultInput> results,
+      @Argument UUID patientID,
+      @Argument Date dateTested)
       throws NumberParseException {
     UUID deviceSpecimenTypeId = getDeviceSpecimenTypeId(deviceID, deviceSpecimenType);
 
     return _tos.addMultiplexResult(deviceSpecimenTypeId, results, patientID, dateTested);
   }
 
+  @MutationMapping
   public ApiTestOrder editQueueItem(
-      UUID id, String deviceId, UUID deviceSpecimenType, String result, Date dateTested) {
+      @Argument UUID id,
+      @Argument String deviceId,
+      @Argument UUID deviceSpecimenType,
+      @Argument String result,
+      @Argument Date dateTested) {
     UUID dst = getDeviceSpecimenTypeId(deviceId, deviceSpecimenType);
 
     return new ApiTestOrder(_tos.editQueueItem(id, dst, result, dateTested));
   }
 
+  @MutationMapping
   public ApiTestOrder editQueueItemMultiplexResult(
-      UUID id,
-      String deviceId,
-      UUID deviceSpecimenType,
-      List<MultiplexResultInput> results,
-      Date dateTested) {
+      @Argument UUID id,
+      @Argument String deviceId,
+      @Argument UUID deviceSpecimenType,
+      @Argument List<MultiplexResultInput> results,
+      @Argument Date dateTested) {
     UUID dst = getDeviceSpecimenTypeId(deviceId, deviceSpecimenType);
 
     return new ApiTestOrder(_tos.editQueueItemMultiplexResult(id, dst, results, dateTested));
   }
 
+  @MutationMapping
   public String addPatientToQueue(
-      UUID facilityID,
-      UUID patientID,
-      String pregnancy,
-      String symptoms,
-      LocalDate symptomOnset,
-      boolean noSymptoms,
-      TestResultDeliveryPreference testResultDelivery)
+      @Argument UUID facilityId,
+      @Argument UUID patientId,
+      @Argument String pregnancy,
+      @Argument String symptoms,
+      @Argument LocalDate symptomOnset,
+      @Argument boolean noSymptoms,
+      @Argument TestResultDeliveryPreference testResultDelivery)
       throws JSONException {
 
     Map<String, Boolean> symptomsMap = parseSymptoms(symptoms);
 
     TestOrder to =
         _tos.addPatientToQueue(
-            facilityID,
-            _ps.getPatientNoPermissionsCheck(patientID),
+            facilityId,
+            _ps.getPatientNoPermissionsCheck(patientId),
             pregnancy,
             symptomsMap,
             symptomOnset,
             noSymptoms);
 
-    _ps.updateTestResultDeliveryPreference(patientID, testResultDelivery);
+    _ps.updateTestResultDeliveryPreference(patientId, testResultDelivery);
 
     return to.getInternalId()
         .toString(); // this return is unused in the UI. it used to be PatientLinkInternalId
   }
 
-  public void removePatientFromQueue(UUID patientID) {
+  @MutationMapping
+  public void removePatientFromQueue(@Argument UUID patientID) {
     _tos.removePatientFromQueue(patientID);
   }
 
+  @MutationMapping
   public void updateTimeOfTestQuestions(
-      UUID patientID,
-      String pregnancy,
-      String symptoms,
-      LocalDate symptomOnset,
-      boolean noSymptoms,
-      TestResultDeliveryPreference testResultDelivery) {
+      @Argument UUID patientID,
+      @Argument String pregnancy,
+      @Argument String symptoms,
+      @Argument LocalDate symptomOnset,
+      @Argument boolean noSymptoms,
+      @Argument TestResultDeliveryPreference testResultDelivery) {
 
     Map<String, Boolean> symptomsMap = parseSymptoms(symptoms);
 

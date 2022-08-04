@@ -5,6 +5,7 @@ import { DatePicker } from "../commonComponents/DatePicker";
 import Dropdown from "../commonComponents/Dropdown";
 import { useGetTopLevelDashboardMetricsNewQuery } from "../../generated/graphql";
 import { LoadingCard } from "../commonComponents/LoadingCard/LoadingCard";
+import { useSelectedFacility } from "../facilitySelect/useSelectedFacility";
 
 import "./Analytics.scss";
 
@@ -60,7 +61,11 @@ export const Analytics = (props: Props) => {
   const facilities = useSelector(
     (state) => ((state as any).facilities as Facility[]) || []
   );
-  const [facilityId, setFacilityId] = useState<string>("");
+
+  const [facility] = useSelectedFacility();
+  const activeFacilityId = facility?.id || "";
+
+  const [facilityId, setFacilityId] = useState<string>(activeFacilityId);
   const [facilityName, setFacilityName] = useState<string>(organization.name);
   const [dateRange, setDateRange] = useState<string>("week");
   const [startDate, setStartDate] = useState<string>(

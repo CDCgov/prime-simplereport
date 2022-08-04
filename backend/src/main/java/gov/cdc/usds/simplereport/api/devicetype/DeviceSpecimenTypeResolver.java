@@ -4,14 +4,16 @@ import gov.cdc.usds.simplereport.db.model.DeviceSpecimenType;
 import gov.cdc.usds.simplereport.service.DeviceTypeService;
 import java.util.List;
 import lombok.RequiredArgsConstructor;
-import org.springframework.stereotype.Component;
+import org.springframework.graphql.data.method.annotation.QueryMapping;
+import org.springframework.stereotype.Controller;
 
-@Component
+@Controller
 @RequiredArgsConstructor
 public class DeviceSpecimenTypeResolver {
   private final DeviceTypeService dts;
 
-  public List<DeviceSpecimenType> getDeviceSpecimenTypes() {
+  @QueryMapping
+  public List<DeviceSpecimenType> deviceSpecimenTypes() {
     return dts.getDeviceSpecimenTypes();
   }
 }

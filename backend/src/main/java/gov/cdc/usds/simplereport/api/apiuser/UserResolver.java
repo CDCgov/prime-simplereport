@@ -6,9 +6,8 @@ import gov.cdc.usds.simplereport.db.model.ApiUser;
 import gov.cdc.usds.simplereport.service.ApiUserService;
 import java.util.List;
 import java.util.UUID;
-
+import org.springframework.graphql.data.method.annotation.Argument;
 import org.springframework.graphql.data.method.annotation.QueryMapping;
-import org.springframework.stereotype.Component;
 import org.springframework.stereotype.Controller;
 
 /** Resolver for the graphql User type */
@@ -26,15 +25,18 @@ public class UserResolver {
     return new User(_userService.getCurrentUserInfo());
   }
 
+  @QueryMapping
   public List<ApiUser> getUsers() {
     return _userService.getUsersInCurrentOrg();
   }
 
+  @QueryMapping
   public List<ApiUserWithStatus> getUsersWithStatus() {
     return _userService.getUsersAndStatusInCurrentOrg();
   }
 
-  public User getUser(UUID userId) {
+  @QueryMapping
+  public User getUser(@Argument UUID userId) {
     return new User(_userService.getUser(userId));
   }
 }

@@ -13,9 +13,11 @@ import java.util.UUID;
 import javax.servlet.http.Part;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.stereotype.Component;
+import org.springframework.graphql.data.method.annotation.Argument;
+import org.springframework.graphql.data.method.annotation.QueryMapping;
+import org.springframework.stereotype.Controller;
 
-@Component
+@Controller
 @RequiredArgsConstructor
 @Slf4j
 public class TestResultMutationResolver {
@@ -23,14 +25,16 @@ public class TestResultMutationResolver {
   private final TestEventReportingService testEventReportingService;
   private final TestResultUploadService testResultUploadService;
 
-  public boolean resendToReportStream(List<UUID> testEventIds) {
+  @QueryMapping
+  public boolean resendToReportStream(@Argument List<UUID> testEventIds) {
     testEventRepository
         .findAllByInternalIdIn(testEventIds)
         .forEach(testEventReportingService::report);
     return true;
   }
 
-  public TestResultUpload uploadTestResultCSV(Part part) {
+  @QueryMapping
+  public TestResultUpload uploadTestResultCSV(@Argument Part part) {
     try (InputStream resultsUpload = part.getInputStream()) {
 
       return testResultUploadService.processResultCSV(resultsUpload);
