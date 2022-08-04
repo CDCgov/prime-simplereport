@@ -58,6 +58,7 @@ Object {
                     class="display-flex flex-align-center"
                   >
                     <button
+                      aria-disabled="true"
                       class="usa-button usa-button--outline usa-button-disabled prime-save-patient-changes-start-test"
                       disabled=""
                       id="edit-patient-save-lower"
@@ -2586,6 +2587,7 @@ Object {
                 class="prime-edit-patient-heading"
               >
                 <button
+                  aria-disabled="true"
                   class="usa-button usa-button-disabled prime-save-patient-changes"
                   disabled=""
                   id="edit-patient-save-lower"
@@ -2657,6 +2659,7 @@ Object {
                   class="display-flex flex-align-center"
                 >
                   <button
+                    aria-disabled="true"
                     class="usa-button usa-button--outline usa-button-disabled prime-save-patient-changes-start-test"
                     disabled=""
                     id="edit-patient-save-lower"
@@ -5185,6 +5188,7 @@ Object {
               class="prime-edit-patient-heading"
             >
               <button
+                aria-disabled="true"
                 class="usa-button usa-button-disabled prime-save-patient-changes"
                 disabled=""
                 id="edit-patient-save-lower"

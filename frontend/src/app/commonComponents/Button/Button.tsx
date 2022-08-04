@@ -39,6 +39,7 @@ const Button = ({
   <button
     type={type}
     disabled={disabled}
+    aria-disabled={disabled}
     className={classnames(
       "usa-button",
       variant && `usa-button--${variant}`,

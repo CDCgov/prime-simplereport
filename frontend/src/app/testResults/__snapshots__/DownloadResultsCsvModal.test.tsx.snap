@@ -108,6 +108,7 @@ Object {
                   No, go back
                 </button>
                 <button
+                  aria-disabled="false"
                   class="usa-button"
                   type="button"
                 >
@@ -246,6 +247,7 @@ Object {
                 No, go back
               </button>
               <button
+                aria-disabled="false"
                 class="usa-button"
                 type="button"
               >
@@ -440,6 +442,7 @@ Object {
                   No, go back
                 </button>
                 <button
+                  aria-disabled="false"
                   class="usa-button"
                   type="button"
                 >
@@ -578,6 +581,7 @@ Object {
                 No, go back
               </button>
               <button
+                aria-disabled="false"
                 class="usa-button"
                 type="button"
               >
@@ -761,6 +765,7 @@ Object {
                   Go back
                 </button>
                 <button
+                  aria-disabled="true"
                   class="usa-button usa-button-disabled"
                   disabled=""
                   type="button"
@@ -889,6 +894,7 @@ Object {
                 Go back
               </button>
               <button
+                aria-disabled="true"
                 class="usa-button usa-button-disabled"
                 disabled=""
                 type="button"

@@ -29,6 +29,7 @@ Object {
                   style="display: flex; justify-content: center; align-items: center;"
                 >
                   <button
+                    aria-disabled="true"
                     class="usa-button usa-button-disabled"
                     disabled=""
                     type="button"
@@ -551,6 +552,7 @@ Object {
                 style="display: flex; justify-content: center; align-items: center;"
               >
                 <button
+                  aria-disabled="true"
                   class="usa-button usa-button-disabled"
                   disabled=""
                   type="button"
