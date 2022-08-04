@@ -217,10 +217,12 @@ class PatientExperienceControllerTest extends BaseFullStackTest {
                         "$.results[?(@.disease.name == \"COVID-19\" && @.testResult == \"POSITIVE\")]")
                     .exists())
             .andExpect(
-                jsonPath("$.results[?(@.disease.name == \"Flu A\" && @.result == \"NEGATIVE\")]")
+                jsonPath(
+                        "$.results[?(@.disease.name == \"Flu A\" && @.testResult == \"NEGATIVE\")]")
                     .exists())
             .andExpect(
-                jsonPath("$.results[?(@.disease.name == \"Flu B\" && @.result == \"NEGATIVE\")]")
+                jsonPath(
+                        "$.results[?(@.disease.name == \"Flu B\" && @.testResult == \"NEGATIVE\")]")
                     .exists())
             .andExpect(jsonPath("$.correctionStatus", is("ORIGINAL")))
             .andExpect(jsonPath("$.patient.firstName", is("Fred")))
