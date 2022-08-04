@@ -143,7 +143,7 @@ class PatientExperienceControllerTest extends BaseFullStackTest {
             .andExpect(jsonPath("$.testEventId", is(testEvent.getInternalId().toString())))
             .andExpect(jsonPath("$.result", is("NEGATIVE")))
             .andExpect(jsonPath("$.results", Matchers.hasSize(1)))
-            .andExpect(jsonPath("$.results[0].result", is("NEGATIVE")))
+            .andExpect(jsonPath("$.results[0].testResult", is("NEGATIVE"))) // TODO
             .andExpect(jsonPath("$.results[0].disease.name", is("COVID-19")))
             .andExpect(jsonPath("$.correctionStatus", is("ORIGINAL")))
             .andExpect(jsonPath("$.patient.firstName", is("Fred")))
@@ -212,8 +212,9 @@ class PatientExperienceControllerTest extends BaseFullStackTest {
             .andExpect(jsonPath("$.testEventId", is(testEvent.getInternalId().toString())))
             .andExpect(jsonPath("$.result", is("POSITIVE")))
             .andExpect(jsonPath("$.results", Matchers.hasSize(3)))
-            .andExpect(
-                jsonPath("$.results[?(@.disease.name == \"COVID-19\" && @.result == \"POSITIVE\")]")
+            .andExpect( // TODO
+                jsonPath(
+                        "$.results[?(@.disease.name == \"COVID-19\" && @.testResult == \"POSITIVE\")]")
                     .exists())
             .andExpect(
                 jsonPath("$.results[?(@.disease.name == \"Flu A\" && @.result == \"NEGATIVE\")]")
@@ -286,7 +287,7 @@ class PatientExperienceControllerTest extends BaseFullStackTest {
             .andExpect(jsonPath("$.testEventId", is(removedTestEvent.getInternalId().toString())))
             .andExpect(jsonPath("$.result", is("POSITIVE")))
             .andExpect(jsonPath("$.results", Matchers.hasSize(1)))
-            .andExpect(jsonPath("$.results[0].result", is("POSITIVE")))
+            .andExpect(jsonPath("$.results[0].testResult", is("POSITIVE"))) // TODO
             .andExpect(jsonPath("$.results[0].disease.name", is("COVID-19")))
             .andExpect(jsonPath("$.correctionStatus", is("REMOVED")))
             .andExpect(jsonPath("$.patient.firstName", is("Fred")))

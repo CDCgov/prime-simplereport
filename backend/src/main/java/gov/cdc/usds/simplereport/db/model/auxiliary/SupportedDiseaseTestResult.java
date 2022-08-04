@@ -8,5 +8,5 @@ import lombok.Getter;
 @Getter
 public class SupportedDiseaseTestResult {
   private SupportedDisease disease;
-  private TestResult result;
+  private TestResult testResult;
 }
