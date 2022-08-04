@@ -75,7 +75,7 @@ exports[`TestQueue should render the test queue 1`] = `
           class="prime-card-container"
         >
           <button
-            aria-label="Close"
+            aria-label="Close test for Doe, John A"
             class="prime-close-button"
           >
             <span
@@ -482,7 +482,7 @@ exports[`TestQueue should render the test queue 1`] = `
           class="prime-card-container"
         >
           <button
-            aria-label="Close"
+            aria-label="Close test for Smith, Jane"
             class="prime-close-button"
           >
             <span
