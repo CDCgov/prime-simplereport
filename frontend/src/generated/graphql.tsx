@@ -2057,6 +2057,7 @@ export type GetPatientsByFacilityForQueueQueryVariables = Exact<{
   facilityId?: InputMaybe<Scalars["ID"]>;
   namePrefixMatch?: InputMaybe<Scalars["String"]>;
   includeArchivedFacilities?: InputMaybe<Scalars["Boolean"]>;
+  includeArchivedPatients?: InputMaybe<Scalars["Boolean"]>;
 }>;
 
 export type GetPatientsByFacilityForQueueQuery = {
@@ -5818,12 +5819,13 @@ export const GetPatientsByFacilityForQueueDocument = gql`
     $facilityId: ID
     $namePrefixMatch: String
     $includeArchivedFacilities: Boolean
+    $includeArchivedPatients: Boolean = false
   ) {
     patients(
       facilityId: $facilityId
       pageNumber: 0
       pageSize: 100
-      showDeleted: false
+      showDeleted: $includeArchivedPatients
       namePrefixMatch: $namePrefixMatch
       includeArchivedFacilities: $includeArchivedFacilities
     ) {
@@ -5860,6 +5862,7 @@ export const GetPatientsByFacilityForQueueDocument = gql`
  *      facilityId: // value for 'facilityId'
  *      namePrefixMatch: // value for 'namePrefixMatch'
  *      includeArchivedFacilities: // value for 'includeArchivedFacilities'
+ *      includeArchivedPatients: // value for 'includeArchivedPatients'
  *   },
  * });
  */

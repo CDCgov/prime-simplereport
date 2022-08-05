@@ -317,6 +317,7 @@ export const mocks = [
         facilityId: "1",
         namePrefixMatch: "Cragell",
         includeArchivedFacilities: true,
+        includeArchivedPatients: true,
       },
     },
     result: {
