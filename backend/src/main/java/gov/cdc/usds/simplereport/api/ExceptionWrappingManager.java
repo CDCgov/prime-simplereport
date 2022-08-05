@@ -1,7 +1,5 @@
 package gov.cdc.usds.simplereport.api;
 
-import graphql.GraphQLError;
-//import graphql.kickstart.spring.error.ThrowableGraphQLError;
 import graphql.GraphQLException;
 import org.springframework.security.access.AccessDeniedException;
 import org.springframework.stereotype.Component;

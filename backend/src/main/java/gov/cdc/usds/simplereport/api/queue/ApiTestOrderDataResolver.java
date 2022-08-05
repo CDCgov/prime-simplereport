@@ -4,17 +4,11 @@ import gov.cdc.usds.simplereport.api.model.ApiTestOrder;
 import gov.cdc.usds.simplereport.db.model.DeviceType;
 import gov.cdc.usds.simplereport.db.model.PatientAnswers;
 import gov.cdc.usds.simplereport.db.model.Person;
-import gov.cdc.usds.simplereport.db.model.Result;
-import gov.cdc.usds.simplereport.db.model.auxiliary.AskOnEntrySurvey;
-import gov.cdc.usds.simplereport.db.model.auxiliary.TestResult;
+import gov.cdc.usds.simplereport.db.repository.DeviceTypeRepository;
+import gov.cdc.usds.simplereport.db.repository.PatientAnswersRepository;
 import gov.cdc.usds.simplereport.db.repository.PersonRepository;
-import gov.cdc.usds.simplereport.service.dataloader.PatientAnswersDataLoader;
-import gov.cdc.usds.simplereport.service.dataloader.TestOrderDeviceTypeDataLoader;
-import gov.cdc.usds.simplereport.service.dataloader.TestOrderPatientDataLoader;
-import graphql.schema.DataFetchingEnvironment;
 import java.time.LocalDate;
 import java.util.Map;
-import java.util.Set;
 import java.util.UUID;
 import java.util.concurrent.CompletableFuture;
 import java.util.stream.Collectors;
@@ -27,23 +21,18 @@ import reactor.core.publisher.Mono;
 @Controller
 public class ApiTestOrderDataResolver {
 
-  private final BatchLoaderRegistry registry;
+  //  private final BatchLoaderRegistry registry;
 
   //  private final PersonRepository personRepository;
-  private final TestOrderPatientDataLoader _testOrderPatientDataLoader;
-  private final TestOrderDeviceTypeDataLoader _testOrderDeviceTypeDataLoader;
-  private final PatientAnswersDataLoader _patientAnswersDataLoader;
+  //  private final TestOrderPatientDataLoader _testOrderPatientDataLoader;
+  //  private final TestOrderDeviceTypeDataLoader _testOrderDeviceTypeDataLoader;
+  //  private final PatientAnswersDataLoader _patientAnswersDataLoader;
 
   public ApiTestOrderDataResolver(
       BatchLoaderRegistry registry,
       PersonRepository personRepository,
-      TestOrderPatientDataLoader testOrderPatientDataLoader,
-      TestOrderDeviceTypeDataLoader testOrderDeviceTypeDataLoader,
-      PatientAnswersDataLoader patientAnswersDataLoader) {
-    this.registry = registry;
-    _testOrderPatientDataLoader = testOrderPatientDataLoader;
-    _testOrderDeviceTypeDataLoader = testOrderDeviceTypeDataLoader;
-    _patientAnswersDataLoader = patientAnswersDataLoader;
+      DeviceTypeRepository deviceTypeRepository,
+      PatientAnswersRepository patientAnswersRepository) {
 
     registry
         .forTypePair(UUID.class, Person.class)
@@ -55,14 +44,34 @@ public class ApiTestOrderDataResolver {
 
               return Mono.just(found);
             });
+
+    registry
+        .forTypePair(UUID.class, DeviceType.class)
+        .registerMappedBatchLoader(
+            (uuids, batchLoaderEnvironment) -> {
+              Map<UUID, DeviceType> found =
+                  deviceTypeRepository.findAllByInternalIdIn(uuids).stream()
+                      .collect(Collectors.toMap(DeviceType::getInternalId, s -> s));
+              return Mono.just(found);
+            });
+
+    registry
+        .forTypePair(UUID.class, PatientAnswers.class)
+        .registerMappedBatchLoader(
+            (uuids, batchLoaderEnvironment) -> {
+              Map<UUID, PatientAnswers> found =
+                  patientAnswersRepository.findAllByInternalIdIn(uuids).stream()
+                      .collect(Collectors.toMap(PatientAnswers::getInternalId, s -> s));
+              return Mono.just(found);
+            });
   }
 
-  private CompletableFuture<AskOnEntrySurvey> getSurvey(
-      ApiTestOrder apiTestOrder, DataFetchingEnvironment dfe) {
-    return _patientAnswersDataLoader
-        .load(apiTestOrder.getWrapped(), dfe)
-        .thenApply(PatientAnswers::getSurvey);
-  }
+  //  private CompletableFuture<AskOnEntrySurvey> getSurvey(
+  //      ApiTestOrder apiTestOrder, DataFetchingEnvironment dfe) {
+  //    return _patientAnswersDataLoader
+  //        .load(apiTestOrder.getWrapped(), dfe)
+  //        .thenApply(PatientAnswers::getSurvey);
+  //  }
 
   @SchemaMapping(typeName = "TestOrder", field = "patient")
   public CompletableFuture<Person> patient(
@@ -74,37 +83,51 @@ public class ApiTestOrderDataResolver {
     //        apiTestOrder.getWrapped().getPatient().getInternalId(), dfe);
   }
 
-  public CompletableFuture<String> getPregnancy(
-      ApiTestOrder apiTestOrder, DataFetchingEnvironment dfe) {
-    return getSurvey(apiTestOrder, dfe).thenApply(AskOnEntrySurvey::getPregnancy);
+  @SchemaMapping(typeName = "TestOrder", field = "pregnancy")
+  public CompletableFuture<String> pregnancy(
+      ApiTestOrder apiTestOrder, DataLoader<UUID, PatientAnswers> loader) {
+    return loader
+        .load(apiTestOrder.getWrapped().getPatientAnswersId())
+        .thenApply(patientAnswers -> patientAnswers.getSurvey().getPregnancy());
   }
 
-  public CompletableFuture<Boolean> getNoSymptoms(
-      ApiTestOrder apiTestOrder, DataFetchingEnvironment dfe) {
-    return getSurvey(apiTestOrder, dfe).thenApply(AskOnEntrySurvey::getNoSymptoms);
+  @SchemaMapping(typeName = "TestOrder", field = "noSymptoms")
+  public CompletableFuture<Boolean> noSymptoms(
+      ApiTestOrder apiTestOrder, DataLoader<UUID, PatientAnswers> loader) {
+    return loader
+        .load(apiTestOrder.getWrapped().getPatientAnswersId())
+        .thenApply(patientAnswers -> patientAnswers.getSurvey().getNoSymptoms());
   }
 
-  public CompletableFuture<String> getSymptoms(
-      ApiTestOrder apiTestOrder, DataFetchingEnvironment dfe) {
-    return getSurvey(apiTestOrder, dfe).thenApply(AskOnEntrySurvey::getSymptomsJSON);
+  @SchemaMapping(typeName = "TestOrder", field = "symptoms")
+  public CompletableFuture<String> symptoms(
+      ApiTestOrder apiTestOrder, DataLoader<UUID, PatientAnswers> loader) {
+    return loader
+        .load(apiTestOrder.getWrapped().getPatientAnswersId())
+        .thenApply(patientAnswers -> patientAnswers.getSurvey().getSymptomsJSON());
   }
 
-  public CompletableFuture<LocalDate> getSymptomOnset(
-      ApiTestOrder apiTestOrder, DataFetchingEnvironment dfe) {
-    return getSurvey(apiTestOrder, dfe).thenApply(AskOnEntrySurvey::getSymptomOnsetDate);
+  @SchemaMapping(typeName = "TestOrder", field = "symptomOnset")
+  public CompletableFuture<LocalDate> symptomOnset(
+      ApiTestOrder apiTestOrder, DataLoader<UUID, PatientAnswers> loader) {
+    return loader
+        .load(apiTestOrder.getWrapped().getPatientAnswersId())
+        .thenApply(patientAnswers -> patientAnswers.getSurvey().getSymptomOnsetDate());
   }
 
-  //  @SchemaMapping(typeName="TestOrder", field="deviceType")
+  @SchemaMapping(typeName = "TestOrder", field = "deviceType")
   public CompletableFuture<DeviceType> deviceType(
-      ApiTestOrder apiTestOrder, DataFetchingEnvironment dfe) {
-    return _testOrderDeviceTypeDataLoader.load(apiTestOrder.getWrapped(), dfe);
+      ApiTestOrder apiTestOrder, DataLoader<UUID, DeviceType> loader) {
+    return loader.load(apiTestOrder.getWrapped().getDeviceType().getInternalId());
   }
 
-  public TestResult getResult(ApiTestOrder apiTestOrder) {
-    return apiTestOrder.getWrapped().getResult();
-  }
-
-  public Set<Result> getResults(ApiTestOrder apiTestOrder) {
-    return apiTestOrder.getWrapped().getPendingResultSet();
-  }
+  //  @SchemaMapping(typeName="TestOrder", field="result")
+  //  public TestResult getResult(ApiTestOrder apiTestOrder) {
+  //    return apiTestOrder.getWrapped().getResult();
+  //  }
+  //
+  //  @SchemaMapping(typeName="TestOrder", field="results")
+  //  public Set<Result> getResults(ApiTestOrder apiTestOrder) {
+  //    return apiTestOrder.getWrapped().getPendingResultSet();
+  //  }
 }
