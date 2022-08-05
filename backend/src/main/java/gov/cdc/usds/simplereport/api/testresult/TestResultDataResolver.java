@@ -1,23 +1,14 @@
 package gov.cdc.usds.simplereport.api.testresult;
 
-import gov.cdc.usds.simplereport.api.InternalIdResolver;
 import gov.cdc.usds.simplereport.api.model.ApiFacility;
 import gov.cdc.usds.simplereport.api.model.TestDescription;
-import gov.cdc.usds.simplereport.api.model.errors.NoDataLoaderFoundException;
-import gov.cdc.usds.simplereport.db.model.PatientLink;
 import gov.cdc.usds.simplereport.db.model.Person;
 import gov.cdc.usds.simplereport.db.model.Result;
 import gov.cdc.usds.simplereport.db.model.TestEvent;
 import gov.cdc.usds.simplereport.db.model.auxiliary.AskOnEntrySurvey;
-import gov.cdc.usds.simplereport.service.dataloader.PatientLinkDataLoader;
-import graphql.schema.DataFetchingEnvironment;
 import java.time.LocalDate;
 import java.util.Date;
 import java.util.Set;
-import java.util.UUID;
-import java.util.concurrent.CompletableFuture;
-import org.dataloader.DataLoader;
-import org.dataloader.DataLoaderRegistry;
 import org.springframework.stereotype.Component;
 import org.springframework.stereotype.Controller;
 
@@ -65,15 +56,15 @@ public class TestResultDataResolver {
     return new ApiFacility(testEvent.getFacility());
   }
 
-//  public CompletableFuture<PatientLink> getPatientLink(
-//      TestEvent testEvent, DataFetchingEnvironment dfe) {
-//    DataLoaderRegistry registry = ((GraphQLContext) dfe.getContext()).getDataLoaderRegistry();
-//    DataLoader<UUID, PatientLink> loader = registry.getDataLoader(PatientLinkDataLoader.KEY);
-//    if (loader == null) {
-//      throw new NoDataLoaderFoundException(PatientLinkDataLoader.KEY);
-//    }
-//    return loader.load(testEvent.getTestOrderId());
-//  }
+  //  public CompletableFuture<PatientLink> getPatientLink(
+  //      TestEvent testEvent, DataFetchingEnvironment dfe) {
+  //    DataLoaderRegistry registry = ((GraphQLContext) dfe.getContext()).getDataLoaderRegistry();
+  //    DataLoader<UUID, PatientLink> loader = registry.getDataLoader(PatientLinkDataLoader.KEY);
+  //    if (loader == null) {
+  //      throw new NoDataLoaderFoundException(PatientLinkDataLoader.KEY);
+  //    }
+  //    return loader.load(testEvent.getTestOrderId());
+  //  }
 
   public Set<Result> getResults(TestEvent testEvent) {
     return testEvent.getResults();

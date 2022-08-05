@@ -58,4 +58,8 @@ public class User extends WrappedEntity<UserInfo> implements PersonWrapper<UserI
   public UserStatus getStatus() {
     return wrapped.getUserStatus();
   }
+
+  public String getSuffix() {
+    return wrapped.getNameInfo().getSuffix();
+  }
 }
