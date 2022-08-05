@@ -1,113 +1,113 @@
 # configuration for dev and demo server startup on a blank DB
-# simple-report-initialization:
-#   organizations:
-#     - org-name: Dis Organization
-#       org-type: university
-#       external-id: DIS_ORG
-#       identity-verified: true
-#     - org-name: Dat Organization
-#       org-type: urgent_care
-#       external-id: DAT_ORG
-#       identity-verified: true
-#     - org-name: Unverified Org
-#       org-type: urgent_care
-#       external-id: UNV_ORG
-#       identity-verified: false
-#   facilities:
-#     # TODO: uncomment once e2e tests can accommodate 2+ facilities
-#     # - facility-name: Injection Site
-#     #   clia-number: "000111222-3"
-#     #   address:
-#     #     street-1: 2797 N Cerrada de Beto
-#     #   organization-external-id: DIS_ORG
-#     - facility-name: Testing Site
-#       clia-number: "999888777-6"
-#       address:
-#         street-1: 1001 Rodeo Dr
-#         city: Los Angeles
-#         state: CA
-#         postal-code: 90000
-#       telephone: 8002324636
-#       email: testingsite@disorg.com
-#       organization-external-id: DIS_ORG
-#     - facility-name: Uptown Clinic
-#       clia-number: "123456789-0"
-#       address:
-#         street-1: 1400 Lexington Ave
-#         city: New York
-#         state: NY
-#         postal-code: 10128
-#       telephone: 8002324636
-#       organization-external-id: DAT_ORG
-#     - facility-name: Downtown Clinic
-#       clia-number: "987654321-0"
-#       address:
-#         street-1: 5 Bleecker St
-#         city: New York
-#         state: NY
-#         postal-code: 10010
-#       telephone: 8002324636
-#       email: downtownclinic@dat.org
-#       organization-external-id: DAT_ORG
-#   provider:
-#     first-name: Fred
-#     last-name: Flintstone
-#     provider-id: PEBBLES
-#     telephone: (202) 555-1212
-#     address:
-#       street-1: 123 Main Street
-#       city: Oz
-#       state: KS
-#       postal-code: "12345"
-#   configured-device-types:
-#     - LumiraDX
-#     - Quidel Sofia 2
-#   specimen-types:
-#     - name: Swab of internal nose
-#       type-code: "445297001"
-#       collection-location-name: Internal nose structure
-#     - name: Nasopharyngeal swab
-#       type-code: "258500001"
-#       collection-location-name: Nasopharyngeal structure
-#       collection-location-code: "71836000"
-#   device-types:
-#     - name: Abbott IDNow
-#       manufacturer: Abbott
-#       model: ID Now
-#       loinc-code: "94534-5"
-#       swab-type: "445297001"
-#     - name: Abbott BinaxNow
-#       manufacturer: Abbott
-#       model: BinaxNOW COVID-19 Ag Card
-#       loinc-code: "94558-4"
-#       swab-type: "445297001"
-#     - name: Quidel Sofia 2
-#       manufacturer: Quidel
-#       model: Sofia 2 SARS Antigen FIA
-#       loinc-code: "95209-3"
-#       swab-type: "445297001"
-#     - name: BD Veritor
-#       manufacturer: Becton, Dickinson and Company (BD)
-#       model: "BD Veritor System for Rapid Detection of SARS-CoV-2*"
-#       loinc-code: "94558-4"
-#       swab-type: "445297001"
-#     - name: LumiraDX
-#       manufacturer: LumiraDx UK Ltd.
-#       model: LumiraDx SARS-CoV-2 Ag Test*
-#       loinc-code: "95209-3"
-#       swab-type: "445297001"
-#     - name: Access Bio CareStart
-#       manufacturer: Access Bio, Inc.
-#       model: CareStart COVID-19 Antigen test*
-#       loinc-code: "94558-4"
-#       swab-type: "258500001"
-#   patient-registration-links:
-#     - patient-registration-link: dis-org
-#       organization-external-id: DIS_ORG
-#     - patient-registration-link: t37ft
-#       facility-name: Testing Site
-#     - patient-registration-link: dat-org
-#       organization-external-id: DAT_ORG
+simple-report-initialization:
+  organizations:
+    - org-name: Dis Organization
+      org-type: university
+      external-id: DIS_ORG
+      identity-verified: true
+    - org-name: Dat Organization
+      org-type: urgent_care
+      external-id: DAT_ORG
+      identity-verified: true
+    - org-name: Unverified Org
+      org-type: urgent_care
+      external-id: UNV_ORG
+      identity-verified: false
+  facilities:
+    # TODO: uncomment once e2e tests can accommodate 2+ facilities
+    # - facility-name: Injection Site
+    #   clia-number: "000111222-3"
+    #   address:
+    #     street-1: 2797 N Cerrada de Beto
+    #   organization-external-id: DIS_ORG
+    - facility-name: Testing Site
+      clia-number: "999888777-6"
+      address:
+        street-1: 1001 Rodeo Dr
+        city: Los Angeles
+        state: CA
+        postal-code: 90000
+      telephone: 8002324636
+      email: testingsite@disorg.com
+      organization-external-id: DIS_ORG
+    - facility-name: Uptown Clinic
+      clia-number: "123456789-0"
+      address:
+        street-1: 1400 Lexington Ave
+        city: New York
+        state: NY
+        postal-code: 10128
+      telephone: 8002324636
+      organization-external-id: DAT_ORG
+    - facility-name: Downtown Clinic
+      clia-number: "987654321-0"
+      address:
+        street-1: 5 Bleecker St
+        city: New York
+        state: NY
+        postal-code: 10010
+      telephone: 8002324636
+      email: downtownclinic@dat.org
+      organization-external-id: DAT_ORG
+  provider:
+    first-name: Fred
+    last-name: Flintstone
+    provider-id: PEBBLES
+    telephone: (202) 555-1212
+    address:
+      street-1: 123 Main Street
+      city: Oz
+      state: KS
+      postal-code: "12345"
+  configured-device-types:
+    - LumiraDX
+    - Quidel Sofia 2
+  specimen-types:
+    - name: Swab of internal nose
+      type-code: "445297001"
+      collection-location-name: Internal nose structure
+    - name: Nasopharyngeal swab
+      type-code: "258500001"
+      collection-location-name: Nasopharyngeal structure
+      collection-location-code: "71836000"
+  device-types:
+    - name: Abbott IDNow
+      manufacturer: Abbott
+      model: ID Now
+      loinc-code: "94534-5"
+      swab-type: "445297001"
+    - name: Abbott BinaxNow
+      manufacturer: Abbott
+      model: BinaxNOW COVID-19 Ag Card
+      loinc-code: "94558-4"
+      swab-type: "445297001"
+    - name: Quidel Sofia 2
+      manufacturer: Quidel
+      model: Sofia 2 SARS Antigen FIA
+      loinc-code: "95209-3"
+      swab-type: "445297001"
+    - name: BD Veritor
+      manufacturer: Becton, Dickinson and Company (BD)
+      model: "BD Veritor System for Rapid Detection of SARS-CoV-2*"
+      loinc-code: "94558-4"
+      swab-type: "445297001"
+    - name: LumiraDX
+      manufacturer: LumiraDx UK Ltd.
+      model: LumiraDx SARS-CoV-2 Ag Test*
+      loinc-code: "95209-3"
+      swab-type: "445297001"
+    - name: Access Bio CareStart
+      manufacturer: Access Bio, Inc.
+      model: CareStart COVID-19 Antigen test*
+      loinc-code: "94558-4"
+      swab-type: "258500001"
+  patient-registration-links:
+    - patient-registration-link: dis-org
+      organization-external-id: DIS_ORG
+    - patient-registration-link: t37ft
+      facility-name: Testing Site
+    - patient-registration-link: dat-org
+      organization-external-id: DAT_ORG
 simple-report:
   demo-users:
     site-admin-emails:
