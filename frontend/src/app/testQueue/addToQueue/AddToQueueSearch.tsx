@@ -54,12 +54,13 @@ export const QUERY_PATIENT = gql`
     $facilityId: ID
     $namePrefixMatch: String
     $includeArchivedFacilities: Boolean
+    $includeArchivedPatients: Boolean = false
   ) {
     patients(
       facilityId: $facilityId
       pageNumber: 0
       pageSize: 100
-      showDeleted: false
+      showDeleted: $includeArchivedPatients
       namePrefixMatch: $namePrefixMatch
       includeArchivedFacilities: $includeArchivedFacilities
     ) {

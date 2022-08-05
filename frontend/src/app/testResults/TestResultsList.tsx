@@ -157,6 +157,7 @@ export const DetachedTestResultsList = ({
           : filterParams.filterFacilityId || activeFacilityId,
       namePrefixMatch: queryString,
       includeArchivedFacilities: isOrgAdmin,
+      includeArchivedPatients: true,
     },
   });
 
