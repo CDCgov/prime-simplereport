@@ -271,6 +271,7 @@ exports[`TestQueue should render the test queue 1`] = `
                         >
                           <button
                             aria-describedby="tooltip-211111"
+                            aria-label="Device"
                             class="usa-button usa-button--unstyled usa-tooltip__trigger"
                             data-testid="triggerElement"
                             position="right"
@@ -680,6 +681,7 @@ exports[`TestQueue should render the test queue 1`] = `
                         >
                           <button
                             aria-describedby="tooltip-211111"
+                            aria-label="Device"
                             class="usa-button usa-button--unstyled usa-tooltip__trigger"
                             data-testid="triggerElement"
                             position="right"
