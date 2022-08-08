@@ -1,10 +1,12 @@
 services:
   # Postgresql database
   db:
-    image: postgres:13-alpine
+    build:
+      context: backend/db-setup
     container_name: "${DB_NAME:-db}"
     environment:
       POSTGRES_PASSWORD: admin_password_for_local_dev_is_not_very_secure
+      SNAPSHOT: /usr/local/lib/anon_dump.sql
     volumes:
       # Create/use a named volume so that the database is not wiped if we recreate the container
       - db-data:/var/lib/postgresql/data
@@ -12,7 +14,16 @@ services:
       - ./backend/db-setup/create-db.sh:/docker-entrypoint-initdb.d/01-user-db-creation.sh
       - ./backend/db-setup/create-metabase-db.sh:/docker-entrypoint-initdb.d/02-metabase-db-creation.sh
       - ./backend/db-setup/reset-db.sql:/usr/local/lib/reset-db.sql
+      - ./backend/db-setup/anonymize-detect.sh:/usr/local/lib/anonymize-detect.sh
+      - ./backend/db-setup/remove-anon.sh:/usr/local/lib/remove-anon.sh
+      - ./backend/db-setup/anonymize-db.sql:/usr/local/lib/anonymize-db.sql
       - ./backend/db-setup/reset-metabase-db.sql:/usr/local/lib/reset-metabase-db.sql
+      - ./backend/db-setup/restore-db.sh:/usr/local/lib/restore-db.sh
+      - ./backend/db-setup/nuke-db.sh:/usr/local/lib/nuke-db.sh
+      - ./backend/db-setup/snapshot-db.sh:/usr/local/lib/snapshot-db.sh
+      - ./backend/db-setup/.pgpass/:/usr/local/lib/.pgpass
+      - ./backend/db-setup/snapshots/:/usr/local/lib/snapshots/
+      - ./backend/db-setup/generate_db_data.py:/usr/local/lib/generate_db_data.py
     command: -p ${SR_DB_PORT:-5432}
     expose:
       - "${SR_DB_PORT:-5432}"

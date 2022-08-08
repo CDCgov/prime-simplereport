@@ -646,7 +646,7 @@ const QueueItem = ({
         setConfirmationType("removeFromQueue");
       }}
       className="prime-close-button"
-      aria-label="Close"
+      aria-label={`Close test for ${patientFullName}`}
     >
       <span className="fa-layers">
         <FontAwesomeIcon icon={"circle"} size="2x" inverse />
@@ -780,7 +780,8 @@ const QueueItem = ({
                 id="patient-name-header"
               >
                 <div className="card-header">
-                  <div
+                  <Button
+                    variant="unstyled"
                     className="card-name"
                     onClick={() => {
                       navigate({
@@ -790,7 +791,7 @@ const QueueItem = ({
                     }}
                   >
                     {patientFullName}
-                  </div>
+                  </Button>
                   <div className="card-dob">
                     Date of birth:
                     <span className="card-date">
@@ -906,6 +907,7 @@ const QueueItem = ({
                           <span>Device</span>
 
                           <TextWithTooltip
+                            buttonLabel="Device"
                             tooltip="Don’t see the test you’re using? Ask your organization admin to add the correct test and it'll show up here."
                             position="right"
                           />

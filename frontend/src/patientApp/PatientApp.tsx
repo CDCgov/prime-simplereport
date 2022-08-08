@@ -49,37 +49,42 @@ const PatientApp = () => {
 
   if (!isValidUUID(plid)) {
     return (
-      <Page>
-        <PatientHeader />
-        <main>
-          <div className="grid-container maxw-tablet">
-            <p></p>
-            <Alert
-              type="error"
-              title="Page not found"
-              body={t("testResult.dob.linkNotFound")}
-            />
-          </div>
-        </main>
-      </Page>
+      <Page
+        header={<PatientHeader />}
+        children={
+          <main>
+            <div className="grid-container maxw-tablet">
+              <p></p>
+              <Alert
+                type="error"
+                title="Page not found"
+                body={t("testResult.dob.linkNotFound")}
+              />
+            </div>
+          </main>
+        }
+        isPatientApp={true}
+      />
     );
   }
 
   return (
-    <Page>
-      <PatientHeader />
-      <PatientLinkURL404Wrapper plid={plid}>
-        <Routes>
-          <Route path="/" element={<TermsOfService />} />
-          <Route path="terms-of-service" element={<TermsOfService />} />
-          <Route path="birth-date-confirmation" element={<DOB />} />
-          <Route
-            path="test-result"
-            element={<GuardedRoute auth={auth} element={<TestResult />} />}
-          />
-        </Routes>
-      </PatientLinkURL404Wrapper>
-    </Page>
+    <Page
+      header={<PatientHeader />}
+      children={
+        <PatientLinkURL404Wrapper plid={plid}>
+          <Routes>
+            <Route path="/" element={<TermsOfService />} />
+            <Route path="terms-of-service" element={<TermsOfService />} />
+            <Route path="birth-date-confirmation" element={<DOB />} />
+            <Route
+              path="test-result"
+              element={<GuardedRoute auth={auth} element={<TestResult />} />}
+            />
+          </Routes>
+        </PatientLinkURL404Wrapper>
+      }
+    />
   );
 };
 

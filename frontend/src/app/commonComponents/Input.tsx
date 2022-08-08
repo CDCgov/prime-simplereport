@@ -3,6 +3,7 @@ import React, { useEffect, useState } from "react";
 import TextInput, { HTMLInputElementType } from "./TextInput";
 
 interface Props<T> {
+  idString?: string;
   field: keyof T;
   formObject: T;
   label: string | React.ReactNode;
@@ -21,6 +22,7 @@ interface Props<T> {
 
 export const Input = <T extends { [key: string]: any }>({
   field,
+  idString,
   formObject,
   label,
   className,
@@ -47,6 +49,7 @@ export const Input = <T extends { [key: string]: any }>({
 
   return (
     <TextInput
+      idString={idString}
       label={label}
       name={String(field)}
       value={formObject[field] || ""}

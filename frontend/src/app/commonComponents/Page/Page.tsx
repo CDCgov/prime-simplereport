@@ -13,7 +13,13 @@ declare global {
   }
 }
 
-const Page: React.FC<{}> = ({ children }) => {
+interface Props {
+  header?: React.ReactNode;
+  children?: React.ReactNode;
+  isPatientApp?: boolean;
+}
+
+const Page: React.FC<Props> = ({ header, children, isPatientApp }) => {
   // load touchpoints script
   useEffect(() => {
     // don't load script when running in cypress
@@ -32,8 +38,17 @@ const Page: React.FC<{}> = ({ children }) => {
   }, []);
   return (
     <div className="App">
-      <div id="main-wrapper">
+      <header
+        className={
+          isPatientApp
+            ? "header border-bottom border-base-lighter"
+            : "usa-header usa-header--basic"
+        }
+      >
         <USAGovBanner />
+        {header}
+      </header>
+      <div id="main-wrapper">
         {children}
         <ToastContainer
           autoClose={5000}
@@ -42,8 +57,8 @@ const Page: React.FC<{}> = ({ children }) => {
           position="bottom-center"
           hideProgressBar={true}
         />
+        <TouchpointsButton />
       </div>
-      <TouchpointsButton />
     </div>
   );
 };

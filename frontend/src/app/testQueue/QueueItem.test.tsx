@@ -947,7 +947,9 @@ describe("QueueItem", () => {
     });
 
     it("tracks removal of patient from queue as custom event", () => {
-      const button = screen.getByLabelText("Close");
+      const button = screen.getByLabelText(
+        `Close test for Potter, Harry James`
+      );
       userEvent.click(button);
       const iAmSure = screen.getByText("Yes, I'm sure");
       userEvent.click(iAmSure);

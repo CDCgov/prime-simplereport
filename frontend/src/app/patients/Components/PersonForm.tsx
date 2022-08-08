@@ -234,6 +234,14 @@ const PersonForm = (props: Props) => {
       setAddressModalOpen(true);
     }
   };
+  const getSchemaNameOrder = () => {
+    const schemaInfo = schema.describe();
+    const schemaOrder: { [key: string]: number } = {};
+    Object.keys(schemaInfo.fields).forEach((schemaName, idx) => {
+      schemaOrder[schemaName] = idx;
+    });
+    return schemaOrder;
+  };
 
   const validateForm = async (shouldStartTest: boolean = false) => {
     // The `startTest` param here originates from a child Add/Edit Patient form,
@@ -258,18 +266,50 @@ const PersonForm = (props: Props) => {
         {} as PersonErrors
       );
       setErrors(newErrors);
-      let focusedOnError = false;
-
-      Object.entries(newErrors).forEach(([name, error]) => {
+      const schemaOrder = getSchemaNameOrder();
+      Object.values(newErrors).forEach((error) => {
         if (!error) {
           return;
         }
-        if (!focusedOnError) {
-          document.getElementsByName(name)[0]?.focus();
-          focusedOnError = true;
-        }
         showError(t("patient.form.errors.validationMsg"), error);
       });
+
+      let earliestErrorIndex = Number.POSITIVE_INFINITY;
+      let earliestErrorName = "";
+      Object.keys(newErrors).forEach((name) => {
+        const errorOrder = schemaOrder[name];
+        if (earliestErrorIndex > errorOrder) {
+          earliestErrorIndex = errorOrder;
+          earliestErrorName = name;
+        }
+      });
+
+      // phone/email fields might have multiple entries, so handle those elements
+      // via their field ID's
+      if (
+        earliestErrorName === "phoneNumbers" ||
+        earliestErrorName === "emails"
+      ) {
+        const elementClassPrefix =
+          earliestErrorName === "phoneNumbers" ? "phoneNumber" : "email";
+        const elementsToCheck = Array.from(
+          document.getElementsByClassName(`${elementClassPrefix}FormElement`)
+        ) as HTMLElement[];
+        for (let i = 0; i < elementsToCheck.length; i++) {
+          const errorContent = elementsToCheck[i].textContent;
+          if (errorContent && errorContent.match("Error")) {
+            // the parent div element isn't in the tabindex and
+            // therefore isn't focusable, so grab the closest input child element
+            document
+              .getElementById(elementsToCheck[i].id)
+              ?.getElementsByTagName("input")[0]
+              .focus();
+            break;
+          }
+        }
+      } else {
+        document.getElementsByName(earliestErrorName)[0]?.focus();
+      }
 
       return;
     }
@@ -290,6 +330,10 @@ const PersonForm = (props: Props) => {
     shouldStartTest: boolean = false
   ) => {
     const person = address ? { ...patient, ...address } : patient;
+    // in the case where we have an empty additional phone number, filter it out
+    person.phoneNumbers = person.phoneNumbers
+      ? person.phoneNumbers.filter((pn) => pn.number && pn.type)
+      : person.phoneNumbers;
     setPatient(person);
     setAddressModalOpen(false);
     setFormChanged(false);
@@ -311,7 +355,6 @@ const PersonForm = (props: Props) => {
     ROLE_VALUES,
     TEST_RESULT_DELIVERY_PREFERENCE_VALUES_EMAIL,
   } = useTranslatedConstants();
-
   return (
     <>
       <Prompt when={formChanged} message={t("patient.form.errors.unsaved")} />
@@ -569,7 +612,7 @@ const PersonForm = (props: Props) => {
           buttons={RACE_VALUES}
           selectedRadio={patient.race}
           onChange={onPersonChange("race")}
-          required={true}
+          required
           validationStatus={validationStatus("race")}
         />
         <div className="usa-form-group">
@@ -592,7 +635,7 @@ const PersonForm = (props: Props) => {
           buttons={ETHNICITY_VALUES}
           selectedRadio={patient.ethnicity}
           onChange={onPersonChange("ethnicity")}
-          required={true}
+          required
           validationStatus={validationStatus("ethnicity")}
         />
         <RadioGroup

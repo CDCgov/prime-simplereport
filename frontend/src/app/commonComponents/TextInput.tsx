@@ -21,6 +21,7 @@ export type HTMLInputElementType =
 
 interface Props {
   name: string;
+  idString?: string;
   type?: HTMLInputElementType;
   label?: React.ReactNode;
   labelSrOnly?: boolean;
@@ -48,6 +49,7 @@ type InputProps = JSX.IntrinsicElements["input"];
 
 export const TextInput = ({
   name,
+  idString,
   type,
   label,
   labelSrOnly,
@@ -81,6 +83,7 @@ export const TextInput = ({
             className,
             validationStatus === "error" && "usa-form-group--error"
           )}
+          id={idString}
         >
           <label
             className={classnames(
@@ -107,6 +110,7 @@ export const TextInput = ({
               validationStatus === "error" && "usa-input--error"
             )}
             id={id}
+            data-testid={idString}
             name={name}
             value={value || ""}
             type={type || "text"}
@@ -125,7 +129,7 @@ export const TextInput = ({
             data-format-message={formatMessage}
             {...inputProps}
             {...(validationStatus === "error"
-              ? { "aria-describedby": `error_${id}` }
+              ? { "aria-describedby": `error_${id}`, "aria-invalid": true }
               : null)}
           />
         </div>

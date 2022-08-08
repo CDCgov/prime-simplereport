@@ -58,6 +58,7 @@ Object {
                     class="display-flex flex-align-center"
                   >
                     <button
+                      aria-disabled="true"
                       class="usa-button usa-button--outline usa-button-disabled prime-save-patient-changes-start-test"
                       disabled=""
                       id="edit-patient-save-lower"
@@ -326,7 +327,8 @@ Object {
                         class="display-flex"
                       >
                         <div
-                          class="usa-form-group flex-fill"
+                          class="usa-form-group flex-fill phoneNumberFormElement"
+                          id="phoneInput-0"
                         >
                           <label
                             class="usa-label"
@@ -344,6 +346,7 @@ Object {
                           <input
                             aria-required="true"
                             class="usa-input"
+                            data-testid="phoneInput-0"
                             id="126"
                             name="number"
                             type="text"
@@ -355,7 +358,8 @@ Object {
                         class="usa-form-group"
                       >
                         <fieldset
-                          class="usa-fieldset prime-radios margin-top-3"
+                          class="usa-fieldset prime-radios margin-top-3 phoneNumberFormElement"
+                          id="phoneType-0"
                         >
                           <legend
                             class="usa-legend"
@@ -439,6 +443,7 @@ Object {
                     >
                       <fieldset
                         class="usa-fieldset prime-radios"
+                        id="testResultDeliveryText"
                       >
                         <legend
                           class="usa-legend"
@@ -500,7 +505,8 @@ Object {
                           class="display-flex"
                         >
                           <div
-                            class="usa-form-group flex-fill"
+                            class="usa-form-group flex-fill emailFormElement"
+                            id="email-0"
                           >
                             <label
                               class="usa-label"
@@ -511,6 +517,7 @@ Object {
                             <input
                               aria-required="false"
                               class="usa-input"
+                              data-testid="email-0"
                               id="129"
                               name="email-0"
                               type="text"
@@ -570,6 +577,7 @@ Object {
                     >
                       <fieldset
                         class="usa-fieldset prime-radios"
+                        id="testResultDeliveryEmail"
                       >
                         <legend
                           class="usa-legend"
@@ -2072,6 +2080,7 @@ Object {
                   >
                     <fieldset
                       class="usa-fieldset prime-radios"
+                      id="race"
                     >
                       <legend
                         class="usa-legend"
@@ -2232,6 +2241,7 @@ Object {
                   >
                     <fieldset
                       class="usa-fieldset prime-radios"
+                      id="ethnicity"
                     >
                       <legend
                         class="usa-legend"
@@ -2310,6 +2320,7 @@ Object {
                   >
                     <fieldset
                       class="usa-fieldset prime-radios"
+                      id="gender"
                     >
                       <legend
                         class="usa-legend"
@@ -2424,6 +2435,7 @@ Object {
                   >
                     <fieldset
                       class="usa-fieldset prime-radios"
+                      id="residentCongregateSetting"
                     >
                       <legend
                         class="usa-legend"
@@ -2501,6 +2513,7 @@ Object {
                   >
                     <fieldset
                       class="usa-fieldset prime-radios"
+                      id="employedInHealthcare"
                     >
                       <legend
                         class="usa-legend"
@@ -2574,6 +2587,7 @@ Object {
                 class="prime-edit-patient-heading"
               >
                 <button
+                  aria-disabled="true"
                   class="usa-button usa-button-disabled prime-save-patient-changes"
                   disabled=""
                   id="edit-patient-save-lower"
@@ -2645,6 +2659,7 @@ Object {
                   class="display-flex flex-align-center"
                 >
                   <button
+                    aria-disabled="true"
                     class="usa-button usa-button--outline usa-button-disabled prime-save-patient-changes-start-test"
                     disabled=""
                     id="edit-patient-save-lower"
@@ -2913,7 +2928,8 @@ Object {
                       class="display-flex"
                     >
                       <div
-                        class="usa-form-group flex-fill"
+                        class="usa-form-group flex-fill phoneNumberFormElement"
+                        id="phoneInput-0"
                       >
                         <label
                           class="usa-label"
@@ -2931,6 +2947,7 @@ Object {
                         <input
                           aria-required="true"
                           class="usa-input"
+                          data-testid="phoneInput-0"
                           id="126"
                           name="number"
                           type="text"
@@ -2942,7 +2959,8 @@ Object {
                       class="usa-form-group"
                     >
                       <fieldset
-                        class="usa-fieldset prime-radios margin-top-3"
+                        class="usa-fieldset prime-radios margin-top-3 phoneNumberFormElement"
+                        id="phoneType-0"
                       >
                         <legend
                           class="usa-legend"
@@ -3026,6 +3044,7 @@ Object {
                   >
                     <fieldset
                       class="usa-fieldset prime-radios"
+                      id="testResultDeliveryText"
                     >
                       <legend
                         class="usa-legend"
@@ -3087,7 +3106,8 @@ Object {
                         class="display-flex"
                       >
                         <div
-                          class="usa-form-group flex-fill"
+                          class="usa-form-group flex-fill emailFormElement"
+                          id="email-0"
                         >
                           <label
                             class="usa-label"
@@ -3098,6 +3118,7 @@ Object {
                           <input
                             aria-required="false"
                             class="usa-input"
+                            data-testid="email-0"
                             id="129"
                             name="email-0"
                             type="text"
@@ -3157,6 +3178,7 @@ Object {
                   >
                     <fieldset
                       class="usa-fieldset prime-radios"
+                      id="testResultDeliveryEmail"
                     >
                       <legend
                         class="usa-legend"
@@ -4659,6 +4681,7 @@ Object {
                 >
                   <fieldset
                     class="usa-fieldset prime-radios"
+                    id="race"
                   >
                     <legend
                       class="usa-legend"
@@ -4819,6 +4842,7 @@ Object {
                 >
                   <fieldset
                     class="usa-fieldset prime-radios"
+                    id="ethnicity"
                   >
                     <legend
                       class="usa-legend"
@@ -4897,6 +4921,7 @@ Object {
                 >
                   <fieldset
                     class="usa-fieldset prime-radios"
+                    id="gender"
                   >
                     <legend
                       class="usa-legend"
@@ -5011,6 +5036,7 @@ Object {
                 >
                   <fieldset
                     class="usa-fieldset prime-radios"
+                    id="residentCongregateSetting"
                   >
                     <legend
                       class="usa-legend"
@@ -5088,6 +5114,7 @@ Object {
                 >
                   <fieldset
                     class="usa-fieldset prime-radios"
+                    id="employedInHealthcare"
                   >
                     <legend
                       class="usa-legend"
@@ -5161,6 +5188,7 @@ Object {
               class="prime-edit-patient-heading"
             >
               <button
+                aria-disabled="true"
                 class="usa-button usa-button-disabled prime-save-patient-changes"
                 disabled=""
                 id="edit-patient-save-lower"
