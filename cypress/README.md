@@ -55,8 +55,10 @@ The `.env` file has a template at `.env.cypress.sample` for running cypress agai
 #### Running Cypress
 Now that you have those files set up, you are ready for a test run! There are a few ways to run the tests from the root directory:
 
-- Run Cypress in docker. All apps startup using docker compose.
-  - `yarn e2e`
+Running Cypress locally in the cypress directory. You need to start the SR apps yourself.
+1. Run yarn install in cypress directory.
+1. Start your apps
+1. Run the yarn command that matches your setup.
 - Run Cypress locally and open interactive mode. Do this if you're running the apps locally on bare metal with okta disabled.
   - `yarn e2e:local`
 - Run Cypress locally and open interactive mode. Do this if you're running the apps locally on bare metal with okta enabled.
@@ -67,5 +69,13 @@ Now that you have those files set up, you are ready for a test run! There are a 
   - `yarn e2e:nginx:okta`
 
 We don't support running cypress interactively in docker containers.
+
+Running Cypress with docker in the root directory. You need to make sure to stop all other instances of the SR apps.
+1. Install docker and docker compose.
+1. Install mkcert
+1. Edit your local /etc/hosts and add the following line.
+  - `127.0.0.1 localhost.simplereport.gov`
+1. Run Cypress.
+  - `yarn e2e`
 
 See the [Cypress documentation](https://docs.cypress.io/api/table-of-contents) for writing new tests. If you need to generate new Wiremock mappings for external services, see [this wiki page](https://github.com/CDCgov/prime-simplereport/wiki/WireMock).
