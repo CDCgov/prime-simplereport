@@ -13,6 +13,7 @@ type CustomButtonProps = React.PropsWithChildren<{
 interface Props {
   tooltip: string;
   position?: "top" | "bottom" | "left" | "right";
+  buttonLabel?: string;
   text?: string;
   className?: string;
 }
@@ -21,6 +22,7 @@ export const TextWithTooltip = ({
   tooltip,
   position,
   text,
+  buttonLabel,
   className,
 }: Props) => {
   const CustomButton: React.ForwardRefExoticComponent<CustomButtonProps> = React.forwardRef(
@@ -28,6 +30,7 @@ export const TextWithTooltip = ({
       <button
         className={`usa-button usa-button--unstyled ${className}`}
         ref={ref}
+        aria-label={buttonLabel}
         {...tooltipProps}
       >
         {children}
