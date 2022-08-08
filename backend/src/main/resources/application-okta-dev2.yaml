@@ -8,5 +8,5 @@ okta:
     org-url: https://hhs-prime.oktapreview.com
 simple-report:
   authorization:
-    role-claim: dev_roles
+    role-claim: dev2_roles
     environment-name: "DEV2"
