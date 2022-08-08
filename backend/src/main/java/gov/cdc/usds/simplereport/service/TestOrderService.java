@@ -289,7 +289,8 @@ public class TestOrderService {
     }
   }
 
-  // Deprecated - remove this method after we've switched to the multiplex endpoints on frontend
+  // Deprecated - remove this method after we've switched to the multiplex
+  // endpoints on frontend
   @AuthorizationConfiguration.RequirePermissionSubmitTestForPatient
   @Transactional(noRollbackFor = {TwilioException.class, ApiException.class})
   public AddTestResultResponse addTestResult(
@@ -435,7 +436,8 @@ public class TestOrderService {
   }
 
   private void saveFinalResults(TestOrder order, TestEvent event) {
-    // Only edit/save the pending results - don't change all Results to point towards the new
+    // Only edit/save the pending results - don't change all Results to point
+    // towards the new
     // TestEvent.
     // Doing so would break the corrections/removal flow.
     Set<Result> results = _resultRepo.getAllPendingResults(order);
