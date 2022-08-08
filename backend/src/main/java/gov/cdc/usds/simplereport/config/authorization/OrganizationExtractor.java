@@ -42,7 +42,6 @@ public class OrganizationExtractor
     // Map of orgs to roles the user has therein
     Map<String, EnumSet<OrganizationRole>> rolesFound = new HashMap<>();
     for (String claimed : claims) {
-      log.debug("This is a claim: " + claimed);
       try {
         if (!claimed.startsWith(properties.getRolePrefix())) {
           continue;
