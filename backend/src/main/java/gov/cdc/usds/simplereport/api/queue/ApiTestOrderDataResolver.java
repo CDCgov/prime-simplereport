@@ -124,13 +124,13 @@ public class ApiTestOrderDataResolver {
     return loader.load(apiTestOrder.getWrapped().getDeviceType().getInternalId());
   }
 
-    @SchemaMapping(typeName="TestOrder", field="result")
-    public TestResult getResult(ApiTestOrder apiTestOrder) {
-      return apiTestOrder.getWrapped().getResult();
-    }
+  @SchemaMapping(typeName = "TestOrder", field = "result")
+  public TestResult getResult(ApiTestOrder apiTestOrder) {
+    return apiTestOrder.getWrapped().getResult();
+  }
 
-    @SchemaMapping(typeName="TestOrder", field="results")
-    public Set<Result> getResults(ApiTestOrder apiTestOrder) {
-      return apiTestOrder.getWrapped().getPendingResultSet();
-    }
+  @SchemaMapping(typeName = "TestOrder", field = "results")
+  public Set<Result> getResults(ApiTestOrder apiTestOrder) {
+    return apiTestOrder.getWrapped().getPendingResultSet();
+  }
 }

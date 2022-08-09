@@ -1,6 +1,5 @@
 package gov.cdc.usds.simplereport.config.scalars.localdate;
 
-import gov.cdc.usds.simplereport.config.scalars.localdate.FlexibleDateCoercion;
 import graphql.schema.GraphQLScalarType;
 
 public class LocalDateScalar {

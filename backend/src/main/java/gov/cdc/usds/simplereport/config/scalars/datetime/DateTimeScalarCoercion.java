@@ -5,7 +5,6 @@ import graphql.schema.Coercing;
 import graphql.schema.CoercingParseLiteralException;
 import graphql.schema.CoercingParseValueException;
 import graphql.schema.CoercingSerializeException;
-import java.sql.Timestamp;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.ZoneOffset;
@@ -68,9 +67,6 @@ class DateTimeScalarCoercion implements Coercing<Date, Object> {
       return getISOString(getLocalDateTime((Date) dataFetcherResult));
     } else if (dataFetcherResult instanceof String) {
       LocalDateTime localDateTime = getLocalDateTime((String) dataFetcherResult);
-      return getISOString(localDateTime);
-    } else if (dataFetcherResult instanceof Timestamp) {
-      LocalDateTime localDateTime = ((Timestamp) dataFetcherResult).toLocalDateTime();
       return getISOString(localDateTime);
     }
 
