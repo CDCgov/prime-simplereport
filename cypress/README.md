@@ -25,7 +25,7 @@ WIREMOCK_URL=http://cypress:8088
 SPRING_LIQUIBASE_ENABLED="true"
 OKTA_TESTING_DISABLEHTTPSCHECK="true"
 
-OKTA_API_KEY=
+OKTA_API_KEY="Get this from your user account in Okta"
 OKTA_OAUTH2_CLIENT_ID=
 SMARTY_AUTH_ID=
 SMARTY_AUTH_TOKEN=
@@ -72,10 +72,19 @@ We don't support running cypress interactively in docker containers.
 
 Running Cypress with docker in the root directory. You need to make sure to stop all other instances of the SR apps.
 1. Install docker and docker compose.
-1. Install mkcert
-1. Edit your local /etc/hosts and add the following line.
-  - `127.0.0.1 localhost.simplereport.gov`
 1. Run Cypress.
   - `yarn e2e`
+
+
+Potential issues:
+Missing certs? 
+  - Try installing `mkcert`
+Using the localhost.simplereport.gov domain? 
+  - If you want to visit the app in your browser while Cypress runs, you can edit your local /etc/hosts and add the following line.
+    - `127.0.0.1 localhost.simplereport.gov`
+Connection refused errors?
+  - Connection refused errors coming out of nginx are normal until your app have started successfully. When they start Cypress will start running tests. If they fail to start, Cypress will time out and bring down all the containers.
+Invalid template errors from docker?
+  - Double check that you have escaped any characters that need escaped in your `.env` file.
 
 See the [Cypress documentation](https://docs.cypress.io/api/table-of-contents) for writing new tests. If you need to generate new Wiremock mappings for external services, see [this wiki page](https://github.com/CDCgov/prime-simplereport/wiki/WireMock).
