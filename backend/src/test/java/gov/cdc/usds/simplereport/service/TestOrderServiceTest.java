@@ -1717,6 +1717,63 @@ class TestOrderServiceTest extends BaseServiceTest<TestOrderService> {
 
   @Test
   @WithSimpleReportOrgAdminUser
+  void getTestEventsResults_withMultiplex_returnsOnlyOneEvent() {
+    Organization org = _organizationService.getCurrentOrganization();
+    Facility facility = _dataFactory.createArchivedFacility(org, "deleted facility");
+    Person p = _dataFactory.createMinimalPerson(org, facility);
+    _dataFactory.createMultiplexTestEvent(
+        p, facility, TestResult.POSITIVE, TestResult.NEGATIVE, TestResult.NEGATIVE, false);
+
+    var res =
+        _service.getTestEventsResults(
+            facility.getInternalId(), null, null, null, null, null, 0, 10);
+    assertEquals(1, res.size());
+  }
+
+  @Test
+  @WithSimpleReportOrgAdminUser
+  void getTestEventsResults_withMultiplexAndCovid_returnsOnlyTwoEvent() {
+    Organization org = _organizationService.getCurrentOrganization();
+    Facility facility = _dataFactory.createArchivedFacility(org, "deleted facility");
+    Person p = _dataFactory.createMinimalPerson(org, facility);
+    _dataFactory.createTestEvent(p, facility);
+    _dataFactory.createMultiplexTestEvent(
+        p, facility, TestResult.POSITIVE, TestResult.NEGATIVE, TestResult.NEGATIVE, false);
+
+    var res =
+        _service.getTestEventsResults(
+            facility.getInternalId(), null, null, null, null, null, 0, 10);
+    assertEquals(2, res.size());
+  }
+
+  @Test
+  @WithSimpleReportOrgAdminUser
+  void getTestEventsResults_withResultFilter_returnsFluAndCovidNegatives() {
+    Organization org = _organizationService.getCurrentOrganization();
+    Facility facility = _dataFactory.createArchivedFacility(org, "deleted facility");
+    Person p = _dataFactory.createMinimalPerson(org, facility);
+    var notExpected_allPos =
+        _dataFactory.createMultiplexTestEvent(
+            p, facility, TestResult.POSITIVE, TestResult.POSITIVE, TestResult.POSITIVE, false);
+    var expected_allNeg =
+        _dataFactory.createMultiplexTestEvent(
+            p, facility, TestResult.NEGATIVE, TestResult.NEGATIVE, TestResult.NEGATIVE, true);
+    var expected_covidPos =
+        _dataFactory.createMultiplexTestEvent(
+            p, facility, TestResult.POSITIVE, TestResult.NEGATIVE, TestResult.NEGATIVE, true);
+
+    var res =
+        _service.getTestEventsResults(
+            facility.getInternalId(), null, TestResult.NEGATIVE, null, null, null, 0, 10);
+
+    var expected = List.of(expected_allNeg.getInternalId(), expected_covidPos.getInternalId());
+    var actualInternalIds = res.stream().map(TestEvent::getInternalId).collect(Collectors.toList());
+    assertTrue(actualInternalIds.containsAll(expected));
+    assertEquals(expected.size(), actualInternalIds.size());
+  }
+
+  @Test
+  @WithSimpleReportOrgAdminUser
   void getTestResultsCount() {
     makedata();
     int size = _service.getTestResultsCount(_site.getInternalId(), null, null, null, null, null);
