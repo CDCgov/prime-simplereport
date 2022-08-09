@@ -2,9 +2,9 @@ package gov.cdc.usds.simplereport.config;
 
 import gov.cdc.usds.simplereport.api.DefaultArgumentValidation;
 import gov.cdc.usds.simplereport.api.directives.RequiredPermissionsDirectiveWiring;
-import gov.cdc.usds.simplereport.config.scalars.LocalDateScalar;
+import gov.cdc.usds.simplereport.config.scalars.datetime.DateTimeScalar;
+import gov.cdc.usds.simplereport.config.scalars.localdate.LocalDateScalar;
 import gov.cdc.usds.simplereport.config.scalars.UploadScalarType;
-import graphql.scalars.ExtendedScalars;
 import graphql.validation.rules.OnValidationErrorStrategy;
 import graphql.validation.rules.ValidationRules;
 import graphql.validation.schemawiring.ValidationSchemaWiring;
@@ -29,7 +29,7 @@ public class GraphQlSchemaDirectiveConfig {
         builder
             .scalar(UploadScalarType.upload)
             .scalar(LocalDateScalar.LocalDate)
-            .scalar(ExtendedScalars.DateTime)
+            .scalar(DateTimeScalar.DateTime)
             //            .scalar(ExtendedScalars.UUID);
             .directiveWiring(new RequiredPermissionsDirectiveWiring());
   }
