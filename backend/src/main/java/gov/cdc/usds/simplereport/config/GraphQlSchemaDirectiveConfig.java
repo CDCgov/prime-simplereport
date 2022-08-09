@@ -2,9 +2,9 @@ package gov.cdc.usds.simplereport.config;
 
 import gov.cdc.usds.simplereport.api.DefaultArgumentValidation;
 import gov.cdc.usds.simplereport.api.directives.RequiredPermissionsDirectiveWiring;
+import gov.cdc.usds.simplereport.config.scalars.UploadScalarType;
 import gov.cdc.usds.simplereport.config.scalars.datetime.DateTimeScalar;
 import gov.cdc.usds.simplereport.config.scalars.localdate.LocalDateScalar;
-import gov.cdc.usds.simplereport.config.scalars.UploadScalarType;
 import graphql.validation.rules.OnValidationErrorStrategy;
 import graphql.validation.rules.ValidationRules;
 import graphql.validation.schemawiring.ValidationSchemaWiring;
