@@ -29,6 +29,7 @@ import {
 } from "./utils";
 
 import "./OrganizationForm.scss";
+import { useDocumentTitle } from "../../utils/hooks";
 
 export interface OrganizationCreateRequest {
   name: string;
@@ -57,6 +58,7 @@ const OrganizationForm = () => {
   const [loading, setLoading] = useState(false);
   const [formChanged, setFormChanged] = useState(false);
   const [orgExternalId, setOrgExternalId] = useState("");
+  useDocumentTitle("Sign up - organization information | SimpleReport");
 
   const onDetailChange = (field: keyof OrganizationCreateRequest) => (
     value: OrganizationCreateRequest[typeof field]

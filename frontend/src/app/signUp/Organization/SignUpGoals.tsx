@@ -11,10 +11,13 @@ import RequestTestResult from "./RequestTestResult";
 
 import "./SignUpGoals.scss";
 
+import { useDocumentTitle } from "../../utils/hooks";
+
 const SignUpGoals = () => {
   const [submitted, setSubmitted] = useState(false);
   const [signUpGoal, setSignUpGoal] = useState("");
   const [signUpGoalError, setSignUpGoalError] = useState("");
+  useDocumentTitle("Sign up - select status | SimpleReport");
 
   if (submitted) {
     switch (signUpGoal) {
