@@ -107,12 +107,9 @@ public class TestResultResolver {
   @QueryMapping
   public TopLevelDashboardMetrics topLevelDashboardMetrics(
       @Argument UUID facilityId,
-      @Argument OffsetDateTime startDate,
-      @Argument OffsetDateTime endDate) {
-    return tos.getTopLevelDashboardMetrics(
-        facilityId,
-        new Date(startDate.toInstant().toEpochMilli()),
-        new Date(endDate.toInstant().toEpochMilli()));
+      @Argument Date startDate,
+      @Argument Date endDate) {
+    return tos.getTopLevelDashboardMetrics(facilityId, startDate, endDate);
   }
 
   @QueryMapping

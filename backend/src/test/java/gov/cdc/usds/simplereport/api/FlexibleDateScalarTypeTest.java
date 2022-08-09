@@ -4,7 +4,7 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.springframework.test.util.AssertionErrors.assertNull;
 
-import gov.cdc.usds.simplereport.config.scalars.FlexibleDateCoercion;
+import gov.cdc.usds.simplereport.config.scalars.localdate.FlexibleDateCoercion;
 import graphql.language.StringValue;
 import graphql.schema.CoercingParseValueException;
 import java.time.LocalDate;
