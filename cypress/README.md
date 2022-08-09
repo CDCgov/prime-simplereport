@@ -1,18 +1,17 @@
 ## E2E tests
 
-E2E/Integration tests are available using [Cypress](https://www.cypress.io/).
+#### E2E/Integration tests are available using [Cypress](https://www.cypress.io/).
 
-#### Requirements:
+### Requirements:
 
-These files required to run integration tests. Please reach out to the engineering team if you're in need of the missing credentials.
+#### This file is required to run integration tests. Please reach out to an engineering team member if you're missing credentials.
 - `.env`
 
-If you're running against your local apps you can set up you `.env` file in the projects root directory like this one.
+#### If you're using the docker-compose e2e setup, you'll need to fill out all of these variables in the `.env` file.
 
-If you run outside the docker containers, you only need the variables that start with `CYPRESS_`.
+#### If you're running e2e tests against a set of local apps that you started, you only need to include these variables: `CYPRESS_OKTA_USERNAME`, `CYPRESS_OKTA_PASSWORD`, `CYPRESS_OKTA_SECRET`.
 
 ```
-
 # .env
 
 # Docker settings
@@ -50,14 +49,17 @@ REACT_APP_OKTA_CLIENT_ID=
 GIT_DISCOVERY_ACROSS_FILESYSTEM=1
 ```
 
-The `.env` file has a template at `.env.cypress.sample` for running cypress against your local setup or `.env.cypress.remote.sample` against a remote environment. Please reach out to the engineering team if you're in need of the missing credentials.
+The `.env` file has a template at `.env.cypress.sample` for running cypress against your local setup or `.env.cypress.remote.sample` to run against a remote environment.
 
-#### Running Cypress
-Now that you have those files set up, you are ready for a test run! There are a few ways to run the tests from the root directory:
+### Running Cypress
 
-Running Cypress locally in the cypress directory. You need to start the SR apps yourself.
-1. Run yarn install in cypress directory.
-1. Start your apps
+#### Now that you have your `.env` file, you are ready for a test run!
+
+#### You are running Cypress against your local apps in the cypress directory.
+
+1. Move to the `cypress/` directory.
+1. Run `yarn install` in the cypress directory.
+1. Start your apps!
 1. Run the yarn command that matches your setup.
 - Run Cypress locally and open interactive mode. Do this if you're running the apps locally on bare metal with okta disabled.
   - `yarn e2e:local`
@@ -68,23 +70,34 @@ Running Cypress locally in the cypress directory. You need to start the SR apps 
 - Run Cypress locally and open interactive mode. Do this if you're running the apps locally with docker-compose with okta enabled.
   - `yarn e2e:nginx:okta`
 
-We don't support running cypress interactively in docker containers.
+#### We don't support running Cypress interactively in docker containers.
 
-Running Cypress with docker in the root directory. You need to make sure to stop all other instances of the SR apps.
-1. Install docker and docker compose.
+#### Running Cypress with docker in the root directory. You need to make sure to stop all other instances of the SR apps.
+
+1. Install docker and docker-compose.
 1. Run Cypress.
   - `yarn e2e`
 
 
-Potential issues:
-Missing certs? 
-  - Try installing `mkcert`
-Using the localhost.simplereport.gov domain? 
-  - If you want to visit the app in your browser while Cypress runs, you can edit your local /etc/hosts and add the following line.
-    - `127.0.0.1 localhost.simplereport.gov`
-Connection refused errors?
-  - Connection refused errors coming out of nginx are normal until your app have started successfully. When they start Cypress will start running tests. If they fail to start, Cypress will time out and bring down all the containers.
-Invalid template errors from docker?
-  - Double check that you have escaped any characters that need escaped in your `.env` file.
+### Potential issues:
 
-See the [Cypress documentation](https://docs.cypress.io/api/table-of-contents) for writing new tests. If you need to generate new Wiremock mappings for external services, see [this wiki page](https://github.com/CDCgov/prime-simplereport/wiki/WireMock).
+#### My port is already allocated!
+  - Check that you have brought down all instances of your apps; you may need to kill a hanging process, and try again.
+
+#### I'm missing certs!
+  - Try installing [`mkcert`](https://github.com/FiloSottile/mkcert#installation) and running again.
+
+#### I'm using the using the localhost.simplereport.gov domain but I can't see it in the browser!
+  - If you want to visit the app in your browser while Cypress runs in docker, you'll need to edit your local /etc/hosts and add the following line.
+    - `127.0.0.1 localhost.simplereport.gov`
+
+#### Connection refused errors!
+  - Connection refused errors coming out of Nginx logs are normal until your apps have started successfully. When they start, Cypress will begin running tests. If they fail to start, Cypress will time out and bring down all the containers.
+
+#### Invalid template errors from docker!
+  - Check that you have escaped special characters in your `.env` file.
+
+#### Cypress user is unable to see certain pages!
+  - Check that you have added the correct user roles to your `application-local.yaml` as documented [here](https://github.com/CDCgov/prime-simplereport/wiki/User-roles#updating-user-roles)
+
+#### See the [Cypress documentation](https://docs.cypress.io/api/table-of-contents) for writing new tests. If you need to generate new Wiremock mappings for external services, see [this wiki page](https://github.com/CDCgov/prime-simplereport/wiki/WireMock).
