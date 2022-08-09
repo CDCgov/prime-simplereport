@@ -9,10 +9,9 @@ import gov.cdc.usds.simplereport.db.model.auxiliary.AskOnEntrySurvey;
 import java.time.LocalDate;
 import java.util.Date;
 import java.util.Set;
-import org.springframework.stereotype.Component;
+import org.springframework.graphql.data.method.annotation.SchemaMapping;
 import org.springframework.stereotype.Controller;
 
-@Component
 @Controller
 public class TestResultDataResolver {
 
@@ -20,26 +19,32 @@ public class TestResultDataResolver {
     return testEvent.getSurveyData();
   }
 
+  @SchemaMapping(typeName = "TestResult", field = "patient")
   public Person getPatient(TestEvent testEvent) {
     return testEvent.getPatientData();
   }
 
+  @SchemaMapping(typeName = "TestResult", field = "dateTested")
   public Date getDateAdded(TestEvent testEvent) {
     return testEvent.getDateTested();
   }
 
+  @SchemaMapping(typeName = "TestResult", field = "dateUpdated")
   public Date getDateUpdated(TestEvent testEvent) {
     return testEvent.getUpdatedAt();
   }
 
+  @SchemaMapping(typeName = "TestResult", field = "pregnancy")
   public String getPregnancy(TestEvent testEvent) {
     return getSurvey(testEvent).getPregnancy();
   }
 
+  @SchemaMapping(typeName = "TestResult", field = "noSymptoms")
   public Boolean getNoSymptoms(TestEvent testEvent) {
     return getSurvey(testEvent).getNoSymptoms();
   }
 
+  @SchemaMapping(typeName = "TestResult", field = "symptoms")
   public String getSymptoms(TestEvent testEvent) {
     return getSurvey(testEvent).getSymptomsJSON();
   }
@@ -48,13 +53,19 @@ public class TestResultDataResolver {
     return getSurvey(testEvent).getSymptomOnsetDate();
   }
 
+  @SchemaMapping(typeName = "TestResult", field = "testPerformed")
   public TestDescription getTestPerformed(TestEvent event) {
     return TestDescription.findTestDescription(event.getDeviceType().getLoincCode());
   }
 
+  @SchemaMapping(typeName = "TestResult", field = "facility")
   public ApiFacility getFacility(TestEvent testEvent) {
     return new ApiFacility(testEvent.getFacility());
   }
+
+  //  public ApiUser getCreatedBy(TestEvent testEvent){
+  //    return testEvent.
+  //  }
 
   //  public CompletableFuture<PatientLink> getPatientLink(
   //      TestEvent testEvent, DataFetchingEnvironment dfe) {
@@ -66,6 +77,7 @@ public class TestResultDataResolver {
   //    return loader.load(testEvent.getTestOrderId());
   //  }
 
+  @SchemaMapping(typeName = "TestResult", field = "results")
   public Set<Result> getResults(TestEvent testEvent) {
     return testEvent.getResults();
   }

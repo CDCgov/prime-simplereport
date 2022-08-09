@@ -44,29 +44,29 @@ public class QueueMutationResolver {
 
   @MutationMapping
   public AddTestResultResponse addTestResultNew(
-      @Argument String deviceID,
+      @Argument String deviceId,
       @Argument UUID deviceSpecimenType,
       @Argument String result,
-      @Argument UUID patientID,
+      @Argument UUID patientId,
       @Argument Date dateTested)
       throws NumberParseException {
-    UUID deviceSpecimenTypeId = getDeviceSpecimenTypeId(deviceID, deviceSpecimenType);
+    UUID deviceSpecimenTypeId = getDeviceSpecimenTypeId(deviceId, deviceSpecimenType);
 
     return _tos.addTestResult(
-        deviceSpecimenTypeId, TestResult.valueOf(result), patientID, dateTested);
+        deviceSpecimenTypeId, TestResult.valueOf(result), patientId, dateTested);
   }
 
   @MutationMapping
   public AddTestResultResponse addMultiplexResult(
-      @Argument String deviceID,
+      @Argument String deviceId,
       @Argument UUID deviceSpecimenType,
       @Argument List<MultiplexResultInput> results,
-      @Argument UUID patientID,
+      @Argument UUID patientId,
       @Argument Date dateTested)
       throws NumberParseException {
-    UUID deviceSpecimenTypeId = getDeviceSpecimenTypeId(deviceID, deviceSpecimenType);
+    UUID deviceSpecimenTypeId = getDeviceSpecimenTypeId(deviceId, deviceSpecimenType);
 
-    return _tos.addMultiplexResult(deviceSpecimenTypeId, results, patientID, dateTested);
+    return _tos.addMultiplexResult(deviceSpecimenTypeId, results, patientId, dateTested);
   }
 
   @MutationMapping
@@ -122,13 +122,13 @@ public class QueueMutationResolver {
   }
 
   @MutationMapping
-  public void removePatientFromQueue(@Argument UUID patientID) {
-    _tos.removePatientFromQueue(patientID);
+  public void removePatientFromQueue(@Argument UUID patientId) {
+    _tos.removePatientFromQueue(patientId);
   }
 
   @MutationMapping
   public void updateTimeOfTestQuestions(
-      @Argument UUID patientID,
+      @Argument UUID patientId,
       @Argument String pregnancy,
       @Argument String symptoms,
       @Argument LocalDate symptomOnset,
@@ -137,8 +137,8 @@ public class QueueMutationResolver {
 
     Map<String, Boolean> symptomsMap = parseSymptoms(symptoms);
 
-    _tos.updateTimeOfTestQuestions(patientID, pregnancy, symptomsMap, symptomOnset, noSymptoms);
+    _tos.updateTimeOfTestQuestions(patientId, pregnancy, symptomsMap, symptomOnset, noSymptoms);
 
-    _ps.updateTestResultDeliveryPreference(patientID, testResultDelivery);
+    _ps.updateTestResultDeliveryPreference(patientId, testResultDelivery);
   }
 }

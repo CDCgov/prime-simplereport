@@ -47,4 +47,12 @@ public abstract class AuditedEntity extends IdentifiedEntity {
   public Date getUpdatedAt() {
     return updatedAt;
   }
+
+  public ApiUser getCreatedBy() {
+    return createdBy;
+  }
+
+  public ApiUser getUpdatedBy() {
+    return updatedBy;
+  }
 }

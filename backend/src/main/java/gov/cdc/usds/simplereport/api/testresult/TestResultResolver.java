@@ -10,7 +10,6 @@ import gov.cdc.usds.simplereport.service.TestResultUploadService;
 import gov.cdc.usds.simplereport.service.errors.InvalidBulkTestResultUploadException;
 import gov.cdc.usds.simplereport.service.errors.InvalidRSAPrivateKeyException;
 import gov.cdc.usds.simplereport.service.model.reportstream.UploadResponse;
-import java.time.OffsetDateTime;
 import java.util.Date;
 import java.util.List;
 import java.util.UUID;
@@ -94,7 +93,7 @@ public class TestResultResolver {
   }
 
   @QueryMapping
-  public TestEvent getTestResult(@Argument UUID id) {
+  public TestEvent testResult(@Argument UUID id) {
     return tos.getTestResult(id);
   }
 
@@ -106,20 +105,18 @@ public class TestResultResolver {
 
   @QueryMapping
   public TopLevelDashboardMetrics topLevelDashboardMetrics(
-      @Argument UUID facilityId,
-      @Argument Date startDate,
-      @Argument Date endDate) {
+      @Argument UUID facilityId, @Argument Date startDate, @Argument Date endDate) {
     return tos.getTopLevelDashboardMetrics(facilityId, startDate, endDate);
   }
 
   @QueryMapping
-  public UploadResponse getUploadSubmission(@Argument UUID id)
+  public UploadResponse uploadSubmission(@Argument UUID id)
       throws InvalidBulkTestResultUploadException, InvalidRSAPrivateKeyException {
     return testResultUploadService.getUploadSubmission(id);
   }
 
   @QueryMapping
-  public Page<TestResultUpload> getUploadSubmissions(
+  public Page<TestResultUpload> uploadSubmissions(
       @Argument Date startDate,
       @Argument Date endDate,
       @Argument int pageNumber,
