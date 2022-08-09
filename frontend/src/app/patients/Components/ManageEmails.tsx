@@ -127,7 +127,11 @@ const ManageEmails: React.FC<Props> = ({
               className="flex-fill emailFormElement"
               value={emailsOrDefault[idx] || ""}
               errorMessage={errors[idx]}
-              label={t("patient.form.contact.email")}
+              label={
+                idx > 0
+                  ? t("patient.form.contact.additionalEmail")
+                  : t("patient.form.contact.email")
+              }
               onBlur={() => {
                 validateField(idx);
               }}
@@ -136,15 +140,19 @@ const ManageEmails: React.FC<Props> = ({
                 onEmailChange(idx, e.target.value)
               }
             />
-            <div className="flex-align-self-end">
-              <button
-                className="usa-button--unstyled padding-105 height-5"
-                onClick={() => onEmailRemove(idx)}
-                aria-label={`Delete email ${email}`.trim()}
-              >
-                <FontAwesomeIcon icon={"trash"} className={"text-error"} />
-              </button>
-            </div>
+            {idx > 0 ? (
+              <div className="flex-align-self-end">
+                <button
+                  className="usa-button--unstyled padding-105 height-5"
+                  onClick={() => onEmailRemove(idx)}
+                  aria-label={`Delete email ${email}`.trim()}
+                >
+                  <FontAwesomeIcon icon={"trash"} className={"text-error"} />
+                </button>
+              </div>
+            ) : (
+              <></>
+            )}
           </div>
         </div>
       ))}
