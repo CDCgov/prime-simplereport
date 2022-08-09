@@ -26,17 +26,17 @@ public class UserResolver {
   }
 
   @QueryMapping
-  public List<ApiUser> getUsers() {
+  public List<ApiUser> users() {
     return _userService.getUsersInCurrentOrg();
   }
 
   @QueryMapping
-  public List<ApiUserWithStatus> getUsersWithStatus() {
+  public List<ApiUserWithStatus> usersWithStatus() {
     return _userService.getUsersAndStatusInCurrentOrg();
   }
 
   @QueryMapping
-  public User getUser(@Argument UUID userId) {
+  public User user(@Argument UUID userId) {
     return new User(_userService.getUser(userId));
   }
 }
