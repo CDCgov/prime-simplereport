@@ -200,7 +200,11 @@ const ManagePhoneNumbers: React.FC<Props> = ({
 
       return (
         <div key={idx}>
-          <div className="display-flex">
+          <div
+            className={`display-flex ${
+              isPrimary ? "" : "patient-form-deletion-field "
+            }`}
+          >
             <Input
               idString={`phoneInput-${idx}`}
               className={`flex-fill phoneNumberFormElement`}

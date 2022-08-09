@@ -120,7 +120,11 @@ const ManageEmails: React.FC<Props> = ({
     <div className="usa-form">
       {emailsOrDefault.map((email, idx) => (
         <div key={idx}>
-          <div className="display-flex">
+          <div
+            className={`display-flex ${
+              idx === 0 ? "" : "patient-form-deletion-field "
+            }`}
+          >
             <TextInput
               name={`email-${idx}`}
               idString={`email-${idx}`}
