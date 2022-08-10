@@ -79,7 +79,7 @@ export type CreateDeviceType = {
   name: Scalars["String"];
   supportedDiseases: Array<Scalars["ID"]>;
   swabTypes: Array<Scalars["ID"]>;
-  testLength?: InputMaybe<Scalars["Int"]>;
+  testLength: Scalars["Int"];
 };
 
 export type DeviceSpecimenType = {
