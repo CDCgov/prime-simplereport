@@ -63,7 +63,7 @@ input CreateDeviceType {
   loincCode: String!
   swabTypes: [ID!]!
   supportedDiseases: [ID!]!
-  testLength: Int
+  testLength: Int!
 }
 
 input UpdateDeviceType {
