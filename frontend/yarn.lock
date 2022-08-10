@@ -586,6 +586,11 @@
   resolved "https://registry.yarnpkg.com/@babel/helper-plugin-utils/-/helper-plugin-utils-7.17.12.tgz#86c2347da5acbf5583ba0a10aed4c9bf9da9cf96"
   integrity sha512-JDkf04mqtN3y4iAbO1hv9U2ARpPyPL1zqyWs/2WG1pgSq9llHFjStX5jdxb84himgJm+8Ng+x0oiWF/nw/XQKA==
 
+"@babel/helper-plugin-utils@^7.18.6":
+  version "7.18.6"
+  resolved "https://registry.yarnpkg.com/@babel/helper-plugin-utils/-/helper-plugin-utils-7.18.6.tgz#9448974dd4fb1d80fefe72e8a0af37809cd30d6d"
+  integrity sha512-gvZnm1YAAxh13eJdkb9EWHBnF3eAub3XTLCZEehHT2kWxiKVRL64+ae5Y6Ivne0mVHmMYKT+xWgZO+gQhuLUBg==
+
 "@babel/helper-remap-async-to-generator@^7.13.0", "@babel/helper-remap-async-to-generator@^7.16.8":
   version "7.16.8"
   resolved "https://registry.yarnpkg.com/@babel/helper-remap-async-to-generator/-/helper-remap-async-to-generator-7.16.8.tgz#29ffaade68a367e2ed09c90901986918d25e57e3"
@@ -10742,6 +10747,11 @@ find-up@^5.0.0:
   dependencies:
     locate-path "^6.0.0"
     path-exists "^4.0.0"
+
+flagged@^2.0.4:
+  version "2.0.4"
+  resolved "https://registry.yarnpkg.com/flagged/-/flagged-2.0.4.tgz#d9276e8a7f8711979dd78b9e3d361c8b399254b3"
+  integrity sha512-bM3QCvaOL/PsK0MC6xtMCarK8lJJTKUsV0y0YqG75MK589BvQQVHSyoyf7wNw5F1dd7K6EUVvIK105Yc3Sm7HA==
 
 flat-cache@^3.0.4:
   version "3.0.4"

@@ -18,6 +18,7 @@ import gov.cdc.usds.simplereport.db.model.PatientLink;
 import gov.cdc.usds.simplereport.db.model.Person;
 import gov.cdc.usds.simplereport.db.model.Person_;
 import gov.cdc.usds.simplereport.db.model.Result;
+import gov.cdc.usds.simplereport.db.model.Result_;
 import gov.cdc.usds.simplereport.db.model.SupportedDisease;
 import gov.cdc.usds.simplereport.db.model.TestEvent;
 import gov.cdc.usds.simplereport.db.model.TestEvent_;
@@ -95,9 +96,11 @@ public class TestOrderService {
       Date startDate,
       Date endDate) {
     return (root, query, cb) -> {
+      Join<TestEvent, Result> resultJoin = root.join(TestEvent_.results);
       Join<TestEvent, TestOrder> order = root.join(TestEvent_.order);
       order.on(cb.equal(root.get(AuditedEntity_.internalId), order.get(TestOrder_.testEvent)));
       query.orderBy(cb.desc(root.get(AuditedEntity_.createdAt)));
+      query.distinct(true);
 
       Predicate p = cb.conjunction();
       if (facilityId != null) {
@@ -117,7 +120,7 @@ public class TestOrderService {
                     root.get(BaseTestInfo_.patient).get(AuditedEntity_.internalId), patientId));
       }
       if (result != null) {
-        p = cb.and(p, cb.equal(root.get(BaseTestInfo_.result), result));
+        p = cb.and(p, cb.equal(resultJoin.get(Result_.testResult), result));
       }
       if (role != null) {
         p = cb.and(p, cb.equal(root.get(BaseTestInfo_.patient).get(Person_.role), role));
@@ -289,7 +292,8 @@ public class TestOrderService {
     }
   }
 
-  // Deprecated - remove this method after we've switched to the multiplex endpoints on frontend
+  // Deprecated - remove this method after we've switched to the multiplex
+  // endpoints on frontend
   @AuthorizationConfiguration.RequirePermissionSubmitTestForPatient
   @Transactional(noRollbackFor = {TwilioException.class, ApiException.class})
   public AddTestResultResponse addTestResult(
@@ -435,7 +439,8 @@ public class TestOrderService {
   }
 
   private void saveFinalResults(TestOrder order, TestEvent event) {
-    // Only edit/save the pending results - don't change all Results to point towards the new
+    // Only edit/save the pending results - don't change all Results to point
+    // towards the new
     // TestEvent.
     // Doing so would break the corrections/removal flow.
     Set<Result> results = _resultRepo.getAllPendingResults(order);
