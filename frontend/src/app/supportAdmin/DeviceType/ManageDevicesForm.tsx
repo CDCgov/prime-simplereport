@@ -62,6 +62,7 @@ const ManageDevicesForm: React.FC<Props> = ({
             device.supportedDiseases?.map((disease) => disease.internalId) ||
             [],
           loincCode: device.loincCode,
+          testLength: device.testLength ? device.testLength : 15,
         }
       : undefined;
   };
@@ -97,7 +98,7 @@ const ManageDevicesForm: React.FC<Props> = ({
               <div className="grid-row grid-gap">
                 <div className="tablet:grid-col">
                   <Select
-                    label="Device name"
+                    label="Select device"
                     name="name"
                     value={selectedDevice?.internalId || ""}
                     options={getDeviceNames()}
@@ -113,21 +114,13 @@ const ManageDevicesForm: React.FC<Props> = ({
                     required
                   />
                 </div>
+              </div>
+              <div className="grid-row grid-gap">
                 <div className="tablet:grid-col">
                   <TextInput
-                    label="Manufacturer"
-                    name="manufacturer"
-                    value={selectedDevice?.manufacturer}
-                    onChange={onChange}
-                    disabled={!selectedDevice}
-                    required
-                  />
-                </div>
-                <div className="tablet:grid-col">
-                  <TextInput
-                    label="LOINC code"
-                    name="loincCode"
-                    value={selectedDevice?.loincCode}
+                    label="Device name"
+                    name="name"
+                    value={selectedDevice?.name}
                     onChange={onChange}
                     disabled={!selectedDevice}
                     required
@@ -140,6 +133,43 @@ const ManageDevicesForm: React.FC<Props> = ({
                     label="Model"
                     name="model"
                     value={selectedDevice?.model}
+                    onChange={onChange}
+                    disabled={!selectedDevice}
+                    required
+                  />
+                </div>
+              </div>
+              <div className="grid-row grid-gap">
+                <div className="tablet:grid-col">
+                  <TextInput
+                    label="Manufacturer"
+                    name="manufacturer"
+                    value={selectedDevice?.manufacturer}
+                    onChange={onChange}
+                    disabled={!selectedDevice}
+                    required
+                  />
+                </div>
+              </div>
+              <div className="grid-row grid-gap">
+                <div className="tablet:grid-col">
+                  <TextInput
+                    label="LOINC code"
+                    name="loincCode"
+                    value={selectedDevice?.loincCode}
+                    onChange={onChange}
+                    disabled={!selectedDevice}
+                    required
+                  />
+                </div>
+                <div className="tablet:grid-col">
+                  <TextInput
+                    type={"number"}
+                    label="Test length (minutes)"
+                    name="testLength"
+                    min={0}
+                    max={999}
+                    value={selectedDevice?.testLength.toString()}
                     onChange={onChange}
                     disabled={!selectedDevice}
                     required

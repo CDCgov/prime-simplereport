@@ -75,7 +75,7 @@ exports[`TestQueue should render the test queue 1`] = `
           class="prime-card-container"
         >
           <button
-            aria-label="Close"
+            aria-label="Close test for Doe, John A"
             class="prime-close-button"
           >
             <span
@@ -126,11 +126,12 @@ exports[`TestQueue should render the test queue 1`] = `
                 <div
                   class="card-header"
                 >
-                  <div
-                    class="card-name"
+                  <button
+                    class="usa-button usa-button--unstyled card-name"
+                    type="button"
                   >
                     Doe, John A
-                  </div>
+                  </button>
                   <div
                     class="card-dob"
                   >
@@ -270,6 +271,7 @@ exports[`TestQueue should render the test queue 1`] = `
                         >
                           <button
                             aria-describedby="tooltip-211111"
+                            aria-label="Device"
                             class="usa-button usa-button--unstyled usa-tooltip__trigger"
                             data-testid="triggerElement"
                             position="right"
@@ -374,6 +376,7 @@ exports[`TestQueue should render the test queue 1`] = `
                 >
                   <fieldset
                     class="usa-fieldset prime-radios"
+                    id="covid-test-result-abc"
                   >
                     <legend
                       class="usa-legend usa-sr-only"
@@ -444,6 +447,7 @@ exports[`TestQueue should render the test queue 1`] = `
                   class="prime-test-result-submit"
                 >
                   <button
+                    aria-disabled="true"
                     class="usa-button usa-button--outline usa-button-disabled"
                     disabled=""
                     type="submit"
@@ -481,7 +485,7 @@ exports[`TestQueue should render the test queue 1`] = `
           class="prime-card-container"
         >
           <button
-            aria-label="Close"
+            aria-label="Close test for Smith, Jane"
             class="prime-close-button"
           >
             <span
@@ -532,11 +536,12 @@ exports[`TestQueue should render the test queue 1`] = `
                 <div
                   class="card-header"
                 >
-                  <div
-                    class="card-name"
+                  <button
+                    class="usa-button usa-button--unstyled card-name"
+                    type="button"
                   >
                     Smith, Jane
-                  </div>
+                  </button>
                   <div
                     class="card-dob"
                   >
@@ -676,6 +681,7 @@ exports[`TestQueue should render the test queue 1`] = `
                         >
                           <button
                             aria-describedby="tooltip-211111"
+                            aria-label="Device"
                             class="usa-button usa-button--unstyled usa-tooltip__trigger"
                             data-testid="triggerElement"
                             position="right"
@@ -780,6 +786,7 @@ exports[`TestQueue should render the test queue 1`] = `
                 >
                   <fieldset
                     class="usa-fieldset prime-radios"
+                    id="covid-test-result-def"
                   >
                     <legend
                       class="usa-legend usa-sr-only"
@@ -850,6 +857,7 @@ exports[`TestQueue should render the test queue 1`] = `
                   class="prime-test-result-submit"
                 >
                   <button
+                    aria-disabled="true"
                     class="usa-button usa-button--outline usa-button-disabled"
                     disabled=""
                     type="submit"

@@ -5,7 +5,7 @@ mutation createDeviceType(
   $loincCode: String!
   $swabTypes: [ID!]!
   $supportedDiseases: [ID!]!
-  $testLength: Int
+  $testLength: Int!
 ) {
   createDeviceType(
     input: {
@@ -30,7 +30,7 @@ mutation updateDeviceType(
   $loincCode: String!
   $swabTypes: [ID!]!
   $supportedDiseases: [ID!]!
-  $testLength: Int
+  $testLength: Int!
 ) {
   updateDeviceType(
     input: {
@@ -55,6 +55,7 @@ query getDeviceTypeList{
     loincCode,
     manufacturer,
     model,
+    testLength,
     swabTypes {
       internalId,
       name

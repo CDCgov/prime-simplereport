@@ -24,7 +24,7 @@ exports[`ResultsNav displays the nav order correctly and defaults to 'Test Resul
       >
         <a
           class=""
-          href="/results/upload"
+          href="/results/upload/submit"
         >
           Upload spreadsheet
         </a>

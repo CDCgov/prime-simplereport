@@ -1,5 +1,6 @@
 
 RESET_DIR=${LIB_DIR:-/usr/local/lib}
+
 createuser -U "$POSTGRES_USER" -w simple_report_migrations --createrole
 createuser -U "$POSTGRES_USER" -w simple_report_app
 createdb -U "$POSTGRES_USER" -w simple_report --maintenance-db="$POSTGRES_DB"

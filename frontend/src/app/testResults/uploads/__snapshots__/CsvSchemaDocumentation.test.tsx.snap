@@ -60,38 +60,54 @@ exports[`CsvSchemaDocumentation tests CsvSchemaDocumentationItem renders a schem
 exports[`CsvSchemaDocumentation tests CsvSchemaDocumentaton matches snapshot 1`] = `
 <div>
   <div
-    class="prime-container prime-container-padding-2x card-container"
+    class="prime-container card-container"
   >
     <div
-      class="tablet:grid-col-8 usa-prose"
+      class="usa-card__header"
     >
-      <div
-        class="text-normal font-body-xs text-base margin-bottom-1"
-      >
-        <span>
-          <a
-            class="sr-link__primary"
-            href="/results/upload/"
+      <div>
+        <div
+          class="display-flex flex-align-center"
+        >
+          <svg
+            aria-hidden="true"
+            class="usa-icon text-base margin-left-neg-2px"
+            focusable="false"
+            role="img"
           >
-            &lt; Return to upload spreadsheet
+            <use
+              xlink:href="sprite.svg#arrow_back"
+            />
+          </svg>
+          <a
+            class="margin-left-05"
+            href="/results/upload/submit"
+          >
+            Upload spreadsheet
           </a>
-        </span>
+        </div>
+        <div>
+          <h2
+            class="margin-top-2"
+          >
+            CSV template guide
+             
+            <span
+              class="text-secondary bg-white border-1px border-secondary font-body-3xs padding-x-1 padding-y-05 text-secondary margin-left-2 text-ttbottom"
+            >
+              Pilot program
+               
+            </span>
+          </h2>
+        </div>
       </div>
+    </div>
+    <div
+      class="tablet:grid-col-8 usa-prose usa-card__body"
+    >
       <section
         id="anchor-top"
       >
-        <h2
-          class="margin-top-0"
-        >
-          CSV template guide
-           
-          <span
-            class="text-secondary bg-white border-1px border-secondary font-body-3xs padding-x-1 padding-y-05 text-secondary margin-left-2 text-ttbottom"
-          >
-            Pilot program
-             
-          </span>
-        </h2>
         <p
           class="usa-intro text-base"
         >

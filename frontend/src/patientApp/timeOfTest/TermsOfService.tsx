@@ -54,10 +54,11 @@ const TermsOfService: React.FunctionComponent<Props> = ({
         <div className="tos-content prime-formgroup usa-prose height-card-lg overflow-x-hidden font-body-3xs">
           <ToS />
         </div>
-        <p>{t("testResult.tos.consent")}</p>
+        <p id="tos-consent-message">{t("testResult.tos.consent")}</p>
         <Button
           id="tos-consent-button"
           label={t("testResult.tos.submit")}
+          ariaDescribedBy={"tos-consent-message"}
           onClick={() => {
             if (onAgree) {
               onAgree();

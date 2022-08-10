@@ -40,6 +40,7 @@ query GetFacilityResultsForCsv(
       isDeleted
     }
     dateTested
+    dateUpdated
     result
     results {
       disease {
@@ -135,6 +136,10 @@ query GetFacilityResultsMultiplex(
       gender
       lookupId
       email
+      phoneNumbers {
+        type
+        number
+      }
     }
     createdBy {
       nameInfo {
@@ -160,22 +165,22 @@ query GetAllFacilities($showArchived: Boolean) {
 }
 
 query GetResultsCountByFacility(
-    $facilityId: ID
-    $patientId: ID
-    $result: String
-    $role: String
-    $startDate: DateTime
-    $endDate: DateTime
-  ) {
-    testResultsCount(
-      facilityId: $facilityId
-      patientId: $patientId
-      result: $result
-      role: $role
-      startDate: $startDate
-      endDate: $endDate
-    )
-  }
+  $facilityId: ID
+  $patientId: ID
+  $result: String
+  $role: String
+  $startDate: DateTime
+  $endDate: DateTime
+) {
+  testResultsCount(
+    facilityId: $facilityId
+    patientId: $patientId
+    result: $result
+    role: $role
+    startDate: $startDate
+    endDate: $endDate
+  )
+}
 
 query GetTestResultForPrint($id: ID!) {
   testResult(id: $id) {

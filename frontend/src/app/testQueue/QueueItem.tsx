@@ -9,7 +9,7 @@ import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { useMutation } from "@apollo/client";
 import Modal from "react-modal";
 import classnames from "classnames";
-import moment from "moment";
+import moment, { Moment } from "moment";
 import { useSelector } from "react-redux";
 import { useNavigate } from "react-router-dom";
 import { throttle } from "lodash";
@@ -489,6 +489,7 @@ const QueueItem = ({
     // Save any date given as input to React state, valid or otherwise. Validation
     // is performed on submit
     updateDateTested(newDateTested);
+    setSelectedDate(date);
   };
 
   const isMounted = useRef(false);
@@ -608,11 +609,13 @@ const QueueItem = ({
   const onUseCurrentDateChange = () => {
     // if we want to use a custom date
     if (shouldUseCurrentDateTime()) {
+      setSelectedDate(moment());
       updateUseCurrentDateTime("false");
     }
     // if we want to use the current date time
     else {
       updateDateTested(undefined);
+      setBeforeDateWarning(false);
       updateUseCurrentDateTime("true");
     }
   };
@@ -643,7 +646,7 @@ const QueueItem = ({
         setConfirmationType("removeFromQueue");
       }}
       className="prime-close-button"
-      aria-label="Close"
+      aria-label={`Close test for ${patientFullName}`}
     >
       <span className="fa-layers">
         <FontAwesomeIcon icon={"circle"} size="2x" inverse />
@@ -652,11 +655,34 @@ const QueueItem = ({
     </button>
   );
 
+  const isBeforeDateWarningThreshold = (date: Moment) => {
+    return date < moment().subtract(6, "months");
+  };
+
+  const [dateBeforeWarnThreshold, setBeforeDateWarning] = useState(
+    isBeforeDateWarningThreshold(moment(dateTested))
+  );
+
+  const [selectedDate, setSelectedDate] = useState(
+    dateTested ? moment(dateTested) : moment()
+  );
+
   const handleDateChange = (date: string) => {
     if (date) {
       const newDate = moment(date)
         .hour(selectedDate.hours())
         .minute(selectedDate.minutes());
+
+      if (isBeforeDateWarningThreshold(newDate)) {
+        setBeforeDateWarning(true);
+      }
+      // unset warning state
+      else if (
+        !isBeforeDateWarningThreshold(newDate) &&
+        dateBeforeWarnThreshold
+      ) {
+        setBeforeDateWarning(false);
+      }
       onDateTestedChange(newDate);
     }
   };
@@ -668,8 +694,6 @@ const QueueItem = ({
       .minutes(parseInt(minutes));
     onDateTestedChange(newDate);
   };
-
-  const selectedDate = dateTested ? moment(dateTested) : moment();
 
   const timer = useTestTimer(internalId, deviceTestLength);
 
@@ -686,6 +710,9 @@ const QueueItem = ({
     }
     if (startTestPatientId === patient.internalId) {
       return prefix + "info";
+    }
+    if (dateBeforeWarnThreshold) {
+      return prefix + "ready";
     }
     return undefined;
   }
@@ -721,6 +748,16 @@ const QueueItem = ({
         <div className="prime-card-container" ref={testCardElement}>
           {saveState !== "saving" && closeButton}
           <div className="grid-row">
+            {dateBeforeWarnThreshold && (
+              <div
+                className={classnames("tablet:grid-col-12", "card-correction")}
+                data-testid="test-correction-header"
+              >
+                <strong>Check test date:</strong> The date you selected is more
+                than six months ago. Please make sure it's correct before
+                submitting.
+              </div>
+            )}
             {isCorrection && reasonForCorrection && (
               <div
                 className={classnames("tablet:grid-col-12", "card-correction")}
@@ -743,7 +780,8 @@ const QueueItem = ({
                 id="patient-name-header"
               >
                 <div className="card-header">
-                  <div
+                  <Button
+                    variant="unstyled"
                     className="card-name"
                     onClick={() => {
                       navigate({
@@ -753,7 +791,7 @@ const QueueItem = ({
                     }}
                   >
                     {patientFullName}
-                  </div>
+                  </Button>
                   <div className="card-dob">
                     Date of birth:
                     <span className="card-date">
@@ -789,7 +827,8 @@ const QueueItem = ({
                   <div className="desktop:grid-col-fill flex-col-container">
                     <div
                       className={classnames(
-                        saveState === "error" && "queue-item-error-message"
+                        saveState === "error" && "queue-item-error-message",
+                        dateBeforeWarnThreshold && "card-correction-label"
                       )}
                     >
                       Test date and time
@@ -799,7 +838,8 @@ const QueueItem = ({
                         hidden={useCurrentDateTime !== "false"}
                         className={classnames(
                           "card-test-input",
-                          saveState === "error" && "card-test-input__error"
+                          saveState === "error" && "card-test-input__error",
+                          dateBeforeWarnThreshold && "card-correction-input"
                         )}
                         id="test-date"
                         data-testid="test-date"
@@ -807,7 +847,7 @@ const QueueItem = ({
                         type="date"
                         min={formatDate(new Date("Jan 1, 2020"))}
                         max={formatDate(moment().toDate())}
-                        defaultValue={formatDate(selectedDate.toDate())}
+                        value={formatDate(selectedDate.toDate())}
                         onChange={(event) =>
                           handleDateChange(event.target.value)
                         }
@@ -816,7 +856,8 @@ const QueueItem = ({
                         hidden={useCurrentDateTime !== "false"}
                         className={classnames(
                           "card-test-input",
-                          saveState === "error" && "card-test-input__error"
+                          saveState === "error" && "card-test-input__error",
+                          dateBeforeWarnThreshold && "card-correction-input"
                         )}
                         name={"test-time"}
                         data-testid="test-time"
@@ -866,6 +907,7 @@ const QueueItem = ({
                           <span>Device</span>
 
                           <TextWithTooltip
+                            buttonLabel="Device"
                             tooltip="Don’t see the test you’re using? Ask your organization admin to add the correct test and it'll show up here."
                             position="right"
                           />

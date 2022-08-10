@@ -70,15 +70,6 @@ export const byDateTested = (a: any, b: any) => {
  * DetachedTestResultsList
  */
 
-export type FilterParams = {
-  patientId?: string | null;
-  startDate?: string | null;
-  endDate?: string | null;
-  role?: string | null;
-  result?: string | null;
-  filterFacilityId?: string | null;
-};
-
 interface DetachedTestResultsListProps {
   data: any;
   refetch: () => void;

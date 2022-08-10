@@ -969,6 +969,7 @@ export type TestResult = {
   createdBy?: Maybe<ApiUser>;
   dateAdded?: Maybe<Scalars["String"]>;
   dateTested?: Maybe<Scalars["DateTime"]>;
+  dateUpdated?: Maybe<Scalars["DateTime"]>;
   deviceType?: Maybe<DeviceType>;
   facility?: Maybe<Facility>;
   internalId?: Maybe<Scalars["ID"]>;
@@ -1005,7 +1006,7 @@ export type UpdateDeviceType = {
   name: Scalars["String"];
   supportedDiseases: Array<Scalars["ID"]>;
   swabTypes: Array<Scalars["ID"]>;
-  testLength?: InputMaybe<Scalars["Int"]>;
+  testLength: Scalars["Int"];
 };
 
 export type UploadResponse = {
@@ -1711,7 +1712,7 @@ export type CreateDeviceTypeMutationVariables = Exact<{
   loincCode: Scalars["String"];
   swabTypes: Array<Scalars["ID"]> | Scalars["ID"];
   supportedDiseases: Array<Scalars["ID"]> | Scalars["ID"];
-  testLength?: InputMaybe<Scalars["Int"]>;
+  testLength: Scalars["Int"];
 }>;
 
 export type CreateDeviceTypeMutation = {
@@ -1730,7 +1731,7 @@ export type UpdateDeviceTypeMutationVariables = Exact<{
   loincCode: Scalars["String"];
   swabTypes: Array<Scalars["ID"]> | Scalars["ID"];
   supportedDiseases: Array<Scalars["ID"]> | Scalars["ID"];
-  testLength?: InputMaybe<Scalars["Int"]>;
+  testLength: Scalars["Int"];
 }>;
 
 export type UpdateDeviceTypeMutation = {
@@ -2434,6 +2435,7 @@ export type GetFacilityResultsForCsvQuery = {
         | {
             __typename?: "TestResult";
             dateTested?: any | null | undefined;
+            dateUpdated?: any | null | undefined;
             result?: string | null | undefined;
             correctionStatus?: string | null | undefined;
             reasonForCorrection?: string | null | undefined;
@@ -2578,6 +2580,18 @@ export type GetFacilityResultsMultiplexQuery = {
                   gender?: string | null | undefined;
                   lookupId?: string | null | undefined;
                   email?: string | null | undefined;
+                  phoneNumbers?:
+                    | Array<
+                        | {
+                            __typename?: "PhoneNumber";
+                            type?: PhoneType | null | undefined;
+                            number?: string | null | undefined;
+                          }
+                        | null
+                        | undefined
+                      >
+                    | null
+                    | undefined;
                 }
               | null
               | undefined;
@@ -4926,7 +4940,7 @@ export const CreateDeviceTypeDocument = gql`
     $loincCode: String!
     $swabTypes: [ID!]!
     $supportedDiseases: [ID!]!
-    $testLength: Int
+    $testLength: Int!
   ) {
     createDeviceType(
       input: {
@@ -5000,7 +5014,7 @@ export const UpdateDeviceTypeDocument = gql`
     $loincCode: String!
     $swabTypes: [ID!]!
     $supportedDiseases: [ID!]!
-    $testLength: Int
+    $testLength: Int!
   ) {
     updateDeviceType(
       input: {
@@ -5075,6 +5089,7 @@ export const GetDeviceTypeListDocument = gql`
       loincCode
       manufacturer
       model
+      testLength
       swabTypes {
         internalId
         name
@@ -6728,6 +6743,7 @@ export const GetFacilityResultsForCsvDocument = gql`
         isDeleted
       }
       dateTested
+      dateUpdated
       result
       results {
         disease {
@@ -6882,6 +6898,10 @@ export const GetFacilityResultsMultiplexDocument = gql`
         gender
         lookupId
         email
+        phoneNumbers {
+          type
+          number
+        }
       }
       createdBy {
         nameInfo {

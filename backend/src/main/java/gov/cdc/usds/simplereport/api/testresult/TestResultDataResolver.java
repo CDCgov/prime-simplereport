@@ -38,6 +38,10 @@ public class TestResultDataResolver
     return testEvent.getDateTested();
   }
 
+  public Date getDateUpdated(TestEvent testEvent) {
+    return testEvent.getUpdatedAt();
+  }
+
   public String getPregnancy(TestEvent testEvent) {
     return getSurvey(testEvent).getPregnancy();
   }

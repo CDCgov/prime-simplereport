@@ -23,41 +23,35 @@ const PatientHeader = () => {
   const { t } = useTranslation("translation");
 
   return (
-    <header className="header border-bottom border-base-lighter">
-      <div className="display-flex flex-align-center maxw-tablet grid-container patient-header">
-        <div className="padding-y-1">
-          <div className="margin-bottom-0" id="basic-logo">
-            <div
-              className="display-flex flex-align-center"
-              title="Home"
-              aria-label="Home"
-            >
-              <img
-                className="width-4"
-                src={siteLogo}
-                alt="{process.env.REACT_APP_TITLE}"
-              />
-              <div className="logo-text margin-left-1 display-flex flex-column">
-                <span
-                  className="prime-organization-name margin-left-0 font-body-md text-primary-darker text-bold"
-                  data-testid="banner-text"
-                >
-                  {organizationName &&
-                    facilityName &&
-                    `${organizationName}, ${facilityName}`}
-                </span>
-                <span className="prime-organization-name margin-left-0 margin-top-05 text-primary-darker">
-                  {t("header")}
-                </span>
-              </div>
+    <div className="display-flex flex-align-center maxw-tablet grid-container patient-header">
+      <div className="padding-y-1">
+        <div className="margin-bottom-0" id="basic-logo">
+          <div className="display-flex flex-align-center" title="SimpleReport">
+            <img
+              className="width-4"
+              src={siteLogo}
+              alt={process.env.REACT_APP_TITLE}
+            />
+            <div className="logo-text margin-left-1 display-flex flex-column">
+              <span
+                className="prime-organization-name margin-left-0 font-body-md text-primary-darker text-bold"
+                data-testid="banner-text"
+              >
+                {organizationName &&
+                  facilityName &&
+                  `${organizationName}, ${facilityName}`}
+              </span>
+              <span className="prime-organization-name margin-left-0 margin-top-05 text-primary-darker">
+                {t("header")}
+              </span>
             </div>
           </div>
         </div>
-        <div className="display-flex flex-align-end">
-          <LanguageToggler />
-        </div>
       </div>
-    </header>
+      <div className="display-flex flex-align-end">
+        <LanguageToggler />
+      </div>
+    </div>
   );
 };
 

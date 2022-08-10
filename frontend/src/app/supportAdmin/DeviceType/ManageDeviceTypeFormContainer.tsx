@@ -30,36 +30,46 @@ const ManageDeviceTypeFormContainer = () => {
   });
 
   const saveDevice = (device: Device) => {
-    if (device.internalId) {
-      const variables: UpdateDeviceType = {
-        internalId: device.internalId,
-        name: device.name,
-        manufacturer: device.manufacturer,
-        model: device.model,
-        swabTypes: device.swabTypes,
-        supportedDiseases: device.supportedDiseases,
-        loincCode: device.loincCode,
-        testLength: device.testLength,
-      };
-      updateDeviceType({
-        variables,
-        fetchPolicy: "no-cache",
-      }).then(() => {
-        const alert = (
-          <Alert
-            type="success"
-            title="Updated Device"
-            body="The device has been updated"
-          />
-        );
-        showNotification(alert);
-        setSubmitted(true);
-      });
-    } else {
-      //todo: make this better
-      console.log(
-        "internal id for saving a device is undefined and your code is bad; aborting"
+    if (device.testLength <= 0 || device.testLength > 999) {
+      showNotification(
+        <Alert
+          type="error"
+          title="Update device failed"
+          body="Failed to update device. Invalid test length"
+        />
       );
+    } else {
+      if (device.internalId) {
+        const variables: UpdateDeviceType = {
+          internalId: device.internalId,
+          name: device.name,
+          manufacturer: device.manufacturer,
+          model: device.model,
+          swabTypes: device.swabTypes,
+          supportedDiseases: device.supportedDiseases,
+          loincCode: device.loincCode,
+          testLength: device.testLength,
+        };
+        updateDeviceType({
+          variables,
+          fetchPolicy: "no-cache",
+        }).then(() => {
+          const alert = (
+            <Alert
+              type="success"
+              title="Updated device"
+              body="The device has been updated"
+            />
+          );
+          showNotification(alert);
+          setSubmitted(true);
+        });
+      } else {
+        //todo: make this better
+        console.log(
+          "internal id for saving a device is undefined and your code is bad; aborting"
+        );
+      }
     }
   };
 
