@@ -157,7 +157,10 @@ public class LiveOktaRepository implements OktaRepository {
             .collect(Collectors.toSet()));
 
     GroupList orgGroups =
-        _client.listGroups(generateGroupOrgPrefix(organizationExternalId), null, null);
+        _client.listGroups(
+            null,
+            "profile.name sw \"" + generateGroupOrgPrefix(organizationExternalId) + "\"",
+            null);
     if (orgGroups.stream().count() == 0) {
       throw new IllegalGraphqlArgumentException(
           String.format(
@@ -195,11 +198,14 @@ public class LiveOktaRepository implements OktaRepository {
   public Set<String> getAllUsersForOrganization(Organization org) {
     final String orgDefaultGroupName =
         generateRoleGroupName(org.getExternalId(), OrganizationRole.getDefault());
-    final GroupList oktaGroupList =
-        _client.listGroups(orgDefaultGroupName, FILTER_TYPE_EQ_OKTA_GROUP, null);
+    final GroupList qResult = _client.listGroups(orgDefaultGroupName, null, null);
+    final var searchResultList =
+        _client.listGroups(null, FILTER_TYPE_EQ_OKTA_GROUP, null).stream()
+            .collect(Collectors.toList());
+    final var combinedResult = qResult.stream().distinct().filter(searchResultList::contains);
 
     Group orgDefaultOktaGroup =
-        oktaGroupList.stream()
+        combinedResult
             .filter(g -> orgDefaultGroupName.equals(g.getProfile().getName()))
             .findFirst()
             .orElseThrow(() -> new IllegalGraphqlArgumentException(OKTA_GROUP_NOT_FOUND));
@@ -212,11 +218,15 @@ public class LiveOktaRepository implements OktaRepository {
   public Map<String, UserStatus> getAllUsersWithStatusForOrganization(Organization org) {
     final String orgDefaultGroupName =
         generateRoleGroupName(org.getExternalId(), OrganizationRole.getDefault());
-    final GroupList oktaGroupList =
-        _client.listGroups(orgDefaultGroupName, FILTER_TYPE_EQ_OKTA_GROUP, null);
+    final GroupList qResult = _client.listGroups(orgDefaultGroupName, null, null);
+    final var searchResultList =
+        _client.listGroups(null, FILTER_TYPE_EQ_OKTA_GROUP, null).stream()
+            .collect(Collectors.toList());
+
+    final var combinedResult = qResult.stream().distinct().filter(searchResultList::contains);
 
     Group orgDefaultOktaGroup =
-        oktaGroupList.stream()
+        combinedResult
             .filter(g -> orgDefaultGroupName.equals(g.getProfile().getName()))
             .findFirst()
             .orElseThrow(() -> new IllegalGraphqlArgumentException(OKTA_GROUP_NOT_FOUND));
@@ -345,8 +355,9 @@ public class LiveOktaRepository implements OktaRepository {
     groupNamesToAdd.removeIf(currentOrgGroupMapForUser::containsKey);
 
     if (!groupNamesToRemove.isEmpty() || !groupNamesToAdd.isEmpty()) {
+
       Map<String, Group> fullOrgGroupMap =
-          _client.listGroups(groupOrgPrefix, null, null).stream()
+          _client.listGroups(null, "profile.name sw \"" + groupOrgPrefix + "\"", null).stream()
               .filter(g -> GroupType.OKTA_GROUP == g.getType())
               .collect(Collectors.toMap(g -> g.getProfile().getName(), Function.identity()));
       if (fullOrgGroupMap.size() == 0) {
