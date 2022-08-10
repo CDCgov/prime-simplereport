@@ -54,9 +54,6 @@ import org.springframework.stereotype.Service;
 @Slf4j
 public class LiveOktaRepository implements OktaRepository {
 
-  private static final String FILTER_TYPE_EQ_OKTA_GROUP =
-      "type eq \"" + GroupType.OKTA_GROUP + "\"";
-
   private static final String OKTA_GROUP_NOT_FOUND = "Okta group not found for this organization";
 
   private String _rolePrefix;
@@ -198,14 +195,10 @@ public class LiveOktaRepository implements OktaRepository {
   public Set<String> getAllUsersForOrganization(Organization org) {
     final String orgDefaultGroupName =
         generateRoleGroupName(org.getExternalId(), OrganizationRole.getDefault());
-    final GroupList qResult = _client.listGroups(orgDefaultGroupName, null, null);
-    final var searchResultList =
-        _client.listGroups(null, FILTER_TYPE_EQ_OKTA_GROUP, null).stream()
-            .collect(Collectors.toList());
-    final var combinedResult = qResult.stream().distinct().filter(searchResultList::contains);
+    final GroupList oktaGroupList = _client.listGroups(orgDefaultGroupName, null, null);
 
     Group orgDefaultOktaGroup =
-        combinedResult
+        oktaGroupList.stream()
             .filter(g -> orgDefaultGroupName.equals(g.getProfile().getName()))
             .findFirst()
             .orElseThrow(() -> new IllegalGraphqlArgumentException(OKTA_GROUP_NOT_FOUND));
@@ -218,15 +211,10 @@ public class LiveOktaRepository implements OktaRepository {
   public Map<String, UserStatus> getAllUsersWithStatusForOrganization(Organization org) {
     final String orgDefaultGroupName =
         generateRoleGroupName(org.getExternalId(), OrganizationRole.getDefault());
-    final GroupList qResult = _client.listGroups(orgDefaultGroupName, null, null);
-    final var searchResultList =
-        _client.listGroups(null, FILTER_TYPE_EQ_OKTA_GROUP, null).stream()
-            .collect(Collectors.toList());
-
-    final var combinedResult = qResult.stream().distinct().filter(searchResultList::contains);
+    final GroupList oktaGroupList = _client.listGroups(orgDefaultGroupName, null, null);
 
     Group orgDefaultOktaGroup =
-        combinedResult
+        oktaGroupList.stream()
             .filter(g -> orgDefaultGroupName.equals(g.getProfile().getName()))
             .findFirst()
             .orElseThrow(() -> new IllegalGraphqlArgumentException(OKTA_GROUP_NOT_FOUND));
