@@ -111,7 +111,7 @@ public class LiveOktaRepository implements OktaRepository {
       Set<OrganizationRole> roles,
       boolean active) {
     // need to validate fields before adding them because Maps don't like nulls
-    Map<String, Object> userProfileMap = new HashMap<String, Object>();
+    Map<String, Object> userProfileMap = new HashMap<>();
     if (userIdentity.getFirstName() != null && !userIdentity.getFirstName().isEmpty()) {
       userProfileMap.put("firstName", userIdentity.getFirstName());
     }
@@ -175,7 +175,7 @@ public class LiveOktaRepository implements OktaRepository {
     Set<String> groupIdsToAdd =
         orgGroups.stream()
             .filter(g -> groupNamesToAdd.contains(g.getProfile().getName()))
-            .map(g -> g.getId())
+            .map(Group::getId)
             .collect(Collectors.toSet());
 
     UserBuilder.instance()
@@ -220,7 +220,7 @@ public class LiveOktaRepository implements OktaRepository {
             .orElseThrow(() -> new IllegalGraphqlArgumentException(OKTA_GROUP_NOT_FOUND));
 
     return orgDefaultOktaGroup.listUsers().stream()
-        .collect(Collectors.toMap(u -> u.getProfile().getEmail(), u -> u.getStatus()));
+        .collect(Collectors.toMap(u -> u.getProfile().getEmail(), User::getStatus));
   }
 
   public Optional<OrganizationRoleClaims> updateUser(IdentityAttributes userIdentity) {
@@ -590,7 +590,7 @@ public class LiveOktaRepository implements OktaRepository {
     return ":" + OrganizationExtractor.FACILITY_ACCESS_MARKER + ":" + facilityId;
   }
 
-  private void isEmpty(Stream stream, String errorMessage) {
+  private void isEmpty(Stream<?> stream, String errorMessage) {
     if (stream.findAny().isEmpty()) {
       throw new IllegalGraphqlArgumentException(errorMessage);
     }
