@@ -18,11 +18,11 @@
   },
   "dependencies": {
     "@azure/functions": "^1.2.3",
-    "@azure/identity": "^1.5.2",
+    "@azure/identity": "^2.1.0",
     "@azure/storage-queue": "^12.6.0",
     "applicationinsights": "^2.1.6",
     "csv-stringify": "^5.6.5",
-    "node-fetch": "^2.0.0"
+    "node-fetch": "^2.6.7"
   },
   "devDependencies": {
     "@types/jest": "^27.0.2",
