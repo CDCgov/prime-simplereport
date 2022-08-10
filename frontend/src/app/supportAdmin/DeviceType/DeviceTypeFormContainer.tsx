@@ -20,7 +20,7 @@ export interface Device {
   loincCode: string;
   swabTypes: Array<string>;
   supportedDiseases: Array<string>;
-  testLength?: number | null;
+  testLength: number;
 }
 
 const DeviceTypeFormContainer = () => {
