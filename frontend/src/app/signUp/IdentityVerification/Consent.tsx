@@ -4,6 +4,7 @@ import { useLocation, Navigate } from "react-router-dom";
 import { Card } from "../../commonComponents/Card/Card";
 import { CardBackground } from "../../commonComponents/CardBackground/CardBackground";
 import Button from "../../commonComponents/Button/Button";
+import { useDocumentTitle } from "../../utils/hooks";
 
 import PersonalDetailsForm, {
   PersonalDetailsFormProps,
@@ -14,6 +15,7 @@ const Consent = () => {
   const { orgExternalId, firstName, middleName, lastName } =
     (useLocation().state as PersonalDetailsFormProps) || {};
   const [submitted, setSubmitted] = useState(false);
+  useDocumentTitle("Sign up - identity verification consent | SimpleReport");
 
   if (!orgExternalId || !firstName || !lastName) {
     return <Navigate to="/sign-up" />;

@@ -23,6 +23,7 @@ public class WebConfiguration implements WebMvcConfigurer {
   public static final String ACCOUNT_REQUEST = "/account-request";
   public static final String USER_ACCOUNT_REQUEST = "/user-account";
   public static final String IDENTITY_VERIFICATION = "/identity-verification";
+  public static final String FEATURE_FLAGS = "/feature-flags";
 
   @Autowired private PatientExperienceLoggingInterceptor _loggingInterceptor;
 

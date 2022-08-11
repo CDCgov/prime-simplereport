@@ -5,6 +5,7 @@ import { Card } from "../../commonComponents/Card/Card";
 import { CardBackground } from "../../commonComponents/CardBackground/CardBackground";
 import Button from "../../commonComponents/Button/Button";
 import { showNotification } from "../../utils";
+import { useDocumentTitle } from "../../utils/hooks";
 import Alert from "../../commonComponents/Alert";
 import { isFormValid, isFieldValid } from "../../utils/yupHelpers";
 import Input from "../../commonComponents/Input";
@@ -57,6 +58,7 @@ const OrganizationForm = () => {
   const [loading, setLoading] = useState(false);
   const [formChanged, setFormChanged] = useState(false);
   const [orgExternalId, setOrgExternalId] = useState("");
+  useDocumentTitle("Sign up - organization information | SimpleReport");
 
   const onDetailChange = (field: keyof OrganizationCreateRequest) => (
     value: OrganizationCreateRequest[typeof field]

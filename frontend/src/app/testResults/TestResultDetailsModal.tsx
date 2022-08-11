@@ -1,6 +1,7 @@
 import { gql } from "@apollo/client";
 import Modal from "react-modal";
 import classnames from "classnames";
+import { useFeature } from "flagged";
 
 import iconClose from "../../img/close.svg";
 import "./TestResultPrintModal.scss";
@@ -105,8 +106,8 @@ export const DetachedTestResultDetailsModal = ({ data, closeModal }: Props) => {
   const displayResult: { [diseaseResult: string]: TestResult | null } = {
     covidResult: result,
   };
-  const multiplexFeatureFlagEnabled =
-    process.env.REACT_APP_MULTIPLEX_ENABLED !== "false";
+  const multiplexFeatureFlagEnabled = useFeature("multiplexEnabled");
+
   const hasMultiplexResults =
     multiplexFeatureFlagEnabled &&
     results &&
