@@ -5,6 +5,7 @@ import { Card } from "../../commonComponents/Card/Card";
 import { CardBackground } from "../../commonComponents/CardBackground/CardBackground";
 import Button from "../../commonComponents/Button/Button";
 import { showNotification } from "../../utils";
+import { useDocumentTitle } from "../../utils/hooks";
 import Alert from "../../commonComponents/Alert";
 import { isFormValid, isFieldValid } from "../../utils/yupHelpers";
 import Input from "../../commonComponents/Input";
@@ -29,7 +30,6 @@ import {
 } from "./utils";
 
 import "./OrganizationForm.scss";
-import { useDocumentTitle } from "../../utils/hooks";
 
 export interface OrganizationCreateRequest {
   name: string;

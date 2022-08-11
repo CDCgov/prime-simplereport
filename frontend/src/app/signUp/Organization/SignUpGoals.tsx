@@ -4,14 +4,13 @@ import { Card } from "../../commonComponents/Card/Card";
 import { CardBackground } from "../../commonComponents/CardBackground/CardBackground";
 import Button from "../../commonComponents/Button/Button";
 import RadioGroup from "../../commonComponents/RadioGroup";
+import { useDocumentTitle } from "../../utils/hooks";
 
 import OrganizationForm from "./OrganizationForm";
 import RequestAccess from "./RequestAccess";
 import RequestTestResult from "./RequestTestResult";
 
 import "./SignUpGoals.scss";
-
-import { useDocumentTitle } from "../../utils/hooks";
 
 const SignUpGoals = () => {
   const [submitted, setSubmitted] = useState(false);
