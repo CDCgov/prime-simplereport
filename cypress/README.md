@@ -4,12 +4,10 @@
 
 ### Requirements:
 
-#### This file is required to run integration tests. Please reach out to an engineering team member if you're missing credentials.
+#### This file is required in the root of the prime-simplereport repo to run integration tests. Please reach out to an engineering team member if you're missing credentials.
 - `.env`
 
 #### If you're using the docker-compose e2e setup, you'll need to fill out all of these variables in the `.env` file.
-
-#### If you're running e2e tests against a set of local apps that you started, you only need to include these variables: `CYPRESS_OKTA_USERNAME`, `CYPRESS_OKTA_PASSWORD`, `CYPRESS_OKTA_SECRET`.
 
 ```
 # .env
@@ -49,35 +47,57 @@ REACT_APP_OKTA_CLIENT_ID=
 GIT_DISCOVERY_ACROSS_FILESYSTEM=1
 ```
 
+#### If you're running e2e tests against a set of local apps with Okta enabled, you only need the following.
+
+
+```
+# .env
+
+OKTA_API_KEY="Get this from your user account in Okta"
+SMARTY_AUTH_ID=
+SMARTY_AUTH_TOKEN=
+
+CYPRESS_OKTA_USERNAME=
+CYPRESS_OKTA_PASSWORD=
+CYPRESS_OKTA_SECRET=
+```
+
+#### If you're running e2e tests against a set of local apps without Okta enabled, you only need the following.
+
+```
+# .env
+
+SMARTY_AUTH_ID=
+SMARTY_AUTH_TOKEN=
+```
+
 The `.env` file has a template at `.env.cypress.sample` for running cypress against your local setup or `.env.cypress.remote.sample` to run against a remote environment.
 
 ### Running Cypress
 
-#### Now that you have your `.env` file, you are ready for a test run!
+#### Make sure you have filled in your `.env` file!
 
-#### You are running Cypress against your local apps in the cypress directory.
-
-1. Move to the `cypress/` directory.
-1. Run `yarn install` in the cypress directory.
-1. Start your apps!
-1. Run the yarn command that matches your setup.
-- Run Cypress locally and open interactive mode. Do this if you're running the apps locally on bare metal with okta disabled.
-  - `yarn e2e:local`
-- Run Cypress locally and open interactive mode. Do this if you're running the apps locally on bare metal with okta enabled.
-  - `yarn e2e:local:okta`
-- Run Cypress locally and open interactive mode. Do this if you're running the apps locally with docker-compose with okta disabled.
-  - `yarn e2e:nginx`
-- Run Cypress locally and open interactive mode. Do this if you're running the apps locally with docker-compose with okta enabled.
-  - `yarn e2e:nginx:okta`
-
-#### We don't support running Cypress interactively in docker containers.
-
-#### Running Cypress with docker in the root directory. You need to make sure to stop all other instances of the SR apps.
+#### Running Cypress with Docker! We don't support running Cypress interactively in docker containers.
 
 1. Install docker and docker-compose.
+1. Stop any local instances of your apps to prevent port conflicts.
 1. Run Cypress.
   - `yarn e2e`
 
+#### Running Cypress against your local apps!
+
+1. Start your local apps however you normally do!
+1. Move to the `cypress/` directory.
+1. Run `yarn install` in the cypress directory.
+1. Run the yarn command that matches your setup.
+- Run Cypress locally and open interactive mode. Do this if you're running the apps locally on bare metal with Okta disabled.
+  - `yarn e2e:local`
+- Run Cypress locally and open interactive mode. Do this if you're running the apps locally on bare metal with Okta enabled.
+  - `yarn e2e:local:okta`
+- Run Cypress locally and open interactive mode. Do this if you're running the apps locally with docker-compose with Okta disabled.
+  - `yarn e2e:nginx`
+- Run Cypress locally and open interactive mode. Do this if you're running the apps locally with docker-compose with Okta enabled.
+  - `yarn e2e:nginx:okta`
 
 ### Potential issues:
 
