@@ -4,7 +4,7 @@ import userEvent from "@testing-library/user-event";
 import { SpecimenType } from "../../../generated/graphql";
 
 import DeviceTypeFormContainer from "./DeviceTypeFormContainer";
-import { addValue } from "./DeviceTypeForm.test";
+import { addValue } from "./DeviceForm.test";
 
 const mockCreateDeviceType = jest.fn();
 
@@ -90,6 +90,7 @@ describe("DeviceTypeFormContainer", () => {
         name: "Accula",
         swabTypes: ["887799"],
         supportedDiseases: ["294729"],
+        testLength: 15,
       },
     });
 

@@ -74,7 +74,7 @@ const DeviceTypeFormContainer = () => {
     );
     return (
       <DeviceForm
-        formTitle="Device Type"
+        formTitle="Device type"
         saveDeviceType={saveDeviceType}
         initialDevice={{
           name: "",

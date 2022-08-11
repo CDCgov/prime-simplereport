@@ -5,7 +5,7 @@ import { ToastContainer } from "react-toastify";
 import { DeviceType, SpecimenType } from "../../../generated/graphql";
 
 import ManageDeviceTypeFormContainer from "./ManageDeviceTypeFormContainer";
-import { addValue } from "./DeviceTypeForm.test";
+import { addValue } from "./DeviceForm.test";
 
 const mockUpdateDeviceType = jest.fn();
 
