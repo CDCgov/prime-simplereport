@@ -1,5 +1,6 @@
 package gov.cdc.usds.simplereport.logging;
 
+import java.util.Collections;
 import java.util.List;
 import org.springframework.graphql.server.WebGraphQlInterceptor;
 import org.springframework.graphql.server.WebGraphQlRequest;
@@ -12,12 +13,15 @@ public class GraphQlInterceptor implements WebGraphQlInterceptor {
 
   @Override
   public Mono<WebGraphQlResponse> intercept(WebGraphQlRequest request, Chain chain) {
-    List<String> values = request.getHeaders().get("headerName");
     //    request.configureExecutionInput((executionInput, builder) ->
     //        builder.graphQLContext(Collections.singletonMap("headerName", values)).build());
     String host = request.getHeaders().toSingleValueMap().get("host");
     //    request.getUri().getHost()
     String uri = request.getUri().toUriString();
+
+
+    request.configureExecutionInput((executionInput, builder) ->
+            builder.graphQLContext(Collections.singletonMap(AuditLoggingInstrumentation.WEB_GRAPHQL_REQUEST_KEY, request)).build());
 
     return chain.next(request);
   }
