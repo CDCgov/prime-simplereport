@@ -14,5 +14,4 @@ yarn-error.log
 backend/locust/__pycache__/
 wiremock*.jar
 cypress/cypress.env.json
-frontend/cypress.env.json
 frontend/src/.env.local
