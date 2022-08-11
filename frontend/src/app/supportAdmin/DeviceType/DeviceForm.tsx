@@ -36,7 +36,6 @@ const DeviceForm = (props: Props) => {
   const [formChanged, updateFormChanged] = useState<boolean>(false);
 
   const updateDeviceAttribute = (name: string, value: any) => {
-    // console.log(`updating device attribute ${name} to value ${value}`);
     if (device) {
       updateDevice({ ...device, [name]: value });
       updateFormChanged(true);
