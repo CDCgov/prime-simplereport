@@ -1,6 +1,7 @@
 import { Card } from "../../commonComponents/Card/Card";
 import { CardBackground } from "../../commonComponents/CardBackground/CardBackground";
 import iconSprite from "../../../../node_modules/uswds/dist/img/sprite.svg";
+import { useDocumentTitle } from "../../utils/hooks";
 
 interface Props {
   email: string;
@@ -11,6 +12,7 @@ const Success: React.FC<Props> = ({ email, activationToken }) => {
   const activationLink = activationToken
     ? `${process.env.PUBLIC_URL}/uac/?activationToken=${activationToken}`
     : null;
+  useDocumentTitle("Sign up - success | SimpleReport");
 
   return (
     <CardBackground>

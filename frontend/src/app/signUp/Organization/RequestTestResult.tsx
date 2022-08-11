@@ -1,7 +1,10 @@
 import { Card } from "../../commonComponents/Card/Card";
 import { CardBackground } from "../../commonComponents/CardBackground/CardBackground";
+import { useDocumentTitle } from "../../utils/hooks";
 
 const RequestTestResult = () => {
+  useDocumentTitle("Get COVID-19 test results | SimpleReport");
+
   return (
     <CardBackground>
       <Card logo>

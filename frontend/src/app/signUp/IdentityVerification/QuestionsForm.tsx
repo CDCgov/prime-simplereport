@@ -12,6 +12,7 @@ import { isFormValid, isFieldValid } from "../../utils/yupHelpers";
 import StepIndicator from "../../commonComponents/StepIndicator";
 import { organizationCreationSteps } from "../../../config/constants";
 import { mmss } from "../../testQueue/TestTimer";
+import { useDocumentTitle } from "../../utils/hooks";
 
 import { initAnswers, getAnswerKey, toOptions, buildSchema } from "./utils";
 
@@ -36,6 +37,7 @@ const QuestionsForm: React.FC<Props> = ({
   timeToComplete,
   disableTimer,
 }) => {
+  useDocumentTitle("Sign up - identity verification | SimpleReport");
   const [answers, setAnswers] = useState<Nullable<Answers>>(
     initAnswers(questionSet)
   );
