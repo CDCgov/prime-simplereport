@@ -105,7 +105,7 @@ The `.env` file has a template at `.env.cypress.sample` for running cypress agai
   - Check that you have brought down all instances of your apps; you may need to kill a hanging process, and try again.
 
 #### I'm missing certs!
-  - Try installing [`mkcert`](https://github.com/FiloSottile/mkcert#installation) and running again.
+  - Try installing [`mkcert`](https://github.com/FiloSottile/mkcert#installation) and run `yarn start`. This will create the certs you need.
 
 #### I'm using the using the localhost.simplereport.gov domain but I can't see it in the browser!
   - If you want to visit the app in your browser while Cypress runs in docker, you'll need to edit your local /etc/hosts and add the following line.
