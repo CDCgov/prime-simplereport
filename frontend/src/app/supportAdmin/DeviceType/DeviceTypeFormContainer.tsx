@@ -27,7 +27,7 @@ const DeviceTypeFormContainer = () => {
       showNotification(
         <Alert
           type="error"
-          title="Update device failed"
+          title="Create device failed"
           body="Failed to create device. Invalid test length"
         />
       );
