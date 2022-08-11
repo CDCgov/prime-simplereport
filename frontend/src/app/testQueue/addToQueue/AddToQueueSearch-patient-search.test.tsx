@@ -44,7 +44,6 @@ const mocks = [
       variables: {
         facilityId,
         namePrefixMatch: "bar",
-        includeArchivedPatients: false,
       },
     },
     result: {
@@ -59,7 +58,6 @@ const mocks = [
       variables: {
         facilityId,
         namePrefixMatch: "joh",
-        includeArchivedPatients: false,
       },
     },
     result: {

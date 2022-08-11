@@ -762,7 +762,6 @@ class PersonServiceTest extends BaseServiceTest<PersonService> {
   void getPatients_includeArchived_returnsDeletedOnly() {
     makedata(true);
 
-    UUID site1Id = _site1.getInternalId();
     var results =
         _service.getPatients(null, PATIENT_PAGEOFFSET, PATIENT_PAGESIZE, true, null, false);
     assertEquals(1, results.size());
