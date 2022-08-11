@@ -1,5 +1,6 @@
 package gov.cdc.usds.simplereport.api.testresult;
 
+import gov.cdc.usds.simplereport.api.InternalIdResolver;
 import gov.cdc.usds.simplereport.api.model.ApiFacility;
 import gov.cdc.usds.simplereport.api.model.TestDescription;
 import gov.cdc.usds.simplereport.db.model.Person;
@@ -9,11 +10,12 @@ import gov.cdc.usds.simplereport.db.model.auxiliary.AskOnEntrySurvey;
 import java.time.LocalDate;
 import java.util.Date;
 import java.util.Set;
+import java.util.UUID;
 import org.springframework.graphql.data.method.annotation.SchemaMapping;
 import org.springframework.stereotype.Controller;
 
 @Controller
-public class TestResultDataResolver {
+public class TestResultDataResolver implements InternalIdResolver<TestEvent> {
 
   private AskOnEntrySurvey getSurvey(TestEvent testEvent) {
     return testEvent.getSurveyData();
@@ -80,5 +82,11 @@ public class TestResultDataResolver {
   @SchemaMapping(typeName = "TestResult", field = "results")
   public Set<Result> getResults(TestEvent testEvent) {
     return testEvent.getResults();
+  }
+
+  @Override
+  @SchemaMapping(typeName = "TestResult", field = "id")
+  public UUID getId(TestEvent testEvent) {
+    return testEvent.getInternalId();
   }
 }

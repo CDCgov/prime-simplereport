@@ -1,7 +1,10 @@
 package gov.cdc.usds.simplereport.api.apiuser;
 
+import gov.cdc.usds.simplereport.api.InternalIdResolver;
+import gov.cdc.usds.simplereport.api.PersonNameResolver;
 import gov.cdc.usds.simplereport.db.model.ApiUser;
 import gov.cdc.usds.simplereport.db.model.auxiliary.PersonName;
+import java.util.UUID;
 import org.springframework.graphql.data.method.annotation.SchemaMapping;
 import org.springframework.stereotype.Controller;
 
@@ -11,7 +14,8 @@ import org.springframework.stereotype.Controller;
  * {@link UserResolver}, which provides access to a much more significant graph.
  */
 @Controller
-public class ApiUserDataResolver {
+public class ApiUserDataResolver
+    implements InternalIdResolver<ApiUser>, PersonNameResolver<ApiUser> {
   @SchemaMapping(typeName = "ApiUser", field = "email")
   public String getEmail(ApiUser user) {
     return user.getLoginEmail();
@@ -37,6 +41,13 @@ public class ApiUserDataResolver {
     return user.getNameInfo().getSuffix();
   }
 
+  @Override
+  @SchemaMapping(typeName = "ApiUser", field = "id")
+  public UUID getId(ApiUser entity) {
+    return entity.getInternalId();
+  }
+
+  @Override
   @SchemaMapping(typeName = "ApiUser", field = "name")
   public PersonName getName(ApiUser user) {
     return user.getNameInfo();

@@ -1,13 +1,17 @@
 package gov.cdc.usds.simplereport.api.patient;
 
+import gov.cdc.usds.simplereport.api.InternalIdResolver;
+import gov.cdc.usds.simplereport.api.PersonNameResolver;
 import gov.cdc.usds.simplereport.api.model.ApiFacility;
 import gov.cdc.usds.simplereport.db.model.Facility;
 import gov.cdc.usds.simplereport.db.model.Person;
+import gov.cdc.usds.simplereport.db.model.auxiliary.PersonName;
+import java.util.UUID;
 import org.springframework.graphql.data.method.annotation.SchemaMapping;
 import org.springframework.stereotype.Controller;
 
 @Controller
-public class PatientDataResolver {
+public class PatientDataResolver implements PersonNameResolver<Person>, InternalIdResolver<Person> {
 
   //  private final PatientPrimaryPhoneDataLoader _patientPrimaryPhoneDataLoader;
   //  private final PatientPhoneNumbersDataLoader _patientPhoneNumbersDataLoader;
@@ -31,6 +35,18 @@ public class PatientDataResolver {
   public ApiFacility facility(Person patient) {
     Facility f = patient.getFacility();
     return f == null ? null : new ApiFacility(f);
+  }
+
+  @Override
+  @SchemaMapping(typeName = "Patient", field = "id")
+  public UUID getId(Person patient) {
+    return patient.getInternalId();
+  }
+
+  @Override
+  @SchemaMapping(typeName = "Patient", field = "name")
+  public PersonName getName(Person patient) {
+    return patient.getNameInfo();
   }
 
   //  public CompletableFuture<List<PhoneNumber>> getPhoneNumbers(

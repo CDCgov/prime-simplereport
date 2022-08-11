@@ -6,7 +6,5 @@ import gov.cdc.usds.simplereport.db.model.auxiliary.PersonName;
 
 /** Resolver mix-in to handle aliasing "nameInfo" to "name" */
 public interface PersonNameResolver<T extends PersonEntity> {
-  default PersonName getName(T entity) {
-    return entity.getNameInfo();
-  }
+  PersonName getName(T entity);
 }
