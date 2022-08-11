@@ -154,17 +154,23 @@ public class LiveOktaRepository implements OktaRepository {
             .map(f -> generateFacilityGroupName(organizationExternalId, f.getInternalId()))
             .collect(Collectors.toSet()));
 
-    GroupList orgGroups =
-        _client.listGroups(
-            null,
-            "profile.name sw \"" + generateGroupOrgPrefix(organizationExternalId) + "\"",
-            null);
+    var orgGroups =
+        Stream.concat(
+            _client
+                .listGroups(
+                    null,
+                    "profile.name sw \"" + generateGroupOrgPrefix(organizationExternalId) + "\"",
+                    null)
+                .stream()
+                .distinct(),
+            _client.listGroups(generateGroupOrgPrefix(organizationExternalId), null, null).stream()
+                .distinct());
     isEmpty(
-        orgGroups.stream(),
+        orgGroups,
         String.format(
             "Cannot add Okta user to nonexistent organization=%s", organizationExternalId));
     Set<String> orgGroupNames =
-        orgGroups.stream().map(g -> g.getProfile().getName()).collect(Collectors.toSet());
+        orgGroups.map(g -> g.getProfile().getName()).collect(Collectors.toSet());
     groupNamesToAdd.stream()
         .filter(n -> !orgGroupNames.contains(n))
         .forEach(
@@ -173,7 +179,7 @@ public class LiveOktaRepository implements OktaRepository {
                   String.format("Cannot add Okta user to nonexistent group=%s", n));
             });
     Set<String> groupIdsToAdd =
-        orgGroups.stream()
+        orgGroups
             .filter(g -> groupNamesToAdd.contains(g.getProfile().getName()))
             .map(Group::getId)
             .collect(Collectors.toSet());
