@@ -46,7 +46,7 @@ public class HttpRequestDetails {
   public HttpRequestDetails(WebGraphQlRequest request) {
     serverName = request.getHeaders().toSingleValueMap().get(Headers.HOST);
     originalHostName = request.getHeaders().toSingleValueMap().get(Headers.FORWARDED_HOST);
-    request.get remoteAddress = request.getHeaders().toSingleValueMap().get(Headers.REMOTE_ADDR);
+    remoteAddress = request.getHeaders().toSingleValueMap().get(Headers.REMOTE_ADDR);
     ;
     String forwardedFor = request.getHeaders().toSingleValueMap().get(Headers.FORWARDED_CLIENT);
     forwardedAddresses =

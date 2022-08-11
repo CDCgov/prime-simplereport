@@ -5,6 +5,7 @@ import gov.cdc.usds.simplereport.config.authorization.OrganizationPrincipal;
 import gov.cdc.usds.simplereport.config.authorization.SiteAdminPrincipal;
 import gov.cdc.usds.simplereport.config.authorization.UserPermission;
 import gov.cdc.usds.simplereport.db.model.auxiliary.GraphQlInputs;
+import gov.cdc.usds.simplereport.db.model.auxiliary.HttpRequestDetails;
 import gov.cdc.usds.simplereport.service.AuditService;
 import graphql.ExecutionResult;
 import graphql.GraphQLContext;
@@ -19,14 +20,17 @@ import java.util.List;
 import java.util.stream.Collectors;
 import javax.security.auth.Subject;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.graphql.server.WebGraphQlRequest;
+import org.springframework.security.core.Authentication;
+import org.springframework.security.core.context.SecurityContext;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Component;
-import org.springframework.web.context.request.RequestAttributes;
-import org.springframework.web.context.request.RequestContextHolder;
 
 @Component
 @Slf4j
 public class AuditLoggingInstrumentation extends SimpleInstrumentation {
 
+  public static final String WEB_GRAPHQL_REQUEST_KEY = "WebGraphQlRequest";
   private final AuditService _auditService;
 
   public AuditLoggingInstrumentation(AuditService service) {
@@ -48,28 +52,18 @@ public class AuditLoggingInstrumentation extends SimpleInstrumentation {
       InstrumentationExecutionParameters parameters) {
     String executionId = parameters.getExecutionInput().getExecutionId().toString();
     log.trace("Instrumenting query executionId={} for audit", executionId);
+    SecurityContext context = SecurityContextHolder.getContext();
+    Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
     try {
-      //      parameters.getContext();
-      RequestAttributes requestAttributes = RequestContextHolder.getRequestAttributes();
-      //      requestAttributes.getAttributeNames()
-      RequestAttributes currentRequestAttributes = RequestContextHolder.currentRequestAttributes();
-
-      String[] attributeNames =
-          currentRequestAttributes.getAttributeNames(RequestAttributes.SCOPE_REQUEST);
       GraphQLContext graphQLContext = parameters.getGraphQLContext();
-
-      Object o =
-          graphQLContext.get(
-              "org.springframework.graphql.execution.ReactorContextManager.THREAD_LOCAL_ACCESSOR");
-      //      Object o =
-      // graphQLContext.get("org.springframework.graphql.execution.ReactorContextManager.THREAD_LOCAL_ACCESSOR");
+      WebGraphQlRequest webGraphQlRequest = (WebGraphQlRequest) graphQLContext.get(WEB_GRAPHQL_REQUEST_KEY);
       GraphqlQueryState state = parameters.getInstrumentationState();
       state.setRequestId(executionId);
-      //      state.setHttpDetails(new HttpRequestDetails(context.getHttpServletRequest()));
+      state.setHttpDetails(new HttpRequestDetails(webGraphQlRequest));
       state.setGraphqlDetails(
           new GraphQlInputs(
               parameters.getOperation(), parameters.getQuery(), parameters.getVariables()));
-      //      return new ExecutionResultContext(state, context.getSubject().orElseThrow());
+//            return new ExecutionResultContext(state, context.getSubject().orElseThrow());
       return null;
     } catch (Exception e) {
       // we don't 100% trust this error not to get swallowed by graphql-java
