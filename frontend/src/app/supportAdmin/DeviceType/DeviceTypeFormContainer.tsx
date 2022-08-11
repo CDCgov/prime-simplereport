@@ -10,18 +10,7 @@ import Alert from "../../commonComponents/Alert";
 import { showNotification } from "../../utils";
 import { LoadingCard } from "../../commonComponents/LoadingCard/LoadingCard";
 
-import DeviceForm from "./DeviceForm";
-
-export interface Device {
-  internalId?: string;
-  name: string;
-  manufacturer: string;
-  model: string;
-  loincCode: string;
-  swabTypes: Array<string>;
-  supportedDiseases: Array<string>;
-  testLength: number;
-}
+import DeviceForm, { Device } from "./DeviceForm";
 
 const DeviceTypeFormContainer = () => {
   const [submitted, setSubmitted] = useState(false);
@@ -34,25 +23,32 @@ const DeviceTypeFormContainer = () => {
   });
 
   const saveDeviceType = (device: Device) => {
-    if (device.internalId) {
-      // todo: make this better?
-      console.log("internal Id for saving device is non-null, aborting");
-      return;
-    }
-    createDeviceType({
-      variables: device,
-      fetchPolicy: "no-cache",
-    }).then(() => {
-      const alert = (
+    if (device.testLength <= 0 || device.testLength > 999) {
+      showNotification(
         <Alert
-          type="success"
-          title="Created Device"
-          body="The device has been created"
+          type="error"
+          title="Update device failed"
+          body="Failed to update device. Invalid test length"
         />
       );
-      showNotification(alert);
-      setSubmitted(true);
-    });
+    } else {
+      if (!device.internalId) {
+        createDeviceType({
+          variables: device,
+          fetchPolicy: "no-cache",
+        }).then(() => {
+          const alert = (
+            <Alert
+              type="success"
+              title="Created Device"
+              body="The device has been created"
+            />
+          );
+          showNotification(alert);
+          setSubmitted(true);
+        });
+      }
+    }
   };
 
   if (submitted) {

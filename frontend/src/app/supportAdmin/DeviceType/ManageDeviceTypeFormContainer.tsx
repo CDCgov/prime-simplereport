@@ -29,7 +29,7 @@ const ManageDeviceTypeFormContainer = () => {
     fetchPolicy: "no-cache",
   });
 
-  const saveDevice = (device: Device) => {
+  const updateDevice = (device: Device) => {
     if (device.testLength <= 0 || device.testLength > 999) {
       showNotification(
         <Alert
@@ -41,14 +41,8 @@ const ManageDeviceTypeFormContainer = () => {
     } else {
       if (device.internalId) {
         const variables: UpdateDeviceType = {
+          ...device,
           internalId: device.internalId,
-          name: device.name,
-          manufacturer: device.manufacturer,
-          model: device.model,
-          swabTypes: device.swabTypes,
-          supportedDiseases: device.supportedDiseases,
-          loincCode: device.loincCode,
-          testLength: device.testLength,
         };
         updateDeviceType({
           variables,
@@ -64,11 +58,6 @@ const ManageDeviceTypeFormContainer = () => {
           showNotification(alert);
           setSubmitted(true);
         });
-      } else {
-        //todo: make this better
-        console.log(
-          "internal id for saving a device is undefined and your code is bad; aborting"
-        );
       }
     }
   };
@@ -101,7 +90,7 @@ const ManageDeviceTypeFormContainer = () => {
     return (
       <DeviceForm
         formTitle="Manage devices"
-        saveDeviceType={saveDevice}
+        saveDeviceType={updateDevice}
         swabOptions={swabOptions}
         supportedDiseaseOptions={supportedDiseaseOptions}
         deviceOptions={devices}

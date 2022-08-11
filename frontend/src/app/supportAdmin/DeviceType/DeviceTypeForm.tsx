@@ -5,7 +5,7 @@ import TextInput from "../../commonComponents/TextInput";
 import MultiSelect from "../../commonComponents/MultiSelect/MultiSelect";
 import { MultiSelectDropdownOption } from "../../commonComponents/MultiSelect/MultiSelectDropdown/MultiSelectDropdown";
 
-import { Device } from "./DeviceTypeFormContainer";
+import { Device } from "./DeviceForm";
 import DeviceTypeReminderMessage from "./DeviceTypeReminderMessage";
 
 interface Props {
@@ -26,6 +26,7 @@ const DeviceTypeForm: React.FC<Props> = ({
     loincCode: "",
     swabTypes: [],
     supportedDiseases: [],
+    testLength: 15,
   });
   const [formChanged, updateFormChanged] = useState<boolean>(false);
 

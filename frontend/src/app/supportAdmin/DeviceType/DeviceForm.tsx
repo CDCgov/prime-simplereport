@@ -7,8 +7,18 @@ import { MultiSelectDropdownOption } from "../../commonComponents/MultiSelect/Mu
 import Select from "../../commonComponents/Select";
 import { DeviceType } from "../../../generated/graphql";
 
-import { Device } from "./DeviceTypeFormContainer";
 import DeviceTypeReminderMessage from "./DeviceTypeReminderMessage";
+
+export interface Device {
+  internalId?: string;
+  name: string;
+  manufacturer: string;
+  model: string;
+  loincCode: string;
+  swabTypes: Array<string>;
+  supportedDiseases: Array<string>;
+  testLength: number;
+}
 
 interface Props {
   formTitle: string;
@@ -59,7 +69,7 @@ const DeviceForm = (props: Props) => {
             device.supportedDiseases?.map((disease) => disease.internalId) ||
             [],
           loincCode: device.loincCode,
-          testLength: device.testLength,
+          testLength: device.testLength ? device.testLength : 15,
         }
       : undefined;
   };
@@ -125,6 +135,8 @@ const DeviceForm = (props: Props) => {
                     required
                   />
                 </div>
+              </div>
+              <div className="grid-row grid-gap">
                 <div className="tablet:grid-col">
                   <TextInput
                     label="Manufacturer"
@@ -135,11 +147,23 @@ const DeviceForm = (props: Props) => {
                     required
                   />
                 </div>
+              </div>
+              <div className="tablet:grid-col">
+                <TextInput
+                  label="Model"
+                  name="model"
+                  value={device?.model}
+                  onChange={onChange}
+                  disabled={!device}
+                  required
+                />
+              </div>
+              <div className="grid-row grid-gap">
                 <div className="tablet:grid-col">
                   <TextInput
-                    label="Model"
-                    name="model"
-                    value={device?.model}
+                    label="LOINC code"
+                    name="loincCode"
+                    value={device?.loincCode}
                     onChange={onChange}
                     disabled={!device}
                     required
@@ -147,9 +171,12 @@ const DeviceForm = (props: Props) => {
                 </div>
                 <div className="tablet:grid-col">
                   <TextInput
-                    label="LOINC code"
-                    name="loincCode"
-                    value={device?.loincCode}
+                    type={"number"}
+                    label="Test length (minutes)"
+                    name="testLength"
+                    min={0}
+                    max={999}
+                    value={device?.testLength.toString()}
                     onChange={onChange}
                     disabled={!device}
                     required
