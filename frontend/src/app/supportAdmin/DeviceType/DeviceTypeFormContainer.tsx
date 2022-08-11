@@ -28,7 +28,7 @@ const DeviceTypeFormContainer = () => {
         <Alert
           type="error"
           title="Update device failed"
-          body="Failed to update device. Invalid test length"
+          body="Failed to create device. Invalid test length"
         />
       );
     } else {
@@ -47,6 +47,10 @@ const DeviceTypeFormContainer = () => {
           showNotification(alert);
           setSubmitted(true);
         });
+      } else {
+        console.log(
+          "Invalid attempt to create a device with an already defined internal ID; aborting"
+        );
       }
     }
   };

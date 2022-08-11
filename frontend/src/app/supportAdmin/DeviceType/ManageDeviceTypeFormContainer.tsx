@@ -13,8 +13,7 @@ import { LoadingCard } from "../../commonComponents/LoadingCard/LoadingCard";
 import { showNotification } from "../../utils";
 import Alert from "../../commonComponents/Alert";
 
-import { Device } from "./DeviceTypeFormContainer";
-import DeviceForm from "./DeviceForm";
+import DeviceForm, { Device } from "./DeviceForm";
 
 const ManageDeviceTypeFormContainer = () => {
   const [submitted, setSubmitted] = useState(false);
@@ -58,6 +57,10 @@ const ManageDeviceTypeFormContainer = () => {
           showNotification(alert);
           setSubmitted(true);
         });
+      } else {
+        console.log(
+          "Invalid attempt to update a device with no internal ID; aborting"
+        );
       }
     }
   };
