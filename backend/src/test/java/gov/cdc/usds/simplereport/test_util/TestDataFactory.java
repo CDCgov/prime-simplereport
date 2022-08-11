@@ -200,17 +200,26 @@ public class TestDataFactory {
 
   @Transactional
   public Person createMinimalPerson(Organization org, Facility fac, PersonName names) {
-    return createMinimalPerson(org, fac, names, PersonRole.STAFF);
+    return createMinimalPerson(org, fac, names, PersonRole.STAFF, false);
   }
 
   @Transactional
   public Person createMinimalPerson(
       Organization org, Facility fac, PersonName names, PersonRole role) {
+    return createMinimalPerson(org, fac, names, role, false);
+  }
+
+  @Transactional
+  public Person createMinimalPerson(
+      Organization org, Facility fac, PersonName names, PersonRole role, boolean isDeleted) {
     Person p = new Person(names, org, fac, role);
     _personRepo.save(p);
     PhoneNumber pn = new PhoneNumber(p, PhoneType.MOBILE, "503-867-5309");
     _phoneNumberRepo.save(pn);
     p.setPrimaryPhone(pn);
+    if (isDeleted) {
+      p.setIsDeleted(true);
+    }
     return _personRepo.save(p);
   }
 

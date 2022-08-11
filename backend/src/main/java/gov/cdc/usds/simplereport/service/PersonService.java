@@ -128,13 +128,18 @@ public class PersonService {
             cb.equal(root.get(SpecField.BIRTH_DATE), birthDate));
   }
 
-  private Specification<Person> isDeletedFilter(boolean isDeleted) {
-    return (root, query, cb) -> cb.equal(root.get(SpecField.IS_DELETED), isDeleted);
+  private Specification<Person> isActiveFilter() {
+    return (root, query, cb) -> cb.isFalse(root.get(SpecField.IS_DELETED));
+  }
+
+  private Specification<Person> isDeletedFilter() {
+    return (root, query, cb) -> cb.isTrue(root.get(SpecField.IS_DELETED));
   }
 
   // called by List function and Count function
   protected Specification<Person> buildPersonSearchFilter(
       UUID facilityId,
+      boolean isActive,
       boolean isArchived,
       String namePrefixMatch,
       boolean includeArchivedFacilities) {
@@ -145,7 +150,16 @@ public class PersonService {
             : Arrays.stream(namePrefixMatch.split("[ ,]")).collect(Collectors.toList());
 
     // build up filter based on params
-    Specification<Person> filter = inCurrentOrganizationFilter().and(isDeletedFilter(isArchived));
+    Specification<Person> filter = inCurrentOrganizationFilter();
+
+    if (isActive && isArchived) {
+      filter = filter.and(isActiveFilter().or(isDeletedFilter()));
+    } else if (isActive) {
+      filter = filter.and(isActiveFilter());
+    } else if (isArchived) {
+      filter = filter.and(isDeletedFilter());
+    }
+
     if (facilityId == null) {
       filter = filter.and(inAccessibleFacilitiesFilter(includeArchivedFacilities));
     } else {
@@ -191,6 +205,34 @@ public class PersonService {
       boolean isArchived,
       String namePrefixMatch,
       boolean includeArchivedFacilities) {
+    return isArchived
+        ? getPatients(
+            facilityId,
+            pageOffset,
+            pageSize,
+            false,
+            true,
+            namePrefixMatch,
+            includeArchivedFacilities)
+        : getPatients(
+            facilityId,
+            pageOffset,
+            pageSize,
+            true,
+            false,
+            namePrefixMatch,
+            includeArchivedFacilities);
+  }
+
+  @AuthorizationConfiguration.RequireSpecificPatientSearchPermission
+  public List<Person> getPatients(
+      UUID facilityId,
+      int pageOffset,
+      int pageSize,
+      boolean isActive,
+      boolean isArchived,
+      String namePrefixMatch,
+      boolean includeArchivedFacilities) {
     if (pageOffset < 0) {
       pageOffset = DEFAULT_PAGINATION_PAGEOFFSET;
     }
@@ -203,7 +245,8 @@ public class PersonService {
     }
 
     return _repo.findAll(
-        buildPersonSearchFilter(facilityId, isArchived, namePrefixMatch, includeArchivedFacilities),
+        buildPersonSearchFilter(
+            facilityId, isActive, isArchived, namePrefixMatch, includeArchivedFacilities),
         PageRequest.of(pageOffset, pageSize, NAME_SORT));
   }
 
@@ -230,10 +273,16 @@ public class PersonService {
     if (namePrefixMatch != null && namePrefixMatch.trim().length() < MINIMUM_CHAR_FOR_SEARCH) {
       return 0;
     }
-    return _repo.count(
-        buildPersonSearchFilter(
-            facilityId, isArchived, namePrefixMatch, includeArchivedFacilities));
+
+    var filter =
+        isArchived
+            ? buildPersonSearchFilter(
+                facilityId, false, true, namePrefixMatch, includeArchivedFacilities)
+            : buildPersonSearchFilter(
+                facilityId, true, false, namePrefixMatch, includeArchivedFacilities);
+    return _repo.count(filter);
   }
+
   // NO PERMISSION CHECK (make sure the caller has one!) getPatient()
   public Person getPatientNoPermissionsCheck(UUID id) {
     return getPatientNoPermissionsCheck(id, _os.getCurrentOrganization(), false);

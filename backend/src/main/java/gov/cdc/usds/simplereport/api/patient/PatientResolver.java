@@ -33,7 +33,31 @@ public class PatientResolver implements GraphQLQueryResolver {
       String namePrefixMatch,
       boolean includeArchivedFacilities) {
     return _ps.getPatients(
-        facilityId, pageNumber, pageSize, showDeleted, namePrefixMatch, includeArchivedFacilities);
+        facilityId,
+        pageNumber,
+        pageSize,
+        true,
+        showDeleted,
+        namePrefixMatch,
+        includeArchivedFacilities);
+  }
+
+  public List<Person> getPatients(
+      UUID facilityId,
+      int pageNumber,
+      int pageSize,
+      boolean showActive,
+      boolean showDeleted,
+      String namePrefixMatch,
+      boolean includeArchivedFacilities) {
+    return _ps.getPatients(
+        facilityId,
+        pageNumber,
+        pageSize,
+        showActive,
+        showDeleted,
+        namePrefixMatch,
+        includeArchivedFacilities);
   }
 
   // authorization happens in calls to PersonService

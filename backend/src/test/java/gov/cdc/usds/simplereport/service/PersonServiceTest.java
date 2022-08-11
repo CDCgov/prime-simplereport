@@ -643,8 +643,9 @@ class PersonServiceTest extends BaseServiceTest<PersonService> {
 
     assertEquals(10, _service.getPatientsCount(null, false, null, false));
     assertEquals(6, _service.getPatientsCount(site2Id, false, null, false));
-    assertEquals(2, _service.getPatientsCount(null, true, null, false));
-    assertEquals(1, _service.getPatientsCount(site2Id, true, null, false));
+    // Charles and Frank archived in this test, plus one by `makedata`
+    assertEquals(3, _service.getPatientsCount(null, true, null, false));
+    assertEquals(2, _service.getPatientsCount(site2Id, true, null, false));
 
     // counts for name filtering
     assertEquals(5, _service.getPatientsCount(null, false, "ma", false));
@@ -754,6 +755,39 @@ class PersonServiceTest extends BaseServiceTest<PersonService> {
         AccessDeniedException.class,
         () ->
             _service.getPatients(site1Id, PATIENT_PAGEOFFSET, PATIENT_PAGESIZE, true, null, false));
+  }
+
+  @Test
+  @WithSimpleReportOrgAdminUser
+  void getPatients_includeArchived_returnsDeletedOnly() {
+    makedata(true);
+
+    UUID site1Id = _site1.getInternalId();
+    var results =
+        _service.getPatients(null, PATIENT_PAGEOFFSET, PATIENT_PAGESIZE, true, null, false);
+    assertEquals(1, results.size());
+    assertEquals("Margaret", results.get(0).getFirstName());
+  }
+
+  @Test
+  @WithSimpleReportOrgAdminUser
+  void getPatients_includeActive_returnsActiveOnly() {
+    makedata(true);
+
+    var results =
+        _service.getPatients(null, PATIENT_PAGEOFFSET, PATIENT_PAGESIZE, true, false, null, false);
+    // 13 patients created; one (archived) not returned
+    assertEquals(12, results.size());
+  }
+
+  @Test
+  @WithSimpleReportOrgAdminUser
+  void getPatients_includeAll_returnsActiveAndDeleted() {
+    makedata(true);
+
+    var results =
+        _service.getPatients(null, PATIENT_PAGEOFFSET, PATIENT_PAGESIZE, true, true, null, false);
+    assertEquals(13, results.size());
   }
 
   @Test
@@ -1018,6 +1052,7 @@ class PersonServiceTest extends BaseServiceTest<PersonService> {
       _dataFactory.createMinimalPerson(_org, _site2, JANNELLE);
       _dataFactory.createMinimalPerson(_org, _site2, KACEY);
       _dataFactory.createMinimalPerson(_org, _site2, LEELOO);
+      _dataFactory.createMinimalPerson(_org, _site2, MARGARET, null, true);
     }
   }
 
