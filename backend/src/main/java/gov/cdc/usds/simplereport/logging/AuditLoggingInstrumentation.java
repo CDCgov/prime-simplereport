@@ -4,11 +4,15 @@ import gov.cdc.usds.simplereport.config.authorization.ApiUserPrincipal;
 import gov.cdc.usds.simplereport.config.authorization.OrganizationPrincipal;
 import gov.cdc.usds.simplereport.config.authorization.SiteAdminPrincipal;
 import gov.cdc.usds.simplereport.config.authorization.UserPermission;
+import gov.cdc.usds.simplereport.db.model.auxiliary.GraphQlInputs;
 import gov.cdc.usds.simplereport.service.AuditService;
 import graphql.ExecutionResult;
+import graphql.GraphQLContext;
+import graphql.execution.instrumentation.InstrumentationContext;
 import graphql.execution.instrumentation.InstrumentationState;
 import graphql.execution.instrumentation.SimpleInstrumentation;
 import graphql.execution.instrumentation.SimpleInstrumentationContext;
+import graphql.execution.instrumentation.parameters.InstrumentationExecutionParameters;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
@@ -16,6 +20,8 @@ import java.util.stream.Collectors;
 import javax.security.auth.Subject;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Component;
+import org.springframework.web.context.request.RequestAttributes;
+import org.springframework.web.context.request.RequestContextHolder;
 
 @Component
 @Slf4j
@@ -34,7 +40,7 @@ public class AuditLoggingInstrumentation extends SimpleInstrumentation {
     return state;
   }
 
-  /*
+  //  /*
 
   @Override
   @SuppressWarnings("checkstyle:IllegalCatch")
@@ -43,21 +49,35 @@ public class AuditLoggingInstrumentation extends SimpleInstrumentation {
     String executionId = parameters.getExecutionInput().getExecutionId().toString();
     log.trace("Instrumenting query executionId={} for audit", executionId);
     try {
-      GraphQLServletContext context = parameters.getContext();
+      //      parameters.getContext();
+      RequestAttributes requestAttributes = RequestContextHolder.getRequestAttributes();
+      //      requestAttributes.getAttributeNames()
+      RequestAttributes currentRequestAttributes = RequestContextHolder.currentRequestAttributes();
+
+      String[] attributeNames =
+          currentRequestAttributes.getAttributeNames(RequestAttributes.SCOPE_REQUEST);
+      GraphQLContext graphQLContext = parameters.getGraphQLContext();
+
+      Object o =
+          graphQLContext.get(
+              "org.springframework.graphql.execution.ReactorContextManager.THREAD_LOCAL_ACCESSOR");
+      //      Object o =
+      // graphQLContext.get("org.springframework.graphql.execution.ReactorContextManager.THREAD_LOCAL_ACCESSOR");
       GraphqlQueryState state = parameters.getInstrumentationState();
       state.setRequestId(executionId);
-      state.setHttpDetails(new HttpRequestDetails(context.getHttpServletRequest()));
+      //      state.setHttpDetails(new HttpRequestDetails(context.getHttpServletRequest()));
       state.setGraphqlDetails(
           new GraphQlInputs(
               parameters.getOperation(), parameters.getQuery(), parameters.getVariables()));
-      return new ExecutionResultContext(state, context.getSubject().orElseThrow());
+      //      return new ExecutionResultContext(state, context.getSubject().orElseThrow());
+      return null;
     } catch (Exception e) {
       // we don't 100% trust this error not to get swallowed by graphql-java
       log.error("Extremely unexpected error creating instrumentation state for audit", e);
       throw e;
     }
   }
-   */
+  //   */
 
   private class /* not static! */ ExecutionResultContext
       extends SimpleInstrumentationContext<ExecutionResult> {
