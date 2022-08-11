@@ -1,8 +1,8 @@
 import { render, screen, within } from "@testing-library/react";
 import userEvent from "@testing-library/user-event";
 
-import ManageDevicesForm from "./ManageDevicesForm";
 import { addValue } from "./DeviceTypeForm.test";
+import DeviceForm from "./DeviceForm";
 
 describe("ManageDeviceTypeForm", () => {
   let saveDeviceType: jest.Mock;
@@ -10,15 +10,16 @@ describe("ManageDeviceTypeForm", () => {
   beforeEach(() => {
     saveDeviceType = jest.fn();
     container = render(
-      <ManageDevicesForm
-        updateDeviceType={saveDeviceType}
+      <DeviceForm
+        formTitle="Manage devices"
+        saveDeviceType={saveDeviceType}
         swabOptions={[
           { label: "nose", value: "123" },
           { label: "eye", value: "456" },
           { label: "mouth", value: "789" },
         ]}
         supportedDiseaseOptions={[{ label: "COVID-19", value: "123" }]}
-        devices={[
+        deviceOptions={[
           {
             internalId: "abc1",
             name: "Tesla Emitter",

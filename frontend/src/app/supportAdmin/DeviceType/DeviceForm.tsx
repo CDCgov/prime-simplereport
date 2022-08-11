@@ -135,6 +135,16 @@ const DeviceForm = (props: Props) => {
                   />
                 </div>
               </div>
+              <div className="tablet:grid-col">
+                <TextInput
+                  label="Model"
+                  name="model"
+                  value={device?.model}
+                  onChange={onChange}
+                  disabled={!device}
+                  required
+                />
+              </div>
               <div className="grid-row grid-gap">
                 <div className="tablet:grid-col">
                   <TextInput
@@ -146,16 +156,6 @@ const DeviceForm = (props: Props) => {
                     required
                   />
                 </div>
-              </div>
-              <div className="tablet:grid-col">
-                <TextInput
-                  label="Model"
-                  name="model"
-                  value={device?.model}
-                  onChange={onChange}
-                  disabled={!device}
-                  required
-                />
               </div>
               <div className="grid-row grid-gap">
                 <div className="tablet:grid-col">
