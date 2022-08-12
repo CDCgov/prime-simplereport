@@ -21,14 +21,12 @@ describe("Organization sign up", () => {
   });
   it("fills out the org info form", () => {
     cy.contains("Sign up for SimpleReport in three steps");
-    cy.get('input[name="name"]').type("Beach Camp " + faker.random.word());
+    cy.get('input[name="name"]').type("Beach Camp");
     cy.get('select[name="state"]').select("CA");
     cy.get('select[name="type"]').select("Camp");
     cy.get('input[name="firstName"]').type("Greg");
     cy.get('input[name="lastName"]').type("McTester");
-    cy.get('input[name="email"]').type(
-      faker.name.firstName() + "greg@mailinator.com"
-    );
+    cy.get('input[name="email"]').type("greg@mailinator.com");
     cy.get('input[name="workPhoneNumber"]').type("5308675309");
   });
   it("submits successfully", () => {
