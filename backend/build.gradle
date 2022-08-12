@@ -39,7 +39,7 @@ dependencies {
     implementation 'org.springframework.boot:spring-boot-starter-validation'
     implementation 'com.vladmihalcea:hibernate-types-52:2.10.0'
     implementation 'org.liquibase:liquibase-core'
-    runtimeOnly 'org.postgresql:postgresql'
+    runtimeOnly 'org.postgresql:postgresql:42.4.1'
 
     // data validation
     implementation 'com.googlecode.libphonenumber:libphonenumber:8.12.15'
