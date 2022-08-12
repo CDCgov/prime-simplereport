@@ -1,7 +1,7 @@
 import { Context } from "@azure/functions";
 import {
   DequeuedMessageItem,
-  QueueClient,
+  QueueClient, QueueDeleteMessageResponse,
   QueueServiceClient,
   StorageSharedKeyCredential,
 } from "@azure/storage-queue";
@@ -141,6 +141,9 @@ export async function deleteSuccessfullyParsedMessages(
   messages: DequeuedMessageItem[],
   parseFailure: { [k: string]: boolean }
 ) {
+
+  const deletionPromises: Promise<QueueDeleteMessageResponse>[] = []
+
   for (const message of messages) {
     if (parseFailure[message.messageId]) {
       context.log(
@@ -148,30 +151,35 @@ export async function deleteSuccessfullyParsedMessages(
       );
       continue;
     }
-    try {
-      // TODO: parallelize processing these API calls; do not await each one
-      const deleteResponse = await queueClient.deleteMessage(
-        message.messageId,
-        message.popReceipt
-      );
 
-      if(message.dequeueCount > 1){
-        context.log(
-          `Message has been dequeued ${message.dequeueCount} times, possibly sent more than once to RS`
-        );
-      }
-
-      const testEventId = JSON.parse(message.messageText)['Result_ID'];
+    if(message.dequeueCount > 1){
       context.log(
-        `Message ${message.messageId} deleted with request id ${deleteResponse.requestId} and has TestEvent id ${testEventId}`
-      );
-    } catch (e: any) {
-      context.log(
-        `Failed to delete message ${message.messageId} from the queue:`,
-        e
+        `Message has been dequeued ${message.dequeueCount} times, possibly sent more than once to RS`
       );
     }
+
+    deletionPromises.push(queueClient.deleteMessage(
+      message.messageId,
+      message.popReceipt
+    ));
   }
+
+  Promise.allSettled(deletionPromises).then(promiseValues => {
+    for (let i = 0; i < promiseValues.length; i++) {
+      const promise = promiseValues[i];
+      const message = messages[i];
+      if(promise.status == "rejected"){
+        console.log(`Failed to delete message ${message.messageId} from the queue:`)
+      } else {
+        const deleteResponse = promise.value;
+        const testEventId = JSON.parse(message.messageText)['Result_ID'];
+        context.log(
+          `Message ${message.messageId} deleted with request id ${deleteResponse.requestId} and has TestEvent id ${testEventId}`
+        );
+      }
+    }
+  })
+
   context.log("Deletion complete");
 }
 
