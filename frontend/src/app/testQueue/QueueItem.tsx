@@ -825,7 +825,6 @@ const QueueItem = ({
 
                   <div className="desktop:grid-col-fill flex-col-container">
                     <div
-                      id="test-date-time-label"
                       className={classnames(
                         saveState === "error" && "queue-item-error-message",
                         dateBeforeWarnThreshold && "card-correction-label"
@@ -841,8 +840,7 @@ const QueueItem = ({
                           saveState === "error" && "card-test-input__error",
                           dateBeforeWarnThreshold && "card-correction-input"
                         )}
-                        aria-labelledby="test-date-time-label"
-                        aria-label="test date"
+                        aria-label="Test date"
                         id="test-date"
                         data-testid="test-date"
                         name="test-date"
@@ -862,8 +860,7 @@ const QueueItem = ({
                           dateBeforeWarnThreshold && "card-correction-input"
                         )}
                         name={"test-time"}
-                        aria-labelledby="test-date-time-label"
-                        aria-label="test time"
+                        aria-label="Test time"
                         data-testid="test-time"
                         type="time"
                         step="60"
@@ -880,6 +877,7 @@ const QueueItem = ({
                             checked={useCurrentDateTime === "true"}
                             type="checkbox"
                             onChange={onUseCurrentDateChange}
+                            aria-label="Use current date and time"
                           />
                           <label
                             className="usa-checkbox__label margin-0 margin-right-05em"
