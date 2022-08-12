@@ -5,9 +5,12 @@ import { ToastContainer } from "react-toastify";
 import { DeviceType, SpecimenType } from "../../../generated/graphql";
 
 import ManageDeviceTypeFormContainer from "./ManageDeviceTypeFormContainer";
-import { addValue } from "./DeviceForm.test";
 
 const mockUpdateDeviceType = jest.fn();
+
+const addValue = (name: string, value: string) => {
+  userEvent.type(screen.getByLabelText(name, { exact: false }), value);
+};
 
 jest.mock("../../../generated/graphql", () => {
   return {

@@ -1,12 +1,16 @@
 import { render, screen } from "@testing-library/react";
 import userEvent from "@testing-library/user-event";
+import { ToastContainer } from "react-toastify";
 
 import { SpecimenType } from "../../../generated/graphql";
 
 import DeviceTypeFormContainer from "./DeviceTypeFormContainer";
-import { addValue } from "./DeviceForm.test";
 
 const mockCreateDeviceType = jest.fn();
+
+const addValue = (name: string, value: string) => {
+  userEvent.type(screen.getByLabelText(name, { exact: false }), value);
+};
 
 jest.mock("../../../generated/graphql", () => {
   return {
@@ -53,16 +57,28 @@ jest.mock("react-router-dom", () => {
   };
 });
 
-describe("DeviceTypeFormContainer", () => {
-  it("should show the device type form", async () => {
-    render(<DeviceTypeFormContainer />);
+let container: any;
 
-    expect(await screen.findByText("Device type")).toBeInTheDocument();
+describe("DeviceTypeFormContainer", () => {
+  beforeEach(() => {
+    container = render(
+      <>
+        <DeviceTypeFormContainer />
+        <ToastContainer
+          autoClose={5000}
+          closeButton={false}
+          limit={2}
+          position="bottom-center"
+          hideProgressBar={true}
+        />
+      </>
+    );
+  });
+  it("should render the device type form", async () => {
+    expect(container).toMatchSnapshot();
   });
 
   it("should save the new device", async () => {
-    render(<DeviceTypeFormContainer />);
-
     addValue("Device name", "Accula");
     addValue("Manufacturer", "Mesa Biotech");
     addValue("Model", "Accula SARS-Cov-2 Test*");
@@ -97,5 +113,19 @@ describe("DeviceTypeFormContainer", () => {
     await new Promise((resolve) => setTimeout(resolve, 0));
 
     await screen.findByText("Redirected to /admin");
+  });
+  it("should display error on invalid test length", async () => {
+    await new Promise((resolve) => setTimeout(resolve, 0));
+
+    addValue("Manufacturer", " LLC");
+    addValue("Model", "D");
+    userEvent.clear(screen.getByLabelText("Test length", { exact: false }));
+
+    userEvent.click(screen.getByText("Save changes"));
+
+    expect(mockCreateDeviceType).not.toHaveBeenCalled();
+    expect(
+      await screen.findByText("Failed to create device. Invalid test length")
+    ).toBeInTheDocument();
   });
 });

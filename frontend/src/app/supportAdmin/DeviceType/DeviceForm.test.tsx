@@ -3,7 +3,7 @@ import userEvent from "@testing-library/user-event";
 
 import DeviceForm from "./DeviceForm";
 
-export const addValue = (name: string, value: string) => {
+const addValue = (name: string, value: string) => {
   userEvent.type(screen.getByLabelText(name, { exact: false }), value);
 };
 
@@ -14,7 +14,7 @@ describe("create new device", () => {
     saveDeviceType = jest.fn();
     render(
       <DeviceForm
-        formTitle="Device Type"
+        formTitle="Device type"
         saveDeviceType={saveDeviceType}
         initialDevice={{
           name: "",
@@ -124,7 +124,7 @@ describe("update existing devices", () => {
     );
   });
 
-  it("renders the Manage Device Type Form Container item", () => {
+  it("renders the Device Form", () => {
     expect(container).toMatchSnapshot();
   });
 

@@ -1,6 +1,6 @@
 // Jest Snapshot v1, https://goo.gl/fbAQLP
 
-exports[`update existing devices renders the Manage Device Type Form Container item 1`] = `
+exports[`update existing devices renders the Device Form 1`] = `
 Object {
   "asFragment": [Function],
   "baseElement": <body>
