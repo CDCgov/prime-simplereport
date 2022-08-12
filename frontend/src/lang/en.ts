@@ -170,8 +170,8 @@ export const en = {
           genderHelpText:
             "This is usually the gender that is written on your original birth certificate.",
         },
-        other: {
-          heading: "Other information",
+        housingAndWork: {
+          heading: "Housing and work",
           congregateLiving: {
             heading:
               "Are you a resident in a group or shared housing facility?",

@@ -180,8 +180,8 @@ export const es: LanguageConfig = {
           genderHelpText:
             "Por lo general, este es el género que está escrito en su certificado de nacimiento original.",
         },
-        other: {
-          heading: "Información adicional",
+        housingAndWork: {
+          heading: "Trabajo y vivienda",
           congregateLiving: {
             heading:
               "¿Reside usted en un entorno compartido por muchas personas?",
