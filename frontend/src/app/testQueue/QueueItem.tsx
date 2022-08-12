@@ -825,6 +825,7 @@ const QueueItem = ({
 
                   <div className="desktop:grid-col-fill flex-col-container">
                     <div
+                      id="test-date-time-label"
                       className={classnames(
                         saveState === "error" && "queue-item-error-message",
                         dateBeforeWarnThreshold && "card-correction-label"
@@ -840,6 +841,8 @@ const QueueItem = ({
                           saveState === "error" && "card-test-input__error",
                           dateBeforeWarnThreshold && "card-correction-input"
                         )}
+                        aria-labelledby="test-date-time-label"
+                        aria-label="test date"
                         id="test-date"
                         data-testid="test-date"
                         name="test-date"
@@ -859,6 +862,8 @@ const QueueItem = ({
                           dateBeforeWarnThreshold && "card-correction-input"
                         )}
                         name={"test-time"}
+                        aria-labelledby="test-date-time-label"
+                        aria-label="test time"
                         data-testid="test-time"
                         type="time"
                         step="60"
