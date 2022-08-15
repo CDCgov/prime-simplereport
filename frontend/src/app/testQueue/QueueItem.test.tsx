@@ -1003,7 +1003,7 @@ describe("QueueItem", () => {
     beforeEach(() => {
       jest.spyOn(flaggedMock, "useFeature").mockReturnValue(true);
 
-      const selectedTestResults: SRMultiplexResult[] = [
+      const selectedTestResults: MultiplexResult[] = [
         {
           disease: { name: "COVID-19" },
           testResult: "POSITIVE",

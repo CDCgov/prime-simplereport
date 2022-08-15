@@ -7,15 +7,11 @@ interface DiseaseName {
   };
 }
 
-interface SRMultiplexResult extends DiseaseName {
+interface MultiplexResult extends DiseaseName {
   testResult: TestResult;
 }
 
-interface PxpMultiplexResult extends DiseaseName {
-  result: TestResult;
-}
-
-type MultiplexResult = SRMultiplexResult | PxpMultiplexResult;
+// type MultiplexResult = MultiplexResult; //TODO-G What's up with interface vs type
 type MultiplexResults = MultiplexResult[];
 
 type FilterParams = {

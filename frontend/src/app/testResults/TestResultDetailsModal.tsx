@@ -17,7 +17,7 @@ import { formatDateWithTimeOption } from "../utils/date";
 type Result = {
   dateTested: string;
   result: TestResult;
-  results: SRMultiplexResult[];
+  results: MultiplexResult[];
   correctionStatus: TestCorrectionStatus;
   noSymptoms: boolean;
   symptoms: string;

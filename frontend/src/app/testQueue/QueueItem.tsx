@@ -105,7 +105,7 @@ export const findResultByDiseaseName = (
   null;
 
 const convertFromMultiplexResponse = (
-  responseResult: SRMultiplexResult[]
+  responseResult: MultiplexResult[]
 ): DiseaseResult[] => {
   const diseaseResults: DiseaseResult[] = responseResult.map((result) => ({
     diseaseName: result.disease.name,
@@ -133,7 +133,7 @@ export interface QueueItemProps {
   selectedDeviceId: string;
   selectedDeviceSpecimenTypeId: string;
   selectedDeviceTestLength: number;
-  selectedTestResults: SRMultiplexResult[];
+  selectedTestResults: MultiplexResult[];
   dateTestedProp: string;
   refetchQueue: () => void;
   facilityName: string | undefined;
