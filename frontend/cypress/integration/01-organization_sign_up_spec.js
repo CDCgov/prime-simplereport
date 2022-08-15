@@ -1,5 +1,3 @@
-const faker = require("faker");
-
 const { loginHooks } = require("../support");
 
 describe("Organization sign up", () => {
