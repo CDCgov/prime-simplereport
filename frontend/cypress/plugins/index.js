@@ -65,6 +65,35 @@ module.exports = (on, _config) => {
       const wm = spawn("./cypress/support/wiremock/start-wiremock.sh", [
         stubDir,
       ]);
+      let scriptOutput = "";
+      wm.stdout.setEncoding("utf8");
+      wm.stdout.on("data", function (data) {
+        //Here is where the output goes
+
+        console.log("stdout: " + data);
+
+        data = data.toString();
+        scriptOutput += data;
+      });
+
+      wm.stderr.setEncoding("utf8");
+      wm.stderr.on("data", function (data) {
+        //Here is where the error output goes
+
+        console.log("stderr: " + data);
+
+        data = data.toString();
+        scriptOutput += data;
+      });
+
+      wm.on("close", function (code) {
+        //Here you can get the exit code of the script
+
+        console.log("closing code: " + code);
+
+        console.log("Full output of script: ", scriptOutput);
+      });
+
       execSync("./cypress/support/wiremock/ping-wiremock.sh");
       global.wm = wm;
       return null;
