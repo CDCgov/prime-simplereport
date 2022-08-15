@@ -2,7 +2,7 @@
   "id" : "490abe65-91be-420d-81a7-e8984d89db85",
   "name" : "api_v1_groups_search",
   "request" : {
-    "urlPattern" : "/api/v1/groups\\?search=profile.name+sw+%22SR-DEV-TENANT%3ACA-Beach-Camp-.*",
+    "urlPathPattern" : "/api/v1/groups/?search=profile.name+sw+%22SR-DEV-TENANT%3ACA-Beach-Camp-.*",
     "method" : "GET"
   },
   "response" : {
