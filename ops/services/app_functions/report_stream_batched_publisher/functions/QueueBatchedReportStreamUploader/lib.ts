@@ -1,11 +1,12 @@
 import { Context } from "@azure/functions";
 import {
   DequeuedMessageItem,
-  QueueClient, QueueDeleteMessageResponse,
+  QueueClient,
+  QueueDeleteMessageResponse,
   QueueServiceClient,
   StorageSharedKeyCredential,
 } from "@azure/storage-queue";
-import * as csvStringify from "csv-stringify/lib/sync";
+import csvStringify from "csv-stringify"
 import { ENV, uploaderVersion } from "../config";
 import fetch, { Headers } from "node-fetch";
 import {
@@ -164,22 +165,26 @@ export async function deleteSuccessfullyParsedMessages(
     ));
   }
 
-  Promise.allSettled(deletionPromises).then(promiseValues => {
+  try {
+    const promiseValues = await Promise.allSettled(deletionPromises);
     for (let i = 0; i < promiseValues.length; i++) {
       const promise = promiseValues[i];
       const message = messages[i];
-      if(promise.status == "rejected"){
-        console.log(`Failed to delete message ${message.messageId} from the queue:`)
-      } else {
+      if (promise.status == "fulfilled") {
         const deleteResponse = promise.value;
         const testEventId = JSON.parse(message.messageText)['Result_ID'];
         context.log(
           `Message ${message.messageId} deleted with request id ${deleteResponse.requestId} and has TestEvent id ${testEventId}`
         );
+      } else {
+        console.log(`Failed to delete message ${message.messageId} from the queue:`)
       }
     }
-  })
-
+  } catch (e){
+    console.log(
+      `The following error has occurred: ${e}`
+    );
+  }
   context.log("Deletion complete");
 }
 

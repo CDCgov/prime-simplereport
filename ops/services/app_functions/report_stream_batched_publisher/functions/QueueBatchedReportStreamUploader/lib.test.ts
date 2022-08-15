@@ -186,13 +186,16 @@ describe("lib", () => {
       } as any; 
       const messages: DequeuedMessageItem[] = [{
         messageId: '1234',
-        popReceipt: 'abcd'
+        popReceipt: 'abcd',
+        messageText: '{"Result_ID" : 1}'
       },{
         messageId: '1234',
-        popReceipt: 'abcd'
+        popReceipt: 'abcd',
+        messageText: '{"Result_ID" : 2}'
       },{
         messageId: '1234',
-        popReceipt: 'abcd'
+        popReceipt: 'abcd',
+        messageText: '{"Result_ID" : 3}'
       }] as any;
 
       // WHEN
@@ -209,13 +212,16 @@ describe("lib", () => {
       } as any; 
       const messages: DequeuedMessageItem[] = [{
         messageId: 'apple',
-        popReceipt: 'abcd'
+        popReceipt: 'abcd',
+        messageText: '{"Result_ID" : 11}'
       },{
         messageId: 'banana',
-        popReceipt: 'abcd'
+        popReceipt: 'abcd',
+        messageText: '{"Result_ID" : 22}'
       },{
         messageId: 'grape',
-        popReceipt: 'abcd'
+        popReceipt: 'abcd',
+        messageText: '{"Result_ID" : 33}'
       }] as any;
       const parseFailure = {
         'grape': true
