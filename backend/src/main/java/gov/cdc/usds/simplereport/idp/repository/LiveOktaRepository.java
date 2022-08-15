@@ -154,21 +154,16 @@ public class LiveOktaRepository implements OktaRepository {
             .map(f -> generateFacilityGroupName(organizationExternalId, f.getInternalId()))
             .collect(Collectors.toSet()));
 
-    var orgGroups =
-        Stream.concat(
-                _client
-                    .listGroups(
-                        null,
-                        "profile.name sw \""
-                            + generateGroupOrgPrefix(organizationExternalId)
-                            + "\"",
-                        null)
-                    .stream(),
-                _client
-                    .listGroups(generateGroupOrgPrefix(organizationExternalId), null, null)
-                    .stream())
-            .distinct()
-            .collect(Collectors.toList());
+    var searchResults =
+        _client
+            .listGroups(
+                null,
+                "profile.name sw \"" + generateGroupOrgPrefix(organizationExternalId) + "\"",
+                null)
+            .stream();
+    var qResults =
+        _client.listGroups(generateGroupOrgPrefix(organizationExternalId), null, null).stream();
+    var orgGroups = Stream.concat(searchResults, qResults).distinct().collect(Collectors.toList());
     isEmpty(
         orgGroups.stream(),
         String.format(
