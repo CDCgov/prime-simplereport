@@ -11,11 +11,24 @@ import i18n from "../../i18n";
 export const DATE_FORMAT_MM_DD_YYYY =
   "^([0-9]{1,2}/[0-9]{1,2}/[0-9]{4})|([0-9]{1,2}-[0-9]{1,2}-[0-9]{4})|([0-9]{8})$";
 
+export enum MULTIPLEX_DISEASES {
+  COVID_19 = "COVID-19",
+  FLU_A = "Flu A",
+  FLU_B = "Flu B",
+}
+
+export enum TEST_RESULTS {
+  POSITIVE = "POSITIVE",
+  NEGATIVE = "NEGATIVE",
+  UNDETERMINED = "UNDETERMINED",
+  UNKNOWN = "UNKNOWN",
+}
+
 export const COVID_RESULTS: { [key: string]: TestResult } = {
-  POSITIVE: "POSITIVE",
-  NEGATIVE: "NEGATIVE",
-  INCONCLUSIVE: "UNDETERMINED",
-  UNKNOWN: "UNKNOWN",
+  POSITIVE: TEST_RESULTS.POSITIVE,
+  NEGATIVE: TEST_RESULTS.NEGATIVE,
+  INCONCLUSIVE: TEST_RESULTS.UNDETERMINED,
+  UNKNOWN: TEST_RESULTS.UNKNOWN,
 };
 
 const testResultDescriptions = (t: TFunction): Record<TestResult, string> => {
