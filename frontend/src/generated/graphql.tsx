@@ -101,11 +101,6 @@ export type DeviceType = {
   testLength?: Maybe<Scalars["Int"]>;
 };
 
-export type MultiplexResultInput = {
-  diseaseName?: InputMaybe<Scalars["String"]>;
-  testResult?: InputMaybe<Scalars["String"]>;
-};
-
 export type Facility = {
   __typename?: "Facility";
   address?: Maybe<AddressInfo>;
@@ -142,6 +137,11 @@ export type MultiplexResult = {
   __typename?: "MultiplexResult";
   disease?: Maybe<SupportedDisease>;
   testResult?: Maybe<Scalars["String"]>;
+};
+
+export type MultiplexResultInput = {
+  diseaseName?: InputMaybe<Scalars["String"]>;
+  testResult?: InputMaybe<Scalars["String"]>;
 };
 
 export type Mutation = {
