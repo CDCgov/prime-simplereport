@@ -148,6 +148,7 @@ const ManageEmails: React.FC<Props> = ({
               <div className="flex-align-self-end">
                 <button
                   className="usa-button--unstyled padding-105 height-5"
+                  data-testid={`delete-email-${idx}`}
                   onClick={() => onEmailRemove(idx)}
                   aria-label={`Delete email ${email}`.trim()}
                 >
