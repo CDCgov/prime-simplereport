@@ -17,7 +17,7 @@ public class FlexibleDateCoercion implements Coercing<Object, Object> {
       DateTimeFormatter.ofPattern("M/d/yy");
   private static final int CENTURY = 100;
 
-  LocalDate convertImpl(Object input) {
+  public LocalDate convertImpl(Object input) {
     if (input instanceof String) {
       if (((String) input).contains("/")) {
         String[] dateParts = ((String) input).split("/");
