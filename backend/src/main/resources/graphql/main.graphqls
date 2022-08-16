@@ -263,7 +263,7 @@ type MultiplexResult {
 }
 
 input MultiplexResultInput {
-  diseaseName: String #TODO-G Make this disease instead?
+  diseaseName: String
   testResult: String
 }
 
