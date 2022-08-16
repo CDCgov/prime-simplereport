@@ -145,10 +145,13 @@ exports[`TestQueue should render the test queue 1`] = `
                   </div>
                 </div>
                 <button
+                  aria-label="Start timer"
                   class="timer-button timer-reset"
                   data-testid="timer"
                 >
-                  <span>
+                  <span
+                    role="timer"
+                  >
                     10:00
                   </span>
                    
@@ -555,10 +558,13 @@ exports[`TestQueue should render the test queue 1`] = `
                   </div>
                 </div>
                 <button
+                  aria-label="Start timer"
                   class="timer-button timer-reset"
                   data-testid="timer"
                 >
-                  <span>
+                  <span
+                    role="timer"
+                  >
                     10:00
                   </span>
                    
