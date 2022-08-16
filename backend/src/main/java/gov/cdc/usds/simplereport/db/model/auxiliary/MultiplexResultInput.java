@@ -5,7 +5,7 @@ import lombok.Getter;
 
 @AllArgsConstructor
 @Getter
-public class DiseaseResult {
-  private String diseaseName;
+public class MultiplexResultInput {
+  private String diseaseName; // TODO-G Change to disease??
   private TestResult testResult;
 }

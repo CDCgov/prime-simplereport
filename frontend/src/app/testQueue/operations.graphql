@@ -7,7 +7,7 @@ mutation EditQueueItemMultiplex(
     $id: ID!
     $deviceId: String
     $deviceSpecimenType: ID
-    $results: [DiseaseResult]
+    $results: [MultiplexResultInput]
     $dateTested: DateTime
   ) {
     editQueueItemMultiplex(
@@ -45,7 +45,7 @@ mutation SubmitTestResultMultiplex(
     $patientId: ID!
     $deviceId: String!
     $deviceSpecimenType: ID
-    $results: [DiseaseResult]!
+    $results: [MultiplexResultInput]!
     $dateTested: DateTime
   ) {
     addTestResultMultiplex(

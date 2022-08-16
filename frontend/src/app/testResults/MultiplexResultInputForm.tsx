@@ -6,7 +6,7 @@ import { COVID_RESULTS, TEST_RESULT_DESCRIPTIONS } from "../constants";
 import { findResultByDiseaseName } from "../testQueue/QueueItem";
 import { TextWithTooltip } from "../commonComponents/TextWithTooltip";
 import Checkboxes from "../commonComponents/Checkboxes";
-import { DiseaseResult } from "../../generated/graphql";
+import { MultiplexResultInput } from "../../generated/graphql";
 
 const MULTIPLEX_DISEASE_TYPE = {
   COVID: "COVID-19" as MultiplexDisease,
@@ -26,8 +26,8 @@ interface MultiplexResultState {
   fluB: TestResult;
 }
 
-const convertFromDiseaseResults = (
-  diseaseResults: DiseaseResult[]
+const convertFromMultiplexResultInputs = (
+  diseaseResults: MultiplexResultInput[]
 ): MultiplexResultState => {
   const multiplexResult: MultiplexResultState = {
     covid:
@@ -72,7 +72,7 @@ const convertFromMultiplexResult = (
  */
 interface Props {
   queueItemId: string;
-  testResults: DiseaseResult[];
+  testResults: MultiplexResultInput[];
   isSubmitDisabled?: boolean;
   onChange: (value: MultiplexResult[]) => void;
   onSubmit: () => void;
@@ -87,7 +87,7 @@ const MultiplexResultInputForm: React.FC<Props> = ({
 }) => {
   //eslint-disable-next-line no-restricted-globals
   const isMobile = screen.width <= 600;
-  const resultsMultiplexFormat: MultiplexResultState = convertFromDiseaseResults(
+  const resultsMultiplexFormat: MultiplexResultState = convertFromMultiplexResultInputs(
     testResults
   );
   const inconclusiveCheck =
@@ -98,7 +98,7 @@ const MultiplexResultInputForm: React.FC<Props> = ({
   /**
    * Handle Setting Results
    */
-  const setDiseaseResult = (
+  const setMultiplexResultInput = (
     diseaseName: "covid" | "fluA" | "fluB",
     value: TestResult
   ) => {
@@ -173,7 +173,7 @@ const MultiplexResultInputForm: React.FC<Props> = ({
             legend="COVID-19 result"
             legendSrOnly
             onChange={(value) => {
-              setDiseaseResult("covid", value);
+              setMultiplexResultInput("covid", value);
             }}
             buttons={[
               {
@@ -197,7 +197,7 @@ const MultiplexResultInputForm: React.FC<Props> = ({
             legend="Flu A result"
             legendSrOnly
             onChange={(value) => {
-              setDiseaseResult("fluA", value);
+              setMultiplexResultInput("fluA", value);
             }}
             buttons={[
               {
@@ -221,7 +221,7 @@ const MultiplexResultInputForm: React.FC<Props> = ({
             legend="Flu B result"
             legendSrOnly
             onChange={(value) => {
-              setDiseaseResult("fluB", value);
+              setMultiplexResultInput("fluB", value);
             }}
             buttons={[
               {

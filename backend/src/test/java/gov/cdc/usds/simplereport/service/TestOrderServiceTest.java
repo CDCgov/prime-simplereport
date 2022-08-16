@@ -27,14 +27,7 @@ import gov.cdc.usds.simplereport.db.model.Person;
 import gov.cdc.usds.simplereport.db.model.Result;
 import gov.cdc.usds.simplereport.db.model.TestEvent;
 import gov.cdc.usds.simplereport.db.model.TestOrder;
-import gov.cdc.usds.simplereport.db.model.auxiliary.AskOnEntrySurvey;
-import gov.cdc.usds.simplereport.db.model.auxiliary.DiseaseResult;
-import gov.cdc.usds.simplereport.db.model.auxiliary.OrderStatus;
-import gov.cdc.usds.simplereport.db.model.auxiliary.PersonName;
-import gov.cdc.usds.simplereport.db.model.auxiliary.PersonRole;
-import gov.cdc.usds.simplereport.db.model.auxiliary.TestCorrectionStatus;
-import gov.cdc.usds.simplereport.db.model.auxiliary.TestResult;
-import gov.cdc.usds.simplereport.db.model.auxiliary.TestResultDeliveryPreference;
+import gov.cdc.usds.simplereport.db.model.auxiliary.*;
 import gov.cdc.usds.simplereport.db.repository.ResultRepository;
 import gov.cdc.usds.simplereport.db.repository.TestEventRepository;
 import gov.cdc.usds.simplereport.db.repository.TestOrderRepository;
@@ -1014,7 +1007,7 @@ class TestOrderServiceTest extends BaseServiceTest<TestOrderService> {
   void editQueueItemMultiplex_worksWithSingleResult() {
     TestOrder order = addTestToQueue();
 
-    DiseaseResult covidResult = new DiseaseResult("COVID-19", TestResult.POSITIVE);
+    MultiplexResultInput covidResult = new MultiplexResultInput("COVID-19", TestResult.POSITIVE);
 
     TestOrder updatedOrder =
         _service.editQueueItemMultiplex(
@@ -1032,9 +1025,9 @@ class TestOrderServiceTest extends BaseServiceTest<TestOrderService> {
   void editQueueItemMultiplex_worksWithMultipleResults() {
     TestOrder order = addTestToQueue();
 
-    DiseaseResult covidResult = new DiseaseResult("COVID-19", TestResult.POSITIVE);
-    DiseaseResult fluAResult = new DiseaseResult("Flu A", TestResult.NEGATIVE);
-    DiseaseResult fluBResult = new DiseaseResult("Flu B", TestResult.NEGATIVE);
+    MultiplexResultInput covidResult = new MultiplexResultInput("COVID-19", TestResult.POSITIVE);
+    MultiplexResultInput fluAResult = new MultiplexResultInput("Flu A", TestResult.NEGATIVE);
+    MultiplexResultInput fluBResult = new MultiplexResultInput("Flu B", TestResult.NEGATIVE);
 
     TestOrder updatedOrder =
         _service.editQueueItemMultiplex(
@@ -1067,9 +1060,9 @@ class TestOrderServiceTest extends BaseServiceTest<TestOrderService> {
   void addTestResultMultiplex_multipleEditsBeforeSubmissionSuccessful() {
     TestOrder order = addTestToQueue();
 
-    DiseaseResult covidResult = new DiseaseResult("COVID-19", TestResult.POSITIVE);
-    DiseaseResult fluAResult = new DiseaseResult("Flu A", TestResult.NEGATIVE);
-    DiseaseResult fluBResult = new DiseaseResult("Flu B", TestResult.NEGATIVE);
+    MultiplexResultInput covidResult = new MultiplexResultInput("COVID-19", TestResult.POSITIVE);
+    MultiplexResultInput fluAResult = new MultiplexResultInput("Flu A", TestResult.NEGATIVE);
+    MultiplexResultInput fluBResult = new MultiplexResultInput("Flu B", TestResult.NEGATIVE);
 
     _service.editQueueItemMultiplex(
         order.getInternalId(),
@@ -1077,7 +1070,8 @@ class TestOrderServiceTest extends BaseServiceTest<TestOrderService> {
         List.of(covidResult, fluAResult, fluBResult),
         convertDate(LocalDateTime.of(2022, 6, 5, 10, 10, 10, 10)));
 
-    DiseaseResult updatedCovidResult = new DiseaseResult("COVID-19", TestResult.NEGATIVE);
+    MultiplexResultInput updatedCovidResult =
+        new MultiplexResultInput("COVID-19", TestResult.NEGATIVE);
     TestOrder updatedOrder =
         _service.editQueueItemMultiplex(
             order.getInternalId(),
@@ -1105,7 +1099,7 @@ class TestOrderServiceTest extends BaseServiceTest<TestOrderService> {
     AddTestResultResponse response =
         _service.addTestResultMultiplex(
             order.getDeviceSpecimen().getInternalId(),
-            List.of(new DiseaseResult("COVID-19", TestResult.POSITIVE)),
+            List.of(new MultiplexResultInput("COVID-19", TestResult.POSITIVE)),
             order.getPatient().getInternalId(),
             convertDate(LocalDateTime.of(2022, 6, 5, 10, 10, 10, 10)));
 
@@ -1116,7 +1110,7 @@ class TestOrderServiceTest extends BaseServiceTest<TestOrderService> {
     AddTestResultResponse correctedResponse =
         _service.addTestResultMultiplex(
             order.getDeviceSpecimen().getInternalId(),
-            List.of(new DiseaseResult("COVID-19", TestResult.NEGATIVE)),
+            List.of(new MultiplexResultInput("COVID-19", TestResult.NEGATIVE)),
             order.getPatient().getInternalId(),
             convertDate(LocalDateTime.of(2022, 6, 5, 10, 10, 10, 10)));
 
@@ -1133,11 +1127,11 @@ class TestOrderServiceTest extends BaseServiceTest<TestOrderService> {
   @WithSimpleReportOrgAdminUser
   void multiplexMutations_multiplexCorrectionSuccessful() {
 
-    List<DiseaseResult> originalResults =
+    List<MultiplexResultInput> originalResults =
         List.of(
-            new DiseaseResult("COVID-19", TestResult.NEGATIVE),
-            new DiseaseResult("Flu A", TestResult.POSITIVE),
-            new DiseaseResult("Flu B", TestResult.NEGATIVE));
+            new MultiplexResultInput("COVID-19", TestResult.NEGATIVE),
+            new MultiplexResultInput("Flu A", TestResult.POSITIVE),
+            new MultiplexResultInput("Flu B", TestResult.NEGATIVE));
 
     TestOrder order = addTestToQueue();
     AddTestResultResponse response =
@@ -1151,11 +1145,11 @@ class TestOrderServiceTest extends BaseServiceTest<TestOrderService> {
 
     _service.markAsCorrection(originalEvent.getInternalId(), "Incorrect result");
 
-    List<DiseaseResult> correctedResults =
+    List<MultiplexResultInput> correctedResults =
         List.of(
-            new DiseaseResult("COVID-19", TestResult.NEGATIVE),
-            new DiseaseResult("Flu A", TestResult.NEGATIVE),
-            new DiseaseResult("Flu B", TestResult.NEGATIVE));
+            new MultiplexResultInput("COVID-19", TestResult.NEGATIVE),
+            new MultiplexResultInput("Flu A", TestResult.NEGATIVE),
+            new MultiplexResultInput("Flu B", TestResult.NEGATIVE));
 
     AddTestResultResponse correctedResponse =
         _service.addTestResultMultiplex(
@@ -1176,11 +1170,11 @@ class TestOrderServiceTest extends BaseServiceTest<TestOrderService> {
   @Test
   @WithSimpleReportOrgAdminUser
   void multiplexMutations_removalSuccessful() {
-    List<DiseaseResult> originalResults =
+    List<MultiplexResultInput> originalResults =
         List.of(
-            new DiseaseResult("COVID-19", TestResult.NEGATIVE),
-            new DiseaseResult("Flu A", TestResult.POSITIVE),
-            new DiseaseResult("Flu B", TestResult.NEGATIVE));
+            new MultiplexResultInput("COVID-19", TestResult.NEGATIVE),
+            new MultiplexResultInput("Flu A", TestResult.POSITIVE),
+            new MultiplexResultInput("Flu B", TestResult.NEGATIVE));
 
     TestOrder order = addTestToQueue();
     AddTestResultResponse response =

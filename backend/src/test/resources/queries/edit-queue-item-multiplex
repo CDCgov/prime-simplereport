@@ -1,4 +1,4 @@
-mutation EditQueueItemMultiplex($id: ID!, $deviceId: String, $results: [DiseaseResult], $dateTested: DateTime) {
+mutation EditQueueItemMultiplex($id: ID!, $deviceId: String, $results: [MultiplexResultInput], $dateTested: DateTime) {
     editQueueItemMultiplex(
       id: $id,
       deviceId: $deviceId,

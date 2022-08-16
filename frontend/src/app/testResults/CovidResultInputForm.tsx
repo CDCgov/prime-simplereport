@@ -4,36 +4,38 @@ import RadioGroup from "../commonComponents/RadioGroup";
 import Button from "../commonComponents/Button/Button";
 import { COVID_RESULTS, TEST_RESULT_DESCRIPTIONS } from "../constants";
 import { findResultByDiseaseName } from "../testQueue/QueueItem";
-import { DiseaseResult } from "../../generated/graphql";
+import { MultiplexResultInput } from "../../generated/graphql";
 
 interface CovidResult {
   diseaseName: "COVID-19";
   testResult: TestResult;
 }
 
-const convertFromDiseaseResults = (
-  diseaseResults: DiseaseResult[]
+const convertFromMultiplexResultInputs = (
+  multiplexResultInputs: MultiplexResultInput[]
 ): TestResult => {
   const covidResult: TestResult =
-    (findResultByDiseaseName(diseaseResults ?? [], "COVID-19") as TestResult) ??
-    "UNKNOWN";
+    (findResultByDiseaseName(
+      multiplexResultInputs ?? [],
+      "COVID-19"
+    ) as TestResult) ?? "UNKNOWN";
   return covidResult;
 };
 
 const convertFromCovidResult = (covidResult: TestResult): CovidResult[] => {
-  const diseaseResults: CovidResult[] = [
+  const covidResults: CovidResult[] = [
     {
       diseaseName: "COVID-19",
       testResult: covidResult,
     },
   ];
 
-  return diseaseResults.filter((result) => result.testResult !== "UNKNOWN");
+  return covidResults.filter((result) => result.testResult !== "UNKNOWN");
 };
 
 interface Props {
   queueItemId: string;
-  testResults: DiseaseResult[];
+  testResults: MultiplexResultInput[];
   isSubmitDisabled?: boolean;
   onChange: (value: CovidResult[]) => void;
   onSubmit: () => void;
@@ -46,7 +48,7 @@ const CovidResultInputForm: React.FC<Props> = ({
   onSubmit,
   onChange,
 }) => {
-  const resultCovidFormat = convertFromDiseaseResults(testResults);
+  const resultCovidFormat = convertFromMultiplexResultInputs(testResults);
   const allowSubmit =
     resultCovidFormat && resultCovidFormat !== "UNKNOWN" && !isSubmitDisabled;
 

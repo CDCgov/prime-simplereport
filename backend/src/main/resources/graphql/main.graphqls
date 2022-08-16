@@ -262,6 +262,11 @@ type MultiplexResult {
   testResult: String
 }
 
+input MultiplexResultInput {
+  diseaseName: String #TODO-G Make this disease instead?
+  testResult: String
+}
+
 type OrganizationLevelDashboardMetrics {
   organizationPositiveTestCount: Int
   organizationNegativeTestCount: Int
@@ -331,11 +336,6 @@ type FeedbackMessage {
 type UploadSubmissionPage {
   totalElements: Int!
   content: [UploadResult!]!
-}
-
-input DiseaseResult {
-  diseaseName: String
-  testResult: String
 }
 
 # Queries and mutations for everyday use
@@ -650,7 +650,7 @@ type Mutation {
   addTestResultMultiplex(
     deviceId: String!
     deviceSpecimenType: ID
-    results: [DiseaseResult]!
+    results: [MultiplexResultInput]!
     patientId: ID!
     dateTested: DateTime
   ): AddTestResultResponse @requiredPermissions(allOf: ["SUBMIT_TEST"])
@@ -665,7 +665,7 @@ type Mutation {
     id: ID!
     deviceId: String
     deviceSpecimenType: ID
-    results: [DiseaseResult]
+    results: [MultiplexResultInput]
     dateTested: DateTime
   ): TestOrder @requiredPermissions(allOf: ["UPDATE_TEST"])
   correctTestMarkAsError(id: ID!, reason: String): TestResult

@@ -101,7 +101,7 @@ export type DeviceType = {
   testLength?: Maybe<Scalars["Int"]>;
 };
 
-export type DiseaseResult = {
+export type MultiplexResultInput = {
   diseaseName?: InputMaybe<Scalars["String"]>;
   testResult?: InputMaybe<Scalars["String"]>;
 };
@@ -292,7 +292,7 @@ export type MutationAddTestResultMultiplexArgs = {
   deviceId: Scalars["String"];
   deviceSpecimenType?: InputMaybe<Scalars["ID"]>;
   patientId: Scalars["ID"];
-  results: Array<InputMaybe<DiseaseResult>>;
+  results: Array<InputMaybe<MultiplexResultInput>>;
 };
 
 export type MutationAddTestResultNewArgs = {
@@ -422,7 +422,7 @@ export type MutationEditQueueItemMultiplexArgs = {
   deviceId?: InputMaybe<Scalars["String"]>;
   deviceSpecimenType?: InputMaybe<Scalars["ID"]>;
   id: Scalars["ID"];
-  results?: InputMaybe<Array<InputMaybe<DiseaseResult>>>;
+  results?: InputMaybe<Array<InputMaybe<MultiplexResultInput>>>;
 };
 
 export type MutationMarkFacilityAsDeletedArgs = {
@@ -2141,7 +2141,7 @@ export type EditQueueItemMultiplexMutationVariables = Exact<{
   deviceId?: InputMaybe<Scalars["String"]>;
   deviceSpecimenType?: InputMaybe<Scalars["ID"]>;
   results?: InputMaybe<
-    Array<InputMaybe<DiseaseResult>> | InputMaybe<DiseaseResult>
+    Array<InputMaybe<MultiplexResultInput>> | InputMaybe<MultiplexResultInput>
   >;
   dateTested?: InputMaybe<Scalars["DateTime"]>;
 }>;
@@ -2197,7 +2197,9 @@ export type SubmitTestResultMultiplexMutationVariables = Exact<{
   patientId: Scalars["ID"];
   deviceId: Scalars["String"];
   deviceSpecimenType?: InputMaybe<Scalars["ID"]>;
-  results: Array<InputMaybe<DiseaseResult>> | InputMaybe<DiseaseResult>;
+  results:
+    | Array<InputMaybe<MultiplexResultInput>>
+    | InputMaybe<MultiplexResultInput>;
   dateTested?: InputMaybe<Scalars["DateTime"]>;
 }>;
 
@@ -6084,7 +6086,7 @@ export const EditQueueItemMultiplexDocument = gql`
     $id: ID!
     $deviceId: String
     $deviceSpecimenType: ID
-    $results: [DiseaseResult]
+    $results: [MultiplexResultInput]
     $dateTested: DateTime
   ) {
     editQueueItemMultiplex(
@@ -6169,7 +6171,7 @@ export const SubmitTestResultMultiplexDocument = gql`
     $patientId: ID!
     $deviceId: String!
     $deviceSpecimenType: ID
-    $results: [DiseaseResult]!
+    $results: [MultiplexResultInput]!
     $dateTested: DateTime
   ) {
     addTestResultMultiplex(

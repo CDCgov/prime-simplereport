@@ -11,7 +11,6 @@ interface MultiplexResult extends DiseaseName {
   testResult: TestResult;
 }
 
-// type MultiplexResult = MultiplexResult; //TODO-G What's up with interface vs type
 type MultiplexResults = MultiplexResult[];
 
 type FilterParams = {

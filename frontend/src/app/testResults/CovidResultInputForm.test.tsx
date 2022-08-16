@@ -2,12 +2,12 @@ import React from "react";
 import { render, screen } from "@testing-library/react";
 import userEvent from "@testing-library/user-event";
 
-import { DiseaseResult } from "../../generated/graphql";
+import { MultiplexResultInput } from "../../generated/graphql";
 
 import CovidResultInputForm from "./CovidResultInputForm";
 
 describe("TestResultInputForm", () => {
-  const positiveResult: DiseaseResult[] = [
+  const positiveResult: MultiplexResultInput[] = [
     {
       diseaseName: "COVID-19",
       testResult: "POSITIVE",

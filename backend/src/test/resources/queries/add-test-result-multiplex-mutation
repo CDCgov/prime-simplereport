@@ -1,4 +1,4 @@
-mutation addTestResultMultiplex($deviceId: String!, $results: [DiseaseResult]!, $patientId: ID!, $dateTested: DateTime) {
+mutation addTestResultMultiplex($deviceId: String!, $results: [MultiplexResultInput]!, $patientId: ID!, $dateTested: DateTime) {
     addTestResultMultiplex(
       patientId: $patientId,
       deviceId: $deviceId,

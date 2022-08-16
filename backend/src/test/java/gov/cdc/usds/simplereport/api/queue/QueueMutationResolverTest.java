@@ -10,7 +10,7 @@ import com.google.i18n.phonenumbers.NumberParseException;
 import gov.cdc.usds.simplereport.db.model.DeviceSpecimenType;
 import gov.cdc.usds.simplereport.db.model.DeviceType;
 import gov.cdc.usds.simplereport.db.model.Organization;
-import gov.cdc.usds.simplereport.db.model.auxiliary.DiseaseResult;
+import gov.cdc.usds.simplereport.db.model.auxiliary.MultiplexResultInput;
 import gov.cdc.usds.simplereport.db.model.auxiliary.TestResult;
 import gov.cdc.usds.simplereport.service.BaseServiceTest;
 import gov.cdc.usds.simplereport.service.DeviceTypeService;
@@ -76,8 +76,8 @@ class QueueMutationResolverTest extends BaseServiceTest<TestOrderService> {
     var testOrderService = mock(TestOrderService.class);
     var queueMutationResolver =
         new QueueMutationResolver(testOrderService, personService, deviceTypeService);
-    List<DiseaseResult> results = new ArrayList<>();
-    results.add(new DiseaseResult(_diseaseService.covid().getName(), TestResult.POSITIVE));
+    List<MultiplexResultInput> results = new ArrayList<>();
+    results.add(new MultiplexResultInput(_diseaseService.covid().getName(), TestResult.POSITIVE));
     UUID deviceUUID = _deviceType.getInternalId();
     String deviceId = deviceUUID.toString();
     UUID deviceSpecimenTypeUUID = _deviceSpecimenType.getInternalId();
