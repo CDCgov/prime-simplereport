@@ -1,10 +1,13 @@
 package gov.cdc.usds.simplereport.api.directives;
 
+import static gov.cdc.usds.simplereport.logging.AuditLoggingInstrumentation.SUBJECT_KEY;
+
 import gov.cdc.usds.simplereport.api.model.errors.IllegalGraphqlArgumentException;
 import gov.cdc.usds.simplereport.api.model.errors.IllegalGraphqlFieldAccessException;
 import gov.cdc.usds.simplereport.config.GraphQlSchemaDirectiveConfig;
 import gov.cdc.usds.simplereport.config.authorization.SiteAdminPrincipal;
 import gov.cdc.usds.simplereport.config.authorization.UserPermission;
+import graphql.GraphQLContext;
 import graphql.execution.DataFetcherResult;
 import graphql.execution.ResultPath;
 import graphql.schema.DataFetcher;
@@ -30,9 +33,6 @@ import java.util.Set;
 import java.util.stream.Collectors;
 import javax.security.auth.Subject;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.security.core.Authentication;
-import org.springframework.security.core.GrantedAuthority;
-import org.springframework.security.core.context.SecurityContextHolder;
 
 /**
  * Wiring for a schema directive that enforces that a user must have certain permissions to traverse
@@ -124,17 +124,12 @@ public class RequiredPermissionsDirectiveWiring implements SchemaDirectiveWiring
             subject ->
                 satisfiesRequiredPermissions(
                     requiredPermissions, subject, dfe.getExecutionStepInfo().getPath()))
-        .orElse(true);
+        .orElse(false);
   }
 
   private static Optional<Subject> getSubjectFrom(DataFetchingEnvironment dfe) {
-    Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
-    Collection<? extends GrantedAuthority> authorities = authentication.getAuthorities();
-    return Optional.ofNullable(null);
-    //    return Optional.ofNullable(dfe.getContext())
-    //        .filter(GraphQLContext.class::isInstance)
-    //        .map(GraphQLContext.class::cast)
-    //        .flatMap(GraphQLContext::getSubject);
+    GraphQLContext graphQLContext = dfe.getGraphQlContext();
+    return Optional.ofNullable(graphQLContext.get(SUBJECT_KEY));
   }
 
   private static boolean satisfiesRequiredPermissions(

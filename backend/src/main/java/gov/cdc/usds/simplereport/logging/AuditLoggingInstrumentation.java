@@ -21,9 +21,6 @@ import java.util.stream.Collectors;
 import javax.security.auth.Subject;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.graphql.server.WebGraphQlRequest;
-import org.springframework.security.core.Authentication;
-import org.springframework.security.core.context.SecurityContext;
-import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Component;
 
 @Component
@@ -31,6 +28,7 @@ import org.springframework.stereotype.Component;
 public class AuditLoggingInstrumentation extends SimpleInstrumentation {
 
   public static final String WEB_GRAPHQL_REQUEST_KEY = "WebGraphQlRequest";
+  public static final String SUBJECT_KEY = "Subject";
   private final AuditService _auditService;
 
   public AuditLoggingInstrumentation(AuditService service) {
@@ -52,19 +50,17 @@ public class AuditLoggingInstrumentation extends SimpleInstrumentation {
       InstrumentationExecutionParameters parameters) {
     String executionId = parameters.getExecutionInput().getExecutionId().toString();
     log.trace("Instrumenting query executionId={} for audit", executionId);
-    SecurityContext context = SecurityContextHolder.getContext();
-    Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
     try {
       GraphQLContext graphQLContext = parameters.getGraphQLContext();
-      WebGraphQlRequest webGraphQlRequest = (WebGraphQlRequest) graphQLContext.get(WEB_GRAPHQL_REQUEST_KEY);
+      WebGraphQlRequest webGraphQlRequest = graphQLContext.get(WEB_GRAPHQL_REQUEST_KEY);
+      Subject subject = graphQLContext.get(SUBJECT_KEY);
       GraphqlQueryState state = parameters.getInstrumentationState();
       state.setRequestId(executionId);
       state.setHttpDetails(new HttpRequestDetails(webGraphQlRequest));
       state.setGraphqlDetails(
           new GraphQlInputs(
               parameters.getOperation(), parameters.getQuery(), parameters.getVariables()));
-//            return new ExecutionResultContext(state, context.getSubject().orElseThrow());
-      return null;
+      return new ExecutionResultContext(state, subject);
     } catch (Exception e) {
       // we don't 100% trust this error not to get swallowed by graphql-java
       log.error("Extremely unexpected error creating instrumentation state for audit", e);
