@@ -227,9 +227,9 @@ const ManagePhoneNumbers: React.FC<Props> = ({
             {!isPrimary && (
               <div className="flex-align-self-end">
                 <button
-                  className="usa-button--unstyled padding-105 height-5"
+                  className="usa-button--unstyled padding-105 height-5 cursor-pointer"
                   onClick={() => onPhoneNumberRemove(idx)}
-                  aria-label={`Delete phone number ${phoneNumber.number}`.trim()}
+                  aria-label={`Delete phone number ${phoneNumber.number.trim()}`}
                 >
                   <FontAwesomeIcon icon={"trash"} className={"text-error"} />
                 </button>
