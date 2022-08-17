@@ -143,6 +143,7 @@ export async function deleteSuccessfullyParsedMessages(
   parseFailure: { [k: string]: boolean }
 ) {
 
+  const validMessages: DequeuedMessageItem[] = []
   const deletionPromises: Promise<QueueDeleteMessageResponse>[] = []
 
   for (const message of messages) {
@@ -150,15 +151,17 @@ export async function deleteSuccessfullyParsedMessages(
       context.log(
         `Message ${message.messageId} failed to parse; skipping deletion`
       );
-      continue;
+    } else {
+      validMessages.push(message)
     }
+  }
 
+  for (const message of validMessages) {
     if(message.dequeueCount > 1){
       context.log(
         `Message has been dequeued ${message.dequeueCount} times, possibly sent more than once to RS`
       );
     }
-
     deletionPromises.push(queueClient.deleteMessage(
       message.messageId,
       message.popReceipt
@@ -169,7 +172,7 @@ export async function deleteSuccessfullyParsedMessages(
     const promiseValues = await Promise.allSettled(deletionPromises);
     for (let i = 0; i < promiseValues.length; i++) {
       const promise = promiseValues[i];
-      const message = messages[i];
+      const message = validMessages[i];
       if (promise.status == "fulfilled") {
         const deleteResponse = promise.value;
         const testEventId = JSON.parse(message.messageText)['Result_ID'];

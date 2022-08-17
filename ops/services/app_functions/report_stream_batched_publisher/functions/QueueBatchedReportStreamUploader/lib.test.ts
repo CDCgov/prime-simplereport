@@ -215,13 +215,13 @@ describe("lib", () => {
         popReceipt: 'abcd',
         messageText: '{"Result_ID" : 11}'
       },{
-        messageId: 'banana',
-        popReceipt: 'abcd',
-        messageText: '{"Result_ID" : 22}'
-      },{
         messageId: 'grape',
-        popReceipt: 'abcd',
+        popReceipt: 'efgh',
         messageText: '{"Result_ID" : 33}'
+      },{
+        messageId: 'banana',
+        popReceipt: 'ijkl',
+        messageText: '{"Result_ID" : 22}'
       }] as any;
       const parseFailure = {
         'grape': true
