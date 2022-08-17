@@ -1,3 +1,5 @@
+import { MULTIPLEX_DISEASES, TEST_RESULTS } from "../testResults/constants";
+
 import {
   getResultByDiseaseName,
   getResultObjByDiseaseName,
@@ -10,12 +12,24 @@ describe("getResultByDiseaseName", () => {
   describe("MultiplexResults", () => {
     let result: string;
     const results: MultiplexResult[] = [
-      { disease: { name: "COVID-19" }, testResult: "UNDETERMINED" },
-      { disease: { name: "Flu A" }, testResult: "POSITIVE" },
-      { disease: { name: "Flu B" }, testResult: "NEGATIVE" },
+      {
+        disease: { name: MULTIPLEX_DISEASES.COVID_19 },
+        testResult: TEST_RESULTS.UNDETERMINED,
+      },
+      {
+        disease: { name: MULTIPLEX_DISEASES.FLU_A },
+        testResult: TEST_RESULTS.POSITIVE,
+      },
+      {
+        disease: { name: MULTIPLEX_DISEASES.FLU_B },
+        testResult: TEST_RESULTS.NEGATIVE,
+      },
     ];
     const covidResults: MultiplexResult[] = [
-      { disease: { name: "COVID-19" }, testResult: "UNDETERMINED" },
+      {
+        disease: { name: MULTIPLEX_DISEASES.COVID_19 },
+        testResult: TEST_RESULTS.UNDETERMINED,
+      },
     ];
     it("returns UNDETERMINED if selecting COVID-19", () => {
       result = "UNDETERMINED";
@@ -39,34 +53,54 @@ describe("getResultByDiseaseName", () => {
 describe("getResultObjByDiseaseName", () => {
   describe("MultiplexResults", () => {
     let results: MultiplexResult[] = [
-      { disease: { name: "COVID-19" }, testResult: "NEGATIVE" },
-      { disease: { name: "Flu A" }, testResult: "POSITIVE" },
-      { disease: { name: "Flu B" }, testResult: "UNKNOWN" },
+      {
+        disease: { name: MULTIPLEX_DISEASES.COVID_19 },
+        testResult: TEST_RESULTS.NEGATIVE,
+      },
+      {
+        disease: { name: MULTIPLEX_DISEASES.FLU_A },
+        testResult: TEST_RESULTS.POSITIVE,
+      },
+      {
+        disease: { name: MULTIPLEX_DISEASES.FLU_B },
+        testResult: TEST_RESULTS.UNKNOWN,
+      },
     ];
     let expectedResult: MultiplexResult;
     it("returns the COVID-19 result when searching by COVID-19", () => {
       expectedResult = {
-        disease: { name: "COVID-19" },
-        testResult: "NEGATIVE",
+        disease: { name: MULTIPLEX_DISEASES.COVID_19 },
+        testResult: TEST_RESULTS.NEGATIVE,
       };
       expect(
         getResultObjByDiseaseName(results, "COVID-19" as MultiplexDisease)
       ).toEqual(expectedResult);
     });
     it("returns the Flu A result when searching by Flu A", () => {
-      expectedResult = { disease: { name: "Flu A" }, testResult: "POSITIVE" };
+      expectedResult = {
+        disease: { name: MULTIPLEX_DISEASES.FLU_A },
+        testResult: TEST_RESULTS.POSITIVE,
+      };
       expect(
         getResultObjByDiseaseName(results, "Flu A" as MultiplexDisease)
       ).toEqual(expectedResult);
     });
     it("returns the Flu B result when searching by Flu B", () => {
-      expectedResult = { disease: { name: "Flu B" }, testResult: "UNKNOWN" };
+      expectedResult = {
+        disease: { name: MULTIPLEX_DISEASES.FLU_B },
+        testResult: TEST_RESULTS.UNKNOWN,
+      };
       expect(
         getResultObjByDiseaseName(results, "Flu B" as MultiplexDisease)
       ).toEqual(expectedResult);
     });
     it("returns null when searching for a MultiplexDisease not in the results", () => {
-      results = [{ disease: { name: "COVID-19" }, testResult: "NEGATIVE" }];
+      results = [
+        {
+          disease: { name: MULTIPLEX_DISEASES.COVID_19 },
+          testResult: TEST_RESULTS.NEGATIVE,
+        },
+      ];
       expect(
         getResultObjByDiseaseName(results, "Flu B" as MultiplexDisease)
       ).toEqual(null);
@@ -77,22 +111,43 @@ describe("getResultObjByDiseaseName", () => {
 describe("getSortedResults", () => {
   describe("MultiplexResults", () => {
     let results: MultiplexResult[] = [
-      { disease: { name: "Flu B" }, testResult: "UNKNOWN" },
-      { disease: { name: "COVID-19" }, testResult: "NEGATIVE" },
-      { disease: { name: "Flu A" }, testResult: "POSITIVE" },
+      {
+        disease: { name: MULTIPLEX_DISEASES.FLU_B },
+        testResult: TEST_RESULTS.UNKNOWN,
+      },
+      {
+        disease: { name: MULTIPLEX_DISEASES.COVID_19 },
+        testResult: TEST_RESULTS.NEGATIVE,
+      },
+      {
+        disease: { name: MULTIPLEX_DISEASES.FLU_A },
+        testResult: TEST_RESULTS.POSITIVE,
+      },
     ];
     let expectedResults: MultiplexResults;
     it("returns the result in ABC order by disease name", () => {
       expectedResults = [
-        { disease: { name: "COVID-19" }, testResult: "NEGATIVE" },
-        { disease: { name: "Flu A" }, testResult: "POSITIVE" },
-        { disease: { name: "Flu B" }, testResult: "UNKNOWN" },
+        {
+          disease: { name: MULTIPLEX_DISEASES.COVID_19 },
+          testResult: TEST_RESULTS.NEGATIVE,
+        },
+        {
+          disease: { name: MULTIPLEX_DISEASES.FLU_A },
+          testResult: TEST_RESULTS.POSITIVE,
+        },
+        {
+          disease: { name: MULTIPLEX_DISEASES.FLU_B },
+          testResult: TEST_RESULTS.UNKNOWN,
+        },
       ];
       expect(getSortedResults(results)).toEqual(expectedResults);
     });
     it("returns the same array when only one result", () => {
       let results: MultiplexResult[] = [
-        { disease: { name: "Flu B" }, testResult: "UNKNOWN" },
+        {
+          disease: { name: MULTIPLEX_DISEASES.FLU_B },
+          testResult: TEST_RESULTS.UNKNOWN,
+        },
       ];
       expect(getSortedResults(results)).toEqual(results);
     });
@@ -104,14 +159,28 @@ describe("hasMultiplexResults", () => {
     let results: MultiplexResult[] = [];
     it("returns true if it contains a multiplex result", () => {
       results = [
-        { disease: { name: "COVID-19" }, testResult: "NEGATIVE" },
-        { disease: { name: "Flu A" }, testResult: "POSITIVE" },
-        { disease: { name: "Flu B" }, testResult: "POSITIVE" },
+        {
+          disease: { name: MULTIPLEX_DISEASES.COVID_19 },
+          testResult: TEST_RESULTS.NEGATIVE,
+        },
+        {
+          disease: { name: MULTIPLEX_DISEASES.FLU_A },
+          testResult: TEST_RESULTS.POSITIVE,
+        },
+        {
+          disease: { name: MULTIPLEX_DISEASES.FLU_B },
+          testResult: TEST_RESULTS.POSITIVE,
+        },
       ];
       expect(hasMultiplexResults(results)).toEqual(true);
     });
     it("returns false if it only contains one result", () => {
-      results = [{ disease: { name: "COVID-19" }, testResult: "NEGATIVE" }];
+      results = [
+        {
+          disease: { name: MULTIPLEX_DISEASES.COVID_19 },
+          testResult: TEST_RESULTS.NEGATIVE,
+        },
+      ];
       expect(hasMultiplexResults(results)).toEqual(false);
     });
     it("returns false if has no results", () => {
@@ -130,14 +199,28 @@ describe("hasPositiveFluResults", () => {
     let results: MultiplexResult[] = [];
     it("returns true if it contains a positive flu result", () => {
       results = [
-        { disease: { name: "COVID-19" }, testResult: "UNDETERMINED" },
-        { disease: { name: "Flu A" }, testResult: "POSITIVE" },
-        { disease: { name: "Flu B" }, testResult: "POSITIVE" },
+        {
+          disease: { name: MULTIPLEX_DISEASES.COVID_19 },
+          testResult: TEST_RESULTS.UNDETERMINED,
+        },
+        {
+          disease: { name: MULTIPLEX_DISEASES.FLU_A },
+          testResult: TEST_RESULTS.POSITIVE,
+        },
+        {
+          disease: { name: MULTIPLEX_DISEASES.FLU_B },
+          testResult: TEST_RESULTS.POSITIVE,
+        },
       ];
       expect(hasPositiveFluResults(results)).toEqual(true);
     });
     it("returns false if it does not contain a flu result", () => {
-      results = [{ disease: { name: "COVID-19" }, testResult: "POSITIVE" }];
+      results = [
+        {
+          disease: { name: MULTIPLEX_DISEASES.COVID_19 },
+          testResult: TEST_RESULTS.POSITIVE,
+        },
+      ];
       expect(hasPositiveFluResults(results)).toEqual(false);
     });
     it("returns false if it contains no results", () => {

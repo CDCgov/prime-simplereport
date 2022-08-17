@@ -6,12 +6,16 @@ import ReactDOM from "react-dom";
 import * as flaggedMock from "flagged";
 
 import { DetachedTestResultPrintModal } from "./TestResultPrintModal";
+import { MULTIPLEX_DISEASES, TEST_RESULTS } from "./constants";
 
 const testResult = {
   dateTested: new Date("2022-01-28T17:56:48.143Z"),
   result: "NEGATIVE",
   results: [
-    { disease: { name: "COVID-19" }, testResult: "NEGATIVE" },
+    {
+      disease: { name: MULTIPLEX_DISEASES.COVID_19 },
+      testResult: TEST_RESULTS.NEGATIVE,
+    },
   ] as MultiplexResult[],
   correctionStatus: null,
   deviceType: {
@@ -101,9 +105,18 @@ describe("TestResultPrintModal with multiplex results in SimpleReport App", () =
 
     const multiplexTestResult = cloneDeep(testResult);
     multiplexTestResult.results = [
-      { disease: { name: "Flu B" }, testResult: "POSITIVE" },
-      { disease: { name: "COVID-19" }, testResult: "POSITIVE" },
-      { disease: { name: "Flu A" }, testResult: "POSITIVE" },
+      {
+        disease: { name: MULTIPLEX_DISEASES.FLU_B },
+        testResult: TEST_RESULTS.POSITIVE,
+      },
+      {
+        disease: { name: MULTIPLEX_DISEASES.COVID_19 },
+        testResult: TEST_RESULTS.POSITIVE,
+      },
+      {
+        disease: { name: MULTIPLEX_DISEASES.FLU_A },
+        testResult: TEST_RESULTS.POSITIVE,
+      },
     ];
 
     ReactDOM.createPortal = jest.fn((element, _node) => {
@@ -142,11 +155,17 @@ describe("TestResultPrintModal with multiplex results in Pxp App", () => {
     const multiplexPxpTestResult = cloneDeep(testResult);
     multiplexPxpTestResult.results = [
       {
-        disease: { name: "COVID-19" },
-        testResult: "NEGATIVE",
+        disease: { name: MULTIPLEX_DISEASES.COVID_19 },
+        testResult: TEST_RESULTS.NEGATIVE,
       } as MultiplexResult,
-      { disease: { name: "Flu A" }, testResult: "NEGATIVE" } as MultiplexResult,
-      { disease: { name: "Flu B" }, testResult: "NEGATIVE" } as MultiplexResult,
+      {
+        disease: { name: MULTIPLEX_DISEASES.FLU_A },
+        testResult: TEST_RESULTS.NEGATIVE,
+      } as MultiplexResult,
+      {
+        disease: { name: MULTIPLEX_DISEASES.FLU_B },
+        testResult: TEST_RESULTS.NEGATIVE,
+      } as MultiplexResult,
     ];
     multiplexPxpTestResult.facility.orderingProvider.NPI = undefined;
     multiplexPxpTestResult.facility.orderingProvider.npi = "fake npi for pxp";

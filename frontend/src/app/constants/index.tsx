@@ -6,23 +6,11 @@ import {
   TestResultDeliveryPreference,
   TestResultDeliveryPreferences,
 } from "../patients/TestResultDeliveryPreference";
+import { TEST_RESULTS } from "../testResults/constants";
 import i18n from "../../i18n";
 
 export const DATE_FORMAT_MM_DD_YYYY =
   "^([0-9]{1,2}/[0-9]{1,2}/[0-9]{4})|([0-9]{1,2}-[0-9]{1,2}-[0-9]{4})|([0-9]{8})$";
-
-export enum MULTIPLEX_DISEASES {
-  COVID_19 = "COVID-19",
-  FLU_A = "Flu A",
-  FLU_B = "Flu B",
-}
-
-export enum TEST_RESULTS {
-  POSITIVE = "POSITIVE",
-  NEGATIVE = "NEGATIVE",
-  UNDETERMINED = "UNDETERMINED",
-  UNKNOWN = "UNKNOWN",
-}
 
 export const COVID_RESULTS: { [key: string]: TestResult } = {
   POSITIVE: TEST_RESULTS.POSITIVE,

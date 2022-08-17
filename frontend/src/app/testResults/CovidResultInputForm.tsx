@@ -6,8 +6,10 @@ import { COVID_RESULTS, TEST_RESULT_DESCRIPTIONS } from "../constants";
 import { findResultByDiseaseName } from "../testQueue/QueueItem";
 import { MultiplexResultInput } from "../../generated/graphql";
 
+import { MULTIPLEX_DISEASES, TEST_RESULTS } from "./constants";
+
 interface CovidResult {
-  diseaseName: "COVID-19";
+  diseaseName: MULTIPLEX_DISEASES.COVID_19;
   testResult: TestResult;
 }
 
@@ -17,20 +19,22 @@ const convertFromMultiplexResultInputs = (
   const covidResult: TestResult =
     (findResultByDiseaseName(
       multiplexResultInputs ?? [],
-      "COVID-19"
-    ) as TestResult) ?? "UNKNOWN";
+      MULTIPLEX_DISEASES.COVID_19
+    ) as TestResult) ?? TEST_RESULTS.UNKNOWN;
   return covidResult;
 };
 
 const convertFromCovidResult = (covidResult: TestResult): CovidResult[] => {
   const covidResults: CovidResult[] = [
     {
-      diseaseName: "COVID-19",
+      diseaseName: MULTIPLEX_DISEASES.COVID_19,
       testResult: covidResult,
     },
   ];
 
-  return covidResults.filter((result) => result.testResult !== "UNKNOWN");
+  return covidResults.filter(
+    (result) => result.testResult !== TEST_RESULTS.UNKNOWN
+  );
 };
 
 interface Props {
@@ -50,7 +54,9 @@ const CovidResultInputForm: React.FC<Props> = ({
 }) => {
   const resultCovidFormat = convertFromMultiplexResultInputs(testResults);
   const allowSubmit =
-    resultCovidFormat && resultCovidFormat !== "UNKNOWN" && !isSubmitDisabled;
+    resultCovidFormat &&
+    resultCovidFormat !== TEST_RESULTS.UNKNOWN &&
+    !isSubmitDisabled;
 
   const onResultSubmit = (event: React.FormEvent<HTMLButtonElement>) => {
     event.preventDefault();
