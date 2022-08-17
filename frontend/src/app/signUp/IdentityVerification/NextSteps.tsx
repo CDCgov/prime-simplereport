@@ -1,7 +1,10 @@
 import { Card } from "../../commonComponents/Card/Card";
 import { CardBackground } from "../../commonComponents/CardBackground/CardBackground";
+import { useDocumentTitle } from "../../utils/hooks";
 
 const NextSteps = () => {
+  useDocumentTitle("Sign up - schedule call | SimpleReport");
+
   return (
     <CardBackground>
       <Card logo>
