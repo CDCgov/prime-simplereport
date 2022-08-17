@@ -136,6 +136,11 @@ resource "azurerm_web_application_firewall_policy" "sr_waf_policy" {
       selector                = "phoneNumbers.number"
       selector_match_operator = "Contains"
     }
+    exclusion {
+      match_variable          = "RequestArgNames"
+      selector                = "variables.model"
+      selector_match_operator = "Equals"
+    }
 
     managed_rule_set {
       type    = "OWASP"
