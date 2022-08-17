@@ -180,11 +180,11 @@ export async function deleteSuccessfullyParsedMessages(
           `Message ${message.messageId} deleted with request id ${deleteResponse.requestId} and has TestEvent id ${testEventId}`
         );
       } else {
-        console.log(`Failed to delete message ${message.messageId} from the queue:`)
+        context.log(`Failed to delete message ${message.messageId} from the queue:`)
       }
     }
   } catch (e){
-    console.log(
+    context.log(
       `The following error has occurred: ${e}`
     );
   }

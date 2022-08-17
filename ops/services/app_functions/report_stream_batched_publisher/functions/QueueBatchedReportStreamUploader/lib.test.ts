@@ -1,5 +1,11 @@
 import { Context } from "@azure/functions";
-import { DequeuedMessageItem, QueueClient, QueueServiceClient, StorageSharedKeyCredential } from "@azure/storage-queue";
+import {
+  DequeuedMessageItem,
+  QueueClient,
+  QueueDeleteMessageResponse,
+  QueueServiceClient,
+  StorageSharedKeyCredential
+} from "@azure/storage-queue";
 import {
   deleteSuccessfullyParsedMessages,
   dequeueMessages,
@@ -208,8 +214,9 @@ describe("lib", () => {
     it("doesn't call queueClient.deleteMessage for parse failures", async () => {
       // GIVEN
       const queueClientMock: QueueClient = {
-        deleteMessage: jest.fn().mockResolvedValue(true),
-      } as any; 
+        deleteMessage: jest.fn().mockResolvedValue({requestId: "123"} as QueueDeleteMessageResponse),
+      } as any;
+
       const messages: DequeuedMessageItem[] = [{
         messageId: 'apple',
         popReceipt: 'abcd',
@@ -232,7 +239,13 @@ describe("lib", () => {
       
       // THEN
       expect(queueClientMock.deleteMessage).toHaveBeenCalledTimes(messages.length - 1);
-      expect(queueClientMock.deleteMessage).not.toHaveBeenCalledWith('grape');
+      expect(queueClientMock.deleteMessage).toHaveBeenCalledWith('apple', "abcd");
+      expect(queueClientMock.deleteMessage).toHaveBeenCalledWith('banana', "ijkl");
+      expect(queueClientMock.deleteMessage).not.toHaveBeenCalledWith('grape', "efgh");
+
+      expect(context.log).toHaveBeenCalledWith("Message grape failed to parse; skipping deletion");
+      expect(context.log).toHaveBeenCalledWith("Message apple deleted with request id 123 and has TestEvent id 11");
+      expect(context.log).toHaveBeenCalledWith("Message banana deleted with request id 123 and has TestEvent id 22");
     });
   });
 
