@@ -1,0 +1,12 @@
+{
+  "baseUrl": "http://localhost.simplereport.gov",
+  "viewportWidth": 1200,
+  "viewportHeight": 800,
+  "defaultCommandTimeout": 10000,
+  "video": true,
+  "videoUploadOnPasses": false,
+  "retries": {
+    "runMode": 2,
+    "openMode": 1
+  }
+}
