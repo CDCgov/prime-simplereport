@@ -154,6 +154,9 @@ public class LiveOktaRepository implements OktaRepository {
             .map(f -> generateFacilityGroupName(organizationExternalId, f.getInternalId()))
             .collect(Collectors.toSet()));
 
+    // Search and q results need to be combined because search results have a delay of the newest
+    // added groups. There is an open ticket for the okta sdk to investigate this issue
+    // https://github.com/okta/okta-sdk-java/issues/750
     var searchResults =
         _client
             .listGroups(
