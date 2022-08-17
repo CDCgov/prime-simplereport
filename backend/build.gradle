@@ -51,7 +51,7 @@ dependencies {
     implementation 'org.json:json:20201115'
     implementation 'com.fasterxml.jackson.dataformat:jackson-dataformat-csv'
     implementation 'com.fasterxml.jackson.datatype:jackson-datatype-hibernate5'
-    implementation 'org.springframework.boot:spring-boot-starter-thymeleaf'
+    implementation 'org.springframework.boot:spring-boot-starter-thymeleaf:2.5.8'
 
     // Okta dependencies
     implementation 'com.okta.spring:okta-spring-boot-starter:2.0.0'
