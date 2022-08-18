@@ -12,5 +12,6 @@ node_modules
 certs/
 yarn-error.log
 backend/locust/__pycache__/
-frontend/cypress.env.json
+wiremock*.jar
+cypress/cypress.env.json
 frontend/src/.env.local

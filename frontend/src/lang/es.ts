@@ -151,6 +151,7 @@ export const es: LanguageConfig = {
           addNumber: "Agregar otro número",
           addEmail: "Agregue otra dirección de correo electrónico",
           email: "Dirección de correo electrónico",
+          additionalEmail: "Dirección de correo electrónico adicional",
           country: "País",
           street1: "Dirección 1",
           street2: "Dirección 2",

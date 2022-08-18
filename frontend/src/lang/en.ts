@@ -143,6 +143,7 @@ export const en = {
           phoneType: "Phone type",
           addNumber: "Add another number",
           email: "Email address",
+          additionalEmail: "Additional email address",
           addEmail: "Add another email address",
           country: "Country",
           street1: "Street address 1",

@@ -6,7 +6,7 @@
     "@arkweid/lefthook": "^0.7.7"
   },
   "scripts": {
-    "e2e": "cd frontend; yarn e2e; cd ..",
+    "e2e": "docker rm cypress || echo \"\" && docker-compose --env-file .env -f docker-compose.yml -f docker-compose.cypress.yml up --remove-orphans --abort-on-container-exit --exit-code-from cypress && docker compose down && docker rm cypress",
     "spotless": "cd backend; ./gradlew spotlessApply; cd ..",
     "start": "./start.sh",
     "locust": "./start.sh -l",

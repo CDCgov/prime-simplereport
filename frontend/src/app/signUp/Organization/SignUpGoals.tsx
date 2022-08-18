@@ -4,6 +4,7 @@ import { Card } from "../../commonComponents/Card/Card";
 import { CardBackground } from "../../commonComponents/CardBackground/CardBackground";
 import Button from "../../commonComponents/Button/Button";
 import RadioGroup from "../../commonComponents/RadioGroup";
+import { useDocumentTitle } from "../../utils/hooks";
 
 import OrganizationForm from "./OrganizationForm";
 import RequestAccess from "./RequestAccess";
@@ -15,6 +16,7 @@ const SignUpGoals = () => {
   const [submitted, setSubmitted] = useState(false);
   const [signUpGoal, setSignUpGoal] = useState("");
   const [signUpGoalError, setSignUpGoalError] = useState("");
+  useDocumentTitle("Sign up - select status | SimpleReport");
 
   if (submitted) {
     switch (signUpGoal) {
