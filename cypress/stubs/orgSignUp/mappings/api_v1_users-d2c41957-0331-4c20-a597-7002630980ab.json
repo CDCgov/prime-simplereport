@@ -2,7 +2,7 @@
   "id" : "d2c41957-0331-4c20-a597-7002630980ab",
   "name" : "api_v1_users",
   "request" : {
-    "url" : "/api/v1/users?activate=false",
+    "url" : "/api/v1/users?activate=false&provider=false",
     "method" : "POST",
     "bodyPatterns" : [ {
       "equalToJson" : "{\"profile\":{\"firstName\":\"Greg\",\"lastName\":\"McTester\",\"login\":\"${json-unit.any-string}\",\"email\":\"${json-unit.any-string}\"},\"groupIds\":[\"00g228nyd7uuGaG1L1d7\",\"00g228nrj9QDJ10y61d7\"]}",
