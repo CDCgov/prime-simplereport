@@ -18,7 +18,7 @@ resource "azurerm_app_service" "metabase" {
 
   site_config {
     always_on        = true
-    linux_fx_version = "DOCKER|metabase/metabase"
+    linux_fx_version = "DOCKER|metabase/metabase:v0.44.1"
   }
 
   app_settings = merge(local.app_setting_defaults, {
