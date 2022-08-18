@@ -59,7 +59,7 @@ resource "azurerm_function_app" "functions" {
   storage_account_name       = data.azurerm_storage_account.app.name
   storage_account_access_key = data.azurerm_storage_account.app.primary_access_key
   https_only                 = true
-  version                    = "~3"
+  version                    = "~4"
   os_type                    = "linux"
   site_config {
     linux_fx_version          = "node|14"
