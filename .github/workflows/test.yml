@@ -152,7 +152,7 @@ jobs:
           key: ${{ runner.os }}-function-coverage-${{ github.run_id }}-${{ github.run_attempt }}
       - name: Sonar analysis
         if: ${{ github.actor != 'dependabot[bot]' }}
-        run: ./gradlew sonarqube -Dsonar.projectBaseDir=${{ env.PROJECT_ROOT }} --info || true
+        run: ./gradlew sonarqube -Dsonar.projectBaseDir=${{ env.PROJECT_ROOT }} --info
         env:
           SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }}
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
