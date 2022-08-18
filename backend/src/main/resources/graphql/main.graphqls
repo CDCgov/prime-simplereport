@@ -94,6 +94,13 @@ type SupportedDisease {
   loinc: String!
 }
 
+input CreateSpecimenType {
+  name: String!
+  typeCode: String!
+  collectionLocationName: String
+  collectionLocationCode: String
+}
+
 type SpecimenType {
   internalId: ID!
   name: String!
