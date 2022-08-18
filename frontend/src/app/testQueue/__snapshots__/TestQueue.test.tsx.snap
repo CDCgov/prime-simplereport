@@ -209,6 +209,7 @@ exports[`TestQueue should render the test queue 1`] = `
                       class="test-date-time-container"
                     >
                       <input
+                        aria-label="Test date"
                         class="card-test-input"
                         data-testid="test-date"
                         hidden=""
@@ -220,6 +221,7 @@ exports[`TestQueue should render the test queue 1`] = `
                         value="2021-08-01"
                       />
                       <input
+                        aria-label="Test time"
                         class="card-test-input"
                         data-testid="test-time"
                         hidden=""
@@ -235,6 +237,7 @@ exports[`TestQueue should render the test queue 1`] = `
                           class="usa-checkbox"
                         >
                           <input
+                            aria-label="Use current date and time"
                             checked=""
                             class="usa-checkbox__input margin"
                             id="current-date-check-abc"
@@ -622,6 +625,7 @@ exports[`TestQueue should render the test queue 1`] = `
                       class="test-date-time-container"
                     >
                       <input
+                        aria-label="Test date"
                         class="card-test-input"
                         data-testid="test-date"
                         hidden=""
@@ -633,6 +637,7 @@ exports[`TestQueue should render the test queue 1`] = `
                         value="2021-08-01"
                       />
                       <input
+                        aria-label="Test time"
                         class="card-test-input"
                         data-testid="test-time"
                         hidden=""
@@ -648,6 +653,7 @@ exports[`TestQueue should render the test queue 1`] = `
                           class="usa-checkbox"
                         >
                           <input
+                            aria-label="Use current date and time"
                             checked=""
                             class="usa-checkbox__input margin"
                             id="current-date-check-def"
