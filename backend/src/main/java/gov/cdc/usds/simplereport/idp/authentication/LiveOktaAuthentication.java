@@ -25,7 +25,6 @@ import gov.cdc.usds.simplereport.api.model.useraccountcreation.FactorAndQrCode;
 import gov.cdc.usds.simplereport.api.model.useraccountcreation.UserAccountStatus;
 import gov.cdc.usds.simplereport.config.BeanProfiles;
 import java.util.List;
-import lombok.extern.slf4j.Slf4j;
 import org.json.JSONObject;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Profile;
@@ -49,7 +48,6 @@ import org.springframework.web.client.RestTemplate;
  * https://github.com/CDCgov/prime-simplereport/issues/1848.
  */
 @Profile("!" + BeanProfiles.NO_OKTA_AUTH)
-@Slf4j
 @Service
 public class LiveOktaAuthentication implements OktaAuthentication {
   private static final String USER_API_ENDPOINT = "/api/v1/users/";
@@ -238,7 +236,6 @@ public class LiveOktaAuthentication implements OktaAuthentication {
       user.enrollFactor(callFactor);
       return callFactor.getId();
     } catch (ResourceException e) {
-      log.debug(e.toString());
       if (e.getStatus() == HttpStatus.BAD_REQUEST.value()) {
         throw new BadRequestException("Invalid phone number.", e);
       }
