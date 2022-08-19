@@ -81,6 +81,13 @@ export type CreateDeviceType = {
   swabTypes: Array<Scalars["ID"]>;
 };
 
+export type CreateSpecimenType = {
+  collectionLocationCode?: InputMaybe<Scalars["String"]>;
+  collectionLocationName?: InputMaybe<Scalars["String"]>;
+  name: Scalars["String"];
+  typeCode: Scalars["String"];
+};
+
 export type DeviceSpecimenType = {
   __typename?: "DeviceSpecimenType";
   deviceType: DeviceType;
@@ -162,6 +169,7 @@ export type Mutation = {
   createFacilityRegistrationLink?: Maybe<Scalars["String"]>;
   createOrganization?: Maybe<Organization>;
   createOrganizationRegistrationLink?: Maybe<Scalars["String"]>;
+  createSpecimenType?: Maybe<SpecimenType>;
   editPendingOrganization?: Maybe<Scalars["String"]>;
   editQueueItem?: Maybe<TestOrder>;
   editQueueItemMultiplex?: Maybe<TestOrder>;
@@ -398,6 +406,10 @@ export type MutationCreateOrganizationArgs = {
 export type MutationCreateOrganizationRegistrationLinkArgs = {
   link: Scalars["String"];
   organizationExternalId: Scalars["String"];
+};
+
+export type MutationCreateSpecimenTypeArgs = {
+  input: CreateSpecimenType;
 };
 
 export type MutationEditPendingOrganizationArgs = {
