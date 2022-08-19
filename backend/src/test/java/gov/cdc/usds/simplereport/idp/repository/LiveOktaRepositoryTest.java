@@ -495,4 +495,163 @@ class LiveOktaRepositoryTest {
     var actual = _repo.getAllUsersWithStatusForOrganization(org);
     assertEquals(Map.of("email@example.com", UserStatus.ACTIVE), actual);
   }
+
+  @Test
+  void updateUserPrivileges() {
+    var userName = "fraud@example.com";
+    var org = new Organization("orgName", "orgType", "1", true);
+    var groupOrgPrefix = "SR-UNITTEST-TENANT:" + org.getExternalId();
+    var groupOrgDefaultName = groupOrgPrefix + ":NO_ACCESS";
+    var orgRole = OrganizationRole.ADMIN;
+    var mockUserList = mock(UserList.class);
+    var mockUser = mock(User.class);
+    var mockGroupList = mock(GroupList.class);
+    var mockGroup = mock(Group.class);
+    var mockGroupProfile = mock(GroupProfile.class);
+    var mockFullGroupList = mock(GroupList.class);
+    var mockAdminGroup = mock(Group.class);
+    var mockAdminGroupProfile = mock(GroupProfile.class);
+    when(_client.listUsers(eq(userName), isNull(), isNull(), isNull(), isNull()))
+        .thenReturn(mockUserList);
+    when(mockUserList.stream()).then(i -> Stream.of(mockUser));
+    when(mockUserList.single()).thenReturn(mockUser);
+    when(mockUser.listGroups()).thenReturn(mockGroupList);
+    when(mockGroupList.stream())
+        .then(i -> Stream.of(mockGroup))
+        .then(i -> Stream.of(mockGroup, mockAdminGroup));
+    when(mockGroup.getType()).thenReturn(GroupType.OKTA_GROUP);
+    when(mockGroup.getProfile()).thenReturn(mockGroupProfile);
+    when(mockGroupProfile.getName()).thenReturn(groupOrgDefaultName);
+    when(_client.listGroups(isNull(), eq("profile.name sw \"" + groupOrgPrefix + "\""), isNull()))
+        .thenReturn(mockFullGroupList);
+    when(mockFullGroupList.stream()).then(i -> Stream.of(mockAdminGroup));
+    when(mockAdminGroup.getType()).thenReturn(GroupType.OKTA_GROUP);
+    when(mockAdminGroup.getProfile()).thenReturn(mockAdminGroupProfile);
+    when(mockAdminGroupProfile.getName()).thenReturn(groupOrgPrefix + ":" + orgRole);
+
+    var actual = _repo.updateUserPrivileges(userName, org, Set.of(), Set.of(orgRole)).orElseThrow();
+    assertTrue(
+        actual
+            .getGrantedRoles()
+            .containsAll(List.of(OrganizationRole.ADMIN, OrganizationRole.NO_ACCESS)));
+  }
+
+  @Test
+  void updateUserPrivileges_illegalGraphqlArgumentException_whenNoUsersFound() {
+    var userName = "fraud@example.com";
+    var org = new Organization("orgName", "orgType", "1", true);
+    var mockUserList = mock(UserList.class);
+
+    when(_client.listUsers(eq(userName), isNull(), isNull(), isNull(), isNull()))
+        .thenReturn(mockUserList);
+    when(mockUserList.stream()).then(i -> Stream.of());
+
+    Throwable caught =
+        assertThrows(
+            IllegalGraphqlArgumentException.class,
+            () -> _repo.updateUserPrivileges(userName, org, Set.of(), Set.of()));
+    assertEquals("Cannot update role of Okta user with unrecognized username", caught.getMessage());
+  }
+
+  @Test
+  void updateUserPrivileges_illegalGraphqlArgumentException_whenGroupOrgDefaultIsNotFound() {
+    var userName = "fraud@example.com";
+    var org = new Organization("orgName", "orgType", "1", true);
+
+    var mockUserList = mock(UserList.class);
+    var mockUser = mock(User.class);
+    var mockGroupList = mock(GroupList.class);
+    var mockGroup = mock(Group.class);
+    var mockGroupProfile = mock(GroupProfile.class);
+    when(_client.listUsers(eq(userName), isNull(), isNull(), isNull(), isNull()))
+        .thenReturn(mockUserList);
+    when(mockUserList.stream()).then(i -> Stream.of(mockUser));
+    when(mockUserList.single()).thenReturn(mockUser);
+    when(mockUser.listGroups()).thenReturn(mockGroupList);
+    when(mockGroupList.stream()).then(i -> Stream.of(mockGroup));
+    when(mockGroup.getType()).thenReturn(GroupType.OKTA_GROUP);
+    when(mockGroup.getProfile()).thenReturn(mockGroupProfile);
+    when(mockGroupProfile.getName()).thenReturn("");
+
+    Throwable caught =
+        assertThrows(
+            IllegalGraphqlArgumentException.class,
+            () -> _repo.updateUserPrivileges(userName, org, Set.of(), Set.of()));
+    assertEquals(
+        "Cannot update privileges of Okta user in organization they do not belong to.",
+        caught.getMessage());
+  }
+
+  @Test
+  void updateUserPrivileges_illegalGraphqlArgumentException_whenNoOrganizationFound() {
+    var userName = "fraud@example.com";
+    var org = new Organization("orgName", "orgType", "1", true);
+    var groupOrgPrefix = "SR-UNITTEST-TENANT:" + org.getExternalId();
+    var groupOrgDefaultName = groupOrgPrefix + ":NO_ACCESS";
+
+    var mockUserList = mock(UserList.class);
+    var mockUser = mock(User.class);
+    var mockGroupList = mock(GroupList.class);
+    var mockGroup = mock(Group.class);
+    var mockGroupProfile = mock(GroupProfile.class);
+    var mockEmptyGroupList = mock(GroupList.class);
+
+    when(_client.listUsers(eq(userName), isNull(), isNull(), isNull(), isNull()))
+        .thenReturn(mockUserList);
+    when(mockUserList.stream()).then(i -> Stream.of(mockUser));
+    when(mockUserList.single()).thenReturn(mockUser);
+    when(mockUser.listGroups()).thenReturn(mockGroupList);
+    when(mockGroupList.stream()).then(i -> Stream.of(mockGroup));
+    when(mockGroup.getType()).thenReturn(GroupType.OKTA_GROUP);
+    when(mockGroup.getProfile()).thenReturn(mockGroupProfile);
+    when(mockGroupProfile.getName()).thenReturn(groupOrgDefaultName);
+    when(_client.listGroups(isNull(), eq("profile.name sw \"" + groupOrgPrefix + "\""), isNull()))
+        .thenReturn(mockEmptyGroupList);
+    when(mockEmptyGroupList.stream()).then(i -> Stream.of());
+
+    Throwable caught =
+        assertThrows(
+            IllegalGraphqlArgumentException.class,
+            () ->
+                _repo.updateUserPrivileges(
+                    userName, org, Set.of(), Set.of(OrganizationRole.ADMIN)));
+    assertEquals(
+        "Cannot add Okta user to nonexistent organization=" + org.getExternalId(),
+        caught.getMessage());
+  }
+
+  @Test
+  void updateUserPrivileges_illegalGraphqlArgumentException_whenGroupToAddNotFound() {
+    var userName = "fraud@example.com";
+    var org = new Organization("orgName", "orgType", "1", true);
+    var groupOrgPrefix = "SR-UNITTEST-TENANT:" + org.getExternalId();
+    var groupOrgDefaultName = groupOrgPrefix + ":NO_ACCESS";
+
+    var mockUserList = mock(UserList.class);
+    var mockUser = mock(User.class);
+    var mockGroupList = mock(GroupList.class);
+    var mockGroup = mock(Group.class);
+    var mockGroupProfile = mock(GroupProfile.class);
+    when(_client.listUsers(eq(userName), isNull(), isNull(), isNull(), isNull()))
+        .thenReturn(mockUserList);
+    when(mockUserList.stream()).then(i -> Stream.of(mockUser));
+    when(mockUserList.single()).thenReturn(mockUser);
+    when(mockUser.listGroups()).thenReturn(mockGroupList);
+    when(mockGroupList.stream()).then(i -> Stream.of(mockGroup));
+    when(mockGroup.getType()).thenReturn(GroupType.OKTA_GROUP);
+    when(mockGroup.getProfile()).thenReturn(mockGroupProfile);
+    when(mockGroupProfile.getName()).thenReturn(groupOrgDefaultName);
+    when(_client.listGroups(isNull(), eq("profile.name sw \"" + groupOrgPrefix + "\""), isNull()))
+        .thenReturn(mockGroupList);
+
+    Throwable caught =
+        assertThrows(
+            IllegalGraphqlArgumentException.class,
+            () ->
+                _repo.updateUserPrivileges(
+                    userName, org, Set.of(), Set.of(OrganizationRole.ADMIN)));
+    assertEquals(
+        "Cannot add Okta user to nonexistent group=" + groupOrgPrefix + ":ADMIN",
+        caught.getMessage());
+  }
 }
