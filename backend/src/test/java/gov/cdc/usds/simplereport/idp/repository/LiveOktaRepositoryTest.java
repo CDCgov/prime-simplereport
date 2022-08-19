@@ -797,4 +797,33 @@ class LiveOktaRepositoryTest {
     assertEquals(
         "Cannot retrieve Okta user's status with unrecognized username", caught.getMessage());
   }
+
+  @Test
+  void reactivateUser() {
+    var username = "fraud@example.com";
+    var mockUserList = mock(UserList.class);
+    var mockUser = mock(User.class);
+
+    when(_client.listUsers(eq(username), isNull(), isNull(), isNull(), isNull()))
+        .thenReturn(mockUserList);
+    when(mockUserList.stream()).then(i -> Stream.of(mockUser));
+    when(mockUserList.single()).thenReturn(mockUser);
+
+    _repo.reactivateUser(username);
+    verify(mockUser, times(1)).unsuspend();
+  }
+
+  @Test
+  void reactivateUser_illegalGraphqlArgumentException_whenNoUsersFound() {
+    var username = "fraud@example.com";
+    var mockUserList = mock(UserList.class);
+
+    when(_client.listUsers(eq(username), isNull(), isNull(), isNull(), isNull()))
+        .thenReturn(mockUserList);
+    when(mockUserList.stream()).then(i -> Stream.of());
+
+    Throwable caught =
+        assertThrows(IllegalGraphqlArgumentException.class, () -> _repo.reactivateUser(username));
+    assertEquals("Cannot reactivate Okta user with unrecognized username", caught.getMessage());
+  }
 }
