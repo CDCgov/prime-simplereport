@@ -165,11 +165,11 @@ class LiveOktaRepositoryTest {
     when(groupProfile1.getName()).thenReturn("SR-UNITTEST-TENANT:MYNIFTYORG:NO_ACCESS");
 
     _repo.updateUser(userAttributes);
-    verify(userProfile, times(1)).setFirstName(personName.getFirstName());
-    verify(userProfile, times(1)).setMiddleName(personName.getMiddleName());
-    verify(userProfile, times(1)).setLastName(personName.getLastName());
-    verify(userProfile, times(1)).setHonorificSuffix(personName.getSuffix());
-    verify(user, times(1)).update();
+    verify(userProfile).setFirstName(personName.getFirstName());
+    verify(userProfile).setMiddleName(personName.getMiddleName());
+    verify(userProfile).setLastName(personName.getLastName());
+    verify(userProfile).setHonorificSuffix(personName.getSuffix());
+    verify(user).update();
   }
 
   @Test
@@ -198,8 +198,8 @@ class LiveOktaRepositoryTest {
     when(groupProfile1.getName()).thenReturn("SR-UNITTEST-TENANT:MYNIFTYORG:NO_ACCESS");
 
     _repo.updateUserEmail(userAttributes, newUsername);
-    verify(userProfile, times(1)).setEmail(newUsername);
-    verify(user, times(1)).update();
+    verify(userProfile).setEmail(newUsername);
+    verify(user).update();
   }
 
   @Test
@@ -257,9 +257,9 @@ class LiveOktaRepositoryTest {
 
     _repo.reprovisionUser(identityAttributes);
 
-    verify(user, times(1)).update();
-    verify(user, times(1)).deactivate();
-    verify(user, times(1)).activate(true);
+    verify(user).update();
+    verify(user).deactivate();
+    verify(user).activate(true);
   }
 
   @Test
@@ -344,10 +344,10 @@ class LiveOktaRepositoryTest {
       staticMockUserBuilder.when(UserBuilder::instance).thenReturn(mockUserBuilder);
 
       var actual = _repo.createUser(identityAttributes, org, Set.of(), Set.of(), true);
-      verify(mockUserBuilder, times(1)).setProfileProperties(profileProperties);
-      verify(mockUserBuilder, times(1)).setGroups(anySet());
-      verify(mockUserBuilder, times(1)).buildAndCreate(eq(_client));
-      verify(mockUserBuilder, times(1)).setActive(eq(true));
+      verify(mockUserBuilder).setProfileProperties(profileProperties);
+      verify(mockUserBuilder).setGroups(anySet());
+      verify(mockUserBuilder).buildAndCreate(eq(_client));
+      verify(mockUserBuilder).setActive(eq(true));
       assertEquals(org.getExternalId(), actual.orElseThrow().getOrganizationExternalId());
       assertEquals(Set.of(OrganizationRole.NO_ACCESS), actual.get().getGrantedRoles());
     }
@@ -654,7 +654,7 @@ class LiveOktaRepositoryTest {
     when(mockUserList.single()).thenReturn(mockUser);
 
     _repo.resetUserPassword(username);
-    verify(mockUser, times(1)).resetPassword(true);
+    verify(mockUser).resetPassword(true);
   }
 
   @Test
@@ -685,7 +685,7 @@ class LiveOktaRepositoryTest {
     when(mockUserList.single()).thenReturn(mockUser);
 
     _repo.resetUserMfa(username);
-    verify(mockUser, times(1)).resetFactors();
+    verify(mockUser).resetFactors();
   }
 
   @Test
@@ -715,7 +715,7 @@ class LiveOktaRepositoryTest {
     when(mockUser.getStatus()).thenReturn(UserStatus.ACTIVE);
 
     _repo.setUserIsActive(username, false);
-    verify(mockUser, times(1)).suspend();
+    verify(mockUser).suspend();
     verify(mockUser, times(0)).unsuspend();
   }
 
@@ -733,7 +733,7 @@ class LiveOktaRepositoryTest {
 
     _repo.setUserIsActive(username, true);
     verify(mockUser, times(0)).suspend();
-    verify(mockUser, times(1)).unsuspend();
+    verify(mockUser).unsuspend();
   }
 
   @Test
@@ -811,7 +811,7 @@ class LiveOktaRepositoryTest {
     when(mockUserList.single()).thenReturn(mockUser);
 
     _repo.reactivateUser(username);
-    verify(mockUser, times(1)).unsuspend();
+    verify(mockUser).unsuspend();
   }
 
   @Test
@@ -841,7 +841,7 @@ class LiveOktaRepositoryTest {
     when(mockUser.getStatus()).thenReturn(UserStatus.PROVISIONED);
 
     _repo.resendActivationEmail(username);
-    verify(mockUser, times(1)).reactivate(true);
+    verify(mockUser).reactivate(true);
   }
 
   @Test
@@ -857,7 +857,7 @@ class LiveOktaRepositoryTest {
     when(mockUser.getStatus()).thenReturn(UserStatus.STAGED);
 
     _repo.resendActivationEmail(username);
-    verify(mockUser, times(1)).activate(true);
+    verify(mockUser).activate(true);
   }
 
   // is it possible to make all of these just parameterized tests?
@@ -929,7 +929,7 @@ class LiveOktaRepositoryTest {
     when(_client.listGroups(eq(groupName), isNull(), isNull())).thenReturn(mockGroupList);
     when(mockGroupList.iterator()).thenReturn((List.of(mockGroup).iterator()));
     _repo.deleteFacility(mockFacility);
-    verify(mockGroup, times(1)).delete();
+    verify(mockGroup).delete();
   }
 
   @Test
@@ -943,6 +943,6 @@ class LiveOktaRepositoryTest {
     when(mockGroupList.iterator()).thenReturn((List.of(mockGroup).iterator()));
 
     _repo.deleteOrganization(org);
-    verify(mockGroup, times(1)).delete();
+    verify(mockGroup).delete();
   }
 }
