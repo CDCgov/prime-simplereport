@@ -227,7 +227,6 @@ public class LiveOktaRepository implements OktaRepository {
   }
 
   public Optional<OrganizationRoleClaims> updateUser(IdentityAttributes userIdentity) {
-
     UserList users = _client.listUsers(userIdentity.getUsername(), null, null, null, null);
     throwErrorIfEmpty(users.stream(), "Cannot update Okta user with unrecognized username");
     User user = users.single();
