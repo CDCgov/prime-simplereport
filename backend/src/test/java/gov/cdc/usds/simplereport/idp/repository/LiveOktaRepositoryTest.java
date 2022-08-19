@@ -70,7 +70,7 @@ class LiveOktaRepositoryTest {
 
   @Test
   void getOrganizationRoleClaimsForUser() {
-    String username = "fraud@fake.com";
+    String username = "fraud@example.com";
 
     UserList userList = mock(UserList.class);
     User user = mock(User.class);
@@ -123,7 +123,7 @@ class LiveOktaRepositoryTest {
 
   @Test
   void getOrganizationRoleClaimsForUser_withTenantDataAccess_success() {
-    String username = "fraud@fake.com";
+    String username = "fraud@example.com";
     Set<String> authorities = new HashSet<>();
     authorities.add("SR-UNITTEST-TENANT:FAKE-ORG:NO_ACCESS");
     authorities.add("SR-UNITTEST-TENANT:FAKE-ORG:ADMIN");
@@ -141,7 +141,7 @@ class LiveOktaRepositoryTest {
 
   @Test
   void updateUser() {
-    String username = "fraud@fake.com";
+    String username = "fraud@example.com";
     PersonName personName = new PersonName("First", "Middle", "Last", "Suffix");
     IdentityAttributes userAttributes = new IdentityAttributes(username, personName);
 
@@ -173,8 +173,8 @@ class LiveOktaRepositoryTest {
 
   @Test
   void updateUserEmail() {
-    String username = "fraud@fake.com";
-    String newUsername = "newemail@fake.com";
+    String username = "fraud@example.com";
+    String newUsername = "newemail@example.com";
     PersonName personName = new PersonName("First", "Middle", "Last", "Suffix");
     IdentityAttributes userAttributes = new IdentityAttributes(username, personName);
 
@@ -203,7 +203,7 @@ class LiveOktaRepositoryTest {
 
   @Test
   void updateUser_userNotFound_error() {
-    String username = "fraud@fake.com";
+    String username = "fraud@example.com";
     PersonName personName = new PersonName("First", "Middle", "Last", "Suffix");
     IdentityAttributes identityAttributes = new IdentityAttributes(username, personName);
 
@@ -220,7 +220,7 @@ class LiveOktaRepositoryTest {
 
   @Test
   void updateUserEmail_userNotFound_error() {
-    String username = "fraud@fake.com";
+    String username = "fraud@example.com";
     PersonName personName = new PersonName("First", "Middle", "Last", "Suffix");
     IdentityAttributes identityAttributes = new IdentityAttributes(username, personName);
 
@@ -232,14 +232,14 @@ class LiveOktaRepositoryTest {
     Throwable caught =
         assertThrows(
             IllegalGraphqlArgumentException.class,
-            () -> _repo.updateUserEmail(identityAttributes, "newemail@fake.com"));
+            () -> _repo.updateUserEmail(identityAttributes, "newemail@example.com"));
     assertEquals(
         "Cannot update email of Okta user with unrecognized username", caught.getMessage());
   }
 
   @Test
   void reprovisionUser_success() {
-    String username = "fraud@fake.com";
+    String username = "fraud@example.com";
     PersonName personName = new PersonName("First", "Middle", "Last", "Suffix");
 
     UserList userList = mock(UserList.class);
@@ -263,7 +263,7 @@ class LiveOktaRepositoryTest {
 
   @Test
   void reprovisionUser_unsupportedUserState_error() {
-    String username = "fraud@fake.com";
+    String username = "fraud@example.com";
     PersonName personName = new PersonName("First", "Middle", "Last", "Suffix");
 
     UserList userList = mock(UserList.class);
@@ -284,7 +284,7 @@ class LiveOktaRepositoryTest {
 
   @Test
   void reprovisionUser_userNotFound_error() {
-    String username = "fraud@fake.com";
+    String username = "fraud@example.com";
     PersonName personName = new PersonName("First", "Middle", "Last", "Suffix");
 
     UserList userList = mock(UserList.class);
@@ -302,7 +302,7 @@ class LiveOktaRepositoryTest {
 
   @Test
   void createUser() {
-    var username = "fraud@fake.com";
+    var username = "fraud@example.com";
     var personName = new PersonName("First", "Middle", "Last", "Suffix");
     var identityAttributes = new IdentityAttributes(username, personName);
     var org = new Organization("orgName", "orgType", "1", true);
@@ -358,7 +358,7 @@ class LiveOktaRepositoryTest {
 
   @Test
   void createUser_illegalGraphqlArgumentError_withoutLastName() {
-    var username = "fraud@fake.com";
+    var username = "fraud@example.com";
     var personName = new PersonName();
     var identityAttributes = new IdentityAttributes(username, personName);
     var org = new Organization("orgName", "orgType", "1", true);
@@ -386,7 +386,7 @@ class LiveOktaRepositoryTest {
 
   @Test
   void createUser_illegalGraphqlArgumentError_noOrgsFound() {
-    var username = "fraud@fake.com";
+    var username = "fraud@example.com";
     var personName = new PersonName("First", "Middle", "Last", "Suffix");
     var identityAttributes = new IdentityAttributes(username, personName);
     var org = new Organization("orgName", "orgType", "1", true);
@@ -407,7 +407,7 @@ class LiveOktaRepositoryTest {
 
   @Test
   void createUser_illegalGraphqlArgumentError_noGroupsFound() {
-    var username = "fraud@fake.com";
+    var username = "fraud@example.com";
     var personName = new PersonName("First", "Middle", "Last", "Suffix");
     var identityAttributes = new IdentityAttributes(username, personName);
     var org = new Organization("orgName", "orgType", "1", true);
