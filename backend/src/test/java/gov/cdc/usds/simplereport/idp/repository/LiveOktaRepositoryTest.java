@@ -470,4 +470,29 @@ class LiveOktaRepositoryTest {
             IllegalGraphqlArgumentException.class, () -> _repo.getAllUsersForOrganization(org));
     assertEquals("Okta group not found for this organization", caught.getMessage());
   }
+
+  @Test
+  void getAllUsersWithStatusForOrganization() {
+    var org = new Organization("orgName", "orgType", "1", true);
+    var groupProfilePrefix = "SR-UNITTEST-TENANT:" + org.getExternalId() + ":NO_ACCESS";
+
+    var mockGroupList = mock(GroupList.class);
+    var mockGroup = mock(Group.class);
+    var mockGroupProfile = mock(GroupProfile.class);
+    var mockUserList = mock(UserList.class);
+    var mockUser = mock(User.class);
+    var mockUserProfile = mock(UserProfile.class);
+    when(_client.listGroups(eq(groupProfilePrefix), isNull(), isNull())).thenReturn(mockGroupList);
+    when(mockGroupList.stream()).then(i -> Stream.of(mockGroup));
+    when(mockGroup.getProfile()).thenReturn(mockGroupProfile);
+    when(mockGroupProfile.getName()).thenReturn(groupProfilePrefix);
+    when(mockGroup.listUsers()).thenReturn(mockUserList);
+    when(mockUserList.stream()).then(i -> Stream.of(mockUser));
+    when(mockUser.getProfile()).thenReturn(mockUserProfile);
+    when(mockUserProfile.getEmail()).thenReturn("email@example.com");
+    when(mockUser.getStatus()).thenReturn(UserStatus.ACTIVE);
+
+    var actual = _repo.getAllUsersWithStatusForOrganization(org);
+    assertEquals(Map.of("email@example.com", UserStatus.ACTIVE), actual);
+  }
 }
