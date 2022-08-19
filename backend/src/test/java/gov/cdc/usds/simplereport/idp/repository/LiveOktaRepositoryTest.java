@@ -431,4 +431,44 @@ class LiveOktaRepositoryTest {
     assertEquals(
         "Cannot add Okta user to nonexistent group=" + groupProfileName, caught.getMessage());
   }
+
+  @Test
+  void getAllUsersForOrganization() {
+    var org = new Organization("orgName", "orgType", "1", true);
+    var groupProfilePrefix = "SR-UNITTEST-TENANT:" + org.getExternalId() + ":NO_ACCESS";
+
+    var mockGroupList = mock(GroupList.class);
+    var mockGroup = mock(Group.class);
+    var mockGroupProfile = mock(GroupProfile.class);
+    var mockUserList = mock(UserList.class);
+    var mockUser = mock(User.class);
+    var mockUserProfile = mock(UserProfile.class);
+    when(_client.listGroups(eq(groupProfilePrefix), isNull(), isNull())).thenReturn(mockGroupList);
+    when(mockGroupList.stream()).then(i -> Stream.of(mockGroup));
+    when(mockGroup.getProfile()).thenReturn(mockGroupProfile);
+    when(mockGroupProfile.getName()).thenReturn(groupProfilePrefix);
+    when(mockGroup.listUsers()).thenReturn(mockUserList);
+    when(mockUserList.stream()).then(i -> Stream.of(mockUser));
+    when(mockUser.getProfile()).thenReturn(mockUserProfile);
+    when(mockUserProfile.getEmail()).thenReturn("email@example.com");
+
+    var actual = _repo.getAllUsersForOrganization(org);
+    assertEquals(Set.of("email@example.com"), actual);
+    assertThrows(UnsupportedOperationException.class, () -> actual.add("not_allowed"));
+  }
+
+  @Test
+  void getAllUsersForOrganization_illegalGraphqlArgumentException_noGroupsFound() {
+    var org = new Organization("orgName", "orgType", "1", true);
+
+    var mockGroupList = mock(GroupList.class);
+
+    when(_client.listGroups(anyString(), isNull(), isNull())).thenReturn(mockGroupList);
+    when(mockGroupList.stream()).then(i -> Stream.of());
+
+    Throwable caught =
+        assertThrows(
+            IllegalGraphqlArgumentException.class, () -> _repo.getAllUsersForOrganization(org));
+    assertEquals("Okta group not found for this organization", caught.getMessage());
+  }
 }
