@@ -366,7 +366,8 @@ public class LiveOktaRepository implements OktaRepository {
 
   public void resetUserPassword(String username) {
     UserList users = _client.listUsers(username, null, null, null, null);
-    throwErrorIfEmpty(users.stream(), "Cannot reset MFA for Okta user with unrecognized username");
+    throwErrorIfEmpty(
+        users.stream(), "Cannot reset password for Okta user with unrecognized username");
     User user = users.single();
     user.resetPassword(true);
   }
