@@ -127,6 +127,7 @@ export async function uploadResult(body) {
     "x-functions-key": REPORT_STREAM_TOKEN,
     "x-api-version": uploaderVersion,
     "content-type": "text/csv",
+    "content-length": body.length,
     client: "simple_report",
   });
   return fetch(REPORT_STREAM_URL, {
