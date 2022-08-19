@@ -700,4 +700,71 @@ class LiveOktaRepositoryTest {
         assertThrows(IllegalGraphqlArgumentException.class, () -> _repo.resetUserMfa(username));
     assertEquals("Cannot reset MFA for Okta user with unrecognized username", caught.getMessage());
   }
+
+  @Test
+  void setUserIsActive_suspend() {
+    var username = "fraud@example.com";
+    var mockUserList = mock(UserList.class);
+    var mockUser = mock(User.class);
+
+    when(_client.listUsers(eq(username), isNull(), isNull(), isNull(), isNull()))
+        .thenReturn(mockUserList);
+    when(mockUserList.stream()).then(i -> Stream.of(mockUser));
+    when(mockUserList.single()).thenReturn(mockUser);
+    when(mockUser.getStatus()).thenReturn(UserStatus.ACTIVE);
+
+    _repo.setUserIsActive(username, false);
+    verify(mockUser, times(1)).suspend();
+    verify(mockUser, times(0)).unsuspend();
+  }
+
+  @Test
+  void setUserIsActive_unsuspend() {
+    var username = "fraud@example.com";
+    var mockUserList = mock(UserList.class);
+    var mockUser = mock(User.class);
+
+    when(_client.listUsers(eq(username), isNull(), isNull(), isNull(), isNull()))
+        .thenReturn(mockUserList);
+    when(mockUserList.stream()).then(i -> Stream.of(mockUser));
+    when(mockUserList.single()).thenReturn(mockUser);
+    when(mockUser.getStatus()).thenReturn(UserStatus.SUSPENDED);
+
+    _repo.setUserIsActive(username, true);
+    verify(mockUser, times(0)).suspend();
+    verify(mockUser, times(1)).unsuspend();
+  }
+
+  @Test
+  void setUserIsActive_doNothing() {
+    var username = "fraud@example.com";
+    var mockUserList = mock(UserList.class);
+    var mockUser = mock(User.class);
+
+    when(_client.listUsers(eq(username), isNull(), isNull(), isNull(), isNull()))
+        .thenReturn(mockUserList);
+    when(mockUserList.stream()).then(i -> Stream.of(mockUser));
+    when(mockUserList.single()).thenReturn(mockUser);
+    when(mockUser.getStatus()).thenReturn(UserStatus.ACTIVE);
+
+    _repo.setUserIsActive(username, true);
+    verify(mockUser, times(0)).suspend();
+    verify(mockUser, times(0)).unsuspend();
+  }
+
+  @Test
+  void setUserIsActive_illegalGraphqlArgumentException_whenNoUsersFound() {
+    var username = "fraud@example.com";
+    var mockUserList = mock(UserList.class);
+
+    when(_client.listUsers(eq(username), isNull(), isNull(), isNull(), isNull()))
+        .thenReturn(mockUserList);
+    when(mockUserList.stream()).then(i -> Stream.of());
+
+    Throwable caught =
+        assertThrows(
+            IllegalGraphqlArgumentException.class, () -> _repo.setUserIsActive(username, null));
+    assertEquals(
+        "Cannot update active status of Okta user with unrecognized username", caught.getMessage());
+  }
 }
