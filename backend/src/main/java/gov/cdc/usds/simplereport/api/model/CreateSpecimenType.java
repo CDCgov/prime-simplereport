@@ -1,10 +1,10 @@
 package gov.cdc.usds.simplereport.api.model;
 
-import lombok.AllArgsConstructor;
+import lombok.Builder;
 import lombok.Getter;
 
 @Getter
-@AllArgsConstructor
+@Builder
 public class CreateSpecimenType {
   public String name;
   public String typeCode;
