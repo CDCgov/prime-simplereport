@@ -347,12 +347,8 @@ class LiveOktaRepositoryTest {
       verify(mockUserBuilder, times(1)).setGroups(anySet());
       verify(mockUserBuilder, times(1)).buildAndCreate(eq(_client));
       verify(mockUserBuilder, times(1)).setActive(eq(true));
-      assertEquals(
-          MOCK_EXTRACTOR
-              .convertClaims(List.of(groupProfileName))
-              .get(0)
-              .getOrganizationExternalId(),
-          actual.orElseThrow().getOrganizationExternalId());
+      assertEquals(org.getExternalId(), actual.orElseThrow().getOrganizationExternalId());
+      assertEquals(Set.of(OrganizationRole.NO_ACCESS), actual.get().getGrantedRoles());
     }
   }
 
