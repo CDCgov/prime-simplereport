@@ -79,8 +79,9 @@ const QueueBatchedTestEventPublisher: AzureFunction = async function (
   });
 
   if (postResult.ok) {
-    const response: ReportStreamResponse = await postResult.json() as ReportStreamResponse;
+    const response: ReportStreamResponse = await postResult.json();
     context.log(`Report Stream response: ${JSON.stringify(response)}`);
+    // TODO: better parallelize w/ dequeuing
     await reportExceptions(context, exceptionQueue, response);
 
     context.log(
