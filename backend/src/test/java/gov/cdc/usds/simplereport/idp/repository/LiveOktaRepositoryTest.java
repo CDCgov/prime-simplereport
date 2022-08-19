@@ -860,7 +860,6 @@ class LiveOktaRepositoryTest {
     verify(mockUser).activate(true);
   }
 
-  // is it possible to make all of these just parameterized tests?
   @Test
   void resendActivationEmail_illegalGraphqlArgumentException_whenNoUsersFound() {
     var username = "fraud@example.com";
