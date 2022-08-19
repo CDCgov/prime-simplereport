@@ -32,6 +32,7 @@ import gov.cdc.usds.simplereport.config.AuthorizationProperties;
 import gov.cdc.usds.simplereport.config.authorization.OrganizationExtractor;
 import gov.cdc.usds.simplereport.config.authorization.OrganizationRole;
 import gov.cdc.usds.simplereport.config.authorization.OrganizationRoleClaims;
+import gov.cdc.usds.simplereport.db.model.Facility;
 import gov.cdc.usds.simplereport.db.model.Organization;
 import gov.cdc.usds.simplereport.db.model.auxiliary.PersonName;
 import gov.cdc.usds.simplereport.service.model.IdentityAttributes;
@@ -913,5 +914,21 @@ class LiveOktaRepositoryTest {
       verify(mockGroupBuilder, times(OrganizationRole.values().length)).buildAndCreate(_client);
       verify(_app, times(OrganizationRole.values().length)).createApplicationGroupAssignment("id");
     }
+  }
+
+  @Test
+  void deleteFacility() {
+    var org = new Organization("orgName", "orgType", "1", true);
+    var facilityID = UUID.randomUUID();
+    var groupName = "SR-UNITTEST-TENANT:1:FACILITY_ACCESS:" + facilityID;
+    var mockFacility = mock(Facility.class);
+    var mockGroupList = mock(GroupList.class);
+    var mockGroup = mock(Group.class);
+    when(mockFacility.getOrganization()).thenReturn(org);
+    when(mockFacility.getInternalId()).thenReturn(facilityID);
+    when(_client.listGroups(eq(groupName), isNull(), isNull())).thenReturn(mockGroupList);
+    when(mockGroupList.iterator()).thenReturn((List.of(mockGroup).iterator()));
+    _repo.deleteFacility(mockFacility);
+    verify(mockGroup, times(1)).delete();
   }
 }
