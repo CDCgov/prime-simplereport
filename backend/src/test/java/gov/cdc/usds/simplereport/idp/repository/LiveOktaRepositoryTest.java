@@ -417,7 +417,6 @@ class LiveOktaRepositoryTest {
     var mockGroupList = mock(GroupList.class);
     var mockGroup = mock(Group.class);
     var mockGroupProfile = mock(GroupProfile.class);
-
     when(mockGroupList.stream()).then(i -> Stream.of(mockGroup));
     when(_client.listGroups(anyString(), isNull(), isNull())).thenReturn(mockGroupList);
     when(_client.listGroups(isNull(), anyString(), isNull())).thenReturn(mockGroupList);
@@ -462,6 +461,7 @@ class LiveOktaRepositoryTest {
     var org = new Organization("orgName", "orgType", "1", true);
 
     var mockGroupList = mock(GroupList.class);
+
     when(_client.listGroups(anyString(), isNull(), isNull())).thenReturn(mockGroupList);
     when(mockGroupList.stream()).then(i -> Stream.of());
 
