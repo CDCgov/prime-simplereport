@@ -9,6 +9,7 @@ import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.ArgumentMatchers.isNull;
 import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.mockStatic;
 import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
@@ -16,6 +17,7 @@ import static org.mockito.Mockito.when;
 import com.okta.sdk.client.Client;
 import com.okta.sdk.resource.application.Application;
 import com.okta.sdk.resource.group.Group;
+import com.okta.sdk.resource.group.GroupBuilder;
 import com.okta.sdk.resource.group.GroupList;
 import com.okta.sdk.resource.group.GroupProfile;
 import com.okta.sdk.resource.group.GroupType;
@@ -43,8 +45,6 @@ import java.util.UUID;
 import java.util.stream.Stream;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
-import org.mockito.MockedStatic;
-import org.mockito.Mockito;
 import org.springframework.context.annotation.Import;
 
 @Import(SliceTestConfiguration.class)
@@ -339,7 +339,7 @@ class LiveOktaRepositoryTest {
     when(mockUserBuilder.setGroups(anySet())).thenReturn(mockUserBuilder);
     when(mockUserBuilder.setActive(true)).thenReturn(mockUserBuilder);
 
-    try (MockedStatic<UserBuilder> staticMockUserBuilder = Mockito.mockStatic(UserBuilder.class)) {
+    try (var staticMockUserBuilder = mockStatic(UserBuilder.class)) {
       staticMockUserBuilder.when(UserBuilder::instance).thenReturn(mockUserBuilder);
 
       var actual = _repo.createUser(identityAttributes, org, Set.of(), Set.of(), true);
@@ -892,5 +892,26 @@ class LiveOktaRepositoryTest {
         assertThrows(
             IllegalGraphqlArgumentException.class, () -> _repo.resendActivationEmail(username));
     assertEquals("Cannot reactivate user with status: " + UserStatus.ACTIVE, caught.getMessage());
+  }
+
+  @Test
+  void createOrganization() {
+    var org = new Organization("orgName", "orgType", "1", true);
+    var mockGroupBuilder = mock(GroupBuilder.class);
+    var mockGroup = mock(Group.class);
+
+    when(mockGroupBuilder.setName(anyString())).thenReturn(mockGroupBuilder);
+    when(mockGroupBuilder.setDescription(anyString())).thenReturn(mockGroupBuilder);
+    when(mockGroupBuilder.buildAndCreate(_client)).thenReturn(mockGroup);
+    when(mockGroup.getId()).thenReturn("id");
+    try (var staticMockGroupBuilder = mockStatic(GroupBuilder.class)) {
+      staticMockGroupBuilder.when(GroupBuilder::instance).thenReturn(mockGroupBuilder);
+
+      _repo.createOrganization(org);
+      verify(mockGroupBuilder, times(OrganizationRole.values().length)).setName(anyString());
+      verify(mockGroupBuilder, times(OrganizationRole.values().length)).setDescription(anyString());
+      verify(mockGroupBuilder, times(OrganizationRole.values().length)).buildAndCreate(_client);
+      verify(_app, times(OrganizationRole.values().length)).createApplicationGroupAssignment("id");
+    }
   }
 }
