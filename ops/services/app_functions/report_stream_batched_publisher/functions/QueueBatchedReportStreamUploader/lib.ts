@@ -6,7 +6,7 @@ import {
   QueueServiceClient,
   StorageSharedKeyCredential,
 } from "@azure/storage-queue";
-import csvStringify from "csv-stringify"
+import csvStringify from "csv-stringify/lib/sync"
 import { ENV, uploaderVersion } from "../config";
 import fetch, { Headers } from "node-fetch";
 import {
@@ -127,7 +127,6 @@ export async function uploadResult(body) {
     "x-functions-key": REPORT_STREAM_TOKEN,
     "x-api-version": uploaderVersion,
     "content-type": "text/csv",
-    "content-length": body.length,
     client: "simple_report",
   });
   return fetch(REPORT_STREAM_URL, {

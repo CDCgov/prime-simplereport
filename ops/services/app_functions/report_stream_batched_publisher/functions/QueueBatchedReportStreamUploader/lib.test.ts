@@ -13,6 +13,7 @@ import {
   minimumMessagesAvailable,
   reportExceptions,
   uploadResult,
+  convertToCsv
 } from "./lib";
 import { ReportStreamError, ReportStreamResponse } from "./rs-response";
 
@@ -170,6 +171,40 @@ describe("lib", () => {
       expect(result.length).toBe(5);
     });
   });
+
+  describe("CSV conversion", () => {
+    it("converts to csv and records parsing errors", () => {
+      // GIVEN
+      const messages: DequeuedMessageItem[] = [{
+        messageId: '1111',
+        popReceipt: 'aa',
+        messageText: '{"Result_ID" : 1}'
+      }, {
+        messageId: '2222',
+        popReceipt: 'bb',
+        messageText: '{"Result_ID" : 2}'
+      }, {
+        messageId: '3333',
+        popReceipt: 'cc',
+        messageText: '{"Result_ID" : 3}'
+      }, {
+        messageId: '4444',
+        popReceipt: 'dd',
+        messageText: '{ERROR : 4}'
+      }] as any;
+
+      // WHEN
+      const {csvPayload, parseFailure, parseFailureCount, parseSuccessCount} = convertToCsv(messages);
+
+      // THEN
+      expect(parseSuccessCount).toBe(3);
+      expect(csvPayload).toBe("Result_ID\n1\n2\n3\n");
+
+      expect(parseFailureCount).toBe(1);
+      expect(parseFailure).toStrictEqual({4444: true});
+    })
+
+  })
 
   describe("uploadResult", () => {
     it("calls fetch", async () => {
