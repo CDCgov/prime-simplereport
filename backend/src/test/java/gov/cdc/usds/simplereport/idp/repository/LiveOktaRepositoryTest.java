@@ -931,4 +931,18 @@ class LiveOktaRepositoryTest {
     _repo.deleteFacility(mockFacility);
     verify(mockGroup, times(1)).delete();
   }
+
+  @Test
+  void deleteOrganization() {
+    var org = new Organization("orgName", "orgType", "1", true);
+    var mockGroupList = mock(GroupList.class);
+    var mockGroup = mock(Group.class);
+
+    when(_client.listGroups(eq("SR-UNITTEST-TENANT:" + org.getExternalId()), isNull(), isNull()))
+        .thenReturn(mockGroupList);
+    when(mockGroupList.iterator()).thenReturn((List.of(mockGroup).iterator()));
+
+    _repo.deleteOrganization(org);
+    verify(mockGroup, times(1)).delete();
+  }
 }
