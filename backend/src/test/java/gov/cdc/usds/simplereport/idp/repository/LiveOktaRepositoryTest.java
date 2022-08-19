@@ -671,4 +671,33 @@ class LiveOktaRepositoryTest {
     assertEquals(
         "Cannot reset password for Okta user with unrecognized username", caught.getMessage());
   }
+
+  @Test
+  void resetUserMfa() {
+    var username = "fraud@example.com";
+    var mockUserList = mock(UserList.class);
+    var mockUser = mock(User.class);
+
+    when(_client.listUsers(eq(username), isNull(), isNull(), isNull(), isNull()))
+        .thenReturn(mockUserList);
+    when(mockUserList.stream()).then(i -> Stream.of(mockUser));
+    when(mockUserList.single()).thenReturn(mockUser);
+
+    _repo.resetUserMfa(username);
+    verify(mockUser, times(1)).resetFactors();
+  }
+
+  @Test
+  void resetUserMfa_illegalGraphqlArgumentException_whenNoUsersFound() {
+    var username = "fraud@example.com";
+    var mockUserList = mock(UserList.class);
+
+    when(_client.listUsers(eq(username), isNull(), isNull(), isNull(), isNull()))
+        .thenReturn(mockUserList);
+    when(mockUserList.stream()).then(i -> Stream.of());
+
+    Throwable caught =
+        assertThrows(IllegalGraphqlArgumentException.class, () -> _repo.resetUserMfa(username));
+    assertEquals("Cannot reset MFA for Okta user with unrecognized username", caught.getMessage());
+  }
 }
