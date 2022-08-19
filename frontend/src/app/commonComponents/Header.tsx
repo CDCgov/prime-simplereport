@@ -180,6 +180,9 @@ const Header: React.FC<{}> = () => {
       icon: (
         <FontAwesomeIcon
           icon={"user-circle"}
+          aria-hidden={false}
+          aria-label={"Profile"}
+          role={"img"}
           style={{
             color: staffDetailsVisible && !menuVisible ? "white" : "",
           }}
@@ -193,7 +196,14 @@ const Header: React.FC<{}> = () => {
       onClick: () => setMenuVisible(false),
       className: getNavItemClassName,
       dataTestId: "settings-button",
-      icon: <FontAwesomeIcon icon={"cog"} />,
+      icon: (
+        <FontAwesomeIcon
+          icon={"cog"}
+          aria-hidden={false}
+          role={"img"}
+          aria-label={"Settings"}
+        />
+      ),
       mobileDisplay: true,
       mobileDisplayText: "Settings",
       hasSubmenu: false,
