@@ -16,6 +16,7 @@ import gov.cdc.usds.simplereport.db.model.Facility;
 import gov.cdc.usds.simplereport.db.model.Organization;
 import gov.cdc.usds.simplereport.db.model.Person;
 import gov.cdc.usds.simplereport.db.model.auxiliary.DiseaseResult;
+import gov.cdc.usds.simplereport.db.model.auxiliary.MultiplexResultInput;
 import gov.cdc.usds.simplereport.db.model.auxiliary.TestResult;
 import gov.cdc.usds.simplereport.service.OrganizationService;
 import gov.cdc.usds.simplereport.service.sms.SmsService;
@@ -120,6 +121,54 @@ class TestResultTest extends BaseGraphqlTest {
             .putPOJO("results", results)
             .put("dateTested", dateTested);
     submitTestResultMultiplex(variables, Optional.empty());
+
+    ArrayNode testResults = fetchTestResultsMultiplex(getFacilityScopedArguments());
+
+    assertTrue(testResults.has(0), "Has at least one submitted test result=");
+    assertEquals(testResults.get(0).get("dateTested").asText(), dateTested);
+    testResults
+        .get(0)
+        .get("results")
+        .elements()
+        .forEachRemaining(
+            r -> {
+              switch (r.get("disease").get("name").asText()) {
+                case "COVID-19":
+                  assertEquals(TestResult.NEGATIVE.toString(), r.get("testResult").asText());
+                  break;
+                case "Flu A":
+                  assertEquals(TestResult.POSITIVE.toString(), r.get("testResult").asText());
+                  break;
+                case "Flu B":
+                  assertEquals(TestResult.UNDETERMINED.toString(), r.get("testResult").asText());
+                  break;
+                default:
+                  fail("Unexpected disease=" + r.get("disease").get("name").asText());
+              }
+            });
+  }
+
+  @Test
+  void submitAndFetchMultiplexResult() throws Exception {
+    Person p = _dataFactory.createFullPerson(_org);
+    DeviceType d = _site.getDefaultDeviceType();
+    _dataFactory.createTestOrder(p, _site);
+    String dateTested = "2020-12-31T14:30:30.001Z";
+
+    List<MultiplexResultInput> results = new ArrayList<>();
+    results.add(new MultiplexResultInput(_diseaseService.covid().getName(), TestResult.NEGATIVE));
+    results.add(new MultiplexResultInput(_diseaseService.fluA().getName(), TestResult.POSITIVE));
+    results.add(
+        new MultiplexResultInput(_diseaseService.fluB().getName(), TestResult.UNDETERMINED));
+
+    ObjectNode variables =
+        JsonNodeFactory.instance
+            .objectNode()
+            .put("deviceId", d.getInternalId().toString())
+            .put("patientId", p.getInternalId().toString())
+            .putPOJO("results", results)
+            .put("dateTested", dateTested);
+    submitMultiplexResult(variables, Optional.empty());
 
     ArrayNode testResults = fetchTestResultsMultiplex(getFacilityScopedArguments());
 
@@ -378,6 +427,10 @@ class TestResultTest extends BaseGraphqlTest {
   private ObjectNode submitTestResultMultiplex(
       ObjectNode variables, Optional<String> expectedError) {
     return runQuery("add-test-result-multiplex-mutation", variables, expectedError.orElse(null));
+  }
+
+  private ObjectNode submitMultiplexResult(ObjectNode variables, Optional<String> expectedError) {
+    return runQuery("add-multiplex-result-mutation", variables, expectedError.orElse(null));
   }
 
   private ArrayNode fetchTestResults(ObjectNode variables) {
