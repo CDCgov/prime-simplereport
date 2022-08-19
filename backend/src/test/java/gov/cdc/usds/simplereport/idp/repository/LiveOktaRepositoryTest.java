@@ -639,15 +639,36 @@ class LiveOktaRepositoryTest {
     when(mockGroupProfile.getName()).thenReturn(groupOrgDefaultName);
     when(_client.listGroups(isNull(), eq("profile.name sw \"" + groupOrgPrefix + "\""), isNull()))
         .thenReturn(mockGroupList);
+  }
+
+  @Test
+  void resetUserPassword() {
+    var username = "fraud@example.com";
+    var mockUserList = mock(UserList.class);
+    var mockUser = mock(User.class);
+
+    when(_client.listUsers(eq(username), isNull(), isNull(), isNull(), isNull()))
+        .thenReturn(mockUserList);
+    when(mockUserList.stream()).then(i -> Stream.of(mockUser));
+    when(mockUserList.single()).thenReturn(mockUser);
+
+    _repo.resetUserPassword(username);
+    verify(mockUser, times(1)).resetPassword(true);
+  }
+
+  @Test
+  void resetUserPassword_illegalGraphqlArgumentException_whenNoUsersFound() {
+    var username = "fraud@example.com";
+    var mockUserList = mock(UserList.class);
+
+    when(_client.listUsers(eq(username), isNull(), isNull(), isNull(), isNull()))
+        .thenReturn(mockUserList);
+    when(mockUserList.stream()).then(i -> Stream.of());
 
     Throwable caught =
         assertThrows(
-            IllegalGraphqlArgumentException.class,
-            () ->
-                _repo.updateUserPrivileges(
-                    userName, org, Set.of(), Set.of(OrganizationRole.ADMIN)));
+            IllegalGraphqlArgumentException.class, () -> _repo.resetUserPassword(username));
     assertEquals(
-        "Cannot add Okta user to nonexistent group=" + groupOrgPrefix + ":ADMIN",
-        caught.getMessage());
+        "Cannot reset password for Okta user with unrecognized username", caught.getMessage());
   }
 }
