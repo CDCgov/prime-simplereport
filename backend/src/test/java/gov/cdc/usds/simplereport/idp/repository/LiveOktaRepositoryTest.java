@@ -4,6 +4,10 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.junit.jupiter.api.Assertions.assertTrue;
+import static org.mockito.ArgumentMatchers.anySet;
+import static org.mockito.ArgumentMatchers.anyString;
+import static org.mockito.ArgumentMatchers.eq;
+import static org.mockito.ArgumentMatchers.isNull;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
@@ -16,6 +20,7 @@ import com.okta.sdk.resource.group.GroupList;
 import com.okta.sdk.resource.group.GroupProfile;
 import com.okta.sdk.resource.group.GroupType;
 import com.okta.sdk.resource.user.User;
+import com.okta.sdk.resource.user.UserBuilder;
 import com.okta.sdk.resource.user.UserList;
 import com.okta.sdk.resource.user.UserProfile;
 import com.okta.sdk.resource.user.UserStatus;
@@ -25,16 +30,21 @@ import gov.cdc.usds.simplereport.config.AuthorizationProperties;
 import gov.cdc.usds.simplereport.config.authorization.OrganizationExtractor;
 import gov.cdc.usds.simplereport.config.authorization.OrganizationRole;
 import gov.cdc.usds.simplereport.config.authorization.OrganizationRoleClaims;
+import gov.cdc.usds.simplereport.db.model.Organization;
 import gov.cdc.usds.simplereport.db.model.auxiliary.PersonName;
 import gov.cdc.usds.simplereport.service.model.IdentityAttributes;
 import gov.cdc.usds.simplereport.test_util.SliceTestConfiguration;
 import java.util.HashSet;
+import java.util.List;
+import java.util.Map;
 import java.util.Optional;
 import java.util.Set;
 import java.util.UUID;
 import java.util.stream.Stream;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
+import org.mockito.MockedStatic;
+import org.mockito.Mockito;
 import org.springframework.context.annotation.Import;
 
 @Import(SliceTestConfiguration.class)
@@ -46,8 +56,8 @@ class LiveOktaRepositoryTest {
   private static final CurrentTenantDataAccessContextHolder tenantDataAccessContextHolder =
       new CurrentTenantDataAccessContextHolder();
   private static final String MOCK_CLIENT_ID = "FAKE_CLIENT_ID";
-  private Client _client = mock(Client.class);
-  private Application _app = mock(Application.class);
+  private final Client _client = mock(Client.class);
+  private final Application _app = mock(Application.class);
   LiveOktaRepository _repo;
 
   @BeforeEach
@@ -204,10 +214,7 @@ class LiveOktaRepositoryTest {
 
     Throwable caught =
         assertThrows(
-            IllegalGraphqlArgumentException.class,
-            () -> {
-              _repo.updateUser(identityAttributes);
-            });
+            IllegalGraphqlArgumentException.class, () -> _repo.updateUser(identityAttributes));
     assertEquals("Cannot update Okta user with unrecognized username", caught.getMessage());
   }
 
@@ -225,9 +232,7 @@ class LiveOktaRepositoryTest {
     Throwable caught =
         assertThrows(
             IllegalGraphqlArgumentException.class,
-            () -> {
-              _repo.updateUserEmail(identityAttributes, "newemail@fake.com");
-            });
+            () -> _repo.updateUserEmail(identityAttributes, "newemail@fake.com"));
     assertEquals(
         "Cannot update email of Okta user with unrecognized username", caught.getMessage());
   }
@@ -273,10 +278,7 @@ class LiveOktaRepositoryTest {
 
     Throwable caught =
         assertThrows(
-            IllegalGraphqlArgumentException.class,
-            () -> {
-              _repo.reprovisionUser(identityAttributes);
-            });
+            IllegalGraphqlArgumentException.class, () -> _repo.reprovisionUser(identityAttributes));
     assertEquals("Cannot reprovision user in unsupported state: ACTIVE", caught.getMessage());
   }
 
@@ -294,10 +296,139 @@ class LiveOktaRepositoryTest {
 
     Throwable caught =
         assertThrows(
-            IllegalGraphqlArgumentException.class,
-            () -> {
-              _repo.reprovisionUser(identityAttributes);
-            });
+            IllegalGraphqlArgumentException.class, () -> _repo.reprovisionUser(identityAttributes));
     assertEquals("Cannot reprovision Okta user with unrecognized username", caught.getMessage());
+  }
+
+  @Test
+  void createUser() {
+    var username = "fraud@fake.com";
+    var personName = new PersonName("First", "Middle", "Last", "Suffix");
+    var identityAttributes = new IdentityAttributes(username, personName);
+    var org = new Organization("orgName", "orgType", "1", true);
+    var groupProfilePrefix = "SR-UNITTEST-TENANT:" + org.getExternalId();
+    var groupProfileName = groupProfilePrefix + ":NO_ACCESS";
+    Map<String, Object> profileProperties =
+        Map.of(
+            "firstName",
+            identityAttributes.getFirstName(),
+            "middleName",
+            identityAttributes.getMiddleName(),
+            "lastName",
+            identityAttributes.getLastName(),
+            "honorificSuffix",
+            identityAttributes.getSuffix(),
+            "email",
+            identityAttributes.getUsername(),
+            "login",
+            identityAttributes.getUsername());
+
+    var mockGroupListQ = mock(GroupList.class);
+    var mockGroupListSearch = mock(GroupList.class);
+    var mockGroup = mock(Group.class);
+    var mockGroupProfile = mock(GroupProfile.class);
+    var mockUserBuilder = mock(UserBuilder.class);
+
+    when(mockGroupListQ.stream()).then(i -> Stream.of(mockGroup));
+    when(mockGroupListSearch.stream()).then(i -> Stream.of(mockGroup));
+    when(_client.listGroups(eq(groupProfilePrefix), isNull(), isNull())).thenReturn(mockGroupListQ);
+    when(_client.listGroups(isNull(), anyString(), isNull())).thenReturn(mockGroupListSearch);
+    when(mockGroup.getProfile()).thenReturn(mockGroupProfile);
+    when(mockGroupProfile.getName()).thenReturn(groupProfileName);
+    when(mockUserBuilder.setProfileProperties(profileProperties)).thenReturn(mockUserBuilder);
+    when(mockUserBuilder.setGroups(anySet())).thenReturn(mockUserBuilder);
+    when(mockUserBuilder.setActive(true)).thenReturn(mockUserBuilder);
+
+    try (MockedStatic<UserBuilder> staticMockUserBuilder = Mockito.mockStatic(UserBuilder.class)) {
+      staticMockUserBuilder.when(UserBuilder::instance).thenReturn(mockUserBuilder);
+
+      var actual = _repo.createUser(identityAttributes, org, Set.of(), Set.of(), true);
+      verify(mockUserBuilder, times(1)).setProfileProperties(profileProperties);
+      verify(mockUserBuilder, times(1)).setGroups(anySet());
+      verify(mockUserBuilder, times(1)).buildAndCreate(eq(_client));
+      verify(mockUserBuilder, times(1)).setActive(eq(true));
+      assertEquals(
+          MOCK_EXTRACTOR
+              .convertClaims(List.of(groupProfileName))
+              .get(0)
+              .getOrganizationExternalId(),
+          actual.orElseThrow().getOrganizationExternalId());
+    }
+  }
+
+  @Test
+  void createUser_illegalGraphqlArgumentError_withoutLastName() {
+    var username = "fraud@fake.com";
+    var personName = new PersonName();
+    var identityAttributes = new IdentityAttributes(username, personName);
+    var org = new Organization("orgName", "orgType", "1", true);
+
+    Throwable caught =
+        assertThrows(
+            IllegalGraphqlArgumentException.class,
+            () -> _repo.createUser(identityAttributes, org, Set.of(), Set.of(), true));
+    assertEquals("Cannot create Okta user without last name", caught.getMessage());
+  }
+
+  @Test
+  void createUser_illegalGraphqlArgumentError_withoutEmail() {
+    var personName = new PersonName();
+    personName.setLastName("LastName");
+    var identityAttributes = new IdentityAttributes(null, personName);
+    var org = new Organization("orgName", "orgType", "1", true);
+
+    Throwable caught =
+        assertThrows(
+            IllegalGraphqlArgumentException.class,
+            () -> _repo.createUser(identityAttributes, org, Set.of(), Set.of(), true));
+    assertEquals("Cannot create Okta user without username", caught.getMessage());
+  }
+
+  @Test
+  void createUser_illegalGraphqlArgumentError_noOrgsFound() {
+    var username = "fraud@fake.com";
+    var personName = new PersonName("First", "Middle", "Last", "Suffix");
+    var identityAttributes = new IdentityAttributes(username, personName);
+    var org = new Organization("orgName", "orgType", "1", true);
+    var mockGroupList = mock(GroupList.class);
+
+    when(mockGroupList.stream()).then(i -> Stream.of());
+    when(_client.listGroups(anyString(), isNull(), isNull())).thenReturn(mockGroupList);
+    when(_client.listGroups(isNull(), anyString(), isNull())).thenReturn(mockGroupList);
+
+    Throwable caught =
+        assertThrows(
+            IllegalGraphqlArgumentException.class,
+            () -> _repo.createUser(identityAttributes, org, Set.of(), Set.of(), true));
+    assertEquals(
+        "Cannot add Okta user to nonexistent organization=" + org.getExternalId(),
+        caught.getMessage());
+  }
+
+  @Test
+  void createUser_illegalGraphqlArgumentError_noGroupsFound() {
+    var username = "fraud@fake.com";
+    var personName = new PersonName("First", "Middle", "Last", "Suffix");
+    var identityAttributes = new IdentityAttributes(username, personName);
+    var org = new Organization("orgName", "orgType", "1", true);
+    var groupProfilePrefix = "SR-UNITTEST-TENANT:" + org.getExternalId();
+    var groupProfileName = groupProfilePrefix + ":NO_ACCESS";
+
+    var mockGroupList = mock(GroupList.class);
+    var mockGroup = mock(Group.class);
+    var mockGroupProfile = mock(GroupProfile.class);
+
+    when(mockGroupList.stream()).then(i -> Stream.of(mockGroup));
+    when(_client.listGroups(anyString(), isNull(), isNull())).thenReturn(mockGroupList);
+    when(_client.listGroups(isNull(), anyString(), isNull())).thenReturn(mockGroupList);
+    when(mockGroup.getProfile()).thenReturn(mockGroupProfile);
+    when(mockGroupProfile.getName()).thenReturn("nonexistent");
+
+    Throwable caught =
+        assertThrows(
+            IllegalGraphqlArgumentException.class,
+            () -> _repo.createUser(identityAttributes, org, Set.of(), Set.of(), true));
+    assertEquals(
+        "Cannot add Okta user to nonexistent group=" + groupProfileName, caught.getMessage());
   }
 }
