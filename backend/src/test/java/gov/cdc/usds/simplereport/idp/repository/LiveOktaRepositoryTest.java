@@ -826,4 +826,71 @@ class LiveOktaRepositoryTest {
         assertThrows(IllegalGraphqlArgumentException.class, () -> _repo.reactivateUser(username));
     assertEquals("Cannot reactivate Okta user with unrecognized username", caught.getMessage());
   }
+
+  @Test
+  void resendActivationEmail_reactivate() {
+    var username = "fraud@example.com";
+    var mockUserList = mock(UserList.class);
+    var mockUser = mock(User.class);
+
+    when(_client.listUsers(eq(username), isNull(), isNull(), isNull(), isNull()))
+        .thenReturn(mockUserList);
+    when(mockUserList.stream()).then(i -> Stream.of(mockUser));
+    when(mockUserList.single()).thenReturn(mockUser);
+    when(mockUser.getStatus()).thenReturn(UserStatus.PROVISIONED);
+
+    _repo.resendActivationEmail(username);
+    verify(mockUser, times(1)).reactivate(true);
+  }
+
+  @Test
+  void resendActivationEmail_activate() {
+    var username = "fraud@example.com";
+    var mockUserList = mock(UserList.class);
+    var mockUser = mock(User.class);
+
+    when(_client.listUsers(eq(username), isNull(), isNull(), isNull(), isNull()))
+        .thenReturn(mockUserList);
+    when(mockUserList.stream()).then(i -> Stream.of(mockUser));
+    when(mockUserList.single()).thenReturn(mockUser);
+    when(mockUser.getStatus()).thenReturn(UserStatus.STAGED);
+
+    _repo.resendActivationEmail(username);
+    verify(mockUser, times(1)).activate(true);
+  }
+
+  // is it possible to make all of these just parameterized tests?
+  @Test
+  void resendActivationEmail_illegalGraphqlArgumentException_whenNoUsersFound() {
+    var username = "fraud@example.com";
+    var mockUserList = mock(UserList.class);
+
+    when(_client.listUsers(eq(username), isNull(), isNull(), isNull(), isNull()))
+        .thenReturn(mockUserList);
+    when(mockUserList.stream()).then(i -> Stream.of());
+
+    Throwable caught =
+        assertThrows(
+            IllegalGraphqlArgumentException.class, () -> _repo.resendActivationEmail(username));
+    assertEquals("Cannot reactivate Okta user with unrecognized username", caught.getMessage());
+  }
+
+  @Test
+  void
+      resendActivationEmail_illegalGraphqlArgumentException_whenUserStatusIsNotProvisionedOrStaged() {
+    var username = "fraud@example.com";
+    var mockUserList = mock(UserList.class);
+    var mockUser = mock(User.class);
+
+    when(_client.listUsers(eq(username), isNull(), isNull(), isNull(), isNull()))
+        .thenReturn(mockUserList);
+    when(mockUserList.stream()).then(i -> Stream.of(mockUser));
+    when(mockUserList.single()).thenReturn(mockUser);
+    when(mockUser.getStatus()).thenReturn(UserStatus.ACTIVE);
+
+    Throwable caught =
+        assertThrows(
+            IllegalGraphqlArgumentException.class, () -> _repo.resendActivationEmail(username));
+    assertEquals("Cannot reactivate user with status: " + UserStatus.ACTIVE, caught.getMessage());
+  }
 }
