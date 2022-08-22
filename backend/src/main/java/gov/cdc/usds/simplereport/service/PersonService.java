@@ -139,8 +139,8 @@ public class PersonService {
   // called by List function and Count function
   protected Specification<Person> buildPersonSearchFilter(
       UUID facilityId,
-      boolean isActive,
-      boolean isArchived,
+      boolean includeActivePatients,
+      boolean includeArchivedPatients,
       String namePrefixMatch,
       boolean includeArchivedFacilities) {
 
@@ -152,11 +152,11 @@ public class PersonService {
     // build up filter based on params
     Specification<Person> filter = inCurrentOrganizationFilter();
 
-    if (isActive && isArchived) {
+    if (includeActivePatients && includeArchivedPatients) {
       filter = filter.and(isActiveFilter().or(isDeletedFilter()));
-    } else if (isActive) {
+    } else if (includeActivePatients) {
       filter = filter.and(isActiveFilter());
-    } else if (isArchived) {
+    } else if (includeArchivedPatients) {
       filter = filter.and(isDeletedFilter());
     }
 
@@ -190,7 +190,7 @@ public class PersonService {
    * @param facilityId If null, then it means across accessible facilities in the whole organization
    * @param pageOffset Pagination offset is zero based
    * @param pageSize How many results to return, zero will result in the default page size (large)
-   * @param isArchived Default is false. true will ONLY show deleted users
+   * @param includeArchivedPatients Default is false, true will ONLY show deleted users
    * @param namePrefixMatch Null returns all users, any string will filter by first,middle,last
    *     names that start with these characters. Case insenstive. If fewer than
    * @param includeArchivedFacilities setting to true will include patients in archived facilities,
@@ -202,10 +202,10 @@ public class PersonService {
       UUID facilityId,
       int pageOffset,
       int pageSize,
-      boolean isArchived,
+      boolean includeArchivedPatients,
       String namePrefixMatch,
       boolean includeArchivedFacilities) {
-    return isArchived
+    return includeArchivedPatients
         ? getPatients(
             facilityId,
             pageOffset,
@@ -229,8 +229,8 @@ public class PersonService {
       UUID facilityId,
       int pageOffset,
       int pageSize,
-      boolean isActive,
-      boolean isArchived,
+      boolean includeActivePatients,
+      boolean includeArchivedPatients,
       String namePrefixMatch,
       boolean includeArchivedFacilities) {
     if (pageOffset < 0) {
@@ -246,7 +246,11 @@ public class PersonService {
 
     return _repo.findAll(
         buildPersonSearchFilter(
-            facilityId, isActive, isArchived, namePrefixMatch, includeArchivedFacilities),
+            facilityId,
+            includeActivePatients,
+            includeArchivedPatients,
+            namePrefixMatch,
+            includeArchivedFacilities),
         PageRequest.of(pageOffset, pageSize, NAME_SORT));
   }
 
