@@ -42,24 +42,6 @@ public class PatientResolver implements GraphQLQueryResolver {
         includeArchivedFacilities);
   }
 
-  public List<Person> getPatients(
-      UUID facilityId,
-      int pageNumber,
-      int pageSize,
-      boolean showActive,
-      boolean showDeleted,
-      String namePrefixMatch,
-      boolean includeArchivedFacilities) {
-    return _ps.getPatients(
-        facilityId,
-        pageNumber,
-        pageSize,
-        showActive,
-        showDeleted,
-        namePrefixMatch,
-        includeArchivedFacilities);
-  }
-
   // authorization happens in calls to PersonService
   public long patientsCount(UUID facilityId, boolean showDeleted, String namePrefixMatch) {
     return _ps.getPatientsCount(facilityId, showDeleted, namePrefixMatch, false);
