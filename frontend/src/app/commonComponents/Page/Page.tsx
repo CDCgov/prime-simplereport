@@ -38,6 +38,9 @@ const Page: React.FC<Props> = ({ header, children, isPatientApp }) => {
   }, []);
   return (
     <div className="App">
+      <a className="usa-skipnav" href="#main-wrapper">
+        Skip to main content
+      </a>
       <header
         className={
           isPatientApp
