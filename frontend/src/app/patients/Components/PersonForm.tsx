@@ -614,6 +614,7 @@ const PersonForm = (props: Props) => {
           onChange={onPersonChange("race")}
           required
           validationStatus={validationStatus("race")}
+          errorMessage={errors.race}
         />
         <div className="usa-form-group">
           <label className="usa-legend" htmlFor="tribal-affiliation">
@@ -637,6 +638,7 @@ const PersonForm = (props: Props) => {
           onChange={onPersonChange("ethnicity")}
           required
           validationStatus={validationStatus("ethnicity")}
+          errorMessage={errors.ethnicity}
         />
         <RadioGroup
           legend={t("patient.form.demographics.gender")}
@@ -647,6 +649,7 @@ const PersonForm = (props: Props) => {
           buttons={GENDER_VALUES}
           selectedRadio={patient.gender}
           onChange={onPersonChange("gender")}
+          errorMessage={errors.gender}
         />
       </FormGroup>
       <FormGroup title={t("patient.form.other.heading")}>
