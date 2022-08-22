@@ -181,7 +181,7 @@ const Header: React.FC<{}> = () => {
         <FontAwesomeIcon
           icon={"user-circle"}
           aria-hidden={false}
-          aria-label={"Profile"}
+          aria-label={"my account"}
           role={"img"}
           style={{
             color: staffDetailsVisible && !menuVisible ? "white" : "",
