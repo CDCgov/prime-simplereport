@@ -57,6 +57,18 @@ jest.mock("react-router-dom", () => {
   };
 });
 
+const mockFacility: any = {
+  id: "12345",
+};
+
+jest.mock("../../facilitySelect/useSelectedFacility", () => {
+  return {
+    useSelectedFacility: () => {
+      return [mockFacility, () => {}];
+    },
+  };
+});
+
 let container: any;
 
 describe("DeviceTypeFormContainer", () => {
@@ -94,7 +106,7 @@ describe("DeviceTypeFormContainer", () => {
 
     userEvent.click(screen.getByText("Save changes"));
 
-    await screen.findByText("Redirected to /admin");
+    await screen.findByText("Redirected to /admin?facility=12345");
 
     expect(mockCreateDeviceType).toBeCalledTimes(1);
     expect(mockCreateDeviceType).toHaveBeenCalledWith({
@@ -112,7 +124,7 @@ describe("DeviceTypeFormContainer", () => {
 
     await new Promise((resolve) => setTimeout(resolve, 0));
 
-    await screen.findByText("Redirected to /admin");
+    await screen.findByText("Redirected to /admin?facility=12345");
   });
   it("should display error on invalid test length", async () => {
     await new Promise((resolve) => setTimeout(resolve, 0));

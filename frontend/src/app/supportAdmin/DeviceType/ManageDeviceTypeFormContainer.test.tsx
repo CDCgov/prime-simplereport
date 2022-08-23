@@ -1,6 +1,7 @@
 import { render, screen } from "@testing-library/react";
 import userEvent from "@testing-library/user-event";
 import { ToastContainer } from "react-toastify";
+import React from "react";
 
 import { DeviceType, SpecimenType } from "../../../generated/graphql";
 
@@ -112,6 +113,18 @@ jest.mock("react-router-dom", () => {
   };
 });
 
+const mockFacility: any = {
+  id: "12345",
+};
+
+jest.mock("../../facilitySelect/useSelectedFacility", () => {
+  return {
+    useSelectedFacility: () => {
+      return [mockFacility, () => {}];
+    },
+  };
+});
+
 let container: any;
 
 describe("ManageDeviceTypeFormContainer", () => {
@@ -169,7 +182,9 @@ describe("ManageDeviceTypeFormContainer", () => {
       },
     });
 
-    expect(await screen.findByText("Redirected to /admin")).toBeInTheDocument();
+    expect(
+      await screen.findByText("Redirected to /admin?facility=12345")
+    ).toBeInTheDocument();
   });
 
   it("should display error when update fails", async () => {
