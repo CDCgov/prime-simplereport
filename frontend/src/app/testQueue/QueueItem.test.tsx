@@ -6,6 +6,7 @@ import { render, screen, waitFor, within } from "@testing-library/react";
 import moment from "moment";
 import userEvent from "@testing-library/user-event";
 import { MemoryRouter } from "react-router-dom";
+import * as flaggedMock from "flagged";
 
 import { getAppInsights } from "../TelemetryService";
 import * as utils from "../utils/index";
@@ -45,7 +46,6 @@ describe("QueueItem", () => {
   let store: MockStoreEnhanced<unknown, {}>;
   const mockStore = configureStore([]);
   const trackEventMock = jest.fn();
-  process.env.REACT_APP_MULTIPLEX_ENABLED = "true";
 
   beforeEach(() => {
     store = mockStore({
@@ -438,6 +438,8 @@ describe("QueueItem", () => {
       await waitFor(() => expect(editQueueMockIsDone).toBe(true));
     });
     it("adds radio buttons for Flu A and Flu B when a multiplex device is chosen", async () => {
+      jest.spyOn(flaggedMock, "useFeature").mockReturnValue(true);
+
       expect(screen.queryByText("Flu A")).not.toBeInTheDocument();
       expect(screen.queryByText("Flu B")).not.toBeInTheDocument();
       const deviceDropdown = (
@@ -454,6 +456,8 @@ describe("QueueItem", () => {
 
       expect(await screen.findByText("Flu A")).toBeInTheDocument();
       expect(await screen.findByText("Flu B")).toBeInTheDocument();
+
+      jest.resetAllMocks();
     });
   });
 
@@ -997,6 +1001,8 @@ describe("QueueItem", () => {
   });
   describe("when a multiplex device is chosen", () => {
     beforeEach(() => {
+      jest.spyOn(flaggedMock, "useFeature").mockReturnValue(true);
+
       const selectedTestResults: SRMultiplexResult[] = [
         {
           disease: { name: "COVID-19" },
@@ -1182,6 +1188,9 @@ describe("QueueItem", () => {
           </MockedProvider>
         </MemoryRouter>
       );
+    });
+    afterEach(() => {
+      jest.resetAllMocks();
     });
 
     it("renders radio buttons with results for Flu A and Flu B", () => {

@@ -1,7 +1,9 @@
 name: Deploy Test
 
 on:
-  workflow_dispatch:
+  push:
+    branches:
+      - main
 
 concurrency:
   group: test-deploy
@@ -11,6 +13,8 @@ env:
   NODE_VERSION: 14
 
 jobs:
+  build-cypress:
+    uses: ./.github/workflows/buildCypressImage.yml
   build-docker:
     runs-on: ubuntu-latest
     defaults:
@@ -110,3 +114,17 @@ jobs:
         with:
           client-tarball: client.tgz
           deploy-env: ${{env.DEPLOY_ENV}}
+  run-cypress:
+    needs: [build-cypress, deploy]
+    uses: ./.github/workflows/e2eRemote.yml
+    with:
+      cypress_okta_redirect_uri: "https%3A%2F%2Ftest.simplereport.gov%2Fapp%2F"
+      cypress_okta_scope: "simple_report_test"
+      cypress_okta_client_id: "0oa1khettjHnj3EPT1d7"
+      spec_path: "cypress/integration/00*,cypress/integration/01*,cypress/integration/02*,cypress/integration/03*,cypress/integration/04*,cypress/integration/05*,cypress/integration/06*"
+      test_env: "https://test.simplereport.gov"
+      deploy_env: test
+    secrets:
+      cypress_okta_username: ${{ secrets.CYPRESS_OKTA_USERNAME }}
+      cypress_okta_password: ${{ secrets.CYPRESS_OKTA_PASSWORD }}
+      cypress_okta_secret: ${{ secrets.CYPRESS_OKTA_SECRET }}

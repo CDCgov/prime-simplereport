@@ -145,10 +145,16 @@ export type MultiplexResult = {
   testResult?: Maybe<Scalars["String"]>;
 };
 
+export type MultiplexResultInput = {
+  diseaseName?: InputMaybe<Scalars["String"]>;
+  testResult?: InputMaybe<Scalars["String"]>;
+};
+
 export type Mutation = {
   __typename?: "Mutation";
   addFacility?: Maybe<Facility>;
   addFacilityNew?: Maybe<Scalars["String"]>;
+  addMultiplexResult?: Maybe<AddTestResultResponse>;
   addPatient?: Maybe<Patient>;
   addPatientToQueue?: Maybe<Scalars["String"]>;
   addTestResultMultiplex?: Maybe<AddTestResultResponse>;
@@ -166,6 +172,7 @@ export type Mutation = {
   editPendingOrganization?: Maybe<Scalars["String"]>;
   editQueueItem?: Maybe<TestOrder>;
   editQueueItemMultiplex?: Maybe<TestOrder>;
+  editQueueItemMultiplexResult?: Maybe<TestOrder>;
   markFacilityAsDeleted?: Maybe<Scalars["String"]>;
   markOrganizationAsDeleted?: Maybe<Scalars["String"]>;
   markPendingOrganizationAsDeleted?: Maybe<Scalars["String"]>;
@@ -246,6 +253,14 @@ export type MutationAddFacilityNewArgs = {
   streetTwo?: InputMaybe<Scalars["String"]>;
   testingFacilityName: Scalars["String"];
   zipCode: Scalars["String"];
+};
+
+export type MutationAddMultiplexResultArgs = {
+  dateTested?: InputMaybe<Scalars["DateTime"]>;
+  deviceId: Scalars["String"];
+  deviceSpecimenType?: InputMaybe<Scalars["ID"]>;
+  patientId: Scalars["ID"];
+  results: Array<InputMaybe<MultiplexResultInput>>;
 };
 
 export type MutationAddPatientArgs = {
@@ -424,6 +439,14 @@ export type MutationEditQueueItemMultiplexArgs = {
   deviceSpecimenType?: InputMaybe<Scalars["ID"]>;
   id: Scalars["ID"];
   results?: InputMaybe<Array<InputMaybe<DiseaseResult>>>;
+};
+
+export type MutationEditQueueItemMultiplexResultArgs = {
+  dateTested?: InputMaybe<Scalars["DateTime"]>;
+  deviceId?: InputMaybe<Scalars["String"]>;
+  deviceSpecimenType?: InputMaybe<Scalars["ID"]>;
+  id: Scalars["ID"];
+  results?: InputMaybe<Array<InputMaybe<MultiplexResultInput>>>;
 };
 
 export type MutationMarkFacilityAsDeletedArgs = {

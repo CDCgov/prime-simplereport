@@ -2,6 +2,7 @@ import React from "react";
 import Modal from "react-modal";
 import classnames from "classnames";
 import { useTranslation } from "react-i18next";
+import { useFeature } from "flagged";
 
 import Button from "../commonComponents/Button/Button";
 import MultiplexResultsGuidance from "../commonComponents/MultiplexResultsGuidance";
@@ -70,7 +71,7 @@ export const StaticTestResultModal = ({
     results,
     dateTested,
   } = testResult;
-  const multiplexEnabled = process.env.REACT_APP_MULTIPLEX_ENABLED === "true";
+  const multiplexEnabled = useFeature("multiplexEnabled") as boolean;
   const isPatientApp = false;
 
   return (

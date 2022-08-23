@@ -13,6 +13,7 @@ import moment, { Moment } from "moment";
 import { useSelector } from "react-redux";
 import { useNavigate } from "react-router-dom";
 import { throttle } from "lodash";
+import { useFeature } from "flagged";
 
 import {
   DiseaseResult,
@@ -171,9 +172,7 @@ const QueueItem = ({
 }: QueueItemProps) => {
   const appInsights = getAppInsights();
   const navigate = useNavigate();
-  const multiplexFlag = JSON.parse(
-    process.env.REACT_APP_MULTIPLEX_ENABLED || "false"
-  );
+  const multiplexFlag = useFeature("multiplexEnabled");
 
   const trackRemovePatientFromQueue = () => {
     if (appInsights) {
@@ -841,6 +840,7 @@ const QueueItem = ({
                           saveState === "error" && "card-test-input__error",
                           dateBeforeWarnThreshold && "card-correction-input"
                         )}
+                        aria-label="Test date"
                         id="test-date"
                         data-testid="test-date"
                         name="test-date"
@@ -860,6 +860,7 @@ const QueueItem = ({
                           dateBeforeWarnThreshold && "card-correction-input"
                         )}
                         name={"test-time"}
+                        aria-label="Test time"
                         data-testid="test-time"
                         type="time"
                         step="60"
@@ -876,6 +877,7 @@ const QueueItem = ({
                             checked={useCurrentDateTime === "true"}
                             type="checkbox"
                             onChange={onUseCurrentDateChange}
+                            aria-label="Use current date and time"
                           />
                           <label
                             className="usa-checkbox__label margin-0 margin-right-05em"

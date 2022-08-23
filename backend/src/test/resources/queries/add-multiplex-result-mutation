@@ -1,0 +1,17 @@
+mutation addMultiplexResult($deviceId: String!, $results: [MultiplexResultInput]!, $patientId: ID!, $dateTested: DateTime) {
+    addMultiplexResult(
+      patientId: $patientId,
+      deviceId: $deviceId,
+      results: $results,
+      dateTested: $dateTested
+    ) {
+      testResult {
+        internalId,
+        result,
+        deviceType {
+          internalId
+        }
+      }
+      deliverySuccess
+    }
+  }

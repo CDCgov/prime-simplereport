@@ -1,7 +1,10 @@
 import { Card } from "../../commonComponents/Card/Card";
 import { CardBackground } from "../../commonComponents/CardBackground/CardBackground";
+import { useDocumentTitle } from "../../utils/hooks";
 
 const RequestAccess = () => {
+  useDocumentTitle("Request access | SimpleReport");
+
   return (
     <CardBackground>
       <Card logo>

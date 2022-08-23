@@ -263,6 +263,16 @@ type MultiplexResult {
   testResult: String
 }
 
+input DiseaseResult {
+  diseaseName: String
+  testResult: String
+}
+
+input MultiplexResultInput {
+  diseaseName: String
+  testResult: String
+}
+
 type OrganizationLevelDashboardMetrics {
   organizationPositiveTestCount: Int
   organizationNegativeTestCount: Int
@@ -332,11 +342,6 @@ type FeedbackMessage {
 type UploadSubmissionPage {
   totalElements: Int!
   content: [UploadResult!]!
-}
-
-input DiseaseResult {
-  diseaseName: String
-  testResult: String
 }
 
 # Queries and mutations for everyday use
@@ -559,7 +564,7 @@ type Mutation {
   updateUserPrivileges(
     id: ID!
     accessAllFacilities: Boolean!
-    facilities: [ID!]
+    facilities: [ID!] @Size(min: 0, max: 5000)
     role: Role!
   ): User @requiredPermissions(allOf: ["MANAGE_USERS"])
   resetUserPassword(id: ID!): User @requiredPermissions(allOf: ["MANAGE_USERS"])
@@ -655,6 +660,13 @@ type Mutation {
     patientId: ID!
     dateTested: DateTime
   ): AddTestResultResponse @requiredPermissions(allOf: ["SUBMIT_TEST"])
+  addMultiplexResult (
+    deviceId: String!
+    deviceSpecimenType: ID
+    results: [MultiplexResultInput]!
+    patientId: ID!
+    dateTested: DateTime
+  ): AddTestResultResponse @requiredPermissions(allOf: ["SUBMIT_TEST"])
   editQueueItem(
     id: ID!
     deviceId: String
@@ -667,6 +679,13 @@ type Mutation {
     deviceId: String
     deviceSpecimenType: ID
     results: [DiseaseResult]
+    dateTested: DateTime
+  ): TestOrder @requiredPermissions(allOf: ["UPDATE_TEST"])
+  editQueueItemMultiplexResult(
+    id: ID!
+    deviceId: String
+    deviceSpecimenType: ID
+    results: [MultiplexResultInput]
     dateTested: DateTime
   ): TestOrder @requiredPermissions(allOf: ["UPDATE_TEST"])
   correctTestMarkAsError(id: ID!, reason: String): TestResult

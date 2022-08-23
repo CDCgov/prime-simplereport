@@ -15,6 +15,7 @@ import {
 import Select from "../../commonComponents/Select";
 import StepIndicator from "../../commonComponents/StepIndicator";
 import { DatePicker } from "../../commonComponents/DatePicker";
+import { useDocumentTitle } from "../../utils/hooks";
 
 import {
   initPersonalDetails,
@@ -55,6 +56,7 @@ const PersonalDetailsForm = ({
   const [saving, setSaving] = useState(false);
   const [formChanged, setFormChanged] = useState(false);
   const [submitted, setSubmitted] = useState(false);
+  useDocumentTitle("Sign up - personal details | SimpleReport");
 
   const onDetailChange = (field: keyof IdentityVerificationRequest) => (
     value: IdentityVerificationRequest[typeof field]
