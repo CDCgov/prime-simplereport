@@ -840,6 +840,7 @@ const QueueItem = ({
                           saveState === "error" && "card-test-input__error",
                           dateBeforeWarnThreshold && "card-correction-input"
                         )}
+                        aria-label="Test date"
                         id="test-date"
                         data-testid="test-date"
                         name="test-date"
@@ -859,6 +860,7 @@ const QueueItem = ({
                           dateBeforeWarnThreshold && "card-correction-input"
                         )}
                         name={"test-time"}
+                        aria-label="Test time"
                         data-testid="test-time"
                         type="time"
                         step="60"
@@ -875,6 +877,7 @@ const QueueItem = ({
                             checked={useCurrentDateTime === "true"}
                             type="checkbox"
                             onChange={onUseCurrentDateChange}
+                            aria-label="Use current date and time"
                           />
                           <label
                             className="usa-checkbox__label margin-0 margin-right-05em"

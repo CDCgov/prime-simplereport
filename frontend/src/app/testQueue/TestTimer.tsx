@@ -237,8 +237,10 @@ export const TestTimerWidget = ({ timer, context }: Props) => {
         className="timer-button timer-reset"
         onClick={() => start(trackTimerStart)}
         data-testid="timer"
+        aria-label="Start timer"
       >
-        <span>{mmss(countdown)}</span> <FontAwesomeIcon icon={faStopwatch} />
+        <span role="timer">{mmss(countdown)}</span>{" "}
+        <FontAwesomeIcon icon={faStopwatch} />
       </button>
     );
   }
@@ -248,8 +250,10 @@ export const TestTimerWidget = ({ timer, context }: Props) => {
         className="timer-button timer-running"
         onClick={() => reset(trackTimerReset)}
         data-testid="timer"
+        aria-label="Reset timer"
       >
-        <span>{mmss(countdown)}</span> <FontAwesomeIcon icon={faRedo} />
+        <span role="timer">{mmss(countdown)}</span>{" "}
+        <FontAwesomeIcon icon={faRedo} />
       </button>
     );
   }
@@ -266,9 +270,12 @@ export const TestTimerWidget = ({ timer, context }: Props) => {
         className="timer-button timer-ready"
         onClick={() => reset(trackTimerReset)}
         data-testid="timer"
+        aria-label="Reset timer"
       >
         <span className="result-ready">RESULT READY</span>{" "}
-        <span className="timer-overtime">{mmss(elapsed)} elapsed </span>{" "}
+        <span className="timer-overtime" role="timer">
+          {mmss(elapsed)} elapsed{" "}
+        </span>{" "}
         <FontAwesomeIcon icon={faRedo} />
       </button>
     </div>

@@ -558,7 +558,7 @@ type Mutation {
   updateUserPrivileges(
     id: ID!
     accessAllFacilities: Boolean!
-    facilities: [ID!]
+    facilities: [ID!] @Size(min: 0, max: 5000)
     role: Role!
   ): User @requiredPermissions(allOf: ["MANAGE_USERS"])
   resetUserPassword(id: ID!): User @requiredPermissions(allOf: ["MANAGE_USERS"])
