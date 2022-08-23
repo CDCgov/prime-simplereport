@@ -12,11 +12,13 @@ import {
 import { LoadingCard } from "../../commonComponents/LoadingCard/LoadingCard";
 import { showNotification } from "../../utils";
 import Alert from "../../commonComponents/Alert";
+import { useSelectedFacility } from "../../facilitySelect/useSelectedFacility";
 
 import DeviceForm, { Device } from "./DeviceForm";
 
 const ManageDeviceTypeFormContainer = () => {
   const [submitted, setSubmitted] = useState(false);
+  const [activeFacility] = useSelectedFacility();
   const [updateDeviceType] = useUpdateDeviceTypeMutation();
   const { data: specimenTypesResults } = useGetSpecimenTypesQuery({
     fetchPolicy: "no-cache",
@@ -66,7 +68,7 @@ const ManageDeviceTypeFormContainer = () => {
   };
 
   if (submitted) {
-    return <Navigate to="/admin" />;
+    return <Navigate to={`/admin?facility=${activeFacility?.id}`} />;
   }
 
   if (deviceTypeResults && specimenTypesResults && supportedDiseaseResults) {
