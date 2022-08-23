@@ -454,7 +454,7 @@ describe("AddPatient", () => {
         );
 
         expect(
-          await screen.findByText("Race is required", { exact: false })
+          await screen.findByText("Race is missing", { exact: false })
         ).toBeInTheDocument();
       });
     });
