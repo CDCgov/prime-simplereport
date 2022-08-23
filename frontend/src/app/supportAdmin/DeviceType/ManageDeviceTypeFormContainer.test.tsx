@@ -1,7 +1,6 @@
 import { render, screen } from "@testing-library/react";
 import userEvent from "@testing-library/user-event";
 import { ToastContainer } from "react-toastify";
-import React from "react";
 
 import { DeviceType, SpecimenType } from "../../../generated/graphql";
 
