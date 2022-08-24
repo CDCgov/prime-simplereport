@@ -52,8 +52,8 @@ public class TestResultUploadService {
   private static final int FIVE_MINUTES_MS = 300 * 1000;
   private static final String REPORTING_SCOPE = "report";
 
-  private String createReportingScope(String scope) {
-    return String.join(".", scope, REPORTING_SCOPE);
+  private String createReportingScope(String reportStreamClientName) {
+    return String.join(".", reportStreamClientName, "*", REPORTING_SCOPE);
   }
 
   public String createDataHubSenderToken(String privateKey) throws InvalidRSAPrivateKeyException {
