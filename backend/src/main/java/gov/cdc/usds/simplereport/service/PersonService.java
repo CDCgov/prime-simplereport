@@ -224,7 +224,6 @@ public class PersonService {
             includeArchivedFacilities);
   }
 
-  @AuthorizationConfiguration.RequireSpecificPatientSearchPermission
   public List<Person> getPatients(
       UUID facilityId,
       int pageOffset,
@@ -281,7 +280,7 @@ public class PersonService {
     var filter =
         isArchived
             ? buildPersonSearchFilter(
-                facilityId, false, true, namePrefixMatch, includeArchivedFacilities)
+                facilityId, true, true, namePrefixMatch, includeArchivedFacilities)
             : buildPersonSearchFilter(
                 facilityId, true, false, namePrefixMatch, includeArchivedFacilities);
     return _repo.count(filter);
