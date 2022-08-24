@@ -6,16 +6,17 @@ import {
   TestResultDeliveryPreference,
   TestResultDeliveryPreferences,
 } from "../patients/TestResultDeliveryPreference";
+import { TEST_RESULTS } from "../testResults/constants";
 import i18n from "../../i18n";
 
 export const DATE_FORMAT_MM_DD_YYYY =
   "^([0-9]{1,2}/[0-9]{1,2}/[0-9]{4})|([0-9]{1,2}-[0-9]{1,2}-[0-9]{4})|([0-9]{8})$";
 
 export const COVID_RESULTS: { [key: string]: TestResult } = {
-  POSITIVE: "POSITIVE",
-  NEGATIVE: "NEGATIVE",
-  INCONCLUSIVE: "UNDETERMINED",
-  UNKNOWN: "UNKNOWN",
+  POSITIVE: TEST_RESULTS.POSITIVE,
+  NEGATIVE: TEST_RESULTS.NEGATIVE,
+  INCONCLUSIVE: TEST_RESULTS.UNDETERMINED,
+  UNKNOWN: TEST_RESULTS.UNKNOWN,
 };
 
 const testResultDescriptions = (t: TFunction): Record<TestResult, string> => {

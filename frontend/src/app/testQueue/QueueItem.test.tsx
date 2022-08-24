@@ -12,8 +12,8 @@ import { getAppInsights } from "../TelemetryService";
 import * as utils from "../utils/index";
 import { TestCorrectionReason } from "../testResults/TestResultCorrectionModal";
 import {
-  SubmitTestResultMultiplexDocument as SUBMIT_TEST_RESULT,
-  EditQueueItemMultiplexDocument as EDIT_QUEUE_ITEM,
+  AddMultiplexResultDocument as SUBMIT_TEST_RESULT,
+  EditQueueItemMultiplexResultDocument as EDIT_QUEUE_ITEM,
 } from "../../generated/graphql";
 import * as generatedGraphql from "../../generated/graphql";
 
@@ -323,7 +323,7 @@ describe("QueueItem", () => {
 
             return {
               data: {
-                editQueueItemMultiplex: {
+                editQueueItemMultiplexResult: {
                   results: [
                     {
                       disease: { name: "COVID-19" },
@@ -360,7 +360,7 @@ describe("QueueItem", () => {
 
             return {
               data: {
-                editQueueItemMultiplex: {
+                editQueueItemMultiplexResult: {
                   results: [
                     {
                       disease: { name: "COVID-19" },
@@ -524,7 +524,7 @@ describe("QueueItem", () => {
             submitTestMockIsDone = true;
             return {
               data: {
-                addTestResultMultiplex: {
+                addMultiplexResult: {
                   testResult: {
                     internalId: internalId,
                   },
@@ -1003,7 +1003,7 @@ describe("QueueItem", () => {
     beforeEach(() => {
       jest.spyOn(flaggedMock, "useFeature").mockReturnValue(true);
 
-      const selectedTestResults: SRMultiplexResult[] = [
+      const selectedTestResults: MultiplexResult[] = [
         {
           disease: { name: "COVID-19" },
           testResult: "POSITIVE",
@@ -1032,7 +1032,7 @@ describe("QueueItem", () => {
           result: () => {
             return {
               data: {
-                editQueueItemMultiplex: {
+                editQueueItemMultiplexResult: {
                   results: [
                     {
                       disease: { name: "COVID-19" },
@@ -1082,7 +1082,7 @@ describe("QueueItem", () => {
           result: () => {
             return {
               data: {
-                editQueueItemMultiplex: {
+                editQueueItemMultiplexResult: {
                   results: [
                     {
                       disease: { name: "COVID-19" },
@@ -1132,7 +1132,7 @@ describe("QueueItem", () => {
           result: () => {
             return {
               data: {
-                editQueueItemMultiplex: {
+                editQueueItemMultiplexResult: {
                   results: [
                     {
                       disease: { name: "COVID-19" },
@@ -1214,7 +1214,7 @@ describe("QueueItem", () => {
 
       const editQueueSpy = jest.spyOn(
         generatedGraphql,
-        "useEditQueueItemMultiplexMutation"
+        "useEditQueueItemMultiplexResultMutation"
       );
       await waitFor(() => expect(editQueueSpy).toHaveBeenCalled());
     });
@@ -1454,7 +1454,7 @@ const mocks = [
     },
     result: {
       data: {
-        addTestResultMultiplex: {
+        addMultiplexResult: {
           testResult: {
             internalId: internalId,
           },

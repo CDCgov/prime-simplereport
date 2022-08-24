@@ -26,8 +26,8 @@ const data = {
     testEventId: "12321312",
     result: "POSITIVE" as TestResult,
     results: [
-      { disease: { name: "COVID-19" }, result: "POSITIVE" },
-    ] as PxpMultiplexResult[],
+      { disease: { name: "COVID-19" }, testResult: "POSITIVE" },
+    ] as MultiplexResult[],
     dateTested: new Date("2021-08-20").toDateString(),
     correctionStatus: "ORIGINAL",
     deviceType: {
@@ -77,7 +77,7 @@ export const PositiveCovid = () => {
 export const NegativeCovid = () => {
   let editedData = cloneDeep(data);
   editedData.testResult.results = [
-    { disease: { name: "COVID-19" }, result: "NEGATIVE" },
+    { disease: { name: "COVID-19" }, testResult: "NEGATIVE" },
   ];
   let store = mockStore(editedData);
   return (
@@ -93,7 +93,7 @@ export const NegativeCovid = () => {
 export const InconclusiveCovid = () => {
   let editedData = cloneDeep(data);
   editedData.testResult.results = [
-    { disease: { name: "COVID-19" }, result: "UNDETERMINED" },
+    { disease: { name: "COVID-19" }, testResult: "UNDETERMINED" },
   ];
   let store = mockStore(editedData);
   return (
@@ -109,9 +109,9 @@ export const InconclusiveCovid = () => {
 export const PositiveFluMultiplex = () => {
   let editedData = cloneDeep(data);
   editedData.testResult.results = [
-    { disease: { name: "Flu B" }, result: "NEGATIVE" },
-    { disease: { name: "Flu A" }, result: "POSITIVE" },
-    { disease: { name: "COVID-19" }, result: "NEGATIVE" },
+    { disease: { name: "Flu B" }, testResult: "NEGATIVE" },
+    { disease: { name: "Flu A" }, testResult: "POSITIVE" },
+    { disease: { name: "COVID-19" }, testResult: "NEGATIVE" },
   ];
   let store = mockStore(editedData);
   return (
@@ -127,9 +127,9 @@ export const PositiveFluMultiplex = () => {
 export const PositiveCovidMultiplex = () => {
   let editedData = cloneDeep(data);
   editedData.testResult.results = [
-    { disease: { name: "Flu B" }, result: "NEGATIVE" },
-    { disease: { name: "Flu A" }, result: "NEGATIVE" },
-    { disease: { name: "COVID-19" }, result: "POSITIVE" },
+    { disease: { name: "Flu B" }, testResult: "NEGATIVE" },
+    { disease: { name: "Flu A" }, testResult: "NEGATIVE" },
+    { disease: { name: "COVID-19" }, testResult: "POSITIVE" },
   ];
   let store = mockStore(editedData);
   return (
@@ -145,9 +145,9 @@ export const PositiveCovidMultiplex = () => {
 export const PositiveAllMultiplex = () => {
   let editedData = cloneDeep(data);
   editedData.testResult.results = [
-    { disease: { name: "Flu A" }, result: "POSITIVE" },
-    { disease: { name: "Flu B" }, result: "POSITIVE" },
-    { disease: { name: "COVID-19" }, result: "POSITIVE" },
+    { disease: { name: "Flu A" }, testResult: "POSITIVE" },
+    { disease: { name: "Flu B" }, testResult: "POSITIVE" },
+    { disease: { name: "COVID-19" }, testResult: "POSITIVE" },
   ];
   let store = mockStore(editedData);
   return (
@@ -163,9 +163,9 @@ export const PositiveAllMultiplex = () => {
 export const NegativeAllMultiplex = () => {
   let editedData = cloneDeep(data);
   editedData.testResult.results = [
-    { disease: { name: "Flu B" }, result: "NEGATIVE" },
-    { disease: { name: "Flu A" }, result: "NEGATIVE" },
-    { disease: { name: "COVID-19" }, result: "NEGATIVE" },
+    { disease: { name: "Flu B" }, testResult: "NEGATIVE" },
+    { disease: { name: "Flu A" }, testResult: "NEGATIVE" },
+    { disease: { name: "COVID-19" }, testResult: "NEGATIVE" },
   ];
   let store = mockStore(editedData);
   return (
@@ -181,9 +181,9 @@ export const NegativeAllMultiplex = () => {
 export const UndeterminedAllMultiplex = () => {
   let editedData = cloneDeep(data);
   editedData.testResult.results = [
-    { disease: { name: "Flu B" }, result: "UNDETERMINED" },
-    { disease: { name: "Flu A" }, result: "UNDETERMINED" },
-    { disease: { name: "COVID-19" }, result: "UNDETERMINED" },
+    { disease: { name: "Flu B" }, testResult: "UNDETERMINED" },
+    { disease: { name: "Flu A" }, testResult: "UNDETERMINED" },
+    { disease: { name: "COVID-19" }, testResult: "UNDETERMINED" },
   ];
   let store = mockStore(editedData);
   return (

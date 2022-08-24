@@ -2,15 +2,16 @@ import React from "react";
 import { render, screen } from "@testing-library/react";
 import userEvent from "@testing-library/user-event";
 
-import { DiseaseResult } from "../../generated/graphql";
+import { MultiplexResultInput } from "../../generated/graphql";
 
 import CovidResultInputForm from "./CovidResultInputForm";
+import { MULTIPLEX_DISEASES, TEST_RESULTS } from "./constants";
 
 describe("TestResultInputForm", () => {
-  const positiveResult: DiseaseResult[] = [
+  const positiveResult: MultiplexResultInput[] = [
     {
-      diseaseName: "COVID-19",
-      testResult: "POSITIVE",
+      diseaseName: MULTIPLEX_DISEASES.COVID_19,
+      testResult: TEST_RESULTS.POSITIVE,
     },
   ];
 
@@ -60,7 +61,10 @@ describe("TestResultInputForm", () => {
 
     userEvent.click(screen.getByLabelText("Negative (-)"));
     expect(onChangeFn).toBeCalledWith([
-      { diseaseName: "COVID-19", testResult: "NEGATIVE" },
+      {
+        diseaseName: MULTIPLEX_DISEASES.COVID_19,
+        testResult: TEST_RESULTS.NEGATIVE,
+      },
     ]);
   });
 
