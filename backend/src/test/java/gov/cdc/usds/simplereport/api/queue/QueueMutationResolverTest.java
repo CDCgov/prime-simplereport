@@ -10,7 +10,6 @@ import com.google.i18n.phonenumbers.NumberParseException;
 import gov.cdc.usds.simplereport.db.model.DeviceSpecimenType;
 import gov.cdc.usds.simplereport.db.model.DeviceType;
 import gov.cdc.usds.simplereport.db.model.Organization;
-import gov.cdc.usds.simplereport.db.model.auxiliary.DiseaseResult;
 import gov.cdc.usds.simplereport.db.model.auxiliary.MultiplexResultInput;
 import gov.cdc.usds.simplereport.db.model.auxiliary.TestResult;
 import gov.cdc.usds.simplereport.service.BaseServiceTest;
@@ -68,30 +67,6 @@ class QueueMutationResolverTest extends BaseServiceTest<TestOrderService> {
             eq(TestResult.POSITIVE),
             eq(_patientId),
             eq(_dateTested));
-  }
-
-  @Test
-  void getDeviceSpecimenTypeId_returnsDeviceSpecimenTypeIdGivenDiseaseResult() {
-    var deviceTypeService = mock(DeviceTypeService.class);
-    var personService = mock(PersonService.class);
-    var testOrderService = mock(TestOrderService.class);
-    var queueMutationResolver =
-        new QueueMutationResolver(testOrderService, personService, deviceTypeService);
-    List<DiseaseResult> results = new ArrayList<>();
-    results.add(new DiseaseResult(_diseaseService.covid().getName(), TestResult.POSITIVE));
-    UUID deviceUUID = _deviceType.getInternalId();
-    String deviceId = deviceUUID.toString();
-    UUID deviceSpecimenTypeUUID = _deviceSpecimenType.getInternalId();
-    UUID testOrderId = UUID.randomUUID();
-
-    // WHEN
-    queueMutationResolver.editQueueItemMultiplex(
-        testOrderId, deviceId, deviceSpecimenTypeUUID, results, _dateTested);
-    // THEN
-    verify(deviceTypeService, never()).getFirstDeviceSpecimenTypeForDeviceTypeId(deviceUUID);
-    verify(testOrderService)
-        .editQueueItemMultiplex(
-            eq(testOrderId), eq(deviceSpecimenTypeUUID), eq(results), eq(_dateTested));
   }
 
   @Test
