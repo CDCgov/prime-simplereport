@@ -51,8 +51,13 @@ describe("Organization sign up", () => {
       .click();
     cy.get("#verify-button").click();
     cy.get("#verify-confirmation").click();
+    // cy.get("#verify-confirmation").trigger("click", { force: true });
+    // cy.contains(`${organization.name}`).should('not.exist')
+    // cy.wait(1000)
+    // cy.get("#verify-confirmation").click();
+    // cy.get("#verify-confirmation").click();
     cy.contains(`Identity verified for ${organization.name}`, {
-      timeout: 30000,
+      timeout: 30000
     });
   });
   it("spoofs into the org", () => {

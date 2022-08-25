@@ -17,7 +17,7 @@ jobs:
     - name: Set Swap Space
       uses: ./.github/actions/set-swap-space
       with:
-        swap-size-gb: 10
+        swap-size-gb: 13
 
     - name: Generate certs
       run: |
@@ -70,7 +70,7 @@ jobs:
         CYPRESS_OKTA_PASSWORD: ${{ secrets.CYPRESS_OKTA_PASSWORD }}
         CYPRESS_OKTA_SECRET: ${{ secrets.CYPRESS_OKTA_SECRET }}
         WIREMOCK_URL: "http://cypress:8088"
-        SPEC_PATH: "cypress/integration/*"
+        SPEC_PATH: "cypress/integration/01*"
         TEST_ENV: "https://localhost.simplereport.gov"
         # frontend settings
         REACT_APP_OKTA_URL: "http://cypress:8088"

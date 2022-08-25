@@ -62,7 +62,7 @@ jobs:
         username: ${{ github.actor }}
         password: ${{ secrets.GITHUB_TOKEN }}
 
-    - name: pull apps - This will only run against stg after merge to main
+    - name: pull apps - This will only run against test after merge to main
       run: |
         echo "::group::Pull Cypress image"
         docker-compose -f docker-compose.yml -f docker-compose.cypress.yml pull cypress

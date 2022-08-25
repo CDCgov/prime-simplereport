@@ -67,9 +67,9 @@ export const generateUser = () => {
 
 // Don't fail tests on redirect to Okta for login
 Cypress.on("uncaught:exception", (err, _runnable) => {
-  if (err.message.includes("Not authenticated, redirecting to Okta...")) {
+  // if (err.message.includes("Not authenticated, redirecting to Okta...")) {
     return false;
-  }
+  // }
 });
 
 export const loginHooks = () => {
