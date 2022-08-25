@@ -7,6 +7,7 @@ import {
   getSortedResults,
   hasMultiplexResults,
 } from "../utils/testResults";
+import { MULTIPLEX_DISEASES, TEST_RESULTS } from "../testResults/constants";
 
 interface Props {
   results: MultiplexResults;
@@ -16,11 +17,11 @@ interface Props {
 
 const setDiseaseName = (diseaseName: MultiplexDisease, t: translateFn) => {
   switch (diseaseName) {
-    case "COVID-19":
+    case MULTIPLEX_DISEASES.COVID_19:
       return t("constants.disease.COVID19");
-    case "Flu A":
+    case MULTIPLEX_DISEASES.FLU_A:
       return t("constants.disease.FLUA");
-    case "Flu B":
+    case MULTIPLEX_DISEASES.FLU_B:
       return t("constants.disease.FLUB");
     default:
       return "";
@@ -29,9 +30,9 @@ const setDiseaseName = (diseaseName: MultiplexDisease, t: translateFn) => {
 
 const setResult = (result: string, t: translateFn) => {
   switch (result) {
-    case "POSITIVE":
+    case TEST_RESULTS.POSITIVE:
       return t("constants.testResults.POSITIVE");
-    case "NEGATIVE":
+    case TEST_RESULTS.NEGATIVE:
       return t("constants.testResults.NEGATIVE");
     default:
       return t("constants.testResults.UNDETERMINED");
@@ -40,9 +41,9 @@ const setResult = (result: string, t: translateFn) => {
 
 const setResultSymbol = (result: string, t: translateFn) => {
   switch (result) {
-    case "POSITIVE":
+    case TEST_RESULTS.POSITIVE:
       return t("constants.testResultsSymbols.POSITIVE");
-    case "NEGATIVE":
+    case TEST_RESULTS.NEGATIVE:
       return t("constants.testResultsSymbols.NEGATIVE");
     default:
       return "";
