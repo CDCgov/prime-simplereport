@@ -68,6 +68,9 @@ export const DatePicker = ({
         defaultValue={defaultValue}
         minDate={minDate}
         maxDate={maxDate}
+        {...(validationStatus === "error"
+          ? { "aria-describedby": `error_${name}`, "aria-invalid": true }
+          : null)}
       />
     </div>
   );
