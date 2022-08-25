@@ -16,10 +16,10 @@ import { throttle } from "lodash";
 import { useFeature } from "flagged";
 
 import {
-  DiseaseResult,
+  MultiplexResultInput,
   useRemovePatientFromQueueMutation,
-  useEditQueueItemMultiplexMutation,
-  useSubmitTestResultMultiplexMutation,
+  useEditQueueItemMultiplexResultMutation,
+  useAddMultiplexResultMutation,
 } from "../../generated/graphql";
 import Alert from "../commonComponents/Alert";
 import Button from "../commonComponents/Button/Button";
@@ -56,7 +56,7 @@ interface EditQueueItemParams {
   id: string;
   deviceId?: string;
   deviceSpecimenType: string;
-  results?: DiseaseResult[];
+  results?: MultiplexResultInput[];
   dateTested?: string;
 }
 
@@ -98,20 +98,22 @@ const AreYouSure: React.FC<AreYouSureProps> = ({
 );
 
 export const findResultByDiseaseName = (
-  results: DiseaseResult[],
+  results: MultiplexResultInput[],
   name: string
 ) =>
-  results.find((r: DiseaseResult) => r.diseaseName === name)?.testResult ??
-  null;
+  results.find((r: MultiplexResultInput) => r.diseaseName === name)
+    ?.testResult ?? null;
 
 const convertFromMultiplexResponse = (
-  responseResult: SRMultiplexResult[]
-): DiseaseResult[] => {
-  const diseaseResults: DiseaseResult[] = responseResult.map((result) => ({
-    diseaseName: result.disease.name,
-    testResult: result.testResult,
-  }));
-  return diseaseResults;
+  responseResult: MultiplexResult[]
+): MultiplexResultInput[] => {
+  const multiplexResultInputs: MultiplexResultInput[] = responseResult.map(
+    (result) => ({
+      diseaseName: result.disease.name,
+      testResult: result.testResult,
+    })
+  );
+  return multiplexResultInputs;
 };
 
 if (process.env.NODE_ENV !== "test") {
@@ -133,7 +135,7 @@ export interface QueueItemProps {
   selectedDeviceId: string;
   selectedDeviceSpecimenTypeId: string;
   selectedDeviceTestLength: number;
-  selectedTestResults: SRMultiplexResult[];
+  selectedTestResults: MultiplexResult[];
   dateTestedProp: string;
   refetchQueue: () => void;
   facilityName: string | undefined;
@@ -146,7 +148,7 @@ interface updateQueueItemProps {
   deviceId?: string;
   deviceSpecimenType: string;
   testLength?: number;
-  results?: DiseaseResult[];
+  results?: MultiplexResultInput[];
   dateTested?: string;
 }
 
@@ -192,12 +194,9 @@ const QueueItem = ({
 
   const [mutationError, updateMutationError] = useState(null);
   const [removePatientFromQueue] = useRemovePatientFromQueueMutation();
-  const [
-    submitTestResult,
-    { loading },
-  ] = useSubmitTestResultMultiplexMutation();
+  const [submitTestResult, { loading }] = useAddMultiplexResultMutation();
   const [updateAoe] = useMutation(UPDATE_AOE);
-  const [editQueueItem] = useEditQueueItemMultiplexMutation();
+  const [editQueueItem] = useEditQueueItemMultiplexResultMutation();
 
   const [saveState, setSaveState] = useState<SaveState>("idle");
 
@@ -321,12 +320,14 @@ const QueueItem = ({
   const [cacheTestResults, setCacheTestResults] = useState(
     convertFromMultiplexResponse(selectedTestResults)
   );
-  const diseaseResultsRef = useRef<DiseaseResult[]>(cacheTestResults); // persistent reference to use in Effect
+  const multiplexResultInputsRef = useRef<MultiplexResultInput[]>(
+    cacheTestResults
+  ); // persistent reference to use in Effect
 
   useEffect(() => {
     // update cache when selectedTestResults prop update
     setCacheTestResults(convertFromMultiplexResponse(selectedTestResults));
-    diseaseResultsRef.current = convertFromMultiplexResponse(
+    multiplexResultInputsRef.current = convertFromMultiplexResponse(
       selectedTestResults
     );
   }, [selectedTestResults]);
@@ -351,7 +352,7 @@ const QueueItem = ({
       ),
     };
 
-    if (response?.data?.addTestResultMultiplex.deliverySuccess === false) {
+    if (response?.data?.addMultiplexResult.deliverySuccess === false) {
       let deliveryFailureAlert = (
         <Alert
           type="error"
@@ -432,16 +433,16 @@ const QueueItem = ({
         .then((response) => {
           if (!response.data) throw Error("updateQueueItem null response");
           updateDeviceSpecimenTypeId(
-            response?.data?.editQueueItemMultiplex?.deviceSpecimenType
+            response?.data?.editQueueItemMultiplexResult?.deviceSpecimenType
               ?.internalId ?? ""
           );
           updateTimer(
             internalId,
-            response?.data?.editQueueItemMultiplex?.deviceSpecimenType
+            response?.data?.editQueueItemMultiplexResult?.deviceSpecimenType
               ?.deviceType.testLength as number
           );
           updateDeviceTestLength(
-            (response?.data?.editQueueItemMultiplex?.deviceSpecimenType
+            (response?.data?.editQueueItemMultiplexResult?.deviceSpecimenType
               ?.deviceType?.testLength as number) ?? 15
           );
         })
@@ -495,7 +496,7 @@ const QueueItem = ({
   const DEBOUNCE_TIME = 300;
 
   useEffect(() => {
-    const results = Object.assign([], diseaseResultsRef.current);
+    const results = Object.assign([], multiplexResultInputsRef.current);
 
     let debounceTimer: ReturnType<typeof setTimeout>;
     if (!isMounted.current) {
@@ -521,10 +522,10 @@ const QueueItem = ({
     deviceSpecimenTypeId,
     dateTested,
     updateQueueItem,
-    diseaseResultsRef,
+    multiplexResultInputsRef,
   ]);
 
-  const editQueueItemService = (resultsFromForm: DiseaseResult[]) => {
+  const editQueueItemService = (resultsFromForm: MultiplexResultInput[]) => {
     editQueueItem({
       variables: {
         id: internalId,
@@ -549,10 +550,10 @@ const QueueItem = ({
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
-  const onTestResultChange = (resultsFromForm: DiseaseResult[]) => {
+  const onTestResultChange = (resultsFromForm: MultiplexResultInput[]) => {
     throttleEditQueueItemService(resultsFromForm);
     setCacheTestResults(resultsFromForm);
-    diseaseResultsRef.current = Object.assign([], resultsFromForm);
+    multiplexResultInputsRef.current = Object.assign([], resultsFromForm);
   };
 
   const removeFromQueue = () => {

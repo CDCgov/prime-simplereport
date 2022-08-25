@@ -2159,19 +2159,19 @@ export type RemovePatientFromQueueMutation = {
   removePatientFromQueue?: string | null | undefined;
 };
 
-export type EditQueueItemMultiplexMutationVariables = Exact<{
+export type EditQueueItemMultiplexResultMutationVariables = Exact<{
   id: Scalars["ID"];
   deviceId?: InputMaybe<Scalars["String"]>;
   deviceSpecimenType?: InputMaybe<Scalars["ID"]>;
   results?: InputMaybe<
-    Array<InputMaybe<DiseaseResult>> | InputMaybe<DiseaseResult>
+    Array<InputMaybe<MultiplexResultInput>> | InputMaybe<MultiplexResultInput>
   >;
   dateTested?: InputMaybe<Scalars["DateTime"]>;
 }>;
 
-export type EditQueueItemMultiplexMutation = {
+export type EditQueueItemMultiplexResultMutation = {
   __typename?: "Mutation";
-  editQueueItemMultiplex?:
+  editQueueItemMultiplexResult?:
     | {
         __typename?: "TestOrder";
         dateTested?: any | null | undefined;
@@ -2216,17 +2216,19 @@ export type EditQueueItemMultiplexMutation = {
     | undefined;
 };
 
-export type SubmitTestResultMultiplexMutationVariables = Exact<{
+export type AddMultiplexResultMutationVariables = Exact<{
   patientId: Scalars["ID"];
   deviceId: Scalars["String"];
   deviceSpecimenType?: InputMaybe<Scalars["ID"]>;
-  results: Array<InputMaybe<DiseaseResult>> | InputMaybe<DiseaseResult>;
+  results:
+    | Array<InputMaybe<MultiplexResultInput>>
+    | InputMaybe<MultiplexResultInput>;
   dateTested?: InputMaybe<Scalars["DateTime"]>;
 }>;
 
-export type SubmitTestResultMultiplexMutation = {
+export type AddMultiplexResultMutation = {
   __typename?: "Mutation";
-  addTestResultMultiplex?:
+  addMultiplexResult?:
     | {
         __typename?: "AddTestResultResponse";
         deliverySuccess?: boolean | null | undefined;
@@ -6102,15 +6104,15 @@ export type RemovePatientFromQueueMutationOptions = Apollo.BaseMutationOptions<
   RemovePatientFromQueueMutation,
   RemovePatientFromQueueMutationVariables
 >;
-export const EditQueueItemMultiplexDocument = gql`
-  mutation EditQueueItemMultiplex(
+export const EditQueueItemMultiplexResultDocument = gql`
+  mutation EditQueueItemMultiplexResult(
     $id: ID!
     $deviceId: String
     $deviceSpecimenType: ID
-    $results: [DiseaseResult]
+    $results: [MultiplexResultInput]
     $dateTested: DateTime
   ) {
-    editQueueItemMultiplex(
+    editQueueItemMultiplexResult(
       id: $id
       deviceId: $deviceId
       deviceSpecimenType: $deviceSpecimenType
@@ -6141,23 +6143,23 @@ export const EditQueueItemMultiplexDocument = gql`
     }
   }
 `;
-export type EditQueueItemMultiplexMutationFn = Apollo.MutationFunction<
-  EditQueueItemMultiplexMutation,
-  EditQueueItemMultiplexMutationVariables
+export type EditQueueItemMultiplexResultMutationFn = Apollo.MutationFunction<
+  EditQueueItemMultiplexResultMutation,
+  EditQueueItemMultiplexResultMutationVariables
 >;
 
 /**
- * __useEditQueueItemMultiplexMutation__
+ * __useEditQueueItemMultiplexResultMutation__
  *
- * To run a mutation, you first call `useEditQueueItemMultiplexMutation` within a React component and pass it any options that fit your needs.
- * When your component renders, `useEditQueueItemMultiplexMutation` returns a tuple that includes:
+ * To run a mutation, you first call `useEditQueueItemMultiplexResultMutation` within a React component and pass it any options that fit your needs.
+ * When your component renders, `useEditQueueItemMultiplexResultMutation` returns a tuple that includes:
  * - A mutate function that you can call at any time to execute the mutation
  * - An object with fields that represent the current status of the mutation's execution
  *
  * @param baseOptions options that will be passed into the mutation, supported options are listed on: https://www.apollographql.com/docs/react/api/react-hooks/#options-2;
  *
  * @example
- * const [editQueueItemMultiplexMutation, { data, loading, error }] = useEditQueueItemMultiplexMutation({
+ * const [editQueueItemMultiplexResultMutation, { data, loading, error }] = useEditQueueItemMultiplexResultMutation({
  *   variables: {
  *      id: // value for 'id'
  *      deviceId: // value for 'deviceId'
@@ -6167,35 +6169,35 @@ export type EditQueueItemMultiplexMutationFn = Apollo.MutationFunction<
  *   },
  * });
  */
-export function useEditQueueItemMultiplexMutation(
+export function useEditQueueItemMultiplexResultMutation(
   baseOptions?: Apollo.MutationHookOptions<
-    EditQueueItemMultiplexMutation,
-    EditQueueItemMultiplexMutationVariables
+    EditQueueItemMultiplexResultMutation,
+    EditQueueItemMultiplexResultMutationVariables
   >
 ) {
   const options = { ...defaultOptions, ...baseOptions };
   return Apollo.useMutation<
-    EditQueueItemMultiplexMutation,
-    EditQueueItemMultiplexMutationVariables
-  >(EditQueueItemMultiplexDocument, options);
+    EditQueueItemMultiplexResultMutation,
+    EditQueueItemMultiplexResultMutationVariables
+  >(EditQueueItemMultiplexResultDocument, options);
 }
-export type EditQueueItemMultiplexMutationHookResult = ReturnType<
-  typeof useEditQueueItemMultiplexMutation
+export type EditQueueItemMultiplexResultMutationHookResult = ReturnType<
+  typeof useEditQueueItemMultiplexResultMutation
 >;
-export type EditQueueItemMultiplexMutationResult = Apollo.MutationResult<EditQueueItemMultiplexMutation>;
-export type EditQueueItemMultiplexMutationOptions = Apollo.BaseMutationOptions<
-  EditQueueItemMultiplexMutation,
-  EditQueueItemMultiplexMutationVariables
+export type EditQueueItemMultiplexResultMutationResult = Apollo.MutationResult<EditQueueItemMultiplexResultMutation>;
+export type EditQueueItemMultiplexResultMutationOptions = Apollo.BaseMutationOptions<
+  EditQueueItemMultiplexResultMutation,
+  EditQueueItemMultiplexResultMutationVariables
 >;
-export const SubmitTestResultMultiplexDocument = gql`
-  mutation SubmitTestResultMultiplex(
+export const AddMultiplexResultDocument = gql`
+  mutation AddMultiplexResult(
     $patientId: ID!
     $deviceId: String!
     $deviceSpecimenType: ID
-    $results: [DiseaseResult]!
+    $results: [MultiplexResultInput]!
     $dateTested: DateTime
   ) {
-    addTestResultMultiplex(
+    addMultiplexResult(
       patientId: $patientId
       deviceId: $deviceId
       deviceSpecimenType: $deviceSpecimenType
@@ -6209,23 +6211,23 @@ export const SubmitTestResultMultiplexDocument = gql`
     }
   }
 `;
-export type SubmitTestResultMultiplexMutationFn = Apollo.MutationFunction<
-  SubmitTestResultMultiplexMutation,
-  SubmitTestResultMultiplexMutationVariables
+export type AddMultiplexResultMutationFn = Apollo.MutationFunction<
+  AddMultiplexResultMutation,
+  AddMultiplexResultMutationVariables
 >;
 
 /**
- * __useSubmitTestResultMultiplexMutation__
+ * __useAddMultiplexResultMutation__
  *
- * To run a mutation, you first call `useSubmitTestResultMultiplexMutation` within a React component and pass it any options that fit your needs.
- * When your component renders, `useSubmitTestResultMultiplexMutation` returns a tuple that includes:
+ * To run a mutation, you first call `useAddMultiplexResultMutation` within a React component and pass it any options that fit your needs.
+ * When your component renders, `useAddMultiplexResultMutation` returns a tuple that includes:
  * - A mutate function that you can call at any time to execute the mutation
  * - An object with fields that represent the current status of the mutation's execution
  *
  * @param baseOptions options that will be passed into the mutation, supported options are listed on: https://www.apollographql.com/docs/react/api/react-hooks/#options-2;
  *
  * @example
- * const [submitTestResultMultiplexMutation, { data, loading, error }] = useSubmitTestResultMultiplexMutation({
+ * const [addMultiplexResultMutation, { data, loading, error }] = useAddMultiplexResultMutation({
  *   variables: {
  *      patientId: // value for 'patientId'
  *      deviceId: // value for 'deviceId'
@@ -6235,25 +6237,25 @@ export type SubmitTestResultMultiplexMutationFn = Apollo.MutationFunction<
  *   },
  * });
  */
-export function useSubmitTestResultMultiplexMutation(
+export function useAddMultiplexResultMutation(
   baseOptions?: Apollo.MutationHookOptions<
-    SubmitTestResultMultiplexMutation,
-    SubmitTestResultMultiplexMutationVariables
+    AddMultiplexResultMutation,
+    AddMultiplexResultMutationVariables
   >
 ) {
   const options = { ...defaultOptions, ...baseOptions };
   return Apollo.useMutation<
-    SubmitTestResultMultiplexMutation,
-    SubmitTestResultMultiplexMutationVariables
-  >(SubmitTestResultMultiplexDocument, options);
+    AddMultiplexResultMutation,
+    AddMultiplexResultMutationVariables
+  >(AddMultiplexResultDocument, options);
 }
-export type SubmitTestResultMultiplexMutationHookResult = ReturnType<
-  typeof useSubmitTestResultMultiplexMutation
+export type AddMultiplexResultMutationHookResult = ReturnType<
+  typeof useAddMultiplexResultMutation
 >;
-export type SubmitTestResultMultiplexMutationResult = Apollo.MutationResult<SubmitTestResultMultiplexMutation>;
-export type SubmitTestResultMultiplexMutationOptions = Apollo.BaseMutationOptions<
-  SubmitTestResultMultiplexMutation,
-  SubmitTestResultMultiplexMutationVariables
+export type AddMultiplexResultMutationResult = Apollo.MutationResult<AddMultiplexResultMutation>;
+export type AddMultiplexResultMutationOptions = Apollo.BaseMutationOptions<
+  AddMultiplexResultMutation,
+  AddMultiplexResultMutationVariables
 >;
 export const GetTestResultForCorrectionDocument = gql`
   query getTestResultForCorrection($id: ID!) {
