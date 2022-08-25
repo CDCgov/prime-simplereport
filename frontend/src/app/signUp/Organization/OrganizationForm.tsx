@@ -106,10 +106,8 @@ const OrganizationForm = () => {
     );
     showNotification(alert);
     setLoading(false);
-    let firstError = document.querySelector(
-      "[aria-invalid=true]"
-    ) as HTMLElement | null;
-    firstError?.focus();
+    let firstError = document.querySelector("[aria-invalid=true]");
+    (firstError as HTMLElement)?.focus();
   };
 
   if (orgExternalId) {
