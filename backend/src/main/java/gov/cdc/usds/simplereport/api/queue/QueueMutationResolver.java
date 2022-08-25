@@ -6,7 +6,6 @@ import com.google.i18n.phonenumbers.NumberParseException;
 import gov.cdc.usds.simplereport.api.model.AddTestResultResponse;
 import gov.cdc.usds.simplereport.api.model.ApiTestOrder;
 import gov.cdc.usds.simplereport.db.model.TestOrder;
-import gov.cdc.usds.simplereport.db.model.auxiliary.DiseaseResult;
 import gov.cdc.usds.simplereport.db.model.auxiliary.MultiplexResultInput;
 import gov.cdc.usds.simplereport.db.model.auxiliary.TestResult;
 import gov.cdc.usds.simplereport.db.model.auxiliary.TestResultDeliveryPreference;
@@ -51,18 +50,6 @@ public class QueueMutationResolver implements GraphQLMutationResolver {
         deviceSpecimenTypeId, TestResult.valueOf(result), patientID, dateTested);
   }
 
-  public AddTestResultResponse addTestResultMultiplex(
-      String deviceID,
-      UUID deviceSpecimenType,
-      List<DiseaseResult> results,
-      UUID patientID,
-      Date dateTested)
-      throws NumberParseException {
-    UUID deviceSpecimenTypeId = getDeviceSpecimenTypeId(deviceID, deviceSpecimenType);
-
-    return _tos.addTestResultMultiplex(deviceSpecimenTypeId, results, patientID, dateTested);
-  }
-
   public AddTestResultResponse addMultiplexResult(
       String deviceID,
       UUID deviceSpecimenType,
@@ -80,17 +67,6 @@ public class QueueMutationResolver implements GraphQLMutationResolver {
     UUID dst = getDeviceSpecimenTypeId(deviceId, deviceSpecimenType);
 
     return new ApiTestOrder(_tos.editQueueItem(id, dst, result, dateTested));
-  }
-
-  public ApiTestOrder editQueueItemMultiplex(
-      UUID id,
-      String deviceId,
-      UUID deviceSpecimenType,
-      List<DiseaseResult> results,
-      Date dateTested) {
-    UUID dst = getDeviceSpecimenTypeId(deviceId, deviceSpecimenType);
-
-    return new ApiTestOrder(_tos.editQueueItemMultiplex(id, dst, results, dateTested));
   }
 
   public ApiTestOrder editQueueItemMultiplexResult(

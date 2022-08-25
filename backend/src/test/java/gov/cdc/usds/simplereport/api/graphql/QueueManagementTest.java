@@ -14,7 +14,6 @@ import gov.cdc.usds.simplereport.db.model.Facility;
 import gov.cdc.usds.simplereport.db.model.Organization;
 import gov.cdc.usds.simplereport.db.model.Person;
 import gov.cdc.usds.simplereport.db.model.TestOrder;
-import gov.cdc.usds.simplereport.db.model.auxiliary.DiseaseResult;
 import gov.cdc.usds.simplereport.db.model.auxiliary.MultiplexResultInput;
 import gov.cdc.usds.simplereport.db.model.auxiliary.TestResult;
 import gov.cdc.usds.simplereport.service.OrganizationService;
@@ -93,44 +92,6 @@ class QueueManagementTest extends BaseGraphqlTest {
     assertEquals(
         deviceId, updatedTestOrder.getDeviceType().getInternalId().toString(), "device type ID");
     assertEquals(TestResult.POSITIVE, updatedTestOrder.getTestResult());
-    assertNull(updatedTestOrder.getTestEvent());
-
-    ObjectNode singleQueueEntry = (ObjectNode) fetchQueue().get(0);
-    assertEquals(orderId.toString(), singleQueueEntry.get("internalId").asText());
-    assertEquals(
-        p.getInternalId().toString(), singleQueueEntry.path("patient").path("internalId").asText());
-    assertEquals(dateTested, singleQueueEntry.path("dateTested").asText());
-  }
-
-  @Test
-  void updateItemInQueueMultiplex() throws Exception {
-    Person p = _dataFactory.createFullPerson(_org);
-    TestOrder o = _dataFactory.createTestOrder(p, _site);
-    UUID orderId = o.getInternalId();
-    DeviceType d = _dataFactory.getGenericDevice();
-    String deviceId = d.getInternalId().toString();
-    String dateTested = "2020-12-31T14:30:30Z";
-    List<DiseaseResult> results = new ArrayList<>();
-    results.add(new DiseaseResult(_diseaseService.covid().getName(), TestResult.POSITIVE));
-    results.add(new DiseaseResult(_diseaseService.fluA().getName(), TestResult.POSITIVE));
-    results.add(new DiseaseResult(_diseaseService.fluB().getName(), TestResult.POSITIVE));
-    ObjectNode variables =
-        JsonNodeFactory.instance
-            .objectNode()
-            .put("id", orderId.toString())
-            .put("deviceId", deviceId)
-            .putPOJO("results", results)
-            .put("dateTested", dateTested);
-
-    performQueueUpdateMultiplexMutation(variables, Optional.empty());
-
-    TestOrder updatedTestOrder = _testOrderService.getTestOrder(_org, orderId);
-    assertEquals(
-        deviceId, updatedTestOrder.getDeviceType().getInternalId().toString(), "device type ID");
-    assertEquals(TestResult.POSITIVE, updatedTestOrder.getTestResult());
-    updatedTestOrder
-        .getResultSet()
-        .forEach(result -> assertEquals(TestResult.POSITIVE, result.getTestResult()));
     assertNull(updatedTestOrder.getTestEvent());
 
     ObjectNode singleQueueEntry = (ObjectNode) fetchQueue().get(0);
