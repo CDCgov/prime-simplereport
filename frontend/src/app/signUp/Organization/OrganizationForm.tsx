@@ -104,9 +104,12 @@ const OrganizationForm = () => {
         body="Please check the form to make sure you complete all of the required fields."
       />
     );
-    window.scrollTo(0, 0);
     showNotification(alert);
     setLoading(false);
+    let firstError = document.querySelector(
+      "[aria-invalid=true]"
+    ) as HTMLInputElement | null;
+    firstError?.focus();
   };
 
   if (orgExternalId) {
