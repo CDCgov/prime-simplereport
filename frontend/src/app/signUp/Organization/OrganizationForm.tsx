@@ -108,7 +108,7 @@ const OrganizationForm = () => {
     setLoading(false);
     let firstError = document.querySelector(
       "[aria-invalid=true]"
-    ) as HTMLInputElement | null;
+    ) as HTMLElement | null;
     firstError?.focus();
   };
 
