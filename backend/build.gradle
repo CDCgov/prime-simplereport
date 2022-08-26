@@ -22,6 +22,13 @@ repositories {
     mavenCentral()
 }
 
+sourceSets {
+    integrationTest {
+        compileClasspath += sourceSets.main.output
+        runtimeClasspath += sourceSets.main.output
+    }
+}
+
 dependencies {
     // core infrastructure
     implementation 'org.springframework.boot:spring-boot-starter-web'
@@ -150,6 +157,10 @@ springBoot {
 
 configurations {
     liquibaseRuntime.extendsFrom runtimeClasspath // inefficient but extremely effective
+
+    integrationTestImplementation.extendsFrom testImplementation
+    integrationTestRuntimeOnly.extendsFrom testRuntimeOnly
+
     compileClasspath {
         resolutionStrategy.activateDependencyLocking()
     }
@@ -229,7 +240,17 @@ task testDbReset(type: Exec) {
     commandLine "db-setup/nuke-db.sh"
 }
 
-test {
+task integrationTest(type: Test) {
+    description= 'Run Integration Tests'
+    group = 'Verification'
+
+    testClassesDirs = sourceSets.integrationTest.output.classesDirs
+    classpath = sourceSets.integrationTest.runtimeClasspath
+    shouldRunAfter test
+
+    if(parallelization.toBoolean()) {
+        maxParallelForks = Runtime.runtime.availableProcessors().intdiv(2) ?: 1
+    }
     // people sometimes export this to run local dev more easily: don't let it break the tests
     environment "SPRING_PROFILES_ACTIVE", ""
     // For some reason, setting this in application-default doesn't work, but it's needed
@@ -250,3 +271,30 @@ test {
     }
 }
 
+check.dependsOn integrationTest
+
+test {
+
+    if(parallelization.toBoolean()) {
+        maxParallelForks = Runtime.runtime.availableProcessors().intdiv(2) ?: 1
+    }
+
+    // people sometimes export this to run local dev more easily: don't let it break the tests
+    environment "SPRING_PROFILES_ACTIVE", ""
+    // For some reason, setting this in application-default doesn't work, but it's needed
+    // to prevent the Okta client from throwing an exception when we point it at WireMock,
+    // which doesn't use HTTPS
+    environment "OKTA_TESTING_DISABLEHTTPSCHECK", "true"
+    useJUnitPlatform()
+    // uncomment this to log to stdout when each test starts, so you can tell what's going on
+    // testLogging {
+    //   events "started", "failed"
+    // }
+    systemProperty "test-db-host", testDbHost
+    systemProperty "test-db-port", testDbPort
+    systemProperty "skip-db-setup", skipDbSetup
+    if (skipDbSetup == "false" && System.getenv("CI") == null) {
+        dependsOn testDbStart
+        finalizedBy testDbStop
+    }
+}
