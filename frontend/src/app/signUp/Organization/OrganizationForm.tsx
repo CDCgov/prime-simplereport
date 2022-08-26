@@ -234,18 +234,26 @@ const OrganizationForm = () => {
             <p className="font-ui-2xs line-height-sans-5 margin-bottom-1">
               <strong>Sign up for SimpleReport in three steps:</strong>
             </p>
-            <div className="margin-y-1">
-              <span className="circled-number margin-right-05">1</span>
-              Fill out your organization information
-            </div>
-            <div className="margin-y-1">
-              <span className="circled-number margin-right-05">2</span>
-              Enter your personal contact details
-            </div>
-            <div className="margin-y-1">
-              <span className="circled-number margin-right-05">3</span>
-              Verify your identity
-            </div>
+            <ol className="prime-ul">
+              <li>
+                <div className="margin-y-1">
+                  <span className="circled-number margin-right-05">1</span>
+                  Fill out your organization information
+                </div>
+              </li>
+              <li>
+                <div className="margin-y-1">
+                  <span className="circled-number margin-right-05">2</span>
+                  Enter your personal contact details
+                </div>
+              </li>
+              <li>
+                <div className="margin-y-1">
+                  <span className="circled-number margin-right-05">3</span>
+                  Verify your identity
+                </div>
+              </li>
+            </ol>
             <p className="font-ui-2xs margin-top-2 line-height-sans-5">
               Each organization only needs one account. After you sign up you
               can add staff and testing locations. Learn more about our{" "}
