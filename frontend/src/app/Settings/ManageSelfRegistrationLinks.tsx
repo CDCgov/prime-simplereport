@@ -58,7 +58,7 @@ export const ManageSelfRegistrationLinks = ({
           </p>
           <p>
             <a
-              href={makeLink(baseUrl, howItWorksPath)}
+              href={makeStaticSiteLink(baseUrl, howItWorksPath)}
               target="_blank"
               rel="noreferrer"
             >
@@ -200,6 +200,10 @@ function getRegistrationLink(
 
 function makeLink(...parts: string[]) {
   return parts.map((part) => part.replace(/(^\/|\/$)/, "")).join("/");
+}
+
+function makeStaticSiteLink(baseUrl: string, staticReference: string) {
+  return makeLink(baseUrl.replace("/app", ""), staticReference);
 }
 
 const TOOLTIP_OFFSET = 7;
