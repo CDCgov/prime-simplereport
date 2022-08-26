@@ -34,7 +34,11 @@ const Consent = () => {
 
   return (
     <CardBackground>
-      <Card logo bodyKicker="Identity verification consent">
+      <Card logo>
+        <h1 className="font-ui-sm text-bold margin-top-3">
+          {" "}
+          Identity verification consent{" "}
+        </h1>
         <div className="margin-bottom-2">
           <p className="font-ui-2xs text-base">
             To create a SimpleReport account, you’ll need to agree to identity
