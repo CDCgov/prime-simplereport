@@ -95,6 +95,12 @@ const PersonalDetailsForm = ({
     );
     showNotification(alert);
     setSaving(false);
+    let elementsWithErrors = Array.from(
+      document.querySelectorAll("[aria-invalid=true]")
+    );
+    (elementsWithErrors.find(
+      (element) => element.getAttribute("aria-hidden") !== "true"
+    ) as HTMLElement | null)?.focus();
   };
 
   if (orgExternalId === null) {

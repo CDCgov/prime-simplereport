@@ -61,6 +61,9 @@ describe("PersonalDetailsForm", () => {
         expect(
           await screen.findByText("A valid phone number is required")
         ).toBeInTheDocument();
+        expect(
+          screen.getByRole("textbox", { name: "Date of birth" })
+        ).toHaveFocus();
       });
     });
     describe("On submitting an invalid street address 1", () => {
