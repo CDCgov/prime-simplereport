@@ -229,5 +229,6 @@ simple-report-initialization:
     - patient-registration-link: inj3ct
       facility-name: Injection Site
 datahub:
-url: http://localhost:9561
-api-key: "super-secret-api-key"
+  url: http://localhost:9561
+  api-key: "super-secret-api-key"
+  jwt-scope: "simple_report.*.report"

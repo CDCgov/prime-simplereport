@@ -49,12 +49,10 @@ public class TestResultUploadService {
   @Value("${data-hub.signing-key}")
   private String signingKey;
 
-  private static final int FIVE_MINUTES_MS = 300 * 1000;
-  private static final String REPORTING_SCOPE = "report";
+  @Value("${data-hub.jwt-scope}")
+  private String scope;
 
-  private String createReportingScope(String scope) {
-    return String.join(".", scope, REPORTING_SCOPE);
-  }
+  private static final int FIVE_MINUTES_MS = 300 * 1000;
 
   public String createDataHubSenderToken(String privateKey) throws InvalidRSAPrivateKeyException {
     Date inFiveMinutes = new Date(System.currentTimeMillis() + FIVE_MINUTES_MS);
@@ -139,10 +137,8 @@ public class TestResultUploadService {
             .findByInternalIdAndOrganization(id, org)
             .orElseThrow(InvalidBulkTestResultUploadException::new);
 
-    String reportingScope = createReportingScope(simpleReportCsvUploadClientName);
-
     Map<String, String> queryParams = new LinkedHashMap<>();
-    queryParams.put("scope", reportingScope);
+    queryParams.put("scope", scope);
     queryParams.put("grant_type", "client_credentials");
     queryParams.put(
         "client_assertion_type", "urn:ietf:params:oauth:client-assertion-type:jwt-bearer");
