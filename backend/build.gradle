@@ -177,6 +177,8 @@ jacocoTestReport {
     reports {
         xml.enabled = true
     }
+
+    dependsOn integrationTest
     dependsOn test // tests are required to run before generating the report
 }
 
