@@ -1,6 +1,6 @@
 <component name="ProjectRunConfigurationManager">
   <configuration default="false" name="test db down" type="ShConfigurationType">
-    <option name="SCRIPT_TEXT" value="docker compose --env-file .env.test -p simple-report-tests down -v db " />
+    <option name="SCRIPT_TEXT" value="docker compose --env-file .env.test -p simple-report-tests down -v " />
     <option name="INDEPENDENT_SCRIPT_PATH" value="true" />
     <option name="SCRIPT_PATH" value="" />
     <option name="SCRIPT_OPTIONS" value="" />
