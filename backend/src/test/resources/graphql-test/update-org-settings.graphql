@@ -1,0 +1,5 @@
+mutation {
+  updateOrganization(
+    name: "dis organization"
+  )
+}

@@ -10,6 +10,8 @@ import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.node.JsonNodeFactory;
 import com.fasterxml.jackson.databind.node.ObjectNode;
+import com.google.common.reflect.TypeToken;
+import com.microsoft.applicationinsights.core.dependencies.google.gson.Gson;
 import com.yannbriancon.interceptor.HibernateQueryInterceptor;
 import gov.cdc.usds.simplereport.api.BaseFullStackTest;
 import gov.cdc.usds.simplereport.api.model.Role;
@@ -22,6 +24,7 @@ import gov.cdc.usds.simplereport.service.AddressValidationService;
 import gov.cdc.usds.simplereport.service.OrganizationInitializingService;
 import gov.cdc.usds.simplereport.test_util.TestUserIdentities;
 import java.io.IOException;
+import java.lang.reflect.Type;
 import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
@@ -35,14 +38,18 @@ import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.boot.test.autoconfigure.graphql.tester.AutoConfigureHttpGraphQlTester;
 import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.boot.test.web.client.TestRestTemplate;
+import org.springframework.graphql.test.tester.GraphQlTester;
+import org.springframework.graphql.test.tester.WebGraphQlTester;
 import org.springframework.http.ResponseEntity;
 import org.springframework.util.LinkedMultiValueMap;
 import org.springframework.util.MultiValueMap;
 
 /** Base class for GraphQL API full-stack tests. */
 @Slf4j
+@AutoConfigureHttpGraphQlTester
 public abstract class BaseGraphqlTest extends BaseFullStackTest {
 
   protected static final String ACCESS_ERROR =
@@ -50,7 +57,6 @@ public abstract class BaseGraphqlTest extends BaseFullStackTest {
 
   @Autowired private OrganizationInitializingService _initService;
   @Autowired private DemoOktaRepository _oktaRepo;
-  //  @Autowired private GraphQLTestTemplate _template;
   @Autowired private DemoUserConfiguration _users;
   @Autowired private TestRestTemplate restTemplate;
   @Autowired private ObjectMapper objectMapper;
@@ -60,6 +66,8 @@ public abstract class BaseGraphqlTest extends BaseFullStackTest {
   private String _userName = null;
   private MultiValueMap<String, String> _customHeaders;
   private ResponseEntity<String> _lastResponse;
+
+  @Autowired private WebGraphQlTester graphQlTester;
 
   protected void useOrgUser() {
     _userName = TestUserIdentities.STANDARD_USER;
@@ -222,9 +230,48 @@ public abstract class BaseGraphqlTest extends BaseFullStackTest {
    */
   protected ObjectNode runQuery(
       String queryFileName, String operationName, ObjectNode variables, String expectedError) {
-    //    if (queryFileName != null && !queryFileName.contains("/")) {
-    //      queryFileName = "queries/" + queryFileName;
-    //    }
+    // change variables to map everywhere! seems like this will continue to give us issues
+    WebGraphQlTester webGraphQlTester =
+        this.graphQlTester
+            .mutate()
+            .headers(headers -> headers.setBearerAuth(getBearerAuth()))
+            .headers(httpHeaders -> httpHeaders.addAll(_customHeaders))
+            .build();
+
+    //    tester.document()
+    //        if (queryFileName != null && !queryFileName.contains("/")) {
+    //          queryFileName = "queries/" + queryFileName;
+    //        }
+    System.out.println(queryFileName);
+    GraphQlTester.Request<?> request = webGraphQlTester.documentName(queryFileName);
+
+    if (operationName != null) {
+      request.operationName(operationName);
+    }
+
+    if (variables != null) {
+      Gson gson = new Gson();
+      Type mapType = new TypeToken<Map<String, String>>() {}.getType();
+      Map<String, String> variableMap = gson.fromJson(variables.toString(), mapType);
+      variableMap.forEach(request::variable);
+    }
+
+    GraphQlTester.Response response = request.execute();
+
+    //    response.errors().satisfy(responseErrors -> {
+    //      assertThat(responseErrors.get(0).getMessage()).isEqualTo(expectedError);
+    //    });
+
+    Object responseObject = response.path("").entity(Object.class).get();
+
+    //    String s = response.toString();
+
+    ObjectMapper mapper = new ObjectMapper();
+    ObjectNode jsonNodeMap = (ObjectNode) mapper.convertValue(responseObject, JsonNode.class);
+
+    //    Object output;
+    //    response.path("").entity(Object.class).satisfies(o -> {output = o;});
+
     //    try {
     //      setQueryHeaders();
     //      GraphQLResponse response = _template.perform(queryFileName, operationName, variables);
@@ -236,7 +283,7 @@ public abstract class BaseGraphqlTest extends BaseFullStackTest {
     //    } catch (IOException e) {
     //      throw new RuntimeException(e);
     //    }
-    return null;
+    return jsonNodeMap;
   }
 
   protected ObjectNode runQuery(String queryFileName, ObjectNode variables) {

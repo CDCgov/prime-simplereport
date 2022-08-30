@@ -1,0 +1,25 @@
+query GetPatients($facilityId: ID = null) {
+  patients(facilityId: $facilityId) {
+    id
+    internalId
+
+    firstName
+    lastName
+    name {
+      firstName
+      lastName
+    }
+    birthDate
+    telephone
+
+    street
+    city
+    state
+
+    address {
+      streetOne
+      city
+      state
+    }
+  }
+}

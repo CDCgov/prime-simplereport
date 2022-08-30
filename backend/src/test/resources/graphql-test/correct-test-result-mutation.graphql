@@ -1,0 +1,18 @@
+mutation correctTestResult($id: ID!, $reason: String) {
+  correctTestMarkAsError(id: $id, reason: $reason) {
+    internalId
+    dateTested
+    result
+    deviceType {
+      internalId
+      name
+    }
+    patient {
+      internalId
+      firstName
+      middleName
+      lastName
+      lookupId
+    }
+  }
+}

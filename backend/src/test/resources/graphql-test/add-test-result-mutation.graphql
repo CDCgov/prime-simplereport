@@ -1,0 +1,17 @@
+mutation addTestResult($deviceId: String!, $result: String!, $patientId: ID!, $dateTested: DateTime) {
+    addTestResultNew(
+      patientId: $patientId,
+      deviceId: $deviceId,
+      result: $result,
+      dateTested: $dateTested
+    ) {
+      testResult {
+        internalId,
+        result,
+        deviceType {
+          internalId
+        }
+      }
+      deliverySuccess
+    }
+  }

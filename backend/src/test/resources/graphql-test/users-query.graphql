@@ -1,0 +1,10 @@
+query listUsers {
+  users {
+    id
+    firstName
+    middleName
+    lastName
+    suffix
+    email
+  }
+}

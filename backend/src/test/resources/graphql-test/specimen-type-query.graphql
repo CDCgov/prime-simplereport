@@ -1,0 +1,7 @@
+query getSpecimenTypes{
+  specimenTypes {
+    internalId
+    name
+    typeCode
+  }
+}
