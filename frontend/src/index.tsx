@@ -94,7 +94,12 @@ const logoutLink = onError(({ networkError, graphQLErrors }: ErrorResponse) => {
     } else {
       const appInsights = getAppInsights();
       if (appInsights instanceof ApplicationInsights) {
-        appInsights.trackException({ error: networkError });
+        appInsights.trackException({
+          exception: networkError,
+          properties: {
+            "user message": `${networkError.message} Please check for errors and try again`,
+          },
+        });
       }
       showError("Please check for errors and try again", networkError.message);
     }

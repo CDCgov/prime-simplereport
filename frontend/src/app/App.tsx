@@ -109,7 +109,10 @@ const App = () => {
 
   if (error) {
     if (appInsights instanceof ApplicationInsights) {
-      appInsights.trackException({ error });
+      appInsights.trackException({
+        exception: error,
+        properties: { "user message": "Server connection error" },
+      });
     }
     return <p>Server connection error...</p>;
   }
