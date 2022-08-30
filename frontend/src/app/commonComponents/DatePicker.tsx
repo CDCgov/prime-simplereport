@@ -18,6 +18,7 @@ interface Props {
   minDate?: string; // TODO: pass minDate and maxDate to yup object for validation
   maxDate?: string;
   noHint?: boolean;
+  ariaHidden?: boolean;
 }
 
 export const DatePicker = ({
@@ -35,6 +36,7 @@ export const DatePicker = ({
   minDate,
   maxDate,
   noHint,
+  ariaHidden,
 }: Props) => {
   return (
     <div
@@ -43,6 +45,7 @@ export const DatePicker = ({
       })}
     >
       <label
+        aria-hidden={ariaHidden}
         className={classnames("usa-label", labelClassName, {
           "usa-sr-only": labelSrOnly,
           "usa-label--error": validationStatus === "error",
@@ -51,10 +54,21 @@ export const DatePicker = ({
       >
         {label}
       </label>
-      {noHint ? null : <span className="usa-hint">mm/dd/yyyy</span>}
+      {noHint ? null : (
+        <span className="usa-hint" aria-hidden={ariaHidden}>
+          mm/dd/yyyy
+        </span>
+      )}
       {validationStatus === "error" && (
-        <span className="usa-error-message" id={`error_${name}`} role="alert">
-          <span className="usa-sr-only">Error: </span>
+        <span
+          className="usa-error-message"
+          id={`error_${name}`}
+          role="alert"
+          aria-hidden={ariaHidden}
+        >
+          <span className="usa-sr-only" aria-hidden={ariaHidden}>
+            Error:{" "}
+          </span>
           {errorMessage}
         </span>
       )}
@@ -68,6 +82,7 @@ export const DatePicker = ({
         defaultValue={defaultValue}
         minDate={minDate}
         maxDate={maxDate}
+        aria-hidden={ariaHidden}
         {...(validationStatus === "error"
           ? { "aria-describedby": `error_${name}`, "aria-invalid": true }
           : null)}

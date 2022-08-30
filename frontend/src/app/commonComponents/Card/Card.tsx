@@ -4,6 +4,7 @@ export type CardProps = {
   logo?: boolean;
   bodyKicker?: string;
   bodyKickerCentered?: boolean;
+  ariaHidden?: boolean;
 };
 
 export const Card: React.FC<CardProps> = ({
@@ -11,6 +12,7 @@ export const Card: React.FC<CardProps> = ({
   logo = false,
   bodyKicker = false,
   bodyKickerCentered = false,
+  ariaHidden,
 }) => {
   let kicker = null;
   if (bodyKicker && bodyKickerCentered) {
@@ -25,7 +27,7 @@ export const Card: React.FC<CardProps> = ({
   return (
     <div className="card">
       {logo && (
-        <header className="display-flex flex-column">
+        <header className="display-flex flex-column" aria-hidden={ariaHidden}>
           <img
             className="flex-align-self-center maxw-card-lg width-full"
             src={siteLogo}
