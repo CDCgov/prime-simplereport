@@ -1,0 +1,13 @@
+query GetOrganizationLevelDashboardMetrics($startDate: DateTime!, $endDate: DateTime!) {
+  organizationLevelDashboardMetrics(startDate: $startDate, endDate: $endDate) {
+    organizationPositiveTestCount
+    organizationNegativeTestCount
+    organizationTotalTestCount
+    facilityMetrics {
+        facilityName,
+        totalTestCount, 
+        positiveTestCount,
+        negativeTestCount,
+    }
+  }
+}

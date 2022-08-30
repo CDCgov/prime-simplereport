@@ -1,0 +1,14 @@
+mutation updateDevice(
+    $input: UpdateDeviceType!
+) {
+    updateDeviceType(
+     input: $input
+    ) {
+      internalId
+      name
+      model
+      manufacturer
+      loincCode
+      swabType
+    }
+}

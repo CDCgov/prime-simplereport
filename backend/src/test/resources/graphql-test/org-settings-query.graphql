@@ -1,0 +1,36 @@
+{
+  organization {
+    internalId
+    name
+    externalId
+    testingFacility {
+      id
+      cliaNumber
+      name
+      street
+      streetTwo
+      city
+      county
+      state
+      zipCode
+      phone
+      email
+      orderingProvider {
+        firstName
+        middleName
+        lastName
+        suffix
+        NPI
+        street
+        streetTwo
+        city
+        county
+        state
+        zipCode
+        phone
+        __typename
+      }
+      __typename
+    }
+  }
+}

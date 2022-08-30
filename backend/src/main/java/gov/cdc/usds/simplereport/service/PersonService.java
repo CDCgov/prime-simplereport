@@ -186,11 +186,11 @@ public class PersonService {
   @AuthorizationConfiguration.RequireSpecificPatientSearchPermission
   public List<Person> getPatients(
       UUID facilityId,
-      int pageOffset,
-      int pageSize,
-      boolean isArchived,
+      Integer pageOffset,
+      Integer pageSize,
+      Boolean isArchived,
       String namePrefixMatch,
-      boolean includeArchivedFacilities) {
+      Boolean includeArchivedFacilities) {
     if (pageOffset < 0) {
       pageOffset = DEFAULT_PAGINATION_PAGEOFFSET;
     }

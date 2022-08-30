@@ -1,0 +1,20 @@
+mutation setPatientIsDeleted(
+    $id: ID!,
+    $deleted: Boolean = true,
+    ){
+  setPatientIsDeleted(
+    id: $id
+    deleted: $deleted
+  ) {
+    internalId
+    lookupId
+    firstName
+    middleName
+    lastName
+    suffix
+    isDeleted
+    facility {
+      id
+    }
+  }
+}

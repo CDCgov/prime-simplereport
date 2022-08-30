@@ -1,0 +1,11 @@
+ query fetchFacilityQueue($facilityId: ID!) {
+    queue(facilityId: $facilityId) {
+      internalId
+      patient {
+        internalId
+        birthDate
+      }
+      symptomOnset
+      dateTested
+    }
+}
