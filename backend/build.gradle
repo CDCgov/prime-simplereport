@@ -34,6 +34,24 @@ dependencies {
     implementation 'org.apache.logging.log4j:log4j-api:2.17.0'
     implementation 'org.apache.logging.log4j:log4j-to-slf4j:2.17.0'
 
+    // RCE Fix - Spring-Beans (Aug 2022)
+    implementation 'org.springframework:spring-beans:5.3.18'
+    implementation 'org.springframework:spring-aop:5.3.18'
+    implementation 'org.springframework:spring-aspects:5.3.18'
+    implementation 'org.springframework:spring-beans:5.3.18'
+    implementation 'org.springframework:spring-context-support:5.3.18'
+    implementation 'org.springframework:spring-context:5.3.18'
+    implementation 'org.springframework:spring-core:5.3.18'
+    implementation 'org.springframework:spring-expression:5.3.18'
+    implementation 'org.springframework:spring-jcl:5.3.18'
+    implementation 'org.springframework:spring-jdbc:5.3.18'
+    implementation 'org.springframework:spring-messaging:5.3.18'
+    implementation 'org.springframework:spring-orm:5.3.18'
+    implementation 'org.springframework:spring-tx:5.3.18'
+    implementation 'org.springframework:spring-web:5.3.18'
+    implementation 'org.springframework:spring-webmvc:5.3.18'
+    implementation 'org.springframework:spring-websocket:5.3.18'
+
     // data layer dependencies
     implementation 'org.springframework.boot:spring-boot-starter-data-jpa'
     implementation 'org.springframework.boot:spring-boot-starter-validation'
