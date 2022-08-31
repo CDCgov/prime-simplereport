@@ -1648,7 +1648,10 @@ class TestOrderServiceTest extends BaseServiceTest<TestOrderService> {
     assertTestResultsList(
         positives,
         testEvents.stream()
-            .filter(t -> t.getResult() == TestResult.POSITIVE)
+            .filter(
+                t ->
+                    t.getResults().stream().findFirst().get().getTestResult()
+                        == TestResult.POSITIVE)
             .collect(Collectors.toList()));
     assertTestResultsList(
         negatives,
