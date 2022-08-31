@@ -72,7 +72,7 @@ dependencies {
     implementation 'org.springframework.boot:spring-boot-starter-thymeleaf:2.7.2'
 
     // Okta dependencies
-    implementation 'com.okta.spring:okta-spring-boot-starter:2.0.0'
+    implementation 'com.okta.spring:okta-spring-boot-starter:2.1.6'
     implementation 'com.okta.sdk:okta-sdk-api:8.2.1'
     runtimeOnly 'com.okta.sdk:okta-sdk-impl:8.2.1'
     runtimeOnly 'com.okta.sdk:okta-sdk-httpclient:8.2.1'
@@ -128,7 +128,7 @@ dependencies {
         exclude group: 'org.junit.vintage', module: 'junit-vintage-engine'
     }
     testImplementation "com.graphql-java-kickstart:graphql-spring-boot-starter-test:${kickstartVersion}"
-    testImplementation 'org.springframework.security:spring-security-test'
+    testImplementation 'org.springframework.security:spring-security-test:5.5.7'
     testImplementation 'com.yannbriancon:spring-hibernate-query-utils:1.0.3'
 
     // used to autoconfigure WireMock for testing
