@@ -47,26 +47,6 @@ class DeviceTypeServiceTest extends BaseServiceTest<DeviceTypeService> {
   }
 
   @Test
-  @WithSimpleReportSiteAdminUser
-  void fetchDeviceType_carestartTestLength() {
-
-    _service.createDeviceType(
-        CreateDeviceType.builder()
-            .name("CareStart")
-            .model("B")
-            .manufacturer("C")
-            .loincCode("D")
-            .swabTypes(emptyList())
-            .supportedDiseases(emptyList())
-            .build());
-
-    DeviceType deviceType = _service.fetchDeviceTypes().get(0);
-    System.out.print(deviceType.toString());
-
-    assertEquals(10, deviceType.getTestLength());
-  }
-
-  @Test
   void createDeviceType_baseUser_error() {
     assertSecurityError(
         () ->
@@ -78,6 +58,7 @@ class DeviceTypeServiceTest extends BaseServiceTest<DeviceTypeService> {
                     .loincCode("D")
                     .swabTypes(emptyList())
                     .supportedDiseases(emptyList())
+                    .testLength(15)
                     .build()));
   }
 
@@ -93,7 +74,7 @@ class DeviceTypeServiceTest extends BaseServiceTest<DeviceTypeService> {
   }
 
   @Test
-  void removeDeviceType_baseUser_eror() {
+  void removeDeviceType_baseUser_error() {
     DeviceType deviceType =
         _deviceTypeRepo.save(
             new DeviceType("A", "B", "C", "D", FAKE_SWAB_TYPE, STANDARD_TEST_LENGTH));
@@ -119,6 +100,7 @@ class DeviceTypeServiceTest extends BaseServiceTest<DeviceTypeService> {
                 .loincCode("D")
                 .swabTypes(List.of(swab1.getInternalId()))
                 .supportedDiseases(List.of(disease1.getInternalId()))
+                .testLength(1)
                 .build());
     DeviceType devB =
         _service.createDeviceType(
@@ -129,6 +111,7 @@ class DeviceTypeServiceTest extends BaseServiceTest<DeviceTypeService> {
                 .loincCode("I")
                 .swabTypes(List.of(swab2.getInternalId()))
                 .supportedDiseases(List.of(disease2.getInternalId()))
+                .testLength(2)
                 .build());
 
     // THEN
@@ -145,6 +128,7 @@ class DeviceTypeServiceTest extends BaseServiceTest<DeviceTypeService> {
     List<SpecimenType> devASwabTypes = devA.getSwabTypes();
     assertThat(devASwabTypes.size()).isEqualTo(1);
     assertThat(devASwabTypes.get(0).getName()).isEqualTo("Hair");
+    assertEquals(1, devA.getTestLength());
 
     devB = _deviceTypeRepo.findById(devB.getInternalId()).get();
     assertNotNull(devB);
@@ -157,6 +141,7 @@ class DeviceTypeServiceTest extends BaseServiceTest<DeviceTypeService> {
     List<SpecimenType> devBSwabTypes = devB.getSwabTypes();
     assertThat(devBSwabTypes.size()).isEqualTo(1);
     assertThat(devBSwabTypes.get(0).getName()).isEqualTo("Mouth");
+    assertEquals(2, devB.getTestLength());
 
     List<DeviceType> found = _service.fetchDeviceTypes();
     assertEquals(2, found.size());
@@ -183,6 +168,7 @@ class DeviceTypeServiceTest extends BaseServiceTest<DeviceTypeService> {
                 .loincCode("D")
                 .swabTypes(List.of(swab1.getInternalId()))
                 .supportedDiseases(List.of(disease1.getInternalId()))
+                .testLength(10)
                 .build());
 
     // WHEN
@@ -229,6 +215,7 @@ class DeviceTypeServiceTest extends BaseServiceTest<DeviceTypeService> {
                 .loincCode("D")
                 .swabTypes(List.of(swab1.getInternalId()))
                 .supportedDiseases(List.of(disease1.getInternalId()))
+                .testLength(15)
                 .build());
 
     // WHEN
@@ -244,6 +231,7 @@ class DeviceTypeServiceTest extends BaseServiceTest<DeviceTypeService> {
     assertEquals("D", updatedDevice.getLoincCode());
     assertEquals("COVID-19", updatedDevice.getSupportedDiseases().get(0).getName());
     assertNull(updatedDevice.getSwabType());
+    assertEquals(15, updatedDevice.getTestLength());
 
     List<SpecimenType> updatedSwabTypes = updatedDevice.getSwabTypes();
     assertThat(updatedSwabTypes.size()).isEqualTo(1);

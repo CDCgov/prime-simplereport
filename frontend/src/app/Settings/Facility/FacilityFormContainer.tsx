@@ -7,6 +7,7 @@ import { updateFacility } from "../../store";
 import Alert from "../../commonComponents/Alert";
 import { showNotification } from "../../utils";
 import { getAppInsights } from "../../TelemetryService";
+import { useSelectedFacility } from "../../facilitySelect/useSelectedFacility";
 
 import FacilityForm from "./FacilityForm";
 
@@ -163,6 +164,7 @@ interface Props {
 
 const FacilityFormContainer: any = (props: Props) => {
   const { facilityId } = useParams();
+  const [activeFacility] = useSelectedFacility();
   const { data, loading, error } = useQuery<FacilityData, {}>(
     GET_FACILITY_QUERY,
     {
@@ -191,7 +193,9 @@ const FacilityFormContainer: any = (props: Props) => {
     if (props.newOrg) {
       window.location.pathname = process.env.PUBLIC_URL || "";
     }
-    return <Navigate to="/settings/facilities" />;
+    return (
+      <Navigate to={`/settings/facilities?facility=${activeFacility?.id}`} />
+    );
   }
 
   const saveFacility = async (facility: Facility) => {

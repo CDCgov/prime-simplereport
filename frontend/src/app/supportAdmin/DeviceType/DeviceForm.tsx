@@ -3,34 +3,42 @@ import React, { useState } from "react";
 import Button from "../../commonComponents/Button/Button";
 import TextInput from "../../commonComponents/TextInput";
 import MultiSelect from "../../commonComponents/MultiSelect/MultiSelect";
-import Select from "../../commonComponents/Select";
 import { MultiSelectDropdownOption } from "../../commonComponents/MultiSelect/MultiSelectDropdown/MultiSelectDropdown";
-import { DeviceType, UpdateDeviceType } from "../../../generated/graphql";
+import Select from "../../commonComponents/Select";
+import { DeviceType } from "../../../generated/graphql";
 
 import DeviceTypeReminderMessage from "./DeviceTypeReminderMessage";
 
-interface Props {
-  updateDeviceType: (device: UpdateDeviceType) => void;
-  swabOptions: Array<MultiSelectDropdownOption>;
-  supportedDiseaseOptions: Array<MultiSelectDropdownOption>;
-  devices: DeviceType[];
+export interface Device {
+  internalId?: string;
+  name: string;
+  manufacturer: string;
+  model: string;
+  loincCode: string;
+  swabTypes: Array<string>;
+  supportedDiseases: Array<string>;
+  testLength: number;
 }
 
-const ManageDevicesForm: React.FC<Props> = ({
-  updateDeviceType,
-  swabOptions,
-  supportedDiseaseOptions,
-  devices,
-}) => {
-  const [selectedDevice, setSelectedDevice] = useState<
-    UpdateDeviceType | undefined
-  >(undefined);
+interface Props {
+  formTitle: string;
+  saveDeviceType: (device: Device) => void;
+  initialDevice?: Device;
+  swabOptions: Array<MultiSelectDropdownOption>;
+  supportedDiseaseOptions: Array<MultiSelectDropdownOption>;
+  deviceOptions?: DeviceType[];
+}
 
+const DeviceForm = (props: Props) => {
+  const [device, updateDevice] = useState<Device | undefined>(
+    props.initialDevice
+  );
   const [formChanged, updateFormChanged] = useState<boolean>(false);
 
   const updateDeviceAttribute = (name: string, value: any) => {
-    if (selectedDevice) {
-      setSelectedDevice({ ...selectedDevice, [name]: value });
+    if (device) {
+      updateDevice({ ...device, [name]: value });
+      updateFormChanged(true);
     }
   };
 
@@ -40,17 +48,15 @@ const ManageDevicesForm: React.FC<Props> = ({
     updateDeviceAttribute(e.target.name, e.target.value);
   };
 
-  const getDeviceNames = () =>
-    Array.from(
-      devices.map((device) => ({
-        label: device.name,
-        value: device.internalId,
-      }))
-    );
+  const getDeviceOptions = () =>
+    props.deviceOptions
+      ? props.deviceOptions.map((deviceType) => ({
+          label: deviceType.name,
+          value: deviceType.internalId,
+        }))
+      : [];
 
-  const getUpdateDeviceType = (
-    device?: DeviceType
-  ): UpdateDeviceType | undefined => {
+  const getDeviceFromDeviceType = (device?: DeviceType): Device | undefined => {
     return device
       ? {
           internalId: device.internalId,
@@ -74,7 +80,7 @@ const ManageDevicesForm: React.FC<Props> = ({
           <div className="prime-container card-container">
             <div className="usa-card__header">
               <div>
-                <h2>Manage devices</h2>
+                <h2>{props.formTitle}</h2>
               </div>
               <div
                 style={{
@@ -85,44 +91,46 @@ const ManageDevicesForm: React.FC<Props> = ({
               >
                 <Button
                   type="button"
-                  onClick={() =>
-                    selectedDevice && updateDeviceType(selectedDevice)
-                  }
+                  onClick={() => device && props.saveDeviceType(device)}
                   label="Save changes"
-                  disabled={!formChanged || !selectedDevice}
+                  disabled={!formChanged || !device}
                 />
               </div>
             </div>
             <div className="usa-card__body margin-top-1">
               <DeviceTypeReminderMessage />
-              <div className="grid-row grid-gap">
-                <div className="tablet:grid-col">
-                  <Select
-                    label="Select device"
-                    name="name"
-                    value={selectedDevice?.internalId || ""}
-                    options={getDeviceNames()}
-                    defaultSelect
-                    onChange={(id) => {
-                      updateFormChanged(!!id);
-                      setSelectedDevice(
-                        getUpdateDeviceType(
-                          devices.find((device) => id === device.internalId)
-                        )
-                      );
-                    }}
-                    required
-                  />
+              {props.deviceOptions ? (
+                <div className="grid-row grid-gap">
+                  <div className="tablet:grid-col">
+                    <Select
+                      label="Select device"
+                      name="selectDevice"
+                      value={device?.internalId || ""}
+                      options={getDeviceOptions()}
+                      defaultSelect
+                      onChange={(id) => {
+                        updateFormChanged(false);
+                        updateDevice(
+                          getDeviceFromDeviceType(
+                            props.deviceOptions?.find(
+                              (d) => id === d.internalId
+                            )
+                          )
+                        );
+                      }}
+                      required
+                    />
+                  </div>
                 </div>
-              </div>
+              ) : null}
               <div className="grid-row grid-gap">
                 <div className="tablet:grid-col">
                   <TextInput
                     label="Device name"
                     name="name"
-                    value={selectedDevice?.name}
+                    value={device?.name}
                     onChange={onChange}
-                    disabled={!selectedDevice}
+                    disabled={!device}
                     required
                   />
                 </div>
@@ -132,9 +140,9 @@ const ManageDevicesForm: React.FC<Props> = ({
                   <TextInput
                     label="Model"
                     name="model"
-                    value={selectedDevice?.model}
+                    value={device?.model}
                     onChange={onChange}
-                    disabled={!selectedDevice}
+                    disabled={!device}
                     required
                   />
                 </div>
@@ -144,9 +152,9 @@ const ManageDevicesForm: React.FC<Props> = ({
                   <TextInput
                     label="Manufacturer"
                     name="manufacturer"
-                    value={selectedDevice?.manufacturer}
+                    value={device?.manufacturer}
                     onChange={onChange}
-                    disabled={!selectedDevice}
+                    disabled={!device}
                     required
                   />
                 </div>
@@ -156,9 +164,9 @@ const ManageDevicesForm: React.FC<Props> = ({
                   <TextInput
                     label="LOINC code"
                     name="loincCode"
-                    value={selectedDevice?.loincCode}
+                    value={device?.loincCode}
                     onChange={onChange}
-                    disabled={!selectedDevice}
+                    disabled={!device}
                     required
                   />
                 </div>
@@ -169,9 +177,9 @@ const ManageDevicesForm: React.FC<Props> = ({
                     name="testLength"
                     min={0}
                     max={999}
-                    value={selectedDevice?.testLength.toString()}
+                    value={device?.testLength.toString()}
                     onChange={onChange}
-                    disabled={!selectedDevice}
+                    disabled={!device}
                     required
                   />
                 </div>
@@ -179,15 +187,17 @@ const ManageDevicesForm: React.FC<Props> = ({
               <div className="grid-row grid-gap">
                 <div className="tablet:grid-col">
                   <MultiSelect
-                    key={selectedDevice?.internalId}
+                    key={device?.internalId}
                     label="SNOMED code for swab type(s)"
                     name="swabTypes"
                     onChange={(swabTypes) => {
                       updateDeviceAttribute("swabTypes", swabTypes);
                     }}
-                    options={swabOptions}
-                    initialSelectedValues={selectedDevice?.swabTypes}
-                    disabled={!selectedDevice}
+                    options={props.swabOptions}
+                    initialSelectedValues={
+                      device?.swabTypes.length ? device?.swabTypes : undefined
+                    }
+                    disabled={!device}
                     required
                   />
                 </div>
@@ -198,7 +208,7 @@ const ManageDevicesForm: React.FC<Props> = ({
                   style={{ marginBottom: "56px" }}
                 >
                   <MultiSelect
-                    key={selectedDevice?.internalId}
+                    key={device?.internalId}
                     label="Supported diseases"
                     name="supportedDiseases"
                     onChange={(supportedDiseases) => {
@@ -207,9 +217,13 @@ const ManageDevicesForm: React.FC<Props> = ({
                         supportedDiseases
                       );
                     }}
-                    options={supportedDiseaseOptions}
-                    initialSelectedValues={selectedDevice?.supportedDiseases}
-                    disabled={!selectedDevice}
+                    options={props.supportedDiseaseOptions}
+                    initialSelectedValues={
+                      device?.supportedDiseases.length
+                        ? device?.supportedDiseases
+                        : undefined
+                    }
+                    disabled={!device}
                     required
                   />
                 </div>
@@ -222,4 +236,4 @@ const ManageDevicesForm: React.FC<Props> = ({
   );
 };
 
-export default ManageDevicesForm;
+export default DeviceForm;
