@@ -29,11 +29,11 @@ public class PatientResolver {
   @QueryMapping
   public List<Person> patients(
       @Argument UUID facilityId,
-      @Argument Integer pageNumber,
-      @Argument Integer pageSize,
-      @Argument Boolean showDeleted,
+      @Argument int pageNumber,
+      @Argument int pageSize,
+      @Argument boolean showDeleted,
       @Argument String namePrefixMatch,
-      @Argument Boolean includeArchivedFacilities) {
+      @Argument boolean includeArchivedFacilities) {
     return _ps.getPatients(
         facilityId, pageNumber, pageSize, showDeleted, namePrefixMatch, includeArchivedFacilities);
   }

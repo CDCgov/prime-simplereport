@@ -962,11 +962,11 @@ export type TestOrder = {
   dateTested?: Maybe<Scalars["DateTime"]>;
   deviceSpecimenType?: Maybe<DeviceSpecimenType>;
   deviceType?: Maybe<DeviceType>;
-  id: Scalars["ID"];
+  id?: Maybe<Scalars["ID"]>;
   /** @deprecated alias for 'id' */
   internalId?: Maybe<Scalars["ID"]>;
   noSymptoms?: Maybe<Scalars["Boolean"]>;
-  patient: Patient;
+  patient?: Maybe<Patient>;
   pregnancy?: Maybe<Scalars["String"]>;
   reasonForCorrection?: Maybe<Scalars["String"]>;
   result?: Maybe<Scalars["String"]>;
@@ -1926,35 +1926,38 @@ export type GetFacilityQueueMultiplexQuery = {
               | { __typename?: "DeviceSpecimenType"; internalId: string }
               | null
               | undefined;
-            patient: {
-              __typename?: "Patient";
-              internalId?: string | null | undefined;
-              telephone?: string | null | undefined;
-              birthDate?: any | null | undefined;
-              firstName?: string | null | undefined;
-              middleName?: string | null | undefined;
-              lastName?: string | null | undefined;
-              gender?: string | null | undefined;
-              testResultDelivery?:
-                | TestResultDeliveryPreference
-                | null
-                | undefined;
-              preferredLanguage?: string | null | undefined;
-              email?: string | null | undefined;
-              emails?: Array<string | null | undefined> | null | undefined;
-              phoneNumbers?:
-                | Array<
-                    | {
-                        __typename?: "PhoneNumber";
-                        type?: PhoneType | null | undefined;
-                        number?: string | null | undefined;
-                      }
+            patient?:
+              | {
+                  __typename?: "Patient";
+                  internalId?: string | null | undefined;
+                  telephone?: string | null | undefined;
+                  birthDate?: any | null | undefined;
+                  firstName?: string | null | undefined;
+                  middleName?: string | null | undefined;
+                  lastName?: string | null | undefined;
+                  gender?: string | null | undefined;
+                  testResultDelivery?:
+                    | TestResultDeliveryPreference
                     | null
-                    | undefined
-                  >
-                | null
-                | undefined;
-            };
+                    | undefined;
+                  preferredLanguage?: string | null | undefined;
+                  email?: string | null | undefined;
+                  emails?: Array<string | null | undefined> | null | undefined;
+                  phoneNumbers?:
+                    | Array<
+                        | {
+                            __typename?: "PhoneNumber";
+                            type?: PhoneType | null | undefined;
+                            number?: string | null | undefined;
+                          }
+                        | null
+                        | undefined
+                      >
+                    | null
+                    | undefined;
+                }
+              | null
+              | undefined;
             results?:
               | Array<
                   | {
