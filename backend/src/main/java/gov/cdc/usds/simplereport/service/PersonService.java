@@ -186,9 +186,9 @@ public class PersonService {
   @AuthorizationConfiguration.RequireSpecificPatientSearchPermission
   public List<Person> getPatients(
       UUID facilityId,
-      Integer pageOffset,
-      Integer pageSize,
-      Boolean isArchived,
+      int pageOffset,
+      int pageSize,
+      boolean isArchived,
       String namePrefixMatch,
       Boolean includeArchivedFacilities) {
     if (pageOffset < 0) {

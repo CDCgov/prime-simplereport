@@ -251,8 +251,8 @@ public abstract class BaseGraphqlTest extends BaseFullStackTest {
 
     if (variables != null) {
       Gson gson = new Gson();
-      Type mapType = new TypeToken<Map<String, String>>() {}.getType();
-      Map<String, String> variableMap = gson.fromJson(variables.toString(), mapType);
+      Type mapType = new TypeToken<Map<String, Object>>() {}.getType();
+      Map<String, Object> variableMap = gson.fromJson(variables.toString(), mapType);
       variableMap.forEach(request::variable);
     }
 
