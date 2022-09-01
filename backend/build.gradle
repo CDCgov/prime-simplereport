@@ -54,6 +54,8 @@ dependencies {
 
     // Security Pins (Sept 2022)
     implementation 'org.glassfish:jakarta.el:3.0.4'
+    implementation 'org.springframework.security:spring-security-web:5.5.7'
+    implementation 'com.nimbusds:oauth2-oidc-sdk:8.36.2'
 
     // data layer dependencies
     implementation 'org.springframework.boot:spring-boot-starter-data-jpa'
@@ -75,7 +77,7 @@ dependencies {
     implementation 'org.springframework.boot:spring-boot-starter-thymeleaf:2.7.2'
 
     // Okta dependencies
-    implementation 'com.okta.spring:okta-spring-boot-starter:2.1.6'
+    implementation 'com.okta.spring:okta-spring-boot-starter:2.0.0'
     implementation 'com.okta.sdk:okta-sdk-api:8.2.1'
     runtimeOnly 'com.okta.sdk:okta-sdk-impl:8.2.1'
     runtimeOnly 'com.okta.sdk:okta-sdk-httpclient:8.2.1'
