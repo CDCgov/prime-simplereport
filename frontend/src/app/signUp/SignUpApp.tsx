@@ -10,7 +10,10 @@ import SignUpGoals from "./Organization/SignUpGoals";
 const SignUpApp = () => {
   const [modalActive, setModalActive] = useState(false);
 
-  observeDatePicker('[data-testid="date-picker-calendar"]', setModalActive);
+  observeDatePicker(
+    '.usa-date-picker__calendar[role="dialog"]',
+    setModalActive
+  );
   return (
     <Page isModalActive={modalActive}>
       <Routes>
