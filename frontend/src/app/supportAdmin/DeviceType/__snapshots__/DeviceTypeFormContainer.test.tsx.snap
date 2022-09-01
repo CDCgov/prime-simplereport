@@ -1,6 +1,6 @@
 // Jest Snapshot v1, https://goo.gl/fbAQLP
 
-exports[`ManageDeviceTypeFormContainer renders the Manage Device Type Form Container item 1`] = `
+exports[`DeviceTypeFormContainer should render the device type form 1`] = `
 Object {
   "asFragment": [Function],
   "baseElement": <body>
@@ -22,7 +22,7 @@ Object {
               >
                 <div>
                   <h2>
-                    Manage devices
+                    Device type
                   </h2>
                 </div>
                 <div
@@ -89,13 +89,13 @@ Object {
                     class="tablet:grid-col"
                   >
                     <div
-                      class="usa-form-group prime-dropdown "
+                      class="usa-form-group"
                     >
                       <label
                         class="usa-label"
                         for="1"
                       >
-                        Select device
+                        Device name
                         <abbr
                           class="usa-hint usa-hint--required"
                           title="required"
@@ -104,33 +104,15 @@ Object {
                           *
                         </abbr>
                       </label>
-                      <select
+                      <input
+                        aria-disabled="false"
                         aria-required="true"
-                        class="usa-select"
+                        class="usa-input"
                         id="1"
-                        name="selectDevice"
-                      >
-                        <option
-                          value=""
-                        >
-                          - Select -
-                        </option>
-                        <option
-                          value="abc1"
-                        >
-                          Tesla Emitter
-                        </option>
-                        <option
-                          value="abc2"
-                        >
-                          Fission Energizer
-                        </option>
-                        <option
-                          value="abc3"
-                        >
-                          Covalent Observer
-                        </option>
-                      </select>
+                        name="name"
+                        type="text"
+                        value=""
+                      />
                     </div>
                   </div>
                 </div>
@@ -147,7 +129,7 @@ Object {
                         class="usa-label"
                         for="2"
                       >
-                        Device name
+                        Model
                         <abbr
                           class="usa-hint usa-hint--required"
                           title="required"
@@ -157,12 +139,11 @@ Object {
                         </abbr>
                       </label>
                       <input
-                        aria-disabled="true"
+                        aria-disabled="false"
                         aria-required="true"
                         class="usa-input"
-                        disabled=""
                         id="2"
-                        name="name"
+                        name="model"
                         type="text"
                         value=""
                       />
@@ -182,7 +163,7 @@ Object {
                         class="usa-label"
                         for="3"
                       >
-                        Model
+                        Manufacturer
                         <abbr
                           class="usa-hint usa-hint--required"
                           title="required"
@@ -192,12 +173,11 @@ Object {
                         </abbr>
                       </label>
                       <input
-                        aria-disabled="true"
+                        aria-disabled="false"
                         aria-required="true"
                         class="usa-input"
-                        disabled=""
                         id="3"
-                        name="model"
+                        name="manufacturer"
                         type="text"
                         value=""
                       />
@@ -217,41 +197,6 @@ Object {
                         class="usa-label"
                         for="4"
                       >
-                        Manufacturer
-                        <abbr
-                          class="usa-hint usa-hint--required"
-                          title="required"
-                        >
-                           
-                          *
-                        </abbr>
-                      </label>
-                      <input
-                        aria-disabled="true"
-                        aria-required="true"
-                        class="usa-input"
-                        disabled=""
-                        id="4"
-                        name="manufacturer"
-                        type="text"
-                        value=""
-                      />
-                    </div>
-                  </div>
-                </div>
-                <div
-                  class="grid-row grid-gap"
-                >
-                  <div
-                    class="tablet:grid-col"
-                  >
-                    <div
-                      class="usa-form-group"
-                    >
-                      <label
-                        class="usa-label"
-                        for="5"
-                      >
                         LOINC code
                         <abbr
                           class="usa-hint usa-hint--required"
@@ -262,11 +207,10 @@ Object {
                         </abbr>
                       </label>
                       <input
-                        aria-disabled="true"
+                        aria-disabled="false"
                         aria-required="true"
                         class="usa-input"
-                        disabled=""
-                        id="5"
+                        id="4"
                         name="loincCode"
                         type="text"
                         value=""
@@ -281,7 +225,7 @@ Object {
                     >
                       <label
                         class="usa-label"
-                        for="6"
+                        for="5"
                       >
                         Test length (minutes)
                         <abbr
@@ -293,16 +237,15 @@ Object {
                         </abbr>
                       </label>
                       <input
-                        aria-disabled="true"
+                        aria-disabled="false"
                         aria-required="true"
                         class="usa-input"
-                        disabled=""
-                        id="6"
+                        id="5"
                         max="999"
                         min="0"
                         name="testLength"
                         type="number"
-                        value=""
+                        value="15"
                       />
                     </div>
                   </div>
@@ -318,7 +261,7 @@ Object {
                     >
                       <label
                         class="usa-label"
-                        for="7"
+                        for="6"
                       >
                         SNOMED code for swab type(s)
                         <abbr
@@ -332,7 +275,7 @@ Object {
                       <div
                         class="usa-combo-box usa-combo-box--pristine multi-select-dropdown"
                         data-testid="multi-select"
-                        id="7"
+                        id="6"
                       >
                         <input
                           aria-expanded="false"
@@ -341,7 +284,6 @@ Object {
                           autocomplete="off"
                           class="usa-combo-box__input"
                           data-testid="multi-select-input"
-                          disabled=""
                           role="multi-select-input"
                           type="text"
                           value=""
@@ -359,7 +301,6 @@ Object {
                             aria-label="Toggle the dropdown list"
                             class="usa-combo-box__toggle-list"
                             data-testid="multi-select-toggle"
-                            disabled=""
                             tabindex="-1"
                             type="button"
                           >
@@ -379,39 +320,13 @@ Object {
                             aria-selected="false"
                             aria-setsize="64"
                             class="usa-combo-box__list-option"
-                            data-testid="multi-select-option-456"
+                            data-testid="multi-select-option-887799"
                             id="multi-select-swabTypes-list--option-0"
                             role="option"
                             tabindex="-1"
-                            value="456"
+                            value="887799"
                           >
-                            eyes (456)
-                          </li>
-                          <li
-                            aria-posinset="2"
-                            aria-selected="false"
-                            aria-setsize="64"
-                            class="usa-combo-box__list-option"
-                            data-testid="multi-select-option-789"
-                            id="multi-select-swabTypes-list--option-1"
-                            role="option"
-                            tabindex="-1"
-                            value="789"
-                          >
-                            mouth (789)
-                          </li>
-                          <li
-                            aria-posinset="3"
-                            aria-selected="false"
-                            aria-setsize="64"
-                            class="usa-combo-box__list-option"
-                            data-testid="multi-select-option-123"
-                            id="multi-select-swabTypes-list--option-2"
-                            role="option"
-                            tabindex="-1"
-                            value="123"
-                          >
-                            nose (123)
+                            Cotton (5309)
                           </li>
                         </ul>
                         <div
@@ -438,7 +353,7 @@ Object {
                     >
                       <label
                         class="usa-label"
-                        for="8"
+                        for="7"
                       >
                         Supported diseases
                         <abbr
@@ -452,7 +367,7 @@ Object {
                       <div
                         class="usa-combo-box usa-combo-box--pristine multi-select-dropdown"
                         data-testid="multi-select"
-                        id="8"
+                        id="7"
                       >
                         <input
                           aria-expanded="false"
@@ -461,7 +376,6 @@ Object {
                           autocomplete="off"
                           class="usa-combo-box__input"
                           data-testid="multi-select-input"
-                          disabled=""
                           role="multi-select-input"
                           type="text"
                           value=""
@@ -479,7 +393,6 @@ Object {
                             aria-label="Toggle the dropdown list"
                             class="usa-combo-box__toggle-list"
                             data-testid="multi-select-toggle"
-                            disabled=""
                             tabindex="-1"
                             type="button"
                           >
@@ -548,7 +461,7 @@ Object {
             >
               <div>
                 <h2>
-                  Manage devices
+                  Device type
                 </h2>
               </div>
               <div
@@ -615,13 +528,13 @@ Object {
                   class="tablet:grid-col"
                 >
                   <div
-                    class="usa-form-group prime-dropdown "
+                    class="usa-form-group"
                   >
                     <label
                       class="usa-label"
                       for="1"
                     >
-                      Select device
+                      Device name
                       <abbr
                         class="usa-hint usa-hint--required"
                         title="required"
@@ -630,33 +543,15 @@ Object {
                         *
                       </abbr>
                     </label>
-                    <select
+                    <input
+                      aria-disabled="false"
                       aria-required="true"
-                      class="usa-select"
+                      class="usa-input"
                       id="1"
-                      name="selectDevice"
-                    >
-                      <option
-                        value=""
-                      >
-                        - Select -
-                      </option>
-                      <option
-                        value="abc1"
-                      >
-                        Tesla Emitter
-                      </option>
-                      <option
-                        value="abc2"
-                      >
-                        Fission Energizer
-                      </option>
-                      <option
-                        value="abc3"
-                      >
-                        Covalent Observer
-                      </option>
-                    </select>
+                      name="name"
+                      type="text"
+                      value=""
+                    />
                   </div>
                 </div>
               </div>
@@ -673,7 +568,7 @@ Object {
                       class="usa-label"
                       for="2"
                     >
-                      Device name
+                      Model
                       <abbr
                         class="usa-hint usa-hint--required"
                         title="required"
@@ -683,12 +578,11 @@ Object {
                       </abbr>
                     </label>
                     <input
-                      aria-disabled="true"
+                      aria-disabled="false"
                       aria-required="true"
                       class="usa-input"
-                      disabled=""
                       id="2"
-                      name="name"
+                      name="model"
                       type="text"
                       value=""
                     />
@@ -708,7 +602,7 @@ Object {
                       class="usa-label"
                       for="3"
                     >
-                      Model
+                      Manufacturer
                       <abbr
                         class="usa-hint usa-hint--required"
                         title="required"
@@ -718,12 +612,11 @@ Object {
                       </abbr>
                     </label>
                     <input
-                      aria-disabled="true"
+                      aria-disabled="false"
                       aria-required="true"
                       class="usa-input"
-                      disabled=""
                       id="3"
-                      name="model"
+                      name="manufacturer"
                       type="text"
                       value=""
                     />
@@ -743,41 +636,6 @@ Object {
                       class="usa-label"
                       for="4"
                     >
-                      Manufacturer
-                      <abbr
-                        class="usa-hint usa-hint--required"
-                        title="required"
-                      >
-                         
-                        *
-                      </abbr>
-                    </label>
-                    <input
-                      aria-disabled="true"
-                      aria-required="true"
-                      class="usa-input"
-                      disabled=""
-                      id="4"
-                      name="manufacturer"
-                      type="text"
-                      value=""
-                    />
-                  </div>
-                </div>
-              </div>
-              <div
-                class="grid-row grid-gap"
-              >
-                <div
-                  class="tablet:grid-col"
-                >
-                  <div
-                    class="usa-form-group"
-                  >
-                    <label
-                      class="usa-label"
-                      for="5"
-                    >
                       LOINC code
                       <abbr
                         class="usa-hint usa-hint--required"
@@ -788,11 +646,10 @@ Object {
                       </abbr>
                     </label>
                     <input
-                      aria-disabled="true"
+                      aria-disabled="false"
                       aria-required="true"
                       class="usa-input"
-                      disabled=""
-                      id="5"
+                      id="4"
                       name="loincCode"
                       type="text"
                       value=""
@@ -807,7 +664,7 @@ Object {
                   >
                     <label
                       class="usa-label"
-                      for="6"
+                      for="5"
                     >
                       Test length (minutes)
                       <abbr
@@ -819,16 +676,15 @@ Object {
                       </abbr>
                     </label>
                     <input
-                      aria-disabled="true"
+                      aria-disabled="false"
                       aria-required="true"
                       class="usa-input"
-                      disabled=""
-                      id="6"
+                      id="5"
                       max="999"
                       min="0"
                       name="testLength"
                       type="number"
-                      value=""
+                      value="15"
                     />
                   </div>
                 </div>
@@ -844,7 +700,7 @@ Object {
                   >
                     <label
                       class="usa-label"
-                      for="7"
+                      for="6"
                     >
                       SNOMED code for swab type(s)
                       <abbr
@@ -858,7 +714,7 @@ Object {
                     <div
                       class="usa-combo-box usa-combo-box--pristine multi-select-dropdown"
                       data-testid="multi-select"
-                      id="7"
+                      id="6"
                     >
                       <input
                         aria-expanded="false"
@@ -867,7 +723,6 @@ Object {
                         autocomplete="off"
                         class="usa-combo-box__input"
                         data-testid="multi-select-input"
-                        disabled=""
                         role="multi-select-input"
                         type="text"
                         value=""
@@ -885,7 +740,6 @@ Object {
                           aria-label="Toggle the dropdown list"
                           class="usa-combo-box__toggle-list"
                           data-testid="multi-select-toggle"
-                          disabled=""
                           tabindex="-1"
                           type="button"
                         >
@@ -905,39 +759,13 @@ Object {
                           aria-selected="false"
                           aria-setsize="64"
                           class="usa-combo-box__list-option"
-                          data-testid="multi-select-option-456"
+                          data-testid="multi-select-option-887799"
                           id="multi-select-swabTypes-list--option-0"
                           role="option"
                           tabindex="-1"
-                          value="456"
+                          value="887799"
                         >
-                          eyes (456)
-                        </li>
-                        <li
-                          aria-posinset="2"
-                          aria-selected="false"
-                          aria-setsize="64"
-                          class="usa-combo-box__list-option"
-                          data-testid="multi-select-option-789"
-                          id="multi-select-swabTypes-list--option-1"
-                          role="option"
-                          tabindex="-1"
-                          value="789"
-                        >
-                          mouth (789)
-                        </li>
-                        <li
-                          aria-posinset="3"
-                          aria-selected="false"
-                          aria-setsize="64"
-                          class="usa-combo-box__list-option"
-                          data-testid="multi-select-option-123"
-                          id="multi-select-swabTypes-list--option-2"
-                          role="option"
-                          tabindex="-1"
-                          value="123"
-                        >
-                          nose (123)
+                          Cotton (5309)
                         </li>
                       </ul>
                       <div
@@ -964,7 +792,7 @@ Object {
                   >
                     <label
                       class="usa-label"
-                      for="8"
+                      for="7"
                     >
                       Supported diseases
                       <abbr
@@ -978,7 +806,7 @@ Object {
                     <div
                       class="usa-combo-box usa-combo-box--pristine multi-select-dropdown"
                       data-testid="multi-select"
-                      id="8"
+                      id="7"
                     >
                       <input
                         aria-expanded="false"
@@ -987,7 +815,6 @@ Object {
                         autocomplete="off"
                         class="usa-combo-box__input"
                         data-testid="multi-select-input"
-                        disabled=""
                         role="multi-select-input"
                         type="text"
                         value=""
@@ -1005,7 +832,6 @@ Object {
                           aria-label="Toggle the dropdown list"
                           class="usa-combo-box__toggle-list"
                           data-testid="multi-select-toggle"
-                          disabled=""
                           tabindex="-1"
                           type="button"
                         >

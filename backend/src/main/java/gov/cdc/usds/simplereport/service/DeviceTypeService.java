@@ -1,7 +1,5 @@
 package gov.cdc.usds.simplereport.service;
 
-import static gov.cdc.usds.simplereport.utils.DeviceTestLengthConverter.determineTestLength;
-
 import gov.cdc.usds.simplereport.api.model.CreateDeviceType;
 import gov.cdc.usds.simplereport.api.model.UpdateDeviceType;
 import gov.cdc.usds.simplereport.api.model.errors.IllegalGraphqlArgumentException;
@@ -102,7 +100,6 @@ public class DeviceTypeService {
     DeviceType device = getDeviceType(updateDevice.getInternalId());
     if (updateDevice.getName() != null) {
       device.setName(updateDevice.getName());
-      device.setTestLength((determineTestLength(updateDevice.getName())));
     }
     if (updateDevice.getTestLength() > 0) {
       device.setTestLength(updateDevice.getTestLength());
@@ -201,7 +198,7 @@ public class DeviceTypeService {
                 createDevice.getModel(),
                 createDevice.getLoincCode(),
                 null,
-                determineTestLength(createDevice.getName())));
+                createDevice.getTestLength()));
 
     specimenTypes.stream()
         .map(specimenType -> new DeviceSpecimenType(dt, specimenType))

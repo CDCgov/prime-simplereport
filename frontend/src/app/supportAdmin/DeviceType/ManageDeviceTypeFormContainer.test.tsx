@@ -5,9 +5,12 @@ import { ToastContainer } from "react-toastify";
 import { DeviceType, SpecimenType } from "../../../generated/graphql";
 
 import ManageDeviceTypeFormContainer from "./ManageDeviceTypeFormContainer";
-import { addValue } from "./DeviceTypeForm.test";
 
 const mockUpdateDeviceType = jest.fn();
+
+const addValue = (name: string, value: string) => {
+  userEvent.type(screen.getByLabelText(name, { exact: false }), value);
+};
 
 jest.mock("../../../generated/graphql", () => {
   return {
@@ -109,6 +112,18 @@ jest.mock("react-router-dom", () => {
   };
 });
 
+const mockFacility: any = {
+  id: "12345",
+};
+
+jest.mock("../../facilitySelect/useSelectedFacility", () => {
+  return {
+    useSelectedFacility: () => {
+      return [mockFacility, () => {}];
+    },
+  };
+});
+
 let container: any;
 
 describe("ManageDeviceTypeFormContainer", () => {
@@ -166,7 +181,9 @@ describe("ManageDeviceTypeFormContainer", () => {
       },
     });
 
-    expect(await screen.findByText("Redirected to /admin")).toBeInTheDocument();
+    expect(
+      await screen.findByText("Redirected to /admin?facility=12345")
+    ).toBeInTheDocument();
   });
 
   it("should display error when update fails", async () => {

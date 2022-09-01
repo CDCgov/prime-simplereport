@@ -63,6 +63,7 @@ input CreateDeviceType {
   loincCode: String!
   swabTypes: [ID!]!
   supportedDiseases: [ID!]!
+  testLength: Int!
 }
 
 input UpdateDeviceType {
@@ -92,6 +93,13 @@ type SupportedDisease {
   internalId: ID!
   name: String!
   loinc: String!
+}
+
+input CreateSpecimenType {
+  name: String!
+  typeCode: String!
+  collectionLocationName: String
+  collectionLocationCode: String
 }
 
 type SpecimenType {
