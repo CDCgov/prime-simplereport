@@ -13,8 +13,8 @@ import graphql.execution.ResultPath;
 import graphql.schema.DataFetcher;
 import graphql.schema.DataFetchingEnvironment;
 import graphql.schema.FieldCoordinates;
+import graphql.schema.GraphQLAppliedDirective;
 import graphql.schema.GraphQLArgument;
-import graphql.schema.GraphQLDirective;
 import graphql.schema.GraphQLDirectiveContainer;
 import graphql.schema.GraphQLFieldDefinition;
 import graphql.schema.GraphQLNonNull;
@@ -73,7 +73,13 @@ public class RequiredPermissionsDirectiveWiring implements SchemaDirectiveWiring
       SchemaDirectiveWiringEnvironment<GraphQLFieldDefinition> environment) {
     GraphQLFieldDefinition fieldDefinition = environment.getElement();
     var requiredPermissionsBuilder = RequiredPermissions.builder();
-    gatherRequiredPermissions(requiredPermissionsBuilder, fieldDefinition);
+
+    if (fieldDefinition.getName().equals("addUserToCurrentOrg")) {
+      gatherRequiredPermissions(requiredPermissionsBuilder, fieldDefinition);
+    } else {
+      gatherRequiredPermissions(requiredPermissionsBuilder, fieldDefinition);
+    }
+
     var requiredPermissions = requiredPermissionsBuilder.build();
 
     overwriteOriginalDataFetcher(
@@ -112,9 +118,16 @@ public class RequiredPermissionsDirectiveWiring implements SchemaDirectiveWiring
 
   private static boolean argumentHasDefaultOrNullValue(
       DataFetchingEnvironment dfe, GraphQLArgument argument) {
+
+    if (!argument.hasSetValue()) {
+      return true;
+    }
+
     var argValue = dfe.getArgument(argument.getName());
 
-    return argValue == null || Objects.equals(argValue, argument.getArgumentDefaultValue());
+    // todo zedd was working here
+    return argValue == null
+        || Objects.equals(argValue, argument.getArgumentDefaultValue().getValue());
   }
 
   private static boolean requesterHasRequisitePermissions(
@@ -161,14 +174,16 @@ public class RequiredPermissionsDirectiveWiring implements SchemaDirectiveWiring
 
   private static void gatherRequiredPermissions(
       RequiredPermissions.Builder permissionsAccumulator, GraphQLDirectiveContainer queryElement) {
-    Optional.ofNullable(
-            queryElement.getDirective(
-                GraphQlSchemaDirectiveConfig.REQUIRED_PERMISSIONS_DIRECTIVE_NAME))
-        .ifPresent(
-            d -> {
-              fromStringListArgument(d, "allOf").ifPresent(permissionsAccumulator::withAllOf);
-              fromStringListArgument(d, "anyOf").ifPresent(permissionsAccumulator::withAnyOf);
-            });
+    GraphQLAppliedDirective appliedDirective =
+        queryElement.getAppliedDirective(
+            GraphQlSchemaDirectiveConfig.REQUIRED_PERMISSIONS_DIRECTIVE_NAME);
+
+    if (appliedDirective != null) {
+      fromStringListArgument(appliedDirective, "allOf")
+          .ifPresent(permissionsAccumulator::withAllOf);
+      fromStringListArgument(appliedDirective, "anyOf")
+          .ifPresent(permissionsAccumulator::withAnyOf);
+    }
   }
 
   private static void overwriteOriginalDataFetcher(
@@ -181,9 +196,9 @@ public class RequiredPermissionsDirectiveWiring implements SchemaDirectiveWiring
 
   @SuppressWarnings("unchecked")
   private static Optional<Set<UserPermission>> fromStringListArgument(
-      GraphQLDirective directive, String argumentName) {
+      GraphQLAppliedDirective directive, String argumentName) {
     return Optional.ofNullable(directive.getArgument(argumentName))
-        .map(graphQLArgument -> graphQLArgument.getArgumentValue())
+        .map(graphQLArgument -> graphQLArgument.getValue())
         .filter(Collection.class::isInstance)
         .map(c -> (Collection<String>) c)
         .map(

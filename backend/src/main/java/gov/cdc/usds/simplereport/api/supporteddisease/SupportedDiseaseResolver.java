@@ -5,14 +5,14 @@ import gov.cdc.usds.simplereport.service.DiseaseService;
 import java.util.List;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.graphql.data.method.annotation.QueryMapping;
-import org.springframework.stereotype.Component;
+import org.springframework.stereotype.Controller;
 
-@Component
+@Controller
 public class SupportedDiseaseResolver {
   @Autowired private DiseaseService ds;
 
   @QueryMapping
-  public List<SupportedDisease> getSupportedDiseases() {
+  public List<SupportedDisease> supportedDiseases() {
     return ds.fetchSupportedDiseases();
   }
 }
