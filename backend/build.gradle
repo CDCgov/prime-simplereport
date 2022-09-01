@@ -52,6 +52,9 @@ dependencies {
     implementation 'org.springframework:spring-webmvc:5.3.19'
     implementation 'org.springframework:spring-websocket:5.3.19'
 
+    // Security Pins (Sept 2022)
+    implementation 'org.glassfish:jakarta.el:3.0.4'
+
     // data layer dependencies
     implementation 'org.springframework.boot:spring-boot-starter-data-jpa'
     implementation 'org.springframework.boot:spring-boot-starter-validation'
@@ -72,7 +75,7 @@ dependencies {
     implementation 'org.springframework.boot:spring-boot-starter-thymeleaf:2.7.2'
 
     // Okta dependencies
-    implementation 'com.okta.spring:okta-spring-boot-starter:2.0.0'
+    implementation 'com.okta.spring:okta-spring-boot-starter:2.1.6'
     implementation 'com.okta.sdk:okta-sdk-api:8.2.1'
     runtimeOnly 'com.okta.sdk:okta-sdk-impl:8.2.1'
     runtimeOnly 'com.okta.sdk:okta-sdk-httpclient:8.2.1'
