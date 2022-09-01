@@ -71,7 +71,7 @@ const Page: React.FC<Props> = ({
           position="bottom-center"
           hideProgressBar={true}
         />
-        <TouchpointsButton />
+        <TouchpointsButton isModalActive={isModalActive} />
       </div>
     </div>
   );
