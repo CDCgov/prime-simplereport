@@ -99,7 +99,7 @@ public class InitialSetupProperties {
                     d.getModel(),
                     d.getLoincCode(),
                     d.getSwabType(),
-                    determineTestLength(d.getName())))
+                    d.getTestLength() > 0 ? d.getTestLength() : determineTestLength(d.getName())))
         .collect(Collectors.toList());
   }
 

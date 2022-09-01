@@ -79,6 +79,14 @@ export type CreateDeviceType = {
   name: Scalars["String"];
   supportedDiseases: Array<Scalars["ID"]>;
   swabTypes: Array<Scalars["ID"]>;
+  testLength: Scalars["Int"];
+};
+
+export type CreateSpecimenType = {
+  collectionLocationCode?: InputMaybe<Scalars["String"]>;
+  collectionLocationName?: InputMaybe<Scalars["String"]>;
+  name: Scalars["String"];
+  typeCode: Scalars["String"];
 };
 
 export type DeviceSpecimenType = {
@@ -162,6 +170,7 @@ export type Mutation = {
   createFacilityRegistrationLink?: Maybe<Scalars["String"]>;
   createOrganization?: Maybe<Organization>;
   createOrganizationRegistrationLink?: Maybe<Scalars["String"]>;
+  createSpecimenType?: Maybe<SpecimenType>;
   editPendingOrganization?: Maybe<Scalars["String"]>;
   editQueueItem?: Maybe<TestOrder>;
   editQueueItemMultiplexResult?: Maybe<TestOrder>;
@@ -398,6 +407,10 @@ export type MutationCreateOrganizationArgs = {
 export type MutationCreateOrganizationRegistrationLinkArgs = {
   link: Scalars["String"];
   organizationExternalId: Scalars["String"];
+};
+
+export type MutationCreateSpecimenTypeArgs = {
+  input: CreateSpecimenType;
 };
 
 export type MutationEditPendingOrganizationArgs = {
@@ -1711,6 +1724,7 @@ export type CreateDeviceTypeMutationVariables = Exact<{
   loincCode: Scalars["String"];
   swabTypes: Array<Scalars["ID"]> | Scalars["ID"];
   supportedDiseases: Array<Scalars["ID"]> | Scalars["ID"];
+  testLength: Scalars["Int"];
 }>;
 
 export type CreateDeviceTypeMutation = {
@@ -1740,18 +1754,6 @@ export type UpdateDeviceTypeMutation = {
     | undefined;
 };
 
-export type GetSpecimenTypesQueryVariables = Exact<{ [key: string]: never }>;
-
-export type GetSpecimenTypesQuery = {
-  __typename?: "Query";
-  specimenTypes: Array<{
-    __typename?: "SpecimenType";
-    internalId: string;
-    name: string;
-    typeCode: string;
-  }>;
-};
-
 export type GetDeviceTypeListQueryVariables = Exact<{ [key: string]: never }>;
 
 export type GetDeviceTypeListQuery = {
@@ -1774,6 +1776,18 @@ export type GetDeviceTypeListQuery = {
       internalId: string;
       name: string;
     }>;
+  }>;
+};
+
+export type GetSpecimenTypesQueryVariables = Exact<{ [key: string]: never }>;
+
+export type GetSpecimenTypesQuery = {
+  __typename?: "Query";
+  specimenTypes: Array<{
+    __typename?: "SpecimenType";
+    internalId: string;
+    name: string;
+    typeCode: string;
   }>;
 };
 
@@ -4940,6 +4954,7 @@ export const CreateDeviceTypeDocument = gql`
     $loincCode: String!
     $swabTypes: [ID!]!
     $supportedDiseases: [ID!]!
+    $testLength: Int!
   ) {
     createDeviceType(
       input: {
@@ -4949,6 +4964,7 @@ export const CreateDeviceTypeDocument = gql`
         loincCode: $loincCode
         swabTypes: $swabTypes
         supportedDiseases: $supportedDiseases
+        testLength: $testLength
       }
     ) {
       internalId
@@ -4979,6 +4995,7 @@ export type CreateDeviceTypeMutationFn = Apollo.MutationFunction<
  *      loincCode: // value for 'loincCode'
  *      swabTypes: // value for 'swabTypes'
  *      supportedDiseases: // value for 'supportedDiseases'
+ *      testLength: // value for 'testLength'
  *   },
  * });
  */
@@ -5078,6 +5095,77 @@ export type UpdateDeviceTypeMutationOptions = Apollo.BaseMutationOptions<
   UpdateDeviceTypeMutation,
   UpdateDeviceTypeMutationVariables
 >;
+export const GetDeviceTypeListDocument = gql`
+  query getDeviceTypeList {
+    deviceTypes {
+      internalId
+      name
+      loincCode
+      manufacturer
+      model
+      testLength
+      swabTypes {
+        internalId
+        name
+      }
+      supportedDiseases {
+        internalId
+        name
+      }
+      testLength
+    }
+  }
+`;
+
+/**
+ * __useGetDeviceTypeListQuery__
+ *
+ * To run a query within a React component, call `useGetDeviceTypeListQuery` and pass it any options that fit your needs.
+ * When your component renders, `useGetDeviceTypeListQuery` returns an object from Apollo Client that contains loading, error, and data properties
+ * you can use to render your UI.
+ *
+ * @param baseOptions options that will be passed into the query, supported options are listed on: https://www.apollographql.com/docs/react/api/react-hooks/#options;
+ *
+ * @example
+ * const { data, loading, error } = useGetDeviceTypeListQuery({
+ *   variables: {
+ *   },
+ * });
+ */
+export function useGetDeviceTypeListQuery(
+  baseOptions?: Apollo.QueryHookOptions<
+    GetDeviceTypeListQuery,
+    GetDeviceTypeListQueryVariables
+  >
+) {
+  const options = { ...defaultOptions, ...baseOptions };
+  return Apollo.useQuery<
+    GetDeviceTypeListQuery,
+    GetDeviceTypeListQueryVariables
+  >(GetDeviceTypeListDocument, options);
+}
+export function useGetDeviceTypeListLazyQuery(
+  baseOptions?: Apollo.LazyQueryHookOptions<
+    GetDeviceTypeListQuery,
+    GetDeviceTypeListQueryVariables
+  >
+) {
+  const options = { ...defaultOptions, ...baseOptions };
+  return Apollo.useLazyQuery<
+    GetDeviceTypeListQuery,
+    GetDeviceTypeListQueryVariables
+  >(GetDeviceTypeListDocument, options);
+}
+export type GetDeviceTypeListQueryHookResult = ReturnType<
+  typeof useGetDeviceTypeListQuery
+>;
+export type GetDeviceTypeListLazyQueryHookResult = ReturnType<
+  typeof useGetDeviceTypeListLazyQuery
+>;
+export type GetDeviceTypeListQueryResult = Apollo.QueryResult<
+  GetDeviceTypeListQuery,
+  GetDeviceTypeListQueryVariables
+>;
 export const GetSpecimenTypesDocument = gql`
   query getSpecimenTypes {
     specimenTypes {
@@ -5136,76 +5224,6 @@ export type GetSpecimenTypesLazyQueryHookResult = ReturnType<
 export type GetSpecimenTypesQueryResult = Apollo.QueryResult<
   GetSpecimenTypesQuery,
   GetSpecimenTypesQueryVariables
->;
-export const GetDeviceTypeListDocument = gql`
-  query getDeviceTypeList {
-    deviceTypes {
-      internalId
-      name
-      loincCode
-      manufacturer
-      model
-      testLength
-      swabTypes {
-        internalId
-        name
-      }
-      supportedDiseases {
-        internalId
-        name
-      }
-    }
-  }
-`;
-
-/**
- * __useGetDeviceTypeListQuery__
- *
- * To run a query within a React component, call `useGetDeviceTypeListQuery` and pass it any options that fit your needs.
- * When your component renders, `useGetDeviceTypeListQuery` returns an object from Apollo Client that contains loading, error, and data properties
- * you can use to render your UI.
- *
- * @param baseOptions options that will be passed into the query, supported options are listed on: https://www.apollographql.com/docs/react/api/react-hooks/#options;
- *
- * @example
- * const { data, loading, error } = useGetDeviceTypeListQuery({
- *   variables: {
- *   },
- * });
- */
-export function useGetDeviceTypeListQuery(
-  baseOptions?: Apollo.QueryHookOptions<
-    GetDeviceTypeListQuery,
-    GetDeviceTypeListQueryVariables
-  >
-) {
-  const options = { ...defaultOptions, ...baseOptions };
-  return Apollo.useQuery<
-    GetDeviceTypeListQuery,
-    GetDeviceTypeListQueryVariables
-  >(GetDeviceTypeListDocument, options);
-}
-export function useGetDeviceTypeListLazyQuery(
-  baseOptions?: Apollo.LazyQueryHookOptions<
-    GetDeviceTypeListQuery,
-    GetDeviceTypeListQueryVariables
-  >
-) {
-  const options = { ...defaultOptions, ...baseOptions };
-  return Apollo.useLazyQuery<
-    GetDeviceTypeListQuery,
-    GetDeviceTypeListQueryVariables
-  >(GetDeviceTypeListDocument, options);
-}
-export type GetDeviceTypeListQueryHookResult = ReturnType<
-  typeof useGetDeviceTypeListQuery
->;
-export type GetDeviceTypeListLazyQueryHookResult = ReturnType<
-  typeof useGetDeviceTypeListLazyQuery
->;
-export type GetDeviceTypeListQueryResult = Apollo.QueryResult<
-  GetDeviceTypeListQuery,
-  GetDeviceTypeListQueryVariables
 >;
 export const GetSupportedDiseasesDocument = gql`
   query getSupportedDiseases {
