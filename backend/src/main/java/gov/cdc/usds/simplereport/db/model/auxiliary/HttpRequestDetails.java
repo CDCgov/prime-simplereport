@@ -47,7 +47,6 @@ public class HttpRequestDetails {
     serverName = request.getHeaders().toSingleValueMap().get(Headers.HOST);
     originalHostName = request.getHeaders().toSingleValueMap().get(Headers.FORWARDED_HOST);
     remoteAddress = request.getHeaders().toSingleValueMap().get(Headers.REMOTE_ADDR);
-    ;
     String forwardedFor = request.getHeaders().toSingleValueMap().get(Headers.FORWARDED_CLIENT);
     forwardedAddresses =
         forwardedFor == null ? List.of() : Arrays.asList(forwardedFor.split(",\\s*"));

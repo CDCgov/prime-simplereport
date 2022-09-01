@@ -52,8 +52,7 @@ import org.springframework.util.MultiValueMap;
 @AutoConfigureHttpGraphQlTester
 public abstract class BaseGraphqlTest extends BaseFullStackTest {
 
-  protected static final String ACCESS_ERROR =
-      "Current user does not have permission for this action";
+  protected static final String ACCESS_ERROR = "Unauthorized";
 
   @Autowired private OrganizationInitializingService _initService;
   @Autowired private DemoOktaRepository _oktaRepo;
@@ -257,6 +256,55 @@ public abstract class BaseGraphqlTest extends BaseFullStackTest {
     }
 
     GraphQlTester.Response response = request.execute();
+    if (expectedError != null) {
+      response
+          .errors()
+          .satisfy(
+              errors -> {
+                assertThat(errors).hasSize(1);
+                //        assertThat(errors.get(0).getErrorType()).isEqualTo(ErrorType.FORBIDDEN);
+                assertThat(errors.get(0).getMessage()).isEqualTo(expectedError);
+              });
+      //      response.errors().expect(responseError -> responseError.equals(expectedError));
+      return null;
+    }
+
+    Object responseObject = response.path("").entity(Object.class).get();
+    ObjectMapper mapper = new ObjectMapper();
+    ObjectNode jsonNodeMap = (ObjectNode) mapper.convertValue(responseObject, JsonNode.class);
+
+    return jsonNodeMap;
+  }
+
+  protected ObjectNode runQueryNew(
+      String queryFileName,
+      String operationName,
+      Map<String, Object> variables,
+      String expectedError) {
+    // change variables to map everywhere! seems like this will continue to give us issues
+    WebGraphQlTester webGraphQlTester =
+        this.graphQlTester
+            .mutate()
+            .headers(headers -> headers.setBearerAuth(getBearerAuth()))
+            .headers(httpHeaders -> httpHeaders.addAll(_customHeaders))
+            .build();
+
+    //    tester.document()
+    //        if (queryFileName != null && !queryFileName.contains("/")) {
+    //          queryFileName = "queries/" + queryFileName;
+    //        }
+    System.out.println(queryFileName);
+    GraphQlTester.Request<?> request = webGraphQlTester.documentName(queryFileName);
+
+    if (operationName != null) {
+      request.operationName(operationName);
+    }
+
+    if (variables != null) {
+      variables.forEach(request::variable);
+    }
+
+    GraphQlTester.Response response = request.execute();
 
     //    response.errors().satisfy(responseErrors -> {
     //      assertThat(responseErrors.get(0).getMessage()).isEqualTo(expectedError);
@@ -316,16 +364,17 @@ public abstract class BaseGraphqlTest extends BaseFullStackTest {
       Optional<UUID> facilityId,
       Optional<String> expectedError)
       throws IOException {
-    ObjectNode variables =
-        JsonNodeFactory.instance
-            .objectNode()
-            .put("firstName", firstName)
-            .put("lastName", lastName)
-            .put("birthDate", birthDate)
-            .putPOJO("phoneNumbers", phoneNumbers)
-            .put("lookupId", lookupId)
-            .put("facilityId", facilityId.map(UUID::toString).orElse(null));
-    return runQuery("add-person", variables, expectedError.orElse(null));
+    Map<String, Object> variables =
+        new HashMap<>(
+            Map.of(
+                "firstName", firstName,
+                "lastName", lastName,
+                "birthDate", birthDate,
+                "phoneNumbers", phoneNumbers,
+                "lookupId", lookupId));
+    facilityId.ifPresent(uuid -> variables.put("facilityId", uuid.toString()));
+
+    return runQueryNew("add-person", null, variables, expectedError.orElse(null));
   }
 
   protected ObjectNode executeAddPersonMutation(
