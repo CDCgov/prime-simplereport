@@ -6,7 +6,9 @@ describe("button", () => {
   describe("className", () => {
     it("should be usa-button", () => {
       render(<Button />);
-      expect(screen.getByRole("button")).toHaveClass("usa-button", { exact: true });
+      expect(screen.getByRole("button")).toHaveClass("usa-button", {
+        exact: true,
+      });
     });
     it("should include usa-button--variant", () => {
       render(<Button variant={"big"} />);

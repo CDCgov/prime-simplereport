@@ -52,11 +52,12 @@ describe("observe date picker", () => {
   });
   it("re runs when element not found", () => {
     jest.spyOn(document, "querySelector").mockImplementation((selector) => {
+      expect(selector).toEqual("something");
       return null;
     });
     jest.spyOn(window, "setTimeout");
 
-    const stateFunc = (val: boolean) => false;
+    const stateFunc = (val: boolean) => val;
     observeDatePicker("something", stateFunc);
 
     expect(window.setTimeout).toBeCalledWith(
