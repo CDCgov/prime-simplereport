@@ -848,17 +848,17 @@ export type QueryPatientExistsWithoutZipArgs = {
 
 export type QueryPatientsArgs = {
   facilityId?: InputMaybe<Scalars["ID"]>;
+  includeArchived?: InputMaybe<Scalars["Boolean"]>;
   includeArchivedFacilities?: InputMaybe<Scalars["Boolean"]>;
   namePrefixMatch?: InputMaybe<Scalars["String"]>;
   pageNumber?: InputMaybe<Scalars["Int"]>;
   pageSize?: InputMaybe<Scalars["Int"]>;
-  showDeleted?: InputMaybe<Scalars["Boolean"]>;
 };
 
 export type QueryPatientsCountArgs = {
   facilityId?: InputMaybe<Scalars["ID"]>;
+  includeArchived?: InputMaybe<Scalars["Boolean"]>;
   namePrefixMatch?: InputMaybe<Scalars["String"]>;
-  showDeleted?: InputMaybe<Scalars["Boolean"]>;
 };
 
 export type QueryQueueArgs = {
@@ -1648,7 +1648,7 @@ export type UpdatePatientMutation = {
 
 export type GetPatientsCountByFacilityQueryVariables = Exact<{
   facilityId: Scalars["ID"];
-  showDeleted: Scalars["Boolean"];
+  includeArchived: Scalars["Boolean"];
   namePrefixMatch?: InputMaybe<Scalars["String"]>;
 }>;
 
@@ -1661,7 +1661,7 @@ export type GetPatientsByFacilityQueryVariables = Exact<{
   facilityId: Scalars["ID"];
   pageNumber: Scalars["Int"];
   pageSize: Scalars["Int"];
-  showDeleted?: InputMaybe<Scalars["Boolean"]>;
+  includeArchived?: InputMaybe<Scalars["Boolean"]>;
   namePrefixMatch?: InputMaybe<Scalars["String"]>;
 }>;
 
@@ -4682,12 +4682,12 @@ export type UpdatePatientMutationOptions = Apollo.BaseMutationOptions<
 export const GetPatientsCountByFacilityDocument = gql`
   query GetPatientsCountByFacility(
     $facilityId: ID!
-    $showDeleted: Boolean!
+    $includeArchived: Boolean!
     $namePrefixMatch: String
   ) {
     patientsCount(
       facilityId: $facilityId
-      showDeleted: $showDeleted
+      includeArchived: $includeArchived
       namePrefixMatch: $namePrefixMatch
     )
   }
@@ -4706,7 +4706,7 @@ export const GetPatientsCountByFacilityDocument = gql`
  * const { data, loading, error } = useGetPatientsCountByFacilityQuery({
  *   variables: {
  *      facilityId: // value for 'facilityId'
- *      showDeleted: // value for 'showDeleted'
+ *      includeArchived: // value for 'includeArchived'
  *      namePrefixMatch: // value for 'namePrefixMatch'
  *   },
  * });
@@ -4750,14 +4750,14 @@ export const GetPatientsByFacilityDocument = gql`
     $facilityId: ID!
     $pageNumber: Int!
     $pageSize: Int!
-    $showDeleted: Boolean
+    $includeArchived: Boolean
     $namePrefixMatch: String
   ) {
     patients(
       facilityId: $facilityId
       pageNumber: $pageNumber
       pageSize: $pageSize
-      showDeleted: $showDeleted
+      includeArchived: $includeArchived
       namePrefixMatch: $namePrefixMatch
     ) {
       internalId
@@ -4789,7 +4789,7 @@ export const GetPatientsByFacilityDocument = gql`
  *      facilityId: // value for 'facilityId'
  *      pageNumber: // value for 'pageNumber'
  *      pageSize: // value for 'pageSize'
- *      showDeleted: // value for 'showDeleted'
+ *      includeArchived: // value for 'includeArchived'
  *      namePrefixMatch: // value for 'namePrefixMatch'
  *   },
  * });
@@ -5843,7 +5843,7 @@ export const GetPatientsByFacilityForQueueDocument = gql`
       facilityId: $facilityId
       pageNumber: 0
       pageSize: 100
-      showDeleted: false
+      includeArchived: false
       namePrefixMatch: $namePrefixMatch
       includeArchivedFacilities: $includeArchivedFacilities
     ) {
