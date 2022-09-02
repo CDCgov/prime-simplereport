@@ -430,6 +430,7 @@ public class TestDataFactory {
 
     Result result = new Result(e, o, _diseaseService.covid(), r);
     _resultRepository.save(result);
+    e.addResult(result);
     _testOrderRepo.save(o);
     return e;
   }
@@ -449,6 +450,7 @@ public class TestDataFactory {
     _testEventRepo.save(e);
     result.setTestEvent(e);
     _resultRepository.save(result);
+    e.addResult(result);
     o.setTestEventRef(e);
     o.markComplete();
     _testOrderRepo.save(o);

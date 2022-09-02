@@ -4,10 +4,7 @@ import com.fasterxml.jackson.annotation.JsonIgnore;
 import gov.cdc.usds.simplereport.db.model.auxiliary.AskOnEntrySurvey;
 import gov.cdc.usds.simplereport.db.model.auxiliary.TestCorrectionStatus;
 import gov.cdc.usds.simplereport.db.model.auxiliary.TestResult;
-import java.util.Date;
-import java.util.Optional;
-import java.util.Set;
-import java.util.UUID;
+import java.util.*;
 import javax.persistence.AttributeOverride;
 import javax.persistence.CascadeType;
 import javax.persistence.Column;
@@ -171,5 +168,12 @@ public class TestEvent extends BaseTestInfo {
   @Override
   public TestResult getResult() {
     return getTestResult();
+  }
+
+  public void addResult(Result result) {
+    if (this.results == null) {
+      this.results = new HashSet<Result>();
+    }
+    this.results.add(result);
   }
 }
