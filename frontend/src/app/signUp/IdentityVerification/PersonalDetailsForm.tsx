@@ -205,7 +205,7 @@ const PersonalDetailsForm = ({
 
   return (
     <CardBackground>
-      <Card logo ariaHidden={isModalActive}>
+      <Card logo isModalActive={isModalActive}>
         <h4 className="margin-bottom-0" aria-hidden={isModalActive}>
           Sign up for SimpleReport
         </h4>

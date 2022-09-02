@@ -9,7 +9,7 @@ describe("card", () => {
       expect(screen.getByAltText("SimpleReport")).toBeInTheDocument();
     });
     it("should be hidden", () => {
-      render(<Card logo={true} ariaHidden={true} />);
+      render(<Card logo={true} isModalActive={true} />);
       expect(screen.getByAltText("SimpleReport")).toBeInTheDocument();
       expect(screen.getByAltText("SimpleReport").parentElement).toHaveAttribute(
         "aria-hidden",
