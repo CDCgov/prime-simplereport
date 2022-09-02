@@ -145,8 +145,6 @@ public class PersonService {
             : Arrays.stream(namePrefixMatch.split("[ ,]")).collect(Collectors.toList());
 
     // build up filter based on params
-    //    Specification<Person> filter =
-    // inCurrentOrganizationFilter().and(isDeletedFilter(isArchived));
     Specification<Person> filter = inCurrentOrganizationFilter();
     if (!isArchived) {
       filter = filter.and(isDeletedFilter(false));
