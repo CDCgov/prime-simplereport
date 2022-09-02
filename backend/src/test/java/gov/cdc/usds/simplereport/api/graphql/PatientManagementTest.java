@@ -381,6 +381,7 @@ class PatientManagementTest extends BaseGraphqlTest {
     useOrgUser();
     runQuery(
         "deleted-person-query",
+        "getDeletedPatients",
         null,
         "Current user does not have permission to supply a non-default value for [showDeleted]");
     assertLastAuditEntry(
@@ -401,7 +402,7 @@ class PatientManagementTest extends BaseGraphqlTest {
   @Test
   void queryingDeletedPatients_admin_ok() {
     useOrgAdmin();
-    runQuery("deleted-person-query", null, null);
+    runQuery("deleted-person-query", "getDeletedPatients", null, null);
     assertLastAuditEntry(
         TestUserIdentities.ORG_ADMIN_USER,
         "getDeletedPatients",
@@ -436,7 +437,8 @@ class PatientManagementTest extends BaseGraphqlTest {
 
     useOrgEntryOnly();
     ObjectNode variables = JsonNodeFactory.instance.objectNode().put("namePrefixMatch", "San");
-    runQuery("person-with-last-test-result-query", variables, null);
+    runQuery(
+        "person-with-last-test-result-query", "getPatientsWithLastTestResult", variables, null);
     assertLastAuditEntry(
         TestUserIdentities.ENTRY_ONLY_USER,
         "getPatientsWithLastTestResult",

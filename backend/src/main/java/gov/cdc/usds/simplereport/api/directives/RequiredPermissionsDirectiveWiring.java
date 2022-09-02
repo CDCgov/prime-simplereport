@@ -4,7 +4,7 @@ import static gov.cdc.usds.simplereport.logging.AuditLoggingInstrumentation.SUBJ
 
 import gov.cdc.usds.simplereport.api.model.errors.IllegalGraphqlArgumentException;
 import gov.cdc.usds.simplereport.api.model.errors.IllegalGraphqlFieldAccessException;
-import gov.cdc.usds.simplereport.config.GraphQlSchemaDirectiveConfig;
+import gov.cdc.usds.simplereport.config.GraphQlConfig;
 import gov.cdc.usds.simplereport.config.authorization.SiteAdminPrincipal;
 import gov.cdc.usds.simplereport.config.authorization.UserPermission;
 import graphql.GraphQLContext;
@@ -73,13 +73,7 @@ public class RequiredPermissionsDirectiveWiring implements SchemaDirectiveWiring
       SchemaDirectiveWiringEnvironment<GraphQLFieldDefinition> environment) {
     GraphQLFieldDefinition fieldDefinition = environment.getElement();
     var requiredPermissionsBuilder = RequiredPermissions.builder();
-
-    if (fieldDefinition.getName().equals("addUserToCurrentOrg")) {
-      gatherRequiredPermissions(requiredPermissionsBuilder, fieldDefinition);
-    } else {
-      gatherRequiredPermissions(requiredPermissionsBuilder, fieldDefinition);
-    }
-
+    gatherRequiredPermissions(requiredPermissionsBuilder, fieldDefinition);
     var requiredPermissions = requiredPermissionsBuilder.build();
 
     overwriteOriginalDataFetcher(
@@ -118,10 +112,6 @@ public class RequiredPermissionsDirectiveWiring implements SchemaDirectiveWiring
 
   private static boolean argumentHasDefaultOrNullValue(
       DataFetchingEnvironment dfe, GraphQLArgument argument) {
-    if (argument.hasSetDefaultValue() && !argument.hasSetValue()) {
-      return true;
-    }
-
     var argValue = dfe.getArgument(argument.getName());
 
     return argValue == null
@@ -172,15 +162,12 @@ public class RequiredPermissionsDirectiveWiring implements SchemaDirectiveWiring
 
   private static void gatherRequiredPermissions(
       RequiredPermissions.Builder permissionsAccumulator, GraphQLDirectiveContainer queryElement) {
-    GraphQLAppliedDirective appliedDirective =
-        queryElement.getAppliedDirective(
-            GraphQlSchemaDirectiveConfig.REQUIRED_PERMISSIONS_DIRECTIVE_NAME);
+    GraphQLAppliedDirective directive =
+        queryElement.getAppliedDirective(GraphQlConfig.REQUIRED_PERMISSIONS_DIRECTIVE_NAME);
 
-    if (appliedDirective != null) {
-      fromStringListArgument(appliedDirective, "allOf")
-          .ifPresent(permissionsAccumulator::withAllOf);
-      fromStringListArgument(appliedDirective, "anyOf")
-          .ifPresent(permissionsAccumulator::withAnyOf);
+    if (directive != null) {
+      fromStringListArgument(directive, "allOf").ifPresent(permissionsAccumulator::withAllOf);
+      fromStringListArgument(directive, "anyOf").ifPresent(permissionsAccumulator::withAnyOf);
     }
   }
 
