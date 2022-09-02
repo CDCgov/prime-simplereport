@@ -51,7 +51,7 @@ class PatientManagementTest extends BaseGraphqlTest {
         });
     useOrgUser();
     JsonNode patients = fetchPatientsWithFacility();
-    assertEquals(true, patients.get(0).get("facility").isNull());
+    assertTrue(patients.get(0).get("facility").isNull());
     assertEquals(facilityId.getValue(), patients.get(1).get("facility").get("id").asText());
   }
 
@@ -382,7 +382,7 @@ class PatientManagementTest extends BaseGraphqlTest {
     runQuery(
         "deleted-person-query",
         null,
-        "Current user does not have permission to supply a non-default value for [showDeleted]");
+        "Current user does not have permission to supply a non-default value for [includeArchived]");
     assertLastAuditEntry(
         TestUserIdentities.STANDARD_USER,
         "getDeletedPatients",

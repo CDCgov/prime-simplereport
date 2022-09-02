@@ -1,5 +1,5 @@
 query getDeletedPatients {
-  patients(showDeleted: true) {
+  patients(includeArchived: true) {
     firstName
     lastName
     birthDate
