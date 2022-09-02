@@ -35,7 +35,7 @@ export type PersonalDetailsFormProps = {
   firstName: string;
   middleName: string;
   lastName: string;
-  isModalActive?: boolean | undefined;
+  isModalActive?: boolean;
 };
 
 const PersonalDetailsForm = ({
