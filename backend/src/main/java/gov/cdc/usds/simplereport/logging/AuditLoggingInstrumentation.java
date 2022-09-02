@@ -1,5 +1,6 @@
 package gov.cdc.usds.simplereport.logging;
 
+import gov.cdc.usds.simplereport.api.model.errors.GenericGraphqlException;
 import gov.cdc.usds.simplereport.config.authorization.ApiUserPrincipal;
 import gov.cdc.usds.simplereport.config.authorization.FacilityPrincipal;
 import gov.cdc.usds.simplereport.config.authorization.OrganizationPrincipal;
@@ -139,7 +140,7 @@ public class AuditLoggingInstrumentation extends SimpleInstrumentation {
       } catch (Exception e) {
         // we don't 100% trust this error not to get swallowed by graphql-java
         log.error("Unexpected error saving audit event", e);
-        throw e;
+        throw new GenericGraphqlException();
       }
     }
   }

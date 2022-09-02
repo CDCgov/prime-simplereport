@@ -9,11 +9,17 @@ import java.util.List;
 /** A customizable error thrown by GraphqlQl for generic reasons */
 public class GenericGraphqlException extends RuntimeException implements GraphQLError {
 
+  public static final String GENERIC_ERROR_MESSAGE = "Something went wrong";
   private ErrorClassification errorType = ErrorType.DataFetchingException;
   private List<Object> errorPath;
 
-  public GenericGraphqlException(String message) {
-    super(message);
+  public GenericGraphqlException() {
+    super(GENERIC_ERROR_MESSAGE);
+  }
+
+  public GenericGraphqlException(List<Object> errorPath) {
+    super(GENERIC_ERROR_MESSAGE);
+    this.errorPath = errorPath;
   }
 
   public GenericGraphqlException(String message, List<Object> errorPath) {
@@ -39,5 +45,10 @@ public class GenericGraphqlException extends RuntimeException implements GraphQL
   @Override
   public List<Object> getPath() {
     return this.errorPath;
+  }
+
+  @Override
+  public String toString() {
+    return super.getMessage();
   }
 }
