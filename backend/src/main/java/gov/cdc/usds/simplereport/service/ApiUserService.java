@@ -80,7 +80,7 @@ public class ApiUserService {
     return createUserHelper(username, name, org, role);
   }
 
-  //  @AuthorizationConfiguration.RequirePermissionManageUsers
+  @AuthorizationConfiguration.RequirePermissionManageUsers
   public UserInfo createUserInCurrentOrg(
       String username, PersonName name, Role role, boolean active) {
     Organization org = _orgService.getCurrentOrganization();

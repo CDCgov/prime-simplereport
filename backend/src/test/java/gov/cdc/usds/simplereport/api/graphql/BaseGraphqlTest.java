@@ -263,7 +263,7 @@ public abstract class BaseGraphqlTest extends BaseFullStackTest {
               errors -> {
                 assertThat(errors).hasSize(1);
                 //        assertThat(errors.get(0).getErrorType()).isEqualTo(ErrorType.FORBIDDEN);
-                assertThat(errors.get(0).getMessage()).isEqualTo(expectedError);
+                assertThat(errors.get(0).getMessage()).contains(expectedError);
               });
       //      response.errors().expect(responseError -> responseError.equals(expectedError));
       return null;

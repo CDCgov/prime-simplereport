@@ -8,8 +8,8 @@ import gov.cdc.usds.simplereport.db.model.ApiUser;
 import gov.cdc.usds.simplereport.db.model.auxiliary.PersonName;
 import gov.cdc.usds.simplereport.service.ApiUserService;
 import gov.cdc.usds.simplereport.service.model.UserInfo;
-import java.util.Arrays;
 import java.util.HashSet;
+import java.util.List;
 import java.util.Set;
 import java.util.UUID;
 import lombok.extern.slf4j.Slf4j;
@@ -36,10 +36,10 @@ public class UserMutationResolver {
       @Argument String lastName,
       @Argument String suffix,
       @Argument String email,
-      @Argument String organizationExternalID,
+      @Argument String organizationExternalId,
       @Argument Role role) {
     name = Translators.consolidateNameArguments(name, firstName, middleName, lastName, suffix);
-    UserInfo user = _us.createUser(email, name, organizationExternalID, role);
+    UserInfo user = _us.createUser(email, name, organizationExternalId, role);
     return new User(user);
   }
 
@@ -82,17 +82,13 @@ public class UserMutationResolver {
     return new User(user);
   }
 
-  // Making `facilities` an array instead of a Collection to avoid type erasure
-  // of UUIDs to Strings since GraphQL ~does not actually make UUIDs UUIDs when you
-  // pass them in~, and this would cause issues downstream.
   @MutationMapping
   public User updateUserPrivileges(
       @Argument UUID id,
       @Argument boolean accessAllFacilities,
-      @Argument UUID[] facilities,
+      @Argument List<UUID> facilities,
       @Argument Role role) {
-    Set<UUID> facilitySet =
-        facilities == null ? Set.of() : new HashSet<>(Arrays.asList(facilities));
+    Set<UUID> facilitySet = facilities == null ? Set.of() : new HashSet<>(facilities);
     UserInfo user = _us.updateUserPrivileges(id, accessAllFacilities, facilitySet, role);
     return new User(user);
   }
@@ -136,10 +132,10 @@ public class UserMutationResolver {
   @AuthorizationConfiguration.RequireGlobalAdminUser
   @MutationMapping
   public User setCurrentUserTenantDataAccess(
-      @Argument String organizationExternalID, @Argument String justification) {
+      @Argument String organizationExternalId, @Argument String justification) {
     UserInfo user =
         _us.setCurrentUserTenantDataAccess(
-            Translators.parseStringNoTrim(organizationExternalID),
+            Translators.parseStringNoTrim(organizationExternalId),
             Translators.parseString(justification));
     return new User(user);
   }
