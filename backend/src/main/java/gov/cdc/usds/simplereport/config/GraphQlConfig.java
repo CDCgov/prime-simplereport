@@ -16,6 +16,7 @@ import graphql.GraphQLError;
 import graphql.validation.rules.OnValidationErrorStrategy;
 import graphql.validation.rules.ValidationRules;
 import graphql.validation.schemawiring.ValidationSchemaWiring;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.graphql.execution.DataFetcherExceptionResolver;
@@ -23,18 +24,13 @@ import org.springframework.graphql.execution.RuntimeWiringConfigurer;
 import org.springframework.security.access.AccessDeniedException;
 import reactor.core.publisher.Mono;
 
+@Slf4j
 @Configuration
-public class GraphQlSchemaDirectiveConfig {
+public class GraphQlConfig {
   public static final String REQUIRED_PERMISSIONS_DIRECTIVE_NAME = "requiredPermissions";
   public static final int MAXIMUM_SIZE = 256;
 
-  //  @Bean
-  //  public SchemaDirective getRequiredPermissionsWiring() {
-  //    return new SchemaDirective(
-  //        REQUIRED_PERMISSIONS_DIRECTIVE_NAME, new RequiredPermissionsDirectiveWiring());
-  //  }
-
-  // graphql masks all exception by default
+  // spring-graphql masks all exception by default
   // https://docs.spring.io/spring-graphql/docs/current/reference/html/#execution-exceptions
   // by default there are 5 categories BAD_REQUEST, UNAUTHORIZED, FORBIDDEN, NOT_FOUND,
   // INTERNAL_ERROR
@@ -43,6 +39,8 @@ public class GraphQlSchemaDirectiveConfig {
   public DataFetcherExceptionResolver dataFetcherExceptionResolver() {
     return (exception, environment) -> {
       String errorPath = environment.getExecutionStepInfo().getPath().getSegmentName();
+
+      log.error("Will replace the following exception with a GenericGraphqlException: ", exception);
 
       if (exception instanceof ConflictingUserException) {
         return Mono.just(singletonList((GraphQLError) exception));
@@ -60,11 +58,15 @@ public class GraphQlSchemaDirectiveConfig {
       }
 
       if (exception instanceof IllegalGraphqlArgumentException) {
-        return Mono.just(singletonList((GraphQLError) exception));
+        return Mono.just(
+            singletonList(
+                new GenericGraphqlException(exception.getMessage(), singletonList(errorPath))));
       }
 
       if (exception instanceof IllegalGraphqlFieldAccessException) {
-        return Mono.just(singletonList((GraphQLError) exception));
+        return Mono.just(
+            singletonList(
+                new GenericGraphqlException(exception.getMessage(), singletonList(errorPath))));
       }
 
       return Mono.just(singletonList(new GenericGraphqlException(singletonList(errorPath))));
@@ -73,23 +75,31 @@ public class GraphQlSchemaDirectiveConfig {
 
   @Bean
   public RuntimeWiringConfigurer runtimeWiringConfigurer() {
-    return builder ->
-        builder
-            .scalar(UploadScalarType.upload)
-            .scalar(LocalDateScalar.LocalDate)
-            .scalar(DateTimeScalar.DateTime)
-            //            .scalar(ExtendedScalars.UUID);
-            .directiveWiring(new RequiredPermissionsDirectiveWiring());
-  }
-
-  @Bean
-  public ValidationSchemaWiring validationDirectives() {
+    // this adds the graphql-java-extended-validation and a max argument size of MAXIMUM_SIZE
     ValidationRules validationRules =
         ValidationRules.newValidationRules()
             .addRule(new DefaultArgumentValidation(MAXIMUM_SIZE))
             .onValidationErrorStrategy(OnValidationErrorStrategy.RETURN_NULL)
             .build();
 
-    return new ValidationSchemaWiring(validationRules);
+    return builder ->
+        builder
+            .scalar(UploadScalarType.upload)
+            .scalar(LocalDateScalar.LocalDate)
+            .scalar(DateTimeScalar.DateTime)
+            .directiveWiring(new ValidationSchemaWiring(validationRules))
+            .directive(
+                REQUIRED_PERMISSIONS_DIRECTIVE_NAME, new RequiredPermissionsDirectiveWiring());
   }
+
+  //  @Bean
+  //  public ValidationSchemaWiring validationDirectives() {
+  //    ValidationRules validationRules =
+  //        ValidationRules.newValidationRules()
+  //            .addRule(new DefaultArgumentValidation(MAXIMUM_SIZE))
+  //            .onValidationErrorStrategy(OnValidationErrorStrategy.RETURN_NULL)
+  //            .build();
+  //
+  //    return new ValidationSchemaWiring(validationRules);
+  //  }
 }

@@ -131,7 +131,7 @@ public class PatientMutationResolver {
       @Argument String suffix,
       @Argument LocalDate birthDate,
       @Argument String street,
-      @Argument String street2,
+      @Argument String streetTwo,
       @Argument String city,
       @Argument String state,
       @Argument String zipCode,
@@ -157,34 +157,36 @@ public class PatientMutationResolver {
 
     var backwardsCompatibleEmails = new PatientEmailsHolder(email, emails);
 
-    return _ps.updatePatient(
-        facilityId,
-        patientId,
-        parseString(lookupId),
-        parseString(firstName),
-        parseString(middleName),
-        parseString(lastName),
-        parseString(suffix),
-        birthDate,
-        new StreetAddress(
-            parseString(street),
-            parseString(street2),
-            parseString(city),
-            parseState(state),
-            parseString(zipCode),
-            parseString(county)),
-        parseString(country),
-        parsePhoneNumbers(backwardsCompatiblePhoneNumbers),
-        parsePersonRole(role, false),
-        parseEmails(backwardsCompatibleEmails.getFullList()),
-        parseRace(race),
-        parseEthnicity(ethnicity),
-        parseTribalAffiliation(tribalAffiliation),
-        parseGender(gender),
-        residentCongregateSetting,
-        employedInHealthcare,
-        parseString(preferredLanguage),
-        testResultDelivery);
+    Person person =
+        _ps.updatePatient(
+            facilityId,
+            patientId,
+            parseString(lookupId),
+            parseString(firstName),
+            parseString(middleName),
+            parseString(lastName),
+            parseString(suffix),
+            birthDate,
+            new StreetAddress(
+                parseString(street),
+                parseString(streetTwo),
+                parseString(city),
+                parseState(state),
+                parseString(zipCode),
+                parseString(county)),
+            parseString(country),
+            parsePhoneNumbers(backwardsCompatiblePhoneNumbers),
+            parsePersonRole(role, false),
+            parseEmails(backwardsCompatibleEmails.getFullList()),
+            parseRace(race),
+            parseEthnicity(ethnicity),
+            parseTribalAffiliation(tribalAffiliation),
+            parseGender(gender),
+            residentCongregateSetting,
+            employedInHealthcare,
+            parseString(preferredLanguage),
+            testResultDelivery);
+    return person;
   }
 
   @MutationMapping
