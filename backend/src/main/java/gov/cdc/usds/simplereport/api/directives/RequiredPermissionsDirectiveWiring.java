@@ -118,16 +118,14 @@ public class RequiredPermissionsDirectiveWiring implements SchemaDirectiveWiring
 
   private static boolean argumentHasDefaultOrNullValue(
       DataFetchingEnvironment dfe, GraphQLArgument argument) {
-
-    if (!argument.hasSetValue()) {
+    if (argument.hasSetDefaultValue() && !argument.hasSetValue()) {
       return true;
     }
 
     var argValue = dfe.getArgument(argument.getName());
 
-    // todo zedd was working here
     return argValue == null
-        || Objects.equals(argValue, argument.getArgumentDefaultValue().getValue());
+        || Objects.equals(argValue, GraphQLArgument.getArgumentDefaultValue(argument));
   }
 
   private static boolean requesterHasRequisitePermissions(
