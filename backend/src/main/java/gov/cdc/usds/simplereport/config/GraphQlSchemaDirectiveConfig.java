@@ -67,7 +67,7 @@ public class GraphQlSchemaDirectiveConfig {
         return Mono.just(singletonList((GraphQLError) exception));
       }
 
-      return null;
+      return Mono.just(singletonList(new GenericGraphqlException(singletonList(errorPath))));
     };
   }
 
