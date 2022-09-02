@@ -226,7 +226,8 @@
     "webpack": "5"
   },
   "resolutions": {
-    "@storybook/react/babel-loader": "8.1.0"
+    "@storybook/react/babel-loader": "8.1.0",
+    "nth-check": "2.1.1"
   },
   "msw": {
     "workerDirectory": "/storybook_public"

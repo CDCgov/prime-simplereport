@@ -52,6 +52,12 @@ dependencies {
     implementation 'org.springframework:spring-webmvc:5.3.19'
     implementation 'org.springframework:spring-websocket:5.3.19'
 
+    // Security Pins (Sept 2022)
+    implementation 'org.glassfish:jakarta.el:3.0.4'
+    implementation 'org.springframework.security:spring-security-web:5.5.7'
+    implementation 'com.nimbusds:oauth2-oidc-sdk:8.36.2'
+    implementation 'org.yaml:snakeyaml:1.31'
+
     // data layer dependencies
     implementation 'org.springframework.boot:spring-boot-starter-data-jpa'
     implementation 'org.springframework.boot:spring-boot-starter-validation'
