@@ -14,7 +14,7 @@ describe("button", () => {
       render(<Button variant={"big"} />);
       expect(screen.getByRole("button")).toHaveClass("usa-button--big");
     });
-    it("should include primary", () => {
+    it("should include class given", () => {
       render(<Button className={"cool-button"} />);
       expect(screen.getByRole("button")).toHaveClass("cool-button");
     });
@@ -92,7 +92,6 @@ describe("button", () => {
         "someLabel"
       );
     });
-    // can we get rid of the or o
     it("should not have aria-describedby", () => {
       render(<Button />);
       expect(screen.getByRole("button")).not.toHaveAttribute(
