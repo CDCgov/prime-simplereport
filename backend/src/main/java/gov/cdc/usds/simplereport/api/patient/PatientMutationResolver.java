@@ -44,8 +44,8 @@ public class PatientMutationResolver {
   }
 
   @MutationMapping
-  public String uploadPatients(@Argument Part part) {
-    try (InputStream people = part.getInputStream()) {
+  public String uploadPatients(@Argument Part patientList) {
+    try (InputStream people = patientList.getInputStream()) {
       return _us.processPersonCSV(people);
     } catch (IllegalGraphqlArgumentException e) {
       throw e;

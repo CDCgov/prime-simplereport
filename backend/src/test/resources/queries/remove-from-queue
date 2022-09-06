@@ -1,3 +1,0 @@
-mutation removePatientFromQueue($patientId: ID!) {
-  removePatientFromQueue(patientId: $patientId)
-}

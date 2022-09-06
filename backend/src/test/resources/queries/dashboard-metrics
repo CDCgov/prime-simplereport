@@ -1,6 +1,0 @@
-query GetTopLevelDashboardMetrics($facilityId: ID, $startDate: DateTime!, $endDate: DateTime!) {
-  topLevelDashboardMetrics(facilityId: $facilityId, startDate: $startDate, endDate: $endDate) {
-    positiveTestCount
-    totalTestCount
-  }
-}
