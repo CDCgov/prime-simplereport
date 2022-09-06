@@ -18,6 +18,7 @@ interface Props {
   labelSrOnly?: boolean;
   labelClassName?: string;
   required?: boolean;
+  disabled?: boolean;
   defaultValue?: string;
   minDate?: string; // TODO: pass minDate and maxDate to yup object for validation
   maxDate?: string;
@@ -36,6 +37,7 @@ export const DatePicker = ({
   labelSrOnly,
   labelClassName,
   required,
+  disabled,
   defaultValue,
   minDate,
   maxDate,
@@ -83,6 +85,7 @@ export const DatePicker = ({
         onChange={onChange}
         onBlur={onBlur}
         required={required}
+        disabled={disabled}
         defaultValue={defaultValue}
         minDate={minDate}
         maxDate={maxDate}

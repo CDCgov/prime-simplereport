@@ -30,15 +30,23 @@ describe("DatePicker", () => {
     });
   });
   describe("required", () => {
-    it("should insert a required star", () => {
+    it("should insert a required star and set required on input", () => {
       render(<DatePicker name={"date"} label={"label"} required={true} />);
       expect(screen.getByText("*")).toHaveClass("usa-hint usa-hint--required", {
         exact: true,
       });
+      expect(screen.getByTestId("date-picker-external-input")).toBeRequired();
     });
     it("should be optional", () => {
       render(<DatePicker name={"date"} label={"label"} required={false} />);
       expect(screen.queryByText("*")).not.toBeInTheDocument();
+    });
+  });
+  describe("disabled", () => {
+    it("should be applied to the input and button", () => {
+      render(<DatePicker name={"date"} label={"label"} disabled={true} />);
+      expect(screen.getByTestId("date-picker-external-input")).toBeDisabled();
+      expect(screen.getByRole("button")).toBeDisabled();
     });
   });
   describe("hint", () => {
@@ -91,15 +99,12 @@ describe("DatePicker", () => {
           validationStatus={"error"}
         />
       );
-      expect(screen.getByText("label").parentElement).toHaveAttribute(
-        "aria-hidden",
-        "true"
-      );
+      expect(screen.getByText("label")).toHaveAttribute("aria-hidden", "true");
       expect(screen.getByText("mm/dd/yyyy")).toHaveAttribute(
         "aria-hidden",
         "true"
       );
-      expect(screen.getByText("Error:")).toHaveAttribute("aria-hidden", true);
+      expect(screen.getByText("Error:")).toHaveAttribute("aria-hidden", "true");
     });
   });
 });
