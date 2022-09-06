@@ -74,7 +74,7 @@ function FBAform(d, N) {
       this.dialogEl.setAttribute("role", "dialog");
       this.dialogEl.setAttribute("aria-modal", "true");
       this.dialogEl.innerHTML = touchpointsFormHtmlString;
-      d.body.appendChild(this.dialogEl);
+      d.querySelector("footer").appendChild(this.dialogEl);
 
       d.querySelector(".fba-modal-close").addEventListener(
         "click",
