@@ -10,6 +10,7 @@ interface Props {
   currentStepValue: string;
   noLabels?: boolean;
   segmentIndicatorOnBottom?: boolean;
+  ariaHidden?: boolean;
 }
 
 const StepIndicator = ({
@@ -17,6 +18,7 @@ const StepIndicator = ({
   currentStepValue,
   noLabels,
   segmentIndicatorOnBottom = false,
+  ariaHidden,
 }: Props): React.ReactElement => {
   const currentStep = steps.find(({ value }) => value === currentStepValue) || {
     order: 0,
@@ -77,6 +79,8 @@ const StepIndicator = ({
           "margin-y-205": !segmentIndicatorOnBottom,
         }
       )}
+      aria-label="progress"
+      aria-hidden={ariaHidden}
     >
       {segmentIndicatorOnBottom ? (
         <>
