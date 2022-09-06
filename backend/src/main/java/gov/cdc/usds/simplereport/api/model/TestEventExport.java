@@ -3,13 +3,7 @@ package gov.cdc.usds.simplereport.api.model;
 import static java.lang.Boolean.TRUE;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
-import gov.cdc.usds.simplereport.db.model.DeviceSpecimenType;
-import gov.cdc.usds.simplereport.db.model.DeviceType;
-import gov.cdc.usds.simplereport.db.model.Facility;
-import gov.cdc.usds.simplereport.db.model.Organization;
-import gov.cdc.usds.simplereport.db.model.Person;
-import gov.cdc.usds.simplereport.db.model.Provider;
-import gov.cdc.usds.simplereport.db.model.TestEvent;
+import gov.cdc.usds.simplereport.db.model.*;
 import gov.cdc.usds.simplereport.db.model.auxiliary.AskOnEntrySurvey;
 import gov.cdc.usds.simplereport.db.model.auxiliary.PersonName;
 import gov.cdc.usds.simplereport.db.model.auxiliary.PersonRole;
@@ -409,7 +403,15 @@ public class TestEventExport {
 
   @JsonProperty("Test_result_code")
   public String getTestResult() {
-    return testResultMap.get(testEvent.getResult());
+    final String COVID_NAME = "COVID-19";
+    final String COVID_LOINC = "96741-4";
+    SupportedDisease disease = new SupportedDisease(COVID_NAME, COVID_LOINC);
+    return testResultMap.get(
+        testEvent.getResults().stream()
+            .filter(r -> r.getDisease().equals(disease))
+            .findFirst()
+            .get()
+            .getTestResult());
   }
 
   @JsonProperty("Specimen_collection_date_time")

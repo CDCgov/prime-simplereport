@@ -91,7 +91,9 @@ class QueueManagementTest extends BaseGraphqlTest {
     TestOrder updatedTestOrder = _testOrderService.getTestOrder(_org, orderId);
     assertEquals(
         deviceId, updatedTestOrder.getDeviceType().getInternalId().toString(), "device type ID");
-    assertEquals(TestResult.POSITIVE, updatedTestOrder.getTestResult());
+    assertEquals(
+        TestResult.POSITIVE,
+        updatedTestOrder.getResultSet().stream().findFirst().get().getTestResult());
     assertNull(updatedTestOrder.getTestEvent());
 
     ObjectNode singleQueueEntry = (ObjectNode) fetchQueue().get(0);
@@ -126,7 +128,7 @@ class QueueManagementTest extends BaseGraphqlTest {
     TestOrder updatedTestOrder = _testOrderService.getTestOrder(_org, orderId);
     assertEquals(
         deviceId, updatedTestOrder.getDeviceType().getInternalId().toString(), "device type ID");
-    assertEquals(TestResult.POSITIVE, updatedTestOrder.getTestResult());
+    //    assertEquals(TestResult.POSITIVE, updatedTestOrder.getResult());
     updatedTestOrder
         .getResultSet()
         .forEach(result -> assertEquals(TestResult.POSITIVE, result.getTestResult()));
