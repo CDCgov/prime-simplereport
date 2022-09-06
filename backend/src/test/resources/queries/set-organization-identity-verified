@@ -1,9 +1,0 @@
-mutation setOrganizationIdentityVerified(
-    $externalId: String!,
-    $verified: Boolean!,
-    ){
-  setOrganizationIdentityVerified(
-    externalId: $externalId
-    verified: $verified
-  )
-}

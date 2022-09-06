@@ -1,7 +1,0 @@
-query getSupportedDiseases {
-  supportedDiseases {
-    internalId
-    name
-    loinc
-  }
-}

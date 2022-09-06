@@ -49,8 +49,14 @@ spring:
     jdbc:
       initialize-schema: never
       table-name: ${spring.jpa.properties.hibernate.default_schema}.spring_session
+#  servlet:
+#    multipart:
+#      max-file-size: 3MB
+#      enabled: true
+#      resolve-lazily: true
 management:
   health.probes.enabled: true
+
 #graphql:
 #  servlet:
 #    mapping: /graphql
@@ -148,3 +154,4 @@ datahub:
   jwt-scope: "simple_report.*.report"
   signing-key: ${DATAHUB_SIGNING_KEY:super-secret-signing-key}
   csv-upload-api-client: "simple_report.csvuploader"
+

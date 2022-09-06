@@ -189,6 +189,39 @@ public abstract class BaseGraphqlTest extends BaseFullStackTest {
     //    } catch (IOException e) {
     //      throw new RuntimeException(e);
     //    }
+    /*
+        // change variables to map everywhere! seems like this will continue to give us issues
+        WebGraphQlTester webGraphQlTester =
+            this.graphQlTester
+                .mutate()
+                .headers(headers -> headers.setBearerAuth(getBearerAuth()))
+                .headers(headers -> headers.setContentType(MediaType.MULTIPART_FORM_DATA))
+                .headers(httpHeaders -> httpHeaders.addAll(_customHeaders))
+                .headers(httpHeaders -> httpHeaders.addAll(_customHeaders))
+                .build();
+
+    //    System.out.println(queryFileName);
+        GraphQlTester.Request<?> request = webGraphQlTester
+
+
+        GraphQlTester.Response response = request.execute();
+    //    if (expectedError != null) {
+    //      response
+    //          .errors()
+    //          .satisfy(
+    //              errors -> {
+    //                assertThat(errors).hasSize(1);
+    //                assertThat(errors.get(0).getMessage()).contains(expectedError);
+    //              });
+    //    }
+
+        Object responseObject = response.path("").entity(Object.class).get();
+        ObjectMapper mapper = new ObjectMapper();
+        ObjectNode jsonNodeMap = (ObjectNode) mapper.convertValue(responseObject, JsonNode.class);
+
+        return jsonNodeMap;
+
+       */
     return null;
   }
 
@@ -237,10 +270,6 @@ public abstract class BaseGraphqlTest extends BaseFullStackTest {
             .headers(httpHeaders -> httpHeaders.addAll(_customHeaders))
             .build();
 
-    //    tester.document()
-    //        if (queryFileName != null && !queryFileName.contains("/")) {
-    //          queryFileName = "queries/" + queryFileName;
-    //        }
     System.out.println(queryFileName);
     GraphQlTester.Request<?> request = webGraphQlTester.documentName(queryFileName);
 
