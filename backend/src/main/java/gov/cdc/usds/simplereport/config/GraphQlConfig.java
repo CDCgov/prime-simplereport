@@ -75,7 +75,7 @@ public class GraphQlConfig {
 
   @Bean
   public RuntimeWiringConfigurer runtimeWiringConfigurer() {
-    // this adds the graphql-java-extended-validation and a max argument size of MAXIMUM_SIZ
+    // this adds the graphql-java-extended-validation and a max argument size of MAXIMUM_SIZE
     ValidationRules validationRules =
         ValidationRules.newValidationRules()
             .addRule(new DefaultArgumentValidation(MAXIMUM_SIZE))
@@ -90,15 +90,4 @@ public class GraphQlConfig {
             .directiveWiring(new RequiredPermissionsDirectiveWiring())
             .directiveWiring(new ValidationSchemaWiring(validationRules));
   }
-
-  //  @Bean
-  //  public ValidationSchemaWiring validationDirectives() {
-  //    ValidationRules validationRules =
-  //        ValidationRules.newValidationRules()
-  //            .addRule(new DefaultArgumentValidation(MAXIMUM_SIZE))
-  //            .onValidationErrorStrategy(OnValidationErrorStrategy.RETURN_NULL)
-  //            .build();
-  //
-  //    return new ValidationSchemaWiring(validationRules);
-  //  }
 }

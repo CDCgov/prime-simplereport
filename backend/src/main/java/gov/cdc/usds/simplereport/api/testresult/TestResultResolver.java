@@ -16,6 +16,7 @@ import java.util.UUID;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
 import org.springframework.graphql.data.method.annotation.Argument;
+import org.springframework.graphql.data.method.annotation.MutationMapping;
 import org.springframework.graphql.data.method.annotation.QueryMapping;
 import org.springframework.stereotype.Controller;
 
@@ -81,15 +82,14 @@ public class TestResultResolver {
         endDate);
   }
 
-  @QueryMapping
-  public TestEvent correctTestMarkAsError(@Argument UUID id, @Argument String reasonForCorrection) {
-    return tos.markAsError(id, reasonForCorrection);
+  @MutationMapping
+  public TestEvent correctTestMarkAsError(@Argument UUID id, @Argument String reason) {
+    return tos.markAsError(id, reason);
   }
 
-  @QueryMapping
-  public TestEvent correctTestMarkAsCorrection(
-      @Argument UUID id, @Argument String reasonForCorrection) {
-    return tos.markAsCorrection(id, reasonForCorrection);
+  @MutationMapping
+  public TestEvent correctTestMarkAsCorrection(@Argument UUID id, @Argument String reason) {
+    return tos.markAsCorrection(id, reason);
   }
 
   @QueryMapping

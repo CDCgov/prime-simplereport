@@ -11,6 +11,7 @@ import java.time.LocalDate;
 import java.util.Date;
 import java.util.Set;
 import java.util.UUID;
+import org.springframework.graphql.data.method.annotation.Argument;
 import org.springframework.graphql.data.method.annotation.SchemaMapping;
 import org.springframework.stereotype.Controller;
 
@@ -58,6 +59,11 @@ public class TestResultDataResolver implements InternalIdResolver<TestEvent> {
   @SchemaMapping(typeName = "TestResult", field = "testPerformed")
   public TestDescription getTestPerformed(TestEvent event) {
     return TestDescription.findTestDescription(event.getDeviceType().getLoincCode());
+  }
+
+  @SchemaMapping(typeName = "TestDescription", field = "name")
+  public String getTestPerformedName(TestDescription testDescription, @Argument String nameType) {
+    return testDescription.getName(nameType);
   }
 
   @SchemaMapping(typeName = "TestResult", field = "facility")
