@@ -350,8 +350,10 @@ class PatientManagementTest extends BaseGraphqlTest {
             .get("addPatient");
 
     updateSelfPrivileges(Role.USER, false, Set.of());
+
     executeDeletePersonMutation(
         UUID.fromString(p2.get("internalId").asText()), Optional.of(ACCESS_ERROR));
+
     executeDeletePersonMutation(
         UUID.fromString(p3.get("internalId").asText()), Optional.of(ACCESS_ERROR));
 

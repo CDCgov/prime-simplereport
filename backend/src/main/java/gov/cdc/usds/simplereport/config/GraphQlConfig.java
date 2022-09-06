@@ -75,7 +75,7 @@ public class GraphQlConfig {
 
   @Bean
   public RuntimeWiringConfigurer runtimeWiringConfigurer() {
-    // this adds the graphql-java-extended-validation and a max argument size of MAXIMUM_SIZE
+    // this adds the graphql-java-extended-validation and a max argument size of MAXIMUM_SIZ
     ValidationRules validationRules =
         ValidationRules.newValidationRules()
             .addRule(new DefaultArgumentValidation(MAXIMUM_SIZE))
@@ -87,9 +87,8 @@ public class GraphQlConfig {
             .scalar(UploadScalarType.upload)
             .scalar(LocalDateScalar.LocalDate)
             .scalar(DateTimeScalar.DateTime)
-            .directiveWiring(new ValidationSchemaWiring(validationRules))
-            .directive(
-                REQUIRED_PERMISSIONS_DIRECTIVE_NAME, new RequiredPermissionsDirectiveWiring());
+            .directiveWiring(new RequiredPermissionsDirectiveWiring())
+            .directiveWiring(new ValidationSchemaWiring(validationRules));
   }
 
   //  @Bean
