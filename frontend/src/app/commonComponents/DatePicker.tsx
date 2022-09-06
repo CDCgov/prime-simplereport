@@ -1,5 +1,9 @@
 import classnames from "classnames";
 import { DatePicker as TrussworksDatePicker } from "@trussworks/react-uswds";
+import React from "react";
+
+import Required from "./Required";
+import Optional from "./Optional";
 
 interface Props {
   name: string;
@@ -52,7 +56,7 @@ export const DatePicker = ({
         })}
         htmlFor={name}
       >
-        {label}
+        {required ? <Required label={label} /> : <Optional label={label} />}
       </label>
       {noHint ? null : (
         <span className="usa-hint" aria-hidden={ariaHidden}>

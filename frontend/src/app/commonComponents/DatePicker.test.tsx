@@ -29,6 +29,18 @@ describe("DatePicker", () => {
       });
     });
   });
+  describe("required", () => {
+    it("should insert a required star", () => {
+      render(<DatePicker name={"date"} label={"label"} required={true} />);
+      expect(screen.getByText("*")).toHaveClass("usa-hint usa-hint--required", {
+        exact: true,
+      });
+    });
+    it("should be optional", () => {
+      render(<DatePicker name={"date"} label={"label"} required={false} />);
+      expect(screen.queryByText("*")).not.toBeInTheDocument();
+    });
+  });
   describe("hint", () => {
     it("should be present when noHint is not present", () => {
       render(<DatePicker name={"date"} label={"label"} />);
