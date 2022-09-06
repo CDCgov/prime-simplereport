@@ -100,7 +100,7 @@ public class QueueMutationResolver {
       @Argument String pregnancy,
       @Argument String symptoms,
       @Argument LocalDate symptomOnset,
-      @Argument boolean noSymptoms,
+      @Argument Boolean noSymptoms,
       @Argument TestResultDeliveryPreference testResultDelivery)
       throws JSONException {
 
@@ -132,7 +132,7 @@ public class QueueMutationResolver {
       @Argument String pregnancy,
       @Argument String symptoms,
       @Argument LocalDate symptomOnset,
-      @Argument boolean noSymptoms,
+      @Argument Boolean noSymptoms,
       @Argument TestResultDeliveryPreference testResultDelivery) {
 
     Map<String, Boolean> symptomsMap = parseSymptoms(symptoms);

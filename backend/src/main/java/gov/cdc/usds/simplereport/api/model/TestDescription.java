@@ -52,7 +52,7 @@ public class TestDescription {
     this.consumerName = consumerName;
   }
 
-  public String getLoincCode() {
+  public String loincCode() {
     return loincCode;
   }
 

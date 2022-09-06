@@ -404,8 +404,8 @@ type Query {
     role: String
     startDate: DateTime
     endDate: DateTime
-    pageNumber: Int
-    pageSize: Int
+    pageNumber: Int = 0
+    pageSize: Int = 5000
   ): [TestResult] @requiredPermissions(allOf: ["READ_RESULT_LIST"])
   testResultsCount(
     facilityId: ID

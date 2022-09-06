@@ -21,6 +21,7 @@ import gov.cdc.usds.simplereport.service.AddressValidationService;
 import gov.cdc.usds.simplereport.service.ApiUserService;
 import gov.cdc.usds.simplereport.service.OrganizationQueueService;
 import gov.cdc.usds.simplereport.service.OrganizationService;
+import java.util.Collections;
 import java.util.List;
 import java.util.Optional;
 import java.util.UUID;
@@ -64,7 +65,7 @@ public class OrganizationMutationResolver {
       @Argument String orderingProviderCounty,
       @Argument String orderingProviderState,
       @Argument String orderingProviderZipCode,
-      @Argument String orderingProviderTelephone,
+      @Argument String orderingProviderPhone,
       @Argument List<UUID> deviceIds) {
     organizationService.assertFacilityNameAvailable(testingFacilityName);
 
@@ -100,7 +101,7 @@ public class OrganizationMutationResolver {
             deviceIds,
             providerName,
             providerAddress,
-            parsePhoneNumber(orderingProviderTelephone),
+            parsePhoneNumber(orderingProviderPhone),
             orderingProviderNPI);
 
     return new ApiFacility(created);
@@ -131,7 +132,7 @@ public class OrganizationMutationResolver {
       @Argument String orderingProviderCounty,
       @Argument String orderingProviderState,
       @Argument String orderingProviderZipCode,
-      @Argument String orderingProviderTelephone,
+      @Argument String orderingProviderPhone,
       @Argument List<UUID> deviceIds) {
 
     return addFacility(
@@ -155,7 +156,7 @@ public class OrganizationMutationResolver {
         orderingProviderCounty,
         orderingProviderState,
         orderingProviderZipCode,
-        orderingProviderTelephone,
+        orderingProviderPhone,
         deviceIds);
   }
 
@@ -184,7 +185,7 @@ public class OrganizationMutationResolver {
       @Argument String orderingProviderCounty,
       @Argument String orderingProviderState,
       @Argument String orderingProviderZipCode,
-      @Argument String orderingProviderTelephone,
+      @Argument String orderingProviderPhone,
       @Argument List<UUID> deviceIds) {
 
     StreetAddress facilityAddress =
@@ -222,7 +223,7 @@ public class OrganizationMutationResolver {
             providerName,
             providerAddress,
             orderingProviderNPI,
-            parsePhoneNumber(orderingProviderTelephone),
+            parsePhoneNumber(orderingProviderPhone),
             deviceIds);
     return new ApiFacility(facility);
   }
@@ -253,7 +254,7 @@ public class OrganizationMutationResolver {
       @Argument String orderingProviderCounty,
       @Argument String orderingProviderState,
       @Argument String orderingProviderZipCode,
-      @Argument String orderingProviderTelephone,
+      @Argument String orderingProviderPhone,
       @Argument List<UUID> deviceIds) {
 
     return updateFacility(
@@ -278,7 +279,7 @@ public class OrganizationMutationResolver {
         orderingProviderCounty,
         orderingProviderState,
         orderingProviderZipCode,
-        orderingProviderTelephone,
+        orderingProviderPhone,
         deviceIds);
   }
 
@@ -298,7 +299,7 @@ public class OrganizationMutationResolver {
       @Argument String zipCode,
       @Argument String phone,
       @Argument String email,
-      @Argument PersonName providerName,
+      @Argument PersonName orderingProviderName,
       @Argument String orderingProviderFirstName,
       @Argument String orderingProviderMiddleName,
       @Argument String orderingProviderLastName,
@@ -310,9 +311,9 @@ public class OrganizationMutationResolver {
       @Argument String orderingProviderCounty,
       @Argument String orderingProviderState,
       @Argument String orderingProviderZipCode,
-      @Argument String orderingProviderTelephone,
+      @Argument String orderingProviderPhone,
       @Argument List<String> deviceIds,
-      @Argument String defaultDeviceId,
+      @Argument String defaultDevice,
       @Argument PersonName adminName,
       @Argument String adminFirstName,
       @Argument String adminMiddleName,
@@ -320,8 +321,11 @@ public class OrganizationMutationResolver {
       @Argument String adminSuffix,
       @Argument String adminEmail) {
 
-    List<UUID> deviceInternalIds =
-        deviceIds.stream().map(UUID::fromString).collect(Collectors.toList());
+    List<UUID> deviceInternalIds = Collections.emptyList();
+
+    if (deviceIds != null) {
+      deviceInternalIds = deviceIds.stream().map(UUID::fromString).collect(Collectors.toList());
+    }
 
     StreetAddress facilityAddress =
         addressValidationService.getValidatedAddress(
@@ -339,9 +343,9 @@ public class OrganizationMutationResolver {
             parseState(orderingProviderState),
             parseString(orderingProviderZipCode),
             parseString(orderingProviderCounty));
-    providerName = // SPECIAL CASE: MAY BE ALL NULLS/BLANKS
+    orderingProviderName = // SPECIAL CASE: MAY BE ALL NULLS/BLANKS
         consolidateNameArguments(
-            providerName,
+            orderingProviderName,
             orderingProviderFirstName,
             orderingProviderMiddleName,
             orderingProviderLastName,
@@ -361,9 +365,9 @@ public class OrganizationMutationResolver {
             parsePhoneNumber(phone),
             parseEmail(email),
             deviceInternalIds,
-            providerName,
+            orderingProviderName,
             providerAddress,
-            parsePhoneNumber(orderingProviderTelephone),
+            parsePhoneNumber(orderingProviderPhone),
             orderingProviderNPI);
     apiUserService.createUser(adminEmail, adminName, externalId, Role.ADMIN);
     List<Facility> facilities = organizationService.getFacilities(org);
