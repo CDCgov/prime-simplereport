@@ -141,7 +141,6 @@ class PatientExperienceControllerTest extends BaseFullStackTest {
             .perform(builder)
             .andExpect(status().isOk())
             .andExpect(jsonPath("$.testEventId", is(testEvent.getInternalId().toString())))
-            .andExpect(jsonPath("$.result", is("NEGATIVE")))
             .andExpect(jsonPath("$.results", Matchers.hasSize(1)))
             .andExpect(jsonPath("$.results[0].testResult", is("NEGATIVE")))
             .andExpect(jsonPath("$.results[0].disease.name", is("COVID-19")))
@@ -210,7 +209,6 @@ class PatientExperienceControllerTest extends BaseFullStackTest {
             .perform(builder)
             .andExpect(status().isOk())
             .andExpect(jsonPath("$.testEventId", is(testEvent.getInternalId().toString())))
-            .andExpect(jsonPath("$.result", is("POSITIVE")))
             .andExpect(jsonPath("$.results", Matchers.hasSize(3)))
             .andExpect(
                 jsonPath(
@@ -287,7 +285,6 @@ class PatientExperienceControllerTest extends BaseFullStackTest {
             .perform(builder)
             .andExpect(status().isOk())
             .andExpect(jsonPath("$.testEventId", is(removedTestEvent.getInternalId().toString())))
-            .andExpect(jsonPath("$.result", is("POSITIVE")))
             .andExpect(jsonPath("$.results", Matchers.hasSize(1)))
             .andExpect(jsonPath("$.results[0].testResult", is("POSITIVE")))
             .andExpect(jsonPath("$.results[0].disease.name", is("COVID-19")))
