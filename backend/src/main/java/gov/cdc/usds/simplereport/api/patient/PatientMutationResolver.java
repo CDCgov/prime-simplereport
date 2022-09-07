@@ -25,11 +25,11 @@ import java.io.InputStream;
 import java.time.LocalDate;
 import java.util.List;
 import java.util.UUID;
-import javax.servlet.http.Part;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.graphql.data.method.annotation.Argument;
 import org.springframework.graphql.data.method.annotation.MutationMapping;
 import org.springframework.stereotype.Controller;
+import org.springframework.web.multipart.MultipartFile;
 
 /** Mutations for creating and updating patient records. */
 @Controller
@@ -44,7 +44,7 @@ public class PatientMutationResolver {
   }
 
   @MutationMapping
-  public String uploadPatients(@Argument Part patientList) {
+  public String uploadPatients(@Argument MultipartFile patientList) {
     try (InputStream people = patientList.getInputStream()) {
       return _us.processPersonCSV(people);
     } catch (IllegalGraphqlArgumentException e) {
