@@ -4,8 +4,10 @@ import com.fasterxml.jackson.annotation.JsonCreator;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import java.util.Arrays;
 import java.util.List;
+import java.util.Optional;
 import javax.servlet.http.HttpServletRequest;
 import org.springframework.graphql.server.WebGraphQlRequest;
+import org.springframework.web.util.UriComponents;
 
 /**
  * The information that we capture about the HTTP request for an audit event. Must be stable (no
@@ -18,7 +20,6 @@ public class HttpRequestDetails {
   /** Headers we extract from the request. */
   private static final class Headers {
     private static final String REMOTE_ADDR = "REMOTE_ADDR";
-    private static final String HOST = "host";
     private static final String FORWARDED_PROTOCOL = "x-forwarded-proto";
     private static final String FORWARDED_CLIENT = "x-forwarded-for";
     private static final String FORWARDED_HOST = "x-original-host"; // screw you, Azure
@@ -44,15 +45,23 @@ public class HttpRequestDetails {
   }
 
   public HttpRequestDetails(WebGraphQlRequest request) {
-    serverName = request.getHeaders().toSingleValueMap().get(Headers.HOST);
-    originalHostName = request.getHeaders().toSingleValueMap().get(Headers.FORWARDED_HOST);
-    remoteAddress = request.getHeaders().toSingleValueMap().get(Headers.REMOTE_ADDR);
-    String forwardedFor = request.getHeaders().toSingleValueMap().get(Headers.FORWARDED_CLIENT);
+    UriComponents uri = request.getUri();
+    serverName = uri.getHost();
+    originalHostName = getHeader(request, Headers.FORWARDED_HOST);
+    remoteAddress = getHeader(request, Headers.REMOTE_ADDR);
+    String forwardedFor = getHeader(request, Headers.FORWARDED_CLIENT);
     forwardedAddresses =
         forwardedFor == null ? List.of() : Arrays.asList(forwardedFor.split(",\\s*"));
-    forwardedProtocol = request.getHeaders().toSingleValueMap().get(Headers.FORWARDED_PROTOCOL);
-    requestUri = request.getUri().toUriString();
+    forwardedProtocol = getHeader(request, Headers.FORWARDED_PROTOCOL);
+    requestUri = uri.getPath();
   }
+
+  private static String getHeader(WebGraphQlRequest request, String header) {
+    return Optional.ofNullable(request.getHeaders().get(header))
+        .map(strings -> String.join(",", strings))
+        .orElse(null);
+  }
+
   // Are all these annotations necessary? Strictly speaking: no. Jackson will introspect the crap
   // out of this thing and probably get the right answer if we leave them off. Let's not rely on
   // that, shall we?
