@@ -821,4 +821,4 @@ const touchpointsFormHtmlString = `<div id="fba-modal-dialog" class="fba-modal-d
 </div>
 `;
 
-new FBAform(document, window).init(formOptions);
+new FBAform(document).init(formOptions);
