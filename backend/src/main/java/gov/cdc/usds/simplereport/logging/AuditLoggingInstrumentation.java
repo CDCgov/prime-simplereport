@@ -27,6 +27,8 @@ import javax.security.auth.Subject;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.graphql.server.WebGraphQlRequest;
 import org.springframework.stereotype.Component;
+import org.springframework.web.context.request.RequestContextHolder;
+import org.springframework.web.context.request.ServletRequestAttributes;
 
 @Component
 @Slf4j
@@ -59,7 +61,6 @@ public class AuditLoggingInstrumentation extends SimpleInstrumentation {
     log.trace("Instrumenting query executionId={} for audit", executionId);
     try {
       GraphQLContext graphQLContext = parameters.getGraphQLContext();
-      WebGraphQlRequest webGraphQlRequest = graphQLContext.get(WEB_GRAPHQL_REQUEST_KEY);
       Subject subject = graphQLContext.get(SUBJECT_KEY);
       if (subject == null) {
         subject = subjectFromCurrentUser();
@@ -67,8 +68,15 @@ public class AuditLoggingInstrumentation extends SimpleInstrumentation {
       GraphqlQueryState state = parameters.getInstrumentationState();
       state.setRequestId(executionId);
 
-      if (webGraphQlRequest != null) {
-        state.setHttpDetails(new HttpRequestDetails(webGraphQlRequest));
+      ServletRequestAttributes servletRequestAttributes =
+          (ServletRequestAttributes) RequestContextHolder.getRequestAttributes();
+      if (servletRequestAttributes != null) {
+        state.setHttpDetails(new HttpRequestDetails(servletRequestAttributes.getRequest()));
+      } else {
+        WebGraphQlRequest webGraphQlRequest = graphQLContext.get(WEB_GRAPHQL_REQUEST_KEY);
+        if (webGraphQlRequest != null) {
+          state.setHttpDetails(new HttpRequestDetails(webGraphQlRequest));
+        }
       }
       state.setGraphqlDetails(
           new GraphQlInputs(
