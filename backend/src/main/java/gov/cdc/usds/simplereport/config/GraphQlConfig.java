@@ -30,10 +30,7 @@ public class GraphQlConfig {
   public static final String REQUIRED_PERMISSIONS_DIRECTIVE_NAME = "requiredPermissions";
   public static final int MAXIMUM_SIZE = 256;
 
-  // spring-graphql masks all exception by default
-  // https://docs.spring.io/spring-graphql/docs/current/reference/html/#execution-exceptions
-  // by default there are 5 categories BAD_REQUEST, UNAUTHORIZED, FORBIDDEN, NOT_FOUND,
-  // INTERNAL_ERROR
+  // mask all exception by default
   // to customize errors returned, you have to manually throw it here
   @Bean
   public DataFetcherExceptionResolver dataFetcherExceptionResolver() {
