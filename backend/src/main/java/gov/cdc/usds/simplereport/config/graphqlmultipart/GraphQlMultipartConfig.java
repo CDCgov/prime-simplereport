@@ -4,6 +4,7 @@ import static gov.cdc.usds.simplereport.config.graphqlmultipart.GraphqlMultipart
 import static org.springframework.http.MediaType.MULTIPART_FORM_DATA;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
+import org.springframework.boot.autoconfigure.condition.ConditionalOnBean;
 import org.springframework.boot.autoconfigure.graphql.GraphQlProperties;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -16,6 +17,7 @@ import org.springframework.web.servlet.function.RouterFunctions;
 import org.springframework.web.servlet.function.ServerResponse;
 
 @Configuration
+@ConditionalOnBean(WebGraphQlHandler.class)
 public class GraphQlMultipartConfig {
 
   @Bean
