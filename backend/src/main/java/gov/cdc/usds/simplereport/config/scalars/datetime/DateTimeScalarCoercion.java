@@ -13,8 +13,10 @@ import java.time.format.DateTimeFormatter;
 import java.time.format.DateTimeParseException;
 import java.util.Date;
 import java.util.List;
+import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.StringUtils;
 
+@Slf4j
 class DateTimeScalarCoercion implements Coercing<Date, Object> {
 
   public static final DateTimeFormatter ISO_LOCAL_DATE =
@@ -31,6 +33,7 @@ class DateTimeScalarCoercion implements Coercing<Date, Object> {
         return null;
       }
       LocalDateTime localDateTime = getLocalDateTime((String) input);
+      if (localDateTime == null) return null;
       return Date.from(localDateTime.atZone(ZoneOffset.UTC).toInstant());
     } else if (input instanceof Date) {
       return (Date) input;
@@ -43,6 +46,7 @@ class DateTimeScalarCoercion implements Coercing<Date, Object> {
       try {
         return LocalDateTime.parse(input, formatter);
       } catch (DateTimeParseException e) {
+        log.error("DateTimeScalarCoercion error: ", e);
       }
     }
 
@@ -50,6 +54,7 @@ class DateTimeScalarCoercion implements Coercing<Date, Object> {
       LocalDate localDate = LocalDate.parse(input, ISO_LOCAL_DATE);
       return localDate.atStartOfDay();
     } catch (DateTimeParseException e) {
+      log.error("DateTimeScalarCoercion error: ", e);
     }
 
     return null;
