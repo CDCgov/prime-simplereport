@@ -1,5 +1,5 @@
 spring:
-  profiles.include: no-security,no-okta-mgmt, no-okta-auth, no-experian
+  profiles.include: no-security,no-okta-mgmt, no-okta-auth, no-experian, disable-graphql-multipart
   datasource:
     simplereport:
       hikari:
