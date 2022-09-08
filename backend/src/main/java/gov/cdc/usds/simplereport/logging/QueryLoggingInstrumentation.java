@@ -13,9 +13,12 @@ import graphql.validation.ValidationError;
 import java.util.List;
 import java.util.Set;
 import java.util.stream.Collectors;
+import javax.servlet.http.HttpServletRequest;
 import lombok.extern.slf4j.Slf4j;
 import org.slf4j.MDC;
 import org.springframework.stereotype.Component;
+import org.springframework.web.context.request.RequestContextHolder;
+import org.springframework.web.context.request.ServletRequestAttributes;
 
 /** Created by nickrobison on 11/27/20 */
 @Component
@@ -64,9 +67,14 @@ public class QueryLoggingInstrumentation extends SimpleInstrumentation {
     // Create a new Azure Telemetry Event
     final RequestTelemetry requestTelemetry = new RequestTelemetry();
     requestTelemetry.setId(executionId);
-    //    final String frontendAppInsightsSessionId =
-    //        context.getHttpServletRequest().getHeader("x-ms-session-id");
-    //    requestTelemetry.getContext().getSession().setId(frontendAppInsightsSessionId);
+
+    ServletRequestAttributes servletRequestAttributes =
+        (ServletRequestAttributes) RequestContextHolder.getRequestAttributes();
+    if (servletRequestAttributes != null) {
+      HttpServletRequest request = servletRequestAttributes.getRequest();
+      final String frontendAppInsightsSessionId = request.getHeader("x-ms-session-id");
+      requestTelemetry.getContext().getSession().setId(frontendAppInsightsSessionId);
+    }
 
     // Try to get the operation name, if one exists
     final String name = parameters.getExecutionInput().getOperationName();
