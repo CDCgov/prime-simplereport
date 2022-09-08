@@ -113,7 +113,7 @@ public class GraphqlMultipartHandler {
       try {
         return objectMapper.readValue(string.get(), t);
       } catch (JsonProcessingException e) {
-        throw new RuntimeException(e);
+        throw new MultipartException(e);
       }
     }
     return (T) map;
