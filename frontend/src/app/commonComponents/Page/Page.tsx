@@ -2,7 +2,6 @@ import React, { useEffect } from "react";
 import { ToastContainer } from "react-toastify";
 
 import "react-toastify/dist/ReactToastify.css";
-
 import TouchpointsButton from "../../analytics/TouchpointsButton";
 import { getUrl } from "../../utils/url";
 import USAGovBanner from "../USAGovBanner";
@@ -72,7 +71,7 @@ const Page: React.FC<Props> = ({
           hideProgressBar={true}
         />
       </div>
-      <footer>
+      <footer aria-hidden={isModalActive}>
         <TouchpointsButton />
       </footer>
     </div>
