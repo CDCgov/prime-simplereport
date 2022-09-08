@@ -51,6 +51,8 @@ const SignUpGoals = () => {
           <RadioGroup
             wrapperClassName="margin-top-1"
             name="signUpGoal"
+            legend="Select Sign Up Goal"
+            legendSrOnly
             buttons={[
               {
                 value: "existingOrg",
