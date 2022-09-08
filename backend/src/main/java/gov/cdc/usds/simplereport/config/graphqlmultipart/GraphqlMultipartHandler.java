@@ -21,7 +21,6 @@ import org.springframework.util.Assert;
 import org.springframework.util.IdGenerator;
 import org.springframework.web.multipart.MultipartFile;
 import org.springframework.web.multipart.support.AbstractMultipartHttpServletRequest;
-import org.springframework.web.server.ServerWebInputException;
 import org.springframework.web.servlet.function.ServerRequest;
 import org.springframework.web.servlet.function.ServerResponse;
 import reactor.core.publisher.Mono;
@@ -121,13 +120,9 @@ public class GraphqlMultipartHandler {
   }
 
   private static Map<String, MultipartFile> readMultipartBody(ServerRequest request) {
-    try {
-      AbstractMultipartHttpServletRequest abstractMultipartHttpServletRequest =
-          (AbstractMultipartHttpServletRequest) request.servletRequest();
-      return abstractMultipartHttpServletRequest.getFileMap();
-    } catch (RuntimeException ex) {
-      throw new ServerWebInputException("Error while reading request parts", null, ex);
-    }
+    AbstractMultipartHttpServletRequest abstractMultipartHttpServletRequest =
+        (AbstractMultipartHttpServletRequest) request.servletRequest();
+    return abstractMultipartHttpServletRequest.getFileMap();
   }
 
   private static MediaType selectResponseMediaType(ServerRequest serverRequest) {
