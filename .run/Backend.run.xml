@@ -1,7 +1,6 @@
 <component name="ProjectRunConfigurationManager">
   <configuration default="false" name="Backend" type="SpringBootApplicationConfigurationType" factoryName="Spring Boot">
     <option name="ACTIVE_PROFILES" value="dev" />
-    <option name="ENABLE_JMX_AGENT" value="false" />
     <module name="simple-report.main" />
     <selectedOptions>
       <option name="environmentVariables" />

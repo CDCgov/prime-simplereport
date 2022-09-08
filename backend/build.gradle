@@ -58,11 +58,11 @@ dependencies {
 //    implementation 'org.springframework:spring-webmvc:5.3.19'
 //    implementation 'org.springframework:spring-websocket:5.3.19'
 //
-//    // Security Pins (Sept 2022)
+    // Security Pins (Sept 2022)
 //    implementation 'org.glassfish:jakarta.el:3.0.4'
 //    implementation 'org.springframework.security:spring-security-web:5.5.7'
 //    implementation 'com.nimbusds:oauth2-oidc-sdk:8.36.2'
-//    implementation 'org.yaml:snakeyaml:1.31'
+    implementation 'org.yaml:snakeyaml:1.31'
 //    implementation 'net.minidev:json-smart:2.3.1'
 
     // data layer dependencies
@@ -82,10 +82,10 @@ dependencies {
     implementation 'org.json:json:20201115'
     implementation 'com.fasterxml.jackson.dataformat:jackson-dataformat-csv'
     implementation 'com.fasterxml.jackson.datatype:jackson-datatype-hibernate5'
-    implementation 'org.springframework.boot:spring-boot-starter-thymeleaf:2.7.2'
+    implementation 'org.springframework.boot:spring-boot-starter-thymeleaf'
 
     // Okta dependencies
-    implementation 'com.okta.spring:okta-spring-boot-starter:2.0.0'
+    implementation 'com.okta.spring:okta-spring-boot-starter:2.1.6'
     implementation 'com.okta.sdk:okta-sdk-api:8.2.1'
     runtimeOnly 'com.okta.sdk:okta-sdk-impl:8.2.1'
     runtimeOnly 'com.okta.sdk:okta-sdk-httpclient:8.2.1'
