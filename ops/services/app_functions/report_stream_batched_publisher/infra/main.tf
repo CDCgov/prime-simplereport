@@ -34,8 +34,9 @@ resource "azurerm_app_service_plan" "asp" {
   kind                = "elastic"
   reserved            = true
   sku {
-    tier = "ElasticPremium"
-    size = "EP1"
+    tier     = "ElasticPremium"
+    size     = "EP1"
+    capacity = 2
   }
 }
 
@@ -61,6 +62,7 @@ resource "azurerm_function_app" "functions" {
   https_only                 = true
   version                    = "~3"
   os_type                    = "linux"
+
   site_config {
     linux_fx_version          = "node|14"
     use_32_bit_worker_process = false
@@ -91,6 +93,10 @@ resource "azurerm_function_app" "functions" {
     SIMPLE_REPORT_CB_URL                                 = local.simple_report_callback_url
     SIMPLE_REPORT_CB_TOKEN                               = "@Microsoft.KeyVault(SecretUri=${data.azurerm_key_vault_secret.simple_report_callback_token.id})"
     "AzureWebJobs.ReportStreamExceptionHandler.Disabled" = "1"
+  }
+
+  auth_settings {
+    enabled = true
   }
 }
 
