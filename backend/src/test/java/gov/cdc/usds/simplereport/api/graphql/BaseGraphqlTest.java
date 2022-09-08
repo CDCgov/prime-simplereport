@@ -40,10 +40,8 @@ import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.graphql.tester.AutoConfigureHttpGraphQlTester;
 import org.springframework.boot.test.mock.mockito.MockBean;
-import org.springframework.boot.test.web.client.TestRestTemplate;
 import org.springframework.graphql.test.tester.GraphQlTester;
 import org.springframework.graphql.test.tester.WebGraphQlTester;
-import org.springframework.http.ResponseEntity;
 import org.springframework.util.LinkedMultiValueMap;
 import org.springframework.util.MultiValueMap;
 
@@ -57,14 +55,11 @@ public abstract class BaseGraphqlTest extends BaseFullStackTest {
   @Autowired private OrganizationInitializingService _initService;
   @Autowired private DemoOktaRepository _oktaRepo;
   @Autowired private DemoUserConfiguration _users;
-  @Autowired private TestRestTemplate restTemplate;
-  @Autowired private ObjectMapper objectMapper;
   @Autowired protected HibernateQueryInterceptor _hibernateQueryInterceptor;
   @MockBean private AddressValidationService _addressValidation;
 
   private String _userName = null;
   private MultiValueMap<String, String> _customHeaders;
-  private ResponseEntity<String> _lastResponse;
 
   @Autowired private WebGraphQlTester graphQlTester;
 
@@ -115,10 +110,6 @@ public abstract class BaseGraphqlTest extends BaseFullStackTest {
     _customHeaders.add(name, value);
   }
 
-  protected ResponseEntity<String> getLastResponse() {
-    return _lastResponse;
-  }
-
   @BeforeEach
   public void setup() {
     truncateDb();
@@ -130,7 +121,6 @@ public abstract class BaseGraphqlTest extends BaseFullStackTest {
     TestUserIdentities.withStandardUser(_initService::initAll);
     useOrgUser();
     _customHeaders = new LinkedMultiValueMap<String, String>();
-    _lastResponse = null;
     assertNull(
         // Dear future reader: this is not negotiable. If you set a default user, then patients will
         // show up as being the default user instead of themselves. This would be bad.
@@ -172,56 +162,6 @@ public abstract class BaseGraphqlTest extends BaseFullStackTest {
   }
 
   protected ObjectNode runMultipart(LinkedMultiValueMap<String, Object> parts) {
-    //    HttpHeaders headers = new HttpHeaders();
-    //    headers.setBearerAuth(getBearerAuth());
-    //    headers.setContentType(MediaType.MULTIPART_FORM_DATA);
-    //    HttpEntity<LinkedMultiValueMap<String, Object>> request =
-    //        new HttpEntity<LinkedMultiValueMap<String, Object>>(parts, headers);
-    //    try {
-    //      _lastResponse = restTemplate.exchange("/graphql", HttpMethod.POST, request,
-    // String.class);
-    //      assertEquals(HttpStatus.OK, _lastResponse.getStatusCode(), "Servlet response should be
-    // OK");
-    //      GraphQLResponse response = new GraphQLResponse(_lastResponse, objectMapper);
-    //      JsonNode responseBody = response.readTree();
-    //      assertGraphQLOutcome(responseBody, null);
-    //      return (ObjectNode) responseBody.get("data");
-    //    } catch (IOException e) {
-    //      throw new RuntimeException(e);
-    //    }
-    /*
-        // change variables to map everywhere! seems like this will continue to give us issues
-        WebGraphQlTester webGraphQlTester =
-            this.graphQlTester
-                .mutate()
-                .headers(headers -> headers.setBearerAuth(getBearerAuth()))
-                .headers(headers -> headers.setContentType(MediaType.MULTIPART_FORM_DATA))
-                .headers(httpHeaders -> httpHeaders.addAll(_customHeaders))
-                .headers(httpHeaders -> httpHeaders.addAll(_customHeaders))
-                .build();
-
-    //    System.out.println(queryFileName);
-        GraphQlTester.Request<?> request = webGraphQlTester
-
-
-        GraphQlTester.Response response = request.execute();
-    //    if (expectedError != null) {
-    //      response
-    //          .errors()
-    //          .satisfy(
-    //              errors -> {
-    //                assertThat(errors).hasSize(1);
-    //                assertThat(errors.get(0).getMessage()).contains(expectedError);
-    //              });
-    //    }
-
-        Object responseObject = response.path("").entity(Object.class).get();
-        ObjectMapper mapper = new ObjectMapper();
-        ObjectNode jsonNodeMap = (ObjectNode) mapper.convertValue(responseObject, JsonNode.class);
-
-        return jsonNodeMap;
-
-       */
     return null;
   }
 
@@ -330,19 +270,8 @@ public abstract class BaseGraphqlTest extends BaseFullStackTest {
       List<PhoneNumberInput> phoneNumbers,
       String lookupId,
       Optional<UUID> facilityId,
-      Optional<String> expectedError)
-      throws IOException {
+      Optional<String> expectedError) {
 
-    //    Map<String, Object> variables =
-    //        new HashMap<>(
-    //            Map.of(
-    //                "firstName", firstName,
-    //                "lastName", lastName,
-    //                "birthDate", birthDate,
-    //                "phoneNumbers", phoneNumbers,
-    //                "lookupId", lookupId));
-    //    facilityId.ifPresent(uuid -> variables.put("facilityId", uuid.toString()));
-    //
     ObjectNode variables =
         JsonNodeFactory.instance
             .objectNode()

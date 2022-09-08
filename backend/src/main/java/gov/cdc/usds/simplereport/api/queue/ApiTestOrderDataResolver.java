@@ -24,13 +24,6 @@ import reactor.core.publisher.Mono;
 @Controller
 public class ApiTestOrderDataResolver {
 
-  //  private final BatchLoaderRegistry registry;
-
-  //  private final PersonRepository personRepository;
-  //  private final TestOrderPatientDataLoader _testOrderPatientDataLoader;
-  //  private final TestOrderDeviceTypeDataLoader _testOrderDeviceTypeDataLoader;
-  //  private final PatientAnswersDataLoader _patientAnswersDataLoader;
-
   public ApiTestOrderDataResolver(
       BatchLoaderRegistry registry,
       PersonRepository personRepository,
@@ -69,21 +62,10 @@ public class ApiTestOrderDataResolver {
             });
   }
 
-  //  private CompletableFuture<AskOnEntrySurvey> getSurvey(
-  //      ApiTestOrder apiTestOrder, DataFetchingEnvironment dfe) {
-  //    return _patientAnswersDataLoader
-  //        .load(apiTestOrder.getWrapped(), dfe)
-  //        .thenApply(PatientAnswers::getSurvey);
-  //  }
-
   @SchemaMapping(typeName = "TestOrder", field = "patient")
   public CompletableFuture<Person> patient(
       ApiTestOrder apiTestOrder, DataLoader<UUID, Person> loader) {
     return loader.load(apiTestOrder.getWrapped().getPatient().getInternalId());
-    // why this doesn't cause Hibernate to eagerly load when other very similar logic doesn't is
-    // beyond me
-    //    return _testOrderPatientDataLoader.load(
-    //        apiTestOrder.getWrapped().getPatient().getInternalId(), dfe);
   }
 
   @SchemaMapping(typeName = "TestOrder", field = "pregnancy")
