@@ -21,6 +21,12 @@ repositories {
     mavenCentral()
 }
 
+// new spring generates two jar files, which messes up the ci pipeline since it expects one jar in the build/libs dir
+// https://stackoverflow.com/questions/67663728/spring-boot-2-5-0-generates-plain-jar-file-can-i-remove-it
+jar {
+    enabled = false
+}
+
 dependencies {
     // core infrastructure
     implementation 'org.springframework.boot:spring-boot-starter-web'
