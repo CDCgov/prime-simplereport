@@ -94,10 +94,6 @@ resource "azurerm_function_app" "functions" {
     SIMPLE_REPORT_CB_TOKEN                               = "@Microsoft.KeyVault(SecretUri=${data.azurerm_key_vault_secret.simple_report_callback_token.id})"
     "AzureWebJobs.ReportStreamExceptionHandler.Disabled" = "1"
   }
-
-  auth_settings {
-    enabled = true
-  }
 }
 
 terraform {
