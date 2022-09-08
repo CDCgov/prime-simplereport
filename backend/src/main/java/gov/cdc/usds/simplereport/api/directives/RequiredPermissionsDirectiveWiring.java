@@ -14,6 +14,7 @@ import graphql.schema.DataFetcher;
 import graphql.schema.DataFetchingEnvironment;
 import graphql.schema.FieldCoordinates;
 import graphql.schema.GraphQLAppliedDirective;
+import graphql.schema.GraphQLAppliedDirectiveArgument;
 import graphql.schema.GraphQLArgument;
 import graphql.schema.GraphQLDirectiveContainer;
 import graphql.schema.GraphQLFieldDefinition;
@@ -183,7 +184,7 @@ public class RequiredPermissionsDirectiveWiring implements SchemaDirectiveWiring
   private static Optional<Set<UserPermission>> fromStringListArgument(
       GraphQLAppliedDirective directive, String argumentName) {
     return Optional.ofNullable(directive.getArgument(argumentName))
-        .map(graphQLArgument -> graphQLArgument.getValue())
+        .map(GraphQLAppliedDirectiveArgument::getValue)
         .filter(Collection.class::isInstance)
         .map(c -> (Collection<String>) c)
         .map(

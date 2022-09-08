@@ -4,32 +4,28 @@ import graphql.ErrorClassification;
 import graphql.ErrorType;
 import graphql.GraphQLError;
 import graphql.language.SourceLocation;
+import java.util.Collections;
 import java.util.List;
 
 /** A customizable error thrown by GraphqlQl for generic reasons */
 public class GenericGraphqlException extends RuntimeException implements GraphQLError {
 
   public static final String GENERIC_ERROR_MESSAGE = "Something went wrong";
-  private ErrorClassification errorType = ErrorType.DataFetchingException;
-  private List<Object> errorPath;
+  private final String errorPath;
 
   public GenericGraphqlException() {
     super(GENERIC_ERROR_MESSAGE);
+    this.errorPath = null;
   }
 
-  public GenericGraphqlException(List<Object> errorPath) {
+  public GenericGraphqlException(String errorPath) {
     super(GENERIC_ERROR_MESSAGE);
     this.errorPath = errorPath;
   }
 
-  public GenericGraphqlException(String message, List<Object> errorPath) {
+  public GenericGraphqlException(String message, String errorPath) {
     super(message);
     this.errorPath = errorPath;
-  }
-
-  public GenericGraphqlException(String message, ErrorClassification errorType) {
-    super(message);
-    this.errorType = errorType;
   }
 
   @Override
@@ -39,12 +35,12 @@ public class GenericGraphqlException extends RuntimeException implements GraphQL
 
   @Override
   public ErrorClassification getErrorType() {
-    return errorType;
+    return ErrorType.ExecutionAborted;
   }
 
   @Override
   public List<Object> getPath() {
-    return this.errorPath;
+    return Collections.singletonList(errorPath);
   }
 
   @Override

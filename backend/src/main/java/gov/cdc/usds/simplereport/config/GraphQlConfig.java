@@ -44,29 +44,25 @@ public class GraphQlConfig {
       }
 
       if (exception instanceof AccessDeniedException) {
-        return Mono.just(
-            singletonList(new GenericGraphqlException("Unauthorized", singletonList(errorPath))));
+        return Mono.just(singletonList(new GenericGraphqlException("Unauthorized", errorPath)));
       }
 
       if (exception instanceof NonexistentUserException) {
         return Mono.just(
-            singletonList(
-                new GenericGraphqlException("Cannot find user.", singletonList(errorPath))));
+            singletonList(new GenericGraphqlException("Cannot find user.", errorPath)));
       }
 
       if (exception instanceof IllegalGraphqlArgumentException) {
         return Mono.just(
-            singletonList(
-                new GenericGraphqlException(exception.getMessage(), singletonList(errorPath))));
+            singletonList(new GenericGraphqlException(exception.getMessage(), errorPath)));
       }
 
       if (exception instanceof IllegalGraphqlFieldAccessException) {
         return Mono.just(
-            singletonList(
-                new GenericGraphqlException(exception.getMessage(), singletonList(errorPath))));
+            singletonList(new GenericGraphqlException(exception.getMessage(), errorPath)));
       }
 
-      return Mono.just(singletonList(new GenericGraphqlException(singletonList(errorPath))));
+      return Mono.just(singletonList(new GenericGraphqlException((errorPath))));
     };
   }
 
