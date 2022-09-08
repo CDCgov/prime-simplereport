@@ -34,8 +34,8 @@ resource "azurerm_app_service_plan" "asp" {
   kind                = "elastic"
   reserved            = true
   sku {
-    tier = "ElasticPremium"
-    size = "EP1"
+    tier     = "ElasticPremium"
+    size     = "EP1"
     capacity = 2
   }
 }
