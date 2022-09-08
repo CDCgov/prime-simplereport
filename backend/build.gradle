@@ -60,7 +60,7 @@ dependencies {
     implementation 'org.yaml:snakeyaml:1.31'
     implementation 'net.minidev:json-smart:2.4.6'
     implementation 'net.minidev:accessors-smart:2.4.6'
-    implementation 'com.fasterxml.jackson.core:jackson-core:2.8.6'
+    implementation 'com.fasterxml.jackson.core:jackson-core:2.11.4'
     implementation 'org.jetbrains.kotlin:kotlin-stdlib:1.6.0'
 
     // data layer dependencies

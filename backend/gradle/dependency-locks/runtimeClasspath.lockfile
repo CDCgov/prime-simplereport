@@ -9,7 +9,7 @@ com.azure:azure-core:1.27.0
 com.azure:azure-storage-common:12.15.1
 com.azure:azure-storage-queue:12.12.2
 com.fasterxml.jackson.core:jackson-annotations:2.11.4
-com.fasterxml.jackson.core:jackson-core:2.8.6
+com.fasterxml.jackson.core:jackson-core:2.11.4
 com.fasterxml.jackson.core:jackson-databind:2.11.4
 com.fasterxml.jackson.dataformat:jackson-dataformat-csv:2.11.4
 com.fasterxml.jackson.dataformat:jackson-dataformat-xml:2.11.4
