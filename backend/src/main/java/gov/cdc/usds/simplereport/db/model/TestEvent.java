@@ -59,7 +59,7 @@ public class TestEvent extends BaseTestInfo {
   }
 
   public TestEvent(TestOrder order, Boolean hasPriorTests) {
-    super(order.getPatient(), order.getFacility(), order.getDeviceSpecimen(), order.getResult());
+    super(order.getPatient(), order.getFacility(), order.getDeviceSpecimen());
     // store a link, and *also* store the object as JSON
     // force load the lazy-loaded phone numbers so values are available to the object mapper
     // when serializing `patientData` (phoneNumbers is default lazy-loaded because of `OneToMany`)
@@ -153,16 +153,13 @@ public class TestEvent extends BaseTestInfo {
   // getResultSet()
   public TestResult getTestResult() {
     final String COVID_LOINC = "96741-4";
-    if (this.results != null) {
-      Optional<Result> resultObject =
-          this.results.stream()
-              .filter(result -> COVID_LOINC.equals(result.getDisease().getLoinc()))
-              .findFirst();
-      if (resultObject.isPresent()) {
-        return resultObject.get().getTestResult();
-      }
-    }
-    return super.getResult();
+    Optional<Result> resultObject =
+        this.results.stream()
+            .filter(result -> COVID_LOINC.equals(result.getDisease().getLoinc()))
+            .findFirst();
+    return resultObject.get().getTestResult();
+
+    //    return super.getResult();
   }
 
   @Override

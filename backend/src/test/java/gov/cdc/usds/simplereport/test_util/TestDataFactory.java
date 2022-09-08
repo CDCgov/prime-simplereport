@@ -395,12 +395,13 @@ public class TestDataFactory {
     order.setAskOnEntrySurvey(savePatientAnswers(createEmptySurvey()));
     order.setDeviceSpecimen(facility.getDefaultDeviceSpecimen());
 
-    order.setResultColumn(result); // remove after #3664
+    //    order.setResultColumn(result); // remove after #3664
     order.markComplete();
     TestOrder savedOrder = _testOrderRepo.save(order);
 
     Result resultEntity = new Result(order, _diseaseService.covid(), result);
     _resultRepository.save(resultEntity);
+    savedOrder.addResult(resultEntity);
     _patientLinkRepository.save(new PatientLink(savedOrder));
     return order;
   }
@@ -490,8 +491,12 @@ public class TestDataFactory {
   }
 
   public TestEvent createTestEventCorrected(TestEvent originalTestEvent) {
-    return _testEventRepo.save(
-        new TestEvent(originalTestEvent, TestCorrectionStatus.CORRECTED, "Cold feet"));
+
+    TestEvent correctedTestEvent =
+        _testEventRepo.save(
+            new TestEvent(originalTestEvent, TestCorrectionStatus.CORRECTED, "Cold feet"));
+    correctedTestEvent.addResult(originalTestEvent.getResults().stream().findFirst().get());
+    return correctedTestEvent;
   }
 
   public TestEvent createTestEventRemoval(TestEvent originalTestEvent) {
@@ -510,7 +515,9 @@ public class TestDataFactory {
     Set<Result> copiedResults = new HashSet<>();
     originalResults.forEach(
         result -> {
-          copiedResults.add(new Result(result, newRemoveEvent));
+          Result resultToAdd = new Result(result, newRemoveEvent);
+          copiedResults.add(resultToAdd);
+          newRemoveEvent.addResult(resultToAdd);
         });
     _resultRepository.saveAll(copiedResults);
 

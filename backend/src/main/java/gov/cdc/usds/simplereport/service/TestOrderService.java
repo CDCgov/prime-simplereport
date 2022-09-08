@@ -326,6 +326,7 @@ public class TestOrderService {
               : new TestEvent(order, order.getCorrectionStatus(), order.getReasonForCorrection());
 
       TestEvent savedEvent = _terepo.save(testEvent);
+      savedEvent.addResult(resultEntity);
       resultEntity.setTestEvent(savedEvent);
       _resultRepo.save(resultEntity);
       order.setTestEventRef(savedEvent);

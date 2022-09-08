@@ -164,7 +164,8 @@ class TestOrderServiceTest extends BaseServiceTest<TestOrderService> {
     verify(testEventReportingService).report(testEventArgumentCaptor.capture());
     TestEvent sentEvent = testEventArgumentCaptor.getValue();
     assertThat(sentEvent.getPatient().getInternalId()).isEqualTo(patient.getInternalId());
-    assertThat(sentEvent.getResult()).isEqualTo(TestResult.POSITIVE);
+    assertThat(sentEvent.getResults().stream().findFirst().get().getTestResult())
+        .isEqualTo(TestResult.POSITIVE);
   }
 
   @Test
@@ -583,7 +584,9 @@ class TestOrderServiceTest extends BaseServiceTest<TestOrderService> {
         originalTestEvent.getInternalId(), correctionTestEvent.getPriorCorrectedTestEventId());
     assertEquals(TestCorrectionStatus.CORRECTED, correctionTestEvent.getCorrectionStatus());
     assertEquals("Cold feet", correctionTestEvent.getReasonForCorrection());
-    assertEquals(TestResult.NEGATIVE, correctionTestEvent.getResult());
+    assertEquals(
+        TestResult.NEGATIVE,
+        correctionTestEvent.getResults().stream().findFirst().get().getTestResult());
     // Date of original test is overwritten by the new correction event
     assertNotEquals(
         LocalDate.of(1865, 12, 25),

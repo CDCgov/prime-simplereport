@@ -40,6 +40,11 @@ import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.domain.Specification;
 
+// @TestPropertySource(
+//        properties = {
+//                "hibernate.query.interceptor.error-level=ERROR",
+//                "spring.jpa.properties.hibernate.enable_lazy_load_no_trans=true"
+//        })
 class TestEventRepositoryTest extends BaseRepositoryTest {
 
   @Autowired private TestEventRepository _repo;
@@ -102,15 +107,18 @@ class TestEventRepositoryTest extends BaseRepositoryTest {
         _dataFactory.createCompletedTestOrder(patient, place, TestResult.POSITIVE);
     TestEvent firstEvent = new TestEvent(firstOrder);
     _repo.save(firstEvent);
+    firstEvent.addResult(firstOrder.getResultSet().stream().findFirst().get());
 
     TestOrder secondOrder =
         _dataFactory.createCompletedTestOrder(patient, place, TestResult.UNDETERMINED);
     TestEvent secondEvent = new TestEvent(secondOrder);
-
     _repo.save(secondEvent);
+    secondEvent.addResult(secondOrder.getResultSet().stream().findFirst().get());
     flush();
     TestEvent found = _repo.findFirst1ByPatientOrderByCreatedAtDesc(patient);
-    assertEquals(TestResult.UNDETERMINED, secondEvent.getResult());
+    assertEquals(
+        TestResult.UNDETERMINED,
+        secondEvent.getResults().stream().findFirst().get().getTestResult());
     List<TestEvent> foundTestReports2 =
         _repo.queryMatchAllBetweenDates(d1, DATE_1MIN_FUTURE, Pageable.unpaged());
     assertEquals(2, foundTestReports2.size() - foundTestReports1.size());
@@ -317,6 +325,7 @@ class TestEventRepositoryTest extends BaseRepositoryTest {
     String reason = "Unit Test Correction " + LocalDateTime.now().toString();
     TestEvent correctionEvent = new TestEvent(startingEvent, TestCorrectionStatus.REMOVED, reason);
     _repo.save(correctionEvent);
+    correctionEvent.addResult(startingEvent.getResults().stream().findFirst().get());
 
     Optional<TestEvent> eventReloadOptional = _repo.findById(correctionEvent.getInternalId());
     assertTrue(eventReloadOptional.isPresent());
@@ -332,7 +341,9 @@ class TestEventRepositoryTest extends BaseRepositoryTest {
         eventReloaded.getOrganization().getInternalId());
     assertEquals(
         startingEvent.getFacility().getInternalId(), eventReloaded.getFacility().getInternalId());
-    assertEquals(startingEvent.getResult(), eventReloaded.getResult());
+    assertEquals(
+        startingEvent.getResults().stream().findFirst().get().getTestResult(),
+        eventReloaded.getResults().stream().findFirst().get().getTestResult());
     assertEquals(startingEvent.getProviderData(), eventReloaded.getProviderData());
     assertEquals(startingEvent.getPatientData(), eventReloaded.getPatientData());
     compareAskOnEntrySurvey(startingEvent.getSurveyData(), eventReloaded.getSurveyData());

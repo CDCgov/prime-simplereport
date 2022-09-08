@@ -95,14 +95,10 @@ public class TestOrder extends BaseTestInfo {
   // Eventually, this method will be deprecated in favor of getResultSet() and getResultForDisease()
   public TestResult getTestResult() {
     Hibernate.initialize(this.results);
-    if (this.results != null) {
-      Comparator<Result> resultDateComparator = Comparator.comparing(Result::getUpdatedAt);
-      Optional<Result> resultObject = this.results.stream().max(resultDateComparator);
-      if (resultObject.isPresent()) {
-        return resultObject.get().getTestResult();
-      }
-    }
-    return super.getResult();
+    Comparator<Result> resultDateComparator = Comparator.comparing(Result::getUpdatedAt);
+    Optional<Result> resultObject = this.results.stream().max(resultDateComparator);
+    return resultObject.get().getTestResult();
+    //    return super.getResult();
   }
 
   @JsonIgnore
@@ -200,5 +196,12 @@ public class TestOrder extends BaseTestInfo {
 
   public UUID getPatientAnswersId() {
     return patientAnswersId;
+  }
+
+  public void addResult(Result result) {
+    if (this.results == null) {
+      this.results = new HashSet<Result>();
+    }
+    this.results.add(result);
   }
 }
