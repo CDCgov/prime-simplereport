@@ -5,7 +5,7 @@
 
 // Form components are namespaced under 'fba' = 'Feedback Analytics'
 
-function FBAform(d, N) {
+function FBAform(d) {
   return {
     formId: "5b1efe87",
     formComponent: function () {
@@ -48,7 +48,7 @@ function FBAform(d, N) {
       var self = this;
       d.addEventListener("keyup", function (event) {
         var x = event.keyCode;
-        if (x == 27 && self.dialogOpen == true) {
+        if (x === 27 && self.dialogOpen === true) {
           self.closeDialog();
         }
       });
@@ -74,7 +74,7 @@ function FBAform(d, N) {
       this.dialogEl.setAttribute("role", "dialog");
       this.dialogEl.setAttribute("aria-modal", "true");
       this.dialogEl.innerHTML = touchpointsFormHtmlString;
-      d.body.appendChild(this.dialogEl);
+      d.querySelector("footer").appendChild(this.dialogEl);
 
       d.querySelector(".fba-modal-close").addEventListener(
         "click",
@@ -82,7 +82,7 @@ function FBAform(d, N) {
         false
       );
       var otherElements = d.querySelectorAll(".usa-input.other-option");
-      for (var i = 0; i < otherElements.length; i++) {
+      for (let i = 0; i < otherElements.length; i++) {
         otherElements[i].addEventListener(
           "keyup",
           this.handleOtherOption.bind(this),
@@ -90,7 +90,7 @@ function FBAform(d, N) {
         );
       }
       var phoneElements = d.querySelectorAll("input[type='tel']");
-      for (var i = 0; i < phoneElements.length; i++) {
+      for (let i = 0; i < phoneElements.length; i++) {
         phoneElements[i].addEventListener(
           "keyup",
           this.handlePhoneInput.bind(this),
@@ -180,16 +180,16 @@ function FBAform(d, N) {
     handleOtherOption: function (e) {
       var selectorId = "#" + e.srcElement.getAttribute("data-option-id");
       var other_val = e.target.value.replace(/,/g, "");
-      if (other_val == "") other_val = "other";
+      if (other_val === "") other_val = "other";
       var option = this.formElement().querySelector(selectorId);
       option.checked = true;
       option.value = other_val;
     },
     handlePhoneInput: function (e) {
       var number = e.srcElement.value.replace(/[^\d]/g, "");
-      if (number.length == 7) {
+      if (number.length === 7) {
         number = number.replace(/(\d{3})(\d{4})/, "$1-$2");
-      } else if (number.length == 10) {
+      } else if (number.length === 10) {
         number = number.replace(/(\d{3})(\d{3})(\d{4})/, "($1) $2-$3");
       }
       e.srcElement.value = number;
@@ -197,7 +197,7 @@ function FBAform(d, N) {
     handleEmailInput: function (e) {
       var EmailRegex = /^([a-zA-Z0-9_.+-])+\@(([a-zA-Z0-9-])+\.)+([a-zA-Z0-9]{2,4})+$/;
       var email = e.srcElement.value.trim();
-      if (email.length == 0) {
+      if (email.length === 0) {
         return;
       }
       var result = EmailRegex.test(email);
@@ -288,7 +288,7 @@ function FBAform(d, N) {
         questions[item.name] = item;
       });
       Array.prototype.forEach.call(dateItems, function (item) {
-        if (item.value.length == 0) {
+        if (item.value.length === 0) {
           delete questions[item.name];
         } else {
           var isValidDate = Date.parse(item.value);
@@ -312,7 +312,7 @@ function FBAform(d, N) {
         questions[item.name] = item;
       });
       Array.prototype.forEach.call(emailItems, function (item) {
-        if (item.value.length == 0) {
+        if (item.value.length === 0) {
           delete questions[item.name];
         } else {
           var EmailRegex = /^([a-zA-Z0-9_.+-])+\@(([a-zA-Z0-9-])+\.)+([a-zA-Z0-9]{2,4})+$/;
@@ -336,7 +336,7 @@ function FBAform(d, N) {
         questions[item.name] = item;
       });
       Array.prototype.forEach.call(phoneItems, function (item) {
-        if (item.value.length == 0) {
+        if (item.value.length === 0) {
           delete questions[item.name];
         } else {
           var PhoneRegex = /^[0-9]{10}$/;
@@ -391,7 +391,7 @@ function FBAform(d, N) {
       var elem = form.querySelector(".usa-form-group--error");
       if (elem == null) return;
       elem.setAttribute("class", "question");
-      var elem = form.querySelector("#input-error-message");
+      elem = form.querySelector("#input-error-message");
       if (elem != null) elem.parentNode.removeChild(elem);
       elem = form.querySelector("#input-error");
       if (elem != null) elem.parentNode.removeChild(elem);
@@ -463,7 +463,7 @@ function FBAform(d, N) {
     successText: function () {
       return "Thanks for your feedback!";
     },
-    showFormSuccess: function (e) {
+    showFormSuccess: function () {
       var formComponent = this.formComponent();
       var formElement = this.formElement();
       var alertElement = formComponent.querySelector(".fba-alert");
@@ -523,7 +523,6 @@ function FBAform(d, N) {
     formSuccess: function (e) {
       // Clear the alert box
       var formComponent = this.formComponent();
-      var alertElement = formComponent.querySelector(".fba-alert");
       var alertElementBody = formComponent.getElementsByClassName(
         "usa-alert__text"
       )[0];
@@ -635,7 +634,7 @@ function FBAform(d, N) {
         );
       }
 
-      for (var i = 0; i < nextButtons.length; i++) {
+      for (let i = 0; i < nextButtons.length; i++) {
         nextButtons[i].addEventListener(
           "click",
           function (e) {
@@ -822,4 +821,4 @@ const touchpointsFormHtmlString = `<div id="fba-modal-dialog" class="fba-modal-d
 </div>
 `;
 
-const touchpointForm5b1efe87 = new FBAform(document, window).init(formOptions);
+new FBAform(document).init(formOptions);
