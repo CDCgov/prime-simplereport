@@ -40,7 +40,7 @@ public class Person extends OrganizationScopedEternalEntity implements PersonEnt
 
   // NOTE: facility==NULL means this person appears in ALL facilities for a given Organization.
   // this is common for imported patients.
-  @ManyToOne(optional = true, fetch = FetchType.EAGER)
+  @ManyToOne(optional = true, fetch = FetchType.LAZY)
   @JoinColumn(name = "facility_id")
   @JsonIgnore // do not serialize to TestEvents
   private Facility facility;
