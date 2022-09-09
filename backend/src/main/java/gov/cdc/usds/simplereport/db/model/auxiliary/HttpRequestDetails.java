@@ -4,10 +4,7 @@ import com.fasterxml.jackson.annotation.JsonCreator;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import java.util.Arrays;
 import java.util.List;
-import java.util.Optional;
 import javax.servlet.http.HttpServletRequest;
-import org.springframework.graphql.server.WebGraphQlRequest;
-import org.springframework.web.util.UriComponents;
 
 /**
  * The information that we capture about the HTTP request for an audit event. Must be stable (no
@@ -19,7 +16,6 @@ public class HttpRequestDetails {
 
   /** Headers we extract from the request. */
   private static final class Headers {
-    private static final String REMOTE_ADDR = "REMOTE_ADDR";
     private static final String FORWARDED_PROTOCOL = "x-forwarded-proto";
     private static final String FORWARDED_CLIENT = "x-forwarded-for";
     private static final String FORWARDED_HOST = "x-original-host"; // screw you, Azure
@@ -42,24 +38,6 @@ public class HttpRequestDetails {
         forwardedFor == null ? List.of() : Arrays.asList(forwardedFor.split(",\\s*"));
     forwardedProtocol = request.getHeader(Headers.FORWARDED_PROTOCOL);
     requestUri = request.getRequestURI();
-  }
-
-  public HttpRequestDetails(WebGraphQlRequest request) {
-    UriComponents uri = request.getUri();
-    serverName = uri.getHost();
-    originalHostName = getHeader(request, Headers.FORWARDED_HOST);
-    remoteAddress = getHeader(request, Headers.REMOTE_ADDR);
-    String forwardedFor = getHeader(request, Headers.FORWARDED_CLIENT);
-    forwardedAddresses =
-        forwardedFor == null ? List.of() : Arrays.asList(forwardedFor.split(",\\s*"));
-    forwardedProtocol = getHeader(request, Headers.FORWARDED_PROTOCOL);
-    requestUri = uri.getPath();
-  }
-
-  private static String getHeader(WebGraphQlRequest request, String header) {
-    return Optional.ofNullable(request.getHeaders().get(header))
-        .map(strings -> String.join(",", strings))
-        .orElse(null);
   }
 
   // Are all these annotations necessary? Strictly speaking: no. Jackson will introspect the crap
