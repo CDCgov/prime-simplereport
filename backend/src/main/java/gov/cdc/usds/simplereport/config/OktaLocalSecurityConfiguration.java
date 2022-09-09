@@ -89,7 +89,10 @@ public class OktaLocalSecurityConfiguration extends WebSecurityConfigurerAdapter
 
         // Anything else goes through Okta
         .anyRequest()
-        .authenticated();
+        .authenticated()
+        .and()
+        .oauth2ResourceServer()
+        .jwt();
 
     // Most of the app doesn't use sessions, so can't have CSRF. Spring's automatic CSRF
     // breaks the REST controller, so we disable it for most paths.
