@@ -10,6 +10,10 @@ const organization = generateOrganization();
 const user = generateUser();
 
 describe("Organization sign up", () => {
+  Cypress.on('uncaught:exception', (err, runnable) => {
+    return false;
+  });
+  
   loginHooks();
   before(() => {
     // Since these tests interact with Okta, we need to use
