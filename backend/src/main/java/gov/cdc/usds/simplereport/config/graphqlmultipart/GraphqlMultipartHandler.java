@@ -9,12 +9,10 @@ import java.util.List;
 import java.util.Map;
 import java.util.Optional;
 import javax.servlet.ServletException;
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.context.i18n.LocaleContextHolder;
 import org.springframework.graphql.server.WebGraphQlHandler;
 import org.springframework.graphql.server.WebGraphQlRequest;
-import org.springframework.graphql.server.webmvc.GraphQlHttpHandler;
 import org.springframework.http.MediaType;
 import org.springframework.util.AlternativeJdkIdGenerator;
 import org.springframework.util.Assert;
@@ -25,6 +23,7 @@ import org.springframework.web.servlet.function.ServerRequest;
 import org.springframework.web.servlet.function.ServerResponse;
 import reactor.core.publisher.Mono;
 
+@Slf4j
 public class GraphqlMultipartHandler {
   private final WebGraphQlHandler graphQlHandler;
 
@@ -39,8 +38,6 @@ public class GraphqlMultipartHandler {
 
   public static final List<MediaType> SUPPORTED_RESPONSE_MEDIA_TYPES =
       Arrays.asList(MediaType.APPLICATION_GRAPHQL, MediaType.APPLICATION_JSON);
-
-  private static final Log logger = LogFactory.getLog(GraphQlHttpHandler.class);
 
   private final IdGenerator idGenerator = new AlternativeJdkIdGenerator();
 
@@ -86,8 +83,8 @@ public class GraphqlMultipartHandler {
             this.idGenerator.generateId().toString(),
             LocaleContextHolder.getLocale());
 
-    if (logger.isDebugEnabled()) {
-      logger.debug("Executing: " + graphQlRequest);
+    if (log.isDebugEnabled()) {
+      log.debug("Executing: " + graphQlRequest);
     }
 
     Mono<ServerResponse> responseMono =
@@ -95,8 +92,8 @@ public class GraphqlMultipartHandler {
             .handleRequest(graphQlRequest)
             .map(
                 response -> {
-                  if (logger.isDebugEnabled()) {
-                    logger.debug("Execution complete");
+                  if (log.isDebugEnabled()) {
+                    log.debug("Execution complete");
                   }
                   ServerResponse.BodyBuilder builder = ServerResponse.ok();
                   builder.headers(headers -> headers.putAll(response.getResponseHeaders()));
