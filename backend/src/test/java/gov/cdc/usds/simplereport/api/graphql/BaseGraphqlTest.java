@@ -42,6 +42,7 @@ import org.springframework.boot.test.autoconfigure.graphql.tester.AutoConfigureH
 import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.graphql.test.tester.GraphQlTester;
 import org.springframework.graphql.test.tester.WebGraphQlTester;
+import org.springframework.http.HttpHeaders;
 import org.springframework.util.LinkedMultiValueMap;
 import org.springframework.util.MultiValueMap;
 
@@ -147,20 +148,6 @@ public abstract class BaseGraphqlTest extends BaseFullStackTest {
     return DemoAuthenticationConfiguration.DEMO_AUTHORIZATION_FLAG + _userName;
   }
 
-  /**
-   * CLEAR ALL HEADERS and then set the Authorization header the requested value, as well as any
-   * other custom headers supplied for this request.
-   */
-  private void setQueryHeaders() {
-    //    log.info("Setting up graphql template authorization for {}", _userName);
-    //    log.info("Setting custom headers: {}", _customHeaders.keySet());
-    //    _template
-    //        .withClearHeaders()
-    //        .withBearerAuth(getBearerAuth())
-    //        .withAdditionalHeaders(_customHeaders);
-    //    _customHeaders.clear();
-  }
-
   protected ObjectNode runMultipart(LinkedMultiValueMap<String, Object> parts) {
     return null;
   }
@@ -187,18 +174,14 @@ public abstract class BaseGraphqlTest extends BaseFullStackTest {
   /**
    * Run the query in the given resource file, check if the response has the expected error (either
    * none or a single specific error message), and return the {@code data} section of the response
-   * if the error was as expected. <b>NOTE</b>: Any headers that have been set on the {@link
-   * GraphQLTestTemplate} will be cleared at the beginning of this method: if you need to set them,
-   * modify the {{@link #setQueryHeaders(String)} method, or add another method that is called after
-   * it!
+   * if the error was as expected. <b>NOTE</b>: Any headers that have been set will be cleared at
+   * the beginning of this method
    *
    * @param queryFileName the resource file name of the query (to be found in
    *     src/test/resources/queries, unless a "/" is found in the filename)
    * @param operationName the operation name from the query file, in the event that the query file
    *     is a multi-operation document.
    * @return the "data" key from the server response.
-   * @throws AssertionFailedError if the response has errors
-   * @throws RuntimeException for unexpected errors
    */
   protected ObjectNode runQuery(
       String queryFileName, String operationName, ObjectNode variables, String expectedError) {
@@ -206,6 +189,7 @@ public abstract class BaseGraphqlTest extends BaseFullStackTest {
     WebGraphQlTester webGraphQlTester =
         this.graphQlTester
             .mutate()
+            .headers(HttpHeaders::clear)
             .headers(headers -> headers.setBearerAuth(getBearerAuth()))
             .headers(httpHeaders -> httpHeaders.addAll(_customHeaders))
             .build();
