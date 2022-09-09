@@ -36,7 +36,7 @@ public class UserResolver {
   }
 
   @QueryMapping
-  public User user(@Argument UUID userId) {
-    return new User(_userService.getUser(userId));
+  public User user(@Argument UUID id) {
+    return new User(_userService.getUser(id));
   }
 }
