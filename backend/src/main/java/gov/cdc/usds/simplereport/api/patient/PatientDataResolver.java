@@ -5,32 +5,67 @@ import gov.cdc.usds.simplereport.api.PersonNameResolver;
 import gov.cdc.usds.simplereport.api.model.ApiFacility;
 import gov.cdc.usds.simplereport.db.model.Facility;
 import gov.cdc.usds.simplereport.db.model.Person;
+import gov.cdc.usds.simplereport.db.model.PhoneNumber;
+import gov.cdc.usds.simplereport.db.model.TestEvent;
 import gov.cdc.usds.simplereport.db.model.auxiliary.PersonName;
+import gov.cdc.usds.simplereport.db.repository.PhoneNumberRepository;
+import gov.cdc.usds.simplereport.db.repository.TestEventRepository;
+import java.util.List;
+import java.util.Map;
 import java.util.UUID;
+import java.util.concurrent.CompletableFuture;
+import java.util.stream.Collectors;
+import org.dataloader.DataLoader;
 import org.springframework.graphql.data.method.annotation.SchemaMapping;
+import org.springframework.graphql.execution.BatchLoaderRegistry;
 import org.springframework.stereotype.Controller;
+import reactor.core.publisher.Mono;
 
 @Controller
 public class PatientDataResolver implements PersonNameResolver<Person>, InternalIdResolver<Person> {
 
-  //  private final PatientPrimaryPhoneDataLoader _patientPrimaryPhoneDataLoader;
-  //  private final PatientPhoneNumbersDataLoader _patientPhoneNumbersDataLoader;
-  //  private final PatientLastTestDataLoader _patientLastTestDataLoader;
-  //
-  //  PatientDataResolver(
-  //      PatientPrimaryPhoneDataLoader patientPrimaryPhoneDataLoader,
-  //      PatientPhoneNumbersDataLoader patientPhoneNumbersDataLoader,
-  //      PatientLastTestDataLoader patientLastTestDataLoader) {
-  //    _patientPrimaryPhoneDataLoader = patientPrimaryPhoneDataLoader;
-  //    _patientPhoneNumbersDataLoader = patientPhoneNumbersDataLoader;
-  //    _patientLastTestDataLoader = patientLastTestDataLoader;
-  //  }
+  public PatientDataResolver(
+      BatchLoaderRegistry registry,
+      TestEventRepository testEventRepository,
+      PhoneNumberRepository phoneNumberRepository) {
+    registry
+        .forTypePair(UUID.class, TestEvent.class)
+        .withName("patientLastTestLoader")
+        .registerMappedBatchLoader(
+            (patientIds, batchLoaderEnvironment) -> {
+              Map<UUID, TestEvent> found =
+                  testEventRepository.findLastTestsByPatient(patientIds).stream()
+                      .collect(Collectors.toMap(TestEvent::getPatientInternalID, s -> s));
+              return Mono.just(found);
+            });
 
-  //  public CompletableFuture<TestEvent> getLastTest(Person person, DataFetchingEnvironment dfe) {
-  //    return _patientLastTestDataLoader.load(person.getInternalId(), dfe);
-  //  }
+    Class<List<PhoneNumber>> phoneNumberListClazz = (Class) List.class;
+    registry
+        .forTypePair(UUID.class, phoneNumberListClazz)
+        .withName("patientPhoneNumbersLoader")
+        .registerMappedBatchLoader(
+            (patientIds, batchLoaderEnvironment) -> {
+              Map<UUID, List<PhoneNumber>> found =
+                  phoneNumberRepository.findAllByPersonInternalIdIn(patientIds).stream()
+                      .flatMap(List::stream)
+                      .collect(Collectors.groupingBy(PhoneNumber::getPersonInternalID));
 
-  // the typename and field are required here because of the Patient/Person name discrepancy
+              return Mono.just(found);
+            });
+  }
+
+  @SchemaMapping(typeName = "Patient", field = "lastTest")
+  public CompletableFuture<TestEvent> getLastTest(
+      Person person, DataLoader<UUID, TestEvent> patientLastTestLoader) {
+    return patientLastTestLoader.load(person.getInternalId());
+  }
+
+  @SchemaMapping(typeName = "Patient", field = "phoneNumbers")
+  public CompletableFuture<List<PhoneNumber>> getPhoneNumbers(
+      Person person, DataLoader<UUID, List<PhoneNumber>> patientPhoneNumbersLoader) {
+    return patientPhoneNumbersLoader.load(person.getInternalId());
+  }
+
   @SchemaMapping(typeName = "Patient", field = "facility")
   public ApiFacility facility(Person patient) {
     Facility f = patient.getFacility();
@@ -48,17 +83,4 @@ public class PatientDataResolver implements PersonNameResolver<Person>, Internal
   public PersonName getName(Person patient) {
     return patient.getNameInfo();
   }
-
-  //  public CompletableFuture<List<PhoneNumber>> getPhoneNumbers(
-  //      Person person, DataFetchingEnvironment dfe) {
-  //    return _patientPhoneNumbersDataLoader.load(person.getInternalId(), dfe);
-  //  }
-
-  //  public CompletableFuture<String> getTelephone(Person person, DataFetchingEnvironment dfe) {
-  //    return _patientPrimaryPhoneDataLoader.load(person, dfe).thenApply(p -> getNumberOrNull(p));
-  //  }
-  //
-  //  private String getNumberOrNull(PhoneNumber phoneNumber) {
-  //    return phoneNumber == null ? null : phoneNumber.getNumber();
-  //  }
 }
