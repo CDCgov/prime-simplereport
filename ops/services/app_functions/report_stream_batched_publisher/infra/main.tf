@@ -28,11 +28,12 @@ resource "azurerm_storage_blob" "appcode" {
 }
 
 resource "azurerm_app_service_plan" "asp" {
-  name                = "${var.prefix}-plan-${var.environment}"
-  resource_group_name = local.resource_group_name
-  location            = var.location
-  kind                = "elastic"
-  reserved            = true
+  name                         = "${var.prefix}-plan-${var.environment}"
+  resource_group_name          = local.resource_group_name
+  location                     = var.location
+  kind                         = "elastic"
+  reserved                     = true
+  maximum_elastic_worker_count = 2
   sku {
     tier     = "ElasticPremium"
     size     = "EP1"
