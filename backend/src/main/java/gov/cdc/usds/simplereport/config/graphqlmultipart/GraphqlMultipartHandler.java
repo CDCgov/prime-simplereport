@@ -36,7 +36,7 @@ public class GraphqlMultipartHandler {
     this.objectMapper = objectMapper;
   }
 
-  public static final List<MediaType> SUPPORTED_RESPONSE_MEDIA_TYPES =
+  protected static final List<MediaType> SUPPORTED_RESPONSE_MEDIA_TYPES =
       Arrays.asList(MediaType.APPLICATION_GRAPHQL, MediaType.APPLICATION_JSON);
 
   private final IdGenerator idGenerator = new AlternativeJdkIdGenerator();
@@ -63,9 +63,8 @@ public class GraphqlMultipartHandler {
           MultipartFile file = fileParams.get(fileKey);
           if (file != null) {
             objectPaths.forEach(
-                (String objectPath) -> {
-                  MultipartVariableMapper.mapVariable(objectPath, queryVariables, file);
-                });
+                (String objectPath) ->
+                    MultipartVariableMapper.mapVariable(objectPath, queryVariables, file));
           }
         });
 

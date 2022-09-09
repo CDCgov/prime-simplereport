@@ -5,41 +5,66 @@ import gov.cdc.usds.simplereport.config.authorization.FacilityPrincipal;
 import gov.cdc.usds.simplereport.config.authorization.OrganizationPrincipal;
 import gov.cdc.usds.simplereport.config.authorization.SiteAdminPrincipal;
 import gov.cdc.usds.simplereport.service.ApiUserService;
+import graphql.execution.ExecutionId;
 import java.security.Principal;
 import java.util.Collections;
+import java.util.HashMap;
 import java.util.HashSet;
-import java.util.Map;
 import javax.security.auth.Subject;
+import javax.servlet.http.HttpServletResponse;
 import lombok.RequiredArgsConstructor;
 import org.springframework.graphql.server.WebGraphQlInterceptor;
 import org.springframework.graphql.server.WebGraphQlRequest;
 import org.springframework.graphql.server.WebGraphQlResponse;
 import org.springframework.stereotype.Component;
+import org.springframework.web.context.request.RequestContextHolder;
+import org.springframework.web.context.request.ServletRequestAttributes;
 import reactor.core.publisher.Mono;
 
 @Component
 @RequiredArgsConstructor
 public class GraphQlInterceptor implements WebGraphQlInterceptor {
 
+  public static final String WEB_GRAPHQL_REQUEST_KEY = "WebGraphQlRequest";
+  public static final String SUBJECT_KEY = "Subject";
+  public static final String HTTP_SERVLET_REQUEST_KEY = "HttpServletRequest";
+  public static final String HTTP_SERVLET_RESPONSE_KEY = "HttpServletResponse";
   private final ApiUserService apiUserService;
 
   @Override
   public Mono<WebGraphQlResponse> intercept(WebGraphQlRequest request, Chain chain) {
-    request.configureExecutionInput(
-        (executionInput, builder) ->
-            builder
-                .graphQLContext(
-                    Map.of(
-                        AuditLoggingInstrumentation.WEB_GRAPHQL_REQUEST_KEY,
-                        request,
-                        AuditLoggingInstrumentation.SUBJECT_KEY,
-                        subjectFromCurrentUser()))
-                .build());
+    HashMap<String, Object> contextMap = new HashMap<>();
 
-    return chain.next(request);
+    contextMap.put(WEB_GRAPHQL_REQUEST_KEY, request);
+    contextMap.put(SUBJECT_KEY, subjectFromCurrentUser());
+
+    ServletRequestAttributes servletRequestAttributes =
+        (ServletRequestAttributes) RequestContextHolder.getRequestAttributes();
+
+    if (servletRequestAttributes != null) {
+      contextMap.put(HTTP_SERVLET_REQUEST_KEY, servletRequestAttributes.getRequest());
+
+      HttpServletResponse response = servletRequestAttributes.getResponse();
+      if (response != null) {
+        contextMap.put(HTTP_SERVLET_RESPONSE_KEY, response);
+      }
+    }
+
+    request.configureExecutionInput(
+        (executionInput, builder) -> builder.graphQLContext(contextMap).build());
+    return chain
+        .next(request)
+        .doOnNext(
+            response -> {
+              ExecutionId executionId = request.getExecutionId();
+              if (executionId != null) {
+                response
+                    .getResponseHeaders()
+                    .add(LoggingConstants.REQUEST_ID_HEADER, executionId.toString());
+              }
+            });
   }
 
-  // lifted from ApiUserAwareGraphQlContextBuilder
   private Subject subjectFromCurrentUser() {
     var currentUser = apiUserService.getCurrentUserInfo();
     var principals = new HashSet<Principal>();

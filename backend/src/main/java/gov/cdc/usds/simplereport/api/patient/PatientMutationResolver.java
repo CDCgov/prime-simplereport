@@ -157,41 +157,38 @@ public class PatientMutationResolver {
 
     var backwardsCompatibleEmails = new PatientEmailsHolder(email, emails);
 
-    Person person =
-        _ps.updatePatient(
-            facilityId,
-            patientId,
-            parseString(lookupId),
-            parseString(firstName),
-            parseString(middleName),
-            parseString(lastName),
-            parseString(suffix),
-            birthDate,
-            new StreetAddress(
-                parseString(street),
-                parseString(streetTwo),
-                parseString(city),
-                parseState(state),
-                parseString(zipCode),
-                parseString(county)),
-            parseString(country),
-            parsePhoneNumbers(backwardsCompatiblePhoneNumbers),
-            parsePersonRole(role, false),
-            parseEmails(backwardsCompatibleEmails.getFullList()),
-            parseRace(race),
-            parseEthnicity(ethnicity),
-            parseTribalAffiliation(tribalAffiliation),
-            parseGender(gender),
-            residentCongregateSetting,
-            employedInHealthcare,
-            parseString(preferredLanguage),
-            testResultDelivery);
-    return person;
+    return _ps.updatePatient(
+        facilityId,
+        patientId,
+        parseString(lookupId),
+        parseString(firstName),
+        parseString(middleName),
+        parseString(lastName),
+        parseString(suffix),
+        birthDate,
+        new StreetAddress(
+            parseString(street),
+            parseString(streetTwo),
+            parseString(city),
+            parseState(state),
+            parseString(zipCode),
+            parseString(county)),
+        parseString(country),
+        parsePhoneNumbers(backwardsCompatiblePhoneNumbers),
+        parsePersonRole(role, false),
+        parseEmails(backwardsCompatibleEmails.getFullList()),
+        parseRace(race),
+        parseEthnicity(ethnicity),
+        parseTribalAffiliation(tribalAffiliation),
+        parseGender(gender),
+        residentCongregateSetting,
+        employedInHealthcare,
+        parseString(preferredLanguage),
+        testResultDelivery);
   }
 
   @MutationMapping
   public Person setPatientIsDeleted(@Argument UUID id, @Argument Boolean deleted) {
-    Person person = _ps.setIsDeleted(id, deleted);
-    return person;
+    return _ps.setIsDeleted(id, deleted);
   }
 }

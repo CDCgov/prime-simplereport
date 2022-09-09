@@ -1,6 +1,6 @@
 package gov.cdc.usds.simplereport.api.directives;
 
-import static gov.cdc.usds.simplereport.logging.AuditLoggingInstrumentation.SUBJECT_KEY;
+import static gov.cdc.usds.simplereport.logging.GraphQlInterceptor.SUBJECT_KEY;
 
 import gov.cdc.usds.simplereport.api.model.errors.IllegalGraphqlArgumentException;
 import gov.cdc.usds.simplereport.api.model.errors.IllegalGraphqlFieldAccessException;

@@ -1,5 +1,8 @@
 package gov.cdc.usds.simplereport.logging;
 
+import static gov.cdc.usds.simplereport.logging.GraphQlInterceptor.HTTP_SERVLET_REQUEST_KEY;
+import static gov.cdc.usds.simplereport.logging.GraphQlInterceptor.HTTP_SERVLET_RESPONSE_KEY;
+
 import com.microsoft.applicationinsights.TelemetryClient;
 import com.microsoft.applicationinsights.telemetry.RequestTelemetry;
 import graphql.ExecutionResult;
@@ -14,11 +17,10 @@ import java.util.List;
 import java.util.Set;
 import java.util.stream.Collectors;
 import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
 import lombok.extern.slf4j.Slf4j;
 import org.slf4j.MDC;
 import org.springframework.stereotype.Component;
-import org.springframework.web.context.request.RequestContextHolder;
-import org.springframework.web.context.request.ServletRequestAttributes;
 
 /** Created by nickrobison on 11/27/20 */
 @Component
@@ -60,19 +62,22 @@ public class QueryLoggingInstrumentation extends SimpleInstrumentation {
     final String executionId = parameters.getExecutionInput().getExecutionId().toString();
     // Add the execution ID to the sfl4j MDC and the response headers
     MDC.put(LoggingConstants.REQUEST_ID_MDC_KEY, executionId);
-    //    GraphQLServletContext context = parameters.getContext();
-    //    context.getHttpServletResponse().setHeader(LoggingConstants.REQUEST_ID_HEADER,
-    // executionId);
 
     // Create a new Azure Telemetry Event
     final RequestTelemetry requestTelemetry = new RequestTelemetry();
     requestTelemetry.setId(executionId);
 
-    ServletRequestAttributes servletRequestAttributes =
-        (ServletRequestAttributes) RequestContextHolder.getRequestAttributes();
-    if (servletRequestAttributes != null) {
-      HttpServletRequest request = servletRequestAttributes.getRequest();
-      final String frontendAppInsightsSessionId = request.getHeader("x-ms-session-id");
+    HttpServletResponse httpServletResponse =
+        parameters.getGraphQLContext().get(HTTP_SERVLET_RESPONSE_KEY);
+    HttpServletRequest httpServletRequest =
+        parameters.getGraphQLContext().get(HTTP_SERVLET_REQUEST_KEY);
+
+    if (httpServletResponse != null) {
+      httpServletResponse.setHeader(LoggingConstants.REQUEST_ID_HEADER, executionId);
+    }
+
+    if (httpServletRequest != null) {
+      final String frontendAppInsightsSessionId = httpServletRequest.getHeader("x-ms-session-id");
       requestTelemetry.getContext().getSession().setId(frontendAppInsightsSessionId);
     }
 
