@@ -65,7 +65,7 @@ public class PatientMutationResolver {
       @Argument String suffix,
       @Argument LocalDate birthDate,
       @Argument String street,
-      @Argument String street2,
+      @Argument String streetTwo,
       @Argument String city,
       @Argument String state,
       @Argument String zipCode,
@@ -101,7 +101,7 @@ public class PatientMutationResolver {
         birthDate,
         new StreetAddress(
             parseString(street),
-            parseString(street2),
+            parseString(streetTwo),
             parseString(city),
             parseState(state),
             parseString(zipCode),
