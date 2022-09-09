@@ -10,7 +10,7 @@ import org.springframework.graphql.server.WebGraphQlRequest;
 import org.springframework.http.HttpHeaders;
 import org.springframework.lang.Nullable;
 
-@EqualsAndHashCode
+@EqualsAndHashCode(callSuper = false)
 class MultipartGraphQlRequest extends WebGraphQlRequest implements ExecutionGraphQlRequest {
 
   private final String document;
