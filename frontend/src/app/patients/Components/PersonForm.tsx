@@ -43,6 +43,7 @@ import YesNoNotSureRadioGroup, {
   boolToYesNoNotSure,
   yesNoNotSureToBool,
 } from "../../commonComponents/YesNoNotSureRadioGroup";
+import { DatePicker } from "../../commonComponents/DatePicker";
 
 import FacilitySelect from "./FacilitySelect";
 import ManagePhoneNumbers from "./ManagePhoneNumbers";
@@ -438,20 +439,24 @@ const PersonForm = (props: Props) => {
           </div>
         </div>
         <div className="usa-form">
-          <Input
-            {...commonInputProps}
-            field="birthDate"
-            label={
-              t("patient.form.general.dob") +
-              " (" +
-              t("patient.form.general.dobFormat") +
-              ")"
-            }
-            type="date"
+          <DatePicker
+            name="dateOfBirth"
+            label="Date of birth"
+            labelClassName="font-ui-sm margin-top-2 margin-bottom-0"
+            onChange={(value) => onPersonChange("birthDate")(value as string)}
+            onBlur={(event) => {
+              // on blur is applied on the div, without any way of disabling it.
+              if (event.target.className !== "usa-date-picker__wrapper") {
+                onBlurField("birthDate");
+              }
+            }}
+            validationStatus={validationStatus("birthDate")}
+            errorMessage={errors.birthDate}
+            ariaHidden={false}
             required={view !== PersonFormView.PXP}
             disabled={view === PersonFormView.PXP}
-            min={formatDate(new Date("Jan 1, 1900"))}
-            max={formatDate(new Date())}
+            minDate={formatDate(new Date("Jan 1, 1900"))}
+            maxDate={formatDate(new Date())}
           />
         </div>
       </FormGroup>
