@@ -4,11 +4,13 @@ import java.net.URI;
 import java.util.HashMap;
 import java.util.Locale;
 import java.util.Map;
+import lombok.EqualsAndHashCode;
 import org.springframework.graphql.ExecutionGraphQlRequest;
 import org.springframework.graphql.server.WebGraphQlRequest;
 import org.springframework.http.HttpHeaders;
 import org.springframework.lang.Nullable;
 
+@EqualsAndHashCode
 class MultipartGraphQlRequest extends WebGraphQlRequest implements ExecutionGraphQlRequest {
 
   private final String document;

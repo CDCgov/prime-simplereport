@@ -9,4 +9,6 @@ public class LocalDateScalar {
           .description("a scalar for multiple date formats. currently yyyy-MM-dd and MM/dd/yyyy")
           .coercing(new FlexibleDateCoercion())
           .build();
+
+  private LocalDateScalar() {}
 }

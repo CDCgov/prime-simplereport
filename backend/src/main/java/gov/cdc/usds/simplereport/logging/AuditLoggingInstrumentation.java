@@ -1,14 +1,15 @@
 package gov.cdc.usds.simplereport.logging;
 
+import static gov.cdc.usds.simplereport.logging.GraphQlInterceptor.HTTP_SERVLET_REQUEST_KEY;
+import static gov.cdc.usds.simplereport.logging.GraphQlInterceptor.SUBJECT_KEY;
+
 import gov.cdc.usds.simplereport.api.model.errors.GenericGraphqlException;
 import gov.cdc.usds.simplereport.config.authorization.ApiUserPrincipal;
-import gov.cdc.usds.simplereport.config.authorization.FacilityPrincipal;
 import gov.cdc.usds.simplereport.config.authorization.OrganizationPrincipal;
 import gov.cdc.usds.simplereport.config.authorization.SiteAdminPrincipal;
 import gov.cdc.usds.simplereport.config.authorization.UserPermission;
 import gov.cdc.usds.simplereport.db.model.auxiliary.GraphQlInputs;
 import gov.cdc.usds.simplereport.db.model.auxiliary.HttpRequestDetails;
-import gov.cdc.usds.simplereport.service.ApiUserService;
 import gov.cdc.usds.simplereport.service.AuditService;
 import graphql.ExecutionResult;
 import graphql.GraphQLContext;
@@ -17,32 +18,21 @@ import graphql.execution.instrumentation.InstrumentationState;
 import graphql.execution.instrumentation.SimpleInstrumentation;
 import graphql.execution.instrumentation.SimpleInstrumentationContext;
 import graphql.execution.instrumentation.parameters.InstrumentationExecutionParameters;
-import java.security.Principal;
 import java.util.ArrayList;
 import java.util.Collections;
-import java.util.HashSet;
 import java.util.List;
 import java.util.stream.Collectors;
 import javax.security.auth.Subject;
+import javax.servlet.http.HttpServletRequest;
+import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.graphql.server.WebGraphQlRequest;
 import org.springframework.stereotype.Component;
-import org.springframework.web.context.request.RequestContextHolder;
-import org.springframework.web.context.request.ServletRequestAttributes;
 
 @Component
 @Slf4j
+@RequiredArgsConstructor
 public class AuditLoggingInstrumentation extends SimpleInstrumentation {
-
-  public static final String WEB_GRAPHQL_REQUEST_KEY = "WebGraphQlRequest";
-  public static final String SUBJECT_KEY = "Subject";
   private final AuditService _auditService;
-  private final ApiUserService apiUserService;
-
-  public AuditLoggingInstrumentation(AuditService service, ApiUserService apiUserService) {
-    _auditService = service;
-    this.apiUserService = apiUserService;
-  }
 
   @Override
   public InstrumentationState createState() {
@@ -50,8 +40,6 @@ public class AuditLoggingInstrumentation extends SimpleInstrumentation {
     log.trace("Creating state={} for audit", state);
     return state;
   }
-
-  //  /*
 
   @Override
   @SuppressWarnings("checkstyle:IllegalCatch")
@@ -62,22 +50,14 @@ public class AuditLoggingInstrumentation extends SimpleInstrumentation {
     try {
       GraphQLContext graphQLContext = parameters.getGraphQLContext();
       Subject subject = graphQLContext.get(SUBJECT_KEY);
-      if (subject == null) {
-        subject = subjectFromCurrentUser();
-      }
       GraphqlQueryState state = parameters.getInstrumentationState();
       state.setRequestId(executionId);
 
-      ServletRequestAttributes servletRequestAttributes =
-          (ServletRequestAttributes) RequestContextHolder.getRequestAttributes();
-      if (servletRequestAttributes != null) {
-        state.setHttpDetails(new HttpRequestDetails(servletRequestAttributes.getRequest()));
-      } else {
-        WebGraphQlRequest webGraphQlRequest = graphQLContext.get(WEB_GRAPHQL_REQUEST_KEY);
-        if (webGraphQlRequest != null) {
-          state.setHttpDetails(new HttpRequestDetails(webGraphQlRequest));
-        }
+      HttpServletRequest httpServletRequest = graphQLContext.get(HTTP_SERVLET_REQUEST_KEY);
+      if (httpServletRequest != null) {
+        state.setHttpDetails(new HttpRequestDetails(httpServletRequest));
       }
+
       state.setGraphqlDetails(
           new GraphQlInputs(
               parameters.getOperation(), parameters.getQuery(), parameters.getVariables()));
@@ -87,27 +67,6 @@ public class AuditLoggingInstrumentation extends SimpleInstrumentation {
       log.error("Extremely unexpected error creating instrumentation state for audit", e);
       throw e;
     }
-  }
-  //   */
-
-  private Subject subjectFromCurrentUser() {
-    var currentUser = apiUserService.getCurrentUserInfo();
-    var principals = new HashSet<Principal>();
-
-    principals.add(new ApiUserPrincipal(currentUser.getWrapped()));
-
-    if (currentUser.getIsAdmin()) {
-      principals.add(SiteAdminPrincipal.getInstance());
-    }
-
-    principals.addAll(currentUser.getPermissions());
-    principals.addAll(currentUser.getRoles());
-
-    currentUser.getOrganization().map(OrganizationPrincipal::new).ifPresent(principals::add);
-
-    currentUser.getFacilities().stream().map(FacilityPrincipal::new).forEach(principals::add);
-
-    return new Subject(true, principals, Collections.emptySet(), Collections.emptySet());
   }
 
   private class /* not static! */ ExecutionResultContext

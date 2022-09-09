@@ -7,12 +7,9 @@ import graphql.schema.CoercingSerializeException;
 import graphql.schema.GraphQLScalarType;
 import org.springframework.web.multipart.MultipartFile;
 
-// Copied from
-// https://github.com/graphql-java-kickstart/graphql-java-servlet/blob/master/graphql-java-servlet/src/main/java/graphql/kickstart/servlet/apollo/ApolloScalars.java
 public class UploadScalarType {
-
-  private static final Coercing COERCING =
-      new Coercing() {
+  private static final Coercing<MultipartFile, Object> COERCING =
+      new Coercing<>() {
         @Override
         public MultipartFile serialize(Object dataFetcherResult) throws CoercingSerializeException {
           throw new CoercingSerializeException("Upload is an input-only type");
@@ -42,4 +39,6 @@ public class UploadScalarType {
           .description("A file part in a multipart request")
           .coercing(COERCING)
           .build();
+
+  private UploadScalarType() {}
 }

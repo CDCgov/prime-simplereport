@@ -9,4 +9,6 @@ public class DateTimeScalar {
           .description("a scalar that is able to parse ISO 8601 dates to java.util.Date")
           .coercing(new DateTimeScalarCoercion())
           .build();
+
+  private DateTimeScalar() {}
 }
