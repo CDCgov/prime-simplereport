@@ -21,7 +21,6 @@ repositories {
     mavenCentral()
 }
 
-// new spring generates two jar files, which messes up the ci pipeline since it expects one jar in the build/libs dir
 jar {
     enabled = false
 }
