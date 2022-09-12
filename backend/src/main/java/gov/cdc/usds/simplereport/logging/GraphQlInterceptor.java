@@ -5,7 +5,6 @@ import gov.cdc.usds.simplereport.config.authorization.FacilityPrincipal;
 import gov.cdc.usds.simplereport.config.authorization.OrganizationPrincipal;
 import gov.cdc.usds.simplereport.config.authorization.SiteAdminPrincipal;
 import gov.cdc.usds.simplereport.service.ApiUserService;
-import graphql.execution.ExecutionId;
 import java.security.Principal;
 import java.util.Collections;
 import java.util.HashMap;
@@ -52,17 +51,7 @@ public class GraphQlInterceptor implements WebGraphQlInterceptor {
 
     request.configureExecutionInput(
         (executionInput, builder) -> builder.graphQLContext(contextMap).build());
-    return chain
-        .next(request)
-        .doOnNext(
-            response -> {
-              ExecutionId executionId = request.getExecutionId();
-              if (executionId != null) {
-                response
-                    .getResponseHeaders()
-                    .add(LoggingConstants.REQUEST_ID_HEADER, executionId.toString());
-              }
-            });
+    return chain.next(request);
   }
 
   private Subject subjectFromCurrentUser() {
