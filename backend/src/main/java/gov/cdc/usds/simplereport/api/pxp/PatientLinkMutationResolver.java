@@ -17,13 +17,13 @@ public class PatientLinkMutationResolver {
   private String patientLinkUrl;
 
   @MutationMapping
-  public boolean sendPatientLinkSms(@Argument UUID patientLinkId) {
-    return testResultsDeliveryService.smsTestResults(patientLinkId);
+  public boolean sendPatientLinkSms(@Argument UUID internalId) {
+    return testResultsDeliveryService.smsTestResults(internalId);
   }
 
   @MutationMapping
-  public boolean sendPatientLinkEmail(@Argument UUID patientLinkId) {
-    return testResultsDeliveryService.emailTestResults(patientLinkId);
+  public boolean sendPatientLinkEmail(@Argument UUID internalId) {
+    return testResultsDeliveryService.emailTestResults(internalId);
   }
 
   @MutationMapping
