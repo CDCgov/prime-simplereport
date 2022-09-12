@@ -362,7 +362,7 @@ export type MutationCreateDeviceTypeArgs = {
 };
 
 export type MutationCreateFacilityRegistrationLinkArgs = {
-  facilityId: Scalars["ID"];
+  facilityUuid: Scalars["ID"];
   link: Scalars["String"];
   organizationExternalId: Scalars["String"];
 };
@@ -478,7 +478,7 @@ export type MutationResetUserPasswordArgs = {
 };
 
 export type MutationSendPatientLinkEmailArgs = {
-  internalId: Scalars["ID"];
+  patientLinkId: Scalars["ID"];
 };
 
 export type MutationSendPatientLinkEmailByTestEventIdArgs = {
@@ -486,7 +486,7 @@ export type MutationSendPatientLinkEmailByTestEventIdArgs = {
 };
 
 export type MutationSendPatientLinkSmsArgs = {
-  internalId: Scalars["ID"];
+  patientLinkId: Scalars["ID"];
 };
 
 export type MutationSendPatientLinkSmsByTestEventIdArgs = {
