@@ -10,6 +10,8 @@ import createMockStore from "redux-mock-store";
 import faker from "faker";
 import "../../i18n";
 
+import userEvent from "@testing-library/user-event";
+
 import { SelfRegistration } from "./SelfRegistration";
 
 const VALID_LINK = "foo-facility";
@@ -88,10 +90,12 @@ describe("SelfRegistration", () => {
     fireEvent.click(screen.getByText("I agree"));
     expect(screen.getByText("General information")).toBeInTheDocument();
     Object.entries(filledForm).forEach(([field, value]) => {
-      fireEvent.change(screen.getByLabelText(field, { exact: false }), {
-        target: { value },
-      });
+      userEvent.type(screen.getByLabelText(field, { exact: false }), value);
     });
+    userEvent.selectOptions(
+      screen.getByLabelText("State", { exact: false }),
+      "MD"
+    );
     screen.getAllByLabelText("No").forEach(fireEvent.click);
     fireEvent.click(screen.getByLabelText("Mobile"));
     fireEvent.click(screen.getByLabelText("Female"));
