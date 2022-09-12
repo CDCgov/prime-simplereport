@@ -100,17 +100,24 @@ class TestEventRepositoryTest extends BaseRepositoryTest {
 
     TestOrder firstOrder =
         _dataFactory.createCompletedTestOrder(patient, place, TestResult.POSITIVE);
-    TestEvent firstEvent = new TestEvent(firstOrder);
+    var firstResults = firstOrder.getResults();
+    TestEvent firstEvent = new TestEvent(firstOrder, false, firstResults);
+    firstResults.forEach(result -> result.setTestEvent(firstEvent));
+    _resultRepo.saveAll(firstResults);
     _repo.save(firstEvent);
 
     TestOrder secondOrder =
         _dataFactory.createCompletedTestOrder(patient, place, TestResult.UNDETERMINED);
-    TestEvent secondEvent = new TestEvent(secondOrder);
-
+    var secondResults = secondOrder.getResults();
+    TestEvent secondEvent = new TestEvent(secondOrder, false, secondResults);
+    secondResults.forEach(result -> result.setTestEvent(secondEvent));
+    _resultRepo.saveAll(secondResults);
     _repo.save(secondEvent);
+
     flush();
     TestEvent found = _repo.findFirst1ByPatientOrderByCreatedAtDesc(patient);
-    assertEquals(TestResult.UNDETERMINED, secondEvent.getResult());
+    TestEvent savedSecondEvent = _repo.findById(secondEvent.getInternalId()).get();
+    assertEquals(TestResult.UNDETERMINED, savedSecondEvent.getTestResult());
     List<TestEvent> foundTestReports2 =
         _repo.queryMatchAllBetweenDates(d1, DATE_1MIN_FUTURE, Pageable.unpaged());
     assertEquals(2, foundTestReports2.size() - foundTestReports1.size());
@@ -315,7 +322,11 @@ class TestEventRepositoryTest extends BaseRepositoryTest {
 
     // repo level test. Higher level tests done in TestOrderServiceTest
     String reason = "Unit Test Correction " + LocalDateTime.now().toString();
-    TestEvent correctionEvent = new TestEvent(startingEvent, TestCorrectionStatus.REMOVED, reason);
+    var results = startingEvent.getResults().stream().map(Result::new).collect(Collectors.toSet());
+    TestEvent correctionEvent =
+        new TestEvent(startingEvent, TestCorrectionStatus.REMOVED, reason, results);
+    results.forEach(result -> result.setTestEvent(correctionEvent));
+    _resultRepo.saveAll(results);
     _repo.save(correctionEvent);
 
     Optional<TestEvent> eventReloadOptional = _repo.findById(correctionEvent.getInternalId());
@@ -332,7 +343,7 @@ class TestEventRepositoryTest extends BaseRepositoryTest {
         eventReloaded.getOrganization().getInternalId());
     assertEquals(
         startingEvent.getFacility().getInternalId(), eventReloaded.getFacility().getInternalId());
-    assertEquals(startingEvent.getResult(), eventReloaded.getResult());
+    assertEquals(startingEvent.getTestResult(), eventReloaded.getTestResult());
     assertEquals(startingEvent.getProviderData(), eventReloaded.getProviderData());
     assertEquals(startingEvent.getPatientData(), eventReloaded.getPatientData());
     compareAskOnEntrySurvey(startingEvent.getSurveyData(), eventReloaded.getSurveyData());

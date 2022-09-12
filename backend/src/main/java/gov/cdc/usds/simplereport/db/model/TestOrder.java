@@ -94,15 +94,9 @@ public class TestOrder extends BaseTestInfo {
   // - this method is temporary
   // Eventually, this method will be deprecated in favor of getResultSet() and getResultForDisease()
   public TestResult getTestResult() {
-    Hibernate.initialize(this.results);
-    if (this.results != null) {
-      Comparator<Result> resultDateComparator = Comparator.comparing(Result::getUpdatedAt);
-      Optional<Result> resultObject = this.results.stream().max(resultDateComparator);
-      if (resultObject.isPresent()) {
-        return resultObject.get().getTestResult();
-      }
-    }
-    return super.getResult();
+    Comparator<Result> resultDateComparator = Comparator.comparing(Result::getUpdatedAt);
+    Optional<Result> resultObject = this.results.stream().max(resultDateComparator);
+    return resultObject.map(Result::getTestResult).orElse(null);
   }
 
   @JsonIgnore
@@ -143,11 +137,6 @@ public class TestOrder extends BaseTestInfo {
       return results.stream().filter(r -> r.getDisease().equals(disease)).findFirst();
     }
     return Optional.empty();
-  }
-
-  // Remove after #3664
-  public void setResultColumn(TestResult result) {
-    super.setTestResult(result);
   }
 
   public void markComplete() {
@@ -200,5 +189,12 @@ public class TestOrder extends BaseTestInfo {
 
   public UUID getPatientAnswersId() {
     return patientAnswersId;
+  }
+
+  public void addResult(Result result) {
+    if (this.results == null) {
+      this.results = new HashSet<>();
+    }
+    this.results.add(result);
   }
 }

@@ -10,6 +10,7 @@ import gov.cdc.usds.simplereport.db.model.Facility;
 import gov.cdc.usds.simplereport.db.model.Organization;
 import gov.cdc.usds.simplereport.db.model.Person;
 import gov.cdc.usds.simplereport.db.model.TestEvent;
+import gov.cdc.usds.simplereport.db.model.auxiliary.TestCorrectionStatus;
 import gov.cdc.usds.simplereport.db.model.auxiliary.TestResult;
 import gov.cdc.usds.simplereport.service.OrganizationService;
 import gov.cdc.usds.simplereport.service.TestEventService;
@@ -156,7 +157,8 @@ class TestEventExportIntegrationTest extends BaseGraphqlTest {
 
   @Test
   void testCorrectedEventSerialization() throws Exception {
-    TestEvent correctedTestEvent = _dataFactory.createTestEventCorrected(testEvent);
+    TestEvent correctedTestEvent =
+        _dataFactory.createTestEventCorrection(testEvent, TestCorrectionStatus.CORRECTED);
     TestEventExport correctedTestEventExport = new TestEventExport(correctedTestEvent);
 
     String actualStr = objectMapper.writeValueAsString(correctedTestEventExport);
@@ -257,7 +259,8 @@ class TestEventExportIntegrationTest extends BaseGraphqlTest {
 
   @Test
   void testRemovedEventSerialization() throws Exception {
-    TestEvent correctedTestEvent = _dataFactory.createTestEventRemoval(testEvent);
+    TestEvent correctedTestEvent =
+        _dataFactory.createTestEventCorrection(testEvent, TestCorrectionStatus.REMOVED);
     TestEventExport correctedTestEventExport = new TestEventExport(correctedTestEvent);
 
     String actualStr = objectMapper.writeValueAsString(correctedTestEventExport);

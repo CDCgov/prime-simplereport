@@ -118,7 +118,6 @@ class TestOrderRepositoryTest extends BaseRepositoryTest {
     flush();
     Result result = new Result(order, _diseaseService.covid(), TestResult.POSITIVE);
     _resultRepo.save(result);
-    order.setResultColumn(TestResult.POSITIVE);
     TestEvent ev = _events.save(new TestEvent(order));
     assertNotNull(ev);
     order.setTestEventRef(ev);
@@ -187,7 +186,6 @@ class TestOrderRepositoryTest extends BaseRepositoryTest {
     flush();
     Result result = new Result(order1, _diseaseService.covid(), TestResult.NEGATIVE);
     _resultRepo.save(result);
-    order1.setResultColumn(TestResult.NEGATIVE);
     TestEvent didit = _events.save(new TestEvent(order1));
     order1.setTestEventRef(didit);
     order1.markComplete();

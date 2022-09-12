@@ -322,8 +322,12 @@ public class TestOrderService {
 
       TestEvent testEvent =
           order.getCorrectionStatus() == TestCorrectionStatus.ORIGINAL
-              ? new TestEvent(order, hasPriorTests)
-              : new TestEvent(order, order.getCorrectionStatus(), order.getReasonForCorrection());
+              ? new TestEvent(order, hasPriorTests, Set.of(resultEntity))
+              : new TestEvent(
+                  order,
+                  order.getCorrectionStatus(),
+                  order.getReasonForCorrection(),
+                  Set.of(resultEntity));
 
       TestEvent savedEvent = _terepo.save(testEvent);
       resultEntity.setTestEvent(savedEvent);
@@ -375,15 +379,16 @@ public class TestOrderService {
 
     try {
       order.setDeviceSpecimen(deviceSpecimenType);
-      editMultiplexResult(order, results);
+      var resultSet = editMultiplexResult(order, results);
       order.setDateTestedBackdate(dateTested);
       order.markComplete();
 
       boolean hasPriorTests = _terepo.existsByPatient(person);
       TestEvent testEvent =
           order.getCorrectionStatus() == TestCorrectionStatus.ORIGINAL
-              ? new TestEvent(order, hasPriorTests)
-              : new TestEvent(order, order.getCorrectionStatus(), order.getReasonForCorrection());
+              ? new TestEvent(order, hasPriorTests, resultSet)
+              : new TestEvent(
+                  order, order.getCorrectionStatus(), order.getReasonForCorrection(), resultSet);
 
       TestEvent savedEvent = _terepo.save(testEvent);
       saveFinalResults(order, testEvent);
@@ -416,32 +421,32 @@ public class TestOrderService {
     return new AddTestResultResponse(savedOrder, deliveryStatus);
   }
 
-  private void editMultiplexResult(TestOrder order, List<MultiplexResultInput> newResults) {
-    // For now - we still need to save the covid results to the result column
-    // To be removed in #3664
-    Optional<MultiplexResultInput> covidResult =
-        newResults.stream().filter(r -> r.getDiseaseName().equals("COVID-19")).findFirst();
-    covidResult.ifPresent(diseaseResult -> order.setResultColumn(diseaseResult.getTestResult()));
-
+  private Set<Result> editMultiplexResult(TestOrder order, List<MultiplexResultInput> newResults) {
     // For new results, check if there's already a pending result for the same test.
     // If so, update it, if not, create a new one.
-    newResults.forEach(
-        newResult -> {
-          Optional<Result> pendingResult =
-              _resultRepo.getPendingResult(
-                  order, _diseaseService.getDiseaseByName(newResult.getDiseaseName()));
-          if (pendingResult.isPresent()) {
-            pendingResult.get().setResult(newResult.getTestResult());
-            _resultRepo.save(pendingResult.get());
-          } else {
-            Result result =
-                new Result(
-                    order,
-                    _diseaseService.getDiseaseByName(newResult.getDiseaseName()),
-                    newResult.getTestResult());
-            _resultRepo.save(result);
-          }
-        });
+    return newResults.stream()
+        .map(
+            newResult -> {
+              Optional<Result> pendingResult =
+                  _resultRepo.getPendingResult(
+                      order, _diseaseService.getDiseaseByName(newResult.getDiseaseName()));
+              if (pendingResult.isPresent()) {
+                pendingResult.get().setResult(newResult.getTestResult());
+                order.addResult(pendingResult.get());
+                _resultRepo.save(pendingResult.get());
+                return pendingResult.get();
+              } else {
+                Result result =
+                    new Result(
+                        order,
+                        _diseaseService.getDiseaseByName(newResult.getDiseaseName()),
+                        newResult.getTestResult());
+                order.addResult(result);
+                _resultRepo.save(result);
+                return result;
+              }
+            })
+        .collect(Collectors.toSet());
   }
 
   private void saveFinalResults(TestOrder order, TestEvent event) {
@@ -564,8 +569,6 @@ public class TestOrderService {
   }
 
   private Result updateTestOrderCovidResult(TestOrder order, TestResult result) {
-    // Remove setResultsColumn as part of #3664
-    order.setResultColumn(result);
     Optional<Result> pendingResult = _resultRepo.getPendingResult(order, _diseaseService.covid());
     Result covidResult;
     if (pendingResult.isPresent()) {
@@ -574,6 +577,7 @@ public class TestOrderService {
     } else {
       covidResult = new Result(order, _diseaseService.covid(), result);
     }
+    order.addResult(covidResult);
     return _resultRepo.save(covidResult);
   }
 
@@ -615,9 +619,6 @@ public class TestOrderService {
 
     // generate a duplicate test_event that just has a status of REMOVED and the
     // reason
-    TestEvent newRemoveEvent =
-        new TestEvent(event, TestCorrectionStatus.REMOVED, reasonForCorrection);
-    _terepo.save(newRemoveEvent);
 
     // Get the most recent results for each disease
     Map<SupportedDisease, Optional<Result>> latestResultsPerDisease =
@@ -626,17 +627,19 @@ public class TestOrderService {
                 Collectors.groupingBy(
                     Result::getDisease,
                     Collectors.maxBy(Comparator.comparing(Result::getUpdatedAt))));
-
-    latestResultsPerDisease
-        .values()
-        .forEach(
-            result -> {
-              if (result.isPresent()) {
-                Result copyResult = new Result(result.get(), newRemoveEvent);
-                _resultRepo.save(copyResult);
-              }
-            });
-
+    var results =
+        latestResultsPerDisease.values().stream()
+            .filter(Optional::isPresent)
+            .map(result -> new Result(result.get()))
+            .collect(Collectors.toSet());
+    TestEvent newRemoveEvent =
+        new TestEvent(event, TestCorrectionStatus.REMOVED, reasonForCorrection, results);
+    _terepo.save(newRemoveEvent);
+    results.forEach(
+        result -> {
+          result.setTestEvent(newRemoveEvent);
+        });
+    _resultRepo.saveAll(results);
     _testEventReportingService.report(newRemoveEvent);
 
     order.setReasonForCorrection(reasonForCorrection);

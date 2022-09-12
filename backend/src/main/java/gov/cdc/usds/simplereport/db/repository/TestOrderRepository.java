@@ -16,6 +16,7 @@ public interface TestOrderRepository
 
   String BASE_QUERY =
       "from #{#entityName} q "
+          + "left join fetch q.results "
           + "where q.organization.isDeleted = false "
           + "and q.patient.isDeleted = false ";
   String BASE_ORG_QUERY = BASE_QUERY + " and q.organization = :org ";
@@ -23,7 +24,7 @@ public interface TestOrderRepository
   String IS_PENDING = " and q.orderStatus = 'PENDING' ";
   String IS_COMPLETED = " and q.orderStatus = 'COMPLETED' ";
   String ORDER_CREATION_ORDER = " order by q.createdAt ";
-  String RESULT_RECENT_ORDER = " order by updatedAt desc ";
+  String RESULT_RECENT_ORDER = " order by q.updatedAt desc ";
 
   @Query(FACILITY_QUERY + IS_PENDING + ORDER_CREATION_ORDER)
   @EntityGraph(attributePaths = {"patient"})

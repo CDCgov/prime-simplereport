@@ -66,6 +66,13 @@ public class Result extends EternalAuditedEntity {
     this.testResult = originalResult.testResult;
   }
 
+  public Result(Result originalResult) {
+    this.testOrder = originalResult.testOrder;
+    this.disease = originalResult.disease;
+    this.resultLOINC = originalResult.resultLOINC;
+    this.testResult = originalResult.testResult;
+  }
+
   public void setTestEvent(TestEvent event) {
     this.testEvent = event;
   }

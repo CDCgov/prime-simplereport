@@ -7,7 +7,14 @@ mutation addMultiplexResult($deviceId: String!, $results: [MultiplexResultInput]
     ) {
       testResult {
         internalId,
-        result,
+        results{
+          disease{
+              internalId
+              name
+              loinc
+          }
+          testResult
+        }
         deviceType {
           internalId
         }

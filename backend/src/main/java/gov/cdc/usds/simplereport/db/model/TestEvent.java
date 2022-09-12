@@ -5,10 +5,10 @@ import gov.cdc.usds.simplereport.db.model.auxiliary.AskOnEntrySurvey;
 import gov.cdc.usds.simplereport.db.model.auxiliary.TestCorrectionStatus;
 import gov.cdc.usds.simplereport.db.model.auxiliary.TestResult;
 import java.util.Date;
+import java.util.HashSet;
 import java.util.Optional;
 import java.util.Set;
 import java.util.UUID;
-import javax.persistence.AttributeOverride;
 import javax.persistence.CascadeType;
 import javax.persistence.Column;
 import javax.persistence.Entity;
@@ -25,7 +25,6 @@ import org.hibernate.annotations.Type;
 @Getter
 @Entity
 @Immutable
-@AttributeOverride(name = "result", column = @Column(nullable = false))
 @Slf4j
 public class TestEvent extends BaseTestInfo {
   @Column
@@ -46,7 +45,10 @@ public class TestEvent extends BaseTestInfo {
   private TestOrder order;
 
   @JsonIgnore
-  @OneToMany(mappedBy = "testEvent", cascade = CascadeType.MERGE, fetch = FetchType.LAZY)
+  @OneToMany(
+      mappedBy = "testEvent",
+      cascade = {CascadeType.MERGE, CascadeType.PERSIST},
+      fetch = FetchType.LAZY)
   private Set<Result> results;
 
   @Column(columnDefinition = "uuid")
@@ -61,8 +63,13 @@ public class TestEvent extends BaseTestInfo {
     this(testOrder, false);
   }
 
+  public TestEvent(TestOrder testOrder, Boolean hasPriorTests, Set<Result> results) {
+    this(testOrder, hasPriorTests);
+    this.results.addAll(results);
+  }
+
   public TestEvent(TestOrder order, Boolean hasPriorTests) {
-    super(order.getPatient(), order.getFacility(), order.getDeviceSpecimen(), order.getResult());
+    super(order.getPatient(), order.getFacility(), order.getDeviceSpecimen());
     // store a link, and *also* store the object as JSON
     // force load the lazy-loaded phone numbers so values are available to the object mapper
     // when serializing `patientData` (phoneNumbers is default lazy-loaded because of `OneToMany`)
@@ -82,11 +89,15 @@ public class TestEvent extends BaseTestInfo {
       // this can happen during unit tests, but never in prod.
       log.error("Order {} missing PatientAnswers", order.getInternalId());
     }
+    this.results = new HashSet<>();
   }
 
   // Constructor for creating corrections. Copy the original event
   public TestEvent(
-      TestEvent event, TestCorrectionStatus correctionStatus, String reasonForCorrection) {
+      TestEvent event,
+      TestCorrectionStatus correctionStatus,
+      String reasonForCorrection,
+      Set<Result> results) {
     super(event, correctionStatus, reasonForCorrection);
 
     this.patientData = event.getPatientData();
@@ -95,10 +106,14 @@ public class TestEvent extends BaseTestInfo {
     this.surveyData = event.getSurveyData();
     setDateTestedBackdate(order.getDateTestedBackdate());
     this.priorCorrectedTestEventId = event.getInternalId();
+    this.results = results;
   }
 
   public TestEvent(
-      TestOrder order, TestCorrectionStatus correctionStatus, String reasonForCorrection) {
+      TestOrder order,
+      TestCorrectionStatus correctionStatus,
+      String reasonForCorrection,
+      Set<Result> results) {
     super(order, correctionStatus, reasonForCorrection);
 
     TestEvent event = order.getTestEvent();
@@ -109,6 +124,7 @@ public class TestEvent extends BaseTestInfo {
     this.surveyData = event.getSurveyData();
     setDateTestedBackdate(order.getDateTestedBackdate());
     this.priorCorrectedTestEventId = event.getInternalId();
+    this.results = results;
   }
 
   public UUID getPatientInternalID() {
@@ -156,20 +172,10 @@ public class TestEvent extends BaseTestInfo {
   // getResultSet()
   public TestResult getTestResult() {
     final String COVID_LOINC = "96741-4";
-    if (this.results != null) {
-      Optional<Result> resultObject =
-          this.results.stream()
-              .filter(result -> COVID_LOINC.equals(result.getDisease().getLoinc()))
-              .findFirst();
-      if (resultObject.isPresent()) {
-        return resultObject.get().getTestResult();
-      }
-    }
-    return super.getResult();
-  }
-
-  @Override
-  public TestResult getResult() {
-    return getTestResult();
+    Optional<Result> resultObject =
+        this.results.stream()
+            .filter(result -> COVID_LOINC.equals(result.getDisease().getLoinc()))
+            .findFirst();
+    return resultObject.map(Result::getTestResult).orElse(null);
   }
 }

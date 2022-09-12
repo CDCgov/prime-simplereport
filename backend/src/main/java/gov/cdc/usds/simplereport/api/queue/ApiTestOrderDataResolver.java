@@ -73,7 +73,7 @@ public class ApiTestOrderDataResolver implements GraphQLResolver<ApiTestOrder> {
   }
 
   public TestResult getResult(ApiTestOrder apiTestOrder) {
-    return apiTestOrder.getWrapped().getResult();
+    return apiTestOrder.getWrapped().getTestResult();
   }
 
   public Set<Result> getResults(ApiTestOrder apiTestOrder) {
