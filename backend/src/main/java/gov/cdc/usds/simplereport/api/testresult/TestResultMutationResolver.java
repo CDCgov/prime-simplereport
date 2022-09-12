@@ -10,12 +10,13 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.util.List;
 import java.util.UUID;
-import javax.servlet.http.Part;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.graphql.data.method.annotation.Argument;
+import org.springframework.graphql.data.method.annotation.MutationMapping;
 import org.springframework.graphql.data.method.annotation.QueryMapping;
 import org.springframework.stereotype.Controller;
+import org.springframework.web.multipart.MultipartFile;
 
 @Controller
 @RequiredArgsConstructor
@@ -33,9 +34,9 @@ public class TestResultMutationResolver {
     return true;
   }
 
-  @QueryMapping
-  public TestResultUpload uploadTestResultCSV(@Argument Part part) {
-    try (InputStream resultsUpload = part.getInputStream()) {
+  @MutationMapping
+  public TestResultUpload uploadTestResultCSV(@Argument MultipartFile testResultList) {
+    try (InputStream resultsUpload = testResultList.getInputStream()) {
 
       return testResultUploadService.processResultCSV(resultsUpload);
     } catch (IllegalGraphqlArgumentException e) {

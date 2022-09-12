@@ -312,7 +312,7 @@ public class OrganizationMutationResolver {
       @Argument String orderingProviderState,
       @Argument String orderingProviderZipCode,
       @Argument String orderingProviderPhone,
-      @Argument List<String> deviceIds,
+      @Argument List<String> deviceTypes,
       @Argument String defaultDevice,
       @Argument PersonName adminName,
       @Argument String adminFirstName,
@@ -323,8 +323,8 @@ public class OrganizationMutationResolver {
 
     List<UUID> deviceInternalIds = Collections.emptyList();
 
-    if (deviceIds != null) {
-      deviceInternalIds = deviceIds.stream().map(UUID::fromString).collect(Collectors.toList());
+    if (deviceTypes != null) {
+      deviceInternalIds = deviceTypes.stream().map(UUID::fromString).collect(Collectors.toList());
     }
 
     StreetAddress facilityAddress =

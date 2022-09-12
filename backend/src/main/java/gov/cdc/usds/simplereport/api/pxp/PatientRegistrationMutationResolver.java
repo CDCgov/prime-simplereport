@@ -31,9 +31,9 @@ public class PatientRegistrationMutationResolver {
 
   @MutationMapping
   public String createFacilityRegistrationLink(
-      @Argument String organizationExternalId, @Argument UUID facilityUuid, @Argument String link) {
+      @Argument String organizationExternalId, @Argument UUID facilityId, @Argument String link) {
     Organization org = _os.getOrganization(organizationExternalId);
-    Facility fac = _os.getFacilities(org, Arrays.asList((facilityUuid))).iterator().next();
+    Facility fac = _os.getFacilities(org, Arrays.asList((facilityId))).iterator().next();
     return _prls.createRegistrationLink(fac, link);
   }
 
