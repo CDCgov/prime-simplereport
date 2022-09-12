@@ -89,7 +89,7 @@ extend type Mutation {
   ): String
   createFacilityRegistrationLink(
     organizationExternalId: String!
-    facilityId: ID!
+    facilityUuid: ID!
     link: String!
   ): String
   updateRegistrationLink(link: String!, newLink: String!): String

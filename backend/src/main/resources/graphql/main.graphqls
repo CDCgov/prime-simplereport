@@ -699,11 +699,11 @@ type Mutation {
     noSymptoms: Boolean
     testResultDelivery: TestResultDeliveryPreference
   ): String @requiredPermissions(allOf: ["UPDATE_TEST"])
-  sendPatientLinkSms(internalId: ID!): Boolean
+  sendPatientLinkSms(patientLinkId: ID!): Boolean
     @requiredPermissions(allOf: ["UPDATE_TEST"])
   sendPatientLinkSmsByTestEventId(testEventId: ID!): Boolean
     @requiredPermissions(allOf: ["UPDATE_TEST"])
-  sendPatientLinkEmail(internalId: ID!): Boolean
+  sendPatientLinkEmail(patientLinkId: ID!): Boolean
   sendPatientLinkEmailByTestEventId(testEventId: ID!): Boolean
   updateOrganization(type: String!): String
     @requiredPermissions(allOf: ["EDIT_ORGANIZATION"])
