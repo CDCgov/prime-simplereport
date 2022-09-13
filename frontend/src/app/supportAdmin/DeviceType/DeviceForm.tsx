@@ -106,7 +106,7 @@ const DeviceForm = (props: Props) => {
                   <div className="tablet:grid-col">
                     <label className="usa-legend" htmlFor="selectDevice">
                       Select Device{" "}
-                      {true && <span className="text-secondary-vivid">*</span>}
+                      <span className="text-secondary-vivid">*</span>
                     </label>
                     <ComboBox
                       className="usa-combo-box__full-width"
