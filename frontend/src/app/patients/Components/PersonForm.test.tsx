@@ -6,9 +6,9 @@ import {
   waitFor,
 } from "@testing-library/react";
 import { Provider } from "react-redux";
-import { UNSAFE_NavigationContext as UnsafeNavigationContext } from "react-router-dom";
 import createMockStore from "redux-mock-store";
 import userEvent from "@testing-library/user-event";
+import { MemoryRouter } from "react-router-dom";
 
 import PersonForm, { PersonFormView } from "./PersonForm";
 
@@ -49,19 +49,6 @@ describe("PersonForm", () => {
     _formChanged: boolean
   ) => <div></div>;
   const mockStore = createMockStore([]);
-  const navigationContext = {
-    basename: "",
-    navigator: {
-      block: jest.fn().mockImplementation((fn) => {
-        fn();
-      }),
-      push: jest.fn() as any,
-      replace: jest.fn() as any,
-      go: jest.fn() as any,
-      createHref: jest.fn() as any,
-    },
-    static: true,
-  };
   const store = {
     facilities: [
       {
@@ -75,13 +62,13 @@ describe("PersonForm", () => {
       beforeEach(() => {
         render(
           <Provider store={mockStore({ ...store })}>
-            <UnsafeNavigationContext.Provider value={navigationContext}>
+            <MemoryRouter>
               <PersonForm
                 patient={personFormData}
                 savePerson={savePersonFunction}
                 getFooter={getFooter}
               />
-            </UnsafeNavigationContext.Provider>
+            </MemoryRouter>
           </Provider>
         );
       });
@@ -113,14 +100,14 @@ describe("PersonForm", () => {
           cleanup();
           render(
             <Provider store={mockStore({ ...store })}>
-              <UnsafeNavigationContext.Provider value={navigationContext}>
+              <MemoryRouter>
                 <PersonForm
                   patient={personFormData}
                   savePerson={savePersonFunction}
                   getFooter={getFooter}
                   view={PersonFormView.PXP}
                 />
-              </UnsafeNavigationContext.Provider>
+              </MemoryRouter>
             </Provider>
           );
           let element = screen.getByTestId("date-picker-external-input")
