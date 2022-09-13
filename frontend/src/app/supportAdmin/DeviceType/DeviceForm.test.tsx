@@ -151,20 +151,19 @@ describe("update existing devices", () => {
 
   it("shows a list of devices to select from", () => {
     userEvent.click(screen.getByLabelText("Select device", { exact: false }));
-    expect(screen.getByText("Tesla Emitter")).toBeInTheDocument();
-    expect(screen.getByText("Fission Energizer")).toBeInTheDocument();
-    expect(screen.getByText("Covalent Observer")).toBeInTheDocument();
+
+    expect(screen.getAllByRole("option").length).toBe(3);
+
+    expect(screen.getAllByText("Tesla Emitter")[1]).toBeInTheDocument();
+    expect(screen.getAllByText("Fission Energizer")[1]).toBeInTheDocument();
+    expect(screen.getAllByText("Covalent Observer")[1]).toBeInTheDocument();
   });
 
   describe("When selecting a device", () => {
-    beforeEach(() => {
-      userEvent.selectOptions(
-        screen.getByLabelText("Select device", { exact: false }),
-        "Tesla Emitter"
-      );
-    });
-
     it("enables input fields and prefills them with current values", () => {
+      userEvent.click(screen.getByTestId("combo-box-select"));
+      userEvent.click(screen.getAllByText("Tesla Emitter")[1]);
+
       const manufacturerInput = screen.getByLabelText("Manufacturer", {
         exact: false,
       });
@@ -195,14 +194,10 @@ describe("update existing devices", () => {
     });
 
     describe("selecting another device", () => {
-      beforeEach(() => {
-        userEvent.selectOptions(
-          screen.getByLabelText("Select device", { exact: false }),
-          "Fission Energizer"
-        );
-      });
-
       it("prefills input fields with new values", () => {
+        userEvent.click(screen.getByTestId("combo-box-select"));
+        userEvent.click(screen.getAllByText("Fission Energizer")[1]);
+
         const manufacturerInput = screen.getByLabelText("Manufacturer", {
           exact: false,
         });
@@ -223,6 +218,9 @@ describe("update existing devices", () => {
 
     describe("updating a device", () => {
       it("calls update device with the current values", () => {
+        userEvent.click(screen.getByTestId("combo-box-select"));
+        userEvent.click(screen.getAllByText("Tesla Emitter")[1]);
+
         const snomedInput = screen.getAllByTestId("multi-select-toggle")[0];
         const snomedList = screen.getAllByTestId("multi-select-option-list")[0];
 
