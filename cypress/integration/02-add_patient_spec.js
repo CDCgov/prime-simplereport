@@ -37,8 +37,8 @@ describe("Adding a patient", () => {
   it("shows what fields are missing on submit", () => {
     cy.get(".prime-save-patient-changes").first().click();
 
-    cy.get(".prime-edit-patient").contains("Last name is required");
-    cy.get(".prime-edit-patient").contains("Testing facility is required");
+    cy.get(".prime-edit-patient").contains("Last name is missing");
+    cy.get(".prime-edit-patient").contains("Testing facility is missing");
   });
   it("fills out the remaining fields, submits and checks for the patient", () => {
     cy.get('input[name="lastName"]').type(patient.lastName);
