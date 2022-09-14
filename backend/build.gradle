@@ -107,9 +107,9 @@ dependencies {
     compile 'com.graphql-java:graphql-java-extended-validation:16.0.0'
 
     implementation 'com.azure:azure-storage-queue:12.14.0'
-    implementation 'com.azure:azure-core-http-netty:1.12.3'
-    implementation 'com.azure:azure-core:1.30.0'
-    implementation 'com.azure:azure-storage-common:12.17.0'
+    implementation 'com.azure:azure-core-http-netty:1.11.9'
+    implementation 'com.azure:azure-core:1.27.0'
+    implementation 'com.azure:azure-storage-common:12.15.1'
 
     implementation 'io.netty:netty-codec:4.1.73.Final'
     implementation 'io.netty:netty-codec-dns:4.1.73.Final'
