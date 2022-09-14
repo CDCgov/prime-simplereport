@@ -20,7 +20,7 @@ import { useDocumentTitle } from "../../utils/hooks";
 import {
   initPersonalDetails,
   initPersonalDetailsErrors,
-  personalDetailsFields,
+  // personalDetailsFields,
   personalDetailsSchema as schema,
 } from "./utils";
 import QuestionsFormContainer from "./QuestionsFormContainer";
@@ -130,7 +130,8 @@ const PersonalDetailsForm = ({
     field: keyof IdentityVerificationRequest | `preheader${"1" | "2"}`,
     label: string,
     required: boolean,
-    hintText: string
+    hintText: string,
+    id: string
   ) => {
     switch (field) {
       case "state":
@@ -176,7 +177,11 @@ const PersonalDetailsForm = ({
         );
       case "preheader1":
       case "preheader2":
-        return <p className="font-ui-sm text-bold margin-bottom-1">{label}</p>;
+        return (
+          <p className="font-ui-sm text-bold margin-bottom-1" id={id}>
+            {label}
+          </p>
+        );
       default:
         return (
           <Input
@@ -240,19 +245,63 @@ const PersonalDetailsForm = ({
             </p>
             <h3>{getPersonFullName()}</h3>
           </div>
-          {Object.entries(personalDetailsFields).map(
-            ([key, { label, required, hintText }]) => {
-              const field = key as keyof IdentityVerificationRequest;
-              return (
-                <div
-                  key={field}
-                  aria-hidden={isModalActive && key !== "dateOfBirth"}
-                >
-                  {getFormElement(field, label, required, hintText)}
-                </div>
-              );
-            }
+          {getFormElement("dateOfBirth", "Date of birth", true, "", "")}
+          {getFormElement(
+            "preheader1",
+            "Personal contact information",
+            false,
+            "",
+            "personal-details-group-header"
           )}
+          <div role="group" aria-labelledby={"personal-details-group-header"}>
+            {getFormElement(
+              "email",
+              "Email",
+              true,
+              "Enter your non-work email address.",
+              ""
+            )}
+            {getFormElement(
+              "phoneNumber",
+              "Phone number",
+              true,
+              "Enter your non-work phone number.",
+              ""
+            )}
+          </div>
+          {getFormElement(
+            "preheader2",
+            "Home address",
+            false,
+            "",
+            "home-address-group-header"
+          )}
+          <div role={"group"} aria-labelledby={"home-address-group-header"}>
+            {getFormElement("streetAddress1", "Street address 1", true, "", "")}
+            {getFormElement(
+              "streetAddress2",
+              "Street address 2",
+              false,
+              "",
+              ""
+            )}
+            {getFormElement("city", "City", true, "", "")}
+            {getFormElement("state", "State", true, "", "")}
+            {getFormElement("zip", "ZIP code", true, "", "")}
+          </div>
+          {/*{Object.entries(personalDetailsFields).map(*/}
+          {/*  ([key, { label, required, hintText }]) => {*/}
+          {/*    const field = key as keyof IdentityVerificationRequest;*/}
+          {/*    return (*/}
+          {/*      <div*/}
+          {/*        key={field}*/}
+          {/*        aria-hidden={isModalActive && key !== "dateOfBirth"}*/}
+          {/*      >*/}
+          {/*        {getFormElement(field, label, required, hintText)}*/}
+          {/*      </div>*/}
+          {/*    );*/}
+          {/*  }*/}
+          {/*)}*/}
         </div>
         <Button
           ariaHidden={isModalActive}
