@@ -88,18 +88,14 @@ Object {
                   <div
                     class="tablet:grid-col"
                   >
-                    <label
-                      class="usa-legend"
-                      for="selectDevice"
+                    Select device
+                    <abbr
+                      class="usa-hint usa-hint--required"
+                      title="required"
                     >
-                      Select Device
                        
-                      <span
-                        class="text-secondary-vivid"
-                      >
-                        *
-                      </span>
-                    </label>
+                      *
+                    </abbr>
                     <div
                       class="usa-combo-box usa-combo-box__full-width"
                       data-enhanced="true"
@@ -720,18 +716,14 @@ Object {
                 <div
                   class="tablet:grid-col"
                 >
-                  <label
-                    class="usa-legend"
-                    for="selectDevice"
+                  Select device
+                  <abbr
+                    class="usa-hint usa-hint--required"
+                    title="required"
                   >
-                    Select Device
                      
-                    <span
-                      class="text-secondary-vivid"
-                    >
-                      *
-                    </span>
-                  </label>
+                    *
+                  </abbr>
                   <div
                     class="usa-combo-box usa-combo-box__full-width"
                     data-enhanced="true"

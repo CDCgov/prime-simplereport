@@ -150,10 +150,7 @@ describe("update existing devices", () => {
   });
 
   it("shows a list of devices to select from", () => {
-    userEvent.click(screen.getByLabelText("Select device", { exact: false }));
-
-    expect(screen.getAllByRole("option").length).toBe(3);
-
+    userEvent.click(screen.getByTestId("combo-box-select"));
     expect(screen.getAllByText("Tesla Emitter")[1]).toBeInTheDocument();
     expect(screen.getAllByText("Fission Energizer")[1]).toBeInTheDocument();
     expect(screen.getAllByText("Covalent Observer")[1]).toBeInTheDocument();
