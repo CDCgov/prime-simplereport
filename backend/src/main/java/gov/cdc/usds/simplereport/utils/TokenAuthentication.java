@@ -36,12 +36,12 @@ public class TokenAuthentication {
     }
   }
 
-  private String createJWT(String scope, String audience, Date exp, Key signingKey) {
+  private String createJWT(String clientName, String audience, Date exp, Key signingKey) {
     return Jwts.builder()
-        .setHeaderParam("kid", scope)
+        .setHeaderParam("kid", clientName)
         .setHeaderParam("typ", "JWT")
-        .setIssuer(scope)
-        .setSubject(scope)
+        .setIssuer(clientName)
+        .setSubject(clientName)
         .setAudience(audience)
         .setId(UUID.randomUUID().toString())
         .setExpiration(exp)
@@ -50,8 +50,8 @@ public class TokenAuthentication {
         .compact();
   }
 
-  public String createRSAJWT(String scope, String audience, Date exp, String signingKey)
+  public String createRSAJWT(String clientName, String audience, Date exp, String signingKey)
       throws InvalidRSAPrivateKeyException {
-    return createJWT(scope, audience, exp, getRSAPrivateKey(signingKey));
+    return createJWT(clientName, audience, exp, getRSAPrivateKey(signingKey));
   }
 }

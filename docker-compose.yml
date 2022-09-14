@@ -38,7 +38,7 @@ services:
     env_file:
       - .env
     environment:
-      SPRING_PROFILES_ACTIVE: okta-local,db-dockerized
+      SPRING_PROFILES_ACTIVE: okta-local,db-dockerized,create-sample-data
       SPRING_LIQUIBASE_ENABLED: "true"
       GIT_DISCOVERY_ACROSS_FILESYSTEM: 1
     volumes:
@@ -79,7 +79,8 @@ services:
       - backend
       - frontend
     volumes:
-      - ./certs:/etc/nginx/certs                            
+      - ./certs:/etc/nginx/certs
+      - ./frontend/public/index.html:/etc/nginx/html/index.html
     ports:
       - "80:80"
       - "443:443"
@@ -88,6 +89,7 @@ services:
       - '1025:1025'
       - '8025:8025'
     image: mailhog/mailhog
+    
 volumes:
   db-data:
   node_modules:

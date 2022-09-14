@@ -2,7 +2,6 @@ import React, { useEffect } from "react";
 import { ToastContainer } from "react-toastify";
 
 import "react-toastify/dist/ReactToastify.css";
-
 import TouchpointsButton from "../../analytics/TouchpointsButton";
 import { getUrl } from "../../utils/url";
 import USAGovBanner from "../USAGovBanner";
@@ -17,9 +16,15 @@ interface Props {
   header?: React.ReactNode;
   children?: React.ReactNode;
   isPatientApp?: boolean;
+  isModalActive?: boolean;
 }
 
-const Page: React.FC<Props> = ({ header, children, isPatientApp }) => {
+const Page: React.FC<Props> = ({
+  header,
+  children,
+  isPatientApp,
+  isModalActive,
+}) => {
   // load touchpoints script
   useEffect(() => {
     // don't load script when running in cypress
@@ -38,12 +43,20 @@ const Page: React.FC<Props> = ({ header, children, isPatientApp }) => {
   }, []);
   return (
     <div className="App">
+      <a
+        className="usa-skipnav"
+        href="#main-wrapper"
+        aria-hidden={isModalActive}
+      >
+        Skip to main content
+      </a>
       <header
         className={
           isPatientApp
             ? "header border-bottom border-base-lighter"
             : "usa-header usa-header--basic"
         }
+        aria-hidden={isModalActive}
       >
         <USAGovBanner />
         {header}
@@ -57,8 +70,10 @@ const Page: React.FC<Props> = ({ header, children, isPatientApp }) => {
           position="bottom-center"
           hideProgressBar={true}
         />
-        <TouchpointsButton />
       </div>
+      <footer aria-hidden={isModalActive}>
+        <TouchpointsButton />
+      </footer>
     </div>
   );
 };

@@ -147,7 +147,7 @@ export interface QueueItemData extends AoEAnswers {
   deviceSpecimenType: DeviceSpecimenType;
   patient: TestQueuePerson;
   result: TestResult;
-  results: SRMultiplexResult[];
+  results: MultiplexResult[];
   dateTested: string;
   correctionStatus: string;
   reasonForCorrection: TestCorrectionReason;
@@ -268,7 +268,7 @@ const TestQueue: React.FC<Props> = ({ activeFacilityId }) => {
               ) || deviceSpecimenTypes[0];
           }
 
-          let selectedTestResults: SRMultiplexResult[];
+          let selectedTestResults: MultiplexResult[];
 
           // backwards compatibility
           if (!results && result) {

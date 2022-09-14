@@ -1,0 +1,61 @@
+services:
+  cypress:
+    build:
+      context: ./
+      dockerfile: cypress/Dockerfile
+    image: ghcr.io/cdcgov/prime-simplereport/cypress:latest
+    container_name: cypress
+    restart: "no"
+    environment:
+      CYPRESS_OKTA_USERNAME: $CYPRESS_OKTA_USERNAME
+      CYPRESS_OKTA_PASSWORD: $CYPRESS_OKTA_PASSWORD
+      CYPRESS_OKTA_SECRET: $CYPRESS_OKTA_SECRET
+      CYPRESS_OKTA_CLIENT_ID: $CYPRESS_OKTA_CLIENT_ID
+      CYPRESS_OKTA_REDIRECT_URI: $CYPRESS_OKTA_REDIRECT_URI
+      CYPRESS_OKTA_SCOPE: $CYPRESS_OKTA_SCOPE
+      SPEC_PATH: $SPEC_PATH
+      TEST_ENV: $TEST_ENV
+    volumes:
+      - ./cypress/fixtures/:/app/cypress/fixtures/
+      - ./cypress/integration/:/app/cypress/integration/
+      - ./cypress/node_modules/:/app/cypress/node_modules/
+      - ./cypress/plugins/:/app/cypress/plugins/
+      - ./cypress/screenshots/:/app/cypress/screenshots/
+      - ./cypress/stubs/:/app/cypress/stubs/
+      - ./cypress/support/:/app/cypress/support/
+      - ./cypress/videos/:/app/cypress/videos/
+      - ./cypress.json:/app/cypress.json
+      - ./cypress/package.json:/app/package.json
+      - ./cypress/yarn.lock:/app/yarn.lock
+      - ./cypress/e2e.sh:/app/e2e.sh
+      - ./.git/:/app/.git/
+    expose:
+      - "8088"
+    command:
+      ["-s", "$SPEC_PATH", "-r", "$TEST_ENV"]
+  backend:
+    environment:
+      SPRING_PROFILES_ACTIVE: $SPRING_PROFILES_ACTIVE
+      OKTA_TESTING_DISABLEHTTPSCHECK: $OKTA_TESTING_DISABLEHTTPSCHECK
+      OKTA_API_KEY: $OKTA_API_KEY
+      OKTA_OAUTH2_CLIENT_ID: $OKTA_OAUTH2_CLIENT_ID
+      SMARTY_AUTH_ID: $SMARTY_AUTH_ID
+      SMARTY_AUTH_TOKEN: $SMARTY_AUTH_TOKEN
+      WIREMOCK_URL: $WIREMOCK_URL
+      SPRING_LIQUIBASE_ENABLED: "true"
+      GIT_DISCOVERY_ACROSS_FILESYSTEM: 1
+  frontend:
+    environment:
+      REACT_APP_OKTA_URL: $WIREMOCK_URL
+      REACT_APP_BASE_URL: https://localhost.simplereport.gov
+      REACT_APP_BACKEND_URL: https://localhost.simplereport.gov/api
+      PUBLIC_URL: /app/
+      REACT_APP_OKTA_ENABLED: "true"
+      REACT_APP_DISABLE_MAINTENANCE_BANNER: "true"
+      GIT_DISCOVERY_ACROSS_FILESYSTEM: 1
+    command: ["./ci-git-fix.sh"]
+  nginx:
+    hostname: localhost.simplereport.gov
+  mailhog:
+    profiles:
+      - donotstart

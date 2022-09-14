@@ -25,7 +25,7 @@ import gov.cdc.usds.simplereport.db.model.TestEvent_;
 import gov.cdc.usds.simplereport.db.model.TestOrder;
 import gov.cdc.usds.simplereport.db.model.TestOrder_;
 import gov.cdc.usds.simplereport.db.model.auxiliary.AskOnEntrySurvey;
-import gov.cdc.usds.simplereport.db.model.auxiliary.DiseaseResult;
+import gov.cdc.usds.simplereport.db.model.auxiliary.MultiplexResultInput;
 import gov.cdc.usds.simplereport.db.model.auxiliary.PersonRole;
 import gov.cdc.usds.simplereport.db.model.auxiliary.TestCorrectionStatus;
 import gov.cdc.usds.simplereport.db.model.auxiliary.TestResult;
@@ -266,8 +266,11 @@ public class TestOrderService {
   }
 
   @AuthorizationConfiguration.RequirePermissionUpdateTestForTestOrder
-  public TestOrder editQueueItemMultiplex(
-      UUID testOrderId, UUID deviceSpecimenTypeId, List<DiseaseResult> results, Date dateTested) {
+  public TestOrder editQueueItemMultiplexResult(
+      UUID testOrderId,
+      UUID deviceSpecimenTypeId,
+      List<MultiplexResultInput> results,
+      Date dateTested) {
     lockOrder(testOrderId);
     try {
       TestOrder order = this.getTestOrder(testOrderId);
@@ -283,7 +286,7 @@ public class TestOrderService {
         }
       }
       if (!results.isEmpty()) {
-        editResults(order, results);
+        editMultiplexResult(order, results);
       }
       order.setDateTestedBackdate(dateTested);
       return _repo.save(order);
@@ -354,8 +357,11 @@ public class TestOrderService {
   }
 
   @AuthorizationConfiguration.RequirePermissionSubmitTestForPatient
-  public AddTestResultResponse addTestResultMultiplex(
-      UUID deviceSpecimenTypeId, List<DiseaseResult> results, UUID patientId, Date dateTested) {
+  public AddTestResultResponse addMultiplexResult(
+      UUID deviceSpecimenTypeId,
+      List<MultiplexResultInput> results,
+      UUID patientId,
+      Date dateTested) {
     Organization org = _os.getCurrentOrganization();
     Person person = _ps.getPatientNoPermissionsCheck(patientId, org);
     TestOrder order =
@@ -369,7 +375,7 @@ public class TestOrderService {
 
     try {
       order.setDeviceSpecimen(deviceSpecimenType);
-      editResults(order, results);
+      editMultiplexResult(order, results);
       order.setDateTestedBackdate(dateTested);
       order.markComplete();
 
@@ -410,10 +416,10 @@ public class TestOrderService {
     return new AddTestResultResponse(savedOrder, deliveryStatus);
   }
 
-  private void editResults(TestOrder order, List<DiseaseResult> newResults) {
+  private void editMultiplexResult(TestOrder order, List<MultiplexResultInput> newResults) {
     // For now - we still need to save the covid results to the result column
     // To be removed in #3664
-    Optional<DiseaseResult> covidResult =
+    Optional<MultiplexResultInput> covidResult =
         newResults.stream().filter(r -> r.getDiseaseName().equals("COVID-19")).findFirst();
     covidResult.ifPresent(diseaseResult -> order.setResultColumn(diseaseResult.getTestResult()));
 

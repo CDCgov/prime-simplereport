@@ -34,12 +34,37 @@ dependencies {
     implementation 'org.apache.logging.log4j:log4j-api:2.17.0'
     implementation 'org.apache.logging.log4j:log4j-to-slf4j:2.17.0'
 
+    // RCE Fix - Spring-Beans (Aug 2022)
+    implementation 'org.springframework:spring-beans:5.3.19'
+    implementation 'org.springframework:spring-aop:5.3.19'
+    implementation 'org.springframework:spring-aspects:5.3.19'
+    implementation 'org.springframework:spring-beans:5.3.19'
+    implementation 'org.springframework:spring-context-support:5.3.19'
+    implementation 'org.springframework:spring-context:5.3.19'
+    implementation 'org.springframework:spring-core:5.3.19'
+    implementation 'org.springframework:spring-expression:5.3.19'
+    implementation 'org.springframework:spring-jcl:5.3.19'
+    implementation 'org.springframework:spring-jdbc:5.3.19'
+    implementation 'org.springframework:spring-messaging:5.3.19'
+    implementation 'org.springframework:spring-orm:5.3.19'
+    implementation 'org.springframework:spring-tx:5.3.19'
+    implementation 'org.springframework:spring-web:5.3.19'
+    implementation 'org.springframework:spring-webmvc:5.3.19'
+    implementation 'org.springframework:spring-websocket:5.3.19'
+
+    // Security Pins (Sept 2022)
+    implementation 'org.glassfish:jakarta.el:3.0.4'
+    implementation 'org.springframework.security:spring-security-web:5.5.7'
+    implementation 'com.nimbusds:oauth2-oidc-sdk:8.36.2'
+    implementation 'org.yaml:snakeyaml:1.31'
+    implementation 'net.minidev:json-smart:2.3.1'
+
     // data layer dependencies
     implementation 'org.springframework.boot:spring-boot-starter-data-jpa'
     implementation 'org.springframework.boot:spring-boot-starter-validation'
     implementation 'com.vladmihalcea:hibernate-types-52:2.10.0'
     implementation 'org.liquibase:liquibase-core'
-    runtimeOnly 'org.postgresql:postgresql'
+    runtimeOnly 'org.postgresql:postgresql:42.4.1'
 
     // data validation
     implementation 'com.googlecode.libphonenumber:libphonenumber:8.12.15'
@@ -51,13 +76,13 @@ dependencies {
     implementation 'org.json:json:20201115'
     implementation 'com.fasterxml.jackson.dataformat:jackson-dataformat-csv'
     implementation 'com.fasterxml.jackson.datatype:jackson-datatype-hibernate5'
-    implementation 'org.springframework.boot:spring-boot-starter-thymeleaf'
+    implementation 'org.springframework.boot:spring-boot-starter-thymeleaf:2.7.2'
 
     // Okta dependencies
     implementation 'com.okta.spring:okta-spring-boot-starter:2.0.0'
-    implementation 'com.okta.sdk:okta-sdk-api:3.0.2'
-    runtimeOnly 'com.okta.sdk:okta-sdk-impl:3.0.2'
-    runtimeOnly 'com.okta.sdk:okta-sdk-httpclient:3.0.2'
+    implementation 'com.okta.sdk:okta-sdk-api:8.2.1'
+    runtimeOnly 'com.okta.sdk:okta-sdk-impl:8.2.1'
+    runtimeOnly 'com.okta.sdk:okta-sdk-httpclient:8.2.1'
 
     // SpringSession dependencies
     runtimeOnly 'org.springframework.session:spring-session-jdbc'

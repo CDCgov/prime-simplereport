@@ -19,6 +19,7 @@ import EditPatient, { GET_PATIENT, UPDATE_PATIENT } from "./EditPatient";
 import EditPatientContainer from "./EditPatientContainer";
 
 jest.mock("@trussworks/react-uswds", () => ({
+  ...jest.requireActual("@trussworks/react-uswds"),
   ComboBox: () => <></>,
 }));
 const mockStore = configureStore([]);
@@ -566,14 +567,14 @@ describe("EditPatient", () => {
       fireEvent.change(name, { target: { value: "" } });
       fireEvent.blur(name);
       expect(
-        await screen.findByText("First name is required")
+        await screen.findByText("First name is missing")
       ).toBeInTheDocument();
       // No error message on good value
       fireEvent.change(name, { target: { value: "James" } });
       fireEvent.blur(name);
       await waitFor(() => {
         expect(
-          screen.queryByText("First name is required")
+          screen.queryByText("First name is missing")
         ).not.toBeInTheDocument();
       });
     });

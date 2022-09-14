@@ -10,6 +10,7 @@ interface Props {
   currentStepValue: string;
   noLabels?: boolean;
   segmentIndicatorOnBottom?: boolean;
+  ariaHidden?: boolean;
 }
 
 const StepIndicator = ({
@@ -17,6 +18,7 @@ const StepIndicator = ({
   currentStepValue,
   noLabels,
   segmentIndicatorOnBottom = false,
+  ariaHidden,
 }: Props): React.ReactElement => {
   const currentStep = steps.find(({ value }) => value === currentStepValue) || {
     order: 0,
@@ -24,13 +26,14 @@ const StepIndicator = ({
   };
 
   const SegmentsIndicator = () => (
-    <ol
+    <div
       className={classnames("usa-step-indicator__segments", {
         "margin-top-1": segmentIndicatorOnBottom,
       })}
+      role={"presentation"}
     >
       {steps.map((step) => (
-        <li
+        <div
           key={step.value}
           className={classnames("usa-step-indicator__segment", {
             "usa-step-indicator__segment--current":
@@ -43,9 +46,9 @@ const StepIndicator = ({
           <span className="usa-step-indicator__segment-label">
             {step.label} <span className="usa-sr-only">completed</span>
           </span>
-        </li>
+        </div>
       ))}
-    </ol>
+    </div>
   );
 
   const StepNameAndCount = () => (
@@ -77,6 +80,7 @@ const StepIndicator = ({
         }
       )}
       aria-label="progress"
+      aria-hidden={ariaHidden}
     >
       {segmentIndicatorOnBottom ? (
         <>

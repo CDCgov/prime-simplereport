@@ -3,6 +3,7 @@ import { fireEvent, render, screen } from "@testing-library/react";
 import userEvent from "@testing-library/user-event";
 
 import MultiplexResultInputForm from "./MultiplexResultInputForm";
+import { MULTIPLEX_DISEASES, TEST_RESULTS } from "./constants";
 
 import spyOn = jest.spyOn;
 
@@ -16,16 +17,16 @@ describe("TestResultInputForm", () => {
         queueItemId={"5d315d18-82f8-4025-a051-1a509e15c880"}
         testResults={[
           {
-            diseaseName: "COVID-19",
-            testResult: "POSITIVE",
+            diseaseName: MULTIPLEX_DISEASES.COVID_19,
+            testResult: TEST_RESULTS.POSITIVE,
           },
           {
-            diseaseName: "Flu A",
-            testResult: "NEGATIVE",
+            diseaseName: MULTIPLEX_DISEASES.FLU_A,
+            testResult: TEST_RESULTS.NEGATIVE,
           },
           {
-            diseaseName: "Flu B",
-            testResult: "NEGATIVE",
+            diseaseName: MULTIPLEX_DISEASES.FLU_B,
+            testResult: TEST_RESULTS.NEGATIVE,
           },
         ]}
         isSubmitDisabled={undefined}
@@ -105,7 +106,10 @@ describe("TestResultInputForm", () => {
 
     userEvent.click(screen.getAllByLabelText("Negative (-)")[0]);
     expect(onChangeFn).toBeCalledWith([
-      { diseaseName: "COVID-19", testResult: "NEGATIVE" },
+      {
+        diseaseName: MULTIPLEX_DISEASES.COVID_19,
+        testResult: TEST_RESULTS.NEGATIVE,
+      },
     ]);
   });
   it("should pass back a Flu A result value when clicked", async () => {
@@ -120,7 +124,10 @@ describe("TestResultInputForm", () => {
 
     userEvent.click(screen.getAllByLabelText("Negative (-)")[1]);
     expect(onChangeFn).toBeCalledWith([
-      { diseaseName: "Flu A", testResult: "NEGATIVE" },
+      {
+        diseaseName: MULTIPLEX_DISEASES.FLU_A,
+        testResult: TEST_RESULTS.NEGATIVE,
+      },
     ]);
   });
   it("should pass back a Flu B result value when clicked", async () => {
@@ -135,7 +142,10 @@ describe("TestResultInputForm", () => {
 
     userEvent.click(screen.getAllByLabelText("Negative (-)")[2]);
     expect(onChangeFn).toBeCalledWith([
-      { diseaseName: "Flu B", testResult: "NEGATIVE" },
+      {
+        diseaseName: MULTIPLEX_DISEASES.FLU_B,
+        testResult: TEST_RESULTS.NEGATIVE,
+      },
     ]);
   });
 
@@ -145,16 +155,16 @@ describe("TestResultInputForm", () => {
         queueItemId={"5d315d18-82f8-4025-a051-1a509e15c880"}
         testResults={[
           {
-            diseaseName: "COVID-19",
-            testResult: "UNDETERMINED",
+            diseaseName: MULTIPLEX_DISEASES.COVID_19,
+            testResult: TEST_RESULTS.UNDETERMINED,
           },
           {
-            diseaseName: "Flu A",
-            testResult: "UNDETERMINED",
+            diseaseName: MULTIPLEX_DISEASES.FLU_A,
+            testResult: TEST_RESULTS.UNDETERMINED,
           },
           {
-            diseaseName: "Flu B",
-            testResult: "UNDETERMINED",
+            diseaseName: MULTIPLEX_DISEASES.FLU_B,
+            testResult: TEST_RESULTS.UNDETERMINED,
           },
         ]}
         onChange={onChangeFn}
@@ -180,8 +190,8 @@ describe("TestResultInputForm", () => {
         queueItemId={"5d315d18-82f8-4025-a051-1a509e15c880"}
         testResults={[
           {
-            diseaseName: "COVID-19",
-            testResult: "POSITIVE",
+            diseaseName: MULTIPLEX_DISEASES.COVID_19,
+            testResult: TEST_RESULTS.POSITIVE,
           },
         ]}
         onChange={onChangeFn}
@@ -198,11 +208,17 @@ describe("TestResultInputForm", () => {
         queueItemId={"5d315d18-82f8-4025-a051-1a509e15c880"}
         testResults={[
           {
-            diseaseName: "COVID-19",
-            testResult: "POSITIVE",
+            diseaseName: MULTIPLEX_DISEASES.COVID_19,
+            testResult: TEST_RESULTS.POSITIVE,
           },
-          { diseaseName: "Flu A", testResult: "UNDETERMINED" },
-          { diseaseName: "Flu B", testResult: "UNDETERMINED" },
+          {
+            diseaseName: MULTIPLEX_DISEASES.FLU_A,
+            testResult: TEST_RESULTS.UNDETERMINED,
+          },
+          {
+            diseaseName: MULTIPLEX_DISEASES.FLU_B,
+            testResult: TEST_RESULTS.UNDETERMINED,
+          },
         ]}
         onChange={onChangeFn}
         onSubmit={onSubmitFn}
@@ -218,16 +234,16 @@ describe("TestResultInputForm", () => {
         queueItemId={"5d315d18-82f8-4025-a051-1a509e15c880"}
         testResults={[
           {
-            diseaseName: "COVID-19",
-            testResult: "POSITIVE",
+            diseaseName: MULTIPLEX_DISEASES.COVID_19,
+            testResult: TEST_RESULTS.POSITIVE,
           },
           {
-            diseaseName: "Flu A",
-            testResult: "NEGATIVE",
+            diseaseName: MULTIPLEX_DISEASES.FLU_A,
+            testResult: TEST_RESULTS.NEGATIVE,
           },
           {
-            diseaseName: "Flu B",
-            testResult: "NEGATIVE",
+            diseaseName: MULTIPLEX_DISEASES.FLU_B,
+            testResult: TEST_RESULTS.NEGATIVE,
           },
         ]}
         onChange={onChangeFn}
@@ -239,9 +255,18 @@ describe("TestResultInputForm", () => {
     expect(screen.getAllByLabelText("Negative (-)")[2]).toBeChecked();
     userEvent.click(screen.getByLabelText("inconclusive", { exact: false }));
     expect(onChangeFn).toHaveBeenCalledWith([
-      { diseaseName: "COVID-19", testResult: "UNDETERMINED" },
-      { diseaseName: "Flu A", testResult: "UNDETERMINED" },
-      { diseaseName: "Flu B", testResult: "UNDETERMINED" },
+      {
+        diseaseName: MULTIPLEX_DISEASES.COVID_19,
+        testResult: TEST_RESULTS.UNDETERMINED,
+      },
+      {
+        diseaseName: MULTIPLEX_DISEASES.FLU_A,
+        testResult: TEST_RESULTS.UNDETERMINED,
+      },
+      {
+        diseaseName: MULTIPLEX_DISEASES.FLU_B,
+        testResult: TEST_RESULTS.UNDETERMINED,
+      },
     ]);
   });
   it("should send correct test values when inconclusive checkbox is checked but user switches to positive/negative result", async () => {
@@ -249,9 +274,18 @@ describe("TestResultInputForm", () => {
       <MultiplexResultInputForm
         queueItemId={"5d315d18-82f8-4025-a051-1a509e15c880"}
         testResults={[
-          { diseaseName: "COVID-19", testResult: "UNDETERMINED" },
-          { diseaseName: "Flu A", testResult: "UNDETERMINED" },
-          { diseaseName: "Flu B", testResult: "UNDETERMINED" },
+          {
+            diseaseName: MULTIPLEX_DISEASES.COVID_19,
+            testResult: TEST_RESULTS.UNDETERMINED,
+          },
+          {
+            diseaseName: MULTIPLEX_DISEASES.FLU_A,
+            testResult: TEST_RESULTS.UNDETERMINED,
+          },
+          {
+            diseaseName: MULTIPLEX_DISEASES.FLU_B,
+            testResult: TEST_RESULTS.UNDETERMINED,
+          },
         ]}
         onChange={onChangeFn}
         onSubmit={onSubmitFn}
@@ -272,9 +306,18 @@ describe("TestResultInputForm", () => {
     );
 
     expect(onChangeFn).toHaveBeenCalledWith([
-      { diseaseName: "COVID-19", testResult: "POSITIVE" },
-      { diseaseName: "Flu A", testResult: "UNDETERMINED" },
-      { diseaseName: "Flu B", testResult: "UNDETERMINED" },
+      {
+        diseaseName: MULTIPLEX_DISEASES.COVID_19,
+        testResult: TEST_RESULTS.POSITIVE,
+      },
+      {
+        diseaseName: MULTIPLEX_DISEASES.FLU_A,
+        testResult: TEST_RESULTS.UNDETERMINED,
+      },
+      {
+        diseaseName: MULTIPLEX_DISEASES.FLU_B,
+        testResult: TEST_RESULTS.UNDETERMINED,
+      },
     ]);
   });
   it("should trigger submit for parent component when submit button is clicked", () => {
@@ -282,9 +325,18 @@ describe("TestResultInputForm", () => {
       <MultiplexResultInputForm
         queueItemId={"5d315d18-82f8-4025-a051-1a509e15c880"}
         testResults={[
-          { diseaseName: "COVID-19", testResult: "POSITIVE" },
-          { diseaseName: "Flu A", testResult: "POSITIVE" },
-          { diseaseName: "Flu B", testResult: "POSITIVE" },
+          {
+            diseaseName: MULTIPLEX_DISEASES.COVID_19,
+            testResult: TEST_RESULTS.POSITIVE,
+          },
+          {
+            diseaseName: MULTIPLEX_DISEASES.FLU_A,
+            testResult: TEST_RESULTS.POSITIVE,
+          },
+          {
+            diseaseName: MULTIPLEX_DISEASES.FLU_B,
+            testResult: TEST_RESULTS.POSITIVE,
+          },
         ]}
         onChange={onChangeFn}
         onSubmit={onSubmitFn}

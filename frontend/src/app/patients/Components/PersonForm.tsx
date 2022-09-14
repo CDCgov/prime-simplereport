@@ -43,6 +43,7 @@ import YesNoNotSureRadioGroup, {
   boolToYesNoNotSure,
   yesNoNotSureToBool,
 } from "../../commonComponents/YesNoNotSureRadioGroup";
+import { DatePicker } from "../../commonComponents/DatePicker";
 
 import FacilitySelect from "./FacilitySelect";
 import ManagePhoneNumbers from "./ManagePhoneNumbers";
@@ -438,20 +439,24 @@ const PersonForm = (props: Props) => {
           </div>
         </div>
         <div className="usa-form">
-          <Input
-            {...commonInputProps}
-            field="birthDate"
-            label={
-              t("patient.form.general.dob") +
-              " (" +
-              t("patient.form.general.dobFormat") +
-              ")"
-            }
-            type="date"
+          <DatePicker
+            name="dateOfBirth"
+            label="Date of birth"
+            labelClassName="font-ui-sm margin-top-2 margin-bottom-0"
+            onChange={(value) => onPersonChange("birthDate")(value as string)}
+            onBlur={(event) => {
+              // on blur is applied on the div, without any way of disabling it.
+              if (event.target.className !== "usa-date-picker__wrapper") {
+                onBlurField("birthDate");
+              }
+            }}
+            validationStatus={validationStatus("birthDate")}
+            errorMessage={errors.birthDate}
+            ariaHidden={false}
             required={view !== PersonFormView.PXP}
             disabled={view === PersonFormView.PXP}
-            min={formatDate(new Date("Jan 1, 1900"))}
-            max={formatDate(new Date())}
+            minDate={formatDate(new Date("Jan 1, 1900"))}
+            maxDate={formatDate(new Date())}
           />
         </div>
       </FormGroup>
@@ -614,6 +619,7 @@ const PersonForm = (props: Props) => {
           onChange={onPersonChange("race")}
           required
           validationStatus={validationStatus("race")}
+          errorMessage={errors.race}
         />
         <div className="usa-form-group">
           <label className="usa-legend" htmlFor="tribal-affiliation">
@@ -637,6 +643,7 @@ const PersonForm = (props: Props) => {
           onChange={onPersonChange("ethnicity")}
           required
           validationStatus={validationStatus("ethnicity")}
+          errorMessage={errors.ethnicity}
         />
         <RadioGroup
           legend={t("patient.form.demographics.gender")}
@@ -647,12 +654,13 @@ const PersonForm = (props: Props) => {
           buttons={GENDER_VALUES}
           selectedRadio={patient.gender}
           onChange={onPersonChange("gender")}
+          errorMessage={errors.gender}
         />
       </FormGroup>
-      <FormGroup title={t("patient.form.other.heading")}>
+      <FormGroup title={t("patient.form.housingAndWork.heading")}>
         <YesNoNotSureRadioGroup
-          legend={t("patient.form.other.congregateLiving.heading")}
-          hintText={t("patient.form.other.congregateLiving.helpText")}
+          legend={t("patient.form.housingAndWork.congregateLiving.heading")}
+          hintText={t("patient.form.housingAndWork.congregateLiving.helpText")}
           name="residentCongregateSetting"
           value={boolToYesNoNotSure(patient.residentCongregateSetting)}
           onChange={(v) =>
@@ -665,7 +673,7 @@ const PersonForm = (props: Props) => {
           errorMessage={errors.residentCongregateSetting}
         />
         <YesNoNotSureRadioGroup
-          legend={t("patient.form.other.healthcareWorker")}
+          legend={t("patient.form.housingAndWork.healthcareWorker")}
           name="employedInHealthcare"
           value={boolToYesNoNotSure(patient.employedInHealthcare)}
           onChange={(v) =>

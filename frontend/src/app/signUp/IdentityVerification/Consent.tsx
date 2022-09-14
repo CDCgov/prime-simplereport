@@ -10,7 +10,10 @@ import PersonalDetailsForm, {
   PersonalDetailsFormProps,
 } from "./PersonalDetailsForm";
 
-const Consent = () => {
+interface Props {
+  isModalActive?: boolean;
+}
+const Consent = ({ isModalActive }: Props) => {
   // Get person name & org id from route state
   const { orgExternalId, firstName, middleName, lastName } =
     (useLocation().state as PersonalDetailsFormProps) || {};
@@ -28,13 +31,18 @@ const Consent = () => {
         firstName={firstName}
         middleName={middleName}
         lastName={lastName}
+        isModalActive={isModalActive}
       />
     );
   }
 
   return (
     <CardBackground>
-      <Card logo bodyKicker="Identity verification consent">
+      <Card logo>
+        <h1 className="font-ui-sm text-bold margin-top-3">
+          {" "}
+          Identity verification consent{" "}
+        </h1>
         <div className="margin-bottom-2">
           <p className="font-ui-2xs text-base">
             To create a SimpleReport account, you’ll need to agree to identity

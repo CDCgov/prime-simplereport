@@ -13,13 +13,12 @@ import org.springframework.stereotype.Component;
 @Component
 public class PatientPrimaryPhoneDataLoader extends KeyedDataLoaderFactory<Person, PhoneNumber> {
   public static final String KEY = "patients[*].primary_phone";
+  private static final int LIMIT = 5000;
 
   @Override
   public String getKey() {
     return KEY;
   }
-
-  private static final int limit = 5000;
 
   PatientPrimaryPhoneDataLoader(PhoneNumberRepository phoneNumberRepository) {
     super(
@@ -35,7 +34,7 @@ public class PatientPrimaryPhoneDataLoader extends KeyedDataLoaderFactory<Person
                   var res = new HashMap<UUID, PhoneNumber>();
                   var processed = 0;
                   while (processed < phoneIds.size()) {
-                    var window = Math.min(limit, phoneIds.size() - processed);
+                    var window = Math.min(LIMIT, phoneIds.size() - processed);
                     processed += window;
                     var subList = phoneIds.subList(res.size(), res.size() + window);
                     Map<UUID, PhoneNumber> found =

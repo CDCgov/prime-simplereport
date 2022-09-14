@@ -28,7 +28,7 @@ import gov.cdc.usds.simplereport.db.model.Result;
 import gov.cdc.usds.simplereport.db.model.TestEvent;
 import gov.cdc.usds.simplereport.db.model.TestOrder;
 import gov.cdc.usds.simplereport.db.model.auxiliary.AskOnEntrySurvey;
-import gov.cdc.usds.simplereport.db.model.auxiliary.DiseaseResult;
+import gov.cdc.usds.simplereport.db.model.auxiliary.MultiplexResultInput;
 import gov.cdc.usds.simplereport.db.model.auxiliary.OrderStatus;
 import gov.cdc.usds.simplereport.db.model.auxiliary.PersonName;
 import gov.cdc.usds.simplereport.db.model.auxiliary.PersonRole;
@@ -1011,13 +1011,13 @@ class TestOrderServiceTest extends BaseServiceTest<TestOrderService> {
 
   @Test
   @WithSimpleReportOrgAdminUser
-  void editQueueItemMultiplex_worksWithSingleResult() {
+  void editQueueItemMultiplexResult_worksWithSingleResult() {
     TestOrder order = addTestToQueue();
 
-    DiseaseResult covidResult = new DiseaseResult("COVID-19", TestResult.POSITIVE);
+    MultiplexResultInput covidResult = new MultiplexResultInput("COVID-19", TestResult.POSITIVE);
 
     TestOrder updatedOrder =
-        _service.editQueueItemMultiplex(
+        _service.editQueueItemMultiplexResult(
             order.getInternalId(),
             DEVICE_A.getInternalId(),
             List.of(covidResult),
@@ -1029,15 +1029,15 @@ class TestOrderServiceTest extends BaseServiceTest<TestOrderService> {
 
   @Test
   @WithSimpleReportOrgAdminUser
-  void editQueueItemMultiplex_worksWithMultipleResults() {
+  void editQueueItemMultiplexResult_worksWithMultipleResults() {
     TestOrder order = addTestToQueue();
 
-    DiseaseResult covidResult = new DiseaseResult("COVID-19", TestResult.POSITIVE);
-    DiseaseResult fluAResult = new DiseaseResult("Flu A", TestResult.NEGATIVE);
-    DiseaseResult fluBResult = new DiseaseResult("Flu B", TestResult.NEGATIVE);
+    MultiplexResultInput covidResult = new MultiplexResultInput("COVID-19", TestResult.POSITIVE);
+    MultiplexResultInput fluAResult = new MultiplexResultInput("Flu A", TestResult.NEGATIVE);
+    MultiplexResultInput fluBResult = new MultiplexResultInput("Flu B", TestResult.NEGATIVE);
 
     TestOrder updatedOrder =
-        _service.editQueueItemMultiplex(
+        _service.editQueueItemMultiplexResult(
             order.getInternalId(),
             DEVICE_A.getInternalId(),
             List.of(covidResult, fluAResult, fluBResult),
@@ -1049,11 +1049,11 @@ class TestOrderServiceTest extends BaseServiceTest<TestOrderService> {
 
   @Test
   @WithSimpleReportOrgAdminUser
-  void editQueueItemMultiplex_worksWithEmptyResults() {
+  void editQueueItemMultiplexResult_worksWithEmptyResults() {
     TestOrder order = addTestToQueue();
 
     TestOrder updatedOrder =
-        _service.editQueueItemMultiplex(
+        _service.editQueueItemMultiplexResult(
             order.getInternalId(),
             DEVICE_A.getInternalId(),
             List.of(),
@@ -1064,22 +1064,23 @@ class TestOrderServiceTest extends BaseServiceTest<TestOrderService> {
 
   @Test
   @WithSimpleReportOrgAdminUser
-  void addTestResultMultiplex_multipleEditsBeforeSubmissionSuccessful() {
+  void addMultiplexResult_multipleEditsBeforeSubmissionSuccessful() {
     TestOrder order = addTestToQueue();
 
-    DiseaseResult covidResult = new DiseaseResult("COVID-19", TestResult.POSITIVE);
-    DiseaseResult fluAResult = new DiseaseResult("Flu A", TestResult.NEGATIVE);
-    DiseaseResult fluBResult = new DiseaseResult("Flu B", TestResult.NEGATIVE);
+    MultiplexResultInput covidResult = new MultiplexResultInput("COVID-19", TestResult.POSITIVE);
+    MultiplexResultInput fluAResult = new MultiplexResultInput("Flu A", TestResult.NEGATIVE);
+    MultiplexResultInput fluBResult = new MultiplexResultInput("Flu B", TestResult.NEGATIVE);
 
-    _service.editQueueItemMultiplex(
+    _service.editQueueItemMultiplexResult(
         order.getInternalId(),
         DEVICE_A.getInternalId(),
         List.of(covidResult, fluAResult, fluBResult),
         convertDate(LocalDateTime.of(2022, 6, 5, 10, 10, 10, 10)));
 
-    DiseaseResult updatedCovidResult = new DiseaseResult("COVID-19", TestResult.NEGATIVE);
+    MultiplexResultInput updatedCovidResult =
+        new MultiplexResultInput("COVID-19", TestResult.NEGATIVE);
     TestOrder updatedOrder =
-        _service.editQueueItemMultiplex(
+        _service.editQueueItemMultiplexResult(
             order.getInternalId(),
             DEVICE_A.getInternalId(),
             List.of(updatedCovidResult, fluAResult, fluBResult),
@@ -1089,7 +1090,7 @@ class TestOrderServiceTest extends BaseServiceTest<TestOrderService> {
         3, _service.getTestOrder(updatedOrder.getInternalId()).getPendingResultSet().size());
 
     AddTestResultResponse response =
-        _service.addTestResultMultiplex(
+        _service.addMultiplexResult(
             updatedOrder.getDeviceSpecimen().getInternalId(),
             List.of(updatedCovidResult, fluAResult, fluBResult),
             order.getPatient().getInternalId(),
@@ -1100,12 +1101,12 @@ class TestOrderServiceTest extends BaseServiceTest<TestOrderService> {
 
   @Test
   @WithSimpleReportOrgAdminUser
-  void multiplexMutations_covidOnlyCorrectionSuccessful() {
+  void multiplexResultMutations_covidOnlyCorrectionSuccessful() {
     TestOrder order = addTestToQueue();
     AddTestResultResponse response =
-        _service.addTestResultMultiplex(
+        _service.addMultiplexResult(
             order.getDeviceSpecimen().getInternalId(),
-            List.of(new DiseaseResult("COVID-19", TestResult.POSITIVE)),
+            List.of(new MultiplexResultInput("COVID-19", TestResult.POSITIVE)),
             order.getPatient().getInternalId(),
             convertDate(LocalDateTime.of(2022, 6, 5, 10, 10, 10, 10)));
 
@@ -1114,9 +1115,9 @@ class TestOrderServiceTest extends BaseServiceTest<TestOrderService> {
     _service.markAsCorrection(originalEvent.getInternalId(), "Incorrect result");
 
     AddTestResultResponse correctedResponse =
-        _service.addTestResultMultiplex(
+        _service.addMultiplexResult(
             order.getDeviceSpecimen().getInternalId(),
-            List.of(new DiseaseResult("COVID-19", TestResult.NEGATIVE)),
+            List.of(new MultiplexResultInput("COVID-19", TestResult.NEGATIVE)),
             order.getPatient().getInternalId(),
             convertDate(LocalDateTime.of(2022, 6, 5, 10, 10, 10, 10)));
 
@@ -1131,17 +1132,17 @@ class TestOrderServiceTest extends BaseServiceTest<TestOrderService> {
 
   @Test
   @WithSimpleReportOrgAdminUser
-  void multiplexMutations_multiplexCorrectionSuccessful() {
+  void multiplexResultMutations_multiplexCorrectionSuccessful() {
 
-    List<DiseaseResult> originalResults =
+    List<MultiplexResultInput> originalResults =
         List.of(
-            new DiseaseResult("COVID-19", TestResult.NEGATIVE),
-            new DiseaseResult("Flu A", TestResult.POSITIVE),
-            new DiseaseResult("Flu B", TestResult.NEGATIVE));
+            new MultiplexResultInput("COVID-19", TestResult.NEGATIVE),
+            new MultiplexResultInput("Flu A", TestResult.POSITIVE),
+            new MultiplexResultInput("Flu B", TestResult.NEGATIVE));
 
     TestOrder order = addTestToQueue();
     AddTestResultResponse response =
-        _service.addTestResultMultiplex(
+        _service.addMultiplexResult(
             order.getDeviceSpecimen().getInternalId(),
             originalResults,
             order.getPatient().getInternalId(),
@@ -1151,14 +1152,14 @@ class TestOrderServiceTest extends BaseServiceTest<TestOrderService> {
 
     _service.markAsCorrection(originalEvent.getInternalId(), "Incorrect result");
 
-    List<DiseaseResult> correctedResults =
+    List<MultiplexResultInput> correctedResults =
         List.of(
-            new DiseaseResult("COVID-19", TestResult.NEGATIVE),
-            new DiseaseResult("Flu A", TestResult.NEGATIVE),
-            new DiseaseResult("Flu B", TestResult.NEGATIVE));
+            new MultiplexResultInput("COVID-19", TestResult.NEGATIVE),
+            new MultiplexResultInput("Flu A", TestResult.NEGATIVE),
+            new MultiplexResultInput("Flu B", TestResult.NEGATIVE));
 
     AddTestResultResponse correctedResponse =
-        _service.addTestResultMultiplex(
+        _service.addMultiplexResult(
             order.getDeviceSpecimen().getInternalId(),
             correctedResults,
             order.getPatient().getInternalId(),
@@ -1175,16 +1176,16 @@ class TestOrderServiceTest extends BaseServiceTest<TestOrderService> {
 
   @Test
   @WithSimpleReportOrgAdminUser
-  void multiplexMutations_removalSuccessful() {
-    List<DiseaseResult> originalResults =
+  void multiplexResultMutations_removalSuccessful() {
+    List<MultiplexResultInput> originalResults =
         List.of(
-            new DiseaseResult("COVID-19", TestResult.NEGATIVE),
-            new DiseaseResult("Flu A", TestResult.POSITIVE),
-            new DiseaseResult("Flu B", TestResult.NEGATIVE));
+            new MultiplexResultInput("COVID-19", TestResult.NEGATIVE),
+            new MultiplexResultInput("Flu A", TestResult.POSITIVE),
+            new MultiplexResultInput("Flu B", TestResult.NEGATIVE));
 
     TestOrder order = addTestToQueue();
     AddTestResultResponse response =
-        _service.addTestResultMultiplex(
+        _service.addMultiplexResult(
             order.getDeviceSpecimen().getInternalId(),
             originalResults,
             order.getPatient().getInternalId(),
@@ -1836,6 +1837,36 @@ class TestOrderServiceTest extends BaseServiceTest<TestOrderService> {
         });
   }
 
+  @Test
+  void markAsErrorTest_successDependsOnFacilityAccess() {
+    Organization org = _organizationService.getCurrentOrganization();
+    Facility facility = _dataFactory.createValidFacility(org);
+    Person p = _dataFactory.createFullPerson(org);
+    TestEvent _e = _dataFactory.createTestEvent(p, facility);
+
+    String reasonMsg = "Testing correction marking as error " + LocalDateTime.now();
+    assertThrows(
+        AccessDeniedException.class, () -> _service.markAsError(_e.getInternalId(), reasonMsg));
+    assertThrows(
+        AccessDeniedException.class,
+        () ->
+            _service.getTestEventsResults(
+                facility.getInternalId(), null, null, null, null, null, 0, 10));
+    assertThrows(
+        AccessDeniedException.class,
+        () -> _service.getTestResult(_e.getInternalId()).getTestOrder());
+
+    // make sure the corrected event is not sent to storage queue
+    verifyNoInteractions(testEventReportingService);
+
+    TestUserIdentities.setFacilityAuthorities(facility);
+    TestEvent correctedTestEvent = _service.markAsError(_e.getInternalId(), reasonMsg);
+    _service.getTestEventsResults(facility.getInternalId(), null, null, null, null, null, 0, 10);
+    _service.getTestResult(_e.getInternalId()).getTestOrder();
+    // make sure the corrected event is sent to storage queue
+    verify(testEventReportingService).report(correctedTestEvent);
+  }
+
   private List<TestEvent> makedata() {
     Organization org = _organizationService.getCurrentOrganization();
     _site = _dataFactory.createValidFacility(org, "The Facility");
@@ -1950,35 +1981,5 @@ class TestOrderServiceTest extends BaseServiceTest<TestOrderService> {
     facility.addDefaultDeviceSpecimen(DEVICE_A);
 
     return order;
-  }
-
-  @Test
-  void markAsErrorTest_successDependsOnFacilityAccess() {
-    Organization org = _organizationService.getCurrentOrganization();
-    Facility facility = _dataFactory.createValidFacility(org);
-    Person p = _dataFactory.createFullPerson(org);
-    TestEvent _e = _dataFactory.createTestEvent(p, facility);
-
-    String reasonMsg = "Testing correction marking as error " + LocalDateTime.now();
-    assertThrows(
-        AccessDeniedException.class, () -> _service.markAsError(_e.getInternalId(), reasonMsg));
-    assertThrows(
-        AccessDeniedException.class,
-        () ->
-            _service.getTestEventsResults(
-                facility.getInternalId(), null, null, null, null, null, 0, 10));
-    assertThrows(
-        AccessDeniedException.class,
-        () -> _service.getTestResult(_e.getInternalId()).getTestOrder());
-
-    // make sure the corrected event is not sent to storage queue
-    verifyNoInteractions(testEventReportingService);
-
-    TestUserIdentities.setFacilityAuthorities(facility);
-    TestEvent correctedTestEvent = _service.markAsError(_e.getInternalId(), reasonMsg);
-    _service.getTestEventsResults(facility.getInternalId(), null, null, null, null, null, 0, 10);
-    _service.getTestResult(_e.getInternalId()).getTestOrder();
-    // make sure the corrected event is sent to storage queue
-    verify(testEventReportingService).report(correctedTestEvent);
   }
 }

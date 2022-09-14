@@ -151,6 +151,7 @@ export const es: LanguageConfig = {
           addNumber: "Agregar otro número",
           addEmail: "Agregue otra dirección de correo electrónico",
           email: "Dirección de correo electrónico",
+          additionalEmail: "Dirección de correo electrónico adicional",
           country: "País",
           street1: "Dirección 1",
           street2: "Dirección 2",
@@ -180,8 +181,8 @@ export const es: LanguageConfig = {
           genderHelpText:
             "Por lo general, este es el género que está escrito en su certificado de nacimiento original.",
         },
-        other: {
-          heading: "Información adicional",
+        housingAndWork: {
+          heading: "Vivienda y trabajo",
           congregateLiving: {
             heading:
               "¿Reside usted en un entorno compartido por muchas personas?",
