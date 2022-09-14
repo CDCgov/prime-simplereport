@@ -78,6 +78,21 @@ export const personalDetailsFields = [
   return fields;
 }, {} as { [key: string]: { label: string; required: boolean; hintText: string } });
 
+export const homeAddressFields = [
+  ["streetAddress1", "Street address 1", true, ""],
+  ["streetAddress2", "Street address 2", false, ""],
+  ["city", "City", true, ""],
+  ["state", "State", true, ""],
+  ["zip", "ZIP code", true, ""],
+].reduce((fields, field) => {
+  fields[field[0] as keyof IdentityVerificationRequest] = {
+    label: field[1] as string,
+    required: field[2] as boolean,
+    hintText: field[3] as string,
+  };
+  return fields;
+}, {} as { [key: string]: { label: string; required: boolean; hintText: string } });
+
 export const initPersonalDetails = (
   orgExternalId: string,
   firstName: string,

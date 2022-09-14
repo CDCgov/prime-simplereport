@@ -20,6 +20,7 @@ import { useDocumentTitle } from "../../utils/hooks";
 import {
   initPersonalDetails,
   initPersonalDetailsErrors,
+  homeAddressFields,
   // personalDetailsFields,
   personalDetailsSchema as schema,
 } from "./utils";
@@ -208,6 +209,21 @@ const PersonalDetailsForm = ({
       personalDetails.lastName,
     ].join(" ");
 
+  const mapFormFields = (fields: {
+    [key: string]: { label: string; required: boolean; hintText: string };
+  }) => {
+    return Object.entries(fields).map(
+      ([key, { label, required, hintText }]) => {
+        const field = key as keyof IdentityVerificationRequest;
+        return (
+          <div key={field} aria-hidden={isModalActive && key !== "dateOfBirth"}>
+            {getFormElement(field, label, required, hintText, "")}
+          </div>
+        );
+      }
+    );
+  };
+
   return (
     <CardBackground>
       <Card logo isModalActive={isModalActive}>
@@ -277,31 +293,19 @@ const PersonalDetailsForm = ({
             "home-address-group-header"
           )}
           <div role={"group"} aria-labelledby={"home-address-group-header"}>
-            {getFormElement("streetAddress1", "Street address 1", true, "", "")}
-            {getFormElement(
-              "streetAddress2",
-              "Street address 2",
-              false,
-              "",
-              ""
-            )}
-            {getFormElement("city", "City", true, "", "")}
-            {getFormElement("state", "State", true, "", "")}
-            {getFormElement("zip", "ZIP code", true, "", "")}
+            {mapFormFields(homeAddressFields)}
+            {/*{getFormElement("streetAddress1", "Street address 1", true, "", "")}*/}
+            {/*{getFormElement(*/}
+            {/*  "streetAddress2",*/}
+            {/*  "Street address 2",*/}
+            {/*  false,*/}
+            {/*  "",*/}
+            {/*  ""*/}
+            {/*)}*/}
+            {/*{getFormElement("city", "City", true, "", "")}*/}
+            {/*{getFormElement("state", "State", true, "", "")}*/}
+            {/*{getFormElement("zip", "ZIP code", true, "", "")}*/}
           </div>
-          {/*{Object.entries(personalDetailsFields).map(*/}
-          {/*  ([key, { label, required, hintText }]) => {*/}
-          {/*    const field = key as keyof IdentityVerificationRequest;*/}
-          {/*    return (*/}
-          {/*      <div*/}
-          {/*        key={field}*/}
-          {/*        aria-hidden={isModalActive && key !== "dateOfBirth"}*/}
-          {/*      >*/}
-          {/*        {getFormElement(field, label, required, hintText)}*/}
-          {/*      </div>*/}
-          {/*    );*/}
-          {/*  }*/}
-          {/*)}*/}
         </div>
         <Button
           ariaHidden={isModalActive}
