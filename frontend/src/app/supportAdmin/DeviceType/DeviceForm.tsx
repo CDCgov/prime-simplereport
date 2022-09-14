@@ -6,6 +6,7 @@ import TextInput from "../../commonComponents/TextInput";
 import MultiSelect from "../../commonComponents/MultiSelect/MultiSelect";
 import { MultiSelectDropdownOption } from "../../commonComponents/MultiSelect/MultiSelectDropdown/MultiSelectDropdown";
 import { DeviceType } from "../../../generated/graphql";
+import Required from "../../commonComponents/Required";
 
 import DeviceTypeReminderMessage from "./DeviceTypeReminderMessage";
 
@@ -104,10 +105,7 @@ const DeviceForm = (props: Props) => {
               {props.deviceOptions ? (
                 <div className="grid-row grid-gap">
                   <div className="tablet:grid-col">
-                    <label className="usa-legend" htmlFor="selectDevice">
-                      Select Device{" "}
-                      <span className="text-secondary-vivid">*</span>
-                    </label>
+                    <Required label={"Select device"} />
                     <ComboBox
                       className="usa-combo-box__full-width"
                       id="selectDevice"
