@@ -6,15 +6,14 @@ describe("card", () => {
   describe("header", () => {
     it("should contain a logo", () => {
       render(<Card logo={true} />);
-      expect(screen.getByAltText("SimpleReport")).toBeInTheDocument();
+      expect(screen.getByAltText("SimpleReport logo")).toBeInTheDocument();
     });
     it("should be hidden", () => {
       render(<Card logo={true} isModalActive={true} />);
-      expect(screen.getByAltText("SimpleReport")).toBeInTheDocument();
-      expect(screen.getByAltText("SimpleReport").parentElement).toHaveAttribute(
-        "aria-hidden",
-        "true"
-      );
+      expect(screen.getByAltText("SimpleReport logo")).toBeInTheDocument();
+      expect(
+        screen.getByAltText("SimpleReport logo").parentElement
+      ).toHaveAttribute("aria-hidden", "true");
     });
   });
   describe("kicker", () => {
