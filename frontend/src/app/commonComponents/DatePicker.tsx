@@ -1,5 +1,9 @@
 import classnames from "classnames";
 import { DatePicker as TrussworksDatePicker } from "@trussworks/react-uswds";
+import React from "react";
+
+import Required from "./Required";
+import Optional from "./Optional";
 
 interface Props {
   name: string;
@@ -14,6 +18,7 @@ interface Props {
   labelSrOnly?: boolean;
   labelClassName?: string;
   required?: boolean;
+  disabled?: boolean;
   defaultValue?: string;
   minDate?: string; // TODO: pass minDate and maxDate to yup object for validation
   maxDate?: string;
@@ -32,6 +37,7 @@ export const DatePicker = ({
   labelSrOnly,
   labelClassName,
   required,
+  disabled,
   defaultValue,
   minDate,
   maxDate,
@@ -52,7 +58,7 @@ export const DatePicker = ({
         })}
         htmlFor={name}
       >
-        {label}
+        {required ? <Required label={label} /> : <Optional label={label} />}
       </label>
       {noHint ? null : (
         <span className="usa-hint" aria-hidden={ariaHidden}>
@@ -79,6 +85,7 @@ export const DatePicker = ({
         onChange={onChange}
         onBlur={onBlur}
         required={required}
+        disabled={disabled}
         defaultValue={defaultValue}
         minDate={minDate}
         maxDate={maxDate}
