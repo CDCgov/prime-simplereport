@@ -19,7 +19,7 @@ describe("Patient self registration", () => {
   });
   it("fills out some of the form fields", () => {
     cy.get('input[name="firstName"]').type(patient.firstName);
-    cy.get('input[name="birthDate"]').type(patient.dobForInput);
+    cy.get('input[id="dateOfBirth"]').type(patient.dobForInput);
     cy.get('input[name="number"]').type(patient.phone);
     cy.get('input[value="MOBILE"]+label').click();
     cy.get('input[value="female"]+label').click();
