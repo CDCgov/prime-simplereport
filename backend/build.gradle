@@ -106,9 +106,11 @@ dependencies {
     // graphql-java-extended-validation schema directives
     compile 'com.graphql-java:graphql-java-extended-validation:16.0.0'
 
-    implementation 'com.azure:azure-storage-queue:12.14.0'
+    // implementation 'com.azure:azure-storage-queue:12.14.0'
+    implementation 'com.azure:azure-storage-queue:12.12.2'
     implementation 'com.azure:azure-core-http-netty:1.11.9'
     implementation 'com.azure:azure-core:1.27.0'
+    // implementation 'com.azure:azure-storage-common:12.17.0'
     implementation 'com.azure:azure-storage-common:12.15.1'
 
     implementation 'io.netty:netty-codec:4.1.73.Final'
