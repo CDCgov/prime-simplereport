@@ -78,20 +78,66 @@ export const personalDetailsFields = [
   return fields;
 }, {} as { [key: string]: { label: string; required: boolean; hintText: string } });
 
-export const homeAddressFields = [
-  ["streetAddress1", "Street address 1", true, ""],
-  ["streetAddress2", "Street address 2", false, ""],
-  ["city", "City", true, ""],
-  ["state", "State", true, ""],
-  ["zip", "ZIP code", true, ""],
+export const dob = {
+  dob: {
+    label: "Date of birth",
+    required: true,
+    hintText: "",
+    id: "",
+  },
+};
+export const personalContactFields = [
+  [
+    "preheader",
+    "Personal contact information",
+    false,
+    "",
+    "personal-contact-header",
+  ],
+  ["email", "Email", true, "Enter your non-work email address.", ""],
+  [
+    "phoneNumber",
+    "Phone number",
+    true,
+    "Enter your non-work phone number.",
+    "",
+  ],
 ].reduce((fields, field) => {
   fields[field[0] as keyof IdentityVerificationRequest] = {
     label: field[1] as string,
     required: field[2] as boolean,
     hintText: field[3] as string,
+    id: field[4] as string,
   };
   return fields;
-}, {} as { [key: string]: { label: string; required: boolean; hintText: string } });
+}, {} as { [key: string]: { label: string; required: boolean; hintText: string; id: string } });
+
+// option: create an interface for these fields instead of the weird reduction into an object
+export const homeAddressFields = [
+  ["preheader", "Home address", false, "", "home-address-header"],
+  ["streetAddress1", "Street address 1", true, "", ""],
+  ["streetAddress2", "Street address 2", false, "", ""],
+  ["city", "City", true, "", ""],
+  ["state", "State", true, "", ""],
+  ["zip", "ZIP code", true, "", ""],
+].reduce((fields, field) => {
+  fields[field[0] as keyof IdentityVerificationRequest] = {
+    label: field[1] as string,
+    required: field[2] as boolean,
+    hintText: field[3] as string,
+    id: field[4] as string,
+  };
+  return fields;
+}, {} as { [key: string]: { label: string; required: boolean; hintText: string; id: string } });
+
+export interface personalDetailsFormElement {
+  [key: string]: {
+    label: string;
+    required: boolean;
+    hintText: string;
+    id: string;
+  };
+}
 
 export const initPersonalDetails = (
   orgExternalId: string,

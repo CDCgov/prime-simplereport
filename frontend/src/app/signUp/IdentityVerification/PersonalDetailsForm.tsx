@@ -23,6 +23,9 @@ import {
   homeAddressFields,
   // personalDetailsFields,
   personalDetailsSchema as schema,
+  personalContactFields,
+  dob,
+  personalDetailsFormElement,
 } from "./utils";
 import QuestionsFormContainer from "./QuestionsFormContainer";
 
@@ -128,7 +131,7 @@ const PersonalDetailsForm = ({
   }
 
   const getFormElement = (
-    field: keyof IdentityVerificationRequest | `preheader${"1" | "2"}`,
+    field: keyof IdentityVerificationRequest | `preheader`,
     label: string,
     required: boolean,
     hintText: string,
@@ -176,8 +179,7 @@ const PersonalDetailsForm = ({
             ariaHidden={isModalActive}
           />
         );
-      case "preheader1":
-      case "preheader2":
+      case "preheader":
         return (
           <p className="font-ui-sm text-bold margin-bottom-1" id={id}>
             {label}
@@ -209,9 +211,7 @@ const PersonalDetailsForm = ({
       personalDetails.lastName,
     ].join(" ");
 
-  const mapFormFields = (fields: {
-    [key: string]: { label: string; required: boolean; hintText: string };
-  }) => {
+  const mapFormFields = (fields: personalDetailsFormElement) => {
     return Object.entries(fields).map(
       ([key, { label, required, hintText }]) => {
         const field = key as keyof IdentityVerificationRequest;
@@ -221,6 +221,31 @@ const PersonalDetailsForm = ({
           </div>
         );
       }
+    );
+  };
+
+  const createGroupingWithHeader = (fields: {
+    [key: string]: {
+      label: string;
+      required: boolean;
+      hintText: string;
+      id: string;
+    };
+  }) => {
+    let formInputs = fields;
+
+    // grumble grumble using delete crashes the app consistently
+    // could we use an interface or something to define these as objects, and start using OOP?
+    // probably overkill >:(
+    // maybe we use an interface to define the rest of the fields, and the preheaders are special?
+    // delete formInputs.preheader;
+    return (
+      <div>
+        {mapFormFields({ preheader: fields.preheader })}
+        <div role={"group"} aria-labelledby={fields.preheader.id}>
+          {mapFormFields(formInputs)}
+        </div>
+      </div>
     );
   };
 
@@ -261,51 +286,9 @@ const PersonalDetailsForm = ({
             </p>
             <h3>{getPersonFullName()}</h3>
           </div>
-          {getFormElement("dateOfBirth", "Date of birth", true, "", "")}
-          {getFormElement(
-            "preheader1",
-            "Personal contact information",
-            false,
-            "",
-            "personal-details-group-header"
-          )}
-          <div role="group" aria-labelledby={"personal-details-group-header"}>
-            {getFormElement(
-              "email",
-              "Email",
-              true,
-              "Enter your non-work email address.",
-              ""
-            )}
-            {getFormElement(
-              "phoneNumber",
-              "Phone number",
-              true,
-              "Enter your non-work phone number.",
-              ""
-            )}
-          </div>
-          {getFormElement(
-            "preheader2",
-            "Home address",
-            false,
-            "",
-            "home-address-group-header"
-          )}
-          <div role={"group"} aria-labelledby={"home-address-group-header"}>
-            {mapFormFields(homeAddressFields)}
-            {/*{getFormElement("streetAddress1", "Street address 1", true, "", "")}*/}
-            {/*{getFormElement(*/}
-            {/*  "streetAddress2",*/}
-            {/*  "Street address 2",*/}
-            {/*  false,*/}
-            {/*  "",*/}
-            {/*  ""*/}
-            {/*)}*/}
-            {/*{getFormElement("city", "City", true, "", "")}*/}
-            {/*{getFormElement("state", "State", true, "", "")}*/}
-            {/*{getFormElement("zip", "ZIP code", true, "", "")}*/}
-          </div>
+          {mapFormFields(dob)}
+          {createGroupingWithHeader(personalContactFields)}
+          {createGroupingWithHeader(homeAddressFields)}
         </div>
         <Button
           ariaHidden={isModalActive}
