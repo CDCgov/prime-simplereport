@@ -137,4 +137,6 @@
 - [ ] Any dependencies introduced have been vetted and discussed
 
 ### Documentation
-- [ ] Any changes to the startup configuration have been documented in the README-->
+- [ ] Any changes to the startup configuration have been documented in the README
+
+-->
