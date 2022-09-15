@@ -19,7 +19,7 @@ describe("Adding a patient", () => {
   });
   it("fills out some of the form fields", () => {
     cy.get('input[name="firstName"]').type(patient.firstName);
-    cy.get('input[name="birthDate"]').type(patient.dobForInput);
+    cy.get('input[id="dateOfBirth"]').type(patient.dobForInput);
     cy.get('input[name="number"]').type(patient.phone);
     cy.get('input[value="MOBILE"]+label').click();
     cy.get('input[value="female"]+label').click();
@@ -37,8 +37,8 @@ describe("Adding a patient", () => {
   it("shows what fields are missing on submit", () => {
     cy.get(".prime-save-patient-changes").first().click();
 
-    cy.get(".prime-edit-patient").contains("Last name is required");
-    cy.get(".prime-edit-patient").contains("Testing facility is required");
+    cy.get(".prime-edit-patient").contains("Last name is missing");
+    cy.get(".prime-edit-patient").contains("Testing facility is missing");
   });
   it("fills out the remaining fields, submits and checks for the patient", () => {
     cy.get('input[name="lastName"]').type(patient.lastName);

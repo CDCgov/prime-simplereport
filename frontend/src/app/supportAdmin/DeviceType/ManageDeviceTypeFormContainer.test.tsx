@@ -153,10 +153,8 @@ describe("ManageDeviceTypeFormContainer", () => {
   it("should update the selected device", async () => {
     await new Promise((resolve) => setTimeout(resolve, 0));
 
-    userEvent.selectOptions(
-      screen.getByLabelText("Select device", { exact: false }),
-      "Covalent Observer"
-    );
+    userEvent.click(screen.getByTestId("combo-box-select"));
+    userEvent.click(screen.getAllByText("Covalent Observer")[1]);
 
     await new Promise((resolve) => setTimeout(resolve, 0));
 
@@ -189,10 +187,8 @@ describe("ManageDeviceTypeFormContainer", () => {
   it("should display error when update fails", async () => {
     await new Promise((resolve) => setTimeout(resolve, 0));
 
-    userEvent.selectOptions(
-      screen.getByLabelText("Select device", { exact: false }),
-      "Covalent Observer"
-    );
+    userEvent.click(screen.getByTestId("combo-box-select"));
+    userEvent.click(screen.getAllByText("Covalent Observer")[1]);
 
     await new Promise((resolve) => setTimeout(resolve, 0));
 

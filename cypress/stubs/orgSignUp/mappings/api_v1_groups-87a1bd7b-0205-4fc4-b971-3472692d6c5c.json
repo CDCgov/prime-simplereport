@@ -6,7 +6,7 @@
     "method" : "GET",
     "queryParameters" : {
       "search" : {
-        "contains" : "profile.name sw \"SR-DEV-TENANT:CA-Beach-Camp"
+        "contains" : "profile.name sw \"SR-DEV-TENANT:"
       }
     }
   },
