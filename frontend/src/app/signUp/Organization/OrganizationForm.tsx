@@ -221,9 +221,9 @@ const OrganizationForm = () => {
     <CardBackground>
       <Card logo>
         <div className="margin-bottom-2 organization-form usa-prose">
-          <h1 className="margin-top-2 margin-bottom-0 font-ui-xs">
+          <h4 className="margin-top-2 margin-bottom-0">
             Sign up for SimpleReport
-          </h1>
+          </h4>
           <StepIndicator
             steps={organizationCreationSteps}
             currentStepValue={"0"}
