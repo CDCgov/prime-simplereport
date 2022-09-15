@@ -218,86 +218,80 @@ const OrganizationForm = () => {
   };
 
   return (
-    <main>
-      <CardBackground>
-        <Card logo>
-          <div className="margin-bottom-2 organization-form usa-prose">
-            <h1 className="margin-top-2 margin-bottom-0 font-ui-xs">
-              Sign up for SimpleReport
-            </h1>
-            <StepIndicator
-              steps={organizationCreationSteps}
-              currentStepValue={"0"}
-              noLabels={true}
-              segmentIndicatorOnBottom={true}
-            />
-            <div className="gray-background padding-y-05 padding-x-3">
-              <p className="font-ui-2xs line-height-sans-5 margin-bottom-1">
-                <strong>Sign up for SimpleReport in three steps:</strong>
-              </p>
-              <ol className="prime-ul">
-                <li>
-                  <div className="margin-y-1">
-                    <span className="circled-number margin-right-05">1</span>
-                    Fill out your organization information
-                  </div>
-                </li>
-                <li>
-                  <div className="margin-y-1">
-                    <span className="circled-number margin-right-05">2</span>
-                    Enter your personal contact details
-                  </div>
-                </li>
-                <li>
-                  <div className="margin-y-1">
-                    <span className="circled-number margin-right-05">3</span>
-                    Verify your identity
-                  </div>
-                </li>
-              </ol>
-              <p className="font-ui-2xs margin-top-2 line-height-sans-5">
-                Each organization only needs one account. After you sign up you
-                can add staff and testing locations. Learn more about our{" "}
-                <a href="/getting-started/organizations-and-testing-facilities/onboard-your-organization/">
-                  sign up and identity verification process
-                </a>
-                .
-              </p>
-            </div>
-            {backendError ? backendError : null}
-            {/* By mapping over organizationFields (found in utils.tsx), we reduce */}
-            {/* duplication of input fields in JSX */}
-            {Object.entries(organizationFields).map(
-              ([key, { label, required, hintText }]) => {
-                const field = key as keyof OrganizationCreateRequest;
-                return (
-                  <div key={field}>
-                    {getFormElement(field, label, required, hintText)}
-                  </div>
-                );
-              }
-            )}
-          </div>
-          <p className="margin-top-4 margin-bottom-0 font-ui-xs">
-            By selecting Continue, you agree to our{" "}
-            <a
-              href="/terms-of-service"
-              target="_blank"
-              rel="noopener noreferrer"
-            >
-              terms of service
-            </a>
-            .
-          </p>
-          <Button
-            className="width-full margin-top-2 submit-button"
-            disabled={!formChanged}
-            onClick={onSave}
-            label={"Continue"}
+    <CardBackground>
+      <Card logo>
+        <div className="margin-bottom-2 organization-form usa-prose">
+          <h1 className="margin-top-2 margin-bottom-0 font-ui-xs">
+            Sign up for SimpleReport
+          </h1>
+          <StepIndicator
+            steps={organizationCreationSteps}
+            currentStepValue={"0"}
+            noLabels={true}
+            segmentIndicatorOnBottom={true}
           />
-        </Card>
-      </CardBackground>
-    </main>
+          <div className="gray-background padding-y-05 padding-x-3">
+            <p className="font-ui-2xs line-height-sans-5 margin-bottom-1">
+              <strong>Sign up for SimpleReport in three steps:</strong>
+            </p>
+            <ol className="prime-ul">
+              <li>
+                <div className="margin-y-1">
+                  <span className="circled-number margin-right-05">1</span>
+                  Fill out your organization information
+                </div>
+              </li>
+              <li>
+                <div className="margin-y-1">
+                  <span className="circled-number margin-right-05">2</span>
+                  Enter your personal contact details
+                </div>
+              </li>
+              <li>
+                <div className="margin-y-1">
+                  <span className="circled-number margin-right-05">3</span>
+                  Verify your identity
+                </div>
+              </li>
+            </ol>
+            <p className="font-ui-2xs margin-top-2 line-height-sans-5">
+              Each organization only needs one account. After you sign up you
+              can add staff and testing locations. Learn more about our{" "}
+              <a href="/getting-started/organizations-and-testing-facilities/onboard-your-organization/">
+                sign up and identity verification process
+              </a>
+              .
+            </p>
+          </div>
+          {backendError ? backendError : null}
+          {/* By mapping over organizationFields (found in utils.tsx), we reduce */}
+          {/* duplication of input fields in JSX */}
+          {Object.entries(organizationFields).map(
+            ([key, { label, required, hintText }]) => {
+              const field = key as keyof OrganizationCreateRequest;
+              return (
+                <div key={field}>
+                  {getFormElement(field, label, required, hintText)}
+                </div>
+              );
+            }
+          )}
+        </div>
+        <p className="margin-top-4 margin-bottom-0 font-ui-xs">
+          By selecting Continue, you agree to our{" "}
+          <a href="/terms-of-service" target="_blank" rel="noopener noreferrer">
+            terms of service
+          </a>
+          .
+        </p>
+        <Button
+          className="width-full margin-top-2 submit-button"
+          disabled={!formChanged}
+          onClick={onSave}
+          label={"Continue"}
+        />
+      </Card>
+    </CardBackground>
   );
 };
 
