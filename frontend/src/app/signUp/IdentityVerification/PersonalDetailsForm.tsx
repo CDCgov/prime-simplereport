@@ -206,9 +206,9 @@ const PersonalDetailsForm = ({
   return (
     <CardBackground>
       <Card logo isModalActive={isModalActive}>
-        <h4 className="margin-bottom-0" aria-hidden={isModalActive}>
+        <h1 className="margin-bottom-0 font-ui-xs" aria-hidden={isModalActive}>
           Sign up for SimpleReport
-        </h4>
+        </h1>
         <StepIndicator
           steps={organizationCreationSteps}
           currentStepValue={"1"}
