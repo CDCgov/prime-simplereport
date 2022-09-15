@@ -238,7 +238,7 @@ const PersonalDetailsForm = ({
               Identity verification helps protect organizations working with
               personal health information.
             </p>
-            <h3>{getPersonFullName()}</h3>
+            <h2 className="questions-form-name">{getPersonFullName()}</h2>
           </div>
           {Object.entries(personalDetailsFields).map(
             ([key, { label, required, hintText }]) => {
