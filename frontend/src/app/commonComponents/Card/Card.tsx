@@ -4,6 +4,7 @@ export type CardProps = {
   logo?: boolean;
   bodyKicker?: string;
   bodyKickerCentered?: boolean;
+  isModalActive?: boolean;
 };
 
 export const Card: React.FC<CardProps> = ({
@@ -11,6 +12,7 @@ export const Card: React.FC<CardProps> = ({
   logo = false,
   bodyKicker = false,
   bodyKickerCentered = false,
+  isModalActive,
 }) => {
   let kicker = null;
   if (bodyKicker && bodyKickerCentered) {
@@ -25,11 +27,14 @@ export const Card: React.FC<CardProps> = ({
   return (
     <div className="card">
       {logo && (
-        <header className="display-flex flex-column">
+        <header
+          className="display-flex flex-column"
+          aria-hidden={isModalActive}
+        >
           <img
             className="flex-align-self-center maxw-card-lg width-full"
             src={siteLogo}
-            alt="SimpleReport"
+            alt="SimpleReport logo"
           />
           <div className="border-bottom border-base-lighter margin-x-neg-3 margin-top-3"></div>
         </header>

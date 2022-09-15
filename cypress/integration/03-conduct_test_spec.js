@@ -38,7 +38,7 @@ describe("Conducting a test", () => {
   });
   it("completes the test", () => {
     cy.get(queueCard).within(() => {
-      cy.get('.prime-radios input[value="NEGATIVE"]+label').click();
+      cy.get('.prime-radios input[value="NEGATIVE"]+label').click({multiple: true});
       cy.get(".prime-test-result-submit button").click();
     });
     cy.contains(`Result was saved and reported for ${patientName}`);

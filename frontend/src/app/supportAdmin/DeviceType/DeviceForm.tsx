@@ -1,11 +1,12 @@
 import React, { useState } from "react";
+import { ComboBox } from "@trussworks/react-uswds";
 
 import Button from "../../commonComponents/Button/Button";
 import TextInput from "../../commonComponents/TextInput";
 import MultiSelect from "../../commonComponents/MultiSelect/MultiSelect";
 import { MultiSelectDropdownOption } from "../../commonComponents/MultiSelect/MultiSelectDropdown/MultiSelectDropdown";
-import Select from "../../commonComponents/Select";
 import { DeviceType } from "../../../generated/graphql";
+import Required from "../../commonComponents/Required";
 
 import DeviceTypeReminderMessage from "./DeviceTypeReminderMessage";
 
@@ -50,10 +51,12 @@ const DeviceForm = (props: Props) => {
 
   const getDeviceOptions = () =>
     props.deviceOptions
-      ? props.deviceOptions.map((deviceType) => ({
-          label: deviceType.name,
-          value: deviceType.internalId,
-        }))
+      ? props.deviceOptions
+          .map((deviceType) => ({
+            label: deviceType.name,
+            value: deviceType.internalId,
+          }))
+          .sort((a, b) => a.label.localeCompare(b.label))
       : [];
 
   const getDeviceFromDeviceType = (device?: DeviceType): Device | undefined => {
@@ -102,12 +105,12 @@ const DeviceForm = (props: Props) => {
               {props.deviceOptions ? (
                 <div className="grid-row grid-gap">
                   <div className="tablet:grid-col">
-                    <Select
-                      label="Select device"
+                    <Required label={"Select device"} />
+                    <ComboBox
+                      className="usa-combo-box__full-width"
+                      id="selectDevice"
                       name="selectDevice"
-                      value={device?.internalId || ""}
                       options={getDeviceOptions()}
-                      defaultSelect
                       onChange={(id) => {
                         updateFormChanged(false);
                         updateDevice(
@@ -118,7 +121,7 @@ const DeviceForm = (props: Props) => {
                           )
                         );
                       }}
-                      required
+                      defaultValue={device?.internalId || ""}
                     />
                   </div>
                 </div>

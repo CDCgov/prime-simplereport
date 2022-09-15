@@ -1,7 +1,14 @@
-import { render, screen, fireEvent, waitFor } from "@testing-library/react";
+import {
+  render,
+  screen,
+  fireEvent,
+  waitFor,
+  cleanup,
+} from "@testing-library/react";
 import userEvent from "@testing-library/user-event";
 
 import PersonalDetailsForm from "./PersonalDetailsForm";
+import { personalDetailsFields } from "./utils";
 
 window.scrollTo = jest.fn();
 
@@ -61,9 +68,7 @@ describe("PersonalDetailsForm", () => {
         expect(
           await screen.findByText("A valid phone number is required")
         ).toBeInTheDocument();
-        expect(
-          screen.getByRole("textbox", { name: "Date of birth" })
-        ).toHaveFocus();
+        expect(screen.getByTestId("date-picker-external-input")).toHaveFocus();
       });
     });
     describe("On submitting an invalid street address 1", () => {
@@ -146,6 +151,51 @@ describe("PersonalDetailsForm", () => {
           expect(
             screen.queryAllByText("is required", { exact: false }).length
           ).toBe(6);
+        });
+      });
+    });
+    describe("and modal is active", () => {
+      it("all elements except for date picker should be hidden", () => {
+        cleanup();
+        render(
+          <PersonalDetailsForm
+            orgExternalId={"foo"}
+            firstName={"Bob"}
+            middleName={"Rob"}
+            lastName={"Bobberton"}
+            isModalActive={true}
+          />
+        );
+        expect(screen.getByText("Sign up for SimpleReport")).toHaveAttribute(
+          "aria-hidden",
+          "true"
+        );
+        expect(
+          screen.getByText("Why we verify your identity").parentElement
+        ).toHaveAttribute("aria-hidden", "true");
+        expect(screen.getByText("Submit")).toHaveAttribute(
+          "aria-hidden",
+          "true"
+        );
+        expect(
+          screen.getByText("Personal contact information").parentElement
+        ).toHaveAttribute("aria-hidden", "true");
+        Object.entries(personalDetailsFields).forEach((elem) => {
+          const label = elem[1].label;
+          const key = elem[0];
+          if (key !== "dateOfBirth") {
+            if (key.startsWith("preheader")) {
+              expect(screen.getByText(label).parentElement).toHaveAttribute(
+                "aria-hidden",
+                "true"
+              );
+            } else {
+              expect(
+                screen.getByText(label).parentElement?.parentElement
+              ).toHaveAttribute("aria-hidden", "true");
+            }
+          } else {
+          }
         });
       });
     });
