@@ -60,6 +60,7 @@ const StepIndicator = ({
             {currentStep.order + 1}
           </span>
           <span className="usa-step-indicator__total-steps">
+            {" "}
             of {steps.length}
           </span>
         </span>
@@ -79,7 +80,6 @@ const StepIndicator = ({
           "margin-y-205": !segmentIndicatorOnBottom,
         }
       )}
-      aria-label="progress"
       aria-hidden={ariaHidden}
     >
       {segmentIndicatorOnBottom ? (
