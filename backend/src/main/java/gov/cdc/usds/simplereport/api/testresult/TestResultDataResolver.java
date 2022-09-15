@@ -92,6 +92,7 @@ public class TestResultDataResolver implements InternalIdResolver<TestEvent> {
     return getSurvey(testEvent).getSymptomsJSON();
   }
 
+  @SchemaMapping(typeName = "TestResult", field = "symptomOnset")
   public LocalDate getSymptomOnset(TestEvent testEvent) {
     return getSurvey(testEvent).getSymptomOnsetDate();
   }
