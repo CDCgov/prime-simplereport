@@ -240,7 +240,7 @@ export const TestTimerWidget = ({ timer, context }: Props) => {
         aria-label="Start timer"
       >
         <span role="timer">{mmss(countdown)}</span>{" "}
-        <FontAwesomeIcon icon={faStopwatch} />
+        <FontAwesomeIcon aria-label="Start test timer" icon={faStopwatch} />
       </button>
     );
   }
@@ -252,8 +252,8 @@ export const TestTimerWidget = ({ timer, context }: Props) => {
         data-testid="timer"
         aria-label="Reset timer"
       >
-        <span role="timer">{mmss(countdown)}</span>{" "}
-        <FontAwesomeIcon icon={faRedo} />
+        <span role={"timer"}>{mmss(countdown)}</span>{" "}
+        <FontAwesomeIcon aria-label="Reset test timer" icon={faRedo} />
       </button>
     );
   }
@@ -276,7 +276,7 @@ export const TestTimerWidget = ({ timer, context }: Props) => {
         <span className="timer-overtime" role="timer">
           {mmss(elapsed)} elapsed{" "}
         </span>{" "}
-        <FontAwesomeIcon icon={faRedo} />
+        <FontAwesomeIcon aria-label="Reset test timer" icon={faRedo} />
       </button>
     </div>
   );

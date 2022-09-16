@@ -49,7 +49,11 @@ export const TextWithTooltip = ({
       wrapperclasses="usa-text-with-tooltip"
     >
       {text}
-      <FontAwesomeIcon className="info-circle-icon" icon={faInfoCircle} />
+      <FontAwesomeIcon
+        aria-label={tooltip}
+        className="info-circle-icon"
+        icon={faInfoCircle}
+      />
     </Tooltip>
   );
 };
