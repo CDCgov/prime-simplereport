@@ -16,13 +16,15 @@ const SignUpApp = () => {
   );
   return (
     <Page isModalActive={modalActive}>
-      <Routes>
-        <Route path="/" element={<SignUpGoals />} />
-        <Route
-          path={"identity-verification"}
-          element={<Consent isModalActive={modalActive} />}
-        />
-      </Routes>
+      <main>
+        <Routes>
+          <Route path="/" element={<SignUpGoals />} />
+          <Route
+            path={"identity-verification"}
+            element={<Consent isModalActive={modalActive} />}
+          />
+        </Routes>
+      </main>
     </Page>
   );
 };
