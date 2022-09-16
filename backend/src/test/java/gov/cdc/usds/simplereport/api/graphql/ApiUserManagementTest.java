@@ -66,6 +66,9 @@ class ApiUserManagementTest extends BaseGraphqlTest {
           UserPermission.ACCESS_ALL_FACILITIES,
           UserPermission.VIEW_ARCHIVED_FACILITIES);
 
+  private static final EnumSet<UserPermission> TENANT_DATA_ACCESS_PERMISSIONS =
+      EnumSet.allOf(UserPermission.class);
+
   @SpyBean private OktaRepository _oktaRepo;
 
   @BeforeEach
@@ -1119,13 +1122,16 @@ class ApiUserManagementTest extends BaseGraphqlTest {
                 .get("setCurrentUserTenantDataAccess");
     assertEquals("ruby@example.com", user.get("email").asText());
     assertEquals(Role.ADMIN, Role.valueOf(user.get("role").asText()));
-    assertEquals(ADMIN_PERMISSIONS, extractPermissionsFromUser(user));
+    // assertEquals(ADMIN_PERMISSIONS, extractPermissionsFromUser(user));
+    assertEquals(TENANT_DATA_ACCESS_PERMISSIONS, extractPermissionsFromUser(user));
     assertLastAuditEntry("ruby@example.com", null, null);
 
     // run query using tenant data access
     runQuery("current-user-query").get("whoami");
     assertLastAuditEntry(
-        "ruby@example.com", TestUserIdentities.DEFAULT_ORGANIZATION, ADMIN_PERMISSIONS);
+        "ruby@example.com",
+        TestUserIdentities.DEFAULT_ORGANIZATION,
+        TENANT_DATA_ACCESS_PERMISSIONS);
   }
 
   @Test
@@ -1184,12 +1190,13 @@ class ApiUserManagementTest extends BaseGraphqlTest {
                       .get("setCurrentUserTenantDataAccess");
           assertEquals("ruby@example.com", user.get("email").asText());
           assertEquals(Role.ADMIN, Role.valueOf(user.get("role").asText()));
-          assertEquals(ADMIN_PERMISSIONS, extractPermissionsFromUser(user));
+          assertEquals(TENANT_DATA_ACCESS_PERMISSIONS, extractPermissionsFromUser(user));
           assertLastAuditEntry("ruby@example.com", null, null);
 
           // run query using tenant data access
           runQuery("current-user-query").get("whoami");
-          assertLastAuditEntry("ruby@example.com", "dc-with-trailing-space ", ADMIN_PERMISSIONS);
+          assertLastAuditEntry(
+              "ruby@example.com", "dc-with-trailing-space ", TENANT_DATA_ACCESS_PERMISSIONS);
         });
   }
 
