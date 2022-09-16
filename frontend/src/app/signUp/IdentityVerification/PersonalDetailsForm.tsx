@@ -34,7 +34,6 @@ export type PersonalDetailsFormProps = {
   firstName: string;
   middleName: string;
   lastName: string;
-  isModalActive?: boolean;
 };
 
 const PersonalDetailsForm = ({
@@ -42,7 +41,6 @@ const PersonalDetailsForm = ({
   firstName,
   middleName,
   lastName,
-  isModalActive,
 }: PersonalDetailsFormProps) => {
   const [
     personalDetails,
@@ -198,19 +196,16 @@ const PersonalDetailsForm = ({
 
   return (
     <CardBackground>
-      <Card logo isModalActive={isModalActive}>
-        <h4 className="margin-bottom-0" aria-hidden={isModalActive}>
-          Sign up for SimpleReport
-        </h4>
+      <Card logo>
+        <h4 className="margin-bottom-0">Sign up for SimpleReport</h4>
         <StepIndicator
           steps={organizationCreationSteps}
           currentStepValue={"1"}
           noLabels={true}
           segmentIndicatorOnBottom={true}
-          ariaHidden={isModalActive}
         />
         <div className="margin-bottom-2 organization-form">
-          <div aria-hidden={isModalActive}>
+          <div>
             <p className="margin-top-neg-2">
               To create your account, we’ll need information to verify your
               identity directly with{" "}
@@ -237,10 +232,7 @@ const PersonalDetailsForm = ({
             ([key, { label, required, hintText }]) => {
               const field = key as keyof IdentityVerificationRequest;
               return (
-                <div
-                  key={field}
-                  aria-hidden={isModalActive && key !== "dateOfBirth"}
-                >
+                <div key={field}>
                   {getFormElement(field, label, required, hintText)}
                 </div>
               );
@@ -248,7 +240,6 @@ const PersonalDetailsForm = ({
           )}
         </div>
         <Button
-          ariaHidden={isModalActive}
           className="width-full"
           disabled={saving || !formChanged}
           onClick={onSave}
