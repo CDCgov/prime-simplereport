@@ -9,10 +9,8 @@ import gov.cdc.usds.simplereport.db.model.Result;
 import gov.cdc.usds.simplereport.db.model.TestEvent;
 import gov.cdc.usds.simplereport.db.model.auxiliary.AskOnEntrySurvey;
 import gov.cdc.usds.simplereport.db.repository.PatientLinkRepository;
-import gov.cdc.usds.simplereport.service.dataloader.PatientLinkDataLoader;
 import java.time.LocalDate;
 import java.util.Date;
-import java.util.List;
 import java.util.Map;
 import java.util.Set;
 import java.util.UUID;
@@ -37,18 +35,9 @@ public class TestResultDataResolver implements InternalIdResolver<TestEvent> {
         .withName("patientLinkDataLoader")
         .registerMappedBatchLoader(
             (testOrderIds, batchLoaderEnvironment) -> {
-              Map<UUID, List<PatientLink>> foundAll =
-                  patientLinkRepository.findAllByTestOrderInternalIdIn(testOrderIds).stream()
-                      .collect(Collectors.groupingBy(PatientLink::getTestOrderId));
-
               Map<UUID, PatientLink> found =
-                  testOrderIds.stream()
-                      .map(
-                          to ->
-                              PatientLinkDataLoader.getMostRecentPatientLink(
-                                  foundAll.getOrDefault(to, null)))
+                  patientLinkRepository.findMostRecentByTestOrderIdIn(testOrderIds).stream()
                       .collect(Collectors.toMap(PatientLink::getTestOrderId, Function.identity()));
-
               return Mono.just(found);
             });
   }
