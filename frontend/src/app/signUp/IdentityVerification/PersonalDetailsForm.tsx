@@ -206,9 +206,9 @@ const PersonalDetailsForm = ({
   return (
     <CardBackground>
       <Card logo isModalActive={isModalActive}>
-        <h4 className="margin-bottom-0" aria-hidden={isModalActive}>
+        <h1 className="margin-bottom-0 font-ui-xs" aria-hidden={isModalActive}>
           Sign up for SimpleReport
-        </h4>
+        </h1>
         <StepIndicator
           steps={organizationCreationSteps}
           currentStepValue={"1"}
@@ -238,7 +238,7 @@ const PersonalDetailsForm = ({
               Identity verification helps protect organizations working with
               personal health information.
             </p>
-            <h3>{getPersonFullName()}</h3>
+            <h2 className="questions-form-name">{getPersonFullName()}</h2>
           </div>
           {Object.entries(personalDetailsFields).map(
             ([key, { label, required, hintText }]) => {
