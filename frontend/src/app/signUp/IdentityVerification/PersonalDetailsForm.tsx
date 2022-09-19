@@ -238,9 +238,9 @@ const PersonalDetailsForm = ({
             "Personal contact information",
             false,
             "",
-            "personal-details-group-header"
+            "personal-contact-group-header"
           )}
-          <div role="group" aria-labelledby={"personal-details-group-header"}>
+          <div role="group" aria-labelledby={"personal-contact-group-header"}>
             {getFormElement(
               "email",
               "Email",
