@@ -1,12 +1,15 @@
-import { ChangeEvent, useState, useEffect } from "react";
+import React, { ChangeEvent, useState } from "react";
 import { useSelector } from "react-redux";
 
-import { DatePicker } from "../commonComponents/DatePicker";
 import Dropdown from "../commonComponents/Dropdown";
 import { useGetTopLevelDashboardMetricsNewQuery } from "../../generated/graphql";
 import { LoadingCard } from "../commonComponents/LoadingCard/LoadingCard";
 
 import "./Analytics.scss";
+import { formatDate } from "../utils/date";
+import TextInput from "../commonComponents/TextInput";
+
+import moment from "moment/moment";
 
 const getDateFromDaysAgo = (daysAgo: number): Date => {
   const date = new Date();
@@ -70,17 +73,6 @@ export const Analytics = (props: Props) => {
     props.endDate || getEndDateStringFromDaysAgo(0)
   );
 
-  useEffect(() => {
-    const startInput = document.getElementById("startDate") as HTMLInputElement;
-    const endInput = document.getElementById("endDate") as HTMLInputElement;
-    if (startInput) {
-      startInput.value = startDate;
-    }
-    if (endInput) {
-      endInput.value = endDate;
-    }
-  });
-
   const updateFacility = ({
     target: { value },
   }: ChangeEvent<HTMLSelectElement>) => {
@@ -142,6 +134,25 @@ export const Analytics = (props: Props) => {
   const positivityRate =
     totalTests > 0 ? (positiveTests / totalTests) * 100 : null;
 
+  const onDateChange = (
+    e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement>
+  ) => {
+    if (e.target.value.length === 10 && Date.parse(e.target.value)) {
+      const d = moment(e.target.value).toDate();
+      if (e.target.name === "startDate") {
+        const startDateString = setStartTimeForDateRange(
+          new Date(d)
+        ).toLocaleDateString();
+        setStartDate(startDateString);
+      } else {
+        const endDateString = setEndTimeForDateRange(
+          new Date(d)
+        ).toLocaleDateString();
+        setEndDate(endDateString);
+      }
+    }
+  };
+
   return (
     <main className="prime-home">
       <div className="grid-container">
@@ -199,35 +210,23 @@ export const Analytics = (props: Props) => {
               {dateRange === "custom" && (
                 <div className="grid-row grid-gap margin-top-2">
                   <div className="grid-col-4">
-                    <DatePicker
-                      name="startDate"
-                      label="Begin"
-                      onChange={(date?: string) => {
-                        if (date && date.length === 10) {
-                          const newDate = new Date(date);
-                          setStartDate(
-                            setStartTimeForDateRange(
-                              newDate
-                            ).toLocaleDateString()
-                          );
-                        }
-                      }}
-                      noHint
-                    />
+                    <TextInput
+                      name={"startDate"}
+                      label={"Begin"}
+                      onChange={onDateChange}
+                      type={"date"}
+                      max={formatDate(new Date())}
+                      value={formatDate(new Date(startDate))}
+                    />{" "}
                   </div>
                   <div className="grid-col-4">
-                    <DatePicker
-                      name="endDate"
-                      label="End"
-                      onChange={(date?: string) => {
-                        if (date && date.length === 10) {
-                          const newDate = new Date(date);
-                          setEndDate(
-                            setEndTimeForDateRange(newDate).toLocaleDateString()
-                          );
-                        }
-                      }}
-                      noHint
+                    <TextInput
+                      name={"endDate"}
+                      label={"End"}
+                      onChange={onDateChange}
+                      type={"date"}
+                      max={formatDate(new Date())}
+                      value={formatDate(new Date(endDate))}
                     />
                   </div>
                 </div>
