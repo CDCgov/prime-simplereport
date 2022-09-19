@@ -1,5 +1,4 @@
 import { useState } from "react";
-import moment from "moment";
 
 import { Card } from "../../commonComponents/Card/Card";
 import { CardBackground } from "../../commonComponents/CardBackground/CardBackground";
@@ -14,8 +13,8 @@ import {
 } from "../../../config/constants";
 import Select from "../../commonComponents/Select";
 import StepIndicator from "../../commonComponents/StepIndicator";
-import { DatePicker } from "../../commonComponents/DatePicker";
 import { useDocumentTitle } from "../../utils/hooks";
+import { formatDate } from "../../utils/date";
 
 import {
   initPersonalDetails,
@@ -35,7 +34,6 @@ export type PersonalDetailsFormProps = {
   firstName: string;
   middleName: string;
   lastName: string;
-  isModalActive?: boolean;
 };
 
 const PersonalDetailsForm = ({
@@ -43,7 +41,6 @@ const PersonalDetailsForm = ({
   firstName,
   middleName,
   lastName,
-  isModalActive,
 }: PersonalDetailsFormProps) => {
   const [
     personalDetails,
@@ -151,27 +148,21 @@ const PersonalDetailsForm = ({
           />
         );
       case "dateOfBirth":
-        const now = moment();
         return (
-          <DatePicker
-            name="dateOfBirth"
-            label="Date of birth"
-            labelClassName="font-ui-sm margin-top-2 margin-bottom-0"
-            onChange={(date) => {
-              if (date) {
-                const newDate = moment(date, "MM/DD/YYYY")
-                  .hour(now.hours())
-                  .minute(now.minutes());
-                onDetailChange("dateOfBirth")(newDate.format("YYYY-MM-DD"));
-              }
-            }}
-            onBlur={() => {
-              validateField("dateOfBirth");
-            }}
-            validationStatus={getValidationStatus("dateOfBirth")}
-            errorMessage={errors.dateOfBirth}
-            required
-            ariaHidden={isModalActive}
+          <Input
+            label={label}
+            type={"date"}
+            field={field}
+            key={field}
+            formObject={personalDetails}
+            onChange={onDetailChange}
+            errors={errors}
+            validate={validateField}
+            getValidationStatus={getValidationStatus}
+            required={required}
+            hintText={hintText}
+            min={formatDate(new Date("Jan 1, 1900"))}
+            max={formatDate(new Date())}
           />
         );
       case "preheader1":
@@ -205,19 +196,16 @@ const PersonalDetailsForm = ({
 
   return (
     <CardBackground>
-      <Card logo isModalActive={isModalActive}>
-        <h1 className="margin-bottom-0 font-ui-xs" aria-hidden={isModalActive}>
-          Sign up for SimpleReport
-        </h1>
+      <Card logo>
+        <h1 className="margin-bottom-0 font-ui-xs">Sign up for SimpleReport</h1>
         <StepIndicator
           steps={organizationCreationSteps}
           currentStepValue={"1"}
           noLabels={true}
           segmentIndicatorOnBottom={true}
-          ariaHidden={isModalActive}
         />
         <div className="margin-bottom-2 organization-form">
-          <div aria-hidden={isModalActive}>
+          <div>
             <p className="margin-top-neg-2">
               To create your account, we’ll need information to verify your
               identity directly with{" "}
@@ -244,10 +232,7 @@ const PersonalDetailsForm = ({
             ([key, { label, required, hintText }]) => {
               const field = key as keyof IdentityVerificationRequest;
               return (
-                <div
-                  key={field}
-                  aria-hidden={isModalActive && key !== "dateOfBirth"}
-                >
+                <div key={field}>
                   {getFormElement(field, label, required, hintText)}
                 </div>
               );
@@ -255,7 +240,6 @@ const PersonalDetailsForm = ({
           )}
         </div>
         <Button
-          ariaHidden={isModalActive}
           className="width-full"
           disabled={saving || !formChanged}
           onClick={onSave}

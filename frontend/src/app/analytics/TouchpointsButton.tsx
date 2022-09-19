@@ -1,15 +1,8 @@
 import "./TouchpointsButton.scss";
 
-interface Props {
-  isModalActive?: boolean;
-}
-
-const TouchpointsButton: React.FC<Props> = (props) => {
+const TouchpointsButton: React.FC = () => {
   return (
-    <button
-      className="touchpoints-wrapper sr-app-touchpoints-button"
-      aria-hidden={props.isModalActive}
-    >
+    <button className="touchpoints-wrapper sr-app-touchpoints-button">
       How can we improve SimpleReport?
     </button>
   );
