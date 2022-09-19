@@ -197,7 +197,7 @@ const PersonalDetailsForm = ({
   return (
     <CardBackground>
       <Card logo>
-        <h4 className="margin-bottom-0">Sign up for SimpleReport</h4>
+        <h1 className="margin-bottom-0 font-ui-xs">Sign up for SimpleReport</h1>
         <StepIndicator
           steps={organizationCreationSteps}
           currentStepValue={"1"}
@@ -226,7 +226,7 @@ const PersonalDetailsForm = ({
               Identity verification helps protect organizations working with
               personal health information.
             </p>
-            <h3>{getPersonFullName()}</h3>
+            <h2 className="questions-form-name">{getPersonFullName()}</h2>
           </div>
           {Object.entries(personalDetailsFields).map(
             ([key, { label, required, hintText }]) => {
