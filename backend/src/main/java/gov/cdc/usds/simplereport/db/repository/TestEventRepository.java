@@ -39,8 +39,6 @@ public interface TestEventRepository
   /** @deprecated (for sonar) */
   TestEvent findFirst1ByPatientOrderByCreatedAtDesc(Person p);
 
-  @Deprecated
-  /** @deprecated (for sonar) */
   @Query(
       value =
           " SELECT DISTINCT ON (patient_id) *, COALESCE(date_tested_backdate, created_at) AS coalesced_last_test_date FROM {h-schema}test_event"

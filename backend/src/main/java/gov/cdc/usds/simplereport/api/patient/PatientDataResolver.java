@@ -7,51 +7,80 @@ import gov.cdc.usds.simplereport.db.model.Facility;
 import gov.cdc.usds.simplereport.db.model.Person;
 import gov.cdc.usds.simplereport.db.model.PhoneNumber;
 import gov.cdc.usds.simplereport.db.model.TestEvent;
-import gov.cdc.usds.simplereport.service.dataloader.PatientLastTestDataLoader;
-import gov.cdc.usds.simplereport.service.dataloader.PatientPhoneNumbersDataLoader;
-import gov.cdc.usds.simplereport.service.dataloader.PatientPrimaryPhoneDataLoader;
-import graphql.kickstart.tools.GraphQLResolver;
-import graphql.schema.DataFetchingEnvironment;
+import gov.cdc.usds.simplereport.db.model.auxiliary.PersonName;
+import gov.cdc.usds.simplereport.db.repository.PhoneNumberRepository;
+import gov.cdc.usds.simplereport.db.repository.TestEventRepository;
 import java.util.List;
+import java.util.Map;
+import java.util.UUID;
 import java.util.concurrent.CompletableFuture;
-import org.springframework.stereotype.Component;
+import java.util.stream.Collectors;
+import org.dataloader.DataLoader;
+import org.springframework.graphql.data.method.annotation.SchemaMapping;
+import org.springframework.graphql.execution.BatchLoaderRegistry;
+import org.springframework.stereotype.Controller;
+import reactor.core.publisher.Mono;
 
-@Component
-public class PatientDataResolver
-    implements GraphQLResolver<Person>, PersonNameResolver<Person>, InternalIdResolver<Person> {
+@Controller
+public class PatientDataResolver implements PersonNameResolver<Person>, InternalIdResolver<Person> {
 
-  private final PatientPrimaryPhoneDataLoader _patientPrimaryPhoneDataLoader;
-  private final PatientPhoneNumbersDataLoader _patientPhoneNumbersDataLoader;
-  private final PatientLastTestDataLoader _patientLastTestDataLoader;
+  public PatientDataResolver(
+      BatchLoaderRegistry registry,
+      TestEventRepository testEventRepository,
+      PhoneNumberRepository phoneNumberRepository) {
+    registry
+        .forTypePair(UUID.class, TestEvent.class)
+        .withName("patientLastTestLoader")
+        .registerMappedBatchLoader(
+            (patientIds, batchLoaderEnvironment) -> {
+              Map<UUID, TestEvent> found =
+                  testEventRepository.findLastTestsByPatient(patientIds).stream()
+                      .collect(Collectors.toMap(TestEvent::getPatientInternalID, s -> s));
+              return Mono.just(found);
+            });
 
-  PatientDataResolver(
-      PatientPrimaryPhoneDataLoader patientPrimaryPhoneDataLoader,
-      PatientPhoneNumbersDataLoader patientPhoneNumbersDataLoader,
-      PatientLastTestDataLoader patientLastTestDataLoader) {
-    _patientPrimaryPhoneDataLoader = patientPrimaryPhoneDataLoader;
-    _patientPhoneNumbersDataLoader = patientPhoneNumbersDataLoader;
-    _patientLastTestDataLoader = patientLastTestDataLoader;
+    Class<List<PhoneNumber>> phoneNumberListClazz = (Class) List.class;
+    registry
+        .forTypePair(UUID.class, phoneNumberListClazz)
+        .withName("patientPhoneNumbersLoader")
+        .registerMappedBatchLoader(
+            (patientIds, batchLoaderEnvironment) -> {
+              Map<UUID, List<PhoneNumber>> found =
+                  phoneNumberRepository.findAllByPersonInternalIdIn(patientIds).stream()
+                      .flatMap(List::stream)
+                      .collect(Collectors.groupingBy(PhoneNumber::getPersonInternalID));
+
+              return Mono.just(found);
+            });
   }
 
-  public CompletableFuture<TestEvent> getLastTest(Person person, DataFetchingEnvironment dfe) {
-    return _patientLastTestDataLoader.load(person.getInternalId(), dfe);
+  @SchemaMapping(typeName = "Patient", field = "lastTest")
+  public CompletableFuture<TestEvent> getLastTest(
+      Person person, DataLoader<UUID, TestEvent> patientLastTestLoader) {
+    return patientLastTestLoader.load(person.getInternalId());
   }
 
-  public ApiFacility getFacility(Person p) {
-    Facility f = p.getFacility();
+  @SchemaMapping(typeName = "Patient", field = "phoneNumbers")
+  public CompletableFuture<List<PhoneNumber>> getPhoneNumbers(
+      Person person, DataLoader<UUID, List<PhoneNumber>> patientPhoneNumbersLoader) {
+    return patientPhoneNumbersLoader.load(person.getInternalId());
+  }
+
+  @SchemaMapping(typeName = "Patient", field = "facility")
+  public ApiFacility facility(Person patient) {
+    Facility f = patient.getFacility();
     return f == null ? null : new ApiFacility(f);
   }
 
-  public CompletableFuture<List<PhoneNumber>> getPhoneNumbers(
-      Person person, DataFetchingEnvironment dfe) {
-    return _patientPhoneNumbersDataLoader.load(person.getInternalId(), dfe);
+  @Override
+  @SchemaMapping(typeName = "Patient", field = "id")
+  public UUID getId(Person patient) {
+    return patient.getInternalId();
   }
 
-  public CompletableFuture<String> getTelephone(Person person, DataFetchingEnvironment dfe) {
-    return _patientPrimaryPhoneDataLoader.load(person, dfe).thenApply(p -> getNumberOrNull(p));
-  }
-
-  private String getNumberOrNull(PhoneNumber phoneNumber) {
-    return phoneNumber == null ? null : phoneNumber.getNumber();
+  @Override
+  @SchemaMapping(typeName = "Patient", field = "name")
+  public PersonName getName(Person patient) {
+    return patient.getNameInfo();
   }
 }

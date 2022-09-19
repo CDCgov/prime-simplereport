@@ -365,8 +365,8 @@ type Query {
   ): [Facility]
   patients(
     facilityId: ID
-    pageNumber: Int
-    pageSize: Int
+    pageNumber: Int = 0
+    pageSize: Int = 5000
     showDeleted: Boolean = false
       @requiredPermissions(allOf: ["READ_ARCHIVED_PATIENT_LIST"])
     namePrefixMatch: String
@@ -404,8 +404,8 @@ type Query {
     role: String
     startDate: DateTime
     endDate: DateTime
-    pageNumber: Int
-    pageSize: Int
+    pageNumber: Int = 0
+    pageSize: Int = 5000
   ): [TestResult] @requiredPermissions(allOf: ["READ_RESULT_LIST"])
   testResultsCount(
     facilityId: ID

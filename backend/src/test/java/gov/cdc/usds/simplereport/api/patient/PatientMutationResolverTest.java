@@ -19,10 +19,10 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.time.LocalDate;
 import java.util.UUID;
-import javax.servlet.http.Part;
 import org.assertj.core.api.InstanceOfAssertFactories;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.web.multipart.MultipartFile;
 
 class PatientMutationResolverTest {
   @Autowired private TestDataFactory _dataFactory;
@@ -32,7 +32,7 @@ class PatientMutationResolverTest {
   void uploadPatients_uploadExceptionThrown_graphQlErrorCaught() throws IOException {
     var personService = mock(PersonService.class);
     var uploadService = mock(UploadService.class);
-    var input = mock(Part.class);
+    var input = mock(MultipartFile.class);
     when(input.getInputStream()).thenThrow(new IOException("Some TCP error, probably."));
 
     var sut = new PatientMutationResolver(personService, uploadService);
@@ -49,7 +49,7 @@ class PatientMutationResolverTest {
     when(uploadService.processPersonCSV(any(InputStream.class)))
         .thenThrow(new IllegalGraphqlArgumentException("PANIC"));
 
-    var input = mock(Part.class);
+    var input = mock(MultipartFile.class);
     when(input.getInputStream()).thenReturn(new ByteArrayInputStream(new byte[0]));
 
     var sut = new PatientMutationResolver(personService, uploadService);

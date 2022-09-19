@@ -81,7 +81,8 @@ class ApiUserManagementTest extends BaseGraphqlTest {
 
   @Test
   void whoami_standardUser_okResponses() {
-    ObjectNode who = (ObjectNode) runQuery("current-user-query").get("whoami");
+    ObjectNode who =
+        (ObjectNode) runQuery("current-user-query", "whoDat", null, null).get("whoami");
     assertEquals("Bobbity", who.get("firstName").asText());
     assertEquals("Bobbity", who.path("name").get("firstName").asText());
     assertEquals("Bob", who.get("middleName").asText());
