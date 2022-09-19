@@ -8,13 +8,6 @@ describe("card", () => {
       render(<Card logo={true} />);
       expect(screen.getByAltText("SimpleReport logo")).toBeInTheDocument();
     });
-    it("should be hidden", () => {
-      render(<Card logo={true} isModalActive={true} />);
-      expect(screen.getByAltText("SimpleReport logo")).toBeInTheDocument();
-      expect(
-        screen.getByAltText("SimpleReport logo").parentElement
-      ).toHaveAttribute("aria-hidden", "true");
-    });
   });
   describe("kicker", () => {
     it("should exist", () => {
