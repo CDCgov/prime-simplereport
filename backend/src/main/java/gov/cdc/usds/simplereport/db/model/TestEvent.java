@@ -170,7 +170,7 @@ public class TestEvent extends BaseTestInfo {
 
   // This method is temporary and eventually, this method will be deprecated in favor of
   // getResultSet()
-  public TestResult getTestResult() {
+  public TestResult getCovidTestResults() {
     final String COVID_LOINC = "96741-4";
     Optional<Result> resultObject =
         this.results.stream()
