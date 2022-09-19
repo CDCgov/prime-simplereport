@@ -79,7 +79,6 @@ const StepIndicator = ({
           "margin-y-205": !segmentIndicatorOnBottom,
         }
       )}
-      aria-label="progress"
       aria-hidden={ariaHidden}
     >
       {segmentIndicatorOnBottom ? (

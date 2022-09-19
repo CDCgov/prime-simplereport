@@ -9,7 +9,7 @@ const RequestTestResult = () => {
     <CardBackground>
       <Card logo>
         <div className="usa-prose">
-          <h2 className="margin-top-2">COVID-19 test results</h2>
+          <h1 className="margin-top-2 font-ui-xl">COVID-19 test results</h1>
           <p>
             COVID-19 test results are sent via email or SMS text message with a
             link to view your result.

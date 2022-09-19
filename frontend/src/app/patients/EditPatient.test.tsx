@@ -19,7 +19,6 @@ import EditPatient, { GET_PATIENT, UPDATE_PATIENT } from "./EditPatient";
 import EditPatientContainer from "./EditPatientContainer";
 
 jest.mock("@trussworks/react-uswds", () => ({
-  ...jest.requireActual("@trussworks/react-uswds"),
   ComboBox: () => <></>,
 }));
 const mockStore = configureStore([]);

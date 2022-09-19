@@ -4,17 +4,19 @@ import gov.cdc.usds.simplereport.api.model.CreateSpecimenType;
 import gov.cdc.usds.simplereport.api.model.errors.IllegalGraphqlArgumentException;
 import gov.cdc.usds.simplereport.db.model.SpecimenType;
 import gov.cdc.usds.simplereport.service.SpecimenTypeService;
-import graphql.kickstart.tools.GraphQLMutationResolver;
 import lombok.RequiredArgsConstructor;
-import org.springframework.stereotype.Component;
+import org.springframework.graphql.data.method.annotation.Argument;
+import org.springframework.graphql.data.method.annotation.MutationMapping;
+import org.springframework.stereotype.Controller;
 
-@Component
+@Controller
 @RequiredArgsConstructor
-public class SpecimenTypeMutationResolver implements GraphQLMutationResolver {
+public class SpecimenTypeMutationResolver {
 
   private final SpecimenTypeService specimenTypeService;
 
-  public SpecimenType createSpecimenType(CreateSpecimenType input)
+  @MutationMapping
+  public SpecimenType createSpecimenType(@Argument CreateSpecimenType input)
       throws IllegalGraphqlArgumentException {
     return specimenTypeService.createSpecimenType(input);
   }
