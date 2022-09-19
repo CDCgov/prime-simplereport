@@ -135,7 +135,7 @@ public class PersonService {
   // called by List function and Count function
   protected Specification<Person> buildPersonSearchFilter(
       UUID facilityId,
-      boolean isArchived,
+      boolean includeArchived,
       String namePrefixMatch,
       boolean includeArchivedFacilities) {
 
@@ -146,7 +146,7 @@ public class PersonService {
 
     // build up filter based on params
     Specification<Person> filter = inCurrentOrganizationFilter();
-    if (!isArchived) {
+    if (!includeArchived) {
       filter = filter.and(isDeletedFilter(false));
     }
     if (facilityId == null) {
@@ -179,9 +179,9 @@ public class PersonService {
    * @param facilityId If null, then it means across accessible facilities in the whole organization
    * @param pageOffset Pagination offset is zero based
    * @param pageSize How many results to return, zero will result in the default page size (large)
-   * @param includeArchived Default is false. true will ONLY show deleted users
+   * @param includeArchived Default is false. true will return both archived _and_ active users
    * @param namePrefixMatch Null returns all users, any string will filter by first,middle,last
-   *     names that start with these characters. Case insenstive. If fewer than
+   *     names that start with these characters. Case-insensitive. If fewer than
    * @param includeArchivedFacilities setting to true will include patients in archived facilities,
    *     ignored if facilityId is not null
    * @return A list of matching patients.
