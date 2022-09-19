@@ -218,6 +218,7 @@ export const Analytics = (props: Props) => {
                     <input
                       id={"endDate"}
                       type={"date"}
+                      min={formatDate(new Date(startDate))}
                       max={formatDate(new Date())}
                       className={classNames("usa-input")}
                       aria-label={"Enter end date"}
