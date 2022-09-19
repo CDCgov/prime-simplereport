@@ -183,7 +183,7 @@ const UserDetail: React.FC<Props> = ({
         ) : null}
       </div>
       <nav
-        className="prime-secondary-nav margin-top-4"
+        className="prime-secondary-nav margin-top-4 padding-bottom-0"
         aria-label="Tertiary navigation"
       >
         <ul className="usa-nav__secondary-links prime-nav">
@@ -191,17 +191,27 @@ const UserDetail: React.FC<Props> = ({
             className={`usa-nav__secondary-item ${
               navItemSelected === "userInfo" ? "usa-current" : ""
             }`}
-            onClick={() => setNavItemSelected("userInfo")}
           >
-            <span>User information</span>
+            <button
+              role="tab"
+              className="usa-button--unstyled text-ink text-no-underline"
+              onClick={() => setNavItemSelected("userInfo")}
+            >
+              User information
+            </button>
           </li>
           <li
             className={`usa-nav__secondary-item ${
               navItemSelected === "facilityAccess" ? "usa-current" : ""
             }`}
-            onClick={() => setNavItemSelected("facilityAccess")}
           >
-            <span>Facility access</span>
+            <button
+              role="tab"
+              className="usa-button--unstyled text-ink text-no-underline"
+              onClick={() => setNavItemSelected("facilityAccess")}
+            >
+              Facility access
+            </button>
           </li>
         </ul>
       </nav>
