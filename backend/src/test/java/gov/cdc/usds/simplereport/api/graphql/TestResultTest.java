@@ -15,6 +15,7 @@ import gov.cdc.usds.simplereport.db.model.DeviceType;
 import gov.cdc.usds.simplereport.db.model.Facility;
 import gov.cdc.usds.simplereport.db.model.Organization;
 import gov.cdc.usds.simplereport.db.model.Person;
+import gov.cdc.usds.simplereport.db.model.auxiliary.AskOnEntrySurvey;
 import gov.cdc.usds.simplereport.db.model.auxiliary.MultiplexResultInput;
 import gov.cdc.usds.simplereport.db.model.auxiliary.TestResult;
 import gov.cdc.usds.simplereport.service.OrganizationService;
@@ -23,9 +24,11 @@ import gov.cdc.usds.simplereport.test_util.SliceTestConfiguration.WithSimpleRepo
 import gov.cdc.usds.simplereport.test_util.TestDataFactory;
 import java.text.SimpleDateFormat;
 import java.time.Instant;
+import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
+import java.util.Map;
 import java.util.Optional;
 import java.util.Set;
 import java.util.UUID;
@@ -104,7 +107,10 @@ class TestResultTest extends BaseGraphqlTest {
   void submitAndFetchMultiplexResult() throws Exception {
     Person p = _dataFactory.createFullPerson(_org);
     DeviceType d = _site.getDefaultDeviceType();
-    _dataFactory.createTestOrder(p, _site);
+    Map<String, Boolean> symptoms = Map.of("25064002", true);
+    LocalDate symptomOnsetDate = LocalDate.of(2020, 9, 15);
+    _dataFactory.createTestOrder(
+        p, _site, new AskOnEntrySurvey("77386006", symptoms, false, symptomOnsetDate));
     String dateTested = "2020-12-31T14:30:30.001Z";
 
     List<MultiplexResultInput> results = new ArrayList<>();
@@ -125,7 +131,11 @@ class TestResultTest extends BaseGraphqlTest {
     ArrayNode testResults = fetchTestResultsMultiplex(getFacilityScopedArguments());
 
     assertTrue(testResults.has(0), "Has at least one submitted test result=");
-    assertEquals(testResults.get(0).get("dateTested").asText(), dateTested);
+    assertEquals(dateTested, testResults.get(0).get("dateTested").asText());
+    assertEquals("{\"25064002\":\"true\"}", testResults.get(0).get("symptoms").asText());
+    assertEquals("false", testResults.get(0).get("noSymptoms").asText());
+    assertEquals("77386006", testResults.get(0).get("pregnancy").asText());
+    assertEquals("2020-09-15", testResults.get(0).get("symptomOnset").asText());
     testResults
         .get(0)
         .get("results")

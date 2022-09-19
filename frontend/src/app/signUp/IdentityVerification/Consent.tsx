@@ -10,10 +10,7 @@ import PersonalDetailsForm, {
   PersonalDetailsFormProps,
 } from "./PersonalDetailsForm";
 
-interface Props {
-  isModalActive?: boolean;
-}
-const Consent = ({ isModalActive }: Props) => {
+const Consent = () => {
   // Get person name & org id from route state
   const { orgExternalId, firstName, middleName, lastName } =
     (useLocation().state as PersonalDetailsFormProps) || {};
@@ -31,7 +28,6 @@ const Consent = ({ isModalActive }: Props) => {
         firstName={firstName}
         middleName={middleName}
         lastName={lastName}
-        isModalActive={isModalActive}
       />
     );
   }

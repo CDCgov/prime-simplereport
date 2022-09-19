@@ -17,13 +17,13 @@ import graphql.ErrorType;
 import graphql.GraphQLError;
 import java.io.ByteArrayInputStream;
 import java.io.IOException;
-import javax.servlet.http.Part;
 import org.assertj.core.api.InstanceOfAssertFactories;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.springframework.boot.context.properties.EnableConfigurationProperties;
 import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.test.context.junit.jupiter.SpringExtension;
+import org.springframework.web.multipart.MultipartFile;
 
 @EnableConfigurationProperties
 @ExtendWith(SpringExtension.class)
@@ -35,7 +35,7 @@ class TestResultMutationResolverTest {
 
   @Test
   void uploadResults_uploadExceptionThrown_graphqlErrorCaught() throws IOException {
-    var input = mock(Part.class);
+    var input = mock(MultipartFile.class);
     when(input.getInputStream()).thenThrow(new IOException("some network error"));
 
     var sut = new TestResultMutationResolver(_mockRepo, _mockReportingSvc, _mockUploadSvc);
@@ -48,7 +48,7 @@ class TestResultMutationResolverTest {
 
   @Test
   void uploadResults_graphqlExceptionThrown_graphqlErrorCaught() throws IOException {
-    var input = mock(Part.class);
+    var input = mock(MultipartFile.class);
     when(input.getInputStream()).thenThrow(new IllegalGraphqlArgumentException("wrong args bro"));
 
     var sut = new TestResultMutationResolver(_mockRepo, _mockReportingSvc, _mockUploadSvc);
@@ -61,7 +61,7 @@ class TestResultMutationResolverTest {
 
   @Test
   void uploadResults_upload_uploadServiceCalled() throws IOException {
-    var input = mock(Part.class);
+    var input = mock(MultipartFile.class);
     when(input.getInputStream()).thenReturn(new ByteArrayInputStream(new byte[0]));
     when(_mockUploadSvc.processResultCSV(any()))
         .thenReturn(new TestResultUpload(UploadStatus.SUCCESS));

@@ -42,6 +42,7 @@ import org.springframework.http.HttpMethod;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.test.context.TestPropertySource;
+import org.springframework.web.reactive.function.client.WebClientRequestException;
 
 /**
  * Tests around edges of audit logging.
@@ -84,6 +85,7 @@ class AuditLoggingFailuresTest extends BaseGraphqlTest {
         });
   }
 
+  // I tweaked the behavior to not return the original error message in order to improve security
   @Test
   void graphqlQuery_databaseError_eventLogged() {
     when(_testEventRepo.save(any(TestEvent.class))).thenThrow(new IllegalArgumentException("ewww"));
@@ -92,12 +94,13 @@ class AuditLoggingFailuresTest extends BaseGraphqlTest {
         patientArgs()
             .put("deviceId", facility.getDefaultDeviceType().getInternalId().toString())
             .put("result", "NEGATIVE");
-    runQuery("submit-test", args, "ewww");
+    runQuery("submit-test", args, "Something went wrong");
     verify(auditLoggerServiceSpy).logEvent(_eventCaptor.capture());
     ConsoleApiAuditEvent event = _eventCaptor.getValue();
     assertEquals(List.of("addTestResultNew"), event.getGraphqlErrorPaths());
   }
 
+  // I tweaked the behavior to not return the original error message in order to improve security
   @Test
   void graphqlQuery_auditFailure_noDataReturned() {
     doThrow(new IllegalArgumentException("naughty naughty"))
@@ -106,10 +109,11 @@ class AuditLoggingFailuresTest extends BaseGraphqlTest {
     useOrgUserAllFacilityAccess();
     ObjectNode args = patientArgs().put("symptoms", "{}").put("noSymptoms", true);
     String clientErrorMessage =
-        assertThrows(NullPointerException.class, () -> runQuery("update-time-of-test", args))
+        assertThrows(WebClientRequestException.class, () -> runQuery("update-time-of-test", args))
             .getMessage();
-    assertEquals( // I would characterize this as a bug in the test framework
-        "Body is empty with status 400", clientErrorMessage);
+    assertEquals(
+        "Request processing failed; nested exception is Something went wrong; nested exception is org.springframework.web.util.NestedServletException: Request processing failed; nested exception is Something went wrong",
+        clientErrorMessage);
   }
 
   @Test

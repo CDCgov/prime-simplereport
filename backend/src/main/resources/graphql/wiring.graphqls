@@ -34,7 +34,7 @@ directive @Pattern(
   message: String = "graphql.validation.Pattern.message"
 ) on ARGUMENT_DEFINITION
 
-# java.util.Date implementation
+# custom scalar gov.cdc.usds.simplereport.config.scalars.datetime.DateTimeScalar
 scalar DateTime
 # custom scalar gov.cdc.usds.simplereport.api.FlexibleDateScalar
 scalar LocalDate

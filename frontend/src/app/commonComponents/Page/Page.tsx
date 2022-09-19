@@ -16,15 +16,9 @@ interface Props {
   header?: React.ReactNode;
   children?: React.ReactNode;
   isPatientApp?: boolean;
-  isModalActive?: boolean;
 }
 
-const Page: React.FC<Props> = ({
-  header,
-  children,
-  isPatientApp,
-  isModalActive,
-}) => {
+const Page: React.FC<Props> = ({ header, children, isPatientApp }) => {
   // load touchpoints script
   useEffect(() => {
     // don't load script when running in cypress
@@ -43,11 +37,7 @@ const Page: React.FC<Props> = ({
   }, []);
   return (
     <div className="App">
-      <a
-        className="usa-skipnav"
-        href="#main-wrapper"
-        aria-hidden={isModalActive}
-      >
+      <a className="usa-skipnav" href="#main-wrapper">
         Skip to main content
       </a>
       <header
@@ -56,7 +46,6 @@ const Page: React.FC<Props> = ({
             ? "header border-bottom border-base-lighter"
             : "usa-header usa-header--basic"
         }
-        aria-hidden={isModalActive}
       >
         <USAGovBanner />
         {header}
@@ -71,7 +60,7 @@ const Page: React.FC<Props> = ({
           hideProgressBar={true}
         />
       </div>
-      <footer aria-hidden={isModalActive}>
+      <footer>
         <TouchpointsButton />
       </footer>
     </div>

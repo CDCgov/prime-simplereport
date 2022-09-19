@@ -34,7 +34,7 @@ class OrganizationResolverTest {
         orgQueueItems.stream().map(ApiPendingOrganization::new).collect(Collectors.toList());
 
     // WHEN
-    var result = organizationMutationResolver.getPendingOrganizations();
+    var result = organizationMutationResolver.pendingOrganizations();
 
     // THEN
     assertThat(expected).hasSameSizeAs(result);
