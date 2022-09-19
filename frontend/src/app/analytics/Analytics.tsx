@@ -7,9 +7,9 @@ import { LoadingCard } from "../commonComponents/LoadingCard/LoadingCard";
 
 import "./Analytics.scss";
 import { formatDate } from "../utils/date";
-import TextInput from "../commonComponents/TextInput";
 
 import moment from "moment/moment";
+import classNames from "classnames";
 
 const getDateFromDaysAgo = (daysAgo: number): Date => {
   const date = new Date();
@@ -134,25 +134,6 @@ export const Analytics = (props: Props) => {
   const positivityRate =
     totalTests > 0 ? (positiveTests / totalTests) * 100 : null;
 
-  const onDateChange = (
-    e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement>
-  ) => {
-    if (e.target.value.length === 10 && Date.parse(e.target.value)) {
-      const d = moment(e.target.value).toDate();
-      if (e.target.name === "startDate") {
-        const startDateString = setStartTimeForDateRange(
-          new Date(d)
-        ).toLocaleDateString();
-        setStartDate(startDateString);
-      } else {
-        const endDateString = setEndTimeForDateRange(
-          new Date(d)
-        ).toLocaleDateString();
-        setEndDate(endDateString);
-      }
-    }
-  };
-
   return (
     <main className="prime-home">
       <div className="grid-container">
@@ -210,23 +191,49 @@ export const Analytics = (props: Props) => {
               {dateRange === "custom" && (
                 <div className="grid-row grid-gap margin-top-2">
                   <div className="grid-col-4">
-                    <TextInput
-                      name={"startDate"}
-                      label={"Begin"}
-                      onChange={onDateChange}
+                    <label className={classNames("usa-label")}>Begin</label>
+                    <input
+                      id={"startDate"}
                       type={"date"}
                       max={formatDate(new Date())}
-                      value={formatDate(new Date(startDate))}
+                      className={classNames("usa-input")}
+                      aria-label={"Enter start date"}
+                      onBlur={() => {
+                        const e = document.getElementById(
+                          "startDate"
+                        ) as HTMLInputElement;
+                        if (Date.parse(e.value)) {
+                          const d = moment(e.value).toDate();
+                          const startDateString = setStartTimeForDateRange(
+                            new Date(d)
+                          ).toLocaleDateString();
+                          setStartDate(startDateString);
+                        }
+                      }}
+                      defaultValue={formatDate(new Date(startDate))}
                     />{" "}
                   </div>
                   <div className="grid-col-4">
-                    <TextInput
-                      name={"endDate"}
-                      label={"End"}
-                      onChange={onDateChange}
+                    <label className={classNames("usa-label")}>End</label>
+                    <input
+                      id={"endDate"}
                       type={"date"}
                       max={formatDate(new Date())}
-                      value={formatDate(new Date(endDate))}
+                      className={classNames("usa-input")}
+                      aria-label={"Enter end date"}
+                      onBlur={() => {
+                        const e = document.getElementById(
+                          "endDate"
+                        ) as HTMLInputElement;
+                        if (Date.parse(e.value)) {
+                          const d = moment(e.value).toDate();
+                          const endDateString = setEndTimeForDateRange(
+                            new Date(d)
+                          ).toLocaleDateString();
+                          setEndDate(endDateString);
+                        }
+                      }}
+                      defaultValue={formatDate(new Date(endDate))}
                     />
                   </div>
                 </div>
