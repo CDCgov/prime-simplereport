@@ -2,12 +2,10 @@ import React, { useState } from "react";
 import { Button, FormGroup, FileInput } from "@trussworks/react-uswds";
 
 import { showError } from "../../utils";
-import {
-  FeedbackMessage,
-  useUploadTestResultCsvMutation,
-} from "../../../generated/graphql";
+import { FeedbackMessage } from "../../../generated/graphql";
 import { useDocumentTitle } from "../../utils/hooks";
 import { LinkWithQuery } from "../../commonComponents/LinkWithQuery";
+import { FileUploadService } from "../../../fileUploadService/FileUploadService";
 
 const PAYLOAD_MAX_BYTES = 50 * 1000 * 1000;
 const REPORT_MAX_ITEMS = 10000;
@@ -29,8 +27,6 @@ const Uploads = () => {
   const [errorMessageText, setErrorMessageText] = useState(
     `Please resolve the errors below and upload your edited file. Your file has not been accepted.`
   );
-
-  const [uploadTestResultCSV] = useUploadTestResultCsvMutation();
 
   const handleFileChange = async (
     event: React.ChangeEvent<HTMLInputElement>
@@ -108,34 +104,29 @@ const Uploads = () => {
       return;
     }
 
-    let queryResponse;
-    try {
-      queryResponse = await uploadTestResultCSV({
-        variables: { testResultList: file },
-      });
-    } catch (error) {}
+    FileUploadService.uploadResults(file).then(async (res) => {
+      if (res.status !== 200) {
+        setErrorMessageText(
+          "There was a server error. Your file has not been accepted."
+        );
+      }
+      const response = await res.json();
+      if (response) {
+        if (response?.reportId) {
+          setReportId(response?.reportId);
+        }
 
-    const response = queryResponse?.data?.uploadTestResultCSV;
+        if (response?.errors?.length) {
+          setErrorMessageText(
+            "Please resolve the errors below and upload your edited file. Your file has not been accepted."
+          );
+        }
 
-    if (queryResponse?.errors?.length) {
-      setErrorMessageText(
-        "There was a server error. Your file has not been accepted."
-      );
-    }
-
-    if (response?.reportId) {
-      setReportId(response?.reportId);
-    }
-
-    if (response?.errors?.length) {
-      setErrorMessageText(
-        "Please resolve the errors below and upload your edited file. Your file has not been accepted."
-      );
-    }
-
-    if (response?.errors && response.errors.length > 0) {
-      setErrors(response.errors);
-    }
+        if (response?.errors && response.errors.length > 0) {
+          setErrors(response.errors);
+        }
+      }
+    });
 
     setFileInputResetValue(fileInputResetValue + 1);
     setFile(undefined);

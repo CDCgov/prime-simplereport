@@ -707,6 +707,4 @@ type Mutation {
   sendPatientLinkEmailByTestEventId(testEventId: ID!): Boolean
   updateOrganization(type: String!): String
     @requiredPermissions(allOf: ["EDIT_ORGANIZATION"])
-  uploadTestResultCSV(testResultList: Upload!): UploadResult
-    @requiredPermissions(allOf: ["SR_CSV_UPLOADER_PILOT"])
 }
