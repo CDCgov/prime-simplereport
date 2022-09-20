@@ -4116,3 +4116,13 @@ databaseChangeLog:
       rollback:
         truncateTable:
           tableName: feature_flag
+  - changeSet:
+      id: ci-test
+      author: alis@skylight.digital
+      comment: triggers a ci run
+      changes:
+        - tagDatabase:
+            tag: insert-multiplex-flag
+        - sql:
+            sql: |
+              select 1;
