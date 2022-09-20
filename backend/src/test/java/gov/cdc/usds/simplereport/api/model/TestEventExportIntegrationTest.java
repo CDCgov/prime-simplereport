@@ -2,8 +2,6 @@ package gov.cdc.usds.simplereport.api.model;
 
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
-import com.fasterxml.jackson.databind.node.JsonNodeFactory;
-import com.fasterxml.jackson.databind.node.ObjectNode;
 import gov.cdc.usds.simplereport.api.CurrentTenantDataAccessContextHolder;
 import gov.cdc.usds.simplereport.api.graphql.BaseGraphqlTest;
 import gov.cdc.usds.simplereport.db.model.Facility;
@@ -15,6 +13,7 @@ import gov.cdc.usds.simplereport.service.OrganizationService;
 import gov.cdc.usds.simplereport.service.TestEventService;
 import gov.cdc.usds.simplereport.test_util.SliceTestConfiguration.WithSimpleReportStandardUser;
 import gov.cdc.usds.simplereport.test_util.TestDataFactory;
+import java.util.Map;
 import java.util.Optional;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -47,13 +46,14 @@ class TestEventExportIntegrationTest extends BaseGraphqlTest {
     Person patient = _dataFactory.createFullPerson(organization);
     _dataFactory.createTestOrder(patient, facility);
     // create testEvent via the API to test the view layer hibernate session
-    ObjectNode variables =
-        JsonNodeFactory.instance
-            .objectNode()
-            .put("deviceId", facility.getDefaultDeviceType().getInternalId().toString())
-            .put("patientId", patient.getInternalId().toString())
-            .put("result", TestResult.NEGATIVE.toString())
-            .put("dateTested", "2021-09-01T10:31:30.001Z");
+
+    Map<String, Object> variables =
+        Map.of(
+            "deviceId", facility.getDefaultDeviceType().getInternalId().toString(),
+            "patientId", patient.getInternalId().toString(),
+            "result", TestResult.NEGATIVE.toString(),
+            "dateTested", "2021-09-01T10:31:30.001Z");
+
     submitTestResult(variables, Optional.empty());
     // getting the testEvent can be improve to use the same context as used by the uploader
     testEvent = _testEventService.getLastTestResultsForPatient(patient);
@@ -356,7 +356,7 @@ class TestEventExportIntegrationTest extends BaseGraphqlTest {
         false);
   }
 
-  private JsonNode submitTestResult(ObjectNode variables, Optional<String> expectedError) {
+  private JsonNode submitTestResult(Map<String, Object> variables, Optional<String> expectedError) {
     return runQuery("add-test-result-mutation", variables, expectedError.orElse(null));
   }
 }

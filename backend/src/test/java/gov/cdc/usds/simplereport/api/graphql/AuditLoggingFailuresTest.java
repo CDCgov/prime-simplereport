@@ -27,7 +27,9 @@ import gov.cdc.usds.simplereport.service.AuditLoggerService;
 import gov.cdc.usds.simplereport.service.OrganizationService;
 import gov.cdc.usds.simplereport.service.TimeOfConsentService;
 import gov.cdc.usds.simplereport.test_util.TestUserIdentities;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import lombok.extern.slf4j.Slf4j;
 import org.hibernate.HibernateException;
 import org.junit.jupiter.api.BeforeEach;
@@ -90,10 +92,9 @@ class AuditLoggingFailuresTest extends BaseGraphqlTest {
   void graphqlQuery_databaseError_eventLogged() {
     when(_testEventRepo.save(any(TestEvent.class))).thenThrow(new IllegalArgumentException("ewww"));
     useOrgUserAllFacilityAccess();
-    ObjectNode args =
-        patientArgs()
-            .put("deviceId", facility.getDefaultDeviceType().getInternalId().toString())
-            .put("result", "NEGATIVE");
+    HashMap<String, Object> args = patientArgs();
+    args.put("deviceId", facility.getDefaultDeviceType().getInternalId().toString());
+    args.put("result", "NEGATIVE");
     runQuery("submit-test", args, "Something went wrong");
     verify(auditLoggerServiceSpy).logEvent(_eventCaptor.capture());
     ConsoleApiAuditEvent event = _eventCaptor.getValue();
@@ -107,7 +108,9 @@ class AuditLoggingFailuresTest extends BaseGraphqlTest {
         .when(auditLoggerServiceSpy)
         .logEvent(_eventCaptor.capture());
     useOrgUserAllFacilityAccess();
-    ObjectNode args = patientArgs().put("symptoms", "{}").put("noSymptoms", true);
+    HashMap<String, Object> args = patientArgs();
+    args.put("symptoms", "{}");
+    args.put("noSymptoms", true);
     String clientErrorMessage =
         assertThrows(WebClientRequestException.class, () -> runQuery("update-time-of-test", args))
             .getMessage();
@@ -155,9 +158,7 @@ class AuditLoggingFailuresTest extends BaseGraphqlTest {
         .put("dateOfBirth", patient.getBirthDate().toString());
   }
 
-  private ObjectNode patientArgs() {
-    return JsonNodeFactory.instance
-        .objectNode()
-        .put("patientId", patient.getInternalId().toString());
+  private HashMap<String, Object> patientArgs() {
+    return new HashMap<>(Map.of("patientId", patient.getInternalId().toString()));
   }
 }
