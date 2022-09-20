@@ -47,7 +47,7 @@ public class TestEvent extends BaseTestInfo {
   @JsonIgnore
   @OneToMany(
       mappedBy = "testEvent",
-      cascade = {CascadeType.MERGE, CascadeType.PERSIST},
+      cascade = {CascadeType.MERGE},
       fetch = FetchType.LAZY)
   private Set<Result> results;
 
