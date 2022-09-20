@@ -1,15 +1,12 @@
 import React, { ChangeEvent, useState } from "react";
 import { useSelector } from "react-redux";
+import moment from "moment/moment";
+import classNames from "classnames";
 
 import Dropdown from "../commonComponents/Dropdown";
 import { useGetTopLevelDashboardMetricsNewQuery } from "../../generated/graphql";
-import { LoadingCard } from "../commonComponents/LoadingCard/LoadingCard";
-
 import "./Analytics.scss";
 import { formatDate } from "../utils/date";
-
-import moment from "moment/moment";
-import classNames from "classnames";
 
 const getDateFromDaysAgo = (daysAgo: number): Date => {
   const date = new Date();
@@ -116,20 +113,16 @@ export const Analytics = (props: Props) => {
     fetchPolicy: "no-cache",
   });
 
-  if (loading) {
-    return <LoadingCard />;
-  }
-
   if (error) {
     throw error;
   }
 
-  if (data === undefined) {
+  if (!loading && data === undefined) {
     return <p>Error: Results not found</p>;
   }
 
-  const totalTests = data.topLevelDashboardMetrics?.totalTestCount || 0;
-  const positiveTests = data.topLevelDashboardMetrics?.positiveTestCount || 0;
+  const totalTests = data?.topLevelDashboardMetrics?.totalTestCount || 0;
+  const positiveTests = data?.topLevelDashboardMetrics?.positiveTestCount || 0;
   const negativeTests = totalTests - positiveTests;
   const positivityRate =
     totalTests > 0 ? (positiveTests / totalTests) * 100 : null;
@@ -194,6 +187,7 @@ export const Analytics = (props: Props) => {
                     <label className={classNames("usa-label")}>Begin</label>
                     <input
                       id={"startDate"}
+                      data-testid={"startDate"}
                       type={"date"}
                       max={formatDate(new Date())}
                       className={classNames("usa-input")}
@@ -217,6 +211,7 @@ export const Analytics = (props: Props) => {
                     <label className={classNames("usa-label")}>End</label>
                     <input
                       id={"endDate"}
+                      data-testid={"endDate"}
                       type={"date"}
                       min={formatDate(new Date(startDate))}
                       max={formatDate(new Date())}
@@ -239,49 +234,55 @@ export const Analytics = (props: Props) => {
                   </div>
                 </div>
               )}
-              <h3>{facilityName}</h3>
-              <p className="margin-bottom-0">All people tested</p>
-              <p className="padding-top-1">{`${startDate} \u2013 ${endDate}`}</p>
-              <div className="grid-row grid-gap">
-                <div className="grid-col-3">
-                  <div className="card display-flex flex-column flex-row">
-                    <h2>Tests conducted</h2>
-                    <h1>{totalTests}</h1>
-                    <p></p>
-                  </div>
-                </div>
-                <div className="grid-col-3">
-                  <div className="card display-flex flex-column flex-align-center">
-                    <h2>Positive tests</h2>
-                    <h1>{positiveTests}</h1>
-                    {/* \u2BC6 is down pointing triangle */}
-                    <p>
-                      {/* <span className="red-pointing-up">{`\u2BC5`} 2</span>{" "}
+              {loading ? (
+                <p>Loading...</p>
+              ) : (
+                <>
+                  <h3>{facilityName}</h3>
+                  <p className="margin-bottom-0">All people tested</p>
+                  <p className="padding-top-1">{`${startDate} \u2013 ${endDate}`}</p>
+                  <div className="grid-row grid-gap">
+                    <div className="grid-col-3">
+                      <div className="card display-flex flex-column flex-row">
+                        <h2>Tests conducted</h2>
+                        <h1>{totalTests}</h1>
+                        <p></p>
+                      </div>
+                    </div>
+                    <div className="grid-col-3">
+                      <div className="card display-flex flex-column flex-align-center">
+                        <h2>Positive tests</h2>
+                        <h1>{positiveTests}</h1>
+                        {/* \u2BC6 is down pointing triangle */}
+                        <p>
+                          {/* <span className="red-pointing-up">{`\u2BC5`} 2</span>{" "}
                       <span className="usa-hint font-ui-md">from last week</span> */}
-                    </p>
+                        </p>
+                      </div>
+                    </div>
+                    <div className="grid-col-3">
+                      <div className="card display-flex flex-column flex-align-center">
+                        <h2>Negative tests</h2>
+                        <h1>{negativeTests}</h1>
+                        <p></p>
+                      </div>
+                    </div>
+                    <div className="grid-col-3">
+                      <div className="card display-flex flex-column flex-align-center">
+                        <h2>Positivity rate</h2>
+                        <h1>
+                          {positivityRate !== null
+                            ? positivityRate.toFixed(1) + "%"
+                            : "N/A"}
+                        </h1>
+                        <p className="font-ui-2xs">
+                          Positives <span>÷</span> total tests
+                        </p>
+                      </div>
+                    </div>
                   </div>
-                </div>
-                <div className="grid-col-3">
-                  <div className="card display-flex flex-column flex-align-center">
-                    <h2>Negative tests</h2>
-                    <h1>{negativeTests}</h1>
-                    <p></p>
-                  </div>
-                </div>
-                <div className="grid-col-3">
-                  <div className="card display-flex flex-column flex-align-center">
-                    <h2>Positivity rate</h2>
-                    <h1>
-                      {positivityRate !== null
-                        ? positivityRate.toFixed(1) + "%"
-                        : "N/A"}
-                    </h1>
-                    <p className="font-ui-2xs">
-                      Positives <span>÷</span> total tests
-                    </p>
-                  </div>
-                </div>
-              </div>
+                </>
+              )}
             </div>
           </div>
         </div>
