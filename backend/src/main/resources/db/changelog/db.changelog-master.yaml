@@ -4121,8 +4121,8 @@ databaseChangeLog:
       author: alis@skylight.digital
       comment: triggers a ci run
       changes:
-        - tagDatabase:
-            tag: insert-multiplex-flag
         - sql:
-            sql: |
-              select 1;
+            sql: select 1;
+      rollback:
+        - sql:
+            sql: -- select 1;
