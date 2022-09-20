@@ -111,7 +111,12 @@ const App = () => {
     if (appInsights instanceof ApplicationInsights) {
       appInsights.trackException({
         exception: error,
-        properties: { "user message": "Server connection error" },
+        properties: {
+          "user message": "Server connection error",
+          org: data?.whoami.organization?.name,
+          url: location,
+          access_token: localStorage.getItem("access_token"),
+        },
       });
     }
     return <p>Server connection error...</p>;
