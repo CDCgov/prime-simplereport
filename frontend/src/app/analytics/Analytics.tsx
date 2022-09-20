@@ -192,12 +192,9 @@ export const Analytics = (props: Props) => {
                       max={formatDate(new Date())}
                       className={classNames("usa-input")}
                       aria-label={"Enter start date"}
-                      onBlur={() => {
-                        const e = document.getElementById(
-                          "startDate"
-                        ) as HTMLInputElement;
-                        if (Date.parse(e.value)) {
-                          const d = moment(e.value).toDate();
+                      onChange={(e) => {
+                        if (Date.parse(e.target.value)) {
+                          const d = moment(e.target.value).toDate();
                           const startDateString = setStartTimeForDateRange(
                             new Date(d)
                           ).toLocaleDateString();
@@ -217,12 +214,9 @@ export const Analytics = (props: Props) => {
                       max={formatDate(new Date())}
                       className={classNames("usa-input")}
                       aria-label={"Enter end date"}
-                      onBlur={() => {
-                        const e = document.getElementById(
-                          "endDate"
-                        ) as HTMLInputElement;
-                        if (Date.parse(e.value)) {
-                          const d = moment(e.value).toDate();
+                      onChange={(e) => {
+                        if (Date.parse(e.target.value)) {
+                          const d = moment(e.target.value).toDate();
                           const endDateString = setEndTimeForDateRange(
                             new Date(d)
                           ).toLocaleDateString();
