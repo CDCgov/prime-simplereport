@@ -4128,7 +4128,7 @@ databaseChangeLog:
             columns:
               - column:
                   name: created_at
-                  descending:  true
+                  descending: true
       rollback:
         - dropIndex:
             indexName: ix__patient_link__created_at
