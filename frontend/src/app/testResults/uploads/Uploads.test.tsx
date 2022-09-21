@@ -9,13 +9,8 @@ import { FileUploadService } from "../../../fileUploadService/FileUploadService"
 
 import Uploads from "./Uploads";
 
-
 const mockStore = createMockStore([]);
 const store = mockStore({});
-
-jest.mock("../../utils/hooks", () => ({
-  useDocumentTitle: jest.fn(),
-}));
 
 const validFileContents =
   "Patient_last_name,Patient_first_name,Patient_middle_name,Patient_suffix,Patient_tribal_affiliation,Patient_ID,Ordered_test_code,Specimen_source_site_code,Specimen_type_code,Device_ID,Instrument_ID,Result_ID,Corrected_result_ID,Test_correction_reason,Test_result_status,Test_result_code,Illness_onset_date,Specimen_collection_date_time,Order_test_date,Test_date,Date_result_released,Patient_race,Patient_DOB,Patient_gender,Patient_ethnicity,Patient_preferred_language,Patient_street,Patient_street_2,Patient_city,Patient_state,Patient_zip_code,Patient_country,Patient_phone_number,Patient_county,Patient_email,Patient_role,Processing_mode_code,Employed_in_healthcare,Resident_congregate_setting,First_test,Symptomatic_for_disease,Testing_lab_name,Testing_lab_CLIA,Testing_lab_street,Testing_lab_street_2,Testing_lab_city,Testing_lab_state,Testing_lab_zip_code,Testing_lab_phone_number,Testing_lab_county,Organization_name,Ordering_facility_name,Ordering_facility_street,Ordering_facility_street_2,Ordering_facility_city,Ordering_facility_state,Ordering_facility_zip_code,Ordering_facility_phone_number,Ordering_facility_county,Ordering_provider_ID,Ordering_provider_last_name,Ordering_provider_first_name,Ordering_provider_street,Ordering_provider_street_2,Ordering_provider_city,Ordering_provider_state,Ordering_provider_zip_code,Ordering_provider_phone_number,Ordering_provider_county,Site_of_care\n" +
@@ -119,7 +114,7 @@ describe("Uploads", () => {
 
       uploadResultsSpy = jest
         .spyOn(FileUploadService, "uploadResults")
-        .mockImplementation((csvFile: File) => {
+        .mockImplementation(() => {
           return Promise.resolve(
             new Response(
               JSON.stringify({

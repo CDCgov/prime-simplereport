@@ -1,5 +1,8 @@
 package gov.cdc.usds.simplereport.api.uploads;
 
+import static gov.cdc.usds.simplereport.config.WebConfiguration.PATIENT_UPLOAD;
+import static gov.cdc.usds.simplereport.config.WebConfiguration.RESULT_UPLOAD;
+
 import gov.cdc.usds.simplereport.api.model.errors.CsvProcessingException;
 import gov.cdc.usds.simplereport.db.model.TestResultUpload;
 import gov.cdc.usds.simplereport.service.TestResultUploadService;
@@ -16,24 +19,24 @@ import org.springframework.web.multipart.MultipartFile;
 @RestController
 @RequiredArgsConstructor
 @Slf4j
-public class UploadController {
+public class FileUploadController {
   private final UploadService uploadService;
   private final TestResultUploadService testResultUploadService;
 
-  @PostMapping("upload/patients")
+  @PostMapping(PATIENT_UPLOAD)
   public String handlePatientsUpload(@RequestParam("file") MultipartFile file) {
     try (InputStream people = file.getInputStream()) {
       return uploadService.processPersonCSV(people);
     } catch (IllegalArgumentException e) {
       log.error("Patient CSV upload failed", e);
-      throw new CsvProcessingException(e.toString());
+      throw new CsvProcessingException(e.getMessage());
     } catch (IOException e) {
       log.error("Patient CSV upload failed", e);
       throw new CsvProcessingException("Unable to complete patient CSV upload");
     }
   }
 
-  @PostMapping("upload/results")
+  @PostMapping(RESULT_UPLOAD)
   public TestResultUpload handleResultsUpload(@RequestParam("file") MultipartFile file) {
     try (InputStream resultsUpload = file.getInputStream()) {
 

@@ -24,6 +24,8 @@ public class WebConfiguration implements WebMvcConfigurer {
   public static final String USER_ACCOUNT_REQUEST = "/user-account";
   public static final String IDENTITY_VERIFICATION = "/identity-verification";
   public static final String FEATURE_FLAGS = "/feature-flags";
+  public static final String PATIENT_UPLOAD = "/upload/patients";
+  public static final String RESULT_UPLOAD = "/upload/results";
   public static final String GRAPH_QL = "/graphql";
 
   @Autowired private PatientExperienceLoggingInterceptor _loggingInterceptor;

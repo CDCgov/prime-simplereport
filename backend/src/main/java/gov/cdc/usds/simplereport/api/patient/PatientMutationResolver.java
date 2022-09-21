@@ -11,49 +11,27 @@ import static gov.cdc.usds.simplereport.api.Translators.parseState;
 import static gov.cdc.usds.simplereport.api.Translators.parseString;
 import static gov.cdc.usds.simplereport.api.Translators.parseTribalAffiliation;
 
-import gov.cdc.usds.simplereport.api.model.errors.CsvProcessingException;
-import gov.cdc.usds.simplereport.api.model.errors.IllegalGraphqlArgumentException;
 import gov.cdc.usds.simplereport.db.model.Person;
 import gov.cdc.usds.simplereport.db.model.auxiliary.PhoneNumberInput;
 import gov.cdc.usds.simplereport.db.model.auxiliary.StreetAddress;
 import gov.cdc.usds.simplereport.db.model.auxiliary.TestResultDeliveryPreference;
 import gov.cdc.usds.simplereport.service.PersonService;
-import gov.cdc.usds.simplereport.service.UploadService;
 import gov.cdc.usds.simplereport.service.model.PatientEmailsHolder;
-import java.io.IOException;
-import java.io.InputStream;
 import java.time.LocalDate;
 import java.util.List;
 import java.util.UUID;
+import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.graphql.data.method.annotation.Argument;
 import org.springframework.graphql.data.method.annotation.MutationMapping;
 import org.springframework.stereotype.Controller;
-import org.springframework.web.multipart.MultipartFile;
 
 /** Mutations for creating and updating patient records. */
 @Controller
 @Slf4j
+@RequiredArgsConstructor
 public class PatientMutationResolver {
-  private final PersonService _ps;
-  private final UploadService _us;
-
-  public PatientMutationResolver(PersonService ps, UploadService us) {
-    _ps = ps;
-    _us = us;
-  }
-
-  @MutationMapping
-  public String uploadPatients(@Argument MultipartFile patientList) {
-    try (InputStream people = patientList.getInputStream()) {
-      return _us.processPersonCSV(people);
-    } catch (IllegalGraphqlArgumentException e) {
-      throw e;
-    } catch (IOException e) {
-      log.error("Patient CSV upload failed", e);
-      throw new CsvProcessingException("Unable to complete patient CSV upload");
-    }
-  }
+  private final PersonService personService;
 
   @MutationMapping
   public Person addPatient(
@@ -91,7 +69,7 @@ public class PatientMutationResolver {
 
     var backwardsCompatibleEmails = new PatientEmailsHolder(email, emails);
 
-    return _ps.addPatient(
+    return personService.addPatient(
         facilityId,
         parseString(lookupId),
         parseString(firstName),
@@ -157,7 +135,7 @@ public class PatientMutationResolver {
 
     var backwardsCompatibleEmails = new PatientEmailsHolder(email, emails);
 
-    return _ps.updatePatient(
+    return personService.updatePatient(
         facilityId,
         patientId,
         parseString(lookupId),
@@ -189,6 +167,6 @@ public class PatientMutationResolver {
 
   @MutationMapping
   public Person setPatientIsDeleted(@Argument UUID id, @Argument Boolean deleted) {
-    return _ps.setIsDeleted(id, deleted);
+    return personService.setIsDeleted(id, deleted);
   }
 }
