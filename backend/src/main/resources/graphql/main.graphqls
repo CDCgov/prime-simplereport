@@ -237,6 +237,8 @@ type TestOrder {
   symptomOnset: LocalDate
   deviceType: DeviceType
   deviceSpecimenType: DeviceSpecimenType
+  result: String
+    @deprecated(reason: "use results as source of truth")
   results: [MultiplexResult]
   dateTested: DateTime
   correctionStatus: String
@@ -254,6 +256,8 @@ type TestResult {
   symptoms: String
   symptomOnset: LocalDate
   deviceType: DeviceType
+  result: String
+    @deprecated(reason: "use results as source of truth")
   results: [MultiplexResult]
   dateTested: DateTime
   testPerformed: TestDescription!
