@@ -15,38 +15,6 @@ import org.springframework.beans.factory.annotation.Autowired;
 class PatientMutationResolverTest {
   @Autowired private TestDataFactory _dataFactory;
 
-  //  @Test
-  //  @SuppressWarnings("checkstyle:IllegalCatch")
-  //  void uploadPatients_uploadExceptionThrown_graphQlErrorCaught() throws IOException {
-  //    var personService = mock(PersonService.class);
-  //    var uploadService = mock(UploadService.class);
-  //    var input = mock(MultipartFile.class);
-  //    when(input.getInputStream()).thenThrow(new IOException("Some TCP error, probably."));
-  //
-  //    var sut = new PatientMutationResolver(personService, uploadService);
-  //    Throwable caught = assertThrows(Throwable.class, () -> sut.uploadPatients(input));
-  //    assertThat(caught)
-  //        .asInstanceOf(InstanceOfAssertFactories.type(GraphQLError.class))
-  //        .matches(e -> e.getErrorType() == ErrorType.ExecutionAborted);
-  //  }
-
-  //  @Test
-  //  void uploadPatients_validationExceptionThrown_sameExceptionCaught() throws IOException {
-  //    var personService = mock(PersonService.class);
-  //    var uploadService = mock(UploadService.class);
-  //    when(uploadService.processPersonCSV(any(InputStream.class)))
-  //        .thenThrow(new IllegalGraphqlArgumentException("PANIC"));
-  //
-  //    var input = mock(MultipartFile.class);
-  //    when(input.getInputStream()).thenReturn(new ByteArrayInputStream(new byte[0]));
-  //
-  //    var sut = new PatientMutationResolver(personService, uploadService);
-  //
-  //    Exception caught =
-  //        assertThrows(IllegalGraphqlArgumentException.class, () -> sut.uploadPatients(input));
-  //    assertThat(caught).hasMessage("PANIC");
-  //  }
-
   @Test
   void addPatient_canAddWithBackwardsCompatibleTelephone() {
     var personService = mock(PersonService.class);
