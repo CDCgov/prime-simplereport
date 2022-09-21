@@ -1,17 +1,21 @@
-import { render, screen } from "@testing-library/react";
+import { render, screen, waitFor } from "@testing-library/react";
 import userEvent from "@testing-library/user-event";
 import createMockStore from "redux-mock-store";
-import { MockedProvider, MockedProviderProps } from "@apollo/client/testing";
 import { Provider } from "react-redux";
 import { MemoryRouter } from "react-router-dom";
 import { ToastContainer } from "react-toastify";
 
-import { UploadTestResultCsvDocument } from "../../../generated/graphql";
+import { FileUploadService } from "../../../fileUploadService/FileUploadService";
 
 import Uploads from "./Uploads";
 
+
 const mockStore = createMockStore([]);
 const store = mockStore({});
+
+jest.mock("../../utils/hooks", () => ({
+  useDocumentTitle: jest.fn(),
+}));
 
 const validFileContents =
   "Patient_last_name,Patient_first_name,Patient_middle_name,Patient_suffix,Patient_tribal_affiliation,Patient_ID,Ordered_test_code,Specimen_source_site_code,Specimen_type_code,Device_ID,Instrument_ID,Result_ID,Corrected_result_ID,Test_correction_reason,Test_result_status,Test_result_code,Illness_onset_date,Specimen_collection_date_time,Order_test_date,Test_date,Date_result_released,Patient_race,Patient_DOB,Patient_gender,Patient_ethnicity,Patient_preferred_language,Patient_street,Patient_street_2,Patient_city,Patient_state,Patient_zip_code,Patient_country,Patient_phone_number,Patient_county,Patient_email,Patient_role,Processing_mode_code,Employed_in_healthcare,Resident_congregate_setting,First_test,Symptomatic_for_disease,Testing_lab_name,Testing_lab_CLIA,Testing_lab_street,Testing_lab_street_2,Testing_lab_city,Testing_lab_state,Testing_lab_zip_code,Testing_lab_phone_number,Testing_lab_county,Organization_name,Ordering_facility_name,Ordering_facility_street,Ordering_facility_street_2,Ordering_facility_city,Ordering_facility_state,Ordering_facility_zip_code,Ordering_facility_phone_number,Ordering_facility_county,Ordering_provider_ID,Ordering_provider_last_name,Ordering_provider_first_name,Ordering_provider_street,Ordering_provider_street_2,Ordering_provider_city,Ordering_provider_state,Ordering_provider_zip_code,Ordering_provider_phone_number,Ordering_provider_county,Site_of_care\n" +
@@ -27,14 +31,12 @@ const file = (text: BlobPart) => {
 const validFile = () => file(validFileContents);
 
 const TestContainer = () => (
-  <MockedProvider>
-    <Provider store={store}>
-      <MemoryRouter>
-        <ToastContainer />
-        <Uploads />
-      </MemoryRouter>
-    </Provider>
-  </MockedProvider>
+  <Provider store={store}>
+    <MemoryRouter>
+      <ToastContainer />
+      <Uploads />
+    </MemoryRouter>
+  </Provider>
 );
 
 describe("Uploads", () => {
@@ -109,78 +111,58 @@ describe("Uploads", () => {
   });
 
   describe("happy path", () => {
-    let mockIsDone: boolean;
     let file: File;
+    let uploadResultsSpy: jest.SpyInstance<Promise<Response>, [csvFile: File]>;
 
-    beforeEach(() => {
-      mockIsDone = false;
+    beforeEach(async () => {
       file = validFile();
 
-      const mocks: MockedProviderProps["mocks"] = [
-        {
-          request: {
-            query: UploadTestResultCsvDocument,
-            variables: {
-              testResultList: file,
-            },
-          },
-          result: () => {
-            mockIsDone = true;
+      uploadResultsSpy = jest
+        .spyOn(FileUploadService, "uploadResults")
+        .mockImplementation((csvFile: File) => {
+          return Promise.resolve(
+            new Response(
+              JSON.stringify({
+                reportId: "fake-report-id",
+                status: "FINISHED",
+                recordsCount: 1,
+                warnings: [],
+                errors: [],
+              }),
+              { status: 200 }
+            )
+          );
+        });
 
-            return {
-              data: {
-                uploadTestResultCSV: {
-                  reportId: "fake-id",
-                  status: "FINISHED",
-                  recordsCount: 1,
-                  warnings: [],
-                  errors: [],
-                },
-              },
-            };
-          },
-        },
-      ];
-
-      render(
-        <MockedProvider mocks={mocks} addTypename={false}>
-          <Provider store={store}>
-            <MemoryRouter>
-              <ToastContainer />
-              <Uploads />
-            </MemoryRouter>
-          </Provider>
-        </MockedProvider>
+      await render(
+        <Provider store={store}>
+          <MemoryRouter>
+            <ToastContainer />
+            <Uploads />
+          </MemoryRouter>
+        </Provider>
       );
+
+      const fileInput = screen.getByTestId("file-input-input");
+      userEvent.upload(fileInput, file);
+      await waitFor(() => {
+        screen.getByText("values.csv");
+      });
+
+      const submitButton = screen.getByTestId("button");
+      userEvent.click(submitButton);
+      await waitFor(() => {
+        expect(screen.getByText("Success: File Accepted")).toBeInTheDocument();
+      });
     });
 
-    it("performs HTTP request to GraphQL endpoint to submit CSV file", async () => {
-      const input = screen.getByTestId("file-input-input");
-
-      userEvent.upload(input, file);
-
-      await new Promise((resolve) => setTimeout(resolve, 0));
-      const button = screen.getByTestId("button");
-
-      userEvent.click(button);
-
-      await new Promise((resolve) => setTimeout(resolve, 0));
-      expect(mockIsDone).toEqual(true);
+    it("performs HTTP request to rest endpoint to submit CSV file", async () => {
+      expect(uploadResultsSpy).toHaveBeenCalled();
     });
 
     it("displays a success message and the returned Report ID", async () => {
-      const input = screen.getByTestId("file-input-input");
-
-      userEvent.upload(input, file);
-      await new Promise((resolve) => setTimeout(resolve, 0));
-
-      const button = screen.getByTestId("button");
-
-      userEvent.click(button);
-      await new Promise((resolve) => setTimeout(resolve, 0));
-
-      expect(await screen.findByText("Success: File Accepted"));
-      expect(await screen.findByText("fake-id"));
+      expect(screen.getByText("Confirmation Code")).toBeInTheDocument();
+      expect(screen.getByText("fake-report-id")).toBeInTheDocument();
     });
   });
 });
