@@ -41,7 +41,6 @@ query GetFacilityResultsForCsv(
     }
     dateTested
     dateUpdated
-    result
     results {
       disease {
         name
@@ -115,7 +114,6 @@ query GetFacilityResultsMultiplex(
   ) {
     internalId
     dateTested
-    result
     results {
       disease {
         name
@@ -185,7 +183,6 @@ query GetResultsCountByFacility(
 query GetTestResultForPrint($id: ID!) {
   testResult(id: $id) {
     dateTested
-    result
     results {
       disease {
         name

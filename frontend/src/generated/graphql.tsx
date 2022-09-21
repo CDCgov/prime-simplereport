@@ -1908,7 +1908,6 @@ export type GetFacilityQueueMultiplexQuery = {
             symptoms?: string | null | undefined;
             symptomOnset?: any | null | undefined;
             noSymptoms?: boolean | null | undefined;
-            result?: string | null | undefined;
             dateTested?: any | null | undefined;
             correctionStatus?: string | null | undefined;
             reasonForCorrection?: string | null | undefined;
@@ -2243,8 +2242,22 @@ export type GetTestResultForCorrectionQuery = {
     | {
         __typename?: "TestResult";
         dateTested?: any | null | undefined;
-        result?: string | null | undefined;
         correctionStatus?: string | null | undefined;
+        results?:
+          | Array<
+              | {
+                  __typename?: "MultiplexResult";
+                  testResult?: string | null | undefined;
+                  disease?:
+                    | { __typename?: "SupportedDisease"; name: string }
+                    | null
+                    | undefined;
+                }
+              | null
+              | undefined
+            >
+          | null
+          | undefined;
         deviceType?:
           | { __typename?: "DeviceType"; name: string }
           | null
@@ -2300,7 +2313,6 @@ export type GetTestResultDetailsQuery = {
     | {
         __typename?: "TestResult";
         dateTested?: any | null | undefined;
-        result?: string | null | undefined;
         correctionStatus?: string | null | undefined;
         symptoms?: string | null | undefined;
         symptomOnset?: any | null | undefined;
@@ -2451,7 +2463,6 @@ export type GetFacilityResultsForCsvQuery = {
             __typename?: "TestResult";
             dateTested?: any | null | undefined;
             dateUpdated?: any | null | undefined;
-            result?: string | null | undefined;
             correctionStatus?: string | null | undefined;
             reasonForCorrection?: string | null | undefined;
             symptoms?: string | null | undefined;
@@ -2563,7 +2574,6 @@ export type GetFacilityResultsMultiplexQuery = {
             __typename?: "TestResult";
             internalId?: string | null | undefined;
             dateTested?: any | null | undefined;
-            result?: string | null | undefined;
             correctionStatus?: string | null | undefined;
             results?:
               | Array<
@@ -2688,7 +2698,6 @@ export type GetTestResultForPrintQuery = {
     | {
         __typename?: "TestResult";
         dateTested?: any | null | undefined;
-        result?: string | null | undefined;
         correctionStatus?: string | null | undefined;
         results?:
           | Array<
@@ -5675,7 +5684,6 @@ export const GetFacilityQueueMultiplexDocument = gql`
           number
         }
       }
-      result
       results {
         disease {
           name
@@ -6259,7 +6267,12 @@ export const GetTestResultForCorrectionDocument = gql`
   query getTestResultForCorrection($id: ID!) {
     testResult(id: $id) {
       dateTested
-      result
+      results {
+        disease {
+          name
+        }
+        testResult
+      }
       correctionStatus
       deviceType {
         name
@@ -6428,7 +6441,6 @@ export const GetTestResultDetailsDocument = gql`
   query getTestResultDetails($id: ID!) {
     testResult(id: $id) {
       dateTested
-      result
       results {
         disease {
           name
@@ -6761,7 +6773,6 @@ export const GetFacilityResultsForCsvDocument = gql`
       }
       dateTested
       dateUpdated
-      result
       results {
         disease {
           name
@@ -6894,7 +6905,6 @@ export const GetFacilityResultsMultiplexDocument = gql`
     ) {
       internalId
       dateTested
-      result
       results {
         disease {
           name
@@ -7132,7 +7142,6 @@ export const GetTestResultForPrintDocument = gql`
   query GetTestResultForPrint($id: ID!) {
     testResult(id: $id) {
       dateTested
-      result
       results {
         disease {
           name
