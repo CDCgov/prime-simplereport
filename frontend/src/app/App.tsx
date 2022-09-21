@@ -114,7 +114,7 @@ const App = () => {
         properties: {
           "user message": "Server connection error",
           org: data?.whoami.organization?.name,
-          url: location,
+          location: location,
           access_token: localStorage.getItem("access_token"),
         },
       });
