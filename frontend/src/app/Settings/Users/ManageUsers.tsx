@@ -457,7 +457,7 @@ const ManageUsers: React.FC<Props> = ({
   return (
     <div className="prime-container card-container manage-users-card">
       <div className="usa-card__header">
-        <h2>Manage users</h2>
+        <h1>Manage users</h1>
         <Button
           onClick={() => updateShowAddUserModal(true)}
           label="+ Add user"

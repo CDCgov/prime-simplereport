@@ -21,77 +21,86 @@ const UsersSideNav: React.FC<Props> = ({
   users,
   onChangeActiveUser,
 }) => {
+  const getIdsAsString = (users: LimitedUser[]) => {
+    return users.map((user) => "user-tab-" + user.id.toString()).join(" ");
+  };
+
   return (
     <div className="display-block users-sidenav">
-      <h3 className="users-header">Users</h3>
-      <ul className="usa-sidenav">
-        {users.map((user: LimitedUser) => {
-          let statusText;
-          switch (user.status) {
-            case "ACTIVE":
-              statusText = (
-                <span className="sidenav-user-status padding-left-0"></span>
-              );
-              break;
-            case "PROVISIONED":
-              statusText = (
-                <>
-                  <PendingIcon />
-                  <span className="sidenav-user-status">
-                    {formatUserStatus(user.status)}
-                  </span>
-                </>
-              );
-              break;
-            case "SUSPENDED":
-              statusText = (
-                <>
-                  <DeactivatedIcon />
-                  <span className="sidenav-user-status">
-                    {formatUserStatus(user.status)}
-                  </span>
-                </>
-              );
-              break;
-            default:
-              statusText = "";
-          }
-          return (
-            <li
-              className="usa-sidenav__item users-sidenav-item"
-              onClick={() => onChangeActiveUser(user.id)}
-              key={user.id}
-            >
-              <button
-                role="tab"
-                style={{ cursor: "pointer" }}
-                className={classnames(
-                  "usa-button--unstyled",
-                  "text-ink",
-                  "text-no-underline",
-                  "padding-105 padding-right-2 padding-left-3",
-                  activeUserId === user.id && "usa-current"
-                )}
-                aria-selected={activeUserId === user.id}
-                aria-label={displayFullName(
-                  user.firstName,
-                  user.middleName,
-                  user.lastName
-                )}
-              >
-                <div className="sidenav-user-name">
-                  {displayFullName(
+      <h2 className="users-sidenav-header">Users</h2>
+      <nav className="prime-secondary-nav" aria-label="Tertiary navigation">
+        <div
+          role="tablist"
+          aria-owns={getIdsAsString(users)}
+          className="usa-sidenav"
+        >
+          {users.map((user: LimitedUser) => {
+            let statusText;
+            switch (user.status) {
+              case "ACTIVE":
+                statusText = (
+                  <span className="sidenav-user-status padding-left-0"></span>
+                );
+                break;
+              case "PROVISIONED":
+                statusText = (
+                  <>
+                    <PendingIcon />
+                    <span className="sidenav-user-status">
+                      {formatUserStatus(user.status)}
+                    </span>
+                  </>
+                );
+                break;
+              case "SUSPENDED":
+                statusText = (
+                  <>
+                    <DeactivatedIcon />
+                    <span className="sidenav-user-status">
+                      {formatUserStatus(user.status)}
+                    </span>
+                  </>
+                );
+                break;
+              default:
+                statusText = "";
+            }
+            return (
+              <div className="usa-sidenav__item users-sidenav-item">
+                <button
+                  id={"user-tab-" + user.id}
+                  role="tab"
+                  style={{ cursor: "pointer" }}
+                  className={classnames(
+                    "usa-button--unstyled",
+                    "text-ink",
+                    "text-no-underline",
+                    "padding-105 padding-right-2 padding-left-3",
+                    activeUserId === user.id && "usa-current"
+                  )}
+                  aria-label={displayFullName(
                     user.firstName,
                     user.middleName,
                     user.lastName
                   )}
-                </div>
-                {statusText}
-              </button>
-            </li>
-          );
-        })}
-      </ul>
+                  aria-selected={activeUserId === user.id}
+                  onClick={() => onChangeActiveUser(user.id)}
+                  key={user.id}
+                >
+                  <div className="sidenav-user-name">
+                    {displayFullName(
+                      user.firstName,
+                      user.middleName,
+                      user.lastName
+                    )}
+                  </div>
+                  {statusText}
+                </button>
+              </div>
+            );
+          })}
+        </div>
+      </nav>
     </div>
   );
 };
