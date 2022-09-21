@@ -16,7 +16,6 @@ public interface TestOrderRepository
 
   String BASE_QUERY =
       "from #{#entityName} q "
-          + "left join fetch q.results "
           + "where q.organization.isDeleted = false "
           + "and q.patient.isDeleted = false ";
   String BASE_ORG_QUERY = BASE_QUERY + " and q.organization = :org ";

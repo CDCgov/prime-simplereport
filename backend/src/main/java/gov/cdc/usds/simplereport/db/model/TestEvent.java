@@ -171,11 +171,17 @@ public class TestEvent extends BaseTestInfo {
   // This method is temporary and eventually, this method will be deprecated in favor of
   // getResultSet()
   public TestResult getCovidTestResults() {
+    Hibernate.initialize(this.results);
     final String COVID_LOINC = "96741-4";
     Optional<Result> resultObject =
         this.results.stream()
             .filter(result -> COVID_LOINC.equals(result.getDisease().getLoinc()))
             .findFirst();
     return resultObject.map(Result::getTestResult).orElse(null);
+  }
+
+  public Set<Result> getResults() {
+    Hibernate.initialize(this.results);
+    return this.results;
   }
 }

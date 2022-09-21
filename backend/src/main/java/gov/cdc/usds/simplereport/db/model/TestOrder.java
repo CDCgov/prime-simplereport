@@ -94,6 +94,7 @@ public class TestOrder extends BaseTestInfo {
   // - this method is temporary
   // Eventually, this method will be deprecated in favor of getResultSet() and getResultForDisease()
   public TestResult getTestResult() {
+    Hibernate.initialize(this.results);
     Comparator<Result> resultDateComparator = Comparator.comparing(Result::getUpdatedAt);
     Optional<Result> resultObject = this.results.stream().max(resultDateComparator);
     return resultObject.map(Result::getTestResult).orElse(null);
