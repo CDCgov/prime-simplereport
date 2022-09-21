@@ -3,6 +3,7 @@ import userEvent from "@testing-library/user-event";
 
 import { PATIENT_TERM_CAP } from "../../../config/constants";
 import TEST_RESULTS_MULTIPLEX from "../mocks/resultsMultiplex.mock";
+import TEST_RESULT_COVID from "../mocks/resultsCovid.mock";
 
 import ResultsTable, { generateTableHeaders } from "./ResultsTable";
 
@@ -95,7 +96,26 @@ describe("Component ResultsTable", () => {
     ).toBeInTheDocument();
   });
 
-  it("checks table with results", () => {
+  it("checks table with covid results", () => {
+    render(
+      <ResultsTable
+        results={[TEST_RESULT_COVID[0]]}
+        setPrintModalId={setPrintModalIdFn}
+        setMarkCorrectionId={setMarkCorrectionIdFn}
+        setDetailsModalId={setDetailsModalIdFn}
+        setTextModalId={setTextModalIdFn}
+        setEmailModalTestResultId={setEmailModalTestResultIdFn}
+        hasMultiplexResults={false}
+        hasFacility={false}
+      />
+    );
+
+    expect(screen.getByTestId("covid-19-result")).toHaveTextContent("Negative");
+    expect(screen.getByTestId("flu-a-result")).toHaveTextContent("N/A");
+    expect(screen.getByTestId("flu-b-result")).toHaveTextContent("N/A");
+  });
+
+  it("checks table with multiplex results", () => {
     render(
       <ResultsTable
         results={TEST_RESULTS_MULTIPLEX}
