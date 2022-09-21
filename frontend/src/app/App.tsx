@@ -107,7 +107,7 @@ const App = () => {
     return <p>Loading account information...</p>;
   }
 
-  if (error) {
+  if (true) {
     if (appInsights instanceof ApplicationInsights) {
       appInsights.trackException({
         exception: error,
