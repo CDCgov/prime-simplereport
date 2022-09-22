@@ -11,6 +11,7 @@ describe("FileUploadService", () => {
   beforeEach(() => {
     (fetch as FetchMock).resetMocks();
     (fetch as FetchMock).mockResponseOnce(JSON.stringify({}));
+    localStorage.setItem("access_token", "access-token-123");
   });
 
   describe("uploading patients", () => {
@@ -27,7 +28,11 @@ describe("FileUploadService", () => {
       // THEN
       expect(fetch).toHaveBeenCalledWith(`${backendUrl}/upload/patients`, {
         body: expectedBody,
-        headers: { ...appInsightsHeaders },
+        headers: {
+          "Access-Control-Request-Headers": "Authorization",
+          Authorization: "Bearer access-token-123",
+          ...appInsightsHeaders,
+        },
         method: "POST",
         mode: "cors",
       });
@@ -48,7 +53,11 @@ describe("FileUploadService", () => {
       // THEN
       expect(fetch).toHaveBeenCalledWith(`${backendUrl}/upload/results`, {
         body: expectedBody,
-        headers: { ...appInsightsHeaders },
+        headers: {
+          "Access-Control-Request-Headers": "Authorization",
+          Authorization: "Bearer access-token-123",
+          ...appInsightsHeaders,
+        },
         method: "POST",
         mode: "cors",
       });

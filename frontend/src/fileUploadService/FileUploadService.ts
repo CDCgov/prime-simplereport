@@ -11,7 +11,11 @@ const getInitOptions = (csvFile: File) => {
     body,
     method: "POST",
     mode: "cors",
-    headers: getAppInsightsHeaders(),
+    headers: {
+      "Access-Control-Request-Headers": "Authorization",
+      Authorization: `Bearer ${localStorage.getItem("access_token")}`,
+      ...getAppInsightsHeaders(),
+    },
   } as RequestInit;
 };
 
