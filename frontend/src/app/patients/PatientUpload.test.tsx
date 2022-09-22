@@ -60,7 +60,7 @@ describe("Patient Upload", () => {
       //Then
       await waitFor(() => {
         expect(alertSpy).toHaveBeenCalledWith(
-          <Alert body="Invalid csv" title="error" type="error" />
+          <Alert body="Invalid csv" title="Error" type="error" />
         );
       });
       expect(onSuccessCallback).not.toHaveBeenCalled();

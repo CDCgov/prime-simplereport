@@ -24,7 +24,7 @@ const PatientUpload = ({ onSuccess }: Props) => {
       showNotification(
         <Alert
           type={successful ? "success" : "error"}
-          title={successful ? "Patients uploaded" : "error"}
+          title={successful ? "Patients uploaded" : "Error"}
           body={await response.text()}
         />
       );

@@ -110,7 +110,9 @@ const Uploads = () => {
           "There was a server error. Your file has not been accepted."
         );
       }
+
       const response = await res.json();
+
       if (response?.reportId) {
         setReportId(response?.reportId);
       }
