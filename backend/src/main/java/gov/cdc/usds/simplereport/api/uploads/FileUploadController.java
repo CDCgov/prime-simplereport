@@ -20,11 +20,14 @@ import org.springframework.web.multipart.MultipartFile;
 @RequiredArgsConstructor
 @Slf4j
 public class FileUploadController {
+  public static final String TEXT_CSV_CONTENT_TYPE = "text/csv";
   private final UploadService uploadService;
   private final TestResultUploadService testResultUploadService;
 
   @PostMapping(PATIENT_UPLOAD)
   public String handlePatientsUpload(@RequestParam("file") MultipartFile file) {
+    assertCsvFileType(file);
+
     try (InputStream people = file.getInputStream()) {
       return uploadService.processPersonCSV(people);
     } catch (IllegalArgumentException e) {
@@ -38,12 +41,19 @@ public class FileUploadController {
 
   @PostMapping(RESULT_UPLOAD)
   public TestResultUpload handleResultsUpload(@RequestParam("file") MultipartFile file) {
-    try (InputStream resultsUpload = file.getInputStream()) {
+    assertCsvFileType(file);
 
+    try (InputStream resultsUpload = file.getInputStream()) {
       return testResultUploadService.processResultCSV(resultsUpload);
     } catch (IOException e) {
       log.error("Test result CSV encountered an unexpected error", e);
       throw new CsvProcessingException("Unable to process test result CSV upload");
+    }
+  }
+
+  private static void assertCsvFileType(MultipartFile file) {
+    if (!TEXT_CSV_CONTENT_TYPE.equals(file.getContentType())) {
+      throw new CsvProcessingException("Only CSV files are supported");
     }
   }
 }

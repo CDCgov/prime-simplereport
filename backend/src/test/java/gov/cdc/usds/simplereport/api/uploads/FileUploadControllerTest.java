@@ -1,5 +1,6 @@
 package gov.cdc.usds.simplereport.api.uploads;
 
+import static gov.cdc.usds.simplereport.api.uploads.FileUploadController.TEXT_CSV_CONTENT_TYPE;
 import static gov.cdc.usds.simplereport.config.WebConfiguration.PATIENT_UPLOAD;
 import static gov.cdc.usds.simplereport.config.WebConfiguration.RESULT_UPLOAD;
 import static org.junit.jupiter.api.Assertions.assertEquals;
@@ -43,7 +44,7 @@ class FileUploadControllerTest extends BaseFullStackTest {
 
     MockMultipartFile file =
         new MockMultipartFile(
-            "file", "patients.csv", MediaType.TEXT_PLAIN_VALUE, "csvContent".getBytes());
+            "file", "patients.csv", TEXT_CSV_CONTENT_TYPE, "csvContent".getBytes());
 
     mockMvc
         .perform(multipart(PATIENT_UPLOAD).file(file))
@@ -58,7 +59,7 @@ class FileUploadControllerTest extends BaseFullStackTest {
 
     MockMultipartFile file =
         new MockMultipartFile(
-            "file", "patients.csv", MediaType.TEXT_PLAIN_VALUE, "csvContent".getBytes());
+            "file", "patients.csv", TEXT_CSV_CONTENT_TYPE, "csvContent".getBytes());
 
     mockMvc
         .perform(multipart(PATIENT_UPLOAD).file(file))
@@ -70,13 +71,33 @@ class FileUploadControllerTest extends BaseFullStackTest {
   }
 
   @Test
+  void patientsUploadTest_NonCsvFileException() throws Exception {
+    when(patientUploadService.processPersonCSV(any(InputStream.class)))
+        .thenThrow(new IllegalArgumentException("Invalid csv"));
+
+    MockMultipartFile file =
+        new MockMultipartFile(
+            "file", "patients.csv", MediaType.TEXT_PLAIN_VALUE, "csvContent".getBytes());
+
+    mockMvc
+        .perform(multipart(PATIENT_UPLOAD).file(file))
+        .andExpect(status().isBadRequest())
+        .andExpect(
+            result -> assertTrue(result.getResolvedException() instanceof CsvProcessingException))
+        .andExpect(
+            result ->
+                assertEquals(
+                    "Only CSV files are supported", result.getResolvedException().getMessage()));
+  }
+
+  @Test
   void patientsUploadTest_IOException() throws Exception {
     MockMultipartFile mock = mock(MockMultipartFile.class);
     when(mock.getBytes()).thenReturn("content".getBytes());
     when(mock.getOriginalFilename()).thenReturn("patients.csv");
     when(mock.getName()).thenReturn("file");
     when(mock.getSize()).thenReturn(7L);
-    when(mock.getContentType()).thenReturn(MediaType.TEXT_PLAIN_VALUE);
+    when(mock.getContentType()).thenReturn(TEXT_CSV_CONTENT_TYPE);
 
     when(mock.getInputStream()).thenThrow(new IOException());
 
@@ -105,7 +126,7 @@ class FileUploadControllerTest extends BaseFullStackTest {
 
     MockMultipartFile file =
         new MockMultipartFile(
-            "file", "results.csv", MediaType.TEXT_PLAIN_VALUE, "csvContent".getBytes());
+            "file", "results.csv", TEXT_CSV_CONTENT_TYPE, "csvContent".getBytes());
 
     mockMvc
         .perform(multipart(RESULT_UPLOAD).file(file))
@@ -123,7 +144,7 @@ class FileUploadControllerTest extends BaseFullStackTest {
     when(mock.getOriginalFilename()).thenReturn("results.csv");
     when(mock.getName()).thenReturn("file");
     when(mock.getSize()).thenReturn(7L);
-    when(mock.getContentType()).thenReturn(MediaType.TEXT_PLAIN_VALUE);
+    when(mock.getContentType()).thenReturn(TEXT_CSV_CONTENT_TYPE);
 
     when(mock.getInputStream()).thenThrow(new IOException());
 
@@ -137,5 +158,27 @@ class FileUploadControllerTest extends BaseFullStackTest {
                 assertEquals(
                     "Unable to process test result CSV upload",
                     result.getResolvedException().getMessage()));
+  }
+
+  @Test
+  void resultsUploadTest_NonCsvFileException() throws Exception {
+    MockMultipartFile mock = mock(MockMultipartFile.class);
+    when(mock.getBytes()).thenReturn("content".getBytes());
+    when(mock.getOriginalFilename()).thenReturn("results.csv");
+    when(mock.getName()).thenReturn("file");
+    when(mock.getSize()).thenReturn(7L);
+    when(mock.getContentType()).thenReturn(MediaType.TEXT_PLAIN_VALUE);
+
+    when(mock.getInputStream()).thenThrow(new IOException());
+
+    mockMvc
+        .perform(multipart(RESULT_UPLOAD).file(mock))
+        .andExpect(status().isBadRequest())
+        .andExpect(
+            result -> assertTrue(result.getResolvedException() instanceof CsvProcessingException))
+        .andExpect(
+            result ->
+                assertEquals(
+                    "Only CSV files are supported", result.getResolvedException().getMessage()));
   }
 }
