@@ -20,14 +20,15 @@ const PatientUpload = ({ onSuccess }: Props) => {
     }
 
     FileUploadService.uploadPatients(fileList[0]).then(async (response) => {
+      const successful = response.status === 200;
       showNotification(
         <Alert
-          type={response.status === 200 ? "success" : "error"}
-          title={response.status === 200 ? "Patients uploaded" : "error"}
+          type={successful ? "success" : "error"}
+          title={successful ? "Patients uploaded" : "error"}
           body={await response.text()}
         />
       );
-      onSuccess();
+      successful && onSuccess();
     });
   };
 
@@ -36,6 +37,7 @@ const PatientUpload = ({ onSuccess }: Props) => {
       type="file"
       name="file"
       placeholder="UploadCSV..."
+      data-testid="patient-file-input"
       onChange={bulkUpload}
     />
   );
