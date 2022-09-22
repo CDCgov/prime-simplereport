@@ -33,6 +33,7 @@ export const EmailTestResultModal = ({ closeModal, testResultId }: Props) => {
       className="email-test-result-modal-content"
       overlayClassName="sr-test-correction-modal-overlay"
       contentLabel="Printable test result"
+      onRequestClose={closeModal}
     >
       <div className="header">Email result?</div>
       {loading ? (
