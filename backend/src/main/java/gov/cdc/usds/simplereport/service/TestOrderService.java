@@ -230,7 +230,7 @@ public class TestOrderService {
         _repo
             .fetchQueueItemByOrganizationAndId(org, id)
             .orElseThrow(TestOrderService::noSuchOrderFound);
-    Hibernate.initialize(order.getResultSet());
+    Hibernate.initialize(order.getResults());
     return order;
   }
 
@@ -622,7 +622,7 @@ public class TestOrderService {
 
     // Get the most recent results for each disease
     Map<SupportedDisease, Optional<Result>> latestResultsPerDisease =
-        order.getResultSet().stream()
+        order.getResults().stream()
             .collect(
                 Collectors.groupingBy(
                     Result::getDisease,

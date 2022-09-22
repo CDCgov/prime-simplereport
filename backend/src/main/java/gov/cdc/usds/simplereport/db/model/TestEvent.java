@@ -178,8 +178,4 @@ public class TestEvent extends BaseTestInfo {
             .findFirst();
     return resultObject.map(Result::getTestResult).orElse(null);
   }
-
-  public Set<Result> getResults() {
-    return this.results;
-  }
 }

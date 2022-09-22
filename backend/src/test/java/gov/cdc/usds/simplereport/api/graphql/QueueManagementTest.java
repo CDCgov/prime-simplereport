@@ -132,7 +132,7 @@ class QueueManagementTest extends BaseGraphqlTest {
         deviceId, updatedTestOrder.getDeviceType().getInternalId().toString(), "device type ID");
     assertEquals(TestResult.POSITIVE, updatedTestOrder.getTestResult());
     updatedTestOrder
-        .getResultSet()
+        .getResults()
         .forEach(result -> assertEquals(TestResult.POSITIVE, result.getTestResult()));
     assertNull(updatedTestOrder.getTestEvent());
 
