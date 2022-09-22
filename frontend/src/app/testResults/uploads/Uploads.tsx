@@ -109,22 +109,22 @@ const Uploads = () => {
         setErrorMessageText(
           "There was a server error. Your file has not been accepted."
         );
-      }
+      } else {
+        const response = await res.json();
 
-      const response = await res.json();
+        if (response?.reportId) {
+          setReportId(response?.reportId);
+        }
 
-      if (response?.reportId) {
-        setReportId(response?.reportId);
-      }
+        if (response?.errors?.length) {
+          setErrorMessageText(
+            "Please resolve the errors below and upload your edited file. Your file has not been accepted."
+          );
+        }
 
-      if (response?.errors?.length) {
-        setErrorMessageText(
-          "Please resolve the errors below and upload your edited file. Your file has not been accepted."
-        );
-      }
-
-      if (response?.errors && response.errors.length > 0) {
-        setErrors(response.errors);
+        if (response?.errors && response.errors.length > 0) {
+          setErrors(response.errors);
+        }
       }
     });
 
