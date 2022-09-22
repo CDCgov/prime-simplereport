@@ -25,6 +25,7 @@ import gov.cdc.usds.simplereport.test_util.TestDataFactory;
 import java.time.Instant;
 import java.time.LocalDateTime;
 import java.util.Date;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
@@ -76,12 +77,15 @@ class TestEventRepositoryTest extends BaseRepositoryTest {
     TestOrder order = _dataFactory.createTestOrder(patient, place);
     Result positiveResult = new Result(order, _diseaseService.covid(), TestResult.POSITIVE);
     _resultRepo.save(positiveResult);
-    //    order.setResult(positiveResult);
-    _repo.save(new TestEvent(order, false));
+    HashSet positiveResults = new HashSet<>();
+    positiveResults.add(positiveResult);
+    _repo.save(new TestEvent(order, false, positiveResults));
+
     Result negativeResult = new Result(order, _diseaseService.covid(), TestResult.NEGATIVE);
     _resultRepo.save(negativeResult);
-    //    order.setResult(negativeResult);
-    _repo.save(new TestEvent(order, false));
+    HashSet negativeResults = new HashSet<>();
+    negativeResults.add(negativeResult);
+    _repo.save(new TestEvent(order, false, negativeResults));
     flush();
     List<TestEvent> found = _repo.findAllByPatientAndFacilities(patient, Set.of(place));
     assertEquals(2, found.size());

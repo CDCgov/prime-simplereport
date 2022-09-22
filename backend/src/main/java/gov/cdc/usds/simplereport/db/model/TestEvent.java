@@ -68,7 +68,7 @@ public class TestEvent extends BaseTestInfo {
     this.results.addAll(results);
   }
 
-  public TestEvent(TestOrder order, Boolean hasPriorTests) {
+  private TestEvent(TestOrder order, Boolean hasPriorTests) {
     super(order.getPatient(), order.getFacility(), order.getDeviceSpecimen());
     // store a link, and *also* store the object as JSON
     // force load the lazy-loaded phone numbers so values are available to the object mapper
