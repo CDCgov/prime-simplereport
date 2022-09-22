@@ -316,6 +316,7 @@ export const mocks = [
       variables: {
         facilityId: "1",
         namePrefixMatch: "Cragell",
+        includeArchived: true,
         includeArchivedFacilities: true,
       },
     },

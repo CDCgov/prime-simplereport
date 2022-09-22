@@ -52,6 +52,20 @@ public class PatientDataResolver implements PersonNameResolver<Person>, Internal
 
               return Mono.just(found);
             });
+
+    registry
+        .forTypePair(UUID.class, PhoneNumber.class)
+        .withName("patientPrimaryPhoneNumberLoader")
+        .registerMappedBatchLoader(
+            (patientIds, batchLoaderEnvironment) -> {
+              Map<UUID, PhoneNumber> found =
+                  phoneNumberRepository
+                      .findPrimaryPhoneNumberByPersonInternalIdIn(patientIds)
+                      .stream()
+                      .collect(Collectors.toMap(PhoneNumber::getPersonInternalID, s -> s));
+
+              return Mono.just(found);
+            });
   }
 
   @SchemaMapping(typeName = "Patient", field = "lastTest")
@@ -64,6 +78,14 @@ public class PatientDataResolver implements PersonNameResolver<Person>, Internal
   public CompletableFuture<List<PhoneNumber>> getPhoneNumbers(
       Person person, DataLoader<UUID, List<PhoneNumber>> patientPhoneNumbersLoader) {
     return patientPhoneNumbersLoader.load(person.getInternalId());
+  }
+
+  @SchemaMapping(typeName = "Patient", field = "telephone")
+  public CompletableFuture<String> getPrimaryPhoneNumbers(
+      Person person, DataLoader<UUID, PhoneNumber> patientPrimaryPhoneNumberLoader) {
+    return patientPrimaryPhoneNumberLoader
+        .load(person.getInternalId())
+        .thenApply(PhoneNumber::getNumber);
   }
 
   @SchemaMapping(typeName = "Patient", field = "facility")

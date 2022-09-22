@@ -135,7 +135,7 @@ public class PersonService {
   // called by List function and Count function
   protected Specification<Person> buildPersonSearchFilter(
       UUID facilityId,
-      boolean isArchived,
+      boolean includeArchived,
       String namePrefixMatch,
       boolean includeArchivedFacilities) {
 
@@ -145,7 +145,10 @@ public class PersonService {
             : Arrays.stream(namePrefixMatch.split("[ ,]")).collect(Collectors.toList());
 
     // build up filter based on params
-    Specification<Person> filter = inCurrentOrganizationFilter().and(isDeletedFilter(isArchived));
+    Specification<Person> filter = inCurrentOrganizationFilter();
+    if (!includeArchived) {
+      filter = filter.and(isDeletedFilter(false));
+    }
     if (facilityId == null) {
       filter = filter.and(inAccessibleFacilitiesFilter(includeArchivedFacilities));
     } else {
@@ -176,9 +179,9 @@ public class PersonService {
    * @param facilityId If null, then it means across accessible facilities in the whole organization
    * @param pageOffset Pagination offset is zero based
    * @param pageSize How many results to return, zero will result in the default page size (large)
-   * @param isArchived Default is false. true will ONLY show deleted users
+   * @param includeArchived Default is false. true will return both archived _and_ active users
    * @param namePrefixMatch Null returns all users, any string will filter by first,middle,last
-   *     names that start with these characters. Case insenstive. If fewer than
+   *     names that start with these characters. Case-insensitive. If fewer than
    * @param includeArchivedFacilities setting to true will include patients in archived facilities,
    *     ignored if facilityId is not null
    * @return A list of matching patients.
@@ -188,7 +191,7 @@ public class PersonService {
       UUID facilityId,
       int pageOffset,
       int pageSize,
-      boolean isArchived,
+      boolean includeArchived,
       String namePrefixMatch,
       Boolean includeArchivedFacilities) {
     if (pageOffset < 0) {
@@ -203,7 +206,8 @@ public class PersonService {
     }
 
     return _repo.findAll(
-        buildPersonSearchFilter(facilityId, isArchived, namePrefixMatch, includeArchivedFacilities),
+        buildPersonSearchFilter(
+            facilityId, includeArchived, namePrefixMatch, includeArchivedFacilities),
         PageRequest.of(pageOffset, pageSize, NAME_SORT));
   }
 
@@ -224,7 +228,7 @@ public class PersonService {
   @AuthorizationConfiguration.RequireSpecificPatientSearchPermission
   public long getPatientsCount(
       UUID facilityId,
-      boolean isArchived,
+      boolean includeArchived,
       String namePrefixMatch,
       boolean includeArchivedFacilities) {
     if (namePrefixMatch != null && namePrefixMatch.trim().length() < MINIMUM_CHAR_FOR_SEARCH) {
@@ -232,7 +236,7 @@ public class PersonService {
     }
     return _repo.count(
         buildPersonSearchFilter(
-            facilityId, isArchived, namePrefixMatch, includeArchivedFacilities));
+            facilityId, includeArchived, namePrefixMatch, includeArchivedFacilities));
   }
   // NO PERMISSION CHECK (make sure the caller has one!) getPatient()
   public Person getPatientNoPermissionsCheck(UUID id) {
