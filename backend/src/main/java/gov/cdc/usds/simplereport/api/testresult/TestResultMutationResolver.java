@@ -6,33 +6,36 @@ import gov.cdc.usds.simplereport.db.model.TestResultUpload;
 import gov.cdc.usds.simplereport.db.repository.TestEventRepository;
 import gov.cdc.usds.simplereport.service.TestEventReportingService;
 import gov.cdc.usds.simplereport.service.TestResultUploadService;
-import graphql.kickstart.tools.GraphQLMutationResolver;
 import java.io.IOException;
 import java.io.InputStream;
 import java.util.List;
 import java.util.UUID;
-import javax.servlet.http.Part;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.stereotype.Component;
+import org.springframework.graphql.data.method.annotation.Argument;
+import org.springframework.graphql.data.method.annotation.MutationMapping;
+import org.springframework.stereotype.Controller;
+import org.springframework.web.multipart.MultipartFile;
 
-@Component
+@Controller
 @RequiredArgsConstructor
 @Slf4j
-public class TestResultMutationResolver implements GraphQLMutationResolver {
+public class TestResultMutationResolver {
   private final TestEventRepository testEventRepository;
   private final TestEventReportingService testEventReportingService;
   private final TestResultUploadService testResultUploadService;
 
-  public boolean resendToReportStream(List<UUID> testEventIds) {
+  @MutationMapping
+  public boolean resendToReportStream(@Argument List<UUID> testEventIds) {
     testEventRepository
         .findAllByInternalIdIn(testEventIds)
         .forEach(testEventReportingService::report);
     return true;
   }
 
-  public TestResultUpload uploadTestResultCSV(Part part) {
-    try (InputStream resultsUpload = part.getInputStream()) {
+  @MutationMapping
+  public TestResultUpload uploadTestResultCSV(@Argument MultipartFile testResultList) {
+    try (InputStream resultsUpload = testResultList.getInputStream()) {
 
       return testResultUploadService.processResultCSV(resultsUpload);
     } catch (IllegalGraphqlArgumentException e) {

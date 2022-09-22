@@ -4,13 +4,14 @@ import gov.cdc.usds.simplereport.db.model.Facility;
 import gov.cdc.usds.simplereport.db.model.Organization;
 import gov.cdc.usds.simplereport.service.OrganizationService;
 import gov.cdc.usds.simplereport.service.PatientSelfRegistrationLinkService;
-import graphql.kickstart.tools.GraphQLMutationResolver;
 import java.util.Arrays;
 import java.util.UUID;
-import org.springframework.stereotype.Component;
+import org.springframework.graphql.data.method.annotation.Argument;
+import org.springframework.graphql.data.method.annotation.MutationMapping;
+import org.springframework.stereotype.Controller;
 
-@Component
-public class PatientRegistrationMutationResolver implements GraphQLMutationResolver {
+@Controller
+public class PatientRegistrationMutationResolver {
 
   private PatientSelfRegistrationLinkService _prls;
   private OrganizationService _os;
@@ -21,23 +22,28 @@ public class PatientRegistrationMutationResolver implements GraphQLMutationResol
     _os = os;
   }
 
-  public String createOrganizationRegistrationLink(String organizationExternalId, String link) {
+  @MutationMapping
+  public String createOrganizationRegistrationLink(
+      @Argument String organizationExternalId, @Argument String link) {
     Organization org = _os.getOrganization(organizationExternalId);
     return _prls.createRegistrationLink(org, link);
   }
 
+  @MutationMapping
   public String createFacilityRegistrationLink(
-      String organizationExternalId, UUID facilityUuid, String link) {
+      @Argument String organizationExternalId, @Argument UUID facilityId, @Argument String link) {
     Organization org = _os.getOrganization(organizationExternalId);
-    Facility fac = _os.getFacilities(org, Arrays.asList((facilityUuid))).iterator().next();
+    Facility fac = _os.getFacilities(org, Arrays.asList((facilityId))).iterator().next();
     return _prls.createRegistrationLink(fac, link);
   }
 
-  public String updateRegistrationLink(String link, String newLink) {
+  @MutationMapping
+  public String updateRegistrationLink(@Argument String link, @Argument String newLink) {
     return _prls.updateRegistrationLink(link, newLink);
   }
 
-  public String setRegistrationLinkIsDeleted(String link, Boolean deleted) {
+  @MutationMapping
+  public String setRegistrationLinkIsDeleted(@Argument String link, @Argument Boolean deleted) {
     return _prls.updateRegistrationLink(link, deleted);
   }
 }

@@ -390,6 +390,11 @@ public class TestDataFactory {
     return savedOrder;
   }
 
+  public TestOrder createTestOrderNoPatientLink(Person p, Facility f) {
+    TestOrder o = new TestOrder(p, f);
+    return _testOrderRepo.save(o);
+  }
+
   public TestOrder createCompletedTestOrder(Person patient, Facility facility, TestResult result) {
     TestOrder order = new TestOrder(patient, facility);
     order.setAskOnEntrySurvey(savePatientAnswers(createEmptySurvey()));

@@ -5,25 +5,26 @@ import gov.cdc.usds.simplereport.api.model.UpdateDeviceType;
 import gov.cdc.usds.simplereport.api.model.errors.IllegalGraphqlArgumentException;
 import gov.cdc.usds.simplereport.db.model.DeviceType;
 import gov.cdc.usds.simplereport.service.DeviceTypeService;
-import graphql.kickstart.tools.GraphQLMutationResolver;
-import org.springframework.stereotype.Component;
+import lombok.RequiredArgsConstructor;
+import org.springframework.graphql.data.method.annotation.Argument;
+import org.springframework.graphql.data.method.annotation.MutationMapping;
+import org.springframework.stereotype.Controller;
 
-@Component
-public class DeviceTypeMutationResolver implements GraphQLMutationResolver {
+@Controller
+@RequiredArgsConstructor
+public class DeviceTypeMutationResolver {
 
-  private final DeviceTypeService _dts;
+  private final DeviceTypeService deviceTypeService;
 
-  public DeviceTypeMutationResolver(DeviceTypeService dts) {
-    _dts = dts;
+  @MutationMapping
+  public DeviceType createDeviceType(@Argument CreateDeviceType input)
+      throws IllegalGraphqlArgumentException {
+    return deviceTypeService.createDeviceType(input);
   }
 
-  public DeviceType createDeviceType(CreateDeviceType input)
+  @MutationMapping
+  public DeviceType updateDeviceType(@Argument UpdateDeviceType input)
       throws IllegalGraphqlArgumentException {
-    return _dts.createDeviceType(input);
-  }
-
-  public DeviceType updateDeviceType(UpdateDeviceType input)
-      throws IllegalGraphqlArgumentException {
-    return _dts.updateDeviceType(input);
+    return deviceTypeService.updateDeviceType(input);
   }
 }

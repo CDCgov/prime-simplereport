@@ -6,16 +6,17 @@ import gov.cdc.usds.simplereport.db.model.Organization;
 import gov.cdc.usds.simplereport.db.model.Person;
 import gov.cdc.usds.simplereport.service.OrganizationService;
 import gov.cdc.usds.simplereport.service.PersonService;
-import graphql.kickstart.tools.GraphQLQueryResolver;
 import java.time.LocalDate;
 import java.util.List;
 import java.util.Optional;
 import java.util.UUID;
-import org.springframework.stereotype.Component;
+import org.springframework.graphql.data.method.annotation.Argument;
+import org.springframework.graphql.data.method.annotation.QueryMapping;
+import org.springframework.stereotype.Controller;
 
 /** Created by nickrobison on 11/17/20 */
-@Component
-public class PatientResolver implements GraphQLQueryResolver {
+@Controller
+public class PatientResolver {
   private final PersonService _ps;
   private final OrganizationService _os;
 
@@ -25,13 +26,14 @@ public class PatientResolver implements GraphQLQueryResolver {
   }
 
   // authorization happens in calls to PersonService
-  public List<Person> getPatients(
-      UUID facilityId,
-      int pageNumber,
-      int pageSize,
-      boolean includeArchived,
-      String namePrefixMatch,
-      boolean includeArchivedFacilities) {
+  @QueryMapping
+  public List<Person> patients(
+      @Argument UUID facilityId,
+      @Argument int pageNumber,
+      @Argument int pageSize,
+      @Argument boolean includeArchived,
+      @Argument String namePrefixMatch,
+      @Argument boolean includeArchivedFacilities) {
     return _ps.getPatients(
         facilityId,
         pageNumber,
@@ -42,12 +44,21 @@ public class PatientResolver implements GraphQLQueryResolver {
   }
 
   // authorization happens in calls to PersonService
-  public long patientsCount(UUID facilityId, boolean includeArchived, String namePrefixMatch) {
+  @QueryMapping
+  public long patientsCount(
+      @Argument UUID facilityId,
+      @Argument boolean includeArchived,
+      @Argument String namePrefixMatch) {
     return _ps.getPatientsCount(facilityId, includeArchived, namePrefixMatch, false);
   }
 
+  @QueryMapping
   public boolean patientExists(
-      String firstName, String lastName, LocalDate birthDate, String zipCode, UUID facilityId) {
+      @Argument String firstName,
+      @Argument String lastName,
+      @Argument LocalDate birthDate,
+      @Argument String zipCode,
+      @Argument UUID facilityId) {
     // Backwards compatibility shim -- zipCode is unused
     Organization org = _os.getCurrentOrganization();
     Optional<Facility> facility =
@@ -58,8 +69,12 @@ public class PatientResolver implements GraphQLQueryResolver {
     return _ps.isDuplicatePatient(firstName, lastName, birthDate, org, facility);
   }
 
+  @QueryMapping
   public boolean patientExistsWithoutZip(
-      String firstName, String lastName, LocalDate birthDate, UUID facilityId) {
+      @Argument String firstName,
+      @Argument String lastName,
+      @Argument LocalDate birthDate,
+      @Argument UUID facilityId) {
     Organization org = _os.getCurrentOrganization();
     Optional<Facility> facility =
         facilityId == null
@@ -70,7 +85,8 @@ public class PatientResolver implements GraphQLQueryResolver {
   }
 
   @AuthorizationConfiguration.RequirePermissionSearchTargetPatient
-  public Person getPatient(UUID patientId) {
-    return _ps.getPatientNoPermissionsCheck(patientId);
+  @QueryMapping
+  public Person patient(@Argument UUID id) {
+    return _ps.getPatientNoPermissionsCheck(id);
   }
 }

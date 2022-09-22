@@ -10,7 +10,7 @@ class TestDescriptionTest {
   @Test
   void construction_validInputs_expectedOutputs() {
     TestDescription desc = new TestDescription("CODE", "LONG", "SHORT", "DISPLAY", "CONSUMER");
-    assertEquals("CODE", desc.getLoincCode());
+    assertEquals("CODE", desc.loincCode());
     assertEquals("LONG", desc.getLongName());
     assertEquals("SHORT", desc.getShortName());
     assertEquals("DISPLAY", desc.getDisplayName());
@@ -21,7 +21,7 @@ class TestDescriptionTest {
   void findTestDescription_invalid_defaultFound() {
     TestDescription desc = TestDescription.findTestDescription("nope");
     assertNotNull(desc);
-    assertEquals("Unknown", desc.getLoincCode());
+    assertEquals("Unknown", desc.loincCode());
     assertEquals("Unknown", desc.getShortName());
   }
 

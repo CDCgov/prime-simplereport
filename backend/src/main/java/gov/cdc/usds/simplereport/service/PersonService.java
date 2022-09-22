@@ -193,7 +193,7 @@ public class PersonService {
       int pageSize,
       boolean includeArchived,
       String namePrefixMatch,
-      boolean includeArchivedFacilities) {
+      Boolean includeArchivedFacilities) {
     if (pageOffset < 0) {
       pageOffset = DEFAULT_PAGINATION_PAGEOFFSET;
     }

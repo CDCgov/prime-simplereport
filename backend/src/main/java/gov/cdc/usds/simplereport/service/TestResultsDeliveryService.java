@@ -13,7 +13,6 @@ import java.util.Map;
 import java.util.UUID;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.jetbrains.annotations.NotNull;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 
@@ -65,7 +64,6 @@ public class TestResultsDeliveryService {
     return true;
   }
 
-  @NotNull
   private String getExpirationDuration(PatientLink patientLink) {
     return format(
         "{0} day{1}", patientLink.getShelfLife(), patientLink.getShelfLife() > 1 ? "s" : "");

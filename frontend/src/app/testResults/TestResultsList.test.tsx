@@ -664,24 +664,6 @@ describe("TestResultsList", () => {
       userEvent.selectOptions(screen.getByLabelText("Testing facility"), ["3"]);
       expect((await screen.findAllByText("Flu A"))[0]).toBeInTheDocument();
     });
-
-    it("should default to column value and show N/A for Flu results for rows with no multiplex results", async () => {
-      expect(
-        await screen.findByRole("option", { name: "Facility 1" })
-      ).toBeInTheDocument();
-      userEvent.selectOptions(screen.getByLabelText("Testing facility"), ["3"]);
-      expect((await screen.findAllByText("Flu A"))[0]).toBeInTheDocument();
-      expect(
-        within(
-          screen.getByTestId("test-result-7c768a5d-ef90-44cd-8050-b96dd7aaa1d5")
-        ).getByText("Positive")
-      ).toBeInTheDocument();
-      expect(
-        within(
-          screen.getByTestId("test-result-7c768a5d-ef90-44cd-8050-b96dd7aaa1d5")
-        ).getAllByText("N/A")[0]
-      ).toBeInTheDocument();
-    });
   });
 
   it("should hide facility filter if user can see only 1 facility", async () => {
