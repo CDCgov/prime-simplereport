@@ -193,6 +193,7 @@ public class TestOrder extends BaseTestInfo {
   }
 
   public void addResult(Result result) {
+    Hibernate.initialize(this.results);
     if (this.results == null) {
       this.results = new HashSet<>();
     }
