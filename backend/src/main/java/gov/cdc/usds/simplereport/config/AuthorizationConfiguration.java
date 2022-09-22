@@ -113,7 +113,7 @@ public class AuthorizationConfiguration {
   private static final String SPEL_CAN_EXECUTE_SPECIFIC_PATIENT_SEARCH =
       "@"
           + AUTHORIZER_BEAN
-          + ".userHasSpecificPatientSearchPermission(#facilityId, #isArchived, #namePrefixMatch, #includeArchivedFacilities)";
+          + ".userHasSpecificPatientSearchPermission(#facilityId, #includeArchived, #namePrefixMatch, #includeArchivedFacilities)";
 
   /**
    * Apply this annotation if the method should only be called by site-wide administrative users

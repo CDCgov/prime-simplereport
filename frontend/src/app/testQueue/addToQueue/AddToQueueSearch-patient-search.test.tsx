@@ -42,6 +42,7 @@ const mocks = [
     request: {
       query: QUERY_PATIENT,
       variables: {
+        includeArchived: false,
         facilityId,
         namePrefixMatch: "bar",
       },
@@ -55,7 +56,9 @@ const mocks = [
   {
     request: {
       query: QUERY_PATIENT,
+      includeArchived: false,
       variables: {
+        includeArchived: false,
         facilityId,
         namePrefixMatch: "joh",
       },

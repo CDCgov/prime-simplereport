@@ -1132,7 +1132,6 @@ class ApiUserManagementTest extends BaseGraphqlTest {
                 .get("setCurrentUserTenantDataAccess");
     assertEquals("ruby@example.com", user.get("email").asText());
     assertEquals(Role.ADMIN, Role.valueOf(user.get("role").asText()));
-    // assertEquals(ADMIN_PERMISSIONS, extractPermissionsFromUser(user));
     assertEquals(TENANT_DATA_ACCESS_PERMISSIONS, extractPermissionsFromUser(user));
     assertLastAuditEntry("ruby@example.com", null, null);
 
