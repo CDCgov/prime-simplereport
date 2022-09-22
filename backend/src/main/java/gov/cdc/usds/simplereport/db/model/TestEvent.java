@@ -171,7 +171,6 @@ public class TestEvent extends BaseTestInfo {
   // This method is temporary and eventually, this method will be deprecated in favor of
   // getResultSet()
   public TestResult getCovidTestResults() {
-    Hibernate.initialize(this.results);
     final String COVID_LOINC = "96741-4";
     Optional<Result> resultObject =
         this.results.stream()
@@ -181,7 +180,6 @@ public class TestEvent extends BaseTestInfo {
   }
 
   public Set<Result> getResults() {
-    Hibernate.initialize(this.results);
     return this.results;
   }
 }

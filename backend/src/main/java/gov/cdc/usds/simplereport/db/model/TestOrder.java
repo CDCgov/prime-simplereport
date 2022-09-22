@@ -24,7 +24,6 @@ import javax.persistence.OneToMany;
 import javax.persistence.OneToOne;
 import lombok.Getter;
 import lombok.Setter;
-import org.hibernate.Hibernate;
 import org.hibernate.annotations.Type;
 
 @Entity
@@ -94,16 +93,9 @@ public class TestOrder extends BaseTestInfo {
   // - this method is temporary
   // Eventually, this method will be deprecated in favor of getResultSet() and getResultForDisease()
   public TestResult getTestResult() {
-    Hibernate.initialize(this.results);
     Comparator<Result> resultDateComparator = Comparator.comparing(Result::getUpdatedAt);
     Optional<Result> resultObject = this.results.stream().max(resultDateComparator);
     return resultObject.map(Result::getTestResult).orElse(null);
-  }
-
-  @JsonIgnore
-  public Set<Result> getResultSet() {
-    Hibernate.initialize(this.results);
-    return results;
   }
 
   /**
@@ -112,7 +104,6 @@ public class TestOrder extends BaseTestInfo {
    */
   @JsonIgnore
   public Set<Result> getPendingResultSet() {
-    Hibernate.initialize(this.results);
     Set<Result> pendingResults;
     pendingResults =
         this.results.stream().filter(r -> r.getTestEvent() == null).collect(Collectors.toSet());
@@ -133,7 +124,6 @@ public class TestOrder extends BaseTestInfo {
   }
 
   public Optional<Result> getResultForDisease(SupportedDisease disease) {
-    Hibernate.initialize(this.results);
     if (results != null) {
       return results.stream().filter(r -> r.getDisease().equals(disease)).findFirst();
     }
@@ -193,7 +183,6 @@ public class TestOrder extends BaseTestInfo {
   }
 
   public void addResult(Result result) {
-    Hibernate.initialize(this.results);
     if (this.results == null) {
       this.results = new HashSet<>();
     }
