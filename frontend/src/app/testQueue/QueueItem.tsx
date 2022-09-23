@@ -649,17 +649,8 @@ const QueueItem = ({
       aria-label={`Close test for ${patientFullName}`}
     >
       <span className="fa-layers">
-        <FontAwesomeIcon
-          aria-label={`Close test for ${patientFullName}`}
-          icon={"circle"}
-          size="2x"
-          inverse
-        />
-        <FontAwesomeIcon
-          aria-label={`Close test for ${patientFullName}`}
-          icon={"times-circle"}
-          size="2x"
-        />
+        <FontAwesomeIcon icon={"circle"} size="2x" inverse />
+        <FontAwesomeIcon icon={"times-circle"} size="2x" />
       </span>
     </button>
   );
