@@ -6,7 +6,6 @@ import { DetachedTestResultDetailsModal } from "./TestResultDetailsModal";
 
 const nonMultiplexTestResult = {
   dateTested: "2022-01-28T17:56:48.143Z",
-  result: "NEGATIVE" as TestResult,
   results: [
     {
       disease: { name: "COVID-19" as MultiplexDisease },

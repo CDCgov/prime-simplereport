@@ -16,7 +16,6 @@ import com.fasterxml.jackson.databind.RuntimeJsonMappingException;
 import com.fasterxml.jackson.dataformat.csv.CsvMapper;
 import com.fasterxml.jackson.dataformat.csv.CsvParser;
 import com.fasterxml.jackson.dataformat.csv.CsvSchema;
-import gov.cdc.usds.simplereport.api.model.errors.IllegalGraphqlArgumentException;
 import gov.cdc.usds.simplereport.config.AuthorizationConfiguration;
 import gov.cdc.usds.simplereport.db.model.Facility;
 import gov.cdc.usds.simplereport.db.model.auxiliary.PhoneNumberInput;
@@ -52,7 +51,7 @@ public class UploadService {
   private boolean hasHeaderRow = false;
 
   private MappingIterator<Map<String, String>> getIteratorForCsv(InputStream csvStream)
-      throws IllegalGraphqlArgumentException {
+      throws IllegalArgumentException {
     try {
       BufferedReader csvStreamBuffered =
           new BufferedReader(new InputStreamReader(csvStream, StandardCharsets.UTF_8));
@@ -68,29 +67,29 @@ public class UploadService {
           .with(personSchema(hasHeaderRow))
           .readValues(csvStreamBuffered);
     } catch (IOException e) {
-      throw new IllegalGraphqlArgumentException(e.getMessage());
+      throw new IllegalArgumentException(e.getMessage());
     }
   }
 
   private Map<String, String> getNextRow(MappingIterator<Map<String, String>> valueIterator)
-      throws IllegalGraphqlArgumentException {
+      throws IllegalArgumentException {
     try {
       return valueIterator.next();
     } catch (RuntimeJsonMappingException e) {
-      throw new IllegalGraphqlArgumentException(e.getMessage());
+      throw new IllegalArgumentException(e.getMessage());
     }
   }
 
   public String getRow(Map<String, String> row, String name, boolean isRequired) {
     String value = row.get(name);
     if (isRequired && (value == null || value.trim().isEmpty())) {
-      throw new IllegalGraphqlArgumentException(name + " is required.");
+      throw new IllegalArgumentException(name + " is required.");
     }
     return value;
   }
 
   @AuthorizationConfiguration.RequireGlobalAdminUser
-  public String processPersonCSV(InputStream csvStream) throws IllegalGraphqlArgumentException {
+  public String processPersonCSV(InputStream csvStream) throws IllegalArgumentException {
     final MappingIterator<Map<String, String>> valueIterator = getIteratorForCsv(csvStream);
     final var org = organizationService.getCurrentOrganization();
 
@@ -98,7 +97,7 @@ public class UploadService {
     // any parsed values
     // If not, we throw an error assuming the user didn't actually want to submit something empty.
     if (hasHeaderRow && !valueIterator.hasNext()) {
-      throw new IllegalGraphqlArgumentException("Empty or invalid CSV submitted");
+      throw new IllegalArgumentException("Empty or invalid CSV submitted");
     }
 
     Instant startTime = Instant.now();
@@ -115,7 +114,7 @@ public class UploadService {
 
         String zipCode = getRow(row, "ZipCode", true);
         if (!zipCode.matches(ZIP_CODE_REGEX)) {
-          throw new IllegalGraphqlArgumentException("Invalid zip code");
+          throw new IllegalArgumentException("Invalid zip code");
         }
 
         StreetAddress address =
@@ -172,10 +171,10 @@ public class UploadService {
             rowNumber,
             rowElapsed.toMillis(),
             totalElapsed.toMinutes());
-      } catch (IllegalGraphqlArgumentException e) {
+      } catch (IllegalArgumentException e) {
         String errorMessage = "Error on row " + rowNumber + "; " + e.getMessage();
         log.error(errorMessage);
-        throw new IllegalGraphqlArgumentException(errorMessage);
+        throw new IllegalArgumentException(errorMessage);
       }
     }
 

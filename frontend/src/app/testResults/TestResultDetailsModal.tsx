@@ -22,7 +22,6 @@ import { MULTIPLEX_DISEASES } from "./constants";
 
 type Result = {
   dateTested: string;
-  result: TestResult;
   results: MultiplexResult[];
   correctionStatus: TestCorrectionStatus;
   noSymptoms: boolean;
@@ -51,7 +50,6 @@ export const testResultDetailsQuery = gql`
   query getTestResultDetails($id: ID!) {
     testResult(id: $id) {
       dateTested
-      result
       results {
         disease {
           name
@@ -139,6 +137,7 @@ export const DetachedTestResultDetailsModal = ({ data, closeModal }: Props) => {
       overlayClassName="prime-modal-overlay display-flex flex-align-center flex-justify-center"
       contentLabel="Unsaved changes to current user"
       ariaHideApp={process.env.NODE_ENV !== "test"}
+      onRequestClose={closeModal}
     >
       <div className="display-flex flex-justify">
         <h1 className="font-heading-lg margin-top-05 margin-bottom-0">

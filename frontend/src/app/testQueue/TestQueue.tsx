@@ -92,7 +92,6 @@ export const queueQuery = gql`
           number
         }
       }
-      result
       results {
         disease {
           name

@@ -31,18 +31,25 @@ public class PatientResolver {
       @Argument UUID facilityId,
       @Argument int pageNumber,
       @Argument int pageSize,
-      @Argument boolean showDeleted,
+      @Argument boolean includeArchived,
       @Argument String namePrefixMatch,
       @Argument boolean includeArchivedFacilities) {
     return _ps.getPatients(
-        facilityId, pageNumber, pageSize, showDeleted, namePrefixMatch, includeArchivedFacilities);
+        facilityId,
+        pageNumber,
+        pageSize,
+        includeArchived,
+        namePrefixMatch,
+        includeArchivedFacilities);
   }
 
   // authorization happens in calls to PersonService
   @QueryMapping
   public long patientsCount(
-      @Argument UUID facilityId, @Argument boolean showDeleted, @Argument String namePrefixMatch) {
-    return _ps.getPatientsCount(facilityId, showDeleted, namePrefixMatch, false);
+      @Argument UUID facilityId,
+      @Argument boolean includeArchived,
+      @Argument String namePrefixMatch) {
+    return _ps.getPatientsCount(facilityId, includeArchived, namePrefixMatch, false);
   }
 
   @QueryMapping

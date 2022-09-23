@@ -581,9 +581,9 @@ class PersonServiceTest extends BaseServiceTest<PersonService> {
     patients = _service.getPatients(site2Id, 0, 100, false, "ma", false);
     assertPatientList(patients, JANNELLE, KACEY);
 
-    // site1, IS deleted, "ma"
+    // site1, includes deleted, "ma"
     patients = _service.getPatients(site1Id, 0, 100, true, "ma", false);
-    assertPatientList(patients, CHARLES);
+    assertPatientList(patients, CHARLES, GALE, ELIZABETH, HEINRICK);
 
     // all facilities, not deleted, "mar"
     patients = _service.getPatients(null, 0, 100, false, "mar", false);
@@ -642,14 +642,14 @@ class PersonServiceTest extends BaseServiceTest<PersonService> {
     _service.setIsDeleted(patients_site2.get(0).getInternalId(), true);
 
     assertEquals(10, _service.getPatientsCount(null, false, null, false));
+    assertEquals(12, _service.getPatientsCount(null, true, null, false));
     assertEquals(6, _service.getPatientsCount(site2Id, false, null, false));
-    assertEquals(2, _service.getPatientsCount(null, true, null, false));
-    assertEquals(1, _service.getPatientsCount(site2Id, true, null, false));
+    assertEquals(7, _service.getPatientsCount(site2Id, true, null, false));
 
     // counts for name filtering
     assertEquals(5, _service.getPatientsCount(null, false, "ma", false));
     assertEquals(2, _service.getPatientsCount(site2Id, false, "ma", false));
-    assertEquals(1, _service.getPatientsCount(site1Id, true, "ma", false));
+    assertEquals(4, _service.getPatientsCount(site1Id, true, "ma", false));
     assertEquals(4, _service.getPatientsCount(null, false, "mar", false));
     assertEquals(2, _service.getPatientsCount(null, false, "MARTHA", false));
 
