@@ -826,6 +826,7 @@ $results-dropdown-spacing: #{units(4)} - #{units(2)} - 22px - #{units(4)}; // he
 
 .is-prime-staff-infobox-visible {
   visibility: visible;
+  z-index: 11;
 }
 
 // export
