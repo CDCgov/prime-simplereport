@@ -9,7 +9,10 @@ const SettingsNav = () => {
   };
 
   const location = useLocation();
-  const onFacilitiesPage = location.pathname.startsWith("/settings/facilit");
+  const onFacilitiesPage =
+    location.pathname.startsWith("/settings/facility") ||
+    location.pathname.startsWith("/settings/facilities") ||
+    location.pathname.startsWith("/settings/add-facility");
   const classNameByActiveFacility = ({ isActive }: { isActive: boolean }) => {
     return isActive || onFacilitiesPage ? "active" : "";
   };
