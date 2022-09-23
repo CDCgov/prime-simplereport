@@ -21,12 +21,12 @@ Object {
       class="ReactModalPortal"
     >
       <div
-        class="ReactModal__Overlay ReactModal__Overlay--after-open prime-modal-overlay display-flex flex-align-center flex-justify-center"
+        class="ReactModal__Overlay prime-modal-overlay display-flex flex-align-center flex-justify-center"
       >
         <div
           aria-label="Test questionnaire"
           aria-modal="true"
-          class="ReactModal__Content ReactModal__Content--after-open"
+          class="ReactModal__Content"
           role="dialog"
           style="position: initial; top: 40px; left: 40px; right: 40px; bottom: 40px; border: 1px solid #ccc; background: rgb(255, 255, 255); overflow: auto; border-radius: 4px; outline: none; padding: 20px;"
           tabindex="-1"
