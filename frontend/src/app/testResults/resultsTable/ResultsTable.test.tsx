@@ -3,6 +3,7 @@ import userEvent from "@testing-library/user-event";
 
 import { PATIENT_TERM_CAP } from "../../../config/constants";
 import TEST_RESULTS_MULTIPLEX from "../mocks/resultsMultiplex.mock";
+import TEST_RESULT_COVID from "../mocks/resultsCovid.mock";
 
 import ResultsTable, { generateTableHeaders } from "./ResultsTable";
 
@@ -95,10 +96,10 @@ describe("Component ResultsTable", () => {
     ).toBeInTheDocument();
   });
 
-  it("checks table with results", () => {
+  it("checks table with covid results", () => {
     render(
       <ResultsTable
-        results={TEST_RESULTS_MULTIPLEX}
+        results={[TEST_RESULT_COVID[0]]}
         setPrintModalId={setPrintModalIdFn}
         setMarkCorrectionId={setMarkCorrectionIdFn}
         setDetailsModalId={setDetailsModalIdFn}
@@ -109,11 +110,33 @@ describe("Component ResultsTable", () => {
       />
     );
 
+    expect(screen.getByTestId("covid-19-result")).toHaveTextContent("Negative");
+    expect(screen.queryByText("Flu A")).not.toBeInTheDocument();
+    expect(screen.queryByText("Flu B")).not.toBeInTheDocument();
+  });
+
+  it("checks table with multiplex results", () => {
+    render(
+      <ResultsTable
+        results={TEST_RESULTS_MULTIPLEX}
+        setPrintModalId={setPrintModalIdFn}
+        setMarkCorrectionId={setMarkCorrectionIdFn}
+        setDetailsModalId={setDetailsModalIdFn}
+        setTextModalId={setTextModalIdFn}
+        setEmailModalTestResultId={setEmailModalTestResultIdFn}
+        hasMultiplexResults={true}
+        hasFacility={false}
+      />
+    );
+
     TEST_RESULTS_MULTIPLEX.forEach((result) => {
       expect(
         screen.getByTestId(`test-result-${result.internalId}`)
       ).toBeInTheDocument();
     });
+    expect(screen.getByText("COVID-19")).toBeInTheDocument();
+    expect(screen.getByText("Flu A")).toBeInTheDocument();
+    expect(screen.getByText("Flu B")).toBeInTheDocument();
   });
 
   describe("actions menu", () => {

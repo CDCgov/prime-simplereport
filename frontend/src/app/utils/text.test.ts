@@ -1,4 +1,4 @@
-import { capitalizeText } from "./text";
+import { capitalizeText, toLowerCaseHyphenate } from "./text";
 
 describe("capitalizeText", () => {
   test("empty text", () => {
@@ -16,5 +16,20 @@ describe("capitalizeText", () => {
   test("two words", () => {
     const text = "foo bar";
     expect(capitalizeText(text)).toBe("Foo bar");
+  });
+});
+
+describe("toLowerCaseHyphenate", () => {
+  test("empty text", () => {
+    const text = "";
+    expect(toLowerCaseHyphenate(text)).toBe("");
+  });
+  test("all capitalized", () => {
+    const text = "COVID-19 TEST RESULT";
+    expect(toLowerCaseHyphenate(text)).toBe("covid-19-test-result");
+  });
+  test("starts and ends with whitespace", () => {
+    const text = " COVID-19 TEST RESULT ";
+    expect(toLowerCaseHyphenate(text)).toBe("-covid-19-test-result-");
   });
 });

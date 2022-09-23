@@ -1,12 +1,11 @@
-import { render, screen } from "@testing-library/react";
+import { render, screen, waitFor } from "@testing-library/react";
 import userEvent from "@testing-library/user-event";
 import createMockStore from "redux-mock-store";
-import { MockedProvider, MockedProviderProps } from "@apollo/client/testing";
 import { Provider } from "react-redux";
 import { MemoryRouter } from "react-router-dom";
 import { ToastContainer } from "react-toastify";
 
-import { UploadTestResultCsvDocument } from "../../../generated/graphql";
+import { FileUploadService } from "../../../fileUploadService/FileUploadService";
 
 import Uploads from "./Uploads";
 
@@ -27,14 +26,12 @@ const file = (text: BlobPart) => {
 const validFile = () => file(validFileContents);
 
 const TestContainer = () => (
-  <MockedProvider>
-    <Provider store={store}>
-      <MemoryRouter>
-        <ToastContainer />
-        <Uploads />
-      </MemoryRouter>
-    </Provider>
-  </MockedProvider>
+  <Provider store={store}>
+    <MemoryRouter>
+      <ToastContainer />
+      <Uploads />
+    </MemoryRouter>
+  </Provider>
 );
 
 describe("Uploads", () => {
@@ -109,78 +106,58 @@ describe("Uploads", () => {
   });
 
   describe("happy path", () => {
-    let mockIsDone: boolean;
     let file: File;
+    let uploadResultsSpy: jest.SpyInstance<Promise<Response>, [csvFile: File]>;
 
-    beforeEach(() => {
-      mockIsDone = false;
+    beforeEach(async () => {
       file = validFile();
 
-      const mocks: MockedProviderProps["mocks"] = [
-        {
-          request: {
-            query: UploadTestResultCsvDocument,
-            variables: {
-              testResultList: file,
-            },
-          },
-          result: () => {
-            mockIsDone = true;
+      uploadResultsSpy = jest
+        .spyOn(FileUploadService, "uploadResults")
+        .mockImplementation(() => {
+          return Promise.resolve(
+            new Response(
+              JSON.stringify({
+                reportId: "fake-report-id",
+                status: "FINISHED",
+                recordsCount: 1,
+                warnings: [],
+                errors: [],
+              }),
+              { status: 200 }
+            )
+          );
+        });
 
-            return {
-              data: {
-                uploadTestResultCSV: {
-                  reportId: "fake-id",
-                  status: "FINISHED",
-                  recordsCount: 1,
-                  warnings: [],
-                  errors: [],
-                },
-              },
-            };
-          },
-        },
-      ];
-
-      render(
-        <MockedProvider mocks={mocks} addTypename={false}>
-          <Provider store={store}>
-            <MemoryRouter>
-              <ToastContainer />
-              <Uploads />
-            </MemoryRouter>
-          </Provider>
-        </MockedProvider>
+      await render(
+        <Provider store={store}>
+          <MemoryRouter>
+            <ToastContainer />
+            <Uploads />
+          </MemoryRouter>
+        </Provider>
       );
+
+      const fileInput = screen.getByTestId("file-input-input");
+      userEvent.upload(fileInput, file);
+      await waitFor(() => {
+        screen.getByText("values.csv");
+      });
+
+      const submitButton = screen.getByTestId("button");
+      userEvent.click(submitButton);
+      await waitFor(() => {
+        expect(screen.getByText("Success: File Accepted")).toBeInTheDocument();
+      });
     });
 
-    it("performs HTTP request to GraphQL endpoint to submit CSV file", async () => {
-      const input = screen.getByTestId("file-input-input");
-
-      userEvent.upload(input, file);
-
-      await new Promise((resolve) => setTimeout(resolve, 0));
-      const button = screen.getByTestId("button");
-
-      userEvent.click(button);
-
-      await new Promise((resolve) => setTimeout(resolve, 0));
-      expect(mockIsDone).toEqual(true);
+    it("performs HTTP request to rest endpoint to submit CSV file", async () => {
+      expect(uploadResultsSpy).toHaveBeenCalled();
     });
 
     it("displays a success message and the returned Report ID", async () => {
-      const input = screen.getByTestId("file-input-input");
-
-      userEvent.upload(input, file);
-      await new Promise((resolve) => setTimeout(resolve, 0));
-
-      const button = screen.getByTestId("button");
-
-      userEvent.click(button);
-      await new Promise((resolve) => setTimeout(resolve, 0));
-
-      expect(await screen.findByText("Success: File Accepted"));
-      expect(await screen.findByText("fake-id"));
+      expect(screen.getByText("Confirmation Code")).toBeInTheDocument();
+      expect(screen.getByText("fake-report-id")).toBeInTheDocument();
     });
   });
 });

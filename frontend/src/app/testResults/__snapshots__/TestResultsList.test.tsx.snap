@@ -467,7 +467,8 @@ exports[`TestResultsList should render a list of tests 1`] = `
                 03/19/2021 7:27pm
               </td>
               <td
-                class="test-result-cell covid-19-result"
+                class="test-result-cell"
+                data-testid="covid-19-result"
               >
                 Positive
               </td>
@@ -544,7 +545,8 @@ exports[`TestResultsList should render a list of tests 1`] = `
                 03/18/2021 7:27pm
               </td>
               <td
-                class="test-result-cell covid-19-result"
+                class="test-result-cell"
+                data-testid="covid-19-result"
               >
                 Negative
               </td>
@@ -621,7 +623,8 @@ exports[`TestResultsList should render a list of tests 1`] = `
                 03/17/2021 7:27pm
               </td>
               <td
-                class="test-result-cell covid-19-result"
+                class="test-result-cell"
+                data-testid="covid-19-result"
               >
                 Negative
               </td>

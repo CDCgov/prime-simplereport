@@ -38,7 +38,6 @@ directive @Pattern(
 scalar DateTime
 # custom scalar gov.cdc.usds.simplereport.api.FlexibleDateScalar
 scalar LocalDate
-scalar Upload
 
 enum UploadStatus {
   PENDING

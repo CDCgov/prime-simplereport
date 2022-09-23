@@ -247,7 +247,7 @@ public class UserAuthorizationVerifier {
 
   public boolean userHasSpecificPatientSearchPermission(
       UUID facilityId,
-      boolean isArchived,
+      boolean includeArchived,
       String namePrefixMatch,
       boolean includeArchivedFacilities) {
     Set<UserPermission> perms = new HashSet<>();
@@ -255,7 +255,7 @@ public class UserAuthorizationVerifier {
     if (facilityId != null && !userCanAccessFacility(facilityId)) {
       return false;
     }
-    if (isArchived) {
+    if (includeArchived) {
       perms.add(UserPermission.READ_ARCHIVED_PATIENT_LIST);
     }
     if (includeArchivedFacilities) {
