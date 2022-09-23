@@ -4,27 +4,17 @@ import userEvent from "@testing-library/user-event";
 
 import AoEModalForm from "./AoEModalForm";
 
-
 jest.mock("./AoEForm", () => () => <></>);
-// jest.mock("react-modal", () => (props: any) => <>{props.children}</>);
 
 describe("AoEModalForm", () => {
-  // let component: RenderResult["container"];
   let component: RenderResult;
-
-  // trying to make Modal component render instead of injecting?
-  // unnecessary if react-modal is mocked
-  // beforeAll(() => {
-  //     ReactDOM.createPortal = jest.fn((element, _node) => {
-  //         return element;
-  //     }) as any;
-  // });
+  let mockOnClose = jest.fn();
 
   beforeEach(() => {
     MockDate.set("2021-02-06");
     component = render(
       <AoEModalForm
-        onClose={jest.fn()}
+        onClose={mockOnClose}
         patient={{
           internalId: "123",
           gender: "male",
@@ -33,7 +23,6 @@ describe("AoEModalForm", () => {
         }}
         saveCallback={jest.fn()}
       />
-      // ).container;
     );
   });
 
@@ -46,29 +35,11 @@ describe("AoEModalForm", () => {
     it("renders", async () => {
       expect(component).toMatchSnapshot();
     });
-  });
-});
 
-describe("experiment", () => {
-  it("closes when it should", async () => {
-    let mockClose = jest.fn(() => {});
-    MockDate.set("2021-02-06");
-    render(
-      <AoEModalForm
-        onClose={mockClose}
-        patient={{
-          internalId: "123",
-          gender: "male",
-          firstName: "Steve",
-          lastName: "Jobs",
-        }}
-        saveCallback={jest.fn()}
-      />
-    );
-
-    await screen.findByText("Test questionnaire");
-    // userEvent.click(screen.getByAltText("Close"));
-    userEvent.keyboard("{Escape}");
-    expect(mockClose).toHaveBeenCalled();
+    it("closes on esc key", () => {
+      expect(mockOnClose).not.toHaveBeenCalled();
+      userEvent.keyboard("{Escape}");
+      expect(mockOnClose).toHaveBeenCalled();
+    });
   });
 });
