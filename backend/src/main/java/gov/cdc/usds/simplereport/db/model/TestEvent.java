@@ -62,7 +62,7 @@ public class TestEvent extends BaseTestInfo {
 
   public TestEvent(TestOrder testOrder, Boolean hasPriorTests, Set<Result> results) {
     this(testOrder, hasPriorTests);
-    this.results = results;
+    this.results.addAll(results);
   }
 
   private TestEvent(TestOrder order, Boolean hasPriorTests) {
@@ -102,7 +102,7 @@ public class TestEvent extends BaseTestInfo {
     this.surveyData = event.getSurveyData();
     setDateTestedBackdate(order.getDateTestedBackdate());
     this.priorCorrectedTestEventId = event.getInternalId();
-    this.results = results;
+    this.results.addAll(results);
   }
 
   public TestEvent(
@@ -120,7 +120,7 @@ public class TestEvent extends BaseTestInfo {
     this.surveyData = event.getSurveyData();
     setDateTestedBackdate(order.getDateTestedBackdate());
     this.priorCorrectedTestEventId = event.getInternalId();
-    this.results = results;
+    this.results.addAll(results);
   }
 
   public UUID getPatientInternalID() {
