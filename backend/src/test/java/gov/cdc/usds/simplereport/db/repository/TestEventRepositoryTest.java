@@ -105,7 +105,7 @@ class TestEventRepositoryTest extends BaseRepositoryTest {
     TestOrder firstOrder =
         _dataFactory.createCompletedTestOrder(patient, place, TestResult.POSITIVE);
     var firstResults = firstOrder.getResults();
-    TestEvent firstEvent = new TestEvent(firstOrder, false, firstResults);
+    var firstEvent = new TestEvent(firstOrder, false, firstResults);
     firstResults.forEach(result -> result.setTestEvent(firstEvent));
     _resultRepo.saveAll(firstResults);
     _repo.save(firstEvent);
@@ -113,14 +113,14 @@ class TestEventRepositoryTest extends BaseRepositoryTest {
     TestOrder secondOrder =
         _dataFactory.createCompletedTestOrder(patient, place, TestResult.UNDETERMINED);
     var secondResults = secondOrder.getResults();
-    TestEvent secondEvent = new TestEvent(secondOrder, false, secondResults);
+    var secondEvent = new TestEvent(secondOrder, false, secondResults);
     secondResults.forEach(result -> result.setTestEvent(secondEvent));
     _resultRepo.saveAll(secondResults);
     _repo.save(secondEvent);
 
     flush();
     TestEvent found = _repo.findFirst1ByPatientOrderByCreatedAtDesc(patient);
-    TestEvent savedSecondEvent = _repo.findById(secondEvent.getInternalId()).get();
+    var savedSecondEvent = _repo.findById(secondEvent.getInternalId()).get();
     assertEquals(TestResult.UNDETERMINED, savedSecondEvent.getCovidTestResult());
     List<TestEvent> foundTestReports2 =
         _repo.queryMatchAllBetweenDates(d1, DATE_1MIN_FUTURE, Pageable.unpaged());
@@ -327,7 +327,7 @@ class TestEventRepositoryTest extends BaseRepositoryTest {
     // repo level test. Higher level tests done in TestOrderServiceTest
     String reason = "Unit Test Correction " + LocalDateTime.now().toString();
     var results = startingEvent.getResults().stream().map(Result::new).collect(Collectors.toSet());
-    TestEvent correctionEvent =
+    var correctionEvent =
         new TestEvent(startingEvent, TestCorrectionStatus.REMOVED, reason, results);
     results.forEach(result -> result.setTestEvent(correctionEvent));
     _resultRepo.saveAll(results);

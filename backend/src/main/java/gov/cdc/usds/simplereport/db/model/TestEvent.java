@@ -46,7 +46,7 @@ public class TestEvent extends BaseTestInfo {
 
   @JsonIgnore
   @OneToMany(mappedBy = "testEvent", cascade = CascadeType.MERGE, fetch = FetchType.LAZY)
-  private Set<Result> results;
+  private Set<Result> results = new HashSet<>();
 
   @Column(columnDefinition = "uuid")
   private UUID priorCorrectedTestEventId; // used to chain events
@@ -62,7 +62,7 @@ public class TestEvent extends BaseTestInfo {
 
   public TestEvent(TestOrder testOrder, Boolean hasPriorTests, Set<Result> results) {
     this(testOrder, hasPriorTests);
-    this.results.addAll(results);
+    this.results = results;
   }
 
   private TestEvent(TestOrder order, Boolean hasPriorTests) {
@@ -86,7 +86,6 @@ public class TestEvent extends BaseTestInfo {
       // this can happen during unit tests, but never in prod.
       log.error("Order {} missing PatientAnswers", order.getInternalId());
     }
-    this.results = new HashSet<>();
   }
 
   // Constructor for creating corrections. Copy the original event

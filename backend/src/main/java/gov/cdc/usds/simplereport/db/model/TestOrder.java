@@ -56,7 +56,7 @@ public class TestOrder extends BaseTestInfo {
   @OneToMany(mappedBy = "testOrder", fetch = FetchType.LAZY, cascade = CascadeType.ALL)
   @Getter
   @Setter
-  private Set<Result> results;
+  private Set<Result> results = new HashSet<>();
 
   protected TestOrder() {
     /* for hibernate */ }
@@ -183,9 +183,6 @@ public class TestOrder extends BaseTestInfo {
   }
 
   public void addResult(Result result) {
-    if (this.results == null) {
-      this.results = new HashSet<>();
-    }
     this.results.add(result);
   }
 }

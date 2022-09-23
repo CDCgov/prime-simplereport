@@ -632,7 +632,7 @@ public class TestOrderService {
             .filter(Optional::isPresent)
             .map(result -> new Result(result.get()))
             .collect(Collectors.toSet());
-    TestEvent newRemoveEvent =
+    var newRemoveEvent =
         new TestEvent(event, TestCorrectionStatus.REMOVED, reasonForCorrection, results);
     _terepo.save(newRemoveEvent);
     results.forEach(
