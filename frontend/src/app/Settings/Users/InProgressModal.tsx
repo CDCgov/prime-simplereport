@@ -22,6 +22,7 @@ const InProgressModal: React.FC<Props> = ({ onClose, onContinue }) => {
       overlayClassName="prime-modal-overlay display-flex flex-align-center flex-justify-center"
       contentLabel="Unsaved changes to current user"
       ariaHideApp={process.env.NODE_ENV !== "test"}
+      onRequestClose={onClose}
     >
       <div className="border-0 card-container">
         <div className="grid-row grid-gap">
