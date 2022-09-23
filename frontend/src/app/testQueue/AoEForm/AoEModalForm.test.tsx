@@ -1,20 +1,24 @@
 import { render, RenderResult, screen } from "@testing-library/react";
 import MockDate from "mockdate";
-import ReactDOM from "react-dom";
+import userEvent from "@testing-library/user-event";
 
 import AoEModalForm from "./AoEModalForm";
 
+
 jest.mock("./AoEForm", () => () => <></>);
-jest.mock("react-modal", () => (props: any) => <>{props.children}</>);
+// jest.mock("react-modal", () => (props: any) => <>{props.children}</>);
 
 describe("AoEModalForm", () => {
-  let component: RenderResult["container"];
+  // let component: RenderResult["container"];
+  let component: RenderResult;
 
-  beforeAll(() => {
-    ReactDOM.createPortal = jest.fn((element, _node) => {
-      return element;
-    }) as any;
-  });
+  // trying to make Modal component render instead of injecting?
+  // unnecessary if react-modal is mocked
+  // beforeAll(() => {
+  //     ReactDOM.createPortal = jest.fn((element, _node) => {
+  //         return element;
+  //     }) as any;
+  // });
 
   beforeEach(() => {
     MockDate.set("2021-02-06");
@@ -27,15 +31,10 @@ describe("AoEModalForm", () => {
           firstName: "Steve",
           lastName: "Jobs",
         }}
-        loadState={{
-          noSymptoms: false,
-          symptoms: '{"426000000":"true","49727002":false}',
-          symptomOnset: "",
-          pregnancy: "",
-        }}
         saveCallback={jest.fn()}
       />
-    ).container;
+      // ).container;
+    );
   });
 
   describe("on data loaded", () => {
@@ -47,5 +46,29 @@ describe("AoEModalForm", () => {
     it("renders", async () => {
       expect(component).toMatchSnapshot();
     });
+  });
+});
+
+describe("experiment", () => {
+  it("closes when it should", async () => {
+    let mockClose = jest.fn(() => {});
+    MockDate.set("2021-02-06");
+    render(
+      <AoEModalForm
+        onClose={mockClose}
+        patient={{
+          internalId: "123",
+          gender: "male",
+          firstName: "Steve",
+          lastName: "Jobs",
+        }}
+        saveCallback={jest.fn()}
+      />
+    );
+
+    await screen.findByText("Test questionnaire");
+    // userEvent.click(screen.getByAltText("Close"));
+    userEvent.keyboard("{Escape}");
+    expect(mockClose).toHaveBeenCalled();
   });
 });
