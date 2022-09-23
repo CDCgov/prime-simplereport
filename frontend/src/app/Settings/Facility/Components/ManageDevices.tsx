@@ -1,9 +1,7 @@
-import React, { useMemo } from "react";
-import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
+import React from "react";
 
-import Button from "../../../commonComponents/Button/Button";
-import Dropdown from "../../../commonComponents/Dropdown";
 import { FacilityErrors } from "../facilitySchema";
+import MultiSelect from "../../../commonComponents/MultiSelect/MultiSelect";
 
 interface Props {
   deviceTypes: DeviceType[];
@@ -24,139 +22,67 @@ const ManageDevices: React.FC<Props> = ({
     deviceErrors.push(errors.deviceTypes);
   }
 
-  const selectedDevicesOrDefault = useMemo(
-    () => (selectedDevices.length > 0 ? selectedDevices : []),
-    [selectedDevices]
+  const getDeviceTypeOptions = Array.from(
+    deviceTypes.map((device) => ({
+      label: device.name,
+      value: device.internalId,
+    }))
   );
 
-  const selectedDeviceTypeIds = selectedDevicesOrDefault.map(
-    (d) => d.internalId
-  );
-
-  const onDeviceTypeChange = (newDeviceId: string, idx: number) => {
-    const newDeviceTypes = [...selectedDevicesOrDefault];
-
-    newDeviceTypes[idx] = deviceTypes.find(
-      (d) => d.internalId === newDeviceId
-    ) as DeviceType;
-
-    updateSelectedDevices(newDeviceTypes);
+  const getDeviceTypesFromIds = (newDeviceIds: String[]) => {
+    return newDeviceIds.length
+      ? newDeviceIds.map((deviceId) => {
+          return deviceTypes.find(
+            (deviceType) => deviceType.internalId === deviceId
+          ) as DeviceType;
+        })
+      : [];
   };
 
-  const onDeviceRemove = (idx: number) => {
-    const newDeviceSpecimenTypes = [...selectedDevicesOrDefault];
-
-    newDeviceSpecimenTypes.splice(idx, 1);
-
-    updateSelectedDevices(newDeviceSpecimenTypes);
+  const updateDevices = (newDeviceIds: String[]) => {
+    // validation does not work as expected here,
+    // only works on the second selection, not the first;
+    // add to props if we decide to use
+    // validateField("deviceTypes");
+    const newDevices = getDeviceTypesFromIds(newDeviceIds);
+    updateSelectedDevices(newDevices);
   };
 
-  // returns a list of deviceIds that have *not* been selected so far
-  const _getRemainingDeviceOptions = () =>
-    deviceTypes
-      .filter((device) => !selectedDeviceTypeIds.includes(device.internalId))
-      .sort((a, b) => a.name.localeCompare(b.name));
-
-  const onAddDevice = () => {
-    const remainingDeviceOptions = _getRemainingDeviceOptions();
-    const newDeviceTypes = [...selectedDevicesOrDefault];
-    newDeviceTypes.push(remainingDeviceOptions[0]);
-
-    updateSelectedDevices(newDeviceTypes);
-  };
-
-  const generateDeviceRows = () => {
-    return selectedDevicesOrDefault.map((device, idx) => {
-      const deviceId = device.internalId;
-
-      const deviceDropdownOptions = [...(deviceTypes || [])]
-        .sort((a, b) => a.name.localeCompare(b.name))
-        .map((deviceType) => {
-          return {
-            label: deviceType.name,
-            value: deviceType.internalId,
-            disabled: selectedDevicesOrDefault
-              .map((d) => d.internalId)
-              .includes(deviceType.internalId),
-          };
-        });
-
-      return (
-        <tr key={idx}>
-          <td>
-            <Dropdown
-              className="padding-0 margin-0"
-              options={deviceDropdownOptions}
-              selectedValue={deviceId}
-              onChange={(e) =>
-                onDeviceTypeChange((e.target as HTMLSelectElement).value, idx)
-              }
-              data-testid={`device-dropdown-${idx}`}
-            />
-          </td>
-          <td>
-            <button
-              className="usa-button--unstyled margin-top-05em margin-left-2"
-              onClick={() => onDeviceRemove(idx)}
-              aria-label="Delete device"
-            >
-              <FontAwesomeIcon icon={"trash"} className={"prime-red-icon"} />
-            </button>
-          </td>
-        </tr>
-      );
-    });
-  };
-
-  const renderDevicesTable = () => {
-    if (Object.keys(selectedDevicesOrDefault).length === 0) {
-      return <p> There are currently no devices </p>;
-    }
-    return (
-      <table
-        className="usa-table usa-table--borderless"
-        style={{ width: "100%" }}
-      >
-        <thead>
-          <tr>
-            <th scope="col">Device type</th>
-            <th scope="col">Action</th>
-          </tr>
-        </thead>
-        <tbody>{generateDeviceRows()}</tbody>
-      </table>
-    );
-  };
+  const getInitialValues = selectedDevices.length
+    ? selectedDevices.map((device) => device.internalId) || []
+    : undefined;
 
   return (
     <div className="prime-container card-container">
       <div className="usa-card__header">
         <h2 className="font-heading-lg">Manage devices</h2>
       </div>
-      {deviceErrors.length > 0 && (
-        <ul className="text-bold text-secondary-vivid">
-          {deviceErrors.map((err, index) => (
-            <li key={index}>{err}</li>
-          ))}
-        </ul>
-      )}
       <div className="usa-card__body">
         <p className="usa-hint padding-top-3">
           If you don&rsquo;t see a device you&rsquo;re using, please contact{" "}
           <a href="mailto:support@simplereport.gov">support@simplereport.gov</a>{" "}
           and request to add a new one.
         </p>
-        {renderDevicesTable()}
-      </div>
-      <div className="usa-card__footer">
-        <Button
-          onClick={onAddDevice}
-          variant="outline"
-          label="Add device"
-          icon="plus"
-          disabled={_getRemainingDeviceOptions().length === 0}
+        <MultiSelect
+          label="Device Types"
+          name="deviceTypes"
+          onChange={(newDeviceIds) => {
+            updateDevices(newDeviceIds);
+          }}
+          options={getDeviceTypeOptions}
+          initialSelectedValues={getInitialValues}
+          // Other option for validation
+          // errorMessage={deviceErrors.map((err, index) => { return err})}
+          // validationStatus={deviceErrors.length > 0 ? "error" : "success"}
         />
       </div>
+      {deviceErrors.length > 0 && (
+        <ul className="text-bold text-secondary-vivid margin-top-0">
+          {deviceErrors.map((err, index) => (
+            <li key={index}>{err}</li>
+          ))}
+        </ul>
+      )}
     </div>
   );
 };
