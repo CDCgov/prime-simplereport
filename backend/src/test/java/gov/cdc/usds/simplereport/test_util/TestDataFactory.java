@@ -406,7 +406,6 @@ public class TestDataFactory {
 
     Result resultEntity = new Result(order, _diseaseService.covid(), result);
     order.addResult(resultEntity);
-
     _resultRepository.save(resultEntity);
     _patientLinkRepository.save(new PatientLink(savedOrder));
     return order;
