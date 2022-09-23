@@ -1,10 +1,19 @@
 import React from "react";
+import { useLocation } from "react-router-dom";
 
 import { LinkWithQuery } from "../commonComponents/LinkWithQuery";
 
 const SettingsNav = () => {
-  const classNameByActive = ({ isActive }: { isActive: boolean }) =>
-    isActive ? "active" : "";
+  const classNameByActive = ({ isActive }: { isActive: boolean }) => {
+    return isActive ? "active" : "";
+  };
+
+  const location = useLocation();
+  const onFacilitiesPage = location.pathname.startsWith("/settings/facilit");
+  const classNameByActiveFacility = ({ isActive }: { isActive: boolean }) => {
+    return isActive || onFacilitiesPage ? "active" : "";
+  };
+  const facilityActive = onFacilitiesPage ? "page" : undefined;
 
   return (
     <nav className="prime-secondary-nav" aria-label="Secondary navigation">
@@ -14,10 +23,10 @@ const SettingsNav = () => {
             Manage users
           </LinkWithQuery>
         </li>
-        <li className="usa-nav__secondary-item">
+        <li className="usa-nav__secondary-item" aria-current={facilityActive}>
           <LinkWithQuery
             to={`/settings/facilities`}
-            className={classNameByActive}
+            className={classNameByActiveFacility}
           >
             Manage facilities
           </LinkWithQuery>
