@@ -23,6 +23,9 @@ describe("SettingsNav", () => {
         "aria-current",
         "page"
       );
+      expect(
+        screen.getByText("Manage facilities").parentElement
+      ).not.toHaveAttribute("aria-current");
       expect(screen.getByText("Manage facilities")).toHaveClass("active", {
         exact: true,
       });
