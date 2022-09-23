@@ -9,6 +9,7 @@ import java.util.HashSet;
 import java.util.Optional;
 import java.util.Set;
 import java.util.UUID;
+import javax.persistence.AttributeOverride;
 import javax.persistence.CascadeType;
 import javax.persistence.Column;
 import javax.persistence.Entity;
@@ -25,6 +26,7 @@ import org.hibernate.annotations.Type;
 @Getter
 @Entity
 @Immutable
+@AttributeOverride(name = "result", column = @Column(nullable = false))
 @Slf4j
 public class TestEvent extends BaseTestInfo {
   @Column

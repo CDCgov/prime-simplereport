@@ -89,9 +89,7 @@ public class TestOrder extends BaseTestInfo {
     super.setDateTestedBackdate(date);
   }
 
-  // This logic will need to be updated later on in the multiplex process
-  // - this method is temporary
-  // Eventually, this method will be deprecated in favor of getResultSet() and getResultForDisease()
+  @Deprecated
   public TestResult getTestResult() {
     Comparator<Result> resultDateComparator = Comparator.comparing(Result::getUpdatedAt);
     Optional<Result> resultObject = this.results.stream().max(resultDateComparator);
