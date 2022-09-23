@@ -76,11 +76,10 @@ const generateResultRows = (
 
   // `sort` mutates the array, so make a copy
   return [...testResults].sort(byDateTested).map((r) => {
-    const testResultOrder = [
-      MULTIPLEX_DISEASES.COVID_19,
-      MULTIPLEX_DISEASES.FLU_A,
-      MULTIPLEX_DISEASES.FLU_B,
-    ];
+    const testResultOrder = [MULTIPLEX_DISEASES.COVID_19];
+    if (hasMultiplexResults) {
+      testResultOrder.push(MULTIPLEX_DISEASES.FLU_A, MULTIPLEX_DISEASES.FLU_B);
+    }
     const actionItems = [];
     actionItems.push({
       name: "Print result",

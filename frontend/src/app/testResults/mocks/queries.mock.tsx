@@ -75,7 +75,7 @@ export const mocks = [
       data: {
         testResult: {
           dateTested: "2021-03-17T19:27:23.806Z",
-          result: "NEGATIVE",
+          results: [{ disease: { name: "COVID-19" }, testResult: "NEGATIVE" }],
           correctionStatus: "ORIGINAL",
           deviceType: {
             name: "Abbott IDNow",

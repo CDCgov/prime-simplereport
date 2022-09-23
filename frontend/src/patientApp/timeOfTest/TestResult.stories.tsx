@@ -24,7 +24,6 @@ export default {
 const data = {
   testResult: {
     testEventId: "12321312",
-    result: "POSITIVE" as TestResult,
     results: [
       { disease: { name: "COVID-19" }, testResult: "POSITIVE" },
     ] as MultiplexResult[],
