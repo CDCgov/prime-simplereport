@@ -45,10 +45,7 @@ public class TestEvent extends BaseTestInfo {
   private TestOrder order;
 
   @JsonIgnore
-  @OneToMany(
-      mappedBy = "testEvent",
-      cascade = {CascadeType.MERGE},
-      fetch = FetchType.LAZY)
+  @OneToMany(mappedBy = "testEvent", cascade = CascadeType.MERGE, fetch = FetchType.LAZY)
   private Set<Result> results;
 
   @Column(columnDefinition = "uuid")
@@ -170,7 +167,7 @@ public class TestEvent extends BaseTestInfo {
 
   // This method is temporary and eventually, this method will be deprecated in favor of
   // getResultSet()
-  public TestResult getCovidTestResults() {
+  public TestResult getCovidTestResult() {
     final String COVID_LOINC = "96741-4";
     Optional<Result> resultObject =
         this.results.stream()

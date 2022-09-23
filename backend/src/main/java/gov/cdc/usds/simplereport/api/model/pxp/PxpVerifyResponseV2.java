@@ -29,7 +29,7 @@ public class PxpVerifyResponseV2 {
   public PxpVerifyResponseV2(Person person, TestEvent testEvent) {
 
     this.testEventId = testEvent.getInternalId();
-    this.result = testEvent.getCovidTestResults();
+    this.result = testEvent.getCovidTestResult();
     Set<Result> allResults = testEvent.getResults();
     results = new HashSet<>();
     allResults.forEach(
