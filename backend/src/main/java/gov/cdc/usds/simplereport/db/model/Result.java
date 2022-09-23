@@ -58,14 +58,6 @@ public class Result extends EternalAuditedEntity {
   }
 
   /* Copy constructor, used for corrections and removals */
-  public Result(Result originalResult, TestEvent testEvent) {
-    this.testEvent = testEvent;
-    this.testOrder = originalResult.testOrder;
-    this.disease = originalResult.disease;
-    this.resultLOINC = originalResult.resultLOINC;
-    this.testResult = originalResult.testResult;
-  }
-
   public Result(Result originalResult) {
     this.testOrder = originalResult.testOrder;
     this.disease = originalResult.disease;
