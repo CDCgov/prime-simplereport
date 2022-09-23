@@ -20,7 +20,6 @@ export type Scalars = {
   Float: number;
   DateTime: any;
   LocalDate: any;
-  Upload: any;
 };
 
 export type AddTestResultResponse = {
@@ -202,8 +201,6 @@ export type Mutation = {
   updateUser?: Maybe<User>;
   updateUserEmail?: Maybe<User>;
   updateUserPrivileges?: Maybe<User>;
-  uploadPatients?: Maybe<Scalars["String"]>;
-  uploadTestResultCSV?: Maybe<UploadResult>;
 };
 
 export type MutationAddFacilityArgs = {
@@ -642,14 +639,6 @@ export type MutationUpdateUserPrivilegesArgs = {
   facilities?: InputMaybe<Array<Scalars["ID"]>>;
   id: Scalars["ID"];
   role: Role;
-};
-
-export type MutationUploadPatientsArgs = {
-  patientList: Scalars["Upload"];
-};
-
-export type MutationUploadTestResultCsvArgs = {
-  testResultList: Scalars["Upload"];
 };
 
 export type NameInfo = {
@@ -1691,15 +1680,6 @@ export type GetPatientsByFacilityQuery = {
       >
     | null
     | undefined;
-};
-
-export type UploadPatientsMutationVariables = Exact<{
-  patientList: Scalars["Upload"];
-}>;
-
-export type UploadPatientsMutation = {
-  __typename?: "Mutation";
-  uploadPatients?: string | null | undefined;
 };
 
 export type AddUserMutationVariables = Exact<{
@@ -2832,47 +2812,6 @@ export type GetUploadSubmissionsQuery = {
         | undefined;
     }>;
   };
-};
-
-export type UploadTestResultCsvMutationVariables = Exact<{
-  testResultList: Scalars["Upload"];
-}>;
-
-export type UploadTestResultCsvMutation = {
-  __typename?: "Mutation";
-  uploadTestResultCSV?:
-    | {
-        __typename?: "UploadResult";
-        reportId?: string | null | undefined;
-        status: UploadStatus;
-        recordsCount: number;
-        warnings?:
-          | Array<
-              | {
-                  __typename?: "FeedbackMessage";
-                  scope?: string | null | undefined;
-                  message?: string | null | undefined;
-                }
-              | null
-              | undefined
-            >
-          | null
-          | undefined;
-        errors?:
-          | Array<
-              | {
-                  __typename?: "FeedbackMessage";
-                  scope?: string | null | undefined;
-                  message?: string | null | undefined;
-                }
-              | null
-              | undefined
-            >
-          | null
-          | undefined;
-      }
-    | null
-    | undefined;
 };
 
 export const WhoAmIDocument = gql`
@@ -4828,53 +4767,6 @@ export type GetPatientsByFacilityLazyQueryHookResult = ReturnType<
 export type GetPatientsByFacilityQueryResult = Apollo.QueryResult<
   GetPatientsByFacilityQuery,
   GetPatientsByFacilityQueryVariables
->;
-export const UploadPatientsDocument = gql`
-  mutation UploadPatients($patientList: Upload!) {
-    uploadPatients(patientList: $patientList)
-  }
-`;
-export type UploadPatientsMutationFn = Apollo.MutationFunction<
-  UploadPatientsMutation,
-  UploadPatientsMutationVariables
->;
-
-/**
- * __useUploadPatientsMutation__
- *
- * To run a mutation, you first call `useUploadPatientsMutation` within a React component and pass it any options that fit your needs.
- * When your component renders, `useUploadPatientsMutation` returns a tuple that includes:
- * - A mutate function that you can call at any time to execute the mutation
- * - An object with fields that represent the current status of the mutation's execution
- *
- * @param baseOptions options that will be passed into the mutation, supported options are listed on: https://www.apollographql.com/docs/react/api/react-hooks/#options-2;
- *
- * @example
- * const [uploadPatientsMutation, { data, loading, error }] = useUploadPatientsMutation({
- *   variables: {
- *      patientList: // value for 'patientList'
- *   },
- * });
- */
-export function useUploadPatientsMutation(
-  baseOptions?: Apollo.MutationHookOptions<
-    UploadPatientsMutation,
-    UploadPatientsMutationVariables
-  >
-) {
-  const options = { ...defaultOptions, ...baseOptions };
-  return Apollo.useMutation<
-    UploadPatientsMutation,
-    UploadPatientsMutationVariables
-  >(UploadPatientsDocument, options);
-}
-export type UploadPatientsMutationHookResult = ReturnType<
-  typeof useUploadPatientsMutation
->;
-export type UploadPatientsMutationResult = Apollo.MutationResult<UploadPatientsMutation>;
-export type UploadPatientsMutationOptions = Apollo.BaseMutationOptions<
-  UploadPatientsMutation,
-  UploadPatientsMutationVariables
 >;
 export const AddUserDocument = gql`
   mutation AddUser(
@@ -7374,63 +7266,4 @@ export type GetUploadSubmissionsLazyQueryHookResult = ReturnType<
 export type GetUploadSubmissionsQueryResult = Apollo.QueryResult<
   GetUploadSubmissionsQuery,
   GetUploadSubmissionsQueryVariables
->;
-export const UploadTestResultCsvDocument = gql`
-  mutation UploadTestResultCSV($testResultList: Upload!) {
-    uploadTestResultCSV(testResultList: $testResultList) {
-      reportId
-      status
-      recordsCount
-      warnings {
-        scope
-        message
-      }
-      errors {
-        scope
-        message
-      }
-    }
-  }
-`;
-export type UploadTestResultCsvMutationFn = Apollo.MutationFunction<
-  UploadTestResultCsvMutation,
-  UploadTestResultCsvMutationVariables
->;
-
-/**
- * __useUploadTestResultCsvMutation__
- *
- * To run a mutation, you first call `useUploadTestResultCsvMutation` within a React component and pass it any options that fit your needs.
- * When your component renders, `useUploadTestResultCsvMutation` returns a tuple that includes:
- * - A mutate function that you can call at any time to execute the mutation
- * - An object with fields that represent the current status of the mutation's execution
- *
- * @param baseOptions options that will be passed into the mutation, supported options are listed on: https://www.apollographql.com/docs/react/api/react-hooks/#options-2;
- *
- * @example
- * const [uploadTestResultCsvMutation, { data, loading, error }] = useUploadTestResultCsvMutation({
- *   variables: {
- *      testResultList: // value for 'testResultList'
- *   },
- * });
- */
-export function useUploadTestResultCsvMutation(
-  baseOptions?: Apollo.MutationHookOptions<
-    UploadTestResultCsvMutation,
-    UploadTestResultCsvMutationVariables
-  >
-) {
-  const options = { ...defaultOptions, ...baseOptions };
-  return Apollo.useMutation<
-    UploadTestResultCsvMutation,
-    UploadTestResultCsvMutationVariables
-  >(UploadTestResultCsvDocument, options);
-}
-export type UploadTestResultCsvMutationHookResult = ReturnType<
-  typeof useUploadTestResultCsvMutation
->;
-export type UploadTestResultCsvMutationResult = Apollo.MutationResult<UploadTestResultCsvMutation>;
-export type UploadTestResultCsvMutationOptions = Apollo.BaseMutationOptions<
-  UploadTestResultCsvMutation,
-  UploadTestResultCsvMutationVariables
 >;
