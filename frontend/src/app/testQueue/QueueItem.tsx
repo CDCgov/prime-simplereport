@@ -86,6 +86,7 @@ const AreYouSure: React.FC<AreYouSureProps> = ({
     overlayClassName="prime-modal-overlay display-flex flex-align-center flex-justify-center"
     contentLabel="Questions not answered"
     ariaHideApp={process.env.NODE_ENV !== "test"}
+    onRequestClose={cancelHandler}
   >
     <div className="sr-modal-content">{children}</div>
     <div className="margin-top-4 padding-top-205 border-top border-base-lighter margin-x-neg-205">

@@ -93,6 +93,7 @@ export const DownloadResultsCsvModal = ({
       overlayClassName="prime-modal-overlay display-flex flex-align-center flex-justify-center"
       contentLabel="Download test results"
       ariaHideApp={process.env.NODE_ENV !== "test"}
+      onRequestClose={closeModal}
     >
       <div className="border-0 card-container">
         <div className="display-flex flex-justify">
