@@ -198,6 +198,9 @@ const PersonalDetailsForm = ({
       personalDetails.lastName,
     ].join(" ");
 
+  const personalContactGroupHeader = "personal-contact-group-header";
+  const homeAddressGroupHeader = "home-address-group-header";
+
   return (
     <CardBackground>
       <Card logo>
@@ -238,9 +241,9 @@ const PersonalDetailsForm = ({
             "Personal contact information",
             false,
             "",
-            "personal-contact-group-header"
+            personalContactGroupHeader
           )}
-          <div role="group" aria-labelledby={"personal-contact-group-header"}>
+          <div role="group" aria-labelledby={personalContactGroupHeader}>
             {getFormElement(
               "email",
               "Email",
@@ -261,9 +264,9 @@ const PersonalDetailsForm = ({
             "Home address",
             false,
             "",
-            "home-address-group-header"
+            homeAddressGroupHeader
           )}
-          <div role={"group"} aria-labelledby={"home-address-group-header"}>
+          <div role={"group"} aria-labelledby={homeAddressGroupHeader}>
             {getFormElement("streetAddress1", "Street address 1", true, "", "")}
             {getFormElement(
               "streetAddress2",
