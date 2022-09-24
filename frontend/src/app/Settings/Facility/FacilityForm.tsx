@@ -329,7 +329,7 @@ const FacilityForm: React.FC<Props> = (props) => {
                       to={`/settings/facilities`}
                       className="margin-left-05"
                     >
-                      All facilities
+                      Back to all facilities
                     </LinkWithQuery>
                   </>
                 )}
