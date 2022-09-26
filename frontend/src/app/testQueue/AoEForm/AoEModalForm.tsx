@@ -41,6 +41,7 @@ const AoEModalForm = (props: AoEModalProps) => {
           position: "initial",
         },
       }}
+      onRequestClose={onClose}
       overlayClassName="prime-modal-overlay display-flex flex-align-center flex-justify-center"
       contentLabel="Test questionnaire"
       ariaHideApp={process.env.NODE_ENV !== "test"}
