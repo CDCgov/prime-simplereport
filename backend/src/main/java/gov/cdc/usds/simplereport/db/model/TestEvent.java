@@ -172,6 +172,6 @@ public class TestEvent extends BaseTestInfo {
         this.results.stream()
             .filter(result -> COVID_LOINC.equals(result.getDisease().getLoinc()))
             .findFirst();
-    return resultObject.map(Result::getTestResult).orElse(null);
+    return resultObject.map(Result::getTestResult).orElseThrow();
   }
 }
