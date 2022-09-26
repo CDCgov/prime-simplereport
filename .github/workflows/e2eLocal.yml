@@ -23,6 +23,7 @@ jobs:
       run: |
         echo "::group::Generate ssl certs"
         sudo apt install libnss3-tools
+        eval "$(/home/linuxbrew/.linuxbrew/bin/brew shellenv)"
         brew install mkcert
         mkcert -install
         mkdir -p certs
