@@ -166,12 +166,12 @@ public class TestEvent extends BaseTestInfo {
     return order.getDeviceSpecimen();
   }
 
-  public TestResult getCovidTestResult() {
+  public Optional<TestResult> getCovidTestResult() {
     final String COVID_LOINC = "96741-4";
     Optional<Result> resultObject =
         this.results.stream()
             .filter(result -> COVID_LOINC.equals(result.getDisease().getLoinc()))
             .findFirst();
-    return resultObject.map(Result::getTestResult).orElseThrow();
+    return resultObject.map(Result::getTestResult);
   }
 }

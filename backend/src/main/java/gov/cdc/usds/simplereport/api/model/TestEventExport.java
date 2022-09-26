@@ -409,7 +409,7 @@ public class TestEventExport {
 
   @JsonProperty("Test_result_code")
   public String getTestResult() {
-    return testResultMap.get(testEvent.getCovidTestResult());
+    return testResultMap.get(testEvent.getCovidTestResult().orElseThrow());
   }
 
   @JsonProperty("Specimen_collection_date_time")

@@ -68,7 +68,7 @@ class TestEventExportTest extends BaseRepositoryTest {
     Person p = _dataFactory.createFullPerson(o);
     TestEvent te = _dataFactory.createTestEvent(p, f);
 
-    assertEquals(TestResult.NEGATIVE, te.getCovidTestResult());
+    assertEquals(TestResult.NEGATIVE, te.getCovidTestResult().get());
 
     TestEventExport sut = new TestEventExport(te);
 

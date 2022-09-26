@@ -121,7 +121,7 @@ class TestEventRepositoryTest extends BaseRepositoryTest {
     flush();
     TestEvent found = _repo.findFirst1ByPatientOrderByCreatedAtDesc(patient);
     var savedSecondEvent = _repo.findById(secondEvent.getInternalId()).get();
-    assertEquals(TestResult.UNDETERMINED, savedSecondEvent.getCovidTestResult());
+    assertEquals(TestResult.UNDETERMINED, savedSecondEvent.getCovidTestResult().orElseThrow());
     List<TestEvent> foundTestReports2 =
         _repo.queryMatchAllBetweenDates(d1, DATE_1MIN_FUTURE, Pageable.unpaged());
     assertEquals(2, foundTestReports2.size() - foundTestReports1.size());
@@ -347,7 +347,8 @@ class TestEventRepositoryTest extends BaseRepositoryTest {
         eventReloaded.getOrganization().getInternalId());
     assertEquals(
         startingEvent.getFacility().getInternalId(), eventReloaded.getFacility().getInternalId());
-    assertEquals(startingEvent.getCovidTestResult(), eventReloaded.getCovidTestResult());
+    assertEquals(
+        startingEvent.getCovidTestResult().get(), eventReloaded.getCovidTestResult().get());
     assertEquals(startingEvent.getProviderData(), eventReloaded.getProviderData());
     assertEquals(startingEvent.getPatientData(), eventReloaded.getPatientData());
     compareAskOnEntrySurvey(startingEvent.getSurveyData(), eventReloaded.getSurveyData());
