@@ -4116,3 +4116,19 @@ databaseChangeLog:
       rollback:
         truncateTable:
           tableName: feature_flag
+  - changeSet:
+      id: add-index-patient_link-created_at
+      author: zedd@skylight.digital
+      changes:
+        - tagDatabase:
+            tag: add-index-patient_link-created_at
+        - createIndex:
+            tableName: patient_link
+            indexName: ix__patient_link__created_at
+            columns:
+              - column:
+                  name: created_at
+                  descending: true
+      rollback:
+        - dropIndex:
+            indexName: ix__patient_link__created_at
