@@ -166,8 +166,6 @@ public class TestEvent extends BaseTestInfo {
     return order.getDeviceSpecimen();
   }
 
-  // This method is temporary and eventually, this method will be deprecated in favor of
-  // getResultSet()
   public TestResult getCovidTestResult() {
     final String COVID_LOINC = "96741-4";
     Optional<Result> resultObject =
