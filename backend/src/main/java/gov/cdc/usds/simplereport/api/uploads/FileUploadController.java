@@ -1,5 +1,6 @@
 package gov.cdc.usds.simplereport.api.uploads;
 
+import static gov.cdc.usds.simplereport.api.Translators.parseUUID;
 import static gov.cdc.usds.simplereport.config.WebConfiguration.PATIENT_UPLOAD;
 import static gov.cdc.usds.simplereport.config.WebConfiguration.RESULT_UPLOAD;
 
@@ -9,6 +10,9 @@ import gov.cdc.usds.simplereport.service.TestResultUploadService;
 import gov.cdc.usds.simplereport.service.UploadService;
 import java.io.IOException;
 import java.io.InputStream;
+import java.util.Optional;
+import java.util.UUID;
+
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -25,11 +29,18 @@ public class FileUploadController {
   private final TestResultUploadService testResultUploadService;
 
   @PostMapping(PATIENT_UPLOAD)
-  public String handlePatientsUpload(@RequestParam("file") MultipartFile file) {
+  public String handlePatientsUpload(@RequestParam("file") MultipartFile file, @RequestParam String rawFacilityId) {
     assertCsvFileType(file);
 
+//    Optional<UUID> facilityId;
+//    if (rawFacilityId == null || rawFacilityId.equals("")) {
+//        facilityId = Optional.empty();
+//    } else {
+//      facilityId = Optional.of(UUID.fromString(rawFacilityId));
+//    }
+
     try (InputStream people = file.getInputStream()) {
-      return uploadService.processPersonCSV(people);
+      return uploadService.processPersonCSV(people, parseUUID(rawFacilityId));
     } catch (IllegalArgumentException e) {
       log.error("Patient CSV upload failed", e);
       throw new CsvProcessingException(e.getMessage());

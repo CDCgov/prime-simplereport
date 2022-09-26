@@ -30,6 +30,8 @@ import java.time.Instant;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
+import java.util.UUID;
+
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
@@ -89,7 +91,7 @@ public class UploadService {
   }
 
   @AuthorizationConfiguration.RequireGlobalAdminUser
-  public String processPersonCSV(InputStream csvStream) throws IllegalArgumentException {
+  public String processPersonCSV(InputStream csvStream, UUID facilityId) throws IllegalArgumentException {
     final MappingIterator<Map<String, String>> valueIterator = getIteratorForCsv(csvStream);
     final var org = organizationService.getCurrentOrganization();
 
@@ -108,7 +110,6 @@ public class UploadService {
       final Map<String, String> row = getNextRow(valueIterator);
       rowNumber++;
       try {
-        var facilityId = parseUUID(getRow(row, FACILITY_ID, false));
         Optional<Facility> facility =
             Optional.ofNullable(facilityId).map(organizationService::getFacilityInCurrentOrg);
 
