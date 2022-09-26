@@ -111,8 +111,8 @@ describe("Component ResultsTable", () => {
     );
 
     expect(screen.getByTestId("covid-19-result")).toHaveTextContent("Negative");
-    expect(screen.getByTestId("flu-a-result")).toHaveTextContent("N/A");
-    expect(screen.getByTestId("flu-b-result")).toHaveTextContent("N/A");
+    expect(screen.queryByText("Flu A")).not.toBeInTheDocument();
+    expect(screen.queryByText("Flu B")).not.toBeInTheDocument();
   });
 
   it("checks table with multiplex results", () => {
@@ -124,7 +124,7 @@ describe("Component ResultsTable", () => {
         setDetailsModalId={setDetailsModalIdFn}
         setTextModalId={setTextModalIdFn}
         setEmailModalTestResultId={setEmailModalTestResultIdFn}
-        hasMultiplexResults={false}
+        hasMultiplexResults={true}
         hasFacility={false}
       />
     );
@@ -134,6 +134,9 @@ describe("Component ResultsTable", () => {
         screen.getByTestId(`test-result-${result.internalId}`)
       ).toBeInTheDocument();
     });
+    expect(screen.getByText("COVID-19")).toBeInTheDocument();
+    expect(screen.getByText("Flu A")).toBeInTheDocument();
+    expect(screen.getByText("Flu B")).toBeInTheDocument();
   });
 
   describe("actions menu", () => {

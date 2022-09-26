@@ -22,7 +22,6 @@ import { MULTIPLEX_DISEASES } from "./constants";
 
 type Result = {
   dateTested: string;
-  result: TestResult;
   results: MultiplexResult[];
   correctionStatus: TestCorrectionStatus;
   noSymptoms: boolean;
@@ -51,7 +50,6 @@ export const testResultDetailsQuery = gql`
   query getTestResultDetails($id: ID!) {
     testResult(id: $id) {
       dateTested
-      result
       results {
         disease {
           name

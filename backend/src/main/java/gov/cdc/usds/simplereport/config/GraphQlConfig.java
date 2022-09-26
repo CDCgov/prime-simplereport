@@ -9,7 +9,6 @@ import gov.cdc.usds.simplereport.api.model.errors.GenericGraphqlException;
 import gov.cdc.usds.simplereport.api.model.errors.IllegalGraphqlArgumentException;
 import gov.cdc.usds.simplereport.api.model.errors.IllegalGraphqlFieldAccessException;
 import gov.cdc.usds.simplereport.api.model.errors.NonexistentUserException;
-import gov.cdc.usds.simplereport.config.scalars.UploadScalarType;
 import gov.cdc.usds.simplereport.config.scalars.datetime.DateTimeScalar;
 import gov.cdc.usds.simplereport.config.scalars.localdate.LocalDateScalar;
 import graphql.GraphQLError;
@@ -77,7 +76,6 @@ public class GraphQlConfig {
 
     return builder ->
         builder
-            .scalar(UploadScalarType.upload)
             .scalar(LocalDateScalar.LocalDate)
             .scalar(DateTimeScalar.DateTime)
             .directiveWiring(new RequiredPermissionsDirectiveWiring())

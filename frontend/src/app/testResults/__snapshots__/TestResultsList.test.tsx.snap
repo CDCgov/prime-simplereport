@@ -473,18 +473,6 @@ exports[`TestResultsList should render a list of tests 1`] = `
                 Positive
               </td>
               <td
-                class="test-result-cell"
-                data-testid="flu-a-result"
-              >
-                N/A
-              </td>
-              <td
-                class="test-result-cell"
-                data-testid="flu-b-result"
-              >
-                N/A
-              </td>
-              <td
                 class="test-device-cell"
               >
                 Abbott IDNow
@@ -563,18 +551,6 @@ exports[`TestResultsList should render a list of tests 1`] = `
                 Negative
               </td>
               <td
-                class="test-result-cell"
-                data-testid="flu-a-result"
-              >
-                N/A
-              </td>
-              <td
-                class="test-result-cell"
-                data-testid="flu-b-result"
-              >
-                N/A
-              </td>
-              <td
                 class="test-device-cell"
               >
                 Abbott IDNow
@@ -651,18 +627,6 @@ exports[`TestResultsList should render a list of tests 1`] = `
                 data-testid="covid-19-result"
               >
                 Negative
-              </td>
-              <td
-                class="test-result-cell"
-                data-testid="flu-a-result"
-              >
-                N/A
-              </td>
-              <td
-                class="test-result-cell"
-                data-testid="flu-b-result"
-              >
-                N/A
               </td>
               <td
                 class="test-device-cell"

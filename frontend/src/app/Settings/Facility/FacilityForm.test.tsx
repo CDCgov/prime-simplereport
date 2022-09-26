@@ -242,6 +242,27 @@ describe("FacilityForm", () => {
       const state = await screen.findByText("Palau", { exact: false });
       expect(state).toBeInTheDocument();
     });
+
+    it("focuses on error with facility name", async () => {
+      render(
+        <MemoryRouter>
+          <FacilityForm
+            facility={validFacility}
+            deviceTypes={devices}
+            saveFacility={saveFacility}
+          />
+        </MemoryRouter>
+      );
+      const saveButton = await screen.getAllByText("Save changes")[0];
+      userEvent.type(
+        screen.getByLabelText("Testing facility name", { exact: false }),
+        ""
+      );
+      userEvent.click(saveButton);
+      expect(
+        screen.getByLabelText("Testing facility name", { exact: false })
+      ).toHaveFocus();
+    });
   });
 
   describe("CLIA number validation", () => {
