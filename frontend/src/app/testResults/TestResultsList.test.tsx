@@ -116,12 +116,12 @@ describe("TestResultsList", () => {
     expect(
       await screen.findByLabelText("Date range (start)")
     ).toBeInTheDocument();
-    expect(await screen.findByDisplayValue("03/18/2021")).toBeInTheDocument();
+    expect(await screen.findByDisplayValue("2021-03-18")).toBeInTheDocument();
 
     expect(
       await screen.findByLabelText("Date range (end)")
     ).toBeInTheDocument();
-    expect(await screen.findByDisplayValue("03/19/2021")).toBeInTheDocument();
+    expect(await screen.findByDisplayValue("2021-03-19")).toBeInTheDocument();
 
     const roleSelect = (await screen.findByLabelText(
       "Role"
@@ -424,8 +424,8 @@ describe("TestResultsList", () => {
       expect(await screen.findByText("Date range (start)")).toBeInTheDocument();
       expect(await screen.findByText("Date range (end)")).toBeInTheDocument();
       userEvent.type(
-        screen.getAllByTestId("date-picker-external-input")[0],
-        "03/18/2021"
+        await screen.findByText("Date range (start)"),
+        "2021-03-18"
       );
       userEvent.tab();
       expect(await screen.findByText("Colleer, Barde X")).toBeInTheDocument();
@@ -433,10 +433,7 @@ describe("TestResultsList", () => {
       expect(
         screen.queryByText("Cragell, Barb Whitaker")
       ).not.toBeInTheDocument();
-      userEvent.type(
-        screen.getAllByTestId("date-picker-external-input")[1],
-        "03/18/2021"
-      );
+      userEvent.type(await screen.findByText("Date range (end)"), "2021-03-18");
       userEvent.tab();
       expect(await screen.findByText("Colleer, Barde X")).toBeInTheDocument();
       expect(screen.queryByText("Gerard, Sam G")).not.toBeInTheDocument();
@@ -468,10 +465,7 @@ describe("TestResultsList", () => {
 
     it("should be able to clear date filters", async () => {
       // Apply filter
-      userEvent.type(
-        screen.getAllByTestId("date-picker-external-input")[0],
-        "03/18/2021"
-      );
+      userEvent.type(screen.getByLabelText("Date range (start)"), "2021-03-18");
 
       userEvent.tab();
 
@@ -482,9 +476,9 @@ describe("TestResultsList", () => {
         screen.queryByText("Cragell, Barb Whitaker")
       ).not.toBeInTheDocument();
 
-      expect(
-        screen.getAllByTestId("date-picker-external-input")[0]
-      ).toHaveValue("03/18/2021");
+      expect(screen.getByLabelText("Date range (start)")).toHaveValue(
+        "2021-03-18"
+      );
       // Clear filter
       expect(await screen.findByText("Clear filters")).toBeInTheDocument();
       userEvent.click(screen.getByText("Clear filters"));
@@ -495,9 +489,7 @@ describe("TestResultsList", () => {
       ).toBeInTheDocument();
 
       // Date picker no longer displays the selected date
-      expect(
-        screen.getAllByTestId("date-picker-external-input")[0]
-      ).toHaveValue("");
+      expect(screen.getByLabelText("Date range (start)")).toHaveValue("");
     });
 
     it("opens the test detail modal from the patient's name", async () => {

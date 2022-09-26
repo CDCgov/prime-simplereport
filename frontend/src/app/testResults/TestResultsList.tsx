@@ -12,7 +12,7 @@ import React, {
 } from "react";
 import moment from "moment";
 import { faSlidersH } from "@fortawesome/free-solid-svg-icons";
-import { DatePicker, Label } from "@trussworks/react-uswds";
+import { Label } from "@trussworks/react-uswds";
 import { useSelector } from "react-redux";
 
 import { displayFullName, facilityDisplayName } from "../utils";
@@ -131,7 +131,6 @@ export const DetachedTestResultsList = ({
   const [showSuggestion, setShowSuggestion] = useState(true);
   const [startDateError, setStartDateError] = useState<string | undefined>();
   const [endDateError, setEndDateError] = useState<string | undefined>();
-  const [resetCount, setResetCount] = useState<number>(0);
 
   const [queryString, debounced, setDebounced] = useDebounce("", {
     debounceTime: SEARCH_DEBOUNCE_TIME,
@@ -269,7 +268,7 @@ export const DetachedTestResultsList = ({
       if (!isValidDate(value, true)) {
         setStartDateError("Date must be in format MM/DD/YYYY");
       } else {
-        const startDate = moment(value, "MM/DD/YYYY").startOf("day");
+        const startDate = moment(value, "YYYY-MM-DD").startOf("day");
         setStartDateError(undefined);
         setFilterParams("startDate")(startDate.toISOString());
       }
@@ -283,7 +282,7 @@ export const DetachedTestResultsList = ({
       if (!isValidDate(value)) {
         setEndDateError("Date must be in format MM/DD/YYYY");
       } else {
-        const endDate = moment(value, "MM/DD/YYYY").endOf("day");
+        const endDate = moment(value, "YYYY-MM-DD").endOf("day");
         if (
           isValidDate(filterParams.startDate || "") &&
           endDate.isBefore(moment(filterParams.startDate))
@@ -363,12 +362,12 @@ export const DetachedTestResultsList = ({
                   onClick={() => {
                     setDebounced("");
                     clearFilterParams();
-                    // The DatePicker component contains bits of state that represent the selected date
-                    // as represented internally to the component and displayed externally to the DOM. Directly
-                    // changing the value of the date via props does not cause the internal state to be updated.
-                    // This hack forces the DatePicker component to be fully re-mounted whenever the filters are
-                    // cleared, therefore resetting the external date display.
-                    setResetCount(resetCount + 1);
+                    (document.querySelector(
+                      "input[id=start-date]"
+                    ) as HTMLInputElement).value = "";
+                    (document.querySelector(
+                      "input[id=end-date]"
+                    ) as HTMLInputElement).value = "";
                   }}
                 >
                   Clear filters
@@ -407,15 +406,19 @@ export const DetachedTestResultsList = ({
                       {startDateError}
                     </span>
                   )}
-                  <DatePicker
+                  <input
                     id="start-date"
-                    key={resetCount}
-                    name="start-date"
-                    defaultValue={filterParams.startDate || ""}
-                    data-testid="start-date"
-                    minDate="2000-01-01T00:00"
-                    maxDate={moment().format("YYYY-MM-DDThh:mm")}
-                    onChange={processStartDate}
+                    type="date"
+                    className="usa-input"
+                    min="2000-01-01"
+                    max={moment().format("YYYY-MM-DD")}
+                    aria-label="Start Date"
+                    onChange={(e) => processStartDate(e.target.value)}
+                    defaultValue={
+                      filterParams.startDate
+                        ? moment(filterParams.startDate).format("YYYY-MM-DD")
+                        : ""
+                    }
                   />
                 </div>
                 <div className="usa-form-group date-filter-group">
@@ -426,15 +429,19 @@ export const DetachedTestResultsList = ({
                       {endDateError}
                     </span>
                   )}
-                  <DatePicker
+                  <input
                     id="end-date"
-                    key={resetCount + 1}
-                    name="end-date"
-                    defaultValue={filterParams.endDate || ""}
-                    data-testid="end-date"
-                    minDate={filterParams.startDate || "2000-01-01T00:00"}
-                    maxDate={moment().format("YYYY-MM-DDThh:mm")}
-                    onChange={processEndDate}
+                    type="date"
+                    className="usa-input"
+                    min="2000-01-01"
+                    max={moment().format("YYYY-MM-DD")}
+                    aria-label="End Date"
+                    onChange={(e) => processEndDate(e.target.value)}
+                    defaultValue={
+                      filterParams.endDate
+                        ? moment(filterParams.endDate).format("YYYY-MM-DD")
+                        : ""
+                    }
                   />
                 </div>
                 <Select
