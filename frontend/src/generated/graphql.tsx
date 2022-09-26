@@ -958,6 +958,7 @@ export type TestOrder = {
   patient?: Maybe<Patient>;
   pregnancy?: Maybe<Scalars["String"]>;
   reasonForCorrection?: Maybe<Scalars["String"]>;
+  /** @deprecated use results as source of truth */
   result?: Maybe<Scalars["String"]>;
   results?: Maybe<Array<Maybe<MultiplexResult>>>;
   symptomOnset?: Maybe<Scalars["LocalDate"]>;
@@ -979,6 +980,7 @@ export type TestResult = {
   patientLink?: Maybe<PatientLink>;
   pregnancy?: Maybe<Scalars["String"]>;
   reasonForCorrection?: Maybe<Scalars["String"]>;
+  /** @deprecated use results as source of truth */
   result?: Maybe<Scalars["String"]>;
   results?: Maybe<Array<Maybe<MultiplexResult>>>;
   symptomOnset?: Maybe<Scalars["LocalDate"]>;

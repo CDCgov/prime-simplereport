@@ -6,7 +6,14 @@ mutation EditQueueItem($id: ID!, $deviceId: String, $result: String, $dateTested
       dateTested: $dateTested
     ) {
       internalId,
-      result,
+      results{
+        disease{
+            internalId
+            name
+            loinc
+        }
+        testResult
+      }
       deviceType {
         internalId
       }

@@ -2,7 +2,14 @@ query GetResultById($id: ID!, $nameType: String = "long") {
   testResult(id: $id) {
     internalId
     dateTested
-    result
+    results{
+      disease{
+          internalId
+          name
+          loinc
+      }
+      testResult
+    }
     deviceType {
       internalId
       name

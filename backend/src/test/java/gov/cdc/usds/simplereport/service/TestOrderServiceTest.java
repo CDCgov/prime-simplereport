@@ -5,7 +5,6 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertNotEquals;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
-import static org.junit.jupiter.api.Assertions.assertNull;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.junit.jupiter.api.Assertions.fail;
@@ -67,7 +66,11 @@ import org.springframework.boot.test.mock.mockito.SpyBean;
 import org.springframework.security.access.AccessDeniedException;
 import org.springframework.test.context.TestPropertySource;
 
-@TestPropertySource(properties = "hibernate.query.interceptor.error-level=ERROR")
+@TestPropertySource(
+    properties = {
+      "hibernate.query.interceptor.error-level=ERROR",
+      "spring.jpa.properties.hibernate.enable_lazy_load_no_trans=true"
+    })
 @SuppressWarnings("checkstyle:MagicNumber")
 class TestOrderServiceTest extends BaseServiceTest<TestOrderService> {
 
@@ -165,7 +168,7 @@ class TestOrderServiceTest extends BaseServiceTest<TestOrderService> {
     verify(testEventReportingService).report(testEventArgumentCaptor.capture());
     TestEvent sentEvent = testEventArgumentCaptor.getValue();
     assertThat(sentEvent.getPatient().getInternalId()).isEqualTo(patient.getInternalId());
-    assertThat(sentEvent.getResult()).isEqualTo(TestResult.POSITIVE);
+    assertThat(sentEvent.getCovidTestResult().get()).isEqualTo(TestResult.POSITIVE);
   }
 
   @Test
@@ -584,7 +587,7 @@ class TestOrderServiceTest extends BaseServiceTest<TestOrderService> {
         originalTestEvent.getInternalId(), correctionTestEvent.getPriorCorrectedTestEventId());
     assertEquals(TestCorrectionStatus.CORRECTED, correctionTestEvent.getCorrectionStatus());
     assertEquals("Cold feet", correctionTestEvent.getReasonForCorrection());
-    assertEquals(TestResult.NEGATIVE, correctionTestEvent.getResult());
+    assertEquals(TestResult.NEGATIVE, correctionTestEvent.getCovidTestResult().get());
     // Date of original test is overwritten by the new correction event
     assertNotEquals(
         LocalDate.of(1865, 12, 25),
@@ -880,10 +883,12 @@ class TestOrderServiceTest extends BaseServiceTest<TestOrderService> {
     _service.editQueueItem(
         o.getInternalId(), devA.getInternalId(), TestResult.POSITIVE.toString(), null);
 
-    List<TestOrder> queue = _service.getQueue(facility.getInternalId());
+    _testOrderRepository.fetchQueueItem(org, p);
+    var queue = _testOrderRepository.fetchQueue(org, facility);
     TestOrder order = queue.get(0);
     assertEquals(1, queue.size());
-    assertEquals(TestResult.POSITIVE, order.getResult());
+    assertEquals(
+        TestResult.POSITIVE, order.getResults().stream().findFirst().get().getTestResult());
     Result result =
         _resultRepository.findResultByTestOrderAndDisease(order, _diseaseService.covid());
     assertEquals(TestResult.POSITIVE, result.getTestResult());
@@ -945,7 +950,8 @@ class TestOrderServiceTest extends BaseServiceTest<TestOrderService> {
     List<TestOrder> queue = _service.getQueue(facility.getInternalId());
     TestOrder order = queue.get(0);
     assertEquals(1, queue.size());
-    assertEquals(TestResult.POSITIVE, order.getResult());
+    assertEquals(
+        TestResult.POSITIVE, order.getResults().stream().findFirst().get().getTestResult());
     assertEquals(devA.getDeviceType().getInternalId(), order.getDeviceType().getInternalId());
   }
 
@@ -1006,7 +1012,7 @@ class TestOrderServiceTest extends BaseServiceTest<TestOrderService> {
             null,
             convertDate(LocalDateTime.of(2022, 5, 9, 12, 30, 0)));
 
-    assertNull(_service.getTestOrder(updatedOrder.getInternalId()).getResult());
+    assertTrue(_service.getTestOrder(updatedOrder.getInternalId()).getResults().isEmpty());
   }
 
   @Test
@@ -1648,17 +1654,17 @@ class TestOrderServiceTest extends BaseServiceTest<TestOrderService> {
     assertTestResultsList(
         positives,
         testEvents.stream()
-            .filter(t -> t.getResult() == TestResult.POSITIVE)
+            .filter(t -> t.getCovidTestResult().orElse(null) == TestResult.POSITIVE)
             .collect(Collectors.toList()));
     assertTestResultsList(
         negatives,
         testEvents.stream()
-            .filter(t -> t.getResult() == TestResult.NEGATIVE)
+            .filter(t -> t.getCovidTestResult().orElse(null) == TestResult.NEGATIVE)
             .collect(Collectors.toList()));
     assertTestResultsList(
         inconclusives,
         testEvents.stream()
-            .filter(t -> t.getResult() == TestResult.UNDETERMINED)
+            .filter(t -> t.getCovidTestResult().orElse(null) == TestResult.UNDETERMINED)
             .collect(Collectors.toList()));
     assertTestResultsList(
         students,
@@ -1690,7 +1696,7 @@ class TestOrderServiceTest extends BaseServiceTest<TestOrderService> {
         testEvents.stream()
             .filter(
                 t ->
-                    t.getResult() == TestResult.POSITIVE
+                    t.getCovidTestResult().orElse(null) == TestResult.POSITIVE
                         && t.getPatient().getNameInfo().equals(AMOS))
             .collect(Collectors.toList()));
     assertTestResultsList(
@@ -1698,7 +1704,7 @@ class TestOrderServiceTest extends BaseServiceTest<TestOrderService> {
         testEvents.stream()
             .filter(
                 t ->
-                    t.getResult() == TestResult.NEGATIVE
+                    t.getCovidTestResult().orElse(null) == TestResult.NEGATIVE
                         && t.getPatient().getNameInfo().equals(AMOS))
             .collect(Collectors.toList()));
     assertTestResultsList(
@@ -1707,7 +1713,7 @@ class TestOrderServiceTest extends BaseServiceTest<TestOrderService> {
             .filter(
                 t ->
                     t.getPatient().getNameInfo().equals(CHARLES)
-                        && t.getResult() == TestResult.POSITIVE
+                        && t.getCovidTestResult().orElse(null) == TestResult.POSITIVE
                         && t.getPatient().getRole() == PersonRole.RESIDENT
                         && !t.getDateTested()
                             .before(convertDate(LocalDateTime.of(2021, 6, 1, 0, 0, 0)))
