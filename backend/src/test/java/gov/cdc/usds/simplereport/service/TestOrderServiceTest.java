@@ -5,7 +5,6 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertNotEquals;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
-import static org.junit.jupiter.api.Assertions.assertNull;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.junit.jupiter.api.Assertions.fail;
@@ -888,7 +887,8 @@ class TestOrderServiceTest extends BaseServiceTest<TestOrderService> {
     var queue = _testOrderRepository.fetchQueue(org, facility);
     TestOrder order = queue.get(0);
     assertEquals(1, queue.size());
-    assertEquals(TestResult.POSITIVE, order.getTestResult());
+    assertEquals(
+        TestResult.POSITIVE, order.getResults().stream().findFirst().get().getTestResult());
     Result result =
         _resultRepository.findResultByTestOrderAndDisease(order, _diseaseService.covid());
     assertEquals(TestResult.POSITIVE, result.getTestResult());
@@ -950,7 +950,8 @@ class TestOrderServiceTest extends BaseServiceTest<TestOrderService> {
     List<TestOrder> queue = _service.getQueue(facility.getInternalId());
     TestOrder order = queue.get(0);
     assertEquals(1, queue.size());
-    assertEquals(TestResult.POSITIVE, order.getTestResult());
+    assertEquals(
+        TestResult.POSITIVE, order.getResults().stream().findFirst().get().getTestResult());
     assertEquals(devA.getDeviceType().getInternalId(), order.getDeviceType().getInternalId());
   }
 
@@ -1011,7 +1012,7 @@ class TestOrderServiceTest extends BaseServiceTest<TestOrderService> {
             null,
             convertDate(LocalDateTime.of(2022, 5, 9, 12, 30, 0)));
 
-    assertNull(_service.getTestOrder(updatedOrder.getInternalId()).getTestResult());
+    assertTrue(_service.getTestOrder(updatedOrder.getInternalId()).getResults().isEmpty());
   }
 
   @Test

@@ -3,9 +3,7 @@ package gov.cdc.usds.simplereport.db.model;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import gov.cdc.usds.simplereport.db.model.auxiliary.OrderStatus;
 import gov.cdc.usds.simplereport.db.model.auxiliary.TestCorrectionStatus;
-import gov.cdc.usds.simplereport.db.model.auxiliary.TestResult;
 import java.time.LocalDate;
-import java.util.Comparator;
 import java.util.Date;
 import java.util.HashSet;
 import java.util.Optional;
@@ -87,13 +85,6 @@ public class TestOrder extends BaseTestInfo {
   @Override
   public void setDateTestedBackdate(Date date) {
     super.setDateTestedBackdate(date);
-  }
-
-  @Deprecated
-  public TestResult getTestResult() {
-    Comparator<Result> resultDateComparator = Comparator.comparing(Result::getUpdatedAt);
-    Optional<Result> resultObject = this.results.stream().max(resultDateComparator);
-    return resultObject.map(Result::getTestResult).orElse(null);
   }
 
   /**
