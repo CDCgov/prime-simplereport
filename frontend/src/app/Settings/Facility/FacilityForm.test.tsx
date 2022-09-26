@@ -128,6 +128,23 @@ describe("FacilityForm", () => {
   });
 
   describe("form submission", () => {
+    it("has a link to return to all facilities page", () => {
+      render(
+        <MemoryRouter>
+          <FacilityForm
+            facility={validFacility}
+            deviceTypes={devices}
+            saveFacility={saveFacility}
+          />
+        </MemoryRouter>
+      );
+      expect(screen.getByText("Back to all facilities")).toBeInTheDocument();
+      expect(screen.getByText("Back to all facilities")).toHaveAttribute(
+        "href",
+        "/settings/facilities"
+      );
+    });
+
     it("submits a valid form", async () => {
       render(
         <MemoryRouter>
