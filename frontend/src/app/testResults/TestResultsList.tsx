@@ -136,8 +136,8 @@ export const DetachedTestResultsList = ({
   const [showSuggestion, setShowSuggestion] = useState(true);
   const [startDateError, setStartDateError] = useState<string | undefined>();
   const [endDateError, setEndDateError] = useState<string | undefined>();
-  const [startDate, setStartDate] = useState<string | null>(null);
-  const [endDate, setEndDate] = useState<string | null>(null);
+  const [startDate, setStartDate] = useState<string | null>("0");
+  const [endDate, setEndDate] = useState<string | null>("0");
 
   const [queryString, debounced, setDebounced] = useDebounce("", {
     debounceTime: SEARCH_DEBOUNCE_TIME,
@@ -195,12 +195,20 @@ export const DetachedTestResultsList = ({
   }, [filterParams, data, setDebounced]);
 
   useDebouncedEffect(
-    () => setFilterParams("startDate")(startDate),
+    () => {
+      if (startDate !== "0") {
+        setFilterParams("startDate")(startDate);
+      }
+    },
     [startDate],
     SEARCH_DEBOUNCE_TIME
   );
   useDebouncedEffect(
-    () => setFilterParams("endDate")(endDate),
+    () => {
+      if (endDate !== "0") {
+        setFilterParams("endDate")(endDate);
+      }
+    },
     [endDate],
     SEARCH_DEBOUNCE_TIME
   );
