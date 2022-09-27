@@ -753,19 +753,36 @@ describe("TestResultsList", () => {
         </WithRouter>
       );
     });
-    it("should display error if end date is before the start date", async () => {
-      userEvent.type(
-        await screen.findByText("Date range (start)"),
-        "2021-03-18"
-      );
+    const setDateRange = async (
+      startDate = "2021-03-17",
+      endDate = "2021-03-18"
+    ) => {
+      userEvent.type(await screen.findByText("Date range (start)"), startDate);
       await new Promise((r) => setTimeout(r, SEARCH_DEBOUNCE_TIME));
-      userEvent.type(await screen.findByText("Date range (end)"), "2021-03-17");
+      userEvent.type(await screen.findByText("Date range (end)"), endDate);
       new Promise((r) => setTimeout(r, SEARCH_DEBOUNCE_TIME));
+    };
+    it("should display error if end date is before the start date", async () => {
+      await setDateRange("2021-03-18", "2021-03-17");
       expect(
         screen.getByText("End date cannot be before start date", {
           exact: false,
         })
       ).toBeInTheDocument();
+    });
+    it("should display clear error message when clear filters button is pressed", async () => {
+      await setDateRange("2021-03-18", "2021-03-17");
+      expect(
+        screen.getByText("End date cannot be before start date", {
+          exact: false,
+        })
+      ).toBeInTheDocument();
+      userEvent.click(screen.getByText("Clear filters"));
+      expect(
+        screen.queryByText("End date cannot be before start date", {
+          exact: false,
+        })
+      ).not.toBeInTheDocument();
     });
   });
 });

@@ -297,6 +297,14 @@ export const DetachedTestResultsList = ({
         const startDate = moment(value, "YYYY-MM-DD").startOf("day");
         setStartDateError(undefined);
         setStartDate(startDate.toISOString());
+        // if(endDateError){
+        //   // try to clear it
+        //   console.log("clear");
+        //   const endDate = (document.querySelector(
+        //       "input[id=end-date]"
+        //   ) as HTMLInputElement).value;
+        //   processEndDate(endDate);
+        // }
       }
     } else {
       setStartDate("");
@@ -304,6 +312,7 @@ export const DetachedTestResultsList = ({
   };
 
   const processEndDate = (value: string | undefined) => {
+    // console.log("processing ", value);
     if (value) {
       if (!isValidDate(value)) {
         setEndDateError("Date must be in format MM/DD/YYYY");
@@ -314,7 +323,7 @@ export const DetachedTestResultsList = ({
           endDate.isBefore(moment(filterParams.startDate))
         ) {
           setEndDateError("End date cannot be before start date");
-          setEndDate("");
+          // setEndDate("0");
         } else {
           setEndDateError(undefined);
           setEndDate(endDate.toISOString());
@@ -394,6 +403,8 @@ export const DetachedTestResultsList = ({
                     (document.querySelector(
                       "input[id=end-date]"
                     ) as HTMLInputElement).value = "";
+                    setStartDateError("");
+                    setEndDateError("");
                   }}
                 >
                   Clear filters
