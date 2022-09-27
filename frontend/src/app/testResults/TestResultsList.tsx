@@ -85,6 +85,7 @@ interface DetachedTestResultsListProps {
   setFilterParams: (filter: keyof FilterParams) => (val: string | null) => void;
   clearFilterParams: () => void;
   activeFacilityId: string;
+  maxDate?: string;
 }
 
 const getResultCountText = (
@@ -122,6 +123,7 @@ export const DetachedTestResultsList = ({
   filterParams,
   setFilterParams,
   clearFilterParams,
+  maxDate = moment().format("YYYY-MM-DD"),
 }: DetachedTestResultsListProps) => {
   const [printModalId, setPrintModalId] = useState(undefined);
   const [markCorrectionId, setMarkCorrectionId] = useState(undefined);
@@ -195,9 +197,13 @@ export const DetachedTestResultsList = ({
   useDebouncedEffect(
     () => setFilterParams("startDate")(startDate),
     [startDate],
-    500
+    SEARCH_DEBOUNCE_TIME
   );
-  useDebouncedEffect(() => setFilterParams("endDate")(endDate), [endDate], 500);
+  useDebouncedEffect(
+    () => setFilterParams("endDate")(endDate),
+    [endDate],
+    SEARCH_DEBOUNCE_TIME
+  );
 
   const onInputChange: ChangeEventHandler<HTMLInputElement> = (event) => {
     if (event.target.value === "") {
@@ -423,7 +429,7 @@ export const DetachedTestResultsList = ({
                     type="date"
                     className="usa-input"
                     min="2000-01-01"
-                    max={moment().format("YYYY-MM-DD")}
+                    max={maxDate}
                     aria-label="Start Date"
                     onChange={(e) => processStartDate(e.target.value)}
                     defaultValue={
@@ -446,7 +452,7 @@ export const DetachedTestResultsList = ({
                     type="date"
                     className="usa-input"
                     min="2000-01-01"
-                    max={moment().format("YYYY-MM-DD")}
+                    max={maxDate}
                     aria-label="End Date"
                     onChange={(e) => processEndDate(e.target.value)}
                     defaultValue={

@@ -14,6 +14,7 @@ import userEvent from "@testing-library/user-event";
 
 import { GetAllFacilitiesDocument } from "../../generated/graphql";
 import { appPermissions } from "../permissions";
+import { SEARCH_DEBOUNCE_TIME } from "../testQueue/constants";
 
 import TestResultsList, {
   ALL_FACILITIES_ID,
@@ -72,6 +73,7 @@ describe("TestResultsList", () => {
               loading={false}
               loadingTotalResults={false}
               refetch={() => {}}
+              maxDate="2022-09-26"
             />
           </MockedProvider>
         </Provider>
@@ -296,7 +298,7 @@ describe("TestResultsList", () => {
   });
 
   describe("with mocks", () => {
-    beforeEach(() => {
+    beforeEach(async () => {
       render(
         <WithRouter>
           <Provider store={store}>
@@ -306,6 +308,7 @@ describe("TestResultsList", () => {
           </Provider>
         </WithRouter>
       );
+      await new Promise((r) => setTimeout(r, SEARCH_DEBOUNCE_TIME));
     });
 
     it("should call appropriate gql endpoints for pagination", async () => {
@@ -428,6 +431,7 @@ describe("TestResultsList", () => {
         "2021-03-18"
       );
       userEvent.tab();
+      await new Promise((r) => setTimeout(r, SEARCH_DEBOUNCE_TIME));
       expect(await screen.findByText("Colleer, Barde X")).toBeInTheDocument();
       expect(await screen.findByText("Gerard, Sam G")).toBeInTheDocument();
       expect(
@@ -435,6 +439,7 @@ describe("TestResultsList", () => {
       ).not.toBeInTheDocument();
       userEvent.type(await screen.findByText("Date range (end)"), "2021-03-18");
       userEvent.tab();
+      await new Promise((r) => setTimeout(r, SEARCH_DEBOUNCE_TIME));
       expect(await screen.findByText("Colleer, Barde X")).toBeInTheDocument();
       expect(screen.queryByText("Gerard, Sam G")).not.toBeInTheDocument();
       expect(
@@ -470,6 +475,7 @@ describe("TestResultsList", () => {
       userEvent.tab();
 
       // Filter applied
+      await new Promise((r) => setTimeout(r, SEARCH_DEBOUNCE_TIME));
       expect(await screen.findByText("Colleer, Barde X")).toBeInTheDocument();
       expect(await screen.findByText("Gerard, Sam G")).toBeInTheDocument();
       expect(
