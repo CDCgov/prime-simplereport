@@ -1893,16 +1893,6 @@ export type GetFacilityQueueMultiplexQuery = {
             dateTested?: any | null | undefined;
             correctionStatus?: string | null | undefined;
             reasonForCorrection?: string | null | undefined;
-            deviceType?:
-              | {
-                  __typename?: "DeviceType";
-                  internalId: string;
-                  name: string;
-                  model: string;
-                  testLength?: number | null | undefined;
-                }
-              | null
-              | undefined;
             deviceSpecimenType?:
               | { __typename?: "DeviceSpecimenType"; internalId: string }
               | null
@@ -5552,12 +5542,6 @@ export const GetFacilityQueueMultiplexDocument = gql`
       symptoms
       symptomOnset
       noSymptoms
-      deviceType {
-        internalId
-        name
-        model
-        testLength
-      }
       deviceSpecimenType {
         internalId
       }

@@ -66,12 +66,6 @@ export const queueQuery = gql`
       symptoms
       symptomOnset
       noSymptoms
-      deviceType {
-        internalId
-        name
-        model
-        testLength
-      }
       deviceSpecimenType {
         internalId
       }
