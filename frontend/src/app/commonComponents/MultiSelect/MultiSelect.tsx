@@ -161,7 +161,14 @@ export const MultiSelect = ({
             className="multi-select-dropdown"
             disabled={isDisabled}
           />
-          <div className="pill-container" data-testid="pill-container">
+          <div
+            className={`pill-container ${
+              selectedItems &&
+              selectedItems.length < 1 &&
+              "sr-pill-container--hidden"
+            }`}
+            data-testid="pill-container"
+          >
             {selectedItems &&
               selectedItems.map((value) => {
                 const option = options.find((item) => item.value === value);

@@ -8,6 +8,7 @@ interface Props {
   selectedDevices: DeviceType[];
   updateSelectedDevices: (deviceTypes: DeviceType[]) => void;
   errors: FacilityErrors;
+  clearError: (field: keyof FacilityErrors) => void;
 }
 
 const ManageDevices: React.FC<Props> = ({
@@ -15,13 +16,8 @@ const ManageDevices: React.FC<Props> = ({
   selectedDevices,
   updateSelectedDevices,
   errors,
+  clearError,
 }) => {
-  const deviceErrors: React.ReactNode[] = [];
-
-  if (errors.deviceTypes) {
-    deviceErrors.push(errors.deviceTypes);
-  }
-
   const getDeviceTypeOptions = Array.from(
     deviceTypes.map((device) => ({
       label: device.name,
@@ -40,12 +36,8 @@ const ManageDevices: React.FC<Props> = ({
   };
 
   const updateDevices = (newDeviceIds: String[]) => {
-    // validation does not work as expected here,
-    // only works on the second selection, not the first;
-    // add to props if we decide to use
-    // validateField("deviceTypes");
-    const newDevices = getDeviceTypesFromIds(newDeviceIds);
-    updateSelectedDevices(newDevices);
+    clearError("deviceTypes");
+    updateSelectedDevices(getDeviceTypesFromIds(newDeviceIds));
   };
 
   const getInitialValues = selectedDevices.length
@@ -71,18 +63,11 @@ const ManageDevices: React.FC<Props> = ({
           }}
           options={getDeviceTypeOptions}
           initialSelectedValues={getInitialValues}
-          // Other option for validation
-          // errorMessage={deviceErrors.map((err, index) => { return err})}
-          // validationStatus={deviceErrors.length > 0 ? "error" : "success"}
+          errorMessage={errors.deviceTypes}
+          validationStatus={errors.deviceTypes ? "error" : "success"}
+          required
         />
       </div>
-      {deviceErrors.length > 0 && (
-        <ul className="text-bold text-secondary-vivid margin-top-0">
-          {deviceErrors.map((err, index) => (
-            <li key={index}>{err}</li>
-          ))}
-        </ul>
-      )}
     </div>
   );
 };

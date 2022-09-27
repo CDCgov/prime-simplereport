@@ -1,4 +1,3 @@
-
 .multi-select-dropdown {
   max-width: unset !important;
 }
@@ -30,4 +29,8 @@
     align-items: center;
     justify-content: center;
   }
+}
+
+.pill-container.sr-pill-container--hidden {
+  display: none;
 }

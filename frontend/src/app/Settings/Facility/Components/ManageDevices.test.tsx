@@ -34,6 +34,7 @@ function ManageDevicesContainer(props: { selectedDevices: DeviceType[] }) {
       selectedDevices={selectedDevices}
       updateSelectedDevices={updateSelectedDevices}
       errors={{}}
+      clearError={jest.fn}
     />
   );
 }
