@@ -299,7 +299,7 @@ describe("TestResultsList", () => {
 
   describe("with mocks", () => {
     beforeEach(async () => {
-      render(
+      await render(
         <WithRouter>
           <Provider store={store}>
             <MockedProvider mocks={mocks}>
@@ -308,7 +308,6 @@ describe("TestResultsList", () => {
           </Provider>
         </WithRouter>
       );
-      await new Promise((r) => setTimeout(r, SEARCH_DEBOUNCE_TIME));
     });
 
     it("should call appropriate gql endpoints for pagination", async () => {
@@ -321,6 +320,7 @@ describe("TestResultsList", () => {
     });
 
     it("should be able to filter by patient", async () => {
+      await new Promise((r) => setTimeout(r, SEARCH_DEBOUNCE_TIME));
       expect(
         await screen.findByText("Test Results", { exact: false })
       ).toBeInTheDocument();
