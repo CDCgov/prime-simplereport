@@ -447,6 +447,7 @@ describe("TestResultsList", () => {
       ).not.toBeInTheDocument();
     });
     it("should be able to clear patient filter", async () => {
+      await new Promise((r) => setTimeout(r, SEARCH_DEBOUNCE_TIME));
       expect(
         await screen.findByText("Test Results", { exact: false })
       ).toBeInTheDocument();
@@ -740,22 +741,31 @@ describe("TestResultsList", () => {
     ).not.toBeInTheDocument();
   });
 
-  it("should display error if end date is before the start date", async () => {
-    render(
-      <WithRouter>
-        <Provider store={store}>
-          <MockedProvider mocks={mocks}>
-            <TestResultsList />
-          </MockedProvider>
-        </Provider>
-      </WithRouter>
-    );
-    userEvent.type(await screen.findByText("Date range (start)"), "2021-03-18");
-    await new Promise((r) => setTimeout(r, SEARCH_DEBOUNCE_TIME));
-    userEvent.type(await screen.findByText("Date range (end)"), "2021-03-17");
-    new Promise((r) => setTimeout(r, SEARCH_DEBOUNCE_TIME));
-    expect(
-      screen.getByText("End date cannot be before start date", { exact: false })
-    ).toBeInTheDocument();
+  describe("end date error", () => {
+    beforeEach(() => {
+      render(
+        <WithRouter>
+          <Provider store={store}>
+            <MockedProvider mocks={mocks}>
+              <TestResultsList />
+            </MockedProvider>
+          </Provider>
+        </WithRouter>
+      );
+    });
+    it("should display error if end date is before the start date", async () => {
+      userEvent.type(
+        await screen.findByText("Date range (start)"),
+        "2021-03-18"
+      );
+      await new Promise((r) => setTimeout(r, SEARCH_DEBOUNCE_TIME));
+      userEvent.type(await screen.findByText("Date range (end)"), "2021-03-17");
+      new Promise((r) => setTimeout(r, SEARCH_DEBOUNCE_TIME));
+      expect(
+        screen.getByText("End date cannot be before start date", {
+          exact: false,
+        })
+      ).toBeInTheDocument();
+    });
   });
 });
