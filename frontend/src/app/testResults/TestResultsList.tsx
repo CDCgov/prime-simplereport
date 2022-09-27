@@ -27,7 +27,10 @@ import {
 } from "../constants";
 import "./TestResultsList.scss";
 import Button from "../commonComponents/Button/Button";
-import { useDebounce } from "../testQueue/addToQueue/useDebounce";
+import {
+  useDebounce,
+  useDebouncedEffect,
+} from "../testQueue/addToQueue/useDebounce";
 import {
   MIN_SEARCH_CHARACTER_COUNT,
   SEARCH_DEBOUNCE_TIME,
@@ -131,6 +134,8 @@ export const DetachedTestResultsList = ({
   const [showSuggestion, setShowSuggestion] = useState(true);
   const [startDateError, setStartDateError] = useState<string | undefined>();
   const [endDateError, setEndDateError] = useState<string | undefined>();
+  const [startDate, setStartDate] = useState<string | null>(null);
+  const [endDate, setEndDate] = useState<string | null>(null);
 
   const [queryString, debounced, setDebounced] = useDebounce("", {
     debounceTime: SEARCH_DEBOUNCE_TIME,
@@ -186,6 +191,13 @@ export const DetachedTestResultsList = ({
       setShowSuggestion(false);
     }
   }, [filterParams, data, setDebounced]);
+
+  useDebouncedEffect(
+    () => setFilterParams("startDate")(startDate),
+    [startDate],
+    500
+  );
+  useDebouncedEffect(() => setFilterParams("endDate")(endDate), [endDate], 500);
 
   const onInputChange: ChangeEventHandler<HTMLInputElement> = (event) => {
     if (event.target.value === "") {
@@ -270,10 +282,10 @@ export const DetachedTestResultsList = ({
       } else {
         const startDate = moment(value, "YYYY-MM-DD").startOf("day");
         setStartDateError(undefined);
-        setFilterParams("startDate")(startDate.toISOString());
+        setStartDate(startDate.toISOString());
       }
     } else {
-      setFilterParams("startDate")("");
+      setStartDate("");
     }
   };
 
@@ -288,14 +300,14 @@ export const DetachedTestResultsList = ({
           endDate.isBefore(moment(filterParams.startDate))
         ) {
           setEndDateError("End date cannot be before start date");
-          setFilterParams("endDate")("");
+          setEndDate("");
         } else {
           setEndDateError(undefined);
-          setFilterParams("endDate")(endDate.toISOString());
+          setEndDate(endDate.toISOString());
         }
       }
     } else {
-      setFilterParams("endDate")("");
+      setEndDate("");
     }
   };
 
