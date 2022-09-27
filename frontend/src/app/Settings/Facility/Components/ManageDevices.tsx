@@ -66,7 +66,11 @@ const ManageDevices: React.FC<Props> = ({
           errorMessage={errors.deviceTypes}
           validationStatus={errors.deviceTypes ? "error" : "success"}
           required
+          placeholder="Add device"
         />
+        {!selectedDevices.length ? (
+          <p> There are currently no devices </p>
+        ) : null}
       </div>
     </div>
   );

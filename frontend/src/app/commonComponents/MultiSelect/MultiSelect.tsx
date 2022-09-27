@@ -29,6 +29,7 @@ export type MultiSelectProps = {
   initialSelectedValues?: string[];
   disabled?: boolean;
   inputProps?: JSX.IntrinsicElements["input"];
+  placeholder?: string;
 };
 
 type PillProps = {
@@ -67,6 +68,7 @@ export const MultiSelect = ({
   options,
   disabled,
   initialSelectedValues,
+  placeholder,
 }: MultiSelectProps): React.ReactElement => {
   const isDisabled = !!disabled;
 
@@ -160,12 +162,13 @@ export const MultiSelect = ({
             onChange={onItemSelected}
             className="multi-select-dropdown"
             disabled={isDisabled}
+            placeholder={placeholder}
           />
           <div
-            className={`pill-container ${
-              selectedItems &&
-              selectedItems.length < 1 &&
-              "sr-pill-container--hidden"
+            className={`pill-container${
+              selectedItems && selectedItems.length < 1
+                ? " sr-pill-container--hidden"
+                : ""
             }`}
             data-testid="pill-container"
           >

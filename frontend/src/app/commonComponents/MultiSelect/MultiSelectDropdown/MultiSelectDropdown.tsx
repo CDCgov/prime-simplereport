@@ -40,6 +40,7 @@ interface MultiSelectDropDownProps {
   onChange: (option: MultiSelectDropdownOption) => void;
   noResults?: string;
   inputProps?: JSX.IntrinsicElements["input"];
+  placeholder?: string;
 }
 
 interface InputProps {
@@ -175,6 +176,7 @@ export const MultiSelectDropdown = ({
   onChange,
   noResults,
   inputProps,
+  placeholder,
 }: MultiSelectDropDownProps): React.ReactElement => {
   const isDisabled = !!disabled;
 
@@ -269,6 +271,7 @@ export const MultiSelectDropdown = ({
         aria-owns={listID}
         aria-expanded={state.isOpen}
         disabled={isDisabled}
+        placeholder={placeholder}
         {...inputProps}
       />
       <span className="usa-combo-box__input-button-separator">&nbsp;</span>
