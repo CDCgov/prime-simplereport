@@ -6,8 +6,6 @@ on:
   pull_request:
     branches:
       - "**"
-    paths:
-      - backend/src/main/resources/db/changelog/db.changelog-master.yaml
   push:
     branches:
       - main
