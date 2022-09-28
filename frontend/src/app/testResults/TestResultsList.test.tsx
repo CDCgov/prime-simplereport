@@ -4,6 +4,7 @@ import { MockedProvider } from "@apollo/client/testing";
 import {
   render,
   screen,
+  waitFor,
   waitForElementToBeRemoved,
   within,
 } from "@testing-library/react";
@@ -320,10 +321,7 @@ describe("TestResultsList", () => {
     });
 
     it("should be able to filter by patient", async () => {
-      await new Promise((r) => setTimeout(r, SEARCH_DEBOUNCE_TIME));
-      expect(
-        await screen.findByText("Test Results", { exact: false })
-      ).toBeInTheDocument();
+      await screen.findByText("Test Results", { exact: false });
       expect(
         await screen.findByText("Cragell, Barb Whitaker")
       ).toBeInTheDocument();
@@ -428,26 +426,27 @@ describe("TestResultsList", () => {
       expect(await screen.findByText("Date range (end)")).toBeInTheDocument();
       userEvent.type(screen.getByText("Date range (start)"), "2021-03-18");
       userEvent.tab();
-      await new Promise((r) => setTimeout(r, SEARCH_DEBOUNCE_TIME));
-      expect(await screen.findByText("Colleer, Barde X")).toBeInTheDocument();
+      expect(screen.getByText("Colleer, Barde X")).toBeInTheDocument();
       expect(await screen.findByText("Gerard, Sam G")).toBeInTheDocument();
-      expect(
-        screen.queryByText("Cragell, Barb Whitaker")
-      ).not.toBeInTheDocument();
+      await waitFor(() =>
+        expect(
+          screen.queryByText("Cragell, Barb Whitaker")
+        ).not.toBeInTheDocument()
+      );
       userEvent.type(screen.getByText("Date range (end)"), "2021-03-18");
       userEvent.tab();
-      await new Promise((r) => setTimeout(r, SEARCH_DEBOUNCE_TIME));
       expect(await screen.findByText("Colleer, Barde X")).toBeInTheDocument();
-      expect(screen.queryByText("Gerard, Sam G")).not.toBeInTheDocument();
-      expect(
-        screen.queryByText("Cragell, Barb Whitaker")
-      ).not.toBeInTheDocument();
+      await waitFor(() =>
+        expect(screen.queryByText("Gerard, Sam G")).not.toBeInTheDocument()
+      );
+      await waitFor(() =>
+        expect(
+          screen.queryByText("Cragell, Barb Whitaker")
+        ).not.toBeInTheDocument()
+      );
     });
     it("should be able to clear patient filter", async () => {
-      await new Promise((r) => setTimeout(r, SEARCH_DEBOUNCE_TIME));
-      expect(
-        await screen.findByText("Test Results", { exact: false })
-      ).toBeInTheDocument();
+      await screen.findByText("Test Results", { exact: false });
 
       // Apply filter
       expect(await screen.findByText("Search by name")).toBeInTheDocument();
@@ -469,11 +468,9 @@ describe("TestResultsList", () => {
     it("should be able to clear date filters", async () => {
       // Apply filter
       userEvent.type(screen.getByLabelText("Date range (start)"), "2021-03-18");
-
-      userEvent.tab();
+      await new Promise((r) => setTimeout(r, SEARCH_DEBOUNCE_TIME));
 
       // Filter applied
-      await new Promise((r) => setTimeout(r, SEARCH_DEBOUNCE_TIME));
       expect(await screen.findByText("Colleer, Barde X")).toBeInTheDocument();
       expect(await screen.findByText("Gerard, Sam G")).toBeInTheDocument();
       expect(
