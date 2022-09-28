@@ -24,7 +24,7 @@ const OrderingProvider: React.FC<Props> = ({
   const onChange = (
     e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement>
   ) => {
-    let fieldName = getSubStrAfterChar(e.target.name, "-", 2);
+    let fieldName = getSubStrAfterChar(e.target.name, "-");
     updateProvider({ ...provider, [fieldName]: e.target.value });
   };
 

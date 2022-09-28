@@ -23,7 +23,7 @@ const FacilityInformation: React.FC<Props> = ({
   const onChange = (
     e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement>
   ) => {
-    let fieldName = getSubStrAfterChar(e.target.name, "-", 2);
+    let fieldName = getSubStrAfterChar(e.target.name, "-");
     updateFacility({ ...facility, [fieldName]: e.target.value });
   };
 
