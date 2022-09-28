@@ -93,8 +93,6 @@ export const useFacilityValidation = (facility: Facility) => {
       );
       showNotification(alert);
       let firstError = document.querySelector("[aria-invalid=true]");
-      console.log("focusing");
-      console.log(firstError);
       (firstError as HTMLElement)?.focus();
       return "error";
     }
