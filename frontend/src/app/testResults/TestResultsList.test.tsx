@@ -298,8 +298,8 @@ describe("TestResultsList", () => {
   });
 
   describe("with mocks", () => {
-    beforeEach(async () => {
-      await render(
+    beforeEach(() => {
+      render(
         <WithRouter>
           <Provider store={store}>
             <MockedProvider mocks={mocks}>
@@ -426,10 +426,7 @@ describe("TestResultsList", () => {
       expect(await screen.findByText("Gerard, Sam G")).toBeInTheDocument();
       expect(await screen.findByText("Date range (start)")).toBeInTheDocument();
       expect(await screen.findByText("Date range (end)")).toBeInTheDocument();
-      userEvent.type(
-        await screen.findByText("Date range (start)"),
-        "2021-03-18"
-      );
+      userEvent.type(screen.getByText("Date range (start)"), "2021-03-18");
       userEvent.tab();
       await new Promise((r) => setTimeout(r, SEARCH_DEBOUNCE_TIME));
       expect(await screen.findByText("Colleer, Barde X")).toBeInTheDocument();
@@ -437,7 +434,7 @@ describe("TestResultsList", () => {
       expect(
         screen.queryByText("Cragell, Barb Whitaker")
       ).not.toBeInTheDocument();
-      userEvent.type(await screen.findByText("Date range (end)"), "2021-03-18");
+      userEvent.type(screen.getByText("Date range (end)"), "2021-03-18");
       userEvent.tab();
       await new Promise((r) => setTimeout(r, SEARCH_DEBOUNCE_TIME));
       expect(await screen.findByText("Colleer, Barde X")).toBeInTheDocument();
