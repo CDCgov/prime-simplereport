@@ -441,6 +441,7 @@ Object {
                       >
                         <input
                           aria-expanded="false"
+                          aria-invalid="false"
                           aria-owns="multi-select-swabTypes-list"
                           autocapitalize="off"
                           autocomplete="off"
@@ -561,6 +562,7 @@ Object {
                       >
                         <input
                           aria-expanded="false"
+                          aria-invalid="false"
                           aria-owns="multi-select-supportedDiseases-list"
                           autocapitalize="off"
                           autocomplete="off"
@@ -1072,6 +1074,7 @@ Object {
                     >
                       <input
                         aria-expanded="false"
+                        aria-invalid="false"
                         aria-owns="multi-select-swabTypes-list"
                         autocapitalize="off"
                         autocomplete="off"
@@ -1192,6 +1195,7 @@ Object {
                     >
                       <input
                         aria-expanded="false"
+                        aria-invalid="false"
                         aria-owns="multi-select-supportedDiseases-list"
                         autocapitalize="off"
                         autocomplete="off"

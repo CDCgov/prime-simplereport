@@ -59,33 +59,6 @@ const validFacility: Facility = {
   deviceTypes: devices,
 };
 
-const facilityWithoutDevices: Facility = {
-  name: "Foo Facility",
-  cliaNumber: "12D4567890",
-  phone: "(202) 395-3080",
-  street: "736 Jackson Pl NW",
-  zipCode: "20503",
-  state: "AZ",
-  id: "some-id",
-  email: null,
-  streetTwo: null,
-  city: null,
-  orderingProvider: {
-    firstName: "Frank",
-    lastName: "Grimes",
-    NPI: "000",
-    street: null,
-    zipCode: null,
-    state: null,
-    middleName: null,
-    suffix: null,
-    phone: "phone",
-    streetTwo: null,
-    city: null,
-  },
-  deviceTypes: [],
-};
-
 // Hardcoded suggestion scenarios
 const addresses = [
   {
@@ -814,14 +787,21 @@ describe("FacilityForm", () => {
       render(
         <MemoryRouter>
           <FacilityForm
-            facility={facilityWithoutDevices}
+            facility={validFacility}
             deviceTypes={devices}
             saveFacility={saveFacility}
           />
         </MemoryRouter>
       );
 
-      // Pre condition
+      // Delete devices
+      const pillContainer = screen.getByTestId("pill-container");
+      const deleteButtons = within(pillContainer).getAllByTestId(
+        "-pill-delete",
+        { exact: false }
+      );
+      deleteButtons.forEach((button) => fireEvent.click(button));
+
       expect(
         await screen.findByText("There are currently no devices", {
           exact: false,
@@ -833,11 +813,9 @@ describe("FacilityForm", () => {
       await waitFor(async () => expect(saveButtons[0]).toBeEnabled());
       userEvent.click(saveButtons[0]);
 
-      expect(
-        await screen.findByText("There must be at least one device", {
-          exact: false,
-        })
-      ).toBeInTheDocument();
+      await screen.findByText("There must be at least one device", {
+            exact: false,
+          });
 
       // Select Device
       const deviceInput = screen.getByTestId("multi-select-toggle");
