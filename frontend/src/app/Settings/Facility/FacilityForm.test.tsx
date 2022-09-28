@@ -1,4 +1,10 @@
-import { render, screen, waitFor } from "@testing-library/react";
+import {
+  fireEvent,
+  render,
+  screen,
+  waitFor,
+  within,
+} from "@testing-library/react";
 import userEvent from "@testing-library/user-event";
 import { MemoryRouter } from "react-router-dom";
 import { ToastContainer } from "react-toastify";
@@ -51,6 +57,33 @@ const validFacility: Facility = {
     city: null,
   },
   deviceTypes: devices,
+};
+
+const facilityWithoutDevices: Facility = {
+  name: "Foo Facility",
+  cliaNumber: "12D4567890",
+  phone: "(202) 395-3080",
+  street: "736 Jackson Pl NW",
+  zipCode: "20503",
+  state: "AZ",
+  id: "some-id",
+  email: null,
+  streetTwo: null,
+  city: null,
+  orderingProvider: {
+    firstName: "Frank",
+    lastName: "Grimes",
+    NPI: "000",
+    street: null,
+    zipCode: null,
+    state: null,
+    middleName: null,
+    suffix: null,
+    phone: "phone",
+    streetTwo: null,
+    city: null,
+  },
+  deviceTypes: [],
 };
 
 // Hardcoded suggestion scenarios
@@ -270,15 +303,16 @@ describe("FacilityForm", () => {
           />
         </MemoryRouter>
       );
-      const saveButton = await screen.getAllByText("Save changes")[0];
-      userEvent.type(
-        screen.getByLabelText("Testing facility name", { exact: false }),
-        ""
+      const saveButton = screen.getAllByText("Save changes")[0];
+      userEvent.clear(
+        screen.getByLabelText("Testing facility name", { exact: false })
       );
       userEvent.click(saveButton);
-      expect(
-        screen.getByLabelText("Testing facility name", { exact: false })
-      ).toHaveFocus();
+      await waitFor(() =>
+        expect(
+          screen.getByLabelText("Testing facility name", { exact: false })
+        ).toHaveFocus()
+      );
     });
   });
 
@@ -750,11 +784,13 @@ describe("FacilityForm", () => {
         </MemoryRouter>
       );
 
-      // Delete devices
-      const deleteButtons = await screen.findAllByLabelText("Delete device");
-      expect(deleteButtons).toHaveLength(2);
-      userEvent.click(deleteButtons[0]);
-      userEvent.click(deleteButtons[0]);
+      const pillContainer = screen.getByTestId("pill-container");
+
+      const deleteButtons = within(pillContainer).getAllByTestId(
+        "-pill-delete",
+        { exact: false }
+      );
+      deleteButtons.forEach((button) => fireEvent.click(button));
 
       expect(
         await screen.findByText("There are currently no devices", {
@@ -764,13 +800,62 @@ describe("FacilityForm", () => {
 
       // Attempt save
       const saveButtons = await screen.findAllByText("Save changes");
-      userEvent.click(saveButtons[0]);
       await waitFor(async () => expect(saveButtons[0]).toBeEnabled());
+      userEvent.click(saveButtons[0]);
+
       const warning = await screen.findByText(
         "There must be at least one device",
         { exact: false }
       );
       expect(warning).toBeInTheDocument();
+    });
+
+    it("resolves the error when a device is selected", async () => {
+      render(
+        <MemoryRouter>
+          <FacilityForm
+            facility={facilityWithoutDevices}
+            deviceTypes={devices}
+            saveFacility={saveFacility}
+          />
+        </MemoryRouter>
+      );
+
+      // Pre condition
+      expect(
+        await screen.findByText("There are currently no devices", {
+          exact: false,
+        })
+      ).toBeInTheDocument();
+
+      // Attempt save
+      const saveButtons = await screen.findAllByText("Save changes");
+      await waitFor(async () => expect(saveButtons[0]).toBeEnabled());
+      userEvent.click(saveButtons[0]);
+
+      expect(
+        await screen.findByText("There must be at least one device", {
+          exact: false,
+        })
+      ).toBeInTheDocument();
+
+      // Select Device
+      const deviceInput = screen.getByTestId("multi-select-toggle");
+      const deviceList = screen.getByTestId("multi-select-option-list");
+      userEvent.click(deviceInput);
+      userEvent.click(within(deviceList).getByText("Device 1"));
+
+      // Post condition
+      expect(
+        screen.queryByText("There are currently no devices", {
+          exact: false,
+        })
+      ).not.toBeInTheDocument();
+      expect(
+        screen.queryByText("There must be at least one device", {
+          exact: false,
+        })
+      ).not.toBeInTheDocument();
     });
   });
 });

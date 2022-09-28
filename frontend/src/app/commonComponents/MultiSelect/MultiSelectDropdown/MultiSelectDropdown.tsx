@@ -41,6 +41,7 @@ interface MultiSelectDropDownProps {
   noResults?: string;
   inputProps?: JSX.IntrinsicElements["input"];
   placeholder?: string;
+  ariaInvalid?: boolean;
 }
 
 interface InputProps {
@@ -177,6 +178,7 @@ export const MultiSelectDropdown = ({
   noResults,
   inputProps,
   placeholder,
+  ariaInvalid,
 }: MultiSelectDropDownProps): React.ReactElement => {
   const isDisabled = !!disabled;
 
@@ -270,6 +272,7 @@ export const MultiSelectDropdown = ({
         role="multi-select-input"
         aria-owns={listID}
         aria-expanded={state.isOpen}
+        aria-invalid={ariaInvalid}
         disabled={isDisabled}
         placeholder={placeholder}
         {...inputProps}

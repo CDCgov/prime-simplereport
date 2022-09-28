@@ -163,6 +163,7 @@ export const MultiSelect = ({
             className="multi-select-dropdown"
             disabled={isDisabled}
             placeholder={placeholder}
+            ariaInvalid={validationStatus === "error"}
           />
           <div
             className={`pill-container${

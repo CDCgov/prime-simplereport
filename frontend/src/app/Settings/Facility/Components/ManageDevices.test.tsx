@@ -90,7 +90,9 @@ describe("ManageDevices", () => {
 
       within(pillContainer).getByText("Device A");
       within(pillContainer).getByText("Device B");
-      expect(within(pillContainer).queryByText("Device C")).not.toBeInTheDocument();
+      expect(
+        within(pillContainer).queryByText("Device C")
+      ).not.toBeInTheDocument();
     });
 
     it("allows user to add a device type to the existing list of devices", async () => {
@@ -113,7 +115,9 @@ describe("ManageDevices", () => {
       within(pillContainer).getByText("Device A");
       fireEvent.click(deleteIcon);
 
-      expect(within(pillContainer).queryByText("Device A")).not.toBeInTheDocument();
+      expect(
+        within(pillContainer).queryByText("Device A")
+      ).not.toBeInTheDocument();
     });
   });
 });
