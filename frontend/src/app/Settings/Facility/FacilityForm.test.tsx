@@ -814,8 +814,8 @@ describe("FacilityForm", () => {
       userEvent.click(saveButtons[0]);
 
       await screen.findByText("There must be at least one device", {
-            exact: false,
-          });
+        exact: false,
+      });
 
       // Select Device
       const deviceInput = screen.getByTestId("multi-select-toggle");
