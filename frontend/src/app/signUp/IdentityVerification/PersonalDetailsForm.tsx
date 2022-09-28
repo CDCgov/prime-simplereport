@@ -19,7 +19,6 @@ import { formatDate } from "../../utils/date";
 import {
   initPersonalDetails,
   initPersonalDetailsErrors,
-  personalDetailsFields,
   personalDetailsSchema as schema,
 } from "./utils";
 import QuestionsFormContainer from "./QuestionsFormContainer";
@@ -127,7 +126,8 @@ const PersonalDetailsForm = ({
     field: keyof IdentityVerificationRequest | `preheader${"1" | "2"}`,
     label: string,
     required: boolean,
-    hintText: string
+    hintText: string,
+    id: string
   ) => {
     switch (field) {
       case "state":
@@ -167,7 +167,11 @@ const PersonalDetailsForm = ({
         );
       case "preheader1":
       case "preheader2":
-        return <p className="font-ui-sm text-bold margin-bottom-1">{label}</p>;
+        return (
+          <p className="font-ui-sm text-bold margin-bottom-1" id={id}>
+            {label}
+          </p>
+        );
       default:
         return (
           <Input
@@ -193,6 +197,9 @@ const PersonalDetailsForm = ({
       personalDetails.middleName,
       personalDetails.lastName,
     ].join(" ");
+
+  const personalContactGroupHeader = "personal-contact-group-header";
+  const homeAddressGroupHeader = "home-address-group-header";
 
   return (
     <CardBackground>
@@ -228,16 +235,50 @@ const PersonalDetailsForm = ({
             </p>
             <h2 className="questions-form-name">{getPersonFullName()}</h2>
           </div>
-          {Object.entries(personalDetailsFields).map(
-            ([key, { label, required, hintText }]) => {
-              const field = key as keyof IdentityVerificationRequest;
-              return (
-                <div key={field}>
-                  {getFormElement(field, label, required, hintText)}
-                </div>
-              );
-            }
+          {getFormElement("dateOfBirth", "Date of birth", true, "", "")}
+          {getFormElement(
+            "preheader1",
+            "Personal contact information",
+            false,
+            "",
+            personalContactGroupHeader
           )}
+          <div role="group" aria-labelledby={personalContactGroupHeader}>
+            {getFormElement(
+              "email",
+              "Email",
+              true,
+              "Enter your non-work email address.",
+              ""
+            )}
+            {getFormElement(
+              "phoneNumber",
+              "Phone number",
+              true,
+              "Enter your non-work phone number.",
+              ""
+            )}
+          </div>
+          {getFormElement(
+            "preheader2",
+            "Home address",
+            false,
+            "",
+            homeAddressGroupHeader
+          )}
+          <div role={"group"} aria-labelledby={homeAddressGroupHeader}>
+            {getFormElement("streetAddress1", "Street address 1", true, "", "")}
+            {getFormElement(
+              "streetAddress2",
+              "Street address 2",
+              false,
+              "",
+              ""
+            )}
+            {getFormElement("city", "City", true, "", "")}
+            {getFormElement("state", "State", true, "", "")}
+            {getFormElement("zip", "ZIP code", true, "", "")}
+          </div>
         </div>
         <Button
           className="width-full"

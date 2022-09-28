@@ -5,7 +5,6 @@ import gov.cdc.usds.simplereport.db.model.DeviceType;
 import gov.cdc.usds.simplereport.db.model.PatientAnswers;
 import gov.cdc.usds.simplereport.db.model.Person;
 import gov.cdc.usds.simplereport.db.model.Result;
-import gov.cdc.usds.simplereport.db.model.auxiliary.TestResult;
 import gov.cdc.usds.simplereport.db.repository.DeviceTypeRepository;
 import gov.cdc.usds.simplereport.db.repository.PatientAnswersRepository;
 import gov.cdc.usds.simplereport.db.repository.PersonRepository;
@@ -104,11 +103,6 @@ public class ApiTestOrderDataResolver {
   public CompletableFuture<DeviceType> deviceType(
       ApiTestOrder apiTestOrder, DataLoader<UUID, DeviceType> loader) {
     return loader.load(apiTestOrder.getWrapped().getDeviceType().getInternalId());
-  }
-
-  @SchemaMapping(typeName = "TestOrder", field = "result")
-  public TestResult getResult(ApiTestOrder apiTestOrder) {
-    return apiTestOrder.getWrapped().getResult();
   }
 
   @SchemaMapping(typeName = "TestOrder", field = "results")

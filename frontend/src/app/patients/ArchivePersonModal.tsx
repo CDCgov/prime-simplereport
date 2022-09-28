@@ -55,6 +55,7 @@ const ArchivePersonModal = ({ person, closeModal }: Props) => {
       className="sr-archive-person-modal-content"
       overlayClassName="sr-archive-person-modal-overlay"
       contentLabel="Archive record"
+      onRequestClose={closeModal}
     >
       <p>
         Are you sure you want to archive the record for{" "}

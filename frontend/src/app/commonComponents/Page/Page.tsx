@@ -2,7 +2,6 @@ import React, { useEffect } from "react";
 import { ToastContainer } from "react-toastify";
 
 import "react-toastify/dist/ReactToastify.css";
-import TouchpointsButton from "../../analytics/TouchpointsButton";
 import { getUrl } from "../../utils/url";
 import USAGovBanner from "../USAGovBanner";
 
@@ -61,7 +60,8 @@ const Page: React.FC<Props> = ({ header, children, isPatientApp }) => {
         />
       </div>
       <footer>
-        <TouchpointsButton />
+        {/*  Disabling Touchpoints until we have designs that specify how to contact Support */}
+        {/*<TouchpointsButton />*/}
       </footer>
     </div>
   );

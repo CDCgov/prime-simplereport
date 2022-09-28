@@ -9,11 +9,9 @@ import java.util.UUID;
 import org.springframework.data.jpa.repository.Query;
 
 public interface PatientLinkRepository extends EternalAuditedEntityRepository<PatientLink> {
-  List<PatientLink> findAllByTestOrderInternalIdIn(Collection<UUID> testOrderIds);
-
   @Query(
       value =
-          "select DISTINCT on (ordered.test_order_id) * from (select * from {h-schema}patient_link where test_order_id in :testOrderIds order by created_at desc ) ordered where test_order_id in :testOrderIds",
+          "select DISTINCT on (ordered.test_order_id) * from (select * from {h-schema}patient_link where test_order_id in :testOrderIds order by created_at desc ) ordered",
       nativeQuery = true)
   List<PatientLink> findMostRecentByTestOrderIdIn(Collection<UUID> testOrderIds);
 

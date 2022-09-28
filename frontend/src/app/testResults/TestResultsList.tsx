@@ -151,6 +151,7 @@ export const DetachedTestResultsList = ({
   ] = useLazyQuery(QUERY_PATIENT, {
     fetchPolicy: "no-cache",
     variables: {
+      includeArchived: isOrgAdmin,
       facilityId:
         filterParams.filterFacilityId === ALL_FACILITIES_ID
           ? null

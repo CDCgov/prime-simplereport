@@ -31,12 +31,12 @@ import "./ManagePatients.scss";
 export const patientsCountQuery = gql`
   query GetPatientsCountByFacility(
     $facilityId: ID!
-    $showDeleted: Boolean!
+    $includeArchived: Boolean!
     $namePrefixMatch: String
   ) {
     patientsCount(
       facilityId: $facilityId
-      showDeleted: $showDeleted
+      includeArchived: $includeArchived
       namePrefixMatch: $namePrefixMatch
     )
   }
@@ -47,14 +47,14 @@ export const patientQuery = gql`
     $facilityId: ID!
     $pageNumber: Int!
     $pageSize: Int!
-    $showDeleted: Boolean
+    $includeArchived: Boolean
     $namePrefixMatch: String
   ) {
     patients(
       facilityId: $facilityId
       pageNumber: $pageNumber
       pageSize: $pageSize
-      showDeleted: $showDeleted
+      includeArchived: $includeArchived
       namePrefixMatch: $namePrefixMatch
     ) {
       internalId
@@ -96,7 +96,7 @@ interface Props {
   currentPage: number;
   entriesPerPage: number;
   totalEntries?: number;
-  showDeleted?: boolean;
+  includeArchived?: boolean;
   data?: { patients: Patient[] };
   refetch: () => null;
   setNamePrefixMatch: (namePrefixMatch: string | null) => void;
@@ -354,7 +354,7 @@ const ManagePatients = (
     {
       variables: {
         facilityId: props.activeFacilityId,
-        showDeleted: false,
+        includeArchived: false,
         namePrefixMatch,
       },
       fetchPolicy: "no-cache",
@@ -380,7 +380,7 @@ const ManagePatients = (
           facilityId: props.activeFacilityId,
           pageNumber: pageNumber - 1,
           pageSize: entriesPerPage,
-          showDeleted: props.showDeleted || false,
+          includeArchived: props.includeArchived || false,
           namePrefixMatch,
         },
       }}

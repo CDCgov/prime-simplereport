@@ -10,8 +10,6 @@ import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.node.JsonNodeFactory;
 import com.fasterxml.jackson.databind.node.ObjectNode;
-import com.google.common.reflect.TypeToken;
-import com.microsoft.applicationinsights.core.dependencies.google.gson.Gson;
 import com.yannbriancon.interceptor.HibernateQueryInterceptor;
 import gov.cdc.usds.simplereport.api.BaseFullStackTest;
 import gov.cdc.usds.simplereport.api.model.Role;
@@ -24,7 +22,6 @@ import gov.cdc.usds.simplereport.service.AddressValidationService;
 import gov.cdc.usds.simplereport.service.OrganizationInitializingService;
 import gov.cdc.usds.simplereport.test_util.TestUserIdentities;
 import java.io.IOException;
-import java.lang.reflect.Type;
 import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
@@ -152,7 +149,7 @@ public abstract class BaseGraphqlTest extends BaseFullStackTest {
     return null;
   }
 
-  /** See {@link #runQuery(String, String, ObjectNode, String)}. */
+  /** See {@link #runQuery(String, String, Map, String)}. */
   protected ObjectNode runQuery(String queryFileName) {
     return runQuery(queryFileName, null, null, null);
   }
@@ -166,8 +163,9 @@ public abstract class BaseGraphqlTest extends BaseFullStackTest {
     return runQuery(queryFileName, null, null, expectedError);
   }
 
-  /** See {@link #runQuery(String,String,ObjectNode,String)}. */
-  protected ObjectNode runQuery(String queryFileName, ObjectNode variables, String expectedError) {
+  /** See {@link #runQuery(String,String,Map,String)}. */
+  protected ObjectNode runQuery(
+      String queryFileName, Map<String, Object> variables, String expectedError) {
     return runQuery(queryFileName, null, variables, expectedError);
   }
 
@@ -184,7 +182,10 @@ public abstract class BaseGraphqlTest extends BaseFullStackTest {
    * @return the "data" key from the server response.
    */
   protected ObjectNode runQuery(
-      String queryFileName, String operationName, ObjectNode variables, String expectedError) {
+      String queryFileName,
+      String operationName,
+      Map<String, Object> variables,
+      String expectedError) {
     // change variables to map everywhere! seems like this will continue to give us issues
     WebGraphQlTester webGraphQlTester =
         this.graphQlTester
@@ -202,10 +203,7 @@ public abstract class BaseGraphqlTest extends BaseFullStackTest {
     }
 
     if (variables != null) {
-      Gson gson = new Gson();
-      Type mapType = new TypeToken<Map<String, Object>>() {}.getType();
-      Map<String, Object> variableMap = gson.fromJson(variables.toString(), mapType);
-      variableMap.forEach(request::variable);
+      variables.forEach(request::variable);
     }
 
     GraphQlTester.Response response = request.execute();
@@ -226,7 +224,7 @@ public abstract class BaseGraphqlTest extends BaseFullStackTest {
     return jsonNodeMap;
   }
 
-  protected ObjectNode runQuery(String queryFileName, ObjectNode variables) {
+  protected ObjectNode runQuery(String queryFileName, Map<String, Object> variables) {
     return runQuery(queryFileName, null, variables, null);
   }
 
@@ -256,15 +254,17 @@ public abstract class BaseGraphqlTest extends BaseFullStackTest {
       Optional<UUID> facilityId,
       Optional<String> expectedError) {
 
-    ObjectNode variables =
-        JsonNodeFactory.instance
-            .objectNode()
-            .put("firstName", firstName)
-            .put("lastName", lastName)
-            .put("birthDate", birthDate)
-            .putPOJO("phoneNumbers", phoneNumbers)
-            .put("lookupId", lookupId)
-            .put("facilityId", facilityId.map(UUID::toString).orElse(null));
+    Map<String, Object> variables =
+        new HashMap<>(
+            Map.of(
+                "firstName", firstName,
+                "lastName", lastName,
+                "birthDate", birthDate,
+                "phoneNumbers", phoneNumbers,
+                "lookupId", lookupId));
+
+    facilityId.ifPresent(uuid -> variables.put("facilityId", uuid.toString()));
+
     return runQuery("add-person", variables, expectedError.orElse(null));
   }
 
@@ -302,28 +302,27 @@ public abstract class BaseGraphqlTest extends BaseFullStackTest {
       useOrgAdmin();
     }
 
-    ObjectNode updatePrivilegesVariables =
+    Map<String, Object> updatePrivilegesVariables =
         getUpdateUserPrivilegesVariables(id, role, accessAllFacilities, facilities);
     runQuery("update-user-privileges", updatePrivilegesVariables);
 
     _userName = originalUsername;
   }
 
-  protected ObjectNode getUpdateUserPrivilegesVariables(
+  protected Map<String, Object> getUpdateUserPrivilegesVariables(
       String id, Role role, boolean accessAllFacilities, Set<UUID> facilities) {
-    ObjectNode variables =
-        JsonNodeFactory.instance
-            .objectNode()
-            .put("id", id)
-            .put("role", role.name())
-            .put("accessAllFacilities", accessAllFacilities);
-    variables
-        .putArray("facilities")
-        .addAll(
-            facilities.stream()
-                .map(f -> JsonNodeFactory.instance.textNode(f.toString()))
-                .collect(Collectors.toSet()));
-    return variables;
+
+    return Map.of(
+        "id",
+        id,
+        "role",
+        role.name(),
+        "accessAllFacilities",
+        accessAllFacilities,
+        "facilities",
+        facilities.stream()
+            .map(f -> JsonNodeFactory.instance.textNode(f.toString()))
+            .collect(Collectors.toSet()));
   }
 
   // map from each facility's name to its UUID; includes all facilities in organization

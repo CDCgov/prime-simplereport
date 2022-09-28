@@ -238,6 +238,7 @@ type TestOrder {
   deviceType: DeviceType
   deviceSpecimenType: DeviceSpecimenType
   result: String
+    @deprecated(reason: "use results as source of truth")
   results: [MultiplexResult]
   dateTested: DateTime
   correctionStatus: String
@@ -256,6 +257,7 @@ type TestResult {
   symptomOnset: LocalDate
   deviceType: DeviceType
   result: String
+    @deprecated(reason: "use results as source of truth")
   results: [MultiplexResult]
   dateTested: DateTime
   testPerformed: TestDescription!
@@ -367,7 +369,7 @@ type Query {
     facilityId: ID
     pageNumber: Int = 0
     pageSize: Int = 5000
-    showDeleted: Boolean = false
+    includeArchived: Boolean = false
       @requiredPermissions(allOf: ["READ_ARCHIVED_PATIENT_LIST"])
     namePrefixMatch: String
     includeArchivedFacilities: Boolean = false
@@ -376,7 +378,7 @@ type Query {
     @requiredPermissions(anyOf: ["SEARCH_PATIENTS", "READ_PATIENT_LIST"])
   patientsCount(
     facilityId: ID
-    showDeleted: Boolean = false
+    includeArchived: Boolean = false
       @requiredPermissions(allOf: ["READ_ARCHIVED_PATIENT_LIST"])
     namePrefixMatch: String
   ): Int @requiredPermissions(anyOf: ["SEARCH_PATIENTS", "READ_PATIENT_LIST"])
@@ -655,7 +657,7 @@ type Mutation {
     patientId: ID!
     dateTested: DateTime
   ): AddTestResultResponse @requiredPermissions(allOf: ["SUBMIT_TEST"])
-  addMultiplexResult (
+  addMultiplexResult(
     deviceId: String!
     deviceSpecimenType: ID
     results: [MultiplexResultInput]!
@@ -707,6 +709,4 @@ type Mutation {
   sendPatientLinkEmailByTestEventId(testEventId: ID!): Boolean
   updateOrganization(type: String!): String
     @requiredPermissions(allOf: ["EDIT_ORGANIZATION"])
-  uploadTestResultCSV(testResultList: Upload!): UploadResult
-    @requiredPermissions(allOf: ["SR_CSV_UPLOADER_PILOT"])
 }

@@ -2,7 +2,7 @@ const TEST_RESULTS_BY_START_END_DATE = [
   {
     internalId: "7c768a5d-ef90-44cd-8050-b96dd77f51d5",
     dateTested: "2021-03-18T19:27:21.052Z",
-    result: "NEGATIVE",
+    results: [{ disease: { name: "COVID-19" }, testResult: "NEGATIVE" }],
     correctionStatus: "ORIGINAL",
     deviceType: {
       internalId: "8c1a8efe-8951-4f84-a4c9-dcea561d7fbb",

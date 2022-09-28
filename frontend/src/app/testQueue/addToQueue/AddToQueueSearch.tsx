@@ -53,13 +53,14 @@ export const QUERY_PATIENT = gql`
   query GetPatientsByFacilityForQueue(
     $facilityId: ID
     $namePrefixMatch: String
+    $includeArchived: Boolean = false
     $includeArchivedFacilities: Boolean
   ) {
     patients(
       facilityId: $facilityId
       pageNumber: 0
       pageSize: 100
-      showDeleted: false
+      includeArchived: $includeArchived
       namePrefixMatch: $namePrefixMatch
       includeArchivedFacilities: $includeArchivedFacilities
     ) {

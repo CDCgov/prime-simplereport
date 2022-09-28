@@ -15,7 +15,7 @@ import {
 } from "@apollo/client";
 
 import { exampleQuestionSet } from "../app/signUp/IdentityVerification/constants";
-import { UploadResult, UploadSubmissionPage } from "../generated/graphql";
+import { UploadResponse, UploadSubmissionPage } from "../generated/graphql";
 
 const BACKEND_URL = process.env.REACT_APP_BACKEND_URL;
 
@@ -82,14 +82,16 @@ const mocks = {
   GetUploadSubmission: graphql.query("GetUploadSubmission", (req, res, ctx) =>
     res(
       ctx.data({
-        internalId: "e70c3110-15b7-43a1-9014-f07b81c5fce1",
-        reportId: "e70c3110-15b7-43a1-9014-f07b81c5fce1",
-        createdAt: "2022-05-05T13:47:09Z",
-        status: "SUCCESS",
-        recordsCount: 15,
-        errors: [],
-        warnings: [],
-      } as UploadResult)
+        uploadSubmission: {
+          internalId: "e70c3110-15b7-43a1-9014-f07b81c5fce1",
+          reportId: "e70c3110-15b7-43a1-9014-f07b81c5fce1",
+          createdAt: "2022-05-05T13:47:09Z",
+          status: "SUCCESS",
+          recordsCount: 15,
+          errors: [],
+          warnings: [],
+        } as UploadResponse,
+      })
     )
   ),
   GetUploadSubmissions: graphql.query("GetUploadSubmissions", (req, res, ctx) =>

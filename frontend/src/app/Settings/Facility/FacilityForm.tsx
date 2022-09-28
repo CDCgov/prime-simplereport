@@ -92,6 +92,8 @@ export const useFacilityValidation = (facility: Facility) => {
         />
       );
       showNotification(alert);
+      let firstError = document.querySelector("[aria-invalid=true]");
+      (firstError as HTMLElement)?.focus();
       return "error";
     }
   };
@@ -327,7 +329,7 @@ const FacilityForm: React.FC<Props> = (props) => {
                       to={`/settings/facilities`}
                       className="margin-left-05"
                     >
-                      All facilities
+                      Back to all facilities
                     </LinkWithQuery>
                   </>
                 )}

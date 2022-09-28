@@ -92,7 +92,6 @@ export const queueQuery = gql`
           number
         }
       }
-      result
       results {
         disease {
           name
@@ -146,7 +145,6 @@ export interface QueueItemData extends AoEAnswers {
   };
   deviceSpecimenType: DeviceSpecimenType;
   patient: TestQueuePerson;
-  result: TestResult;
   results: MultiplexResult[];
   dateTested: string;
   correctionStatus: string;
@@ -235,7 +233,6 @@ const TestQueue: React.FC<Props> = ({ activeFacilityId }) => {
           deviceType,
           deviceSpecimenType,
           patient,
-          result,
           results,
           dateTested,
           correctionStatus,
@@ -268,16 +265,7 @@ const TestQueue: React.FC<Props> = ({ activeFacilityId }) => {
               ) || deviceSpecimenTypes[0];
           }
 
-          let selectedTestResults: MultiplexResult[];
-
-          // backwards compatibility
-          if (!results && result) {
-            selectedTestResults = [
-              { disease: { name: "COVID-19" }, testResult: result },
-            ];
-          } else {
-            selectedTestResults = results;
-          }
+          let selectedTestResults: MultiplexResult[] = results;
 
           return (
             <CSSTransition

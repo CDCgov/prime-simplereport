@@ -7,6 +7,7 @@ import gov.cdc.usds.simplereport.db.model.Organization;
 import gov.cdc.usds.simplereport.db.model.Person;
 import gov.cdc.usds.simplereport.db.model.TestEvent;
 import gov.cdc.usds.simplereport.db.model.auxiliary.AskOnEntrySurvey;
+import gov.cdc.usds.simplereport.db.model.auxiliary.TestCorrectionStatus;
 import gov.cdc.usds.simplereport.db.model.auxiliary.TestResult;
 import gov.cdc.usds.simplereport.db.repository.BaseRepositoryTest;
 import gov.cdc.usds.simplereport.test_util.TestDataFactory;
@@ -67,7 +68,7 @@ class TestEventExportTest extends BaseRepositoryTest {
     Person p = _dataFactory.createFullPerson(o);
     TestEvent te = _dataFactory.createTestEvent(p, f);
 
-    assertEquals(TestResult.NEGATIVE, te.getResult());
+    assertEquals(TestResult.NEGATIVE, te.getCovidTestResult().get());
 
     TestEventExport sut = new TestEventExport(te);
 
@@ -185,7 +186,8 @@ class TestEventExportTest extends BaseRepositoryTest {
     TestEvent originalTestEvent =
         _dataFactory.createTestEvent(person, facility, null, TestResult.NEGATIVE, backTestedDate);
     String originalEventId = originalTestEvent.getInternalId().toString();
-    TestEvent testEvent = _dataFactory.createTestEventRemoval(originalTestEvent);
+    TestEvent testEvent =
+        _dataFactory.createTestEventCorrection(originalTestEvent, TestCorrectionStatus.REMOVED);
 
     // WHEN
     TestEventExport exportedEvent = new TestEventExport(testEvent);
