@@ -122,9 +122,7 @@ const App = () => {
           console.error("Failed to decode access token", e);
         }
       }
-      const rolesFieldName = `${process.env.REACT_APP_OKTA_SCOPE?.substring(
-        14
-      )}_roles`;
+      const rolesFieldName = `${process.env.REACT_APP_OKTA_TOKEN_ROLE_CLAIM}`;
       appInsights.trackException({
         exception: error,
         properties: {
