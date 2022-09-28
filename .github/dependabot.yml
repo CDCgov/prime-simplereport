@@ -1,0 +1,295 @@
+version: 2
+updates:
+  - package-ecosystem: "docker"
+    directory: "/nginx"
+    schedule:
+      interval: "weekly"
+    reviewers:
+      - "alismx"
+      - "DanielSass"
+      - "rin-skylight"
+      
+  - package-ecosystem: "docker"
+    directory: "/frontend"
+    schedule:
+      interval: "weekly"
+    reviewers:
+      - "alismx"
+      - "DanielSass"
+      - "rin-skylight"
+
+  - package-ecosystem: "docker"
+    directory: "/backend"
+    schedule:
+      interval: "weekly"
+    reviewers:
+      - "alismx"
+      - "DanielSass"
+      - "rin-skylight"
+
+  - package-ecosystem: "docker"
+    directory: "/backend/db-setup"
+    schedule:
+      interval: "weekly"
+    reviewers:
+      - "alismx"
+      - "DanielSass"
+      - "rin-skylight"
+
+  # - package-ecosystem: "github-actions"
+  #   directory: "/.github/workflows"
+  #   schedule:
+  #     interval: "weekly"
+  #   reviewers:
+      # - "alismx"
+      # - "emyl3"
+      # - "rin-skylight"
+
+  # - package-ecosystem: "github-actions"
+  #   directory: "/.github/actions"
+  #   schedule:
+  #     interval: "weekly"
+  #   reviewers:
+      # - "alismx"
+      # - "emyl3"
+      # - "rin-skylight"
+
+  # - package-ecosystem: "gradle"
+  #   directory: "/backend"
+  #   schedule:
+  #     interval: "weekly"
+  #   reviewers:
+      # - "alismx"
+      # - "BobanL"
+      # - "DanielSass"
+      # - "mehansen"
+      # - "rin-skylight"
+      # - "zdeveloper"
+
+  # - package-ecosystem: "npm"
+  #   directory: "/"
+  #   schedule:
+  #     interval: "weekly"
+  #   reviewers:
+      # - "alismx"
+      # - "BobanL"
+      # - "emyl3"
+      # - "fzhao99"
+      # - "georgehager"
+      # - "rin-skylight"
+      
+  # - package-ecosystem: "npm"
+  #   directory: "/frontend"
+  #   schedule:
+  #     interval: "weekly"
+  #   reviewers:
+  #     - "alismx"
+  #     - "BobanL"
+  #     - "emyl3"
+  #     - "fzhao99"
+  #     - "georgehager"
+  #     - "rin-skylight"
+      
+  # - package-ecosystem: "npm"
+  #   directory: "/cypress"
+  #   schedule:
+  #     interval: "weekly"
+  #   reviewers:
+      # - "alismx"
+      # - "BobanL"
+      # - "emyl3"
+      # - "fzhao99"
+      # - "georgehager"
+      # - "rin-skylight"
+
+  # - package-ecosystem: "terraform"
+  #   directory: "/ops/demo"
+  #   schedule:
+  #     interval: "weekly"
+  #   reviewers:
+      # - "alismx"
+      # - "rin-skylight"
+
+  # - package-ecosystem: "terraform"
+  #   directory: "/ops/demo/persistent"
+  #   schedule:
+  #     interval: "weekly"
+  #   reviewers:
+      # - "alismx"
+      # - "rin-skylight"
+
+  # - package-ecosystem: "terraform"
+  #   directory: "/ops/dev"
+  #   schedule:
+  #     interval: "weekly"
+  #   reviewers:
+      # - "alismx"
+      # - "rin-skylight"
+
+  # - package-ecosystem: "terraform"
+  #   directory: "/ops/dev/persistent"
+  #   schedule:
+  #     interval: "weekly"
+  #   reviewers:
+      # - "alismx"
+      # - "rin-skylight"
+
+  # - package-ecosystem: "terraform"
+  #   directory: "/ops/dev2"
+  #   schedule:
+  #     interval: "weekly"
+  #   reviewers:
+      # - "alismx"
+      # - "rin-skylight"
+
+  # - package-ecosystem: "terraform"
+  #   directory: "/ops/dev2/persistent"
+  #   schedule:
+  #     interval: "weekly"
+  #   reviewers:
+      # - "alismx"
+      # - "rin-skylight"
+
+  # - package-ecosystem: "terraform"
+  #   directory: "/ops/dev3"
+  #   schedule:
+  #     interval: "weekly"
+  #   reviewers:
+      # - "alismx"
+      # - "rin-skylight"
+
+  # - package-ecosystem: "terraform"
+  #   directory: "/ops/dev3/persistent"
+  #   schedule:
+  #     interval: "weekly"
+  #   reviewers:
+      # - "alismx"
+      # - "rin-skylight"
+
+  # - package-ecosystem: "terraform"
+  #   directory: "/ops/dev4"
+  #   schedule:
+  #     interval: "weekly"
+  #   reviewers:
+      # - "alismx"
+      # - "rin-skylight"
+
+  # - package-ecosystem: "terraform"
+  #   directory: "/ops/dev4/persistent"
+  #   schedule:
+  #     interval: "weekly"
+  #   reviewers:
+      # - "alismx"
+      # - "rin-skylight"
+
+  # - package-ecosystem: "terraform"
+  #   directory: "/ops/global"
+  #   schedule:
+  #     interval: "weekly"
+  #   reviewers:
+      # - "alismx"
+      # - "rin-skylight"
+
+  # - package-ecosystem: "terraform"
+  #   directory: "/ops/pentest"
+  #   schedule:
+  #     interval: "weekly"
+  #   reviewers:
+      # - "alismx"
+      # - "rin-skylight"
+
+  # - package-ecosystem: "terraform"
+  #   directory: "/ops/pentest/persistent"
+  #   schedule:
+  #     interval: "weekly"
+  #   reviewers:
+      # - "alismx"
+      # - "rin-skylight"
+
+  # - package-ecosystem: "terraform"
+  #   directory: "/ops/prod"
+  #   schedule:
+  #     interval: "weekly"
+  #   reviewers:
+      # - "alismx"
+      # - "rin-skylight"
+
+  # - package-ecosystem: "terraform"
+  #   directory: "/ops/prod/persistent"
+  #   schedule:
+  #     interval: "weekly"
+  #   reviewers:
+      # - "alismx"
+      # - "rin-skylight"
+
+  # - package-ecosystem: "terraform"
+  #   directory: "/ops/services/app_functions/report_stream_batched_publisher/infra"
+  #   schedule:
+  #     interval: "weekly"
+  #   reviewers:
+      # - "alismx"
+      # - "rin-skylight"
+
+  # - package-ecosystem: "terraform"
+  #   directory: "/ops/services/okta-global"
+  #   schedule:
+  #     interval: "weekly"
+  #   reviewers:
+      # - "alismx"
+      # - "rin-skylight"
+
+  # - package-ecosystem: "terraform"
+  #   directory: "/ops/services/pagerduty"
+  #   schedule:
+  #     interval: "weekly"
+  #   reviewers:
+      # - "alismx"
+      # - "rin-skylight"
+
+  # - package-ecosystem: "terraform"
+  #   directory: "/ops/stg"
+  #   schedule:
+  #     interval: "weekly"
+  #   reviewers:
+      # - "alismx"
+      # - "rin-skylight"
+
+  # - package-ecosystem: "terraform"
+  #   directory: "/ops/stg/persistent"
+  #   schedule:
+  #     interval: "weekly"
+  #   reviewers:
+      # - "alismx"
+      # - "rin-skylight"
+
+  # - package-ecosystem: "terraform"
+  #   directory: "/ops/test"
+  #   schedule:
+  #     interval: "weekly"
+  #   reviewers:
+      # - "alismx"
+      # - "rin-skylight"
+
+  # - package-ecosystem: "terraform"
+  #   directory: "/ops/test/persistent"
+  #   schedule:
+  #     interval: "weekly"
+  #   reviewers:
+      # - "alismx"
+      # - "rin-skylight"
+
+  # - package-ecosystem: "terraform"
+  #   directory: "/ops/training"
+  #   schedule:
+  #     interval: "weekly"
+  #   reviewers:
+      # - "alismx"
+      # - "rin-skylight"
+
+  # - package-ecosystem: "terraform"
+  #   directory: "/ops/training/persistent"
+  #   schedule:
+  #     interval: "weekly"
+  #   reviewers:
+      # - "alismx"
+      # - "rin-skylight"
