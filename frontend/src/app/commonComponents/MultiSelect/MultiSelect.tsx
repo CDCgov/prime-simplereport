@@ -179,7 +179,7 @@ export const MultiSelect = ({
             }`}
             data-testid="pill-container"
           >
-            <legend className="usa-sr-only">{`Selected ${name}`}</legend>
+            <legend className="usa-sr-only">{`Selected ${label}`}</legend>
             {selectedItems &&
               selectedItems.map((value) => {
                 const option = options.find((item) => item.value === value);
