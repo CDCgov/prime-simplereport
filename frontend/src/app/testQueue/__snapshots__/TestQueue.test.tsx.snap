@@ -9,6 +9,11 @@ exports[`TestQueue should render the test queue 1`] = `
     <div
       class="grid-container queue-container-wide"
     >
+      <h1
+        class="font-sans-lg"
+      >
+        Conduct tests
+      </h1>
       <div
         class="position-relative"
       >
