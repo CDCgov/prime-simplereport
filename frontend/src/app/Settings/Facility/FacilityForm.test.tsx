@@ -746,7 +746,7 @@ describe("FacilityForm", () => {
   });
 
   describe("Device validation", () => {
-    it("warns about missing device selection", async () => {
+    beforeEach(() => {
       render(
         <MemoryRouter>
           <FacilityForm
@@ -756,56 +756,30 @@ describe("FacilityForm", () => {
           />
         </MemoryRouter>
       );
+    });
 
-      const pillContainer = screen.getByTestId("pill-container");
+    it("warns about missing device selection", async () => {
+      await deleteAllDevices();
 
-      const deleteButtons = within(pillContainer).getAllByRole("button");
-      deleteButtons.forEach((button) => fireEvent.click(button));
+      await screen.findByText("There are currently no devices", {
+        exact: false,
+      });
 
-      expect(
-        await screen.findByText("There are currently no devices", {
-          exact: false,
-        })
-      ).toBeInTheDocument();
+      await attemptSaveDevices();
 
-      // Attempt save
-      const saveButtons = await screen.findAllByText("Save changes");
-      await waitFor(async () => expect(saveButtons[0]).toBeEnabled());
-      userEvent.click(saveButtons[0]);
-
-      const warning = await screen.findByText(
-        "There must be at least one device",
-        { exact: false }
-      );
-      expect(warning).toBeInTheDocument();
+      await screen.findByText("There must be at least one device", {
+        exact: false,
+      });
     });
 
     it("resolves the error when a device is selected", async () => {
-      render(
-        <MemoryRouter>
-          <FacilityForm
-            facility={validFacility}
-            deviceTypes={devices}
-            saveFacility={saveFacility}
-          />
-        </MemoryRouter>
-      );
+      await deleteAllDevices();
 
-      // Delete devices
-      const pillContainer = screen.getByTestId("pill-container");
-      const deleteButtons = within(pillContainer).getAllByRole("button");
-      deleteButtons.forEach((button) => fireEvent.click(button));
+      await screen.findByText("There are currently no devices", {
+        exact: false,
+      });
 
-      expect(
-        await screen.findByText("There are currently no devices", {
-          exact: false,
-        })
-      ).toBeInTheDocument();
-
-      // Attempt save
-      const saveButtons = await screen.findAllByText("Save changes");
-      await waitFor(async () => expect(saveButtons[0]).toBeEnabled());
-      userEvent.click(saveButtons[0]);
+      await attemptSaveDevices();
 
       await screen.findByText("There must be at least one device", {
         exact: false,
@@ -817,7 +791,7 @@ describe("FacilityForm", () => {
       userEvent.click(deviceInput);
       userEvent.click(within(deviceList).getByText("Device 1"));
 
-      // Post condition
+      // Expect no errors
       expect(
         screen.queryByText("There are currently no devices", {
           exact: false,
@@ -831,6 +805,18 @@ describe("FacilityForm", () => {
     });
   });
 });
+
+async function attemptSaveDevices() {
+  const saveButtons = await screen.findAllByText("Save changes");
+  await waitFor(async () => expect(saveButtons[0]).toBeEnabled());
+  userEvent.click(saveButtons[0]);
+}
+
+async function deleteAllDevices() {
+  const pillContainer = screen.getByTestId("pill-container");
+  const deleteButtons = within(pillContainer).getAllByRole("button");
+  deleteButtons.forEach((button) => fireEvent.click(button));
+}
 
 async function validateAddress(
   saveFacility: (facility: Facility) => void,
