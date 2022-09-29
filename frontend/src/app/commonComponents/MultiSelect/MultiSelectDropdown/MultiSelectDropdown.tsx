@@ -269,7 +269,8 @@ export const MultiSelectDropdown = ({
         onKeyDown={handleInputKeyDown(dispatch, state, selectOption)}
         value={state.inputValue}
         focused={state.focusMode === FocusMode.Input}
-        role="multi-select-input"
+        role="combobox"
+        aria-label={placeholder}
         aria-owns={listID}
         aria-expanded={state.isOpen}
         aria-invalid={ariaInvalid}
@@ -284,7 +285,7 @@ export const MultiSelectDropdown = ({
           type="button"
           className="usa-combo-box__toggle-list"
           tabIndex={-1}
-          aria-label="Toggle the dropdown list"
+          aria-hidden={"true"}
           onClick={(): void =>
             dispatch({
               type: state.isOpen

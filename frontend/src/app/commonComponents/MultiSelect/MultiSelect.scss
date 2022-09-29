@@ -22,6 +22,7 @@
   }
 
   .close-button {
+    color: #005ea2;
     cursor: pointer;
     width: 24px;
     height: 24px;
@@ -31,6 +32,11 @@
   }
 }
 
-.pill-container.sr-pill-container--hidden {
+.pill-container.pill-container--hidden {
   display: none;
+}
+
+.fieldset--unstyled {
+  border: none;
+  padding: inherit;
 }

@@ -12,6 +12,7 @@ import MultiSelectDropdown, {
 } from "./MultiSelectDropdown/MultiSelectDropdown";
 
 import "./MultiSelect.scss";
+import Button from "../Button/Button";
 
 export type MultiSelectProps = {
   name: string;
@@ -40,13 +41,18 @@ type PillProps = {
 const Pill = (props: PillProps) => (
   <div className="pill">
     {props.option.label}
-    <div
-      className="close-button"
+    <Button
+      className="close-button usa-button--unstyled"
       data-testid={`${props.option.label}-pill-delete`}
       onClick={() => props.onDelete(props.option)}
     >
-      <FontAwesomeIcon fontSize={24} icon={"times"} />
-    </div>
+      <FontAwesomeIcon
+        aria-hidden={false}
+        fontSize={24}
+        icon={"times"}
+        aria-label={"Delete device"}
+      />
+    </Button>
   </div>
 );
 
@@ -165,14 +171,15 @@ export const MultiSelect = ({
             placeholder={placeholder}
             ariaInvalid={validationStatus === "error"}
           />
-          <div
-            className={`pill-container${
+          <fieldset
+            className={`fieldset--unstyled pill-container${
               selectedItems && selectedItems.length < 1
-                ? " sr-pill-container--hidden"
+                ? " pill-container--hidden"
                 : ""
             }`}
             data-testid="pill-container"
           >
+            <legend className="usa-sr-only">{`Selected ${name}`}</legend>
             {selectedItems &&
               selectedItems.map((value) => {
                 const option = options.find((item) => item.value === value);
@@ -186,7 +193,7 @@ export const MultiSelect = ({
                   )
                 );
               })}
-          </div>
+          </fieldset>
         </div>
       )}
     </UIDConsumer>
