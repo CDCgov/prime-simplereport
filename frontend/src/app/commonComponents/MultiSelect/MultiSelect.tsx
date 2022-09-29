@@ -6,13 +6,13 @@ import _ from "lodash";
 
 import Required from "../Required";
 import Optional from "../Optional";
+import Button from "../Button/Button";
 
 import MultiSelectDropdown, {
   MultiSelectDropdownOption,
 } from "./MultiSelectDropdown/MultiSelectDropdown";
 
 import "./MultiSelect.scss";
-import Button from "../Button/Button";
 
 export type MultiSelectProps = {
   name: string;
