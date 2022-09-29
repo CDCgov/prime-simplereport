@@ -42,6 +42,12 @@ resource "azurerm_app_service" "service" {
     always_on        = "true"
     min_tls_version  = "1.2"
     ftps_state       = "Disabled"
+
+    //TODO: Evaluate if this can be hit from somewhere else in Azure. If so, use a private link.
+    ip_restriction {
+      virtual_network_subnet_id = var.lb_subnet_id
+      action                    = "Allow"
+    }
   }
 
   app_settings = local.all_app_settings

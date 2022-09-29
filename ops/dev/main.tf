@@ -28,6 +28,21 @@ resource "azurerm_storage_account" "app" {
   tags = local.management_tags
 }
 
+# The name of the private DNS zone MUST be environment-specific to support multiple envs within the same resource group.
+resource "azurerm_private_dns_zone" "default" {
+  name                = "privatelink.${var.env == var.env_level ? "" : "${var.env}."}blob.core.azure.com"
+  resource_group_name = var.resource_group_name
+}
+
+# DNS/VNet linkage for Flexible DB functionality
+# TODO: Import the existing links for each standing environment.
+resource "azurerm_private_dns_zone_virtual_network_link" "vnet_link" {
+  name                  = "${var.env}-vnet-dns-link"
+  resource_group_name   = var.resource_group_name
+  private_dns_zone_name = azurerm_private_dns_zone.default.name
+  virtual_network_id    = data.terraform_remote_state.persistent_dev.outputs.subnet_lbs_id
+}
+
 resource "azurerm_storage_queue" "test_event_queue" {
   name                 = "test-event-publishing"
   storage_account_name = azurerm_storage_account.app.name

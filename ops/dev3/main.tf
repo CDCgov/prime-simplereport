@@ -30,6 +30,20 @@ resource "azurerm_storage_account" "app" {
   tags = local.management_tags
 }
 
+resource "azurerm_private_dns_zone" "default" {
+  name                = "privatelink.${local.env == local.env_level ? "" : "${local.env}."}blob.core.azure.com"
+  resource_group_name = data.azurerm_resource_group.rg.name
+}
+
+# DNS/VNet linkage for Flexible DB functionality
+# TODO: Import the existing links for each standing environment.
+resource "azurerm_private_dns_zone_virtual_network_link" "vnet_link" {
+  name                  = "${local.env}-vnet-dns-link"
+  resource_group_name   = data.azurerm_resource_group.rg.name
+  private_dns_zone_name = azurerm_private_dns_zone.default.name
+  virtual_network_id    = data.terraform_remote_state.persistent_dev3.outputs.subnet_lbs_id
+}
+
 resource "azurerm_storage_queue" "test_event_queue" {
   name                 = "test-event-publishing"
   storage_account_name = azurerm_storage_account.app.name
@@ -55,6 +69,10 @@ module "app_gateway" {
 
   fqdns = [
     module.simple_report_api.app_hostname
+  ]
+
+  metabase_fqdns = [
+    module.metabase_service.app_hostname
   ]
 
   firewall_policy_id = module.web_application_firewall.web_application_firewall_id

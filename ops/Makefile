@@ -14,8 +14,10 @@ API_NAME=simple-report-api-$*
 INFO_ENDPOINT=https://$(API_NAME).azurewebsites.net/actuator/info
 SLOT_INFO_ENDPOINT=https://$(API_NAME)-$(SOURCE_SLOT).azurewebsites.net/actuator/info
 CURL:=curl --silent --fail --max-time $(CURL_TIMEOUT)
-APP_READY=$(CURL) https://$(API_NAME).azurewebsites.net/actuator/health/readiness > /dev/null
-SLOT_READY=$(CURL) https://$(API_NAME)-$(SOURCE_SLOT).azurewebsites.net/actuator/health/readiness > /dev/null
+APP_READY=$(CURL) https://$*.simplereport.gov/api/actuator/health/readiness > /dev/null
+PROD_APP_READY=$(CURL) https://simplereport.gov/api/actuator/health/readiness > /dev/null
+SLOT_READY=$(CURL) https://$*.simplereport.gov/staging/api/actuator/health/readiness > /dev/null
+PROD_SLOT_READY =$(CURL) https://simplereport.gov/staging/api/actuator/health/readiness > /dev/null
 
 default:
 	@echo "Hello, SimpleReport operator!"
@@ -103,11 +105,11 @@ check-%-release: .valid-env-%
 
 check-%-slot-readiness: .valid-env-%
 	@echo Checking the readiness probe for $*/$(SOURCE_SLOT)
-	$(SLOT_READY)
+	@if [[ "$*" == "prod"]] ; $(PROD_SLOT_READY); else; $(SLOT_READY); fi
 
 check-%-readiness: .valid-env-%
 	@echo Checking the readiness probe for $*
-	$(APP_READY)
+	@if [[ "$*" == "prod"]] ; $(PROD_APP_READY); else; $(APP_READY); fi
 
 # DEPRECATED: This is too greedy a match, replacing it
 wait-for-%: .valid-env-%
