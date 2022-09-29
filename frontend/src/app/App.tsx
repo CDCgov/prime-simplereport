@@ -108,9 +108,8 @@ const App = () => {
     return <p>Loading account information...</p>;
   }
 
-  if (true) {
+  if (error) {
     if (appInsights instanceof ApplicationInsights) {
-      // todo: make a type for decoded that extends JwtPayload?
       let decoded: any;
       let validToken = false;
       if (accessToken) {
