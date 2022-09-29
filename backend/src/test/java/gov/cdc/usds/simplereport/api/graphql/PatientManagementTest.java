@@ -4,7 +4,6 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
 import com.fasterxml.jackson.databind.JsonNode;
-import com.fasterxml.jackson.databind.node.JsonNodeFactory;
 import com.fasterxml.jackson.databind.node.ObjectNode;
 import gov.cdc.usds.simplereport.api.CurrentTenantDataAccessContextHolder;
 import gov.cdc.usds.simplereport.api.model.Role;
@@ -16,7 +15,9 @@ import gov.cdc.usds.simplereport.test_util.TestDataFactory;
 import gov.cdc.usds.simplereport.test_util.TestUserIdentities;
 import java.io.IOException;
 import java.util.EnumSet;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.Optional;
 import java.util.Set;
 import java.util.UUID;
@@ -51,7 +52,7 @@ class PatientManagementTest extends BaseGraphqlTest {
         });
     useOrgUser();
     JsonNode patients = fetchPatientsWithFacility();
-    assertEquals(true, patients.get(0).get("facility").isNull());
+    assertTrue(patients.get(0).get("facility").isNull());
     assertEquals(facilityId.getValue(), patients.get(1).get("facility").get("id").asText());
   }
 
@@ -350,8 +351,10 @@ class PatientManagementTest extends BaseGraphqlTest {
             .get("addPatient");
 
     updateSelfPrivileges(Role.USER, false, Set.of());
+
     executeDeletePersonMutation(
         UUID.fromString(p2.get("internalId").asText()), Optional.of(ACCESS_ERROR));
+
     executeDeletePersonMutation(
         UUID.fromString(p3.get("internalId").asText()), Optional.of(ACCESS_ERROR));
 
@@ -381,8 +384,9 @@ class PatientManagementTest extends BaseGraphqlTest {
     useOrgUser();
     runQuery(
         "deleted-person-query",
+        "getDeletedPatients",
         null,
-        "Current user does not have permission to supply a non-default value for [showDeleted]");
+        "Current user does not have permission to supply a non-default value for [includeArchived]");
     assertLastAuditEntry(
         TestUserIdentities.STANDARD_USER,
         "getDeletedPatients",
@@ -401,7 +405,7 @@ class PatientManagementTest extends BaseGraphqlTest {
   @Test
   void queryingDeletedPatients_admin_ok() {
     useOrgAdmin();
-    runQuery("deleted-person-query", null, null);
+    runQuery("deleted-person-query", "getDeletedPatients", null, null);
     assertLastAuditEntry(
         TestUserIdentities.ORG_ADMIN_USER,
         "getDeletedPatients",
@@ -435,8 +439,9 @@ class PatientManagementTest extends BaseGraphqlTest {
         Optional.empty());
 
     useOrgEntryOnly();
-    ObjectNode variables = JsonNodeFactory.instance.objectNode().put("namePrefixMatch", "San");
-    runQuery("person-with-last-test-result-query", variables, null);
+    Map<String, Object> variables = Map.of("namePrefixMatch", "San");
+    runQuery(
+        "person-with-last-test-result-query", "getPatientsWithLastTestResult", variables, null);
     assertLastAuditEntry(
         TestUserIdentities.ENTRY_ONLY_USER,
         "getPatientsWithLastTestResult",
@@ -464,14 +469,12 @@ class PatientManagementTest extends BaseGraphqlTest {
                     Optional.empty())
                 .get("addPatient");
 
-    ObjectNode variables =
-        JsonNodeFactory.instance
-            .objectNode()
-            .put("patientId", patient.get("internalId").asText())
-            .put("firstName", patient.get("firstName").asText())
-            .put("lastName", patient.get("lastName").asText())
-            .put("birthDate", "1100-12-25")
-            .put(argName, argValue);
+    HashMap<String, Object> variables = new HashMap<>();
+    variables.put("patientId", patient.get("internalId").asText());
+    variables.put("firstName", patient.get("firstName").asText());
+    variables.put("lastName", patient.get("lastName").asText());
+    variables.put("birthDate", "1100-12-25");
+    variables.put(argName, argValue);
     runQuery("update-person", variables, expectedError);
   }
 
@@ -501,10 +504,10 @@ class PatientManagementTest extends BaseGraphqlTest {
   }
 
   private JsonNode fetchPatients(Optional<UUID> facilityId) {
-    ObjectNode variables =
-        JsonNodeFactory.instance
-            .objectNode()
-            .put("facilityId", facilityId.map(UUID::toString).orElse(null));
+    Map<String, Object> variables = null;
+    if (facilityId.isPresent()) {
+      variables = Map.of("facilityId", facilityId.get().toString());
+    }
     return (JsonNode) runQuery("person-query", variables).get("patients");
   }
 
@@ -522,23 +525,22 @@ class PatientManagementTest extends BaseGraphqlTest {
       Optional<UUID> facilityId,
       Optional<String> expectedError)
       throws IOException {
-    ObjectNode variables =
-        JsonNodeFactory.instance
-            .objectNode()
-            .put("patientId", patientId.toString())
-            .put("firstName", firstName)
-            .put("lastName", lastName)
-            .put("birthDate", birthDate)
-            .put("telephone", phone)
-            .put("lookupId", lookupId)
-            .put("facilityId", facilityId.map(UUID::toString).orElse(null));
+    Map<String, Object> variables =
+        new HashMap<>(
+            Map.of(
+                "patientId", patientId.toString(),
+                "firstName", firstName,
+                "lastName", lastName,
+                "birthDate", birthDate,
+                "telephone", phone,
+                "lookupId", lookupId));
+    facilityId.ifPresent(uuid -> variables.put("facilityId", uuid.toString()));
     return runQuery("update-person", variables, expectedError.orElse(null)).get("updatePatient");
   }
 
   private JsonNode executeDeletePersonMutation(UUID patientId, Optional<String> expectedError)
       throws IOException {
-    ObjectNode variables =
-        JsonNodeFactory.instance.objectNode().put("id", patientId.toString()).put("deleted", true);
+    Map<String, Object> variables = Map.of("id", patientId.toString(), "deleted", true);
     return runQuery("delete-person", variables, expectedError.orElse(null))
         .get("setPatientIsDeleted");
   }

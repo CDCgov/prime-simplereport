@@ -128,6 +128,23 @@ describe("FacilityForm", () => {
   });
 
   describe("form submission", () => {
+    it("has a link to return to all facilities page", () => {
+      render(
+        <MemoryRouter>
+          <FacilityForm
+            facility={validFacility}
+            deviceTypes={devices}
+            saveFacility={saveFacility}
+          />
+        </MemoryRouter>
+      );
+      expect(screen.getByText("Back to all facilities")).toBeInTheDocument();
+      expect(screen.getByText("Back to all facilities")).toHaveAttribute(
+        "href",
+        "/settings/facilities"
+      );
+    });
+
     it("submits a valid form", async () => {
       render(
         <MemoryRouter>
@@ -162,8 +179,33 @@ describe("FacilityForm", () => {
       });
       userEvent.clear(facilityNameInput);
       userEvent.tab();
-      const warning = await screen.findByText("Facility name is missing");
-      expect(warning).toBeInTheDocument();
+      const nameWarning = await screen.findByText("Facility name is missing");
+      expect(nameWarning).toBeInTheDocument();
+      userEvent.type(facilityNameInput, "Test facility A");
+
+      const facilityStreetAddressInput = screen.getAllByLabelText(
+        "Street address 1",
+        {
+          exact: false,
+        }
+      )[0];
+      userEvent.clear(facilityStreetAddressInput);
+      userEvent.tab();
+      const streetAddressWarning = await screen.findByText(
+        "Facility street is missing"
+      );
+      expect(streetAddressWarning).toBeInTheDocument();
+      userEvent.type(facilityStreetAddressInput, "123 Main Street");
+
+      const facilityZipCodeInput = screen.getAllByLabelText("ZIP code", {
+        exact: false,
+      })[0];
+      userEvent.clear(facilityZipCodeInput);
+      userEvent.tab();
+      const facilityZipCodeWarning = await screen.findByText(
+        "Facility zip code is missing"
+      );
+      expect(facilityZipCodeWarning).toBeInTheDocument();
     });
 
     it("prevents submit for invalid form", async () => {
@@ -241,6 +283,27 @@ describe("FacilityForm", () => {
       expect(warning).toBeInTheDocument();
       const state = await screen.findByText("Palau", { exact: false });
       expect(state).toBeInTheDocument();
+    });
+
+    it("focuses on error with facility name", async () => {
+      render(
+        <MemoryRouter>
+          <FacilityForm
+            facility={validFacility}
+            deviceTypes={devices}
+            saveFacility={saveFacility}
+          />
+        </MemoryRouter>
+      );
+      const saveButton = await screen.getAllByText("Save changes")[0];
+      userEvent.type(
+        screen.getByLabelText("Testing facility name", { exact: false }),
+        ""
+      );
+      userEvent.click(saveButton);
+      expect(
+        screen.getByLabelText("Testing facility name", { exact: false })
+      ).toHaveFocus();
     });
   });
 

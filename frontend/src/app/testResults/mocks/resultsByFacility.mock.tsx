@@ -2,7 +2,7 @@ const TEST_RESULTS_BY_FACILITY = [
   {
     internalId: "0969da96-b211-41cd-ba61-002181f0123a",
     dateTested: "2021-04-12T12:40:33.381Z",
-    result: "NEGATIVE",
+    results: [{ disease: { name: "COVID-19" }, testResult: "NEGATIVE" }],
     correctionStatus: "ORIGINAL",
     deviceType: {
       internalId: "8c1a8efe-8951-4f84-a4c9-dcea561d7fbb",

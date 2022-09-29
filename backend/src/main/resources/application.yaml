@@ -49,25 +49,16 @@ spring:
     jdbc:
       initialize-schema: never
       table-name: ${spring.jpa.properties.hibernate.default_schema}.spring_session
-management:
-  health.probes.enabled: true
-graphql:
   servlet:
-    mapping: /graphql
-    enabled: true
-    corsEnabled: true
-    exception-handlers-enabled: true
-  playground:
-    enabled: false
-  tools:
-    schema-location-pattern: "**/*.graphqls"
-  datetime:
-    scalars:
-      Date:
-        scalar-name: DateTime
-        format: yyyy-MM-dd'T'HH:MM:ss'Z'
-      localDate:
-        scalarName: MyLocalDate # graphql-datetime injects the LocalDate scalar no matter what. this rename allows us to reuse the LocalDate in FlexibleDateScalar
+    multipart:
+      max-file-size: 50MB
+server:
+  error:
+    include-stacktrace: never
+management:
+  endpoint.health.probes.enabled: true
+  endpoint.info.enabled: true
+  endpoints.web.exposure.include: health, info
 okta:
   oauth2:
     issuer: https://hhs-prime.okta.com/oauth2/default
@@ -148,3 +139,4 @@ datahub:
   jwt-scope: "simple_report.*.report"
   signing-key: ${DATAHUB_SIGNING_KEY:super-secret-signing-key}
   csv-upload-api-client: "simple_report.csvuploader"
+

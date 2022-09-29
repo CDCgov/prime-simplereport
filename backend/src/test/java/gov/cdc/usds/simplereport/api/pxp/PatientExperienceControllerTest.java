@@ -19,6 +19,7 @@ import gov.cdc.usds.simplereport.db.model.PatientLink;
 import gov.cdc.usds.simplereport.db.model.Person;
 import gov.cdc.usds.simplereport.db.model.TestEvent;
 import gov.cdc.usds.simplereport.db.model.TimeOfConsent;
+import gov.cdc.usds.simplereport.db.model.auxiliary.TestCorrectionStatus;
 import gov.cdc.usds.simplereport.db.model.auxiliary.TestResult;
 import gov.cdc.usds.simplereport.logging.LoggingConstants;
 import gov.cdc.usds.simplereport.service.TimeOfConsentService;
@@ -261,7 +262,8 @@ class PatientExperienceControllerTest extends BaseFullStackTest {
 
     TestUserIdentities.withStandardUser(
         () -> {
-          removedTestEvent = _dataFactory.createTestEventRemoval(testEvent);
+          removedTestEvent =
+              _dataFactory.createTestEventCorrection(testEvent, TestCorrectionStatus.REMOVED);
         });
 
     // GIVEN

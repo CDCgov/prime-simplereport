@@ -21,18 +21,20 @@ import gov.cdc.usds.simplereport.service.AddressValidationService;
 import gov.cdc.usds.simplereport.service.ApiUserService;
 import gov.cdc.usds.simplereport.service.OrganizationQueueService;
 import gov.cdc.usds.simplereport.service.OrganizationService;
-import graphql.kickstart.tools.GraphQLMutationResolver;
+import java.util.Collections;
 import java.util.List;
 import java.util.Optional;
 import java.util.UUID;
 import java.util.stream.Collectors;
 import lombok.RequiredArgsConstructor;
-import org.springframework.stereotype.Component;
+import org.springframework.graphql.data.method.annotation.Argument;
+import org.springframework.graphql.data.method.annotation.MutationMapping;
+import org.springframework.stereotype.Controller;
 
 /** Created by nickrobison on 11/17/20 */
-@Component
+@Controller
 @RequiredArgsConstructor
-public class OrganizationMutationResolver implements GraphQLMutationResolver {
+public class OrganizationMutationResolver {
 
   private final OrganizationService organizationService;
   private final OrganizationQueueService organizationQueueService;
@@ -41,29 +43,30 @@ public class OrganizationMutationResolver implements GraphQLMutationResolver {
 
   /** addFacility is the latest iteration */
   /** remove addFacilityNew at a later date */
+  @MutationMapping
   public ApiFacility addFacility(
-      String testingFacilityName,
-      String cliaNumber,
-      String street,
-      String streetTwo,
-      String city,
-      String state,
-      String zipCode,
-      String phone,
-      String email,
-      String orderingProviderFirstName,
-      String orderingProviderMiddleName,
-      String orderingProviderLastName,
-      String orderingProviderSuffix,
-      String orderingProviderNPI,
-      String orderingProviderStreet,
-      String orderingProviderStreetTwo,
-      String orderingProviderCity,
-      String orderingProviderCounty,
-      String orderingProviderState,
-      String orderingProviderZipCode,
-      String orderingProviderTelephone,
-      List<UUID> deviceIds) {
+      @Argument String testingFacilityName,
+      @Argument String cliaNumber,
+      @Argument String street,
+      @Argument String streetTwo,
+      @Argument String city,
+      @Argument String state,
+      @Argument String zipCode,
+      @Argument String phone,
+      @Argument String email,
+      @Argument String orderingProviderFirstName,
+      @Argument String orderingProviderMiddleName,
+      @Argument String orderingProviderLastName,
+      @Argument String orderingProviderSuffix,
+      @Argument String orderingProviderNPI,
+      @Argument String orderingProviderStreet,
+      @Argument String orderingProviderStreetTwo,
+      @Argument String orderingProviderCity,
+      @Argument String orderingProviderCounty,
+      @Argument String orderingProviderState,
+      @Argument String orderingProviderZipCode,
+      @Argument String orderingProviderPhone,
+      @Argument List<UUID> deviceIds) {
     organizationService.assertFacilityNameAvailable(testingFacilityName);
 
     StreetAddress facilityAddress =
@@ -98,7 +101,7 @@ public class OrganizationMutationResolver implements GraphQLMutationResolver {
             deviceIds,
             providerName,
             providerAddress,
-            parsePhoneNumber(orderingProviderTelephone),
+            parsePhoneNumber(orderingProviderPhone),
             orderingProviderNPI);
 
     return new ApiFacility(created);
@@ -107,29 +110,30 @@ public class OrganizationMutationResolver implements GraphQLMutationResolver {
   /** addFacilityNew is being kept along side addFacility to ensure backwards compatibility */
   /** addFacilityNew calls addFacility */
   /** addFacilityNew should be removed at a future date */
+  @MutationMapping
   public ApiFacility addFacilityNew(
-      String testingFacilityName,
-      String cliaNumber,
-      String street,
-      String streetTwo,
-      String city,
-      String state,
-      String zipCode,
-      String phone,
-      String email,
-      String orderingProviderFirstName,
-      String orderingProviderMiddleName,
-      String orderingProviderLastName,
-      String orderingProviderSuffix,
-      String orderingProviderNPI,
-      String orderingProviderStreet,
-      String orderingProviderStreetTwo,
-      String orderingProviderCity,
-      String orderingProviderCounty,
-      String orderingProviderState,
-      String orderingProviderZipCode,
-      String orderingProviderTelephone,
-      List<UUID> deviceIds) {
+      @Argument String testingFacilityName,
+      @Argument String cliaNumber,
+      @Argument String street,
+      @Argument String streetTwo,
+      @Argument String city,
+      @Argument String state,
+      @Argument String zipCode,
+      @Argument String phone,
+      @Argument String email,
+      @Argument String orderingProviderFirstName,
+      @Argument String orderingProviderMiddleName,
+      @Argument String orderingProviderLastName,
+      @Argument String orderingProviderSuffix,
+      @Argument String orderingProviderNPI,
+      @Argument String orderingProviderStreet,
+      @Argument String orderingProviderStreetTwo,
+      @Argument String orderingProviderCity,
+      @Argument String orderingProviderCounty,
+      @Argument String orderingProviderState,
+      @Argument String orderingProviderZipCode,
+      @Argument String orderingProviderPhone,
+      @Argument List<UUID> deviceIds) {
 
     return addFacility(
         testingFacilityName,
@@ -152,36 +156,37 @@ public class OrganizationMutationResolver implements GraphQLMutationResolver {
         orderingProviderCounty,
         orderingProviderState,
         orderingProviderZipCode,
-        orderingProviderTelephone,
+        orderingProviderPhone,
         deviceIds);
   }
 
   /** updateFacility is the latest iteration */
   /** remove updateFacilityNew at a later date */
+  @MutationMapping
   public ApiFacility updateFacility(
-      UUID facilityId,
-      String testingFacilityName,
-      String cliaNumber,
-      String street,
-      String streetTwo,
-      String city,
-      String state,
-      String zipCode,
-      String phone,
-      String email,
-      String orderingProviderFirstName,
-      String orderingProviderMiddleName,
-      String orderingProviderLastName,
-      String orderingProviderSuffix,
-      String orderingProviderNPI,
-      String orderingProviderStreet,
-      String orderingProviderStreetTwo,
-      String orderingProviderCity,
-      String orderingProviderCounty,
-      String orderingProviderState,
-      String orderingProviderZipCode,
-      String orderingProviderTelephone,
-      List<UUID> deviceIds) {
+      @Argument UUID facilityId,
+      @Argument String testingFacilityName,
+      @Argument String cliaNumber,
+      @Argument String street,
+      @Argument String streetTwo,
+      @Argument String city,
+      @Argument String state,
+      @Argument String zipCode,
+      @Argument String phone,
+      @Argument String email,
+      @Argument String orderingProviderFirstName,
+      @Argument String orderingProviderMiddleName,
+      @Argument String orderingProviderLastName,
+      @Argument String orderingProviderSuffix,
+      @Argument String orderingProviderNPI,
+      @Argument String orderingProviderStreet,
+      @Argument String orderingProviderStreetTwo,
+      @Argument String orderingProviderCity,
+      @Argument String orderingProviderCounty,
+      @Argument String orderingProviderState,
+      @Argument String orderingProviderZipCode,
+      @Argument String orderingProviderPhone,
+      @Argument List<UUID> deviceIds) {
 
     StreetAddress facilityAddress =
         addressValidationService.getValidatedAddress(
@@ -218,7 +223,7 @@ public class OrganizationMutationResolver implements GraphQLMutationResolver {
             providerName,
             providerAddress,
             orderingProviderNPI,
-            parsePhoneNumber(orderingProviderTelephone),
+            parsePhoneNumber(orderingProviderPhone),
             deviceIds);
     return new ApiFacility(facility);
   }
@@ -226,30 +231,31 @@ public class OrganizationMutationResolver implements GraphQLMutationResolver {
   /** updateFacilityNew is being kept along side updateFacility to ensure backwards compatibility */
   /** updateFacilityNew calls updateFacility */
   /** updateFacilityNew should be removed at a future date */
+  @MutationMapping
   public ApiFacility updateFacilityNew(
-      UUID facilityId,
-      String testingFacilityName,
-      String cliaNumber,
-      String street,
-      String streetTwo,
-      String city,
-      String state,
-      String zipCode,
-      String phone,
-      String email,
-      String orderingProviderFirstName,
-      String orderingProviderMiddleName,
-      String orderingProviderLastName,
-      String orderingProviderSuffix,
-      String orderingProviderNPI,
-      String orderingProviderStreet,
-      String orderingProviderStreetTwo,
-      String orderingProviderCity,
-      String orderingProviderCounty,
-      String orderingProviderState,
-      String orderingProviderZipCode,
-      String orderingProviderTelephone,
-      List<UUID> deviceIds) {
+      @Argument UUID facilityId,
+      @Argument String testingFacilityName,
+      @Argument String cliaNumber,
+      @Argument String street,
+      @Argument String streetTwo,
+      @Argument String city,
+      @Argument String state,
+      @Argument String zipCode,
+      @Argument String phone,
+      @Argument String email,
+      @Argument String orderingProviderFirstName,
+      @Argument String orderingProviderMiddleName,
+      @Argument String orderingProviderLastName,
+      @Argument String orderingProviderSuffix,
+      @Argument String orderingProviderNPI,
+      @Argument String orderingProviderStreet,
+      @Argument String orderingProviderStreetTwo,
+      @Argument String orderingProviderCity,
+      @Argument String orderingProviderCounty,
+      @Argument String orderingProviderState,
+      @Argument String orderingProviderZipCode,
+      @Argument String orderingProviderPhone,
+      @Argument List<UUID> deviceIds) {
 
     return updateFacility(
         facilityId,
@@ -273,49 +279,53 @@ public class OrganizationMutationResolver implements GraphQLMutationResolver {
         orderingProviderCounty,
         orderingProviderState,
         orderingProviderZipCode,
-        orderingProviderTelephone,
+        orderingProviderPhone,
         deviceIds);
   }
 
   @AuthorizationConfiguration.RequireGlobalAdminUser
+  @MutationMapping
   public ApiOrganization createOrganization(
-      String name,
-      String type,
-      String externalId,
-      String testingFacilityName,
-      String cliaNumber,
-      String street,
-      String streetTwo,
-      String city,
-      String county,
-      String state,
-      String zipCode,
-      String phone,
-      String email,
-      PersonName providerName,
-      String orderingProviderFirstName,
-      String orderingProviderMiddleName,
-      String orderingProviderLastName,
-      String orderingProviderSuffix,
-      String orderingProviderNPI,
-      String orderingProviderStreet,
-      String orderingProviderStreetTwo,
-      String orderingProviderCity,
-      String orderingProviderCounty,
-      String orderingProviderState,
-      String orderingProviderZipCode,
-      String orderingProviderTelephone,
-      List<String> deviceIds,
-      String defaultDeviceId,
-      PersonName adminName,
-      String adminFirstName,
-      String adminMiddleName,
-      String adminLastName,
-      String adminSuffix,
-      String adminEmail) {
+      @Argument String name,
+      @Argument String type,
+      @Argument String externalId,
+      @Argument String testingFacilityName,
+      @Argument String cliaNumber,
+      @Argument String street,
+      @Argument String streetTwo,
+      @Argument String city,
+      @Argument String county,
+      @Argument String state,
+      @Argument String zipCode,
+      @Argument String phone,
+      @Argument String email,
+      @Argument PersonName orderingProviderName,
+      @Argument String orderingProviderFirstName,
+      @Argument String orderingProviderMiddleName,
+      @Argument String orderingProviderLastName,
+      @Argument String orderingProviderSuffix,
+      @Argument String orderingProviderNPI,
+      @Argument String orderingProviderStreet,
+      @Argument String orderingProviderStreetTwo,
+      @Argument String orderingProviderCity,
+      @Argument String orderingProviderCounty,
+      @Argument String orderingProviderState,
+      @Argument String orderingProviderZipCode,
+      @Argument String orderingProviderPhone,
+      @Argument List<String> deviceTypes,
+      @Argument String defaultDevice,
+      @Argument PersonName adminName,
+      @Argument String adminFirstName,
+      @Argument String adminMiddleName,
+      @Argument String adminLastName,
+      @Argument String adminSuffix,
+      @Argument String adminEmail) {
 
-    List<UUID> deviceInternalIds =
-        deviceIds.stream().map(UUID::fromString).collect(Collectors.toList());
+    List<UUID> deviceInternalIds = Collections.emptyList();
+
+    if (deviceTypes != null) {
+      deviceInternalIds = deviceTypes.stream().map(UUID::fromString).collect(Collectors.toList());
+    }
 
     StreetAddress facilityAddress =
         addressValidationService.getValidatedAddress(
@@ -333,9 +343,9 @@ public class OrganizationMutationResolver implements GraphQLMutationResolver {
             parseState(orderingProviderState),
             parseString(orderingProviderZipCode),
             parseString(orderingProviderCounty));
-    providerName = // SPECIAL CASE: MAY BE ALL NULLS/BLANKS
+    orderingProviderName = // SPECIAL CASE: MAY BE ALL NULLS/BLANKS
         consolidateNameArguments(
-            providerName,
+            orderingProviderName,
             orderingProviderFirstName,
             orderingProviderMiddleName,
             orderingProviderLastName,
@@ -355,26 +365,30 @@ public class OrganizationMutationResolver implements GraphQLMutationResolver {
             parsePhoneNumber(phone),
             parseEmail(email),
             deviceInternalIds,
-            providerName,
+            orderingProviderName,
             providerAddress,
-            parsePhoneNumber(orderingProviderTelephone),
+            parsePhoneNumber(orderingProviderPhone),
             orderingProviderNPI);
     apiUserService.createUser(adminEmail, adminName, externalId, Role.ADMIN);
     List<Facility> facilities = organizationService.getFacilities(org);
     return new ApiOrganization(org, facilities);
   }
 
-  public void adminUpdateOrganization(String name, String type) {
+  @MutationMapping
+  public void adminUpdateOrganization(@Argument String name, @Argument String type) {
     String parsedType = parseOrganizationType(type);
     organizationService.updateOrganization(name, parsedType);
   }
 
-  public void updateOrganization(String type) {
+  @MutationMapping
+  public void updateOrganization(@Argument String type) {
     String parsedType = parseOrganizationType(type);
     organizationService.updateOrganization(parsedType);
   }
 
-  public boolean setOrganizationIdentityVerified(String externalId, boolean verified) {
+  @MutationMapping
+  public boolean setOrganizationIdentityVerified(
+      @Argument String externalId, @Argument boolean verified) {
     Optional<OrganizationQueueItem> orgQueueItem =
         organizationQueueService.getUnverifiedQueuedOrganizationByExternalId(externalId);
     if (orgQueueItem.isPresent() && verified) {
@@ -383,13 +397,14 @@ public class OrganizationMutationResolver implements GraphQLMutationResolver {
     return organizationService.setIdentityVerified(externalId, verified);
   }
 
+  @MutationMapping
   public String editPendingOrganization(
-      String orgExternalId,
-      String name,
-      String adminFirstName,
-      String adminLastName,
-      String adminEmail,
-      String adminPhone) {
+      @Argument String orgExternalId,
+      @Argument String name,
+      @Argument String adminFirstName,
+      @Argument String adminLastName,
+      @Argument String adminEmail,
+      @Argument String adminPhone) {
     OrganizationQueueItem editedItem =
         organizationQueueService.editQueueItem(
             orgExternalId,
@@ -404,18 +419,22 @@ public class OrganizationMutationResolver implements GraphQLMutationResolver {
   /**
    * Support-only mutation to mark a PendingOrganization as deleted. This is a soft deletion only.
    */
+  @MutationMapping
   public OrganizationQueueItem markPendingOrganizationAsDeleted(
-      String orgExternalId, boolean deleted) {
+      @Argument String orgExternalId, @Argument boolean deleted) {
     return organizationQueueService.markPendingOrganizationAsDeleted(orgExternalId, deleted);
   }
 
   /** Support-only mutation to mark an organization as deleted. This is a soft deletion only. */
-  public Organization markOrganizationAsDeleted(UUID organizationId, boolean deleted) {
+  @MutationMapping
+  public Organization markOrganizationAsDeleted(
+      @Argument UUID organizationId, @Argument boolean deleted) {
     return organizationService.markOrganizationAsDeleted(organizationId, deleted);
   }
 
   /** Support-only mutation to mark a facility as deleted. This is a soft deletion only. */
-  public Facility markFacilityAsDeleted(UUID facilityId, boolean deleted) {
+  @MutationMapping
+  public Facility markFacilityAsDeleted(@Argument UUID facilityId, @Argument boolean deleted) {
     return organizationService.markFacilityAsDeleted(facilityId, deleted);
   }
 }

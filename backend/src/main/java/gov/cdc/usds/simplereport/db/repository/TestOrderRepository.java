@@ -23,7 +23,7 @@ public interface TestOrderRepository
   String IS_PENDING = " and q.orderStatus = 'PENDING' ";
   String IS_COMPLETED = " and q.orderStatus = 'COMPLETED' ";
   String ORDER_CREATION_ORDER = " order by q.createdAt ";
-  String RESULT_RECENT_ORDER = " order by updatedAt desc ";
+  String RESULT_RECENT_ORDER = " order by q.updatedAt desc ";
 
   @Query(FACILITY_QUERY + IS_PENDING + ORDER_CREATION_ORDER)
   @EntityGraph(attributePaths = {"patient"})

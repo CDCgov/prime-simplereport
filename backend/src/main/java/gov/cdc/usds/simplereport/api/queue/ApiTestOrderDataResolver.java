@@ -5,77 +5,107 @@ import gov.cdc.usds.simplereport.db.model.DeviceType;
 import gov.cdc.usds.simplereport.db.model.PatientAnswers;
 import gov.cdc.usds.simplereport.db.model.Person;
 import gov.cdc.usds.simplereport.db.model.Result;
-import gov.cdc.usds.simplereport.db.model.auxiliary.AskOnEntrySurvey;
-import gov.cdc.usds.simplereport.db.model.auxiliary.TestResult;
-import gov.cdc.usds.simplereport.service.dataloader.PatientAnswersDataLoader;
-import gov.cdc.usds.simplereport.service.dataloader.TestOrderDeviceTypeDataLoader;
-import gov.cdc.usds.simplereport.service.dataloader.TestOrderPatientDataLoader;
-import graphql.kickstart.tools.GraphQLResolver;
-import graphql.schema.DataFetchingEnvironment;
+import gov.cdc.usds.simplereport.db.repository.DeviceTypeRepository;
+import gov.cdc.usds.simplereport.db.repository.PatientAnswersRepository;
+import gov.cdc.usds.simplereport.db.repository.PersonRepository;
 import java.time.LocalDate;
+import java.util.Map;
 import java.util.Set;
+import java.util.UUID;
 import java.util.concurrent.CompletableFuture;
-import org.springframework.stereotype.Component;
+import java.util.stream.Collectors;
+import org.dataloader.DataLoader;
+import org.springframework.graphql.data.method.annotation.SchemaMapping;
+import org.springframework.graphql.execution.BatchLoaderRegistry;
+import org.springframework.stereotype.Controller;
+import reactor.core.publisher.Mono;
 
-@Component
-public class ApiTestOrderDataResolver implements GraphQLResolver<ApiTestOrder> {
-  private final TestOrderPatientDataLoader _testOrderPatientDataLoader;
-  private final TestOrderDeviceTypeDataLoader _testOrderDeviceTypeDataLoader;
-  private final PatientAnswersDataLoader _patientAnswersDataLoader;
+@Controller
+public class ApiTestOrderDataResolver {
 
   public ApiTestOrderDataResolver(
-      TestOrderPatientDataLoader testOrderPatientDataLoader,
-      TestOrderDeviceTypeDataLoader testOrderDeviceTypeDataLoader,
-      PatientAnswersDataLoader patientAnswersDataLoader) {
-    _testOrderPatientDataLoader = testOrderPatientDataLoader;
-    _testOrderDeviceTypeDataLoader = testOrderDeviceTypeDataLoader;
-    _patientAnswersDataLoader = patientAnswersDataLoader;
+      BatchLoaderRegistry registry,
+      PersonRepository personRepository,
+      DeviceTypeRepository deviceTypeRepository,
+      PatientAnswersRepository patientAnswersRepository) {
+
+    registry
+        .forTypePair(UUID.class, Person.class)
+        .registerMappedBatchLoader(
+            (uuids, batchLoaderEnvironment) -> {
+              Map<UUID, Person> found =
+                  personRepository.findAllByInternalIdIn(uuids).stream()
+                      .collect(Collectors.toMap(Person::getInternalId, s -> s));
+
+              return Mono.just(found);
+            });
+
+    registry
+        .forTypePair(UUID.class, DeviceType.class)
+        .registerMappedBatchLoader(
+            (uuids, batchLoaderEnvironment) -> {
+              Map<UUID, DeviceType> found =
+                  deviceTypeRepository.findAllByInternalIdIn(uuids).stream()
+                      .collect(Collectors.toMap(DeviceType::getInternalId, s -> s));
+              return Mono.just(found);
+            });
+
+    registry
+        .forTypePair(UUID.class, PatientAnswers.class)
+        .registerMappedBatchLoader(
+            (uuids, batchLoaderEnvironment) -> {
+              Map<UUID, PatientAnswers> found =
+                  patientAnswersRepository.findAllByInternalIdIn(uuids).stream()
+                      .collect(Collectors.toMap(PatientAnswers::getInternalId, s -> s));
+              return Mono.just(found);
+            });
   }
 
-  private CompletableFuture<AskOnEntrySurvey> getSurvey(
-      ApiTestOrder apiTestOrder, DataFetchingEnvironment dfe) {
-    return _patientAnswersDataLoader
-        .load(apiTestOrder.getWrapped(), dfe)
-        .thenApply(PatientAnswers::getSurvey);
+  @SchemaMapping(typeName = "TestOrder", field = "patient")
+  public CompletableFuture<Person> patient(
+      ApiTestOrder apiTestOrder, DataLoader<UUID, Person> loader) {
+    return loader.load(apiTestOrder.getWrapped().getPatient().getInternalId());
   }
 
-  public CompletableFuture<Person> getPatient(
-      ApiTestOrder apiTestOrder, DataFetchingEnvironment dfe) {
-    // why this doesn't cause Hibernate to eagerly load when other very similar logic doesn't is
-    // beyond me
-    return _testOrderPatientDataLoader.load(
-        apiTestOrder.getWrapped().getPatient().getInternalId(), dfe);
+  @SchemaMapping(typeName = "TestOrder", field = "pregnancy")
+  public CompletableFuture<String> pregnancy(
+      ApiTestOrder apiTestOrder, DataLoader<UUID, PatientAnswers> loader) {
+    return loader
+        .load(apiTestOrder.getWrapped().getPatientAnswersId())
+        .thenApply(patientAnswers -> patientAnswers.getSurvey().getPregnancy());
   }
 
-  public CompletableFuture<String> getPregnancy(
-      ApiTestOrder apiTestOrder, DataFetchingEnvironment dfe) {
-    return getSurvey(apiTestOrder, dfe).thenApply(AskOnEntrySurvey::getPregnancy);
+  @SchemaMapping(typeName = "TestOrder", field = "noSymptoms")
+  public CompletableFuture<Boolean> noSymptoms(
+      ApiTestOrder apiTestOrder, DataLoader<UUID, PatientAnswers> loader) {
+    return loader
+        .load(apiTestOrder.getWrapped().getPatientAnswersId())
+        .thenApply(patientAnswers -> patientAnswers.getSurvey().getNoSymptoms());
   }
 
-  public CompletableFuture<Boolean> getNoSymptoms(
-      ApiTestOrder apiTestOrder, DataFetchingEnvironment dfe) {
-    return getSurvey(apiTestOrder, dfe).thenApply(AskOnEntrySurvey::getNoSymptoms);
+  @SchemaMapping(typeName = "TestOrder", field = "symptoms")
+  public CompletableFuture<String> symptoms(
+      ApiTestOrder apiTestOrder, DataLoader<UUID, PatientAnswers> loader) {
+    return loader
+        .load(apiTestOrder.getWrapped().getPatientAnswersId())
+        .thenApply(patientAnswers -> patientAnswers.getSurvey().getSymptomsJSON());
   }
 
-  public CompletableFuture<String> getSymptoms(
-      ApiTestOrder apiTestOrder, DataFetchingEnvironment dfe) {
-    return getSurvey(apiTestOrder, dfe).thenApply(AskOnEntrySurvey::getSymptomsJSON);
+  @SchemaMapping(typeName = "TestOrder", field = "symptomOnset")
+  public CompletableFuture<LocalDate> symptomOnset(
+      ApiTestOrder apiTestOrder, DataLoader<UUID, PatientAnswers> loader) {
+    return loader
+        .load(apiTestOrder.getWrapped().getPatientAnswersId())
+        .thenApply(patientAnswers -> patientAnswers.getSurvey().getSymptomOnsetDate());
   }
 
-  public CompletableFuture<LocalDate> getSymptomOnset(
-      ApiTestOrder apiTestOrder, DataFetchingEnvironment dfe) {
-    return getSurvey(apiTestOrder, dfe).thenApply(AskOnEntrySurvey::getSymptomOnsetDate);
+  @SchemaMapping(typeName = "TestOrder", field = "deviceType")
+  public CompletableFuture<DeviceType> deviceType(
+      ApiTestOrder apiTestOrder, DataLoader<UUID, DeviceType> loader) {
+    return loader.load(apiTestOrder.getWrapped().getDeviceType().getInternalId());
   }
 
-  public CompletableFuture<DeviceType> getDeviceType(
-      ApiTestOrder apiTestOrder, DataFetchingEnvironment dfe) {
-    return _testOrderDeviceTypeDataLoader.load(apiTestOrder.getWrapped(), dfe);
-  }
-
-  public TestResult getResult(ApiTestOrder apiTestOrder) {
-    return apiTestOrder.getWrapped().getResult();
-  }
-
+  @SchemaMapping(typeName = "TestOrder", field = "results")
   public Set<Result> getResults(ApiTestOrder apiTestOrder) {
     return apiTestOrder.getWrapped().getPendingResultSet();
   }

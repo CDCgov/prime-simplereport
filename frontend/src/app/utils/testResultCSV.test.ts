@@ -10,7 +10,6 @@ const data = [
     },
     dateTested: "2022-06-13T19:24:31.187Z",
     dateUpdated: "2022-03-13T19:24:31.187Z",
-    result: "NEGATIVE",
     results: [
       {
         disease: {

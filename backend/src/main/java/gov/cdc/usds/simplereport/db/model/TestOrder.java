@@ -3,9 +3,7 @@ package gov.cdc.usds.simplereport.db.model;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import gov.cdc.usds.simplereport.db.model.auxiliary.OrderStatus;
 import gov.cdc.usds.simplereport.db.model.auxiliary.TestCorrectionStatus;
-import gov.cdc.usds.simplereport.db.model.auxiliary.TestResult;
 import java.time.LocalDate;
-import java.util.Comparator;
 import java.util.Date;
 import java.util.HashSet;
 import java.util.Optional;
@@ -24,7 +22,6 @@ import javax.persistence.OneToMany;
 import javax.persistence.OneToOne;
 import lombok.Getter;
 import lombok.Setter;
-import org.hibernate.Hibernate;
 import org.hibernate.annotations.Type;
 
 @Entity
@@ -57,7 +54,7 @@ public class TestOrder extends BaseTestInfo {
   @OneToMany(mappedBy = "testOrder", fetch = FetchType.LAZY, cascade = CascadeType.ALL)
   @Getter
   @Setter
-  private Set<Result> results;
+  private Set<Result> results = new HashSet<>();
 
   protected TestOrder() {
     /* for hibernate */ }
@@ -90,34 +87,12 @@ public class TestOrder extends BaseTestInfo {
     super.setDateTestedBackdate(date);
   }
 
-  // This logic will need to be updated later on in the multiplex process
-  // - this method is temporary
-  // Eventually, this method will be deprecated in favor of getResultSet() and getResultForDisease()
-  public TestResult getTestResult() {
-    Hibernate.initialize(this.results);
-    if (this.results != null) {
-      Comparator<Result> resultDateComparator = Comparator.comparing(Result::getUpdatedAt);
-      Optional<Result> resultObject = this.results.stream().max(resultDateComparator);
-      if (resultObject.isPresent()) {
-        return resultObject.get().getTestResult();
-      }
-    }
-    return super.getResult();
-  }
-
-  @JsonIgnore
-  public Set<Result> getResultSet() {
-    Hibernate.initialize(this.results);
-    return results;
-  }
-
   /**
    * A helper method to only return pending results - those associated with a TestOrder, but not yet
    * a TestEvent. This is used to display results while the test is in the queue.
    */
   @JsonIgnore
   public Set<Result> getPendingResultSet() {
-    Hibernate.initialize(this.results);
     Set<Result> pendingResults;
     pendingResults =
         this.results.stream().filter(r -> r.getTestEvent() == null).collect(Collectors.toSet());
@@ -138,16 +113,10 @@ public class TestOrder extends BaseTestInfo {
   }
 
   public Optional<Result> getResultForDisease(SupportedDisease disease) {
-    Hibernate.initialize(this.results);
     if (results != null) {
       return results.stream().filter(r -> r.getDisease().equals(disease)).findFirst();
     }
     return Optional.empty();
-  }
-
-  // Remove after #3664
-  public void setResultColumn(TestResult result) {
-    super.setTestResult(result);
   }
 
   public void markComplete() {
@@ -200,5 +169,9 @@ public class TestOrder extends BaseTestInfo {
 
   public UUID getPatientAnswersId() {
     return patientAnswersId;
+  }
+
+  public void addResult(Result result) {
+    this.results.add(result);
   }
 }

@@ -140,7 +140,11 @@ const UserDetail: React.FC<Props> = ({
   }
 
   return (
-    <div className="tablet:grid-col padding-left-3 user-detail-column">
+    <div
+      role="tabpanel"
+      aria-labelledby={"user-tab-" + user?.id}
+      className="tablet:grid-col padding-left-3 user-detail-column"
+    >
       <div>
         <h2 className="display-inline-block margin-top-1 margin-bottom-0 user-name-header">
           {displayFullName(user.firstName, user.middleName, user.lastName)}
@@ -183,31 +187,53 @@ const UserDetail: React.FC<Props> = ({
         ) : null}
       </div>
       <nav
-        className="prime-secondary-nav margin-top-4"
-        aria-label="Tertiary navigation"
+        className="prime-secondary-nav margin-top-4 padding-bottom-0"
+        aria-label="User action navigation"
       >
-        <ul className="usa-nav__secondary-links prime-nav">
-          <li
+        <div
+          role="tablist"
+          aria-owns={"user-info-tab-id facility-access-tab-id"}
+          className="usa-nav__secondary-links prime-nav usa-list"
+        >
+          <div
             className={`usa-nav__secondary-item ${
               navItemSelected === "userInfo" ? "usa-current" : ""
             }`}
-            onClick={() => setNavItemSelected("userInfo")}
           >
-            <span>User information</span>
-          </li>
-          <li
+            <button
+              id="user-info-tab-id"
+              role="tab"
+              className="usa-button--unstyled text-ink text-no-underline"
+              onClick={() => setNavItemSelected("userInfo")}
+              aria-selected={navItemSelected === "userInfo"}
+            >
+              User information
+            </button>
+          </div>
+          <div
             className={`usa-nav__secondary-item ${
               navItemSelected === "facilityAccess" ? "usa-current" : ""
             }`}
-            onClick={() => setNavItemSelected("facilityAccess")}
           >
-            <span>Facility access</span>
-          </li>
-        </ul>
+            <button
+              id="facility-access-tab-id"
+              role="tab"
+              className="usa-button--unstyled text-ink text-no-underline"
+              onClick={() => setNavItemSelected("facilityAccess")}
+              aria-selected={navItemSelected === "facilityAccess"}
+            >
+              Facility access
+            </button>
+          </div>
+        </div>
       </nav>
       {navItemSelected === "userInfo" ? (
-        <div className="padding-left-1">
-          <h4 className="basic-info-header">Basic information</h4>
+        <div
+          role="tabpanel"
+          aria-labelledby="user-info-tab-id"
+          className="padding-left-1"
+        >
+          <h3 className="basic-info-header">Basic information</h3>
           <div
             className={classnames(
               "user-header grid-row flex-row flex-align-center",
@@ -249,7 +275,7 @@ const UserDetail: React.FC<Props> = ({
             />
           </div>
           <div className="userinfo-divider"></div>
-          <h4 className="user-controls-header">User controls</h4>
+          <h3 className="user-controls-header">User controls</h3>
           <div
             className={classnames(
               "user-header grid-row flex-row flex-align-center",
@@ -315,8 +341,12 @@ const UserDetail: React.FC<Props> = ({
           </div>
         </div>
       ) : (
-        <div className="padding-left-1">
-          <h4 className="basic-info-header margin-bottom-1">User role</h4>
+        <div
+          role="tabpanel"
+          aria-labelledby="facility-access-tab-id"
+          className="padding-left-1"
+        >
+          <h3 className="basic-info-header margin-bottom-1">User role</h3>
           <div className="userrole-subtext">
             Admins have full access to use and change settings on SimpleReport.
             Standard and testing-only users have limited access for specific
