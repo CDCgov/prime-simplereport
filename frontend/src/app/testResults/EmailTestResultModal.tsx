@@ -35,7 +35,9 @@ export const EmailTestResultModal = ({ closeModal, testResultId }: Props) => {
       contentLabel="Printable test result"
       onRequestClose={closeModal}
     >
-      <div className="header">Email result?</div>
+      <h1 className="font-sans-lg margin-top-0 margin-bottom-105 text-normal">
+        Email result?
+      </h1>
       {loading ? (
         <p>Loading</p>
       ) : (
@@ -47,7 +49,7 @@ export const EmailTestResultModal = ({ closeModal, testResultId }: Props) => {
             </div>
             <ul className="usa-list usa-list--unstyled">
               {patient.emails?.map((email: string) => (
-                <li className={"line-height-sans-2"} key={email}>
+                <li className="line-height-sans-2" key={email}>
                   {email}
                 </li>
               ))}

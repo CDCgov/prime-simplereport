@@ -6,11 +6,11 @@ Object {
   "baseElement": <body>
     <div>
       <div>
-        <div
-          class="header"
+        <h1
+          class="font-sans-lg margin-top-0 margin-bottom-105 text-normal"
         >
           Email result?
-        </div>
+        </h1>
         <div
           class="body"
         >
@@ -54,11 +54,11 @@ Object {
   </body>,
   "container": <div>
     <div>
-      <div
-        class="header"
+      <h1
+        class="font-sans-lg margin-top-0 margin-bottom-105 text-normal"
       >
         Email result?
-      </div>
+      </h1>
       <div
         class="body"
       >
