@@ -108,9 +108,7 @@ describe("ManageDevices", () => {
 
     it("removes a device from the list", async () => {
       const pillContainer = screen.getByTestId("pill-container");
-      const deleteIcon = within(pillContainer).getAllByTestId("-pill-delete", {
-        exact: false,
-      })[0];
+      const deleteIcon = within(pillContainer).getAllByRole("button")[0];
 
       within(pillContainer).getByText("Device A");
       fireEvent.click(deleteIcon);

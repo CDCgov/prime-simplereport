@@ -759,10 +759,7 @@ describe("FacilityForm", () => {
 
       const pillContainer = screen.getByTestId("pill-container");
 
-      const deleteButtons = within(pillContainer).getAllByTestId(
-        "-pill-delete",
-        { exact: false }
-      );
+      const deleteButtons = within(pillContainer).getAllByRole("button");
       deleteButtons.forEach((button) => fireEvent.click(button));
 
       expect(
@@ -796,10 +793,7 @@ describe("FacilityForm", () => {
 
       // Delete devices
       const pillContainer = screen.getByTestId("pill-container");
-      const deleteButtons = within(pillContainer).getAllByTestId(
-        "-pill-delete",
-        { exact: false }
-      );
+      const deleteButtons = within(pillContainer).getAllByRole("button");
       deleteButtons.forEach((button) => fireEvent.click(button));
 
       expect(

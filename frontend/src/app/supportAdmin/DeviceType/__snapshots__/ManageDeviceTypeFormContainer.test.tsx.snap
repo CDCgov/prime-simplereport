@@ -448,7 +448,7 @@ Object {
                           class="usa-combo-box__input"
                           data-testid="multi-select-input"
                           disabled=""
-                          role="multi-select-input"
+                          role="combobox"
                           type="text"
                           value=""
                         />
@@ -462,7 +462,7 @@ Object {
                           tabindex="-1"
                         >
                           <button
-                            aria-label="Toggle the dropdown list"
+                            aria-hidden="true"
                             class="usa-combo-box__toggle-list"
                             data-testid="multi-select-toggle"
                             disabled=""
@@ -525,10 +525,16 @@ Object {
                           role="status"
                         />
                       </div>
-                      <div
-                        class="pill-container"
+                      <fieldset
+                        class="fieldset--unstyled pill-container"
                         data-testid="pill-container"
-                      />
+                      >
+                        <legend
+                          class="usa-sr-only"
+                        >
+                          Selected SNOMED code for swab type(s)
+                        </legend>
+                      </fieldset>
                     </div>
                   </div>
                 </div>
@@ -569,7 +575,7 @@ Object {
                           class="usa-combo-box__input"
                           data-testid="multi-select-input"
                           disabled=""
-                          role="multi-select-input"
+                          role="combobox"
                           type="text"
                           value=""
                         />
@@ -583,7 +589,7 @@ Object {
                           tabindex="-1"
                         >
                           <button
-                            aria-label="Toggle the dropdown list"
+                            aria-hidden="true"
                             class="usa-combo-box__toggle-list"
                             data-testid="multi-select-toggle"
                             disabled=""
@@ -620,10 +626,16 @@ Object {
                           role="status"
                         />
                       </div>
-                      <div
-                        class="pill-container"
+                      <fieldset
+                        class="fieldset--unstyled pill-container"
                         data-testid="pill-container"
-                      />
+                      >
+                        <legend
+                          class="usa-sr-only"
+                        >
+                          Selected Supported diseases
+                        </legend>
+                      </fieldset>
                     </div>
                   </div>
                 </div>
@@ -1081,7 +1093,7 @@ Object {
                         class="usa-combo-box__input"
                         data-testid="multi-select-input"
                         disabled=""
-                        role="multi-select-input"
+                        role="combobox"
                         type="text"
                         value=""
                       />
@@ -1095,7 +1107,7 @@ Object {
                         tabindex="-1"
                       >
                         <button
-                          aria-label="Toggle the dropdown list"
+                          aria-hidden="true"
                           class="usa-combo-box__toggle-list"
                           data-testid="multi-select-toggle"
                           disabled=""
@@ -1158,10 +1170,16 @@ Object {
                         role="status"
                       />
                     </div>
-                    <div
-                      class="pill-container"
+                    <fieldset
+                      class="fieldset--unstyled pill-container"
                       data-testid="pill-container"
-                    />
+                    >
+                      <legend
+                        class="usa-sr-only"
+                      >
+                        Selected SNOMED code for swab type(s)
+                      </legend>
+                    </fieldset>
                   </div>
                 </div>
               </div>
@@ -1202,7 +1220,7 @@ Object {
                         class="usa-combo-box__input"
                         data-testid="multi-select-input"
                         disabled=""
-                        role="multi-select-input"
+                        role="combobox"
                         type="text"
                         value=""
                       />
@@ -1216,7 +1234,7 @@ Object {
                         tabindex="-1"
                       >
                         <button
-                          aria-label="Toggle the dropdown list"
+                          aria-hidden="true"
                           class="usa-combo-box__toggle-list"
                           data-testid="multi-select-toggle"
                           disabled=""
@@ -1253,10 +1271,16 @@ Object {
                         role="status"
                       />
                     </div>
-                    <div
-                      class="pill-container"
+                    <fieldset
+                      class="fieldset--unstyled pill-container"
                       data-testid="pill-container"
-                    />
+                    >
+                      <legend
+                        class="usa-sr-only"
+                      >
+                        Selected Supported diseases
+                      </legend>
+                    </fieldset>
                   </div>
                 </div>
               </div>

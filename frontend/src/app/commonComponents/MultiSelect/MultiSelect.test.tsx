@@ -59,7 +59,8 @@ describe("Multi Select", () => {
       const pillContainer = screen.getByTestId("pill-container");
       expect(pillContainer).toBeInTheDocument();
 
-      expect(pillContainer.children.length).toEqual(2);
+      // children includes a legend, so length is 1 more than selected items
+      expect(pillContainer.children.length).toEqual(3);
       within(pillContainer).getByText("Apples");
       within(pillContainer).getByText("Oranges");
     });
@@ -75,9 +76,7 @@ describe("Multi Select", () => {
       beforeEach(() => {
         const pillContainer = screen.getByTestId("pill-container");
         expect(pillContainer).toBeInTheDocument();
-        userEvent.click(
-          within(pillContainer).getByTestId("Apples-pill-delete")
-        );
+        userEvent.click(within(pillContainer).getAllByRole("button")[0]);
         userEvent.click(screen.getByTestId("multi-select-input"));
       });
 
@@ -85,7 +84,8 @@ describe("Multi Select", () => {
         const pillContainer = screen.getByTestId("pill-container");
         expect(pillContainer).toBeInTheDocument();
 
-        expect(pillContainer.children.length).toEqual(1);
+        // children includes a legend, so length is 1 more than selected items
+        expect(pillContainer.children.length).toEqual(2);
         within(pillContainer).getByText("Oranges");
       });
       it("should make the option available to select", () => {
