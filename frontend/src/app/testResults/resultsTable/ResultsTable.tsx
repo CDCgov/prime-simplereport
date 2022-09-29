@@ -182,7 +182,7 @@ const generateResultRows = (
           </td>
         )}
         <td className="actions-cell">
-          <ActionsMenu items={actionItems} />
+          <ActionsMenu items={actionItems} id={r.internalId} />
         </td>
       </tr>
     );
