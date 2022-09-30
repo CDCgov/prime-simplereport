@@ -364,7 +364,7 @@ resource "azurerm_application_gateway" "load_balancer" {
 
     rewrite_rule {
       name          = "HSTS"
-      rule_sequence = 101
+      rule_sequence = 102
 
       response_header_configuration {
         header_name  = "Strict-Transport-Security"
