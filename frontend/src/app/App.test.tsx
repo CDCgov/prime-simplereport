@@ -327,7 +327,7 @@ describe("App", () => {
         exception: new Error("Server connection error"),
         properties: {
           "user message": "Server connection error",
-          validToken: true,
+          "valid access token": true,
           "token subject": "subject@fakeorg.net",
           "token roles": [
             "SR-FAKE-TENANT:XX-TestOrg-123:NO_ACCESS",
@@ -343,7 +343,15 @@ describe("App", () => {
       renderApp(mockedStore, [WhoAmIErrorQueryMock]);
       await screen.findByText("error", { exact: false });
 
-      expect(trackExceptionMock).toHaveBeenCalled();
+      expect(trackExceptionMock).toHaveBeenCalledWith({
+        exception: new Error("Server connection error"),
+        properties: {
+          "user message": "Server connection error",
+          "valid access token": null,
+          "token subject": undefined,
+          "token roles": undefined,
+        },
+      });
     });
     it("still logs if invalid token", async () => {
       jest
@@ -362,7 +370,7 @@ describe("App", () => {
         exception: new Error("Server connection error"),
         properties: {
           "user message": "Server connection error",
-          validToken: false,
+          "valid access token": false,
           "token subject": undefined,
           "token roles": undefined,
         },

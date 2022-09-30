@@ -111,7 +111,7 @@ const App = () => {
   if (error) {
     if (appInsights instanceof ApplicationInsights) {
       let decoded: any;
-      let validToken = false;
+      let validToken = null;
       if (accessToken) {
         try {
           decoded = jwtDecode(accessToken);
@@ -126,7 +126,7 @@ const App = () => {
         exception: error,
         properties: {
           "user message": "Server connection error",
-          validToken,
+          "valid access token": validToken,
           "token subject": decoded?.sub,
           "token roles": decoded?.[rolesFieldName],
         },
