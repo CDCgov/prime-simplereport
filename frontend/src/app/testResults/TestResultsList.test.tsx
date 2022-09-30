@@ -48,8 +48,6 @@ jest.mock("@microsoft/applicationinsights-react-js", () => ({
   useTrackEvent: jest.fn(),
 }));
 
-jest.mock("./EmailTestResultModal", () => () => <p>Email result modal</p>);
-
 const WithRouter: React.FC = ({ children }) => (
   <MemoryRouter initialEntries={[{ search: "?facility=1" }]}>
     {children}
@@ -530,7 +528,7 @@ describe("TestResultsList", () => {
       userEvent.click(moreActions);
       const emailResult = screen.getByText("Email result");
       userEvent.click(emailResult);
-      expect(screen.getByText("Email result modal")).toBeInTheDocument();
+      await screen.findByText("Email result?");
     });
 
     it("opens the download test results modal and shows how many rows the csv will have", async () => {
@@ -678,10 +676,19 @@ describe("TestResultsList", () => {
       it("should set focus on the text result button", async () => {
         const printButton = screen.getByText("Text result");
         userEvent.click(printButton);
-        await screen.findAllByText("Send result");
-        userEvent.click(screen.getByText("Send result"));
+        await screen.findAllByText("Cancel");
+        userEvent.click(screen.getByText("Cancel"));
         await waitFor(() =>
           expect(screen.getByText("Text result")).toHaveFocus()
+        );
+      });
+      it("should set focus on the email result button", async () => {
+        const printButton = screen.getByText("Email result");
+        userEvent.click(printButton);
+        await screen.findAllByText("Cancel");
+        userEvent.click(screen.getByText("Cancel"));
+        await waitFor(() =>
+          expect(screen.getByText("Email result")).toHaveFocus()
         );
       });
     });

@@ -280,7 +280,10 @@ export const DetachedTestResultsList = ({
     return (
       <EmailTestResultModal
         testResultId={emailModalTestResultId}
-        closeModal={() => setEmailModalTestResultId(undefined)}
+        closeModal={() => {
+          setFocusOnActionMenu(emailModalTestResultId, "email");
+          setEmailModalTestResultId(undefined);
+        }}
       />
     );
   }
