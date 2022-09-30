@@ -1,4 +1,7 @@
 import { FetchMock } from "jest-fetch-mock/types";
+import { useLocation } from "react-router-dom";
+
+import { getFacilityIdFromUrl } from "../app/utils/url";
 
 import { FileUploadService } from "./FileUploadService";
 
@@ -23,7 +26,10 @@ describe("FileUploadService", () => {
       expectedBody.append("file", csvFile);
 
       // WHEN
-      await FileUploadService.uploadPatients(csvFile);
+      await FileUploadService.uploadPatients(
+        csvFile,
+        getFacilityIdFromUrl(useLocation())
+      );
 
       // THEN
       expect(fetch).toHaveBeenCalledWith(`${backendUrl}/upload/patients`, {

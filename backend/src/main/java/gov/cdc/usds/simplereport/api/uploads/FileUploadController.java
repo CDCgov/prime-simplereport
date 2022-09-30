@@ -10,8 +10,6 @@ import gov.cdc.usds.simplereport.service.TestResultUploadService;
 import gov.cdc.usds.simplereport.service.UploadService;
 import java.io.IOException;
 import java.io.InputStream;
-import java.util.Optional;
-import java.util.UUID;
 
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -31,13 +29,6 @@ public class FileUploadController {
   @PostMapping(PATIENT_UPLOAD)
   public String handlePatientsUpload(@RequestParam("file") MultipartFile file, @RequestParam String rawFacilityId) {
     assertCsvFileType(file);
-
-//    Optional<UUID> facilityId;
-//    if (rawFacilityId == null || rawFacilityId.equals("")) {
-//        facilityId = Optional.empty();
-//    } else {
-//      facilityId = Optional.of(UUID.fromString(rawFacilityId));
-//    }
 
     try (InputStream people = file.getInputStream()) {
       return uploadService.processPersonCSV(people, parseUUID(rawFacilityId));

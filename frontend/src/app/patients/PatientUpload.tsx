@@ -1,45 +1,33 @@
-import React from "react";
+import React, { useState } from "react";
 
-import { showError, showNotification } from "../utils";
-import Alert from "../commonComponents/Alert";
-import { FileUploadService } from "../../fileUploadService/FileUploadService";
+import Button from "../commonComponents/Button/Button";
+
+import PatientUploadModal from "./PatientUploadModal";
 
 interface Props {
   onSuccess: () => void;
 }
 
 const PatientUpload = ({ onSuccess }: Props) => {
-  const bulkUpload = async ({
-    target: { files },
-  }: React.ChangeEvent<HTMLInputElement>) => {
-    const fileList = files;
-
-    if (fileList === null) {
-      showError("Error", "File not found");
-      return;
-    }
-
-    FileUploadService.uploadPatients(fileList[0]).then(async (response) => {
-      const successful = response.status === 200;
-      showNotification(
-        <Alert
-          type={successful ? "success" : "error"}
-          title={successful ? "Patients uploaded" : "Error"}
-          body={await response.text()}
-        />
-      );
-      successful && onSuccess();
-    });
-  };
+  const [showPatientUploadModal, updateshowPatientUploadModal] = useState(
+    false
+  );
 
   return (
-    <input
-      type="file"
-      name="file"
-      placeholder="UploadCSV..."
-      data-testid="patient-file-input"
-      onChange={bulkUpload}
-    />
+    <div>
+      <Button
+        variant="outline"
+        className="margin-left-auto margin-bottom-1"
+        onClick={() => updateshowPatientUploadModal(true)}
+        label="Begin patient upload"
+      />
+      {showPatientUploadModal ? (
+        <PatientUploadModal
+          onClose={() => updateshowPatientUploadModal(false)}
+          onSuccess={onSuccess}
+        />
+      ) : null}
+    </div>
   );
 };
 
