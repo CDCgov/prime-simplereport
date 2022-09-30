@@ -4,8 +4,8 @@ import {
   GetFacilityResultsMultiplexDocument,
   GetResultsCountByFacilityDocument,
   GetTestResultForPrintDocument,
+  GetTestResultForResendingEmailsDocument,
   GetTestResultForTextDocument,
-  SendSmsDocument,
 } from "../../../generated/graphql";
 import { testResultDetailsQuery } from "../TestResultDetailsModal";
 import { QUERY_PATIENT } from "../../testQueue/addToQueue/AddToQueueSearch";
@@ -24,6 +24,7 @@ import { facilities, facilitiesIncludeArchived } from "./facilities.mock";
 import { patients } from "./patients.mock";
 import resultForPrint from "./resultForPrint";
 import resultForText from "./resultForText";
+import resultForEmail from "./resultForEmail";
 
 export const mocks = [
   {
@@ -479,13 +480,15 @@ export const mocks = [
   },
   {
     request: {
-      query: SendSmsDocument,
+      query: GetTestResultForResendingEmailsDocument,
       variables: {
         id: "7c768a5d-ef90-44cd-8050-b96dd7aaa1d5",
       },
     },
     result: {
-      data: { sendPatientLinkSmsByTestEventId: true },
+      data: {
+        testResult: resultForEmail,
+      },
     },
   },
 ];
