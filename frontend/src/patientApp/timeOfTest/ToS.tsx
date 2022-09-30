@@ -59,9 +59,7 @@ function ToS() {
         i18nKey="testResult.tos.document.privacy.p0"
         parent="p"
         components={[
-          <a href="https://www.cms.gov/Research-Statistics-Data-and-Systems/Computer-Data-and-Systems/Privacy/PrivacyActof1974.html">
-            click here
-          </a>,
+          <a href="https://www.hhs.gov/foia/privacy/index.html"></a>,
         ]}
       />
       <p>{t("testResult.tos.document.privacy.p1")}</p>
