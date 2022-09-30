@@ -44,6 +44,7 @@ updates:
       # - "alismx"
       # - "emyl3"
       # - "rin-skylight"
+      # - "emmastephenson"
 
   # - package-ecosystem: "github-actions"
   #   directory: "/.github/actions"
@@ -53,6 +54,7 @@ updates:
       # - "alismx"
       # - "emyl3"
       # - "rin-skylight"
+      # - "emmastephenson"
 
   # - package-ecosystem: "gradle"
   #   directory: "/backend"
@@ -65,30 +67,31 @@ updates:
       # - "mehansen"
       # - "rin-skylight"
       # - "zdeveloper"
+      # - "emmastephenson"
 
-  # - package-ecosystem: "npm"
-  #   directory: "/"
-  #   schedule:
-  #     interval: "weekly"
-  #   reviewers:
-      # - "alismx"
-      # - "BobanL"
-      # - "emyl3"
-      # - "fzhao99"
-      # - "georgehager"
-      # - "rin-skylight"
+  - package-ecosystem: "npm"
+    directory: "/"
+    schedule:
+      interval: "weekly"
+    reviewers:
+      - "alismx"
+      - "BobanL"
+      - "emyl3"
+      - "fzhao99"
+      - "georgehager"
+      - "rin-skylight"
       
-  # - package-ecosystem: "npm"
-  #   directory: "/frontend"
-  #   schedule:
-  #     interval: "weekly"
-  #   reviewers:
-  #     - "alismx"
-  #     - "BobanL"
-  #     - "emyl3"
-  #     - "fzhao99"
-  #     - "georgehager"
-  #     - "rin-skylight"
+  - package-ecosystem: "npm"
+    directory: "/frontend"
+    schedule:
+      interval: "weekly"
+    reviewers:
+      - "alismx"
+      - "BobanL"
+      - "emyl3"
+      - "fzhao99"
+      - "georgehager"
+      - "rin-skylight"
       
   # - package-ecosystem: "npm"
   #   directory: "/cypress"
