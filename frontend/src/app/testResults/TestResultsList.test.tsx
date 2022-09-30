@@ -663,49 +663,25 @@ describe("TestResultsList", () => {
         )[0];
         userEvent.click(actionMenuButton as HTMLElement);
       });
-      it("should set focus on the print result button", async () => {
-        const printButton = screen.getByText("Print result");
-        userEvent.click(printButton);
-        await screen.findAllByText("Close");
-        userEvent.click(screen.getAllByText("Close")[0]);
+      it.each([
+        ["Print result", "Close"],
+        ["Text result", "Cancel"],
+        ["Email result", "Cancel"],
+        ["Correct result", "No, go back"],
+      ])("should set focus on %p", async (menuButtonText, closeButtonText) => {
+        userEvent.click(screen.getByText(menuButtonText));
+        await screen.findAllByText(closeButtonText);
+        userEvent.click(screen.getAllByText(closeButtonText)[0]);
         await waitFor(() =>
-          expect(screen.getByText("Print result")).toHaveFocus()
-        );
-      });
-      it("should set focus on the text result button", async () => {
-        const printButton = screen.getByText("Text result");
-        userEvent.click(printButton);
-        await screen.findAllByText("Cancel");
-        userEvent.click(screen.getByText("Cancel"));
-        await waitFor(() =>
-          expect(screen.getByText("Text result")).toHaveFocus()
-        );
-      });
-      it("should set focus on the email result button", async () => {
-        const printButton = screen.getByText("Email result");
-        userEvent.click(printButton);
-        await screen.findAllByText("Cancel");
-        userEvent.click(screen.getByText("Cancel"));
-        await waitFor(() =>
-          expect(screen.getByText("Email result")).toHaveFocus()
+          expect(screen.getByText(menuButtonText)).toHaveFocus()
         );
       });
       it("should set focus on the view details button", async () => {
-        const printButton = screen.getByText("View details");
-        userEvent.click(printButton);
-        await screen.findAllByText("Test details");
+        userEvent.click(screen.getByText("View details"));
+        await screen.findByAltText("Close");
         userEvent.click(screen.getByAltText("Close"));
         await waitFor(() =>
           expect(screen.getByText("View details")).toHaveFocus()
-        );
-      });
-      it("should set focus on the correct result button", async () => {
-        const printButton = screen.getByText("Correct result");
-        userEvent.click(printButton);
-        await screen.findAllByText("No, go back");
-        userEvent.click(screen.getByText("No, go back"));
-        await waitFor(() =>
-          expect(screen.getByText("Correct result")).toHaveFocus()
         );
       });
     });
