@@ -691,6 +691,15 @@ describe("TestResultsList", () => {
           expect(screen.getByText("Email result")).toHaveFocus()
         );
       });
+      it("should set focus on the view details button", async () => {
+        const printButton = screen.getByText("View details");
+        userEvent.click(printButton);
+        await screen.findAllByText("Test details");
+        userEvent.click(screen.getByAltText("Close"));
+        await waitFor(() =>
+          expect(screen.getByText("View details")).toHaveFocus()
+        );
+      });
     });
   });
 
