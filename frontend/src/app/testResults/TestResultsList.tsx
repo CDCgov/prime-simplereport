@@ -47,6 +47,7 @@ import {
   useGetFacilityResultsMultiplexQuery,
   useGetResultsCountByFacilityQuery,
 } from "../../generated/graphql";
+import { waitForElement } from "../utils/elements";
 
 import TestResultPrintModal from "./TestResultPrintModal";
 import TestResultTextModal from "./TestResultTextModal";
@@ -246,7 +247,17 @@ export const DetachedTestResultsList = ({
     return (
       <TestResultPrintModal
         testResultId={printModalId}
-        closeModal={() => setPrintModalId(undefined)}
+        closeModal={() => {
+          const buttonSelector = `#action_${printModalId}`;
+          const printButtonSelector = `#print_${printModalId}`;
+          waitForElement(buttonSelector).then((actionButton) => {
+            (actionButton as HTMLElement)?.click();
+            waitForElement(printButtonSelector).then((printButton) => {
+              (printButton as HTMLElement)?.focus();
+            });
+          });
+          setPrintModalId(undefined);
+        }}
       />
     );
   }

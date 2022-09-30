@@ -657,6 +657,23 @@ describe("TestResultsList", () => {
       userEvent.selectOptions(screen.getByLabelText("Testing facility"), ["3"]);
       expect((await screen.findAllByText("Flu A"))[0]).toBeInTheDocument();
     });
+
+    describe("focus", () => {
+      it("should set focus on the print action button after clicking close button", async () => {
+        expect(await screen.findByText("Showing 1-3 of 3")).toBeInTheDocument();
+        const actionMenuButton = document.querySelectorAll(
+          ".rc-menu-button"
+        )[0];
+        userEvent.click(actionMenuButton as HTMLElement);
+        const printButton = screen.getByText("Print result");
+        userEvent.click(printButton);
+        await screen.findAllByText("Close");
+        userEvent.click(screen.getAllByText("Close")[0]);
+        await waitFor(() =>
+          expect(screen.getByText("Print result")).toHaveFocus()
+        );
+      });
+    });
   });
 
   it("should hide facility filter if user can see only 1 facility", async () => {
