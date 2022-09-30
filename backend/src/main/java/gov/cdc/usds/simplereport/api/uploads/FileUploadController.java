@@ -7,6 +7,7 @@ import gov.cdc.usds.simplereport.api.model.errors.CsvProcessingException;
 import gov.cdc.usds.simplereport.db.model.TestResultUpload;
 import gov.cdc.usds.simplereport.service.TestResultUploadService;
 import gov.cdc.usds.simplereport.service.UploadService;
+import gov.cdc.usds.simplereport.validators.TestResultFileValidator;
 import java.io.IOException;
 import java.io.InputStream;
 import lombok.RequiredArgsConstructor;
@@ -23,6 +24,7 @@ public class FileUploadController {
   public static final String TEXT_CSV_CONTENT_TYPE = "text/csv";
   private final UploadService uploadService;
   private final TestResultUploadService testResultUploadService;
+  private final TestResultFileValidator testResultFileValidator;
 
   @PostMapping(PATIENT_UPLOAD)
   public String handlePatientsUpload(@RequestParam("file") MultipartFile file) {
@@ -44,6 +46,8 @@ public class FileUploadController {
     assertCsvFileType(file);
 
     try (InputStream resultsUpload = file.getInputStream()) {
+      boolean valid = testResultFileValidator.validateHeaders(resultsUpload);
+
       return testResultUploadService.processResultCSV(resultsUpload);
     } catch (IOException e) {
       log.error("Test result CSV encountered an unexpected error", e);
