@@ -41,7 +41,7 @@ resource "azurerm_private_dns_zone_virtual_network_link" "vnet_link" {
   name                  = "${local.env}-vnet-dns-link"
   resource_group_name   = data.azurerm_resource_group.rg.name
   private_dns_zone_name = azurerm_private_dns_zone.default.name
-  virtual_network_id    = data.terraform_remote_state.persistent_dev3.outputs.subnet_lbs_id
+  virtual_network_id    = data.terraform_remote_state.persistent_dev3.outputs.vnet_id
 }
 
 resource "azurerm_storage_queue" "test_event_queue" {

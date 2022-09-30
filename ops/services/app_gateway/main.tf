@@ -6,8 +6,8 @@ locals {
   api_backend_http_setting        = "${var.name}-${var.env}-be-api-http"
   api_backend_https_setting       = "${var.name}-${var.env}-be-api-https"
   metabase_pool                   = "${var.name}-${var.env}-be-metabase"
-  metabase_http_setting           = "${var.name}-${var.env}-be-api-metabase"
-  metabase_https_setting          = "${var.name}-${var.env}-be-api-metabase"
+  metabase_http_setting           = "${var.name}-${var.env}-be-api-metabase-http"
+  metabase_https_setting          = "${var.name}-${var.env}-be-api-metabase-https"
   http_listener                   = "${var.name}-http"
   https_listener                  = "${var.name}-https"
   frontend_config                 = "${var.name}-config"
@@ -272,6 +272,7 @@ resource "azurerm_application_gateway" "load_balancer" {
       rewrite_rule_set_name      = "simple-report-routing"
     }
   }
+  
   redirect_configuration {
     name = local.redirect_self_registration_rule
 
