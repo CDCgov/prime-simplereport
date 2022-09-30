@@ -55,8 +55,10 @@ const Pill = (props: PillProps) => (
   </div>
 );
 
-const getSortedOptions = (options: MultiSelectDropdownOption[]) =>
-  _.orderBy(options, ["label"], ["asc"]);
+const getSortedOptions = (options: MultiSelectDropdownOption[]) => {
+  const sortedOptions = _.orderBy(options, ["label"], ["asc"]);
+  return _.uniqBy(sortedOptions, "value");
+};
 
 export const MultiSelect = ({
   name,
@@ -99,14 +101,10 @@ export const MultiSelect = ({
     const selectedItemsSet = new Set(selectedItems);
     selectedItemsSet.delete(option.value);
     setSelectedItems(Array.from(selectedItemsSet));
+
     const sortedOptions = getSortedOptions([...availableOptions, option]);
     setAvailableOptions(sortedOptions);
   };
-
-  useEffect(() => {
-    const sortedOptions = getSortedOptions([...options]);
-    setAvailableOptions(sortedOptions);
-  }, [options, setAvailableOptions]);
 
   useEffect(() => {
     if (selectedItems) {
