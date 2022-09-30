@@ -658,19 +658,30 @@ describe("TestResultsList", () => {
       expect((await screen.findAllByText("Flu A"))[0]).toBeInTheDocument();
     });
 
-    describe("focus", () => {
-      it("should set focus on the print action button after clicking close button", async () => {
+    describe("return focus after modal close", () => {
+      beforeEach(async () => {
         expect(await screen.findByText("Showing 1-3 of 3")).toBeInTheDocument();
         const actionMenuButton = document.querySelectorAll(
           ".rc-menu-button"
         )[0];
         userEvent.click(actionMenuButton as HTMLElement);
+      });
+      it("should set focus on the print result button", async () => {
         const printButton = screen.getByText("Print result");
         userEvent.click(printButton);
         await screen.findAllByText("Close");
         userEvent.click(screen.getAllByText("Close")[0]);
         await waitFor(() =>
           expect(screen.getByText("Print result")).toHaveFocus()
+        );
+      });
+      it("should set focus on the text result button", async () => {
+        const printButton = screen.getByText("Text result");
+        userEvent.click(printButton);
+        await screen.findAllByText("Send result");
+        userEvent.click(screen.getByText("Send result"));
+        await waitFor(() =>
+          expect(screen.getByText("Text result")).toHaveFocus()
         );
       });
     });

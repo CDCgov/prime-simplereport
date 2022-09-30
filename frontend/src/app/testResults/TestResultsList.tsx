@@ -112,6 +112,17 @@ const getFilteredPatientName = (params: FilterParams, data: any) => {
   return null;
 };
 
+const setFocusOnActionMenu = (id: string, actionName: string) => {
+  const buttonSelector = `#action_${id}`;
+  const printButtonSelector = `#${actionName}_${id}`;
+  waitForElement(buttonSelector).then((actionButton) => {
+    (actionButton as HTMLElement)?.click();
+    waitForElement(printButtonSelector).then((printButton) => {
+      (printButton as HTMLElement)?.focus();
+    });
+  });
+};
+
 export const DetachedTestResultsList = ({
   data,
   refetch,
@@ -248,14 +259,7 @@ export const DetachedTestResultsList = ({
       <TestResultPrintModal
         testResultId={printModalId}
         closeModal={() => {
-          const buttonSelector = `#action_${printModalId}`;
-          const printButtonSelector = `#print_${printModalId}`;
-          waitForElement(buttonSelector).then((actionButton) => {
-            (actionButton as HTMLElement)?.click();
-            waitForElement(printButtonSelector).then((printButton) => {
-              (printButton as HTMLElement)?.focus();
-            });
-          });
+          setFocusOnActionMenu(printModalId, "print");
           setPrintModalId(undefined);
         }}
       />
@@ -265,7 +269,10 @@ export const DetachedTestResultsList = ({
     return (
       <TestResultTextModal
         testResultId={textModalId}
-        closeModal={() => setTextModalId(undefined)}
+        closeModal={() => {
+          setFocusOnActionMenu(textModalId, "text");
+          setTextModalId(undefined);
+        }}
       />
     );
   }
