@@ -18,7 +18,7 @@ locals {
   url_prefix                      = var.env == "prod" ? "www" : var.env
   app_url                         = "https://${local.url_prefix}.simplereport.gov/app"
   metabase_url                    = "https://prime-simple-report-${var.env}-metabase.azurewebsites.net"
-  staging_slot_url                = "https://simple-report-api-${var.env}-staging.azurewebsites.net/staging/actuator/health/readiness"
+  staging_slot_url                = "https://simple-report-api-${var.env}-staging.azurewebsites.net/actuator/health/readiness"
 }
 
 resource "azurerm_public_ip" "static_gateway" {
@@ -260,7 +260,7 @@ resource "azurerm_application_gateway" "load_balancer" {
 
     path_rule {
       name                        = "staging-slot"
-      paths                       = ["/staging/api/actuator/health/readiness"]
+      paths                       = ["/staging/*", "/staging"]
       redirect_configuration_name = local.redirect_self_registration_rule
     }
 
@@ -272,7 +272,7 @@ resource "azurerm_application_gateway" "load_balancer" {
       rewrite_rule_set_name      = "simple-report-routing"
     }
   }
-  
+
   redirect_configuration {
     name = local.redirect_self_registration_rule
 
@@ -324,7 +324,7 @@ resource "azurerm_application_gateway" "load_balancer" {
 
     rewrite_rule {
       name          = "metabase-wildcard"
-      rule_sequence = 100
+      rule_sequence = 101
       condition {
         ignore_case = true
         negate      = false
