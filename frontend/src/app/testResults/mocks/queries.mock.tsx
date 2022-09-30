@@ -3,6 +3,7 @@ import {
   GetFacilityResultsForCsvDocument,
   GetFacilityResultsMultiplexDocument,
   GetResultsCountByFacilityDocument,
+  GetTestResultForPrintDocument,
 } from "../../../generated/graphql";
 import { testResultDetailsQuery } from "../TestResultDetailsModal";
 import { QUERY_PATIENT } from "../../testQueue/addToQueue/AddToQueueSearch";
@@ -19,6 +20,7 @@ import testResultsByStartDateAndEndDate from "./resultsByStartAndEndDate.mock";
 import testResultsMultiplex from "./resultsMultiplex.mock";
 import { facilities, facilitiesIncludeArchived } from "./facilities.mock";
 import { patients } from "./patients.mock";
+import resultForPrint from "./resultForPrint";
 
 export const mocks = [
   {
@@ -443,6 +445,19 @@ export const mocks = [
     result: {
       data: {
         testResults: testResultsByStartDateAndEndDate,
+      },
+    },
+  },
+  {
+    request: {
+      query: GetTestResultForPrintDocument,
+      variables: {
+        id: "7c768a5d-ef90-44cd-8050-b96dd7aaa1d5",
+      },
+    },
+    result: {
+      data: {
+        testResult: resultForPrint,
       },
     },
   },
