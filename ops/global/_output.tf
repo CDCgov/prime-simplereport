@@ -18,3 +18,7 @@ output "pagerduty_non_prod_action_id" {
 output "pagerduty_prod_action_id" {
   value = module.pagerduty_prod.monitor_group_id
 }
+
+output "pagerduty_stg_action_id" {
+  value = module.pagerduty_stg.monitor_group_id
+}
