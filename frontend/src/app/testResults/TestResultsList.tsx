@@ -76,7 +76,6 @@ export const byDateTested = (a: any, b: any) => {
 
 interface DetachedTestResultsListProps {
   data: any;
-  refetch: () => void;
   loading: boolean;
   loadingTotalResults: boolean;
   pageNumber: number;
@@ -125,7 +124,6 @@ const setFocusOnActionMenu = (id: string, actionName: string) => {
 
 export const DetachedTestResultsList = ({
   data,
-  refetch,
   pageNumber,
   entriesPerPage,
   loading,
@@ -292,8 +290,8 @@ export const DetachedTestResultsList = ({
       <TestResultCorrectionModal
         testResultId={markCorrectionId}
         closeModal={() => {
+          setFocusOnActionMenu(markCorrectionId, "correct");
           setMarkCorrectionId(undefined);
-          refetch();
         }}
       />
     );
@@ -625,8 +623,6 @@ const TestResultsList = () => {
     filter({ [key]: val });
   };
 
-  const refetch = () => navigate(0);
-
   const clearFilterParams = () =>
     navigate({
       pathname: "/results/1",
@@ -691,7 +687,6 @@ const TestResultsList = () => {
       setFilterParams={setFilterParams}
       clearFilterParams={clearFilterParams}
       activeFacilityId={activeFacilityId}
-      refetch={refetch}
     />
   );
 };

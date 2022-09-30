@@ -71,7 +71,6 @@ describe("TestResultsList", () => {
               activeFacilityId={"1"}
               loading={false}
               loadingTotalResults={false}
-              refetch={() => {}}
               maxDate="2022-09-26"
             />
           </MockedProvider>
@@ -698,6 +697,15 @@ describe("TestResultsList", () => {
         userEvent.click(screen.getByAltText("Close"));
         await waitFor(() =>
           expect(screen.getByText("View details")).toHaveFocus()
+        );
+      });
+      it("should set focus on the correct result button", async () => {
+        const printButton = screen.getByText("Correct result");
+        userEvent.click(printButton);
+        await screen.findAllByText("No, go back");
+        userEvent.click(screen.getByText("No, go back"));
+        await waitFor(() =>
+          expect(screen.getByText("Correct result")).toHaveFocus()
         );
       });
     });
