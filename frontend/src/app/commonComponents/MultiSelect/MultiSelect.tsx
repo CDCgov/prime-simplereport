@@ -55,11 +55,6 @@ const Pill = (props: PillProps) => (
   </div>
 );
 
-const getSortedOptions = (options: MultiSelectDropdownOption[]) => {
-  const sortedOptions = _.orderBy(options, ["label"], ["asc"]);
-  return _.uniqBy(sortedOptions, "value");
-};
-
 export const MultiSelect = ({
   name,
   label,
@@ -79,9 +74,22 @@ export const MultiSelect = ({
 }: MultiSelectProps): React.ReactElement => {
   const isDisabled = !!disabled;
 
+  const getInitialOptions = (options: MultiSelectDropdownOption[]) => {
+    const alreadySelected = initialSelectedValues || [];
+
+    return options.filter((option) => {
+      return !alreadySelected.includes(option.value);
+    });
+  };
+
+  const getSortedOptions = (options: MultiSelectDropdownOption[]) => {
+    const sortedOptions = _.orderBy(options, ["label"], ["asc"]);
+    return _.uniqBy(sortedOptions, "value");
+  };
+
   const [availableOptions, setAvailableOptions] = useState<
     MultiSelectDropdownOption[]
-  >(getSortedOptions(options));
+  >(getSortedOptions(getInitialOptions(options)));
 
   const [selectedItems, setSelectedItems] = useState<string[] | undefined>(
     initialSelectedValues
