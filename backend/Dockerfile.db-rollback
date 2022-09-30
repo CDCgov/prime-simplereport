@@ -1,4 +1,4 @@
-FROM gradle:6.9.1-jdk11-hotspot AS build
+FROM gradle:7.2.0-jdk11-hotspot AS build
 
 USER gradle
 
