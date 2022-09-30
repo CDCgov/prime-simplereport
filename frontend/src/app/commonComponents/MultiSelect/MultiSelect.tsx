@@ -49,7 +49,7 @@ const Pill = (props: PillProps) => (
         aria-hidden={false}
         fontSize={24}
         icon={"times"}
-        aria-label={"Delete device"}
+        aria-label={`Delete ${props.option.label}`}
       />
     </Button>
   </div>
