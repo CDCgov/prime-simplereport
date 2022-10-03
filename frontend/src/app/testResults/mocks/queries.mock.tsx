@@ -3,6 +3,11 @@ import {
   GetFacilityResultsForCsvDocument,
   GetFacilityResultsMultiplexDocument,
   GetResultsCountByFacilityDocument,
+  GetTestResultDetailsDocument,
+  GetTestResultForCorrectionDocument,
+  GetTestResultForPrintDocument,
+  GetTestResultForResendingEmailsDocument,
+  GetTestResultForTextDocument,
 } from "../../../generated/graphql";
 import { testResultDetailsQuery } from "../TestResultDetailsModal";
 import { QUERY_PATIENT } from "../../testQueue/addToQueue/AddToQueueSearch";
@@ -19,6 +24,11 @@ import testResultsByStartDateAndEndDate from "./resultsByStartAndEndDate.mock";
 import testResultsMultiplex from "./resultsMultiplex.mock";
 import { facilities, facilitiesIncludeArchived } from "./facilities.mock";
 import { patients } from "./patients.mock";
+import resultForPrint from "./resultForPrint";
+import resultForText from "./resultForText";
+import resultForEmail from "./resultForEmail";
+import resultForViewing from "./resultForViewing";
+import resultForCorrection from "./resultForCorrection";
 
 export const mocks = [
   {
@@ -443,6 +453,71 @@ export const mocks = [
     result: {
       data: {
         testResults: testResultsByStartDateAndEndDate,
+      },
+    },
+  },
+  {
+    request: {
+      query: GetTestResultForPrintDocument,
+      variables: {
+        id: "7c768a5d-ef90-44cd-8050-b96dd7aaa1d5",
+      },
+    },
+    result: {
+      data: {
+        testResult: resultForPrint,
+      },
+    },
+  },
+  {
+    request: {
+      query: GetTestResultForTextDocument,
+      variables: {
+        id: "7c768a5d-ef90-44cd-8050-b96dd7aaa1d5",
+      },
+    },
+    result: {
+      data: {
+        testResult: resultForText,
+      },
+    },
+  },
+  {
+    request: {
+      query: GetTestResultForResendingEmailsDocument,
+      variables: {
+        id: "7c768a5d-ef90-44cd-8050-b96dd7aaa1d5",
+      },
+    },
+    result: {
+      data: {
+        testResult: resultForEmail,
+      },
+    },
+  },
+  {
+    request: {
+      query: GetTestResultDetailsDocument,
+      variables: {
+        id: "7c768a5d-ef90-44cd-8050-b96dd7aaa1d5",
+      },
+    },
+    result: {
+      data: {
+        testResult: resultForViewing,
+      },
+    },
+  },
+  {
+    request: {
+      query: GetTestResultForCorrectionDocument,
+      variables: {
+        id: "7c768a5d-ef90-44cd-8050-b96dd7aaa1d5",
+      },
+    },
+    result: {
+      data: {
+        testResult: resultForCorrection,
       },
     },
   },

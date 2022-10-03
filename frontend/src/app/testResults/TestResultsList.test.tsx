@@ -48,8 +48,6 @@ jest.mock("@microsoft/applicationinsights-react-js", () => ({
   useTrackEvent: jest.fn(),
 }));
 
-jest.mock("./EmailTestResultModal", () => () => <p>Email result modal</p>);
-
 const WithRouter: React.FC = ({ children }) => (
   <MemoryRouter initialEntries={[{ search: "?facility=1" }]}>
     {children}
@@ -73,7 +71,6 @@ describe("TestResultsList", () => {
               activeFacilityId={"1"}
               loading={false}
               loadingTotalResults={false}
-              refetch={() => {}}
               maxDate="2022-09-26"
             />
           </MockedProvider>
@@ -530,7 +527,7 @@ describe("TestResultsList", () => {
       userEvent.click(moreActions);
       const emailResult = screen.getByText("Email result");
       userEvent.click(emailResult);
-      expect(screen.getByText("Email result modal")).toBeInTheDocument();
+      await screen.findByText("Email result?");
     });
 
     it("opens the download test results modal and shows how many rows the csv will have", async () => {
@@ -656,6 +653,37 @@ describe("TestResultsList", () => {
       ).toBeInTheDocument();
       userEvent.selectOptions(screen.getByLabelText("Testing facility"), ["3"]);
       expect((await screen.findAllByText("Flu A"))[0]).toBeInTheDocument();
+    });
+
+    describe("return focus after modal close", () => {
+      beforeEach(async () => {
+        expect(await screen.findByText("Showing 1-3 of 3")).toBeInTheDocument();
+        const actionMenuButton = document.querySelectorAll(
+          ".rc-menu-button"
+        )[0];
+        userEvent.click(actionMenuButton as HTMLElement);
+      });
+      it.each([
+        ["Print result", "Close"],
+        ["Text result", "Cancel"],
+        ["Email result", "Cancel"],
+        ["Correct result", "No, go back"],
+      ])("should set focus on %p", async (menuButtonText, closeButtonText) => {
+        userEvent.click(screen.getByText(menuButtonText));
+        await screen.findAllByText(closeButtonText);
+        userEvent.click(screen.getAllByText(closeButtonText)[0]);
+        await waitFor(() =>
+          expect(screen.getByText(menuButtonText)).toHaveFocus()
+        );
+      });
+      it("should set focus on the view details button", async () => {
+        userEvent.click(screen.getByText("View details"));
+        await screen.findByAltText("Close");
+        userEvent.click(screen.getByAltText("Close"));
+        await waitFor(() =>
+          expect(screen.getByText("View details")).toHaveFocus()
+        );
+      });
     });
   });
 
