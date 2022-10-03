@@ -614,6 +614,7 @@ const PersonForm = (props: Props) => {
           onChange={onPersonChange("race")}
           required
           validationStatus={validationStatus("race")}
+          errorMessage={errors.race}
         />
         <div className="usa-form-group">
           <label className="usa-legend" htmlFor="tribal-affiliation">
@@ -637,6 +638,7 @@ const PersonForm = (props: Props) => {
           onChange={onPersonChange("ethnicity")}
           required
           validationStatus={validationStatus("ethnicity")}
+          errorMessage={errors.ethnicity}
         />
         <RadioGroup
           legend={t("patient.form.demographics.gender")}
@@ -647,12 +649,13 @@ const PersonForm = (props: Props) => {
           buttons={GENDER_VALUES}
           selectedRadio={patient.gender}
           onChange={onPersonChange("gender")}
+          errorMessage={errors.gender}
         />
       </FormGroup>
-      <FormGroup title={t("patient.form.other.heading")}>
+      <FormGroup title={t("patient.form.housingAndWork.heading")}>
         <YesNoNotSureRadioGroup
-          legend={t("patient.form.other.congregateLiving.heading")}
-          hintText={t("patient.form.other.congregateLiving.helpText")}
+          legend={t("patient.form.housingAndWork.congregateLiving.heading")}
+          hintText={t("patient.form.housingAndWork.congregateLiving.helpText")}
           name="residentCongregateSetting"
           value={boolToYesNoNotSure(patient.residentCongregateSetting)}
           onChange={(v) =>
@@ -665,7 +668,7 @@ const PersonForm = (props: Props) => {
           errorMessage={errors.residentCongregateSetting}
         />
         <YesNoNotSureRadioGroup
-          legend={t("patient.form.other.healthcareWorker")}
+          legend={t("patient.form.housingAndWork.healthcareWorker")}
           name="employedInHealthcare"
           value={boolToYesNoNotSure(patient.employedInHealthcare)}
           onChange={(v) =>

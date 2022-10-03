@@ -87,6 +87,7 @@ export const DetachedTestResultTextModal = ({
       className="sr-test-correction-modal-content"
       overlayClassName="sr-test-correction-modal-overlay"
       contentLabel="Printable test result"
+      onRequestClose={closeModal}
     >
       <h3>Text result?</h3>
       <p>

@@ -92,11 +92,13 @@ export const useFacilityValidation = (facility: Facility) => {
         />
       );
       showNotification(alert);
+      let firstError = document.querySelector("[aria-invalid=true]");
+      (firstError as HTMLElement)?.focus();
       return "error";
     }
   };
 
-  return { errors, validateField, validateFacility };
+  return { errors, clearError, validateField, validateFacility };
 };
 
 const createStateError = (stateCode: string | number) => {
@@ -161,9 +163,12 @@ const FacilityForm: React.FC<Props> = (props) => {
     }));
   };
 
-  const { errors, validateField, validateFacility } = useFacilityValidation(
-    facility
-  );
+  const {
+    errors,
+    clearError,
+    validateField,
+    validateFacility,
+  } = useFacilityValidation(facility);
 
   const getFacilityAddress = (f: Nullable<Facility>): AddressWithMetaData => {
     return {
@@ -327,7 +332,7 @@ const FacilityForm: React.FC<Props> = (props) => {
                       to={`/settings/facilities`}
                       className="margin-left-05"
                     >
-                      All facilities
+                      Back to all facilities
                     </LinkWithQuery>
                   </>
                 )}
@@ -374,6 +379,7 @@ const FacilityForm: React.FC<Props> = (props) => {
           selectedDevices={facility.deviceTypes}
           updateSelectedDevices={updateSelectedDevices}
           errors={errors}
+          clearError={clearError}
         />
         <div className="float-right margin-bottom-4 margin-top-4">
           <Button

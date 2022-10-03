@@ -1,0 +1,21 @@
+mutation EditQueueItemMultiplexResult($id: ID!, $deviceId: String, $results: [MultiplexResultInput], $dateTested: DateTime) {
+  editQueueItemMultiplexResult(
+    id: $id,
+    deviceId: $deviceId,
+    results: $results,
+    dateTested: $dateTested
+  ) {
+    internalId,
+    results {
+      disease{
+        internalId
+        name
+        loinc
+      }
+      testResult
+    },
+    deviceType {
+      internalId
+    }
+  }
+}

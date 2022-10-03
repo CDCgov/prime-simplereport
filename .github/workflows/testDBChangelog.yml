@@ -6,8 +6,6 @@ on:
   pull_request:
     branches:
       - "**"
-    paths:
-      - backend/src/main/resources/db/changelog/db.changelog-master.yaml
   push:
     branches:
       - main
@@ -41,5 +39,5 @@ jobs:
         run: touch ../.env && docker compose -f ../docker-compose.yml up -d db
       - name: Run forward migrations
         run: ./gradlew liquibaseUpdate
-      - name: Test rolling back all migrations
-        run: ./gradlew liquibaseRollbackCount -PliquibaseCommandValue=9999
+      - name: Test rolling back on last 20 migrations
+        run: ./gradlew liquibaseRollbackCount -PliquibaseCommandValue=20

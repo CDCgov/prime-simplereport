@@ -1,4 +1,4 @@
-# configuration for dev and demo server startup on a blank DB
+# configuration for dev and demo server startup
 simple-report-initialization:
   organizations:
     - org-name: Dis Organization
@@ -119,7 +119,7 @@ simple-report:
         last-name: Bobberoo
       authorization:
         organization-external-id: ${SR_DEMO_USER_ORG:DIS_ORG}
-        granted-roles: ${SR_DEMO_USER_ROLE:ADMIN}
+        granted-roles: ${SR_DEMO_USER_ROLE:ADMIN},${SR_DEMO_USER_ROLE:TEST_RESULT_UPLOAD_USER}
     alternate-users:
       - identity:
           username: ruby@example.com

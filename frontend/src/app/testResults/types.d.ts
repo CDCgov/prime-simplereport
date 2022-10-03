@@ -1,5 +1,12 @@
-type MultiplexDisease = "COVID-19" | "Flu A" | "Flu B";
-type TestResult = "POSITIVE" | "NEGATIVE" | "UNDETERMINED" | "UNKNOWN";
+type MultiplexDisease =
+  | MULTIPLEX_DISEASES.COVID_19
+  | MULTIPLEX_DISEASES.FLU_A
+  | MULTIPLEX_DISEASES.FLU_B;
+type TestResult =
+  | TEST_RESULTS.POSITIVE
+  | TEST_RESULTS.NEGATIVE
+  | TEST_RESULTS.UNDETERMINED
+  | TEST_RESULTS.UNKNOWN;
 
 interface DiseaseName {
   disease: {
@@ -7,15 +14,10 @@ interface DiseaseName {
   };
 }
 
-interface SRMultiplexResult extends DiseaseName {
+interface MultiplexResult extends DiseaseName {
   testResult: TestResult;
 }
 
-interface PxpMultiplexResult extends DiseaseName {
-  result: TestResult;
-}
-
-type MultiplexResult = SRMultiplexResult | PxpMultiplexResult;
 type MultiplexResults = MultiplexResult[];
 
 type FilterParams = {

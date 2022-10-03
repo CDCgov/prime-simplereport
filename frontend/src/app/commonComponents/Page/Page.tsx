@@ -2,8 +2,6 @@ import React, { useEffect } from "react";
 import { ToastContainer } from "react-toastify";
 
 import "react-toastify/dist/ReactToastify.css";
-
-import TouchpointsButton from "../../analytics/TouchpointsButton";
 import { getUrl } from "../../utils/url";
 import USAGovBanner from "../USAGovBanner";
 
@@ -38,6 +36,9 @@ const Page: React.FC<Props> = ({ header, children, isPatientApp }) => {
   }, []);
   return (
     <div className="App">
+      <a className="usa-skipnav" href="#main-wrapper">
+        Skip to main content
+      </a>
       <header
         className={
           isPatientApp
@@ -57,8 +58,11 @@ const Page: React.FC<Props> = ({ header, children, isPatientApp }) => {
           position="bottom-center"
           hideProgressBar={true}
         />
-        <TouchpointsButton />
       </div>
+      <footer>
+        {/*  Disabling Touchpoints until we have designs that specify how to contact Support */}
+        {/*<TouchpointsButton />*/}
+      </footer>
     </div>
   );
 };

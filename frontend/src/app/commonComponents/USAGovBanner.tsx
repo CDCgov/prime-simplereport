@@ -82,7 +82,7 @@ class USAGovBanner extends React.Component<Props, State> {
               <img
                 className="usa-banner__header-flag"
                 src={usFlagSmall}
-                alt="U.S. flag"
+                alt=""
               />
             </div>
             <div className="grid-col-fill tablet:grid-col-auto">

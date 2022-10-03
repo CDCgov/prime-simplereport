@@ -234,6 +234,7 @@ export const DetachedTestResultPrintModal = ({
       className="sr-test-results-modal-content"
       overlayClassName="sr-test-results-modal-overlay"
       contentLabel="Printable test result"
+      onRequestClose={closeModal}
     >
       <div className="display-flex flex-align-center maxw-tablet grid-container patient-header padding-x-0 dont-print">
         <LanguageToggler />

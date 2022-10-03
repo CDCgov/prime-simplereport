@@ -2,21 +2,23 @@ package gov.cdc.usds.simplereport.api.devicetype;
 
 import gov.cdc.usds.simplereport.db.model.SpecimenType;
 import gov.cdc.usds.simplereport.service.SpecimenTypeService;
-import graphql.kickstart.tools.GraphQLQueryResolver;
 import java.util.List;
 import lombok.RequiredArgsConstructor;
-import org.springframework.stereotype.Component;
+import org.springframework.graphql.data.method.annotation.QueryMapping;
+import org.springframework.stereotype.Controller;
 
-@Component
+@Controller
 @RequiredArgsConstructor
-public class SpecimenTypeResolver implements GraphQLQueryResolver {
+public class SpecimenTypeResolver {
   private final SpecimenTypeService sts;
 
-  public List<SpecimenType> getSpecimenTypes() {
+  @QueryMapping
+  public List<SpecimenType> specimenTypes() {
     return sts.fetchSpecimenTypes();
   }
 
-  public List<SpecimenType> getSpecimenType() {
-    return getSpecimenTypes();
+  @QueryMapping
+  public List<SpecimenType> specimenType() {
+    return specimenTypes();
   }
 }

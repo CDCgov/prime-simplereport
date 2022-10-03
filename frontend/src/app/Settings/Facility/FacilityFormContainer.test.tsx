@@ -206,7 +206,7 @@ describe("FacilityFormContainer", () => {
     (getAppInsights as jest.Mock).mockReset();
   });
 
-  it("redirects on successful facilty update", async () => {
+  it("redirects on successful facility update", async () => {
     await waitForElementToBeRemoved(() => screen.queryByText("Loading..."));
     userEvent.click(screen.getByRole("button"));
     expect(await screen.findByText("Redirected")).toBeInTheDocument();

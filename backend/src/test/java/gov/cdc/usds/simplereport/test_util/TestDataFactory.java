@@ -55,10 +55,11 @@ import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Date;
-import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 import java.util.UUID;
+import java.util.stream.Collectors;
+import org.hibernate.Hibernate;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.jpa.domain.Specification;
@@ -390,16 +391,21 @@ public class TestDataFactory {
     return savedOrder;
   }
 
+  public TestOrder createTestOrderNoPatientLink(Person p, Facility f) {
+    TestOrder o = new TestOrder(p, f);
+    return _testOrderRepo.save(o);
+  }
+
   public TestOrder createCompletedTestOrder(Person patient, Facility facility, TestResult result) {
     TestOrder order = new TestOrder(patient, facility);
     order.setAskOnEntrySurvey(savePatientAnswers(createEmptySurvey()));
     order.setDeviceSpecimen(facility.getDefaultDeviceSpecimen());
 
-    order.setResultColumn(result); // remove after #3664
     order.markComplete();
     TestOrder savedOrder = _testOrderRepo.save(order);
 
     Result resultEntity = new Result(order, _diseaseService.covid(), result);
+    order.addResult(resultEntity);
     _resultRepository.save(resultEntity);
     _patientLinkRepository.save(new PatientLink(savedOrder));
     return order;
@@ -422,13 +428,12 @@ public class TestDataFactory {
   public TestEvent createTestEvent(Person p, Facility f, AskOnEntrySurvey s, TestResult r, Date d) {
     TestOrder o = createTestOrder(p, f, s);
     o.setDateTestedBackdate(d);
-    o.setResultColumn(r);
-
-    TestEvent e = _testEventRepo.save(new TestEvent(o));
+    Result result = new Result(o, _diseaseService.covid(), r);
+    TestEvent e = _testEventRepo.save(new TestEvent(o, false, Set.of(result)));
     o.setTestEventRef(e);
     o.markComplete();
 
-    Result result = new Result(e, o, _diseaseService.covid(), r);
+    result.setTestEvent(e);
     _resultRepository.save(result);
     _testOrderRepo.save(o);
     return e;
@@ -442,10 +447,9 @@ public class TestDataFactory {
     TestOrder o = createTestOrder(p, f);
     Result result = new Result(o, _diseaseService.covid(), r);
     _resultRepository.save(result);
-    o.setResultColumn(r);
     o = _testOrderRepo.save(o);
 
-    TestEvent e = new TestEvent(o, hasPriorTests);
+    TestEvent e = new TestEvent(o, hasPriorTests, Set.of(result));
     _testEventRepo.save(e);
     result.setTestEvent(e);
     _resultRepository.save(result);
@@ -471,7 +475,7 @@ public class TestDataFactory {
     _resultRepository.save(fluB);
     order = _testOrderRepo.save(order);
 
-    TestEvent event = new TestEvent(order, hasPriorTests);
+    TestEvent event = new TestEvent(order, hasPriorTests, Set.of(covid, fluA, fluB));
     _testEventRepo.save(event);
     covid.setTestEvent(event);
     _resultRepository.save(covid);
@@ -487,36 +491,32 @@ public class TestDataFactory {
     return event;
   }
 
-  public TestEvent createTestEventCorrected(TestEvent originalTestEvent) {
-    return _testEventRepo.save(
-        new TestEvent(originalTestEvent, TestCorrectionStatus.CORRECTED, "Cold feet"));
-  }
-
-  public TestEvent createTestEventRemoval(TestEvent originalTestEvent) {
-    TestEvent newRemoveEvent =
-        new TestEvent(originalTestEvent, TestCorrectionStatus.REMOVED, "Cold feet");
-    _testEventRepo.save(newRemoveEvent);
+  public TestEvent createTestEventCorrection(
+      TestEvent originalTestEvent, TestCorrectionStatus correctionStatus) {
 
     TestOrder order = originalTestEvent.getTestOrder();
 
     order.setReasonForCorrection("Cold feet");
-    order.setTestEventRef(newRemoveEvent);
-    order.setCorrectionStatus(TestCorrectionStatus.REMOVED);
-    _testOrderRepo.save(order);
+    order.setCorrectionStatus(correctionStatus);
 
     List<Result> originalResults = _resultRepository.findAllByTestOrder(order);
-    Set<Result> copiedResults = new HashSet<>();
-    originalResults.forEach(
-        result -> {
-          copiedResults.add(new Result(result, newRemoveEvent));
-        });
+    Set<Result> copiedResults =
+        originalResults.stream().map(Result::new).collect(Collectors.toSet());
+
+    TestEvent newRemoveEvent =
+        new TestEvent(originalTestEvent, correctionStatus, "Cold feet", copiedResults);
+    copiedResults.forEach(result -> result.setTestEvent(newRemoveEvent));
+
+    order.setTestEventRef(newRemoveEvent);
+    _testEventRepo.save(newRemoveEvent);
+    _testOrderRepo.save(order);
     _resultRepository.saveAll(copiedResults);
 
+    Hibernate.initialize(newRemoveEvent.getOrganization());
     return newRemoveEvent;
   }
 
   public TestEvent doTest(TestOrder order, TestResult result) {
-    order.setResultColumn(result);
     TestEvent event = _testEventRepo.save(new TestEvent(order));
     Result resultEntity = new Result(event, order, _diseaseService.covid(), result);
     _resultRepository.save(resultEntity);

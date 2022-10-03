@@ -7,9 +7,9 @@ import "../../i18n";
 
 const mockStore = configureStore([]);
 
-let getPatientLinkData = (results: PxpMultiplexResult[]) => ({
+let getPatientLinkData = (results: MultiplexResult[]) => ({
   testEventId: "4606e571-8249-479e-94ab-e2f311713a5f",
-  results: results as PxpMultiplexResult[],
+  results: results as MultiplexResult[],
   dateTested: "2022-02-11T21:16:26.404+00:00",
   correctionStatus: "ORIGINAL",
   patient: {
@@ -46,8 +46,8 @@ let getPatientLinkData = (results: PxpMultiplexResult[]) => ({
 describe("TestResult - COVID-19 only", () => {
   it("should show the patient/device name", () => {
     const results = [
-      { disease: { name: "COVID-19" }, result: "UNDETERMINED" },
-    ] as PxpMultiplexResult[];
+      { disease: { name: "COVID-19" }, testResult: "UNDETERMINED" },
+    ] as MultiplexResult[];
     const store = mockStore({ testResult: getPatientLinkData(results) });
     render(
       <Provider store={store}>
@@ -69,8 +69,8 @@ describe("TestResult - COVID-19 only", () => {
   });
   it("should show a positive result", () => {
     const results = [
-      { disease: { name: "COVID-19" }, result: "POSITIVE" },
-    ] as PxpMultiplexResult[];
+      { disease: { name: "COVID-19" }, testResult: "POSITIVE" },
+    ] as MultiplexResult[];
     const store = mockStore({ testResult: getPatientLinkData(results) });
     render(
       <Provider store={store}>
@@ -87,8 +87,8 @@ describe("TestResult - COVID-19 only", () => {
   });
   it("should show a negative result", () => {
     const results = [
-      { disease: { name: "COVID-19" }, result: "NEGATIVE" },
-    ] as PxpMultiplexResult[];
+      { disease: { name: "COVID-19" }, testResult: "NEGATIVE" },
+    ] as MultiplexResult[];
     const store = mockStore({ testResult: getPatientLinkData(results) });
     render(
       <Provider store={store}>
@@ -105,8 +105,8 @@ describe("TestResult - COVID-19 only", () => {
   });
   it("should show an inconclusive result", () => {
     const results = [
-      { disease: { name: "COVID-19" }, result: "UNDETERMINED" },
-    ] as PxpMultiplexResult[];
+      { disease: { name: "COVID-19" }, testResult: "UNDETERMINED" },
+    ] as MultiplexResult[];
     const store = mockStore({ testResult: getPatientLinkData(results) });
     render(
       <Provider store={store}>
@@ -127,10 +127,10 @@ if (process.env.REACT_APP_MULTIPLEX_ENABLE) {
   describe("TestResult - Multiplex", () => {
     it("should show the results for positive COVID-19 and negative Flu", () => {
       const results = [
-        { disease: { name: "Flu B" }, result: "NEGATIVE" },
-        { disease: { name: "Flu A" }, result: "NEGATIVE" },
-        { disease: { name: "COVID-19" }, result: "POSITIVE" },
-      ] as PxpMultiplexResult[];
+        { disease: { name: "Flu B" }, testResult: "NEGATIVE" },
+        { disease: { name: "Flu A" }, testResult: "NEGATIVE" },
+        { disease: { name: "COVID-19" }, testResult: "POSITIVE" },
+      ] as MultiplexResult[];
       const store = mockStore({ testResult: getPatientLinkData(results) });
       render(
         <Provider store={store}>
@@ -151,10 +151,10 @@ if (process.env.REACT_APP_MULTIPLEX_ENABLE) {
 
     it("should show the results for negative COVID-19 and positive Flu", () => {
       const results = [
-        { disease: { name: "Flu B" }, result: "POSITIVE" },
-        { disease: { name: "Flu A" }, result: "POSITIVE" },
-        { disease: { name: "COVID-19" }, result: "NEGATIVE" },
-      ] as PxpMultiplexResult[];
+        { disease: { name: "Flu B" }, testResult: "POSITIVE" },
+        { disease: { name: "Flu A" }, testResult: "POSITIVE" },
+        { disease: { name: "COVID-19" }, testResult: "NEGATIVE" },
+      ] as MultiplexResult[];
       const store = mockStore({ testResult: getPatientLinkData(results) });
       render(
         <Provider store={store}>
@@ -179,10 +179,10 @@ if (process.env.REACT_APP_MULTIPLEX_ENABLE) {
 
     it("should show the results for undetermined COVID-19 and Flu", () => {
       const results = [
-        { disease: { name: "Flu B" }, result: "UNDETERMINED" },
-        { disease: { name: "Flu A" }, result: "UNDETERMINED" },
-        { disease: { name: "COVID-19" }, result: "UNDETERMINED" },
-      ] as PxpMultiplexResult[];
+        { disease: { name: "Flu B" }, testResult: "UNDETERMINED" },
+        { disease: { name: "Flu A" }, testResult: "UNDETERMINED" },
+        { disease: { name: "COVID-19" }, testResult: "UNDETERMINED" },
+      ] as MultiplexResult[];
       const store = mockStore({ testResult: getPatientLinkData(results) });
       render(
         <Provider store={store}>

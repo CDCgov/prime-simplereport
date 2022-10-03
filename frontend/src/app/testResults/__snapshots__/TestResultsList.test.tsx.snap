@@ -114,56 +114,15 @@ exports[`TestResultsList should render a list of tests 1`] = `
               >
                 Date range (start)
               </label>
-              <div
-                class="usa-date-picker usa-date-picker--initialized"
-                data-testid="date-picker"
-              >
-                <input
-                  aria-hidden="true"
-                  class="usa-input usa-sr-only usa-date-picker__internal-input"
-                  data-testid="date-picker-internal-input"
-                  name="start-date"
-                  readonly=""
-                  tabindex="-1"
-                  type="text"
-                  value=""
-                />
-                <div
-                  class="usa-date-picker__wrapper"
-                  tabindex="-1"
-                >
-                  <input
-                    class="usa-input usa-date-picker__external-input"
-                    data-testid="date-picker-external-input"
-                    id="start-date"
-                    type="text"
-                    value=""
-                  />
-                  <button
-                    aria-haspopup="true"
-                    aria-label="Toggle calendar"
-                    class="usa-date-picker__button"
-                    data-testid="date-picker-button"
-                    type="button"
-                  >
-                     
-                  </button>
-                  <div
-                    aria-modal="true"
-                    class="usa-date-picker__calendar"
-                    data-testid="date-picker-calendar"
-                    hidden=""
-                    role="dialog"
-                    style="top: 0px;"
-                  />
-                  <div
-                    aria-live="polite"
-                    class="usa-sr-only usa-date-picker__status"
-                    data-testid="date-picker-status"
-                    role="status"
-                  />
-                </div>
-              </div>
+              <input
+                aria-label="Start Date"
+                class="usa-input"
+                id="start-date"
+                max="2022-09-26"
+                min="2000-01-01"
+                type="date"
+                value=""
+              />
             </div>
             <div
               class="usa-form-group date-filter-group"
@@ -175,56 +134,15 @@ exports[`TestResultsList should render a list of tests 1`] = `
               >
                 Date range (end)
               </label>
-              <div
-                class="usa-date-picker usa-date-picker--initialized"
-                data-testid="date-picker"
-              >
-                <input
-                  aria-hidden="true"
-                  class="usa-input usa-sr-only usa-date-picker__internal-input"
-                  data-testid="date-picker-internal-input"
-                  name="end-date"
-                  readonly=""
-                  tabindex="-1"
-                  type="text"
-                  value=""
-                />
-                <div
-                  class="usa-date-picker__wrapper"
-                  tabindex="-1"
-                >
-                  <input
-                    class="usa-input usa-date-picker__external-input"
-                    data-testid="date-picker-external-input"
-                    id="end-date"
-                    type="text"
-                    value=""
-                  />
-                  <button
-                    aria-haspopup="true"
-                    aria-label="Toggle calendar"
-                    class="usa-date-picker__button"
-                    data-testid="date-picker-button"
-                    type="button"
-                  >
-                     
-                  </button>
-                  <div
-                    aria-modal="true"
-                    class="usa-date-picker__calendar"
-                    data-testid="date-picker-calendar"
-                    hidden=""
-                    role="dialog"
-                    style="top: 0px;"
-                  />
-                  <div
-                    aria-live="polite"
-                    class="usa-sr-only usa-date-picker__status"
-                    data-testid="date-picker-status"
-                    role="status"
-                  />
-                </div>
-              </div>
+              <input
+                aria-label="End Date"
+                class="usa-input"
+                id="end-date"
+                max="2022-09-26"
+                min="2000-01-01"
+                type="date"
+                value=""
+              />
             </div>
             <div
               class="usa-form-group prime-dropdown "
@@ -467,7 +385,8 @@ exports[`TestResultsList should render a list of tests 1`] = `
                 03/19/2021 7:27pm
               </td>
               <td
-                class="test-result-cell covid-19-result"
+                class="test-result-cell"
+                data-testid="covid-19-result"
               >
                 Positive
               </td>
@@ -544,7 +463,8 @@ exports[`TestResultsList should render a list of tests 1`] = `
                 03/18/2021 7:27pm
               </td>
               <td
-                class="test-result-cell covid-19-result"
+                class="test-result-cell"
+                data-testid="covid-19-result"
               >
                 Negative
               </td>
@@ -621,7 +541,8 @@ exports[`TestResultsList should render a list of tests 1`] = `
                 03/17/2021 7:27pm
               </td>
               <td
-                class="test-result-cell covid-19-result"
+                class="test-result-cell"
+                data-testid="covid-19-result"
               >
                 Negative
               </td>

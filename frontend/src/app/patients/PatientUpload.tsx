@@ -1,39 +1,34 @@
 import React from "react";
-import { gql, useMutation } from "@apollo/client";
 
 import { showError, showNotification } from "../utils";
 import Alert from "../commonComponents/Alert";
-
-const uploadPatients = gql`
-  mutation UploadPatients($patientList: Upload!) {
-    uploadPatients(patientList: $patientList)
-  }
-`;
+import { FileUploadService } from "../../fileUploadService/FileUploadService";
 
 interface Props {
   onSuccess: () => void;
 }
 
 const PatientUpload = ({ onSuccess }: Props) => {
-  const [upload] = useMutation(uploadPatients);
-
   const bulkUpload = async ({
     target: { files },
   }: React.ChangeEvent<HTMLInputElement>) => {
     const fileList = files;
+
     if (fileList === null) {
       showError("Error", "File not found");
       return;
     }
-    upload({ variables: { patientList: fileList[0] } }).then((response) => {
+
+    FileUploadService.uploadPatients(fileList[0]).then(async (response) => {
+      const successful = response.status === 200;
       showNotification(
         <Alert
-          type="success"
-          title={`Patients uploaded`}
-          body={response.data.uploadPatients}
+          type={successful ? "success" : "error"}
+          title={successful ? "Patients uploaded" : "Error"}
+          body={await response.text()}
         />
       );
-      onSuccess();
+      successful && onSuccess();
     });
   };
 
@@ -42,6 +37,7 @@ const PatientUpload = ({ onSuccess }: Props) => {
       type="file"
       name="file"
       placeholder="UploadCSV..."
+      data-testid="patient-file-input"
       onChange={bulkUpload}
     />
   );

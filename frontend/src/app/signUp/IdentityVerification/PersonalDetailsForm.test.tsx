@@ -61,6 +61,9 @@ describe("PersonalDetailsForm", () => {
         expect(
           await screen.findByText("A valid phone number is required")
         ).toBeInTheDocument();
+        expect(
+          screen.getByLabelText("Date of birth", { exact: false })
+        ).toHaveFocus();
       });
     });
     describe("On submitting an invalid street address 1", () => {
@@ -75,17 +78,12 @@ describe("PersonalDetailsForm", () => {
         ).toBeInTheDocument();
       });
     });
-    describe("On clicking an invalid date of birth and submitting", () => {
+    describe("On entering an invalid date of birth and submitting", () => {
       it("shows an error", async () => {
-        userEvent.click(screen.getByTestId("date-picker-button"));
-        const nextMonthButton = screen.getByTestId("next-month");
-        expect(nextMonthButton).toHaveClass(
-          "usa-date-picker__calendar__next-month"
+        userEvent.type(
+          screen.getByLabelText("Date of birth", { exact: false }),
+          "01/01/9999"
         );
-        userEvent.click(nextMonthButton);
-        const dateButton = screen.getByText("15");
-        expect(dateButton).toHaveClass("usa-date-picker__calendar__date");
-        userEvent.click(dateButton);
         userEvent.click(screen.getByText("Submit"));
         expect(
           await screen.findByText("A valid date of birth is required")
@@ -94,15 +92,10 @@ describe("PersonalDetailsForm", () => {
     });
     describe("On clicking a valid date of birth and submitting", () => {
       it("shows an error", async () => {
-        userEvent.click(screen.getByTestId("date-picker-button"));
-        const previousMonthButton = screen.getByTestId("previous-month");
-        expect(previousMonthButton).toHaveClass(
-          "usa-date-picker__calendar__previous-month"
+        userEvent.type(
+          screen.getByLabelText("Date of birth", { exact: false }),
+          "09/15/2022"
         );
-        userEvent.click(previousMonthButton);
-        const dateButton = screen.getByText("15");
-        expect(dateButton).toHaveClass("usa-date-picker__calendar__date");
-        userEvent.click(dateButton);
         userEvent.click(screen.getByText("Submit"));
         await waitFor(() => {
           expect(
@@ -150,10 +143,7 @@ describe("PersonalDetailsForm", () => {
 
   describe("Completed form", () => {
     beforeEach(() => {
-      userEvent.click(screen.getByTestId("date-picker-button"));
-      const dateButton = screen.getByText("15");
-      expect(dateButton).toHaveClass("usa-date-picker__calendar__date");
-      userEvent.click(dateButton);
+      fillInText("Date of birth", "09/15/2022");
       fillInText("Email", "bob@bob.bob");
       fillInText("Phone number", "530-867-5309");
       fillInText("Street address 1", "123 Bob St");

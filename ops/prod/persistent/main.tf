@@ -72,7 +72,7 @@ module "db_alerting" {
   rg_name = local.rg_name
   db_id   = module.db.server_id
   action_group_ids = [
-    data.terraform_remote_state.global.outputs.pagerduty_non_prod_action_id
+    data.terraform_remote_state.global.outputs.pagerduty_prod_action_id
   ]
 }
 

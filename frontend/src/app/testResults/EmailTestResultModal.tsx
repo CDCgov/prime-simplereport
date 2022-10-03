@@ -33,8 +33,11 @@ export const EmailTestResultModal = ({ closeModal, testResultId }: Props) => {
       className="email-test-result-modal-content"
       overlayClassName="sr-test-correction-modal-overlay"
       contentLabel="Printable test result"
+      onRequestClose={closeModal}
     >
-      <div className="header">Email result?</div>
+      <h1 className="font-sans-lg margin-top-0 margin-bottom-105 text-normal">
+        Email result?
+      </h1>
       {loading ? (
         <p>Loading</p>
       ) : (
@@ -44,9 +47,13 @@ export const EmailTestResultModal = ({ closeModal, testResultId }: Props) => {
               {formatFullName(patient)}'s test result from{" "}
               {formatDateLong(dateTested)} will be sent to the following emails:
             </div>
-            {patient.emails?.map((email: string) => (
-              <div key={email}>{email}</div>
-            ))}
+            <ul className="usa-list usa-list--unstyled">
+              {patient.emails?.map((email: string) => (
+                <li className="line-height-sans-2" key={email}>
+                  {email}
+                </li>
+              ))}
+            </ul>
           </div>
           <div className="sr-test-correction-buttons">
             <Button variant="unstyled" label="Cancel" onClick={closeModal} />

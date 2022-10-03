@@ -41,6 +41,7 @@ resource "azurerm_app_service" "service" {
     linux_fx_version = var.docker_image_uri
     always_on        = "true"
     min_tls_version  = "1.2"
+    ftps_state       = "Disabled"
   }
 
   app_settings = local.all_app_settings

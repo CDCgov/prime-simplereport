@@ -74,7 +74,7 @@ const Dropdown: React.FC<Props & SelectProps> = ({
             </label>
           )}
           {validationStatus === "error" && (
-            <div className="usa-error-message" role="alert">
+            <div className="usa-error-message" id={`error_${id}`} role="alert">
               <span className="usa-sr-only">Error: </span>
               {errorMessage}
             </div>
@@ -93,6 +93,9 @@ const Dropdown: React.FC<Props & SelectProps> = ({
             value={selectedValue || defaultOption || ""}
             disabled={disabled}
             {...inputProps}
+            {...(validationStatus === "error"
+              ? { "aria-describedby": `error_${id}`, "aria-invalid": true }
+              : null)}
           >
             {defaultSelect && <option value="">{defaultOption}</option>}
             {options.map(({ value, label, disabled }) => (

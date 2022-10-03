@@ -107,6 +107,7 @@ const ConfirmOrgVerificationModal: React.FC<VerficationModalProps> = ({
       }}
       overlayClassName="prime-modal-overlay display-flex flex-align-center flex-justify-center"
       contentLabel="Verify organization"
+      onRequestClose={handleClose}
     >
       <div className="border-0 card-container">
         <div className="display-flex flex-justify">
@@ -165,6 +166,7 @@ const ConfirmOrgVerificationModal: React.FC<VerficationModalProps> = ({
       overlayClassName="prime-modal-overlay display-flex flex-align-center flex-justify-center"
       contentLabel="Unsaved changes to current organization"
       ariaHideApp={process.env.NODE_ENV !== "test"}
+      onRequestClose={handleClose}
     >
       <div className="border-0 card-container">
         <div className="display-flex flex-justify">

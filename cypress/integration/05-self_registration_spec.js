@@ -36,7 +36,7 @@ describe("Patient self registration", () => {
   });
   it("shows what fields are missing on submit", () => {
     cy.get(".self-registration-button").first().click();
-    cy.get(".prime-formgroup").contains("Last name is required");
+    cy.get(".prime-formgroup").contains("Last name is missing");
   });
   it("fills out the remaining fields and submits", () => {
     cy.get('input[name="lastName"]').type(patient.lastName);

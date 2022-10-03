@@ -6,6 +6,7 @@ import { ValidateField } from "../FacilityForm";
 import { FacilityErrors } from "../facilitySchema";
 import Dropdown from "../../../commonComponents/Dropdown";
 import TextInput from "../../../commonComponents/TextInput";
+import { getSubStrAfterChar } from "../../../utils/text";
 
 interface Props {
   facility: Facility;
@@ -23,7 +24,8 @@ const OrderingProvider: React.FC<Props> = ({
   const onChange = (
     e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement>
   ) => {
-    updateProvider({ ...provider, [e.target.name]: e.target.value });
+    let fieldName = getSubStrAfterChar(e.target.name, "-");
+    updateProvider({ ...provider, [fieldName]: e.target.value });
   };
 
   const { orderingProvider: provider } = facility;
@@ -100,7 +102,7 @@ const OrderingProvider: React.FC<Props> = ({
         />
         <TextInput
           label="Phone number"
-          name="phone"
+          name="op-phone"
           required={isRequired}
           value={provider.phone || ""}
           onChange={onChange}
@@ -114,32 +116,32 @@ const OrderingProvider: React.FC<Props> = ({
         />
         <TextInput
           label="Street address 1"
-          name="street"
+          name="op-street"
           value={provider.street || ""}
           onChange={onChange}
         />
         <TextInput
           label="Street address 2"
-          name="streetTwo"
+          name="op-streetTwo"
           value={provider.streetTwo || ""}
           onChange={onChange}
         />
         <TextInput
           label="City"
-          name="city"
+          name="op-city"
           value={provider.city || ""}
           onChange={onChange}
         />
         <TextInput
           label="ZIP code"
-          name="zipCode"
+          name="op-zipCode"
           value={provider.zipCode || ""}
           onChange={onChange}
           className="usa-input--medium"
         />
         <Dropdown
           label="State"
-          name="state"
+          name="op-state"
           selectedValue={provider.state || ""}
           options={stateCodes.map((c) => ({ label: c, value: c }))}
           defaultSelect
