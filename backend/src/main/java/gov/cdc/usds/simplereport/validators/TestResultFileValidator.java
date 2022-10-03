@@ -423,7 +423,7 @@ public class TestResultFileValidator {
   private ValueOrError getValue(Map<String, String> row, String name, boolean isRequired) {
     String value = row.get(name);
     if (isRequired && (value == null || value.trim().isEmpty())) {
-      return new ValueOrError(new FeedbackMessage("error", name + " is required."), name);
+      return new ValueOrError(new FeedbackMessage("error", name + " is a required column."));
     }
     return new ValueOrError(value, name);
   }
@@ -460,9 +460,9 @@ public class TestResultFileValidator {
 
   @Getter
   private class ValueOrError {
-    private List<FeedbackMessage> error;
-    private String value;
-    private String header;
+    private final List<FeedbackMessage> error;
+    private final String value;
+    private final String header;
 
     public ValueOrError(String value, String header) {
       this.value = value;
@@ -470,10 +470,10 @@ public class TestResultFileValidator {
       this.header = header;
     }
 
-    public ValueOrError(FeedbackMessage error, String header) {
+    public ValueOrError(FeedbackMessage error) {
       this.value = null;
+      this.header = null;
       this.error = List.of(error);
-      this.header = header;
     }
 
     public List<FeedbackMessage> getPossibleError() {
