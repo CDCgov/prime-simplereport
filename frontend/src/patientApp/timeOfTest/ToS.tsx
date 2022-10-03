@@ -22,13 +22,15 @@ function ToS() {
         {t("testResult.tos.document.definitions.heading")}
       </h2>
       <ul>
-        <li>{t("testResult.tos.document.definitions.l0")}</li>
+        <li>
+          <b>{t("testResult.tos.document.definitions.l0.title")}</b>{" "}
+          {t("testResult.tos.document.definitions.l0.definition")}
+        </li>
+        <li>
+          <b>{t("testResult.tos.document.definitions.l1.title")}</b>{" "}
+          {t("testResult.tos.document.definitions.l1.definition")}
+        </li>
       </ul>
-      <p>{t("testResult.tos.document.definitions.p0")}</p>
-      <ul>
-        <li>{t("testResult.tos.document.definitions.l1")}</li>
-      </ul>
-      <p>{t("testResult.tos.document.definitions.p1")}</p>
       <h2 id="data-rights-and-usage">
         {t("testResult.tos.document.dataRights.heading")}
       </h2>

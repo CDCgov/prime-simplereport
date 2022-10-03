@@ -392,19 +392,23 @@ export const en = {
           },
           definitions: {
             heading: "Definitions",
-            l0: "Entity",
-            p0:
-              "A health care provider or facility; testing site; a state, local, tribal, and territorial public health authority " +
-              "(STLT Public Health Agency); or other organization that is enrolled in and using Simple Report to record and/or " +
-              "transmit data.",
-            l1: "User",
-            p1:
-              "An individual whose personal data is being reported via Simple Report (Individual User), or an individual authorized " +
-              "to act on behalf of the Entity under these Terms (Entity User or Entity Administrator). Simple Report will only designate " +
-              "one User from the Entity as the Entity Administrator. Entity Administrators will have more detailed identity verification " +
-              "than general Entity Users. Once the Entity Administrator has their identity verified, the Entity Administrator can add " +
-              "other general Entity Users or Individual Users to the Application. All roles are referred to as “User” for the purposes " +
-              "of these Terms, unless otherwise indicated.",
+            l0: {
+              title: "Entity:",
+              definition:
+                "A health care provider or facility; testing site; a state, local, tribal, and territorial public health authority " +
+                "(STLT Public Health Agency); or other organization that is enrolled in and using Simple Report to record and/or " +
+                "transmit data.",
+            },
+            l1: {
+              title: "User:",
+              definition:
+                "An individual whose personal data is being reported via Simple Report (Individual User), or an individual authorized " +
+                "to act on behalf of the Entity under these Terms (Entity User or Entity Administrator). Simple Report will only designate " +
+                "one User from the Entity as the Entity Administrator. Entity Administrators will have more detailed identity verification " +
+                "than general Entity Users. Once the Entity Administrator has their identity verified, the Entity Administrator can add " +
+                "other general Entity Users or Individual Users to the Application. All roles are referred to as “User” for the purposes " +
+                "of these Terms, unless otherwise indicated.",
+            },
           },
           dataRights: {
             heading: "Data rights and usage",
