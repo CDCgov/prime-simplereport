@@ -118,6 +118,12 @@ const setFocusOnActionMenu = (id: string, actionName: string) => {
     (actionButton as HTMLElement)?.click();
     waitForElement(printButtonSelector).then((printButton) => {
       (printButton as HTMLElement)?.focus();
+      const event = new MouseEvent("mouseover", {
+        view: window,
+        bubbles: true,
+        cancelable: true,
+      });
+      printButton?.dispatchEvent(event);
     });
   });
 };
