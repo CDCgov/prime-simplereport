@@ -407,10 +407,12 @@ export const es: LanguageConfig = {
           },
           definitions: {
             heading: "Definiciones",
-            l0:
-              "Entidad: Un proveedor o establecimiento de atención médica; un lugar donde se hagan pruebas; una autoridad de salud pública estatal, local, tribal o territorial (agencia de salud pública STLT); u otra institución que esté inscrita en SimpleReport y la use para registrar o transmitir datos.",
-            l1:
-              "Usuario: Una persona cuyos datos personales se estén notificando vía SimpleReport (usuario individual) o una persona autorizada para actuar en nombre de la entidad bajo estos términos (usuario de una entidad o administrador de una entidad). SimpleReport solo designará a un usuario de la entidad como el administrador de la entidad. Los administradores de entidades tendrán una verificación de identidad más detallada que los usuarios generales de las entidades. Una vez que se haya verificado la identidad del administrador de la entidad, esta persona podrá añadir a otros usuarios de la entidad o usuarios individuales a la aplicación. A efectos de estos términos, todas las funciones se denominan como las de un “usuario”, a menos que se indique lo contrario.",
+            l0: "Entidad",
+            p0:
+              "Un proveedor o establecimiento de atención médica; un lugar donde se hagan pruebas; una autoridad de salud pública estatal, local, tribal o territorial (agencia de salud pública STLT); u otra institución que esté inscrita en SimpleReport y la use para registrar o transmitir datos.",
+            l1: "Usuario",
+            p1:
+              "Una persona cuyos datos personales se estén notificando vía SimpleReport (usuario individual) o una persona autorizada para actuar en nombre de la entidad bajo estos términos (usuario de una entidad o administrador de una entidad). SimpleReport solo designará a un usuario de la entidad como el administrador de la entidad. Los administradores de entidades tendrán una verificación de identidad más detallada que los usuarios generales de las entidades. Una vez que se haya verificado la identidad del administrador de la entidad, esta persona podrá añadir a otros usuarios de la entidad o usuarios individuales a la aplicación. A efectos de estos términos, todas las funciones se denominan como las de un “usuario”, a menos que se indique lo contrario.",
           },
           dataRights: {
             heading: "Derechos y uso de los datos",
