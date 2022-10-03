@@ -40,9 +40,9 @@ public class TestResultFileValidator {
   public static final String EMAIL_REGEX = "^[\\w-\\.]+@([\\w-]+\\.)+[\\w-]{2,4}$";
   public static final String ALPHABET_REGEX = "^[a-zA-Z]+$";
 
-  private final Set<String> VALID_STATE_CODES = new HashSet<>();
+  private static final Set<String> VALID_STATE_CODES = new HashSet<>();
 
-  private final Set<String> GENDER_VALUES =
+  private static final Set<String> GENDER_VALUES =
       Set.of(
           "M", "Male",
           "F", "Female",
@@ -51,13 +51,13 @@ public class TestResultFileValidator {
           "A", "Ambiguous",
           "N", "Not applicable");
 
-  private final Set<String> ETHNICITY_VALUES =
+  private static final Set<String> ETHNICITY_VALUES =
       Set.of(
           "2135-2", "Hispanic or Latino",
           "2186-5", "Not Hispanic or Latino",
           "UNK", "Unknown");
 
-  private final Set<String> RACE_VALUES =
+  private static final Set<String> RACE_VALUES =
       Set.of(
           "1002-5", "American Indian or Alaska Native",
           "2028-9", "Asian",
@@ -68,16 +68,16 @@ public class TestResultFileValidator {
           "ASKU", "Ask but unknown",
           "UNK", "Unknown");
 
-  private final Set<String> YES_NO_VALUES =
+  private static final Set<String> YES_NO_VALUES =
       Set.of(
           "Y", "YES",
           "N", "NO",
           "U", "UNK");
 
-  private final Set<String> TEST_RESULT_VALUES =
+  private static final Set<String> TEST_RESULT_VALUES =
       Set.of("Positive", "Negative", "Not Detected", "Detected", "Invalid Result");
 
-  private final Set<String> SPECIMEN_TYPE_VALUES =
+  private static final Set<String> SPECIMEN_TYPE_VALUES =
       Set.of(
           "Nasal Swab",
           "Nasopharyngeal Swab",
@@ -88,7 +88,7 @@ public class TestResultFileValidator {
           "Plasma",
           "Serum");
 
-  private final Set<String> RESIDENCE_VALUES =
+  private static final Set<String> RESIDENCE_VALUES =
       Set.of(
           "22232009", "Hospital",
           "2081004", "Hospital Ship",
@@ -109,7 +109,7 @@ public class TestResultFileValidator {
           "285141008", "Work (environment)",
           "32911000", "Homeless");
 
-  private final Set<String> TEST_RESULT_STATUS_VALUES = Set.of("F", "C");
+  private static final Set<String> TEST_RESULT_STATUS_VALUES = Set.of("F", "C");
 
   public TestResultFileValidator() {
     VALID_STATE_CODES.addAll(STATE_CODES);
@@ -437,29 +437,15 @@ public class TestResultFileValidator {
       return new CsvMapper()
           .enable(CsvParser.Feature.FAIL_ON_MISSING_COLUMNS)
           .readerFor(Map.class)
-          .with(resultSchema(false))
+          .with(CsvSchema.builder().setUseHeader(true).build())
           .readValues(csvStreamBuffered);
     } catch (IOException e) {
       throw new IllegalArgumentException(e.getMessage());
     }
   }
 
-  private CsvSchema resultSchema(boolean hasHeaderRow) {
-    // using both addColumn and setUseHeader() causes offset issues (columns don't align). use one
-    // or the other.
-
-    if (hasHeaderRow) {
-      return CsvSchema.builder().setUseHeader(true).build();
-    } else {
-      // Sequence order matters
-      return CsvSchema.builder()
-          .setUseHeader(true) // no valid header row detected
-          .build();
-    }
-  }
-
   @Getter
-  private class ValueOrError {
+  private static class ValueOrError {
     private final List<FeedbackMessage> error;
     private final String value;
     private final String header;
