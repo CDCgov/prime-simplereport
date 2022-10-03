@@ -656,19 +656,20 @@ describe("TestResultsList", () => {
     });
 
     describe("return focus after modal close", () => {
-      beforeEach(async () => {
+      const clickActionMenu = async () => {
         expect(await screen.findByText("Showing 1-3 of 3")).toBeInTheDocument();
         const actionMenuButton = document.querySelectorAll(
           ".rc-menu-button"
         )[0];
         userEvent.click(actionMenuButton as HTMLElement);
-      });
+      };
       it.each([
         ["Print result", "Close"],
         ["Text result", "Cancel"],
         ["Email result", "Cancel"],
         ["Correct result", "No, go back"],
       ])("should set focus on %p", async (menuButtonText, closeButtonText) => {
+        await clickActionMenu();
         userEvent.click(screen.getByText(menuButtonText));
         await screen.findAllByText(closeButtonText);
         userEvent.click(screen.getAllByText(closeButtonText)[0]);
@@ -677,6 +678,7 @@ describe("TestResultsList", () => {
         );
       });
       it("should set focus on the view details button", async () => {
+        await clickActionMenu();
         userEvent.click(screen.getByText("View details"));
         await screen.findByAltText("Close");
         userEvent.click(screen.getByAltText("Close"));
