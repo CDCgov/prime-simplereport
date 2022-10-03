@@ -116,7 +116,7 @@ public class TestResultFileValidator {
     VALID_STATE_CODES.addAll(CANADIAN_STATE_CODES);
   }
 
-  public List<FeedbackMessage> validateHeaders(InputStream csvStream) {
+  public List<FeedbackMessage> validate(InputStream csvStream) {
     final MappingIterator<Map<String, String>> valueIterator = getIteratorForCsv(csvStream);
 
     if (!valueIterator.hasNext()) {
@@ -360,7 +360,7 @@ public class TestResultFileValidator {
     return validateRegex(input, ZIP_CODE_REGEX, "zipcode");
   }
 
-  public List<FeedbackMessage> validatePhoneNumber(String input) {
+  private List<FeedbackMessage> validatePhoneNumber(String input) {
     return validateRegex(input, PHONE_NUMBER_REGEX, "phone number");
   }
 
@@ -417,7 +417,7 @@ public class TestResultFileValidator {
     }
   }
 
-  public ValueOrError getValue(Map<String, String> row, String name, boolean isRequired) {
+  private ValueOrError getValue(Map<String, String> row, String name, boolean isRequired) {
     String value = row.get(name);
     if (isRequired && (value == null || value.trim().isEmpty())) {
       return new ValueOrError(new FeedbackMessage("error", name + " is required."));

@@ -1,6 +1,8 @@
 package gov.cdc.usds.simplereport.service;
 
 import static com.github.tomakehurst.wiremock.client.WireMock.stubFor;
+import static gov.cdc.usds.simplereport.db.model.auxiliary.UploadStatus.FAILURE;
+import static org.assertj.core.api.Assertions.assertThat;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.junit.jupiter.api.Assertions.assertNull;
@@ -15,6 +17,7 @@ import static org.mockito.Mockito.when;
 import com.github.tomakehurst.wiremock.client.WireMock;
 import com.okta.commons.http.MediaType;
 import gov.cdc.usds.simplereport.api.model.errors.CsvProcessingException;
+import gov.cdc.usds.simplereport.db.model.TestResultUpload;
 import gov.cdc.usds.simplereport.db.model.auxiliary.UploadStatus;
 import gov.cdc.usds.simplereport.db.repository.TestResultUploadRepository;
 import gov.cdc.usds.simplereport.service.errors.InvalidBulkTestResultUploadException;
@@ -25,11 +28,15 @@ import gov.cdc.usds.simplereport.service.model.reportstream.UploadResponse;
 import gov.cdc.usds.simplereport.test_util.SliceTestConfiguration;
 import gov.cdc.usds.simplereport.test_util.TestDataFactory;
 import gov.cdc.usds.simplereport.utils.TokenAuthentication;
+import gov.cdc.usds.simplereport.validators.TestResultFileValidator;
+import java.io.ByteArrayInputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.nio.charset.StandardCharsets;
 import java.util.Arrays;
+import java.util.Collections;
 import java.util.Date;
+import java.util.List;
 import java.util.Optional;
 import java.util.UUID;
 import org.apache.commons.io.IOUtils;
@@ -38,6 +45,8 @@ import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.ArgumentCaptor;
 import org.mockito.Captor;
+import org.mockito.InjectMocks;
+import org.mockito.Mock;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.context.properties.EnableConfigurationProperties;
 import org.springframework.cloud.contract.spec.internal.HttpStatus;
@@ -53,6 +62,12 @@ class TestResultUploadServiceTest extends BaseServiceTest<TestResultUploadServic
   @Autowired private TestDataFactory factory;
   @Captor private ArgumentCaptor<UUID> reportIdCaptor;
   @Captor private ArgumentCaptor<String> accessTokenCaptor;
+  @Mock private DataHubClient dataHubMock;
+  @Mock private TestResultUploadRepository repoMock;
+  @Mock private OrganizationService orgServiceMock;
+  @Mock private TokenAuthentication tokenAuthMock;
+  @Mock private TestResultFileValidator csvFileValidatorMock;
+  @InjectMocks private TestResultUploadService sut;
 
   @BeforeEach()
   public void init() {
@@ -76,7 +91,7 @@ class TestResultUploadServiceTest extends BaseServiceTest<TestResultUploadServic
                     .withStatus(HttpStatus.OK)
                     .withHeader("Content-Type", MediaType.APPLICATION_JSON_VALUE)
                     .withBody(mockResponse)));
-    InputStream input = loadCsv("test-upload-test-results.csv");
+    InputStream input = loadCsv("test-upload-valid.csv");
 
     var output = this._service.processResultCSV(input);
     assertEquals(UploadStatus.PENDING, output.getStatus());
@@ -120,13 +135,12 @@ class TestResultUploadServiceTest extends BaseServiceTest<TestResultUploadServic
                       .withHeader("Content-Type", MediaType.APPLICATION_JSON_VALUE)
                       .withBody(x.readAllBytes())));
     }
-    InputStream input = mock(InputStream.class);
-    when(input.readAllBytes()).thenReturn(new byte[] {45});
+    InputStream input = loadCsv("test-upload-valid.csv");
 
     var response = this._service.processResultCSV(input);
 
     assertEquals(6, response.getErrors().length);
-    assertEquals(UploadStatus.FAILURE, response.getStatus());
+    assertEquals(FAILURE, response.getStatus());
   }
 
   @Test
@@ -141,13 +155,13 @@ class TestResultUploadServiceTest extends BaseServiceTest<TestResultUploadServic
                     .withStatus(HttpStatus.INTERNAL_SERVER_ERROR)
                     .withHeader("Content-Type", MediaType.APPLICATION_JSON_VALUE)
                     .withBody("you messed up")));
-    InputStream input = mock(InputStream.class);
-    when(input.readAllBytes()).thenReturn(new byte[] {45});
+
+    InputStream input = loadCsv("test-upload-valid.csv");
 
     var response = this._service.processResultCSV(input);
 
     assertNull(response.getErrors());
-    assertEquals(UploadStatus.FAILURE, response.getStatus());
+    assertEquals(FAILURE, response.getStatus());
   }
 
   @Test
@@ -170,14 +184,8 @@ class TestResultUploadServiceTest extends BaseServiceTest<TestResultUploadServic
     InputStream input = mock(InputStream.class);
     when(input.readAllBytes()).thenReturn(new byte[] {45});
 
-    var dataHubMock = mock(DataHubClient.class);
-    var repoMock = mock(TestResultUploadRepository.class);
-    var orgServiceMock = mock(OrganizationService.class);
-    var tokenAuthMock = mock(TokenAuthentication.class);
-
+    when(csvFileValidatorMock.validate(any())).thenReturn(Collections.emptyList());
     when(dataHubMock.uploadCSV(any())).thenReturn(response);
-
-    var sut = new TestResultUploadService(repoMock, dataHubMock, orgServiceMock, tokenAuthMock);
 
     var output = sut.processResultCSV(input);
     assertNotNull(output.getReportId());
@@ -195,8 +203,12 @@ class TestResultUploadServiceTest extends BaseServiceTest<TestResultUploadServic
     var repoMock = mock(TestResultUploadRepository.class);
     var orgServiceMock = mock(OrganizationService.class);
     var tokenAuthMock = mock(TokenAuthentication.class);
+    var csvFileValidatorMock = mock(TestResultFileValidator.class);
+    when(csvFileValidatorMock.validate(any())).thenReturn(Collections.emptyList());
 
-    var sut = new TestResultUploadService(repoMock, dataHubMock, orgServiceMock, tokenAuthMock);
+    var sut =
+        new TestResultUploadService(
+            repoMock, dataHubMock, orgServiceMock, tokenAuthMock, csvFileValidatorMock);
 
     var uuid = UUID.randomUUID();
 
@@ -207,16 +219,10 @@ class TestResultUploadServiceTest extends BaseServiceTest<TestResultUploadServic
   @DirtiesContext
   @SliceTestConfiguration.WithSimpleReportCsvUploadPilotUser
   void uploadService_getUploadSubmission_rsClientOk() {
-    var dataHubMock = mock(DataHubClient.class);
-    var repoMock = mock(TestResultUploadRepository.class);
-    var orgServiceMock = mock(OrganizationService.class);
-    var tokenAuthMock = mock(TokenAuthentication.class);
-
-    var sut = new TestResultUploadService(repoMock, dataHubMock, orgServiceMock, tokenAuthMock);
-
     UUID reportId = UUID.randomUUID();
 
     // GIVEN
+    when(csvFileValidatorMock.validate(any())).thenReturn(Collections.emptyList());
     when(orgServiceMock.getCurrentOrganization()).thenReturn(factory.createValidOrg());
     var testResultUpload =
         factory.createTestResultUpload(
@@ -251,5 +257,23 @@ class TestResultUploadServiceTest extends BaseServiceTest<TestResultUploadServic
     assertEquals(testResultUpload.getStatus(), result.getStatus());
     assertEquals(testResultUpload.getCreatedAt(), result.getCreatedAt());
     assertEquals(testResultUpload.getRecordsCount(), result.getRecordsCount());
+  }
+
+  @Test
+  @SliceTestConfiguration.WithSimpleReportCsvUploadPilotUser
+  void uploadService_getUploadSubmission_fileInvalidData() {
+    // GIVEN
+    InputStream invalidInput = new ByteArrayInputStream("invalid".getBytes());
+    when(csvFileValidatorMock.validate(any()))
+        .thenReturn(List.of(new FeedbackMessage("error", "my lovely error message")));
+    when(orgServiceMock.getCurrentOrganization()).thenReturn(factory.createValidOrg());
+
+    // WHEN
+    TestResultUpload result = sut.processResultCSV(invalidInput);
+
+    // THEN
+    assertThat(result.getStatus()).isEqualTo(FAILURE);
+    assertThat(result.getErrors()).hasSize(1);
+    assertThat(result.getErrors()[0].getMessage()).isEqualTo("my lovely error message");
   }
 }

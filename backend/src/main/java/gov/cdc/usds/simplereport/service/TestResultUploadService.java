@@ -84,7 +84,7 @@ public class TestResultUploadService {
     }
 
     List<FeedbackMessage> errors =
-        testResultFileValidator.validateHeaders(new ByteArrayInputStream(content));
+        testResultFileValidator.validate(new ByteArrayInputStream(content));
     if (!errors.isEmpty()) {
       result.setErrors(errors.toArray(FeedbackMessage[]::new));
       return result;
