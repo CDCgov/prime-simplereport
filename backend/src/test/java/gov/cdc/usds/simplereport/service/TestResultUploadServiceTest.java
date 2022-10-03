@@ -199,17 +199,6 @@ class TestResultUploadServiceTest extends BaseServiceTest<TestResultUploadServic
   @Test
   @SliceTestConfiguration.WithSimpleReportCsvUploadPilotUser
   void uploadService_getUploadSubmission_throwsOnInvalid() {
-    var dataHubMock = mock(DataHubClient.class);
-    var repoMock = mock(TestResultUploadRepository.class);
-    var orgServiceMock = mock(OrganizationService.class);
-    var tokenAuthMock = mock(TokenAuthentication.class);
-    var csvFileValidatorMock = mock(TestResultFileValidator.class);
-    when(csvFileValidatorMock.validate(any())).thenReturn(Collections.emptyList());
-
-    var sut =
-        new TestResultUploadService(
-            repoMock, dataHubMock, orgServiceMock, tokenAuthMock, csvFileValidatorMock);
-
     var uuid = UUID.randomUUID();
 
     assertThrows(InvalidBulkTestResultUploadException.class, () -> sut.getUploadSubmission(uuid));
