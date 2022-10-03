@@ -320,7 +320,6 @@ public class TestResultFileValidator {
     if (value == null) {
       return errors;
     }
-    // SNOMED codes are numerical and are a minimum of six digits long
     boolean nonSNOMEDValue = value.matches(ALPHABET_REGEX);
     if (nonSNOMEDValue) {
       return validateInSet(input, acceptableValues);
