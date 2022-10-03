@@ -5,6 +5,7 @@ import React, {
   useRef,
 } from "react";
 import classnames from "classnames";
+import { IconSearch } from "@trussworks/react-uswds";
 
 type Props = {
   onSearchClick?: MouseEventHandler<HTMLButtonElement>;
@@ -76,6 +77,7 @@ const SearchInput = ({
               disabled={disabled}
               onClick={onSearchClick}
             >
+              <IconSearch />
               <span className="usa-sr-only">Search</span>
             </button>
           )}
