@@ -809,4 +809,40 @@ describe("TestResultsList", () => {
       ).not.toBeInTheDocument();
     });
   });
+
+  describe("clear filter button", () => {
+    const elementToTest = (filterParams: FilterParams) => (
+      <WithRouter>
+        <Provider store={store}>
+          <MockedProvider mocks={mocks}>
+            <DetachedTestResultsList
+              data={{ testResults }}
+              pageNumber={1}
+              entriesPerPage={20}
+              totalEntries={testResults.length}
+              filterParams={filterParams}
+              setFilterParams={() => () => {}}
+              clearFilterParams={() => {}}
+              activeFacilityId={"1"}
+              loading={false}
+              loadingTotalResults={false}
+              maxDate="2022-09-26"
+            />
+          </MockedProvider>
+        </Provider>
+      </WithRouter>
+    );
+    it("should be disabled when no filters are applied", () => {
+      render(elementToTest({}));
+      expect(screen.getByText("Clear filters")).toBeDisabled();
+    });
+    it("should be disabled when testing only filter applied is facility is active facility", () => {
+      render(elementToTest({ filterFacilityId: "1" }));
+      expect(screen.getByText("Clear filters")).toBeDisabled();
+    });
+    it("should be enabled filters are applied", () => {
+      render(elementToTest({ result: "Positive" }));
+      expect(screen.getByText("Clear filters")).toBeEnabled();
+    });
+  });
 });

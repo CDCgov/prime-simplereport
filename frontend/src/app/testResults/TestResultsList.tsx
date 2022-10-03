@@ -420,6 +420,11 @@ export const DetachedTestResultsList = ({
                   setStartDateError("");
                   setEndDateError("");
                 }}
+                disabled={
+                  Object.keys(filterParams).length === 0 ||
+                  (Object.keys(filterParams).length === 1 &&
+                    filterParams.filterFacilityId === activeFacilityId)
+                }
               >
                 Clear filters
               </Button>
