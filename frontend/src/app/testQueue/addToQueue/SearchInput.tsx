@@ -77,7 +77,7 @@ const SearchInput = ({
               disabled={disabled}
               onClick={onSearchClick}
             >
-              <IconSearch />
+              <IconSearch size={3} />
               <span className="usa-sr-only">Search</span>
             </button>
           )}
