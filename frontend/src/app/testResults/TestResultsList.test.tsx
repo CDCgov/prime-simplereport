@@ -423,8 +423,8 @@ describe("TestResultsList", () => {
       expect(await screen.findByText("Date range (end)")).toBeInTheDocument();
       userEvent.type(screen.getByText("Date range (start)"), "2021-03-18");
       userEvent.tab();
-      expect(screen.getByText("Colleer, Barde X")).toBeInTheDocument();
-      expect(await screen.findByText("Gerard, Sam G")).toBeInTheDocument();
+      screen.getByText("Colleer, Barde X");
+      screen.getByText("Gerard, Sam G");
       await waitFor(() =>
         expect(
           screen.queryByText("Cragell, Barb Whitaker")
@@ -496,7 +496,8 @@ describe("TestResultsList", () => {
       ).toBeInTheDocument();
       const patientNameLink = await screen.findByText("Cragell, Barb Whitaker");
       userEvent.click(patientNameLink);
-      expect(screen.queryAllByText("Test details").length).toBe(2);
+      screen.getByText("Result details");
+      screen.getByText("Test information");
       expect(
         await screen.findByText("Barb Whitaker Cragell")
       ).toBeInTheDocument();
@@ -513,7 +514,8 @@ describe("TestResultsList", () => {
       userEvent.click(moreActions);
       const viewDetails = await screen.findByText("View details");
       userEvent.click(viewDetails);
-      expect(screen.queryAllByText("Test details").length).toBe(2);
+      screen.getByText("Result details");
+      screen.getByText("Test information");
     });
 
     it("opens the email test results modal", async () => {
