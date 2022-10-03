@@ -26,22 +26,20 @@ import org.springframework.stereotype.Component;
 @Component
 public class TestResultFileValidator {
 
-  public static final String ZIP_CODE_REGEX = "^[0-9]{5}(?:-[0-9]{4})?$";
+  private static final String ZIP_CODE_REGEX = "^[0-9]{5}(?:-[0-9]{4})?$";
 
   /// 000-000-0000
-  public static final String PHONE_NUMBER_REGEX = "^[1-9]\\d{2}-\\d{3}-\\d{4}$";
+  private static final String PHONE_NUMBER_REGEX = "^[1-9]\\d{2}-\\d{3}-\\d{4}$";
 
   // MM/DD/YYYY OR M/D/YYYY
-  public static final String DATE_REGEX = "^\\d{1,2}\\/\\d{1,2}\\/\\d{4}$";
+  private static final String DATE_REGEX = "^\\d{1,2}\\/\\d{1,2}\\/\\d{4}$";
 
   // MM/DD/YYYY HH:mm, MM/DD/YYYY H:mm, M/D/YYYY HH:mm OR M/D/YYYY H:mm
-  public static final String DATE_TIME_REGEX =
+  private static final String DATE_TIME_REGEX =
       "^\\d{1,2}\\/\\d{1,2}\\/\\d{4}( ([0-1]?[0-9]|2[0-3]):[0-5][0-9])?$";
-  public static final String EMAIL_REGEX = "^[\\w-\\.]+@([\\w-]+\\.)+[\\w-]{2,4}$";
-  public static final String ALPHABET_REGEX = "^[a-zA-Z]+$";
-
+  private static final String EMAIL_REGEX = "^[\\w-\\.]+@([\\w-]+\\.)+[\\w-]{2,4}$";
+  private static final String ALPHABET_REGEX = "^[a-zA-Z]+$";
   private static final Set<String> VALID_STATE_CODES = new HashSet<>();
-
   private static final Set<String> GENDER_VALUES =
       Set.of(
           "M", "Male",
@@ -50,13 +48,11 @@ public class TestResultFileValidator {
           "U", "Unknown",
           "A", "Ambiguous",
           "N", "Not applicable");
-
   private static final Set<String> ETHNICITY_VALUES =
       Set.of(
           "2135-2", "Hispanic or Latino",
           "2186-5", "Not Hispanic or Latino",
           "UNK", "Unknown");
-
   private static final Set<String> RACE_VALUES =
       Set.of(
           "1002-5", "American Indian or Alaska Native",
@@ -67,16 +63,13 @@ public class TestResultFileValidator {
           "2131-1", "Other",
           "ASKU", "Ask but unknown",
           "UNK", "Unknown");
-
   private static final Set<String> YES_NO_VALUES =
       Set.of(
           "Y", "YES",
           "N", "NO",
           "U", "UNK");
-
   private static final Set<String> TEST_RESULT_VALUES =
       Set.of("Positive", "Negative", "Not Detected", "Detected", "Invalid Result");
-
   private static final Set<String> SPECIMEN_TYPE_VALUES =
       Set.of(
           "Nasal Swab",
@@ -87,7 +80,6 @@ public class TestResultFileValidator {
           "Whole Blood",
           "Plasma",
           "Serum");
-
   private static final Set<String> RESIDENCE_VALUES =
       Set.of(
           "22232009", "Hospital",
@@ -108,8 +100,9 @@ public class TestResultFileValidator {
           "285113009", "Religious Institutional Residence",
           "285141008", "Work (environment)",
           "32911000", "Homeless");
-
   private static final Set<String> TEST_RESULT_STATUS_VALUES = Set.of("F", "C");
+  private static final String ITEM_SCOPE = "item";
+  private static final String REPORT_SCOPE = "report";
 
   public TestResultFileValidator() {
     VALID_STATE_CODES.addAll(STATE_CODES);
@@ -384,7 +377,8 @@ public class TestResultFileValidator {
     if (!value.matches(regex)) {
       errors.add(
           new FeedbackMessage(
-              "error", input.getValue() + " is not a valid value for column " + input.getHeader()));
+              ITEM_SCOPE,
+              input.getValue() + " is not a valid value for column " + input.getHeader()));
     }
     return errors;
   }
@@ -398,7 +392,7 @@ public class TestResultFileValidator {
     if (!acceptableValues.contains(value)) {
       errors.add(
           new FeedbackMessage(
-              "error",
+              ITEM_SCOPE,
               input.getValue() + " is not an acceptable value for column " + input.getHeader()));
     }
     return errors;
@@ -423,7 +417,7 @@ public class TestResultFileValidator {
   private ValueOrError getValue(Map<String, String> row, String name, boolean isRequired) {
     String value = row.get(name);
     if (isRequired && (value == null || value.trim().isEmpty())) {
-      return new ValueOrError(new FeedbackMessage("error", name + " is a required column."));
+      return new ValueOrError(new FeedbackMessage(REPORT_SCOPE, name + " is a required column."));
     }
     return new ValueOrError(value, name);
   }
