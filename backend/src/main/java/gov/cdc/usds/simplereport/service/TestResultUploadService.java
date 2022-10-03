@@ -12,14 +12,18 @@ import gov.cdc.usds.simplereport.db.model.auxiliary.UploadStatus;
 import gov.cdc.usds.simplereport.db.repository.TestResultUploadRepository;
 import gov.cdc.usds.simplereport.service.errors.InvalidBulkTestResultUploadException;
 import gov.cdc.usds.simplereport.service.errors.InvalidRSAPrivateKeyException;
+import gov.cdc.usds.simplereport.service.model.reportstream.FeedbackMessage;
 import gov.cdc.usds.simplereport.service.model.reportstream.ReportStreamStatus;
 import gov.cdc.usds.simplereport.service.model.reportstream.TokenResponse;
 import gov.cdc.usds.simplereport.service.model.reportstream.UploadResponse;
 import gov.cdc.usds.simplereport.utils.TokenAuthentication;
+import gov.cdc.usds.simplereport.validators.TestResultFileValidator;
+import java.io.ByteArrayInputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.util.Date;
 import java.util.LinkedHashMap;
+import java.util.List;
 import java.util.Map;
 import java.util.UUID;
 import lombok.RequiredArgsConstructor;
@@ -38,6 +42,7 @@ public class TestResultUploadService {
   private final DataHubClient _client;
   private final OrganizationService _orgService;
   private final TokenAuthentication _tokenAuth;
+  private final TestResultFileValidator testResultFileValidator;
 
   @Value("${data-hub.url}")
   private String dataHubUrl;
@@ -76,6 +81,13 @@ public class TestResultUploadService {
     } catch (IOException e) {
       log.error("Error reading test result upload CSV", e);
       throw new CsvProcessingException("Unable to read csv");
+    }
+
+    List<FeedbackMessage> errors =
+        testResultFileValidator.validateHeaders(new ByteArrayInputStream(content));
+    if (!errors.isEmpty()) {
+      result.setErrors(errors.toArray(FeedbackMessage[]::new));
+      return result;
     }
 
     UploadResponse response = null;
