@@ -260,143 +260,147 @@ public class TestResultFileValidator {
       errors.addAll(testResultStatus.getPossibleError());
 
       // validate individual values
-      errors.addAll(validateState(patientState.getValue()));
-      errors.addAll(validateState(orderingProviderState.getValue()));
-      errors.addAll(validateState(testingLabState.getValue()));
-      errors.addAll(validateState(orderingFacilityState.getValue()));
+      errors.addAll(validateState(patientState));
+      errors.addAll(validateState(orderingProviderState));
+      errors.addAll(validateState(testingLabState));
+      errors.addAll(validateState(orderingFacilityState));
 
-      errors.addAll(validateZipCode(patientZipCode.getValue()));
-      errors.addAll(validateZipCode(orderingProviderZipCode.getValue()));
-      errors.addAll(validateZipCode(testingLabZipCode.getValue()));
-      errors.addAll(validateZipCode(orderingFacilityZipCode.getValue()));
+      errors.addAll(validateZipCode(patientZipCode));
+      errors.addAll(validateZipCode(orderingProviderZipCode));
+      errors.addAll(validateZipCode(testingLabZipCode));
+      errors.addAll(validateZipCode(orderingFacilityZipCode));
 
-      errors.addAll(validatePhoneNumber(patientPhoneNumber.getValue()));
-      errors.addAll(validatePhoneNumber(orderingProviderPhoneNumber.getValue()));
-      errors.addAll(validatePhoneNumber(testingLabPhoneNumber.getValue()));
-      errors.addAll(validatePhoneNumber(orderingFacilityPhoneNumber.getValue()));
+      errors.addAll(validatePhoneNumber(patientPhoneNumber));
+      errors.addAll(validatePhoneNumber(orderingProviderPhoneNumber));
+      errors.addAll(validatePhoneNumber(testingLabPhoneNumber));
+      errors.addAll(validatePhoneNumber(orderingFacilityPhoneNumber));
 
-      errors.addAll(validateDate(patientDob.getValue()));
-      errors.addAll(validateDate(illnessOnsetDate.getValue()));
+      errors.addAll(validateDate(patientDob));
+      errors.addAll(validateDate(illnessOnsetDate));
 
-      errors.addAll(validateDateTime(orderTestDate.getValue()));
-      errors.addAll(validateDateTime(specimenCollectionDate.getValue()));
-      errors.addAll(validateDateTime(testingLabSpecimenReceivedDate.getValue()));
-      errors.addAll(validateDateTime(testResultDate.getValue()));
-      errors.addAll(validateDateTime(dateResultReleased.getValue()));
+      errors.addAll(validateDateTime(orderTestDate));
+      errors.addAll(validateDateTime(specimenCollectionDate));
+      errors.addAll(validateDateTime(testingLabSpecimenReceivedDate));
+      errors.addAll(validateDateTime(testResultDate));
+      errors.addAll(validateDateTime(dateResultReleased));
 
-      errors.addAll(validateEmail(patientEmail.getValue()));
-      errors.addAll(validateRace(patientRace.getValue()));
-      errors.addAll(validateGender(patientGender.getValue()));
-      errors.addAll(validateEthnicity(patientEthnicity.getValue()));
+      errors.addAll(validateEmail(patientEmail));
+      errors.addAll(validateRace(patientRace));
+      errors.addAll(validateGender(patientGender));
+      errors.addAll(validateEthnicity(patientEthnicity));
 
-      errors.addAll(validateYesNoAnswer(pregnant.getValue()));
-      errors.addAll(validateYesNoAnswer(employedInHealthcare.getValue()));
-      errors.addAll(validateYesNoAnswer(symptomaticForDisease.getValue()));
-      errors.addAll(validateYesNoAnswer(residentCongregateSetting.getValue()));
-      errors.addAll(validateYesNoAnswer(hospitalized.getValue()));
-      errors.addAll(validateYesNoAnswer(icu.getValue()));
-      errors.addAll(validateResidence(residenceType.getValue()));
+      errors.addAll(validateYesNoAnswer(pregnant));
+      errors.addAll(validateYesNoAnswer(employedInHealthcare));
+      errors.addAll(validateYesNoAnswer(symptomaticForDisease));
+      errors.addAll(validateYesNoAnswer(residentCongregateSetting));
+      errors.addAll(validateYesNoAnswer(hospitalized));
+      errors.addAll(validateYesNoAnswer(icu));
+      errors.addAll(validateResidence(residenceType));
 
-      errors.addAll(validateTestResult(testResult.getValue()));
-      errors.addAll(validateTestResultStatus(testResultStatus.getValue()));
-      errors.addAll(validateSpecimenType(specimenType.getValue()));
+      errors.addAll(validateTestResult(testResult));
+      errors.addAll(validateTestResultStatus(testResultStatus));
+      errors.addAll(validateSpecimenType(specimenType));
     }
 
     return errors;
   }
 
-  private List<FeedbackMessage> validateTestResult(String input) {
-    return validateSpecificValueOrSNOMED(input, TEST_RESULT_VALUES, "test result");
+  private List<FeedbackMessage> validateTestResult(ValueOrError input) {
+    return validateSpecificValueOrSNOMED(input, TEST_RESULT_VALUES);
   }
 
-  private List<FeedbackMessage> validateSpecimenType(String input) {
-    return validateSpecificValueOrSNOMED(input, SPECIMEN_TYPE_VALUES, "specimen type");
+  private List<FeedbackMessage> validateSpecimenType(ValueOrError input) {
+    return validateSpecificValueOrSNOMED(input, SPECIMEN_TYPE_VALUES);
   }
 
   private List<FeedbackMessage> validateSpecificValueOrSNOMED(
-      String input, Set<String> acceptableValues, String type) {
+      ValueOrError input, Set<String> acceptableValues) {
     List<FeedbackMessage> errors = new ArrayList<>();
-    String value = parseString(input);
+    String value = parseString(input.getValue());
     if (value == null) {
       return errors;
     }
     // SNOMED codes are numerical and are a minimum of six digits long
     boolean nonSNOMEDValue = value.matches(ALPHABET_REGEX);
     if (nonSNOMEDValue) {
-      return validateInSet(input, acceptableValues, type);
+      return validateInSet(input, acceptableValues);
     }
     return errors;
   }
 
-  private List<FeedbackMessage> validateResidence(String input) {
-    return validateInSet(input, RESIDENCE_VALUES, "residence type");
+  private List<FeedbackMessage> validateResidence(ValueOrError input) {
+    return validateInSet(input, RESIDENCE_VALUES);
   }
 
-  private List<FeedbackMessage> validateYesNoAnswer(String input) {
-    return validateInSet(input, YES_NO_VALUES, "value");
+  private List<FeedbackMessage> validateYesNoAnswer(ValueOrError input) {
+    return validateInSet(input, YES_NO_VALUES);
   }
 
-  private List<FeedbackMessage> validateEthnicity(String input) {
-    return validateInSet(input, ETHNICITY_VALUES, "race");
+  private List<FeedbackMessage> validateEthnicity(ValueOrError input) {
+    return validateInSet(input, ETHNICITY_VALUES);
   }
 
-  private List<FeedbackMessage> validateRace(String input) {
-    return validateInSet(input, RACE_VALUES, "race");
+  private List<FeedbackMessage> validateRace(ValueOrError input) {
+    return validateInSet(input, RACE_VALUES);
   }
 
-  private List<FeedbackMessage> validateGender(String input) {
-    return validateInSet(input, GENDER_VALUES, "gender");
+  private List<FeedbackMessage> validateGender(ValueOrError input) {
+    return validateInSet(input, GENDER_VALUES);
   }
 
-  private List<FeedbackMessage> validateState(String input) {
-    return validateInSet(input, VALID_STATE_CODES, "state");
+  private List<FeedbackMessage> validateState(ValueOrError input) {
+    return validateInSet(input, VALID_STATE_CODES);
   }
 
-  private List<FeedbackMessage> validateTestResultStatus(String input) {
-    return validateInSet(input, TEST_RESULT_STATUS_VALUES, "test result status");
+  private List<FeedbackMessage> validateTestResultStatus(ValueOrError input) {
+    return validateInSet(input, TEST_RESULT_STATUS_VALUES);
   }
 
-  private List<FeedbackMessage> validateZipCode(String input) {
-    return validateRegex(input, ZIP_CODE_REGEX, "zipcode");
+  private List<FeedbackMessage> validateZipCode(ValueOrError input) {
+    return validateRegex(input, ZIP_CODE_REGEX);
   }
 
-  private List<FeedbackMessage> validatePhoneNumber(String input) {
-    return validateRegex(input, PHONE_NUMBER_REGEX, "phone number");
+  private List<FeedbackMessage> validatePhoneNumber(ValueOrError input) {
+    return validateRegex(input, PHONE_NUMBER_REGEX);
   }
 
-  private List<FeedbackMessage> validateDate(String input) {
-    return validateRegex(input, DATE_REGEX, "date");
+  private List<FeedbackMessage> validateDate(ValueOrError input) {
+    return validateRegex(input, DATE_REGEX);
   }
 
-  private List<FeedbackMessage> validateDateTime(String input) {
-    return validateRegex(input, DATE_TIME_REGEX, "date or datetime");
+  private List<FeedbackMessage> validateDateTime(ValueOrError input) {
+    return validateRegex(input, DATE_TIME_REGEX);
   }
 
-  private List<FeedbackMessage> validateEmail(String input) {
-    return validateRegex(input, EMAIL_REGEX, "email");
+  private List<FeedbackMessage> validateEmail(ValueOrError input) {
+    return validateRegex(input, EMAIL_REGEX);
   }
 
-  private List<FeedbackMessage> validateRegex(String input, String regex, String type) {
+  private List<FeedbackMessage> validateRegex(ValueOrError input, String regex) {
     List<FeedbackMessage> errors = new ArrayList<>();
-    String value = parseString(input);
+    String value = parseString(input.getValue());
     if (value == null) {
       return errors;
     }
     if (!value.matches(regex)) {
-      errors.add(new FeedbackMessage("error", input + " is not a recognized " + type));
+      errors.add(
+          new FeedbackMessage(
+              "error", input.getValue() + " is not a valid value for column " + input.getHeader()));
     }
     return errors;
   }
 
-  private List<FeedbackMessage> validateInSet(
-      String input, Set<String> acceptableValues, String type) {
+  private List<FeedbackMessage> validateInSet(ValueOrError input, Set<String> acceptableValues) {
     List<FeedbackMessage> errors = new ArrayList<>();
-    String value = parseString(input);
+    String value = parseString(input.getValue());
     if (value == null) {
       return errors;
     }
     if (!acceptableValues.contains(value)) {
-      errors.add(new FeedbackMessage("error", input + " is not a recognized " + type));
+      errors.add(
+          new FeedbackMessage(
+              "error",
+              input.getValue() + " is not an acceptable value for column " + input.getHeader()));
     }
     return errors;
   }
@@ -420,9 +424,9 @@ public class TestResultFileValidator {
   private ValueOrError getValue(Map<String, String> row, String name, boolean isRequired) {
     String value = row.get(name);
     if (isRequired && (value == null || value.trim().isEmpty())) {
-      return new ValueOrError(new FeedbackMessage("error", name + " is required."));
+      return new ValueOrError(new FeedbackMessage("error", name + " is required."), name);
     }
-    return new ValueOrError(value);
+    return new ValueOrError(value, name);
   }
 
   private MappingIterator<Map<String, String>> getIteratorForCsv(InputStream csvStream)
@@ -457,21 +461,20 @@ public class TestResultFileValidator {
 
   @Getter
   private class ValueOrError {
-    List<FeedbackMessage> error;
-    String value;
+    private List<FeedbackMessage> error;
+    private String value;
+    private String header;
 
-    public ValueOrError(String value) {
+    public ValueOrError(String value, String header) {
       this.value = value;
       this.error = Collections.emptyList();
+      this.header = header;
     }
 
-    public ValueOrError(FeedbackMessage error) {
+    public ValueOrError(FeedbackMessage error, String header) {
       this.value = null;
       this.error = List.of(error);
-    }
-
-    public boolean hasValue() {
-      return value != null;
+      this.header = header;
     }
 
     public List<FeedbackMessage> getPossibleError() {
