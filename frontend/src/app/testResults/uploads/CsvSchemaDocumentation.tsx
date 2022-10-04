@@ -182,7 +182,7 @@ const CsvSchemaDocumentation = () => {
                 results, you may have to adjust it to match the SimpleReport
                 template. If you don’t have one, use the{" "}
                 <a
-                  href="https://reportstream.cdc.gov/assets/csv/ReportStream-StandardCSV-ExampleData-20220509.csv"
+                  href="/assets/resources/test_results_example_10-3-2022.csv"
                   className="usa-link"
                 >
                   spreadsheet template file
