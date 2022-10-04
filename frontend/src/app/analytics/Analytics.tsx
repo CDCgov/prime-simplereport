@@ -232,7 +232,7 @@ export const Analytics = (props: Props) => {
                 <p>Loading...</p>
               ) : (
                 <>
-                  <h3>{facilityName}</h3>
+                  <h2>{facilityName}</h2>
                   <p className="margin-bottom-0">All people tested</p>
                   <p className="padding-top-1">{`${startDate} \u2013 ${endDate}`}</p>
                   <div className="grid-row grid-gap">

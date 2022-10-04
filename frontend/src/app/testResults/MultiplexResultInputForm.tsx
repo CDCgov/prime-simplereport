@@ -176,7 +176,7 @@ const MultiplexResultInputForm: React.FC<Props> = ({
     <form className="usa-form maxw-none multiplex-result-form">
       <div className="grid-row grid-gap-2">
         <div className="grid-col-4">
-          <h4 className="prime-radio__title">COVID-19</h4>
+          <h2 className="prime-radio__title">COVID-19</h2>
           <RadioGroup
             legend="COVID-19 result"
             legendSrOnly
@@ -200,7 +200,7 @@ const MultiplexResultInputForm: React.FC<Props> = ({
           />
         </div>
         <div className="grid-col-4">
-          <h4 className="prime-radio__title">Flu A</h4>
+          <h2 className="prime-radio__title">Flu A</h2>
           <RadioGroup
             legend="Flu A result"
             legendSrOnly
@@ -224,7 +224,7 @@ const MultiplexResultInputForm: React.FC<Props> = ({
           />
         </div>
         <div className="grid-col-4">
-          <h4 className="prime-radio__title">Flu B</h4>
+          <h2 className="prime-radio__title">Flu B</h2>
           <RadioGroup
             legend="Flu B result"
             legendSrOnly
