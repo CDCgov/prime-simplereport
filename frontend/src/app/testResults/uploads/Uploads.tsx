@@ -156,11 +156,12 @@ const Uploads = () => {
               <br /> The results uploader allows you to report test results in
               bulk using a CSV file. While we expect most SimpleReport users
               will continue to report through the regular process, this feature
-              can serve labs and others who have an information system that can
-              export spreadsheets, such as an EMR. {" "}
+              can serve labs and others with an information system that exports
+              spreadsheets, such as an EMR.{" "}
               <LinkWithQuery to="/results/upload/submit/guide">
                 <strong>Learn more about how it works</strong>
-              </LinkWithQuery>.
+              </LinkWithQuery>
+              .
             </p>
           </div>
         </div>
