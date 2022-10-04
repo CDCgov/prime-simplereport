@@ -95,6 +95,9 @@ const TEST_RESULTS_COVID = [
       role: "RESIDENT",
       lookupId: null,
       email: "sam@gerard.com",
+      phoneNumbers: [
+        { type: "MOBILE", number: "(248) 555-1234", __typename: "PhoneNumber" },
+      ],
       __typename: "Patient",
     },
     createdBy: {

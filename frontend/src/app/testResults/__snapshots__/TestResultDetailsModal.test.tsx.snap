@@ -29,7 +29,7 @@ Object {
             <h1
               class="font-heading-lg margin-top-05 margin-bottom-0"
             >
-              Test details
+              Result details
             </h1>
             <div
               class="sr-time-of-test-buttons"
@@ -89,7 +89,7 @@ Object {
           <h2
             class="font-sans-md margin-top-3"
           >
-            Test details
+            Test information
           </h2>
           <table
             class="width-full font-sans-md add-list-reset border-base-lighter border-2px radius-md padding-x-2 padding-y-1"
@@ -235,7 +235,7 @@ Object {
           <h1
             class="font-heading-lg margin-top-05 margin-bottom-0"
           >
-            Test details
+            Result details
           </h1>
           <div
             class="sr-time-of-test-buttons"
@@ -295,7 +295,7 @@ Object {
         <h2
           class="font-sans-md margin-top-3"
         >
-          Test details
+          Test information
         </h2>
         <table
           class="width-full font-sans-md add-list-reset border-base-lighter border-2px radius-md padding-x-2 padding-y-1"
@@ -497,7 +497,7 @@ Object {
             <h1
               class="font-heading-lg margin-top-05 margin-bottom-0"
             >
-              Test details
+              Result details
             </h1>
             <div
               class="sr-time-of-test-buttons"
@@ -557,7 +557,7 @@ Object {
           <h2
             class="font-sans-md margin-top-3"
           >
-            Test details
+            Test information
           </h2>
           <table
             class="width-full font-sans-md add-list-reset border-base-lighter border-2px radius-md padding-x-2 padding-y-1"
@@ -679,7 +679,7 @@ Object {
           <h1
             class="font-heading-lg margin-top-05 margin-bottom-0"
           >
-            Test details
+            Result details
           </h1>
           <div
             class="sr-time-of-test-buttons"
@@ -739,7 +739,7 @@ Object {
         <h2
           class="font-sans-md margin-top-3"
         >
-          Test details
+          Test information
         </h2>
         <table
           class="width-full font-sans-md add-list-reset border-base-lighter border-2px radius-md padding-x-2 padding-y-1"

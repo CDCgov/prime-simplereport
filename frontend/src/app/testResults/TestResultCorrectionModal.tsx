@@ -147,6 +147,7 @@ export const DetachedTestResultCorrectionModal = ({
       })
       .finally(() => {
         closeModal();
+        navigate(0);
       });
   };
 

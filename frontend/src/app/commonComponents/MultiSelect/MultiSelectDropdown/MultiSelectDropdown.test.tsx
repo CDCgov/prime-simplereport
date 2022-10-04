@@ -43,10 +43,8 @@ describe("MultiSelectDropdown component", () => {
         onChange={jest.fn()}
       />
     );
-    expect(screen.getByRole("multi-select-input")).toBeInTheDocument();
-    expect(screen.getByRole("multi-select-input")).toBeInstanceOf(
-      HTMLInputElement
-    );
+    expect(screen.getByRole("combobox")).toBeInTheDocument();
+    expect(screen.getByRole("combobox")).toBeInstanceOf(HTMLInputElement);
   });
 
   it("renders hidden options list on load", () => {

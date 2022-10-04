@@ -56,7 +56,8 @@ describe("EmailTestResultModal", () => {
   });
 
   it("should show render", () => {
-    render(
+    let component: any;
+    component = render(
       <EmailTestResultModal
         testResultId={"super-fancy-id"}
         closeModal={mockCloseModal}
@@ -70,6 +71,8 @@ describe("EmailTestResultModal", () => {
     screen.getByText("gesezyx@mailinator.com");
     screen.getByText("Send result");
     screen.getByText("Cancel");
+
+    expect(component).toMatchSnapshot();
   });
 
   describe("clicking on Send result button", () => {
