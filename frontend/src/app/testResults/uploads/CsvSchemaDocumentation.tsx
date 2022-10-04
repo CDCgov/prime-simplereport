@@ -2,6 +2,7 @@ import { LinkWithQuery } from "../../commonComponents/LinkWithQuery";
 import { useDocumentTitle } from "../../utils/hooks";
 import iconSprite from "../../../../node_modules/uswds/dist/img/sprite.svg";
 
+import "../FontFix.scss";
 import schema from "./schema.json";
 
 export type CsvSchemaItem = {
@@ -89,7 +90,7 @@ const CsvSchemaDocumentation = () => {
   useDocumentTitle("Spreadsheet upload guide");
 
   return (
-    <div className="prime-container card-container">
+    <div className="prime-container card-container header-size-change">
       <div className="usa-card__header">
         <div>
           <div className="display-flex flex-align-center">
