@@ -2,7 +2,7 @@
 
 exports[`CsvSchemaDocumentation tests CsvSchemaDocumentationItem renders a schema item 1`] = `
 <div>
-  <h4
+  <h3
     class="font-body-md margin-bottom-2"
     data-testid="header"
     id="doc-sample_item"
@@ -13,7 +13,7 @@ exports[`CsvSchemaDocumentation tests CsvSchemaDocumentationItem renders a schem
     >
       Optional
     </span>
-  </h4>
+  </h3>
   <div
     class="margin-bottom-3"
     data-testid="notes"
