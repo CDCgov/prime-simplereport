@@ -37,9 +37,7 @@ function ToS() {
       <h3 id="accounts-registration">
         {t("testResult.tos.document.dataRights.subheading")}
       </h3>
-      <ul>
-        <li>{t("testResult.tos.document.dataRights.l0")}</li>
-      </ul>
+      <h4>{t("testResult.tos.document.dataRights.section0")}</h4>
       <p>{t("testResult.tos.document.dataRights.p01")}</p>
       <Trans
         t={t}
@@ -51,13 +49,9 @@ function ToS() {
           </a>,
         ]}
       />
-      <ul>
-        <li>{t("testResult.tos.document.dataRights.l1")}</li>
-      </ul>
+      <h4>{t("testResult.tos.document.dataRights.section1")}</h4>
       <p>{t("testResult.tos.document.dataRights.p1")}</p>
-      <ul>
-        <li>{t("testResult.tos.document.dataRights.l2")}</li>
-      </ul>
+      <h4>{t("testResult.tos.document.dataRights.section2")}</h4>
       <p>{t("testResult.tos.document.dataRights.p2")}</p>
       <h3 id="privacy">{t("testResult.tos.document.privacy.heading")}</h3>
       <Trans

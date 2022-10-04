@@ -412,8 +412,8 @@ export const en = {
           },
           dataRights: {
             heading: "Data rights and usage",
-            subheading: "Accounts/Registration",
-            l0: "For entity users",
+            subheading: "Accounts/registration",
+            section0: "For entity users",
             p01:
               "If you are using the Application on behalf of an Entity as either an Entity Administrator or Entity User, you represent " +
               "and warrant that you have authority to bind that Entity to the Terms and by accepting the Terms, you are doing so on " +
@@ -429,12 +429,12 @@ export const en = {
               "keys, tokens, and Entity and Entity User identifications (IDs)) will be issued to you by HHS or CDC. These credentials " +
               "are intended to be used only by you and to identify any software or APIs which you are using. You agree to keep your " +
               "credentials confidential and make reasonable efforts to prevent and discourage other persons from using your credentials.",
-            l1: "For entity administrators",
+            section1: "For entity administrators",
             p1:
               "The Entity Administrator agrees to verify the identity of other Entity Users who are added and to inactivate any other " +
               "Entity Users who should no longer have access. The Administrator also agrees to set permissions appropriately to determine " +
               "the minimum access necessary for each other Entity User to complete their required job duties.",
-            l2: "For individual users",
+            section2: "For individual users",
             p2:
               "Entity Administrators will grant Individual Users access to the Application. Individual Users can use the Application " +
               "to access and review their own information or information about others as may be permitted by applicable law (e.g., on " +
