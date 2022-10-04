@@ -441,7 +441,6 @@ export const DetachedTestResultsList = ({
                   queryString={debounced}
                   disabled={!allowQuery}
                   label={"Search by name"}
-                  placeholder={""}
                   className="usa-form-group search-input_without_submit_button"
                   showSubmitButton={false}
                 />
