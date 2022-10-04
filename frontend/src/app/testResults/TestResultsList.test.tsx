@@ -658,19 +658,20 @@ describe("TestResultsList", () => {
     });
 
     describe("return focus after modal close", () => {
-      beforeEach(async () => {
+      const clickActionMenu = async () => {
         expect(await screen.findByText("Showing 1-3 of 3")).toBeInTheDocument();
         const actionMenuButton = document.querySelectorAll(
           ".rc-menu-button"
         )[0];
         userEvent.click(actionMenuButton as HTMLElement);
-      });
+      };
       it.each([
         ["Print result", "Close"],
         ["Text result", "Cancel"],
         ["Email result", "Cancel"],
         ["Correct result", "No, go back"],
       ])("should set focus on %p", async (menuButtonText, closeButtonText) => {
+        await clickActionMenu();
         userEvent.click(screen.getByText(menuButtonText));
         await screen.findAllByText(closeButtonText);
         userEvent.click(screen.getAllByText(closeButtonText)[0]);
@@ -679,6 +680,7 @@ describe("TestResultsList", () => {
         );
       });
       it("should set focus on the view details button", async () => {
+        await clickActionMenu();
         userEvent.click(screen.getByText("View details"));
         await screen.findByAltText("Close");
         userEvent.click(screen.getByAltText("Close"));
@@ -807,6 +809,42 @@ describe("TestResultsList", () => {
           exact: false,
         })
       ).not.toBeInTheDocument();
+    });
+  });
+
+  describe("clear filter button", () => {
+    const elementToTest = (filterParams: FilterParams) => (
+      <WithRouter>
+        <Provider store={store}>
+          <MockedProvider mocks={mocks}>
+            <DetachedTestResultsList
+              data={{ testResults }}
+              pageNumber={1}
+              entriesPerPage={20}
+              totalEntries={testResults.length}
+              filterParams={filterParams}
+              setFilterParams={() => () => {}}
+              clearFilterParams={() => {}}
+              activeFacilityId={"1"}
+              loading={false}
+              loadingTotalResults={false}
+              maxDate="2022-09-26"
+            />
+          </MockedProvider>
+        </Provider>
+      </WithRouter>
+    );
+    it("should be disabled when no filters are applied", () => {
+      render(elementToTest({}));
+      expect(screen.getByText("Clear filters")).toBeDisabled();
+    });
+    it("should be disabled when testing only filter applied is facility is active facility", () => {
+      render(elementToTest({ filterFacilityId: "1" }));
+      expect(screen.getByText("Clear filters")).toBeDisabled();
+    });
+    it("should be enabled filters are applied", () => {
+      render(elementToTest({ result: "Positive" }));
+      expect(screen.getByText("Clear filters")).toBeEnabled();
     });
   });
 });

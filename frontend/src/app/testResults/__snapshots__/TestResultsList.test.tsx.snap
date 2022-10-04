@@ -45,7 +45,9 @@ exports[`TestResultsList should render a list of tests 1`] = `
               Download results
             </button>
             <button
-              class="usa-button sr-active-button"
+              aria-disabled="true"
+              class="usa-button usa-button-disabled sr-active-button"
+              disabled=""
               type="button"
             >
               <svg

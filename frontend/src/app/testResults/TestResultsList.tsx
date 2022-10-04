@@ -411,15 +411,20 @@ export const DetachedTestResultsList = ({
                 onClick={() => {
                   setDebounced("");
                   clearFilterParams();
-                  (document.querySelector(
-                    "input[id=start-date]"
+                  (document.getElementById(
+                    "start-date"
                   ) as HTMLInputElement).value = "";
-                  (document.querySelector(
-                    "input[id=end-date]"
+                  (document.getElementById(
+                    "end-date"
                   ) as HTMLInputElement).value = "";
                   setStartDateError("");
                   setEndDateError("");
                 }}
+                disabled={
+                  Object.keys(filterParams).length === 0 ||
+                  (Object.keys(filterParams).length === 1 &&
+                    filterParams.filterFacilityId === activeFacilityId)
+                }
               >
                 Clear filters
               </Button>
