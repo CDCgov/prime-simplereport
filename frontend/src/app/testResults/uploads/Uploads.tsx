@@ -136,7 +136,7 @@ const Uploads = () => {
   };
 
   return (
-    <div className="grid-row header-size-change">
+    <div className="grid-row header-size-fix">
       <div className="prime-container card-container">
         <div className="usa-card__header">
           <h1>Upload your results</h1>
@@ -219,7 +219,7 @@ const Uploads = () => {
               key={fileInputResetValue}
               id="upload-csv-input"
               name="upload-csv-input"
-              aria-describedby="upload-csv-input-label"
+              aria-label="file selection input"
               accept="text/csv, .csv"
               onChange={(e) => handleFileChange(e)}
               required

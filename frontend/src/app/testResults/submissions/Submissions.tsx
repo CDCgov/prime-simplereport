@@ -78,7 +78,7 @@ const Submissions = () => {
   };
 
   return (
-    <div className="grid-row header-size-change">
+    <div className="grid-row header-size-fix">
       <div className="prime-container card-container">
         {/*Submission header*/}
         <div className="usa-card__header">

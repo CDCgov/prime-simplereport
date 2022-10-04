@@ -90,7 +90,7 @@ const CsvSchemaDocumentation = () => {
   useDocumentTitle("Spreadsheet upload guide");
 
   return (
-    <div className="prime-container card-container header-size-change">
+    <div className="prime-container card-container header-size-fix">
       <div className="usa-card__header">
         <div>
           <div className="display-flex flex-align-center">

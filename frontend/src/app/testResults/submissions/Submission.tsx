@@ -5,6 +5,7 @@ import { useGetUploadSubmissionQuery } from "../../../generated/graphql";
 import { LinkWithQuery } from "../../commonComponents/LinkWithQuery";
 import { formatDateWithTimeOption } from "../../utils/date";
 import { useDocumentTitle } from "../../utils/hooks";
+import "../FontFix.scss";
 
 const Submission = () => {
   useDocumentTitle("View upload details");
@@ -32,7 +33,7 @@ const Submission = () => {
   );
 
   return (
-    <div className="grid-row">
+    <div className="grid-row header-size-fix">
       <div className="prime-container card-container">
         {/* Sub-heading */}
         <div className="usa-card__header">
@@ -51,6 +52,9 @@ const Submission = () => {
             >
               Upload history
             </LinkWithQuery>
+            <div>
+              <h1 className="margin-top-2">Submission detail</h1>
+            </div>
           </div>
         </div>
 
