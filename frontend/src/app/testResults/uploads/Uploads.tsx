@@ -157,10 +157,10 @@ const Uploads = () => {
               bulk using a CSV file. While we expect most SimpleReport users
               will continue to report through the regular process, this feature
               can serve labs and others who have an information system that can
-              export spreadsheets, such as an EMR. &nbsp;{" "}
+              export spreadsheets, such as an EMR. {" "}
               <LinkWithQuery to="/results/upload/submit/guide">
                 <strong>Learn more about how it works</strong>
-              </LinkWithQuery>
+              </LinkWithQuery>.
             </p>
           </div>
         </div>
