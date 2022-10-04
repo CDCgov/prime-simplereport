@@ -60,7 +60,7 @@ exports[`CsvSchemaDocumentation tests CsvSchemaDocumentationItem renders a schem
 exports[`CsvSchemaDocumentation tests CsvSchemaDocumentaton matches snapshot 1`] = `
 <div>
   <div
-    class="prime-container card-container"
+    class="prime-container card-container header-size-fix"
   >
     <div
       class="usa-card__header"
@@ -91,7 +91,18 @@ exports[`CsvSchemaDocumentation tests CsvSchemaDocumentaton matches snapshot 1`]
             class="margin-top-2"
           >
             CSV template guide
+<<<<<<< HEAD
           </h2>
+=======
+             
+            <span
+              class="text-secondary bg-white border-1px border-secondary font-body-3xs padding-x-1 padding-y-05 text-secondary margin-left-2 text-ttbottom"
+            >
+              Pilot program
+               
+            </span>
+          </h1>
+>>>>>>> 5f3176b3 (fix test)
         </div>
       </div>
     </div>
