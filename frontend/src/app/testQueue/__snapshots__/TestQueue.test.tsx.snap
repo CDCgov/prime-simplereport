@@ -40,11 +40,11 @@ exports[`TestQueue should render the test queue 1`] = `
                 disabled=""
                 type="submit"
               >
-                <span
-                  class="usa-sr-only"
-                >
-                  Search
-                </span>
+                <img
+                  alt="Search"
+                  class="usa-search__submit-icon"
+                  src="search--white.svg"
+                />
               </button>
             </div>
           </form>
