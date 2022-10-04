@@ -62,3 +62,10 @@ module "pagerduty_prod" {
   pagerduty_service_name  = "SimpleReport - Production"
   action_group_short_name = "SR-Prod"
 }
+
+module "pagerduty_stg" {
+  source                  = "../services/pagerduty"
+  resource_group_name     = data.azurerm_resource_group.rg.name
+  pagerduty_service_name  = "SimpleReport - Stg"
+  action_group_short_name = "SR-Stg"
+}

@@ -1,4 +1,3 @@
-
 .multi-select-dropdown {
   max-width: unset !important;
 }
@@ -23,6 +22,7 @@
   }
 
   .close-button {
+    color: #005ea2;
     cursor: pointer;
     width: 24px;
     height: 24px;
@@ -30,4 +30,13 @@
     align-items: center;
     justify-content: center;
   }
+}
+
+.pill-container.pill-container--hidden {
+  display: none;
+}
+
+.fieldset--unstyled {
+  border: none;
+  padding: inherit;
 }

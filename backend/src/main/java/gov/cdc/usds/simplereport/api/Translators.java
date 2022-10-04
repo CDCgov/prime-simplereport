@@ -274,14 +274,14 @@ public class Translators {
   }
 
   // "NA" is used for international addresses
-  private static final Set<String> STATE_CODES =
+  public static final Set<String> STATE_CODES =
       Set.of(
           "AK", "AL", "AR", "AS", "AZ", "CA", "CO", "CT", "DC", "DE", "FL", "FM", "GA", "GU", "HI",
           "IA", "ID", "IL", "IN", "KS", "KY", "LA", "MA", "MD", "ME", "MH", "MI", "MN", "MO", "MP",
           "MS", "MT", "NC", "ND", "NE", "NH", "NJ", "NM", "NV", "NY", "OH", "OK", "OR", "PA", "PR",
           "PW", "RI", "SC", "SD", "TN", "TX", "UT", "VA", "VI", "VT", "WA", "WI", "WV", "WY", "NA");
 
-  private static final Set<String> CANADIAN_STATE_CODES =
+  public static final Set<String> CANADIAN_STATE_CODES =
       Set.of("AB", "BC", "MB", "NB", "NL", "NT", "NS", "NU", "ON", "PE", "QC", "SK", "YT");
 
   public static String parseState(String s) {

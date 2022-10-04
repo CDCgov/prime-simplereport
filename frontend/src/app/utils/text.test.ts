@@ -1,4 +1,8 @@
-import { capitalizeText, toLowerCaseHyphenate } from "./text";
+import {
+  capitalizeText,
+  getSubStrAfterChar,
+  toLowerCaseHyphenate,
+} from "./text";
 
 describe("capitalizeText", () => {
   test("empty text", () => {
@@ -31,5 +35,28 @@ describe("toLowerCaseHyphenate", () => {
   test("starts and ends with whitespace", () => {
     const text = " COVID-19 TEST RESULT ";
     expect(toLowerCaseHyphenate(text)).toBe("-covid-19-test-result-");
+  });
+});
+
+describe("getSubStrAfterChar", () => {
+  test("empty text", () => {
+    const text = "";
+    expect(getSubStrAfterChar(text, "a")).toBe("");
+  });
+  test("where no result found", () => {
+    const text = "facility-streetThree";
+    expect(getSubStrAfterChar(text, "!")).toBe("facility-streetThree");
+  });
+  test("where result found", () => {
+    const text = "facility-streetThree";
+    expect(getSubStrAfterChar(text, "-")).toBe("streetThree");
+  });
+  test("where result found multiple times with limit", () => {
+    const text = "facility-streetThree-unitOne";
+    expect(getSubStrAfterChar(text, "-")).toBe("streetThree");
+  });
+  test("where result found multiple times with different limit", () => {
+    const text = "facility-streetThree-unitOne";
+    expect(getSubStrAfterChar(text, "-", 3)).toBe("unitOne");
   });
 });

@@ -141,7 +141,7 @@ export const DetachedTestResultDetailsModal = ({ data, closeModal }: Props) => {
     >
       <div className="display-flex flex-justify">
         <h1 className="font-heading-lg margin-top-05 margin-bottom-0">
-          Test details
+          Result details
         </h1>
         <div className="sr-time-of-test-buttons">
           <button
@@ -191,7 +191,7 @@ export const DetachedTestResultDetailsModal = ({ data, closeModal }: Props) => {
           </span>
         </div>
       </div>
-      <h2 className="font-sans-md margin-top-3">Test details</h2>
+      <h2 className="font-sans-md margin-top-3">Test information</h2>
       <table className={containerClasses}>
         <tbody>
           <DetailsRow
