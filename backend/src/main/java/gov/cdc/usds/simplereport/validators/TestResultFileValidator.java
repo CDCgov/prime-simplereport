@@ -38,6 +38,7 @@ public class TestResultFileValidator {
   private static final String DATE_TIME_REGEX =
       "^\\d{1,2}\\/\\d{1,2}\\/\\d{4}( ([0-1]?[0-9]|2[0-3]):[0-5][0-9])?$";
   private static final String EMAIL_REGEX = "^[\\w-\\.]+@([\\w-]+\\.)+[\\w-]{2,4}$";
+  private static final String CLIA_REGEX = "^[A-Za-z0-9]{2}[Dd][A-Za-z0-9]{7}$";
   private static final String ALPHABET_REGEX = "^[a-zA-Z]+$";
   private static final Set<String> VALID_STATE_CODES = new HashSet<>();
   private static final Set<String> GENDER_VALUES =
@@ -293,6 +294,8 @@ public class TestResultFileValidator {
       errors.addAll(validateTestResult(testResult));
       errors.addAll(validateTestResultStatus(testResultStatus));
       errors.addAll(validateSpecimenType(specimenType));
+
+      errors.addAll(validateClia(testingLabClia));
     }
 
     return errors;
@@ -354,6 +357,10 @@ public class TestResultFileValidator {
 
   private List<FeedbackMessage> validatePhoneNumber(ValueOrError input) {
     return validateRegex(input, PHONE_NUMBER_REGEX);
+  }
+
+  private List<FeedbackMessage> validateClia(ValueOrError input) {
+    return validateRegex(input, CLIA_REGEX);
   }
 
   private List<FeedbackMessage> validateDate(ValueOrError input) {

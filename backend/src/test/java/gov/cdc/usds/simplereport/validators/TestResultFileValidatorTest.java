@@ -87,11 +87,10 @@ class TestResultFileValidatorTest {
     // WHEN
     List<FeedbackMessage> errors = testResultFileValidator.validate(input);
     // THEN
-    assertThat(errors).hasSize(33);
+    assertThat(errors).hasSize(34);
 
     List<String> errorMessages =
         errors.stream().map(FeedbackMessage::getMessage).collect(Collectors.toList());
-    System.out.println(errorMessages);
     assertThat(errorMessages)
         .contains(
             "x is not an acceptable value for column patient_state",
@@ -114,6 +113,7 @@ class TestResultFileValidatorTest {
             "x is not a valid value for column test_result_date",
             "x is not a valid value for column date_result_released",
             "x is not a valid value for column patient_email",
+            "x is not a valid value for column testing_lab_clia",
             "x is not an acceptable value for column patient_race",
             "x is not an acceptable value for column patient_gender",
             "x is not an acceptable value for column patient_ethnicity",
