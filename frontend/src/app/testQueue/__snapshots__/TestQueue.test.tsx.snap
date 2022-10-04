@@ -377,11 +377,11 @@ exports[`TestQueue should render the test queue 1`] = `
               <form
                 class="usa-form maxw-none"
               >
-                <h4
+                <h2
                   class="prime-radio__title"
                 >
                   COVID-19 results
-                </h4>
+                </h2>
                 <div
                   class="usa-form-group prime-radio__group"
                 >
@@ -793,11 +793,11 @@ exports[`TestQueue should render the test queue 1`] = `
               <form
                 class="usa-form maxw-none"
               >
-                <h4
+                <h2
                   class="prime-radio__title"
                 >
                   COVID-19 results
-                </h4>
+                </h2>
                 <div
                   class="usa-form-group prime-radio__group"
                 >
