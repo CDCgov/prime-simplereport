@@ -6,6 +6,7 @@ import { FeedbackMessage } from "../../../generated/graphql";
 import { useDocumentTitle } from "../../utils/hooks";
 import { LinkWithQuery } from "../../commonComponents/LinkWithQuery";
 import { FileUploadService } from "../../../fileUploadService/FileUploadService";
+import "../FontFix.scss";
 
 const PAYLOAD_MAX_BYTES = 50 * 1000 * 1000;
 const REPORT_MAX_ITEMS = 10000;
@@ -135,10 +136,10 @@ const Uploads = () => {
   };
 
   return (
-    <div className="grid-row">
+    <div className="grid-row header-size-change">
       <div className="prime-container card-container">
         <div className="usa-card__header">
-          <h2>Upload your results</h2>
+          <h1>Upload your results</h1>
         </div>
         <div className="usa-alert usa-alert--info margin-left-105em margin-right-105em maxw-tablet-lg">
           <div className="usa-alert__body">
