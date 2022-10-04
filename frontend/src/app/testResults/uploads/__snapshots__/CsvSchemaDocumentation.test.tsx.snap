@@ -213,7 +213,7 @@ exports[`CsvSchemaDocumentation tests CsvSchemaDocumentaton matches snapshot 1`]
           <li>
             <a
               class="usa-link"
-              href="/getting-started/testing-facilities/csv-schema"
+              href="/assets/resources/test_results_example_10-3-2022.csv"
             >
               Standard CSV template with example data
             </a>

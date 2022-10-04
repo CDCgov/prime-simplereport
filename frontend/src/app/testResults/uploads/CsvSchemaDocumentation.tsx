@@ -160,7 +160,7 @@ const CsvSchemaDocumentation = () => {
           <ul>
             <li>
               <a
-                href="/getting-started/testing-facilities/csv-schema"
+                href="/assets/resources/test_results_example_10-3-2022.csv"
                 className="usa-link"
               >
                 Standard CSV template with example data
