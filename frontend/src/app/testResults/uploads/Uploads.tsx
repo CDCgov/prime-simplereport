@@ -140,21 +140,24 @@ const Uploads = () => {
         <div className="usa-card__header">
           <h2>Upload your results</h2>
         </div>
-        <div className="usa-alert usa-alert--info margin-left-105em margin-right-105em">
+        <div className="usa-alert usa-alert--info margin-left-105em margin-right-105em maxw-tablet-lg">
           <div className="usa-alert__body">
             <h4 className="usa-alert__heading">
               What is the bulk results uploader?
             </h4>
             <p className="usa-alert__text">
-              This feature is in beta. That means it’s new, and we’ll continue
-              to update and improve it for our users. Though the feature is in
-              beta, it will route all the results you submit to the appropriate
-              public health department(s). The results uploader allows you to
-              report test results in bulk using a CSV file. While we expect most
-              SimpleReport users will continue to report through the regular
-              process, this feature can serve labs and others who have an
-              information system that can export spreadsheets, such as an EMR.
-              &nbsp;{" "}
+              <em>
+                This feature is in beta. That means it’s new, and we’ll continue
+                to update and improve it for our users. Though the feature is in
+                beta, it will route all the results you submit to the
+                appropriate public health department(s).
+              </em>{" "}
+              <br />
+              <br /> The results uploader allows you to report test results in
+              bulk using a CSV file. While we expect most SimpleReport users
+              will continue to report through the regular process, this feature
+              can serve labs and others who have an information system that can
+              export spreadsheets, such as an EMR. &nbsp;{" "}
               <LinkWithQuery to="/results/upload/submit/guide">
                 <strong>Learn more about how it works</strong>
               </LinkWithQuery>
