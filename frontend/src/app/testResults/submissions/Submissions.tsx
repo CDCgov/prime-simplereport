@@ -12,7 +12,6 @@ import {
 import { setStartTimeForDateRange } from "../../analytics/Analytics";
 import { LinkWithQuery } from "../../commonComponents/LinkWithQuery";
 import { useDocumentTitle } from "../../utils/hooks";
-import "../FontFix.scss";
 
 const Submissions = () => {
   useDocumentTitle("View upload history");
@@ -78,11 +77,11 @@ const Submissions = () => {
   };
 
   return (
-    <div className="grid-row header-size-fix">
+    <div className="grid-row">
       <div className="prime-container card-container">
         {/*Submission header*/}
         <div className="usa-card__header">
-          <h1>Upload history</h1>
+          <h2>Upload history</h2>
         </div>
 
         {/*filters*/}
