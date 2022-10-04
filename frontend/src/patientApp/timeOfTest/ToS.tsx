@@ -83,26 +83,24 @@ function ToS() {
       <h3 id="other-responsibilities">
         {t("testResult.tos.document.otherResponsibilities.heading")}
       </h3>
+      <h4>
+        {t("testResult.tos.document.otherResponsibilities.ul.preheading1")}
+      </h4>
       <ul>
-        <li>
-          {t("testResult.tos.document.otherResponsibilities.ul.preheading1")}
-        </li>
-        <ul>
-          <li>{t("testResult.tos.document.otherResponsibilities.ul.li0")}</li>
-          <li>{t("testResult.tos.document.otherResponsibilities.ul.li1")}</li>
-          <li>{t("testResult.tos.document.otherResponsibilities.ul.li2")}</li>
-          <li>{t("testResult.tos.document.otherResponsibilities.ul.li3")}</li>
-        </ul>
-        <li>
-          {t("testResult.tos.document.otherResponsibilities.ul.preheading2")}
-        </li>
-        <ul>
-          <li>{t("testResult.tos.document.otherResponsibilities.ul.li4")}</li>
-          <li>{t("testResult.tos.document.otherResponsibilities.ul.li5")}</li>
-          <li>{t("testResult.tos.document.otherResponsibilities.ul.li6")}</li>
-          <li>{t("testResult.tos.document.otherResponsibilities.ul.li7")}</li>
-          <li>{t("testResult.tos.document.otherResponsibilities.ul.li8")}</li>
-        </ul>
+        <li>{t("testResult.tos.document.otherResponsibilities.ul.li0")}</li>
+        <li>{t("testResult.tos.document.otherResponsibilities.ul.li1")}</li>
+        <li>{t("testResult.tos.document.otherResponsibilities.ul.li2")}</li>
+        <li>{t("testResult.tos.document.otherResponsibilities.ul.li3")}</li>
+      </ul>
+      <h4>
+        {t("testResult.tos.document.otherResponsibilities.ul.preheading2")}
+      </h4>
+      <ul>
+        <li>{t("testResult.tos.document.otherResponsibilities.ul.li4")}</li>
+        <li>{t("testResult.tos.document.otherResponsibilities.ul.li5")}</li>
+        <li>{t("testResult.tos.document.otherResponsibilities.ul.li6")}</li>
+        <li>{t("testResult.tos.document.otherResponsibilities.ul.li7")}</li>
+        <li>{t("testResult.tos.document.otherResponsibilities.ul.li8")}</li>
       </ul>
       <h2 id="service-management">
         {t("testResult.tos.document.serviceManagement.heading")}
