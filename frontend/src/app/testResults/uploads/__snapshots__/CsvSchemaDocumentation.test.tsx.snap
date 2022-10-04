@@ -213,7 +213,7 @@ exports[`CsvSchemaDocumentation tests CsvSchemaDocumentaton matches snapshot 1`]
           <li>
             <a
               class="usa-link"
-              href="/getting-started/testing-facilities/csv-schema"
+              href="/assets/resources/test_results_example_10-3-2022.csv"
             >
               Standard CSV template with example data
             </a>
@@ -247,7 +247,7 @@ exports[`CsvSchemaDocumentation tests CsvSchemaDocumentaton matches snapshot 1`]
                
               <a
                 class="usa-link"
-                href="https://reportstream.cdc.gov/assets/csv/ReportStream-StandardCSV-ExampleData-20220509.csv"
+                href="/assets/resources/test_results_example_10-3-2022.csv"
               >
                 spreadsheet template file
               </a>

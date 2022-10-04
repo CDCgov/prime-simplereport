@@ -147,7 +147,7 @@ const Uploads = () => {
           </p>
           <ol className="usa-list">
             <li>
-              <a href="https://reportstream.cdc.gov/assets/csv/ReportStream-StandardCSV-ExampleData-20220509.csv">
+              <a href="/assets/resources/test_results_example_10-3-2022.csv">
                 Download the spreadsheet template
               </a>{" "}
             </li>
