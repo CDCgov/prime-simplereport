@@ -5,7 +5,8 @@ import React, {
   useRef,
 } from "react";
 import classnames from "classnames";
-import { IconSearch } from "@trussworks/react-uswds";
+
+import iconSearch from "../../../img/search--white.svg";
 
 type Props = {
   onSearchClick?: MouseEventHandler<HTMLButtonElement>;
@@ -77,8 +78,11 @@ const SearchInput = ({
               disabled={disabled}
               onClick={onSearchClick}
             >
-              <IconSearch size={3} />
-              <span className="usa-sr-only">Search</span>
+              <img
+                src={iconSearch}
+                className="usa-search__submit-icon"
+                alt="Search"
+              />
             </button>
           )}
         </div>
