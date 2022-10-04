@@ -650,8 +650,13 @@ const QueueItem = ({
       aria-label={`Close test for ${patientFullName}`}
     >
       <span className="fa-layers">
-        <FontAwesomeIcon icon={"circle"} size="2x" inverse />
-        <FontAwesomeIcon icon={"times-circle"} size="2x" />
+        <FontAwesomeIcon
+          alt-text="close-circle"
+          icon={"circle"}
+          size="2x"
+          inverse
+        />
+        <FontAwesomeIcon alt-text="close-x" icon={"times-circle"} size="2x" />
       </span>
     </button>
   );
@@ -909,7 +914,6 @@ const QueueItem = ({
                       label={
                         <>
                           <span>Device</span>
-
                           <TextWithTooltip
                             buttonLabel="Device"
                             tooltip="Don’t see the test you’re using? Ask your organization admin to add the correct test and it'll show up here."
