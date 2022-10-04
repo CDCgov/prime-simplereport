@@ -10,6 +10,7 @@ on:
 
 jobs:
   terraform-plan:
+    if: ${{ github.actor != 'dependabot[bot]' }}
     runs-on: ubuntu-latest
     defaults:
       run:
