@@ -76,7 +76,7 @@ class TestResultUploadServiceTest extends BaseServiceTest<TestResultUploadServic
 
   @Test
   @DirtiesContext
-  @SliceTestConfiguration.WithSimpleReportCsvUploadPilotUser
+  @SliceTestConfiguration.WithSimpleReportStandardUser
   void integrationTest_returnsSuccessfulResult() throws IOException {
     var responseFile =
         TestResultUploadServiceTest.class
@@ -109,7 +109,7 @@ class TestResultUploadServiceTest extends BaseServiceTest<TestResultUploadServic
   }
 
   @Test
-  @SliceTestConfiguration.WithSimpleReportCsvUploadPilotUser
+  @SliceTestConfiguration.WithSimpleReportStandardUser
   void ioException_CaughtAndThrowsCsvException() throws IOException {
 
     var input = mock(InputStream.class);
@@ -124,7 +124,7 @@ class TestResultUploadServiceTest extends BaseServiceTest<TestResultUploadServic
 
   @Test
   @DirtiesContext
-  @SliceTestConfiguration.WithSimpleReportCsvUploadPilotUser
+  @SliceTestConfiguration.WithSimpleReportStandardUser
   void feignBadRequest_returnsErrorMessage() throws IOException {
     try (var x = loadCsv("responses/datahub-error-response.json")) {
       stubFor(
@@ -145,7 +145,7 @@ class TestResultUploadServiceTest extends BaseServiceTest<TestResultUploadServic
 
   @Test
   @DirtiesContext
-  @SliceTestConfiguration.WithSimpleReportCsvUploadPilotUser
+  @SliceTestConfiguration.WithSimpleReportStandardUser
   void feignGeneralError_returnsFailureStatus() throws IOException {
 
     stubFor(
@@ -165,7 +165,7 @@ class TestResultUploadServiceTest extends BaseServiceTest<TestResultUploadServic
   }
 
   @Test
-  @SliceTestConfiguration.WithSimpleReportStandardUser
+  @SliceTestConfiguration.WithSimpleReportEntryOnlyUser
   void unauthorizedUser_NotAuthorizedResponse() throws IOException {
     try (InputStream input = loadCsv("test-upload-test-results.csv")) {
       assertThrows(AccessDeniedException.class, () -> this._service.processResultCSV(input));
@@ -197,7 +197,7 @@ class TestResultUploadServiceTest extends BaseServiceTest<TestResultUploadServic
   }
 
   @Test
-  @SliceTestConfiguration.WithSimpleReportCsvUploadPilotUser
+  @SliceTestConfiguration.WithSimpleReportStandardUser
   void uploadService_getUploadSubmission_throwsOnInvalid() {
     var uuid = UUID.randomUUID();
 
@@ -206,7 +206,7 @@ class TestResultUploadServiceTest extends BaseServiceTest<TestResultUploadServic
 
   @Test
   @DirtiesContext
-  @SliceTestConfiguration.WithSimpleReportCsvUploadPilotUser
+  @SliceTestConfiguration.WithSimpleReportStandardUser
   void uploadService_getUploadSubmission_rsClientOk() {
     UUID reportId = UUID.randomUUID();
 
@@ -249,7 +249,7 @@ class TestResultUploadServiceTest extends BaseServiceTest<TestResultUploadServic
   }
 
   @Test
-  @SliceTestConfiguration.WithSimpleReportCsvUploadPilotUser
+  @SliceTestConfiguration.WithSimpleReportStandardUser
   void uploadService_getUploadSubmission_fileInvalidData() {
     // GIVEN
     InputStream invalidInput = new ByteArrayInputStream("invalid".getBytes());
