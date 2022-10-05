@@ -52,7 +52,7 @@ const SearchInput = ({
           className={label ? "display-block" : "usa-sr-only"}
           htmlFor="search-field-small"
         >
-          {label || "Search"}
+          {label || placeholder || "Search"}
         </label>
         <div>
           <input

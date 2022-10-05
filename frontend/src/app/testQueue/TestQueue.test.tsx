@@ -66,7 +66,7 @@ describe("TestQueue", () => {
         </MockedProvider>
       </MemoryRouter>
     );
-    await screen.findByLabelText("Search");
+    await screen.findByLabelText("Search for a person to start their test");
     expect(await screen.findByText("Doe, John A")).toBeInTheDocument();
     expect(await screen.findByText("Smith, Jane")).toBeInTheDocument();
     expect(container).toMatchSnapshot();
@@ -189,7 +189,7 @@ describe("TestQueue", () => {
         </MemoryRouter>
       );
 
-      await screen.findByLabelText("Search");
+      await screen.findByLabelText("Search for a person to start their test");
       expect(await screen.findByText("Doe, John A")).toBeInTheDocument();
       expect(await screen.findByText("Smith, Jane")).toBeInTheDocument();
 

@@ -23,7 +23,7 @@ exports[`TestQueue should render the test queue 1`] = `
               class="usa-sr-only"
               for="search-field-small"
             >
-              Search
+              Search for a person to start their test
             </label>
             <div>
               <input
