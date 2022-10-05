@@ -11,7 +11,7 @@ import {
 } from "../../../generated/graphql";
 import { LinkWithQuery } from "../../commonComponents/LinkWithQuery";
 import { useDocumentTitle } from "../../utils/hooks";
-import "../FontFix.scss";
+import "../HeaderSizeFix.scss";
 
 const Submissions = () => {
   useDocumentTitle("View upload history");

@@ -5,7 +5,7 @@ import { useGetUploadSubmissionQuery } from "../../../generated/graphql";
 import { LinkWithQuery } from "../../commonComponents/LinkWithQuery";
 import { formatDateWithTimeOption } from "../../utils/date";
 import { useDocumentTitle } from "../../utils/hooks";
-import "../FontFix.scss";
+import "../HeaderSizeFix.scss";
 
 const Submission = () => {
   useDocumentTitle("View upload details");

@@ -2,7 +2,7 @@ import { LinkWithQuery } from "../../commonComponents/LinkWithQuery";
 import { useDocumentTitle } from "../../utils/hooks";
 import iconSprite from "../../../../node_modules/uswds/dist/img/sprite.svg";
 
-import "../FontFix.scss";
+import "../HeaderSizeFix.scss";
 import schema from "./schema.json";
 
 export type CsvSchemaItem = {

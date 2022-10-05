@@ -6,7 +6,7 @@ import { FeedbackMessage } from "../../../generated/graphql";
 import { useDocumentTitle } from "../../utils/hooks";
 import { LinkWithQuery } from "../../commonComponents/LinkWithQuery";
 import { FileUploadService } from "../../../fileUploadService/FileUploadService";
-import "../FontFix.scss";
+import "../HeaderSizeFix.scss";
 
 const PAYLOAD_MAX_BYTES = 50 * 1000 * 1000;
 const REPORT_MAX_ITEMS = 10000;
