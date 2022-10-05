@@ -319,7 +319,7 @@ const AddPatient = () => {
   );
 
   return (
-    <main className={"prime-edit-patient prime-home"}>
+    <div className={"prime-edit-patient prime-home"}>
       <div className={"grid-container margin-bottom-4"}>
         <DuplicatePatientModal
           showModal={
@@ -375,7 +375,7 @@ const AddPatient = () => {
           )}
         />
       </div>
-    </main>
+    </div>
   );
 };
 
