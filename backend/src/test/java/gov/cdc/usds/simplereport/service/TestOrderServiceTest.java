@@ -1550,7 +1550,7 @@ class TestOrderServiceTest extends BaseServiceTest<TestOrderService> {
     String reasonMsg = "Testing correction marking as error " + LocalDateTime.now();
 
     TestEvent originalEvent = _service.markAsCorrection(e.getInternalId(), reasonMsg);
-    assertEquals(originalEvent.getTestOrder().getDateTestedBackdate(), dateTested);
+    assertEquals(0, originalEvent.getTestOrder().getDateTestedBackdate().compareTo(dateTested));
   }
 
   @Test
