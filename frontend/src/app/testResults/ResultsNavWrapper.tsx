@@ -21,12 +21,12 @@ const ResultsNavWrapper = ({ children, userPermissions }: Props) => {
   }
 
   return (
-    <main className="prime-home">
+    <div className="prime-home flex-1">
       <div className="grid-container results-wide-container">
         {showSubTabs && <ResultsNav />}
         {children}
       </div>
-    </main>
+    </div>
   );
 };
 
