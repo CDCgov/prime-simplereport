@@ -269,7 +269,7 @@ resource "azurerm_application_gateway" "load_balancer" {
       paths                      = ["/metabase/*", "/metabase"]
       backend_address_pool_name  = local.metabase_pool
       backend_http_settings_name = local.metabase_https_setting
-      rewrite_rule_set_name      = "simple-report-routing"
+      rewrite_rule_set_name      = "simple-report-metabase-routing"
     }
   }
 
@@ -299,6 +299,30 @@ resource "azurerm_application_gateway" "load_balancer" {
     redirect_type        = "Permanent"
     target_url           = local.staging_slot_url
   }
+
+  rewrite_rule_set {
+    name = "simple-report-metabase-routing"
+
+rewrite_rule {
+      name          = "metabase-wildcard"
+      rule_sequence = 100
+      condition {
+        ignore_case = true
+        negate      = false
+        pattern     = ".*metabase/(.*)"
+        variable    = "var_uri_path"
+      }
+
+      //TODO: See if this is really necessary for metabase.
+      url {
+        path    = "/{var_uri_path_1}"
+        reroute = false
+        # Per documentation, we should be able to leave this pass-through out. See however
+        # https://github.com/terraform-providers/terraform-provider-azurerm/issues/11563
+        query_string = "{var_query_string}"
+      }
+    }
+  }
  
   rewrite_rule_set {
     name = "simple-report-routing"
@@ -313,26 +337,6 @@ resource "azurerm_application_gateway" "load_balancer" {
         variable    = "var_uri_path"
       }
 
-      url {
-        path    = "/{var_uri_path_1}"
-        reroute = false
-        # Per documentation, we should be able to leave this pass-through out. See however
-        # https://github.com/terraform-providers/terraform-provider-azurerm/issues/11563
-        query_string = "{var_query_string}"
-      }
-    }
-
-     rewrite_rule {
-      name          = "metabase-wildcard"
-      rule_sequence = 100
-      condition {
-        ignore_case = true
-        negate      = false
-        pattern     = ".*metabase/(.*)"
-        variable    = "var_uri_path"
-      }
-
-      //TODO: See if this is really necessary for metabase.
       url {
         path    = "/{var_uri_path_1}"
         reroute = false
