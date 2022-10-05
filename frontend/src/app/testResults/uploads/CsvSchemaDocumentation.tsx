@@ -120,6 +120,8 @@ const CsvSchemaDocumentation = () => {
             through SimpleReport.
           </p>
           <iframe
+            width="640"
+            height="360"
             title="SimpleReport bulk results uploader tutorial video"
             src="https://www.youtube.com/embed/qqhC7PFBdek"
           />
