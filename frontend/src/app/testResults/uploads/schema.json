@@ -907,7 +907,7 @@
             {
               "name": "Ordering facility name",
               "colHeader": "ordering_facility_name",
-              "required": true,
+              "required": false,
               "requested": false,
               "acceptedFormat": false,
               "acceptedValues": false,
@@ -921,7 +921,7 @@
             {
               "name": "Ordering facility street address",
               "colHeader": "ordering_facility_street",
-              "required": true,
+              "required": false,
               "requested": false,
               "acceptedFormat": false,
               "acceptedValues": false,
@@ -949,7 +949,7 @@
             {
               "name": "Ordering facility city",
               "colHeader": "ordering_facility_city ",
-              "required": true,
+              "required": false,
               "requested": false,
               "acceptedFormat": false,
               "acceptedValues": false,
@@ -963,7 +963,7 @@
             {
               "name": "Ordering facility state",
               "colHeader": "ordering_facility_state",
-              "required": true,
+              "required": false,
               "requested": false,
               "acceptedFormat": true,
               "acceptedValues": false,
@@ -977,7 +977,7 @@
             {
               "name": "Ordering facility zip code",
               "colHeader": "ordering_facility_zip_code",
-              "required": true,
+              "required": false,
               "requested": false,
               "acceptedFormat": true,
               "acceptedValues": false,
@@ -991,7 +991,7 @@
             {
               "name": "Ordering facility phone number",
               "colHeader": "ordering_facility_phone_number",
-              "required": true,
+              "required": false,
               "requested": false,
               "acceptedFormat": true,
               "acceptedValues": false,

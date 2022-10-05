@@ -30,7 +30,7 @@ class TestResultFileValidatorTest {
     // WHEN
     List<FeedbackMessage> errors = testResultFileValidator.validate(input);
     // THEN
-    assertThat(errors).hasSize(42);
+    assertThat(errors).hasSize(36);
 
     List<String> errorMessages =
         errors.stream().map(FeedbackMessage::getMessage).collect(Collectors.toList());
@@ -71,13 +71,7 @@ class TestResultFileValidatorTest {
             "testing_lab_street is a required column.",
             "testing_lab_city is a required column.",
             "testing_lab_state is a required column.",
-            "testing_lab_zip_code is a required column.",
-            "ordering_facility_name is a required column.",
-            "ordering_facility_street is a required column.",
-            "ordering_facility_city is a required column.",
-            "ordering_facility_state is a required column.",
-            "ordering_facility_zip_code is a required column.",
-            "ordering_facility_phone_number is a required column.");
+            "testing_lab_zip_code is a required column.");
   }
 
   @Test
