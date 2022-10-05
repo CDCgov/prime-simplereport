@@ -30,7 +30,7 @@ class TestResultFileValidatorTest {
     // WHEN
     List<FeedbackMessage> errors = testResultFileValidator.validate(input);
     // THEN
-    assertThat(errors).hasSize(36);
+    assertThat(errors).hasSize(33);
 
     List<String> errorMessages =
         errors.stream().map(FeedbackMessage::getMessage).collect(Collectors.toList());
@@ -53,10 +53,7 @@ class TestResultFileValidatorTest {
             "test_performed_code is a required column.",
             "test_result is a required column.",
             "order_test_date is a required column.",
-            "specimen_collection_date is a required column.",
-            "testing_lab_specimen_received_date is a required column.",
             "test_result_date is a required column.",
-            "date_result_released is a required column.",
             "specimen_type is a required column.",
             "ordering_provider_id is a required column.",
             "ordering_provider_last_name is a required column.",

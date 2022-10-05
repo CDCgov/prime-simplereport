@@ -378,7 +378,7 @@
             {
               "name": "Specimen collection date",
               "colHeader": "specimen_collection_date",
-              "required": true,
+              "required": false,
               "requested": false,
               "acceptedFormat": true,
               "acceptedValues": false,
@@ -393,7 +393,7 @@
             {
               "name": "Testing lab specimen received date",
               "colHeader": "testing_lab_specimen_received_date",
-              "required": true,
+              "required": false,
               "requested": false,
               "acceptedFormat": true,
               "acceptedValues": false,
@@ -423,7 +423,7 @@
             {
               "name": "Date result released",
               "colHeader": "date_result_released",
-              "required": true,
+              "required": false,
               "requested": false,
               "acceptedFormat": true,
               "acceptedValues": false,
