@@ -151,7 +151,8 @@ const Uploads = () => {
                 This feature is in beta. That means it’s new, and we’ll continue
                 to update and improve it for our users. Though the feature is in
                 beta, it will route all the results you submit to the
-                appropriate public health department(s).
+                appropriate public health department(s). Results you upload here
+                will not appear individually in the "Test results" page.
               </em>{" "}
               <br />
               <br /> The results uploader allows you to report test results in
