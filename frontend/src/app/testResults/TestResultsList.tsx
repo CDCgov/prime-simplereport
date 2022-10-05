@@ -391,14 +391,14 @@ export const DetachedTestResultsList = ({
       <div className="prime-container card-container sr-test-results-list">
         <div className="sticky-heading">
           <div className="usa-card__header">
-            <h2>
+            <h1 className="font-sans-lg">
               Test results
               {!loadingTotalResults && (
                 <span className="sr-showing-results-on-page">
                   {getResultCountText(totalEntries, pageNumber, entriesPerPage)}
                 </span>
               )}
-            </h2>
+            </h1>
             <div>
               <DownloadResultsCSVButton
                 filterParams={filterParams}
