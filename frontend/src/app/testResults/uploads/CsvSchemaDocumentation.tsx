@@ -222,7 +222,7 @@ const CsvSchemaDocumentation = () => {
               </h3>
               <p>
                 Visit the{" "}
-                <LinkWithQuery to={"/results/upload"}>
+                <LinkWithQuery to={"/results/upload/submit"}>
                   "upload spreadsheet"
                 </LinkWithQuery>{" "}
                 tab under “Results” in the main SimpleReport navigation. Select
@@ -277,7 +277,7 @@ const CsvSchemaDocumentation = () => {
             </li>
           </ul>
 
-          <h4>Required, requested, and optional fields</h4>
+          <h3>Required, requested, and optional fields</h3>
 
           <p>
             <span className="text-normal bg-white border-1px border-secondary font-body-3xs padding-x-1 padding-y-05 text-secondary margin-right-1 text-middle">

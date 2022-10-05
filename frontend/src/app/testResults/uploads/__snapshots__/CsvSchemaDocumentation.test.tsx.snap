@@ -287,7 +287,7 @@ exports[`CsvSchemaDocumentation tests CsvSchemaDocumentaton matches snapshot 1`]
                
               <a
                 class=""
-                href="/results/upload"
+                href="/results/upload/submit"
               >
                 "upload spreadsheet"
               </a>
@@ -350,9 +350,9 @@ exports[`CsvSchemaDocumentation tests CsvSchemaDocumentaton matches snapshot 1`]
              
           </li>
         </ul>
-        <h4>
+        <h3>
           Required, requested, and optional fields
-        </h4>
+        </h3>
         <p>
           <span
             class="text-normal bg-white border-1px border-secondary font-body-3xs padding-x-1 padding-y-05 text-secondary margin-right-1 text-middle"
