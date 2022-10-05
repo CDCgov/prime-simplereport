@@ -1518,6 +1518,8 @@ class TestOrderServiceTest extends BaseServiceTest<TestOrderService> {
 
     String reasonMsg = "Testing correction marking as error " + LocalDateTime.now();
 
+    assertNull(e.getTestOrder().getDateTestedBackdate());
+
     // A test correction call just returns the original TestEvent...
     TestEvent originalEvent = _service.markAsCorrection(e.getInternalId(), reasonMsg);
 
@@ -1539,7 +1541,6 @@ class TestOrderServiceTest extends BaseServiceTest<TestOrderService> {
 
     String reasonMsg = "Testing correction marking as error " + LocalDateTime.now();
 
-    assertNull(e.getTestOrder().getDateTestedBackdate());
     TestEvent originalEvent = _service.markAsCorrection(e.getInternalId(), reasonMsg);
     assertEquals(originalEvent.getTestOrder().getDateTestedBackdate(), dateTested);
   }
