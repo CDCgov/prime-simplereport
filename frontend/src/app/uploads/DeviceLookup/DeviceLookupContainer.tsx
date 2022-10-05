@@ -42,7 +42,7 @@ const DeviceLookupContainer = () => {
 
     return (
       <DeviceLookup
-        formTitle="Manage devices"
+        formTitle="Device lookup"
         swabOptions={swabOptions}
         supportedDiseaseOptions={supportedDiseaseOptions}
         deviceOptions={devices}

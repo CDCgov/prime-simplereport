@@ -1,12 +1,14 @@
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import { ComboBox } from "@trussworks/react-uswds";
+import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
+import { faCopy } from "@fortawesome/free-solid-svg-icons";
 
 import TextInput from "../../commonComponents/TextInput";
 import MultiSelect from "../../commonComponents/MultiSelect/MultiSelect";
 import { MultiSelectDropdownOption } from "../../commonComponents/MultiSelect/MultiSelectDropdown/MultiSelectDropdown";
 import { DeviceType } from "../../../generated/graphql";
 import { Device } from "../../supportAdmin/DeviceType/DeviceForm";
-import Required from "../../commonComponents/Required";
+import LabeledText from "../../commonComponents/LabeledText";
 
 interface Props {
   formTitle: string;
@@ -17,6 +19,30 @@ interface Props {
 
 const DeviceLookup = (props: Props) => {
   const [device, updateDevice] = useState<Device | undefined>();
+
+  const [copiedSlug, setCopiedSlug] = useState<string>();
+
+  useEffect(() => {
+    const timeout = copiedSlug
+      ? setTimeout(() => {
+          setCopiedSlug(undefined);
+        }, 3000)
+      : undefined;
+    return () => {
+      if (timeout) {
+        clearTimeout(timeout);
+      }
+    };
+  }, [copiedSlug]);
+
+  async function copySlug(slug: string) {
+    try {
+      await navigator.clipboard.writeText(slug);
+      setCopiedSlug(slug);
+    } catch (e: any) {
+      console.error(e);
+    }
+  }
 
   const updateDeviceAttribute = (name: string, value: any) => {
     if (device) {
@@ -78,7 +104,7 @@ const DeviceLookup = (props: Props) => {
               {props.deviceOptions ? (
                 <div className="grid-row grid-gap">
                   <div className="tablet:grid-col">
-                    <Required label={"Select device"} />
+                    <LabeledText label={"Select device"} />
                     <ComboBox
                       className="usa-combo-box__full-width"
                       id="selectDevice"
@@ -100,46 +126,90 @@ const DeviceLookup = (props: Props) => {
               ) : null}
               <div className="grid-row grid-gap">
                 <div className="tablet:grid-col">
-                  <TextInput
-                    label="Device name"
-                    name="name"
-                    value={device?.name}
-                    onChange={onChange}
-                    disabled={true}
-                  />
+                  <div style={{ position: "relative" }}>
+                    <TextInput
+                      label="Device name"
+                      name="name"
+                      value={device?.name}
+                      onChange={onChange}
+                      disabled={true}
+                    />
+                    <button
+                      style={{ bottom: 12, right: 15, position: "absolute" }}
+                      className="usa-button usa-button--unstyled"
+                      onClick={() => device?.name && copySlug(device?.name)}
+                      arial-label={`Copy name for ${device?.name}`}
+                    >
+                      <FontAwesomeIcon icon={faCopy} />
+                    </button>
+                  </div>
                 </div>
               </div>
               <div className="grid-row grid-gap">
                 <div className="tablet:grid-col">
-                  <TextInput
-                    label="Model"
-                    name="model"
-                    value={device?.model}
-                    onChange={onChange}
-                    disabled={true}
-                  />
+                  <div style={{ position: "relative" }}>
+                    <TextInput
+                      label="Model"
+                      name="model"
+                      value={device?.model}
+                      onChange={onChange}
+                      disabled={true}
+                    />
+                    <button
+                      style={{ bottom: 12, right: 15, position: "absolute" }}
+                      className="usa-button usa-button--unstyled"
+                      onClick={() => device?.model && copySlug(device?.model)}
+                      arial-label={`Copy model for ${device?.name}`}
+                    >
+                      <FontAwesomeIcon icon={faCopy} />
+                    </button>
+                  </div>
                 </div>
               </div>
               <div className="grid-row grid-gap">
                 <div className="tablet:grid-col">
-                  <TextInput
-                    label="Manufacturer"
-                    name="manufacturer"
-                    value={device?.manufacturer}
-                    onChange={onChange}
-                    disabled={true}
-                  />
+                  <div style={{ position: "relative" }}>
+                    <TextInput
+                      label="Manufacturer"
+                      name="manufacturer"
+                      value={device?.manufacturer}
+                      onChange={onChange}
+                      disabled={true}
+                    />
+                    <button
+                      style={{ bottom: 12, right: 15, position: "absolute" }}
+                      className="usa-button usa-button--unstyled"
+                      onClick={() =>
+                        device?.manufacturer && copySlug(device?.manufacturer)
+                      }
+                      arial-label={`Copy manufacturer for ${device?.name}`}
+                    >
+                      <FontAwesomeIcon icon={faCopy} />
+                    </button>
+                  </div>
                 </div>
               </div>
               <div className="grid-row grid-gap">
                 <div className="tablet:grid-col">
-                  <TextInput
-                    label="LOINC code"
-                    name="loincCode"
-                    value={device?.loincCode}
-                    onChange={onChange}
-                    disabled={true}
-                  />
+                  <div style={{ position: "relative" }}>
+                    <TextInput
+                      label="LOINC code"
+                      name="loincCode"
+                      value={device?.loincCode}
+                      onChange={onChange}
+                      disabled={true}
+                    />
+                    <button
+                      style={{ bottom: 12, right: 15, position: "absolute" }}
+                      className="usa-button usa-button--unstyled"
+                      onClick={() =>
+                        device?.loincCode && copySlug(device?.loincCode)
+                      }
+                      arial-label={`Copy loincCode for ${device?.name}`}
+                    >
+                      <FontAwesomeIcon icon={faCopy} />
+                    </button>
+                  </div>
                 </div>
               </div>
               <div className="grid-row grid-gap">
