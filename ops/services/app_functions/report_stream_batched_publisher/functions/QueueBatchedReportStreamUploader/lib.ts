@@ -2,10 +2,11 @@ import { Context } from "@azure/functions";
 import {
   DequeuedMessageItem,
   QueueClient,
+  QueueDeleteMessageResponse,
   QueueServiceClient,
   StorageSharedKeyCredential,
 } from "@azure/storage-queue";
-import * as csvStringify from "csv-stringify/lib/sync";
+import csvStringify from "csv-stringify/lib/sync"
 import { ENV, uploaderVersion } from "../config";
 import fetch, { Headers } from "node-fetch";
 import {
@@ -141,36 +142,51 @@ export async function deleteSuccessfullyParsedMessages(
   messages: DequeuedMessageItem[],
   parseFailure: { [k: string]: boolean }
 ) {
+
+  const validMessages: DequeuedMessageItem[] = []
+  const deletionPromises: Promise<QueueDeleteMessageResponse>[] = []
+
   for (const message of messages) {
     if (parseFailure[message.messageId]) {
       context.log(
         `Message ${message.messageId} failed to parse; skipping deletion`
       );
-      continue;
+    } else {
+      validMessages.push(message)
     }
-    try {
-      // TODO: parallelize processing these API calls; do not await each one
-      const deleteResponse = await queueClient.deleteMessage(
-        message.messageId,
-        message.popReceipt
-      );
+  }
 
-      if(message.dequeueCount > 1){
+  for (const message of validMessages) {
+    if(message.dequeueCount > 1){
+      context.log(
+        `Message has been dequeued ${message.dequeueCount} times, possibly sent more than once to RS`
+      );
+    }
+    deletionPromises.push(queueClient.deleteMessage(
+      message.messageId,
+      message.popReceipt
+    ));
+  }
+
+  try {
+    const promiseValues = await Promise.allSettled(deletionPromises);
+    for (let i = 0; i < promiseValues.length; i++) {
+      const promise = promiseValues[i];
+      const message = validMessages[i];
+      if (promise.status == "fulfilled") {
+        const deleteResponse = promise.value;
+        const testEventId = JSON.parse(message.messageText)['Result_ID'];
         context.log(
-          `Message has been dequeued ${message.dequeueCount} times, possibly sent more than once to RS`
+          `Message ${message.messageId} deleted with request id ${deleteResponse.requestId} and has TestEvent id ${testEventId}`
         );
+      } else {
+        context.log(`Failed to delete message ${message.messageId} from the queue:`)
       }
-
-      const testEventId = JSON.parse(message.messageText)['Result_ID'];
-      context.log(
-        `Message ${message.messageId} deleted with request id ${deleteResponse.requestId} and has TestEvent id ${testEventId}`
-      );
-    } catch (e: any) {
-      context.log(
-        `Failed to delete message ${message.messageId} from the queue:`,
-        e
-      );
     }
+  } catch (e){
+    context.log(
+      `The following error has occurred: ${e}`
+    );
   }
   context.log("Deletion complete");
 }

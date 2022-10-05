@@ -7,7 +7,6 @@ import static org.junit.jupiter.api.Assertions.fail;
 
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.node.ArrayNode;
-import com.fasterxml.jackson.databind.node.JsonNodeFactory;
 import com.fasterxml.jackson.databind.node.ObjectNode;
 import gov.cdc.usds.simplereport.api.CurrentTenantDataAccessContextHolder;
 import gov.cdc.usds.simplereport.api.model.Role;
@@ -15,7 +14,8 @@ import gov.cdc.usds.simplereport.db.model.DeviceType;
 import gov.cdc.usds.simplereport.db.model.Facility;
 import gov.cdc.usds.simplereport.db.model.Organization;
 import gov.cdc.usds.simplereport.db.model.Person;
-import gov.cdc.usds.simplereport.db.model.auxiliary.DiseaseResult;
+import gov.cdc.usds.simplereport.db.model.auxiliary.AskOnEntrySurvey;
+import gov.cdc.usds.simplereport.db.model.auxiliary.MultiplexResultInput;
 import gov.cdc.usds.simplereport.db.model.auxiliary.TestResult;
 import gov.cdc.usds.simplereport.service.OrganizationService;
 import gov.cdc.usds.simplereport.service.sms.SmsService;
@@ -23,9 +23,12 @@ import gov.cdc.usds.simplereport.test_util.SliceTestConfiguration.WithSimpleRepo
 import gov.cdc.usds.simplereport.test_util.TestDataFactory;
 import java.text.SimpleDateFormat;
 import java.time.Instant;
+import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.Date;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.Optional;
 import java.util.Set;
 import java.util.UUID;
@@ -62,7 +65,7 @@ class TestResultTest extends BaseGraphqlTest {
     _dataFactory.createTestEvent(p, _site);
     _dataFactory.createTestEvent(p, _site);
 
-    ObjectNode variables = getFacilityScopedArguments();
+    HashMap<String, Object> variables = getFacilityScopedArguments();
     ArrayNode testResults = fetchTestResults(variables);
     assertEquals(3, testResults.size());
     assertEquals(
@@ -85,13 +88,12 @@ class TestResultTest extends BaseGraphqlTest {
     _dataFactory.createTestOrder(p, _site);
     String dateTested = "2020-12-31T14:30:30.001Z";
 
-    ObjectNode variables =
-        JsonNodeFactory.instance
-            .objectNode()
-            .put("deviceId", d.getInternalId().toString())
-            .put("patientId", p.getInternalId().toString())
-            .put("result", TestResult.NEGATIVE.toString())
-            .put("dateTested", dateTested);
+    Map<String, Object> variables =
+        Map.of(
+            "deviceId", d.getInternalId().toString(),
+            "patientId", p.getInternalId().toString(),
+            "result", TestResult.NEGATIVE.toString(),
+            "dateTested", dateTested);
     submitTestResult(variables, Optional.empty());
 
     ArrayNode testResults = fetchTestResults(getFacilityScopedArguments());
@@ -101,30 +103,41 @@ class TestResultTest extends BaseGraphqlTest {
   }
 
   @Test
-  void submitAndFetchTestResultMultiplex() throws Exception {
+  void submitAndFetchMultiplexResult() throws Exception {
     Person p = _dataFactory.createFullPerson(_org);
     DeviceType d = _site.getDefaultDeviceType();
-    _dataFactory.createTestOrder(p, _site);
+    Map<String, Boolean> symptoms = Map.of("25064002", true);
+    LocalDate symptomOnsetDate = LocalDate.of(2020, 9, 15);
+    _dataFactory.createTestOrder(
+        p, _site, new AskOnEntrySurvey("77386006", symptoms, false, symptomOnsetDate));
     String dateTested = "2020-12-31T14:30:30.001Z";
 
-    List<DiseaseResult> results = new ArrayList<>();
-    results.add(new DiseaseResult(_diseaseService.covid().getName(), TestResult.NEGATIVE));
-    results.add(new DiseaseResult(_diseaseService.fluA().getName(), TestResult.POSITIVE));
-    results.add(new DiseaseResult(_diseaseService.fluB().getName(), TestResult.UNDETERMINED));
+    List<MultiplexResultInput> results = new ArrayList<>();
+    results.add(new MultiplexResultInput(_diseaseService.covid().getName(), TestResult.NEGATIVE));
+    results.add(new MultiplexResultInput(_diseaseService.fluA().getName(), TestResult.POSITIVE));
+    results.add(
+        new MultiplexResultInput(_diseaseService.fluB().getName(), TestResult.UNDETERMINED));
 
-    ObjectNode variables =
-        JsonNodeFactory.instance
-            .objectNode()
-            .put("deviceId", d.getInternalId().toString())
-            .put("patientId", p.getInternalId().toString())
-            .putPOJO("results", results)
-            .put("dateTested", dateTested);
-    submitTestResultMultiplex(variables, Optional.empty());
+    Map<String, Object> variables =
+        Map.of(
+            "deviceId",
+            d.getInternalId().toString(),
+            "patientId",
+            p.getInternalId().toString(),
+            "results",
+            results,
+            "dateTested",
+            dateTested);
+    submitMultiplexResult(variables, Optional.empty());
 
     ArrayNode testResults = fetchTestResultsMultiplex(getFacilityScopedArguments());
 
     assertTrue(testResults.has(0), "Has at least one submitted test result=");
-    assertEquals(testResults.get(0).get("dateTested").asText(), dateTested);
+    assertEquals(dateTested, testResults.get(0).get("dateTested").asText());
+    assertEquals("{\"25064002\":\"true\"}", testResults.get(0).get("symptoms").asText());
+    assertEquals("false", testResults.get(0).get("noSymptoms").asText());
+    assertEquals("77386006", testResults.get(0).get("pregnancy").asText());
+    assertEquals("2020-09-15", testResults.get(0).get("symptomOnset").asText());
     testResults
         .get(0)
         .get("results")
@@ -159,20 +172,19 @@ class TestResultTest extends BaseGraphqlTest {
     // The test default standard user is configured to access _site by default,
     // so we need to remove access to establish a baseline in this test
     updateSelfPrivileges(Role.USER, false, Set.of());
-    ObjectNode submitP1Variables =
-        JsonNodeFactory.instance
-            .objectNode()
-            .put("deviceId", d.getInternalId().toString())
-            .put("patientId", p1.getInternalId().toString())
-            .put("result", TestResult.NEGATIVE.toString())
-            .put("dateTested", dateTested);
-    ObjectNode submitP2Variables =
-        JsonNodeFactory.instance
-            .objectNode()
-            .put("deviceId", d.getInternalId().toString())
-            .put("patientId", p2.getInternalId().toString())
-            .put("result", TestResult.NEGATIVE.toString())
-            .put("dateTested", dateTested);
+    Map<String, Object> submitP1Variables =
+        Map.of(
+            "deviceId", d.getInternalId().toString(),
+            "patientId", p1.getInternalId().toString(),
+            "result", TestResult.NEGATIVE.toString(),
+            "dateTested", dateTested);
+    Map<String, Object> submitP2Variables =
+        Map.of(
+            "deviceId", d.getInternalId().toString(),
+            "patientId", p2.getInternalId().toString(),
+            "result", TestResult.NEGATIVE.toString(),
+            "dateTested", dateTested);
+
     submitTestResult(submitP1Variables, Optional.of(ACCESS_ERROR));
     submitTestResult(submitP2Variables, Optional.of(ACCESS_ERROR));
 
@@ -181,7 +193,7 @@ class TestResultTest extends BaseGraphqlTest {
     submitTestResult(submitP2Variables, Optional.empty());
 
     updateSelfPrivileges(Role.USER, false, Set.of());
-    ObjectNode fetchVariables = getFacilityScopedArguments();
+    Map<String, Object> fetchVariables = getFacilityScopedArguments();
     fetchTestResultsWithError(fetchVariables, ACCESS_ERROR);
 
     updateSelfPrivileges(Role.USER, true, Set.of());
@@ -191,16 +203,13 @@ class TestResultTest extends BaseGraphqlTest {
     UUID t2Id = UUID.fromString(testResults.get(1).get("internalId").asText());
 
     updateSelfPrivileges(Role.USER, false, Set.of());
-    ObjectNode correctT1Variables =
-        JsonNodeFactory.instance
-            .objectNode()
-            .put("id", t1Id.toString())
-            .put("reason", "nobody's perfect");
-    ObjectNode correctT2Variables =
-        JsonNodeFactory.instance
-            .objectNode()
-            .put("id", t2Id.toString())
-            .put("reason", "nobody's perfect");
+
+    Map<String, Object> correctT1Variables =
+        Map.of("id", t1Id.toString(), "reason", "nobody's perfect");
+
+    Map<String, Object> correctT2Variables =
+        Map.of("id", t2Id.toString(), "reason", "nobody's perfect");
+
     correctTest(correctT1Variables, Optional.of(ACCESS_ERROR));
     correctTest(correctT2Variables, Optional.of(ACCESS_ERROR));
 
@@ -209,8 +218,9 @@ class TestResultTest extends BaseGraphqlTest {
     correctTest(correctT2Variables, Optional.empty());
 
     updateSelfPrivileges(Role.USER, false, Set.of());
-    ObjectNode fetchT1Variables = JsonNodeFactory.instance.objectNode().put("id", t1Id.toString());
-    ObjectNode fetchT2Variables = JsonNodeFactory.instance.objectNode().put("id", t2Id.toString());
+    Map<String, Object> fetchT1Variables = Map.of("id", t1Id.toString());
+    Map<String, Object> fetchT2Variables = Map.of("id", t2Id.toString());
+
     fetchTestResult(fetchT1Variables, Optional.of(ACCESS_ERROR));
     fetchTestResult(fetchT2Variables, Optional.of(ACCESS_ERROR));
 
@@ -238,34 +248,30 @@ class TestResultTest extends BaseGraphqlTest {
     _dataFactory.createTestOrder(p4, _secondSite);
     String dateTested = "2020-12-31T14:30:30.001Z";
 
-    ObjectNode submitP1Variables =
-        JsonNodeFactory.instance
-            .objectNode()
-            .put("deviceId", d.getInternalId().toString())
-            .put("patientId", p1.getInternalId().toString())
-            .put("result", TestResult.POSITIVE.toString())
-            .put("dateTested", dateTested);
-    ObjectNode submitP2Variables =
-        JsonNodeFactory.instance
-            .objectNode()
-            .put("deviceId", d.getInternalId().toString())
-            .put("patientId", p2.getInternalId().toString())
-            .put("result", TestResult.NEGATIVE.toString())
-            .put("dateTested", dateTested);
-    ObjectNode submitP3Variables =
-        JsonNodeFactory.instance
-            .objectNode()
-            .put("deviceId", secondSiteDevice.getInternalId().toString())
-            .put("patientId", p3.getInternalId().toString())
-            .put("result", TestResult.NEGATIVE.toString())
-            .put("dateTested", dateTested);
-    ObjectNode submitP4Variables =
-        JsonNodeFactory.instance
-            .objectNode()
-            .put("deviceId", secondSiteDevice.getInternalId().toString())
-            .put("patientId", p4.getInternalId().toString())
-            .put("result", TestResult.NEGATIVE.toString())
-            .put("dateTested", dateTested);
+    Map<String, Object> submitP1Variables =
+        Map.of(
+            "deviceId", d.getInternalId().toString(),
+            "patientId", p1.getInternalId().toString(),
+            "result", TestResult.POSITIVE.toString(),
+            "dateTested", dateTested);
+    Map<String, Object> submitP2Variables =
+        Map.of(
+            "deviceId", d.getInternalId().toString(),
+            "patientId", p2.getInternalId().toString(),
+            "result", TestResult.NEGATIVE.toString(),
+            "dateTested", dateTested);
+    Map<String, Object> submitP3Variables =
+        Map.of(
+            "deviceId", secondSiteDevice.getInternalId().toString(),
+            "patientId", p3.getInternalId().toString(),
+            "result", TestResult.NEGATIVE.toString(),
+            "dateTested", dateTested);
+    Map<String, Object> submitP4Variables =
+        Map.of(
+            "deviceId", secondSiteDevice.getInternalId().toString(),
+            "patientId", p4.getInternalId().toString(),
+            "result", TestResult.NEGATIVE.toString(),
+            "dateTested", dateTested);
     submitTestResult(submitP1Variables, Optional.empty());
     submitTestResult(submitP2Variables, Optional.empty());
     submitTestResult(submitP3Variables, Optional.empty());
@@ -274,8 +280,10 @@ class TestResultTest extends BaseGraphqlTest {
     String startDate = "2020-01-01";
     String endDate = new SimpleDateFormat("yyyy-MM-dd").format(Date.from(Instant.now()));
 
-    ObjectNode variables =
-        JsonNodeFactory.instance.objectNode().put("startDate", startDate).put("endDate", endDate);
+    Map<String, Object> variables =
+        Map.of(
+            "startDate", startDate,
+            "endDate", endDate);
 
     ObjectNode result =
         runQuery(
@@ -294,9 +302,10 @@ class TestResultTest extends BaseGraphqlTest {
     String startDate = "2020-01-01";
     String endDate = new SimpleDateFormat("yyyy-MM-dd").format(Date.from(Instant.now()));
 
-    ObjectNode variables =
-        JsonNodeFactory.instance.objectNode().put("startDate", startDate).put("endDate", endDate);
-
+    Map<String, Object> variables =
+        Map.of(
+            "startDate", startDate,
+            "endDate", endDate);
     useOrgUser();
 
     runQuery(
@@ -315,20 +324,18 @@ class TestResultTest extends BaseGraphqlTest {
     _dataFactory.createTestOrder(p2, _site);
     String dateTested = "2020-12-31T14:30:30.001Z";
 
-    ObjectNode submitP1Variables =
-        JsonNodeFactory.instance
-            .objectNode()
-            .put("deviceId", d.getInternalId().toString())
-            .put("patientId", p1.getInternalId().toString())
-            .put("result", TestResult.POSITIVE.toString())
-            .put("dateTested", dateTested);
-    ObjectNode submitP2Variables =
-        JsonNodeFactory.instance
-            .objectNode()
-            .put("deviceId", d.getInternalId().toString())
-            .put("patientId", p2.getInternalId().toString())
-            .put("result", TestResult.NEGATIVE.toString())
-            .put("dateTested", dateTested);
+    Map<String, Object> submitP1Variables =
+        Map.of(
+            "deviceId", d.getInternalId().toString(),
+            "patientId", p1.getInternalId().toString(),
+            "result", TestResult.POSITIVE.toString(),
+            "dateTested", dateTested);
+    Map<String, Object> submitP2Variables =
+        Map.of(
+            "deviceId", d.getInternalId().toString(),
+            "patientId", p2.getInternalId().toString(),
+            "result", TestResult.NEGATIVE.toString(),
+            "dateTested", dateTested);
     submitTestResult(submitP1Variables, Optional.empty());
     submitTestResult(submitP2Variables, Optional.empty());
 
@@ -337,8 +344,10 @@ class TestResultTest extends BaseGraphqlTest {
 
     useOrgAdmin();
 
-    ObjectNode variables =
-        JsonNodeFactory.instance.objectNode().put("startDate", startDate).put("endDate", endDate);
+    Map<String, Object> variables =
+        Map.of(
+            "startDate", startDate,
+            "endDate", endDate);
 
     ObjectNode result =
         runQuery("dashboard-metrics", "GetTopLevelDashboardMetrics", variables, null);
@@ -353,8 +362,10 @@ class TestResultTest extends BaseGraphqlTest {
     String startDate = "2020-01-01";
     String endDate = new SimpleDateFormat("yyyy-MM-dd").format(Date.from(Instant.now()));
 
-    ObjectNode variables =
-        JsonNodeFactory.instance.objectNode().put("startDate", startDate).put("endDate", endDate);
+    Map<String, Object> variables =
+        Map.of(
+            "startDate", startDate,
+            "endDate", endDate);
 
     useOrgUser();
 
@@ -365,38 +376,37 @@ class TestResultTest extends BaseGraphqlTest {
         "Current user does not have permission to request [/topLevelDashboardMetrics]");
   }
 
-  private ObjectNode getFacilityScopedArguments() {
-    return JsonNodeFactory.instance
-        .objectNode()
-        .put("facilityId", _site.getInternalId().toString());
+  private HashMap<String, Object> getFacilityScopedArguments() {
+    return new HashMap<>(Map.of("facilityId", _site.getInternalId().toString()));
   }
 
-  private ObjectNode submitTestResult(ObjectNode variables, Optional<String> expectedError) {
+  private ObjectNode submitTestResult(
+      Map<String, Object> variables, Optional<String> expectedError) {
     return runQuery("add-test-result-mutation", variables, expectedError.orElse(null));
   }
 
-  private ObjectNode submitTestResultMultiplex(
-      ObjectNode variables, Optional<String> expectedError) {
-    return runQuery("add-test-result-multiplex-mutation", variables, expectedError.orElse(null));
+  private ObjectNode submitMultiplexResult(
+      Map<String, Object> variables, Optional<String> expectedError) {
+    return runQuery("add-multiplex-result-mutation", variables, expectedError.orElse(null));
   }
 
-  private ArrayNode fetchTestResults(ObjectNode variables) {
+  private ArrayNode fetchTestResults(Map<String, Object> variables) {
     return (ArrayNode) runQuery("test-results-query", variables).get("testResults");
   }
 
-  private ArrayNode fetchTestResultsMultiplex(ObjectNode variables) {
+  private ArrayNode fetchTestResultsMultiplex(Map<String, Object> variables) {
     return (ArrayNode) runQuery("test-results-multiplex-query", variables).get("testResults");
   }
 
-  private void fetchTestResultsWithError(ObjectNode variables, String expectedError) {
+  private void fetchTestResultsWithError(Map<String, Object> variables, String expectedError) {
     runQuery("test-results-query", variables, expectedError);
   }
 
-  private void fetchTestResult(ObjectNode variables, Optional<String> expectedError) {
+  private void fetchTestResult(Map<String, Object> variables, Optional<String> expectedError) {
     runQuery("test-result-query", variables, expectedError.orElse(null));
   }
 
-  private ObjectNode correctTest(ObjectNode variables, Optional<String> expectedError) {
+  private ObjectNode correctTest(Map<String, Object> variables, Optional<String> expectedError) {
     return runQuery("correct-test-result-mutation", variables, expectedError.orElse(null));
   }
 }

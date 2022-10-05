@@ -6,13 +6,14 @@ import { render, screen, waitFor, within } from "@testing-library/react";
 import moment from "moment";
 import userEvent from "@testing-library/user-event";
 import { MemoryRouter } from "react-router-dom";
+import * as flaggedMock from "flagged";
 
 import { getAppInsights } from "../TelemetryService";
 import * as utils from "../utils/index";
 import { TestCorrectionReason } from "../testResults/TestResultCorrectionModal";
 import {
-  SubmitTestResultMultiplexDocument as SUBMIT_TEST_RESULT,
-  EditQueueItemMultiplexDocument as EDIT_QUEUE_ITEM,
+  AddMultiplexResultDocument as SUBMIT_TEST_RESULT,
+  EditQueueItemMultiplexResultDocument as EDIT_QUEUE_ITEM,
 } from "../../generated/graphql";
 import * as generatedGraphql from "../../generated/graphql";
 
@@ -45,7 +46,6 @@ describe("QueueItem", () => {
   let store: MockStoreEnhanced<unknown, {}>;
   const mockStore = configureStore([]);
   const trackEventMock = jest.fn();
-  process.env.REACT_APP_MULTIPLEX_ENABLED = "true";
 
   beforeEach(() => {
     store = mockStore({
@@ -323,7 +323,7 @@ describe("QueueItem", () => {
 
             return {
               data: {
-                editQueueItemMultiplex: {
+                editQueueItemMultiplexResult: {
                   results: [
                     {
                       disease: { name: "COVID-19" },
@@ -360,7 +360,7 @@ describe("QueueItem", () => {
 
             return {
               data: {
-                editQueueItemMultiplex: {
+                editQueueItemMultiplexResult: {
                   results: [
                     {
                       disease: { name: "COVID-19" },
@@ -438,6 +438,8 @@ describe("QueueItem", () => {
       await waitFor(() => expect(editQueueMockIsDone).toBe(true));
     });
     it("adds radio buttons for Flu A and Flu B when a multiplex device is chosen", async () => {
+      jest.spyOn(flaggedMock, "useFeature").mockReturnValue(true);
+
       expect(screen.queryByText("Flu A")).not.toBeInTheDocument();
       expect(screen.queryByText("Flu B")).not.toBeInTheDocument();
       const deviceDropdown = (
@@ -454,6 +456,8 @@ describe("QueueItem", () => {
 
       expect(await screen.findByText("Flu A")).toBeInTheDocument();
       expect(await screen.findByText("Flu B")).toBeInTheDocument();
+
+      jest.resetAllMocks();
     });
   });
 
@@ -520,7 +524,7 @@ describe("QueueItem", () => {
             submitTestMockIsDone = true;
             return {
               data: {
-                addTestResultMultiplex: {
+                addMultiplexResult: {
                   testResult: {
                     internalId: internalId,
                   },
@@ -947,7 +951,9 @@ describe("QueueItem", () => {
     });
 
     it("tracks removal of patient from queue as custom event", () => {
-      const button = screen.getByLabelText("Close");
+      const button = screen.getByLabelText(
+        `Close test for Potter, Harry James`
+      );
       userEvent.click(button);
       const iAmSure = screen.getByText("Yes, I'm sure");
       userEvent.click(iAmSure);
@@ -995,7 +1001,9 @@ describe("QueueItem", () => {
   });
   describe("when a multiplex device is chosen", () => {
     beforeEach(() => {
-      const selectedTestResults: SRMultiplexResult[] = [
+      jest.spyOn(flaggedMock, "useFeature").mockReturnValue(true);
+
+      const selectedTestResults: MultiplexResult[] = [
         {
           disease: { name: "COVID-19" },
           testResult: "POSITIVE",
@@ -1024,7 +1032,7 @@ describe("QueueItem", () => {
           result: () => {
             return {
               data: {
-                editQueueItemMultiplex: {
+                editQueueItemMultiplexResult: {
                   results: [
                     {
                       disease: { name: "COVID-19" },
@@ -1074,7 +1082,7 @@ describe("QueueItem", () => {
           result: () => {
             return {
               data: {
-                editQueueItemMultiplex: {
+                editQueueItemMultiplexResult: {
                   results: [
                     {
                       disease: { name: "COVID-19" },
@@ -1124,7 +1132,7 @@ describe("QueueItem", () => {
           result: () => {
             return {
               data: {
-                editQueueItemMultiplex: {
+                editQueueItemMultiplexResult: {
                   results: [
                     {
                       disease: { name: "COVID-19" },
@@ -1181,6 +1189,9 @@ describe("QueueItem", () => {
         </MemoryRouter>
       );
     });
+    afterEach(() => {
+      jest.resetAllMocks();
+    });
 
     it("renders radio buttons with results for Flu A and Flu B", () => {
       expect(screen.getByText("Flu A")).toBeInTheDocument();
@@ -1203,7 +1214,7 @@ describe("QueueItem", () => {
 
       const editQueueSpy = jest.spyOn(
         generatedGraphql,
-        "useEditQueueItemMultiplexMutation"
+        "useEditQueueItemMultiplexResultMutation"
       );
       await waitFor(() => expect(editQueueSpy).toHaveBeenCalled());
     });
@@ -1443,7 +1454,7 @@ const mocks = [
     },
     result: {
       data: {
-        addTestResultMultiplex: {
+        addMultiplexResult: {
           testResult: {
             internalId: internalId,
           },

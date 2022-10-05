@@ -180,6 +180,9 @@ const Header: React.FC<{}> = () => {
       icon: (
         <FontAwesomeIcon
           icon={"user-circle"}
+          aria-hidden={false}
+          aria-label={"My account"}
+          role={"img"}
           style={{
             color: staffDetailsVisible && !menuVisible ? "white" : "",
           }}
@@ -193,7 +196,14 @@ const Header: React.FC<{}> = () => {
       onClick: () => setMenuVisible(false),
       className: getNavItemClassName,
       dataTestId: "settings-button",
-      icon: <FontAwesomeIcon icon={"cog"} />,
+      icon: (
+        <FontAwesomeIcon
+          icon={"cog"}
+          aria-hidden={false}
+          role={"img"}
+          aria-label={"Settings"}
+        />
+      ),
       mobileDisplay: true,
       mobileDisplayText: "Settings",
       hasSubmenu: false,
@@ -282,101 +292,100 @@ const Header: React.FC<{}> = () => {
   };
 
   return (
-    <header className="usa-header usa-header--basic">
-      <div className="usa-nav-container prime-header">
-        <div className="usa-navbar">
-          <div className="usa-logo" id="basic-logo">
-            <LinkWithQuery to={siteLogoLinkPath} title="Home" aria-label="Home">
-              <img
-                className="width-card desktop:width-full"
-                src={siteLogo}
-                alt="{process.env.REACT_APP_TITLE}"
-              />
-            </LinkWithQuery>
-            <div className="prime-organization-name">{organization.name}</div>
-          </div>
-
-          <button
-            onClick={() => setMenuVisible(!menuVisible)}
-            className="usa-menu-btn"
-          >
-            Menu
-          </button>
-
-          <nav
-            aria-label="Primary navigation"
-            className={classNames(
-              "usa-nav",
-              "prime-nav",
-              "desktop:display-none",
-              {
-                "is-visible": menuVisible,
-              },
-              "mobile-nav"
-            )}
-          >
-            <button
-              className="fa-layers fa-fw fa-2x usa-nav__close prime-nav-close-button"
-              onClick={() => setMenuVisible(false)}
-              title={"close menu"}
-            >
-              <FontAwesomeIcon icon={"window-close"} />
-            </button>
-            <ul className="usa-nav__primary usa-accordion mobile-main-nav-container">
-              {mainNavList("mobile")}
-            </ul>
-            <ul className="usa-nav__primary usa-accordion mobile-secondary-nav-container">
-              {secondaryNav("mobile")}
-            </ul>
-            <div className="usa-nav__primary mobile-sublist-container">
-              {secondaryNavSublist("mobile")}
-              <hr />
-
-              <label id="mobile-facility-label" className="usa-label ">
-                Facility
-              </label>
-              <div className="prime-facility-select facility-select-mobile-container">
-                <Dropdown
-                  selectedValue={facility.id}
-                  onChange={onFacilitySelect}
-                  className={"mobile-facility-select"}
-                  options={facilities.map(({ name, id }) => ({
-                    label: name,
-                    value: id,
-                  }))}
-                />
-              </div>
-
-              <TouchpointsButton />
-            </div>
-          </nav>
+    <div className="usa-nav-container prime-header">
+      <div className="usa-navbar">
+        <div className="usa-logo" id="basic-logo">
+          <LinkWithQuery to={siteLogoLinkPath} title="Home" aria-label="Home">
+            <img
+              className="width-card desktop:width-full"
+              src={siteLogo}
+              alt={process.env.REACT_APP_TITLE}
+            />
+          </LinkWithQuery>
+          <div className="prime-organization-name">{organization.name}</div>
         </div>
+
+        <button
+          onClick={() => setMenuVisible(!menuVisible)}
+          className="usa-menu-btn"
+        >
+          Menu
+        </button>
 
         <nav
           aria-label="Primary navigation"
-          className="usa-nav prime-nav desktop-nav"
+          className={classNames(
+            "usa-nav",
+            "prime-nav",
+            "desktop:display-none",
+            {
+              "is-visible": menuVisible,
+            },
+            "mobile-nav"
+          )}
         >
-          <ul className="usa-nav__primary usa-accordion">
-            {mainNavList("desktop")}
+          <button
+            className="fa-layers fa-fw fa-2x usa-nav__close prime-nav-close-button"
+            onClick={() => setMenuVisible(false)}
+            title={"close menu"}
+          >
+            <FontAwesomeIcon icon={"window-close"} />
+          </button>
+          <ul className="usa-nav__primary usa-accordion mobile-main-nav-container">
+            {mainNavList("mobile")}
           </ul>
-          {facilities && facilities.length > 0 ? (
-            <div className="prime-facility-select">
+          <ul className="usa-nav__primary usa-accordion mobile-secondary-nav-container">
+            {secondaryNav("mobile")}
+          </ul>
+          <div className="usa-nav__primary mobile-sublist-container">
+            {secondaryNavSublist("mobile")}
+            <hr />
+
+            <label id="mobile-facility-label" className="usa-label ">
+              Facility
+            </label>
+            <div className="prime-facility-select facility-select-mobile-container">
               <Dropdown
                 selectedValue={facility.id}
                 onChange={onFacilitySelect}
+                className={"mobile-facility-select"}
                 options={facilities.map(({ name, id }) => ({
                   label: name,
                   value: id,
                 }))}
               />
             </div>
-          ) : null}
-          <ul className="usa-nav__primary usa-accordion">
-            {secondaryNav("desktop")}
-          </ul>
+
+            <TouchpointsButton />
+          </div>
         </nav>
       </div>
-    </header>
+
+      <nav
+        aria-label="Primary navigation"
+        className="usa-nav prime-nav desktop-nav"
+      >
+        <ul className="usa-nav__primary usa-accordion">
+          {mainNavList("desktop")}
+        </ul>
+        {facilities && facilities.length > 0 ? (
+          <div className="prime-facility-select">
+            <Dropdown
+              aria-label={"Select facility"}
+              selectedValue={facility.id}
+              onChange={onFacilitySelect}
+              options={facilities.map(({ name, id }) => ({
+                label: name,
+                value: id,
+              }))}
+            />
+          </div>
+        ) : null}
+        <ul className="usa-nav__primary usa-accordion">
+          {secondaryNav("desktop")}
+        </ul>
+      </nav>
+    </div>
   );
 };
 

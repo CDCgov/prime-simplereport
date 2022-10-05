@@ -3,14 +3,14 @@ mutation RemovePatientFromQueue($patientId: ID!) {
     removePatientFromQueue(patientId: $patientId)
   }
 
-mutation EditQueueItemMultiplex(
+mutation EditQueueItemMultiplexResult(
     $id: ID!
     $deviceId: String
     $deviceSpecimenType: ID
-    $results: [DiseaseResult]
+    $results: [MultiplexResultInput]
     $dateTested: DateTime
   ) {
-    editQueueItemMultiplex(
+    editQueueItemMultiplexResult(
       id: $id
       deviceId: $deviceId
       deviceSpecimenType: $deviceSpecimenType
@@ -41,14 +41,14 @@ mutation EditQueueItemMultiplex(
     }
   }
 
-mutation SubmitTestResultMultiplex(
+mutation AddMultiplexResult(
     $patientId: ID!
     $deviceId: String!
     $deviceSpecimenType: ID
-    $results: [DiseaseResult]!
+    $results: [MultiplexResultInput]!
     $dateTested: DateTime
   ) {
-    addTestResultMultiplex(
+    addMultiplexResult(
       patientId: $patientId
       deviceId: $deviceId
       deviceSpecimenType: $deviceSpecimenType

@@ -8,17 +8,18 @@ import gov.cdc.usds.simplereport.db.model.ApiUser;
 import gov.cdc.usds.simplereport.db.model.auxiliary.PersonName;
 import gov.cdc.usds.simplereport.service.ApiUserService;
 import gov.cdc.usds.simplereport.service.model.UserInfo;
-import graphql.kickstart.tools.GraphQLMutationResolver;
-import java.util.Arrays;
 import java.util.HashSet;
+import java.util.List;
 import java.util.Set;
 import java.util.UUID;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.stereotype.Component;
+import org.springframework.graphql.data.method.annotation.Argument;
+import org.springframework.graphql.data.method.annotation.MutationMapping;
+import org.springframework.stereotype.Controller;
 
-@Component
+@Controller
 @Slf4j
-public class UserMutationResolver implements GraphQLMutationResolver {
+public class UserMutationResolver {
 
   private final ApiUserService _us;
 
@@ -27,102 +28,114 @@ public class UserMutationResolver implements GraphQLMutationResolver {
   }
 
   @AuthorizationConfiguration.RequireGlobalAdminUser
+  @MutationMapping
   public User addUser(
-      PersonName name,
-      String firstName,
-      String middleName,
-      String lastName,
-      String suffix,
-      String email,
-      String organizationExternalID,
-      Role role) {
+      @Argument PersonName name,
+      @Argument String firstName,
+      @Argument String middleName,
+      @Argument String lastName,
+      @Argument String suffix,
+      @Argument String email,
+      @Argument String organizationExternalId,
+      @Argument Role role) {
     name = Translators.consolidateNameArguments(name, firstName, middleName, lastName, suffix);
-    UserInfo user = _us.createUser(email, name, organizationExternalID, role);
+    UserInfo user = _us.createUser(email, name, organizationExternalId, role);
     return new User(user);
   }
 
+  @MutationMapping
   public User addUserToCurrentOrg(
-      PersonName name,
-      String firstName,
-      String middleName,
-      String lastName,
-      String suffix,
-      String email,
-      Role role) {
+      @Argument PersonName name,
+      @Argument String firstName,
+      @Argument String middleName,
+      @Argument String lastName,
+      @Argument String suffix,
+      @Argument String email,
+      @Argument Role role) {
     name = Translators.consolidateNameArguments(name, firstName, middleName, lastName, suffix);
     UserInfo user = _us.createUserInCurrentOrg(email, name, role, true);
     return new User(user);
   }
 
+  @MutationMapping
   public ApiUser createApiUserNoOkta(
-      PersonName name,
-      String firstName,
-      String middleName,
-      String lastName,
-      String suffix,
-      String email) {
+      @Argument PersonName name,
+      @Argument String firstName,
+      @Argument String middleName,
+      @Argument String lastName,
+      @Argument String suffix,
+      @Argument String email) {
     name = Translators.consolidateNameArguments(name, firstName, middleName, lastName, suffix);
     return _us.createApiUserNoOkta(email, name);
   }
 
+  @MutationMapping
   public User updateUser(
-      UUID id,
-      PersonName name,
-      String firstName,
-      String middleName,
-      String lastName,
-      String suffix) {
+      @Argument UUID id,
+      @Argument PersonName name,
+      @Argument String firstName,
+      @Argument String middleName,
+      @Argument String lastName,
+      @Argument String suffix) {
     name = Translators.consolidateNameArguments(name, firstName, middleName, lastName, suffix);
     UserInfo user = _us.updateUser(id, name);
     return new User(user);
   }
 
-  // Making `facilities` an array instead of a Collection to avoid type erasure
-  // of UUIDs to Strings since GraphQL ~does not actually make UUIDs UUIDs when you
-  // pass them in~, and this would cause issues downstream.
+  @MutationMapping
   public User updateUserPrivileges(
-      UUID id, boolean accessAllFacilities, UUID[] facilities, Role role) {
-    Set<UUID> facilitySet =
-        facilities == null ? Set.of() : new HashSet<>(Arrays.asList(facilities));
+      @Argument UUID id,
+      @Argument boolean accessAllFacilities,
+      @Argument List<UUID> facilities,
+      @Argument Role role) {
+    Set<UUID> facilitySet = facilities == null ? Set.of() : new HashSet<>(facilities);
     UserInfo user = _us.updateUserPrivileges(id, accessAllFacilities, facilitySet, role);
     return new User(user);
   }
 
-  public User updateUserEmail(UUID id, String email) {
+  @MutationMapping
+  public User updateUserEmail(@Argument UUID id, @Argument String email) {
     UserInfo user = _us.updateUserEmail(id, email);
     return new User(user);
   }
 
-  public User resetUserPassword(UUID id) {
+  @MutationMapping
+  public User resetUserPassword(@Argument UUID id) {
     UserInfo user = _us.resetUserPassword(id);
     return new User(user);
   }
 
-  public User resetUserMfa(UUID id) {
+  @MutationMapping
+  public User resetUserMfa(@Argument UUID id) {
     UserInfo user = _us.resetUserMfa(id);
     return new User(user);
   }
 
-  public User setUserIsDeleted(UUID id, boolean deleted) {
+  @MutationMapping
+  public User setUserIsDeleted(@Argument UUID id, @Argument boolean deleted) {
     UserInfo user = _us.setIsDeleted(id, deleted);
     return new User(user);
   }
 
-  public User reactivateUser(UUID id) {
+  @MutationMapping
+  public User reactivateUser(@Argument UUID id) {
     UserInfo user = _us.reactivateUser(id);
     return new User(user);
   }
 
-  public User resendActivationEmail(UUID id) {
+  @MutationMapping
+  public User resendActivationEmail(@Argument UUID id) {
     UserInfo user = _us.resendActivationEmail(id);
     return new User(user);
   }
 
   @AuthorizationConfiguration.RequireGlobalAdminUser
-  public User setCurrentUserTenantDataAccess(String organizationExternalID, String justification) {
+  @MutationMapping
+  public User setCurrentUserTenantDataAccess(
+      @Argument String organizationExternalId, @Argument String justification) {
     UserInfo user =
         _us.setCurrentUserTenantDataAccess(
-            Translators.parseStringNoTrim(organizationExternalID),
+            Translators.parseStringNoTrim(organizationExternalId),
             Translators.parseString(justification));
     return new User(user);
   }

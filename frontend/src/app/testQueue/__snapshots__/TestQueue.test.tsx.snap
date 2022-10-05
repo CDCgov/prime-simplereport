@@ -9,6 +9,11 @@ exports[`TestQueue should render the test queue 1`] = `
     <div
       class="grid-container queue-container-wide"
     >
+      <h1
+        class="font-sans-lg"
+      >
+        Conduct tests
+      </h1>
       <div
         class="position-relative"
       >
@@ -23,7 +28,7 @@ exports[`TestQueue should render the test queue 1`] = `
               class="usa-sr-only"
               for="search-field-small"
             >
-              Search
+              Search for a person to start their test
             </label>
             <div>
               <input
@@ -40,11 +45,11 @@ exports[`TestQueue should render the test queue 1`] = `
                 disabled=""
                 type="submit"
               >
-                <span
-                  class="usa-sr-only"
-                >
-                  Search
-                </span>
+                <img
+                  alt="Search"
+                  class="usa-search__submit-icon"
+                  src="search--white.svg"
+                />
               </button>
             </div>
           </form>
@@ -75,13 +80,14 @@ exports[`TestQueue should render the test queue 1`] = `
           class="prime-card-container"
         >
           <button
-            aria-label="Close"
+            aria-label="Close test for Doe, John A"
             class="prime-close-button"
           >
             <span
               class="fa-layers"
             >
               <svg
+                alt-text="close-circle"
                 aria-hidden="true"
                 class="svg-inline--fa fa-circle fa-w-16 fa-inverse fa-2x "
                 data-icon="circle"
@@ -97,6 +103,7 @@ exports[`TestQueue should render the test queue 1`] = `
                 />
               </svg>
               <svg
+                alt-text="close-x"
                 aria-hidden="true"
                 class="svg-inline--fa fa-times-circle fa-w-16 fa-2x "
                 data-icon="times-circle"
@@ -126,11 +133,12 @@ exports[`TestQueue should render the test queue 1`] = `
                 <div
                   class="card-header"
                 >
-                  <div
-                    class="card-name"
+                  <button
+                    class="usa-button usa-button--unstyled card-name"
+                    type="button"
                   >
                     Doe, John A
-                  </div>
+                  </button>
                   <div
                     class="card-dob"
                   >
@@ -144,14 +152,18 @@ exports[`TestQueue should render the test queue 1`] = `
                   </div>
                 </div>
                 <button
+                  aria-label="Start timer"
                   class="timer-button timer-reset"
                   data-testid="timer"
                 >
-                  <span>
+                  <span
+                    role="timer"
+                  >
                     10:00
                   </span>
                    
                   <svg
+                    alt-text="stopwatch"
                     aria-hidden="true"
                     class="svg-inline--fa fa-stopwatch fa-w-14 "
                     data-icon="stopwatch"
@@ -205,6 +217,7 @@ exports[`TestQueue should render the test queue 1`] = `
                       class="test-date-time-container"
                     >
                       <input
+                        aria-label="Test date"
                         class="card-test-input"
                         data-testid="test-date"
                         hidden=""
@@ -216,6 +229,7 @@ exports[`TestQueue should render the test queue 1`] = `
                         value="2021-08-01"
                       />
                       <input
+                        aria-label="Test time"
                         class="card-test-input"
                         data-testid="test-time"
                         hidden=""
@@ -231,6 +245,7 @@ exports[`TestQueue should render the test queue 1`] = `
                           class="usa-checkbox"
                         >
                           <input
+                            aria-label="Use current date and time"
                             checked=""
                             class="usa-checkbox__input margin"
                             id="current-date-check-abc"
@@ -270,6 +285,7 @@ exports[`TestQueue should render the test queue 1`] = `
                         >
                           <button
                             aria-describedby="tooltip-211111"
+                            aria-label="Device tooltip"
                             class="usa-button usa-button--unstyled usa-tooltip__trigger"
                             data-testid="triggerElement"
                             position="right"
@@ -278,6 +294,7 @@ exports[`TestQueue should render the test queue 1`] = `
                             wrapperclasses="usa-text-with-tooltip"
                           >
                             <svg
+                              alt-text="info"
                               aria-hidden="true"
                               class="svg-inline--fa fa-info-circle fa-w-16 info-circle-icon"
                               data-icon="info-circle"
@@ -364,16 +381,17 @@ exports[`TestQueue should render the test queue 1`] = `
               <form
                 class="usa-form maxw-none"
               >
-                <h4
+                <h2
                   class="prime-radio__title"
                 >
                   COVID-19 results
-                </h4>
+                </h2>
                 <div
                   class="usa-form-group prime-radio__group"
                 >
                   <fieldset
                     class="usa-fieldset prime-radios"
+                    id="covid-test-result-abc"
                   >
                     <legend
                       class="usa-legend usa-sr-only"
@@ -444,6 +462,7 @@ exports[`TestQueue should render the test queue 1`] = `
                   class="prime-test-result-submit"
                 >
                   <button
+                    aria-disabled="true"
                     class="usa-button usa-button--outline usa-button-disabled"
                     disabled=""
                     type="submit"
@@ -481,13 +500,14 @@ exports[`TestQueue should render the test queue 1`] = `
           class="prime-card-container"
         >
           <button
-            aria-label="Close"
+            aria-label="Close test for Smith, Jane"
             class="prime-close-button"
           >
             <span
               class="fa-layers"
             >
               <svg
+                alt-text="close-circle"
                 aria-hidden="true"
                 class="svg-inline--fa fa-circle fa-w-16 fa-inverse fa-2x "
                 data-icon="circle"
@@ -503,6 +523,7 @@ exports[`TestQueue should render the test queue 1`] = `
                 />
               </svg>
               <svg
+                alt-text="close-x"
                 aria-hidden="true"
                 class="svg-inline--fa fa-times-circle fa-w-16 fa-2x "
                 data-icon="times-circle"
@@ -532,11 +553,12 @@ exports[`TestQueue should render the test queue 1`] = `
                 <div
                   class="card-header"
                 >
-                  <div
-                    class="card-name"
+                  <button
+                    class="usa-button usa-button--unstyled card-name"
+                    type="button"
                   >
                     Smith, Jane
-                  </div>
+                  </button>
                   <div
                     class="card-dob"
                   >
@@ -550,14 +572,18 @@ exports[`TestQueue should render the test queue 1`] = `
                   </div>
                 </div>
                 <button
+                  aria-label="Start timer"
                   class="timer-button timer-reset"
                   data-testid="timer"
                 >
-                  <span>
+                  <span
+                    role="timer"
+                  >
                     10:00
                   </span>
                    
                   <svg
+                    alt-text="stopwatch"
                     aria-hidden="true"
                     class="svg-inline--fa fa-stopwatch fa-w-14 "
                     data-icon="stopwatch"
@@ -611,6 +637,7 @@ exports[`TestQueue should render the test queue 1`] = `
                       class="test-date-time-container"
                     >
                       <input
+                        aria-label="Test date"
                         class="card-test-input"
                         data-testid="test-date"
                         hidden=""
@@ -622,6 +649,7 @@ exports[`TestQueue should render the test queue 1`] = `
                         value="2021-08-01"
                       />
                       <input
+                        aria-label="Test time"
                         class="card-test-input"
                         data-testid="test-time"
                         hidden=""
@@ -637,6 +665,7 @@ exports[`TestQueue should render the test queue 1`] = `
                           class="usa-checkbox"
                         >
                           <input
+                            aria-label="Use current date and time"
                             checked=""
                             class="usa-checkbox__input margin"
                             id="current-date-check-def"
@@ -676,6 +705,7 @@ exports[`TestQueue should render the test queue 1`] = `
                         >
                           <button
                             aria-describedby="tooltip-211111"
+                            aria-label="Device tooltip"
                             class="usa-button usa-button--unstyled usa-tooltip__trigger"
                             data-testid="triggerElement"
                             position="right"
@@ -684,6 +714,7 @@ exports[`TestQueue should render the test queue 1`] = `
                             wrapperclasses="usa-text-with-tooltip"
                           >
                             <svg
+                              alt-text="info"
                               aria-hidden="true"
                               class="svg-inline--fa fa-info-circle fa-w-16 info-circle-icon"
                               data-icon="info-circle"
@@ -770,16 +801,17 @@ exports[`TestQueue should render the test queue 1`] = `
               <form
                 class="usa-form maxw-none"
               >
-                <h4
+                <h2
                   class="prime-radio__title"
                 >
                   COVID-19 results
-                </h4>
+                </h2>
                 <div
                   class="usa-form-group prime-radio__group"
                 >
                   <fieldset
                     class="usa-fieldset prime-radios"
+                    id="covid-test-result-def"
                   >
                     <legend
                       class="usa-legend usa-sr-only"
@@ -850,6 +882,7 @@ exports[`TestQueue should render the test queue 1`] = `
                   class="prime-test-result-submit"
                 >
                   <button
+                    aria-disabled="true"
                     class="usa-button usa-button--outline usa-button-disabled"
                     disabled=""
                     type="submit"

@@ -336,17 +336,9 @@ describe("EditPatient", () => {
           exact: false,
         })[0]
       );
-
       // Do not enter phone type for additional number
-      const number = screen.getAllByLabelText("Additional phone number", {
-        exact: false,
-      })[1] as HTMLInputElement;
-
-      fireEvent.change(number, {
-        target: { value: "6318675309" },
-      });
-
-      userEvent.click(screen.getAllByText("Save changes")[0]);
+      userEvent.type(await screen.findByTestId("phoneInput-2"), "6378908987");
+      userEvent.click((await screen.findAllByText("Save changes"))[0]);
 
       expect(
         await screen.findByText("Phone type is required", {
@@ -574,14 +566,14 @@ describe("EditPatient", () => {
       fireEvent.change(name, { target: { value: "" } });
       fireEvent.blur(name);
       expect(
-        await screen.findByText("First name is required")
+        await screen.findByText("First name is missing")
       ).toBeInTheDocument();
       // No error message on good value
       fireEvent.change(name, { target: { value: "James" } });
       fireEvent.blur(name);
       await waitFor(() => {
         expect(
-          screen.queryByText("First name is required")
+          screen.queryByText("First name is missing")
         ).not.toBeInTheDocument();
       });
     });

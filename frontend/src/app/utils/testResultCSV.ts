@@ -23,24 +23,20 @@ export function parseDataForCSV(data: any, multiplexEnabled: boolean) {
       ),
       "Patient date of birth": moment(r.patient.birthDate).format("MM/DD/YYYY"),
       "Test date": moment(r.dateTested).format("MM/DD/YYYY h:mma"),
-      ...(multiplexEnabled
-        ? {
-            "COVID-19 result":
-              TEST_RESULT_DESCRIPTIONS[
-                getResultByDiseaseName(r.results, "COVID-19") as Results
-              ],
-            "Flu A result":
-              TEST_RESULT_DESCRIPTIONS[
-                getResultByDiseaseName(r.results, "Flu A") as Results
-              ],
-            "Flu B result":
-              TEST_RESULT_DESCRIPTIONS[
-                getResultByDiseaseName(r.results, "Flu B") as Results
-              ],
-          }
-        : {
-            "COVID-19 result": TEST_RESULT_DESCRIPTIONS[r.result as Results],
-          }),
+      "COVID-19 result":
+        TEST_RESULT_DESCRIPTIONS[
+          getResultByDiseaseName(r.results, "COVID-19") as Results
+        ],
+      ...(multiplexEnabled && {
+        "Flu A result":
+          TEST_RESULT_DESCRIPTIONS[
+            getResultByDiseaseName(r.results, "Flu A") as Results
+          ],
+        "Flu B result":
+          TEST_RESULT_DESCRIPTIONS[
+            getResultByDiseaseName(r.results, "Flu B") as Results
+          ],
+      }),
       "Result reported date": moment(r.dateUpdated).format("MM/DD/YYYY h:mma"),
       "Test correction status": r.correctionStatus,
       "Test correction reason": r.reasonForCorrection,

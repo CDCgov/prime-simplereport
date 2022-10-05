@@ -3,6 +3,7 @@ import { gql, useQuery } from "@apollo/client";
 import { useDispatch, connect } from "react-redux";
 import { Navigate, Route, Routes, useLocation } from "react-router-dom";
 import { ApplicationInsights } from "@microsoft/applicationinsights-web";
+import jwtDecode from "jwt-decode";
 
 import ProtectedRoute from "./commonComponents/ProtectedRoute";
 import Header from "./commonComponents/Header";
@@ -56,10 +57,10 @@ const App = () => {
   const appInsights = getAppInsights();
   const dispatch = useDispatch();
   const location = useLocation();
+  const accessToken = localStorage.getItem("access_token");
 
   // Check if the user is logged in, if not redirect to Okta
   if (process.env.REACT_APP_OKTA_ENABLED === "true") {
-    const accessToken = localStorage.getItem("access_token");
     if (!accessToken) {
       // If Okta login has been attempted and returned to SR with an error, don't redirect back to Okta
       const params = new URLSearchParams(location.hash.slice(1));
@@ -109,7 +110,27 @@ const App = () => {
 
   if (error) {
     if (appInsights instanceof ApplicationInsights) {
-      appInsights.trackException({ error });
+      let decoded: any;
+      let validToken = null;
+      if (accessToken) {
+        try {
+          decoded = jwtDecode(accessToken);
+          validToken = true;
+        } catch (e) {
+          validToken = false;
+          console.error("Failed to decode access token", e);
+        }
+      }
+      const rolesFieldName = `${process.env.REACT_APP_OKTA_TOKEN_ROLE_CLAIM}`;
+      appInsights.trackException({
+        exception: error,
+        properties: {
+          "user message": "Server connection error",
+          "valid access token": validToken,
+          "token subject": decoded?.sub,
+          "token roles": decoded?.[rolesFieldName],
+        },
+      });
     }
     return <p>Server connection error...</p>;
   }
@@ -147,199 +168,201 @@ const App = () => {
         <TrainingNotification />
       )}
       <WithFacility>
-        <Page>
-          <Header />
-          <Routes>
-            <Route
-              path="/"
-              element={
-                <Navigate
-                  to={{ pathname: homepagePath, search: location.search }}
-                />
-              }
-            />
-            <Route path="queue" element={<TestQueueContainer />} />
-            <Route
-              path="results/:pageNumber"
-              element={
-                <ProtectedRoute
-                  requiredPermissions={canViewResults}
-                  userPermissions={data.whoami.permissions}
-                  element={
-                    <ResultsNavWrapper
-                      userPermissions={data.whoami.permissions}
-                    >
-                      <TestResultsList />
-                    </ResultsNavWrapper>
-                  }
-                />
-              }
-            />
-            <Route
-              path="results"
-              element={
-                <ProtectedRoute
-                  requiredPermissions={canViewResults}
-                  userPermissions={data.whoami.permissions}
-                  element={
-                    <ResultsNavWrapper
-                      userPermissions={data.whoami.permissions}
-                    >
-                      <CleanTestResultsList />
-                    </ResultsNavWrapper>
-                  }
-                />
-              }
-            />
-            <Route
-              path="results/upload/submit"
-              element={
-                <ProtectedRoute
-                  requiredPermissions={canUseCsvUploaderPilot}
-                  userPermissions={data.whoami.permissions}
-                  element={
-                    <ResultsNavWrapper
-                      userPermissions={data.whoami.permissions}
-                    >
-                      <Uploads />
-                    </ResultsNavWrapper>
-                  }
-                />
-              }
-            />
-            <Route
-              path="results/upload/submit/guide"
-              element={
-                <ProtectedRoute
-                  requiredPermissions={canUseCsvUploaderPilot}
-                  userPermissions={data.whoami.permissions}
-                  element={
-                    <ResultsNavWrapper
-                      userPermissions={data.whoami.permissions}
-                    >
-                      <Schema />
-                    </ResultsNavWrapper>
-                  }
-                />
-              }
-            />
+        <Page
+          header={<Header />}
+          children={
+            <Routes>
+              <Route
+                path="/"
+                element={
+                  <Navigate
+                    to={{ pathname: homepagePath, search: location.search }}
+                  />
+                }
+              />
+              <Route path="queue" element={<TestQueueContainer />} />
+              <Route
+                path="results/:pageNumber"
+                element={
+                  <ProtectedRoute
+                    requiredPermissions={canViewResults}
+                    userPermissions={data.whoami.permissions}
+                    element={
+                      <ResultsNavWrapper
+                        userPermissions={data.whoami.permissions}
+                      >
+                        <TestResultsList />
+                      </ResultsNavWrapper>
+                    }
+                  />
+                }
+              />
+              <Route
+                path="results"
+                element={
+                  <ProtectedRoute
+                    requiredPermissions={canViewResults}
+                    userPermissions={data.whoami.permissions}
+                    element={
+                      <ResultsNavWrapper
+                        userPermissions={data.whoami.permissions}
+                      >
+                        <CleanTestResultsList />
+                      </ResultsNavWrapper>
+                    }
+                  />
+                }
+              />
+              <Route
+                path="results/upload/submit"
+                element={
+                  <ProtectedRoute
+                    requiredPermissions={canUseCsvUploaderPilot}
+                    userPermissions={data.whoami.permissions}
+                    element={
+                      <ResultsNavWrapper
+                        userPermissions={data.whoami.permissions}
+                      >
+                        <Uploads />
+                      </ResultsNavWrapper>
+                    }
+                  />
+                }
+              />
+              <Route
+                path="results/upload/submit/guide"
+                element={
+                  <ProtectedRoute
+                    requiredPermissions={canUseCsvUploaderPilot}
+                    userPermissions={data.whoami.permissions}
+                    element={
+                      <ResultsNavWrapper
+                        userPermissions={data.whoami.permissions}
+                      >
+                        <Schema />
+                      </ResultsNavWrapper>
+                    }
+                  />
+                }
+              />
 
-            <Route
-              path="results/upload/submissions/submission/:id"
-              element={
-                <ProtectedRoute
-                  requiredPermissions={canUseCsvUploaderPilot}
-                  userPermissions={data.whoami.permissions}
-                  element={
-                    <ResultsNavWrapper
-                      userPermissions={data.whoami.permissions}
-                    >
-                      <Submission />
-                    </ResultsNavWrapper>
-                  }
-                />
-              }
-            />
-            <Route
-              path={"results/upload/submissions"}
-              element={
-                <ProtectedRoute
-                  requiredPermissions={canUseCsvUploaderPilot}
-                  userPermissions={data.whoami.permissions}
-                  element={
-                    <ResultsNavWrapper
-                      userPermissions={data.whoami.permissions}
-                    >
-                      <Submissions />
-                    </ResultsNavWrapper>
-                  }
-                />
-              }
-            />
-            <Route
-              path={"results/upload/submissions/:pageNumber"}
-              element={
-                <ProtectedRoute
-                  requiredPermissions={canUseCsvUploaderPilot}
-                  userPermissions={data.whoami.permissions}
-                  element={
-                    <ResultsNavWrapper
-                      userPermissions={data.whoami.permissions}
-                    >
-                      <Submissions />
-                    </ResultsNavWrapper>
-                  }
-                />
-              }
-            />
-            <Route path="patients">
               <Route
-                path=":pageNumber"
+                path="results/upload/submissions/submission/:id"
                 element={
                   <ProtectedRoute
-                    requiredPermissions={canViewPeople}
+                    requiredPermissions={canUseCsvUploaderPilot}
                     userPermissions={data.whoami.permissions}
-                    element={<ManagePatientsContainer />}
+                    element={
+                      <ResultsNavWrapper
+                        userPermissions={data.whoami.permissions}
+                      >
+                        <Submission />
+                      </ResultsNavWrapper>
+                    }
                   />
                 }
               />
               <Route
-                path=""
+                path={"results/upload/submissions"}
                 element={
                   <ProtectedRoute
-                    requiredPermissions={canViewPeople}
+                    requiredPermissions={canUseCsvUploaderPilot}
                     userPermissions={data.whoami.permissions}
-                    element={<ManagePatientsContainer />}
+                    element={
+                      <ResultsNavWrapper
+                        userPermissions={data.whoami.permissions}
+                      >
+                        <Submissions />
+                      </ResultsNavWrapper>
+                    }
                   />
                 }
               />
-            </Route>
-            <Route
-              path="patient/:patientId"
-              element={
-                <ProtectedRoute
-                  requiredPermissions={canEditPeople}
-                  userPermissions={data.whoami.permissions}
-                  element={<EditPatientContainer />}
+              <Route
+                path={"results/upload/submissions/:pageNumber"}
+                element={
+                  <ProtectedRoute
+                    requiredPermissions={canUseCsvUploaderPilot}
+                    userPermissions={data.whoami.permissions}
+                    element={
+                      <ResultsNavWrapper
+                        userPermissions={data.whoami.permissions}
+                      >
+                        <Submissions />
+                      </ResultsNavWrapper>
+                    }
+                  />
+                }
+              />
+              <Route path="patients">
+                <Route
+                  path=":pageNumber"
+                  element={
+                    <ProtectedRoute
+                      requiredPermissions={canViewPeople}
+                      userPermissions={data.whoami.permissions}
+                      element={<ManagePatientsContainer />}
+                    />
+                  }
                 />
-              }
-            />
-            <Route
-              path="add-patient"
-              element={
-                <ProtectedRoute
-                  requiredPermissions={canEditPeople}
-                  userPermissions={data.whoami.permissions}
-                  element={<AddPatient />}
+                <Route
+                  path=""
+                  element={
+                    <ProtectedRoute
+                      requiredPermissions={canViewPeople}
+                      userPermissions={data.whoami.permissions}
+                      element={<ManagePatientsContainer />}
+                    />
+                  }
                 />
-              }
-            />
-            <Route
-              path="settings/*"
-              element={
-                <ProtectedRoute
-                  requiredPermissions={canViewSettings}
-                  userPermissions={data.whoami.permissions}
-                  element={<Settings />}
-                />
-              }
-            />
-            <Route
-              path="dashboard"
-              element={
-                <ProtectedRoute
-                  requiredPermissions={canViewSettings}
-                  userPermissions={data.whoami.permissions}
-                  element={<Analytics />}
-                />
-              }
-            />
-            <Route
-              path="admin/*"
-              element={<SupportAdminRoutes isAdmin={isSupportAdmin} />}
-            />
-          </Routes>
-        </Page>
+              </Route>
+              <Route
+                path="patient/:patientId"
+                element={
+                  <ProtectedRoute
+                    requiredPermissions={canEditPeople}
+                    userPermissions={data.whoami.permissions}
+                    element={<EditPatientContainer />}
+                  />
+                }
+              />
+              <Route
+                path="add-patient"
+                element={
+                  <ProtectedRoute
+                    requiredPermissions={canEditPeople}
+                    userPermissions={data.whoami.permissions}
+                    element={<AddPatient />}
+                  />
+                }
+              />
+              <Route
+                path="settings/*"
+                element={
+                  <ProtectedRoute
+                    requiredPermissions={canViewSettings}
+                    userPermissions={data.whoami.permissions}
+                    element={<Settings />}
+                  />
+                }
+              />
+              <Route
+                path="dashboard"
+                element={
+                  <ProtectedRoute
+                    requiredPermissions={canViewSettings}
+                    userPermissions={data.whoami.permissions}
+                    element={<Analytics />}
+                  />
+                }
+              />
+              <Route
+                path="admin/*"
+                element={<SupportAdminRoutes isAdmin={isSupportAdmin} />}
+              />
+            </Routes>
+          }
+        />
       </WithFacility>
     </>
   );

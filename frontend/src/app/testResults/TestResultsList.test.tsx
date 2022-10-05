@@ -4,6 +4,7 @@ import { MockedProvider } from "@apollo/client/testing";
 import {
   render,
   screen,
+  waitFor,
   waitForElementToBeRemoved,
   within,
 } from "@testing-library/react";
@@ -14,6 +15,7 @@ import userEvent from "@testing-library/user-event";
 
 import { GetAllFacilitiesDocument } from "../../generated/graphql";
 import { appPermissions } from "../permissions";
+import { SEARCH_DEBOUNCE_TIME } from "../testQueue/constants";
 
 import TestResultsList, {
   ALL_FACILITIES_ID,
@@ -46,8 +48,6 @@ jest.mock("@microsoft/applicationinsights-react-js", () => ({
   useTrackEvent: jest.fn(),
 }));
 
-jest.mock("./EmailTestResultModal", () => () => <p>Email result modal</p>);
-
 const WithRouter: React.FC = ({ children }) => (
   <MemoryRouter initialEntries={[{ search: "?facility=1" }]}>
     {children}
@@ -71,7 +71,7 @@ describe("TestResultsList", () => {
               activeFacilityId={"1"}
               loading={false}
               loadingTotalResults={false}
-              refetch={() => {}}
+              maxDate="2022-09-26"
             />
           </MockedProvider>
         </Provider>
@@ -116,12 +116,12 @@ describe("TestResultsList", () => {
     expect(
       await screen.findByLabelText("Date range (start)")
     ).toBeInTheDocument();
-    expect(await screen.findByDisplayValue("03/18/2021")).toBeInTheDocument();
+    expect(await screen.findByDisplayValue("2021-03-18")).toBeInTheDocument();
 
     expect(
       await screen.findByLabelText("Date range (end)")
     ).toBeInTheDocument();
-    expect(await screen.findByDisplayValue("03/19/2021")).toBeInTheDocument();
+    expect(await screen.findByDisplayValue("2021-03-19")).toBeInTheDocument();
 
     const roleSelect = (await screen.findByLabelText(
       "Role"
@@ -318,9 +318,7 @@ describe("TestResultsList", () => {
     });
 
     it("should be able to filter by patient", async () => {
-      expect(
-        await screen.findByText("Test Results", { exact: false })
-      ).toBeInTheDocument();
+      await screen.findByText("Test Results", { exact: false });
       expect(
         await screen.findByText("Cragell, Barb Whitaker")
       ).toBeInTheDocument();
@@ -423,31 +421,29 @@ describe("TestResultsList", () => {
       expect(await screen.findByText("Gerard, Sam G")).toBeInTheDocument();
       expect(await screen.findByText("Date range (start)")).toBeInTheDocument();
       expect(await screen.findByText("Date range (end)")).toBeInTheDocument();
-      userEvent.type(
-        screen.getAllByTestId("date-picker-external-input")[0],
-        "03/18/2021"
+      userEvent.type(screen.getByText("Date range (start)"), "2021-03-18");
+      userEvent.tab();
+      screen.getByText("Colleer, Barde X");
+      screen.getByText("Gerard, Sam G");
+      await waitFor(() =>
+        expect(
+          screen.queryByText("Cragell, Barb Whitaker")
+        ).not.toBeInTheDocument()
       );
+      userEvent.type(screen.getByText("Date range (end)"), "2021-03-18");
       userEvent.tab();
       expect(await screen.findByText("Colleer, Barde X")).toBeInTheDocument();
-      expect(await screen.findByText("Gerard, Sam G")).toBeInTheDocument();
-      expect(
-        screen.queryByText("Cragell, Barb Whitaker")
-      ).not.toBeInTheDocument();
-      userEvent.type(
-        screen.getAllByTestId("date-picker-external-input")[1],
-        "03/18/2021"
+      await waitFor(() =>
+        expect(screen.queryByText("Gerard, Sam G")).not.toBeInTheDocument()
       );
-      userEvent.tab();
-      expect(await screen.findByText("Colleer, Barde X")).toBeInTheDocument();
-      expect(screen.queryByText("Gerard, Sam G")).not.toBeInTheDocument();
-      expect(
-        screen.queryByText("Cragell, Barb Whitaker")
-      ).not.toBeInTheDocument();
+      await waitFor(() =>
+        expect(
+          screen.queryByText("Cragell, Barb Whitaker")
+        ).not.toBeInTheDocument()
+      );
     });
     it("should be able to clear patient filter", async () => {
-      expect(
-        await screen.findByText("Test Results", { exact: false })
-      ).toBeInTheDocument();
+      await screen.findByText("Test Results", { exact: false });
 
       // Apply filter
       expect(await screen.findByText("Search by name")).toBeInTheDocument();
@@ -468,12 +464,8 @@ describe("TestResultsList", () => {
 
     it("should be able to clear date filters", async () => {
       // Apply filter
-      userEvent.type(
-        screen.getAllByTestId("date-picker-external-input")[0],
-        "03/18/2021"
-      );
-
-      userEvent.tab();
+      userEvent.type(screen.getByLabelText("Date range (start)"), "2021-03-18");
+      await new Promise((r) => setTimeout(r, SEARCH_DEBOUNCE_TIME));
 
       // Filter applied
       expect(await screen.findByText("Colleer, Barde X")).toBeInTheDocument();
@@ -482,9 +474,9 @@ describe("TestResultsList", () => {
         screen.queryByText("Cragell, Barb Whitaker")
       ).not.toBeInTheDocument();
 
-      expect(
-        screen.getAllByTestId("date-picker-external-input")[0]
-      ).toHaveValue("03/18/2021");
+      expect(screen.getByLabelText("Date range (start)")).toHaveValue(
+        "2021-03-18"
+      );
       // Clear filter
       expect(await screen.findByText("Clear filters")).toBeInTheDocument();
       userEvent.click(screen.getByText("Clear filters"));
@@ -495,9 +487,7 @@ describe("TestResultsList", () => {
       ).toBeInTheDocument();
 
       // Date picker no longer displays the selected date
-      expect(
-        screen.getAllByTestId("date-picker-external-input")[0]
-      ).toHaveValue("");
+      expect(screen.getByLabelText("Date range (start)")).toHaveValue("");
     });
 
     it("opens the test detail modal from the patient's name", async () => {
@@ -506,7 +496,8 @@ describe("TestResultsList", () => {
       ).toBeInTheDocument();
       const patientNameLink = await screen.findByText("Cragell, Barb Whitaker");
       userEvent.click(patientNameLink);
-      expect(screen.queryAllByText("Test details").length).toBe(2);
+      screen.getByText("Result details");
+      screen.getByText("Test information");
       expect(
         await screen.findByText("Barb Whitaker Cragell")
       ).toBeInTheDocument();
@@ -523,7 +514,8 @@ describe("TestResultsList", () => {
       userEvent.click(moreActions);
       const viewDetails = await screen.findByText("View details");
       userEvent.click(viewDetails);
-      expect(screen.queryAllByText("Test details").length).toBe(2);
+      screen.getByText("Result details");
+      screen.getByText("Test information");
     });
 
     it("opens the email test results modal", async () => {
@@ -537,7 +529,7 @@ describe("TestResultsList", () => {
       userEvent.click(moreActions);
       const emailResult = screen.getByText("Email result");
       userEvent.click(emailResult);
-      expect(screen.getByText("Email result modal")).toBeInTheDocument();
+      await screen.findByText("Email result?");
     });
 
     it("opens the download test results modal and shows how many rows the csv will have", async () => {
@@ -665,22 +657,37 @@ describe("TestResultsList", () => {
       expect((await screen.findAllByText("Flu A"))[0]).toBeInTheDocument();
     });
 
-    it("should default to column value and show N/A for Flu results for rows with no multiplex results", async () => {
-      expect(
-        await screen.findByRole("option", { name: "Facility 1" })
-      ).toBeInTheDocument();
-      userEvent.selectOptions(screen.getByLabelText("Testing facility"), ["3"]);
-      expect((await screen.findAllByText("Flu A"))[0]).toBeInTheDocument();
-      expect(
-        within(
-          screen.getByTestId("test-result-7c768a5d-ef90-44cd-8050-b96dd7aaa1d5")
-        ).getByText("Positive")
-      ).toBeInTheDocument();
-      expect(
-        within(
-          screen.getByTestId("test-result-7c768a5d-ef90-44cd-8050-b96dd7aaa1d5")
-        ).getAllByText("N/A")[0]
-      ).toBeInTheDocument();
+    describe("return focus after modal close", () => {
+      const clickActionMenu = async () => {
+        expect(await screen.findByText("Showing 1-3 of 3")).toBeInTheDocument();
+        const actionMenuButton = document.querySelectorAll(
+          ".rc-menu-button"
+        )[0];
+        userEvent.click(actionMenuButton as HTMLElement);
+      };
+      it.each([
+        ["Print result", "Close"],
+        ["Text result", "Cancel"],
+        ["Email result", "Cancel"],
+        ["Correct result", "No, go back"],
+      ])("should set focus on %p", async (menuButtonText, closeButtonText) => {
+        await clickActionMenu();
+        userEvent.click(screen.getByText(menuButtonText));
+        await screen.findAllByText(closeButtonText);
+        userEvent.click(screen.getAllByText(closeButtonText)[0]);
+        await waitFor(() =>
+          expect(screen.getByText(menuButtonText)).toHaveFocus()
+        );
+      });
+      it("should set focus on the view details button", async () => {
+        await clickActionMenu();
+        userEvent.click(screen.getByText("View details"));
+        await screen.findByAltText("Close");
+        userEvent.click(screen.getByAltText("Close"));
+        await waitFor(() =>
+          expect(screen.getByText("View details")).toHaveFocus()
+        );
+      });
     });
   });
 
@@ -758,5 +765,86 @@ describe("TestResultsList", () => {
     expect(
       screen.queryByRole("option", { name: "All facilities" })
     ).not.toBeInTheDocument();
+  });
+
+  describe("end date error", () => {
+    beforeEach(() => {
+      render(
+        <WithRouter>
+          <Provider store={store}>
+            <MockedProvider mocks={mocks}>
+              <TestResultsList />
+            </MockedProvider>
+          </Provider>
+        </WithRouter>
+      );
+    });
+    const setDateRange = async (
+      startDate = "2021-03-17",
+      endDate = "2021-03-18"
+    ) => {
+      userEvent.type(await screen.findByText("Date range (start)"), startDate);
+      await new Promise((r) => setTimeout(r, SEARCH_DEBOUNCE_TIME));
+      userEvent.type(await screen.findByText("Date range (end)"), endDate);
+      new Promise((r) => setTimeout(r, SEARCH_DEBOUNCE_TIME));
+    };
+    it("should display error if end date is before the start date", async () => {
+      await setDateRange("2021-03-18", "2021-03-17");
+      expect(
+        screen.getByText("End date cannot be before start date", {
+          exact: false,
+        })
+      ).toBeInTheDocument();
+    });
+    it("should display clear error message when clear filters button is pressed", async () => {
+      await setDateRange("2021-03-18", "2021-03-17");
+      expect(
+        screen.getByText("End date cannot be before start date", {
+          exact: false,
+        })
+      ).toBeInTheDocument();
+      userEvent.click(screen.getByText("Clear filters"));
+      expect(
+        screen.queryByText("End date cannot be before start date", {
+          exact: false,
+        })
+      ).not.toBeInTheDocument();
+    });
+  });
+
+  describe("clear filter button", () => {
+    const elementToTest = (filterParams: FilterParams) => (
+      <WithRouter>
+        <Provider store={store}>
+          <MockedProvider mocks={mocks}>
+            <DetachedTestResultsList
+              data={{ testResults }}
+              pageNumber={1}
+              entriesPerPage={20}
+              totalEntries={testResults.length}
+              filterParams={filterParams}
+              setFilterParams={() => () => {}}
+              clearFilterParams={() => {}}
+              activeFacilityId={"1"}
+              loading={false}
+              loadingTotalResults={false}
+              maxDate="2022-09-26"
+            />
+          </MockedProvider>
+        </Provider>
+      </WithRouter>
+    );
+    it("should be disabled when no filters are applied", () => {
+      render(elementToTest({}));
+      expect(screen.getByText("Clear filters")).toBeDisabled();
+    });
+    it("should be disabled when testing only filter applied is facility is active facility", () => {
+      render(elementToTest({ filterFacilityId: "1" }));
+      expect(screen.getByText("Clear filters")).toBeDisabled();
+    });
+    it("should be enabled filters are applied", () => {
+      render(elementToTest({ result: "Positive" }));
+      expect(screen.getByText("Clear filters")).toBeEnabled();
+    });
   });
 });

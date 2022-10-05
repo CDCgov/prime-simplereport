@@ -109,12 +109,7 @@ const CsvSchemaDocumentation = () => {
             </LinkWithQuery>
           </div>
           <div>
-            <h2 className="margin-top-2">
-              CSV template guide{" "}
-              <span className="text-secondary bg-white border-1px border-secondary font-body-3xs padding-x-1 padding-y-05 text-secondary margin-left-2 text-ttbottom">
-                Pilot program{" "}
-              </span>
-            </h2>
+            <h2 className="margin-top-2">CSV template guide</h2>
           </div>
         </div>
       </div>
@@ -160,7 +155,7 @@ const CsvSchemaDocumentation = () => {
           <ul>
             <li>
               <a
-                href="/getting-started/testing-facilities/csv-schema"
+                href="/assets/resources/test_results_example_10-3-2022.csv"
                 className="usa-link"
               >
                 Standard CSV template with example data
@@ -182,7 +177,7 @@ const CsvSchemaDocumentation = () => {
                 results, you may have to adjust it to match the SimpleReport
                 template. If you don’t have one, use the{" "}
                 <a
-                  href="https://reportstream.cdc.gov/assets/csv/ReportStream-StandardCSV-ExampleData-20220509.csv"
+                  href="/assets/resources/test_results_example_10-3-2022.csv"
                   className="usa-link"
                 >
                   spreadsheet template file

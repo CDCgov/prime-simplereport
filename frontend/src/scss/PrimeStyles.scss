@@ -443,6 +443,8 @@ $results-dropdown-spacing: #{units(4)} - #{units(2)} - 22px - #{units(4)}; // he
 
   &__title {
     margin-bottom: 0;
+    margin-top: 1.33rem;
+    font-size: 1rem;
   }
 
   &__label {
@@ -826,6 +828,7 @@ $results-dropdown-spacing: #{units(4)} - #{units(2)} - 22px - #{units(4)}; // he
 
 .is-prime-staff-infobox-visible {
   visibility: visible;
+  z-index: 11;
 }
 
 // export
@@ -860,6 +863,10 @@ $results-dropdown-spacing: #{units(4)} - #{units(2)} - 22px - #{units(4)}; // he
 .usa-textarea,
 .usa-combo-box__input {
   max-width: none;
+}
+
+.usa-combo-box__full-width {
+  max-width: none !important;
 }
 
 // Patient form
@@ -1064,7 +1071,11 @@ $results-dropdown-spacing: #{units(4)} - #{units(2)} - 22px - #{units(4)}; // he
   }
 
   h3 {
-    font-size: size("body", "sm");
+    font-size: size("body", "xs");
+  }
+
+  h4 {
+    font-size: size("body", "3xs");
   }
 }
 

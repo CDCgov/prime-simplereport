@@ -2,6 +2,7 @@ import React from "react";
 import Modal from "react-modal";
 import classnames from "classnames";
 import { useTranslation } from "react-i18next";
+import { useFeature } from "flagged";
 
 import Button from "../commonComponents/Button/Button";
 import MultiplexResultsGuidance from "../commonComponents/MultiplexResultsGuidance";
@@ -14,6 +15,7 @@ import { GetTestResultForPrintDocument } from "../../generated/graphql";
 import { displayFullName } from "../utils";
 import { formatDateWithTimeOption } from "../utils/date";
 import { hasMultiplexResults } from "../utils/testResults";
+import { setLanguage } from "../utils/languages";
 
 interface OrderingProvider {
   firstName: string;
@@ -69,7 +71,7 @@ export const StaticTestResultModal = ({
     results,
     dateTested,
   } = testResult;
-  const multiplexEnabled = process.env.REACT_APP_MULTIPLEX_ENABLED === "true";
+  const multiplexEnabled = useFeature("multiplexEnabled") as boolean;
   const isPatientApp = false;
 
   return (
@@ -217,7 +219,10 @@ export const DetachedTestResultPrintModal = ({
       <Button
         variant="unstyled"
         label={t("testResult.close")}
-        onClick={closeModal}
+        onClick={() => {
+          closeModal();
+          setLanguage("en");
+        }}
       />
       <Button label={t("testResult.print")} onClick={() => window.print()} />
     </div>
@@ -229,6 +234,7 @@ export const DetachedTestResultPrintModal = ({
       className="sr-test-results-modal-content"
       overlayClassName="sr-test-results-modal-overlay"
       contentLabel="Printable test result"
+      onRequestClose={closeModal}
     >
       <div className="display-flex flex-align-center maxw-tablet grid-container patient-header padding-x-0 dont-print">
         <LanguageToggler />

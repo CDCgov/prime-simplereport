@@ -4,6 +4,7 @@ import { useLocation, Navigate } from "react-router-dom";
 import { Card } from "../../commonComponents/Card/Card";
 import { CardBackground } from "../../commonComponents/CardBackground/CardBackground";
 import Button from "../../commonComponents/Button/Button";
+import { useDocumentTitle } from "../../utils/hooks";
 
 import PersonalDetailsForm, {
   PersonalDetailsFormProps,
@@ -14,6 +15,7 @@ const Consent = () => {
   const { orgExternalId, firstName, middleName, lastName } =
     (useLocation().state as PersonalDetailsFormProps) || {};
   const [submitted, setSubmitted] = useState(false);
+  useDocumentTitle("Sign up - identity verification consent | SimpleReport");
 
   if (!orgExternalId || !firstName || !lastName) {
     return <Navigate to="/sign-up" />;
@@ -32,7 +34,11 @@ const Consent = () => {
 
   return (
     <CardBackground>
-      <Card logo bodyKicker="Identity verification consent">
+      <Card logo>
+        <h1 className="font-ui-sm text-bold margin-top-3">
+          {" "}
+          Identity verification consent{" "}
+        </h1>
         <div className="margin-bottom-2">
           <p className="font-ui-2xs text-base">
             To create a SimpleReport account, you’ll need to agree to identity

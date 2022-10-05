@@ -2,8 +2,6 @@ import React, { useEffect } from "react";
 import { ToastContainer } from "react-toastify";
 
 import "react-toastify/dist/ReactToastify.css";
-
-import TouchpointsButton from "../../analytics/TouchpointsButton";
 import { getUrl } from "../../utils/url";
 import USAGovBanner from "../USAGovBanner";
 
@@ -13,7 +11,13 @@ declare global {
   }
 }
 
-const Page: React.FC<{}> = ({ children }) => {
+interface Props {
+  header?: React.ReactNode;
+  children?: React.ReactNode;
+  isPatientApp?: boolean;
+}
+
+const Page: React.FC<Props> = ({ header, children, isPatientApp }) => {
   // load touchpoints script
   useEffect(() => {
     // don't load script when running in cypress
@@ -32,8 +36,20 @@ const Page: React.FC<{}> = ({ children }) => {
   }, []);
   return (
     <div className="App">
-      <div id="main-wrapper">
+      <a className="usa-skipnav" href="#main-wrapper">
+        Skip to main content
+      </a>
+      <header
+        className={
+          isPatientApp
+            ? "header border-bottom border-base-lighter"
+            : "usa-header usa-header--basic"
+        }
+      >
         <USAGovBanner />
+        {header}
+      </header>
+      <div id="main-wrapper">
         {children}
         <ToastContainer
           autoClose={5000}
@@ -43,7 +59,10 @@ const Page: React.FC<{}> = ({ children }) => {
           hideProgressBar={true}
         />
       </div>
-      <TouchpointsButton />
+      <footer>
+        {/*  Disabling Touchpoints until we have designs that specify how to contact Support */}
+        {/*<TouchpointsButton />*/}
+      </footer>
     </div>
   );
 };

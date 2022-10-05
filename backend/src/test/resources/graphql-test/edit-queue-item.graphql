@@ -1,0 +1,21 @@
+mutation EditQueueItem($id: ID!, $deviceId: String, $result: String, $dateTested: DateTime) {
+    editQueueItem(
+      id: $id,
+      deviceId: $deviceId,
+      result: $result,
+      dateTested: $dateTested
+    ) {
+      internalId,
+      results{
+        disease{
+            internalId
+            name
+            loinc
+        }
+        testResult
+      }
+      deviceType {
+        internalId
+      }
+    }
+  }

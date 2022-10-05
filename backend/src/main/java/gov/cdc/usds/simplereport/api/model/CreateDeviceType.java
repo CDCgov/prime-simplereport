@@ -14,4 +14,5 @@ public class CreateDeviceType {
   private String loincCode;
   private List<UUID> swabTypes;
   private List<UUID> supportedDiseases;
+  private int testLength;
 }

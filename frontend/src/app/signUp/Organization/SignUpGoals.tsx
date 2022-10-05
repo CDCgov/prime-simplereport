@@ -4,6 +4,7 @@ import { Card } from "../../commonComponents/Card/Card";
 import { CardBackground } from "../../commonComponents/CardBackground/CardBackground";
 import Button from "../../commonComponents/Button/Button";
 import RadioGroup from "../../commonComponents/RadioGroup";
+import { useDocumentTitle } from "../../utils/hooks";
 
 import OrganizationForm from "./OrganizationForm";
 import RequestAccess from "./RequestAccess";
@@ -15,6 +16,7 @@ const SignUpGoals = () => {
   const [submitted, setSubmitted] = useState(false);
   const [signUpGoal, setSignUpGoal] = useState("");
   const [signUpGoalError, setSignUpGoalError] = useState("");
+  useDocumentTitle("Sign up - select status | SimpleReport");
 
   if (submitted) {
     switch (signUpGoal) {
@@ -42,13 +44,15 @@ const SignUpGoals = () => {
     <CardBackground>
       <Card logo>
         <div className="sign-up-goals-card usa-prose margin-bottom-3">
-          <h3 className="margin-top-2">Sign up for SimpleReport</h3>
+          <h1 className="margin-top-2 font-ui-lg">Sign up for SimpleReport</h1>
           <p className="subheader margin-bottom-0">
             To get you to the right place, tell us a little about yourself.
           </p>
           <RadioGroup
             wrapperClassName="margin-top-1"
             name="signUpGoal"
+            legend="Select Sign Up Goal"
+            legendSrOnly
             buttons={[
               {
                 value: "existingOrg",

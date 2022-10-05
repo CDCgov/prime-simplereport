@@ -66,6 +66,10 @@ public class OktaLocalSecurityConfiguration extends WebSecurityConfigurerAdapter
         .antMatchers(HttpMethod.POST, WebConfiguration.TWILIO_CALLBACK)
         .permitAll()
 
+        // Feature Flags that apply at app level
+        .antMatchers(HttpMethod.GET, WebConfiguration.FEATURE_FLAGS)
+        .permitAll()
+
         // ReportStreamResponse callback authorization is handled in the controller
         .antMatchers(HttpMethod.POST, WebConfiguration.RS_QUEUE_CALLBACK)
         .permitAll()
@@ -86,12 +90,15 @@ public class OktaLocalSecurityConfiguration extends WebSecurityConfigurerAdapter
         // Anything else goes through Okta
         .anyRequest()
         .authenticated()
-
-        // Most of the app doesn't use sessions, so can't have CSRF. Spring's automatic CSRF
-        // breaks the REST controller, so we disable it for most paths.
-        // USER_ACCOUNT_REQUEST does use sessions, so CSRF is enabled there.
         .and()
-        .csrf()
+        .oauth2ResourceServer()
+        .jwt();
+
+    // Most of the app doesn't use sessions, so can't have CSRF. Spring's automatic CSRF
+    // breaks the REST controller, so we disable it for most paths.
+    // USER_ACCOUNT_REQUEST does use sessions, so CSRF is enabled there.
+
+    http.csrf()
         .requireCsrfProtectionMatcher(
             new AntPathRequestMatcher(WebConfiguration.USER_ACCOUNT_REQUEST));
 

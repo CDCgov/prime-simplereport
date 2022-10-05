@@ -18,6 +18,7 @@ resource "azurerm_app_service" "metabase" {
 
   site_config {
     always_on        = true
+    ftps_state       = "Disabled"
     linux_fx_version = "DOCKER|metabase/metabase"
   }
 

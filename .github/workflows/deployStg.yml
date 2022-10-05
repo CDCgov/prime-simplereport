@@ -5,6 +5,12 @@ on:
     branches:
       - main
 
+# on:
+#   workflow_run:
+#     workflows: ["Deploy Test"]
+#     types:
+#       - completed
+
 env:
   DEPLOY_ENV: stg
   NODE_VERSION: 14
@@ -13,6 +19,7 @@ concurrency:
 
 jobs:
   build-docker:
+    # if: ${{ github.event.workflow_run.conclusion == 'success' }}
     runs-on: ubuntu-latest
     defaults:
       run:
@@ -26,6 +33,7 @@ jobs:
       - name: Build and push Docker images
         run: ./build_and_push.sh
   prerelease-backend:
+    # if: ${{ github.event.workflow_run.conclusion == 'success' }}
     runs-on: ubuntu-latest
     needs: build-docker
     defaults:
@@ -56,6 +64,7 @@ jobs:
         timeout-minutes: 1
         run: make wait-for-${{ env.DEPLOY_ENV }}-slot-readiness
   build-frontend:
+    # if: ${{ github.event.workflow_run.conclusion == 'success' }}
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v3
@@ -88,6 +97,7 @@ jobs:
           path: client.tgz
           retention-days: 1
   deploy:
+    # if: ${{ github.event.workflow_run.conclusion == 'success' }}
     runs-on: ubuntu-latest
     environment:
       name: Staging
@@ -106,16 +116,4 @@ jobs:
         uses: ./.github/actions/deploy-application
         with:
           client-tarball: client.tgz
-          deploy-env: ${{env.DEPLOY_ENV}}
-  verify-release:
-    runs-on: ubuntu-latest
-    needs: [deploy]
-    defaults:
-      run:
-        working-directory: ./ops
-    steps:
-      - uses: actions/checkout@v3
-      - name: Run health checks
-        uses: ./.github/actions/health-checks
-        with:
           deploy-env: ${{env.DEPLOY_ENV}}

@@ -22,6 +22,7 @@ interface Props {
   className?: string;
   id?: string;
   onClick?: React.MouseEventHandler<HTMLButtonElement>;
+  ariaHidden?: boolean;
 }
 
 const Button = ({
@@ -35,10 +36,13 @@ const Button = ({
   className,
   onClick,
   id,
+  ariaHidden,
 }: Props) => (
   <button
     type={type}
     disabled={disabled}
+    aria-disabled={disabled}
+    aria-hidden={ariaHidden}
     className={classnames(
       "usa-button",
       variant && `usa-button--${variant}`,

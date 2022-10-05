@@ -93,6 +93,10 @@ describe("OrganizationForm", () => {
         exact: false,
       })
     ).toBeInTheDocument();
+
+    expect(
+      screen.getByRole("textbox", { name: "Organization name required" })
+    ).toHaveFocus();
   });
 
   it("redirects to identity verification when submitting valid input", async () => {

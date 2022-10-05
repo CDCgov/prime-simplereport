@@ -17,12 +17,9 @@ import gov.cdc.usds.simplereport.db.model.Person;
 import gov.cdc.usds.simplereport.db.model.TestEvent;
 import gov.cdc.usds.simplereport.db.model.TestOrder;
 import gov.cdc.usds.simplereport.db.repository.PatientLinkRepository;
-import gov.cdc.usds.simplereport.service.dataloader.PatientLinkDataLoader;
 import gov.cdc.usds.simplereport.test_util.TestDataFactory;
 import java.time.LocalDate;
-import java.util.ArrayList;
 import java.util.Date;
-import java.util.List;
 import java.util.UUID;
 import java.util.function.BooleanSupplier;
 import org.junit.jupiter.api.BeforeEach;
@@ -143,16 +140,5 @@ class PatientLinkServiceTest extends BaseServiceTest<PatientLinkService> {
     assertThrows(
         ExpiredPatientLinkException.class,
         () -> _service.verifyPatientLink(patientId, patientBirthDate));
-  }
-
-  @Test
-  void patientLinkDataLoaderReturnsMostRecent() {
-    List<PatientLink> links = new ArrayList<>();
-    links.add(_patientLink);
-    links.add(_dataFactory.createPatientLink(_testOrder));
-    links.add(_dataFactory.createPatientLink(_testOrder));
-    PatientLink mostRecent = _dataFactory.createPatientLink(_testOrder);
-    links.add(mostRecent);
-    assertEquals(mostRecent, PatientLinkDataLoader.getMostRecentPatientLink(links));
   }
 }

@@ -2,12 +2,10 @@ import React, { useState } from "react";
 import { Button, FormGroup, FileInput } from "@trussworks/react-uswds";
 
 import { showError } from "../../utils";
-import {
-  FeedbackMessage,
-  useUploadTestResultCsvMutation,
-} from "../../../generated/graphql";
+import { FeedbackMessage } from "../../../generated/graphql";
 import { useDocumentTitle } from "../../utils/hooks";
 import { LinkWithQuery } from "../../commonComponents/LinkWithQuery";
+import { FileUploadService } from "../../../fileUploadService/FileUploadService";
 
 const PAYLOAD_MAX_BYTES = 50 * 1000 * 1000;
 const REPORT_MAX_ITEMS = 10000;
@@ -29,8 +27,6 @@ const Uploads = () => {
   const [errorMessageText, setErrorMessageText] = useState(
     `Please resolve the errors below and upload your edited file. Your file has not been accepted.`
   );
-
-  const [uploadTestResultCSV] = useUploadTestResultCsvMutation();
 
   const handleFileChange = async (
     event: React.ChangeEvent<HTMLInputElement>
@@ -108,34 +104,29 @@ const Uploads = () => {
       return;
     }
 
-    let queryResponse;
-    try {
-      queryResponse = await uploadTestResultCSV({
-        variables: { testResultList: file },
-      });
-    } catch (error) {}
+    FileUploadService.uploadResults(file).then(async (res) => {
+      if (res.status !== 200) {
+        setErrorMessageText(
+          "There was a server error. Your file has not been accepted."
+        );
+      } else {
+        const response = await res.json();
 
-    const response = queryResponse?.data?.uploadTestResultCSV;
+        if (response?.reportId) {
+          setReportId(response?.reportId);
+        }
 
-    if (queryResponse?.errors?.length) {
-      setErrorMessageText(
-        "There was a server error. Your file has not been accepted."
-      );
-    }
+        if (response?.errors?.length) {
+          setErrorMessageText(
+            "Please resolve the errors below and upload your edited file. Your file has not been accepted."
+          );
+        }
 
-    if (response?.reportId) {
-      setReportId(response?.reportId);
-    }
-
-    if (response?.errors?.length) {
-      setErrorMessageText(
-        "Please resolve the errors below and upload your edited file. Your file has not been accepted."
-      );
-    }
-
-    if (response?.errors && response.errors.length > 0) {
-      setErrors(response.errors);
-    }
+        if (response?.errors && response.errors.length > 0) {
+          setErrors(response.errors);
+        }
+      }
+    });
 
     setFileInputResetValue(fileInputResetValue + 1);
     setFile(undefined);
@@ -149,6 +140,31 @@ const Uploads = () => {
         <div className="usa-card__header">
           <h2>Upload your results</h2>
         </div>
+        <div className="usa-alert usa-alert--info margin-left-105em margin-right-105em maxw-tablet-lg">
+          <div className="usa-alert__body">
+            <h4 className="usa-alert__heading">
+              What is the bulk results uploader?
+            </h4>
+            <p className="usa-alert__text">
+              <em>
+                This feature is in beta. That means it’s new, and we’ll continue
+                to update and improve it for our users. Though the feature is in
+                beta, it will route all the results you submit to the
+                appropriate public health department(s).
+              </em>{" "}
+              <br />
+              <br /> The results uploader allows you to report test results in
+              bulk using a CSV file. While we expect most SimpleReport users
+              will continue to report through the regular process, this feature
+              can serve labs and others with an information system that exports
+              spreadsheets, such as an EMR.{" "}
+              <LinkWithQuery to="/results/upload/submit/guide">
+                <strong>Learn more about how it works</strong>
+              </LinkWithQuery>
+              .
+            </p>
+          </div>
+        </div>
         <div className="usa-card__body padding-y-2 maxw-prose">
           <p>
             Report results in bulk using a comma-separated values (CSV)
@@ -156,7 +172,7 @@ const Uploads = () => {
           </p>
           <ol className="usa-list">
             <li>
-              <a href="https://reportstream.cdc.gov/assets/csv/ReportStream-StandardCSV-ExampleData-20220509.csv">
+              <a href="/assets/resources/test_results_example_10-3-2022.csv">
                 Download the spreadsheet template
               </a>{" "}
             </li>

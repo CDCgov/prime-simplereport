@@ -5,7 +5,6 @@ import com.fasterxml.jackson.databind.DeserializationFeature;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import feign.FeignException;
 import gov.cdc.usds.simplereport.api.model.errors.CsvProcessingException;
-import gov.cdc.usds.simplereport.api.model.errors.IllegalGraphqlArgumentException;
 import gov.cdc.usds.simplereport.config.AuthorizationConfiguration;
 import gov.cdc.usds.simplereport.db.model.Organization;
 import gov.cdc.usds.simplereport.db.model.TestResultUpload;
@@ -13,14 +12,18 @@ import gov.cdc.usds.simplereport.db.model.auxiliary.UploadStatus;
 import gov.cdc.usds.simplereport.db.repository.TestResultUploadRepository;
 import gov.cdc.usds.simplereport.service.errors.InvalidBulkTestResultUploadException;
 import gov.cdc.usds.simplereport.service.errors.InvalidRSAPrivateKeyException;
+import gov.cdc.usds.simplereport.service.model.reportstream.FeedbackMessage;
 import gov.cdc.usds.simplereport.service.model.reportstream.ReportStreamStatus;
 import gov.cdc.usds.simplereport.service.model.reportstream.TokenResponse;
 import gov.cdc.usds.simplereport.service.model.reportstream.UploadResponse;
 import gov.cdc.usds.simplereport.utils.TokenAuthentication;
+import gov.cdc.usds.simplereport.validators.TestResultFileValidator;
+import java.io.ByteArrayInputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.util.Date;
 import java.util.LinkedHashMap;
+import java.util.List;
 import java.util.Map;
 import java.util.UUID;
 import lombok.RequiredArgsConstructor;
@@ -39,6 +42,7 @@ public class TestResultUploadService {
   private final DataHubClient _client;
   private final OrganizationService _orgService;
   private final TokenAuthentication _tokenAuth;
+  private final TestResultFileValidator testResultFileValidator;
 
   @Value("${data-hub.url}")
   private String dataHubUrl;
@@ -49,12 +53,10 @@ public class TestResultUploadService {
   @Value("${data-hub.signing-key}")
   private String signingKey;
 
-  private static final int FIVE_MINUTES_MS = 300 * 1000;
-  private static final String REPORTING_SCOPE = "report";
+  @Value("${data-hub.jwt-scope}")
+  private String scope;
 
-  private String createReportingScope(String scope) {
-    return String.join(".", scope, REPORTING_SCOPE);
-  }
+  private static final int FIVE_MINUTES_MS = 300 * 1000;
 
   public String createDataHubSenderToken(String privateKey) throws InvalidRSAPrivateKeyException {
     Date inFiveMinutes = new Date(System.currentTimeMillis() + FIVE_MINUTES_MS);
@@ -67,8 +69,7 @@ public class TestResultUploadService {
       new ObjectMapper().configure(DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES, false);
 
   @AuthorizationConfiguration.RequirePermissionCSVUpload
-  public TestResultUpload processResultCSV(InputStream csvStream)
-      throws IllegalGraphqlArgumentException {
+  public TestResultUpload processResultCSV(InputStream csvStream) {
 
     TestResultUpload result = new TestResultUpload(UploadStatus.FAILURE);
 
@@ -80,6 +81,13 @@ public class TestResultUploadService {
     } catch (IOException e) {
       log.error("Error reading test result upload CSV", e);
       throw new CsvProcessingException("Unable to read csv");
+    }
+
+    List<FeedbackMessage> errors =
+        testResultFileValidator.validate(new ByteArrayInputStream(content));
+    if (!errors.isEmpty()) {
+      result.setErrors(errors.toArray(FeedbackMessage[]::new));
+      return result;
     }
 
     UploadResponse response = null;
@@ -139,10 +147,8 @@ public class TestResultUploadService {
             .findByInternalIdAndOrganization(id, org)
             .orElseThrow(InvalidBulkTestResultUploadException::new);
 
-    String reportingScope = createReportingScope(simpleReportCsvUploadClientName);
-
     Map<String, String> queryParams = new LinkedHashMap<>();
-    queryParams.put("scope", reportingScope);
+    queryParams.put("scope", scope);
     queryParams.put("grant_type", "client_credentials");
     queryParams.put(
         "client_assertion_type", "urn:ietf:params:oauth:client-assertion-type:jwt-bearer");

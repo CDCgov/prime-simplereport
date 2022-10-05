@@ -7,6 +7,7 @@ import "./ActionsMenu.scss";
 
 interface Props {
   title?: string;
+  id?: string;
   items: {
     name: string;
     action: () => void;
@@ -16,14 +17,26 @@ interface Props {
 export const ActionsMenu = (props: Props) => (
   <Menu
     menuButton={
-      <MenuButton className="sr-actions-menu">
+      <MenuButton
+        className="sr-actions-menu"
+        id={props.id ? `action_${props.id}` : undefined}
+      >
         <FontAwesomeIcon icon={faEllipsisH} size="2x" />
         <span className="usa-sr-only">{props.title ?? "More actions"}</span>
       </MenuButton>
     }
   >
     {props.items.map((item) => (
-      <MenuItem key={item.name} onClick={item.action} className="sr-menu-item">
+      <MenuItem
+        key={item.name}
+        onClick={item.action}
+        className="sr-menu-item"
+        id={
+          props.id
+            ? `${item.name.split(" ")[0].toLowerCase()}_${props.id}`
+            : undefined
+        }
+      >
         {item.name}
       </MenuItem>
     ))}

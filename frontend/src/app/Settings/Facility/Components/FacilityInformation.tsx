@@ -5,6 +5,7 @@ import Dropdown from "../../../commonComponents/Dropdown";
 import TextInput from "../../../commonComponents/TextInput";
 import { FacilityErrors } from "../facilitySchema";
 import { ValidateField } from "../FacilityForm";
+import { getSubStrAfterChar } from "../../../utils/text";
 
 interface Props {
   facility: Facility;
@@ -22,7 +23,8 @@ const FacilityInformation: React.FC<Props> = ({
   const onChange = (
     e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement>
   ) => {
-    updateFacility({ ...facility, [e.target.name]: e.target.value });
+    let fieldName = getSubStrAfterChar(e.target.name, "-");
+    updateFacility({ ...facility, [fieldName]: e.target.value });
   };
 
   return (
@@ -44,7 +46,7 @@ const FacilityInformation: React.FC<Props> = ({
       />
       <TextInput
         label="Phone number"
-        name="phone"
+        name="facility-phone"
         value={facility.phone}
         required
         onChange={onChange}
@@ -68,7 +70,7 @@ const FacilityInformation: React.FC<Props> = ({
       />
       <TextInput
         label="Street address 1"
-        name="street"
+        name="facility-street"
         value={facility.street}
         required
         onChange={onChange}
@@ -80,19 +82,19 @@ const FacilityInformation: React.FC<Props> = ({
       />
       <TextInput
         label="Street address 2"
-        name="streetTwo"
+        name="facility-streetTwo"
         value={facility.streetTwo || ""}
         onChange={onChange}
       />
       <TextInput
         label="City"
-        name="city"
+        name="facility-city"
         value={facility.city || ""}
         onChange={onChange}
       />
       <TextInput
         label="ZIP code"
-        name="zipCode"
+        name="facility-zipCode"
         value={facility.zipCode}
         required
         onChange={onChange}
@@ -105,7 +107,7 @@ const FacilityInformation: React.FC<Props> = ({
       />
       <Dropdown
         label="State"
-        name="state"
+        name="facility-state"
         selectedValue={facility.state}
         options={stateCodes.map((c) => ({ label: c, value: c }))}
         defaultSelect

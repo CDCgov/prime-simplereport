@@ -2,8 +2,6 @@ function getTestResult(result: MultiplexResult): TestResult {
   if (result) {
     if ("testResult" in result) {
       return result.testResult;
-    } else if ("result" in result) {
-      return result.result;
     }
   }
   return "UNKNOWN";
@@ -16,7 +14,7 @@ export function getResultObjByDiseaseName(
   return (
     (results.find((result: MultiplexResult) => {
       return result.disease.name.includes(diseaseName);
-    }) as SRMultiplexResult | PxpMultiplexResult) || null
+    }) as MultiplexResult) || null
   );
 }
 

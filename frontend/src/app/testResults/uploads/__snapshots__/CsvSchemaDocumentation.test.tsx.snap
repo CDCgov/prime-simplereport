@@ -91,13 +91,6 @@ exports[`CsvSchemaDocumentation tests CsvSchemaDocumentaton matches snapshot 1`]
             class="margin-top-2"
           >
             CSV template guide
-             
-            <span
-              class="text-secondary bg-white border-1px border-secondary font-body-3xs padding-x-1 padding-y-05 text-secondary margin-left-2 text-ttbottom"
-            >
-              Pilot program
-               
-            </span>
           </h2>
         </div>
       </div>
@@ -213,7 +206,7 @@ exports[`CsvSchemaDocumentation tests CsvSchemaDocumentaton matches snapshot 1`]
           <li>
             <a
               class="usa-link"
-              href="/getting-started/testing-facilities/csv-schema"
+              href="/assets/resources/test_results_example_10-3-2022.csv"
             >
               Standard CSV template with example data
             </a>
@@ -247,7 +240,7 @@ exports[`CsvSchemaDocumentation tests CsvSchemaDocumentaton matches snapshot 1`]
                
               <a
                 class="usa-link"
-                href="https://reportstream.cdc.gov/assets/csv/ReportStream-StandardCSV-ExampleData-20220509.csv"
+                href="/assets/resources/test_results_example_10-3-2022.csv"
               >
                 spreadsheet template file
               </a>
@@ -2299,9 +2292,9 @@ exports[`CsvSchemaDocumentation tests CsvSchemaDocumentaton matches snapshot 1`]
             >
               Specimen collection date
               <span
-                class="text-normal bg-white border-1px border-secondary font-body-3xs padding-x-1 padding-y-05 text-secondary margin-left-2 text-ttbottom"
+                class="text-normal bg-white border-1px border-base font-body-3xs padding-x-1 padding-y-05 text-base margin-left-2 text-ttbottom"
               >
-                Required
+                Optional
               </span>
             </h4>
             <div
@@ -2373,9 +2366,9 @@ exports[`CsvSchemaDocumentation tests CsvSchemaDocumentaton matches snapshot 1`]
             >
               Testing lab specimen received date
               <span
-                class="text-normal bg-white border-1px border-secondary font-body-3xs padding-x-1 padding-y-05 text-secondary margin-left-2 text-ttbottom"
+                class="text-normal bg-white border-1px border-base font-body-3xs padding-x-1 padding-y-05 text-base margin-left-2 text-ttbottom"
               >
-                Required
+                Optional
               </span>
             </h4>
             <div
@@ -2521,9 +2514,9 @@ exports[`CsvSchemaDocumentation tests CsvSchemaDocumentaton matches snapshot 1`]
             >
               Date result released
               <span
-                class="text-normal bg-white border-1px border-secondary font-body-3xs padding-x-1 padding-y-05 text-secondary margin-left-2 text-ttbottom"
+                class="text-normal bg-white border-1px border-base font-body-3xs padding-x-1 padding-y-05 text-base margin-left-2 text-ttbottom"
               >
-                Required
+                Optional
               </span>
             </h4>
             <div
@@ -4872,9 +4865,9 @@ exports[`CsvSchemaDocumentation tests CsvSchemaDocumentaton matches snapshot 1`]
             >
               Ordering facility name
               <span
-                class="text-normal bg-white border-1px border-secondary font-body-3xs padding-x-1 padding-y-05 text-secondary margin-left-2 text-ttbottom"
+                class="text-normal bg-white border-1px border-base font-body-3xs padding-x-1 padding-y-05 text-base margin-left-2 text-ttbottom"
               >
-                Required
+                Optional
               </span>
             </h4>
             <div
@@ -4943,9 +4936,9 @@ exports[`CsvSchemaDocumentation tests CsvSchemaDocumentaton matches snapshot 1`]
             >
               Ordering facility street address
               <span
-                class="text-normal bg-white border-1px border-secondary font-body-3xs padding-x-1 padding-y-05 text-secondary margin-left-2 text-ttbottom"
+                class="text-normal bg-white border-1px border-base font-body-3xs padding-x-1 padding-y-05 text-base margin-left-2 text-ttbottom"
               >
-                Required
+                Optional
               </span>
             </h4>
             <div
@@ -5078,9 +5071,9 @@ exports[`CsvSchemaDocumentation tests CsvSchemaDocumentaton matches snapshot 1`]
             >
               Ordering facility city
               <span
-                class="text-normal bg-white border-1px border-secondary font-body-3xs padding-x-1 padding-y-05 text-secondary margin-left-2 text-ttbottom"
+                class="text-normal bg-white border-1px border-base font-body-3xs padding-x-1 padding-y-05 text-base margin-left-2 text-ttbottom"
               >
-                Required
+                Optional
               </span>
             </h4>
             <div
@@ -5149,9 +5142,9 @@ exports[`CsvSchemaDocumentation tests CsvSchemaDocumentaton matches snapshot 1`]
             >
               Ordering facility state
               <span
-                class="text-normal bg-white border-1px border-secondary font-body-3xs padding-x-1 padding-y-05 text-secondary margin-left-2 text-ttbottom"
+                class="text-normal bg-white border-1px border-base font-body-3xs padding-x-1 padding-y-05 text-base margin-left-2 text-ttbottom"
               >
-                Required
+                Optional
               </span>
             </h4>
             <div
@@ -5224,9 +5217,9 @@ exports[`CsvSchemaDocumentation tests CsvSchemaDocumentaton matches snapshot 1`]
             >
               Ordering facility zip code
               <span
-                class="text-normal bg-white border-1px border-secondary font-body-3xs padding-x-1 padding-y-05 text-secondary margin-left-2 text-ttbottom"
+                class="text-normal bg-white border-1px border-base font-body-3xs padding-x-1 padding-y-05 text-base margin-left-2 text-ttbottom"
               >
-                Required
+                Optional
               </span>
             </h4>
             <div
@@ -5302,9 +5295,9 @@ exports[`CsvSchemaDocumentation tests CsvSchemaDocumentaton matches snapshot 1`]
             >
               Ordering facility phone number
               <span
-                class="text-normal bg-white border-1px border-secondary font-body-3xs padding-x-1 padding-y-05 text-secondary margin-left-2 text-ttbottom"
+                class="text-normal bg-white border-1px border-base font-body-3xs padding-x-1 padding-y-05 text-base margin-left-2 text-ttbottom"
               >
-                Required
+                Optional
               </span>
             </h4>
             <div

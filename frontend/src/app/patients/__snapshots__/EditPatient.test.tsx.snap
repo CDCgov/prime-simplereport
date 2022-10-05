@@ -58,6 +58,7 @@ Object {
                     class="display-flex flex-align-center"
                   >
                     <button
+                      aria-disabled="true"
                       class="usa-button usa-button--outline usa-button-disabled prime-save-patient-changes-start-test"
                       disabled=""
                       id="edit-patient-save-lower"
@@ -323,10 +324,11 @@ Object {
                   >
                     <div>
                       <div
-                        class="display-flex"
+                        class="display-flex "
                       >
                         <div
-                          class="usa-form-group flex-fill"
+                          class="usa-form-group flex-fill phoneNumberFormElement"
+                          id="phoneInput-0"
                         >
                           <label
                             class="usa-label"
@@ -344,6 +346,7 @@ Object {
                           <input
                             aria-required="true"
                             class="usa-input"
+                            data-testid="phoneInput-0"
                             id="126"
                             name="number"
                             type="text"
@@ -355,7 +358,8 @@ Object {
                         class="usa-form-group"
                       >
                         <fieldset
-                          class="usa-fieldset prime-radios margin-top-3"
+                          class="usa-fieldset prime-radios margin-top-3 phoneNumberFormElement"
+                          id="phoneType-0"
                         >
                           <legend
                             class="usa-legend"
@@ -439,6 +443,7 @@ Object {
                     >
                       <fieldset
                         class="usa-fieldset prime-radios"
+                        id="testResultDeliveryText"
                       >
                         <legend
                           class="usa-legend"
@@ -497,10 +502,11 @@ Object {
                     >
                       <div>
                         <div
-                          class="display-flex"
+                          class="display-flex "
                         >
                           <div
-                            class="usa-form-group flex-fill"
+                            class="usa-form-group flex-fill emailFormElement"
+                            id="email-0"
                           >
                             <label
                               class="usa-label"
@@ -511,35 +517,12 @@ Object {
                             <input
                               aria-required="false"
                               class="usa-input"
+                              data-testid="email-0"
                               id="129"
                               name="email-0"
                               type="text"
                               value="foo@bar.com"
                             />
-                          </div>
-                          <div
-                            class="flex-align-self-end"
-                          >
-                            <button
-                              aria-label="Delete email foo@bar.com"
-                              class="usa-button--unstyled padding-105 height-5"
-                            >
-                              <svg
-                                aria-hidden="true"
-                                class="svg-inline--fa fa-trash fa-w-14 text-error"
-                                data-icon="trash"
-                                data-prefix="fas"
-                                focusable="false"
-                                role="img"
-                                viewBox="0 0 448 512"
-                                xmlns="http://www.w3.org/2000/svg"
-                              >
-                                <path
-                                  d="M432 32H312l-9.4-18.7A24 24 0 0 0 281.1 0H166.8a23.72 23.72 0 0 0-21.4 13.3L136 32H16A16 16 0 0 0 0 48v32a16 16 0 0 0 16 16h416a16 16 0 0 0 16-16V48a16 16 0 0 0-16-16zM53.2 467a48 48 0 0 0 47.9 45h245.8a48 48 0 0 0 47.9-45L416 128H32z"
-                                  fill="currentColor"
-                                />
-                              </svg>
-                            </button>
                           </div>
                         </div>
                       </div>
@@ -570,6 +553,7 @@ Object {
                     >
                       <fieldset
                         class="usa-fieldset prime-radios"
+                        id="testResultDeliveryEmail"
                       >
                         <legend
                           class="usa-legend"
@@ -2072,6 +2056,7 @@ Object {
                   >
                     <fieldset
                       class="usa-fieldset prime-radios"
+                      id="race"
                     >
                       <legend
                         class="usa-legend"
@@ -2232,6 +2217,7 @@ Object {
                   >
                     <fieldset
                       class="usa-fieldset prime-radios"
+                      id="ethnicity"
                     >
                       <legend
                         class="usa-legend"
@@ -2310,6 +2296,7 @@ Object {
                   >
                     <fieldset
                       class="usa-fieldset prime-radios"
+                      id="gender"
                     >
                       <legend
                         class="usa-legend"
@@ -2417,13 +2404,14 @@ Object {
                   <legend
                     class="prime-formgroup-heading usa-legend"
                   >
-                    Other information
+                    Housing and work
                   </legend>
                   <div
                     class="usa-form-group"
                   >
                     <fieldset
                       class="usa-fieldset prime-radios"
+                      id="residentCongregateSetting"
                     >
                       <legend
                         class="usa-legend"
@@ -2501,6 +2489,7 @@ Object {
                   >
                     <fieldset
                       class="usa-fieldset prime-radios"
+                      id="employedInHealthcare"
                     >
                       <legend
                         class="usa-legend"
@@ -2574,6 +2563,7 @@ Object {
                 class="prime-edit-patient-heading"
               >
                 <button
+                  aria-disabled="true"
                   class="usa-button usa-button-disabled prime-save-patient-changes"
                   disabled=""
                   id="edit-patient-save-lower"
@@ -2645,6 +2635,7 @@ Object {
                   class="display-flex flex-align-center"
                 >
                   <button
+                    aria-disabled="true"
                     class="usa-button usa-button--outline usa-button-disabled prime-save-patient-changes-start-test"
                     disabled=""
                     id="edit-patient-save-lower"
@@ -2910,10 +2901,11 @@ Object {
                 >
                   <div>
                     <div
-                      class="display-flex"
+                      class="display-flex "
                     >
                       <div
-                        class="usa-form-group flex-fill"
+                        class="usa-form-group flex-fill phoneNumberFormElement"
+                        id="phoneInput-0"
                       >
                         <label
                           class="usa-label"
@@ -2931,6 +2923,7 @@ Object {
                         <input
                           aria-required="true"
                           class="usa-input"
+                          data-testid="phoneInput-0"
                           id="126"
                           name="number"
                           type="text"
@@ -2942,7 +2935,8 @@ Object {
                       class="usa-form-group"
                     >
                       <fieldset
-                        class="usa-fieldset prime-radios margin-top-3"
+                        class="usa-fieldset prime-radios margin-top-3 phoneNumberFormElement"
+                        id="phoneType-0"
                       >
                         <legend
                           class="usa-legend"
@@ -3026,6 +3020,7 @@ Object {
                   >
                     <fieldset
                       class="usa-fieldset prime-radios"
+                      id="testResultDeliveryText"
                     >
                       <legend
                         class="usa-legend"
@@ -3084,10 +3079,11 @@ Object {
                   >
                     <div>
                       <div
-                        class="display-flex"
+                        class="display-flex "
                       >
                         <div
-                          class="usa-form-group flex-fill"
+                          class="usa-form-group flex-fill emailFormElement"
+                          id="email-0"
                         >
                           <label
                             class="usa-label"
@@ -3098,35 +3094,12 @@ Object {
                           <input
                             aria-required="false"
                             class="usa-input"
+                            data-testid="email-0"
                             id="129"
                             name="email-0"
                             type="text"
                             value="foo@bar.com"
                           />
-                        </div>
-                        <div
-                          class="flex-align-self-end"
-                        >
-                          <button
-                            aria-label="Delete email foo@bar.com"
-                            class="usa-button--unstyled padding-105 height-5"
-                          >
-                            <svg
-                              aria-hidden="true"
-                              class="svg-inline--fa fa-trash fa-w-14 text-error"
-                              data-icon="trash"
-                              data-prefix="fas"
-                              focusable="false"
-                              role="img"
-                              viewBox="0 0 448 512"
-                              xmlns="http://www.w3.org/2000/svg"
-                            >
-                              <path
-                                d="M432 32H312l-9.4-18.7A24 24 0 0 0 281.1 0H166.8a23.72 23.72 0 0 0-21.4 13.3L136 32H16A16 16 0 0 0 0 48v32a16 16 0 0 0 16 16h416a16 16 0 0 0 16-16V48a16 16 0 0 0-16-16zM53.2 467a48 48 0 0 0 47.9 45h245.8a48 48 0 0 0 47.9-45L416 128H32z"
-                                fill="currentColor"
-                              />
-                            </svg>
-                          </button>
                         </div>
                       </div>
                     </div>
@@ -3157,6 +3130,7 @@ Object {
                   >
                     <fieldset
                       class="usa-fieldset prime-radios"
+                      id="testResultDeliveryEmail"
                     >
                       <legend
                         class="usa-legend"
@@ -4659,6 +4633,7 @@ Object {
                 >
                   <fieldset
                     class="usa-fieldset prime-radios"
+                    id="race"
                   >
                     <legend
                       class="usa-legend"
@@ -4819,6 +4794,7 @@ Object {
                 >
                   <fieldset
                     class="usa-fieldset prime-radios"
+                    id="ethnicity"
                   >
                     <legend
                       class="usa-legend"
@@ -4897,6 +4873,7 @@ Object {
                 >
                   <fieldset
                     class="usa-fieldset prime-radios"
+                    id="gender"
                   >
                     <legend
                       class="usa-legend"
@@ -5004,13 +4981,14 @@ Object {
                 <legend
                   class="prime-formgroup-heading usa-legend"
                 >
-                  Other information
+                  Housing and work
                 </legend>
                 <div
                   class="usa-form-group"
                 >
                   <fieldset
                     class="usa-fieldset prime-radios"
+                    id="residentCongregateSetting"
                   >
                     <legend
                       class="usa-legend"
@@ -5088,6 +5066,7 @@ Object {
                 >
                   <fieldset
                     class="usa-fieldset prime-radios"
+                    id="employedInHealthcare"
                   >
                     <legend
                       class="usa-legend"
@@ -5161,6 +5140,7 @@ Object {
               class="prime-edit-patient-heading"
             >
               <button
+                aria-disabled="true"
                 class="usa-button usa-button-disabled prime-save-patient-changes"
                 disabled=""
                 id="edit-patient-save-lower"

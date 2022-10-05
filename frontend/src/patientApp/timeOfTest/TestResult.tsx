@@ -1,6 +1,7 @@
 import { useSelector } from "react-redux";
 import { useTranslation } from "react-i18next";
 import React from "react";
+import { useFeature } from "flagged";
 
 import { formatFullName } from "../../app/utils/user";
 import { RootState } from "../../app/store";
@@ -19,7 +20,7 @@ const TestResult = () => {
   const testResult = useSelector<RootState, VerifyV2Response>(
     (state) => state.testResult
   );
-  const multiplexEnabled = process.env.REACT_APP_MULTIPLEX_ENABLED === "true";
+  const multiplexEnabled = useFeature("multiplexEnabled") as boolean;
   const isMultiplex = hasMultiplexResults(testResult.results);
   const fullName = formatFullName(testResult?.patient as any);
   const dateTested = formatDateWithTimeOption(testResult?.dateTested, true);

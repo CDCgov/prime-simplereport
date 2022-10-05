@@ -133,18 +133,21 @@ jobs:
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }} # Needed to get PR information, if any
       - name: Restore backend cache
+        if: ${{ github.actor != 'dependabot[bot]' }}
         uses: actions/cache@v3
         with:
           path: |
             backend/build/**
           key: ${{ runner.os }}-backend-coverage-${{ github.run_id }}-${{ github.run_attempt }}
       - name: Restore frontend cache
+        if: ${{ github.actor != 'dependabot[bot]' }}
         uses: actions/cache@v3
         with:
           path: |
             frontend/coverage/**
           key: ${{ runner.os }}-frontend-coverage-${{ github.run_id }}-${{ github.run_attempt }}
       - name: Restore functions cache
+        if: ${{ github.actor != 'dependabot[bot]' }}
         uses: actions/cache@v3
         with:
           path: |

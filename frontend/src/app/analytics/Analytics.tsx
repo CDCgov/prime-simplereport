@@ -1,12 +1,12 @@
-import { ChangeEvent, useState, useEffect } from "react";
+import React, { ChangeEvent, useState } from "react";
 import { useSelector } from "react-redux";
+import moment from "moment/moment";
+import classNames from "classnames";
 
-import { DatePicker } from "../commonComponents/DatePicker";
 import Dropdown from "../commonComponents/Dropdown";
 import { useGetTopLevelDashboardMetricsNewQuery } from "../../generated/graphql";
-import { LoadingCard } from "../commonComponents/LoadingCard/LoadingCard";
-
 import "./Analytics.scss";
+import { formatDate } from "../utils/date";
 
 const getDateFromDaysAgo = (daysAgo: number): Date => {
   const date = new Date();
@@ -70,17 +70,6 @@ export const Analytics = (props: Props) => {
     props.endDate || getEndDateStringFromDaysAgo(0)
   );
 
-  useEffect(() => {
-    const startInput = document.getElementById("startDate") as HTMLInputElement;
-    const endInput = document.getElementById("endDate") as HTMLInputElement;
-    if (startInput) {
-      startInput.value = startDate;
-    }
-    if (endInput) {
-      endInput.value = endDate;
-    }
-  });
-
   const updateFacility = ({
     target: { value },
   }: ChangeEvent<HTMLSelectElement>) => {
@@ -124,20 +113,16 @@ export const Analytics = (props: Props) => {
     fetchPolicy: "no-cache",
   });
 
-  if (loading) {
-    return <LoadingCard />;
-  }
-
   if (error) {
     throw error;
   }
 
-  if (data === undefined) {
+  if (!loading && data === undefined) {
     return <p>Error: Results not found</p>;
   }
 
-  const totalTests = data.topLevelDashboardMetrics?.totalTestCount || 0;
-  const positiveTests = data.topLevelDashboardMetrics?.positiveTestCount || 0;
+  const totalTests = data?.topLevelDashboardMetrics?.totalTestCount || 0;
+  const positiveTests = data?.topLevelDashboardMetrics?.positiveTestCount || 0;
   const negativeTests = totalTests - positiveTests;
   const positivityRate =
     totalTests > 0 ? (positiveTests / totalTests) * 100 : null;
@@ -147,7 +132,7 @@ export const Analytics = (props: Props) => {
       <div className="grid-container">
         <div className="prime-container card-container margin-top-2">
           <div className="usa-card__header">
-            <h2>COVID-19 testing data</h2>
+            <h1 className="font-sans-lg">COVID-19 testing data</h1>
           </div>
           <div id="analytics-page">
             <div className="prime-container padding-3">
@@ -199,82 +184,105 @@ export const Analytics = (props: Props) => {
               {dateRange === "custom" && (
                 <div className="grid-row grid-gap margin-top-2">
                   <div className="grid-col-4">
-                    <DatePicker
-                      name="startDate"
-                      label="Begin"
-                      onChange={(date?: string) => {
-                        if (date && date.length === 10) {
-                          const newDate = new Date(date);
-                          setStartDate(
-                            setStartTimeForDateRange(
-                              newDate
-                            ).toLocaleDateString()
-                          );
+                    <label className={classNames("usa-label")}>Begin</label>
+                    <input
+                      id={"startDate"}
+                      data-testid={"startDate"}
+                      type={"date"}
+                      max={formatDate(new Date())}
+                      className={classNames("usa-input")}
+                      aria-label={"Enter start date"}
+                      onChange={(e) => {
+                        if (Date.parse(e.target.value)) {
+                          const d = moment(e.target.value).toDate();
+                          const startDateString = setStartTimeForDateRange(
+                            new Date(d)
+                          ).toLocaleDateString();
+                          setStartDate(startDateString);
                         }
                       }}
-                      noHint
-                    />
+                      defaultValue={formatDate(new Date(startDate))}
+                    />{" "}
                   </div>
                   <div className="grid-col-4">
-                    <DatePicker
-                      name="endDate"
-                      label="End"
-                      onChange={(date?: string) => {
-                        if (date && date.length === 10) {
-                          const newDate = new Date(date);
-                          setEndDate(
-                            setEndTimeForDateRange(newDate).toLocaleDateString()
-                          );
+                    <label className={classNames("usa-label")}>End</label>
+                    <input
+                      id={"endDate"}
+                      data-testid={"endDate"}
+                      type={"date"}
+                      min={formatDate(new Date(startDate))}
+                      max={formatDate(new Date())}
+                      className={classNames("usa-input")}
+                      aria-label={"Enter end date"}
+                      onChange={(e) => {
+                        if (Date.parse(e.target.value)) {
+                          const d = moment(e.target.value).toDate();
+                          const endDateString = setEndTimeForDateRange(
+                            new Date(d)
+                          ).toLocaleDateString();
+                          setEndDate(endDateString);
                         }
                       }}
-                      noHint
+                      defaultValue={formatDate(new Date(endDate))}
                     />
                   </div>
                 </div>
               )}
-              <h3>{facilityName}</h3>
-              <p className="margin-bottom-0">All people tested</p>
-              <p className="padding-top-1">{`${startDate} \u2013 ${endDate}`}</p>
-              <div className="grid-row grid-gap">
-                <div className="grid-col-3">
-                  <div className="card display-flex flex-column flex-row">
-                    <h2>Tests conducted</h2>
-                    <h1>{totalTests}</h1>
-                    <p></p>
-                  </div>
-                </div>
-                <div className="grid-col-3">
-                  <div className="card display-flex flex-column flex-align-center">
-                    <h2>Positive tests</h2>
-                    <h1>{positiveTests}</h1>
-                    {/* \u2BC6 is down pointing triangle */}
-                    <p>
-                      {/* <span className="red-pointing-up">{`\u2BC5`} 2</span>{" "}
+              {loading ? (
+                <p>Loading...</p>
+              ) : (
+                <>
+                  <h2>{facilityName}</h2>
+                  <p className="margin-bottom-0">All people tested</p>
+                  <p className="padding-top-1">{`${startDate} \u2013 ${endDate}`}</p>
+                  <div className="grid-row grid-gap">
+                    <div className="grid-col-3">
+                      <div className="card display-flex flex-column flex-row">
+                        <h2>Tests conducted</h2>
+                        <span className="font-sans-3xl text-bold margin-y-auto">
+                          {totalTests}
+                        </span>
+                        <p></p>
+                      </div>
+                    </div>
+                    <div className="grid-col-3">
+                      <div className="card display-flex flex-column flex-align-center">
+                        <h2>Positive tests</h2>
+                        <span className="font-sans-3xl text-bold margin-y-auto">
+                          {positiveTests}
+                        </span>
+                        {/* \u2BC6 is down pointing triangle */}
+                        <p>
+                          {/* <span className="red-pointing-up">{`\u2BC5`} 2</span>{" "}
                       <span className="usa-hint font-ui-md">from last week</span> */}
-                    </p>
+                        </p>
+                      </div>
+                    </div>
+                    <div className="grid-col-3">
+                      <div className="card display-flex flex-column flex-align-center">
+                        <h2>Negative tests</h2>
+                        <span className="font-sans-3xl text-bold margin-y-auto">
+                          {negativeTests}
+                        </span>
+                        <p></p>
+                      </div>
+                    </div>
+                    <div className="grid-col-3">
+                      <div className="card display-flex flex-column flex-align-center">
+                        <h2>Positivity rate</h2>
+                        <span className="font-sans-3xl text-bold margin-y-auto">
+                          {positivityRate !== null
+                            ? positivityRate.toFixed(1) + "%"
+                            : "N/A"}
+                        </span>
+                        <p className="font-ui-2xs">
+                          Positives <span>÷</span> total tests
+                        </p>
+                      </div>
+                    </div>
                   </div>
-                </div>
-                <div className="grid-col-3">
-                  <div className="card display-flex flex-column flex-align-center">
-                    <h2>Negative tests</h2>
-                    <h1>{negativeTests}</h1>
-                    <p></p>
-                  </div>
-                </div>
-                <div className="grid-col-3">
-                  <div className="card display-flex flex-column flex-align-center">
-                    <h2>Positivity rate</h2>
-                    <h1>
-                      {positivityRate !== null
-                        ? positivityRate.toFixed(1) + "%"
-                        : "N/A"}
-                    </h1>
-                    <p className="font-ui-2xs">
-                      Positives <span>÷</span> total tests
-                    </p>
-                  </div>
-                </div>
-              </div>
+                </>
+              )}
             </div>
           </div>
         </div>

@@ -92,7 +92,6 @@ export const queueQuery = gql`
           number
         }
       }
-      result
       results {
         disease {
           name
@@ -146,8 +145,7 @@ export interface QueueItemData extends AoEAnswers {
   };
   deviceSpecimenType: DeviceSpecimenType;
   patient: TestQueuePerson;
-  result: TestResult;
-  results: SRMultiplexResult[];
+  results: MultiplexResult[];
   dateTested: string;
   correctionStatus: string;
   reasonForCorrection: TestCorrectionReason;
@@ -235,7 +233,6 @@ const TestQueue: React.FC<Props> = ({ activeFacilityId }) => {
           deviceType,
           deviceSpecimenType,
           patient,
-          result,
           results,
           dateTested,
           correctionStatus,
@@ -268,16 +265,7 @@ const TestQueue: React.FC<Props> = ({ activeFacilityId }) => {
               ) || deviceSpecimenTypes[0];
           }
 
-          let selectedTestResults: SRMultiplexResult[];
-
-          // backwards compatibility
-          if (!results && result) {
-            selectedTestResults = [
-              { disease: { name: "COVID-19" }, testResult: result },
-            ];
-          } else {
-            selectedTestResults = results;
-          }
+          let selectedTestResults: MultiplexResult[] = results;
 
           return (
             <CSSTransition
@@ -345,6 +333,7 @@ const TestQueue: React.FC<Props> = ({ activeFacilityId }) => {
   return (
     <main className="prime-home">
       <div className="grid-container queue-container-wide">
+        <h1 className="font-sans-lg">Conduct tests</h1>
         <div className="position-relative">
           <AddToQueueSearch
             refetchQueue={refetch}

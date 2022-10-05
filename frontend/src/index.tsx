@@ -41,6 +41,7 @@ import PrimeErrorBoundary from "./app/PrimeErrorBoundary";
 import "./styles/App.css";
 import { getUrl } from "./app/utils/url";
 import SessionTimeout from "./app/accountCreation/SessionTimeout";
+import WithFeatureFlags from "./featureFlags/WithFeatureFlags";
 
 // Initialize telemetry early
 ai.initialize();
@@ -93,7 +94,12 @@ const logoutLink = onError(({ networkError, graphQLErrors }: ErrorResponse) => {
     } else {
       const appInsights = getAppInsights();
       if (appInsights instanceof ApplicationInsights) {
-        appInsights.trackException({ error: networkError });
+        appInsights.trackException({
+          exception: networkError,
+          properties: {
+            "user message": `${networkError.message} Please check for errors and try again`,
+          },
+        });
       }
       showError("Please check for errors and try again", networkError.message);
     }
@@ -119,26 +125,28 @@ export const ReactApp = (
   <ApolloProvider client={client}>
     <React.StrictMode>
       <Provider store={store}>
-        <Router basename={process.env.PUBLIC_URL}>
-          <TelemetryProvider>
-            <PrimeErrorBoundary>
-              <Routes>
-                <Route path="/health/*" element={<HealthChecks />} />
-                <Route path="/pxp/*" element={<PatientApp />} />
-                <Route path="/uac/*" element={<AccountCreationApp />} />
-                <Route path="/sign-up/*" element={<SignUpApp />} />
-                <Route
-                  path="/register/:registrationLink"
-                  element={<SelfRegistration />}
-                />
-                <Route path="/session-timeout" element={<SessionTimeout />} />
-                <Route path="/reload-app" element={<Navigate to="/" />} />
-                <Route path="/*" element={<App />} />
-                <Route element={<>Page not found</>} />
-              </Routes>
-            </PrimeErrorBoundary>
-          </TelemetryProvider>
-        </Router>
+        <WithFeatureFlags>
+          <Router basename={process.env.PUBLIC_URL}>
+            <TelemetryProvider>
+              <PrimeErrorBoundary>
+                <Routes>
+                  <Route path="/health/*" element={<HealthChecks />} />
+                  <Route path="/pxp/*" element={<PatientApp />} />
+                  <Route path="/uac/*" element={<AccountCreationApp />} />
+                  <Route path="/sign-up/*" element={<SignUpApp />} />
+                  <Route
+                    path="/register/:registrationLink"
+                    element={<SelfRegistration />}
+                  />
+                  <Route path="/session-timeout" element={<SessionTimeout />} />
+                  <Route path="/reload-app" element={<Navigate to="/" />} />
+                  <Route path="/*" element={<App />} />
+                  <Route element={<>Page not found</>} />
+                </Routes>
+              </PrimeErrorBoundary>
+            </TelemetryProvider>
+          </Router>
+        </WithFeatureFlags>
       </Provider>
     </React.StrictMode>
   </ApolloProvider>

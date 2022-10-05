@@ -66,7 +66,7 @@ describe("TestQueue", () => {
         </MockedProvider>
       </MemoryRouter>
     );
-    await screen.findByLabelText("Search");
+    await screen.findByLabelText("Search for a person to start their test");
     expect(await screen.findByText("Doe, John A")).toBeInTheDocument();
     expect(await screen.findByText("Smith, Jane")).toBeInTheDocument();
     expect(container).toMatchSnapshot();
@@ -83,7 +83,9 @@ describe("TestQueue", () => {
       </MemoryRouter>
     );
     expect(await screen.findByText("Doe, John A")).toBeInTheDocument();
-    const removeButton = (await screen.findAllByLabelText("Close"))[0];
+    const removeButton = await screen.findByLabelText(
+      "Close test for Doe, John A"
+    );
     userEvent.click(removeButton);
     const confirmButton = await screen.findByText("Yes", { exact: false });
     userEvent.click(confirmButton);
@@ -187,7 +189,7 @@ describe("TestQueue", () => {
         </MemoryRouter>
       );
 
-      await screen.findByLabelText("Search");
+      await screen.findByLabelText("Search for a person to start their test");
       expect(await screen.findByText("Doe, John A")).toBeInTheDocument();
       expect(await screen.findByText("Smith, Jane")).toBeInTheDocument();
 

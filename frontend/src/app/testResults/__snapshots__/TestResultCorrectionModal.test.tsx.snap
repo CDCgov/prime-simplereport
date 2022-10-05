@@ -14,12 +14,12 @@ Object {
     />
     <div>
       <div
-        class="ReactModal__Overlay ReactModal__Overlay--after-open sr-test-correction-modal-overlay"
+        class="ReactModal__Overlay sr-test-correction-modal-overlay"
       >
         <div
           aria-label="Correct result"
           aria-modal="true"
-          class="ReactModal__Content ReactModal__Content--after-open sr-test-correction-modal-content"
+          class="ReactModal__Content sr-test-correction-modal-content"
           role="dialog"
           tabindex="-1"
         >
@@ -78,6 +78,7 @@ Object {
               No, go back
             </button>
             <button
+              aria-disabled="false"
               class="usa-button"
               type="button"
             >
@@ -98,12 +99,12 @@ Object {
   </body>,
   "container": <div>
     <div
-      class="ReactModal__Overlay ReactModal__Overlay--after-open sr-test-correction-modal-overlay"
+      class="ReactModal__Overlay sr-test-correction-modal-overlay"
     >
       <div
         aria-label="Correct result"
         aria-modal="true"
-        class="ReactModal__Content ReactModal__Content--after-open sr-test-correction-modal-content"
+        class="ReactModal__Content sr-test-correction-modal-content"
         role="dialog"
         tabindex="-1"
       >
@@ -162,6 +163,7 @@ Object {
             No, go back
           </button>
           <button
+            aria-disabled="false"
             class="usa-button"
             type="button"
           >

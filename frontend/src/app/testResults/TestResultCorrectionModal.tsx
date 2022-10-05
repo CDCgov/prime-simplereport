@@ -72,7 +72,12 @@ export const testQuery = gql`
   query getTestResultForCorrection($id: ID!) {
     testResult(id: $id) {
       dateTested
-      result
+      results {
+        disease {
+          name
+        }
+        testResult
+      }
       correctionStatus
       deviceType {
         name
@@ -142,6 +147,7 @@ export const DetachedTestResultCorrectionModal = ({
       })
       .finally(() => {
         closeModal();
+        navigate(0);
       });
   };
 
@@ -173,6 +179,7 @@ export const DetachedTestResultCorrectionModal = ({
       className="sr-test-correction-modal-content"
       overlayClassName="sr-test-correction-modal-overlay"
       contentLabel="Correct result"
+      onRequestClose={closeModal}
     >
       <h3 className="modal__heading">
         Correct result for{" "}

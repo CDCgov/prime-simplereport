@@ -120,13 +120,13 @@ describe("ManageEmails", () => {
       exact: false,
     });
     userEvent.click(addButton);
-    const second = (await screen.findAllByText("Email address"))[1];
+
+    const second = (await screen.findAllByText("Additional email address"))[1];
     userEvent.type(second, "foo@bar.com");
-    userEvent.click(
-      (await screen.findAllByLabelText("Delete email", { exact: false }))[1]
-    );
-    await waitFor(() => {
-      expect(second).not.toBeInTheDocument();
-    });
+    userEvent.click(screen.getByTestId(`delete-email-1`));
+    expect(
+      screen.queryByText("Additional email address")
+    ).not.toBeInTheDocument();
+    expect(screen.queryByText("foo@bar.com")).not.toBeInTheDocument();
   });
 });

@@ -16,13 +16,6 @@ public class ApiTestOrder extends WrappedEntity<TestOrder> {
     return wrapped.getCreatedAt();
   }
 
-  public String getResult() {
-    if (wrapped.getTestResult() == null) {
-      return "";
-    }
-    return wrapped.getTestResult().toString();
-  }
-
   public Date getDateTested() {
     return wrapped.getDateTestedBackdate();
   }

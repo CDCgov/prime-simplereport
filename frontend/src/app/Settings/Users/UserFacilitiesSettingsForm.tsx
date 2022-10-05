@@ -142,10 +142,10 @@ const UserFacilitiesSettingsForm: React.FC<Props> = ({
 
   return (
     <>
-      <h3 className="testing-facility-access-subheader margin-bottom-0">
+      <h4 className="testing-facility-access-subheader margin-bottom-0">
         Testing facility access{" "}
         {showRequired && <span className="text-secondary-vivid">*</span>}
-      </h3>
+      </h4>
       <p className="testing-facility-access-subtext">
         {facilityAccessDescription}
       </p>

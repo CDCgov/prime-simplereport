@@ -6,12 +6,14 @@ import { COVID_RESULTS, TEST_RESULT_DESCRIPTIONS } from "../constants";
 import { findResultByDiseaseName } from "../testQueue/QueueItem";
 import { TextWithTooltip } from "../commonComponents/TextWithTooltip";
 import Checkboxes from "../commonComponents/Checkboxes";
-import { DiseaseResult } from "../../generated/graphql";
+import { MultiplexResultInput } from "../../generated/graphql";
+
+import { MULTIPLEX_DISEASES, TEST_RESULTS } from "./constants";
 
 const MULTIPLEX_DISEASE_TYPE = {
-  COVID: "COVID-19" as MultiplexDisease,
-  FLU_A: "Flu A" as MultiplexDisease,
-  FLU_B: "Flu B" as MultiplexDisease,
+  COVID: MULTIPLEX_DISEASES.COVID_19 as MultiplexDisease,
+  FLU_A: MULTIPLEX_DISEASES.FLU_A as MultiplexDisease,
+  FLU_B: MULTIPLEX_DISEASES.FLU_B as MultiplexDisease,
   ALL: "All",
 };
 
@@ -26,21 +28,25 @@ interface MultiplexResultState {
   fluB: TestResult;
 }
 
-const convertFromDiseaseResults = (
-  diseaseResults: DiseaseResult[]
+const convertFromMultiplexResultInputs = (
+  diseaseResults: MultiplexResultInput[]
 ): MultiplexResultState => {
   const multiplexResult: MultiplexResultState = {
     covid:
       (findResultByDiseaseName(
         diseaseResults ?? [],
-        "COVID-19"
-      ) as TestResult) ?? "UNKNOWN",
+        MULTIPLEX_DISEASES.COVID_19
+      ) as TestResult) ?? TEST_RESULTS.UNKNOWN,
     fluA:
-      (findResultByDiseaseName(diseaseResults ?? [], "Flu A") as TestResult) ??
-      "UNKNOWN",
+      (findResultByDiseaseName(
+        diseaseResults ?? [],
+        MULTIPLEX_DISEASES.FLU_A
+      ) as TestResult) ?? TEST_RESULTS.UNKNOWN,
     fluB:
-      (findResultByDiseaseName(diseaseResults ?? [], "Flu B") as TestResult) ??
-      "UNKNOWN",
+      (findResultByDiseaseName(
+        diseaseResults ?? [],
+        MULTIPLEX_DISEASES.FLU_B
+      ) as TestResult) ?? TEST_RESULTS.UNKNOWN,
   };
 
   return multiplexResult;
@@ -64,7 +70,9 @@ const convertFromMultiplexResult = (
     },
   ];
 
-  return diseaseResults.filter((result) => result.testResult !== "UNKNOWN");
+  return diseaseResults.filter(
+    (result) => result.testResult !== TEST_RESULTS.UNKNOWN
+  );
 };
 
 /**
@@ -72,7 +80,7 @@ const convertFromMultiplexResult = (
  */
 interface Props {
   queueItemId: string;
-  testResults: DiseaseResult[];
+  testResults: MultiplexResultInput[];
   isSubmitDisabled?: boolean;
   onChange: (value: MultiplexResult[]) => void;
   onSubmit: () => void;
@@ -87,18 +95,18 @@ const MultiplexResultInputForm: React.FC<Props> = ({
 }) => {
   //eslint-disable-next-line no-restricted-globals
   const isMobile = screen.width <= 600;
-  const resultsMultiplexFormat: MultiplexResultState = convertFromDiseaseResults(
+  const resultsMultiplexFormat: MultiplexResultState = convertFromMultiplexResultInputs(
     testResults
   );
   const inconclusiveCheck =
-    resultsMultiplexFormat.covid === "UNDETERMINED" &&
-    resultsMultiplexFormat.fluA === "UNDETERMINED" &&
-    resultsMultiplexFormat.fluB === "UNDETERMINED";
+    resultsMultiplexFormat.covid === TEST_RESULTS.UNDETERMINED &&
+    resultsMultiplexFormat.fluA === TEST_RESULTS.UNDETERMINED &&
+    resultsMultiplexFormat.fluB === TEST_RESULTS.UNDETERMINED;
 
   /**
    * Handle Setting Results
    */
-  const setDiseaseResult = (
+  const setMultiplexResultInput = (
     diseaseName: "covid" | "fluA" | "fluB",
     value: TestResult
   ) => {
@@ -120,21 +128,21 @@ const MultiplexResultInputForm: React.FC<Props> = ({
     const markedInconclusive = value.target.checked;
     if (markedInconclusive) {
       const inconclusiveState: MultiplexResultState = {
-        covid: "UNDETERMINED",
-        fluA: "UNDETERMINED",
-        fluB: "UNDETERMINED",
+        covid: TEST_RESULTS.UNDETERMINED,
+        fluA: TEST_RESULTS.UNDETERMINED,
+        fluB: TEST_RESULTS.UNDETERMINED,
       };
       convertAndSendResults(inconclusiveState);
     } else {
       const currentState = { ...resultsMultiplexFormat };
-      if (currentState.covid === "UNDETERMINED") {
-        currentState.covid = "UNKNOWN";
+      if (currentState.covid === TEST_RESULTS.UNDETERMINED) {
+        currentState.covid = TEST_RESULTS.UNKNOWN;
       }
-      if (currentState.fluA === "UNDETERMINED") {
-        currentState.fluA = "UNKNOWN";
+      if (currentState.fluA === TEST_RESULTS.UNDETERMINED) {
+        currentState.fluA = TEST_RESULTS.UNKNOWN;
       }
-      if (currentState.fluB === "UNDETERMINED") {
-        currentState.fluB = "UNKNOWN";
+      if (currentState.fluB === TEST_RESULTS.UNDETERMINED) {
+        currentState.fluB = TEST_RESULTS.UNKNOWN;
       }
       convertAndSendResults(currentState);
     }
@@ -146,12 +154,12 @@ const MultiplexResultInputForm: React.FC<Props> = ({
   const validateForm = () => {
     if (
       inconclusiveCheck ||
-      ((resultsMultiplexFormat.covid === "POSITIVE" ||
-        resultsMultiplexFormat.covid === "NEGATIVE") &&
-        (resultsMultiplexFormat.fluA === "POSITIVE" ||
-          resultsMultiplexFormat.fluA === "NEGATIVE") &&
-        (resultsMultiplexFormat.fluB === "POSITIVE" ||
-          resultsMultiplexFormat.fluB === "NEGATIVE"))
+      ((resultsMultiplexFormat.covid === TEST_RESULTS.POSITIVE ||
+        resultsMultiplexFormat.covid === TEST_RESULTS.NEGATIVE) &&
+        (resultsMultiplexFormat.fluA === TEST_RESULTS.POSITIVE ||
+          resultsMultiplexFormat.fluA === TEST_RESULTS.NEGATIVE) &&
+        (resultsMultiplexFormat.fluB === TEST_RESULTS.POSITIVE ||
+          resultsMultiplexFormat.fluB === TEST_RESULTS.NEGATIVE))
     ) {
       return true;
     }
@@ -168,12 +176,12 @@ const MultiplexResultInputForm: React.FC<Props> = ({
     <form className="usa-form maxw-none multiplex-result-form">
       <div className="grid-row grid-gap-2">
         <div className="grid-col-4">
-          <h4 className="prime-radio__title">COVID-19</h4>
+          <h2 className="prime-radio__title">COVID-19</h2>
           <RadioGroup
             legend="COVID-19 result"
             legendSrOnly
             onChange={(value) => {
-              setDiseaseResult("covid", value);
+              setMultiplexResultInput("covid", value);
             }}
             buttons={[
               {
@@ -192,12 +200,12 @@ const MultiplexResultInputForm: React.FC<Props> = ({
           />
         </div>
         <div className="grid-col-4">
-          <h4 className="prime-radio__title">Flu A</h4>
+          <h2 className="prime-radio__title">Flu A</h2>
           <RadioGroup
             legend="Flu A result"
             legendSrOnly
             onChange={(value) => {
-              setDiseaseResult("fluA", value);
+              setMultiplexResultInput("fluA", value);
             }}
             buttons={[
               {
@@ -216,12 +224,12 @@ const MultiplexResultInputForm: React.FC<Props> = ({
           />
         </div>
         <div className="grid-col-4">
-          <h4 className="prime-radio__title">Flu B</h4>
+          <h2 className="prime-radio__title">Flu B</h2>
           <RadioGroup
             legend="Flu B result"
             legendSrOnly
             onChange={(value) => {
-              setDiseaseResult("fluB", value);
+              setMultiplexResultInput("fluB", value);
             }}
             buttons={[
               {
@@ -259,6 +267,7 @@ const MultiplexResultInputForm: React.FC<Props> = ({
         </div>
         <div className="grid-col-auto">
           <TextWithTooltip
+            buttonLabel="Results info"
             tooltip="COVID-19 results are reported to your public health department. Flu results are not reported at this time."
             position={isMobile ? "top" : "left"}
           />

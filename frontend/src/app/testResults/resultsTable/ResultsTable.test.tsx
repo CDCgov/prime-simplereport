@@ -1,7 +1,9 @@
-import { render, screen } from "@testing-library/react";
+import { render, screen, within } from "@testing-library/react";
+import userEvent from "@testing-library/user-event";
 
 import { PATIENT_TERM_CAP } from "../../../config/constants";
 import TEST_RESULTS_MULTIPLEX from "../mocks/resultsMultiplex.mock";
+import TEST_RESULT_COVID from "../mocks/resultsCovid.mock";
 
 import ResultsTable, { generateTableHeaders } from "./ResultsTable";
 
@@ -93,10 +95,11 @@ describe("Component ResultsTable", () => {
       screen.getByRole("cell", { name: /no results/i })
     ).toBeInTheDocument();
   });
-  it("checks table with results", () => {
+
+  it("checks table with covid results", () => {
     render(
       <ResultsTable
-        results={TEST_RESULTS_MULTIPLEX}
+        results={[TEST_RESULT_COVID[0]]}
         setPrintModalId={setPrintModalIdFn}
         setMarkCorrectionId={setMarkCorrectionIdFn}
         setDetailsModalId={setDetailsModalIdFn}
@@ -107,10 +110,145 @@ describe("Component ResultsTable", () => {
       />
     );
 
+    expect(screen.getByTestId("covid-19-result")).toHaveTextContent("Negative");
+    expect(screen.queryByText("Flu A")).not.toBeInTheDocument();
+    expect(screen.queryByText("Flu B")).not.toBeInTheDocument();
+  });
+
+  it("checks table with multiplex results", () => {
+    render(
+      <ResultsTable
+        results={TEST_RESULTS_MULTIPLEX}
+        setPrintModalId={setPrintModalIdFn}
+        setMarkCorrectionId={setMarkCorrectionIdFn}
+        setDetailsModalId={setDetailsModalIdFn}
+        setTextModalId={setTextModalIdFn}
+        setEmailModalTestResultId={setEmailModalTestResultIdFn}
+        hasMultiplexResults={true}
+        hasFacility={false}
+      />
+    );
+
     TEST_RESULTS_MULTIPLEX.forEach((result) => {
       expect(
         screen.getByTestId(`test-result-${result.internalId}`)
       ).toBeInTheDocument();
+    });
+    expect(screen.getByText("COVID-19")).toBeInTheDocument();
+    expect(screen.getByText("Flu A")).toBeInTheDocument();
+    expect(screen.getByText("Flu B")).toBeInTheDocument();
+  });
+
+  describe("actions menu", () => {
+    describe("text result action", () => {
+      it("includes `Text result` if patient has mobile number", () => {
+        const testResultPatientMobileNumber = [TEST_RESULTS_MULTIPLEX[1]];
+
+        render(
+          <ResultsTable
+            results={testResultPatientMobileNumber}
+            setPrintModalId={setPrintModalIdFn}
+            setMarkCorrectionId={setMarkCorrectionIdFn}
+            setDetailsModalId={setDetailsModalIdFn}
+            setTextModalId={setTextModalIdFn}
+            setEmailModalTestResultId={setEmailModalTestResultIdFn}
+            hasMultiplexResults={false}
+            hasFacility={false}
+          />
+        );
+
+        const moreActions = within(screen.getByRole("table")).getAllByRole(
+          "button"
+        )[1];
+
+        userEvent.click(moreActions);
+
+        // Action menu is open
+        expect(screen.getByText("Print result")).toBeInTheDocument();
+        expect(screen.getByText("Text result")).toBeInTheDocument();
+      });
+
+      it("does not include `Text result` if no patient mobile number", () => {
+        const testResultPatientNoMobileNumber = [TEST_RESULTS_MULTIPLEX[0]];
+
+        render(
+          <ResultsTable
+            results={testResultPatientNoMobileNumber}
+            setPrintModalId={setPrintModalIdFn}
+            setMarkCorrectionId={setMarkCorrectionIdFn}
+            setDetailsModalId={setDetailsModalIdFn}
+            setTextModalId={setTextModalIdFn}
+            setEmailModalTestResultId={setEmailModalTestResultIdFn}
+            hasMultiplexResults={false}
+            hasFacility={false}
+          />
+        );
+
+        const moreActions = within(screen.getByRole("table")).getAllByRole(
+          "button"
+        )[1];
+
+        userEvent.click(moreActions);
+
+        // Action menu is open
+        expect(screen.getByText("Print result")).toBeInTheDocument();
+        expect(screen.queryByText("Text result")).not.toBeInTheDocument();
+      });
+    });
+    describe("email result action", () => {
+      it("includes `Email result` if patient email address", () => {
+        const testResultPatientEmail = [TEST_RESULTS_MULTIPLEX[0]];
+
+        render(
+          <ResultsTable
+            results={testResultPatientEmail}
+            setPrintModalId={setPrintModalIdFn}
+            setMarkCorrectionId={setMarkCorrectionIdFn}
+            setDetailsModalId={setDetailsModalIdFn}
+            setTextModalId={setTextModalIdFn}
+            setEmailModalTestResultId={setEmailModalTestResultIdFn}
+            hasMultiplexResults={false}
+            hasFacility={false}
+          />
+        );
+
+        const moreActions = within(screen.getByRole("table")).getAllByRole(
+          "button"
+        )[1];
+
+        userEvent.click(moreActions);
+
+        // Action menu is open
+        expect(screen.getByText("Print result")).toBeInTheDocument();
+        expect(screen.getByText("Email result")).toBeInTheDocument();
+      });
+
+      it("does not include `Email result` if no patient email address", () => {
+        const testResultPatientNoEmail = [TEST_RESULTS_MULTIPLEX[1]];
+
+        render(
+          <ResultsTable
+            results={testResultPatientNoEmail}
+            setPrintModalId={setPrintModalIdFn}
+            setMarkCorrectionId={setMarkCorrectionIdFn}
+            setDetailsModalId={setDetailsModalIdFn}
+            setTextModalId={setTextModalIdFn}
+            setEmailModalTestResultId={setEmailModalTestResultIdFn}
+            hasMultiplexResults={false}
+            hasFacility={false}
+          />
+        );
+
+        const moreActions = within(screen.getByRole("table")).getAllByRole(
+          "button"
+        )[1];
+
+        userEvent.click(moreActions);
+
+        // Action menu is open
+        expect(screen.getByText("Print result")).toBeInTheDocument();
+        expect(screen.queryByText("Email result")).not.toBeInTheDocument();
+      });
     });
   });
 });
