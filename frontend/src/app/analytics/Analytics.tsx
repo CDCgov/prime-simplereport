@@ -128,7 +128,7 @@ export const Analytics = (props: Props) => {
     totalTests > 0 ? (positiveTests / totalTests) * 100 : null;
 
   return (
-    <main className="prime-home">
+    <div className="prime-home flex-1">
       <div className="grid-container">
         <div className="prime-container card-container margin-top-2">
           <div className="usa-card__header">
@@ -287,6 +287,6 @@ export const Analytics = (props: Props) => {
           </div>
         </div>
       </div>
-    </main>
+    </div>
   );
 };
