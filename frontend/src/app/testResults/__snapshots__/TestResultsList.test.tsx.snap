@@ -100,7 +100,6 @@ exports[`TestResultsList should render a list of tests 1`] = `
                       class="usa-input"
                       id="search-field-small"
                       name="search"
-                      placeholder=""
                       type="search"
                       value=""
                     />

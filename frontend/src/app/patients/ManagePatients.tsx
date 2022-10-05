@@ -292,7 +292,6 @@ export const DetachedManagePatients = ({
                 }}
                 queryString={debounced || ""}
                 className="display-inline-block"
-                placeholder=""
                 focusOnMount
               />
             </div>
