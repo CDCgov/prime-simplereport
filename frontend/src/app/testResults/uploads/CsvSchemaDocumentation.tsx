@@ -66,21 +66,23 @@ export const CsvSchemaDocumentationItem: React.FC<CsvSchemaItemProps> = ({
         <div className="grid-col-4 text-base">Value type</div>
         <div className="grid-col-auto">{item.valueType}</div>
       </div>
-      <div className="grid-row margin-bottom-05 border-base-lighter border-top-1px padding-top-1">
-        <div className="grid-col-4 text-base">
-          {item.acceptedFormat && "Accepted format"}
-          {item.acceptedValues && "Accepted value(s)"}
-          {item.acceptedExample && "Example(s)"}
+      {(item.acceptedFormat || item.acceptedValues || item.acceptedExample) && (
+        <div className="grid-row margin-bottom-05 border-base-lighter border-top-1px padding-top-1">
+          <div className="grid-col-4 text-base">
+            {item.acceptedFormat && "Accepted format"}
+            {item.acceptedValues && "Accepted value(s)"}
+            {item.acceptedExample && "Example(s)"}
+          </div>
+          <ul className="grid-col-8 prime-ul margin-top-0">
+            {item.values?.map((value, valueIndex) => (
+              <li
+                key={`${item.colHeader}-value-${valueIndex}`}
+                dangerouslySetInnerHTML={{ __html: `${value}` }}
+              />
+            ))}
+          </ul>
         </div>
-        <ul className="grid-col-8 prime-ul">
-          {item.values?.map((value, valueIndex) => (
-            <li
-              key={`${item.colHeader}-value-${valueIndex}`}
-              dangerouslySetInnerHTML={{ __html: `${value}` }}
-            />
-          ))}
-        </ul>
-      </div>
+      )}
     </div>
   );
 };
@@ -329,7 +331,7 @@ const CsvSchemaDocumentation = () => {
                       return (
                         <CsvSchemaDocumentationItem
                           item={item}
-                          className="rs-documentation__values"
+                          className="rs-documentation__values margin-top-6"
                         />
                       );
                     })}
