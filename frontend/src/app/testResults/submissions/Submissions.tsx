@@ -117,8 +117,8 @@ const Submissions = () => {
                 data-testid="end-date"
                 type="date"
                 className="usa-input width-card"
-                defaultValue={startDate || ""}
-                min={startDate || "2000-01-01"}
+                defaultValue={endDate || ""}
+                min="2000-01-01"
                 max={moment().add(1, "day").format("YYYY-MM-DD")}
                 aria-label="End Date"
                 onChange={(e) => {
