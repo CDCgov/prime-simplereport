@@ -11,7 +11,7 @@ Object {
         <div
           class="grid-container"
         >
-          <main
+          <div
             class="prime-edit-patient prime-home"
           >
             <div
@@ -2573,7 +2573,7 @@ Object {
                 </button>
               </div>
             </div>
-          </main>
+          </div>
         </div>
       </div>
     </div>
@@ -2588,7 +2588,7 @@ Object {
       <div
         class="grid-container"
       >
-        <main
+        <div
           class="prime-edit-patient prime-home"
         >
           <div
@@ -5150,7 +5150,7 @@ Object {
               </button>
             </div>
           </div>
-        </main>
+        </div>
       </div>
     </div>
   </div>,
