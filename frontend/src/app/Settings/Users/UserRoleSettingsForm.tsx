@@ -17,13 +17,13 @@ const ROLES: RoleButton[] = [
     value: "ADMIN",
     label: "Admin",
     labelDescription:
-      "Full access: Conduct tests, manage test results and patient profiles,  manage account settings, users, and testing facilities. ",
+      "Full access: Conduct tests, bulk upload results, manage test results and patient profiles,  manage account settings, users, and testing facilities. ",
   },
   {
     value: "USER",
     label: "Standard user",
     labelDescription:
-      "Conduct tests, manage test results, and patient profiles",
+      "Conduct tests, bulk upload results, manage test results, and patient profiles",
   },
   {
     value: "ENTRY_ONLY",

@@ -156,7 +156,6 @@ const App = () => {
   const canViewPeople = appPermissions.people.canView;
   const canEditPeople = appPermissions.people.canEdit;
   const canViewSettings = appPermissions.settings.canView;
-  const canUseCsvUploaderPilot = appPermissions.featureFlags.SrCsvUploaderPilot;
 
   return (
     <>
@@ -217,7 +216,7 @@ const App = () => {
                 path="results/upload/submit"
                 element={
                   <ProtectedRoute
-                    requiredPermissions={canUseCsvUploaderPilot}
+                    requiredPermissions={canViewResults}
                     userPermissions={data.whoami.permissions}
                     element={
                       <ResultsNavWrapper
@@ -233,7 +232,7 @@ const App = () => {
                 path="results/upload/submit/guide"
                 element={
                   <ProtectedRoute
-                    requiredPermissions={canUseCsvUploaderPilot}
+                    requiredPermissions={canViewResults}
                     userPermissions={data.whoami.permissions}
                     element={
                       <ResultsNavWrapper
@@ -250,7 +249,7 @@ const App = () => {
                 path="results/upload/submissions/submission/:id"
                 element={
                   <ProtectedRoute
-                    requiredPermissions={canUseCsvUploaderPilot}
+                    requiredPermissions={canViewResults}
                     userPermissions={data.whoami.permissions}
                     element={
                       <ResultsNavWrapper
@@ -266,7 +265,7 @@ const App = () => {
                 path={"results/upload/submissions"}
                 element={
                   <ProtectedRoute
-                    requiredPermissions={canUseCsvUploaderPilot}
+                    requiredPermissions={canViewResults}
                     userPermissions={data.whoami.permissions}
                     element={
                       <ResultsNavWrapper
@@ -282,7 +281,7 @@ const App = () => {
                 path={"results/upload/submissions/:pageNumber"}
                 element={
                   <ProtectedRoute
-                    requiredPermissions={canUseCsvUploaderPilot}
+                    requiredPermissions={canViewResults}
                     userPermissions={data.whoami.permissions}
                     element={
                       <ResultsNavWrapper
