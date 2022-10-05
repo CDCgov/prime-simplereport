@@ -82,6 +82,7 @@ exports[`TestQueue should render the test queue 1`] = `
               class="fa-layers"
             >
               <svg
+                alt-text="close-circle"
                 aria-hidden="true"
                 class="svg-inline--fa fa-circle fa-w-16 fa-inverse fa-2x "
                 data-icon="circle"
@@ -97,6 +98,7 @@ exports[`TestQueue should render the test queue 1`] = `
                 />
               </svg>
               <svg
+                alt-text="close-x"
                 aria-hidden="true"
                 class="svg-inline--fa fa-times-circle fa-w-16 fa-2x "
                 data-icon="times-circle"
@@ -156,6 +158,7 @@ exports[`TestQueue should render the test queue 1`] = `
                   </span>
                    
                   <svg
+                    alt-text="stopwatch"
                     aria-hidden="true"
                     class="svg-inline--fa fa-stopwatch fa-w-14 "
                     data-icon="stopwatch"
@@ -277,7 +280,7 @@ exports[`TestQueue should render the test queue 1`] = `
                         >
                           <button
                             aria-describedby="tooltip-211111"
-                            aria-label="Device"
+                            aria-label="Device tooltip"
                             class="usa-button usa-button--unstyled usa-tooltip__trigger"
                             data-testid="triggerElement"
                             position="right"
@@ -286,6 +289,7 @@ exports[`TestQueue should render the test queue 1`] = `
                             wrapperclasses="usa-text-with-tooltip"
                           >
                             <svg
+                              alt-text="info"
                               aria-hidden="true"
                               class="svg-inline--fa fa-info-circle fa-w-16 info-circle-icon"
                               data-icon="info-circle"
@@ -498,6 +502,7 @@ exports[`TestQueue should render the test queue 1`] = `
               class="fa-layers"
             >
               <svg
+                alt-text="close-circle"
                 aria-hidden="true"
                 class="svg-inline--fa fa-circle fa-w-16 fa-inverse fa-2x "
                 data-icon="circle"
@@ -513,6 +518,7 @@ exports[`TestQueue should render the test queue 1`] = `
                 />
               </svg>
               <svg
+                alt-text="close-x"
                 aria-hidden="true"
                 class="svg-inline--fa fa-times-circle fa-w-16 fa-2x "
                 data-icon="times-circle"
@@ -572,6 +578,7 @@ exports[`TestQueue should render the test queue 1`] = `
                   </span>
                    
                   <svg
+                    alt-text="stopwatch"
                     aria-hidden="true"
                     class="svg-inline--fa fa-stopwatch fa-w-14 "
                     data-icon="stopwatch"
@@ -693,7 +700,7 @@ exports[`TestQueue should render the test queue 1`] = `
                         >
                           <button
                             aria-describedby="tooltip-211111"
-                            aria-label="Device"
+                            aria-label="Device tooltip"
                             class="usa-button usa-button--unstyled usa-tooltip__trigger"
                             data-testid="triggerElement"
                             position="right"
@@ -702,6 +709,7 @@ exports[`TestQueue should render the test queue 1`] = `
                             wrapperclasses="usa-text-with-tooltip"
                           >
                             <svg
+                              alt-text="info"
                               aria-hidden="true"
                               class="svg-inline--fa fa-info-circle fa-w-16 info-circle-icon"
                               data-icon="info-circle"
