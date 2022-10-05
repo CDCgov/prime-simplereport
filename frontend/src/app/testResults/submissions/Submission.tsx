@@ -53,7 +53,7 @@ const Submission = () => {
               Upload history
             </LinkWithQuery>
             <div>
-              <h1 className="margin-top-2">Submission detail</h1>
+              <h1 className="margin-top-2">Submission details</h1>
             </div>
           </div>
         </div>
