@@ -4,6 +4,7 @@ exports[`TestQueue should render the test queue 1`] = `
 <div>
   <div
     class="prime-home flex-1"
+    style="padding-top: 80px;"
   >
     <div
       class="grid-container queue-container-wide"

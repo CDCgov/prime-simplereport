@@ -191,15 +191,15 @@ const TestQueue: React.FC<Props> = ({ activeFacilityId }) => {
   }
   if (loading) {
     return (
-      <main
-        className="prime-home display-flex flex-justify-center"
+      <div
+        className="prime-home display-flex flex-justify-center flex-1"
         style={{
           fontSize: "22px",
           paddingTop: "80px",
         }}
       >
         Loading tests ...
-      </main>
+      </div>
     );
   }
 
