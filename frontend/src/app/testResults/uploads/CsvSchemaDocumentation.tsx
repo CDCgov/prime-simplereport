@@ -109,12 +109,7 @@ const CsvSchemaDocumentation = () => {
             </LinkWithQuery>
           </div>
           <div>
-            <h2 className="margin-top-2">
-              CSV template guide{" "}
-              <span className="text-secondary bg-white border-1px border-secondary font-body-3xs padding-x-1 padding-y-05 text-secondary margin-left-2 text-ttbottom">
-                Pilot program{" "}
-              </span>
-            </h2>
+            <h2 className="margin-top-2">CSV template guide</h2>
           </div>
         </div>
       </div>
