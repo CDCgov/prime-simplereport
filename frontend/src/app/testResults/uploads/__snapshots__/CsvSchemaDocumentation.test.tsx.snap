@@ -87,22 +87,11 @@ exports[`CsvSchemaDocumentation tests CsvSchemaDocumentaton matches snapshot 1`]
           </a>
         </div>
         <div>
-          <h2
+          <h1
             class="margin-top-2"
           >
             CSV template guide
-<<<<<<< HEAD
-          </h2>
-=======
-             
-            <span
-              class="text-secondary bg-white border-1px border-secondary font-body-3xs padding-x-1 padding-y-05 text-secondary margin-left-2 text-ttbottom"
-            >
-              Pilot program
-               
-            </span>
           </h1>
->>>>>>> 5f3176b3 (fix test)
         </div>
       </div>
     </div>
@@ -138,75 +127,75 @@ exports[`CsvSchemaDocumentation tests CsvSchemaDocumentaton matches snapshot 1`]
             >
               General formatting guidelines
             </a>
+            <ol
+              class=""
+            >
+              <li>
+                <a
+                  class="usa-link"
+                  href="#patient"
+                >
+                  Patient data elements
+                </a>
+              </li>
+              <li>
+                <a
+                  class="usa-link"
+                  href="#order-and-result"
+                >
+                  Order and result data elements
+                </a>
+              </li>
+              <li>
+                <a
+                  class="usa-link"
+                  href="#specimen"
+                >
+                  Specimen data elements
+                </a>
+              </li>
+              <li>
+                <a
+                  class="usa-link"
+                  href="#ordering-provider"
+                >
+                  Ordering provider data elements
+                </a>
+              </li>
+              <li>
+                <a
+                  class="usa-link"
+                  href="#testing-facility"
+                >
+                  Testing facility data elements
+                </a>
+              </li>
+              <li>
+                <a
+                  class="usa-link"
+                  href="#ask-on-entry"
+                >
+                  Ask on entry (AOE) data elements
+                </a>
+              </li>
+              <li>
+                <a
+                  class="usa-link"
+                  href="#ordering-facility"
+                >
+                  Ordering facility data elements
+                </a>
+              </li>
+              <li>
+                <a
+                  class="usa-link"
+                  href="#additional-data-elements"
+                >
+                  Additional data elements and notes
+                </a>
+              </li>
+            </ol>
           </li>
-          <div
-            class=""
-          >
-            <li>
-              <a
-                class="usa-link"
-                href="#patient"
-              >
-                Patient data elements
-              </a>
-            </li>
-            <li>
-              <a
-                class="usa-link"
-                href="#order-and-result"
-              >
-                Order and result data elements
-              </a>
-            </li>
-            <li>
-              <a
-                class="usa-link"
-                href="#specimen"
-              >
-                Specimen data elements
-              </a>
-            </li>
-            <li>
-              <a
-                class="usa-link"
-                href="#ordering-provider"
-              >
-                Ordering provider data elements
-              </a>
-            </li>
-            <li>
-              <a
-                class="usa-link"
-                href="#testing-facility"
-              >
-                Testing facility data elements
-              </a>
-            </li>
-            <li>
-              <a
-                class="usa-link"
-                href="#ask-on-entry"
-              >
-                Ask on entry (AOE) data elements
-              </a>
-            </li>
-            <li>
-              <a
-                class="usa-link"
-                href="#ordering-facility"
-              >
-                Ordering facility data elements
-              </a>
-            </li>
-            <li>
-              <a
-                class="usa-link"
-                href="#additional-data-elements"
-              >
-                Additional data elements and notes
-              </a>
-            </li>
-          </div>
         </ul>
         <p>
           <strong>
@@ -227,23 +216,23 @@ exports[`CsvSchemaDocumentation tests CsvSchemaDocumentaton matches snapshot 1`]
       <section
         class="border-top-1px border-ink margin-top-9"
       >
-        <h3
+        <h2
           class="font-body-lg margin-y-1"
           id="preparing-upload"
         >
           Preparing and uploading a spreadsheet
-        </h3>
+        </h2>
         <ol
           class="usa-process-list"
         >
           <li
             class="usa-process-list__item"
           >
-            <h4
+            <h3
               class="usa-process-list__heading"
             >
               Create or export your spreadsheet
-            </h4>
+            </h3>
             <p
               class="margin-top-05"
             >
@@ -262,11 +251,11 @@ exports[`CsvSchemaDocumentation tests CsvSchemaDocumentaton matches snapshot 1`]
           <li
             class="usa-process-list__item"
           >
-            <h4
+            <h3
               class="usa-process-list__heading"
             >
               Format using the SimpleReport template
-            </h4>
+            </h3>
             <p>
               In your spreadsheet, include all column headers in the spreadsheet template and guidelines below, with no extras. Copy column header names exactly. Be sure to include every column in the template, even if you don’t have data for every field.
             </p>
@@ -274,11 +263,11 @@ exports[`CsvSchemaDocumentation tests CsvSchemaDocumentaton matches snapshot 1`]
           <li
             class="usa-process-list__item"
           >
-            <h4
+            <h3
               class="usa-process-list__heading"
             >
               Enter your data
-            </h4>
+            </h3>
             <p>
               Following the spreadsheet guidelines below, enter properly formatted values in the relevant fields. Some fields require data, while others don’t.
             </p>
@@ -286,11 +275,11 @@ exports[`CsvSchemaDocumentation tests CsvSchemaDocumentaton matches snapshot 1`]
           <li
             class="usa-process-list__item"
           >
-            <h4
+            <h3
               class="usa-process-list__heading"
             >
               Export or save your data
-            </h4>
+            </h3>
             <p>
               Make sure your spreadsheet is in a CSV format. SimpleReport doesn’t accept XLS, XLXS, or any other formats.
             </p>
@@ -298,11 +287,11 @@ exports[`CsvSchemaDocumentation tests CsvSchemaDocumentaton matches snapshot 1`]
           <li
             class="usa-process-list__item"
           >
-            <h4
+            <h3
               class="usa-process-list__heading"
             >
               Use the uploader on SimpleReport
-            </h4>
+            </h3>
             <p>
               Visit the
                
@@ -315,11 +304,11 @@ exports[`CsvSchemaDocumentation tests CsvSchemaDocumentaton matches snapshot 1`]
                
               tab under “Results” in the main SimpleReport navigation. Select your CSV by dragging the file from a folder to the upload area, or browse your computer to find and open it. Once you click Upload your CSV, SimpleReport will check your file to see if it matches the template. If it accepts the file, you’ll see a confirmation message.
             </p>
-            <h4
+            <h3
               class="usa-process-list__heading"
             >
               Fix any errors
-            </h4>
+            </h3>
             <p>
               If SimpleReport finds any errors in the spreadsheet formatting or data, it will recommend how to fix them. Once you’ve made the recommended changes in your spreadsheet, save it, and then upload it again.
             </p>
@@ -329,12 +318,12 @@ exports[`CsvSchemaDocumentation tests CsvSchemaDocumentaton matches snapshot 1`]
       <section
         class="border-top-1px border-ink margin-top-9"
       >
-        <h3
+        <h2
           class="font-body-lg margin-y-1"
           id="formatting-guidelines"
         >
           General formatting guidelines
-        </h3>
+        </h2>
         <p>
           The SimpleReport standard CSV template is a blend of the Department of Health and Human Science's (HHS)
            
@@ -357,11 +346,11 @@ exports[`CsvSchemaDocumentation tests CsvSchemaDocumentaton matches snapshot 1`]
           </a>
            
         </p>
-        <h4
+        <h3
           class="margin-top-4"
         >
           Column headers and order
-        </h4>
+        </h3>
         <ul>
           <li>
             Column headers can be placed in any order.
@@ -416,16 +405,16 @@ exports[`CsvSchemaDocumentation tests CsvSchemaDocumentaton matches snapshot 1`]
         <div
           class="border-top-1px border-ink margin-top-9"
         >
-          <h3
+          <h2
             class="font-body-lg margin-y-1"
             id="patient"
           >
             Patient data elements
-          </h3>
+          </h2>
           <div
             class="rs-documentation__values"
           >
-            <h4
+            <h3
               class="font-body-md margin-bottom-2"
               data-testid="header"
               id="doc-patient_id"
@@ -441,7 +430,7 @@ exports[`CsvSchemaDocumentation tests CsvSchemaDocumentaton matches snapshot 1`]
               >
                 Requested
               </span>
-            </h4>
+            </h3>
             <div
               class="margin-bottom-3"
               data-testid="notes"
@@ -506,7 +495,7 @@ exports[`CsvSchemaDocumentation tests CsvSchemaDocumentaton matches snapshot 1`]
           <div
             class="rs-documentation__values"
           >
-            <h4
+            <h3
               class="font-body-md margin-bottom-2"
               data-testid="header"
               id="doc-patient_last_name"
@@ -517,7 +506,7 @@ exports[`CsvSchemaDocumentation tests CsvSchemaDocumentaton matches snapshot 1`]
               >
                 Required
               </span>
-            </h4>
+            </h3>
             <div
               class="margin-bottom-3"
               data-testid="notes"
@@ -570,7 +559,7 @@ exports[`CsvSchemaDocumentation tests CsvSchemaDocumentaton matches snapshot 1`]
           <div
             class="rs-documentation__values"
           >
-            <h4
+            <h3
               class="font-body-md margin-bottom-2"
               data-testid="header"
               id="doc-patient_first_name"
@@ -581,7 +570,7 @@ exports[`CsvSchemaDocumentation tests CsvSchemaDocumentaton matches snapshot 1`]
               >
                 Required
               </span>
-            </h4>
+            </h3>
             <div
               class="margin-bottom-3"
               data-testid="notes"
@@ -634,7 +623,7 @@ exports[`CsvSchemaDocumentation tests CsvSchemaDocumentaton matches snapshot 1`]
           <div
             class="rs-documentation__values"
           >
-            <h4
+            <h3
               class="font-body-md margin-bottom-2"
               data-testid="header"
               id="doc-patient_middle_name"
@@ -645,7 +634,7 @@ exports[`CsvSchemaDocumentation tests CsvSchemaDocumentaton matches snapshot 1`]
               >
                 Optional
               </span>
-            </h4>
+            </h3>
             <div
               class="margin-bottom-3"
               data-testid="notes"
@@ -698,7 +687,7 @@ exports[`CsvSchemaDocumentation tests CsvSchemaDocumentaton matches snapshot 1`]
           <div
             class="rs-documentation__values"
           >
-            <h4
+            <h3
               class="font-body-md margin-bottom-2"
               data-testid="header"
               id="doc-patient_street"
@@ -709,7 +698,7 @@ exports[`CsvSchemaDocumentation tests CsvSchemaDocumentaton matches snapshot 1`]
               >
                 Required
               </span>
-            </h4>
+            </h3>
             <div
               class="margin-bottom-3"
               data-testid="notes"
@@ -787,7 +776,7 @@ exports[`CsvSchemaDocumentation tests CsvSchemaDocumentaton matches snapshot 1`]
           <div
             class="rs-documentation__values"
           >
-            <h4
+            <h3
               class="font-body-md margin-bottom-2"
               data-testid="header"
               id="doc-patient_street2"
@@ -798,7 +787,7 @@ exports[`CsvSchemaDocumentation tests CsvSchemaDocumentaton matches snapshot 1`]
               >
                 Optional
               </span>
-            </h4>
+            </h3>
             <div
               class="margin-bottom-3"
               data-testid="notes"
@@ -851,7 +840,7 @@ exports[`CsvSchemaDocumentation tests CsvSchemaDocumentaton matches snapshot 1`]
           <div
             class="rs-documentation__values"
           >
-            <h4
+            <h3
               class="font-body-md margin-bottom-2"
               data-testid="header"
               id="doc-patient_city"
@@ -862,7 +851,7 @@ exports[`CsvSchemaDocumentation tests CsvSchemaDocumentaton matches snapshot 1`]
               >
                 Required
               </span>
-            </h4>
+            </h3>
             <div
               class="margin-bottom-3"
               data-testid="notes"
@@ -925,7 +914,7 @@ exports[`CsvSchemaDocumentation tests CsvSchemaDocumentaton matches snapshot 1`]
           <div
             class="rs-documentation__values"
           >
-            <h4
+            <h3
               class="font-body-md margin-bottom-2"
               data-testid="header"
               id="doc-patient_state"
@@ -936,7 +925,7 @@ exports[`CsvSchemaDocumentation tests CsvSchemaDocumentaton matches snapshot 1`]
               >
                 Required
               </span>
-            </h4>
+            </h3>
             <div
               class="margin-bottom-3"
               data-testid="notes"
@@ -1003,7 +992,7 @@ exports[`CsvSchemaDocumentation tests CsvSchemaDocumentaton matches snapshot 1`]
           <div
             class="rs-documentation__values"
           >
-            <h4
+            <h3
               class="font-body-md margin-bottom-2"
               data-testid="header"
               id="doc-patient_county"
@@ -1014,7 +1003,7 @@ exports[`CsvSchemaDocumentation tests CsvSchemaDocumentaton matches snapshot 1`]
               >
                 Required
               </span>
-            </h4>
+            </h3>
             <div
               class="margin-bottom-3"
               data-testid="notes"
@@ -1067,7 +1056,7 @@ exports[`CsvSchemaDocumentation tests CsvSchemaDocumentaton matches snapshot 1`]
           <div
             class="rs-documentation__values"
           >
-            <h4
+            <h3
               class="font-body-md margin-bottom-2"
               data-testid="header"
               id="doc-patient_zip_code"
@@ -1078,7 +1067,7 @@ exports[`CsvSchemaDocumentation tests CsvSchemaDocumentaton matches snapshot 1`]
               >
                 Required
               </span>
-            </h4>
+            </h3>
             <div
               class="margin-bottom-3"
               data-testid="notes"
@@ -1148,7 +1137,7 @@ exports[`CsvSchemaDocumentation tests CsvSchemaDocumentaton matches snapshot 1`]
           <div
             class="rs-documentation__values"
           >
-            <h4
+            <h3
               class="font-body-md margin-bottom-2"
               data-testid="header"
               id="doc-patient_phone_number"
@@ -1159,7 +1148,7 @@ exports[`CsvSchemaDocumentation tests CsvSchemaDocumentaton matches snapshot 1`]
               >
                 Required
               </span>
-            </h4>
+            </h3>
             <div
               class="margin-bottom-3"
               data-testid="notes"
@@ -1226,7 +1215,7 @@ exports[`CsvSchemaDocumentation tests CsvSchemaDocumentaton matches snapshot 1`]
           <div
             class="rs-documentation__values"
           >
-            <h4
+            <h3
               class="font-body-md margin-bottom-2"
               data-testid="header"
               id="doc-patient_dob"
@@ -1237,7 +1226,7 @@ exports[`CsvSchemaDocumentation tests CsvSchemaDocumentaton matches snapshot 1`]
               >
                 Required
               </span>
-            </h4>
+            </h3>
             <div
               class="margin-bottom-3"
               data-testid="notes"
@@ -1294,7 +1283,7 @@ exports[`CsvSchemaDocumentation tests CsvSchemaDocumentaton matches snapshot 1`]
           <div
             class="rs-documentation__values"
           >
-            <h4
+            <h3
               class="font-body-md margin-bottom-2"
               data-testid="header"
               id="doc-patient_gender"
@@ -1305,7 +1294,7 @@ exports[`CsvSchemaDocumentation tests CsvSchemaDocumentaton matches snapshot 1`]
               >
                 Required
               </span>
-            </h4>
+            </h3>
             <div
               class="margin-bottom-3"
               data-testid="notes"
@@ -1422,7 +1411,7 @@ exports[`CsvSchemaDocumentation tests CsvSchemaDocumentaton matches snapshot 1`]
           <div
             class="rs-documentation__values"
           >
-            <h4
+            <h3
               class="font-body-md margin-bottom-2"
               data-testid="header"
               id="doc-patient_race"
@@ -1433,7 +1422,7 @@ exports[`CsvSchemaDocumentation tests CsvSchemaDocumentaton matches snapshot 1`]
               >
                 Required
               </span>
-            </h4>
+            </h3>
             <div
               class="margin-bottom-3"
               data-testid="notes"
@@ -1568,7 +1557,7 @@ exports[`CsvSchemaDocumentation tests CsvSchemaDocumentaton matches snapshot 1`]
           <div
             class="rs-documentation__values"
           >
-            <h4
+            <h3
               class="font-body-md margin-bottom-2"
               data-testid="header"
               id="doc-patient_ethnicity"
@@ -1579,7 +1568,7 @@ exports[`CsvSchemaDocumentation tests CsvSchemaDocumentaton matches snapshot 1`]
               >
                 Required
               </span>
-            </h4>
+            </h3>
             <div
               class="margin-bottom-3"
               data-testid="notes"
@@ -1669,7 +1658,7 @@ exports[`CsvSchemaDocumentation tests CsvSchemaDocumentaton matches snapshot 1`]
           <div
             class="rs-documentation__values"
           >
-            <h4
+            <h3
               class="font-body-md margin-bottom-2"
               data-testid="header"
               id="doc-patient_preferred_language"
@@ -1680,7 +1669,7 @@ exports[`CsvSchemaDocumentation tests CsvSchemaDocumentaton matches snapshot 1`]
               >
                 Optional
               </span>
-            </h4>
+            </h3>
             <div
               class="margin-bottom-3"
               data-testid="notes"
@@ -1779,7 +1768,7 @@ exports[`CsvSchemaDocumentation tests CsvSchemaDocumentaton matches snapshot 1`]
           <div
             class="rs-documentation__values"
           >
-            <h4
+            <h3
               class="font-body-md margin-bottom-2"
               data-testid="header"
               id="doc-patient_email"
@@ -1790,7 +1779,7 @@ exports[`CsvSchemaDocumentation tests CsvSchemaDocumentaton matches snapshot 1`]
               >
                 Optional
               </span>
-            </h4>
+            </h3>
             <div
               class="margin-bottom-3"
               data-testid="notes"
@@ -1842,16 +1831,16 @@ exports[`CsvSchemaDocumentation tests CsvSchemaDocumentaton matches snapshot 1`]
         <div
           class="border-top-1px border-ink margin-top-9"
         >
-          <h3
+          <h2
             class="font-body-lg margin-y-1"
             id="order-and-result"
           >
             Order and result data elements
-          </h3>
+          </h2>
           <div
             class="rs-documentation__values"
           >
-            <h4
+            <h3
               class="font-body-md margin-bottom-2"
               data-testid="header"
               id="doc-accession_number "
@@ -1862,7 +1851,7 @@ exports[`CsvSchemaDocumentation tests CsvSchemaDocumentaton matches snapshot 1`]
               >
                 Required
               </span>
-            </h4>
+            </h3>
             <div
               class="margin-bottom-3"
               data-testid="notes"
@@ -1919,7 +1908,7 @@ exports[`CsvSchemaDocumentation tests CsvSchemaDocumentaton matches snapshot 1`]
           <div
             class="rs-documentation__values"
           >
-            <h4
+            <h3
               class="font-body-md margin-bottom-2"
               data-testid="header"
               id="doc-equipment_model_name"
@@ -1930,7 +1919,7 @@ exports[`CsvSchemaDocumentation tests CsvSchemaDocumentaton matches snapshot 1`]
               >
                 Required
               </span>
-            </h4>
+            </h3>
             <div
               class="margin-bottom-3"
               data-testid="notes"
@@ -2019,7 +2008,7 @@ exports[`CsvSchemaDocumentation tests CsvSchemaDocumentaton matches snapshot 1`]
           <div
             class="rs-documentation__values"
           >
-            <h4
+            <h3
               class="font-body-md margin-bottom-2"
               data-testid="header"
               id="doc-test_performed_code"
@@ -2030,7 +2019,7 @@ exports[`CsvSchemaDocumentation tests CsvSchemaDocumentaton matches snapshot 1`]
               >
                 Required
               </span>
-            </h4>
+            </h3>
             <div
               class="margin-bottom-3"
               data-testid="notes"
@@ -2114,7 +2103,7 @@ exports[`CsvSchemaDocumentation tests CsvSchemaDocumentaton matches snapshot 1`]
           <div
             class="rs-documentation__values"
           >
-            <h4
+            <h3
               class="font-body-md margin-bottom-2"
               data-testid="header"
               id="doc-test_result"
@@ -2125,7 +2114,7 @@ exports[`CsvSchemaDocumentation tests CsvSchemaDocumentaton matches snapshot 1`]
               >
                 Required
               </span>
-            </h4>
+            </h3>
             <div
               class="margin-bottom-3"
               data-testid="notes"
@@ -2222,7 +2211,7 @@ exports[`CsvSchemaDocumentation tests CsvSchemaDocumentaton matches snapshot 1`]
           <div
             class="rs-documentation__values"
           >
-            <h4
+            <h3
               class="font-body-md margin-bottom-2"
               data-testid="header"
               id="doc-order_test_date"
@@ -2233,7 +2222,7 @@ exports[`CsvSchemaDocumentation tests CsvSchemaDocumentaton matches snapshot 1`]
               >
                 Required
               </span>
-            </h4>
+            </h3>
             <div
               class="margin-bottom-3"
               data-testid="notes"
@@ -2296,7 +2285,7 @@ exports[`CsvSchemaDocumentation tests CsvSchemaDocumentaton matches snapshot 1`]
           <div
             class="rs-documentation__values"
           >
-            <h4
+            <h3
               class="font-body-md margin-bottom-2"
               data-testid="header"
               id="doc-specimen_collection_date"
@@ -2307,7 +2296,7 @@ exports[`CsvSchemaDocumentation tests CsvSchemaDocumentaton matches snapshot 1`]
               >
                 Required
               </span>
-            </h4>
+            </h3>
             <div
               class="margin-bottom-3"
               data-testid="notes"
@@ -2370,7 +2359,7 @@ exports[`CsvSchemaDocumentation tests CsvSchemaDocumentaton matches snapshot 1`]
           <div
             class="rs-documentation__values"
           >
-            <h4
+            <h3
               class="font-body-md margin-bottom-2"
               data-testid="header"
               id="doc-testing_lab_specimen_received_date"
@@ -2381,7 +2370,7 @@ exports[`CsvSchemaDocumentation tests CsvSchemaDocumentaton matches snapshot 1`]
               >
                 Required
               </span>
-            </h4>
+            </h3>
             <div
               class="margin-bottom-3"
               data-testid="notes"
@@ -2444,7 +2433,7 @@ exports[`CsvSchemaDocumentation tests CsvSchemaDocumentaton matches snapshot 1`]
           <div
             class="rs-documentation__values"
           >
-            <h4
+            <h3
               class="font-body-md margin-bottom-2"
               data-testid="header"
               id="doc-test_result_date"
@@ -2455,7 +2444,7 @@ exports[`CsvSchemaDocumentation tests CsvSchemaDocumentaton matches snapshot 1`]
               >
                 Required
               </span>
-            </h4>
+            </h3>
             <div
               class="margin-bottom-3"
               data-testid="notes"
@@ -2518,7 +2507,7 @@ exports[`CsvSchemaDocumentation tests CsvSchemaDocumentaton matches snapshot 1`]
           <div
             class="rs-documentation__values"
           >
-            <h4
+            <h3
               class="font-body-md margin-bottom-2"
               data-testid="header"
               id="doc-date_result_released"
@@ -2529,7 +2518,7 @@ exports[`CsvSchemaDocumentation tests CsvSchemaDocumentaton matches snapshot 1`]
               >
                 Required
               </span>
-            </h4>
+            </h3>
             <div
               class="margin-bottom-3"
               data-testid="notes"
@@ -2593,16 +2582,16 @@ exports[`CsvSchemaDocumentation tests CsvSchemaDocumentaton matches snapshot 1`]
         <div
           class="border-top-1px border-ink margin-top-9"
         >
-          <h3
+          <h2
             class="font-body-lg margin-y-1"
             id="specimen"
           >
             Specimen data elements
-          </h3>
+          </h2>
           <div
             class="rs-documentation__values"
           >
-            <h4
+            <h3
               class="font-body-md margin-bottom-2"
               data-testid="header"
               id="doc-specimen_type"
@@ -2613,7 +2602,7 @@ exports[`CsvSchemaDocumentation tests CsvSchemaDocumentaton matches snapshot 1`]
               >
                 Required
               </span>
-            </h4>
+            </h3>
             <div
               class="margin-bottom-3"
               data-testid="notes"
@@ -2726,16 +2715,16 @@ exports[`CsvSchemaDocumentation tests CsvSchemaDocumentaton matches snapshot 1`]
         <div
           class="border-top-1px border-ink margin-top-9"
         >
-          <h3
+          <h2
             class="font-body-lg margin-y-1"
             id="ordering-provider"
           >
             Ordering provider data elements
-          </h3>
+          </h2>
           <div
             class="rs-documentation__values"
           >
-            <h4
+            <h3
               class="font-body-md margin-bottom-2"
               data-testid="header"
               id="doc-ordering_provider_id"
@@ -2746,7 +2735,7 @@ exports[`CsvSchemaDocumentation tests CsvSchemaDocumentaton matches snapshot 1`]
               >
                 Required
               </span>
-            </h4>
+            </h3>
             <div
               class="margin-bottom-3"
               data-testid="notes"
@@ -2823,7 +2812,7 @@ exports[`CsvSchemaDocumentation tests CsvSchemaDocumentaton matches snapshot 1`]
           <div
             class="rs-documentation__values"
           >
-            <h4
+            <h3
               class="font-body-md margin-bottom-2"
               data-testid="header"
               id="doc-ordering_provider_last_name"
@@ -2834,7 +2823,7 @@ exports[`CsvSchemaDocumentation tests CsvSchemaDocumentaton matches snapshot 1`]
               >
                 Required
               </span>
-            </h4>
+            </h3>
             <div
               class="margin-bottom-3"
               data-testid="notes"
@@ -2887,7 +2876,7 @@ exports[`CsvSchemaDocumentation tests CsvSchemaDocumentaton matches snapshot 1`]
           <div
             class="rs-documentation__values"
           >
-            <h4
+            <h3
               class="font-body-md margin-bottom-2"
               data-testid="header"
               id="doc-ordering_provider_first_name"
@@ -2898,7 +2887,7 @@ exports[`CsvSchemaDocumentation tests CsvSchemaDocumentaton matches snapshot 1`]
               >
                 Required
               </span>
-            </h4>
+            </h3>
             <div
               class="margin-bottom-3"
               data-testid="notes"
@@ -2951,7 +2940,7 @@ exports[`CsvSchemaDocumentation tests CsvSchemaDocumentaton matches snapshot 1`]
           <div
             class="rs-documentation__values"
           >
-            <h4
+            <h3
               class="font-body-md margin-bottom-2"
               data-testid="header"
               id="doc-ordering_provider_middle_name"
@@ -2962,7 +2951,7 @@ exports[`CsvSchemaDocumentation tests CsvSchemaDocumentaton matches snapshot 1`]
               >
                 Optional
               </span>
-            </h4>
+            </h3>
             <div
               class="margin-bottom-3"
               data-testid="notes"
@@ -3015,7 +3004,7 @@ exports[`CsvSchemaDocumentation tests CsvSchemaDocumentaton matches snapshot 1`]
           <div
             class="rs-documentation__values"
           >
-            <h4
+            <h3
               class="font-body-md margin-bottom-2"
               data-testid="header"
               id="doc-ordering_provider_street"
@@ -3026,7 +3015,7 @@ exports[`CsvSchemaDocumentation tests CsvSchemaDocumentaton matches snapshot 1`]
               >
                 Required
               </span>
-            </h4>
+            </h3>
             <div
               class="margin-bottom-3"
               data-testid="notes"
@@ -3079,7 +3068,7 @@ exports[`CsvSchemaDocumentation tests CsvSchemaDocumentaton matches snapshot 1`]
           <div
             class="rs-documentation__values"
           >
-            <h4
+            <h3
               class="font-body-md margin-bottom-2"
               data-testid="header"
               id="doc-ordering_provider_street2"
@@ -3090,7 +3079,7 @@ exports[`CsvSchemaDocumentation tests CsvSchemaDocumentaton matches snapshot 1`]
               >
                 Optional
               </span>
-            </h4>
+            </h3>
             <div
               class="margin-bottom-3"
               data-testid="notes"
@@ -3143,7 +3132,7 @@ exports[`CsvSchemaDocumentation tests CsvSchemaDocumentaton matches snapshot 1`]
           <div
             class="rs-documentation__values"
           >
-            <h4
+            <h3
               class="font-body-md margin-bottom-2"
               data-testid="header"
               id="doc-ordering_provider_city"
@@ -3154,7 +3143,7 @@ exports[`CsvSchemaDocumentation tests CsvSchemaDocumentaton matches snapshot 1`]
               >
                 Required
               </span>
-            </h4>
+            </h3>
             <div
               class="margin-bottom-3"
               data-testid="notes"
@@ -3207,7 +3196,7 @@ exports[`CsvSchemaDocumentation tests CsvSchemaDocumentaton matches snapshot 1`]
           <div
             class="rs-documentation__values"
           >
-            <h4
+            <h3
               class="font-body-md margin-bottom-2"
               data-testid="header"
               id="doc-ordering_provider_state"
@@ -3218,7 +3207,7 @@ exports[`CsvSchemaDocumentation tests CsvSchemaDocumentaton matches snapshot 1`]
               >
                 Required
               </span>
-            </h4>
+            </h3>
             <div
               class="margin-bottom-3"
               data-testid="notes"
@@ -3275,7 +3264,7 @@ exports[`CsvSchemaDocumentation tests CsvSchemaDocumentaton matches snapshot 1`]
           <div
             class="rs-documentation__values"
           >
-            <h4
+            <h3
               class="font-body-md margin-bottom-2"
               data-testid="header"
               id="doc-ordering_provider_zip_code"
@@ -3286,7 +3275,7 @@ exports[`CsvSchemaDocumentation tests CsvSchemaDocumentaton matches snapshot 1`]
               >
                 Required
               </span>
-            </h4>
+            </h3>
             <div
               class="margin-bottom-3"
               data-testid="notes"
@@ -3346,7 +3335,7 @@ exports[`CsvSchemaDocumentation tests CsvSchemaDocumentaton matches snapshot 1`]
           <div
             class="rs-documentation__values"
           >
-            <h4
+            <h3
               class="font-body-md margin-bottom-2"
               data-testid="header"
               id="doc-ordering_provider_phone_number"
@@ -3357,7 +3346,7 @@ exports[`CsvSchemaDocumentation tests CsvSchemaDocumentaton matches snapshot 1`]
               >
                 Required
               </span>
-            </h4>
+            </h3>
             <div
               class="margin-bottom-3"
               data-testid="notes"
@@ -3415,16 +3404,16 @@ exports[`CsvSchemaDocumentation tests CsvSchemaDocumentaton matches snapshot 1`]
         <div
           class="border-top-1px border-ink margin-top-9"
         >
-          <h3
+          <h2
             class="font-body-lg margin-y-1"
             id="testing-facility"
           >
             Testing facility data elements
-          </h3>
+          </h2>
           <div
             class="rs-documentation__values"
           >
-            <h4
+            <h3
               class="font-body-md margin-bottom-2"
               data-testid="header"
               id="doc-testing_lab_clia"
@@ -3435,7 +3424,7 @@ exports[`CsvSchemaDocumentation tests CsvSchemaDocumentaton matches snapshot 1`]
               >
                 Required
               </span>
-            </h4>
+            </h3>
             <div
               class="margin-bottom-3"
               data-testid="notes"
@@ -3504,7 +3493,7 @@ exports[`CsvSchemaDocumentation tests CsvSchemaDocumentaton matches snapshot 1`]
           <div
             class="rs-documentation__values"
           >
-            <h4
+            <h3
               class="font-body-md margin-bottom-2"
               data-testid="header"
               id="doc-testing_lab_name"
@@ -3515,7 +3504,7 @@ exports[`CsvSchemaDocumentation tests CsvSchemaDocumentaton matches snapshot 1`]
               >
                 Required
               </span>
-            </h4>
+            </h3>
             <div
               class="margin-bottom-3"
               data-testid="notes"
@@ -3568,7 +3557,7 @@ exports[`CsvSchemaDocumentation tests CsvSchemaDocumentaton matches snapshot 1`]
           <div
             class="rs-documentation__values"
           >
-            <h4
+            <h3
               class="font-body-md margin-bottom-2"
               data-testid="header"
               id="doc-testing_lab_street"
@@ -3579,7 +3568,7 @@ exports[`CsvSchemaDocumentation tests CsvSchemaDocumentaton matches snapshot 1`]
               >
                 Required
               </span>
-            </h4>
+            </h3>
             <div
               class="margin-bottom-3"
               data-testid="notes"
@@ -3632,7 +3621,7 @@ exports[`CsvSchemaDocumentation tests CsvSchemaDocumentaton matches snapshot 1`]
           <div
             class="rs-documentation__values"
           >
-            <h4
+            <h3
               class="font-body-md margin-bottom-2"
               data-testid="header"
               id="doc-testing_lab_street2"
@@ -3643,7 +3632,7 @@ exports[`CsvSchemaDocumentation tests CsvSchemaDocumentaton matches snapshot 1`]
               >
                 Optional
               </span>
-            </h4>
+            </h3>
             <div
               class="margin-bottom-3"
               data-testid="notes"
@@ -3696,7 +3685,7 @@ exports[`CsvSchemaDocumentation tests CsvSchemaDocumentaton matches snapshot 1`]
           <div
             class="rs-documentation__values"
           >
-            <h4
+            <h3
               class="font-body-md margin-bottom-2"
               data-testid="header"
               id="doc-testing_lab_city"
@@ -3707,7 +3696,7 @@ exports[`CsvSchemaDocumentation tests CsvSchemaDocumentaton matches snapshot 1`]
               >
                 Required
               </span>
-            </h4>
+            </h3>
             <div
               class="margin-bottom-3"
               data-testid="notes"
@@ -3760,7 +3749,7 @@ exports[`CsvSchemaDocumentation tests CsvSchemaDocumentaton matches snapshot 1`]
           <div
             class="rs-documentation__values"
           >
-            <h4
+            <h3
               class="font-body-md margin-bottom-2"
               data-testid="header"
               id="doc-testing_lab_state"
@@ -3771,7 +3760,7 @@ exports[`CsvSchemaDocumentation tests CsvSchemaDocumentaton matches snapshot 1`]
               >
                 Required
               </span>
-            </h4>
+            </h3>
             <div
               class="margin-bottom-3"
               data-testid="notes"
@@ -3828,7 +3817,7 @@ exports[`CsvSchemaDocumentation tests CsvSchemaDocumentaton matches snapshot 1`]
           <div
             class="rs-documentation__values"
           >
-            <h4
+            <h3
               class="font-body-md margin-bottom-2"
               data-testid="header"
               id="doc-testing_lab_zip_code"
@@ -3839,7 +3828,7 @@ exports[`CsvSchemaDocumentation tests CsvSchemaDocumentaton matches snapshot 1`]
               >
                 Required
               </span>
-            </h4>
+            </h3>
             <div
               class="margin-bottom-3"
               data-testid="notes"
@@ -3899,7 +3888,7 @@ exports[`CsvSchemaDocumentation tests CsvSchemaDocumentaton matches snapshot 1`]
           <div
             class="rs-documentation__values"
           >
-            <h4
+            <h3
               class="font-body-md margin-bottom-2"
               data-testid="header"
               id="doc-testing_lab_phone_number"
@@ -3910,7 +3899,7 @@ exports[`CsvSchemaDocumentation tests CsvSchemaDocumentaton matches snapshot 1`]
               >
                 Optional
               </span>
-            </h4>
+            </h3>
             <div
               class="margin-bottom-3"
               data-testid="notes"
@@ -3968,16 +3957,16 @@ exports[`CsvSchemaDocumentation tests CsvSchemaDocumentaton matches snapshot 1`]
         <div
           class="border-top-1px border-ink margin-top-9"
         >
-          <h3
+          <h2
             class="font-body-lg margin-y-1"
             id="ask-on-entry"
           >
             Ask on entry (AOE) data elements
-          </h3>
+          </h2>
           <div
             class="rs-documentation__values"
           >
-            <h4
+            <h3
               class="font-body-md margin-bottom-2"
               data-testid="header"
               id="doc-pregnant"
@@ -3993,7 +3982,7 @@ exports[`CsvSchemaDocumentation tests CsvSchemaDocumentaton matches snapshot 1`]
               >
                 Requested
               </span>
-            </h4>
+            </h3>
             <div
               class="margin-bottom-3"
               data-testid="notes"
@@ -4074,7 +4063,7 @@ exports[`CsvSchemaDocumentation tests CsvSchemaDocumentaton matches snapshot 1`]
           <div
             class="rs-documentation__values"
           >
-            <h4
+            <h3
               class="font-body-md margin-bottom-2"
               data-testid="header"
               id="doc-employed_in_healthcare"
@@ -4090,7 +4079,7 @@ exports[`CsvSchemaDocumentation tests CsvSchemaDocumentaton matches snapshot 1`]
               >
                 Requested
               </span>
-            </h4>
+            </h3>
             <div
               class="margin-bottom-3"
               data-testid="notes"
@@ -4171,7 +4160,7 @@ exports[`CsvSchemaDocumentation tests CsvSchemaDocumentaton matches snapshot 1`]
           <div
             class="rs-documentation__values"
           >
-            <h4
+            <h3
               class="font-body-md margin-bottom-2"
               data-testid="header"
               id="doc-symptomatic_for_disease"
@@ -4187,7 +4176,7 @@ exports[`CsvSchemaDocumentation tests CsvSchemaDocumentaton matches snapshot 1`]
               >
                 Requested
               </span>
-            </h4>
+            </h3>
             <div
               class="margin-bottom-3"
               data-testid="notes"
@@ -4268,7 +4257,7 @@ exports[`CsvSchemaDocumentation tests CsvSchemaDocumentaton matches snapshot 1`]
           <div
             class="rs-documentation__values"
           >
-            <h4
+            <h3
               class="font-body-md margin-bottom-2"
               data-testid="header"
               id="doc-illness_onset_date"
@@ -4284,7 +4273,7 @@ exports[`CsvSchemaDocumentation tests CsvSchemaDocumentaton matches snapshot 1`]
               >
                 Requested
               </span>
-            </h4>
+            </h3>
             <div
               class="margin-bottom-3"
               data-testid="notes"
@@ -4341,7 +4330,7 @@ exports[`CsvSchemaDocumentation tests CsvSchemaDocumentaton matches snapshot 1`]
           <div
             class="rs-documentation__values"
           >
-            <h4
+            <h3
               class="font-body-md margin-bottom-2"
               data-testid="header"
               id="doc-resident_congregate_setting"
@@ -4357,7 +4346,7 @@ exports[`CsvSchemaDocumentation tests CsvSchemaDocumentaton matches snapshot 1`]
               >
                 Requested
               </span>
-            </h4>
+            </h3>
             <div
               class="margin-bottom-3"
               data-testid="notes"
@@ -4438,7 +4427,7 @@ exports[`CsvSchemaDocumentation tests CsvSchemaDocumentaton matches snapshot 1`]
           <div
             class="rs-documentation__values"
           >
-            <h4
+            <h3
               class="font-body-md margin-bottom-2"
               data-testid="header"
               id="doc-residence_type"
@@ -4449,7 +4438,7 @@ exports[`CsvSchemaDocumentation tests CsvSchemaDocumentaton matches snapshot 1`]
               >
                 Optional
               </span>
-            </h4>
+            </h3>
             <div
               class="margin-bottom-3"
               data-testid="notes"
@@ -4665,7 +4654,7 @@ exports[`CsvSchemaDocumentation tests CsvSchemaDocumentaton matches snapshot 1`]
           <div
             class="rs-documentation__values"
           >
-            <h4
+            <h3
               class="font-body-md margin-bottom-2"
               data-testid="header"
               id="doc-hospitalized"
@@ -4681,7 +4670,7 @@ exports[`CsvSchemaDocumentation tests CsvSchemaDocumentaton matches snapshot 1`]
               >
                 Requested
               </span>
-            </h4>
+            </h3>
             <div
               class="margin-bottom-3"
               data-testid="notes"
@@ -4762,7 +4751,7 @@ exports[`CsvSchemaDocumentation tests CsvSchemaDocumentaton matches snapshot 1`]
           <div
             class="rs-documentation__values"
           >
-            <h4
+            <h3
               class="font-body-md margin-bottom-2"
               data-testid="header"
               id="doc-icu"
@@ -4778,7 +4767,7 @@ exports[`CsvSchemaDocumentation tests CsvSchemaDocumentaton matches snapshot 1`]
               >
                 Requested
               </span>
-            </h4>
+            </h3>
             <div
               class="margin-bottom-3"
               data-testid="notes"
@@ -4860,16 +4849,16 @@ exports[`CsvSchemaDocumentation tests CsvSchemaDocumentaton matches snapshot 1`]
         <div
           class="border-top-1px border-ink margin-top-9"
         >
-          <h3
+          <h2
             class="font-body-lg margin-y-1"
             id="ordering-facility"
           >
             Ordering facility data elements
-          </h3>
+          </h2>
           <div
             class="rs-documentation__values"
           >
-            <h4
+            <h3
               class="font-body-md margin-bottom-2"
               data-testid="header"
               id="doc-ordering_facility_name"
@@ -4880,7 +4869,7 @@ exports[`CsvSchemaDocumentation tests CsvSchemaDocumentaton matches snapshot 1`]
               >
                 Optional
               </span>
-            </h4>
+            </h3>
             <div
               class="margin-bottom-3"
               data-testid="notes"
@@ -4940,7 +4929,7 @@ exports[`CsvSchemaDocumentation tests CsvSchemaDocumentaton matches snapshot 1`]
           <div
             class="rs-documentation__values"
           >
-            <h4
+            <h3
               class="font-body-md margin-bottom-2"
               data-testid="header"
               id="doc-ordering_facility_street"
@@ -4951,7 +4940,7 @@ exports[`CsvSchemaDocumentation tests CsvSchemaDocumentaton matches snapshot 1`]
               >
                 Optional
               </span>
-            </h4>
+            </h3>
             <div
               class="margin-bottom-3"
               data-testid="notes"
@@ -5011,7 +5000,7 @@ exports[`CsvSchemaDocumentation tests CsvSchemaDocumentaton matches snapshot 1`]
           <div
             class="rs-documentation__values"
           >
-            <h4
+            <h3
               class="font-body-md margin-bottom-2"
               data-testid="header"
               id="doc-ordering_facility_street2"
@@ -5022,7 +5011,7 @@ exports[`CsvSchemaDocumentation tests CsvSchemaDocumentaton matches snapshot 1`]
               >
                 Optional
               </span>
-            </h4>
+            </h3>
             <div
               class="margin-bottom-3"
               data-testid="notes"
@@ -5075,7 +5064,7 @@ exports[`CsvSchemaDocumentation tests CsvSchemaDocumentaton matches snapshot 1`]
           <div
             class="rs-documentation__values"
           >
-            <h4
+            <h3
               class="font-body-md margin-bottom-2"
               data-testid="header"
               id="doc-ordering_facility_city "
@@ -5086,7 +5075,7 @@ exports[`CsvSchemaDocumentation tests CsvSchemaDocumentaton matches snapshot 1`]
               >
                 Optional
               </span>
-            </h4>
+            </h3>
             <div
               class="margin-bottom-3"
               data-testid="notes"
@@ -5146,7 +5135,7 @@ exports[`CsvSchemaDocumentation tests CsvSchemaDocumentaton matches snapshot 1`]
           <div
             class="rs-documentation__values"
           >
-            <h4
+            <h3
               class="font-body-md margin-bottom-2"
               data-testid="header"
               id="doc-ordering_facility_state"
@@ -5157,7 +5146,7 @@ exports[`CsvSchemaDocumentation tests CsvSchemaDocumentaton matches snapshot 1`]
               >
                 Optional
               </span>
-            </h4>
+            </h3>
             <div
               class="margin-bottom-3"
               data-testid="notes"
@@ -5221,7 +5210,7 @@ exports[`CsvSchemaDocumentation tests CsvSchemaDocumentaton matches snapshot 1`]
           <div
             class="rs-documentation__values"
           >
-            <h4
+            <h3
               class="font-body-md margin-bottom-2"
               data-testid="header"
               id="doc-ordering_facility_zip_code"
@@ -5232,7 +5221,7 @@ exports[`CsvSchemaDocumentation tests CsvSchemaDocumentaton matches snapshot 1`]
               >
                 Optional
               </span>
-            </h4>
+            </h3>
             <div
               class="margin-bottom-3"
               data-testid="notes"
@@ -5299,7 +5288,7 @@ exports[`CsvSchemaDocumentation tests CsvSchemaDocumentaton matches snapshot 1`]
           <div
             class="rs-documentation__values"
           >
-            <h4
+            <h3
               class="font-body-md margin-bottom-2"
               data-testid="header"
               id="doc-ordering_facility_phone_number"
@@ -5310,7 +5299,7 @@ exports[`CsvSchemaDocumentation tests CsvSchemaDocumentaton matches snapshot 1`]
               >
                 Optional
               </span>
-            </h4>
+            </h3>
             <div
               class="margin-bottom-3"
               data-testid="notes"
@@ -5375,16 +5364,16 @@ exports[`CsvSchemaDocumentation tests CsvSchemaDocumentaton matches snapshot 1`]
         <div
           class="border-top-1px border-ink margin-top-9"
         >
-          <h3
+          <h2
             class="font-body-lg margin-y-1"
             id="additional-data-elements"
           >
             Additional data elements and notes
-          </h3>
+          </h2>
           <div
             class="rs-documentation__values"
           >
-            <h4
+            <h3
               class="font-body-md margin-bottom-2"
               data-testid="header"
               id="doc-comment"
@@ -5395,7 +5384,7 @@ exports[`CsvSchemaDocumentation tests CsvSchemaDocumentaton matches snapshot 1`]
               >
                 Optional
               </span>
-            </h4>
+            </h3>
             <div
               class="margin-bottom-3"
               data-testid="notes"
@@ -5453,7 +5442,7 @@ exports[`CsvSchemaDocumentation tests CsvSchemaDocumentaton matches snapshot 1`]
           <div
             class="rs-documentation__values"
           >
-            <h4
+            <h3
               class="font-body-md margin-bottom-2"
               data-testid="header"
               id="doc-test_result_status "
@@ -5464,7 +5453,7 @@ exports[`CsvSchemaDocumentation tests CsvSchemaDocumentaton matches snapshot 1`]
               >
                 Optional
               </span>
-            </h4>
+            </h3>
             <div
               class="margin-bottom-3"
               data-testid="notes"
