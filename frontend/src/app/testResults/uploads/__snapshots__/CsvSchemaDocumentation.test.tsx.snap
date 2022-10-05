@@ -91,13 +91,6 @@ exports[`CsvSchemaDocumentation tests CsvSchemaDocumentaton matches snapshot 1`]
             class="margin-top-2"
           >
             CSV template guide
-             
-            <span
-              class="text-secondary bg-white border-1px border-secondary font-body-3xs padding-x-1 padding-y-05 text-secondary margin-left-2 text-ttbottom"
-            >
-              Pilot program
-               
-            </span>
           </h2>
         </div>
       </div>
