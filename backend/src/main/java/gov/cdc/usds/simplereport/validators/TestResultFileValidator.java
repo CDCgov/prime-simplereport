@@ -178,14 +178,14 @@ public class TestResultFileValidator {
       ValueOrError residenceType = getValue(row, "residence_type", false);
       ValueOrError hospitalized = getValue(row, "hospitalized", false);
       ValueOrError icu = getValue(row, "icu", false);
-      ValueOrError orderingFacilityName = getValue(row, "ordering_facility_name", true);
-      ValueOrError orderingFacilityStreet = getValue(row, "ordering_facility_street", true);
+      ValueOrError orderingFacilityName = getValue(row, "ordering_facility_name", false);
+      ValueOrError orderingFacilityStreet = getValue(row, "ordering_facility_street", false);
       ValueOrError orderingFacilityStreet2 = getValue(row, "ordering_facility_street2", false);
-      ValueOrError orderingFacilityCity = getValue(row, "ordering_facility_city", true);
-      ValueOrError orderingFacilityState = getValue(row, "ordering_facility_state", true);
-      ValueOrError orderingFacilityZipCode = getValue(row, "ordering_facility_zip_code", true);
+      ValueOrError orderingFacilityCity = getValue(row, "ordering_facility_city", false);
+      ValueOrError orderingFacilityState = getValue(row, "ordering_facility_state", false);
+      ValueOrError orderingFacilityZipCode = getValue(row, "ordering_facility_zip_code", false);
       ValueOrError orderingFacilityPhoneNumber =
-          getValue(row, "ordering_facility_phone_number", true);
+          getValue(row, "ordering_facility_phone_number", false);
       ValueOrError comment = getValue(row, "comment", false);
       ValueOrError testResultStatus = getValue(row, "test_result_status", false);
 
