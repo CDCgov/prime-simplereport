@@ -264,6 +264,7 @@ const AddToQueueSearchBox = ({
         onInputChange={onInputChange}
         queryString={debounced}
         disabled={!allowQuery}
+        placeholder={"Search for a person to start their test"}
       />
       <SearchResults
         page="queue"

@@ -52,18 +52,14 @@ const SearchInput = ({
           className={label ? "display-block" : "usa-sr-only"}
           htmlFor="search-field-small"
         >
-          {label || "Search"}
+          {label || placeholder || "Search"}
         </label>
         <div>
           <input
             autoComplete="off"
             className="usa-input"
             id="search-field-small"
-            placeholder={
-              placeholder !== undefined
-                ? placeholder
-                : "Search for a person to start their test"
-            }
+            placeholder={placeholder}
             type="search"
             name="search"
             value={queryString}
