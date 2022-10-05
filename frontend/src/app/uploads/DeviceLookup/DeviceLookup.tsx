@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from "react";
 import { ComboBox } from "@trussworks/react-uswds";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
-import { faCopy } from "@fortawesome/free-solid-svg-icons";
+import { faCheck, faCopy } from "@fortawesome/free-solid-svg-icons";
 
 import TextInput from "../../commonComponents/TextInput";
 import MultiSelect from "../../commonComponents/MultiSelect/MultiSelect";
@@ -134,14 +134,19 @@ const DeviceLookup = (props: Props) => {
                       onChange={onChange}
                       disabled={true}
                     />
-                    <button
-                      style={{ bottom: 12, right: 15, position: "absolute" }}
-                      className="usa-button usa-button--unstyled"
-                      onClick={() => device?.name && copySlug(device?.name)}
-                      arial-label={`Copy name for ${device?.name}`}
-                    >
-                      <FontAwesomeIcon icon={faCopy} />
-                    </button>
+                    {device && (
+                      <button
+                        style={{ bottom: 12, right: 15, position: "absolute" }}
+                        className="usa-button usa-button--unstyled"
+                        onClick={() => device?.name && copySlug(device?.name)}
+                        arial-label={`Copy model for ${device?.name}`}
+                      >
+                        <FontAwesomeIcon
+                          icon={copiedSlug === device?.name ? faCheck : faCopy}
+                        />
+                      </button>
+                    )}
+                    {device && copiedSlug === device?.name && <CopyTooltip />}
                   </div>
                 </div>
               </div>
@@ -155,14 +160,19 @@ const DeviceLookup = (props: Props) => {
                       onChange={onChange}
                       disabled={true}
                     />
-                    <button
-                      style={{ bottom: 12, right: 15, position: "absolute" }}
-                      className="usa-button usa-button--unstyled"
-                      onClick={() => device?.model && copySlug(device?.model)}
-                      arial-label={`Copy model for ${device?.name}`}
-                    >
-                      <FontAwesomeIcon icon={faCopy} />
-                    </button>
+                    {device && (
+                      <button
+                        style={{ bottom: 12, right: 15, position: "absolute" }}
+                        className="usa-button usa-button--unstyled"
+                        onClick={() => device?.model && copySlug(device?.model)}
+                        arial-label={`Copy model for ${device?.name}`}
+                      >
+                        <FontAwesomeIcon
+                          icon={copiedSlug === device?.model ? faCheck : faCopy}
+                        />
+                      </button>
+                    )}
+                    {device && copiedSlug === device?.model && <CopyTooltip />}
                   </div>
                 </div>
               </div>
@@ -176,16 +186,27 @@ const DeviceLookup = (props: Props) => {
                       onChange={onChange}
                       disabled={true}
                     />
-                    <button
-                      style={{ bottom: 12, right: 15, position: "absolute" }}
-                      className="usa-button usa-button--unstyled"
-                      onClick={() =>
-                        device?.manufacturer && copySlug(device?.manufacturer)
-                      }
-                      arial-label={`Copy manufacturer for ${device?.name}`}
-                    >
-                      <FontAwesomeIcon icon={faCopy} />
-                    </button>
+                    {device && (
+                      <button
+                        style={{ bottom: 12, right: 15, position: "absolute" }}
+                        className="usa-button usa-button--unstyled"
+                        onClick={() =>
+                          device?.manufacturer && copySlug(device?.manufacturer)
+                        }
+                        arial-label={`Copy model for ${device?.manufacturer}`}
+                      >
+                        <FontAwesomeIcon
+                          icon={
+                            copiedSlug === device?.manufacturer
+                              ? faCheck
+                              : faCopy
+                          }
+                        />
+                      </button>
+                    )}
+                    {device && copiedSlug === device?.manufacturer && (
+                      <CopyTooltip />
+                    )}
                   </div>
                 </div>
               </div>
@@ -199,16 +220,25 @@ const DeviceLookup = (props: Props) => {
                       onChange={onChange}
                       disabled={true}
                     />
-                    <button
-                      style={{ bottom: 12, right: 15, position: "absolute" }}
-                      className="usa-button usa-button--unstyled"
-                      onClick={() =>
-                        device?.loincCode && copySlug(device?.loincCode)
-                      }
-                      arial-label={`Copy loincCode for ${device?.name}`}
-                    >
-                      <FontAwesomeIcon icon={faCopy} />
-                    </button>
+                    {device && (
+                      <button
+                        style={{ bottom: 12, right: 15, position: "absolute" }}
+                        className="usa-button usa-button--unstyled"
+                        onClick={() =>
+                          device?.loincCode && copySlug(device?.loincCode)
+                        }
+                        arial-label={`Copy model for ${device?.name}`}
+                      >
+                        <FontAwesomeIcon
+                          icon={
+                            copiedSlug === device?.loincCode ? faCheck : faCopy
+                          }
+                        />
+                      </button>
+                    )}
+                    {device && copiedSlug === device?.loincCode && (
+                      <CopyTooltip />
+                    )}
                   </div>
                 </div>
               </div>
@@ -238,3 +268,25 @@ const DeviceLookup = (props: Props) => {
 };
 
 export default DeviceLookup;
+
+const TOOLTIP_OFFSET = 7;
+
+const CopyTooltip = () => {
+  const [spanRef, setSpanRef] = useState<HTMLSpanElement | null>(null);
+
+  const marginTop = -TOOLTIP_OFFSET;
+  const marginRight =
+    -1 * (spanRef?.getBoundingClientRect().width || 0) - TOOLTIP_OFFSET;
+
+  return (
+    <span
+      ref={(node) => {
+        setSpanRef(node);
+      }}
+      className="usa-tooltip__body usa-tooltip__body--right is-set is-visible"
+      style={{ right: 0, marginRight, marginTop }}
+    >
+      Copied!
+    </span>
+  );
+};
