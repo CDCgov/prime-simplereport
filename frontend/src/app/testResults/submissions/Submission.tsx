@@ -37,21 +37,23 @@ const Submission = () => {
       <div className="prime-container card-container">
         {/* Sub-heading */}
         <div className="usa-card__header">
-          <div className="display-flex flex-align-center">
-            <svg
-              className="usa-icon text-base margin-left-neg-2px"
-              aria-hidden="true"
-              focusable="false"
-              role="img"
-            >
-              <use xlinkHref={iconSprite + "#arrow_back"}></use>
-            </svg>
-            <LinkWithQuery
-              to={`/results/upload/submissions/`}
-              className="margin-left-05"
-            >
-              Upload history
-            </LinkWithQuery>
+          <div>
+            <div className="display-flex flex-align-center">
+              <svg
+                className="usa-icon text-base margin-left-neg-2px"
+                aria-hidden="true"
+                focusable="false"
+                role="img"
+              >
+                <use xlinkHref={iconSprite + "#arrow_back"}></use>
+              </svg>
+              <LinkWithQuery
+                to={`/results/upload/submissions/`}
+                className="margin-left-05"
+              >
+                Upload history
+              </LinkWithQuery>
+            </div>
             <div>
               <h1 className="margin-top-2">Submission details</h1>
             </div>
