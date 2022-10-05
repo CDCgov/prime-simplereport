@@ -144,11 +144,11 @@ public class TestResultFileValidator {
       ValueOrError testPerformedCode = getValue(row, "test_performed_code", true);
       ValueOrError testResult = getValue(row, "test_result", true);
       ValueOrError orderTestDate = getValue(row, "order_test_date", true);
-      ValueOrError specimenCollectionDate = getValue(row, "specimen_collection_date", true);
+      ValueOrError specimenCollectionDate = getValue(row, "specimen_collection_date", false);
       ValueOrError testingLabSpecimenReceivedDate =
-          getValue(row, "testing_lab_specimen_received_date", true);
+          getValue(row, "testing_lab_specimen_received_date", false);
       ValueOrError testResultDate = getValue(row, "test_result_date", true);
-      ValueOrError dateResultReleased = getValue(row, "date_result_released", true);
+      ValueOrError dateResultReleased = getValue(row, "date_result_released", false);
       ValueOrError specimenType = getValue(row, "specimen_type", true);
       ValueOrError orderingProviderId = getValue(row, "ordering_provider_id", true);
       ValueOrError orderingProviderLastName = getValue(row, "ordering_provider_last_name", true);
