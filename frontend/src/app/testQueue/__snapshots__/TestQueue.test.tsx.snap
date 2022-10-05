@@ -2,9 +2,8 @@
 
 exports[`TestQueue should render the test queue 1`] = `
 <div>
-  <main
-    class="prime-home"
-    style="padding-top: 80px;"
+  <div
+    class="prime-home flex-1"
   >
     <div
       class="grid-container queue-container-wide"
@@ -896,6 +895,6 @@ exports[`TestQueue should render the test queue 1`] = `
         </div>
       </div>
     </div>
-  </main>
+  </div>
 </div>
 `;

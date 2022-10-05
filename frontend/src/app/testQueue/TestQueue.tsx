@@ -331,7 +331,7 @@ const TestQueue: React.FC<Props> = ({ activeFacilityId }) => {
   );
 
   return (
-    <main className="prime-home">
+    <div className="prime-home flex-1">
       <div className="grid-container queue-container-wide">
         <h1 className="font-sans-lg">Conduct tests</h1>
         <div className="position-relative">
@@ -345,7 +345,7 @@ const TestQueue: React.FC<Props> = ({ activeFacilityId }) => {
         </div>
         {createQueueItems(data.queue)}
       </div>
-    </main>
+    </div>
   );
 };
 
