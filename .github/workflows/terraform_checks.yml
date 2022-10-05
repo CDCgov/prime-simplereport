@@ -60,17 +60,26 @@ jobs:
       OKTA_API_TOKEN: ${{ secrets.OKTA_API_TOKEN }}
     steps:
       - uses: actions/checkout@v3
+      - name: Dependabot bypass
+        if: ${{ github.actor == 'dependabot[bot]' }}
+        run: |
+          true
       - uses: azure/login@v1
+        if: ${{ github.actor != 'dependabot[bot]' }}
         with:
           creds: ${{ secrets.AZURE_CREDENTIALS }}
       - uses: hashicorp/setup-terraform@v1
+        if: ${{ github.actor != 'dependabot[bot]' }}
         with:
           terraform_version: 1.1.4
       - name: Terraform Init
+        if: ${{ github.actor != 'dependabot[bot]' }}
         run: make init-prod
       - name: Build ReportStream function app
+        if: ${{ github.actor != 'dependabot[bot]' }}
         uses: ./.github/actions/build-reportstream-functions
         with:
           deploy-env: ${{env.DEPLOY_ENV}}
       - name: Terraform plan
+        if: ${{ github.actor != 'dependabot[bot]' }}
         run: make plan-prod
