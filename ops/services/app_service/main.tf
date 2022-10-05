@@ -44,6 +44,7 @@ resource "azurerm_app_service" "service" {
     ftps_state       = "Disabled"
 
     //TODO: Evaluate if this can be hit from somewhere else in Azure. If so, use a private link.
+    // NOTE: If this code is removed, TF will not automatically delete it with the current provider version! It must be removed manually from the App Service -> Networking blade!
     ip_restriction {
       virtual_network_subnet_id = var.lb_subnet_id
       action                    = "Allow"

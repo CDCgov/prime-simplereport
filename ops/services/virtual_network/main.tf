@@ -37,6 +37,10 @@ resource "azurerm_subnet" "lbs" {
   resource_group_name  = var.resource_group_name
   virtual_network_name = azurerm_virtual_network.vn.name
   address_prefixes     = [cidrsubnet(var.network_address, 8, 254)] # X.X.254.0/24
+  service_endpoints = [
+    "Microsoft.Web", 
+    "Microsoft.Storage"
+  ]
 }
 
 resource "azurerm_subnet" "webapp" {

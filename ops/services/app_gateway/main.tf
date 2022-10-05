@@ -132,7 +132,7 @@ resource "azurerm_application_gateway" "load_balancer" {
   }
 
   # ------- Backend Metabase App -------------------------
-  backend_address_pool {
+   backend_address_pool {
     name         = local.metabase_pool
     fqdns        = var.metabase_fqdns
     ip_addresses = var.metabase_ip_addresses
@@ -154,7 +154,7 @@ resource "azurerm_application_gateway" "load_balancer" {
     protocol                            = "Https"
     request_timeout                     = 20
     pick_host_name_from_backend_address = true
-  }
+  } 
 
   # ------- Listeners -------------------------
 
@@ -257,7 +257,7 @@ resource "azurerm_application_gateway" "load_balancer" {
       paths                       = ["/register/*"]
       redirect_configuration_name = local.redirect_self_registration_rule
     }
-
+ 
     path_rule {
       name                        = "staging-slot"
       paths                       = ["/staging/*", "/staging"]
@@ -282,14 +282,14 @@ resource "azurerm_application_gateway" "load_balancer" {
     target_url           = local.app_url
   }
 
-  redirect_configuration {
+  /*redirect_configuration {
     name = local.redirect_metabase_rule
 
     include_path         = true
     include_query_string = true
     redirect_type        = "Permanent"
     target_url           = local.metabase_url
-  }
+  }*/
 
   redirect_configuration {
     name = local.redirect_staging_slot_rule
@@ -299,13 +299,13 @@ resource "azurerm_application_gateway" "load_balancer" {
     redirect_type        = "Permanent"
     target_url           = local.staging_slot_url
   }
-
+ 
   rewrite_rule_set {
     name = "simple-report-routing"
 
     rewrite_rule {
       name          = "api-wildcard"
-      rule_sequence = 100
+      rule_sequence = 101
       condition {
         ignore_case = true
         negate      = false
@@ -322,9 +322,9 @@ resource "azurerm_application_gateway" "load_balancer" {
       }
     }
 
-    rewrite_rule {
+     rewrite_rule {
       name          = "metabase-wildcard"
-      rule_sequence = 101
+      rule_sequence = 100
       condition {
         ignore_case = true
         negate      = false
@@ -349,7 +349,7 @@ resource "azurerm_application_gateway" "load_balancer" {
       condition {
         ignore_case = true
         negate      = false
-        pattern     = ".*app/(.*)"
+        pattern     = "*.gov/app/(.*)"
         variable    = "var_uri_path"
       }
 
@@ -364,7 +364,7 @@ resource "azurerm_application_gateway" "load_balancer" {
 
     rewrite_rule {
       name          = "HSTS"
-      rule_sequence = 102
+      rule_sequence = 101
 
       response_header_configuration {
         header_name  = "Strict-Transport-Security"
