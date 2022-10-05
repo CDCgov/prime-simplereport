@@ -1,7 +1,7 @@
 import { useParams } from "react-router-dom";
 import moment from "moment";
-import { DatePicker, Label } from "@trussworks/react-uswds";
-import { useState } from "react";
+import { Label } from "@trussworks/react-uswds";
+import React, { useState } from "react";
 
 import Pagination from "../../commonComponents/Pagination";
 import { formatDateWithTimeOption } from "../../utils/date";
@@ -9,7 +9,6 @@ import {
   GetUploadSubmissionsQuery,
   useGetUploadSubmissionsQuery,
 } from "../../../generated/graphql";
-import { setStartTimeForDateRange } from "../../analytics/Analytics";
 import { LinkWithQuery } from "../../commonComponents/LinkWithQuery";
 import { useDocumentTitle } from "../../utils/hooks";
 import "../FontFix.scss";
@@ -90,20 +89,21 @@ const Submissions = () => {
           <div className="display-flex grid-row grid-gap flex-row flex-align-end padding-x-3 padding-y-2">
             <div>
               <Label htmlFor="start-date">Date range (start)</Label>
-              <DatePicker
+              <input
                 key={resetCount}
                 id="start-date"
-                name="start-date"
-                defaultValue={startDate || ""}
                 data-testid="start-date"
-                minDate="2000-01-01T00:00"
-                maxDate={moment().format("YYYY-MM-DDThh:mm")}
-                onChange={(date?: string) => {
+                type="date"
+                className="usa-input width-card"
+                defaultValue={startDate || ""}
+                min="2000-01-01"
+                max={moment().format("YYYY-MM-DD")}
+                aria-label="Start Date"
+                onChange={(e) => {
+                  const date = e.target.value;
                   if (date && date.length === 10) {
                     const newDate = new Date(date);
-                    setStartDate(
-                      setStartTimeForDateRange(newDate).toISOString()
-                    );
+                    setStartDate(newDate.toISOString());
                   }
                 }}
               />
@@ -111,15 +111,18 @@ const Submissions = () => {
 
             <div>
               <Label htmlFor="end-date">Date range (end)</Label>
-              <DatePicker
+              <input
                 key={resetCount}
                 id="end-date"
-                name="end-date"
-                defaultValue={endDate || ""}
                 data-testid="end-date"
-                minDate="2000-01-01T00:00"
-                maxDate={moment().add(1, "day").format("YYYY-MM-DDThh:mm")}
-                onChange={(date?: string) => {
+                type="date"
+                className="usa-input width-card"
+                defaultValue={startDate || ""}
+                min={startDate || "2000-01-01"}
+                max={moment().add(1, "day").format("YYYY-MM-DD")}
+                aria-label="End Date"
+                onChange={(e) => {
+                  const date = e.target.value;
                   if (date && date.length === 10) {
                     const newDate = new Date(date);
                     setEndDate(newDate.toISOString());
