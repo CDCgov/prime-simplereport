@@ -1,4 +1,4 @@
-FROM postgres:13-alpine
+FROM postgres:14-alpine
 
 RUN apk add py3-pip postgresql-libs gcc musl-dev postgresql-dev make
 RUN pip3 install pgxnclient
