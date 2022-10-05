@@ -52,16 +52,14 @@ const PatientApp = () => {
       <Page
         header={<PatientHeader />}
         children={
-          <main>
-            <div className="grid-container maxw-tablet">
-              <p></p>
-              <Alert
-                type="error"
-                title="Page not found"
-                body={t("testResult.dob.linkNotFound")}
-              />
-            </div>
-          </main>
+          <div className="grid-container maxw-tablet">
+            <p></p>
+            <Alert
+              type="error"
+              title="Page not found"
+              body={t("testResult.dob.linkNotFound")}
+            />
+          </div>
         }
         isPatientApp={true}
       />
