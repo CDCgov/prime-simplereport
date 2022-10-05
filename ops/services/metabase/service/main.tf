@@ -20,6 +20,11 @@ resource "azurerm_app_service" "metabase" {
     always_on        = true
     ftps_state       = "Disabled"
     linux_fx_version = "DOCKER|metabase/metabase"
+
+    ip_restriction {
+      virtual_network_subnet_id = var.lb_subnet_id
+      action                    = "Allow"
+    }
   }
 
   app_settings = merge(local.app_setting_defaults, {

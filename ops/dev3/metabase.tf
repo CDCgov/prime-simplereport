@@ -27,6 +27,8 @@ module "metabase_service" {
   postgres_url         = "@Microsoft.KeyVault(SecretUri=${data.azurerm_key_vault_secret.metabase_db_uri.id})"
   postgres_server_fqdn = data.terraform_remote_state.persistent_dev3.outputs.postgres_server_fqdn
 
+  lb_subnet_id = data.terraform_remote_state.persistent_dev3.outputs.subnet_lbs_id
+
   depends_on = [
     module.metabase_database
   ]

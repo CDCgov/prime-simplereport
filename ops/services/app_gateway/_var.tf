@@ -32,12 +32,22 @@ variable "metabase_fqdns" {
   default = []
 }
 
+variable "staging_fqdns" {
+  type    = list(string)
+  default = []
+}
+
 variable "ip_addresses" {
   type    = list(string)
   default = []
 }
 
 variable "metabase_ip_addresses" {
+  type    = list(string)
+  default = []
+}
+
+variable "staging_ip_addresses" {
   type    = list(string)
   default = []
 }

@@ -8,6 +8,9 @@ locals {
   metabase_pool                   = "${var.name}-${var.env}-be-metabase"
   metabase_http_setting           = "${var.name}-${var.env}-be-api-metabase-http"
   metabase_https_setting          = "${var.name}-${var.env}-be-api-metabase-https"
+  staging_pool                   = "${var.name}-${var.env}-be-staging"
+  staging_http_setting           = "${var.name}-${var.env}-be-api-staging-http"
+  staging_https_setting          = "${var.name}-${var.env}-be-api-staging-https"
   http_listener                   = "${var.name}-http"
   https_listener                  = "${var.name}-https"
   frontend_config                 = "${var.name}-config"
@@ -132,7 +135,7 @@ resource "azurerm_application_gateway" "load_balancer" {
   }
 
   # ------- Backend Metabase App -------------------------
-   backend_address_pool {
+  backend_address_pool {
     name         = local.metabase_pool
     fqdns        = var.metabase_fqdns
     ip_addresses = var.metabase_ip_addresses
@@ -154,7 +157,32 @@ resource "azurerm_application_gateway" "load_balancer" {
     protocol                            = "Https"
     request_timeout                     = 20
     pick_host_name_from_backend_address = true
-  } 
+  }
+
+  # ------- Backend Staging Slot -------------------------
+  backend_address_pool {
+    name         = local.staging_pool
+    fqdns        = var.staging_fqdns
+    ip_addresses = var.staging_ip_addresses
+  }
+
+  backend_http_settings {
+    name                                = local.staging_http_setting
+    cookie_based_affinity               = "Disabled"
+    port                                = 80
+    protocol                            = "Http"
+    request_timeout                     = 20
+    pick_host_name_from_backend_address = true
+  }
+
+  backend_http_settings {
+    name                                = local.staging_https_setting
+    cookie_based_affinity               = "Disabled"
+    port                                = 443
+    protocol                            = "Https"
+    request_timeout                     = 20
+    pick_host_name_from_backend_address = true
+  }
 
   # ------- Listeners -------------------------
 
@@ -257,11 +285,15 @@ resource "azurerm_application_gateway" "load_balancer" {
       paths                       = ["/register/*"]
       redirect_configuration_name = local.redirect_self_registration_rule
     }
- 
+
     path_rule {
       name                        = "staging-slot"
       paths                       = ["/staging/*", "/staging"]
-      redirect_configuration_name = local.redirect_self_registration_rule
+      backend_address_pool_name  = local.staging_pool
+      backend_http_settings_name = local.staging_https_setting
+      // this is the default, why would we set it again?
+      // because if we don't do this we get 404s on API calls
+      rewrite_rule_set_name = "simple-report-staging-routing"
     }
 
     path_rule {
@@ -282,28 +314,10 @@ resource "azurerm_application_gateway" "load_balancer" {
     target_url           = local.app_url
   }
 
-  /*redirect_configuration {
-    name = local.redirect_metabase_rule
-
-    include_path         = true
-    include_query_string = true
-    redirect_type        = "Permanent"
-    target_url           = local.metabase_url
-  }*/
-
-  redirect_configuration {
-    name = local.redirect_staging_slot_rule
-
-    include_path         = true
-    include_query_string = false
-    redirect_type        = "Permanent"
-    target_url           = local.staging_slot_url
-  }
-
   rewrite_rule_set {
     name = "simple-report-metabase-routing"
 
-rewrite_rule {
+    rewrite_rule {
       name          = "metabase-wildcard"
       rule_sequence = 100
       condition {
@@ -323,7 +337,31 @@ rewrite_rule {
       }
     }
   }
- 
+
+  rewrite_rule_set {
+    name = "simple-report-staging-routing"
+
+    rewrite_rule {
+      name          = "staging-wildcard"
+      rule_sequence = 100
+      condition {
+        ignore_case = true
+        negate      = false
+        pattern     = ".*api/(.*)"
+        variable    = "var_uri_path"
+      }
+
+      //TODO: See if this is really necessary for metabase.
+      url {
+        path    = "/{var_uri_path_1}"
+        reroute = false
+        # Per documentation, we should be able to leave this pass-through out. See however
+        # https://github.com/terraform-providers/terraform-provider-azurerm/issues/11563
+        query_string = "{var_query_string}"
+      }
+    }
+  }
+
   rewrite_rule_set {
     name = "simple-report-routing"
 

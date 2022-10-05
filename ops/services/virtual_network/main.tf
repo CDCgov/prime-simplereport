@@ -38,7 +38,7 @@ resource "azurerm_subnet" "lbs" {
   virtual_network_name = azurerm_virtual_network.vn.name
   address_prefixes     = [cidrsubnet(var.network_address, 8, 254)] # X.X.254.0/24
   service_endpoints = [
-    "Microsoft.Web", 
+    "Microsoft.Web",
     "Microsoft.Storage"
   ]
 }
