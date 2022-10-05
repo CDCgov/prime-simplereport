@@ -392,24 +392,28 @@ export const en = {
           },
           definitions: {
             heading: "Definitions",
-            l0: "Entity",
-            p0:
-              "A health care provider or facility; testing site; a state, local, tribal, and territorial public health authority " +
-              "(STLT Public Health Agency); or other organization that is enrolled in and using Simple Report to record and/or " +
-              "transmit data.",
-            l1: "User",
-            p1:
-              "An individual whose personal data is being reported via Simple Report (Individual User), or an individual authorized " +
-              "to act on behalf of the Entity under these Terms (Entity User or Entity Administrator). Simple Report will only designate " +
-              "one User from the Entity as the Entity Administrator. Entity Administrators will have more detailed identity verification " +
-              "than general Entity Users. Once the Entity Administrator has their identity verified, the Entity Administrator can add " +
-              "other general Entity Users or Individual Users to the Application. All roles are referred to as “User” for the purposes " +
-              "of these Terms, unless otherwise indicated.",
+            l0: {
+              title: "Entity:",
+              definition:
+                "A health care provider or facility; testing site; a state, local, tribal, and territorial public health authority " +
+                "(STLT Public Health Agency); or other organization that is enrolled in and using Simple Report to record and/or " +
+                "transmit data.",
+            },
+            l1: {
+              title: "User:",
+              definition:
+                "An individual whose personal data is being reported via Simple Report (Individual User), or an individual authorized " +
+                "to act on behalf of the Entity under these Terms (Entity User or Entity Administrator). Simple Report will only designate " +
+                "one User from the Entity as the Entity Administrator. Entity Administrators will have more detailed identity verification " +
+                "than general Entity Users. Once the Entity Administrator has their identity verified, the Entity Administrator can add " +
+                "other general Entity Users or Individual Users to the Application. All roles are referred to as “User” for the purposes " +
+                "of these Terms, unless otherwise indicated.",
+            },
           },
           dataRights: {
             heading: "Data rights and usage",
-            subheading: "Accounts/Registration",
-            l0: "For entity users",
+            subheading: "Accounts/registration",
+            section0: "For entity users",
             p01:
               "If you are using the Application on behalf of an Entity as either an Entity Administrator or Entity User, you represent " +
               "and warrant that you have authority to bind that Entity to the Terms and by accepting the Terms, you are doing so on " +
@@ -425,12 +429,12 @@ export const en = {
               "keys, tokens, and Entity and Entity User identifications (IDs)) will be issued to you by HHS or CDC. These credentials " +
               "are intended to be used only by you and to identify any software or APIs which you are using. You agree to keep your " +
               "credentials confidential and make reasonable efforts to prevent and discourage other persons from using your credentials.",
-            l1: "For entity administrators",
+            section1: "For entity administrators",
             p1:
               "The Entity Administrator agrees to verify the identity of other Entity Users who are added and to inactivate any other " +
               "Entity Users who should no longer have access. The Administrator also agrees to set permissions appropriately to determine " +
               "the minimum access necessary for each other Entity User to complete their required job duties.",
-            l2: "For individual users",
+            section2: "For individual users",
             p2:
               "Entity Administrators will grant Individual Users access to the Application. Individual Users can use the Application " +
               "to access and review their own information or information about others as may be permitted by applicable law (e.g., on " +
