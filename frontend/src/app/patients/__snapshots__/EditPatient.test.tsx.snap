@@ -61,7 +61,7 @@ Object {
                       aria-disabled="true"
                       class="usa-button usa-button--outline usa-button-disabled prime-save-patient-changes-start-test"
                       disabled=""
-                      id="edit-patient-save-lower"
+                      id="edit-patient-save-upper"
                       type="button"
                     >
                       Save and start test
@@ -2638,7 +2638,7 @@ Object {
                     aria-disabled="true"
                     class="usa-button usa-button--outline usa-button-disabled prime-save-patient-changes-start-test"
                     disabled=""
-                    id="edit-patient-save-lower"
+                    id="edit-patient-save-upper"
                     type="button"
                   >
                     Save and start test

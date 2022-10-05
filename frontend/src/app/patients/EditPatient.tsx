@@ -339,7 +339,7 @@ const EditPatient = (props: Props) => {
                   <div className="display-flex flex-align-center">
                     {!props.fromQueue && (
                       <Button
-                        id="edit-patient-save-lower"
+                        id="edit-patient-save-upper"
                         className="prime-save-patient-changes-start-test"
                         disabled={loading || !formChanged}
                         onClick={() => {
