@@ -243,7 +243,7 @@ export const DetachedManagePatients = ({
         <div className="grid-row">
           <div className="prime-container card-container">
             <div className="usa-card__header">
-              <h2>
+              <h1 className="font-sans-lg">
                 {PATIENT_TERM_PLURAL_CAP}
                 <span className="sr-showing-patients-on-page">
                   {totalEntries === undefined ? (
@@ -256,7 +256,7 @@ export const DetachedManagePatients = ({
                     </>
                   )}
                 </span>
-              </h2>
+              </h1>
               <div>
                 <Button
                   className="sr-active-button"
