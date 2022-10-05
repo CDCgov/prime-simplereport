@@ -269,22 +269,11 @@ const DeviceLookup = (props: Props) => {
 
 export default DeviceLookup;
 
-const TOOLTIP_OFFSET = 7;
-
 const CopyTooltip = () => {
-  const [spanRef, setSpanRef] = useState<HTMLSpanElement | null>(null);
-
-  const marginTop = -TOOLTIP_OFFSET;
-  const marginRight =
-    -1 * (spanRef?.getBoundingClientRect().width || 0) - TOOLTIP_OFFSET;
-
   return (
     <span
-      ref={(node) => {
-        setSpanRef(node);
-      }}
       className="usa-tooltip__body usa-tooltip__body--right is-set is-visible"
-      style={{ right: 0, marginRight, marginTop }}
+      style={{ right: 0, marginRight: -75, marginTop: -37 }}
     >
       Copied!
     </span>
