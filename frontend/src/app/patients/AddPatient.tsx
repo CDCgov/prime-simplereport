@@ -289,11 +289,12 @@ const AddPatient = () => {
 
   const getSaveButtons = (
     formChanged: boolean,
-    onSave: (startTest?: boolean) => void
+    onSave: (startTest?: boolean) => void,
+    location: string
   ) => (
     <>
       <Button
-        id="edit-patient-save-lower"
+        id={`edit-patient-save-and-start-${location}`}
         className="prime-save-patient-changes-start-test"
         disabled={loading || !formChanged}
         onClick={() => {
@@ -305,7 +306,7 @@ const AddPatient = () => {
         }
       />
       <Button
-        id="edit-patient-save-lower"
+        id={`edit-patient-save-${location}`}
         className="prime-save-patient-changes"
         disabled={loading || !formChanged}
         onClick={() => {
@@ -363,13 +364,13 @@ const AddPatient = () => {
                 </div>
               </div>
               <div className="display-flex flex-align-center">
-                {getSaveButtons(formChanged, onSave)}
+                {getSaveButtons(formChanged, onSave, "upper")}
               </div>
             </div>
           )}
           getFooter={(onSave, formChanged) => (
             <div className="prime-edit-patient-heading">
-              {getSaveButtons(formChanged, onSave)}
+              {getSaveButtons(formChanged, onSave, "lower")}
             </div>
           )}
         />
