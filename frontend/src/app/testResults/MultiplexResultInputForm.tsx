@@ -267,6 +267,7 @@ const MultiplexResultInputForm: React.FC<Props> = ({
         </div>
         <div className="grid-col-auto">
           <TextWithTooltip
+            buttonLabel="Results info"
             tooltip="COVID-19 results are reported to your public health department. Flu results are not reported at this time."
             position={isMobile ? "top" : "left"}
           />
