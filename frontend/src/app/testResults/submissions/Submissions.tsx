@@ -1,7 +1,7 @@
 import { useParams } from "react-router-dom";
 import moment from "moment";
 import { Label } from "@trussworks/react-uswds";
-import React, { useState } from "react";
+import { useState } from "react";
 
 import Pagination from "../../commonComponents/Pagination";
 import { formatDateWithTimeOption } from "../../utils/date";
