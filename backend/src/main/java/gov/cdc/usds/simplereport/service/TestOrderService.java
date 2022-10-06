@@ -612,6 +612,10 @@ public class TestOrderService {
       order.setCorrectionStatus(status);
       order.setReasonForCorrection(reasonForCorrection);
       order.markPending();
+
+      if (order.getDateTestedBackdate() == null) {
+        order.setDateTestedBackdate(event.getDateTested());
+      }
       _repo.save(order);
 
       return event;
