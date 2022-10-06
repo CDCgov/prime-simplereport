@@ -7,7 +7,7 @@ on:
       - "george/4336-enable-lighthouse-on-prs"
 jobs:
 
-  cypress-local-env:
+  cypress-local-env-with-lighthouse:
     runs-on: ubuntu-latest
     steps:
 
