@@ -68,7 +68,7 @@ public class TestResultUploadService {
   private static final ObjectMapper mapper =
       new ObjectMapper().configure(DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES, false);
 
-  @AuthorizationConfiguration.RequirePermissionCSVUpload
+  @AuthorizationConfiguration.RequirePermissionReadResultListForTestEvent
   public TestResultUpload processResultCSV(InputStream csvStream) {
 
     TestResultUpload result = new TestResultUpload(UploadStatus.FAILURE);
