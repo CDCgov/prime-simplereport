@@ -122,6 +122,12 @@ const CsvSchemaDocumentation = () => {
             How to format and upload a CSV file to report test results in bulk
             through SimpleReport.
           </p>
+          <iframe
+            width="640"
+            height="360"
+            title="SimpleReport bulk results uploader tutorial video"
+            src="https://www.youtube.com/embed/qqhC7PFBdek"
+          />
           <p>
             <strong>In this guide</strong>
           </p>
