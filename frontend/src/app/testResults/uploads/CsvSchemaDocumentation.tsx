@@ -2,7 +2,7 @@ import { LinkWithQuery } from "../../commonComponents/LinkWithQuery";
 import { useDocumentTitle } from "../../utils/hooks";
 import iconSprite from "../../../../node_modules/uswds/dist/img/sprite.svg";
 
-import "../HeaderSizeFix.scss";
+import "./CsvSchemaDocumentation.scss";
 import schema from "./schema.json";
 
 export type CsvSchemaItem = {
@@ -31,22 +31,25 @@ export const CsvSchemaDocumentationItem: React.FC<CsvSchemaItemProps> = ({
     <div className={className}>
       <h3
         id={`doc-${item.colHeader}`}
-        className="font-body-md margin-bottom-2"
+        className="margin-bottom-2"
         data-testid="header"
       >
         {item.name}
-        {item.required ? (
+        {item.required && (
           <span className="text-normal bg-white border-1px border-secondary font-body-3xs padding-x-1 padding-y-05 text-secondary margin-left-2 text-ttbottom">
             Required
           </span>
-        ) : (
-          <span className="text-normal bg-white border-1px border-base font-body-3xs padding-x-1 padding-y-05 text-base margin-left-2 text-ttbottom">
-            Optional
-          </span>
         )}
+
         {!item.required && item.requested && (
           <span className="text-normal bg-white border-1px border-base font-body-3xs padding-x-1 padding-y-05 text-base margin-left-2 text-ttbottom">
             Requested
+          </span>
+        )}
+
+        {!item.required && !item.requested && (
+          <span className="text-normal bg-white border-1px border-base font-body-3xs padding-x-1 padding-y-05 text-base margin-left-2 text-ttbottom">
+            Optional
           </span>
         )}
       </h3>
@@ -89,10 +92,10 @@ export const CsvSchemaDocumentationItem: React.FC<CsvSchemaItemProps> = ({
 
 /* eslint-disable jsx-a11y/anchor-has-content */
 const CsvSchemaDocumentation = () => {
-  useDocumentTitle("Spreadsheet upload guide");
+  useDocumentTitle("Bulk results upload guide");
 
   return (
-    <div className="prime-container card-container header-size-fix">
+    <div className="prime-container card-container csv-guide-container">
       <div className="usa-card__header">
         <div>
           <div className="display-flex flex-align-center">
@@ -112,13 +115,13 @@ const CsvSchemaDocumentation = () => {
             </LinkWithQuery>
           </div>
           <div>
-            <h1 className="margin-top-2">CSV template guide</h1>
+            <h1 className="margin-top-2">Bulk results upload guide</h1>
           </div>
         </div>
       </div>
       <div className="tablet:grid-col-8 usa-prose usa-card__body">
         <section id="anchor-top">
-          <p className="usa-intro text-base">
+          <p className="text-base sub-header">
             How to format and upload a CSV file to report test results in bulk
             through SimpleReport.
           </p>
@@ -128,54 +131,152 @@ const CsvSchemaDocumentation = () => {
             title="SimpleReport bulk results uploader tutorial video"
             src="https://www.youtube.com/embed/qqhC7PFBdek"
           />
-          <p>
-            <strong>In this guide</strong>
-          </p>
+          <h2>In this guide</h2>
           <ul>
+            <li>
+              <a href="#" className="usa-link">
+                About the CSV results uploader
+              </a>
+            </li>
+            <li>
+              <a href="#formatting-guidelines" className="usa-link">
+                Data formatting guide
+              </a>
+            </li>
             <li>
               <a href="#preparing-upload" className="usa-link">
                 Preparing and uploading a spreadsheet
               </a>
             </li>
-            <li>
-              <a href="#formatting-guidelines" className="usa-link">
-                General formatting guidelines
-              </a>
-              {schema.fields.map((field, fieldIndex) => {
-                return (
-                  <ol key={`toc-${fieldIndex}`} className="">
-                    {field.sections?.map((section, sectionIndex) => {
-                      return (
-                        <li key={`toc-${fieldIndex}-${sectionIndex}`}>
-                          <a href={`#${section.slug}`} className="usa-link">
-                            {section.title}
-                          </a>
-                        </li>
-                      );
-                    })}
-                  </ol>
-                );
-              })}
-            </li>
           </ul>
-          <p>
-            <strong>Resources</strong>
-          </p>
+          <h2>Resources</h2>
           <ul>
             <li>
               <a
                 href="/assets/resources/test_results_example_10-3-2022.csv"
                 className="usa-link"
               >
-                Standard CSV template with example data
+                SimpleReport spreadsheet template with example data
+              </a>
+            </li>
+            <li>
+              <a href="https://youtu.be/qqhC7PFBdek" className="usa-link">
+                Spreadsheet results uploader training video
+              </a>
+            </li>
+            <li>
+              <a href="mailto:support@simplereport.gov" className="usa-link">
+                SimpleReport support
               </a>
             </li>
           </ul>
         </section>
         <section className="border-top-1px border-ink margin-top-9">
-          <h2 id="preparing-upload" className="font-body-lg margin-y-1">
-            Preparing and uploading a spreadsheet
-          </h2>
+          <h2 id="formatting-guidelines">Data formatting guide</h2>
+          <p>
+            The SimpleReport results spreadsheet template is a blend of the
+            Department of Health and Human Service’s (HHS){" "}
+            <a
+              href="https://www.hhs.gov/coronavirus/testing/covid-19-diagnostic-data-reporting/index.html"
+              target="_blank"
+              rel="noreferrer noopener"
+              className="usa-link"
+            >
+              requirements for COVID-19 test data
+            </a>{" "}
+            as well as those of many jurisdictions. This standard data format
+            will be accepted by state, tribal, local, or territorial (STLT){" "}
+            <a
+              href="/getting-started/organizations-and-testing-facilities/where-does-simplereport-work"
+              className="usa-link"
+            >
+              health departments partnered with SimpleReport.
+            </a>{" "}
+          </p>
+
+          <h3 className="margin-top-4">Formatting rules</h3>
+          <h4>Include all SimpleReport columns</h4>
+          <p>
+            Include all columns in the SimpleReport template, with no extras.
+            The order doesn’t matter.
+          </p>
+          <h4>Match SimpleReport field names exactly</h4>
+          <p>
+            Write column headers exactly as they are in the guidelines and the
+            template. For example, if you have a “date of birth” column, you
+            must rename it “patient_dob” to match our template.
+          </p>
+          <h4>Include data for all required fields</h4>
+          <p>
+            The data template has three field types: required, requested, and
+            optional. SimpleReport won’t accept files with missing or incorrect
+            headers and values in required fields. Requested fields are not
+            required by HHS, but the data is helpful to jurisdictions. The tags
+            next to data element names listed below show field type:
+          </p>
+          <p>
+            <span className="text-normal bg-white border-1px border-secondary font-body-1xs padding-x-1 padding-y-05 text-secondary margin-right-1 text-middle">
+              Required
+            </span>
+            <span className="text-normal bg-white border-1px border-base font-body-1xs padding-x-1 padding-y-05 text-base margin-right-1 text-middle">
+              Requested
+            </span>
+            <span className="text-normal bg-white border-1px border-base font-body-1xs padding-x-1 padding-y-05 text-base margin-right-1 text-middle">
+              Optional
+            </span>
+          </p>
+        </section>
+
+        <section className="margin-top-5">
+          <h2>Data elements</h2>
+          {schema.fields.map((field, fieldIndex) => {
+            return (
+              <ul key={`toc-${fieldIndex}`} className="">
+                {field.sections?.map((section, sectionIndex) => {
+                  return (
+                    <li key={`toc-${fieldIndex}-${sectionIndex}`}>
+                      <a href={`#${section.slug}`} className="usa-link">
+                        {section.title}
+                      </a>
+                    </li>
+                  );
+                })}
+              </ul>
+            );
+          })}
+        </section>
+
+        {schema.fields.map((field, fieldIndex) => {
+          return (
+            <div
+              data-testid="fieldDiv"
+              key={`field-${fieldIndex}`}
+              className="margin-bottom-5"
+            >
+              {field.sections?.map((section, sectionIndex) => {
+                return (
+                  <div
+                    key={`section-${fieldIndex}-${sectionIndex}`}
+                    className="border-top-1px border-ink margin-top-9"
+                  >
+                    <h2 id={`${section.slug}`}>{section.title}</h2>
+
+                    {section.items?.map((item) => {
+                      return (
+                        <CsvSchemaDocumentationItem
+                          item={item}
+                          className="rs-documentation__values margin-top-6"
+                        />
+                      );
+                    })}
+                  </div>
+                );
+              })}
+            </div>
+          );
+        })}
+        <section className="border-top-1px border-ink margin-top-9 ">
+          <h2 id="preparing-upload">Preparing and uploading a spreadsheet</h2>
           <ol className="usa-process-list">
             <li className="usa-process-list__item">
               <h3 className="usa-process-list__heading">
@@ -249,109 +350,11 @@ const CsvSchemaDocumentation = () => {
             </li>
           </ol>
         </section>
-        <section className="border-top-1px border-ink margin-top-9">
-          <h2 id="formatting-guidelines" className="font-body-lg margin-y-1">
-            General formatting guidelines
-          </h2>
-          <p>
-            The SimpleReport standard CSV template is a blend of the Department
-            of Health and Human Science's (HHS){" "}
-            <a
-              href="https://www.hhs.gov/coronavirus/testing/covid-19-diagnostic-data-reporting/index.html"
-              target="_blank"
-              rel="noreferrer noopener"
-              className="usa-link"
-            >
-              requirements for COVID-19 test data
-            </a>{" "}
-            as well as those of numerous jurisdictions. This standard schema
-            will be accepted by state, tribal, local, or territorial (STLT){" "}
-            <a
-              href="/getting-started/organizations-and-testing-facilities/where-does-simplereport-work"
-              className="usa-link"
-            >
-              health departments partnered with SimpleReport.
-            </a>{" "}
-          </p>
-
-          <h3 className="margin-top-4">Column headers and order</h3>
-          <ul>
-            <li>Column headers can be placed in any order.</li>
-            <li>
-              Column headers must be included as specified in this
-              documentation.{" "}
-            </li>
-          </ul>
-
-          <h3>Required, requested, and optional fields</h3>
-
-          <p>
-            <span className="text-normal bg-white border-1px border-secondary font-body-3xs padding-x-1 padding-y-05 text-secondary margin-right-1 text-middle">
-              Required
-            </span>
-          </p>
-          <p>
-            Files <em>must</em> contain these column headers and values. If
-            headers or fields are blank or contain incorrect values you will not
-            be able to submit your file. Accepted values are outlined for each
-            header and field below
-          </p>
-          <p>
-            <span className="text-normal bg-white border-1px border-base font-body-3xs padding-x-1 padding-y-05 text-base margin-right-1 text-middle">
-              Requested
-            </span>
-          </p>
-          <p>
-            Fields are not required by HHS, but the data is incredibly helpful
-            to and, in some cases, required by jurisdictions.
-          </p>
-          <p>
-            <span className="text-normal bg-white border-1px border-base font-body-3xs padding-x-1 padding-y-05 text-base margin-right-1 text-middle">
-              Optional
-            </span>
-          </p>
-          <p>Fields are not required.</p>
-        </section>
-
-        {schema.fields.map((field, fieldIndex) => {
-          return (
-            <div
-              data-testid="fieldDiv"
-              key={`field-${fieldIndex}`}
-              className="margin-bottom-5"
-            >
-              {field.sections?.map((section, sectionIndex) => {
-                return (
-                  <div
-                    key={`section-${fieldIndex}-${sectionIndex}`}
-                    className="border-top-1px border-ink margin-top-9"
-                  >
-                    <h2
-                      id={`${section.slug}`}
-                      className="font-body-lg margin-y-1"
-                    >
-                      {section.title}
-                    </h2>
-
-                    {section.items?.map((item) => {
-                      return (
-                        <CsvSchemaDocumentationItem
-                          item={item}
-                          className="rs-documentation__values margin-top-6"
-                        />
-                      );
-                    })}
-                  </div>
-                );
-              })}
-              <p className="margin-top-8">
-                <a href="#anchor-top" className="usa-link">
-                  Return to top
-                </a>
-              </p>
-            </div>
-          );
-        })}
+        <p className="margin-top-8">
+          <a href="#anchor-top" className="usa-link">
+            Return to top
+          </a>
+        </p>
       </div>
     </div>
   );

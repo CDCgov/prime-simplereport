@@ -6,7 +6,7 @@
     {
       "sections": [
         {
-          "title": "Patient data elements",
+          "title": "Patient",
           "slug": "patient",
           "items": [
             {
@@ -150,7 +150,7 @@
               "acceptedValues": false,
               "acceptedExample": false,
               "valueType": "5 or 9 digit zip code",
-              "values": ["12345", "12345-6789 "],
+              "values": ["<code>12345</code>", "<code>12345-6789</code>"],
               "notes": [
                 "Enter patient's zip code. File will fail if value is not entered using acceptable format or field is left blank. ",
                 "If no address given or homeless, populate field with the <a href=\"#ordering-facility\" class=\"usa-link\">ordering facility</a> information. "
@@ -165,7 +165,7 @@
               "acceptedValues": false,
               "acceptedExample": false,
               "valueType": "10-digit phone number",
-              "values": ["000-000-0000"],
+              "values": ["<code>000-000-0000</code>"],
               "notes": [
                 "Enter patient's phone number. File will fail if value is not entered using acceptable format or field is left blank.",
                 "If no address given or homeless, populate field with the <a href=\"#ordering-facility\" class=\"usa-link\">ordering facility</a> information. "
@@ -257,10 +257,10 @@
               "acceptedExample": true,
               "valueType": "Text",
               "values": [
-                "<code>eng</code> or <code>English</code>",
-                "<code>spa</code> or <code>Spanish</code>",
-                "<code>fre</code> or <code>French</code>",
-                "<code>jpn</code> or <code>Japanese</code>"
+                "<em>eng</em> or <em>English</em>",
+                "<em>spa</em> or <em>Spanish</em>",
+                "<em>fre</em> or <em>French</em>",
+                "<em>jpn</em> or <em>Japanese</em>"
               ],
               "notes": [
                 "Accepted values come from Language Concept Codes or the Language Concept Name from the <a href=\"https://phinvads.cdc.gov/vads/ViewValueSet.action?id=D0858308-9AB3-EA11-818F-005056ABE2F0#\" class=\"usa-link\" target=\"_blank\" rel=\"noreferrer noopener\">ISO-639 table in the PHIN VADS system</a>."
@@ -283,7 +283,7 @@
           ]
         },
         {
-          "title": "Order and result data elements",
+          "title": "Order and result",
           "slug": "order-and-result",
           "items": [
             {
@@ -295,7 +295,7 @@
               "acceptedValues": false,
               "acceptedExample": true,
               "valueType": "Unique ID",
-              "values": ["ID12345-6789"],
+              "values": ["<em>ID12345-6789</em>"],
               "notes": [
                 "An accession number is a unique ID that identifies a single result. This field is important for public health departments to refer back to a test event. File will fail if field left blank."
               ]
@@ -310,10 +310,10 @@
               "acceptedExample": true,
               "valueType": "Unique identifier",
               "values": [
-                "<code>ID NOW</code>",
-                "<code>BD Veritor System for Rapid Detection of SARS-CoV-2*</code>",
-                "<code>BD Veritor System for Rapid Detection of SARS-CoV-2 & Flu A+B*</code>",
-                "<code>RightSign COVID-19 IgG/IgM Rapid Test Cassette*</code>"
+                "<em>ID NOW</em>",
+                "<em>BD Veritor System for Rapid Detection of SARS-CoV-2*</em>",
+                "<em>BD Veritor System for Rapid Detection of SARS-CoV-2 & Flu A+B*</em>",
+                "<em>RightSign COVID-19 IgG/IgM Rapid Test Cassette*</em>"
               ],
               "notes": [
                 "Enter equipment model name value from Department of Health and Human Services' (HHS) LOINC Mapping spreadsheet. File will fail if value not entered using accepted values or field is left blank.",
@@ -330,7 +330,7 @@
               "acceptedValues": false,
               "acceptedExample": true,
               "valueType": "LOINC code",
-              "values": ["94534-5", "94558-4", "97097-0", "94507-1", "94508-9"],
+              "values": ["<em>94534-5</em>", "<em>94558-4</em>", "<em>97097-0</em>", "<em>94507-1</em>", "<em>94508-9</em>"],
               "notes": [
                 "Enter TestPerformed Code value from Department of Health and Human Services' (HHS) LOINC Mapping spreadsheet. File will fail if value not entered using acceptable values or field is left blank.",
                 "Go to <a href=\"https://www.cdc.gov/csels/dls/sars-cov-2-livd-codes.html\" class=\"usa-link\" target=\"_blank\" rel=\"noreferrer noopener\">https://www.cdc.gov/csels/dls/sars-cov-2-livd-codes.html</a>. Click on the Mapping Tool labeled \"LIVD SARS-CoV-2 Test Codes.xlsx\" to download the file.",
@@ -438,7 +438,7 @@
           ]
         },
         {
-          "title": "Specimen data elements",
+          "title": "Specimen",
           "slug": "specimen",
           "items": [
             {
@@ -470,7 +470,7 @@
           ]
         },
         {
-          "title": "Ordering provider data elements",
+          "title": "Ordering provider",
           "slug": "ordering-provider",
           "items": [
             {
@@ -483,8 +483,8 @@
               "acceptedExample": true,
               "valueType": "Unique identifier",
               "values": [
-                "NPI example: 1013012657",
-                "Local code example: muc1290"
+                "NPI example: <em>1013012657</em>",
+                "Local code example: <em>muc1290</em>"
               ],
               "notes": [
                 "Enter National Provider Identifier (NPI). ReportStream prefers this value, however if NPI is unknown enter local coding. File will fail if field left blank. <em>Some jurisdictions may not accept a local code, ReportStream will work with you if this is the case</em>.",
@@ -599,7 +599,7 @@
               "acceptedValues": false,
               "acceptedExample": false,
               "valueType": "5 or 9 digit zip code",
-              "values": ["12345", "12345-6789"],
+              "values": ["<code>12345</code>", "<code>12345-6789</code>"],
               "notes": [
                 "Enter ordering provider zip code. File will fail if value is not entered using accepted format or field is left blank. "
               ]
@@ -613,7 +613,7 @@
               "acceptedValues": false,
               "acceptedExample": false,
               "valueType": "10-digit phone number",
-              "values": ["000-000-0000"],
+              "values": ["<code>000-000-0000</code>"],
               "notes": [
                 "Enter ordering provider's phone number. File will fail if value is not entered using accepted format or field is left blank."
               ]
@@ -621,7 +621,7 @@
           ]
         },
         {
-          "title": "Testing facility data elements",
+          "title": "Testing facility",
           "slug": "testing-facility",
           "items": [
             {
@@ -633,7 +633,7 @@
               "acceptedValues": false,
               "acceptedExample": true,
               "valueType": "CLIA number",
-              "values": ["11D2030855"],
+              "values": ["<em>11D2030855</em>"],
               "notes": [
                 "Enter testing lab's CLIA number. File will fail if left blank.",
                 "CLIA numbers can be found at <a href=\"https://www.cdc.gov/clia/LabSearch.html\" class=\"usa-link\" target=\"_blank\" rel=\"noreferrer noopener\">https://www.cdc.gov/clia/LabSearch.html</a>."
@@ -700,9 +700,9 @@
               "colHeader": "testing_lab_state",
               "required": true,
               "requested": false,
-              "acceptedFormat": false,
+              "acceptedFormat": true,
               "acceptedValues": false,
-              "acceptedExample": true,
+              "acceptedExample": false,
               "valueType": "Address",
               "values": ["Two-character state abbreviation"],
               "notes": [
@@ -718,7 +718,7 @@
               "acceptedValues": false,
               "acceptedExample": false,
               "valueType": "5 or 9 digit zip code",
-              "values": ["12345", "12345-6789"],
+              "values": ["<code>12345</code>", "<code>12345-6789</code>"],
               "notes": [
                 "Enter testing lab's zip code. File will fail if value is not entered using accepted format or field is left blank. "
               ]
@@ -732,7 +732,7 @@
               "acceptedValues": false,
               "acceptedExample": false,
               "valueType": "10-digit phone number",
-              "values": ["000-000-0000"],
+              "values": ["<code>000-000-0000</code>"],
               "notes": [
                 "Enter testing lab's phone number, if known. File will fail if value is not entered using accepted format."
               ]
@@ -740,7 +740,7 @@
           ]
         },
         {
-          "title": "Ask on entry (AOE) data elements",
+          "title": "Ask on entry (AOE)",
           "slug": "ask-on-entry",
           "items": [
             {
@@ -806,7 +806,7 @@
               "acceptedValues": false,
               "acceptedExample": false,
               "valueType": "Date",
-              "values": ["M/d/yyyy"],
+              "values": ["<code>M/d/yyyy</code>"],
               "notes": [
                 "Enter patient's illness onset date.  Field is not required, but requested for thorough reporting. Enter value using accebtable format displayed."
               ]
@@ -901,7 +901,7 @@
           ]
         },
         {
-          "title": "Ordering facility data elements",
+          "title": "Ordering facility",
           "slug": "ordering-facility",
           "items": [
             {
@@ -983,7 +983,7 @@
               "acceptedValues": false,
               "acceptedExample": false,
               "valueType": "5 or 9 digit zip code",
-              "values": ["12345", "12345-6789"],
+              "values": ["<code>12345</code>", "<code>12345-6789</code>"],
               "notes": [
                 "Enter ordering facility zip code. Can be left blank if same as <a href=\"#testing-facility\" class=\"usa-link\">testing_lab_zip_code</a>. "
               ]
@@ -997,7 +997,7 @@
               "acceptedValues": false,
               "acceptedExample": false,
               "valueType": "10 digit phone number",
-              "values": ["000-000-0000"],
+              "values": ["<code>000-000-0000</code>"],
               "notes": [
                 "Enter ordering facility phone number. Can be left blank if same as <a href=\"#testing-facility\" class=\"usa-link\">testing_lab_phone_number</a>."
               ]
@@ -1005,7 +1005,7 @@
           ]
         },
         {
-          "title": "Additional data elements and notes",
+          "title": "Additional data and notes",
           "slug": "additional-data-elements",
           "items": [
             {
