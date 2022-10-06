@@ -22,15 +22,9 @@ const DeviceLookupContainer = () => {
   if (deviceTypeResults && specimenTypesResults && supportedDiseaseResults) {
     const swabOptions = Array.from(
       specimenTypesResults.specimenTypes.map((type) => ({
-        label: `${type?.name} (${type?.typeCode})`,
-        value: type?.internalId,
-      }))
-    );
-
-    const supportedDiseaseOptions = Array.from(
-      supportedDiseaseResults.supportedDiseases.map((disease) => ({
-        label: disease.name,
-        value: disease.internalId,
+        swabName: type?.name,
+        typeCode: type?.typeCode,
+        internalId: type?.internalId,
       }))
     );
 
@@ -44,7 +38,6 @@ const DeviceLookupContainer = () => {
       <DeviceLookup
         formTitle="Device lookup"
         swabOptions={swabOptions}
-        supportedDiseaseOptions={supportedDiseaseOptions}
         deviceOptions={devices}
       />
     );

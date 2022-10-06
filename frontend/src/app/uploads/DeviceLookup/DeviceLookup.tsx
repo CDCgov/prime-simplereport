@@ -4,16 +4,27 @@ import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faCheck, faCopy } from "@fortawesome/free-solid-svg-icons";
 
 import TextInput from "../../commonComponents/TextInput";
-import MultiSelect from "../../commonComponents/MultiSelect/MultiSelect";
-import { MultiSelectDropdownOption } from "../../commonComponents/MultiSelect/MultiSelectDropdown/MultiSelectDropdown";
 import { DeviceType } from "../../../generated/graphql";
-import { Device } from "../../supportAdmin/DeviceType/DeviceForm";
 import LabeledText from "../../commonComponents/LabeledText";
+
+export interface Device {
+  internalId?: string;
+  name: string;
+  manufacturer: string;
+  model: string;
+  loincCode: string;
+  swabTypes: Array<string>;
+}
+
+export interface SwabType {
+  swabName: string;
+  typeCode: string;
+  internalId: string;
+}
 
 interface Props {
   formTitle: string;
-  swabOptions: Array<MultiSelectDropdownOption>;
-  supportedDiseaseOptions: Array<MultiSelectDropdownOption>;
+  swabOptions: Array<SwabType>;
   deviceOptions?: DeviceType[];
 }
 
@@ -74,11 +85,7 @@ const DeviceLookup = (props: Props) => {
           manufacturer: device.manufacturer,
           model: device.model,
           swabTypes: device.swabTypes?.map((swab) => swab.internalId),
-          supportedDiseases:
-            device.supportedDiseases?.map((disease) => disease.internalId) ||
-            [],
           loincCode: device.loincCode,
-          testLength: device.testLength ? device.testLength : 15,
         }
       : undefined;
   };
@@ -156,6 +163,7 @@ const DeviceLookup = (props: Props) => {
                     <TextInput
                       label="Model"
                       name="model"
+                      hintText={"equipment_model_name"}
                       value={device?.model}
                       onChange={onChange}
                       disabled={true}
@@ -216,6 +224,7 @@ const DeviceLookup = (props: Props) => {
                     <TextInput
                       label="LOINC code"
                       name="loincCode"
+                      hintText={"test_performed_code"}
                       value={device?.loincCode}
                       onChange={onChange}
                       disabled={true}
@@ -244,19 +253,54 @@ const DeviceLookup = (props: Props) => {
               </div>
               <div className="grid-row grid-gap">
                 <div className="tablet:grid-col">
-                  <MultiSelect
-                    key={device?.internalId}
-                    label="SNOMED code for swab type(s)"
-                    name="swabTypes"
-                    onChange={(swabTypes) => {
-                      updateDeviceAttribute("swabTypes", swabTypes);
-                    }}
-                    options={props.swabOptions}
-                    initialSelectedValues={
-                      device?.swabTypes.length ? device?.swabTypes : undefined
-                    }
-                    disabled={true}
-                  />
+                  <table className={"usa-table"}>
+                    <thead>
+                      <tr>
+                        <th scope={"col"}>
+                          SNOMED code for swab type(s)
+                          <span className="usa-hint">specimen_type</span>
+                        </th>
+                      </tr>
+                    </thead>
+                    <tbody>
+                      {device &&
+                        props.swabOptions
+                          .filter((swab) =>
+                            device.swabTypes.includes(swab.internalId)
+                          )
+                          .map(({ swabName, typeCode }) => (
+                            <tr key={swabName}>
+                              <td>
+                                <div></div>
+                                <span>
+                                  {swabName} ({typeCode})
+                                </span>
+                                {device && (
+                                  <button
+                                    // style={{bottom: 12, right: 15, position: "absolute"}}
+                                    className="usa-button usa-button--unstyled"
+                                    onClick={() =>
+                                      typeCode && copySlug(typeCode)
+                                    }
+                                    arial-label={`Copy SNOMED code for ${swabName} (${typeCode})`}
+                                  >
+                                    <FontAwesomeIcon
+                                      icon={
+                                        copiedSlug === typeCode
+                                          ? faCheck
+                                          : faCopy
+                                      }
+                                    />
+                                  </button>
+                                )}
+                                {device && copiedSlug === typeCode && (
+                                  <CopyTooltip />
+                                )}
+                              </td>
+                            </tr>
+                          ))}
+                    </tbody>
+                  </table>
                 </div>
               </div>
             </div>
