@@ -96,6 +96,12 @@ exports[`CsvSchemaDocumentation tests CsvSchemaDocumentaton matches snapshot 1`]
         >
           How to format and upload a CSV file to report test results in bulk through SimpleReport.
         </p>
+        <iframe
+          height="360"
+          src="https://www.youtube.com/embed/qqhC7PFBdek"
+          title="SimpleReport bulk results uploader tutorial video"
+          width="640"
+        />
         <p>
           <strong>
             In this guide
