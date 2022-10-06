@@ -64,7 +64,7 @@ describe("TestResult - COVID-19 only", () => {
       within(patientApp).getByText("Abbott BinaxNOW (Antigen)")
     ).toBeInTheDocument();
     expect(within(patientApp).getByText("Bob M Barker")).toBeInTheDocument();
-    expect(within(patientApp).getByText("COVID-19")).toBeInTheDocument();
+    expect(within(patientApp).getByText("COVID-19 result")).toBeInTheDocument();
     expect(within(patientApp).getByText("Download result")).toBeInTheDocument();
   });
   it("should show a positive result", () => {
