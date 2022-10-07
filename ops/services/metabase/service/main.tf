@@ -18,8 +18,8 @@ resource "azurerm_app_service" "metabase" {
 
   site_config {
     always_on        = true
+    linux_fx_version = "DOCKER|metabase/metabase:v0.44.4"
     ftps_state       = "Disabled"
-    linux_fx_version = "DOCKER|metabase/metabase"
 
     ip_restriction {
       virtual_network_subnet_id = var.lb_subnet_id

@@ -5,6 +5,7 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertNotEquals;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
+import static org.junit.jupiter.api.Assertions.assertNull;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.junit.jupiter.api.Assertions.fail;
@@ -1511,6 +1512,45 @@ class TestOrderServiceTest extends BaseServiceTest<TestOrderService> {
 
     // Does not report to ReportStream
     verify(testEventReportingService, times(0)).report(e);
+  }
+
+  @Test
+  @WithSimpleReportOrgAdminUser
+  void correctTest_backDatedFromCurrentDate() {
+    Organization org = _organizationService.getCurrentOrganization();
+    Facility facility = _organizationService.getFacilities(org).get(0);
+    DeviceSpecimenType device = _dataFactory.getGenericDeviceSpecimen();
+    facility.addDefaultDeviceSpecimen(device);
+    Person p = _dataFactory.createFullPerson(org);
+    TestEvent e = _dataFactory.createTestEvent(p, facility);
+
+    String reasonMsg = "Testing correction marking as error " + LocalDateTime.now();
+
+    assertNull(e.getTestOrder().getDateTestedBackdate());
+
+    // A test correction call just returns the original TestEvent...
+    TestEvent originalEvent = _service.markAsCorrection(e.getInternalId(), reasonMsg);
+
+    assertEquals(e.getDateTested(), originalEvent.getTestOrder().getDateTestedBackdate());
+  }
+
+  @Test
+  @WithSimpleReportOrgAdminUser
+  void correctTest_backdatePreserved() {
+    Organization org = _organizationService.getCurrentOrganization();
+    Facility facility = _organizationService.getFacilities(org).get(0);
+    DeviceSpecimenType device = _dataFactory.getGenericDeviceSpecimen();
+    facility.addDefaultDeviceSpecimen(device);
+    Person p = _dataFactory.createFullPerson(org);
+
+    LocalDate localDate = LocalDate.of(2022, 1, 1);
+    Date dateTested = Date.from(localDate.atStartOfDay(ZoneId.systemDefault()).toInstant());
+    TestEvent e = _dataFactory.createTestEvent(p, facility, null, TestResult.POSITIVE, dateTested);
+
+    String reasonMsg = "Testing correction marking as error " + LocalDateTime.now();
+
+    TestEvent originalEvent = _service.markAsCorrection(e.getInternalId(), reasonMsg);
+    assertEquals(0, originalEvent.getTestOrder().getDateTestedBackdate().compareTo(dateTested));
   }
 
   @Test

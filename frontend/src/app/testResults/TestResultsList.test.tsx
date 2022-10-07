@@ -48,8 +48,6 @@ jest.mock("@microsoft/applicationinsights-react-js", () => ({
   useTrackEvent: jest.fn(),
 }));
 
-jest.mock("./EmailTestResultModal", () => () => <p>Email result modal</p>);
-
 const WithRouter: React.FC = ({ children }) => (
   <MemoryRouter initialEntries={[{ search: "?facility=1" }]}>
     {children}
@@ -73,7 +71,6 @@ describe("TestResultsList", () => {
               activeFacilityId={"1"}
               loading={false}
               loadingTotalResults={false}
-              refetch={() => {}}
               maxDate="2022-09-26"
             />
           </MockedProvider>
@@ -426,8 +423,8 @@ describe("TestResultsList", () => {
       expect(await screen.findByText("Date range (end)")).toBeInTheDocument();
       userEvent.type(screen.getByText("Date range (start)"), "2021-03-18");
       userEvent.tab();
-      expect(screen.getByText("Colleer, Barde X")).toBeInTheDocument();
-      expect(await screen.findByText("Gerard, Sam G")).toBeInTheDocument();
+      screen.getByText("Colleer, Barde X");
+      screen.getByText("Gerard, Sam G");
       await waitFor(() =>
         expect(
           screen.queryByText("Cragell, Barb Whitaker")
@@ -499,7 +496,8 @@ describe("TestResultsList", () => {
       ).toBeInTheDocument();
       const patientNameLink = await screen.findByText("Cragell, Barb Whitaker");
       userEvent.click(patientNameLink);
-      expect(screen.queryAllByText("Test details").length).toBe(2);
+      screen.getByText("Result details");
+      screen.getByText("Test information");
       expect(
         await screen.findByText("Barb Whitaker Cragell")
       ).toBeInTheDocument();
@@ -516,7 +514,8 @@ describe("TestResultsList", () => {
       userEvent.click(moreActions);
       const viewDetails = await screen.findByText("View details");
       userEvent.click(viewDetails);
-      expect(screen.queryAllByText("Test details").length).toBe(2);
+      screen.getByText("Result details");
+      screen.getByText("Test information");
     });
 
     it("opens the email test results modal", async () => {
@@ -530,7 +529,7 @@ describe("TestResultsList", () => {
       userEvent.click(moreActions);
       const emailResult = screen.getByText("Email result");
       userEvent.click(emailResult);
-      expect(screen.getByText("Email result modal")).toBeInTheDocument();
+      await screen.findByText("Email result?");
     });
 
     it("opens the download test results modal and shows how many rows the csv will have", async () => {
@@ -657,6 +656,39 @@ describe("TestResultsList", () => {
       userEvent.selectOptions(screen.getByLabelText("Testing facility"), ["3"]);
       expect((await screen.findAllByText("Flu A"))[0]).toBeInTheDocument();
     });
+
+    describe("return focus after modal close", () => {
+      const clickActionMenu = async () => {
+        expect(await screen.findByText("Showing 1-3 of 3")).toBeInTheDocument();
+        const actionMenuButton = document.querySelectorAll(
+          ".rc-menu-button"
+        )[0];
+        userEvent.click(actionMenuButton as HTMLElement);
+      };
+      it.each([
+        ["Print result", "Close"],
+        ["Text result", "Cancel"],
+        ["Email result", "Cancel"],
+        ["Correct result", "No, go back"],
+      ])("should set focus on %p", async (menuButtonText, closeButtonText) => {
+        await clickActionMenu();
+        userEvent.click(screen.getByText(menuButtonText));
+        await screen.findAllByText(closeButtonText);
+        userEvent.click(screen.getAllByText(closeButtonText)[0]);
+        await waitFor(() =>
+          expect(screen.getByText(menuButtonText)).toHaveFocus()
+        );
+      });
+      it("should set focus on the view details button", async () => {
+        await clickActionMenu();
+        userEvent.click(screen.getByText("View details"));
+        await screen.findByAltText("Close");
+        userEvent.click(screen.getByAltText("Close"));
+        await waitFor(() =>
+          expect(screen.getByText("View details")).toHaveFocus()
+        );
+      });
+    });
   });
 
   it("should hide facility filter if user can see only 1 facility", async () => {
@@ -777,6 +809,42 @@ describe("TestResultsList", () => {
           exact: false,
         })
       ).not.toBeInTheDocument();
+    });
+  });
+
+  describe("clear filter button", () => {
+    const elementToTest = (filterParams: FilterParams) => (
+      <WithRouter>
+        <Provider store={store}>
+          <MockedProvider mocks={mocks}>
+            <DetachedTestResultsList
+              data={{ testResults }}
+              pageNumber={1}
+              entriesPerPage={20}
+              totalEntries={testResults.length}
+              filterParams={filterParams}
+              setFilterParams={() => () => {}}
+              clearFilterParams={() => {}}
+              activeFacilityId={"1"}
+              loading={false}
+              loadingTotalResults={false}
+              maxDate="2022-09-26"
+            />
+          </MockedProvider>
+        </Provider>
+      </WithRouter>
+    );
+    it("should be disabled when no filters are applied", () => {
+      render(elementToTest({}));
+      expect(screen.getByText("Clear filters")).toBeDisabled();
+    });
+    it("should be disabled when testing only filter applied is facility is active facility", () => {
+      render(elementToTest({ filterFacilityId: "1" }));
+      expect(screen.getByText("Clear filters")).toBeDisabled();
+    });
+    it("should be enabled filters are applied", () => {
+      render(elementToTest({ result: "Positive" }));
+      expect(screen.getByText("Clear filters")).toBeEnabled();
     });
   });
 });

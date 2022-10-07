@@ -9,6 +9,11 @@ exports[`TestQueue should render the test queue 1`] = `
     <div
       class="grid-container queue-container-wide"
     >
+      <h1
+        class="font-sans-lg"
+      >
+        Conduct tests
+      </h1>
       <div
         class="position-relative"
       >
@@ -23,7 +28,7 @@ exports[`TestQueue should render the test queue 1`] = `
               class="usa-sr-only"
               for="search-field-small"
             >
-              Search
+              Search for a person to start their test
             </label>
             <div>
               <input
@@ -40,11 +45,11 @@ exports[`TestQueue should render the test queue 1`] = `
                 disabled=""
                 type="submit"
               >
-                <span
-                  class="usa-sr-only"
-                >
-                  Search
-                </span>
+                <img
+                  alt="Search"
+                  class="usa-search__submit-icon"
+                  src="search--white.svg"
+                />
               </button>
             </div>
           </form>
@@ -82,6 +87,7 @@ exports[`TestQueue should render the test queue 1`] = `
               class="fa-layers"
             >
               <svg
+                alt-text="close-circle"
                 aria-hidden="true"
                 class="svg-inline--fa fa-circle fa-w-16 fa-inverse fa-2x "
                 data-icon="circle"
@@ -97,6 +103,7 @@ exports[`TestQueue should render the test queue 1`] = `
                 />
               </svg>
               <svg
+                alt-text="close-x"
                 aria-hidden="true"
                 class="svg-inline--fa fa-times-circle fa-w-16 fa-2x "
                 data-icon="times-circle"
@@ -156,6 +163,7 @@ exports[`TestQueue should render the test queue 1`] = `
                   </span>
                    
                   <svg
+                    alt-text="stopwatch"
                     aria-hidden="true"
                     class="svg-inline--fa fa-stopwatch fa-w-14 "
                     data-icon="stopwatch"
@@ -277,7 +285,7 @@ exports[`TestQueue should render the test queue 1`] = `
                         >
                           <button
                             aria-describedby="tooltip-211111"
-                            aria-label="Device"
+                            aria-label="Device tooltip"
                             class="usa-button usa-button--unstyled usa-tooltip__trigger"
                             data-testid="triggerElement"
                             position="right"
@@ -286,6 +294,7 @@ exports[`TestQueue should render the test queue 1`] = `
                             wrapperclasses="usa-text-with-tooltip"
                           >
                             <svg
+                              alt-text="info"
                               aria-hidden="true"
                               class="svg-inline--fa fa-info-circle fa-w-16 info-circle-icon"
                               data-icon="info-circle"
@@ -372,11 +381,11 @@ exports[`TestQueue should render the test queue 1`] = `
               <form
                 class="usa-form maxw-none"
               >
-                <h4
+                <h2
                   class="prime-radio__title"
                 >
                   COVID-19 results
-                </h4>
+                </h2>
                 <div
                   class="usa-form-group prime-radio__group"
                 >
@@ -498,6 +507,7 @@ exports[`TestQueue should render the test queue 1`] = `
               class="fa-layers"
             >
               <svg
+                alt-text="close-circle"
                 aria-hidden="true"
                 class="svg-inline--fa fa-circle fa-w-16 fa-inverse fa-2x "
                 data-icon="circle"
@@ -513,6 +523,7 @@ exports[`TestQueue should render the test queue 1`] = `
                 />
               </svg>
               <svg
+                alt-text="close-x"
                 aria-hidden="true"
                 class="svg-inline--fa fa-times-circle fa-w-16 fa-2x "
                 data-icon="times-circle"
@@ -572,6 +583,7 @@ exports[`TestQueue should render the test queue 1`] = `
                   </span>
                    
                   <svg
+                    alt-text="stopwatch"
                     aria-hidden="true"
                     class="svg-inline--fa fa-stopwatch fa-w-14 "
                     data-icon="stopwatch"
@@ -693,7 +705,7 @@ exports[`TestQueue should render the test queue 1`] = `
                         >
                           <button
                             aria-describedby="tooltip-211111"
-                            aria-label="Device"
+                            aria-label="Device tooltip"
                             class="usa-button usa-button--unstyled usa-tooltip__trigger"
                             data-testid="triggerElement"
                             position="right"
@@ -702,6 +714,7 @@ exports[`TestQueue should render the test queue 1`] = `
                             wrapperclasses="usa-text-with-tooltip"
                           >
                             <svg
+                              alt-text="info"
                               aria-hidden="true"
                               class="svg-inline--fa fa-info-circle fa-w-16 info-circle-icon"
                               data-icon="info-circle"
@@ -788,11 +801,11 @@ exports[`TestQueue should render the test queue 1`] = `
               <form
                 class="usa-form maxw-none"
               >
-                <h4
+                <h2
                   class="prime-radio__title"
                 >
                   COVID-19 results
-                </h4>
+                </h2>
                 <div
                   class="usa-form-group prime-radio__group"
                 >

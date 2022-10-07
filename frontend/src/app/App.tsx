@@ -3,6 +3,7 @@ import { gql, useQuery } from "@apollo/client";
 import { useDispatch, connect } from "react-redux";
 import { Navigate, Route, Routes, useLocation } from "react-router-dom";
 import { ApplicationInsights } from "@microsoft/applicationinsights-web";
+import jwtDecode from "jwt-decode";
 
 import ProtectedRoute from "./commonComponents/ProtectedRoute";
 import Header from "./commonComponents/Header";
@@ -56,10 +57,10 @@ const App = () => {
   const appInsights = getAppInsights();
   const dispatch = useDispatch();
   const location = useLocation();
+  const accessToken = localStorage.getItem("access_token");
 
   // Check if the user is logged in, if not redirect to Okta
   if (process.env.REACT_APP_OKTA_ENABLED === "true") {
-    const accessToken = localStorage.getItem("access_token");
     if (!accessToken) {
       // If Okta login has been attempted and returned to SR with an error, don't redirect back to Okta
       const params = new URLSearchParams(location.hash.slice(1));
@@ -109,9 +110,26 @@ const App = () => {
 
   if (error) {
     if (appInsights instanceof ApplicationInsights) {
+      let decoded: any;
+      let validToken = null;
+      if (accessToken) {
+        try {
+          decoded = jwtDecode(accessToken);
+          validToken = true;
+        } catch (e) {
+          validToken = false;
+          console.error("Failed to decode access token", e);
+        }
+      }
+      const rolesFieldName = `${process.env.REACT_APP_OKTA_TOKEN_ROLE_CLAIM}`;
       appInsights.trackException({
         exception: error,
-        properties: { "user message": "Server connection error" },
+        properties: {
+          "user message": "Server connection error",
+          "valid access token": validToken,
+          "token subject": decoded?.sub,
+          "token roles": decoded?.[rolesFieldName],
+        },
       });
     }
     return <p>Server connection error...</p>;
@@ -138,7 +156,6 @@ const App = () => {
   const canViewPeople = appPermissions.people.canView;
   const canEditPeople = appPermissions.people.canEdit;
   const canViewSettings = appPermissions.settings.canView;
-  const canUseCsvUploaderPilot = appPermissions.featureFlags.SrCsvUploaderPilot;
 
   return (
     <>
@@ -170,9 +187,7 @@ const App = () => {
                     requiredPermissions={canViewResults}
                     userPermissions={data.whoami.permissions}
                     element={
-                      <ResultsNavWrapper
-                        userPermissions={data.whoami.permissions}
-                      >
+                      <ResultsNavWrapper>
                         <TestResultsList />
                       </ResultsNavWrapper>
                     }
@@ -186,9 +201,7 @@ const App = () => {
                     requiredPermissions={canViewResults}
                     userPermissions={data.whoami.permissions}
                     element={
-                      <ResultsNavWrapper
-                        userPermissions={data.whoami.permissions}
-                      >
+                      <ResultsNavWrapper>
                         <CleanTestResultsList />
                       </ResultsNavWrapper>
                     }
@@ -199,12 +212,10 @@ const App = () => {
                 path="results/upload/submit"
                 element={
                   <ProtectedRoute
-                    requiredPermissions={canUseCsvUploaderPilot}
+                    requiredPermissions={canViewResults}
                     userPermissions={data.whoami.permissions}
                     element={
-                      <ResultsNavWrapper
-                        userPermissions={data.whoami.permissions}
-                      >
+                      <ResultsNavWrapper>
                         <Uploads />
                       </ResultsNavWrapper>
                     }
@@ -215,12 +226,10 @@ const App = () => {
                 path="results/upload/submit/guide"
                 element={
                   <ProtectedRoute
-                    requiredPermissions={canUseCsvUploaderPilot}
+                    requiredPermissions={canViewResults}
                     userPermissions={data.whoami.permissions}
                     element={
-                      <ResultsNavWrapper
-                        userPermissions={data.whoami.permissions}
-                      >
+                      <ResultsNavWrapper>
                         <Schema />
                       </ResultsNavWrapper>
                     }
@@ -232,12 +241,10 @@ const App = () => {
                 path="results/upload/submissions/submission/:id"
                 element={
                   <ProtectedRoute
-                    requiredPermissions={canUseCsvUploaderPilot}
+                    requiredPermissions={canViewResults}
                     userPermissions={data.whoami.permissions}
                     element={
-                      <ResultsNavWrapper
-                        userPermissions={data.whoami.permissions}
-                      >
+                      <ResultsNavWrapper>
                         <Submission />
                       </ResultsNavWrapper>
                     }
@@ -248,12 +255,10 @@ const App = () => {
                 path={"results/upload/submissions"}
                 element={
                   <ProtectedRoute
-                    requiredPermissions={canUseCsvUploaderPilot}
+                    requiredPermissions={canViewResults}
                     userPermissions={data.whoami.permissions}
                     element={
-                      <ResultsNavWrapper
-                        userPermissions={data.whoami.permissions}
-                      >
+                      <ResultsNavWrapper>
                         <Submissions />
                       </ResultsNavWrapper>
                     }
@@ -264,12 +269,10 @@ const App = () => {
                 path={"results/upload/submissions/:pageNumber"}
                 element={
                   <ProtectedRoute
-                    requiredPermissions={canUseCsvUploaderPilot}
+                    requiredPermissions={canViewResults}
                     userPermissions={data.whoami.permissions}
                     element={
-                      <ResultsNavWrapper
-                        userPermissions={data.whoami.permissions}
-                      >
+                      <ResultsNavWrapper>
                         <Submissions />
                       </ResultsNavWrapper>
                     }
