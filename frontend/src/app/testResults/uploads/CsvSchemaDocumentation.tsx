@@ -178,11 +178,6 @@ const CsvSchemaDocumentation = () => {
           <h2>In this guide</h2>
           <ul>
             <li>
-              <a href="#" className="usa-link">
-                About the CSV results uploader
-              </a>
-            </li>
-            <li>
               <a href="#formatting-guidelines" className="usa-link">
                 Data formatting guide
               </a>

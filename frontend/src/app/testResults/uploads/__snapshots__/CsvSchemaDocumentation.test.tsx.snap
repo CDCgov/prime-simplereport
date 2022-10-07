@@ -100,14 +100,6 @@ exports[`CsvSchemaDocumentation tests CsvSchemaDocumentaton matches snapshot 1`]
           <li>
             <a
               class="usa-link"
-              href="#"
-            >
-              About the CSV results uploader
-            </a>
-          </li>
-          <li>
-            <a
-              class="usa-link"
               href="#formatting-guidelines"
             >
               Data formatting guide
