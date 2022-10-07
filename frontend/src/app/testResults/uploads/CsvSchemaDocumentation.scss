@@ -15,7 +15,20 @@
     font-size: 18px;
   }
 
+  mark {
+    background-color: #f0f0f0;
+  }
+
   .sub-header {
     font-size: 18px;
+  }
+
+  .usa-card__header {
+    padding-bottom: 0.5em;
+  }
+
+  .bullet-list {
+    list-style-type: disc;
+    list-style-position: inside;
   }
 }

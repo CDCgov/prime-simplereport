@@ -10,12 +10,16 @@ export type CsvSchemaItem = {
   colHeader: string;
   required: boolean;
   requested: boolean;
-  acceptedFormat: boolean;
-  acceptedValues: boolean;
-  acceptedExample: boolean;
-  valueType: string;
-  values: string[];
-  notes: string[];
+  acceptedFormat?: boolean;
+  acceptedValues?: boolean;
+  acceptedExample?: boolean;
+  valueType?: string;
+  values?: string[];
+  notes?: string[];
+  description?: string[];
+  subHeader?: string[];
+  format?: string;
+  examples?: string[];
 };
 
 type CsvSchemaItemProps = {
@@ -30,7 +34,7 @@ export const CsvSchemaDocumentationItem: React.FC<CsvSchemaItemProps> = ({
   return (
     <div className={className}>
       <h3
-        id={`doc-${item.colHeader}`}
+        id={`${item.colHeader}`}
         className="margin-bottom-2"
         data-testid="header"
       >
@@ -53,32 +57,71 @@ export const CsvSchemaDocumentationItem: React.FC<CsvSchemaItemProps> = ({
           </span>
         )}
       </h3>
-      <div data-testid="notes" className="margin-bottom-3">
-        {item.notes?.map((note, noteIndex) => (
+      <div data-testid="subheader" className="margin-bottom-3">
+        {item.subHeader?.map((subHeader, subHeaderIndex) => (
           <p
-            key={`${item.colHeader}-note-${noteIndex}`}
-            dangerouslySetInnerHTML={{ __html: `${note}` }}
+            key={`${item.colHeader}-note-${subHeaderIndex}`}
+            dangerouslySetInnerHTML={{ __html: `${subHeader}` }}
           />
         ))}
       </div>
       <div className="grid-row margin-bottom-05">
         <div className="grid-col-4 text-base">Column header</div>
-        <div className="grid-col-auto">{item.colHeader}</div>
+        <div className="grid-col-auto">
+          <code>{item.colHeader}</code>
+        </div>
       </div>
-      <div className="grid-row margin-bottom-05 border-base-lighter border-top-1px padding-top-1">
-        <div className="grid-col-4 text-base">Value type</div>
-        <div className="grid-col-auto">{item.valueType}</div>
-      </div>
-      {(item.acceptedFormat || item.acceptedValues || item.acceptedExample) && (
+      {item.description && item.description.length > 0 && (
+        <div className="grid-row margin-bottom-05 border-base-lighter border-top-1px padding-top-1">
+          <div className="grid-col-4 text-base">Description</div>
+          <div className="grid-col-8">
+            {item.description?.map((line, noteIndex) => (
+              <div
+                key={`${item.colHeader}-note-${noteIndex}`}
+                dangerouslySetInnerHTML={{ __html: `${line}` }}
+              />
+            ))}
+          </div>
+        </div>
+      )}
+      {item.valueType && (
+        <div className="grid-row margin-bottom-05 border-base-lighter border-top-1px padding-top-1">
+          <div className="grid-col-4 text-base">Value type</div>
+          <div className="grid-col-auto">{item.valueType}</div>
+        </div>
+      )}
+      {item.format && (
+        <div className="grid-row margin-bottom-05 border-base-lighter border-top-1px padding-top-1">
+          <div className="grid-col-4 text-base">Format</div>
+          <div
+            className="grid-col-8 prime-ul margin-top-0"
+            dangerouslySetInnerHTML={{ __html: `${item.format}` }}
+          />
+        </div>
+      )}
+      {item.examples && item.examples.length > 0 && (
         <div className="grid-row margin-bottom-05 border-base-lighter border-top-1px padding-top-1">
           <div className="grid-col-4 text-base">
-            {item.acceptedFormat && "Accepted format"}
-            {item.acceptedValues && "Accepted value(s)"}
-            {item.acceptedExample && "Example(s)"}
+            Example{item.examples.length > 1 && "s"}
           </div>
+          <ul className="grid-col-8 prime-ul margin-top-0">
+            {item.examples?.map((value, valueIndex) => (
+              <li
+                className={item.examples!.length > 1 ? "bullet-list" : ""}
+                key={`${item.colHeader}-value-${valueIndex}`}
+                dangerouslySetInnerHTML={{ __html: `<em>${value}</em>` }}
+              />
+            ))}
+          </ul>
+        </div>
+      )}
+      {item.values && item.values.length > 0 && (
+        <div className="grid-row margin-bottom-05 border-base-lighter border-top-1px padding-top-1">
+          <div className="grid-col-4 text-base">Accepted values</div>
           <ul className="grid-col-8 prime-ul margin-top-0">
             {item.values?.map((value, valueIndex) => (
               <li
+                className={item.values!.length > 1 ? "bullet-list" : ""}
                 key={`${item.colHeader}-value-${valueIndex}`}
                 dangerouslySetInnerHTML={{ __html: `${value}` }}
               />
@@ -284,13 +327,13 @@ const CsvSchemaDocumentation = () => {
               </h3>
               <p className="margin-top-05">
                 If your organization already uses a set spreadsheet format for
-                results, you may have to adjust it to match the SimpleReport
+                results, you need to adjust it to match the SimpleReport
                 template. If you don’t have one, use the{" "}
                 <a
                   href="/assets/resources/test_results_example_10-3-2022.csv"
                   className="usa-link"
                 >
-                  spreadsheet template file
+                  spreadsheet template
                 </a>{" "}
                 as a starting point.
               </p>
@@ -301,26 +344,30 @@ const CsvSchemaDocumentation = () => {
               </h3>
               <p>
                 In your spreadsheet, include all column headers in the
-                spreadsheet template and guidelines below, with no extras. Copy
-                column header names exactly. Be sure to include every column in
-                the template, even if you don’t have data for every field.
+                spreadsheet, exactly as written in the template and guidelines,
+                with no extras. Copy column header names exactly. Be sure to
+                include every column in the template, even if you don’t have
+                data for every field.
               </p>
             </li>
             <li className="usa-process-list__item">
               <h3 className="usa-process-list__heading">Enter your data</h3>
               <p>
-                Following the spreadsheet guidelines below, enter properly
-                formatted values in the relevant fields. Some fields require
-                data, while others don’t.
+                Following the{" "}
+                <a href="#formatting-guidelines" className="usa-link">
+                  spreadsheet guidelines
+                </a>
+                , enter properly formatted values in the relevant fields. Some
+                fields require data, while others don’t.
               </p>
             </li>
             <li className="usa-process-list__item">
               <h3 className="usa-process-list__heading">
-                Export or save your data
+                Export or save your CSV
               </h3>
               <p>
                 Make sure your spreadsheet is in a CSV format. SimpleReport
-                doesn’t accept XLS, XLXS, or any other formats.
+                does’t accept .XLS, .XLXS, or other formats.
               </p>
             </li>
             <li className="usa-process-list__item">
@@ -330,7 +377,7 @@ const CsvSchemaDocumentation = () => {
               <p>
                 Visit the{" "}
                 <LinkWithQuery to={"/results/upload/submit"}>
-                  "upload spreadsheet"
+                  "Upload spreadsheet"
                 </LinkWithQuery>{" "}
                 tab under “Results” in the main SimpleReport navigation. Select
                 your CSV by dragging the file from a folder to the upload area,
@@ -339,7 +386,8 @@ const CsvSchemaDocumentation = () => {
                 matches the template. If it accepts the file, you’ll see a
                 confirmation message.
               </p>
-
+            </li>
+            <li className="usa-process-list__item">
               <h3 className="usa-process-list__heading">Fix any errors</h3>
               <p>
                 If SimpleReport finds any errors in the spreadsheet formatting
