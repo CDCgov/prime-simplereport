@@ -105,11 +105,19 @@ check-%-release: .valid-env-%
 
 check-%-slot-readiness: .valid-env-%
 	@echo Checking the readiness probe for $*/$(SOURCE_SLOT)
-	@if [[ "$*" == "prod"]] ; $(PROD_SLOT_READY); else; $(SLOT_READY); fi
+	@if [[ "$*" == "prod"]] ; then\
+	  $(PROD_SLOT_READY);\
+	else \
+	  $(SLOT_READY);\
+	fi
 
 check-%-readiness: .valid-env-%
 	@echo Checking the readiness probe for $*
-	@if [[ "$*" == "prod"]] ; $(PROD_APP_READY); else; $(APP_READY); fi
+	@if [[ "$*" == "prod"]] ; then\
+	  $(PROD_APP_READY);\ 
+	else \
+	  $(APP_READY);\
+	fi
 
 # DEPRECATED: This is too greedy a match, replacing it
 wait-for-%: .valid-env-%
