@@ -60,14 +60,17 @@ export const CsvSchemaDocumentationItem: React.FC<CsvSchemaItemProps> = ({
           />
         ))}
       </div>
-      <div className="grid-row margin-bottom-05">
+      <div className="grid-row margin-bottom-05" data-testid="column-header">
         <div className="grid-col-4 text-base">Column header</div>
         <div className="grid-col-auto">
           <code>{item.colHeader}</code>
         </div>
       </div>
       {item.description && item.description.length > 0 && (
-        <div className="grid-row margin-bottom-05 border-base-lighter border-top-1px padding-top-1">
+        <div
+          className="grid-row margin-bottom-05 border-base-lighter border-top-1px padding-top-1"
+          data-testid="description"
+        >
           <div className="grid-col-4 text-base">Description</div>
           <div className="grid-col-8">
             {item.description?.map((line, noteIndex) => (
@@ -80,7 +83,10 @@ export const CsvSchemaDocumentationItem: React.FC<CsvSchemaItemProps> = ({
         </div>
       )}
       {item.format && (
-        <div className="grid-row margin-bottom-05 border-base-lighter border-top-1px padding-top-1">
+        <div
+          className="grid-row margin-bottom-05 border-base-lighter border-top-1px padding-top-1"
+          data-testid="format"
+        >
           <div className="grid-col-4 text-base">Format</div>
           <div
             className="grid-col-8 prime-ul margin-top-0"
@@ -89,7 +95,10 @@ export const CsvSchemaDocumentationItem: React.FC<CsvSchemaItemProps> = ({
         </div>
       )}
       {item.examples && item.examples.length > 0 && (
-        <div className="grid-row margin-bottom-05 border-base-lighter border-top-1px padding-top-1">
+        <div
+          className="grid-row margin-bottom-05 border-base-lighter border-top-1px padding-top-1"
+          data-testid="examples"
+        >
           <div className="grid-col-4 text-base">
             Example{item.examples.length > 1 && "s"}
           </div>
@@ -105,7 +114,10 @@ export const CsvSchemaDocumentationItem: React.FC<CsvSchemaItemProps> = ({
         </div>
       )}
       {item.acceptedValues && item.acceptedValues.length > 0 && (
-        <div className="grid-row margin-bottom-05 border-base-lighter border-top-1px padding-top-1">
+        <div
+          className="grid-row margin-bottom-05 border-base-lighter border-top-1px padding-top-1"
+          data-testid="accepted-values"
+        >
           <div className="grid-col-4 text-base">Accepted values</div>
           <ul className="grid-col-8 prime-ul margin-top-0">
             {item.acceptedValues?.map((value, valueIndex) => (
