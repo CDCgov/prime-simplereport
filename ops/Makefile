@@ -105,18 +105,18 @@ check-%-release: .valid-env-%
 
 check-%-slot-readiness: .valid-env-%
 	@echo Checking the readiness probe for $*/$(SOURCE_SLOT)
-	@if [[ "$*" == "prod" ]] ; then\
-	  $(PROD_SLOT_READY);\
+	@if [[ "$*" == "prod" ]] ; then \
+	  $(PROD_SLOT_READY) ; \
 	else \
-	  $(SLOT_READY);\
+	  $(SLOT_READY) ; \
 	fi;
 
 check-%-readiness: .valid-env-%
 	@echo Checking the readiness probe for $*
-	@if [[ "$*" == "prod" ]] ; then\
-	  $(PROD_APP_READY);\ 
+	@if [[ "$*" == "prod" ]] ; then \
+	  $(PROD_APP_READY) ; \ 
 	else \
-	  $(APP_READY);\
+	  $(APP_READY) ; \
 	fi;
 
 # DEPRECATED: This is too greedy a match, replacing it
