@@ -169,7 +169,7 @@ const DOB = () => {
     return <LoadingCard />;
   } else {
     return (
-      <main>
+      <div className={"prime-home flex-1"}>
         <div className="grid-container maxw-tablet">
           <h1 className="font-heading-lg margin-top-3">
             {t("testResult.dob.header")}
@@ -224,7 +224,7 @@ const DOB = () => {
             onClick={confirmBirthDate}
           />
         </div>
-      </main>
+      </div>
     );
   }
 };
