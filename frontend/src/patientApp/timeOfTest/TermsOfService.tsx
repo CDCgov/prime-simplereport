@@ -34,9 +34,9 @@ const TermsOfService: React.FunctionComponent<Props> = ({
   }
 
   return (
-    <main
+    <div
       className={classnames(
-        "patient-app padding-bottom-4 bg-base-lightest",
+        "patient-app padding-bottom-4 bg-base-lightest flex-1",
         className
       )}
     >
@@ -68,7 +68,7 @@ const TermsOfService: React.FunctionComponent<Props> = ({
           }}
         />
       </form>
-    </main>
+    </div>
   );
 };
 
