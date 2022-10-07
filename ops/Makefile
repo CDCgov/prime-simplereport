@@ -114,7 +114,7 @@ check-%-slot-readiness: .valid-env-%
 check-%-readiness: .valid-env-%
 	@echo Checking the readiness probe for $*
 	@if [[ "$*" == "prod" ]] ; then \
-	  $(PROD_APP_READY) ; \ 
+	  $(PROD_APP_READY) ; \
 	else \
 	  $(APP_READY) ; \
 	fi;
