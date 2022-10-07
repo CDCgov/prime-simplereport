@@ -150,7 +150,7 @@ describe("QuestionsFormContainer", () => {
 describe("QuestionsFormContainer countdown", () => {
   let personalDetails: IdentityVerificationRequest;
   beforeEach(() => {
-    jest.useFakeTimers("modern");
+    jest.useFakeTimers();
   });
   it("redirects to failure page when countdown runs out", async () => {
     personalDetails = initPersonalDetails("foo", "Bob", "Bill", "Martínez");

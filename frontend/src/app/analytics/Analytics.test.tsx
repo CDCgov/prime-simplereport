@@ -28,7 +28,7 @@ const store = mockStore({
 });
 
 beforeAll(() => {
-  jest.useFakeTimers("modern").setSystemTime(new Date("2021-08-01").getTime());
+  jest.useFakeTimers().setSystemTime(new Date("2021-08-01").getTime());
 });
 
 const getMocks = () => [
@@ -198,9 +198,7 @@ const getMocks = () => [
 
 describe("Analytics", () => {
   beforeEach(() => {
-    jest
-      .useFakeTimers("modern")
-      .setSystemTime(new Date("2021-08-01").getTime());
+    jest.useFakeTimers().setSystemTime(new Date("2021-08-01").getTime());
     render(
       <MockedProvider mocks={getMocks()}>
         <Provider store={store}>
