@@ -61,6 +61,45 @@ exports[`ResultsNav doesnt display the results sub nav when user doesnt have the
     <div
       class="grid-container results-wide-container"
     >
+      <nav
+        aria-label="Secondary navigation"
+        class="prime-secondary-nav"
+      >
+        <ul
+          class="usa-nav__secondary-links prime-nav"
+        >
+          <li
+            class="usa-nav__secondary-item"
+          >
+            <a
+              class=""
+              href="/results/1"
+            >
+              View test results
+            </a>
+          </li>
+          <li
+            class="usa-nav__secondary-item"
+          >
+            <a
+              class=""
+              href="/results/upload/submit"
+            >
+              Upload spreadsheet
+            </a>
+          </li>
+          <li
+            class="usa-nav__secondary-item"
+          >
+            <a
+              class=""
+              href="/results/upload/submissions"
+            >
+              View upload history
+            </a>
+          </li>
+        </ul>
+      </nav>
       Testing 123
     </div>
   </main>

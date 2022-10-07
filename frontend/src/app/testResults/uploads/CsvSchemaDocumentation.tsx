@@ -2,6 +2,7 @@ import { LinkWithQuery } from "../../commonComponents/LinkWithQuery";
 import { useDocumentTitle } from "../../utils/hooks";
 import iconSprite from "../../../../node_modules/uswds/dist/img/sprite.svg";
 
+import "../HeaderSizeFix.scss";
 import schema from "./schema.json";
 
 export type CsvSchemaItem = {
@@ -28,7 +29,7 @@ export const CsvSchemaDocumentationItem: React.FC<CsvSchemaItemProps> = ({
 }) => {
   return (
     <div className={className}>
-      <h4
+      <h3
         id={`doc-${item.colHeader}`}
         className="font-body-md margin-bottom-2"
         data-testid="header"
@@ -48,7 +49,7 @@ export const CsvSchemaDocumentationItem: React.FC<CsvSchemaItemProps> = ({
             Requested
           </span>
         )}
-      </h4>
+      </h3>
       <div data-testid="notes" className="margin-bottom-3">
         {item.notes?.map((note, noteIndex) => (
           <p
@@ -65,21 +66,23 @@ export const CsvSchemaDocumentationItem: React.FC<CsvSchemaItemProps> = ({
         <div className="grid-col-4 text-base">Value type</div>
         <div className="grid-col-auto">{item.valueType}</div>
       </div>
-      <div className="grid-row margin-bottom-05 border-base-lighter border-top-1px padding-top-1">
-        <div className="grid-col-4 text-base">
-          {item.acceptedFormat && "Accepted format"}
-          {item.acceptedValues && "Accepted value(s)"}
-          {item.acceptedExample && "Example(s)"}
+      {(item.acceptedFormat || item.acceptedValues || item.acceptedExample) && (
+        <div className="grid-row margin-bottom-05 border-base-lighter border-top-1px padding-top-1">
+          <div className="grid-col-4 text-base">
+            {item.acceptedFormat && "Accepted format"}
+            {item.acceptedValues && "Accepted value(s)"}
+            {item.acceptedExample && "Example(s)"}
+          </div>
+          <ul className="grid-col-8 prime-ul margin-top-0">
+            {item.values?.map((value, valueIndex) => (
+              <li
+                key={`${item.colHeader}-value-${valueIndex}`}
+                dangerouslySetInnerHTML={{ __html: `${value}` }}
+              />
+            ))}
+          </ul>
         </div>
-        <ul className="grid-col-8 prime-ul">
-          {item.values?.map((value, valueIndex) => (
-            <li
-              key={`${item.colHeader}-value-${valueIndex}`}
-              dangerouslySetInnerHTML={{ __html: `${value}` }}
-            />
-          ))}
-        </ul>
-      </div>
+      )}
     </div>
   );
 };
@@ -89,7 +92,7 @@ const CsvSchemaDocumentation = () => {
   useDocumentTitle("Spreadsheet upload guide");
 
   return (
-    <div className="prime-container card-container">
+    <div className="prime-container card-container header-size-fix">
       <div className="usa-card__header">
         <div>
           <div className="display-flex flex-align-center">
@@ -109,7 +112,7 @@ const CsvSchemaDocumentation = () => {
             </LinkWithQuery>
           </div>
           <div>
-            <h2 className="margin-top-2">CSV template guide</h2>
+            <h1 className="margin-top-2">CSV template guide</h1>
           </div>
         </div>
       </div>
@@ -119,6 +122,12 @@ const CsvSchemaDocumentation = () => {
             How to format and upload a CSV file to report test results in bulk
             through SimpleReport.
           </p>
+          <iframe
+            width="640"
+            height="360"
+            title="SimpleReport bulk results uploader tutorial video"
+            src="https://www.youtube.com/embed/qqhC7PFBdek"
+          />
           <p>
             <strong>In this guide</strong>
           </p>
@@ -132,22 +141,22 @@ const CsvSchemaDocumentation = () => {
               <a href="#formatting-guidelines" className="usa-link">
                 General formatting guidelines
               </a>
+              {schema.fields.map((field, fieldIndex) => {
+                return (
+                  <ol key={`toc-${fieldIndex}`} className="">
+                    {field.sections?.map((section, sectionIndex) => {
+                      return (
+                        <li key={`toc-${fieldIndex}-${sectionIndex}`}>
+                          <a href={`#${section.slug}`} className="usa-link">
+                            {section.title}
+                          </a>
+                        </li>
+                      );
+                    })}
+                  </ol>
+                );
+              })}
             </li>
-            {schema.fields.map((field, fieldIndex) => {
-              return (
-                <div key={`toc-${fieldIndex}`} className="">
-                  {field.sections?.map((section, sectionIndex) => {
-                    return (
-                      <li key={`toc-${fieldIndex}-${sectionIndex}`}>
-                        <a href={`#${section.slug}`} className="usa-link">
-                          {section.title}
-                        </a>
-                      </li>
-                    );
-                  })}
-                </div>
-              );
-            })}
           </ul>
           <p>
             <strong>Resources</strong>
@@ -164,14 +173,14 @@ const CsvSchemaDocumentation = () => {
           </ul>
         </section>
         <section className="border-top-1px border-ink margin-top-9">
-          <h3 id="preparing-upload" className="font-body-lg margin-y-1">
+          <h2 id="preparing-upload" className="font-body-lg margin-y-1">
             Preparing and uploading a spreadsheet
-          </h3>
+          </h2>
           <ol className="usa-process-list">
             <li className="usa-process-list__item">
-              <h4 className="usa-process-list__heading">
+              <h3 className="usa-process-list__heading">
                 Create or export your spreadsheet
-              </h4>
+              </h3>
               <p className="margin-top-05">
                 If your organization already uses a set spreadsheet format for
                 results, you may have to adjust it to match the SimpleReport
@@ -186,9 +195,9 @@ const CsvSchemaDocumentation = () => {
               </p>
             </li>
             <li className="usa-process-list__item">
-              <h4 className="usa-process-list__heading">
+              <h3 className="usa-process-list__heading">
                 Format using the SimpleReport template
-              </h4>
+              </h3>
               <p>
                 In your spreadsheet, include all column headers in the
                 spreadsheet template and guidelines below, with no extras. Copy
@@ -197,7 +206,7 @@ const CsvSchemaDocumentation = () => {
               </p>
             </li>
             <li className="usa-process-list__item">
-              <h4 className="usa-process-list__heading">Enter your data</h4>
+              <h3 className="usa-process-list__heading">Enter your data</h3>
               <p>
                 Following the spreadsheet guidelines below, enter properly
                 formatted values in the relevant fields. Some fields require
@@ -205,21 +214,21 @@ const CsvSchemaDocumentation = () => {
               </p>
             </li>
             <li className="usa-process-list__item">
-              <h4 className="usa-process-list__heading">
+              <h3 className="usa-process-list__heading">
                 Export or save your data
-              </h4>
+              </h3>
               <p>
                 Make sure your spreadsheet is in a CSV format. SimpleReport
                 doesn’t accept XLS, XLXS, or any other formats.
               </p>
             </li>
             <li className="usa-process-list__item">
-              <h4 className="usa-process-list__heading">
+              <h3 className="usa-process-list__heading">
                 Use the uploader on SimpleReport
-              </h4>
+              </h3>
               <p>
                 Visit the{" "}
-                <LinkWithQuery to={"/results/upload"}>
+                <LinkWithQuery to={"/results/upload/submit"}>
                   "upload spreadsheet"
                 </LinkWithQuery>{" "}
                 tab under “Results” in the main SimpleReport navigation. Select
@@ -230,7 +239,7 @@ const CsvSchemaDocumentation = () => {
                 confirmation message.
               </p>
 
-              <h4 className="usa-process-list__heading">Fix any errors</h4>
+              <h3 className="usa-process-list__heading">Fix any errors</h3>
               <p>
                 If SimpleReport finds any errors in the spreadsheet formatting
                 or data, it will recommend how to fix them. Once you’ve made the
@@ -241,9 +250,9 @@ const CsvSchemaDocumentation = () => {
           </ol>
         </section>
         <section className="border-top-1px border-ink margin-top-9">
-          <h3 id="formatting-guidelines" className="font-body-lg margin-y-1">
+          <h2 id="formatting-guidelines" className="font-body-lg margin-y-1">
             General formatting guidelines
-          </h3>
+          </h2>
           <p>
             The SimpleReport standard CSV template is a blend of the Department
             of Health and Human Science's (HHS){" "}
@@ -265,7 +274,7 @@ const CsvSchemaDocumentation = () => {
             </a>{" "}
           </p>
 
-          <h4 className="margin-top-4">Column headers and order</h4>
+          <h3 className="margin-top-4">Column headers and order</h3>
           <ul>
             <li>Column headers can be placed in any order.</li>
             <li>
@@ -274,7 +283,7 @@ const CsvSchemaDocumentation = () => {
             </li>
           </ul>
 
-          <h4>Required, requested, and optional fields</h4>
+          <h3>Required, requested, and optional fields</h3>
 
           <p>
             <span className="text-normal bg-white border-1px border-secondary font-body-3xs padding-x-1 padding-y-05 text-secondary margin-right-1 text-middle">
@@ -317,18 +326,18 @@ const CsvSchemaDocumentation = () => {
                     key={`section-${fieldIndex}-${sectionIndex}`}
                     className="border-top-1px border-ink margin-top-9"
                   >
-                    <h3
+                    <h2
                       id={`${section.slug}`}
                       className="font-body-lg margin-y-1"
                     >
                       {section.title}
-                    </h3>
+                    </h2>
 
                     {section.items?.map((item) => {
                       return (
                         <CsvSchemaDocumentationItem
                           item={item}
-                          className="rs-documentation__values"
+                          className="rs-documentation__values margin-top-6"
                         />
                       );
                     })}
