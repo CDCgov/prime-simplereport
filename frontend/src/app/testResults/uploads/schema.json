@@ -724,7 +724,7 @@
                 "<mark><code>C</code></mark> = Corrected result"
               ],
               "description": [
-                "\nEnter test result status using the accepted format listed below. If left blank, value will default to F for final."
+                "Enter test result status using the accepted format listed below. If left blank, value will default to F for final."
               ]
             }
           ]
