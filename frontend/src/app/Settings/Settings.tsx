@@ -13,7 +13,7 @@ const Settings = () => {
   useDocumentTitle("Settings");
 
   return (
-    <div className="prime-home main-wrapper">
+    <div className="prime-home flex-1">
       <div className="grid-container">
         <SettingsNav />
         <Routes>
