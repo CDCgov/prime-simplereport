@@ -116,11 +116,9 @@ const DOB = () => {
 
   if (loading) {
     return (
-      <main>
-        <div className="grid-container maxw-tablet">
-          <p className="margin-top-3">{t("testResult.dob.validating")}</p>
-        </div>
-      </main>
+      <div className="grid-container maxw-tablet">
+        <p className="margin-top-3">{t("testResult.dob.validating")}</p>
+      </div>
     );
   }
 
@@ -137,31 +135,27 @@ const DOB = () => {
 
   if (linkExpiredError) {
     return (
-      <main>
-        <div className="grid-container maxw-tablet">
-          <p></p>
-          <Alert
-            type="error"
-            title="Link expired"
-            body={t("testResult.dob.linkExpired")}
-          />
-        </div>
-      </main>
+      <div className="grid-container maxw-tablet">
+        <p></p>
+        <Alert
+          type="error"
+          title="Link expired"
+          body={t("testResult.dob.linkExpired")}
+        />
+      </div>
     );
   }
 
   if (linkNotFoundError) {
     return (
-      <main>
-        <div className="grid-container maxw-tablet">
-          <p></p>
-          <Alert
-            type="error"
-            title="Page not found"
-            body={t("testResult.dob.linkNotFound")}
-          />
-        </div>
-      </main>
+      <div className="grid-container maxw-tablet">
+        <p></p>
+        <Alert
+          type="error"
+          title="Page not found"
+          body={t("testResult.dob.linkNotFound")}
+        />
+      </div>
     );
   }
 
