@@ -10,12 +10,7 @@ export type CsvSchemaItem = {
   colHeader: string;
   required: boolean;
   requested: boolean;
-  acceptedFormat?: boolean;
-  acceptedValues?: boolean;
-  acceptedExample?: boolean;
-  valueType?: string;
-  values?: string[];
-  notes?: string[];
+  acceptedValues?: string[];
   description?: string[];
   subHeader?: string[];
   format?: string;
@@ -84,12 +79,6 @@ export const CsvSchemaDocumentationItem: React.FC<CsvSchemaItemProps> = ({
           </div>
         </div>
       )}
-      {item.valueType && (
-        <div className="grid-row margin-bottom-05 border-base-lighter border-top-1px padding-top-1">
-          <div className="grid-col-4 text-base">Value type</div>
-          <div className="grid-col-auto">{item.valueType}</div>
-        </div>
-      )}
       {item.format && (
         <div className="grid-row margin-bottom-05 border-base-lighter border-top-1px padding-top-1">
           <div className="grid-col-4 text-base">Format</div>
@@ -115,13 +104,13 @@ export const CsvSchemaDocumentationItem: React.FC<CsvSchemaItemProps> = ({
           </ul>
         </div>
       )}
-      {item.values && item.values.length > 0 && (
+      {item.acceptedValues && item.acceptedValues.length > 0 && (
         <div className="grid-row margin-bottom-05 border-base-lighter border-top-1px padding-top-1">
           <div className="grid-col-4 text-base">Accepted values</div>
           <ul className="grid-col-8 prime-ul margin-top-0">
-            {item.values?.map((value, valueIndex) => (
+            {item.acceptedValues?.map((value, valueIndex) => (
               <li
-                className={item.values!.length > 1 ? "bullet-list" : ""}
+                className={item.acceptedValues!.length > 1 ? "bullet-list" : ""}
                 key={`${item.colHeader}-value-${valueIndex}`}
                 dangerouslySetInnerHTML={{ __html: `${value}` }}
               />

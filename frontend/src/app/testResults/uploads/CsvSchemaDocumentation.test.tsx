@@ -11,12 +11,9 @@ const baseItem: CsvSchemaItem = {
   colHeader: "sample_item",
   required: false,
   requested: false,
-  acceptedFormat: false,
-  acceptedValues: false,
-  acceptedExample: false,
-  valueType: "",
-  values: [],
-  notes: [],
+  acceptedValues: [],
+  description: [],
+  subHeader: [],
 };
 
 describe("CsvSchemaDocumentation tests", () => {
