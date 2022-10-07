@@ -36,25 +36,25 @@ updates:
       - "DanielSass"
       - "rin-skylight"
 
-  # - package-ecosystem: "github-actions"
-  #   directory: "/.github/workflows"
-  #   schedule:
-  #     interval: "weekly"
-  #   reviewers:
-      # - "alismx"
-      # - "emyl3"
-      # - "rin-skylight"
-      # - "emmastephenson"
+  - package-ecosystem: "github-actions"
+    directory: "/.github/workflows"
+    schedule:
+      interval: "weekly"
+    reviewers:
+      - "alismx"
+      - "emyl3"
+      - "rin-skylight"
+      - "emmastephenson"
 
-  # - package-ecosystem: "github-actions"
-  #   directory: "/.github/actions"
-  #   schedule:
-  #     interval: "weekly"
-  #   reviewers:
-      # - "alismx"
-      # - "emyl3"
-      # - "rin-skylight"
-      # - "emmastephenson"
+  - package-ecosystem: "github-actions"
+    directory: "/.github/actions"
+    schedule:
+      interval: "weekly"
+    reviewers:
+      - "alismx"
+      - "emyl3"
+      - "rin-skylight"
+      - "emmastephenson"
 
   # - package-ecosystem: "gradle"
   #   directory: "/backend"
