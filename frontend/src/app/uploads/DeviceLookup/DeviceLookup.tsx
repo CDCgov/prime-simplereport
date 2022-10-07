@@ -6,8 +6,9 @@ import { faCheck, faCopy } from "@fortawesome/free-solid-svg-icons";
 import TextInput from "../../commonComponents/TextInput";
 import { DeviceType } from "../../../generated/graphql";
 import LabeledText from "../../commonComponents/LabeledText";
+import Optional from "../../commonComponents/Optional";
 
-export interface Device {
+interface Device {
   internalId?: string;
   name: string;
   manufacturer: string;
@@ -16,7 +17,7 @@ export interface Device {
   swabTypes: Array<string>;
 }
 
-export interface SwabType {
+interface SwabType {
   swabName: string;
   typeCode: string;
   internalId: string;
@@ -55,17 +56,7 @@ const DeviceLookup = (props: Props) => {
     }
   }
 
-  const updateDeviceAttribute = (name: string, value: any) => {
-    if (device) {
-      updateDevice({ ...device, [name]: value });
-    }
-  };
-
-  const onChange = (
-    e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement>
-  ) => {
-    updateDeviceAttribute(e.target.name, e.target.value);
-  };
+  const onChange = () => {};
 
   const getDeviceOptions = () =>
     props.deviceOptions
@@ -88,6 +79,29 @@ const DeviceLookup = (props: Props) => {
           loincCode: device.loincCode,
         }
       : undefined;
+  };
+
+  const getCopyToClipboardButton = (
+    copiedAttribute: string | undefined,
+    label: string
+  ) => {
+    return (
+      <div>
+        {device && (
+          <button
+            style={{ bottom: 12, right: 15, position: "absolute" }}
+            className="usa-button usa-button--unstyled"
+            onClick={() => copiedAttribute && copySlug(copiedAttribute)}
+            arial-label={`${label}`}
+          >
+            <FontAwesomeIcon
+              icon={copiedSlug === copiedAttribute ? faCheck : faCopy}
+            />
+          </button>
+        )}
+        {device && copiedSlug === copiedAttribute && <CopyTooltip />}
+      </div>
+    );
   };
 
   return (
@@ -135,85 +149,16 @@ const DeviceLookup = (props: Props) => {
                 <div className="tablet:grid-col">
                   <div style={{ position: "relative" }}>
                     <TextInput
-                      label="Device name"
-                      name="name"
-                      value={device?.name}
-                      onChange={onChange}
-                      disabled={true}
-                    />
-                    {device && (
-                      <button
-                        style={{ bottom: 12, right: 15, position: "absolute" }}
-                        className="usa-button usa-button--unstyled"
-                        onClick={() => device?.name && copySlug(device?.name)}
-                        arial-label={`Copy model for ${device?.name}`}
-                      >
-                        <FontAwesomeIcon
-                          icon={copiedSlug === device?.name ? faCheck : faCopy}
-                        />
-                      </button>
-                    )}
-                    {device && copiedSlug === device?.name && <CopyTooltip />}
-                  </div>
-                </div>
-              </div>
-              <div className="grid-row grid-gap">
-                <div className="tablet:grid-col">
-                  <div style={{ position: "relative" }}>
-                    <TextInput
-                      label="Model"
-                      name="model"
-                      hintText={"equipment_model_name"}
+                      label="Equipment model name"
+                      name="Equipment model name"
+                      hintText={<code>equipment_model_name</code>}
                       value={device?.model}
                       onChange={onChange}
                       disabled={true}
                     />
-                    {device && (
-                      <button
-                        style={{ bottom: 12, right: 15, position: "absolute" }}
-                        className="usa-button usa-button--unstyled"
-                        onClick={() => device?.model && copySlug(device?.model)}
-                        arial-label={`Copy model for ${device?.name}`}
-                      >
-                        <FontAwesomeIcon
-                          icon={copiedSlug === device?.model ? faCheck : faCopy}
-                        />
-                      </button>
-                    )}
-                    {device && copiedSlug === device?.model && <CopyTooltip />}
-                  </div>
-                </div>
-              </div>
-              <div className="grid-row grid-gap">
-                <div className="tablet:grid-col">
-                  <div style={{ position: "relative" }}>
-                    <TextInput
-                      label="Manufacturer"
-                      name="manufacturer"
-                      value={device?.manufacturer}
-                      onChange={onChange}
-                      disabled={true}
-                    />
-                    {device && (
-                      <button
-                        style={{ bottom: 12, right: 15, position: "absolute" }}
-                        className="usa-button usa-button--unstyled"
-                        onClick={() =>
-                          device?.manufacturer && copySlug(device?.manufacturer)
-                        }
-                        arial-label={`Copy model for ${device?.manufacturer}`}
-                      >
-                        <FontAwesomeIcon
-                          icon={
-                            copiedSlug === device?.manufacturer
-                              ? faCheck
-                              : faCopy
-                          }
-                        />
-                      </button>
-                    )}
-                    {device && copiedSlug === device?.manufacturer && (
-                      <CopyTooltip />
+                    {getCopyToClipboardButton(
+                      device?.model,
+                      `Copy equipment model name for ${device?.name}`
                     )}
                   </div>
                 </div>
@@ -222,85 +167,73 @@ const DeviceLookup = (props: Props) => {
                 <div className="tablet:grid-col">
                   <div style={{ position: "relative" }}>
                     <TextInput
-                      label="LOINC code"
-                      name="loincCode"
-                      hintText={"test_performed_code"}
+                      label="Test performed code "
+                      name="Test performed code "
+                      hintText={<code>test_performed_code</code>}
                       value={device?.loincCode}
                       onChange={onChange}
                       disabled={true}
                     />
-                    {device && (
-                      <button
-                        style={{ bottom: 12, right: 15, position: "absolute" }}
-                        className="usa-button usa-button--unstyled"
-                        onClick={() =>
-                          device?.loincCode && copySlug(device?.loincCode)
-                        }
-                        arial-label={`Copy model for ${device?.name}`}
-                      >
-                        <FontAwesomeIcon
-                          icon={
-                            copiedSlug === device?.loincCode ? faCheck : faCopy
-                          }
-                        />
-                      </button>
-                    )}
-                    {device && copiedSlug === device?.loincCode && (
-                      <CopyTooltip />
+                    {getCopyToClipboardButton(
+                      device?.loincCode,
+                      `Copy Test performed code for ${device?.name}`
                     )}
                   </div>
                 </div>
               </div>
               <div className="grid-row grid-gap">
                 <div className="tablet:grid-col">
-                  <table className={"usa-table"}>
-                    <thead>
-                      <tr>
-                        <th scope={"col"}>
-                          SNOMED code for swab type(s)
-                          <span className="usa-hint">specimen_type</span>
-                        </th>
-                      </tr>
-                    </thead>
-                    <tbody>
-                      {device &&
-                        props.swabOptions
-                          .filter((swab) =>
-                            device.swabTypes.includes(swab.internalId)
-                          )
-                          .map(({ swabName, typeCode }) => (
-                            <tr key={swabName}>
-                              <td>
-                                <div></div>
-                                <span>
-                                  {swabName} ({typeCode})
-                                </span>
-                                {device && (
-                                  <button
-                                    // style={{bottom: 12, right: 15, position: "absolute"}}
-                                    className="usa-button usa-button--unstyled"
-                                    onClick={() =>
-                                      typeCode && copySlug(typeCode)
-                                    }
-                                    arial-label={`Copy SNOMED code for ${swabName} (${typeCode})`}
+                  <div style={{ position: "relative" }}>
+                    <label className="usa-label">
+                      <Optional label="Specimen Type" />
+                    </label>
+                    <span className="usa-hint">
+                      <code>specimen_type</code>
+                    </span>
+                    <table className={"usa-table"}>
+                      <tbody>
+                        {device &&
+                          props.swabOptions
+                            .filter((swab) =>
+                              device.swabTypes.includes(swab.internalId)
+                            )
+                            .map(({ swabName, typeCode }) => (
+                              <tr key={swabName}>
+                                <td>
+                                  <div
+                                    style={{ position: "relative" }}
+                                    className="display-flex flex-justify"
                                   >
-                                    <FontAwesomeIcon
-                                      icon={
-                                        copiedSlug === typeCode
-                                          ? faCheck
-                                          : faCopy
-                                      }
-                                    />
-                                  </button>
-                                )}
-                                {device && copiedSlug === typeCode && (
-                                  <CopyTooltip />
-                                )}
-                              </td>
-                            </tr>
-                          ))}
-                    </tbody>
-                  </table>
+                                    <span>
+                                      {swabName} ({typeCode})
+                                    </span>
+                                    {device && (
+                                      <button
+                                        className="usa-button usa-button--unstyled"
+                                        onClick={() =>
+                                          typeCode && copySlug(typeCode)
+                                        }
+                                        arial-label={`Copy SNOMED code for ${swabName} (${typeCode})`}
+                                      >
+                                        <FontAwesomeIcon
+                                          icon={
+                                            copiedSlug === typeCode
+                                              ? faCheck
+                                              : faCopy
+                                          }
+                                        />
+                                      </button>
+                                    )}
+                                    {device && copiedSlug === typeCode && (
+                                      <CopyTooltip />
+                                    )}
+                                  </div>
+                                </td>
+                              </tr>
+                            ))}
+                      </tbody>
+                    </table>
+                  </div>
                 </div>
               </div>
             </div>
