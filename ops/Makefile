@@ -12,7 +12,7 @@ CURL_TIMEOUT?=20
 # Internal DRYing (also overrideable if you are sufficiently desperate)
 API_NAME=simple-report-api-$*
 INFO_ENDPOINT=https://$(API_NAME).azurewebsites.net/actuator/info
-SLOT_INFO_ENDPOINT=https://$(API_NAME)-$(SOURCE_SLOT).azurewebsites.net/actuator/info
+SLOT_INFO_ENDPOINT=https://$*.simplereport.gov/staging/api/actuator/info
 CURL:=curl --silent --fail --max-time $(CURL_TIMEOUT)
 APP_READY=$(CURL) https://$*.simplereport.gov/api/actuator/health/readiness > /dev/null
 PROD_APP_READY=$(CURL) https://simplereport.gov/api/actuator/health/readiness > /dev/null
