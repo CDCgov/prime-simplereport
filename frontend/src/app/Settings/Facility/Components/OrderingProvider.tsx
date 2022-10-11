@@ -1,4 +1,5 @@
 import React from "react";
+import classNames from "classnames";
 
 import { stateCodes } from "../../../../config/constants";
 import { requiresOrderProvider } from "../../../utils/state";
@@ -38,9 +39,11 @@ const OrderingProvider: React.FC<Props> = ({
       <div className="usa-card__header">
         <h2 className="font-heading-lg">Ordering provider</h2>
       </div>
-      <div className="usa-form usa-form--large usa-card__body">
+      <div
+        className={classNames("usa-form", "usa-form--large", "usa-card__body")}
+      >
         {newOrg && (
-          <div>
+          <>
             <p>
               Please enter one ordering provider to get started. If you need to,
               you can add more after account setup.
@@ -50,7 +53,7 @@ const OrderingProvider: React.FC<Props> = ({
               additional ordering providers in your spreadsheets without adding
               them to SimpleReport.
             </p>
-          </div>
+          </>
         )}
         <TextInput
           label="First name"

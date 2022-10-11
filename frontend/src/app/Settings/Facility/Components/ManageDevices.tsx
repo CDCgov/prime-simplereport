@@ -1,4 +1,5 @@
 import React from "react";
+import classNames from "classnames";
 
 import { FacilityErrors } from "../facilitySchema";
 import MultiSelect from "../../../commonComponents/MultiSelect/MultiSelect";
@@ -58,7 +59,7 @@ const ManageDevices: React.FC<Props> = ({
           and request to add a new one.
         </p>
         {newOrg && (
-          <p>
+          <p className={classNames("usa-form", "usa-form--large")}>
             If you plan to upload your results in bulk, enter one device here to
             get started. You can include any additional devices in your
             spreadsheets without adding them here.

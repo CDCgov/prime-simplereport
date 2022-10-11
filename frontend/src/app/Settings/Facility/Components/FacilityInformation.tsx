@@ -1,4 +1,5 @@
 import React from "react";
+import classNames from "classnames";
 
 import { stateCodes } from "../../../../config/constants";
 import Dropdown from "../../../commonComponents/Dropdown";
@@ -28,7 +29,21 @@ const FacilityInformation: React.FC<Props> = ({
   };
 
   return (
-    <div className="usa-form usa-form--large">
+    <div className={classNames("usa-form", "usa-form--large")}>
+      {!facility && (
+        <>
+          <p>
+            Please enter one facility to get started. You can add more after
+            account setup.
+          </p>
+          <p>
+            If you plan to upload your results in bulk, you can include
+            additional facilities in your spreadsheets without adding them in
+            SimpleReport.
+          </p>
+        </>
+      )}
+
       <h2 className="font-heading-lg" style={{ margin: 0 }}>
         Testing facility information
       </h2>
