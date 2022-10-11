@@ -347,7 +347,7 @@
                 "<mark><code>Whole Blood</code></mark>",
                 "<mark><code>Plasma</code></mark>",
                 "<mark><code>Serum</code></mark>",
-                "SNOMED code from lookup table, example:<em>697989009</em>"
+                "SNOMED code from lookup table, example: <em>697989009</em>"
               ],
               "description": [
                 "Use one of the common values listed below; or look up SNOMED code in the <a href=\"https://www.cdc.gov/csels/dls/sars-cov-2-livd-codes.html\" class=\"usa-link\" target=\"_blank\" rel=\"noreferrer noopener\">LIVD SARS-CoV-2</a> Test Codes spreadsheet, “LOINC Mapping” tab, column D"

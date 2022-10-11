@@ -28,7 +28,7 @@ export const CsvSchemaDocumentationItem: React.FC<CsvSchemaItemProps> = ({
 }) => {
   return (
     <div className={className}>
-      <h3
+      <h5
         id={`${item.colHeader}`}
         className="margin-bottom-2"
         data-testid="header"
@@ -51,7 +51,7 @@ export const CsvSchemaDocumentationItem: React.FC<CsvSchemaItemProps> = ({
             Optional
           </span>
         )}
-      </h3>
+      </h5>
       <div data-testid="subheader" className="margin-bottom-3">
         {item.subHeader?.map((subHeader, subHeaderIndex) => (
           <p
@@ -267,7 +267,7 @@ const CsvSchemaDocumentation = () => {
         </section>
 
         <section className="margin-top-5">
-          <h2>Data elements</h2>
+          <h3>Data elements</h3>
           {schema.fields.map((field, fieldIndex) => {
             return (
               <ul key={`toc-${fieldIndex}`} className="">
@@ -296,9 +296,9 @@ const CsvSchemaDocumentation = () => {
                 return (
                   <div
                     key={`section-${fieldIndex}-${sectionIndex}`}
-                    className="border-top-1px border-ink margin-top-9"
+                    className="margin-top-9"
                   >
-                    <h2 id={`${section.slug}`}>{section.title}</h2>
+                    <h4 id={`${section.slug}`}>{section.title}</h4>
 
                     {section.items?.map((item) => {
                       return (
