@@ -360,6 +360,19 @@ const FacilityForm: React.FC<Props> = (props) => {
               <h3>To get started, add a testing facility.</h3>
             ) : null}
             <RequiredMessage />
+            {props.newOrg && (
+              <div>
+                <p>
+                  Please enter one facility to get started. You can add more
+                  after account setup.
+                </p>
+                <p>
+                  If you plan to upload your results in bulk, you can include
+                  additional facilities in your spreadsheets without adding them
+                  in SimpleReport.
+                </p>
+              </div>
+            )}
             <FacilityInformation
               facility={facility}
               updateFacility={updateFacility}
@@ -373,6 +386,7 @@ const FacilityForm: React.FC<Props> = (props) => {
           updateProvider={updateProvider}
           errors={errors}
           validateField={validateField}
+          newOrg={props.newOrg}
         />
         <ManageDevices
           deviceTypes={props.deviceTypes}
@@ -380,6 +394,7 @@ const FacilityForm: React.FC<Props> = (props) => {
           updateSelectedDevices={updateSelectedDevices}
           errors={errors}
           clearError={clearError}
+          newOrg={props.newOrg}
         />
         <div className="float-right margin-bottom-4 margin-top-4">
           <Button

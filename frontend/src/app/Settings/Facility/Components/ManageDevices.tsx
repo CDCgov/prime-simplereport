@@ -9,6 +9,7 @@ interface Props {
   updateSelectedDevices: (deviceTypes: DeviceType[]) => void;
   errors: FacilityErrors;
   clearError: (field: keyof FacilityErrors) => void;
+  newOrg?: boolean;
 }
 
 const ManageDevices: React.FC<Props> = ({
@@ -17,6 +18,7 @@ const ManageDevices: React.FC<Props> = ({
   updateSelectedDevices,
   errors,
   clearError,
+  newOrg = false,
 }) => {
   const getDeviceTypeOptions = Array.from(
     deviceTypes.map((device) => ({
@@ -55,6 +57,13 @@ const ManageDevices: React.FC<Props> = ({
           <a href="mailto:support@simplereport.gov">support@simplereport.gov</a>{" "}
           and request to add a new one.
         </p>
+        {newOrg && (
+          <p>
+            If you plan to upload your results in bulk, enter one device here to
+            get started. You can include any additional devices in your
+            spreadsheets without adding them here.
+          </p>
+        )}
         <MultiSelect
           label="Device Types"
           name="deviceTypes"
