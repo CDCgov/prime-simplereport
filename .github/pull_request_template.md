@@ -128,7 +128,7 @@
 ## Checklist for Author and Reviewer
 ### Accessibility
 - [ ] Any large changes have been run through Deque manual testing
-- [ ] All changes have passed Lighthouse verification
+- [ ] All changes have run through the Deque automated testing
 
 ### Design
 - [ ] Any UI/UX changes have a designer as a reviewer, and changes have been approved
