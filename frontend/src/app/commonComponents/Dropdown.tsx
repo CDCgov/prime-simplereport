@@ -74,7 +74,7 @@ const Dropdown: React.FC<Props & SelectProps> = ({
             </label>
           )}
           {validationStatus === "error" && (
-            <div className="usa-error-message" role="alert">
+            <div className="usa-error-message" id={`error_${id}`} role="alert">
               <span className="usa-sr-only">Error: </span>
               {errorMessage}
             </div>

@@ -6,6 +6,7 @@ import { FeedbackMessage } from "../../../generated/graphql";
 import { useDocumentTitle } from "../../utils/hooks";
 import { LinkWithQuery } from "../../commonComponents/LinkWithQuery";
 import { FileUploadService } from "../../../fileUploadService/FileUploadService";
+import "../HeaderSizeFix.scss";
 
 const PAYLOAD_MAX_BYTES = 50 * 1000 * 1000;
 const REPORT_MAX_ITEMS = 10000;
@@ -135,10 +136,36 @@ const Uploads = () => {
   };
 
   return (
-    <div className="grid-row">
+    <div className="grid-row header-size-fix">
       <div className="prime-container card-container">
         <div className="usa-card__header">
-          <h2>Upload your results</h2>
+          <h1>Upload your results</h1>
+        </div>
+        <div className="usa-alert usa-alert--info margin-left-105em margin-right-105em maxw-tablet-lg">
+          <div className="usa-alert__body">
+            <h3 className="usa-alert__heading">
+              What is the bulk results uploader?
+            </h3>
+            <p className="usa-alert__text">
+              <em>
+                This feature is in beta. That means it’s new, and we’ll continue
+                to update and improve it for our users. Though the feature is in
+                beta, it will route all the results you submit to the
+                appropriate public health department(s). Results you upload here
+                will not appear individually in the "Test results" page.
+              </em>{" "}
+              <br />
+              <br /> The results uploader allows you to report test results in
+              bulk using a CSV file. While we expect most SimpleReport users
+              will continue to report through the regular process, this feature
+              can serve labs and others with an information system that exports
+              spreadsheets, such as an EMR.{" "}
+              <LinkWithQuery to="/results/upload/submit/guide">
+                <strong>Learn more about how it works</strong>
+              </LinkWithQuery>
+              .
+            </p>
+          </div>
         </div>
         <div className="usa-card__body padding-y-2 maxw-prose">
           <p>
@@ -147,7 +174,7 @@ const Uploads = () => {
           </p>
           <ol className="usa-list">
             <li>
-              <a href="https://reportstream.cdc.gov/assets/csv/ReportStream-StandardCSV-ExampleData-20220509.csv">
+              <a href="/assets/resources/test_results_example_10-3-2022.csv">
                 Download the spreadsheet template
               </a>{" "}
             </li>
@@ -168,7 +195,7 @@ const Uploads = () => {
             <div>
               <div className="usa-alert usa-alert--success">
                 <div className="usa-alert__body">
-                  <h4 className="usa-alert__heading">Success: File Accepted</h4>
+                  <h3 className="usa-alert__heading">Success: File Accepted</h3>
                   <p className="usa-alert__text">
                     Your file has been successfully transmitted to the
                     department of health
@@ -187,9 +214,9 @@ const Uploads = () => {
             <div>
               <div className="usa-alert usa-alert--error" role="alert">
                 <div className="usa-alert__body">
-                  <h4 className="usa-alert__heading">
+                  <h3 className="usa-alert__heading">
                     Error: File not accepted
-                  </h4>
+                  </h3>
                   <p className="usa-alert__text">{errorMessageText}</p>
                 </div>
               </div>
@@ -218,7 +245,7 @@ const Uploads = () => {
               key={fileInputResetValue}
               id="upload-csv-input"
               name="upload-csv-input"
-              aria-describedby="upload-csv-input-label"
+              aria-label="Choose CSV file"
               accept="text/csv, .csv"
               onChange={(e) => handleFileChange(e)}
               required

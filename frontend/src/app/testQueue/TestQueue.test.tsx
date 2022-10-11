@@ -54,9 +54,7 @@ describe("TestQueue", () => {
   });
 
   it("should render the test queue", async () => {
-    jest
-      .useFakeTimers("modern")
-      .setSystemTime(new Date("2021-08-01 08:20").getTime());
+    jest.useFakeTimers().setSystemTime(new Date("2021-08-01 08:20").getTime());
     const { container } = render(
       <MemoryRouter>
         <MockedProvider mocks={mocks}>
@@ -66,7 +64,7 @@ describe("TestQueue", () => {
         </MockedProvider>
       </MemoryRouter>
     );
-    await screen.findByLabelText("Search");
+    await screen.findByLabelText("Search for a person to start their test");
     expect(await screen.findByText("Doe, John A")).toBeInTheDocument();
     expect(await screen.findByText("Smith, Jane")).toBeInTheDocument();
     expect(container).toMatchSnapshot();
@@ -189,7 +187,7 @@ describe("TestQueue", () => {
         </MemoryRouter>
       );
 
-      await screen.findByLabelText("Search");
+      await screen.findByLabelText("Search for a person to start their test");
       expect(await screen.findByText("Doe, John A")).toBeInTheDocument();
       expect(await screen.findByText("Smith, Jane")).toBeInTheDocument();
 

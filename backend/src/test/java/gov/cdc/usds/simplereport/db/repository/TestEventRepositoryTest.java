@@ -25,6 +25,7 @@ import gov.cdc.usds.simplereport.test_util.TestDataFactory;
 import java.time.Instant;
 import java.time.LocalDateTime;
 import java.util.Date;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
@@ -76,12 +77,15 @@ class TestEventRepositoryTest extends BaseRepositoryTest {
     TestOrder order = _dataFactory.createTestOrder(patient, place);
     Result positiveResult = new Result(order, _diseaseService.covid(), TestResult.POSITIVE);
     _resultRepo.save(positiveResult);
-    //    order.setResult(positiveResult);
-    _repo.save(new TestEvent(order, false));
+    HashSet positiveResults = new HashSet<>();
+    positiveResults.add(positiveResult);
+    _repo.save(new TestEvent(order, false, positiveResults));
+
     Result negativeResult = new Result(order, _diseaseService.covid(), TestResult.NEGATIVE);
     _resultRepo.save(negativeResult);
-    //    order.setResult(negativeResult);
-    _repo.save(new TestEvent(order, false));
+    HashSet negativeResults = new HashSet<>();
+    negativeResults.add(negativeResult);
+    _repo.save(new TestEvent(order, false, negativeResults));
     flush();
     List<TestEvent> found = _repo.findAllByPatientAndFacilities(patient, Set.of(place));
     assertEquals(2, found.size());
@@ -100,17 +104,24 @@ class TestEventRepositoryTest extends BaseRepositoryTest {
 
     TestOrder firstOrder =
         _dataFactory.createCompletedTestOrder(patient, place, TestResult.POSITIVE);
-    TestEvent firstEvent = new TestEvent(firstOrder);
+    var firstResults = firstOrder.getResults();
+    var firstEvent = new TestEvent(firstOrder, false, firstResults);
+    firstResults.forEach(result -> result.setTestEvent(firstEvent));
+    _resultRepo.saveAll(firstResults);
     _repo.save(firstEvent);
 
     TestOrder secondOrder =
         _dataFactory.createCompletedTestOrder(patient, place, TestResult.UNDETERMINED);
-    TestEvent secondEvent = new TestEvent(secondOrder);
-
+    var secondResults = secondOrder.getResults();
+    var secondEvent = new TestEvent(secondOrder, false, secondResults);
+    secondResults.forEach(result -> result.setTestEvent(secondEvent));
+    _resultRepo.saveAll(secondResults);
     _repo.save(secondEvent);
+
     flush();
     TestEvent found = _repo.findFirst1ByPatientOrderByCreatedAtDesc(patient);
-    assertEquals(TestResult.UNDETERMINED, secondEvent.getResult());
+    var savedSecondEvent = _repo.findById(secondEvent.getInternalId()).get();
+    assertEquals(TestResult.UNDETERMINED, savedSecondEvent.getCovidTestResult().orElseThrow());
     List<TestEvent> foundTestReports2 =
         _repo.queryMatchAllBetweenDates(d1, DATE_1MIN_FUTURE, Pageable.unpaged());
     assertEquals(2, foundTestReports2.size() - foundTestReports1.size());
@@ -315,7 +326,11 @@ class TestEventRepositoryTest extends BaseRepositoryTest {
 
     // repo level test. Higher level tests done in TestOrderServiceTest
     String reason = "Unit Test Correction " + LocalDateTime.now().toString();
-    TestEvent correctionEvent = new TestEvent(startingEvent, TestCorrectionStatus.REMOVED, reason);
+    var results = startingEvent.getResults().stream().map(Result::new).collect(Collectors.toSet());
+    var correctionEvent =
+        new TestEvent(startingEvent, TestCorrectionStatus.REMOVED, reason, results);
+    results.forEach(result -> result.setTestEvent(correctionEvent));
+    _resultRepo.saveAll(results);
     _repo.save(correctionEvent);
 
     Optional<TestEvent> eventReloadOptional = _repo.findById(correctionEvent.getInternalId());
@@ -332,7 +347,8 @@ class TestEventRepositoryTest extends BaseRepositoryTest {
         eventReloaded.getOrganization().getInternalId());
     assertEquals(
         startingEvent.getFacility().getInternalId(), eventReloaded.getFacility().getInternalId());
-    assertEquals(startingEvent.getResult(), eventReloaded.getResult());
+    assertEquals(
+        startingEvent.getCovidTestResult().get(), eventReloaded.getCovidTestResult().get());
     assertEquals(startingEvent.getProviderData(), eventReloaded.getProviderData());
     assertEquals(startingEvent.getPatientData(), eventReloaded.getPatientData());
     compareAskOnEntrySurvey(startingEvent.getSurveyData(), eventReloaded.getSurveyData());

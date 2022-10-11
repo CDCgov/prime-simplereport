@@ -39,6 +39,7 @@ public abstract class BaseTestInfo extends AuditedEntity implements Organization
   @JoinColumn(name = "specimen_type_id")
   private SpecimenType specimenType;
 
+  @Deprecated
   @Column(nullable = true)
   @Type(type = "pg_enum")
   @Enumerated(EnumType.STRING)
@@ -59,11 +60,10 @@ public abstract class BaseTestInfo extends AuditedEntity implements Organization
   }
 
   protected BaseTestInfo(BaseTestInfo orig) {
-    this(orig.getPatient(), orig.getFacility(), orig.getDeviceSpecimen(), orig.getResult());
+    this(orig.getPatient(), orig.getFacility(), orig.getDeviceSpecimen());
   }
 
-  protected BaseTestInfo(
-      Person patient, Facility facility, DeviceSpecimenType deviceSpecimen, TestResult result) {
+  protected BaseTestInfo(Person patient, Facility facility, DeviceSpecimenType deviceSpecimen) {
     super();
     this.patient = patient;
     this.facility = facility;
@@ -71,13 +71,11 @@ public abstract class BaseTestInfo extends AuditedEntity implements Organization
     this.deviceSpecimen = deviceSpecimen;
     this.deviceType = deviceSpecimen.getDeviceType();
     this.specimenType = deviceSpecimen.getSpecimenType();
-    // Remove this call as part of #3664
-    this.result = result;
     this.correctionStatus = TestCorrectionStatus.ORIGINAL;
   }
 
   protected BaseTestInfo(Person patient, Facility facility) {
-    this(patient, facility, facility.getDefaultDeviceSpecimen(), null);
+    this(patient, facility, facility.getDefaultDeviceSpecimen());
   }
 
   protected BaseTestInfo(
@@ -112,10 +110,6 @@ public abstract class BaseTestInfo extends AuditedEntity implements Organization
     return deviceSpecimen;
   }
 
-  public TestResult getResult() {
-    return result;
-  }
-
   // FYI Setters shouldn't be allowed in TestEvent, so they are always *protected*
   // in this base class
   // and exposed only in TestOrder.
@@ -126,10 +120,6 @@ public abstract class BaseTestInfo extends AuditedEntity implements Organization
 
   protected void setDateTestedBackdate(Date dateTestedBackdate) {
     this.dateTestedBackdate = dateTestedBackdate;
-  }
-
-  protected void setTestResult(TestResult newResult) {
-    this.result = newResult;
   }
 
   protected void setDeviceSpecimen(DeviceSpecimenType deviceSpecimen) {

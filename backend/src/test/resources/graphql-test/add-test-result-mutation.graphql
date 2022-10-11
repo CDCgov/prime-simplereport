@@ -7,7 +7,14 @@ mutation addTestResult($deviceId: String!, $result: String!, $patientId: ID!, $d
     ) {
       testResult {
         internalId,
-        result,
+        results{
+          disease{
+              internalId
+              name
+              loinc
+          }
+          testResult
+        }
         deviceType {
           internalId
         }

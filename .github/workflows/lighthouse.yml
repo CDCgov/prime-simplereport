@@ -25,5 +25,5 @@ jobs:
         configPath: ./lighthouserc.yml
         runs: 1
       env:
-        SITE_URL: https://training.simplereport.gov
-        FACILITY_ID: ?facility=adddb27d-3be3-48b7-b959-ea506fd92ce6
+        SITE_URL: https://demo.simplereport.gov
+        FACILITY_ID: ?facility=14fab3c1-070e-4e86-8ec7-4a1fc8e13477

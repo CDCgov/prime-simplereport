@@ -5,6 +5,7 @@ import gov.cdc.usds.simplereport.db.model.auxiliary.AskOnEntrySurvey;
 import gov.cdc.usds.simplereport.db.model.auxiliary.TestCorrectionStatus;
 import gov.cdc.usds.simplereport.db.model.auxiliary.TestResult;
 import java.util.Date;
+import java.util.HashSet;
 import java.util.Optional;
 import java.util.Set;
 import java.util.UUID;
@@ -47,7 +48,7 @@ public class TestEvent extends BaseTestInfo {
 
   @JsonIgnore
   @OneToMany(mappedBy = "testEvent", cascade = CascadeType.MERGE, fetch = FetchType.LAZY)
-  private Set<Result> results;
+  private Set<Result> results = new HashSet<>();
 
   @Column(columnDefinition = "uuid")
   private UUID priorCorrectedTestEventId; // used to chain events
@@ -61,8 +62,13 @@ public class TestEvent extends BaseTestInfo {
     this(testOrder, false);
   }
 
-  public TestEvent(TestOrder order, Boolean hasPriorTests) {
-    super(order.getPatient(), order.getFacility(), order.getDeviceSpecimen(), order.getResult());
+  public TestEvent(TestOrder testOrder, Boolean hasPriorTests, Set<Result> results) {
+    this(testOrder, hasPriorTests);
+    this.results.addAll(results);
+  }
+
+  private TestEvent(TestOrder order, Boolean hasPriorTests) {
+    super(order.getPatient(), order.getFacility(), order.getDeviceSpecimen());
     // store a link, and *also* store the object as JSON
     // force load the lazy-loaded phone numbers so values are available to the object mapper
     // when serializing `patientData` (phoneNumbers is default lazy-loaded because of `OneToMany`)
@@ -86,7 +92,10 @@ public class TestEvent extends BaseTestInfo {
 
   // Constructor for creating corrections. Copy the original event
   public TestEvent(
-      TestEvent event, TestCorrectionStatus correctionStatus, String reasonForCorrection) {
+      TestEvent event,
+      TestCorrectionStatus correctionStatus,
+      String reasonForCorrection,
+      Set<Result> results) {
     super(event, correctionStatus, reasonForCorrection);
 
     this.patientData = event.getPatientData();
@@ -95,10 +104,14 @@ public class TestEvent extends BaseTestInfo {
     this.surveyData = event.getSurveyData();
     setDateTestedBackdate(order.getDateTestedBackdate());
     this.priorCorrectedTestEventId = event.getInternalId();
+    this.results.addAll(results);
   }
 
   public TestEvent(
-      TestOrder order, TestCorrectionStatus correctionStatus, String reasonForCorrection) {
+      TestOrder order,
+      TestCorrectionStatus correctionStatus,
+      String reasonForCorrection,
+      Set<Result> results) {
     super(order, correctionStatus, reasonForCorrection);
 
     TestEvent event = order.getTestEvent();
@@ -109,6 +122,7 @@ public class TestEvent extends BaseTestInfo {
     this.surveyData = event.getSurveyData();
     setDateTestedBackdate(order.getDateTestedBackdate());
     this.priorCorrectedTestEventId = event.getInternalId();
+    this.results.addAll(results);
   }
 
   public UUID getPatientInternalID() {
@@ -152,24 +166,12 @@ public class TestEvent extends BaseTestInfo {
     return order.getDeviceSpecimen();
   }
 
-  // This method is temporary and eventually, this method will be deprecated in favor of
-  // getResultSet()
-  public TestResult getTestResult() {
+  public Optional<TestResult> getCovidTestResult() {
     final String COVID_LOINC = "96741-4";
-    if (this.results != null) {
-      Optional<Result> resultObject =
-          this.results.stream()
-              .filter(result -> COVID_LOINC.equals(result.getDisease().getLoinc()))
-              .findFirst();
-      if (resultObject.isPresent()) {
-        return resultObject.get().getTestResult();
-      }
-    }
-    return super.getResult();
-  }
-
-  @Override
-  public TestResult getResult() {
-    return getTestResult();
+    Optional<Result> resultObject =
+        this.results.stream()
+            .filter(result -> COVID_LOINC.equals(result.getDisease().getLoinc()))
+            .findFirst();
+    return resultObject.map(Result::getTestResult);
   }
 }

@@ -5,8 +5,6 @@ import gov.cdc.usds.simplereport.db.model.DeviceType;
 import gov.cdc.usds.simplereport.db.model.PatientAnswers;
 import gov.cdc.usds.simplereport.db.model.Person;
 import gov.cdc.usds.simplereport.db.model.Result;
-import gov.cdc.usds.simplereport.db.model.auxiliary.TestResult;
-import gov.cdc.usds.simplereport.db.repository.DeviceTypeRepository;
 import gov.cdc.usds.simplereport.db.repository.PatientAnswersRepository;
 import gov.cdc.usds.simplereport.db.repository.PersonRepository;
 import java.time.LocalDate;
@@ -27,7 +25,6 @@ public class ApiTestOrderDataResolver {
   public ApiTestOrderDataResolver(
       BatchLoaderRegistry registry,
       PersonRepository personRepository,
-      DeviceTypeRepository deviceTypeRepository,
       PatientAnswersRepository patientAnswersRepository) {
 
     registry
@@ -38,16 +35,6 @@ public class ApiTestOrderDataResolver {
                   personRepository.findAllByInternalIdIn(uuids).stream()
                       .collect(Collectors.toMap(Person::getInternalId, s -> s));
 
-              return Mono.just(found);
-            });
-
-    registry
-        .forTypePair(UUID.class, DeviceType.class)
-        .registerMappedBatchLoader(
-            (uuids, batchLoaderEnvironment) -> {
-              Map<UUID, DeviceType> found =
-                  deviceTypeRepository.findAllByInternalIdIn(uuids).stream()
-                      .collect(Collectors.toMap(DeviceType::getInternalId, s -> s));
               return Mono.just(found);
             });
 
@@ -101,18 +88,12 @@ public class ApiTestOrderDataResolver {
   }
 
   @SchemaMapping(typeName = "TestOrder", field = "deviceType")
-  public CompletableFuture<DeviceType> deviceType(
-      ApiTestOrder apiTestOrder, DataLoader<UUID, DeviceType> loader) {
-    return loader.load(apiTestOrder.getWrapped().getDeviceType().getInternalId());
-  }
-
-  @SchemaMapping(typeName = "TestOrder", field = "result")
-  public TestResult getResult(ApiTestOrder apiTestOrder) {
-    return apiTestOrder.getWrapped().getResult();
+  public DeviceType deviceType(ApiTestOrder apiTestOrder) {
+    return apiTestOrder.getWrapped().getDeviceType();
   }
 
   @SchemaMapping(typeName = "TestOrder", field = "results")
-  public Set<Result> getResults(ApiTestOrder apiTestOrder) {
+  public Set<Result> results(ApiTestOrder apiTestOrder) {
     return apiTestOrder.getWrapped().getPendingResultSet();
   }
 }

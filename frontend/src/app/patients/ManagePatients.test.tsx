@@ -73,7 +73,7 @@ describe("ManagePatients", () => {
     expect(await screen.findByText(patients[2].lastName, { exact: false }));
   });
   it("filters a list of patients", async () => {
-    jest.useFakeTimers("modern");
+    jest.useFakeTimers();
     render(<TestContainer />);
     expect(await screen.findByText(patients[0].lastName, { exact: false }));
     const btn = await screen.findByText("Filter", { exact: false });
@@ -87,7 +87,7 @@ describe("ManagePatients", () => {
     expect(await screen.findByText(patients[2].lastName, { exact: false }));
   });
   it("can go to page 2", async () => {
-    jest.useFakeTimers("modern");
+    jest.useFakeTimers();
     render(<TestContainer />);
     expect(await screen.findByText(patients[0].lastName, { exact: false }));
     const page2 = screen.getByRole("link", { name: "Page 2" });

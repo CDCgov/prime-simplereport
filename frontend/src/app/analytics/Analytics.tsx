@@ -132,7 +132,7 @@ export const Analytics = (props: Props) => {
       <div className="grid-container">
         <div className="prime-container card-container margin-top-2">
           <div className="usa-card__header">
-            <h2>COVID-19 testing data</h2>
+            <h1 className="font-sans-lg">COVID-19 testing data</h1>
           </div>
           <div id="analytics-page">
             <div className="prime-container padding-3">
@@ -232,21 +232,25 @@ export const Analytics = (props: Props) => {
                 <p>Loading...</p>
               ) : (
                 <>
-                  <h3>{facilityName}</h3>
+                  <h2>{facilityName}</h2>
                   <p className="margin-bottom-0">All people tested</p>
                   <p className="padding-top-1">{`${startDate} \u2013 ${endDate}`}</p>
                   <div className="grid-row grid-gap">
                     <div className="grid-col-3">
                       <div className="card display-flex flex-column flex-row">
                         <h2>Tests conducted</h2>
-                        <h1>{totalTests}</h1>
+                        <span className="font-sans-3xl text-bold margin-y-auto">
+                          {totalTests}
+                        </span>
                         <p></p>
                       </div>
                     </div>
                     <div className="grid-col-3">
                       <div className="card display-flex flex-column flex-align-center">
                         <h2>Positive tests</h2>
-                        <h1>{positiveTests}</h1>
+                        <span className="font-sans-3xl text-bold margin-y-auto">
+                          {positiveTests}
+                        </span>
                         {/* \u2BC6 is down pointing triangle */}
                         <p>
                           {/* <span className="red-pointing-up">{`\u2BC5`} 2</span>{" "}
@@ -257,18 +261,20 @@ export const Analytics = (props: Props) => {
                     <div className="grid-col-3">
                       <div className="card display-flex flex-column flex-align-center">
                         <h2>Negative tests</h2>
-                        <h1>{negativeTests}</h1>
+                        <span className="font-sans-3xl text-bold margin-y-auto">
+                          {negativeTests}
+                        </span>
                         <p></p>
                       </div>
                     </div>
                     <div className="grid-col-3">
                       <div className="card display-flex flex-column flex-align-center">
                         <h2>Positivity rate</h2>
-                        <h1>
+                        <span className="font-sans-3xl text-bold margin-y-auto">
                           {positivityRate !== null
                             ? positivityRate.toFixed(1) + "%"
                             : "N/A"}
-                        </h1>
+                        </span>
                         <p className="font-ui-2xs">
                           Positives <span>÷</span> total tests
                         </p>
