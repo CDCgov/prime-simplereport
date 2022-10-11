@@ -363,7 +363,7 @@ const CsvSchemaDocumentation = () => {
               </h3>
               <p>
                 Make sure your spreadsheet is in a CSV format. SimpleReport
-                does’t accept .XLS, .XLXS, or other formats.
+                doesn’t accept .XLS, .XLXS, or other formats.
               </p>
             </li>
             <li className="usa-process-list__item">
