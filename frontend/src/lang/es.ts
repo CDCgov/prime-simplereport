@@ -258,6 +258,7 @@ export const es: LanguageConfig = {
       },
     },
     testResult: {
+      resultLiteral: "resultado",
       result: "Resultado de SARS-CoV-2",
       covidResultHeader: "Resultado de la prueba: COVID-19",
       multiplexResultHeader:
