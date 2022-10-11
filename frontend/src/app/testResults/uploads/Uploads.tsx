@@ -7,6 +7,7 @@ import { useDocumentTitle } from "../../utils/hooks";
 import { LinkWithQuery } from "../../commonComponents/LinkWithQuery";
 import { FileUploadService } from "../../../fileUploadService/FileUploadService";
 import "../HeaderSizeFix.scss";
+import { getAppInsights } from "../../TelemetryService";
 
 const PAYLOAD_MAX_BYTES = 50 * 1000 * 1000;
 const REPORT_MAX_ITEMS = 10000;
@@ -14,6 +15,8 @@ const REPORT_MAX_ITEM_COLUMNS = 2000;
 
 const Uploads = () => {
   useDocumentTitle("Upload spreadsheet");
+
+  const appInsights = getAppInsights();
 
   const [fileInputResetValue, setFileInputResetValue] = useState(0);
   const [buttonIsDisabled, setButtonIsDisabled] = useState(true);
@@ -174,7 +177,14 @@ const Uploads = () => {
           </p>
           <ol className="usa-list">
             <li>
-              <a href="/assets/resources/test_results_example_10-3-2022.csv">
+              <a
+                href="/assets/resources/test_results_example_10-3-2022.csv"
+                onClick={() => {
+                  appInsights?.trackEvent({
+                    name: "Download spreadsheet template",
+                  });
+                }}
+              >
                 Download the spreadsheet template
               </a>{" "}
             </li>
