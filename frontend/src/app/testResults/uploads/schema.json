@@ -47,7 +47,7 @@
               "required": true,
               "requested": false,
               "acceptedValues": [
-                "ex: <em>1234 America Ln</em>",
+                "Example: <em>1234 America Ln</em>",
                 "<mark><code>** Unknown / Not Given **</code></mark>",
                 "<mark><code>** Homeless **</code></mark>"
               ],
@@ -115,7 +115,7 @@
               "colHeader": "patient_dob",
               "required": true,
               "requested": false,
-              "format": "M/d/yyyy",
+              "format": "M/D/YYYY",
               "examples": ["3/30/1972", "12/8/2002"]
             },
             {
@@ -132,7 +132,7 @@
                 "<mark><code>N</code></mark> or <mark><code>Not applicable</code></mark>"
               ],
               "description": [
-                "Use one of the LOINC codes listed below, which come from the <a href=\"https://phinvads.cdc.gov/vads/SearchVocab.action\" class=\"usa-link\" target=\"_blank\" rel=\"noreferrer noopener\">PHIN VADS system</a>."
+                "Use one of the LOINC codes listed below, which come from the <a href=\"https://phinvads.cdc.gov/vads/SearchVocab.action\" class=\"usa-link\" target=\"_blank\" rel=\"noreferrer noopener\">PHIN VADS system</a>"
               ]
             },
             {
@@ -151,7 +151,7 @@
                 "<mark><code>UNK</code></mark> or <mark><code>Unknown</code></mark>"
               ],
               "description": [
-                "Use one of the LOINC codes listed below, which come from the <a href=\"https://phinvads.cdc.gov/vads/SearchVocab.action\" class=\"usa-link\" target=\"_blank\" rel=\"noreferrer noopener\">PHIN VADS system</a>. "
+                "Use one of the LOINC codes listed below, which come from the <a href=\"https://phinvads.cdc.gov/vads/SearchVocab.action\" class=\"usa-link\" target=\"_blank\" rel=\"noreferrer noopener\">PHIN VADS system</a>"
               ]
             },
             {
@@ -165,7 +165,7 @@
                 "<mark><code>UNK</code></mark> or <mark><code>Unknown</code></mark>"
               ],
               "description": [
-                "Use one of the LOINC codes list below, which come from the <a href=\"https://phinvads.cdc.gov/vads/SearchVocab.action\" class=\"usa-link\" target=\"_blank\" rel=\"noreferrer noopener\">PHIN VADS system</a>."
+                "Use one of the LOINC codes list below, which come from the <a href=\"https://phinvads.cdc.gov/vads/SearchVocab.action\" class=\"usa-link\" target=\"_blank\" rel=\"noreferrer noopener\">PHIN VADS system</a"
               ]
             },
             {
@@ -178,7 +178,7 @@
                 "spa or Spanish"
               ],
               "description": [
-                "Look up a Language Concept Code or Name from the  <a href=\"https://phinvads.cdc.gov/vads/ViewValueSet.action?id=D0858308-9AB3-EA11-818F-005056ABE2F0#\" class=\"usa-link\" target=\"_blank\" rel=\"noreferrer noopener\">ISO-639 table in the PHIN VADS system</a>."
+                "Look up a Language Concept Code or Name from the  <a href=\"https://phinvads.cdc.gov/vads/ViewValueSet.action?id=D0858308-9AB3-EA11-818F-005056ABE2F0#\" class=\"usa-link\" target=\"_blank\" rel=\"noreferrer noopener\">ISO-639 table in the PHIN VADS system</a>"
               ]
             },
             {
@@ -200,7 +200,7 @@
               "colHeader": "accession_number ",
               "required": true,
               "requested": false,
-              "acceptedValues": ["<em>ID12345-6789</em>"],
+              "examples": ["ID12345-6789"],
               "description": [
                 "A unique ID that identifies a single result, which allows public health departments to refer back to a test event"
               ]
@@ -210,11 +210,11 @@
               "colHeader": "equipment_model_name",
               "required": true,
               "requested": false,
-              "acceptedValues": [
-                "<em>ID NOW</em>",
-                "<em>BD Veritor System for Rapid Detection of SARS-CoV-2*</em>",
-                "<em>BD Veritor System for Rapid Detection of SARS-CoV-2 & Flu A+B*</em>",
-                "<em>RightSign COVID-19 IgG/IgM Rapid Test Cassette*</em>"
+              "examples": [
+                "ID NOW",
+                "BD Veritor System for Rapid Detection of SARS-CoV-2*",
+                "BD Veritor System for Rapid Detection of SARS-CoV-2 & Flu A+B*",
+                "RightSign COVID-19 IgG/IgM Rapid Test Cassette*"
               ],
               "subHeader": ["To find your equipment model name, you need to look it up in the Department of Health and Human Services' (HHS) LOINC mapping tool:",
               "<ol><li>Visit <a href=\"https://www.cdc.gov/csels/dls/sars-cov-2-livd-codes.html\" class=\"usa-link\" target=\"_blank\" rel=\"noreferrer noopener\">the CDC website</a></li><li>Click on the mapping tool labeled “LIVD SARS-CoV-2 Test Codes.xlsx” to download the file</li><li>Open the file on your computer and go to the “LOINC Mapping” tab</li><li>Search for your device name </li><li>For your device, find the corresponding value in column B, “Model,” and copy it to your spreadsheet </li></ol>"
@@ -249,7 +249,7 @@
                 "<mark><code>Not Detected</code></mark>",
                 "<mark><code>Detected</code></mark>",
                 "<mark><code>Invalid Result</code></mark>",
-                "SNOMED code from lookup table, ex: <em>260373001<em>"
+                "SNOMED code from lookup table, example: <em>260373001<em>"
               ],
               "subHeader": [
                 "For your test result value, you can either use a common value from the chart below or you can look it up in the Department of Health and Human Services' (HHS) LOINC mapping tool. To look up the value:",
@@ -347,7 +347,7 @@
                 "<mark><code>Whole Blood</code></mark>",
                 "<mark><code>Plasma</code></mark>",
                 "<mark><code>Serum</code></mark>",
-                "SNOMED code from lookup table, <em>ex: 697989009</em>"
+                "SNOMED code from lookup table, example:<em>697989009</em>"
               ],
               "description": [
                 "Use one of the common values listed below; or look up SNOMED code in the <a href=\"https://www.cdc.gov/csels/dls/sars-cov-2-livd-codes.html\" class=\"usa-link\" target=\"_blank\" rel=\"noreferrer noopener\">LIVD SARS-CoV-2</a> Test Codes spreadsheet, “LOINC Mapping” tab, column D"
@@ -364,14 +364,13 @@
               "colHeader": "ordering_provider_id",
               "required": true,
               "requested": false,
-              "subHeader": ["<mark>Some jurisdictions may not accept a local code, ReportStream will work with you if this is the case.</mark>"],
               "format": "<a href=\"https://npiregistry.cms.hhs.gov/\" class=\"usa-link\" target=\"_blank\" rel=\"noreferrer noopener\">NPI number</a> or local code",
               "examples": [
-                "NPI example: <em>1013012657</em>",
-                "Local code example: <em>muc1290</em>"
+                "<span class=\"normal-style\">NPI example:</span> <em>1013012657</em>",
+                "<span class=\"normal-style\">Local code example:</span> <em>muc1290</em>"
               ],
               "description": [
-               "Enter the National Provider Identifier (NPI), the unique 10-digit number that identifies a healthcare provider. You can find NPIs at the <a href=\"https://npiregistry.cms.hhs.gov/\" class=\"usa-link\" target=\"_blank\" rel=\"noreferrer noopener\">NPI Registry</a>. If you don’t know the NPI, you can enter local coding."
+               "Enter the National Provider Identifier (NPI), the unique 10-digit number that identifies a healthcare provider. You can find NPIs at the <a href=\"https://npiregistry.cms.hhs.gov/\" class=\"usa-link\" target=\"_blank\" rel=\"noreferrer noopener\">NPI Registry</a>. If you don’t know the NPI, you can enter local coding. Some jurisdictions may not accept a local code, ReportStream will work with you if this is the case."
               ]
             },
             {
@@ -555,7 +554,7 @@
               "colHeader": "illness_onset_date",
               "required": false,
               "requested": true,
-              "format": "M/d/YYYY",
+              "format": "M/D/YYYY",
               "examples": ["9/2/2022", "10/13/2021"],
               "description": ["Date"]
             },
@@ -576,7 +575,7 @@
               "colHeader": "residence_type",
               "required": false,
               "requested": false,
-              "format": "Use oe of the accepted values listed below",
+              "format": "Use one of the accepted values listed below",
               "acceptedValues": [
                 "<mark><code>22232009</code></mark> or <mark><code>Hospital</code></mark>",
                 "<mark><code>2081004</code></mark> or <mark><code>Hospital Ship</code></mark>",
@@ -637,7 +636,7 @@
               "required": false,
               "requested": false,
               "description": [
-                "You can leave this field blank if it’s the same as <a href=\"#testing_lab_name\" class=\"usa-link\">testing_lab_name</a>. "
+                "You can leave this field blank if it’s the same as <a href=\"#testing_lab_name\" class=\"usa-link\">testing_lab_name</a>"
               ]
             },
             {
@@ -646,14 +645,15 @@
               "required": false,
               "requested": false,
               "description": [
-                "You can leave this field blank if it’s the same as <a href=\"#testing_lab_street\" class=\"usa-link\">testing_lab_street</a>."
+                "You can leave this field blank if it’s the same as <a href=\"#testing_lab_street\" class=\"usa-link\">testing_lab_street</a>"
               ]
             },
             {
               "name": "Ordering facility street address line 2",
               "colHeader": "ordering_facility_street2",
               "required": false,
-              "requested": false
+              "requested": false,
+              "description": ["Address, continued"]
             },
             {
               "name": "Ordering facility city",
@@ -661,7 +661,7 @@
               "required": false,
               "requested": false,
               "description": [
-                "You can leave this field blank if it’s the same as <a href=\"#testing_lab_city\" class=\"usa-link\">testing_lab_city</a>."
+                "You can leave this field blank if it’s the same as <a href=\"#testing_lab_city\" class=\"usa-link\">testing_lab_city</a>"
               ]
             },
             {
@@ -671,7 +671,7 @@
               "requested": false,
               "format": "Two-character state abbreviation",
               "description": [
-                "You can leave this field blank if it’s the same as <a href=\"#testing_lab_state\" class=\"usa-link\">testing_lab_state</a>."
+                "You can leave this field blank if it’s the same as <a href=\"#testing_lab_state\" class=\"usa-link\">testing_lab_state</a>"
               ],
               "examples": ["TX", "CA"]
             },
@@ -683,7 +683,7 @@
               "format": "5 or 9 digit zip code",
               "examples": ["12345", "12345-6789"],
               "description": [
-                "You can leave this field blank if it’s the same as <a href=\"#testing_lab_zip_code\" class=\"usa-link\">testing_lab_zip_code</a>. "
+                "You can leave this field blank if it’s the same as <a href=\"#testing_lab_zip_code\" class=\"usa-link\">testing_lab_zip_code</a>"
               ]
             },
             {
@@ -694,7 +694,7 @@
               "examples": ["123-456-7890"],
               "format": "000-000-0000",
               "description": [
-                "You can leave this field blank if it’s the same as <a href=\"#testing_lab_phone_number\" class=\"usa-link\">testing_lab_phone_number</a>."
+                "You can leave this field blank if it’s the same as <a href=\"#testing_lab_phone_number\" class=\"usa-link\">testing_lab_phone_number</a>"
               ]
             }
           ]

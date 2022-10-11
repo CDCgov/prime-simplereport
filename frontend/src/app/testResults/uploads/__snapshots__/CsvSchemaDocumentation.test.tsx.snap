@@ -626,7 +626,7 @@ exports[`CsvSchemaDocumentation tests CsvSchemaDocumentaton matches snapshot 1`]
                 <li
                   class="bullet-list"
                 >
-                  ex: 
+                  Example: 
                   <em>
                     1234 America Ln
                   </em>
@@ -1213,7 +1213,7 @@ exports[`CsvSchemaDocumentation tests CsvSchemaDocumentaton matches snapshot 1`]
               <div
                 class="grid-col-8 prime-ul margin-top-0"
               >
-                M/d/yyyy
+                M/D/YYYY
               </div>
             </div>
             <div
@@ -1304,7 +1304,6 @@ exports[`CsvSchemaDocumentation tests CsvSchemaDocumentaton matches snapshot 1`]
                   >
                     PHIN VADS system
                   </a>
-                  .
                 </div>
               </div>
             </div>
@@ -1471,7 +1470,6 @@ exports[`CsvSchemaDocumentation tests CsvSchemaDocumentaton matches snapshot 1`]
                   >
                     PHIN VADS system
                   </a>
-                  . 
                 </div>
               </div>
             </div>
@@ -1668,7 +1666,6 @@ exports[`CsvSchemaDocumentation tests CsvSchemaDocumentaton matches snapshot 1`]
                   >
                     PHIN VADS system
                   </a>
-                  .
                 </div>
               </div>
             </div>
@@ -1790,7 +1787,6 @@ exports[`CsvSchemaDocumentation tests CsvSchemaDocumentaton matches snapshot 1`]
                   >
                     ISO-639 table in the PHIN VADS system
                   </a>
-                  .
                 </div>
               </div>
             </div>
@@ -1961,12 +1957,12 @@ exports[`CsvSchemaDocumentation tests CsvSchemaDocumentaton matches snapshot 1`]
             </div>
             <div
               class="grid-row margin-bottom-05 border-base-lighter border-top-1px padding-top-1"
-              data-testid="accepted-values"
+              data-testid="examples"
             >
               <div
                 class="grid-col-4 text-base"
               >
-                Accepted values
+                Example
               </div>
               <ul
                 class="grid-col-8 prime-ul margin-top-0"
@@ -2075,12 +2071,13 @@ exports[`CsvSchemaDocumentation tests CsvSchemaDocumentaton matches snapshot 1`]
             </div>
             <div
               class="grid-row margin-bottom-05 border-base-lighter border-top-1px padding-top-1"
-              data-testid="accepted-values"
+              data-testid="examples"
             >
               <div
                 class="grid-col-4 text-base"
               >
-                Accepted values
+                Example
+                s
               </div>
               <ul
                 class="grid-col-8 prime-ul margin-top-0"
@@ -2434,7 +2431,7 @@ exports[`CsvSchemaDocumentation tests CsvSchemaDocumentaton matches snapshot 1`]
                 <li
                   class="bullet-list"
                 >
-                  SNOMED code from lookup table, ex: 
+                  SNOMED code from lookup table, example: 
                   <em>
                     260373001
                     <em />
@@ -3151,9 +3148,9 @@ exports[`CsvSchemaDocumentation tests CsvSchemaDocumentaton matches snapshot 1`]
                 <li
                   class="bullet-list"
                 >
-                  SNOMED code from lookup table, 
+                  SNOMED code from lookup table, example:
                   <em>
-                    ex: 697989009
+                    697989009
                   </em>
                 </li>
               </ul>
@@ -3186,13 +3183,7 @@ exports[`CsvSchemaDocumentation tests CsvSchemaDocumentaton matches snapshot 1`]
             <div
               class="margin-bottom-3"
               data-testid="subheader"
-            >
-              <p>
-                <mark>
-                  Some jurisdictions may not accept a local code, ReportStream will work with you if this is the case.
-                </mark>
-              </p>
-            </div>
+            />
             <div
               class="grid-row margin-bottom-05"
               data-testid="column-header"
@@ -3232,7 +3223,7 @@ exports[`CsvSchemaDocumentation tests CsvSchemaDocumentaton matches snapshot 1`]
                   >
                     NPI Registry
                   </a>
-                  . If you don’t know the NPI, you can enter local coding.
+                  . If you don’t know the NPI, you can enter local coding. Some jurisdictions may not accept a local code, ReportStream will work with you if this is the case.
                 </div>
               </div>
             </div>
@@ -3276,7 +3267,12 @@ exports[`CsvSchemaDocumentation tests CsvSchemaDocumentaton matches snapshot 1`]
                   class="bullet-list"
                 >
                   <em>
-                    NPI example: 
+                    <span
+                      class="normal-style"
+                    >
+                      NPI example:
+                    </span>
+                     
                     <em>
                       1013012657
                     </em>
@@ -3286,7 +3282,12 @@ exports[`CsvSchemaDocumentation tests CsvSchemaDocumentaton matches snapshot 1`]
                   class="bullet-list"
                 >
                   <em>
-                    Local code example: 
+                    <span
+                      class="normal-style"
+                    >
+                      Local code example:
+                    </span>
+                     
                     <em>
                       muc1290
                     </em>
@@ -4846,7 +4847,7 @@ exports[`CsvSchemaDocumentation tests CsvSchemaDocumentaton matches snapshot 1`]
               <div
                 class="grid-col-8 prime-ul margin-top-0"
               >
-                M/d/YYYY
+                M/D/YYYY
               </div>
             </div>
             <div
@@ -5055,7 +5056,7 @@ exports[`CsvSchemaDocumentation tests CsvSchemaDocumentaton matches snapshot 1`]
               <div
                 class="grid-col-8 prime-ul margin-top-0"
               >
-                Use oe of the accepted values listed below
+                Use one of the accepted values listed below
               </div>
             </div>
             <div
@@ -5630,7 +5631,6 @@ exports[`CsvSchemaDocumentation tests CsvSchemaDocumentaton matches snapshot 1`]
                   >
                     testing_lab_name
                   </a>
-                  . 
                 </div>
               </div>
             </div>
@@ -5691,7 +5691,6 @@ exports[`CsvSchemaDocumentation tests CsvSchemaDocumentaton matches snapshot 1`]
                   >
                     testing_lab_street
                   </a>
-                  .
                 </div>
               </div>
             </div>
@@ -5730,6 +5729,23 @@ exports[`CsvSchemaDocumentation tests CsvSchemaDocumentaton matches snapshot 1`]
                 <code>
                   ordering_facility_street2
                 </code>
+              </div>
+            </div>
+            <div
+              class="grid-row margin-bottom-05 border-base-lighter border-top-1px padding-top-1"
+              data-testid="description"
+            >
+              <div
+                class="grid-col-4 text-base"
+              >
+                Description
+              </div>
+              <div
+                class="grid-col-8"
+              >
+                <div>
+                  Address, continued
+                </div>
               </div>
             </div>
           </div>
@@ -5789,7 +5805,6 @@ exports[`CsvSchemaDocumentation tests CsvSchemaDocumentaton matches snapshot 1`]
                   >
                     testing_lab_city
                   </a>
-                  .
                 </div>
               </div>
             </div>
@@ -5850,7 +5865,6 @@ exports[`CsvSchemaDocumentation tests CsvSchemaDocumentaton matches snapshot 1`]
                   >
                     testing_lab_state
                   </a>
-                  .
                 </div>
               </div>
             </div>
@@ -5955,7 +5969,6 @@ exports[`CsvSchemaDocumentation tests CsvSchemaDocumentaton matches snapshot 1`]
                   >
                     testing_lab_zip_code
                   </a>
-                  . 
                 </div>
               </div>
             </div>
@@ -6060,7 +6073,6 @@ exports[`CsvSchemaDocumentation tests CsvSchemaDocumentaton matches snapshot 1`]
                   >
                     testing_lab_phone_number
                   </a>
-                  .
                 </div>
               </div>
             </div>
