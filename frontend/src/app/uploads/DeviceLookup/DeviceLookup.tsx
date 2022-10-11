@@ -7,6 +7,7 @@ import TextInput from "../../commonComponents/TextInput";
 import { DeviceType } from "../../../generated/graphql";
 import LabeledText from "../../commonComponents/LabeledText";
 import Optional from "../../commonComponents/Optional";
+import "./DeviceLookup.scss";
 
 interface Device {
   internalId?: string;
@@ -86,10 +87,9 @@ const DeviceLookup = (props: Props) => {
     label: string
   ) => {
     return (
-      <div>
+      <div className="copy-button-container copy-button-tooltip">
         {device && (
           <button
-            style={{ bottom: 12, right: 15, position: "absolute" }}
             className="usa-button usa-button--unstyled"
             onClick={() => copiedAttribute && copySlug(copiedAttribute)}
             arial-label={`${label}`}
@@ -105,7 +105,7 @@ const DeviceLookup = (props: Props) => {
   };
 
   return (
-    <main className="prime-home">
+    <main className="prime-home device-lookup-container">
       <div className="grid-container">
         <div className="grid-row">
           <div className="prime-container card-container">
@@ -184,55 +184,58 @@ const DeviceLookup = (props: Props) => {
               <div className="grid-row grid-gap">
                 <div className="tablet:grid-col">
                   <div style={{ position: "relative" }}>
-                    <label className="usa-label">
-                      <Optional label="Specimen Type" />
-                    </label>
-                    <span className="usa-hint">
-                      <code>specimen_type</code>
-                    </span>
-                    <table className={"usa-table"}>
-                      <tbody>
-                        {device &&
-                          props.swabOptions
-                            .filter((swab) =>
-                              device.swabTypes.includes(swab.internalId)
-                            )
-                            .map(({ swabName, typeCode }) => (
-                              <tr key={swabName}>
-                                <td>
-                                  <div
-                                    style={{ position: "relative" }}
-                                    className="display-flex flex-justify"
-                                  >
-                                    <span>
-                                      {swabName} ({typeCode})
-                                    </span>
-                                    {device && (
-                                      <button
-                                        className="usa-button usa-button--unstyled"
-                                        onClick={() =>
-                                          typeCode && copySlug(typeCode)
-                                        }
-                                        arial-label={`Copy SNOMED code for ${swabName} (${typeCode})`}
-                                      >
-                                        <FontAwesomeIcon
-                                          icon={
-                                            copiedSlug === typeCode
-                                              ? faCheck
-                                              : faCopy
-                                          }
-                                        />
-                                      </button>
-                                    )}
-                                    {device && copiedSlug === typeCode && (
-                                      <CopyTooltip />
-                                    )}
-                                  </div>
-                                </td>
-                              </tr>
-                            ))}
-                      </tbody>
-                    </table>
+                    <div className="usa-form-group">
+                      <label className="usa-label">
+                        <Optional label="Specimen Type" />
+                      </label>
+                      <span className="usa-hint">
+                        <code>specimen_type</code>
+                      </span>
+                      <table className={"usa-table"}>
+                        <tbody>
+                          {device &&
+                            props.swabOptions
+                              .filter((swab) =>
+                                device.swabTypes.includes(swab.internalId)
+                              )
+                              .map(({ swabName, typeCode }) => (
+                                <tr key={swabName}>
+                                  <td>{swabName}</td>
+                                  <td>
+                                    <div
+                                      style={{ position: "relative" }}
+                                      className="display-flex flex-justify"
+                                    >
+                                      <span>{typeCode}</span>
+                                      <div className={"copy-button-container"}>
+                                        {device && (
+                                          <button
+                                            className="usa-button usa-button--unstyled copy-button"
+                                            onClick={() =>
+                                              typeCode && copySlug(typeCode)
+                                            }
+                                            aria-label={`Copy SNOMED code for ${swabName} (${typeCode})`}
+                                          >
+                                            <FontAwesomeIcon
+                                              icon={
+                                                copiedSlug === typeCode
+                                                  ? faCheck
+                                                  : faCopy
+                                              }
+                                            />
+                                          </button>
+                                        )}
+                                        {device && copiedSlug === typeCode && (
+                                          <CopyTooltip />
+                                        )}
+                                      </div>
+                                    </div>
+                                  </td>
+                                </tr>
+                              ))}
+                        </tbody>
+                      </table>
+                    </div>
                   </div>
                 </div>
               </div>
@@ -250,7 +253,7 @@ const CopyTooltip = () => {
   return (
     <span
       className="usa-tooltip__body usa-tooltip__body--right is-set is-visible"
-      style={{ right: 0, marginRight: -75, marginTop: -37 }}
+      style={{ right: 0, marginRight: -75 }}
     >
       Copied!
     </span>
