@@ -70,7 +70,7 @@ class UploadServiceTest extends BaseServiceTest<UploadService> {
     InputStream inputStream = loadCsv("test-upload.csv");
 
     // WHEN
-    this._service.processPersonCSV(inputStream);
+    this._service.processPersonCSV(inputStream, null);
 
     // THEN
     assertThat(getPatients()).hasSize(1);
@@ -93,7 +93,7 @@ class UploadServiceTest extends BaseServiceTest<UploadService> {
     // WHEN
     var error =
         assertThrows(
-            IllegalArgumentException.class, () -> this._service.processPersonCSV(inputStream));
+            IllegalArgumentException.class, () -> this._service.processPersonCSV(inputStream, null));
 
     // THEN
     assertThat(error.getMessage()).isEqualTo("Error on row 1; Invalid zip code");
@@ -108,7 +108,7 @@ class UploadServiceTest extends BaseServiceTest<UploadService> {
     // WHEN
     var error =
         assertThrows(
-            IllegalArgumentException.class, () -> this._service.processPersonCSV(inputStream));
+            IllegalArgumentException.class, () -> this._service.processPersonCSV(inputStream, null));
 
     // THEN
     assertThat(error.getMessage()).isEqualTo("Error on row 1; Invalid PhoneType received");
@@ -121,7 +121,7 @@ class UploadServiceTest extends BaseServiceTest<UploadService> {
     InputStream inputStream = loadCsv("test-upload-no-phone-type.csv");
 
     // WHEN
-    this._service.processPersonCSV(inputStream);
+    this._service.processPersonCSV(inputStream, null);
 
     // THEN
     assertThat(getPatients()).hasSize(1);
@@ -140,7 +140,7 @@ class UploadServiceTest extends BaseServiceTest<UploadService> {
     InputStream inputStream = loadCsv("test-upload-no-country.csv");
 
     // WHEN
-    this._service.processPersonCSV(inputStream);
+    this._service.processPersonCSV(inputStream, null);
 
     // THEN
     assertThat(getPatients()).hasSize(1);
@@ -156,7 +156,7 @@ class UploadServiceTest extends BaseServiceTest<UploadService> {
     // WHEN
     var error =
         assertThrows(
-            IllegalArgumentException.class, () -> this._service.processPersonCSV(inputStream));
+            IllegalArgumentException.class, () -> this._service.processPersonCSV(inputStream, null));
 
     // THEN
     assertThat(error.getMessage()).isEqualTo("Error on row 4; [abc] is not a valid date");
@@ -170,7 +170,7 @@ class UploadServiceTest extends BaseServiceTest<UploadService> {
 
     // WHEN
     var error =
-        assertThrows(IllegalArgumentException.class, () -> this._service.processPersonCSV(bis));
+        assertThrows(IllegalArgumentException.class, () -> this._service.processPersonCSV(bis, null));
 
     // THEN
     assertThat(error.getMessage()).contains("Not enough column values:");
@@ -184,7 +184,7 @@ class UploadServiceTest extends BaseServiceTest<UploadService> {
 
     // WHEN
     var error =
-        assertThrows(IllegalArgumentException.class, () -> this._service.processPersonCSV(bis));
+        assertThrows(IllegalArgumentException.class, () -> this._service.processPersonCSV(bis, null));
 
     // THEN
     assertThat(error.getMessage()).contains("Not enough column values: expected 22, found 1");
@@ -198,7 +198,7 @@ class UploadServiceTest extends BaseServiceTest<UploadService> {
     // WHEN
     var error =
         assertThrows(
-            IllegalArgumentException.class, () -> this._service.processPersonCSV(inputStream));
+            IllegalArgumentException.class, () -> this._service.processPersonCSV(inputStream, null));
 
     // THEN
     assertThat(error.getMessage()).isEqualTo("Error on row 1; Ethnicity is required.");
@@ -212,7 +212,7 @@ class UploadServiceTest extends BaseServiceTest<UploadService> {
     // WHEN
     var error =
         assertThrows(
-            IllegalArgumentException.class, () -> this._service.processPersonCSV(inputStream));
+            IllegalArgumentException.class, () -> this._service.processPersonCSV(inputStream, null));
 
     // THEN
     assertThat(error.getMessage()).contains("Error on row 1; \"InvalidEthnicity\" must be one of");
@@ -226,7 +226,7 @@ class UploadServiceTest extends BaseServiceTest<UploadService> {
     // WHEN
     var error =
         assertThrows(
-            IllegalArgumentException.class, () -> this._service.processPersonCSV(inputStream));
+            IllegalArgumentException.class, () -> this._service.processPersonCSV(inputStream, null));
 
     // THEN
     assertThat(error.getMessage()).isEqualTo("Error on row 1; Race is required.");
@@ -240,7 +240,7 @@ class UploadServiceTest extends BaseServiceTest<UploadService> {
     // WHEN
     var error =
         assertThrows(
-            IllegalArgumentException.class, () -> this._service.processPersonCSV(inputStream));
+            IllegalArgumentException.class, () -> this._service.processPersonCSV(inputStream, null));
 
     // THEN
     assertThat(error.getMessage()).contains("Error on row 1; \"InvalidRace\" must be one of");
@@ -254,7 +254,7 @@ class UploadServiceTest extends BaseServiceTest<UploadService> {
     // WHEN
     var error =
         assertThrows(
-            IllegalArgumentException.class, () -> this._service.processPersonCSV(inputStream));
+            IllegalArgumentException.class, () -> this._service.processPersonCSV(inputStream, null));
 
     // THEN
     assertThat(error.getMessage())
@@ -267,7 +267,7 @@ class UploadServiceTest extends BaseServiceTest<UploadService> {
     InputStream inputStream = loadCsv("test-upload-valid-no-header.csv");
 
     // WHEN
-    this._service.processPersonCSV(inputStream);
+    this._service.processPersonCSV(inputStream, null);
 
     // THEN
     assertThat(getPatients()).hasSize(1);

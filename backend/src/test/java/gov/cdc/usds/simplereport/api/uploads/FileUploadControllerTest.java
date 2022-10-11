@@ -39,7 +39,7 @@ class FileUploadControllerTest extends BaseFullStackTest {
 
   @Test
   void patientsUploadTest_happy() throws Exception {
-    when(patientUploadService.processPersonCSV(any(InputStream.class)))
+    when(patientUploadService.processPersonCSV(any(InputStream.class), any(UUID.class)))
         .thenReturn("Successfully uploaded 1 record(s)");
 
     MockMultipartFile file =
@@ -54,7 +54,7 @@ class FileUploadControllerTest extends BaseFullStackTest {
 
   @Test
   void patientsUploadTest_IllegalArgumentException() throws Exception {
-    when(patientUploadService.processPersonCSV(any(InputStream.class)))
+    when(patientUploadService.processPersonCSV(any(InputStream.class), any(UUID.class)))
         .thenThrow(new IllegalArgumentException("Invalid csv"));
 
     MockMultipartFile file =
@@ -72,7 +72,7 @@ class FileUploadControllerTest extends BaseFullStackTest {
 
   @Test
   void patientsUploadTest_NonCsvFileException() throws Exception {
-    when(patientUploadService.processPersonCSV(any(InputStream.class)))
+    when(patientUploadService.processPersonCSV(any(InputStream.class), any(UUID.class)))
         .thenThrow(new IllegalArgumentException("Invalid csv"));
 
     MockMultipartFile file =
