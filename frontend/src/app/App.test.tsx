@@ -228,9 +228,7 @@ const MODAL_TEXT = "Welcome to the SimpleReport";
 
 describe("App", () => {
   beforeEach(() => {
-    jest
-      .useFakeTimers("modern")
-      .setSystemTime(new Date("2021-08-01").getTime());
+    jest.useFakeTimers().setSystemTime(new Date("2021-08-01").getTime());
   });
 
   afterEach(() => {

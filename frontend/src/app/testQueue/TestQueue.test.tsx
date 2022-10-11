@@ -54,9 +54,7 @@ describe("TestQueue", () => {
   });
 
   it("should render the test queue", async () => {
-    jest
-      .useFakeTimers("modern")
-      .setSystemTime(new Date("2021-08-01 08:20").getTime());
+    jest.useFakeTimers().setSystemTime(new Date("2021-08-01 08:20").getTime());
     const { container } = render(
       <MemoryRouter>
         <MockedProvider mocks={mocks}>
