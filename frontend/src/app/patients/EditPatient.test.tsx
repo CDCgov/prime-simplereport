@@ -351,9 +351,7 @@ describe("EditPatient", () => {
   describe("facility select input", () => {
     let component: any;
     beforeEach(async () => {
-      jest
-        .useFakeTimers("modern")
-        .setSystemTime(new Date("2021-08-01").getTime());
+      jest.useFakeTimers().setSystemTime(new Date("2021-08-01").getTime());
       const mocks = [
         {
           request: {
