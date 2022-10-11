@@ -247,6 +247,7 @@ export const en = {
       },
     },
     testResult: {
+      resultLiteral: "result",
       result: "SARS-CoV-2 result",
       covidResultHeader: "Test result: COVID-19",
       multiplexResultHeader: "Test results: COVID-19 and flu",
