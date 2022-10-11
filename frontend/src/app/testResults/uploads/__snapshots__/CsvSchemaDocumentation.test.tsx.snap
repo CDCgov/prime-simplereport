@@ -6359,7 +6359,7 @@ exports[`CsvSchemaDocumentation tests CsvSchemaDocumentaton matches snapshot 1`]
               Export or save your CSV
             </h3>
             <p>
-              Make sure your spreadsheet is in a CSV format. SimpleReport does’t accept .XLS, .XLXS, or other formats.
+              Make sure your spreadsheet is in a CSV format. SimpleReport doesn’t accept .XLS, .XLXS, or other formats.
             </p>
           </li>
           <li
