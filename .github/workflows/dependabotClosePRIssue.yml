@@ -1,7 +1,7 @@
-name: Dependabot Create Issue
+name: Dependabot Close Issue
 on:
   pull_request:
-    types: [opened, reopened]
+    types: [closed]
 
 jobs:
   issue:
@@ -10,11 +10,11 @@ jobs:
       GITHUB_TOKEN: ${{secrets.GITHUB_TOKEN}}
     # Github action permissions: https://docs.github.com/en/actions/using-jobs/assigning-permissions-to-jobs#overview
     permissions:
-      issues: write
+      pull-requests: write
     steps:
       - uses: actions/checkout@v2
         if: github.event.pull_request.user.login  == 'dependabot[bot]'
-      - name: Open issue if Dependabot PR
+      - name: Close issue if Dependabot PR is closed
         if: github.event.pull_request.user.login  == 'dependabot[bot]'
         env:
           title: ${{github.event.pull_request.title}}
@@ -22,7 +22,5 @@ jobs:
           url: ${{github.event.pull_request.url}}
         run: |
           title="Dependabot PR $title opened"
-          labels="dependencies,Dependabot"
-          body="Dependabot has opened PR #$number
-          Link: $url"
-          gh issue create --title "$title" --body "$body" --label "$labels"
+          issue=$(gh issue list --json number --jq '.[].number' --search "$title")
+          gh issue close "$issue"
