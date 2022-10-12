@@ -211,7 +211,13 @@ const App = () => {
               />
               <Route
                 path="csv/codelookup"
-                element={<DeviceLookupContainer />}
+                element={
+                  <ProtectedRoute
+                    requiredPermissions={canViewResults}
+                    userPermissions={data.whoami.permissions}
+                    element={<DeviceLookupContainer />}
+                  />
+                }
               />
               <Route
                 path="results/upload/submit"
