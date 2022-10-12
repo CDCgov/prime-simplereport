@@ -69,7 +69,7 @@ const CovidResultInputForm: React.FC<Props> = ({
 
   return (
     <form className="usa-form maxw-none">
-      <h2 className="prime-radio__title">COVID-19 results</h2>
+      <h3 className="prime-radio__title">COVID-19 results</h3>
       <RadioGroup
         legend="Test result"
         legendSrOnly
