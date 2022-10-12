@@ -92,7 +92,7 @@ const DeviceLookup = (props: Props) => {
           <button
             className="usa-button usa-button--unstyled"
             onClick={() => copiedAttribute && copySlug(copiedAttribute)}
-            arial-label={`${label}`}
+            aria-label={`${label}`}
           >
             <FontAwesomeIcon
               icon={copiedSlug === copiedAttribute ? faCheck : faCopy}
@@ -147,7 +147,7 @@ const DeviceLookup = (props: Props) => {
               ) : null}
               <div className="grid-row grid-gap">
                 <div className="tablet:grid-col">
-                  <div style={{ position: "relative" }}>
+                  <div className="text-field">
                     <TextInput
                       label="Equipment model name"
                       name="Equipment model name"
@@ -165,7 +165,7 @@ const DeviceLookup = (props: Props) => {
               </div>
               <div className="grid-row grid-gap">
                 <div className="tablet:grid-col">
-                  <div style={{ position: "relative" }}>
+                  <div className="text-field">
                     <TextInput
                       label="Test performed code "
                       name="Test performed code "

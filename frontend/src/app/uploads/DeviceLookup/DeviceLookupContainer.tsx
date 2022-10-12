@@ -1,7 +1,6 @@
 import {
   DeviceType,
   useGetSpecimenTypesQuery,
-  useGetSupportedDiseasesQuery,
   useGetDeviceTypeListQuery,
 } from "../../../generated/graphql";
 import { LoadingCard } from "../../commonComponents/LoadingCard/LoadingCard";
@@ -12,14 +11,12 @@ const DeviceLookupContainer = () => {
   const { data: specimenTypesResults } = useGetSpecimenTypesQuery({
     fetchPolicy: "no-cache",
   });
-  const { data: supportedDiseaseResults } = useGetSupportedDiseasesQuery({
-    fetchPolicy: "no-cache",
-  });
+
   const { data: deviceTypeResults } = useGetDeviceTypeListQuery({
     fetchPolicy: "no-cache",
   });
 
-  if (deviceTypeResults && specimenTypesResults && supportedDiseaseResults) {
+  if (deviceTypeResults && specimenTypesResults) {
     const swabOptions = Array.from(
       specimenTypesResults.specimenTypes.map((type) => ({
         swabName: type?.name,
