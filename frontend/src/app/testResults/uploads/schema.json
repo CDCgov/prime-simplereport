@@ -174,8 +174,8 @@
               "required": false,
               "requested": false,
               "examples": [
-                "eng or English",
-                "spa or Spanish"
+                "eng <span class=\"normal-style\">or</span> English",
+                "spa <span class=\"normal-style\">or</span> Spanish"
               ],
               "description": [
                 "Look up a Language Concept Code or Name from the  <a href=\"https://phinvads.cdc.gov/vads/ViewValueSet.action?id=D0858308-9AB3-EA11-818F-005056ABE2F0#\" class=\"usa-link\" target=\"_blank\" rel=\"noreferrer noopener\">ISO-639 table in the PHIN VADS system</a>"

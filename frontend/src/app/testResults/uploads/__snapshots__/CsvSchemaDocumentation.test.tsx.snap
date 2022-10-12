@@ -1807,14 +1807,26 @@ exports[`CsvSchemaDocumentation tests CsvSchemaDocumentaton matches snapshot 1`]
                   class="bullet-list"
                 >
                   <em>
-                    eng or English
+                    eng 
+                    <span
+                      class="normal-style"
+                    >
+                      or
+                    </span>
+                     English
                   </em>
                 </li>
                 <li
                   class="bullet-list"
                 >
                   <em>
-                    spa or Spanish
+                    spa 
+                    <span
+                      class="normal-style"
+                    >
+                      or
+                    </span>
+                     Spanish
                   </em>
                 </li>
               </ul>
