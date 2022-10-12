@@ -365,6 +365,7 @@ const FacilityForm: React.FC<Props> = (props) => {
               updateFacility={updateFacility}
               errors={errors}
               validateField={validateField}
+              newOrg={props.newOrg}
             />
           </div>
         </div>

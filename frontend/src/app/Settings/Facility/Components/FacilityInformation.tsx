@@ -13,6 +13,7 @@ interface Props {
   updateFacility: (facility: Facility) => void;
   errors: FacilityErrors;
   validateField: ValidateField;
+  newOrg?: boolean;
 }
 
 const FacilityInformation: React.FC<Props> = ({
@@ -20,6 +21,7 @@ const FacilityInformation: React.FC<Props> = ({
   updateFacility,
   errors,
   validateField,
+  newOrg = false,
 }) => {
   const onChange = (
     e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement>
@@ -30,7 +32,7 @@ const FacilityInformation: React.FC<Props> = ({
 
   return (
     <div className={classNames("usa-form", "usa-form--large")}>
-      {!facility && (
+      {newOrg && (
         <>
           <p>
             Please enter one facility to get started. You can add more after
@@ -43,7 +45,6 @@ const FacilityInformation: React.FC<Props> = ({
           </p>
         </>
       )}
-
       <h2 className="font-heading-lg" style={{ margin: 0 }}>
         Testing facility information
       </h2>
