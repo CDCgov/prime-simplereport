@@ -137,6 +137,14 @@ exports[`CsvSchemaDocumentation tests CsvSchemaDocumentaton matches snapshot 1`]
           <li>
             <a
               class="usa-link"
+              href="/csv/codelookup"
+            >
+              Device code lookup tool
+            </a>
+          </li>
+          <li>
+            <a
+              class="usa-link"
               href="mailto:support@simplereport.gov"
             >
               SimpleReport support
