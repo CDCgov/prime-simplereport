@@ -1,0 +1,1195 @@
+// Jest Snapshot v1, https://goo.gl/fbAQLP
+
+exports[`DeviceLookupContainer should render device lookup container 1`] = `
+Object {
+  "asFragment": [Function],
+  "baseElement": <body>
+    <div>
+      <main
+        class="prime-home device-lookup-container"
+      >
+        <div
+          class="grid-container"
+        >
+          <div
+            class="grid-row"
+          >
+            <div
+              class="prime-container card-container"
+            >
+              <div
+                class="usa-card__header"
+              >
+                <div>
+                  <h2>
+                    Device lookup
+                  </h2>
+                </div>
+                <div
+                  style="display: flex; justify-content: center; align-items: center;"
+                />
+              </div>
+              <div
+                class="usa-card__body margin-top-1"
+              >
+                <div
+                  class="grid-row grid-gap"
+                >
+                  <div
+                    class="tablet:grid-col"
+                  >
+                    <strong>
+                      Select device
+                    </strong>
+                    <p />
+                    <div
+                      class="usa-combo-box usa-combo-box__full-width"
+                      data-enhanced="true"
+                      data-testid="combo-box"
+                    >
+                      <select
+                        aria-hidden="true"
+                        class="usa-select usa-sr-only usa-combo-box__select"
+                        data-testid="combo-box-select"
+                        name="selectDevice"
+                        tabindex="-1"
+                      >
+                        <option
+                          value="1"
+                        >
+                          Abbott Tomorrow
+                        </option>
+                      </select>
+                      <input
+                        aria-activedescendant=""
+                        aria-autocomplete="list"
+                        aria-describedby="selectDevice--assistiveHint"
+                        aria-expanded="false"
+                        aria-owns="selectDevice--list"
+                        autocapitalize="off"
+                        autocomplete="off"
+                        class="usa-combo-box__input"
+                        data-testid="combo-box-input"
+                        id="selectDevice"
+                        role="combobox"
+                        type="text"
+                        value=""
+                      />
+                      <span
+                        class="usa-combo-box__clear-input__wrapper"
+                        tabindex="-1"
+                      >
+                        <button
+                          aria-label="Clear the select contents"
+                          class="usa-combo-box__clear-input"
+                          data-testid="combo-box-clear-button"
+                          hidden=""
+                          type="button"
+                        >
+                           
+                        </button>
+                      </span>
+                      <span
+                        class="usa-combo-box__input-button-separator"
+                      >
+                         
+                      </span>
+                      <span
+                        class="usa-combo-box__toggle-list__wrapper"
+                        tabindex="-1"
+                      >
+                        <button
+                          aria-label="Toggle the dropdown list"
+                          class="usa-combo-box__toggle-list"
+                          data-testid="combo-box-toggle"
+                          tabindex="-1"
+                          type="button"
+                        >
+                           
+                        </button>
+                      </span>
+                      <ul
+                        class="usa-combo-box__list"
+                        data-testid="combo-box-option-list"
+                        hidden=""
+                        id="selectDevice--list"
+                        role="listbox"
+                        tabindex="-1"
+                      >
+                        <li
+                          aria-posinset="1"
+                          aria-selected="false"
+                          aria-setsize="1"
+                          class="usa-combo-box__list-option"
+                          data-testid="combo-box-option-1"
+                          data-value="1"
+                          id="selectDevice--list--option-0"
+                          role="option"
+                          tabindex="-1"
+                          value="1"
+                        >
+                          Abbott Tomorrow
+                        </li>
+                      </ul>
+                      <div
+                        class="usa-combo-box__status usa-sr-only"
+                        role="status"
+                      />
+                      <span
+                        class="usa-sr-only"
+                        data-testid="combo-box-assistive-hint"
+                        id="selectDevice--assistiveHint"
+                      >
+                        When autocomplete results are available use up and down arrows to review
+           and enter to select. Touch device users, explore by touch or with swipe
+           gestures.
+                      </span>
+                    </div>
+                  </div>
+                </div>
+                <div
+                  class="grid-row grid-gap"
+                >
+                  <div
+                    class="tablet:grid-col"
+                  >
+                    <div
+                      class="text-field"
+                    >
+                      <div
+                        class="usa-form-group"
+                      >
+                        <label
+                          class="usa-label"
+                          for="1"
+                        >
+                          Equipment model name
+                        </label>
+                        <span
+                          class="usa-hint"
+                        >
+                          <code>
+                            equipment_model_name
+                          </code>
+                        </span>
+                        <input
+                          aria-disabled="true"
+                          aria-required="false"
+                          class="usa-input"
+                          disabled=""
+                          id="1"
+                          name="Equipment model name"
+                          type="text"
+                          value=""
+                        />
+                      </div>
+                      <div
+                        class="copy-button-container copy-button-tooltip"
+                      />
+                    </div>
+                  </div>
+                </div>
+                <div
+                  class="grid-row grid-gap"
+                >
+                  <div
+                    class="tablet:grid-col"
+                  >
+                    <div
+                      class="text-field"
+                    >
+                      <div
+                        class="usa-form-group"
+                      >
+                        <label
+                          class="usa-label"
+                          for="2"
+                        >
+                          Test performed code 
+                        </label>
+                        <span
+                          class="usa-hint"
+                        >
+                          <code>
+                            test_performed_code
+                          </code>
+                        </span>
+                        <input
+                          aria-disabled="true"
+                          aria-required="false"
+                          class="usa-input"
+                          disabled=""
+                          id="2"
+                          name="Test performed code "
+                          type="text"
+                          value=""
+                        />
+                      </div>
+                      <div
+                        class="copy-button-container copy-button-tooltip"
+                      />
+                    </div>
+                  </div>
+                </div>
+                <div
+                  class="grid-row grid-gap"
+                >
+                  <div
+                    class="tablet:grid-col"
+                  >
+                    <div
+                      style="position: relative;"
+                    >
+                      <div
+                        class="usa-form-group"
+                      >
+                        <label
+                          class="usa-label"
+                        >
+                          Specimen Type
+                        </label>
+                        <span
+                          class="usa-hint"
+                        >
+                          <code>
+                            specimen_type
+                          </code>
+                        </span>
+                        <table
+                          class="usa-table"
+                        >
+                          <tbody />
+                        </table>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </main>
+      <div
+        class="Toastify"
+      />
+    </div>
+  </body>,
+  "container": <div>
+    <main
+      class="prime-home device-lookup-container"
+    >
+      <div
+        class="grid-container"
+      >
+        <div
+          class="grid-row"
+        >
+          <div
+            class="prime-container card-container"
+          >
+            <div
+              class="usa-card__header"
+            >
+              <div>
+                <h2>
+                  Device lookup
+                </h2>
+              </div>
+              <div
+                style="display: flex; justify-content: center; align-items: center;"
+              />
+            </div>
+            <div
+              class="usa-card__body margin-top-1"
+            >
+              <div
+                class="grid-row grid-gap"
+              >
+                <div
+                  class="tablet:grid-col"
+                >
+                  <strong>
+                    Select device
+                  </strong>
+                  <p />
+                  <div
+                    class="usa-combo-box usa-combo-box__full-width"
+                    data-enhanced="true"
+                    data-testid="combo-box"
+                  >
+                    <select
+                      aria-hidden="true"
+                      class="usa-select usa-sr-only usa-combo-box__select"
+                      data-testid="combo-box-select"
+                      name="selectDevice"
+                      tabindex="-1"
+                    >
+                      <option
+                        value="1"
+                      >
+                        Abbott Tomorrow
+                      </option>
+                    </select>
+                    <input
+                      aria-activedescendant=""
+                      aria-autocomplete="list"
+                      aria-describedby="selectDevice--assistiveHint"
+                      aria-expanded="false"
+                      aria-owns="selectDevice--list"
+                      autocapitalize="off"
+                      autocomplete="off"
+                      class="usa-combo-box__input"
+                      data-testid="combo-box-input"
+                      id="selectDevice"
+                      role="combobox"
+                      type="text"
+                      value=""
+                    />
+                    <span
+                      class="usa-combo-box__clear-input__wrapper"
+                      tabindex="-1"
+                    >
+                      <button
+                        aria-label="Clear the select contents"
+                        class="usa-combo-box__clear-input"
+                        data-testid="combo-box-clear-button"
+                        hidden=""
+                        type="button"
+                      >
+                         
+                      </button>
+                    </span>
+                    <span
+                      class="usa-combo-box__input-button-separator"
+                    >
+                       
+                    </span>
+                    <span
+                      class="usa-combo-box__toggle-list__wrapper"
+                      tabindex="-1"
+                    >
+                      <button
+                        aria-label="Toggle the dropdown list"
+                        class="usa-combo-box__toggle-list"
+                        data-testid="combo-box-toggle"
+                        tabindex="-1"
+                        type="button"
+                      >
+                         
+                      </button>
+                    </span>
+                    <ul
+                      class="usa-combo-box__list"
+                      data-testid="combo-box-option-list"
+                      hidden=""
+                      id="selectDevice--list"
+                      role="listbox"
+                      tabindex="-1"
+                    >
+                      <li
+                        aria-posinset="1"
+                        aria-selected="false"
+                        aria-setsize="1"
+                        class="usa-combo-box__list-option"
+                        data-testid="combo-box-option-1"
+                        data-value="1"
+                        id="selectDevice--list--option-0"
+                        role="option"
+                        tabindex="-1"
+                        value="1"
+                      >
+                        Abbott Tomorrow
+                      </li>
+                    </ul>
+                    <div
+                      class="usa-combo-box__status usa-sr-only"
+                      role="status"
+                    />
+                    <span
+                      class="usa-sr-only"
+                      data-testid="combo-box-assistive-hint"
+                      id="selectDevice--assistiveHint"
+                    >
+                      When autocomplete results are available use up and down arrows to review
+           and enter to select. Touch device users, explore by touch or with swipe
+           gestures.
+                    </span>
+                  </div>
+                </div>
+              </div>
+              <div
+                class="grid-row grid-gap"
+              >
+                <div
+                  class="tablet:grid-col"
+                >
+                  <div
+                    class="text-field"
+                  >
+                    <div
+                      class="usa-form-group"
+                    >
+                      <label
+                        class="usa-label"
+                        for="1"
+                      >
+                        Equipment model name
+                      </label>
+                      <span
+                        class="usa-hint"
+                      >
+                        <code>
+                          equipment_model_name
+                        </code>
+                      </span>
+                      <input
+                        aria-disabled="true"
+                        aria-required="false"
+                        class="usa-input"
+                        disabled=""
+                        id="1"
+                        name="Equipment model name"
+                        type="text"
+                        value=""
+                      />
+                    </div>
+                    <div
+                      class="copy-button-container copy-button-tooltip"
+                    />
+                  </div>
+                </div>
+              </div>
+              <div
+                class="grid-row grid-gap"
+              >
+                <div
+                  class="tablet:grid-col"
+                >
+                  <div
+                    class="text-field"
+                  >
+                    <div
+                      class="usa-form-group"
+                    >
+                      <label
+                        class="usa-label"
+                        for="2"
+                      >
+                        Test performed code 
+                      </label>
+                      <span
+                        class="usa-hint"
+                      >
+                        <code>
+                          test_performed_code
+                        </code>
+                      </span>
+                      <input
+                        aria-disabled="true"
+                        aria-required="false"
+                        class="usa-input"
+                        disabled=""
+                        id="2"
+                        name="Test performed code "
+                        type="text"
+                        value=""
+                      />
+                    </div>
+                    <div
+                      class="copy-button-container copy-button-tooltip"
+                    />
+                  </div>
+                </div>
+              </div>
+              <div
+                class="grid-row grid-gap"
+              >
+                <div
+                  class="tablet:grid-col"
+                >
+                  <div
+                    style="position: relative;"
+                  >
+                    <div
+                      class="usa-form-group"
+                    >
+                      <label
+                        class="usa-label"
+                      >
+                        Specimen Type
+                      </label>
+                      <span
+                        class="usa-hint"
+                      >
+                        <code>
+                          specimen_type
+                        </code>
+                      </span>
+                      <table
+                        class="usa-table"
+                      >
+                        <tbody />
+                      </table>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </main>
+    <div
+      class="Toastify"
+    />
+  </div>,
+  "debug": [Function],
+  "findAllByAltText": [Function],
+  "findAllByDisplayValue": [Function],
+  "findAllByLabelText": [Function],
+  "findAllByPlaceholderText": [Function],
+  "findAllByRole": [Function],
+  "findAllByTestId": [Function],
+  "findAllByText": [Function],
+  "findAllByTitle": [Function],
+  "findByAltText": [Function],
+  "findByDisplayValue": [Function],
+  "findByLabelText": [Function],
+  "findByPlaceholderText": [Function],
+  "findByRole": [Function],
+  "findByTestId": [Function],
+  "findByText": [Function],
+  "findByTitle": [Function],
+  "getAllByAltText": [Function],
+  "getAllByDisplayValue": [Function],
+  "getAllByLabelText": [Function],
+  "getAllByPlaceholderText": [Function],
+  "getAllByRole": [Function],
+  "getAllByTestId": [Function],
+  "getAllByText": [Function],
+  "getAllByTitle": [Function],
+  "getByAltText": [Function],
+  "getByDisplayValue": [Function],
+  "getByLabelText": [Function],
+  "getByPlaceholderText": [Function],
+  "getByRole": [Function],
+  "getByTestId": [Function],
+  "getByText": [Function],
+  "getByTitle": [Function],
+  "queryAllByAltText": [Function],
+  "queryAllByDisplayValue": [Function],
+  "queryAllByLabelText": [Function],
+  "queryAllByPlaceholderText": [Function],
+  "queryAllByRole": [Function],
+  "queryAllByTestId": [Function],
+  "queryAllByText": [Function],
+  "queryAllByTitle": [Function],
+  "queryByAltText": [Function],
+  "queryByDisplayValue": [Function],
+  "queryByLabelText": [Function],
+  "queryByPlaceholderText": [Function],
+  "queryByRole": [Function],
+  "queryByTestId": [Function],
+  "queryByText": [Function],
+  "queryByTitle": [Function],
+  "rerender": [Function],
+  "unmount": [Function],
+}
+`;
+
+exports[`DeviceLookupContainer should render loading screen 1`] = `
+Object {
+  "asFragment": [Function],
+  "baseElement": <body>
+    <div>
+      <main
+        class="prime-home device-lookup-container"
+      >
+        <div
+          class="grid-container"
+        >
+          <div
+            class="grid-row"
+          >
+            <div
+              class="prime-container card-container"
+            >
+              <div
+                class="usa-card__header"
+              >
+                <div>
+                  <h2>
+                    Device lookup
+                  </h2>
+                </div>
+                <div
+                  style="display: flex; justify-content: center; align-items: center;"
+                />
+              </div>
+              <div
+                class="usa-card__body margin-top-1"
+              >
+                <div
+                  class="grid-row grid-gap"
+                >
+                  <div
+                    class="tablet:grid-col"
+                  >
+                    <strong>
+                      Select device
+                    </strong>
+                    <p />
+                    <div
+                      class="usa-combo-box usa-combo-box__full-width"
+                      data-enhanced="true"
+                      data-testid="combo-box"
+                    >
+                      <select
+                        aria-hidden="true"
+                        class="usa-select usa-sr-only usa-combo-box__select"
+                        data-testid="combo-box-select"
+                        name="selectDevice"
+                        tabindex="-1"
+                      >
+                        <option
+                          value="1"
+                        >
+                          Abbott Tomorrow
+                        </option>
+                      </select>
+                      <input
+                        aria-activedescendant=""
+                        aria-autocomplete="list"
+                        aria-describedby="selectDevice--assistiveHint"
+                        aria-expanded="false"
+                        aria-owns="selectDevice--list"
+                        autocapitalize="off"
+                        autocomplete="off"
+                        class="usa-combo-box__input"
+                        data-testid="combo-box-input"
+                        id="selectDevice"
+                        role="combobox"
+                        type="text"
+                        value=""
+                      />
+                      <span
+                        class="usa-combo-box__clear-input__wrapper"
+                        tabindex="-1"
+                      >
+                        <button
+                          aria-label="Clear the select contents"
+                          class="usa-combo-box__clear-input"
+                          data-testid="combo-box-clear-button"
+                          hidden=""
+                          type="button"
+                        >
+                           
+                        </button>
+                      </span>
+                      <span
+                        class="usa-combo-box__input-button-separator"
+                      >
+                         
+                      </span>
+                      <span
+                        class="usa-combo-box__toggle-list__wrapper"
+                        tabindex="-1"
+                      >
+                        <button
+                          aria-label="Toggle the dropdown list"
+                          class="usa-combo-box__toggle-list"
+                          data-testid="combo-box-toggle"
+                          tabindex="-1"
+                          type="button"
+                        >
+                           
+                        </button>
+                      </span>
+                      <ul
+                        class="usa-combo-box__list"
+                        data-testid="combo-box-option-list"
+                        hidden=""
+                        id="selectDevice--list"
+                        role="listbox"
+                        tabindex="-1"
+                      >
+                        <li
+                          aria-posinset="1"
+                          aria-selected="false"
+                          aria-setsize="1"
+                          class="usa-combo-box__list-option"
+                          data-testid="combo-box-option-1"
+                          data-value="1"
+                          id="selectDevice--list--option-0"
+                          role="option"
+                          tabindex="-1"
+                          value="1"
+                        >
+                          Abbott Tomorrow
+                        </li>
+                      </ul>
+                      <div
+                        class="usa-combo-box__status usa-sr-only"
+                        role="status"
+                      />
+                      <span
+                        class="usa-sr-only"
+                        data-testid="combo-box-assistive-hint"
+                        id="selectDevice--assistiveHint"
+                      >
+                        When autocomplete results are available use up and down arrows to review
+           and enter to select. Touch device users, explore by touch or with swipe
+           gestures.
+                      </span>
+                    </div>
+                  </div>
+                </div>
+                <div
+                  class="grid-row grid-gap"
+                >
+                  <div
+                    class="tablet:grid-col"
+                  >
+                    <div
+                      class="text-field"
+                    >
+                      <div
+                        class="usa-form-group"
+                      >
+                        <label
+                          class="usa-label"
+                          for="1"
+                        >
+                          Equipment model name
+                        </label>
+                        <span
+                          class="usa-hint"
+                        >
+                          <code>
+                            equipment_model_name
+                          </code>
+                        </span>
+                        <input
+                          aria-disabled="true"
+                          aria-required="false"
+                          class="usa-input"
+                          disabled=""
+                          id="1"
+                          name="Equipment model name"
+                          type="text"
+                          value=""
+                        />
+                      </div>
+                      <div
+                        class="copy-button-container copy-button-tooltip"
+                      />
+                    </div>
+                  </div>
+                </div>
+                <div
+                  class="grid-row grid-gap"
+                >
+                  <div
+                    class="tablet:grid-col"
+                  >
+                    <div
+                      class="text-field"
+                    >
+                      <div
+                        class="usa-form-group"
+                      >
+                        <label
+                          class="usa-label"
+                          for="2"
+                        >
+                          Test performed code 
+                        </label>
+                        <span
+                          class="usa-hint"
+                        >
+                          <code>
+                            test_performed_code
+                          </code>
+                        </span>
+                        <input
+                          aria-disabled="true"
+                          aria-required="false"
+                          class="usa-input"
+                          disabled=""
+                          id="2"
+                          name="Test performed code "
+                          type="text"
+                          value=""
+                        />
+                      </div>
+                      <div
+                        class="copy-button-container copy-button-tooltip"
+                      />
+                    </div>
+                  </div>
+                </div>
+                <div
+                  class="grid-row grid-gap"
+                >
+                  <div
+                    class="tablet:grid-col"
+                  >
+                    <div
+                      style="position: relative;"
+                    >
+                      <div
+                        class="usa-form-group"
+                      >
+                        <label
+                          class="usa-label"
+                        >
+                          Specimen Type
+                        </label>
+                        <span
+                          class="usa-hint"
+                        >
+                          <code>
+                            specimen_type
+                          </code>
+                        </span>
+                        <table
+                          class="usa-table"
+                        >
+                          <tbody />
+                        </table>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </main>
+      <div
+        class="Toastify"
+      />
+    </div>
+  </body>,
+  "container": <div>
+    <main
+      class="prime-home device-lookup-container"
+    >
+      <div
+        class="grid-container"
+      >
+        <div
+          class="grid-row"
+        >
+          <div
+            class="prime-container card-container"
+          >
+            <div
+              class="usa-card__header"
+            >
+              <div>
+                <h2>
+                  Device lookup
+                </h2>
+              </div>
+              <div
+                style="display: flex; justify-content: center; align-items: center;"
+              />
+            </div>
+            <div
+              class="usa-card__body margin-top-1"
+            >
+              <div
+                class="grid-row grid-gap"
+              >
+                <div
+                  class="tablet:grid-col"
+                >
+                  <strong>
+                    Select device
+                  </strong>
+                  <p />
+                  <div
+                    class="usa-combo-box usa-combo-box__full-width"
+                    data-enhanced="true"
+                    data-testid="combo-box"
+                  >
+                    <select
+                      aria-hidden="true"
+                      class="usa-select usa-sr-only usa-combo-box__select"
+                      data-testid="combo-box-select"
+                      name="selectDevice"
+                      tabindex="-1"
+                    >
+                      <option
+                        value="1"
+                      >
+                        Abbott Tomorrow
+                      </option>
+                    </select>
+                    <input
+                      aria-activedescendant=""
+                      aria-autocomplete="list"
+                      aria-describedby="selectDevice--assistiveHint"
+                      aria-expanded="false"
+                      aria-owns="selectDevice--list"
+                      autocapitalize="off"
+                      autocomplete="off"
+                      class="usa-combo-box__input"
+                      data-testid="combo-box-input"
+                      id="selectDevice"
+                      role="combobox"
+                      type="text"
+                      value=""
+                    />
+                    <span
+                      class="usa-combo-box__clear-input__wrapper"
+                      tabindex="-1"
+                    >
+                      <button
+                        aria-label="Clear the select contents"
+                        class="usa-combo-box__clear-input"
+                        data-testid="combo-box-clear-button"
+                        hidden=""
+                        type="button"
+                      >
+                         
+                      </button>
+                    </span>
+                    <span
+                      class="usa-combo-box__input-button-separator"
+                    >
+                       
+                    </span>
+                    <span
+                      class="usa-combo-box__toggle-list__wrapper"
+                      tabindex="-1"
+                    >
+                      <button
+                        aria-label="Toggle the dropdown list"
+                        class="usa-combo-box__toggle-list"
+                        data-testid="combo-box-toggle"
+                        tabindex="-1"
+                        type="button"
+                      >
+                         
+                      </button>
+                    </span>
+                    <ul
+                      class="usa-combo-box__list"
+                      data-testid="combo-box-option-list"
+                      hidden=""
+                      id="selectDevice--list"
+                      role="listbox"
+                      tabindex="-1"
+                    >
+                      <li
+                        aria-posinset="1"
+                        aria-selected="false"
+                        aria-setsize="1"
+                        class="usa-combo-box__list-option"
+                        data-testid="combo-box-option-1"
+                        data-value="1"
+                        id="selectDevice--list--option-0"
+                        role="option"
+                        tabindex="-1"
+                        value="1"
+                      >
+                        Abbott Tomorrow
+                      </li>
+                    </ul>
+                    <div
+                      class="usa-combo-box__status usa-sr-only"
+                      role="status"
+                    />
+                    <span
+                      class="usa-sr-only"
+                      data-testid="combo-box-assistive-hint"
+                      id="selectDevice--assistiveHint"
+                    >
+                      When autocomplete results are available use up and down arrows to review
+           and enter to select. Touch device users, explore by touch or with swipe
+           gestures.
+                    </span>
+                  </div>
+                </div>
+              </div>
+              <div
+                class="grid-row grid-gap"
+              >
+                <div
+                  class="tablet:grid-col"
+                >
+                  <div
+                    class="text-field"
+                  >
+                    <div
+                      class="usa-form-group"
+                    >
+                      <label
+                        class="usa-label"
+                        for="1"
+                      >
+                        Equipment model name
+                      </label>
+                      <span
+                        class="usa-hint"
+                      >
+                        <code>
+                          equipment_model_name
+                        </code>
+                      </span>
+                      <input
+                        aria-disabled="true"
+                        aria-required="false"
+                        class="usa-input"
+                        disabled=""
+                        id="1"
+                        name="Equipment model name"
+                        type="text"
+                        value=""
+                      />
+                    </div>
+                    <div
+                      class="copy-button-container copy-button-tooltip"
+                    />
+                  </div>
+                </div>
+              </div>
+              <div
+                class="grid-row grid-gap"
+              >
+                <div
+                  class="tablet:grid-col"
+                >
+                  <div
+                    class="text-field"
+                  >
+                    <div
+                      class="usa-form-group"
+                    >
+                      <label
+                        class="usa-label"
+                        for="2"
+                      >
+                        Test performed code 
+                      </label>
+                      <span
+                        class="usa-hint"
+                      >
+                        <code>
+                          test_performed_code
+                        </code>
+                      </span>
+                      <input
+                        aria-disabled="true"
+                        aria-required="false"
+                        class="usa-input"
+                        disabled=""
+                        id="2"
+                        name="Test performed code "
+                        type="text"
+                        value=""
+                      />
+                    </div>
+                    <div
+                      class="copy-button-container copy-button-tooltip"
+                    />
+                  </div>
+                </div>
+              </div>
+              <div
+                class="grid-row grid-gap"
+              >
+                <div
+                  class="tablet:grid-col"
+                >
+                  <div
+                    style="position: relative;"
+                  >
+                    <div
+                      class="usa-form-group"
+                    >
+                      <label
+                        class="usa-label"
+                      >
+                        Specimen Type
+                      </label>
+                      <span
+                        class="usa-hint"
+                      >
+                        <code>
+                          specimen_type
+                        </code>
+                      </span>
+                      <table
+                        class="usa-table"
+                      >
+                        <tbody />
+                      </table>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </main>
+    <div
+      class="Toastify"
+    />
+  </div>,
+  "debug": [Function],
+  "findAllByAltText": [Function],
+  "findAllByDisplayValue": [Function],
+  "findAllByLabelText": [Function],
+  "findAllByPlaceholderText": [Function],
+  "findAllByRole": [Function],
+  "findAllByTestId": [Function],
+  "findAllByText": [Function],
+  "findAllByTitle": [Function],
+  "findByAltText": [Function],
+  "findByDisplayValue": [Function],
+  "findByLabelText": [Function],
+  "findByPlaceholderText": [Function],
+  "findByRole": [Function],
+  "findByTestId": [Function],
+  "findByText": [Function],
+  "findByTitle": [Function],
+  "getAllByAltText": [Function],
+  "getAllByDisplayValue": [Function],
+  "getAllByLabelText": [Function],
+  "getAllByPlaceholderText": [Function],
+  "getAllByRole": [Function],
+  "getAllByTestId": [Function],
+  "getAllByText": [Function],
+  "getAllByTitle": [Function],
+  "getByAltText": [Function],
+  "getByDisplayValue": [Function],
+  "getByLabelText": [Function],
+  "getByPlaceholderText": [Function],
+  "getByRole": [Function],
+  "getByTestId": [Function],
+  "getByText": [Function],
+  "getByTitle": [Function],
+  "queryAllByAltText": [Function],
+  "queryAllByDisplayValue": [Function],
+  "queryAllByLabelText": [Function],
+  "queryAllByPlaceholderText": [Function],
+  "queryAllByRole": [Function],
+  "queryAllByTestId": [Function],
+  "queryAllByText": [Function],
+  "queryAllByTitle": [Function],
+  "queryByAltText": [Function],
+  "queryByDisplayValue": [Function],
+  "queryByLabelText": [Function],
+  "queryByPlaceholderText": [Function],
+  "queryByRole": [Function],
+  "queryByTestId": [Function],
+  "queryByText": [Function],
+  "queryByTitle": [Function],
+  "rerender": [Function],
+  "unmount": [Function],
+}
+`;
