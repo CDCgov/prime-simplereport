@@ -786,18 +786,20 @@ const QueueItem = ({
                 id="patient-name-header"
               >
                 <div className="card-header">
-                  <Button
-                    variant="unstyled"
-                    className="card-name"
-                    onClick={() => {
-                      navigate({
-                        pathname: `/patient/${patient.internalId}`,
-                        search: `?facility=${facilityId}&fromQueue=true`,
-                      });
-                    }}
-                  >
-                    {patientFullName}
-                  </Button>
+                  <h2>
+                    <Button
+                      variant="unstyled"
+                      className="card-name"
+                      onClick={() => {
+                        navigate({
+                          pathname: `/patient/${patient.internalId}`,
+                          search: `?facility=${facilityId}&fromQueue=true`,
+                        });
+                      }}
+                    >
+                      {patientFullName}
+                    </Button>
+                  </h2>
                   <div className="card-dob">
                     Date of birth:
                     <span className="card-date">
