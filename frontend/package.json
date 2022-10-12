@@ -203,7 +203,7 @@
     "@typescript-eslint/eslint-plugin": "^5.9.1",
     "@typescript-eslint/parser": "^5.9.1",
     "babel-loader": "8.1.0",
-    "chromatic": "^6.3.4",
+    "chromatic": "^6.10.2",
     "dayjs": "^1.10.7",
     "depcheck": "^1.4.3",
     "eslint-config-prettier": "^8.3.0",
