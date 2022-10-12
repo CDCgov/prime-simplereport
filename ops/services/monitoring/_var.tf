@@ -30,7 +30,7 @@ variable "app_url" {
 
 variable "ai_ingest_cap_gb" {
   description = "Cap for data ingested into Application Insights, per day."
-  default     = 50
+  default     = 100
 }
 
 variable "ai_retention_days" {
