@@ -5,6 +5,7 @@ import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.when;
 
+import gov.cdc.usds.simplereport.db.model.Facility;
 import gov.cdc.usds.simplereport.db.model.Person;
 import gov.cdc.usds.simplereport.db.model.PhoneNumber;
 import gov.cdc.usds.simplereport.db.model.auxiliary.PhoneType;
@@ -17,6 +18,8 @@ import java.io.InputStream;
 import java.nio.charset.StandardCharsets;
 import java.util.List;
 import java.util.Map;
+import java.util.UUID;
+
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -34,8 +37,11 @@ class UploadServiceTest extends BaseServiceTest<UploadService> {
 
   @Autowired private PersonService personService;
   @Autowired private PhoneNumberRepository phoneNumberRepository;
+  @Autowired private OrganizationService organizationService;
   @MockBean protected AddressValidationService addressValidationService;
   private StreetAddress address;
+  private UUID firstFacilityId;
+  private UUID secondFacilityId;
 
   @BeforeEach
   void setupData() {
@@ -43,6 +49,9 @@ class UploadServiceTest extends BaseServiceTest<UploadService> {
     initSampleData();
     when(addressValidationService.getValidatedAddress(any(), any(), any(), any(), any(), any()))
         .thenReturn(address);
+    List<Facility> facilities = organizationService.getFacilities(organizationService.getCurrentOrganization());
+    firstFacilityId = facilities.get(0).getInternalId();
+    secondFacilityId = facilities.get(1).getInternalId();
   }
 
   @Test
@@ -83,6 +92,29 @@ class UploadServiceTest extends BaseServiceTest<UploadService> {
     PhoneNumber pn = phoneNumbers.get(0);
     assertThat(pn.getNumber()).isEqualTo("(565) 666-7777");
     assertThat(pn.getType()).isEqualTo(PhoneType.MOBILE);
+  }
+
+  @Test
+  void withoutFacilityId_validCsvUploadsToOrganization() {
+    // GIVEN
+    InputStream inputStream = loadCsv("test-upload.csv");
+
+    // WHEN
+    this._service.processPersonCSV(inputStream, null);
+
+    assertThat(getPatientsForFacility(firstFacilityId).size()).isEqualTo(getPatientsForFacility(secondFacilityId).size());
+  }
+
+  @Test
+  void withFacilityId_validCsvUploadsToSingleFacility() {
+    // GIVEN
+    InputStream inputStream = loadCsv("test-upload.csv");
+
+    // WHEN
+    this._service.processPersonCSV(inputStream, firstFacilityId);
+
+    assertThat(getPatientsForFacility(firstFacilityId).size()).isEqualTo(1);
+    assertThat(getPatientsForFacility(secondFacilityId).size()).isEqualTo(0);
   }
 
   @Test
@@ -187,7 +219,7 @@ class UploadServiceTest extends BaseServiceTest<UploadService> {
         assertThrows(IllegalArgumentException.class, () -> this._service.processPersonCSV(bis, null));
 
     // THEN
-    assertThat(error.getMessage()).contains("Not enough column values: expected 22, found 1");
+    assertThat(error.getMessage()).contains("Not enough column values: expected 21, found 1");
   }
 
   @Test
@@ -280,5 +312,10 @@ class UploadServiceTest extends BaseServiceTest<UploadService> {
   private List<Person> getPatients() {
     return this.personService.getPatients(
         null, PATIENT_PAGE_OFFSET, PATIENT_PAGE_SIZE, false, null, false);
+  }
+
+  private List<Person> getPatientsForFacility(UUID facilityId) {
+    return this.personService.getPatients(
+            facilityId, PATIENT_PAGE_OFFSET, PATIENT_PAGE_SIZE, false, null, false);
   }
 }

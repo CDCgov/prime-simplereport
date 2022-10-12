@@ -42,7 +42,6 @@ import org.springframework.transaction.annotation.Transactional;
 @RequiredArgsConstructor
 @Slf4j
 public class UploadService {
-  private static final String FACILITY_ID = "facilityId";
   private static final int MAX_LINE_LENGTH = 1024 * 6;
   public static final String ZIP_CODE_REGEX = "^[0-9]{5}(?:-[0-9]{4})?$";
 
@@ -214,7 +213,6 @@ public class UploadService {
           .addColumn("residentCongregateSetting", CsvSchema.ColumnType.STRING)
           .addColumn("Role", CsvSchema.ColumnType.STRING)
           .addColumn("Email", CsvSchema.ColumnType.STRING)
-          .addColumn(FACILITY_ID, CsvSchema.ColumnType.STRING)
           .setUseHeader(false) // no valid header row detected
           .build();
     }
