@@ -2,7 +2,7 @@ import { LinkWithQuery } from "../commonComponents/LinkWithQuery";
 
 const SupportAdmin = () => {
   return (
-    <main className="prime-home">
+    <div className="prime-home flex-1">
       <div className="grid-container">
         <div className="grid-row">
           <div className="prime-container card-container">
@@ -41,7 +41,7 @@ const SupportAdmin = () => {
           </div>
         </div>
       </div>
-    </main>
+    </div>
   );
 };
 

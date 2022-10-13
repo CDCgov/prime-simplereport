@@ -77,7 +77,7 @@ const DeviceForm = (props: Props) => {
   };
 
   return (
-    <main className="prime-home">
+    <div className="prime-home flex-1">
       <div className="grid-container">
         <div className="grid-row">
           <div className="prime-container card-container">
@@ -235,7 +235,7 @@ const DeviceForm = (props: Props) => {
           </div>
         </div>
       </div>
-    </main>
+    </div>
   );
 };
 
