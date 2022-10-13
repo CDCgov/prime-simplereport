@@ -502,7 +502,7 @@
             {
               "name": "Testing lab phone number",
               "colHeader": "testing_lab_phone_number",
-              "required": false,
+              "required": true,
               "requested": false,
               "format": "000-000-0000",
               "examples": ["123-456-7890"]
