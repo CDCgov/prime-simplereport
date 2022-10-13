@@ -41,18 +41,6 @@ jobs:
           node-version: 14.x
       - name: mkcert and yarn install, build
         run: |
-          echo "::group::Generate ssl certs"
-          sudo apt install libnss3-tools
-          eval "$(/home/linuxbrew/.linuxbrew/bin/brew shellenv)"
-          brew install mkcert
-          mkcert -install
-          mkdir -p certs
-          cd certs
-          mkcert localhost.simplereport.gov
-          mv localhost.simplereport.gov.pem localhost.simplereport.gov.crt
-          mv localhost.simplereport.gov-key.pem localhost.simplereport.gov.key
-          cd ..
-          echo "::endgroup::"
           yarn install
           yarn build
       - name: run Lighthouse CI
@@ -86,6 +74,20 @@ jobs:
           REACT_APP_OKTA_ENABLED: "true"
           REACT_APP_DISABLE_MAINTENANCE_BANNER: "true"
         run: |
+          # mkcert
+          echo "::group::Generate ssl certs"
+          sudo apt install libnss3-tools
+          eval "$(/home/linuxbrew/.linuxbrew/bin/brew shellenv)"
+          brew install mkcert
+          mkcert -install
+          mkdir -p certs
+          cd certs
+          mkcert localhost.simplereport.gov
+          mv localhost.simplereport.gov.pem localhost.simplereport.gov.crt
+          mv localhost.simplereport.gov-key.pem localhost.simplereport.gov.key
+          cd ..
+          echo "::endgroup::"
+          # lhci
           npm install -g @lhci/cli@0.9.x
           lhci autorun
       - uses: actions/upload-artifact@v3
