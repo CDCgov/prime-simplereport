@@ -19,7 +19,6 @@ import java.nio.charset.StandardCharsets;
 import java.util.List;
 import java.util.Map;
 import java.util.UUID;
-
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -49,7 +48,8 @@ class UploadServiceTest extends BaseServiceTest<UploadService> {
     initSampleData();
     when(addressValidationService.getValidatedAddress(any(), any(), any(), any(), any(), any()))
         .thenReturn(address);
-    List<Facility> facilities = organizationService.getFacilities(organizationService.getCurrentOrganization());
+    List<Facility> facilities =
+        organizationService.getFacilities(organizationService.getCurrentOrganization());
     firstFacilityId = facilities.get(0).getInternalId();
     secondFacilityId = facilities.get(1).getInternalId();
   }
@@ -102,7 +102,8 @@ class UploadServiceTest extends BaseServiceTest<UploadService> {
     // WHEN
     this._service.processPersonCSV(inputStream, null);
 
-    assertThat(getPatientsForFacility(firstFacilityId).size()).isEqualTo(getPatientsForFacility(secondFacilityId).size());
+    assertThat(getPatientsForFacility(firstFacilityId).size())
+        .isEqualTo(getPatientsForFacility(secondFacilityId).size());
   }
 
   @Test
@@ -125,7 +126,8 @@ class UploadServiceTest extends BaseServiceTest<UploadService> {
     // WHEN
     var error =
         assertThrows(
-            IllegalArgumentException.class, () -> this._service.processPersonCSV(inputStream, null));
+            IllegalArgumentException.class,
+            () -> this._service.processPersonCSV(inputStream, null));
 
     // THEN
     assertThat(error.getMessage()).isEqualTo("Error on row 1; Invalid zip code");
@@ -140,7 +142,8 @@ class UploadServiceTest extends BaseServiceTest<UploadService> {
     // WHEN
     var error =
         assertThrows(
-            IllegalArgumentException.class, () -> this._service.processPersonCSV(inputStream, null));
+            IllegalArgumentException.class,
+            () -> this._service.processPersonCSV(inputStream, null));
 
     // THEN
     assertThat(error.getMessage()).isEqualTo("Error on row 1; Invalid PhoneType received");
@@ -188,7 +191,8 @@ class UploadServiceTest extends BaseServiceTest<UploadService> {
     // WHEN
     var error =
         assertThrows(
-            IllegalArgumentException.class, () -> this._service.processPersonCSV(inputStream, null));
+            IllegalArgumentException.class,
+            () -> this._service.processPersonCSV(inputStream, null));
 
     // THEN
     assertThat(error.getMessage()).isEqualTo("Error on row 4; [abc] is not a valid date");
@@ -202,7 +206,8 @@ class UploadServiceTest extends BaseServiceTest<UploadService> {
 
     // WHEN
     var error =
-        assertThrows(IllegalArgumentException.class, () -> this._service.processPersonCSV(bis, null));
+        assertThrows(
+            IllegalArgumentException.class, () -> this._service.processPersonCSV(bis, null));
 
     // THEN
     assertThat(error.getMessage()).contains("Not enough column values:");
@@ -216,7 +221,8 @@ class UploadServiceTest extends BaseServiceTest<UploadService> {
 
     // WHEN
     var error =
-        assertThrows(IllegalArgumentException.class, () -> this._service.processPersonCSV(bis, null));
+        assertThrows(
+            IllegalArgumentException.class, () -> this._service.processPersonCSV(bis, null));
 
     // THEN
     assertThat(error.getMessage()).contains("Not enough column values: expected 21, found 1");
@@ -230,7 +236,8 @@ class UploadServiceTest extends BaseServiceTest<UploadService> {
     // WHEN
     var error =
         assertThrows(
-            IllegalArgumentException.class, () -> this._service.processPersonCSV(inputStream, null));
+            IllegalArgumentException.class,
+            () -> this._service.processPersonCSV(inputStream, null));
 
     // THEN
     assertThat(error.getMessage()).isEqualTo("Error on row 1; Ethnicity is required.");
@@ -244,7 +251,8 @@ class UploadServiceTest extends BaseServiceTest<UploadService> {
     // WHEN
     var error =
         assertThrows(
-            IllegalArgumentException.class, () -> this._service.processPersonCSV(inputStream, null));
+            IllegalArgumentException.class,
+            () -> this._service.processPersonCSV(inputStream, null));
 
     // THEN
     assertThat(error.getMessage()).contains("Error on row 1; \"InvalidEthnicity\" must be one of");
@@ -258,7 +266,8 @@ class UploadServiceTest extends BaseServiceTest<UploadService> {
     // WHEN
     var error =
         assertThrows(
-            IllegalArgumentException.class, () -> this._service.processPersonCSV(inputStream, null));
+            IllegalArgumentException.class,
+            () -> this._service.processPersonCSV(inputStream, null));
 
     // THEN
     assertThat(error.getMessage()).isEqualTo("Error on row 1; Race is required.");
@@ -272,7 +281,8 @@ class UploadServiceTest extends BaseServiceTest<UploadService> {
     // WHEN
     var error =
         assertThrows(
-            IllegalArgumentException.class, () -> this._service.processPersonCSV(inputStream, null));
+            IllegalArgumentException.class,
+            () -> this._service.processPersonCSV(inputStream, null));
 
     // THEN
     assertThat(error.getMessage()).contains("Error on row 1; \"InvalidRace\" must be one of");
@@ -286,7 +296,8 @@ class UploadServiceTest extends BaseServiceTest<UploadService> {
     // WHEN
     var error =
         assertThrows(
-            IllegalArgumentException.class, () -> this._service.processPersonCSV(inputStream, null));
+            IllegalArgumentException.class,
+            () -> this._service.processPersonCSV(inputStream, null));
 
     // THEN
     assertThat(error.getMessage())
@@ -316,6 +327,6 @@ class UploadServiceTest extends BaseServiceTest<UploadService> {
 
   private List<Person> getPatientsForFacility(UUID facilityId) {
     return this.personService.getPatients(
-            facilityId, PATIENT_PAGE_OFFSET, PATIENT_PAGE_SIZE, false, null, false);
+        facilityId, PATIENT_PAGE_OFFSET, PATIENT_PAGE_SIZE, false, null, false);
   }
 }

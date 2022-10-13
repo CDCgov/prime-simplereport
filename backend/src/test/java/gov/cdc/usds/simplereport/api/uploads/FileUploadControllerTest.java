@@ -117,30 +117,33 @@ class FileUploadControllerTest extends BaseFullStackTest {
   @Test
   void patientsUploadTest_acceptsUUIDForFacilityId() throws Exception {
     when(patientUploadService.processPersonCSV(any(InputStream.class), any(UUID.class)))
-            .thenReturn("Successfully uploaded 1 record(s)");
+        .thenReturn("Successfully uploaded 1 record(s)");
 
     MockMultipartFile file =
-            new MockMultipartFile(
-                    "file", "patients.csv", TEXT_CSV_CONTENT_TYPE, "csvContent".getBytes());
+        new MockMultipartFile(
+            "file", "patients.csv", TEXT_CSV_CONTENT_TYPE, "csvContent".getBytes());
 
     UUID testUUID = UUID.randomUUID();
     mockMvc
-            .perform(multipart(PATIENT_UPLOAD).file(file).param("rawFacilityId", testUUID.toString()))
-            .andExpect(status().isOk())
-            .andExpect(content().string("Successfully uploaded 1 record(s)"));
+        .perform(multipart(PATIENT_UPLOAD).file(file).param("rawFacilityId", testUUID.toString()))
+        .andExpect(status().isOk())
+        .andExpect(content().string("Successfully uploaded 1 record(s)"));
   }
 
   @Test
   void patientsUploadTest_rejectsInvalidUUIDForFacilityId() throws Exception {
     MockMultipartFile file =
-            new MockMultipartFile(
-                    "file", "patients.csv", TEXT_CSV_CONTENT_TYPE, "csvContent".getBytes());
+        new MockMultipartFile(
+            "file", "patients.csv", TEXT_CSV_CONTENT_TYPE, "csvContent".getBytes());
 
     mockMvc
-            .perform(multipart(PATIENT_UPLOAD).file(file).param("rawFacilityId", "12"))
-            .andExpect(status().isBadRequest())
-            .andExpect(result -> assertTrue(result.getResolvedException() instanceof BadRequestException))
-            .andExpect(result -> assertEquals("Invalid facility id", result.getResolvedException().getMessage()));
+        .perform(multipart(PATIENT_UPLOAD).file(file).param("rawFacilityId", "12"))
+        .andExpect(status().isBadRequest())
+        .andExpect(
+            result -> assertTrue(result.getResolvedException() instanceof BadRequestException))
+        .andExpect(
+            result ->
+                assertEquals("Invalid facility id", result.getResolvedException().getMessage()));
   }
 
   @Test

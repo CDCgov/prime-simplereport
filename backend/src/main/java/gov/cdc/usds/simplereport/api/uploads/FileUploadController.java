@@ -12,7 +12,6 @@ import gov.cdc.usds.simplereport.service.TestResultUploadService;
 import gov.cdc.usds.simplereport.service.UploadService;
 import java.io.IOException;
 import java.io.InputStream;
-
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -29,12 +28,13 @@ public class FileUploadController {
   private final TestResultUploadService testResultUploadService;
 
   @PostMapping(PATIENT_UPLOAD)
-  public String handlePatientsUpload(@RequestParam("file") MultipartFile file, @RequestParam String rawFacilityId) {
+  public String handlePatientsUpload(
+      @RequestParam("file") MultipartFile file, @RequestParam String rawFacilityId) {
     assertCsvFileType(file);
 
     try (InputStream people = file.getInputStream()) {
       return uploadService.processPersonCSV(people, parseUUID(rawFacilityId));
-    }catch (IllegalGraphqlArgumentException e) {
+    } catch (IllegalGraphqlArgumentException e) {
       log.error("Invalid facility id passed", e);
       throw new BadRequestException("Invalid facility id");
     } catch (IllegalArgumentException e) {
