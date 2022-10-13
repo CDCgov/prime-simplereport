@@ -39,7 +39,7 @@ jobs:
         uses: actions/setup-node@v1
         with:
           node-version: 14.x
-      - name: mkcert and yarn install, build
+      - name: yarn install, build
         run: |
           yarn install
           yarn build
@@ -74,7 +74,6 @@ jobs:
           REACT_APP_OKTA_ENABLED: "true"
           REACT_APP_DISABLE_MAINTENANCE_BANNER: "true"
         run: |
-          # mkcert
           echo "::group::Generate ssl certs"
           sudo apt install libnss3-tools
           eval "$(/home/linuxbrew/.linuxbrew/bin/brew shellenv)"
@@ -87,7 +86,6 @@ jobs:
           mv localhost.simplereport.gov-key.pem localhost.simplereport.gov.key
           cd ..
           echo "::endgroup::"
-          # lhci
           npm install -g @lhci/cli@0.9.x
           lhci autorun
       - uses: actions/upload-artifact@v3
