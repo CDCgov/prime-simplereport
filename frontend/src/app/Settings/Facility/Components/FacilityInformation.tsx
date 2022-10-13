@@ -1,5 +1,4 @@
 import React from "react";
-import classNames from "classnames";
 
 import { stateCodes } from "../../../../config/constants";
 import Dropdown from "../../../commonComponents/Dropdown";
@@ -31,7 +30,7 @@ const FacilityInformation: React.FC<Props> = ({
   };
 
   return (
-    <div className={classNames("usa-form", "usa-form--large")}>
+    <div className="usa-form usa-form--large">
       {newOrg && (
         <>
           <p>

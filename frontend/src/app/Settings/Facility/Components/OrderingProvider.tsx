@@ -1,5 +1,4 @@
 import React from "react";
-import classNames from "classnames";
 
 import { stateCodes } from "../../../../config/constants";
 import { requiresOrderProvider } from "../../../utils/state";
@@ -39,9 +38,7 @@ const OrderingProvider: React.FC<Props> = ({
       <div className="usa-card__header">
         <h2 className="font-heading-lg">Ordering provider</h2>
       </div>
-      <div
-        className={classNames("usa-form", "usa-form--large", "usa-card__body")}
-      >
+      <div className="usa-form usa-form--large usa-card__body">
         {newOrg && (
           <>
             <p>
