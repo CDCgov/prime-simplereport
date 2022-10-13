@@ -10,11 +10,6 @@ import Alert from "../commonComponents/Alert";
 
 import PatientUpload from "./PatientUpload";
 
-const mockFacility = {
-  id: "1",
-  name: "Facility 1",
-};
-
 const mockStore = createMockStore([]);
 
 const store = mockStore({

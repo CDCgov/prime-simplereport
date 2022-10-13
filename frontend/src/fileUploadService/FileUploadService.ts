@@ -37,10 +37,7 @@ const getInitOptions = (csvFile: File) => {
 };
 
 export class FileUploadService {
-  static uploadPatients(
-    csvFile: File,
-    facilityId: string | undefined | null
-  ) {
+  static uploadPatients(csvFile: File, facilityId: string | undefined | null) {
     if (facilityId == null) {
       facilityId = "";
     }
