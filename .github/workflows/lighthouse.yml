@@ -15,20 +15,20 @@ jobs:
       with:
         swap-size-gb: 10
 
-    - name: Generate certs
-      run: |
-        echo "::group::Generate ssl certs"
-        sudo apt install libnss3-tools
-        eval "$(/home/linuxbrew/.linuxbrew/bin/brew shellenv)"
-        brew install mkcert
-        mkcert -install
-        mkdir -p certs
-        cd certs
-        mkcert localhost.simplereport.gov
-        mv localhost.simplereport.gov.pem localhost.simplereport.gov.crt
-        mv localhost.simplereport.gov-key.pem localhost.simplereport.gov.key
-        cd ..
-        echo "::endgroup::"
+#    - name: Generate certs
+#      run: |
+#        echo "::group::Generate ssl certs"
+#        sudo apt install libnss3-tools
+#        eval "$(/home/linuxbrew/.linuxbrew/bin/brew shellenv)"
+#        brew install mkcert
+#        mkcert -install
+#        mkdir -p certs
+#        cd certs
+#        mkcert localhost.simplereport.gov
+#        mv localhost.simplereport.gov.pem localhost.simplereport.gov.crt
+#        mv localhost.simplereport.gov-key.pem localhost.simplereport.gov.key
+#        cd ..
+#        echo "::endgroup::"
 
     - name: Update files permissions
       # Even though we don't use it, we need the .env file created here due to an issue similar to this one: https://github.com/mutagen-io/mutagen/issues/265
@@ -50,28 +50,7 @@ jobs:
       run: yarn install
 
     - name: Start app
-      run: yarn start
-
-    - name: Lighthouse CI Action
-      uses: treosh/lighthouse-ci-action@v7
-      with:
-        urls: |
-          $SITE_URL/
-#          $SITE_URL/app/$FACILITY_ID
-#          $SITE_URL/app/queue/$FACILITY_ID
-#          $SITE_URL/app/results/$FACILITY_ID
-#          $SITE_URL/app/patients/$FACILITY_ID
-#          $SITE_URL/app/add-patient/$FACILITY_ID
-#          $SITE_URL/app/settings/$FACILITY_ID
-#          $SITE_URL/app/settings/facilities/$FACILITY_ID
-#          $SITE_URL/app/settings/add-facility/$FACILITY_ID
-        uploadArtifacts: true
-        configPath: ./lighthouserc.yml
-        runs: 1
       env:
-        SITE_URL: https://localhost.simplereport.gov
-        #FACILITY_ID: ?facility=14fab3c1-070e-4e86-8ec7-4a1fc8e13477
-        # CI settings
         CI: 1
         # docker settings
         DOCKER_CLIENT_TIMEOUT: 180
@@ -100,3 +79,39 @@ jobs:
         PUBLIC_URL: /app/
         REACT_APP_OKTA_ENABLED: "true"
         REACT_APP_DISABLE_MAINTENANCE_BANNER: "true"
+      run: |
+        echo "::group::Generate ssl certs"
+        sudo apt install libnss3-tools
+        eval "$(/home/linuxbrew/.linuxbrew/bin/brew shellenv)"
+        brew install mkcert
+        mkcert -install
+        mkdir -p certs
+        cd certs
+        mkcert localhost.simplereport.gov
+        mv localhost.simplereport.gov.pem localhost.simplereport.gov.crt
+        mv localhost.simplereport.gov-key.pem localhost.simplereport.gov.key
+        cd ..
+        echo "::endgroup::"
+        yarn start
+
+    - name: Lighthouse CI Action
+      uses: treosh/lighthouse-ci-action@v7
+      with:
+        urls: |
+          $SITE_URL/
+#          $SITE_URL/app/$FACILITY_ID
+#          $SITE_URL/app/queue/$FACILITY_ID
+#          $SITE_URL/app/results/$FACILITY_ID
+#          $SITE_URL/app/patients/$FACILITY_ID
+#          $SITE_URL/app/add-patient/$FACILITY_ID
+#          $SITE_URL/app/settings/$FACILITY_ID
+#          $SITE_URL/app/settings/facilities/$FACILITY_ID
+#          $SITE_URL/app/settings/add-facility/$FACILITY_ID
+        uploadArtifacts: true
+        configPath: ./lighthouserc.yml
+        runs: 1
+      env:
+        SITE_URL: https://localhost.simplereport.gov
+        #FACILITY_ID: ?facility=14fab3c1-070e-4e86-8ec7-4a1fc8e13477
+        # CI settings
+
