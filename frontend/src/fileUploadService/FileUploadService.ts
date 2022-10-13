@@ -39,14 +39,14 @@ const getInitOptions = (csvFile: File) => {
 export class FileUploadService {
   static uploadPatients(
     csvFile: File,
-    facilityIdFromUrl: string | undefined | null
+    facilityId: string | undefined | null
   ) {
-    if (facilityIdFromUrl == null) {
-      facilityIdFromUrl = "";
+    if (facilityId == null) {
+      facilityId = "";
     }
     return fetch(
       api.getURL("/upload/patients"),
-      initPatientUploadRequest(csvFile, facilityIdFromUrl)
+      initPatientUploadRequest(csvFile, facilityId)
     );
   }
 
