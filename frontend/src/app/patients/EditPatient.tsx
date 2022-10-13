@@ -275,7 +275,7 @@ const EditPatient = (props: Props) => {
   return (
     <div className="bg-base-lightest">
       <div className="grid-container">
-        <main className={"prime-edit-patient prime-home"}>
+        <div className="prime-edit-patient prime-home">
           <div className={"margin-bottom-4"}>
             <PersonForm
               patient={{
@@ -339,7 +339,7 @@ const EditPatient = (props: Props) => {
                   <div className="display-flex flex-align-center">
                     {!props.fromQueue && (
                       <Button
-                        id="edit-patient-save-lower"
+                        id="edit-patient-save-upper"
                         className="prime-save-patient-changes-start-test"
                         disabled={loading || !formChanged}
                         onClick={() => {
@@ -382,7 +382,7 @@ const EditPatient = (props: Props) => {
               )}
             />
           </div>
-        </main>
+        </div>
       </div>
     </div>
   );

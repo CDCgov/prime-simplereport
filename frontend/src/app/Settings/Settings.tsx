@@ -13,7 +13,7 @@ const Settings = () => {
   useDocumentTitle("Settings");
 
   return (
-    <main className="prime-home">
+    <div className="prime-home flex-1">
       <div className="grid-container">
         <SettingsNav />
         <Routes>
@@ -34,7 +34,7 @@ const Settings = () => {
           <Route path="/" element={<ManageUsersContainer />} />
         </Routes>
       </div>
-    </main>
+    </div>
   );
 };
 

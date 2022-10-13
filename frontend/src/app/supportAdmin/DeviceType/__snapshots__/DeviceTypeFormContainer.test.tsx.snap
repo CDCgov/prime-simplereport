@@ -5,8 +5,8 @@ Object {
   "asFragment": [Function],
   "baseElement": <body>
     <div>
-      <main
-        class="prime-home"
+      <div
+        class="prime-home flex-1"
       >
         <div
           class="grid-container"
@@ -451,15 +451,15 @@ Object {
             </div>
           </div>
         </div>
-      </main>
+      </div>
       <div
         class="Toastify"
       />
     </div>
   </body>,
   "container": <div>
-    <main
-      class="prime-home"
+    <div
+      class="prime-home flex-1"
     >
       <div
         class="grid-container"
@@ -904,7 +904,7 @@ Object {
           </div>
         </div>
       </div>
-    </main>
+    </div>
     <div
       class="Toastify"
     />
