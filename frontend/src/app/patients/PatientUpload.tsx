@@ -1,7 +1,6 @@
 import React, { useState } from "react";
 
-import { showError, showNotification } from "../utils";
-import Alert from "../commonComponents/Alert";
+import { showError, showSuccess } from "../utils/srToast";
 import { FileUploadService } from "../../fileUploadService/FileUploadService";
 import { useSelectedFacility } from "../facilitySelect/useSelectedFacility";
 import Checkboxes from "../commonComponents/Checkboxes";
@@ -29,13 +28,12 @@ const PatientUpload = ({ onSuccess }: Props) => {
     FileUploadService.uploadPatients(fileList[0], facilityId).then(
       async (response) => {
         const successful = response.status === 200;
-        showNotification(
-          <Alert
-            type={successful ? "success" : "error"}
-            title={successful ? "Patients uploaded" : "Error"}
-            body={await response.text()}
-          />
-        );
+        const alertMsg = await response.text();
+        if (successful) {
+          showSuccess(alertMsg, "Patients uploaded");
+        } else {
+          showError(alertMsg, "Error");
+        }
         successful && onSuccess();
       }
     );

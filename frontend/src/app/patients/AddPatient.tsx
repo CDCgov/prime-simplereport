@@ -7,8 +7,8 @@ import { useSelector } from "react-redux";
 
 import iconSprite from "../../../node_modules/uswds/dist/img/sprite.svg";
 import { PATIENT_TERM, PATIENT_TERM_CAP } from "../../config/constants";
-import { showNotification, dedupeAndCompactStrings } from "../utils";
-import Alert from "../commonComponents/Alert";
+import { dedupeAndCompactStrings } from "../utils";
+import { showSuccess } from "../utils/srToast";
 import Button from "../commonComponents/Button/Button";
 import { LinkWithQuery } from "../commonComponents/LinkWithQuery";
 import { useDocumentTitle } from "../utils/hooks";
@@ -248,13 +248,9 @@ const AddPatient = () => {
         emails: dedupeAndCompactStrings(person.emails || []),
       },
     });
-
-    showNotification(
-      <Alert
-        type="success"
-        title={`${PATIENT_TERM_CAP} record created`}
-        body="New information record has been created."
-      />
+    showSuccess(
+      "New information record has been created.",
+      `${PATIENT_TERM_CAP} record created`
     );
 
     if (startTest) {

@@ -4,8 +4,7 @@ import { Navigate, useParams } from "react-router-dom";
 import { useDispatch } from "react-redux";
 
 import { updateFacility } from "../../store";
-import Alert from "../../commonComponents/Alert";
-import { showNotification } from "../../utils";
+import { showSuccess } from "../../utils/srToast";
 import { getAppInsights } from "../../TelemetryService";
 import { useSelectedFacility } from "../../facilitySelect/useSelectedFacility";
 
@@ -239,15 +238,10 @@ const FacilityFormContainer: any = (props: Props) => {
           ? savedFacility.data.updateFacility.id
           : savedFacility.data.addFacility.id,
     }));
-    const alert = (
-      <Alert
-        type="success"
-        title="Updated Facility"
-        body="The settings for the facility have been updated"
-      />
+    showSuccess(
+      "The settings for the facility have been updated",
+      "Updated Facility"
     );
-
-    showNotification(alert);
     updateSaveSuccess(true);
   };
 

@@ -7,14 +7,13 @@ import React, {
 } from "react";
 import { gql, useMutation, useLazyQuery, useQuery } from "@apollo/client";
 
-import Alert from "../../commonComponents/Alert";
 import {
   QUEUE_NOTIFICATION_TYPES,
   ALERT_CONTENT,
   MIN_SEARCH_CHARACTER_COUNT,
   SEARCH_DEBOUNCE_TIME,
 } from "../constants";
-import { showNotification } from "../../utils";
+import { showAlertNotification } from "../../utils/srToast";
 import { useOutsideClick } from "../../utils/hooks";
 import { Patient } from "../../patients/ManagePatients";
 import { AoEAnswersDelivery } from "../AoEForm/AoEForm";
@@ -244,8 +243,7 @@ const AddToQueueSearchBox = ({
             patient
           ),
         };
-        const alert = <Alert type={type} title={title} body={body} />;
-        showNotification(alert);
+        showAlertNotification(type, title, body);
         refetchQueue();
         setStartTestPatientId(null);
         if (createOrUpdate === "create") {

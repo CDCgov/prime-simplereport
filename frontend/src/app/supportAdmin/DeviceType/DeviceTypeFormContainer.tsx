@@ -6,8 +6,7 @@ import {
   useGetSpecimenTypesQuery,
   useGetSupportedDiseasesQuery,
 } from "../../../generated/graphql";
-import Alert from "../../commonComponents/Alert";
-import { showNotification } from "../../utils";
+import { showError, showSuccess } from "../../utils/srToast";
 import { LoadingCard } from "../../commonComponents/LoadingCard/LoadingCard";
 import { useSelectedFacility } from "../../facilitySelect/useSelectedFacility";
 
@@ -26,12 +25,9 @@ const DeviceTypeFormContainer = () => {
 
   const saveDeviceType = (device: Device) => {
     if (device.testLength <= 0 || device.testLength > 999) {
-      showNotification(
-        <Alert
-          type="error"
-          title="Create device failed"
-          body="Failed to create device. Invalid test length"
-        />
+      showError(
+        "Failed to create device. Invalid test length",
+        "Create device failed"
       );
     } else {
       if (!device.internalId) {
@@ -39,14 +35,7 @@ const DeviceTypeFormContainer = () => {
           variables: device,
           fetchPolicy: "no-cache",
         }).then(() => {
-          const alert = (
-            <Alert
-              type="success"
-              title="Created Device"
-              body="The device has been created"
-            />
-          );
-          showNotification(alert);
+          showSuccess("The device has been created", "Created Device");
           setSubmitted(true);
         });
       } else {

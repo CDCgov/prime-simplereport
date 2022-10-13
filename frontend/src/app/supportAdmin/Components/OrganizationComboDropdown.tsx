@@ -2,8 +2,7 @@ import React from "react";
 import { ComboBox } from "@trussworks/react-uswds";
 
 import Required from "../../commonComponents/Required";
-import Alert from "../../commonComponents/Alert";
-import { showNotification } from "../../utils";
+import { showError } from "../../utils/srToast";
 
 export interface OrganizationOption {
   name: string;
@@ -24,14 +23,7 @@ export const useOrganizationDropDownValidation = (
       return "combo box cleared";
     }
     if (organizationExternalId === null || organizationExternalId === "") {
-      const alert = (
-        <Alert
-          type="error"
-          title="Form Errors"
-          body="Please select an organization."
-        />
-      );
-      showNotification(alert);
+      showError("Please select an organization.", "Form Errors");
       return "error";
     }
 
