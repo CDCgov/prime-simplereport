@@ -15,7 +15,7 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v3
-      - uses: hashicorp/setup-terraform@v1
+      - uses: hashicorp/setup-terraform@v2.0.2
         with:
           terraform_version: 1.1.4
       - name: Terraform fmt
@@ -31,7 +31,7 @@ jobs:
           global
     steps:
       - uses: actions/checkout@v3
-      - uses: hashicorp/setup-terraform@v1
+      - uses: hashicorp/setup-terraform@v2.0.2
         with:
           terraform_version: 1.1.4
       - name: Terraform Init
@@ -68,7 +68,7 @@ jobs:
         if: ${{ github.actor != 'dependabot[bot]' }}
         with:
           creds: ${{ secrets.AZURE_CREDENTIALS }}
-      - uses: hashicorp/setup-terraform@v1
+      - uses: hashicorp/setup-terraform@v2.0.2
         if: ${{ github.actor != 'dependabot[bot]' }}
         with:
           terraform_version: 1.1.4
