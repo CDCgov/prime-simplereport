@@ -19,6 +19,7 @@ import java.nio.charset.StandardCharsets;
 import java.util.List;
 import java.util.Map;
 import java.util.UUID;
+import java.util.stream.Collectors;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -48,10 +49,15 @@ class UploadServiceTest extends BaseServiceTest<UploadService> {
     initSampleData();
     when(addressValidationService.getValidatedAddress(any(), any(), any(), any(), any(), any()))
         .thenReturn(address);
-    List<Facility> facilities =
-        organizationService.getFacilities(organizationService.getCurrentOrganization());
-    firstFacilityId = facilities.get(0).getInternalId();
-    secondFacilityId = facilities.get(1).getInternalId();
+    List<UUID> facilityIds =
+        organizationService.getFacilities(organizationService.getCurrentOrganization()).stream()
+            .map(Facility::getInternalId)
+            .collect(Collectors.toList());
+    if (facilityIds.isEmpty()) {
+      throw new IllegalStateException("This organization has no facilities");
+    }
+    firstFacilityId = facilityIds.get(0);
+    secondFacilityId = facilityIds.get(1);
   }
 
   @Test
