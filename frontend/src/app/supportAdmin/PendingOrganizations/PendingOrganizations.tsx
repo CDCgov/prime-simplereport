@@ -233,7 +233,7 @@ const PendingOrganizations = ({
     ));
   };
   return (
-    <main className="prime-home">
+    <div className="prime-home flex-1">
       <div className="grid-container pending-orgs-wide-container">
         <div className="grid-row">
           <div className="prime-container card-container sr-pending-organizations-list">
@@ -279,7 +279,7 @@ const PendingOrganizations = ({
           </div>
         </div>
       </div>
-    </main>
+    </div>
   );
 };
 

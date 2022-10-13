@@ -11,7 +11,7 @@ Object {
         <div
           class="grid-container"
         >
-          <main
+          <div
             class="prime-edit-patient prime-home"
           >
             <div
@@ -61,7 +61,7 @@ Object {
                       aria-disabled="true"
                       class="usa-button usa-button--outline usa-button-disabled prime-save-patient-changes-start-test"
                       disabled=""
-                      id="edit-patient-save-lower"
+                      id="edit-patient-save-upper"
                       type="button"
                     >
                       Save and start test
@@ -2573,7 +2573,7 @@ Object {
                 </button>
               </div>
             </div>
-          </main>
+          </div>
         </div>
       </div>
     </div>
@@ -2588,7 +2588,7 @@ Object {
       <div
         class="grid-container"
       >
-        <main
+        <div
           class="prime-edit-patient prime-home"
         >
           <div
@@ -2638,7 +2638,7 @@ Object {
                     aria-disabled="true"
                     class="usa-button usa-button--outline usa-button-disabled prime-save-patient-changes-start-test"
                     disabled=""
-                    id="edit-patient-save-lower"
+                    id="edit-patient-save-upper"
                     type="button"
                   >
                     Save and start test
@@ -5150,7 +5150,7 @@ Object {
               </button>
             </div>
           </div>
-        </main>
+        </div>
       </div>
     </div>
   </div>,

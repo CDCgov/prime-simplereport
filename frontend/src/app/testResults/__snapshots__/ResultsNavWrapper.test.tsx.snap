@@ -2,8 +2,8 @@
 
 exports[`ResultsNav displays the results sub nav when user has the permission 1`] = `
 <div>
-  <main
-    class="prime-home"
+  <div
+    class="prime-home flex-1"
   >
     <div
       class="grid-container results-wide-container"
@@ -49,14 +49,14 @@ exports[`ResultsNav displays the results sub nav when user has the permission 1`
       </nav>
       Testing 123
     </div>
-  </main>
+  </div>
 </div>
 `;
 
 exports[`ResultsNav doesnt display the results sub nav when user doesnt have the permission 1`] = `
 <div>
-  <main
-    class="prime-home"
+  <div
+    class="prime-home flex-1"
   >
     <div
       class="grid-container results-wide-container"
@@ -102,6 +102,6 @@ exports[`ResultsNav doesnt display the results sub nav when user doesnt have the
       </nav>
       Testing 123
     </div>
-  </main>
+  </div>
 </div>
 `;

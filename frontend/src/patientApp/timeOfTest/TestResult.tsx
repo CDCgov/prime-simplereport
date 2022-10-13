@@ -37,7 +37,7 @@ const TestResult = () => {
         </div>
       </div>
 
-      <main
+      <div
         className="patient-app padding-top-105 padding-bottom-4 bg-base-lightest"
         data-testid="patient-app"
       >
@@ -88,7 +88,7 @@ const TestResult = () => {
             />
           </div>
         </div>
-      </main>
+      </div>
     </div>
   );
 };

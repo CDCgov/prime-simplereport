@@ -49,7 +49,7 @@ const Page: React.FC<Props> = ({ header, children, isPatientApp }) => {
         <USAGovBanner />
         {header}
       </header>
-      <div id="main-wrapper">
+      <main id="main-wrapper">
         {children}
         <ToastContainer
           autoClose={5000}
@@ -58,7 +58,7 @@ const Page: React.FC<Props> = ({ header, children, isPatientApp }) => {
           position="bottom-center"
           hideProgressBar={true}
         />
-      </div>
+      </main>
       <footer>
         {/*  Disabling Touchpoints until we have designs that specify how to contact Support */}
         {/*<TouchpointsButton />*/}
