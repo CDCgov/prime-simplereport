@@ -86,7 +86,7 @@ jobs:
           REACT_APP_OKTA_ENABLED: "true"
           REACT_APP_DISABLE_MAINTENANCE_BANNER: "true"
         run: |
-          npm install -g @lhci/cli@0.8.x
+          npm install -g @lhci/cli@0.9.x
           lhci autorun
       - uses: actions/upload-artifact@v3
         with:
