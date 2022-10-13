@@ -49,8 +49,31 @@ jobs:
     - name: Install node modules
       run: yarn install
 
-    - name: Start app
+#    - name: Start app
+#      env:
+#      run:
+
+
+    - name: Lighthouse CI Action
+      uses: treosh/lighthouse-ci-action@v7
+      with:
+        urls: |
+          $SITE_URL/
+#          $SITE_URL/app/$FACILITY_ID
+#          $SITE_URL/app/queue/$FACILITY_ID
+#          $SITE_URL/app/results/$FACILITY_ID
+#          $SITE_URL/app/patients/$FACILITY_ID
+#          $SITE_URL/app/add-patient/$FACILITY_ID
+#          $SITE_URL/app/settings/$FACILITY_ID
+#          $SITE_URL/app/settings/facilities/$FACILITY_ID
+#          $SITE_URL/app/settings/add-facility/$FACILITY_ID
+        uploadArtifacts: true
+        configPath: ./lighthouserc.yml
+        runs: 1
       env:
+        SITE_URL: https://localhost.simplereport.gov
+        #FACILITY_ID: ?facility=14fab3c1-070e-4e86-8ec7-4a1fc8e13477
+        #CI Settings
         CI: 1
         # docker settings
         DOCKER_CLIENT_TIMEOUT: 180
@@ -93,25 +116,4 @@ jobs:
         cd ..
         echo "::endgroup::"
         yarn start
-
-    - name: Lighthouse CI Action
-      uses: treosh/lighthouse-ci-action@v7
-      with:
-        urls: |
-          $SITE_URL/
-#          $SITE_URL/app/$FACILITY_ID
-#          $SITE_URL/app/queue/$FACILITY_ID
-#          $SITE_URL/app/results/$FACILITY_ID
-#          $SITE_URL/app/patients/$FACILITY_ID
-#          $SITE_URL/app/add-patient/$FACILITY_ID
-#          $SITE_URL/app/settings/$FACILITY_ID
-#          $SITE_URL/app/settings/facilities/$FACILITY_ID
-#          $SITE_URL/app/settings/add-facility/$FACILITY_ID
-        uploadArtifacts: true
-        configPath: ./lighthouserc.yml
-        runs: 1
-      env:
-        SITE_URL: https://localhost.simplereport.gov
-        #FACILITY_ID: ?facility=14fab3c1-070e-4e86-8ec7-4a1fc8e13477
-        # CI settings
 
