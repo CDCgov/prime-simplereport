@@ -8,6 +8,7 @@ import { LinkWithQuery } from "../../commonComponents/LinkWithQuery";
 import { FileUploadService } from "../../../fileUploadService/FileUploadService";
 import "../HeaderSizeFix.scss";
 import { getAppInsights } from "../../TelemetryService";
+import { useSelectedFacility } from "../../facilitySelect/useSelectedFacility";
 
 const PAYLOAD_MAX_BYTES = 50 * 1000 * 1000;
 const REPORT_MAX_ITEMS = 10000;
@@ -17,6 +18,8 @@ const Uploads = () => {
   useDocumentTitle("Upload spreadsheet");
 
   const appInsights = getAppInsights();
+  const [facility] = useSelectedFacility();
+  const facilityId = facility?.id;
 
   const [fileInputResetValue, setFileInputResetValue] = useState(0);
   const [buttonIsDisabled, setButtonIsDisabled] = useState(true);
@@ -113,21 +116,38 @@ const Uploads = () => {
         setErrorMessageText(
           "There was a server error. Your file has not been accepted."
         );
+        appInsights?.trackEvent({
+          name: "Spreadsheet upload server error",
+          properties: {
+            "facility ID": facilityId,
+          },
+        });
       } else {
         const response = await res.json();
 
         if (response?.reportId) {
           setReportId(response?.reportId);
+          appInsights?.trackEvent({
+            name: "Spreadsheet upload success",
+            properties: {
+              "report ID": reportId,
+              "facility ID": facilityId,
+            },
+          });
         }
 
         if (response?.errors?.length) {
           setErrorMessageText(
             "Please resolve the errors below and upload your edited file. Your file has not been accepted."
           );
-        }
-
-        if (response?.errors && response.errors.length > 0) {
           setErrors(response.errors);
+          appInsights?.trackEvent({
+            name: "Spreadsheet upload validation failure",
+            properties: {
+              errors: response.errors,
+              "facility ID": facilityId,
+            },
+          });
         }
       }
     });
