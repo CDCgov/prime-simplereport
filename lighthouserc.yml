@@ -1,6 +1,11 @@
 ci:
   collect:
     numberOfRuns: 1
+    startServerCommand: yarn start
+    url: https://localhost.simplereport.gov
+  upload:
+    target: filesystem
+    outputDir: ./lhci
   assert:
     assertions:
       categories:performance: [warn, {minScore: 0.8}]
