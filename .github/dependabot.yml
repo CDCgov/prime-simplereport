@@ -54,19 +54,19 @@ updates:
       - "rin-skylight"
       - "emmastephenson"
 
-  # - package-ecosystem: "gradle"
-  #   directory: "/backend"
-  #   open-pull-requests-limit: 2
-  #   schedule:
-  #     interval: "weekly"
-  #   reviewers:
-      # - "alismx"
-      # - "BobanL"
-      # - "DanielSass"
-      # - "mehansen"
-      # - "rin-skylight"
-      # - "zdeveloper"
-      # - "emmastephenson"
+  - package-ecosystem: "gradle"
+    directory: "/backend"
+    open-pull-requests-limit: 2
+    schedule:
+      interval: "weekly"
+    reviewers:
+      - "alismx"
+      - "BobanL"
+      - "DanielSass"
+      - "mehansen"
+      - "rin-skylight"
+      - "zdeveloper"
+      - "emmastephenson"
 
   - package-ecosystem: "npm"
     directory: "/"
