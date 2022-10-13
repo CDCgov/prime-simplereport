@@ -39,8 +39,20 @@ jobs:
         uses: actions/setup-node@v1
         with:
           node-version: 14.x
-      - name: yarn install, build
+      - name: mkcert and yarn install, build
         run: |
+          echo "::group::Generate ssl certs"
+          sudo apt install libnss3-tools
+          eval "$(/home/linuxbrew/.linuxbrew/bin/brew shellenv)"
+          brew install mkcert
+          mkcert -install
+          mkdir -p certs
+          cd certs
+          mkcert localhost.simplereport.gov
+          mv localhost.simplereport.gov.pem localhost.simplereport.gov.crt
+          mv localhost.simplereport.gov-key.pem localhost.simplereport.gov.key
+          cd ..
+          echo "::endgroup::"
           yarn install
           yarn build
       - name: run Lighthouse CI
