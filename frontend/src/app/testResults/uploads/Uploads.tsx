@@ -8,7 +8,10 @@ import { LinkWithQuery } from "../../commonComponents/LinkWithQuery";
 import { FileUploadService } from "../../../fileUploadService/FileUploadService";
 import "../HeaderSizeFix.scss";
 import { getAppInsights } from "../../TelemetryService";
-import { useSelectedFacility } from "../../facilitySelect/useSelectedFacility";
+
+import { useSelector } from "react-redux";
+
+import { RootState } from "../../store";
 
 const PAYLOAD_MAX_BYTES = 50 * 1000 * 1000;
 const REPORT_MAX_ITEMS = 10000;
@@ -18,8 +21,10 @@ const Uploads = () => {
   useDocumentTitle("Upload spreadsheet");
 
   const appInsights = getAppInsights();
-  const [facility] = useSelectedFacility();
-  const facilityId = facility?.id;
+  const orgName = useSelector<RootState, string>(
+    (state) => state.organization.name
+  );
+  const user = useSelector<RootState, User>((state) => state.user);
 
   const [fileInputResetValue, setFileInputResetValue] = useState(0);
   const [buttonIsDisabled, setButtonIsDisabled] = useState(true);
@@ -119,7 +124,8 @@ const Uploads = () => {
         appInsights?.trackEvent({
           name: "Spreadsheet upload server error",
           properties: {
-            "facility ID": facilityId,
+            org: orgName,
+            user: user.email,
           },
         });
       } else {
@@ -131,7 +137,8 @@ const Uploads = () => {
             name: "Spreadsheet upload success",
             properties: {
               "report ID": reportId,
-              "facility ID": facilityId,
+              "org internal ID": orgName,
+              user: user.email,
             },
           });
         }
@@ -145,7 +152,8 @@ const Uploads = () => {
             name: "Spreadsheet upload validation failure",
             properties: {
               errors: response.errors,
-              "facility ID": facilityId,
+              "org internal ID": orgName,
+              user: user.email,
             },
           });
         }
