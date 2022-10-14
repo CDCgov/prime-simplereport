@@ -135,7 +135,7 @@ const Uploads = () => {
             name: "Spreadsheet upload success",
             properties: {
               "report ID": reportId,
-              "org internal ID": orgName,
+              org: orgName,
               user: user.email,
             },
           });
@@ -150,7 +150,7 @@ const Uploads = () => {
             name: "Spreadsheet upload validation failure",
             properties: {
               errors: response.errors,
-              "org internal ID": orgName,
+              org: orgName,
               user: user.email,
             },
           });
