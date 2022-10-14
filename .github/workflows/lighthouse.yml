@@ -49,13 +49,9 @@ jobs:
           sudo chmod -R 777 backend
           sudo chmod -R 777 frontend
           echo "::endgroup::"
-          echo "::group::Make artifact dir:"
           mkdir ./lhci
-          echo "::endgroup::"
-          echo "::group::Yarn build"
           yarn install
           yarn build
-          echo "::endgroup::"
 
       - name: run Lighthouse CI
         env:         # CI settings
