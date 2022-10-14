@@ -3,6 +3,29 @@ import userEvent from "@testing-library/user-event";
 
 import DeviceLookup from "./DeviceLookup";
 
+describe("Device lookup - no devices", () => {
+  beforeEach(() => {
+    render(
+      <DeviceLookup
+        formTitle={"title"}
+        swabOptions={[
+          {
+            swabName: "Swab (445297001)",
+            typeCode: "445297001",
+            internalId: "1",
+          },
+        ]}
+        deviceOptions={[]}
+      />
+    );
+  });
+
+  it("displays no results message", () => {
+    userEvent.click(screen.getByTestId("combo-box-select"));
+    expect(screen.getByText("No results found")).toBeInTheDocument();
+  });
+});
+
 describe("Device lookup", () => {
   beforeEach(() => {
     render(
