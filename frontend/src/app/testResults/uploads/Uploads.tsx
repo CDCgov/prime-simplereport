@@ -1,4 +1,5 @@
 import React, { useState } from "react";
+import { useSelector } from "react-redux";
 import { Button, FormGroup, FileInput } from "@trussworks/react-uswds";
 
 import { showError } from "../../utils";
@@ -8,9 +9,6 @@ import { LinkWithQuery } from "../../commonComponents/LinkWithQuery";
 import { FileUploadService } from "../../../fileUploadService/FileUploadService";
 import "../HeaderSizeFix.scss";
 import { getAppInsights } from "../../TelemetryService";
-
-import { useSelector } from "react-redux";
-
 import { RootState } from "../../store";
 
 const PAYLOAD_MAX_BYTES = 50 * 1000 * 1000;

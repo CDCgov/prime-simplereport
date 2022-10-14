@@ -1,12 +1,10 @@
 import { LinkWithQuery } from "../../commonComponents/LinkWithQuery";
 import { useDocumentTitle } from "../../utils/hooks";
 import iconSprite from "../../../../node_modules/uswds/dist/img/sprite.svg";
-
 import "./CsvSchemaDocumentation.scss";
 import { getAppInsights } from "../../TelemetryService";
 
 import schema from "./schema.json";
-
 
 export type CsvSchemaItem = {
   name: string;
