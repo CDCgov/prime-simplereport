@@ -20,7 +20,7 @@ const Uploads = () => {
 
   const appInsights = getAppInsights();
   const orgName = useSelector<RootState, string>(
-    (state) => state.organization.name
+    (state) => state.organization?.name
   );
   const user = useSelector<RootState, User>((state) => state.user);
 
