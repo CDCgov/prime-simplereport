@@ -246,7 +246,7 @@ const Uploads = () => {
               </div>
             </div>
           )}
-          {errors && errors.length > 0 && (
+          {!reportId && (
             <div>
               <div className="usa-alert usa-alert--error" role="alert">
                 <div className="usa-alert__body">
@@ -256,24 +256,26 @@ const Uploads = () => {
                   <p className="usa-alert__text">{errorMessageText}</p>
                 </div>
               </div>
-              <table className="usa-table usa-table--borderless">
-                <thead>
-                  <tr>
-                    <th>Requested Edit</th>
-                    <th>Areas Containing the Requested Edit</th>
-                  </tr>
-                </thead>
-                <tbody>
-                  {errors.map((e, i) => {
-                    return (
-                      <tr key={"error_" + i}>
-                        <td>{e?.["message"]} </td>
-                        <td>Row(s): {e?.["indices"]}</td>
-                      </tr>
-                    );
-                  })}
-                </tbody>
-              </table>
+              {errors?.length > 0 && (
+                <table className="usa-table usa-table--borderless">
+                  <thead>
+                    <tr>
+                      <th>Requested Edit</th>
+                      <th>Areas Containing the Requested Edit</th>
+                    </tr>
+                  </thead>
+                  <tbody>
+                    {errors.map((e, i) => {
+                      return (
+                        <tr key={"error_" + i}>
+                          <td>{e?.["message"]} </td>
+                          <td>Row(s): {e?.["indices"]}</td>
+                        </tr>
+                      );
+                    })}
+                  </tbody>
+                </table>
+              )}
             </div>
           )}
           <FormGroup className="margin-bottom-3">

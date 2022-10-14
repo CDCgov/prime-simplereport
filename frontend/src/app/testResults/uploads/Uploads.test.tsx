@@ -105,59 +105,126 @@ describe("Uploads", () => {
     expect(button).toBeDisabled();
   });
 
-  describe("happy path", () => {
-    let file: File;
-    let uploadResultsSpy: jest.SpyInstance<Promise<Response>, [csvFile: File]>;
+  describe("on file upload", () => {
+    describe("happy path", () => {
+      let file: File;
+      let uploadResultsSpy: jest.SpyInstance<
+        Promise<Response>,
+        [csvFile: File]
+      >;
 
-    beforeEach(async () => {
-      file = validFile();
+      beforeEach(async () => {
+        file = validFile();
 
-      uploadResultsSpy = jest
-        .spyOn(FileUploadService, "uploadResults")
-        .mockImplementation(() => {
-          return Promise.resolve(
-            new Response(
-              JSON.stringify({
-                reportId: "fake-report-id",
-                status: "FINISHED",
-                recordsCount: 1,
-                warnings: [],
-                errors: [],
-              }),
-              { status: 200 }
-            )
-          );
+        uploadResultsSpy = jest
+          .spyOn(FileUploadService, "uploadResults")
+          .mockImplementation(() => {
+            return Promise.resolve(
+              new Response(
+                JSON.stringify({
+                  reportId: "fake-report-id",
+                  status: "FINISHED",
+                  recordsCount: 1,
+                  warnings: [],
+                  errors: [],
+                }),
+                { status: 200 }
+              )
+            );
+          });
+
+        render(<TestContainer />);
+
+        const fileInput = screen.getByTestId("file-input-input");
+        userEvent.upload(fileInput, file);
+        await waitFor(() => {
+          screen.getByText("values.csv");
         });
 
-      await render(
-        <Provider store={store}>
-          <MemoryRouter>
-            <ToastContainer />
-            <Uploads />
-          </MemoryRouter>
-        </Provider>
-      );
+        const submitButton = screen.getByTestId("button");
+        userEvent.click(submitButton);
+        await waitFor(() => {
+          expect(
+            screen.getByText("Success: File Accepted")
+          ).toBeInTheDocument();
+        });
+      });
+
+      it("performs HTTP request to rest endpoint to submit CSV file", async () => {
+        expect(uploadResultsSpy).toHaveBeenCalled();
+      });
+
+      it("displays a success message and the returned Report ID", async () => {
+        expect(screen.getByText("Confirmation Code")).toBeInTheDocument();
+        expect(screen.getByText("fake-report-id")).toBeInTheDocument();
+      });
+    });
+
+    it("server upload failure displays error message", async () => {
+      jest.spyOn(FileUploadService, "uploadResults").mockImplementation(() => {
+        return Promise.resolve(new Response(null, { status: 500 }));
+      });
+
+      render(<TestContainer />);
 
       const fileInput = screen.getByTestId("file-input-input");
-      userEvent.upload(fileInput, file);
+      userEvent.upload(fileInput, validFile());
       await waitFor(() => {
         screen.getByText("values.csv");
       });
 
       const submitButton = screen.getByTestId("button");
       userEvent.click(submitButton);
+
       await waitFor(() => {
-        expect(screen.getByText("Success: File Accepted")).toBeInTheDocument();
+        expect(
+          screen.getByText(
+            "There was a server error. Your file has not been accepted."
+          )
+        ).toBeInTheDocument();
       });
+      expect(screen.queryByText("Requested Edit")).not.toBeInTheDocument();
     });
 
-    it("performs HTTP request to rest endpoint to submit CSV file", async () => {
-      expect(uploadResultsSpy).toHaveBeenCalled();
-    });
+    it("response errors are shown to user", async () => {
+      jest.spyOn(FileUploadService, "uploadResults").mockImplementation(() => {
+        return Promise.resolve(
+          new Response(
+            JSON.stringify({
+              reportId: null,
+              status: "ERROR",
+              recordsCount: 1,
+              warnings: [],
+              errors: [
+                {
+                  message: "missing required column",
+                  scope: "report",
+                },
+              ],
+            }),
+            { status: 200 }
+          )
+        );
+      });
 
-    it("displays a success message and the returned Report ID", async () => {
-      expect(screen.getByText("Confirmation Code")).toBeInTheDocument();
-      expect(screen.getByText("fake-report-id")).toBeInTheDocument();
+      render(<TestContainer />);
+
+      const fileInput = screen.getByTestId("file-input-input");
+      userEvent.upload(fileInput, validFile());
+      await waitFor(() => {
+        screen.getByText("values.csv");
+      });
+
+      const submitButton = screen.getByTestId("button");
+      userEvent.click(submitButton);
+
+      await waitFor(() => {
+        expect(
+          screen.getByText("Error: File not accepted")
+        ).toBeInTheDocument();
+      });
+      expect(screen.getByText("Requested Edit")).toBeInTheDocument();
+      expect(screen.getByText("missing required column")).toBeInTheDocument();
     });
   });
 });
