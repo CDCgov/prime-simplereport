@@ -60,13 +60,7 @@ updates:
     schedule:
       interval: "weekly"
     reviewers:
-      - "alismx"
-      - "BobanL"
-      - "DanielSass"
-      - "mehansen"
-      - "rin-skylight"
-      - "zdeveloper"
-      - "emmastephenson"
+      - "SimpleReport-BackendReviews"
 
   - package-ecosystem: "npm"
     directory: "/"
