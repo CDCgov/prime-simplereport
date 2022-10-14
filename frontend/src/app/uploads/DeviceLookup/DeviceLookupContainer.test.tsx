@@ -1,26 +1,12 @@
 import { render } from "@testing-library/react";
 import { ToastContainer } from "react-toastify";
 
-import { SpecimenType } from "../../../generated/graphql";
 
 import DeviceLookupContainer from "./DeviceLookupContainer";
 
 jest.mock("../../../generated/graphql", () => {
   return {
-    useGetSpecimenTypesQuery: () => {
-      return {
-        data: {
-          specimenTypes: [
-            {
-              internalId: "1234",
-              name: "NOSE POKE",
-              typeCode: "4321-a",
-            },
-          ] as SpecimenType[],
-        },
-      };
-    },
-    useGetDeviceTypeListQuery: () => {
+    useGetDeviceTypesForLookupQuery: () => {
       return {
         data: {
           deviceTypes: [
@@ -30,7 +16,13 @@ jest.mock("../../../generated/graphql", () => {
               loincCode: "loinc-1",
               manufacturer: "Abbott",
               model: "A",
-              swabTypes: ["1234"],
+              swabTypes: [
+                {
+                  internalId: "1234",
+                  name: "NOSE POKE",
+                  typeCode: "4321-a",
+                },
+              ],
             },
           ],
         },

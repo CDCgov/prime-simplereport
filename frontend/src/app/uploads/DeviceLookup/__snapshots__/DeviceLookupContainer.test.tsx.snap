@@ -6,7 +6,7 @@ Object {
   "baseElement": <body>
     <div>
       <div
-        class="prime-home device-lookup-container"
+        class="prime-home device-lookup-container flex-1"
       >
         <div
           class="grid-container"
@@ -276,7 +276,7 @@ Object {
   </body>,
   "container": <div>
     <div
-      class="prime-home device-lookup-container"
+      class="prime-home device-lookup-container flex-1"
     >
       <div
         class="grid-container"

@@ -5,19 +5,7 @@ import DeviceLookup from "./DeviceLookup";
 
 describe("Device lookup - no devices", () => {
   beforeEach(() => {
-    render(
-      <DeviceLookup
-        formTitle={"title"}
-        swabOptions={[
-          {
-            swabName: "Swab (445297001)",
-            typeCode: "445297001",
-            internalId: "1",
-          },
-        ]}
-        deviceOptions={[]}
-      />
-    );
+    render(<DeviceLookup formTitle={"title"} deviceOptions={[]} />);
   });
 
   it("displays no results message", () => {
@@ -31,13 +19,6 @@ describe("Device lookup", () => {
     render(
       <DeviceLookup
         formTitle={"title"}
-        swabOptions={[
-          {
-            swabName: "Swab (445297001)",
-            typeCode: "445297001",
-            internalId: "1",
-          },
-        ]}
         deviceOptions={[
           {
             internalId: "abc1",

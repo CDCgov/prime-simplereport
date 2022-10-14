@@ -8,29 +8,13 @@ import { DeviceType } from "../../../generated/graphql";
 import Optional from "../../commonComponents/Optional";
 import "./DeviceLookup.scss";
 
-interface Device {
-  internalId?: string;
-  name: string;
-  manufacturer: string;
-  model: string;
-  loincCode: string;
-  swabTypes: Array<string>;
-}
-
-interface SwabType {
-  swabName: string;
-  typeCode: string;
-  internalId: string;
-}
-
 interface Props {
   formTitle: string;
-  swabOptions: Array<SwabType>;
   deviceOptions?: DeviceType[];
 }
 
 const DeviceLookup = (props: Props) => {
-  const [device, updateDevice] = useState<Device | undefined>();
+  const [device, updateDevice] = useState<DeviceType | undefined>();
 
   const [copiedSlug, setCopiedSlug] = useState<string>();
 
@@ -68,19 +52,6 @@ const DeviceLookup = (props: Props) => {
           .sort((a, b) => a.label.localeCompare(b.label))
       : [];
 
-  const getDeviceFromDeviceType = (device?: DeviceType): Device | undefined => {
-    return device
-      ? {
-          internalId: device.internalId,
-          name: device.name,
-          manufacturer: device.manufacturer,
-          model: device.model,
-          swabTypes: device.swabTypes?.map((swab) => swab.internalId),
-          loincCode: device.loincCode,
-        }
-      : undefined;
-  };
-
   const getCopyToClipboardButton = (
     copiedAttribute: string | undefined,
     label: string
@@ -104,7 +75,7 @@ const DeviceLookup = (props: Props) => {
   };
 
   return (
-    <div className="prime-home device-lookup-container">
+    <div className="prime-home device-lookup-container flex-1">
       <div className="grid-container">
         <div className="grid-row">
           <div className="prime-container card-container">
@@ -132,10 +103,8 @@ const DeviceLookup = (props: Props) => {
                         options={getDeviceOptions()}
                         onChange={(id) => {
                           updateDevice(
-                            getDeviceFromDeviceType(
-                              props.deviceOptions?.find(
-                                (d) => id === d.internalId
-                              )
+                            props.deviceOptions?.find(
+                              (d) => id === d.internalId
                             )
                           );
                         }}
@@ -194,45 +163,41 @@ const DeviceLookup = (props: Props) => {
                       <table className={"usa-table"}>
                         <tbody>
                           {device &&
-                            props.swabOptions
-                              .filter((swab) =>
-                                device.swabTypes.includes(swab.internalId)
-                              )
-                              .map(({ swabName, typeCode }) => (
-                                <tr key={swabName}>
-                                  <td>{swabName}</td>
-                                  <td>
-                                    <div
-                                      style={{ position: "relative" }}
-                                      className="display-flex flex-justify"
-                                    >
-                                      <span>{typeCode}</span>
-                                      <div className={"copy-button-container"}>
-                                        {device && (
-                                          <button
-                                            className="usa-button usa-button--unstyled copy-button"
-                                            onClick={() =>
-                                              typeCode && copySlug(typeCode)
+                            device.swabTypes.map(({ name, typeCode }) => (
+                              <tr key={name}>
+                                <td>{name}</td>
+                                <td>
+                                  <div
+                                    style={{ position: "relative" }}
+                                    className="display-flex flex-justify"
+                                  >
+                                    <span>{typeCode}</span>
+                                    <div className={"copy-button-container"}>
+                                      {device && (
+                                        <button
+                                          className="usa-button usa-button--unstyled copy-button"
+                                          onClick={() =>
+                                            typeCode && copySlug(typeCode)
+                                          }
+                                          aria-label={`Copy SNOMED code for ${name} (${typeCode})`}
+                                        >
+                                          <FontAwesomeIcon
+                                            icon={
+                                              copiedSlug === typeCode
+                                                ? faCheck
+                                                : faCopy
                                             }
-                                            aria-label={`Copy SNOMED code for ${swabName} (${typeCode})`}
-                                          >
-                                            <FontAwesomeIcon
-                                              icon={
-                                                copiedSlug === typeCode
-                                                  ? faCheck
-                                                  : faCopy
-                                              }
-                                            />
-                                          </button>
-                                        )}
-                                        {device && copiedSlug === typeCode && (
-                                          <CopyTooltip />
-                                        )}
-                                      </div>
+                                          />
+                                        </button>
+                                      )}
+                                      {device && copiedSlug === typeCode && (
+                                        <CopyTooltip />
+                                      )}
                                     </div>
-                                  </td>
-                                </tr>
-                              ))}
+                                  </div>
+                                </td>
+                              </tr>
+                            ))}
                         </tbody>
                       </table>
                     </div>
