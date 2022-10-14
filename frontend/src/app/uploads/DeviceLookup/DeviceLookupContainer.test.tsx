@@ -1,7 +1,6 @@
 import { render } from "@testing-library/react";
 import { ToastContainer } from "react-toastify";
 
-
 import DeviceLookupContainer from "./DeviceLookupContainer";
 
 jest.mock("../../../generated/graphql", () => {
