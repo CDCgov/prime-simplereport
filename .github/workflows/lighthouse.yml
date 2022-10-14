@@ -53,8 +53,10 @@ jobs:
           mv localhost.simplereport.gov-key.pem localhost.simplereport.gov.key
           cd ..
           echo "::endgroup::"
+          mkdir ./lhci
           yarn install
           yarn build
+
       - name: run Lighthouse CI
         env:         # CI settings
           CI: 1

@@ -4,7 +4,7 @@ name: Run end-to-end tests
 on:
   push:
     branches:
-      - "**"
+      - none
 jobs:
 
   cypress-local-env:
