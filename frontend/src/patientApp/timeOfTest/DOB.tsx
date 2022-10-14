@@ -1,4 +1,4 @@
-import { useEffect, useState, useRef } from "react";
+import React, { useEffect, useState, useRef } from "react";
 import { connect, useDispatch, useSelector } from "react-redux";
 import { Navigate } from "react-router-dom";
 import moment from "moment";
@@ -165,58 +165,69 @@ const DOB = () => {
     return (
       <div className={"prime-home flex-1"}>
         <div className="grid-container maxw-tablet">
-          <h1 className="font-heading-lg margin-top-3">
-            {t("testResult.dob.header")}
-          </h1>
-          <Trans t={t} parent="p" i18nKey="testResult.dob.enterDOB2">
-            <span className="text-bold">
-              {{ personName: patientObfuscatedName }}
-            </span>
-          </Trans>
-          <p className="usa-hint font-ui-2xs">
-            <em>
-              <Trans t={t} i18nKey="testResult.dob.linkExpirationNotice">
-                {{
-                  expirationDate: formatLongDateWithTimeOption(expiresAt, true),
-                }}
+          <div className="prime-container card-container margin-top-2">
+            <div className="usa-card__header">
+              <h1 className="font-sans-lg">{t("testResult.dob.header")}</h1>
+            </div>
+            <div className="prime-container padding-3">
+              <Trans t={t} parent="p" i18nKey="testResult.dob.enterDOB2">
+                <span className="text-bold">
+                  {{ personName: patientObfuscatedName }}
+                </span>
               </Trans>
-              <Trans t={t} i18nKey="testResult.dob.testingFacilityContact">
-                {{ facilityName: facility?.name }}
-                {facility?.phone && (
-                  <span style={{ whiteSpace: "nowrap" }}>
+              <p className="usa-hint font-ui-2xs">
+                <em>
+                  <Trans t={t} i18nKey="testResult.dob.linkExpirationNotice">
                     {{
-                      facilityPhone:
-                        "at " +
-                        formatPhoneNumberParens(facility?.phone as string),
+                      expirationDate: formatLongDateWithTimeOption(
+                        expiresAt,
+                        true
+                      ),
                     }}
-                  </span>
-                )}
-              </Trans>
-            </em>
-          </p>
-          <DateInput
-            className="width-mobile"
-            label={t("testResult.dob.dateOfBirth")}
-            name={"birthDate"}
-            monthName={"birthMonth"}
-            dayName={"birthDay"}
-            yearName={"birthYear"}
-            monthValue={birthMonth}
-            dayValue={birthDay}
-            yearValue={birthYear}
-            monthOnChange={(evt: any) => setBirthMonth(evt.currentTarget.value)}
-            dayOnChange={(evt: any) => setBirthDay(evt.currentTarget.value)}
-            yearOnChange={(evt: any) => setBirthYear(evt.currentTarget.value)}
-            errorMessage={birthDateError}
-            validationStatus={birthDateError ? "error" : undefined}
-          />
-          <Button
-            className="margin-top-2"
-            id="dob-submit-button"
-            data-testid="dob-submit-button"
-            label={t("testResult.dob.submit")}
-            onClick={confirmBirthDate}
-          />
+                  </Trans>
+                  <Trans t={t} i18nKey="testResult.dob.testingFacilityContact">
+                    {{ facilityName: facility?.name }}
+                    {facility?.phone && (
+                      <span style={{ whiteSpace: "nowrap" }}>
+                        {{
+                          facilityPhone:
+                            "at " +
+                            formatPhoneNumberParens(facility?.phone as string),
+                        }}
+                      </span>
+                    )}
+                  </Trans>
+                </em>
+              </p>
+              <DateInput
+                className="width-mobile"
+                label={t("testResult.dob.dateOfBirth")}
+                name={"birthDate"}
+                monthName={"birthMonth"}
+                dayName={"birthDay"}
+                yearName={"birthYear"}
+                monthValue={birthMonth}
+                dayValue={birthDay}
+                yearValue={birthYear}
+                monthOnChange={(evt: any) =>
+                  setBirthMonth(evt.currentTarget.value)
+                }
+                dayOnChange={(evt: any) => setBirthDay(evt.currentTarget.value)}
+                yearOnChange={(evt: any) =>
+                  setBirthYear(evt.currentTarget.value)
+                }
+                errorMessage={birthDateError}
+                validationStatus={birthDateError ? "error" : undefined}
+              />
+              <Button
+                className="margin-top-2"
+                id="dob-submit-button"
+                data-testid="dob-submit-button"
+                label={t("testResult.dob.submit")}
+                onClick={confirmBirthDate}
+              />
+            </div>
+          </div>
         </div>
       </div>
     );
