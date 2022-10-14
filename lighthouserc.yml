@@ -2,7 +2,7 @@ ci:
   collect:
     numberOfRuns: 1
     startServerCommand: yarn start
-    url: https://localhost:3000
+    url: https://localhost.simplereport.gov
   upload:
     target: filesystem
     outputDir: ./lhci
