@@ -40,6 +40,9 @@ describe("Uploads", () => {
 
     expect(await screen.findByText("Upload your CSV")).toBeInTheDocument();
     expect(await screen.findByText("Drag file here or")).toBeInTheDocument();
+    expect(
+      screen.queryByText("Your file has not been accepted.")
+    ).not.toBeInTheDocument();
   });
 
   it("should display error toast when empty file is uploaded, button disabled", async () => {

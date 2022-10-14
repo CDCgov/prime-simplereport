@@ -246,7 +246,7 @@ const Uploads = () => {
               </div>
             </div>
           )}
-          {!reportId && (
+          {fileInputResetValue > 0 && !reportId && (
             <div>
               <div className="usa-alert usa-alert--error" role="alert">
                 <div className="usa-alert__body">
