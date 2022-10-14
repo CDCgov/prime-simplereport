@@ -86,7 +86,18 @@ jobs:
           REACT_APP_OKTA_ENABLED: "true"
           REACT_APP_DISABLE_MAINTENANCE_BANNER: "true"
         run: |
-#          Even though we don't use it, we need the .env file created here due to an issue similar to this one: https://github.com/mutagen-io/mutagen/issues/265
+          echo "::group::Generate ssl certs"
+          sudo apt install libnss3-tools
+          eval "$(/home/linuxbrew/.linuxbrew/bin/brew shellenv)"
+          brew install mkcert
+          mkcert -install
+          mkdir -p certs
+          cd certs
+          mkcert localhost.simplereport.gov
+          mv localhost.simplereport.gov.pem localhost.simplereport.gov.crt
+          mv localhost.simplereport.gov-key.pem localhost.simplereport.gov.key
+          cd ..
+          echo "::endgroup::"
           echo "::group::Update permissions"
           echo FAKE_ENV="true" >> .env
           sudo chmod -R 777 backend
