@@ -61,6 +61,8 @@ updates:
       interval: "weekly"
     reviewers:
       - "CDCgov/simplereport-backendreviews"
+      - "alixmx"
+      - "rin-skylight"
 
   - package-ecosystem: "npm"
     directory: "/"
