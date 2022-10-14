@@ -5,8 +5,6 @@ import { SpecimenType } from "../../../generated/graphql";
 
 import DeviceLookupContainer from "./DeviceLookupContainer";
 
-const mockCreateDeviceType = jest.fn();
-
 jest.mock("../../../generated/graphql", () => {
   return {
     useGetSpecimenTypesQuery: () => {

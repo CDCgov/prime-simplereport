@@ -5,7 +5,6 @@ import { faCheck, faCopy } from "@fortawesome/free-solid-svg-icons";
 
 import TextInput from "../../commonComponents/TextInput";
 import { DeviceType } from "../../../generated/graphql";
-import LabeledText from "../../commonComponents/LabeledText";
 import Optional from "../../commonComponents/Optional";
 import "./DeviceLookup.scss";
 
@@ -105,7 +104,7 @@ const DeviceLookup = (props: Props) => {
   };
 
   return (
-    <main className="prime-home device-lookup-container">
+    <div className="prime-home device-lookup-container">
       <div className="grid-container">
         <div className="grid-row">
           <div className="prime-container card-container">
@@ -125,23 +124,24 @@ const DeviceLookup = (props: Props) => {
               {props.deviceOptions ? (
                 <div className="grid-row grid-gap">
                   <div className="tablet:grid-col">
-                    <LabeledText label={"Select device"} />
-                    <ComboBox
-                      className="usa-combo-box__full-width"
-                      id="selectDevice"
-                      name="selectDevice"
-                      options={getDeviceOptions()}
-                      onChange={(id) => {
-                        updateDevice(
-                          getDeviceFromDeviceType(
-                            props.deviceOptions?.find(
-                              (d) => id === d.internalId
+                    <label htmlFor={"Select device"}>
+                      <ComboBox
+                        className="usa-combo-box__full-width"
+                        id="selectDevice"
+                        name="selectDevice"
+                        options={getDeviceOptions()}
+                        onChange={(id) => {
+                          updateDevice(
+                            getDeviceFromDeviceType(
+                              props.deviceOptions?.find(
+                                (d) => id === d.internalId
+                              )
                             )
-                          )
-                        );
-                      }}
-                      defaultValue={device?.internalId || ""}
-                    />
+                          );
+                        }}
+                        defaultValue={device?.internalId || ""}
+                      />
+                    </label>
                   </div>
                 </div>
               ) : null}
@@ -243,7 +243,7 @@ const DeviceLookup = (props: Props) => {
           </div>
         </div>
       </div>
-    </main>
+    </div>
   );
 };
 
