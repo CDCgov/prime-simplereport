@@ -5,7 +5,7 @@ Object {
   "asFragment": [Function],
   "baseElement": <body>
     <div>
-      <main
+      <div
         class="prime-home device-lookup-container"
       >
         <div
@@ -38,113 +38,113 @@ Object {
                   <div
                     class="tablet:grid-col"
                   >
-                    <strong>
-                      Select device
-                    </strong>
-                    <p />
-                    <div
-                      class="usa-combo-box usa-combo-box__full-width"
-                      data-enhanced="true"
-                      data-testid="combo-box"
+                    <label
+                      for="Select device"
                     >
-                      <select
-                        aria-hidden="true"
-                        class="usa-select usa-sr-only usa-combo-box__select"
-                        data-testid="combo-box-select"
-                        name="selectDevice"
-                        tabindex="-1"
-                      >
-                        <option
-                          value="1"
-                        >
-                          Abbott Tomorrow
-                        </option>
-                      </select>
-                      <input
-                        aria-activedescendant=""
-                        aria-autocomplete="list"
-                        aria-describedby="selectDevice--assistiveHint"
-                        aria-expanded="false"
-                        aria-owns="selectDevice--list"
-                        autocapitalize="off"
-                        autocomplete="off"
-                        class="usa-combo-box__input"
-                        data-testid="combo-box-input"
-                        id="selectDevice"
-                        role="combobox"
-                        type="text"
-                        value=""
-                      />
-                      <span
-                        class="usa-combo-box__clear-input__wrapper"
-                        tabindex="-1"
-                      >
-                        <button
-                          aria-label="Clear the select contents"
-                          class="usa-combo-box__clear-input"
-                          data-testid="combo-box-clear-button"
-                          hidden=""
-                          type="button"
-                        >
-                           
-                        </button>
-                      </span>
-                      <span
-                        class="usa-combo-box__input-button-separator"
-                      >
-                         
-                      </span>
-                      <span
-                        class="usa-combo-box__toggle-list__wrapper"
-                        tabindex="-1"
-                      >
-                        <button
-                          aria-label="Toggle the dropdown list"
-                          class="usa-combo-box__toggle-list"
-                          data-testid="combo-box-toggle"
-                          tabindex="-1"
-                          type="button"
-                        >
-                           
-                        </button>
-                      </span>
-                      <ul
-                        class="usa-combo-box__list"
-                        data-testid="combo-box-option-list"
-                        hidden=""
-                        id="selectDevice--list"
-                        role="listbox"
-                        tabindex="-1"
-                      >
-                        <li
-                          aria-posinset="1"
-                          aria-selected="false"
-                          aria-setsize="1"
-                          class="usa-combo-box__list-option"
-                          data-testid="combo-box-option-1"
-                          data-value="1"
-                          id="selectDevice--list--option-0"
-                          role="option"
-                          tabindex="-1"
-                          value="1"
-                        >
-                          Abbott Tomorrow
-                        </li>
-                      </ul>
                       <div
-                        class="usa-combo-box__status usa-sr-only"
-                        role="status"
-                      />
-                      <span
-                        class="usa-sr-only"
-                        data-testid="combo-box-assistive-hint"
-                        id="selectDevice--assistiveHint"
+                        class="usa-combo-box usa-combo-box__full-width"
+                        data-enhanced="true"
+                        data-testid="combo-box"
                       >
-                        When autocomplete results are available use up and down arrows to review
+                        <select
+                          aria-hidden="true"
+                          class="usa-select usa-sr-only usa-combo-box__select"
+                          data-testid="combo-box-select"
+                          name="selectDevice"
+                          tabindex="-1"
+                        >
+                          <option
+                            value="1"
+                          >
+                            Abbott Tomorrow
+                          </option>
+                        </select>
+                        <input
+                          aria-activedescendant=""
+                          aria-autocomplete="list"
+                          aria-describedby="selectDevice--assistiveHint"
+                          aria-expanded="false"
+                          aria-owns="selectDevice--list"
+                          autocapitalize="off"
+                          autocomplete="off"
+                          class="usa-combo-box__input"
+                          data-testid="combo-box-input"
+                          id="selectDevice"
+                          role="combobox"
+                          type="text"
+                          value=""
+                        />
+                        <span
+                          class="usa-combo-box__clear-input__wrapper"
+                          tabindex="-1"
+                        >
+                          <button
+                            aria-label="Clear the select contents"
+                            class="usa-combo-box__clear-input"
+                            data-testid="combo-box-clear-button"
+                            hidden=""
+                            type="button"
+                          >
+                             
+                          </button>
+                        </span>
+                        <span
+                          class="usa-combo-box__input-button-separator"
+                        >
+                           
+                        </span>
+                        <span
+                          class="usa-combo-box__toggle-list__wrapper"
+                          tabindex="-1"
+                        >
+                          <button
+                            aria-label="Toggle the dropdown list"
+                            class="usa-combo-box__toggle-list"
+                            data-testid="combo-box-toggle"
+                            tabindex="-1"
+                            type="button"
+                          >
+                             
+                          </button>
+                        </span>
+                        <ul
+                          class="usa-combo-box__list"
+                          data-testid="combo-box-option-list"
+                          hidden=""
+                          id="selectDevice--list"
+                          role="listbox"
+                          tabindex="-1"
+                        >
+                          <li
+                            aria-posinset="1"
+                            aria-selected="false"
+                            aria-setsize="1"
+                            class="usa-combo-box__list-option"
+                            data-testid="combo-box-option-1"
+                            data-value="1"
+                            id="selectDevice--list--option-0"
+                            role="option"
+                            tabindex="-1"
+                            value="1"
+                          >
+                            Abbott Tomorrow
+                          </li>
+                        </ul>
+                        <div
+                          class="usa-combo-box__status usa-sr-only"
+                          role="status"
+                        />
+                        <span
+                          class="usa-sr-only"
+                          data-testid="combo-box-assistive-hint"
+                          id="selectDevice--assistiveHint"
+                        >
+                          When autocomplete results are available use up and down arrows to review
            and enter to select. Touch device users, explore by touch or with swipe
            gestures.
-                      </span>
-                    </div>
+                        </span>
+                      </div>
+                    </label>
                   </div>
                 </div>
                 <div
@@ -268,14 +268,14 @@ Object {
             </div>
           </div>
         </div>
-      </main>
+      </div>
       <div
         class="Toastify"
       />
     </div>
   </body>,
   "container": <div>
-    <main
+    <div
       class="prime-home device-lookup-container"
     >
       <div
@@ -308,113 +308,113 @@ Object {
                 <div
                   class="tablet:grid-col"
                 >
-                  <strong>
-                    Select device
-                  </strong>
-                  <p />
-                  <div
-                    class="usa-combo-box usa-combo-box__full-width"
-                    data-enhanced="true"
-                    data-testid="combo-box"
+                  <label
+                    for="Select device"
                   >
-                    <select
-                      aria-hidden="true"
-                      class="usa-select usa-sr-only usa-combo-box__select"
-                      data-testid="combo-box-select"
-                      name="selectDevice"
-                      tabindex="-1"
-                    >
-                      <option
-                        value="1"
-                      >
-                        Abbott Tomorrow
-                      </option>
-                    </select>
-                    <input
-                      aria-activedescendant=""
-                      aria-autocomplete="list"
-                      aria-describedby="selectDevice--assistiveHint"
-                      aria-expanded="false"
-                      aria-owns="selectDevice--list"
-                      autocapitalize="off"
-                      autocomplete="off"
-                      class="usa-combo-box__input"
-                      data-testid="combo-box-input"
-                      id="selectDevice"
-                      role="combobox"
-                      type="text"
-                      value=""
-                    />
-                    <span
-                      class="usa-combo-box__clear-input__wrapper"
-                      tabindex="-1"
-                    >
-                      <button
-                        aria-label="Clear the select contents"
-                        class="usa-combo-box__clear-input"
-                        data-testid="combo-box-clear-button"
-                        hidden=""
-                        type="button"
-                      >
-                         
-                      </button>
-                    </span>
-                    <span
-                      class="usa-combo-box__input-button-separator"
-                    >
-                       
-                    </span>
-                    <span
-                      class="usa-combo-box__toggle-list__wrapper"
-                      tabindex="-1"
-                    >
-                      <button
-                        aria-label="Toggle the dropdown list"
-                        class="usa-combo-box__toggle-list"
-                        data-testid="combo-box-toggle"
-                        tabindex="-1"
-                        type="button"
-                      >
-                         
-                      </button>
-                    </span>
-                    <ul
-                      class="usa-combo-box__list"
-                      data-testid="combo-box-option-list"
-                      hidden=""
-                      id="selectDevice--list"
-                      role="listbox"
-                      tabindex="-1"
-                    >
-                      <li
-                        aria-posinset="1"
-                        aria-selected="false"
-                        aria-setsize="1"
-                        class="usa-combo-box__list-option"
-                        data-testid="combo-box-option-1"
-                        data-value="1"
-                        id="selectDevice--list--option-0"
-                        role="option"
-                        tabindex="-1"
-                        value="1"
-                      >
-                        Abbott Tomorrow
-                      </li>
-                    </ul>
                     <div
-                      class="usa-combo-box__status usa-sr-only"
-                      role="status"
-                    />
-                    <span
-                      class="usa-sr-only"
-                      data-testid="combo-box-assistive-hint"
-                      id="selectDevice--assistiveHint"
+                      class="usa-combo-box usa-combo-box__full-width"
+                      data-enhanced="true"
+                      data-testid="combo-box"
                     >
-                      When autocomplete results are available use up and down arrows to review
+                      <select
+                        aria-hidden="true"
+                        class="usa-select usa-sr-only usa-combo-box__select"
+                        data-testid="combo-box-select"
+                        name="selectDevice"
+                        tabindex="-1"
+                      >
+                        <option
+                          value="1"
+                        >
+                          Abbott Tomorrow
+                        </option>
+                      </select>
+                      <input
+                        aria-activedescendant=""
+                        aria-autocomplete="list"
+                        aria-describedby="selectDevice--assistiveHint"
+                        aria-expanded="false"
+                        aria-owns="selectDevice--list"
+                        autocapitalize="off"
+                        autocomplete="off"
+                        class="usa-combo-box__input"
+                        data-testid="combo-box-input"
+                        id="selectDevice"
+                        role="combobox"
+                        type="text"
+                        value=""
+                      />
+                      <span
+                        class="usa-combo-box__clear-input__wrapper"
+                        tabindex="-1"
+                      >
+                        <button
+                          aria-label="Clear the select contents"
+                          class="usa-combo-box__clear-input"
+                          data-testid="combo-box-clear-button"
+                          hidden=""
+                          type="button"
+                        >
+                           
+                        </button>
+                      </span>
+                      <span
+                        class="usa-combo-box__input-button-separator"
+                      >
+                         
+                      </span>
+                      <span
+                        class="usa-combo-box__toggle-list__wrapper"
+                        tabindex="-1"
+                      >
+                        <button
+                          aria-label="Toggle the dropdown list"
+                          class="usa-combo-box__toggle-list"
+                          data-testid="combo-box-toggle"
+                          tabindex="-1"
+                          type="button"
+                        >
+                           
+                        </button>
+                      </span>
+                      <ul
+                        class="usa-combo-box__list"
+                        data-testid="combo-box-option-list"
+                        hidden=""
+                        id="selectDevice--list"
+                        role="listbox"
+                        tabindex="-1"
+                      >
+                        <li
+                          aria-posinset="1"
+                          aria-selected="false"
+                          aria-setsize="1"
+                          class="usa-combo-box__list-option"
+                          data-testid="combo-box-option-1"
+                          data-value="1"
+                          id="selectDevice--list--option-0"
+                          role="option"
+                          tabindex="-1"
+                          value="1"
+                        >
+                          Abbott Tomorrow
+                        </li>
+                      </ul>
+                      <div
+                        class="usa-combo-box__status usa-sr-only"
+                        role="status"
+                      />
+                      <span
+                        class="usa-sr-only"
+                        data-testid="combo-box-assistive-hint"
+                        id="selectDevice--assistiveHint"
+                      >
+                        When autocomplete results are available use up and down arrows to review
            and enter to select. Touch device users, explore by touch or with swipe
            gestures.
-                    </span>
-                  </div>
+                      </span>
+                    </div>
+                  </label>
                 </div>
               </div>
               <div
@@ -538,7 +538,7 @@ Object {
           </div>
         </div>
       </div>
-    </main>
+    </div>
     <div
       class="Toastify"
     />
