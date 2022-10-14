@@ -60,7 +60,7 @@ updates:
     schedule:
       interval: "weekly"
     reviewers:
-      - "SimpleReport-BackendReviews"
+      - "CDCgov/simplereport-backendreviews"
 
   - package-ecosystem: "npm"
     directory: "/"
