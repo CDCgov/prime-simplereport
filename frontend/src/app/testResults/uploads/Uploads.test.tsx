@@ -4,13 +4,27 @@ import createMockStore from "redux-mock-store";
 import { Provider } from "react-redux";
 import { MemoryRouter } from "react-router-dom";
 import { ToastContainer } from "react-toastify";
+import { ApplicationInsights } from "@microsoft/applicationinsights-web";
 
 import { FileUploadService } from "../../../fileUploadService/FileUploadService";
+import { getAppInsights } from "../../TelemetryService";
 
 import Uploads from "./Uploads";
 
+jest.mock("../../TelemetryService", () => ({
+  ...jest.requireActual("../../TelemetryService"),
+  getAppInsights: jest.fn(),
+}));
+
 const mockStore = createMockStore([]);
-const store = mockStore({});
+const store = mockStore({
+  organization: {
+    name: "Test Org",
+  },
+  user: {
+    email: "testuser@test.org",
+  },
+});
 
 const validFileContents =
   "Patient_last_name,Patient_first_name,Patient_middle_name,Patient_suffix,Patient_tribal_affiliation,Patient_ID,Ordered_test_code,Specimen_source_site_code,Specimen_type_code,Device_ID,Instrument_ID,Result_ID,Corrected_result_ID,Test_correction_reason,Test_result_status,Test_result_code,Illness_onset_date,Specimen_collection_date_time,Order_test_date,Test_date,Date_result_released,Patient_race,Patient_DOB,Patient_gender,Patient_ethnicity,Patient_preferred_language,Patient_street,Patient_street_2,Patient_city,Patient_state,Patient_zip_code,Patient_country,Patient_phone_number,Patient_county,Patient_email,Patient_role,Processing_mode_code,Employed_in_healthcare,Resident_congregate_setting,First_test,Symptomatic_for_disease,Testing_lab_name,Testing_lab_CLIA,Testing_lab_street,Testing_lab_street_2,Testing_lab_city,Testing_lab_state,Testing_lab_zip_code,Testing_lab_phone_number,Testing_lab_county,Organization_name,Ordering_facility_name,Ordering_facility_street,Ordering_facility_street_2,Ordering_facility_city,Ordering_facility_state,Ordering_facility_zip_code,Ordering_facility_phone_number,Ordering_facility_county,Ordering_provider_ID,Ordering_provider_last_name,Ordering_provider_first_name,Ordering_provider_street,Ordering_provider_street_2,Ordering_provider_city,Ordering_provider_state,Ordering_provider_zip_code,Ordering_provider_phone_number,Ordering_provider_county,Site_of_care\n" +
@@ -109,6 +123,15 @@ describe("Uploads", () => {
   });
 
   describe("on file upload", () => {
+    const mockTrackEvent = jest.fn();
+
+    beforeEach(() => {
+      (getAppInsights as jest.Mock).mockImplementation(() => {
+        const ai = Object.create(ApplicationInsights.prototype);
+        return Object.assign(ai, { trackEvent: mockTrackEvent });
+      });
+    });
+
     describe("happy path", () => {
       let file: File;
       let uploadResultsSpy: jest.SpyInstance<
@@ -161,6 +184,17 @@ describe("Uploads", () => {
         expect(screen.getByText("Confirmation Code")).toBeInTheDocument();
         expect(screen.getByText("fake-report-id")).toBeInTheDocument();
       });
+
+      it("logs success event to App Insights", () => {
+        expect(mockTrackEvent).toHaveBeenCalledWith({
+          name: "Spreadsheet upload success",
+          properties: {
+            org: "Test Org",
+            "report ID": "fake-report-id",
+            user: "testuser@test.org",
+          },
+        });
+      });
     });
 
     it("server upload failure displays error message", async () => {
@@ -187,6 +221,13 @@ describe("Uploads", () => {
         ).toBeInTheDocument();
       });
       expect(screen.queryByText("Requested Edit")).not.toBeInTheDocument();
+      expect(mockTrackEvent).toHaveBeenCalledWith({
+        name: "Spreadsheet upload server error",
+        properties: {
+          org: "Test Org",
+          user: "testuser@test.org",
+        },
+      });
     });
 
     it("response errors are shown to user", async () => {
@@ -228,6 +269,19 @@ describe("Uploads", () => {
       });
       expect(screen.getByText("Requested Edit")).toBeInTheDocument();
       expect(screen.getByText("missing required column")).toBeInTheDocument();
+      expect(mockTrackEvent).toHaveBeenCalledWith({
+        name: "Spreadsheet upload validation failure",
+        properties: {
+          errors: [
+            {
+              message: "missing required column",
+              scope: "report",
+            },
+          ],
+          org: "Test Org",
+          user: "testuser@test.org",
+        },
+      });
     });
   });
 });

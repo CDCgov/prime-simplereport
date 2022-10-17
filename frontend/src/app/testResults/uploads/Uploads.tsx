@@ -123,7 +123,7 @@ const Uploads = () => {
           name: "Spreadsheet upload server error",
           properties: {
             org: orgName,
-            user: user.email,
+            user: user?.email,
           },
         });
       } else {
@@ -134,9 +134,9 @@ const Uploads = () => {
           appInsights?.trackEvent({
             name: "Spreadsheet upload success",
             properties: {
-              "report ID": reportId,
+              "report ID": response.reportId,
               org: orgName,
-              user: user.email,
+              user: user?.email,
             },
           });
         }
@@ -151,7 +151,7 @@ const Uploads = () => {
             properties: {
               errors: response.errors,
               org: orgName,
-              user: user.email,
+              user: user?.email,
             },
           });
         }
