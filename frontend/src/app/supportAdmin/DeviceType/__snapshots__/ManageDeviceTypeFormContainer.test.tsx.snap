@@ -127,6 +127,7 @@ Object {
                       <input
                         aria-activedescendant=""
                         aria-autocomplete="list"
+                        aria-controls="selectDevice--list"
                         aria-describedby="selectDevice--assistiveHint"
                         aria-expanded="false"
                         aria-owns="selectDevice--list"
@@ -772,6 +773,7 @@ Object {
                     <input
                       aria-activedescendant=""
                       aria-autocomplete="list"
+                      aria-controls="selectDevice--list"
                       aria-describedby="selectDevice--assistiveHint"
                       aria-expanded="false"
                       aria-owns="selectDevice--list"

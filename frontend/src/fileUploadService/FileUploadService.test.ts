@@ -21,9 +21,10 @@ describe("FileUploadService", () => {
       // GIVEN
       const expectedBody = new FormData();
       expectedBody.append("file", csvFile);
+      expectedBody.append("rawFacilityId", "");
 
       // WHEN
-      await FileUploadService.uploadPatients(csvFile);
+      await FileUploadService.uploadPatients(csvFile, null);
 
       // THEN
       expect(fetch).toHaveBeenCalledWith(`${backendUrl}/upload/patients`, {
