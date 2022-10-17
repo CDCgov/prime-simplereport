@@ -8,9 +8,9 @@ locals {
   metabase_pool                   = "${var.name}-${var.env}-be-metabase"
   metabase_http_setting           = "${var.name}-${var.env}-be-api-metabase-http"
   metabase_https_setting          = "${var.name}-${var.env}-be-api-metabase-https"
-  staging_pool                   = "${var.name}-${var.env}-be-staging"
-  staging_http_setting           = "${var.name}-${var.env}-be-api-staging-http"
-  staging_https_setting          = "${var.name}-${var.env}-be-api-staging-https"
+  staging_pool                    = "${var.name}-${var.env}-be-staging"
+  staging_http_setting            = "${var.name}-${var.env}-be-api-staging-http"
+  staging_https_setting           = "${var.name}-${var.env}-be-api-staging-https"
   http_listener                   = "${var.name}-http"
   https_listener                  = "${var.name}-https"
   frontend_config                 = "${var.name}-config"
@@ -287,8 +287,8 @@ resource "azurerm_application_gateway" "load_balancer" {
     }
 
     path_rule {
-      name                        = "staging-slot"
-      paths                       = ["/staging/*", "/staging"]
+      name                       = "staging-slot"
+      paths                      = ["/staging/*", "/staging"]
       backend_address_pool_name  = local.staging_pool
       backend_http_settings_name = local.staging_https_setting
       // this is the default, why would we set it again?
