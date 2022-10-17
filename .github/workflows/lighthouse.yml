@@ -62,7 +62,7 @@ jobs:
       shell: bash
       run: |
         echo "::group::Run Lighthouse locally"
-        npx install -g @lhci/cli@0.9.x && lhci autorun
+        npm install -g @lhci/cli@0.9.x && lhci autorun
         echo "::endgroup::"
 
     - name: Archive Lighthouse results
