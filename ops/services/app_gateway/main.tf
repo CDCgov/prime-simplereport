@@ -327,7 +327,6 @@ resource "azurerm_application_gateway" "load_balancer" {
         variable    = "var_uri_path"
       }
 
-      //TODO: See if this is really necessary for metabase.
       url {
         path    = "/{var_uri_path_1}"
         reroute = false
@@ -351,7 +350,6 @@ resource "azurerm_application_gateway" "load_balancer" {
         variable    = "var_uri_path"
       }
 
-      //TODO: See if this is really necessary for metabase.
       url {
         path    = "/{var_uri_path_1}"
         reroute = false
