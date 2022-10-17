@@ -30,11 +30,9 @@ jest.mock("../../../generated/graphql", () => {
   };
 });
 
-let container: any;
-
 describe("DeviceLookupContainer", () => {
   beforeEach(() => {
-    container = render(
+    render(
       <>
         <DeviceLookupContainer />
         <ToastContainer
