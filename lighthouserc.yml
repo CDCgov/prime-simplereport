@@ -1,9 +1,6 @@
 ci:
   collect:
     numberOfRuns: 1
-    startServerCommand: yarn run start
-    startServerReadyPattern: "Compiled successfully!"
-    startServerReadyTimeout: 100000
     url: https://localhost.simplereport.gov
   upload:
     target: filesystem

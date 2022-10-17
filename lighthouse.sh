@@ -5,13 +5,6 @@ BACKEND_URL_PATH="/api/health"
 PUBLIC_URL="/app"
 FRONTEND_URL_PATH="/health/commit"
 
-echo
-[[ -n $TEST_ENV ]] && echo "Testing against URL------$TEST_ENV"
-[[ -n $BACKEND_URL_PATH ]] && echo "Backend health route-----$BACKEND_URL_PATH"
-[[ -n $PUBLIC_URL ]] && echo "Public url---------------$PUBLIC_URL"
-[[ -n $FRONTEND_URL_PATH ]] && echo "Frontend health route----$FRONTEND_URL_PATH"
-echo
-
 echo "Waiting for backend to start at ${TEST_ENV}${BACKEND_URL_PATH}"
 http_response=0
 polls=0
@@ -44,5 +37,11 @@ echo
 
 echo 'App is online! Starting Lighthouse...'
 echo
+
+echo 'Installing mkcert...'
+sudo apt install libnss3-tools
+eval "$(/home/linuxbrew/.linuxbrew/bin/brew shellenv)"
+brew install mkcert
+mkcert -install
 
 npm install -g @lhci/cli@0.9.x && lhci autorun
