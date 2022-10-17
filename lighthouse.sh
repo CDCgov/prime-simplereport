@@ -38,13 +38,9 @@ fi
 echo 'Frontend started!'
 echo
 
+sleep 1m
+
 echo 'applesaredelicious'
 
 echo 'App is online! Starting Lighthouse...'
 echo
-
-#echo 'Installing mkcert...'
-#sudo apt install libnss3-tools
-#eval "$(/home/linuxbrew/.linuxbrew/bin/brew shellenv)"
-#brew install mkcert
-#mkcert -install
