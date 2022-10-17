@@ -63,9 +63,7 @@ jobs:
       run: |
         echo "::group::Run Lighthouse locally"
         docker compose pull
-        docker-compose -f docker-compose.yml -f docker-compose.ci.yml up -d & sleep 560 --abort-on-container-exit
-#        npm install -g @lhci/cli@0.9.x && lhci autorun && docker-compose down
-        ./lighthouse.sh
+        docker-compose -f docker-compose.yml -f docker-compose.ci.yml up -d & sleep 560 --abort-on-container-exit &&./lighthouse.sh
         echo "::endgroup::"
 
     - name: Stop containers
