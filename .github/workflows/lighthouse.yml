@@ -2,7 +2,7 @@ name: "Run Lighthouse audit"
 on:
   push:
     branches:
-      - alis/george/4336-enable-lighthouse-on-prs
+      - alis/george/4336-enable-lighthouse-on-prs-2
 jobs:
   lhci:
     name: Lighthouse
@@ -48,7 +48,7 @@ jobs:
         username: ${{ github.actor }}
         password: ${{ secrets.GITHUB_TOKEN }}
 
-    - name: mkcert and yarn install, build
+    - name: setup and run lighthouse
       # uses: actions/setup-node@v1
       # with:
       #   node-version: 14.x
@@ -61,7 +61,7 @@ jobs:
         SPRING_PROFILES_ACTIVE: dev,db-dockerized
       shell: bash
       run: |
-        echo "::group::Run Cypress locally"
+        echo "::group::Run Lighthouse locally"
         docker compose pull
         docker-compose -f docker-compose.yml -f docker-compose.ci.yml up & sleep 560 && npm install -g @lhci/cli@0.9.x && lhci autorun && docker-compose down
         echo "::endgroup::"
