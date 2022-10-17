@@ -4,7 +4,7 @@ ci:
     startServerCommand: sh ./lighthouse.sh
     startServerReadyPattern: 'applesaredelicious'
     startServerReadyTimeout: 500000
-    url: https://localhost.simplereport.gov
+    url: https://localhost:3000/
   upload:
     target: filesystem
     outputDir: ./lhci
