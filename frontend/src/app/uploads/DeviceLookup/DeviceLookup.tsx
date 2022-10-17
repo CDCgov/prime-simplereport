@@ -7,6 +7,7 @@ import TextInput from "../../commonComponents/TextInput";
 import { DeviceType } from "../../../generated/graphql";
 import Optional from "../../commonComponents/Optional";
 import "./DeviceLookup.scss";
+import LabeledText from "../../commonComponents/LabeledText";
 
 interface Props {
   formTitle: string;
@@ -96,7 +97,7 @@ const DeviceLookup = (props: Props) => {
                 <div className="grid-row grid-gap">
                   <div className="tablet:grid-col">
                     <label>
-                       <LabeledText label={"Select device"} />
+                      <LabeledText label={"Select device"} />
                       <ComboBox
                         className="usa-combo-box__full-width"
                         id="selectDevice"
