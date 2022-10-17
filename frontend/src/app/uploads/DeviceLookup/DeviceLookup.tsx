@@ -95,7 +95,8 @@ const DeviceLookup = (props: Props) => {
               {props.deviceOptions ? (
                 <div className="grid-row grid-gap">
                   <div className="tablet:grid-col">
-                    <label htmlFor={"Select device"}>
+                    <label>
+                       <LabeledText label={"Select device"} />
                       <ComboBox
                         className="usa-combo-box__full-width"
                         id="selectDevice"
