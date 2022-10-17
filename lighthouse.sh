@@ -44,4 +44,16 @@ eval "$(/home/linuxbrew/.linuxbrew/bin/brew shellenv)"
 brew install mkcert
 mkcert -install
 
-npm install -g @lhci/cli@0.9.x && lhci autorun
+# Lighthouse requires Node 16 LTS (16.x) or later.
+curl -sL https://deb.nodesource.com/setup_14.x | sudo -E bash - &&\
+sudo apt-get install -y nodejs npm
+
+# get chromium (stable)
+apt-get install chromium
+
+# install lighthouse
+npm i -g lighthouse
+
+lighthouse --chrome-flags="--headless" https://localhost.simplereport.gov
+
+#npm install -g @lhci/cli@0.9.x && lhci autorun
