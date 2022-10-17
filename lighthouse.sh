@@ -38,7 +38,7 @@ fi
 echo 'Frontend started!'
 echo
 
-echo 'ready'
+echo 'applesaredelicious'
 
 echo 'App is online! Starting Lighthouse...'
 echo
