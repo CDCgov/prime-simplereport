@@ -99,10 +99,6 @@ module "app_gateway" {
     module.simple_report_api.app_hostname
   ]
 
-  metabase_fqdns = [
-    module.metabase_service.app_hostname
-  ]
-
   staging_fqdns = [
     module.simple_report_api.staging_hostname
   ]
