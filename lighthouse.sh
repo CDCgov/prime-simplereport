@@ -5,6 +5,9 @@ BACKEND_URL_PATH="/api/health"
 PUBLIC_URL="/app"
 FRONTEND_URL_PATH="/health/commit"
 
+docker compose pull
+docker-compose -f docker-compose.yml -f docker-compose.ci.yml up -d
+
 echo "Waiting for backend to start at ${TEST_ENV}${BACKEND_URL_PATH}"
 http_response=0
 polls=0
@@ -35,25 +38,13 @@ fi
 echo 'Frontend started!'
 echo
 
+echo 'ready'
+
 echo 'App is online! Starting Lighthouse...'
 echo
 
-echo 'Installing mkcert...'
-sudo apt install libnss3-tools
-eval "$(/home/linuxbrew/.linuxbrew/bin/brew shellenv)"
-brew install mkcert
-mkcert -install
-
-# Lighthouse requires Node 16 LTS (16.x) or later.
-curl -sL https://deb.nodesource.com/setup_14.x | sudo -E bash - &&\
-sudo apt-get install -y nodejs npm
-
-# get chromium (stable)
-apt-get install chromium
-
-# install lighthouse
-npm i -g lighthouse
-
-lighthouse --chrome-flags="--headless" https://localhost.simplereport.gov
-
-#npm install -g @lhci/cli@0.9.x && lhci autorun
+#echo 'Installing mkcert...'
+#sudo apt install libnss3-tools
+#eval "$(/home/linuxbrew/.linuxbrew/bin/brew shellenv)"
+#brew install mkcert
+#mkcert -install

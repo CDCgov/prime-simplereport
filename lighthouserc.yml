@@ -1,6 +1,8 @@
 ci:
   collect:
     numberOfRuns: 1
+    startServerCommand: sh ./lighthouse.sh
+    startServerReadyTimeout: 120000
     url: https://localhost.simplereport.gov
   upload:
     target: filesystem
