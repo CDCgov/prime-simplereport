@@ -1,9 +1,12 @@
 package gov.cdc.usds.simplereport.api.uploads;
 
+import static gov.cdc.usds.simplereport.api.Translators.parseUUID;
 import static gov.cdc.usds.simplereport.config.WebConfiguration.PATIENT_UPLOAD;
 import static gov.cdc.usds.simplereport.config.WebConfiguration.RESULT_UPLOAD;
 
+import gov.cdc.usds.simplereport.api.model.errors.BadRequestException;
 import gov.cdc.usds.simplereport.api.model.errors.CsvProcessingException;
+import gov.cdc.usds.simplereport.api.model.errors.IllegalGraphqlArgumentException;
 import gov.cdc.usds.simplereport.db.model.TestResultUpload;
 import gov.cdc.usds.simplereport.service.TestResultUploadService;
 import gov.cdc.usds.simplereport.service.UploadService;
@@ -25,11 +28,15 @@ public class FileUploadController {
   private final TestResultUploadService testResultUploadService;
 
   @PostMapping(PATIENT_UPLOAD)
-  public String handlePatientsUpload(@RequestParam("file") MultipartFile file) {
+  public String handlePatientsUpload(
+      @RequestParam("file") MultipartFile file, @RequestParam String rawFacilityId) {
     assertCsvFileType(file);
 
     try (InputStream people = file.getInputStream()) {
-      return uploadService.processPersonCSV(people);
+      return uploadService.processPersonCSV(people, parseUUID(rawFacilityId));
+    } catch (IllegalGraphqlArgumentException e) {
+      log.error("Invalid facility id passed", e);
+      throw new BadRequestException("Invalid facility id");
     } catch (IllegalArgumentException e) {
       log.error("Patient CSV upload failed", e);
       throw new CsvProcessingException(e.getMessage());

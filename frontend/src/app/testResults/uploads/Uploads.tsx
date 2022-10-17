@@ -115,6 +115,11 @@ const Uploads = () => {
     }
 
     FileUploadService.uploadResults(file).then(async (res) => {
+      setIsSubmitting(false);
+      setFileInputResetValue(fileInputResetValue + 1);
+      setFile(undefined);
+      setButtonIsDisabled(true);
+
       if (res.status !== 200) {
         setErrorMessageText(
           "There was a server error. Your file has not been accepted."
@@ -157,11 +162,6 @@ const Uploads = () => {
         }
       }
     });
-
-    setFileInputResetValue(fileInputResetValue + 1);
-    setFile(undefined);
-    setButtonIsDisabled(true);
-    setIsSubmitting(false);
   };
 
   return (

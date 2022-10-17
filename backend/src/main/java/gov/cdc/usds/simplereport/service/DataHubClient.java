@@ -19,7 +19,7 @@ import org.springframework.web.bind.annotation.RequestHeader;
     configuration = DataHubClientConfiguration.class)
 public interface DataHubClient {
 
-  @PostMapping(value = "/api/reports", consumes = "text/csv")
+  @PostMapping(value = "/api/reports?processing=async", consumes = "text/csv")
   UploadResponse uploadCSV(@Param("file") byte[] file);
 
   @PostMapping(value = "/api/token")
