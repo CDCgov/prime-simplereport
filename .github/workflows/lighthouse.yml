@@ -64,7 +64,7 @@ jobs:
         echo "::group::Run Lighthouse locally"
         docker compose pull
         docker-compose -f docker-compose.yml -f docker-compose.ci.yml up -d
-        ./lighthouse.sh
+        sh ./lighthouse.sh
         echo "::endgroup::"
 
     - name: Stop containers
