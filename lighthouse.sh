@@ -38,6 +38,7 @@ fi
 echo 'Frontend started!'
 echo
 
+echo 'Waiting two minutes in case something went wrong...'
 sleep 2m
 
 echo 'applesaredelicious'
