@@ -6,7 +6,7 @@ PUBLIC_URL="/app"
 FRONTEND_URL_PATH="/health/commit"
 
 docker compose pull
-docker-compose -f docker-compose.yml -f docker-compose.ci.yml up -d
+docker-compose -f docker-compose.yml -f docker-compose.ci.yml up
 
 echo "Waiting for backend to start at ${TEST_ENV}${BACKEND_URL_PATH}"
 http_response=0
@@ -40,8 +40,6 @@ fi
 echo 'Frontend started!'
 echo
 
-echo 'Waiting two minutes in case something went wrong...'
-sleep 2m
 echo
 
 # start server command

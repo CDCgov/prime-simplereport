@@ -32,6 +32,10 @@ jobs:
         cd ..
         echo "::endgroup::"
 
+    - name: Add hosts to /etc/hosts
+      run: |
+        sudo echo "127.0.0.1	localhost.simplereport.gov" | sudo tee -a /etc/hosts
+
     - name: Update files permissions
       # Even though we don't use it, we need the .env file created here due to an issue similar to this one: https://github.com/mutagen-io/mutagen/issues/265
       run: |
@@ -47,10 +51,6 @@ jobs:
         registry: ghcr.io
         username: ${{ github.actor }}
         password: ${{ secrets.GITHUB_TOKEN }}
-
-    - name: Add hosts to /etc/hosts
-      run: |
-        sudo echo "127.0.0.1	localhost.simplereport.gov" | sudo tee -a /etc/hosts
 
     - name: setup and run lighthouse
       # uses: actions/setup-node@v1
