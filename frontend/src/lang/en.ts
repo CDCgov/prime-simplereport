@@ -224,6 +224,7 @@ export const en = {
       },
     },
     selfRegistration: {
+      title: "Test registration form",
       form: {
         complete: "Registration complete",
         inProgress: "Register for your test",
@@ -233,6 +234,7 @@ export const en = {
         },
       },
       confirmation: {
+        title: "Test registration complete",
         registered:
           "<0>{{personName}}</0>, thanks for completing your patient profile at {{entityName}}.",
         checkIn:
@@ -368,6 +370,7 @@ export const en = {
       },
       tos: {
         header: "Terms of service",
+        title: "Terms of service",
         introText: `This testing site uses <0>SimpleReport</0> to manage COVID-19 testing and reporting. The terms below explain SimpleReport’s policies and terms of service.`,
         consent: "By agreeing, you consent to our terms of service.",
         submit: "I agree",

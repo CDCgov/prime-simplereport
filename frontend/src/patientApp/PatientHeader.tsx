@@ -26,7 +26,7 @@ const PatientHeader = () => {
     <div className="display-flex flex-align-center maxw-tablet grid-container patient-header">
       <div className="padding-y-1">
         <div className="margin-bottom-0" id="basic-logo">
-          <div className="display-flex flex-align-center" title="SimpleReport">
+          <div className="display-flex flex-align-center" title="title">
             <img
               className="width-4"
               src={siteLogo}
