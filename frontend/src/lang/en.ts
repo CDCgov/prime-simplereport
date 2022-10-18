@@ -249,6 +249,7 @@ export const en = {
       },
     },
     testResult: {
+      title: "Test result",
       resultLiteral: "result",
       result: "SARS-CoV-2 result",
       covidResultHeader: "Test result: COVID-19",
@@ -609,6 +610,7 @@ export const en = {
         },
       },
       dob: {
+        title: "Test result verification",
         header: "Access your COVID-19 test result",
         dateOfBirth: "Date of birth",
         enterDOB: "Enter your date of birth",

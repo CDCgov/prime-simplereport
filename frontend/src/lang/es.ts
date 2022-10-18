@@ -260,6 +260,7 @@ export const es: LanguageConfig = {
       },
     },
     testResult: {
+      title: "Resultado de la prueba",
       resultLiteral: "resultado",
       result: "Resultado de SARS-CoV-2",
       covidResultHeader: "Resultado de la prueba: COVID-19",
@@ -534,6 +535,7 @@ export const es: LanguageConfig = {
         },
       },
       dob: {
+        title: "Verificación del resultado de la prueba",
         header: "Acceda al resultado de su prueba de COVID-19",
         dateOfBirth: "Fecha de nacimiento",
         enterDOB: "Ingrese su fecha de nacimiento",

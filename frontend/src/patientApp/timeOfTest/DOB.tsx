@@ -16,9 +16,12 @@ import {
 } from "../../app/utils/date";
 import { LoadingCard } from "../../app/commonComponents/LoadingCard/LoadingCard";
 import { formatPhoneNumberParens } from "../../app/utils/text";
+import { useDocumentTitle } from "../../app/utils/hooks";
 
 const DOB = () => {
   const { t } = useTranslation();
+
+  useDocumentTitle(t("testResult.dob.title"));
 
   const plid = useSelector((state: any) => state.plid);
 
