@@ -43,4 +43,6 @@ sleep 1m
 echo 'applesaredelicious'
 
 echo 'App is online! Starting Lighthouse...'
-echo
+
+mkdir lighthouse
+lighthouse https://localhost.simplereport.gov --output json --output-path lighthouse/output.json
