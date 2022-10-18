@@ -5,7 +5,7 @@ import moment from "moment";
 import "react-toastify/dist/ReactToastify.css";
 import { useTranslation } from "react-i18next";
 
-import { showError } from "../../app/utils";
+import { showError } from "../../app/utils/srToast";
 import { formatFullName } from "../../app/utils/user";
 import PatientHeader from "../PatientHeader";
 import { PxpApi, SelfRegistrationData } from "../PxpApiService";

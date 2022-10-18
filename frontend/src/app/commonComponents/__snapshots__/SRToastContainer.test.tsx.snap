@@ -1,0 +1,355 @@
+// Jest Snapshot v1, https://goo.gl/fbAQLP
+
+exports[`SRToastContainer contains the error defaults 1`] = `
+Object {
+  "asFragment": [Function],
+  "baseElement": <body>
+    <div>
+      <div
+        class="Toastify"
+      >
+        <div
+          class="Toastify__toast-container Toastify__toast-container--bottom-left"
+        >
+          <div
+            class="Toastify__toast Toastify__toast--default sr-alert--error Toastify__bounce-enter--bottom-left"
+            id="{\\"type\\":\\"error\\",\\"title\\":\\"Problems saving data to server\\",\\"body\\":\\"Please check for missing data or typos.\\"}"
+            style="animation-fill-mode: forwards; animation-duration: 750ms;"
+          >
+            <div
+              class="Toastify__toast-body"
+              role="alert"
+            >
+              <div
+                class="usa-alert usa-alert--error"
+                role="alert"
+              >
+                <div
+                  class="usa-alert__body"
+                >
+                  <h3
+                    class="usa-alert__heading"
+                  >
+                    Problems saving data to server
+                  </h3>
+                  <div
+                    class="usa-alert__text"
+                  >
+                    Please check for missing data or typos.
+                  </div>
+                </div>
+              </div>
+            </div>
+            <button
+              aria-label="close"
+              class="Toastify__close-button Toastify__close-button--default"
+              type="button"
+            >
+              <svg
+                aria-hidden="true"
+                viewBox="0 0 14 16"
+              >
+                <path
+                  d="M7.71 8.23l3.75 3.75-1.48 1.48-3.75-3.75-3.75 3.75L1 11.98l3.75-3.75L1 4.48 2.48 3l3.75 3.75L9.98 3l1.48 1.48-3.75 3.75z"
+                  fill-rule="evenodd"
+                />
+              </svg>
+            </button>
+            <div
+              class="Toastify__progress-bar Toastify__progress-bar--animated Toastify__progress-bar--default"
+              style="animation-duration: 5000ms; animation-play-state: running; opacity: 0;"
+            />
+          </div>
+        </div>
+      </div>
+    </div>
+  </body>,
+  "container": <div>
+    <div
+      class="Toastify"
+    >
+      <div
+        class="Toastify__toast-container Toastify__toast-container--bottom-left"
+      >
+        <div
+          class="Toastify__toast Toastify__toast--default sr-alert--error Toastify__bounce-enter--bottom-left"
+          id="{\\"type\\":\\"error\\",\\"title\\":\\"Problems saving data to server\\",\\"body\\":\\"Please check for missing data or typos.\\"}"
+          style="animation-fill-mode: forwards; animation-duration: 750ms;"
+        >
+          <div
+            class="Toastify__toast-body"
+            role="alert"
+          >
+            <div
+              class="usa-alert usa-alert--error"
+              role="alert"
+            >
+              <div
+                class="usa-alert__body"
+              >
+                <h3
+                  class="usa-alert__heading"
+                >
+                  Problems saving data to server
+                </h3>
+                <div
+                  class="usa-alert__text"
+                >
+                  Please check for missing data or typos.
+                </div>
+              </div>
+            </div>
+          </div>
+          <button
+            aria-label="close"
+            class="Toastify__close-button Toastify__close-button--default"
+            type="button"
+          >
+            <svg
+              aria-hidden="true"
+              viewBox="0 0 14 16"
+            >
+              <path
+                d="M7.71 8.23l3.75 3.75-1.48 1.48-3.75-3.75-3.75 3.75L1 11.98l3.75-3.75L1 4.48 2.48 3l3.75 3.75L9.98 3l1.48 1.48-3.75 3.75z"
+                fill-rule="evenodd"
+              />
+            </svg>
+          </button>
+          <div
+            class="Toastify__progress-bar Toastify__progress-bar--animated Toastify__progress-bar--default"
+            style="animation-duration: 5000ms; animation-play-state: running; opacity: 0;"
+          />
+        </div>
+      </div>
+    </div>
+  </div>,
+  "debug": [Function],
+  "findAllByAltText": [Function],
+  "findAllByDisplayValue": [Function],
+  "findAllByLabelText": [Function],
+  "findAllByPlaceholderText": [Function],
+  "findAllByRole": [Function],
+  "findAllByTestId": [Function],
+  "findAllByText": [Function],
+  "findAllByTitle": [Function],
+  "findByAltText": [Function],
+  "findByDisplayValue": [Function],
+  "findByLabelText": [Function],
+  "findByPlaceholderText": [Function],
+  "findByRole": [Function],
+  "findByTestId": [Function],
+  "findByText": [Function],
+  "findByTitle": [Function],
+  "getAllByAltText": [Function],
+  "getAllByDisplayValue": [Function],
+  "getAllByLabelText": [Function],
+  "getAllByPlaceholderText": [Function],
+  "getAllByRole": [Function],
+  "getAllByTestId": [Function],
+  "getAllByText": [Function],
+  "getAllByTitle": [Function],
+  "getByAltText": [Function],
+  "getByDisplayValue": [Function],
+  "getByLabelText": [Function],
+  "getByPlaceholderText": [Function],
+  "getByRole": [Function],
+  "getByTestId": [Function],
+  "getByText": [Function],
+  "getByTitle": [Function],
+  "queryAllByAltText": [Function],
+  "queryAllByDisplayValue": [Function],
+  "queryAllByLabelText": [Function],
+  "queryAllByPlaceholderText": [Function],
+  "queryAllByRole": [Function],
+  "queryAllByTestId": [Function],
+  "queryAllByText": [Function],
+  "queryAllByTitle": [Function],
+  "queryByAltText": [Function],
+  "queryByDisplayValue": [Function],
+  "queryByLabelText": [Function],
+  "queryByPlaceholderText": [Function],
+  "queryByRole": [Function],
+  "queryByTestId": [Function],
+  "queryByText": [Function],
+  "queryByTitle": [Function],
+  "rerender": [Function],
+  "unmount": [Function],
+}
+`;
+
+exports[`SRToastContainer contains the success defaults 1`] = `
+Object {
+  "asFragment": [Function],
+  "baseElement": <body>
+    <div>
+      <div
+        class="Toastify"
+      >
+        <div
+          class="Toastify__toast-container Toastify__toast-container--bottom-left"
+        >
+          <div
+            class="Toastify__toast Toastify__toast--default sr-alert--success Toastify__bounce-enter--bottom-left"
+            id="{\\"type\\":\\"success\\",\\"title\\":\\"Success\\",\\"body\\":\\"A new patient has been added.\\"}"
+            style="animation-fill-mode: forwards; animation-duration: 750ms;"
+          >
+            <div
+              class="Toastify__toast-body"
+              role="alert"
+            >
+              <div
+                class="usa-alert usa-alert--success"
+                role="region"
+              >
+                <div
+                  class="usa-alert__body"
+                >
+                  <h3
+                    class="usa-alert__heading"
+                  >
+                    Success
+                  </h3>
+                  <div
+                    class="usa-alert__text"
+                  >
+                    A new patient has been added.
+                  </div>
+                </div>
+              </div>
+            </div>
+            <button
+              aria-label="close"
+              class="Toastify__close-button Toastify__close-button--default"
+              type="button"
+            >
+              <svg
+                aria-hidden="true"
+                viewBox="0 0 14 16"
+              >
+                <path
+                  d="M7.71 8.23l3.75 3.75-1.48 1.48-3.75-3.75-3.75 3.75L1 11.98l3.75-3.75L1 4.48 2.48 3l3.75 3.75L9.98 3l1.48 1.48-3.75 3.75z"
+                  fill-rule="evenodd"
+                />
+              </svg>
+            </button>
+            <div
+              class="Toastify__progress-bar Toastify__progress-bar--animated Toastify__progress-bar--default"
+              style="animation-duration: 5000ms; animation-play-state: running; opacity: 0;"
+            />
+          </div>
+        </div>
+      </div>
+    </div>
+  </body>,
+  "container": <div>
+    <div
+      class="Toastify"
+    >
+      <div
+        class="Toastify__toast-container Toastify__toast-container--bottom-left"
+      >
+        <div
+          class="Toastify__toast Toastify__toast--default sr-alert--success Toastify__bounce-enter--bottom-left"
+          id="{\\"type\\":\\"success\\",\\"title\\":\\"Success\\",\\"body\\":\\"A new patient has been added.\\"}"
+          style="animation-fill-mode: forwards; animation-duration: 750ms;"
+        >
+          <div
+            class="Toastify__toast-body"
+            role="alert"
+          >
+            <div
+              class="usa-alert usa-alert--success"
+              role="region"
+            >
+              <div
+                class="usa-alert__body"
+              >
+                <h3
+                  class="usa-alert__heading"
+                >
+                  Success
+                </h3>
+                <div
+                  class="usa-alert__text"
+                >
+                  A new patient has been added.
+                </div>
+              </div>
+            </div>
+          </div>
+          <button
+            aria-label="close"
+            class="Toastify__close-button Toastify__close-button--default"
+            type="button"
+          >
+            <svg
+              aria-hidden="true"
+              viewBox="0 0 14 16"
+            >
+              <path
+                d="M7.71 8.23l3.75 3.75-1.48 1.48-3.75-3.75-3.75 3.75L1 11.98l3.75-3.75L1 4.48 2.48 3l3.75 3.75L9.98 3l1.48 1.48-3.75 3.75z"
+                fill-rule="evenodd"
+              />
+            </svg>
+          </button>
+          <div
+            class="Toastify__progress-bar Toastify__progress-bar--animated Toastify__progress-bar--default"
+            style="animation-duration: 5000ms; animation-play-state: running; opacity: 0;"
+          />
+        </div>
+      </div>
+    </div>
+  </div>,
+  "debug": [Function],
+  "findAllByAltText": [Function],
+  "findAllByDisplayValue": [Function],
+  "findAllByLabelText": [Function],
+  "findAllByPlaceholderText": [Function],
+  "findAllByRole": [Function],
+  "findAllByTestId": [Function],
+  "findAllByText": [Function],
+  "findAllByTitle": [Function],
+  "findByAltText": [Function],
+  "findByDisplayValue": [Function],
+  "findByLabelText": [Function],
+  "findByPlaceholderText": [Function],
+  "findByRole": [Function],
+  "findByTestId": [Function],
+  "findByText": [Function],
+  "findByTitle": [Function],
+  "getAllByAltText": [Function],
+  "getAllByDisplayValue": [Function],
+  "getAllByLabelText": [Function],
+  "getAllByPlaceholderText": [Function],
+  "getAllByRole": [Function],
+  "getAllByTestId": [Function],
+  "getAllByText": [Function],
+  "getAllByTitle": [Function],
+  "getByAltText": [Function],
+  "getByDisplayValue": [Function],
+  "getByLabelText": [Function],
+  "getByPlaceholderText": [Function],
+  "getByRole": [Function],
+  "getByTestId": [Function],
+  "getByText": [Function],
+  "getByTitle": [Function],
+  "queryAllByAltText": [Function],
+  "queryAllByDisplayValue": [Function],
+  "queryAllByLabelText": [Function],
+  "queryAllByPlaceholderText": [Function],
+  "queryAllByRole": [Function],
+  "queryAllByTestId": [Function],
+  "queryAllByText": [Function],
+  "queryAllByTitle": [Function],
+  "queryByAltText": [Function],
+  "queryByDisplayValue": [Function],
+  "queryByLabelText": [Function],
+  "queryByPlaceholderText": [Function],
+  "queryByRole": [Function],
+  "queryByTestId": [Function],
+  "queryByText": [Function],
+  "queryByTitle": [Function],
+  "rerender": [Function],
+  "unmount": [Function],
+}
+`;

@@ -5,7 +5,7 @@ import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { CSVLink } from "react-csv";
 import { useFeature } from "flagged";
 
-import { showError } from "../utils";
+import { showError } from "../utils/srToast";
 import { useImperativeQuery } from "../utils/hooks";
 import { parseDataForCSV } from "../utils/testResultCSV";
 import Button from "../commonComponents/Button/Button";

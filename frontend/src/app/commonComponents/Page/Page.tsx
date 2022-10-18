@@ -1,9 +1,8 @@
 import React, { useEffect } from "react";
-import { ToastContainer } from "react-toastify";
 
-import "react-toastify/dist/ReactToastify.css";
 import { getUrl } from "../../utils/url";
 import USAGovBanner from "../USAGovBanner";
+import SRToastContainer from "../SRToastContainer";
 
 declare global {
   interface Window {
@@ -51,13 +50,7 @@ const Page: React.FC<Props> = ({ header, children, isPatientApp }) => {
       </header>
       <main id="main-wrapper">
         {children}
-        <ToastContainer
-          autoClose={5000}
-          closeButton={false}
-          limit={2}
-          position="bottom-center"
-          hideProgressBar={true}
-        />
+        <SRToastContainer />
       </main>
       <footer>
         {/*  Disabling Touchpoints until we have designs that specify how to contact Support */}

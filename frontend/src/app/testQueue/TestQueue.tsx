@@ -4,7 +4,7 @@ import { CSSTransition, TransitionGroup } from "react-transition-group";
 import { useLocation } from "react-router-dom";
 import { useSelector } from "react-redux";
 
-import { showError } from "../utils";
+import { showError } from "../utils/srToast";
 import { useSelectedFacility } from "../facilitySelect/useSelectedFacility";
 import { TestCorrectionReason } from "../testResults/TestResultCorrectionModal";
 import { LinkWithQuery } from "../commonComponents/LinkWithQuery";

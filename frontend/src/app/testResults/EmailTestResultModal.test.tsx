@@ -1,7 +1,7 @@
 import { render, screen } from "@testing-library/react";
 import userEvent from "@testing-library/user-event";
 
-import * as utils from "../utils";
+import * as srToast from "../utils/srToast";
 
 import EmailTestResultModal from "./EmailTestResultModal";
 
@@ -48,7 +48,7 @@ describe("EmailTestResultModal", () => {
   let alertSpy: jest.SpyInstance;
 
   beforeEach(() => {
-    alertSpy = jest.spyOn(utils, "showAlertNotification");
+    alertSpy = jest.spyOn(srToast, "showAlertNotification");
   });
 
   afterEach(() => {

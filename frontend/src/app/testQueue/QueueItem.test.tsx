@@ -9,13 +9,14 @@ import { MemoryRouter } from "react-router-dom";
 import * as flaggedMock from "flagged";
 
 import { getAppInsights } from "../TelemetryService";
-import * as utils from "../utils/index";
+import * as srToast from "../utils/srToast";
 import { TestCorrectionReason } from "../testResults/TestResultCorrectionModal";
 import {
   AddMultiplexResultDocument as SUBMIT_TEST_RESULT,
   EditQueueItemMultiplexResultDocument as EDIT_QUEUE_ITEM,
 } from "../../generated/graphql";
 import * as generatedGraphql from "../../generated/graphql";
+import SRToastContainer from "../commonComponents/SRToastContainer";
 
 import QueueItem from "./QueueItem";
 
@@ -464,7 +465,7 @@ describe("QueueItem", () => {
   describe("SMS delivery failure", () => {
     let alertSpy: jest.SpyInstance;
     beforeEach(() => {
-      alertSpy = jest.spyOn(utils, "showNotification");
+      alertSpy = jest.spyOn(srToast, "showError");
     });
 
     afterEach(() => {
@@ -568,13 +569,7 @@ describe("QueueItem", () => {
               </Provider>
             </MockedProvider>
           </MemoryRouter>
-          <ToastContainer
-            autoClose={5000}
-            closeButton={false}
-            limit={2}
-            position="bottom-center"
-            hideProgressBar={true}
-          />
+          <SRToastContainer />
         </>
       );
 
@@ -609,6 +604,12 @@ describe("QueueItem", () => {
       expect(submitTestMockIsDone).toBe(true);
 
       // Verify alert is displayed
+      await waitFor(() => {
+        expect(alertSpy).toHaveBeenCalledWith(
+          "The phone number provided may not be valid or may not be able to accept text messages",
+          "Unable to text result to Potter, Harry James"
+        );
+      });
       expect(
         await screen.findByText(
           "Unable to text result to Potter, Harry James",
