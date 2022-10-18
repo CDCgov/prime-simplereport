@@ -34,13 +34,14 @@ const Uploads = () => {
   const [errors, setErrors] = useState<
     Array<FeedbackMessage | undefined | null>
   >([]);
-  const [errorMessageText, setErrorMessageText] = useState(
-    `Please resolve the errors below and upload your edited file. Your file has not been accepted.`
-  );
+  const [errorMessageText, setErrorMessageText] = useState<string | null>(null);
 
   const handleFileChange = async (
     event: React.ChangeEvent<HTMLInputElement>
   ) => {
+    setButtonIsDisabled(true);
+    setFile(undefined);
+
     try {
       if (!event?.currentTarget?.files?.length) {
         return; //no files
@@ -56,7 +57,8 @@ const Uploads = () => {
           minimumFractionDigits: 2,
         });
         showError(
-          `The file '${currentFile.name}' is too large.  The maximum file size is ${maxKBytes}k`
+          `The file '${currentFile.name}' is too large.  The maximum file size is ${maxKBytes}k`,
+          "Invalid file"
         );
         return;
       }
@@ -65,14 +67,16 @@ const Uploads = () => {
       const lineCount = (fileText.match(/\n/g) || []).length + 1;
       if (lineCount > REPORT_MAX_ITEMS) {
         showError(
-          `The file '${currentFile.name}' has too many rows. The maximum number of rows is ${REPORT_MAX_ITEMS}.`
+          `The file '${currentFile.name}' has too many rows. The maximum number of rows is ${REPORT_MAX_ITEMS}.`,
+          "Invalid file"
         );
         return;
       }
 
       if (lineCount <= 1) {
         showError(
-          `The file '${currentFile.name}' doesn't contain any valid data. File should have a header line and at least one line of data.`
+          `The file '${currentFile.name}' doesn't contain any valid data. File should have a header line and at least one line of data.`,
+          "Invalid file"
         );
         return;
       }
@@ -87,14 +91,15 @@ const Uploads = () => {
 
       if (columnCount > REPORT_MAX_ITEM_COLUMNS) {
         showError(
-          `The file '${currentFile.name}' has too many columns. The maximum number of allowed columns is ${REPORT_MAX_ITEM_COLUMNS}.`
+          `The file '${currentFile.name}' has too many columns. The maximum number of allowed columns is ${REPORT_MAX_ITEM_COLUMNS}.`,
+          "Invalid file"
         );
         return;
       }
       setFile(currentFile);
       setButtonIsDisabled(false);
     } catch (err: any) {
-      showError(`An unexpected error happened: '${err.toString()}'`);
+      showError(err.toString(), "An unexpected error happened");
     }
   };
 
@@ -104,10 +109,13 @@ const Uploads = () => {
     setIsSubmitting(true);
     setButtonIsDisabled(true);
     setReportId(null);
+    setErrorMessageText(null);
     setErrors([]);
 
     if (!file || file.size === 0) {
-      setButtonIsDisabled(false);
+      setErrorMessageText(
+        "Please resolve the errors below and upload your edited file. Your file has not been accepted."
+      );
       const errorMessage = {} as FeedbackMessage;
       errorMessage.message = "Invalid File";
       setErrors([errorMessage]);
@@ -118,7 +126,6 @@ const Uploads = () => {
       setIsSubmitting(false);
       setFileInputResetValue(fileInputResetValue + 1);
       setFile(undefined);
-      setButtonIsDisabled(true);
 
       if (res.status !== 200) {
         setErrorMessageText(
@@ -246,7 +253,7 @@ const Uploads = () => {
               </div>
             </div>
           )}
-          {fileInputResetValue > 0 && !reportId && (
+          {errorMessageText && (
             <div>
               <div className="usa-alert usa-alert--error" role="alert">
                 <div className="usa-alert__body">
