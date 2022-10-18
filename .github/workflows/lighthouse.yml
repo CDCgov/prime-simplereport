@@ -70,6 +70,13 @@ jobs:
         lhci autorun
         echo "::endgroup::"
 
+      # docker compose pull
+      # docker-compose -f docker-compose.yml -f docker-compose.ci.yml up -d
+      # sleep 300
+      # FACILITY_ID=$(docker exec db psql -qtA -v ON_ERROR_STOP=1 -p 5432 -U simple_report_migrations simple_report -c "select internal_id from simple_report.facility limit 1;")
+      # echo "Our facility id is: $FACILITY_ID"
+      # docker compose down
+
     - name: Archive Lighthouse results
       uses: actions/upload-artifact@v3
       with:

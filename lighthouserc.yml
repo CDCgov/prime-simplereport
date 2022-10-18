@@ -4,7 +4,16 @@ ci:
     startServerCommand: sh ./lighthouse.sh
     startServerReadyPattern: 'BUILD SUCCESSFUL'
     startServerReadyTimeout: 300000
-    url: https://localhost.simplereport.gov/app
+    url:
+      - https://localhost.simplereport.gov/app
+      - https://localhost.simplereport.gov/app?facility=$FACILITY_ID
+      - https://localhost.simplereport.gov/app/queue?facility=$FACILITY_ID
+      - https://localhost.simplereport.gov/app/results/1?facility=$FACILITY_ID
+      - https://localhost.simplereport.gov/app/patients?facility=$FACILITY_ID
+      - https://localhost.simplereport.gov/app/add-patient?facility=$FACILITY_ID
+      - https://localhost.simplereport.gov/app/settings?facility=$FACILITY_ID
+      - https://localhost.simplereport.gov/app/settings/facilities?facility=$FACILITY_ID
+      - https://localhost.simplereport.gov/app/settings/add-facility/?facility=$FACILITY_ID
     settings:
       chromeFlags:
         - "--ignore-certificate-errors"
@@ -15,5 +24,5 @@ ci:
     githubToken: ${{ secrets.GITHUB_TOKEN }}
   assert:
     assertions:
-      categories:performance: [error, {minScore: 0.8}]
+      categories:performance: [error, {minScore: 0.3}]
       categories:accessibility: [error, {minScore: 1}]
