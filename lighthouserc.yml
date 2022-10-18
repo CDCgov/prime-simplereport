@@ -5,6 +5,9 @@ ci:
     startServerReadyPattern: 'BUILD SUCCESSFUL'
     startServerReadyTimeout: 300000
     url: https://localhost.simplereport.gov/
+    settings:
+      chromeFlags:
+        - "--ignore-certificate-errors"
   upload:
     target: filesystem
     outputDir: ./lighthouse

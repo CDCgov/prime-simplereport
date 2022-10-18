@@ -47,13 +47,3 @@ echo 'applesaredelicious'
 
 echo 'App is online!'
 echo
-
-#echo 'Installing chromium and lighthouse...'
-#apt-get install chromium
-#npm install -g lighthouse
-#echo
-#
-#echo 'Starting lighthouse...'
-#echo
-#mkdir lighthouse -p
-#lighthouse https://localhost.simplereport.gov --output json --output-path lighthouse/output.json --chrome-flags="--headless"

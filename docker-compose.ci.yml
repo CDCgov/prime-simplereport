@@ -1,7 +1,7 @@
 services:
   backend:
     environment:
-      SPRING_PROFILES_ACTIVE: dev,db-dockerized,create-sample-data
+      SPRING_PROFILES_ACTIVE: dev,db-dockerized
       SPRING_LIQUIBASE_ENABLED: "true"
       GIT_DISCOVERY_ACROSS_FILESYSTEM: 1
   frontend:
