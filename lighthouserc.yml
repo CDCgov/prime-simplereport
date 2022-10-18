@@ -4,6 +4,7 @@ ci:
     startServerCommand: sh ./lighthouse.sh
     startServerReadyPattern: 'BUILD SUCCESSFUL'
     startServerReadyTimeout: 300000
+    isSinglePageApplication: true
     url: https://localhost.simplereport.gov/app
     settings:
       chromeFlags:
