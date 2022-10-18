@@ -18,7 +18,7 @@ import { useDocumentTitle } from "../../app/utils/hooks";
 const TestResult = () => {
   const { t } = useTranslation();
 
-  useDocumentTitle(t("testResult.dob.title"));
+  useDocumentTitle(t("testResult.title"));
 
   const testResult = useSelector<RootState, VerifyV2Response>(
     (state) => state.testResult
