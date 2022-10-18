@@ -4,7 +4,7 @@ ci:
     startServerCommand: sh ./lighthouse.sh
     startServerReadyPattern: 'BUILD SUCCESSFUL'
     startServerReadyTimeout: 300000
-    url: https://localhost.simplereport.gov/
+    url: https://localhost.simplereport.gov/app
     settings:
       chromeFlags:
         - "--ignore-certificate-errors"
