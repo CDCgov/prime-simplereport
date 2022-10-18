@@ -48,6 +48,10 @@ jobs:
         username: ${{ github.actor }}
         password: ${{ secrets.GITHUB_TOKEN }}
 
+    - name: Add hosts to /etc/hosts
+      run: |
+        sudo echo "127.0.0.1	localhost.simplereport.gov" | sudo tee -a /etc/hosts
+
     - name: setup and run lighthouse
       # uses: actions/setup-node@v1
       # with:
@@ -58,11 +62,12 @@ jobs:
         DOCKER_CLIENT_TIMEOUT: 180
         COMPOSE_HTTP_TIMEOUT: 180
         # backend settings
-        SPRING_PROFILES_ACTIVE: dev,db-dockerized, create-sample-data
+        SPRING_PROFILES_ACTIVE: dev,db-dockerized
       shell: bash
       run: |
         echo "::group::Run Lighthouse locally"
-        sh ./lighthouse.sh
+        npm install -g @lhci/cli@0.9.x
+        lhci autorun
         echo "::endgroup::"
 
     - name: Archive Lighthouse results

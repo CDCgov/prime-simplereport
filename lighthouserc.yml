@@ -3,11 +3,11 @@ ci:
     numberOfRuns: 1
     startServerCommand: sh ./lighthouse.sh
     startServerReadyPattern: 'applesaredelicious'
-    startServerReadyTimeout: 1000000
+    startServerReadyTimeout: 100000
     url: https://localhost.simplereport.gov/
   upload:
     target: filesystem
-    outputDir: ./lhci
+    outputDir: ./lighthouse
     githubToken: ${{ secrets.GITHUB_TOKEN }}
   assert:
     assertions:
