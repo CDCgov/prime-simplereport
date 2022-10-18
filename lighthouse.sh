@@ -1,9 +1,9 @@
 #!/bin/bash
 
-TEST_ENV="https://localhost.simplereport.gov"
-BACKEND_URL_PATH="/api/health"
-PUBLIC_URL="/app"
-FRONTEND_URL_PATH="/health/commit"
+#TEST_ENV="https://localhost.simplereport.gov"
+#BACKEND_URL_PATH="/api/health"
+#PUBLIC_URL="/app"
+#FRONTEND_URL_PATH="/health/commit"
 
 docker compose pull
 docker-compose -f docker-compose.yml -f docker-compose.ci.yml up
@@ -39,9 +39,6 @@ docker-compose -f docker-compose.yml -f docker-compose.ci.yml up
 #fi
 #echo 'Frontend started!'
 #echo
-
-#echo
-#
 ## start server command
 #echo 'applesaredelicious'
 #

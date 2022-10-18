@@ -8,6 +8,7 @@ ci:
     settings:
       chromeFlags:
         - "--ignore-certificate-errors"
+      preset: "desktop"
   upload:
     target: filesystem
     outputDir: ./lighthouse
