@@ -72,16 +72,16 @@ const ManageOrganizationContainer: any = () => {
     try {
       await mutation();
       dispatch(updateOrganization({ name }));
+      showSuccess(
+        "The settings for the organization have been updated",
+        "Updated organization"
+      );
     } catch (e: any) {
       showError(
         "There was an error updating the organization settings",
         "Error updating organization"
       );
     }
-    showSuccess(
-      "The settings for the organization have been updated",
-      "Updated organization"
-    );
   };
 
   return (
