@@ -6,6 +6,7 @@ provider "registry.terraform.io/hashicorp/azurerm" {
   constraints = "~> 2.92.0"
   hashes = [
     "h1:4hZBxKHENrIx59+2OVuw8kT/+QcD8c2pkHrnPRmXvog=",
+    "h1:qbykcy2XARWtkXDJsGtdHFVxHoi4W4cqf4Xc813b2vs=",
     "zh:0de2206cf0a876fe61b0693075a4dbe73f45b52dd8749f61a743e562aa56505d",
     "zh:28aa7999b8592e6a1c51ee8e52690e594a64fe124413af01fb3e8f4f88b77b9a",
     "zh:374c9d9a001e3b9987866b6f565232a29c6b8d7993ddc2d7813d5ea852eef306",
@@ -24,6 +25,7 @@ provider "registry.terraform.io/hashicorp/random" {
   version = "3.1.2"
   hashes = [
     "h1:5A5VsY5wNmOZlupUcLnIoziMPn8htSZBXbP3lI7lBEM=",
+    "h1:JF+aiOtS0G0ffbBdk1qfj7IrT39y/GZh/yl2IhqcIVM=",
     "zh:0daceba867b330d3f8e2c5dc895c4291845a78f31955ce1b91ab2c4d1cd1c10b",
     "zh:104050099efd30a630741f788f9576b19998e7a09347decbec3da0b21d64ba2d",
     "zh:173f4ef3fdf0c7e2564a3db0fac560e9f5afdf6afd0b75d6646af6576b122b16",
@@ -44,6 +46,7 @@ provider "registry.terraform.io/okta/okta" {
   constraints = "~> 3.19"
   hashes = [
     "h1:H+hvsik1xGQMj7MMr1I605iftqDZSw2sfwtdhvhUDXo=",
+    "h1:nStEZuiJlF5AqzYxnXjOGfu/YsyXgXRiPoQLp8SYSZs=",
     "zh:01eed21e2c930377e8de2c160619b0a3c3434f2329729fddba5e7bd4858aead2",
     "zh:13829e6ef6a32eb11ca92742ca4a5f6d246ff14761e69fdb18a6099ae712663a",
     "zh:29d9d7327d77ce44ae6bff677437d4ac6e2838606849fbadb93ad72bfc86a69f",
