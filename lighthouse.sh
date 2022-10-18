@@ -40,11 +40,19 @@ echo
 
 echo 'Waiting two minutes in case something went wrong...'
 sleep 2m
+echo
 
 echo 'applesaredelicious'
 
-echo 'App is online! Starting Lighthouse...'
+echo 'App is online!'
+echo
 
+echo 'Installing chromium and lighthouse...'
 apt-get install chromium
+npm install -g lighthouse
+echo
+
+echo 'Starting lighthouse...'
+echo
 mkdir lighthouse
 lighthouse https://localhost.simplereport.gov --output json --output-path lighthouse/output.json --chrome-flags="--headless"

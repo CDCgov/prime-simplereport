@@ -62,7 +62,6 @@ jobs:
       shell: bash
       run: |
         echo "::group::Run Lighthouse locally"
-        npm install -g lighthouse
         sh ./lighthouse.sh
         echo "::endgroup::"
 
