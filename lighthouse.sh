@@ -38,11 +38,12 @@ fi
 echo 'Frontend started!'
 echo
 
-sleep 1m
+sleep 2m
 
 echo 'applesaredelicious'
 
 echo 'App is online! Starting Lighthouse...'
 
+apt-get install chromium
 mkdir lighthouse
-lighthouse https://localhost.simplereport.gov --output json --output-path lighthouse/output.json
+lighthouse https://localhost.simplereport.gov --output json --output-path lighthouse/output.json --chrome-flags="--headless"
