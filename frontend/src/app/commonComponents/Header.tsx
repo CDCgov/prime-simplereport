@@ -4,7 +4,6 @@ import classNames from "classnames";
 import { v4 as uuidv4 } from "uuid";
 import { useSelector, connect } from "react-redux";
 
-import { PATIENT_TERM_PLURAL_CAP } from "../../config/constants";
 import siteLogo from "../../img/simplereport-logo-color.svg";
 import { hasPermission, appPermissions } from "../permissions";
 import { RootState } from "../store";
@@ -20,7 +19,19 @@ import Button from "./Button/Button";
 import ChangeUser from "./ChangeUser";
 import Dropdown from "./Dropdown";
 
-const Header: React.FC<{}> = () => {
+interface MenuItem {
+  url: string;
+  displayText: string;
+  displayPermissions: boolean;
+  className: string | ((props: { isActive: boolean }) => string);
+  key: string;
+}
+
+interface HeaderProps {
+  menuItems: MenuItem[];
+}
+
+const Header: React.FC<HeaderProps> = ({ menuItems }) => {
   const appInsights = getAppInsights();
 
   const handleSupportClick = () => {
@@ -68,21 +79,6 @@ const Header: React.FC<{}> = () => {
     appPermissions.settings.canView
   );
 
-  const canViewPeople = hasPermission(
-    user.permissions,
-    appPermissions.people.canView
-  );
-
-  const canViewResults = hasPermission(
-    user.permissions,
-    appPermissions.results.canView
-  );
-
-  const canViewTestQueue = hasPermission(
-    user.permissions,
-    appPermissions.tests.canView
-  );
-
   let siteLogoLinkPath: string;
 
   if (isSupportAdmin) {
@@ -115,40 +111,11 @@ const Header: React.FC<{}> = () => {
     );
   };
 
-  const activeNavItem = "active-nav-item prime-nav-link";
-  const inactiveNavItem = "prime-nav-link";
-  const getNavItemClassName = ({ isActive }: { isActive: boolean }) =>
-    isActive ? activeNavItem : inactiveNavItem;
-  const mainNavContent = [
-    {
-      url: "/dashboard",
-      displayText: "Dashboard",
-      displayPermissions: canViewSettings,
-      className: getNavItemClassName,
-      key: "dashboard-nav-link",
-    },
-    {
-      url: "/queue",
-      displayText: "Conduct tests",
-      displayPermissions: canViewTestQueue,
-      className: getNavItemClassName,
-      key: "conduct-test-nav-link",
-    },
-    {
-      url: "/results",
-      displayText: "Results",
-      displayPermissions: canViewResults,
-      className: getNavItemClassName,
-      key: "results-nav-link",
-    },
-    {
-      url: "/patients",
-      displayText: PATIENT_TERM_PLURAL_CAP,
-      displayPermissions: canViewPeople,
-      className: getNavItemClassName,
-      key: "patient-nav-link",
-    },
-  ];
+  // const activeNavItem = "active-nav-item prime-nav-link";
+  // const inactiveNavItem = "prime-nav-link";
+  // const getNavItemClassName = ({ isActive }: { isActive: boolean }) =>
+  //   isActive ? activeNavItem : inactiveNavItem;
+  const mainNavContent = menuItems;
   const mainNavList = (deviceType: string) =>
     mainNavContent.map((item) => {
       return (

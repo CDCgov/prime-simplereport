@@ -6,7 +6,6 @@ import { ApplicationInsights } from "@microsoft/applicationinsights-web";
 import jwtDecode from "jwt-decode";
 
 import ProtectedRoute from "./commonComponents/ProtectedRoute";
-import Header from "./commonComponents/Header";
 import Page from "./commonComponents/Page/Page";
 import { setInitialState } from "./store";
 import TestResultsList from "./testResults/TestResultsList";
@@ -30,6 +29,7 @@ import Submission from "./testResults/submissions/Submission";
 import Submissions from "./testResults/submissions/Submissions";
 import ResultsNavWrapper from "./testResults/ResultsNavWrapper";
 import DeviceLookupContainer from "./uploads/DeviceLookup/DeviceLookupContainer";
+import MainHeader from "./commonComponents/MainHeader";
 
 export const WHOAMI_QUERY = gql`
   query WhoAmI {
@@ -169,7 +169,7 @@ const App = () => {
       )}
       <WithFacility>
         <Page
-          header={<Header />}
+          header={<MainHeader />}
           children={
             <Routes>
               <Route
