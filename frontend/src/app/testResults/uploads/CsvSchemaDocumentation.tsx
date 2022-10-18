@@ -204,9 +204,9 @@ const CsvSchemaDocumentation = () => {
               </a>
             </li>
             <li>
-              <a href="/csv/codelookup" className="usa-link">
+              <LinkWithQuery to={`/csv/codelookup`}>
                 Device code lookup tool
-              </a>
+              </LinkWithQuery>
             </li>
             <li>
               <a href="mailto:support@simplereport.gov" className="usa-link">
