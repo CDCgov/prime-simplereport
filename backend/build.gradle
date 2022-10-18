@@ -53,6 +53,7 @@ dependencies {
     implementation 'com.vladmihalcea:hibernate-types-55:2.19.2'
     implementation 'org.liquibase:liquibase-core'
     runtimeOnly 'org.postgresql:postgresql:42.4.1'
+    liquibaseRuntime 'info.picocli:picocli:4.6.1'
 
     // data validation
     implementation 'com.googlecode.libphonenumber:libphonenumber:8.12.57'
@@ -131,7 +132,6 @@ dependencies {
     runtimeOnly "io.zipkin.reporter2:zipkin-reporter-brave:2.16.3"
     runtimeOnly "io.zipkin.reporter2:zipkin-reporter:2.16.1"
     runtimeOnly "io.zipkin.zipkin2:zipkin:2.23.0"
-
 }
 
 dependencyManagement {
