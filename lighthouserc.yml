@@ -3,7 +3,7 @@ ci:
     numberOfRuns: 1
     startServerCommand: sh ./lighthouse.sh
     startServerReadyPattern: 'BUILD SUCCESSFUL'
-    startServerReadyTimeout: 300000
+    startServerReadyTimeout: 600000
     url:
       - https://localhost.simplereport.gov/app
       - https://localhost.simplereport.gov/app?facility=$FACILITY_ID

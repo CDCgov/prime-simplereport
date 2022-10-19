@@ -63,8 +63,6 @@ jobs:
         # docker settings
         DOCKER_CLIENT_TIMEOUT: 180
         COMPOSE_HTTP_TIMEOUT: 180
-        # backend settings
-        SPRING_PROFILES_ACTIVE: dev,db-dockerized
       shell: bash
       run: |
         echo "::group::Run Lighthouse locally"
