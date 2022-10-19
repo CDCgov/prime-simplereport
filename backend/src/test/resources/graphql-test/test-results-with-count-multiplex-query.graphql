@@ -2,7 +2,7 @@ query GetFacilityResultsWithCountMultiplex(
   $facilityId: ID!
   $nameType: String = "long"
 ) {
-  testResultsWithPage(facilityId: $facilityId) {
+  testResultsPage(facilityId: $facilityId) {
     content {
       internalId
       dateTested
