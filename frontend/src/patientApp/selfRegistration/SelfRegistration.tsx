@@ -1,6 +1,5 @@
 import { useState } from "react";
 import { useParams } from "react-router-dom";
-import { ToastContainer } from "react-toastify";
 import moment from "moment";
 import "react-toastify/dist/ReactToastify.css";
 import { useTranslation } from "react-i18next";
@@ -134,13 +133,6 @@ export const SelfRegistration = () => {
                 )}
               </div>
             </RegistrationContainer>
-            <ToastContainer
-              autoClose={5000}
-              closeButton={false}
-              limit={2}
-              position="bottom-center"
-              hideProgressBar={true}
-            />
           </div>
         }
         isPatientApp={true}

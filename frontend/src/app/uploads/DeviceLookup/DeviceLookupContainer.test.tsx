@@ -1,5 +1,6 @@
 import { render, screen } from "@testing-library/react";
-import { ToastContainer } from "react-toastify";
+
+import SRToastContainer from "../../commonComponents/SRToastContainer";
 
 import DeviceLookupContainer from "./DeviceLookupContainer";
 
@@ -35,13 +36,7 @@ describe("DeviceLookupContainer", () => {
     render(
       <>
         <DeviceLookupContainer />
-        <ToastContainer
-          autoClose={5000}
-          closeButton={false}
-          limit={2}
-          position={"bottom-center"}
-          hideProgressBar={true}
-        />
+        <SRToastContainer />
       </>
     );
   });

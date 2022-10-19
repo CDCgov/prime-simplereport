@@ -1,6 +1,5 @@
 import { MockedProvider } from "@apollo/client/testing";
 import { Provider } from "react-redux";
-import { ToastContainer } from "react-toastify";
 import configureStore, { MockStoreEnhanced } from "redux-mock-store";
 import { render, screen, waitFor, within } from "@testing-library/react";
 import moment from "moment";
@@ -417,13 +416,7 @@ describe("QueueItem", () => {
               </Provider>
             </MockedProvider>
           </MemoryRouter>
-          <ToastContainer
-            autoClose={5000}
-            closeButton={false}
-            limit={2}
-            position="bottom-center"
-            hideProgressBar={true}
-          />
+          <SRToastContainer />
         </>
       );
     });
@@ -698,13 +691,7 @@ describe("QueueItem", () => {
             </Provider>
           </MockedProvider>
         </MemoryRouter>
-        <ToastContainer
-          autoClose={5000}
-          closeButton={false}
-          limit={2}
-          position="bottom-center"
-          hideProgressBar={true}
-        />
+        <SRToastContainer />
       </>
     );
 
