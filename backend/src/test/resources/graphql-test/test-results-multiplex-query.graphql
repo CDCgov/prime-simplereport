@@ -1,33 +1,40 @@
-query GetFacilityResultsMultiplex($facilityId: ID!, $nameType: String = "long") {
+query GetFacilityResultsMultiplex(
+  $facilityId: ID!
+  $nameType: String = "long"
+) {
   testResults(facilityId: $facilityId) {
-    internalId
-    dateTested
-    results {
-      disease {
+    content {
+      internalId
+      dateTested
+      results {
+        disease {
+          name
+        }
+        testResult
+      }
+      deviceType {
+        internalId
         name
       }
-      testResult
+      patient {
+        internalId
+        firstName
+        middleName
+        lastName
+        lookupId
+      }
+      testPerformed {
+        name(nameType: $nameType)
+      }
+      patientLink {
+        internalId
+      }
+      symptoms
+      noSymptoms
+      pregnancy
+      symptomOnset
     }
-    deviceType {
-      internalId
-      name
-    }
-    patient {
-      internalId
-      firstName
-      middleName
-      lastName
-      lookupId
-    }
-    testPerformed {
-      name(nameType: $nameType)
-    }
-    patientLink {
-      internalId
-    }
-    symptoms
-    noSymptoms
-    pregnancy
-    symptomOnset
+
+    totalElements
   }
 }

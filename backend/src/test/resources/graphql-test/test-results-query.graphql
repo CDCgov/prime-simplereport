@@ -1,12 +1,54 @@
+query GetFacilityResultsWithCount(
+  $facilityId: ID!
+  $nameType: String = "long"
+) {
+  testResultsWithCount(facilityId: $facilityId) {
+    content {
+      internalId
+      dateTested
+      results {
+        disease {
+          internalId
+          name
+          loinc
+        }
+        testResult
+      }
+      deviceType {
+        internalId
+        name
+      }
+      patient {
+        internalId
+        firstName
+        middleName
+        lastName
+        lookupId
+      }
+      testPerformed {
+        name(nameType: $nameType)
+      }
+      patientLink {
+        internalId
+      }
+      symptoms
+      noSymptoms
+      pregnancy
+      symptomOnset
+    }
+    totalElements
+  }
+}
+
 query GetFacilityResults($facilityId: ID!, $nameType: String = "long") {
   testResults(facilityId: $facilityId) {
     internalId
     dateTested
-    results{
-      disease{
-          internalId
-          name
-          loinc
+    results {
+      disease {
+        internalId
+        name
+        loinc
       }
       testResult
     }
