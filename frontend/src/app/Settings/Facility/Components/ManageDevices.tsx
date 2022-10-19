@@ -52,11 +52,6 @@ const ManageDevices: React.FC<Props> = ({
         <h2 className="font-heading-lg">Manage devices</h2>
       </div>
       <div className="usa-card__body">
-        <p className="usa-hint padding-top-3">
-          If you don&rsquo;t see a device you&rsquo;re using, please contact{" "}
-          <a href="mailto:support@simplereport.gov">support@simplereport.gov</a>{" "}
-          and request to add a new one.
-        </p>
         {newOrg && (
           <p className="usa-form usa-form--large">
             If you plan to upload your results in bulk, enter one device here to
@@ -79,7 +74,15 @@ const ManageDevices: React.FC<Props> = ({
         />
         {!selectedDevices.length ? (
           <p> There are currently no devices </p>
-        ) : null}
+        ) : (
+          <p className="usa-hint padding-top-3">
+            If you don&rsquo;t see a device you&rsquo;re using, please contact{" "}
+            <a href="mailto:support@simplereport.gov">
+              support@simplereport.gov
+            </a>{" "}
+            and request to add a new one.
+          </p>
+        )}
       </div>
     </div>
   );
