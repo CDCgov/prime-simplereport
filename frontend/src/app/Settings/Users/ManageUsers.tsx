@@ -1,9 +1,9 @@
 import React, { useEffect, useState } from "react";
 import { ApolloQueryResult } from "@apollo/client";
 
-import Alert from "../../commonComponents/Alert";
 import Button from "../../commonComponents/Button/Button";
-import { showNotification, displayFullName } from "../../utils";
+import { displayFullName } from "../../utils";
+import { showSuccess } from "../../utils/srToast";
 import reload from "../../utils/reload";
 import {
   UserPermission,
@@ -197,13 +197,7 @@ const ManageUsers: React.FC<Props> = ({
           userWithPermissions?.lastName
         );
         setIsUpdating(false);
-        showNotification(
-          <Alert
-            type="success"
-            title="Changes Saved"
-            body={`${fullName}'s settings have been saved`}
-          />
-        );
+        showSuccess(`${fullName}'s settings have been saved`, "Changes Saved");
       })
       .catch(setError);
   };
@@ -239,12 +233,9 @@ const ManageUsers: React.FC<Props> = ({
 
       await getUsers();
       const fullName = displayFullName(firstName, "", lastName);
-      showNotification(
-        <Alert
-          type="success"
-          title={`Invitation sent to ${fullName}`}
-          body={`They will receive an invitation to create an account at the email address provided`}
-        />
+      showSuccess(
+        "They will receive an invitation to create an account at the email address provided",
+        `Invitation sent to ${fullName}`
       );
       updateShowAddUserModal(false);
       setAddedUserId(addedUser);
@@ -273,9 +264,7 @@ const ManageUsers: React.FC<Props> = ({
       });
       const fullName = displayFullName(firstName, "", lastName);
       updateEditUserNameModal(false);
-      showNotification(
-        <Alert type="success" title={`User name changed to ${fullName}`} />
-      );
+      showSuccess("", `User name changed to ${fullName}`);
       queryUserWithPermissions();
     } catch (e: any) {
       setError(e);
@@ -291,12 +280,7 @@ const ManageUsers: React.FC<Props> = ({
         },
       });
       updateEditUserEmailModal(false);
-      showNotification(
-        <Alert
-          type="success"
-          title={`User email address changed to ${emailAddress}`}
-        />
-      );
+      showSuccess("", `User email address changed to ${emailAddress}`);
       await getUsers();
     } catch (e: any) {}
   };
@@ -314,9 +298,7 @@ const ManageUsers: React.FC<Props> = ({
         userWithPermissions?.lastName
       );
       updateShowResetPasswordModal(false);
-      showNotification(
-        <Alert type="success" title={`Password reset for ${fullName}`} />
-      );
+      showSuccess("", `Password reset for ${fullName}`);
     } catch (e: any) {
       setError(e);
     }
@@ -335,9 +317,7 @@ const ManageUsers: React.FC<Props> = ({
         userWithPermissions?.lastName
       );
       updateShowResetMfaModal(false);
-      showNotification(
-        <Alert type="success" title={`MFA reset for ${fullName}`} />
-      );
+      showSuccess("", `MFA reset for ${fullName}`);
     } catch (e: any) {
       setError(e);
     }
@@ -358,9 +338,7 @@ const ManageUsers: React.FC<Props> = ({
       );
       updateShowDeleteUserModal(false);
       setDeletedUserId(userId);
-      showNotification(
-        <Alert type="success" title={`User account removed for ${fullName}`} />
-      );
+      showSuccess("", `User account removed for ${fullName}`);
       await getUsers();
     } catch (e: any) {
       setError(e);
@@ -381,9 +359,7 @@ const ManageUsers: React.FC<Props> = ({
       );
       updateShowReactivateUserModal(false);
       reload();
-      showNotification(
-        <Alert type="success" title={`${fullName} has been reactivated.`} />
-      );
+      showSuccess("", `${fullName} has been reactivated.`);
     } catch (e: any) {
       setError(e);
     }
@@ -402,12 +378,7 @@ const ManageUsers: React.FC<Props> = ({
         userWithPermissions?.lastName
       );
       updateShowResendUserActivationEmailModal(false);
-      showNotification(
-        <Alert
-          type="success"
-          title={`${fullName} has been sent a new invitation.`}
-        />
-      );
+      showSuccess("", `${fullName} has been sent a new invitation.`);
     } catch (e: any) {
       setError(e);
     }

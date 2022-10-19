@@ -10,8 +10,7 @@ import {
   useUpdateDeviceTypeMutation,
 } from "../../../generated/graphql";
 import { LoadingCard } from "../../commonComponents/LoadingCard/LoadingCard";
-import { showNotification } from "../../utils";
-import Alert from "../../commonComponents/Alert";
+import { showError, showSuccess } from "../../utils/srToast";
 import { useSelectedFacility } from "../../facilitySelect/useSelectedFacility";
 
 import DeviceForm, { Device } from "./DeviceForm";
@@ -32,12 +31,9 @@ const ManageDeviceTypeFormContainer = () => {
 
   const updateDevice = (device: Device) => {
     if (device.testLength <= 0 || device.testLength > 999) {
-      showNotification(
-        <Alert
-          type="error"
-          title="Update device failed"
-          body="Failed to update device. Invalid test length"
-        />
+      showError(
+        "Failed to update device. Invalid test length",
+        "Update device failed"
       );
     } else {
       if (device.internalId) {
@@ -49,14 +45,7 @@ const ManageDeviceTypeFormContainer = () => {
           variables,
           fetchPolicy: "no-cache",
         }).then(() => {
-          const alert = (
-            <Alert
-              type="success"
-              title="Updated device"
-              body="The device has been updated"
-            />
-          );
-          showNotification(alert);
+          showSuccess("The device has been updated", "Updated device");
           setSubmitted(true);
         });
       } else {

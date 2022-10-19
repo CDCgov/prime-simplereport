@@ -2,12 +2,12 @@ import { PhoneNumberUtil, PhoneNumberFormat } from "google-libphonenumber";
 import { useState } from "react";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 
-import Alert from "../../commonComponents/Alert";
 import Button from "../../commonComponents/Button/Button";
 import {
   PendingOrganization,
   useEditPendingOrganizationMutation,
 } from "../../../generated/graphql";
+import { showSuccess } from "../../utils/srToast";
 
 import {
   PendingOrganizationFormValues,
@@ -27,7 +27,6 @@ interface Props {
   ) => Promise<void>;
   loading: boolean;
   refetch: () => void;
-  showNotification: (notif: JSX.Element) => void;
 }
 
 const phoneUtil = PhoneNumberUtil.getInstance();
@@ -38,7 +37,6 @@ const PendingOrganizations = ({
   submitDeletion,
   loading,
   refetch,
-  showNotification,
 }: Props) => {
   const [orgToVerify, setOrgToVerify] = useState<PendingOrganization | null>(
     null
@@ -98,7 +96,7 @@ const PendingOrganizations = ({
     setIsUpdating(false);
     setOrgToVerify(null);
     const updateMessage = `${org.name} details updated`;
-    showNotification(<Alert type="success" title={updateMessage} body="" />);
+    showSuccess("", updateMessage);
     return Promise.resolve(updatedOrg);
   };
 

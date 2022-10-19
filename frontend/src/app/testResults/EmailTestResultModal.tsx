@@ -7,7 +7,7 @@ import {
   useGetTestResultForResendingEmailsQuery,
   useResendTestResultsEmailMutation,
 } from "../../generated/graphql";
-import { showAlertNotification } from "../utils";
+import { showAlertNotification } from "../utils/srToast";
 import "./EmailTestResultModal.scss";
 import { formatDateLong } from "../utils/date";
 
