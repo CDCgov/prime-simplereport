@@ -3,6 +3,43 @@ query GetFacilityResultsMultiplex(
   $nameType: String = "long"
 ) {
   testResults(facilityId: $facilityId) {
+    internalId
+    dateTested
+    results {
+      disease {
+        name
+      }
+      testResult
+    }
+    deviceType {
+      internalId
+      name
+    }
+    patient {
+      internalId
+      firstName
+      middleName
+      lastName
+      lookupId
+    }
+    testPerformed {
+      name(nameType: $nameType)
+    }
+    patientLink {
+      internalId
+    }
+    symptoms
+    noSymptoms
+    pregnancy
+    symptomOnset
+  }
+}
+
+query GetFacilityResultsWithCountMultiplex(
+  $facilityId: ID!
+  $nameType: String = "long"
+) {
+  testResultsWithPage(facilityId: $facilityId) {
     content {
       internalId
       dateTested
