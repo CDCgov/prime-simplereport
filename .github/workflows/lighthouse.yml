@@ -52,11 +52,9 @@ jobs:
         username: ${{ github.actor }}
         password: ${{ secrets.GITHUB_TOKEN }}
 
-    - name: setup and run lighthouse
-      # uses: actions/setup-node@v1
-      # with:
-      #   node-version: 14.x
-      env:         # CI settings
+    - name: Setup and Run Lighthouse
+      env:
+        # CI settings
         CI: 1
         # docker settings
         DOCKER_CLIENT_TIMEOUT: 180

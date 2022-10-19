@@ -358,7 +358,17 @@ const AddPatient = () => {
                   </LinkWithQuery>
                 </div>
                 <div className="prime-edit-patient-heading margin-y-0">
-                  <h1 className="font-heading-lg margin-top-1 margin-bottom-0">
+                  <h3 className="font-heading-lg margin-top-1 margin-bottom-0">
+                    Silly heading
+                  </h3>
+                  <h2 className="font-heading-lg margin-top-1 margin-bottom-0">
+                    Add new {PATIENT_TERM}
+                  </h2>
+                  <h1
+                    className="font-heading-lg margin-top-1 margin-bottom-0"
+                    aria-role="blah"
+                    aria-hidden={true}
+                  >
                     Add new {PATIENT_TERM}
                   </h1>
                 </div>
