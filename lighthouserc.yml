@@ -24,5 +24,5 @@ ci:
     githubToken: ${{ secrets.GITHUB_TOKEN }}
   assert:
     assertions:
-      categories:performance: [error, {minScore: 0.3}]
+      categories:performance: [error, {minScore: 0.8}]
       categories:accessibility: [error, {minScore: 1}]
