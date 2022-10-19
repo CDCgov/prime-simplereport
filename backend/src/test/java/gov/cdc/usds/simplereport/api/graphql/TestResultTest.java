@@ -398,6 +398,15 @@ class TestResultTest extends BaseGraphqlTest {
     return (ArrayNode) runQuery("test-results-multiplex-query", variables).get("testResults");
   }
 
+  private ArrayNode fetchTestResultsWithCount(Map<String, Object> variables) {
+    return (ArrayNode) runQuery("test-results-with-count-query", variables).get("testResultsPage");
+  }
+
+  private ArrayNode fetchTestResultsMultiplexWithCount(Map<String, Object> variables) {
+    return (ArrayNode)
+        runQuery("test-results-with-count-multiplex-query", variables).get("testResultsPage");
+  }
+
   private void fetchTestResultsWithError(Map<String, Object> variables, String expectedError) {
     runQuery("test-results-query", variables, expectedError);
   }
