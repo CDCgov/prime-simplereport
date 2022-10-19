@@ -18,11 +18,13 @@ ci:
       chromeFlags:
         - "--ignore-certificate-errors"
       preset: "desktop"
+      onlyCategories: ["performance", "accessibility"]
   upload:
     target: filesystem
     outputDir: ./lighthouse
     githubToken: ${{ secrets.GITHUB_TOKEN }}
   assert:
     assertions:
-      categories:performance: [error, {minScore: 0.8}]
+      categories:performance: [error, {minScore: 0.3}]
       categories:accessibility: [error, {minScore: 1}]
+      includePassedAssertions: true
