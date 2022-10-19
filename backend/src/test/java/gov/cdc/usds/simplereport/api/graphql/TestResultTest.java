@@ -67,7 +67,9 @@ class TestResultTest extends BaseGraphqlTest {
 
     HashMap<String, Object> variables = getFacilityScopedArguments();
     ArrayNode testResults = fetchTestResults(variables);
+
     assertEquals(3, testResults.size());
+
     assertEquals(
         "SARS-CoV+SARS-CoV-2 (COVID-19) Ag [Presence] in Respiratory specimen by Rapid immunoassay",
         testResults.get(0).get("testPerformed").get("name").asText());
@@ -391,20 +393,15 @@ class TestResultTest extends BaseGraphqlTest {
   }
 
   private ArrayNode fetchTestResults(Map<String, Object> variables) {
-    return (ArrayNode) runQuery("test-results-query", variables).get("testResults");
+    return (ArrayNode)
+        runQuery("test-results-with-count-query", variables).get("testResultsPage").get("content");
   }
 
   private ArrayNode fetchTestResultsMultiplex(Map<String, Object> variables) {
-    return (ArrayNode) runQuery("test-results-multiplex-query", variables).get("testResults");
-  }
-
-  private ArrayNode fetchTestResultsWithCount(Map<String, Object> variables) {
-    return (ArrayNode) runQuery("test-results-with-count-query", variables).get("testResultsPage");
-  }
-
-  private ArrayNode fetchTestResultsMultiplexWithCount(Map<String, Object> variables) {
     return (ArrayNode)
-        runQuery("test-results-with-count-multiplex-query", variables).get("testResultsPage");
+        runQuery("test-results-with-count-multiplex-query", variables)
+            .get("testResultsPage")
+            .get("content");
   }
 
   private void fetchTestResultsWithError(Map<String, Object> variables, String expectedError) {
