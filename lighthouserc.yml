@@ -19,6 +19,8 @@ ci:
         - "--ignore-certificate-errors"
       preset: "desktop"
       onlyCategories: ["performance", "accessibility"]
+      output: ["html", "json"]
+      output-path: ["./lighthouse/lighthouse-results", "stdout"]
   upload:
     target: filesystem
     outputDir: ./lighthouse
