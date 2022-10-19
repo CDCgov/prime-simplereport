@@ -235,7 +235,6 @@ public class TestOrderService {
             buildTestEventSearchFilter(null, patientId, result, role, startDate, endDate),
             PageRequest.of(pageOffset, pageSize))
         .toList();
-    ;
   }
 
   @Transactional(readOnly = true)

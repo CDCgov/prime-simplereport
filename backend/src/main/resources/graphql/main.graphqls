@@ -348,7 +348,7 @@ type UploadSubmissionPage {
 
 type TestResultsPage {
   totalElements: Int
-  content: [TestResult!]!
+  content: [TestResult]
 }
 
 # Queries and mutations for everyday use
@@ -412,7 +412,7 @@ type Query {
     pageNumber: Int = 0
     pageSize: Int = 5000
   ): [TestResult] @requiredPermissions(allOf: ["READ_RESULT_LIST"])
-  testResultsWithCount(
+  testResultsPage(
     facilityId: ID
     patientId: ID
     result: String

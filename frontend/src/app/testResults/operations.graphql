@@ -25,7 +25,7 @@ query GetFacilityResultsForCsvWithCount(
   $pageNumber: Int
   $pageSize: Int
 ) {
-  testResultsWithCount(
+  testResultsPage(
     facilityId: $facilityId
     patientId: $patientId
     result: $result
@@ -105,7 +105,7 @@ query GetFacilityResultsMultiplexWithCount(
   $pageNumber: Int
   $pageSize: Int
 ) {
-  testResultsWithCount(
+  testResultsPage(
     facilityId: $facilityId
     patientId: $patientId
     result: $result

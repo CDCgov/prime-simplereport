@@ -71,7 +71,7 @@ public class TestResultResolver {
   // new method with page casting to allow for us to get the count alongside
   // the results list in one query
   @QueryMapping
-  public Page<TestEvent> testResultsWithCount(
+  public Page<TestEvent> testResultsPage(
       @Argument UUID facilityId,
       @Argument UUID patientId,
       @Argument String result,
