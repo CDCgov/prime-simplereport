@@ -1,5 +1,8 @@
 name: "Run Lighthouse audit"
 on:
+  pull_request:
+    branches:
+      - alis/george/4336-enable-lighthouse-on-prs-2
   push:
     branches:
       - alis/george/4336-enable-lighthouse-on-prs-2
