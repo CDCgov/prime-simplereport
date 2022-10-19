@@ -72,17 +72,12 @@ const ManageDevices: React.FC<Props> = ({
           required
           placeholder="Add device"
         />
-        {!selectedDevices.length ? (
-          <p> There are currently no devices </p>
-        ) : (
-          <p className="usa-hint padding-top-3">
-            If you don&rsquo;t see a device you&rsquo;re using, please contact{" "}
-            <a href="mailto:support@simplereport.gov">
-              support@simplereport.gov
-            </a>{" "}
-            and request to add a new one.
-          </p>
-        )}
+        {!selectedDevices.length && <p> There are currently no devices </p>}
+        <p className="usa-hint padding-top-1">
+          If you don&rsquo;t see a device you&rsquo;re using, please contact{" "}
+          <a href="mailto:support@simplereport.gov">support@simplereport.gov</a>{" "}
+          and request to add a new one.
+        </p>
       </div>
     </div>
   );
