@@ -1,12 +1,9 @@
-name: "Run Lighthouse audit"
+name: "Run Lighthouse Audit"
 on:
   workflow_dispatch:
   pull_request:
     branches:
-      - alis/george/4336-enable-lighthouse-on-prs-2
-  push:
-    branches:
-      - alis/george/4336-enable-lighthouse-on-prs-2
+      - "**"
 jobs:
   lhci:
     name: Lighthouse
