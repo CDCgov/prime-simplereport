@@ -65,6 +65,8 @@ resource "azurerm_function_app" "functions" {
     linux_fx_version          = "node|14"
     use_32_bit_worker_process = false
 
+    elastic_instance_minimum = 1
+
     // NOTE: If this code is removed, TF will not automatically delete it with the current provider version! It must be removed manually from the App Service -> Networking blade!
     ip_restriction {
       virtual_network_subnet_id = var.lb_subnet_id
