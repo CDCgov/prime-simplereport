@@ -51,10 +51,13 @@ public class AddressValidationService {
   public StreetAddress getValidatedAddress(Lookup lookup, String fieldName) {
     try {
       _client.send(lookup);
-    } catch (SmartyException | IOException | InterruptedException ex) {
+    } catch (SmartyException | IOException ex) {
       log.error("SmartyStreets address lookup failed", ex);
       throw new IllegalGraphqlArgumentException(
           "The server is unable to verify the address you entered. Please try again later");
+    } catch (InterruptedException ex) {
+      log.error("SmartyStreets address lookup interrupted", ex);
+      Thread.currentThread().interrupt();
     }
 
     var results = lookup.getResult();
