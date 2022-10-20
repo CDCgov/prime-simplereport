@@ -247,6 +247,7 @@ export const en = {
       },
     },
     testResult: {
+      resultLiteral: "result",
       result: "SARS-CoV-2 result",
       covidResultHeader: "Test result: COVID-19",
       multiplexResultHeader: "Test results: COVID-19 and flu",
@@ -453,7 +454,7 @@ export const en = {
               "Where Individual Users may be accessing the information on behalf of a minor or otherwise as a guardian, Entity Users and " +
               "Administrator Users agree to assume full responsibility for designating the correct Individual User contact information " +
               "within the Application, in accordance with applicable law. If you would like more information about the application of " +
-              "the Privacy Act at CDC, <0>click here</0>.",
+              "the Privacy Act at CDC, visit the <0>Health and Human Services website</0>.",
             p1:
               "For purposes of use of this Application, if you are a HIPAA-covered entity or acting on behalf of one as a business " +
               "associate or if the data is maintained by you in a HIPAA-covered designated record set, you further acknowledge that you " +

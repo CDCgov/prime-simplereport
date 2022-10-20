@@ -4,8 +4,7 @@ import iconSprite from "../../../../node_modules/uswds/dist/img/sprite.svg";
 import Button from "../../commonComponents/Button/Button";
 import RequiredMessage from "../../commonComponents/RequiredMessage";
 import { LinkWithQuery } from "../../commonComponents/LinkWithQuery";
-import Alert from "../../commonComponents/Alert";
-import { showNotification } from "../../utils";
+import { showError } from "../../utils/srToast";
 import { stateCodes, urls } from "../../../config/constants";
 import { getStateNameFromCode, requiresOrderProvider } from "../../utils/state";
 import {
@@ -84,14 +83,10 @@ export const useFacilityValidation = (facility: Facility) => {
         {} as FacilityErrors
       );
       setErrors(errors);
-      const alert = (
-        <Alert
-          type="error"
-          title="Form Errors"
-          body="Please check the form to make sure you complete all of the required fields."
-        />
+      showError(
+        "Please check the form to make sure you complete all of the required fields.",
+        "Form Errors"
       );
-      showNotification(alert);
       let firstError = document.querySelector("[aria-invalid=true]");
       (firstError as HTMLElement)?.focus();
       return "error";
@@ -220,16 +215,7 @@ const FacilityForm: React.FC<Props> = (props) => {
     );
 
     if (!isValidZipForState) {
-      const alert = (
-        <Alert
-          type="error"
-          title="Form Errors"
-          body="Invalid ZIP code for this state"
-        />
-      );
-
-      showNotification(alert);
-
+      showError("Invalid ZIP code for this state", "Form Errors");
       return;
     }
 

@@ -1,7 +1,7 @@
 import React, { useState } from "react";
 import { Button, FormGroup, FileInput } from "@trussworks/react-uswds";
 
-import { showError } from "../../utils";
+import { showError } from "../../utils/srToast";
 import { FeedbackMessage } from "../../../generated/graphql";
 import { useDocumentTitle } from "../../utils/hooks";
 import { LinkWithQuery } from "../../commonComponents/LinkWithQuery";
@@ -106,6 +106,11 @@ const Uploads = () => {
     }
 
     FileUploadService.uploadResults(file).then(async (res) => {
+      setIsSubmitting(false);
+      setFileInputResetValue(fileInputResetValue + 1);
+      setFile(undefined);
+      setButtonIsDisabled(true);
+
       if (res.status !== 200) {
         setErrorMessageText(
           "There was a server error. Your file has not been accepted."
@@ -128,11 +133,6 @@ const Uploads = () => {
         }
       }
     });
-
-    setFileInputResetValue(fileInputResetValue + 1);
-    setFile(undefined);
-    setButtonIsDisabled(true);
-    setIsSubmitting(false);
   };
 
   return (

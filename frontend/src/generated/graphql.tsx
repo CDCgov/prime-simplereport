@@ -2825,6 +2825,28 @@ export type GetUploadSubmissionsQuery = {
   };
 };
 
+export type GetDeviceTypesForLookupQueryVariables = Exact<{
+  [key: string]: never;
+}>;
+
+export type GetDeviceTypesForLookupQuery = {
+  __typename?: "Query";
+  deviceTypes: Array<{
+    __typename?: "DeviceType";
+    internalId: string;
+    name: string;
+    loincCode: string;
+    manufacturer: string;
+    model: string;
+    swabTypes: Array<{
+      __typename?: "SpecimenType";
+      internalId: string;
+      name: string;
+      typeCode: string;
+    }>;
+  }>;
+};
+
 export const WhoAmIDocument = gql`
   query WhoAmI {
     whoami {
@@ -7277,4 +7299,70 @@ export type GetUploadSubmissionsLazyQueryHookResult = ReturnType<
 export type GetUploadSubmissionsQueryResult = Apollo.QueryResult<
   GetUploadSubmissionsQuery,
   GetUploadSubmissionsQueryVariables
+>;
+export const GetDeviceTypesForLookupDocument = gql`
+  query getDeviceTypesForLookup {
+    deviceTypes {
+      internalId
+      name
+      loincCode
+      manufacturer
+      model
+      swabTypes {
+        internalId
+        name
+        typeCode
+      }
+    }
+  }
+`;
+
+/**
+ * __useGetDeviceTypesForLookupQuery__
+ *
+ * To run a query within a React component, call `useGetDeviceTypesForLookupQuery` and pass it any options that fit your needs.
+ * When your component renders, `useGetDeviceTypesForLookupQuery` returns an object from Apollo Client that contains loading, error, and data properties
+ * you can use to render your UI.
+ *
+ * @param baseOptions options that will be passed into the query, supported options are listed on: https://www.apollographql.com/docs/react/api/react-hooks/#options;
+ *
+ * @example
+ * const { data, loading, error } = useGetDeviceTypesForLookupQuery({
+ *   variables: {
+ *   },
+ * });
+ */
+export function useGetDeviceTypesForLookupQuery(
+  baseOptions?: Apollo.QueryHookOptions<
+    GetDeviceTypesForLookupQuery,
+    GetDeviceTypesForLookupQueryVariables
+  >
+) {
+  const options = { ...defaultOptions, ...baseOptions };
+  return Apollo.useQuery<
+    GetDeviceTypesForLookupQuery,
+    GetDeviceTypesForLookupQueryVariables
+  >(GetDeviceTypesForLookupDocument, options);
+}
+export function useGetDeviceTypesForLookupLazyQuery(
+  baseOptions?: Apollo.LazyQueryHookOptions<
+    GetDeviceTypesForLookupQuery,
+    GetDeviceTypesForLookupQueryVariables
+  >
+) {
+  const options = { ...defaultOptions, ...baseOptions };
+  return Apollo.useLazyQuery<
+    GetDeviceTypesForLookupQuery,
+    GetDeviceTypesForLookupQueryVariables
+  >(GetDeviceTypesForLookupDocument, options);
+}
+export type GetDeviceTypesForLookupQueryHookResult = ReturnType<
+  typeof useGetDeviceTypesForLookupQuery
+>;
+export type GetDeviceTypesForLookupLazyQueryHookResult = ReturnType<
+  typeof useGetDeviceTypesForLookupLazyQuery
+>;
+export type GetDeviceTypesForLookupQueryResult = Apollo.QueryResult<
+  GetDeviceTypesForLookupQuery,
+  GetDeviceTypesForLookupQueryVariables
 >;

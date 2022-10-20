@@ -7,7 +7,6 @@ import static gov.cdc.usds.simplereport.api.Translators.parsePersonRole;
 import static gov.cdc.usds.simplereport.api.Translators.parsePhoneNumbers;
 import static gov.cdc.usds.simplereport.api.Translators.parseRaceDisplayValue;
 import static gov.cdc.usds.simplereport.api.Translators.parseString;
-import static gov.cdc.usds.simplereport.api.Translators.parseUUID;
 import static gov.cdc.usds.simplereport.api.Translators.parseUserShortDate;
 import static gov.cdc.usds.simplereport.api.Translators.parseYesNo;
 
@@ -30,6 +29,7 @@ import java.time.Instant;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
+import java.util.UUID;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
@@ -41,7 +41,6 @@ import org.springframework.transaction.annotation.Transactional;
 @RequiredArgsConstructor
 @Slf4j
 public class UploadService {
-  private static final String FACILITY_ID = "facilityId";
   private static final int MAX_LINE_LENGTH = 1024 * 6;
   public static final String ZIP_CODE_REGEX = "^[0-9]{5}(?:-[0-9]{4})?$";
 
@@ -89,7 +88,8 @@ public class UploadService {
   }
 
   @AuthorizationConfiguration.RequireGlobalAdminUser
-  public String processPersonCSV(InputStream csvStream) throws IllegalArgumentException {
+  public String processPersonCSV(InputStream csvStream, UUID facilityId)
+      throws IllegalArgumentException {
     final MappingIterator<Map<String, String>> valueIterator = getIteratorForCsv(csvStream);
     final var org = organizationService.getCurrentOrganization();
 
@@ -108,7 +108,6 @@ public class UploadService {
       final Map<String, String> row = getNextRow(valueIterator);
       rowNumber++;
       try {
-        var facilityId = parseUUID(getRow(row, FACILITY_ID, false));
         Optional<Facility> facility =
             Optional.ofNullable(facilityId).map(organizationService::getFacilityInCurrentOrg);
 
@@ -214,7 +213,6 @@ public class UploadService {
           .addColumn("residentCongregateSetting", CsvSchema.ColumnType.STRING)
           .addColumn("Role", CsvSchema.ColumnType.STRING)
           .addColumn("Email", CsvSchema.ColumnType.STRING)
-          .addColumn(FACILITY_ID, CsvSchema.ColumnType.STRING)
           .setUseHeader(false) // no valid header row detected
           .build();
     }

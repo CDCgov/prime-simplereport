@@ -21,11 +21,11 @@ import {
   useEditQueueItemMultiplexResultMutation,
   useAddMultiplexResultMutation,
 } from "../../generated/graphql";
-import Alert from "../commonComponents/Alert";
 import Button from "../commonComponents/Button/Button";
 import Dropdown from "../commonComponents/Dropdown";
 import CovidResultInputForm from "../testResults/CovidResultInputForm";
-import { displayFullName, showNotification } from "../utils";
+import { displayFullName } from "../utils";
+import { showError, showSuccess } from "../utils/srToast";
 import { RootState } from "../store";
 import { getAppInsights } from "../TelemetryService";
 import { formatDate } from "../utils/date";
@@ -354,18 +354,12 @@ const QueueItem = ({
     };
 
     if (response?.data?.addMultiplexResult.deliverySuccess === false) {
-      let deliveryFailureAlert = (
-        <Alert
-          type="error"
-          title={`Unable to text result to ${patientFullName}`}
-          body="The phone number provided may not be valid or may not be able to accept text messages"
-        />
-      );
-      showNotification(deliveryFailureAlert);
+      let deliveryFailureTitle = `Unable to text result to ${patientFullName}`;
+      let deliveryFailureMsg =
+        "The phone number provided may not be valid or may not be able to accept text messages";
+      showError(deliveryFailureMsg, deliveryFailureTitle);
     }
-
-    let alert = <Alert type="success" title={title} body={body} />;
-    showNotification(alert);
+    showSuccess(body, title);
   };
 
   const onTestResultSubmit = async (forceSubmit: boolean = false) => {
@@ -381,9 +375,7 @@ const QueueItem = ({
             )}`
           : "Test date can't be in the future";
 
-      showNotification(
-        <Alert type="error" title="Invalid test date" body={message} />
-      );
+      showError(message, "Invalid test date");
 
       setSaveState("error");
       return;
@@ -786,18 +778,20 @@ const QueueItem = ({
                 id="patient-name-header"
               >
                 <div className="card-header">
-                  <Button
-                    variant="unstyled"
-                    className="card-name"
-                    onClick={() => {
-                      navigate({
-                        pathname: `/patient/${patient.internalId}`,
-                        search: `?facility=${facilityId}&fromQueue=true`,
-                      });
-                    }}
-                  >
-                    {patientFullName}
-                  </Button>
+                  <h2>
+                    <Button
+                      variant="unstyled"
+                      className="card-name"
+                      onClick={() => {
+                        navigate({
+                          pathname: `/patient/${patient.internalId}`,
+                          search: `?facility=${facilityId}&fromQueue=true`,
+                        });
+                      }}
+                    >
+                      {patientFullName}
+                    </Button>
+                  </h2>
                   <div className="card-dob">
                     Date of birth:
                     <span className="card-date">

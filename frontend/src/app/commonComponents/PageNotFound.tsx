@@ -4,13 +4,11 @@ const PageNotFound = () => {
   const { t } = useTranslation();
 
   return (
-    <main>
-      <div className="grid-container usa-section maxw-tablet usa-prose">
-        <h1>{t("common.pageNotFound.heading")}</h1>
-        <p>{t("common.pageNotFound.text")}</p>
-        <p>{t("common.pageNotFound.errorCode")}</p>
-      </div>
-    </main>
+    <div className="grid-container usa-section maxw-tablet usa-prose">
+      <h1>{t("common.pageNotFound.heading")}</h1>
+      <p>{t("common.pageNotFound.text")}</p>
+      <p>{t("common.pageNotFound.errorCode")}</p>
+    </div>
   );
 };
 

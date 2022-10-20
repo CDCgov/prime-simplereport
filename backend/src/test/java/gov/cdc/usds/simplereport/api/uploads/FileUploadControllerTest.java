@@ -14,6 +14,7 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
 import gov.cdc.usds.simplereport.api.BaseFullStackTest;
+import gov.cdc.usds.simplereport.api.model.errors.BadRequestException;
 import gov.cdc.usds.simplereport.api.model.errors.CsvProcessingException;
 import gov.cdc.usds.simplereport.db.model.Organization;
 import gov.cdc.usds.simplereport.db.model.TestResultUpload;
@@ -39,7 +40,7 @@ class FileUploadControllerTest extends BaseFullStackTest {
 
   @Test
   void patientsUploadTest_happy() throws Exception {
-    when(patientUploadService.processPersonCSV(any(InputStream.class)))
+    when(patientUploadService.processPersonCSV(any(InputStream.class), any()))
         .thenReturn("Successfully uploaded 1 record(s)");
 
     MockMultipartFile file =
@@ -47,14 +48,14 @@ class FileUploadControllerTest extends BaseFullStackTest {
             "file", "patients.csv", TEXT_CSV_CONTENT_TYPE, "csvContent".getBytes());
 
     mockMvc
-        .perform(multipart(PATIENT_UPLOAD).file(file))
+        .perform(multipart(PATIENT_UPLOAD).file(file).param("rawFacilityId", ""))
         .andExpect(status().isOk())
         .andExpect(content().string("Successfully uploaded 1 record(s)"));
   }
 
   @Test
   void patientsUploadTest_IllegalArgumentException() throws Exception {
-    when(patientUploadService.processPersonCSV(any(InputStream.class)))
+    when(patientUploadService.processPersonCSV(any(InputStream.class), any()))
         .thenThrow(new IllegalArgumentException("Invalid csv"));
 
     MockMultipartFile file =
@@ -62,7 +63,7 @@ class FileUploadControllerTest extends BaseFullStackTest {
             "file", "patients.csv", TEXT_CSV_CONTENT_TYPE, "csvContent".getBytes());
 
     mockMvc
-        .perform(multipart(PATIENT_UPLOAD).file(file))
+        .perform(multipart(PATIENT_UPLOAD).file(file).param("rawFacilityId", ""))
         .andExpect(status().isBadRequest())
         .andExpect(
             result -> assertTrue(result.getResolvedException() instanceof CsvProcessingException))
@@ -72,7 +73,7 @@ class FileUploadControllerTest extends BaseFullStackTest {
 
   @Test
   void patientsUploadTest_NonCsvFileException() throws Exception {
-    when(patientUploadService.processPersonCSV(any(InputStream.class)))
+    when(patientUploadService.processPersonCSV(any(InputStream.class), any()))
         .thenThrow(new IllegalArgumentException("Invalid csv"));
 
     MockMultipartFile file =
@@ -80,7 +81,7 @@ class FileUploadControllerTest extends BaseFullStackTest {
             "file", "patients.csv", MediaType.TEXT_PLAIN_VALUE, "csvContent".getBytes());
 
     mockMvc
-        .perform(multipart(PATIENT_UPLOAD).file(file))
+        .perform(multipart(PATIENT_UPLOAD).file(file).param("rawFacilityId", ""))
         .andExpect(status().isBadRequest())
         .andExpect(
             result -> assertTrue(result.getResolvedException() instanceof CsvProcessingException))
@@ -102,7 +103,7 @@ class FileUploadControllerTest extends BaseFullStackTest {
     when(mock.getInputStream()).thenThrow(new IOException());
 
     mockMvc
-        .perform(multipart(PATIENT_UPLOAD).file(mock))
+        .perform(multipart(PATIENT_UPLOAD).file(mock).param("rawFacilityId", ""))
         .andExpect(status().isBadRequest())
         .andExpect(
             result -> assertTrue(result.getResolvedException() instanceof CsvProcessingException))
@@ -111,6 +112,38 @@ class FileUploadControllerTest extends BaseFullStackTest {
                 assertEquals(
                     "Unable to complete patient CSV upload",
                     result.getResolvedException().getMessage()));
+  }
+
+  @Test
+  void patientsUploadTest_acceptsUUIDForFacilityId() throws Exception {
+    when(patientUploadService.processPersonCSV(any(InputStream.class), any(UUID.class)))
+        .thenReturn("Successfully uploaded 1 record(s)");
+
+    MockMultipartFile file =
+        new MockMultipartFile(
+            "file", "patients.csv", TEXT_CSV_CONTENT_TYPE, "csvContent".getBytes());
+
+    UUID testUUID = UUID.randomUUID();
+    mockMvc
+        .perform(multipart(PATIENT_UPLOAD).file(file).param("rawFacilityId", testUUID.toString()))
+        .andExpect(status().isOk())
+        .andExpect(content().string("Successfully uploaded 1 record(s)"));
+  }
+
+  @Test
+  void patientsUploadTest_rejectsInvalidUUIDForFacilityId() throws Exception {
+    MockMultipartFile file =
+        new MockMultipartFile(
+            "file", "patients.csv", TEXT_CSV_CONTENT_TYPE, "csvContent".getBytes());
+
+    mockMvc
+        .perform(multipart(PATIENT_UPLOAD).file(file).param("rawFacilityId", "12"))
+        .andExpect(status().isBadRequest())
+        .andExpect(
+            result -> assertTrue(result.getResolvedException() instanceof BadRequestException))
+        .andExpect(
+            result ->
+                assertEquals("Invalid facility id", result.getResolvedException().getMessage()));
   }
 
   @Test

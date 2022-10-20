@@ -1,2 +1,2 @@
-LastName,FirstName,MiddleName,Suffix,Race,DOB,biologicalSex,Ethnicity,Street,Street2,City,County,State,ZipCode,PhoneNumber,PhoneNumberType,employedInHealthcare,residentCongregateSetting,Role,Email,facilityId
-Best,Tim,,,White,5/11/1933,Male,Not_Hispanic,123 Main Street,,Washington,,DC,20008,not a phone number,MOBILE,Yes,No,Staff,foo@example.com,
+LastName,FirstName,MiddleName,Suffix,Race,DOB,biologicalSex,Ethnicity,Street,Street2,City,County,State,ZipCode,PhoneNumber,PhoneNumberType,employedInHealthcare,residentCongregateSetting,Role,Email
+Best,Tim,,,White,5/11/1933,Male,Not_Hispanic,123 Main Street,,Washington,,DC,20008,not a phone number,MOBILE,Yes,No,Staff,foo@example.com

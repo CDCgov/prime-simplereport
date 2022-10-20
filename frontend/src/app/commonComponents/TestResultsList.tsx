@@ -78,7 +78,9 @@ const pxpAppResultList = (
 ) => {
   return (
     <>
-      <h2 className="font-heading-sm">{setDiseaseName(diseaseName, t)}</h2>
+      <h2 className="font-heading-sm">
+        {setDiseaseName(diseaseName, t) + " " + t("testResult.resultLiteral")}
+      </h2>
       <p className="margin-top-05 text-uppercase">
         {setResult(result, t)}
         <span>

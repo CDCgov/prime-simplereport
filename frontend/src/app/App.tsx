@@ -29,6 +29,7 @@ import Schema from "./testResults/uploads/CsvSchemaDocumentation";
 import Submission from "./testResults/submissions/Submission";
 import Submissions from "./testResults/submissions/Submissions";
 import ResultsNavWrapper from "./testResults/ResultsNavWrapper";
+import DeviceLookupContainer from "./uploads/DeviceLookup/DeviceLookupContainer";
 
 export const WHOAMI_QUERY = gql`
   query WhoAmI {
@@ -205,6 +206,16 @@ const App = () => {
                         <CleanTestResultsList />
                       </ResultsNavWrapper>
                     }
+                  />
+                }
+              />
+              <Route
+                path="csv/codelookup"
+                element={
+                  <ProtectedRoute
+                    requiredPermissions={canViewResults}
+                    userPermissions={data.whoami.permissions}
+                    element={<DeviceLookupContainer />}
                   />
                 }
               />

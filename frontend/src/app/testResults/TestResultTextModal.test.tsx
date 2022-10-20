@@ -7,7 +7,7 @@ import {
 import userEvent from "@testing-library/user-event";
 import { MockedProvider } from "@apollo/client/testing";
 
-import * as utils from "../utils";
+import * as srToast from "../utils/srToast";
 
 import TestResultTextModal, {
   DetachedTestResultTextModal,
@@ -27,7 +27,7 @@ describe("TestResultTextModal", () => {
   let alertSpy: jest.SpyInstance;
 
   beforeEach(() => {
-    alertSpy = jest.spyOn(utils, "showAlertNotification");
+    alertSpy = jest.spyOn(srToast, "showAlertNotification");
   });
 
   afterEach(() => {

@@ -1,8 +1,8 @@
 import { render, screen } from "@testing-library/react";
 import userEvent from "@testing-library/user-event";
-import { ToastContainer } from "react-toastify";
 
 import { SpecimenType } from "../../../generated/graphql";
+import SRToastContainer from "../../commonComponents/SRToastContainer";
 
 import DeviceTypeFormContainer from "./DeviceTypeFormContainer";
 
@@ -76,13 +76,7 @@ describe("DeviceTypeFormContainer", () => {
     container = render(
       <>
         <DeviceTypeFormContainer />
-        <ToastContainer
-          autoClose={5000}
-          closeButton={false}
-          limit={2}
-          position="bottom-center"
-          hideProgressBar={true}
-        />
+        <SRToastContainer />
       </>
     );
   });

@@ -1,8 +1,7 @@
 import { useState } from "react";
 import { Navigate } from "react-router-dom";
 
-import Alert from "../../commonComponents/Alert";
-import { showNotification } from "../../utils";
+import { showSuccess } from "../../utils/srToast";
 import { LoadingCard } from "../../commonComponents/LoadingCard/LoadingCard";
 import {
   useAddUserMutation,
@@ -46,14 +45,10 @@ const AddOrganizationAdminFormContainer = () => {
         email: admin.email,
       },
     }).then(() => {
-      const alert = (
-        <Alert
-          type="success"
-          title="Added Organization Admin"
-          body="The organization admin has been added"
-        />
+      showSuccess(
+        "The organization admin has been added",
+        "Added Organization Admin"
       );
-      showNotification(alert);
       setSubmitted(true);
     });
   };

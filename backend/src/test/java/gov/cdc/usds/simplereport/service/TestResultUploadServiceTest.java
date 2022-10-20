@@ -85,7 +85,7 @@ class TestResultUploadServiceTest extends BaseServiceTest<TestResultUploadServic
     assert responseFile != null;
     var mockResponse = IOUtils.toString(responseFile, StandardCharsets.UTF_8);
     stubFor(
-        WireMock.post(WireMock.urlEqualTo("/api/reports"))
+        WireMock.post(WireMock.urlEqualTo("/api/reports?processing=async"))
             .willReturn(
                 WireMock.aResponse()
                     .withStatus(HttpStatus.OK)
@@ -128,7 +128,7 @@ class TestResultUploadServiceTest extends BaseServiceTest<TestResultUploadServic
   void feignBadRequest_returnsErrorMessage() throws IOException {
     try (var x = loadCsv("responses/datahub-error-response.json")) {
       stubFor(
-          WireMock.post(WireMock.urlEqualTo("/api/reports"))
+          WireMock.post(WireMock.urlEqualTo("/api/reports?processing=async"))
               .willReturn(
                   WireMock.aResponse()
                       .withStatus(HttpStatus.BAD_REQUEST)
@@ -149,7 +149,7 @@ class TestResultUploadServiceTest extends BaseServiceTest<TestResultUploadServic
   void feignGeneralError_returnsFailureStatus() throws IOException {
 
     stubFor(
-        WireMock.post(WireMock.urlEqualTo("/api/reports"))
+        WireMock.post(WireMock.urlEqualTo("/api/reports?processing=async"))
             .willReturn(
                 WireMock.aResponse()
                     .withStatus(HttpStatus.INTERNAL_SERVER_ERROR)

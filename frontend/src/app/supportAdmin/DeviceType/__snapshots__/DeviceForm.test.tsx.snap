@@ -5,8 +5,8 @@ Object {
   "asFragment": [Function],
   "baseElement": <body>
     <div>
-      <main
-        class="prime-home"
+      <div
+        class="prime-home flex-1"
       >
         <div
           class="grid-container"
@@ -127,6 +127,7 @@ Object {
                       <input
                         aria-activedescendant=""
                         aria-autocomplete="list"
+                        aria-controls="selectDevice--list"
                         aria-describedby="selectDevice--assistiveHint"
                         aria-expanded="false"
                         aria-owns="selectDevice--list"
@@ -643,12 +644,12 @@ Object {
             </div>
           </div>
         </div>
-      </main>
+      </div>
     </div>
   </body>,
   "container": <div>
-    <main
-      class="prime-home"
+    <div
+      class="prime-home flex-1"
     >
       <div
         class="grid-container"
@@ -769,6 +770,7 @@ Object {
                     <input
                       aria-activedescendant=""
                       aria-autocomplete="list"
+                      aria-controls="selectDevice--list"
                       aria-describedby="selectDevice--assistiveHint"
                       aria-expanded="false"
                       aria-owns="selectDevice--list"
@@ -1285,7 +1287,7 @@ Object {
           </div>
         </div>
       </div>
-    </main>
+    </div>
   </div>,
   "debug": [Function],
   "findAllByAltText": [Function],

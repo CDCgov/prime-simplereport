@@ -5,12 +5,8 @@ import { useTranslation } from "react-i18next";
 
 import iconSprite from "../../../node_modules/uswds/dist/img/sprite.svg";
 import { PATIENT_TERM_CAP } from "../../config/constants";
-import {
-  displayFullName,
-  showNotification,
-  dedupeAndCompactStrings,
-} from "../utils";
-import Alert from "../commonComponents/Alert";
+import { displayFullName, dedupeAndCompactStrings } from "../utils";
+import { showSuccess } from "../utils/srToast";
 import Button from "../commonComponents/Button/Button";
 import { LinkWithQuery } from "../commonComponents/LinkWithQuery";
 import { useDocumentTitle } from "../utils/hooks";
@@ -247,12 +243,9 @@ const EditPatient = (props: Props) => {
         emails: dedupeAndCompactStrings(person.emails || []),
       },
     });
-    showNotification(
-      <Alert
-        type="success"
-        title={`${PATIENT_TERM_CAP} record saved`}
-        body="Information record has been updated."
-      />
+    showSuccess(
+      "Information record has been updated.",
+      `${PATIENT_TERM_CAP} record saved`
     );
 
     if (startTest) {
@@ -275,7 +268,7 @@ const EditPatient = (props: Props) => {
   return (
     <div className="bg-base-lightest">
       <div className="grid-container">
-        <main className={"prime-edit-patient prime-home"}>
+        <div className="prime-edit-patient prime-home">
           <div className={"margin-bottom-4"}>
             <PersonForm
               patient={{
@@ -339,7 +332,7 @@ const EditPatient = (props: Props) => {
                   <div className="display-flex flex-align-center">
                     {!props.fromQueue && (
                       <Button
-                        id="edit-patient-save-lower"
+                        id="edit-patient-save-upper"
                         className="prime-save-patient-changes-start-test"
                         disabled={loading || !formChanged}
                         onClick={() => {
@@ -382,7 +375,7 @@ const EditPatient = (props: Props) => {
               )}
             />
           </div>
-        </main>
+        </div>
       </div>
     </div>
   );
