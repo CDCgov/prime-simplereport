@@ -170,7 +170,6 @@ def dbConnectionString = System.getenv("SPRING_DATASOURCE_URL") ?: "jdbc:postgre
 def isLocalDB = dbConnectionString.contains("postgresql://db") || dbConnectionString.contains("postgresql://127")
 // Use "simple_report" schema for local DBs, and "public" for non-local
 def defaultSchema = isLocalDB ? "simple_report" : "public"
-def noPhiPassword = System.getenv("DB_PASSWORD_NO_PHI") ?: "nophi789"
 
 liquibase {
     activities {
