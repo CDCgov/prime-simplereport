@@ -6,7 +6,7 @@ import { Card } from "../../commonComponents/Card/Card";
 import { CardBackground } from "../../commonComponents/CardBackground/CardBackground";
 import RadioGroup from "../../commonComponents/RadioGroup";
 import Button from "../../commonComponents/Button/Button";
-import { showNotification } from "../../utils";
+import { showError } from "../../utils/srToast";
 import Alert from "../../commonComponents/Alert";
 import { isFormValid, isFieldValid } from "../../utils/yupHelpers";
 import StepIndicator from "../../commonComponents/StepIndicator";
@@ -88,14 +88,10 @@ const QuestionsForm: React.FC<Props> = ({
       return;
     }
     setErrors(validation.errors);
-    const alert = (
-      <Alert
-        type="error"
-        title="Form Errors"
-        body="Please check the form to make sure you complete all of the required fields."
-      />
+    showError(
+      "Please check the form to make sure you complete all of the required fields.",
+      "Form Errors"
     );
-    showNotification(alert);
   };
 
   return (

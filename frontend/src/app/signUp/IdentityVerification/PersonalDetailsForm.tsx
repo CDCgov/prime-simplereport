@@ -3,8 +3,7 @@ import { useState } from "react";
 import { Card } from "../../commonComponents/Card/Card";
 import { CardBackground } from "../../commonComponents/CardBackground/CardBackground";
 import Button from "../../commonComponents/Button/Button";
-import { showNotification } from "../../utils";
-import Alert from "../../commonComponents/Alert";
+import { showError } from "../../utils/srToast";
 import { isFormValid, isFieldValid } from "../../utils/yupHelpers";
 import Input from "../../commonComponents/Input";
 import {
@@ -84,14 +83,10 @@ const PersonalDetailsForm = ({
       return;
     }
     setErrors(validation.errors);
-    const alert = (
-      <Alert
-        type="error"
-        title="Form Errors"
-        body="Please check the form to make sure you complete all of the required fields."
-      />
+    showError(
+      "Please check the form to make sure you complete all of the required fields.",
+      "Form Errors"
     );
-    showNotification(alert);
     setSaving(false);
     let elementsWithErrors = Array.from(
       document.querySelectorAll("[aria-invalid=true]")

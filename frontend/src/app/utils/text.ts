@@ -47,6 +47,10 @@ export function toLowerCaseHyphenate(string: string) {
   return string.toLocaleLowerCase().replace(/\s+/g, "-");
 }
 
+export function get512Characters(s: string) {
+  return s.substring(0, 512);
+}
+
 export function getSubStrAfterChar(
   s: string,
   strToSplitOn: string,
