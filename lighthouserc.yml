@@ -1,7 +1,31 @@
 ci:
   collect:
     numberOfRuns: 1
+    startServerCommand: sh ./lighthouse.sh
+    startServerReadyPattern: 'BUILD SUCCESSFUL'
+    startServerReadyTimeout: 600000
+    url:
+      - https://localhost.simplereport.gov/app
+      - https://localhost.simplereport.gov/app?facility=$FACILITY_ID
+      - https://localhost.simplereport.gov/app/dashboard?facility=$FACILITY_ID
+      - https://localhost.simplereport.gov/app/queue?facility=$FACILITY_ID
+      - https://localhost.simplereport.gov/app/results/1?facility=$FACILITY_ID
+      - https://localhost.simplereport.gov/app/patients?facility=$FACILITY_ID
+      - https://localhost.simplereport.gov/app/add-patient?facility=$FACILITY_ID
+      - https://localhost.simplereport.gov/app/settings?facility=$FACILITY_ID
+      - https://localhost.simplereport.gov/app/settings/facilities?facility=$FACILITY_ID
+      - https://localhost.simplereport.gov/app/settings/add-facility/?facility=$FACILITY_ID
+    settings:
+      chromeFlags:
+        - "--ignore-certificate-errors"
+      preset: "desktop"
+      onlyCategories: ["performance", "accessibility"]
+  upload:
+    target: filesystem
+    outputDir: ./lighthouse
+    githubToken: ${{ secrets.GITHUB_TOKEN }}
   assert:
     assertions:
-      categories:performance: [warn, {minScore: 0.8}]
+      categories:performance: [error, {minScore: 0.3}]
       categories:accessibility: [error, {minScore: 1}]
+      includePassedAssertions: true
