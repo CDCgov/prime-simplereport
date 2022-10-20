@@ -23,7 +23,7 @@ jobs:
     steps:
       - uses: actions/checkout@v3
       - name: Set up Docker Buildx
-        uses: docker/setup-buildx-action@v1
+        uses: docker/setup-buildx-action@v2
       - name: Login to ACR
         run: docker login ${{ secrets.ACR_REPO_URL }} -u ${{ secrets.ACR_ADMIN_USERNAME }} -p ${{ secrets.ACR_ADMIN_PASWORD }}
       - name: Build and push Docker images
@@ -106,7 +106,7 @@ jobs:
         with:
           creds: ${{ secrets.AZURE_CREDENTIALS }}
       - name: Retrieve frontend build
-        uses: actions/download-artifact@v2
+        uses: actions/download-artifact@v3
         with:
           name: frontend-tarball
       - name: Promote and deploy
@@ -114,17 +114,17 @@ jobs:
         with:
           client-tarball: client.tgz
           deploy-env: ${{env.DEPLOY_ENV}}
-  run-cypress:
-    needs: [build-cypress, deploy]
-    uses: ./.github/workflows/e2eRemote.yml
-    with:
-      cypress_okta_redirect_uri: "https%3A%2F%2Ftest.simplereport.gov%2Fapp%2F"
-      cypress_okta_scope: "simple_report_test"
-      cypress_okta_client_id: "0oa1khettjHnj3EPT1d7"
-      spec_path: "cypress/integration/00*,cypress/integration/01*,cypress/integration/02*,cypress/integration/03*,cypress/integration/04*,cypress/integration/05*,cypress/integration/06*"
-      test_env: "https://test.simplereport.gov"
-      deploy_env: test
-    secrets:
-      cypress_okta_username: ${{ secrets.CYPRESS_OKTA_USERNAME }}
-      cypress_okta_password: ${{ secrets.CYPRESS_OKTA_PASSWORD }}
-      cypress_okta_secret: ${{ secrets.CYPRESS_OKTA_SECRET }}
+  # run-cypress:
+  #   needs: [build-cypress, deploy]
+  #   uses: ./.github/workflows/e2eRemote.yml
+  #   with:
+  #     cypress_okta_redirect_uri: "https%3A%2F%2Ftest.simplereport.gov%2Fapp%2F"
+  #     cypress_okta_scope: "simple_report_test"
+  #     cypress_okta_client_id: "0oa1khettjHnj3EPT1d7"
+  #     spec_path: "cypress/integration/00*,cypress/integration/01*,cypress/integration/02*,cypress/integration/03*,cypress/integration/04*,cypress/integration/05*,cypress/integration/06*"
+  #     test_env: "https://test.simplereport.gov"
+  #     deploy_env: test
+  #   secrets:
+  #     cypress_okta_username: ${{ secrets.CYPRESS_OKTA_USERNAME }}
+  #     cypress_okta_password: ${{ secrets.CYPRESS_OKTA_PASSWORD }}
+  #     cypress_okta_secret: ${{ secrets.CYPRESS_OKTA_SECRET }}

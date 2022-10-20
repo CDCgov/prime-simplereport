@@ -4,9 +4,8 @@ import { Navigate } from "react-router-dom";
 import { Card } from "../../commonComponents/Card/Card";
 import { CardBackground } from "../../commonComponents/CardBackground/CardBackground";
 import Button from "../../commonComponents/Button/Button";
-import { showNotification } from "../../utils";
+import { showError } from "../../utils/srToast";
 import { useDocumentTitle } from "../../utils/hooks";
-import Alert from "../../commonComponents/Alert";
 import { isFormValid, isFieldValid } from "../../utils/yupHelpers";
 import Input from "../../commonComponents/Input";
 import {
@@ -97,14 +96,10 @@ const OrganizationForm = () => {
       return;
     }
     setErrors(validation.errors);
-    const alert = (
-      <Alert
-        type="error"
-        title="Form Errors"
-        body="Please check the form to make sure you complete all of the required fields."
-      />
+    showError(
+      "Please check the form to make sure you complete all of the required fields.",
+      "Form Errors"
     );
-    showNotification(alert);
     setLoading(false);
     let firstError = document.querySelector("[aria-invalid=true]");
     (firstError as HTMLElement)?.focus();

@@ -1,4 +1,7 @@
-query GetFacilityResultsMultiplex($facilityId: ID!, $nameType: String = "long") {
+query GetFacilityResultsMultiplex(
+  $facilityId: ID!
+  $nameType: String = "long"
+) {
   testResults(facilityId: $facilityId) {
     internalId
     dateTested

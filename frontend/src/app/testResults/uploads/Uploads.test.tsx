@@ -3,11 +3,11 @@ import userEvent from "@testing-library/user-event";
 import createMockStore from "redux-mock-store";
 import { Provider } from "react-redux";
 import { MemoryRouter } from "react-router-dom";
-import { ToastContainer } from "react-toastify";
 import { ApplicationInsights } from "@microsoft/applicationinsights-web";
 
-import { FileUploadService } from "../../../fileUploadService/FileUploadService";
 import { getAppInsights } from "../../TelemetryService";
+import { FileUploadService } from "../../../fileUploadService/FileUploadService";
+import SRToastContainer from "../../commonComponents/SRToastContainer";
 
 import Uploads from "./Uploads";
 
@@ -42,7 +42,7 @@ const validFile = () => file(validFileContents);
 const TestContainer = () => (
   <Provider store={store}>
     <MemoryRouter>
-      <ToastContainer />
+      <SRToastContainer />
       <Uploads />
     </MemoryRouter>
   </Provider>

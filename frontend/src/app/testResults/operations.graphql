@@ -15,6 +15,151 @@ mutation resendTestResultsEmail($testEventId: ID!) {
   sendPatientLinkEmailByTestEventId(testEventId: $testEventId)
 }
 
+query GetFacilityResultsForCsvWithCount(
+  $facilityId: ID
+  $patientId: ID
+  $result: String
+  $role: String
+  $startDate: DateTime
+  $endDate: DateTime
+  $pageNumber: Int
+  $pageSize: Int
+) {
+  testResultsPage(
+    facilityId: $facilityId
+    patientId: $patientId
+    result: $result
+    role: $role
+    startDate: $startDate
+    endDate: $endDate
+    pageNumber: $pageNumber
+    pageSize: $pageSize
+  ) {
+    content {
+      facility {
+        name
+        isDeleted
+      }
+      dateTested
+      dateUpdated
+      results {
+        disease {
+          name
+        }
+        testResult
+      }
+      correctionStatus
+      reasonForCorrection
+      deviceType {
+        name
+        manufacturer
+        model
+        swabType
+      }
+      patient {
+        firstName
+        middleName
+        lastName
+        birthDate
+        gender
+        race
+        ethnicity
+        tribalAffiliation
+        lookupId
+        telephone
+        email
+        street
+        streetTwo
+        city
+        county
+        state
+        zipCode
+        country
+        role
+        residentCongregateSetting
+        employedInHealthcare
+        preferredLanguage
+      }
+      createdBy {
+        nameInfo {
+          firstName
+          middleName
+          lastName
+        }
+      }
+      symptoms
+      noSymptoms
+      symptomOnset
+    }
+    totalElements
+  }
+}
+
+query GetFacilityResultsMultiplexWithCount(
+  $facilityId: ID
+  $patientId: ID
+  $result: String
+  $role: String
+  $startDate: DateTime
+  $endDate: DateTime
+  $pageNumber: Int
+  $pageSize: Int
+) {
+  testResultsPage(
+    facilityId: $facilityId
+    patientId: $patientId
+    result: $result
+    role: $role
+    startDate: $startDate
+    endDate: $endDate
+    pageNumber: $pageNumber
+    pageSize: $pageSize
+  ) {
+    content {
+      internalId
+      dateTested
+      results {
+        disease {
+          name
+        }
+        testResult
+      }
+      correctionStatus
+      deviceType {
+        internalId
+        name
+      }
+      patient {
+        internalId
+        firstName
+        middleName
+        lastName
+        birthDate
+        gender
+        lookupId
+        email
+        phoneNumbers {
+          type
+          number
+        }
+      }
+      createdBy {
+        nameInfo {
+          firstName
+          lastName
+        }
+      }
+      patientLink {
+        internalId
+      }
+      facility {
+        name
+      }
+    }
+    totalElements
+  }
+}
+
 query GetFacilityResultsForCsv(
   $facilityId: ID
   $patientId: ID

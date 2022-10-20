@@ -5,7 +5,7 @@ import Button from "../commonComponents/Button/Button";
 import RequiredMessage from "../commonComponents/RequiredMessage";
 import Alert from "../commonComponents/Alert";
 import Select from "../commonComponents/Select";
-import { showNotification } from "../utils";
+import { showError } from "../utils/srToast";
 import { OrganizationTypeEnum } from "../signUp/Organization/utils";
 
 import { EditableOrganization } from "./ManageOrganizationContainer";
@@ -58,21 +58,16 @@ const ManageOrganization: React.FC<Props> = (props) => {
     if (validName && validType) {
       props.onSave(organization);
     } else {
-      showNotification(
-        <Alert
-          type="error"
-          title="Information missing"
-          body={
-            <ul>
-              {[errors["name"], errors["type"]]
-                .filter((msg) => !!msg)
-                .map((msg) => (
-                  <li key={msg}>{msg}</li>
-                ))}
-            </ul>
-          }
-        />
+      let ulAlertBody = (
+        <ul>
+          {[errors["name"], errors["type"]]
+            .filter((msg) => !!msg)
+            .map((msg) => (
+              <li key={msg}>{msg}</li>
+            ))}
+        </ul>
       );
+      showError(ulAlertBody, "Information missing");
     }
   };
 

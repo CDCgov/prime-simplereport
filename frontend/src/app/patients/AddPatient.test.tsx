@@ -10,9 +10,9 @@ import { Provider } from "react-redux";
 import configureStore from "redux-mock-store";
 import { MemoryRouter, Route, Routes, useLocation } from "react-router-dom";
 import userEvent from "@testing-library/user-event";
-import { ToastContainer } from "react-toastify";
 
 import * as smartyStreets from "../utils/smartyStreets";
+import SRToastContainer from "../commonComponents/SRToastContainer";
 
 import AddPatient, { ADD_PATIENT, PATIENT_EXISTS } from "./AddPatient";
 
@@ -233,13 +233,7 @@ describe("AddPatient", () => {
               </RouterWithFacility>
             </MockedProvider>
           </Provider>
-          <ToastContainer
-            autoClose={5000}
-            closeButton={false}
-            limit={2}
-            position="bottom-center"
-            hideProgressBar={true}
-          />
+          <SRToastContainer />
         </>
       );
     });

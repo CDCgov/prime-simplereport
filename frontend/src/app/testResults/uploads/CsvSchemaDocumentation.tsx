@@ -212,6 +212,11 @@ const CsvSchemaDocumentation = () => {
               </a>
             </li>
             <li>
+              <LinkWithQuery to={`/csv/codelookup`}>
+                Device code lookup tool
+              </LinkWithQuery>
+            </li>
+            <li>
               <a href="mailto:support@simplereport.gov" className="usa-link">
                 SimpleReport support
               </a>

@@ -26,7 +26,7 @@ import SignUpApp from "./app/signUp/SignUpApp";
 import HealthChecks from "./app/HealthChecks";
 import * as serviceWorker from "./serviceWorker";
 import { store } from "./app/store";
-import { showError } from "./app/utils";
+import { showError } from "./app/utils/srToast";
 import {
   getAppInsights,
   ai,

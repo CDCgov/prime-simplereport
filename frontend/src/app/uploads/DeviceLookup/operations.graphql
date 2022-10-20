@@ -1,0 +1,14 @@
+query getDeviceTypesForLookup {
+    deviceTypes {
+        internalId
+        name
+        loincCode
+        manufacturer
+        model
+        swabTypes {
+            internalId
+            name
+            typeCode
+        }
+    }
+}

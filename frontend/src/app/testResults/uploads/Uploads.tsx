@@ -2,7 +2,7 @@ import React, { useState } from "react";
 import { useSelector } from "react-redux";
 import { Button, FormGroup, FileInput } from "@trussworks/react-uswds";
 
-import { showError } from "../../utils";
+import { showError } from "../../utils/srToast";
 import { FeedbackMessage } from "../../../generated/graphql";
 import { useDocumentTitle } from "../../utils/hooks";
 import { LinkWithQuery } from "../../commonComponents/LinkWithQuery";
