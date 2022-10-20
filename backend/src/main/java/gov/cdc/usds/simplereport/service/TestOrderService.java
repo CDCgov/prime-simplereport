@@ -51,7 +51,9 @@ import javax.persistence.criteria.Predicate;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.hibernate.Hibernate;
+import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Sort;
 import org.springframework.data.jpa.domain.Specification;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -153,7 +155,48 @@ public class TestOrderService {
       return p;
     };
   }
+  // methods to replace the methods that return List<TestEvent> once we get
+  // backwards compability issues resolved
+  @Transactional(readOnly = true)
+  @AuthorizationConfiguration.RequirePermissionReadResultListAtFacility
+  public Page<TestEvent> getTestEventsResultsPage(
+      UUID facilityId,
+      UUID patientId,
+      TestResult result,
+      PersonRole role,
+      Date startDate,
+      Date endDate,
+      int pageOffset,
+      int pageSize) {
 
+    PageRequest pageRequest =
+        PageRequest.of(pageOffset, pageSize, Sort.by("createdAt").descending());
+
+    return _terepo.findAll(
+        buildTestEventSearchFilter(facilityId, patientId, result, role, startDate, endDate),
+        pageRequest);
+  }
+
+  @Transactional(readOnly = true)
+  @AuthorizationConfiguration.RequirePermissionViewAllFacilityResults
+  public Page<TestEvent> getAllFacilityTestEventsResultsPage(
+      UUID patientId,
+      TestResult result,
+      PersonRole role,
+      Date startDate,
+      Date endDate,
+      int pageOffset,
+      int pageSize) {
+
+    PageRequest pageRequest =
+        PageRequest.of(pageOffset, pageSize, Sort.by("createdAt").descending());
+
+    return _terepo.findAll(
+        buildTestEventSearchFilter(null, patientId, result, role, startDate, endDate), pageRequest);
+  }
+
+  // methods to delete once we get
+  // backwards compability issues resolved
   @Transactional(readOnly = true)
   @AuthorizationConfiguration.RequirePermissionReadResultListAtFacility
   public List<TestEvent> getTestEventsResults(
@@ -165,6 +208,10 @@ public class TestOrderService {
       Date endDate,
       int pageOffset,
       int pageSize) {
+
+    PageRequest pageRequest =
+        PageRequest.of(pageOffset, pageSize, Sort.by("createdAt").descending());
+
     return _terepo
         .findAll(
             buildTestEventSearchFilter(facilityId, patientId, result, role, startDate, endDate),
@@ -182,6 +229,7 @@ public class TestOrderService {
       Date endDate,
       int pageOffset,
       int pageSize) {
+
     return _terepo
         .findAll(
             buildTestEventSearchFilter(null, patientId, result, role, startDate, endDate),
