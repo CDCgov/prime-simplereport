@@ -346,6 +346,11 @@ cross-spawn@^7.0.0:
     shebang-command "^2.0.0"
     which "^2.0.1"
 
+cypress-axe@^1.0.0:
+  version "1.0.0"
+  resolved "https://registry.yarnpkg.com/cypress-axe/-/cypress-axe-1.0.0.tgz#ab4e9486eaa3bb956a90a1ae40d52df42827b4f0"
+  integrity sha512-QBlNMAd5eZoyhG8RGGR/pLtpHGkvgWXm2tkP68scJ+AjYiNNOlJihxoEwH93RT+rWOLrefw4iWwEx8kpEcrvJA==
+
 cypress-localstorage-commands@^1.6.1:
   version "1.7.0"
   resolved "https://registry.yarnpkg.com/cypress-localstorage-commands/-/cypress-localstorage-commands-1.7.0.tgz#39840973de0a861d50b82f9fa548331db5973f5f"

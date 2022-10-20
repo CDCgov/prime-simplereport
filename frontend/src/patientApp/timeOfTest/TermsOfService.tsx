@@ -42,34 +42,42 @@ const TermsOfService: React.FunctionComponent<Props> = ({
         className
       )}
     >
-      <form className="grid-container maxw-tablet usa-prose">
-        <h1 className="font-heading-lg margin-top-3">
-          {t("testResult.tos.header")}
-        </h1>
-        <Trans
-          t={t}
-          parent="p"
-          className="margin-top-105"
-          i18nKey="testResult.tos.introText"
-          components={[<a href="https://simplereport.gov/">SimpleReport</a>]}
-        />
-        <div className="tos-content prime-formgroup usa-prose height-card-lg overflow-x-hidden font-body-3xs">
-          <ToS />
-        </div>
-        <p id="tos-consent-message">{t("testResult.tos.consent")}</p>
-        <Button
-          id="tos-consent-button"
-          label={t("testResult.tos.submit")}
-          ariaDescribedBy={"tos-consent-message"}
-          onClick={() => {
-            if (onAgree) {
-              onAgree();
-            } else {
-              setNextPage(true);
-            }
-          }}
-        />
-      </form>
+      <main>
+        <form className="grid-container maxw-tablet usa-prose">
+          <h3 className="font-heading-lg margin-top-3">
+            {t("testResult.tos.header")}
+          </h3>
+          <h2 className="font-heading-lg margin-top-3">
+            {t("testResult.tos.header")}
+          </h2>
+          <h1 className="font-heading-lg margin-top-3">
+            {t("testResult.tos.header")}
+          </h1>
+          <Trans
+            t={t}
+            parent="p"
+            className="margin-top-105"
+            i18nKey="testResult.tos.introText"
+            components={[<a href="https://simplereport.gov/">SimpleReport</a>]}
+          />
+          <div className="tos-content prime-formgroup usa-prose height-card-lg overflow-x-hidden font-body-3xs">
+            <ToS />
+          </div>
+          <p id="tos-consent-message">{t("testResult.tos.consent")}</p>
+          <Button
+            id="tos-consent-button"
+            label={t("testResult.tos.submit")}
+            ariaDescribedBy={"tos-consent-message"}
+            onClick={() => {
+              if (onAgree) {
+                onAgree();
+              } else {
+                setNextPage(true);
+              }
+            }}
+          />
+        </form>
+      </main>
     </div>
   );
 };

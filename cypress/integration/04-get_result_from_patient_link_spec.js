@@ -16,6 +16,8 @@ describe("Getting a test result from a patient link", () => {
   });
   it("successfully navigates to the patient link", () => {
     cy.visit(patientLink);
+    cy.injectAxe();
+    cy.checkA11y();
   });
   it("accepts the terms of service", () => {
     cy.contains("Terms of service");
