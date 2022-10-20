@@ -4,7 +4,7 @@ import {
 } from "../../../generated/graphql";
 import { LoadingCard } from "../../commonComponents/LoadingCard/LoadingCard";
 
-import DeviceLookup from "./DeviceLookup";
+import DeviceLookup from "./DeviceLookup2";
 
 const DeviceLookupContainer = () => {
   const { data: deviceTypeResults } = useGetDeviceTypesForLookupQuery({
