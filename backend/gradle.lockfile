@@ -21,6 +21,7 @@ com.fasterxml.jackson:jackson-bom:2.13.4=compileClasspath,runtimeClasspath
 com.fasterxml.woodstox:woodstox-core:6.3.1=compileClasspath,runtimeClasspath
 com.fasterxml:classmate:1.5.1=compileClasspath,runtimeClasspath
 com.github.stephenc.jcip:jcip-annotations:1.0-1=compileClasspath,runtimeClasspath
+com.google.code.findbugs:jsr305:3.0.2=compileClasspath,runtimeClasspath
 com.googlecode.libphonenumber:libphonenumber:8.12.57=compileClasspath,runtimeClasspath
 com.graphql-java:graphql-java-extended-scalars:18.1=compileClasspath,runtimeClasspath
 com.graphql-java:graphql-java-extended-validation:18.1-hibernate-validator-6.2.0.Final=compileClasspath,runtimeClasspath
