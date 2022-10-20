@@ -13,7 +13,6 @@ import gov.cdc.usds.simplereport.api.model.errors.IllegalGraphqlArgumentExceptio
 import gov.cdc.usds.simplereport.db.model.auxiliary.StreetAddress;
 import gov.cdc.usds.simplereport.properties.SmartyStreetsProperties;
 import java.io.IOException;
-import java.util.ArrayList;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -52,13 +51,13 @@ public class AddressValidationService {
   public StreetAddress getValidatedAddress(Lookup lookup, String fieldName) {
     try {
       _client.send(lookup);
-    } catch (SmartyException | IOException ex) {
+    } catch (SmartyException | IOException | InterruptedException ex) {
       log.error("SmartyStreets address lookup failed", ex);
       throw new IllegalGraphqlArgumentException(
           "The server is unable to verify the address you entered. Please try again later");
     }
 
-    ArrayList<Candidate> results = lookup.getResult();
+    var results = lookup.getResult();
 
     if (results.isEmpty()) {
       return new StreetAddress(
