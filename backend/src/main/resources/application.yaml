@@ -40,9 +40,6 @@ spring:
       change-log: classpath:db/changelog/db.changelog-metabase.yaml
       database-change-log-table: databasechangelog-metabase
       database-change-log-lock-table: databasechangeloglock-metabase
-    parameters:
-      noPhiUsername: simple_report_no_phi
-      noPhiPassword: ${DB_PASSWORD_NO_PHI:nophi789}
   jackson:
     serialization:
       FAIL_ON_EMPTY_BEANS: false

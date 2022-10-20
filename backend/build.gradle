@@ -182,8 +182,6 @@ liquibase {
             password "migrations456"
             defaultSchemaName defaultSchema
             classpath "src/main/resources"
-            // this shadows application.yaml: should probably be in a shared properties file
-//            changeLogParameters([noPhiUsername: "simple_report_no_phi", noPhiPassword: noPhiPassword])
         }
     }
 }
