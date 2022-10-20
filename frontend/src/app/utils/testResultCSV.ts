@@ -72,7 +72,8 @@ export function parseDataForCSV(data: any, multiplexEnabled: boolean) {
       "Patient gender": r.patient.gender,
       "Patient race": r.patient.race,
       "Patient ethnicity": r.patient.ethnicity,
-      "Patient tribal affiliation": r.patient.tribalAffiliation.join(", "),
+      "Patient tribal affiliation":
+        r.patient.tribalAffiliation?.join(", ") || "",
       "Patient is a resident in a congregate setting":
         r.patient.residentCongregateSetting,
       "Patient is employed in healthcare": r.patient.employedInHealthcare,
