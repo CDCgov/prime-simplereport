@@ -60,7 +60,7 @@ updates:
     schedule:
       interval: "weekly"
     reviewers:
-      - "CDCgov/simplereport-backendreviews"
+      - "simplereport-backendreviews"
       - "alixmx"
       - "rin-skylight"
 
