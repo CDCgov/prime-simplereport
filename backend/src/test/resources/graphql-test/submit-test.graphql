@@ -1,13 +1,13 @@
 mutation SubmitTestResult(
   $patientId: ID!
   $deviceId: String!
-  $result: String!
+  $results: [MultiplexResultInput]!
   $dateTested: DateTime
 ) {
-  addTestResultNew(
+  addMultiplexResult(
     patientId: $patientId
     deviceId: $deviceId
-    result: $result
+    results: $results
     dateTested: $dateTested
   ) {
     testResult {

@@ -650,13 +650,6 @@ type Mutation {
   ): Patient @requiredPermissions(allOf: ["EDIT_PATIENT"])
   setPatientIsDeleted(id: ID!, deleted: Boolean!): Patient
     @requiredPermissions(allOf: ["ARCHIVE_PATIENT"])
-  addTestResultNew(
-    deviceId: String!
-    deviceSpecimenType: ID
-    result: String!
-    patientId: ID!
-    dateTested: DateTime
-  ): AddTestResultResponse @requiredPermissions(allOf: ["SUBMIT_TEST"])
   addMultiplexResult(
     deviceId: String!
     deviceSpecimenType: ID
@@ -664,13 +657,6 @@ type Mutation {
     patientId: ID!
     dateTested: DateTime
   ): AddTestResultResponse @requiredPermissions(allOf: ["SUBMIT_TEST"])
-  editQueueItem(
-    id: ID!
-    deviceId: String
-    deviceSpecimenType: ID
-    result: String
-    dateTested: DateTime
-  ): TestOrder @requiredPermissions(allOf: ["UPDATE_TEST"])
   editQueueItemMultiplexResult(
     id: ID!
     deviceId: String

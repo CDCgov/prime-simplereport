@@ -7,7 +7,6 @@ import gov.cdc.usds.simplereport.api.model.AddTestResultResponse;
 import gov.cdc.usds.simplereport.api.model.ApiTestOrder;
 import gov.cdc.usds.simplereport.db.model.TestOrder;
 import gov.cdc.usds.simplereport.db.model.auxiliary.MultiplexResultInput;
-import gov.cdc.usds.simplereport.db.model.auxiliary.TestResult;
 import gov.cdc.usds.simplereport.db.model.auxiliary.TestResultDeliveryPreference;
 import gov.cdc.usds.simplereport.service.DeviceTypeService;
 import gov.cdc.usds.simplereport.service.PersonService;
@@ -40,20 +39,6 @@ public class QueueMutationResolver {
     return deviceSpecimenType == null
         ? _dts.getFirstDeviceSpecimenTypeForDeviceTypeId(UUID.fromString(deviceID)).getInternalId()
         : deviceSpecimenType;
-  }
-
-  @MutationMapping
-  public AddTestResultResponse addTestResultNew(
-      @Argument String deviceId,
-      @Argument UUID deviceSpecimenType,
-      @Argument String result,
-      @Argument UUID patientId,
-      @Argument Date dateTested)
-      throws NumberParseException {
-    UUID deviceSpecimenTypeId = getDeviceSpecimenTypeId(deviceId, deviceSpecimenType);
-
-    return _tos.addTestResult(
-        deviceSpecimenTypeId, TestResult.valueOf(result), patientId, dateTested);
   }
 
   @MutationMapping

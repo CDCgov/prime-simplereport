@@ -44,7 +44,7 @@ const mocks = {
         req.body?.variables.patientId === "this-should-fail"
           ? {}
           : {
-              addTestResultNew: {
+              addMultiplexResult: {
                 internalId: req.body?.variables.patientId,
               },
             };
