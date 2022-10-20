@@ -393,7 +393,7 @@ export const es: LanguageConfig = {
         },
       },
       tos: {
-        header: "Términos de servicio",
+        header: "Condiciones del servicio",
         title: "Condiciones del servicio",
         introText:
           "Este centro de pruebas utiliza <0>SimpleReport</0> para gestionar las pruebas de COVID-19 y sus correspondientes notificaciones. Los términos a continuación " +
