@@ -13,7 +13,10 @@ import { MemoryRouter } from "react-router-dom";
 import configureStore from "redux-mock-store";
 import userEvent from "@testing-library/user-event";
 
-import { GetAllFacilitiesDocument } from "../../generated/graphql";
+import {
+  GetAllFacilitiesDocument,
+  GetFacilityResultsMultiplexWithCountQuery,
+} from "../../generated/graphql";
 import { appPermissions } from "../permissions";
 import { SEARCH_DEBOUNCE_TIME } from "../testQueue/constants";
 
@@ -61,16 +64,15 @@ describe("TestResultsList", () => {
         <Provider store={store}>
           <MockedProvider mocks={mocks}>
             <DetachedTestResultsList
-              data={{ testResults }}
+              data={testResults as GetFacilityResultsMultiplexWithCountQuery}
               pageNumber={1}
               entriesPerPage={20}
-              totalEntries={testResults.length}
+              totalEntries={testResults.testResultsPage.totalEntries}
               filterParams={{}}
               setFilterParams={() => () => {}}
               clearFilterParams={() => {}}
               activeFacilityId={"1"}
               loading={false}
-              loadingTotalResults={false}
               maxDate="2022-09-26"
             />
           </MockedProvider>
@@ -818,16 +820,15 @@ describe("TestResultsList", () => {
         <Provider store={store}>
           <MockedProvider mocks={mocks}>
             <DetachedTestResultsList
-              data={{ testResults }}
+              data={testResults as GetFacilityResultsMultiplexWithCountQuery}
               pageNumber={1}
               entriesPerPage={20}
-              totalEntries={testResults.length}
+              totalEntries={testResults.testResultsPage.totalEntries}
               filterParams={filterParams}
               setFilterParams={() => () => {}}
               clearFilterParams={() => {}}
               activeFacilityId={"1"}
               loading={false}
-              loadingTotalResults={false}
               maxDate="2022-09-26"
             />
           </MockedProvider>

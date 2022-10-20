@@ -99,7 +99,7 @@ describe("Component ResultsTable", () => {
   it("checks table with covid results", () => {
     render(
       <ResultsTable
-        results={[TEST_RESULT_COVID[0]]}
+        results={[TEST_RESULT_COVID.testResultsPage.content[0]]}
         setPrintModalId={setPrintModalIdFn}
         setMarkCorrectionId={setMarkCorrectionIdFn}
         setDetailsModalId={setDetailsModalIdFn}
