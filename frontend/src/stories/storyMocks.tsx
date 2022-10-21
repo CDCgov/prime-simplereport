@@ -20,21 +20,6 @@ import { UploadResponse, UploadSubmissionPage } from "../generated/graphql";
 const BACKEND_URL = process.env.REACT_APP_BACKEND_URL;
 
 const mocks = {
-  EditQueueItem: graphql.mutation("EditQueueItem", (req, res, ctx) => {
-    return res(
-      ctx.data({
-        editQueueItem: {
-          result: req.body?.variables.result || null,
-          dateTested: req.body?.variables.dateTested || null,
-          deviceType: {
-            internalId: null,
-            testLength: "0.1",
-            ...req.body?.variables.deviceType,
-          },
-        },
-      })
-    );
-  }),
   SubmitTestResult: graphql.mutation(
     "SubmitTestResult",
     async (req, res, ctx) => {
