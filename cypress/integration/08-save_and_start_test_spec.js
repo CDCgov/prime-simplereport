@@ -61,9 +61,9 @@ describe("edit patient and save and start test", () => {
     cy.checkA11y(
         {
           // failing a11y test
-          // this element returns a duplicate-id error, which the SimpleReport team at some point deemed not relevant due to the page structure
+          // this element returns a duplicate-id error, which the SimpleReport team in the past deemed not relevant
           // If this is deemed to not be a false positive in the future, please remove the exclusion and fix the problem
-          // It may also be possible to remove the offending id if it is not used
+          // It may also be possible to remove the offending duplicate id if it is not used
           exclude: ['.prime-test-name.usa-card__header.grid-row'],
         },
     );
