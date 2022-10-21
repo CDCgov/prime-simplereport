@@ -78,6 +78,10 @@ describe("Okta account creation", () => {
       cy.visit("/uac/?activationToken=h971awbXda7y7jGaxN8f");
       cy.contains("Create your password");
     });
+    it("contains no accessibility violations", () => {
+      cy.injectAxe();
+      cy.checkA11y();
+    });
     it("sets a password", () => {
       cy.setPassword();
     });
