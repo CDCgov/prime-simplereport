@@ -56,8 +56,9 @@ describe("Conducting a test", () => {
     cy.get("#desktop-results-nav-link").click();
     cy.get(".usa-table").contains(patientName);
 
+    // failing a11y test
     // if we don't wait 5 seconds for the toasts to disappear, we get a false positive for the page
-    // error applies to the toast
+    // error applies to the toast, take out the wait
     cy.wait(5000);
     cy.checkA11y();
   });

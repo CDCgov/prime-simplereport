@@ -19,6 +19,10 @@ describe("edit patient and save and start test", () => {
     cy.get("#desktop-patient-nav-link").click();
     cy.get("#search-field-small").type(lastName);
     cy.get(".sr-patient-list").contains(lastName).click();
+    cy.contains("General information");
+
+    cy.injectAxe();
+    cy.checkA11y();
   });
   it("edits the patient and clicks save and start test and verifies AoE form is correctly filled in", () => {
     cy.get('input[value="male"]+label').click();
@@ -39,9 +43,30 @@ describe("edit patient and save and start test", () => {
   });
   it("completes AoE form and verifies queue", () => {
     cy.contains("New loss of taste").click();
+
+    // if we don't wait 5 seconds for the toasts to disappear, we get a false positive for the page
+    // error applies to the toast
+    // cy.wait(5000);
+    // failing a11y test - additional failures besides the one we need to wait for
+    // cy.checkA11y();
+
     cy.contains("button", "Continue").click();
     cy.get(".prime-home").contains(patientName);
     cy.url().should("include", "queue");
+
+    // failing a11y test
+    // if we don't wait 5 seconds for the toasts to disappear, we get a false positive for the page
+    // error applies to the toast, take out the wait
+    cy.wait(5000);
+    cy.checkA11y(
+        {
+          // failing a11y test
+          // this element returns a duplicate-id error, which the SimpleReport team at some point deemed not relevant due to the page structure
+          // If this is deemed to not be a false positive in the future, please remove the exclusion and fix the problem
+          // It may also be possible to remove the offending id if it is not used
+          exclude: ['.prime-test-name.usa-card__header.grid-row'],
+        },
+    );
   });
 });
 
@@ -55,6 +80,9 @@ describe("add patient and save and start test", () => {
     cy.get("#desktop-patient-nav-link").click();
     cy.get("#add-patient-button").click();
     cy.get(".prime-edit-patient").contains("Add new person");
+
+    cy.injectAxe();
+    cy.checkA11y();
   });
   it("fills out form fields and clicks save and start test and verifies AoE form is correctly filled in", () => {
     cy.get('input[name="firstName"]').type(patient.firstName);
@@ -74,6 +102,12 @@ describe("add patient and save and start test", () => {
     cy.get(
       '.modal__container input[name="addressSelect-person"][value="userAddress"]+label'
     ).click();
+
+    // failing a11y test
+    // Also found in 01-organization_sign_up_spec.js
+    // Test a11y on the confirm address modal
+    // cy.checkA11y();
+
     cy.get(".modal__container #save-confirmed-address").click();
     cy.url().should("include", "queue");
     cy.get('input[name="testResultDeliverySms"][value="SMS"]').should(
