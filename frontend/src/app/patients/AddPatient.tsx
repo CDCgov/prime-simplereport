@@ -21,6 +21,7 @@ import {
   IdentifyingData,
 } from "./Components/DuplicatePatientModal";
 import PersonForm from "./Components/PersonForm";
+import PatientsNav from "./PatientsNav";
 
 export const EMPTY_PERSON: Nullable<PersonFormData> = {
   facilityId: "",
@@ -338,30 +339,33 @@ const AddPatient = () => {
           savePerson={savePerson}
           onBlur={onBlur}
           getHeader={(_, onSave, formChanged) => (
-            <div className="display-flex flex-justify">
-              <div>
+            <div>
+              <div className="display-flex flex-justify">
+                <div>
+                  <div className="display-flex flex-align-center">
+                    <svg
+                      className="usa-icon text-base margin-left-neg-2px"
+                      aria-hidden="true"
+                      focusable="false"
+                      role="img"
+                    >
+                      <use xlinkHref={iconSprite + "#arrow_back"}></use>
+                    </svg>
+                    <LinkWithQuery to={`/patients`} className="margin-left-05">
+                      People
+                    </LinkWithQuery>
+                  </div>
+                  <div className="prime-edit-patient-heading margin-y-0">
+                    <h1 className="font-heading-lg margin-top-1 margin-bottom-0">
+                      Add new {PATIENT_TERM}
+                    </h1>
+                  </div>
+                </div>
                 <div className="display-flex flex-align-center">
-                  <svg
-                    className="usa-icon text-base margin-left-neg-2px"
-                    aria-hidden="true"
-                    focusable="false"
-                    role="img"
-                  >
-                    <use xlinkHref={iconSprite + "#arrow_back"}></use>
-                  </svg>
-                  <LinkWithQuery to={`/patients`} className="margin-left-05">
-                    People
-                  </LinkWithQuery>
-                </div>
-                <div className="prime-edit-patient-heading margin-y-0">
-                  <h1 className="font-heading-lg margin-top-1 margin-bottom-0">
-                    Add new {PATIENT_TERM}
-                  </h1>
+                  {getSaveButtons(formChanged, onSave, "upper")}
                 </div>
               </div>
-              <div className="display-flex flex-align-center">
-                {getSaveButtons(formChanged, onSave, "upper")}
-              </div>
+              <PatientsNav />
             </div>
           )}
           getFooter={(onSave, formChanged) => (
