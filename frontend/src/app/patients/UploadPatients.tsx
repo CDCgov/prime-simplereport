@@ -2,17 +2,16 @@ import React from "react";
 
 import { useDocumentTitle } from "../utils/hooks";
 
-import PatientsNav from "./PatientsNav";
+import { AddPatientHeader } from "./Components/AddPatientsHeader";
 
 const UploadPatients = () => {
   useDocumentTitle("Add Patient");
 
   return (
-    <div className="grid-row header-size-fix">
-      <div className="prime-container card-container">
-        <PatientsNav />
-        <div className="usa-card__header">
-          <h1>Upload your results</h1>
+    <div className={"prime-edit-patient prime-home"}>
+      <div className={"grid-container margin-bottom-4"}>
+        <div className="patient__header">
+          <AddPatientHeader />
         </div>
       </div>
     </div>
