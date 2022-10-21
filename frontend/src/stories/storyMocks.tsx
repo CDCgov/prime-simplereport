@@ -20,22 +20,6 @@ import { UploadResponse, UploadSubmissionPage } from "../generated/graphql";
 const BACKEND_URL = process.env.REACT_APP_BACKEND_URL;
 
 const mocks = {
-  SubmitTestResult: graphql.mutation(
-    "SubmitTestResult",
-    async (req, res, ctx) => {
-      await new Promise((res) => setTimeout(res, 200));
-
-      const data =
-        req.body?.variables.patientId === "this-should-fail"
-          ? {}
-          : {
-              addMultiplexResult: {
-                internalId: req.body?.variables.patientId,
-              },
-            };
-      return res(ctx.data(data));
-    }
-  ),
   GetPatientsLastResult: graphql.query(
     "GetPatientsLastResult",
     (req, res, ctx) => {

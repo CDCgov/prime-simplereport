@@ -15,7 +15,6 @@ export default {
   parameters: {
     layout: "fullscreen",
     msw: getMocks(
-      "SubmitTestResult",
       "GetPatientsLastResult",
       "SendPatientLinkSms",
       "UpdateAOE",
