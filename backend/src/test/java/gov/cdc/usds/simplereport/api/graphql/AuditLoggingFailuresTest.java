@@ -99,7 +99,7 @@ class AuditLoggingFailuresTest extends BaseGraphqlTest {
     MultiplexResultInput multiplexResultInput =
         new MultiplexResultInput(_diseaseService.covid().getName(), TestResult.POSITIVE);
     args.put("results", List.of(multiplexResultInput));
-    runQuery("submit-test", args, "Something went wrong");
+    runQuery("add-multiplex-result-mutation", args, "Something went wrong");
     verify(auditLoggerServiceSpy).logEvent(_eventCaptor.capture());
     ConsoleApiAuditEvent event = _eventCaptor.getValue();
     assertEquals(List.of("addMultiplexResult"), event.getGraphqlErrorPaths());
