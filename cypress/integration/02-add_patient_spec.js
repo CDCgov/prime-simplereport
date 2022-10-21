@@ -16,6 +16,8 @@ describe("Adding a patient", () => {
     cy.get(".prime-container");
     cy.get("#add-patient-button").click();
     cy.get(".prime-edit-patient").contains("Add new person");
+    cy.injectAxe();
+    cy.checkA11y();
   });
   it("fills out some of the form fields", () => {
     cy.get('input[name="firstName"]').type(patient.firstName);
@@ -47,10 +49,20 @@ describe("Adding a patient", () => {
     cy.get(
       '.modal__container input[name="addressSelect-person"][value="userAddress"]+label'
     ).click();
+
+    // failing a11y test
+    // Also found in 01-organization_sign_up_spec.js
+    // Test a11y on the confirm address modal
+    // cy.checkA11y();
+
     cy.get(".modal__container #save-confirmed-address").click();
     cy.get(".usa-card__header").contains("People");
     cy.get(".usa-card__header").contains("Showing");
     cy.get("#search-field-small").type(patient.lastName);
     cy.get(".prime-container").contains(patient.fullName);
+
+    // if we don't wait 5 seconds for the toasts to disappear, we get a false positive
+    cy.wait(5000);
+    cy.checkA11y();
   });
 });

@@ -22,12 +22,17 @@ describe("Organization sign up", () => {
   });
   it("navigates to the sign up form", () => {
     cy.visit("/sign-up");
+    cy.injectAxe();
+    cy.checkA11y();
+
     cy.contains("Sign up for SimpleReport");
     cy.contains("My organization is new to SimpleReport").click();
     cy.contains("Continue").click();
   });
   it("fills out the org info form", () => {
     cy.contains("Sign up for SimpleReport in three steps");
+    cy.checkA11y();
+
     cy.get('input[name="name"]').type(organization.name);
     cy.get('select[name="state"]').select("CA");
     cy.get('select[name="type"]').select("Camp");
@@ -39,10 +44,12 @@ describe("Organization sign up", () => {
   it("submits successfully", () => {
     cy.get("button.submit-button").click();
     cy.contains("Identity verification consent");
+    cy.checkA11y();
   });
   it("navigates to the support pending org table and verifies the org", () => {
     cy.removeOrganizationAccess();
     cy.visit("/admin");
+
     cy.contains("Organizations pending identify verification").click();
     cy.get("[data-cy=pending-orgs-title]").should("be.visible");
     cy.contains("td", `${organization.name}`)
@@ -57,6 +64,7 @@ describe("Organization sign up", () => {
   });
   it("spoofs into the org", () => {
     cy.visit("/admin");
+
     cy.contains("Organization data").click();
     cy.get("[data-testid='combo-box-input']").clear();
     cy.get("[data-testid='combo-box-input']").type(
@@ -71,8 +79,19 @@ describe("Organization sign up", () => {
     cy.contains("Support admin");
     cy.get("#desktop-settings-button").click();
     cy.contains("Manage facilities").click();
+    cy.contains("CLIA number");
+
+    // failing a11y test
+    // Test a11y on Manage Facilities tab
+    // cy.injectAxe();
+    // cy.checkA11y();
+
     cy.contains("+ New facility").click();
     cy.contains("Testing facility information");
+
+    // failing a11y test
+    // Test a11y on New Facility page
+    // cy.checkA11y();
   });
   it("fills out the form for a new facility", () => {
     cy.get('input[name="name"]').type(facility.name);
@@ -89,6 +108,12 @@ describe("Organization sign up", () => {
     cy.get(
       '.modal__container input[name="addressSelect-facility"][value="userAddress"]+label'
     ).click();
+
+    // failing a11y test
+    // Also found in 02-add_patient_spec.js
+    // Test a11y on the confirm address modal
+    // cy.checkA11y();
+
     cy.get(".modal__container #save-confirmed-address").click();
     cy.contains("+ New facility");
   });
@@ -96,5 +121,9 @@ describe("Organization sign up", () => {
     cy.visit("/");
     cy.get("#desktop-patient-nav-link").click();
     cy.contains("No results");
+
+    // Test a11y on the People page
+    cy.injectAxe();
+    cy.checkA11y();
   });
 });
