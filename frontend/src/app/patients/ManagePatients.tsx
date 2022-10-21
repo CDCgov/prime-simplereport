@@ -22,12 +22,12 @@ import { SEARCH_DEBOUNCE_TIME } from "../testQueue/constants";
 import Button from "../commonComponents/Button/Button";
 import SearchInput from "../testQueue/addToQueue/SearchInput";
 import { StartTestProps } from "../testQueue/addToQueue/AddToQueueSearch";
+import { MenuButton } from "../commonComponents/MenuButton";
 
 import PatientUpload from "./PatientUpload";
 import ArchivePersonModal from "./ArchivePersonModal";
 
 import "./ManagePatients.scss";
-import { MenuButton } from "../commonComponents/MenuButton";
 
 export const patientsCountQuery = gql`
   query GetPatientsCountByFacility(
@@ -269,7 +269,29 @@ export const DetachedManagePatients = ({
                 >
                   Clear filters
                 </Button>
-                <MenuButton items={[{ name: "", action: () => "" }]} id={"1"} />
+                <MenuButton
+                  items={[
+                    {
+                      name: "add individual patient",
+                      action: () => {
+                        setRedirect({
+                          pathname: "/add-patient",
+                          search: `?facility=${activeFacilityId}`,
+                        });
+                      },
+                    },
+                    {
+                      name: "upload patients",
+                      action: () => {
+                        setRedirect({
+                          pathname: "/upload-patients",
+                          search: `?facility=${activeFacilityId}`,
+                        });
+                      },
+                    },
+                  ]}
+                  id={"1"}
+                />
                 {canEditUser ? (
                   <LinkWithQuery
                     className="usa-button usa-button--primary"
