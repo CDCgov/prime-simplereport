@@ -27,6 +27,7 @@ import PatientUpload from "./PatientUpload";
 import ArchivePersonModal from "./ArchivePersonModal";
 
 import "./ManagePatients.scss";
+import { MenuButton } from "../commonComponents/MenuButton";
 
 export const patientsCountQuery = gql`
   query GetPatientsCountByFacility(
@@ -268,6 +269,7 @@ export const DetachedManagePatients = ({
                 >
                   Clear filters
                 </Button>
+                <MenuButton items={[{ name: "", action: () => "" }]} id={"1"} />
                 {canEditUser ? (
                   <LinkWithQuery
                     className="usa-button usa-button--primary"
