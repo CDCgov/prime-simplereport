@@ -55,18 +55,6 @@ public class QueueMutationResolver {
   }
 
   @MutationMapping
-  public ApiTestOrder editQueueItem(
-      @Argument UUID id,
-      @Argument String deviceId,
-      @Argument UUID deviceSpecimenType,
-      @Argument String result,
-      @Argument Date dateTested) {
-    UUID dst = getDeviceSpecimenTypeId(deviceId, deviceSpecimenType);
-
-    return new ApiTestOrder(_tos.editQueueItem(id, dst, result, dateTested));
-  }
-
-  @MutationMapping
   public ApiTestOrder editQueueItemMultiplexResult(
       @Argument UUID id,
       @Argument String deviceId,
