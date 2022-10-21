@@ -407,11 +407,6 @@ class TestResultTest extends BaseGraphqlTest {
     return new HashMap<>(Map.of("facilityId", _site.getInternalId().toString()));
   }
 
-  //  private ObjectNode submitTestResult(
-  //      Map<String, Object> variables, Optional<String> expectedError) {
-  //    return runQuery("add-test-result-mutation", variables, expectedError.orElse(null));
-  //  }
-
   private ObjectNode submitMultiplexResult(
       Map<String, Object> variables, Optional<String> expectedError) {
     return runQuery("add-multiplex-result-mutation", variables, expectedError.orElse(null));
