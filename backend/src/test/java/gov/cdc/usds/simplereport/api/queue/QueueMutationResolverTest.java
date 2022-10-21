@@ -64,8 +64,7 @@ class QueueMutationResolverTest extends BaseServiceTest<TestOrderService> {
     // THEN
     verify(deviceTypeService).getFirstDeviceSpecimenTypeForDeviceTypeId(eq(deviceUUID));
     verify(testOrderService)
-        .addMultiplexResult(
-            eq(_deviceSpecimenType.getInternalId()), eq(results), eq(_patientId), eq(_dateTested));
+        .addMultiplexResult(_deviceSpecimenType.getInternalId(), results, _patientId, _dateTested);
   }
 
   @Test
