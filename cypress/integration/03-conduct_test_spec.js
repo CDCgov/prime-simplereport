@@ -14,7 +14,10 @@ describe("Conducting a test", () => {
     cy.get(".usa-nav-container");
     cy.get("#desktop-conduct-test-nav-link").click();
     cy.get("#search-field-small").type(lastName);
-    cy.get(".results-dropdown").contains(lastName);
+    cy.get(".results-dropdown").contains(lastName)
+
+    cy.injectAxe();
+    cy.checkA11y();
   });
   it("begins a test", () => {
     cy.get(".results-dropdown").within(() => {
@@ -25,6 +28,9 @@ describe("Conducting a test", () => {
     cy.get(".ReactModal__Content").contains(
       "Are you experiencing any of the following symptoms?"
     );
+
+    // failing a11y test
+    // cy.checkA11y();
   });
   it("fills out the pretest questions and submits", () => {
     cy.get(".ReactModal__Content").within(() => {
@@ -35,6 +41,8 @@ describe("Conducting a test", () => {
     cy.get(".prime-home").contains(patientName);
     queueCard = "div.prime-queue-item:last-of-type";
     cy.get(queueCard).contains("COVID-19 results");
+
+    cy.checkA11y();
   });
   it("completes the test", () => {
     cy.get(queueCard).within(() => {
@@ -47,6 +55,11 @@ describe("Conducting a test", () => {
   it("shows the result on the results table", () => {
     cy.get("#desktop-results-nav-link").click();
     cy.get(".usa-table").contains(patientName);
+
+    // if we don't wait 5 seconds for the toasts to disappear, we get a false positive for the page
+    // error applies to the toast
+    cy.wait(5000);
+    cy.checkA11y();
   });
   it("stores the patient link", () => {
     cy.get(".sr-test-result-row").then(($row) => {

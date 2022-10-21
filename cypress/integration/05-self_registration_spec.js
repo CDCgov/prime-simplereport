@@ -8,14 +8,24 @@ describe("Patient self registration", () => {
     cy.visit("/settings");
     cy.contains("Patient self-registration").click();
     cy.contains("Patients can now register themselves online");
+
+    // failing a11y test
+    // cy.injectAxe();
+    // cy.checkA11y();
+
     cy.get("#org-link").then(($link) => cy.visit($link.val()));
   });
   it("loads terms of service", () => {
     cy.contains("Terms of service");
+
+    cy.injectAxe(); // this can be removed when the preceding test is fixed
+    cy.checkA11y();
   });
   it("accepts the terms of service", () => {
     cy.contains("I agree").click();
     cy.get("#registration-container").contains("General information");
+
+    cy.checkA11y();
   });
   it("fills out some of the form fields", () => {
     cy.get('input[name="firstName"]').type(patient.firstName);
@@ -44,9 +54,17 @@ describe("Patient self registration", () => {
     cy.get(
       '.modal__container input[name="addressSelect-person"][value="userAddress"]+label'
     ).click();
+
+    // failing a11y test
+    // Also found in 01-organization_sign_up_spec.js
+    // Test a11y on the confirm address modal
+    // cy.checkA11y();
+
     cy.get(".modal__container #save-confirmed-address").click();
     cy.get("#self-reg-confirmation").contains(
       "thanks for completing your patient profile"
     );
+
+    cy.checkA11y();
   });
 });

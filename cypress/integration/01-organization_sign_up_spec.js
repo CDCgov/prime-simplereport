@@ -110,7 +110,7 @@ describe("Organization sign up", () => {
     ).click();
 
     // failing a11y test
-    // Also found in 02-add_patient_spec.js
+    // Also found in specs 02 and 05
     // Test a11y on the confirm address modal
     // cy.checkA11y();
 

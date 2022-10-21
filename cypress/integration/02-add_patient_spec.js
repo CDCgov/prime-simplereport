@@ -61,7 +61,8 @@ describe("Adding a patient", () => {
     cy.get("#search-field-small").type(patient.lastName);
     cy.get(".prime-container").contains(patient.fullName);
 
-    // if we don't wait 5 seconds for the toasts to disappear, we get a false positive
+    // if we don't wait 5 seconds for the toasts to disappear, we get a false positive for the page
+    // error applies to the toast
     cy.wait(5000);
     cy.checkA11y();
   });
