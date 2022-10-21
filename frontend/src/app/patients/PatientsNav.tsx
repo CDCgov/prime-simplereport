@@ -7,9 +7,12 @@ const PatientsNav = () => {
     isActive ? "active" : "";
 
   return (
-    <nav className="prime-secondary-nav" aria-label="Secondary navigation">
+    <nav
+      className="prime-secondary-nav padding-top-2"
+      aria-label="Secondary navigation"
+    >
       <ul className="usa-nav__secondary-links prime-nav">
-        <li className="usa-nav__secondary-item">
+        <li className="usa-nav__secondary-item padding-left-0">
           <LinkWithQuery to={`/add-patient`} end className={classNameByActive}>
             Add individual patient
           </LinkWithQuery>
