@@ -16,6 +16,8 @@ describe("Getting a test result from a patient link", () => {
   });
   it("successfully navigates to the patient link", () => {
     cy.visit(patientLink);
+  });
+  it("contains no accessibility issues", () => {
     cy.injectAxe();
     cy.checkA11y();
   });

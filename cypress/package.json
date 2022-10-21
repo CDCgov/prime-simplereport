@@ -17,6 +17,7 @@
         "e2e:nginx:okta": "env $(cat ./../.env | grep -v \"#\" | xargs) CYPRESS_CHECK_COMMIT=$(git rev-parse HEAD) CYPRESS_CHECK_URL=/health/commit cypress open --project ./../ --config-file cypress.json --config baseUrl=https://localhost.simplereport.gov/app"
     },
     "dependencies": {
+        "axe-core": "^4.4.3",
         "cypress-axe": "^1.0.0"
     }
 }
