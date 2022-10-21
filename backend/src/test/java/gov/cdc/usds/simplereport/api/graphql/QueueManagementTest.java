@@ -47,11 +47,15 @@ class QueueManagementTest extends BaseGraphqlTest {
   private Organization _org;
   private Facility _site;
 
+  private List<MultiplexResultInput> positiveCovidResult;
+
   @BeforeEach
   public void init() {
     _org = _orgService.getCurrentOrganizationNoCache();
     _site = _orgService.getFacilities(_org).get(0);
     _site.addDefaultDeviceSpecimen(_dataFactory.getGenericDeviceSpecimen());
+    positiveCovidResult =
+        List.of(new MultiplexResultInput(_diseaseService.covid().getName(), TestResult.POSITIVE));
   }
 
   @Test
@@ -82,15 +86,10 @@ class QueueManagementTest extends BaseGraphqlTest {
     String dateTested = "2020-12-31T14:30:30Z";
     Map<String, Object> variables =
         Map.of(
-            "id",
-            orderId.toString(),
-            "deviceId",
-            deviceId,
-            "results",
-            List.of(
-                new MultiplexResultInput(_diseaseService.covid().getName(), TestResult.POSITIVE)),
-            "dateTested",
-            dateTested);
+            "id", orderId.toString(),
+            "deviceId", deviceId,
+            "results", positiveCovidResult,
+            "dateTested", dateTested);
 
     performQueueUpdateMultiplexMutation(variables, Optional.empty());
 
@@ -188,13 +187,14 @@ class QueueManagementTest extends BaseGraphqlTest {
     updateSelfPrivileges(Role.USER, false, Set.of());
     Map<String, Object> updateVariables =
         Map.of(
-            "id", orderId.toString(),
-            "deviceId", deviceId.toString(),
+            "id",
+            orderId.toString(),
+            "deviceId",
+            deviceId.toString(),
             "results",
-                List.of(
-                    new MultiplexResultInput(
-                        _diseaseService.covid().getName(), TestResult.POSITIVE)),
-            "dateTested", dateTested);
+            positiveCovidResult,
+            "dateTested",
+            dateTested);
     performQueueUpdateMultiplexMutation(updateVariables, Optional.of(ACCESS_ERROR));
     updateSelfPrivileges(Role.USER, false, Set.of(_site.getInternalId()));
     performQueueUpdateMultiplexMutation(updateVariables, Optional.empty());
