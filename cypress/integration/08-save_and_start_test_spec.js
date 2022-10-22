@@ -57,7 +57,7 @@ describe("edit patient and save and start test", () => {
     // failing a11y test
     // if we don't wait 5 seconds for the toasts to disappear, we get a false positive for the page
     // error applies to the toast, take out the wait
-    cy.wait(5000);
+    cy.wait(10000);
     cy.checkA11y(
         {
           // failing a11y test
