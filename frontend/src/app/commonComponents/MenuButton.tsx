@@ -14,6 +14,7 @@ interface Props {
   id?: string;
   items: {
     name: string;
+    content?: React.ReactElement;
     action: () => void;
   }[];
 }
@@ -38,7 +39,7 @@ export const MenuButton = (props: Props) => (
             : undefined
         }
       >
-        {item.name}
+        {item.content ?? item.name}
       </MenuItem>
     ))}
   </Menu>
