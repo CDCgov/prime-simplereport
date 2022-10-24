@@ -90,7 +90,7 @@ jobs:
           okta-url: https://hhs-prime.okta.com
           okta-client-id: 0oa62qncijWSeQMuc4h6
       - name: Save compiled frontend application
-        uses: actions/upload-artifact@v2
+        uses: actions/upload-artifact@v3
         if: success()
         with:
           name: frontend-tarball
