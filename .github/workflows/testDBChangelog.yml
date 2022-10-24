@@ -29,7 +29,7 @@ jobs:
         with:
           java-version: ${{env.JAVA_VERSION}}
       - name: Cache Java Dependencies
-        uses: actions/cache@v2
+        uses: actions/cache@v3.0.11
         with:
           path: |
             ~/.gradle/caches
