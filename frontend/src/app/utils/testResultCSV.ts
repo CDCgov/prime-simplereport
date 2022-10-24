@@ -8,7 +8,7 @@ import { getResultByDiseaseName } from "./testResults";
 
 import { displayFullName, facilityDisplayName } from "./index";
 
-export function parseDataForCSV(data: any, multiplexEnabled: boolean) {
+export function parseDataForCSV(data: any[], multiplexEnabled: boolean) {
   return data.sort(byDateTested).map((r: any) => {
     const symptomList = r.symptoms ? symptomsStringToArray(r.symptoms) : [];
 
