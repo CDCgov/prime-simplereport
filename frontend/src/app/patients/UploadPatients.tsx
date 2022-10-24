@@ -45,7 +45,6 @@ const UploadPatients = () => {
           </div>
           <RadioGroup
             wrapperClassName="margin-top-1"
-            // className={"usa-radio__input--tile"}
             inputClassName={"usa-radio__input--tile"}
             name="facilitySector"
             legend="Select facility"
