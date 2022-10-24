@@ -10,15 +10,25 @@ describe("Patient self registration", () => {
     cy.contains("Patients can now register themselves online");
 
     // failing a11y test
-    // cy.injectAxe();
-    // cy.checkA11y();
+    cy.injectAxe();
+    cy.checkA11y(
+        {
+          exclude: [],
+        },
+        {
+          rules: {
+            'button-name': { enabled: false },
+            'page-has-heading-one': { enabled: false },
+          },
+        },
+    );
 
     cy.get("#org-link").then(($link) => cy.visit($link.val()));
   });
   it("loads terms of service", () => {
     cy.contains("Terms of service");
 
-    cy.injectAxe(); // this can be removed when the preceding test is fixed
+    cy.injectAxe();
     cy.checkA11y();
   });
   it("accepts the terms of service", () => {
@@ -56,9 +66,20 @@ describe("Patient self registration", () => {
     ).click();
 
     // failing a11y test
-    // Also found in 01-organization_sign_up_spec.js
+    // Also found in specs 01, 02, 05, 08
     // Test a11y on the confirm address modal
-    // cy.checkA11y();
+    cy.checkA11y(
+        {
+          exclude: [],
+        },
+        {
+          rules: {
+            'aria-dialog-name': { enabled: false },
+            'landmark-one-main': { enabled: false },
+            'page-has-heading-one': { enabled: false },
+          },
+        },
+    );
 
     cy.get(".modal__container #save-confirmed-address").click();
     cy.get("#self-reg-confirmation").contains(

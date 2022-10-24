@@ -79,6 +79,7 @@ describe("Okta account creation", () => {
       cy.contains("Create your password");
     });
     it("contains no accessibility violations", () => {
+      // We only need to check a11y once for this page workflow
       cy.injectAxe();
       cy.checkA11y();
     });

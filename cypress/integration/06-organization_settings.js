@@ -7,8 +7,17 @@ describe("Updating organization settings", () => {
     cy.get(".prime-container").contains("Manage organization");
 
     // failing a11y test
-    // cy.injectAxe();
-    // cy.checkA11y();
+    cy.injectAxe();
+    cy.checkA11y(
+        {
+          exclude: [],
+        },
+        {
+          rules: {
+            'page-has-heading-one': { enabled: false },
+          },
+        },
+    );
   });
   it("attempts an empty selection for organization type", () => {
     cy.get('select[name="type"]').select("- Select -");

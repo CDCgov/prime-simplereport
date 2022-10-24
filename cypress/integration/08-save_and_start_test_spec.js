@@ -44,27 +44,47 @@ describe("edit patient and save and start test", () => {
   it("completes AoE form and verifies queue", () => {
     cy.contains("New loss of taste").click();
 
-    // if we don't wait 5 seconds for the toasts to disappear, we get a false positive for the page
+    // failing a11y test
     // error applies to the toast
-    // cy.wait(5000);
-    // failing a11y test - additional failures besides the one we need to wait for
-    // cy.checkA11y();
+    // observe this by adding cy.wait(5000); to wait for the toasts to disappear
+    cy.checkA11y(
+        {
+          exclude: [],
+        },
+        {
+          rules: {
+            // error applies to the toast
+            'heading-order': { enabled: false },
+            'landmark-one-main': { enabled: false },
+            'landmark-unique': { enabled: false },
+            // failing a11y test
+            // the following error is unrelated to the toast
+            'label': { enabled: false },
+          },
+        },
+    );
 
     cy.contains("button", "Continue").click();
     cy.get(".prime-home").contains(patientName);
     cy.url().should("include", "queue");
 
     // failing a11y test
-    // if we don't wait 5 seconds for the toasts to disappear, we get a false positive for the page
-    // error applies to the toast, take out the wait
-    cy.wait(10000);
     cy.checkA11y(
         {
           // failing a11y test
-          // this element returns a duplicate-id error, which the SimpleReport team in the past deemed not relevant
-          // If this is deemed to not be a false positive in the future, please remove the exclusion and fix the problem
+          // this element returns a duplicate-id error, each test card needs a unique id
           // It may also be possible to remove the offending duplicate id if it is not used
           exclude: ['.prime-test-name.usa-card__header.grid-row'],
+        },
+        {
+          rules: {
+            // failing a11y test
+            // error applies to the toast
+            // observe this by adding cy.wait(5000); to wait for the toasts to disappear
+            'heading-order': { enabled: false },
+            'landmark-one-main': { enabled: false },
+            'landmark-unique': { enabled: false },
+          },
         },
     );
   });
@@ -104,9 +124,20 @@ describe("add patient and save and start test", () => {
     ).click();
 
     // failing a11y test
-    // Also found in 01-organization_sign_up_spec.js
+    // Also found in specs 01, 02, 05, 08
     // Test a11y on the confirm address modal
-    // cy.checkA11y();
+    cy.checkA11y(
+        {
+          exclude: [],
+        },
+        {
+          rules: {
+            'aria-dialog-name': { enabled: false },
+            'landmark-one-main': { enabled: false },
+            'page-has-heading-one': { enabled: false },
+          },
+        },
+    );
 
     cy.get(".modal__container #save-confirmed-address").click();
     cy.url().should("include", "queue");

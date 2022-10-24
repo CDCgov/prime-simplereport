@@ -83,15 +83,33 @@ describe("Organization sign up", () => {
 
     // failing a11y test
     // Test a11y on Manage Facilities tab
-    // cy.injectAxe();
-    // cy.checkA11y();
+    cy.injectAxe();
+    cy.checkA11y(
+        {
+          exclude: [],
+        },
+        {
+          rules: {
+            'page-has-heading-one': { enabled: false },
+          },
+        },
+    );
 
     cy.contains("+ New facility").click();
     cy.contains("Testing facility information");
 
     // failing a11y test
     // Test a11y on New Facility page
-    // cy.checkA11y();
+    cy.checkA11y(
+        {
+          exclude: [],
+        },
+        {
+          rules: {
+            'empty-heading': { enabled: false },
+          },
+        },
+    );
   });
   it("fills out the form for a new facility", () => {
     cy.get('input[name="name"]').type(facility.name);
@@ -110,9 +128,20 @@ describe("Organization sign up", () => {
     ).click();
 
     // failing a11y test
-    // Also found in specs 02 and 05
+    // Also found in specs 01, 02, 05, 08
     // Test a11y on the confirm address modal
-    // cy.checkA11y();
+    cy.checkA11y(
+        {
+          exclude: [],
+        },
+        {
+          rules: {
+            'aria-dialog-name': { enabled: false },
+            'landmark-one-main': { enabled: false },
+            'page-has-heading-one': { enabled: false },
+          },
+        },
+    );
 
     cy.get(".modal__container #save-confirmed-address").click();
     cy.contains("+ New facility");

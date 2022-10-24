@@ -51,9 +51,20 @@ describe("Adding a patient", () => {
     ).click();
 
     // failing a11y test
-    // Also found in 01-organization_sign_up_spec.js
+    // Also found in specs 01, 02, 05, 08
     // Test a11y on the confirm address modal
-    // cy.checkA11y();
+    cy.checkA11y(
+        {
+          exclude: [],
+        },
+        {
+          rules: {
+            'aria-dialog-name': { enabled: false },
+            'landmark-one-main': { enabled: false },
+            'page-has-heading-one': { enabled: false },
+          },
+        },
+    );
 
     cy.get(".modal__container #save-confirmed-address").click();
     cy.get(".usa-card__header").contains("People");
@@ -62,9 +73,17 @@ describe("Adding a patient", () => {
     cy.get(".prime-container").contains(patient.fullName);
 
     // failing a11y test
-    // if we don't wait 5 seconds for the toasts to disappear, we get a false positive for the page
-    // error applies to the toast, take out the wait
-    cy.wait(5000);
-    cy.checkA11y();
+    // error applies to the toast
+    // observe this by adding cy.wait(5000); to wait for the toasts to disappear
+    cy.checkA11y(
+        {
+          exclude: [],
+        },
+        {
+          rules: {
+            'heading-order': { enabled: false },
+          },
+        },
+    );
   });
 });
