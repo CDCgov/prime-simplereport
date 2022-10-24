@@ -1,4 +1,4 @@
-const TEST_RESULTS_CSV = [
+const data = [
   {
     facility: { name: "Central Middle School", __typename: "Facility" },
     dateTested: "2022-01-19T16:45:11.446Z",
@@ -160,5 +160,9 @@ const TEST_RESULTS_CSV = [
     __typename: "TestResult",
   },
 ];
+const TEST_RESULTS_CSV = {
+  content: data,
+  totalElements: data.length,
+};
 
 export default TEST_RESULTS_CSV;
