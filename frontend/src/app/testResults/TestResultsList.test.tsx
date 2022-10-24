@@ -563,6 +563,7 @@ describe("TestResultsList", () => {
     });
 
     it("closes the download test results modal after downloading", async () => {
+      // source of "navigation not implemented" error
       expect(await screen.findByText("Showing 1-3 of 3")).toBeInTheDocument();
       expect(
         screen.getByText("Test Results", { exact: false })
@@ -669,6 +670,7 @@ describe("TestResultsList", () => {
     });
 
     describe("return focus after modal close", () => {
+      // source of the React key prop warning
       const clickActionMenu = async () => {
         expect(await screen.findByText("Showing 1-3 of 3")).toBeInTheDocument();
         const actionMenuButton = document.querySelectorAll(
@@ -794,6 +796,7 @@ describe("TestResultsList", () => {
       startDate = "2021-03-17",
       endDate = "2021-03-18"
     ) => {
+      // source of the last two "wrapped in act" warnings
       userEvent.type(await screen.findByText("Date range (start)"), startDate);
       await new Promise((r) => setTimeout(r, SEARCH_DEBOUNCE_TIME));
       userEvent.type(await screen.findByText("Date range (end)"), endDate);

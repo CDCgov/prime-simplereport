@@ -47,6 +47,21 @@ export const mocks = [
   },
   {
     request: {
+      query: GetFacilityResultsForCsvWithCountDocument,
+      variables: {
+        facilityId: "1",
+        pageNumber: 0,
+        pageSize: 3,
+      },
+    },
+    result: {
+      data: {
+        testResultsPage: testResultsForCsv,
+      },
+    },
+  },
+  {
+    request: {
       query: testResultDetailsQuery,
       variables: {
         id: testResults.content[0].internalId,
@@ -83,26 +98,7 @@ export const mocks = [
       },
     },
   },
-  {
-    request: {
-      query: GetFacilityResultsMultiplexWithCountDocument,
-      variables: {
-        facilityId: "1",
-        pageNumber: 0,
-        pageSize: 20,
-        patientId: "48c523e8-7c65-4047-955c-e3f65bb8b58a",
-        startDate: "2021-03-18T00:00:00.000Z",
-        endDate: "2021-03-19T23:59:59.999Z",
-        role: "STAFF",
-        result: "NEGATIVE",
-      },
-    },
-    result: {
-      data: {
-        testResultsPage: testResultsByStartDateAndEndDate,
-      },
-    },
-  },
+
   {
     request: {
       query: GetFacilityResultsMultiplexWithCountDocument,
@@ -132,21 +128,6 @@ export const mocks = [
     result: {
       data: {
         testResultsPage: testResultsByResultValue,
-      },
-    },
-  },
-  {
-    request: {
-      query: GetFacilityResultsForCsvWithCountDocument,
-      variables: {
-        facilityId: "1",
-        pageNumber: 0,
-        pageSize: 3,
-      },
-    },
-    result: {
-      data: {
-        testResultsPage: testResultsForCsv,
       },
     },
   },
@@ -187,22 +168,6 @@ export const mocks = [
       query: GetFacilityResultsMultiplexWithCountDocument,
       variables: {
         facilityId: "1",
-        startDate: "2021-03-17T00:00:00.000Z",
-        pageNumber: 0,
-        pageSize: 20,
-      },
-    },
-    result: {
-      data: {
-        testResultsPage: testResultsByStartDate,
-      },
-    },
-  },
-  {
-    request: {
-      query: GetFacilityResultsMultiplexWithCountDocument,
-      variables: {
-        facilityId: "1",
         startDate: "2021-03-18T00:00:00.000Z",
         endDate: "2021-03-18T23:59:59.999Z",
         pageNumber: 0,
@@ -215,6 +180,7 @@ export const mocks = [
       },
     },
   },
+
   {
     request: {
       query: GetFacilityResultsMultiplexWithCountDocument,
@@ -317,7 +283,26 @@ export const mocks = [
       },
     },
   },
-
+  {
+    request: {
+      query: GetFacilityResultsMultiplexWithCountDocument,
+      variables: {
+        facilityId: "1",
+        pageNumber: 0,
+        pageSize: 20,
+        patientId: "48c523e8-7c65-4047-955c-e3f65bb8b58a",
+        startDate: "2021-03-18T00:00:00.000Z",
+        endDate: "2021-03-19T23:59:59.999Z",
+        role: "STAFF",
+        result: "NEGATIVE",
+      },
+    },
+    result: {
+      data: {
+        testResultsPage: testResultsByStartDateAndEndDate,
+      },
+    },
+  },
   {
     request: {
       query: GetTestResultForPrintDocument,
