@@ -1,114 +1,18 @@
 package gov.cdc.usds.simplereport.validators;
 
-import static gov.cdc.usds.simplereport.api.Translators.CANADIAN_STATE_CODES;
-import static gov.cdc.usds.simplereport.api.Translators.STATE_CODES;
+import static gov.cdc.usds.simplereport.validators.CsvValidatorUtils.*;
 
 import com.fasterxml.jackson.databind.MappingIterator;
-import com.fasterxml.jackson.databind.RuntimeJsonMappingException;
-import com.fasterxml.jackson.dataformat.csv.CsvMapper;
-import com.fasterxml.jackson.dataformat.csv.CsvParser;
-import com.fasterxml.jackson.dataformat.csv.CsvSchema;
 import gov.cdc.usds.simplereport.service.model.reportstream.FeedbackMessage;
-import java.io.BufferedReader;
-import java.io.IOException;
+import gov.cdc.usds.simplereport.validators.CsvValidatorUtils.*;
 import java.io.InputStream;
-import java.io.InputStreamReader;
-import java.nio.charset.StandardCharsets;
 import java.util.ArrayList;
-import java.util.Collections;
-import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
-import java.util.Set;
-import lombok.Getter;
 import org.springframework.stereotype.Component;
 
 @Component
 public class TestResultFileValidator {
-
-  private static final String ZIP_CODE_REGEX = "^[0-9]{5}(?:-[0-9]{4})?$";
-
-  /// 000-000-0000
-  private static final String PHONE_NUMBER_REGEX = "^[1-9]\\d{2}-\\d{3}-\\d{4}$";
-
-  // MM/DD/YYYY OR M/D/YYYY
-  private static final String DATE_REGEX = "^\\d{1,2}\\/\\d{1,2}\\/\\d{4}$";
-
-  // MM/DD/YYYY HH:mm, MM/DD/YYYY H:mm, M/D/YYYY HH:mm OR M/D/YYYY H:mm
-  private static final String DATE_TIME_REGEX =
-      "^\\d{1,2}\\/\\d{1,2}\\/\\d{4}( ([0-1]?[0-9]|2[0-3]):[0-5][0-9])?$";
-  private static final String EMAIL_REGEX = "^[\\w-\\.]+@([\\w-]+\\.)+[\\w-]{2,4}$";
-  private static final String CLIA_REGEX = "^[A-Za-z0-9]{2}[Dd][A-Za-z0-9]{7}$";
-  private static final String ALPHABET_REGEX = "^[a-zA-Z]+$";
-  private static final Set<String> VALID_STATE_CODES = new HashSet<>();
-  private static final Set<String> GENDER_VALUES =
-      Set.of(
-          "M", "Male",
-          "F", "Female",
-          "O", "Other",
-          "U", "Unknown",
-          "A", "Ambiguous",
-          "N", "Not applicable");
-  private static final Set<String> ETHNICITY_VALUES =
-      Set.of(
-          "2135-2", "Hispanic or Latino",
-          "2186-5", "Not Hispanic or Latino",
-          "UNK", "Unknown");
-  private static final Set<String> RACE_VALUES =
-      Set.of(
-          "1002-5", "American Indian or Alaska Native",
-          "2028-9", "Asian",
-          "2054-5", "Black or African American",
-          "2076-8", "Native Hawaiian or Other Pacific Islander",
-          "2106-3", "White",
-          "2131-1", "Other",
-          "ASKU", "Ask but unknown",
-          "UNK", "Unknown");
-  private static final Set<String> YES_NO_VALUES =
-      Set.of(
-          "Y", "YES",
-          "N", "NO",
-          "U", "UNK");
-  private static final Set<String> TEST_RESULT_VALUES =
-      Set.of("Positive", "Negative", "Not Detected", "Detected", "Invalid Result");
-  private static final Set<String> SPECIMEN_TYPE_VALUES =
-      Set.of(
-          "Nasal Swab",
-          "Nasopharyngeal Swab",
-          "Anterior Nares Swab",
-          "Throat Swab",
-          "Oropharyngeal Swab",
-          "Whole Blood",
-          "Plasma",
-          "Serum");
-  private static final Set<String> RESIDENCE_VALUES =
-      Set.of(
-          "22232009", "Hospital",
-          "2081004", "Hospital Ship",
-          "32074000", "Long Term Care Hospital",
-          "224929004", "Secure Hospital",
-          "42665001", "Nursing Home",
-          "30629002", "Retirement Home",
-          "74056004", "Orphanage",
-          "722173008", "Prison-based Care Site",
-          "20078004", "Substance Abuse Treatment Center",
-          "257573002", "Boarding House",
-          "224683003", "Military Accommodation",
-          "284546000", "Hospice",
-          "257628001", "Hostel",
-          "310207003", "Sheltered Housing",
-          "57656006", "Penal Institution",
-          "285113009", "Religious Institutional Residence",
-          "285141008", "Work (environment)",
-          "32911000", "Homeless");
-  private static final Set<String> TEST_RESULT_STATUS_VALUES = Set.of("F", "C");
-  private static final String ITEM_SCOPE = "item";
-  private static final String REPORT_SCOPE = "report";
-
-  public TestResultFileValidator() {
-    VALID_STATE_CODES.addAll(STATE_CODES);
-    VALID_STATE_CODES.addAll(CANADIAN_STATE_CODES);
-  }
 
   public List<FeedbackMessage> validate(InputStream csvStream) {
     final MappingIterator<Map<String, String>> valueIterator = getIteratorForCsv(csvStream);
@@ -122,72 +26,98 @@ public class TestResultFileValidator {
     while (valueIterator.hasNext() && errors.isEmpty()) {
       final Map<String, String> row = getNextRow(valueIterator);
 
-      ValueOrError patientId = getValue(row, "patient_id", false);
-      ValueOrError patientLastName = getValue(row, "patient_last_name", true);
-      ValueOrError patientFirstName = getValue(row, "patient_first_name", true);
-      ValueOrError patientMiddleName = getValue(row, "patient_middle_name", false);
-      ValueOrError patientStreet = getValue(row, "patient_street", true);
-      ValueOrError patientStreet2 = getValue(row, "patient_street2", false);
-      ValueOrError patientCity = getValue(row, "patient_city", true);
-      ValueOrError patientState = getValue(row, "patient_state", true);
-      ValueOrError patientZipCode = getValue(row, "patient_zip_code", true);
-      ValueOrError patientCounty = getValue(row, "patient_county", true);
-      ValueOrError patientPhoneNumber = getValue(row, "patient_phone_number", true);
-      ValueOrError patientDob = getValue(row, "patient_dob", true);
-      ValueOrError patientGender = getValue(row, "patient_gender", true);
-      ValueOrError patientRace = getValue(row, "patient_race", true);
-      ValueOrError patientEthnicity = getValue(row, "patient_ethnicity", true);
-      ValueOrError patientPreferredLanguage = getValue(row, "patient_preferred_language", false);
-      ValueOrError patientEmail = getValue(row, "patient_email", false);
-      ValueOrError accessionNumber = getValue(row, "accession_number", true);
-      ValueOrError equipmentModelName = getValue(row, "equipment_model_name", true);
-      ValueOrError testPerformedCode = getValue(row, "test_performed_code", true);
-      ValueOrError testResult = getValue(row, "test_result", true);
-      ValueOrError orderTestDate = getValue(row, "order_test_date", true);
-      ValueOrError specimenCollectionDate = getValue(row, "specimen_collection_date", false);
-      ValueOrError testingLabSpecimenReceivedDate =
+      CsvValidatorUtils.ValueOrError patientId = getValue(row, "patient_id", false);
+      CsvValidatorUtils.ValueOrError patientLastName = getValue(row, "patient_last_name", true);
+      CsvValidatorUtils.ValueOrError patientFirstName = getValue(row, "patient_first_name", true);
+      CsvValidatorUtils.ValueOrError patientMiddleName =
+          getValue(row, "patient_middle_name", false);
+      CsvValidatorUtils.ValueOrError patientStreet = getValue(row, "patient_street", true);
+      CsvValidatorUtils.ValueOrError patientStreet2 = getValue(row, "patient_street2", false);
+      CsvValidatorUtils.ValueOrError patientCity = getValue(row, "patient_city", true);
+      CsvValidatorUtils.ValueOrError patientState = getValue(row, "patient_state", true);
+      CsvValidatorUtils.ValueOrError patientZipCode = getValue(row, "patient_zip_code", true);
+      CsvValidatorUtils.ValueOrError patientCounty = getValue(row, "patient_county", true);
+      CsvValidatorUtils.ValueOrError patientPhoneNumber =
+          getValue(row, "patient_phone_number", true);
+      CsvValidatorUtils.ValueOrError patientDob = getValue(row, "patient_dob", true);
+      CsvValidatorUtils.ValueOrError patientGender = getValue(row, "patient_gender", true);
+      CsvValidatorUtils.ValueOrError patientRace = getValue(row, "patient_race", true);
+      CsvValidatorUtils.ValueOrError patientEthnicity = getValue(row, "patient_ethnicity", true);
+      CsvValidatorUtils.ValueOrError patientPreferredLanguage =
+          getValue(row, "patient_preferred_language", false);
+      CsvValidatorUtils.ValueOrError patientEmail = getValue(row, "patient_email", false);
+      CsvValidatorUtils.ValueOrError accessionNumber = getValue(row, "accession_number", true);
+      CsvValidatorUtils.ValueOrError equipmentModelName =
+          getValue(row, "equipment_model_name", true);
+      CsvValidatorUtils.ValueOrError testPerformedCode = getValue(row, "test_performed_code", true);
+      CsvValidatorUtils.ValueOrError testResult = getValue(row, "test_result", true);
+      CsvValidatorUtils.ValueOrError orderTestDate = getValue(row, "order_test_date", true);
+      CsvValidatorUtils.ValueOrError specimenCollectionDate =
+          getValue(row, "specimen_collection_date", false);
+      CsvValidatorUtils.ValueOrError testingLabSpecimenReceivedDate =
           getValue(row, "testing_lab_specimen_received_date", false);
-      ValueOrError testResultDate = getValue(row, "test_result_date", true);
-      ValueOrError dateResultReleased = getValue(row, "date_result_released", false);
-      ValueOrError specimenType = getValue(row, "specimen_type", true);
-      ValueOrError orderingProviderId = getValue(row, "ordering_provider_id", true);
-      ValueOrError orderingProviderLastName = getValue(row, "ordering_provider_last_name", true);
-      ValueOrError orderingProviderFirstName = getValue(row, "ordering_provider_first_name", true);
-      ValueOrError orderingProviderMiddleName =
+      CsvValidatorUtils.ValueOrError testResultDate = getValue(row, "test_result_date", true);
+      CsvValidatorUtils.ValueOrError dateResultReleased =
+          getValue(row, "date_result_released", false);
+      CsvValidatorUtils.ValueOrError specimenType = getValue(row, "specimen_type", true);
+      CsvValidatorUtils.ValueOrError orderingProviderId =
+          getValue(row, "ordering_provider_id", true);
+      CsvValidatorUtils.ValueOrError orderingProviderLastName =
+          getValue(row, "ordering_provider_last_name", true);
+      CsvValidatorUtils.ValueOrError orderingProviderFirstName =
+          getValue(row, "ordering_provider_first_name", true);
+      CsvValidatorUtils.ValueOrError orderingProviderMiddleName =
           getValue(row, "ordering_provider_middle_name", false);
-      ValueOrError orderingProviderStreet = getValue(row, "ordering_provider_street", true);
-      ValueOrError orderingProviderStreet2 = getValue(row, "ordering_provider_street2", false);
-      ValueOrError orderingProviderCity = getValue(row, "ordering_provider_city", true);
-      ValueOrError orderingProviderState = getValue(row, "ordering_provider_state", true);
-      ValueOrError orderingProviderZipCode = getValue(row, "ordering_provider_zip_code", true);
-      ValueOrError orderingProviderPhoneNumber =
+      CsvValidatorUtils.ValueOrError orderingProviderStreet =
+          getValue(row, "ordering_provider_street", true);
+      CsvValidatorUtils.ValueOrError orderingProviderStreet2 =
+          getValue(row, "ordering_provider_street2", false);
+      CsvValidatorUtils.ValueOrError orderingProviderCity =
+          getValue(row, "ordering_provider_city", true);
+      CsvValidatorUtils.ValueOrError orderingProviderState =
+          getValue(row, "ordering_provider_state", true);
+      CsvValidatorUtils.ValueOrError orderingProviderZipCode =
+          getValue(row, "ordering_provider_zip_code", true);
+      CsvValidatorUtils.ValueOrError orderingProviderPhoneNumber =
           getValue(row, "ordering_provider_phone_number", true);
-      ValueOrError testingLabClia = getValue(row, "testing_lab_clia", true);
-      ValueOrError testingLabName = getValue(row, "testing_lab_name", true);
-      ValueOrError testingLabStreet = getValue(row, "testing_lab_street", true);
-      ValueOrError testingLabStreet2 = getValue(row, "testing_lab_street2", false);
-      ValueOrError testingLabCity = getValue(row, "testing_lab_city", true);
-      ValueOrError testingLabState = getValue(row, "testing_lab_state", true);
-      ValueOrError testingLabZipCode = getValue(row, "testing_lab_zip_code", true);
-      ValueOrError testingLabPhoneNumber = getValue(row, "testing_lab_phone_number", false);
-      ValueOrError pregnant = getValue(row, "pregnant", false);
-      ValueOrError employedInHealthcare = getValue(row, "employed_in_healthcare", false);
-      ValueOrError symptomaticForDisease = getValue(row, "symptomatic_for_disease", false);
-      ValueOrError illnessOnsetDate = getValue(row, "illness_onset_date", false);
-      ValueOrError residentCongregateSetting = getValue(row, "resident_congregate_setting", false);
-      ValueOrError residenceType = getValue(row, "residence_type", false);
-      ValueOrError hospitalized = getValue(row, "hospitalized", false);
-      ValueOrError icu = getValue(row, "icu", false);
-      ValueOrError orderingFacilityName = getValue(row, "ordering_facility_name", false);
-      ValueOrError orderingFacilityStreet = getValue(row, "ordering_facility_street", false);
-      ValueOrError orderingFacilityStreet2 = getValue(row, "ordering_facility_street2", false);
-      ValueOrError orderingFacilityCity = getValue(row, "ordering_facility_city", false);
-      ValueOrError orderingFacilityState = getValue(row, "ordering_facility_state", false);
-      ValueOrError orderingFacilityZipCode = getValue(row, "ordering_facility_zip_code", false);
-      ValueOrError orderingFacilityPhoneNumber =
+      CsvValidatorUtils.ValueOrError testingLabClia = getValue(row, "testing_lab_clia", true);
+      CsvValidatorUtils.ValueOrError testingLabName = getValue(row, "testing_lab_name", true);
+      CsvValidatorUtils.ValueOrError testingLabStreet = getValue(row, "testing_lab_street", true);
+      CsvValidatorUtils.ValueOrError testingLabStreet2 =
+          getValue(row, "testing_lab_street2", false);
+      CsvValidatorUtils.ValueOrError testingLabCity = getValue(row, "testing_lab_city", true);
+      CsvValidatorUtils.ValueOrError testingLabState = getValue(row, "testing_lab_state", true);
+      CsvValidatorUtils.ValueOrError testingLabZipCode =
+          getValue(row, "testing_lab_zip_code", true);
+      CsvValidatorUtils.ValueOrError testingLabPhoneNumber =
+          getValue(row, "testing_lab_phone_number", false);
+      CsvValidatorUtils.ValueOrError pregnant = getValue(row, "pregnant", false);
+      CsvValidatorUtils.ValueOrError employedInHealthcare =
+          getValue(row, "employed_in_healthcare", false);
+      CsvValidatorUtils.ValueOrError symptomaticForDisease =
+          getValue(row, "symptomatic_for_disease", false);
+      CsvValidatorUtils.ValueOrError illnessOnsetDate = getValue(row, "illness_onset_date", false);
+      CsvValidatorUtils.ValueOrError residentCongregateSetting =
+          getValue(row, "resident_congregate_setting", false);
+      CsvValidatorUtils.ValueOrError residenceType = getValue(row, "residence_type", false);
+      CsvValidatorUtils.ValueOrError hospitalized = getValue(row, "hospitalized", false);
+      CsvValidatorUtils.ValueOrError icu = getValue(row, "icu", false);
+      CsvValidatorUtils.ValueOrError orderingFacilityName =
+          getValue(row, "ordering_facility_name", false);
+      CsvValidatorUtils.ValueOrError orderingFacilityStreet =
+          getValue(row, "ordering_facility_street", false);
+      CsvValidatorUtils.ValueOrError orderingFacilityStreet2 =
+          getValue(row, "ordering_facility_street2", false);
+      CsvValidatorUtils.ValueOrError orderingFacilityCity =
+          getValue(row, "ordering_facility_city", false);
+      CsvValidatorUtils.ValueOrError orderingFacilityState =
+          getValue(row, "ordering_facility_state", false);
+      CsvValidatorUtils.ValueOrError orderingFacilityZipCode =
+          getValue(row, "ordering_facility_zip_code", false);
+      CsvValidatorUtils.ValueOrError orderingFacilityPhoneNumber =
           getValue(row, "ordering_facility_phone_number", false);
-      ValueOrError comment = getValue(row, "comment", false);
-      ValueOrError testResultStatus = getValue(row, "test_result_status", false);
+      CsvValidatorUtils.ValueOrError comment = getValue(row, "comment", false);
+      CsvValidatorUtils.ValueOrError testResultStatus = getValue(row, "test_result_status", false);
 
       // validate headers
       errors.addAll(patientId.getPossibleError());
@@ -299,172 +229,5 @@ public class TestResultFileValidator {
     }
 
     return errors;
-  }
-
-  private List<FeedbackMessage> validateTestResult(ValueOrError input) {
-    return validateSpecificValueOrSNOMED(input, TEST_RESULT_VALUES);
-  }
-
-  private List<FeedbackMessage> validateSpecimenType(ValueOrError input) {
-    return validateSpecificValueOrSNOMED(input, SPECIMEN_TYPE_VALUES);
-  }
-
-  private List<FeedbackMessage> validateSpecificValueOrSNOMED(
-      ValueOrError input, Set<String> acceptableValues) {
-    List<FeedbackMessage> errors = new ArrayList<>();
-    String value = parseString(input.getValue());
-    if (value == null) {
-      return errors;
-    }
-    boolean nonSNOMEDValue = value.matches(ALPHABET_REGEX);
-    if (nonSNOMEDValue) {
-      return validateInSet(input, acceptableValues);
-    }
-    return errors;
-  }
-
-  private List<FeedbackMessage> validateResidence(ValueOrError input) {
-    return validateInSet(input, RESIDENCE_VALUES);
-  }
-
-  private List<FeedbackMessage> validateYesNoAnswer(ValueOrError input) {
-    return validateInSet(input, YES_NO_VALUES);
-  }
-
-  private List<FeedbackMessage> validateEthnicity(ValueOrError input) {
-    return validateInSet(input, ETHNICITY_VALUES);
-  }
-
-  private List<FeedbackMessage> validateRace(ValueOrError input) {
-    return validateInSet(input, RACE_VALUES);
-  }
-
-  private List<FeedbackMessage> validateGender(ValueOrError input) {
-    return validateInSet(input, GENDER_VALUES);
-  }
-
-  private List<FeedbackMessage> validateState(ValueOrError input) {
-    return validateInSet(input, VALID_STATE_CODES);
-  }
-
-  private List<FeedbackMessage> validateTestResultStatus(ValueOrError input) {
-    return validateInSet(input, TEST_RESULT_STATUS_VALUES);
-  }
-
-  private List<FeedbackMessage> validateZipCode(ValueOrError input) {
-    return validateRegex(input, ZIP_CODE_REGEX);
-  }
-
-  private List<FeedbackMessage> validatePhoneNumber(ValueOrError input) {
-    return validateRegex(input, PHONE_NUMBER_REGEX);
-  }
-
-  private List<FeedbackMessage> validateClia(ValueOrError input) {
-    return validateRegex(input, CLIA_REGEX);
-  }
-
-  private List<FeedbackMessage> validateDate(ValueOrError input) {
-    return validateRegex(input, DATE_REGEX);
-  }
-
-  private List<FeedbackMessage> validateDateTime(ValueOrError input) {
-    return validateRegex(input, DATE_TIME_REGEX);
-  }
-
-  private List<FeedbackMessage> validateEmail(ValueOrError input) {
-    return validateRegex(input, EMAIL_REGEX);
-  }
-
-  private List<FeedbackMessage> validateRegex(ValueOrError input, String regex) {
-    List<FeedbackMessage> errors = new ArrayList<>();
-    String value = parseString(input.getValue());
-    if (value == null) {
-      return errors;
-    }
-    if (!value.matches(regex)) {
-      errors.add(
-          new FeedbackMessage(
-              ITEM_SCOPE,
-              input.getValue() + " is not a valid value for column " + input.getHeader()));
-    }
-    return errors;
-  }
-
-  private List<FeedbackMessage> validateInSet(ValueOrError input, Set<String> acceptableValues) {
-    List<FeedbackMessage> errors = new ArrayList<>();
-    String value = parseString(input.getValue());
-    if (value == null) {
-      return errors;
-    }
-    if (!acceptableValues.contains(value)) {
-      errors.add(
-          new FeedbackMessage(
-              ITEM_SCOPE,
-              input.getValue() + " is not an acceptable value for column " + input.getHeader()));
-    }
-    return errors;
-  }
-
-  private String parseString(String value) {
-    if (value == null || "".equals(value)) {
-      return null;
-    }
-    return value.trim();
-  }
-
-  private Map<String, String> getNextRow(MappingIterator<Map<String, String>> valueIterator)
-      throws IllegalArgumentException {
-    try {
-      return valueIterator.next();
-    } catch (RuntimeJsonMappingException e) {
-      throw new IllegalArgumentException(e.getMessage());
-    }
-  }
-
-  private ValueOrError getValue(Map<String, String> row, String name, boolean isRequired) {
-    String value = row.get(name);
-    if (isRequired && (value == null || value.trim().isEmpty())) {
-      return new ValueOrError(new FeedbackMessage(REPORT_SCOPE, name + " is a required column."));
-    }
-    return new ValueOrError(value, name);
-  }
-
-  private MappingIterator<Map<String, String>> getIteratorForCsv(InputStream csvStream)
-      throws IllegalArgumentException {
-    try {
-      BufferedReader csvStreamBuffered =
-          new BufferedReader(new InputStreamReader(csvStream, StandardCharsets.UTF_8));
-
-      return new CsvMapper()
-          .enable(CsvParser.Feature.FAIL_ON_MISSING_COLUMNS)
-          .readerFor(Map.class)
-          .with(CsvSchema.builder().setUseHeader(true).build())
-          .readValues(csvStreamBuffered);
-    } catch (IOException e) {
-      throw new IllegalArgumentException(e.getMessage());
-    }
-  }
-
-  @Getter
-  private static class ValueOrError {
-    private final List<FeedbackMessage> error;
-    private final String value;
-    private final String header;
-
-    public ValueOrError(String value, String header) {
-      this.value = value;
-      this.error = Collections.emptyList();
-      this.header = header;
-    }
-
-    public ValueOrError(FeedbackMessage error) {
-      this.value = null;
-      this.header = null;
-      this.error = List.of(error);
-    }
-
-    public List<FeedbackMessage> getPossibleError() {
-      return this.error;
-    }
   }
 }
