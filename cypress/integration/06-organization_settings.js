@@ -7,6 +7,7 @@ describe("Updating organization settings", () => {
     cy.get(".prime-container").contains("Manage organization");
 
     // failing a11y test
+    // Test a11y on the Manage organization page
     cy.injectAxe();
     cy.checkA11y(
         {

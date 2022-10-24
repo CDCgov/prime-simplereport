@@ -17,7 +17,7 @@ describe("Adding a patient", () => {
     cy.get("#add-patient-button").click();
     cy.get(".prime-edit-patient").contains("Add new person");
     cy.injectAxe();
-    cy.checkA11y();
+    cy.checkA11y(); // Patient form
   });
   it("fills out some of the form fields", () => {
     cy.get('input[name="firstName"]').type(patient.firstName);
@@ -75,6 +75,7 @@ describe("Adding a patient", () => {
     // failing a11y test
     // error applies to the toast
     // observe this by adding cy.wait(5000); to wait for the toasts to disappear
+    // Test a11y on the People page
     cy.checkA11y(
         {
           exclude: [],

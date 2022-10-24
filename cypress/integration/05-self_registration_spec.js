@@ -10,6 +10,7 @@ describe("Patient self registration", () => {
     cy.contains("Patients can now register themselves online");
 
     // failing a11y test
+    // Test a11y on the Patient self registration page
     cy.injectAxe();
     cy.checkA11y(
         {
@@ -29,13 +30,13 @@ describe("Patient self registration", () => {
     cy.contains("Terms of service");
 
     cy.injectAxe();
-    cy.checkA11y();
+    cy.checkA11y(); // Terms of Service
   });
   it("accepts the terms of service", () => {
     cy.contains("I agree").click();
     cy.get("#registration-container").contains("General information");
 
-    cy.checkA11y();
+    cy.checkA11y(); // Info form
   });
   it("fills out some of the form fields", () => {
     cy.get('input[name="firstName"]').type(patient.firstName);
@@ -86,6 +87,6 @@ describe("Patient self registration", () => {
       "thanks for completing your patient profile"
     );
 
-    cy.checkA11y();
+    cy.checkA11y(); // Confirmation page
   });
 });

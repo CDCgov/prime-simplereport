@@ -22,7 +22,7 @@ describe("edit patient and save and start test", () => {
     cy.contains("General information");
 
     cy.injectAxe();
-    cy.checkA11y();
+    cy.checkA11y(); // Edit Patient page
   });
   it("edits the patient and clicks save and start test and verifies AoE form is correctly filled in", () => {
     cy.get('input[value="male"]+label').click();
@@ -47,6 +47,7 @@ describe("edit patient and save and start test", () => {
     // failing a11y test
     // error applies to the toast
     // observe this by adding cy.wait(5000); to wait for the toasts to disappear
+    // Test a11y on the AoE form
     cy.checkA11y(
         {
           exclude: [],
@@ -69,6 +70,7 @@ describe("edit patient and save and start test", () => {
     cy.url().should("include", "queue");
 
     // failing a11y test
+    // Test a11y on the Test Queue page
     cy.checkA11y(
         {
           // failing a11y test
@@ -102,7 +104,7 @@ describe("add patient and save and start test", () => {
     cy.get(".prime-edit-patient").contains("Add new person");
 
     cy.injectAxe();
-    cy.checkA11y();
+    cy.checkA11y(); // New Patient page
   });
   it("fills out form fields and clicks save and start test and verifies AoE form is correctly filled in", () => {
     cy.get('input[name="firstName"]').type(patient.firstName);

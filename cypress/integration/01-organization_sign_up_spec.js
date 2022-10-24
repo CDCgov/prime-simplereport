@@ -23,7 +23,7 @@ describe("Organization sign up", () => {
   it("navigates to the sign up form", () => {
     cy.visit("/sign-up");
     cy.injectAxe();
-    cy.checkA11y();
+    cy.checkA11y(); // Sign up page
 
     cy.contains("Sign up for SimpleReport");
     cy.contains("My organization is new to SimpleReport").click();
@@ -31,7 +31,7 @@ describe("Organization sign up", () => {
   });
   it("fills out the org info form", () => {
     cy.contains("Sign up for SimpleReport in three steps");
-    cy.checkA11y();
+    cy.checkA11y(); // Sign up form
 
     cy.get('input[name="name"]').type(organization.name);
     cy.get('select[name="state"]').select("CA");
@@ -44,14 +44,44 @@ describe("Organization sign up", () => {
   it("submits successfully", () => {
     cy.get("button.submit-button").click();
     cy.contains("Identity verification consent");
-    cy.checkA11y();
+    cy.checkA11y(); // Identity verification page
   });
   it("navigates to the support pending org table and verifies the org", () => {
     cy.removeOrganizationAccess();
     cy.visit("/admin");
 
+    cy.contains("Support admin");
+
+    cy.injectAxe();
+    // failing a11y test - admin
+    cy.checkA11y(
+        {
+          exclude: [],
+        },
+        {
+          rules: {
+            'page-has-heading-one': { enabled: false },
+          },
+        },
+    );
+
     cy.contains("Organizations pending identify verification").click();
     cy.get("[data-cy=pending-orgs-title]").should("be.visible");
+
+    cy.contains("td", `${organization.name}`);
+    // failing a11y test - admin
+    cy.checkA11y(
+        {
+          exclude: [],
+        },
+        {
+          rules: {
+            'button-name': { enabled: false },
+            'page-has-heading-one': { enabled: false },
+          },
+        },
+    );
+
     cy.contains("td", `${organization.name}`)
       .siblings()
       .contains("Edit/Verify")
@@ -71,6 +101,23 @@ describe("Organization sign up", () => {
       `${organization.name}{enter}`
     );
     cy.get('input[name="justification"]').type("I am a test user").blur();
+
+    cy.injectAxe();
+    // failing a11y test - admin
+    cy.checkA11y(
+        {
+          exclude: [],
+        },
+        {
+          rules: {
+            'label-title-only': { enabled: false },
+            'label': { enabled: false },
+            'page-has-heading-one': { enabled: false },
+
+          },
+        },
+    );
+
     cy.contains("Access data").click();
     cy.contains("Support admin");
   });

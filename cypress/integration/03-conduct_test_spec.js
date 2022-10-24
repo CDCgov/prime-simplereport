@@ -17,7 +17,7 @@ describe("Conducting a test", () => {
     cy.get(".results-dropdown").contains(lastName)
 
     cy.injectAxe();
-    cy.checkA11y();
+    cy.checkA11y(); // Conduct Tests page
   });
   it("begins a test", () => {
     cy.get(".results-dropdown").within(() => {
@@ -30,6 +30,7 @@ describe("Conducting a test", () => {
     );
 
     // failing a11y test
+    // Test a11y on the AoE modal
     cy.checkA11y(
         {
           exclude: [],
@@ -52,7 +53,7 @@ describe("Conducting a test", () => {
     queueCard = "div.prime-queue-item:last-of-type";
     cy.get(queueCard).contains("COVID-19 results");
 
-    cy.checkA11y();
+    cy.checkA11y(); // Test Card page
   });
   it("completes the test", () => {
     cy.get(queueCard).within(() => {
@@ -69,6 +70,7 @@ describe("Conducting a test", () => {
     // failing a11y test
     // error applies to the toast
     // observe this by adding cy.wait(5000); to wait for the toasts to disappear
+    // Test a11y on the Results page
     cy.checkA11y(
         {
           exclude: [],
