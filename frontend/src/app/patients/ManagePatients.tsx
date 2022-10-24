@@ -3,7 +3,11 @@ import React, { useEffect, useState } from "react";
 import moment from "moment";
 import classnames from "classnames";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
-import { faSlidersH } from "@fortawesome/free-solid-svg-icons";
+import {
+  faArrowRight,
+  faSlidersH,
+  faStar,
+} from "@fortawesome/free-solid-svg-icons";
 import { NavigateOptions, useNavigate } from "react-router-dom";
 
 import { displayFullName } from "../utils";
@@ -28,6 +32,7 @@ import PatientUpload from "./PatientUpload";
 import ArchivePersonModal from "./ArchivePersonModal";
 
 import "./ManagePatients.scss";
+import { IconLabel } from "../commonComponents/IconLabel";
 
 export const patientsCountQuery = gql`
   query GetPatientsCountByFacility(
@@ -269,10 +274,18 @@ export const DetachedManagePatients = ({
                 >
                   Clear filters
                 </Button>
+                {/*todo: use proper icon in the items*/}
                 <MenuButton
                   items={[
                     {
                       name: "add individual patient",
+                      content: (
+                        <IconLabel
+                          icon={faStar}
+                          primaryText={"Add individual patient"}
+                          secondaryText={"Fill out a form to add a patient"}
+                        />
+                      ),
                       action: () => {
                         setRedirect({
                           pathname: "/add-patient",
@@ -282,6 +295,13 @@ export const DetachedManagePatients = ({
                     },
                     {
                       name: "upload patients",
+                      content: (
+                        <IconLabel
+                          icon={faArrowRight}
+                          primaryText={"Import from spreadsheet"}
+                          secondaryText={"Bulk upload patients with a CSV file"}
+                        />
+                      ),
                       action: () => {
                         setRedirect({
                           pathname: "/upload-patients",
