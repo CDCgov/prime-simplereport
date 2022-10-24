@@ -92,23 +92,15 @@ describe("Okta account creation", () => {
     });
     it("sets a password", () => {
       cy.setPassword();
-      // cy.injectAxe();
-      // cy.checkA11y();
     });
     it("sets a security question", () => {
       cy.setSecurityQuestion();
-      // cy.injectAxe();
-      // cy.checkA11y();
     });
     it("selects SMS MFA", () => {
       cy.mfaSelect("sms");
-      // cy.injectAxe();
-      // cy.checkA11y();
     });
     it("enters a phone number", () => {
       cy.enterPhoneNumber();
-      // cy.injectAxe();
-      // cy.checkA11y();
     });
     it("enters a verification code", () => {
       cy.verifySecurityCode("033457");
