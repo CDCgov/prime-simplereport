@@ -77,30 +77,38 @@ describe("Okta account creation", () => {
     it("navigates to the activation link", () => {
       cy.visit("/uac/?activationToken=h971awbXda7y7jGaxN8f");
       cy.contains("Create your password");
-    });
-    it("contains no accessibility violations", () => {
-      // Test a11y on the Account Creation page
-      // We only need to check a11y once for this page workflow
       cy.injectAxe();
       cy.checkA11y();
     });
     it("sets a password", () => {
       cy.setPassword();
+      cy.injectAxe();
+      cy.checkA11y();
     });
     it("sets a security question", () => {
       cy.setSecurityQuestion();
+      cy.injectAxe();
+      cy.checkA11y();
     });
     it("selects SMS MFA", () => {
       cy.mfaSelect("sms");
+      cy.injectAxe();
+      cy.checkA11y();
     });
     it("enters a phone number", () => {
       cy.enterPhoneNumber();
+      cy.injectAxe();
+      cy.checkA11y();
     });
     it("enters a verification code", () => {
       cy.verifySecurityCode("033457");
+      cy.injectAxe();
+      cy.checkA11y();
     });
     it("displays a success message", () => {
       cy.contains("Account set up complete");
+      cy.injectAxe();
+      cy.checkA11y();
     });
   });
 
