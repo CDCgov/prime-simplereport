@@ -6,6 +6,7 @@ on:
 
 env:
   JAVA_VERSION: 11
+  JAVA_DISTRIBUTION: 'zulu'
 
 defaults:
   run:
@@ -32,6 +33,7 @@ jobs:
         uses: actions/setup-java@v3
         with:
           java-version: ${{env.JAVA_VERSION}}
+          distribution: ${{env.JAVA_DISTRIBUTION}}
       - name: Configure git commit information
         run: |
           git config user.name simplereport-dependabot-helper
