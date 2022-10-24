@@ -60,7 +60,7 @@ const ManageDevices: React.FC<Props> = ({
           </p>
         )}
         <MultiSelect
-          label="Device Types"
+          label="Device types"
           name="deviceTypes"
           onChange={(newDeviceIds) => {
             updateDevices(newDeviceIds);
