@@ -847,7 +847,8 @@ $results-dropdown-spacing: #{units(4)} - #{units(2)} - 22px - #{units(4)}; // he
 .usa-range,
 .usa-input,
 .usa-textarea,
-.usa-combo-box__input {
+.usa-combo-box__input,
+.usa-radio {
   max-width: none;
 }
 
