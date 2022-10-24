@@ -102,8 +102,6 @@ describe("Okta account creation", () => {
     });
     it("enters a verification code", () => {
       cy.verifySecurityCode("033457");
-      cy.injectAxe();
-      cy.checkA11y();
     });
     it("displays a success message", () => {
       cy.contains("Account set up complete");
