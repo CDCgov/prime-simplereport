@@ -235,6 +235,7 @@ export const es: LanguageConfig = {
       },
     },
     selfRegistration: {
+      title: "Formulario de inscripción a la prueba",
       form: {
         complete: "Inscripción completa",
         inProgress: "Inscríbase para programar su prueba",
@@ -244,6 +245,7 @@ export const es: LanguageConfig = {
         },
       },
       confirmation: {
+        title: "Inscripción a la prueba completa",
         registered:
           "<0>{{personName}}</0>, gracias por completar su perfil de paciente en {{entityName}}.",
         checkIn:
@@ -258,6 +260,7 @@ export const es: LanguageConfig = {
       },
     },
     testResult: {
+      title: "Resultado de la prueba",
       resultLiteral: "resultado",
       result: "Resultado de SARS-CoV-2",
       covidResultHeader: "Resultado de la prueba: COVID-19",
@@ -390,7 +393,8 @@ export const es: LanguageConfig = {
         },
       },
       tos: {
-        header: "Términos de servicio",
+        header: "Condiciones del servicio",
+        title: "Condiciones del servicio",
         introText:
           "Este centro de pruebas utiliza <0>SimpleReport</0> para gestionar las pruebas de COVID-19 y sus correspondientes notificaciones. Los términos a continuación " +
           "explican las políticas y condiciones del servicio de SimpleReport.",
@@ -531,6 +535,7 @@ export const es: LanguageConfig = {
         },
       },
       dob: {
+        title: "Verificación del resultado de la prueba",
         header: "Acceda al resultado de su prueba de COVID-19",
         dateOfBirth: "Fecha de nacimiento",
         enterDOB: "Ingrese su fecha de nacimiento",
