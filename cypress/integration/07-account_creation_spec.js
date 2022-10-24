@@ -16,6 +16,8 @@ Cypress.Commands.add("setPassword", () => {
   cy.get('input[name="confirm-password"]').type(pass);
   cy.get(submitButton).click();
   cy.contains("Select your security question");
+  cy.injectAxe();
+  cy.checkA11y();
 });
 
 Cypress.Commands.add("setSecurityQuestion", () => {
@@ -25,6 +27,8 @@ Cypress.Commands.add("setSecurityQuestion", () => {
   cy.get('input[name="answer"]').type("Jane Doe");
   cy.get(submitButton).click();
   cy.contains("Set up authentication");
+  cy.injectAxe();
+  cy.checkA11y();
 });
 
 Cypress.Commands.add("mfaSelect", (choice) => {
@@ -37,6 +41,8 @@ Cypress.Commands.add("mfaSelect", (choice) => {
 
 Cypress.Commands.add("enterPhoneNumber", () => {
   cy.contains("Get your security code via");
+  cy.injectAxe();
+  cy.checkA11y();
   cy.get('input[name="phone-number"]').type("530867530");
   cy.contains("Get your security code via").click();
   cy.contains("Enter a valid phone number");
@@ -47,11 +53,15 @@ Cypress.Commands.add("enterPhoneNumber", () => {
 
 Cypress.Commands.add("scanQrCode", () => {
   cy.contains("Get your security code via");
+  cy.injectAxe();
+  cy.checkA11y();
   cy.get(submitButton).click();
 });
 
 Cypress.Commands.add("verifySecurityCode", (code) => {
   cy.contains("Verify your security code.");
+  cy.injectAxe();
+  cy.checkA11y();
   cy.get('input[name="security-code"]').type(code);
   cy.get(submitButton).first().click();
 });
@@ -82,23 +92,23 @@ describe("Okta account creation", () => {
     });
     it("sets a password", () => {
       cy.setPassword();
-      cy.injectAxe();
-      cy.checkA11y();
+      // cy.injectAxe();
+      // cy.checkA11y();
     });
     it("sets a security question", () => {
       cy.setSecurityQuestion();
-      cy.injectAxe();
-      cy.checkA11y();
+      // cy.injectAxe();
+      // cy.checkA11y();
     });
     it("selects SMS MFA", () => {
       cy.mfaSelect("sms");
-      cy.injectAxe();
-      cy.checkA11y();
+      // cy.injectAxe();
+      // cy.checkA11y();
     });
     it("enters a phone number", () => {
       cy.enterPhoneNumber();
-      cy.injectAxe();
-      cy.checkA11y();
+      // cy.injectAxe();
+      // cy.checkA11y();
     });
     it("enters a verification code", () => {
       cy.verifySecurityCode("033457");
@@ -135,6 +145,8 @@ describe("Okta account creation", () => {
     });
     it("displays a success message", () => {
       cy.contains("Account set up complete");
+      cy.injectAxe();
+      cy.checkA11y();
     });
   });
 
@@ -163,6 +175,8 @@ describe("Okta account creation", () => {
     });
     it("displays a success message", () => {
       cy.contains("Account set up complete");
+      cy.injectAxe();
+      cy.checkA11y();
     });
   });
 
@@ -191,6 +205,8 @@ describe("Okta account creation", () => {
     });
     it("displays a success message", () => {
       cy.contains("Account set up complete");
+      cy.injectAxe();
+      cy.checkA11y();
     });
   });
 
@@ -216,6 +232,8 @@ describe("Okta account creation", () => {
     });
     it("displays a success message", () => {
       cy.contains("Account set up complete");
+      cy.injectAxe();
+      cy.checkA11y();
     });
   });
 });
