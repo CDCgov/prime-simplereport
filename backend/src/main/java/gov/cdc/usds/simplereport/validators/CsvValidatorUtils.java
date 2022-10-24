@@ -16,30 +16,33 @@ import java.io.InputStreamReader;
 import java.nio.charset.StandardCharsets;
 import java.util.ArrayList;
 import java.util.Collections;
-import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
+import java.util.stream.Collectors;
+import java.util.stream.Stream;
 import lombok.Getter;
 
 public class CsvValidatorUtils {
 
-  public static final String ZIP_CODE_REGEX = "^[0-9]{5}(?:-[0-9]{4})?$";
+  private static final String ZIP_CODE_REGEX = "^[0-9]{5}(?:-[0-9]{4})?$";
 
   /// 000-000-0000
-  public static final String PHONE_NUMBER_REGEX = "^[1-9]\\d{2}-\\d{3}-\\d{4}$";
+  private static final String PHONE_NUMBER_REGEX = "^[1-9]\\d{2}-\\d{3}-\\d{4}$";
 
   // MM/DD/YYYY OR M/D/YYYY
-  public static final String DATE_REGEX = "^\\d{1,2}\\/\\d{1,2}\\/\\d{4}$";
+  private static final String DATE_REGEX = "^\\d{1,2}\\/\\d{1,2}\\/\\d{4}$";
 
   // MM/DD/YYYY HH:mm, MM/DD/YYYY H:mm, M/D/YYYY HH:mm OR M/D/YYYY H:mm
-  public static final String DATE_TIME_REGEX =
+  private static final String DATE_TIME_REGEX =
       "^\\d{1,2}\\/\\d{1,2}\\/\\d{4}( ([0-1]?[0-9]|2[0-3]):[0-5][0-9])?$";
-  public static final String EMAIL_REGEX = "^[\\w-\\.]+@([\\w-]+\\.)+[\\w-]{2,4}$";
-  public static final String CLIA_REGEX = "^[A-Za-z0-9]{2}[Dd][A-Za-z0-9]{7}$";
-  public static final String ALPHABET_REGEX = "^[a-zA-Z]+$";
-  public static final Set<String> VALID_STATE_CODES = new HashSet<>();
-  public static final Set<String> GENDER_VALUES =
+  private static final String EMAIL_REGEX = "^[\\w-\\.]+@([\\w-]+\\.)+[\\w-]{2,4}$";
+  private static final String CLIA_REGEX = "^[A-Za-z0-9]{2}[Dd][A-Za-z0-9]{7}$";
+  private static final String ALPHABET_REGEX = "^[a-zA-Z]+$";
+  private static final Set<String> VALID_STATE_CODES =
+      Stream.concat(STATE_CODES.stream(), CANADIAN_STATE_CODES.stream())
+          .collect(Collectors.toSet());
+  private static final Set<String> GENDER_VALUES =
       Set.of(
           "M", "Male",
           "F", "Female",
@@ -47,12 +50,12 @@ public class CsvValidatorUtils {
           "U", "Unknown",
           "A", "Ambiguous",
           "N", "Not applicable");
-  public static final Set<String> ETHNICITY_VALUES =
+  private static final Set<String> ETHNICITY_VALUES =
       Set.of(
           "2135-2", "Hispanic or Latino",
           "2186-5", "Not Hispanic or Latino",
           "UNK", "Unknown");
-  public static final Set<String> RACE_VALUES =
+  private static final Set<String> RACE_VALUES =
       Set.of(
           "1002-5", "American Indian or Alaska Native",
           "2028-9", "Asian",
@@ -62,14 +65,14 @@ public class CsvValidatorUtils {
           "2131-1", "Other",
           "ASKU", "Ask but unknown",
           "UNK", "Unknown");
-  public static final Set<String> YES_NO_VALUES =
+  private static final Set<String> YES_NO_VALUES =
       Set.of(
           "Y", "YES",
           "N", "NO",
           "U", "UNK");
-  public static final Set<String> TEST_RESULT_VALUES =
+  private static final Set<String> TEST_RESULT_VALUES =
       Set.of("Positive", "Negative", "Not Detected", "Detected", "Invalid Result");
-  public static final Set<String> SPECIMEN_TYPE_VALUES =
+  private static final Set<String> SPECIMEN_TYPE_VALUES =
       Set.of(
           "Nasal Swab",
           "Nasopharyngeal Swab",
@@ -79,7 +82,7 @@ public class CsvValidatorUtils {
           "Whole Blood",
           "Plasma",
           "Serum");
-  public static final Set<String> RESIDENCE_VALUES =
+  private static final Set<String> RESIDENCE_VALUES =
       Set.of(
           "22232009", "Hospital",
           "2081004", "Hospital Ship",
@@ -99,14 +102,12 @@ public class CsvValidatorUtils {
           "285113009", "Religious Institutional Residence",
           "285141008", "Work (environment)",
           "32911000", "Homeless");
-  public static final Set<String> TEST_RESULT_STATUS_VALUES = Set.of("F", "C");
-  public static final String ITEM_SCOPE = "item";
-  public static final String REPORT_SCOPE = "report";
-
-  public CsvValidatorUtils() {
-    VALID_STATE_CODES.addAll(STATE_CODES);
-    VALID_STATE_CODES.addAll(CANADIAN_STATE_CODES);
-  }
+  private static final Set<String> PATIENT_ROLE_VALUES =
+      Set.of("Staff", "Resident", "Student", "Visitor", "Unknown");
+  private static final Set<String> PHONE_NUMBER_TYPE_VALUES = Set.of("mobile", "landline");
+  private static final Set<String> TEST_RESULT_STATUS_VALUES = Set.of("F", "C");
+  private static final String ITEM_SCOPE = "item";
+  private static final String REPORT_SCOPE = "report";
 
   public static List<FeedbackMessage> validateTestResult(ValueOrError input) {
     return validateSpecificValueOrSNOMED(input, TEST_RESULT_VALUES);
@@ -114,20 +115,6 @@ public class CsvValidatorUtils {
 
   public static List<FeedbackMessage> validateSpecimenType(ValueOrError input) {
     return validateSpecificValueOrSNOMED(input, SPECIMEN_TYPE_VALUES);
-  }
-
-  public static List<FeedbackMessage> validateSpecificValueOrSNOMED(
-      ValueOrError input, Set<String> acceptableValues) {
-    List<FeedbackMessage> errors = new ArrayList<>();
-    String value = parseString(input.getValue());
-    if (value == null) {
-      return errors;
-    }
-    boolean nonSNOMEDValue = value.matches(ALPHABET_REGEX);
-    if (nonSNOMEDValue) {
-      return validateInSet(input, acceptableValues);
-    }
-    return errors;
   }
 
   public static List<FeedbackMessage> validateResidence(ValueOrError input) {
@@ -146,7 +133,7 @@ public class CsvValidatorUtils {
     return validateInSet(input, RACE_VALUES);
   }
 
-  public static List<FeedbackMessage> validateGender(ValueOrError input) {
+  public static List<FeedbackMessage> validateBiologicalSex(ValueOrError input) {
     return validateInSet(input, GENDER_VALUES);
   }
 
@@ -166,6 +153,14 @@ public class CsvValidatorUtils {
     return validateRegex(input, PHONE_NUMBER_REGEX);
   }
 
+  public static List<FeedbackMessage> validatePhoneNumberType(ValueOrError input) {
+    return validateInSet(input, PHONE_NUMBER_TYPE_VALUES);
+  }
+
+  public static List<FeedbackMessage> validateRole(ValueOrError input) {
+    return validateInSet(input, PATIENT_ROLE_VALUES);
+  }
+
   public static List<FeedbackMessage> validateClia(ValueOrError input) {
     return validateRegex(input, CLIA_REGEX);
   }
@@ -180,44 +175,6 @@ public class CsvValidatorUtils {
 
   public static List<FeedbackMessage> validateEmail(ValueOrError input) {
     return validateRegex(input, EMAIL_REGEX);
-  }
-
-  public static List<FeedbackMessage> validateRegex(ValueOrError input, String regex) {
-    List<FeedbackMessage> errors = new ArrayList<>();
-    String value = parseString(input.getValue());
-    if (value == null) {
-      return errors;
-    }
-    if (!value.matches(regex)) {
-      errors.add(
-          new FeedbackMessage(
-              ITEM_SCOPE,
-              input.getValue() + " is not a valid value for column " + input.getHeader()));
-    }
-    return errors;
-  }
-
-  public static List<FeedbackMessage> validateInSet(
-      ValueOrError input, Set<String> acceptableValues) {
-    List<FeedbackMessage> errors = new ArrayList<>();
-    String value = parseString(input.getValue());
-    if (value == null) {
-      return errors;
-    }
-    if (!acceptableValues.contains(value)) {
-      errors.add(
-          new FeedbackMessage(
-              ITEM_SCOPE,
-              input.getValue() + " is not an acceptable value for column " + input.getHeader()));
-    }
-    return errors;
-  }
-
-  public static String parseString(String value) {
-    if (value == null || "".equals(value)) {
-      return null;
-    }
-    return value.trim();
   }
 
   public static Map<String, String> getNextRow(MappingIterator<Map<String, String>> valueIterator)
@@ -251,6 +208,59 @@ public class CsvValidatorUtils {
     } catch (IOException e) {
       throw new IllegalArgumentException(e.getMessage());
     }
+  }
+
+  private static List<FeedbackMessage> validateSpecificValueOrSNOMED(
+      ValueOrError input, Set<String> acceptableValues) {
+    List<FeedbackMessage> errors = new ArrayList<>();
+    String value = parseString(input.getValue());
+    if (value == null) {
+      return errors;
+    }
+    boolean nonSNOMEDValue = value.matches(ALPHABET_REGEX);
+    if (nonSNOMEDValue) {
+      return validateInSet(input, acceptableValues);
+    }
+    return errors;
+  }
+
+  private static List<FeedbackMessage> validateRegex(ValueOrError input, String regex) {
+    List<FeedbackMessage> errors = new ArrayList<>();
+    String value = parseString(input.getValue());
+    if (value == null) {
+      return errors;
+    }
+    if (!value.matches(regex)) {
+      errors.add(
+          new FeedbackMessage(
+              ITEM_SCOPE,
+              input.getValue() + " is not a valid value for column " + input.getHeader()));
+    }
+    return errors;
+  }
+
+  private static List<FeedbackMessage> validateInSet(
+      ValueOrError input, Set<String> acceptableValues) {
+    List<FeedbackMessage> errors = new ArrayList<>();
+    String value = parseString(input.getValue());
+    if (value == null) {
+      return errors;
+    }
+    if (!acceptableValues.contains(value)) {
+      errors.add(
+          new FeedbackMessage(
+              ITEM_SCOPE,
+              input.getValue() + " is not an acceptable value for column " + input.getHeader()));
+    }
+    return errors;
+  }
+
+  private static String parseString(String value) {
+    if (value == null || "".equals(value)) {
+      return null;
+    }
+    // TODO: test this out with different casing for race/ethnicity/etc
+    return value.trim();
   }
 
   @Getter
