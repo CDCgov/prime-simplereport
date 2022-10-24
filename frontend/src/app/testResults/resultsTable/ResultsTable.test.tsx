@@ -7,6 +7,7 @@ import TEST_RESULT_COVID from "../mocks/resultsCovid.mock";
 
 import ResultsTable, { generateTableHeaders } from "./ResultsTable";
 
+const TEST_RESULTS_MULTIPLEX_CONTENT = TEST_RESULTS_MULTIPLEX.content;
 describe("Method generateTableHeaders", () => {
   const table = (headers: JSX.Element) => (
     <table>
@@ -99,7 +100,7 @@ describe("Component ResultsTable", () => {
   it("checks table with covid results", () => {
     render(
       <ResultsTable
-        results={[TEST_RESULT_COVID[0]]}
+        results={[TEST_RESULT_COVID.content[0]]}
         setPrintModalId={setPrintModalIdFn}
         setMarkCorrectionId={setMarkCorrectionIdFn}
         setDetailsModalId={setDetailsModalIdFn}
@@ -118,7 +119,7 @@ describe("Component ResultsTable", () => {
   it("checks table with multiplex results", () => {
     render(
       <ResultsTable
-        results={TEST_RESULTS_MULTIPLEX}
+        results={TEST_RESULTS_MULTIPLEX_CONTENT}
         setPrintModalId={setPrintModalIdFn}
         setMarkCorrectionId={setMarkCorrectionIdFn}
         setDetailsModalId={setDetailsModalIdFn}
@@ -129,7 +130,7 @@ describe("Component ResultsTable", () => {
       />
     );
 
-    TEST_RESULTS_MULTIPLEX.forEach((result) => {
+    TEST_RESULTS_MULTIPLEX_CONTENT.forEach((result) => {
       expect(
         screen.getByTestId(`test-result-${result.internalId}`)
       ).toBeInTheDocument();
@@ -142,7 +143,9 @@ describe("Component ResultsTable", () => {
   describe("actions menu", () => {
     describe("text result action", () => {
       it("includes `Text result` if patient has mobile number", () => {
-        const testResultPatientMobileNumber = [TEST_RESULTS_MULTIPLEX[1]];
+        const testResultPatientMobileNumber = [
+          TEST_RESULTS_MULTIPLEX_CONTENT[1],
+        ];
 
         render(
           <ResultsTable
@@ -169,7 +172,9 @@ describe("Component ResultsTable", () => {
       });
 
       it("does not include `Text result` if no patient mobile number", () => {
-        const testResultPatientNoMobileNumber = [TEST_RESULTS_MULTIPLEX[0]];
+        const testResultPatientNoMobileNumber = [
+          TEST_RESULTS_MULTIPLEX_CONTENT[0],
+        ];
 
         render(
           <ResultsTable
@@ -197,7 +202,7 @@ describe("Component ResultsTable", () => {
     });
     describe("email result action", () => {
       it("includes `Email result` if patient email address", () => {
-        const testResultPatientEmail = [TEST_RESULTS_MULTIPLEX[0]];
+        const testResultPatientEmail = [TEST_RESULTS_MULTIPLEX_CONTENT[0]];
 
         render(
           <ResultsTable
@@ -224,7 +229,7 @@ describe("Component ResultsTable", () => {
       });
 
       it("does not include `Email result` if no patient email address", () => {
-        const testResultPatientNoEmail = [TEST_RESULTS_MULTIPLEX[1]];
+        const testResultPatientNoEmail = [TEST_RESULTS_MULTIPLEX_CONTENT[1]];
 
         render(
           <ResultsTable
