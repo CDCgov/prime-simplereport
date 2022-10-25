@@ -6,8 +6,9 @@ import { useDocumentTitle } from "../utils/hooks";
 import Button from "../commonComponents/Button/Button";
 import RadioGroup from "../commonComponents/RadioGroup";
 import Dropdown from "../commonComponents/Dropdown";
-import { Facility } from "../../generated/graphql";
+import { Facility, FeedbackMessage } from "../../generated/graphql";
 import { showError } from "../utils/srToast";
+import { FileUploadService } from "../../fileUploadService/FileUploadService";
 
 import { AddPatientHeader } from "./Components/AddPatientsHeader";
 
@@ -17,6 +18,12 @@ const UploadPatients = () => {
   const [buttonIsDisabled, setButtonIsDisabled] = useState(true);
   const [selectedFacility, setSelectedFacility] = useState<Facility>();
   const [file, setFile] = useState<File>();
+  const [isSubmitting, setIsSubmitting] = useState(false);
+  const [errors, setErrors] = useState<
+    Array<FeedbackMessage | undefined | null>
+  >([]);
+  const [errorMessageText, setErrorMessageText] = useState("");
+  const [status, setStatus] = useState("");
 
   const facilities = useSelector(
     (state) => ((state as any).facilities as Facility[]) || []
@@ -43,9 +50,52 @@ const UploadPatients = () => {
       }
       setFile(currentFile);
       setButtonIsDisabled(false);
+      setStatus("");
     } catch (err: any) {
       showError(`An unexpected error happened: '${err.toString()}'`);
     }
+  };
+
+  const handleSubmit = async (event: React.FormEvent<HTMLButtonElement>) => {
+    event.preventDefault();
+
+    setIsSubmitting(true);
+    setButtonIsDisabled(true);
+    setErrors([]);
+    setErrorMessageText("");
+
+    if (!file || file.size === 0) {
+      setButtonIsDisabled(false);
+      const errorMessage = {} as FeedbackMessage;
+      errorMessage.message = "Invalid File";
+      setErrors([errorMessage]);
+      return;
+    }
+    const facilityId = facilityAmount === "oneFacility" ? facility.id : "";
+    FileUploadService.uploadPatients(file, facilityId).then(async (res) => {
+      setIsSubmitting(false);
+      setFile(undefined);
+      setButtonIsDisabled(true);
+
+      if (res.status !== 200) {
+        setStatus("fail");
+        setErrorMessageText(
+          "There was a server error. Your file has not been accepted."
+        );
+        if (res.body) {
+          const response = await res.json();
+
+          if (response?.errors?.length) {
+            setErrorMessageText(
+              "Please resolve the errors below and upload your edited file."
+            );
+            setErrors(response.errors);
+          }
+        }
+      } else {
+        setStatus("success");
+      }
+    });
   };
 
   return (
@@ -144,6 +194,55 @@ const UploadPatients = () => {
             errors or when the upload is complete.
           </div>
           <div style={{ marginLeft: "20px", marginTop: "8px" }}>
+            {status === "success" && (
+              <div>
+                <div
+                  className="usa-alert usa-alert--success"
+                  style={{ maxWidth: "50%" }}
+                >
+                  <div className="usa-alert__body">
+                    <h3 className="usa-alert__heading">
+                      Success: File Accepted
+                    </h3>
+                    <p className="usa-alert__text">
+                      Patients in your file have been successfully uploaded.
+                    </p>
+                  </div>
+                </div>
+              </div>
+            )}
+            {errorMessageText && (
+              <div>
+                <div className="usa-alert usa-alert--error" role="alert">
+                  <div className="usa-alert__body">
+                    <h3 className="usa-alert__heading">
+                      Error: File not accepted
+                    </h3>
+                    <p className="usa-alert__text">{errorMessageText}</p>
+                  </div>
+                </div>
+                {errors.length > 0 && (
+                  <table className="usa-table usa-table--borderless">
+                    <thead>
+                      <tr>
+                        <th>Requested Edit</th>
+                        <th>Areas Containing the Requested Edit</th>
+                      </tr>
+                    </thead>
+                    <tbody>
+                      {errors.map((e, i) => {
+                        return (
+                          <tr key={"error_" + i}>
+                            <td>{e?.["message"]} </td>
+                            <td>Row(s): {e?.["indices"]}</td>
+                          </tr>
+                        );
+                      })}
+                    </tbody>
+                  </table>
+                )}
+              </div>
+            )}
             <FormGroup className="margin-bottom-3">
               <FileInput
                 id="upload-csv-input"
@@ -156,8 +255,11 @@ const UploadPatients = () => {
             </FormGroup>
           </div>
           <div>
-            <Button disabled={buttonIsDisabled || facilityAmount === undefined}>
-              Upload CSV file
+            <Button
+              disabled={buttonIsDisabled || facilityAmount === undefined}
+              onClick={handleSubmit}
+            >
+              {isSubmitting ? "Processing file..." : "Upload CSV file"}
             </Button>
           </div>
         </div>
