@@ -1,14 +1,31 @@
-import React from "react";
+import React, { useState } from "react";
 import { FileInput, FormGroup } from "@trussworks/react-uswds";
+import { useSelector } from "react-redux";
 
 import { useDocumentTitle } from "../utils/hooks";
 import Button from "../commonComponents/Button/Button";
 import RadioGroup from "../commonComponents/RadioGroup";
+import Dropdown from "../commonComponents/Dropdown";
+import { Facility } from "../../generated/graphql";
 
 import { AddPatientHeader } from "./Components/AddPatientsHeader";
 
 const UploadPatients = () => {
   useDocumentTitle("Add Patient");
+  const [facilityAmount, setFacilityAmount] = useState<string>();
+
+  const facilities = useSelector(
+    (state) => ((state as any).facilities as Facility[]) || []
+  );
+  const [selectedFacility, setSelectedFacility] = useState<Facility>();
+  const facility = selectedFacility || { id: "", name: "" };
+
+  const onFacilitySelect = (e: React.ChangeEvent<HTMLSelectElement>) => {
+    const selected = facilities.find((f) => f.id === e.target.value);
+    if (selected) {
+      setSelectedFacility(selected);
+    }
+  };
 
   return (
     <div className={"prime-edit-patient prime-home flex-1"}>
@@ -63,19 +80,34 @@ const UploadPatients = () => {
               legendSrOnly
               buttons={[
                 {
-                  value: "current",
+                  value: "oneFacility",
                   label: "One facility",
                 },
                 {
-                  value: "all",
+                  value: "allFacility",
                   label: "All facilities",
                 },
               ]}
-              // selectedRadio={selectedFacility}
-              onChange={() => {}}
+              selectedRadio={facilityAmount}
+              onChange={setFacilityAmount}
               variant="horizontal"
             />
           </div>
+          {facilityAmount === "oneFacility" && (
+            <div style={{ marginLeft: "20px", marginTop: "20px" }}>
+              <div>Which facility?</div>
+              <Dropdown
+                selectedValue={facility.id}
+                onChange={onFacilitySelect}
+                className={"grid-col-4"}
+                options={facilities.map(({ name, id }) => ({
+                  label: name,
+                  value: id,
+                }))}
+              />
+            </div>
+          )}
+
           <div
             style={{ fontSize: "22px", marginTop: "56px", marginBottom: "8px" }}
           >
