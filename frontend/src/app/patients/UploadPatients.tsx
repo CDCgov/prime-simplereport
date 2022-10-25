@@ -45,7 +45,9 @@ const UploadPatients = () => {
               marginLeft: "20px",
             }}
           >
-            <h3 className="usa-alert__heading">Follow formatting guidelines</h3>
+            <span className="usa-alert__heading text-bold">
+              Follow formatting guidelines
+            </span>
             <p className="usa-alert__text">
               To upload patients in bulk, spreadsheets need to match
               SimpleReport data requirements. Follow the Patient bulk upload
@@ -97,6 +99,7 @@ const UploadPatients = () => {
             <div style={{ marginLeft: "20px", marginTop: "20px" }}>
               <div>Which facility?</div>
               <Dropdown
+                aria-label={"Select facility"}
                 selectedValue={facility.id}
                 onChange={onFacilitySelect}
                 className={"grid-col-4"}
