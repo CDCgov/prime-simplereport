@@ -40,8 +40,11 @@ class FileUploadControllerTest extends BaseFullStackTest {
 
   @Test
   void patientsUploadTest_happy() throws Exception {
+    PatientBulkUploadResponse success = new PatientBulkUploadResponse();
+    success.setStatus(UploadStatus.SUCCESS);
+
     when(patientPatientBulkUploadService.processPersonCSV(any(InputStream.class), any()))
-        .thenReturn("Successfully uploaded 1 record(s)");
+        .thenReturn(success);
 
     MockMultipartFile file =
         new MockMultipartFile(
@@ -116,8 +119,11 @@ class FileUploadControllerTest extends BaseFullStackTest {
 
   @Test
   void patientsUploadTest_acceptsUUIDForFacilityId() throws Exception {
+    PatientBulkUploadResponse success = new PatientBulkUploadResponse();
+    success.setStatus(UploadStatus.SUCCESS);
+
     when(patientPatientBulkUploadService.processPersonCSV(any(InputStream.class), any(UUID.class)))
-        .thenReturn("Successfully uploaded 1 record(s)");
+        .thenReturn(success);
 
     MockMultipartFile file =
         new MockMultipartFile(

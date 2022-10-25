@@ -15,11 +15,18 @@ import com.fasterxml.jackson.databind.RuntimeJsonMappingException;
 import com.fasterxml.jackson.dataformat.csv.CsvMapper;
 import com.fasterxml.jackson.dataformat.csv.CsvParser;
 import com.fasterxml.jackson.dataformat.csv.CsvSchema;
+import gov.cdc.usds.simplereport.api.model.errors.CsvProcessingException;
+import gov.cdc.usds.simplereport.api.uploads.PatientBulkUploadResponse;
 import gov.cdc.usds.simplereport.config.AuthorizationConfiguration;
 import gov.cdc.usds.simplereport.db.model.Facility;
+import gov.cdc.usds.simplereport.db.model.Organization;
 import gov.cdc.usds.simplereport.db.model.auxiliary.PhoneNumberInput;
 import gov.cdc.usds.simplereport.db.model.auxiliary.StreetAddress;
+import gov.cdc.usds.simplereport.db.model.auxiliary.UploadStatus;
+import gov.cdc.usds.simplereport.service.model.reportstream.FeedbackMessage;
+import gov.cdc.usds.simplereport.validators.PatientBulkUploadFileValidator;
 import java.io.BufferedReader;
+import java.io.ByteArrayInputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
@@ -35,7 +42,12 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-/** Created by nickrobison on 11/21/20 */
+/**
+ * Service to upload a roster of patient data given a CSV input. Formerly restricted to superusers
+ * but now available to end users.
+ *
+ * <p>Updated by emmastephenson on 10/24/2022
+ */
 @Service
 @Transactional
 @RequiredArgsConstructor
@@ -44,9 +56,10 @@ public class PatientBulkUploadService {
   private static final int MAX_LINE_LENGTH = 1024 * 6;
   public static final String ZIP_CODE_REGEX = "^[0-9]{5}(?:-[0-9]{4})?$";
 
-  private final PersonService personService;
-  private final AddressValidationService addressValidationService;
-  private final OrganizationService organizationService;
+  private final PersonService _personService;
+  private final AddressValidationService _addressValidationService;
+  private final OrganizationService _organizationService;
+  private final PatientBulkUploadFileValidator _patientBulkUploadFileValidator;
   private boolean hasHeaderRow = false;
 
   private MappingIterator<Map<String, String>> getIteratorForCsv(InputStream csvStream)
@@ -87,11 +100,40 @@ public class PatientBulkUploadService {
     return value;
   }
 
+  // This authorization will change once we open the feature to end users
   @AuthorizationConfiguration.RequireGlobalAdminUser
-  public String processPersonCSV(InputStream csvStream, UUID facilityId)
+  public PatientBulkUploadResponse processPersonCSV(InputStream csvStream, UUID facilityId)
       throws IllegalArgumentException {
+
+    PatientBulkUploadResponse result = new PatientBulkUploadResponse();
+    result.setStatus(UploadStatus.FAILURE);
+
+    Organization org = _organizationService.getCurrentOrganization();
+
+    byte[] content;
+
+    try {
+      content = csvStream.readAllBytes();
+    } catch (IOException e) {
+      log.error("Error reading patient bulk upload CSV", e);
+      throw new CsvProcessingException("Unable to read csv");
+    }
+
+    List<FeedbackMessage> errors =
+        _patientBulkUploadFileValidator.validate(new ByteArrayInputStream(content));
+
+    if (!errors.isEmpty()) {
+      result.setErrors(errors.toArray(FeedbackMessage[]::new));
+      return result;
+    }
+
+    // This is the point where we need to figure out multithreading
+    // because what needs to happen is that we return a success message to the end user
+    // but continue to process the csv (create person records) in the background.
+    // Putting a pin in it for now.
+    // We shall return...
+
     final MappingIterator<Map<String, String>> valueIterator = getIteratorForCsv(csvStream);
-    final var org = organizationService.getCurrentOrganization();
 
     // Since the CSV parser won't fail when give a single string, we simple check to see if it has
     // any parsed values
@@ -109,7 +151,7 @@ public class PatientBulkUploadService {
       rowNumber++;
       try {
         Optional<Facility> facility =
-            Optional.ofNullable(facilityId).map(organizationService::getFacilityInCurrentOrg);
+            Optional.ofNullable(facilityId).map(_organizationService::getFacilityInCurrentOrg);
 
         String zipCode = getRow(row, "ZipCode", true);
         if (!zipCode.matches(ZIP_CODE_REGEX)) {
@@ -117,7 +159,7 @@ public class PatientBulkUploadService {
         }
 
         StreetAddress address =
-            addressValidationService.getValidatedAddress(
+            _addressValidationService.getValidatedAddress(
                 getRow(row, "Street", true),
                 getRow(row, "Street2", false),
                 getRow(row, "City", false),
@@ -134,11 +176,11 @@ public class PatientBulkUploadService {
           country = "USA";
         }
 
-        if (personService.isDuplicatePatient(firstName, lastName, dob, org, facility)) {
+        if (_personService.isDuplicatePatient(firstName, lastName, dob, org, facility)) {
           continue;
         }
 
-        personService.addPatient(
+        _personService.addPatient(
             facilityId,
             null, // lookupID
             firstName,
