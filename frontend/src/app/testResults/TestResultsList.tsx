@@ -2,7 +2,7 @@ import qs from "querystring";
 
 import { useLocation, useNavigate, useParams } from "react-router-dom";
 import { useLazyQuery } from "@apollo/client";
-import React, {
+import {
   ChangeEventHandler,
   useCallback,
   useEffect,
@@ -43,9 +43,9 @@ import Select from "../commonComponents/Select";
 import { useSelectedFacility } from "../facilitySelect/useSelectedFacility";
 import { appPermissions, hasPermission } from "../permissions";
 import {
+  GetFacilityResultsMultiplexWithCountQuery,
   useGetAllFacilitiesQuery,
-  useGetFacilityResultsMultiplexQuery,
-  useGetResultsCountByFacilityQuery,
+  useGetFacilityResultsMultiplexWithCountQuery,
 } from "../../generated/graphql";
 import { waitForElement } from "../utils/elements";
 
@@ -75,9 +75,8 @@ export const byDateTested = (a: any, b: any) => {
  */
 
 interface DetachedTestResultsListProps {
-  data: any;
+  data: GetFacilityResultsMultiplexWithCountQuery | undefined;
   loading: boolean;
-  loadingTotalResults: boolean;
   pageNumber: number;
   entriesPerPage: number;
   totalEntries: number;
@@ -99,8 +98,13 @@ const getResultCountText = (
   return `Showing ${from}-${to} of ${totalEntries}`;
 };
 
-const getFilteredPatientName = (params: FilterParams, data: any) => {
-  const person = data?.testResults[0]?.patient;
+const getFilteredPatientName = (
+  params: FilterParams,
+  data: GetFacilityResultsMultiplexWithCountQuery
+) => {
+  const firstLoadedContentEntry =
+    data?.testResultsPage?.content && data?.testResultsPage?.content[0];
+  const person = firstLoadedContentEntry && firstLoadedContentEntry.patient;
   if (params.patientId && person) {
     return displayFullName(
       person.firstName,
@@ -133,7 +137,6 @@ export const DetachedTestResultsList = ({
   pageNumber,
   entriesPerPage,
   loading,
-  loadingTotalResults,
   totalEntries,
   activeFacilityId,
   filterParams,
@@ -203,10 +206,12 @@ export const DetachedTestResultsList = ({
   }, [filterParams, setDebounced]);
 
   useEffect(() => {
-    const patientName = getFilteredPatientName(filterParams, data);
-    if (patientName) {
-      setDebounced(patientName);
-      setShowSuggestion(false);
+    if (data) {
+      const patientName = getFilteredPatientName(filterParams, data);
+      if (patientName) {
+        setDebounced(patientName);
+        setShowSuggestion(false);
+      }
     }
   }, [filterParams, data, setDebounced]);
 
@@ -314,7 +319,7 @@ export const DetachedTestResultsList = ({
     );
   }
 
-  const testResults = data?.testResults || [];
+  const testResults = data?.testResultsPage?.content || [];
   const displayFacilityColumn =
     filterParams.filterFacilityId === ALL_FACILITIES_ID ||
     activeFacilityId === ALL_FACILITIES_ID;
@@ -393,7 +398,7 @@ export const DetachedTestResultsList = ({
           <div className="usa-card__header">
             <h1 className="font-sans-lg">
               Test results
-              {!loadingTotalResults && (
+              {!loading && (
                 <span className="sr-showing-results-on-page">
                   {getResultCountText(totalEntries, pageNumber, entriesPerPage)}
                 </span>
@@ -651,26 +656,8 @@ const TestResultsList = () => {
     pageSize: entriesPerPage,
     ...queryParams,
   };
-  const countQueryVariables: {
-    patientId?: string | null;
-    facilityId: string | null;
-    result?: string | null;
-    role?: string | null;
-    startDate?: string | null;
-    endDate?: string | null;
-  } = {
-    facilityId:
-      filterFacilityId === ALL_FACILITIES_ID
-        ? null
-        : filterFacilityId || activeFacilityId,
-    ...queryParams,
-  };
-  const count = useGetResultsCountByFacilityQuery({
-    fetchPolicy: "no-cache",
-    variables: countQueryVariables,
-  });
 
-  const results = useGetFacilityResultsMultiplexQuery({
+  const results = useGetFacilityResultsMultiplexWithCountQuery({
     fetchPolicy: "no-cache",
     variables: resultsQueryVariables,
   });
@@ -679,18 +666,16 @@ const TestResultsList = () => {
     return <div>"No facility selected"</div>;
   }
 
-  if (results.error || count.error) {
-    throw results.error || count.error;
+  if (results.error) {
+    throw results.error;
   }
-
-  const totalEntries = count.data?.testResultsCount || 0;
+  const totalEntries = results.data?.testResultsPage?.totalElements || 0;
 
   return (
     <DetachedTestResultsList
       data={results.data}
       loading={results.loading}
       pageNumber={pageNumber}
-      loadingTotalResults={count.loading}
       entriesPerPage={entriesPerPage}
       totalEntries={totalEntries}
       filterParams={filterParams}
