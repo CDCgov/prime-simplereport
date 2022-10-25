@@ -259,7 +259,6 @@ public class CsvValidatorUtils {
     if (value == null || "".equals(value)) {
       return null;
     }
-    // TODO: test this out with different casing for race/ethnicity/etc
     return value.trim();
   }
 
