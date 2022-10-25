@@ -18,7 +18,7 @@ const UploadPatients = () => {
     (state) => ((state as any).facilities as Facility[]) || []
   );
   const [selectedFacility, setSelectedFacility] = useState<Facility>();
-  const facility = selectedFacility || { id: "", name: "" };
+  const facility = selectedFacility || facilities[0] || { id: "", name: "" };
 
   const onFacilitySelect = (e: React.ChangeEvent<HTMLSelectElement>) => {
     const selected = facilities.find((f) => f.id === e.target.value);
