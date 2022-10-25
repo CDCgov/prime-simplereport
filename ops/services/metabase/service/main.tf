@@ -6,6 +6,7 @@ locals {
     "WEBSITE_VNET_ROUTE_ALL"                          = 1
     "WEBSITE_DNS_SERVER"                              = "168.63.129.16"
     "APPINSIGHTS_INSTRUMENTATIONKEY"                  = var.ai_instrumentation_key
+    "MB_SITE_URL"                                     = var.metabase_url
   }
 }
 

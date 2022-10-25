@@ -29,6 +29,8 @@ module "metabase_service" {
 
   lb_subnet_id = data.terraform_remote_state.persistent_prod.outputs.subnet_lbs_id
 
+  metabase_url = "https://simplereport.gov/metabase/"
+
   depends_on = [
     module.metabase_database
   ]
