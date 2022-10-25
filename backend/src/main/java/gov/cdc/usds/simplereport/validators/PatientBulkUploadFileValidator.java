@@ -5,6 +5,7 @@ import static gov.cdc.usds.simplereport.validators.CsvValidatorUtils.getIterator
 import static gov.cdc.usds.simplereport.validators.CsvValidatorUtils.getNextRow;
 import static gov.cdc.usds.simplereport.validators.CsvValidatorUtils.getValue;
 import static gov.cdc.usds.simplereport.validators.CsvValidatorUtils.validateBiologicalSex;
+import static gov.cdc.usds.simplereport.validators.CsvValidatorUtils.validateDate;
 import static gov.cdc.usds.simplereport.validators.CsvValidatorUtils.validateEmail;
 import static gov.cdc.usds.simplereport.validators.CsvValidatorUtils.validateEthnicity;
 import static gov.cdc.usds.simplereport.validators.CsvValidatorUtils.validatePhoneNumber;
@@ -43,7 +44,7 @@ public class PatientBulkUploadFileValidator {
       ValueOrError middleName = getValue(row, "MiddleName", false);
       ValueOrError suffix = getValue(row, "Suffix", false);
       ValueOrError race = getValue(row, "Race", true);
-      ValueOrError DOB = getValue(row, "DOB", true);
+      ValueOrError dob = getValue(row, "DOB", true);
       ValueOrError biologicalSex = getValue(row, "biologicalSex", true);
       ValueOrError ethnicity = getValue(row, "Ethnicity", true);
       ValueOrError street = getValue(row, "Street", true);
@@ -66,7 +67,7 @@ public class PatientBulkUploadFileValidator {
               middleName,
               suffix,
               race,
-              DOB,
+              dob,
               biologicalSex,
               ethnicity,
               street,
@@ -88,6 +89,7 @@ public class PatientBulkUploadFileValidator {
       // validate individual values
 
       // demographics
+      errors.addAll(validateDate(dob));
       errors.addAll(validateRace(race));
       errors.addAll(validateBiologicalSex(biologicalSex));
       errors.addAll(validateEthnicity(ethnicity));

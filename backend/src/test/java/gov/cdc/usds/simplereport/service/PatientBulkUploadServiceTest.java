@@ -69,14 +69,14 @@ class PatientBulkUploadServiceTest extends BaseServiceTest<PatientBulkUploadServ
   @Test
   void testRowWithEmptyValue() {
     String value = this._service.getRow(Map.of("key1", ""), "key1", false);
-    assertThat(value).isEqualTo("");
+    assertThat(value).isEmpty();
   }
 
   @Test
   void testRowWithEmptyValueRequired() {
+    var emptyRow = Map.of("key1", "");
     assertThrows(
-        IllegalArgumentException.class,
-        () -> this._service.getRow(Map.of("key1", ""), "key1", true));
+        IllegalArgumentException.class, () -> this._service.getRow(emptyRow, "key1", true));
   }
 
   @Test
@@ -108,8 +108,8 @@ class PatientBulkUploadServiceTest extends BaseServiceTest<PatientBulkUploadServ
     // WHEN
     this._service.processPersonCSV(inputStream, null);
 
-    assertThat(getPatientsForFacility(firstFacilityId).size())
-        .isEqualTo(getPatientsForFacility(secondFacilityId).size());
+    assertThat(getPatientsForFacility(firstFacilityId))
+        .hasSameClassAs(getPatientsForFacility(secondFacilityId));
   }
 
   @Test
@@ -120,8 +120,8 @@ class PatientBulkUploadServiceTest extends BaseServiceTest<PatientBulkUploadServ
     // WHEN
     this._service.processPersonCSV(inputStream, firstFacilityId);
 
-    assertThat(getPatientsForFacility(firstFacilityId).size()).isEqualTo(1);
-    assertThat(getPatientsForFacility(secondFacilityId).size()).isEqualTo(0);
+    assertThat(getPatientsForFacility(firstFacilityId)).hasSize(1);
+    assertThat(getPatientsForFacility(secondFacilityId)).isEmpty();
   }
 
   @Test

@@ -42,19 +42,21 @@ public class CsvValidatorUtils {
   private static final Set<String> VALID_STATE_CODES =
       Stream.concat(STATE_CODES.stream(), CANADIAN_STATE_CODES.stream())
           .collect(Collectors.toSet());
+  private static final String UNKNOWN_LITERAL = "Unknown";
+
   private static final Set<String> GENDER_VALUES =
       Set.of(
           "M", "Male",
           "F", "Female",
           "O", "Other",
-          "U", "Unknown",
+          "U", UNKNOWN_LITERAL,
           "A", "Ambiguous",
           "N", "Not applicable");
   private static final Set<String> ETHNICITY_VALUES =
       Set.of(
           "2135-2", "Hispanic or Latino",
           "2186-5", "Not Hispanic or Latino",
-          "UNK", "Unknown");
+          "UNK", UNKNOWN_LITERAL);
   private static final Set<String> RACE_VALUES =
       Set.of(
           "1002-5", "American Indian or Alaska Native",
@@ -64,7 +66,7 @@ public class CsvValidatorUtils {
           "2106-3", "White",
           "2131-1", "Other",
           "ASKU", "Ask but unknown",
-          "UNK", "Unknown");
+          "UNK", UNKNOWN_LITERAL);
   private static final Set<String> YES_NO_VALUES =
       Set.of(
           "Y", "YES",
@@ -103,11 +105,16 @@ public class CsvValidatorUtils {
           "285141008", "Work (environment)",
           "32911000", "Homeless");
   private static final Set<String> PATIENT_ROLE_VALUES =
-      Set.of("Staff", "Resident", "Student", "Visitor", "Unknown");
+      Set.of("Staff", "Resident", "Student", "Visitor", UNKNOWN_LITERAL);
   private static final Set<String> PHONE_NUMBER_TYPE_VALUES = Set.of("mobile", "landline");
   private static final Set<String> TEST_RESULT_STATUS_VALUES = Set.of("F", "C");
   private static final String ITEM_SCOPE = "item";
   private static final String REPORT_SCOPE = "report";
+
+  private CsvValidatorUtils() {
+    throw new IllegalStateException("CsvValidatorUtils is a utility class");
+  }
+  ;
 
   public static List<FeedbackMessage> validateTestResult(ValueOrError input) {
     return validateSpecificValueOrSNOMED(input, TEST_RESULT_VALUES);
