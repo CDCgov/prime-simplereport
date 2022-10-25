@@ -7,23 +7,44 @@ import Button from "../commonComponents/Button/Button";
 import RadioGroup from "../commonComponents/RadioGroup";
 import Dropdown from "../commonComponents/Dropdown";
 import { Facility } from "../../generated/graphql";
+import { showError } from "../utils/srToast";
 
 import { AddPatientHeader } from "./Components/AddPatientsHeader";
 
 const UploadPatients = () => {
   useDocumentTitle("Add Patient");
   const [facilityAmount, setFacilityAmount] = useState<string>();
+  const [buttonIsDisabled, setButtonIsDisabled] = useState(true);
+  const [selectedFacility, setSelectedFacility] = useState<Facility>();
+  const [file, setFile] = useState<File>();
 
   const facilities = useSelector(
     (state) => ((state as any).facilities as Facility[]) || []
   );
-  const [selectedFacility, setSelectedFacility] = useState<Facility>();
   const facility = selectedFacility || facilities[0] || { id: "", name: "" };
 
   const onFacilitySelect = (e: React.ChangeEvent<HTMLSelectElement>) => {
     const selected = facilities.find((f) => f.id === e.target.value);
     if (selected) {
       setSelectedFacility(selected);
+    }
+  };
+
+  const handleFileChange = async (
+    event: React.ChangeEvent<HTMLInputElement>
+  ) => {
+    try {
+      if (!event?.currentTarget?.files?.length) {
+        return; //no files
+      }
+      const currentFile = event.currentTarget.files.item(0);
+      if (!currentFile) {
+        return;
+      }
+      setFile(currentFile);
+      setButtonIsDisabled(false);
+    } catch (err: any) {
+      showError(`An unexpected error happened: '${err.toString()}'`);
     }
   };
 
@@ -114,7 +135,8 @@ const UploadPatients = () => {
           <div
             style={{ fontSize: "22px", marginTop: "56px", marginBottom: "8px" }}
           >
-            3. Upload your spreadsheet.
+            3. Upload your spreadsheet
+            {facilityAmount === "oneFacility" && " for " + facility.name}.
           </div>
           <div style={{ marginLeft: "20px" }}>
             The spreadsheet may take 10 or more minutes to upload. You do not
@@ -124,18 +146,19 @@ const UploadPatients = () => {
           <div style={{ marginLeft: "20px", marginTop: "8px" }}>
             <FormGroup className="margin-bottom-3">
               <FileInput
-                // key={fileInputResetValue}
                 id="upload-csv-input"
                 name="upload-csv-input"
                 aria-label="Choose CSV file"
                 accept="text/csv, .csv"
-                // onChange={(e) => handleFileChange(e)}
+                onChange={handleFileChange}
                 required
               />
             </FormGroup>
           </div>
           <div>
-            <Button>Upload CSV file</Button>
+            <Button disabled={buttonIsDisabled || facilityAmount === undefined}>
+              Upload CSV file
+            </Button>
           </div>
         </div>
       </div>
