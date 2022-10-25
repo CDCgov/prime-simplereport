@@ -5,6 +5,20 @@ describe("Updating organization settings", () => {
   it("navigates to the org settings page", () => {
     cy.visit("/settings/organization");
     cy.get(".prime-container").contains("Manage organization");
+
+    // failing a11y test
+    // Test a11y on the Manage organization page
+    cy.injectAxe();
+    cy.checkA11y(
+        {
+          exclude: [],
+        },
+        {
+          rules: {
+            'page-has-heading-one': { enabled: false },
+          },
+        },
+    );
   });
   it("attempts an empty selection for organization type", () => {
     cy.get('select[name="type"]').select("- Select -");
