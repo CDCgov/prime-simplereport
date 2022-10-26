@@ -32,6 +32,10 @@ const uploadPatientsSpy = (response: Response) =>
   });
 
 describe("Upload Patient", () => {
+  it("displays the upload patients page correctly", () => {
+    const { container } = renderUploadPatients();
+    expect(container).toMatchSnapshot();
+  });
   it("should add facility name to label when facility is selected", async () => {
     renderUploadPatients();
     expect(

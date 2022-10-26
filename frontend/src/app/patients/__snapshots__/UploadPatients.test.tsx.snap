@@ -1,0 +1,265 @@
+// Jest Snapshot v1, https://goo.gl/fbAQLP
+
+exports[`Upload Patient displays the upload patients page correctly 1`] = `
+<div>
+  <div
+    class="prime-edit-patient prime-home flex-1"
+  >
+    <div
+      class="grid-container margin-bottom-4"
+    >
+      <div
+        class="patient__header"
+      >
+        <div>
+          <div
+            class="display-flex flex-justify"
+          >
+            <div>
+              <div
+                class="display-flex flex-align-center"
+              >
+                <svg
+                  aria-hidden="true"
+                  class="usa-icon text-base margin-left-neg-2px"
+                  focusable="false"
+                  role="img"
+                >
+                  <use
+                    xlink:href="sprite.svg#arrow_back"
+                  />
+                </svg>
+                <a
+                  class="margin-left-05"
+                  href="/patients"
+                >
+                  People
+                </a>
+              </div>
+              <div
+                class="prime-edit-patient-heading margin-y-0"
+              >
+                <h1
+                  class="font-heading-lg margin-top-1 margin-bottom-0"
+                >
+                  Add new 
+                  person
+                </h1>
+              </div>
+            </div>
+          </div>
+          <nav
+            aria-label="Secondary navigation"
+            class="prime-secondary-nav padding-top-2"
+          >
+            <ul
+              class="usa-nav__secondary-links prime-nav"
+            >
+              <li
+                class="usa-nav__secondary-item padding-left-0"
+              >
+                <a
+                  class=""
+                  href="/add-patient"
+                >
+                  Add individual 
+                  person
+                </a>
+              </li>
+              <li
+                class="usa-nav__secondary-item"
+              >
+                <a
+                  class=""
+                  href="/upload-patients"
+                >
+                  Import from spreadsheet
+                </a>
+              </li>
+            </ul>
+          </nav>
+        </div>
+      </div>
+      <div
+        class="card"
+      >
+        <span
+          style="font-size: 22px; margin-top: 20px;"
+        >
+          1. Setup your spreadsheet
+        </span>
+        <div
+          class="usa-summary-box"
+          style="margin-top: 24px; margin-bottom: 24px; margin-left: 20px;"
+        >
+          <span
+            class="usa-alert__heading text-bold"
+          >
+            Follow formatting guidelines
+          </span>
+          <p
+            class="usa-alert__text"
+          >
+            To upload patients in bulk, spreadsheets need to match SimpleReport data requirements. Follow the Patient bulk upload guide closely to format your CSV before uploading it below.
+          </p>
+        </div>
+        <div
+          style="margin-left: 20px;"
+        >
+          <button
+            class="usa-button"
+            type="button"
+          >
+            View patient bulk upload guide
+          </button>
+          <button
+            class="usa-button usa-button--outline"
+            type="button"
+          >
+            Download spreadsheet template
+          </button>
+        </div>
+        <div
+          style="font-size: 22px; margin-top: 56px; margin-bottom: 8px;"
+        >
+          2. Would you like to import these patients to one facility OR all facilities?
+        </div>
+        <div
+          style="margin-left: 20px;"
+        >
+          If you plan to test patients at more than one facility, we recommend adding them to all facilities. You can't select multiple facilities individually.
+        </div>
+        <div
+          style="margin-left: 20px;"
+        >
+          <div
+            class="usa-form-group margin-top-1"
+          >
+            <fieldset
+              class="usa-fieldset prime-radios"
+              id="facilitySector"
+            >
+              <legend
+                class="usa-legend usa-sr-only"
+              >
+                Select facility
+              </legend>
+              <div
+                class="prime-radio--horizontal"
+              >
+                <div
+                  class="usa-radio prime-radio--horizontal__container"
+                >
+                  <input
+                    class="usa-radio__input usa-radio__input--tile"
+                    data-required="false"
+                    id="1-val-oneFacility"
+                    name="facilitySector"
+                    type="radio"
+                    value="oneFacility"
+                  />
+                  <label
+                    class="usa-radio__label"
+                    for="1-val-oneFacility"
+                  >
+                    One facility
+                  </label>
+                </div>
+                <div
+                  class="usa-radio prime-radio--horizontal__container"
+                >
+                  <input
+                    class="usa-radio__input usa-radio__input--tile"
+                    data-required="false"
+                    id="1-val-allFacility"
+                    name="facilitySector"
+                    type="radio"
+                    value="allFacility"
+                  />
+                  <label
+                    class="usa-radio__label"
+                    for="1-val-allFacility"
+                  >
+                    All facilities
+                  </label>
+                </div>
+              </div>
+            </fieldset>
+          </div>
+        </div>
+        <div
+          style="font-size: 22px; margin-top: 56px; margin-bottom: 8px;"
+        >
+          3. Upload your spreadsheet
+          .
+        </div>
+        <div
+          style="margin-left: 20px;"
+        >
+          The spreadsheet may take 10 or more minutes to upload. You do not need to stay on this page. We'll email you if you need to fix any errors or when the upload is complete.
+        </div>
+        <div
+          style="margin-left: 20px; margin-top: 8px;"
+        >
+          
+          <div
+            class="usa-form-group margin-bottom-3"
+            data-testid="formGroup"
+          >
+            <div
+              class="usa-file-input"
+              data-testid="file-input"
+            >
+              <div
+                class="usa-file-input__target"
+                data-testid="file-input-droptarget"
+              >
+                <div
+                  aria-hidden="true"
+                  class="usa-file-input__instructions"
+                  data-testid="file-input-instructions"
+                >
+                  <span
+                    class="usa-file-input__drag-text"
+                  >
+                    Drag file here or 
+                  </span>
+                  <span
+                    class="usa-file-input__choose"
+                  >
+                    choose from folder
+                  </span>
+                </div>
+                <div
+                  class="usa-file-input__box"
+                  data-testid="file-input-box"
+                />
+                <input
+                  accept="text/csv, .csv"
+                  aria-label="Choose CSV file"
+                  class="usa-file-input__input"
+                  data-testid="file-input-input"
+                  id="upload-csv-input"
+                  name="upload-csv-input"
+                  required=""
+                  type="file"
+                />
+              </div>
+            </div>
+          </div>
+        </div>
+        <div>
+          <button
+            aria-disabled="true"
+            class="usa-button usa-button-disabled"
+            disabled=""
+            type="button"
+          >
+            Upload CSV file
+          </button>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+`;
