@@ -96,7 +96,7 @@ const DeviceLookup = (props: Props) => {
             <h1 className="font-sans-lg">Device lookup</h1>
           </div>
           <div className="usa-card__body margin-top-1">
-            <strong id="select-device">Select device" </strong>
+            <strong id="select-device">Select device</strong>
             <div className="position-relative">
               <SearchInput
                 onSearchClick={onSearchClick}
