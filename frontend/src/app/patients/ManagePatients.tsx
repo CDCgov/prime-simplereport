@@ -2,11 +2,7 @@ import { gql, useQuery } from "@apollo/client";
 import React, { useEffect, useState } from "react";
 import moment from "moment";
 import classnames from "classnames";
-import {
-  faCaretDown,
-  faSlidersH,
-  faIdCard,
-} from "@fortawesome/free-solid-svg-icons";
+import { faCaretDown, faIdCard } from "@fortawesome/free-solid-svg-icons";
 import { NavigateOptions, useNavigate } from "react-router-dom";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 
@@ -27,7 +23,6 @@ import {
 import Pagination from "../commonComponents/Pagination";
 import { useDebounce } from "../testQueue/addToQueue/useDebounce";
 import { SEARCH_DEBOUNCE_TIME } from "../testQueue/constants";
-import Button from "../commonComponents/Button/Button";
 import SearchInput from "../testQueue/addToQueue/SearchInput";
 import { StartTestProps } from "../testQueue/addToQueue/AddToQueueSearch";
 import { MenuButton } from "../commonComponents/MenuButton";
@@ -268,16 +263,6 @@ export const DetachedManagePatients = ({
                 </span>
               </h1>
               <div>
-                <Button
-                  className="sr-active-button"
-                  icon={faSlidersH}
-                  onClick={() => {
-                    setNamePrefixMatch(null);
-                    setDebounced(null);
-                  }}
-                >
-                  Clear filters
-                </Button>
                 {canEditUser ? (
                   <MenuButton
                     buttonContent={
