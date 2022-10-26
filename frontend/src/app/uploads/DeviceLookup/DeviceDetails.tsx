@@ -104,13 +104,13 @@ const DeviceDetails = (props: { device: DeviceType }) => {
         <div className="tablet:grid-col">
           <div style={{ position: "relative" }}>
             <div className="usa-form-group">
-              <label className="usa-label">
-                <Optional label="Specimen Type" />
+              <label id="specimen-type" className="usa-label">
+                <Optional label="Specimen type" />
               </label>
               <span className="usa-hint">
                 <code>specimen_type</code>
               </span>
-              <table className={"usa-table"}>
+              <table aria-labelledby="specimen-type" className={"usa-table"}>
                 <tbody>
                   {device.swabTypes?.map(({ name, typeCode }) => (
                     <tr key={name}>
