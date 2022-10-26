@@ -105,16 +105,13 @@ const UploadPatients = () => {
           <AddPatientHeader />
         </div>
         <div className={"card"}>
-          <span style={{ fontSize: "22px", marginTop: "20px" }}>
+          <span className={"font-sans-lg margin-top-205"}>
             1. Setup your spreadsheet
           </span>
           <div
-            className={"usa-summary-box"}
-            style={{
-              marginTop: "24px",
-              marginBottom: "24px",
-              marginLeft: "20px",
-            }}
+            className={
+              "usa-summary-box margin-top-3 margin-bottom-3 margin-left-205"
+            }
           >
             <span className="usa-alert__heading text-bold">
               Follow formatting guidelines
@@ -125,49 +122,45 @@ const UploadPatients = () => {
               guide closely to format your CSV before uploading it below.
             </p>
           </div>
-          <div
-            style={{
-              marginLeft: "20px",
-            }}
-          >
+          <div className={"margin-left-205"}>
             <Button>View patient bulk upload guide</Button>
             <Button variant={"outline"}>Download spreadsheet template</Button>
           </div>
-          <div
-            style={{ fontSize: "22px", marginTop: "56px", marginBottom: "8px" }}
-          >
+          <div className={"margin-top-7 margin-bottom-1 font-sans-lg"}>
             2. Would you like to import these patients to one facility OR all
             facilities?
           </div>
-          <div style={{ marginLeft: "20px" }}>
-            If you plan to test patients at more than one facility, we recommend
-            adding them to all facilities. You can't select multiple facilities
-            individually.
-          </div>
-          <div style={{ marginLeft: "20px" }}>
-            <RadioGroup
-              wrapperClassName="margin-top-1"
-              inputClassName={"usa-radio__input--tile"}
-              name="facilitySector"
-              legend="Select facility"
-              legendSrOnly
-              buttons={[
-                {
-                  value: "oneFacility",
-                  label: "One facility",
-                },
-                {
-                  value: "allFacility",
-                  label: "All facilities",
-                },
-              ]}
-              selectedRadio={facilityAmount}
-              onChange={setFacilityAmount}
-              variant="horizontal"
-            />
+          <div className={"margin-left-205"}>
+            <div>
+              If you plan to test patients at more than one facility, we
+              recommend adding them to all facilities. You can't select multiple
+              facilities individually.
+            </div>
+            <div>
+              <RadioGroup
+                wrapperClassName="margin-top-1"
+                inputClassName={"usa-radio__input--tile"}
+                name="facilitySector"
+                legend="Select facility"
+                legendSrOnly
+                buttons={[
+                  {
+                    value: "oneFacility",
+                    label: "One facility",
+                  },
+                  {
+                    value: "allFacility",
+                    label: "All facilities",
+                  },
+                ]}
+                selectedRadio={facilityAmount}
+                onChange={setFacilityAmount}
+                variant="horizontal"
+              />
+            </div>
           </div>
           {facilityAmount === "oneFacility" && (
-            <div style={{ marginLeft: "20px", marginTop: "20px" }}>
+            <div className={"margin-left-205 margin-top-205"}>
               <div>Which facility?</div>
               <Dropdown
                 aria-label={"Select facility"}
@@ -182,24 +175,19 @@ const UploadPatients = () => {
             </div>
           )}
 
-          <div
-            style={{ fontSize: "22px", marginTop: "56px", marginBottom: "8px" }}
-          >
+          <div className={"margin-top-7 margin-bottom-1 font-sans-lg"}>
             3. Upload your spreadsheet
             {facilityAmount === "oneFacility" && " for " + facility.name}.
           </div>
-          <div style={{ marginLeft: "20px" }}>
+          <div className={"margin-left-205"}>
             The spreadsheet may take 10 or more minutes to upload. You do not
             need to stay on this page. We'll email you if you need to fix any
             errors or when the upload is complete.
           </div>
-          <div style={{ marginLeft: "20px", marginTop: "8px" }}>
+          <div className={"margin-left-205 margin-top-1"}>
             {status === "success" && (
               <div>
-                <div
-                  className="usa-alert usa-alert--success"
-                  style={{ maxWidth: "50%" }}
-                >
+                <div className="usa-alert usa-alert--success maxw-mobile-lg margin-top-3">
                   <div className="usa-alert__body">
                     <h3 className="usa-alert__heading">
                       Success: File Accepted
@@ -212,7 +200,7 @@ const UploadPatients = () => {
               </div>
             )}
             {errorMessageText && (
-              <div>
+              <div className={"margin-top-3"}>
                 <div className="usa-alert usa-alert--error" role="alert">
                   <div className="usa-alert__body">
                     <h3 className="usa-alert__heading">
