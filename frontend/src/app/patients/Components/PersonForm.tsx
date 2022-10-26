@@ -359,7 +359,7 @@ const PersonForm = (props: Props) => {
     <>
       <Prompt when={formChanged} message={t("patient.form.errors.unsaved")} />
       {view === PersonFormView.APP && props.getHeader && (
-        <div className="patient__header padding-bottom-0">
+        <div className="patient__header">
           {props.getHeader(patient, validateForm, formChanged)}
         </div>
       )}

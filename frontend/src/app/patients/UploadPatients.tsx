@@ -101,7 +101,7 @@ const UploadPatients = () => {
   return (
     <div className={"prime-edit-patient prime-home flex-1"}>
       <div className={"grid-container margin-bottom-4"}>
-        <div className="patient__header padding-bottom-0">
+        <div className="patient__header">
           <AddPatientHeader />
         </div>
         <div className={"card"}>
