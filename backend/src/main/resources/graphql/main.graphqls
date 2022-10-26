@@ -265,6 +265,11 @@ type TestResult {
   patientLink: PatientLink
 }
 
+type TestResultsPage {
+  totalElements: Int
+  content: [TestResult]
+}
+
 type MultiplexResult {
   disease: SupportedDisease
   testResult: String
@@ -346,11 +351,6 @@ type UploadSubmissionPage {
   content: [UploadResult!]!
 }
 
-type TestResultsPage {
-  totalElements: Int
-  content: [TestResult]
-}
-
 # Queries and mutations for everyday use
 
 type Query {
@@ -411,6 +411,9 @@ type Query {
     endDate: DateTime
     pageNumber: Int = 0
     pageSize: Int = 5000
+      @deprecated(
+        reason: "use testResultsPage call instead to access both results and count at once"
+      )
   ): [TestResult] @requiredPermissions(allOf: ["READ_RESULT_LIST"])
   testResultsPage(
     facilityId: ID
