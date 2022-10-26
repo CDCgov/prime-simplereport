@@ -7,7 +7,7 @@ interface Props {
   primaryText: string;
   secondaryText?: string;
 }
-// todo: fix spacing on secondary text
+
 export const IconLabel = (props: Props) => (
   <div className={"display-flex"}>
     <div className={"text-primary"}>
