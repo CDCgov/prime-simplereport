@@ -155,8 +155,7 @@ public class TestOrderService {
       return p;
     };
   }
-  // methods to replace the methods that return List<TestEvent> once we get
-  // backwards compability issues resolved
+
   @Transactional(readOnly = true)
   @AuthorizationConfiguration.RequirePermissionReadResultListAtFacility
   public Page<TestEvent> getFacilityTestEventsResults(
