@@ -32,12 +32,12 @@ import Button from "../commonComponents/Button/Button";
 import SearchInput from "../testQueue/addToQueue/SearchInput";
 import { StartTestProps } from "../testQueue/addToQueue/AddToQueueSearch";
 import { MenuButton } from "../commonComponents/MenuButton";
+import { IconLabel } from "../commonComponents/IconLabel";
 
 import PatientUpload from "./PatientUpload";
 import ArchivePersonModal from "./ArchivePersonModal";
 
 import "./ManagePatients.scss";
-import { IconLabel } from "../commonComponents/IconLabel";
 
 export const patientsCountQuery = gql`
   query GetPatientsCountByFacility(
