@@ -2,39 +2,50 @@ import React from "react";
 import { Link } from "react-router-dom";
 
 import { DeviceType } from "../../../generated/graphql";
+import Button from "../../commonComponents/Button/Button";
 
 interface SearchResultsProps {
   devices: DeviceType[];
+  // TODO: fix this type
+  setSelectedDevice: any;
   shouldShowSuggestions: boolean;
   loading: boolean;
   dropDownRef?: React.RefObject<HTMLDivElement>;
+  queryString?: string;
 }
-/*
-export interface QueueProps extends SearchResultsProps {
-    page: "queue";
-    onAddToQueue: (
-        a: Patient,
-        b: AoEAnswersDelivery,
-        c: string
-    ) => Promise<string | void>;
-    patientsInQueue: string[];
-}
-export interface TestResultsProps extends SearchResultsProps {
-    page: "test-results";
-    onPatientSelect: (a: Patient) => void;
-}
-*/
-const DeviceSearchResults = (props: SearchResultsProps) => {
-  const { devices, shouldShowSuggestions, loading, dropDownRef } = props;
-  // const [dialogDevice, setDialogDevice] = useState<Device | null>(null);
-  // const [redirect, setRedirect] = useState<string | undefined>(undefined);
-  // const activeFacilityId = getFacilityIdFromUrl(useLocation());
+
+const getTestTypeFromDeviceName = (deviceName: string): string => {
+  if (!deviceName) {
+    return "";
+  }
+
   /*
-    if (redirect) {
-      return <Navigate to={redirect} />;
-    }
-       */
+   * Device test types (PCR, antigen, etc.) are not stored in a dedicated column in the devices
+   * table, but instead are parenthesized and appended to the device name
+   * Get the test type from inside the parentheses at the end of the string
+   */
+  const re = /\(([^()]*)\)$/;
+
+  const match = deviceName.match(re);
+  if (!match || match.length === 0) {
+    return "";
+  }
+
+  return match[1];
+};
+
+const DeviceSearchResults = (props: SearchResultsProps) => {
+  const {
+    devices,
+    setSelectedDevice,
+    shouldShowSuggestions,
+    loading,
+    dropDownRef,
+    queryString,
+  } = props;
+
   let resultsContent;
+
   if (loading) {
     resultsContent = <p>Searching...</p>;
   } else if (devices.length === 0) {
@@ -45,7 +56,7 @@ const DeviceSearchResults = (props: SearchResultsProps) => {
         }
       >
         <div className="margin-bottom-105">
-          No device found matching {<strong>xxx</strong>}
+          No device found matching <strong>{queryString}</strong>
         </div>
         <div>
           Please try a different search term, or follow the instructions on the{" "}
@@ -61,6 +72,7 @@ const DeviceSearchResults = (props: SearchResultsProps) => {
             <th scope="col">Manufacturer</th>
             <th scope="col">Equipment model name</th>
             <th scope="col">Test type</th>
+            <th scope="col">Action</th>
           </tr>
         </thead>
         <tbody>
@@ -68,7 +80,19 @@ const DeviceSearchResults = (props: SearchResultsProps) => {
             <tr key={d.internalId}>
               <td id={`device-${idx}`}>{d.manufacturer}</td>
               <td id={`model-name-${idx}`}>{d.model}</td>
-              <td id={`test-type-${idx}`}>{d.supportedDiseases}</td>
+              <td id={`test-type-${idx}`}>
+                {getTestTypeFromDeviceName(d.name)}
+              </td>
+              <td id={`view-${idx}`}>
+                {
+                  <Button
+                    label={"Select"}
+                    onClick={() => {
+                      setSelectedDevice(d);
+                    }}
+                  />
+                }
+              </td>
             </tr>
           ))}
         </tbody>
