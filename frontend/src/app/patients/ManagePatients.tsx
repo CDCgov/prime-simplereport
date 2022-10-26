@@ -2,16 +2,21 @@ import { gql, useQuery } from "@apollo/client";
 import React, { useEffect, useState } from "react";
 import moment from "moment";
 import classnames from "classnames";
-import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import {
   faArrowRight,
+  faCaretDown,
   faSlidersH,
   faStar,
 } from "@fortawesome/free-solid-svg-icons";
 import { NavigateOptions, useNavigate } from "react-router-dom";
+import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 
 import { displayFullName } from "../utils";
-import { PATIENT_TERM, PATIENT_TERM_PLURAL_CAP } from "../../config/constants";
+import {
+  PATIENT_TERM,
+  PATIENT_TERM_PLURAL,
+  PATIENT_TERM_PLURAL_CAP,
+} from "../../config/constants";
 import { daysSince } from "../utils/date";
 import { capitalizeText } from "../utils/text";
 import { LinkWithQuery } from "../commonComponents/LinkWithQuery";
@@ -275,52 +280,52 @@ export const DetachedManagePatients = ({
                   Clear filters
                 </Button>
                 {/*todo: use proper icon in the items*/}
-                <MenuButton
-                  items={[
-                    {
-                      name: "add individual patient",
-                      content: (
-                        <IconLabel
-                          icon={faStar}
-                          primaryText={"Add individual patient"}
-                          secondaryText={"Fill out a form to add a patient"}
-                        />
-                      ),
-                      action: () => {
-                        setRedirect({
-                          pathname: "/add-patient",
-                          search: `?facility=${activeFacilityId}`,
-                        });
-                      },
-                    },
-                    {
-                      name: "upload patients",
-                      content: (
-                        <IconLabel
-                          icon={faArrowRight}
-                          primaryText={"Import from spreadsheet"}
-                          secondaryText={"Bulk upload patients with a CSV file"}
-                        />
-                      ),
-                      action: () => {
-                        setRedirect({
-                          pathname: "/upload-patients",
-                          search: `?facility=${activeFacilityId}`,
-                        });
-                      },
-                    },
-                  ]}
-                  id={"1"}
-                />
                 {canEditUser ? (
-                  <LinkWithQuery
-                    className="usa-button usa-button--primary"
-                    to={`/add-patient`}
-                    id="add-patient-button"
-                  >
-                    <FontAwesomeIcon icon="plus" />
-                    {` Add ${PATIENT_TERM}`}
-                  </LinkWithQuery>
+                  <MenuButton
+                    buttonContent={
+                      <>
+                        <span className={"margin-right-1"}>
+                          Add {PATIENT_TERM_PLURAL}
+                        </span>
+                        <FontAwesomeIcon icon={faCaretDown} />
+                      </>
+                    }
+                    items={[
+                      {
+                        name: "add individual",
+                        content: (
+                          <IconLabel
+                            icon={faStar}
+                            primaryText={`Add individual ${PATIENT_TERM}`}
+                            secondaryText={"Fill out a form to add a patient"}
+                          />
+                        ),
+                        action: () => {
+                          setRedirect({
+                            pathname: "/add-patient",
+                            search: `?facility=${activeFacilityId}`,
+                          });
+                        },
+                      },
+                      {
+                        name: "upload patients",
+                        content: (
+                          <IconLabel
+                            icon={faArrowRight}
+                            primaryText={"Import from spreadsheet"}
+                            secondaryText={`Bulk upload ${PATIENT_TERM_PLURAL} with a CSV file`}
+                          />
+                        ),
+                        action: () => {
+                          setRedirect({
+                            pathname: "/upload-patients",
+                            search: `?facility=${activeFacilityId}`,
+                          });
+                        },
+                      },
+                    ]}
+                    id={"1"}
+                  />
                 ) : null}
               </div>
             </div>

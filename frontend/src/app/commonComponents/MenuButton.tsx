@@ -6,8 +6,6 @@ import {
 } from "@szhsin/react-menu";
 import "@szhsin/react-menu/dist/index.css";
 import "./ActionsMenu.scss";
-import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
-import { faCaretDown } from "@fortawesome/free-solid-svg-icons";
 
 interface Props {
   title?: string;
@@ -17,14 +15,14 @@ interface Props {
     content?: React.ReactElement;
     action: () => void;
   }[];
+  buttonContent: React.ReactElement;
 }
 
 export const MenuButton = (props: Props) => (
   <Menu
     menuButton={
       <ReactMenuButton id={props.id} className="usa-button usa-button--primary">
-        <span className={"margin-right-1"}>Add patients</span>
-        <FontAwesomeIcon icon={faCaretDown} />
+        {props.buttonContent}
       </ReactMenuButton>
     }
   >
