@@ -10,7 +10,7 @@ interface Props {
 // todo: fix spacing on secondary text
 export const IconLabel = (props: Props) => (
   <div className={"display-flex"}>
-    <div>
+    <div className={"text-primary"}>
       <FontAwesomeIcon icon={props.icon} />
     </div>
     <div className={"margin-left-105"}>
