@@ -324,7 +324,6 @@ export const DetachedManagePatients = ({
                         },
                       },
                     ]}
-                    id={"1"}
                   />
                 ) : null}
               </div>
