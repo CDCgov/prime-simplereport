@@ -75,7 +75,7 @@ public class Translators {
         .collect(Collectors.toList());
   }
 
-  private static PhoneType parsePhoneType(String t) {
+  public static PhoneType parsePhoneType(String t) {
     String type = parseString(t);
     if (type == null) {
       // When we no longer require backwards compatibility with an old UI, we can parse this

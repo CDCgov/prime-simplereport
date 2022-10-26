@@ -1,38 +1,29 @@
 package gov.cdc.usds.simplereport.service;
 
-import static gov.cdc.usds.simplereport.api.Translators.parseEmails;
-import static gov.cdc.usds.simplereport.api.Translators.parseEthnicity;
-import static gov.cdc.usds.simplereport.api.Translators.parseGender;
 import static gov.cdc.usds.simplereport.api.Translators.parsePersonRole;
-import static gov.cdc.usds.simplereport.api.Translators.parsePhoneNumbers;
-import static gov.cdc.usds.simplereport.api.Translators.parseRaceDisplayValue;
+import static gov.cdc.usds.simplereport.api.Translators.parsePhoneType;
 import static gov.cdc.usds.simplereport.api.Translators.parseString;
 import static gov.cdc.usds.simplereport.api.Translators.parseUserShortDate;
 import static gov.cdc.usds.simplereport.api.Translators.parseYesNo;
+import static gov.cdc.usds.simplereport.validators.CsvValidatorUtils.getValue;
 
 import com.fasterxml.jackson.databind.MappingIterator;
-import com.fasterxml.jackson.databind.RuntimeJsonMappingException;
-import com.fasterxml.jackson.dataformat.csv.CsvMapper;
-import com.fasterxml.jackson.dataformat.csv.CsvParser;
-import com.fasterxml.jackson.dataformat.csv.CsvSchema;
 import gov.cdc.usds.simplereport.api.model.errors.CsvProcessingException;
 import gov.cdc.usds.simplereport.api.uploads.PatientBulkUploadResponse;
 import gov.cdc.usds.simplereport.config.AuthorizationConfiguration;
 import gov.cdc.usds.simplereport.db.model.Facility;
 import gov.cdc.usds.simplereport.db.model.Organization;
-import gov.cdc.usds.simplereport.db.model.auxiliary.PhoneNumberInput;
+import gov.cdc.usds.simplereport.db.model.PhoneNumber;
+import gov.cdc.usds.simplereport.db.model.auxiliary.PersonRole;
 import gov.cdc.usds.simplereport.db.model.auxiliary.StreetAddress;
 import gov.cdc.usds.simplereport.db.model.auxiliary.UploadStatus;
 import gov.cdc.usds.simplereport.service.model.reportstream.FeedbackMessage;
+import gov.cdc.usds.simplereport.validators.CsvValidatorUtils;
 import gov.cdc.usds.simplereport.validators.PatientBulkUploadFileValidator;
-import java.io.BufferedReader;
 import java.io.ByteArrayInputStream;
 import java.io.IOException;
 import java.io.InputStream;
-import java.io.InputStreamReader;
-import java.nio.charset.StandardCharsets;
-import java.time.Duration;
-import java.time.Instant;
+import java.time.LocalDate;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
@@ -53,44 +44,11 @@ import org.springframework.transaction.annotation.Transactional;
 @RequiredArgsConstructor
 @Slf4j
 public class PatientBulkUploadService {
-  private static final int MAX_LINE_LENGTH = 1024 * 6;
-  public static final String ZIP_CODE_REGEX = "^[0-9]{5}(?:-[0-9]{4})?$";
 
   private final PersonService _personService;
   private final AddressValidationService _addressValidationService;
   private final OrganizationService _organizationService;
   private final PatientBulkUploadFileValidator _patientBulkUploadFileValidator;
-  private boolean hasHeaderRow = false;
-
-  private MappingIterator<Map<String, String>> getIteratorForCsv(InputStream csvStream)
-      throws IllegalArgumentException {
-    try {
-      BufferedReader csvStreamBuffered =
-          new BufferedReader(new InputStreamReader(csvStream, StandardCharsets.UTF_8));
-
-      // determine if this csv has a header row in the first line by looking for header string
-      csvStreamBuffered.mark(MAX_LINE_LENGTH);
-      hasHeaderRow = (csvStreamBuffered.readLine().toLowerCase().contains("firstname"));
-      csvStreamBuffered.reset();
-
-      return new CsvMapper()
-          .enable(CsvParser.Feature.FAIL_ON_MISSING_COLUMNS)
-          .readerFor(Map.class)
-          .with(personSchema(hasHeaderRow))
-          .readValues(csvStreamBuffered);
-    } catch (IOException e) {
-      throw new IllegalArgumentException(e.getMessage());
-    }
-  }
-
-  private Map<String, String> getNextRow(MappingIterator<Map<String, String>> valueIterator)
-      throws IllegalArgumentException {
-    try {
-      return valueIterator.next();
-    } catch (RuntimeJsonMappingException e) {
-      throw new IllegalArgumentException(e.getMessage());
-    }
-  }
 
   public String getRow(Map<String, String> row, String name, boolean isRequired) {
     String value = row.get(name);
@@ -131,46 +89,45 @@ public class PatientBulkUploadService {
     // because what needs to happen is that we return a success message to the end user
     // but continue to process the csv (create person records) in the background.
     // Putting a pin in it for now.
-    // We shall return...
 
-    final MappingIterator<Map<String, String>> valueIterator = getIteratorForCsv(csvStream);
+    final MappingIterator<Map<String, String>> valueIterator =
+        CsvValidatorUtils.getIteratorForCsv(csvStream);
 
-    // Since the CSV parser won't fail when give a single string, we simple check to see if it has
-    // any parsed values
-    // If not, we throw an error assuming the user didn't actually want to submit something empty.
-    if (hasHeaderRow && !valueIterator.hasNext()) {
-      throw new IllegalArgumentException("Empty or invalid CSV submitted");
-    }
+    Optional<Facility> facility =
+        Optional.ofNullable(facilityId).map(_organizationService::getFacilityInCurrentOrg);
 
-    Instant startTime = Instant.now();
-
-    int rowNumber = 0;
     while (valueIterator.hasNext()) {
-      final Instant rowStartTime = Instant.now();
-      final Map<String, String> row = getNextRow(valueIterator);
-      rowNumber++;
+      final Map<String, String> row = CsvValidatorUtils.getNextRow(valueIterator);
+
       try {
-        Optional<Facility> facility =
-            Optional.ofNullable(facilityId).map(_organizationService::getFacilityInCurrentOrg);
-
-        String zipCode = getRow(row, "ZipCode", true);
-        if (!zipCode.matches(ZIP_CODE_REGEX)) {
-          throw new IllegalArgumentException("Invalid zip code");
-        }
-
+        // get address here
         StreetAddress address =
             _addressValidationService.getValidatedAddress(
-                getRow(row, "Street", true),
-                getRow(row, "Street2", false),
-                getRow(row, "City", false),
-                getRow(row, "State", true),
-                zipCode,
+                getValue(row, "Street", true).getValue(),
+                getValue(row, "Street2", false).getValue(),
+                getValue(row, "City", false).getValue(),
+                getValue(row, "State", true).getValue(),
+                getValue(row, "ZipCode", true).getValue(),
                 null);
 
-        var firstName = parseString(getRow(row, "FirstName", true));
-        var lastName = parseString(getRow(row, "LastName", true));
-        var dob = parseUserShortDate(getRow(row, "DOB", true));
-        var country = parseString(getRow(row, "Country", false));
+        String firstName = getValue(row, "FirstName", true).getValue();
+        String lastName = getValue(row, "LastName", true).getValue();
+        String middleName = getValue(row, "MiddleName", false).getValue();
+        String suffix = getValue(row, "Suffix", false).getValue();
+        String race = getValue(row, "Race", true).getValue();
+        LocalDate dob = parseUserShortDate(getValue(row, "DOB", true).getValue());
+        String biologicalSex = getValue(row, "biologicalSex", true).getValue();
+        String ethnicity = getValue(row, "Ethnicity", true).getValue();
+        String phoneNumber = getValue(row, "PhoneNumber", true).getValue();
+        String phoneNumberType = getValue(row, "PhoneNumberType", false).getValue();
+        Boolean employedInHealthcare =
+            parseYesNo(getValue(row, "employedInHealthcare", true).getValue());
+        Boolean residentCongregateSetting =
+            parseYesNo(getValue(row, "residentCongregateSetting", true).getValue());
+        PersonRole role = parsePersonRole(getValue(row, "role", false).getValue(), false);
+        String email = getValue(row, "email", false).getValue();
+
+        String country = parseString(getValue(row, "Country", false).getValue());
 
         if (country == null) {
           country = "USA";
@@ -184,79 +141,38 @@ public class PatientBulkUploadService {
             facilityId,
             null, // lookupID
             firstName,
-            parseString(getRow(row, "MiddleName", false)),
+            middleName,
             lastName,
-            parseString(getRow(row, "Suffix", false)),
+            suffix,
             dob,
             address,
             country,
-            parsePhoneNumbers(
-                List.of(
-                    new PhoneNumberInput(
-                        getRow(row, "PhoneNumberType", false), getRow(row, "PhoneNumber", true)))),
-            parsePersonRole(getRow(row, "Role", false), false),
-            parseEmails(List.of(getRow(row, "Email", false))),
-            parseRaceDisplayValue(getRow(row, "Race", true)),
-            parseEthnicity(getRow(row, "Ethnicity", true)),
+            List.of(new PhoneNumber(parsePhoneType(phoneNumberType), phoneNumber)),
+            role,
+            List.of(email),
+            race,
+            ethnicity,
             null,
-            parseGender(getRow(row, "biologicalSex", true)),
-            parseYesNo(getRow(row, "residentCongregateSetting", true)),
-            parseYesNo(getRow(row, "employedInHealthcare", true)),
-            null, // Not including preferredLanguage for now
-            null); // Not including test result delivery preference for now
-
-        Duration rowElapsed = Duration.between(rowStartTime, Instant.now());
-        Duration totalElapsed = Duration.between(startTime, Instant.now());
-        log.debug(
-            "Processed row {} in {}ms; {} minutes total",
-            rowNumber,
-            rowElapsed.toMillis(),
-            totalElapsed.toMinutes());
+            biologicalSex,
+            residentCongregateSetting,
+            employedInHealthcare,
+            null,
+            null);
       } catch (IllegalArgumentException e) {
-        String errorMessage = "Error on row " + rowNumber + "; " + e.getMessage();
-        log.error(errorMessage);
+        String errorMessage = "Error uploading patient roster";
+        log.error(
+            errorMessage
+                + " for organization "
+                + org.getExternalId()
+                + " and facility "
+                + facilityId);
         throw new IllegalArgumentException(errorMessage);
       }
     }
 
-    log.info(
-        "CSV Patient upload completed for {} records in {} minutes",
-        rowNumber,
-        Duration.between(startTime, Instant.now()).toMinutes());
-    return "Successfully uploaded " + rowNumber + " record(s)";
-  }
-
-  private static CsvSchema personSchema(boolean hasHeaderRow) {
-    // using both addColumn and setUseHeader() causes offset issues (columns don't align). use one
-    // or the other.
-    if (hasHeaderRow) {
-      return CsvSchema.builder().setUseHeader(true).build();
-    } else {
-      // Sequence order matters
-      return CsvSchema.builder()
-          .addColumn("FirstName", CsvSchema.ColumnType.STRING)
-          .addColumn("LastName", CsvSchema.ColumnType.STRING)
-          .addColumn("MiddleName", CsvSchema.ColumnType.STRING)
-          .addColumn("Suffix", CsvSchema.ColumnType.STRING)
-          .addColumn("Race", CsvSchema.ColumnType.STRING)
-          .addColumn("DOB", CsvSchema.ColumnType.STRING)
-          .addColumn("biologicalSex", CsvSchema.ColumnType.STRING)
-          .addColumn("Ethnicity", CsvSchema.ColumnType.STRING)
-          .addColumn("Street", CsvSchema.ColumnType.STRING)
-          .addColumn("Street2", CsvSchema.ColumnType.STRING)
-          .addColumn("City", CsvSchema.ColumnType.STRING)
-          .addColumn("County", CsvSchema.ColumnType.STRING)
-          .addColumn("State", CsvSchema.ColumnType.STRING)
-          .addColumn("ZipCode", CsvSchema.ColumnType.STRING)
-          .addColumn("Country", CsvSchema.ColumnType.STRING)
-          .addColumn("PhoneNumber", CsvSchema.ColumnType.STRING)
-          .addColumn("PhoneNumberType", CsvSchema.ColumnType.STRING)
-          .addColumn("employedInHealthcare", CsvSchema.ColumnType.STRING)
-          .addColumn("residentCongregateSetting", CsvSchema.ColumnType.STRING)
-          .addColumn("Role", CsvSchema.ColumnType.STRING)
-          .addColumn("Email", CsvSchema.ColumnType.STRING)
-          .setUseHeader(false) // no valid header row detected
-          .build();
-    }
+    log.info("CSV patient upload completed for {}", org.getOrganizationName());
+    result.setStatus(UploadStatus.SUCCESS);
+    // eventually want to send an email here instead of return success
+    return result;
   }
 }
