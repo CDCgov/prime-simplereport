@@ -75,7 +75,7 @@ public class CsvValidatorUtils {
           "n", "no",
           "u", "unk");
   private static final Set<String> TEST_RESULT_VALUES =
-      Set.of("Positive", "Negative", "Not Detected", "Detected", "Invalid Result");
+      Set.of("positive", "negative", "not detected", "detected", "invalid result");
   private static final Set<String> SPECIMEN_TYPE_VALUES =
       Set.of(
           "nasal swab",
