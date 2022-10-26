@@ -14,7 +14,8 @@ describe("Adding a patient", () => {
     cy.get(".usa-nav-container");
     cy.get("#desktop-patient-nav-link").click();
     cy.get(".prime-container");
-    cy.get("#add-patient-button").click();
+    cy.get("#add-patient").click();
+    cy.get("#individual_add-patient").click();
     cy.get(".prime-edit-patient").contains("Add new person");
   });
   it("fills out some of the form fields", () => {

@@ -265,6 +265,7 @@ export const DetachedManagePatients = ({
               <div>
                 {canEditUser ? (
                   <MenuButton
+                    id={"add-patient"}
                     buttonContent={
                       <>
                         <span className={"margin-right-1"}>
@@ -275,7 +276,7 @@ export const DetachedManagePatients = ({
                     }
                     items={[
                       {
-                        name: "add individual",
+                        name: "individual",
                         content: (
                           <IconLabel
                             icon={faIdCard}
