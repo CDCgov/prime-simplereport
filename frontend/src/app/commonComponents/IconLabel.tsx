@@ -9,26 +9,17 @@ interface Props {
 }
 // todo: fix spacing on secondary text
 export const IconLabel = (props: Props) => (
-  <span>
-    <FontAwesomeIcon icon={props.icon} />
-    <span
-      style={{
-        fontSize: "16px",
-        color: "#005AE2",
-        marginLeft: "12px",
-      }}
-    >
-      {props.primaryText}
-      <div
-        style={{
-          fontSize: "13px",
-          color: "#71767A",
-          paddingBottom: "10px",
-          paddingLeft: "28px",
-        }}
-      >
-        {props.secondaryText}
-      </div>
-    </span>
-  </span>
+  <div className={"display-flex"}>
+    <div>
+      <FontAwesomeIcon icon={props.icon} />
+    </div>
+    <div className={"margin-left-105"}>
+      <span className={"font-sans-sm text-primary"}>
+        {props.primaryText}
+        <div className={"font-sans-3xs text-base margin-top-05"}>
+          {props.secondaryText}
+        </div>
+      </span>
+    </div>
+  </div>
 );
