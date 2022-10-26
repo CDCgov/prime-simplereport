@@ -5,7 +5,7 @@ import {
   MenuItem,
 } from "@szhsin/react-menu";
 import "@szhsin/react-menu/dist/index.css";
-import "./ActionsMenu.scss";
+import "./MenuButton.scss";
 
 interface Props {
   title?: string;
@@ -30,7 +30,6 @@ export const MenuButton = (props: Props) => (
       <MenuItem
         key={item.name}
         onClick={item.action}
-        className="sr-menu-item"
         id={
           props.id
             ? `${item.name.split(" ")[0].toLowerCase()}_${props.id}`
