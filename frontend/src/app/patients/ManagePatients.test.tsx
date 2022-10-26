@@ -76,8 +76,6 @@ describe("ManagePatients", () => {
     jest.useFakeTimers();
     render(<TestContainer />);
     expect(await screen.findByText(patients[0].lastName, { exact: false }));
-    const btn = await screen.findByText("Filter", { exact: false });
-    userEvent.click(btn);
     const input = await screen.findByLabelText("Person");
     userEvent.type(input, "Al");
     await waitForElementToBeRemoved(() =>
