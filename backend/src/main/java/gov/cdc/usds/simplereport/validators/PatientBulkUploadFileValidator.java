@@ -57,8 +57,8 @@ public class PatientBulkUploadFileValidator {
       ValueOrError phoneNumberType = getValue(row, "PhoneNumberType", false);
       ValueOrError employedInHealthcare = getValue(row, "employedInHealthcare", true);
       ValueOrError residentCongregateSetting = getValue(row, "residentCongregateSetting", true);
-      ValueOrError role = getValue(row, "role", false);
-      ValueOrError email = getValue(row, "email", false);
+      ValueOrError role = getValue(row, "Role", false);
+      ValueOrError email = getValue(row, "Email", false);
 
       List<ValueOrError> allFields =
           List.of(
