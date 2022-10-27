@@ -20,6 +20,7 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
+import java.util.stream.Collectors;
 import lombok.Getter;
 import org.springframework.stereotype.Component;
 
@@ -43,71 +44,73 @@ public class TestResultFileValidator {
   private static final Set<String> VALID_STATE_CODES = new HashSet<>();
   private static final Set<String> GENDER_VALUES =
       Set.of(
-          "M", "Male",
-          "F", "Female",
-          "O", "Other",
-          "U", "Unknown",
-          "A", "Ambiguous",
-          "N", "Not applicable");
+          "m", "male",
+          "f", "female",
+          "o", "other",
+          "u", "unknown",
+          "a", "ambiguous",
+          "n", "not applicable");
   private static final Set<String> ETHNICITY_VALUES =
       Set.of(
-          "2135-2", "Hispanic or Latino",
-          "2186-5", "Not Hispanic or Latino",
-          "UNK", "Unknown");
+          "2135-2", "hispanic or latino",
+          "2186-5", "not hispanic or latino",
+          "unk", "unknown");
   private static final Set<String> RACE_VALUES =
       Set.of(
-          "1002-5", "American Indian or Alaska Native",
-          "2028-9", "Asian",
-          "2054-5", "Black or African American",
-          "2076-8", "Native Hawaiian or Other Pacific Islander",
-          "2106-3", "White",
-          "2131-1", "Other",
-          "ASKU", "Ask but unknown",
-          "UNK", "Unknown");
+          "1002-5", "american indian or alaska native",
+          "2028-9", "asian",
+          "2054-5", "black or african american",
+          "2076-8", "native hawaiian or other pacific islander",
+          "2106-3", "white",
+          "2131-1", "other",
+          "asku", "ask but unknown",
+          "unk", "unknown");
   private static final Set<String> YES_NO_VALUES =
       Set.of(
-          "Y", "YES",
-          "N", "NO",
-          "U", "UNK");
+          "y", "yes",
+          "n", "no",
+          "u", "unk");
   private static final Set<String> TEST_RESULT_VALUES =
-      Set.of("Positive", "Negative", "Not Detected", "Detected", "Invalid Result");
+      Set.of("positive", "negative", "not detected", "detected", "invalid result");
   private static final Set<String> SPECIMEN_TYPE_VALUES =
       Set.of(
-          "Nasal Swab",
-          "Nasopharyngeal Swab",
-          "Anterior Nares Swab",
-          "Throat Swab",
-          "Oropharyngeal Swab",
-          "Whole Blood",
-          "Plasma",
-          "Serum");
+          "nasal swab",
+          "nasopharyngeal swab",
+          "anterior nares swab",
+          "throat swab",
+          "oropharyngeal swab",
+          "whole blood",
+          "plasma",
+          "serum");
   private static final Set<String> RESIDENCE_VALUES =
       Set.of(
-          "22232009", "Hospital",
-          "2081004", "Hospital Ship",
-          "32074000", "Long Term Care Hospital",
-          "224929004", "Secure Hospital",
-          "42665001", "Nursing Home",
-          "30629002", "Retirement Home",
-          "74056004", "Orphanage",
-          "722173008", "Prison-based Care Site",
-          "20078004", "Substance Abuse Treatment Center",
-          "257573002", "Boarding House",
-          "224683003", "Military Accommodation",
-          "284546000", "Hospice",
-          "257628001", "Hostel",
-          "310207003", "Sheltered Housing",
-          "57656006", "Penal Institution",
-          "285113009", "Religious Institutional Residence",
-          "285141008", "Work (environment)",
-          "32911000", "Homeless");
-  private static final Set<String> TEST_RESULT_STATUS_VALUES = Set.of("F", "C");
+          "22232009", "hospital",
+          "2081004", "hospital ship",
+          "32074000", "long term care hospital",
+          "224929004", "secure hospital",
+          "42665001", "nursing home",
+          "30629002", "retirement home",
+          "74056004", "orphanage",
+          "722173008", "prison-based care site",
+          "20078004", "substance abuse treatment center",
+          "257573002", "boarding house",
+          "224683003", "military accommodation",
+          "284546000", "hospice",
+          "257628001", "hostel",
+          "310207003", "sheltered housing",
+          "57656006", "penal institution",
+          "285113009", "religious institutional residence",
+          "285141008", "work (environment)",
+          "32911000", "homeless");
+  private static final Set<String> TEST_RESULT_STATUS_VALUES = Set.of("f", "c");
   private static final String ITEM_SCOPE = "item";
   private static final String REPORT_SCOPE = "report";
 
   public TestResultFileValidator() {
-    VALID_STATE_CODES.addAll(STATE_CODES);
-    VALID_STATE_CODES.addAll(CANADIAN_STATE_CODES);
+    VALID_STATE_CODES.addAll(
+        STATE_CODES.stream().map(String::toLowerCase).collect(Collectors.toList()));
+    VALID_STATE_CODES.addAll(
+        CANADIAN_STATE_CODES.stream().map(String::toLowerCase).collect(Collectors.toList()));
   }
 
   public List<FeedbackMessage> validate(InputStream csvStream) {
@@ -396,7 +399,7 @@ public class TestResultFileValidator {
     if (value == null) {
       return errors;
     }
-    if (!acceptableValues.contains(value)) {
+    if (!acceptableValues.contains(value.toLowerCase())) {
       errors.add(
           new FeedbackMessage(
               ITEM_SCOPE,
