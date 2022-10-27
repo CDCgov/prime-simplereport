@@ -26,7 +26,7 @@ const UploadPatients = () => {
   const [status, setStatus] = useState("");
 
   const facilities = useSelector(
-    (state) => ((state as any).facilities as Facility[]) || []
+    (state: any) => (state?.facilities as Facility[]) || []
   );
   const facility = selectedFacility || facilities[0] || { id: "", name: "" };
 
