@@ -5,11 +5,13 @@ import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.when;
 
+import gov.cdc.usds.simplereport.api.uploads.PatientBulkUploadResponse;
 import gov.cdc.usds.simplereport.db.model.Facility;
 import gov.cdc.usds.simplereport.db.model.Person;
 import gov.cdc.usds.simplereport.db.model.PhoneNumber;
 import gov.cdc.usds.simplereport.db.model.auxiliary.PhoneType;
 import gov.cdc.usds.simplereport.db.model.auxiliary.StreetAddress;
+import gov.cdc.usds.simplereport.db.model.auxiliary.UploadStatus;
 import gov.cdc.usds.simplereport.db.repository.PhoneNumberRepository;
 import gov.cdc.usds.simplereport.test_util.SliceTestConfiguration.Role;
 import gov.cdc.usds.simplereport.test_util.TestUserIdentities;
@@ -17,7 +19,6 @@ import java.io.ByteArrayInputStream;
 import java.io.InputStream;
 import java.nio.charset.StandardCharsets;
 import java.util.List;
-import java.util.Map;
 import java.util.UUID;
 import java.util.stream.Collectors;
 import org.junit.jupiter.api.BeforeEach;
@@ -60,34 +61,22 @@ class PatientBulkUploadServiceTest extends BaseServiceTest<PatientBulkUploadServ
     secondFacilityId = facilityIds.get(1);
   }
 
-  @Test
-  void testRowWithValue() {
-    String value = this._service.getRow(Map.of("key1", "value1"), "key1", true);
-    assertThat(value).isEqualTo("value1");
-  }
+  // for the service, we need to test:
+  // returns SUCCESS when csv is successfully processed, number of patients updated
+  // returns FAILURE (and errors) when csv has errors, number of patients not updated
+  // duplicate patients are skipped
+  // eventually: emails are sent and async processing WAI
 
   @Test
-  void testRowWithEmptyValue() {
-    String value = this._service.getRow(Map.of("key1", ""), "key1", false);
-    assertThat(value).isEqualTo("");
-  }
-
-  @Test
-  void testRowWithEmptyValueRequired() {
-    assertThrows(
-        IllegalArgumentException.class,
-        () -> this._service.getRow(Map.of("key1", ""), "key1", true));
-  }
-
-  @Test
-  void testUploadValidCsv() {
+  void testSuccessfulUpload_withValidCsv() {
     // GIVEN
-    InputStream inputStream = loadCsv("test-upload.csv");
+    InputStream inputStream = loadCsv("test-patient-upload-valid.csv");
 
     // WHEN
-    this._service.processPersonCSV(inputStream, null);
+    PatientBulkUploadResponse response = this._service.processPersonCSV(inputStream, null);
 
     // THEN
+    assertThat(response.getStatus()).isEqualTo(UploadStatus.SUCCESS);
     assertThat(getPatients()).hasSize(1);
     Person p = getPatients().get(0);
     assertThat(p.getLastName()).isEqualTo("Best");
@@ -96,14 +85,14 @@ class PatientBulkUploadServiceTest extends BaseServiceTest<PatientBulkUploadServ
         phoneNumberRepository.findAllByPersonInternalId(p.getInternalId());
     assertThat(phoneNumbers).hasSize(1);
     PhoneNumber pn = phoneNumbers.get(0);
-    assertThat(pn.getNumber()).isEqualTo("(565) 666-7777");
+    assertThat(pn.getNumber()).isEqualTo("565-666-7777");
     assertThat(pn.getType()).isEqualTo(PhoneType.MOBILE);
   }
 
   @Test
   void withoutFacilityId_validCsvUploadsToOrganization() {
     // GIVEN
-    InputStream inputStream = loadCsv("test-upload.csv");
+    InputStream inputStream = loadCsv("test-patient-upload-valid.csv");
 
     // WHEN
     this._service.processPersonCSV(inputStream, null);
@@ -115,7 +104,7 @@ class PatientBulkUploadServiceTest extends BaseServiceTest<PatientBulkUploadServ
   @Test
   void withFacilityId_validCsvUploadsToSingleFacility() {
     // GIVEN
-    InputStream inputStream = loadCsv("test-upload.csv");
+    InputStream inputStream = loadCsv("test-patient-upload-valid.csv");
 
     // WHEN
     this._service.processPersonCSV(inputStream, firstFacilityId);

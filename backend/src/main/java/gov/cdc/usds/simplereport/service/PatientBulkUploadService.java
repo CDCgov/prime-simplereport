@@ -2,10 +2,8 @@ package gov.cdc.usds.simplereport.service;
 
 import static gov.cdc.usds.simplereport.api.Translators.parsePersonRole;
 import static gov.cdc.usds.simplereport.api.Translators.parsePhoneType;
-import static gov.cdc.usds.simplereport.api.Translators.parseString;
 import static gov.cdc.usds.simplereport.api.Translators.parseUserShortDate;
 import static gov.cdc.usds.simplereport.api.Translators.parseYesNo;
-import static gov.cdc.usds.simplereport.validators.CsvValidatorUtils.getValue;
 
 import com.fasterxml.jackson.databind.MappingIterator;
 import gov.cdc.usds.simplereport.api.model.errors.CsvProcessingException;
@@ -14,16 +12,15 @@ import gov.cdc.usds.simplereport.config.AuthorizationConfiguration;
 import gov.cdc.usds.simplereport.db.model.Facility;
 import gov.cdc.usds.simplereport.db.model.Organization;
 import gov.cdc.usds.simplereport.db.model.PhoneNumber;
-import gov.cdc.usds.simplereport.db.model.auxiliary.PersonRole;
 import gov.cdc.usds.simplereport.db.model.auxiliary.StreetAddress;
 import gov.cdc.usds.simplereport.db.model.auxiliary.UploadStatus;
 import gov.cdc.usds.simplereport.service.model.reportstream.FeedbackMessage;
 import gov.cdc.usds.simplereport.validators.CsvValidatorUtils;
 import gov.cdc.usds.simplereport.validators.PatientBulkUploadFileValidator;
+import gov.cdc.usds.simplereport.validators.PatientBulkUploadFileValidator.PatientUploadRow;
 import java.io.ByteArrayInputStream;
 import java.io.IOException;
 import java.io.InputStream;
-import java.time.LocalDate;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
@@ -49,14 +46,6 @@ public class PatientBulkUploadService {
   private final AddressValidationService _addressValidationService;
   private final OrganizationService _organizationService;
   private final PatientBulkUploadFileValidator _patientBulkUploadFileValidator;
-
-  public String getRow(Map<String, String> row, String name, boolean isRequired) {
-    String value = row.get(name);
-    if (isRequired && (value == null || value.trim().isEmpty())) {
-      throw new IllegalArgumentException(name + " is required.");
-    }
-    return value;
-  }
 
   // This authorization will change once we open the feature to end users
   @AuthorizationConfiguration.RequireGlobalAdminUser
@@ -91,7 +80,7 @@ public class PatientBulkUploadService {
     // Putting a pin in it for now.
 
     final MappingIterator<Map<String, String>> valueIterator =
-        CsvValidatorUtils.getIteratorForCsv(csvStream);
+        CsvValidatorUtils.getIteratorForCsv(new ByteArrayInputStream(content));
 
     Optional<Facility> facility =
         Optional.ofNullable(facilityId).map(_organizationService::getFacilityInCurrentOrg);
@@ -100,62 +89,52 @@ public class PatientBulkUploadService {
       final Map<String, String> row = CsvValidatorUtils.getNextRow(valueIterator);
 
       try {
-        // get address here
+
+        PatientUploadRow extractedData = new PatientUploadRow(row);
+
+        // Fetch address information
         StreetAddress address =
             _addressValidationService.getValidatedAddress(
-                getValue(row, "Street", true).getValue(),
-                getValue(row, "Street2", false).getValue(),
-                getValue(row, "City", false).getValue(),
-                getValue(row, "State", true).getValue(),
-                getValue(row, "ZipCode", true).getValue(),
+                extractedData.getStreet().getValue(),
+                extractedData.getStreet2().getValue(),
+                extractedData.getCity().getValue(),
+                extractedData.getState().getValue(),
+                extractedData.getZipCode().getValue(),
                 null);
 
-        String firstName = getValue(row, "FirstName", true).getValue();
-        String lastName = getValue(row, "LastName", true).getValue();
-        String middleName = getValue(row, "MiddleName", false).getValue();
-        String suffix = getValue(row, "Suffix", false).getValue();
-        String race = getValue(row, "Race", true).getValue();
-        LocalDate dob = parseUserShortDate(getValue(row, "DOB", true).getValue());
-        String biologicalSex = getValue(row, "biologicalSex", true).getValue();
-        String ethnicity = getValue(row, "Ethnicity", true).getValue();
-        String phoneNumber = getValue(row, "PhoneNumber", true).getValue();
-        String phoneNumberType = getValue(row, "PhoneNumberType", false).getValue();
-        Boolean employedInHealthcare =
-            parseYesNo(getValue(row, "employedInHealthcare", true).getValue());
-        Boolean residentCongregateSetting =
-            parseYesNo(getValue(row, "residentCongregateSetting", true).getValue());
-        PersonRole role = parsePersonRole(getValue(row, "role", false).getValue(), false);
-        String email = getValue(row, "email", false).getValue();
+        String country = "USA";
 
-        String country = parseString(getValue(row, "Country", false).getValue());
-
-        if (country == null) {
-          country = "USA";
-        }
-
-        if (_personService.isDuplicatePatient(firstName, lastName, dob, org, facility)) {
+        if (_personService.isDuplicatePatient(
+            extractedData.getFirstName().getValue(),
+            extractedData.getLastName().getValue(),
+            parseUserShortDate(extractedData.getDateOfBirth().getValue()),
+            org,
+            facility)) {
           continue;
         }
 
         _personService.addPatient(
             facilityId,
             null, // lookupID
-            firstName,
-            middleName,
-            lastName,
-            suffix,
-            dob,
+            extractedData.getFirstName().getValue(),
+            extractedData.getMiddleName().getValue(),
+            extractedData.getLastName().getValue(),
+            extractedData.getSuffix().getValue(),
+            parseUserShortDate(extractedData.getDateOfBirth().getValue()),
             address,
             country,
-            List.of(new PhoneNumber(parsePhoneType(phoneNumberType), phoneNumber)),
-            role,
-            List.of(email),
-            race,
-            ethnicity,
+            List.of(
+                new PhoneNumber(
+                    parsePhoneType(extractedData.getPhoneNumberType().getValue()),
+                    extractedData.getPhoneNumber().getValue())),
+            parsePersonRole(extractedData.getRole().getValue(), false),
+            List.of(extractedData.getEmail().getValue()),
+            extractedData.getRace().getValue(),
+            extractedData.getEthnicity().getValue(),
             null,
-            biologicalSex,
-            residentCongregateSetting,
-            employedInHealthcare,
+            extractedData.getBiologicalSex().getValue(),
+            parseYesNo(extractedData.getResidentCongregateSetting().getValue()),
+            parseYesNo(extractedData.getEmployedInHealthcare().getValue()),
             null,
             null);
       } catch (IllegalArgumentException e) {
