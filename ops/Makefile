@@ -51,6 +51,11 @@ init-%: .valid-env-%
 	terraform -chdir=$*/persistent init -upgrade -migrate-state
 	terraform -chdir=$* init -upgrade -migrate-state
 
+# Passes the -upgrade and -migration flags to terraform init
+# init-%: .valid-env-%
+# 	terraform -chdir=$*/persistent init -upgrade -migrate-state
+# 	terraform -chdir=$* init -upgrade -migrate-state
+
 plan-%: .valid-env-% api.tfvars
 	terraform -chdir=$*/persistent plan -lock-timeout=30m
 	terraform -chdir=$* plan -var-file=../api.tfvars -lock-timeout=30m
