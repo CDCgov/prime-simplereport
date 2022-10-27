@@ -46,10 +46,9 @@ api.tfvars: /dev/null
 # 	terraform -chdir=$*/persistent init
 # 	terraform -chdir=$* init
 
-# Passes the -upgrade and -migration flags to terraform init
 init-%: .valid-env-%
-	terraform -chdir=$*/persistent init -upgrade -migrate-state
-	terraform -chdir=$* init -upgrade -migrate-state
+	terraform -chdir=$*/persistent init
+	terraform -chdir=$* init
 
 # Passes the -upgrade and -migration flags to terraform init
 # init-%: .valid-env-%
