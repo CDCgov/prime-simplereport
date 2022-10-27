@@ -1,6 +1,8 @@
 import React, { useState } from "react";
 import { FileInput, FormGroup } from "@trussworks/react-uswds";
 import { useSelector } from "react-redux";
+import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
+import { faXmark } from "@fortawesome/free-solid-svg-icons";
 
 import { useDocumentTitle } from "../utils/hooks";
 import Button from "../commonComponents/Button/Button";
@@ -195,6 +197,14 @@ const UploadPatients = () => {
                     <span className="usa-alert__heading text-bold">
                       Success: File Accepted
                     </span>
+                    <button
+                      className="Toastify__close-button Toastify__close-button--default position-absolute top-0 right-0"
+                      type="button"
+                      aria-label="close"
+                      onClick={() => setStatus("")}
+                    >
+                      <FontAwesomeIcon icon={faXmark} />
+                    </button>
                     <p className="usa-alert__text">
                       Patients in your file have been successfully uploaded.
                     </p>
@@ -209,6 +219,17 @@ const UploadPatients = () => {
                     <span className="usa-alert__heading text-bold">
                       Error: File not accepted
                     </span>
+                    <button
+                      className="Toastify__close-button Toastify__close-button--default position-absolute top-0 right-0"
+                      type="button"
+                      aria-label="close"
+                      onClick={() => {
+                        setErrorMessageText("");
+                        setErrors([]);
+                      }}
+                    >
+                      <FontAwesomeIcon icon={faXmark} />
+                    </button>
                     <p className="usa-alert__text">{errorMessageText}</p>
                   </div>
                 </div>
