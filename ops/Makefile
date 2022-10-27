@@ -46,9 +46,18 @@ api.tfvars: /dev/null
 	echo "deploy_timestamp=\"$(shell date +%Y-%m-%dT%H:%M:%S%z) \"" >> $@; \
 	echo "deploy_actor=\"$(GITHUB_ACTOR)\"" >> $@;
 
+# init-%: .valid-env-%
+# 	terraform -chdir=$*/persistent init
+# 	terraform -chdir=$* init
+
 init-%: .valid-env-%
 	terraform -chdir=$*/persistent init
 	terraform -chdir=$* init
+
+# Passes the -upgrade and -migration flags to terraform init
+# init-%: .valid-env-%
+# 	terraform -chdir=$*/persistent init -upgrade -migrate-state
+# 	terraform -chdir=$* init -upgrade -migrate-state
 
 plan-%: .valid-env-% api.tfvars
 	terraform -chdir=$*/persistent plan -lock-timeout=30m

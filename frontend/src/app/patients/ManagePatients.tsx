@@ -238,7 +238,7 @@ export const DetachedManagePatients = ({
   };
 
   return (
-    <main className="prime-home">
+    <div className="prime-home flex-1">
       <div className="grid-container">
         <div className="grid-row">
           <div className="prime-container card-container">
@@ -333,7 +333,7 @@ export const DetachedManagePatients = ({
           {isAdmin && <PatientUpload onSuccess={refetch} />}
         </div>
       </div>
-    </main>
+    </div>
   );
 };
 

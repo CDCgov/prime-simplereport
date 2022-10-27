@@ -8,14 +8,35 @@ describe("Patient self registration", () => {
     cy.visit("/settings");
     cy.contains("Patient self-registration").click();
     cy.contains("Patients can now register themselves online");
+
+    // failing a11y test
+    // Test a11y on the Patient self registration page
+    cy.injectAxe();
+    cy.checkA11y(
+        {
+          exclude: [],
+        },
+        {
+          rules: {
+            'button-name': { enabled: false },
+            'page-has-heading-one': { enabled: false },
+          },
+        },
+    );
+
     cy.get("#org-link").then(($link) => cy.visit($link.val()));
   });
   it("loads terms of service", () => {
     cy.contains("Terms of service");
+
+    cy.injectAxe();
+    cy.checkA11y(); // Terms of Service
   });
   it("accepts the terms of service", () => {
     cy.contains("I agree").click();
     cy.get("#registration-container").contains("General information");
+
+    cy.checkA11y(); // Info form
   });
   it("fills out some of the form fields", () => {
     cy.get('input[name="firstName"]').type(patient.firstName);
@@ -44,9 +65,28 @@ describe("Patient self registration", () => {
     cy.get(
       '.modal__container input[name="addressSelect-person"][value="userAddress"]+label'
     ).click();
+
+    // failing a11y test
+    // Also found in specs 01, 02, 05, 08
+    // Test a11y on the confirm address modal
+    cy.checkA11y(
+        {
+          exclude: [],
+        },
+        {
+          rules: {
+            'aria-dialog-name': { enabled: false },
+            'landmark-one-main': { enabled: false },
+            'page-has-heading-one': { enabled: false },
+          },
+        },
+    );
+
     cy.get(".modal__container #save-confirmed-address").click();
     cy.get("#self-reg-confirmation").contains(
       "thanks for completing your patient profile"
     );
+
+    cy.checkA11y(); // Confirmation page
   });
 });

@@ -1,0 +1,45 @@
+.Toastify {
+  &__toast-container {
+    max-width: 40rem;
+    width: auto;
+  }
+
+  &__toast {
+    padding: 0;
+  }
+
+  &__close-button {
+    height: 1.5rem;
+    margin-top: 0.5rem;
+    margin-right: 0.5rem;
+    opacity: 1;
+    width: 1.5rem;
+
+    &:hover {
+      opacity: 0.3;
+    }
+
+    svg {
+      width: 100%;
+      height: 100%;
+    }
+  }
+
+  .sr-alert {
+    &--error {
+      background-color: #f4e3db;
+    }
+
+    &--success {
+      background-color: #ecf3ec;
+
+      .usa-alert--success {
+        outline: none;
+      }
+    }
+  }
+
+  .usa-alert {
+    max-width: 37.5rem;
+  }
+}

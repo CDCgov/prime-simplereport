@@ -5,6 +5,7 @@ import { Trans, useTranslation } from "react-i18next";
 import { Navigate } from "react-router-dom";
 
 import Button from "../../app/commonComponents/Button/Button";
+import { useDocumentTitle } from "../../app/utils/hooks";
 
 import ToS from "./ToS";
 
@@ -21,6 +22,7 @@ const TermsOfService: React.FunctionComponent<Props> = ({
   const plid = useSelector((state: any) => state.plid);
 
   const { t } = useTranslation();
+  useDocumentTitle(t("testResult.tos.title"));
 
   if (nextPage) {
     return (
@@ -34,9 +36,9 @@ const TermsOfService: React.FunctionComponent<Props> = ({
   }
 
   return (
-    <main
+    <div
       className={classnames(
-        "patient-app padding-bottom-4 bg-base-lightest",
+        "patient-app padding-bottom-4 bg-base-lightest flex-1",
         className
       )}
     >
@@ -68,7 +70,7 @@ const TermsOfService: React.FunctionComponent<Props> = ({
           }}
         />
       </form>
-    </main>
+    </div>
   );
 };
 

@@ -2,8 +2,8 @@
 
 exports[`TestQueue should render the test queue 1`] = `
 <div>
-  <main
-    class="prime-home"
+  <div
+    class="prime-home flex-1"
     style="padding-top: 80px;"
   >
     <div
@@ -133,12 +133,14 @@ exports[`TestQueue should render the test queue 1`] = `
                 <div
                   class="card-header"
                 >
-                  <button
-                    class="usa-button usa-button--unstyled card-name"
-                    type="button"
-                  >
-                    Doe, John A
-                  </button>
+                  <h2>
+                    <button
+                      class="usa-button usa-button--unstyled card-name"
+                      type="button"
+                    >
+                      Doe, John A
+                    </button>
+                  </h2>
                   <div
                     class="card-dob"
                   >
@@ -381,11 +383,11 @@ exports[`TestQueue should render the test queue 1`] = `
               <form
                 class="usa-form maxw-none"
               >
-                <h2
+                <h3
                   class="prime-radio__title"
                 >
                   COVID-19 results
-                </h2>
+                </h3>
                 <div
                   class="usa-form-group prime-radio__group"
                 >
@@ -553,12 +555,14 @@ exports[`TestQueue should render the test queue 1`] = `
                 <div
                   class="card-header"
                 >
-                  <button
-                    class="usa-button usa-button--unstyled card-name"
-                    type="button"
-                  >
-                    Smith, Jane
-                  </button>
+                  <h2>
+                    <button
+                      class="usa-button usa-button--unstyled card-name"
+                      type="button"
+                    >
+                      Smith, Jane
+                    </button>
+                  </h2>
                   <div
                     class="card-dob"
                   >
@@ -801,11 +805,11 @@ exports[`TestQueue should render the test queue 1`] = `
               <form
                 class="usa-form maxw-none"
               >
-                <h2
+                <h3
                   class="prime-radio__title"
                 >
                   COVID-19 results
-                </h2>
+                </h3>
                 <div
                   class="usa-form-group prime-radio__group"
                 >
@@ -896,6 +900,6 @@ exports[`TestQueue should render the test queue 1`] = `
         </div>
       </div>
     </div>
-  </main>
+  </div>
 </div>
 `;

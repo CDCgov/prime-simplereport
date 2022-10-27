@@ -4,13 +4,13 @@ import Modal from "react-modal";
 import { useNavigate } from "react-router-dom";
 
 import Button from "../commonComponents/Button/Button";
-import { displayFullName, showNotification } from "../utils";
+import { displayFullName } from "../utils";
+import { showSuccess } from "../utils/srToast";
 import "./TestResultCorrectionModal.scss";
 import {
   InjectedQueryWrapperProps,
   QueryWrapper,
 } from "../commonComponents/QueryWrapper";
-import Alert from "../commonComponents/Alert";
 import Dropdown from "../commonComponents/Dropdown";
 import RadioGroup from "../commonComponents/RadioGroup";
 import Required from "../commonComponents/Required";
@@ -140,10 +140,7 @@ export const DetachedTestResultCorrectionModal = ({
       },
     })
       .then(() => {
-        const alert = (
-          <Alert type="success" title="Result marked as error" body="" />
-        );
-        showNotification(alert);
+        showSuccess("", "Result marked as error");
       })
       .finally(() => {
         closeModal();
@@ -159,12 +156,9 @@ export const DetachedTestResultCorrectionModal = ({
       },
     })
       .then(() => {
-        const alert = (
-          // TODO: better text here, maybe indicating to user that the test should now
-          // be available in the queue
-          <Alert type="success" title="Result marked as correction" body="" />
-        );
-        showNotification(alert);
+        // TODO: better text here, maybe indicating to user that the test should now
+        // be available in the queue
+        showSuccess("", "Result marked as correction");
       })
       .finally(() => {
         setTimeout(() => {

@@ -138,4 +138,18 @@ describe("parseDataForCSV", () => {
       multiplexResult
     );
   });
+  it("parse data does not fail if tribalAffiliation is null", () => {
+    const multiplexEnabled = false;
+    expect(
+      parseDataForCSV(
+        [
+          {
+            ...data[0],
+            patient: { ...data[0].patient, tribalAffiliation: null },
+          },
+        ],
+        multiplexEnabled
+      )
+    ).toEqual(result);
+  });
 });

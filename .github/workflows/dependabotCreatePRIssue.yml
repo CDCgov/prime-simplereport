@@ -1,9 +1,6 @@
-name: DependabotCreatePRIssue
+name: Dependabot Create Issue
 on:
-  workflow_dispatch:
   pull_request:
-    branches:
-      - main
     types: [opened, reopened]
 
 jobs:
@@ -11,6 +8,9 @@ jobs:
     runs-on: ubuntu-latest
     env:
       GITHUB_TOKEN: ${{secrets.GITHUB_TOKEN}}
+    # Github action permissions: https://docs.github.com/en/actions/using-jobs/assigning-permissions-to-jobs#overview
+    permissions:
+      issues: write
     steps:
       - uses: actions/checkout@v2
         if: github.event.pull_request.user.login  == 'dependabot[bot]'
@@ -22,6 +22,7 @@ jobs:
           url: ${{github.event.pull_request.url}}
         run: |
           title="Dependabot PR $title opened"
+          labels="dependencies,Dependabot"
           body="Dependabot has opened PR #$number
           Link: $url"
-          gh issue create --title "$title" --body "$body"
+          gh issue create --title "$title" --body "$body" --label "$labels"

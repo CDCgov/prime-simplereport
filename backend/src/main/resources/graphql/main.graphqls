@@ -237,8 +237,7 @@ type TestOrder {
   symptomOnset: LocalDate
   deviceType: DeviceType
   deviceSpecimenType: DeviceSpecimenType
-  result: String
-    @deprecated(reason: "use results as source of truth")
+  result: String @deprecated(reason: "use results as source of truth")
   results: [MultiplexResult]
   dateTested: DateTime
   correctionStatus: String
@@ -256,8 +255,7 @@ type TestResult {
   symptoms: String
   symptomOnset: LocalDate
   deviceType: DeviceType
-  result: String
-    @deprecated(reason: "use results as source of truth")
+  result: String @deprecated(reason: "use results as source of truth")
   results: [MultiplexResult]
   dateTested: DateTime
   testPerformed: TestDescription!
@@ -348,6 +346,11 @@ type UploadSubmissionPage {
   content: [UploadResult!]!
 }
 
+type TestResultsPage {
+  totalElements: Int
+  content: [TestResult]
+}
+
 # Queries and mutations for everyday use
 
 type Query {
@@ -409,6 +412,16 @@ type Query {
     pageNumber: Int = 0
     pageSize: Int = 5000
   ): [TestResult] @requiredPermissions(allOf: ["READ_RESULT_LIST"])
+  testResultsPage(
+    facilityId: ID
+    patientId: ID
+    result: String
+    role: String
+    startDate: DateTime
+    endDate: DateTime
+    pageNumber: Int = 0
+    pageSize: Int = 5000
+  ): TestResultsPage @requiredPermissions(allOf: ["READ_RESULT_LIST"])
   testResultsCount(
     facilityId: ID
     patientId: ID
@@ -650,13 +663,6 @@ type Mutation {
   ): Patient @requiredPermissions(allOf: ["EDIT_PATIENT"])
   setPatientIsDeleted(id: ID!, deleted: Boolean!): Patient
     @requiredPermissions(allOf: ["ARCHIVE_PATIENT"])
-  addTestResultNew(
-    deviceId: String!
-    deviceSpecimenType: ID
-    result: String!
-    patientId: ID!
-    dateTested: DateTime
-  ): AddTestResultResponse @requiredPermissions(allOf: ["SUBMIT_TEST"])
   addMultiplexResult(
     deviceId: String!
     deviceSpecimenType: ID
@@ -664,13 +670,6 @@ type Mutation {
     patientId: ID!
     dateTested: DateTime
   ): AddTestResultResponse @requiredPermissions(allOf: ["SUBMIT_TEST"])
-  editQueueItem(
-    id: ID!
-    deviceId: String
-    deviceSpecimenType: ID
-    result: String
-    dateTested: DateTime
-  ): TestOrder @requiredPermissions(allOf: ["UPDATE_TEST"])
   editQueueItemMultiplexResult(
     id: ID!
     deviceId: String

@@ -2,11 +2,11 @@ query GetFacilityResults($facilityId: ID!, $nameType: String = "long") {
   testResults(facilityId: $facilityId) {
     internalId
     dateTested
-    results{
-      disease{
-          internalId
-          name
-          loinc
+    results {
+      disease {
+        internalId
+        name
+        loinc
       }
       testResult
     }

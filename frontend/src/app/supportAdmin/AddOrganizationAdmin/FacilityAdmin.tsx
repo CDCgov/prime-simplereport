@@ -1,8 +1,7 @@
 import React, { useCallback, useState } from "react";
 
-import Alert from "../../commonComponents/Alert";
 import Input from "../../commonComponents/Input";
-import { showNotification } from "../../utils";
+import { showError } from "../../utils/srToast";
 import { camelToSentenceCase } from "../../utils/text";
 
 import {
@@ -53,14 +52,10 @@ export const useFacilityAdminValidation = (admin: FacilityAdmin) => {
         {} as FacilityAdminErrors
       );
       setErrors(newErrors);
-      const alert = (
-        <Alert
-          type="error"
-          title="Form Errors"
-          body="Please check the form to make sure you complete all of the required fields."
-        />
+      showError(
+        "Please check the form to make sure you complete all of the required fields.",
+        "Form Errors"
       );
-      showNotification(alert);
       return "error";
     }
   };

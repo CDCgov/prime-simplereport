@@ -1,4 +1,4 @@
-const TEST_RESULTS_COVID = [
+const data = [
   {
     internalId: "0969da96-b211-41cd-ba61-002181f0918d",
     dateTested: "2021-03-17T19:27:23.806Z",
@@ -96,7 +96,11 @@ const TEST_RESULTS_COVID = [
       lookupId: null,
       email: "sam@gerard.com",
       phoneNumbers: [
-        { type: "MOBILE", number: "(248) 555-1234", __typename: "PhoneNumber" },
+        {
+          type: "MOBILE",
+          number: "(248) 555-1234",
+          __typename: "PhoneNumber",
+        },
       ],
       __typename: "Patient",
     },
@@ -118,5 +122,9 @@ const TEST_RESULTS_COVID = [
     __typename: "TestResult",
   },
 ];
+const TEST_RESULTS_COVID = {
+  content: data,
+  totalElements: data.length,
+};
 
 export default TEST_RESULTS_COVID;

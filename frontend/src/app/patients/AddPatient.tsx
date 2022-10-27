@@ -7,19 +7,19 @@ import { useSelector } from "react-redux";
 
 import iconSprite from "../../../node_modules/uswds/dist/img/sprite.svg";
 import { PATIENT_TERM, PATIENT_TERM_CAP } from "../../config/constants";
-import { showNotification, dedupeAndCompactStrings } from "../utils";
-import Alert from "../commonComponents/Alert";
+import { dedupeAndCompactStrings } from "../utils";
+import { showSuccess } from "../utils/srToast";
 import Button from "../commonComponents/Button/Button";
-import {
-  DuplicatePatientModal,
-  IdentifyingData,
-} from "../../app/patients/Components/DuplicatePatientModal";
 import { LinkWithQuery } from "../commonComponents/LinkWithQuery";
 import { useDocumentTitle } from "../utils/hooks";
 import { useSelectedFacility } from "../facilitySelect/useSelectedFacility";
 import { RootState } from "../store";
 import { StartTestProps } from "../testQueue/addToQueue/AddToQueueSearch";
 
+import {
+  DuplicatePatientModal,
+  IdentifyingData,
+} from "./Components/DuplicatePatientModal";
 import PersonForm from "./Components/PersonForm";
 
 export const EMPTY_PERSON: Nullable<PersonFormData> = {
@@ -248,13 +248,9 @@ const AddPatient = () => {
         emails: dedupeAndCompactStrings(person.emails || []),
       },
     });
-
-    showNotification(
-      <Alert
-        type="success"
-        title={`${PATIENT_TERM_CAP} record created`}
-        body="New information record has been created."
-      />
+    showSuccess(
+      "New information record has been created.",
+      `${PATIENT_TERM_CAP} record created`
     );
 
     if (startTest) {
@@ -289,11 +285,12 @@ const AddPatient = () => {
 
   const getSaveButtons = (
     formChanged: boolean,
-    onSave: (startTest?: boolean) => void
+    onSave: (startTest?: boolean) => void,
+    location: string
   ) => (
     <>
       <Button
-        id="edit-patient-save-lower"
+        id={`edit-patient-save-and-start-${location}`}
         className="prime-save-patient-changes-start-test"
         disabled={loading || !formChanged}
         onClick={() => {
@@ -305,7 +302,7 @@ const AddPatient = () => {
         }
       />
       <Button
-        id="edit-patient-save-lower"
+        id={`edit-patient-save-${location}`}
         className="prime-save-patient-changes"
         disabled={loading || !formChanged}
         onClick={() => {
@@ -319,12 +316,11 @@ const AddPatient = () => {
   );
 
   return (
-    <main className={"prime-edit-patient prime-home"}>
+    <div className={"prime-edit-patient prime-home"}>
       <div className={"grid-container margin-bottom-4"}>
         <DuplicatePatientModal
           showModal={
-            patientExistsResponse?.patientExistsWithoutZip &&
-            preventModal === false
+            patientExistsResponse?.patientExistsWithoutZip && !preventModal
           }
           onDuplicate={() => setRedirect(personPath)}
           entityName={
@@ -364,18 +360,18 @@ const AddPatient = () => {
                 </div>
               </div>
               <div className="display-flex flex-align-center">
-                {getSaveButtons(formChanged, onSave)}
+                {getSaveButtons(formChanged, onSave, "upper")}
               </div>
             </div>
           )}
           getFooter={(onSave, formChanged) => (
             <div className="prime-edit-patient-heading">
-              {getSaveButtons(formChanged, onSave)}
+              {getSaveButtons(formChanged, onSave, "lower")}
             </div>
           )}
         />
       </div>
-    </main>
+    </div>
   );
 };
 

@@ -158,7 +158,6 @@ export type Mutation = {
   addMultiplexResult?: Maybe<AddTestResultResponse>;
   addPatient?: Maybe<Patient>;
   addPatientToQueue?: Maybe<Scalars["String"]>;
-  addTestResultNew?: Maybe<AddTestResultResponse>;
   addUser?: Maybe<User>;
   addUserToCurrentOrg?: Maybe<User>;
   adminUpdateOrganization?: Maybe<Scalars["String"]>;
@@ -171,7 +170,6 @@ export type Mutation = {
   createOrganizationRegistrationLink?: Maybe<Scalars["String"]>;
   createSpecimenType?: Maybe<SpecimenType>;
   editPendingOrganization?: Maybe<Scalars["String"]>;
-  editQueueItem?: Maybe<TestOrder>;
   editQueueItemMultiplexResult?: Maybe<TestOrder>;
   markFacilityAsDeleted?: Maybe<Scalars["String"]>;
   markOrganizationAsDeleted?: Maybe<Scalars["String"]>;
@@ -301,14 +299,6 @@ export type MutationAddPatientToQueueArgs = {
   testResultDelivery?: InputMaybe<TestResultDeliveryPreference>;
 };
 
-export type MutationAddTestResultNewArgs = {
-  dateTested?: InputMaybe<Scalars["DateTime"]>;
-  deviceId: Scalars["String"];
-  deviceSpecimenType?: InputMaybe<Scalars["ID"]>;
-  patientId: Scalars["ID"];
-  result: Scalars["String"];
-};
-
 export type MutationAddUserArgs = {
   email: Scalars["String"];
   firstName?: InputMaybe<Scalars["String"]>;
@@ -417,14 +407,6 @@ export type MutationEditPendingOrganizationArgs = {
   adminPhone?: InputMaybe<Scalars["String"]>;
   name?: InputMaybe<Scalars["String"]>;
   orgExternalId: Scalars["String"];
-};
-
-export type MutationEditQueueItemArgs = {
-  dateTested?: InputMaybe<Scalars["DateTime"]>;
-  deviceId?: InputMaybe<Scalars["String"]>;
-  deviceSpecimenType?: InputMaybe<Scalars["ID"]>;
-  id: Scalars["ID"];
-  result?: InputMaybe<Scalars["String"]>;
 };
 
 export type MutationEditQueueItemMultiplexResultArgs = {
@@ -794,6 +776,7 @@ export type Query = {
   testResult?: Maybe<TestResult>;
   testResults?: Maybe<Array<Maybe<TestResult>>>;
   testResultsCount?: Maybe<Scalars["Int"]>;
+  testResultsPage?: Maybe<TestResultsPage>;
   topLevelDashboardMetrics?: Maybe<TopLevelDashboardMetrics>;
   uploadSubmission: UploadResponse;
   uploadSubmissions: UploadSubmissionPage;
@@ -872,6 +855,17 @@ export type QueryTestResultsArgs = {
 export type QueryTestResultsCountArgs = {
   endDate?: InputMaybe<Scalars["DateTime"]>;
   facilityId?: InputMaybe<Scalars["ID"]>;
+  patientId?: InputMaybe<Scalars["ID"]>;
+  result?: InputMaybe<Scalars["String"]>;
+  role?: InputMaybe<Scalars["String"]>;
+  startDate?: InputMaybe<Scalars["DateTime"]>;
+};
+
+export type QueryTestResultsPageArgs = {
+  endDate?: InputMaybe<Scalars["DateTime"]>;
+  facilityId?: InputMaybe<Scalars["ID"]>;
+  pageNumber?: InputMaybe<Scalars["Int"]>;
+  pageSize?: InputMaybe<Scalars["Int"]>;
   patientId?: InputMaybe<Scalars["ID"]>;
   result?: InputMaybe<Scalars["String"]>;
   role?: InputMaybe<Scalars["String"]>;
@@ -994,6 +988,12 @@ export enum TestResultDeliveryPreference {
   None = "NONE",
   Sms = "SMS",
 }
+
+export type TestResultsPage = {
+  __typename?: "TestResultsPage";
+  content?: Maybe<Array<Maybe<TestResult>>>;
+  totalElements?: Maybe<Scalars["Int"]>;
+};
 
 export type TopLevelDashboardMetrics = {
   __typename?: "TopLevelDashboardMetrics";
@@ -2426,6 +2426,239 @@ export type ResendTestResultsEmailMutation = {
   sendPatientLinkEmailByTestEventId?: boolean | null | undefined;
 };
 
+export type GetFacilityResultsForCsvWithCountQueryVariables = Exact<{
+  facilityId?: InputMaybe<Scalars["ID"]>;
+  patientId?: InputMaybe<Scalars["ID"]>;
+  result?: InputMaybe<Scalars["String"]>;
+  role?: InputMaybe<Scalars["String"]>;
+  startDate?: InputMaybe<Scalars["DateTime"]>;
+  endDate?: InputMaybe<Scalars["DateTime"]>;
+  pageNumber?: InputMaybe<Scalars["Int"]>;
+  pageSize?: InputMaybe<Scalars["Int"]>;
+}>;
+
+export type GetFacilityResultsForCsvWithCountQuery = {
+  __typename?: "Query";
+  testResultsPage?:
+    | {
+        __typename?: "TestResultsPage";
+        totalElements?: number | null | undefined;
+        content?:
+          | Array<
+              | {
+                  __typename?: "TestResult";
+                  dateTested?: any | null | undefined;
+                  dateUpdated?: any | null | undefined;
+                  correctionStatus?: string | null | undefined;
+                  reasonForCorrection?: string | null | undefined;
+                  symptoms?: string | null | undefined;
+                  noSymptoms?: boolean | null | undefined;
+                  symptomOnset?: any | null | undefined;
+                  facility?:
+                    | {
+                        __typename?: "Facility";
+                        name: string;
+                        isDeleted?: boolean | null | undefined;
+                      }
+                    | null
+                    | undefined;
+                  results?:
+                    | Array<
+                        | {
+                            __typename?: "MultiplexResult";
+                            testResult?: string | null | undefined;
+                            disease?:
+                              | {
+                                  __typename?: "SupportedDisease";
+                                  name: string;
+                                }
+                              | null
+                              | undefined;
+                          }
+                        | null
+                        | undefined
+                      >
+                    | null
+                    | undefined;
+                  deviceType?:
+                    | {
+                        __typename?: "DeviceType";
+                        name: string;
+                        manufacturer: string;
+                        model: string;
+                        swabType?: string | null | undefined;
+                      }
+                    | null
+                    | undefined;
+                  patient?:
+                    | {
+                        __typename?: "Patient";
+                        firstName?: string | null | undefined;
+                        middleName?: string | null | undefined;
+                        lastName?: string | null | undefined;
+                        birthDate?: any | null | undefined;
+                        gender?: string | null | undefined;
+                        race?: string | null | undefined;
+                        ethnicity?: string | null | undefined;
+                        tribalAffiliation?:
+                          | Array<string | null | undefined>
+                          | null
+                          | undefined;
+                        lookupId?: string | null | undefined;
+                        telephone?: string | null | undefined;
+                        email?: string | null | undefined;
+                        street?: string | null | undefined;
+                        streetTwo?: string | null | undefined;
+                        city?: string | null | undefined;
+                        county?: string | null | undefined;
+                        state?: string | null | undefined;
+                        zipCode?: string | null | undefined;
+                        country?: string | null | undefined;
+                        role?: string | null | undefined;
+                        residentCongregateSetting?: boolean | null | undefined;
+                        employedInHealthcare?: boolean | null | undefined;
+                        preferredLanguage?: string | null | undefined;
+                      }
+                    | null
+                    | undefined;
+                  createdBy?:
+                    | {
+                        __typename?: "ApiUser";
+                        nameInfo?:
+                          | {
+                              __typename?: "NameInfo";
+                              firstName?: string | null | undefined;
+                              middleName?: string | null | undefined;
+                              lastName: string;
+                            }
+                          | null
+                          | undefined;
+                      }
+                    | null
+                    | undefined;
+                }
+              | null
+              | undefined
+            >
+          | null
+          | undefined;
+      }
+    | null
+    | undefined;
+};
+
+export type GetFacilityResultsMultiplexWithCountQueryVariables = Exact<{
+  facilityId?: InputMaybe<Scalars["ID"]>;
+  patientId?: InputMaybe<Scalars["ID"]>;
+  result?: InputMaybe<Scalars["String"]>;
+  role?: InputMaybe<Scalars["String"]>;
+  startDate?: InputMaybe<Scalars["DateTime"]>;
+  endDate?: InputMaybe<Scalars["DateTime"]>;
+  pageNumber?: InputMaybe<Scalars["Int"]>;
+  pageSize?: InputMaybe<Scalars["Int"]>;
+}>;
+
+export type GetFacilityResultsMultiplexWithCountQuery = {
+  __typename?: "Query";
+  testResultsPage?:
+    | {
+        __typename?: "TestResultsPage";
+        totalElements?: number | null | undefined;
+        content?:
+          | Array<
+              | {
+                  __typename?: "TestResult";
+                  internalId?: string | null | undefined;
+                  dateTested?: any | null | undefined;
+                  correctionStatus?: string | null | undefined;
+                  results?:
+                    | Array<
+                        | {
+                            __typename?: "MultiplexResult";
+                            testResult?: string | null | undefined;
+                            disease?:
+                              | {
+                                  __typename?: "SupportedDisease";
+                                  name: string;
+                                }
+                              | null
+                              | undefined;
+                          }
+                        | null
+                        | undefined
+                      >
+                    | null
+                    | undefined;
+                  deviceType?:
+                    | {
+                        __typename?: "DeviceType";
+                        internalId: string;
+                        name: string;
+                      }
+                    | null
+                    | undefined;
+                  patient?:
+                    | {
+                        __typename?: "Patient";
+                        internalId?: string | null | undefined;
+                        firstName?: string | null | undefined;
+                        middleName?: string | null | undefined;
+                        lastName?: string | null | undefined;
+                        birthDate?: any | null | undefined;
+                        gender?: string | null | undefined;
+                        lookupId?: string | null | undefined;
+                        email?: string | null | undefined;
+                        phoneNumbers?:
+                          | Array<
+                              | {
+                                  __typename?: "PhoneNumber";
+                                  type?: PhoneType | null | undefined;
+                                  number?: string | null | undefined;
+                                }
+                              | null
+                              | undefined
+                            >
+                          | null
+                          | undefined;
+                      }
+                    | null
+                    | undefined;
+                  createdBy?:
+                    | {
+                        __typename?: "ApiUser";
+                        nameInfo?:
+                          | {
+                              __typename?: "NameInfo";
+                              firstName?: string | null | undefined;
+                              lastName: string;
+                            }
+                          | null
+                          | undefined;
+                      }
+                    | null
+                    | undefined;
+                  patientLink?:
+                    | {
+                        __typename?: "PatientLink";
+                        internalId?: string | null | undefined;
+                      }
+                    | null
+                    | undefined;
+                  facility?:
+                    | { __typename?: "Facility"; name: string }
+                    | null
+                    | undefined;
+                }
+              | null
+              | undefined
+            >
+          | null
+          | undefined;
+      }
+    | null
+    | undefined;
+};
+
 export type GetFacilityResultsForCsvQueryVariables = Exact<{
   facilityId?: InputMaybe<Scalars["ID"]>;
   patientId?: InputMaybe<Scalars["ID"]>;
@@ -2823,6 +3056,28 @@ export type GetUploadSubmissionsQuery = {
         | undefined;
     }>;
   };
+};
+
+export type GetDeviceTypesForLookupQueryVariables = Exact<{
+  [key: string]: never;
+}>;
+
+export type GetDeviceTypesForLookupQuery = {
+  __typename?: "Query";
+  deviceTypes: Array<{
+    __typename?: "DeviceType";
+    internalId: string;
+    name: string;
+    loincCode: string;
+    manufacturer: string;
+    model: string;
+    swabTypes: Array<{
+      __typename?: "SpecimenType";
+      internalId: string;
+      name: string;
+      typeCode: string;
+    }>;
+  }>;
 };
 
 export const WhoAmIDocument = gql`
@@ -6640,6 +6895,269 @@ export type ResendTestResultsEmailMutationOptions = Apollo.BaseMutationOptions<
   ResendTestResultsEmailMutation,
   ResendTestResultsEmailMutationVariables
 >;
+export const GetFacilityResultsForCsvWithCountDocument = gql`
+  query GetFacilityResultsForCsvWithCount(
+    $facilityId: ID
+    $patientId: ID
+    $result: String
+    $role: String
+    $startDate: DateTime
+    $endDate: DateTime
+    $pageNumber: Int
+    $pageSize: Int
+  ) {
+    testResultsPage(
+      facilityId: $facilityId
+      patientId: $patientId
+      result: $result
+      role: $role
+      startDate: $startDate
+      endDate: $endDate
+      pageNumber: $pageNumber
+      pageSize: $pageSize
+    ) {
+      content {
+        facility {
+          name
+          isDeleted
+        }
+        dateTested
+        dateUpdated
+        results {
+          disease {
+            name
+          }
+          testResult
+        }
+        correctionStatus
+        reasonForCorrection
+        deviceType {
+          name
+          manufacturer
+          model
+          swabType
+        }
+        patient {
+          firstName
+          middleName
+          lastName
+          birthDate
+          gender
+          race
+          ethnicity
+          tribalAffiliation
+          lookupId
+          telephone
+          email
+          street
+          streetTwo
+          city
+          county
+          state
+          zipCode
+          country
+          role
+          residentCongregateSetting
+          employedInHealthcare
+          preferredLanguage
+        }
+        createdBy {
+          nameInfo {
+            firstName
+            middleName
+            lastName
+          }
+        }
+        symptoms
+        noSymptoms
+        symptomOnset
+      }
+      totalElements
+    }
+  }
+`;
+
+/**
+ * __useGetFacilityResultsForCsvWithCountQuery__
+ *
+ * To run a query within a React component, call `useGetFacilityResultsForCsvWithCountQuery` and pass it any options that fit your needs.
+ * When your component renders, `useGetFacilityResultsForCsvWithCountQuery` returns an object from Apollo Client that contains loading, error, and data properties
+ * you can use to render your UI.
+ *
+ * @param baseOptions options that will be passed into the query, supported options are listed on: https://www.apollographql.com/docs/react/api/react-hooks/#options;
+ *
+ * @example
+ * const { data, loading, error } = useGetFacilityResultsForCsvWithCountQuery({
+ *   variables: {
+ *      facilityId: // value for 'facilityId'
+ *      patientId: // value for 'patientId'
+ *      result: // value for 'result'
+ *      role: // value for 'role'
+ *      startDate: // value for 'startDate'
+ *      endDate: // value for 'endDate'
+ *      pageNumber: // value for 'pageNumber'
+ *      pageSize: // value for 'pageSize'
+ *   },
+ * });
+ */
+export function useGetFacilityResultsForCsvWithCountQuery(
+  baseOptions?: Apollo.QueryHookOptions<
+    GetFacilityResultsForCsvWithCountQuery,
+    GetFacilityResultsForCsvWithCountQueryVariables
+  >
+) {
+  const options = { ...defaultOptions, ...baseOptions };
+  return Apollo.useQuery<
+    GetFacilityResultsForCsvWithCountQuery,
+    GetFacilityResultsForCsvWithCountQueryVariables
+  >(GetFacilityResultsForCsvWithCountDocument, options);
+}
+export function useGetFacilityResultsForCsvWithCountLazyQuery(
+  baseOptions?: Apollo.LazyQueryHookOptions<
+    GetFacilityResultsForCsvWithCountQuery,
+    GetFacilityResultsForCsvWithCountQueryVariables
+  >
+) {
+  const options = { ...defaultOptions, ...baseOptions };
+  return Apollo.useLazyQuery<
+    GetFacilityResultsForCsvWithCountQuery,
+    GetFacilityResultsForCsvWithCountQueryVariables
+  >(GetFacilityResultsForCsvWithCountDocument, options);
+}
+export type GetFacilityResultsForCsvWithCountQueryHookResult = ReturnType<
+  typeof useGetFacilityResultsForCsvWithCountQuery
+>;
+export type GetFacilityResultsForCsvWithCountLazyQueryHookResult = ReturnType<
+  typeof useGetFacilityResultsForCsvWithCountLazyQuery
+>;
+export type GetFacilityResultsForCsvWithCountQueryResult = Apollo.QueryResult<
+  GetFacilityResultsForCsvWithCountQuery,
+  GetFacilityResultsForCsvWithCountQueryVariables
+>;
+export const GetFacilityResultsMultiplexWithCountDocument = gql`
+  query GetFacilityResultsMultiplexWithCount(
+    $facilityId: ID
+    $patientId: ID
+    $result: String
+    $role: String
+    $startDate: DateTime
+    $endDate: DateTime
+    $pageNumber: Int
+    $pageSize: Int
+  ) {
+    testResultsPage(
+      facilityId: $facilityId
+      patientId: $patientId
+      result: $result
+      role: $role
+      startDate: $startDate
+      endDate: $endDate
+      pageNumber: $pageNumber
+      pageSize: $pageSize
+    ) {
+      content {
+        internalId
+        dateTested
+        results {
+          disease {
+            name
+          }
+          testResult
+        }
+        correctionStatus
+        deviceType {
+          internalId
+          name
+        }
+        patient {
+          internalId
+          firstName
+          middleName
+          lastName
+          birthDate
+          gender
+          lookupId
+          email
+          phoneNumbers {
+            type
+            number
+          }
+        }
+        createdBy {
+          nameInfo {
+            firstName
+            lastName
+          }
+        }
+        patientLink {
+          internalId
+        }
+        facility {
+          name
+        }
+      }
+      totalElements
+    }
+  }
+`;
+
+/**
+ * __useGetFacilityResultsMultiplexWithCountQuery__
+ *
+ * To run a query within a React component, call `useGetFacilityResultsMultiplexWithCountQuery` and pass it any options that fit your needs.
+ * When your component renders, `useGetFacilityResultsMultiplexWithCountQuery` returns an object from Apollo Client that contains loading, error, and data properties
+ * you can use to render your UI.
+ *
+ * @param baseOptions options that will be passed into the query, supported options are listed on: https://www.apollographql.com/docs/react/api/react-hooks/#options;
+ *
+ * @example
+ * const { data, loading, error } = useGetFacilityResultsMultiplexWithCountQuery({
+ *   variables: {
+ *      facilityId: // value for 'facilityId'
+ *      patientId: // value for 'patientId'
+ *      result: // value for 'result'
+ *      role: // value for 'role'
+ *      startDate: // value for 'startDate'
+ *      endDate: // value for 'endDate'
+ *      pageNumber: // value for 'pageNumber'
+ *      pageSize: // value for 'pageSize'
+ *   },
+ * });
+ */
+export function useGetFacilityResultsMultiplexWithCountQuery(
+  baseOptions?: Apollo.QueryHookOptions<
+    GetFacilityResultsMultiplexWithCountQuery,
+    GetFacilityResultsMultiplexWithCountQueryVariables
+  >
+) {
+  const options = { ...defaultOptions, ...baseOptions };
+  return Apollo.useQuery<
+    GetFacilityResultsMultiplexWithCountQuery,
+    GetFacilityResultsMultiplexWithCountQueryVariables
+  >(GetFacilityResultsMultiplexWithCountDocument, options);
+}
+export function useGetFacilityResultsMultiplexWithCountLazyQuery(
+  baseOptions?: Apollo.LazyQueryHookOptions<
+    GetFacilityResultsMultiplexWithCountQuery,
+    GetFacilityResultsMultiplexWithCountQueryVariables
+  >
+) {
+  const options = { ...defaultOptions, ...baseOptions };
+  return Apollo.useLazyQuery<
+    GetFacilityResultsMultiplexWithCountQuery,
+    GetFacilityResultsMultiplexWithCountQueryVariables
+  >(GetFacilityResultsMultiplexWithCountDocument, options);
+}
+export type GetFacilityResultsMultiplexWithCountQueryHookResult = ReturnType<
+  typeof useGetFacilityResultsMultiplexWithCountQuery
+>;
+export type GetFacilityResultsMultiplexWithCountLazyQueryHookResult = ReturnType<
+  typeof useGetFacilityResultsMultiplexWithCountLazyQuery
+>;
+export type GetFacilityResultsMultiplexWithCountQueryResult = Apollo.QueryResult<
+  GetFacilityResultsMultiplexWithCountQuery,
+  GetFacilityResultsMultiplexWithCountQueryVariables
+>;
 export const GetFacilityResultsForCsvDocument = gql`
   query GetFacilityResultsForCsv(
     $facilityId: ID
@@ -7277,4 +7795,70 @@ export type GetUploadSubmissionsLazyQueryHookResult = ReturnType<
 export type GetUploadSubmissionsQueryResult = Apollo.QueryResult<
   GetUploadSubmissionsQuery,
   GetUploadSubmissionsQueryVariables
+>;
+export const GetDeviceTypesForLookupDocument = gql`
+  query getDeviceTypesForLookup {
+    deviceTypes {
+      internalId
+      name
+      loincCode
+      manufacturer
+      model
+      swabTypes {
+        internalId
+        name
+        typeCode
+      }
+    }
+  }
+`;
+
+/**
+ * __useGetDeviceTypesForLookupQuery__
+ *
+ * To run a query within a React component, call `useGetDeviceTypesForLookupQuery` and pass it any options that fit your needs.
+ * When your component renders, `useGetDeviceTypesForLookupQuery` returns an object from Apollo Client that contains loading, error, and data properties
+ * you can use to render your UI.
+ *
+ * @param baseOptions options that will be passed into the query, supported options are listed on: https://www.apollographql.com/docs/react/api/react-hooks/#options;
+ *
+ * @example
+ * const { data, loading, error } = useGetDeviceTypesForLookupQuery({
+ *   variables: {
+ *   },
+ * });
+ */
+export function useGetDeviceTypesForLookupQuery(
+  baseOptions?: Apollo.QueryHookOptions<
+    GetDeviceTypesForLookupQuery,
+    GetDeviceTypesForLookupQueryVariables
+  >
+) {
+  const options = { ...defaultOptions, ...baseOptions };
+  return Apollo.useQuery<
+    GetDeviceTypesForLookupQuery,
+    GetDeviceTypesForLookupQueryVariables
+  >(GetDeviceTypesForLookupDocument, options);
+}
+export function useGetDeviceTypesForLookupLazyQuery(
+  baseOptions?: Apollo.LazyQueryHookOptions<
+    GetDeviceTypesForLookupQuery,
+    GetDeviceTypesForLookupQueryVariables
+  >
+) {
+  const options = { ...defaultOptions, ...baseOptions };
+  return Apollo.useLazyQuery<
+    GetDeviceTypesForLookupQuery,
+    GetDeviceTypesForLookupQueryVariables
+  >(GetDeviceTypesForLookupDocument, options);
+}
+export type GetDeviceTypesForLookupQueryHookResult = ReturnType<
+  typeof useGetDeviceTypesForLookupQuery
+>;
+export type GetDeviceTypesForLookupLazyQueryHookResult = ReturnType<
+  typeof useGetDeviceTypesForLookupLazyQuery
+>;
+export type GetDeviceTypesForLookupQueryResult = Apollo.QueryResult<
+  GetDeviceTypesForLookupQuery,
+  GetDeviceTypesForLookupQueryVariables
 >;
