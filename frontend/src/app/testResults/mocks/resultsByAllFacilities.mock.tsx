@@ -1,4 +1,4 @@
-const TEST_RESULTS_BY_ALL_FACILITIES = [
+const data = [
   {
     internalId: "0969da96-b211-41cd-ba61-002181f0123a",
     dateTested: "2021-04-12T12:40:33.381Z",
@@ -72,5 +72,9 @@ const TEST_RESULTS_BY_ALL_FACILITIES = [
     __typename: "TestResult",
   },
 ];
+const TEST_RESULTS_BY_ALL_FACILITIES = {
+  content: data,
+  totalElements: data.length,
+};
 
 export default TEST_RESULTS_BY_ALL_FACILITIES;

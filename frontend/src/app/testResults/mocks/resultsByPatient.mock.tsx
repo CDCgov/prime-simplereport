@@ -1,4 +1,4 @@
-const RESULTS_BY_PATIENT = [
+const data = [
   {
     internalId: "0969da96-b211-41cd-ba61-002181f0918d",
     dateTested: "2021-03-17T19:27:23.806Z",
@@ -38,5 +38,10 @@ const RESULTS_BY_PATIENT = [
     __typename: "TestResult",
   },
 ];
+
+const RESULTS_BY_PATIENT = {
+  content: data,
+  totalElements: data.length,
+};
 
 export default RESULTS_BY_PATIENT;

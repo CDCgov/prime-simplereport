@@ -14,7 +14,7 @@ const createTelemetryService = () => {
 
     if (!connectionString) {
       if (process.env.NODE_ENV !== "test") {
-        console.warn("Connection string not provided");
+        console.warn("App Insights connection string not provided");
       }
       return;
     }
