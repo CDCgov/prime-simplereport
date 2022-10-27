@@ -2,9 +2,15 @@
 .usa-file-input__target {
   height: 13.5rem !important;
   max-width: 45rem !important;
+  display: flex !important;
+  flex-direction: column;
 }
 
 .usa-file-input__instructions {
   padding: 0 !important;
-  top: calc(50% - 7px);
+  margin: auto;
+}
+
+.usa-file-input__preview {
+  flex: auto;
 }

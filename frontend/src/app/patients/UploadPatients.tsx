@@ -11,7 +11,9 @@ import { showError } from "../utils/srToast";
 import { FileUploadService } from "../../fileUploadService/FileUploadService";
 
 import { AddPatientHeader } from "./Components/AddPatientsHeader";
+
 import "./UploadPatients.scss";
+import iconLoader from "../../img/loader.svg";
 
 const UploadPatients = () => {
   useDocumentTitle("Add Patient");
@@ -233,14 +235,33 @@ const UploadPatients = () => {
               </div>
             )}
             <FormGroup className="margin-bottom-3">
-              <FileInput
-                id="upload-csv-input"
-                name="upload-csv-input"
-                aria-label="Choose CSV file"
-                accept="text/csv, .csv"
-                onChange={handleFileChange}
-                required
-              />
+              {isSubmitting ? (
+                <div className={"usa-file-input"}>
+                  <div className={"usa-file-input__target"}>
+                    <div className={"margin-top-8"}>
+                      <span className="usa-file-input__drag-text font-sans-xs text-bold">
+                        Uploading patient information...
+                      </span>
+                      <div className={"margin-top-1"}>
+                        <img
+                          src={iconLoader}
+                          alt="submitting"
+                          className={"square-5"}
+                        />
+                      </div>
+                    </div>
+                  </div>
+                </div>
+              ) : (
+                <FileInput
+                  id="upload-csv-input"
+                  name="upload-csv-input"
+                  aria-label="Choose CSV file"
+                  accept="text/csv, .csv"
+                  onChange={handleFileChange}
+                  required
+                />
+              )}
             </FormGroup>
           </div>
           <div>
@@ -248,7 +269,7 @@ const UploadPatients = () => {
               disabled={buttonIsDisabled || facilityAmount === undefined}
               onClick={handleSubmit}
             >
-              {isSubmitting ? "Processing file..." : "Upload CSV file"}
+              Upload CSV file
             </Button>
           </div>
         </div>
