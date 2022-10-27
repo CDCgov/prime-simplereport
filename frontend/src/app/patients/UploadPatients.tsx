@@ -11,6 +11,7 @@ import { showError } from "../utils/srToast";
 import { FileUploadService } from "../../fileUploadService/FileUploadService";
 
 import { AddPatientHeader } from "./Components/AddPatientsHeader";
+import "./UploadPatients.scss";
 
 const UploadPatients = () => {
   useDocumentTitle("Add Patient");
