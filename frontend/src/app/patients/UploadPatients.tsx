@@ -190,14 +190,11 @@ const UploadPatients = () => {
           <div className={"margin-left-205 margin-top-1"}>
             {status === "success" && (
               <div>
-                <div
-                  className="usa-alert usa-alert--success maxw-mobile-lg margin-top-3 outline-0"
-                  role={"alert"}
-                >
+                <div className="usa-alert usa-alert--success maxw-mobile-lg margin-top-3 outline-0">
                   <div className="usa-alert__body">
-                    <h3 className="usa-alert__heading">
+                    <span className="usa-alert__heading text-bold">
                       Success: File Accepted
-                    </h3>
+                    </span>
                     <p className="usa-alert__text">
                       Patients in your file have been successfully uploaded.
                     </p>
@@ -207,14 +204,11 @@ const UploadPatients = () => {
             )}
             {errorMessageText && (
               <div className={"margin-top-3"}>
-                <div
-                  className="usa-alert usa-alert--error maxw-mobile-lg"
-                  role="alert"
-                >
+                <div className="usa-alert usa-alert--error maxw-mobile-lg">
                   <div className="usa-alert__body">
-                    <h3 className="usa-alert__heading">
+                    <span className="usa-alert__heading text-bold">
                       Error: File not accepted
-                    </h3>
+                    </span>
                     <p className="usa-alert__text">{errorMessageText}</p>
                   </div>
                 </div>
