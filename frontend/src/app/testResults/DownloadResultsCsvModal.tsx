@@ -5,11 +5,14 @@ import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { CSVLink } from "react-csv";
 import { useFeature } from "flagged";
 
-import { showError } from "../utils";
+import { showError } from "../utils/srToast";
 import { useImperativeQuery } from "../utils/hooks";
 import { parseDataForCSV } from "../utils/testResultCSV";
 import Button from "../commonComponents/Button/Button";
-import { GetFacilityResultsForCsvDocument } from "../../generated/graphql";
+import {
+  GetFacilityResultsForCsvWithCountDocument,
+  GetFacilityResultsForCsvWithCountQuery,
+} from "../../generated/graphql";
 
 import { ALL_FACILITIES_ID, ResultsQueryVariables } from "./TestResultsList";
 
@@ -30,7 +33,7 @@ export const DownloadResultsCsvModal = ({
 }: DownloadResultsCsvModalProps) => {
   const rowsMaxLimit = 20000;
   const [loading, setLoading] = useState(false);
-  const [results, setResults] = useState([]);
+  const [results, setResults] = useState<any[]>([]);
   const csvLink = useRef<
     CSVLink & HTMLAnchorElement & { link: HTMLAnchorElement }
   >(null);
@@ -57,22 +60,30 @@ export const DownloadResultsCsvModal = ({
     ...filterParams,
   };
 
-  const getResults = useImperativeQuery(GetFacilityResultsForCsvDocument, {
-    fetchPolicy: "no-cache",
-  });
+  const getResults = useImperativeQuery<GetFacilityResultsForCsvWithCountQuery>(
+    GetFacilityResultsForCsvWithCountDocument,
+    {
+      fetchPolicy: "no-cache",
+    }
+  );
 
   const downloadResults = async () => {
-    setLoading(true);
     const { data, error } = await getResults(variables);
     if (error) {
       showError("Error downloading results", error.message);
       setLoading(false);
-    } else {
-      const csvResults = parseDataForCSV(data.testResults, multiplexEnabled);
+    } else if (data.testResultsPage && data.testResultsPage.content) {
+      const csvResults = parseDataForCSV(
+        data.testResultsPage.content,
+        multiplexEnabled
+      );
       setResults(csvResults);
       setLoading(false);
       csvLink?.current?.link.click();
       closeModal();
+    } else {
+      showError("Unknown error downloading results");
+      setLoading(false);
     }
   };
 
@@ -147,7 +158,10 @@ export const DownloadResultsCsvModal = ({
               label={disableDownload ? "Go back" : "No, go back"}
             />
             <Button
-              onClick={downloadResults}
+              onClick={async () => {
+                setLoading(true);
+                downloadResults();
+              }}
               disabled={disableDownload}
               icon={faDownload}
               label={loading ? "Loading..." : "Download results"}

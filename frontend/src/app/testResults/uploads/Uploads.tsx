@@ -1,12 +1,15 @@
 import React, { useState } from "react";
+import { useSelector } from "react-redux";
 import { Button, FormGroup, FileInput } from "@trussworks/react-uswds";
 
-import { showError } from "../../utils";
+import { showError } from "../../utils/srToast";
 import { FeedbackMessage } from "../../../generated/graphql";
 import { useDocumentTitle } from "../../utils/hooks";
 import { LinkWithQuery } from "../../commonComponents/LinkWithQuery";
 import { FileUploadService } from "../../../fileUploadService/FileUploadService";
 import "../HeaderSizeFix.scss";
+import { getAppInsights } from "../../TelemetryService";
+import { RootState } from "../../store";
 
 const PAYLOAD_MAX_BYTES = 50 * 1000 * 1000;
 const REPORT_MAX_ITEMS = 10000;
@@ -14,6 +17,12 @@ const REPORT_MAX_ITEM_COLUMNS = 2000;
 
 const Uploads = () => {
   useDocumentTitle("Upload spreadsheet");
+
+  const appInsights = getAppInsights();
+  const orgName = useSelector<RootState, string>(
+    (state) => state.organization?.name
+  );
+  const user = useSelector<RootState, User>((state) => state.user);
 
   const [fileInputResetValue, setFileInputResetValue] = useState(0);
   const [buttonIsDisabled, setButtonIsDisabled] = useState(true);
@@ -25,13 +34,14 @@ const Uploads = () => {
   const [errors, setErrors] = useState<
     Array<FeedbackMessage | undefined | null>
   >([]);
-  const [errorMessageText, setErrorMessageText] = useState(
-    `Please resolve the errors below and upload your edited file. Your file has not been accepted.`
-  );
+  const [errorMessageText, setErrorMessageText] = useState<string | null>(null);
 
   const handleFileChange = async (
     event: React.ChangeEvent<HTMLInputElement>
   ) => {
+    setButtonIsDisabled(true);
+    setFile(undefined);
+
     try {
       if (!event?.currentTarget?.files?.length) {
         return; //no files
@@ -47,7 +57,8 @@ const Uploads = () => {
           minimumFractionDigits: 2,
         });
         showError(
-          `The file '${currentFile.name}' is too large.  The maximum file size is ${maxKBytes}k`
+          `The file '${currentFile.name}' is too large.  The maximum file size is ${maxKBytes}k`,
+          "Invalid file"
         );
         return;
       }
@@ -56,14 +67,16 @@ const Uploads = () => {
       const lineCount = (fileText.match(/\n/g) || []).length + 1;
       if (lineCount > REPORT_MAX_ITEMS) {
         showError(
-          `The file '${currentFile.name}' has too many rows. The maximum number of rows is ${REPORT_MAX_ITEMS}.`
+          `The file '${currentFile.name}' has too many rows. The maximum number of rows is ${REPORT_MAX_ITEMS}.`,
+          "Invalid file"
         );
         return;
       }
 
       if (lineCount <= 1) {
         showError(
-          `The file '${currentFile.name}' doesn't contain any valid data. File should have a header line and at least one line of data.`
+          `The file '${currentFile.name}' doesn't contain any valid data. File should have a header line and at least one line of data.`,
+          "Invalid file"
         );
         return;
       }
@@ -78,14 +91,15 @@ const Uploads = () => {
 
       if (columnCount > REPORT_MAX_ITEM_COLUMNS) {
         showError(
-          `The file '${currentFile.name}' has too many columns. The maximum number of allowed columns is ${REPORT_MAX_ITEM_COLUMNS}.`
+          `The file '${currentFile.name}' has too many columns. The maximum number of allowed columns is ${REPORT_MAX_ITEM_COLUMNS}.`,
+          "Invalid file"
         );
         return;
       }
       setFile(currentFile);
       setButtonIsDisabled(false);
     } catch (err: any) {
-      showError(`An unexpected error happened: '${err.toString()}'`);
+      showError(err.toString(), "An unexpected error happened");
     }
   };
 
@@ -95,10 +109,13 @@ const Uploads = () => {
     setIsSubmitting(true);
     setButtonIsDisabled(true);
     setReportId(null);
+    setErrorMessageText(null);
     setErrors([]);
 
     if (!file || file.size === 0) {
-      setButtonIsDisabled(false);
+      setErrorMessageText(
+        "Please resolve the errors below and upload your edited file. Your file has not been accepted."
+      );
       const errorMessage = {} as FeedbackMessage;
       errorMessage.message = "Invalid File";
       setErrors([errorMessage]);
@@ -106,33 +123,52 @@ const Uploads = () => {
     }
 
     FileUploadService.uploadResults(file).then(async (res) => {
+      setIsSubmitting(false);
+      setFileInputResetValue(fileInputResetValue + 1);
+      setFile(undefined);
+
       if (res.status !== 200) {
         setErrorMessageText(
           "There was a server error. Your file has not been accepted."
         );
+        appInsights?.trackEvent({
+          name: "Spreadsheet upload server error",
+          properties: {
+            org: orgName,
+            user: user?.email,
+          },
+        });
       } else {
         const response = await res.json();
 
         if (response?.reportId) {
           setReportId(response?.reportId);
+          appInsights?.trackEvent({
+            name: "Spreadsheet upload success",
+            properties: {
+              "report ID": response.reportId,
+              org: orgName,
+              user: user?.email,
+            },
+          });
         }
 
         if (response?.errors?.length) {
           setErrorMessageText(
             "Please resolve the errors below and upload your edited file. Your file has not been accepted."
           );
-        }
-
-        if (response?.errors && response.errors.length > 0) {
           setErrors(response.errors);
+          appInsights?.trackEvent({
+            name: "Spreadsheet upload validation failure",
+            properties: {
+              errors: response.errors,
+              org: orgName,
+              user: user?.email,
+            },
+          });
         }
       }
     });
-
-    setFileInputResetValue(fileInputResetValue + 1);
-    setFile(undefined);
-    setButtonIsDisabled(true);
-    setIsSubmitting(false);
   };
 
   return (
@@ -174,7 +210,14 @@ const Uploads = () => {
           </p>
           <ol className="usa-list">
             <li>
-              <a href="/assets/resources/test_results_example_10-3-2022.csv">
+              <a
+                href="/assets/resources/test_results_example_10-3-2022.csv"
+                onClick={() => {
+                  appInsights?.trackEvent({
+                    name: "Download spreadsheet template",
+                  });
+                }}
+              >
                 Download the spreadsheet template
               </a>{" "}
             </li>
@@ -210,7 +253,7 @@ const Uploads = () => {
               </div>
             </div>
           )}
-          {errors && errors.length > 0 && (
+          {errorMessageText && (
             <div>
               <div className="usa-alert usa-alert--error" role="alert">
                 <div className="usa-alert__body">
@@ -220,24 +263,26 @@ const Uploads = () => {
                   <p className="usa-alert__text">{errorMessageText}</p>
                 </div>
               </div>
-              <table className="usa-table usa-table--borderless">
-                <thead>
-                  <tr>
-                    <th>Requested Edit</th>
-                    <th>Areas Containing the Requested Edit</th>
-                  </tr>
-                </thead>
-                <tbody>
-                  {errors.map((e, i) => {
-                    return (
-                      <tr key={"error_" + i}>
-                        <td>{e?.["message"]} </td>
-                        <td>Row(s): {e?.["indices"]}</td>
-                      </tr>
-                    );
-                  })}
-                </tbody>
-              </table>
+              {errors?.length > 0 && (
+                <table className="usa-table usa-table--borderless">
+                  <thead>
+                    <tr>
+                      <th>Requested Edit</th>
+                      <th>Areas Containing the Requested Edit</th>
+                    </tr>
+                  </thead>
+                  <tbody>
+                    {errors.map((e, i) => {
+                      return (
+                        <tr key={"error_" + i}>
+                          <td>{e?.["message"]} </td>
+                          <td>Row(s): {e?.["indices"]}</td>
+                        </tr>
+                      );
+                    })}
+                  </tbody>
+                </table>
+              )}
             </div>
           )}
           <FormGroup className="margin-bottom-3">

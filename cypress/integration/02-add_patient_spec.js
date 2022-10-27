@@ -16,6 +16,8 @@ describe("Adding a patient", () => {
     cy.get(".prime-container");
     cy.get("#add-patient-button").click();
     cy.get(".prime-edit-patient").contains("Add new person");
+    cy.injectAxe();
+    cy.checkA11y(); // Patient form
   });
   it("fills out some of the form fields", () => {
     cy.get('input[name="firstName"]').type(patient.firstName);
@@ -47,10 +49,42 @@ describe("Adding a patient", () => {
     cy.get(
       '.modal__container input[name="addressSelect-person"][value="userAddress"]+label'
     ).click();
+
+    // failing a11y test
+    // Also found in specs 01, 02, 05, 08
+    // Test a11y on the confirm address modal
+    cy.checkA11y(
+        {
+          exclude: [],
+        },
+        {
+          rules: {
+            'aria-dialog-name': { enabled: false },
+            'landmark-one-main': { enabled: false },
+            'page-has-heading-one': { enabled: false },
+          },
+        },
+    );
+
     cy.get(".modal__container #save-confirmed-address").click();
     cy.get(".usa-card__header").contains("People");
     cy.get(".usa-card__header").contains("Showing");
     cy.get("#search-field-small").type(patient.lastName);
     cy.get(".prime-container").contains(patient.fullName);
+
+    // failing a11y test
+    // error applies to the toast
+    // observe this by adding cy.wait(5000); to wait for the toasts to disappear
+    // Test a11y on the People page
+    cy.checkA11y(
+        {
+          exclude: [],
+        },
+        {
+          rules: {
+            'heading-order': { enabled: false },
+          },
+        },
+    );
   });
 });

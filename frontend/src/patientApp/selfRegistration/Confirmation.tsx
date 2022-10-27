@@ -2,6 +2,8 @@ import { faCheckCircle } from "@fortawesome/free-solid-svg-icons";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { Trans, useTranslation } from "react-i18next";
 
+import { useDocumentTitle } from "../../app/utils/hooks";
+
 type Props = {
   personName: string;
   entityName: string;
@@ -9,6 +11,8 @@ type Props = {
 
 export const Confirmation = ({ personName, entityName }: Props) => {
   const { t } = useTranslation();
+
+  useDocumentTitle(t("selfRegistration.confirmation.title"));
 
   return (
     <div className="grid-container maxw-tablet padding-y-3">

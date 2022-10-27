@@ -8,12 +8,10 @@ import SignUpGoals from "./Organization/SignUpGoals";
 const SignUpApp = () => {
   return (
     <Page>
-      <main>
-        <Routes>
-          <Route path="/" element={<SignUpGoals />} />
-          <Route path={"identity-verification"} element={<Consent />} />
-        </Routes>
-      </main>
+      <Routes>
+        <Route path="/" element={<SignUpGoals />} />
+        <Route path={"identity-verification"} element={<Consent />} />
+      </Routes>
     </Page>
   );
 };

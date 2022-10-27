@@ -6,7 +6,7 @@
     {
       "sections": [
         {
-          "title": "Patient data elements",
+          "title": "Patient",
           "slug": "patient",
           "items": [
             {
@@ -14,14 +14,10 @@
               "colHeader": "patient_id",
               "required": false,
               "requested": true,
-              "acceptedFormat": false,
-              "acceptedValues": false,
-              "acceptedExample": false,
-              "valueType": "Unique identifier",
-              "values": [""],
-              "notes": [
+              "examples" : ["1234", "P2300"],
+              "description": [
                 "Enter unique patient identifier. This is typically the Medical Record Number. <strong><em>Do not send a Social Security Number</em></strong>.",
-                "This value is optional and can be left blank if no information is provided. <em>Some jurisdictions may require this field, ReportStream will notify you if this is the case.</em>"
+                "<em>Some jurisdictions may require this field, ReportStream will notify you if this is the case.</em>"
               ]
             },
             {
@@ -29,60 +25,34 @@
               "colHeader": "patient_last_name",
               "required": true,
               "requested": false,
-              "acceptedFormat": false,
-              "acceptedValues": false,
-              "acceptedExample": false,
-              "valueType": "Text",
-              "values": [""],
-              "notes": [
-                "Enter patient's last name. File will fail if field left blank."
-              ]
+              "description": ["Last name, separated from first name"]
             },
             {
               "name": "Patient first name",
               "colHeader": "patient_first_name",
               "required": true,
               "requested": false,
-              "acceptedFormat": false,
-              "acceptedValues": false,
-              "acceptedExample": false,
-              "valueType": "Text",
-              "values": [""],
-              "notes": [
-                "Enter patient's first name. File will fail if field left blank."
-              ]
+              "description": ["First name, separated from last name"]
             },
             {
               "name": "Patient middle name",
               "colHeader": "patient_middle_name",
               "required": false,
               "requested": false,
-              "acceptedFormat": false,
-              "acceptedValues": false,
-              "acceptedExample": false,
-              "valueType": "Text",
-              "values": [""],
-              "notes": [
-                "Enter patient's middle name, if known. This value is optional and can be left blank if no information is provided."
-              ]
+              "description": ["Middle name, if known"]
             },
             {
               "name": "Patient street address",
               "colHeader": "patient_street",
               "required": true,
               "requested": false,
-              "acceptedFormat": false,
-              "acceptedValues": true,
-              "acceptedExample": false,
-              "valueType": "Address, accepted value",
-              "values": [
-                "ex: 1234 America Ln",
-                "<code>** Unknown / Not Given **</code>",
-                "<code>** Homeless **</code>"
+              "acceptedValues": [
+                "Example: <em>1234 America Ln</em>",
+                "<mark><code>** Unknown / Not Given **</code></mark>",
+                "<mark><code>** Homeless **</code></mark>"
               ],
-              "notes": [
-                "Enter patient's street address. File will fail if field left blank.",
-                "If no address given or homeless, populate this field with <code>** Unknown / Not Given **</code> or <code>** Homeless **</code>. "
+              "description": [
+                "Patient’s street address or one of the accepted values below"
               ]
             },
             {
@@ -90,28 +60,16 @@
               "colHeader": "patient_street2",
               "required": false,
               "requested": false,
-              "acceptedFormat": false,
-              "acceptedValues": false,
-              "acceptedExample": false,
-              "valueType": "Address",
-              "values": [""],
-              "notes": [
-                "Enter patient's additional address information, if applicable. This value is optional and can be left blank if no information is provided. "
-              ]
+              "examples": ["<em>Apartment 4C</em>"]
             },
             {
               "name": "Patient city",
               "colHeader": "patient_city",
               "required": true,
               "requested": false,
-              "acceptedFormat": false,
-              "acceptedValues": false,
-              "acceptedExample": false,
-              "valueType": "Address",
-              "values": [""],
-              "notes": [
-                "Enter patient's city. File will fail if field left blank.",
-                "If no address given or homeless, populate this field with the <a href=\"#ordering-facility\" class=\"usa-link\">ordering facility</a> information."
+              "examples": ["Los Angeles", "Madison"],
+              "description": [
+                "If a patient’s city is unknown or they’re experiencing homelessness, use <a href=\"#ordering_facility_city\" class=\"usa-link\">ordering facility city</a>"
               ]
             },
             {
@@ -119,41 +77,26 @@
               "colHeader": "patient_state",
               "required": true,
               "requested": false,
-              "acceptedFormat": true,
-              "acceptedValues": false,
-              "acceptedExample": false,
-              "valueType": "Address",
-              "values": ["Two-character state abbreviation"],
-              "notes": [
-                "Enter patient's state using the two-character state abbreviation. File will fail if field left blank. ",
-                "If no address given or homeless, populate this field with the <a href=\"#ordering-facility\" class=\"usa-link\">ordering facility</a> information."
-              ]
+              "format": "Two-character state abbreviation",
+              "examples": ["TX", "CA"]
             },
             {
               "name": "Patient county",
               "colHeader": "patient_county",
               "required": true,
               "requested": false,
-              "acceptedFormat": false,
-              "acceptedValues": false,
-              "acceptedExample": false,
-              "valueType": "Address",
-              "values": [""],
-              "notes": ["Enter patient's county/parish name."]
+              "examples": ["Kings County", "Allen Parish"],
+              "description": ["County or parish name"]
             },
             {
               "name": "Patient zip code",
               "colHeader": "patient_zip_code",
               "required": true,
               "requested": false,
-              "acceptedFormat": true,
-              "acceptedValues": false,
-              "acceptedExample": false,
-              "valueType": "5 or 9 digit zip code",
-              "values": ["12345", "12345-6789 "],
-              "notes": [
-                "Enter patient's zip code. File will fail if value is not entered using acceptable format or field is left blank. ",
-                "If no address given or homeless, populate field with the <a href=\"#ordering-facility\" class=\"usa-link\">ordering facility</a> information. "
+              "format": "5 or 9 digit zip code",
+              "examples": ["12345", "12345-6789"],
+              "description": [
+                "If no address is given or a patient is experiencing homelessness, use <a href=\"#ordering_facility_zip_code\" class=\"usa-link\">ordering facility zip code</a>"
               ]
             },
             {
@@ -161,14 +104,10 @@
               "colHeader": "patient_phone_number",
               "required": true,
               "requested": false,
-              "acceptedFormat": true,
-              "acceptedValues": false,
-              "acceptedExample": false,
-              "valueType": "10-digit phone number",
-              "values": ["000-000-0000"],
-              "notes": [
-                "Enter patient's phone number. File will fail if value is not entered using acceptable format or field is left blank.",
-                "If no address given or homeless, populate field with the <a href=\"#ordering-facility\" class=\"usa-link\">ordering facility</a> information. "
+              "format": "000-000-0000",
+              "examples": ["123-456-7890"],
+              "description": [
+                "If no address is given or a patient is experiencing homelessness, use <a href=\"#ordering_facility_phone_number\" class=\"usa-link\">ordering facility phone number</a>"
               ]
             },
             {
@@ -176,34 +115,24 @@
               "colHeader": "patient_dob",
               "required": true,
               "requested": false,
-              "acceptedFormat": true,
-              "acceptedValues": false,
-              "acceptedExample": false,
-              "valueType": "Date",
-              "values": ["M/d/yyyy"],
-              "notes": [
-                "Enter patient's date of birth. File will fail if value is not entered using accepted format or field is left blank."
-              ]
+              "format": "M/D/YYYY",
+              "examples": ["3/30/1972", "12/8/2002"]
             },
             {
               "name": "Patient gender",
               "colHeader": "patient_gender",
               "required": true,
               "requested": false,
-              "acceptedFormat": false,
-              "acceptedValues": true,
-              "acceptedExample": false,
-              "valueType": "Accepted value",
-              "values": [
-                "<code>M</code> or <code>Male</code>",
-                "<code>F</code> or <code>Female</code>",
-                "<code>O</code> or <code>Other</code>",
-                "<code>U</code> or <code>Unknown</code>",
-                "<code>A</code> or <code>Ambiguous</code>",
-                "<code>N</code> or <code>Not applicable</code>"
+              "acceptedValues": [
+                "<mark><code>M</code></mark> or <mark><code>Male</code></mark>",
+                "<mark><code>F</code></mark> or <mark><code>Female</code></mark>",
+                "<mark><code>O</code></mark> or <mark><code>Other</code></mark>",
+                "<mark><code>U</code></mark> or <mark><code>Unknown</code></mark>",
+                "<mark><code>A</code></mark> or <mark><code>Ambiguous</code></mark>",
+                "<mark><code>N</code></mark> or <mark><code>Not applicable</code></mark>"
               ],
-              "notes": [
-                "Enter patient's gender. File will fail if value not entered using accepted values or field is left blank. Accepted values come from values mapped to LOINC codes you can find in the <a href=\"https://phinvads.cdc.gov/vads/SearchVocab.action\" class=\"usa-link\" target=\"_blank\" rel=\"noreferrer noopener\">PHIN VADS system</a>."
+              "description": [
+                "Use one of the LOINC codes listed below, which come from the <a href=\"https://phinvads.cdc.gov/vads/SearchVocab.action\" class=\"usa-link\" target=\"_blank\" rel=\"noreferrer noopener\">PHIN VADS system</a>"
               ]
             },
             {
@@ -211,22 +140,18 @@
               "colHeader": "patient_race",
               "required": true,
               "requested": false,
-              "acceptedFormat": false,
-              "acceptedValues": true,
-              "acceptedExample": false,
-              "valueType": "Numeric or text accepted value",
-              "values": [
-                "<code>1002-5</code> or <code>American Indian or Alaska Native</code>",
-                "<code>2028-9</code> or <code>Asian</code>",
-                "<code>2054-5</code> or <code>Black or African American</code>",
-                "<code>2076-8</code> or <code>Native Hawaiian or Other Pacific Islander</code>",
-                "<code>2106-3</code> or <code>White</code>",
-                "<code>2131-1</code> or <code>Other</code>",
-                "<code>ASKU</code> or <code>Ask, but unknown</code>",
-                "<code>UNK</code> or <code>Unknown</code>"
+              "acceptedValues": [
+                "<mark><code>1002-5</code></mark> or <mark><code>American Indian or Alaska Native</code></mark>",
+                "<mark><code>2028-9</code></mark> or <mark><code>Asian</code></mark>",
+                "<mark><code>2054-5</code></mark> or <mark><code>Black or African American</code></mark>",
+                "<mark><code>2076-8</code></mark> or <mark><code>Native Hawaiian or Other Pacific Islander</code></mark>",
+                "<mark><code>2106-3</code></mark> or <mark><code>White</code></mark>",
+                "<mark><code>2131-1</code></mark> or <mark><code>Other</code></mark>",
+                "<mark><code>ASKU</code></mark> or <mark><code>Ask, but unknown</code></mark>",
+                "<mark><code>UNK</code></mark> or <mark><code>Unknown</code></mark>"
               ],
-              "notes": [
-                "File will fail if numeric values or text values are not entered using acceptable values or field is left blank. Accepted values come from values mapped to LOINC codes you can find in the <a href=\"https://phinvads.cdc.gov/vads/SearchVocab.action\" class=\"usa-link\" target=\"_blank\" rel=\"noreferrer noopener\">PHIN VADS system</a>. "
+              "description": [
+                "Use one of the LOINC codes listed below, which come from the <a href=\"https://phinvads.cdc.gov/vads/SearchVocab.action\" class=\"usa-link\" target=\"_blank\" rel=\"noreferrer noopener\">PHIN VADS system</a>"
               ]
             },
             {
@@ -234,17 +159,13 @@
               "colHeader": "patient_ethnicity",
               "required": true,
               "requested": false,
-              "acceptedFormat": false,
-              "acceptedValues": true,
-              "acceptedExample": false,
-              "valueType": "Numeric or text accepted value",
-              "values": [
-                "<code>2135-2</code> or <code>Hispanic or Latino</code>",
-                "<code>2186-5</code> or <code>Not Hispanic or Latino</code>",
-                "<code>UNK</code> or <code>Unknown</code>"
+              "acceptedValues": [
+                "<mark><code>2135-2</code></mark> or <mark><code>Hispanic or Latino</code></mark>",
+                "<mark><code>2186-5</code></mark> or <mark><code>Not Hispanic or Latino</code></mark>",
+                "<mark><code>UNK</code></mark> or <mark><code>Unknown</code></mark>"
               ],
-              "notes": [
-                "File will fail if numeric values or text values are not entered using accepted values or field is left blank. Accepted values come from values mapped to LOINC codes you can find in the <a href=\"https://phinvads.cdc.gov/vads/SearchVocab.action\" class=\"usa-link\" target=\"_blank\" rel=\"noreferrer noopener\">PHIN VADS system</a>."
+              "description": [
+                "Use one of the LOINC codes list below, which come from the <a href=\"https://phinvads.cdc.gov/vads/SearchVocab.action\" class=\"usa-link\" target=\"_blank\" rel=\"noreferrer noopener\">PHIN VADS system</a"
               ]
             },
             {
@@ -252,18 +173,12 @@
               "colHeader": "patient_preferred_language",
               "required": false,
               "requested": false,
-              "acceptedFormat": false,
-              "acceptedValues": false,
-              "acceptedExample": true,
-              "valueType": "Text",
-              "values": [
-                "<code>eng</code> or <code>English</code>",
-                "<code>spa</code> or <code>Spanish</code>",
-                "<code>fre</code> or <code>French</code>",
-                "<code>jpn</code> or <code>Japanese</code>"
+              "examples": [
+                "eng <span class=\"normal-style\">or</span> English",
+                "spa <span class=\"normal-style\">or</span> Spanish"
               ],
-              "notes": [
-                "Accepted values come from Language Concept Codes or the Language Concept Name from the <a href=\"https://phinvads.cdc.gov/vads/ViewValueSet.action?id=D0858308-9AB3-EA11-818F-005056ABE2F0#\" class=\"usa-link\" target=\"_blank\" rel=\"noreferrer noopener\">ISO-639 table in the PHIN VADS system</a>."
+              "description": [
+                "Look up a Language Concept Code or Name from the  <a href=\"https://phinvads.cdc.gov/vads/ViewValueSet.action?id=D0858308-9AB3-EA11-818F-005056ABE2F0#\" class=\"usa-link\" target=\"_blank\" rel=\"noreferrer noopener\">ISO-639 table in the PHIN VADS system</a>"
               ]
             },
             {
@@ -271,19 +186,13 @@
               "colHeader": "patient_email",
               "required": false,
               "requested": false,
-              "acceptedFormat": false,
-              "acceptedValues": false,
-              "acceptedExample": false,
-              "valueType": "Text",
-              "values": [],
-              "notes": [
-                "Enter patient email address, if known. This value is optional and can be left blank if no information is provided."
-              ]
+              "format": "Email address",
+              "examples": ["janedoe@person.com"]
             }
           ]
         },
         {
-          "title": "Order and result data elements",
+          "title": "Order and result",
           "slug": "order-and-result",
           "items": [
             {
@@ -291,50 +200,42 @@
               "colHeader": "accession_number ",
               "required": true,
               "requested": false,
-              "acceptedFormat": false,
-              "acceptedValues": false,
-              "acceptedExample": true,
-              "valueType": "Unique ID",
-              "values": ["ID12345-6789"],
-              "notes": [
-                "An accession number is a unique ID that identifies a single result. This field is important for public health departments to refer back to a test event. File will fail if field left blank."
+              "examples": ["ID12345-6789"],
+              "description": [
+                "A unique ID that identifies a single result, which allows public health departments to refer back to a test event"
               ]
             },
             {
-              "name": "Equipment model name",
+              "name": "Model name",
               "colHeader": "equipment_model_name",
               "required": true,
               "requested": false,
-              "acceptedFormat": false,
-              "acceptedValues": false,
-              "acceptedExample": true,
-              "valueType": "Unique identifier",
-              "values": [
-                "<code>ID NOW</code>",
-                "<code>BD Veritor System for Rapid Detection of SARS-CoV-2*</code>",
-                "<code>BD Veritor System for Rapid Detection of SARS-CoV-2 & Flu A+B*</code>",
-                "<code>RightSign COVID-19 IgG/IgM Rapid Test Cassette*</code>"
+              "examples": [
+                "ID NOW",
+                "BD Veritor System for Rapid Detection of SARS-CoV-2*",
+                "BD Veritor System for Rapid Detection of SARS-CoV-2 & Flu A+B*",
+                "RightSign COVID-19 IgG/IgM Rapid Test Cassette*"
               ],
-              "notes": [
-                "Enter equipment model name value from Department of Health and Human Services' (HHS) LOINC Mapping spreadsheet. File will fail if value not entered using accepted values or field is left blank.",
-                "Go to <a href=\"https://www.cdc.gov/csels/dls/sars-cov-2-livd-codes.html\" class=\"usa-link\" target=\"_blank\" rel=\"noreferrer noopener\">https://www.cdc.gov/csels/dls/sars-cov-2-livd-codes.html</a>. Click on the Mapping Tool labeled \"LIVD SARS-CoV-2 Test Codes.xlsx\" to download the file.",
-                "Locate the saved file on your computer and open it. Click on the \"LOINC Mapping\" tab. Go to Column B, labeled \"Model\" to locate the corresponding value to enter."
+              "subHeader": ["To find your equipment model name, you need to look it up in the Department of Health and Human Services' (HHS) LOINC mapping tool:",
+              "<ol><li>Visit <a href=\"https://www.cdc.gov/csels/dls/sars-cov-2-livd-codes.html\" class=\"usa-link\" target=\"_blank\" rel=\"noreferrer noopener\">the CDC website</a></li><li>Click on the mapping tool labeled “LIVD SARS-CoV-2 Test Codes.xlsx” to download the file</li><li>Open the file on your computer and go to the “LOINC Mapping” tab</li><li>Search for your device name </li><li>For your device, find the corresponding value in column B, “Model,” and copy it to your spreadsheet </li></ol>"
+              ],
+              "description": [
+                "<a href=\"https://www.cdc.gov/csels/dls/sars-cov-2-livd-codes.html\" class=\"usa-link\" target=\"_blank\" rel=\"noreferrer noopener\">LIVD SARS-CoV-2 Test Codes spreadsheet</a>, “LOINC Mapping” tab, column B"
               ]
             },
             {
-              "name": "Test performed code",
+              "name": "Test performed LOINC code",
               "colHeader": "test_performed_code",
               "required": true,
               "requested": false,
-              "acceptedFormat": false,
-              "acceptedValues": false,
-              "acceptedExample": true,
-              "valueType": "LOINC code",
-              "values": ["94534-5", "94558-4", "97097-0", "94507-1", "94508-9"],
-              "notes": [
-                "Enter TestPerformed Code value from Department of Health and Human Services' (HHS) LOINC Mapping spreadsheet. File will fail if value not entered using acceptable values or field is left blank.",
-                "Go to <a href=\"https://www.cdc.gov/csels/dls/sars-cov-2-livd-codes.html\" class=\"usa-link\" target=\"_blank\" rel=\"noreferrer noopener\">https://www.cdc.gov/csels/dls/sars-cov-2-livd-codes.html</a>. Click on the Mapping Tool labeled \"LIVD SARS-CoV-2 Test Codes.xlsx\" to download the file.",
-                "Locate the saved file on your computer and open it. Click on the \"LOINC Mapping\" tab. Go to Column F, labeled \"Test Performed LOINC Code\". Locate the corresponding value to enter."
+              "format": "00000-0",
+              "examples": ["94534-5", "94558-4", "97097-0", "94507-1", "94508-9"],
+              "subHeader": [
+                "To find your test performed code, you need to look it up in the Department of Health and Human Services' (HHS) LOINC mapping tool:",
+                "<ol><li>Visit <a href=\"https://www.cdc.gov/csels/dls/sars-cov-2-livd-codes.html\" class=\"usa-link\" target=\"_blank\" rel=\"noreferrer noopener\">the CDC website</a></li><li>Click on the mapping tool labeled “LIVD SARS-CoV-2 Test Codes.xlsx” to download the file</li><li>Open the file on your computer and go to the “LOINC Mapping” tab</li><li>Search for your device name</li><li>For your device, find the corresponding value in column F, “Test Performed LOINC Code,” and copy it to your spreadsheet </li></ol>"
+              ],
+              "description": [
+                "<a href=\"https://www.cdc.gov/csels/dls/sars-cov-2-livd-codes.html\" class=\"usa-link\" target=\"_blank\" rel=\"noreferrer noopener\">LIVD SARS-CoV-2 Test Codes spreadsheet</a>, “LOINC Mapping” tab, column F"
               ]
             },
             {
@@ -342,22 +243,19 @@
               "colHeader": "test_result",
               "required": true,
               "requested": false,
-              "acceptedFormat": false,
-              "acceptedValues": true,
-              "acceptedExample": false,
-              "valueType": "Common values, SNOMED code",
-              "values": [
-                "<code>Positive</code>",
-                "<code>Negative</code>",
-                "<code>Not Detected</code>",
-                "<code>Detected</code>",
-                "<code>Invalid Result</code>",
-                "SNOMED code from lookup table, ex: 260373001"
+              "acceptedValues": [
+                "<mark><code>Positive</code></mark>",
+                "<mark><code>Negative</code></mark>",
+                "<mark><code>Not Detected</code></mark>",
+                "<mark><code>Detected</code></mark>",
+                "<mark><code>Invalid Result</code></mark>",
+                "SNOMED code from lookup table, example: <em>260373001<em>"
               ],
-              "notes": [
-                "File will fail if value is not entered using accepted text values or SNOMED codes, or if the field is left blank. Enter a value from the common values listed.",
-                "Go to <a href=\"https://www.cdc.gov/csels/dls/sars-cov-2-livd-codes.html\" class=\"usa-link\" target=\"_blank\" rel=\"noreferrer noopener\">https://www.cdc.gov/csels/dls/sars-cov-2-livd-codes.html</a>. Click on the Mapping Tool labeled \"LIVD SARS-CoV-2 Test Codes.xlsx\" to download the file.",
-                "Locate the saved file on your computer and open it. Click on the \"LOINC Mapping\" tab. Go to Column E, labeled \"Vendor Result Description\". Locate SNOMED code value and enter into field (Example: Positive = 260373001)."
+              "subHeader": [
+                "For your test result value, you can either use a common value from the chart below or you can look it up in the Department of Health and Human Services' (HHS) LOINC mapping tool. To look up the value:",
+                "<ol><li>Visit <a href=\"https://www.cdc.gov/csels/dls/sars-cov-2-livd-codes.html\" class=\"usa-link\" target=\"_blank\" rel=\"noreferrer noopener\">the CDC website</a></li><li>Click on the mapping tool labeled “LIVD SARS-CoV-2 Test Codes.xlsx” to download the file</li><li>Open the file on your computer and go to the “LOINC Mapping” tab</li><li>Search for your device name</li><li>For your device, find the corresponding value in column E, “Vendor Result Description”</li><li>Copy the SNOMED code to your spreadsheet (example: <em>Positive = 260373001</em>)</li></ol>"],
+              "description": [
+                "Use one of the common values listed below; or look up the SNOMED code in <a href=\"https://www.cdc.gov/csels/dls/sars-cov-2-livd-codes.html\" class=\"usa-link\" target=\"_blank\" rel=\"noreferrer noopener\">LIVD SARS-CoV-2 Test Codes spreadsheet</a>, “LOINC Mapping” tab, column E"
               ]
             },
             {
@@ -365,14 +263,10 @@
               "colHeader": "order_test_date",
               "required": true,
               "requested": false,
-              "acceptedFormat": true,
-              "acceptedValues": false,
-              "acceptedExample": false,
-              "valueType": "Date",
-              "values": ["M/d/yyyy HH:mm", "M/d/yyyy"],
-              "notes": [
-                "Enter order test date. File will fail if value is not entered using acceptable format or field is left blank.",
-                "M/D/yyyy HH:MM is the preferred format. If your system can't produce date and time, M/d/yyyy will also be accepted."
+              "format": "<code>M/D/YYY HH:mm</code> is preferred, but <code>M/D/YYYY</code> is acceptable",
+              "examples": [
+                "11/2/2022 14:17",
+                "9/21/2022"
               ]
             },
             {
@@ -380,14 +274,13 @@
               "colHeader": "specimen_collection_date",
               "required": false,
               "requested": false,
-              "acceptedFormat": true,
-              "acceptedValues": false,
-              "acceptedExample": false,
-              "valueType": "Date",
-              "values": ["M/d/yyyy HH:mm", "M/d/yyyy"],
-              "notes": [
-                "Enter specimen collection date. If unknown, populate field with the order_test_date value. In most cases, these are the same. Can be left blank if same as order_test_date.",
-                "M/D/yyyy HH:MM is the preferred format. If your system can't produce date and time, M/d/yyyy will also be accepted."
+              "format": "<code>M/D/YYY HH:mm</code> is preferred, but <code>M/D/YYYY</code> is acceptable",
+              "examples": [
+                "11/2/2022 14:17",
+                "9/21/2022"
+              ],
+              "description": [
+                "If the collection date is unknown, use the <a href=\"#order_test_date\" class=\"usa-link\">order_test_date</a> value. In most cases, these are the same. You can leave this blank if it’s the same as order_test_date."
               ]
             },
             {
@@ -395,14 +288,13 @@
               "colHeader": "testing_lab_specimen_received_date",
               "required": false,
               "requested": false,
-              "acceptedFormat": true,
-              "acceptedValues": false,
-              "acceptedExample": false,
-              "valueType": "Date",
-              "values": ["M/d/yyyy HH:mm", "M/d/yyyy"],
-              "notes": [
-                "Enter the testing lab speciment received date. If unknown, populate field with the order_test_date value. In most cases, these are the same. Can be left blank if same as order_test_date.",
-                "M/D/yyyy HH:MM is the preferred format. If your system can't produce date and time, M/d/yyyy will also be accepted."
+              "format": "<code>M/D/YYY HH:mm</code> is preferred, but <code>M/D/YYYY</code> is acceptable",
+              "examples": [
+                "11/2/2022 14:17",
+                "9/21/2022"
+              ],
+              "description": [
+                "If unknown, use the <a href=\"#order_test_date\" class=\"usa-link\">order_test_date</a> value. In most cases, these are the same. You can leave this blank if it’s the same as order_test_date."
               ]
             },
             {
@@ -410,14 +302,10 @@
               "colHeader": "test_result_date",
               "required": true,
               "requested": false,
-              "acceptedFormat": true,
-              "acceptedValues": false,
-              "acceptedExample": false,
-              "valueType": "Date",
-              "values": ["M/d/yyyy HH:mm", "M/d/yyyy"],
-              "notes": [
-                "Enter test result date. File will fail if value is not entered using acceptable format or field is left blank.",
-                "M/D/yyyy HH:MM is the preferred format. If your system can't produce date and time, M/d/yyyy will also be accepted."
+              "format": "<code>M/D/YYY HH:mm</code> is preferred, but <code>M/D/YYYY</code> is acceptable",
+              "examples": [
+                "11/2/2022 14:17",
+                "9/21/2022"
               ]
             },
             {
@@ -425,20 +313,19 @@
               "colHeader": "date_result_released",
               "required": false,
               "requested": false,
-              "acceptedFormat": true,
-              "acceptedValues": false,
-              "acceptedExample": false,
-              "valueType": "Date",
-              "values": ["M/d/yyyy HH:mm", "M/d/yyyy"],
-              "notes": [
-                "Enter test result date. If unknown, populate field with the test_result_date value. In most cases, these are the same. Can be left blank if same as order_test_date.",
-                "M/D/yyyy HH:MM is the preferred format. If your system can't produce date and time, M/d/yyyy will also be accepted."
+              "format": "<code>M/D/YYY HH:mm</code> is preferred, but <code>M/D/YYYY</code> is acceptable",
+              "examples": [
+                "11/2/2022 14:17",
+                "9/21/2022"
+              ],
+              "description": [
+                "If unknown, use the <a href=\"#test_result_date\" class=\"usa-link\">test_result_date</a> value. In most cases, these are the same. You can leave this blank if it’s the same as order_test_date."
               ]
             }
           ]
         },
         {
-          "title": "Specimen data elements",
+          "title": "Specimen",
           "slug": "specimen",
           "items": [
             {
@@ -446,31 +333,30 @@
               "colHeader": "specimen_type",
               "required": true,
               "requested": false,
-              "acceptedFormat": false,
-              "acceptedValues": true,
-              "acceptedExample": false,
-              "valueType": "Common values, SNOMED code",
-              "values": [
-                "<code>Nasal Swab</code>",
-                "<code>Nasopharyngeal Swab</code>",
-                "<code>Anterior Nares Swab</code>",
-                "<code>Throat Swab</code>",
-                "<code>Oropharyngeal Swab</code>",
-                "<code>Whole Blood</code>",
-                "<code>Plasma</code>",
-                "<code>Serum</code>",
-                "SNOMED code from lookup table, ex: 697989009"
+              "subHeader": [
+                "For your specimen type, you can either use a common value from the chart below or you can look it up in the Department of Health and Human Services' (HHS) LOINC mapping tool. To look up the value:",
+                "<ol><li>Visit <a href=\"https://www.cdc.gov/csels/dls/sars-cov-2-livd-codes.html\" class=\"usa-link\" target=\"_blank\" rel=\"noreferrer noopener\">the CDC website</a></li><li>Click on the mapping tool labeled “LIVD SARS-CoV-2 Test Codes.xlsx” to download the file</li><li>Open the file on your computer and go to the “LOINC Mapping” tab</li><li>Search for your device name</li><li>For your device, go to column D, “Vendor Specimen Description”</li><li>Copy either the SNOMED code OR the text value (example: <em>Anterior Nares Swab or 697989009</em>)</li></ol>"
               ],
-              "notes": [
-                "File will fail if value not entered using acceptable text values or SNOMED codes or field is left blank. ",
-                "Go to <a href=\"https://www.cdc.gov/csels/dls/sars-cov-2-livd-codes.html\" class=\"usa-link\" target=\"_blank\" rel=\"noreferrer noopener\">https://www.cdc.gov/csels/dls/sars-cov-2-livd-codes.html</a>. Click on the Mapping Tool labeled \"LIVD SARS-CoV-2 Test Codes.xlsx\" to download the file.",
-                "Locate the saved file on your computer and open it. Click on the \"LOINC Mapping\" tab. Go to Column D, labeled \"Vendor Specimen Description\". Locate the corresponding text value or SNOMED code and enter into field (example: Anterior Nares Swab = \"697989009\")."
+
+              "acceptedValues": [
+                "<mark><code>Nasal Swab</code></mark>",
+                "<mark><code>Nasopharyngeal Swab</code></mark>",
+                "<mark><code>Anterior Nares Swab</code></mark>",
+                "<mark><code>Throat Swab</code></mark>",
+                "<mark><code>Oropharyngeal Swab</code></mark>",
+                "<mark><code>Whole Blood</code></mark>",
+                "<mark><code>Plasma</code></mark>",
+                "<mark><code>Serum</code></mark>",
+                "SNOMED code from lookup table, example: <em>697989009</em>"
+              ],
+              "description": [
+                "Use one of the common values listed below; or look up SNOMED code in the <a href=\"https://www.cdc.gov/csels/dls/sars-cov-2-livd-codes.html\" class=\"usa-link\" target=\"_blank\" rel=\"noreferrer noopener\">LIVD SARS-CoV-2</a> Test Codes spreadsheet, “LOINC Mapping” tab, column D"
               ]
             }
           ]
         },
         {
-          "title": "Ordering provider data elements",
+          "title": "Ordering provider",
           "slug": "ordering-provider",
           "items": [
             {
@@ -478,18 +364,13 @@
               "colHeader": "ordering_provider_id",
               "required": true,
               "requested": false,
-              "acceptedFormat": false,
-              "acceptedValues": false,
-              "acceptedExample": true,
-              "valueType": "Unique identifier",
-              "values": [
-                "NPI example: 1013012657",
-                "Local code example: muc1290"
+              "format": "<a href=\"https://npiregistry.cms.hhs.gov/\" class=\"usa-link\" target=\"_blank\" rel=\"noreferrer noopener\">NPI number</a> or local code",
+              "examples": [
+                "<span class=\"normal-style\">NPI example:</span> <em>1013012657</em>",
+                "<span class=\"normal-style\">Local code example:</span> <em>muc1290</em>"
               ],
-              "notes": [
-                "Enter National Provider Identifier (NPI). ReportStream prefers this value, however if NPI is unknown enter local coding. File will fail if field left blank. <em>Some jurisdictions may not accept a local code, ReportStream will work with you if this is the case</em>.",
-                "NPI is a 10-character all-numeric identification number to uniquely identify a health care provider. NPIs can be found at <a href=\"https://npiregistry.cms.hhs.gov/\" class=\"usa-link\" rel=\"noreferrer noopener\" target=\"_blank\">https://npiregistry.cms.hhs.gov/</a>.",
-                ""
+              "description": [
+               "Enter the National Provider Identifier (NPI), the unique 10-digit number that identifies a healthcare provider. You can find NPIs at the <a href=\"https://npiregistry.cms.hhs.gov/\" class=\"usa-link\" target=\"_blank\" rel=\"noreferrer noopener\">NPI Registry</a>. If you don’t know the NPI, you can enter local coding. Some jurisdictions may not accept a local code, ReportStream will work with you if this is the case."
               ]
             },
             {
@@ -497,131 +378,71 @@
               "colHeader": "ordering_provider_last_name",
               "required": true,
               "requested": false,
-              "acceptedFormat": false,
-              "acceptedValues": false,
-              "acceptedExample": false,
-              "valueType": "Text",
-              "values": [""],
-              "notes": [
-                "Enter the last name of the ordering provider. File will fail if field left blank. "
-              ]
+              "description": ["Last name, separated from first name"]
             },
             {
               "name": "Ordering provider first name",
               "colHeader": "ordering_provider_first_name",
               "required": true,
               "requested": false,
-              "acceptedFormat": false,
-              "acceptedValues": false,
-              "acceptedExample": false,
-              "valueType": "Text",
-              "values": [""],
-              "notes": [
-                "Enter the first name of the ordering provider. File will fail if field left blank."
-              ]
+              "description": ["First name, separated from last name"]
             },
             {
               "name": "Ordering provider middle name",
               "colHeader": "ordering_provider_middle_name",
               "required": false,
               "requested": false,
-              "acceptedFormat": false,
-              "acceptedValues": false,
-              "acceptedExample": false,
-              "valueType": "Text",
-              "values": [""],
-              "notes": [
-                "Enter the middle name of the ordering provider, if known. This value is optional and can be left blank if no information is provided. "
-              ]
+              "description": ["Middle name, if known"]
             },
             {
               "name": "Ordering provider street address",
               "colHeader": "ordering_provider_street",
               "required": true,
               "requested": false,
-              "acceptedFormat": false,
-              "acceptedValues": false,
-              "acceptedExample": false,
-              "valueType": "Address",
-              "values": [""],
-              "notes": [
-                "Enter the street address of the ordering provider. File will fail if field left blank. "
-              ]
+              "examples": ["1234 America Ln"]
             },
             {
               "name": "Ordering provider street address line 2",
               "colHeader": "ordering_provider_street2",
               "required": false,
               "requested": false,
-              "acceptedFormat": false,
-              "acceptedValues": false,
-              "acceptedExample": false,
-              "valueType": "Address",
-              "values": [""],
-              "notes": [
-                "Enter ordering provider's additional address information, if applicable. This value is optional and can be left blank if no information is provided."
-              ]
+              "examples": ["Suite 5C"]
             },
             {
               "name": "Ordering provider city",
               "colHeader": "ordering_provider_city",
               "required": true,
               "requested": false,
-              "acceptedFormat": false,
-              "acceptedValues": false,
-              "acceptedExample": false,
-              "valueType": "Address",
-              "values": [""],
-              "notes": [
-                "Enter ordering provider's city. File will fail if field left blank."
-              ]
+              "examples": ["Los Angeles", "Madison"]
             },
             {
               "name": "Ordering provider state",
               "colHeader": "ordering_provider_state",
               "required": true,
               "requested": false,
-              "acceptedFormat": false,
-              "acceptedValues": true,
-              "acceptedExample": false,
-              "valueType": "Address",
-              "values": ["Two-character state abbreviation"],
-              "notes": [
-                "Enter ordering provider's state. File will fail if field left blank."
-              ]
+              "format": "Two-character state abbreviation",
+              "examples": ["TX", "CA"]
             },
             {
               "name": "Ordering provider zip code",
               "colHeader": "ordering_provider_zip_code",
               "required": true,
               "requested": false,
-              "acceptedFormat": true,
-              "acceptedValues": false,
-              "acceptedExample": false,
-              "valueType": "5 or 9 digit zip code",
-              "values": ["12345", "12345-6789"],
-              "notes": [
-                "Enter ordering provider zip code. File will fail if value is not entered using accepted format or field is left blank. "
-              ]
+              "format": "5 or 9 digit zip code",
+              "examples": ["12345", "12345-6789"]
             },
             {
               "name": "Ordering provider phone number",
               "colHeader": "ordering_provider_phone_number",
               "required": true,
               "requested": false,
-              "acceptedFormat": true,
-              "acceptedValues": false,
-              "acceptedExample": false,
-              "valueType": "10-digit phone number",
-              "values": ["000-000-0000"],
-              "notes": [
-                "Enter ordering provider's phone number. File will fail if value is not entered using accepted format or field is left blank."
-              ]
+              "format": "000-000-0000",
+              "examples": ["123-456-7890"]
             }
           ]
         },
         {
-          "title": "Testing facility data elements",
+          "title": "Testing facility",
           "slug": "testing-facility",
           "items": [
             {
@@ -629,14 +450,9 @@
               "colHeader": "testing_lab_clia",
               "required": true,
               "requested": false,
-              "acceptedFormat": false,
-              "acceptedValues": false,
-              "acceptedExample": true,
-              "valueType": "CLIA number",
-              "values": ["11D2030855"],
-              "notes": [
-                "Enter testing lab's CLIA number. File will fail if left blank.",
-                "CLIA numbers can be found at <a href=\"https://www.cdc.gov/clia/LabSearch.html\" class=\"usa-link\" target=\"_blank\" rel=\"noreferrer noopener\">https://www.cdc.gov/clia/LabSearch.html</a>."
+              "examples": ["<em>11D2030855</em>"],
+              "description": [
+                "CLIA number from the <a href=\"https://www.cdc.gov/clia/LabSearch.html\" class=\"usa-link\" target=\"_blank\" rel=\"noreferrer noopener\">CDC Laboratory Search</a>"
               ]
             },
             {
@@ -644,103 +460,57 @@
               "colHeader": "testing_lab_name",
               "required": true,
               "requested": false,
-              "acceptedFormat": false,
-              "acceptedValues": false,
-              "acceptedExample": false,
-              "valueType": "Text",
-              "values": [""],
-              "notes": [
-                "Enter testing lab's name. File will fail if field left blank."
-              ]
+              "description": ["Name of facility that processed test results"]
             },
             {
               "name": "Testing lab street address",
               "colHeader": "testing_lab_street",
               "required": true,
               "requested": false,
-              "acceptedFormat": false,
-              "acceptedValues": false,
-              "acceptedExample": false,
-              "valueType": "Address",
-              "values": [""],
-              "notes": [
-                "Enter the street address of the testing lab. File will fail if field left blank."
-              ]
+              "examples": ["1234 America Ln"]
             },
             {
               "name": "Testing lab street address line 2",
               "colHeader": "testing_lab_street2",
               "required": false,
               "requested": false,
-              "acceptedFormat": false,
-              "acceptedValues": false,
-              "acceptedExample": false,
-              "valueType": "Address",
-              "values": [""],
-              "notes": [
-                "Enter testing lab's additional address information, if applicable. This value is optional and can be left blank if no information is provided."
-              ]
+              "examples": ["Unit 3"]
             },
             {
               "name": "Testing lab city",
               "colHeader": "testing_lab_city",
               "required": true,
               "requested": false,
-              "acceptedFormat": false,
-              "acceptedValues": false,
-              "acceptedExample": false,
-              "valueType": "Address",
-              "values": [""],
-              "notes": [
-                "Enter testing lab's city. File will fail if field left blank."
-              ]
+              "examples": ["Los Angeles", "Madison"]
             },
             {
               "name": "Testing lab state",
               "colHeader": "testing_lab_state",
               "required": true,
               "requested": false,
-              "acceptedFormat": false,
-              "acceptedValues": false,
-              "acceptedExample": true,
-              "valueType": "Address",
-              "values": ["Two-character state abbreviation"],
-              "notes": [
-                "Enter testing lab's state. File will fail if field left blank."
-              ]
+              "format": "Two-character state abbreviation",
+              "examples": ["TX", "CA"]
             },
             {
               "name": "Testing lab zip code",
               "colHeader": "testing_lab_zip_code",
               "required": true,
               "requested": false,
-              "acceptedFormat": true,
-              "acceptedValues": false,
-              "acceptedExample": false,
-              "valueType": "5 or 9 digit zip code",
-              "values": ["12345", "12345-6789"],
-              "notes": [
-                "Enter testing lab's zip code. File will fail if value is not entered using accepted format or field is left blank. "
-              ]
+              "format": "5 or 9 digit zip code",
+              "examples": ["12345", "12345-6789"]
             },
             {
               "name": "Testing lab phone number",
               "colHeader": "testing_lab_phone_number",
-              "required": false,
+              "required": true,
               "requested": false,
-              "acceptedFormat": true,
-              "acceptedValues": false,
-              "acceptedExample": false,
-              "valueType": "10-digit phone number",
-              "values": ["000-000-0000"],
-              "notes": [
-                "Enter testing lab's phone number, if known. File will fail if value is not entered using accepted format."
-              ]
+              "format": "000-000-0000",
+              "examples": ["123-456-7890"]
             }
           ]
         },
         {
-          "title": "Ask on entry (AOE) data elements",
+          "title": "Ask on entry (AOE)",
           "slug": "ask-on-entry",
           "items": [
             {
@@ -748,118 +518,86 @@
               "colHeader": "pregnant",
               "required": false,
               "requested": true,
-              "acceptedFormat": false,
-              "acceptedValues": true,
-              "acceptedExample": false,
-              "valueType": "Status",
-              "values": [
-                "<code>Y</code> or <code>YES</code>",
-                "<code>N</code> or <code>NO</code>",
-                "<code>U</code> or <code>UNK</code>"
+              "acceptedValues": [
+                "<mark><code>Y</code></mark> or <mark><code>YES</code></mark>",
+                "<mark><code>N</code></mark> or <mark><code>NO</code></mark>",
+                "<mark><code>U</code></mark> or <mark><code>UNK</code></mark>"
               ],
-              "notes": [
-                "Enter patient's pregnancy status. Field is not required, but requested for thorough reporting. Enter one of the acceptable values exactly as displayed."
-              ]
+              "format": "Use one of the accepted values listed below"
             },
             {
               "name": "Employed in healthcare",
               "colHeader": "employed_in_healthcare",
               "required": false,
               "requested": true,
-              "acceptedFormat": false,
-              "acceptedValues": true,
-              "acceptedExample": false,
-              "valueType": "Status",
-              "values": [
-                "<code>Y</code> or <code>YES</code>",
-                "<code>N</code> or <code>NO</code>",
-                "<code>U</code> or <code>UNK</code>"
+              "acceptedValues": [
+                "<mark><code>Y</code></mark> or <mark><code>YES</code></mark>",
+                "<mark><code>N</code></mark> or <mark><code>NO</code></mark>",
+                "<mark><code>U</code></mark> or <mark><code>UNK</code></mark>"
               ],
-              "notes": [
-                "Enter patient's employment in healthcare status. Field is not required, but requested for thorough reporting. Enter one of the acceptable values exactly as displayed."
-              ]
+              "format": "Use one of the accepted values listed below"
             },
             {
               "name": "Symptomatic for disease",
               "colHeader": "symptomatic_for_disease",
               "required": false,
               "requested": true,
-              "acceptedFormat": false,
-              "acceptedValues": true,
-              "acceptedExample": false,
-              "valueType": "Status",
-              "values": [
-                "<code>Y</code> or <code>YES</code>",
-                "<code>N</code> or <code>NO</code>",
-                "<code>U</code> or <code>UNK</code>"
+              "acceptedValues": [
+                "<mark><code>Y</code></mark> or <mark><code>YES</code></mark>",
+                "<mark><code>N</code></mark> or <mark><code>NO</code></mark>",
+                "<mark><code>U</code></mark> or <mark><code>UNK</code></mark>"
               ],
-              "notes": [
-                "Enter patient's symptomatic for disease status. Field is not required, but requested for thorough reporting. Enter one of the acceptable values exactly as displayed."
-              ]
+              "format": "Use one of the accepted values listed below"
             },
             {
               "name": "Illness onset date",
               "colHeader": "illness_onset_date",
               "required": false,
               "requested": true,
-              "acceptedFormat": true,
-              "acceptedValues": false,
-              "acceptedExample": false,
-              "valueType": "Date",
-              "values": ["M/d/yyyy"],
-              "notes": [
-                "Enter patient's illness onset date.  Field is not required, but requested for thorough reporting. Enter value using accebtable format displayed."
-              ]
+              "format": "M/D/YYYY",
+              "examples": ["9/2/2022", "10/13/2021"],
+              "description": ["Date"]
             },
             {
               "name": "Resident congregate setting",
               "colHeader": "resident_congregate_setting",
               "required": false,
               "requested": true,
-              "acceptedFormat": false,
-              "acceptedValues": true,
-              "acceptedExample": false,
-              "valueType": "Status",
-              "values": [
-                "<code>Y</code> or <code>YES</code>",
-                "<code>N</code> or <code>NO</code>",
-                "<code>U</code> or <code>UNK</code>"
+              "acceptedValues": [
+                "<mark><code>Y</code></mark> or <mark><code>YES</code></mark>",
+                "<mark><code>N</code></mark> or <mark><code>NO</code></mark>",
+                "<mark><code>U</code></mark> or <mark><code>UNK</code></mark>"
               ],
-              "notes": [
-                "Enter patient's congregate housing status. Field is not required, but requested for thorough reporting. Enter one of the acceptable values exactly as displayed."
-              ]
+              "format": "Use one of the accepted values listed below"
             },
             {
               "name": "Residence type",
               "colHeader": "residence_type",
               "required": false,
               "requested": false,
-              "acceptedFormat": false,
-              "acceptedValues": true,
-              "acceptedExample": false,
-              "valueType": "Status",
-              "values": [
-                "<code>22232009</code> or <code>Hospital</code>",
-                "<code>2081004</code> or <code>Hospital Ship</code>",
-                "<code>32074000</code> or <code>Long Term Care Hospital</code>",
-                "<code>224929004</code> or <code>Secure Hospital</code>",
-                "<code>42665001</code> or <code>Nursing Home</code>",
-                "<code>30629002</code> or <code>Retirement Home</code>",
-                "<code>74056004</code> or <code>Orphanage</code>",
-                "<code>722173008</code> or <code>Prison-based Care Site</code>",
-                "<code>20078004</code> or <code>Substance Abuse Treatment Center</code>",
-                "<code>257573002</code> or <code>Boarding House</code>",
-                "<code>224683003</code> or <code>Military Accommodation</code>",
-                "<code>284546000</code> or <code>Hospice</code>",
-                "<code>257628001</code> or <code>Hostel</code>",
-                "<code>310207003</code> or <code>Sheltered Housing</code>",
-                "<code>57656006</code> or <code>Penal Institution</code>",
-                "<code>285113009</code> or <code>Religious Institutional Residence</code>",
-                "<code>285141008</code> or <code>Work (environment)</code>",
-                "<code>32911000</code> or <code>Homeless</code>"
+              "format": "Use one of the accepted values listed below",
+              "acceptedValues": [
+                "<mark><code>22232009</code></mark> or <mark><code>Hospital</code></mark>",
+                "<mark><code>2081004</code></mark> or <mark><code>Hospital Ship</code></mark>",
+                "<mark><code>32074000</code></mark> or <mark><code>Long Term Care Hospital</code></mark>",
+                "<mark><code>224929004</code></mark> or <mark><code>Secure Hospital</code></mark>",
+                "<mark><code>42665001</code></mark> or <mark><code>Nursing Home</code></mark>",
+                "<mark><code>30629002</code></mark> or <mark><code>Retirement Home</code></mark>",
+                "<mark><code>74056004</code></mark> or <mark><code>Orphanage</code></mark>",
+                "<mark><code>722173008</code></mark> or <mark><code>Prison-based Care Site</code></mark>",
+                "<mark><code>20078004</code></mark> or <mark><code>Substance Abuse Treatment Center</code></mark>",
+                "<mark><code>257573002</code></mark> or <mark><code>Boarding House</code></mark>",
+                "<mark><code>224683003</code></mark> or <mark><code>Military Accommodation</code></mark>",
+                "<mark><code>284546000</code></mark> or <mark><code>Hospice</code></mark>",
+                "<mark><code>257628001</code></mark> or <mark><code>Hostel</code></mark>",
+                "<mark><code>310207003</code></mark> or <mark><code>Sheltered Housing</code></mark>",
+                "<mark><code>57656006</code></mark> or <mark><code>Penal Institution</code></mark>",
+                "<mark><code>285113009</code></mark> or <mark><code>Religious Institutional Residence</code></mark>",
+                "<mark><code>285141008</code></mark> or <mark><code>Work (environment)</code></mark>",
+                "<mark><code>32911000</code></mark> or <mark><code>Homeless</code></mark>"
               ],
-              "notes": [
-                "If resident congregate setting is “Y” or “Yes,” then provide residence type. Enter one of the acceptable values exactly as displayed."
+              "description": [
+                "If the resident congregate setting is “Y” or “Yes,” then provide residence type"
               ]
             },
             {
@@ -867,41 +605,29 @@
               "colHeader": "hospitalized",
               "required": false,
               "requested": true,
-              "acceptedFormat": false,
-              "acceptedValues": true,
-              "acceptedExample": false,
-              "valueType": "Status",
-              "values": [
-                "<code>Y</code> or <code>YES</code>",
-                "<code>N</code> or <code>NO</code>",
-                "<code>U</code> or <code>UNK</code>"
+              "acceptedValues": [
+                "<mark><code>Y</code></mark> or <mark><code>YES</code></mark>",
+                "<mark><code>N</code></mark> or <mark><code>NO</code></mark>",
+                "<mark><code>U</code></mark> or <mark><code>UNK</code></mark>"
               ],
-              "notes": [
-                "Enter patient's hospitalization status. Field is not required, but requested for thorough reporting. Enter one of the acceptable values exactly as displayed."
-              ]
+              "format": "Use one of the accepted values listed below"
             },
             {
               "name": "Intensive care unit",
               "colHeader": "icu",
               "required": false,
               "requested": true,
-              "acceptedFormat": false,
-              "acceptedValues": true,
-              "acceptedExample": false,
-              "valueType": "Status",
-              "values": [
-                "<code>Y</code> or <code>YES</code>",
-                "<code>N</code> or <code>NO</code>",
-                "<code>U</code> or <code>UNK</code>"
+              "acceptedValues": [
+                "<mark><code>Y</code></mark> or <mark><code>YES</code></mark>",
+                "<mark><code>N</code></mark> or <mark><code>NO</code></mark>",
+                "<mark><code>U</code></mark> or <mark><code>UNK</code></mark>"
               ],
-              "notes": [
-                "Enter patient's intensive care unit (ICU) status.  Field is not required, but requested for thorough reporting. Enter one of the acceptable values exactly as displayed."
-              ]
+              "format": "Use one of the accepted values listed below"
             }
           ]
         },
         {
-          "title": "Ordering facility data elements",
+          "title": "Ordering facility",
           "slug": "ordering-facility",
           "items": [
             {
@@ -909,13 +635,8 @@
               "colHeader": "ordering_facility_name",
               "required": false,
               "requested": false,
-              "acceptedFormat": false,
-              "acceptedValues": false,
-              "acceptedExample": false,
-              "valueType": "Text",
-              "values": [""],
-              "notes": [
-                "Enter ordering facility name. Can be left blank if same as <a href=\"#testing-facility\" class=\"usa-link\">testing_lab_name</a>. "
+              "description": [
+                "You can leave this field blank if it’s the same as <a href=\"#testing_lab_name\" class=\"usa-link\">testing_lab_name</a>"
               ]
             },
             {
@@ -923,13 +644,8 @@
               "colHeader": "ordering_facility_street",
               "required": false,
               "requested": false,
-              "acceptedFormat": false,
-              "acceptedValues": false,
-              "acceptedExample": false,
-              "valueType": "Address",
-              "values": [""],
-              "notes": [
-                "Enter the street address of the ordering facility. Can be left blank if same as <a href=\"#testing-facility\" class=\"usa-link\">testing_lab_street</a>."
+              "description": [
+                "You can leave this field blank if it’s the same as <a href=\"#testing_lab_street\" class=\"usa-link\">testing_lab_street</a>"
               ]
             },
             {
@@ -937,27 +653,15 @@
               "colHeader": "ordering_facility_street2",
               "required": false,
               "requested": false,
-              "acceptedFormat": false,
-              "acceptedValues": false,
-              "acceptedExample": false,
-              "valueType": "Address",
-              "values": [""],
-              "notes": [
-                "Enter ordering facility's additional address information, if applicable. This value is optional and can be left blank if no information is provided."
-              ]
+              "description": ["Address, continued"]
             },
             {
               "name": "Ordering facility city",
-              "colHeader": "ordering_facility_city ",
+              "colHeader": "ordering_facility_city",
               "required": false,
               "requested": false,
-              "acceptedFormat": false,
-              "acceptedValues": false,
-              "acceptedExample": false,
-              "valueType": "Address",
-              "values": [""],
-              "notes": [
-                "Enter ordering facility's city. Can be left blank if same as <a href=\"#testing-facility\" class=\"usa-link\">testing_lab_city</a>."
+              "description": [
+                "You can leave this field blank if it’s the same as <a href=\"#testing_lab_city\" class=\"usa-link\">testing_lab_city</a>"
               ]
             },
             {
@@ -965,27 +669,21 @@
               "colHeader": "ordering_facility_state",
               "required": false,
               "requested": false,
-              "acceptedFormat": true,
-              "acceptedValues": false,
-              "acceptedExample": false,
-              "valueType": "Address",
-              "values": ["Two-character state abbreviation"],
-              "notes": [
-                "Enter ordering facility's state. Can be left blank if same as <a href=\"#testing-facility\" class=\"usa-link\">testing_lab_state</a>."
-              ]
+              "format": "Two-character state abbreviation",
+              "description": [
+                "You can leave this field blank if it’s the same as <a href=\"#testing_lab_state\" class=\"usa-link\">testing_lab_state</a>"
+              ],
+              "examples": ["TX", "CA"]
             },
             {
               "name": "Ordering facility zip code",
               "colHeader": "ordering_facility_zip_code",
               "required": false,
               "requested": false,
-              "acceptedFormat": true,
-              "acceptedValues": false,
-              "acceptedExample": false,
-              "valueType": "5 or 9 digit zip code",
-              "values": ["12345", "12345-6789"],
-              "notes": [
-                "Enter ordering facility zip code. Can be left blank if same as <a href=\"#testing-facility\" class=\"usa-link\">testing_lab_zip_code</a>. "
+              "format": "5 or 9 digit zip code",
+              "examples": ["12345", "12345-6789"],
+              "description": [
+                "You can leave this field blank if it’s the same as <a href=\"#testing_lab_zip_code\" class=\"usa-link\">testing_lab_zip_code</a>"
               ]
             },
             {
@@ -993,19 +691,16 @@
               "colHeader": "ordering_facility_phone_number",
               "required": false,
               "requested": false,
-              "acceptedFormat": true,
-              "acceptedValues": false,
-              "acceptedExample": false,
-              "valueType": "10 digit phone number",
-              "values": ["000-000-0000"],
-              "notes": [
-                "Enter ordering facility phone number. Can be left blank if same as <a href=\"#testing-facility\" class=\"usa-link\">testing_lab_phone_number</a>."
+              "examples": ["123-456-7890"],
+              "format": "000-000-0000",
+              "description": [
+                "You can leave this field blank if it’s the same as <a href=\"#testing_lab_phone_number\" class=\"usa-link\">testing_lab_phone_number</a>"
               ]
             }
           ]
         },
         {
-          "title": "Additional data elements and notes",
+          "title": "Additional data and notes",
           "slug": "additional-data-elements",
           "items": [
             {
@@ -1013,14 +708,9 @@
               "colHeader": "comment",
               "required": false,
               "requested": false,
-              "acceptedFormat": false,
-              "acceptedValues": false,
-              "acceptedExample": false,
-              "valueType": "Text",
-              "values": [""],
-              "notes": [
-                "If there are comments from a physician or lab technician you want to relay to your public health department, enter them here. This field is not intended for characteristics of COVID-19 tests or statements about false positive or negative results. This value is optional and can be left blank if no information is provided.",
-                "<em>Do not include commas (,) in any comments.</em>"
+              "format": "Do not include commas (,) in any comments",
+              "description": [
+                "If there are comments from a physician or lab technician you want to relay to your public health department, enter them here. This field isn’t meant for characteristics of COVID-19 tests or statements about false positive or negative results."
               ]
             },
             {
@@ -1028,16 +718,13 @@
               "colHeader": "test_result_status ",
               "required": false,
               "requested": false,
-              "acceptedFormat": false,
-              "acceptedValues": true,
-              "acceptedExample": false,
-              "valueType": "Text",
-              "values": [
-                "<code>F</code> = Final result",
-                "<code>C</code> = Corrected result"
+              "format": "Use one of the accepted values below",
+              "acceptedValues": [
+                "<mark><code>F</code></mark> = Final result",
+                "<mark><code>C</code></mark> = Corrected result"
               ],
-              "notes": [
-                "Enter test result status using the accepted format. If left blank, value will default to <code>F</code> for final."
+              "description": [
+                "Enter test result status using the accepted format listed below. If left blank, value will default to F for final."
               ]
             }
           ]

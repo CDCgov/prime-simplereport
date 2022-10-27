@@ -224,6 +224,7 @@ export const en = {
       },
     },
     selfRegistration: {
+      title: "Test registration form",
       form: {
         complete: "Registration complete",
         inProgress: "Register for your test",
@@ -233,6 +234,7 @@ export const en = {
         },
       },
       confirmation: {
+        title: "Test registration complete",
         registered:
           "<0>{{personName}}</0>, thanks for completing your patient profile at {{entityName}}.",
         checkIn:
@@ -247,6 +249,8 @@ export const en = {
       },
     },
     testResult: {
+      title: "Test result",
+      resultLiteral: "result",
       result: "SARS-CoV-2 result",
       covidResultHeader: "Test result: COVID-19",
       multiplexResultHeader: "Test results: COVID-19 and flu",
@@ -367,6 +371,7 @@ export const en = {
       },
       tos: {
         header: "Terms of service",
+        title: "Terms of service",
         introText: `This testing site uses <0>SimpleReport</0> to manage COVID-19 testing and reporting. The terms below explain SimpleReport’s policies and terms of service.`,
         consent: "By agreeing, you consent to our terms of service.",
         submit: "I agree",
@@ -453,7 +458,7 @@ export const en = {
               "Where Individual Users may be accessing the information on behalf of a minor or otherwise as a guardian, Entity Users and " +
               "Administrator Users agree to assume full responsibility for designating the correct Individual User contact information " +
               "within the Application, in accordance with applicable law. If you would like more information about the application of " +
-              "the Privacy Act at CDC, <0>click here</0>.",
+              "the Privacy Act at CDC, visit the <0>Health and Human Services website</0>.",
             p1:
               "For purposes of use of this Application, if you are a HIPAA-covered entity or acting on behalf of one as a business " +
               "associate or if the data is maintained by you in a HIPAA-covered designated record set, you further acknowledge that you " +
@@ -605,6 +610,7 @@ export const en = {
         },
       },
       dob: {
+        title: "Test result verification",
         header: "Access your COVID-19 test result",
         dateOfBirth: "Date of birth",
         enterDOB: "Enter your date of birth",

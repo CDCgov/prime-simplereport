@@ -1,4 +1,4 @@
-const TEST_RESULTS_BY_ROLE = [
+const data = [
   {
     internalId: "0969da96-b211-41cd-ba61-002181f0918d",
     dateTested: "2021-03-17T19:27:23.806Z",
@@ -77,4 +77,8 @@ const TEST_RESULTS_BY_ROLE = [
   },
 ];
 
+const TEST_RESULTS_BY_ROLE = {
+  content: data,
+  totalElements: data.length,
+};
 export default TEST_RESULTS_BY_ROLE;

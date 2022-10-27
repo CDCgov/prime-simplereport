@@ -235,6 +235,7 @@ export const es: LanguageConfig = {
       },
     },
     selfRegistration: {
+      title: "Formulario de inscripción a la prueba",
       form: {
         complete: "Inscripción completa",
         inProgress: "Inscríbase para programar su prueba",
@@ -244,6 +245,7 @@ export const es: LanguageConfig = {
         },
       },
       confirmation: {
+        title: "Inscripción a la prueba completa",
         registered:
           "<0>{{personName}}</0>, gracias por completar su perfil de paciente en {{entityName}}.",
         checkIn:
@@ -258,6 +260,8 @@ export const es: LanguageConfig = {
       },
     },
     testResult: {
+      title: "Resultado de la prueba",
+      resultLiteral: "resultado",
       result: "Resultado de SARS-CoV-2",
       covidResultHeader: "Resultado de la prueba: COVID-19",
       multiplexResultHeader:
@@ -389,7 +393,8 @@ export const es: LanguageConfig = {
         },
       },
       tos: {
-        header: "Términos de servicio",
+        header: "Condiciones del servicio",
+        title: "Condiciones del servicio",
         introText:
           "Este centro de pruebas utiliza <0>SimpleReport</0> para gestionar las pruebas de COVID-19 y sus correspondientes notificaciones. Los términos a continuación " +
           "explican las políticas y condiciones del servicio de SimpleReport.",
@@ -436,7 +441,7 @@ export const es: LanguageConfig = {
           privacy: {
             heading: "Privacidad",
             p0:
-              "Usted puede usar la aplicación para buscar, exhibir, analizar, recuperar, visualizar u ‘obtener’ la información de los datos que esté enviando (o, para los usuarios individuales, de los datos que se les envíen) por medio de la aplicación y la plataforma. Note que los datos a los que usted acceda, registre o transmita por medio de la aplicación podrían estar sujetos a la Ley de Portabilidad y Responsabilidad del Seguro Médico de 1996 (HIPAA) y otras leyes y requiere protección especial. Al acceder a la aplicación y usarla, usted acepta obedecer estrictamente todas las leyes federales y estatales aplicables con respecto a la recolección, el uso, la protección y la divulgación de la información obtenida o enviada por medio de la aplicación. Debido a que podría haber usuarios individuales que acceden a la información en nombre de un menor o como tutores legales, los usuarios y administradores de una entidad se comprometen a asumir toda la responsabilidad de señalar la información de contacto correcta de los usuarios individuales en la aplicación, según las leyes correspondientes. Si desea más información sobre la aplicación de la Ley de Privacidad en los CDC, <0>haga clic aquí.</0>",
+              "Usted puede usar la aplicación para buscar, exhibir, analizar, recuperar, visualizar u ‘obtener’ la información de los datos que esté enviando (o, para los usuarios individuales, de los datos que se les envíen) por medio de la aplicación y la plataforma. Note que los datos a los que usted acceda, registre o transmita por medio de la aplicación podrían estar sujetos a la Ley de Portabilidad y Responsabilidad del Seguro Médico de 1996 (HIPAA) y otras leyes y requiere protección especial. Al acceder a la aplicación y usarla, usted acepta obedecer estrictamente todas las leyes federales y estatales aplicables con respecto a la recolección, el uso, la protección y la divulgación de la información obtenida o enviada por medio de la aplicación. Debido a que podría haber usuarios individuales que acceden a la información en nombre de un menor o como tutores legales, los usuarios y administradores de una entidad se comprometen a asumir toda la responsabilidad de señalar la información de contacto correcta de los usuarios individuales en la aplicación, según las leyes correspondientes. Si desea más información sobre la aplicación de la Ley de Privacidad en los CDC, visite el <0>sitio web del Departamento de Salud y Servicios Humanos</0>.",
             p1:
               "A efectos del uso de esta aplicación, si su entidad está cubierta por la HIPAA, usted está actuando en nombre de una entidad de esas características como socio de negocios o usted mantiene los datos en un registro designado cubierto por la HIPAA, usted reconoce, asimismo, que cumplirá con las regulaciones de la HIPAA aplicables (45 CFR, partes 160 y 164), relacionadas con el almacenamiento, la transmisión, el uso y la divulgación adecuados de toda información de salud protegida.",
           },
@@ -530,6 +535,7 @@ export const es: LanguageConfig = {
         },
       },
       dob: {
+        title: "Verificación del resultado de la prueba",
         header: "Acceda al resultado de su prueba de COVID-19",
         dateOfBirth: "Fecha de nacimiento",
         enterDOB: "Ingrese su fecha de nacimiento",

@@ -4,7 +4,7 @@ import { CSSTransition, TransitionGroup } from "react-transition-group";
 import { useLocation } from "react-router-dom";
 import { useSelector } from "react-redux";
 
-import { showError } from "../utils";
+import { showError } from "../utils/srToast";
 import { useSelectedFacility } from "../facilitySelect/useSelectedFacility";
 import { TestCorrectionReason } from "../testResults/TestResultCorrectionModal";
 import { LinkWithQuery } from "../commonComponents/LinkWithQuery";
@@ -191,15 +191,15 @@ const TestQueue: React.FC<Props> = ({ activeFacilityId }) => {
   }
   if (loading) {
     return (
-      <main
-        className="prime-home display-flex flex-justify-center"
+      <div
+        className="prime-home display-flex flex-justify-center flex-1"
         style={{
           fontSize: "22px",
           paddingTop: "80px",
         }}
       >
         Loading tests ...
-      </main>
+      </div>
     );
   }
 
@@ -331,7 +331,7 @@ const TestQueue: React.FC<Props> = ({ activeFacilityId }) => {
   );
 
   return (
-    <main className="prime-home">
+    <div className="prime-home flex-1">
       <div className="grid-container queue-container-wide">
         <h1 className="font-sans-lg">Conduct tests</h1>
         <div className="position-relative">
@@ -345,7 +345,7 @@ const TestQueue: React.FC<Props> = ({ activeFacilityId }) => {
         </div>
         {createQueueItems(data.queue)}
       </div>
-    </main>
+    </div>
   );
 };
 

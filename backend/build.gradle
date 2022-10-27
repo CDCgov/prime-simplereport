@@ -50,12 +50,12 @@ dependencies {
     // data layer dependencies
     implementation 'org.springframework.boot:spring-boot-starter-data-jpa'
     implementation 'org.springframework.boot:spring-boot-starter-validation'
-    implementation 'com.vladmihalcea:hibernate-types-52:2.10.0'
+    implementation 'com.vladmihalcea:hibernate-types-55:2.19.2'
     implementation 'org.liquibase:liquibase-core'
     runtimeOnly 'org.postgresql:postgresql:42.4.1'
 
     // data validation
-    implementation 'com.googlecode.libphonenumber:libphonenumber:8.12.15'
+    implementation 'com.googlecode.libphonenumber:libphonenumber:8.12.57'
     implementation 'com.smartystreets.api:smartystreets-java-sdk:3.7.2'
 
     // UI layer dependencies
@@ -94,7 +94,7 @@ dependencies {
     // graphql-java-extended-scalars
     implementation 'com.graphql-java:graphql-java-extended-scalars:18.1'
 
-    implementation 'com.azure:azure-storage-queue:12.12.+'
+    implementation 'com.azure:azure-storage-queue:12.15.+'
     implementation 'com.azure:azure-core-http-netty:1.11.9'
     implementation 'com.azure:azure-core:1.27.0'
     implementation 'com.azure:azure-storage-common:12.15.1'
