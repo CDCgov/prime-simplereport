@@ -216,16 +216,24 @@ const UploadPatients = () => {
                   <table className="usa-table usa-table--borderless">
                     <thead>
                       <tr>
-                        <th>Requested Edit</th>
-                        <th>Areas Containing the Requested Edit</th>
+                        <th className={"thick-bottom-border padding-left-0"}>
+                          Edits needed
+                        </th>
+                        <th className={"thick-bottom-border padding-left-0"}>
+                          Areas requiring edits
+                        </th>
                       </tr>
                     </thead>
                     <tbody>
                       {errors.map((e, i) => {
                         return (
                           <tr key={"error_" + i}>
-                            <td>{e?.["message"]} </td>
-                            <td>Row(s): {e?.["indices"]}</td>
+                            <td className={"no-bottom-border"}>
+                              {e?.["message"]}{" "}
+                            </td>
+                            <td className={"no-bottom-border"}>
+                              Row(s): {e?.["indices"]}
+                            </td>
                           </tr>
                         );
                       })}
