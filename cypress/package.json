@@ -6,14 +6,18 @@
         "@types/faker": "^5.5.9",
         "cypress": "^9.2.1",
         "cypress-localstorage-commands": "^1.6.1",
+        "eslint-plugin-cypress": "^2.12.1",
         "faker": "^5.5.3",
-        "otplib": "^12.0.1",
-        "eslint-plugin-cypress": "^2.12.1"
+        "otplib": "^12.0.1"
     },
     "scripts": {
         "e2e:local": "env $(cat ./../.env | grep -v \"#\" | xargs) CYPRESS_SKIP_OKTA=true CYPRESS_CHECK_COMMIT=$(git rev-parse HEAD) CYPRESS_CHECK_URL=/health/commit cypress open --project ./../ --config-file cypress.json --config baseUrl=http://localhost:3000",
         "e2e:local:okta": "env $(cat ./../.env | grep -v \"#\" | xargs) CYPRESS_CHECK_COMMIT=$(git rev-parse HEAD) CYPRESS_CHECK_URL=/health/commit cypress open --project ./../ --config-file cypress.json --config baseUrl=http://localhost:3000",
         "e2e:nginx": "env $(cat ./../.env | grep -v \"#\" | xargs) CYPRESS_SKIP_OKTA=true CYPRESS_CHECK_COMMIT=$(git rev-parse HEAD) CYPRESS_CHECK_URL=/health/commit cypress open --project ./../ --config-file cypress.json --config baseUrl=https://localhost.simplereport.gov/app",
         "e2e:nginx:okta": "env $(cat ./../.env | grep -v \"#\" | xargs) CYPRESS_CHECK_COMMIT=$(git rev-parse HEAD) CYPRESS_CHECK_URL=/health/commit cypress open --project ./../ --config-file cypress.json --config baseUrl=https://localhost.simplereport.gov/app"
+    },
+    "dependencies": {
+        "axe-core": "^4.4.3",
+        "cypress-axe": "^1.0.0"
     }
 }

@@ -187,14 +187,13 @@ updates:
       # - "alismx"
       # - "rin-skylight"
 
-  # - package-ecosystem: "terraform"
-  #   directory: "/ops/global"
-  #   open-pull-requests-limit: 2
-  #   schedule:
-  #     interval: "weekly"
-  #   reviewers:
-      # - "alismx"
-      # - "rin-skylight"
+  - package-ecosystem: "terraform"
+    directory: "/ops/global"
+    schedule:
+      interval: "weekly"
+    reviewers:
+      - "alismx"
+      - "rin-skylight"
 
   # - package-ecosystem: "terraform"
   #   directory: "/ops/pentest"
@@ -241,14 +240,13 @@ updates:
       # - "alismx"
       # - "rin-skylight"
 
-  # - package-ecosystem: "terraform"
-  #   directory: "/ops/services/okta-global"
-  #   open-pull-requests-limit: 2
-  #   schedule:
-  #     interval: "weekly"
-  #   reviewers:
-      # - "alismx"
-      # - "rin-skylight"
+  - package-ecosystem: "terraform"
+    directory: "/ops/services/okta-global"
+    schedule:
+      interval: "weekly"
+    reviewers:
+      - "alismx"
+      - "rin-skylight"
 
   # - package-ecosystem: "terraform"
   #   directory: "/ops/services/pagerduty"
@@ -277,23 +275,23 @@ updates:
       # - "alismx"
       # - "rin-skylight"
 
-  # - package-ecosystem: "terraform"
-  #   directory: "/ops/test"
-  #   open-pull-requests-limit: 2
-  #   schedule:
-  #     interval: "weekly"
-  #   reviewers:
-      # - "alismx"
-      # - "rin-skylight"
+  - package-ecosystem: "terraform"
+    directory: "/ops/test"
+    open-pull-requests-limit: 2
+    schedule:
+      interval: "weekly"
+    reviewers:
+      - "alismx"
+      - "rin-skylight"
 
-  # - package-ecosystem: "terraform"
-  #   directory: "/ops/test/persistent"
-  #   open-pull-requests-limit: 2
-  #   schedule:
-  #     interval: "weekly"
-  #   reviewers:
-      # - "alismx"
-      # - "rin-skylight"
+  - package-ecosystem: "terraform"
+    directory: "/ops/test/persistent"
+    open-pull-requests-limit: 2
+    schedule:
+      interval: "weekly"
+    reviewers:
+      - "alismx"
+      - "rin-skylight"
 
   # - package-ecosystem: "terraform"
   #   directory: "/ops/training"

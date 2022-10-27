@@ -50,16 +50,23 @@ class TestResultTest extends BaseGraphqlTest {
   private Organization _org;
   private Facility _site;
   private Facility _secondSite;
+  private List<MultiplexResultInput> positiveCovidResult;
+  private List<MultiplexResultInput> negativeCovidResult;
 
   @BeforeEach
   public void init() {
     _org = _orgService.getCurrentOrganizationNoCache();
     _site = _orgService.getFacilities(_org).get(0);
     _secondSite = _orgService.getFacilities(_org).get(1);
+
+    positiveCovidResult =
+        List.of(new MultiplexResultInput(_diseaseService.covid().getName(), TestResult.POSITIVE));
+    negativeCovidResult =
+        List.of(new MultiplexResultInput(_diseaseService.covid().getName(), TestResult.NEGATIVE));
   }
 
   @Test
-  void fetchTestResults() throws Exception {
+  void fetchTestResults() {
     Person p = _dataFactory.createFullPerson(_org);
     _dataFactory.createTestEvent(p, _site);
     _dataFactory.createTestEvent(p, _site);
@@ -84,7 +91,7 @@ class TestResultTest extends BaseGraphqlTest {
   }
 
   @Test
-  void submitTestResult() throws Exception {
+  void submitTestResult() {
     Person p = _dataFactory.createFullPerson(_org);
     DeviceType d = _site.getDefaultDeviceType();
     _dataFactory.createTestOrder(p, _site);
@@ -92,11 +99,15 @@ class TestResultTest extends BaseGraphqlTest {
 
     Map<String, Object> variables =
         Map.of(
-            "deviceId", d.getInternalId().toString(),
-            "patientId", p.getInternalId().toString(),
-            "result", TestResult.NEGATIVE.toString(),
-            "dateTested", dateTested);
-    submitTestResult(variables, Optional.empty());
+            "deviceId",
+            d.getInternalId().toString(),
+            "patientId",
+            p.getInternalId().toString(),
+            "results",
+            negativeCovidResult,
+            "dateTested",
+            dateTested);
+    submitMultiplexResult(variables, Optional.empty());
 
     ArrayNode testResults = fetchTestResults(getFacilityScopedArguments());
 
@@ -105,7 +116,7 @@ class TestResultTest extends BaseGraphqlTest {
   }
 
   @Test
-  void submitAndFetchMultiplexResult() throws Exception {
+  void submitAndFetchMultiplexResult() {
     Person p = _dataFactory.createFullPerson(_org);
     DeviceType d = _site.getDefaultDeviceType();
     Map<String, Boolean> symptoms = Map.of("25064002", true);
@@ -163,7 +174,7 @@ class TestResultTest extends BaseGraphqlTest {
   }
 
   @Test
-  void testResultOperations_standardUser_successDependsOnFacilityAccess() throws Exception {
+  void testResultOperations_standardUser_successDependsOnFacilityAccess() {
     Person p1 = _dataFactory.createFullPerson(_org);
     Person p2 = _dataFactory.createMinimalPerson(_org, _site);
     DeviceType d = _site.getDefaultDeviceType();
@@ -176,23 +187,31 @@ class TestResultTest extends BaseGraphqlTest {
     updateSelfPrivileges(Role.USER, false, Set.of());
     Map<String, Object> submitP1Variables =
         Map.of(
-            "deviceId", d.getInternalId().toString(),
-            "patientId", p1.getInternalId().toString(),
-            "result", TestResult.NEGATIVE.toString(),
-            "dateTested", dateTested);
+            "deviceId",
+            d.getInternalId().toString(),
+            "patientId",
+            p1.getInternalId().toString(),
+            "results",
+            negativeCovidResult,
+            "dateTested",
+            dateTested);
     Map<String, Object> submitP2Variables =
         Map.of(
-            "deviceId", d.getInternalId().toString(),
-            "patientId", p2.getInternalId().toString(),
-            "result", TestResult.NEGATIVE.toString(),
-            "dateTested", dateTested);
+            "deviceId",
+            d.getInternalId().toString(),
+            "patientId",
+            p2.getInternalId().toString(),
+            "results",
+            negativeCovidResult,
+            "dateTested",
+            dateTested);
 
-    submitTestResult(submitP1Variables, Optional.of(ACCESS_ERROR));
-    submitTestResult(submitP2Variables, Optional.of(ACCESS_ERROR));
+    submitMultiplexResult(submitP1Variables, Optional.of(ACCESS_ERROR));
+    submitMultiplexResult(submitP2Variables, Optional.of(ACCESS_ERROR));
 
     updateSelfPrivileges(Role.USER, false, Set.of(_site.getInternalId()));
-    submitTestResult(submitP1Variables, Optional.empty());
-    submitTestResult(submitP2Variables, Optional.empty());
+    submitMultiplexResult(submitP1Variables, Optional.empty());
+    submitMultiplexResult(submitP2Variables, Optional.empty());
 
     updateSelfPrivileges(Role.USER, false, Set.of());
     Map<String, Object> fetchVariables = getFacilityScopedArguments();
@@ -252,32 +271,48 @@ class TestResultTest extends BaseGraphqlTest {
 
     Map<String, Object> submitP1Variables =
         Map.of(
-            "deviceId", d.getInternalId().toString(),
-            "patientId", p1.getInternalId().toString(),
-            "result", TestResult.POSITIVE.toString(),
-            "dateTested", dateTested);
+            "deviceId",
+            d.getInternalId().toString(),
+            "patientId",
+            p1.getInternalId().toString(),
+            "results",
+            positiveCovidResult,
+            "dateTested",
+            dateTested);
     Map<String, Object> submitP2Variables =
         Map.of(
-            "deviceId", d.getInternalId().toString(),
-            "patientId", p2.getInternalId().toString(),
-            "result", TestResult.NEGATIVE.toString(),
-            "dateTested", dateTested);
+            "deviceId",
+            d.getInternalId().toString(),
+            "patientId",
+            p2.getInternalId().toString(),
+            "results",
+            negativeCovidResult,
+            "dateTested",
+            dateTested);
     Map<String, Object> submitP3Variables =
         Map.of(
-            "deviceId", secondSiteDevice.getInternalId().toString(),
-            "patientId", p3.getInternalId().toString(),
-            "result", TestResult.NEGATIVE.toString(),
-            "dateTested", dateTested);
+            "deviceId",
+            secondSiteDevice.getInternalId().toString(),
+            "patientId",
+            p3.getInternalId().toString(),
+            "results",
+            negativeCovidResult,
+            "dateTested",
+            dateTested);
     Map<String, Object> submitP4Variables =
         Map.of(
-            "deviceId", secondSiteDevice.getInternalId().toString(),
-            "patientId", p4.getInternalId().toString(),
-            "result", TestResult.NEGATIVE.toString(),
-            "dateTested", dateTested);
-    submitTestResult(submitP1Variables, Optional.empty());
-    submitTestResult(submitP2Variables, Optional.empty());
-    submitTestResult(submitP3Variables, Optional.empty());
-    submitTestResult(submitP4Variables, Optional.empty());
+            "deviceId",
+            secondSiteDevice.getInternalId().toString(),
+            "patientId",
+            p4.getInternalId().toString(),
+            "results",
+            negativeCovidResult,
+            "dateTested",
+            dateTested);
+    submitMultiplexResult(submitP1Variables, Optional.empty());
+    submitMultiplexResult(submitP2Variables, Optional.empty());
+    submitMultiplexResult(submitP3Variables, Optional.empty());
+    submitMultiplexResult(submitP4Variables, Optional.empty());
 
     String startDate = "2020-01-01";
     String endDate = new SimpleDateFormat("yyyy-MM-dd").format(Date.from(Instant.now()));
@@ -328,18 +363,26 @@ class TestResultTest extends BaseGraphqlTest {
 
     Map<String, Object> submitP1Variables =
         Map.of(
-            "deviceId", d.getInternalId().toString(),
-            "patientId", p1.getInternalId().toString(),
-            "result", TestResult.POSITIVE.toString(),
-            "dateTested", dateTested);
+            "deviceId",
+            d.getInternalId().toString(),
+            "patientId",
+            p1.getInternalId().toString(),
+            "results",
+            positiveCovidResult,
+            "dateTested",
+            dateTested);
     Map<String, Object> submitP2Variables =
         Map.of(
-            "deviceId", d.getInternalId().toString(),
-            "patientId", p2.getInternalId().toString(),
-            "result", TestResult.NEGATIVE.toString(),
-            "dateTested", dateTested);
-    submitTestResult(submitP1Variables, Optional.empty());
-    submitTestResult(submitP2Variables, Optional.empty());
+            "deviceId",
+            d.getInternalId().toString(),
+            "patientId",
+            p2.getInternalId().toString(),
+            "results",
+            negativeCovidResult,
+            "dateTested",
+            dateTested);
+    submitMultiplexResult(submitP1Variables, Optional.empty());
+    submitMultiplexResult(submitP2Variables, Optional.empty());
 
     String startDate = "2020-01-01";
     String endDate = new SimpleDateFormat("yyyy-MM-dd").format(Date.from(Instant.now()));
@@ -380,11 +423,6 @@ class TestResultTest extends BaseGraphqlTest {
 
   private HashMap<String, Object> getFacilityScopedArguments() {
     return new HashMap<>(Map.of("facilityId", _site.getInternalId().toString()));
-  }
-
-  private ObjectNode submitTestResult(
-      Map<String, Object> variables, Optional<String> expectedError) {
-    return runQuery("add-test-result-mutation", variables, expectedError.orElse(null));
   }
 
   private ObjectNode submitMultiplexResult(

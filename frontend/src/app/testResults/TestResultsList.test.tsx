@@ -13,7 +13,10 @@ import { MemoryRouter } from "react-router-dom";
 import configureStore from "redux-mock-store";
 import userEvent from "@testing-library/user-event";
 
-import { GetAllFacilitiesDocument } from "../../generated/graphql";
+import {
+  GetAllFacilitiesDocument,
+  GetFacilityResultsMultiplexWithCountQuery,
+} from "../../generated/graphql";
 import { appPermissions } from "../permissions";
 import { SEARCH_DEBOUNCE_TIME } from "../testQueue/constants";
 
@@ -21,7 +24,7 @@ import TestResultsList, {
   ALL_FACILITIES_ID,
   DetachedTestResultsList,
 } from "./TestResultsList";
-import testResults from "./mocks/resultsCovid.mock";
+import COVID_MOCK_DATA from "./mocks/resultsCovid.mock";
 import { mocks, mocksWithMultiplex } from "./mocks/queries.mock";
 import { facilities } from "./mocks/facilities.mock";
 
@@ -43,6 +46,12 @@ const store = mockStore({
   facility: { id: "1", name: "Facility 1" },
 });
 
+const testResults = {
+  data: {
+    testResultsPage: COVID_MOCK_DATA,
+  },
+};
+
 jest.mock("@microsoft/applicationinsights-react-js", () => ({
   useAppInsightsContext: () => {},
   useTrackEvent: jest.fn(),
@@ -61,16 +70,17 @@ describe("TestResultsList", () => {
         <Provider store={store}>
           <MockedProvider mocks={mocks}>
             <DetachedTestResultsList
-              data={{ testResults }}
+              data={
+                testResults.data as GetFacilityResultsMultiplexWithCountQuery
+              }
               pageNumber={1}
               entriesPerPage={20}
-              totalEntries={testResults.length}
+              totalEntries={testResults.data.testResultsPage.totalElements}
               filterParams={{}}
               setFilterParams={() => () => {}}
               clearFilterParams={() => {}}
               activeFacilityId={"1"}
               loading={false}
-              loadingTotalResults={false}
               maxDate="2022-09-26"
             />
           </MockedProvider>
@@ -98,7 +108,7 @@ describe("TestResultsList", () => {
       facility: "1",
     };
 
-    await render(
+    render(
       <MemoryRouter
         initialEntries={[
           { pathname: "/results/1", search: qs.stringify(search) },
@@ -161,7 +171,7 @@ describe("TestResultsList", () => {
       filterFacilityId: "all",
     };
 
-    await render(
+    render(
       <MemoryRouter
         initialEntries={[
           { pathname: "/results/1", search: qs.stringify(search) },
@@ -188,7 +198,7 @@ describe("TestResultsList", () => {
       filterFacilityId: "all",
     };
 
-    await render(
+    render(
       <MemoryRouter
         initialEntries={[
           { pathname: "/results/1", search: qs.stringify(search) },
@@ -226,7 +236,7 @@ describe("TestResultsList", () => {
       filterFacilityId: "all",
     };
 
-    await render(
+    render(
       <MemoryRouter
         initialEntries={[
           { pathname: "/results/1", search: qs.stringify(search) },
@@ -262,7 +272,7 @@ describe("TestResultsList", () => {
       facility: "1",
     };
 
-    await render(
+    render(
       <MemoryRouter
         initialEntries={[
           { pathname: "/results/1", search: qs.stringify(search) },
@@ -465,14 +475,15 @@ describe("TestResultsList", () => {
     it("should be able to clear date filters", async () => {
       // Apply filter
       userEvent.type(screen.getByLabelText("Date range (start)"), "2021-03-18");
-      await new Promise((r) => setTimeout(r, SEARCH_DEBOUNCE_TIME));
 
       // Filter applied
       expect(await screen.findByText("Colleer, Barde X")).toBeInTheDocument();
       expect(await screen.findByText("Gerard, Sam G")).toBeInTheDocument();
-      expect(
-        screen.queryByText("Cragell, Barb Whitaker")
-      ).not.toBeInTheDocument();
+      await waitFor(() => {
+        expect(
+          screen.queryByText("Cragell, Barb Whitaker")
+        ).not.toBeInTheDocument();
+      });
 
       expect(screen.getByLabelText("Date range (start)")).toHaveValue(
         "2021-03-18"
@@ -482,9 +493,9 @@ describe("TestResultsList", () => {
       userEvent.click(screen.getByText("Clear filters"));
 
       // Filter no longer applied
-      expect(
-        await screen.findByText("Cragell, Barb Whitaker")
-      ).toBeInTheDocument();
+      await waitFor(() => {
+        expect(screen.getByText("Cragell, Barb Whitaker")).toBeInTheDocument();
+      });
 
       // Date picker no longer displays the selected date
       expect(screen.getByLabelText("Date range (start)")).toHaveValue("");
@@ -552,6 +563,7 @@ describe("TestResultsList", () => {
     });
 
     it("closes the download test results modal after downloading", async () => {
+      // source of "navigation not implemented" error
       expect(await screen.findByText("Showing 1-3 of 3")).toBeInTheDocument();
       expect(
         screen.getByText("Test Results", { exact: false })
@@ -658,6 +670,7 @@ describe("TestResultsList", () => {
     });
 
     describe("return focus after modal close", () => {
+      // source of the React key prop warning
       const clickActionMenu = async () => {
         expect(await screen.findByText("Showing 1-3 of 3")).toBeInTheDocument();
         const actionMenuButton = document.querySelectorAll(
@@ -720,7 +733,7 @@ describe("TestResultsList", () => {
       },
     ]);
 
-    await render(
+    render(
       <WithRouter>
         <Provider store={localStore}>
           <MockedProvider mocks={localMock}>
@@ -746,7 +759,7 @@ describe("TestResultsList", () => {
       facility: { id: "1", name: "Facility 1" },
     });
 
-    await render(
+    render(
       <WithRouter>
         <Provider store={localStore}>
           <MockedProvider mocks={mocks}>
@@ -783,6 +796,7 @@ describe("TestResultsList", () => {
       startDate = "2021-03-17",
       endDate = "2021-03-18"
     ) => {
+      // source of the last two "wrapped in act" warnings
       userEvent.type(await screen.findByText("Date range (start)"), startDate);
       await new Promise((r) => setTimeout(r, SEARCH_DEBOUNCE_TIME));
       userEvent.type(await screen.findByText("Date range (end)"), endDate);
@@ -818,16 +832,17 @@ describe("TestResultsList", () => {
         <Provider store={store}>
           <MockedProvider mocks={mocks}>
             <DetachedTestResultsList
-              data={{ testResults }}
+              data={
+                testResults.data as GetFacilityResultsMultiplexWithCountQuery
+              }
               pageNumber={1}
               entriesPerPage={20}
-              totalEntries={testResults.length}
+              totalEntries={testResults.data.testResultsPage.totalElements}
               filterParams={filterParams}
               setFilterParams={() => () => {}}
               clearFilterParams={() => {}}
               activeFacilityId={"1"}
               loading={false}
-              loadingTotalResults={false}
               maxDate="2022-09-26"
             />
           </MockedProvider>

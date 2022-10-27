@@ -22,11 +22,11 @@ jobs:
     steps:
       - uses: actions/checkout@v3
       - name: Use Node.js ${{env.NODE_VERSION}}
-        uses: actions/setup-node@v2.1.5
+        uses: actions/setup-node@v3.5.1
         with:
           node-version: ${{env.NODE_VERSION}}
       - name: Cache yarn
-        uses: actions/cache@v2
+        uses: actions/cache@v3.0.11
         with:
           path: ~/.cache/yarn
           key: ${{ runner.os }}-yarn-${{ hashFiles('**/yarn.lock') }}
@@ -48,7 +48,7 @@ jobs:
             exit 1
           fi
       - name: Archive git diff
-        uses: actions/upload-artifact@v2
+        uses: actions/upload-artifact@v3
         if: failure()
         with:
           name: files changed
