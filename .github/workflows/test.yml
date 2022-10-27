@@ -72,7 +72,7 @@ jobs:
           path: backend/build/**
           key: ${{ runner.os }}-backend-coverage-${{ github.run_id }}-${{ github.run_attempt }}
       - name: Archive failed test results
-        uses: actions/upload-artifact@v2
+        uses: actions/upload-artifact@v3
         if: failure()
         with:
           name: backend-test-report
@@ -83,7 +83,7 @@ jobs:
     steps:
       - uses: actions/checkout@v3
       - name: Use Node.js ${{env.NODE_VERSION}}
-        uses: actions/setup-node@v2.1.5
+        uses: actions/setup-node@v3.5.1
         with:
           node-version: ${{env.NODE_VERSION}}
       - name: Cache yarn
@@ -120,7 +120,7 @@ jobs:
             ops/services/app_functions/report_stream_batched_publisher/functions/coverage/**
           key: ${{ runner.os }}-function-coverage-${{ github.run_id }}-${{ github.run_attempt }}
       - name: Archive function coverage results
-        uses: actions/upload-artifact@v2
+        uses: actions/upload-artifact@v3
         with:
           name: function-coverage
           path: ops/services/app_functions/report_stream_batched_publisher/functions/coverage
@@ -202,7 +202,7 @@ jobs:
     steps:
       - uses: actions/checkout@v3
       - name: Use Node.js ${{env.NODE_VERSION}}
-        uses: actions/setup-node@v2.1.5
+        uses: actions/setup-node@v3.5.1
         with:
           node-version: ${{env.NODE_VERSION}}
       - name: Cache yarn

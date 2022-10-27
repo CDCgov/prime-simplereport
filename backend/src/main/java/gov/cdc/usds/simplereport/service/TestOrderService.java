@@ -283,37 +283,6 @@ public class TestOrderService {
   }
 
   @AuthorizationConfiguration.RequirePermissionUpdateTestForTestOrder
-  @Deprecated // switch to specifying device-specimen combo
-  public TestOrder editQueueItem(
-      UUID testOrderId, UUID deviceSpecimenTypeId, String result, Date dateTested) {
-    lockOrder(testOrderId);
-    try {
-      TestOrder order = this.getTestOrder(testOrderId);
-
-      if (deviceSpecimenTypeId != null) {
-        DeviceSpecimenType deviceSpecimenType = _dts.getDeviceSpecimenType(deviceSpecimenTypeId);
-
-        if (deviceSpecimenType != null) {
-          order.setDeviceSpecimen(deviceSpecimenType);
-          // Set the most-recently configured device specimen for a facility's
-          // test as facility default
-          order.getFacility().addDefaultDeviceSpecimen(deviceSpecimenType);
-        }
-      }
-
-      if (result != null) {
-        updateTestOrderCovidResult(order, TestResult.valueOf(result));
-      }
-
-      order.setDateTestedBackdate(dateTested);
-
-      return _repo.save(order);
-    } finally {
-      unlockOrder(testOrderId);
-    }
-  }
-
-  @AuthorizationConfiguration.RequirePermissionUpdateTestForTestOrder
   public TestOrder editQueueItemMultiplexResult(
       UUID testOrderId,
       UUID deviceSpecimenTypeId,

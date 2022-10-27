@@ -23,7 +23,7 @@ jobs:
     if: ${{ github.actor != 'dependabot[bot]' }}
     steps:
       - uses: actions/checkout@v3
-      - uses: actions/setup-node@v2.1.5
+      - uses: actions/setup-node@v3.5.1
         with:
           node-version: "14"
       - name: Cache npm local files
