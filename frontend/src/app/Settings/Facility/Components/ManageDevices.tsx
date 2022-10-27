@@ -9,6 +9,7 @@ interface Props {
   updateSelectedDevices: (deviceTypes: DeviceType[]) => void;
   errors: FacilityErrors;
   clearError: (field: keyof FacilityErrors) => void;
+  newOrg?: boolean;
 }
 
 const ManageDevices: React.FC<Props> = ({
@@ -17,6 +18,7 @@ const ManageDevices: React.FC<Props> = ({
   updateSelectedDevices,
   errors,
   clearError,
+  newOrg = false,
 }) => {
   const getDeviceTypeOptions = Array.from(
     deviceTypes.map((device) => ({
@@ -50,13 +52,15 @@ const ManageDevices: React.FC<Props> = ({
         <h2 className="font-heading-lg">Manage devices</h2>
       </div>
       <div className="usa-card__body">
-        <p className="usa-hint padding-top-3">
-          If you don&rsquo;t see a device you&rsquo;re using, please contact{" "}
-          <a href="mailto:support@simplereport.gov">support@simplereport.gov</a>{" "}
-          and request to add a new one.
-        </p>
+        {newOrg && (
+          <p className="usa-form usa-form--large">
+            If you plan to upload your results in bulk, enter one device here to
+            get started. You can include any additional devices in your
+            spreadsheets without adding them here.
+          </p>
+        )}
         <MultiSelect
-          label="Device Types"
+          label="Device types"
           name="deviceTypes"
           onChange={(newDeviceIds) => {
             updateDevices(newDeviceIds);
@@ -68,9 +72,12 @@ const ManageDevices: React.FC<Props> = ({
           required
           placeholder="Add device"
         />
-        {!selectedDevices.length ? (
-          <p> There are currently no devices </p>
-        ) : null}
+        {!selectedDevices.length && <p> There are currently no devices </p>}
+        <p className="usa-hint padding-top-1">
+          If you don&rsquo;t see a device you&rsquo;re using, please contact{" "}
+          <a href="mailto:support@simplereport.gov">support@simplereport.gov</a>{" "}
+          and request to add a new one.
+        </p>
       </div>
     </div>
   );

@@ -13,6 +13,7 @@ on:
 env:
   NODE_VERSION: 14
   JAVA_VERSION: 11
+  JAVA_DISTRIBUTION: 'zulu'
   PROJECT_ROOT: /home/runner/work/prime-simplereport/prime-simplereport # Hardcoding this here because env.WORKSPACE_ROOT gets overridden by one of the steps downstream. We only need this for Sonar.
 
 defaults:
@@ -38,11 +39,12 @@ jobs:
     steps:
       - uses: actions/checkout@v3
       - name: Set up JDK ${{env.JAVA_VERSION}}
-        uses: actions/setup-java@v1
+        uses: actions/setup-java@v3
         with:
           java-version: ${{env.JAVA_VERSION}}
+          distribution: ${{env.JAVA_DISTRIBUTION}}
       - name: Cache Java Dependencies
-        uses: actions/cache@v3
+        uses: actions/cache@v3.0.11
         with:
           path: |
             ~/.gradle/caches
@@ -65,12 +67,12 @@ jobs:
           TWILIO_AUTH_TOKEN: ${{secrets.TWILIO_TEST_AUTH_TOKEN }}
         run: ./gradlew jacocoTestReport -PtestDbPort=5432
       - name: Cache backend coverage results
-        uses: actions/cache@v3
+        uses: actions/cache@v3.0.11
         with:
           path: backend/build/**
           key: ${{ runner.os }}-backend-coverage-${{ github.run_id }}-${{ github.run_attempt }}
       - name: Archive failed test results
-        uses: actions/upload-artifact@v2
+        uses: actions/upload-artifact@v3
         if: failure()
         with:
           name: backend-test-report
@@ -81,11 +83,11 @@ jobs:
     steps:
       - uses: actions/checkout@v3
       - name: Use Node.js ${{env.NODE_VERSION}}
-        uses: actions/setup-node@v2.1.5
+        uses: actions/setup-node@v3.5.1
         with:
           node-version: ${{env.NODE_VERSION}}
       - name: Cache yarn
-        uses: actions/cache@v3
+        uses: actions/cache@v3.0.11
         with:
           path: ~/.cache/yarn
           key: ${{ runner.os }}-yarn-${{ hashFiles('**/yarn.lock') }}
@@ -96,7 +98,7 @@ jobs:
         working-directory: ./frontend
         run: yarn test:ci
       - name: Cache frontend coverage results
-        uses: actions/cache@v3
+        uses: actions/cache@v3.0.11
         with:
           path: |
             frontend/coverage/**
@@ -112,13 +114,13 @@ jobs:
         working-directory: ./ops/services/app_functions/report_stream_batched_publisher/functions
         run: npm run coverage
       - name: Cache function coverage results
-        uses: actions/cache@v3
+        uses: actions/cache@v3.0.11
         with:
           path: |
             ops/services/app_functions/report_stream_batched_publisher/functions/coverage/**
           key: ${{ runner.os }}-function-coverage-${{ github.run_id }}-${{ github.run_attempt }}
       - name: Archive function coverage results
-        uses: actions/upload-artifact@v2
+        uses: actions/upload-artifact@v3
         with:
           name: function-coverage
           path: ops/services/app_functions/report_stream_batched_publisher/functions/coverage
@@ -134,21 +136,21 @@ jobs:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }} # Needed to get PR information, if any
       - name: Restore backend cache
         if: ${{ github.actor != 'dependabot[bot]' }}
-        uses: actions/cache@v3
+        uses: actions/cache@v3.0.11
         with:
           path: |
             backend/build/**
           key: ${{ runner.os }}-backend-coverage-${{ github.run_id }}-${{ github.run_attempt }}
       - name: Restore frontend cache
         if: ${{ github.actor != 'dependabot[bot]' }}
-        uses: actions/cache@v3
+        uses: actions/cache@v3.0.11
         with:
           path: |
             frontend/coverage/**
           key: ${{ runner.os }}-frontend-coverage-${{ github.run_id }}-${{ github.run_attempt }}
       - name: Restore functions cache
         if: ${{ github.actor != 'dependabot[bot]' }}
-        uses: actions/cache@v3
+        uses: actions/cache@v3.0.11
         with:
           path: |
             ops/services/app_functions/report_stream_batched_publisher/functions/coverage/**
@@ -164,11 +166,12 @@ jobs:
     steps:
       - uses: actions/checkout@v3
       - name: Set up JDK ${{env.JAVA_VERSION}}
-        uses: actions/setup-java@v1
+        uses: actions/setup-java@v3
         with:
           java-version: ${{env.JAVA_VERSION}}
+          distribution: ${{env.JAVA_DISTRIBUTION}}
       - name: Cache Java dependencies
-        uses: actions/cache@v3
+        uses: actions/cache@v3.0.11
         with:
           path: |
             ~/.gradle/caches
@@ -181,11 +184,12 @@ jobs:
     steps:
       - uses: actions/checkout@v3
       - name: Set up JDK ${{env.JAVA_VERSION}}
-        uses: actions/setup-java@v1
+        uses: actions/setup-java@v3
         with:
           java-version: ${{env.JAVA_VERSION}}
+          distribution: ${{env.JAVA_DISTRIBUTION}}
       - name: Cache Java dependencies
-        uses: actions/cache@v3
+        uses: actions/cache@v3.0.11
         with:
           path: |
             ~/.gradle/caches
@@ -198,11 +202,11 @@ jobs:
     steps:
       - uses: actions/checkout@v3
       - name: Use Node.js ${{env.NODE_VERSION}}
-        uses: actions/setup-node@v2.1.5
+        uses: actions/setup-node@v3.5.1
         with:
           node-version: ${{env.NODE_VERSION}}
       - name: Cache yarn
-        uses: actions/cache@v3
+        uses: actions/cache@v3.0.11
         with:
           path: ~/.cache/yarn
           key: ${{ runner.os }}-yarn-${{ hashFiles('**/yarn.lock') }}

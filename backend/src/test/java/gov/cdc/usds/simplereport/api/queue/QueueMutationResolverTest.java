@@ -53,20 +53,18 @@ class QueueMutationResolverTest extends BaseServiceTest<TestOrderService> {
         new QueueMutationResolver(testOrderService, personService, deviceTypeService);
     UUID deviceUUID = _deviceType.getInternalId();
     String deviceId = deviceUUID.toString();
+    List<MultiplexResultInput> results =
+        List.of(new MultiplexResultInput(_diseaseService.covid().getName(), TestResult.POSITIVE));
 
     // GIVEN
     when(deviceTypeService.getFirstDeviceSpecimenTypeForDeviceTypeId(deviceUUID))
         .thenReturn(_deviceSpecimenType);
     // WHEN
-    queueMutationResolver.addTestResultNew(deviceId, null, "POSITIVE", _patientId, _dateTested);
+    queueMutationResolver.addMultiplexResult(deviceId, null, results, _patientId, _dateTested);
     // THEN
     verify(deviceTypeService).getFirstDeviceSpecimenTypeForDeviceTypeId(eq(deviceUUID));
     verify(testOrderService)
-        .addTestResult(
-            eq(_deviceSpecimenType.getInternalId()),
-            eq(TestResult.POSITIVE),
-            eq(_patientId),
-            eq(_dateTested));
+        .addMultiplexResult(_deviceSpecimenType.getInternalId(), results, _patientId, _dateTested);
   }
 
   @Test
