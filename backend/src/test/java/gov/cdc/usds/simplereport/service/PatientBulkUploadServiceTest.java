@@ -109,7 +109,7 @@ class PatientBulkUploadServiceTest extends BaseServiceTest<PatientBulkUploadServ
     this._service.processPersonCSV(inputStream, null);
 
     assertThat(getPatientsForFacility(firstFacilityId))
-        .hasSameClassAs(getPatientsForFacility(secondFacilityId));
+        .hasSameSizeAs(getPatientsForFacility(secondFacilityId));
   }
 
   @Test
