@@ -60,7 +60,7 @@ updates:
     schedule:
       interval: "weekly"
     reviewers:
-      - "simplereport-backendreviews"
+      - "cdcgov/simplereport-backendreviews"
       - "alixmx"
       - "rin-skylight"
 
@@ -72,7 +72,7 @@ updates:
     reviewers:
       - "alismx"
       - "rin-skylight"
-      - "simplereport-frontendreviews"
+      - "cdcgov/simplereport-frontendreviews"
       
   - package-ecosystem: "npm"
     directory: "/frontend"
@@ -82,7 +82,7 @@ updates:
     reviewers:
       - "alismx"
       - "rin-skylight"
-      - "simplereport-frontendreviews"
+      - "cdcgov/simplereport-frontendreviews"
       
   # - package-ecosystem: "npm"
   #   directory: "/cypress"
