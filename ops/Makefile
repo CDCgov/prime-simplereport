@@ -156,7 +156,7 @@ check-%-release: .valid-env-%
 
 check-%-slot-readiness: .valid-env-%
 	@echo Checking the readiness probe for $*/$(SOURCE_SLOT)
-	@if [[ "$*" == "prod" ]] ; then \
+	if [[ "$*" == "prod" ]] ; then \
 	  $(PROD_SLOT_READY) ; \
 	else \
 	  $(SLOT_READY) ; \
@@ -164,7 +164,7 @@ check-%-slot-readiness: .valid-env-%
 
 check-%-readiness: .valid-env-%
 	@echo Checking the readiness probe for $*
-	@if [[ "$*" == "prod" ]] ; then \
+	if [[ "$*" == "prod" ]] ; then \
 	  $(PROD_APP_READY) ; \
 	else \
 	  $(APP_READY) ; \

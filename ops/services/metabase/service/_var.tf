@@ -73,6 +73,11 @@ variable "ai_instrumentation_key" {
 
 variable "lb_subnet_id" {}
 
+variable "metabase_url" {
+  type        = string
+  description = "Metabase URL"
+}
+
 # Secret Access
 variable "key_vault_id" {}
 variable "tenant_id" {}
