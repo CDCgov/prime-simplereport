@@ -389,7 +389,7 @@ resource "azurerm_application_gateway" "load_balancer" {
       condition {
         ignore_case = true
         negate      = false
-        pattern     = "*.gov/app/(.*)"
+        pattern     = ".*app/(.*)"
         variable    = "var_uri_path"
       }
 
