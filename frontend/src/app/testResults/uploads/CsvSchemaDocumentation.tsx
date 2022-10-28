@@ -172,6 +172,25 @@ const CsvSchemaDocumentation = () => {
             How to format and upload a CSV file to report test results in bulk
             through SimpleReport.
           </p>
+          <p>
+            SimpleReport’s bulk results uploader lets you report multiple test
+            results at once using a CSV file. When you submit your results, the
+            uploader tool verifies the data, then sends your results to the
+            relevant state and/or local health department(s).
+            <br />
+            <br />
+            The results uploader is connected with all{" "}
+            <a
+              href="/getting-started/organizations-and-testing-facilities/where-does-simplereport-work"
+              className="usa-link"
+            >
+              states partnered with SimpleReport.
+            </a>{" "}
+            If you report to multiple jurisdictions, you can share results with
+            them using one spreadsheet. SimpleReport routes data to the
+            appropriate health departments based on the facility location and
+            patient address fields in your CSV.
+          </p>
           <iframe
             width="640"
             height="360"
@@ -203,12 +222,13 @@ const CsvSchemaDocumentation = () => {
                   });
                 }}
               >
-                SimpleReport spreadsheet template with example data
+                SimpleReport spreadsheet template with example data [CSV
+                Download]
               </a>
             </li>
             <li>
               <a href="https://youtu.be/qqhC7PFBdek" className="usa-link">
-                Spreadsheet results uploader training video
+                Spreadsheet results uploader training video [Youtube video]
               </a>
             </li>
             <li>
@@ -218,7 +238,7 @@ const CsvSchemaDocumentation = () => {
             </li>
             <li>
               <a href="mailto:support@simplereport.gov" className="usa-link">
-                SimpleReport support
+                SimpleReport support email
               </a>
             </li>
           </ul>
