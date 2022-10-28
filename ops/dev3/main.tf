@@ -57,6 +57,14 @@ module "app_gateway" {
     module.simple_report_api.app_hostname
   ]
 
+  metabase_fqdns = [
+    module.metabase_service.app_hostname
+  ]
+
+  staging_fqdns = [
+    module.simple_report_api.staging_hostname
+  ]
+
   firewall_policy_id = module.web_application_firewall.web_application_firewall_id
   tags               = local.management_tags
 }

@@ -6,6 +6,7 @@ locals {
     "WEBSITE_VNET_ROUTE_ALL"                          = 1
     "WEBSITE_DNS_SERVER"                              = "168.63.129.16"
     "APPINSIGHTS_INSTRUMENTATIONKEY"                  = var.ai_instrumentation_key
+    "MB_SITE_URL"                                     = var.metabase_url
   }
 }
 
@@ -20,6 +21,11 @@ resource "azurerm_app_service" "metabase" {
     always_on        = true
     linux_fx_version = "DOCKER|metabase/metabase:v0.44.4"
     ftps_state       = "Disabled"
+
+    ip_restriction {
+      virtual_network_subnet_id = var.lb_subnet_id
+      action                    = "Allow"
+    }
   }
 
   app_settings = merge(local.app_setting_defaults, {
