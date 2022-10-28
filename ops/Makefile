@@ -11,11 +11,15 @@ CURL_TIMEOUT?=20
 
 # Internal DRYing (also overrideable if you are sufficiently desperate)
 API_NAME=simple-report-api-$*
-INFO_ENDPOINT=https://$(API_NAME).azurewebsites.net/actuator/info
-SLOT_INFO_ENDPOINT=https://$(API_NAME)-$(SOURCE_SLOT).azurewebsites.net/actuator/info
+INFO_ENDPOINT=https://$(API_NAME).simplereport.gov/api/actuator/info
+PROD_INFO_ENDPOINT=https://simplereport.gov/api/actuator/info
+SLOT_INFO_ENDPOINT=https://$*.simplereport.gov/staging/api/actuator/info
+PROD_SLOT_INFO_ENDPOINT=https://simplereport.gov/staging/api/actuator/info
 CURL:=curl --silent --fail --max-time $(CURL_TIMEOUT)
-APP_READY=$(CURL) https://$(API_NAME).azurewebsites.net/actuator/health/readiness > /dev/null
-SLOT_READY=$(CURL) https://$(API_NAME)-$(SOURCE_SLOT).azurewebsites.net/actuator/health/readiness > /dev/null
+APP_READY=$(CURL) https://$*.simplereport.gov/api/actuator/health/readiness > /dev/null
+PROD_APP_READY=$(CURL) https://simplereport.gov/api/actuator/health/readiness > /dev/null
+SLOT_READY=$(CURL) https://$*.simplereport.gov/staging/api/actuator/health/readiness > /dev/null
+PROD_SLOT_READY =$(CURL) https://simplereport.gov/staging/api/actuator/health/readiness > /dev/null
 
 default:
 	@echo "Hello, SimpleReport operator!"
@@ -68,55 +72,103 @@ promote-%: .be-logged-in .valid-env-%
 
 wait-for-%-slot-commit: .valid-env-%
 	@echo "Starting wait for commit $(DEPLOYED_COMMIT) in $(SOURCE_SLOT) slot of $* at `date`"
-	until  [[ "$(DEPLOYED_COMMIT)"  == "`$(CURL) $(SLOT_INFO_ENDPOINT) | jq -r .git.commit.id`" ]] ; do sleep 5; done;
+	if [[ "$*" == "prod" ]] ; then \
+	  until  [[ "$(DEPLOYED_COMMIT)"  == "`$(CURL) $(PROD_SLOT_INFO_ENDPOINT) | jq -r .git.commit.id`" ]] ; do sleep 5; done; \
+	else \
+	  until  [[ "$(DEPLOYED_COMMIT)"  == "`$(CURL) $(SLOT_INFO_ENDPOINT) | jq -r .git.commit.id`" ]] ; do sleep 5; done; \
+	fi;
 	@echo "Finished waiting at `date`"
 
 wait-for-%-commit: .valid-env-%
 	@echo "Starting wait for commit $(DEPLOYED_COMMIT) in $* at `date`"
-	until  [[ "$(DEPLOYED_COMMIT)"  == "`$(CURL) $(INFO_ENDPOINT) | jq -r .git.commit.id`" ]] ; do sleep 5; done;
+	if [[ "$*" == "prod" ]] ; then \
+	  until  [[ "$(DEPLOYED_COMMIT)"  == "`$(CURL) $(PROD_INFO_ENDPOINT) | jq -r .git.commit.id`" ]] ; do sleep 5; done; \
+	else \
+	  until  [[ "$(DEPLOYED_COMMIT)"  == "`$(CURL) $(INFO_ENDPOINT) | jq -r .git.commit.id`" ]] ; do sleep 5; done; \
+	fi;
 	@echo "Finished waiting at `date`"
 
 wait-for-%-release: .valid-env-%
 	@echo "Starting wait for release $(RELEASE_TAG) in $* at `date`"
-	until [[ "$(RELEASE_TAG)"  == "`$(CURL) $(INFO_ENDPOINT) | jq -r .deploy.tag`" ]]; do sleep 5; done
+	if [[ "$*" == "prod" ]] ; then \
+	  until [[ "$(RELEASE_TAG)"  == "`$(CURL) $(PROD_INFO_ENDPOINT) | jq -r .deploy.tag`" ]]; do sleep 5; done ; \
+	else \
+	  until [[ "$(RELEASE_TAG)"  == "`$(CURL) $(INFO_ENDPOINT) | jq -r .deploy.tag`" ]]; do sleep 5; done ; \
+	fi;
 	@echo "Finished waiting at `date`"
 
 wait-for-%-slot-release: .valid-env-%
 	@echo "Starting wait for release $(RELEASE_TAG) in $* at `date`"
-	until [[ "$(RELEASE_TAG)"  == "`$(CURL) $(SLOT_INFO_ENDPOINT) | jq -r .deploy.tag`" ]]; do sleep 5; done
+	if [[ "$*" == "prod" ]] ; then \
+	  until [[ "$(RELEASE_TAG)"  == "`$(CURL) $(PROD_SLOT_INFO_ENDPOINT) | jq -r .deploy.tag`" ]]; do sleep 5; done ; \
+	else \
+	  until [[ "$(RELEASE_TAG)"  == "`$(CURL) $(SLOT_INFO_ENDPOINT) | jq -r .deploy.tag`" ]]; do sleep 5; done ; \
+	fi;
 	@echo "Finished waiting at `date`"
 
 wait-for-%-slot-readiness: .valid-env-% # could use curl's built-in retry/timeout if we wanted to
 	@echo "Waiting for a successful readiness probe in $*/$(SOURCE_SLOT)"
-	until $(SLOT_READY); do sleep 5; done;
+	if [[ "$*" == "prod" ]] ; then \
+	  until $(PROD_SLOT_READY); do sleep 5; done; \
+	else \
+	  until $(SLOT_READY); do sleep 5; done; \
+	fi;
 
 wait-for-%-readiness: .valid-env-% # could use curl's built-in retry/timeout if we wanted to
 	@echo "Waiting for a successful readiness probe in $*"
-	until $(APP_READY); do sleep 5; done;
+	if [[ "$*" == "prod" ]] ; then \
+	  until $(PROD_APP_READY); do sleep 5; done; \
+	else \
+	  until $(APP_READY); do sleep 5; done; \
+	fi;
 
 check-%-slot-commit: .valid-env-%
 	@echo Checking that $(DEPLOYED_COMMIT) is the current deployed commit for $*/$(SOURCE_SLOT)
-	[[ "$(DEPLOYED_COMMIT)"  == "`$(CURL) $(SLOT_INFO_ENDPOINT) | jq -r .git.commit.id`" ]]
+	if [[ "$*" == "prod" ]] ; then \
+	  [[ "$(DEPLOYED_COMMIT)"  == "`$(CURL) $(PROD_SLOT_INFO_ENDPOINT) | jq -r .git.commit.id`" ]] ; \
+	else \
+	  [[ "$(DEPLOYED_COMMIT)"  == "`$(CURL) $(SLOT_INFO_ENDPOINT) | jq -r .git.commit.id`" ]] ; \
+	fi;
 
 check-%-commit: .valid-env-%
 	@echo Checking that $(DEPLOYED_COMMIT) is the current deployed commit for $*
-	[[ "$(DEPLOYED_COMMIT)"  == "`$(CURL) $(INFO_ENDPOINT) | jq -r .git.commit.id`" ]]
+	if [[ "$*" == "prod" ]] ; then \
+	  [[ "$(DEPLOYED_COMMIT)"  == "`$(CURL) $(PROD_INFO_ENDPOINT) | jq -r .git.commit.id`" ]] ; \
+	else \
+	  [[ "$(DEPLOYED_COMMIT)"  == "`$(CURL) $(INFO_ENDPOINT) | jq -r .git.commit.id`" ]] ; \
+	fi;
 
 check-%-slot-release: .valid-env-%
 	@echo Checking that $(RELEASE_TAG) is the current release on $*/$(SOURCE_SLOT)
-	[[ "$(RELEASE_TAG)"  == "`$(CURL) $(SLOT_INFO_ENDPOINT) | jq -r .deploy.tag`" ]]
+	if [[ "$*" == "prod" ]] ; then \
+	  [[ "$(RELEASE_TAG)"  == "`$(CURL) $(PROD_SLOT_INFO_ENDPOINT) | jq -r .deploy.tag`" ]] ; \
+	else \
+	  [[ "$(RELEASE_TAG)"  == "`$(CURL) $(SLOT_INFO_ENDPOINT) | jq -r .deploy.tag`" ]] ; \
+	fi;
 
 check-%-release: .valid-env-%
 	@echo Checking that $(RELEASE_TAG) is the current release on $*
-	[[ "$(RELEASE_TAG)"  == "`$(CURL) $(INFO_ENDPOINT) | jq -r .deploy.tag`" ]]
+	if [[ "$*" == "prod" ]] ; then \
+	  [[ "$(RELEASE_TAG)"  == "`$(CURL) $(PROD_INFO_ENDPOINT) | jq -r .deploy.tag`" ]] ; \
+	else \
+	  [[ "$(RELEASE_TAG)"  == "`$(CURL) $(INFO_ENDPOINT) | jq -r .deploy.tag`" ]] ; \
+	fi;
 
 check-%-slot-readiness: .valid-env-%
 	@echo Checking the readiness probe for $*/$(SOURCE_SLOT)
-	$(SLOT_READY)
+	if [[ "$*" == "prod" ]] ; then \
+	  $(PROD_SLOT_READY) ; \
+	else \
+	  $(SLOT_READY) ; \
+	fi;
 
 check-%-readiness: .valid-env-%
 	@echo Checking the readiness probe for $*
-	$(APP_READY)
+	if [[ "$*" == "prod" ]] ; then \
+	  $(PROD_APP_READY) ; \
+	else \
+	  $(APP_READY) ; \
+	fi;
 
 # DEPRECATED: This is too greedy a match, replacing it
 wait-for-%: .valid-env-%

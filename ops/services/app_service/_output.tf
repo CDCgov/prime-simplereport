@@ -14,6 +14,10 @@ output "app_hostname" {
   value = azurerm_app_service.service.default_site_hostname
 }
 
+output "staging_hostname" {
+  value = azurerm_app_service_slot.staging.default_site_hostname
+}
+
 output "app_ip_addr" {
   value = split(",", azurerm_app_service.service.outbound_ip_addresses)
 }

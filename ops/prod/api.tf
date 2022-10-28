@@ -10,6 +10,7 @@ module "simple_report_api" {
   resource_group_name     = data.azurerm_resource_group.rg.name
 
   webapp_subnet_id = data.terraform_remote_state.persistent_prod.outputs.subnet_webapp_id
+  lb_subnet_id     = data.terraform_remote_state.persistent_prod.outputs.subnet_lbs_id
 
   docker_image_uri = "DOCKER|simplereportacr.azurecr.io/api/simple-report-api-build:${var.acr_image_tag}"
   key_vault_id     = data.azurerm_key_vault.global.id
@@ -68,10 +69,11 @@ module "simple_report_api" {
 }
 
 module "report_stream_reporting_functions" {
-  source      = "../services/app_functions/report_stream_batched_publisher/infra"
-  environment = local.env
-  env_level   = local.env_level
-  tenant_id   = data.azurerm_client_config.current.tenant_id
+  source       = "../services/app_functions/report_stream_batched_publisher/infra"
+  environment  = local.env
+  env_level    = local.env_level
+  tenant_id    = data.azurerm_client_config.current.tenant_id
+  lb_subnet_id = data.terraform_remote_state.persistent_prod.outputs.subnet_lbs_id
   depends_on = [
     azurerm_storage_account.app
   ]

@@ -5,13 +5,23 @@ locals {
   api_backend_pool                = "${var.name}-${var.env}-be-api"
   api_backend_http_setting        = "${var.name}-${var.env}-be-api-http"
   api_backend_https_setting       = "${var.name}-${var.env}-be-api-https"
+  metabase_pool                   = "${var.name}-${var.env}-be-metabase"
+  metabase_http_setting           = "${var.name}-${var.env}-be-api-metabase-http"
+  metabase_https_setting          = "${var.name}-${var.env}-be-api-metabase-https"
+  staging_pool                    = "${var.name}-${var.env}-be-staging"
+  staging_http_setting            = "${var.name}-${var.env}-be-api-staging-http"
+  staging_https_setting           = "${var.name}-${var.env}-be-api-staging-https"
   http_listener                   = "${var.name}-http"
   https_listener                  = "${var.name}-https"
   frontend_config                 = "${var.name}-config"
   redirect_rule                   = "${var.name}-redirect"
   redirect_self_registration_rule = "${var.name}-redirect-self-registration"
+  redirect_metabase_rule          = "${var.name}-redirect-metabase"
+  redirect_staging_slot_rule      = "${var.name}-redirect-staging"
   url_prefix                      = var.env == "prod" ? "www" : var.env
   app_url                         = "https://${local.url_prefix}.simplereport.gov/app"
+  metabase_url                    = "https://prime-simple-report-${var.env}-metabase.azurewebsites.net"
+  staging_slot_url                = "https://simple-report-api-${var.env}-staging.azurewebsites.net/actuator/health/readiness"
 }
 
 resource "azurerm_public_ip" "static_gateway" {
@@ -124,6 +134,56 @@ resource "azurerm_application_gateway" "load_balancer" {
     pick_host_name_from_backend_address = true
   }
 
+  # ------- Backend Metabase App -------------------------
+  backend_address_pool {
+    name         = local.metabase_pool
+    fqdns        = var.metabase_fqdns
+    ip_addresses = var.metabase_ip_addresses
+  }
+
+  backend_http_settings {
+    name                                = local.metabase_http_setting
+    cookie_based_affinity               = "Disabled"
+    port                                = 80
+    protocol                            = "Http"
+    request_timeout                     = 20
+    pick_host_name_from_backend_address = true
+  }
+
+  backend_http_settings {
+    name                                = local.metabase_https_setting
+    cookie_based_affinity               = "Disabled"
+    port                                = 443
+    protocol                            = "Https"
+    request_timeout                     = 20
+    pick_host_name_from_backend_address = true
+  }
+
+  # ------- Backend Staging Slot -------------------------
+  backend_address_pool {
+    name         = local.staging_pool
+    fqdns        = var.staging_fqdns
+    ip_addresses = var.staging_ip_addresses
+  }
+
+  backend_http_settings {
+    name                                = local.staging_http_setting
+    cookie_based_affinity               = "Disabled"
+    port                                = 80
+    protocol                            = "Http"
+    request_timeout                     = 20
+    pick_host_name_from_backend_address = true
+  }
+
+  backend_http_settings {
+    name                                = local.staging_https_setting
+    cookie_based_affinity               = "Disabled"
+    port                                = 443
+    protocol                            = "Https"
+    request_timeout                     = 20
+    pick_host_name_from_backend_address = true
+  }
+
   # ------- Listeners -------------------------
 
   frontend_ip_configuration {
@@ -225,7 +285,26 @@ resource "azurerm_application_gateway" "load_balancer" {
       paths                       = ["/register/*"]
       redirect_configuration_name = local.redirect_self_registration_rule
     }
+
+    path_rule {
+      name                       = "staging-slot"
+      paths                      = ["/staging/*", "/staging"]
+      backend_address_pool_name  = local.staging_pool
+      backend_http_settings_name = local.staging_https_setting
+      // this is the default, why would we set it again?
+      // because if we don't do this we get 404s on API calls
+      rewrite_rule_set_name = "simple-report-staging-routing"
+    }
+
+    path_rule {
+      name                       = "metabase"
+      paths                      = ["/metabase/*", "/metabase"]
+      backend_address_pool_name  = local.metabase_pool
+      backend_http_settings_name = local.metabase_https_setting
+      rewrite_rule_set_name      = "simple-report-metabase-routing"
+    }
   }
+
   redirect_configuration {
     name = local.redirect_self_registration_rule
 
@@ -236,11 +315,57 @@ resource "azurerm_application_gateway" "load_balancer" {
   }
 
   rewrite_rule_set {
+    name = "simple-report-metabase-routing"
+
+    rewrite_rule {
+      name          = "metabase-wildcard"
+      rule_sequence = 100
+      condition {
+        ignore_case = true
+        negate      = false
+        pattern     = ".*metabase/(.*)"
+        variable    = "var_uri_path"
+      }
+
+      url {
+        path    = "/{var_uri_path_1}"
+        reroute = false
+        # Per documentation, we should be able to leave this pass-through out. See however
+        # https://github.com/terraform-providers/terraform-provider-azurerm/issues/11563
+        query_string = "{var_query_string}"
+      }
+    }
+  }
+
+  rewrite_rule_set {
+    name = "simple-report-staging-routing"
+
+    rewrite_rule {
+      name          = "staging-wildcard"
+      rule_sequence = 100
+      condition {
+        ignore_case = true
+        negate      = false
+        pattern     = ".*api/(.*)"
+        variable    = "var_uri_path"
+      }
+
+      url {
+        path    = "/{var_uri_path_1}"
+        reroute = false
+        # Per documentation, we should be able to leave this pass-through out. See however
+        # https://github.com/terraform-providers/terraform-provider-azurerm/issues/11563
+        query_string = "{var_query_string}"
+      }
+    }
+  }
+
+  rewrite_rule_set {
     name = "simple-report-routing"
 
     rewrite_rule {
       name          = "api-wildcard"
-      rule_sequence = 100
+      rule_sequence = 101
       condition {
         ignore_case = true
         negate      = false
