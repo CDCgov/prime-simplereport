@@ -70,6 +70,8 @@ const UploadPatients = () => {
     setErrorMessageText("");
 
     if (!file || file.size === 0) {
+      setStatus("fail");
+      setIsSubmitting(false);
       setButtonIsDisabled(false);
       setErrorMessageText("Invalid file");
       return;
