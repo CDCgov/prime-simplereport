@@ -32,7 +32,6 @@ import { StartTestProps } from "../testQueue/addToQueue/AddToQueueSearch";
 import { MenuButton } from "../commonComponents/MenuButton";
 import { IconLabel } from "../commonComponents/IconLabel";
 
-import PatientUpload from "./PatientUpload";
 import ArchivePersonModal from "./ArchivePersonModal";
 
 import "./ManagePatients.scss";
@@ -109,7 +108,6 @@ interface Props {
   data?: { patients: Patient[] };
   refetch: () => null;
   setNamePrefixMatch: (namePrefixMatch: string | null) => void;
-  isAdmin: boolean;
 }
 
 export const DetachedManagePatients = ({
@@ -120,7 +118,6 @@ export const DetachedManagePatients = ({
   totalEntries,
   refetch,
   setNamePrefixMatch,
-  isAdmin,
   activeFacilityId,
 }: Props) => {
   const [archivePerson, setArchivePerson] = useState<Patient | null>(null);
@@ -366,7 +363,6 @@ export const DetachedManagePatients = ({
               </div>
             )}
           </div>
-          {isAdmin && <PatientUpload onSuccess={refetch} />}
         </div>
       </div>
     </div>

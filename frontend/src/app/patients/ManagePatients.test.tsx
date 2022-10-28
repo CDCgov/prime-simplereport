@@ -37,7 +37,6 @@ const PageNumberContainer = () => {
       activeFacilityId="a1"
       canEditUser={true}
       canDeleteUser={true}
-      isAdmin={false}
     />
   );
 };
