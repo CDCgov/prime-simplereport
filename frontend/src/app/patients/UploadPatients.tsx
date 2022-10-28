@@ -23,12 +23,13 @@ const UploadPatients = () => {
   const [buttonIsDisabled, setButtonIsDisabled] = useState(true);
   const [selectedFacility, setSelectedFacility] = useState<Facility>();
   const [file, setFile] = useState<File>();
-  const [isSubmitting, setIsSubmitting] = useState(false);
   const [errors, setErrors] = useState<
     Array<FeedbackMessage | undefined | null>
   >([]);
   const [errorMessageText, setErrorMessageText] = useState("");
-  const [status, setStatus] = useState("");
+  const [status, setStatus] = useState<
+    "submitting" | "complete" | "success" | "fail" | ""
+  >("");
 
   const facilities = useSelector(
     (state: any) => (state?.facilities as Facility[]) || []
@@ -64,21 +65,20 @@ const UploadPatients = () => {
   const handleSubmit = async (event: React.FormEvent<HTMLButtonElement>) => {
     event.preventDefault();
 
-    setIsSubmitting(true);
+    setStatus("submitting");
     setButtonIsDisabled(true);
     setErrors([]);
     setErrorMessageText("");
 
     if (!file || file.size === 0) {
       setStatus("fail");
-      setIsSubmitting(false);
       setButtonIsDisabled(false);
       setErrorMessageText("Invalid file");
       return;
     }
     const facilityId = facilityAmount === "oneFacility" ? facility.id : "";
     FileUploadService.uploadPatients(file, facilityId).then(async (res) => {
-      setIsSubmitting(false);
+      setStatus("complete");
       setFile(undefined);
       setButtonIsDisabled(true);
 
@@ -264,7 +264,7 @@ const UploadPatients = () => {
               </div>
             )}
             <FormGroup className="margin-bottom-3">
-              {isSubmitting ? (
+              {status === "submitting" ? (
                 <div className={"usa-file-input"}>
                   <div className={"usa-file-input__target"}>
                     <div className={"margin-top-1"}>
