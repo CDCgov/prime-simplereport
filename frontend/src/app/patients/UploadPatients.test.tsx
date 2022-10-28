@@ -167,6 +167,11 @@ describe("Upload Patient", () => {
     expect(
       await screen.findByText("Error: File not accepted")
     ).toBeInTheDocument();
+    expect(
+      await screen.findByText(
+        "Please resolve the errors below and upload your edited file."
+      )
+    ).toBeInTheDocument();
     expect(await screen.findByText("bad zipcode")).toBeInTheDocument();
     expect(await screen.findByText("Row(s): 0")).toBeInTheDocument();
   });
@@ -243,5 +248,24 @@ describe("Upload Patient", () => {
     expect(
       screen.queryByText("Uploading patient information...")
     ).not.toBeInTheDocument();
+  });
+  describe("handle file change", () => {
+    it("should do nothing if no file was added", () => {
+      renderUploadPatients();
+
+      const input = screen.getByTestId("file-input-input");
+      userEvent.upload(input, []);
+
+      expect(screen.getByText("Drag file here or")).toBeInTheDocument();
+    });
+    it("shows the file when selected", () => {
+      renderUploadPatients();
+
+      const input = screen.getByTestId("file-input-input");
+      userEvent.upload(input, file("someText"));
+
+      expect(screen.getByText("Selected file")).toBeInTheDocument();
+      expect(screen.getByText("values.csv")).toBeInTheDocument();
+    });
   });
 });
