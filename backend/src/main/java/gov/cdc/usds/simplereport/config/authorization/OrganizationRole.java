@@ -62,8 +62,8 @@ public enum OrganizationRole implements Principal {
 
   /**
    * This is the organization admin role: if you have this role, then you have the ability to change
-   * your role, so other roles you may have are moot. This role's permission (which is to say all of
-   * them except SR_CSV_UPLOADER_PILOT) take precedence over any other roles.
+   * your role, so other roles you may have are moot. This role's permissions take precedence over
+   * any other roles.
    */
   ADMIN(
       "Admin user",
