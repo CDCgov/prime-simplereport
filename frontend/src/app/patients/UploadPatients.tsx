@@ -267,7 +267,7 @@ const UploadPatients = () => {
               {isSubmitting ? (
                 <div className={"usa-file-input"}>
                   <div className={"usa-file-input__target"}>
-                    <div className={"margin-top-8"}>
+                    <div className={"margin-top-1"}>
                       <span className="usa-file-input__drag-text font-sans-xs text-bold">
                         Uploading patient information...
                       </span>
