@@ -12,14 +12,14 @@ CURL_TIMEOUT?=20
 # Internal DRYing (also overrideable if you are sufficiently desperate)
 API_NAME=simple-report-api-$*
 INFO_ENDPOINT=https://$(API_NAME).simplereport.gov/api/actuator/info
-PROD_INFO_ENDPOINT=https://simplereport.gov/api/actuator/info
+PROD_INFO_ENDPOINT=https://www.simplereport.gov/api/actuator/info
 SLOT_INFO_ENDPOINT=https://$*.simplereport.gov/staging/api/actuator/info
-PROD_SLOT_INFO_ENDPOINT=https://simplereport.gov/staging/api/actuator/info
+PROD_SLOT_INFO_ENDPOINT=https://www.simplereport.gov/staging/api/actuator/info
 CURL:=curl --silent --fail --max-time $(CURL_TIMEOUT)
 APP_READY=$(CURL) https://$*.simplereport.gov/api/actuator/health/readiness > /dev/null
-PROD_APP_READY=$(CURL) https://simplereport.gov/api/actuator/health/readiness > /dev/null
+PROD_APP_READY=$(CURL) https://www.simplereport.gov/api/actuator/health/readiness > /dev/null
 SLOT_READY=$(CURL) https://$*.simplereport.gov/staging/api/actuator/health/readiness > /dev/null
-PROD_SLOT_READY =$(CURL) https://simplereport.gov/staging/api/actuator/health/readiness > /dev/null
+PROD_SLOT_READY =$(CURL) https://www.simplereport.gov/staging/api/actuator/health/readiness > /dev/null
 
 default:
 	@echo "Hello, SimpleReport operator!"
