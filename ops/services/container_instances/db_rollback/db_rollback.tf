@@ -5,7 +5,7 @@ resource "azurerm_container_group" "db_rollback" {
   ip_address_type     = "Private"
   os_type             = "Linux"
   restart_policy      = "Never"
-  network_profile_id  = var.network_profile_id
+  # network_profile_id  = var.network_profile_id
 
   image_registry_credential {
     username = var.acr_username

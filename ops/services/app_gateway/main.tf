@@ -30,6 +30,7 @@ resource "azurerm_public_ip" "static_gateway" {
   location            = var.resource_group_location
   allocation_method   = "Static"
   sku                 = "Standard"
+  zones             = ["1","2","3"]
 
   tags = var.tags
 }
@@ -233,6 +234,7 @@ resource "azurerm_application_gateway" "load_balancer" {
   # HTTP -> HTTPS redirect
   request_routing_rule {
     name                        = local.redirect_rule
+    priority                    = 100
     rule_type                   = "Basic"
     http_listener_name          = "${var.name}-http"
     redirect_configuration_name = local.redirect_rule
@@ -250,6 +252,7 @@ resource "azurerm_application_gateway" "load_balancer" {
   # HTTPS path-based routing
   request_routing_rule {
     name                       = "${var.name}-routing-https"
+    priority                   = 200
     rule_type                  = "PathBasedRouting"
     http_listener_name         = local.https_listener
     backend_address_pool_name  = local.static_backend_pool

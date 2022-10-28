@@ -47,6 +47,8 @@ data "azurerm_storage_account_sas" "sas" {
     file  = false
   }
   permissions {
+    tag     = false
+    filter  = false
     read    = true
     write   = false
     delete  = false

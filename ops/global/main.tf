@@ -31,6 +31,12 @@ resource "azurerm_log_analytics_workspace" "sr" {
   tags = local.management_tags
 }
 
+// Okta preview configuration
+# module "okta_preview" {
+#   source = "../services/okta-global"
+
+#   all_users_group_id = data.okta_group.everyone.id
+# }
 
 // Okta configuration
 module "okta" {
@@ -41,12 +47,13 @@ module "okta" {
 
 // App Insights for Azure Functions
 module "insights" {
-  source        = "../services/monitoring"
-  env           = "global"
-  management_rg = data.azurerm_resource_group.rg.name
-  rg_location   = data.azurerm_resource_group.rg.location
-  rg_name       = data.azurerm_resource_group.rg.name
-  tags          = local.management_tags
+  source           = "../services/monitoring"
+  env              = "global"
+  ai_ingest_cap_gb = 100
+  management_rg    = data.azurerm_resource_group.rg.name
+  rg_location      = data.azurerm_resource_group.rg.location
+  rg_name          = data.azurerm_resource_group.rg.name
+  tags             = local.management_tags
 }
 
 module "pagerduty_non_prod" {

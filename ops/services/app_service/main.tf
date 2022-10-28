@@ -10,38 +10,44 @@ locals {
       "DOCKER_REGISTRY_SERVER_USERNAME" = data.terraform_remote_state.global.outputs.acr_simeplereport_name
       "WEBSITES_PORT"                   = "8080"
       "WEBSITE_DNS_SERVER"              = "168.63.129.16" # https://docs.microsoft.com/en-us/azure/app-service/web-sites-integrate-with-vnet#azure-dns-private-zones
-      "WEBSITE_VNET_ROUTE_ALL"          = "1"
   })
 }
 
-resource "azurerm_app_service_plan" "service_plan" {
+resource "azurerm_service_plan" "service_plan" {
+  name                = "${var.az_account}-linux-appserviceplan-${var.env}"
+  location            = var.resource_group_location
+  resource_group_name = var.resource_group_name
+  os_type  = "Linux"
+  sku_name = "P2v3"
+}
+
+resource "azurerm_service_plan" "linux" {
   name                = "${var.az_account}-appserviceplan-${var.env}"
   location            = var.resource_group_location
   resource_group_name = var.resource_group_name
-
-  # Define Linux as Host OS
-  kind     = "Linux"
-  reserved = true
-
-  sku {
-    tier     = var.instance_tier
-    size     = var.instance_size
-    capacity = var.instance_count
-  }
+  os_type  = "Linux"
+  sku_name = "P2v3"
 }
 
-resource "azurerm_app_service" "service" {
-  name                = "${var.name}-${var.env}"
+resource "azurerm_linux_web_app" "service" {
+  name                = "${var.name}-linux-${var.env}"
   location            = var.resource_group_location
   resource_group_name = var.resource_group_name
-  app_service_plan_id = azurerm_app_service_plan.service_plan.id
+  service_plan_id     = azurerm_service_plan.service_plan.id
+
+  # virtual_network_subnet_id = var.webapp_subnet_id
 
   # Configure Docker Image to load on start
   site_config {
-    linux_fx_version = var.docker_image_uri
-    always_on        = "true"
-    min_tls_version  = "1.2"
-    ftps_state       = "Disabled"
+    always_on = "true"
+    ftps_state = "Disabled"
+    vnet_route_all_enabled = false
+
+    application_stack {
+      docker_image     = var.docker_image
+      docker_image_tag = var.docker_image_tag
+    }
+
 
     // NOTE: If this code is removed, TF will not automatically delete it with the current provider version! It must be removed manually from the App Service -> Networking blade!
     ip_restriction {
@@ -66,26 +72,25 @@ resource "azurerm_app_service" "service" {
     }
   }
 
-  lifecycle {
-    ignore_changes = [
-      app_settings, site_config[0].linux_fx_version
-    ]
-  }
+  # lifecycle {
+  #   ignore_changes = [
+  #     app_settings
+  #   ]
+  # }
 }
 
-resource "azurerm_app_service_slot" "staging" {
-  name                = "staging"
-  app_service_name    = azurerm_app_service.service.name
-  app_service_plan_id = azurerm_app_service_plan.service_plan.id
-  resource_group_name = var.resource_group_name
-  location            = var.resource_group_location
+resource "azurerm_linux_web_app_slot" "staging" {
+  name           = "${var.name}-linux-${var.env}-staging"
+  app_service_id = azurerm_linux_web_app.service.id
 
   app_settings = local.all_app_settings
   https_only   = var.https_only
 
+  # virtual_network_subnet_id = var.webapp_subnet_id
+
   site_config {
-    linux_fx_version = var.docker_image_uri
-    always_on        = "true"
+    always_on = "true"
+    vnet_route_all_enabled = false
 
     ip_restriction {
       virtual_network_subnet_id = var.lb_subnet_id
@@ -109,44 +114,44 @@ resource "azurerm_app_service_slot" "staging" {
 
 resource "azurerm_key_vault_access_policy" "app_secret_access" {
   key_vault_id = var.key_vault_id
-  object_id    = azurerm_app_service.service.identity[0].principal_id
+  object_id    = azurerm_linux_web_app.service.identity[0].principal_id
   tenant_id    = var.tenant_id
 
   key_permissions = [
-    "get",
-    "list",
+    "Get",
+    "List",
   ]
   secret_permissions = [
-    "get",
-    "list",
+    "Get",
+    "List",
   ]
 }
 
 resource "azurerm_key_vault_access_policy" "staging_slot_secret_access" {
   key_vault_id = var.key_vault_id
-  object_id    = azurerm_app_service_slot.staging.identity[0].principal_id
+  object_id    = azurerm_linux_web_app_slot.staging.identity[0].principal_id
   tenant_id    = var.tenant_id
 
   key_permissions = [
-    "get",
-    "list",
+    "Get",
+    "List",
   ]
   secret_permissions = [
-    "get",
-    "list",
+    "Get",
+    "List",
   ]
 }
 
 # Associate the App Service and staging slot with the environment's VNet:
 
 resource "azurerm_app_service_virtual_network_swift_connection" "app" {
-  app_service_id = azurerm_app_service.service.id
+  app_service_id = azurerm_linux_web_app.service.id
   subnet_id      = var.webapp_subnet_id
 }
 
 resource "azurerm_app_service_slot_virtual_network_swift_connection" "staging" {
-  slot_name      = azurerm_app_service_slot.staging.name
-  app_service_id = azurerm_app_service.service.id
+  slot_name      = azurerm_linux_web_app_slot.staging.name
+  app_service_id = azurerm_linux_web_app.service.id
   subnet_id      = var.webapp_subnet_id
 }
 
@@ -196,7 +201,7 @@ resource "azurerm_app_service_certificate_binding" "app" {
   # Azure only allows for a single instance of a certificate fingerprint in a specific resource group.connection {
   # in resource groups with multiple environments, we have to work around this by using this
   # prescribed value for certificate_id. 
-  hostname_binding_id = "${azurerm_app_service.service.id}/hostNameBindings/api-${var.env}.simplereport.gov"
+  hostname_binding_id = "${azurerm_linux_web_app.service.id}/hostNameBindings/api-${var.env}.simplereport.gov"
   certificate_id      = "${data.azurerm_subscription.primary.id}/resourceGroups/${var.resource_group_name}/providers/Microsoft.Web/certificates/new-sr-wildcard"
   ssl_state           = "SniEnabled"
 }

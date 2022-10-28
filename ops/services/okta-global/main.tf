@@ -30,17 +30,18 @@ resource "okta_auth_server_claim" "given_name" {
 resource "okta_group" "prime_users" {
   name        = "Prime Team Members"
   description = "All Prime team members"
+  skip_users  = true
 }
 
 // Create a sign on policy requiring MFA
-
 resource "okta_policy_signon" "mfa_require" {
-  name            = "simple-report-mfa-require"
+  name            = "MFA policy"
   status          = "ACTIVE"
-  description     = "Require MFA for all users"
+  description     = "MFA for everyone"
   groups_included = [var.all_users_group_id]
 }
 
+# terraform import module.okta.okta_policy_rule_signon.app_mfa 00p5a443kcwt33k6R4h6/0pr1rywgmm0V0T2LX4h7
 resource "okta_policy_rule_signon" "app_mfa" {
   policy_id          = okta_policy_signon.mfa_require.id
   name               = "simple-report-mfa-require"
