@@ -11,11 +11,11 @@ import Dropdown from "../commonComponents/Dropdown";
 import { Facility, FeedbackMessage } from "../../generated/graphql";
 import { showError } from "../utils/srToast";
 import { FileUploadService } from "../../fileUploadService/FileUploadService";
+import iconLoader from "../../img/loader.svg";
 
 import { AddPatientHeader } from "./Components/AddPatientsHeader";
 
 import "./UploadPatients.scss";
-import iconLoader from "../../img/loader.svg";
 
 const UploadPatients = () => {
   useDocumentTitle("Add Patient");
@@ -71,9 +71,7 @@ const UploadPatients = () => {
 
     if (!file || file.size === 0) {
       setButtonIsDisabled(false);
-      const errorMessage = {} as FeedbackMessage;
-      errorMessage.message = "Invalid File";
-      setErrors([errorMessage]);
+      setErrorMessageText("Invalid file");
       return;
     }
     const facilityId = facilityAmount === "oneFacility" ? facility.id : "";
@@ -88,7 +86,7 @@ const UploadPatients = () => {
           "There was a server error. Your file has not been accepted."
         );
         if (res.body) {
-          const response = await res.json();
+          const response = await res?.json();
 
           if (response?.errors?.length) {
             setErrorMessageText(
