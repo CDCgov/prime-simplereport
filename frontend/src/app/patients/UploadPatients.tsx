@@ -109,197 +109,201 @@ const UploadPatients = () => {
         <div className="patient__header">
           <AddPatientHeader />
         </div>
-        <div className={"card"}>
-          <span className={"font-sans-lg margin-top-205"}>
-            1. Setup your spreadsheet
-          </span>
-          <div
-            className={
-              "usa-summary-box margin-top-3 margin-bottom-3 margin-left-205"
-            }
-          >
-            <span className="usa-alert__heading text-bold">
-              Follow formatting guidelines
+        <div className={"card padding-left-0"}>
+          <div className={"margin-left-4"}>
+            <span className={"font-sans-lg margin-top-205"}>
+              1. Setup your spreadsheet
             </span>
-            <p className="usa-alert__text">
-              To upload patients in bulk, spreadsheets need to match
-              SimpleReport data requirements. Follow the Patient bulk upload
-              guide closely to format your CSV before uploading it below.
-            </p>
-          </div>
-          <div className={"margin-left-205"}>
-            <Button>View patient bulk upload guide</Button>
-            <Button variant={"outline"}>Download spreadsheet template</Button>
-          </div>
-          <div className={"margin-top-7 margin-bottom-1 font-sans-lg"}>
-            2. Would you like to import these patients to one facility OR all
-            facilities?
-          </div>
-          <div className={"margin-left-205"}>
-            <div>
-              If you plan to test patients at more than one facility, we
-              recommend adding them to all facilities. You can't select multiple
-              facilities individually.
+            <div className={"margin-left-3"}>
+              <div className={"usa-summary-box margin-top-3 margin-bottom-3"}>
+                <span className="usa-alert__heading text-bold">
+                  Follow formatting guidelines
+                </span>
+                <p className="usa-alert__text">
+                  To upload patients in bulk, spreadsheets need to match
+                  SimpleReport data requirements. Follow the Patient bulk upload
+                  guide closely to format your CSV before uploading it below.
+                </p>
+              </div>
+              <Button>View patient bulk upload guide</Button>
+              <Button variant={"outline"}>Download spreadsheet template</Button>
             </div>
-            <div>
-              <RadioGroup
-                wrapperClassName="margin-top-1"
-                inputClassName={"usa-radio__input--tile"}
-                name="facilitySector"
-                legend="Select facility"
-                legendSrOnly
-                buttons={[
-                  {
-                    value: "oneFacility",
-                    label: "One facility",
-                  },
-                  {
-                    value: "allFacility",
-                    label: "All facilities",
-                  },
-                ]}
-                selectedRadio={facilityAmount}
-                onChange={setFacilityAmount}
-                variant="horizontal"
-              />
+            <div className={"margin-top-7 margin-bottom-1 font-sans-lg"}>
+              2. Would you like to import these patients to one facility OR all
+              facilities?
             </div>
-          </div>
-          {facilityAmount === "oneFacility" && (
-            <div className={"margin-left-205 margin-top-205"}>
-              <div>Which facility?</div>
-              <Dropdown
-                aria-label={"Select facility"}
-                selectedValue={facility.id}
-                onChange={onFacilitySelect}
-                className={"grid-col-4"}
-                options={facilities.map(({ name, id }) => ({
-                  label: name,
-                  value: id,
-                }))}
-              />
-            </div>
-          )}
-
-          <div className={"margin-top-7 margin-bottom-1 font-sans-lg"}>
-            3. Upload your spreadsheet
-            {facilityAmount === "oneFacility" && " for " + facility.name}.
-          </div>
-          <div className={"margin-left-205"}>
-            The spreadsheet may take 10 or more minutes to upload. You do not
-            need to stay on this page. We'll email you if you need to fix any
-            errors or when the upload is complete.
-          </div>
-          <div className={"margin-left-205 margin-top-1"}>
-            {status === "success" && (
+            <div className={"margin-left-3"}>
+              <div className={"maxw-710"}>
+                If you plan to test patients at more than one facility, we
+                recommend adding them to all facilities. You can't select
+                multiple facilities individually.
+              </div>
               <div>
-                <div className="usa-alert usa-alert--success maxw-mobile-lg margin-top-3 outline-0">
-                  <div className="usa-alert__body">
-                    <span className="usa-alert__heading text-bold">
-                      Success: File Accepted
-                    </span>
-                    <button
-                      className="Toastify__close-button Toastify__close-button--default position-absolute top-0 right-0"
-                      type="button"
-                      aria-label="close"
-                      onClick={() => setStatus("")}
-                    >
-                      <FontAwesomeIcon icon={faXmark} />
-                    </button>
-                    <p className="usa-alert__text">
-                      Patients in your file have been successfully uploaded.
-                    </p>
-                  </div>
-                </div>
+                <RadioGroup
+                  wrapperClassName="margin-top-1"
+                  inputClassName={"usa-radio__input--tile"}
+                  name="facilitySector"
+                  legend="Select facility"
+                  legendSrOnly
+                  buttons={[
+                    {
+                      value: "oneFacility",
+                      label: "One facility",
+                    },
+                    {
+                      value: "allFacility",
+                      label: "All facilities",
+                    },
+                  ]}
+                  selectedRadio={facilityAmount}
+                  onChange={setFacilityAmount}
+                  variant="horizontal"
+                />
               </div>
-            )}
-            {errorMessageText && (
-              <div className={"margin-top-3"}>
-                <div className="usa-alert usa-alert--error maxw-mobile-lg">
-                  <div className="usa-alert__body">
-                    <span className="usa-alert__heading text-bold">
-                      Error: File not accepted
-                    </span>
-                    <button
-                      className="Toastify__close-button Toastify__close-button--default position-absolute top-0 right-0"
-                      type="button"
-                      aria-label="close"
-                      onClick={() => {
-                        setErrorMessageText("");
-                        setErrors([]);
-                      }}
-                    >
-                      <FontAwesomeIcon icon={faXmark} />
-                    </button>
-                    <p className="usa-alert__text">{errorMessageText}</p>
-                  </div>
+              {facilityAmount === "oneFacility" && (
+                <div className={"margin-top-205"}>
+                  <div>Which facility?</div>
+                  <Dropdown
+                    aria-label={"Select facility"}
+                    selectedValue={facility.id}
+                    onChange={onFacilitySelect}
+                    className={"grid-col-4"}
+                    options={facilities.map(({ name, id }) => ({
+                      label: name,
+                      value: id,
+                    }))}
+                  />
                 </div>
-                {errors.length > 0 && (
-                  <table className="usa-table usa-table--borderless">
-                    <thead>
-                      <tr>
-                        <th className={"thick-bottom-border padding-left-0"}>
-                          Edits needed
-                        </th>
-                        <th className={"thick-bottom-border padding-left-0"}>
-                          Areas requiring edits
-                        </th>
-                      </tr>
-                    </thead>
-                    <tbody>
-                      {errors.map((e, i) => {
-                        return (
-                          <tr key={"error_" + i}>
-                            <td className={"no-bottom-border"}>
-                              {e?.["message"]}{" "}
-                            </td>
-                            <td className={"no-bottom-border"}>
-                              Row(s): {e?.["indices"]}
-                            </td>
-                          </tr>
-                        );
-                      })}
-                    </tbody>
-                  </table>
-                )}
+              )}
+            </div>
+
+            <div className={"margin-top-7 margin-bottom-1 font-sans-lg"}>
+              3. Upload your spreadsheet
+              {facilityAmount === "oneFacility" && " for " + facility.name}.
+            </div>
+            <div className={"margin-left-3"}>
+              <div className={"maxw-710"}>
+                The spreadsheet may take 10 or more minutes to upload. You do
+                not need to stay on this page. We'll email you if you need to
+                fix any errors or when the upload is complete.
               </div>
-            )}
-            <FormGroup className="margin-bottom-3">
-              {status === "submitting" ? (
-                <div className={"usa-file-input"}>
-                  <div className={"usa-file-input__target"}>
-                    <div className={"margin-top-1"}>
-                      <span className="usa-file-input__drag-text font-sans-xs text-bold">
-                        Uploading patient information...
-                      </span>
-                      <div className={"margin-top-1"}>
-                        <img
-                          src={iconLoader}
-                          alt="submitting"
-                          className={"square-5"}
-                        />
+              <div className={"margin-top-1"}>
+                {status === "success" && (
+                  <div>
+                    <div className="usa-alert usa-alert--success maxw-mobile-lg margin-top-3 outline-0">
+                      <div className="usa-alert__body">
+                        <span className="usa-alert__heading text-bold">
+                          Success: File Accepted
+                        </span>
+                        <button
+                          className="Toastify__close-button Toastify__close-button--default position-absolute top-0 right-0"
+                          type="button"
+                          aria-label="close"
+                          onClick={() => setStatus("")}
+                        >
+                          <FontAwesomeIcon icon={faXmark} />
+                        </button>
+                        <p className="usa-alert__text">
+                          Patients in your file have been successfully uploaded.
+                        </p>
                       </div>
                     </div>
                   </div>
-                </div>
-              ) : (
-                <FileInput
-                  id="upload-csv-input"
-                  name="upload-csv-input"
-                  aria-label="Choose CSV file"
-                  accept="text/csv, .csv"
-                  onChange={handleFileChange}
-                  required
-                />
-              )}
-            </FormGroup>
-          </div>
-          <div>
-            <Button
-              disabled={buttonIsDisabled || facilityAmount === undefined}
-              onClick={handleSubmit}
-            >
-              Upload CSV file
-            </Button>
+                )}
+                {errorMessageText && (
+                  <div className={"margin-top-3"}>
+                    <div className="usa-alert usa-alert--error maxw-mobile-lg">
+                      <div className="usa-alert__body">
+                        <span className="usa-alert__heading text-bold">
+                          Error: File not accepted
+                        </span>
+                        <button
+                          className="Toastify__close-button Toastify__close-button--default position-absolute top-0 right-0"
+                          type="button"
+                          aria-label="close"
+                          onClick={() => {
+                            setErrorMessageText("");
+                            setErrors([]);
+                          }}
+                        >
+                          <FontAwesomeIcon icon={faXmark} />
+                        </button>
+                        <p className="usa-alert__text">{errorMessageText}</p>
+                      </div>
+                    </div>
+                    {errors.length > 0 && (
+                      <table className="usa-table usa-table--borderless">
+                        <thead>
+                          <tr>
+                            <th
+                              className={"thick-bottom-border padding-left-0"}
+                            >
+                              Edits needed
+                            </th>
+                            <th
+                              className={"thick-bottom-border padding-left-0"}
+                            >
+                              Areas requiring edits
+                            </th>
+                          </tr>
+                        </thead>
+                        <tbody>
+                          {errors.map((e, i) => {
+                            return (
+                              <tr key={"error_" + i}>
+                                <td className={"no-bottom-border"}>
+                                  {e?.["message"]}{" "}
+                                </td>
+                                <td className={"no-bottom-border"}>
+                                  Row(s): {e?.["indices"]}
+                                </td>
+                              </tr>
+                            );
+                          })}
+                        </tbody>
+                      </table>
+                    )}
+                  </div>
+                )}
+                <FormGroup className="margin-bottom-3">
+                  {status === "submitting" ? (
+                    <div className={"usa-file-input"}>
+                      <div className={"usa-file-input__target"}>
+                        <div className={"margin-top-1"}>
+                          <span className="usa-file-input__drag-text font-sans-xs text-bold">
+                            Uploading patient information...
+                          </span>
+                          <div className={"margin-top-1"}>
+                            <img
+                              src={iconLoader}
+                              alt="submitting"
+                              className={"square-5"}
+                            />
+                          </div>
+                        </div>
+                      </div>
+                    </div>
+                  ) : (
+                    <FileInput
+                      id="upload-csv-input"
+                      name="upload-csv-input"
+                      aria-label="Choose CSV file"
+                      accept="text/csv, .csv"
+                      onChange={handleFileChange}
+                      required
+                    />
+                  )}
+                </FormGroup>
+              </div>
+              <div>
+                <Button
+                  disabled={buttonIsDisabled || facilityAmount === undefined}
+                  onClick={handleSubmit}
+                >
+                  Upload CSV file
+                </Button>
+              </div>
+            </div>
           </div>
         </div>
       </div>
