@@ -2,7 +2,11 @@ import { gql, useQuery } from "@apollo/client";
 import React, { useEffect, useState } from "react";
 import moment from "moment";
 import classnames from "classnames";
-import { faCaretDown, faIdCard } from "@fortawesome/free-solid-svg-icons";
+import {
+  faCaretDown,
+  faIdCard,
+  faRightFromBracket,
+} from "@fortawesome/free-solid-svg-icons";
 import { NavigateOptions, useNavigate } from "react-router-dom";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 
@@ -295,7 +299,7 @@ export const DetachedManagePatients = ({
                         name: "upload patients",
                         content: (
                           <IconLabel
-                            icon={"right-from-bracket"}
+                            icon={faRightFromBracket}
                             primaryText={"Import from spreadsheet"}
                             secondaryText={`Bulk upload ${PATIENT_TERM_PLURAL} with a CSV file`}
                           />
