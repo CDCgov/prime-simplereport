@@ -17,6 +17,10 @@ describe("Getting a test result from a patient link", () => {
   it("successfully navigates to the patient link", () => {
     cy.visit(patientLink);
   });
+  it("contains no accessibility issues", () => {
+    cy.injectAxe();
+    cy.checkA11y(); // PXP page
+  });
   it("accepts the terms of service", () => {
     cy.contains("Terms of service");
     cy.contains("I agree").click();
@@ -34,6 +38,9 @@ describe("Getting a test result from a patient link", () => {
     const birthMonth = dob.month() + 1;
     const birthDay = dob.date();
     const birthYear = dob.year();
+
+    cy.checkA11y(); // DoB entry page
+
     cy.get('input[name="birthMonth"]').type(birthMonth);
     cy.get('input[name="birthDay"]').type(birthDay);
     cy.get('input[name="birthYear"]').type(birthYear);
@@ -44,5 +51,7 @@ describe("Getting a test result from a patient link", () => {
     cy.contains("Test result");
     cy.contains("Test date");
     cy.contains("Test device");
+
+    cy.checkA11y(); // Result page
   });
 });

@@ -1,8 +1,9 @@
 import { LinkWithQuery } from "../../commonComponents/LinkWithQuery";
 import { useDocumentTitle } from "../../utils/hooks";
 import iconSprite from "../../../../node_modules/uswds/dist/img/sprite.svg";
-
 import "./CsvSchemaDocumentation.scss";
+import { getAppInsights } from "../../TelemetryService";
+
 import schema from "./schema.json";
 
 export type CsvSchemaItem = {
@@ -138,6 +139,8 @@ export const CsvSchemaDocumentationItem: React.FC<CsvSchemaItemProps> = ({
 const CsvSchemaDocumentation = () => {
   useDocumentTitle("Bulk results upload guide");
 
+  const appInsights = getAppInsights();
+
   return (
     <div className="prime-container card-container csv-guide-container">
       <div className="usa-card__header">
@@ -194,6 +197,11 @@ const CsvSchemaDocumentation = () => {
               <a
                 href="/assets/resources/test_results_example_10-3-2022.csv"
                 className="usa-link"
+                onClick={() => {
+                  appInsights?.trackEvent({
+                    name: "Download spreadsheet template",
+                  });
+                }}
               >
                 SimpleReport spreadsheet template with example data
               </a>
@@ -333,6 +341,11 @@ const CsvSchemaDocumentation = () => {
                 <a
                   href="/assets/resources/test_results_example_10-3-2022.csv"
                   className="usa-link"
+                  onClick={() => {
+                    appInsights?.trackEvent({
+                      name: "Download spreadsheet template",
+                    });
+                  }}
                 >
                   spreadsheet template
                 </a>{" "}

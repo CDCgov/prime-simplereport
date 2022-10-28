@@ -43,6 +43,7 @@ resource "azurerm_cdn_endpoint" "cdn_endpoint" {
   location                      = data.azurerm_resource_group.rg.location
   origin_host_header            = azurerm_storage_account.app.primary_web_host
   querystring_caching_behaviour = "IgnoreQueryString"
+  is_http_allowed               = false
 
   origin {
     name      = "${local.name}-${local.env}-static"
@@ -95,6 +96,10 @@ module "app_gateway" {
 
   fqdns = [
     module.simple_report_api.app_hostname
+  ]
+
+  staging_fqdns = [
+    module.simple_report_api.staging_hostname
   ]
 
   firewall_policy_id = module.web_application_firewall.web_application_firewall_id

@@ -32,12 +32,9 @@ jest.mock("react-router-dom", () => {
   };
 });
 
-const initialDateString = "2021-02-14";
 const updatedDateString = "2021-03-10";
 const dateStringBeforeWarningThreshold = "2001-01-01";
 const updatedTimeString = "10:05";
-const fakeDate = Date.parse(initialDateString);
-const updatedDate = Date.parse(updatedDateString);
 
 const setStartTestPatientIdMock = jest.fn();
 
@@ -69,7 +66,7 @@ describe("QueueItem", () => {
   it("correctly renders the test queue", () => {
     render(
       <MemoryRouter>
-        <MockedProvider mocks={[]}>
+        <MockedProvider>
           <Provider store={store}>
             <QueueItem
               internalId={testProps.internalId}
@@ -104,7 +101,7 @@ describe("QueueItem", () => {
 
     render(
       <MemoryRouter>
-        <MockedProvider mocks={[]}>
+        <MockedProvider>
           <Provider store={store}>
             <QueueItem
               internalId={testProps.internalId}
@@ -138,7 +135,7 @@ describe("QueueItem", () => {
 
   it("navigates to edit the user when clicking their name", () => {
     render(
-      <MockedProvider mocks={[]}>
+      <MockedProvider>
         <MemoryRouter>
           <Provider store={store}>
             <QueueItem
@@ -176,7 +173,7 @@ describe("QueueItem", () => {
   it("updates the timer when a device is changed", async () => {
     render(
       <MemoryRouter>
-        <MockedProvider mocks={mocks} addTypename={false}>
+        <MockedProvider addTypename={false}>
           <Provider store={store}>
             <QueueItem
               internalId={testProps.internalId}
@@ -213,7 +210,7 @@ describe("QueueItem", () => {
   it("renders dropdown of device types", async () => {
     render(
       <MemoryRouter>
-        <MockedProvider mocks={[]} addTypename={false}>
+        <MockedProvider addTypename={false}>
           <Provider store={store}>
             <QueueItem
               internalId={testProps.internalId}
@@ -257,7 +254,7 @@ describe("QueueItem", () => {
   it("renders dropdown of swab types configured with selected device", async () => {
     render(
       <MemoryRouter>
-        <MockedProvider mocks={[]} addTypename={false}>
+        <MockedProvider addTypename={false}>
           <Provider store={store}>
             <QueueItem
               internalId={testProps.internalId}
@@ -471,38 +468,6 @@ describe("QueueItem", () => {
       const submitTestResultMocks = [
         {
           request: {
-            query: EDIT_QUEUE_ITEM,
-            variables: {
-              id: internalId,
-              deviceSpecimenType: "device-specimen-1",
-              deviceId: internalId,
-              results: [
-                { diseaseName: "COVID-19", testResult: "UNDETERMINED" },
-              ],
-            },
-          },
-          result: {
-            data: {
-              editQueueItem: {
-                results: [
-                  { disease: { name: "COVID-19" }, testResult: "UNDETERMINED" },
-                ],
-                dateTested: null,
-                deviceType: {
-                  internalId: internalId,
-                  testLength: 10,
-                },
-                deviceSpecimenType: {
-                  internalId: "device-specimen-1",
-                  deviceType: deviceOne,
-                  specimenType: {},
-                },
-              },
-            },
-          },
-        },
-        {
-          request: {
             query: SUBMIT_TEST_RESULT,
             variables: {
               patientId: internalId,
@@ -627,7 +592,7 @@ describe("QueueItem", () => {
   it("updates custom test date/time", async () => {
     render(
       <MemoryRouter>
-        <MockedProvider mocks={mocks} addTypename={false}>
+        <MockedProvider addTypename={false}>
           <Provider store={store}>
             <QueueItem
               internalId={testProps.internalId}
@@ -665,7 +630,7 @@ describe("QueueItem", () => {
     render(
       <>
         <MemoryRouter>
-          <MockedProvider mocks={mocks} addTypename={false}>
+          <MockedProvider addTypename={false}>
             <Provider store={store}>
               <QueueItem
                 internalId={testProps.internalId}
@@ -731,7 +696,7 @@ describe("QueueItem", () => {
   it("formats card with warning state if selected date input is more than six months ago", async () => {
     render(
       <MemoryRouter>
-        <MockedProvider mocks={mocks} addTypename={false}>
+        <MockedProvider addTypename={false}>
           <Provider store={store}>
             <QueueItem
               internalId={testProps.internalId}
@@ -771,7 +736,7 @@ describe("QueueItem", () => {
   it("highlights the test card where the validation failure occurs", async () => {
     render(
       <MemoryRouter>
-        <MockedProvider mocks={mocks}>
+        <MockedProvider>
           <Provider store={store}>
             <QueueItem
               internalId={testProps.internalId}
@@ -825,7 +790,7 @@ describe("QueueItem", () => {
 
   it("highlights test corrections and includes corrector name and reason for correction", async () => {
     render(
-      <MockedProvider mocks={mocks}>
+      <MockedProvider>
         <Provider store={store}>
           <QueueItem
             internalId={testProps.internalId}
@@ -866,7 +831,7 @@ describe("QueueItem", () => {
   it("displays person's mobile phone numbers", async () => {
     render(
       <MemoryRouter>
-        <MockedProvider mocks={mocks} addTypename={false}>
+        <MockedProvider addTypename={false}>
           <Provider store={store}>
             <QueueItem
               internalId={testProps.internalId}
@@ -909,7 +874,7 @@ describe("QueueItem", () => {
     beforeEach(() => {
       render(
         <MemoryRouter>
-          <MockedProvider mocks={mocks} addTypename={false}>
+          <MockedProvider addTypename={false}>
             <Provider store={store}>
               <QueueItem
                 internalId={testProps.internalId}
@@ -1302,153 +1267,3 @@ const testProps = {
     },
   ] as DeviceSpecimenType[],
 };
-
-const nowUTC = moment(new Date(fakeDate))
-  .seconds(0)
-  .milliseconds(0)
-  .toISOString();
-
-const updatedDateUTC = moment(new Date(updatedDate))
-  .seconds(0)
-  .milliseconds(0)
-  .toISOString();
-
-const updatedDateTimeUTC = moment(
-  new Date(`${updatedDateString}T${updatedTimeString}`)
-).toISOString();
-
-const mocks = [
-  {
-    request: {
-      query: EDIT_QUEUE_ITEM,
-      variables: {
-        id: internalId,
-        deviceId: "lumira",
-        deviceSpecimenType: "device-specimen-2",
-        results: [],
-      },
-    },
-    result: {
-      data: {
-        editQueueItem: {
-          results: [],
-          dateTested: null,
-          deviceType: deviceTwo,
-          deviceSpecimenType: {
-            internalId: "device-specimen-2",
-            deviceType: deviceTwo,
-            specimenType: {},
-          },
-        },
-      },
-    },
-  },
-  {
-    request: {
-      query: EDIT_QUEUE_ITEM,
-      variables: {
-        id: internalId,
-        deviceId: internalId,
-        deviceSpecimenType: "device-specimen-1",
-        dateTested: nowUTC,
-        results: [{ diseaseName: "COVID-19", testResult: "UNDETERMINED" }],
-      },
-    },
-    result: {
-      data: {
-        editQueueItem: {
-          results: [
-            { disease: { name: "COVID-19" }, testResult: "UNDETERMINED" },
-          ],
-          dateTested: nowUTC,
-          deviceType: deviceOne,
-          deviceSpecimenType: {
-            internalId: "device-specimen-1",
-            deviceType: deviceOne,
-            specimenType: {},
-          },
-        },
-      },
-    },
-  },
-  {
-    request: {
-      query: EDIT_QUEUE_ITEM,
-      variables: {
-        id: internalId,
-        deviceId: internalId,
-        deviceSpecimenType: "device-specimen-1",
-        dateTested: updatedDateUTC,
-        results: [],
-      },
-    },
-    result: {
-      data: {
-        editQueueItem: {
-          results: [],
-          dateTested: null,
-          deviceType: {
-            internalId: internalId,
-            testLength: 10,
-          },
-          deviceSpecimenType: {
-            internalId: "device-specimen-1",
-            deviceType: deviceOne,
-            specimenType: {},
-          },
-        },
-      },
-    },
-  },
-  {
-    request: {
-      query: EDIT_QUEUE_ITEM,
-      variables: {
-        id: internalId,
-        deviceId: internalId,
-        deviceSpecimenType: "device-specimen-1",
-        dateTested: updatedDateTimeUTC,
-        results: [],
-      },
-    },
-    result: {
-      data: {
-        editQueueItem: {
-          results: [],
-          dateTested: null,
-          deviceType: {
-            internalId: internalId,
-            testLength: 10,
-          },
-          deviceSpecimenType: {
-            internalId: "device-specimen-1",
-            deviceType: deviceOne,
-            specimenType: {},
-          },
-        },
-      },
-    },
-  },
-  {
-    request: {
-      query: SUBMIT_TEST_RESULT,
-      variables: {
-        patientId: internalId,
-        deviceId: internalId,
-        deviceSpecimenType: "device-specimen-1",
-        results: [{ diseaseName: "COVID-19", testResult: "UNDETERMINED" }],
-        dateTested: null,
-      },
-    },
-    result: {
-      data: {
-        addMultiplexResult: {
-          testResult: {
-            internalId: internalId,
-          },
-          deliverySuccess: false,
-        },
-      },
-    },
-  },
-];

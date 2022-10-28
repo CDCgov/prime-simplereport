@@ -1,29 +1,75 @@
-name: "Run Lighthouse audit"
+name: "Run Lighthouse Audit"
 on:
-  schedule:
-  - cron: "0 0 * * *"
+  workflow_dispatch:
+  pull_request:
+    branches:
+      - "**"
 jobs:
-  validate-508:
+  lhci:
+    name: Lighthouse
     runs-on: ubuntu-latest
     steps:
-    - uses: actions/checkout@v3
 
-    - name: Lighthouse CI Action
-      uses: treosh/lighthouse-ci-action@v7
+    - name: Checkout
+      uses: actions/checkout@v3
+
+    - name: Set Swap Space
+      uses: ./.github/actions/set-swap-space
       with:
-        urls: |
-          $SITE_URL/
-          $SITE_URL/app/$FACILITY_ID
-          $SITE_URL/app/queue/$FACILITY_ID
-          $SITE_URL/app/results/$FACILITY_ID
-          $SITE_URL/app/patients/$FACILITY_ID
-          $SITE_URL/app/add-patient/$FACILITY_ID
-          $SITE_URL/app/settings/$FACILITY_ID
-          $SITE_URL/app/settings/facilities/$FACILITY_ID
-          $SITE_URL/app/settings/add-facility/$FACILITY_ID
-        uploadArtifacts: true
-        configPath: ./lighthouserc.yml
-        runs: 1
+        swap-size-gb: 10
+
+    - name: Generate certs
+      run: |
+        echo "::group::Generate ssl certs"
+        sudo apt install libnss3-tools
+        eval "$(/home/linuxbrew/.linuxbrew/bin/brew shellenv)"
+        brew install mkcert
+        mkcert -install
+        mkdir -p certs
+        cd certs
+        mkcert localhost.simplereport.gov
+        mv localhost.simplereport.gov.pem localhost.simplereport.gov.crt
+        mv localhost.simplereport.gov-key.pem localhost.simplereport.gov.key
+        cd ..
+        echo "::endgroup::"
+
+    - name: Add hosts to /etc/hosts
+      run: |
+        sudo echo "127.0.0.1	localhost.simplereport.gov" | sudo tee -a /etc/hosts
+
+    - name: Update files permissions
+      # Even though we don't use it, we need the .env file created here due to an issue similar to this one: https://github.com/mutagen-io/mutagen/issues/265
+      run: |
+        echo "::group::Update permissions"
+        echo FAKE_ENV="true" >> .env
+        sudo chmod -R 777 backend
+        sudo chmod -R 777 frontend
+        echo "::endgroup::"
+
+    - name: Log in to the Container registry
+      uses: docker/login-action@v2
+      with:
+        registry: ghcr.io
+        username: ${{ github.actor }}
+        password: ${{ secrets.GITHUB_TOKEN }}
+
+    - name: Setup and Run Lighthouse
       env:
-        SITE_URL: https://demo.simplereport.gov
-        FACILITY_ID: ?facility=14fab3c1-070e-4e86-8ec7-4a1fc8e13477
+        # CI settings
+        CI: 1
+        # docker settings
+        DOCKER_CLIENT_TIMEOUT: 180
+        COMPOSE_HTTP_TIMEOUT: 180
+      shell: bash
+      run: |
+        echo "::group::Run Lighthouse locally"
+        npm install -g @lhci/cli@0.9.x
+        lhci autorun
+        echo "::endgroup::"
+
+    - name: Archive Lighthouse results
+      uses: actions/upload-artifact@v3
+      if: always()
+      with:
+        name: lighthouse-results
+        path: lighthouse/*

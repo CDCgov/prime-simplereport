@@ -1,0 +1,20 @@
+services:
+  backend:
+    environment:
+      SPRING_PROFILES_ACTIVE: dev,db-dockerized
+      SPRING_LIQUIBASE_ENABLED: "true"
+      GIT_DISCOVERY_ACROSS_FILESYSTEM: 1
+  frontend:
+    environment:
+      REACT_APP_BASE_URL: https://localhost.simplereport.gov
+      REACT_APP_BACKEND_URL: https://localhost.simplereport.gov/api
+      PUBLIC_URL: /app/
+      REACT_APP_OKTA_ENABLED: "false"
+      REACT_APP_DISABLE_MAINTENANCE_BANNER: "true"
+      GIT_DISCOVERY_ACROSS_FILESYSTEM: 1
+    command: ["./ci-git-fix.sh"]
+  nginx:
+    hostname: localhost.simplereport.gov
+  mailhog:
+    profiles:
+      - donotstart

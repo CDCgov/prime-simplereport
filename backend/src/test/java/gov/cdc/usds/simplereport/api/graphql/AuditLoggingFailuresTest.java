@@ -22,6 +22,8 @@ import gov.cdc.usds.simplereport.db.model.PatientLink;
 import gov.cdc.usds.simplereport.db.model.Person;
 import gov.cdc.usds.simplereport.db.model.TestEvent;
 import gov.cdc.usds.simplereport.db.model.TestOrder;
+import gov.cdc.usds.simplereport.db.model.auxiliary.MultiplexResultInput;
+import gov.cdc.usds.simplereport.db.model.auxiliary.TestResult;
 import gov.cdc.usds.simplereport.db.repository.TestEventRepository;
 import gov.cdc.usds.simplereport.service.AuditLoggerService;
 import gov.cdc.usds.simplereport.service.OrganizationService;
@@ -94,11 +96,13 @@ class AuditLoggingFailuresTest extends BaseGraphqlTest {
     useOrgUserAllFacilityAccess();
     HashMap<String, Object> args = patientArgs();
     args.put("deviceId", facility.getDefaultDeviceType().getInternalId().toString());
-    args.put("result", "NEGATIVE");
-    runQuery("submit-test", args, "Something went wrong");
+    MultiplexResultInput multiplexResultInput =
+        new MultiplexResultInput(_diseaseService.covid().getName(), TestResult.NEGATIVE);
+    args.put("results", List.of(multiplexResultInput));
+    runQuery("add-multiplex-result-mutation", args, "Something went wrong");
     verify(auditLoggerServiceSpy).logEvent(_eventCaptor.capture());
     ConsoleApiAuditEvent event = _eventCaptor.getValue();
-    assertEquals(List.of("addTestResultNew"), event.getGraphqlErrorPaths());
+    assertEquals(List.of("addMultiplexResult"), event.getGraphqlErrorPaths());
   }
 
   // I tweaked the behavior to not return the original error message in order to improve security

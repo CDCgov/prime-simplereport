@@ -27,6 +27,8 @@ public class TestResultResolver {
   private final TestOrderService tos;
   private final TestResultUploadService testResultUploadService;
 
+  // resolver method to be deleted once the frontend compatibility issues
+  // here are resolved
   @QueryMapping
   public List<TestEvent> testResults(
       @Argument UUID facilityId,
@@ -45,6 +47,7 @@ public class TestResultResolver {
     }
 
     if (facilityId == null) {
+
       return tos.getAllFacilityTestEventsResults(
           patientId,
           Translators.parseTestResult(result),
@@ -55,6 +58,47 @@ public class TestResultResolver {
           pageSize);
     }
     return tos.getTestEventsResults(
+        facilityId,
+        patientId,
+        Translators.parseTestResult(result),
+        Translators.parsePersonRole(role, true),
+        startDate,
+        endDate,
+        pageNumber,
+        pageSize);
+  }
+
+  // new method with page casting to allow for us to get the count alongside
+  // the results list in one query
+  @QueryMapping
+  public Page<TestEvent> testResultsPage(
+      @Argument UUID facilityId,
+      @Argument UUID patientId,
+      @Argument String result,
+      @Argument String role,
+      @Argument Date startDate,
+      @Argument Date endDate,
+      @Argument int pageNumber,
+      @Argument int pageSize) {
+    if (pageNumber < 0) {
+      pageNumber = TestOrderService.DEFAULT_PAGINATION_PAGEOFFSET;
+    }
+    if (pageSize < 1) {
+      pageSize = TestOrderService.DEFAULT_PAGINATION_PAGESIZE;
+    }
+
+    if (facilityId == null) {
+
+      return tos.getAllFacilityTestEventsResultsPage(
+          patientId,
+          Translators.parseTestResult(result),
+          Translators.parsePersonRole(role, true),
+          startDate,
+          endDate,
+          pageNumber,
+          pageSize);
+    }
+    return tos.getTestEventsResultsPage(
         facilityId,
         patientId,
         Translators.parseTestResult(result),
