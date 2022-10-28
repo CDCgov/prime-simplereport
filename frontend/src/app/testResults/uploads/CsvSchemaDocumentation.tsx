@@ -223,7 +223,7 @@ const CsvSchemaDocumentation = () => {
                 }}
               >
                 SimpleReport spreadsheet template with example data [CSV
-                Download]
+                download]
               </a>
             </li>
             <li>

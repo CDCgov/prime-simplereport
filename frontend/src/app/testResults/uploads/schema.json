@@ -206,7 +206,7 @@
               ]
             },
             {
-              "name": "Model name",
+              "name": "Equipment model name",
               "colHeader": "equipment_model_name",
               "required": true,
               "requested": false,
