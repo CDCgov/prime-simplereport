@@ -53,11 +53,12 @@ public enum OrganizationRole implements Principal {
           UserPermission.ARCHIVE_PATIENT,
           UserPermission.START_TEST,
           UserPermission.UPDATE_TEST,
-          UserPermission.SUBMIT_TEST)),
+          UserPermission.SUBMIT_TEST,
+          UserPermission.UPLOAD_RESULTS_SPREADSHEET)),
 
   /** This is the role for users in the pilot for the test result bulk upload feature. */
   TEST_RESULT_UPLOAD_USER(
-      "test-result-upload-pilot user", EnumSet.of(UserPermission.SR_CSV_UPLOADER_PILOT)),
+      "test-result-upload-pilot user", EnumSet.of(UserPermission.UPLOAD_RESULTS_SPREADSHEET)),
 
   /**
    * This is the organization admin role: if you have this role, then you have the ability to change
@@ -80,7 +81,8 @@ public enum OrganizationRole implements Principal {
           UserPermission.UPDATE_TEST,
           UserPermission.SUBMIT_TEST,
           UserPermission.ACCESS_ALL_FACILITIES,
-          UserPermission.VIEW_ARCHIVED_FACILITIES));
+          UserPermission.VIEW_ARCHIVED_FACILITIES,
+          UserPermission.UPLOAD_RESULTS_SPREADSHEET));
 
   private String description;
   private Set<UserPermission> grantedPermissions;
