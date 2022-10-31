@@ -221,6 +221,7 @@ class TestResultUploadServiceTest extends BaseServiceTest<TestResultUploadServic
     var output = sut.processResultCSV(input);
 
     assertEquals(FAILURE, output.getBody().getStatus());
+    assertEquals(HttpStatus.SERVICE_UNAVAILABLE, output.getStatusCode());
   }
 
   private InputStream loadCsv(String csvFile) {
