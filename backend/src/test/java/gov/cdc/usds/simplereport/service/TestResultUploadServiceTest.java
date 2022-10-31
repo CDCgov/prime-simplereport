@@ -53,8 +53,8 @@ import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.context.properties.EnableConfigurationProperties;
-import org.springframework.cloud.contract.spec.internal.HttpStatus;
 import org.springframework.cloud.contract.wiremock.AutoConfigureWireMock;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.AccessDeniedException;
 import org.springframework.test.annotation.DirtiesContext;
@@ -93,7 +93,7 @@ class TestResultUploadServiceTest extends BaseServiceTest<TestResultUploadServic
         WireMock.post(WireMock.urlEqualTo("/api/reports?processing=async"))
             .willReturn(
                 WireMock.aResponse()
-                    .withStatus(HttpStatus.OK)
+                    .withStatus(HttpStatus.OK.value())
                     .withHeader("Content-Type", MediaType.APPLICATION_JSON_VALUE)
                     .withBody(mockResponse)));
     InputStream input = loadCsv("test-results-upload-valid.csv");
@@ -136,7 +136,7 @@ class TestResultUploadServiceTest extends BaseServiceTest<TestResultUploadServic
           WireMock.post(WireMock.urlEqualTo("/api/reports?processing=async"))
               .willReturn(
                   WireMock.aResponse()
-                      .withStatus(HttpStatus.BAD_REQUEST)
+                      .withStatus(HttpStatus.BAD_REQUEST.value())
                       .withHeader("Content-Type", MediaType.APPLICATION_JSON_VALUE)
                       .withBody(x.readAllBytes())));
     }
@@ -157,7 +157,7 @@ class TestResultUploadServiceTest extends BaseServiceTest<TestResultUploadServic
         WireMock.post(WireMock.urlEqualTo("/api/reports?processing=async"))
             .willReturn(
                 WireMock.aResponse()
-                    .withStatus(HttpStatus.INTERNAL_SERVER_ERROR)
+                    .withStatus(HttpStatus.INTERNAL_SERVER_ERROR.value())
                     .withHeader("Content-Type", MediaType.APPLICATION_JSON_VALUE)
                     .withBody("you messed up")));
 
