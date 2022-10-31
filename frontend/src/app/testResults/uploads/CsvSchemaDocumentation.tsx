@@ -187,7 +187,7 @@ const CsvSchemaDocumentation = () => {
               rel="noopener noreferrer"
             >
               states partnered with SimpleReport
-            </a>{" "}
+            </a>
             . If you report to multiple jurisdictions, you can share results
             with them using one spreadsheet. SimpleReport routes data to the
             appropriate health departments based on the facility location and
