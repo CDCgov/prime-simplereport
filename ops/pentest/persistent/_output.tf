@@ -1,3 +1,7 @@
+output "vnet_id" {
+  value = module.vnet.network.id
+}
+
 output "subnet_vm_id" {
   value = module.vnet.subnet_vm_id
 }
