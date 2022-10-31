@@ -3,7 +3,7 @@
   "version": "0.1.0",
   "private": true,
   "engines": {
-    "node": "14",
+    "node": "18",
     "npm": "6.13.4"
   },
   "dependencies": {
@@ -191,7 +191,7 @@
     "@types/classnames": "^2.2.11",
     "@types/faker": "^5.5.9",
     "@types/jest": "^29.1.2",
-    "@types/node": "^14.14.10",
+    "@types/node": "18.11.7",
     "@types/react": "^17.0.38",
     "@types/react-csv": "^1.1.2",
     "@types/react-dom": "^17.0.11",
