@@ -1,6 +1,7 @@
 #!/bin/bash
 
 docker compose pull
+docker-compose -f docker-compose.yml -f docker-compose.ci.yml build
 docker-compose -f docker-compose.yml -f docker-compose.ci.yml up -d
 
 echo "Waiting for backend to start at https://localhost.simplereport.gov/api/health"
