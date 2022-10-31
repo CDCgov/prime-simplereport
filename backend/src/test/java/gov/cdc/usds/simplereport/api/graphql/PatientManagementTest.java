@@ -398,7 +398,8 @@ class PatientManagementTest extends BaseGraphqlTest {
             UserPermission.ARCHIVE_PATIENT,
             UserPermission.START_TEST,
             UserPermission.UPDATE_TEST,
-            UserPermission.SUBMIT_TEST),
+            UserPermission.SUBMIT_TEST,
+            UserPermission.UPLOAD_RESULTS_SPREADSHEET),
         List.of("patients"));
   }
 
@@ -423,7 +424,8 @@ class PatientManagementTest extends BaseGraphqlTest {
             UserPermission.UPDATE_TEST,
             UserPermission.SUBMIT_TEST,
             UserPermission.ACCESS_ALL_FACILITIES,
-            UserPermission.VIEW_ARCHIVED_FACILITIES),
+            UserPermission.VIEW_ARCHIVED_FACILITIES,
+            UserPermission.UPLOAD_RESULTS_SPREADSHEET),
         List.of());
   }
 
