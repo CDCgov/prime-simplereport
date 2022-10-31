@@ -8,8 +8,8 @@ import gov.cdc.usds.simplereport.api.model.errors.BadRequestException;
 import gov.cdc.usds.simplereport.api.model.errors.CsvProcessingException;
 import gov.cdc.usds.simplereport.api.model.errors.IllegalGraphqlArgumentException;
 import gov.cdc.usds.simplereport.db.model.TestResultUpload;
+import gov.cdc.usds.simplereport.service.PatientBulkUploadService;
 import gov.cdc.usds.simplereport.service.TestResultUploadService;
-import gov.cdc.usds.simplereport.service.UploadService;
 import java.io.IOException;
 import java.io.InputStream;
 import lombok.RequiredArgsConstructor;
@@ -25,7 +25,7 @@ import org.springframework.web.multipart.MultipartFile;
 @Slf4j
 public class FileUploadController {
   public static final String TEXT_CSV_CONTENT_TYPE = "text/csv";
-  private final UploadService uploadService;
+  private final PatientBulkUploadService patientBulkUploadService;
   private final TestResultUploadService testResultUploadService;
 
   @PostMapping(PATIENT_UPLOAD)
@@ -34,7 +34,7 @@ public class FileUploadController {
     assertCsvFileType(file);
 
     try (InputStream people = file.getInputStream()) {
-      return uploadService.processPersonCSV(people, parseUUID(rawFacilityId));
+      return patientBulkUploadService.processPersonCSV(people, parseUUID(rawFacilityId));
     } catch (IllegalGraphqlArgumentException e) {
       log.error("Invalid facility id passed", e);
       throw new BadRequestException("Invalid facility id");
