@@ -16,6 +16,9 @@ import static org.mockito.Mockito.when;
 
 import com.github.tomakehurst.wiremock.client.WireMock;
 import com.okta.commons.http.MediaType;
+import feign.FeignException;
+import feign.Request;
+import feign.RequestTemplate;
 import gov.cdc.usds.simplereport.api.model.errors.CsvProcessingException;
 import gov.cdc.usds.simplereport.db.model.TestResultUpload;
 import gov.cdc.usds.simplereport.db.model.auxiliary.UploadStatus;
@@ -33,12 +36,7 @@ import java.io.ByteArrayInputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.nio.charset.StandardCharsets;
-import java.util.Arrays;
-import java.util.Collections;
-import java.util.Date;
-import java.util.List;
-import java.util.Optional;
-import java.util.UUID;
+import java.util.*;
 import org.apache.commons.io.IOUtils;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -51,6 +49,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.context.properties.EnableConfigurationProperties;
 import org.springframework.cloud.contract.spec.internal.HttpStatus;
 import org.springframework.cloud.contract.wiremock.AutoConfigureWireMock;
+import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.AccessDeniedException;
 import org.springframework.test.annotation.DirtiesContext;
 import org.springframework.test.context.junit.jupiter.SpringExtension;
@@ -94,18 +93,18 @@ class TestResultUploadServiceTest extends BaseServiceTest<TestResultUploadServic
     InputStream input = loadCsv("test-results-upload-valid.csv");
 
     var output = this._service.processResultCSV(input);
-    assertEquals(UploadStatus.PENDING, output.getStatus());
-    assertEquals(14, output.getRecordsCount());
-    assertNotNull(output.getOrganization());
+    assertEquals(UploadStatus.PENDING, output.getBody().getStatus());
+    assertEquals(14, output.getBody().getRecordsCount());
+    assertNotNull(output.getBody().getOrganization());
 
-    var warningMessage = Arrays.stream(output.getWarnings()).findFirst().get();
+    var warningMessage = Arrays.stream(output.getBody().getWarnings()).findFirst().get();
     assertNotNull(warningMessage.getMessage());
     assertNotNull(warningMessage.getScope());
-    assertEquals(0, output.getErrors().length);
+    assertEquals(0, output.getBody().getErrors().length);
 
-    assertNotNull(output.getCreatedAt());
-    assertNotNull(output.getUpdatedAt());
-    assertNotNull(output.getInternalId());
+    assertNotNull(output.getBody().getCreatedAt());
+    assertNotNull(output.getBody().getUpdatedAt());
+    assertNotNull(output.getBody().getInternalId());
   }
 
   @Test
@@ -139,8 +138,8 @@ class TestResultUploadServiceTest extends BaseServiceTest<TestResultUploadServic
 
     var response = this._service.processResultCSV(input);
 
-    assertEquals(6, response.getErrors().length);
-    assertEquals(FAILURE, response.getStatus());
+    assertEquals(6, response.getBody().getErrors().length);
+    assertEquals(FAILURE, response.getBody().getStatus());
   }
 
   @Test
@@ -160,8 +159,8 @@ class TestResultUploadServiceTest extends BaseServiceTest<TestResultUploadServic
 
     var response = this._service.processResultCSV(input);
 
-    assertNull(response.getErrors());
-    assertEquals(FAILURE, response.getStatus());
+    assertNull(response.getBody().getErrors());
+    assertEquals(FAILURE, response.getBody().getStatus());
   }
 
   @Test
@@ -188,8 +187,34 @@ class TestResultUploadServiceTest extends BaseServiceTest<TestResultUploadServic
     when(dataHubMock.uploadCSV(any())).thenReturn(response);
 
     var output = sut.processResultCSV(input);
-    assertNotNull(output.getReportId());
-    assertEquals(UploadStatus.PENDING, output.getStatus());
+    assertNotNull(output.getBody().getReportId());
+    assertEquals(UploadStatus.PENDING, output.getBody().getStatus());
+  }
+
+  @Test
+  void mockResponse_returnsGatewayTimeout() throws IOException {
+    InputStream input = mock(InputStream.class);
+    when(input.readAllBytes()).thenReturn(new byte[] {45});
+
+    String responseBody =
+        "<HTML><HEAD>\n"
+            + "<TITLE>Gateway Timeout - In read </TITLE>\n"
+            + "</HEAD><BODY>\n"
+            + "<H1>Gateway Timeout</H1>\n"
+            + "The proxy server did not receive a timely response from the upstream server.<P>\n"
+            + "Reference&#32;&#35;1&#46;136bdc17&#46;1666816860&#46;528d7d3c\n"
+            + "</BODY></HTML>";
+
+    Request req =
+        Request.create(Request.HttpMethod.POST, "", new HashMap<>(), null, new RequestTemplate());
+    FeignException reportStreamResponse =
+        new FeignException.GatewayTimeout(responseBody, req, null, new HashMap<>());
+    when(csvFileValidatorMock.validate(any())).thenReturn(Collections.emptyList());
+    when(dataHubMock.uploadCSV(any())).thenThrow(reportStreamResponse);
+
+    var output = sut.processResultCSV(input);
+
+    assertEquals(FAILURE, output.getBody().getStatus());
   }
 
   private InputStream loadCsv(String csvFile) {
@@ -258,11 +283,12 @@ class TestResultUploadServiceTest extends BaseServiceTest<TestResultUploadServic
     when(orgServiceMock.getCurrentOrganization()).thenReturn(factory.createValidOrg());
 
     // WHEN
-    TestResultUpload result = sut.processResultCSV(invalidInput);
+    ResponseEntity<TestResultUpload> result = sut.processResultCSV(invalidInput);
 
     // THEN
-    assertThat(result.getStatus()).isEqualTo(FAILURE);
-    assertThat(result.getErrors()).hasSize(1);
-    assertThat(result.getErrors()[0].getMessage()).isEqualTo("my lovely error message");
+    assertNotNull(result.getBody());
+    assertThat(result.getBody().getStatus()).isEqualTo(FAILURE);
+    assertThat(result.getBody().getErrors()).hasSize(1);
+    assertThat(result.getBody().getErrors()[0].getMessage()).isEqualTo("my lovely error message");
   }
 }

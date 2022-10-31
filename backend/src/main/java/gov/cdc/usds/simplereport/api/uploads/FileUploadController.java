@@ -14,6 +14,7 @@ import java.io.IOException;
 import java.io.InputStream;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
@@ -47,7 +48,8 @@ public class FileUploadController {
   }
 
   @PostMapping(RESULT_UPLOAD)
-  public TestResultUpload handleResultsUpload(@RequestParam("file") MultipartFile file) {
+  public ResponseEntity<TestResultUpload> handleResultsUpload(
+      @RequestParam("file") MultipartFile file) {
     assertCsvFileType(file);
 
     try (InputStream resultsUpload = file.getInputStream()) {

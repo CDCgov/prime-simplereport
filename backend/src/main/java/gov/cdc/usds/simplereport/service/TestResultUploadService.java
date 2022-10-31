@@ -32,6 +32,8 @@ import org.springframework.beans.factory.annotation.Value;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Sort;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 
 @Service
@@ -69,7 +71,7 @@ public class TestResultUploadService {
       new ObjectMapper().configure(DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES, false);
 
   @AuthorizationConfiguration.RequirePermissionReadResultListForTestEvent
-  public TestResultUpload processResultCSV(InputStream csvStream) {
+  public ResponseEntity<TestResultUpload> processResultCSV(InputStream csvStream) {
 
     TestResultUpload result = new TestResultUpload(UploadStatus.FAILURE);
 
@@ -87,7 +89,7 @@ public class TestResultUploadService {
         testResultFileValidator.validate(new ByteArrayInputStream(content));
     if (!errors.isEmpty()) {
       result.setErrors(errors.toArray(FeedbackMessage[]::new));
-      return result;
+      return new ResponseEntity<>(result, HttpStatus.OK); // should return bad request?
     }
 
     UploadResponse response = null;
@@ -115,9 +117,10 @@ public class TestResultUploadService {
       if (response.getOverallStatus() != ReportStreamStatus.ERROR) {
         _repo.save(result);
       }
+      return new ResponseEntity<>(result, HttpStatus.OK);
     }
 
-    return result;
+    return new ResponseEntity<>(result, HttpStatus.SERVICE_UNAVAILABLE);
   }
 
   private UploadResponse parseFeignException(FeignException e) {

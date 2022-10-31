@@ -28,7 +28,9 @@ import org.hamcrest.Matchers;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.mock.mockito.MockBean;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
+import org.springframework.http.ResponseEntity;
 import org.springframework.mock.web.MockMultipartFile;
 import org.springframework.test.web.servlet.MockMvc;
 
@@ -153,9 +155,8 @@ class FileUploadControllerTest extends BaseFullStackTest {
     Organization organization = new Organization("best org", "lab", "best-org-123", true);
     TestResultUpload testResultUpload =
         new TestResultUpload(reportId, UploadStatus.SUCCESS, 5, organization, null, null);
-
-    when(testResultUploadService.processResultCSV(any(InputStream.class)))
-        .thenReturn(testResultUpload);
+    var httpResponse = new ResponseEntity<TestResultUpload>(testResultUpload, HttpStatus.OK);
+    when(testResultUploadService.processResultCSV(any(InputStream.class))).thenReturn(httpResponse);
 
     MockMultipartFile file =
         new MockMultipartFile(
