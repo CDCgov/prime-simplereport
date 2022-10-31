@@ -183,11 +183,13 @@ const CsvSchemaDocumentation = () => {
             <a
               href="/getting-started/organizations-and-testing-facilities/where-does-simplereport-work"
               className="usa-link"
+              target="_blank"
+              rel="noopener noreferrer"
             >
               states partnered with SimpleReport
-            </a>{" "}.
-            If you report to multiple jurisdictions, you can share results with
-            them using one spreadsheet. SimpleReport routes data to the
+            </a>{" "}
+            . If you report to multiple jurisdictions, you can share results
+            with them using one spreadsheet. SimpleReport routes data to the
             appropriate health departments based on the facility location and
             patient address fields in your CSV.
           </p>
