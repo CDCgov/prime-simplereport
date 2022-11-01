@@ -28,8 +28,13 @@ const variantIcons: Record<ModalVariant, IconDefinition> = {
   warning: faExclamationCircle,
 };
 
-const Header: React.FC<{}> = ({ children }) => (
-  <h1 className="modal__heading font-sans-lg margin-0">{children}</h1>
+const Header: React.FC<{ styleClassNames?: string }> = ({
+  children,
+  styleClassNames,
+}) => (
+  <h1 className={"modal__heading font-sans-lg " + styleClassNames}>
+    {children}
+  </h1>
 );
 const Footer: React.FC<{}> = ({ children }) => (
   <div className="modal__footer">{children}</div>

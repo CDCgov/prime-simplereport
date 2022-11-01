@@ -42,7 +42,7 @@ export const DuplicatePatientModal: React.FC<DuplicateModalProps> = ({
       variant="warning"
       contentLabel={"Duplicate patient"}
     >
-      <Modal.Header>
+      <Modal.Header styleClassNames={"margin-0"}>
         {onClose
           ? `This patient is already registered at ${entityName}`
           : `${t("selfRegistration.duplicate.heading")} ${entityName}`}
