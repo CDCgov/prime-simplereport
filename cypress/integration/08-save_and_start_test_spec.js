@@ -55,7 +55,6 @@ describe("edit patient and save and start test", () => {
         {
           rules: {
             // error applies to the toast
-            'heading-order': { enabled: false },
             'landmark-one-main': { enabled: false },
             'landmark-unique': { enabled: false },
             // failing a11y test
@@ -83,7 +82,6 @@ describe("edit patient and save and start test", () => {
             // failing a11y test
             // error applies to the toast
             // observe this by adding cy.wait(5000); to wait for the toasts to disappear
-            'heading-order': { enabled: false },
             'landmark-one-main': { enabled: false },
             'landmark-unique': { enabled: false },
           },

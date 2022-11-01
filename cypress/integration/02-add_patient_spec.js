@@ -82,7 +82,6 @@ describe("Adding a patient", () => {
         },
         {
           rules: {
-            'heading-order': { enabled: false },
           },
         },
     );

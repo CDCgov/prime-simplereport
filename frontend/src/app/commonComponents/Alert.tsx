@@ -56,7 +56,7 @@ const Alert = ({
       role={role ? role : type === "error" ? "alert" : "region"}
     >
       <div className="usa-alert__body">
-        {title && <h3 className="usa-alert__heading">{title}</h3>}
+        {title && <div className="usa-alert__heading text-bold">{title}</div>}
         <div className="usa-alert__text">{body || children}</div>
       </div>
     </div>

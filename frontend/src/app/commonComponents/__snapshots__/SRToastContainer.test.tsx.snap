@@ -27,11 +27,11 @@ Object {
                 <div
                   class="usa-alert__body"
                 >
-                  <h3
-                    class="usa-alert__heading"
+                  <div
+                    class="usa-alert__heading text-bold"
                   >
                     Problems saving data to server
-                  </h3>
+                  </div>
                   <div
                     class="usa-alert__text"
                   >
@@ -87,11 +87,11 @@ Object {
               <div
                 class="usa-alert__body"
               >
-                <h3
-                  class="usa-alert__heading"
+                <div
+                  class="usa-alert__heading text-bold"
                 >
                   Problems saving data to server
-                </h3>
+                </div>
                 <div
                   class="usa-alert__text"
                 >
@@ -204,11 +204,11 @@ Object {
                 <div
                   class="usa-alert__body"
                 >
-                  <h3
-                    class="usa-alert__heading"
+                  <div
+                    class="usa-alert__heading text-bold"
                   >
                     Success
-                  </h3>
+                  </div>
                   <div
                     class="usa-alert__text"
                   >
@@ -264,11 +264,11 @@ Object {
               <div
                 class="usa-alert__body"
               >
-                <h3
-                  class="usa-alert__heading"
+                <div
+                  class="usa-alert__heading text-bold"
                 >
                   Success
-                </h3>
+                </div>
                 <div
                   class="usa-alert__text"
                 >
