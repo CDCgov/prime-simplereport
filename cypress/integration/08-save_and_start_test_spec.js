@@ -134,9 +134,6 @@ describe("add patient and save and start test", () => {
         },
         {
           rules: {
-            'aria-dialog-name': { enabled: false },
-            'landmark-one-main': { enabled: false },
-            'page-has-heading-one': { enabled: false },
           },
         },
     );

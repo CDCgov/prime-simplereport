@@ -183,9 +183,6 @@ describe("Organization sign up", () => {
         },
         {
           rules: {
-            'aria-dialog-name': { enabled: false },
-            'landmark-one-main': { enabled: false },
-            'page-has-heading-one': { enabled: false },
           },
         },
     );
