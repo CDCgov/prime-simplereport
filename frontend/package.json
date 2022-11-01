@@ -29,7 +29,7 @@
     "flagged": "^2.0.4",
     "google-libphonenumber": "^3.2.26",
     "graphql": "^16.6.0",
-    "i18next": "^20.3.0",
+    "i18next": "22.0.4",
     "jwt-decode": "^3.1.2",
     "lodash": "^4.17.21",
     "minimist": "1.2.6",
