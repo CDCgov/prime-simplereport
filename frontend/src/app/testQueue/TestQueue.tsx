@@ -169,7 +169,7 @@ const TestQueue: React.FC<Props> = ({ activeFacilityId }) => {
   );
   const canUseCsvUploader = hasPermission(
     useSelector((state) => (state as any).user.permissions),
-    appPermissions.featureFlags.SrCsvUploaderPilot
+    appPermissions.results.canView
   );
 
   useEffect(() => {

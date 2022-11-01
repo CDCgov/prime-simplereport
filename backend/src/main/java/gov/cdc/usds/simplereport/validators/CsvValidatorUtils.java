@@ -44,19 +44,21 @@ public class CsvValidatorUtils {
               STATE_CODES.stream().map(String::toLowerCase),
               CANADIAN_STATE_CODES.stream().map(String::toLowerCase))
           .collect(Collectors.toSet());
+  private static final String UNKNOWN_LITERAL = "unknown";
+
   private static final Set<String> GENDER_VALUES =
       Set.of(
           "m", "male",
           "f", "female",
           "o", "other",
-          "u", "unknown",
+          "u", UNKNOWN_LITERAL,
           "a", "ambiguous",
           "n", "not applicable");
   private static final Set<String> ETHNICITY_VALUES =
       Set.of(
           "2135-2", "hispanic or latino",
           "2186-5", "not hispanic or latino",
-          "unk", "unknown");
+          "unk", UNKNOWN_LITERAL);
   private static final Set<String> RACE_VALUES =
       Set.of(
           "1002-5", "american indian or alaska native",
@@ -66,7 +68,7 @@ public class CsvValidatorUtils {
           "2106-3", "white",
           "2131-1", "other",
           "asku", "ask but unknown",
-          "unk", "unknown");
+          "unk", UNKNOWN_LITERAL);
   private static final Set<String> YES_NO_VALUES =
       Set.of(
           "y", "yes",
@@ -105,11 +107,15 @@ public class CsvValidatorUtils {
           "285141008", "work (environment)",
           "32911000", "homeless");
   private static final Set<String> PATIENT_ROLE_VALUES =
-      Set.of("staff", "resident", "student", "visitor", "unknown");
+      Set.of("staff", "resident", "student", "visitor", UNKNOWN_LITERAL);
   private static final Set<String> PHONE_NUMBER_TYPE_VALUES = Set.of("mobile", "landline");
   private static final Set<String> TEST_RESULT_STATUS_VALUES = Set.of("f", "c");
   private static final String ITEM_SCOPE = "item";
   private static final String REPORT_SCOPE = "report";
+
+  private CsvValidatorUtils() {
+    throw new IllegalStateException("CsvValidatorUtils is a utility class");
+  }
 
   public static List<FeedbackMessage> validateTestResult(ValueOrError input) {
     return validateSpecificValueOrSNOMED(input, TEST_RESULT_VALUES);

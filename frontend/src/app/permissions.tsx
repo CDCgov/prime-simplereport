@@ -67,15 +67,6 @@ const appPermissions = {
     canUpdate: [UserPermission.UpdateTest],
     canSubmit: [UserPermission.SubmitTest],
   },
-  featureFlags: {
-    SrCsvUploaderPilot: [
-      UserPermission.SrCsvUploaderPilot,
-      UserPermission.StartTest,
-      UserPermission.UpdateTest,
-      UserPermission.SubmitTest,
-      UserPermission.ReadResultList,
-    ],
-  },
 };
 
 export { hasPermission, appPermissions };

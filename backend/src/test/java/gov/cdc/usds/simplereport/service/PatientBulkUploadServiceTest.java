@@ -19,6 +19,7 @@ import java.io.ByteArrayInputStream;
 import java.io.InputStream;
 import java.nio.charset.StandardCharsets;
 import java.util.List;
+import java.util.Map;
 import java.util.UUID;
 import java.util.stream.Collectors;
 import org.junit.jupiter.api.BeforeEach;
@@ -69,6 +70,14 @@ class PatientBulkUploadServiceTest extends BaseServiceTest<PatientBulkUploadServ
 
   @Test
   void testSuccessfulUpload_withValidCsv() {
+  void testRowWithEmptyValueRequired() {
+    var emptyRow = Map.of("key1", "");
+    assertThrows(
+        IllegalArgumentException.class, () -> this._service.getRow(emptyRow, "key1", true));
+  }
+
+  @Test
+  void testUploadValidCsv() {
     // GIVEN
     InputStream inputStream = loadCsv("test-patient-upload-valid.csv");
 
@@ -109,8 +118,8 @@ class PatientBulkUploadServiceTest extends BaseServiceTest<PatientBulkUploadServ
     // WHEN
     this._service.processPersonCSV(inputStream, firstFacilityId);
 
-    assertThat(getPatientsForFacility(firstFacilityId).size()).isEqualTo(1);
-    assertThat(getPatientsForFacility(secondFacilityId).size()).isEqualTo(0);
+    assertThat(getPatientsForFacility(firstFacilityId)).hasSize(1);
+    assertThat(getPatientsForFacility(secondFacilityId)).isEmpty();
   }
 
   @Test
