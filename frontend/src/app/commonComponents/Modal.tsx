@@ -11,6 +11,7 @@ type ModalVariant = "warning";
 interface Props {
   onClose: () => void;
   showModal: boolean;
+  contentLabel: string;
   showClose?: boolean;
   containerClassName?: string;
   variant?: "warning";
@@ -41,6 +42,7 @@ const Modal: React.FC<Props> & SubComponents = ({
   showClose = true,
   containerClassName,
   variant,
+  contentLabel,
 }) => {
   const containerClasses = classnames(
     containerClassName,
@@ -70,6 +72,7 @@ const Modal: React.FC<Props> & SubComponents = ({
       }}
       overlayClassName="prime-modal-overlay display-flex flex-align-center flex-justify-center"
       ariaHideApp={process.env.NODE_ENV !== "test"}
+      contentLabel={contentLabel}
     >
       <div className={containerClasses}>
         {showClose && (

@@ -171,7 +171,11 @@ export const AddressConfirmationModal = <T extends string>({
   };
 
   return (
-    <Modal onClose={closeModal} showModal={showModal}>
+    <Modal
+      onClose={closeModal}
+      showModal={showModal}
+      contentLabel={t("address.heading")}
+    >
       <Modal.Header>{t("address.heading")}</Modal.Header>
       <div className="border-top border-base-lighter margin-x-neg-205"></div>
       {getAlert()}

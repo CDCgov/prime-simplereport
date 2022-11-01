@@ -40,6 +40,7 @@ export const DuplicatePatientModal: React.FC<DuplicateModalProps> = ({
       showModal={showModal}
       showClose={false}
       variant="warning"
+      contentLabel={"Duplicate patient"}
     >
       <Modal.Header>
         {onClose
