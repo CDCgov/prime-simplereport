@@ -29,7 +29,7 @@ const variantIcons: Record<ModalVariant, IconDefinition> = {
 };
 
 const Header: React.FC<{}> = ({ children }) => (
-  <h3 className="modal__heading">{children}</h3>
+  <h1 className="modal__heading font-sans-lg margin-0">{children}</h1>
 );
 const Footer: React.FC<{}> = ({ children }) => (
   <div className="modal__footer">{children}</div>
