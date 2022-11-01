@@ -20,6 +20,7 @@ import feign.FeignException;
 import feign.Request;
 import feign.RequestTemplate;
 import gov.cdc.usds.simplereport.api.model.errors.CsvProcessingException;
+import gov.cdc.usds.simplereport.api.model.errors.DependencyFailureException;
 import gov.cdc.usds.simplereport.db.model.TestResultUpload;
 import gov.cdc.usds.simplereport.db.model.auxiliary.UploadStatus;
 import gov.cdc.usds.simplereport.db.repository.TestResultUploadRepository;
@@ -55,7 +56,6 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.context.properties.EnableConfigurationProperties;
 import org.springframework.cloud.contract.wiremock.AutoConfigureWireMock;
 import org.springframework.http.HttpStatus;
-import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.AccessDeniedException;
 import org.springframework.test.annotation.DirtiesContext;
 import org.springframework.test.context.junit.jupiter.SpringExtension;
@@ -99,18 +99,18 @@ class TestResultUploadServiceTest extends BaseServiceTest<TestResultUploadServic
     InputStream input = loadCsv("test-results-upload-valid.csv");
 
     var output = this._service.processResultCSV(input);
-    assertEquals(UploadStatus.PENDING, output.getBody().getStatus());
-    assertEquals(14, output.getBody().getRecordsCount());
-    assertNotNull(output.getBody().getOrganization());
+    assertEquals(UploadStatus.PENDING, output.getStatus());
+    assertEquals(14, output.getRecordsCount());
+    assertNotNull(output.getOrganization());
 
-    var warningMessage = Arrays.stream(output.getBody().getWarnings()).findFirst().get();
+    var warningMessage = Arrays.stream(output.getWarnings()).findFirst().get();
     assertNotNull(warningMessage.getMessage());
     assertNotNull(warningMessage.getScope());
-    assertEquals(0, output.getBody().getErrors().length);
+    assertEquals(0, output.getErrors().length);
 
-    assertNotNull(output.getBody().getCreatedAt());
-    assertNotNull(output.getBody().getUpdatedAt());
-    assertNotNull(output.getBody().getInternalId());
+    assertNotNull(output.getCreatedAt());
+    assertNotNull(output.getUpdatedAt());
+    assertNotNull(output.getInternalId());
   }
 
   @Test
@@ -144,8 +144,8 @@ class TestResultUploadServiceTest extends BaseServiceTest<TestResultUploadServic
 
     var response = this._service.processResultCSV(input);
 
-    assertEquals(6, response.getBody().getErrors().length);
-    assertEquals(FAILURE, response.getBody().getStatus());
+    assertEquals(6, response.getErrors().length);
+    assertEquals(FAILURE, response.getStatus());
   }
 
   @Test
@@ -165,8 +165,8 @@ class TestResultUploadServiceTest extends BaseServiceTest<TestResultUploadServic
 
     var response = this._service.processResultCSV(input);
 
-    assertNull(response.getBody().getErrors());
-    assertEquals(FAILURE, response.getBody().getStatus());
+    assertNull(response.getErrors());
+    assertEquals(FAILURE, response.getStatus());
   }
 
   @Test
@@ -193,8 +193,8 @@ class TestResultUploadServiceTest extends BaseServiceTest<TestResultUploadServic
     when(dataHubMock.uploadCSV(any())).thenReturn(response);
 
     var output = sut.processResultCSV(input);
-    assertNotNull(output.getBody().getReportId());
-    assertEquals(UploadStatus.PENDING, output.getBody().getStatus());
+    assertNotNull(output.getReportId());
+    assertEquals(UploadStatus.PENDING, output.getStatus());
   }
 
   @Test
@@ -218,10 +218,7 @@ class TestResultUploadServiceTest extends BaseServiceTest<TestResultUploadServic
     when(csvFileValidatorMock.validate(any())).thenReturn(Collections.emptyList());
     when(dataHubMock.uploadCSV(any())).thenThrow(reportStreamResponse);
 
-    var output = sut.processResultCSV(input);
-
-    assertEquals(FAILURE, output.getBody().getStatus());
-    assertEquals(HttpStatus.SERVICE_UNAVAILABLE, output.getStatusCode());
+    assertThrows(DependencyFailureException.class, () -> sut.processResultCSV(input));
   }
 
   private InputStream loadCsv(String csvFile) {
@@ -290,12 +287,11 @@ class TestResultUploadServiceTest extends BaseServiceTest<TestResultUploadServic
     when(orgServiceMock.getCurrentOrganization()).thenReturn(factory.createValidOrg());
 
     // WHEN
-    ResponseEntity<TestResultUpload> result = sut.processResultCSV(invalidInput);
+    TestResultUpload result = sut.processResultCSV(invalidInput);
 
     // THEN
-    assertNotNull(result.getBody());
-    assertThat(result.getBody().getStatus()).isEqualTo(FAILURE);
-    assertThat(result.getBody().getErrors()).hasSize(1);
-    assertThat(result.getBody().getErrors()[0].getMessage()).isEqualTo("my lovely error message");
+    assertThat(result.getStatus()).isEqualTo(FAILURE);
+    assertThat(result.getErrors()).hasSize(1);
+    assertThat(result.getErrors()[0].getMessage()).isEqualTo("my lovely error message");
   }
 }

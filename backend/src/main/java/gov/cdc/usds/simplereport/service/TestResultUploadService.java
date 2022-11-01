@@ -5,6 +5,7 @@ import com.fasterxml.jackson.databind.DeserializationFeature;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import feign.FeignException;
 import gov.cdc.usds.simplereport.api.model.errors.CsvProcessingException;
+import gov.cdc.usds.simplereport.api.model.errors.DependencyFailureException;
 import gov.cdc.usds.simplereport.config.AuthorizationConfiguration;
 import gov.cdc.usds.simplereport.db.model.Organization;
 import gov.cdc.usds.simplereport.db.model.TestResultUpload;
@@ -32,8 +33,6 @@ import org.springframework.beans.factory.annotation.Value;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Sort;
-import org.springframework.http.HttpStatus;
-import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 
 @Service
@@ -71,7 +70,7 @@ public class TestResultUploadService {
       new ObjectMapper().configure(DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES, false);
 
   @AuthorizationConfiguration.RequirePermissionCSVUpload
-  public ResponseEntity<TestResultUpload> processResultCSV(InputStream csvStream) {
+  public TestResultUpload processResultCSV(InputStream csvStream) {
 
     TestResultUpload result = new TestResultUpload(UploadStatus.FAILURE);
 
@@ -89,7 +88,7 @@ public class TestResultUploadService {
         testResultFileValidator.validate(new ByteArrayInputStream(content));
     if (!errors.isEmpty()) {
       result.setErrors(errors.toArray(FeedbackMessage[]::new));
-      return new ResponseEntity<>(result, HttpStatus.OK); // should return bad request?
+      return result; // should return bad request?
     }
 
     UploadResponse response = null;
@@ -117,10 +116,8 @@ public class TestResultUploadService {
       if (response.getOverallStatus() != ReportStreamStatus.ERROR) {
         _repo.save(result);
       }
-      return new ResponseEntity<>(result, HttpStatus.OK);
     }
-
-    return new ResponseEntity<>(result, HttpStatus.SERVICE_UNAVAILABLE);
+    return result;
   }
 
   private UploadResponse parseFeignException(FeignException e) {
@@ -128,7 +125,7 @@ public class TestResultUploadService {
       return mapper.readValue(e.contentUTF8(), UploadResponse.class);
     } catch (JsonProcessingException ex) {
       log.error("Unable to parse Report Stream response.", ex);
-      return null;
+      throw new DependencyFailureException("Unable to parse Report Stream response.");
     }
   }
 
