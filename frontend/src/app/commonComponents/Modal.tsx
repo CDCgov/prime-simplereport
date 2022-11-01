@@ -84,14 +84,16 @@ const Modal: React.FC<Props> & SubComponents = ({
             <img className="modal__close-img" src={iconClose} alt="Close" />
           </button>
         )}
-        <div className="modal__content grid-row">
-          {variant && (
-            <div className="grid-col flex-auto margin-right-2">
-              <FontAwesomeIcon icon={variantIcons[variant]} size="2x" />
-            </div>
-          )}
-          <div className="grid-col">{children}</div>
-        </div>
+        <main>
+          <div className="modal__content grid-row">
+            {variant && (
+              <div className="grid-col flex-auto margin-right-2">
+                <FontAwesomeIcon icon={variantIcons[variant]} size="2x" />
+              </div>
+            )}
+            <div className="grid-col">{children}</div>
+          </div>
+        </main>
       </div>
     </ReactModal>
   );
