@@ -63,7 +63,6 @@ public class TenantDataAccessService {
     // authority names for the org being accessed (assume org-level admin in the tenant)
     authorities.add(prefix + org.getExternalId() + ":" + OrganizationRole.getDefault());
     authorities.add(prefix + org.getExternalId() + ":" + OrganizationRole.ADMIN);
-    authorities.add(prefix + org.getExternalId() + ":" + OrganizationRole.TEST_RESULT_UPLOAD_USER);
 
     PermissionsData permissionsData = new PermissionsData(authorities);
 
