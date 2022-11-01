@@ -7,7 +7,11 @@ import { faSlidersH } from "@fortawesome/free-solid-svg-icons";
 import { NavigateOptions, useNavigate } from "react-router-dom";
 
 import { displayFullName } from "../utils";
-import { PATIENT_TERM, PATIENT_TERM_PLURAL_CAP } from "../../config/constants";
+import {
+  PATIENT_TERM,
+  PATIENT_TERM_CAP,
+  PATIENT_TERM_PLURAL_CAP,
+} from "../../config/constants";
 import { daysSince } from "../utils/date";
 import { capitalizeText } from "../utils/text";
 import { LinkWithQuery } from "../commonComponents/LinkWithQuery";
@@ -225,7 +229,7 @@ export const DetachedManagePatients = ({
                       }),
                   },
                   {
-                    name: "Archive person",
+                    name: `Archive ${PATIENT_TERM}`,
                     action: () => setArchivePerson(patient),
                   },
                 ]}
@@ -282,7 +286,7 @@ export const DetachedManagePatients = ({
             </div>
             <div className="display-flex flex-row bg-base-lightest padding-x-3 padding-y-2">
               <SearchInput
-                label="Person"
+                label={PATIENT_TERM_CAP}
                 onInputChange={(e) => {
                   setDebounced(e.target.value);
                 }}

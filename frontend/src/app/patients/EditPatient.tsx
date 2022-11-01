@@ -4,7 +4,10 @@ import { NavigateOptions, NavLink, useNavigate } from "react-router-dom";
 import { useTranslation } from "react-i18next";
 
 import iconSprite from "../../../node_modules/uswds/dist/img/sprite.svg";
-import { PATIENT_TERM_CAP } from "../../config/constants";
+import {
+  PATIENT_TERM_CAP,
+  PATIENT_TERM_PLURAL_CAP,
+} from "../../config/constants";
 import { displayFullName, dedupeAndCompactStrings } from "../utils";
 import { showSuccess } from "../utils/srToast";
 import Button from "../commonComponents/Button/Button";
@@ -319,7 +322,7 @@ const EditPatient = (props: Props) => {
                           to={`/patients`}
                           className="margin-left-05"
                         >
-                          People
+                          {PATIENT_TERM_PLURAL_CAP}
                         </LinkWithQuery>
                       )}
                     </div>

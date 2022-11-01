@@ -15,7 +15,7 @@ describe("Adding a patient", () => {
     cy.get("#desktop-patient-nav-link").click();
     cy.get(".prime-container");
     cy.get("#add-patient-button").click();
-    cy.get(".prime-edit-patient").contains("Add new person");
+    cy.get(".prime-edit-patient").contains("Add new patient");
     cy.injectAxe();
     cy.checkA11y(); // Patient form
   });
@@ -67,7 +67,7 @@ describe("Adding a patient", () => {
     );
 
     cy.get(".modal__container #save-confirmed-address").click();
-    cy.get(".usa-card__header").contains("People");
+    cy.get(".usa-card__header").contains("Patients");
     cy.get(".usa-card__header").contains("Showing");
     cy.get("#search-field-small").type(patient.lastName);
     cy.get(".prime-container").contains(patient.fullName);
