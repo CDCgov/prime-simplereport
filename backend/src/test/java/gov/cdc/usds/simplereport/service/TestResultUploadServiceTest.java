@@ -5,7 +5,6 @@ import static gov.cdc.usds.simplereport.db.model.auxiliary.UploadStatus.FAILURE;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
-import static org.junit.jupiter.api.Assertions.assertNull;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyMap;
@@ -163,10 +162,7 @@ class TestResultUploadServiceTest extends BaseServiceTest<TestResultUploadServic
 
     InputStream input = loadCsv("test-results-upload-valid.csv");
 
-    var response = this._service.processResultCSV(input);
-
-    assertNull(response.getErrors());
-    assertEquals(FAILURE, response.getStatus());
+    assertThrows(DependencyFailureException.class, () -> this._service.processResultCSV(input));
   }
 
   @Test
