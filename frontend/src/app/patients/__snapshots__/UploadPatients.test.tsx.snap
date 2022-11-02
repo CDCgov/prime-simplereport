@@ -11,74 +11,72 @@ exports[`Upload Patient displays the upload patients page correctly 1`] = `
       <div
         class="patient__header"
       >
-        <div>
-          <div
-            class="display-flex flex-justify"
-          >
-            <div>
-              <div
-                class="display-flex flex-align-center"
+        <div
+          class="display-flex flex-justify"
+        >
+          <div>
+            <div
+              class="display-flex flex-align-center"
+            >
+              <svg
+                aria-hidden="true"
+                class="usa-icon text-base margin-left-neg-2px"
+                focusable="false"
+                role="img"
               >
-                <svg
-                  aria-hidden="true"
-                  class="usa-icon text-base margin-left-neg-2px"
-                  focusable="false"
-                  role="img"
-                >
-                  <use
-                    xlink:href="sprite.svg#arrow_back"
-                  />
-                </svg>
-                <a
-                  class="margin-left-05"
-                  href="/patients"
-                >
-                  People
-                </a>
-              </div>
-              <div
-                class="prime-edit-patient-heading margin-y-0"
+                <use
+                  xlink:href="sprite.svg#arrow_back"
+                />
+              </svg>
+              <a
+                class="margin-left-05"
+                href="/patients"
               >
-                <h1
-                  class="font-heading-lg margin-top-1 margin-bottom-0"
-                >
-                  Add new 
-                  person
-                </h1>
-              </div>
+                People
+              </a>
+            </div>
+            <div
+              class="prime-edit-patient-heading margin-y-0"
+            >
+              <h1
+                class="font-heading-lg margin-top-1 margin-bottom-0"
+              >
+                Add new 
+                person
+              </h1>
             </div>
           </div>
-          <nav
-            aria-label="Secondary navigation"
-            class="prime-secondary-nav padding-top-2"
-          >
-            <ul
-              class="usa-nav__secondary-links prime-nav"
-            >
-              <li
-                class="usa-nav__secondary-item padding-left-0"
-              >
-                <a
-                  class=""
-                  href="/add-patient"
-                >
-                  Add individual 
-                  person
-                </a>
-              </li>
-              <li
-                class="usa-nav__secondary-item"
-              >
-                <a
-                  class=""
-                  href="/upload-patients"
-                >
-                  Import from spreadsheet
-                </a>
-              </li>
-            </ul>
-          </nav>
         </div>
+        <nav
+          aria-label="Secondary navigation"
+          class="prime-secondary-nav padding-top-2"
+        >
+          <ul
+            class="usa-nav__secondary-links prime-nav"
+          >
+            <li
+              class="usa-nav__secondary-item padding-left-0"
+            >
+              <a
+                class=""
+                href="/add-patient"
+              >
+                Add individual 
+                person
+              </a>
+            </li>
+            <li
+              class="usa-nav__secondary-item"
+            >
+              <a
+                class=""
+                href="/upload-patients"
+              >
+                Import from spreadsheet
+              </a>
+            </li>
+          </ul>
+        </nav>
       </div>
       <div
         class="card padding-left-0"

@@ -10,7 +10,7 @@ interface Props {
 }
 export const AddPatientHeader = (props: Props) => {
   return (
-    <div>
+    <>
       <div className="display-flex flex-justify">
         <div>
           <div className="display-flex flex-align-center">
@@ -35,6 +35,6 @@ export const AddPatientHeader = (props: Props) => {
         {props.additional}
       </div>
       <PatientsNav />
-    </div>
+    </>
   );
 };
