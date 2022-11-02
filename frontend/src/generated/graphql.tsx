@@ -2844,6 +2844,7 @@ export type GetDeviceTypesForLookupQuery = {
       name: string;
       typeCode: string;
     }>;
+    supportedDiseases: Array<{ __typename?: "SupportedDisease"; name: string }>;
   }>;
 };
 
@@ -7312,6 +7313,9 @@ export const GetDeviceTypesForLookupDocument = gql`
         internalId
         name
         typeCode
+      }
+      supportedDiseases {
+        name
       }
     }
   }

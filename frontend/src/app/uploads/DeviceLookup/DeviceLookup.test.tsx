@@ -56,7 +56,7 @@ describe("Device lookup - no devices", () => {
 
     expect(screen.getByText("Celoxitin")).toBeInTheDocument();
     expect(screen.getByText("Model A")).toBeInTheDocument();
-    expect(screen.getByText("RT-PCR")).toBeInTheDocument();
+    expect(screen.getByText("COVID-19")).toBeInTheDocument();
   });
 
   it("selected device displays device info", async () => {
@@ -73,6 +73,12 @@ describe("Device lookup - no devices", () => {
     const loinc = screen.getByLabelText("Test performed code");
     expect(loinc).toBeDisabled();
     expect(loinc).toHaveValue("1234-1");
+
+    const testResults = screen.getByLabelText("Test result");
+    expect(within(testResults).getByText("Positive")).toBeInTheDocument();
+    expect(within(testResults).getByText("260373001")).toBeInTheDocument();
+    expect(within(testResults).getByText("Negative")).toBeInTheDocument();
+    expect(within(testResults).getByText("260415000")).toBeInTheDocument();
 
     const specimenType = screen.getByLabelText("Specimen type");
     expect(within(specimenType).getByText("nose")).toBeInTheDocument();

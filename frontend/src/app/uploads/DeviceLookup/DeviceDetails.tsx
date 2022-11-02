@@ -3,11 +3,19 @@ import "./DeviceLookup.scss";
 import React, { useEffect, useState } from "react";
 import { faCheck } from "@fortawesome/free-solid-svg-icons/faCheck";
 import { faCopy } from "@fortawesome/free-solid-svg-icons/faCopy";
+import { capitalize } from "lodash";
 
 import Optional from "../../commonComponents/Optional";
 import TextInput from "../../commonComponents/TextInput";
 import CopyTooltip from "../../commonComponents/CopyTooltip";
 import { DeviceType } from "../../../generated/graphql";
+import { TEST_RESULTS } from "../../testResults/constants";
+
+const testResultCodes = {
+  [TEST_RESULTS.POSITIVE]: "260373001",
+  [TEST_RESULTS.NEGATIVE]: "260415000",
+  [TEST_RESULTS.UNDETERMINED]: "419984006",
+};
 
 const onChange = () => {};
 
@@ -100,6 +108,44 @@ const DeviceDetails = (props: { device: DeviceType }) => {
           </div>
         </div>
       </div>
+
+      <div className="grid-row grid-gap">
+        <div className="tablet:grid-col">
+          <div style={{ position: "relative" }}>
+            <div className="usa-form-group">
+              <label id="test-result" className="usa-label">
+                <Optional label="Test result" />
+              </label>
+              <span className="usa-hint">
+                <code>test_result</code>
+              </span>
+              <table aria-labelledby="test-result" className={"usa-table"}>
+                <tbody>
+                  {Object.entries(testResultCodes).map(([result, code]) => (
+                    <tr key={result}>
+                      <td>{capitalize(result)}</td>
+                      <td>
+                        <div
+                          style={{ position: "relative" }}
+                          className="display-flex flex-justify"
+                        >
+                          <span>{code}</span>
+                          {getCopyToClipboardButton(
+                            code,
+                            `Copy code for ${result} (${code})`,
+                            true
+                          )}
+                        </div>
+                      </td>
+                    </tr>
+                  ))}
+                </tbody>
+              </table>
+            </div>
+          </div>
+        </div>
+      </div>
+
       <div className="grid-row grid-gap">
         <div className="tablet:grid-col">
           <div style={{ position: "relative" }}>

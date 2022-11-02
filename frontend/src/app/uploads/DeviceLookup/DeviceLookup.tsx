@@ -93,7 +93,7 @@ const DeviceLookup = (props: Props) => {
       <div className="grid-container">
         <div className="prime-container card-container">
           <div className="usa-card__header">
-            <h1 className="font-sans-lg">Device lookup</h1>
+            <h1 className="font-sans-lg">Device code lookup</h1>
           </div>
           <div className="usa-card__body margin-top-1">
             <strong

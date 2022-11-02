@@ -14,26 +14,6 @@ interface SearchResultsProps {
   queryString?: string;
 }
 
-const getTestTypeFromDeviceName = (deviceName: string): string => {
-  if (!deviceName) {
-    return "";
-  }
-
-  /*
-   * Device test types (PCR, antigen, etc.) are not stored in a dedicated column in the devices
-   * table, but instead are parenthesized and appended to the device name
-   * Get the test type from inside the parentheses at the end of the string
-   */
-  const re = /\(([^()]*)\)$/;
-
-  const match = deviceName.match(re);
-  if (!match || match.length === 0) {
-    return "";
-  }
-
-  return match[1];
-};
-
 const DeviceSearchResults = (props: SearchResultsProps) => {
   const {
     devices,
@@ -81,7 +61,7 @@ const DeviceSearchResults = (props: SearchResultsProps) => {
               <td id={`device-${idx}`}>{d.manufacturer}</td>
               <td id={`model-name-${idx}`}>{d.model}</td>
               <td id={`test-type-${idx}`}>
-                {getTestTypeFromDeviceName(d.name)}
+                {d.supportedDiseases?.map((sd) => sd.name).join(", ")}
               </td>
               <td id={`view-${idx}`}>
                 {
