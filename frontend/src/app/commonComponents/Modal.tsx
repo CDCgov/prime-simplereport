@@ -31,11 +31,7 @@ const variantIcons: Record<ModalVariant, IconDefinition> = {
 const Header: React.FC<{ styleClassNames?: string }> = ({
   children,
   styleClassNames,
-}) => (
-  <h1 className={"modal__heading font-sans-lg " + styleClassNames}>
-    {children}
-  </h1>
-);
+}) => <h1 className={"modal__heading " + styleClassNames}>{children}</h1>;
 const Footer: React.FC<{}> = ({ children }) => (
   <div className="modal__footer">{children}</div>
 );
