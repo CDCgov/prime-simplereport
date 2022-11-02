@@ -253,3 +253,33 @@ ${local.skip_on_weekends}
     action_group = var.action_group_ids
   }
 }
+
+resource "azurerm_monitor_scheduled_query_rules_alert" "bulk_results_upload" {
+  name                = "${var.env}-bulk_results_upload"
+  description         = "${local.env_title} alert when bulk uploads "
+  location            = data.azurerm_resource_group.app.location
+  resource_group_name = var.rg_name
+
+  action {
+    action_group = var.action_group_ids
+  }
+
+  data_source_id = var.app_insights_id
+  enabled        = contains(var.disabled_alerts, "bulk_results_upload") ? false : true
+
+  query = <<-QUERY
+requests
+| where true
+| where timestamp >= ago(5m)
+    and name == "/upload/results"
+    and resultCode != 200
+  QUERY
+
+  severity    = 1
+  frequency   = 5
+  time_window = 5
+  trigger {
+    operator  = "GreaterThan"
+    threshold = 0
+  }
+}
