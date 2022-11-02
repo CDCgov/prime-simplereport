@@ -133,7 +133,7 @@ logging:
     json-log: "{\"time\": \"%d{yyyy-MM-dd HH:mm:ss.SSS}\", \"level\": \"%p\", \"source\": \"%logger{39}:%L\", \"message\": %replace(%m%wEx){'[\r\n]+', '\\n'}%nopex}%n"
 hibernate.query.interceptor.error-level: ERROR
 datahub:
-  url: ${DATAHUB_URL:http://localhost:9561}
+  url: "https://stagings.prime.cdc.gov/"
   api-key: ${DATAHUB_API_KEY:super-secret-api-key}
   api-version: "2021-09-21"
   jwt-scope: "simple_report.*.report"
