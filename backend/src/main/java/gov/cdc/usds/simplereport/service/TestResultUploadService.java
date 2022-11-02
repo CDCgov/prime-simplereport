@@ -88,7 +88,7 @@ public class TestResultUploadService {
         testResultFileValidator.validate(new ByteArrayInputStream(content));
     if (!errors.isEmpty()) {
       result.setErrors(errors.toArray(FeedbackMessage[]::new));
-      return result; // should return bad request?
+      return result;
     }
 
     UploadResponse response = null;
