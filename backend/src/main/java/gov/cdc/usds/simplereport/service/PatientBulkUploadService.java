@@ -4,6 +4,9 @@ import static gov.cdc.usds.simplereport.api.Translators.parsePersonRole;
 import static gov.cdc.usds.simplereport.api.Translators.parsePhoneType;
 import static gov.cdc.usds.simplereport.api.Translators.parseUserShortDate;
 import static gov.cdc.usds.simplereport.api.Translators.parseYesNo;
+import static gov.cdc.usds.simplereport.validators.CsvValidatorUtils.convertEthnicityToDatabaseValue;
+import static gov.cdc.usds.simplereport.validators.CsvValidatorUtils.convertRaceToDatabaseValue;
+import static gov.cdc.usds.simplereport.validators.CsvValidatorUtils.convertSexToDatabaseValue;
 
 import com.fasterxml.jackson.databind.MappingIterator;
 import gov.cdc.usds.simplereport.api.model.errors.CsvProcessingException;
@@ -50,7 +53,7 @@ public class PatientBulkUploadService {
   // This authorization will change once we open the feature to end users
   @AuthorizationConfiguration.RequireGlobalAdminUser
   public PatientBulkUploadResponse processPersonCSV(InputStream csvStream, UUID facilityId)
-          throws IllegalArgumentException {
+      throws IllegalArgumentException {
 
     PatientBulkUploadResponse result = new PatientBulkUploadResponse();
     result.setStatus(UploadStatus.FAILURE);
@@ -67,7 +70,7 @@ public class PatientBulkUploadService {
     }
 
     List<FeedbackMessage> errors =
-            _patientBulkUploadFileValidator.validate(new ByteArrayInputStream(content));
+        _patientBulkUploadFileValidator.validate(new ByteArrayInputStream(content));
 
     if (!errors.isEmpty()) {
       result.setErrors(errors.toArray(FeedbackMessage[]::new));
@@ -80,10 +83,10 @@ public class PatientBulkUploadService {
     // Putting a pin in it for now.
 
     final MappingIterator<Map<String, String>> valueIterator =
-            CsvValidatorUtils.getIteratorForCsv(new ByteArrayInputStream(content));
+        CsvValidatorUtils.getIteratorForCsv(new ByteArrayInputStream(content));
 
     Optional<Facility> facility =
-            Optional.ofNullable(facilityId).map(_organizationService::getFacilityInCurrentOrg);
+        Optional.ofNullable(facilityId).map(_organizationService::getFacilityInCurrentOrg);
 
     while (valueIterator.hasNext()) {
       final Map<String, String> row = CsvValidatorUtils.getNextRow(valueIterator);
@@ -94,57 +97,57 @@ public class PatientBulkUploadService {
 
         // Fetch address information
         StreetAddress address =
-                _addressValidationService.getValidatedAddress(
-                        extractedData.getStreet().getValue(),
-                        extractedData.getStreet2().getValue(),
-                        extractedData.getCity().getValue(),
-                        extractedData.getState().getValue(),
-                        extractedData.getZipCode().getValue(),
-                        null);
+            _addressValidationService.getValidatedAddress(
+                extractedData.getStreet().getValue(),
+                extractedData.getStreet2().getValue(),
+                extractedData.getCity().getValue(),
+                extractedData.getState().getValue(),
+                extractedData.getZipCode().getValue(),
+                null);
 
         String country = "USA";
 
         if (_personService.isDuplicatePatient(
-                extractedData.getFirstName().getValue(),
-                extractedData.getLastName().getValue(),
-                parseUserShortDate(extractedData.getDateOfBirth().getValue()),
-                org,
-                facility)) {
+            extractedData.getFirstName().getValue(),
+            extractedData.getLastName().getValue(),
+            parseUserShortDate(extractedData.getDateOfBirth().getValue()),
+            org,
+            facility)) {
           continue;
         }
 
         _personService.addPatient(
-                facilityId,
-                null, // lookupID
-                extractedData.getFirstName().getValue(),
-                extractedData.getMiddleName().getValue(),
-                extractedData.getLastName().getValue(),
-                extractedData.getSuffix().getValue(),
-                parseUserShortDate(extractedData.getDateOfBirth().getValue()),
-                address,
-                country,
-                List.of(
-                        new PhoneNumber(
-                                parsePhoneType(extractedData.getPhoneNumberType().getValue()),
-                                extractedData.getPhoneNumber().getValue())),
-                parsePersonRole(extractedData.getRole().getValue(), false),
-                List.of(extractedData.getEmail().getValue()),
-                extractedData.getRace().getValue(),
-                extractedData.getEthnicity().getValue(),
-                null,
-                extractedData.getBiologicalSex().getValue(),
-                parseYesNo(extractedData.getResidentCongregateSetting().getValue()),
-                parseYesNo(extractedData.getEmployedInHealthcare().getValue()),
-                null,
-                null);
+            facilityId,
+            null, // lookupID
+            extractedData.getFirstName().getValue(),
+            extractedData.getMiddleName().getValue(),
+            extractedData.getLastName().getValue(),
+            extractedData.getSuffix().getValue(),
+            parseUserShortDate(extractedData.getDateOfBirth().getValue()),
+            address,
+            country,
+            List.of(
+                new PhoneNumber(
+                    parsePhoneType(extractedData.getPhoneNumberType().getValue()),
+                    extractedData.getPhoneNumber().getValue())),
+            parsePersonRole(extractedData.getRole().getValue(), false),
+            List.of(extractedData.getEmail().getValue()),
+            convertRaceToDatabaseValue(extractedData.getRace().getValue()),
+            convertEthnicityToDatabaseValue(extractedData.getEthnicity().getValue()),
+            null,
+            convertSexToDatabaseValue(extractedData.getBiologicalSex().getValue()),
+            parseYesNo(extractedData.getResidentCongregateSetting().getValue()),
+            parseYesNo(extractedData.getEmployedInHealthcare().getValue()),
+            null,
+            null);
       } catch (IllegalArgumentException e) {
         String errorMessage = "Error uploading patient roster";
         log.error(
-                errorMessage
-                        + " for organization "
-                        + org.getExternalId()
-                        + " and facility "
-                        + facilityId);
+            errorMessage
+                + " for organization "
+                + org.getExternalId()
+                + " and facility "
+                + facilityId);
         throw new IllegalArgumentException(errorMessage);
       }
     }

@@ -16,6 +16,7 @@ import java.io.InputStreamReader;
 import java.nio.charset.StandardCharsets;
 import java.util.ArrayList;
 import java.util.Collections;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
@@ -216,6 +217,64 @@ public class CsvValidatorUtils {
     } catch (IOException e) {
       throw new IllegalArgumentException(e.getMessage());
     }
+  }
+
+  /* The acceptable values for race and ethnicity don't map to the values expected in our database. */
+  public static String convertEthnicityToDatabaseValue(String ethnicity) {
+    Map<String, String> displayValueToDatabaseValue =
+        Map.of(
+            "hispanic or latino",
+            "hispanic",
+            "not hispanic or latino",
+            "not_hispanic",
+            "unk",
+            UNKNOWN_LITERAL,
+            UNKNOWN_LITERAL,
+            UNKNOWN_LITERAL);
+
+    return displayValueToDatabaseValue.get(ethnicity.toLowerCase());
+  }
+
+  public static String convertRaceToDatabaseValue(String race) {
+    Map<String, String> displayValueToDatabaseValue =
+        Map.of(
+            "american indian or alaska native",
+            "native",
+            "asian",
+            "asian",
+            "black or african american",
+            "black",
+            "native hawaiian or other pacific islander",
+            "pacific",
+            "white",
+            "white",
+            "other",
+            "other",
+            "ask but unknown",
+            "refused",
+            UNKNOWN_LITERAL,
+            UNKNOWN_LITERAL);
+
+    return displayValueToDatabaseValue.get(race.toLowerCase());
+  }
+
+  public static String convertSexToDatabaseValue(String biologicalSex) {
+    // fun fact: Map.of() has a limit of 10 key/value pairs
+    HashMap<String, String> displayValueToDatabaseValue = new HashMap<>();
+    displayValueToDatabaseValue.put("m", "male");
+    displayValueToDatabaseValue.put("male", "male");
+    displayValueToDatabaseValue.put("f", "female");
+    displayValueToDatabaseValue.put("female", "female");
+    displayValueToDatabaseValue.put("o", "other");
+    displayValueToDatabaseValue.put("other", "other");
+    displayValueToDatabaseValue.put("u", "refused");
+    displayValueToDatabaseValue.put(UNKNOWN_LITERAL, "refused");
+    displayValueToDatabaseValue.put("a", "other");
+    displayValueToDatabaseValue.put("ambiguous", "other");
+    displayValueToDatabaseValue.put("n", "other");
+    displayValueToDatabaseValue.put("not applicable", "other");
+
+    return displayValueToDatabaseValue.get(biologicalSex.toLowerCase());
   }
 
   private static List<FeedbackMessage> validateSpecificValueOrSNOMED(

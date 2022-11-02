@@ -95,27 +95,27 @@ public class PatientBulkUploadFileValidator {
     private final ValueOrError email;
 
     public PatientUploadRow(Map<String, String> rawRow) {
-      firstName = getValue(rawRow, "FirstName", true);
-      lastName = getValue(rawRow, "LastName", true);
-      middleName = getValue(rawRow, "MiddleName", false);
-      suffix = getValue(rawRow, "Suffix", false);
-      race = getValue(rawRow, "Race", true);
-      dateOfBirth = getValue(rawRow, "DOB", true);
-      biologicalSex = getValue(rawRow, "biologicalSex", true);
-      ethnicity = getValue(rawRow, "Ethnicity", true);
-      street = getValue(rawRow, "Street", true);
-      street2 = getValue(rawRow, "Street2", false);
-      city = getValue(rawRow, "City", false);
-      county = getValue(rawRow, "County", false);
-      state = getValue(rawRow, "State", true);
-      zipCode = getValue(rawRow, "ZipCode", true);
-      country = getValue(rawRow, "Country", false);
-      phoneNumber = getValue(rawRow, "PhoneNumber", true);
-      phoneNumberType = getValue(rawRow, "PhoneNumberType", false);
-      employedInHealthcare = getValue(rawRow, "employedInHealthcare", true);
-      residentCongregateSetting = getValue(rawRow, "residentCongregateSetting", true);
-      role = getValue(rawRow, "Role", false);
-      email = getValue(rawRow, "Email", false);
+      firstName = getValue(rawRow, "first_name", true);
+      lastName = getValue(rawRow, "last_name", true);
+      middleName = getValue(rawRow, "middle_name", false);
+      suffix = getValue(rawRow, "suffix", false);
+      race = getValue(rawRow, "race", true);
+      dateOfBirth = getValue(rawRow, "date_of_birth", true);
+      biologicalSex = getValue(rawRow, "biological_sex", true);
+      ethnicity = getValue(rawRow, "ethnicity", true);
+      street = getValue(rawRow, "street", true);
+      street2 = getValue(rawRow, "street_2", false);
+      city = getValue(rawRow, "city", false);
+      county = getValue(rawRow, "county", false);
+      state = getValue(rawRow, "state", true);
+      zipCode = getValue(rawRow, "zip_code", true);
+      country = getValue(rawRow, "country", false);
+      phoneNumber = getValue(rawRow, "phone_number", true);
+      phoneNumberType = getValue(rawRow, "phone_number_type", false);
+      employedInHealthcare = getValue(rawRow, "employed_in_healthcare", true);
+      residentCongregateSetting = getValue(rawRow, "resident_congregate_setting", true);
+      role = getValue(rawRow, "role", false);
+      email = getValue(rawRow, "email", false);
     }
 
     public List<FeedbackMessage> validateHeaders() {
