@@ -251,10 +251,10 @@ const UploadPatients = () => {
                           {errors.map((e, i) => {
                             return (
                               <tr key={"error_" + i}>
-                                <td className={"no-bottom-border"}>
+                                <td className={"border-bottom-0"}>
                                   {e?.["message"]}{" "}
                                 </td>
-                                <td className={"no-bottom-border"}>
+                                <td className={"border-bottom-0"}>
                                   Row(s): {e?.["indices"]}
                                 </td>
                               </tr>
