@@ -18,7 +18,7 @@ Object {
               class="margin-bottom-4"
             >
               <div
-                class="patient__header"
+                class="patient__header "
               >
                 <div
                   class="display-flex flex-justify"
@@ -2595,7 +2595,7 @@ Object {
             class="margin-bottom-4"
           >
             <div
-              class="patient__header"
+              class="patient__header "
             >
               <div
                 class="display-flex flex-justify"

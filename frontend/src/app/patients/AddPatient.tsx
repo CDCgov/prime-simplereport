@@ -345,6 +345,7 @@ const AddPatient = () => {
               ),
             })
           }
+          headerClassName={"padding-bottom-0"}
           getFooter={(onSave, formChanged) => (
             <div className="prime-edit-patient-heading">
               {getSaveButtons(formChanged, onSave, "lower")}
