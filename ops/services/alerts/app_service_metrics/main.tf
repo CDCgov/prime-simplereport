@@ -256,7 +256,7 @@ ${local.skip_on_weekends}
 
 resource "azurerm_monitor_scheduled_query_rules_alert" "bulk_results_upload" {
   name                = "${var.env}-bulk_results_upload"
-  description         = "${local.env_title} alert when bulk uploads "
+  description         = "${local.env_title} alert when bulk uploads fail"
   location            = data.azurerm_resource_group.app.location
   resource_group_name = var.rg_name
 
@@ -272,7 +272,7 @@ requests
 | where true
 | where timestamp >= ago(5m)
     and name == "/upload/results"
-    and resultCode != 200
+    and toint(resultCode) >= 500
   QUERY
 
   severity    = 1
