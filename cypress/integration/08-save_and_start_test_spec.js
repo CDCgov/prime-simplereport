@@ -132,10 +132,6 @@ describe("add patient and save and start test", () => {
         {
           exclude: [],
         },
-        {
-          rules: {
-          },
-        },
     );
 
     cy.get(".modal__container #save-confirmed-address").click();

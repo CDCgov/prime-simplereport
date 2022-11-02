@@ -73,10 +73,6 @@ describe("Patient self registration", () => {
         {
           exclude: [],
         },
-        {
-          rules: {
-          },
-        },
     );
 
     cy.get(".modal__container #save-confirmed-address").click();

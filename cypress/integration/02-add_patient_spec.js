@@ -57,10 +57,6 @@ describe("Adding a patient", () => {
         {
           exclude: [],
         },
-        {
-          rules: {
-          },
-        },
     );
 
     cy.get(".modal__container #save-confirmed-address").click();

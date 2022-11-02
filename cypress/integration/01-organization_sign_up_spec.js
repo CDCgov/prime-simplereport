@@ -181,10 +181,6 @@ describe("Organization sign up", () => {
         {
           exclude: [],
         },
-        {
-          rules: {
-          },
-        },
     );
 
     cy.get(".modal__container #save-confirmed-address").click();
