@@ -147,28 +147,26 @@ const UploadPatients = () => {
               recommend adding them to all facilities. You can't select multiple
               facilities individually.
             </div>
-            <div>
-              <RadioGroup
-                wrapperClassName="margin-top-2"
-                inputClassName={"usa-radio__input--tile"}
-                name="facilitySector"
-                legend="Select facility"
-                legendSrOnly
-                buttons={[
-                  {
-                    value: "oneFacility",
-                    label: "One facility",
-                  },
-                  {
-                    value: "allFacility",
-                    label: "All facilities",
-                  },
-                ]}
-                selectedRadio={facilityAmount}
-                onChange={setFacilityAmount}
-                variant="horizontal"
-              />
-            </div>
+            <RadioGroup
+              wrapperClassName="margin-top-2"
+              inputClassName={"usa-radio__input--tile"}
+              name="facilitySector"
+              legend="Select facility"
+              legendSrOnly
+              buttons={[
+                {
+                  value: "oneFacility",
+                  label: "One facility",
+                },
+                {
+                  value: "allFacility",
+                  label: "All facilities",
+                },
+              ]}
+              selectedRadio={facilityAmount}
+              onChange={setFacilityAmount}
+              variant="horizontal"
+            />
             {facilityAmount === "oneFacility" && (
               <div className={"margin-top-205"}>
                 <div>Which facility?</div>

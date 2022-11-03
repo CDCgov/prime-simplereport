@@ -129,61 +129,59 @@ exports[`Upload Patient displays the upload patients page correctly 1`] = `
           >
             If you plan to test patients at more than one facility, we recommend adding them to all facilities. You can't select multiple facilities individually.
           </div>
-          <div>
-            <div
-              class="usa-form-group margin-top-2"
+          <div
+            class="usa-form-group margin-top-2"
+          >
+            <fieldset
+              class="usa-fieldset prime-radios"
+              id="facilitySector"
             >
-              <fieldset
-                class="usa-fieldset prime-radios"
-                id="facilitySector"
+              <legend
+                class="usa-legend usa-sr-only"
               >
-                <legend
-                  class="usa-legend usa-sr-only"
-                >
-                  Select facility
-                </legend>
+                Select facility
+              </legend>
+              <div
+                class="prime-radio--horizontal"
+              >
                 <div
-                  class="prime-radio--horizontal"
+                  class="usa-radio prime-radio--horizontal__container"
                 >
-                  <div
-                    class="usa-radio prime-radio--horizontal__container"
+                  <input
+                    class="usa-radio__input usa-radio__input--tile"
+                    data-required="false"
+                    id="1-val-oneFacility"
+                    name="facilitySector"
+                    type="radio"
+                    value="oneFacility"
+                  />
+                  <label
+                    class="usa-radio__label"
+                    for="1-val-oneFacility"
                   >
-                    <input
-                      class="usa-radio__input usa-radio__input--tile"
-                      data-required="false"
-                      id="1-val-oneFacility"
-                      name="facilitySector"
-                      type="radio"
-                      value="oneFacility"
-                    />
-                    <label
-                      class="usa-radio__label"
-                      for="1-val-oneFacility"
-                    >
-                      One facility
-                    </label>
-                  </div>
-                  <div
-                    class="usa-radio prime-radio--horizontal__container"
-                  >
-                    <input
-                      class="usa-radio__input usa-radio__input--tile"
-                      data-required="false"
-                      id="1-val-allFacility"
-                      name="facilitySector"
-                      type="radio"
-                      value="allFacility"
-                    />
-                    <label
-                      class="usa-radio__label"
-                      for="1-val-allFacility"
-                    >
-                      All facilities
-                    </label>
-                  </div>
+                    One facility
+                  </label>
                 </div>
-              </fieldset>
-            </div>
+                <div
+                  class="usa-radio prime-radio--horizontal__container"
+                >
+                  <input
+                    class="usa-radio__input usa-radio__input--tile"
+                    data-required="false"
+                    id="1-val-allFacility"
+                    name="facilitySector"
+                    type="radio"
+                    value="allFacility"
+                  />
+                  <label
+                    class="usa-radio__label"
+                    for="1-val-allFacility"
+                  >
+                    All facilities
+                  </label>
+                </div>
+              </div>
+            </fieldset>
           </div>
         </div>
         <div
