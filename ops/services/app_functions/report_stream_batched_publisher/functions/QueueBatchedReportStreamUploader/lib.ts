@@ -82,6 +82,7 @@ export async function dequeueMessages(
     try {
       const dequeueResponse = await queueClient.receiveMessages({
         numberOfMessages: DEQUEUE_BATCH_SIZE,
+        visibilityTimeout: 3600,
       });
       if (dequeueResponse?.receivedMessageItems.length) {
         messages.push(...dequeueResponse.receivedMessageItems);
