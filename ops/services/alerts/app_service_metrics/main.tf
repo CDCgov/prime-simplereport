@@ -270,14 +270,14 @@ resource "azurerm_monitor_scheduled_query_rules_alert" "bulk_results_upload" {
   query = <<-QUERY
 requests
 | where true
-| where timestamp >= ago(5m)
+| where timestamp >= ago(6m)
     and name == "/upload/results"
     and toint(resultCode) >= 500
   QUERY
 
   severity    = 1
   frequency   = 5
-  time_window = 5
+  time_window = 6
   trigger {
     operator  = "GreaterThan"
     threshold = 0
