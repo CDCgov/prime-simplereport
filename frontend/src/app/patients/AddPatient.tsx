@@ -316,7 +316,7 @@ const AddPatient = () => {
 
   return (
     <div className={"prime-edit-patient prime-home"}>
-      <div className={"grid-container margin-bottom-4"}>
+      <div className={"grid-container margin-bottom-4 maxw-desktop-lg"}>
         <DuplicatePatientModal
           showModal={
             patientExistsResponse?.patientExistsWithoutZip && !preventModal
