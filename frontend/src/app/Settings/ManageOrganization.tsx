@@ -73,9 +73,9 @@ const ManageOrganization: React.FC<Props> = (props) => {
 
   return (
     <div className="grid-row position-relative">
-      <div className="prime-container card-container">
+      <div className="prime-container card-container settings-tab">
         <div className="usa-card__header">
-          <h2>Manage organization</h2>
+          <h1>Manage organization</h1>
           <Button
             onClick={validateAndSave}
             label="Save settings"
