@@ -775,7 +775,7 @@ const QueueItem = ({
             >
               <div
                 className="grid-row prime-test-name usa-card__header"
-                id="patient-name-header"
+                id={`patient-name-header-${patient.internalId}`}
               >
                 <div className="card-header">
                   <h2>
@@ -842,7 +842,7 @@ const QueueItem = ({
                           dateBeforeWarnThreshold && "card-correction-input"
                         )}
                         aria-label="Test date"
-                        id="test-date"
+                        id={`test-date-${patient.internalId}`}
                         data-testid="test-date"
                         name="test-date"
                         type="date"

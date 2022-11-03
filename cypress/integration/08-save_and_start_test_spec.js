@@ -44,49 +44,15 @@ describe("edit patient and save and start test", () => {
   it("completes AoE form and verifies queue", () => {
     cy.contains("New loss of taste").click();
 
-    // failing a11y test
-    // error applies to the toast
-    // observe this by adding cy.wait(5000); to wait for the toasts to disappear
     // Test a11y on the AoE form
-    cy.checkA11y(
-        {
-          exclude: [],
-        },
-        {
-          rules: {
-            // error applies to the toast
-            'landmark-one-main': { enabled: false },
-            'landmark-unique': { enabled: false },
-            // failing a11y test
-            // the following error is unrelated to the toast
-            'label': { enabled: false },
-          },
-        },
-    );
+    cy.checkA11y();
 
     cy.contains("button", "Continue").click();
     cy.get(".prime-home").contains(patientName);
     cy.url().should("include", "queue");
 
-    // failing a11y test
     // Test a11y on the Test Queue page
-    cy.checkA11y(
-        {
-          // failing a11y test
-          // this element returns a duplicate-id error, each test card needs a unique id
-          // It may also be possible to remove the offending duplicate id if it is not used
-          exclude: ['.prime-test-name.usa-card__header.grid-row'],
-        },
-        {
-          rules: {
-            // failing a11y test
-            // error applies to the toast
-            // observe this by adding cy.wait(5000); to wait for the toasts to disappear
-            'landmark-one-main': { enabled: false },
-            'landmark-unique': { enabled: false },
-          },
-        },
-    );
+    cy.checkA11y();
   });
 });
 
