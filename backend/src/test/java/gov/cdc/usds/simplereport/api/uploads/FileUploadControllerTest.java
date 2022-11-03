@@ -21,7 +21,6 @@ import gov.cdc.usds.simplereport.db.model.TestResultUpload;
 import gov.cdc.usds.simplereport.db.model.auxiliary.UploadStatus;
 import gov.cdc.usds.simplereport.service.PatientBulkUploadService;
 import gov.cdc.usds.simplereport.service.TestResultUploadService;
-import gov.cdc.usds.simplereport.service.UploadService;
 import java.io.IOException;
 import java.io.InputStream;
 import java.util.UUID;
