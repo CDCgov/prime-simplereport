@@ -171,8 +171,16 @@ export const AddressConfirmationModal = <T extends string>({
   };
 
   return (
-    <Modal onClose={closeModal} showModal={showModal}>
-      <Modal.Header>{t("address.heading")}</Modal.Header>
+    <Modal
+      onClose={closeModal}
+      showModal={showModal}
+      contentLabel={t("address.heading")}
+    >
+      <Modal.Header
+        styleClassNames={"font-sans-md margin-top-0 margin-bottom-205"}
+      >
+        {t("address.heading")}
+      </Modal.Header>
       <div className="border-top border-base-lighter margin-x-neg-205"></div>
       {getAlert()}
       {addressSuggestionConfig.map((address) => (
