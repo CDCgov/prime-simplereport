@@ -56,21 +56,7 @@ describe("Patient self registration", () => {
       '.modal__container input[name="addressSelect-person"][value="userAddress"]+label'
     ).click();
 
-    // failing a11y test
-    // Also found in specs 01, 02, 05, 08
-    // Test a11y on the confirm address modal
-    cy.checkA11y(
-        {
-          exclude: [],
-        },
-        {
-          rules: {
-            'aria-dialog-name': { enabled: false },
-            'landmark-one-main': { enabled: false },
-            'page-has-heading-one': { enabled: false },
-          },
-        },
-    );
+    cy.checkA11y();
 
     cy.get(".modal__container #save-confirmed-address").click();
     cy.get("#self-reg-confirmation").contains(

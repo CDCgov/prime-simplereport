@@ -56,10 +56,6 @@ public enum OrganizationRole implements Principal {
           UserPermission.SUBMIT_TEST,
           UserPermission.UPLOAD_RESULTS_SPREADSHEET)),
 
-  /** This is the role for users in the pilot for the test result bulk upload feature. */
-  TEST_RESULT_UPLOAD_USER(
-      "test-result-upload-pilot user", EnumSet.of(UserPermission.UPLOAD_RESULTS_SPREADSHEET)),
-
   /**
    * This is the organization admin role: if you have this role, then you have the ability to change
    * your role, so other roles you may have are moot. This role's permissions take precedence over
