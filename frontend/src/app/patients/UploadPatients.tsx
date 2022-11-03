@@ -105,7 +105,7 @@ const UploadPatients = () => {
 
   return (
     <div className={"prime-edit-patient prime-home flex-1"}>
-      <div className={"grid-container margin-bottom-4"}>
+      <div className={"grid-container margin-bottom-4 maxw-desktop-lg"}>
         <div className="patient__header padding-bottom-0">
           <AddPatientHeader />
         </div>
@@ -116,7 +116,7 @@ const UploadPatients = () => {
           <div className={"margin-left-3"}>
             <div
               className={
-                "usa-summary-box margin-top-3 margin-bottom-3 margin-right-3"
+                "usa-summary-box margin-top-3 margin-bottom-3 margin-right-3 maxw-tablet-lg"
               }
             >
               <span className="usa-alert__heading text-bold">
@@ -199,7 +199,7 @@ const UploadPatients = () => {
             </div>
             <div>
               {status === "success" && (
-                <div className="usa-alert usa-alert--success maxw-mobile-lg margin-top-3 outline-0">
+                <div className="usa-alert usa-alert--success maxw-560 margin-top-3 outline-0">
                   <div className="usa-alert__body">
                     <span className="usa-alert__heading text-bold">
                       Success: File Accepted
@@ -218,27 +218,29 @@ const UploadPatients = () => {
                   </div>
                 </div>
               )}
-              {errorMessageText && (
+              {status === "fail" && (
                 <div className={"margin-top-3"}>
-                  <div className="usa-alert usa-alert--error maxw-mobile-lg">
-                    <div className="usa-alert__body">
-                      <span className="usa-alert__heading text-bold">
-                        Error: File not accepted
-                      </span>
-                      <button
-                        className="Toastify__close-button Toastify__close-button--default position-absolute top-0 right-0"
-                        type="button"
-                        aria-label="close"
-                        onClick={() => {
-                          setErrorMessageText("");
-                          setErrors([]);
-                        }}
-                      >
-                        <FontAwesomeIcon icon={faXmark} />
-                      </button>
-                      <p className="usa-alert__text">{errorMessageText}</p>
+                  {errorMessageText && (
+                    <div className="usa-alert usa-alert--error maxw-560">
+                      <div className="usa-alert__body">
+                        <span className="usa-alert__heading text-bold">
+                          Error: File not accepted
+                        </span>
+                        <button
+                          className="Toastify__close-button Toastify__close-button--default position-absolute top-0 right-0"
+                          type="button"
+                          aria-label="close"
+                          onClick={() => {
+                            setErrorMessageText("");
+                            setErrors([]);
+                          }}
+                        >
+                          <FontAwesomeIcon icon={faXmark} />
+                        </button>
+                        <p className="usa-alert__text">{errorMessageText}</p>
+                      </div>
                     </div>
-                  </div>
+                  )}
                   {errors.length > 0 && (
                     <table className="usa-table usa-table--borderless">
                       <thead>

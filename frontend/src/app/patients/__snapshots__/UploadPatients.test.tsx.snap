@@ -6,7 +6,7 @@ exports[`Upload Patient displays the upload patients page correctly 1`] = `
     class="prime-edit-patient prime-home flex-1"
   >
     <div
-      class="grid-container margin-bottom-4"
+      class="grid-container margin-bottom-4 maxw-desktop-lg"
     >
       <div
         class="patient__header padding-bottom-0"
@@ -90,7 +90,7 @@ exports[`Upload Patient displays the upload patients page correctly 1`] = `
           class="margin-left-3"
         >
           <div
-            class="usa-summary-box margin-top-3 margin-bottom-3 margin-right-3"
+            class="usa-summary-box margin-top-3 margin-bottom-3 margin-right-3 maxw-tablet-lg"
           >
             <span
               class="usa-alert__heading text-bold"
@@ -199,7 +199,6 @@ exports[`Upload Patient displays the upload patients page correctly 1`] = `
             The spreadsheet may take 10 or more minutes to upload. You do not need to stay on this page. We'll email you if you need to fix any errors or when the upload is complete.
           </div>
           <div>
-            
             <div
               class="usa-form-group margin-bottom-3"
               data-testid="formGroup"
