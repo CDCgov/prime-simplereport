@@ -241,7 +241,7 @@ const Uploads = () => {
               </li>
               <li className="usa-process-list__item margin-bottom-1em">
                 <h2 className="usa-process-list__heading">
-                  Save your spreadsheet as a CSV
+                  Save your spreadsheet in a CSV format
                 </h2>
               </li>
               <li className="usa-process-list__item margin-bottom-1em">
