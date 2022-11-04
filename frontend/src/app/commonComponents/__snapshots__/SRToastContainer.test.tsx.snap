@@ -21,9 +21,9 @@ Object {
               role="alert"
             >
               <div
-                aria-labelledby="alert-undefined-body"
+                aria-labelledby="alert-1667580636341-body"
                 class="usa-alert usa-alert--error"
-                id="alert-undefined"
+                id="alert-1667580636341"
                 role="alert"
               >
                 <div
@@ -36,7 +36,7 @@ Object {
                   </div>
                   <div
                     class="usa-alert__text"
-                    id="alert-undefined-body"
+                    id="alert-1667580636341-body"
                   >
                     Please check for missing data or typos.
                   </div>
@@ -84,9 +84,9 @@ Object {
             role="alert"
           >
             <div
-              aria-labelledby="alert-undefined-body"
+              aria-labelledby="alert-1667580636341-body"
               class="usa-alert usa-alert--error"
-              id="alert-undefined"
+              id="alert-1667580636341"
               role="alert"
             >
               <div
@@ -99,7 +99,7 @@ Object {
                 </div>
                 <div
                   class="usa-alert__text"
-                  id="alert-undefined-body"
+                  id="alert-1667580636341-body"
                 >
                   Please check for missing data or typos.
                 </div>
@@ -204,9 +204,9 @@ Object {
               role="alert"
             >
               <div
-                aria-labelledby="region-undefined-body"
+                aria-labelledby="region-1667580636341-body"
                 class="usa-alert usa-alert--success"
-                id="region-undefined"
+                id="region-1667580636341"
                 role="region"
               >
                 <div
@@ -219,7 +219,7 @@ Object {
                   </div>
                   <div
                     class="usa-alert__text"
-                    id="region-undefined-body"
+                    id="region-1667580636341-body"
                   >
                     A new patient has been added.
                   </div>
@@ -267,9 +267,9 @@ Object {
             role="alert"
           >
             <div
-              aria-labelledby="region-undefined-body"
+              aria-labelledby="region-1667580636341-body"
               class="usa-alert usa-alert--success"
-              id="region-undefined"
+              id="region-1667580636341"
               role="region"
             >
               <div
@@ -282,7 +282,7 @@ Object {
                 </div>
                 <div
                   class="usa-alert__text"
-                  id="region-undefined-body"
+                  id="region-1667580636341-body"
                 >
                   A new patient has been added.
                 </div>
