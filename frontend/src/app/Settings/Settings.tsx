@@ -9,6 +9,8 @@ import ManageUsersContainer from "./Users/ManageUsersContainer";
 import SettingsNav from "./SettingsNav";
 import { ManageSelfRegistrationLinksContainer } from "./ManageSelfRegistrationLinksContainer";
 
+import "./Settings.scss";
+
 const Settings = () => {
   useDocumentTitle("Settings");
 
