@@ -53,7 +53,7 @@ class FileUploadControllerTest extends BaseFullStackTest {
     mockMvc
         .perform(multipart(PATIENT_UPLOAD).file(file).param("rawFacilityId", ""))
         .andExpect(status().isOk())
-        .andExpect(content().string("Successfully uploaded 1 record(s)"));
+        .andExpect(content().string("{\"errors\":null,\"status\":\"SUCCESS\"}"));
   }
 
   @Test
@@ -133,7 +133,7 @@ class FileUploadControllerTest extends BaseFullStackTest {
     mockMvc
         .perform(multipart(PATIENT_UPLOAD).file(file).param("rawFacilityId", testUUID.toString()))
         .andExpect(status().isOk())
-        .andExpect(content().string("Successfully uploaded 1 record(s)"));
+        .andExpect(content().string("{\"errors\":null,\"status\":\"SUCCESS\"}"));
   }
 
   @Test
