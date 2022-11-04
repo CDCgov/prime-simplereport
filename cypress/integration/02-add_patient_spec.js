@@ -85,7 +85,7 @@ describe("Adding Patients", () => {
       const csvFile = "LastName,FirstName,MiddleName,Suffix,Race,DOB,biologicalSex,Ethnicity,Street,Street2,City,County,State,ZipCode,Country,PhoneNumber,PhoneNumberType,employedInHealthcare,residentCongregateSetting,Role,Email\n"
           + `${patientToCsv(patients[0])}\n`
           + `${patientToCsv(patients[1])}\n`
-      cy.get(".usa-radio__label").click(); // select one facility
+      cy.get(".usa-radio__label").first().click(); // select one facility
       cy.get('input[type=file]').selectFile({
         fileContent: csvFile,
         fileName: 'contentData.csv',
