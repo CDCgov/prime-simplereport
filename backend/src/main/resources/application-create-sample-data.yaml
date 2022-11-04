@@ -119,7 +119,7 @@ simple-report:
         last-name: Bobberoo
       authorization:
         organization-external-id: ${SR_DEMO_USER_ORG:DIS_ORG}
-        granted-roles: ${SR_DEMO_USER_ROLE:ADMIN},${SR_DEMO_USER_ROLE:TEST_RESULT_UPLOAD_USER}
+        granted-roles: ${SR_DEMO_USER_ROLE:ADMIN}
     alternate-users:
       - identity:
           username: ruby@example.com

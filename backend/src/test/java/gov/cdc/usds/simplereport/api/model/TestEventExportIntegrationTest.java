@@ -8,12 +8,14 @@ import gov.cdc.usds.simplereport.db.model.Facility;
 import gov.cdc.usds.simplereport.db.model.Organization;
 import gov.cdc.usds.simplereport.db.model.Person;
 import gov.cdc.usds.simplereport.db.model.TestEvent;
+import gov.cdc.usds.simplereport.db.model.auxiliary.MultiplexResultInput;
 import gov.cdc.usds.simplereport.db.model.auxiliary.TestCorrectionStatus;
 import gov.cdc.usds.simplereport.db.model.auxiliary.TestResult;
 import gov.cdc.usds.simplereport.service.OrganizationService;
 import gov.cdc.usds.simplereport.service.TestEventService;
 import gov.cdc.usds.simplereport.test_util.SliceTestConfiguration.WithSimpleReportStandardUser;
 import gov.cdc.usds.simplereport.test_util.TestDataFactory;
+import java.util.List;
 import java.util.Map;
 import java.util.Optional;
 import org.junit.jupiter.api.BeforeEach;
@@ -52,7 +54,10 @@ class TestEventExportIntegrationTest extends BaseGraphqlTest {
         Map.of(
             "deviceId", facility.getDefaultDeviceType().getInternalId().toString(),
             "patientId", patient.getInternalId().toString(),
-            "result", TestResult.NEGATIVE.toString(),
+            "results",
+                List.of(
+                    new MultiplexResultInput(
+                        _diseaseService.covid().getName(), TestResult.NEGATIVE)),
             "dateTested", "2021-09-01T10:31:30.001Z");
 
     submitTestResult(variables, Optional.empty());
@@ -360,6 +365,6 @@ class TestEventExportIntegrationTest extends BaseGraphqlTest {
   }
 
   private JsonNode submitTestResult(Map<String, Object> variables, Optional<String> expectedError) {
-    return runQuery("add-test-result-mutation", variables, expectedError.orElse(null));
+    return runQuery("add-multiplex-result-mutation", variables, expectedError.orElse(null));
   }
 }

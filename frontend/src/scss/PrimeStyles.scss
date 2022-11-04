@@ -839,20 +839,6 @@ $results-dropdown-spacing: #{units(4)} - #{units(2)} - 22px - #{units(4)}; // he
   white-space: nowrap;
 }
 
-// toast
-
-.Toastify__toast {
-  padding: 3px;
-
-  &-container {
-    width: auto;
-  }
-
-  &--default {
-    color: #1b1b1b;
-  }
-}
-
 .usa-table--borderless th:first-child {
   padding: 0.5rem 1rem;
 }

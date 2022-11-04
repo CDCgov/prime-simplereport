@@ -7,11 +7,11 @@ import {
 } from "@testing-library/react";
 import userEvent from "@testing-library/user-event";
 import { MemoryRouter } from "react-router-dom";
-import { ToastContainer } from "react-toastify";
 
 import * as clia from "../../utils/clia";
 import * as state from "../../utils/state";
 import * as smartyStreets from "../../utils/smartyStreets";
+import SRToastContainer from "../../commonComponents/SRToastContainer";
 
 import FacilityForm from "./FacilityForm";
 
@@ -734,13 +734,7 @@ describe("FacilityForm", () => {
               saveFacility={saveFacility}
             />
           </MemoryRouter>
-          <ToastContainer
-            autoClose={5000}
-            closeButton={false}
-            limit={2}
-            position="bottom-center"
-            hideProgressBar={true}
-          />
+          <SRToastContainer />
         </>
       );
 

@@ -29,9 +29,21 @@ interface MenuItem {
 
 interface HeaderProps {
   menuItems: MenuItem[];
+  activeNavItem: string;
+  inactiveNavItem: string;
+  getNavItemClassName: ({
+    isActive,
+  }: {
+    isActive: boolean;
+  }) => "active-nav-item prime-nav-link" | "prime-nav-link";
 }
 
-const Header: React.FC<HeaderProps> = ({ menuItems }) => {
+const Header: React.FC<HeaderProps> = ({
+  menuItems,
+  activeNavItem,
+  inactiveNavItem,
+  getNavItemClassName,
+}) => {
   const appInsights = getAppInsights();
 
   const handleSupportClick = () => {
@@ -111,10 +123,6 @@ const Header: React.FC<HeaderProps> = ({ menuItems }) => {
     );
   };
 
-  // const activeNavItem = "active-nav-item prime-nav-link";
-  // const inactiveNavItem = "prime-nav-link";
-  // const getNavItemClassName = ({ isActive }: { isActive: boolean }) =>
-  //   isActive ? activeNavItem : inactiveNavItem;
   const mainNavContent = menuItems;
   const mainNavList = (deviceType: string) =>
     mainNavContent.map((item) => {

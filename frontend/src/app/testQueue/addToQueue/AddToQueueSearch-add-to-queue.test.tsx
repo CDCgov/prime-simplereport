@@ -1,5 +1,5 @@
 import React from "react";
-import { render, screen } from "@testing-library/react";
+import { render, screen, waitFor } from "@testing-library/react";
 import userEvent from "@testing-library/user-event";
 import { MockedProvider } from "@apollo/client/testing";
 import { MemoryRouter } from "react-router-dom";
@@ -7,6 +7,7 @@ import { MemoryRouter } from "react-router-dom";
 import { AoEAnswersDelivery } from "../AoEForm/AoEForm";
 import { Patient } from "../../patients/ManagePatients";
 import { getAppInsights } from "../../TelemetryService";
+import * as srToast from "../../utils/srToast";
 
 import AddToQueueSearch, {
   ADD_PATIENT_TO_QUEUE,
@@ -152,12 +153,23 @@ describe("AddToSearchQueue - add to queue", () => {
   });
 
   it("adds patient to queue from search form", async () => {
+    let alertSpy: jest.SpyInstance = jest.spyOn(
+      srToast,
+      "showAlertNotification"
+    );
     userEvent.type(screen.getByRole("searchbox", { exact: false }), "bar");
 
     userEvent.click(screen.getAllByRole("button")[1]);
 
     expect(queryPatientMockIsDone).toBe(true);
     expect(addPatientMockIsDone).toBe(true);
+    await waitFor(() => {
+      expect(alertSpy).toHaveBeenCalledWith(
+        "success",
+        "Cragell, Barb Whitaker was added to the queue",
+        "Newly added patients go to the bottom of the queue"
+      );
+    });
   });
 
   it("tracks custom telemetry event", async () => {

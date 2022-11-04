@@ -40,7 +40,7 @@ import org.springframework.transaction.annotation.Transactional;
 @Transactional
 @RequiredArgsConstructor
 @Slf4j
-public class UploadService {
+public class PatientBulkUploadService {
   private static final int MAX_LINE_LENGTH = 1024 * 6;
   public static final String ZIP_CODE_REGEX = "^[0-9]{5}(?:-[0-9]{4})?$";
 

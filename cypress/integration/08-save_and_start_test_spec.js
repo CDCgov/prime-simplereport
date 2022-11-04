@@ -19,6 +19,10 @@ describe("edit patient and save and start test", () => {
     cy.get("#desktop-patient-nav-link").click();
     cy.get("#search-field-small").type(lastName);
     cy.get(".sr-patient-list").contains(lastName).click();
+    cy.contains("General information");
+
+    cy.injectAxe();
+    cy.checkA11y(); // Edit Patient page
   });
   it("edits the patient and clicks save and start test and verifies AoE form is correctly filled in", () => {
     cy.get('input[value="male"]+label').click();
@@ -39,9 +43,50 @@ describe("edit patient and save and start test", () => {
   });
   it("completes AoE form and verifies queue", () => {
     cy.contains("New loss of taste").click();
+
+    // failing a11y test
+    // error applies to the toast
+    // observe this by adding cy.wait(5000); to wait for the toasts to disappear
+    // Test a11y on the AoE form
+    cy.checkA11y(
+        {
+          exclude: [],
+        },
+        {
+          rules: {
+            // error applies to the toast
+            'landmark-one-main': { enabled: false },
+            'landmark-unique': { enabled: false },
+            // failing a11y test
+            // the following error is unrelated to the toast
+            'label': { enabled: false },
+          },
+        },
+    );
+
     cy.contains("button", "Continue").click();
     cy.get(".prime-home").contains(patientName);
     cy.url().should("include", "queue");
+
+    // failing a11y test
+    // Test a11y on the Test Queue page
+    cy.checkA11y(
+        {
+          // failing a11y test
+          // this element returns a duplicate-id error, each test card needs a unique id
+          // It may also be possible to remove the offending duplicate id if it is not used
+          exclude: ['.prime-test-name.usa-card__header.grid-row'],
+        },
+        {
+          rules: {
+            // failing a11y test
+            // error applies to the toast
+            // observe this by adding cy.wait(5000); to wait for the toasts to disappear
+            'landmark-one-main': { enabled: false },
+            'landmark-unique': { enabled: false },
+          },
+        },
+    );
   });
 });
 
@@ -54,7 +99,10 @@ describe("add patient and save and start test", () => {
     cy.get(".usa-nav-container");
     cy.get("#desktop-patient-nav-link").click();
     cy.get("#add-patient-button").click();
-    cy.get(".prime-edit-patient").contains("Add new person");
+    cy.get(".prime-edit-patient").contains("Add new patient");
+
+    cy.injectAxe();
+    cy.checkA11y(); // New Patient page
   });
   it("fills out form fields and clicks save and start test and verifies AoE form is correctly filled in", () => {
     cy.get('input[name="firstName"]').type(patient.firstName);
@@ -74,6 +122,9 @@ describe("add patient and save and start test", () => {
     cy.get(
       '.modal__container input[name="addressSelect-person"][value="userAddress"]+label'
     ).click();
+
+    cy.checkA11y();
+
     cy.get(".modal__container #save-confirmed-address").click();
     cy.url().should("include", "queue");
     cy.get('input[name="testResultDeliverySms"][value="SMS"]').should(
@@ -120,8 +171,8 @@ describe("edit patient from test queue", () => {
   });
 });
 
-describe("start test from people page for patient already in queue", () => {
-  it("navigates to people page, selects Start test, and verifies link to test queue", () => {
+describe("start test from patients page for patient already in queue", () => {
+  it("navigates to patients page, selects Start test, and verifies link to test queue", () => {
     cy.visit("/");
     cy.get(".usa-nav-container");
     cy.get("#desktop-patient-nav-link").click();

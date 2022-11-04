@@ -7,7 +7,7 @@ import { hasPermission, appPermissions } from "../permissions";
 import "./Header.scss";
 import Header from "./Header";
 
-const MainHeader: React.FC<{}> = () => {
+const MainHeader: React.FC = () => {
   const user = useSelector((state) => (state as any).user as User);
 
   const canViewSettings = hasPermission(
@@ -65,7 +65,14 @@ const MainHeader: React.FC<{}> = () => {
       key: "patient-nav-link",
     },
   ];
-  return <Header menuItems={mainNavContent} />;
+  return (
+    <Header
+      menuItems={mainNavContent}
+      inactiveNavItem={inactiveNavItem}
+      activeNavItem={activeNavItem}
+      getNavItemClassName={getNavItemClassName}
+    />
+  );
 };
 
-export default connect(MainHeader);
+export default connect()(MainHeader);

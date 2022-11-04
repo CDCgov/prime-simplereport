@@ -3,14 +3,28 @@ import userEvent from "@testing-library/user-event";
 import createMockStore from "redux-mock-store";
 import { Provider } from "react-redux";
 import { MemoryRouter } from "react-router-dom";
-import { ToastContainer } from "react-toastify";
+import { ApplicationInsights } from "@microsoft/applicationinsights-web";
 
+import { getAppInsights } from "../../TelemetryService";
 import { FileUploadService } from "../../../fileUploadService/FileUploadService";
+import SRToastContainer from "../../commonComponents/SRToastContainer";
 
 import Uploads from "./Uploads";
 
+jest.mock("../../TelemetryService", () => ({
+  ...jest.requireActual("../../TelemetryService"),
+  getAppInsights: jest.fn(),
+}));
+
 const mockStore = createMockStore([]);
-const store = mockStore({});
+const store = mockStore({
+  organization: {
+    name: "Test Org",
+  },
+  user: {
+    email: "testuser@test.org",
+  },
+});
 
 const validFileContents =
   "Patient_last_name,Patient_first_name,Patient_middle_name,Patient_suffix,Patient_tribal_affiliation,Patient_ID,Ordered_test_code,Specimen_source_site_code,Specimen_type_code,Device_ID,Instrument_ID,Result_ID,Corrected_result_ID,Test_correction_reason,Test_result_status,Test_result_code,Illness_onset_date,Specimen_collection_date_time,Order_test_date,Test_date,Date_result_released,Patient_race,Patient_DOB,Patient_gender,Patient_ethnicity,Patient_preferred_language,Patient_street,Patient_street_2,Patient_city,Patient_state,Patient_zip_code,Patient_country,Patient_phone_number,Patient_county,Patient_email,Patient_role,Processing_mode_code,Employed_in_healthcare,Resident_congregate_setting,First_test,Symptomatic_for_disease,Testing_lab_name,Testing_lab_CLIA,Testing_lab_street,Testing_lab_street_2,Testing_lab_city,Testing_lab_state,Testing_lab_zip_code,Testing_lab_phone_number,Testing_lab_county,Organization_name,Ordering_facility_name,Ordering_facility_street,Ordering_facility_street_2,Ordering_facility_city,Ordering_facility_state,Ordering_facility_zip_code,Ordering_facility_phone_number,Ordering_facility_county,Ordering_provider_ID,Ordering_provider_last_name,Ordering_provider_first_name,Ordering_provider_street,Ordering_provider_street_2,Ordering_provider_city,Ordering_provider_state,Ordering_provider_zip_code,Ordering_provider_phone_number,Ordering_provider_county,Site_of_care\n" +
@@ -28,7 +42,7 @@ const validFile = () => file(validFileContents);
 const TestContainer = () => (
   <Provider store={store}>
     <MemoryRouter>
-      <ToastContainer />
+      <SRToastContainer />
       <Uploads />
     </MemoryRouter>
   </Provider>
@@ -40,6 +54,9 @@ describe("Uploads", () => {
 
     expect(await screen.findByText("Upload your CSV")).toBeInTheDocument();
     expect(await screen.findByText("Drag file here or")).toBeInTheDocument();
+    expect(
+      screen.queryByText("Your file has not been accepted.")
+    ).not.toBeInTheDocument();
   });
 
   it("should display error toast when empty file is uploaded, button disabled", async () => {
@@ -105,59 +122,166 @@ describe("Uploads", () => {
     expect(button).toBeDisabled();
   });
 
-  describe("happy path", () => {
-    let file: File;
-    let uploadResultsSpy: jest.SpyInstance<Promise<Response>, [csvFile: File]>;
+  describe("on file upload", () => {
+    const mockTrackEvent = jest.fn();
 
-    beforeEach(async () => {
-      file = validFile();
+    beforeEach(() => {
+      (getAppInsights as jest.Mock).mockImplementation(() => {
+        const ai = Object.create(ApplicationInsights.prototype);
+        return Object.assign(ai, { trackEvent: mockTrackEvent });
+      });
+    });
 
-      uploadResultsSpy = jest
-        .spyOn(FileUploadService, "uploadResults")
-        .mockImplementation(() => {
-          return Promise.resolve(
-            new Response(
-              JSON.stringify({
-                reportId: "fake-report-id",
-                status: "FINISHED",
-                recordsCount: 1,
-                warnings: [],
-                errors: [],
-              }),
-              { status: 200 }
-            )
-          );
+    describe("happy path", () => {
+      let file: File;
+      let uploadResultsSpy: jest.SpyInstance<
+        Promise<Response>,
+        [csvFile: File]
+      >;
+
+      beforeEach(async () => {
+        file = validFile();
+
+        uploadResultsSpy = jest
+          .spyOn(FileUploadService, "uploadResults")
+          .mockImplementation(() => {
+            return Promise.resolve(
+              new Response(
+                JSON.stringify({
+                  reportId: "fake-report-id",
+                  status: "FINISHED",
+                  recordsCount: 1,
+                  warnings: [],
+                  errors: [],
+                }),
+                { status: 200 }
+              )
+            );
+          });
+
+        render(<TestContainer />);
+
+        const fileInput = screen.getByTestId("file-input-input");
+        userEvent.upload(fileInput, file);
+        await waitFor(() => {
+          screen.getByText("values.csv");
         });
 
-      await render(
-        <Provider store={store}>
-          <MemoryRouter>
-            <ToastContainer />
-            <Uploads />
-          </MemoryRouter>
-        </Provider>
-      );
+        const submitButton = screen.getByTestId("button");
+        userEvent.click(submitButton);
+        await waitFor(() => {
+          expect(
+            screen.getByText("Success: File Accepted")
+          ).toBeInTheDocument();
+        });
+      });
+
+      it("performs HTTP request to rest endpoint to submit CSV file", async () => {
+        expect(uploadResultsSpy).toHaveBeenCalled();
+      });
+
+      it("displays a success message and the returned Report ID", async () => {
+        expect(screen.getByText("Confirmation Code")).toBeInTheDocument();
+        expect(screen.getByText("fake-report-id")).toBeInTheDocument();
+      });
+
+      it("logs success event to App Insights", () => {
+        expect(mockTrackEvent).toHaveBeenCalledWith({
+          name: "Spreadsheet upload success",
+          properties: {
+            org: "Test Org",
+            "report ID": "fake-report-id",
+            user: "testuser@test.org",
+          },
+        });
+      });
+    });
+
+    it("server upload failure displays error message", async () => {
+      jest.spyOn(FileUploadService, "uploadResults").mockImplementation(() => {
+        return Promise.resolve(new Response(null, { status: 500 }));
+      });
+
+      render(<TestContainer />);
 
       const fileInput = screen.getByTestId("file-input-input");
-      userEvent.upload(fileInput, file);
+      userEvent.upload(fileInput, validFile());
       await waitFor(() => {
         screen.getByText("values.csv");
       });
 
       const submitButton = screen.getByTestId("button");
       userEvent.click(submitButton);
+
       await waitFor(() => {
-        expect(screen.getByText("Success: File Accepted")).toBeInTheDocument();
+        expect(
+          screen.getByText(
+            "There was a server error. Your file has not been accepted."
+          )
+        ).toBeInTheDocument();
+      });
+      expect(screen.queryByText("Requested Edit")).not.toBeInTheDocument();
+      expect(mockTrackEvent).toHaveBeenCalledWith({
+        name: "Spreadsheet upload server error",
+        properties: {
+          org: "Test Org",
+          user: "testuser@test.org",
+        },
       });
     });
 
-    it("performs HTTP request to rest endpoint to submit CSV file", async () => {
-      expect(uploadResultsSpy).toHaveBeenCalled();
-    });
+    it("response errors are shown to user", async () => {
+      jest.spyOn(FileUploadService, "uploadResults").mockImplementation(() => {
+        return Promise.resolve(
+          new Response(
+            JSON.stringify({
+              reportId: null,
+              status: "ERROR",
+              recordsCount: 1,
+              warnings: [],
+              errors: [
+                {
+                  message: "missing required column",
+                  scope: "report",
+                },
+              ],
+            }),
+            { status: 200 }
+          )
+        );
+      });
 
-    it("displays a success message and the returned Report ID", async () => {
-      expect(screen.getByText("Confirmation Code")).toBeInTheDocument();
-      expect(screen.getByText("fake-report-id")).toBeInTheDocument();
+      render(<TestContainer />);
+
+      const fileInput = screen.getByTestId("file-input-input");
+      userEvent.upload(fileInput, validFile());
+      await waitFor(() => {
+        screen.getByText("values.csv");
+      });
+
+      const submitButton = screen.getByTestId("button");
+      userEvent.click(submitButton);
+
+      await waitFor(() => {
+        expect(
+          screen.getByText("Error: File not accepted")
+        ).toBeInTheDocument();
+      });
+      expect(screen.getByText("Requested Edit")).toBeInTheDocument();
+      expect(screen.getByText("missing required column")).toBeInTheDocument();
+      expect(mockTrackEvent).toHaveBeenCalledWith({
+        name: "Spreadsheet upload validation failure",
+        properties: {
+          errors: [
+            {
+              message: "missing required column",
+              scope: "report",
+            },
+          ],
+          org: "Test Org",
+          user: "testuser@test.org",
+        },
+      });
     });
   });
 });

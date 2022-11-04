@@ -10,17 +10,15 @@ jobs:
       GITHUB_TOKEN: ${{secrets.GITHUB_TOKEN}}
     # Github action permissions: https://docs.github.com/en/actions/using-jobs/assigning-permissions-to-jobs#overview
     permissions:
-      pull-requests: write
+      issues: write
     steps:
-      - uses: actions/checkout@v2
+      - uses: actions/checkout@v3
         if: github.event.pull_request.user.login  == 'dependabot[bot]'
       - name: Close issue if Dependabot PR is closed
         if: github.event.pull_request.user.login  == 'dependabot[bot]'
         env:
-          title: ${{github.event.pull_request.title}}
-          number: ${{github.event.pull_request.number}}
-          url: ${{github.event.pull_request.url}}
+          pr_title: ${{github.event.pull_request.title}}
         run: |
-          title="Dependabot PR $title opened"
-          issue=$(gh issue list --json number --jq '.[].number' --search "$title")
+          issue_title="Dependabot PR $pr_title opened"
+          issue=$(gh issue list --json number --jq '.[].number' --label "dependencies" --label "Dependabot" --search "is:issue is:open $issue_title")
           gh issue close "$issue"

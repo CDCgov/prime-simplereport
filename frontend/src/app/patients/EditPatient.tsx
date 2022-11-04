@@ -4,13 +4,12 @@ import { NavigateOptions, NavLink, useNavigate } from "react-router-dom";
 import { useTranslation } from "react-i18next";
 
 import iconSprite from "../../../node_modules/uswds/dist/img/sprite.svg";
-import { PATIENT_TERM_CAP } from "../../config/constants";
 import {
-  displayFullName,
-  showNotification,
-  dedupeAndCompactStrings,
-} from "../utils";
-import Alert from "../commonComponents/Alert";
+  PATIENT_TERM_CAP,
+  PATIENT_TERM_PLURAL_CAP,
+} from "../../config/constants";
+import { displayFullName, dedupeAndCompactStrings } from "../utils";
+import { showSuccess } from "../utils/srToast";
 import Button from "../commonComponents/Button/Button";
 import { LinkWithQuery } from "../commonComponents/LinkWithQuery";
 import { useDocumentTitle } from "../utils/hooks";
@@ -247,12 +246,9 @@ const EditPatient = (props: Props) => {
         emails: dedupeAndCompactStrings(person.emails || []),
       },
     });
-    showNotification(
-      <Alert
-        type="success"
-        title={`${PATIENT_TERM_CAP} record saved`}
-        body="Information record has been updated."
-      />
+    showSuccess(
+      "Information record has been updated.",
+      `${PATIENT_TERM_CAP} record saved`
     );
 
     if (startTest) {
@@ -326,7 +322,7 @@ const EditPatient = (props: Props) => {
                           to={`/patients`}
                           className="margin-left-05"
                         >
-                          People
+                          {PATIENT_TERM_PLURAL_CAP}
                         </LinkWithQuery>
                       )}
                     </div>

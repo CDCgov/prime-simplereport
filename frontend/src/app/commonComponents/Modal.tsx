@@ -11,6 +11,7 @@ type ModalVariant = "warning";
 interface Props {
   onClose: () => void;
   showModal: boolean;
+  contentLabel: string;
   showClose?: boolean;
   containerClassName?: string;
   variant?: "warning";
@@ -27,9 +28,10 @@ const variantIcons: Record<ModalVariant, IconDefinition> = {
   warning: faExclamationCircle,
 };
 
-const Header: React.FC<{}> = ({ children }) => (
-  <h3 className="modal__heading">{children}</h3>
-);
+const Header: React.FC<{ styleClassNames?: string }> = ({
+  children,
+  styleClassNames,
+}) => <h1 className={"modal__heading " + styleClassNames}>{children}</h1>;
 const Footer: React.FC<{}> = ({ children }) => (
   <div className="modal__footer">{children}</div>
 );
@@ -41,6 +43,7 @@ const Modal: React.FC<Props> & SubComponents = ({
   showClose = true,
   containerClassName,
   variant,
+  contentLabel,
 }) => {
   const containerClasses = classnames(
     containerClassName,
@@ -70,6 +73,7 @@ const Modal: React.FC<Props> & SubComponents = ({
       }}
       overlayClassName="prime-modal-overlay display-flex flex-align-center flex-justify-center"
       ariaHideApp={process.env.NODE_ENV !== "test"}
+      contentLabel={contentLabel}
     >
       <div className={containerClasses}>
         {showClose && (
@@ -81,14 +85,16 @@ const Modal: React.FC<Props> & SubComponents = ({
             <img className="modal__close-img" src={iconClose} alt="Close" />
           </button>
         )}
-        <div className="modal__content grid-row">
-          {variant && (
-            <div className="grid-col flex-auto margin-right-2">
-              <FontAwesomeIcon icon={variantIcons[variant]} size="2x" />
-            </div>
-          )}
-          <div className="grid-col">{children}</div>
-        </div>
+        <main>
+          <div className="modal__content grid-row">
+            {variant && (
+              <div className="grid-col flex-auto margin-right-2">
+                <FontAwesomeIcon icon={variantIcons[variant]} size="2x" />
+              </div>
+            )}
+            <div className="grid-col">{children}</div>
+          </div>
+        </main>
       </div>
     </ReactModal>
   );

@@ -5,6 +5,7 @@ import com.fasterxml.jackson.databind.DeserializationFeature;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import feign.FeignException;
 import gov.cdc.usds.simplereport.api.model.errors.CsvProcessingException;
+import gov.cdc.usds.simplereport.api.model.errors.DependencyFailureException;
 import gov.cdc.usds.simplereport.config.AuthorizationConfiguration;
 import gov.cdc.usds.simplereport.db.model.Organization;
 import gov.cdc.usds.simplereport.db.model.TestResultUpload;
@@ -68,7 +69,7 @@ public class TestResultUploadService {
   private static final ObjectMapper mapper =
       new ObjectMapper().configure(DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES, false);
 
-  @AuthorizationConfiguration.RequirePermissionReadResultListForTestEvent
+  @AuthorizationConfiguration.RequirePermissionCSVUpload
   public TestResultUpload processResultCSV(InputStream csvStream) {
 
     TestResultUpload result = new TestResultUpload(UploadStatus.FAILURE);
@@ -116,7 +117,6 @@ public class TestResultUploadService {
         _repo.save(result);
       }
     }
-
     return result;
   }
 
@@ -125,7 +125,7 @@ public class TestResultUploadService {
       return mapper.readValue(e.contentUTF8(), UploadResponse.class);
     } catch (JsonProcessingException ex) {
       log.error("Unable to parse Report Stream response.", ex);
-      return null;
+      throw new DependencyFailureException("Unable to parse Report Stream response.");
     }
   }
 

@@ -13,7 +13,9 @@ import { MockedProvider } from "@apollo/client/testing";
 import { Provider } from "react-redux";
 import configureStore from "redux-mock-store";
 import { MemoryRouter, Route, Routes, useLocation } from "react-router-dom";
-import { ToastContainer } from "react-toastify";
+
+import SRToastContainer from "../commonComponents/SRToastContainer";
+import { PATIENT_TERM_CAP } from "../../config/constants";
 
 import EditPatient, { GET_PATIENT, UPDATE_PATIENT } from "./EditPatient";
 import EditPatientContainer from "./EditPatientContainer";
@@ -299,13 +301,7 @@ describe("EditPatient", () => {
               </MockedProvider>
             </Provider>
           </MemoryRouter>
-          <ToastContainer
-            autoClose={5000}
-            closeButton={false}
-            limit={2}
-            position="bottom-center"
-            hideProgressBar={true}
-          />
+          <SRToastContainer />
         </>
       );
 
@@ -668,7 +664,7 @@ describe("EditPatient", () => {
     });
     it("shows Conduct tests link and hides Save and start test button", async () => {
       expect(await screen.findByText("Conduct tests")).toBeInTheDocument();
-      expect(screen.queryByText("People")).not.toBeInTheDocument();
+      expect(screen.queryByText(PATIENT_TERM_CAP)).not.toBeInTheDocument();
       expect(screen.queryByText("Save and start test")).not.toBeInTheDocument();
     });
   });

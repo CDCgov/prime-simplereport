@@ -1,8 +1,9 @@
 import { LinkWithQuery } from "../../commonComponents/LinkWithQuery";
 import { useDocumentTitle } from "../../utils/hooks";
 import iconSprite from "../../../../node_modules/uswds/dist/img/sprite.svg";
-
 import "./CsvSchemaDocumentation.scss";
+import { getAppInsights } from "../../TelemetryService";
+
 import schema from "./schema.json";
 
 export type CsvSchemaItem = {
@@ -138,6 +139,8 @@ export const CsvSchemaDocumentationItem: React.FC<CsvSchemaItemProps> = ({
 const CsvSchemaDocumentation = () => {
   useDocumentTitle("Bulk results upload guide");
 
+  const appInsights = getAppInsights();
+
   return (
     <div className="prime-container card-container csv-guide-container">
       <div className="usa-card__header">
@@ -169,6 +172,27 @@ const CsvSchemaDocumentation = () => {
             How to format and upload a CSV file to report test results in bulk
             through SimpleReport.
           </p>
+          <p>
+            SimpleReport’s bulk results uploader lets you report multiple test
+            results at once using a CSV file. When you submit your results, the
+            uploader tool verifies the data, then sends your results to the
+            relevant state and/or local health department(s).
+            <br />
+            <br />
+            The results uploader is connected with all{" "}
+            <a
+              href="/getting-started/organizations-and-testing-facilities/where-does-simplereport-work"
+              className="usa-link"
+              target="_blank"
+              rel="noopener noreferrer"
+            >
+              states partnered with SimpleReport
+            </a>
+            . If you report to multiple jurisdictions, you can share results
+            with them using one spreadsheet. SimpleReport routes data to the
+            appropriate health departments based on the facility location and
+            patient address fields in your CSV.
+          </p>
           <iframe
             width="640"
             height="360"
@@ -194,13 +218,19 @@ const CsvSchemaDocumentation = () => {
               <a
                 href="/assets/resources/test_results_example_10-3-2022.csv"
                 className="usa-link"
+                onClick={() => {
+                  appInsights?.trackEvent({
+                    name: "Download spreadsheet template",
+                  });
+                }}
               >
-                SimpleReport spreadsheet template with example data
+                SimpleReport spreadsheet template with example data [CSV
+                download]
               </a>
             </li>
             <li>
               <a href="https://youtu.be/qqhC7PFBdek" className="usa-link">
-                Spreadsheet results uploader training video
+                Spreadsheet results uploader training video [Youtube video]
               </a>
             </li>
             <li>
@@ -210,7 +240,7 @@ const CsvSchemaDocumentation = () => {
             </li>
             <li>
               <a href="mailto:support@simplereport.gov" className="usa-link">
-                SimpleReport support
+                SimpleReport support email
               </a>
             </li>
           </ul>
@@ -333,6 +363,11 @@ const CsvSchemaDocumentation = () => {
                 <a
                   href="/assets/resources/test_results_example_10-3-2022.csv"
                   className="usa-link"
+                  onClick={() => {
+                    appInsights?.trackEvent({
+                      name: "Download spreadsheet template",
+                    });
+                  }}
                 >
                   spreadsheet template
                 </a>{" "}

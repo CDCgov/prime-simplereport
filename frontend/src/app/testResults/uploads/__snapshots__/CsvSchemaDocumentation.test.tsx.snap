@@ -87,6 +87,22 @@ exports[`CsvSchemaDocumentation tests CsvSchemaDocumentaton matches snapshot 1`]
         >
           How to format and upload a CSV file to report test results in bulk through SimpleReport.
         </p>
+        <p>
+          SimpleReport’s bulk results uploader lets you report multiple test results at once using a CSV file. When you submit your results, the uploader tool verifies the data, then sends your results to the relevant state and/or local health department(s).
+          <br />
+          <br />
+          The results uploader is connected with all
+           
+          <a
+            class="usa-link"
+            href="/getting-started/organizations-and-testing-facilities/where-does-simplereport-work"
+            rel="noopener noreferrer"
+            target="_blank"
+          >
+            states partnered with SimpleReport
+          </a>
+          . If you report to multiple jurisdictions, you can share results with them using one spreadsheet. SimpleReport routes data to the appropriate health departments based on the facility location and patient address fields in your CSV.
+        </p>
         <iframe
           height="360"
           src="https://www.youtube.com/embed/qqhC7PFBdek"
@@ -123,7 +139,7 @@ exports[`CsvSchemaDocumentation tests CsvSchemaDocumentaton matches snapshot 1`]
               class="usa-link"
               href="/assets/resources/test_results_example_10-3-2022.csv"
             >
-              SimpleReport spreadsheet template with example data
+              SimpleReport spreadsheet template with example data [CSV download]
             </a>
           </li>
           <li>
@@ -131,7 +147,7 @@ exports[`CsvSchemaDocumentation tests CsvSchemaDocumentaton matches snapshot 1`]
               class="usa-link"
               href="https://youtu.be/qqhC7PFBdek"
             >
-              Spreadsheet results uploader training video
+              Spreadsheet results uploader training video [Youtube video]
             </a>
           </li>
           <li>
@@ -147,7 +163,7 @@ exports[`CsvSchemaDocumentation tests CsvSchemaDocumentaton matches snapshot 1`]
               class="usa-link"
               href="mailto:support@simplereport.gov"
             >
-              SimpleReport support
+              SimpleReport support email
             </a>
           </li>
         </ul>
@@ -2005,7 +2021,7 @@ exports[`CsvSchemaDocumentation tests CsvSchemaDocumentaton matches snapshot 1`]
               data-testid="header"
               id="equipment_model_name"
             >
-              Model name
+              Equipment model name
               <span
                 class="text-normal bg-white border-1px border-secondary font-body-3xs padding-x-1 padding-y-05 text-secondary margin-left-2 text-ttbottom"
               >
@@ -2015,38 +2031,7 @@ exports[`CsvSchemaDocumentation tests CsvSchemaDocumentaton matches snapshot 1`]
             <div
               class="margin-bottom-3"
               data-testid="subheader"
-            >
-              <p>
-                To find your equipment model name, you need to look it up in the Department of Health and Human Services' (HHS) LOINC mapping tool:
-              </p>
-              <p>
-                <ol>
-                  <li>
-                    Visit 
-                    <a
-                      class="usa-link"
-                      href="https://www.cdc.gov/csels/dls/sars-cov-2-livd-codes.html"
-                      rel="noreferrer noopener"
-                      target="_blank"
-                    >
-                      the CDC website
-                    </a>
-                  </li>
-                  <li>
-                    Click on the mapping tool labeled “LIVD SARS-CoV-2 Test Codes.xlsx” to download the file
-                  </li>
-                  <li>
-                    Open the file on your computer and go to the “LOINC Mapping” tab
-                  </li>
-                  <li>
-                    Search for your device name 
-                  </li>
-                  <li>
-                    For your device, find the corresponding value in column B, “Model,” and copy it to your spreadsheet 
-                  </li>
-                </ol>
-              </p>
-            </div>
+            />
             <div
               class="grid-row margin-bottom-05"
               data-testid="column-header"
@@ -2077,15 +2062,31 @@ exports[`CsvSchemaDocumentation tests CsvSchemaDocumentaton matches snapshot 1`]
                 class="grid-col-8"
               >
                 <div>
+                  Find your device on the 
+                  <a
+                    class="usa-link"
+                    href="/csv/codelookup"
+                    rel="noreferrer noopener"
+                    target="_blank"
+                  >
+                    device code lookup tool
+                  </a>
+                  , then copy the value for this field.
+                </div>
+                <div>
+                  <br />
+                </div>
+                <div>
+                  You can also search the LIVD SARS-CoV-2 Test Codes spreadsheet on the 
                   <a
                     class="usa-link"
                     href="https://www.cdc.gov/csels/dls/sars-cov-2-livd-codes.html"
                     rel="noreferrer noopener"
                     target="_blank"
                   >
-                    LIVD SARS-CoV-2 Test Codes spreadsheet
+                    CDC website
                   </a>
-                  , “LOINC Mapping” tab, column B
+                  . Download the spreadsheet, go to the "LOINC Mapping" tab, and find the value for your device in column B.
                 </div>
               </div>
             </div>
@@ -2151,38 +2152,7 @@ exports[`CsvSchemaDocumentation tests CsvSchemaDocumentaton matches snapshot 1`]
             <div
               class="margin-bottom-3"
               data-testid="subheader"
-            >
-              <p>
-                To find your test performed code, you need to look it up in the Department of Health and Human Services' (HHS) LOINC mapping tool:
-              </p>
-              <p>
-                <ol>
-                  <li>
-                    Visit 
-                    <a
-                      class="usa-link"
-                      href="https://www.cdc.gov/csels/dls/sars-cov-2-livd-codes.html"
-                      rel="noreferrer noopener"
-                      target="_blank"
-                    >
-                      the CDC website
-                    </a>
-                  </li>
-                  <li>
-                    Click on the mapping tool labeled “LIVD SARS-CoV-2 Test Codes.xlsx” to download the file
-                  </li>
-                  <li>
-                    Open the file on your computer and go to the “LOINC Mapping” tab
-                  </li>
-                  <li>
-                    Search for your device name
-                  </li>
-                  <li>
-                    For your device, find the corresponding value in column F, “Test Performed LOINC Code,” and copy it to your spreadsheet 
-                  </li>
-                </ol>
-              </p>
-            </div>
+            />
             <div
               class="grid-row margin-bottom-05"
               data-testid="column-header"
@@ -2213,15 +2183,31 @@ exports[`CsvSchemaDocumentation tests CsvSchemaDocumentaton matches snapshot 1`]
                 class="grid-col-8"
               >
                 <div>
+                  Find your device on the 
+                  <a
+                    class="usa-link"
+                    href="/csv/codelookup"
+                    rel="noreferrer noopener"
+                    target="_blank"
+                  >
+                    device code lookup tool
+                  </a>
+                  , then copy the value for this field.
+                </div>
+                <div>
+                  <br />
+                </div>
+                <div>
+                  You can also search the LIVD SARS-CoV-2 Test Codes spreadsheet on the 
                   <a
                     class="usa-link"
                     href="https://www.cdc.gov/csels/dls/sars-cov-2-livd-codes.html"
                     rel="noreferrer noopener"
                     target="_blank"
                   >
-                    LIVD SARS-CoV-2 Test Codes spreadsheet
+                    CDC website
                   </a>
-                  , “LOINC Mapping” tab, column F
+                  . Download the spreadsheet, go to the "LOINC Mapping" tab, and find the value for your device in column F.
                 </div>
               </div>
             </div>
@@ -2309,45 +2295,7 @@ exports[`CsvSchemaDocumentation tests CsvSchemaDocumentaton matches snapshot 1`]
             <div
               class="margin-bottom-3"
               data-testid="subheader"
-            >
-              <p>
-                For your test result value, you can either use a common value from the chart below or you can look it up in the Department of Health and Human Services' (HHS) LOINC mapping tool. To look up the value:
-              </p>
-              <p>
-                <ol>
-                  <li>
-                    Visit 
-                    <a
-                      class="usa-link"
-                      href="https://www.cdc.gov/csels/dls/sars-cov-2-livd-codes.html"
-                      rel="noreferrer noopener"
-                      target="_blank"
-                    >
-                      the CDC website
-                    </a>
-                  </li>
-                  <li>
-                    Click on the mapping tool labeled “LIVD SARS-CoV-2 Test Codes.xlsx” to download the file
-                  </li>
-                  <li>
-                    Open the file on your computer and go to the “LOINC Mapping” tab
-                  </li>
-                  <li>
-                    Search for your device name
-                  </li>
-                  <li>
-                    For your device, find the corresponding value in column E, “Vendor Result Description”
-                  </li>
-                  <li>
-                    Copy the SNOMED code to your spreadsheet (example: 
-                    <em>
-                      Positive = 260373001
-                    </em>
-                    )
-                  </li>
-                </ol>
-              </p>
-            </div>
+            />
             <div
               class="grid-row margin-bottom-05"
               data-testid="column-header"
@@ -2378,16 +2326,31 @@ exports[`CsvSchemaDocumentation tests CsvSchemaDocumentaton matches snapshot 1`]
                 class="grid-col-8"
               >
                 <div>
-                  Use one of the common values listed below; or look up the SNOMED code in 
+                  Use one of the comman values below, or find your device on the 
+                  <a
+                    class="usa-link"
+                    href="/csv/codelookup"
+                    rel="noreferrer noopener"
+                    target="_blank"
+                  >
+                    device code lookup tool
+                  </a>
+                  .
+                </div>
+                <div>
+                  <br />
+                </div>
+                <div>
+                  You can also search the LIVD SARS-CoV-2 Test Codes spreadsheet on the 
                   <a
                     class="usa-link"
                     href="https://www.cdc.gov/csels/dls/sars-cov-2-livd-codes.html"
                     rel="noreferrer noopener"
                     target="_blank"
                   >
-                    LIVD SARS-CoV-2 Test Codes spreadsheet
+                    CDC website
                   </a>
-                  , “LOINC Mapping” tab, column E
+                  . Download the spreadsheet, go to the "LOINC Mapping" tab, and find the value for your device in column E.
                 </div>
               </div>
             </div>
@@ -2999,45 +2962,7 @@ exports[`CsvSchemaDocumentation tests CsvSchemaDocumentaton matches snapshot 1`]
             <div
               class="margin-bottom-3"
               data-testid="subheader"
-            >
-              <p>
-                For your specimen type, you can either use a common value from the chart below or you can look it up in the Department of Health and Human Services' (HHS) LOINC mapping tool. To look up the value:
-              </p>
-              <p>
-                <ol>
-                  <li>
-                    Visit 
-                    <a
-                      class="usa-link"
-                      href="https://www.cdc.gov/csels/dls/sars-cov-2-livd-codes.html"
-                      rel="noreferrer noopener"
-                      target="_blank"
-                    >
-                      the CDC website
-                    </a>
-                  </li>
-                  <li>
-                    Click on the mapping tool labeled “LIVD SARS-CoV-2 Test Codes.xlsx” to download the file
-                  </li>
-                  <li>
-                    Open the file on your computer and go to the “LOINC Mapping” tab
-                  </li>
-                  <li>
-                    Search for your device name
-                  </li>
-                  <li>
-                    For your device, go to column D, “Vendor Specimen Description”
-                  </li>
-                  <li>
-                    Copy either the SNOMED code OR the text value (example: 
-                    <em>
-                      Anterior Nares Swab or 697989009
-                    </em>
-                    )
-                  </li>
-                </ol>
-              </p>
-            </div>
+            />
             <div
               class="grid-row margin-bottom-05"
               data-testid="column-header"
@@ -3068,16 +2993,31 @@ exports[`CsvSchemaDocumentation tests CsvSchemaDocumentaton matches snapshot 1`]
                 class="grid-col-8"
               >
                 <div>
-                  Use one of the common values listed below; or look up SNOMED code in the 
+                  Use one of the comman values below, or find your device on the 
+                  <a
+                    class="usa-link"
+                    href="/csv/codelookup"
+                    rel="noreferrer noopener"
+                    target="_blank"
+                  >
+                    device code lookup tool
+                  </a>
+                  .
+                </div>
+                <div>
+                  <br />
+                </div>
+                <div>
+                  You can also search the LIVD SARS-CoV-2 Test Codes spreadsheet on the 
                   <a
                     class="usa-link"
                     href="https://www.cdc.gov/csels/dls/sars-cov-2-livd-codes.html"
                     rel="noreferrer noopener"
                     target="_blank"
                   >
-                    LIVD SARS-CoV-2
+                    CDC website
                   </a>
-                   Test Codes spreadsheet, “LOINC Mapping” tab, column D
+                  . Download the spreadsheet, go to the "LOINC Mapping" tab, and copy either the SNOMED code or text value for your device from column D.
                 </div>
               </div>
             </div>

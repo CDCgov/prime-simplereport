@@ -64,6 +64,12 @@ resource "azurerm_function_app" "functions" {
   site_config {
     linux_fx_version          = "node|14"
     use_32_bit_worker_process = false
+
+    // NOTE: If this code is removed, TF will not automatically delete it with the current provider version! It must be removed manually from the App Service -> Networking blade!
+    ip_restriction {
+      virtual_network_subnet_id = var.lb_subnet_id
+      action                    = "Allow"
+    }
   }
 
   identity {
@@ -100,5 +106,5 @@ terraform {
       version = "~> 2.92.0"
     }
   }
-  required_version = "~> 1.1.4"
+  required_version = "~> 1.3.3"
 }

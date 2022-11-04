@@ -116,9 +116,6 @@ public class SliceTestConfiguration {
         SliceTestConfiguration.DEFAULT_ROLE_PREFIX + "NO_ACCESS";
     public static final String DEFAULT_ORG_ALL_FACILITIES =
         SliceTestConfiguration.DEFAULT_ROLE_PREFIX + "ALL_FACILITIES";
-
-    public static final String DEFAULT_ORG_CSV_UPLOAD =
-        SliceTestConfiguration.DEFAULT_ROLE_PREFIX + "TEST_RESULT_UPLOAD_USER";
   }
 
   @Bean
@@ -187,14 +184,6 @@ public class SliceTestConfiguration {
       })
   @Inherited
   public @interface WithSimpleReportEntryOnlyAllFacilitiesUser {}
-
-  @Retention(RetentionPolicy.RUNTIME)
-  @Target({ElementType.METHOD, ElementType.TYPE})
-  @WithMockUser(
-      username = TestUserIdentities.STANDARD_USER,
-      authorities = {Role.DEFAULT_ORG_CSV_UPLOAD})
-  @Inherited
-  public @interface WithSimpleReportCsvUploadPilotUser {}
 
   @Retention(RetentionPolicy.RUNTIME)
   @Target({ElementType.METHOD, ElementType.TYPE})

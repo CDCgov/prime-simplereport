@@ -1,4 +1,4 @@
-const TEST_RESULTS_BY_START_END_DATE = [
+const data = [
   {
     internalId: "7c768a5d-ef90-44cd-8050-b96dd77f51d5",
     dateTested: "2021-03-18T19:27:21.052Z",
@@ -38,5 +38,10 @@ const TEST_RESULTS_BY_START_END_DATE = [
     __typename: "TestResult",
   },
 ];
+
+const TEST_RESULTS_BY_START_END_DATE = {
+  content: data,
+  totalElements: data.length,
+};
 
 export default TEST_RESULTS_BY_START_END_DATE;
