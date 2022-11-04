@@ -35,7 +35,7 @@ import org.springframework.transaction.annotation.Transactional;
 
 /**
  * Service to upload a roster of patient data given a CSV input. Formerly restricted to superusers
- * but now available to end users.
+ * but now (almost) available to end users.
  *
  * <p>Updated by emmastephenson on 10/24/2022
  */

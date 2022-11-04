@@ -86,7 +86,6 @@ public class PatientBulkUploadFileValidator {
     private final ValueOrError county;
     private final ValueOrError state;
     private final ValueOrError zipCode;
-    private final ValueOrError country;
     private final ValueOrError phoneNumber;
     private final ValueOrError phoneNumberType;
     private final ValueOrError employedInHealthcare;
@@ -109,7 +108,6 @@ public class PatientBulkUploadFileValidator {
       county = getValue(rawRow, "county", false);
       state = getValue(rawRow, "state", true);
       zipCode = getValue(rawRow, "zip_code", true);
-      country = getValue(rawRow, "country", false);
       phoneNumber = getValue(rawRow, "phone_number", true);
       phoneNumberType = getValue(rawRow, "phone_number_type", false);
       employedInHealthcare = getValue(rawRow, "employed_in_healthcare", true);
