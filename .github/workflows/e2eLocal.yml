@@ -85,6 +85,7 @@ jobs:
       run: |
         echo "::group::Run Cypress locally"
         docker compose pull
+        docker-compose -f docker-compose.yml -f docker-compose.cypress.yml build
         docker-compose -f docker-compose.yml -f docker-compose.cypress.yml up --abort-on-container-exit --exit-code-from cypress
         echo "::endgroup::"
     
@@ -93,7 +94,7 @@ jobs:
       shell: bash
       run: |
         echo "::group::Stop Docker containers"
-        docker-compose -f "docker-compose.yml" -f "docker-compose.cypress.yml" down
+        docker-compose -f docker-compose.yml -f docker-compose.cypress.yml down
         echo "::endgroup::"
 
     - name: Archive cypress failures
