@@ -144,6 +144,7 @@ describe("start test from patients page for patient already in queue", () => {
     cy.visit("/");
     cy.get(".usa-nav-container");
     cy.get("#desktop-patient-nav-link").click();
+    cy.get(".sr-patient-list").contains('Loading...').should('not.exist');
     cy.get("#search-field-small").type(lastName);
     cy.contains("tr", patientName).find(".sr-actions-menu").click();
     cy.contains("Start test").click();

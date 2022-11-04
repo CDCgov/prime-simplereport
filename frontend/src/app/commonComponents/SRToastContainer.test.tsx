@@ -9,6 +9,14 @@ const renderSRToastContainer = () => {
 };
 
 describe("SRToastContainer", () => {
+  beforeAll(() => {
+    jest.spyOn(Date, "now").mockImplementation(() => 123);
+  });
+
+  afterAll(() => {
+    jest.restoreAllMocks();
+  });
+
   it("contains the error defaults", async () => {
     const view = renderSRToastContainer();
     await showError();

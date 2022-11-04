@@ -21,7 +21,9 @@ Object {
               role="alert"
             >
               <div
+                aria-labelledby="alert-undefined-body"
                 class="usa-alert usa-alert--error"
+                id="alert-undefined"
                 role="alert"
               >
                 <div
@@ -34,6 +36,7 @@ Object {
                   </div>
                   <div
                     class="usa-alert__text"
+                    id="alert-undefined-body"
                   >
                     Please check for missing data or typos.
                   </div>
@@ -81,7 +84,9 @@ Object {
             role="alert"
           >
             <div
+              aria-labelledby="alert-undefined-body"
               class="usa-alert usa-alert--error"
+              id="alert-undefined"
               role="alert"
             >
               <div
@@ -94,6 +99,7 @@ Object {
                 </div>
                 <div
                   class="usa-alert__text"
+                  id="alert-undefined-body"
                 >
                   Please check for missing data or typos.
                 </div>
@@ -198,7 +204,9 @@ Object {
               role="alert"
             >
               <div
+                aria-labelledby="region-undefined-body"
                 class="usa-alert usa-alert--success"
+                id="region-undefined"
                 role="region"
               >
                 <div
@@ -211,6 +219,7 @@ Object {
                   </div>
                   <div
                     class="usa-alert__text"
+                    id="region-undefined-body"
                   >
                     A new patient has been added.
                   </div>
@@ -258,7 +267,9 @@ Object {
             role="alert"
           >
             <div
+              aria-labelledby="region-undefined-body"
               class="usa-alert usa-alert--success"
+              id="region-undefined"
               role="region"
             >
               <div
@@ -271,6 +282,7 @@ Object {
                 </div>
                 <div
                   class="usa-alert__text"
+                  id="region-undefined-body"
                 >
                   A new patient has been added.
                 </div>

@@ -50,14 +50,21 @@ const Alert = ({
     className
   );
 
+  const identifiedRole = role ? role : type === "error" ? "alert" : "region";
+  const id = `${identifiedRole}-${Date.now()}`;
+
   return (
     <div
       className={classes}
-      role={role ? role : type === "error" ? "alert" : "region"}
+      id={id}
+      role={identifiedRole}
+      aria-labelledby={`${id}-body`}
     >
       <div className="usa-alert__body">
         {title && <div className="usa-alert__heading text-bold">{title}</div>}
-        <div className="usa-alert__text">{body || children}</div>
+        <div id={`${id}-body`} className="usa-alert__text">
+          {body || children}
+        </div>
       </div>
     </div>
   );
