@@ -7,6 +7,7 @@ import Dropdown from "../commonComponents/Dropdown";
 import { useGetTopLevelDashboardMetricsNewQuery } from "../../generated/graphql";
 import "./Analytics.scss";
 import { formatDate } from "../utils/date";
+import { PATIENT_TERM_PLURAL } from "../../config/constants";
 
 const getDateFromDaysAgo = (daysAgo: number): Date => {
   const date = new Date();
@@ -233,7 +234,9 @@ export const Analytics = (props: Props) => {
               ) : (
                 <>
                   <h2>{facilityName}</h2>
-                  <p className="margin-bottom-0">All people tested</p>
+                  <p className="margin-bottom-0">
+                    All {PATIENT_TERM_PLURAL} tested
+                  </p>
                   <p className="padding-top-1">{`${startDate} \u2013 ${endDate}`}</p>
                   <div className="grid-row grid-gap">
                     <div className="grid-col-3">

@@ -18,6 +18,7 @@ import { useOutsideClick } from "../../utils/hooks";
 import { Patient } from "../../patients/ManagePatients";
 import { AoEAnswersDelivery } from "../AoEForm/AoEForm";
 import { getAppInsights } from "../../TelemetryService";
+import { PATIENT_TERM } from "../../../config/constants";
 
 import SearchResults from "./SearchResults";
 import SearchInput from "./SearchInput";
@@ -262,7 +263,7 @@ const AddToQueueSearchBox = ({
         onInputChange={onInputChange}
         queryString={debounced}
         disabled={!allowQuery}
-        placeholder={"Search for a person to start their test"}
+        placeholder={`Search for a ${PATIENT_TERM} to start their test`}
       />
       <SearchResults
         page="queue"
