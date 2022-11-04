@@ -55,7 +55,6 @@ describe("edit patient and save and start test", () => {
         {
           rules: {
             // error applies to the toast
-            'heading-order': { enabled: false },
             'landmark-one-main': { enabled: false },
             'landmark-unique': { enabled: false },
             // failing a11y test
@@ -83,7 +82,6 @@ describe("edit patient and save and start test", () => {
             // failing a11y test
             // error applies to the toast
             // observe this by adding cy.wait(5000); to wait for the toasts to disappear
-            'heading-order': { enabled: false },
             'landmark-one-main': { enabled: false },
             'landmark-unique': { enabled: false },
           },
@@ -126,21 +124,7 @@ describe("add patient and save and start test", () => {
       '.modal__container input[name="addressSelect-person"][value="userAddress"]+label'
     ).click();
 
-    // failing a11y test
-    // Also found in specs 01, 02, 05, 08
-    // Test a11y on the confirm address modal
-    cy.checkA11y(
-        {
-          exclude: [],
-        },
-        {
-          rules: {
-            'aria-dialog-name': { enabled: false },
-            'landmark-one-main': { enabled: false },
-            'page-has-heading-one': { enabled: false },
-          },
-        },
-    );
+    cy.checkA11y();
 
     cy.get(".modal__container #save-confirmed-address").click();
     cy.url().should("include", "queue");

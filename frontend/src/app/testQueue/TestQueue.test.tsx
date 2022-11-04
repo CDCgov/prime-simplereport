@@ -113,7 +113,7 @@ describe("TestQueue", () => {
                 },
               ],
               user: {
-                permissions: appPermissions.featureFlags.SrCsvUploaderPilot,
+                permissions: appPermissions.results.canView,
               },
             })}
           >
@@ -139,7 +139,7 @@ describe("TestQueue", () => {
     ).toHaveAttribute("href", `/results/upload/submit`);
   });
 
-  it("should render the empty queue message if no tests in the queue (no csv permissions)", async () => {
+  it("should render the empty queue message if no tests in the queue (no canViewResults permissions)", async () => {
     render(
       <MemoryRouter>
         <MockedProvider mocks={mocks}>

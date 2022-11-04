@@ -78,7 +78,6 @@ describe("Conducting a test", () => {
         {
           rules: {
             // error applies to the toast
-            'heading-order': { enabled: false },
             'landmark-unique': { enabled: false },
           },
         },
