@@ -118,7 +118,7 @@ public class PatientBulkUploadFileValidator {
       email = getValue(rawRow, "email", false);
     }
 
-    public List<FeedbackMessage> validateHeaders() {
+    private List<FeedbackMessage> validateHeaders() {
       List<ValueOrError> allFields =
           List.of(
               firstName,
