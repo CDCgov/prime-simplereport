@@ -17,9 +17,11 @@ describe("edit patient and save and start test", () => {
     cy.visit("/");
     cy.get(".usa-nav-container");
     cy.get("#desktop-patient-nav-link").click();
+    cy.get(".sr-patient-list").should('exist');
+    cy.get(".sr-patient-list").contains('Loading...').should('not.exist');
     cy.get("#search-field-small").type(lastName);
-    cy.get(".sr-patient-list").contains(lastName).click();
-    cy.contains("General information");
+    cy.get(".sr-patient-list").contains(patientName).should('exist').click();
+    cy.contains("General information").should('exist');
 
     cy.injectAxe();
     cy.checkA11y(); // Edit Patient page
@@ -42,7 +44,7 @@ describe("edit patient and save and start test", () => {
     );
   });
   it("completes AoE form and verifies queue", () => {
-    cy.contains("New loss of taste").click();
+    cy.contains("New loss of taste").should('exist').click();
 
     // Test a11y on the AoE form
     cy.checkA11y();
