@@ -52,7 +52,7 @@ describe("Adding Patients", () => {
           '.modal__container input[name="addressSelect-person"][value="userAddress"]+label'
       ).click();
 
-    cy.checkA11y();
+      cy.checkA11y();
 
       cy.get(".modal__container #save-confirmed-address").click();
       cy.get(".usa-card__header").contains("People");
@@ -60,11 +60,7 @@ describe("Adding Patients", () => {
       cy.get("#search-field-small").type(patient.lastName);
       cy.get(".prime-container").contains(patient.fullName);
 
-    // failing a11y test
-    // error applies to the toast
-    // observe this by adding cy.wait(5000); to wait for the toasts to disappear
-    // Test a11y on the People page
-    cy.checkA11y();
+      cy.checkA11y();
   });
 });
 
