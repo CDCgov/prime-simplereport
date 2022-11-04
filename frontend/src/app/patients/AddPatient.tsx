@@ -6,7 +6,11 @@ import moment from "moment";
 import { useSelector } from "react-redux";
 
 import iconSprite from "../../../node_modules/uswds/dist/img/sprite.svg";
-import { PATIENT_TERM, PATIENT_TERM_CAP } from "../../config/constants";
+import {
+  PATIENT_TERM,
+  PATIENT_TERM_CAP,
+  PATIENT_TERM_PLURAL_CAP,
+} from "../../config/constants";
 import { dedupeAndCompactStrings } from "../utils";
 import { showSuccess } from "../utils/srToast";
 import Button from "../commonComponents/Button/Button";
@@ -350,7 +354,7 @@ const AddPatient = () => {
                     <use xlinkHref={iconSprite + "#arrow_back"}></use>
                   </svg>
                   <LinkWithQuery to={`/patients`} className="margin-left-05">
-                    People
+                    {PATIENT_TERM_PLURAL_CAP}
                   </LinkWithQuery>
                 </div>
                 <div className="prime-edit-patient-heading margin-y-0">

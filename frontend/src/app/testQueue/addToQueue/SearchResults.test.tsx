@@ -4,6 +4,7 @@ import { render, screen } from "@testing-library/react";
 import userEvent from "@testing-library/user-event";
 
 import { Patient } from "../../patients/ManagePatients";
+import { PATIENT_TERM } from "../../../config/constants";
 
 import SearchResults from "./SearchResults";
 
@@ -107,8 +108,8 @@ describe("SearchResults", () => {
         </RouterWithFacility>
       );
 
-      expect(screen.getByText("Add new patient")).toBeInTheDocument();
-      userEvent.click(screen.getByText("Add new patient"));
+      expect(screen.getByText(`Add new ${PATIENT_TERM}`)).toBeInTheDocument();
+      userEvent.click(screen.getByText(`Add new ${PATIENT_TERM}`));
       expect(
         screen.getByText(
           `Redirected to /add-patient?facility=${mockFacilityID}`
