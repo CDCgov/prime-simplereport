@@ -99,7 +99,7 @@ describe("add patient and save and start test", () => {
     cy.get(".usa-nav-container");
     cy.get("#desktop-patient-nav-link").click();
     cy.get("#add-patient-button").click();
-    cy.get(".prime-edit-patient").contains("Add new person");
+    cy.get(".prime-edit-patient").contains("Add new patient");
 
     cy.injectAxe();
     cy.checkA11y(); // New Patient page
@@ -123,21 +123,7 @@ describe("add patient and save and start test", () => {
       '.modal__container input[name="addressSelect-person"][value="userAddress"]+label'
     ).click();
 
-    // failing a11y test
-    // Also found in specs 01, 02, 05, 08
-    // Test a11y on the confirm address modal
-    cy.checkA11y(
-        {
-          exclude: [],
-        },
-        {
-          rules: {
-            'aria-dialog-name': { enabled: false },
-            'landmark-one-main': { enabled: false },
-            'page-has-heading-one': { enabled: false },
-          },
-        },
-    );
+    cy.checkA11y();
 
     cy.get(".modal__container #save-confirmed-address").click();
     cy.url().should("include", "queue");
@@ -185,8 +171,8 @@ describe("edit patient from test queue", () => {
   });
 });
 
-describe("start test from people page for patient already in queue", () => {
-  it("navigates to people page, selects Start test, and verifies link to test queue", () => {
+describe("start test from patients page for patient already in queue", () => {
+  it("navigates to patients page, selects Start test, and verifies link to test queue", () => {
     cy.visit("/");
     cy.get(".usa-nav-container");
     cy.get("#desktop-patient-nav-link").click();

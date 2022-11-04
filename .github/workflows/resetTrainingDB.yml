@@ -5,7 +5,7 @@ on:
 
 env:
   DEPLOY_ENV: training
-  NODE_VERSION: 14
+  NODE_VERSION: 18
 concurrency:
   group: training-deploy
 
@@ -19,7 +19,7 @@ jobs:
       - uses: actions/checkout@v3
       - uses: actions/setup-node@v3.5.1
         with:
-          node-version: "14.0"
+          node-version: ${{env.NODE_VERSION}}
       - uses: azure/login@v1
         with:
           creds: ${{ secrets.AZURE_CREDENTIALS }}

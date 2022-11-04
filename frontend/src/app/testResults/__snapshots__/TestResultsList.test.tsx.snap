@@ -275,7 +275,7 @@ exports[`TestResultsList should render a list of tests 1`] = `
                 class="patient-name-cell"
                 scope="col"
               >
-                Person
+                Patient
               </th>
               <th
                 class="test-date-cell"
@@ -325,7 +325,7 @@ exports[`TestResultsList should render a list of tests 1`] = `
                 class="patient-name-cell"
                 scope="col"
               >
-                Person
+                Patient
               </th>
               <th
                 class="test-date-cell"

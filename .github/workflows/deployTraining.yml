@@ -8,7 +8,7 @@ on:
 
 env:
   DEPLOY_ENV: training
-  NODE_VERSION: 14
+  NODE_VERSION: 18
 concurrency:
   group: training-deploy
 

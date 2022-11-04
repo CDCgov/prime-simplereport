@@ -10,7 +10,7 @@ concurrency:
   cancel-in-progress: true
 env:
   DEPLOY_ENV: test
-  NODE_VERSION: 14
+  NODE_VERSION: 18
 
 jobs:
   build-cypress:

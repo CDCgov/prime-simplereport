@@ -15,6 +15,7 @@ import {
   RemovePatientFromQueueDocument,
 } from "../../generated/graphql";
 import { appPermissions } from "../permissions";
+import { PATIENT_TERM } from "../../config/constants";
 
 import TestQueue from "./TestQueue";
 import { QUERY_PATIENT } from "./addToQueue/AddToQueueSearch";
@@ -64,7 +65,9 @@ describe("TestQueue", () => {
         </MockedProvider>
       </MemoryRouter>
     );
-    await screen.findByLabelText("Search for a person to start their test");
+    await screen.findByLabelText(
+      `Search for a ${PATIENT_TERM} to start their test`
+    );
     expect(await screen.findByText("Doe, John A")).toBeInTheDocument();
     expect(await screen.findByText("Smith, Jane")).toBeInTheDocument();
     expect(container).toMatchSnapshot();
@@ -125,7 +128,7 @@ describe("TestQueue", () => {
 
     expect(
       await screen.findByText(
-        "There are no tests running. Search for a person to start their test."
+        `There are no tests running. Search for a ${PATIENT_TERM} to start their test.`
       )
     ).toBeInTheDocument();
     expect(
@@ -167,7 +170,7 @@ describe("TestQueue", () => {
 
     expect(
       await screen.findByText(
-        "There are no tests running. Search for a person to start their test."
+        `There are no tests running. Search for a ${PATIENT_TERM} to start their test.`
       )
     ).toBeInTheDocument();
     expect(
@@ -187,7 +190,9 @@ describe("TestQueue", () => {
         </MemoryRouter>
       );
 
-      await screen.findByLabelText("Search for a person to start their test");
+      await screen.findByLabelText(
+        `Search for a ${PATIENT_TERM} to start their test`
+      );
       expect(await screen.findByText("Doe, John A")).toBeInTheDocument();
       expect(await screen.findByText("Smith, Jane")).toBeInTheDocument();
 
