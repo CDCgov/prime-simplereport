@@ -46,12 +46,18 @@ public class CsvValidatorUtils {
               CANADIAN_STATE_CODES.stream().map(String::toLowerCase))
           .collect(Collectors.toSet());
   private static final String UNKNOWN_LITERAL = "unknown";
+  private static final String OTHER_LITERAL = "other";
+  private static final String REFUSED_LITERAL = "refused";
+  private static final String FEMALE_LITERAL = "female";
+  private static final String MALE_LITERAL = "male";
+  private static final String ASIAN_LITERAL = "asian";
+  private static final String WHITE_LITERAL = "white";
 
   private static final Set<String> GENDER_VALUES =
       Set.of(
-          "m", "male",
-          "f", "female",
-          "o", "other",
+          "m", MALE_LITERAL,
+          "f", FEMALE_LITERAL,
+          "o", OTHER_LITERAL,
           "u", UNKNOWN_LITERAL,
           "a", "ambiguous",
           "n", "not applicable");
@@ -62,14 +68,22 @@ public class CsvValidatorUtils {
           "unk", UNKNOWN_LITERAL);
   private static final Set<String> RACE_VALUES =
       Set.of(
-          "1002-5", "american indian or alaska native",
-          "2028-9", "asian",
-          "2054-5", "black or african american",
-          "2076-8", "native hawaiian or other pacific islander",
-          "2106-3", "white",
-          "2131-1", "other",
-          "asku", "ask but unknown",
-          "unk", UNKNOWN_LITERAL);
+          "1002-5",
+          "american indian or alaska native",
+          "2028-9",
+          ASIAN_LITERAL,
+          "2054-5",
+          "black or african american",
+          "2076-8",
+          "native hawaiian or other pacific islander",
+          "2106-3",
+          WHITE_LITERAL,
+          "2131-1",
+          OTHER_LITERAL,
+          "asku",
+          "ask but unknown",
+          "unk",
+          UNKNOWN_LITERAL);
   private static final Set<String> YES_NO_VALUES =
       Set.of(
           "y", "yes",
@@ -240,18 +254,18 @@ public class CsvValidatorUtils {
         Map.of(
             "american indian or alaska native",
             "native",
-            "asian",
-            "asian",
+            ASIAN_LITERAL,
+            ASIAN_LITERAL,
             "black or african american",
             "black",
             "native hawaiian or other pacific islander",
             "pacific",
-            "white",
-            "white",
-            "other",
-            "other",
+            WHITE_LITERAL,
+            WHITE_LITERAL,
+            OTHER_LITERAL,
+            OTHER_LITERAL,
             "ask but unknown",
-            "refused",
+            REFUSED_LITERAL,
             UNKNOWN_LITERAL,
             UNKNOWN_LITERAL);
 
@@ -261,18 +275,18 @@ public class CsvValidatorUtils {
   public static String convertSexToDatabaseValue(String biologicalSex) {
     // fun fact: Map.of() has a limit of 10 key/value pairs
     HashMap<String, String> displayValueToDatabaseValue = new HashMap<>();
-    displayValueToDatabaseValue.put("m", "male");
-    displayValueToDatabaseValue.put("male", "male");
-    displayValueToDatabaseValue.put("f", "female");
-    displayValueToDatabaseValue.put("female", "female");
-    displayValueToDatabaseValue.put("o", "other");
-    displayValueToDatabaseValue.put("other", "other");
-    displayValueToDatabaseValue.put("u", "refused");
-    displayValueToDatabaseValue.put(UNKNOWN_LITERAL, "refused");
-    displayValueToDatabaseValue.put("a", "other");
-    displayValueToDatabaseValue.put("ambiguous", "other");
-    displayValueToDatabaseValue.put("n", "other");
-    displayValueToDatabaseValue.put("not applicable", "other");
+    displayValueToDatabaseValue.put("m", MALE_LITERAL);
+    displayValueToDatabaseValue.put(MALE_LITERAL, MALE_LITERAL);
+    displayValueToDatabaseValue.put("f", FEMALE_LITERAL);
+    displayValueToDatabaseValue.put(FEMALE_LITERAL, FEMALE_LITERAL);
+    displayValueToDatabaseValue.put("o", OTHER_LITERAL);
+    displayValueToDatabaseValue.put(OTHER_LITERAL, OTHER_LITERAL);
+    displayValueToDatabaseValue.put("u", REFUSED_LITERAL);
+    displayValueToDatabaseValue.put(UNKNOWN_LITERAL, REFUSED_LITERAL);
+    displayValueToDatabaseValue.put("a", OTHER_LITERAL);
+    displayValueToDatabaseValue.put("ambiguous", OTHER_LITERAL);
+    displayValueToDatabaseValue.put("n", OTHER_LITERAL);
+    displayValueToDatabaseValue.put("not applicable", OTHER_LITERAL);
 
     return displayValueToDatabaseValue.get(biologicalSex.toLowerCase());
   }

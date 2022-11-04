@@ -9,7 +9,7 @@ import java.util.List;
 import java.util.stream.Collectors;
 import org.junit.jupiter.api.Test;
 
-public class PatientBulkUploadFileValidatorTest {
+class PatientBulkUploadFileValidatorTest {
 
   PatientBulkUploadFileValidator patientBulkUploadFileValidator =
       new PatientBulkUploadFileValidator();

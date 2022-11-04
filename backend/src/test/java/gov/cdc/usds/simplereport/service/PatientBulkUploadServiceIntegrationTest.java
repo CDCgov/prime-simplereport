@@ -93,8 +93,8 @@ class PatientBulkUploadServiceIntegrationTest extends BaseServiceTest<PatientBul
     assertThat(pn.getType()).isEqualTo(PhoneType.MOBILE);
     assertThat(patient.getEmail()).isEqualTo("jane@testingorg.com");
 
-    assertThat(getPatientsForFacility(firstFacilityId).size())
-        .isEqualTo(getPatientsForFacility(secondFacilityId).size());
+    assertThat(getPatientsForFacility(firstFacilityId))
+        .hasSameSizeAs(getPatientsForFacility(secondFacilityId));
   }
 
   @Test
