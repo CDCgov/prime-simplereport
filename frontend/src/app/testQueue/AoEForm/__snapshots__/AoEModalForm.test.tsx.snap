@@ -31,37 +31,42 @@ Object {
           style="position: initial; top: 40px; left: 40px; right: 40px; bottom: 40px; border: 1px solid #ccc; background: rgb(255, 255, 255); overflow: auto; border-radius: 4px; outline: none; padding: 20px;"
           tabindex="-1"
         >
-          <div
-            class="display-flex flex-justify"
+          <main
+            aria-labelledby="aoe-form-title"
           >
-            <h1
-              class="font-heading-lg margin-top-05 margin-bottom-0"
-            >
-              Jobs, Steve
-            </h1>
             <div
-              class="sr-time-of-test-buttons"
+              class="display-flex flex-justify"
             >
-              <button
-                class="modal__close-button"
-                style="cursor: pointer;"
+              <h1
+                class="font-heading-lg margin-top-05 margin-bottom-0"
               >
-                <img
-                  alt="Close"
-                  class="modal__close-img"
-                  src="close.svg"
-                />
-              </button>
+                Jobs, Steve
+              </h1>
+              <div
+                class="sr-time-of-test-buttons"
+              >
+                <button
+                  class="modal__close-button"
+                  style="cursor: pointer;"
+                >
+                  <img
+                    alt="Close"
+                    class="modal__close-img"
+                    src="close.svg"
+                  />
+                </button>
+              </div>
             </div>
-          </div>
-          <div
-            class="border-top border-base-lighter margin-x-neg-205 margin-top-1"
-          />
-          <h2
-            class="font-heading-lg margin-top-205 margin-bottom-0"
-          >
-            Test questionnaire
-          </h2>
+            <div
+              class="border-top border-base-lighter margin-x-neg-205 margin-top-1"
+            />
+            <h2
+              class="font-heading-lg margin-top-205 margin-bottom-0"
+              id="aoe-form-title"
+            >
+              Test questionnaire
+            </h2>
+          </main>
         </div>
       </div>
     </div>
