@@ -179,9 +179,9 @@ const Uploads = () => {
         </div>
         <div className="usa-alert usa-alert--info margin-left-105em margin-right-105em maxw-tablet-lg">
           <div className="usa-alert__body">
-            <h3 className="usa-alert__heading">
+            <h2 className="usa-alert__heading">
               What is the bulk results uploader?
-            </h3>
+            </h2>
             <p className="usa-alert__text">
               <em>
                 This feature is in beta. That means it’s new, and we’ll continue
@@ -208,32 +208,50 @@ const Uploads = () => {
             Report results in bulk using a comma-separated values (CSV)
             spreadsheet. To upload your spreadsheet:
           </p>
-          <ol className="usa-list">
-            <li>
-              <a
-                href="/assets/resources/test_results_example_10-3-2022.csv"
-                onClick={() => {
-                  appInsights?.trackEvent({
-                    name: "Download spreadsheet template",
-                  });
-                }}
-              >
-                Download the spreadsheet template
-              </a>{" "}
-            </li>
-            <li>
-              Format and add your data following the template and upload guide
-            </li>
-            <li>Save your spreadsheet as a CSV</li>
-            <li>Upload your CSV here</li>
-          </ol>
-          <p>
-            For more information about preparing your spreadsheet, visit our{" "}
-            <LinkWithQuery to="/results/upload/submit/guide">
-              <strong>spreadsheet upload guide</strong>
-            </LinkWithQuery>
-            .
-          </p>
+          <section>
+            <ol className="usa-process-list">
+              <li className="usa-process-list__item margin-bottom-1em">
+                <h2 className="usa-process-list__heading">
+                  Visit the{" "}
+                  <LinkWithQuery to="/results/upload/submit/guide">
+                    <strong>spreadsheet upload guide</strong>
+                  </LinkWithQuery>
+                </h2>
+              </li>
+              <li className="usa-process-list__item margin-bottom-1em">
+                <h2 className="usa-process-list__heading">
+                  Download the{" "}
+                  <a
+                    href="/assets/resources/test_results_example_10-3-2022.csv"
+                    onClick={() => {
+                      appInsights?.trackEvent({
+                        name: "Download spreadsheet template",
+                      });
+                    }}
+                  >
+                    spreadsheet template
+                  </a>
+                </h2>
+              </li>
+              <li className="usa-process-list__item margin-bottom-1em">
+                <h2 className="usa-process-list__heading">
+                  Following the guide and template, format your data to match
+                  SimpleReport requirements
+                </h2>
+              </li>
+              <li className="usa-process-list__item margin-bottom-1em">
+                <h2 className="usa-process-list__heading">
+                  Save your spreadsheet in a CSV format
+                </h2>
+              </li>
+              <li className="usa-process-list__item margin-bottom-1em">
+                <h2 className="usa-process-list__heading">
+                  Submit your CSV to the uploader below
+                </h2>
+              </li>
+            </ol>
+          </section>
+
           {reportId && (
             <div>
               <div className="usa-alert usa-alert--success">
