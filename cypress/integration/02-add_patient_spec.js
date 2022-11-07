@@ -68,7 +68,7 @@ describe("Adding Patients", () => {
     const patients = [generatePatient(), generatePatient()];
 
     const patientToCsv = (patient) => {
-      return `${patient.lastName},${patient.firstName},,,refused,${patient.dob},refused,refused,123 Main Street,,Washington,,DC,20008,USA,5656667777,MOBILE,No,No,VISITOR,foo@example.com`
+      return `${patient.lastName},${patient.firstName},,,refused,5/11/1933,refused,refused,123 Main Street,,Washington,,DC,20008,USA,5656667777,MOBILE,No,No,VISITOR,foo@example.com`;
     }
     it("navigates to the bulk upload page", () => {
       cy.visit("/");
@@ -82,17 +82,18 @@ describe("Adding Patients", () => {
       cy.checkA11y(); // Bulk upload patient form
     });
     it("uploads csv file of patients", () => {
-      const csvFile = "LastName,FirstName,MiddleName,Suffix,Race,DOB,biologicalSex,Ethnicity,Street,Street2,City,County,State,ZipCode,Country,PhoneNumber,PhoneNumberType,employedInHealthcare,residentCongregateSetting,Role,Email\n"
+      const csvFileContent = "LastName,FirstName,MiddleName,Suffix,Race,DOB,biologicalSex,Ethnicity,Street,Street2,City,County,State,ZipCode,Country,PhoneNumber,PhoneNumberType,employedInHealthcare,residentCongregateSetting,Role,Email\n"
           + `${patientToCsv(patients[0])}\n`
-          + `${patientToCsv(patients[1])}\n`
+          + `${patientToCsv(patients[1])}\n`;
       cy.get(".usa-radio__label").first().click(); // select one facility
       cy.get('input[type=file]').selectFile({
-        fileContent: csvFile,
+        contents: Cypress.Buffer.from(csvFileContent),
         fileName: 'contentData.csv',
         mimeType: 'text/csv',
       }, {
         action: 'drag-drop'
-      })
+      });
+      cy.get(".usa-button").contains("Upload CSV file").click();
       cy.get(".prime-edit-patient").contains("Success: File Accepted");
     })
     it("patients should appear in the patients list", () => {
