@@ -6,8 +6,7 @@ import Button from "../../commonComponents/Button/Button";
 
 interface SearchResultsProps {
   devices: DeviceType[];
-  // TODO: fix this type
-  setSelectedDevice: any;
+  setSelectedDevice: (d: DeviceType | null) => void;
   shouldShowSuggestions: boolean;
   loading: boolean;
   dropDownRef?: React.RefObject<HTMLDivElement>;

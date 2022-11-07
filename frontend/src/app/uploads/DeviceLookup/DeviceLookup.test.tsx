@@ -45,7 +45,9 @@ describe("Device lookup", () => {
   it("displays no results message if no matches found", async () => {
     userEvent.type(screen.getByLabelText("Select device"), "noresults");
     await waitFor(() => {
-      expect(screen.getByText("No device found matching")).toBeInTheDocument();
+      expect(
+        screen.getByText("No device found matching", { exact: false })
+      ).toBeInTheDocument();
     });
   });
 
