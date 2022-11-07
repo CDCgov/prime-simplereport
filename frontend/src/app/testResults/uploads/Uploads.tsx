@@ -241,7 +241,8 @@ const Uploads = () => {
               </li>
               <li className="usa-process-list__item margin-bottom-1em">
                 <h2 className="usa-process-list__heading">
-                  Save your spreadsheet in a CSV format
+                  Save your spreadsheet in a CSV format (file size limit is 50
+                  MB or 10,000 rows)
                 </h2>
               </li>
               <li className="usa-process-list__item margin-bottom-1em">
