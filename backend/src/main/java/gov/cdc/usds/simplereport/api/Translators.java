@@ -30,7 +30,7 @@ import org.json.JSONObject;
  * ways.
  */
 public class Translators {
-  private static final DateTimeFormatter US_SLASHDATE_SHORT_FORMATTER =
+  public static final DateTimeFormatter US_SLASHDATE_SHORT_FORMATTER =
       DateTimeFormatter.ofPattern("M/d/yyyy");
   private static final int MAX_STRING_LENGTH = 500;
 

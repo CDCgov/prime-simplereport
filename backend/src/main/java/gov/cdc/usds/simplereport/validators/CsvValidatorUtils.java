@@ -3,6 +3,7 @@ package gov.cdc.usds.simplereport.validators;
 import static gov.cdc.usds.simplereport.api.Translators.CANADIAN_STATE_CODES;
 import static gov.cdc.usds.simplereport.api.Translators.COUNTRY_CODES;
 import static gov.cdc.usds.simplereport.api.Translators.STATE_CODES;
+import static gov.cdc.usds.simplereport.api.Translators.US_SLASHDATE_SHORT_FORMATTER;
 
 import com.fasterxml.jackson.databind.MappingIterator;
 import com.fasterxml.jackson.databind.RuntimeJsonMappingException;
@@ -15,6 +16,7 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.nio.charset.StandardCharsets;
+import java.time.format.DateTimeParseException;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
@@ -128,6 +130,10 @@ public class CsvValidatorUtils {
   private static final String ITEM_SCOPE = "item";
   private static final String REPORT_SCOPE = "report";
 
+  //  private static final DateTimeFormatter dateFormatter = DateTimeFormatter.ofPattern("M/d/yyyy",
+  // Locale.US)
+  //          .withResolverStyle(ResolverStyle.STRICT);
+
   private CsvValidatorUtils() {
     throw new IllegalStateException("CsvValidatorUtils is a utility class");
   }
@@ -193,7 +199,18 @@ public class CsvValidatorUtils {
   }
 
   public static List<FeedbackMessage> validateDate(ValueOrError input) {
-    return validateRegex(input, DATE_REGEX);
+    List<FeedbackMessage> errors = validateRegex(input, DATE_REGEX);
+    if (errors.isEmpty()) {
+      try {
+        US_SLASHDATE_SHORT_FORMATTER.parse(input.getValue());
+      } catch (DateTimeParseException e) {
+        errors.add(
+            new FeedbackMessage(
+                ITEM_SCOPE,
+                input.getValue() + " is not an acceptable value for column " + input.getHeader()));
+      }
+    }
+    return errors;
   }
 
   public static List<FeedbackMessage> validateDateTime(ValueOrError input) {
