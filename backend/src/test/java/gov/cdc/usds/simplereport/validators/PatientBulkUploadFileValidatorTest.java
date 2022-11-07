@@ -91,7 +91,7 @@ class PatientBulkUploadFileValidatorTest {
     // WHEN
     List<FeedbackMessage> errors = patientBulkUploadFileValidator.validate(input);
     // THEN
-    assertThat(errors).hasSize(12);
+    assertThat(errors).hasSize(13);
     List<String> errorMessages =
         errors.stream().map(FeedbackMessage::getMessage).collect(Collectors.toList());
     assertThat(errorMessages)
@@ -105,6 +105,7 @@ class PatientBulkUploadFileValidatorTest {
             "doctor is not an acceptable value for column role",
             "Alaska is not an acceptable value for column state",
             "1234 is not a valid value for column zip_code",
+            "America is not an acceptable value for column country",
             "4108675309 is not a valid value for column phone_number",
             "cell is not an acceptable value for column phone_number_type",
             "janedoe.com is not a valid value for column email");

@@ -1,6 +1,7 @@
 package gov.cdc.usds.simplereport.validators;
 
 import static gov.cdc.usds.simplereport.api.Translators.CANADIAN_STATE_CODES;
+import static gov.cdc.usds.simplereport.api.Translators.COUNTRY_CODES;
 import static gov.cdc.usds.simplereport.api.Translators.STATE_CODES;
 
 import com.fasterxml.jackson.databind.MappingIterator;
@@ -16,7 +17,6 @@ import java.io.InputStreamReader;
 import java.nio.charset.StandardCharsets;
 import java.util.ArrayList;
 import java.util.Collections;
-import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
@@ -164,6 +164,10 @@ public class CsvValidatorUtils {
     return validateInSet(input, VALID_STATE_CODES);
   }
 
+  public static List<FeedbackMessage> validateCountry(ValueOrError input) {
+    return validateInSet(input, COUNTRY_CODES);
+  }
+
   public static List<FeedbackMessage> validateTestResultStatus(ValueOrError input) {
     return validateInSet(input, TEST_RESULT_STATUS_VALUES);
   }
@@ -236,57 +240,46 @@ public class CsvValidatorUtils {
   /* The acceptable values for race and ethnicity don't map to the values expected in our database. */
   public static String convertEthnicityToDatabaseValue(String ethnicity) {
     Map<String, String> displayValueToDatabaseValue =
-        Map.of(
-            "hispanic or latino",
-            "hispanic",
-            "not hispanic or latino",
-            "not_hispanic",
-            "unk",
-            UNKNOWN_LITERAL,
-            UNKNOWN_LITERAL,
-            UNKNOWN_LITERAL);
+        Map.ofEntries(
+            Map.entry("hispanic or latino", "hispanic"),
+            Map.entry("not hispanic or latino", "not_hispanic"),
+            Map.entry("unk", UNKNOWN_LITERAL),
+            Map.entry(UNKNOWN_LITERAL, UNKNOWN_LITERAL));
 
     return displayValueToDatabaseValue.get(ethnicity.toLowerCase());
   }
 
   public static String convertRaceToDatabaseValue(String race) {
     Map<String, String> displayValueToDatabaseValue =
-        Map.of(
-            "american indian or alaska native",
-            "native",
-            ASIAN_LITERAL,
-            ASIAN_LITERAL,
-            "black or african american",
-            "black",
-            "native hawaiian or other pacific islander",
-            "pacific",
-            WHITE_LITERAL,
-            WHITE_LITERAL,
-            OTHER_LITERAL,
-            OTHER_LITERAL,
-            "ask but unknown",
-            REFUSED_LITERAL,
-            UNKNOWN_LITERAL,
-            UNKNOWN_LITERAL);
+        Map.ofEntries(
+            Map.entry("american indian or alaska native", "native"),
+            Map.entry(ASIAN_LITERAL, ASIAN_LITERAL),
+            Map.entry("black or african american", "black"),
+            Map.entry("native hawaiian or other pacific islander", "pacific"),
+            Map.entry(WHITE_LITERAL, WHITE_LITERAL),
+            Map.entry(OTHER_LITERAL, OTHER_LITERAL),
+            Map.entry("ask but unknown", REFUSED_LITERAL),
+            Map.entry(UNKNOWN_LITERAL, UNKNOWN_LITERAL));
 
     return displayValueToDatabaseValue.get(race.toLowerCase());
   }
 
   public static String convertSexToDatabaseValue(String biologicalSex) {
     // fun fact: Map.of() has a limit of 10 key/value pairs
-    HashMap<String, String> displayValueToDatabaseValue = new HashMap<>();
-    displayValueToDatabaseValue.put("m", MALE_LITERAL);
-    displayValueToDatabaseValue.put(MALE_LITERAL, MALE_LITERAL);
-    displayValueToDatabaseValue.put("f", FEMALE_LITERAL);
-    displayValueToDatabaseValue.put(FEMALE_LITERAL, FEMALE_LITERAL);
-    displayValueToDatabaseValue.put("o", OTHER_LITERAL);
-    displayValueToDatabaseValue.put(OTHER_LITERAL, OTHER_LITERAL);
-    displayValueToDatabaseValue.put("u", REFUSED_LITERAL);
-    displayValueToDatabaseValue.put(UNKNOWN_LITERAL, REFUSED_LITERAL);
-    displayValueToDatabaseValue.put("a", OTHER_LITERAL);
-    displayValueToDatabaseValue.put("ambiguous", OTHER_LITERAL);
-    displayValueToDatabaseValue.put("n", OTHER_LITERAL);
-    displayValueToDatabaseValue.put("not applicable", OTHER_LITERAL);
+    Map<String, String> displayValueToDatabaseValue =
+        Map.ofEntries(
+            Map.entry("m", MALE_LITERAL),
+            Map.entry(MALE_LITERAL, MALE_LITERAL),
+            Map.entry("f", FEMALE_LITERAL),
+            Map.entry(FEMALE_LITERAL, FEMALE_LITERAL),
+            Map.entry("o", OTHER_LITERAL),
+            Map.entry(OTHER_LITERAL, OTHER_LITERAL),
+            Map.entry("u", REFUSED_LITERAL),
+            Map.entry(UNKNOWN_LITERAL, REFUSED_LITERAL),
+            Map.entry("a", OTHER_LITERAL),
+            Map.entry("ambiguous", OTHER_LITERAL),
+            Map.entry("n", OTHER_LITERAL),
+            Map.entry("not applicable", OTHER_LITERAL));
 
     return displayValueToDatabaseValue.get(biologicalSex.toLowerCase());
   }

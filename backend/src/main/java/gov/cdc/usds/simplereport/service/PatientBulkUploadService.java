@@ -105,7 +105,10 @@ public class PatientBulkUploadService {
                 extractedData.getZipCode().getValue(),
                 null);
 
-        String country = "USA";
+        String country =
+            extractedData.getCountry().getValue() == null
+                ? "USA"
+                : extractedData.getCountry().getValue();
 
         if (_personService.isDuplicatePatient(
             extractedData.getFirstName().getValue(),

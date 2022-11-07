@@ -5,6 +5,7 @@ import static gov.cdc.usds.simplereport.validators.CsvValidatorUtils.getIterator
 import static gov.cdc.usds.simplereport.validators.CsvValidatorUtils.getNextRow;
 import static gov.cdc.usds.simplereport.validators.CsvValidatorUtils.getValue;
 import static gov.cdc.usds.simplereport.validators.CsvValidatorUtils.validateBiologicalSex;
+import static gov.cdc.usds.simplereport.validators.CsvValidatorUtils.validateCountry;
 import static gov.cdc.usds.simplereport.validators.CsvValidatorUtils.validateDate;
 import static gov.cdc.usds.simplereport.validators.CsvValidatorUtils.validateEmail;
 import static gov.cdc.usds.simplereport.validators.CsvValidatorUtils.validateEthnicity;
@@ -60,6 +61,7 @@ public class PatientBulkUploadFileValidator {
       // address
       errors.addAll(validateState(extractedData.state));
       errors.addAll(validateZipCode(extractedData.zipCode));
+      errors.addAll(validateCountry(extractedData.country));
 
       // contact info
       errors.addAll(validatePhoneNumber(extractedData.phoneNumber));
@@ -86,6 +88,7 @@ public class PatientBulkUploadFileValidator {
     private final ValueOrError county;
     private final ValueOrError state;
     private final ValueOrError zipCode;
+    private final ValueOrError country;
     private final ValueOrError phoneNumber;
     private final ValueOrError phoneNumberType;
     private final ValueOrError employedInHealthcare;
@@ -108,6 +111,7 @@ public class PatientBulkUploadFileValidator {
       county = getValue(rawRow, "county", false);
       state = getValue(rawRow, "state", true);
       zipCode = getValue(rawRow, "zip_code", true);
+      country = getValue(rawRow, "country", false);
       phoneNumber = getValue(rawRow, "phone_number", true);
       phoneNumberType = getValue(rawRow, "phone_number_type", false);
       employedInHealthcare = getValue(rawRow, "employed_in_healthcare", true);
@@ -133,6 +137,7 @@ public class PatientBulkUploadFileValidator {
               county,
               state,
               zipCode,
+              country,
               phoneNumber,
               phoneNumberType,
               employedInHealthcare,

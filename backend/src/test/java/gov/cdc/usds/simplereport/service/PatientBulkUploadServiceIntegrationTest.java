@@ -84,6 +84,7 @@ class PatientBulkUploadServiceIntegrationTest extends BaseServiceTest<PatientBul
     assertThat(patient.getRole()).isEqualTo(PersonRole.STAFF);
 
     assertThat(patient.getAddress()).isEqualTo(address);
+    assertThat(patient.getCountry()).isEqualTo("USA");
 
     List<PhoneNumber> phoneNumbers =
         phoneNumberRepository.findAllByPersonInternalId(patient.getInternalId());
