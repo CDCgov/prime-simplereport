@@ -49,3 +49,5 @@ variable "report_stream_batch_maximum" {
   type    = string
   default = "300"
 }
+
+variable "lb_subnet_id" {}

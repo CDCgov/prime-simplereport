@@ -13,6 +13,7 @@ interface Props {
   updateProvider: (provider: Provider) => void;
   errors: FacilityErrors;
   validateField: ValidateField;
+  newOrg?: boolean;
 }
 
 const OrderingProvider: React.FC<Props> = ({
@@ -20,6 +21,7 @@ const OrderingProvider: React.FC<Props> = ({
   updateProvider,
   errors,
   validateField,
+  newOrg = false,
 }) => {
   const onChange = (
     e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement>
@@ -37,6 +39,19 @@ const OrderingProvider: React.FC<Props> = ({
         <h2 className="font-heading-lg">Ordering provider</h2>
       </div>
       <div className="usa-form usa-form--large usa-card__body">
+        {newOrg && (
+          <>
+            <p>
+              Please enter one ordering provider to get started. If you need to,
+              you can add more after account setup.
+            </p>
+            <p>
+              If you plan to upload your results in bulk, you can include
+              additional ordering providers in your spreadsheets without adding
+              them to SimpleReport.
+            </p>
+          </>
+        )}
         <TextInput
           label="First name"
           name="firstName"

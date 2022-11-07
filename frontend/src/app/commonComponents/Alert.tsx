@@ -50,14 +50,33 @@ const Alert = ({
     className
   );
 
+  // Decides element's role base on passed props
+  const getIdentifiedRole = () => {
+    if (role) {
+      return role;
+    }
+
+    if (type === "error") {
+      return "alert";
+    }
+
+    return "region";
+  };
+
+  const id = `${getIdentifiedRole()}-${Date.now()}`;
+
   return (
     <div
       className={classes}
-      role={role ? role : type === "error" ? "alert" : "region"}
+      id={id}
+      role={getIdentifiedRole()}
+      aria-labelledby={`${id}-body`}
     >
       <div className="usa-alert__body">
-        {title && <h3 className="usa-alert__heading">{title}</h3>}
-        <div className="usa-alert__text">{body || children}</div>
+        {title && <div className="usa-alert__heading text-bold">{title}</div>}
+        <div id={`${id}-body`} className="usa-alert__text">
+          {body || children}
+        </div>
       </div>
     </div>
   );

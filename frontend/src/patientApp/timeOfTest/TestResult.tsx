@@ -12,11 +12,14 @@ import MultiplexResultsGuidance from "../../app/commonComponents/MultiplexResult
 import TestResultsList from "../../app/commonComponents/TestResultsList";
 import { formatDateWithTimeOption } from "../../app/utils/date";
 import { hasMultiplexResults } from "../../app/utils/testResults";
-
 import "./TestResult.scss";
+import { useDocumentTitle } from "../../app/utils/hooks";
 
 const TestResult = () => {
   const { t } = useTranslation();
+
+  useDocumentTitle(t("testResult.title"));
+
   const testResult = useSelector<RootState, VerifyV2Response>(
     (state) => state.testResult
   );

@@ -51,7 +51,9 @@ import javax.persistence.criteria.Predicate;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.hibernate.Hibernate;
+import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Sort;
 import org.springframework.data.jpa.domain.Specification;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -153,7 +155,48 @@ public class TestOrderService {
       return p;
     };
   }
+  // methods to replace the methods that return List<TestEvent> once we get
+  // backwards compability issues resolved
+  @Transactional(readOnly = true)
+  @AuthorizationConfiguration.RequirePermissionReadResultListAtFacility
+  public Page<TestEvent> getTestEventsResultsPage(
+      UUID facilityId,
+      UUID patientId,
+      TestResult result,
+      PersonRole role,
+      Date startDate,
+      Date endDate,
+      int pageOffset,
+      int pageSize) {
 
+    PageRequest pageRequest =
+        PageRequest.of(pageOffset, pageSize, Sort.by("createdAt").descending());
+
+    return _terepo.findAll(
+        buildTestEventSearchFilter(facilityId, patientId, result, role, startDate, endDate),
+        pageRequest);
+  }
+
+  @Transactional(readOnly = true)
+  @AuthorizationConfiguration.RequirePermissionViewAllFacilityResults
+  public Page<TestEvent> getAllFacilityTestEventsResultsPage(
+      UUID patientId,
+      TestResult result,
+      PersonRole role,
+      Date startDate,
+      Date endDate,
+      int pageOffset,
+      int pageSize) {
+
+    PageRequest pageRequest =
+        PageRequest.of(pageOffset, pageSize, Sort.by("createdAt").descending());
+
+    return _terepo.findAll(
+        buildTestEventSearchFilter(null, patientId, result, role, startDate, endDate), pageRequest);
+  }
+
+  // methods to delete once we get
+  // backwards compability issues resolved
   @Transactional(readOnly = true)
   @AuthorizationConfiguration.RequirePermissionReadResultListAtFacility
   public List<TestEvent> getTestEventsResults(
@@ -165,6 +208,10 @@ public class TestOrderService {
       Date endDate,
       int pageOffset,
       int pageSize) {
+
+    PageRequest pageRequest =
+        PageRequest.of(pageOffset, pageSize, Sort.by("createdAt").descending());
+
     return _terepo
         .findAll(
             buildTestEventSearchFilter(facilityId, patientId, result, role, startDate, endDate),
@@ -182,6 +229,7 @@ public class TestOrderService {
       Date endDate,
       int pageOffset,
       int pageSize) {
+
     return _terepo
         .findAll(
             buildTestEventSearchFilter(null, patientId, result, role, startDate, endDate),
@@ -232,37 +280,6 @@ public class TestOrderService {
             .orElseThrow(TestOrderService::noSuchOrderFound);
     Hibernate.initialize(order.getResults());
     return order;
-  }
-
-  @AuthorizationConfiguration.RequirePermissionUpdateTestForTestOrder
-  @Deprecated // switch to specifying device-specimen combo
-  public TestOrder editQueueItem(
-      UUID testOrderId, UUID deviceSpecimenTypeId, String result, Date dateTested) {
-    lockOrder(testOrderId);
-    try {
-      TestOrder order = this.getTestOrder(testOrderId);
-
-      if (deviceSpecimenTypeId != null) {
-        DeviceSpecimenType deviceSpecimenType = _dts.getDeviceSpecimenType(deviceSpecimenTypeId);
-
-        if (deviceSpecimenType != null) {
-          order.setDeviceSpecimen(deviceSpecimenType);
-          // Set the most-recently configured device specimen for a facility's
-          // test as facility default
-          order.getFacility().addDefaultDeviceSpecimen(deviceSpecimenType);
-        }
-      }
-
-      if (result != null) {
-        updateTestOrderCovidResult(order, TestResult.valueOf(result));
-      }
-
-      order.setDateTestedBackdate(dateTested);
-
-      return _repo.save(order);
-    } finally {
-      unlockOrder(testOrderId);
-    }
   }
 
   @AuthorizationConfiguration.RequirePermissionUpdateTestForTestOrder

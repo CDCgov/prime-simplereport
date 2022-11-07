@@ -9,12 +9,14 @@ import { useSelectedFacility } from "../facilitySelect/useSelectedFacility";
 import { TestCorrectionReason } from "../testResults/TestResultCorrectionModal";
 import { LinkWithQuery } from "../commonComponents/LinkWithQuery";
 import { appPermissions, hasPermission } from "../permissions";
+import { PATIENT_TERM } from "../../config/constants";
 
 import AddToQueueSearch, {
   StartTestProps,
 } from "./addToQueue/AddToQueueSearch";
 import QueueItem from "./QueueItem";
 import { AoEAnswers, TestQueuePerson } from "./AoEForm/AoEForm";
+
 import "./TestQueue.scss";
 
 const pollInterval = 10_000;
@@ -40,7 +42,8 @@ const emptyQueueMessage = (canUseCsvUploader: boolean) => {
       <div className="grid-row">
         <div className="usa-card__body">
           <p>
-            There are no tests running. Search for a person to start their test.
+            There are no tests running. Search for a {PATIENT_TERM} to start
+            their test.
           </p>
           {canUseCsvUploader && (
             <p>
@@ -169,7 +172,7 @@ const TestQueue: React.FC<Props> = ({ activeFacilityId }) => {
   );
   const canUseCsvUploader = hasPermission(
     useSelector((state) => (state as any).user.permissions),
-    appPermissions.featureFlags.SrCsvUploaderPilot
+    appPermissions.results.canView
   );
 
   useEffect(() => {

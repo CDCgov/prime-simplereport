@@ -25,7 +25,8 @@ class PermissionHolderTest {
             UserPermission.ARCHIVE_PATIENT,
             UserPermission.START_TEST,
             UserPermission.UPDATE_TEST,
-            UserPermission.SUBMIT_TEST);
+            UserPermission.SUBMIT_TEST,
+            UserPermission.UPLOAD_RESULTS_SPREADSHEET);
     assertEquals(expected, permissions);
   }
 
@@ -74,9 +75,7 @@ class PermissionHolderTest {
   @Test
   void getEffectiveRoles_allRoles_admin() {
     Set<OrganizationRole> roles = EnumSet.allOf(OrganizationRole.class);
-    assertEquals(
-        Set.of(OrganizationRole.ADMIN, OrganizationRole.TEST_RESULT_UPLOAD_USER),
-        makeHolder(roles).getEffectiveRoles());
+    assertEquals(Set.of(OrganizationRole.ADMIN), makeHolder(roles).getEffectiveRoles());
   }
 
   @Test

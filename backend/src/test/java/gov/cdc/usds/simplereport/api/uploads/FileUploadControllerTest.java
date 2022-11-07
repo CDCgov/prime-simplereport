@@ -19,8 +19,8 @@ import gov.cdc.usds.simplereport.api.model.errors.CsvProcessingException;
 import gov.cdc.usds.simplereport.db.model.Organization;
 import gov.cdc.usds.simplereport.db.model.TestResultUpload;
 import gov.cdc.usds.simplereport.db.model.auxiliary.UploadStatus;
+import gov.cdc.usds.simplereport.service.PatientBulkUploadService;
 import gov.cdc.usds.simplereport.service.TestResultUploadService;
-import gov.cdc.usds.simplereport.service.UploadService;
 import java.io.IOException;
 import java.io.InputStream;
 import java.util.UUID;
@@ -35,12 +35,12 @@ import org.springframework.test.web.servlet.MockMvc;
 class FileUploadControllerTest extends BaseFullStackTest {
 
   @Autowired private MockMvc mockMvc;
-  @MockBean private UploadService patientUploadService;
+  @MockBean private PatientBulkUploadService patientBulkUploadService;
   @MockBean private TestResultUploadService testResultUploadService;
 
   @Test
   void patientsUploadTest_happy() throws Exception {
-    when(patientUploadService.processPersonCSV(any(InputStream.class), any()))
+    when(patientBulkUploadService.processPersonCSV(any(InputStream.class), any()))
         .thenReturn("Successfully uploaded 1 record(s)");
 
     MockMultipartFile file =
@@ -55,7 +55,7 @@ class FileUploadControllerTest extends BaseFullStackTest {
 
   @Test
   void patientsUploadTest_IllegalArgumentException() throws Exception {
-    when(patientUploadService.processPersonCSV(any(InputStream.class), any()))
+    when(patientBulkUploadService.processPersonCSV(any(InputStream.class), any()))
         .thenThrow(new IllegalArgumentException("Invalid csv"));
 
     MockMultipartFile file =
@@ -73,7 +73,7 @@ class FileUploadControllerTest extends BaseFullStackTest {
 
   @Test
   void patientsUploadTest_NonCsvFileException() throws Exception {
-    when(patientUploadService.processPersonCSV(any(InputStream.class), any()))
+    when(patientBulkUploadService.processPersonCSV(any(InputStream.class), any()))
         .thenThrow(new IllegalArgumentException("Invalid csv"));
 
     MockMultipartFile file =
@@ -116,7 +116,7 @@ class FileUploadControllerTest extends BaseFullStackTest {
 
   @Test
   void patientsUploadTest_acceptsUUIDForFacilityId() throws Exception {
-    when(patientUploadService.processPersonCSV(any(InputStream.class), any(UUID.class)))
+    when(patientBulkUploadService.processPersonCSV(any(InputStream.class), any(UUID.class)))
         .thenReturn("Successfully uploaded 1 record(s)");
 
     MockMultipartFile file =
@@ -153,7 +153,6 @@ class FileUploadControllerTest extends BaseFullStackTest {
     Organization organization = new Organization("best org", "lab", "best-org-123", true);
     TestResultUpload testResultUpload =
         new TestResultUpload(reportId, UploadStatus.SUCCESS, 5, organization, null, null);
-
     when(testResultUploadService.processResultCSV(any(InputStream.class)))
         .thenReturn(testResultUpload);
 

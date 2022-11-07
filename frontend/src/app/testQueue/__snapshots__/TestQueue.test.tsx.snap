@@ -28,7 +28,7 @@ exports[`TestQueue should render the test queue 1`] = `
               class="usa-sr-only"
               for="search-field-small"
             >
-              Search for a person to start their test
+              Search for a patient to start their test
             </label>
             <div>
               <input
@@ -36,7 +36,7 @@ exports[`TestQueue should render the test queue 1`] = `
                 class="usa-input"
                 id="search-field-small"
                 name="search"
-                placeholder="Search for a person to start their test"
+                placeholder="Search for a patient to start their test"
                 type="search"
                 value=""
               />
@@ -128,7 +128,7 @@ exports[`TestQueue should render the test queue 1`] = `
             >
               <div
                 class="grid-row prime-test-name usa-card__header"
-                id="patient-name-header"
+                id="patient-name-header-abc"
               >
                 <div
                   class="card-header"
@@ -223,7 +223,7 @@ exports[`TestQueue should render the test queue 1`] = `
                         class="card-test-input"
                         data-testid="test-date"
                         hidden=""
-                        id="test-date"
+                        id="test-date-abc"
                         max="2021-08-01"
                         min="2020-01-01"
                         name="test-date"
@@ -550,7 +550,7 @@ exports[`TestQueue should render the test queue 1`] = `
             >
               <div
                 class="grid-row prime-test-name usa-card__header"
-                id="patient-name-header"
+                id="patient-name-header-def"
               >
                 <div
                   class="card-header"
@@ -645,7 +645,7 @@ exports[`TestQueue should render the test queue 1`] = `
                         class="card-test-input"
                         data-testid="test-date"
                         hidden=""
-                        id="test-date"
+                        id="test-date-def"
                         max="2021-08-01"
                         min="2020-01-01"
                         name="test-date"

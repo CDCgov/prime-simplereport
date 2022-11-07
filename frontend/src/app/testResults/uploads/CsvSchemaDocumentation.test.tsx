@@ -1,10 +1,19 @@
 import { render, screen, within } from "@testing-library/react";
 import { MemoryRouter } from "react-router-dom";
+import userEvent from "@testing-library/user-event";
+import { ApplicationInsights } from "@microsoft/applicationinsights-web";
+
+import { getAppInsights } from "../../TelemetryService";
 
 import CsvSchemaDocumentation, {
   CsvSchemaDocumentationItem,
   CsvSchemaItem,
 } from "./CsvSchemaDocumentation";
+
+jest.mock("../../TelemetryService", () => ({
+  ...jest.requireActual("../../TelemetryService"),
+  getAppInsights: jest.fn(),
+}));
 
 const baseItem: CsvSchemaItem = {
   name: "Sample Item",
@@ -132,6 +141,36 @@ describe("CsvSchemaDocumentation tests", () => {
       );
 
       expect(container).toMatchSnapshot();
+    });
+    it("logs to App Insights on template download", () => {
+      const mockTrackEvent = jest.fn();
+      (getAppInsights as jest.Mock).mockImplementation(() => {
+        const ai = Object.create(ApplicationInsights.prototype);
+        return Object.assign(ai, { trackEvent: mockTrackEvent });
+      });
+      render(
+        <MemoryRouter>
+          <CsvSchemaDocumentation />
+        </MemoryRouter>
+      );
+
+      const templateLink1 = screen.getByRole("link", {
+        name:
+          "SimpleReport spreadsheet template with example data [CSV download]",
+      });
+      const templateLink2 = screen.getByRole("link", {
+        name: "spreadsheet template",
+      });
+      userEvent.click(templateLink1);
+      userEvent.click(templateLink2);
+
+      expect(mockTrackEvent).toHaveBeenCalledTimes(2);
+      expect(mockTrackEvent).toHaveBeenNthCalledWith(1, {
+        name: "Download spreadsheet template",
+      });
+      expect(mockTrackEvent).toHaveBeenNthCalledWith(2, {
+        name: "Download spreadsheet template",
+      });
     });
   });
 });

@@ -32,11 +32,7 @@ class TenantDataAccessServiceTest extends BaseServiceTest<TenantDataAccessServic
     OrganizationRoleClaims claims = claimsOpt.get();
     assertEquals(org.getExternalId(), claims.getOrganizationExternalId());
     assertEquals(
-        Set.of(
-            OrganizationRole.NO_ACCESS,
-            OrganizationRole.TEST_RESULT_UPLOAD_USER,
-            OrganizationRole.ADMIN),
-        claims.getGrantedRoles());
+        Set.of(OrganizationRole.NO_ACCESS, OrganizationRole.ADMIN), claims.getGrantedRoles());
   }
 
   @Test
@@ -68,11 +64,6 @@ class TenantDataAccessServiceTest extends BaseServiceTest<TenantDataAccessServic
             + OrganizationRole.getDefault());
     expectedAuthorities.add(
         _authProperties.getRolePrefix() + org.getExternalId() + ":" + OrganizationRole.ADMIN);
-    expectedAuthorities.add(
-        _authProperties.getRolePrefix()
-            + org.getExternalId()
-            + ":"
-            + OrganizationRole.TEST_RESULT_UPLOAD_USER);
 
     return expectedAuthorities;
   }
