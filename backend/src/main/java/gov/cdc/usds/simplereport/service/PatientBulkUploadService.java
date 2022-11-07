@@ -56,7 +56,6 @@ public class PatientBulkUploadService {
       throws IllegalArgumentException {
 
     PatientBulkUploadResponse result = new PatientBulkUploadResponse();
-    result.setStatus(UploadStatus.FAILURE);
 
     Organization org = _organizationService.getCurrentOrganization();
 
@@ -73,6 +72,7 @@ public class PatientBulkUploadService {
         _patientBulkUploadFileValidator.validate(new ByteArrayInputStream(content));
 
     if (!errors.isEmpty()) {
+      result.setStatus(UploadStatus.FAILURE);
       result.setErrors(errors.toArray(FeedbackMessage[]::new));
       return result;
     }
