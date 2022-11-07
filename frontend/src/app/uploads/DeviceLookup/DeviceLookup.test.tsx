@@ -33,7 +33,7 @@ const devices = [
   },
 ];
 
-describe("Device lookup - no devices", () => {
+describe("Device lookup", () => {
   beforeEach(() => {
     render(
       <MemoryRouter>

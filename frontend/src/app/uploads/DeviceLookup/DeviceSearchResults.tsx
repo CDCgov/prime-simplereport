@@ -36,7 +36,7 @@ const DeviceSearchResults = (props: SearchResultsProps) => {
         }
       >
         <div className="margin-bottom-105">
-          No device found matching <strong>{queryString}</strong>
+          No device found matching <strong>{queryString}</strong>.
         </div>
         <div>
           Please try a different search term, or follow the instructions on the{" "}
