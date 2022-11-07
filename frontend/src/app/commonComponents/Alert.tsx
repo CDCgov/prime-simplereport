@@ -50,14 +50,26 @@ const Alert = ({
     className
   );
 
-  const identifiedRole = role ? role : type === "error" ? "alert" : "region";
-  const id = `${identifiedRole}-${Date.now()}`;
+  // Decides element's role base on passed props
+  const getIdentifiedRole = () => {
+    if (role) {
+      return role;
+    }
+
+    if (type === "error") {
+      return "alert";
+    }
+
+    return "region";
+  };
+
+  const id = `${getIdentifiedRole()}-${Date.now()}`;
 
   return (
     <div
       className={classes}
       id={id}
-      role={identifiedRole}
+      role={getIdentifiedRole()}
       aria-labelledby={`${id}-body`}
     >
       <div className="usa-alert__body">
