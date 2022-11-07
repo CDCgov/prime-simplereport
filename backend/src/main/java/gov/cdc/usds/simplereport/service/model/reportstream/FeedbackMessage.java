@@ -11,6 +11,12 @@ public class FeedbackMessage implements Serializable {
   private String message;
   private int[] indices;
 
+  public FeedbackMessage(String scope, String message, int[] indices) {
+    this.scope = scope;
+    this.message = message;
+    this.indices = indices;
+  }
+
   public FeedbackMessage(String scope, String message) {
     this.scope = scope;
     this.message = message;

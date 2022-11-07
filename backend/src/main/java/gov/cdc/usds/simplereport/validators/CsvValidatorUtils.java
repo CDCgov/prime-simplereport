@@ -8,6 +8,7 @@ import com.fasterxml.jackson.databind.RuntimeJsonMappingException;
 import com.fasterxml.jackson.dataformat.csv.CsvMapper;
 import com.fasterxml.jackson.dataformat.csv.CsvParser;
 import com.fasterxml.jackson.dataformat.csv.CsvSchema;
+import gov.cdc.usds.simplereport.api.model.errors.CsvProcessingException;
 import gov.cdc.usds.simplereport.service.model.reportstream.FeedbackMessage;
 import java.io.BufferedReader;
 import java.io.IOException;
@@ -186,11 +187,13 @@ public class CsvValidatorUtils {
   }
 
   public static Map<String, String> getNextRow(MappingIterator<Map<String, String>> valueIterator)
-      throws IllegalArgumentException {
+      throws CsvProcessingException {
     try {
       return valueIterator.next();
     } catch (RuntimeJsonMappingException e) {
-      throw new IllegalArgumentException(e.getMessage());
+      var location = valueIterator.getCurrentLocation();
+      throw new CsvProcessingException(
+          e.getMessage(), location.getLineNr(), location.getColumnNr());
     }
   }
 
