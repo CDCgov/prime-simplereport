@@ -1,4 +1,5 @@
 import { render, screen } from "@testing-library/react";
+import MockDate from "mockdate";
 
 import { showError, showSuccess } from "../utils/srToast";
 
@@ -9,6 +10,14 @@ const renderSRToastContainer = () => {
 };
 
 describe("SRToastContainer", () => {
+  beforeAll(() => {
+    MockDate.set(1667580636341);
+  });
+
+  afterAll(() => {
+    MockDate.reset();
+  });
+
   it("contains the error defaults", async () => {
     const view = renderSRToastContainer();
     await showError();

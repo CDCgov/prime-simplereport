@@ -21,19 +21,22 @@ Object {
               role="alert"
             >
               <div
+                aria-labelledby="alert-1667580636341-body"
                 class="usa-alert usa-alert--error"
+                id="alert-1667580636341"
                 role="alert"
               >
                 <div
                   class="usa-alert__body"
                 >
-                  <h3
-                    class="usa-alert__heading"
+                  <div
+                    class="usa-alert__heading text-bold"
                   >
                     Problems saving data to server
-                  </h3>
+                  </div>
                   <div
                     class="usa-alert__text"
+                    id="alert-1667580636341-body"
                   >
                     Please check for missing data or typos.
                   </div>
@@ -81,19 +84,22 @@ Object {
             role="alert"
           >
             <div
+              aria-labelledby="alert-1667580636341-body"
               class="usa-alert usa-alert--error"
+              id="alert-1667580636341"
               role="alert"
             >
               <div
                 class="usa-alert__body"
               >
-                <h3
-                  class="usa-alert__heading"
+                <div
+                  class="usa-alert__heading text-bold"
                 >
                   Problems saving data to server
-                </h3>
+                </div>
                 <div
                   class="usa-alert__text"
+                  id="alert-1667580636341-body"
                 >
                   Please check for missing data or typos.
                 </div>
@@ -198,19 +204,22 @@ Object {
               role="alert"
             >
               <div
+                aria-labelledby="region-1667580636341-body"
                 class="usa-alert usa-alert--success"
+                id="region-1667580636341"
                 role="region"
               >
                 <div
                   class="usa-alert__body"
                 >
-                  <h3
-                    class="usa-alert__heading"
+                  <div
+                    class="usa-alert__heading text-bold"
                   >
                     Success
-                  </h3>
+                  </div>
                   <div
                     class="usa-alert__text"
+                    id="region-1667580636341-body"
                   >
                     A new patient has been added.
                   </div>
@@ -258,19 +267,22 @@ Object {
             role="alert"
           >
             <div
+              aria-labelledby="region-1667580636341-body"
               class="usa-alert usa-alert--success"
+              id="region-1667580636341"
               role="region"
             >
               <div
                 class="usa-alert__body"
               >
-                <h3
-                  class="usa-alert__heading"
+                <div
+                  class="usa-alert__heading text-bold"
                 >
                   Success
-                </h3>
+                </div>
                 <div
                   class="usa-alert__text"
+                  id="region-1667580636341-body"
                 >
                   A new patient has been added.
                 </div>

@@ -15,7 +15,7 @@ describe("Adding a patient", () => {
     cy.get("#desktop-patient-nav-link").click();
     cy.get(".prime-container");
     cy.get("#add-patient-button").click();
-    cy.get(".prime-edit-patient").contains("Add new person");
+    cy.get(".prime-edit-patient").contains("Add new patient");
     cy.injectAxe();
     cy.checkA11y(); // Patient form
   });
@@ -50,24 +50,10 @@ describe("Adding a patient", () => {
       '.modal__container input[name="addressSelect-person"][value="userAddress"]+label'
     ).click();
 
-    // failing a11y test
-    // Also found in specs 01, 02, 05, 08
-    // Test a11y on the confirm address modal
-    cy.checkA11y(
-        {
-          exclude: [],
-        },
-        {
-          rules: {
-            'aria-dialog-name': { enabled: false },
-            'landmark-one-main': { enabled: false },
-            'page-has-heading-one': { enabled: false },
-          },
-        },
-    );
+    cy.checkA11y();
 
     cy.get(".modal__container #save-confirmed-address").click();
-    cy.get(".usa-card__header").contains("People");
+    cy.get(".usa-card__header").contains("Patients");
     cy.get(".usa-card__header").contains("Showing");
     cy.get("#search-field-small").type(patient.lastName);
     cy.get(".prime-container").contains(patient.fullName);
@@ -82,7 +68,6 @@ describe("Adding a patient", () => {
         },
         {
           rules: {
-            'heading-order': { enabled: false },
           },
         },
     );

@@ -11,7 +11,7 @@ on:
       - main
 
 env:
-  NODE_VERSION: 14
+  NODE_VERSION: 18
   JAVA_VERSION: 11
   JAVA_DISTRIBUTION: 'zulu'
   PROJECT_ROOT: /home/runner/work/prime-simplereport/prime-simplereport # Hardcoding this here because env.WORKSPACE_ROOT gets overridden by one of the steps downstream. We only need this for Sonar.
@@ -83,7 +83,7 @@ jobs:
     steps:
       - uses: actions/checkout@v3
       - name: Use Node.js ${{env.NODE_VERSION}}
-        uses: actions/setup-node@v2.1.5
+        uses: actions/setup-node@v3.5.1
         with:
           node-version: ${{env.NODE_VERSION}}
       - name: Cache yarn
@@ -202,7 +202,7 @@ jobs:
     steps:
       - uses: actions/checkout@v3
       - name: Use Node.js ${{env.NODE_VERSION}}
-        uses: actions/setup-node@v2.1.5
+        uses: actions/setup-node@v3.5.1
         with:
           node-version: ${{env.NODE_VERSION}}
       - name: Cache yarn

@@ -42,6 +42,12 @@ resource "azurerm_app_service" "service" {
     always_on        = "true"
     min_tls_version  = "1.2"
     ftps_state       = "Disabled"
+
+    // NOTE: If this code is removed, TF will not automatically delete it with the current provider version! It must be removed manually from the App Service -> Networking blade!
+    ip_restriction {
+      virtual_network_subnet_id = var.lb_subnet_id
+      action                    = "Allow"
+    }
   }
 
   app_settings = local.all_app_settings
@@ -80,6 +86,11 @@ resource "azurerm_app_service_slot" "staging" {
   site_config {
     linux_fx_version = var.docker_image_uri
     always_on        = "true"
+
+    ip_restriction {
+      virtual_network_subnet_id = var.lb_subnet_id
+      action                    = "Allow"
+    }
   }
 
   identity {

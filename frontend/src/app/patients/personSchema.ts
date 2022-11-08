@@ -146,12 +146,12 @@ export function isValidBirthdate18n(t: TFunction) {
     }
     if (parsedDate.year() < 1900) {
       return this.createError({
-        message: t("patient.form.errors.birthDate.past"),
+        message: t("patient.form.errors.birthDate.past", undefined),
       });
     }
     if (parsedDate.isAfter(moment())) {
       return this.createError({
-        message: t("patient.form.errors.birthDate.future"),
+        message: t("patient.form.errors.birthDate.future", undefined),
       });
     }
     return true;
@@ -170,7 +170,7 @@ function isValidEmail18n(t: TFunction) {
 
     if (email && email.length > MAX_LENGTH) {
       return this.createError({
-        message: t("patient.form.errors.fieldLength"),
+        message: t("patient.form.errors.fieldLength", undefined),
       });
     }
 
@@ -197,81 +197,91 @@ const updateFieldSchemata: (
     .mixed()
     .oneOf(
       [...getValues(ROLE_VALUES), "UNKNOWN", "", null],
-      t("patient.form.errors.role")
+      t("patient.form.errors.role", undefined)
     ),
   telephone: yup.mixed().optional(),
   phoneNumbers: yup
     .array()
     .test(
       "phone-numbers",
-      t("patient.form.errors.phoneNumbers"),
+      t("patient.form.errors.phoneNumbers", undefined),
       areValidPhoneNumbers
     )
     .test(
       "phone-numbers",
-      t("patient.form.errors.phoneNumbersDuplicate"),
+      t("patient.form.errors.phoneNumbersDuplicate", undefined),
       areUniquePhoneNumbers
     )
     .test(
       "phone-numbers",
-      t("patient.form.errors.phoneNumbersType"),
+      t("patient.form.errors.phoneNumbersType", undefined),
       hasPhoneType
     )
     .required(),
   emails: yup
     .array()
-    .test("emails", t("patient.form.errors.email"), areValidEmails18n(t))
+    .test(
+      "emails",
+      t("patient.form.errors.email", undefined),
+      areValidEmails18n(t)
+    )
     .nullable(),
   street: yup
     .string()
-    .max(MAX_LENGTH, t("patient.form.errors.fieldLength"))
-    .required(t("patient.form.errors.street")),
+    .max(MAX_LENGTH, t("patient.form.errors.fieldLength", undefined))
+    .required(t("patient.form.errors.street", undefined)),
   streetTwo: yup
     .string()
-    .max(MAX_LENGTH, t("patient.form.errors.fieldLength"))
+    .max(MAX_LENGTH, t("patient.form.errors.fieldLength", undefined))
     .nullable(),
   city: yup
     .string()
-    .max(MAX_LENGTH, t("patient.form.errors.fieldLength"))
+    .max(MAX_LENGTH, t("patient.form.errors.fieldLength", undefined))
     .nullable(),
   county: yup
     .string()
-    .max(MAX_LENGTH, t("patient.form.errors.fieldLength"))
+    .max(MAX_LENGTH, t("patient.form.errors.fieldLength", undefined))
     .nullable(),
-  state: yup.string().required(t("patient.form.errors.state")),
+  state: yup.string().required(t("patient.form.errors.state", undefined)),
   zipCode: yup
     .string()
-    .max(MAX_LENGTH, t("patient.form.errors.fieldLength"))
-    .required(t("patient.form.errors.zipCode")),
-  country: yup.string().required(t("patient.form.errors.country")),
+    .max(MAX_LENGTH, t("patient.form.errors.fieldLength", undefined))
+    .required(t("patient.form.errors.zipCode", undefined)),
+  country: yup.string().required(t("patient.form.errors.country", undefined)),
   race: yup
     .mixed()
-    .oneOf(getValues(RACE_VALUES), t("patient.form.errors.race")),
+    .oneOf(getValues(RACE_VALUES), t("patient.form.errors.race", undefined)),
   ethnicity: yup
     .mixed()
-    .oneOf(getValues(ETHNICITY_VALUES), t("patient.form.errors.ethnicity")),
+    .oneOf(
+      getValues(ETHNICITY_VALUES),
+      t("patient.form.errors.ethnicity", undefined)
+    ),
   gender: yup
     .mixed()
-    .oneOf(getValues(GENDER_VALUES), t("patient.form.errors.gender")),
+    .oneOf(
+      getValues(GENDER_VALUES),
+      t("patient.form.errors.gender", undefined)
+    ),
   residentCongregateSetting: yup.boolean().nullable(),
   employedInHealthcare: yup.boolean().nullable(),
   tribalAffiliation: yup
     .mixed()
     .oneOf(
       [...getValues(TRIBAL_AFFILIATION_VALUES), "", null],
-      t("patient.form.errors.tribalAffiliation")
+      t("patient.form.errors.tribalAffiliation", undefined)
     ),
   preferredLanguage: yup
     .mixed()
     .oneOf(
       [...languages, "", null],
-      t("patient.form.errors.preferredLanguage")
+      t("patient.form.errors.preferredLanguage", undefined)
     ),
   testResultDelivery: yup
     .mixed()
     .oneOf(
       [...Object.values(TestResultDeliveryPreferences), "", null],
-      t("patient.form.errors.testResultDelivery")
+      t("patient.form.errors.testResultDelivery", undefined)
     ),
 });
 
@@ -280,10 +290,10 @@ const updatePhoneNumberSchemata: (
 ) => Record<keyof PhoneNumber, yup.AnySchema> = (t) => ({
   number: yup
     .string()
-    .max(MAX_LENGTH, t("patient.form.errors.fieldLength"))
+    .max(MAX_LENGTH, t("patient.form.errors.fieldLength", undefined))
     .test(
       "phone-number",
-      t("patient.form.errors.telephone"),
+      t("patient.form.errors.telephone", undefined),
       phoneNumberIsValid
     )
     .required(),
@@ -291,15 +301,15 @@ const updatePhoneNumberSchemata: (
     .mixed()
     .oneOf(
       getValues(PHONE_TYPE_VALUES),
-      t("patient.form.errors.phoneNumbersType")
+      t("patient.form.errors.phoneNumbersType", undefined)
     ),
 });
 
 const translateUpdateEmailSchemata = (t: TFunction) => {
   return yup
     .string()
-    .email(t("patient.form.errors.email"))
-    .max(MAX_LENGTH, t("patient.form.errors.fieldLength"))
+    .email(t("patient.form.errors.email", undefined))
+    .max(MAX_LENGTH, t("patient.form.errors.fieldLength", undefined))
     .nullable();
 };
 
@@ -311,21 +321,25 @@ const translatePersonUpdateSchema: TranslatedSchema<PersonUpdateFields> = (t) =>
 
 const translatePersonSchema: TranslatedSchema<RequiredPersonFields> = (t) =>
   yup.object({
-    firstName: yup.string().required(t("patient.form.errors.firstName")),
+    firstName: yup
+      .string()
+      .required(t("patient.form.errors.firstName", undefined)),
     middleName: yup.string().nullable(),
-    lastName: yup.string().required(t("patient.form.errors.lastName")),
+    lastName: yup
+      .string()
+      .required(t("patient.form.errors.lastName", undefined)),
     birthDate: yup
       .string()
       .test(
         "birth-date",
-        t("patient.form.errors.birthDate.base"),
+        t("patient.form.errors.birthDate.base", undefined),
         isValidBirthdate18n(t)
       )
-      .required(t("patient.form.errors.birthDate.base")),
+      .required(t("patient.form.errors.birthDate.base", undefined)),
     facilityId: yup
       .string()
       .nullable()
-      .min(1, t("patient.form.errors.facilityId")) as any,
+      .min(1, t("patient.form.errors.facilityId", undefined)) as any,
     ...updateFieldSchemata(t),
   });
 
@@ -335,24 +349,24 @@ const translateSelfRegistrationSchema: TranslatedSchema<SelfRegistationFields> =
   yup.object({
     firstName: yup
       .string()
-      .max(MAX_LENGTH, t("patient.form.errors.fieldLength"))
-      .required(t("patient.form.errors.firstName")),
+      .max(MAX_LENGTH, t("patient.form.errors.fieldLength", undefined))
+      .required(t("patient.form.errors.firstName", undefined)),
     middleName: yup
       .string()
-      .max(MAX_LENGTH, t("patient.form.errors.fieldLength"))
+      .max(MAX_LENGTH, t("patient.form.errors.fieldLength", undefined))
       .nullable(),
     lastName: yup
       .string()
-      .required(t("patient.form.errors.lastName"))
-      .max(MAX_LENGTH, t("patient.form.errors.fieldLength")),
+      .required(t("patient.form.errors.lastName", undefined))
+      .max(MAX_LENGTH, t("patient.form.errors.fieldLength", undefined)),
     birthDate: yup
       .string()
       .test(
         "birth-date",
-        t("patient.form.errors.birthDate.base"),
+        t("patient.form.errors.birthDate.base", undefined),
         isValidBirthdate18n(t)
       )
-      .required(t("patient.form.errors.birthDate.base")),
+      .required(t("patient.form.errors.birthDate.base", undefined)),
     ...updateFieldSchemata(t),
   });
 

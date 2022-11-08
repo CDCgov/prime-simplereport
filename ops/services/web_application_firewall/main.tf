@@ -142,6 +142,24 @@ resource "azurerm_web_application_firewall_policy" "sr_waf_policy" {
       selector_match_operator = "Equals"
     }
 
+    exclusion {
+      match_variable          = "RequestArgNames"
+      selector                = "query"
+      selector_match_operator = "Equals"
+    }
+
+    exclusion {
+      match_variable          = "RequestArgNames"
+      selector                = "visualization_settings"
+      selector_match_operator = "Equals"
+    }
+
+    exclusion {
+      match_variable          = "RequestArgNames"
+      selector                = "query.filters"
+      selector_match_operator = "Contains"
+    }
+
     managed_rule_set {
       type    = "OWASP"
       version = "3.2"
@@ -180,6 +198,7 @@ resource "azurerm_web_application_firewall_policy" "sr_waf_policy" {
           "942260",
           "942330",
           "942361",
+          "942370",
           "942410",
           "942430",
           "942440"

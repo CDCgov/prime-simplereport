@@ -451,14 +451,14 @@ type Query {
   user(id: ID!): User @requiredPermissions(allOf: ["MANAGE_USERS"])
   whoami: User!
   uploadSubmission(id: ID!): UploadResponse!
-    @requiredPermissions(allOf: ["SR_CSV_UPLOADER_PILOT"])
+    @requiredPermissions(allOf: ["UPLOAD_RESULTS_SPREADSHEET"])
   uploadSubmissions(
     startDate: DateTime
     endDate: DateTime
     pageNumber: Int
     pageSize: Int
   ): UploadSubmissionPage!
-    @requiredPermissions(allOf: ["SR_CSV_UPLOADER_PILOT"])
+    @requiredPermissions(allOf: ["UPLOAD_RESULTS_SPREADSHEET"])
 }
 
 type Mutation {

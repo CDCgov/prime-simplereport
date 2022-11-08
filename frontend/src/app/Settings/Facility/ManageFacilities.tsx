@@ -9,9 +9,9 @@ interface Props {
 const ManageFacilities: React.FC<Props> = ({ facilities }) => {
   return (
     <div className="grid-row">
-      <div className="prime-container card-container">
+      <div className="prime-container card-container settings-tab">
         <div className="usa-card__header">
-          <h2>Manage facilities</h2>
+          <h1>Manage facilities</h1>
           <LinkWithQuery
             className="usa-button usa-button--inverse"
             to="/settings/add-facility/"

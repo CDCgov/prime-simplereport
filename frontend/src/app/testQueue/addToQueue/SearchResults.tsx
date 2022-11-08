@@ -8,6 +8,7 @@ import { displayFullName } from "../../utils";
 import { Patient } from "../../patients/ManagePatients";
 import { AoEAnswersDelivery } from "../AoEForm/AoEForm";
 import { getFacilityIdFromUrl } from "../../utils/url";
+import { PATIENT_TERM } from "../../../config/constants";
 
 interface SearchResultsProps {
   patients: Patient[];
@@ -104,7 +105,7 @@ const SearchResults = (props: QueueProps | TestResultsProps) => {
           Check for spelling errors or
           <Button
             className="margin-left-1"
-            label="Add new patient"
+            label={`Add new ${PATIENT_TERM}`}
             onClick={() => {
               setRedirect(`/add-patient?facility=${activeFacilityId}`);
             }}

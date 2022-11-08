@@ -5,6 +5,7 @@ import createMockStore from "redux-mock-store";
 import { Provider } from "react-redux";
 
 import { GetTopLevelDashboardMetricsNewDocument } from "../../generated/graphql";
+import { PATIENT_TERM_PLURAL } from "../../config/constants";
 
 import {
   Analytics,
@@ -285,7 +286,7 @@ describe("Analytics", () => {
     const startDate = screen.getByTestId("startDate") as HTMLInputElement;
     const endDate = screen.getByTestId("endDate") as HTMLInputElement;
     userEvent.type(startDate, "2021-07-01");
-    await screen.findByText("All people tested");
+    await screen.findByText(`All ${PATIENT_TERM_PLURAL} tested`);
     await userEvent.type(endDate, "2021-07-31");
     expect(await screen.findByText("14982")).toBeInTheDocument();
     expect(await screen.findByText("953")).toBeInTheDocument();

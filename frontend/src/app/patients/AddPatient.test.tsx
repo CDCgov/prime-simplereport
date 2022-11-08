@@ -13,6 +13,7 @@ import userEvent from "@testing-library/user-event";
 
 import * as smartyStreets from "../utils/smartyStreets";
 import SRToastContainer from "../commonComponents/SRToastContainer";
+import { PATIENT_TERM } from "../../config/constants";
 
 import AddPatient, { ADD_PATIENT, PATIENT_EXISTS } from "./AddPatient";
 
@@ -134,7 +135,7 @@ describe("AddPatient", () => {
     });
     it("does not show the form title", () => {
       expect(
-        screen.queryByText("Add new person", {
+        screen.queryByText(`Add new ${PATIENT_TERM}`, {
           exact: false,
         })
       ).not.toBeInTheDocument();
@@ -239,7 +240,11 @@ describe("AddPatient", () => {
     });
     it("shows the form title", async () => {
       expect(
-        (await screen.findAllByText("Add new person", { exact: false }))[0]
+        (
+          await screen.findAllByText(`Add new ${PATIENT_TERM}`, {
+            exact: false,
+          })
+        )[0]
       ).toBeInTheDocument();
     });
 

@@ -351,6 +351,7 @@ const FacilityForm: React.FC<Props> = (props) => {
               updateFacility={updateFacility}
               errors={errors}
               validateField={validateField}
+              newOrg={props.newOrg}
             />
           </div>
         </div>
@@ -359,6 +360,7 @@ const FacilityForm: React.FC<Props> = (props) => {
           updateProvider={updateProvider}
           errors={errors}
           validateField={validateField}
+          newOrg={props.newOrg}
         />
         <ManageDevices
           deviceTypes={props.deviceTypes}
@@ -366,6 +368,7 @@ const FacilityForm: React.FC<Props> = (props) => {
           updateSelectedDevices={updateSelectedDevices}
           errors={errors}
           clearError={clearError}
+          newOrg={props.newOrg}
         />
         <div className="float-right margin-bottom-4 margin-top-4">
           <Button
