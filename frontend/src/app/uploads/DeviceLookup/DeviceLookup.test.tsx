@@ -19,6 +19,7 @@ const devices = [
     model: "Model A",
     manufacturer: "Celoxitin",
     loincCode: "1234-1",
+    testLength: 15,
     swabTypes: [{ internalId: "123", name: "nose", typeCode: "n123" }],
     supportedDiseases: [
       { internalId: "123", name: "COVID-19", loinc: "1234-1" },
@@ -30,6 +31,7 @@ const devices = [
     model: "Giselle",
     manufacturer: "yo-mama",
     loincCode: "8675309",
+    testLength: 15,
     swabTypes: [{ internalId: "123", name: "nose", typeCode: "nose-code" }],
     supportedDiseases: [],
   },

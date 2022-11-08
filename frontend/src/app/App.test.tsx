@@ -17,7 +17,7 @@ import { ApplicationInsights } from "@microsoft/applicationinsights-web";
 import jwtDecode from "jwt-decode";
 
 import {
-  GetFacilityQueueMultiplexDocument,
+  GetFacilityQueueDocument,
   GetTopLevelDashboardMetricsNewDocument,
 } from "../generated/graphql";
 
@@ -141,7 +141,7 @@ const WhoAmIQueryMock = {
 };
 const facilityQueryMock = {
   request: {
-    query: GetFacilityQueueMultiplexDocument,
+    query: GetFacilityQueueDocument,
     fetchPolicy: "no-cache",
     variables: {
       facilityId: "fec4de56-f4cc-4c61-b3d5-76869ca71296",

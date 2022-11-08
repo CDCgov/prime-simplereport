@@ -29,11 +29,12 @@ type Facility {
   zipCode: String
   phone: String
   email: String
-  deviceTypes: [DeviceType]
+  deviceTypes: [DeviceType!]!
   defaultDeviceSpecimen: ID
   deviceSpecimenTypes: [DeviceSpecimenType]
     @deprecated(reason: "kept for compatibility")
-  defaultDeviceType: DeviceType @deprecated(reason: "kept for compatibility")
+  defaultDeviceType: DeviceType
+  defaultSpecimenType: SpecimenType
   orderingProvider: Provider
   patientSelfRegistrationLink: String
   isDeleted: Boolean
@@ -86,7 +87,7 @@ type DeviceType {
   swabType: String
   swabTypes: [SpecimenType!]!
   supportedDiseases: [SupportedDisease!]!
-  testLength: Int
+  testLength: Int!
 }
 
 type SupportedDisease {
@@ -181,8 +182,8 @@ type Patient
   @requiredPermissions(
     anyOf: ["READ_PATIENT_LIST", "SEARCH_PATIENTS", "UPDATE_TEST"]
   ) {
-  id: ID
-  internalId: ID @deprecated(reason: "alias for 'id'")
+  id: ID!
+  internalId: ID! @deprecated(reason: "alias for 'id'")
   facility: Facility
   lookupId: String
   name: NameInfo
@@ -227,18 +228,19 @@ type Patient
 }
 # TestResult and TestOrder should have the same properties
 type TestOrder {
-  id: ID
-  internalId: ID @deprecated(reason: "alias for 'id'")
-  patient: Patient
-  dateAdded: String
+  id: ID!
+  internalId: ID! @deprecated(reason: "alias for 'id'")
+  patient: Patient!
+  dateAdded: String!
   pregnancy: String
   noSymptoms: Boolean
   symptoms: String
   symptomOnset: LocalDate
-  deviceType: DeviceType
-  deviceSpecimenType: DeviceSpecimenType
+  deviceType: DeviceType!
+  specimenType: SpecimenType!
+  deviceSpecimenType: DeviceSpecimenType!
   result: String @deprecated(reason: "use results as source of truth")
-  results: [MultiplexResult]
+  results: [MultiplexResult!]!
   dateTested: DateTime
   correctionStatus: String
   reasonForCorrection: String
@@ -368,6 +370,7 @@ type Query {
     showArchived: Boolean = false
       @requiredPermissions(allOf: ["VIEW_ARCHIVED_FACILITIES"])
   ): [Facility]
+  facility(id: ID!): Facility
   patients(
     facilityId: ID
     pageNumber: Int = 0
@@ -399,7 +402,7 @@ type Query {
     birthDate: LocalDate!
     facilityId: ID
   ): Boolean
-  queue(facilityId: ID!): [TestOrder]
+  queue(facilityId: ID!): [TestOrder!]!
     @requiredPermissions(anyOf: ["START_TEST", "UPDATE_TEST", "SUBMIT_TEST"])
   specimenTypes: [SpecimenType!]!
   testResults(
@@ -673,10 +676,24 @@ type Mutation {
     patientId: ID!
     dateTested: DateTime
   ): AddTestResultResponse @requiredPermissions(allOf: ["SUBMIT_TEST"])
+  submitQueueItem(
+    deviceTypeId: ID!
+    specimenTypeId: ID!
+    results: [MultiplexResultInput]!
+    patientId: ID!
+    dateTested: DateTime
+  ): AddTestResultResponse @requiredPermissions(allOf: ["SUBMIT_TEST"])
   editQueueItemMultiplexResult(
     id: ID!
     deviceId: String
     deviceSpecimenType: ID
+    results: [MultiplexResultInput]
+    dateTested: DateTime
+  ): TestOrder @requiredPermissions(allOf: ["UPDATE_TEST"])
+  editQueueItem(
+    id: ID!
+    deviceTypeId: ID
+    specimenTypeId: ID
     results: [MultiplexResultInput]
     dateTested: DateTime
   ): TestOrder @requiredPermissions(allOf: ["UPDATE_TEST"])
