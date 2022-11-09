@@ -295,7 +295,7 @@ const Uploads = () => {
                       return (
                         <tr key={"error_" + i}>
                           <td>{e?.["message"]} </td>
-                          <td>Row(s): {e?.["indices"]}</td>
+                          <td>Row(s): {e?.["indices"]?.join(", ")}</td>
                         </tr>
                       );
                     })}
