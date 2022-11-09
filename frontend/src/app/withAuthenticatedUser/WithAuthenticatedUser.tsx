@@ -1,5 +1,5 @@
 import React, { useEffect } from "react";
-import { useDispatch } from "react-redux";
+import { connect, useDispatch } from "react-redux";
 import { useLocation } from "react-router-dom";
 import { useQuery } from "@apollo/client";
 import { ApplicationInsights } from "@microsoft/applicationinsights-web";
@@ -96,4 +96,4 @@ const WithAuthenticatedUser: React.FC<Props> = ({ children }) => {
   return <>{children}</>;
 };
 
-export default WithAuthenticatedUser;
+export default connect()(WithAuthenticatedUser);

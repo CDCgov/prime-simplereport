@@ -3,10 +3,12 @@ import {
   useGetDeviceTypesForLookupQuery,
 } from "../../../generated/graphql";
 import { LoadingCard } from "../../commonComponents/LoadingCard/LoadingCard";
+import { useDocumentTitle } from "../../utils/hooks";
 
 import DeviceLookup from "./DeviceLookup";
 
 const DeviceLookupContainer = () => {
+  useDocumentTitle("Device lookup");
   const { data: deviceTypeResults } = useGetDeviceTypesForLookupQuery({
     fetchPolicy: "no-cache",
   });

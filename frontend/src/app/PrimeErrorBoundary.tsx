@@ -49,7 +49,14 @@ export default class PrimeErrorBoundary extends React.Component<
     if (this.state.redirectToOkta) {
       const url = `${process.env.REACT_APP_OKTA_URL}/oauth2/default/v1/authorize`;
       const clientId = `?client_id=${process.env.REACT_APP_OKTA_CLIENT_ID}`;
-      const redirectUri = `&redirect_uri=${encodeURIComponent(getUrl())}`;
+      // todo: before merging, make sure csv-uploads redirect URI is added to all Okta clients
+      const redirectUri = `&redirect_uri=${encodeURIComponent(
+        // return to csv upload experience homepage if being redirected from the uploader experience
+        getUrl() +
+          (window.location.pathname.includes("csv-uploads")
+            ? "csv-uploads"
+            : "")
+      )}`;
       const responseType = `&response_type=${encodeURIComponent(
         "token id_token"
       )}`;

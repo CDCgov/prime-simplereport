@@ -37,7 +37,7 @@ const UploadResultsApp = () => {
         header={<UploaderHeader />}
         children={
           <Routes>
-            <Route path="/" element={<Navigate to="/csv-uploads/submit" />} />
+            <Route path="/" element={<Navigate to="submit" />} />
             <Route
               path="submit"
               element={
