@@ -13,11 +13,11 @@ import { Facility, FeedbackMessage } from "../../generated/graphql";
 import { showError } from "../utils/srToast";
 import { FileUploadService } from "../../fileUploadService/FileUploadService";
 import iconLoader from "../../img/loader.svg";
+import { getFacilityIdFromUrl } from "../utils/url";
 
 import { AddPatientHeader } from "./Components/AddPatientsHeader";
 
 import "./UploadPatients.scss";
-import { getFacilityIdFromUrl } from "../utils/url";
 
 const UploadPatients = () => {
   useDocumentTitle("Add Patient");
