@@ -40,7 +40,7 @@ public class TestResultFileValidator {
 
     List<FeedbackMessage> errors = new ArrayList<>();
 
-    while (valueIterator.hasNext() && errors.isEmpty()) {
+    while (valueIterator.hasNext()) {
       final Map<String, String> row = getNextRow(valueIterator);
 
       ValueOrError patientId = getValue(row, "patient_id", false);
