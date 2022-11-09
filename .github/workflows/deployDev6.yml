@@ -1,4 +1,4 @@
-name: Deploy dev6
+name: Deploy Dev6
 
 on:
   workflow_dispatch:
