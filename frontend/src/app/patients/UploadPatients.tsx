@@ -3,6 +3,7 @@ import { FileInput, FormGroup } from "@trussworks/react-uswds";
 import { useSelector } from "react-redux";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faXmark } from "@fortawesome/free-solid-svg-icons";
+import { useLocation } from "react-router-dom";
 
 import { useDocumentTitle } from "../utils/hooks";
 import Button from "../commonComponents/Button/Button";
@@ -16,6 +17,7 @@ import iconLoader from "../../img/loader.svg";
 import { AddPatientHeader } from "./Components/AddPatientsHeader";
 
 import "./UploadPatients.scss";
+import { getFacilityIdFromUrl } from "../utils/url";
 
 const UploadPatients = () => {
   useDocumentTitle("Add Patient");
@@ -34,7 +36,10 @@ const UploadPatients = () => {
   const facilities = useSelector(
     (state: any) => (state?.facilities as Facility[]) || []
   );
-  const facility = selectedFacility || facilities[0] || { id: "", name: "" };
+  const activeFacilityId = getFacilityIdFromUrl(useLocation());
+  const facility = selectedFacility ||
+    facilities.find((f) => f.id === activeFacilityId) ||
+    facilities[0] || { id: "", name: "" };
 
   const onFacilitySelect = (e: React.ChangeEvent<HTMLSelectElement>) => {
     const selected = facilities.find((f) => f.id === e.target.value);
