@@ -1,5 +1,5 @@
 import React from "react";
-import { useSelector, connect } from "react-redux";
+import { useSelector } from "react-redux";
 
 import { PATIENT_TERM_PLURAL_CAP } from "../../config/constants";
 import { hasPermission, appPermissions } from "../permissions";
@@ -71,8 +71,9 @@ const MainHeader: React.FC = () => {
       inactiveNavItem={inactiveNavItem}
       activeNavItem={activeNavItem}
       getNavItemClassName={getNavItemClassName}
+      showFacilitySelect={true}
     />
   );
 };
 
-export default connect()(MainHeader);
+export default MainHeader;

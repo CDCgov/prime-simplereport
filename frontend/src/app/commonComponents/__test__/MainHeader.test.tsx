@@ -4,7 +4,7 @@ import { Provider } from "react-redux";
 import { MemoryRouter } from "react-router-dom";
 import createMockStore from "redux-mock-store";
 
-import Header from "../Header";
+import MainHeader from "../MainHeader";
 import { getAppInsights } from "../../TelemetryService";
 import "../../../i18n";
 import { useSelectedFacility } from "../../facilitySelect/useSelectedFacility";
@@ -49,7 +49,7 @@ describe("Header.tsx", () => {
   const WrappedHeader: React.FC = ({ children }) => (
     <MemoryRouter>
       <Provider store={store}>
-        <Header />
+        <MainHeader />
         {children}
       </Provider>
     </MemoryRouter>

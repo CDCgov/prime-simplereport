@@ -36,6 +36,7 @@ interface HeaderProps {
   }: {
     isActive: boolean;
   }) => "active-nav-item prime-nav-link" | "prime-nav-link";
+  showFacilitySelect: boolean;
 }
 
 const Header: React.FC<HeaderProps> = ({
@@ -43,6 +44,7 @@ const Header: React.FC<HeaderProps> = ({
   activeNavItem,
   inactiveNavItem,
   getNavItemClassName,
+  showFacilitySelect,
 }) => {
   const appInsights = getAppInsights();
 
@@ -316,20 +318,24 @@ const Header: React.FC<HeaderProps> = ({
             {secondaryNavSublist("mobile")}
             <hr />
 
-            <label id="mobile-facility-label" className="usa-label ">
-              Facility
-            </label>
-            <div className="prime-facility-select facility-select-mobile-container">
-              <Dropdown
-                selectedValue={facility.id}
-                onChange={onFacilitySelect}
-                className={"mobile-facility-select"}
-                options={facilities.map(({ name, id }) => ({
-                  label: name,
-                  value: id,
-                }))}
-              />
-            </div>
+            {showFacilitySelect && (
+              <>
+                <label id="mobile-facility-label" className="usa-label ">
+                  Facility
+                </label>
+                <div className="prime-facility-select facility-select-mobile-container">
+                  <Dropdown
+                    selectedValue={facility.id}
+                    onChange={onFacilitySelect}
+                    className={"mobile-facility-select"}
+                    options={facilities.map(({ name, id }) => ({
+                      label: name,
+                      value: id,
+                    }))}
+                  />
+                </div>
+              </>
+            )}
 
             <TouchpointsButton />
           </div>
@@ -343,7 +349,7 @@ const Header: React.FC<HeaderProps> = ({
         <ul className="usa-nav__primary usa-accordion">
           {mainNavList("desktop")}
         </ul>
-        {facilities && facilities.length > 0 ? (
+        {showFacilitySelect && facilities && facilities.length > 0 ? (
           <div className="prime-facility-select">
             <Dropdown
               aria-label={"Select facility"}

@@ -42,6 +42,7 @@ import "./styles/App.css";
 import { getUrl } from "./app/utils/url";
 import SessionTimeout from "./app/accountCreation/SessionTimeout";
 import WithFeatureFlags from "./featureFlags/WithFeatureFlags";
+import UploadResultsApp from "./app/uploads/UploadResultsApp";
 
 // Initialize telemetry early
 ai.initialize();
@@ -140,6 +141,7 @@ export const ReactApp = (
                   />
                   <Route path="/session-timeout" element={<SessionTimeout />} />
                   <Route path="/reload-app" element={<Navigate to="/" />} />
+                  <Route path="/csv-uploads/*" element={<UploadResultsApp />} />
                   <Route path="/*" element={<App />} />
                   <Route element={<>Page not found</>} />
                 </Routes>
