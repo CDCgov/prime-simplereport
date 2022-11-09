@@ -130,10 +130,6 @@ public class CsvValidatorUtils {
   private static final String ITEM_SCOPE = "item";
   private static final String REPORT_SCOPE = "report";
 
-  //  private static final DateTimeFormatter dateFormatter = DateTimeFormatter.ofPattern("M/d/yyyy",
-  // Locale.US)
-  //          .withResolverStyle(ResolverStyle.STRICT);
-
   private CsvValidatorUtils() {
     throw new IllegalStateException("CsvValidatorUtils is a utility class");
   }
