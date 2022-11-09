@@ -5,6 +5,7 @@ resource "azurerm_postgresql_flexible_server" "db" {
   sku_name            = var.env == "prod" ? "MO_Standard_E8ds_v4" : "MO_Standard_E4ds_v4"
   version             = "13"
   delegated_subnet_id = var.subnet_id
+  private_dns_zone_id = var.private_dns_zone_id
 
 
   administrator_login    = var.administrator_login

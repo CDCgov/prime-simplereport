@@ -38,14 +38,13 @@ public class TestResultFileValidator {
     List<FeedbackMessage> errors = new ArrayList<>();
 
     try {
-
       final MappingIterator<Map<String, String>> valueIterator = getIteratorForCsv(csvStream);
 
       if (!valueIterator.hasNext()) {
         throw new IllegalArgumentException("Empty or invalid CSV submitted");
       }
 
-      while (valueIterator.hasNext() && errors.isEmpty()) {
+      while (valueIterator.hasNext()) {
         final Map<String, String> row = getNextRow(valueIterator);
 
         ValueOrError patientId = getValue(row, "patient_id", false);

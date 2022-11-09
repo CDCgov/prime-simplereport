@@ -1,0 +1,18 @@
+spring:
+  profiles.include: okta-dev6, server-debug
+simple-report:
+  azure-reporting-queue:
+    enabled: true
+    exception-webhook-enabled: true
+  patient-link-url: https://dev6.simplereport.gov/app/pxp?plid=
+  twilio-callback-url: https://dev6.simplereport.gov/api/pxp/callback
+  sendgrid:
+    enabled: false
+  cors:
+    allowed-origins:
+      - https://simplereportdev6app.z13.web.core.windows.net
+      - https://simple-report-api-dev6.azurewebsites.net
+      - https://simple-report-dev6.azureedge.net
+      - https://dev6.simplereport.gov
+twilio:
+  enabled: true
