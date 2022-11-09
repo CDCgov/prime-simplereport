@@ -13,6 +13,7 @@ import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { displayFullName } from "../utils";
 import {
   PATIENT_TERM,
+  PATIENT_TERM_CAP,
   PATIENT_TERM_PLURAL,
   PATIENT_TERM_PLURAL_CAP,
 } from "../../config/constants";
@@ -231,7 +232,7 @@ export const DetachedManagePatients = ({
                       }),
                   },
                   {
-                    name: "Archive person",
+                    name: `Archive ${PATIENT_TERM}`,
                     action: () => setArchivePerson(patient),
                   },
                 ]}
@@ -315,7 +316,7 @@ export const DetachedManagePatients = ({
             </div>
             <div className="display-flex flex-row bg-base-lightest padding-x-3 padding-y-2">
               <SearchInput
-                label="Person"
+                label={PATIENT_TERM_CAP}
                 onInputChange={(e) => {
                   setDebounced(e.target.value);
                 }}

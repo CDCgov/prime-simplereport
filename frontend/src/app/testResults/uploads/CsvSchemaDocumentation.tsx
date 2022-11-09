@@ -405,6 +405,10 @@ const CsvSchemaDocumentation = () => {
                 Make sure your spreadsheet is in a CSV format. SimpleReport
                 doesn’t accept .XLS, .XLXS, or other formats.
               </p>
+              <p>
+                Note: If your spreadsheet is larger than 50 MB or 10,000 rows,
+                please separate it into multiple files.
+              </p>
             </li>
             <li className="usa-process-list__item">
               <h3 className="usa-process-list__heading">

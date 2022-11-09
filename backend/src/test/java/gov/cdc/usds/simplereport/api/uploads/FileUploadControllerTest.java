@@ -40,8 +40,11 @@ class FileUploadControllerTest extends BaseFullStackTest {
 
   @Test
   void patientsUploadTest_happy() throws Exception {
+    PatientBulkUploadResponse success = new PatientBulkUploadResponse();
+    success.setStatus(UploadStatus.SUCCESS);
+
     when(patientBulkUploadService.processPersonCSV(any(InputStream.class), any()))
-        .thenReturn("Successfully uploaded 1 record(s)");
+        .thenReturn(success);
 
     MockMultipartFile file =
         new MockMultipartFile(
@@ -50,7 +53,7 @@ class FileUploadControllerTest extends BaseFullStackTest {
     mockMvc
         .perform(multipart(PATIENT_UPLOAD).file(file).param("rawFacilityId", ""))
         .andExpect(status().isOk())
-        .andExpect(content().string("Successfully uploaded 1 record(s)"));
+        .andExpect(content().string("{\"errors\":null,\"status\":\"SUCCESS\"}"));
   }
 
   @Test
@@ -116,8 +119,11 @@ class FileUploadControllerTest extends BaseFullStackTest {
 
   @Test
   void patientsUploadTest_acceptsUUIDForFacilityId() throws Exception {
+    PatientBulkUploadResponse success = new PatientBulkUploadResponse();
+    success.setStatus(UploadStatus.SUCCESS);
+
     when(patientBulkUploadService.processPersonCSV(any(InputStream.class), any(UUID.class)))
-        .thenReturn("Successfully uploaded 1 record(s)");
+        .thenReturn(success);
 
     MockMultipartFile file =
         new MockMultipartFile(
@@ -127,7 +133,7 @@ class FileUploadControllerTest extends BaseFullStackTest {
     mockMvc
         .perform(multipart(PATIENT_UPLOAD).file(file).param("rawFacilityId", testUUID.toString()))
         .andExpect(status().isOk())
-        .andExpect(content().string("Successfully uploaded 1 record(s)"));
+        .andExpect(content().string("{\"errors\":null,\"status\":\"SUCCESS\"}"));
   }
 
   @Test
@@ -153,7 +159,6 @@ class FileUploadControllerTest extends BaseFullStackTest {
     Organization organization = new Organization("best org", "lab", "best-org-123", true);
     TestResultUpload testResultUpload =
         new TestResultUpload(reportId, UploadStatus.SUCCESS, 5, organization, null, null);
-
     when(testResultUploadService.processResultCSV(any(InputStream.class)))
         .thenReturn(testResultUpload);
 

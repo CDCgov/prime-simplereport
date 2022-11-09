@@ -16,6 +16,8 @@ import {
 } from "react-router-dom";
 import createMockStore from "redux-mock-store";
 
+import { PATIENT_TERM, PATIENT_TERM_CAP } from "../../config/constants";
+
 import ManagePatients, {
   patientQuery,
   patientsCountQuery,
@@ -75,7 +77,7 @@ describe("ManagePatients", () => {
     jest.useFakeTimers();
     render(<TestContainer />);
     expect(await screen.findByText(patients[0].lastName, { exact: false }));
-    const input = await screen.findByLabelText("Person");
+    const input = await screen.findByLabelText(PATIENT_TERM_CAP);
     userEvent.type(input, "Al");
     await waitForElementToBeRemoved(() =>
       screen.queryByText("Abramcik", { exact: false })
@@ -101,7 +103,7 @@ describe("ManagePatients", () => {
 
       const menu = (await screen.findAllByText("More actions"))[0];
       userEvent.click(menu);
-      userEvent.click(await screen.findByText("Archive person"));
+      userEvent.click(await screen.findByText(`Archive ${PATIENT_TERM}`));
 
       expect(
         screen.getByText("Yes, I'm sure", { exact: false })

@@ -57,3 +57,7 @@ variable "nophi_user_password" {
   type        = string
   sensitive   = true
 }
+
+variable "private_dns_zone_id" {
+  type = string
+}

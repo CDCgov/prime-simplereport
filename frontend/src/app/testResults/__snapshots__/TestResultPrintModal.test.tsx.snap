@@ -79,9 +79,14 @@ Object {
               </h1>
               <img
                 alt="SimpleReport logo"
-                class="sr-print-logo"
+                class="sr-print-logo dont-print"
                 src="simplereport-logo-black.svg"
               />
+              <h2
+                class="display-none sr-show-on-print"
+              >
+                SimpleReport
+              </h2>
             </header>
             <main>
               <section
@@ -445,9 +450,14 @@ your local health department.
             </h1>
             <img
               alt="SimpleReport logo"
-              class="sr-print-logo"
+              class="sr-print-logo dont-print"
               src="simplereport-logo-black.svg"
             />
+            <h2
+              class="display-none sr-show-on-print"
+            >
+              SimpleReport
+            </h2>
           </header>
           <main>
             <section
@@ -868,9 +878,14 @@ Object {
               </h1>
               <img
                 alt="SimpleReport logo"
-                class="sr-print-logo"
+                class="sr-print-logo dont-print"
                 src="simplereport-logo-black.svg"
               />
+              <h2
+                class="display-none sr-show-on-print"
+              >
+                SimpleReport
+              </h2>
             </header>
             <main>
               <section
@@ -1289,9 +1304,14 @@ Object {
             </h1>
             <img
               alt="SimpleReport logo"
-              class="sr-print-logo"
+              class="sr-print-logo dont-print"
               src="simplereport-logo-black.svg"
             />
+            <h2
+              class="display-none sr-show-on-print"
+            >
+              SimpleReport
+            </h2>
           </header>
           <main>
             <section
@@ -1767,9 +1787,14 @@ Object {
               </h1>
               <img
                 alt="SimpleReport logo"
-                class="sr-print-logo"
+                class="sr-print-logo dont-print"
                 src="simplereport-logo-black.svg"
               />
+              <h2
+                class="display-none sr-show-on-print"
+              >
+                SimpleReport
+              </h2>
             </header>
             <main>
               <section
@@ -2097,9 +2122,14 @@ your local health department.
             </h1>
             <img
               alt="SimpleReport logo"
-              class="sr-print-logo"
+              class="sr-print-logo dont-print"
               src="simplereport-logo-black.svg"
             />
+            <h2
+              class="display-none sr-show-on-print"
+            >
+              SimpleReport
+            </h2>
           </header>
           <main>
             <section

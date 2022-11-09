@@ -17,7 +17,7 @@ describe("Adding Patients", () => {
       cy.get(".prime-container");
       cy.get("#add-patient").click();
       cy.get("#individual_add-patient").click();
-      cy.get(".prime-edit-patient").contains("Add new person");
+      cy.get(".prime-edit-patient").contains("Add new patient");
       cy.injectAxe();
       cy.checkA11y(); // Patient form
     });
@@ -55,14 +55,14 @@ describe("Adding Patients", () => {
       cy.checkA11y();
 
       cy.get(".modal__container #save-confirmed-address").click();
-      cy.get(".usa-card__header").contains("People");
+      cy.get(".usa-card__header").contains("Patients");
       cy.get(".usa-card__header").contains("Showing");
       cy.get("#search-field-small").type(patient.lastName);
       cy.get(".prime-container").contains(patient.fullName);
 
       cy.checkA11y();
+    });
   });
-});
 
   describe("Bulk upload patients", () => {
     const patients = [generatePatient(), generatePatient()];
@@ -109,4 +109,5 @@ describe("Adding Patients", () => {
       cy.get(".prime-container").contains(patients[1].fullName);
     })
   })
-})
+});
+

@@ -34,7 +34,7 @@ default:
 
 # Internal target: check if the passed-in wildcard is a known environment name. Hard-coding them because let's be real here.
 .valid-env-%:
-	@case $* in test|dev|dev2|dev3|dev4|demo|training|pentest|stg|prod) ;; *) echo "$* is not a valid environment"; exit 1;; esac
+	@case $* in test|dev|dev2|dev3|dev4|dev5|dev6|dev7|demo|training|pentest|stg|prod) ;; *) echo "$* is not a valid environment"; exit 1;; esac
 
 api.tfvars: /dev/null
 	echo "acr_image_tag=\"$(DEPLOYED_COMMIT)\"" > $@; \

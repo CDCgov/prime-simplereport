@@ -5,11 +5,12 @@ import { useSelectedFacility } from "../facilitySelect/useSelectedFacility";
 import { hasPermission, appPermissions } from "../permissions";
 import { RootState } from "../store";
 import { useDocumentTitle } from "../utils/hooks";
+import { PATIENT_TERM_PLURAL_CAP } from "../../config/constants";
 
 import ManagePatients from "./ManagePatients";
 
 const ManagePatientsContainer = () => {
-  useDocumentTitle("People");
+  useDocumentTitle(PATIENT_TERM_PLURAL_CAP);
   const { pageNumber } = useParams();
   const currentPage = pageNumber ? +pageNumber : 1;
   const [facility] = useSelectedFacility();

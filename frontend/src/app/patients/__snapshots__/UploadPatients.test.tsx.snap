@@ -42,7 +42,7 @@ exports[`Upload Patient displays the upload patients page correctly 1`] = `
                 class="font-heading-lg margin-top-1 margin-bottom-0"
               >
                 Add new 
-                person
+                patient
               </h1>
             </div>
           </div>
@@ -62,7 +62,7 @@ exports[`Upload Patient displays the upload patients page correctly 1`] = `
                 href="/add-patient"
               >
                 Add individual 
-                person
+                patient
               </a>
             </li>
             <li
