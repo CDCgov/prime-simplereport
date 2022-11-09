@@ -228,7 +228,11 @@ public class TestResultFileValidator {
     } catch (CsvProcessingException ex) {
       log.error("Unable to parse test result csv.", ex);
       // todo before pr approval: replace message with something more user-friendly
-      errors.add(new FeedbackMessage("File", ex.getMessage(), new int[] {ex.getLineNumber()}));
+      errors.add(
+          new FeedbackMessage(
+              "File",
+              "File has the incorrect number of columns or empty rows. Please make sure all columns match the data template, and delete any empty rows.",
+              new int[] {ex.getLineNumber()}));
     }
 
     return errors;
