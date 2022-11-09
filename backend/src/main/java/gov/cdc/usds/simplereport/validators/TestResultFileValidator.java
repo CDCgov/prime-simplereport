@@ -226,7 +226,6 @@ public class TestResultFileValidator {
       }
     } catch (CsvProcessingException ex) {
       log.error("Unable to parse test result csv.", ex);
-      // todo before pr approval: replace message with something more user-friendly
       errors.add(
           new FeedbackMessage(
               "File",
