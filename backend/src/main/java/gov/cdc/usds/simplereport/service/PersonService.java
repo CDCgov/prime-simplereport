@@ -16,7 +16,13 @@ import gov.cdc.usds.simplereport.db.model.auxiliary.TestResultDeliveryPreference
 import gov.cdc.usds.simplereport.db.repository.PersonRepository;
 import gov.cdc.usds.simplereport.db.repository.PhoneNumberRepository;
 import java.time.LocalDate;
-import java.util.*;
+import java.util.Arrays;
+import java.util.Collections;
+import java.util.HashSet;
+import java.util.List;
+import java.util.Optional;
+import java.util.Set;
+import java.util.UUID;
 import java.util.stream.Collectors;
 import javax.validation.constraints.Size;
 import org.springframework.data.domain.PageRequest;
