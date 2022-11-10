@@ -14,6 +14,7 @@ import gov.cdc.usds.simplereport.api.uploads.PatientBulkUploadResponse;
 import gov.cdc.usds.simplereport.config.AuthorizationConfiguration;
 import gov.cdc.usds.simplereport.db.model.Facility;
 import gov.cdc.usds.simplereport.db.model.Organization;
+import gov.cdc.usds.simplereport.db.model.Person;
 import gov.cdc.usds.simplereport.db.model.PhoneNumber;
 import gov.cdc.usds.simplereport.db.model.auxiliary.StreetAddress;
 import gov.cdc.usds.simplereport.db.model.auxiliary.UploadStatus;
@@ -24,10 +25,7 @@ import gov.cdc.usds.simplereport.validators.PatientBulkUploadFileValidator.Patie
 import java.io.ByteArrayInputStream;
 import java.io.IOException;
 import java.io.InputStream;
-import java.util.List;
-import java.util.Map;
-import java.util.Optional;
-import java.util.UUID;
+import java.util.*;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
@@ -57,7 +55,17 @@ public class PatientBulkUploadService {
 
     PatientBulkUploadResponse result = new PatientBulkUploadResponse();
 
-    Organization org = _organizationService.getCurrentOrganization();
+    Organization currentOrganization = _organizationService.getCurrentOrganization();
+
+    Facility assignedFacility = null;
+    // Patients do not need to be assigned to a facility,
+    // but if an id is given it must be valid
+    if (facilityId != null) {
+      assignedFacility = _organizationService.getFacilityInCurrentOrg(facilityId);
+    }
+
+    List<Person> patientsList = new ArrayList<>();
+    List<PhoneNumber> phoneNumbersList = new ArrayList<>();
 
     byte[] content;
 
@@ -114,48 +122,77 @@ public class PatientBulkUploadService {
             extractedData.getFirstName().getValue(),
             extractedData.getLastName().getValue(),
             parseUserShortDate(extractedData.getDateOfBirth().getValue()),
-            org,
+            currentOrganization,
             facility)) {
           continue;
         }
 
-        _personService.addPatient(
-            facilityId,
-            null, // lookupID
-            extractedData.getFirstName().getValue(),
-            extractedData.getMiddleName().getValue(),
-            extractedData.getLastName().getValue(),
-            extractedData.getSuffix().getValue(),
-            parseUserShortDate(extractedData.getDateOfBirth().getValue()),
-            address,
-            country,
-            List.of(
-                new PhoneNumber(
-                    parsePhoneType(extractedData.getPhoneNumberType().getValue()),
-                    extractedData.getPhoneNumber().getValue())),
-            parsePersonRole(extractedData.getRole().getValue(), false),
-            List.of(extractedData.getEmail().getValue()),
-            convertRaceToDatabaseValue(extractedData.getRace().getValue()),
-            convertEthnicityToDatabaseValue(extractedData.getEthnicity().getValue()),
-            null,
-            convertSexToDatabaseValue(extractedData.getBiologicalSex().getValue()),
-            parseYesNo(extractedData.getResidentCongregateSetting().getValue()),
-            parseYesNo(extractedData.getEmployedInHealthcare().getValue()),
-            null,
-            null);
+        // create new person
+        // - pass in the organization they belong to, as saved up above
+        // - set facility on person
+        // add person to person list
+        // create List of Phone numbers for that person following PersonService steps
+        // add phone numbers to phone numbers list
+        // exit while loop
+        // do the save for persons and phone numbers
+        // see how much better it is
+
+        // create new person with current organization, then add to new patients list
+        Person newPatient =
+            new Person(
+                currentOrganization,
+                null,
+                extractedData.getFirstName().getValue(),
+                extractedData.getMiddleName().getValue(),
+                extractedData.getLastName().getValue(),
+                extractedData.getSuffix().getValue(),
+                parseUserShortDate(extractedData.getDateOfBirth().getValue()),
+                address,
+                country,
+                parsePersonRole(extractedData.getRole().getValue(), false),
+                List.of(extractedData.getEmail().getValue()),
+                convertRaceToDatabaseValue(extractedData.getRace().getValue()),
+                convertEthnicityToDatabaseValue(extractedData.getEthnicity().getValue()),
+                null,
+                convertSexToDatabaseValue(extractedData.getBiologicalSex().getValue()),
+                parseYesNo(extractedData.getResidentCongregateSetting().getValue()),
+                parseYesNo(extractedData.getEmployedInHealthcare().getValue()),
+                null,
+                null);
+        newPatient.setFacility(assignedFacility); // might be null, that's fine
+        patientsList.add(newPatient);
+
+        // collect phone numbers and associate them with the patient, then add to phone numbers list
+        List<PhoneNumber> newPhoneNumbers =
+            _personService.assignPhoneNumbersToPatient(
+                newPatient,
+                List.of(
+                    new PhoneNumber(
+                        parsePhoneType(extractedData.getPhoneNumberType().getValue()),
+                        extractedData.getPhoneNumber().getValue())));
+        newPhoneNumbers.forEach(phoneNumber -> phoneNumbersList.add((phoneNumber)));
+
+        // set primary phone number
+        if (!newPhoneNumbers.isEmpty()) {
+          newPatient.setPrimaryPhone(newPhoneNumbers.get(0));
+        }
       } catch (IllegalArgumentException e) {
         String errorMessage = "Error uploading patient roster";
         log.error(
             errorMessage
                 + " for organization "
-                + org.getExternalId()
+                + currentOrganization.getExternalId()
                 + " and facility "
                 + facilityId);
         throw new IllegalArgumentException(errorMessage);
       }
     }
 
-    log.info("CSV patient upload completed for {}", org.getOrganizationName());
+    if (patientsList != null && phoneNumbersList != null) {
+      _personService.addPatientsAndPhoneNumbers(patientsList, phoneNumbersList);
+    }
+
+    log.info("CSV patient upload completed for {}", currentOrganization.getOrganizationName());
     result.setStatus(UploadStatus.SUCCESS);
     // eventually want to send an email here instead of return success
     return result;
