@@ -45,7 +45,6 @@ public class CsvValidatorUtils {
               STATE_CODES.stream().map(String::toLowerCase),
               CANADIAN_STATE_CODES.stream().map(String::toLowerCase))
           .collect(Collectors.toSet());
-
   private static final Set<String> VALID_COUNTRY_CODES =
       COUNTRY_CODES.stream().map(String::toLowerCase).collect(Collectors.toSet());
   private static final String UNKNOWN_LITERAL = "unknown";

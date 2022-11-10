@@ -1,6 +1,5 @@
 package gov.cdc.usds.simplereport.validators;
 
-import static gov.cdc.usds.simplereport.api.Translators.COUNTRY_CODES;
 import static gov.cdc.usds.simplereport.validators.CsvValidatorUtils.ValueOrError;
 import static gov.cdc.usds.simplereport.validators.CsvValidatorUtils.getValue;
 import static gov.cdc.usds.simplereport.validators.CsvValidatorUtils.validateCountry;
@@ -68,7 +67,7 @@ class CsvValidatorUtilsTest {
 
   @Test
   void validCountryCode() {
-    var countryCode = new ValueOrError(COUNTRY_CODES.stream().findAny().get(), "country");
-    assertThat(validateCountry(countryCode)).hasSize(0);
+    var countryCode = new ValueOrError("USA", "country");
+    assertThat(validateCountry(countryCode)).isEmpty();
   }
 }
