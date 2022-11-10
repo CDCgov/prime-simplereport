@@ -45,6 +45,9 @@ public class CsvValidatorUtils {
               STATE_CODES.stream().map(String::toLowerCase),
               CANADIAN_STATE_CODES.stream().map(String::toLowerCase))
           .collect(Collectors.toSet());
+
+  private static final Set<String> VALID_COUNTRY_CODES =
+      COUNTRY_CODES.stream().map(String::toLowerCase).collect(Collectors.toSet());
   private static final String UNKNOWN_LITERAL = "unknown";
   private static final String OTHER_LITERAL = "other";
   private static final String REFUSED_LITERAL = "refused";
@@ -165,7 +168,7 @@ public class CsvValidatorUtils {
   }
 
   public static List<FeedbackMessage> validateCountry(ValueOrError input) {
-    return validateInSet(input, COUNTRY_CODES);
+    return validateInSet(input, VALID_COUNTRY_CODES);
   }
 
   public static List<FeedbackMessage> validateTestResultStatus(ValueOrError input) {
