@@ -2,6 +2,7 @@ package gov.cdc.usds.simplereport.validators;
 
 import static gov.cdc.usds.simplereport.validators.CsvValidatorUtils.ValueOrError;
 import static gov.cdc.usds.simplereport.validators.CsvValidatorUtils.getValue;
+import static gov.cdc.usds.simplereport.validators.CsvValidatorUtils.validateCountry;
 import static gov.cdc.usds.simplereport.validators.CsvValidatorUtils.validateEthnicity;
 import static gov.cdc.usds.simplereport.validators.CsvValidatorUtils.validatePhoneNumber;
 import static gov.cdc.usds.simplereport.validators.CsvValidatorUtils.validateZipCode;
@@ -91,5 +92,11 @@ class CsvValidatorUtilsTest {
     assertEquals("it broke", thrown.getMessage());
     assertEquals(1, thrown.getLineNumber());
     assertEquals(5, thrown.getColumnNumber());
+  }
+
+  @Test
+  void validCountryCode() {
+    var countryCode = new ValueOrError("USA", "country");
+    assertThat(validateCountry(countryCode)).isEmpty();
   }
 }
