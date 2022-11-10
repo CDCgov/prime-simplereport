@@ -96,7 +96,7 @@ class PatientBulkUploadFileValidatorTest {
         errors.stream().map(FeedbackMessage::getMessage).collect(Collectors.toList());
     assertThat(errorMessages)
         .contains(
-            "11/3/80 is not a valid value for column date_of_birth",
+            "11/3/8 is not an acceptable value for column date_of_birth",
             "african american is not an acceptable value for column race",
             "androgynous is not an acceptable value for column biological_sex",
             "latinx is not an acceptable value for column ethnicity",

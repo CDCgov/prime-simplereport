@@ -33,9 +33,6 @@ public class CsvValidatorUtils {
   /// 000-000-0000
   private static final String PHONE_NUMBER_REGEX = "^[1-9]\\d{2}-\\d{3}-\\d{4}$";
 
-  // MM/DD/YYYY OR M/D/YYYY
-  private static final String DATE_REGEX = "^\\d{1,2}\\/\\d{1,2}\\/\\d{4}$";
-
   // MM/DD/YYYY HH:mm, MM/DD/YYYY H:mm, M/D/YYYY HH:mm OR M/D/YYYY H:mm
   private static final String DATE_TIME_REGEX =
       "^\\d{1,2}\\/\\d{1,2}\\/\\d{4}( ([0-1]?[0-9]|2[0-3]):[0-5][0-9])?$";
@@ -195,16 +192,18 @@ public class CsvValidatorUtils {
   }
 
   public static List<FeedbackMessage> validateDate(ValueOrError input) {
-    List<FeedbackMessage> errors = validateRegex(input, DATE_REGEX);
-    if (errors.isEmpty()) {
-      try {
-        US_SLASHDATE_SHORT_FORMATTER.parse(input.getValue());
-      } catch (DateTimeParseException e) {
-        errors.add(
-            new FeedbackMessage(
-                ITEM_SCOPE,
-                input.getValue() + " is not an acceptable value for column " + input.getHeader()));
-      }
+    List<FeedbackMessage> errors = new ArrayList<>();
+    String value = parseString(input.getValue());
+    if (value == null) {
+      return errors;
+    }
+    try {
+      US_SLASHDATE_SHORT_FORMATTER.parse(input.getValue());
+    } catch (DateTimeParseException e) {
+      errors.add(
+          new FeedbackMessage(
+              ITEM_SCOPE,
+              input.getValue() + " is not an acceptable value for column " + input.getHeader()));
     }
     return errors;
   }

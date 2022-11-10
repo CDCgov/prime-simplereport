@@ -11,7 +11,9 @@ import gov.cdc.usds.simplereport.db.model.auxiliary.PhoneType;
 import gov.cdc.usds.simplereport.db.model.auxiliary.TestResult;
 import java.time.LocalDate;
 import java.time.format.DateTimeFormatter;
+import java.time.format.DateTimeFormatterBuilder;
 import java.time.format.DateTimeParseException;
+import java.time.temporal.ChronoField;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.Iterator;
@@ -30,8 +32,20 @@ import org.json.JSONObject;
  * ways.
  */
 public class Translators {
+  // Accepts either two-digit or four-digit years.
+  // Two-digit years will always resolve to years past.
+  // (e.g., if today is Jan. 1, 2023, and the formatter is passed 11/4/24, it will resolve to Nov 4,
+  // 1924).
   public static final DateTimeFormatter US_SLASHDATE_SHORT_FORMATTER =
-      DateTimeFormatter.ofPattern("M/d/yyyy");
+      new DateTimeFormatterBuilder()
+          .appendPattern("M/d/")
+          .optionalStart()
+          .appendPattern("uuuu")
+          .optionalEnd()
+          .optionalStart()
+          .appendValueReduced(ChronoField.YEAR, 2, 2, LocalDate.now().minusYears(99))
+          .optionalEnd()
+          .toFormatter();
   private static final int MAX_STRING_LENGTH = 500;
 
   public static final LocalDate parseUserShortDate(String d) {
