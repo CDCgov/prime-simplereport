@@ -32,11 +32,14 @@ import org.json.JSONObject;
  * ways.
  */
 public class Translators {
+  private static final DateTimeFormatter US_SLASHDATE_SHORT_FORMATTER =
+      DateTimeFormatter.ofPattern("M/d/yyyy");
+
   // Accepts either two-digit or four-digit years.
   // Two-digit years will always resolve to years past.
   // (e.g., if today is Jan. 1, 2023, and the formatter is passed 11/4/24, it will resolve to Nov 4,
   // 1924).
-  public static final DateTimeFormatter US_SLASHDATE_SHORT_FORMATTER =
+  public static final DateTimeFormatter PAST_DATE_FLEXIBLE_FORMATTER =
       new DateTimeFormatterBuilder()
           .appendPattern("M/d/")
           .optionalStart()
@@ -46,6 +49,7 @@ public class Translators {
           .appendValueReduced(ChronoField.YEAR, 2, 2, LocalDate.now().minusYears(99))
           .optionalEnd()
           .toFormatter();
+
   private static final int MAX_STRING_LENGTH = 500;
 
   public static final LocalDate parseUserShortDate(String d) {

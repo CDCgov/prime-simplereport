@@ -2,8 +2,8 @@ package gov.cdc.usds.simplereport.validators;
 
 import static gov.cdc.usds.simplereport.api.Translators.CANADIAN_STATE_CODES;
 import static gov.cdc.usds.simplereport.api.Translators.COUNTRY_CODES;
+import static gov.cdc.usds.simplereport.api.Translators.PAST_DATE_FLEXIBLE_FORMATTER;
 import static gov.cdc.usds.simplereport.api.Translators.STATE_CODES;
-import static gov.cdc.usds.simplereport.api.Translators.US_SLASHDATE_SHORT_FORMATTER;
 
 import com.fasterxml.jackson.databind.MappingIterator;
 import com.fasterxml.jackson.databind.RuntimeJsonMappingException;
@@ -32,6 +32,9 @@ public class CsvValidatorUtils {
 
   /// 000-000-0000
   private static final String PHONE_NUMBER_REGEX = "^[1-9]\\d{2}-\\d{3}-\\d{4}$";
+
+  // MM/DD/YYYY OR M/D/YYYY
+  private static final String DATE_REGEX = "^\\d{1,2}\\/\\d{1,2}\\/\\d{4}$";
 
   // MM/DD/YYYY HH:mm, MM/DD/YYYY H:mm, M/D/YYYY HH:mm OR M/D/YYYY H:mm
   private static final String DATE_TIME_REGEX =
@@ -191,14 +194,14 @@ public class CsvValidatorUtils {
     return validateRegex(input, CLIA_REGEX);
   }
 
-  public static List<FeedbackMessage> validateDate(ValueOrError input) {
+  public static List<FeedbackMessage> validateFlexibleDate(ValueOrError input) {
     List<FeedbackMessage> errors = new ArrayList<>();
     String value = parseString(input.getValue());
     if (value == null) {
       return errors;
     }
     try {
-      US_SLASHDATE_SHORT_FORMATTER.parse(input.getValue());
+      PAST_DATE_FLEXIBLE_FORMATTER.parse(input.getValue());
     } catch (DateTimeParseException e) {
       errors.add(
           new FeedbackMessage(
@@ -206,6 +209,10 @@ public class CsvValidatorUtils {
               input.getValue() + " is not an acceptable value for column " + input.getHeader()));
     }
     return errors;
+  }
+
+  public static List<FeedbackMessage> validateDateFormat(ValueOrError input) {
+    return validateRegex(input, DATE_REGEX);
   }
 
   public static List<FeedbackMessage> validateDateTime(ValueOrError input) {

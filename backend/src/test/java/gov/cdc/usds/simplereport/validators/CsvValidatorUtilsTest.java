@@ -2,8 +2,8 @@ package gov.cdc.usds.simplereport.validators;
 
 import static gov.cdc.usds.simplereport.validators.CsvValidatorUtils.ValueOrError;
 import static gov.cdc.usds.simplereport.validators.CsvValidatorUtils.getValue;
-import static gov.cdc.usds.simplereport.validators.CsvValidatorUtils.validateDate;
 import static gov.cdc.usds.simplereport.validators.CsvValidatorUtils.validateEthnicity;
+import static gov.cdc.usds.simplereport.validators.CsvValidatorUtils.validateFlexibleDate;
 import static gov.cdc.usds.simplereport.validators.CsvValidatorUtils.validatePhoneNumber;
 import static gov.cdc.usds.simplereport.validators.CsvValidatorUtils.validateZipCode;
 import static org.assertj.core.api.Assertions.assertThat;
@@ -66,8 +66,14 @@ class CsvValidatorUtilsTest {
   }
 
   @Test
-  void invalidDateWithCorrectFormat_isRejected() {
-    ValueOrError birthDate = new ValueOrError("0/13/1990", "date_of_birth");
-    assertThat(validateDate(birthDate)).hasSize(1);
+  void twoYearDate_passesFlexibleValidation() {
+    ValueOrError birthDate = new ValueOrError("11/3/80", "date_of_birth");
+    assertThat(validateFlexibleDate(birthDate)).isEmpty();
+  }
+
+  @Test
+  void invalidDate_doesNotPassFlexibleValidation() {
+    ValueOrError birthDate = new ValueOrError("0/3/1980", "date_of_birth");
+    assertThat(validateFlexibleDate(birthDate)).hasSize(1);
   }
 }
