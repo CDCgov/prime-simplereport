@@ -68,7 +68,7 @@ deploy-%: .valid-env-% api.tfvars
 	terraform -chdir=$* apply -auto-approve -var-file=../api.tfvars -lock-timeout=30m
 
 promote-%: .be-logged-in .valid-env-%
-	@case $* in dev2|dev3|dev4) az webapp deployment slot swap -g prime-simple-report-dev -n $(API_NAME) --slot $(SOURCE_SLOT) --target-slot $(TARGET_SLOT) ;; *) az webapp deployment slot swap -g prime-simple-report-$* -n $(API_NAME) --slot $(SOURCE_SLOT) --target-slot $(TARGET_SLOT) ;; esac
+	@case $* in dev2|dev3|dev4|dev5|dev6|dev7) az webapp deployment slot swap -g prime-simple-report-dev -n $(API_NAME) --slot $(SOURCE_SLOT) --target-slot $(TARGET_SLOT) ;; *) az webapp deployment slot swap -g prime-simple-report-$* -n $(API_NAME) --slot $(SOURCE_SLOT) --target-slot $(TARGET_SLOT) ;; esac
 
 wait-for-%-slot-commit: .valid-env-%
 	@echo "Starting wait for commit $(DEPLOYED_COMMIT) in $(SOURCE_SLOT) slot of $* at `date`"
