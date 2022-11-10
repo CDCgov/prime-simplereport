@@ -92,18 +92,24 @@ const UploadPatients = () => {
         setErrorMessageText(
           "There was a server error. Your file has not been accepted."
         );
-        if (res.body) {
-          const response = await res?.json();
+      } else {
+        const response = await res?.json();
 
+        if (response.status === "FAILURE") {
+          setStatus("fail");
           if (response?.errors?.length) {
             setErrorMessageText(
               "Please resolve the errors below and upload your edited file."
             );
             setErrors(response.errors);
+          } else {
+            setErrorMessageText(
+              "There was a server error. Your file has not been accepted."
+            );
           }
+        } else {
+          setStatus("success");
         }
-      } else {
-        setStatus("success");
       }
     });
   };
@@ -282,7 +288,8 @@ const UploadPatients = () => {
                                     {e?.["message"]}{" "}
                                   </td>
                                   <td className={"border-bottom-0"}>
-                                    Row(s): {e?.["indices"]}
+                                    {e?.["indices"] &&
+                                      "Row(s): " + e?.["indices"]}
                                   </td>
                                 </tr>
                               );

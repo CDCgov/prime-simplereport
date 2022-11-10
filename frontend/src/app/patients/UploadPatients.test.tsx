@@ -31,7 +31,13 @@ const uploadPatientsSpy = (response: Response) =>
     return Promise.resolve(response);
   });
 const errorResponseBody = {
+  status: "FAILURE",
   errors: [{ indices: [0], message: "bad zipcode" }],
+};
+
+const successResponseBody = {
+  status: "SUCCESS",
+  errors: null,
 };
 
 function userEventUpload(uploadFile: File, facility: string) {
@@ -117,7 +123,7 @@ describe("Upload Patient", () => {
   });
   it("should upload to single facility", async () => {
     renderUploadPatients();
-    let mockResponse = new Response(null, {
+    let mockResponse = new Response(JSON.stringify(successResponseBody), {
       status: 200,
     });
     const uploadFile = file("someText");
@@ -131,7 +137,7 @@ describe("Upload Patient", () => {
   });
   it("should show success message if upload is successful", async () => {
     renderUploadPatients();
-    let mockResponse = new Response(null, {
+    let mockResponse = new Response(JSON.stringify(successResponseBody), {
       status: 200,
     });
     const uploadFile = file("someText");
@@ -143,23 +149,10 @@ describe("Upload Patient", () => {
       await screen.findByText("Success: File Accepted")
     ).toBeInTheDocument();
   });
-  it("should show error message error response does not have a", async () => {
-    renderUploadPatients();
-    let mockResponse = new Response(null, {
-      status: 400,
-    });
-
-    submitCSVFile(mockResponse);
-
-    expect(
-      await screen.findByText("Error: File not accepted")
-    ).toBeInTheDocument();
-    expect(screen.queryByText("Edits needed")).not.toBeInTheDocument();
-  });
   it("should show error message and list errors if error occurs", async () => {
     renderUploadPatients();
     let mockResponse = new Response(JSON.stringify(errorResponseBody), {
-      status: 400,
+      status: 200,
     });
 
     submitCSVFile(mockResponse);
@@ -175,7 +168,7 @@ describe("Upload Patient", () => {
     expect(await screen.findByText("bad zipcode")).toBeInTheDocument();
     expect(await screen.findByText("Row(s): 0")).toBeInTheDocument();
   });
-  it("should show error message if upload fails", async () => {
+  it("should show error message if 500 is returned", async () => {
     renderUploadPatients();
     let mockResponse = new Response(null, {
       status: 500,
@@ -191,7 +184,7 @@ describe("Upload Patient", () => {
   });
   it("should close success message when close is clicked", async () => {
     renderUploadPatients();
-    let mockResponse = new Response(null, {
+    let mockResponse = new Response(JSON.stringify(successResponseBody), {
       status: 200,
     });
     uploadPatientsSpy(mockResponse);
@@ -209,7 +202,7 @@ describe("Upload Patient", () => {
   it("should remove error message and table when close is clicked", async () => {
     renderUploadPatients();
     let mockResponse = new Response(JSON.stringify(errorResponseBody), {
-      status: 400,
+      status: 200,
     });
 
     submitCSVFile(mockResponse);
