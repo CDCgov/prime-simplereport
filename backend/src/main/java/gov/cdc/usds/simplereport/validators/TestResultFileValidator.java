@@ -228,7 +228,7 @@ public class TestResultFileValidator {
       log.error("Unable to parse test result csv.", ex);
       errors.add(
           new FeedbackMessage(
-              "File",
+              CsvValidatorUtils.REPORT_SCOPE,
               "File has the incorrect number of columns or empty rows. Please make sure all columns match the data template, and delete any empty rows.",
               new int[] {ex.getLineNumber()}));
     }

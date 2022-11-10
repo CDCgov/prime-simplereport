@@ -126,8 +126,8 @@ public class CsvValidatorUtils {
       Set.of("staff", "resident", "student", "visitor", UNKNOWN_LITERAL);
   private static final Set<String> PHONE_NUMBER_TYPE_VALUES = Set.of("mobile", "landline");
   private static final Set<String> TEST_RESULT_STATUS_VALUES = Set.of("f", "c");
-  private static final String ITEM_SCOPE = "item";
-  private static final String REPORT_SCOPE = "report";
+  public static final String ITEM_SCOPE = "item";
+  public static final String REPORT_SCOPE = "report";
 
   private CsvValidatorUtils() {
     throw new IllegalStateException("CsvValidatorUtils is a utility class");

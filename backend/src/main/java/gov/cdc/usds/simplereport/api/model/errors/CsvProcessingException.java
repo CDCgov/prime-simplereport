@@ -8,8 +8,8 @@ import org.springframework.web.bind.annotation.ResponseStatus;
 @ResponseStatus(HttpStatus.BAD_REQUEST)
 public class CsvProcessingException extends RuntimeException {
 
-  @Getter private final int lineNumber;
-  @Getter private final int columnNumber;
+  @Getter private final Integer lineNumber;
+  @Getter private final Integer columnNumber;
 
   public CsvProcessingException(String message, int lineNumber, int columnNumber) {
     super(message);
@@ -20,7 +20,7 @@ public class CsvProcessingException extends RuntimeException {
 
   public CsvProcessingException(String message) {
     super(message);
-    this.lineNumber = 0;
-    this.columnNumber = 0;
+    lineNumber = null;
+    columnNumber = null;
   }
 }
