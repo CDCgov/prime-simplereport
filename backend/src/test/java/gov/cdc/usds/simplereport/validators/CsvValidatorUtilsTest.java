@@ -2,6 +2,7 @@ package gov.cdc.usds.simplereport.validators;
 
 import static gov.cdc.usds.simplereport.validators.CsvValidatorUtils.ValueOrError;
 import static gov.cdc.usds.simplereport.validators.CsvValidatorUtils.getValue;
+import static gov.cdc.usds.simplereport.validators.CsvValidatorUtils.validateCountry;
 import static gov.cdc.usds.simplereport.validators.CsvValidatorUtils.validateEthnicity;
 import static gov.cdc.usds.simplereport.validators.CsvValidatorUtils.validateFlexibleDate;
 import static gov.cdc.usds.simplereport.validators.CsvValidatorUtils.validatePhoneNumber;
@@ -75,5 +76,11 @@ class CsvValidatorUtilsTest {
   void invalidDate_doesNotPassFlexibleValidation() {
     ValueOrError birthDate = new ValueOrError("0/3/1980", "date_of_birth");
     assertThat(validateFlexibleDate(birthDate)).hasSize(1);
+  }
+
+  @Test
+  void validCountryCode() {
+    var countryCode = new ValueOrError("USA", "country");
+    assertThat(validateCountry(countryCode)).isEmpty();
   }
 }
