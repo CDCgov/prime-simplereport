@@ -44,7 +44,6 @@ public class TestResultResolver {
     }
 
     if (facilityId == null) {
-
       return tos.getOrganizationTestEventsResults(
           patientId,
           Translators.parseTestResult(result),

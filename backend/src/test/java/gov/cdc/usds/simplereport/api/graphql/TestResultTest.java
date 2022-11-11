@@ -76,7 +76,6 @@ class TestResultTest extends BaseGraphqlTest {
     ArrayNode testResults = fetchTestResults(variables);
 
     assertEquals(3, testResults.size());
-
     assertEquals(
         "SARS-CoV+SARS-CoV-2 (COVID-19) Ag [Presence] in Respiratory specimen by Rapid immunoassay",
         testResults.get(0).get("testPerformed").get("name").asText());
@@ -88,6 +87,27 @@ class TestResultTest extends BaseGraphqlTest {
         "SARS-CoV+SARS-CoV-2 Ag Resp Ql IA.rapid",
         testResults.get(0).get("testPerformed").get("name").asText());
     assertNotNull(testResults.get(0).get("patientLink"));
+  }
+
+  @Test
+  void fetchOrganizationTestResults_adminUser() {
+    useOrgAdmin();
+
+    Person p = _dataFactory.createFullPerson(_org);
+    _dataFactory.createTestEvent(p, _site);
+    _dataFactory.createTestEvent(p, _site);
+    _dataFactory.createTestEvent(p, _site);
+
+    HashMap<String, Object> variables = getFacilityScopedArguments();
+    variables.put("facilityId", null);
+    ArrayNode testResults = fetchTestResults(variables);
+
+    testResults = fetchTestResults(variables);
+    assertEquals(3, testResults.size());
+
+    assertEquals(
+        "SARS-CoV+SARS-CoV-2 (COVID-19) Ag [Presence] in Respiratory specimen by Rapid immunoassay",
+        testResults.get(0).get("testPerformed").get("name").asText());
   }
 
   @Test
