@@ -443,7 +443,7 @@ class TestResultTest extends BaseGraphqlTest {
   }
 
   private void fetchTestResultsWithError(Map<String, Object> variables, String expectedError) {
-    runQuery("test-results-query", variables, expectedError);
+    runQuery("test-results-with-count-query", variables, expectedError);
   }
 
   private void fetchTestResult(Map<String, Object> variables, Optional<String> expectedError) {
