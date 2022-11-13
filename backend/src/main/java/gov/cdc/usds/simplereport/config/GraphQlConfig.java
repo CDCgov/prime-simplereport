@@ -9,6 +9,7 @@ import gov.cdc.usds.simplereport.api.model.errors.GenericGraphqlException;
 import gov.cdc.usds.simplereport.api.model.errors.IllegalGraphqlArgumentException;
 import gov.cdc.usds.simplereport.api.model.errors.IllegalGraphqlFieldAccessException;
 import gov.cdc.usds.simplereport.api.model.errors.NonexistentUserException;
+import gov.cdc.usds.simplereport.api.model.errors.TestEventSerializationFailureException;
 import gov.cdc.usds.simplereport.config.scalars.datetime.DateTimeScalar;
 import gov.cdc.usds.simplereport.config.scalars.localdate.LocalDateScalar;
 import graphql.GraphQLError;
@@ -59,6 +60,11 @@ public class GraphQlConfig {
       if (exception instanceof IllegalGraphqlFieldAccessException) {
         return Mono.just(
             singletonList(new GenericGraphqlException(exception.getMessage(), errorPath)));
+      }
+
+      if (exception instanceof TestEventSerializationFailureException) {
+        return Mono.just(
+            singletonList(new GenericGraphqlException("Error saving result", errorPath)));
       }
 
       return Mono.just(singletonList(new GenericGraphqlException((errorPath))));

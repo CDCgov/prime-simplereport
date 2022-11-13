@@ -15,6 +15,7 @@ import com.azure.storage.queue.models.QueueMessageItem;
 import com.azure.storage.queue.models.SendMessageResult;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import gov.cdc.usds.simplereport.api.model.TestEventExport;
+import gov.cdc.usds.simplereport.api.model.errors.TestEventSerializationFailureException;
 import gov.cdc.usds.simplereport.db.model.TestEvent;
 import java.io.IOException;
 import java.util.HashSet;
@@ -43,6 +44,18 @@ class AzureStorageQueueTestEventReportingServiceTest
     sut.report(testEvent);
 
     verify(client, times(1)).sendMessage(argThat(matcherForTest(testEvent)));
+  }
+
+  @Test
+  void throws_custom_test_event_serialization_failure_exception() {
+    var client = mock(QueueAsyncClient.class);
+    Mono<SendMessageResult> response = mock(Mono.class);
+    when(response.toFuture())
+        .thenReturn(CompletableFuture.completedFuture(new SendMessageResult()));
+    when(client.sendMessage(any(String.class))).thenReturn(response);
+
+    var sut = new AzureStorageQueueTestEventReportingService(new ObjectMapper(), client);
+    assertThrows(TestEventSerializationFailureException.class, () -> sut.report(new TestEvent()));
   }
 
   @Test
