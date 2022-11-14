@@ -51,6 +51,7 @@ public class PatientBulkUploadService {
   private final AddressValidationService _addressValidationService;
   private final OrganizationService _organizationService;
   private final PatientBulkUploadFileValidator _patientBulkUploadFileValidator;
+  private final PatientBulkUploadServiceAsync _patientBulkUploadServiceAsync;
 
   // This authorization will change once we open the feature to end users
   @AuthorizationConfiguration.RequireGlobalAdminUser
@@ -185,7 +186,8 @@ public class PatientBulkUploadService {
     }
 
     if (patientsList != null && phoneNumbersList != null) {
-      _personService.addPatientsAndPhoneNumbers(patientsList, phoneNumbersList);
+      _patientBulkUploadServiceAsync.savePatients(patientsList, phoneNumbersList);
+      //      _personService.addPatientsAndPhoneNumbers(patientsList, phoneNumbersList);
     }
 
     log.info("CSV patient upload completed for {}", currentOrganization.getOrganizationName());
