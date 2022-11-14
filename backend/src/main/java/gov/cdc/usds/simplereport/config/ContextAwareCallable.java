@@ -17,6 +17,7 @@ public class ContextAwareCallable<T> implements Callable<T> {
   public T call() throws Exception {
     if (context != null) {
       RequestContextHolder.setRequestAttributes(context);
+      //      CurrentOrganizationRolesContextHolder
     }
 
     try {
