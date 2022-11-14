@@ -16,13 +16,7 @@ import gov.cdc.usds.simplereport.db.model.auxiliary.TestResultDeliveryPreference
 import gov.cdc.usds.simplereport.db.repository.PersonRepository;
 import gov.cdc.usds.simplereport.db.repository.PhoneNumberRepository;
 import java.time.LocalDate;
-import java.util.Arrays;
-import java.util.Collections;
-import java.util.HashSet;
-import java.util.List;
-import java.util.Optional;
-import java.util.Set;
-import java.util.UUID;
+import java.util.*;
 import java.util.stream.Collectors;
 import javax.validation.constraints.Size;
 import org.springframework.data.domain.PageRequest;
@@ -370,13 +364,11 @@ public class PersonService {
   /** This method associates PhoneNumbers with a new patient and ensures there are no duplicates */
   public List<PhoneNumber> assignPhoneNumbersToPatient(Person person, List<PhoneNumber> incoming) {
     if (incoming == null) {
-      return null;
+      return List.of();
     }
 
     // we don't want to allow a patient to have any duplicate phone numbers
-    List<PhoneNumber> deduplicatedPhoneNumbers = deduplicatePhoneNumbers(person, incoming);
-
-    return deduplicatedPhoneNumbers;
+    return deduplicatePhoneNumbers(person, incoming);
   }
 
   /**
