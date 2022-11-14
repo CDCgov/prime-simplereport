@@ -35,6 +35,8 @@ public class Translators {
   private static final DateTimeFormatter US_SLASHDATE_SHORT_FORMATTER =
       DateTimeFormatter.ofPattern("M/d/yyyy");
 
+  private static final long LOOK_BACK_YEARS = 99;
+
   // Accepts either two-digit or four-digit years.
   // Two-digit years will always resolve to years past.
   // (e.g., if today is Jan. 1, 2023, and the formatter is passed 11/4/24, it will resolve to Nov 4,
@@ -46,7 +48,7 @@ public class Translators {
           .appendPattern("uuuu")
           .optionalEnd()
           .optionalStart()
-          .appendValueReduced(ChronoField.YEAR, 2, 2, LocalDate.now().minusYears(99))
+          .appendValueReduced(ChronoField.YEAR, 2, 2, LocalDate.now().minusYears(LOOK_BACK_YEARS))
           .optionalEnd()
           .toFormatter();
 
