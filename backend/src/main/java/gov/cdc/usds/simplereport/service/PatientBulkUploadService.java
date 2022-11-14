@@ -131,16 +131,6 @@ public class PatientBulkUploadService {
           continue;
         }
 
-        // create new person
-        // - pass in the organization they belong to, as saved up above
-        // - set facility on person
-        // add person to person list
-        // create List of Phone numbers for that person following PersonService steps
-        // add phone numbers to phone numbers list
-        // exit while loop
-        // do the save for persons and phone numbers
-        // see how much better it is
-
         // create new person with current organization, then add to new patients list
         Person newPatient =
             new Person(
