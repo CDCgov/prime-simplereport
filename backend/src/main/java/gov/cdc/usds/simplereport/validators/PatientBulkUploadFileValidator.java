@@ -21,9 +21,12 @@ import com.fasterxml.jackson.databind.MappingIterator;
 import gov.cdc.usds.simplereport.service.model.reportstream.FeedbackMessage;
 import java.io.InputStream;
 import java.util.ArrayList;
+import java.util.Comparator;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import lombok.Getter;
+import org.bouncycastle.util.Arrays;
 import org.springframework.stereotype.Component;
 
 @Component
@@ -36,39 +39,61 @@ public class PatientBulkUploadFileValidator {
       throw new IllegalArgumentException("Empty or invalid CSV submitted");
     }
 
-    List<FeedbackMessage> errors = new ArrayList<>();
+    var mapOfErrors = new HashMap<String, FeedbackMessage>();
+    var currentRow = 1;
 
-    while (valueIterator.hasNext() && errors.isEmpty()) {
+    while (valueIterator.hasNext()) {
       final Map<String, String> row = getNextRow(valueIterator);
+      var currentRowErrors = new ArrayList<FeedbackMessage>();
 
       PatientUploadRow extractedData = new PatientUploadRow(row);
 
-      errors.addAll(extractedData.validateHeaders());
+      // todo: check if this needs to be an array list when being returned?
+      currentRowErrors.addAll(extractedData.validateHeaders());
 
       // validate individual values
 
       // demographics
-      errors.addAll(validateDate(extractedData.dateOfBirth));
-      errors.addAll(validateRace(extractedData.race));
-      errors.addAll(validateBiologicalSex(extractedData.biologicalSex));
-      errors.addAll(validateEthnicity(extractedData.ethnicity));
+      currentRowErrors.addAll(validateDate(extractedData.dateOfBirth));
+      currentRowErrors.addAll(validateRace(extractedData.race));
+      currentRowErrors.addAll(validateBiologicalSex(extractedData.biologicalSex));
+      currentRowErrors.addAll(validateEthnicity(extractedData.ethnicity));
 
       // housing, work, and role
-      errors.addAll(validateYesNoAnswer(extractedData.residentCongregateSetting));
-      errors.addAll(validateYesNoAnswer(extractedData.employedInHealthcare));
-      errors.addAll(validateRole(extractedData.role));
+      currentRowErrors.addAll(validateYesNoAnswer(extractedData.residentCongregateSetting));
+      currentRowErrors.addAll(validateYesNoAnswer(extractedData.employedInHealthcare));
+      currentRowErrors.addAll(validateRole(extractedData.role));
 
       // address
-      errors.addAll(validateState(extractedData.state));
-      errors.addAll(validateZipCode(extractedData.zipCode));
-      errors.addAll(validateCountry(extractedData.country));
+      currentRowErrors.addAll(validateState(extractedData.state));
+      currentRowErrors.addAll(validateZipCode(extractedData.zipCode));
+      currentRowErrors.addAll(validateCountry(extractedData.country));
 
       // contact info
-      errors.addAll(validatePhoneNumber(extractedData.phoneNumber));
-      errors.addAll(validatePhoneNumberType(extractedData.phoneNumberType));
-      errors.addAll(validateEmail(extractedData.email));
-    }
+      currentRowErrors.addAll(validatePhoneNumber(extractedData.phoneNumber));
+      currentRowErrors.addAll(validatePhoneNumberType(extractedData.phoneNumberType));
+      currentRowErrors.addAll(validateEmail(extractedData.email));
 
+      final var finalCurrentRow = currentRow;
+      currentRowErrors.forEach(error -> error.setIndices(new int[] {finalCurrentRow}));
+
+      currentRowErrors.forEach(
+          error -> {
+            mapOfErrors.merge(
+                error.getMessage(),
+                error,
+                (e1, e2) -> {
+                  var rows = Arrays.concatenate(e1.getIndices(), e2.getIndices());
+                  e1.setIndices(rows);
+                  return e1;
+                });
+          });
+
+      currentRow++;
+    }
+    var errors = new ArrayList<>(mapOfErrors.values());
+    errors.sort(
+        Comparator.comparingInt(e -> java.util.Arrays.stream(e.getIndices()).min().orElse(0)));
     return errors;
   }
 
