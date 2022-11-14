@@ -111,6 +111,13 @@ class TestResultTest extends BaseGraphqlTest {
   }
 
   @Test
+  void fetchOrganizationTestResults__orgUser_failure() {
+    HashMap<String, Object> variables = getFacilityScopedArguments();
+    variables.put("facilityId", null);
+    fetchTestResultsWithError(variables, ACCESS_ERROR);
+  }
+
+  @Test
   void submitTestResult() {
     Person p = _dataFactory.createFullPerson(_org);
     DeviceType d = _site.getDefaultDeviceType();
