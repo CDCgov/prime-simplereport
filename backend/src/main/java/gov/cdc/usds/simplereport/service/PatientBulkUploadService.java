@@ -154,7 +154,6 @@ public class PatientBulkUploadService {
                 null,
                 null);
         newPatient.setFacility(assignedFacility); // might be null, that's fine
-        patientsList.add(newPatient);
 
         // collect phone numbers and associate them with the patient, then add to phone numbers list
         List<PhoneNumber> newPhoneNumbers =
@@ -170,6 +169,9 @@ public class PatientBulkUploadService {
         if (!newPhoneNumbers.isEmpty()) {
           newPatient.setPrimaryPhone(newPhoneNumbers.get(0));
         }
+
+        // add new patient to the patients list
+        patientsList.add(newPatient);
       } catch (IllegalArgumentException e) {
         String errorMessage = "Error uploading patient roster";
         log.error(
