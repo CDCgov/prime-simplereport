@@ -27,6 +27,7 @@ import java.util.UUID;
 import java.util.stream.Collectors;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.beans.factory.support.ScopeNotActiveException;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -51,12 +52,17 @@ public class OrganizationService {
   }
 
   public Optional<OrganizationRoles> getCurrentOrganizationRoles() {
-    if (organizationRolesContext.hasBeenPopulated()) {
-      return organizationRolesContext.getOrganizationRoles();
+    try {
+      if (organizationRolesContext.hasBeenPopulated()) {
+        return organizationRolesContext.getOrganizationRoles();
+      }
+      var result = fetchCurrentOrganizationRoles();
+      organizationRolesContext.setOrganizationRoles(result);
+      return result;
+    } catch (ScopeNotActiveException e) {
+      System.out.println("The scope of the request is no longer active. Booooo");
+      return fetchCurrentOrganizationRoles();
     }
-    var result = fetchCurrentOrganizationRoles();
-    organizationRolesContext.setOrganizationRoles(result);
-    return result;
   }
 
   private Optional<OrganizationRoles> fetchCurrentOrganizationRoles() {
