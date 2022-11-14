@@ -1,17 +1,13 @@
 import { render } from "@testing-library/react";
 import { MemoryRouter } from "react-router-dom";
 
-import { appPermissions } from "../permissions";
-
 import ResultsNavWrapper from "./ResultsNavWrapper";
 
 describe("ResultsNav", () => {
   it("displays the results sub nav when user has the permission", () => {
     const { container } = render(
       <MemoryRouter>
-        <ResultsNavWrapper
-          userPermissions={appPermissions.featureFlags.SrCsvUploaderPilot}
-        >
+        <ResultsNavWrapper>
           <>Testing 123</>
         </ResultsNavWrapper>
       </MemoryRouter>

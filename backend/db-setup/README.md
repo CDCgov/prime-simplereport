@@ -56,7 +56,7 @@ desired behavior, you can explicitly tell it which snapshot file to use:
 1. Restore anonymized database to a new database
 1. Sync/Create users in Okta and Non-production testing environment
 
-For now, to ensure access to any database that gets created from an anonymized dump, please ensure you have an account in the source database. In the future we can use the Okta API to grant proper permissions based on need. https://github.com/CDCgov/prime-simplereport/issues/3962
+For now, to ensure access to any database created from an anonymized dump, please ensure you have an account in the source database. In the future we can use the Okta API to grant proper permissions based on need. https://github.com/CDCgov/prime-simplereport/issues/3962
 
 Create an anonymized local database
 1. run db

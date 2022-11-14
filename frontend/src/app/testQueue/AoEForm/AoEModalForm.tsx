@@ -41,33 +41,39 @@ const AoEModalForm = (props: AoEModalProps) => {
           position: "initial",
         },
       }}
+      onRequestClose={onClose}
       overlayClassName="prime-modal-overlay display-flex flex-align-center flex-justify-center"
       contentLabel="Test questionnaire"
       ariaHideApp={process.env.NODE_ENV !== "test"}
     >
-      <div className="display-flex flex-justify">
-        <h1 className="font-heading-lg margin-top-05 margin-bottom-0">
-          {displayFullName(
-            patient.firstName,
-            patient.middleName,
-            patient.lastName
-          )}
-        </h1>
-        {buttonGroup}
-      </div>
-      <div className="border-top border-base-lighter margin-x-neg-205 margin-top-1"></div>
-      <h2 className="font-heading-lg margin-top-205 margin-bottom-0">
-        Test questionnaire
-      </h2>
-      <AoEForm
-        saveButtonText="Continue"
-        onClose={onClose}
-        patient={patient}
-        loadState={loadState}
-        saveCallback={saveCallback}
-        isModal={true}
-        noValidation={true}
-      />
+      <main aria-labelledby="aoe-form-title">
+        <div className="display-flex flex-justify">
+          <h1 className="font-heading-lg margin-top-05 margin-bottom-0">
+            {displayFullName(
+              patient.firstName,
+              patient.middleName,
+              patient.lastName
+            )}
+          </h1>
+          {buttonGroup}
+        </div>
+        <div className="border-top border-base-lighter margin-x-neg-205 margin-top-1"></div>
+        <h2
+          id="aoe-form-title"
+          className="font-heading-lg margin-top-205 margin-bottom-0"
+        >
+          Test questionnaire
+        </h2>
+        <AoEForm
+          saveButtonText="Continue"
+          onClose={onClose}
+          patient={patient}
+          loadState={loadState}
+          saveCallback={saveCallback}
+          isModal={true}
+          noValidation={true}
+        />
+      </main>
     </Modal>
   );
 };

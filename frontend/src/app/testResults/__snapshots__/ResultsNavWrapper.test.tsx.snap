@@ -2,8 +2,8 @@
 
 exports[`ResultsNav displays the results sub nav when user has the permission 1`] = `
 <div>
-  <main
-    class="prime-home"
+  <div
+    class="prime-home flex-1"
   >
     <div
       class="grid-container results-wide-container"
@@ -49,20 +49,59 @@ exports[`ResultsNav displays the results sub nav when user has the permission 1`
       </nav>
       Testing 123
     </div>
-  </main>
+  </div>
 </div>
 `;
 
 exports[`ResultsNav doesnt display the results sub nav when user doesnt have the permission 1`] = `
 <div>
-  <main
-    class="prime-home"
+  <div
+    class="prime-home flex-1"
   >
     <div
       class="grid-container results-wide-container"
     >
+      <nav
+        aria-label="Secondary navigation"
+        class="prime-secondary-nav"
+      >
+        <ul
+          class="usa-nav__secondary-links prime-nav"
+        >
+          <li
+            class="usa-nav__secondary-item"
+          >
+            <a
+              class=""
+              href="/results/1"
+            >
+              View test results
+            </a>
+          </li>
+          <li
+            class="usa-nav__secondary-item"
+          >
+            <a
+              class=""
+              href="/results/upload/submit"
+            >
+              Upload spreadsheet
+            </a>
+          </li>
+          <li
+            class="usa-nav__secondary-item"
+          >
+            <a
+              class=""
+              href="/results/upload/submissions"
+            >
+              View upload history
+            </a>
+          </li>
+        </ul>
+      </nav>
       Testing 123
     </div>
-  </main>
+  </div>
 </div>
 `;

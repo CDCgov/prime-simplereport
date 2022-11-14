@@ -5,8 +5,8 @@ Object {
   "asFragment": [Function],
   "baseElement": <body>
     <div>
-      <main
-        class="prime-home"
+      <div
+        class="prime-home flex-1"
       >
         <div
           class="grid-container"
@@ -88,37 +88,30 @@ Object {
                   <div
                     class="tablet:grid-col"
                   >
-                    <div
-                      class="usa-form-group prime-dropdown "
+                    Select device
+                    <abbr
+                      class="usa-hint usa-hint--required"
+                      title="required"
                     >
-                      <label
-                        class="usa-label"
-                        for="19"
-                      >
-                        Select device
-                        <abbr
-                          class="usa-hint usa-hint--required"
-                          title="required"
-                        >
-                           
-                          *
-                        </abbr>
-                      </label>
+                       
+                      *
+                    </abbr>
+                    <div
+                      class="usa-combo-box usa-combo-box__full-width"
+                      data-enhanced="true"
+                      data-testid="combo-box"
+                    >
                       <select
-                        aria-required="true"
-                        class="usa-select"
-                        id="19"
-                        name="name"
+                        aria-hidden="true"
+                        class="usa-select usa-sr-only usa-combo-box__select"
+                        data-testid="combo-box-select"
+                        name="selectDevice"
+                        tabindex="-1"
                       >
                         <option
-                          value=""
+                          value="abc3"
                         >
-                          - Select -
-                        </option>
-                        <option
-                          value="abc1"
-                        >
-                          Tesla Emitter
+                          Covalent Observer
                         </option>
                         <option
                           value="abc2"
@@ -126,11 +119,124 @@ Object {
                           Fission Energizer
                         </option>
                         <option
+                          value="abc1"
+                        >
+                          Tesla Emitter
+                        </option>
+                      </select>
+                      <input
+                        aria-activedescendant=""
+                        aria-autocomplete="list"
+                        aria-controls="selectDevice--list"
+                        aria-describedby="selectDevice--assistiveHint"
+                        aria-expanded="false"
+                        aria-owns="selectDevice--list"
+                        autocapitalize="off"
+                        autocomplete="off"
+                        class="usa-combo-box__input"
+                        data-testid="combo-box-input"
+                        id="selectDevice"
+                        role="combobox"
+                        type="text"
+                        value=""
+                      />
+                      <span
+                        class="usa-combo-box__clear-input__wrapper"
+                        tabindex="-1"
+                      >
+                        <button
+                          aria-label="Clear the select contents"
+                          class="usa-combo-box__clear-input"
+                          data-testid="combo-box-clear-button"
+                          hidden=""
+                          type="button"
+                        >
+                           
+                        </button>
+                      </span>
+                      <span
+                        class="usa-combo-box__input-button-separator"
+                      >
+                         
+                      </span>
+                      <span
+                        class="usa-combo-box__toggle-list__wrapper"
+                        tabindex="-1"
+                      >
+                        <button
+                          aria-label="Toggle the dropdown list"
+                          class="usa-combo-box__toggle-list"
+                          data-testid="combo-box-toggle"
+                          tabindex="-1"
+                          type="button"
+                        >
+                           
+                        </button>
+                      </span>
+                      <ul
+                        class="usa-combo-box__list"
+                        data-testid="combo-box-option-list"
+                        hidden=""
+                        id="selectDevice--list"
+                        role="listbox"
+                        tabindex="-1"
+                      >
+                        <li
+                          aria-posinset="1"
+                          aria-selected="false"
+                          aria-setsize="3"
+                          class="usa-combo-box__list-option"
+                          data-testid="combo-box-option-abc3"
+                          data-value="abc3"
+                          id="selectDevice--list--option-0"
+                          role="option"
+                          tabindex="-1"
                           value="abc3"
                         >
                           Covalent Observer
-                        </option>
-                      </select>
+                        </li>
+                        <li
+                          aria-posinset="2"
+                          aria-selected="false"
+                          aria-setsize="3"
+                          class="usa-combo-box__list-option"
+                          data-testid="combo-box-option-abc2"
+                          data-value="abc2"
+                          id="selectDevice--list--option-1"
+                          role="option"
+                          tabindex="-1"
+                          value="abc2"
+                        >
+                          Fission Energizer
+                        </li>
+                        <li
+                          aria-posinset="3"
+                          aria-selected="false"
+                          aria-setsize="3"
+                          class="usa-combo-box__list-option"
+                          data-testid="combo-box-option-abc1"
+                          data-value="abc1"
+                          id="selectDevice--list--option-2"
+                          role="option"
+                          tabindex="-1"
+                          value="abc1"
+                        >
+                          Tesla Emitter
+                        </li>
+                      </ul>
+                      <div
+                        class="usa-combo-box__status usa-sr-only"
+                        role="status"
+                      />
+                      <span
+                        class="usa-sr-only"
+                        data-testid="combo-box-assistive-hint"
+                        id="selectDevice--assistiveHint"
+                      >
+                        When autocomplete results are available use up and down arrows to review
+           and enter to select. Touch device users, explore by touch or with swipe
+           gestures.
+                      </span>
                     </div>
                   </div>
                 </div>
@@ -145,7 +251,7 @@ Object {
                     >
                       <label
                         class="usa-label"
-                        for="20"
+                        for="1"
                       >
                         Device name
                         <abbr
@@ -161,7 +267,7 @@ Object {
                         aria-required="true"
                         class="usa-input"
                         disabled=""
-                        id="20"
+                        id="1"
                         name="name"
                         type="text"
                         value=""
@@ -180,7 +286,7 @@ Object {
                     >
                       <label
                         class="usa-label"
-                        for="21"
+                        for="2"
                       >
                         Model
                         <abbr
@@ -196,7 +302,7 @@ Object {
                         aria-required="true"
                         class="usa-input"
                         disabled=""
-                        id="21"
+                        id="2"
                         name="model"
                         type="text"
                         value=""
@@ -215,7 +321,7 @@ Object {
                     >
                       <label
                         class="usa-label"
-                        for="22"
+                        for="3"
                       >
                         Manufacturer
                         <abbr
@@ -231,7 +337,7 @@ Object {
                         aria-required="true"
                         class="usa-input"
                         disabled=""
-                        id="22"
+                        id="3"
                         name="manufacturer"
                         type="text"
                         value=""
@@ -250,7 +356,7 @@ Object {
                     >
                       <label
                         class="usa-label"
-                        for="23"
+                        for="4"
                       >
                         LOINC code
                         <abbr
@@ -266,7 +372,7 @@ Object {
                         aria-required="true"
                         class="usa-input"
                         disabled=""
-                        id="23"
+                        id="4"
                         name="loincCode"
                         type="text"
                         value=""
@@ -281,7 +387,7 @@ Object {
                     >
                       <label
                         class="usa-label"
-                        for="24"
+                        for="5"
                       >
                         Test length (minutes)
                         <abbr
@@ -297,7 +403,7 @@ Object {
                         aria-required="true"
                         class="usa-input"
                         disabled=""
-                        id="24"
+                        id="5"
                         max="999"
                         min="0"
                         name="testLength"
@@ -318,7 +424,7 @@ Object {
                     >
                       <label
                         class="usa-label"
-                        for="25"
+                        for="6"
                       >
                         SNOMED code for swab type(s)
                         <abbr
@@ -332,17 +438,18 @@ Object {
                       <div
                         class="usa-combo-box usa-combo-box--pristine multi-select-dropdown"
                         data-testid="multi-select"
-                        id="25"
+                        id="6"
                       >
                         <input
                           aria-expanded="false"
+                          aria-invalid="false"
                           aria-owns="multi-select-swabTypes-list"
                           autocapitalize="off"
                           autocomplete="off"
                           class="usa-combo-box__input"
                           data-testid="multi-select-input"
                           disabled=""
-                          role="multi-select-input"
+                          role="combobox"
                           type="text"
                           value=""
                         />
@@ -356,7 +463,7 @@ Object {
                           tabindex="-1"
                         >
                           <button
-                            aria-label="Toggle the dropdown list"
+                            aria-hidden="true"
                             class="usa-combo-box__toggle-list"
                             data-testid="multi-select-toggle"
                             disabled=""
@@ -419,10 +526,16 @@ Object {
                           role="status"
                         />
                       </div>
-                      <div
-                        class="pill-container"
+                      <fieldset
+                        class="fieldset--unstyled pill-container"
                         data-testid="pill-container"
-                      />
+                      >
+                        <legend
+                          class="usa-sr-only"
+                        >
+                          Selected SNOMED code for swab type(s)
+                        </legend>
+                      </fieldset>
                     </div>
                   </div>
                 </div>
@@ -438,7 +551,7 @@ Object {
                     >
                       <label
                         class="usa-label"
-                        for="26"
+                        for="7"
                       >
                         Supported diseases
                         <abbr
@@ -452,17 +565,18 @@ Object {
                       <div
                         class="usa-combo-box usa-combo-box--pristine multi-select-dropdown"
                         data-testid="multi-select"
-                        id="26"
+                        id="7"
                       >
                         <input
                           aria-expanded="false"
+                          aria-invalid="false"
                           aria-owns="multi-select-supportedDiseases-list"
                           autocapitalize="off"
                           autocomplete="off"
                           class="usa-combo-box__input"
                           data-testid="multi-select-input"
                           disabled=""
-                          role="multi-select-input"
+                          role="combobox"
                           type="text"
                           value=""
                         />
@@ -476,7 +590,7 @@ Object {
                           tabindex="-1"
                         >
                           <button
-                            aria-label="Toggle the dropdown list"
+                            aria-hidden="true"
                             class="usa-combo-box__toggle-list"
                             data-testid="multi-select-toggle"
                             disabled=""
@@ -513,10 +627,16 @@ Object {
                           role="status"
                         />
                       </div>
-                      <div
-                        class="pill-container"
+                      <fieldset
+                        class="fieldset--unstyled pill-container"
                         data-testid="pill-container"
-                      />
+                      >
+                        <legend
+                          class="usa-sr-only"
+                        >
+                          Selected Supported diseases
+                        </legend>
+                      </fieldset>
                     </div>
                   </div>
                 </div>
@@ -524,15 +644,15 @@ Object {
             </div>
           </div>
         </div>
-      </main>
+      </div>
       <div
         class="Toastify"
       />
     </div>
   </body>,
   "container": <div>
-    <main
-      class="prime-home"
+    <div
+      class="prime-home flex-1"
     >
       <div
         class="grid-container"
@@ -614,37 +734,30 @@ Object {
                 <div
                   class="tablet:grid-col"
                 >
-                  <div
-                    class="usa-form-group prime-dropdown "
+                  Select device
+                  <abbr
+                    class="usa-hint usa-hint--required"
+                    title="required"
                   >
-                    <label
-                      class="usa-label"
-                      for="19"
-                    >
-                      Select device
-                      <abbr
-                        class="usa-hint usa-hint--required"
-                        title="required"
-                      >
-                         
-                        *
-                      </abbr>
-                    </label>
+                     
+                    *
+                  </abbr>
+                  <div
+                    class="usa-combo-box usa-combo-box__full-width"
+                    data-enhanced="true"
+                    data-testid="combo-box"
+                  >
                     <select
-                      aria-required="true"
-                      class="usa-select"
-                      id="19"
-                      name="name"
+                      aria-hidden="true"
+                      class="usa-select usa-sr-only usa-combo-box__select"
+                      data-testid="combo-box-select"
+                      name="selectDevice"
+                      tabindex="-1"
                     >
                       <option
-                        value=""
+                        value="abc3"
                       >
-                        - Select -
-                      </option>
-                      <option
-                        value="abc1"
-                      >
-                        Tesla Emitter
+                        Covalent Observer
                       </option>
                       <option
                         value="abc2"
@@ -652,11 +765,124 @@ Object {
                         Fission Energizer
                       </option>
                       <option
+                        value="abc1"
+                      >
+                        Tesla Emitter
+                      </option>
+                    </select>
+                    <input
+                      aria-activedescendant=""
+                      aria-autocomplete="list"
+                      aria-controls="selectDevice--list"
+                      aria-describedby="selectDevice--assistiveHint"
+                      aria-expanded="false"
+                      aria-owns="selectDevice--list"
+                      autocapitalize="off"
+                      autocomplete="off"
+                      class="usa-combo-box__input"
+                      data-testid="combo-box-input"
+                      id="selectDevice"
+                      role="combobox"
+                      type="text"
+                      value=""
+                    />
+                    <span
+                      class="usa-combo-box__clear-input__wrapper"
+                      tabindex="-1"
+                    >
+                      <button
+                        aria-label="Clear the select contents"
+                        class="usa-combo-box__clear-input"
+                        data-testid="combo-box-clear-button"
+                        hidden=""
+                        type="button"
+                      >
+                         
+                      </button>
+                    </span>
+                    <span
+                      class="usa-combo-box__input-button-separator"
+                    >
+                       
+                    </span>
+                    <span
+                      class="usa-combo-box__toggle-list__wrapper"
+                      tabindex="-1"
+                    >
+                      <button
+                        aria-label="Toggle the dropdown list"
+                        class="usa-combo-box__toggle-list"
+                        data-testid="combo-box-toggle"
+                        tabindex="-1"
+                        type="button"
+                      >
+                         
+                      </button>
+                    </span>
+                    <ul
+                      class="usa-combo-box__list"
+                      data-testid="combo-box-option-list"
+                      hidden=""
+                      id="selectDevice--list"
+                      role="listbox"
+                      tabindex="-1"
+                    >
+                      <li
+                        aria-posinset="1"
+                        aria-selected="false"
+                        aria-setsize="3"
+                        class="usa-combo-box__list-option"
+                        data-testid="combo-box-option-abc3"
+                        data-value="abc3"
+                        id="selectDevice--list--option-0"
+                        role="option"
+                        tabindex="-1"
                         value="abc3"
                       >
                         Covalent Observer
-                      </option>
-                    </select>
+                      </li>
+                      <li
+                        aria-posinset="2"
+                        aria-selected="false"
+                        aria-setsize="3"
+                        class="usa-combo-box__list-option"
+                        data-testid="combo-box-option-abc2"
+                        data-value="abc2"
+                        id="selectDevice--list--option-1"
+                        role="option"
+                        tabindex="-1"
+                        value="abc2"
+                      >
+                        Fission Energizer
+                      </li>
+                      <li
+                        aria-posinset="3"
+                        aria-selected="false"
+                        aria-setsize="3"
+                        class="usa-combo-box__list-option"
+                        data-testid="combo-box-option-abc1"
+                        data-value="abc1"
+                        id="selectDevice--list--option-2"
+                        role="option"
+                        tabindex="-1"
+                        value="abc1"
+                      >
+                        Tesla Emitter
+                      </li>
+                    </ul>
+                    <div
+                      class="usa-combo-box__status usa-sr-only"
+                      role="status"
+                    />
+                    <span
+                      class="usa-sr-only"
+                      data-testid="combo-box-assistive-hint"
+                      id="selectDevice--assistiveHint"
+                    >
+                      When autocomplete results are available use up and down arrows to review
+           and enter to select. Touch device users, explore by touch or with swipe
+           gestures.
+                    </span>
                   </div>
                 </div>
               </div>
@@ -671,7 +897,7 @@ Object {
                   >
                     <label
                       class="usa-label"
-                      for="20"
+                      for="1"
                     >
                       Device name
                       <abbr
@@ -687,7 +913,7 @@ Object {
                       aria-required="true"
                       class="usa-input"
                       disabled=""
-                      id="20"
+                      id="1"
                       name="name"
                       type="text"
                       value=""
@@ -706,7 +932,7 @@ Object {
                   >
                     <label
                       class="usa-label"
-                      for="21"
+                      for="2"
                     >
                       Model
                       <abbr
@@ -722,7 +948,7 @@ Object {
                       aria-required="true"
                       class="usa-input"
                       disabled=""
-                      id="21"
+                      id="2"
                       name="model"
                       type="text"
                       value=""
@@ -741,7 +967,7 @@ Object {
                   >
                     <label
                       class="usa-label"
-                      for="22"
+                      for="3"
                     >
                       Manufacturer
                       <abbr
@@ -757,7 +983,7 @@ Object {
                       aria-required="true"
                       class="usa-input"
                       disabled=""
-                      id="22"
+                      id="3"
                       name="manufacturer"
                       type="text"
                       value=""
@@ -776,7 +1002,7 @@ Object {
                   >
                     <label
                       class="usa-label"
-                      for="23"
+                      for="4"
                     >
                       LOINC code
                       <abbr
@@ -792,7 +1018,7 @@ Object {
                       aria-required="true"
                       class="usa-input"
                       disabled=""
-                      id="23"
+                      id="4"
                       name="loincCode"
                       type="text"
                       value=""
@@ -807,7 +1033,7 @@ Object {
                   >
                     <label
                       class="usa-label"
-                      for="24"
+                      for="5"
                     >
                       Test length (minutes)
                       <abbr
@@ -823,7 +1049,7 @@ Object {
                       aria-required="true"
                       class="usa-input"
                       disabled=""
-                      id="24"
+                      id="5"
                       max="999"
                       min="0"
                       name="testLength"
@@ -844,7 +1070,7 @@ Object {
                   >
                     <label
                       class="usa-label"
-                      for="25"
+                      for="6"
                     >
                       SNOMED code for swab type(s)
                       <abbr
@@ -858,17 +1084,18 @@ Object {
                     <div
                       class="usa-combo-box usa-combo-box--pristine multi-select-dropdown"
                       data-testid="multi-select"
-                      id="25"
+                      id="6"
                     >
                       <input
                         aria-expanded="false"
+                        aria-invalid="false"
                         aria-owns="multi-select-swabTypes-list"
                         autocapitalize="off"
                         autocomplete="off"
                         class="usa-combo-box__input"
                         data-testid="multi-select-input"
                         disabled=""
-                        role="multi-select-input"
+                        role="combobox"
                         type="text"
                         value=""
                       />
@@ -882,7 +1109,7 @@ Object {
                         tabindex="-1"
                       >
                         <button
-                          aria-label="Toggle the dropdown list"
+                          aria-hidden="true"
                           class="usa-combo-box__toggle-list"
                           data-testid="multi-select-toggle"
                           disabled=""
@@ -945,10 +1172,16 @@ Object {
                         role="status"
                       />
                     </div>
-                    <div
-                      class="pill-container"
+                    <fieldset
+                      class="fieldset--unstyled pill-container"
                       data-testid="pill-container"
-                    />
+                    >
+                      <legend
+                        class="usa-sr-only"
+                      >
+                        Selected SNOMED code for swab type(s)
+                      </legend>
+                    </fieldset>
                   </div>
                 </div>
               </div>
@@ -964,7 +1197,7 @@ Object {
                   >
                     <label
                       class="usa-label"
-                      for="26"
+                      for="7"
                     >
                       Supported diseases
                       <abbr
@@ -978,17 +1211,18 @@ Object {
                     <div
                       class="usa-combo-box usa-combo-box--pristine multi-select-dropdown"
                       data-testid="multi-select"
-                      id="26"
+                      id="7"
                     >
                       <input
                         aria-expanded="false"
+                        aria-invalid="false"
                         aria-owns="multi-select-supportedDiseases-list"
                         autocapitalize="off"
                         autocomplete="off"
                         class="usa-combo-box__input"
                         data-testid="multi-select-input"
                         disabled=""
-                        role="multi-select-input"
+                        role="combobox"
                         type="text"
                         value=""
                       />
@@ -1002,7 +1236,7 @@ Object {
                         tabindex="-1"
                       >
                         <button
-                          aria-label="Toggle the dropdown list"
+                          aria-hidden="true"
                           class="usa-combo-box__toggle-list"
                           data-testid="multi-select-toggle"
                           disabled=""
@@ -1039,10 +1273,16 @@ Object {
                         role="status"
                       />
                     </div>
-                    <div
-                      class="pill-container"
+                    <fieldset
+                      class="fieldset--unstyled pill-container"
                       data-testid="pill-container"
-                    />
+                    >
+                      <legend
+                        class="usa-sr-only"
+                      >
+                        Selected Supported diseases
+                      </legend>
+                    </fieldset>
                   </div>
                 </div>
               </div>
@@ -1050,7 +1290,7 @@ Object {
           </div>
         </div>
       </div>
-    </main>
+    </div>
     <div
       class="Toastify"
     />

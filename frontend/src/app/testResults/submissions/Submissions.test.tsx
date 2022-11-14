@@ -177,11 +177,11 @@ describe("Submissions", () => {
     expect(await screen.findByText("reportId_2")).toBeInTheDocument();
     expect(await screen.findByText("reportId_3")).toBeInTheDocument();
 
-    const startDateInput = screen.getAllByTestId(
-      "date-picker-external-input"
-    )[0];
+    const startDateInput = screen.getByTestId("start-date");
 
-    userEvent.type(startDateInput, "01/01/2021");
+    userEvent.type(startDateInput, "2021-01-01");
+    userEvent.tab();
+
     await new Promise((resolve) => setTimeout(resolve, 0));
 
     expect(screen.getByText("reportId_2")).toBeInTheDocument();
@@ -204,9 +204,9 @@ describe("Submissions", () => {
     expect(await screen.findByText("reportId_2")).toBeInTheDocument();
     expect(await screen.findByText("reportId_3")).toBeInTheDocument();
 
-    const endDateInput = screen.getAllByTestId("date-picker-external-input")[1];
+    const endDateInput = screen.getByTestId("end-date");
 
-    userEvent.type(endDateInput, "01/01/2022");
+    userEvent.type(endDateInput, "2022-01-01");
     await new Promise((resolve) => setTimeout(resolve, 0));
 
     expect(screen.queryByText("reportId_1")).not.toBeInTheDocument();

@@ -26,7 +26,7 @@ import SignUpApp from "./app/signUp/SignUpApp";
 import HealthChecks from "./app/HealthChecks";
 import * as serviceWorker from "./serviceWorker";
 import { store } from "./app/store";
-import { showError } from "./app/utils";
+import { showError } from "./app/utils/srToast";
 import {
   getAppInsights,
   ai,
@@ -94,7 +94,12 @@ const logoutLink = onError(({ networkError, graphQLErrors }: ErrorResponse) => {
     } else {
       const appInsights = getAppInsights();
       if (appInsights instanceof ApplicationInsights) {
-        appInsights.trackException({ error: networkError });
+        appInsights.trackException({
+          exception: networkError,
+          properties: {
+            "user message": `${networkError.message} Please check for errors and try again`,
+          },
+        });
       }
       showError("Please check for errors and try again", networkError.message);
     }

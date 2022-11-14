@@ -6,10 +6,10 @@ extend type Query {
   pendingOrganizations: [PendingOrganization!]!
 }
 extend type Mutation {
-  uploadPatients(patientList: Upload!): String
   resendToReportStream(testEventIds: [ID!]!): Boolean
   createDeviceType(input: CreateDeviceType!): DeviceType
   updateDeviceType(input: UpdateDeviceType!): DeviceType
+  createSpecimenType(input: CreateSpecimenType!): SpecimenType
   addUser( # not actually used in the admin console (currently)
     name: NameInput
     firstName: String

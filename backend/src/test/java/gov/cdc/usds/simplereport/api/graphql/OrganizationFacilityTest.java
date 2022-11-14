@@ -12,7 +12,6 @@ import static org.mockito.Mockito.verify;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.node.ArrayNode;
-import com.fasterxml.jackson.databind.node.JsonNodeFactory;
 import com.fasterxml.jackson.databind.node.ObjectNode;
 import gov.cdc.usds.simplereport.api.CurrentTenantDataAccessContextHolder;
 import gov.cdc.usds.simplereport.db.model.Facility;
@@ -23,7 +22,9 @@ import gov.cdc.usds.simplereport.service.DeviceTypeService;
 import gov.cdc.usds.simplereport.service.OrganizationService;
 import gov.cdc.usds.simplereport.service.model.IdentityAttributes;
 import gov.cdc.usds.simplereport.test_util.TestUserIdentities;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.UUID;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -57,7 +58,7 @@ class OrganizationFacilityTest extends BaseGraphqlTest {
 
   @Test
   void updateFacility_orgAdmin_success() {
-    ObjectNode args = getDeviceArgs();
+    HashMap<String, Object> args = getDeviceArgs();
     TestUserIdentities.withStandardUser(
         () -> {
           Organization org = _orgService.getCurrentOrganizationNoCache();
@@ -78,7 +79,7 @@ class OrganizationFacilityTest extends BaseGraphqlTest {
           Organization org = _orgService.getCurrentOrganizationNoCache();
           Facility validFacility = _orgService.getFacilities(org).get(0);
           Facility archivedFacility = _dataFactory.createArchivedFacility(org, "archived facility");
-          ObjectNode variables = JsonNodeFactory.instance.objectNode().put("showArchived", true);
+          HashMap<String, Object> variables = new HashMap<>(Map.of("showArchived", true));
           useOrgAdmin();
           JsonNode showArchivedResult = runQuery("facilities-query", variables).get("facilities");
           List<String> showArchivedResultIds = showArchivedResult.findValuesAsText("id");
@@ -113,11 +114,7 @@ class OrganizationFacilityTest extends BaseGraphqlTest {
 
   @Test
   void setOrganizationIdentityVerified_orgUser_failure() {
-    ObjectNode variables =
-        JsonNodeFactory.instance
-            .objectNode()
-            .put("externalId", "THIS_DOES_NOT_MATTER")
-            .put("verified", false);
+    Map<String, Object> variables = Map.of("externalId", "THIS_DOES_NOT_MATTER", "verified", false);
     runQuery("set-organization-identity-verified", variables, ACCESS_ERROR);
   }
 
@@ -128,19 +125,13 @@ class OrganizationFacilityTest extends BaseGraphqlTest {
         () -> {
           Organization org = _dataFactory.createValidOrg();
           useSuperUser();
-          ObjectNode variables =
-              JsonNodeFactory.instance
-                  .objectNode()
-                  .put("externalId", org.getExternalId())
-                  .put("verified", false);
+          Map<String, Object> variables =
+              Map.of("externalId", org.getExternalId(), "verified", false);
           ObjectNode verified = runQuery("set-organization-identity-verified", variables);
           assertFalse(verified.path("setOrganizationIdentityVerified").asBoolean());
 
-          variables =
-              JsonNodeFactory.instance
-                  .objectNode()
-                  .put("externalId", org.getExternalId())
-                  .put("verified", true);
+          variables = Map.of("externalId", org.getExternalId(), "verified", true);
+
           verified = runQuery("set-organization-identity-verified", variables);
           assertTrue(verified.path("setOrganizationIdentityVerified").asBoolean());
         });
@@ -153,11 +144,8 @@ class OrganizationFacilityTest extends BaseGraphqlTest {
         () -> {
           OrganizationQueueItem orgQueueItem = _dataFactory.createOrganizationQueueItem();
           useSuperUser();
-          ObjectNode variables =
-              JsonNodeFactory.instance
-                  .objectNode()
-                  .put("externalId", orgQueueItem.getExternalId())
-                  .put("verified", true);
+          Map<String, Object> variables =
+              Map.of("externalId", orgQueueItem.getExternalId(), "verified", true);
           ObjectNode verified = runQuery("set-organization-identity-verified", variables);
           assertTrue(verified.path("setOrganizationIdentityVerified").asBoolean());
         });
@@ -195,21 +183,20 @@ class OrganizationFacilityTest extends BaseGraphqlTest {
     assertEquals("inj3ct", facilityLink);
   }
 
-  private ObjectNode getDeviceArgs() {
+  private HashMap<String, Object> getDeviceArgs() {
     String someDeviceType = _deviceService.fetchDeviceTypes().get(0).getInternalId().toString();
     List<UUID> someDeviceSpecimenTypes =
         List.of(_deviceService.getDeviceSpecimenTypes().get(0).getInternalId());
 
     final ObjectMapper mapper = new ObjectMapper();
 
-    ObjectNode variables =
-        JsonNodeFactory.instance
-            .objectNode()
-            .put("deviceId", someDeviceType)
-            .set(
-                "deviceSpecimenTypes",
-                mapper.convertValue(someDeviceSpecimenTypes, JsonNode.class));
+    Map<String, Object> variables =
+        Map.of(
+            "deviceId",
+            someDeviceType,
+            "deviceSpecimenTypes",
+            mapper.convertValue(someDeviceSpecimenTypes, JsonNode.class));
 
-    return variables;
+    return new HashMap<>(variables);
   }
 }

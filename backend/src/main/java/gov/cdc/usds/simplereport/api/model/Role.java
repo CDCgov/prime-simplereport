@@ -30,12 +30,7 @@ public enum Role {
    * This is the organization admin role: if you have this role, then you have the ability to change
    * your role, so other roles you may have are moot.
    */
-  ADMIN(OrganizationRole.ADMIN),
-  /**
-   * This is a specific role for users who are in the test result bulk upload feature pilot and have
-   * the ability to submit test results as a CSV
-   */
-  TEST_RESULT_UPLOAD_USER(OrganizationRole.TEST_RESULT_UPLOAD_USER);
+  ADMIN(OrganizationRole.ADMIN);
 
   private OrganizationRole translation;
 

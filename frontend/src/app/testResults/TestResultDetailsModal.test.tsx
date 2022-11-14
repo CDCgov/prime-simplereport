@@ -1,11 +1,11 @@
 import { render, screen } from "@testing-library/react";
 import ReactDOM from "react-dom";
+import * as flaggedMock from "flagged";
 
 import { DetachedTestResultDetailsModal } from "./TestResultDetailsModal";
 
 const nonMultiplexTestResult = {
   dateTested: "2022-01-28T17:56:48.143Z",
-  result: "NEGATIVE" as TestResult,
   results: [
     {
       disease: { name: "COVID-19" as MultiplexDisease },
@@ -88,35 +88,34 @@ describe("non-multiplex TestResultDetailsModal", () => {
   });
 });
 
-if (process.env.REACT_APP_MULTIPLEX_ENABLE) {
-  describe("Multiplex TestResultDetailsModal", () => {
-    let component: any;
+describe("Multiplex TestResultDetailsModal", () => {
+  let component: any;
 
-    beforeEach(() => {
-      ReactDOM.createPortal = jest.fn((element, _node) => {
-        return element;
-      }) as any;
+  beforeEach(() => {
+    jest.spyOn(flaggedMock, "useFeature").mockReturnValue(true);
+    ReactDOM.createPortal = jest.fn((element, _node) => {
+      return element;
+    }) as any;
 
-      component = render(
-        <DetachedTestResultDetailsModal
-          data={{ testResult: multiplexTestResult }}
-          testResultId="id"
-          closeModal={() => {}}
-        />
-      );
-    });
-
-    it("should render the test date and test time", () => {
-      expect(screen.getByText("01/28/2022 5:56pm")).toBeInTheDocument();
-    });
-
-    it("should have flu A or B result rows", () => {
-      expect(screen.getByText("Flu A result")).toBeInTheDocument();
-      expect(screen.getByText("Flu B result")).toBeInTheDocument();
-    });
-
-    it("matches screenshot", () => {
-      expect(component).toMatchSnapshot();
-    });
+    component = render(
+      <DetachedTestResultDetailsModal
+        data={{ testResult: multiplexTestResult }}
+        testResultId="id"
+        closeModal={() => {}}
+      />
+    );
   });
-}
+
+  it("should render the test date and test time", () => {
+    expect(screen.getByText("01/28/2022 5:56pm")).toBeInTheDocument();
+  });
+
+  it("should have flu A or B result rows", () => {
+    expect(screen.getByText("Flu A result")).toBeInTheDocument();
+    expect(screen.getByText("Flu B result")).toBeInTheDocument();
+  });
+
+  it("matches screenshot", () => {
+    expect(component).toMatchSnapshot();
+  });
+});

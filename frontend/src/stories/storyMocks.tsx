@@ -15,42 +15,11 @@ import {
 } from "@apollo/client";
 
 import { exampleQuestionSet } from "../app/signUp/IdentityVerification/constants";
-import { UploadResult, UploadSubmissionPage } from "../generated/graphql";
+import { UploadResponse, UploadSubmissionPage } from "../generated/graphql";
 
 const BACKEND_URL = process.env.REACT_APP_BACKEND_URL;
 
 const mocks = {
-  EditQueueItem: graphql.mutation("EditQueueItem", (req, res, ctx) => {
-    return res(
-      ctx.data({
-        editQueueItem: {
-          result: req.body?.variables.result || null,
-          dateTested: req.body?.variables.dateTested || null,
-          deviceType: {
-            internalId: null,
-            testLength: "0.1",
-            ...req.body?.variables.deviceType,
-          },
-        },
-      })
-    );
-  }),
-  SubmitTestResult: graphql.mutation(
-    "SubmitTestResult",
-    async (req, res, ctx) => {
-      await new Promise((res) => setTimeout(res, 200));
-
-      const data =
-        req.body?.variables.patientId === "this-should-fail"
-          ? {}
-          : {
-              addTestResultNew: {
-                internalId: req.body?.variables.patientId,
-              },
-            };
-      return res(ctx.data(data));
-    }
-  ),
   GetPatientsLastResult: graphql.query(
     "GetPatientsLastResult",
     (req, res, ctx) => {
@@ -82,14 +51,16 @@ const mocks = {
   GetUploadSubmission: graphql.query("GetUploadSubmission", (req, res, ctx) =>
     res(
       ctx.data({
-        internalId: "e70c3110-15b7-43a1-9014-f07b81c5fce1",
-        reportId: "e70c3110-15b7-43a1-9014-f07b81c5fce1",
-        createdAt: "2022-05-05T13:47:09Z",
-        status: "SUCCESS",
-        recordsCount: 15,
-        errors: [],
-        warnings: [],
-      } as UploadResult)
+        uploadSubmission: {
+          internalId: "e70c3110-15b7-43a1-9014-f07b81c5fce1",
+          reportId: "e70c3110-15b7-43a1-9014-f07b81c5fce1",
+          createdAt: "2022-05-05T13:47:09Z",
+          status: "SUCCESS",
+          recordsCount: 15,
+          errors: [],
+          warnings: [],
+        } as UploadResponse,
+      })
     )
   ),
   GetUploadSubmissions: graphql.query("GetUploadSubmissions", (req, res, ctx) =>

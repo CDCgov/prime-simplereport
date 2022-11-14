@@ -5,12 +5,14 @@ import Dropdown from "../../../commonComponents/Dropdown";
 import TextInput from "../../../commonComponents/TextInput";
 import { FacilityErrors } from "../facilitySchema";
 import { ValidateField } from "../FacilityForm";
+import { getSubStrAfterChar } from "../../../utils/text";
 
 interface Props {
   facility: Facility;
   updateFacility: (facility: Facility) => void;
   errors: FacilityErrors;
   validateField: ValidateField;
+  newOrg?: boolean;
 }
 
 const FacilityInformation: React.FC<Props> = ({
@@ -18,15 +20,30 @@ const FacilityInformation: React.FC<Props> = ({
   updateFacility,
   errors,
   validateField,
+  newOrg = false,
 }) => {
   const onChange = (
     e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement>
   ) => {
-    updateFacility({ ...facility, [e.target.name]: e.target.value });
+    let fieldName = getSubStrAfterChar(e.target.name, "-");
+    updateFacility({ ...facility, [fieldName]: e.target.value });
   };
 
   return (
     <div className="usa-form usa-form--large">
+      {newOrg && (
+        <>
+          <p>
+            Please enter one facility to get started. You can add more after
+            account setup.
+          </p>
+          <p>
+            If you plan to upload your results in bulk, you can include
+            additional facilities in your spreadsheets without adding them in
+            SimpleReport.
+          </p>
+        </>
+      )}
       <h2 className="font-heading-lg" style={{ margin: 0 }}>
         Testing facility information
       </h2>
@@ -44,7 +61,7 @@ const FacilityInformation: React.FC<Props> = ({
       />
       <TextInput
         label="Phone number"
-        name="phone"
+        name="facility-phone"
         value={facility.phone}
         required
         onChange={onChange}
@@ -68,7 +85,7 @@ const FacilityInformation: React.FC<Props> = ({
       />
       <TextInput
         label="Street address 1"
-        name="street"
+        name="facility-street"
         value={facility.street}
         required
         onChange={onChange}
@@ -80,19 +97,19 @@ const FacilityInformation: React.FC<Props> = ({
       />
       <TextInput
         label="Street address 2"
-        name="streetTwo"
+        name="facility-streetTwo"
         value={facility.streetTwo || ""}
         onChange={onChange}
       />
       <TextInput
         label="City"
-        name="city"
+        name="facility-city"
         value={facility.city || ""}
         onChange={onChange}
       />
       <TextInput
         label="ZIP code"
-        name="zipCode"
+        name="facility-zipCode"
         value={facility.zipCode}
         required
         onChange={onChange}
@@ -105,7 +122,7 @@ const FacilityInformation: React.FC<Props> = ({
       />
       <Dropdown
         label="State"
-        name="state"
+        name="facility-state"
         selectedValue={facility.state}
         options={stateCodes.map((c) => ({ label: c, value: c }))}
         defaultSelect

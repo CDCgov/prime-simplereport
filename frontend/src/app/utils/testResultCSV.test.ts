@@ -10,7 +10,6 @@ const data = [
     },
     dateTested: "2022-06-13T19:24:31.187Z",
     dateUpdated: "2022-03-13T19:24:31.187Z",
-    result: "NEGATIVE",
     results: [
       {
         disease: {
@@ -138,5 +137,19 @@ describe("parseDataForCSV", () => {
     expect(parseDataForCSV(multiplexData, multiplexEnabled)).toEqual(
       multiplexResult
     );
+  });
+  it("parse data does not fail if tribalAffiliation is null", () => {
+    const multiplexEnabled = false;
+    expect(
+      parseDataForCSV(
+        [
+          {
+            ...data[0],
+            patient: { ...data[0].patient, tribalAffiliation: null },
+          },
+        ],
+        multiplexEnabled
+      )
+    ).toEqual(result);
   });
 });

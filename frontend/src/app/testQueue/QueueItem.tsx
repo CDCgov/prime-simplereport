@@ -16,16 +16,16 @@ import { throttle } from "lodash";
 import { useFeature } from "flagged";
 
 import {
-  DiseaseResult,
+  MultiplexResultInput,
   useRemovePatientFromQueueMutation,
-  useEditQueueItemMultiplexMutation,
-  useSubmitTestResultMultiplexMutation,
+  useEditQueueItemMultiplexResultMutation,
+  useAddMultiplexResultMutation,
 } from "../../generated/graphql";
-import Alert from "../commonComponents/Alert";
 import Button from "../commonComponents/Button/Button";
 import Dropdown from "../commonComponents/Dropdown";
 import CovidResultInputForm from "../testResults/CovidResultInputForm";
-import { displayFullName, showNotification } from "../utils";
+import { displayFullName } from "../utils";
+import { showError, showSuccess } from "../utils/srToast";
 import { RootState } from "../store";
 import { getAppInsights } from "../TelemetryService";
 import { formatDate } from "../utils/date";
@@ -56,7 +56,7 @@ interface EditQueueItemParams {
   id: string;
   deviceId?: string;
   deviceSpecimenType: string;
-  results?: DiseaseResult[];
+  results?: MultiplexResultInput[];
   dateTested?: string;
 }
 
@@ -86,6 +86,7 @@ const AreYouSure: React.FC<AreYouSureProps> = ({
     overlayClassName="prime-modal-overlay display-flex flex-align-center flex-justify-center"
     contentLabel="Questions not answered"
     ariaHideApp={process.env.NODE_ENV !== "test"}
+    onRequestClose={cancelHandler}
   >
     <div className="sr-modal-content">{children}</div>
     <div className="margin-top-4 padding-top-205 border-top border-base-lighter margin-x-neg-205">
@@ -98,20 +99,22 @@ const AreYouSure: React.FC<AreYouSureProps> = ({
 );
 
 export const findResultByDiseaseName = (
-  results: DiseaseResult[],
+  results: MultiplexResultInput[],
   name: string
 ) =>
-  results.find((r: DiseaseResult) => r.diseaseName === name)?.testResult ??
-  null;
+  results.find((r: MultiplexResultInput) => r.diseaseName === name)
+    ?.testResult ?? null;
 
 const convertFromMultiplexResponse = (
-  responseResult: SRMultiplexResult[]
-): DiseaseResult[] => {
-  const diseaseResults: DiseaseResult[] = responseResult.map((result) => ({
-    diseaseName: result.disease.name,
-    testResult: result.testResult,
-  }));
-  return diseaseResults;
+  responseResult: MultiplexResult[]
+): MultiplexResultInput[] => {
+  const multiplexResultInputs: MultiplexResultInput[] = responseResult.map(
+    (result) => ({
+      diseaseName: result.disease.name,
+      testResult: result.testResult,
+    })
+  );
+  return multiplexResultInputs;
 };
 
 if (process.env.NODE_ENV !== "test") {
@@ -133,7 +136,7 @@ export interface QueueItemProps {
   selectedDeviceId: string;
   selectedDeviceSpecimenTypeId: string;
   selectedDeviceTestLength: number;
-  selectedTestResults: SRMultiplexResult[];
+  selectedTestResults: MultiplexResult[];
   dateTestedProp: string;
   refetchQueue: () => void;
   facilityName: string | undefined;
@@ -146,7 +149,7 @@ interface updateQueueItemProps {
   deviceId?: string;
   deviceSpecimenType: string;
   testLength?: number;
-  results?: DiseaseResult[];
+  results?: MultiplexResultInput[];
   dateTested?: string;
 }
 
@@ -192,12 +195,9 @@ const QueueItem = ({
 
   const [mutationError, updateMutationError] = useState(null);
   const [removePatientFromQueue] = useRemovePatientFromQueueMutation();
-  const [
-    submitTestResult,
-    { loading },
-  ] = useSubmitTestResultMultiplexMutation();
+  const [submitTestResult, { loading }] = useAddMultiplexResultMutation();
   const [updateAoe] = useMutation(UPDATE_AOE);
-  const [editQueueItem] = useEditQueueItemMultiplexMutation();
+  const [editQueueItem] = useEditQueueItemMultiplexResultMutation();
 
   const [saveState, setSaveState] = useState<SaveState>("idle");
 
@@ -321,12 +321,14 @@ const QueueItem = ({
   const [cacheTestResults, setCacheTestResults] = useState(
     convertFromMultiplexResponse(selectedTestResults)
   );
-  const diseaseResultsRef = useRef<DiseaseResult[]>(cacheTestResults); // persistent reference to use in Effect
+  const multiplexResultInputsRef = useRef<MultiplexResultInput[]>(
+    cacheTestResults
+  ); // persistent reference to use in Effect
 
   useEffect(() => {
     // update cache when selectedTestResults prop update
     setCacheTestResults(convertFromMultiplexResponse(selectedTestResults));
-    diseaseResultsRef.current = convertFromMultiplexResponse(
+    multiplexResultInputsRef.current = convertFromMultiplexResponse(
       selectedTestResults
     );
   }, [selectedTestResults]);
@@ -351,19 +353,13 @@ const QueueItem = ({
       ),
     };
 
-    if (response?.data?.addTestResultMultiplex.deliverySuccess === false) {
-      let deliveryFailureAlert = (
-        <Alert
-          type="error"
-          title={`Unable to text result to ${patientFullName}`}
-          body="The phone number provided may not be valid or may not be able to accept text messages"
-        />
-      );
-      showNotification(deliveryFailureAlert);
+    if (response?.data?.addMultiplexResult.deliverySuccess === false) {
+      let deliveryFailureTitle = `Unable to text result to ${patientFullName}`;
+      let deliveryFailureMsg =
+        "The phone number provided may not be valid or may not be able to accept text messages";
+      showError(deliveryFailureMsg, deliveryFailureTitle);
     }
-
-    let alert = <Alert type="success" title={title} body={body} />;
-    showNotification(alert);
+    showSuccess(body, title);
   };
 
   const onTestResultSubmit = async (forceSubmit: boolean = false) => {
@@ -379,9 +375,7 @@ const QueueItem = ({
             )}`
           : "Test date can't be in the future";
 
-      showNotification(
-        <Alert type="error" title="Invalid test date" body={message} />
-      );
+      showError(message, "Invalid test date");
 
       setSaveState("error");
       return;
@@ -432,16 +426,16 @@ const QueueItem = ({
         .then((response) => {
           if (!response.data) throw Error("updateQueueItem null response");
           updateDeviceSpecimenTypeId(
-            response?.data?.editQueueItemMultiplex?.deviceSpecimenType
+            response?.data?.editQueueItemMultiplexResult?.deviceSpecimenType
               ?.internalId ?? ""
           );
           updateTimer(
             internalId,
-            response?.data?.editQueueItemMultiplex?.deviceSpecimenType
+            response?.data?.editQueueItemMultiplexResult?.deviceSpecimenType
               ?.deviceType.testLength as number
           );
           updateDeviceTestLength(
-            (response?.data?.editQueueItemMultiplex?.deviceSpecimenType
+            (response?.data?.editQueueItemMultiplexResult?.deviceSpecimenType
               ?.deviceType?.testLength as number) ?? 15
           );
         })
@@ -495,7 +489,7 @@ const QueueItem = ({
   const DEBOUNCE_TIME = 300;
 
   useEffect(() => {
-    const results = Object.assign([], diseaseResultsRef.current);
+    const results = Object.assign([], multiplexResultInputsRef.current);
 
     let debounceTimer: ReturnType<typeof setTimeout>;
     if (!isMounted.current) {
@@ -521,10 +515,10 @@ const QueueItem = ({
     deviceSpecimenTypeId,
     dateTested,
     updateQueueItem,
-    diseaseResultsRef,
+    multiplexResultInputsRef,
   ]);
 
-  const editQueueItemService = (resultsFromForm: DiseaseResult[]) => {
+  const editQueueItemService = (resultsFromForm: MultiplexResultInput[]) => {
     editQueueItem({
       variables: {
         id: internalId,
@@ -549,10 +543,10 @@ const QueueItem = ({
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
-  const onTestResultChange = (resultsFromForm: DiseaseResult[]) => {
+  const onTestResultChange = (resultsFromForm: MultiplexResultInput[]) => {
     throttleEditQueueItemService(resultsFromForm);
     setCacheTestResults(resultsFromForm);
-    diseaseResultsRef.current = Object.assign([], resultsFromForm);
+    multiplexResultInputsRef.current = Object.assign([], resultsFromForm);
   };
 
   const removeFromQueue = () => {
@@ -648,8 +642,13 @@ const QueueItem = ({
       aria-label={`Close test for ${patientFullName}`}
     >
       <span className="fa-layers">
-        <FontAwesomeIcon icon={"circle"} size="2x" inverse />
-        <FontAwesomeIcon icon={"times-circle"} size="2x" />
+        <FontAwesomeIcon
+          alt-text="close-circle"
+          icon={"circle"}
+          size="2x"
+          inverse
+        />
+        <FontAwesomeIcon alt-text="close-x" icon={"times-circle"} size="2x" />
       </span>
     </button>
   );
@@ -776,21 +775,23 @@ const QueueItem = ({
             >
               <div
                 className="grid-row prime-test-name usa-card__header"
-                id="patient-name-header"
+                id={`patient-name-header-${patient.internalId}`}
               >
                 <div className="card-header">
-                  <Button
-                    variant="unstyled"
-                    className="card-name"
-                    onClick={() => {
-                      navigate({
-                        pathname: `/patient/${patient.internalId}`,
-                        search: `?facility=${facilityId}&fromQueue=true`,
-                      });
-                    }}
-                  >
-                    {patientFullName}
-                  </Button>
+                  <h2>
+                    <Button
+                      variant="unstyled"
+                      className="card-name"
+                      onClick={() => {
+                        navigate({
+                          pathname: `/patient/${patient.internalId}`,
+                          search: `?facility=${facilityId}&fromQueue=true`,
+                        });
+                      }}
+                    >
+                      {patientFullName}
+                    </Button>
+                  </h2>
                   <div className="card-dob">
                     Date of birth:
                     <span className="card-date">
@@ -841,7 +842,7 @@ const QueueItem = ({
                           dateBeforeWarnThreshold && "card-correction-input"
                         )}
                         aria-label="Test date"
-                        id="test-date"
+                        id={`test-date-${patient.internalId}`}
                         data-testid="test-date"
                         name="test-date"
                         type="date"
@@ -907,7 +908,6 @@ const QueueItem = ({
                       label={
                         <>
                           <span>Device</span>
-
                           <TextWithTooltip
                             buttonLabel="Device"
                             tooltip="Don’t see the test you’re using? Ask your organization admin to add the correct test and it'll show up here."

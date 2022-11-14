@@ -1,13 +1,16 @@
 import { render, screen } from "@testing-library/react";
 import userEvent from "@testing-library/user-event";
-import { ToastContainer } from "react-toastify";
 
 import { DeviceType, SpecimenType } from "../../../generated/graphql";
+import SRToastContainer from "../../commonComponents/SRToastContainer";
 
 import ManageDeviceTypeFormContainer from "./ManageDeviceTypeFormContainer";
-import { addValue } from "./DeviceTypeForm.test";
 
 const mockUpdateDeviceType = jest.fn();
+
+const addValue = (name: string, value: string) => {
+  userEvent.type(screen.getByLabelText(name, { exact: false }), value);
+};
 
 jest.mock("../../../generated/graphql", () => {
   return {
@@ -109,6 +112,18 @@ jest.mock("react-router-dom", () => {
   };
 });
 
+const mockFacility: any = {
+  id: "12345",
+};
+
+jest.mock("../../facilitySelect/useSelectedFacility", () => {
+  return {
+    useSelectedFacility: () => {
+      return [mockFacility, () => {}];
+    },
+  };
+});
+
 let container: any;
 
 describe("ManageDeviceTypeFormContainer", () => {
@@ -116,13 +131,7 @@ describe("ManageDeviceTypeFormContainer", () => {
     container = render(
       <>
         <ManageDeviceTypeFormContainer />
-        <ToastContainer
-          autoClose={5000}
-          closeButton={false}
-          limit={2}
-          position="bottom-center"
-          hideProgressBar={true}
-        />
+        <SRToastContainer />
       </>
     );
   });
@@ -138,10 +147,8 @@ describe("ManageDeviceTypeFormContainer", () => {
   it("should update the selected device", async () => {
     await new Promise((resolve) => setTimeout(resolve, 0));
 
-    userEvent.selectOptions(
-      screen.getByLabelText("Select device", { exact: false }),
-      "Covalent Observer"
-    );
+    userEvent.click(screen.getByTestId("combo-box-select"));
+    userEvent.click(screen.getAllByText("Covalent Observer")[1]);
 
     await new Promise((resolve) => setTimeout(resolve, 0));
 
@@ -166,16 +173,16 @@ describe("ManageDeviceTypeFormContainer", () => {
       },
     });
 
-    expect(await screen.findByText("Redirected to /admin")).toBeInTheDocument();
+    expect(
+      await screen.findByText("Redirected to /admin?facility=12345")
+    ).toBeInTheDocument();
   });
 
   it("should display error when update fails", async () => {
     await new Promise((resolve) => setTimeout(resolve, 0));
 
-    userEvent.selectOptions(
-      screen.getByLabelText("Select device", { exact: false }),
-      "Covalent Observer"
-    );
+    userEvent.click(screen.getByTestId("combo-box-select"));
+    userEvent.click(screen.getAllByText("Covalent Observer")[1]);
 
     await new Promise((resolve) => setTimeout(resolve, 0));
 

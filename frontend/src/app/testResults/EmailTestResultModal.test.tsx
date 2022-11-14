@@ -1,7 +1,7 @@
 import { render, screen } from "@testing-library/react";
 import userEvent from "@testing-library/user-event";
 
-import * as utils from "../utils";
+import * as srToast from "../utils/srToast";
 
 import EmailTestResultModal from "./EmailTestResultModal";
 
@@ -48,7 +48,7 @@ describe("EmailTestResultModal", () => {
   let alertSpy: jest.SpyInstance;
 
   beforeEach(() => {
-    alertSpy = jest.spyOn(utils, "showAlertNotification");
+    alertSpy = jest.spyOn(srToast, "showAlertNotification");
   });
 
   afterEach(() => {
@@ -56,7 +56,8 @@ describe("EmailTestResultModal", () => {
   });
 
   it("should show render", () => {
-    render(
+    let component: any;
+    component = render(
       <EmailTestResultModal
         testResultId={"super-fancy-id"}
         closeModal={mockCloseModal}
@@ -70,6 +71,8 @@ describe("EmailTestResultModal", () => {
     screen.getByText("gesezyx@mailinator.com");
     screen.getByText("Send result");
     screen.getByText("Cancel");
+
+    expect(component).toMatchSnapshot();
   });
 
   describe("clicking on Send result button", () => {

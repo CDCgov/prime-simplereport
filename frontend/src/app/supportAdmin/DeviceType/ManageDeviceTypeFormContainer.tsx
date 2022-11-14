@@ -10,13 +10,14 @@ import {
   useUpdateDeviceTypeMutation,
 } from "../../../generated/graphql";
 import { LoadingCard } from "../../commonComponents/LoadingCard/LoadingCard";
-import { showNotification } from "../../utils";
-import Alert from "../../commonComponents/Alert";
+import { showError, showSuccess } from "../../utils/srToast";
+import { useSelectedFacility } from "../../facilitySelect/useSelectedFacility";
 
-import ManageDevicesForm from "./ManageDevicesForm";
+import DeviceForm, { Device } from "./DeviceForm";
 
 const ManageDeviceTypeFormContainer = () => {
   const [submitted, setSubmitted] = useState(false);
+  const [activeFacility] = useSelectedFacility();
   const [updateDeviceType] = useUpdateDeviceTypeMutation();
   const { data: specimenTypesResults } = useGetSpecimenTypesQuery({
     fetchPolicy: "no-cache",
@@ -28,35 +29,35 @@ const ManageDeviceTypeFormContainer = () => {
     fetchPolicy: "no-cache",
   });
 
-  const saveDeviceType = (device: UpdateDeviceType) => {
+  const updateDevice = (device: Device) => {
     if (device.testLength <= 0 || device.testLength > 999) {
-      showNotification(
-        <Alert
-          type="error"
-          title="Update device failed"
-          body="Failed to update device. Invalid test length"
-        />
+      showError(
+        "Failed to update device. Invalid test length",
+        "Update device failed"
       );
     } else {
-      updateDeviceType({
-        variables: device,
-        fetchPolicy: "no-cache",
-      }).then(() => {
-        const alert = (
-          <Alert
-            type="success"
-            title="Updated device"
-            body="The device has been updated"
-          />
+      if (device.internalId) {
+        const variables: UpdateDeviceType = {
+          ...device,
+          internalId: device.internalId,
+        };
+        updateDeviceType({
+          variables,
+          fetchPolicy: "no-cache",
+        }).then(() => {
+          showSuccess("The device has been updated", "Updated device");
+          setSubmitted(true);
+        });
+      } else {
+        console.log(
+          "Invalid attempt to update a device with no internal ID; aborting"
         );
-        showNotification(alert);
-        setSubmitted(true);
-      });
+      }
     }
   };
 
   if (submitted) {
-    return <Navigate to="/admin" />;
+    return <Navigate to={`/admin?facility=${activeFacility?.id}`} />;
   }
 
   if (deviceTypeResults && specimenTypesResults && supportedDiseaseResults) {
@@ -81,11 +82,12 @@ const ManageDeviceTypeFormContainer = () => {
     );
 
     return (
-      <ManageDevicesForm
-        updateDeviceType={saveDeviceType}
+      <DeviceForm
+        formTitle="Manage devices"
+        saveDeviceType={updateDevice}
         swabOptions={swabOptions}
         supportedDiseaseOptions={supportedDiseaseOptions}
-        devices={devices}
+        deviceOptions={devices}
       />
     );
   } else {

@@ -4,9 +4,9 @@ import { Navigate, useParams } from "react-router-dom";
 import { useDispatch } from "react-redux";
 
 import { updateFacility } from "../../store";
-import Alert from "../../commonComponents/Alert";
-import { showNotification } from "../../utils";
+import { showSuccess } from "../../utils/srToast";
 import { getAppInsights } from "../../TelemetryService";
+import { useSelectedFacility } from "../../facilitySelect/useSelectedFacility";
 
 import FacilityForm from "./FacilityForm";
 
@@ -163,6 +163,7 @@ interface Props {
 
 const FacilityFormContainer: any = (props: Props) => {
   const { facilityId } = useParams();
+  const [activeFacility] = useSelectedFacility();
   const { data, loading, error } = useQuery<FacilityData, {}>(
     GET_FACILITY_QUERY,
     {
@@ -191,7 +192,9 @@ const FacilityFormContainer: any = (props: Props) => {
     if (props.newOrg) {
       window.location.pathname = process.env.PUBLIC_URL || "";
     }
-    return <Navigate to="/settings/facilities" />;
+    return (
+      <Navigate to={`/settings/facilities?facility=${activeFacility?.id}`} />
+    );
   }
 
   const saveFacility = async (facility: Facility) => {
@@ -235,15 +238,10 @@ const FacilityFormContainer: any = (props: Props) => {
           ? savedFacility.data.updateFacility.id
           : savedFacility.data.addFacility.id,
     }));
-    const alert = (
-      <Alert
-        type="success"
-        title="Updated Facility"
-        body="The settings for the facility have been updated"
-      />
+    showSuccess(
+      "The settings for the facility have been updated",
+      "Updated Facility"
     );
-
-    showNotification(alert);
     updateSaveSuccess(true);
   };
 

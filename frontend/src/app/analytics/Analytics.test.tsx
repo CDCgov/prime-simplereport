@@ -5,6 +5,7 @@ import createMockStore from "redux-mock-store";
 import { Provider } from "react-redux";
 
 import { GetTopLevelDashboardMetricsNewDocument } from "../../generated/graphql";
+import { PATIENT_TERM_PLURAL } from "../../config/constants";
 
 import {
   Analytics,
@@ -28,7 +29,7 @@ const store = mockStore({
 });
 
 beforeAll(() => {
-  jest.useFakeTimers("modern").setSystemTime(new Date("2021-08-01").getTime());
+  jest.useFakeTimers().setSystemTime(new Date("2021-08-01").getTime());
 });
 
 const getMocks = () => [
@@ -198,9 +199,7 @@ const getMocks = () => [
 
 describe("Analytics", () => {
   beforeEach(() => {
-    jest
-      .useFakeTimers("modern")
-      .setSystemTime(new Date("2021-08-01").getTime());
+    jest.useFakeTimers().setSystemTime(new Date("2021-08-01").getTime());
     render(
       <MockedProvider mocks={getMocks()}>
         <Provider store={store}>
@@ -284,19 +283,17 @@ describe("Analytics", () => {
       "Custom date range",
     ]);
     await screen.findByText("COVID-19 testing data");
-    userEvent.type(
-      screen.getAllByTestId("date-picker-external-input")[0],
-      "07/01/2021"
-    );
-    await screen.findByText("COVID-19 testing data");
-    await userEvent.type(
-      screen.getAllByTestId("date-picker-external-input")[1],
-      "07/31/2021"
-    );
+    const startDate = screen.getByTestId("startDate") as HTMLInputElement;
+    const endDate = screen.getByTestId("endDate") as HTMLInputElement;
+    userEvent.type(startDate, "2021-07-01");
+    await screen.findByText(`All ${PATIENT_TERM_PLURAL} tested`);
+    await userEvent.type(endDate, "2021-07-31");
     expect(await screen.findByText("14982")).toBeInTheDocument();
     expect(await screen.findByText("953")).toBeInTheDocument();
     expect(await screen.findByText("14029")).toBeInTheDocument();
     expect(await screen.findByText("6.4%")).toBeInTheDocument();
+    expect(startDate.value).toEqual("2021-07-01");
+    expect(endDate.value).toEqual("2021-07-31");
   });
   it("shows N/A for positivity rate at Empty School", async () => {
     await screen.findByText("COVID-19 testing data");

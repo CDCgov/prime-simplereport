@@ -10,7 +10,7 @@ import com.google.i18n.phonenumbers.NumberParseException;
 import gov.cdc.usds.simplereport.db.model.DeviceSpecimenType;
 import gov.cdc.usds.simplereport.db.model.DeviceType;
 import gov.cdc.usds.simplereport.db.model.Organization;
-import gov.cdc.usds.simplereport.db.model.auxiliary.DiseaseResult;
+import gov.cdc.usds.simplereport.db.model.auxiliary.MultiplexResultInput;
 import gov.cdc.usds.simplereport.db.model.auxiliary.TestResult;
 import gov.cdc.usds.simplereport.service.BaseServiceTest;
 import gov.cdc.usds.simplereport.service.DeviceTypeService;
@@ -53,20 +53,18 @@ class QueueMutationResolverTest extends BaseServiceTest<TestOrderService> {
         new QueueMutationResolver(testOrderService, personService, deviceTypeService);
     UUID deviceUUID = _deviceType.getInternalId();
     String deviceId = deviceUUID.toString();
+    List<MultiplexResultInput> results =
+        List.of(new MultiplexResultInput(_diseaseService.covid().getName(), TestResult.POSITIVE));
 
     // GIVEN
     when(deviceTypeService.getFirstDeviceSpecimenTypeForDeviceTypeId(deviceUUID))
         .thenReturn(_deviceSpecimenType);
     // WHEN
-    queueMutationResolver.addTestResultNew(deviceId, null, "POSITIVE", _patientId, _dateTested);
+    queueMutationResolver.addMultiplexResult(deviceId, null, results, _patientId, _dateTested);
     // THEN
     verify(deviceTypeService).getFirstDeviceSpecimenTypeForDeviceTypeId(eq(deviceUUID));
     verify(testOrderService)
-        .addTestResult(
-            eq(_deviceSpecimenType.getInternalId()),
-            eq(TestResult.POSITIVE),
-            eq(_patientId),
-            eq(_dateTested));
+        .addMultiplexResult(_deviceSpecimenType.getInternalId(), results, _patientId, _dateTested);
   }
 
   @Test
@@ -76,20 +74,20 @@ class QueueMutationResolverTest extends BaseServiceTest<TestOrderService> {
     var testOrderService = mock(TestOrderService.class);
     var queueMutationResolver =
         new QueueMutationResolver(testOrderService, personService, deviceTypeService);
-    List<DiseaseResult> results = new ArrayList<>();
-    results.add(new DiseaseResult(_diseaseService.covid().getName(), TestResult.POSITIVE));
+    List<MultiplexResultInput> results = new ArrayList<>();
+    results.add(new MultiplexResultInput(_diseaseService.covid().getName(), TestResult.POSITIVE));
     UUID deviceUUID = _deviceType.getInternalId();
     String deviceId = deviceUUID.toString();
     UUID deviceSpecimenTypeUUID = _deviceSpecimenType.getInternalId();
     UUID testOrderId = UUID.randomUUID();
 
     // WHEN
-    queueMutationResolver.editQueueItemMultiplex(
+    queueMutationResolver.editQueueItemMultiplexResult(
         testOrderId, deviceId, deviceSpecimenTypeUUID, results, _dateTested);
     // THEN
     verify(deviceTypeService, never()).getFirstDeviceSpecimenTypeForDeviceTypeId(deviceUUID);
     verify(testOrderService)
-        .editQueueItemMultiplex(
+        .editQueueItemMultiplexResult(
             eq(testOrderId), eq(deviceSpecimenTypeUUID), eq(results), eq(_dateTested));
   }
 }

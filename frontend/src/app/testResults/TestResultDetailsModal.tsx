@@ -12,12 +12,17 @@ import {
   PregnancyCode,
   pregnancyMap,
 } from "../../patientApp/timeOfTest/constants";
+import {
+  getResultByDiseaseName,
+  hasMultiplexResults,
+} from "../utils/testResults";
 import { formatDateWithTimeOption } from "../utils/date";
+
+import { MULTIPLEX_DISEASES } from "./constants";
 
 type Result = {
   dateTested: string;
-  result: TestResult;
-  results: SRMultiplexResult[];
+  results: MultiplexResult[];
   correctionStatus: TestCorrectionStatus;
   noSymptoms: boolean;
   symptoms: string;
@@ -45,7 +50,6 @@ export const testResultDetailsQuery = gql`
   query getTestResultDetails($id: ID!) {
     testResult(id: $id) {
       dateTested
-      result
       results {
         disease {
           name
@@ -90,7 +94,6 @@ interface Props {
 export const DetachedTestResultDetailsModal = ({ data, closeModal }: Props) => {
   const {
     dateTested,
-    result,
     results,
     correctionStatus,
     symptoms,
@@ -104,21 +107,22 @@ export const DetachedTestResultDetailsModal = ({ data, closeModal }: Props) => {
   const removed = correctionStatus === "REMOVED";
   const symptomList = symptoms ? symptomsStringToArray(symptoms) : [];
   const displayResult: { [diseaseResult: string]: TestResult | null } = {
-    covidResult: result,
+    covidResult: results
+      ? getResultByDiseaseName(results, MULTIPLEX_DISEASES.COVID_19)
+      : "UNKNOWN",
   };
   const multiplexFeatureFlagEnabled = useFeature("multiplexEnabled");
-
-  const hasMultiplexResults =
-    multiplexFeatureFlagEnabled &&
-    results &&
-    results.some((d) => d.disease.name !== "COVID-19");
-  if (hasMultiplexResults) {
-    displayResult["fluAResult"] =
-      results?.filter((d) => d.disease.name === "Flu A")?.[0]?.testResult ||
-      null;
-    displayResult["fluBResult"] =
-      results?.filter((d) => d.disease.name === "Flu B")?.[0]?.testResult ||
-      null;
+  const multiplexEnabled =
+    multiplexFeatureFlagEnabled && results && hasMultiplexResults(results);
+  if (multiplexEnabled) {
+    displayResult["fluAResult"] = getResultByDiseaseName(
+      results,
+      MULTIPLEX_DISEASES.FLU_A
+    );
+    displayResult["fluBResult"] = getResultByDiseaseName(
+      results,
+      MULTIPLEX_DISEASES.FLU_B
+    );
   }
   return (
     <Modal
@@ -133,10 +137,11 @@ export const DetachedTestResultDetailsModal = ({ data, closeModal }: Props) => {
       overlayClassName="prime-modal-overlay display-flex flex-align-center flex-justify-center"
       contentLabel="Unsaved changes to current user"
       ariaHideApp={process.env.NODE_ENV !== "test"}
+      onRequestClose={closeModal}
     >
       <div className="display-flex flex-justify">
         <h1 className="font-heading-lg margin-top-05 margin-bottom-0">
-          Test details
+          Result details
         </h1>
         <div className="sr-time-of-test-buttons">
           <button
@@ -186,7 +191,7 @@ export const DetachedTestResultDetailsModal = ({ data, closeModal }: Props) => {
           </span>
         </div>
       </div>
-      <h2 className="font-sans-md margin-top-3">Test details</h2>
+      <h2 className="font-sans-md margin-top-3">Test information</h2>
       <table className={containerClasses}>
         <tbody>
           <DetailsRow
@@ -195,7 +200,7 @@ export const DetachedTestResultDetailsModal = ({ data, closeModal }: Props) => {
             removed={removed}
           />
 
-          {hasMultiplexResults ? (
+          {multiplexEnabled ? (
             <>
               <DetailsRow
                 label="Flu A result"

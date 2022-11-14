@@ -5,12 +5,6 @@ resource "pagerduty_service_integration" "az" {
   vendor  = data.pagerduty_vendor.azure.id
 }
 
-resource "pagerduty_service_integration" "twilio" {
-  name    = "Terraformed Twilio Integration"
-  service = data.pagerduty_service.service.id
-  vendor  = data.pagerduty_vendor.twilio.id
-}
-
 resource "azurerm_monitor_action_group" "pd" {
   name                = data.pagerduty_service.service.name
   short_name          = var.action_group_short_name

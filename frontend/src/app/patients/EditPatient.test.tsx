@@ -13,7 +13,9 @@ import { MockedProvider } from "@apollo/client/testing";
 import { Provider } from "react-redux";
 import configureStore from "redux-mock-store";
 import { MemoryRouter, Route, Routes, useLocation } from "react-router-dom";
-import { ToastContainer } from "react-toastify";
+
+import SRToastContainer from "../commonComponents/SRToastContainer";
+import { PATIENT_TERM_CAP } from "../../config/constants";
 
 import EditPatient, { GET_PATIENT, UPDATE_PATIENT } from "./EditPatient";
 import EditPatientContainer from "./EditPatientContainer";
@@ -299,13 +301,7 @@ describe("EditPatient", () => {
               </MockedProvider>
             </Provider>
           </MemoryRouter>
-          <ToastContainer
-            autoClose={5000}
-            closeButton={false}
-            limit={2}
-            position="bottom-center"
-            hideProgressBar={true}
-          />
+          <SRToastContainer />
         </>
       );
 
@@ -351,9 +347,7 @@ describe("EditPatient", () => {
   describe("facility select input", () => {
     let component: any;
     beforeEach(async () => {
-      jest
-        .useFakeTimers("modern")
-        .setSystemTime(new Date("2021-08-01").getTime());
+      jest.useFakeTimers().setSystemTime(new Date("2021-08-01").getTime());
       const mocks = [
         {
           request: {
@@ -566,14 +560,14 @@ describe("EditPatient", () => {
       fireEvent.change(name, { target: { value: "" } });
       fireEvent.blur(name);
       expect(
-        await screen.findByText("First name is required")
+        await screen.findByText("First name is missing")
       ).toBeInTheDocument();
       // No error message on good value
       fireEvent.change(name, { target: { value: "James" } });
       fireEvent.blur(name);
       await waitFor(() => {
         expect(
-          screen.queryByText("First name is required")
+          screen.queryByText("First name is missing")
         ).not.toBeInTheDocument();
       });
     });
@@ -670,7 +664,7 @@ describe("EditPatient", () => {
     });
     it("shows Conduct tests link and hides Save and start test button", async () => {
       expect(await screen.findByText("Conduct tests")).toBeInTheDocument();
-      expect(screen.queryByText("People")).not.toBeInTheDocument();
+      expect(screen.queryByText(PATIENT_TERM_CAP)).not.toBeInTheDocument();
       expect(screen.queryByText("Save and start test")).not.toBeInTheDocument();
     });
   });

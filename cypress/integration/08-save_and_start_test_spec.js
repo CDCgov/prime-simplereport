@@ -17,8 +17,14 @@ describe("edit patient and save and start test", () => {
     cy.visit("/");
     cy.get(".usa-nav-container");
     cy.get("#desktop-patient-nav-link").click();
+    cy.get(".sr-patient-list").should('exist');
+    cy.get(".sr-patient-list").contains('Loading...').should('not.exist');
     cy.get("#search-field-small").type(lastName);
-    cy.get(".sr-patient-list").contains(lastName).click();
+    cy.get(".sr-patient-list").contains(patientName).should('exist').click();
+    cy.contains("General information").should('exist');
+
+    cy.injectAxe();
+    cy.checkA11y(); // Edit Patient page
   });
   it("edits the patient and clicks save and start test and verifies AoE form is correctly filled in", () => {
     cy.get('input[value="male"]+label').click();
@@ -38,10 +44,17 @@ describe("edit patient and save and start test", () => {
     );
   });
   it("completes AoE form and verifies queue", () => {
-    cy.contains("New loss of taste").click();
+    cy.contains("New loss of taste").should('exist').click();
+
+    // Test a11y on the AoE form
+    cy.checkA11y();
+
     cy.contains("button", "Continue").click();
     cy.get(".prime-home").contains(patientName);
     cy.url().should("include", "queue");
+
+    // Test a11y on the Test Queue page
+    cy.checkA11y();
   });
 });
 
@@ -54,7 +67,10 @@ describe("add patient and save and start test", () => {
     cy.get(".usa-nav-container");
     cy.get("#desktop-patient-nav-link").click();
     cy.get("#add-patient-button").click();
-    cy.get(".prime-edit-patient").contains("Add new person");
+    cy.get(".prime-edit-patient").contains("Add new patient");
+
+    cy.injectAxe();
+    cy.checkA11y(); // New Patient page
   });
   it("fills out form fields and clicks save and start test and verifies AoE form is correctly filled in", () => {
     cy.get('input[name="firstName"]').type(patient.firstName);
@@ -74,6 +90,9 @@ describe("add patient and save and start test", () => {
     cy.get(
       '.modal__container input[name="addressSelect-person"][value="userAddress"]+label'
     ).click();
+
+    cy.checkA11y();
+
     cy.get(".modal__container #save-confirmed-address").click();
     cy.url().should("include", "queue");
     cy.get('input[name="testResultDeliverySms"][value="SMS"]').should(
@@ -120,11 +139,12 @@ describe("edit patient from test queue", () => {
   });
 });
 
-describe("start test from people page for patient already in queue", () => {
-  it("navigates to people page, selects Start test, and verifies link to test queue", () => {
+describe("start test from patients page for patient already in queue", () => {
+  it("navigates to patients page, selects Start test, and verifies link to test queue", () => {
     cy.visit("/");
     cy.get(".usa-nav-container");
     cy.get("#desktop-patient-nav-link").click();
+    cy.get(".sr-patient-list").contains('Loading...').should('not.exist');
     cy.get("#search-field-small").type(lastName);
     cy.contains("tr", patientName).find(".sr-actions-menu").click();
     cy.contains("Start test").click();

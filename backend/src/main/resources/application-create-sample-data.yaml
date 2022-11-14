@@ -1,4 +1,4 @@
-# configuration for dev and demo server startup on a blank DB
+# configuration for dev and demo server startup
 simple-report-initialization:
   organizations:
     - org-name: Dis Organization

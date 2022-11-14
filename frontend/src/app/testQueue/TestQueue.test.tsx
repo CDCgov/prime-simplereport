@@ -15,6 +15,7 @@ import {
   RemovePatientFromQueueDocument,
 } from "../../generated/graphql";
 import { appPermissions } from "../permissions";
+import { PATIENT_TERM } from "../../config/constants";
 
 import TestQueue from "./TestQueue";
 import { QUERY_PATIENT } from "./addToQueue/AddToQueueSearch";
@@ -54,9 +55,7 @@ describe("TestQueue", () => {
   });
 
   it("should render the test queue", async () => {
-    jest
-      .useFakeTimers("modern")
-      .setSystemTime(new Date("2021-08-01 08:20").getTime());
+    jest.useFakeTimers().setSystemTime(new Date("2021-08-01 08:20").getTime());
     const { container } = render(
       <MemoryRouter>
         <MockedProvider mocks={mocks}>
@@ -66,7 +65,9 @@ describe("TestQueue", () => {
         </MockedProvider>
       </MemoryRouter>
     );
-    await screen.findByLabelText("Search");
+    await screen.findByLabelText(
+      `Search for a ${PATIENT_TERM} to start their test`
+    );
     expect(await screen.findByText("Doe, John A")).toBeInTheDocument();
     expect(await screen.findByText("Smith, Jane")).toBeInTheDocument();
     expect(container).toMatchSnapshot();
@@ -115,7 +116,7 @@ describe("TestQueue", () => {
                 },
               ],
               user: {
-                permissions: appPermissions.featureFlags.SrCsvUploaderPilot,
+                permissions: appPermissions.results.canView,
               },
             })}
           >
@@ -127,7 +128,7 @@ describe("TestQueue", () => {
 
     expect(
       await screen.findByText(
-        "There are no tests running. Search for a person to start their test."
+        `There are no tests running. Search for a ${PATIENT_TERM} to start their test.`
       )
     ).toBeInTheDocument();
     expect(
@@ -141,7 +142,7 @@ describe("TestQueue", () => {
     ).toHaveAttribute("href", `/results/upload/submit`);
   });
 
-  it("should render the empty queue message if no tests in the queue (no csv permissions)", async () => {
+  it("should render the empty queue message if no tests in the queue (no canViewResults permissions)", async () => {
     render(
       <MemoryRouter>
         <MockedProvider mocks={mocks}>
@@ -169,7 +170,7 @@ describe("TestQueue", () => {
 
     expect(
       await screen.findByText(
-        "There are no tests running. Search for a person to start their test."
+        `There are no tests running. Search for a ${PATIENT_TERM} to start their test.`
       )
     ).toBeInTheDocument();
     expect(
@@ -189,7 +190,9 @@ describe("TestQueue", () => {
         </MemoryRouter>
       );
 
-      await screen.findByLabelText("Search");
+      await screen.findByLabelText(
+        `Search for a ${PATIENT_TERM} to start their test`
+      );
       expect(await screen.findByText("Doe, John A")).toBeInTheDocument();
       expect(await screen.findByText("Smith, Jane")).toBeInTheDocument();
 

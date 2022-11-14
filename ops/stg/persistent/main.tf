@@ -52,10 +52,11 @@ module "db" {
   rg_location = local.rg_location
   rg_name     = local.rg_name
 
-  global_vault_id  = data.azurerm_key_vault.global.id
-  db_vault_id      = data.azurerm_key_vault.db_keys.id
-  subnet_id        = module.vnet.subnet_db_id
-  log_workspace_id = module.monitoring.log_analytics_workspace_id
+  global_vault_id     = data.azurerm_key_vault.global.id
+  db_vault_id         = data.azurerm_key_vault.db_keys.id
+  subnet_id           = module.vnet.subnet_db_id
+  log_workspace_id    = module.monitoring.log_analytics_workspace_id
+  private_dns_zone_id = module.vnet.private_dns_zone_id
 
   nophi_user_password = random_password.random_nophi_password.result
 
@@ -68,7 +69,7 @@ module "db_alerting" {
   rg_name = local.rg_name
   db_id   = module.db.server_id
   action_group_ids = [
-    data.terraform_remote_state.global.outputs.pagerduty_non_prod_action_id
+    data.terraform_remote_state.global.outputs.pagerduty_stg_action_id
   ]
 }
 

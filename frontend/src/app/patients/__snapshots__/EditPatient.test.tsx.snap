@@ -11,7 +11,7 @@ Object {
         <div
           class="grid-container"
         >
-          <main
+          <div
             class="prime-edit-patient prime-home"
           >
             <div
@@ -41,7 +41,7 @@ Object {
                         class="margin-left-05"
                         href="/patients"
                       >
-                        People
+                        Patients
                       </a>
                     </div>
                     <div
@@ -61,7 +61,7 @@ Object {
                       aria-disabled="true"
                       class="usa-button usa-button--outline usa-button-disabled prime-save-patient-changes-start-test"
                       disabled=""
-                      id="edit-patient-save-lower"
+                      id="edit-patient-save-upper"
                       type="button"
                     >
                       Save and start test
@@ -2404,7 +2404,7 @@ Object {
                   <legend
                     class="prime-formgroup-heading usa-legend"
                   >
-                    Other information
+                    Housing and work
                   </legend>
                   <div
                     class="usa-form-group"
@@ -2573,7 +2573,7 @@ Object {
                 </button>
               </div>
             </div>
-          </main>
+          </div>
         </div>
       </div>
     </div>
@@ -2588,7 +2588,7 @@ Object {
       <div
         class="grid-container"
       >
-        <main
+        <div
           class="prime-edit-patient prime-home"
         >
           <div
@@ -2618,7 +2618,7 @@ Object {
                       class="margin-left-05"
                       href="/patients"
                     >
-                      People
+                      Patients
                     </a>
                   </div>
                   <div
@@ -2638,7 +2638,7 @@ Object {
                     aria-disabled="true"
                     class="usa-button usa-button--outline usa-button-disabled prime-save-patient-changes-start-test"
                     disabled=""
-                    id="edit-patient-save-lower"
+                    id="edit-patient-save-upper"
                     type="button"
                   >
                     Save and start test
@@ -4981,7 +4981,7 @@ Object {
                 <legend
                   class="prime-formgroup-heading usa-legend"
                 >
-                  Other information
+                  Housing and work
                 </legend>
                 <div
                   class="usa-form-group"
@@ -5150,7 +5150,7 @@ Object {
               </button>
             </div>
           </div>
-        </main>
+        </div>
       </div>
     </div>
   </div>,

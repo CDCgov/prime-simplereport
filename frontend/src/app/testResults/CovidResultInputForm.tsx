@@ -4,36 +4,42 @@ import RadioGroup from "../commonComponents/RadioGroup";
 import Button from "../commonComponents/Button/Button";
 import { COVID_RESULTS, TEST_RESULT_DESCRIPTIONS } from "../constants";
 import { findResultByDiseaseName } from "../testQueue/QueueItem";
-import { DiseaseResult } from "../../generated/graphql";
+import { MultiplexResultInput } from "../../generated/graphql";
+
+import { MULTIPLEX_DISEASES, TEST_RESULTS } from "./constants";
 
 interface CovidResult {
-  diseaseName: "COVID-19";
+  diseaseName: MULTIPLEX_DISEASES.COVID_19;
   testResult: TestResult;
 }
 
-const convertFromDiseaseResults = (
-  diseaseResults: DiseaseResult[]
+const convertFromMultiplexResultInputs = (
+  multiplexResultInputs: MultiplexResultInput[]
 ): TestResult => {
   const covidResult: TestResult =
-    (findResultByDiseaseName(diseaseResults ?? [], "COVID-19") as TestResult) ??
-    "UNKNOWN";
+    (findResultByDiseaseName(
+      multiplexResultInputs ?? [],
+      MULTIPLEX_DISEASES.COVID_19
+    ) as TestResult) ?? TEST_RESULTS.UNKNOWN;
   return covidResult;
 };
 
 const convertFromCovidResult = (covidResult: TestResult): CovidResult[] => {
-  const diseaseResults: CovidResult[] = [
+  const covidResults: CovidResult[] = [
     {
-      diseaseName: "COVID-19",
+      diseaseName: MULTIPLEX_DISEASES.COVID_19,
       testResult: covidResult,
     },
   ];
 
-  return diseaseResults.filter((result) => result.testResult !== "UNKNOWN");
+  return covidResults.filter(
+    (result) => result.testResult !== TEST_RESULTS.UNKNOWN
+  );
 };
 
 interface Props {
   queueItemId: string;
-  testResults: DiseaseResult[];
+  testResults: MultiplexResultInput[];
   isSubmitDisabled?: boolean;
   onChange: (value: CovidResult[]) => void;
   onSubmit: () => void;
@@ -46,9 +52,11 @@ const CovidResultInputForm: React.FC<Props> = ({
   onSubmit,
   onChange,
 }) => {
-  const resultCovidFormat = convertFromDiseaseResults(testResults);
+  const resultCovidFormat = convertFromMultiplexResultInputs(testResults);
   const allowSubmit =
-    resultCovidFormat && resultCovidFormat !== "UNKNOWN" && !isSubmitDisabled;
+    resultCovidFormat &&
+    resultCovidFormat !== TEST_RESULTS.UNKNOWN &&
+    !isSubmitDisabled;
 
   const onResultSubmit = (event: React.FormEvent<HTMLButtonElement>) => {
     event.preventDefault();
@@ -61,7 +69,7 @@ const CovidResultInputForm: React.FC<Props> = ({
 
   return (
     <form className="usa-form maxw-none">
-      <h4 className="prime-radio__title">COVID-19 results</h4>
+      <h3 className="prime-radio__title">COVID-19 results</h3>
       <RadioGroup
         legend="Test result"
         legendSrOnly

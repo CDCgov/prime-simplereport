@@ -1,9 +1,10 @@
 package gov.cdc.usds.simplereport.service;
 
 import static com.github.tomakehurst.wiremock.client.WireMock.stubFor;
+import static gov.cdc.usds.simplereport.db.model.auxiliary.UploadStatus.FAILURE;
+import static org.assertj.core.api.Assertions.assertThat;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
-import static org.junit.jupiter.api.Assertions.assertNull;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyMap;
@@ -14,7 +15,12 @@ import static org.mockito.Mockito.when;
 
 import com.github.tomakehurst.wiremock.client.WireMock;
 import com.okta.commons.http.MediaType;
+import feign.FeignException;
+import feign.Request;
+import feign.RequestTemplate;
 import gov.cdc.usds.simplereport.api.model.errors.CsvProcessingException;
+import gov.cdc.usds.simplereport.api.model.errors.DependencyFailureException;
+import gov.cdc.usds.simplereport.db.model.TestResultUpload;
 import gov.cdc.usds.simplereport.db.model.auxiliary.UploadStatus;
 import gov.cdc.usds.simplereport.db.repository.TestResultUploadRepository;
 import gov.cdc.usds.simplereport.service.errors.InvalidBulkTestResultUploadException;
@@ -25,11 +31,16 @@ import gov.cdc.usds.simplereport.service.model.reportstream.UploadResponse;
 import gov.cdc.usds.simplereport.test_util.SliceTestConfiguration;
 import gov.cdc.usds.simplereport.test_util.TestDataFactory;
 import gov.cdc.usds.simplereport.utils.TokenAuthentication;
+import gov.cdc.usds.simplereport.validators.TestResultFileValidator;
+import java.io.ByteArrayInputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.nio.charset.StandardCharsets;
 import java.util.Arrays;
+import java.util.Collections;
 import java.util.Date;
+import java.util.HashMap;
+import java.util.List;
 import java.util.Optional;
 import java.util.UUID;
 import org.apache.commons.io.IOUtils;
@@ -38,10 +49,12 @@ import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.ArgumentCaptor;
 import org.mockito.Captor;
+import org.mockito.InjectMocks;
+import org.mockito.Mock;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.context.properties.EnableConfigurationProperties;
-import org.springframework.cloud.contract.spec.internal.HttpStatus;
 import org.springframework.cloud.contract.wiremock.AutoConfigureWireMock;
+import org.springframework.http.HttpStatus;
 import org.springframework.security.access.AccessDeniedException;
 import org.springframework.test.annotation.DirtiesContext;
 import org.springframework.test.context.junit.jupiter.SpringExtension;
@@ -53,6 +66,12 @@ class TestResultUploadServiceTest extends BaseServiceTest<TestResultUploadServic
   @Autowired private TestDataFactory factory;
   @Captor private ArgumentCaptor<UUID> reportIdCaptor;
   @Captor private ArgumentCaptor<String> accessTokenCaptor;
+  @Mock private DataHubClient dataHubMock;
+  @Mock private TestResultUploadRepository repoMock;
+  @Mock private OrganizationService orgServiceMock;
+  @Mock private TokenAuthentication tokenAuthMock;
+  @Mock private TestResultFileValidator csvFileValidatorMock;
+  @InjectMocks private TestResultUploadService sut;
 
   @BeforeEach()
   public void init() {
@@ -61,7 +80,7 @@ class TestResultUploadServiceTest extends BaseServiceTest<TestResultUploadServic
 
   @Test
   @DirtiesContext
-  @SliceTestConfiguration.WithSimpleReportCsvUploadPilotUser
+  @SliceTestConfiguration.WithSimpleReportStandardUser
   void integrationTest_returnsSuccessfulResult() throws IOException {
     var responseFile =
         TestResultUploadServiceTest.class
@@ -70,13 +89,13 @@ class TestResultUploadServiceTest extends BaseServiceTest<TestResultUploadServic
     assert responseFile != null;
     var mockResponse = IOUtils.toString(responseFile, StandardCharsets.UTF_8);
     stubFor(
-        WireMock.post(WireMock.urlEqualTo("/api/reports"))
+        WireMock.post(WireMock.urlEqualTo("/api/reports?processing=async"))
             .willReturn(
                 WireMock.aResponse()
-                    .withStatus(HttpStatus.OK)
+                    .withStatus(HttpStatus.OK.value())
                     .withHeader("Content-Type", MediaType.APPLICATION_JSON_VALUE)
                     .withBody(mockResponse)));
-    InputStream input = loadCsv("test-upload-test-results.csv");
+    InputStream input = loadCsv("test-results-upload-valid.csv");
 
     var output = this._service.processResultCSV(input);
     assertEquals(UploadStatus.PENDING, output.getStatus());
@@ -94,7 +113,7 @@ class TestResultUploadServiceTest extends BaseServiceTest<TestResultUploadServic
   }
 
   @Test
-  @SliceTestConfiguration.WithSimpleReportCsvUploadPilotUser
+  @SliceTestConfiguration.WithSimpleReportStandardUser
   void ioException_CaughtAndThrowsCsvException() throws IOException {
 
     var input = mock(InputStream.class);
@@ -109,49 +128,45 @@ class TestResultUploadServiceTest extends BaseServiceTest<TestResultUploadServic
 
   @Test
   @DirtiesContext
-  @SliceTestConfiguration.WithSimpleReportCsvUploadPilotUser
+  @SliceTestConfiguration.WithSimpleReportStandardUser
   void feignBadRequest_returnsErrorMessage() throws IOException {
     try (var x = loadCsv("responses/datahub-error-response.json")) {
       stubFor(
-          WireMock.post(WireMock.urlEqualTo("/api/reports"))
+          WireMock.post(WireMock.urlEqualTo("/api/reports?processing=async"))
               .willReturn(
                   WireMock.aResponse()
-                      .withStatus(HttpStatus.BAD_REQUEST)
+                      .withStatus(HttpStatus.BAD_REQUEST.value())
                       .withHeader("Content-Type", MediaType.APPLICATION_JSON_VALUE)
                       .withBody(x.readAllBytes())));
     }
-    InputStream input = mock(InputStream.class);
-    when(input.readAllBytes()).thenReturn(new byte[] {45});
+    InputStream input = loadCsv("test-results-upload-valid.csv");
 
     var response = this._service.processResultCSV(input);
 
     assertEquals(6, response.getErrors().length);
-    assertEquals(UploadStatus.FAILURE, response.getStatus());
+    assertEquals(FAILURE, response.getStatus());
   }
 
   @Test
   @DirtiesContext
-  @SliceTestConfiguration.WithSimpleReportCsvUploadPilotUser
+  @SliceTestConfiguration.WithSimpleReportStandardUser
   void feignGeneralError_returnsFailureStatus() throws IOException {
 
     stubFor(
-        WireMock.post(WireMock.urlEqualTo("/api/reports"))
+        WireMock.post(WireMock.urlEqualTo("/api/reports?processing=async"))
             .willReturn(
                 WireMock.aResponse()
-                    .withStatus(HttpStatus.INTERNAL_SERVER_ERROR)
+                    .withStatus(HttpStatus.INTERNAL_SERVER_ERROR.value())
                     .withHeader("Content-Type", MediaType.APPLICATION_JSON_VALUE)
                     .withBody("you messed up")));
-    InputStream input = mock(InputStream.class);
-    when(input.readAllBytes()).thenReturn(new byte[] {45});
 
-    var response = this._service.processResultCSV(input);
+    InputStream input = loadCsv("test-results-upload-valid.csv");
 
-    assertNull(response.getErrors());
-    assertEquals(UploadStatus.FAILURE, response.getStatus());
+    assertThrows(DependencyFailureException.class, () -> this._service.processResultCSV(input));
   }
 
   @Test
-  @SliceTestConfiguration.WithSimpleReportStandardUser
+  @SliceTestConfiguration.WithSimpleReportEntryOnlyUser
   void unauthorizedUser_NotAuthorizedResponse() throws IOException {
     try (InputStream input = loadCsv("test-upload-test-results.csv")) {
       assertThrows(AccessDeniedException.class, () -> this._service.processResultCSV(input));
@@ -170,18 +185,36 @@ class TestResultUploadServiceTest extends BaseServiceTest<TestResultUploadServic
     InputStream input = mock(InputStream.class);
     when(input.readAllBytes()).thenReturn(new byte[] {45});
 
-    var dataHubMock = mock(DataHubClient.class);
-    var repoMock = mock(TestResultUploadRepository.class);
-    var orgServiceMock = mock(OrganizationService.class);
-    var tokenAuthMock = mock(TokenAuthentication.class);
-
+    when(csvFileValidatorMock.validate(any())).thenReturn(Collections.emptyList());
     when(dataHubMock.uploadCSV(any())).thenReturn(response);
-
-    var sut = new TestResultUploadService(repoMock, dataHubMock, orgServiceMock, tokenAuthMock);
 
     var output = sut.processResultCSV(input);
     assertNotNull(output.getReportId());
     assertEquals(UploadStatus.PENDING, output.getStatus());
+  }
+
+  @Test
+  void mockResponse_returnsGatewayTimeout() throws IOException {
+    InputStream input = mock(InputStream.class);
+    when(input.readAllBytes()).thenReturn(new byte[] {45});
+
+    String responseBody =
+        "<HTML><HEAD>\n"
+            + "<TITLE>Gateway Timeout - In read </TITLE>\n"
+            + "</HEAD><BODY>\n"
+            + "<H1>Gateway Timeout</H1>\n"
+            + "The proxy server did not receive a timely response from the upstream server.<P>\n"
+            + "Reference&#32;&#35;1&#46;136bdc17&#46;1666816860&#46;528d7d3c\n"
+            + "</BODY></HTML>";
+
+    Request req =
+        Request.create(Request.HttpMethod.POST, "", new HashMap<>(), null, new RequestTemplate());
+    FeignException reportStreamResponse =
+        new FeignException.GatewayTimeout(responseBody, req, null, new HashMap<>());
+    when(csvFileValidatorMock.validate(any())).thenReturn(Collections.emptyList());
+    when(dataHubMock.uploadCSV(any())).thenThrow(reportStreamResponse);
+
+    assertThrows(DependencyFailureException.class, () -> sut.processResultCSV(input));
   }
 
   private InputStream loadCsv(String csvFile) {
@@ -189,15 +222,8 @@ class TestResultUploadServiceTest extends BaseServiceTest<TestResultUploadServic
   }
 
   @Test
-  @SliceTestConfiguration.WithSimpleReportCsvUploadPilotUser
+  @SliceTestConfiguration.WithSimpleReportStandardUser
   void uploadService_getUploadSubmission_throwsOnInvalid() {
-    var dataHubMock = mock(DataHubClient.class);
-    var repoMock = mock(TestResultUploadRepository.class);
-    var orgServiceMock = mock(OrganizationService.class);
-    var tokenAuthMock = mock(TokenAuthentication.class);
-
-    var sut = new TestResultUploadService(repoMock, dataHubMock, orgServiceMock, tokenAuthMock);
-
     var uuid = UUID.randomUUID();
 
     assertThrows(InvalidBulkTestResultUploadException.class, () -> sut.getUploadSubmission(uuid));
@@ -205,18 +231,12 @@ class TestResultUploadServiceTest extends BaseServiceTest<TestResultUploadServic
 
   @Test
   @DirtiesContext
-  @SliceTestConfiguration.WithSimpleReportCsvUploadPilotUser
+  @SliceTestConfiguration.WithSimpleReportStandardUser
   void uploadService_getUploadSubmission_rsClientOk() {
-    var dataHubMock = mock(DataHubClient.class);
-    var repoMock = mock(TestResultUploadRepository.class);
-    var orgServiceMock = mock(OrganizationService.class);
-    var tokenAuthMock = mock(TokenAuthentication.class);
-
-    var sut = new TestResultUploadService(repoMock, dataHubMock, orgServiceMock, tokenAuthMock);
-
     UUID reportId = UUID.randomUUID();
 
     // GIVEN
+    when(csvFileValidatorMock.validate(any())).thenReturn(Collections.emptyList());
     when(orgServiceMock.getCurrentOrganization()).thenReturn(factory.createValidOrg());
     var testResultUpload =
         factory.createTestResultUpload(
@@ -251,5 +271,23 @@ class TestResultUploadServiceTest extends BaseServiceTest<TestResultUploadServic
     assertEquals(testResultUpload.getStatus(), result.getStatus());
     assertEquals(testResultUpload.getCreatedAt(), result.getCreatedAt());
     assertEquals(testResultUpload.getRecordsCount(), result.getRecordsCount());
+  }
+
+  @Test
+  @SliceTestConfiguration.WithSimpleReportStandardUser
+  void uploadService_getUploadSubmission_fileInvalidData() {
+    // GIVEN
+    InputStream invalidInput = new ByteArrayInputStream("invalid".getBytes());
+    when(csvFileValidatorMock.validate(any()))
+        .thenReturn(List.of(new FeedbackMessage("error", "my lovely error message")));
+    when(orgServiceMock.getCurrentOrganization()).thenReturn(factory.createValidOrg());
+
+    // WHEN
+    TestResultUpload result = sut.processResultCSV(invalidInput);
+
+    // THEN
+    assertThat(result.getStatus()).isEqualTo(FAILURE);
+    assertThat(result.getErrors()).hasSize(1);
+    assertThat(result.getErrors()[0].getMessage()).isEqualTo("my lovely error message");
   }
 }

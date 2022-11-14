@@ -25,7 +25,7 @@ import gov.cdc.usds.simplereport.db.model.TestEvent_;
 import gov.cdc.usds.simplereport.db.model.TestOrder;
 import gov.cdc.usds.simplereport.db.model.TestOrder_;
 import gov.cdc.usds.simplereport.db.model.auxiliary.AskOnEntrySurvey;
-import gov.cdc.usds.simplereport.db.model.auxiliary.DiseaseResult;
+import gov.cdc.usds.simplereport.db.model.auxiliary.MultiplexResultInput;
 import gov.cdc.usds.simplereport.db.model.auxiliary.PersonRole;
 import gov.cdc.usds.simplereport.db.model.auxiliary.TestCorrectionStatus;
 import gov.cdc.usds.simplereport.db.model.auxiliary.TestResult;
@@ -51,7 +51,9 @@ import javax.persistence.criteria.Predicate;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.hibernate.Hibernate;
+import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Sort;
 import org.springframework.data.jpa.domain.Specification;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -153,7 +155,48 @@ public class TestOrderService {
       return p;
     };
   }
+  // methods to replace the methods that return List<TestEvent> once we get
+  // backwards compability issues resolved
+  @Transactional(readOnly = true)
+  @AuthorizationConfiguration.RequirePermissionReadResultListAtFacility
+  public Page<TestEvent> getTestEventsResultsPage(
+      UUID facilityId,
+      UUID patientId,
+      TestResult result,
+      PersonRole role,
+      Date startDate,
+      Date endDate,
+      int pageOffset,
+      int pageSize) {
 
+    PageRequest pageRequest =
+        PageRequest.of(pageOffset, pageSize, Sort.by("createdAt").descending());
+
+    return _terepo.findAll(
+        buildTestEventSearchFilter(facilityId, patientId, result, role, startDate, endDate),
+        pageRequest);
+  }
+
+  @Transactional(readOnly = true)
+  @AuthorizationConfiguration.RequirePermissionViewAllFacilityResults
+  public Page<TestEvent> getAllFacilityTestEventsResultsPage(
+      UUID patientId,
+      TestResult result,
+      PersonRole role,
+      Date startDate,
+      Date endDate,
+      int pageOffset,
+      int pageSize) {
+
+    PageRequest pageRequest =
+        PageRequest.of(pageOffset, pageSize, Sort.by("createdAt").descending());
+
+    return _terepo.findAll(
+        buildTestEventSearchFilter(null, patientId, result, role, startDate, endDate), pageRequest);
+  }
+
+  // methods to delete once we get
+  // backwards compability issues resolved
   @Transactional(readOnly = true)
   @AuthorizationConfiguration.RequirePermissionReadResultListAtFacility
   public List<TestEvent> getTestEventsResults(
@@ -165,6 +208,10 @@ public class TestOrderService {
       Date endDate,
       int pageOffset,
       int pageSize) {
+
+    PageRequest pageRequest =
+        PageRequest.of(pageOffset, pageSize, Sort.by("createdAt").descending());
+
     return _terepo
         .findAll(
             buildTestEventSearchFilter(facilityId, patientId, result, role, startDate, endDate),
@@ -182,6 +229,7 @@ public class TestOrderService {
       Date endDate,
       int pageOffset,
       int pageSize) {
+
     return _terepo
         .findAll(
             buildTestEventSearchFilter(null, patientId, result, role, startDate, endDate),
@@ -230,44 +278,16 @@ public class TestOrderService {
         _repo
             .fetchQueueItemByOrganizationAndId(org, id)
             .orElseThrow(TestOrderService::noSuchOrderFound);
-    Hibernate.initialize(order.getResultSet());
+    Hibernate.initialize(order.getResults());
     return order;
   }
 
   @AuthorizationConfiguration.RequirePermissionUpdateTestForTestOrder
-  @Deprecated // switch to specifying device-specimen combo
-  public TestOrder editQueueItem(
-      UUID testOrderId, UUID deviceSpecimenTypeId, String result, Date dateTested) {
-    lockOrder(testOrderId);
-    try {
-      TestOrder order = this.getTestOrder(testOrderId);
-
-      if (deviceSpecimenTypeId != null) {
-        DeviceSpecimenType deviceSpecimenType = _dts.getDeviceSpecimenType(deviceSpecimenTypeId);
-
-        if (deviceSpecimenType != null) {
-          order.setDeviceSpecimen(deviceSpecimenType);
-          // Set the most-recently configured device specimen for a facility's
-          // test as facility default
-          order.getFacility().addDefaultDeviceSpecimen(deviceSpecimenType);
-        }
-      }
-
-      if (result != null) {
-        updateTestOrderCovidResult(order, TestResult.valueOf(result));
-      }
-
-      order.setDateTestedBackdate(dateTested);
-
-      return _repo.save(order);
-    } finally {
-      unlockOrder(testOrderId);
-    }
-  }
-
-  @AuthorizationConfiguration.RequirePermissionUpdateTestForTestOrder
-  public TestOrder editQueueItemMultiplex(
-      UUID testOrderId, UUID deviceSpecimenTypeId, List<DiseaseResult> results, Date dateTested) {
+  public TestOrder editQueueItemMultiplexResult(
+      UUID testOrderId,
+      UUID deviceSpecimenTypeId,
+      List<MultiplexResultInput> results,
+      Date dateTested) {
     lockOrder(testOrderId);
     try {
       TestOrder order = this.getTestOrder(testOrderId);
@@ -283,7 +303,7 @@ public class TestOrderService {
         }
       }
       if (!results.isEmpty()) {
-        editResults(order, results);
+        editMultiplexResult(order, results);
       }
       order.setDateTestedBackdate(dateTested);
       return _repo.save(order);
@@ -319,8 +339,12 @@ public class TestOrderService {
 
       TestEvent testEvent =
           order.getCorrectionStatus() == TestCorrectionStatus.ORIGINAL
-              ? new TestEvent(order, hasPriorTests)
-              : new TestEvent(order, order.getCorrectionStatus(), order.getReasonForCorrection());
+              ? new TestEvent(order, hasPriorTests, Set.of(resultEntity))
+              : new TestEvent(
+                  order,
+                  order.getCorrectionStatus(),
+                  order.getReasonForCorrection(),
+                  Set.of(resultEntity));
 
       TestEvent savedEvent = _terepo.save(testEvent);
       resultEntity.setTestEvent(savedEvent);
@@ -354,8 +378,11 @@ public class TestOrderService {
   }
 
   @AuthorizationConfiguration.RequirePermissionSubmitTestForPatient
-  public AddTestResultResponse addTestResultMultiplex(
-      UUID deviceSpecimenTypeId, List<DiseaseResult> results, UUID patientId, Date dateTested) {
+  public AddTestResultResponse addMultiplexResult(
+      UUID deviceSpecimenTypeId,
+      List<MultiplexResultInput> results,
+      UUID patientId,
+      Date dateTested) {
     Organization org = _os.getCurrentOrganization();
     Person person = _ps.getPatientNoPermissionsCheck(patientId, org);
     TestOrder order =
@@ -369,18 +396,26 @@ public class TestOrderService {
 
     try {
       order.setDeviceSpecimen(deviceSpecimenType);
-      editResults(order, results);
+      var resultSet = editMultiplexResult(order, results);
       order.setDateTestedBackdate(dateTested);
       order.markComplete();
 
       boolean hasPriorTests = _terepo.existsByPatient(person);
       TestEvent testEvent =
           order.getCorrectionStatus() == TestCorrectionStatus.ORIGINAL
-              ? new TestEvent(order, hasPriorTests)
-              : new TestEvent(order, order.getCorrectionStatus(), order.getReasonForCorrection());
+              ? new TestEvent(order, hasPriorTests, resultSet)
+              : new TestEvent(
+                  order, order.getCorrectionStatus(), order.getReasonForCorrection(), resultSet);
 
       TestEvent savedEvent = _terepo.save(testEvent);
-      saveFinalResults(order, testEvent);
+
+      // Only edit/save the pending results - don't change all Results to point
+      // towards the new
+      // TestEvent.
+      // Doing so would break the corrections/removal flow.
+      Set<Result> resultsForTestOrder = _resultRepo.getAllPendingResults(order);
+      resultsForTestOrder.forEach(result -> result.setTestEvent(savedEvent));
+      _resultRepo.saveAll(resultsForTestOrder);
 
       order.setTestEventRef(savedEvent);
       savedOrder = _repo.save(order);
@@ -410,42 +445,32 @@ public class TestOrderService {
     return new AddTestResultResponse(savedOrder, deliveryStatus);
   }
 
-  private void editResults(TestOrder order, List<DiseaseResult> newResults) {
-    // For now - we still need to save the covid results to the result column
-    // To be removed in #3664
-    Optional<DiseaseResult> covidResult =
-        newResults.stream().filter(r -> r.getDiseaseName().equals("COVID-19")).findFirst();
-    covidResult.ifPresent(diseaseResult -> order.setResultColumn(diseaseResult.getTestResult()));
-
+  private Set<Result> editMultiplexResult(TestOrder order, List<MultiplexResultInput> newResults) {
     // For new results, check if there's already a pending result for the same test.
     // If so, update it, if not, create a new one.
-    newResults.forEach(
-        newResult -> {
-          Optional<Result> pendingResult =
-              _resultRepo.getPendingResult(
-                  order, _diseaseService.getDiseaseByName(newResult.getDiseaseName()));
-          if (pendingResult.isPresent()) {
-            pendingResult.get().setResult(newResult.getTestResult());
-            _resultRepo.save(pendingResult.get());
-          } else {
-            Result result =
-                new Result(
-                    order,
-                    _diseaseService.getDiseaseByName(newResult.getDiseaseName()),
-                    newResult.getTestResult());
-            _resultRepo.save(result);
-          }
-        });
-  }
-
-  private void saveFinalResults(TestOrder order, TestEvent event) {
-    // Only edit/save the pending results - don't change all Results to point
-    // towards the new
-    // TestEvent.
-    // Doing so would break the corrections/removal flow.
-    Set<Result> results = _resultRepo.getAllPendingResults(order);
-    results.forEach(result -> result.setTestEvent(event));
-    _resultRepo.saveAll(results);
+    return newResults.stream()
+        .map(
+            newResult -> {
+              Optional<Result> pendingResult =
+                  _resultRepo.getPendingResult(
+                      order, _diseaseService.getDiseaseByName(newResult.getDiseaseName()));
+              if (pendingResult.isPresent()) {
+                pendingResult.get().setResult(newResult.getTestResult());
+                order.addResult(pendingResult.get());
+                _resultRepo.save(pendingResult.get());
+                return pendingResult.get();
+              } else {
+                Result result =
+                    new Result(
+                        order,
+                        _diseaseService.getDiseaseByName(newResult.getDiseaseName()),
+                        newResult.getTestResult());
+                order.addResult(result);
+                _resultRepo.save(result);
+                return result;
+              }
+            })
+        .collect(Collectors.toSet());
   }
 
   private boolean patientHasDeliveryPreference(TestOrder savedOrder) {
@@ -558,8 +583,6 @@ public class TestOrderService {
   }
 
   private Result updateTestOrderCovidResult(TestOrder order, TestResult result) {
-    // Remove setResultsColumn as part of #3664
-    order.setResultColumn(result);
     Optional<Result> pendingResult = _resultRepo.getPendingResult(order, _diseaseService.covid());
     Result covidResult;
     if (pendingResult.isPresent()) {
@@ -568,6 +591,7 @@ public class TestOrderService {
     } else {
       covidResult = new Result(order, _diseaseService.covid(), result);
     }
+    order.addResult(covidResult);
     return _resultRepo.save(covidResult);
   }
 
@@ -602,6 +626,10 @@ public class TestOrderService {
       order.setCorrectionStatus(status);
       order.setReasonForCorrection(reasonForCorrection);
       order.markPending();
+
+      if (order.getDateTestedBackdate() == null) {
+        order.setDateTestedBackdate(event.getDateTested());
+      }
       _repo.save(order);
 
       return event;
@@ -609,28 +637,27 @@ public class TestOrderService {
 
     // generate a duplicate test_event that just has a status of REMOVED and the
     // reason
-    TestEvent newRemoveEvent =
-        new TestEvent(event, TestCorrectionStatus.REMOVED, reasonForCorrection);
-    _terepo.save(newRemoveEvent);
 
     // Get the most recent results for each disease
     Map<SupportedDisease, Optional<Result>> latestResultsPerDisease =
-        order.getResultSet().stream()
+        order.getResults().stream()
             .collect(
                 Collectors.groupingBy(
                     Result::getDisease,
                     Collectors.maxBy(Comparator.comparing(Result::getUpdatedAt))));
-
-    latestResultsPerDisease
-        .values()
-        .forEach(
-            result -> {
-              if (result.isPresent()) {
-                Result copyResult = new Result(result.get(), newRemoveEvent);
-                _resultRepo.save(copyResult);
-              }
-            });
-
+    var results =
+        latestResultsPerDisease.values().stream()
+            .filter(Optional::isPresent)
+            .map(result -> new Result(result.get()))
+            .collect(Collectors.toSet());
+    var newRemoveEvent =
+        new TestEvent(event, TestCorrectionStatus.REMOVED, reasonForCorrection, results);
+    _terepo.save(newRemoveEvent);
+    results.forEach(
+        result -> {
+          result.setTestEvent(newRemoveEvent);
+        });
+    _resultRepo.saveAll(results);
     _testEventReportingService.report(newRemoveEvent);
 
     order.setReasonForCorrection(reasonForCorrection);

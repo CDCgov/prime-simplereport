@@ -22,12 +22,16 @@ import gov.cdc.usds.simplereport.db.model.PatientLink;
 import gov.cdc.usds.simplereport.db.model.Person;
 import gov.cdc.usds.simplereport.db.model.TestEvent;
 import gov.cdc.usds.simplereport.db.model.TestOrder;
+import gov.cdc.usds.simplereport.db.model.auxiliary.MultiplexResultInput;
+import gov.cdc.usds.simplereport.db.model.auxiliary.TestResult;
 import gov.cdc.usds.simplereport.db.repository.TestEventRepository;
 import gov.cdc.usds.simplereport.service.AuditLoggerService;
 import gov.cdc.usds.simplereport.service.OrganizationService;
 import gov.cdc.usds.simplereport.service.TimeOfConsentService;
 import gov.cdc.usds.simplereport.test_util.TestUserIdentities;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import lombok.extern.slf4j.Slf4j;
 import org.hibernate.HibernateException;
 import org.junit.jupiter.api.BeforeEach;
@@ -42,6 +46,7 @@ import org.springframework.http.HttpMethod;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.test.context.TestPropertySource;
+import org.springframework.web.reactive.function.client.WebClientRequestException;
 
 /**
  * Tests around edges of audit logging.
@@ -84,32 +89,38 @@ class AuditLoggingFailuresTest extends BaseGraphqlTest {
         });
   }
 
+  // I tweaked the behavior to not return the original error message in order to improve security
   @Test
   void graphqlQuery_databaseError_eventLogged() {
     when(_testEventRepo.save(any(TestEvent.class))).thenThrow(new IllegalArgumentException("ewww"));
     useOrgUserAllFacilityAccess();
-    ObjectNode args =
-        patientArgs()
-            .put("deviceId", facility.getDefaultDeviceType().getInternalId().toString())
-            .put("result", "NEGATIVE");
-    runQuery("submit-test", args, "ewww");
+    HashMap<String, Object> args = patientArgs();
+    args.put("deviceId", facility.getDefaultDeviceType().getInternalId().toString());
+    MultiplexResultInput multiplexResultInput =
+        new MultiplexResultInput(_diseaseService.covid().getName(), TestResult.NEGATIVE);
+    args.put("results", List.of(multiplexResultInput));
+    runQuery("add-multiplex-result-mutation", args, "Something went wrong");
     verify(auditLoggerServiceSpy).logEvent(_eventCaptor.capture());
     ConsoleApiAuditEvent event = _eventCaptor.getValue();
-    assertEquals(List.of("addTestResultNew"), event.getGraphqlErrorPaths());
+    assertEquals(List.of("addMultiplexResult"), event.getGraphqlErrorPaths());
   }
 
+  // I tweaked the behavior to not return the original error message in order to improve security
   @Test
   void graphqlQuery_auditFailure_noDataReturned() {
     doThrow(new IllegalArgumentException("naughty naughty"))
         .when(auditLoggerServiceSpy)
         .logEvent(_eventCaptor.capture());
     useOrgUserAllFacilityAccess();
-    ObjectNode args = patientArgs().put("symptoms", "{}").put("noSymptoms", true);
+    HashMap<String, Object> args = patientArgs();
+    args.put("symptoms", "{}");
+    args.put("noSymptoms", true);
     String clientErrorMessage =
-        assertThrows(NullPointerException.class, () -> runQuery("update-time-of-test", args))
+        assertThrows(WebClientRequestException.class, () -> runQuery("update-time-of-test", args))
             .getMessage();
-    assertEquals( // I would characterize this as a bug in the test framework
-        "Body is empty with status 400", clientErrorMessage);
+    assertEquals(
+        "Request processing failed; nested exception is Something went wrong; nested exception is org.springframework.web.util.NestedServletException: Request processing failed; nested exception is Something went wrong",
+        clientErrorMessage);
   }
 
   @Test
@@ -151,9 +162,7 @@ class AuditLoggingFailuresTest extends BaseGraphqlTest {
         .put("dateOfBirth", patient.getBirthDate().toString());
   }
 
-  private ObjectNode patientArgs() {
-    return JsonNodeFactory.instance
-        .objectNode()
-        .put("patientId", patient.getInternalId().toString());
+  private HashMap<String, Object> patientArgs() {
+    return new HashMap<>(Map.of("patientId", patient.getInternalId().toString()));
   }
 }

@@ -1,33 +1,38 @@
 package gov.cdc.usds.simplereport.api.pxp;
 
 import gov.cdc.usds.simplereport.service.TestResultsDeliveryService;
-import graphql.kickstart.tools.GraphQLMutationResolver;
 import java.util.UUID;
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Value;
-import org.springframework.stereotype.Component;
+import org.springframework.graphql.data.method.annotation.Argument;
+import org.springframework.graphql.data.method.annotation.MutationMapping;
+import org.springframework.stereotype.Controller;
 
 @RequiredArgsConstructor
-@Component
-public class PatientLinkMutationResolver implements GraphQLMutationResolver {
+@Controller
+public class PatientLinkMutationResolver {
   private final TestResultsDeliveryService testResultsDeliveryService;
 
   @Value("${simple-report.patient-link-url:https://simplereport.gov/pxp?plid=}")
   private String patientLinkUrl;
 
-  public boolean sendPatientLinkSms(UUID patientLinkId) {
-    return testResultsDeliveryService.smsTestResults(patientLinkId);
+  @MutationMapping
+  public boolean sendPatientLinkSms(@Argument UUID internalId) {
+    return testResultsDeliveryService.smsTestResults(internalId);
   }
 
-  public boolean sendPatientLinkEmail(UUID patientLinkId) {
-    return testResultsDeliveryService.emailTestResults(patientLinkId);
+  @MutationMapping
+  public boolean sendPatientLinkEmail(@Argument UUID internalId) {
+    return testResultsDeliveryService.emailTestResults(internalId);
   }
 
-  public boolean sendPatientLinkSmsByTestEventId(UUID testEventId) {
+  @MutationMapping
+  public boolean sendPatientLinkSmsByTestEventId(@Argument UUID testEventId) {
     return testResultsDeliveryService.smsTestResultsForTestEvent(testEventId);
   }
 
-  public boolean sendPatientLinkEmailByTestEventId(UUID testEventId) {
+  @MutationMapping
+  public boolean sendPatientLinkEmailByTestEventId(@Argument UUID testEventId) {
     return testResultsDeliveryService.emailTestResultsForTestEvent(testEventId);
   }
 }

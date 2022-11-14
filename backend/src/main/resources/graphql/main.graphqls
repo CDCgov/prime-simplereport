@@ -63,6 +63,7 @@ input CreateDeviceType {
   loincCode: String!
   swabTypes: [ID!]!
   supportedDiseases: [ID!]!
+  testLength: Int!
 }
 
 input UpdateDeviceType {
@@ -92,6 +93,13 @@ type SupportedDisease {
   internalId: ID!
   name: String!
   loinc: String!
+}
+
+input CreateSpecimenType {
+  name: String!
+  typeCode: String!
+  collectionLocationName: String
+  collectionLocationCode: String
 }
 
 type SpecimenType {
@@ -229,7 +237,7 @@ type TestOrder {
   symptomOnset: LocalDate
   deviceType: DeviceType
   deviceSpecimenType: DeviceSpecimenType
-  result: String
+  result: String @deprecated(reason: "use results as source of truth")
   results: [MultiplexResult]
   dateTested: DateTime
   correctionStatus: String
@@ -247,7 +255,7 @@ type TestResult {
   symptoms: String
   symptomOnset: LocalDate
   deviceType: DeviceType
-  result: String
+  result: String @deprecated(reason: "use results as source of truth")
   results: [MultiplexResult]
   dateTested: DateTime
   testPerformed: TestDescription!
@@ -259,6 +267,11 @@ type TestResult {
 
 type MultiplexResult {
   disease: SupportedDisease
+  testResult: String
+}
+
+input MultiplexResultInput {
+  diseaseName: String
   testResult: String
 }
 
@@ -333,9 +346,9 @@ type UploadSubmissionPage {
   content: [UploadResult!]!
 }
 
-input DiseaseResult {
-  diseaseName: String
-  testResult: String
+type TestResultsPage {
+  totalElements: Int
+  content: [TestResult]
 }
 
 # Queries and mutations for everyday use
@@ -357,9 +370,9 @@ type Query {
   ): [Facility]
   patients(
     facilityId: ID
-    pageNumber: Int
-    pageSize: Int
-    showDeleted: Boolean = false
+    pageNumber: Int = 0
+    pageSize: Int = 5000
+    includeArchived: Boolean = false
       @requiredPermissions(allOf: ["READ_ARCHIVED_PATIENT_LIST"])
     namePrefixMatch: String
     includeArchivedFacilities: Boolean = false
@@ -368,7 +381,7 @@ type Query {
     @requiredPermissions(anyOf: ["SEARCH_PATIENTS", "READ_PATIENT_LIST"])
   patientsCount(
     facilityId: ID
-    showDeleted: Boolean = false
+    includeArchived: Boolean = false
       @requiredPermissions(allOf: ["READ_ARCHIVED_PATIENT_LIST"])
     namePrefixMatch: String
   ): Int @requiredPermissions(anyOf: ["SEARCH_PATIENTS", "READ_PATIENT_LIST"])
@@ -396,9 +409,19 @@ type Query {
     role: String
     startDate: DateTime
     endDate: DateTime
-    pageNumber: Int
-    pageSize: Int
+    pageNumber: Int = 0
+    pageSize: Int = 5000
   ): [TestResult] @requiredPermissions(allOf: ["READ_RESULT_LIST"])
+  testResultsPage(
+    facilityId: ID
+    patientId: ID
+    result: String
+    role: String
+    startDate: DateTime
+    endDate: DateTime
+    pageNumber: Int = 0
+    pageSize: Int = 5000
+  ): TestResultsPage @requiredPermissions(allOf: ["READ_RESULT_LIST"])
   testResultsCount(
     facilityId: ID
     patientId: ID
@@ -425,14 +448,14 @@ type Query {
   user(id: ID!): User @requiredPermissions(allOf: ["MANAGE_USERS"])
   whoami: User!
   uploadSubmission(id: ID!): UploadResponse!
-    @requiredPermissions(allOf: ["SR_CSV_UPLOADER_PILOT"])
+    @requiredPermissions(allOf: ["UPLOAD_RESULTS_SPREADSHEET"])
   uploadSubmissions(
     startDate: DateTime
     endDate: DateTime
     pageNumber: Int
     pageSize: Int
   ): UploadSubmissionPage!
-    @requiredPermissions(allOf: ["SR_CSV_UPLOADER_PILOT"])
+    @requiredPermissions(allOf: ["UPLOAD_RESULTS_SPREADSHEET"])
 }
 
 type Mutation {
@@ -640,32 +663,18 @@ type Mutation {
   ): Patient @requiredPermissions(allOf: ["EDIT_PATIENT"])
   setPatientIsDeleted(id: ID!, deleted: Boolean!): Patient
     @requiredPermissions(allOf: ["ARCHIVE_PATIENT"])
-  addTestResultNew(
+  addMultiplexResult(
     deviceId: String!
     deviceSpecimenType: ID
-    result: String!
+    results: [MultiplexResultInput]!
     patientId: ID!
     dateTested: DateTime
   ): AddTestResultResponse @requiredPermissions(allOf: ["SUBMIT_TEST"])
-  addTestResultMultiplex(
-    deviceId: String!
-    deviceSpecimenType: ID
-    results: [DiseaseResult]!
-    patientId: ID!
-    dateTested: DateTime
-  ): AddTestResultResponse @requiredPermissions(allOf: ["SUBMIT_TEST"])
-  editQueueItem(
+  editQueueItemMultiplexResult(
     id: ID!
     deviceId: String
     deviceSpecimenType: ID
-    result: String
-    dateTested: DateTime
-  ): TestOrder @requiredPermissions(allOf: ["UPDATE_TEST"])
-  editQueueItemMultiplex(
-    id: ID!
-    deviceId: String
-    deviceSpecimenType: ID
-    results: [DiseaseResult]
+    results: [MultiplexResultInput]
     dateTested: DateTime
   ): TestOrder @requiredPermissions(allOf: ["UPDATE_TEST"])
   correctTestMarkAsError(id: ID!, reason: String): TestResult
@@ -699,6 +708,4 @@ type Mutation {
   sendPatientLinkEmailByTestEventId(testEventId: ID!): Boolean
   updateOrganization(type: String!): String
     @requiredPermissions(allOf: ["EDIT_ORGANIZATION"])
-  uploadTestResultCSV(testResultList: Upload!): UploadResult
-    @requiredPermissions(allOf: ["SR_CSV_UPLOADER_PILOT"])
 }

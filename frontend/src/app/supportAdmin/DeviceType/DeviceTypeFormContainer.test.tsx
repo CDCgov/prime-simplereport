@@ -2,11 +2,15 @@ import { render, screen } from "@testing-library/react";
 import userEvent from "@testing-library/user-event";
 
 import { SpecimenType } from "../../../generated/graphql";
+import SRToastContainer from "../../commonComponents/SRToastContainer";
 
 import DeviceTypeFormContainer from "./DeviceTypeFormContainer";
-import { addValue } from "./DeviceTypeForm.test";
 
 const mockCreateDeviceType = jest.fn();
+
+const addValue = (name: string, value: string) => {
+  userEvent.type(screen.getByLabelText(name, { exact: false }), value);
+};
 
 jest.mock("../../../generated/graphql", () => {
   return {
@@ -53,16 +57,34 @@ jest.mock("react-router-dom", () => {
   };
 });
 
-describe("DeviceTypeFormContainer", () => {
-  it("should show the device type form", async () => {
-    render(<DeviceTypeFormContainer />);
+const mockFacility: any = {
+  id: "12345",
+};
 
-    expect(await screen.findByText("Device type")).toBeInTheDocument();
+jest.mock("../../facilitySelect/useSelectedFacility", () => {
+  return {
+    useSelectedFacility: () => {
+      return [mockFacility, () => {}];
+    },
+  };
+});
+
+let container: any;
+
+describe("DeviceTypeFormContainer", () => {
+  beforeEach(() => {
+    container = render(
+      <>
+        <DeviceTypeFormContainer />
+        <SRToastContainer />
+      </>
+    );
+  });
+  it("should render the device type form", async () => {
+    expect(container).toMatchSnapshot();
   });
 
   it("should save the new device", async () => {
-    render(<DeviceTypeFormContainer />);
-
     addValue("Device name", "Accula");
     addValue("Manufacturer", "Mesa Biotech");
     addValue("Model", "Accula SARS-Cov-2 Test*");
@@ -78,7 +100,7 @@ describe("DeviceTypeFormContainer", () => {
 
     userEvent.click(screen.getByText("Save changes"));
 
-    await screen.findByText("Redirected to /admin");
+    await screen.findByText("Redirected to /admin?facility=12345");
 
     expect(mockCreateDeviceType).toBeCalledTimes(1);
     expect(mockCreateDeviceType).toHaveBeenCalledWith({
@@ -90,11 +112,26 @@ describe("DeviceTypeFormContainer", () => {
         name: "Accula",
         swabTypes: ["887799"],
         supportedDiseases: ["294729"],
+        testLength: 15,
       },
     });
 
     await new Promise((resolve) => setTimeout(resolve, 0));
 
-    await screen.findByText("Redirected to /admin");
+    await screen.findByText("Redirected to /admin?facility=12345");
+  });
+  it("should display error on invalid test length", async () => {
+    await new Promise((resolve) => setTimeout(resolve, 0));
+
+    addValue("Manufacturer", " LLC");
+    addValue("Model", "D");
+    userEvent.clear(screen.getByLabelText("Test length", { exact: false }));
+
+    userEvent.click(screen.getByText("Save changes"));
+
+    expect(mockCreateDeviceType).not.toHaveBeenCalled();
+    expect(
+      await screen.findByText("Failed to create device. Invalid test length")
+    ).toBeInTheDocument();
   });
 });

@@ -4,8 +4,7 @@ import iconSprite from "../../../../node_modules/uswds/dist/img/sprite.svg";
 import Button from "../../commonComponents/Button/Button";
 import RequiredMessage from "../../commonComponents/RequiredMessage";
 import { LinkWithQuery } from "../../commonComponents/LinkWithQuery";
-import Alert from "../../commonComponents/Alert";
-import { showNotification } from "../../utils";
+import { showError } from "../../utils/srToast";
 import { stateCodes, urls } from "../../../config/constants";
 import { getStateNameFromCode, requiresOrderProvider } from "../../utils/state";
 import {
@@ -84,19 +83,17 @@ export const useFacilityValidation = (facility: Facility) => {
         {} as FacilityErrors
       );
       setErrors(errors);
-      const alert = (
-        <Alert
-          type="error"
-          title="Form Errors"
-          body="Please check the form to make sure you complete all of the required fields."
-        />
+      showError(
+        "Please check the form to make sure you complete all of the required fields.",
+        "Form Errors"
       );
-      showNotification(alert);
+      let firstError = document.querySelector("[aria-invalid=true]");
+      (firstError as HTMLElement)?.focus();
       return "error";
     }
   };
 
-  return { errors, validateField, validateFacility };
+  return { errors, clearError, validateField, validateFacility };
 };
 
 const createStateError = (stateCode: string | number) => {
@@ -161,9 +158,12 @@ const FacilityForm: React.FC<Props> = (props) => {
     }));
   };
 
-  const { errors, validateField, validateFacility } = useFacilityValidation(
-    facility
-  );
+  const {
+    errors,
+    clearError,
+    validateField,
+    validateFacility,
+  } = useFacilityValidation(facility);
 
   const getFacilityAddress = (f: Nullable<Facility>): AddressWithMetaData => {
     return {
@@ -215,16 +215,7 @@ const FacilityForm: React.FC<Props> = (props) => {
     );
 
     if (!isValidZipForState) {
-      const alert = (
-        <Alert
-          type="error"
-          title="Form Errors"
-          body="Invalid ZIP code for this state"
-        />
-      );
-
-      showNotification(alert);
-
+      showError("Invalid ZIP code for this state", "Form Errors");
       return;
     }
 
@@ -327,7 +318,7 @@ const FacilityForm: React.FC<Props> = (props) => {
                       to={`/settings/facilities`}
                       className="margin-left-05"
                     >
-                      All facilities
+                      Back to all facilities
                     </LinkWithQuery>
                   </>
                 )}
@@ -360,6 +351,7 @@ const FacilityForm: React.FC<Props> = (props) => {
               updateFacility={updateFacility}
               errors={errors}
               validateField={validateField}
+              newOrg={props.newOrg}
             />
           </div>
         </div>
@@ -368,12 +360,15 @@ const FacilityForm: React.FC<Props> = (props) => {
           updateProvider={updateProvider}
           errors={errors}
           validateField={validateField}
+          newOrg={props.newOrg}
         />
         <ManageDevices
           deviceTypes={props.deviceTypes}
           selectedDevices={facility.deviceTypes}
           updateSelectedDevices={updateSelectedDevices}
           errors={errors}
+          clearError={clearError}
+          newOrg={props.newOrg}
         />
         <div className="float-right margin-bottom-4 margin-top-4">
           <Button

@@ -22,7 +22,7 @@ const internalId = "a665c5d9-ac47-4fd4-8be9-ab7cb5d9f2dd";
 const testResult = {
   testResult: {
     dateTested: "2022-01-28T17:56:48.143Z",
-    result: "NEGATIVE" as TestResult,
+    results: [{ disease: { name: "COVID-19" }, testResult: "NEGATIVE" }],
     correctionStatus: null,
     noSymptoms: false,
     symptoms: '{"00000":"false"}',

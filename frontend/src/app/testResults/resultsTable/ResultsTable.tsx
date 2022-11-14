@@ -8,7 +8,10 @@ import Button from "../../commonComponents/Button/Button";
 import { displayFullName, facilityDisplayName } from "../../utils";
 import { formatDateWithTimeOption } from "../../utils/date";
 import { ActionsMenu } from "../../commonComponents/ActionsMenu";
-import { byDateTested, Results } from "../TestResultsList";
+import { byDateTested } from "../TestResultsList";
+import { MULTIPLEX_DISEASES } from "../constants";
+import { toLowerCaseHyphenate } from "../../utils/text";
+import { getResultObjByDiseaseName } from "../../utils/testResults";
 
 export const generateTableHeaders = (
   hasMultiplexResults: boolean,
@@ -73,6 +76,10 @@ const generateResultRows = (
 
   // `sort` mutates the array, so make a copy
   return [...testResults].sort(byDateTested).map((r) => {
+    const testResultOrder = [MULTIPLEX_DISEASES.COVID_19];
+    if (hasMultiplexResults) {
+      testResultOrder.push(MULTIPLEX_DISEASES.FLU_A, MULTIPLEX_DISEASES.FLU_B);
+    }
     const actionItems = [];
     actionItems.push({
       name: "Print result",
@@ -108,19 +115,22 @@ const generateResultRows = (
       action: () => setDetailsModalId(r.internalId),
     });
     const getResultCell = (disease: string) => {
-      let result;
-      if (r.results && r.results.length > 1) {
-        result = r.results?.find(
-          (result: any) => result.disease.name === disease
-        )?.testResult;
-      }
-      if (result) {
-        return TEST_RESULT_DESCRIPTIONS[result as Results];
-      } else if (disease === "COVID-19") {
-        return TEST_RESULT_DESCRIPTIONS[r.result as Results];
-      } else {
-        return "N/A";
-      }
+      let result = getResultObjByDiseaseName(r.results, disease);
+      return result ? TEST_RESULT_DESCRIPTIONS[result.testResult] : "N/A";
+    };
+    const getResultCellHTML = () => {
+      return testResultOrder.map((disease) => {
+        let diseaseIdName = toLowerCaseHyphenate(disease);
+        return (
+          <td
+            key={`${r.internalId}-${diseaseIdName}`}
+            className="test-result-cell"
+            data-testid={`${diseaseIdName}-result`}
+          >
+            {getResultCell(disease)}
+          </td>
+        );
+      });
     };
     return (
       <tr
@@ -155,24 +165,7 @@ const generateResultRows = (
         <td className="test-date-cell">
           {formatDateWithTimeOption(r.dateTested, true)}
         </td>
-
-        {hasMultiplexResults ? (
-          <>
-            <td className="test-result-cell covid-19-result">
-              {getResultCell("COVID-19")}
-            </td>
-            <td className="test-result-cell flu-a-result">
-              {getResultCell("Flu A")}
-            </td>
-            <td className="test-result-cell flu-b-result">
-              {getResultCell("Flu B")}
-            </td>
-          </>
-        ) : (
-          <td className="test-result-cell covid-19-result">
-            {getResultCell("COVID-19")}
-          </td>
-        )}
+        {getResultCellHTML()}
         <td className="test-device-cell">{r.deviceType.name}</td>
         {hasMultiplexResults && hasFacility ? null : (
           <td className="submitted-by-cell">
@@ -189,7 +182,7 @@ const generateResultRows = (
           </td>
         )}
         <td className="actions-cell">
-          <ActionsMenu items={actionItems} />
+          <ActionsMenu items={actionItems} id={r.internalId} />
         </td>
       </tr>
     );

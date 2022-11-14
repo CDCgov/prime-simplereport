@@ -240,7 +240,7 @@ export const TestTimerWidget = ({ timer, context }: Props) => {
         aria-label="Start timer"
       >
         <span role="timer">{mmss(countdown)}</span>{" "}
-        <FontAwesomeIcon icon={faStopwatch} />
+        <FontAwesomeIcon alt-text="stopwatch" icon={faStopwatch} />
       </button>
     );
   }
@@ -253,7 +253,7 @@ export const TestTimerWidget = ({ timer, context }: Props) => {
         aria-label="Reset timer"
       >
         <span role="timer">{mmss(countdown)}</span>{" "}
-        <FontAwesomeIcon icon={faRedo} />
+        <FontAwesomeIcon alt-text="reset" icon={faRedo} />
       </button>
     );
   }

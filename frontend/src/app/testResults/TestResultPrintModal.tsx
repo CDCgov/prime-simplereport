@@ -87,7 +87,12 @@ export const StaticTestResultModal = ({
             ? t("testResult.multiplexResultHeader")
             : t("testResult.covidResultHeader")}
         </h1>
-        <img alt="SimpleReport logo" src={logo} className="sr-print-logo" />
+        <img
+          alt="SimpleReport logo"
+          src={logo}
+          className="sr-print-logo dont-print"
+        />
+        <h2 className="display-none sr-show-on-print">SimpleReport</h2>
       </header>
       <main>
         <section className="sr-result-section sr-result-patient-details">
@@ -234,6 +239,7 @@ export const DetachedTestResultPrintModal = ({
       className="sr-test-results-modal-content"
       overlayClassName="sr-test-results-modal-overlay"
       contentLabel="Printable test result"
+      onRequestClose={closeModal}
     >
       <div className="display-flex flex-align-center maxw-tablet grid-container patient-header padding-x-0 dont-print">
         <LanguageToggler />

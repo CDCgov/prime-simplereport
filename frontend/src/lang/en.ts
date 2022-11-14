@@ -171,8 +171,8 @@ export const en = {
           genderHelpText:
             "This is usually the gender that is written on your original birth certificate.",
         },
-        other: {
-          heading: "Other information",
+        housingAndWork: {
+          heading: "Housing and work",
           congregateLiving: {
             heading:
               "Are you a resident in a group or shared housing facility?",
@@ -185,16 +185,15 @@ export const en = {
           unsaved:
             "\nYour changes are not yet saved!\n\nClick OK discard changes, Cancel to continue editing.",
           validationMsg: "Please correct before submitting",
-          firstName: "First name is required",
+          firstName: "First name is missing",
           fieldLength: "This answer is too long",
           middleName: "Middle name is incorrectly formatted",
-          lastName: "Last name is required",
+          lastName: "Last name is missing",
           lookupId: "Student ID is incorrectly formatted",
           role: "Role is incorrectly formatted",
-          facilityId: "Testing facility is required",
+          facilityId: "Testing facility is missing",
           birthDate: {
-            base:
-              "Date of birth is required, must be in MM/DD/YY format, and in the past",
+            base: "Date of birth is missing or in the wrong format",
             past: "Date of birth is too far in the past",
             future: "Date of birth can’t be in the future",
           },
@@ -203,18 +202,18 @@ export const en = {
           phoneNumbersType: "Phone type is required",
           phoneNumbersDuplicate: "Duplicate phone number entered",
           email: "Email is missing or incorrectly formatted",
-          street: "Street is missing",
+          street: "Street address is missing",
           streetTwo: "Street 2 is incorrectly formatted",
-          zipCode: "ZIP code is missing or incorrectly formatted",
+          zipCode: "ZIP code is missing",
           zipForState: "Invalid ZIP code for this state",
-          state: "State is missing or incorrectly formatted",
+          state: "State is missing",
           city: "City is incorrectly formatted",
           county: "County is incorrectly formatted",
           country: "Country is incorrectly formatted",
-          race: "Race is required",
+          race: "Race is missing",
           tribalAffiliation: "Tribal affiliation is incorrectly formatted",
-          ethnicity: "Ethnicity is required",
-          gender: "Sex assigned at birth is required",
+          ethnicity: "Ethnicity is missing",
+          gender: "Sex assigned at birth is missing",
           residentCongregateSetting:
             "Are you a resident in a congregate living setting? is required",
           employedInHealthcare: "Are you a health care worker? is required",
@@ -225,6 +224,7 @@ export const en = {
       },
     },
     selfRegistration: {
+      title: "Test registration form",
       form: {
         complete: "Registration complete",
         inProgress: "Register for your test",
@@ -234,6 +234,7 @@ export const en = {
         },
       },
       confirmation: {
+        title: "Test registration complete",
         registered:
           "<0>{{personName}}</0>, thanks for completing your patient profile at {{entityName}}.",
         checkIn:
@@ -248,6 +249,8 @@ export const en = {
       },
     },
     testResult: {
+      title: "Test result",
+      resultLiteral: "result",
       result: "SARS-CoV-2 result",
       covidResultHeader: "Test result: COVID-19",
       multiplexResultHeader: "Test results: COVID-19 and flu",
@@ -368,6 +371,7 @@ export const en = {
       },
       tos: {
         header: "Terms of service",
+        title: "Terms of service",
         introText: `This testing site uses <0>SimpleReport</0> to manage COVID-19 testing and reporting. The terms below explain SimpleReport’s policies and terms of service.`,
         consent: "By agreeing, you consent to our terms of service.",
         submit: "I agree",
@@ -393,24 +397,28 @@ export const en = {
           },
           definitions: {
             heading: "Definitions",
-            l0: "Entity",
-            p0:
-              "A health care provider or facility; testing site; a state, local, tribal, and territorial public health authority " +
-              "(STLT Public Health Agency); or other organization that is enrolled in and using Simple Report to record and/or " +
-              "transmit data.",
-            l1: "User",
-            p1:
-              "An individual whose personal data is being reported via Simple Report (Individual User), or an individual authorized " +
-              "to act on behalf of the Entity under these Terms (Entity User or Entity Administrator). Simple Report will only designate " +
-              "one User from the Entity as the Entity Administrator. Entity Administrators will have more detailed identity verification " +
-              "than general Entity Users. Once the Entity Administrator has their identity verified, the Entity Administrator can add " +
-              "other general Entity Users or Individual Users to the Application. All roles are referred to as “User” for the purposes " +
-              "of these Terms, unless otherwise indicated.",
+            l0: {
+              title: "Entity:",
+              definition:
+                "A health care provider or facility; testing site; a state, local, tribal, and territorial public health authority " +
+                "(STLT Public Health Agency); or other organization that is enrolled in and using Simple Report to record and/or " +
+                "transmit data.",
+            },
+            l1: {
+              title: "User:",
+              definition:
+                "An individual whose personal data is being reported via Simple Report (Individual User), or an individual authorized " +
+                "to act on behalf of the Entity under these Terms (Entity User or Entity Administrator). Simple Report will only designate " +
+                "one User from the Entity as the Entity Administrator. Entity Administrators will have more detailed identity verification " +
+                "than general Entity Users. Once the Entity Administrator has their identity verified, the Entity Administrator can add " +
+                "other general Entity Users or Individual Users to the Application. All roles are referred to as “User” for the purposes " +
+                "of these Terms, unless otherwise indicated.",
+            },
           },
           dataRights: {
             heading: "Data rights and usage",
-            subheading: "Accounts/Registration",
-            l0: "For entity users",
+            subheading: "Accounts/registration",
+            section0: "For entity users",
             p01:
               "If you are using the Application on behalf of an Entity as either an Entity Administrator or Entity User, you represent " +
               "and warrant that you have authority to bind that Entity to the Terms and by accepting the Terms, you are doing so on " +
@@ -426,12 +434,12 @@ export const en = {
               "keys, tokens, and Entity and Entity User identifications (IDs)) will be issued to you by HHS or CDC. These credentials " +
               "are intended to be used only by you and to identify any software or APIs which you are using. You agree to keep your " +
               "credentials confidential and make reasonable efforts to prevent and discourage other persons from using your credentials.",
-            l1: "For entity administrators",
+            section1: "For entity administrators",
             p1:
               "The Entity Administrator agrees to verify the identity of other Entity Users who are added and to inactivate any other " +
               "Entity Users who should no longer have access. The Administrator also agrees to set permissions appropriately to determine " +
               "the minimum access necessary for each other Entity User to complete their required job duties.",
-            l2: "For individual users",
+            section2: "For individual users",
             p2:
               "Entity Administrators will grant Individual Users access to the Application. Individual Users can use the Application " +
               "to access and review their own information or information about others as may be permitted by applicable law (e.g., on " +
@@ -450,7 +458,7 @@ export const en = {
               "Where Individual Users may be accessing the information on behalf of a minor or otherwise as a guardian, Entity Users and " +
               "Administrator Users agree to assume full responsibility for designating the correct Individual User contact information " +
               "within the Application, in accordance with applicable law. If you would like more information about the application of " +
-              "the Privacy Act at CDC, <0>click here</0>.",
+              "the Privacy Act at CDC, visit the <0>Health and Human Services website</0>.",
             p1:
               "For purposes of use of this Application, if you are a HIPAA-covered entity or acting on behalf of one as a business " +
               "associate or if the data is maintained by you in a HIPAA-covered designated record set, you further acknowledge that you " +
@@ -602,6 +610,7 @@ export const en = {
         },
       },
       dob: {
+        title: "Test result verification",
         header: "Access your COVID-19 test result",
         dateOfBirth: "Date of birth",
         enterDOB: "Enter your date of birth",

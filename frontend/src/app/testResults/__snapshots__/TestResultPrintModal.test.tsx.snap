@@ -14,12 +14,12 @@ Object {
     />
     <div>
       <div
-        class="ReactModal__Overlay ReactModal__Overlay--after-open sr-test-results-modal-overlay"
+        class="ReactModal__Overlay sr-test-results-modal-overlay"
       >
         <div
           aria-label="Printable test result"
           aria-modal="true"
-          class="ReactModal__Content ReactModal__Content--after-open sr-test-results-modal-content"
+          class="ReactModal__Content sr-test-results-modal-content"
           role="dialog"
           tabindex="-1"
         >
@@ -79,9 +79,14 @@ Object {
               </h1>
               <img
                 alt="SimpleReport logo"
-                class="sr-print-logo"
+                class="sr-print-logo dont-print"
                 src="simplereport-logo-black.svg"
               />
+              <h2
+                class="display-none sr-show-on-print"
+              >
+                SimpleReport
+              </h2>
             </header>
             <main>
               <section
@@ -380,12 +385,12 @@ your local health department.
   </body>,
   "container": <div>
     <div
-      class="ReactModal__Overlay ReactModal__Overlay--after-open sr-test-results-modal-overlay"
+      class="ReactModal__Overlay sr-test-results-modal-overlay"
     >
       <div
         aria-label="Printable test result"
         aria-modal="true"
-        class="ReactModal__Content ReactModal__Content--after-open sr-test-results-modal-content"
+        class="ReactModal__Content sr-test-results-modal-content"
         role="dialog"
         tabindex="-1"
       >
@@ -445,9 +450,14 @@ your local health department.
             </h1>
             <img
               alt="SimpleReport logo"
-              class="sr-print-logo"
+              class="sr-print-logo dont-print"
               src="simplereport-logo-black.svg"
             />
+            <h2
+              class="display-none sr-show-on-print"
+            >
+              SimpleReport
+            </h2>
           </header>
           <main>
             <section
@@ -803,12 +813,12 @@ Object {
     />
     <div>
       <div
-        class="ReactModal__Overlay ReactModal__Overlay--after-open sr-test-results-modal-overlay"
+        class="ReactModal__Overlay sr-test-results-modal-overlay"
       >
         <div
           aria-label="Printable test result"
           aria-modal="true"
-          class="ReactModal__Content ReactModal__Content--after-open sr-test-results-modal-content"
+          class="ReactModal__Content sr-test-results-modal-content"
           role="dialog"
           tabindex="-1"
         >
@@ -868,9 +878,14 @@ Object {
               </h1>
               <img
                 alt="SimpleReport logo"
-                class="sr-print-logo"
+                class="sr-print-logo dont-print"
                 src="simplereport-logo-black.svg"
               />
+              <h2
+                class="display-none sr-show-on-print"
+              >
+                SimpleReport
+              </h2>
             </header>
             <main>
               <section
@@ -1224,12 +1239,12 @@ Object {
   </body>,
   "container": <div>
     <div
-      class="ReactModal__Overlay ReactModal__Overlay--after-open sr-test-results-modal-overlay"
+      class="ReactModal__Overlay sr-test-results-modal-overlay"
     >
       <div
         aria-label="Printable test result"
         aria-modal="true"
-        class="ReactModal__Content ReactModal__Content--after-open sr-test-results-modal-content"
+        class="ReactModal__Content sr-test-results-modal-content"
         role="dialog"
         tabindex="-1"
       >
@@ -1289,9 +1304,14 @@ Object {
             </h1>
             <img
               alt="SimpleReport logo"
-              class="sr-print-logo"
+              class="sr-print-logo dont-print"
               src="simplereport-logo-black.svg"
             />
+            <h2
+              class="display-none sr-show-on-print"
+            >
+              SimpleReport
+            </h2>
           </header>
           <main>
             <section
@@ -1702,12 +1722,12 @@ Object {
     />
     <div>
       <div
-        class="ReactModal__Overlay ReactModal__Overlay--after-open sr-test-results-modal-overlay"
+        class="ReactModal__Overlay sr-test-results-modal-overlay"
       >
         <div
           aria-label="Printable test result"
           aria-modal="true"
-          class="ReactModal__Content ReactModal__Content--after-open sr-test-results-modal-content"
+          class="ReactModal__Content sr-test-results-modal-content"
           role="dialog"
           tabindex="-1"
         >
@@ -1767,9 +1787,14 @@ Object {
               </h1>
               <img
                 alt="SimpleReport logo"
-                class="sr-print-logo"
+                class="sr-print-logo dont-print"
                 src="simplereport-logo-black.svg"
               />
+              <h2
+                class="display-none sr-show-on-print"
+              >
+                SimpleReport
+              </h2>
             </header>
             <main>
               <section
@@ -2032,12 +2057,12 @@ your local health department.
   </body>,
   "container": <div>
     <div
-      class="ReactModal__Overlay ReactModal__Overlay--after-open sr-test-results-modal-overlay"
+      class="ReactModal__Overlay sr-test-results-modal-overlay"
     >
       <div
         aria-label="Printable test result"
         aria-modal="true"
-        class="ReactModal__Content ReactModal__Content--after-open sr-test-results-modal-content"
+        class="ReactModal__Content sr-test-results-modal-content"
         role="dialog"
         tabindex="-1"
       >
@@ -2097,9 +2122,14 @@ your local health department.
             </h1>
             <img
               alt="SimpleReport logo"
-              class="sr-print-logo"
+              class="sr-print-logo dont-print"
               src="simplereport-logo-black.svg"
             />
+            <h2
+              class="display-none sr-show-on-print"
+            >
+              SimpleReport
+            </h2>
           </header>
           <main>
             <section

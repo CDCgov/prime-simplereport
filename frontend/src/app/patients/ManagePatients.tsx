@@ -7,7 +7,11 @@ import { faSlidersH } from "@fortawesome/free-solid-svg-icons";
 import { NavigateOptions, useNavigate } from "react-router-dom";
 
 import { displayFullName } from "../utils";
-import { PATIENT_TERM, PATIENT_TERM_PLURAL_CAP } from "../../config/constants";
+import {
+  PATIENT_TERM,
+  PATIENT_TERM_CAP,
+  PATIENT_TERM_PLURAL_CAP,
+} from "../../config/constants";
 import { daysSince } from "../utils/date";
 import { capitalizeText } from "../utils/text";
 import { LinkWithQuery } from "../commonComponents/LinkWithQuery";
@@ -31,12 +35,12 @@ import "./ManagePatients.scss";
 export const patientsCountQuery = gql`
   query GetPatientsCountByFacility(
     $facilityId: ID!
-    $showDeleted: Boolean!
+    $includeArchived: Boolean!
     $namePrefixMatch: String
   ) {
     patientsCount(
       facilityId: $facilityId
-      showDeleted: $showDeleted
+      includeArchived: $includeArchived
       namePrefixMatch: $namePrefixMatch
     )
   }
@@ -47,14 +51,14 @@ export const patientQuery = gql`
     $facilityId: ID!
     $pageNumber: Int!
     $pageSize: Int!
-    $showDeleted: Boolean
+    $includeArchived: Boolean
     $namePrefixMatch: String
   ) {
     patients(
       facilityId: $facilityId
       pageNumber: $pageNumber
       pageSize: $pageSize
-      showDeleted: $showDeleted
+      includeArchived: $includeArchived
       namePrefixMatch: $namePrefixMatch
     ) {
       internalId
@@ -96,7 +100,7 @@ interface Props {
   currentPage: number;
   entriesPerPage: number;
   totalEntries?: number;
-  showDeleted?: boolean;
+  includeArchived?: boolean;
   data?: { patients: Patient[] };
   refetch: () => null;
   setNamePrefixMatch: (namePrefixMatch: string | null) => void;
@@ -225,7 +229,7 @@ export const DetachedManagePatients = ({
                       }),
                   },
                   {
-                    name: "Archive person",
+                    name: `Archive ${PATIENT_TERM}`,
                     action: () => setArchivePerson(patient),
                   },
                 ]}
@@ -238,12 +242,12 @@ export const DetachedManagePatients = ({
   };
 
   return (
-    <main className="prime-home">
+    <div className="prime-home flex-1">
       <div className="grid-container">
         <div className="grid-row">
           <div className="prime-container card-container">
             <div className="usa-card__header">
-              <h2>
+              <h1 className="font-sans-lg">
                 {PATIENT_TERM_PLURAL_CAP}
                 <span className="sr-showing-patients-on-page">
                   {totalEntries === undefined ? (
@@ -256,7 +260,7 @@ export const DetachedManagePatients = ({
                     </>
                   )}
                 </span>
-              </h2>
+              </h1>
               <div>
                 <Button
                   className="sr-active-button"
@@ -282,7 +286,7 @@ export const DetachedManagePatients = ({
             </div>
             <div className="display-flex flex-row bg-base-lightest padding-x-3 padding-y-2">
               <SearchInput
-                label="Person"
+                label={PATIENT_TERM_CAP}
                 onInputChange={(e) => {
                   setDebounced(e.target.value);
                 }}
@@ -292,7 +296,6 @@ export const DetachedManagePatients = ({
                 }}
                 queryString={debounced || ""}
                 className="display-inline-block"
-                placeholder=""
                 focusOnMount
               />
             </div>
@@ -334,7 +337,7 @@ export const DetachedManagePatients = ({
           {isAdmin && <PatientUpload onSuccess={refetch} />}
         </div>
       </div>
-    </main>
+    </div>
   );
 };
 
@@ -354,7 +357,7 @@ const ManagePatients = (
     {
       variables: {
         facilityId: props.activeFacilityId,
-        showDeleted: false,
+        includeArchived: false,
         namePrefixMatch,
       },
       fetchPolicy: "no-cache",
@@ -380,7 +383,7 @@ const ManagePatients = (
           facilityId: props.activeFacilityId,
           pageNumber: pageNumber - 1,
           pageSize: entriesPerPage,
-          showDeleted: props.showDeleted || false,
+          includeArchived: props.includeArchived || false,
           namePrefixMatch,
         },
       }}

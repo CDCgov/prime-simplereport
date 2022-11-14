@@ -1,49 +1,67 @@
-import React from "react";
-import { gql, useMutation } from "@apollo/client";
+import React, { useState } from "react";
 
-import { showError, showNotification } from "../utils";
-import Alert from "../commonComponents/Alert";
-
-const uploadPatients = gql`
-  mutation UploadPatients($patientList: Upload!) {
-    uploadPatients(patientList: $patientList)
-  }
-`;
+import { showError, showSuccess } from "../utils/srToast";
+import { FileUploadService } from "../../fileUploadService/FileUploadService";
+import { useSelectedFacility } from "../facilitySelect/useSelectedFacility";
+import Checkboxes from "../commonComponents/Checkboxes";
 
 interface Props {
   onSuccess: () => void;
 }
 
 const PatientUpload = ({ onSuccess }: Props) => {
-  const [upload] = useMutation(uploadPatients);
+  const [activeFacility] = useSelectedFacility();
+  const [useSingleFacility, updateUseSingleFacility] = useState(false);
 
   const bulkUpload = async ({
     target: { files },
   }: React.ChangeEvent<HTMLInputElement>) => {
     const fileList = files;
+
     if (fileList === null) {
       showError("Error", "File not found");
       return;
     }
-    upload({ variables: { patientList: fileList[0] } }).then((response) => {
-      showNotification(
-        <Alert
-          type="success"
-          title={`Patients uploaded`}
-          body={response.data.uploadPatients}
-        />
-      );
-      onSuccess();
-    });
+
+    let facilityId = useSingleFacility ? activeFacility?.id : "";
+
+    FileUploadService.uploadPatients(fileList[0], facilityId).then(
+      async (response) => {
+        const successful = response.status === 200;
+        const alertMsg = await response.text();
+        if (successful) {
+          showSuccess(alertMsg, "Patients uploaded");
+        } else {
+          showError(alertMsg, "Error");
+        }
+        successful && onSuccess();
+      }
+    );
   };
 
   return (
-    <input
-      type="file"
-      name="file"
-      placeholder="UploadCSV..."
-      onChange={bulkUpload}
-    />
+    <div>
+      <Checkboxes
+        onChange={(e) => updateUseSingleFacility(e.target.checked)}
+        legend="Facility selection"
+        legendSrOnly
+        name="facility-select"
+        boxes={[
+          {
+            value: "singleFacility",
+            label: "Upload patients only to current facility",
+            checked: useSingleFacility,
+          },
+        ]}
+      />
+      <input
+        type="file"
+        name="file"
+        placeholder="UploadCSV..."
+        data-testid="patient-file-input"
+        onChange={bulkUpload}
+      />
+    </div>
   );
 };
 

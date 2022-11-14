@@ -4,17 +4,19 @@ import { CSSTransition, TransitionGroup } from "react-transition-group";
 import { useLocation } from "react-router-dom";
 import { useSelector } from "react-redux";
 
-import { showError } from "../utils";
+import { showError } from "../utils/srToast";
 import { useSelectedFacility } from "../facilitySelect/useSelectedFacility";
 import { TestCorrectionReason } from "../testResults/TestResultCorrectionModal";
 import { LinkWithQuery } from "../commonComponents/LinkWithQuery";
 import { appPermissions, hasPermission } from "../permissions";
+import { PATIENT_TERM } from "../../config/constants";
 
 import AddToQueueSearch, {
   StartTestProps,
 } from "./addToQueue/AddToQueueSearch";
 import QueueItem from "./QueueItem";
 import { AoEAnswers, TestQueuePerson } from "./AoEForm/AoEForm";
+
 import "./TestQueue.scss";
 
 const pollInterval = 10_000;
@@ -40,7 +42,8 @@ const emptyQueueMessage = (canUseCsvUploader: boolean) => {
       <div className="grid-row">
         <div className="usa-card__body">
           <p>
-            There are no tests running. Search for a person to start their test.
+            There are no tests running. Search for a {PATIENT_TERM} to start
+            their test.
           </p>
           {canUseCsvUploader && (
             <p>
@@ -92,7 +95,6 @@ export const queueQuery = gql`
           number
         }
       }
-      result
       results {
         disease {
           name
@@ -146,8 +148,7 @@ export interface QueueItemData extends AoEAnswers {
   };
   deviceSpecimenType: DeviceSpecimenType;
   patient: TestQueuePerson;
-  result: TestResult;
-  results: SRMultiplexResult[];
+  results: MultiplexResult[];
   dateTested: string;
   correctionStatus: string;
   reasonForCorrection: TestCorrectionReason;
@@ -171,7 +172,7 @@ const TestQueue: React.FC<Props> = ({ activeFacilityId }) => {
   );
   const canUseCsvUploader = hasPermission(
     useSelector((state) => (state as any).user.permissions),
-    appPermissions.featureFlags.SrCsvUploaderPilot
+    appPermissions.results.canView
   );
 
   useEffect(() => {
@@ -193,15 +194,15 @@ const TestQueue: React.FC<Props> = ({ activeFacilityId }) => {
   }
   if (loading) {
     return (
-      <main
-        className="prime-home display-flex flex-justify-center"
+      <div
+        className="prime-home display-flex flex-justify-center flex-1"
         style={{
           fontSize: "22px",
           paddingTop: "80px",
         }}
       >
         Loading tests ...
-      </main>
+      </div>
     );
   }
 
@@ -235,7 +236,6 @@ const TestQueue: React.FC<Props> = ({ activeFacilityId }) => {
           deviceType,
           deviceSpecimenType,
           patient,
-          result,
           results,
           dateTested,
           correctionStatus,
@@ -268,16 +268,7 @@ const TestQueue: React.FC<Props> = ({ activeFacilityId }) => {
               ) || deviceSpecimenTypes[0];
           }
 
-          let selectedTestResults: SRMultiplexResult[];
-
-          // backwards compatibility
-          if (!results && result) {
-            selectedTestResults = [
-              { disease: { name: "COVID-19" }, testResult: result },
-            ];
-          } else {
-            selectedTestResults = results;
-          }
+          let selectedTestResults: MultiplexResult[] = results;
 
           return (
             <CSSTransition
@@ -343,8 +334,9 @@ const TestQueue: React.FC<Props> = ({ activeFacilityId }) => {
   );
 
   return (
-    <main className="prime-home">
+    <div className="prime-home flex-1">
       <div className="grid-container queue-container-wide">
+        <h1 className="font-sans-lg">Conduct tests</h1>
         <div className="position-relative">
           <AddToQueueSearch
             refetchQueue={refetch}
@@ -356,7 +348,7 @@ const TestQueue: React.FC<Props> = ({ activeFacilityId }) => {
         </div>
         {createQueueItems(data.queue)}
       </div>
-    </main>
+    </div>
   );
 };
 

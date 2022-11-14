@@ -181,8 +181,8 @@ export const es: LanguageConfig = {
           genderHelpText:
             "Por lo general, este es el género que está escrito en su certificado de nacimiento original.",
         },
-        other: {
-          heading: "Información adicional",
+        housingAndWork: {
+          heading: "Vivienda y trabajo",
           congregateLiving: {
             heading:
               "¿Reside usted en un entorno compartido por muchas personas?",
@@ -235,6 +235,7 @@ export const es: LanguageConfig = {
       },
     },
     selfRegistration: {
+      title: "Formulario de inscripción a la prueba",
       form: {
         complete: "Inscripción completa",
         inProgress: "Inscríbase para programar su prueba",
@@ -244,6 +245,7 @@ export const es: LanguageConfig = {
         },
       },
       confirmation: {
+        title: "Inscripción a la prueba completa",
         registered:
           "<0>{{personName}}</0>, gracias por completar su perfil de paciente en {{entityName}}.",
         checkIn:
@@ -258,6 +260,8 @@ export const es: LanguageConfig = {
       },
     },
     testResult: {
+      title: "Resultado de la prueba",
+      resultLiteral: "resultado",
       result: "Resultado de SARS-CoV-2",
       covidResultHeader: "Resultado de la prueba: COVID-19",
       multiplexResultHeader:
@@ -389,7 +393,8 @@ export const es: LanguageConfig = {
         },
       },
       tos: {
-        header: "Términos de servicio",
+        header: "Condiciones del servicio",
+        title: "Condiciones del servicio",
         introText:
           "Este centro de pruebas utiliza <0>SimpleReport</0> para gestionar las pruebas de COVID-19 y sus correspondientes notificaciones. Los términos a continuación " +
           "explican las políticas y condiciones del servicio de SimpleReport.",
@@ -407,32 +412,36 @@ export const es: LanguageConfig = {
           },
           definitions: {
             heading: "Definiciones",
-            l0: "Entidad",
-            p0:
-              "Un proveedor o establecimiento de atención médica; un lugar donde se hagan pruebas; una autoridad de salud pública estatal, local, tribal o territorial (agencia de salud pública STLT); u otra institución que esté inscrita en SimpleReport y la use para registrar o transmitir datos.",
-            l1: "Usuario",
-            p1:
-              "Una persona cuyos datos personales se estén notificando vía SimpleReport (usuario individual) o una persona autorizada para actuar en nombre de la entidad bajo estos términos (usuario de una entidad o administrador de una entidad). SimpleReport solo designará a un usuario de la entidad como el administrador de la entidad. Los administradores de entidades tendrán una verificación de identidad más detallada que los usuarios generales de las entidades. Una vez que se haya verificado la identidad del administrador de la entidad, esta persona podrá añadir a otros usuarios de la entidad o usuarios individuales a la aplicación. A efectos de estos términos, todas las funciones se denominan como las de un “usuario”, a menos que se indique lo contrario.",
+            l0: {
+              title: "Entidad:",
+              definition:
+                "Un proveedor o establecimiento de atención médica; un lugar donde se hagan pruebas; una autoridad de salud pública estatal, local, tribal o territorial (agencia de salud pública STLT); u otra institución que esté inscrita en SimpleReport y la use para registrar o transmitir datos.",
+            },
+            l1: {
+              title: "Usuario:",
+              definition:
+                "Una persona cuyos datos personales se estén notificando vía SimpleReport (usuario individual) o una persona autorizada para actuar en nombre de la entidad bajo estos términos (usuario de una entidad o administrador de una entidad). SimpleReport solo designará a un usuario de la entidad como el administrador de la entidad. Los administradores de entidades tendrán una verificación de identidad más detallada que los usuarios generales de las entidades. Una vez que se haya verificado la identidad del administrador de la entidad, esta persona podrá añadir a otros usuarios de la entidad o usuarios individuales a la aplicación. A efectos de estos términos, todas las funciones se denominan como las de un “usuario”, a menos que se indique lo contrario.",
+            },
           },
           dataRights: {
             heading: "Derechos y uso de los datos",
-            subheading: "Cuentas/Inscripción",
-            l0: "Para los usuarios de entidades",
+            subheading: "Cuentas/inscripción",
+            section0: "Para los usuarios de entidades",
             p01:
               "Si usted está usando la aplicación en nombre de una entidad, como administrador o como usuario, usted declara y garantiza que tiene la autoridad para hacer que esa entidad cumpla con los términos, y al aceptar los términos lo hace en nombre de esa entidad (y cada mención de “usted” en los términos se refiere a usted y esa entidad).",
             p02:
               "Para acceder a la aplicación, como parte del proceso de inscripción y para continuar usándola, es probable que se le pida que proporcione cierta información (como los detalles de identificación o contacto). Toda esa información que usted dé a los CDC o el HHS debe ser correcta y estar actualizada. Debe informarnos con prontitud sobre cualquier cambio y actualizar su información en la aplicación o escribir a <0>support@simplereport.gov</0>, para que podamos mantenerlo informado de cualquier cambio en la aplicación o en estos términos que podrían afectar su uso de la aplicación. Es probable que usemos la información de contacto que usted proporcione para comunicarnos con respecto a la facilidad de uso, a fin de mejorar el producto y el servicio. Después de la inscripción de la entidad y la creación de cuentas de usuarios de una entidad en la aplicación, el HHS o los CDC le proporcionarán credenciales (como contraseñas, claves, identificadores e identificaciones para la entidad y los usuarios de la identidad). Estas credenciales son para que solo usted las use y para identificar cualquier software o interfaz de programación (API, por sus siglas en inglés) que usted esté usando. Usted acepta mantener sus credenciales de manera confidencial y hacer lo razonablemente posible para prevenir y desalentar que otras personas usen sus credenciales.",
-            l1: "Para los administradores de entidades",
+            section1: "Para los administradores de entidades",
             p1:
               "El administrador de una entidad acepta verificar la identidad de otros usuarios de la entidad que sean agregados y desactivar las cuentas de otros usuarios de la entidad que ya no deberían tener acceso. El administrador también acepta establecer los permisos adecuadamente para determinar el acceso mínimo necesario para cada usuario de la entidad, a fin de que puedan cumplir con los deberes requeridos en su puesto de trabajo.",
-            l2: "Para los usuarios individuales",
+            section2: "Para los usuarios individuales",
             p2:
               "Los administradores de la entidad les darán a los usuarios individuales acceso a la aplicación. Los usuarios individuales pueden usar la aplicación para acceder y revisar su propia información o la información de otras personas, según lo permitan las leyes vigentes (p. ej., en nombre de un menor o como tutor legal).  Como se ha mencionado, todos los usuarios deben aceptar y cumplir con estos términos una vez que se hayan inscrito y usen la aplicación.",
           },
           privacy: {
             heading: "Privacidad",
             p0:
-              "Usted puede usar la aplicación para buscar, exhibir, analizar, recuperar, visualizar u ‘obtener’ la información de los datos que esté enviando (o, para los usuarios individuales, de los datos que se les envíen) por medio de la aplicación y la plataforma. Note que los datos a los que usted acceda, registre o transmita por medio de la aplicación podrían estar sujetos a la Ley de Portabilidad y Responsabilidad del Seguro Médico de 1996 (HIPAA) y otras leyes y requiere protección especial. Al acceder a la aplicación y usarla, usted acepta obedecer estrictamente todas las leyes federales y estatales aplicables con respecto a la recolección, el uso, la protección y la divulgación de la información obtenida o enviada por medio de la aplicación. Debido a que podría haber usuarios individuales que acceden a la información en nombre de un menor o como tutores legales, los usuarios y administradores de una entidad se comprometen a asumir toda la responsabilidad de señalar la información de contacto correcta de los usuarios individuales en la aplicación, según las leyes correspondientes. Si desea más información sobre la aplicación de la Ley de Privacidad en los CDC, <0>haga clic aquí.</0>",
+              "Usted puede usar la aplicación para buscar, exhibir, analizar, recuperar, visualizar u ‘obtener’ la información de los datos que esté enviando (o, para los usuarios individuales, de los datos que se les envíen) por medio de la aplicación y la plataforma. Note que los datos a los que usted acceda, registre o transmita por medio de la aplicación podrían estar sujetos a la Ley de Portabilidad y Responsabilidad del Seguro Médico de 1996 (HIPAA) y otras leyes y requiere protección especial. Al acceder a la aplicación y usarla, usted acepta obedecer estrictamente todas las leyes federales y estatales aplicables con respecto a la recolección, el uso, la protección y la divulgación de la información obtenida o enviada por medio de la aplicación. Debido a que podría haber usuarios individuales que acceden a la información en nombre de un menor o como tutores legales, los usuarios y administradores de una entidad se comprometen a asumir toda la responsabilidad de señalar la información de contacto correcta de los usuarios individuales en la aplicación, según las leyes correspondientes. Si desea más información sobre la aplicación de la Ley de Privacidad en los CDC, visite el <0>sitio web del Departamento de Salud y Servicios Humanos</0>.",
             p1:
               "A efectos del uso de esta aplicación, si su entidad está cubierta por la HIPAA, usted está actuando en nombre de una entidad de esas características como socio de negocios o usted mantiene los datos en un registro designado cubierto por la HIPAA, usted reconoce, asimismo, que cumplirá con las regulaciones de la HIPAA aplicables (45 CFR, partes 160 y 164), relacionadas con el almacenamiento, la transmisión, el uso y la divulgación adecuados de toda información de salud protegida.",
           },
@@ -526,6 +535,7 @@ export const es: LanguageConfig = {
         },
       },
       dob: {
+        title: "Verificación del resultado de la prueba",
         header: "Acceda al resultado de su prueba de COVID-19",
         dateOfBirth: "Fecha de nacimiento",
         enterDOB: "Ingrese su fecha de nacimiento",

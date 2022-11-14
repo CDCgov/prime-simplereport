@@ -1,8 +1,7 @@
-const TEST_RESULTS_CSV = [
+const data = [
   {
     facility: { name: "Central Middle School", __typename: "Facility" },
     dateTested: "2022-01-19T16:45:11.446Z",
-    result: "NEGATIVE",
     results: [{ disease: { name: "COVID-19" }, testResult: "NEGATIVE" }],
     correctionStatus: "ORIGINAL",
     reasonForCorrection: null,
@@ -57,7 +56,6 @@ const TEST_RESULTS_CSV = [
   {
     facility: { name: "Central Middle School", __typename: "Facility" },
     dateTested: "2022-01-19T16:42:46.744Z",
-    result: "NEGATIVE",
     results: [{ disease: { name: "COVID-19" }, testResult: "NEGATIVE" }],
     correctionStatus: "ORIGINAL",
     reasonForCorrection: null,
@@ -111,7 +109,6 @@ const TEST_RESULTS_CSV = [
   {
     facility: { name: "Central Middle School", __typename: "Facility" },
     dateTested: "2022-01-13T22:44:52.193Z",
-    result: "POSITIVE",
     results: [{ disease: { name: "COVID-19" }, testResult: "POSITIVE" }],
     correctionStatus: "ORIGINAL",
     reasonForCorrection: null,
@@ -163,5 +160,9 @@ const TEST_RESULTS_CSV = [
     __typename: "TestResult",
   },
 ];
+const TEST_RESULTS_CSV = {
+  content: data,
+  totalElements: data.length,
+};
 
 export default TEST_RESULTS_CSV;

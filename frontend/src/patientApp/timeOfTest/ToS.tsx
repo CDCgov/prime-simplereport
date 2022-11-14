@@ -22,22 +22,22 @@ function ToS() {
         {t("testResult.tos.document.definitions.heading")}
       </h2>
       <ul>
-        <li>{t("testResult.tos.document.definitions.l0")}</li>
+        <li>
+          <b>{t("testResult.tos.document.definitions.l0.title")}</b>{" "}
+          {t("testResult.tos.document.definitions.l0.definition")}
+        </li>
+        <li>
+          <b>{t("testResult.tos.document.definitions.l1.title")}</b>{" "}
+          {t("testResult.tos.document.definitions.l1.definition")}
+        </li>
       </ul>
-      <p>{t("testResult.tos.document.definitions.p0")}</p>
-      <ul>
-        <li>{t("testResult.tos.document.definitions.l1")}</li>
-      </ul>
-      <p>{t("testResult.tos.document.definitions.p1")}</p>
       <h2 id="data-rights-and-usage">
         {t("testResult.tos.document.dataRights.heading")}
       </h2>
       <h3 id="accounts-registration">
         {t("testResult.tos.document.dataRights.subheading")}
       </h3>
-      <ul>
-        <li>{t("testResult.tos.document.dataRights.l0")}</li>
-      </ul>
+      <h4>{t("testResult.tos.document.dataRights.section0")}</h4>
       <p>{t("testResult.tos.document.dataRights.p01")}</p>
       <Trans
         t={t}
@@ -49,13 +49,9 @@ function ToS() {
           </a>,
         ]}
       />
-      <ul>
-        <li>{t("testResult.tos.document.dataRights.l1")}</li>
-      </ul>
+      <h4>{t("testResult.tos.document.dataRights.section1")}</h4>
       <p>{t("testResult.tos.document.dataRights.p1")}</p>
-      <ul>
-        <li>{t("testResult.tos.document.dataRights.l2")}</li>
-      </ul>
+      <h4>{t("testResult.tos.document.dataRights.section2")}</h4>
       <p>{t("testResult.tos.document.dataRights.p2")}</p>
       <h3 id="privacy">{t("testResult.tos.document.privacy.heading")}</h3>
       <Trans
@@ -63,8 +59,8 @@ function ToS() {
         i18nKey="testResult.tos.document.privacy.p0"
         parent="p"
         components={[
-          <a href="https://www.cms.gov/Research-Statistics-Data-and-Systems/Computer-Data-and-Systems/Privacy/PrivacyActof1974.html">
-            click here
+          <a href="https://www.hhs.gov/foia/privacy/index.html">
+            this content is replaced
           </a>,
         ]}
       />
@@ -87,26 +83,24 @@ function ToS() {
       <h3 id="other-responsibilities">
         {t("testResult.tos.document.otherResponsibilities.heading")}
       </h3>
+      <h4>
+        {t("testResult.tos.document.otherResponsibilities.ul.preheading1")}
+      </h4>
       <ul>
-        <li>
-          {t("testResult.tos.document.otherResponsibilities.ul.preheading1")}
-        </li>
-        <ul>
-          <li>{t("testResult.tos.document.otherResponsibilities.ul.li0")}</li>
-          <li>{t("testResult.tos.document.otherResponsibilities.ul.li1")}</li>
-          <li>{t("testResult.tos.document.otherResponsibilities.ul.li2")}</li>
-          <li>{t("testResult.tos.document.otherResponsibilities.ul.li3")}</li>
-        </ul>
-        <li>
-          {t("testResult.tos.document.otherResponsibilities.ul.preheading2")}
-        </li>
-        <ul>
-          <li>{t("testResult.tos.document.otherResponsibilities.ul.li4")}</li>
-          <li>{t("testResult.tos.document.otherResponsibilities.ul.li5")}</li>
-          <li>{t("testResult.tos.document.otherResponsibilities.ul.li6")}</li>
-          <li>{t("testResult.tos.document.otherResponsibilities.ul.li7")}</li>
-          <li>{t("testResult.tos.document.otherResponsibilities.ul.li8")}</li>
-        </ul>
+        <li>{t("testResult.tos.document.otherResponsibilities.ul.li0")}</li>
+        <li>{t("testResult.tos.document.otherResponsibilities.ul.li1")}</li>
+        <li>{t("testResult.tos.document.otherResponsibilities.ul.li2")}</li>
+        <li>{t("testResult.tos.document.otherResponsibilities.ul.li3")}</li>
+      </ul>
+      <h4>
+        {t("testResult.tos.document.otherResponsibilities.ul.preheading2")}
+      </h4>
+      <ul>
+        <li>{t("testResult.tos.document.otherResponsibilities.ul.li4")}</li>
+        <li>{t("testResult.tos.document.otherResponsibilities.ul.li5")}</li>
+        <li>{t("testResult.tos.document.otherResponsibilities.ul.li6")}</li>
+        <li>{t("testResult.tos.document.otherResponsibilities.ul.li7")}</li>
+        <li>{t("testResult.tos.document.otherResponsibilities.ul.li8")}</li>
       </ul>
       <h2 id="service-management">
         {t("testResult.tos.document.serviceManagement.heading")}

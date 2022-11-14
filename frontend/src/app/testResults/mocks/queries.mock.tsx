@@ -1,8 +1,12 @@
 import {
   GetAllFacilitiesDocument,
-  GetFacilityResultsForCsvDocument,
-  GetFacilityResultsMultiplexDocument,
-  GetResultsCountByFacilityDocument,
+  GetFacilityResultsMultiplexWithCountDocument,
+  GetTestResultDetailsDocument,
+  GetTestResultForCorrectionDocument,
+  GetTestResultForPrintDocument,
+  GetTestResultForResendingEmailsDocument,
+  GetTestResultForTextDocument,
+  GetFacilityResultsForCsvWithCountDocument,
 } from "../../../generated/graphql";
 import { testResultDetailsQuery } from "../TestResultDetailsModal";
 import { QUERY_PATIENT } from "../../testQueue/addToQueue/AddToQueueSearch";
@@ -19,24 +23,16 @@ import testResultsByStartDateAndEndDate from "./resultsByStartAndEndDate.mock";
 import testResultsMultiplex from "./resultsMultiplex.mock";
 import { facilities, facilitiesIncludeArchived } from "./facilities.mock";
 import { patients } from "./patients.mock";
+import resultForPrint from "./resultForPrint";
+import resultForText from "./resultForText";
+import resultForEmail from "./resultForEmail";
+import resultForViewing from "./resultForViewing";
+import resultForCorrection from "./resultForCorrection";
 
 export const mocks = [
   {
     request: {
-      query: GetResultsCountByFacilityDocument,
-      variables: {
-        facilityId: "1",
-      },
-    },
-    result: {
-      data: {
-        testResultsCount: testResults.length,
-      },
-    },
-  },
-  {
-    request: {
-      query: GetFacilityResultsMultiplexDocument,
+      query: GetFacilityResultsMultiplexWithCountDocument,
       variables: {
         facilityId: "1",
         pageNumber: 0,
@@ -45,13 +41,13 @@ export const mocks = [
     },
     result: {
       data: {
-        testResults,
+        testResultsPage: testResults,
       },
     },
   },
   {
     request: {
-      query: GetFacilityResultsForCsvDocument,
+      query: GetFacilityResultsForCsvWithCountDocument,
       variables: {
         facilityId: "1",
         pageNumber: 0,
@@ -60,7 +56,7 @@ export const mocks = [
     },
     result: {
       data: {
-        testResults: testResultsForCsv,
+        testResultsPage: testResultsForCsv,
       },
     },
   },
@@ -68,14 +64,14 @@ export const mocks = [
     request: {
       query: testResultDetailsQuery,
       variables: {
-        id: testResults[0].internalId,
+        id: testResults.content[0].internalId,
       },
     },
     result: {
       data: {
         testResult: {
           dateTested: "2021-03-17T19:27:23.806Z",
-          result: "NEGATIVE",
+          results: [{ disease: { name: "COVID-19" }, testResult: "NEGATIVE" }],
           correctionStatus: "ORIGINAL",
           deviceType: {
             name: "Abbott IDNow",
@@ -102,23 +98,10 @@ export const mocks = [
       },
     },
   },
+
   {
     request: {
-      query: GetResultsCountByFacilityDocument,
-      variables: {
-        facilityId: "1",
-        patientId: "48c523e8-7c65-4047-955c-e3f65bb8b58a",
-      },
-    },
-    result: {
-      data: {
-        testResultsCount: testResultsByPatient.length,
-      },
-    },
-  },
-  {
-    request: {
-      query: GetFacilityResultsMultiplexDocument,
+      query: GetFacilityResultsMultiplexWithCountDocument,
       variables: {
         facilityId: "1",
         patientId: "48c523e8-7c65-4047-955c-e3f65bb8b58a",
@@ -128,27 +111,13 @@ export const mocks = [
     },
     result: {
       data: {
-        testResults: testResultsByPatient,
+        testResultsPage: testResultsByPatient,
       },
     },
   },
   {
     request: {
-      query: GetResultsCountByFacilityDocument,
-      variables: {
-        facilityId: "1",
-        result: "NEGATIVE",
-      },
-    },
-    result: {
-      data: {
-        testResultsCount: testResultsByResultValue.length,
-      },
-    },
-  },
-  {
-    request: {
-      query: GetFacilityResultsMultiplexDocument,
+      query: GetFacilityResultsMultiplexWithCountDocument,
       variables: {
         facilityId: "1",
         result: "NEGATIVE",
@@ -158,27 +127,13 @@ export const mocks = [
     },
     result: {
       data: {
-        testResults: testResultsByResultValue,
+        testResultsPage: testResultsByResultValue,
       },
     },
   },
   {
     request: {
-      query: GetResultsCountByFacilityDocument,
-      variables: {
-        facilityId: "1",
-        role: "RESIDENT",
-      },
-    },
-    result: {
-      data: {
-        testResultsCount: testResultsByRole.length,
-      },
-    },
-  },
-  {
-    request: {
-      query: GetFacilityResultsMultiplexDocument,
+      query: GetFacilityResultsMultiplexWithCountDocument,
       variables: {
         facilityId: "1",
         role: "RESIDENT",
@@ -188,27 +143,13 @@ export const mocks = [
     },
     result: {
       data: {
-        testResults: testResultsByRole,
+        testResultsPage: testResultsByRole,
       },
     },
   },
   {
     request: {
-      query: GetResultsCountByFacilityDocument,
-      variables: {
-        facilityId: "1",
-        startDate: "2021-03-18T00:00:00.000Z",
-      },
-    },
-    result: {
-      data: {
-        testResultsCount: testResultsByStartDate.length,
-      },
-    },
-  },
-  {
-    request: {
-      query: GetFacilityResultsMultiplexDocument,
+      query: GetFacilityResultsMultiplexWithCountDocument,
       variables: {
         facilityId: "1",
         startDate: "2021-03-18T00:00:00.000Z",
@@ -218,28 +159,13 @@ export const mocks = [
     },
     result: {
       data: {
-        testResults: testResultsByStartDate,
+        testResultsPage: testResultsByStartDate,
       },
     },
   },
   {
     request: {
-      query: GetResultsCountByFacilityDocument,
-      variables: {
-        facilityId: "1",
-        startDate: "2021-03-18T00:00:00.000Z",
-        endDate: "2021-03-18T23:59:59.999Z",
-      },
-    },
-    result: {
-      data: {
-        testResultsCount: testResultsByStartDateAndEndDate.length,
-      },
-    },
-  },
-  {
-    request: {
-      query: GetFacilityResultsMultiplexDocument,
+      query: GetFacilityResultsMultiplexWithCountDocument,
       variables: {
         facilityId: "1",
         startDate: "2021-03-18T00:00:00.000Z",
@@ -250,26 +176,14 @@ export const mocks = [
     },
     result: {
       data: {
-        testResults: testResultsByStartDateAndEndDate,
+        testResultsPage: testResultsByStartDateAndEndDate,
       },
     },
   },
+
   {
     request: {
-      query: GetResultsCountByFacilityDocument,
-      variables: {
-        facilityId: "2",
-      },
-    },
-    result: {
-      data: {
-        testResultsCount: testResultsByFacility.length,
-      },
-    },
-  },
-  {
-    request: {
-      query: GetFacilityResultsMultiplexDocument,
+      query: GetFacilityResultsMultiplexWithCountDocument,
       variables: {
         facilityId: "2",
         pageNumber: 0,
@@ -278,26 +192,13 @@ export const mocks = [
     },
     result: {
       data: {
-        testResults: testResultsByFacility,
+        testResultsPage: testResultsByFacility,
       },
     },
   },
   {
     request: {
-      query: GetResultsCountByFacilityDocument,
-      variables: {
-        facilityId: null,
-      },
-    },
-    result: {
-      data: {
-        testResultsCount: testResultsByAllFacility.length,
-      },
-    },
-  },
-  {
-    request: {
-      query: GetFacilityResultsMultiplexDocument,
+      query: GetFacilityResultsMultiplexWithCountDocument,
       variables: {
         facilityId: null,
         pageNumber: 0,
@@ -306,7 +207,7 @@ export const mocks = [
     },
     result: {
       data: {
-        testResults: testResultsByAllFacility,
+        testResultsPage: testResultsByAllFacility,
       },
     },
   },
@@ -316,6 +217,7 @@ export const mocks = [
       variables: {
         facilityId: "1",
         namePrefixMatch: "Cragell",
+        includeArchived: true,
         includeArchivedFacilities: true,
       },
     },
@@ -327,20 +229,7 @@ export const mocks = [
   },
   {
     request: {
-      query: GetResultsCountByFacilityDocument,
-      variables: {
-        facilityId: "1",
-      },
-    },
-    result: {
-      data: {
-        testResultsCount: testResults.length,
-      },
-    },
-  },
-  {
-    request: {
-      query: GetFacilityResultsMultiplexDocument,
+      query: GetFacilityResultsMultiplexWithCountDocument,
       variables: {
         facilityId: "1",
         pageNumber: 0,
@@ -349,20 +238,7 @@ export const mocks = [
     },
     result: {
       data: {
-        testResults,
-      },
-    },
-  },
-  {
-    request: {
-      query: GetResultsCountByFacilityDocument,
-      variables: {
-        facilityId: "3",
-      },
-    },
-    result: {
-      data: {
-        testResultsCount: testResultsMultiplex.length,
+        testResultsPage: testResults,
       },
     },
   },
@@ -381,7 +257,7 @@ export const mocks = [
   },
   {
     request: {
-      query: GetFacilityResultsMultiplexDocument,
+      query: GetFacilityResultsMultiplexWithCountDocument,
       variables: {
         facilityId: "3",
         pageNumber: 0,
@@ -390,7 +266,7 @@ export const mocks = [
     },
     result: {
       data: {
-        testResults: testResultsMultiplex,
+        testResultsPage: testResultsMultiplex,
       },
     },
   },
@@ -409,25 +285,7 @@ export const mocks = [
   },
   {
     request: {
-      query: GetResultsCountByFacilityDocument,
-      variables: {
-        facilityId: "1",
-        patientId: "48c523e8-7c65-4047-955c-e3f65bb8b58a",
-        startDate: "2021-03-18T00:00:00.000Z",
-        endDate: "2021-03-19T23:59:59.999Z",
-        role: "STAFF",
-        result: "NEGATIVE",
-      },
-    },
-    result: {
-      data: {
-        testResultsCount: testResultsByStartDateAndEndDate.length,
-      },
-    },
-  },
-  {
-    request: {
-      query: GetFacilityResultsMultiplexDocument,
+      query: GetFacilityResultsMultiplexWithCountDocument,
       variables: {
         facilityId: "1",
         pageNumber: 0,
@@ -441,7 +299,72 @@ export const mocks = [
     },
     result: {
       data: {
-        testResults: testResultsByStartDateAndEndDate,
+        testResultsPage: testResultsByStartDateAndEndDate,
+      },
+    },
+  },
+  {
+    request: {
+      query: GetTestResultForPrintDocument,
+      variables: {
+        id: "7c768a5d-ef90-44cd-8050-b96dd7aaa1d5",
+      },
+    },
+    result: {
+      data: {
+        testResult: resultForPrint,
+      },
+    },
+  },
+  {
+    request: {
+      query: GetTestResultForTextDocument,
+      variables: {
+        id: "7c768a5d-ef90-44cd-8050-b96dd7aaa1d5",
+      },
+    },
+    result: {
+      data: {
+        testResult: resultForText,
+      },
+    },
+  },
+  {
+    request: {
+      query: GetTestResultForResendingEmailsDocument,
+      variables: {
+        id: "7c768a5d-ef90-44cd-8050-b96dd7aaa1d5",
+      },
+    },
+    result: {
+      data: {
+        testResult: resultForEmail,
+      },
+    },
+  },
+  {
+    request: {
+      query: GetTestResultDetailsDocument,
+      variables: {
+        id: "7c768a5d-ef90-44cd-8050-b96dd7aaa1d5",
+      },
+    },
+    result: {
+      data: {
+        testResult: resultForViewing,
+      },
+    },
+  },
+  {
+    request: {
+      query: GetTestResultForCorrectionDocument,
+      variables: {
+        id: "7c768a5d-ef90-44cd-8050-b96dd7aaa1d5",
+      },
+    },
+    result: {
+      data: {
+        testResult: resultForCorrection,
       },
     },
   },
@@ -450,20 +373,7 @@ export const mocks = [
 export const mocksWithMultiplex = [
   {
     request: {
-      query: GetResultsCountByFacilityDocument,
-      variables: {
-        facilityId: null,
-      },
-    },
-    result: {
-      data: {
-        testResultsCount: testResultsMultiplex.length,
-      },
-    },
-  },
-  {
-    request: {
-      query: GetFacilityResultsMultiplexDocument,
+      query: GetFacilityResultsMultiplexWithCountDocument,
       variables: {
         facilityId: null,
         pageNumber: 0,
@@ -472,7 +382,7 @@ export const mocksWithMultiplex = [
     },
     result: {
       data: {
-        testResults: testResultsMultiplex,
+        testResultsPage: testResultsMultiplex,
       },
     },
   },
@@ -491,20 +401,7 @@ export const mocksWithMultiplex = [
   },
   {
     request: {
-      query: GetResultsCountByFacilityDocument,
-      variables: {
-        facilityId: "1",
-      },
-    },
-    result: {
-      data: {
-        testResultsCount: testResultsMultiplex.length,
-      },
-    },
-  },
-  {
-    request: {
-      query: GetFacilityResultsMultiplexDocument,
+      query: GetFacilityResultsMultiplexWithCountDocument,
       variables: {
         facilityId: "1",
         pageNumber: 0,
@@ -513,7 +410,7 @@ export const mocksWithMultiplex = [
     },
     result: {
       data: {
-        testResults: testResultsMultiplex,
+        testResultsPage: testResultsMultiplex,
       },
     },
   },

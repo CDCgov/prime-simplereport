@@ -4,13 +4,13 @@ import Modal from "react-modal";
 import { useNavigate } from "react-router-dom";
 
 import Button from "../commonComponents/Button/Button";
-import { displayFullName, showNotification } from "../utils";
+import { displayFullName } from "../utils";
+import { showSuccess } from "../utils/srToast";
 import "./TestResultCorrectionModal.scss";
 import {
   InjectedQueryWrapperProps,
   QueryWrapper,
 } from "../commonComponents/QueryWrapper";
-import Alert from "../commonComponents/Alert";
 import Dropdown from "../commonComponents/Dropdown";
 import RadioGroup from "../commonComponents/RadioGroup";
 import Required from "../commonComponents/Required";
@@ -72,7 +72,12 @@ export const testQuery = gql`
   query getTestResultForCorrection($id: ID!) {
     testResult(id: $id) {
       dateTested
-      result
+      results {
+        disease {
+          name
+        }
+        testResult
+      }
       correctionStatus
       deviceType {
         name
@@ -135,13 +140,11 @@ export const DetachedTestResultCorrectionModal = ({
       },
     })
       .then(() => {
-        const alert = (
-          <Alert type="success" title="Result marked as error" body="" />
-        );
-        showNotification(alert);
+        showSuccess("", "Result marked as error");
       })
       .finally(() => {
         closeModal();
+        navigate(0);
       });
   };
 
@@ -153,12 +156,9 @@ export const DetachedTestResultCorrectionModal = ({
       },
     })
       .then(() => {
-        const alert = (
-          // TODO: better text here, maybe indicating to user that the test should now
-          // be available in the queue
-          <Alert type="success" title="Result marked as correction" body="" />
-        );
-        showNotification(alert);
+        // TODO: better text here, maybe indicating to user that the test should now
+        // be available in the queue
+        showSuccess("", "Result marked as correction");
       })
       .finally(() => {
         setTimeout(() => {
@@ -173,6 +173,7 @@ export const DetachedTestResultCorrectionModal = ({
       className="sr-test-correction-modal-content"
       overlayClassName="sr-test-correction-modal-overlay"
       contentLabel="Correct result"
+      onRequestClose={closeModal}
     >
       <h3 className="modal__heading">
         Correct result for{" "}

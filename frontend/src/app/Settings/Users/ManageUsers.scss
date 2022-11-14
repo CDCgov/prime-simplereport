@@ -5,12 +5,14 @@
 
   .users-sidenav {
     border-right: 1px solid #dfe1e2; // color("text-base-lighter");
-    .users-header {
+    .users-sidenav-header {
       font-style: normal;
       font-weight: bold;
       font-size: 16px;
       line-height: 19px;
       color: #1b1b1b;
+      margin-block-start: 1em;
+      margin-block-end: 1em;
     }
   }
 
@@ -19,8 +21,6 @@
   }
 
   .user-header {
-    // border-bottom: 1px solid #dfe1e2;
-    // padding: 0 0.5em;
     margin-bottom: 1em;
   }
 
@@ -102,18 +102,22 @@
   .usa-card__header,
   .usa-card__body {
     padding-left: 1.1rem;
-    padding-right: 1.1rem;
+    padding-right: 1.5rem;
   }
 
   .usa-card__header {
     padding-bottom: 2rem;
 
-    h2 {
-      margin-top: 8px;
+    h1 {
+      font-size: 1.5em;
+      margin-top: 8px !important;
+      margin-bottom: 0 !important;
+      margin-block-start: 0.83em;
+      margin-block-end: 0.83em;
     }
 
-    button.usa-button {
-      margin-right: 1rem;
+    h2 {
+      margin-top: 8px;
     }
   }
 
@@ -155,11 +159,11 @@
         line-height: 26px;
         color: #1b1b1b;
 
-        span {
+        button {
           padding-bottom: 2px;
         }
 
-        &.usa-current span {
+        &.usa-current button {
           font-weight: 600;
           border-bottom: 0.25rem solid #005ea2;
         }
@@ -211,6 +215,7 @@
       line-height: 19px;
       color: #1b1b1b;
       margin-bottom: 2rem;
+      margin-block-start: 1.33em;
     }
 
     .usercontrols-text {
@@ -250,6 +255,7 @@
       font-size: 16px;
       line-height: 19px;
       color: #1b1b1b;
+      margin-block-start: 1em;
     }
 
     .testing-facility-access-subtext {

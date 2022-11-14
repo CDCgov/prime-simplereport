@@ -13,6 +13,8 @@ import {
   waitForElementToBeRemoved,
 } from "@testing-library/react";
 import userEvent from "@testing-library/user-event";
+import { ApplicationInsights } from "@microsoft/applicationinsights-web";
+import jwtDecode from "jwt-decode";
 
 import {
   GetFacilityQueueMultiplexDocument,
@@ -26,6 +28,7 @@ import {
   getEndDateFromDaysAgo,
   getStartDateFromDaysAgo,
 } from "./analytics/Analytics";
+import { getAppInsights } from "./TelemetryService";
 
 jest.mock("uuid");
 jest.mock("./VersionService", () => ({
@@ -39,6 +42,11 @@ jest.mock("./testResults/CleanTestResultsList", () => {
 jest.mock("./testResults/TestResultsList", () => {
   return () => <p>TestResultsList</p>;
 });
+jest.mock("./TelemetryService", () => ({
+  ...jest.requireActual("./TelemetryService"),
+  getAppInsights: jest.fn(),
+}));
+jest.mock("jwt-decode", () => jest.fn());
 
 const mockStore = createMockStore([]);
 const mockDispatch = jest.fn();
@@ -220,9 +228,7 @@ const MODAL_TEXT = "Welcome to the SimpleReport";
 
 describe("App", () => {
   beforeEach(() => {
-    jest
-      .useFakeTimers("modern")
-      .setSystemTime(new Date("2021-08-01").getTime());
+    jest.useFakeTimers().setSystemTime(new Date("2021-08-01").getTime());
   });
 
   afterEach(() => {
@@ -283,6 +289,92 @@ describe("App", () => {
     renderApp(mockedStore, [WhoAmIQueryMock, facilityQueryMock]);
     expect(screen.queryByText(TRAINING_PURPOSES_ONLY)).not.toBeInTheDocument();
     expect(screen.queryByText(MODAL_TEXT)).not.toBeInTheDocument();
+  });
+  describe("logs to App Insights on WhoAmI error", () => {
+    const oldTokenClaim = process.env.REACT_APP_OKTA_TOKEN_ROLE_CLAIM;
+    const trackExceptionMock = jest.fn();
+    beforeEach(() => {
+      process.env.REACT_APP_OKTA_TOKEN_ROLE_CLAIM = "test_roles";
+      trackExceptionMock.mockReset();
+      (getAppInsights as jest.Mock).mockImplementation(() => {
+        const ai = Object.create(ApplicationInsights.prototype);
+        return Object.assign(ai, { trackException: trackExceptionMock });
+      });
+    });
+    afterEach(() => {
+      process.env.REACT_APP_OKTA_TOKEN_ROLE_CLAIM = oldTokenClaim;
+      jest.spyOn(Storage.prototype, "getItem").mockRestore();
+    });
+    it("logs with access token info", async () => {
+      jest
+        .spyOn(Storage.prototype, "getItem")
+        .mockImplementation(() => "definitely a valid token");
+      (jwtDecode as jest.Mock).mockReturnValue({
+        sub: "subject@fakeorg.net",
+        test_roles: [
+          "SR-FAKE-TENANT:XX-TestOrg-123:NO_ACCESS",
+          "SR-FAKE-TENANT:XX-TestOrg-123:USER",
+        ],
+      });
+      const mockedStore = mockStore({ ...store, dataLoaded: true });
+
+      renderApp(mockedStore, [WhoAmIErrorQueryMock]);
+      await screen.findByText("error", { exact: false });
+
+      expect(trackExceptionMock).toHaveBeenCalledWith({
+        exception: new Error("Server connection error"),
+        properties: {
+          "user message": "Server connection error",
+          "valid access token": true,
+          "token subject": "subject@fakeorg.net",
+          "token roles": [
+            "SR-FAKE-TENANT:XX-TestOrg-123:NO_ACCESS",
+            "SR-FAKE-TENANT:XX-TestOrg-123:USER",
+          ],
+        },
+      });
+    });
+    it("still logs if missing token", async () => {
+      const mockedStore = mockStore({ ...store, dataLoaded: true });
+      jest.spyOn(Storage.prototype, "getItem").mockImplementation(() => null);
+
+      renderApp(mockedStore, [WhoAmIErrorQueryMock]);
+      await screen.findByText("error", { exact: false });
+
+      expect(trackExceptionMock).toHaveBeenCalledWith({
+        exception: new Error("Server connection error"),
+        properties: {
+          "user message": "Server connection error",
+          "valid access token": null,
+          "token subject": undefined,
+          "token roles": undefined,
+        },
+      });
+    });
+    it("still logs if invalid token", async () => {
+      jest
+        .spyOn(Storage.prototype, "getItem")
+        .mockImplementation(() => "definitely NOT a valid token");
+      jest.spyOn(console, "error").mockImplementation(() => {});
+      (jwtDecode as jest.Mock).mockImplementation(() => {
+        throw new Error("InvalidToken");
+      });
+      const mockedStore = mockStore({ ...store, dataLoaded: true });
+
+      renderApp(mockedStore, [WhoAmIErrorQueryMock]);
+      await screen.findByText("error", { exact: false });
+
+      expect(trackExceptionMock).toHaveBeenCalledWith({
+        exception: new Error("Server connection error"),
+        properties: {
+          "user message": "Server connection error",
+          "valid access token": false,
+          "token subject": undefined,
+          "token roles": undefined,
+        },
+      });
+      jest.spyOn(console, "error").mockRestore();
+    });
   });
   it("renders CleanTestResultsList when going to /results/", async () => {
     const mockedStore = mockStore({ ...store, dataLoaded: true });

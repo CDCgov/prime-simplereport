@@ -10,9 +10,10 @@ import { Provider } from "react-redux";
 import configureStore from "redux-mock-store";
 import { MemoryRouter, Route, Routes, useLocation } from "react-router-dom";
 import userEvent from "@testing-library/user-event";
-import { ToastContainer } from "react-toastify";
 
 import * as smartyStreets from "../utils/smartyStreets";
+import SRToastContainer from "../commonComponents/SRToastContainer";
+import { PATIENT_TERM } from "../../config/constants";
 
 import AddPatient, { ADD_PATIENT, PATIENT_EXISTS } from "./AddPatient";
 
@@ -134,7 +135,7 @@ describe("AddPatient", () => {
     });
     it("does not show the form title", () => {
       expect(
-        screen.queryByText("Add new person", {
+        screen.queryByText(`Add new ${PATIENT_TERM}`, {
           exact: false,
         })
       ).not.toBeInTheDocument();
@@ -233,19 +234,17 @@ describe("AddPatient", () => {
               </RouterWithFacility>
             </MockedProvider>
           </Provider>
-          <ToastContainer
-            autoClose={5000}
-            closeButton={false}
-            limit={2}
-            position="bottom-center"
-            hideProgressBar={true}
-          />
+          <SRToastContainer />
         </>
       );
     });
     it("shows the form title", async () => {
       expect(
-        (await screen.findAllByText("Add new person", { exact: false }))[0]
+        (
+          await screen.findAllByText(`Add new ${PATIENT_TERM}`, {
+            exact: false,
+          })
+        )[0]
       ).toBeInTheDocument();
     });
 
@@ -454,7 +453,7 @@ describe("AddPatient", () => {
         );
 
         expect(
-          await screen.findByText("Race is required", { exact: false })
+          await screen.findByText("Race is missing", { exact: false })
         ).toBeInTheDocument();
       });
     });

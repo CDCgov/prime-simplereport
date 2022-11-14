@@ -1,0 +1,1344 @@
+// Jest Snapshot v1, https://goo.gl/fbAQLP
+
+exports[`update existing devices renders the Device Form 1`] = `
+Object {
+  "asFragment": [Function],
+  "baseElement": <body>
+    <div>
+      <div
+        class="prime-home flex-1"
+      >
+        <div
+          class="grid-container"
+        >
+          <div
+            class="grid-row"
+          >
+            <div
+              class="prime-container card-container"
+            >
+              <div
+                class="usa-card__header"
+              >
+                <div>
+                  <h2>
+                    Manage devices
+                  </h2>
+                </div>
+                <div
+                  style="display: flex; justify-content: center; align-items: center;"
+                >
+                  <button
+                    aria-disabled="true"
+                    class="usa-button usa-button-disabled"
+                    disabled=""
+                    type="button"
+                  >
+                    Save changes
+                  </button>
+                </div>
+              </div>
+              <div
+                class="usa-card__body margin-top-1"
+              >
+                <div>
+                  <div
+                    class="usa-alert usa-alert--warning"
+                  >
+                    <div
+                      class="usa-alert__body"
+                    >
+                      <h4
+                        class="usa-alert__heading"
+                      >
+                        Reminder
+                      </h4>
+                      <p
+                        class="usa-alert__text"
+                      >
+                        Notify ReportStream of devices added in
+                         
+                        <a
+                          href="https://usds.slack.com/archives/C024MGSJZ38"
+                          rel="noreferrer"
+                          target="_blank"
+                        >
+                          #prime-reportstream
+                        </a>
+                        .
+                      </p>
+                      <p>
+                        Device details can be found by downloading the mapping tool (Excel file) from the
+                         
+                        <a
+                          href="https://www.cdc.gov/csels/dls/sars-cov-2-livd-codes.html"
+                          rel="noreferrer"
+                          target="_blank"
+                        >
+                          CDC test code mapping for COVID-19 page
+                        </a>
+                        .
+                      </p>
+                    </div>
+                  </div>
+                </div>
+                <div
+                  class="grid-row grid-gap"
+                >
+                  <div
+                    class="tablet:grid-col"
+                  >
+                    Select device
+                    <abbr
+                      class="usa-hint usa-hint--required"
+                      title="required"
+                    >
+                       
+                      *
+                    </abbr>
+                    <div
+                      class="usa-combo-box usa-combo-box__full-width"
+                      data-enhanced="true"
+                      data-testid="combo-box"
+                    >
+                      <select
+                        aria-hidden="true"
+                        class="usa-select usa-sr-only usa-combo-box__select"
+                        data-testid="combo-box-select"
+                        name="selectDevice"
+                        tabindex="-1"
+                      >
+                        <option
+                          value="abc3"
+                        >
+                          Covalent Observer
+                        </option>
+                        <option
+                          value="abc2"
+                        >
+                          Fission Energizer
+                        </option>
+                        <option
+                          value="abc1"
+                        >
+                          Tesla Emitter
+                        </option>
+                      </select>
+                      <input
+                        aria-activedescendant=""
+                        aria-autocomplete="list"
+                        aria-controls="selectDevice--list"
+                        aria-describedby="selectDevice--assistiveHint"
+                        aria-expanded="false"
+                        aria-owns="selectDevice--list"
+                        autocapitalize="off"
+                        autocomplete="off"
+                        class="usa-combo-box__input"
+                        data-testid="combo-box-input"
+                        id="selectDevice"
+                        role="combobox"
+                        type="text"
+                        value=""
+                      />
+                      <span
+                        class="usa-combo-box__clear-input__wrapper"
+                        tabindex="-1"
+                      >
+                        <button
+                          aria-label="Clear the select contents"
+                          class="usa-combo-box__clear-input"
+                          data-testid="combo-box-clear-button"
+                          hidden=""
+                          type="button"
+                        >
+                           
+                        </button>
+                      </span>
+                      <span
+                        class="usa-combo-box__input-button-separator"
+                      >
+                         
+                      </span>
+                      <span
+                        class="usa-combo-box__toggle-list__wrapper"
+                        tabindex="-1"
+                      >
+                        <button
+                          aria-label="Toggle the dropdown list"
+                          class="usa-combo-box__toggle-list"
+                          data-testid="combo-box-toggle"
+                          tabindex="-1"
+                          type="button"
+                        >
+                           
+                        </button>
+                      </span>
+                      <ul
+                        class="usa-combo-box__list"
+                        data-testid="combo-box-option-list"
+                        hidden=""
+                        id="selectDevice--list"
+                        role="listbox"
+                        tabindex="-1"
+                      >
+                        <li
+                          aria-posinset="1"
+                          aria-selected="false"
+                          aria-setsize="3"
+                          class="usa-combo-box__list-option"
+                          data-testid="combo-box-option-abc3"
+                          data-value="abc3"
+                          id="selectDevice--list--option-0"
+                          role="option"
+                          tabindex="-1"
+                          value="abc3"
+                        >
+                          Covalent Observer
+                        </li>
+                        <li
+                          aria-posinset="2"
+                          aria-selected="false"
+                          aria-setsize="3"
+                          class="usa-combo-box__list-option"
+                          data-testid="combo-box-option-abc2"
+                          data-value="abc2"
+                          id="selectDevice--list--option-1"
+                          role="option"
+                          tabindex="-1"
+                          value="abc2"
+                        >
+                          Fission Energizer
+                        </li>
+                        <li
+                          aria-posinset="3"
+                          aria-selected="false"
+                          aria-setsize="3"
+                          class="usa-combo-box__list-option"
+                          data-testid="combo-box-option-abc1"
+                          data-value="abc1"
+                          id="selectDevice--list--option-2"
+                          role="option"
+                          tabindex="-1"
+                          value="abc1"
+                        >
+                          Tesla Emitter
+                        </li>
+                      </ul>
+                      <div
+                        class="usa-combo-box__status usa-sr-only"
+                        role="status"
+                      />
+                      <span
+                        class="usa-sr-only"
+                        data-testid="combo-box-assistive-hint"
+                        id="selectDevice--assistiveHint"
+                      >
+                        When autocomplete results are available use up and down arrows to review
+           and enter to select. Touch device users, explore by touch or with swipe
+           gestures.
+                      </span>
+                    </div>
+                  </div>
+                </div>
+                <div
+                  class="grid-row grid-gap"
+                >
+                  <div
+                    class="tablet:grid-col"
+                  >
+                    <div
+                      class="usa-form-group"
+                    >
+                      <label
+                        class="usa-label"
+                        for="22"
+                      >
+                        Device name
+                        <abbr
+                          class="usa-hint usa-hint--required"
+                          title="required"
+                        >
+                           
+                          *
+                        </abbr>
+                      </label>
+                      <input
+                        aria-disabled="true"
+                        aria-required="true"
+                        class="usa-input"
+                        disabled=""
+                        id="22"
+                        name="name"
+                        type="text"
+                        value=""
+                      />
+                    </div>
+                  </div>
+                </div>
+                <div
+                  class="grid-row grid-gap"
+                >
+                  <div
+                    class="tablet:grid-col"
+                  >
+                    <div
+                      class="usa-form-group"
+                    >
+                      <label
+                        class="usa-label"
+                        for="23"
+                      >
+                        Model
+                        <abbr
+                          class="usa-hint usa-hint--required"
+                          title="required"
+                        >
+                           
+                          *
+                        </abbr>
+                      </label>
+                      <input
+                        aria-disabled="true"
+                        aria-required="true"
+                        class="usa-input"
+                        disabled=""
+                        id="23"
+                        name="model"
+                        type="text"
+                        value=""
+                      />
+                    </div>
+                  </div>
+                </div>
+                <div
+                  class="grid-row grid-gap"
+                >
+                  <div
+                    class="tablet:grid-col"
+                  >
+                    <div
+                      class="usa-form-group"
+                    >
+                      <label
+                        class="usa-label"
+                        for="24"
+                      >
+                        Manufacturer
+                        <abbr
+                          class="usa-hint usa-hint--required"
+                          title="required"
+                        >
+                           
+                          *
+                        </abbr>
+                      </label>
+                      <input
+                        aria-disabled="true"
+                        aria-required="true"
+                        class="usa-input"
+                        disabled=""
+                        id="24"
+                        name="manufacturer"
+                        type="text"
+                        value=""
+                      />
+                    </div>
+                  </div>
+                </div>
+                <div
+                  class="grid-row grid-gap"
+                >
+                  <div
+                    class="tablet:grid-col"
+                  >
+                    <div
+                      class="usa-form-group"
+                    >
+                      <label
+                        class="usa-label"
+                        for="25"
+                      >
+                        LOINC code
+                        <abbr
+                          class="usa-hint usa-hint--required"
+                          title="required"
+                        >
+                           
+                          *
+                        </abbr>
+                      </label>
+                      <input
+                        aria-disabled="true"
+                        aria-required="true"
+                        class="usa-input"
+                        disabled=""
+                        id="25"
+                        name="loincCode"
+                        type="text"
+                        value=""
+                      />
+                    </div>
+                  </div>
+                  <div
+                    class="tablet:grid-col"
+                  >
+                    <div
+                      class="usa-form-group"
+                    >
+                      <label
+                        class="usa-label"
+                        for="26"
+                      >
+                        Test length (minutes)
+                        <abbr
+                          class="usa-hint usa-hint--required"
+                          title="required"
+                        >
+                           
+                          *
+                        </abbr>
+                      </label>
+                      <input
+                        aria-disabled="true"
+                        aria-required="true"
+                        class="usa-input"
+                        disabled=""
+                        id="26"
+                        max="999"
+                        min="0"
+                        name="testLength"
+                        type="number"
+                        value=""
+                      />
+                    </div>
+                  </div>
+                </div>
+                <div
+                  class="grid-row grid-gap"
+                >
+                  <div
+                    class="tablet:grid-col"
+                  >
+                    <div
+                      class="usa-form-group"
+                    >
+                      <label
+                        class="usa-label"
+                        for="27"
+                      >
+                        SNOMED code for swab type(s)
+                        <abbr
+                          class="usa-hint usa-hint--required"
+                          title="required"
+                        >
+                           
+                          *
+                        </abbr>
+                      </label>
+                      <div
+                        class="usa-combo-box usa-combo-box--pristine multi-select-dropdown"
+                        data-testid="multi-select"
+                        id="27"
+                      >
+                        <input
+                          aria-expanded="false"
+                          aria-invalid="false"
+                          aria-owns="multi-select-swabTypes-list"
+                          autocapitalize="off"
+                          autocomplete="off"
+                          class="usa-combo-box__input"
+                          data-testid="multi-select-input"
+                          disabled=""
+                          role="combobox"
+                          type="text"
+                          value=""
+                        />
+                        <span
+                          class="usa-combo-box__input-button-separator"
+                        >
+                           
+                        </span>
+                        <span
+                          class="usa-combo-box__toggle-list__wrapper"
+                          tabindex="-1"
+                        >
+                          <button
+                            aria-hidden="true"
+                            class="usa-combo-box__toggle-list"
+                            data-testid="multi-select-toggle"
+                            disabled=""
+                            tabindex="-1"
+                            type="button"
+                          >
+                             
+                          </button>
+                        </span>
+                        <ul
+                          class="usa-combo-box__list"
+                          data-testid="multi-select-option-list"
+                          hidden=""
+                          id="multi-select-swabTypes-list"
+                          role="listbox"
+                          tabindex="-1"
+                        >
+                          <li
+                            aria-posinset="1"
+                            aria-selected="false"
+                            aria-setsize="64"
+                            class="usa-combo-box__list-option"
+                            data-testid="multi-select-option-456"
+                            id="multi-select-swabTypes-list--option-0"
+                            role="option"
+                            tabindex="-1"
+                            value="456"
+                          >
+                            eye
+                          </li>
+                          <li
+                            aria-posinset="2"
+                            aria-selected="false"
+                            aria-setsize="64"
+                            class="usa-combo-box__list-option"
+                            data-testid="multi-select-option-789"
+                            id="multi-select-swabTypes-list--option-1"
+                            role="option"
+                            tabindex="-1"
+                            value="789"
+                          >
+                            mouth
+                          </li>
+                          <li
+                            aria-posinset="3"
+                            aria-selected="false"
+                            aria-setsize="64"
+                            class="usa-combo-box__list-option"
+                            data-testid="multi-select-option-123"
+                            id="multi-select-swabTypes-list--option-2"
+                            role="option"
+                            tabindex="-1"
+                            value="123"
+                          >
+                            nose
+                          </li>
+                        </ul>
+                        <div
+                          class="usa-combo-box__status usa-sr-only"
+                          role="status"
+                        />
+                      </div>
+                      <fieldset
+                        class="fieldset--unstyled pill-container"
+                        data-testid="pill-container"
+                      >
+                        <legend
+                          class="usa-sr-only"
+                        >
+                          Selected SNOMED code for swab type(s)
+                        </legend>
+                      </fieldset>
+                    </div>
+                  </div>
+                </div>
+                <div
+                  class="grid-row grid-gap"
+                >
+                  <div
+                    class="tablet:grid-col"
+                    style="margin-bottom: 56px;"
+                  >
+                    <div
+                      class="usa-form-group"
+                    >
+                      <label
+                        class="usa-label"
+                        for="28"
+                      >
+                        Supported diseases
+                        <abbr
+                          class="usa-hint usa-hint--required"
+                          title="required"
+                        >
+                           
+                          *
+                        </abbr>
+                      </label>
+                      <div
+                        class="usa-combo-box usa-combo-box--pristine multi-select-dropdown"
+                        data-testid="multi-select"
+                        id="28"
+                      >
+                        <input
+                          aria-expanded="false"
+                          aria-invalid="false"
+                          aria-owns="multi-select-supportedDiseases-list"
+                          autocapitalize="off"
+                          autocomplete="off"
+                          class="usa-combo-box__input"
+                          data-testid="multi-select-input"
+                          disabled=""
+                          role="combobox"
+                          type="text"
+                          value=""
+                        />
+                        <span
+                          class="usa-combo-box__input-button-separator"
+                        >
+                           
+                        </span>
+                        <span
+                          class="usa-combo-box__toggle-list__wrapper"
+                          tabindex="-1"
+                        >
+                          <button
+                            aria-hidden="true"
+                            class="usa-combo-box__toggle-list"
+                            data-testid="multi-select-toggle"
+                            disabled=""
+                            tabindex="-1"
+                            type="button"
+                          >
+                             
+                          </button>
+                        </span>
+                        <ul
+                          class="usa-combo-box__list"
+                          data-testid="multi-select-option-list"
+                          hidden=""
+                          id="multi-select-supportedDiseases-list"
+                          role="listbox"
+                          tabindex="-1"
+                        >
+                          <li
+                            aria-posinset="1"
+                            aria-selected="false"
+                            aria-setsize="64"
+                            class="usa-combo-box__list-option"
+                            data-testid="multi-select-option-123"
+                            id="multi-select-supportedDiseases-list--option-0"
+                            role="option"
+                            tabindex="-1"
+                            value="123"
+                          >
+                            COVID-19
+                          </li>
+                        </ul>
+                        <div
+                          class="usa-combo-box__status usa-sr-only"
+                          role="status"
+                        />
+                      </div>
+                      <fieldset
+                        class="fieldset--unstyled pill-container"
+                        data-testid="pill-container"
+                      >
+                        <legend
+                          class="usa-sr-only"
+                        >
+                          Selected Supported diseases
+                        </legend>
+                      </fieldset>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </body>,
+  "container": <div>
+    <div
+      class="prime-home flex-1"
+    >
+      <div
+        class="grid-container"
+      >
+        <div
+          class="grid-row"
+        >
+          <div
+            class="prime-container card-container"
+          >
+            <div
+              class="usa-card__header"
+            >
+              <div>
+                <h2>
+                  Manage devices
+                </h2>
+              </div>
+              <div
+                style="display: flex; justify-content: center; align-items: center;"
+              >
+                <button
+                  aria-disabled="true"
+                  class="usa-button usa-button-disabled"
+                  disabled=""
+                  type="button"
+                >
+                  Save changes
+                </button>
+              </div>
+            </div>
+            <div
+              class="usa-card__body margin-top-1"
+            >
+              <div>
+                <div
+                  class="usa-alert usa-alert--warning"
+                >
+                  <div
+                    class="usa-alert__body"
+                  >
+                    <h4
+                      class="usa-alert__heading"
+                    >
+                      Reminder
+                    </h4>
+                    <p
+                      class="usa-alert__text"
+                    >
+                      Notify ReportStream of devices added in
+                       
+                      <a
+                        href="https://usds.slack.com/archives/C024MGSJZ38"
+                        rel="noreferrer"
+                        target="_blank"
+                      >
+                        #prime-reportstream
+                      </a>
+                      .
+                    </p>
+                    <p>
+                      Device details can be found by downloading the mapping tool (Excel file) from the
+                       
+                      <a
+                        href="https://www.cdc.gov/csels/dls/sars-cov-2-livd-codes.html"
+                        rel="noreferrer"
+                        target="_blank"
+                      >
+                        CDC test code mapping for COVID-19 page
+                      </a>
+                      .
+                    </p>
+                  </div>
+                </div>
+              </div>
+              <div
+                class="grid-row grid-gap"
+              >
+                <div
+                  class="tablet:grid-col"
+                >
+                  Select device
+                  <abbr
+                    class="usa-hint usa-hint--required"
+                    title="required"
+                  >
+                     
+                    *
+                  </abbr>
+                  <div
+                    class="usa-combo-box usa-combo-box__full-width"
+                    data-enhanced="true"
+                    data-testid="combo-box"
+                  >
+                    <select
+                      aria-hidden="true"
+                      class="usa-select usa-sr-only usa-combo-box__select"
+                      data-testid="combo-box-select"
+                      name="selectDevice"
+                      tabindex="-1"
+                    >
+                      <option
+                        value="abc3"
+                      >
+                        Covalent Observer
+                      </option>
+                      <option
+                        value="abc2"
+                      >
+                        Fission Energizer
+                      </option>
+                      <option
+                        value="abc1"
+                      >
+                        Tesla Emitter
+                      </option>
+                    </select>
+                    <input
+                      aria-activedescendant=""
+                      aria-autocomplete="list"
+                      aria-controls="selectDevice--list"
+                      aria-describedby="selectDevice--assistiveHint"
+                      aria-expanded="false"
+                      aria-owns="selectDevice--list"
+                      autocapitalize="off"
+                      autocomplete="off"
+                      class="usa-combo-box__input"
+                      data-testid="combo-box-input"
+                      id="selectDevice"
+                      role="combobox"
+                      type="text"
+                      value=""
+                    />
+                    <span
+                      class="usa-combo-box__clear-input__wrapper"
+                      tabindex="-1"
+                    >
+                      <button
+                        aria-label="Clear the select contents"
+                        class="usa-combo-box__clear-input"
+                        data-testid="combo-box-clear-button"
+                        hidden=""
+                        type="button"
+                      >
+                         
+                      </button>
+                    </span>
+                    <span
+                      class="usa-combo-box__input-button-separator"
+                    >
+                       
+                    </span>
+                    <span
+                      class="usa-combo-box__toggle-list__wrapper"
+                      tabindex="-1"
+                    >
+                      <button
+                        aria-label="Toggle the dropdown list"
+                        class="usa-combo-box__toggle-list"
+                        data-testid="combo-box-toggle"
+                        tabindex="-1"
+                        type="button"
+                      >
+                         
+                      </button>
+                    </span>
+                    <ul
+                      class="usa-combo-box__list"
+                      data-testid="combo-box-option-list"
+                      hidden=""
+                      id="selectDevice--list"
+                      role="listbox"
+                      tabindex="-1"
+                    >
+                      <li
+                        aria-posinset="1"
+                        aria-selected="false"
+                        aria-setsize="3"
+                        class="usa-combo-box__list-option"
+                        data-testid="combo-box-option-abc3"
+                        data-value="abc3"
+                        id="selectDevice--list--option-0"
+                        role="option"
+                        tabindex="-1"
+                        value="abc3"
+                      >
+                        Covalent Observer
+                      </li>
+                      <li
+                        aria-posinset="2"
+                        aria-selected="false"
+                        aria-setsize="3"
+                        class="usa-combo-box__list-option"
+                        data-testid="combo-box-option-abc2"
+                        data-value="abc2"
+                        id="selectDevice--list--option-1"
+                        role="option"
+                        tabindex="-1"
+                        value="abc2"
+                      >
+                        Fission Energizer
+                      </li>
+                      <li
+                        aria-posinset="3"
+                        aria-selected="false"
+                        aria-setsize="3"
+                        class="usa-combo-box__list-option"
+                        data-testid="combo-box-option-abc1"
+                        data-value="abc1"
+                        id="selectDevice--list--option-2"
+                        role="option"
+                        tabindex="-1"
+                        value="abc1"
+                      >
+                        Tesla Emitter
+                      </li>
+                    </ul>
+                    <div
+                      class="usa-combo-box__status usa-sr-only"
+                      role="status"
+                    />
+                    <span
+                      class="usa-sr-only"
+                      data-testid="combo-box-assistive-hint"
+                      id="selectDevice--assistiveHint"
+                    >
+                      When autocomplete results are available use up and down arrows to review
+           and enter to select. Touch device users, explore by touch or with swipe
+           gestures.
+                    </span>
+                  </div>
+                </div>
+              </div>
+              <div
+                class="grid-row grid-gap"
+              >
+                <div
+                  class="tablet:grid-col"
+                >
+                  <div
+                    class="usa-form-group"
+                  >
+                    <label
+                      class="usa-label"
+                      for="22"
+                    >
+                      Device name
+                      <abbr
+                        class="usa-hint usa-hint--required"
+                        title="required"
+                      >
+                         
+                        *
+                      </abbr>
+                    </label>
+                    <input
+                      aria-disabled="true"
+                      aria-required="true"
+                      class="usa-input"
+                      disabled=""
+                      id="22"
+                      name="name"
+                      type="text"
+                      value=""
+                    />
+                  </div>
+                </div>
+              </div>
+              <div
+                class="grid-row grid-gap"
+              >
+                <div
+                  class="tablet:grid-col"
+                >
+                  <div
+                    class="usa-form-group"
+                  >
+                    <label
+                      class="usa-label"
+                      for="23"
+                    >
+                      Model
+                      <abbr
+                        class="usa-hint usa-hint--required"
+                        title="required"
+                      >
+                         
+                        *
+                      </abbr>
+                    </label>
+                    <input
+                      aria-disabled="true"
+                      aria-required="true"
+                      class="usa-input"
+                      disabled=""
+                      id="23"
+                      name="model"
+                      type="text"
+                      value=""
+                    />
+                  </div>
+                </div>
+              </div>
+              <div
+                class="grid-row grid-gap"
+              >
+                <div
+                  class="tablet:grid-col"
+                >
+                  <div
+                    class="usa-form-group"
+                  >
+                    <label
+                      class="usa-label"
+                      for="24"
+                    >
+                      Manufacturer
+                      <abbr
+                        class="usa-hint usa-hint--required"
+                        title="required"
+                      >
+                         
+                        *
+                      </abbr>
+                    </label>
+                    <input
+                      aria-disabled="true"
+                      aria-required="true"
+                      class="usa-input"
+                      disabled=""
+                      id="24"
+                      name="manufacturer"
+                      type="text"
+                      value=""
+                    />
+                  </div>
+                </div>
+              </div>
+              <div
+                class="grid-row grid-gap"
+              >
+                <div
+                  class="tablet:grid-col"
+                >
+                  <div
+                    class="usa-form-group"
+                  >
+                    <label
+                      class="usa-label"
+                      for="25"
+                    >
+                      LOINC code
+                      <abbr
+                        class="usa-hint usa-hint--required"
+                        title="required"
+                      >
+                         
+                        *
+                      </abbr>
+                    </label>
+                    <input
+                      aria-disabled="true"
+                      aria-required="true"
+                      class="usa-input"
+                      disabled=""
+                      id="25"
+                      name="loincCode"
+                      type="text"
+                      value=""
+                    />
+                  </div>
+                </div>
+                <div
+                  class="tablet:grid-col"
+                >
+                  <div
+                    class="usa-form-group"
+                  >
+                    <label
+                      class="usa-label"
+                      for="26"
+                    >
+                      Test length (minutes)
+                      <abbr
+                        class="usa-hint usa-hint--required"
+                        title="required"
+                      >
+                         
+                        *
+                      </abbr>
+                    </label>
+                    <input
+                      aria-disabled="true"
+                      aria-required="true"
+                      class="usa-input"
+                      disabled=""
+                      id="26"
+                      max="999"
+                      min="0"
+                      name="testLength"
+                      type="number"
+                      value=""
+                    />
+                  </div>
+                </div>
+              </div>
+              <div
+                class="grid-row grid-gap"
+              >
+                <div
+                  class="tablet:grid-col"
+                >
+                  <div
+                    class="usa-form-group"
+                  >
+                    <label
+                      class="usa-label"
+                      for="27"
+                    >
+                      SNOMED code for swab type(s)
+                      <abbr
+                        class="usa-hint usa-hint--required"
+                        title="required"
+                      >
+                         
+                        *
+                      </abbr>
+                    </label>
+                    <div
+                      class="usa-combo-box usa-combo-box--pristine multi-select-dropdown"
+                      data-testid="multi-select"
+                      id="27"
+                    >
+                      <input
+                        aria-expanded="false"
+                        aria-invalid="false"
+                        aria-owns="multi-select-swabTypes-list"
+                        autocapitalize="off"
+                        autocomplete="off"
+                        class="usa-combo-box__input"
+                        data-testid="multi-select-input"
+                        disabled=""
+                        role="combobox"
+                        type="text"
+                        value=""
+                      />
+                      <span
+                        class="usa-combo-box__input-button-separator"
+                      >
+                         
+                      </span>
+                      <span
+                        class="usa-combo-box__toggle-list__wrapper"
+                        tabindex="-1"
+                      >
+                        <button
+                          aria-hidden="true"
+                          class="usa-combo-box__toggle-list"
+                          data-testid="multi-select-toggle"
+                          disabled=""
+                          tabindex="-1"
+                          type="button"
+                        >
+                           
+                        </button>
+                      </span>
+                      <ul
+                        class="usa-combo-box__list"
+                        data-testid="multi-select-option-list"
+                        hidden=""
+                        id="multi-select-swabTypes-list"
+                        role="listbox"
+                        tabindex="-1"
+                      >
+                        <li
+                          aria-posinset="1"
+                          aria-selected="false"
+                          aria-setsize="64"
+                          class="usa-combo-box__list-option"
+                          data-testid="multi-select-option-456"
+                          id="multi-select-swabTypes-list--option-0"
+                          role="option"
+                          tabindex="-1"
+                          value="456"
+                        >
+                          eye
+                        </li>
+                        <li
+                          aria-posinset="2"
+                          aria-selected="false"
+                          aria-setsize="64"
+                          class="usa-combo-box__list-option"
+                          data-testid="multi-select-option-789"
+                          id="multi-select-swabTypes-list--option-1"
+                          role="option"
+                          tabindex="-1"
+                          value="789"
+                        >
+                          mouth
+                        </li>
+                        <li
+                          aria-posinset="3"
+                          aria-selected="false"
+                          aria-setsize="64"
+                          class="usa-combo-box__list-option"
+                          data-testid="multi-select-option-123"
+                          id="multi-select-swabTypes-list--option-2"
+                          role="option"
+                          tabindex="-1"
+                          value="123"
+                        >
+                          nose
+                        </li>
+                      </ul>
+                      <div
+                        class="usa-combo-box__status usa-sr-only"
+                        role="status"
+                      />
+                    </div>
+                    <fieldset
+                      class="fieldset--unstyled pill-container"
+                      data-testid="pill-container"
+                    >
+                      <legend
+                        class="usa-sr-only"
+                      >
+                        Selected SNOMED code for swab type(s)
+                      </legend>
+                    </fieldset>
+                  </div>
+                </div>
+              </div>
+              <div
+                class="grid-row grid-gap"
+              >
+                <div
+                  class="tablet:grid-col"
+                  style="margin-bottom: 56px;"
+                >
+                  <div
+                    class="usa-form-group"
+                  >
+                    <label
+                      class="usa-label"
+                      for="28"
+                    >
+                      Supported diseases
+                      <abbr
+                        class="usa-hint usa-hint--required"
+                        title="required"
+                      >
+                         
+                        *
+                      </abbr>
+                    </label>
+                    <div
+                      class="usa-combo-box usa-combo-box--pristine multi-select-dropdown"
+                      data-testid="multi-select"
+                      id="28"
+                    >
+                      <input
+                        aria-expanded="false"
+                        aria-invalid="false"
+                        aria-owns="multi-select-supportedDiseases-list"
+                        autocapitalize="off"
+                        autocomplete="off"
+                        class="usa-combo-box__input"
+                        data-testid="multi-select-input"
+                        disabled=""
+                        role="combobox"
+                        type="text"
+                        value=""
+                      />
+                      <span
+                        class="usa-combo-box__input-button-separator"
+                      >
+                         
+                      </span>
+                      <span
+                        class="usa-combo-box__toggle-list__wrapper"
+                        tabindex="-1"
+                      >
+                        <button
+                          aria-hidden="true"
+                          class="usa-combo-box__toggle-list"
+                          data-testid="multi-select-toggle"
+                          disabled=""
+                          tabindex="-1"
+                          type="button"
+                        >
+                           
+                        </button>
+                      </span>
+                      <ul
+                        class="usa-combo-box__list"
+                        data-testid="multi-select-option-list"
+                        hidden=""
+                        id="multi-select-supportedDiseases-list"
+                        role="listbox"
+                        tabindex="-1"
+                      >
+                        <li
+                          aria-posinset="1"
+                          aria-selected="false"
+                          aria-setsize="64"
+                          class="usa-combo-box__list-option"
+                          data-testid="multi-select-option-123"
+                          id="multi-select-supportedDiseases-list--option-0"
+                          role="option"
+                          tabindex="-1"
+                          value="123"
+                        >
+                          COVID-19
+                        </li>
+                      </ul>
+                      <div
+                        class="usa-combo-box__status usa-sr-only"
+                        role="status"
+                      />
+                    </div>
+                    <fieldset
+                      class="fieldset--unstyled pill-container"
+                      data-testid="pill-container"
+                    >
+                      <legend
+                        class="usa-sr-only"
+                      >
+                        Selected Supported diseases
+                      </legend>
+                    </fieldset>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>,
+  "debug": [Function],
+  "findAllByAltText": [Function],
+  "findAllByDisplayValue": [Function],
+  "findAllByLabelText": [Function],
+  "findAllByPlaceholderText": [Function],
+  "findAllByRole": [Function],
+  "findAllByTestId": [Function],
+  "findAllByText": [Function],
+  "findAllByTitle": [Function],
+  "findByAltText": [Function],
+  "findByDisplayValue": [Function],
+  "findByLabelText": [Function],
+  "findByPlaceholderText": [Function],
+  "findByRole": [Function],
+  "findByTestId": [Function],
+  "findByText": [Function],
+  "findByTitle": [Function],
+  "getAllByAltText": [Function],
+  "getAllByDisplayValue": [Function],
+  "getAllByLabelText": [Function],
+  "getAllByPlaceholderText": [Function],
+  "getAllByRole": [Function],
+  "getAllByTestId": [Function],
+  "getAllByText": [Function],
+  "getAllByTitle": [Function],
+  "getByAltText": [Function],
+  "getByDisplayValue": [Function],
+  "getByLabelText": [Function],
+  "getByPlaceholderText": [Function],
+  "getByRole": [Function],
+  "getByTestId": [Function],
+  "getByText": [Function],
+  "getByTitle": [Function],
+  "queryAllByAltText": [Function],
+  "queryAllByDisplayValue": [Function],
+  "queryAllByLabelText": [Function],
+  "queryAllByPlaceholderText": [Function],
+  "queryAllByRole": [Function],
+  "queryAllByTestId": [Function],
+  "queryAllByText": [Function],
+  "queryAllByTitle": [Function],
+  "queryByAltText": [Function],
+  "queryByDisplayValue": [Function],
+  "queryByLabelText": [Function],
+  "queryByPlaceholderText": [Function],
+  "queryByRole": [Function],
+  "queryByTestId": [Function],
+  "queryByText": [Function],
+  "queryByTitle": [Function],
+  "rerender": [Function],
+  "unmount": [Function],
+}
+`;

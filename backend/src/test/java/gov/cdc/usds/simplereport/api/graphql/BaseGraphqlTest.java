@@ -1,7 +1,6 @@
 package gov.cdc.usds.simplereport.api.graphql;
 
 import static org.assertj.core.api.Assertions.assertThat;
-import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertNull;
 import static org.junit.jupiter.api.Assertions.fail;
 import static org.mockito.ArgumentMatchers.any;
@@ -11,8 +10,6 @@ import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.node.JsonNodeFactory;
 import com.fasterxml.jackson.databind.node.ObjectNode;
-import com.graphql.spring.boot.test.GraphQLResponse;
-import com.graphql.spring.boot.test.GraphQLTestTemplate;
 import com.yannbriancon.interceptor.HibernateQueryInterceptor;
 import gov.cdc.usds.simplereport.api.BaseFullStackTest;
 import gov.cdc.usds.simplereport.api.model.Role;
@@ -38,36 +35,31 @@ import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.boot.test.autoconfigure.graphql.tester.AutoConfigureHttpGraphQlTester;
 import org.springframework.boot.test.mock.mockito.MockBean;
-import org.springframework.boot.test.web.client.TestRestTemplate;
-import org.springframework.http.HttpEntity;
+import org.springframework.graphql.test.tester.GraphQlTester;
+import org.springframework.graphql.test.tester.WebGraphQlTester;
 import org.springframework.http.HttpHeaders;
-import org.springframework.http.HttpMethod;
-import org.springframework.http.HttpStatus;
-import org.springframework.http.MediaType;
-import org.springframework.http.ResponseEntity;
 import org.springframework.util.LinkedMultiValueMap;
 import org.springframework.util.MultiValueMap;
 
 /** Base class for GraphQL API full-stack tests. */
 @Slf4j
+@AutoConfigureHttpGraphQlTester
 public abstract class BaseGraphqlTest extends BaseFullStackTest {
 
-  protected static final String ACCESS_ERROR =
-      "Current user does not have permission for this action";
+  protected static final String ACCESS_ERROR = "Unauthorized";
 
   @Autowired private OrganizationInitializingService _initService;
   @Autowired private DemoOktaRepository _oktaRepo;
-  @Autowired private GraphQLTestTemplate _template;
   @Autowired private DemoUserConfiguration _users;
-  @Autowired private TestRestTemplate restTemplate;
-  @Autowired private ObjectMapper objectMapper;
   @Autowired protected HibernateQueryInterceptor _hibernateQueryInterceptor;
   @MockBean private AddressValidationService _addressValidation;
 
   private String _userName = null;
   private MultiValueMap<String, String> _customHeaders;
-  private ResponseEntity<String> _lastResponse;
+
+  @Autowired private WebGraphQlTester graphQlTester;
 
   protected void useOrgUser() {
     _userName = TestUserIdentities.STANDARD_USER;
@@ -116,10 +108,6 @@ public abstract class BaseGraphqlTest extends BaseFullStackTest {
     _customHeaders.add(name, value);
   }
 
-  protected ResponseEntity<String> getLastResponse() {
-    return _lastResponse;
-  }
-
   @BeforeEach
   public void setup() {
     truncateDb();
@@ -131,7 +119,6 @@ public abstract class BaseGraphqlTest extends BaseFullStackTest {
     TestUserIdentities.withStandardUser(_initService::initAll);
     useOrgUser();
     _customHeaders = new LinkedMultiValueMap<String, String>();
-    _lastResponse = null;
     assertNull(
         // Dear future reader: this is not negotiable. If you set a default user, then patients will
         // show up as being the default user instead of themselves. This would be bad.
@@ -158,39 +145,11 @@ public abstract class BaseGraphqlTest extends BaseFullStackTest {
     return DemoAuthenticationConfiguration.DEMO_AUTHORIZATION_FLAG + _userName;
   }
 
-  /**
-   * CLEAR ALL HEADERS and then set the Authorization header the requested value, as well as any
-   * other custom headers supplied for this request.
-   */
-  private void setQueryHeaders() {
-    log.info("Setting up graphql template authorization for {}", _userName);
-    log.info("Setting custom headers: {}", _customHeaders.keySet());
-    _template
-        .withClearHeaders()
-        .withBearerAuth(getBearerAuth())
-        .withAdditionalHeaders(_customHeaders);
-    _customHeaders.clear();
-  }
-
   protected ObjectNode runMultipart(LinkedMultiValueMap<String, Object> parts) {
-    HttpHeaders headers = new HttpHeaders();
-    headers.setBearerAuth(getBearerAuth());
-    headers.setContentType(MediaType.MULTIPART_FORM_DATA);
-    HttpEntity<LinkedMultiValueMap<String, Object>> request =
-        new HttpEntity<LinkedMultiValueMap<String, Object>>(parts, headers);
-    try {
-      _lastResponse = restTemplate.exchange("/graphql", HttpMethod.POST, request, String.class);
-      assertEquals(HttpStatus.OK, _lastResponse.getStatusCode(), "Servlet response should be OK");
-      GraphQLResponse response = new GraphQLResponse(_lastResponse, objectMapper);
-      JsonNode responseBody = response.readTree();
-      assertGraphQLOutcome(responseBody, null);
-      return (ObjectNode) responseBody.get("data");
-    } catch (IOException e) {
-      throw new RuntimeException(e);
-    }
+    return null;
   }
 
-  /** See {@link #runQuery(String, String, ObjectNode, String)}. */
+  /** See {@link #runQuery(String, String, Map, String)}. */
   protected ObjectNode runQuery(String queryFileName) {
     return runQuery(queryFileName, null, null, null);
   }
@@ -204,46 +163,68 @@ public abstract class BaseGraphqlTest extends BaseFullStackTest {
     return runQuery(queryFileName, null, null, expectedError);
   }
 
-  /** See {@link #runQuery(String,String,ObjectNode,String)}. */
-  protected ObjectNode runQuery(String queryFileName, ObjectNode variables, String expectedError) {
+  /** See {@link #runQuery(String,String,Map,String)}. */
+  protected ObjectNode runQuery(
+      String queryFileName, Map<String, Object> variables, String expectedError) {
     return runQuery(queryFileName, null, variables, expectedError);
   }
 
   /**
    * Run the query in the given resource file, check if the response has the expected error (either
    * none or a single specific error message), and return the {@code data} section of the response
-   * if the error was as expected. <b>NOTE</b>: Any headers that have been set on the {@link
-   * GraphQLTestTemplate} will be cleared at the beginning of this method: if you need to set them,
-   * modify the {{@link #setQueryHeaders(String)} method, or add another method that is called after
-   * it!
+   * if the error was as expected. <b>NOTE</b>: Any headers that have been set will be cleared at
+   * the beginning of this method
    *
    * @param queryFileName the resource file name of the query (to be found in
    *     src/test/resources/queries, unless a "/" is found in the filename)
    * @param operationName the operation name from the query file, in the event that the query file
    *     is a multi-operation document.
    * @return the "data" key from the server response.
-   * @throws AssertionFailedError if the response has errors
-   * @throws RuntimeException for unexpected errors
    */
   protected ObjectNode runQuery(
-      String queryFileName, String operationName, ObjectNode variables, String expectedError) {
-    if (queryFileName != null && !queryFileName.contains("/")) {
-      queryFileName = "queries/" + queryFileName;
+      String queryFileName,
+      String operationName,
+      Map<String, Object> variables,
+      String expectedError) {
+    // change variables to map everywhere! seems like this will continue to give us issues
+    WebGraphQlTester webGraphQlTester =
+        this.graphQlTester
+            .mutate()
+            .headers(HttpHeaders::clear)
+            .headers(headers -> headers.setBearerAuth(getBearerAuth()))
+            .headers(httpHeaders -> httpHeaders.addAll(_customHeaders))
+            .build();
+
+    System.out.println(queryFileName);
+    GraphQlTester.Request<?> request = webGraphQlTester.documentName(queryFileName);
+
+    if (operationName != null) {
+      request.operationName(operationName);
     }
-    try {
-      setQueryHeaders();
-      GraphQLResponse response = _template.perform(queryFileName, operationName, variables);
-      assertEquals(HttpStatus.OK, response.getStatusCode(), "Servlet response should be OK");
-      _lastResponse = response.getRawResponse();
-      JsonNode responseBody = response.readTree();
-      assertGraphQLOutcome(responseBody, expectedError);
-      return (ObjectNode) responseBody.get("data");
-    } catch (IOException e) {
-      throw new RuntimeException(e);
+
+    if (variables != null) {
+      variables.forEach(request::variable);
     }
+
+    GraphQlTester.Response response = request.execute();
+    if (expectedError != null) {
+      response
+          .errors()
+          .satisfy(
+              errors -> {
+                assertThat(errors).hasSize(1);
+                assertThat(errors.get(0).getMessage()).contains(expectedError);
+              });
+    }
+
+    Object responseObject = response.path("").entity(Object.class).get();
+    ObjectMapper mapper = new ObjectMapper();
+    ObjectNode jsonNodeMap = (ObjectNode) mapper.convertValue(responseObject, JsonNode.class);
+
+    return jsonNodeMap;
   }
 
-  protected ObjectNode runQuery(String queryFileName, ObjectNode variables) {
+  protected ObjectNode runQuery(String queryFileName, Map<String, Object> variables) {
     return runQuery(queryFileName, null, variables, null);
   }
 
@@ -271,17 +252,19 @@ public abstract class BaseGraphqlTest extends BaseFullStackTest {
       List<PhoneNumberInput> phoneNumbers,
       String lookupId,
       Optional<UUID> facilityId,
-      Optional<String> expectedError)
-      throws IOException {
-    ObjectNode variables =
-        JsonNodeFactory.instance
-            .objectNode()
-            .put("firstName", firstName)
-            .put("lastName", lastName)
-            .put("birthDate", birthDate)
-            .putPOJO("phoneNumbers", phoneNumbers)
-            .put("lookupId", lookupId)
-            .put("facilityId", facilityId.map(UUID::toString).orElse(null));
+      Optional<String> expectedError) {
+
+    Map<String, Object> variables =
+        new HashMap<>(
+            Map.of(
+                "firstName", firstName,
+                "lastName", lastName,
+                "birthDate", birthDate,
+                "phoneNumbers", phoneNumbers,
+                "lookupId", lookupId));
+
+    facilityId.ifPresent(uuid -> variables.put("facilityId", uuid.toString()));
+
     return runQuery("add-person", variables, expectedError.orElse(null));
   }
 
@@ -319,28 +302,27 @@ public abstract class BaseGraphqlTest extends BaseFullStackTest {
       useOrgAdmin();
     }
 
-    ObjectNode updatePrivilegesVariables =
+    Map<String, Object> updatePrivilegesVariables =
         getUpdateUserPrivilegesVariables(id, role, accessAllFacilities, facilities);
     runQuery("update-user-privileges", updatePrivilegesVariables);
 
     _userName = originalUsername;
   }
 
-  protected ObjectNode getUpdateUserPrivilegesVariables(
+  protected Map<String, Object> getUpdateUserPrivilegesVariables(
       String id, Role role, boolean accessAllFacilities, Set<UUID> facilities) {
-    ObjectNode variables =
-        JsonNodeFactory.instance
-            .objectNode()
-            .put("id", id)
-            .put("role", role.name())
-            .put("accessAllFacilities", accessAllFacilities);
-    variables
-        .putArray("facilities")
-        .addAll(
-            facilities.stream()
-                .map(f -> JsonNodeFactory.instance.textNode(f.toString()))
-                .collect(Collectors.toSet()));
-    return variables;
+
+    return Map.of(
+        "id",
+        id,
+        "role",
+        role.name(),
+        "accessAllFacilities",
+        accessAllFacilities,
+        "facilities",
+        facilities.stream()
+            .map(f -> JsonNodeFactory.instance.textNode(f.toString()))
+            .collect(Collectors.toSet()));
   }
 
   // map from each facility's name to its UUID; includes all facilities in organization

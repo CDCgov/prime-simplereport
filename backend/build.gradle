@@ -1,12 +1,12 @@
 plugins {
-    id 'org.springframework.boot' version '2.4.2'
+    id 'org.springframework.boot' version '2.7.4'
     id 'org.liquibase.gradle' version '2.0.4'
-    id 'io.spring.dependency-management' version '1.0.10.RELEASE'
+    id 'io.spring.dependency-management' version '1.0.14.RELEASE'
     id 'java'
     id 'checkstyle'
     id 'jacoco'
     id 'org.sonarqube' version '3.0'
-    id 'com.gorylenko.gradle-git-properties' version '2.2.0'
+    id 'com.gorylenko.gradle-git-properties' version '2.4.0'
     id "com.diffplug.spotless" version "5.14.0"
 }
 
@@ -15,16 +15,26 @@ version = '0.0.1-SNAPSHOT'
 sourceCompatibility = '11'
 
 ext {
-    kickstartVersion = '11.0.0'
-    set('springCloudVersion', "2020.0.5")
+    set('springCloudVersion', "2021.0.3")
 }
 repositories {
     mavenCentral()
 }
 
+jar {
+    enabled = false
+}
+
 dependencies {
     // core infrastructure
     implementation 'org.springframework.boot:spring-boot-starter-web'
+    implementation 'org.springframework.boot:spring-boot-actuator'
+    implementation 'org.springframework.boot:spring-boot-actuator-autoconfigure'
+
+    // graphql
+    implementation 'org.springframework.boot:spring-boot-starter-graphql'
+    testImplementation 'org.springframework:spring-webflux'
+    testImplementation 'org.springframework.graphql:spring-graphql-test'
 
     //Feign HTTP Client
     implementation 'org.springframework.cloud:spring-cloud-starter-openfeign'
@@ -34,27 +44,29 @@ dependencies {
     implementation 'org.apache.logging.log4j:log4j-api:2.17.0'
     implementation 'org.apache.logging.log4j:log4j-to-slf4j:2.17.0'
 
+    // Security Pins (Sept 2022)
+    implementation 'org.yaml:snakeyaml:1.31'
+
     // data layer dependencies
     implementation 'org.springframework.boot:spring-boot-starter-data-jpa'
     implementation 'org.springframework.boot:spring-boot-starter-validation'
-    implementation 'com.vladmihalcea:hibernate-types-52:2.10.0'
+    implementation 'com.vladmihalcea:hibernate-types-55:2.19.2'
     implementation 'org.liquibase:liquibase-core'
-    runtimeOnly 'org.postgresql:postgresql'
+    runtimeOnly 'org.postgresql:postgresql:42.4.1'
 
     // data validation
-    implementation 'com.googlecode.libphonenumber:libphonenumber:8.12.15'
-    implementation 'com.smartystreets.api:smartystreets-java-sdk:3.7.2'
+    implementation 'com.googlecode.libphonenumber:libphonenumber:8.12.57'
+    implementation 'com.smartystreets.api:smartystreets-java-sdk:3.13.0'
+    implementation 'com.google.code.findbugs:jsr305:3.0.2'
 
     // UI layer dependencies
-    implementation "com.graphql-java-kickstart:graphql-spring-boot-starter:${kickstartVersion}"
-    implementation "com.zhokhov.graphql:graphql-datetime-spring-boot-starter:4.0.0"
     implementation 'org.json:json:20201115'
     implementation 'com.fasterxml.jackson.dataformat:jackson-dataformat-csv'
     implementation 'com.fasterxml.jackson.datatype:jackson-datatype-hibernate5'
     implementation 'org.springframework.boot:spring-boot-starter-thymeleaf'
 
     // Okta dependencies
-    implementation 'com.okta.spring:okta-spring-boot-starter:2.0.0'
+    implementation 'com.okta.spring:okta-spring-boot-starter:2.1.6'
     implementation 'com.okta.sdk:okta-sdk-api:8.2.1'
     runtimeOnly 'com.okta.sdk:okta-sdk-impl:8.2.1'
     runtimeOnly 'com.okta.sdk:okta-sdk-httpclient:8.2.1'
@@ -75,41 +87,26 @@ dependencies {
     implementation 'org.springframework.boot:spring-boot-starter-mail'
 
     // JPA Hibernate static metamodel generation
-    compile 'org.hibernate:hibernate-jpamodelgen:5.4.27.Final'
+    implementation 'org.hibernate:hibernate-jpamodelgen:5.4.27.Final'
     annotationProcessor 'org.hibernate:hibernate-jpamodelgen'
 
     // graphql-java-extended-validation schema directives
-    compile 'com.graphql-java:graphql-java-extended-validation:16.0.0'
+    implementation 'com.graphql-java:graphql-java-extended-validation:18.1-hibernate-validator-6.2.0.Final'
+    // graphql-java-extended-scalars
+    implementation 'com.graphql-java:graphql-java-extended-scalars:18.1'
 
-    implementation 'com.azure:azure-storage-queue:12.12.+'
+    implementation 'com.azure:azure-storage-queue:12.15.+'
     implementation 'com.azure:azure-core-http-netty:1.11.9'
     implementation 'com.azure:azure-core:1.27.0'
     implementation 'com.azure:azure-storage-common:12.15.1'
 
-    implementation 'io.netty:netty-codec:4.1.73.Final'
-    implementation 'io.netty:netty-codec-dns:4.1.73.Final'
-    implementation 'io.netty:netty-common:4.1.73.Final'
-    implementation 'io.netty:netty-resolver:4.1.73.Final'
-    implementation 'io.netty:netty-resolver-dns:4.1.73.Final'
-    implementation 'io.netty:netty-resolver-dns-native-macos:4.1.73.Final'
-    implementation 'io.netty:netty-transport:4.1.73.Final'
-    implementation 'io.netty:netty-buffer:4.1.73.Final'
-    implementation 'io.netty:netty-codec-http2:4.1.73.Final'
-    implementation 'io.netty:netty-codec-http:4.1.73.Final'
-    implementation 'io.netty:netty-handler:4.1.73.Final'
-    implementation 'io.netty:netty-handler-proxy:4.1.73.Final'
-    implementation 'io.netty:netty-transport-native-epoll:4.1.73.Final'
-    implementation 'io.netty:netty-transport-native-kqueue:4.1.73.Final'
-    implementation 'io.netty:netty-transport-native-unix-common:4.1.73.Final'
-    implementation 'io.netty:netty-codec-socks:4.1.73.Final'
-
-    implementation 'io.netty:netty-tcnative-boringssl-static:2.0.47.Final'
+    // RandomStringUtils to generate PatientSelfRegistrationLink
+    implementation 'org.apache.commons:commons-lang3:3.12.0'
 
     // test/check dependencies
     testImplementation('org.springframework.boot:spring-boot-starter-test') {
         exclude group: 'org.junit.vintage', module: 'junit-vintage-engine'
     }
-    testImplementation "com.graphql-java-kickstart:graphql-spring-boot-starter-test:${kickstartVersion}"
     testImplementation 'org.springframework.security:spring-security-test'
     testImplementation 'com.yannbriancon:spring-hibernate-query-utils:1.0.3'
 
@@ -122,13 +119,13 @@ dependencies {
     developmentOnly 'org.springframework.boot:spring-boot-devtools'
 
     // Lombok
-    compileOnly 'org.projectlombok:lombok:1.18.20'
-    annotationProcessor 'org.projectlombok:lombok:1.18.20'
-    testCompileOnly 'org.projectlombok:lombok:1.18.20'
-    testAnnotationProcessor 'org.projectlombok:lombok:1.18.20'
+    compileOnly 'org.projectlombok:lombok'
+    annotationProcessor 'org.projectlombok:lombok'
+    testCompileOnly 'org.projectlombok:lombok'
+    testAnnotationProcessor 'org.projectlombok:lombok'
 
     // WireMock (only used for testing)
-    testCompile "com.github.tomakehurst:wiremock-jre8:2.31.0"
+    testImplementation "com.github.tomakehurst:wiremock-jre8:2.31.0"
 
     runtimeOnly "io.zipkin.brave:brave-instrumentation-http:5.13.2"
     runtimeOnly "io.zipkin.brave:brave:5.13.2"
@@ -229,7 +226,7 @@ task testDbReset(type: Exec) {
     commandLine "db-setup/nuke-db.sh"
 }
 
-test {
+tasks.named('test') {
     // people sometimes export this to run local dev more easily: don't let it break the tests
     environment "SPRING_PROFILES_ACTIVE", ""
     // For some reason, setting this in application-default doesn't work, but it's needed

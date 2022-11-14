@@ -1,8 +1,8 @@
-const TEST_RESULTS_BY_ROLE = [
+const data = [
   {
     internalId: "0969da96-b211-41cd-ba61-002181f0918d",
     dateTested: "2021-03-17T19:27:23.806Z",
-    result: "NEGATIVE",
+    results: [{ disease: { name: "COVID-19" }, testResult: "NEGATIVE" }],
     correctionStatus: "ORIGINAL",
     deviceType: {
       internalId: "8c1a8efe-8951-4f84-a4c9-dcea561d7fbb",
@@ -40,7 +40,7 @@ const TEST_RESULTS_BY_ROLE = [
   {
     internalId: "7c768a5d-ef90-44cd-8050-b96dd7aaa1d5",
     dateTested: "2021-03-19T19:27:21.052Z",
-    result: "POSITIVE",
+    results: [{ disease: { name: "COVID-19" }, testResult: "POSITIVE" }],
     correctionStatus: "ORIGINAL",
     deviceType: {
       internalId: "8c1a8efe-8951-4f84-a4c9-dcea561d7fbb",
@@ -77,4 +77,8 @@ const TEST_RESULTS_BY_ROLE = [
   },
 ];
 
+const TEST_RESULTS_BY_ROLE = {
+  content: data,
+  totalElements: data.length,
+};
 export default TEST_RESULTS_BY_ROLE;

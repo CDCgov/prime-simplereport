@@ -30,7 +30,7 @@ export const TextWithTooltip = ({
       <button
         className={`usa-button usa-button--unstyled ${className}`}
         ref={ref}
-        aria-label={buttonLabel}
+        aria-label={`${buttonLabel} tooltip`}
         {...tooltipProps}
       >
         {children}
@@ -49,7 +49,11 @@ export const TextWithTooltip = ({
       wrapperclasses="usa-text-with-tooltip"
     >
       {text}
-      <FontAwesomeIcon className="info-circle-icon" icon={faInfoCircle} />
+      <FontAwesomeIcon
+        alt-text="info"
+        className="info-circle-icon"
+        icon={faInfoCircle}
+      />
     </Tooltip>
   );
 };

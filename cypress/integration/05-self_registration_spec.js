@@ -8,14 +8,25 @@ describe("Patient self registration", () => {
     cy.visit("/settings");
     cy.contains("Patient self-registration").click();
     cy.contains("Patients can now register themselves online");
+
+
+    // Test a11y on the Patient self registration page
+    cy.injectAxe();
+    cy.checkA11y();
+
     cy.get("#org-link").then(($link) => cy.visit($link.val()));
   });
   it("loads terms of service", () => {
     cy.contains("Terms of service");
+
+    cy.injectAxe();
+    cy.checkA11y(); // Terms of Service
   });
   it("accepts the terms of service", () => {
     cy.contains("I agree").click();
     cy.get("#registration-container").contains("General information");
+
+    cy.checkA11y(); // Info form
   });
   it("fills out some of the form fields", () => {
     cy.get('input[name="firstName"]').type(patient.firstName);
@@ -36,7 +47,7 @@ describe("Patient self registration", () => {
   });
   it("shows what fields are missing on submit", () => {
     cy.get(".self-registration-button").first().click();
-    cy.get(".prime-formgroup").contains("Last name is required");
+    cy.get(".prime-formgroup").contains("Last name is missing");
   });
   it("fills out the remaining fields and submits", () => {
     cy.get('input[name="lastName"]').type(patient.lastName);
@@ -44,9 +55,14 @@ describe("Patient self registration", () => {
     cy.get(
       '.modal__container input[name="addressSelect-person"][value="userAddress"]+label'
     ).click();
+
+    cy.checkA11y();
+
     cy.get(".modal__container #save-confirmed-address").click();
     cy.get("#self-reg-confirmation").contains(
       "thanks for completing your patient profile"
     );
+
+    cy.checkA11y(); // Confirmation page
   });
 });

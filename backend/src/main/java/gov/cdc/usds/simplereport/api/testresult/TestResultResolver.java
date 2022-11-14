@@ -10,31 +10,35 @@ import gov.cdc.usds.simplereport.service.TestResultUploadService;
 import gov.cdc.usds.simplereport.service.errors.InvalidBulkTestResultUploadException;
 import gov.cdc.usds.simplereport.service.errors.InvalidRSAPrivateKeyException;
 import gov.cdc.usds.simplereport.service.model.reportstream.UploadResponse;
-import graphql.kickstart.tools.GraphQLMutationResolver;
-import graphql.kickstart.tools.GraphQLQueryResolver;
 import java.util.Date;
 import java.util.List;
 import java.util.UUID;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
-import org.springframework.stereotype.Component;
+import org.springframework.graphql.data.method.annotation.Argument;
+import org.springframework.graphql.data.method.annotation.MutationMapping;
+import org.springframework.graphql.data.method.annotation.QueryMapping;
+import org.springframework.stereotype.Controller;
 
-@Component
+@Controller
 @RequiredArgsConstructor
-public class TestResultResolver implements GraphQLQueryResolver, GraphQLMutationResolver {
+public class TestResultResolver {
 
   private final TestOrderService tos;
   private final TestResultUploadService testResultUploadService;
 
-  public List<TestEvent> getTestResults(
-      UUID facilityId,
-      UUID patientId,
-      String result,
-      String role,
-      Date startDate,
-      Date endDate,
-      int pageNumber,
-      int pageSize) {
+  // resolver method to be deleted once the frontend compatibility issues
+  // here are resolved
+  @QueryMapping
+  public List<TestEvent> testResults(
+      @Argument UUID facilityId,
+      @Argument UUID patientId,
+      @Argument String result,
+      @Argument String role,
+      @Argument Date startDate,
+      @Argument Date endDate,
+      @Argument int pageNumber,
+      @Argument int pageSize) {
     if (pageNumber < 0) {
       pageNumber = TestOrderService.DEFAULT_PAGINATION_PAGEOFFSET;
     }
@@ -43,6 +47,7 @@ public class TestResultResolver implements GraphQLQueryResolver, GraphQLMutation
     }
 
     if (facilityId == null) {
+
       return tos.getAllFacilityTestEventsResults(
           patientId,
           Translators.parseTestResult(result),
@@ -63,8 +68,55 @@ public class TestResultResolver implements GraphQLQueryResolver, GraphQLMutation
         pageSize);
   }
 
+  // new method with page casting to allow for us to get the count alongside
+  // the results list in one query
+  @QueryMapping
+  public Page<TestEvent> testResultsPage(
+      @Argument UUID facilityId,
+      @Argument UUID patientId,
+      @Argument String result,
+      @Argument String role,
+      @Argument Date startDate,
+      @Argument Date endDate,
+      @Argument int pageNumber,
+      @Argument int pageSize) {
+    if (pageNumber < 0) {
+      pageNumber = TestOrderService.DEFAULT_PAGINATION_PAGEOFFSET;
+    }
+    if (pageSize < 1) {
+      pageSize = TestOrderService.DEFAULT_PAGINATION_PAGESIZE;
+    }
+
+    if (facilityId == null) {
+
+      return tos.getAllFacilityTestEventsResultsPage(
+          patientId,
+          Translators.parseTestResult(result),
+          Translators.parsePersonRole(role, true),
+          startDate,
+          endDate,
+          pageNumber,
+          pageSize);
+    }
+    return tos.getTestEventsResultsPage(
+        facilityId,
+        patientId,
+        Translators.parseTestResult(result),
+        Translators.parsePersonRole(role, true),
+        startDate,
+        endDate,
+        pageNumber,
+        pageSize);
+  }
+
+  @QueryMapping
   public int testResultsCount(
-      UUID facilityId, UUID patientId, String result, String role, Date startDate, Date endDate) {
+      @Argument UUID facilityId,
+      @Argument UUID patientId,
+      @Argument String result,
+      @Argument String role,
+      @Argument Date startDate,
+      @Argument Date endDate) {
     return tos.getTestResultsCount(
         facilityId,
         patientId,
@@ -74,35 +126,45 @@ public class TestResultResolver implements GraphQLQueryResolver, GraphQLMutation
         endDate);
   }
 
-  public TestEvent correctTestMarkAsError(UUID id, String reasonForCorrection) {
-    return tos.markAsError(id, reasonForCorrection);
+  @MutationMapping
+  public TestEvent correctTestMarkAsError(@Argument UUID id, @Argument String reason) {
+    return tos.markAsError(id, reason);
   }
 
-  public TestEvent correctTestMarkAsCorrection(UUID id, String reasonForCorrection) {
-    return tos.markAsCorrection(id, reasonForCorrection);
+  @MutationMapping
+  public TestEvent correctTestMarkAsCorrection(@Argument UUID id, @Argument String reason) {
+    return tos.markAsCorrection(id, reason);
   }
 
-  public TestEvent getTestResult(UUID id) {
+  @QueryMapping
+  public TestEvent testResult(@Argument UUID id) {
     return tos.getTestResult(id);
   }
 
-  public OrganizationLevelDashboardMetrics getOrganizationLevelDashboardMetrics(
-      Date startDate, Date endDate) {
+  @QueryMapping
+  public OrganizationLevelDashboardMetrics organizationLevelDashboardMetrics(
+      @Argument Date startDate, @Argument Date endDate) {
     return tos.getOrganizationLevelDashboardMetrics(startDate, endDate);
   }
 
-  public TopLevelDashboardMetrics getTopLevelDashboardMetrics(
-      UUID facilityId, Date startDate, Date endDate) {
+  @QueryMapping
+  public TopLevelDashboardMetrics topLevelDashboardMetrics(
+      @Argument UUID facilityId, @Argument Date startDate, @Argument Date endDate) {
     return tos.getTopLevelDashboardMetrics(facilityId, startDate, endDate);
   }
 
-  public UploadResponse getUploadSubmission(UUID id)
+  @QueryMapping
+  public UploadResponse uploadSubmission(@Argument UUID id)
       throws InvalidBulkTestResultUploadException, InvalidRSAPrivateKeyException {
     return testResultUploadService.getUploadSubmission(id);
   }
 
-  public Page<TestResultUpload> getUploadSubmissions(
-      Date startDate, Date endDate, int pageNumber, int pageSize) {
+  @QueryMapping
+  public Page<TestResultUpload> uploadSubmissions(
+      @Argument Date startDate,
+      @Argument Date endDate,
+      @Argument int pageNumber,
+      @Argument int pageSize) {
     return testResultUploadService.getUploadSubmissions(startDate, endDate, pageNumber, pageSize);
   }
 }

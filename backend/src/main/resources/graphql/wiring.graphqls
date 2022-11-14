@@ -34,11 +34,10 @@ directive @Pattern(
   message: String = "graphql.validation.Pattern.message"
 ) on ARGUMENT_DEFINITION
 
-# java.util.Date implementation
+# custom scalar gov.cdc.usds.simplereport.config.scalars.datetime.DateTimeScalar
 scalar DateTime
 # custom scalar gov.cdc.usds.simplereport.api.FlexibleDateScalar
 scalar LocalDate
-scalar Upload
 
 enum UploadStatus {
   PENDING
@@ -66,7 +65,7 @@ enum UserPermission {
   UPDATE_TEST
   SUBMIT_TEST
   ACCESS_ALL_FACILITIES
-  SR_CSV_UPLOADER_PILOT
+  UPLOAD_RESULTS_SPREADSHEET
   VIEW_ARCHIVED_FACILITIES
 }
 
