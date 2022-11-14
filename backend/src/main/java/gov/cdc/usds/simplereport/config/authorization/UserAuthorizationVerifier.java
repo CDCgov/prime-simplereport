@@ -285,6 +285,19 @@ public class UserAuthorizationVerifier {
     return true;
   }
 
+  public boolean userIsValidForDebugging() {
+    IdentityAttributes id = _supplier.get();
+    if (id == null) {
+      throw new UnidentifiedUserException();
+    }
+    Optional<ApiUser> found = _userRepo.findByLoginEmail(id.getUsername());
+    if (!found.isPresent()) {
+      throw new NonexistentUserException();
+    }
+
+    return true;
+  }
+
   // This replicates getUser() in ApiUserService.java, but we cannot call that logic directly or
   // else that method
   // would have to either a) become public with no method-level security, which is bad; or b) become

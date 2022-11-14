@@ -27,6 +27,9 @@ public class AuthorizationConfiguration {
 
   private static final String SPEL_IS_VALID = "@" + AUTHORIZER_BEAN + ".userIsValid()";
 
+  private static final String SPEL_IS_VALID_FOR_DEBUGGING =
+      "@" + AUTHORIZER_BEAN + ".userIsValidForDebugging()";
+
   private static final String SPEL_HAS_PERMISSION =
       "@"
           + AUTHORIZER_BEAN
@@ -222,7 +225,11 @@ public class AuthorizationConfiguration {
   @Retention(RUNTIME)
   @Target(METHOD)
   @PreAuthorize(
-      SPEL_IS_VALID + " && " + SPEL_HAS_PERMISSION_EDIT_PATIENT + " && " + SPEL_CAN_ACCESS_FACILITY)
+      SPEL_IS_VALID_FOR_DEBUGGING
+          + " && "
+          + SPEL_HAS_PERMISSION_EDIT_PATIENT
+          + " && "
+          + SPEL_CAN_ACCESS_FACILITY)
   public @interface RequirePermissionCreatePatientAtFacility {}
 
   /**
