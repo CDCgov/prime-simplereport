@@ -9,6 +9,8 @@ import { WHOAMI_QUERY } from "../App";
 import { setInitialState } from "../store";
 import { getAppInsights } from "../TelemetryService";
 
+export const PermissionsContext = React.createContext([]);
+
 interface Props {}
 
 const WithAuthenticatedUser: React.FC<Props> = ({ children }) => {
@@ -93,7 +95,11 @@ const WithAuthenticatedUser: React.FC<Props> = ({ children }) => {
     return <p>Server connection error...</p>;
   }
 
-  return <>{children}</>;
+  return (
+    <PermissionsContext.Provider value={data.whoami.permissions}>
+      {children}
+    </PermissionsContext.Provider>
+  );
 };
 
 export default connect()(WithAuthenticatedUser);
