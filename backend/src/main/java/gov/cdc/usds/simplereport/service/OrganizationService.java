@@ -60,7 +60,6 @@ public class OrganizationService {
       organizationRolesContext.setOrganizationRoles(result);
       return result;
     } catch (ScopeNotActiveException e) {
-      System.out.println("The scope of the request is no longer active. Booooo");
       return fetchCurrentOrganizationRoles();
     }
   }

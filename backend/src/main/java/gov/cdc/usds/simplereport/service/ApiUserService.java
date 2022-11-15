@@ -42,7 +42,6 @@ import org.springframework.security.access.AccessDeniedException;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Propagation;
 import org.springframework.transaction.annotation.Transactional;
-import org.springframework.web.context.request.RequestContextHolder;
 
 @Service
 @Transactional(readOnly = false)
@@ -505,10 +504,6 @@ public class ApiUserService {
   }
 
   private ApiUser getCurrentApiUser() {
-    if (RequestContextHolder.getRequestAttributes() == null) {
-      // short-circuit in the event this is called from outside a request
-      return getCurrentApiUserNoCache();
-    }
     try {
       if (_apiUserContextHolder.hasBeenPopulated()) {
         log.debug("Retrieving user from request context");
