@@ -134,6 +134,17 @@ class PatientBulkUploadServiceIntegrationTest extends BaseServiceTest<PatientBul
   }
 
   @Test
+  void duplicatePatient_isNotAddedToBatch() {
+    // WHEN
+    InputStream inputStream = loadCsv("patientBulkUpload/duplicatePatients.csv");
+    PatientBulkUploadResponse response = this._service.processPersonCSV(inputStream, null);
+
+    // THEN
+    assertThat(response.getStatus()).isEqualTo(UploadStatus.SUCCESS);
+    assertThat(getPatients()).hasSize(1);
+  }
+
+  @Test
   void patientSavedToSingleFacility_successful() {
     // GIVEN
     InputStream inputStream = loadCsv("patientBulkUpload/valid.csv");

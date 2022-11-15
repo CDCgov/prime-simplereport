@@ -13,7 +13,6 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 import java.util.Objects;
-import java.util.Optional;
 import java.util.stream.Collectors;
 import javax.persistence.Column;
 import javax.persistence.Embedded;
@@ -156,7 +155,7 @@ public class Person extends OrganizationScopedEternalEntity implements PersonEnt
 
   public Person(
       Organization organization,
-      Optional<Facility> facility,
+      Facility facility,
       String lookupId,
       String firstName,
       String middleName,
@@ -195,9 +194,7 @@ public class Person extends OrganizationScopedEternalEntity implements PersonEnt
         employedInHealthcare,
         preferredLanguage,
         testResultDeliveryPreference);
-    if (facility.isPresent()) {
-      this.facility = facility.get();
-    }
+    this.facility = facility;
   }
 
   public Person(PersonName names, Organization org, Facility facility) {
@@ -212,6 +209,22 @@ public class Person extends OrganizationScopedEternalEntity implements PersonEnt
     this.facility = facility;
     this.nameInfo = names;
     this.role = role;
+  }
+
+  @Override
+  public boolean equals(Object o) {
+    if (this == o) return true;
+    if (o == null || getClass() != o.getClass()) return false;
+    Person person = (Person) o;
+    return nameInfo.equals(person.nameInfo)
+        && birthDate.equals(person.birthDate)
+        && Objects.equals(facility, person.facility)
+        && Objects.equals(person.getOrganization(), getOrganization());
+  }
+
+  @Override
+  public int hashCode() {
+    return Objects.hash(nameInfo, birthDate, facility, getOrganization());
   }
 
   public void updatePatient(

@@ -26,9 +26,11 @@ import java.io.ByteArrayInputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.util.ArrayList;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
+import java.util.Set;
 import java.util.UUID;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -65,7 +67,7 @@ public class PatientBulkUploadService {
     Optional<Facility> assignedFacility =
         Optional.ofNullable(facilityId).map(_organizationService::getFacilityInCurrentOrg);
 
-    List<Person> patientsList = new ArrayList<>();
+    Set<Person> patientsList = new HashSet<>();
     List<PhoneNumber> phoneNumbersList = new ArrayList<>();
 
     byte[] content;
@@ -129,7 +131,7 @@ public class PatientBulkUploadService {
         Person newPatient =
             new Person(
                 currentOrganization,
-                assignedFacility,
+                assignedFacility.orElse(null),
                 null,
                 extractedData.getFirstName().getValue(),
                 extractedData.getMiddleName().getValue(),
@@ -149,6 +151,10 @@ public class PatientBulkUploadService {
                 null,
                 null);
 
+        if (patientsList.contains(newPatient)) {
+          continue;
+        }
+
         // collect phone numbers and associate them with the patient, then add to phone numbers list
         List<PhoneNumber> newPhoneNumbers =
             _personService.assignPhoneNumbersToPatient(
@@ -157,14 +163,12 @@ public class PatientBulkUploadService {
                     new PhoneNumber(
                         parsePhoneType(extractedData.getPhoneNumberType().getValue()),
                         extractedData.getPhoneNumber().getValue())));
-        newPhoneNumbers.forEach(phoneNumber -> phoneNumbersList.add((phoneNumber)));
+        phoneNumbersList.addAll(newPhoneNumbers);
 
-        // set primary phone number
         if (!newPhoneNumbers.isEmpty()) {
           newPatient.setPrimaryPhone(newPhoneNumbers.get(0));
         }
 
-        // add new patient to the patients list
         patientsList.add(newPatient);
       } catch (IllegalArgumentException e) {
         String errorMessage = "Error uploading patient roster";
