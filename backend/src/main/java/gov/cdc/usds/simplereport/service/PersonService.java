@@ -265,10 +265,10 @@ public class PersonService {
 
   @AuthorizationConfiguration.RequirePermissionCreatePatientAtFacility
   public void addPatientsAndPhoneNumbers(Set<Person> patients, List<PhoneNumber> phoneNumbers) {
-    if (patients.size() > 0) {
+    if (!patients.isEmpty()) {
       _repo.saveAll(patients);
     }
-    if (phoneNumbers.size() > 0) {
+    if (!phoneNumbers.isEmpty()) {
       _phoneRepo.saveAll(phoneNumbers);
     }
   }

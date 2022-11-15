@@ -152,23 +152,21 @@ public class PatientBulkUploadService {
                 null // testResultDeliveryPreference
                 );
 
-        if (patientsList.contains(newPatient)) {
-          continue;
+        if (!patientsList.contains(newPatient)) {
+          // collect phone numbers and associate them with the patient
+          // then add to phone numbers list and set primary phone, if exists
+          List<PhoneNumber> newPhoneNumbers =
+              _personService.assignPhoneNumbersToPatient(
+                  newPatient,
+                  List.of(
+                      new PhoneNumber(
+                          parsePhoneType(extractedData.getPhoneNumberType().getValue()),
+                          extractedData.getPhoneNumber().getValue())));
+          phoneNumbersList.addAll(newPhoneNumbers);
+          newPhoneNumbers.stream().findFirst().ifPresent(newPatient::setPrimaryPhone);
+
+          patientsList.add(newPatient);
         }
-
-        // collect phone numbers and associate them with the patient
-        // then add to phone numbers list and set primary phone, if exists
-        List<PhoneNumber> newPhoneNumbers =
-            _personService.assignPhoneNumbersToPatient(
-                newPatient,
-                List.of(
-                    new PhoneNumber(
-                        parsePhoneType(extractedData.getPhoneNumberType().getValue()),
-                        extractedData.getPhoneNumber().getValue())));
-        phoneNumbersList.addAll(newPhoneNumbers);
-        newPhoneNumbers.stream().findFirst().ifPresent(newPatient::setPrimaryPhone);
-
-        patientsList.add(newPatient);
       } catch (IllegalArgumentException e) {
         String errorMessage = "Error uploading patient roster";
         log.error(

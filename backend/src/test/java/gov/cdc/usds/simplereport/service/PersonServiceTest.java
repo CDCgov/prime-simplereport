@@ -376,7 +376,7 @@ class PersonServiceTest extends BaseServiceTest<PersonService> {
     List<PhoneNumber> assignedPhoneNumbers =
         _service.assignPhoneNumbersToPatient(person, phoneNumbers);
 
-    assertEquals(assignedPhoneNumbers.size(), 0);
+    assertEquals(0, assignedPhoneNumbers.size());
   }
 
   @Test
