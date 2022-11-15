@@ -13,6 +13,7 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 import java.util.Objects;
+import java.util.Optional;
 import java.util.stream.Collectors;
 import javax.persistence.Column;
 import javax.persistence.Embedded;
@@ -153,16 +154,58 @@ public class Person extends OrganizationScopedEternalEntity implements PersonEnt
     this.testResultDeliveryPreference = testResultDeliveryPreference;
   }
 
-  public Person(PersonName names, Organization org, Facility fac) {
+  public Person(
+      Organization organization,
+      Optional<Facility> facility,
+      String lookupId,
+      String firstName,
+      String middleName,
+      String lastName,
+      String suffix,
+      LocalDate birthDate,
+      StreetAddress address,
+      String country,
+      PersonRole role,
+      List<String> emails,
+      String race,
+      String ethnicity,
+      List<String> tribalAffiliation,
+      String gender,
+      Boolean residentCongregateSetting,
+      Boolean employedInHealthcare,
+      String preferredLanguage,
+      TestResultDeliveryPreference testResultDeliveryPreference) {
+    super(organization);
+    if (facility.isPresent()) {
+      this.facility = facility.get();
+    }
+    this.lookupId = lookupId;
+    this.nameInfo = new PersonName(firstName, middleName, lastName, suffix);
+    this.birthDate = birthDate;
+    this.address = address;
+    this.country = country;
+    this.role = role;
+    this.emails = emails;
+    this.race = race;
+    this.ethnicity = ethnicity;
+    this.tribalAffiliation = tribalAffiliation;
+    this.gender = gender;
+    this.residentCongregateSetting = residentCongregateSetting;
+    this.employedInHealthcare = employedInHealthcare;
+    this.preferredLanguage = preferredLanguage;
+    this.testResultDeliveryPreference = testResultDeliveryPreference;
+  }
+
+  public Person(PersonName names, Organization org, Facility facility) {
     super(org);
-    this.facility = fac;
+    this.facility = facility;
     this.nameInfo = names;
     this.role = PersonRole.STAFF;
   }
 
-  public Person(PersonName names, Organization org, Facility fac, PersonRole role) {
+  public Person(PersonName names, Organization org, Facility facility, PersonRole role) {
     super(org);
-    this.facility = fac;
+    this.facility = facility;
     this.nameInfo = names;
     this.role = role;
   }

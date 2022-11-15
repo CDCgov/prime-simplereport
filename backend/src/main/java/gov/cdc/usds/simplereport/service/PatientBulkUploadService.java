@@ -61,12 +61,9 @@ public class PatientBulkUploadService {
 
     Organization currentOrganization = _organizationService.getCurrentOrganization();
 
-    Facility assignedFacility = null;
-    // Patients do not need to be assigned to a facility,
-    // but if an id is given it must be valid
-    if (facilityId != null) {
-      assignedFacility = _organizationService.getFacilityInCurrentOrg(facilityId);
-    }
+    // Patients do not need to be assigned to a facility, but if an id is given it must be valid
+    Optional<Facility> assignedFacility =
+        Optional.ofNullable(facilityId).map(_organizationService::getFacilityInCurrentOrg);
 
     List<Person> patientsList = new ArrayList<>();
     List<PhoneNumber> phoneNumbersList = new ArrayList<>();
@@ -97,9 +94,6 @@ public class PatientBulkUploadService {
     final MappingIterator<Map<String, String>> valueIterator =
         CsvValidatorUtils.getIteratorForCsv(new ByteArrayInputStream(content));
 
-    Optional<Facility> facility =
-        Optional.ofNullable(facilityId).map(_organizationService::getFacilityInCurrentOrg);
-
     while (valueIterator.hasNext()) {
       final Map<String, String> row = CsvValidatorUtils.getNextRow(valueIterator);
 
@@ -127,7 +121,7 @@ public class PatientBulkUploadService {
             extractedData.getLastName().getValue(),
             parseUserShortDate(extractedData.getDateOfBirth().getValue()),
             currentOrganization,
-            facility)) {
+            assignedFacility)) {
           continue;
         }
 
@@ -135,6 +129,7 @@ public class PatientBulkUploadService {
         Person newPatient =
             new Person(
                 currentOrganization,
+                assignedFacility,
                 null,
                 extractedData.getFirstName().getValue(),
                 extractedData.getMiddleName().getValue(),
@@ -153,7 +148,6 @@ public class PatientBulkUploadService {
                 parseYesNo(extractedData.getEmployedInHealthcare().getValue()),
                 null,
                 null);
-        newPatient.setFacility(assignedFacility); // might be null, that's fine
 
         // collect phone numbers and associate them with the patient, then add to phone numbers list
         List<PhoneNumber> newPhoneNumbers =
