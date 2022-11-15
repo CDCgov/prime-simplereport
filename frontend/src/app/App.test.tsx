@@ -21,7 +21,7 @@ import {
   GetTopLevelDashboardMetricsNewDocument,
 } from "../generated/graphql";
 
-import App, { WHOAMI_QUERY } from "./App";
+import App from "./App";
 import PrimeErrorBoundary from "./PrimeErrorBoundary";
 import { TRAINING_PURPOSES_ONLY } from "./commonComponents/TrainingNotification";
 import {
@@ -29,6 +29,7 @@ import {
   getStartDateFromDaysAgo,
 } from "./analytics/Analytics";
 import { getAppInsights } from "./TelemetryService";
+import { WHOAMI_QUERY } from "./withAuthenticatedUser/WithAuthenticatedUser";
 
 jest.mock("uuid");
 jest.mock("./VersionService", () => ({

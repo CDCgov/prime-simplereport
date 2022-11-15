@@ -1,15 +1,35 @@
 import React, { useEffect } from "react";
 import { connect, useDispatch } from "react-redux";
 import { useLocation } from "react-router-dom";
-import { useQuery } from "@apollo/client";
+import { gql, useQuery } from "@apollo/client";
 import { ApplicationInsights } from "@microsoft/applicationinsights-web";
 import jwtDecode from "jwt-decode";
 
-import { WHOAMI_QUERY } from "../App";
 import { setInitialState } from "../store";
 import { getAppInsights } from "../TelemetryService";
 
-export const PermissionsContext = React.createContext([]);
+export const WHOAMI_QUERY = gql`
+  query WhoAmI {
+    whoami {
+      id
+      firstName
+      middleName
+      lastName
+      suffix
+      email
+      isAdmin
+      permissions
+      roleDescription
+      organization {
+        name
+        testingFacility {
+          id
+          name
+        }
+      }
+    }
+  }
+`;
 
 interface Props {}
 
@@ -95,11 +115,7 @@ const WithAuthenticatedUser: React.FC<Props> = ({ children }) => {
     return <p>Server connection error...</p>;
   }
 
-  return (
-    <PermissionsContext.Provider value={data.whoami.permissions}>
-      {children}
-    </PermissionsContext.Provider>
-  );
+  return <>{children}</>;
 };
 
 export default connect()(WithAuthenticatedUser);
