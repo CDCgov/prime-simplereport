@@ -175,25 +175,29 @@ public class Person extends OrganizationScopedEternalEntity implements PersonEnt
       Boolean employedInHealthcare,
       String preferredLanguage,
       TestResultDeliveryPreference testResultDeliveryPreference) {
-    super(organization);
+    this(
+        organization,
+        lookupId,
+        firstName,
+        middleName,
+        lastName,
+        suffix,
+        birthDate,
+        address,
+        country,
+        role,
+        emails,
+        race,
+        ethnicity,
+        tribalAffiliation,
+        gender,
+        residentCongregateSetting,
+        employedInHealthcare,
+        preferredLanguage,
+        testResultDeliveryPreference);
     if (facility.isPresent()) {
       this.facility = facility.get();
     }
-    this.lookupId = lookupId;
-    this.nameInfo = new PersonName(firstName, middleName, lastName, suffix);
-    this.birthDate = birthDate;
-    this.address = address;
-    this.country = country;
-    this.role = role;
-    this.emails = emails;
-    this.race = race;
-    this.ethnicity = ethnicity;
-    this.tribalAffiliation = tribalAffiliation;
-    this.gender = gender;
-    this.residentCongregateSetting = residentCongregateSetting;
-    this.employedInHealthcare = employedInHealthcare;
-    this.preferredLanguage = preferredLanguage;
-    this.testResultDeliveryPreference = testResultDeliveryPreference;
   }
 
   public Person(PersonName names, Organization org, Facility facility) {
