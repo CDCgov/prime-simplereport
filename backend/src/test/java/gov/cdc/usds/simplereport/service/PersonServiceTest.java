@@ -343,6 +343,43 @@ class PersonServiceTest extends BaseServiceTest<PersonService> {
   }
 
   @Test
+  @SliceTestConfiguration.WithSimpleReportOrgAdminUser
+  void assignPhoneNumberToPatient_noNumbers_success() {
+    Facility facility = _dataFactory.createValidFacility(_orgService.getCurrentOrganization());
+    UUID facilityId = facility.getInternalId();
+
+    Person person =
+        _service.addPatient(
+            facilityId,
+            null,
+            "John",
+            null,
+            "Doe",
+            null,
+            LocalDate.of(1990, 01, 01),
+            _dataFactory.getAddress(),
+            "USA",
+            null,
+            PersonRole.STAFF,
+            null,
+            null,
+            null,
+            null,
+            null,
+            false,
+            false,
+            "English",
+            TestResultDeliveryPreference.NONE);
+
+    List<PhoneNumber> phoneNumbers = new ArrayList<>();
+
+    List<PhoneNumber> assignedPhoneNumbers =
+        _service.assignPhoneNumbersToPatient(person, phoneNumbers);
+
+    assertEquals(assignedPhoneNumbers.size(), 0);
+  }
+
+  @Test
   @WithSimpleReportStandardUser
   void deletePatient_standardUser_successDependsOnFacilityAccess() {
     Facility fac = _dataFactory.createValidFacility(_orgService.getCurrentOrganization());

@@ -265,8 +265,12 @@ public class PersonService {
 
   @AuthorizationConfiguration.RequirePermissionCreatePatientAtFacility
   public void addPatientsAndPhoneNumbers(Set<Person> patients, List<PhoneNumber> phoneNumbers) {
-    _repo.saveAll(patients);
-    _phoneRepo.saveAll(phoneNumbers);
+    if (patients.size() > 0) {
+      _repo.saveAll(patients);
+    }
+    if (phoneNumbers.size() > 0) {
+      _phoneRepo.saveAll(phoneNumbers);
+    }
   }
 
   @AuthorizationConfiguration.RequirePermissionCreatePatientAtFacility

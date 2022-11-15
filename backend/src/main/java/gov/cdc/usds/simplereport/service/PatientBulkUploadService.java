@@ -132,7 +132,7 @@ public class PatientBulkUploadService {
             new Person(
                 currentOrganization,
                 assignedFacility.orElse(null),
-                null,
+                null, // lookupid
                 extractedData.getFirstName().getValue(),
                 extractedData.getMiddleName().getValue(),
                 extractedData.getLastName().getValue(),
@@ -144,18 +144,20 @@ public class PatientBulkUploadService {
                 List.of(extractedData.getEmail().getValue()),
                 convertRaceToDatabaseValue(extractedData.getRace().getValue()),
                 convertEthnicityToDatabaseValue(extractedData.getEthnicity().getValue()),
-                null,
+                null, // tribalAffiliation
                 convertSexToDatabaseValue(extractedData.getBiologicalSex().getValue()),
                 parseYesNo(extractedData.getResidentCongregateSetting().getValue()),
                 parseYesNo(extractedData.getEmployedInHealthcare().getValue()),
-                null,
-                null);
+                null, // preferredLanguage
+                null // testResultDeliveryPreference
+                );
 
         if (patientsList.contains(newPatient)) {
           continue;
         }
 
-        // collect phone numbers and associate them with the patient, then add to phone numbers list
+        // collect phone numbers and associate them with the patient
+        // then add to phone numbers list and set primary phone, if exists
         List<PhoneNumber> newPhoneNumbers =
             _personService.assignPhoneNumbersToPatient(
                 newPatient,
@@ -164,10 +166,7 @@ public class PatientBulkUploadService {
                         parsePhoneType(extractedData.getPhoneNumberType().getValue()),
                         extractedData.getPhoneNumber().getValue())));
         phoneNumbersList.addAll(newPhoneNumbers);
-
-        if (!newPhoneNumbers.isEmpty()) {
-          newPatient.setPrimaryPhone(newPhoneNumbers.get(0));
-        }
+        newPhoneNumbers.stream().findFirst().ifPresent(newPatient::setPrimaryPhone);
 
         patientsList.add(newPatient);
       } catch (IllegalArgumentException e) {
@@ -182,9 +181,7 @@ public class PatientBulkUploadService {
       }
     }
 
-    if (patientsList != null && phoneNumbersList != null) {
-      _personService.addPatientsAndPhoneNumbers(patientsList, phoneNumbersList);
-    }
+    _personService.addPatientsAndPhoneNumbers(patientsList, phoneNumbersList);
 
     log.info("CSV patient upload completed for {}", currentOrganization.getOrganizationName());
     result.setStatus(UploadStatus.SUCCESS);
