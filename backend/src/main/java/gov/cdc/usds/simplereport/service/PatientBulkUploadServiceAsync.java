@@ -18,9 +18,11 @@ import gov.cdc.usds.simplereport.validators.CsvValidatorUtils;
 import gov.cdc.usds.simplereport.validators.PatientBulkUploadFileValidator;
 import java.io.ByteArrayInputStream;
 import java.util.ArrayList;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
+import java.util.Set;
 import java.util.UUID;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -38,24 +40,22 @@ public class PatientBulkUploadServiceAsync {
   private final OrganizationService _organizationService;
 
   @Async
-  public void savePatients(
-      byte[] content,
-      UUID facilityId,
-      Organization currentOrganization,
-      Facility assignedFacility) {
-
+  public void savePatients(byte[] content, UUID facilityId) {
     System.out.println("BOOYAH");
     System.out.println("security context: " + SecurityContextHolder.getContext());
     System.out.println("thread name: " + Thread.currentThread().getName());
 
-    List<Person> patientsList = new ArrayList<>();
+    Organization currentOrganization = _organizationService.getCurrentOrganization();
+
+    // Patients do not need to be assigned to a facility, but if an id is given it must be valid
+    Optional<Facility> assignedFacility =
+        Optional.ofNullable(facilityId).map(_organizationService::getFacilityInCurrentOrg);
+
+    Set<Person> patientsList = new HashSet<>();
     List<PhoneNumber> phoneNumbersList = new ArrayList<>();
 
     final MappingIterator<Map<String, String>> valueIterator =
         CsvValidatorUtils.getIteratorForCsv(new ByteArrayInputStream(content));
-
-    Optional<Facility> facility =
-        Optional.ofNullable(facilityId).map(_organizationService::getFacilityInCurrentOrg);
 
     while (valueIterator.hasNext()) {
       final Map<String, String> row = CsvValidatorUtils.getNextRow(valueIterator);
@@ -85,7 +85,7 @@ public class PatientBulkUploadServiceAsync {
             extractedData.getLastName().getValue(),
             parseUserShortDate(extractedData.getDateOfBirth().getValue()),
             currentOrganization,
-            facility)) {
+            assignedFacility)) {
           continue;
         }
 
@@ -93,7 +93,8 @@ public class PatientBulkUploadServiceAsync {
         Person newPatient =
             new Person(
                 currentOrganization,
-                null,
+                assignedFacility.orElse(null),
+                null, // lookupid
                 extractedData.getFirstName().getValue(),
                 extractedData.getMiddleName().getValue(),
                 extractedData.getLastName().getValue(),
@@ -105,15 +106,20 @@ public class PatientBulkUploadServiceAsync {
                 List.of(extractedData.getEmail().getValue()),
                 convertRaceToDatabaseValue(extractedData.getRace().getValue()),
                 convertEthnicityToDatabaseValue(extractedData.getEthnicity().getValue()),
-                null,
+                null, // tribalAffiliation
                 convertSexToDatabaseValue(extractedData.getBiologicalSex().getValue()),
                 parseYesNo(extractedData.getResidentCongregateSetting().getValue()),
                 parseYesNo(extractedData.getEmployedInHealthcare().getValue()),
-                null,
-                null);
-        newPatient.setFacility(assignedFacility); // might be null, that's fine
+                null, // preferredLanguage
+                null // testResultDeliveryPreference
+                );
 
-        // collect phone numbers and associate them with the patient, then add to phone numbers list
+        if (patientsList.contains(newPatient)) {
+          continue;
+        }
+
+        // collect phone numbers and associate them with the patient
+        // then add to phone numbers list and set primary phone, if exists
         List<PhoneNumber> newPhoneNumbers =
             _personService.assignPhoneNumbersToPatient(
                 newPatient,
@@ -122,13 +128,8 @@ public class PatientBulkUploadServiceAsync {
                         parsePhoneType(extractedData.getPhoneNumberType().getValue()),
                         extractedData.getPhoneNumber().getValue())));
         phoneNumbersList.addAll(newPhoneNumbers);
+        newPhoneNumbers.stream().findFirst().ifPresent(newPatient::setPrimaryPhone);
 
-        // set primary phone number
-        if (!newPhoneNumbers.isEmpty()) {
-          newPatient.setPrimaryPhone(newPhoneNumbers.get(0));
-        }
-
-        // add new patient to the patients list
         patientsList.add(newPatient);
       } catch (IllegalArgumentException e) {
         String errorMessage = "Error uploading patient roster";
@@ -142,8 +143,9 @@ public class PatientBulkUploadServiceAsync {
       }
     }
 
-    if (patientsList != null && phoneNumbersList != null) {
-      _personService.addPatientsAndPhoneNumbers(patientsList, phoneNumbersList);
-    }
+    _personService.addPatientsAndPhoneNumbers(patientsList, phoneNumbersList);
+
+    log.info("CSV patient upload completed for {}", currentOrganization.getOrganizationName());
+    // eventually want to send an email here
   }
 }
