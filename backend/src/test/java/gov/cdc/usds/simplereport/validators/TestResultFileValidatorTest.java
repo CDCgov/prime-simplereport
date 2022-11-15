@@ -1,6 +1,7 @@
 package gov.cdc.usds.simplereport.validators;
 
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.junit.jupiter.api.Assertions.assertEquals;
 
 import gov.cdc.usds.simplereport.service.model.reportstream.FeedbackMessage;
 import java.io.ByteArrayInputStream;
@@ -118,6 +119,42 @@ class TestResultFileValidatorTest {
             "x is not an acceptable value for column test_result",
             "x is not an acceptable value for column test_result_status",
             "x is not an acceptable value for column specimen_type");
+  }
+
+  @Test
+  void testResultsFile_InvalidFormat1() {
+    // GIVEN
+    InputStream input = loadCsv("test-results-upload-invalid-format1.csv");
+    // WHEN
+    List<FeedbackMessage> errors = testResultFileValidator.validate(input);
+    // THEN
+    assertThat(errors).hasSize(1);
+
+    List<String> errorMessages =
+        errors.stream().map(FeedbackMessage::getMessage).collect(Collectors.toList());
+    assertThat(errorMessages)
+        .contains(
+            "File has the incorrect number of columns or empty rows. Please make sure all columns match the data template, and delete any empty rows.");
+
+    assertEquals(3, errors.get(0).getIndices()[0]);
+  }
+
+  @Test
+  void testResultsFile_InvalidFormat2() {
+    // GIVEN
+    InputStream input = loadCsv("test-results-upload-invalid-format2.csv");
+    // WHEN
+    List<FeedbackMessage> errors = testResultFileValidator.validate(input);
+    // THEN
+    assertThat(errors).hasSize(1);
+
+    List<String> errorMessages =
+        errors.stream().map(FeedbackMessage::getMessage).collect(Collectors.toList());
+    assertThat(errorMessages)
+        .contains(
+            "File has the incorrect number of columns or empty rows. Please make sure all columns match the data template, and delete any empty rows.");
+
+    assertEquals(2, errors.get(0).getIndices()[0]);
   }
 
   private InputStream loadCsv(String csvFile) {

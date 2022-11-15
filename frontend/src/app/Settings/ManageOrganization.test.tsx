@@ -26,10 +26,12 @@ describe("ManageOrganization", () => {
       </Provider>
     );
     const saveButton = await screen.findByText("Save settings");
-    const orgNameInput = screen.queryByLabelText("Organization name", {
-      exact: false,
-    });
-    expect(orgNameInput).not.toBeInTheDocument();
+    await screen.findByText(
+      /the organization name is used for reporting to public health departments\. please contact if you need to change it\./i
+    );
+    expect(
+      screen.queryByRole("textbox", { name: /organization name required/i })
+    ).not.toBeInTheDocument();
     expect(saveButton).toBeDisabled();
   });
   it("allows org name and type change for super admins", async () => {

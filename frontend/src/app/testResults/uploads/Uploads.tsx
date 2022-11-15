@@ -241,7 +241,8 @@ const Uploads = () => {
               </li>
               <li className="usa-process-list__item margin-bottom-1em">
                 <h2 className="usa-process-list__heading">
-                  Save your spreadsheet in a CSV format
+                  Save your spreadsheet in a CSV format (file size limit is 50
+                  MB or 10,000 rows)
                 </h2>
               </li>
               <li className="usa-process-list__item margin-bottom-1em">
@@ -285,8 +286,8 @@ const Uploads = () => {
                 <table className="usa-table usa-table--borderless">
                   <thead>
                     <tr>
-                      <th>Requested Edit</th>
-                      <th>Areas Containing the Requested Edit</th>
+                      <th>Error description</th>
+                      <th>Location of error</th>
                     </tr>
                   </thead>
                   <tbody>
@@ -294,7 +295,7 @@ const Uploads = () => {
                       return (
                         <tr key={"error_" + i}>
                           <td>{e?.["message"]} </td>
-                          <td>Row(s): {e?.["indices"]}</td>
+                          <td>Row(s): {e?.["indices"]?.join(", ")}</td>
                         </tr>
                       );
                     })}
