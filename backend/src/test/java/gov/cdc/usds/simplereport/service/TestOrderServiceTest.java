@@ -1044,11 +1044,12 @@ class TestOrderServiceTest extends BaseServiceTest<TestOrderService> {
     assertThrows(
         AccessDeniedException.class,
         () ->
-            _service.getTestEventsResults(
+            _service.getFacilityTestEventsResults(
                 facility.getInternalId(), null, null, null, null, null, 0, 10));
 
     TestUserIdentities.setFacilityAuthorities(facility);
-    _service.getTestEventsResults(facility.getInternalId(), null, null, null, null, null, 0, 10);
+    _service.getFacilityTestEventsResults(
+        facility.getInternalId(), null, null, null, null, null, 0, 10);
   }
 
   @Test
@@ -1059,7 +1060,8 @@ class TestOrderServiceTest extends BaseServiceTest<TestOrderService> {
     Person p = _dataFactory.createMinimalPerson(org, facility);
     _dataFactory.createTestEvent(p, facility);
 
-    _service.getTestEventsResults(facility.getInternalId(), null, null, null, null, null, 0, 10);
+    _service.getFacilityTestEventsResults(
+        facility.getInternalId(), null, null, null, null, null, 0, 10);
   }
 
   @Test
@@ -1073,7 +1075,7 @@ class TestOrderServiceTest extends BaseServiceTest<TestOrderService> {
     assertThrows(
         AccessDeniedException.class,
         () ->
-            _service.getTestEventsResults(
+            _service.getFacilityTestEventsResults(
                 facility.getInternalId(), null, null, null, null, null, 0, 10));
   }
 
@@ -1085,7 +1087,7 @@ class TestOrderServiceTest extends BaseServiceTest<TestOrderService> {
     Person p = _dataFactory.createMinimalPerson(org, facility);
     _dataFactory.createTestEvent(p, facility);
 
-    _service.getAllFacilityTestEventsResults(null, null, null, null, null, 0, 10);
+    _service.getOrganizationTestEventsResults(null, null, null, null, null, 0, 10);
   }
 
   @Test
@@ -1098,7 +1100,7 @@ class TestOrderServiceTest extends BaseServiceTest<TestOrderService> {
 
     assertThrows(
         AccessDeniedException.class,
-        () -> _service.getAllFacilityTestEventsResults(null, null, null, null, null, 0, 10));
+        () -> _service.getOrganizationTestEventsResults(null, null, null, null, null, 0, 10));
   }
 
   @Test
@@ -1160,7 +1162,9 @@ class TestOrderServiceTest extends BaseServiceTest<TestOrderService> {
     long startQueryCount = _hibernateQueryInterceptor.getQueryCount();
     int firstQueryResults =
         _service
-            .getTestEventsResults(facility.getInternalId(), null, null, null, null, null, 0, 50)
+            .getFacilityTestEventsResults(
+                facility.getInternalId(), null, null, null, null, null, 0, 50)
+            .toList()
             .size();
     long firstPassTotal = _hibernateQueryInterceptor.getQueryCount() - startQueryCount;
 
@@ -1175,7 +1179,9 @@ class TestOrderServiceTest extends BaseServiceTest<TestOrderService> {
     startQueryCount = _hibernateQueryInterceptor.getQueryCount();
     int secondQueryResults =
         _service
-            .getTestEventsResults(facility.getInternalId(), null, null, null, null, null, 0, 50)
+            .getFacilityTestEventsResults(
+                facility.getInternalId(), null, null, null, null, null, 0, 50)
+            .toList()
             .size();
     long secondPassTotal = _hibernateQueryInterceptor.getQueryCount() - startQueryCount;
     assertEquals(firstPassTotal, secondPassTotal);
@@ -1276,8 +1282,10 @@ class TestOrderServiceTest extends BaseServiceTest<TestOrderService> {
     assertEquals(_e.getTestOrder().getInternalId(), _e.getTestOrderId());
 
     List<TestEvent> events_before =
-        _service.getTestEventsResults(
-            facility.getInternalId(), null, null, null, null, null, 0, 50);
+        _service
+            .getFacilityTestEventsResults(
+                facility.getInternalId(), null, null, null, null, null, 0, 50)
+            .toList();
     assertEquals(1, events_before.size());
 
     // verify the original order was updated
@@ -1291,8 +1299,10 @@ class TestOrderServiceTest extends BaseServiceTest<TestOrderService> {
     // make sure the original item is removed from the result and ONLY the
     // "corrected" removed one is shown
     List<TestEvent> events_after =
-        _service.getTestEventsResults(
-            facility.getInternalId(), null, null, null, null, null, 0, 50);
+        _service
+            .getFacilityTestEventsResults(
+                facility.getInternalId(), null, null, null, null, null, 0, 50)
+            .toList();
     assertEquals(1, events_after.size());
     assertEquals(
         deleteMarkerEvent.getInternalId().toString(),
@@ -1429,13 +1439,21 @@ class TestOrderServiceTest extends BaseServiceTest<TestOrderService> {
   void getTestEventsResults_pagination() {
     List<TestEvent> testEvents = makedata();
     List<TestEvent> results_page0 =
-        _service.getTestEventsResults(_site.getInternalId(), null, null, null, null, null, 0, 5);
+        _service
+            .getFacilityTestEventsResults(_site.getInternalId(), null, null, null, null, null, 0, 5)
+            .toList();
     List<TestEvent> results_page1 =
-        _service.getTestEventsResults(_site.getInternalId(), null, null, null, null, null, 1, 5);
+        _service
+            .getFacilityTestEventsResults(_site.getInternalId(), null, null, null, null, null, 1, 5)
+            .toList();
     List<TestEvent> results_page2 =
-        _service.getTestEventsResults(_site.getInternalId(), null, null, null, null, null, 2, 5);
+        _service
+            .getFacilityTestEventsResults(_site.getInternalId(), null, null, null, null, null, 2, 5)
+            .toList();
     List<TestEvent> results_page3 =
-        _service.getTestEventsResults(_site.getInternalId(), null, null, null, null, null, 3, 5);
+        _service
+            .getFacilityTestEventsResults(_site.getInternalId(), null, null, null, null, null, 3, 5)
+            .toList();
 
     Collections.reverse(testEvents);
 
@@ -1450,70 +1468,90 @@ class TestOrderServiceTest extends BaseServiceTest<TestOrderService> {
   void getTestEventsResults_filtering() {
     List<TestEvent> testEvents = makedata();
     List<TestEvent> positives =
-        _service.getTestEventsResults(
-            _site.getInternalId(), null, TestResult.POSITIVE, null, null, null, 0, 10);
+        _service
+            .getFacilityTestEventsResults(
+                _site.getInternalId(), null, TestResult.POSITIVE, null, null, null, 0, 10)
+            .toList();
     List<TestEvent> negatives =
-        _service.getTestEventsResults(
-            _site.getInternalId(), null, TestResult.NEGATIVE, null, null, null, 0, 10);
+        _service
+            .getFacilityTestEventsResults(
+                _site.getInternalId(), null, TestResult.NEGATIVE, null, null, null, 0, 10)
+            .toList();
     List<TestEvent> inconclusives =
-        _service.getTestEventsResults(
-            _site.getInternalId(), null, TestResult.UNDETERMINED, null, null, null, 0, 10);
+        _service
+            .getFacilityTestEventsResults(
+                _site.getInternalId(), null, TestResult.UNDETERMINED, null, null, null, 0, 10)
+            .toList();
     List<TestEvent> students =
-        _service.getTestEventsResults(
-            _site.getInternalId(), null, null, PersonRole.STUDENT, null, null, 0, 10);
+        _service
+            .getFacilityTestEventsResults(
+                _site.getInternalId(), null, null, PersonRole.STUDENT, null, null, 0, 10)
+            .toList();
     List<TestEvent> visitors =
-        _service.getTestEventsResults(
-            _site.getInternalId(), null, null, PersonRole.VISITOR, null, null, 0, 10);
+        _service
+            .getFacilityTestEventsResults(
+                _site.getInternalId(), null, null, PersonRole.VISITOR, null, null, 0, 10)
+            .toList();
     List<TestEvent> june1to3 =
-        _service.getTestEventsResults(
-            _site.getInternalId(),
-            null,
-            null,
-            null,
-            convertDate(LocalDateTime.of(2021, 6, 1, 0, 0, 0)),
-            convertDate(LocalDateTime.of(2021, 6, 3, 23, 59, 59)),
-            0,
-            10);
+        _service
+            .getFacilityTestEventsResults(
+                _site.getInternalId(),
+                null,
+                null,
+                null,
+                convertDate(LocalDateTime.of(2021, 6, 1, 0, 0, 0)),
+                convertDate(LocalDateTime.of(2021, 6, 3, 23, 59, 59)),
+                0,
+                10)
+            .toList();
     List<TestEvent> priorToJune2Noon =
-        _service.getTestEventsResults(
-            _site.getInternalId(),
-            null,
-            null,
-            null,
-            null,
-            convertDate(LocalDateTime.of(2021, 6, 2, 11, 59, 59)),
-            0,
-            10);
+        _service
+            .getFacilityTestEventsResults(
+                _site.getInternalId(),
+                null,
+                null,
+                null,
+                null,
+                convertDate(LocalDateTime.of(2021, 6, 2, 11, 59, 59)),
+                0,
+                10)
+            .toList();
     List<TestEvent> positivesAmos =
-        _service.getTestEventsResults(
-            _site.getInternalId(),
-            _dataFactory.getPersonByName(AMOS).getInternalId(),
-            TestResult.POSITIVE,
-            null,
-            null,
-            null,
-            0,
-            10);
+        _service
+            .getFacilityTestEventsResults(
+                _site.getInternalId(),
+                _dataFactory.getPersonByName(AMOS).getInternalId(),
+                TestResult.POSITIVE,
+                null,
+                null,
+                null,
+                0,
+                10)
+            .toList();
     List<TestEvent> negativesAmos =
-        _service.getTestEventsResults(
-            _site.getInternalId(),
-            _dataFactory.getPersonByName(AMOS).getInternalId(),
-            TestResult.NEGATIVE,
-            null,
-            null,
-            null,
-            0,
-            10);
+        _service
+            .getFacilityTestEventsResults(
+                _site.getInternalId(),
+                _dataFactory.getPersonByName(AMOS).getInternalId(),
+                TestResult.NEGATIVE,
+                null,
+                null,
+                null,
+                0,
+                10)
+            .toList();
     List<TestEvent> allFilters =
-        _service.getTestEventsResults(
-            _site.getInternalId(),
-            _dataFactory.getPersonByName(CHARLES).getInternalId(),
-            TestResult.POSITIVE,
-            PersonRole.RESIDENT,
-            convertDate(LocalDateTime.of(2021, 6, 1, 0, 0, 0)),
-            convertDate(LocalDateTime.of(2021, 6, 1, 23, 59, 59)),
-            0,
-            10);
+        _service
+            .getFacilityTestEventsResults(
+                _site.getInternalId(),
+                _dataFactory.getPersonByName(CHARLES).getInternalId(),
+                TestResult.POSITIVE,
+                PersonRole.RESIDENT,
+                convertDate(LocalDateTime.of(2021, 6, 1, 0, 0, 0)),
+                convertDate(LocalDateTime.of(2021, 6, 1, 23, 59, 59)),
+                0,
+                10)
+            .toList();
 
     Collections.reverse(testEvents);
 
@@ -1598,8 +1636,10 @@ class TestOrderServiceTest extends BaseServiceTest<TestOrderService> {
         p, facility, TestResult.POSITIVE, TestResult.NEGATIVE, TestResult.NEGATIVE, false);
 
     var res =
-        _service.getTestEventsResults(
-            facility.getInternalId(), null, null, null, null, null, 0, 10);
+        _service
+            .getFacilityTestEventsResults(
+                facility.getInternalId(), null, null, null, null, null, 0, 10)
+            .toList();
     assertEquals(1, res.size());
   }
 
@@ -1614,8 +1654,10 @@ class TestOrderServiceTest extends BaseServiceTest<TestOrderService> {
         p, facility, TestResult.POSITIVE, TestResult.NEGATIVE, TestResult.NEGATIVE, false);
 
     var res =
-        _service.getTestEventsResults(
-            facility.getInternalId(), null, null, null, null, null, 0, 10);
+        _service
+            .getFacilityTestEventsResults(
+                facility.getInternalId(), null, null, null, null, null, 0, 10)
+            .toList();
     assertEquals(2, res.size());
   }
 
@@ -1636,7 +1678,7 @@ class TestOrderServiceTest extends BaseServiceTest<TestOrderService> {
             p, facility, TestResult.POSITIVE, TestResult.NEGATIVE, TestResult.NEGATIVE, true);
 
     var res =
-        _service.getTestEventsResults(
+        _service.getFacilityTestEventsResults(
             facility.getInternalId(), null, TestResult.NEGATIVE, null, null, null, 0, 10);
 
     var expected = List.of(expected_allNeg.getInternalId(), expected_covidPos.getInternalId());
@@ -1722,7 +1764,7 @@ class TestOrderServiceTest extends BaseServiceTest<TestOrderService> {
     assertThrows(
         AccessDeniedException.class,
         () ->
-            _service.getTestEventsResults(
+            _service.getFacilityTestEventsResults(
                 facility.getInternalId(), null, null, null, null, null, 0, 10));
     assertThrows(
         AccessDeniedException.class,
@@ -1733,7 +1775,8 @@ class TestOrderServiceTest extends BaseServiceTest<TestOrderService> {
 
     TestUserIdentities.setFacilityAuthorities(facility);
     TestEvent correctedTestEvent = _service.markAsError(_e.getInternalId(), reasonMsg);
-    _service.getTestEventsResults(facility.getInternalId(), null, null, null, null, null, 0, 10);
+    _service.getFacilityTestEventsResults(
+        facility.getInternalId(), null, null, null, null, null, 0, 10);
     _service.getTestResult(_e.getInternalId()).getTestOrder();
     // make sure the corrected event is sent to storage queue
     verify(testEventReportingService).report(correctedTestEvent);

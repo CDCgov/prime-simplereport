@@ -11,7 +11,6 @@ import gov.cdc.usds.simplereport.service.errors.InvalidBulkTestResultUploadExcep
 import gov.cdc.usds.simplereport.service.errors.InvalidRSAPrivateKeyException;
 import gov.cdc.usds.simplereport.service.model.reportstream.UploadResponse;
 import java.util.Date;
-import java.util.List;
 import java.util.UUID;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
@@ -27,49 +26,6 @@ public class TestResultResolver {
   private final TestOrderService tos;
   private final TestResultUploadService testResultUploadService;
 
-  // resolver method to be deleted once the frontend compatibility issues
-  // here are resolved
-  @QueryMapping
-  public List<TestEvent> testResults(
-      @Argument UUID facilityId,
-      @Argument UUID patientId,
-      @Argument String result,
-      @Argument String role,
-      @Argument Date startDate,
-      @Argument Date endDate,
-      @Argument int pageNumber,
-      @Argument int pageSize) {
-    if (pageNumber < 0) {
-      pageNumber = TestOrderService.DEFAULT_PAGINATION_PAGEOFFSET;
-    }
-    if (pageSize < 1) {
-      pageSize = TestOrderService.DEFAULT_PAGINATION_PAGESIZE;
-    }
-
-    if (facilityId == null) {
-
-      return tos.getAllFacilityTestEventsResults(
-          patientId,
-          Translators.parseTestResult(result),
-          Translators.parsePersonRole(role, true),
-          startDate,
-          endDate,
-          pageNumber,
-          pageSize);
-    }
-    return tos.getTestEventsResults(
-        facilityId,
-        patientId,
-        Translators.parseTestResult(result),
-        Translators.parsePersonRole(role, true),
-        startDate,
-        endDate,
-        pageNumber,
-        pageSize);
-  }
-
-  // new method with page casting to allow for us to get the count alongside
-  // the results list in one query
   @QueryMapping
   public Page<TestEvent> testResultsPage(
       @Argument UUID facilityId,
@@ -88,8 +44,7 @@ public class TestResultResolver {
     }
 
     if (facilityId == null) {
-
-      return tos.getAllFacilityTestEventsResultsPage(
+      return tos.getOrganizationTestEventsResults(
           patientId,
           Translators.parseTestResult(result),
           Translators.parsePersonRole(role, true),
@@ -98,7 +53,7 @@ public class TestResultResolver {
           pageNumber,
           pageSize);
     }
-    return tos.getTestEventsResultsPage(
+    return tos.getFacilityTestEventsResults(
         facilityId,
         patientId,
         Translators.parseTestResult(result),
