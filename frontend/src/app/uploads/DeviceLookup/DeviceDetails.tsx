@@ -4,14 +4,14 @@ import React, { useEffect, useState } from "react";
 import { faCheck } from "@fortawesome/free-solid-svg-icons/faCheck";
 import { faCopy } from "@fortawesome/free-solid-svg-icons/faCopy";
 import { capitalize } from "lodash";
+import { IconLookup } from "@fortawesome/free-solid-svg-icons";
+import { IconProp } from "@fortawesome/fontawesome-svg-core";
 
 import Optional from "../../commonComponents/Optional";
 import TextInput from "../../commonComponents/TextInput";
 import CopyTooltip from "../../commonComponents/CopyTooltip";
 import { DeviceType } from "../../../generated/graphql";
 import { TEST_RESULTS } from "../../testResults/constants";
-import { IconLookup } from "@fortawesome/free-solid-svg-icons";
-import { IconProp } from "@fortawesome/fontawesome-svg-core";
 
 const testResultCodes = {
   [TEST_RESULTS.POSITIVE]: "260373001",
@@ -49,7 +49,11 @@ const DeviceDetails = (props: { device: DeviceType }) => {
           aria-label={`${label}`}
         >
           <FontAwesomeIcon
-            icon={copiedSlug === copiedAttribute ? faCheck as IconProp : faCopy as IconProp}
+            icon={
+              copiedSlug === copiedAttribute
+                ? (faCheck as IconProp)
+                : (faCopy as IconProp)
+            }
           />
         </button>
         {copiedSlug === copiedAttribute && <CopyTooltip />}
