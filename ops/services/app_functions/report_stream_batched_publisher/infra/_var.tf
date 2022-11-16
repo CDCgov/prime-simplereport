@@ -56,4 +56,3 @@ variable "report_stream_client" {
   type    = string
   default = "simple_report"
 }
-
