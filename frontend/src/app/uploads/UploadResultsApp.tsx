@@ -28,7 +28,6 @@ const UploadResultsApp = () => {
 
   const canViewResults = appPermissions.results.canView;
 
-  console.log(`dataLoaded: ${dataLoaded}`);
   return (
     <WithAuthenticatedUser>
       <VersionEnforcer />
@@ -42,7 +41,7 @@ const UploadResultsApp = () => {
         header={<UploaderHeader />}
         children={
           dataLoaded && (
-            // don't render routes until data is loaded
+            // don't return routes until user data loaded to redux store
             <Routes>
               <Route path="/" element={<Navigate to="submit" />} />
               <Route

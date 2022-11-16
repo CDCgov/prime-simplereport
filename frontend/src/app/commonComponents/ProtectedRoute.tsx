@@ -22,8 +22,6 @@ const ProtectedRoute: React.FC<Props> = ({
     );
   }
 
-  let log = `hasAccess: ${hasAccess} because userPermissions: ${userPermissions}`;
-  console.log(log);
   return hasAccess ? element : <Navigate to="/" />;
 };
 

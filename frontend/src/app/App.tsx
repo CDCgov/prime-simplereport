@@ -73,6 +73,8 @@ const App = () => {
         <Page
           header={<MainHeader />}
           children={
+            // todo: talk about whether this is ok - could lead to flickering
+            // don't return routes until user data loaded to redux store
             dataLoaded && (
               <Routes>
                 <Route
