@@ -54,7 +54,7 @@ public class Translators {
 
   private static final int MAX_STRING_LENGTH = 500;
 
-  public static final LocalDate parseUserShortDate(String d) {
+  public static final LocalDate parseUserDate(String d) {
     String date = parseString(d);
     if (date == null) {
       return null;
@@ -63,6 +63,18 @@ public class Translators {
       return LocalDate.parse(date, US_SLASHDATE_SHORT_FORMATTER);
     } catch (DateTimeParseException e) {
       throw IllegalGraphqlArgumentException.invalidInput(d, "date");
+    }
+  }
+
+  public static final LocalDate parseUserShortDate(String input) {
+    String date = parseString(input);
+    if (date == null) {
+      return null;
+    }
+    try {
+      return LocalDate.parse(date, PAST_DATE_FLEXIBLE_FORMATTER);
+    } catch (DateTimeParseException e) {
+      throw IllegalGraphqlArgumentException.invalidInput(input, "date");
     }
   }
 
