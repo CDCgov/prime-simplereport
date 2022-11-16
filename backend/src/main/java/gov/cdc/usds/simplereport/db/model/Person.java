@@ -225,7 +225,7 @@ public class Person extends OrganizationScopedEternalEntity implements PersonEnt
 
   @Override
   public int hashCode() {
-    return Objects.hash(nameInfo, birthDate, facility, getOrganization());
+    return Objects.hash(nameInfo, birthDate, facility, getOrganization(), isDeleted());
   }
 
   public void updatePatient(
