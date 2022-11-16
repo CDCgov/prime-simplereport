@@ -1,7 +1,6 @@
 import { faCheck, faCopy } from "@fortawesome/free-solid-svg-icons";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { useEffect, useMemo, useState } from "react";
-
 import "./ManageSelfRegistrationLinks.scss";
 import { IconProp } from "@fortawesome/fontawesome-svg-core";
 
