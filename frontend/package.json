@@ -4,9 +4,9 @@
   "version": "0.0.0",
   "type": "module",
   "scripts": {
-    "dev": "vite",
+    "dev": "VITE_CURRENT_COMMIT=$(git rev-parse HEAD) vite",
     "prebuild": "tsc",
-    "build": "vite build",
+    "build": "VITE_CURRENT_COMMIT=$(git rev-parse HEAD) vite build",
     "preview": "vite preview",
     "test": "jest",
     "test:ci": "CI=true yarn test --coverage",
