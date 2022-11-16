@@ -51,3 +51,9 @@ variable "report_stream_batch_maximum" {
 }
 
 variable "lb_subnet_id" {}
+
+variable "report_stream_client" {
+  type    = string
+  default = "simple_report"
+}
+
