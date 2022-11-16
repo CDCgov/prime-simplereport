@@ -1,7 +1,5 @@
 package gov.cdc.usds.simplereport.service;
 
-import com.twilio.exception.ApiException;
-import com.twilio.exception.TwilioException;
 import gov.cdc.usds.simplereport.api.model.AddTestResultResponse;
 import gov.cdc.usds.simplereport.api.model.AggregateFacilityMetrics;
 import gov.cdc.usds.simplereport.api.model.OrganizationLevelDashboardMetrics;
@@ -276,71 +274,72 @@ public class TestOrderService {
     }
   }
 
-  // Deprecated - remove this method after we've switched to the multiplex
-  // endpoints on frontend
-  @AuthorizationConfiguration.RequirePermissionSubmitTestForPatient
-  @Transactional(noRollbackFor = {TwilioException.class, ApiException.class})
-  public AddTestResultResponse addTestResult(
-      UUID deviceSpecimenTypeId, TestResult result, UUID patientId, Date dateTested) {
-    Organization org = _organizationService.getCurrentOrganization();
-    Person person = _personService.getPatientNoPermissionsCheck(patientId, org);
-    TestOrder order =
-        _testOrderRepo.fetchQueueItem(org, person).orElseThrow(TestOrderService::noSuchOrderFound);
+  // // Deprecated - remove this method after we've switched to the multiplex
+  // // endpoints on frontend
+  // @AuthorizationConfiguration.RequirePermissionSubmitTestForPatient
+  // @Transactional(noRollbackFor = {TwilioException.class, ApiException.class})
+  // public AddTestResultResponse addTestResult(
+  //     UUID deviceSpecimenTypeId, TestResult result, UUID patientId, Date dateTested) {
+  //   Organization org = _organizationService.getCurrentOrganization();
+  //   Person person = _personService.getPatientNoPermissionsCheck(patientId, org);
+  //   TestOrder order =
+  //       _testOrderRepo.fetchQueueItem(org,
+  // person).orElseThrow(TestOrderService::noSuchOrderFound);
 
-    DeviceSpecimenType deviceSpecimen =
-        _deviceTypeService.getDeviceSpecimenType(deviceSpecimenTypeId);
+  //   DeviceSpecimenType deviceSpecimen =
+  //       _deviceTypeService.getDeviceSpecimenType(deviceSpecimenTypeId);
 
-    lockOrder(order.getInternalId());
+  //   lockOrder(order.getInternalId());
 
-    TestOrder savedOrder = null;
+  //   TestOrder savedOrder = null;
 
-    try {
-      order.setDeviceSpecimen(deviceSpecimen);
-      Result resultEntity = updateTestOrderCovidResult(order, result);
-      order.setDateTestedBackdate(dateTested);
-      order.markComplete();
+  //   try {
+  //     order.setDeviceSpecimen(deviceSpecimen);
+  //     Result resultEntity = updateTestOrderCovidResult(order, result);
+  //     order.setDateTestedBackdate(dateTested);
+  //     order.markComplete();
 
-      boolean hasPriorTests = _testEventRepo.existsByPatient(person);
+  //     boolean hasPriorTests = _testEventRepo.existsByPatient(person);
 
-      TestEvent testEvent =
-          order.getCorrectionStatus() == TestCorrectionStatus.ORIGINAL
-              ? new TestEvent(order, hasPriorTests, Set.of(resultEntity))
-              : new TestEvent(
-                  order,
-                  order.getCorrectionStatus(),
-                  order.getReasonForCorrection(),
-                  Set.of(resultEntity));
+  //     TestEvent testEvent =
+  //         order.getCorrectionStatus() == TestCorrectionStatus.ORIGINAL
+  //             ? new TestEvent(order, hasPriorTests, Set.of(resultEntity))
+  //             : new TestEvent(
+  //                 order,
+  //                 order.getCorrectionStatus(),
+  //                 order.getReasonForCorrection(),
+  //                 Set.of(resultEntity));
 
-      TestEvent savedEvent = _testEventRepo.save(testEvent);
-      resultEntity.setTestEvent(savedEvent);
-      _resultRepo.save(resultEntity);
-      order.setTestEventRef(savedEvent);
-      savedOrder = _testOrderRepo.save(order);
-      _testEventReportingService.report(savedEvent);
-    } finally {
-      unlockOrder(order.getInternalId());
-    }
+  //     TestEvent savedEvent = _testEventRepo.save(testEvent);
+  //     resultEntity.setTestEvent(savedEvent);
+  //     _resultRepo.save(resultEntity);
+  //     order.setTestEventRef(savedEvent);
+  //     savedOrder = _testOrderRepo.save(order);
+  //     _testEventReportingService.report(savedEvent);
+  //   } finally {
+  //     unlockOrder(order.getInternalId());
+  //   }
 
-    ArrayList<Boolean> deliveryStatuses = new ArrayList<>();
+  //   ArrayList<Boolean> deliveryStatuses = new ArrayList<>();
 
-    PatientLink patientLink = _patientLinkService.createPatientLink(savedOrder.getInternalId());
-    if (patientHasDeliveryPreference(savedOrder)) {
+  //   PatientLink patientLink = _patientLinkService.createPatientLink(savedOrder.getInternalId());
+  //   if (patientHasDeliveryPreference(savedOrder)) {
 
-      if (smsDeliveryPreference(savedOrder) || smsAndEmailDeliveryPreference(savedOrder)) {
-        boolean smsDeliveryStatus = testResultsDeliveryService.smsTestResults(patientLink);
-        deliveryStatuses.add(smsDeliveryStatus);
-      }
+  //     if (smsDeliveryPreference(savedOrder) || smsAndEmailDeliveryPreference(savedOrder)) {
+  //       boolean smsDeliveryStatus = testResultsDeliveryService.smsTestResults(patientLink);
+  //       deliveryStatuses.add(smsDeliveryStatus);
+  //     }
 
-      if (emailDeliveryPreference(savedOrder) || smsAndEmailDeliveryPreference(savedOrder)) {
-        boolean emailDeliveryStatus = testResultsDeliveryService.emailTestResults(patientLink);
-        deliveryStatuses.add(emailDeliveryStatus);
-      }
-    }
+  //     if (emailDeliveryPreference(savedOrder) || smsAndEmailDeliveryPreference(savedOrder)) {
+  //       boolean emailDeliveryStatus = testResultsDeliveryService.emailTestResults(patientLink);
+  //       deliveryStatuses.add(emailDeliveryStatus);
+  //     }
+  //   }
 
-    boolean deliveryStatus =
-        deliveryStatuses.isEmpty() || deliveryStatuses.stream().anyMatch(status -> status);
-    return new AddTestResultResponse(savedOrder, deliveryStatus);
-  }
+  //   boolean deliveryStatus =
+  //       deliveryStatuses.isEmpty() || deliveryStatuses.stream().anyMatch(status -> status);
+  //   return new AddTestResultResponse(savedOrder, deliveryStatus);
+  // }
 
   @AuthorizationConfiguration.RequirePermissionSubmitTestForPatient
   public AddTestResultResponse addMultiplexResult(
