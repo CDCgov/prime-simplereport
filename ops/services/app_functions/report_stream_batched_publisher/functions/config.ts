@@ -26,6 +26,7 @@ export const ENV = (() => {
     REPORT_STREAM_BATCH_MINIMUM: "minimum # of messages to read from the queue",
     REPORT_STREAM_BATCH_MAXIMUM:
       "maximum # of messages to send to ReportStream",
+    REPORT_STREAM_CLIENT: "client name",
     SIMPLE_REPORT_CB_URL: "SimpleReport webhook URL for ReportStream exceptions",
     SIMPLE_REPORT_CB_TOKEN: "API token for the SimpleReport webhook for ReportStream exceptions"
   };
