@@ -1,5 +1,6 @@
 import { gql } from "@apollo/client";
 import * as Apollo from "@apollo/client";
+
 export type Maybe<T> = T | null;
 export type InputMaybe<T> = Maybe<T>;
 export type Exact<T extends { [key: string]: unknown }> = {
@@ -115,7 +116,6 @@ export type Facility = {
   county?: Maybe<Scalars["String"]>;
   defaultDeviceSpecimen?: Maybe<Scalars["ID"]>;
   defaultDeviceType?: Maybe<DeviceType>;
-  defaultSpecimenType?: Maybe<SpecimenType>;
   /** @deprecated kept for compatibility */
   deviceSpecimenTypes?: Maybe<Array<Maybe<DeviceSpecimenType>>>;
   deviceTypes: Array<DeviceType>;
