@@ -38,7 +38,7 @@ const onExiting = (node: HTMLElement) => {
 
 const emptyQueueMessage = (canUseCsvUploader: boolean) => {
   return (
-    <div className="grid-container prime-center card-container queue-container-wide">
+    <div className="grid-container prime-center card-container">
       <div className="grid-row">
         <div className="usa-card__body">
           <p>
@@ -335,7 +335,7 @@ const TestQueue: React.FC<Props> = ({ activeFacilityId }) => {
 
   return (
     <div className="prime-home flex-1">
-      <div className="grid-container queue-container-wide">
+      <div className="grid-container">
         <h1 className="font-sans-lg">Conduct tests</h1>
         <div className="position-relative">
           <AddToQueueSearch
