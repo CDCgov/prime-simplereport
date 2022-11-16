@@ -99,6 +99,17 @@ class PatientBulkUploadServiceIntegrationTest extends BaseServiceTest<PatientBul
   }
 
   @Test
+  void noPhoneNumberTypes_savesPatient() {
+    // WHEN
+    InputStream inputStream = loadCsv("patientBulkUpload/noPhoneNumberTypes.csv");
+    PatientBulkUploadResponse response = this._service.processPersonCSV(inputStream, null);
+
+    // THEN
+    assertThat(response.getStatus()).isEqualTo(UploadStatus.SUCCESS);
+    assertThat(getPatients()).hasSize(1);
+  }
+
+  @Test
   void duplicatePatient_isNotSaved() {
     // GIVEN
     personService.addPatient(
@@ -126,6 +137,17 @@ class PatientBulkUploadServiceIntegrationTest extends BaseServiceTest<PatientBul
 
     // WHEN
     InputStream inputStream = loadCsv("patientBulkUpload/valid.csv");
+    PatientBulkUploadResponse response = this._service.processPersonCSV(inputStream, null);
+
+    // THEN
+    assertThat(response.getStatus()).isEqualTo(UploadStatus.SUCCESS);
+    assertThat(getPatients()).hasSize(1);
+  }
+
+  @Test
+  void duplicatePatient_isNotAddedToBatch() {
+    // WHEN
+    InputStream inputStream = loadCsv("patientBulkUpload/duplicatePatients.csv");
     PatientBulkUploadResponse response = this._service.processPersonCSV(inputStream, null);
 
     // THEN
