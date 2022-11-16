@@ -4,7 +4,7 @@ import {
   QueueClient,
   QueueDeleteMessageResponse,
   QueueServiceClient,
-  StorageSharedKeyCredential
+  StorageSharedKeyCredential,
 } from "@azure/storage-queue";
 import {
   deleteSuccessfullyParsedMessages,
@@ -13,7 +13,7 @@ import {
   minimumMessagesAvailable,
   reportExceptions,
   uploadResult,
-  convertToCsv
+  convertToCsv,
 } from "./lib";
 import { ReportStreamError, ReportStreamResponse } from "./rs-response";
 
@@ -37,9 +37,14 @@ jest.mock("../config", () => ({
   },
 }));
 
-const queueServiceClientMock = QueueServiceClient as jest.MockedClass<typeof QueueServiceClient>;
-const storageSharedKeyCredentialMock = StorageSharedKeyCredential as jest.MockedClass<typeof StorageSharedKeyCredential>;
-jest.mock("@azure/storage-queue"); 
+const queueServiceClientMock = QueueServiceClient as jest.MockedClass<
+  typeof QueueServiceClient
+>;
+const storageSharedKeyCredentialMock =
+  StorageSharedKeyCredential as jest.MockedClass<
+    typeof StorageSharedKeyCredential
+  >;
+jest.mock("@azure/storage-queue");
 
 const context: Context = {
   log: jest.fn(),
@@ -48,7 +53,7 @@ const context: Context = {
 context.log.error = jest.fn();
 
 describe("lib", () => {
-  describe('getQueueClient', () => {
+  describe("getQueueClient", () => {
     it("creates a StorageSharedKeyCredential and QueueServiceClient", async () => {
       // WHEN
       getQueueClient("whatever");
@@ -67,9 +72,8 @@ describe("lib", () => {
       // THEN
       expect(queueServiceClientMock).toHaveBeenCalledTimes(1);
       expect(storageSharedKeyCredentialMock).toHaveBeenCalledTimes(1);
-    })
-  })
-
+    });
+  });
 
   describe("minimumMessagesAvailable", () => {
     it("returns false for 0 messages", async () => {
@@ -175,36 +179,41 @@ describe("lib", () => {
   describe("CSV conversion", () => {
     it("converts to csv and records parsing errors", () => {
       // GIVEN
-      const messages: DequeuedMessageItem[] = [{
-        messageId: '1111',
-        popReceipt: 'aa',
-        messageText: '{"Result_ID" : 1}'
-      }, {
-        messageId: '2222',
-        popReceipt: 'bb',
-        messageText: '{"Result_ID" : 2}'
-      }, {
-        messageId: '3333',
-        popReceipt: 'cc',
-        messageText: '{"Result_ID" : 3}'
-      }, {
-        messageId: '4444',
-        popReceipt: 'dd',
-        messageText: '{ERROR : 4}'
-      }] as any;
+      const messages: DequeuedMessageItem[] = [
+        {
+          messageId: "1111",
+          popReceipt: "aa",
+          messageText: '{"Result_ID" : 1}',
+        },
+        {
+          messageId: "2222",
+          popReceipt: "bb",
+          messageText: '{"Result_ID" : 2}',
+        },
+        {
+          messageId: "3333",
+          popReceipt: "cc",
+          messageText: '{"Result_ID" : 3}',
+        },
+        {
+          messageId: "4444",
+          popReceipt: "dd",
+          messageText: "{ERROR : 4}",
+        },
+      ] as any;
 
       // WHEN
-      const {csvPayload, parseFailure, parseFailureCount, parseSuccessCount} = convertToCsv(messages);
+      const { csvPayload, parseFailure, parseFailureCount, parseSuccessCount } =
+        convertToCsv(messages);
 
       // THEN
       expect(parseSuccessCount).toBe(3);
       expect(csvPayload).toBe("Result_ID\n1\n2\n3\n");
 
       expect(parseFailureCount).toBe(1);
-      expect(parseFailure).toStrictEqual({4444: true});
-    })
-
-  })
+      expect(parseFailure).toStrictEqual({ 4444: true });
+    });
+  });
 
   describe("uploadResult", () => {
     it("calls fetch", async () => {
@@ -216,71 +225,110 @@ describe("lib", () => {
 
       // THEN
       expect(fetch).toHaveBeenCalled();
-    })
+    });
   });
 
   describe("deleteSuccessfullyParsedMessages", () => {
-    it('calls queueClient.deleteMessage appropriately', async () => {
+    it("calls queueClient.deleteMessage appropriately", async () => {
       // GIVEN
       const queueClientMock: QueueClient = {
         deleteMessage: jest.fn().mockResolvedValue(true),
-      } as any; 
-      const messages: DequeuedMessageItem[] = [{
-        messageId: '1234',
-        popReceipt: 'abcd',
-        messageText: '{"Result_ID" : 1}'
-      },{
-        messageId: '1234',
-        popReceipt: 'abcd',
-        messageText: '{"Result_ID" : 2}'
-      },{
-        messageId: '1234',
-        popReceipt: 'abcd',
-        messageText: '{"Result_ID" : 3}'
-      }] as any;
+      } as any;
+      const messages: DequeuedMessageItem[] = [
+        {
+          messageId: "1234",
+          popReceipt: "abcd",
+          messageText: '{"Result_ID" : 1}',
+        },
+        {
+          messageId: "1234",
+          popReceipt: "abcd",
+          messageText: '{"Result_ID" : 2}',
+        },
+        {
+          messageId: "1234",
+          popReceipt: "abcd",
+          messageText: '{"Result_ID" : 3}',
+        },
+      ] as any;
 
       // WHEN
-      await deleteSuccessfullyParsedMessages(context, queueClientMock, messages, {});
-      
+      await deleteSuccessfullyParsedMessages(
+        context,
+        queueClientMock,
+        messages,
+        {}
+      );
+
       // THEN
-      expect(queueClientMock.deleteMessage).toHaveBeenCalledTimes(messages.length);
+      expect(queueClientMock.deleteMessage).toHaveBeenCalledTimes(
+        messages.length
+      );
     });
 
     it("doesn't call queueClient.deleteMessage for parse failures", async () => {
       // GIVEN
       const queueClientMock: QueueClient = {
-        deleteMessage: jest.fn().mockResolvedValue({requestId: "123"} as QueueDeleteMessageResponse),
+        deleteMessage: jest.fn().mockResolvedValue({
+          requestId: "123",
+        } as QueueDeleteMessageResponse),
       } as any;
 
-      const messages: DequeuedMessageItem[] = [{
-        messageId: 'apple',
-        popReceipt: 'abcd',
-        messageText: '{"Result_ID" : 11}'
-      },{
-        messageId: 'grape',
-        popReceipt: 'efgh',
-        messageText: '{"Result_ID" : 33}'
-      },{
-        messageId: 'banana',
-        popReceipt: 'ijkl',
-        messageText: '{"Result_ID" : 22}'
-      }] as any;
+      const messages: DequeuedMessageItem[] = [
+        {
+          messageId: "apple",
+          popReceipt: "abcd",
+          messageText: '{"Result_ID" : 11}',
+        },
+        {
+          messageId: "grape",
+          popReceipt: "efgh",
+          messageText: '{"Result_ID" : 33}',
+        },
+        {
+          messageId: "banana",
+          popReceipt: "ijkl",
+          messageText: '{"Result_ID" : 22}',
+        },
+      ] as any;
       const parseFailure = {
-        'grape': true
+        grape: true,
       };
 
       // WHEN
-      await deleteSuccessfullyParsedMessages(context, queueClientMock, messages, parseFailure);
-      
-      // THEN
-      expect(queueClientMock.deleteMessage).toHaveBeenCalledTimes(messages.length - 1);
-      expect(queueClientMock.deleteMessage).toHaveBeenCalledWith('apple', "abcd");
-      expect(queueClientMock.deleteMessage).toHaveBeenCalledWith('banana', "ijkl");
-      expect(queueClientMock.deleteMessage).not.toHaveBeenCalledWith('grape', "efgh");
+      await deleteSuccessfullyParsedMessages(
+        context,
+        queueClientMock,
+        messages,
+        parseFailure
+      );
 
-      expect(context.log).toHaveBeenCalledWith("Message grape failed to parse; skipping deletion");
-      expect(context.log).toHaveBeenCalledWith("Message apple deleted with request id 123 and has TestEvent id 11");
-      expect(context.log).toHaveBeenCalledWith("Message banana deleted with request id 123 and has TestEvent id 22");
+      // THEN
+      expect(queueClientMock.deleteMessage).toHaveBeenCalledTimes(
+        messages.length - 1
+      );
+      expect(queueClientMock.deleteMessage).toHaveBeenCalledWith(
+        "apple",
+        "abcd"
+      );
+      expect(queueClientMock.deleteMessage).toHaveBeenCalledWith(
+        "banana",
+        "ijkl"
+      );
+      expect(queueClientMock.deleteMessage).not.toHaveBeenCalledWith(
+        "grape",
+        "efgh"
+      );
+
+      expect(context.log).toHaveBeenCalledWith(
+        "Message grape failed to parse; skipping deletion"
+      );
+      expect(context.log).toHaveBeenCalledWith(
+        "Message apple deleted with request id 123 and has TestEvent id 11"
+      );
+      expect(context.log).toHaveBeenCalledWith(
+        "Message banana deleted with request id 123 and has TestEvent id 22"
+      );
     });
   });
 
@@ -420,19 +468,19 @@ describe("lib", () => {
       await reportExceptions(context, queueClientMock, response);
 
       // THEN
-      expect(queueClientMock.sendMessage).toHaveBeenCalledTimes(
-          6
-      );
+      expect(queueClientMock.sendMessage).toHaveBeenCalledTimes(6);
       const expectedMessages = [
         `{"testEventInternalId":"1234","isError":false,"details":"goodbye"}`,
         `{"testEventInternalId":"5678","isError":false,"details":"goodbye"}`,
         `{"testEventInternalId":"1234","isError":false,"details":"au revoir"}`,
         `{"testEventInternalId":"1234","isError":true,"details":"adios"}`,
         `{"testEventInternalId":"1234","isError":true,"details":"auf wiedersehen"}`,
-        `{"testEventInternalId":"91011","isError":true,"details":"auf wiedersehen"}`
+        `{"testEventInternalId":"91011","isError":true,"details":"auf wiedersehen"}`,
       ];
       expectedMessages.forEach((em) => {
-        expect(queueClientMock.sendMessage).toHaveBeenCalledWith(Buffer.from(em).toString("base64"));
+        expect(queueClientMock.sendMessage).toHaveBeenCalledWith(
+          Buffer.from(em).toString("base64")
+        );
       });
     });
   });
