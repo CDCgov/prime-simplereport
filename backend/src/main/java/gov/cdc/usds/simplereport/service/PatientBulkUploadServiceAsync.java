@@ -27,7 +27,6 @@ import java.util.UUID;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.scheduling.annotation.Async;
-import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
 
 @Service
@@ -41,10 +40,6 @@ public class PatientBulkUploadServiceAsync {
 
   @Async
   public void savePatients(byte[] content, UUID facilityId) {
-    System.out.println("BOOYAH");
-    System.out.println("security context: " + SecurityContextHolder.getContext());
-    System.out.println("thread name: " + Thread.currentThread().getName());
-
     Organization currentOrganization = _organizationService.getCurrentOrganization();
 
     // Patients do not need to be assigned to a facility, but if an id is given it must be valid
