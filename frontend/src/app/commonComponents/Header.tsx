@@ -23,29 +23,15 @@ interface MenuItem {
   url: string;
   displayText: string;
   displayPermissions: boolean;
-  className: string | ((props: { isActive: boolean }) => string);
   key: string;
 }
 
 interface HeaderProps {
   menuItems: MenuItem[];
-  activeNavItem: string;
-  inactiveNavItem: string;
-  getNavItemClassName: ({
-    isActive,
-  }: {
-    isActive: boolean;
-  }) => "active-nav-item prime-nav-link" | "prime-nav-link";
   showFacilitySelect: boolean;
 }
 
-const Header: React.FC<HeaderProps> = ({
-  menuItems,
-  activeNavItem,
-  inactiveNavItem,
-  getNavItemClassName,
-  showFacilitySelect,
-}) => {
+const Header: React.FC<HeaderProps> = ({ menuItems, showFacilitySelect }) => {
   const appInsights = getAppInsights();
 
   const handleSupportClick = () => {
@@ -126,6 +112,10 @@ const Header: React.FC<HeaderProps> = ({
   };
 
   const mainNavContent = menuItems;
+  const activeNavItem = "active-nav-item prime-nav-link";
+  const inactiveNavItem = "prime-nav-link";
+  const getNavItemClassName = ({ isActive }: { isActive: boolean }) =>
+    isActive ? activeNavItem : inactiveNavItem;
   const mainNavList = (deviceType: string) =>
     mainNavContent.map((item) => {
       return (
@@ -134,7 +124,7 @@ const Header: React.FC<HeaderProps> = ({
             <LinkWithQuery
               to={item.url}
               onClick={() => setMenuVisible(false)}
-              className={item.className}
+              className={getNavItemClassName}
               id={`${deviceType}-${item.key}`}
             >
               {item.displayText}
