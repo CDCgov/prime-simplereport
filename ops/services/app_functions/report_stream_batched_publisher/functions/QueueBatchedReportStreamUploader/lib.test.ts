@@ -232,7 +232,7 @@ describe("lib", () => {
     it("calls fetch with topic", async () => {
       // GIVEN
       fetchMock.mockResponseOnce("yup");
-      process.env["REPORT_STREAM_TOPIC"] = "mytopic";
+      process.env.REPORT_STREAM_TOPIC = "mytopic";
 
       // WHEN
       await uploadResult("whatever");
@@ -251,7 +251,7 @@ describe("lib", () => {
         body: "whatever"
       });
 
-      delete process.env["REPORT_STREAM_TOPIC"];
+      delete process.env.REPORT_STREAM_TOPIC;
     })
   });
 

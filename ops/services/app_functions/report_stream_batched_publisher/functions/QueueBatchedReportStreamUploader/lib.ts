@@ -130,8 +130,8 @@ export async function uploadResult(body) {
     "content-type": "text/csv",
     client: REPORT_STREAM_CLIENT
   });
-  if(process.env["REPORT_STREAM_TOPIC"]){
-    headers.set("topic", process.env["REPORT_STREAM_TOPIC"]);
+  if(process.env.REPORT_STREAM_TOPIC){
+    headers.set("topic", process.env.REPORT_STREAM_TOPIC);
   }
   return fetch(REPORT_STREAM_URL, {
     method: "POST",
