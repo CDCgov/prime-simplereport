@@ -20,6 +20,7 @@ const {
   REPORT_STREAM_BATCH_MAXIMUM,
   REPORT_STREAM_TOKEN,
   REPORT_STREAM_URL,
+  REPORT_STREAM_CLIENT,
   AZ_STORAGE_ACCOUNT_KEY,
   AZ_STORAGE_ACCOUNT_NAME,
   AZ_STORAGE_QUEUE_SVC_URL,
@@ -127,8 +128,11 @@ export async function uploadResult(body) {
     "x-functions-key": REPORT_STREAM_TOKEN,
     "x-api-version": uploaderVersion,
     "content-type": "text/csv",
-    client: "simple_report",
+    client: REPORT_STREAM_CLIENT
   });
+  if(process.env["REPORT_STREAM_TOPIC"]){
+    headers.set("topic", process.env["REPORT_STREAM_TOPIC"]);
+  }
   return fetch(REPORT_STREAM_URL, {
     method: "POST",
     headers,

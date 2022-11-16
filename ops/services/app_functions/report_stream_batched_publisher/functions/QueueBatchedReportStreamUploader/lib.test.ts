@@ -19,6 +19,7 @@ import { ReportStreamError, ReportStreamResponse } from "./rs-response";
 
 import fetch from "node-fetch";
 import fetchMock from "jest-fetch-mock";
+import { uploaderVersion } from "../config";
 jest.mock(
   "node-fetch",
   jest.fn(() => require("jest-fetch-mock"))
@@ -34,6 +35,7 @@ jest.mock("../config", () => ({
     REPORT_STREAM_TOKEN: "merhaba",
     REPORT_STREAM_BATCH_MINIMUM: "1",
     REPORT_STREAM_BATCH_MAXIMUM: "5000",
+    REPORT_STREAM_CLIENT: "simplereport"
   },
 }));
 
@@ -207,7 +209,7 @@ describe("lib", () => {
   })
 
   describe("uploadResult", () => {
-    it("calls fetch", async () => {
+    it("calls fetch without topic", async () => {
       // GIVEN
       fetchMock.mockResponseOnce("yup");
 
@@ -216,6 +218,40 @@ describe("lib", () => {
 
       // THEN
       expect(fetch).toHaveBeenCalled();
+      expect(fetch).toBeCalledWith("https://nope.url/1234", {
+        method: "POST",
+        headers: new Headers({
+          "x-functions-key": "merhaba",
+          "x-api-version": uploaderVersion,
+          "content-type": "text/csv",
+          client: "simplereport"
+        }),
+        body: "whatever"
+      })
+    });
+    it("calls fetch with topic", async () => {
+      // GIVEN
+      fetchMock.mockResponseOnce("yup");
+      process.env["REPORT_STREAM_TOPIC"] = "mytopic";
+
+      // WHEN
+      await uploadResult("whatever");
+
+      // THEN
+      expect(fetch).toHaveBeenCalled();
+      expect(fetch).toBeCalledWith("https://nope.url/1234", {
+        method: "POST",
+        headers: new Headers({
+          "x-functions-key": "merhaba",
+          "x-api-version": uploaderVersion,
+          "content-type": "text/csv",
+          client: "simplereport",
+          topic: "mytopic"
+        }),
+        body: "whatever"
+      });
+
+      delete process.env["REPORT_STREAM_TOPIC"];
     })
   });
 
