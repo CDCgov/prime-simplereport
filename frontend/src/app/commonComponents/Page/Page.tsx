@@ -25,7 +25,8 @@ const Page: React.FC<Props> = ({ header, children, isPatientApp }) => {
       const urlPrefix = getUrl(true);
 
       script.src =
-        process.env.PUBLIC_URL && urlPrefix.includes(process.env.PUBLIC_URL)
+        import.meta.env.VITE_PUBLIC_URL &&
+        urlPrefix.includes(import.meta.env.VITE_PUBLIC_URL)
           ? `${urlPrefix}static/touchpoints.js`
           : "touchpoints.js";
       script.async = true;

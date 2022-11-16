@@ -33,15 +33,16 @@ const mocks = [
 
 const org = mocks[0].result.data.whoami.organization;
 const expectedOrgSlug = org.patientSelfRegistrationLink.toUpperCase();
-const expectedFacilitySlug = org.facilities[1].patientSelfRegistrationLink.toUpperCase();
+const expectedFacilitySlug =
+  org.facilities[1].patientSelfRegistrationLink.toUpperCase();
 const testBaseUrl = "https://example.com";
 
 describe("ManageSelfRegistrationLinks", () => {
   const nav = { ...navigator };
-  const originalBaseUrl = process.env.REACT_APP_BASE_URL;
+  const originalBaseUrl = process.env.VITE_BASE_URL;
 
   beforeEach(async () => {
-    process.env.REACT_APP_BASE_URL = testBaseUrl;
+    process.env.VITE_BASE_URL = testBaseUrl;
     Object.assign(navigator, {
       clipboard: {
         writeText: jest.fn(),
@@ -56,12 +57,12 @@ describe("ManageSelfRegistrationLinks", () => {
   });
 
   afterEach(() => {
-    process.env.REACT_APP_BASE_URL = originalBaseUrl;
+    process.env.VITE_BASE_URL = originalBaseUrl;
     Object.assign(navigator, nav);
   });
 
   it("copies the org link", async () => {
-    const orgUrl = `${process.env.REACT_APP_BASE_URL}/register/${expectedOrgSlug}`;
+    const orgUrl = `${process.env.VITE_BASE_URL}/register/${expectedOrgSlug}`;
     const [orgBtn] = screen.getAllByRole("button");
     userEvent.click(orgBtn);
     await waitFor(async () => expect(orgBtn).toBeEnabled());
@@ -69,7 +70,7 @@ describe("ManageSelfRegistrationLinks", () => {
   });
 
   it("copies a facility link", async () => {
-    const facilityUrl = `${process.env.REACT_APP_BASE_URL}/register/${expectedFacilitySlug}`;
+    const facilityUrl = `${process.env.VITE_BASE_URL}/register/${expectedFacilitySlug}`;
     const btns = screen.getAllByRole("button");
     userEvent.click(btns[2]);
     await waitFor(async () => expect(btns[2]).toBeEnabled());

@@ -1,9 +1,9 @@
 import {
-  DefaultRequestBody,
   graphql,
   GraphQLHandler,
   GraphQLRequest,
   MockedRequest,
+  DefaultBodyType,
   rest,
   RestHandler,
 } from "msw";
@@ -17,7 +17,7 @@ import {
 import { exampleQuestionSet } from "../app/signUp/IdentityVerification/constants";
 import { UploadResponse, UploadSubmissionPage } from "../generated/graphql";
 
-const BACKEND_URL = process.env.REACT_APP_BACKEND_URL;
+const BACKEND_URL = import.meta.env.VITE_BACKEND_URL;
 
 const mocks = {
   GetPatientsLastResult: graphql.query(
@@ -167,7 +167,7 @@ export const getMocks = (
   ...names: (keyof typeof mocks)[]
 ): (
   | GraphQLHandler<GraphQLRequest<any>>
-  | RestHandler<MockedRequest<DefaultRequestBody>>
+  | RestHandler<MockedRequest<DefaultBodyType>>
 )[] => names.map((name) => mocks[name]);
 
 const cache = new InMemoryCache();
@@ -179,6 +179,13 @@ const client = new ApolloClient({
   cache,
   link,
 });
-export const StoryGraphQLProvider: React.FC = ({ children }) => (
+
+type StoryGraphQLProviderProps = {
+  children: React.ReactNode;
+};
+
+export const StoryGraphQLProvider = ({
+  children,
+}: StoryGraphQLProviderProps): JSX.Element => (
   <ApolloProvider client={client}>{children}</ApolloProvider>
 );

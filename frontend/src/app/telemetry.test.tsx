@@ -15,7 +15,7 @@ jest.mock("@microsoft/applicationinsights-web", () => {
   };
 });
 
-const oldEnv = process.env.REACT_APP_APPLICATIONINSIGHTS_CONNECTION_STRING;
+const oldEnv = import.meta.env.VITE_APPLICATIONINSIGHTS_CONNECTION_STRING;
 
 describe("telemetry", () => {
   beforeEach(() => {
@@ -26,18 +26,18 @@ describe("telemetry", () => {
   });
   afterEach(() => {
     jest.resetAllMocks();
-    process.env.REACT_APP_APPLICATIONINSIGHTS_CONNECTION_STRING = oldEnv;
+    import.meta.env.VITE_APPLICATIONINSIGHTS_CONNECTION_STRING = oldEnv;
   });
 
   it("initializes the appInsights service", () => {
-    process.env.REACT_APP_APPLICATIONINSIGHTS_CONNECTION_STRING =
+    import.meta.env.VITE_APPLICATIONINSIGHTS_CONNECTION_STRING =
       "fake-connection-string";
     ai.initialize();
     expect(getAppInsights()).not.toBe(null);
   });
 
   it("calls app insights on console methods", () => {
-    process.env.REACT_APP_APPLICATIONINSIGHTS_CONNECTION_STRING =
+    import.meta.env.VITE_APPLICATIONINSIGHTS_CONNECTION_STRING =
       "fake-connection-string";
     const appInsights = getAppInsights();
     withInsights(console);

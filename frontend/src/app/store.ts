@@ -65,6 +65,7 @@ const reducers = (state = initialState, action: any) => {
         },
       };
     case UPDATE_FACILITY:
+      // eslint-disable-next-line no-case-declarations
       const facilityIndex = state.facilities.findIndex(
         (f) => f.id === action.payload.id
       );

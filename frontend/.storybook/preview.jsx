@@ -1,9 +1,4 @@
-import { addDecorator } from "@storybook/react";
-import { initializeWorker, mswDecorator } from "msw-storybook-addon";
-import "../src/styles/App.css";
-
-initializeWorker();
-addDecorator(mswDecorator);
+import "../src/scss/App.scss";
 
 export const parameters = {
   actions: { argTypesRegex: "^on[A-Z].*" },

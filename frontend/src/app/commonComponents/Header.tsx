@@ -102,14 +102,14 @@ const Header: React.FC<{}> = () => {
     localStorage.removeItem("id_token");
     // Determine which Okta domain to use for logout
     const oktaDomain =
-      process.env.NODE_ENV !== "development" ? "okta" : "oktapreview";
+      import.meta.env.MODE !== "development" ? "okta" : "oktapreview";
     window.location.replace(
       "https://hhs-prime." +
         encodeURIComponent(oktaDomain) +
         ".com/oauth2/default/v1/logout" +
         `?id_token_hint=${encodeURIComponent(id_token || "")}` +
         `&post_logout_redirect_uri=${encodeURIComponent(
-          process.env.REACT_APP_BASE_URL || ""
+          import.meta.env.VITE_BASE_URL || ""
         )}` +
         `&state=${state}`
     );
@@ -299,7 +299,7 @@ const Header: React.FC<{}> = () => {
             <img
               className="width-card desktop:width-full"
               src={siteLogo}
-              alt={process.env.REACT_APP_TITLE}
+              alt={import.meta.env.VITE_TITLE}
             />
           </LinkWithQuery>
           <div className="prime-organization-name">{organization.name}</div>

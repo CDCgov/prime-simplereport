@@ -140,9 +140,9 @@ describe("isValidBirthdate18n", () => {
   let testContext: TestContext;
 
   beforeEach(() => {
-    testContext = ({
+    testContext = {
       createError: jest.fn(),
-    } as any) as TestContext;
+    } as any as TestContext;
   });
 
   it("returns false for undefined", () => {

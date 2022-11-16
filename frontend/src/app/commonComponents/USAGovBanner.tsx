@@ -1,10 +1,10 @@
 import React from "react";
 import { Trans, withTranslation } from "react-i18next";
+import iconDotGov from "uswds/img/icon-dot-gov.svg";
+import usFlagSmall from "uswds/img/us_flag_small.png";
+import iconHttps from "uswds/img/icon-https.svg";
 
 import i18n from "../../i18n";
-import iconDotGov from "../../../node_modules/uswds/dist/img/icon-dot-gov.svg";
-import usFlagSmall from "../../../node_modules/uswds/dist/img/us_flag_small.png";
-import iconHttps from "../../../node_modules/uswds/dist/img/icon-https.svg";
 
 import "./USAGovBanner.scss";
 

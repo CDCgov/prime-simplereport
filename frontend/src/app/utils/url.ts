@@ -20,10 +20,10 @@ export const getActivationTokenFromUrl = (): string | null =>
   getParameterFromUrl("activationToken");
 
 export function getUrl(relative = false): string {
-  if (process.env.REACT_APP_BASE_URL) {
+  if (import.meta.env.VITE_BASE_URL) {
     const url = relative
-      ? process.env.PUBLIC_URL
-      : process.env.REACT_APP_BASE_URL + process.env.PUBLIC_URL;
+      ? import.meta.env.VITE_PUBLIC_URL
+      : import.meta.env.VITE_BASE_URL + import.meta.env.VITE_PUBLIC_URL;
     return url.charAt(url.length - 1) === "/" ? url : url + "/";
   }
   return "http://localhost:3000/";

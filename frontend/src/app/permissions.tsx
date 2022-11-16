@@ -10,7 +10,7 @@ export type RoleDescription =
 // when changing a user's role, the server expects one of these values as the roleDescription. It's annoying how its not consistent with RoleDescription
 export type Role = "ADMIN" | "USER" | "ENTRY_ONLY" | "TEST_RESULT_UPLOAD_USER";
 
-/* 
+/*
     TODO: this is a quick v0
 
     We should store permissions in Redux, react context, or another global state storage. A standardized one doesn't exist in our codebase atm.
@@ -27,7 +27,7 @@ export type Role = "ADMIN" | "USER" | "ENTRY_ONLY" | "TEST_RESULT_UPLOAD_USER";
 
     Off the top of my head, there are a few other options for checking permissions
     - create a permissions component that takes in the required permissions, pulls the current permissions from the centralized local store, and does the gating
-    - manually pull in the permissions from centraliezd local store. 
+    - manually pull in the permissions from centraliezd local store.
     - look into third-party permission gating components? CASL is one.
 */
 const hasPermission = (

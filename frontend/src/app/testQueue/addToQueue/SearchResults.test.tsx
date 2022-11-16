@@ -51,7 +51,14 @@ const patients: Patient[] = [
 ];
 
 const mockFacilityID = "facility-id-101";
-const RouterWithFacility: React.FC = ({ children }) => (
+
+type RouterWithFacilityProps = {
+  children: React.ReactNode;
+};
+
+const RouterWithFacility = ({
+  children,
+}: RouterWithFacilityProps): JSX.Element => (
   <MemoryRouter initialEntries={[`/queue?facility=${mockFacilityID}`]}>
     <Routes>{children}</Routes>
   </MemoryRouter>

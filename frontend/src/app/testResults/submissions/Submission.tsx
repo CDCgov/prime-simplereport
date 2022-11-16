@@ -1,6 +1,6 @@
 import { useParams } from "react-router-dom";
+import iconSprite from "uswds/img/sprite.svg";
 
-import iconSprite from "../../../../node_modules/uswds/dist/img/sprite.svg";
 import { useGetUploadSubmissionQuery } from "../../../generated/graphql";
 import { LinkWithQuery } from "../../commonComponents/LinkWithQuery";
 import { formatDateWithTimeOption } from "../../utils/date";
@@ -12,7 +12,11 @@ const Submission = () => {
   const urlParams = useParams();
   const internalId = urlParams.id || "";
 
-  const { data: submission, loading, error } = useGetUploadSubmissionQuery({
+  const {
+    data: submission,
+    loading,
+    error,
+  } = useGetUploadSubmissionQuery({
     fetchPolicy: "no-cache",
     variables: {
       id: internalId,

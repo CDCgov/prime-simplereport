@@ -65,6 +65,7 @@ interface AreYouSureProps {
   continueText: string;
   cancelHandler: () => void;
   continueHandler: () => void;
+  children: React.ReactNode;
 }
 
 const AreYouSure: React.FC<AreYouSureProps> = ({
@@ -85,7 +86,7 @@ const AreYouSure: React.FC<AreYouSureProps> = ({
     }}
     overlayClassName="prime-modal-overlay display-flex flex-align-center flex-justify-center"
     contentLabel="Questions not answered"
-    ariaHideApp={process.env.NODE_ENV !== "test"}
+    ariaHideApp={import.meta.env.MODE !== "test"}
     onRequestClose={cancelHandler}
   >
     <div className="sr-modal-content">{children}</div>
@@ -117,7 +118,7 @@ const convertFromMultiplexResponse = (
   return multiplexResultInputs;
 };
 
-if (process.env.NODE_ENV !== "test") {
+if (import.meta.env.MODE !== "test") {
   Modal.setAppElement("#root");
 }
 
@@ -212,9 +213,8 @@ const QueueItem = ({
   const [deviceSpecimenTypeId, updateDeviceSpecimenTypeId] = useState(
     selectedDeviceSpecimenTypeId
   );
-  const [supportsMultipleDiseases, updateSupportsMultipleDiseases] = useState(
-    false
-  );
+  const [supportsMultipleDiseases, updateSupportsMultipleDiseases] =
+    useState(false);
 
   // Populate device+specimen state variables from selected device specimen type
   useEffect(() => {
@@ -321,16 +321,14 @@ const QueueItem = ({
   const [cacheTestResults, setCacheTestResults] = useState(
     convertFromMultiplexResponse(selectedTestResults)
   );
-  const multiplexResultInputsRef = useRef<MultiplexResultInput[]>(
-    cacheTestResults
-  ); // persistent reference to use in Effect
+  const multiplexResultInputsRef =
+    useRef<MultiplexResultInput[]>(cacheTestResults); // persistent reference to use in Effect
 
   useEffect(() => {
     // update cache when selectedTestResults prop update
     setCacheTestResults(convertFromMultiplexResponse(selectedTestResults));
-    multiplexResultInputsRef.current = convertFromMultiplexResponse(
-      selectedTestResults
-    );
+    multiplexResultInputsRef.current =
+      convertFromMultiplexResponse(selectedTestResults);
   }, [selectedTestResults]);
 
   const covidResult = findResultByDiseaseName(cacheTestResults, "COVID-19");
@@ -923,9 +921,11 @@ const QueueItem = ({
                   </div>
                   <div className="prime-li flex-align-self-end tablet:grid-col-5 padding-right-2">
                     <Dropdown
-                      options={(deviceLookup.get(
-                        deviceTypes[deviceId]
-                      ) as SpecimenType[])
+                      options={(
+                        deviceLookup.get(
+                          deviceTypes[deviceId]
+                        ) as SpecimenType[]
+                      )
                         .sort(alphabetizeByName)
                         .map((s: SpecimenType) => ({
                           label: s.name,

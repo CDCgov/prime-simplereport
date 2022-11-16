@@ -50,7 +50,7 @@ export function useBlocker(blocker: any, when = true) {
  */
 export function usePrompt(message: string, when = true) {
   const blocker = useCallback(
-    (tx) => {
+    (tx: any) => {
       // eslint-disable-next-line no-alert
       if (window.confirm(message)) {
         tx.retry();

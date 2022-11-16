@@ -10,6 +10,7 @@ import { Provider } from "react-redux";
 import configureStore from "redux-mock-store";
 import { MemoryRouter, Route, Routes, useLocation } from "react-router-dom";
 import userEvent from "@testing-library/user-event";
+import React from "react";
 
 import * as smartyStreets from "../utils/smartyStreets";
 import SRToastContainer from "../commonComponents/SRToastContainer";
@@ -32,7 +33,12 @@ const store = mockStore({
   organization: { name: "Test Organization" },
 });
 
-const RouterWithFacility: React.FC = ({ children }) => (
+type RouterWithFacilityProps = {
+  children: React.ReactNode;
+};
+const RouterWithFacility = ({
+  children,
+}: RouterWithFacilityProps): JSX.Element => (
   <MemoryRouter initialEntries={[`/add-patient?facility=${mockFacilityID}`]}>
     <Routes>{children}</Routes>
   </MemoryRouter>

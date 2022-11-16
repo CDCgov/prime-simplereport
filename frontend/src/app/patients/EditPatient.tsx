@@ -2,8 +2,8 @@ import React, { useState } from "react";
 import { gql, useMutation, useQuery } from "@apollo/client";
 import { NavigateOptions, NavLink, useNavigate } from "react-router-dom";
 import { useTranslation } from "react-i18next";
+import iconSprite from "uswds/img/sprite.svg";
 
-import iconSprite from "../../../node_modules/uswds/dist/img/sprite.svg";
 import {
   PATIENT_TERM_CAP,
   PATIENT_TERM_PLURAL_CAP,

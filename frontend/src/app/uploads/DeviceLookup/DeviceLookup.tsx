@@ -9,6 +9,8 @@ import Optional from "../../commonComponents/Optional";
 import "./DeviceLookup.scss";
 import LabeledText from "../../commonComponents/LabeledText";
 
+import { IconProp } from "@fortawesome/fontawesome-svg-core";
+
 interface Props {
   formTitle: string;
   deviceOptions?: DeviceType[];
@@ -66,7 +68,11 @@ const DeviceLookup = (props: Props) => {
             aria-label={`${label}`}
           >
             <FontAwesomeIcon
-              icon={copiedSlug === copiedAttribute ? faCheck : faCopy}
+              icon={
+                copiedSlug === copiedAttribute
+                  ? (faCheck as IconProp)
+                  : (faCopy as IconProp)
+              }
             />
           </button>
         )}
@@ -186,8 +192,8 @@ const DeviceLookup = (props: Props) => {
                                           <FontAwesomeIcon
                                             icon={
                                               copiedSlug === typeCode
-                                                ? faCheck
-                                                : faCopy
+                                                ? (faCheck as IconProp)
+                                                : (faCopy as IconProp)
                                             }
                                           />
                                         </button>

@@ -22,9 +22,13 @@ const patient = {
   },
 };
 
-const RouterWithFacility: React.FC = ({ children }) => (
-  <MemoryRouter>{children}</MemoryRouter>
-);
+type RouterWithFacilityProps = {
+  children: React.ReactNode;
+};
+
+const RouterWithFacility: React.FC<RouterWithFacilityProps> = ({
+  children,
+}) => <MemoryRouter>{children}</MemoryRouter>;
 
 export default {
   title: "Search Results",
@@ -32,16 +36,18 @@ export default {
   argTypes: {},
 } as Meta;
 
-const TestResultsTemplate = (): Story<TestResultsProps> => (args) => (
-  <RouterWithFacility>
-    <SearchResults {...args} />
-  </RouterWithFacility>
-);
-const QueueTemplate = (): Story<QueueProps> => (args) => (
-  <RouterWithFacility>
-    <SearchResults {...args} />
-  </RouterWithFacility>
-);
+const TestResultsTemplate = (): Story<TestResultsProps> => (args) =>
+  (
+    <RouterWithFacility>
+      <SearchResults {...args} />
+    </RouterWithFacility>
+  );
+const QueueTemplate = (): Story<QueueProps> => (args) =>
+  (
+    <RouterWithFacility>
+      <SearchResults {...args} />
+    </RouterWithFacility>
+  );
 
 export const NoResults = TestResultsTemplate();
 NoResults.args = {

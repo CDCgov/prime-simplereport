@@ -4,14 +4,16 @@ export type CardProps = {
   logo?: boolean;
   bodyKicker?: string;
   bodyKickerCentered?: boolean;
+  children?: React.ReactNode;
 };
 
-export const Card: React.FC<CardProps> = ({
+export const Card = ({
   children,
   logo = false,
+  //@ts-ignore mismatch of types boolean and string. Needs to be revisited later
   bodyKicker = false,
   bodyKickerCentered = false,
-}) => {
+}: CardProps) => {
   let kicker = null;
   if (bodyKicker && bodyKickerCentered) {
     kicker = (

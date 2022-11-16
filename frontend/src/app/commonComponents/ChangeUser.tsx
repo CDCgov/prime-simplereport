@@ -1,5 +1,5 @@
 const ChangeUser = () => {
-  if (process.env.NODE_ENV !== "development") {
+  if (import.meta.env.MODE !== "development") {
     return null;
   }
 

@@ -61,7 +61,7 @@ const App = () => {
   const accessToken = localStorage.getItem("access_token");
 
   // Check if the user is logged in, if not redirect to Okta
-  if (process.env.REACT_APP_OKTA_ENABLED === "true") {
+  if (import.meta.env.VITE_OKTA_ENABLED === "true") {
     if (!accessToken) {
       // If Okta login has been attempted and returned to SR with an error, don't redirect back to Okta
       const params = new URLSearchParams(location.hash.slice(1));
@@ -122,7 +122,7 @@ const App = () => {
           console.error("Failed to decode access token", e);
         }
       }
-      const rolesFieldName = `${process.env.REACT_APP_OKTA_TOKEN_ROLE_CLAIM}`;
+      const rolesFieldName = `${import.meta.env.VITE_OKTA_TOKEN_ROLE_CLAIM}`;
       appInsights.trackException({
         exception: error,
         properties: {
@@ -161,10 +161,10 @@ const App = () => {
   return (
     <>
       <VersionEnforcer />
-      {process.env.REACT_APP_DISABLE_MAINTENANCE_BANNER === "true" ? null : (
+      {import.meta.env.VITE_DISABLE_MAINTENANCE_BANNER === "true" ? null : (
         <MaintenanceBanner />
       )}
-      {process.env.REACT_APP_IS_TRAINING_SITE === "true" && (
+      {import.meta.env.VITE_IS_TRAINING_SITE === "true" && (
         <TrainingNotification />
       )}
       <WithFacility>

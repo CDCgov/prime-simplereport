@@ -3,6 +3,7 @@ import ReactModal from "react-modal";
 import classnames from "classnames";
 import { faExclamationCircle } from "@fortawesome/free-solid-svg-icons";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
+import { IconProp } from "@fortawesome/fontawesome-svg-core";
 
 import iconClose from "../../img/close.svg";
 
@@ -16,6 +17,7 @@ interface Props {
   containerClassName?: string;
   variant?: "warning";
   title?: string;
+  children: React.ReactNode;
 }
 interface SubComponents {
   Header: typeof Header;
@@ -28,11 +30,19 @@ const variantIcons: Record<ModalVariant, IconDefinition> = {
   warning: faExclamationCircle,
 };
 
-const Header: React.FC<{ styleClassNames?: string }> = ({
-  children,
-  styleClassNames,
-}) => <h1 className={"modal__heading " + styleClassNames}>{children}</h1>;
-const Footer: React.FC<{}> = ({ children }) => (
+type HeaderProps = {
+  styleClassNames?: string;
+  children?: React.ReactNode;
+};
+
+const Header: React.FC<HeaderProps> = ({ children, styleClassNames }) => (
+  <h1 className={"modal__heading " + styleClassNames}>{children}</h1>
+);
+
+type FooterProps = {
+  children?: React.ReactNode;
+};
+const Footer: React.FC<FooterProps> = ({ children }) => (
   <div className="modal__footer">{children}</div>
 );
 
@@ -72,7 +82,7 @@ const Modal: React.FC<Props> & SubComponents = ({
         },
       }}
       overlayClassName="prime-modal-overlay display-flex flex-align-center flex-justify-center"
-      ariaHideApp={process.env.NODE_ENV !== "test"}
+      ariaHideApp={import.meta.env.MODE !== "test"}
       contentLabel={contentLabel}
     >
       <div className={containerClasses}>
@@ -89,7 +99,10 @@ const Modal: React.FC<Props> & SubComponents = ({
           <div className="modal__content grid-row">
             {variant && (
               <div className="grid-col flex-auto margin-right-2">
-                <FontAwesomeIcon icon={variantIcons[variant]} size="2x" />
+                <FontAwesomeIcon
+                  icon={variantIcons[variant] as IconProp}
+                  size="2x"
+                />
               </div>
             )}
             <div className="grid-col">{children}</div>

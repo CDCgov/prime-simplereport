@@ -52,7 +52,7 @@ export function QueryWrapper<ComponentProps>({
     refetch();
     onRefetch && onRefetch();
   };
-  const props = ({
+  const props = {
     ...componentProps,
     trackAction: appInsights
       ? appInsights.trackEvent({ name: "User Action" })
@@ -64,10 +64,10 @@ export function QueryWrapper<ComponentProps>({
     refetch: passOnRefetch,
     startPolling,
     stopPolling,
-  } as unknown) as ComponentProps;
+  } as unknown as ComponentProps;
   return (
     <>
-      <Component {...props} />
+      <Component {...props} as any />
       {children}
     </>
   );

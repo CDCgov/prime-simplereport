@@ -492,7 +492,7 @@ export const languages: Language[] = [
 
 export const urls = {
   FACILITY_INFO:
-    process.env.REACT_APP_BASE_URL +
+    import.meta.env.VITE_BASE_URL +
     "resources/using-simplereport/manage-facility-info/find-supported-jurisdictions/",
 };
 

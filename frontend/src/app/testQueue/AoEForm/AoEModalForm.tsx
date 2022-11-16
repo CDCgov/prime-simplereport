@@ -10,6 +10,7 @@ interface AoEModalProps {
   onClose: () => void;
   patient: any;
   loadState?: any;
+  // eslint-disable-next-line @typescript-eslint/no-invalid-void-type
   saveCallback: (a: any) => Promise<string | void> | void;
 }
 
@@ -44,7 +45,7 @@ const AoEModalForm = (props: AoEModalProps) => {
       onRequestClose={onClose}
       overlayClassName="prime-modal-overlay display-flex flex-align-center flex-justify-center"
       contentLabel="Test questionnaire"
-      ariaHideApp={process.env.NODE_ENV !== "test"}
+      ariaHideApp={import.meta.env.MODE !== "test"}
     >
       <main aria-labelledby="aoe-form-title">
         <div className="display-flex flex-justify">

@@ -26,7 +26,7 @@ const ConfirmDeleteOrgModal: React.FC<DeletionModalProps> = ({
       }}
       overlayClassName="prime-modal-overlay display-flex flex-align-center flex-justify-center"
       contentLabel="Deletion confirmation for pending organizations"
-      ariaHideApp={process.env.NODE_ENV !== "test"}
+      ariaHideApp={import.meta.env.MODE !== "test"}
       onRequestClose={handleClose}
     >
       <div className="border-0 card-container">

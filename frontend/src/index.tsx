@@ -1,5 +1,5 @@
 import React from "react";
-import ReactDOM from "react-dom";
+import { createRoot } from "react-dom/client";
 import { Provider } from "react-redux";
 import {
   ApolloClient,
@@ -24,7 +24,6 @@ import PatientApp from "./patientApp/PatientApp";
 import AccountCreationApp from "./app/accountCreation/AccountCreationApp";
 import SignUpApp from "./app/signUp/SignUpApp";
 import HealthChecks from "./app/HealthChecks";
-import * as serviceWorker from "./serviceWorker";
 import { store } from "./app/store";
 import { showError } from "./app/utils/srToast";
 import {
@@ -38,7 +37,7 @@ import { SelfRegistration } from "./patientApp/selfRegistration/SelfRegistration
 import "./i18n";
 import getNodeEnv from "./app/utils/getNodeEnv";
 import PrimeErrorBoundary from "./app/PrimeErrorBoundary";
-import "./styles/App.css";
+import "./scss/App.scss";
 import { getUrl } from "./app/utils/url";
 import SessionTimeout from "./app/accountCreation/SessionTimeout";
 import WithFeatureFlags from "./featureFlags/WithFeatureFlags";
@@ -66,7 +65,7 @@ if (window.location.hash) {
 }
 
 const httpLink = createUploadLink({
-  uri: `${process.env.REACT_APP_BACKEND_URL}/graphql`,
+  uri: `${import.meta.env.VITE_BACKEND_URL}/graphql`,
 });
 
 const apolloMiddleware = new ApolloLink((operation, forward) => {
@@ -83,7 +82,7 @@ const apolloMiddleware = new ApolloLink((operation, forward) => {
 });
 
 const logoutLink = onError(({ networkError, graphQLErrors }: ErrorResponse) => {
-  if (networkError && process.env.REACT_APP_BASE_URL) {
+  if (networkError && import.meta.env.VITE_BASE_URL) {
     // If unauthorized (expired or missing token), remove the access token and reload
     if ("statusCode" in networkError && networkError.statusCode === 401) {
       console.warn("[UNATHORIZED_ACCESS] !!");
@@ -121,12 +120,14 @@ const client = new ApolloClient({
   link: logoutLink.concat(concat(apolloMiddleware, httpLink as any)),
 });
 
+console.log(import.meta.env);
+
 export const ReactApp = (
   <ApolloProvider client={client}>
     <React.StrictMode>
       <Provider store={store}>
         <WithFeatureFlags>
-          <Router basename={process.env.PUBLIC_URL}>
+          <Router basename={import.meta.env.PUBLIC_URL}>
             <TelemetryProvider>
               <PrimeErrorBoundary>
                 <Routes>
@@ -151,11 +152,7 @@ export const ReactApp = (
     </React.StrictMode>
   </ApolloProvider>
 );
+
 export const rootElement = document.getElementById("root");
-
-ReactDOM.render(ReactApp, rootElement);
-
-// If you want your app to work offline and load faster, you can change
-// unregister() to register() below. Note this comes with some pitfalls.
-// Learn more about service workers: https://bit.ly/CRA-PWA
-serviceWorker.unregister();
+const root = createRoot(rootElement as Element);
+root.render(ReactApp);

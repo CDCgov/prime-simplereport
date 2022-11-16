@@ -2,12 +2,14 @@ import React, { useEffect, useState } from "react";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faStopwatch, faRedo } from "@fortawesome/free-solid-svg-icons";
 
+import alarmModule from "./test-timer.mp3";
+
 import "./TestTimer.scss";
 import { getAppInsights } from "../../app/TelemetryService";
 
-const alarmModule = require("./test-timer.mp3");
+import { IconProp } from "@fortawesome/fontawesome-svg-core";
 
-const alarmSound = new Audio(alarmModule.default || alarmModule);
+const alarmSound = new Audio(alarmModule || alarmModule);
 
 type DateTimeStamp = ReturnType<typeof Date.now>;
 
@@ -240,7 +242,7 @@ export const TestTimerWidget = ({ timer, context }: Props) => {
         aria-label="Start timer"
       >
         <span role="timer">{mmss(countdown)}</span>{" "}
-        <FontAwesomeIcon alt-text="stopwatch" icon={faStopwatch} />
+        <FontAwesomeIcon alt-text="stopwatch" icon={faStopwatch as IconProp} />
       </button>
     );
   }
@@ -253,7 +255,7 @@ export const TestTimerWidget = ({ timer, context }: Props) => {
         aria-label="Reset timer"
       >
         <span role="timer">{mmss(countdown)}</span>{" "}
-        <FontAwesomeIcon alt-text="reset" icon={faRedo} />
+        <FontAwesomeIcon alt-text="reset" icon={faRedo as IconProp} />
       </button>
     );
   }
@@ -276,7 +278,7 @@ export const TestTimerWidget = ({ timer, context }: Props) => {
         <span className="timer-overtime" role="timer">
           {mmss(elapsed)} elapsed{" "}
         </span>{" "}
-        <FontAwesomeIcon icon={faRedo} />
+        <FontAwesomeIcon icon={faRedo as IconProp} />
       </button>
     </div>
   );

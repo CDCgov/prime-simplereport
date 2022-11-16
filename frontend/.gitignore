@@ -1,5 +1,6 @@
 /node_modules
 /build
+/dist
 /src/styles/*
 /.env.local
 /.env.*.local

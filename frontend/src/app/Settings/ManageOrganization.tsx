@@ -22,12 +22,12 @@ const ManageOrganization: React.FC<Props> = (props) => {
     Partial<Record<keyof EditableOrganization, string>>
   >({});
   const [formChanged, setFormChanged] = useState(false);
-  const onChange = <K extends keyof EditableOrganization>(key: K) => (
-    value: EditableOrganization[K]
-  ) => {
-    setOrganization({ ...organization, [key]: value });
-    setFormChanged(true);
-  };
+  const onChange =
+    <K extends keyof EditableOrganization>(key: K) =>
+    (value: EditableOrganization[K]) => {
+      setOrganization({ ...organization, [key]: value });
+      setFormChanged(true);
+    };
 
   const validateField = (field: keyof EditableOrganization): boolean => {
     if (field === "name") {

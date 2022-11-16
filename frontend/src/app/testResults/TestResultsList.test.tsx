@@ -57,7 +57,11 @@ jest.mock("@microsoft/applicationinsights-react-js", () => ({
   useTrackEvent: jest.fn(),
 }));
 
-const WithRouter: React.FC = ({ children }) => (
+type WithRouterProps = {
+  children: React.ReactNode;
+};
+
+const WithRouter: React.FC<WithRouterProps> = ({ children }) => (
   <MemoryRouter initialEntries={[{ search: "?facility=1" }]}>
     {children}
   </MemoryRouter>
@@ -673,9 +677,8 @@ describe("TestResultsList", () => {
       // source of the React key prop warning
       const clickActionMenu = async () => {
         expect(await screen.findByText("Showing 1-3 of 3")).toBeInTheDocument();
-        const actionMenuButton = document.querySelectorAll(
-          ".rc-menu-button"
-        )[0];
+        const actionMenuButton =
+          document.querySelectorAll(".rc-menu-button")[0];
         userEvent.click(actionMenuButton as HTMLElement);
       };
       it.each([
@@ -800,6 +803,7 @@ describe("TestResultsList", () => {
       userEvent.type(await screen.findByText("Date range (start)"), startDate);
       await new Promise((r) => setTimeout(r, SEARCH_DEBOUNCE_TIME));
       userEvent.type(await screen.findByText("Date range (end)"), endDate);
+      // eslint-disable-next-line no-new
       new Promise((r) => setTimeout(r, SEARCH_DEBOUNCE_TIME));
     };
     it("should display error if end date is before the start date", async () => {

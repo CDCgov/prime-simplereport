@@ -36,6 +36,7 @@ const UsersSideNav: React.FC<Props> = ({
         >
           {users.map((user: LimitedUser) => {
             let statusText;
+
             switch (user.status) {
               case "ACTIVE":
                 statusText = (

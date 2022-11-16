@@ -268,7 +268,7 @@ describe("App", () => {
     expect(container).toMatchSnapshot();
   });
   it("displays the training header and modal and dismisses the modal", async () => {
-    process.env.REACT_APP_IS_TRAINING_SITE = "true";
+    process.env.VITE_IS_TRAINING_SITE = "true";
     const mockedStore = mockStore({ ...store, dataLoaded: true });
     renderApp(mockedStore, [
       WhoAmIQueryMock,
@@ -284,17 +284,17 @@ describe("App", () => {
     expect(trainingWelcome).not.toBeInTheDocument();
   });
   it("does not display training notifications outside the training environment", () => {
-    process.env.REACT_APP_IS_TRAINING_SITE = "false";
+    process.env.VITE_IS_TRAINING_SITE = "false";
     const mockedStore = mockStore({ ...store, dataLoaded: true });
     renderApp(mockedStore, [WhoAmIQueryMock, facilityQueryMock]);
     expect(screen.queryByText(TRAINING_PURPOSES_ONLY)).not.toBeInTheDocument();
     expect(screen.queryByText(MODAL_TEXT)).not.toBeInTheDocument();
   });
   describe("logs to App Insights on WhoAmI error", () => {
-    const oldTokenClaim = process.env.REACT_APP_OKTA_TOKEN_ROLE_CLAIM;
+    const oldTokenClaim = process.env.VITE_OKTA_TOKEN_ROLE_CLAIM;
     const trackExceptionMock = jest.fn();
     beforeEach(() => {
-      process.env.REACT_APP_OKTA_TOKEN_ROLE_CLAIM = "test_roles";
+      process.env.VITE_OKTA_TOKEN_ROLE_CLAIM = "test_roles";
       trackExceptionMock.mockReset();
       (getAppInsights as jest.Mock).mockImplementation(() => {
         const ai = Object.create(ApplicationInsights.prototype);
@@ -302,12 +302,14 @@ describe("App", () => {
       });
     });
     afterEach(() => {
-      process.env.REACT_APP_OKTA_TOKEN_ROLE_CLAIM = oldTokenClaim;
+      process.env.VITE_OKTA_TOKEN_ROLE_CLAIM = oldTokenClaim;
+      //@ts-ignore jest.spyOn should not be used with ts
       jest.spyOn(Storage.prototype, "getItem").mockRestore();
     });
     it("logs with access token info", async () => {
       jest
         .spyOn(Storage.prototype, "getItem")
+        //@ts-ignore jest.spyOn should not be used with ts
         .mockImplementation(() => "definitely a valid token");
       (jwtDecode as jest.Mock).mockReturnValue({
         sub: "subject@fakeorg.net",
@@ -336,7 +338,10 @@ describe("App", () => {
     });
     it("still logs if missing token", async () => {
       const mockedStore = mockStore({ ...store, dataLoaded: true });
-      jest.spyOn(Storage.prototype, "getItem").mockImplementation(() => null);
+      jest
+        .spyOn(Storage.prototype, "getItem")
+        //@ts-ignore jest.spyOn should not be used with ts
+        .mockImplementation(() => null);
 
       renderApp(mockedStore, [WhoAmIErrorQueryMock]);
       await screen.findByText("error", { exact: false });
@@ -354,6 +359,7 @@ describe("App", () => {
     it("still logs if invalid token", async () => {
       jest
         .spyOn(Storage.prototype, "getItem")
+        //@ts-ignore jest.spyOn should not be used with ts
         .mockImplementation(() => "definitely NOT a valid token");
       jest.spyOn(console, "error").mockImplementation(() => {});
       (jwtDecode as jest.Mock).mockImplementation(() => {

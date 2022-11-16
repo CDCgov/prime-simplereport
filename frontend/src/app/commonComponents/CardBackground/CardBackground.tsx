@@ -1,8 +1,12 @@
 import "./CardBackground.scss";
 
-export type CardContainerProps = {};
+type CardBackgroundProps = {
+  children?: React.ReactNode;
+};
 
-export const CardBackground: React.FC<CardContainerProps> = ({ children }) => {
+export const CardBackground = ({
+  children,
+}: CardBackgroundProps): JSX.Element => {
   return (
     <div className="card__background bg-base-lightest">
       <div className="grid-container maxw-mobile-lg usa-section">

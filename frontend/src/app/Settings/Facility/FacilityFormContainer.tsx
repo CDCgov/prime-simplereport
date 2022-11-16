@@ -190,7 +190,7 @@ const FacilityFormContainer: any = (props: Props) => {
   if (saveSuccess) {
     dispatch(updateFacility(facilityData));
     if (props.newOrg) {
-      window.location.pathname = process.env.PUBLIC_URL || "";
+      window.location.pathname = import.meta.env.PUBLIC_URL || "";
     }
     return (
       <Navigate to={`/settings/facilities?facility=${activeFacility?.id}`} />

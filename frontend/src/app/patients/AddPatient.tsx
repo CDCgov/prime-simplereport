@@ -4,8 +4,8 @@ import { useNavigate, NavigateOptions } from "react-router-dom";
 import { useTranslation } from "react-i18next";
 import moment from "moment";
 import { useSelector } from "react-redux";
+import iconSprite from "uswds/img/sprite.svg";
 
-import iconSprite from "../../../node_modules/uswds/dist/img/sprite.svg";
 import {
   PATIENT_TERM,
   PATIENT_TERM_CAP,

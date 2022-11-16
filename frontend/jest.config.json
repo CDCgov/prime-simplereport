@@ -1,0 +1,13 @@
+{
+  "transform": {
+    "\\.[jt]sx?$": "babel-jest"
+  },
+  "transformIgnorePatterns": [
+    "node_modules\\/(?!(uuid|uswds))"
+  ],
+  "moduleNameMapper": {
+    "\\.(css|less|sass|scss|svg|png|mp3)$": "identity-obj-proxy"
+  },
+  "setupFilesAfterEnv": ["<rootDir>/jest-setup.ts"],
+  "testEnvironment": "jsdom"
+}

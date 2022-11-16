@@ -226,7 +226,11 @@ let resetUserPassword: (obj: any) => Promise<any>;
 let resetUserMfa: (obj: any) => Promise<any>;
 let resendUserActivationEmail: (obj: any) => Promise<any>;
 
-const TestContainer: React.FC = ({ children }) => (
+type TestContainerProps = {
+  children: React.ReactNode;
+};
+
+const TestContainer: React.FC<TestContainerProps> = ({ children }) => (
   <MemoryRouter>
     <Provider store={store}>
       <MockedProvider mocks={mocks}>

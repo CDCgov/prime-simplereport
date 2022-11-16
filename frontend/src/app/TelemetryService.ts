@@ -9,11 +9,11 @@ let appInsights: ApplicationInsights | null = null;
 
 const createTelemetryService = () => {
   const initialize = () => {
-    const connectionString =
-      process.env.REACT_APP_APPLICATIONINSIGHTS_CONNECTION_STRING;
+    const connectionString = import.meta.env
+      .VITE_APPLICATIONINSIGHTS_CONNECTION_STRING;
 
     if (!connectionString) {
-      if (process.env.NODE_ENV !== "test") {
+      if (import.meta.env.MODE !== "test") {
         console.warn("App Insights connection string not provided");
       }
       return;
@@ -24,8 +24,8 @@ const createTelemetryService = () => {
     appInsights = new ApplicationInsights({
       config: {
         connectionString,
-        extensions: [reactPlugin],
-        loggingLevelConsole: process.env.NODE_ENV === "development" ? 2 : 0,
+        extensions: [reactPlugin as any],
+        loggingLevelConsole: import.meta.env.MODE === "development" ? 2 : 0,
         disableFetchTracking: false,
         enableAutoRouteTracking: true,
         loggingLevelTelemetry: 2,
@@ -111,5 +111,6 @@ export function getAppInsightsHeaders(): { [key: string]: string } {
 }
 
 function getAppInsightsSessionId(): string {
+  //@ts-ignore session manager does not exists on ITelemetry context
   return appInsights?.context.sessionManager.automaticSession.id ?? "";
 }

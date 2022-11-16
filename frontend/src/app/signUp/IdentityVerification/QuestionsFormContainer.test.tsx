@@ -11,6 +11,7 @@ import QuestionsFormContainer from "./QuestionsFormContainer";
 import { initPersonalDetails } from "./utils";
 
 jest.mock("../SignUpApi", () => {
+  // eslint-disable-next-line @typescript-eslint/no-var-requires
   const { exampleQuestionSet } = require("./constants");
   return {
     SignUpApi: {

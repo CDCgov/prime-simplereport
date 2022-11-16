@@ -24,6 +24,7 @@ export interface QueueProps extends SearchResultsProps {
     a: Patient,
     b: AoEAnswersDelivery,
     c: string
+    // eslint-disable-next-line @typescript-eslint/no-invalid-void-type
   ) => Promise<string | void>;
   patientsInQueue: string[];
 }

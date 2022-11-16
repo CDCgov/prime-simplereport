@@ -31,7 +31,13 @@ const store = mockStore({
   facilities: [{ id: mockFacilityID, name: "123" }],
 });
 
-const RouterWithFacility: React.FC = ({ children }) => (
+type RouterWithFacilityProps = {
+  children: React.ReactNode;
+};
+
+const RouterWithFacility: React.FC<RouterWithFacilityProps> = ({
+  children,
+}) => (
   <MemoryRouter initialEntries={[`/patient?facility=${mockFacilityID}`]}>
     <Routes>{children}</Routes>
   </MemoryRouter>

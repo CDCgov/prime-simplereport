@@ -163,10 +163,10 @@ const AddToQueueSearchBox = ({
   const [updateAoe] = useMutation(UPDATE_AOE);
 
   const allowQuery = debounced.length >= MIN_SEARCH_CHARACTER_COUNT;
-  const showDropdown = useMemo(() => allowQuery && showSuggestion, [
-    allowQuery,
-    showSuggestion,
-  ]);
+  const showDropdown = useMemo(
+    () => allowQuery && showSuggestion,
+    [allowQuery, showSuggestion]
+  );
 
   const dropDownRef = useRef(null);
   const hideOnOutsideClick = useCallback(() => {
@@ -216,6 +216,7 @@ const AddToQueueSearchBox = ({
       testResultDelivery,
     }: AoEAnswersDelivery,
     createOrUpdate = "create"
+    // eslint-disable-next-line @typescript-eslint/no-invalid-void-type
   ): Promise<string | void> => {
     setDebounced("");
     setShowSuggestion(false);

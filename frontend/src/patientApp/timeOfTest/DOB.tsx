@@ -2,7 +2,7 @@ import React, { useEffect, useState, useRef } from "react";
 import { connect, useDispatch, useSelector } from "react-redux";
 import { Navigate } from "react-router-dom";
 import moment from "moment";
-import { Trans, useTranslation } from "react-i18next";
+import { ReactI18NextChild, Trans, useTranslation } from "react-i18next";
 import { validate as isValidUUID } from "uuid";
 
 import Button from "../../app/commonComponents/Button/Button";
@@ -175,7 +175,7 @@ const DOB = () => {
             <div className="prime-container padding-3">
               <Trans t={t} parent="p" i18nKey="testResult.dob.enterDOB2">
                 <span className="text-bold">
-                  {{ personName: patientObfuscatedName }}
+                  {{ personName: patientObfuscatedName } as any}
                 </span>
               </Trans>
               <p className="usa-hint font-ui-2xs">
@@ -192,11 +192,12 @@ const DOB = () => {
                     {{ facilityName: facility?.name }}
                     {facility?.phone && (
                       <span style={{ whiteSpace: "nowrap" }}>
-                        {{
-                          facilityPhone:
-                            "at " +
-                            formatPhoneNumberParens(facility?.phone as string),
-                        }}
+                        {
+                          {
+                            facilityPhone:
+                              "at " + formatPhoneNumberParens(facility?.phone),
+                          } as any
+                        }
                       </span>
                     )}
                   </Trans>

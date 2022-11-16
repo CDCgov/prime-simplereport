@@ -8,12 +8,12 @@ export class SmartyStreetsError extends Error {
 }
 
 export function buildClient(builder: Function) {
-  if (process.env.REACT_APP_SMARTY_STREETS_KEY === undefined) {
-    throw new SmartyStreetsError("Missing REACT_APP_SMARTY_STREETS_KEY");
+  if (import.meta.env.VITE_SMARTY_STREETS_KEY === undefined) {
+    throw new SmartyStreetsError("Missing VITE_SMARTY_STREETS_KEY");
   }
 
   const credentials = new core.SharedCredentials(
-    process.env.REACT_APP_SMARTY_STREETS_KEY
+    import.meta.env.VITE_SMARTY_STREETS_KEY
   );
 
   return builder(credentials);

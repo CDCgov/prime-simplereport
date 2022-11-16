@@ -1,3 +1,5 @@
+// @ts-nocheck
+import "@testing-library/jest-dom";
 // jest-dom adds custom jest matchers for asserting on DOM nodes.
 // allows you to do things like:
 // expect(element).toHaveTextContent(/react/i)
@@ -13,7 +15,7 @@ jest.mock("@microsoft/applicationinsights-react-js", () => {
   return {
     useAppInsightsContext: jest.fn(),
     useTrackEvent: () => jest.fn(),
-    withAITracking: (reactPlugin, Component) => <Component />,
+    //withAITracking: (reactPlugin, Component) => <Component />,
     ReactPlugin: Object,
   };
 });

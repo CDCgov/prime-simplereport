@@ -123,7 +123,7 @@ describe("TestResult - COVID-19 only", () => {
   });
 });
 
-if (process.env.REACT_APP_MULTIPLEX_ENABLE) {
+if (process.env.VITE_MULTIPLEX_ENABLE) {
   describe("TestResult - Multiplex", () => {
     it("should show the results for positive COVID-19 and negative Flu", () => {
       const results = [

@@ -1,6 +1,7 @@
+import iconSprite from "uswds/img/sprite.svg";
+
 import { LinkWithQuery } from "../../commonComponents/LinkWithQuery";
 import { useDocumentTitle } from "../../utils/hooks";
-import iconSprite from "../../../../node_modules/uswds/dist/img/sprite.svg";
 import "./CsvSchemaDocumentation.scss";
 import { getAppInsights } from "../../TelemetryService";
 
