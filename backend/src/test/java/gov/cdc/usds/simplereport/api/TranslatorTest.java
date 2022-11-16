@@ -11,6 +11,7 @@ import static gov.cdc.usds.simplereport.api.Translators.parseString;
 import static gov.cdc.usds.simplereport.api.Translators.parseTestResult;
 import static gov.cdc.usds.simplereport.api.Translators.parseUUID;
 import static gov.cdc.usds.simplereport.api.Translators.parseUserDate;
+import static gov.cdc.usds.simplereport.api.Translators.parseUserShortDate;
 import static gov.cdc.usds.simplereport.api.Translators.parseYesNo;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.junit.jupiter.api.Assertions.assertEquals;
@@ -44,7 +45,7 @@ class TranslatorTest {
   }
 
   @Test
-  void testValidShortDate() {
+  void testValidUserDate() {
     LocalDate result = parseUserDate("2/1/2021");
     assertEquals(2, result.getMonthValue());
     assertEquals(1, result.getDayOfMonth());
@@ -60,7 +61,7 @@ class TranslatorTest {
   }
 
   @Test
-  void testInvalidShortDate() {
+  void testInvalidDate() {
     IllegalGraphqlArgumentException caught =
         assertThrows(
             IllegalGraphqlArgumentException.class,
@@ -68,6 +69,25 @@ class TranslatorTest {
               parseUserDate("fooexample.com");
             });
     assertEquals("[fooexample.com] is not a valid date", caught.getMessage());
+  }
+
+  @Test
+  void testValidShortDate() {
+    LocalDate result = parseUserShortDate("2/1/80");
+    assertEquals(2, result.getMonthValue());
+    assertEquals(1, result.getDayOfMonth());
+    assertEquals(1980, result.getYear());
+  }
+
+  @Test
+  void testInvalidShortDate() {
+    IllegalGraphqlArgumentException caught =
+        assertThrows(
+            IllegalGraphqlArgumentException.class,
+            () -> {
+              parseUserDate("0/0/23");
+            });
+    assertEquals("[0/0/23] is not a valid date", caught.getMessage());
   }
 
   @Test
