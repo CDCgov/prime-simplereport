@@ -1,217 +1,124 @@
-import React, { useEffect, useState } from "react";
-import { ComboBox } from "@trussworks/react-uswds";
-import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
-import { faCheck, faCopy } from "@fortawesome/free-solid-svg-icons";
-
-import TextInput from "../../commonComponents/TextInput";
-import { DeviceType } from "../../../generated/graphql";
-import Optional from "../../commonComponents/Optional";
+import React, {
+  useCallback,
+  useEffect,
+  useMemo,
+  useRef,
+  useState,
+} from "react";
 import "./DeviceLookup.scss";
-import LabeledText from "../../commonComponents/LabeledText";
+import { uniq } from "lodash";
 
-import { IconProp } from "@fortawesome/fontawesome-svg-core";
+import SearchInput from "../../testQueue/addToQueue/SearchInput";
+import { useDebounce } from "../../testQueue/addToQueue/useDebounce";
+import {
+  MIN_SEARCH_CHARACTER_COUNT,
+  SEARCH_DEBOUNCE_TIME,
+} from "../../testQueue/constants";
+import { DeviceType } from "../../../generated/graphql";
+import { useOutsideClick } from "../../utils/hooks";
+
+import DeviceSearchResults from "./DeviceSearchResults";
+import DeviceDetails from "./DeviceDetails";
 
 interface Props {
   formTitle: string;
-  deviceOptions?: DeviceType[];
+  deviceOptions: DeviceType[];
 }
 
-const DeviceLookup = (props: Props) => {
-  const [device, updateDevice] = useState<DeviceType | undefined>();
+const searchFields = ["manufacturer", "name", "model"] as const;
+type DeviceSearchFields = typeof searchFields[number];
+type SearchableDevice = Pick<DeviceType, DeviceSearchFields>;
 
-  const [copiedSlug, setCopiedSlug] = useState<string>();
-
-  useEffect(() => {
-    const timeout = copiedSlug
-      ? setTimeout(() => {
-          setCopiedSlug(undefined);
-        }, 3000)
-      : undefined;
-    return () => {
-      if (timeout) {
-        clearTimeout(timeout);
-      }
-    };
-  }, [copiedSlug]);
-
-  async function copySlug(slug: string) {
-    try {
-      await navigator.clipboard.writeText(slug);
-      setCopiedSlug(slug);
-    } catch (e: any) {
-      console.error(e);
-    }
+const searchDevices = (devices: DeviceType[], query: string): DeviceType[] => {
+  if (!query) {
+    return [];
   }
 
-  const onChange = () => {};
+  const results: DeviceType[] = [];
 
-  const getDeviceOptions = () =>
-    props.deviceOptions
-      ? props.deviceOptions
-          .map((deviceType) => ({
-            label: deviceType.name,
-            value: deviceType.internalId,
-          }))
-          .sort((a, b) => a.label.localeCompare(b.label))
-      : [];
-
-  const getCopyToClipboardButton = (
-    copiedAttribute: string | undefined,
-    label: string
-  ) => {
-    return (
-      <div className="copy-button-container copy-button-tooltip">
-        {device && (
-          <button
-            className="usa-button usa-button--unstyled"
-            onClick={() => copiedAttribute && copySlug(copiedAttribute)}
-            aria-label={`${label}`}
-          >
-            <FontAwesomeIcon
-              icon={
-                copiedSlug === copiedAttribute
-                  ? (faCheck as IconProp)
-                  : (faCopy as IconProp)
-              }
-            />
-          </button>
-        )}
-        {device && copiedSlug === copiedAttribute && <CopyTooltip />}
-      </div>
+  for (const field of searchFields) {
+    results.push(
+      ...devices.filter((d: DeviceType) => {
+        const value = d[field as keyof SearchableDevice];
+        return value.toLowerCase().includes(query.toLowerCase());
+      })
     );
+  }
+
+  return uniq(results);
+};
+
+const DeviceLookup = (props: Props) => {
+  const [queryString, debounced, setDebounced] = useDebounce("", {
+    debounceTime: SEARCH_DEBOUNCE_TIME,
+    runIf: (q) => q.length >= MIN_SEARCH_CHARACTER_COUNT,
+  });
+  const [selectedDevice, setSelectedDevice] = useState<DeviceType | null>(null);
+  const [showSuggestion, setShowSuggestion] = useState(true);
+
+  const allowQuery = debounced.length >= MIN_SEARCH_CHARACTER_COUNT;
+  const showDropdown = useMemo(() => allowQuery && showSuggestion, [
+    allowQuery,
+    showSuggestion,
+  ]);
+  const dropDownRef = useRef(null);
+  const hideOnOutsideClick = useCallback(() => {
+    setShowSuggestion(false);
+  }, []);
+
+  useOutsideClick(dropDownRef, hideOnOutsideClick);
+
+  const onInputChange = (event: React.ChangeEvent<HTMLInputElement>) => {
+    // Search field is cleared out via cancel icon
+    if (event.target.value === "") {
+      setSelectedDevice(null);
+      setDebounced("");
+    } else {
+      setShowSuggestion(true);
+      setDebounced(event.target.value);
+    }
   };
+
+  const onSearchClick = (event: React.MouseEvent<HTMLButtonElement>) => {
+    event.preventDefault();
+  };
+
+  // Close dropdown menu when a device is selected
+  useEffect(() => {
+    setShowSuggestion(false);
+  }, [selectedDevice]);
 
   return (
     <div className="prime-home device-lookup-container flex-1">
       <div className="grid-container">
-        <div className="grid-row">
-          <div className="prime-container card-container">
-            <div className="usa-card__header">
-              <div>
-                <h2>{props.formTitle}</h2>
-              </div>
-              <div
-                style={{
-                  display: "flex",
-                  justifyContent: "center",
-                  alignItems: "center",
-                }}
-              ></div>
-            </div>
-            <div className="usa-card__body margin-top-1">
-              {props.deviceOptions ? (
-                <div className="grid-row grid-gap">
-                  <div className="tablet:grid-col">
-                    <label>
-                      <LabeledText label={"Select device"} />
-                      <ComboBox
-                        className="usa-combo-box__full-width"
-                        id="selectDevice"
-                        name="selectDevice"
-                        options={getDeviceOptions()}
-                        onChange={(id) => {
-                          updateDevice(
-                            props.deviceOptions?.find(
-                              (d) => id === d.internalId
-                            )
-                          );
-                        }}
-                        defaultValue={device?.internalId || ""}
-                      />
-                    </label>
-                  </div>
-                </div>
-              ) : null}
-              <div className="grid-row grid-gap">
-                <div className="tablet:grid-col">
-                  <div className="text-field">
-                    <TextInput
-                      label="Equipment model name"
-                      name="Equipment model name"
-                      hintText={<code>equipment_model_name</code>}
-                      value={device?.model}
-                      onChange={onChange}
-                      disabled={true}
-                    />
-                    {getCopyToClipboardButton(
-                      device?.model,
-                      `Copy equipment model name for ${device?.name}`
-                    )}
-                  </div>
-                </div>
-              </div>
-              <div className="grid-row grid-gap">
-                <div className="tablet:grid-col">
-                  <div className="text-field">
-                    <TextInput
-                      label="Test performed code "
-                      name="Test performed code "
-                      hintText={<code>test_performed_code</code>}
-                      value={device?.loincCode}
-                      onChange={onChange}
-                      disabled={true}
-                    />
-                    {getCopyToClipboardButton(
-                      device?.loincCode,
-                      `Copy Test performed code for ${device?.name}`
-                    )}
-                  </div>
-                </div>
-              </div>
-              <div className="grid-row grid-gap">
-                <div className="tablet:grid-col">
-                  <div style={{ position: "relative" }}>
-                    <div className="usa-form-group">
-                      <label className="usa-label">
-                        <Optional label="Specimen Type" />
-                      </label>
-                      <span className="usa-hint">
-                        <code>specimen_type</code>
-                      </span>
-                      <table className={"usa-table"}>
-                        <tbody>
-                          {device &&
-                            device.swabTypes.map(({ name, typeCode }) => (
-                              <tr key={name}>
-                                <td>{name}</td>
-                                <td>
-                                  <div
-                                    style={{ position: "relative" }}
-                                    className="display-flex flex-justify"
-                                  >
-                                    <span>{typeCode}</span>
-                                    <div className={"copy-button-container"}>
-                                      {device && (
-                                        <button
-                                          className="usa-button usa-button--unstyled copy-button"
-                                          onClick={() =>
-                                            typeCode && copySlug(typeCode)
-                                          }
-                                          aria-label={`Copy SNOMED code for ${name} (${typeCode})`}
-                                        >
-                                          <FontAwesomeIcon
-                                            icon={
-                                              copiedSlug === typeCode
-                                                ? (faCheck as IconProp)
-                                                : (faCopy as IconProp)
-                                            }
-                                          />
-                                        </button>
-                                      )}
-                                      {device && copiedSlug === typeCode && (
-                                        <CopyTooltip />
-                                      )}
-                                    </div>
-                                  </div>
-                                </td>
-                              </tr>
-                            ))}
-                        </tbody>
-                      </table>
-                    </div>
-                  </div>
-                </div>
-              </div>
+        <div className="prime-container card-container">
+          <div className="usa-card__header">
+            <h1 className="font-sans-lg">Device code lookup</h1>
+          </div>
+          <div className="usa-card__body margin-top-1">
+            <strong
+              className="display-block margin-bottom-1em"
+              id="select-device"
+            >
+              Select device
+            </strong>
+            <div className="position-relative">
+              <SearchInput
+                onSearchClick={onSearchClick}
+                onInputChange={onInputChange}
+                queryString={debounced}
+                placeholder={"Search for a device"}
+                labeledBy="select-device"
+              />
+              <DeviceSearchResults
+                devices={searchDevices(props.deviceOptions, queryString)}
+                setSelectedDevice={setSelectedDevice}
+                shouldShowSuggestions={showDropdown}
+                loading={debounced !== queryString}
+                queryString={queryString}
+                dropDownRef={dropDownRef}
+              />
+              {selectedDevice && <DeviceDetails device={selectedDevice} />}
             </div>
           </div>
         </div>
@@ -221,14 +128,3 @@ const DeviceLookup = (props: Props) => {
 };
 
 export default DeviceLookup;
-
-const CopyTooltip = () => {
-  return (
-    <span
-      className="usa-tooltip__body usa-tooltip__body--right is-set is-visible"
-      style={{ right: 0, marginRight: -75 }}
-    >
-      Copied!
-    </span>
-  );
-};

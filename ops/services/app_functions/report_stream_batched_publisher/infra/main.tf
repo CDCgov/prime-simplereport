@@ -59,11 +59,13 @@ resource "azurerm_function_app" "functions" {
   storage_account_name       = data.azurerm_storage_account.app.name
   storage_account_access_key = data.azurerm_storage_account.app.primary_access_key
   https_only                 = true
-  version                    = "~3"
+  version                    = "~4"
   os_type                    = "linux"
   site_config {
     linux_fx_version          = "node|14"
     use_32_bit_worker_process = false
+
+    elastic_instance_minimum = 1
 
     // NOTE: If this code is removed, TF will not automatically delete it with the current provider version! It must be removed manually from the App Service -> Networking blade!
     ip_restriction {

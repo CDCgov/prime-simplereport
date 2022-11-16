@@ -155,11 +155,10 @@ public class TestOrderService {
       return p;
     };
   }
-  // methods to replace the methods that return List<TestEvent> once we get
-  // backwards compability issues resolved
+
   @Transactional(readOnly = true)
   @AuthorizationConfiguration.RequirePermissionReadResultListAtFacility
-  public Page<TestEvent> getTestEventsResultsPage(
+  public Page<TestEvent> getFacilityTestEventsResults(
       UUID facilityId,
       UUID patientId,
       TestResult result,
@@ -179,7 +178,7 @@ public class TestOrderService {
 
   @Transactional(readOnly = true)
   @AuthorizationConfiguration.RequirePermissionViewAllFacilityResults
-  public Page<TestEvent> getAllFacilityTestEventsResultsPage(
+  public Page<TestEvent> getOrganizationTestEventsResults(
       UUID patientId,
       TestResult result,
       PersonRole role,
@@ -193,48 +192,6 @@ public class TestOrderService {
 
     return _terepo.findAll(
         buildTestEventSearchFilter(null, patientId, result, role, startDate, endDate), pageRequest);
-  }
-
-  // methods to delete once we get
-  // backwards compability issues resolved
-  @Transactional(readOnly = true)
-  @AuthorizationConfiguration.RequirePermissionReadResultListAtFacility
-  public List<TestEvent> getTestEventsResults(
-      UUID facilityId,
-      UUID patientId,
-      TestResult result,
-      PersonRole role,
-      Date startDate,
-      Date endDate,
-      int pageOffset,
-      int pageSize) {
-
-    PageRequest pageRequest =
-        PageRequest.of(pageOffset, pageSize, Sort.by("createdAt").descending());
-
-    return _terepo
-        .findAll(
-            buildTestEventSearchFilter(facilityId, patientId, result, role, startDate, endDate),
-            PageRequest.of(pageOffset, pageSize))
-        .toList();
-  }
-
-  @Transactional(readOnly = true)
-  @AuthorizationConfiguration.RequirePermissionViewAllFacilityResults
-  public List<TestEvent> getAllFacilityTestEventsResults(
-      UUID patientId,
-      TestResult result,
-      PersonRole role,
-      Date startDate,
-      Date endDate,
-      int pageOffset,
-      int pageSize) {
-
-    return _terepo
-        .findAll(
-            buildTestEventSearchFilter(null, patientId, result, role, startDate, endDate),
-            PageRequest.of(pageOffset, pageSize))
-        .toList();
   }
 
   @Transactional(readOnly = true)
@@ -408,7 +365,14 @@ public class TestOrderService {
                   order, order.getCorrectionStatus(), order.getReasonForCorrection(), resultSet);
 
       TestEvent savedEvent = _terepo.save(testEvent);
-      saveFinalResults(order, testEvent);
+
+      // Only edit/save the pending results - don't change all Results to point
+      // towards the new
+      // TestEvent.
+      // Doing so would break the corrections/removal flow.
+      Set<Result> resultsForTestOrder = _resultRepo.getAllPendingResults(order);
+      resultsForTestOrder.forEach(result -> result.setTestEvent(savedEvent));
+      _resultRepo.saveAll(resultsForTestOrder);
 
       order.setTestEventRef(savedEvent);
       savedOrder = _repo.save(order);
@@ -464,16 +428,6 @@ public class TestOrderService {
               }
             })
         .collect(Collectors.toSet());
-  }
-
-  private void saveFinalResults(TestOrder order, TestEvent event) {
-    // Only edit/save the pending results - don't change all Results to point
-    // towards the new
-    // TestEvent.
-    // Doing so would break the corrections/removal flow.
-    Set<Result> results = _resultRepo.getAllPendingResults(order);
-    results.forEach(result -> result.setTestEvent(event));
-    _resultRepo.saveAll(results);
   }
 
   private boolean patientHasDeliveryPreference(TestOrder savedOrder) {

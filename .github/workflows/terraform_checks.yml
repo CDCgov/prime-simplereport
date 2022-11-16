@@ -15,7 +15,7 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v3
-      - uses: hashicorp/setup-terraform@v2.0.2
+      - uses: hashicorp/setup-terraform@v2.0.3
         with:
           terraform_version: 1.3.3
       - name: Terraform fmt
@@ -25,13 +25,14 @@ jobs:
     runs-on: ubuntu-latest
     env:
       TERRAFORM_DIRS: |
-          dev dev/persistent dev2 dev2/persistent dev3 dev3/persistent dev4 dev4/persistent 
+          dev dev/persistent dev2 dev2/persistent dev3 dev3/persistent dev4 dev4/persistent
+          dev5 dev5/persistent dev6 dev6/persistent dev7 dev7/persistent 
           test test/persistent demo demo/persistent training training/persistent
           stg stg/persistent pentest pentest/persistent prod prod/persistent
           global
     steps:
       - uses: actions/checkout@v3
-      - uses: hashicorp/setup-terraform@v2.0.2
+      - uses: hashicorp/setup-terraform@v2.0.3
         with:
           terraform_version: 1.3.3
       - name: Terraform Init
@@ -68,7 +69,7 @@ jobs:
         if: ${{ github.actor != 'dependabot[bot]' }}
         with:
           creds: ${{ secrets.AZURE_CREDENTIALS }}
-      - uses: hashicorp/setup-terraform@v2.0.2
+      - uses: hashicorp/setup-terraform@v2.0.3
         if: ${{ github.actor != 'dependabot[bot]' }}
         with:
           terraform_version: 1.3.3

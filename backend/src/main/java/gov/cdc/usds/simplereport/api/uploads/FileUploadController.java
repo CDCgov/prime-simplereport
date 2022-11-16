@@ -28,7 +28,7 @@ public class FileUploadController {
   private final TestResultUploadService testResultUploadService;
 
   @PostMapping(PATIENT_UPLOAD)
-  public String handlePatientsUpload(
+  public PatientBulkUploadResponse handlePatientsUpload(
       @RequestParam("file") MultipartFile file, @RequestParam String rawFacilityId) {
     assertCsvFileType(file);
 

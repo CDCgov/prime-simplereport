@@ -100,8 +100,8 @@ export function strToBin(str: string) {
  * @returns formatted phone number
  */
 export function formatPhoneNumber(str: string) {
-  var cleaned = ("" + str).replace(/\D/g, "");
-  var match = cleaned.match(/^(\d{3})(\d{3})(\d{4})$/);
+  let cleaned = ("" + str).replace(/\D/g, "");
+  let match = cleaned.match(/^(\d{3})(\d{3})(\d{4})$/);
   if (match) {
     return match[1] + "-" + match[2] + "-" + match[3];
   }
@@ -116,8 +116,8 @@ export function formatPhoneNumber(str: string) {
  * @returns formatted phone number
  */
 export function formatPhoneNumberParens(str: string) {
-  var cleaned = ("" + str).replace(/\D/g, "");
-  var match = cleaned.match(/^(\d{3})(\d{3})(\d{4})$/);
+  let cleaned = ("" + str).replace(/\D/g, "");
+  let match = cleaned.match(/^(\d{3})(\d{3})(\d{4})$/);
   if (match) {
     return "(" + match[1] + ") " + match[2] + "-" + match[3];
   }

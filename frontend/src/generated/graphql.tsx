@@ -1,16 +1,15 @@
 import { gql } from "@apollo/client";
 import * as Apollo from "@apollo/client";
+
 export type Maybe<T> = T | null;
 export type InputMaybe<T> = Maybe<T>;
 export type Exact<T extends { [key: string]: unknown }> = {
   [K in keyof T]: T[K];
 };
-export type MakeOptional<T, K extends keyof T> = Omit<T, K> & {
-  [SubKey in K]?: Maybe<T[SubKey]>;
-};
-export type MakeMaybe<T, K extends keyof T> = Omit<T, K> & {
-  [SubKey in K]: Maybe<T[SubKey]>;
-};
+export type MakeOptional<T, K extends keyof T> = Omit<T, K> &
+  { [SubKey in K]?: Maybe<T[SubKey]> };
+export type MakeMaybe<T, K extends keyof T> = Omit<T, K> &
+  { [SubKey in K]: Maybe<T[SubKey]> };
 const defaultOptions = {} as const;
 /** All built-in and custom scalars, mapped to their actual values */
 export type Scalars = {
@@ -2660,215 +2659,6 @@ export type GetFacilityResultsMultiplexWithCountQuery = {
     | undefined;
 };
 
-export type GetFacilityResultsForCsvQueryVariables = Exact<{
-  facilityId?: InputMaybe<Scalars["ID"]>;
-  patientId?: InputMaybe<Scalars["ID"]>;
-  result?: InputMaybe<Scalars["String"]>;
-  role?: InputMaybe<Scalars["String"]>;
-  startDate?: InputMaybe<Scalars["DateTime"]>;
-  endDate?: InputMaybe<Scalars["DateTime"]>;
-  pageNumber?: InputMaybe<Scalars["Int"]>;
-  pageSize?: InputMaybe<Scalars["Int"]>;
-}>;
-
-export type GetFacilityResultsForCsvQuery = {
-  __typename?: "Query";
-  testResults?:
-    | Array<
-        | {
-            __typename?: "TestResult";
-            dateTested?: any | null | undefined;
-            dateUpdated?: any | null | undefined;
-            correctionStatus?: string | null | undefined;
-            reasonForCorrection?: string | null | undefined;
-            symptoms?: string | null | undefined;
-            noSymptoms?: boolean | null | undefined;
-            symptomOnset?: any | null | undefined;
-            facility?:
-              | {
-                  __typename?: "Facility";
-                  name: string;
-                  isDeleted?: boolean | null | undefined;
-                }
-              | null
-              | undefined;
-            results?:
-              | Array<
-                  | {
-                      __typename?: "MultiplexResult";
-                      testResult?: string | null | undefined;
-                      disease?:
-                        | { __typename?: "SupportedDisease"; name: string }
-                        | null
-                        | undefined;
-                    }
-                  | null
-                  | undefined
-                >
-              | null
-              | undefined;
-            deviceType?:
-              | {
-                  __typename?: "DeviceType";
-                  name: string;
-                  manufacturer: string;
-                  model: string;
-                  swabType?: string | null | undefined;
-                }
-              | null
-              | undefined;
-            patient?:
-              | {
-                  __typename?: "Patient";
-                  firstName?: string | null | undefined;
-                  middleName?: string | null | undefined;
-                  lastName?: string | null | undefined;
-                  birthDate?: any | null | undefined;
-                  gender?: string | null | undefined;
-                  race?: string | null | undefined;
-                  ethnicity?: string | null | undefined;
-                  tribalAffiliation?:
-                    | Array<string | null | undefined>
-                    | null
-                    | undefined;
-                  lookupId?: string | null | undefined;
-                  telephone?: string | null | undefined;
-                  email?: string | null | undefined;
-                  street?: string | null | undefined;
-                  streetTwo?: string | null | undefined;
-                  city?: string | null | undefined;
-                  county?: string | null | undefined;
-                  state?: string | null | undefined;
-                  zipCode?: string | null | undefined;
-                  country?: string | null | undefined;
-                  role?: string | null | undefined;
-                  residentCongregateSetting?: boolean | null | undefined;
-                  employedInHealthcare?: boolean | null | undefined;
-                  preferredLanguage?: string | null | undefined;
-                }
-              | null
-              | undefined;
-            createdBy?:
-              | {
-                  __typename?: "ApiUser";
-                  nameInfo?:
-                    | {
-                        __typename?: "NameInfo";
-                        firstName?: string | null | undefined;
-                        middleName?: string | null | undefined;
-                        lastName: string;
-                      }
-                    | null
-                    | undefined;
-                }
-              | null
-              | undefined;
-          }
-        | null
-        | undefined
-      >
-    | null
-    | undefined;
-};
-
-export type GetFacilityResultsMultiplexQueryVariables = Exact<{
-  facilityId?: InputMaybe<Scalars["ID"]>;
-  patientId?: InputMaybe<Scalars["ID"]>;
-  result?: InputMaybe<Scalars["String"]>;
-  role?: InputMaybe<Scalars["String"]>;
-  startDate?: InputMaybe<Scalars["DateTime"]>;
-  endDate?: InputMaybe<Scalars["DateTime"]>;
-  pageNumber?: InputMaybe<Scalars["Int"]>;
-  pageSize?: InputMaybe<Scalars["Int"]>;
-}>;
-
-export type GetFacilityResultsMultiplexQuery = {
-  __typename?: "Query";
-  testResults?:
-    | Array<
-        | {
-            __typename?: "TestResult";
-            internalId?: string | null | undefined;
-            dateTested?: any | null | undefined;
-            correctionStatus?: string | null | undefined;
-            results?:
-              | Array<
-                  | {
-                      __typename?: "MultiplexResult";
-                      testResult?: string | null | undefined;
-                      disease?:
-                        | { __typename?: "SupportedDisease"; name: string }
-                        | null
-                        | undefined;
-                    }
-                  | null
-                  | undefined
-                >
-              | null
-              | undefined;
-            deviceType?:
-              | { __typename?: "DeviceType"; internalId: string; name: string }
-              | null
-              | undefined;
-            patient?:
-              | {
-                  __typename?: "Patient";
-                  internalId?: string | null | undefined;
-                  firstName?: string | null | undefined;
-                  middleName?: string | null | undefined;
-                  lastName?: string | null | undefined;
-                  birthDate?: any | null | undefined;
-                  gender?: string | null | undefined;
-                  lookupId?: string | null | undefined;
-                  email?: string | null | undefined;
-                  phoneNumbers?:
-                    | Array<
-                        | {
-                            __typename?: "PhoneNumber";
-                            type?: PhoneType | null | undefined;
-                            number?: string | null | undefined;
-                          }
-                        | null
-                        | undefined
-                      >
-                    | null
-                    | undefined;
-                }
-              | null
-              | undefined;
-            createdBy?:
-              | {
-                  __typename?: "ApiUser";
-                  nameInfo?:
-                    | {
-                        __typename?: "NameInfo";
-                        firstName?: string | null | undefined;
-                        lastName: string;
-                      }
-                    | null
-                    | undefined;
-                }
-              | null
-              | undefined;
-            patientLink?:
-              | {
-                  __typename?: "PatientLink";
-                  internalId?: string | null | undefined;
-                }
-              | null
-              | undefined;
-            facility?:
-              | { __typename?: "Facility"; name: string }
-              | null
-              | undefined;
-          }
-        | null
-        | undefined
-      >
-    | null
-    | undefined;
-};
-
 export type GetAllFacilitiesQueryVariables = Exact<{
   showArchived?: InputMaybe<Scalars["Boolean"]>;
 }>;
@@ -3078,6 +2868,7 @@ export type GetDeviceTypesForLookupQuery = {
       name: string;
       typeCode: string;
     }>;
+    supportedDiseases: Array<{ __typename?: "SupportedDisease"; name: string }>;
   }>;
 };
 
@@ -3344,8 +3135,7 @@ export function useUpdateFacilityMutation(
 export type UpdateFacilityMutationHookResult = ReturnType<
   typeof useUpdateFacilityMutation
 >;
-export type UpdateFacilityMutationResult =
-  Apollo.MutationResult<UpdateFacilityMutation>;
+export type UpdateFacilityMutationResult = Apollo.MutationResult<UpdateFacilityMutation>;
 export type UpdateFacilityMutationOptions = Apollo.BaseMutationOptions<
   UpdateFacilityMutation,
   UpdateFacilityMutationVariables
@@ -3458,8 +3248,7 @@ export function useAddFacilityMutation(
 export type AddFacilityMutationHookResult = ReturnType<
   typeof useAddFacilityMutation
 >;
-export type AddFacilityMutationResult =
-  Apollo.MutationResult<AddFacilityMutation>;
+export type AddFacilityMutationResult = Apollo.MutationResult<AddFacilityMutation>;
 export type AddFacilityMutationOptions = Apollo.BaseMutationOptions<
   AddFacilityMutation,
   AddFacilityMutationVariables
@@ -3626,8 +3415,7 @@ export function useAdminSetOrganizationMutation(
 export type AdminSetOrganizationMutationHookResult = ReturnType<
   typeof useAdminSetOrganizationMutation
 >;
-export type AdminSetOrganizationMutationResult =
-  Apollo.MutationResult<AdminSetOrganizationMutation>;
+export type AdminSetOrganizationMutationResult = Apollo.MutationResult<AdminSetOrganizationMutation>;
 export type AdminSetOrganizationMutationOptions = Apollo.BaseMutationOptions<
   AdminSetOrganizationMutation,
   AdminSetOrganizationMutationVariables
@@ -3674,8 +3462,7 @@ export function useSetOrganizationMutation(
 export type SetOrganizationMutationHookResult = ReturnType<
   typeof useSetOrganizationMutation
 >;
-export type SetOrganizationMutationResult =
-  Apollo.MutationResult<SetOrganizationMutation>;
+export type SetOrganizationMutationResult = Apollo.MutationResult<SetOrganizationMutation>;
 export type SetOrganizationMutationOptions = Apollo.BaseMutationOptions<
   SetOrganizationMutation,
   SetOrganizationMutationVariables
@@ -3800,8 +3587,7 @@ export function useUpdateUserPrivilegesMutation(
 export type UpdateUserPrivilegesMutationHookResult = ReturnType<
   typeof useUpdateUserPrivilegesMutation
 >;
-export type UpdateUserPrivilegesMutationResult =
-  Apollo.MutationResult<UpdateUserPrivilegesMutation>;
+export type UpdateUserPrivilegesMutationResult = Apollo.MutationResult<UpdateUserPrivilegesMutation>;
 export type UpdateUserPrivilegesMutationOptions = Apollo.BaseMutationOptions<
   UpdateUserPrivilegesMutation,
   UpdateUserPrivilegesMutationVariables
@@ -3850,8 +3636,7 @@ export function useResetUserPasswordMutation(
 export type ResetUserPasswordMutationHookResult = ReturnType<
   typeof useResetUserPasswordMutation
 >;
-export type ResetUserPasswordMutationResult =
-  Apollo.MutationResult<ResetUserPasswordMutation>;
+export type ResetUserPasswordMutationResult = Apollo.MutationResult<ResetUserPasswordMutation>;
 export type ResetUserPasswordMutationOptions = Apollo.BaseMutationOptions<
   ResetUserPasswordMutation,
   ResetUserPasswordMutationVariables
@@ -3901,8 +3686,7 @@ export function useSetUserIsDeletedMutation(
 export type SetUserIsDeletedMutationHookResult = ReturnType<
   typeof useSetUserIsDeletedMutation
 >;
-export type SetUserIsDeletedMutationResult =
-  Apollo.MutationResult<SetUserIsDeletedMutation>;
+export type SetUserIsDeletedMutationResult = Apollo.MutationResult<SetUserIsDeletedMutation>;
 export type SetUserIsDeletedMutationOptions = Apollo.BaseMutationOptions<
   SetUserIsDeletedMutation,
   SetUserIsDeletedMutationVariables
@@ -3951,8 +3735,7 @@ export function useReactivateUserMutation(
 export type ReactivateUserMutationHookResult = ReturnType<
   typeof useReactivateUserMutation
 >;
-export type ReactivateUserMutationResult =
-  Apollo.MutationResult<ReactivateUserMutation>;
+export type ReactivateUserMutationResult = Apollo.MutationResult<ReactivateUserMutation>;
 export type ReactivateUserMutationOptions = Apollo.BaseMutationOptions<
   ReactivateUserMutation,
   ReactivateUserMutationVariables
@@ -4014,8 +3797,7 @@ export function useAddUserToCurrentOrgMutation(
 export type AddUserToCurrentOrgMutationHookResult = ReturnType<
   typeof useAddUserToCurrentOrgMutation
 >;
-export type AddUserToCurrentOrgMutationResult =
-  Apollo.MutationResult<AddUserToCurrentOrgMutation>;
+export type AddUserToCurrentOrgMutationResult = Apollo.MutationResult<AddUserToCurrentOrgMutation>;
 export type AddUserToCurrentOrgMutationOptions = Apollo.BaseMutationOptions<
   AddUserToCurrentOrgMutation,
   AddUserToCurrentOrgMutationVariables
@@ -4193,8 +3975,7 @@ export function useResendActivationEmailMutation(
 export type ResendActivationEmailMutationHookResult = ReturnType<
   typeof useResendActivationEmailMutation
 >;
-export type ResendActivationEmailMutationResult =
-  Apollo.MutationResult<ResendActivationEmailMutation>;
+export type ResendActivationEmailMutationResult = Apollo.MutationResult<ResendActivationEmailMutation>;
 export type ResendActivationEmailMutationOptions = Apollo.BaseMutationOptions<
   ResendActivationEmailMutation,
   ResendActivationEmailMutationVariables
@@ -4259,8 +4040,7 @@ export function useUpdateUserNameMutation(
 export type UpdateUserNameMutationHookResult = ReturnType<
   typeof useUpdateUserNameMutation
 >;
-export type UpdateUserNameMutationResult =
-  Apollo.MutationResult<UpdateUserNameMutation>;
+export type UpdateUserNameMutationResult = Apollo.MutationResult<UpdateUserNameMutation>;
 export type UpdateUserNameMutationOptions = Apollo.BaseMutationOptions<
   UpdateUserNameMutation,
   UpdateUserNameMutationVariables
@@ -4311,8 +4091,7 @@ export function useEditUserEmailMutation(
 export type EditUserEmailMutationHookResult = ReturnType<
   typeof useEditUserEmailMutation
 >;
-export type EditUserEmailMutationResult =
-  Apollo.MutationResult<EditUserEmailMutation>;
+export type EditUserEmailMutationResult = Apollo.MutationResult<EditUserEmailMutation>;
 export type EditUserEmailMutationOptions = Apollo.BaseMutationOptions<
   EditUserEmailMutation,
   EditUserEmailMutationVariables
@@ -4361,8 +4140,7 @@ export function useResetUserMfaMutation(
 export type ResetUserMfaMutationHookResult = ReturnType<
   typeof useResetUserMfaMutation
 >;
-export type ResetUserMfaMutationResult =
-  Apollo.MutationResult<ResetUserMfaMutation>;
+export type ResetUserMfaMutationResult = Apollo.MutationResult<ResetUserMfaMutation>;
 export type ResetUserMfaMutationOptions = Apollo.BaseMutationOptions<
   ResetUserMfaMutation,
   ResetUserMfaMutationVariables
@@ -4628,8 +4406,7 @@ export function useAddPatientMutation(
 export type AddPatientMutationHookResult = ReturnType<
   typeof useAddPatientMutation
 >;
-export type AddPatientMutationResult =
-  Apollo.MutationResult<AddPatientMutation>;
+export type AddPatientMutationResult = Apollo.MutationResult<AddPatientMutation>;
 export type AddPatientMutationOptions = Apollo.BaseMutationOptions<
   AddPatientMutation,
   AddPatientMutationVariables
@@ -4679,8 +4456,7 @@ export function useArchivePersonMutation(
 export type ArchivePersonMutationHookResult = ReturnType<
   typeof useArchivePersonMutation
 >;
-export type ArchivePersonMutationResult =
-  Apollo.MutationResult<ArchivePersonMutation>;
+export type ArchivePersonMutationResult = Apollo.MutationResult<ArchivePersonMutation>;
 export type ArchivePersonMutationOptions = Apollo.BaseMutationOptions<
   ArchivePersonMutation,
   ArchivePersonMutationVariables
@@ -4896,8 +4672,7 @@ export function useUpdatePatientMutation(
 export type UpdatePatientMutationHookResult = ReturnType<
   typeof useUpdatePatientMutation
 >;
-export type UpdatePatientMutationResult =
-  Apollo.MutationResult<UpdatePatientMutation>;
+export type UpdatePatientMutationResult = Apollo.MutationResult<UpdatePatientMutation>;
 export type UpdatePatientMutationOptions = Apollo.BaseMutationOptions<
   UpdatePatientMutation,
   UpdatePatientMutationVariables
@@ -5190,8 +4965,7 @@ export function useCreateDeviceTypeMutation(
 export type CreateDeviceTypeMutationHookResult = ReturnType<
   typeof useCreateDeviceTypeMutation
 >;
-export type CreateDeviceTypeMutationResult =
-  Apollo.MutationResult<CreateDeviceTypeMutation>;
+export type CreateDeviceTypeMutationResult = Apollo.MutationResult<CreateDeviceTypeMutation>;
 export type CreateDeviceTypeMutationOptions = Apollo.BaseMutationOptions<
   CreateDeviceTypeMutation,
   CreateDeviceTypeMutationVariables
@@ -5267,8 +5041,7 @@ export function useUpdateDeviceTypeMutation(
 export type UpdateDeviceTypeMutationHookResult = ReturnType<
   typeof useUpdateDeviceTypeMutation
 >;
-export type UpdateDeviceTypeMutationResult =
-  Apollo.MutationResult<UpdateDeviceTypeMutation>;
+export type UpdateDeviceTypeMutationResult = Apollo.MutationResult<UpdateDeviceTypeMutation>;
 export type UpdateDeviceTypeMutationOptions = Apollo.BaseMutationOptions<
   UpdateDeviceTypeMutation,
   UpdateDeviceTypeMutationVariables
@@ -5570,8 +5343,7 @@ export function useSetOrgIdentityVerifiedMutation(
 export type SetOrgIdentityVerifiedMutationHookResult = ReturnType<
   typeof useSetOrgIdentityVerifiedMutation
 >;
-export type SetOrgIdentityVerifiedMutationResult =
-  Apollo.MutationResult<SetOrgIdentityVerifiedMutation>;
+export type SetOrgIdentityVerifiedMutationResult = Apollo.MutationResult<SetOrgIdentityVerifiedMutation>;
 export type SetOrgIdentityVerifiedMutationOptions = Apollo.BaseMutationOptions<
   SetOrgIdentityVerifiedMutation,
   SetOrgIdentityVerifiedMutationVariables
@@ -5587,11 +5359,10 @@ export const MarkPendingOrganizationAsDeletedDocument = gql`
     )
   }
 `;
-export type MarkPendingOrganizationAsDeletedMutationFn =
-  Apollo.MutationFunction<
-    MarkPendingOrganizationAsDeletedMutation,
-    MarkPendingOrganizationAsDeletedMutationVariables
-  >;
+export type MarkPendingOrganizationAsDeletedMutationFn = Apollo.MutationFunction<
+  MarkPendingOrganizationAsDeletedMutation,
+  MarkPendingOrganizationAsDeletedMutationVariables
+>;
 
 /**
  * __useMarkPendingOrganizationAsDeletedMutation__
@@ -5626,13 +5397,11 @@ export function useMarkPendingOrganizationAsDeletedMutation(
 export type MarkPendingOrganizationAsDeletedMutationHookResult = ReturnType<
   typeof useMarkPendingOrganizationAsDeletedMutation
 >;
-export type MarkPendingOrganizationAsDeletedMutationResult =
-  Apollo.MutationResult<MarkPendingOrganizationAsDeletedMutation>;
-export type MarkPendingOrganizationAsDeletedMutationOptions =
-  Apollo.BaseMutationOptions<
-    MarkPendingOrganizationAsDeletedMutation,
-    MarkPendingOrganizationAsDeletedMutationVariables
-  >;
+export type MarkPendingOrganizationAsDeletedMutationResult = Apollo.MutationResult<MarkPendingOrganizationAsDeletedMutation>;
+export type MarkPendingOrganizationAsDeletedMutationOptions = Apollo.BaseMutationOptions<
+  MarkPendingOrganizationAsDeletedMutation,
+  MarkPendingOrganizationAsDeletedMutationVariables
+>;
 export const EditPendingOrganizationDocument = gql`
   mutation EditPendingOrganization(
     $externalId: String!
@@ -5694,8 +5463,7 @@ export function useEditPendingOrganizationMutation(
 export type EditPendingOrganizationMutationHookResult = ReturnType<
   typeof useEditPendingOrganizationMutation
 >;
-export type EditPendingOrganizationMutationResult =
-  Apollo.MutationResult<EditPendingOrganizationMutation>;
+export type EditPendingOrganizationMutationResult = Apollo.MutationResult<EditPendingOrganizationMutation>;
 export type EditPendingOrganizationMutationOptions = Apollo.BaseMutationOptions<
   EditPendingOrganizationMutation,
   EditPendingOrganizationMutationVariables
@@ -5779,11 +5547,10 @@ export const SetCurrentUserTenantDataAccessOpDocument = gql`
     }
   }
 `;
-export type SetCurrentUserTenantDataAccessOpMutationFn =
-  Apollo.MutationFunction<
-    SetCurrentUserTenantDataAccessOpMutation,
-    SetCurrentUserTenantDataAccessOpMutationVariables
-  >;
+export type SetCurrentUserTenantDataAccessOpMutationFn = Apollo.MutationFunction<
+  SetCurrentUserTenantDataAccessOpMutation,
+  SetCurrentUserTenantDataAccessOpMutationVariables
+>;
 
 /**
  * __useSetCurrentUserTenantDataAccessOpMutation__
@@ -5818,13 +5585,11 @@ export function useSetCurrentUserTenantDataAccessOpMutation(
 export type SetCurrentUserTenantDataAccessOpMutationHookResult = ReturnType<
   typeof useSetCurrentUserTenantDataAccessOpMutation
 >;
-export type SetCurrentUserTenantDataAccessOpMutationResult =
-  Apollo.MutationResult<SetCurrentUserTenantDataAccessOpMutation>;
-export type SetCurrentUserTenantDataAccessOpMutationOptions =
-  Apollo.BaseMutationOptions<
-    SetCurrentUserTenantDataAccessOpMutation,
-    SetCurrentUserTenantDataAccessOpMutationVariables
-  >;
+export type SetCurrentUserTenantDataAccessOpMutationResult = Apollo.MutationResult<SetCurrentUserTenantDataAccessOpMutation>;
+export type SetCurrentUserTenantDataAccessOpMutationOptions = Apollo.BaseMutationOptions<
+  SetCurrentUserTenantDataAccessOpMutation,
+  SetCurrentUserTenantDataAccessOpMutationVariables
+>;
 export const GetFacilityQueueMultiplexDocument = gql`
   query GetFacilityQueueMultiplex($facilityId: ID!) {
     queue(facilityId: $facilityId) {
@@ -6168,8 +5933,7 @@ export function useAddPatientToQueueMutation(
 export type AddPatientToQueueMutationHookResult = ReturnType<
   typeof useAddPatientToQueueMutation
 >;
-export type AddPatientToQueueMutationResult =
-  Apollo.MutationResult<AddPatientToQueueMutation>;
+export type AddPatientToQueueMutationResult = Apollo.MutationResult<AddPatientToQueueMutation>;
 export type AddPatientToQueueMutationOptions = Apollo.BaseMutationOptions<
   AddPatientToQueueMutation,
   AddPatientToQueueMutationVariables
@@ -6282,8 +6046,7 @@ export function useRemovePatientFromQueueMutation(
 export type RemovePatientFromQueueMutationHookResult = ReturnType<
   typeof useRemovePatientFromQueueMutation
 >;
-export type RemovePatientFromQueueMutationResult =
-  Apollo.MutationResult<RemovePatientFromQueueMutation>;
+export type RemovePatientFromQueueMutationResult = Apollo.MutationResult<RemovePatientFromQueueMutation>;
 export type RemovePatientFromQueueMutationOptions = Apollo.BaseMutationOptions<
   RemovePatientFromQueueMutation,
   RemovePatientFromQueueMutationVariables
@@ -6368,13 +6131,11 @@ export function useEditQueueItemMultiplexResultMutation(
 export type EditQueueItemMultiplexResultMutationHookResult = ReturnType<
   typeof useEditQueueItemMultiplexResultMutation
 >;
-export type EditQueueItemMultiplexResultMutationResult =
-  Apollo.MutationResult<EditQueueItemMultiplexResultMutation>;
-export type EditQueueItemMultiplexResultMutationOptions =
-  Apollo.BaseMutationOptions<
-    EditQueueItemMultiplexResultMutation,
-    EditQueueItemMultiplexResultMutationVariables
-  >;
+export type EditQueueItemMultiplexResultMutationResult = Apollo.MutationResult<EditQueueItemMultiplexResultMutation>;
+export type EditQueueItemMultiplexResultMutationOptions = Apollo.BaseMutationOptions<
+  EditQueueItemMultiplexResultMutation,
+  EditQueueItemMultiplexResultMutationVariables
+>;
 export const AddMultiplexResultDocument = gql`
   mutation AddMultiplexResult(
     $patientId: ID!
@@ -6438,8 +6199,7 @@ export function useAddMultiplexResultMutation(
 export type AddMultiplexResultMutationHookResult = ReturnType<
   typeof useAddMultiplexResultMutation
 >;
-export type AddMultiplexResultMutationResult =
-  Apollo.MutationResult<AddMultiplexResultMutation>;
+export type AddMultiplexResultMutationResult = Apollo.MutationResult<AddMultiplexResultMutation>;
 export type AddMultiplexResultMutationOptions = Apollo.BaseMutationOptions<
   AddMultiplexResultMutation,
   AddMultiplexResultMutationVariables
@@ -6563,8 +6323,7 @@ export function useMarkTestAsErrorMutation(
 export type MarkTestAsErrorMutationHookResult = ReturnType<
   typeof useMarkTestAsErrorMutation
 >;
-export type MarkTestAsErrorMutationResult =
-  Apollo.MutationResult<MarkTestAsErrorMutation>;
+export type MarkTestAsErrorMutationResult = Apollo.MutationResult<MarkTestAsErrorMutation>;
 export type MarkTestAsErrorMutationOptions = Apollo.BaseMutationOptions<
   MarkTestAsErrorMutation,
   MarkTestAsErrorMutationVariables
@@ -6614,8 +6373,7 @@ export function useMarkTestAsCorrectionMutation(
 export type MarkTestAsCorrectionMutationHookResult = ReturnType<
   typeof useMarkTestAsCorrectionMutation
 >;
-export type MarkTestAsCorrectionMutationResult =
-  Apollo.MutationResult<MarkTestAsCorrectionMutation>;
+export type MarkTestAsCorrectionMutationResult = Apollo.MutationResult<MarkTestAsCorrectionMutation>;
 export type MarkTestAsCorrectionMutationOptions = Apollo.BaseMutationOptions<
   MarkTestAsCorrectionMutation,
   MarkTestAsCorrectionMutationVariables
@@ -6924,8 +6682,7 @@ export function useResendTestResultsEmailMutation(
 export type ResendTestResultsEmailMutationHookResult = ReturnType<
   typeof useResendTestResultsEmailMutation
 >;
-export type ResendTestResultsEmailMutationResult =
-  Apollo.MutationResult<ResendTestResultsEmailMutation>;
+export type ResendTestResultsEmailMutationResult = Apollo.MutationResult<ResendTestResultsEmailMutation>;
 export type ResendTestResultsEmailMutationOptions = Apollo.BaseMutationOptions<
   ResendTestResultsEmailMutation,
   ResendTestResultsEmailMutationVariables
@@ -7186,269 +6943,12 @@ export function useGetFacilityResultsMultiplexWithCountLazyQuery(
 export type GetFacilityResultsMultiplexWithCountQueryHookResult = ReturnType<
   typeof useGetFacilityResultsMultiplexWithCountQuery
 >;
-export type GetFacilityResultsMultiplexWithCountLazyQueryHookResult =
-  ReturnType<typeof useGetFacilityResultsMultiplexWithCountLazyQuery>;
-export type GetFacilityResultsMultiplexWithCountQueryResult =
-  Apollo.QueryResult<
-    GetFacilityResultsMultiplexWithCountQuery,
-    GetFacilityResultsMultiplexWithCountQueryVariables
-  >;
-export const GetFacilityResultsForCsvDocument = gql`
-  query GetFacilityResultsForCsv(
-    $facilityId: ID
-    $patientId: ID
-    $result: String
-    $role: String
-    $startDate: DateTime
-    $endDate: DateTime
-    $pageNumber: Int
-    $pageSize: Int
-  ) {
-    testResults(
-      facilityId: $facilityId
-      patientId: $patientId
-      result: $result
-      role: $role
-      startDate: $startDate
-      endDate: $endDate
-      pageNumber: $pageNumber
-      pageSize: $pageSize
-    ) {
-      facility {
-        name
-        isDeleted
-      }
-      dateTested
-      dateUpdated
-      results {
-        disease {
-          name
-        }
-        testResult
-      }
-      correctionStatus
-      reasonForCorrection
-      deviceType {
-        name
-        manufacturer
-        model
-        swabType
-      }
-      patient {
-        firstName
-        middleName
-        lastName
-        birthDate
-        gender
-        race
-        ethnicity
-        tribalAffiliation
-        lookupId
-        telephone
-        email
-        street
-        streetTwo
-        city
-        county
-        state
-        zipCode
-        country
-        role
-        residentCongregateSetting
-        employedInHealthcare
-        preferredLanguage
-      }
-      createdBy {
-        nameInfo {
-          firstName
-          middleName
-          lastName
-        }
-      }
-      symptoms
-      noSymptoms
-      symptomOnset
-    }
-  }
-`;
-
-/**
- * __useGetFacilityResultsForCsvQuery__
- *
- * To run a query within a React component, call `useGetFacilityResultsForCsvQuery` and pass it any options that fit your needs.
- * When your component renders, `useGetFacilityResultsForCsvQuery` returns an object from Apollo Client that contains loading, error, and data properties
- * you can use to render your UI.
- *
- * @param baseOptions options that will be passed into the query, supported options are listed on: https://www.apollographql.com/docs/react/api/react-hooks/#options;
- *
- * @example
- * const { data, loading, error } = useGetFacilityResultsForCsvQuery({
- *   variables: {
- *      facilityId: // value for 'facilityId'
- *      patientId: // value for 'patientId'
- *      result: // value for 'result'
- *      role: // value for 'role'
- *      startDate: // value for 'startDate'
- *      endDate: // value for 'endDate'
- *      pageNumber: // value for 'pageNumber'
- *      pageSize: // value for 'pageSize'
- *   },
- * });
- */
-export function useGetFacilityResultsForCsvQuery(
-  baseOptions?: Apollo.QueryHookOptions<
-    GetFacilityResultsForCsvQuery,
-    GetFacilityResultsForCsvQueryVariables
-  >
-) {
-  const options = { ...defaultOptions, ...baseOptions };
-  return Apollo.useQuery<
-    GetFacilityResultsForCsvQuery,
-    GetFacilityResultsForCsvQueryVariables
-  >(GetFacilityResultsForCsvDocument, options);
-}
-export function useGetFacilityResultsForCsvLazyQuery(
-  baseOptions?: Apollo.LazyQueryHookOptions<
-    GetFacilityResultsForCsvQuery,
-    GetFacilityResultsForCsvQueryVariables
-  >
-) {
-  const options = { ...defaultOptions, ...baseOptions };
-  return Apollo.useLazyQuery<
-    GetFacilityResultsForCsvQuery,
-    GetFacilityResultsForCsvQueryVariables
-  >(GetFacilityResultsForCsvDocument, options);
-}
-export type GetFacilityResultsForCsvQueryHookResult = ReturnType<
-  typeof useGetFacilityResultsForCsvQuery
+export type GetFacilityResultsMultiplexWithCountLazyQueryHookResult = ReturnType<
+  typeof useGetFacilityResultsMultiplexWithCountLazyQuery
 >;
-export type GetFacilityResultsForCsvLazyQueryHookResult = ReturnType<
-  typeof useGetFacilityResultsForCsvLazyQuery
->;
-export type GetFacilityResultsForCsvQueryResult = Apollo.QueryResult<
-  GetFacilityResultsForCsvQuery,
-  GetFacilityResultsForCsvQueryVariables
->;
-export const GetFacilityResultsMultiplexDocument = gql`
-  query GetFacilityResultsMultiplex(
-    $facilityId: ID
-    $patientId: ID
-    $result: String
-    $role: String
-    $startDate: DateTime
-    $endDate: DateTime
-    $pageNumber: Int
-    $pageSize: Int
-  ) {
-    testResults(
-      facilityId: $facilityId
-      patientId: $patientId
-      result: $result
-      role: $role
-      startDate: $startDate
-      endDate: $endDate
-      pageNumber: $pageNumber
-      pageSize: $pageSize
-    ) {
-      internalId
-      dateTested
-      results {
-        disease {
-          name
-        }
-        testResult
-      }
-      correctionStatus
-      deviceType {
-        internalId
-        name
-      }
-      patient {
-        internalId
-        firstName
-        middleName
-        lastName
-        birthDate
-        gender
-        lookupId
-        email
-        phoneNumbers {
-          type
-          number
-        }
-      }
-      createdBy {
-        nameInfo {
-          firstName
-          lastName
-        }
-      }
-      patientLink {
-        internalId
-      }
-      facility {
-        name
-      }
-    }
-  }
-`;
-
-/**
- * __useGetFacilityResultsMultiplexQuery__
- *
- * To run a query within a React component, call `useGetFacilityResultsMultiplexQuery` and pass it any options that fit your needs.
- * When your component renders, `useGetFacilityResultsMultiplexQuery` returns an object from Apollo Client that contains loading, error, and data properties
- * you can use to render your UI.
- *
- * @param baseOptions options that will be passed into the query, supported options are listed on: https://www.apollographql.com/docs/react/api/react-hooks/#options;
- *
- * @example
- * const { data, loading, error } = useGetFacilityResultsMultiplexQuery({
- *   variables: {
- *      facilityId: // value for 'facilityId'
- *      patientId: // value for 'patientId'
- *      result: // value for 'result'
- *      role: // value for 'role'
- *      startDate: // value for 'startDate'
- *      endDate: // value for 'endDate'
- *      pageNumber: // value for 'pageNumber'
- *      pageSize: // value for 'pageSize'
- *   },
- * });
- */
-export function useGetFacilityResultsMultiplexQuery(
-  baseOptions?: Apollo.QueryHookOptions<
-    GetFacilityResultsMultiplexQuery,
-    GetFacilityResultsMultiplexQueryVariables
-  >
-) {
-  const options = { ...defaultOptions, ...baseOptions };
-  return Apollo.useQuery<
-    GetFacilityResultsMultiplexQuery,
-    GetFacilityResultsMultiplexQueryVariables
-  >(GetFacilityResultsMultiplexDocument, options);
-}
-export function useGetFacilityResultsMultiplexLazyQuery(
-  baseOptions?: Apollo.LazyQueryHookOptions<
-    GetFacilityResultsMultiplexQuery,
-    GetFacilityResultsMultiplexQueryVariables
-  >
-) {
-  const options = { ...defaultOptions, ...baseOptions };
-  return Apollo.useLazyQuery<
-    GetFacilityResultsMultiplexQuery,
-    GetFacilityResultsMultiplexQueryVariables
-  >(GetFacilityResultsMultiplexDocument, options);
-}
-export type GetFacilityResultsMultiplexQueryHookResult = ReturnType<
-  typeof useGetFacilityResultsMultiplexQuery
->;
-export type GetFacilityResultsMultiplexLazyQueryHookResult = ReturnType<
-  typeof useGetFacilityResultsMultiplexLazyQuery
->;
-export type GetFacilityResultsMultiplexQueryResult = Apollo.QueryResult<
-  GetFacilityResultsMultiplexQuery,
-  GetFacilityResultsMultiplexQueryVariables
+export type GetFacilityResultsMultiplexWithCountQueryResult = Apollo.QueryResult<
+  GetFacilityResultsMultiplexWithCountQuery,
+  GetFacilityResultsMultiplexWithCountQueryVariables
 >;
 export const GetAllFacilitiesDocument = gql`
   query GetAllFacilities($showArchived: Boolean) {
@@ -7843,6 +7343,9 @@ export const GetDeviceTypesForLookupDocument = gql`
         internalId
         name
         typeCode
+      }
+      supportedDiseases {
+        name
       }
     }
   }
