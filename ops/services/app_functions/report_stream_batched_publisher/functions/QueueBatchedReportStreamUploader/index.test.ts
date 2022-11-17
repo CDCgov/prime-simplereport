@@ -3,6 +3,7 @@ import * as lib from "./lib";
 import * as appInsights from "applicationinsights";
 import { Context } from "@azure/functions";
 import { DequeuedMessageItem, QueueClient } from "@azure/storage-queue";
+import { Response } from "node-fetch";
 
 jest.mock(
   "applicationinsights",
@@ -28,10 +29,10 @@ jest.mock("../config", () => ({
 }));
 
 describe("main function export", () => {
-  const context: Context = {
+  const context = {
     log: jest.fn(),
     traceContext: { traceparent: "asdf" },
-  } as any;
+  } as jest.MockedObject<Context>;
   context.log.error = jest.fn();
 
   let getQueueClientMock;
@@ -51,7 +52,7 @@ describe("main function export", () => {
     uploadResultMock = jest.spyOn(lib, "uploadResult").mockResolvedValue({
       ok: true,
       json: () => Promise.resolve({ destinationCount: 4 }),
-    } as any);
+    } as jest.Mocked<Response>);
   }
 
   beforeAll(() => {
@@ -64,7 +65,7 @@ describe("main function export", () => {
 
   beforeEach(() => {
     jest.resetAllMocks();
-    (context.log as any as jest.Mock).mockReset();
+    context.log.mockReset();
   });
 
   describe("minimum messages", () => {
@@ -110,7 +111,7 @@ describe("main function export", () => {
     uploadResultMock = jest.spyOn(lib, "uploadResult").mockResolvedValue({
       ok: false,
       text: () => Promise.resolve("error"),
-    } as any);
+    } as jest.Mocked<Response>);
 
     // WHEN
     try {
