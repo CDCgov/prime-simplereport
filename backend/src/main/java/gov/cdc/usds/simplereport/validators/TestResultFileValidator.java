@@ -6,7 +6,7 @@ import static gov.cdc.usds.simplereport.validators.CsvValidatorUtils.getNextRow;
 import static gov.cdc.usds.simplereport.validators.CsvValidatorUtils.getValue;
 import static gov.cdc.usds.simplereport.validators.CsvValidatorUtils.validateBiologicalSex;
 import static gov.cdc.usds.simplereport.validators.CsvValidatorUtils.validateClia;
-import static gov.cdc.usds.simplereport.validators.CsvValidatorUtils.validateDate;
+import static gov.cdc.usds.simplereport.validators.CsvValidatorUtils.validateDateFormat;
 import static gov.cdc.usds.simplereport.validators.CsvValidatorUtils.validateDateTime;
 import static gov.cdc.usds.simplereport.validators.CsvValidatorUtils.validateEmail;
 import static gov.cdc.usds.simplereport.validators.CsvValidatorUtils.validateEthnicity;
@@ -204,8 +204,8 @@ public class TestResultFileValidator {
       errors.addAll(validatePhoneNumber(testingLabPhoneNumber));
       errors.addAll(validatePhoneNumber(orderingFacilityPhoneNumber));
 
-      errors.addAll(validateDate(patientDob));
-      errors.addAll(validateDate(illnessOnsetDate));
+      errors.addAll(validateDateFormat(patientDob));
+      errors.addAll(validateDateFormat(illnessOnsetDate));
 
       errors.addAll(validateDateTime(orderTestDate));
       errors.addAll(validateDateTime(specimenCollectionDate));

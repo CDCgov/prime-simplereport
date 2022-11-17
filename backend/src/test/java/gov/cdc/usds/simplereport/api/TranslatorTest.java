@@ -34,17 +34,17 @@ import org.junit.jupiter.params.provider.ArgumentsSource;
 
 class TranslatorTest {
   @Test
-  void testEmptyShortDate() {
+  void emptyUserShortDate_returnsNull() {
     assertNull(parseUserShortDate(""));
   }
 
   @Test
-  void testNullShortDate() {
+  void nullUserShortDate_returnsNull() {
     assertNull(parseUserShortDate(null));
   }
 
   @Test
-  void testValidShortDate() {
+  void validUserShortDate_withStandardFormatParsesCorrectly() {
     LocalDate result = parseUserShortDate("2/1/2021");
     assertEquals(2, result.getMonthValue());
     assertEquals(1, result.getDayOfMonth());
@@ -52,7 +52,7 @@ class TranslatorTest {
   }
 
   @Test
-  void testValidDateWithLeadingZeros() {
+  void validUserShortDate_withLeadingZerosParsesCorrectly() {
     LocalDate result = parseUserShortDate("02/01/2021");
     assertEquals(2, result.getMonthValue());
     assertEquals(1, result.getDayOfMonth());
@@ -60,14 +60,22 @@ class TranslatorTest {
   }
 
   @Test
-  void testInvalidShortDate() {
+  void validUserShortDate_withShortYearParsesCorrectly() {
+    LocalDate result = parseUserShortDate("2/1/80");
+    assertEquals(2, result.getMonthValue());
+    assertEquals(1, result.getDayOfMonth());
+    assertEquals(1980, result.getYear());
+  }
+
+  @Test
+  void invalidUserShortDate_throwsException() {
     IllegalGraphqlArgumentException caught =
         assertThrows(
             IllegalGraphqlArgumentException.class,
             () -> {
-              parseUserShortDate("fooexample.com");
+              parseUserShortDate("0/0/23");
             });
-    assertEquals("[fooexample.com] is not a valid date", caught.getMessage());
+    assertEquals("[0/0/23] is not a valid date", caught.getMessage());
   }
 
   @Test

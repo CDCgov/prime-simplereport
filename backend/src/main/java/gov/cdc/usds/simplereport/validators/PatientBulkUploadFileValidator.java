@@ -6,9 +6,9 @@ import static gov.cdc.usds.simplereport.validators.CsvValidatorUtils.getNextRow;
 import static gov.cdc.usds.simplereport.validators.CsvValidatorUtils.getValue;
 import static gov.cdc.usds.simplereport.validators.CsvValidatorUtils.validateBiologicalSex;
 import static gov.cdc.usds.simplereport.validators.CsvValidatorUtils.validateCountry;
-import static gov.cdc.usds.simplereport.validators.CsvValidatorUtils.validateDate;
 import static gov.cdc.usds.simplereport.validators.CsvValidatorUtils.validateEmail;
 import static gov.cdc.usds.simplereport.validators.CsvValidatorUtils.validateEthnicity;
+import static gov.cdc.usds.simplereport.validators.CsvValidatorUtils.validateFlexibleDate;
 import static gov.cdc.usds.simplereport.validators.CsvValidatorUtils.validatePhoneNumber;
 import static gov.cdc.usds.simplereport.validators.CsvValidatorUtils.validatePhoneNumberType;
 import static gov.cdc.usds.simplereport.validators.CsvValidatorUtils.validateRace;
@@ -59,7 +59,7 @@ public class PatientBulkUploadFileValidator {
       // validate individual values
 
       // demographics
-      errors.addAll(validateDate(extractedData.dateOfBirth));
+      errors.addAll(validateFlexibleDate(extractedData.dateOfBirth));
       errors.addAll(validateRace(extractedData.race));
       errors.addAll(validateBiologicalSex(extractedData.biologicalSex));
       errors.addAll(validateEthnicity(extractedData.ethnicity));
