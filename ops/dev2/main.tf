@@ -40,13 +40,13 @@ resource "azurerm_storage_queue" "test_event_exceptions_queue" {
   storage_account_name = azurerm_storage_account.app.name
 }
 
-resource "azurerm_storage_queue" "flu_test_event_queue" {
-  name                 = "flu-test-event-publishing"
+resource "azurerm_storage_queue" "fhir_test_event_queue" {
+  name                 = "fhir-test-event-publishing"
   storage_account_name = azurerm_storage_account.app.name
 }
 
-resource "azurerm_storage_queue" "flu_test_event_exceptions_queue" {
-  name                 = "flu-test-event-publishing-exceptions"
+resource "azurerm_storage_queue" "fhir_test_event_exceptions_queue" {
+  name                 = "fhir-test-event-publishing-exceptions"
   storage_account_name = azurerm_storage_account.app.name
 }
 
