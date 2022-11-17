@@ -68,6 +68,8 @@ dependencies {
     // Okta dependencies
     implementation 'com.okta.spring:okta-spring-boot-starter:2.1.6'
     implementation 'com.okta.sdk:okta-sdk-api:8.2.1'
+    implementation 'org.springframework.security:spring-security-web:5.7.5' //TODO: Remove when Okta's Spring Boot Starter version increases beyond 2.1.6.
+    implementation 'org.springframework.security:spring-security-oauth2-client:5.7.5' //TODO: Remove when Okta's Spring Boot Starter version increases beyond 2.1.6.
     runtimeOnly 'com.okta.sdk:okta-sdk-impl:8.2.1'
     runtimeOnly 'com.okta.sdk:okta-sdk-httpclient:8.2.1'
 
@@ -119,10 +121,10 @@ dependencies {
     developmentOnly 'org.springframework.boot:spring-boot-devtools'
 
     // Lombok
-    compileOnly 'org.projectlombok:lombok:1.18.20'
-    annotationProcessor 'org.projectlombok:lombok:1.18.20'
-    testCompileOnly 'org.projectlombok:lombok:1.18.20'
-    testAnnotationProcessor 'org.projectlombok:lombok:1.18.20'
+    compileOnly 'org.projectlombok:lombok'
+    annotationProcessor 'org.projectlombok:lombok'
+    testCompileOnly 'org.projectlombok:lombok'
+    testAnnotationProcessor 'org.projectlombok:lombok'
 
     // WireMock (only used for testing)
     testImplementation "com.github.tomakehurst:wiremock-jre8:2.31.0"

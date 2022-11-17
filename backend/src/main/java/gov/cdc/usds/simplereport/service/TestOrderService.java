@@ -155,11 +155,10 @@ public class TestOrderService {
       return p;
     };
   }
-  // methods to replace the methods that return List<TestEvent> once we get
-  // backwards compability issues resolved
+
   @Transactional(readOnly = true)
   @AuthorizationConfiguration.RequirePermissionReadResultListAtFacility
-  public Page<TestEvent> getTestEventsResultsPage(
+  public Page<TestEvent> getFacilityTestEventsResults(
       UUID facilityId,
       UUID patientId,
       TestResult result,
@@ -179,7 +178,7 @@ public class TestOrderService {
 
   @Transactional(readOnly = true)
   @AuthorizationConfiguration.RequirePermissionViewAllFacilityResults
-  public Page<TestEvent> getAllFacilityTestEventsResultsPage(
+  public Page<TestEvent> getOrganizationTestEventsResults(
       UUID patientId,
       TestResult result,
       PersonRole role,
@@ -193,48 +192,6 @@ public class TestOrderService {
 
     return _terepo.findAll(
         buildTestEventSearchFilter(null, patientId, result, role, startDate, endDate), pageRequest);
-  }
-
-  // methods to delete once we get
-  // backwards compability issues resolved
-  @Transactional(readOnly = true)
-  @AuthorizationConfiguration.RequirePermissionReadResultListAtFacility
-  public List<TestEvent> getTestEventsResults(
-      UUID facilityId,
-      UUID patientId,
-      TestResult result,
-      PersonRole role,
-      Date startDate,
-      Date endDate,
-      int pageOffset,
-      int pageSize) {
-
-    PageRequest pageRequest =
-        PageRequest.of(pageOffset, pageSize, Sort.by("createdAt").descending());
-
-    return _terepo
-        .findAll(
-            buildTestEventSearchFilter(facilityId, patientId, result, role, startDate, endDate),
-            PageRequest.of(pageOffset, pageSize))
-        .toList();
-  }
-
-  @Transactional(readOnly = true)
-  @AuthorizationConfiguration.RequirePermissionViewAllFacilityResults
-  public List<TestEvent> getAllFacilityTestEventsResults(
-      UUID patientId,
-      TestResult result,
-      PersonRole role,
-      Date startDate,
-      Date endDate,
-      int pageOffset,
-      int pageSize) {
-
-    return _terepo
-        .findAll(
-            buildTestEventSearchFilter(null, patientId, result, role, startDate, endDate),
-            PageRequest.of(pageOffset, pageSize))
-        .toList();
   }
 
   @Transactional(readOnly = true)

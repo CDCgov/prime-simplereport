@@ -286,8 +286,8 @@ const Uploads = () => {
                 <table className="usa-table usa-table--borderless">
                   <thead>
                     <tr>
-                      <th>Requested Edit</th>
-                      <th>Areas Containing the Requested Edit</th>
+                      <th>Error description</th>
+                      <th>Location of error</th>
                     </tr>
                   </thead>
                   <tbody>
@@ -295,7 +295,7 @@ const Uploads = () => {
                       return (
                         <tr key={"error_" + i}>
                           <td>{e?.["message"]} </td>
-                          <td>Row(s): {e?.["indices"]}</td>
+                          <td>Row(s): {e?.["indices"]?.join(", ")}</td>
                         </tr>
                       );
                     })}

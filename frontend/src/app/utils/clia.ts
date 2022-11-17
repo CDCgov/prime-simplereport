@@ -20,6 +20,8 @@ export function isValidCLIANumber(input: string, state: string): boolean {
     return true;
   } else if (state === "WY" && input === "12Z3456789") {
     return true;
+  } else if (input.substring(0, 3) === "DOD") {
+    cliaNumberValidator = /^DOD\d{7}$/;
   } else {
     cliaNumberValidator = /^\d{2}D\d{7}$/;
   }

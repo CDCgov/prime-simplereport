@@ -96,7 +96,7 @@ class PatientBulkUploadFileValidatorTest {
         errors.stream().map(FeedbackMessage::getMessage).collect(Collectors.toList());
     assertThat(errorMessages)
         .contains(
-            "11/3/80 is not a valid value for column date_of_birth",
+            "11/3/8 is not an acceptable value for column date_of_birth",
             "african american is not an acceptable value for column race",
             "androgynous is not an acceptable value for column biological_sex",
             "latinx is not an acceptable value for column ethnicity",
@@ -150,6 +150,21 @@ class PatientBulkUploadFileValidatorTest {
             });
     // THEN
     assertThat(exception).hasMessage("Empty or invalid CSV submitted");
+  }
+
+  @Test
+  void malformedCsv_returnsError() {
+    // GIVEN
+    InputStream input = loadCsv("patientBulkUpload/malformed.csv");
+    // WHEN
+    List<FeedbackMessage> errors = patientBulkUploadFileValidator.validate(input);
+    // THEN
+    assertThat(errors).hasSize(1);
+    List<String> errorMessages =
+        errors.stream().map(FeedbackMessage::getMessage).collect(Collectors.toList());
+    assertThat(errorMessages)
+        .contains(
+            "File has the incorrect number of columns or empty rows. Please make sure all columns match the data template, and delete any empty rows.");
   }
 
   private InputStream loadCsv(String csvFile) {

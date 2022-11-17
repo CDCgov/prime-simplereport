@@ -6,9 +6,9 @@ import static gov.cdc.usds.simplereport.validators.CsvValidatorUtils.getNextRow;
 import static gov.cdc.usds.simplereport.validators.CsvValidatorUtils.getValue;
 import static gov.cdc.usds.simplereport.validators.CsvValidatorUtils.validateBiologicalSex;
 import static gov.cdc.usds.simplereport.validators.CsvValidatorUtils.validateCountry;
-import static gov.cdc.usds.simplereport.validators.CsvValidatorUtils.validateDate;
 import static gov.cdc.usds.simplereport.validators.CsvValidatorUtils.validateEmail;
 import static gov.cdc.usds.simplereport.validators.CsvValidatorUtils.validateEthnicity;
+import static gov.cdc.usds.simplereport.validators.CsvValidatorUtils.validateFlexibleDate;
 import static gov.cdc.usds.simplereport.validators.CsvValidatorUtils.validatePhoneNumber;
 import static gov.cdc.usds.simplereport.validators.CsvValidatorUtils.validatePhoneNumberType;
 import static gov.cdc.usds.simplereport.validators.CsvValidatorUtils.validateRace;
@@ -18,6 +18,7 @@ import static gov.cdc.usds.simplereport.validators.CsvValidatorUtils.validateYes
 import static gov.cdc.usds.simplereport.validators.CsvValidatorUtils.validateZipCode;
 
 import com.fasterxml.jackson.databind.MappingIterator;
+import gov.cdc.usds.simplereport.api.model.errors.CsvProcessingException;
 import gov.cdc.usds.simplereport.service.model.reportstream.FeedbackMessage;
 import java.io.InputStream;
 import java.util.ArrayList;
@@ -39,7 +40,17 @@ public class PatientBulkUploadFileValidator {
     List<FeedbackMessage> errors = new ArrayList<>();
 
     while (valueIterator.hasNext() && errors.isEmpty()) {
-      final Map<String, String> row = getNextRow(valueIterator);
+      Map<String, String> row = null;
+      try {
+        row = getNextRow(valueIterator);
+      } catch (CsvProcessingException ex) {
+        errors.add(
+            new FeedbackMessage(
+                CsvValidatorUtils.REPORT_SCOPE,
+                "File has the incorrect number of columns or empty rows. Please make sure all columns match the data template, and delete any empty rows.",
+                new int[] {ex.getLineNumber()}));
+        return errors;
+      }
 
       PatientUploadRow extractedData = new PatientUploadRow(row);
 
@@ -48,7 +59,7 @@ public class PatientBulkUploadFileValidator {
       // validate individual values
 
       // demographics
-      errors.addAll(validateDate(extractedData.dateOfBirth));
+      errors.addAll(validateFlexibleDate(extractedData.dateOfBirth));
       errors.addAll(validateRace(extractedData.race));
       errors.addAll(validateBiologicalSex(extractedData.biologicalSex));
       errors.addAll(validateEthnicity(extractedData.ethnicity));

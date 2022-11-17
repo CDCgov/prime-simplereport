@@ -2,6 +2,7 @@ package gov.cdc.usds.simplereport.validators;
 
 import static gov.cdc.usds.simplereport.api.Translators.CANADIAN_STATE_CODES;
 import static gov.cdc.usds.simplereport.api.Translators.COUNTRY_CODES;
+import static gov.cdc.usds.simplereport.api.Translators.PAST_DATE_FLEXIBLE_FORMATTER;
 import static gov.cdc.usds.simplereport.api.Translators.STATE_CODES;
 
 import com.fasterxml.jackson.databind.MappingIterator;
@@ -9,12 +10,14 @@ import com.fasterxml.jackson.databind.RuntimeJsonMappingException;
 import com.fasterxml.jackson.dataformat.csv.CsvMapper;
 import com.fasterxml.jackson.dataformat.csv.CsvParser;
 import com.fasterxml.jackson.dataformat.csv.CsvSchema;
+import gov.cdc.usds.simplereport.api.model.errors.CsvProcessingException;
 import gov.cdc.usds.simplereport.service.model.reportstream.FeedbackMessage;
 import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.nio.charset.StandardCharsets;
+import java.time.format.DateTimeParseException;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
@@ -127,8 +130,8 @@ public class CsvValidatorUtils {
       Set.of("staff", "resident", "student", "visitor", UNKNOWN_LITERAL);
   private static final Set<String> PHONE_NUMBER_TYPE_VALUES = Set.of("mobile", "landline");
   private static final Set<String> TEST_RESULT_STATUS_VALUES = Set.of("f", "c");
-  private static final String ITEM_SCOPE = "item";
-  private static final String REPORT_SCOPE = "report";
+  public static final String ITEM_SCOPE = "item";
+  public static final String REPORT_SCOPE = "report";
 
   private CsvValidatorUtils() {
     throw new IllegalStateException("CsvValidatorUtils is a utility class");
@@ -194,7 +197,24 @@ public class CsvValidatorUtils {
     return validateRegex(input, CLIA_REGEX);
   }
 
-  public static List<FeedbackMessage> validateDate(ValueOrError input) {
+  public static List<FeedbackMessage> validateFlexibleDate(ValueOrError input) {
+    List<FeedbackMessage> errors = new ArrayList<>();
+    String value = parseString(input.getValue());
+    if (value == null) {
+      return errors;
+    }
+    try {
+      PAST_DATE_FLEXIBLE_FORMATTER.parse(input.getValue());
+    } catch (DateTimeParseException e) {
+      errors.add(
+          new FeedbackMessage(
+              ITEM_SCOPE,
+              input.getValue() + " is not an acceptable value for column " + input.getHeader()));
+    }
+    return errors;
+  }
+
+  public static List<FeedbackMessage> validateDateFormat(ValueOrError input) {
     return validateRegex(input, DATE_REGEX);
   }
 
@@ -207,11 +227,13 @@ public class CsvValidatorUtils {
   }
 
   public static Map<String, String> getNextRow(MappingIterator<Map<String, String>> valueIterator)
-      throws IllegalArgumentException {
+      throws CsvProcessingException {
     try {
       return valueIterator.next();
     } catch (RuntimeJsonMappingException e) {
-      throw new IllegalArgumentException(e.getMessage());
+      var location = valueIterator.getCurrentLocation();
+      throw new CsvProcessingException(
+          e.getMessage(), location.getLineNr(), location.getColumnNr());
     }
   }
 
