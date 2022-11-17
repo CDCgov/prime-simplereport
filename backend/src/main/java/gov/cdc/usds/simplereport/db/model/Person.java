@@ -153,18 +153,79 @@ public class Person extends OrganizationScopedEternalEntity implements PersonEnt
     this.testResultDeliveryPreference = testResultDeliveryPreference;
   }
 
-  public Person(PersonName names, Organization org, Facility fac) {
+  public Person(
+      Organization organization,
+      Facility facility,
+      String lookupId,
+      String firstName,
+      String middleName,
+      String lastName,
+      String suffix,
+      LocalDate birthDate,
+      StreetAddress address,
+      String country,
+      PersonRole role,
+      List<String> emails,
+      String race,
+      String ethnicity,
+      List<String> tribalAffiliation,
+      String gender,
+      Boolean residentCongregateSetting,
+      Boolean employedInHealthcare,
+      String preferredLanguage,
+      TestResultDeliveryPreference testResultDeliveryPreference) {
+    this(
+        organization,
+        lookupId,
+        firstName,
+        middleName,
+        lastName,
+        suffix,
+        birthDate,
+        address,
+        country,
+        role,
+        emails,
+        race,
+        ethnicity,
+        tribalAffiliation,
+        gender,
+        residentCongregateSetting,
+        employedInHealthcare,
+        preferredLanguage,
+        testResultDeliveryPreference);
+    this.facility = facility;
+  }
+
+  public Person(PersonName names, Organization org, Facility facility) {
     super(org);
-    this.facility = fac;
+    this.facility = facility;
     this.nameInfo = names;
     this.role = PersonRole.STAFF;
   }
 
-  public Person(PersonName names, Organization org, Facility fac, PersonRole role) {
+  public Person(PersonName names, Organization org, Facility facility, PersonRole role) {
     super(org);
-    this.facility = fac;
+    this.facility = facility;
     this.nameInfo = names;
     this.role = role;
+  }
+
+  @Override
+  public boolean equals(Object o) {
+    if (this == o) return true;
+    if (o == null || getClass() != o.getClass()) return false;
+    Person person = (Person) o;
+    return nameInfo.equals(person.nameInfo)
+        && birthDate.equals(person.birthDate)
+        && Objects.equals(facility, person.facility)
+        && Objects.equals(getOrganization(), person.getOrganization())
+        && (isDeleted() == person.isDeleted());
+  }
+
+  @Override
+  public int hashCode() {
+    return Objects.hash(nameInfo, birthDate, facility, getOrganization(), isDeleted());
   }
 
   public void updatePatient(

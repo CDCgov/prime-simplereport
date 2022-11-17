@@ -21,27 +21,41 @@ import static gov.cdc.usds.simplereport.validators.CsvValidatorUtils.validateYes
 import static gov.cdc.usds.simplereport.validators.CsvValidatorUtils.validateZipCode;
 
 import com.fasterxml.jackson.databind.MappingIterator;
+import gov.cdc.usds.simplereport.api.model.errors.CsvProcessingException;
 import gov.cdc.usds.simplereport.service.model.reportstream.FeedbackMessage;
 import java.io.InputStream;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Component;
 
 @Component
+@Slf4j
 public class TestResultFileValidator {
 
   public List<FeedbackMessage> validate(InputStream csvStream) {
+    List<FeedbackMessage> errors = new ArrayList<>();
+
     final MappingIterator<Map<String, String>> valueIterator = getIteratorForCsv(csvStream);
 
     if (!valueIterator.hasNext()) {
       throw new IllegalArgumentException("Empty or invalid CSV submitted");
     }
 
-    List<FeedbackMessage> errors = new ArrayList<>();
-
     while (valueIterator.hasNext()) {
-      final Map<String, String> row = getNextRow(valueIterator);
+      final Map<String, String> row;
+      try {
+        row = getNextRow(valueIterator);
+      } catch (CsvProcessingException ex) {
+        log.error("Unable to parse test result csv.", ex);
+        errors.add(
+            new FeedbackMessage(
+                CsvValidatorUtils.REPORT_SCOPE,
+                "File has the incorrect number of columns or empty rows. Please make sure all columns match the data template, and delete any empty rows.",
+                new int[] {ex.getLineNumber()}));
+        return errors;
+      }
 
       ValueOrError patientId = getValue(row, "patient_id", false);
       ValueOrError patientLastName = getValue(row, "patient_last_name", true);

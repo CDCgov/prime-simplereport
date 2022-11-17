@@ -187,6 +187,21 @@ class PatientBulkUploadFileValidatorTest {
     assertThat(exception).hasMessage("Empty or invalid CSV submitted");
   }
 
+  @Test
+  void malformedCsv_returnsError() {
+    // GIVEN
+    InputStream input = loadCsv("patientBulkUpload/malformed.csv");
+    // WHEN
+    List<FeedbackMessage> errors = patientBulkUploadFileValidator.validate(input);
+    // THEN
+    assertThat(errors).hasSize(1);
+    List<String> errorMessages =
+        errors.stream().map(FeedbackMessage::getMessage).collect(Collectors.toList());
+    assertThat(errorMessages)
+        .contains(
+            "File has the incorrect number of columns or empty rows. Please make sure all columns match the data template, and delete any empty rows.");
+  }
+
   private InputStream loadCsv(String csvFile) {
     return PatientBulkUploadFileValidatorTest.class.getClassLoader().getResourceAsStream(csvFile);
   }

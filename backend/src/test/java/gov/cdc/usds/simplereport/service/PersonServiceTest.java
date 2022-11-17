@@ -18,6 +18,7 @@ import gov.cdc.usds.simplereport.db.model.auxiliary.PhoneType;
 import gov.cdc.usds.simplereport.db.model.auxiliary.StreetAddress;
 import gov.cdc.usds.simplereport.db.model.auxiliary.TestResultDeliveryPreference;
 import gov.cdc.usds.simplereport.db.repository.PatientRegistrationLinkRepository;
+import gov.cdc.usds.simplereport.test_util.SliceTestConfiguration;
 import gov.cdc.usds.simplereport.test_util.SliceTestConfiguration.WithSimpleReportEntryOnlyAllFacilitiesUser;
 import gov.cdc.usds.simplereport.test_util.SliceTestConfiguration.WithSimpleReportEntryOnlyUser;
 import gov.cdc.usds.simplereport.test_util.SliceTestConfiguration.WithSimpleReportOrgAdminUser;
@@ -296,6 +297,86 @@ class PersonServiceTest extends BaseServiceTest<PersonService> {
                     "English",
                     null));
     assertEquals("Duplicate phone number entered", e.getMessage());
+  }
+
+  @Test
+  @SliceTestConfiguration.WithSimpleReportOrgAdminUser
+  void assignPhoneNumberToPatient_noDuplicates_success() {
+    Facility facility = _dataFactory.createValidFacility(_orgService.getCurrentOrganization());
+    UUID facilityId = facility.getInternalId();
+
+    Person person =
+        _service.addPatient(
+            facilityId,
+            null,
+            "John",
+            null,
+            "Doe",
+            null,
+            LocalDate.of(1990, 01, 01),
+            _dataFactory.getAddress(),
+            "USA",
+            null,
+            PersonRole.STAFF,
+            null,
+            null,
+            null,
+            null,
+            null,
+            false,
+            false,
+            "English",
+            TestResultDeliveryPreference.NONE);
+    UUID personInternalId = person.getInternalId();
+
+    List<PhoneNumber> phoneNumbers = new ArrayList<>();
+    phoneNumbers.add(new PhoneNumber(PhoneType.MOBILE, "2342342344"));
+    phoneNumbers.add(new PhoneNumber(PhoneType.LANDLINE, "2342342345"));
+    phoneNumbers.add(new PhoneNumber(PhoneType.LANDLINE, "2342342346"));
+
+    List<PhoneNumber> assignedPhoneNumbers =
+        _service.assignPhoneNumbersToPatient(person, phoneNumbers);
+
+    assertEquals(assignedPhoneNumbers.get(0).getPersonInternalID(), personInternalId);
+    assertEquals(assignedPhoneNumbers.get(1).getPersonInternalID(), personInternalId);
+    assertEquals(assignedPhoneNumbers.get(2).getPersonInternalID(), personInternalId);
+  }
+
+  @Test
+  @SliceTestConfiguration.WithSimpleReportOrgAdminUser
+  void assignPhoneNumberToPatient_noNumbers_success() {
+    Facility facility = _dataFactory.createValidFacility(_orgService.getCurrentOrganization());
+    UUID facilityId = facility.getInternalId();
+
+    Person person =
+        _service.addPatient(
+            facilityId,
+            null,
+            "John",
+            null,
+            "Doe",
+            null,
+            LocalDate.of(1990, 01, 01),
+            _dataFactory.getAddress(),
+            "USA",
+            null,
+            PersonRole.STAFF,
+            null,
+            null,
+            null,
+            null,
+            null,
+            false,
+            false,
+            "English",
+            TestResultDeliveryPreference.NONE);
+
+    List<PhoneNumber> phoneNumbers = new ArrayList<>();
+
+    List<PhoneNumber> assignedPhoneNumbers =
+        _service.assignPhoneNumbersToPatient(person, phoneNumbers);
+
+    assertEquals(0, assignedPhoneNumbers.size());
   }
 
   @Test

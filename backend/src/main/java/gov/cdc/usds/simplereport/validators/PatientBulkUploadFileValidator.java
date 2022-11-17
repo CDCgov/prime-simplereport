@@ -18,6 +18,7 @@ import static gov.cdc.usds.simplereport.validators.CsvValidatorUtils.validateYes
 import static gov.cdc.usds.simplereport.validators.CsvValidatorUtils.validateZipCode;
 
 import com.fasterxml.jackson.databind.MappingIterator;
+import gov.cdc.usds.simplereport.api.model.errors.CsvProcessingException;
 import gov.cdc.usds.simplereport.service.model.reportstream.FeedbackMessage;
 import java.io.InputStream;
 import java.util.ArrayList;
@@ -43,7 +44,18 @@ public class PatientBulkUploadFileValidator {
     var currentRow = 1;
 
     while (valueIterator.hasNext()) {
-      final Map<String, String> row = getNextRow(valueIterator);
+      Map<String, String> row = null;
+      try {
+        row = getNextRow(valueIterator);
+      } catch (CsvProcessingException ex) {
+        var feedback =
+            new FeedbackMessage(
+                CsvValidatorUtils.REPORT_SCOPE,
+                "File has the incorrect number of columns or empty rows. Please make sure all columns match the data template, and delete any empty rows.",
+                new int[] {ex.getLineNumber()});
+        mapOfErrors.put(feedback.getMessage(), feedback);
+        break;
+      }
       var currentRowErrors = new ArrayList<FeedbackMessage>();
 
       PatientUploadRow extractedData = new PatientUploadRow(row);
@@ -83,6 +95,7 @@ public class PatientBulkUploadFileValidator {
                 error.getMessage(),
                 error,
                 (e1, e2) -> {
+                  // todo: convert indices to array list to avoid this crazy thing
                   var rows = Arrays.concatenate(e1.getIndices(), e2.getIndices());
                   e1.setIndices(rows);
                   return e1;
