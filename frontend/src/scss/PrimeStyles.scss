@@ -2,6 +2,10 @@
   background-color: color("base-lightest");
   padding-top: units(2);
   padding-bottom: units(2);
+
+  .grid-container {
+    max-width: 75rem;
+  }
 }
 
 .prime-container {
