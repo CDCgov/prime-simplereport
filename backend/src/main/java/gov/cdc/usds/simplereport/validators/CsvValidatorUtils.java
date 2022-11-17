@@ -2,6 +2,7 @@ package gov.cdc.usds.simplereport.validators;
 
 import static gov.cdc.usds.simplereport.api.Translators.CANADIAN_STATE_CODES;
 import static gov.cdc.usds.simplereport.api.Translators.COUNTRY_CODES;
+import static gov.cdc.usds.simplereport.api.Translators.PAST_DATE_FLEXIBLE_FORMATTER;
 import static gov.cdc.usds.simplereport.api.Translators.STATE_CODES;
 
 import com.fasterxml.jackson.databind.MappingIterator;
@@ -16,6 +17,7 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.nio.charset.StandardCharsets;
+import java.time.format.DateTimeParseException;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
@@ -195,7 +197,24 @@ public class CsvValidatorUtils {
     return validateRegex(input, CLIA_REGEX);
   }
 
-  public static List<FeedbackMessage> validateDate(ValueOrError input) {
+  public static List<FeedbackMessage> validateFlexibleDate(ValueOrError input) {
+    List<FeedbackMessage> errors = new ArrayList<>();
+    String value = parseString(input.getValue());
+    if (value == null) {
+      return errors;
+    }
+    try {
+      PAST_DATE_FLEXIBLE_FORMATTER.parse(input.getValue());
+    } catch (DateTimeParseException e) {
+      errors.add(
+          new FeedbackMessage(
+              ITEM_SCOPE,
+              input.getValue() + " is not an acceptable value for column " + input.getHeader()));
+    }
+    return errors;
+  }
+
+  public static List<FeedbackMessage> validateDateFormat(ValueOrError input) {
     return validateRegex(input, DATE_REGEX);
   }
 

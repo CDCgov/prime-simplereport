@@ -4,6 +4,7 @@ import static gov.cdc.usds.simplereport.validators.CsvValidatorUtils.ValueOrErro
 import static gov.cdc.usds.simplereport.validators.CsvValidatorUtils.getValue;
 import static gov.cdc.usds.simplereport.validators.CsvValidatorUtils.validateCountry;
 import static gov.cdc.usds.simplereport.validators.CsvValidatorUtils.validateEthnicity;
+import static gov.cdc.usds.simplereport.validators.CsvValidatorUtils.validateFlexibleDate;
 import static gov.cdc.usds.simplereport.validators.CsvValidatorUtils.validatePhoneNumber;
 import static gov.cdc.usds.simplereport.validators.CsvValidatorUtils.validateZipCode;
 import static org.assertj.core.api.Assertions.assertThat;
@@ -73,6 +74,18 @@ class CsvValidatorUtilsTest {
     ValueOrError actual = getValue(row, "biological_sex", true);
     String expectedMessage = "biological_sex is a required column.";
     assertThat(actual.getError().get(0).getMessage()).isEqualTo(expectedMessage);
+  }
+
+  @Test
+  void twoYearDate_passesFlexibleValidation() {
+    ValueOrError birthDate = new ValueOrError("11/3/80", "date_of_birth");
+    assertThat(validateFlexibleDate(birthDate)).isEmpty();
+  }
+
+  @Test
+  void invalidDate_doesNotPassFlexibleValidation() {
+    ValueOrError birthDate = new ValueOrError("0/3/1980", "date_of_birth");
+    assertThat(validateFlexibleDate(birthDate)).hasSize(1);
   }
 
   @Test

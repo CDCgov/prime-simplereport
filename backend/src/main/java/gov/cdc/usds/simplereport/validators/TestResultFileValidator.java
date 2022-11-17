@@ -6,7 +6,7 @@ import static gov.cdc.usds.simplereport.validators.CsvValidatorUtils.getNextRow;
 import static gov.cdc.usds.simplereport.validators.CsvValidatorUtils.getValue;
 import static gov.cdc.usds.simplereport.validators.CsvValidatorUtils.validateBiologicalSex;
 import static gov.cdc.usds.simplereport.validators.CsvValidatorUtils.validateClia;
-import static gov.cdc.usds.simplereport.validators.CsvValidatorUtils.validateDate;
+import static gov.cdc.usds.simplereport.validators.CsvValidatorUtils.validateDateFormat;
 import static gov.cdc.usds.simplereport.validators.CsvValidatorUtils.validateDateTime;
 import static gov.cdc.usds.simplereport.validators.CsvValidatorUtils.validateEmail;
 import static gov.cdc.usds.simplereport.validators.CsvValidatorUtils.validateEthnicity;
@@ -85,8 +85,8 @@ public class TestResultFileValidator {
       currentRowErrors.addAll(validatePhoneNumber(extractedData.getTestingLabPhoneNumber()));
       currentRowErrors.addAll(validatePhoneNumber(extractedData.getOrderingFacilityPhoneNumber()));
 
-      currentRowErrors.addAll(validateDate(extractedData.getPatientDob()));
-      currentRowErrors.addAll(validateDate(extractedData.getIllnessOnsetDate()));
+      currentRowErrors.addAll(validateDateFormat(extractedData.getPatientDob()));
+      currentRowErrors.addAll(validateDateFormat(extractedData.getIllnessOnsetDate()));
 
       currentRowErrors.addAll(validateDateTime(extractedData.getOrderTestDate()));
       currentRowErrors.addAll(validateDateTime(extractedData.getSpecimenCollectionDate()));
