@@ -133,7 +133,7 @@ class PatientBulkUploadFileValidatorTest {
     // WHEN
     List<FeedbackMessage> errors = patientBulkUploadFileValidator.validate(input);
     // THEN
-    assertThat(errors.size()).isEqualTo(3);
+    assertThat(errors).hasSize(3);
     assertThat(errors.get(0).getScope()).isEqualTo("item");
     assertThat(errors.get(0).getMessage())
         .isEqualTo("african american is not an acceptable value for column race");
