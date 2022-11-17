@@ -15,7 +15,7 @@ import gov.cdc.usds.simplereport.db.model.Person;
 import gov.cdc.usds.simplereport.db.model.PhoneNumber;
 import gov.cdc.usds.simplereport.db.model.auxiliary.StreetAddress;
 import gov.cdc.usds.simplereport.validators.CsvValidatorUtils;
-import gov.cdc.usds.simplereport.validators.PatientBulkUploadFileValidator;
+import gov.cdc.usds.simplereport.validators.PatientBulkUploadFileValidator.PatientUploadRow;
 import java.io.ByteArrayInputStream;
 import java.util.ArrayList;
 import java.util.HashSet;
@@ -57,8 +57,7 @@ public class PatientBulkUploadServiceAsync {
 
       try {
 
-        PatientBulkUploadFileValidator.PatientUploadRow extractedData =
-            new PatientBulkUploadFileValidator.PatientUploadRow(row);
+        PatientUploadRow extractedData = new PatientUploadRow(row);
 
         // Fetch address information
         StreetAddress address =
@@ -109,23 +108,21 @@ public class PatientBulkUploadServiceAsync {
                 null // testResultDeliveryPreference
                 );
 
-        if (patientsList.contains(newPatient)) {
-          continue;
+        if (!patientsList.contains(newPatient)) {
+          // collect phone numbers and associate them with the patient
+          // then add to phone numbers list and set primary phone, if exists
+          List<PhoneNumber> newPhoneNumbers =
+              _personService.assignPhoneNumbersToPatient(
+                  newPatient,
+                  List.of(
+                      new PhoneNumber(
+                          parsePhoneType(extractedData.getPhoneNumberType().getValue()),
+                          extractedData.getPhoneNumber().getValue())));
+          phoneNumbersList.addAll(newPhoneNumbers);
+          newPhoneNumbers.stream().findFirst().ifPresent(newPatient::setPrimaryPhone);
+
+          patientsList.add(newPatient);
         }
-
-        // collect phone numbers and associate them with the patient
-        // then add to phone numbers list and set primary phone, if exists
-        List<PhoneNumber> newPhoneNumbers =
-            _personService.assignPhoneNumbersToPatient(
-                newPatient,
-                List.of(
-                    new PhoneNumber(
-                        parsePhoneType(extractedData.getPhoneNumberType().getValue()),
-                        extractedData.getPhoneNumber().getValue())));
-        phoneNumbersList.addAll(newPhoneNumbers);
-        newPhoneNumbers.stream().findFirst().ifPresent(newPatient::setPrimaryPhone);
-
-        patientsList.add(newPatient);
       } catch (IllegalArgumentException e) {
         String errorMessage = "Error uploading patient roster";
         log.error(
@@ -141,6 +138,6 @@ public class PatientBulkUploadServiceAsync {
     _personService.addPatientsAndPhoneNumbers(patientsList, phoneNumbersList);
 
     log.info("CSV patient upload completed for {}", currentOrganization.getOrganizationName());
-    // eventually want to send an email here
+    // eventually want to send an email here instead of return success
   }
 }
