@@ -33,7 +33,7 @@ type Facility {
   defaultDeviceSpecimen: ID
   deviceSpecimenTypes: [DeviceSpecimenType]
     @deprecated(reason: "kept for compatibility")
-  defaultDeviceType: DeviceType
+  defaultDeviceType: DeviceType @deprecated(reason: "kept for compatibility")
   orderingProvider: Provider
   patientSelfRegistrationLink: String
   isDeleted: Boolean

@@ -115,6 +115,7 @@ export type Facility = {
   cliaNumber?: Maybe<Scalars["String"]>;
   county?: Maybe<Scalars["String"]>;
   defaultDeviceSpecimen?: Maybe<Scalars["ID"]>;
+  /** @deprecated kept for compatibility */
   defaultDeviceType?: Maybe<DeviceType>;
   /** @deprecated kept for compatibility */
   deviceSpecimenTypes?: Maybe<Array<Maybe<DeviceSpecimenType>>>;
