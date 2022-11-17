@@ -9,7 +9,7 @@ type Props = {
 const ResultsNavWrapper = ({ children }: Props) => {
   return (
     <div className="prime-home flex-1">
-      <div className="grid-container">
+      <div className="grid-container results-wide-container">
         <ResultsNav />
         {children}
       </div>
