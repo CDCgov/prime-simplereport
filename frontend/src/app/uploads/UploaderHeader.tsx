@@ -38,7 +38,13 @@ const UploaderHeader: React.FC = () => {
       key: "uploads-lookup-nav-link",
     },
   ];
-  return <Header menuItems={mainNavContent} showFacilitySelect={false} />;
+  return (
+    <Header
+      menuItems={mainNavContent}
+      siteLogoLinkPath={"/csv-uploads"}
+      showFacilitySelect={false}
+    />
+  );
 };
 
 export default UploaderHeader;

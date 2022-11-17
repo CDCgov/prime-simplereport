@@ -5,8 +5,6 @@ import { v4 as uuidv4 } from "uuid";
 import { useSelector, connect } from "react-redux";
 
 import siteLogo from "../../img/simplereport-logo-color.svg";
-import { hasPermission, appPermissions } from "../permissions";
-import { RootState } from "../store";
 import { useSelectedFacility } from "../facilitySelect/useSelectedFacility";
 import { getAppInsights } from "../TelemetryService";
 import { formatFullName, formatRole } from "../utils/user";
@@ -28,10 +26,15 @@ interface MenuItem {
 
 interface HeaderProps {
   menuItems: MenuItem[];
+  siteLogoLinkPath: string;
   showFacilitySelect: boolean;
 }
 
-const Header: React.FC<HeaderProps> = ({ menuItems, showFacilitySelect }) => {
+const Header: React.FC<HeaderProps> = ({
+  menuItems,
+  siteLogoLinkPath,
+  showFacilitySelect,
+}) => {
   const appInsights = getAppInsights();
 
   const handleSupportClick = () => {
@@ -46,9 +49,6 @@ const Header: React.FC<HeaderProps> = ({ menuItems, showFacilitySelect }) => {
     }
   };
 
-  const isSupportAdmin = useSelector<RootState, boolean>(
-    (state) => state.user.isAdmin
-  );
   const organization = useSelector(
     (state) => (state as any).organization as Organization
   );
@@ -73,21 +73,6 @@ const Header: React.FC<HeaderProps> = ({ menuItems, showFacilitySelect }) => {
       setSelectedFacility(selected);
     }
   };
-
-  const canViewSettings = hasPermission(
-    user.permissions,
-    appPermissions.settings.canView
-  );
-
-  let siteLogoLinkPath: string;
-
-  if (isSupportAdmin) {
-    siteLogoLinkPath = "/admin";
-  } else if (canViewSettings) {
-    siteLogoLinkPath = "/dashboard";
-  } else {
-    siteLogoLinkPath = "/queue";
-  }
 
   const logout = () => {
     // Fetch the id_token from local storage

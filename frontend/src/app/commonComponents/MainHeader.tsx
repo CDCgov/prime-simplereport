@@ -3,12 +3,15 @@ import { useSelector } from "react-redux";
 
 import { PATIENT_TERM_PLURAL_CAP } from "../../config/constants";
 import { hasPermission, appPermissions } from "../permissions";
+import { RootState } from "../store";
 
-import "./Header.scss";
 import Header from "./Header";
 
 const MainHeader: React.FC = () => {
-  const user = useSelector((state) => (state as any).user as User);
+  const user = useSelector<RootState, User>((state) => state.user);
+  const isSupportAdmin = useSelector<RootState, boolean>(
+    (state) => state.user.isAdmin
+  );
 
   const canViewSettings = hasPermission(
     user.permissions,
@@ -29,6 +32,16 @@ const MainHeader: React.FC = () => {
     user.permissions,
     appPermissions.tests.canView
   );
+
+  let siteLogoLinkPath: string;
+
+  if (isSupportAdmin) {
+    siteLogoLinkPath = "/admin";
+  } else if (canViewSettings) {
+    siteLogoLinkPath = "/dashboard";
+  } else {
+    siteLogoLinkPath = "/queue";
+  }
 
   const mainNavContent = [
     {
@@ -56,7 +69,13 @@ const MainHeader: React.FC = () => {
       key: "patient-nav-link",
     },
   ];
-  return <Header menuItems={mainNavContent} showFacilitySelect={true} />;
+  return (
+    <Header
+      menuItems={mainNavContent}
+      siteLogoLinkPath={siteLogoLinkPath}
+      showFacilitySelect={true}
+    />
+  );
 };
 
 export default MainHeader;
