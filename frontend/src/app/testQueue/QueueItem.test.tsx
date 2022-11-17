@@ -93,7 +93,6 @@ describe("QueueItem", () => {
       name: device1Name,
       model: "LumiraDx SARS-CoV-2 Ag Test*",
       testLength: 15,
-      supportedDiseases: [],
     },
     specimenType: {
       internalId: specimen1Id,

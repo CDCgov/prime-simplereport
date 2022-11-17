@@ -96,7 +96,7 @@ export type QueriedDeviceType = NonNullable<
   GetFacilityQueueQuery["facility"]
 >["deviceTypes"][number];
 export type QueriedFacility = GetFacilityQueueQuery["facility"];
-type QueriedSupportedDiseases = QueriedTestOrder["deviceType"]["supportedDiseases"][number];
+type QueriedSupportedDiseases = QueriedDeviceType["supportedDiseases"][number];
 
 const convertFromMultiplexResponse = (
   responseResult: QueriedTestOrder["results"]
@@ -197,9 +197,7 @@ const QueueItem = ({
     string | null
   >(null);
   const [supportsMultipleDiseases, updateSupportsMultipleDiseases] = useState(
-    queueItem.deviceType.supportedDiseases.filter(
-      (d: any) => d.name !== "COVID-19"
-    ).length > 0
+    false
   );
 
   const [cacheTestResults, setCacheTestResults] = useState(

@@ -2089,12 +2089,6 @@ export type GetFacilityQueueQuery = {
       name: string;
       model: string;
       testLength: number;
-      supportedDiseases: Array<{
-        __typename?: "SupportedDisease";
-        internalId: string;
-        name: string;
-        loinc: string;
-      }>;
     };
     specimenType: {
       __typename?: "SpecimenType";
@@ -6034,11 +6028,6 @@ export const GetFacilityQueueDocument = gql`
         name
         model
         testLength
-        supportedDiseases {
-          internalId
-          name
-          loinc
-        }
       }
       specimenType {
         internalId
