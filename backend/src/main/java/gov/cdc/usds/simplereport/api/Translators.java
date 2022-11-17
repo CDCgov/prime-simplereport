@@ -32,9 +32,6 @@ import org.json.JSONObject;
  * ways.
  */
 public class Translators {
-  private static final DateTimeFormatter US_SLASHDATE_SHORT_FORMATTER =
-      DateTimeFormatter.ofPattern("M/d/yyyy");
-
   private static final long LOOK_BACK_YEARS = 99;
 
   // Accepts either two-digit or four-digit years.
@@ -53,18 +50,6 @@ public class Translators {
           .toFormatter();
 
   private static final int MAX_STRING_LENGTH = 500;
-
-  public static final LocalDate parseUserDate(String d) {
-    String date = parseString(d);
-    if (date == null) {
-      return null;
-    }
-    try {
-      return LocalDate.parse(date, US_SLASHDATE_SHORT_FORMATTER);
-    } catch (DateTimeParseException e) {
-      throw IllegalGraphqlArgumentException.invalidInput(d, "date");
-    }
-  }
 
   public static final LocalDate parseUserShortDate(String input) {
     String date = parseString(input);
