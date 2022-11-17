@@ -1,6 +1,7 @@
 import React, { useState } from "react";
 import { useSelector } from "react-redux";
 import { Button, FormGroup, FileInput } from "@trussworks/react-uswds";
+import { useLocation } from "react-router-dom";
 
 import { showError } from "../../utils/srToast";
 import { FeedbackMessage } from "../../../generated/graphql";
@@ -10,6 +11,7 @@ import { FileUploadService } from "../../../fileUploadService/FileUploadService"
 import "../HeaderSizeFix.scss";
 import { getAppInsights } from "../../TelemetryService";
 import { RootState } from "../../store";
+import { getUrl } from "../../utils/url";
 
 const PAYLOAD_MAX_BYTES = 50 * 1000 * 1000;
 const REPORT_MAX_ITEMS = 10000;
@@ -19,6 +21,9 @@ const Uploads = () => {
   useDocumentTitle("Upload spreadsheet");
 
   const appInsights = getAppInsights();
+  const inUploadResultsApp = useLocation().pathname.startsWith(
+    getUrl(true) + "csv-uploads"
+  );
   const orgName = useSelector<RootState, string>(
     (state) => state.organization?.name
   );
@@ -28,9 +33,7 @@ const Uploads = () => {
   const [buttonIsDisabled, setButtonIsDisabled] = useState(true);
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [file, setFile] = useState<File>();
-
   const [reportId, setReportId] = useState<string | null>(null);
-
   const [errors, setErrors] = useState<
     Array<FeedbackMessage | undefined | null>
   >([]);
@@ -196,7 +199,10 @@ const Uploads = () => {
               will continue to report through the regular process, this feature
               can serve labs and others with an information system that exports
               spreadsheets, such as an EMR.{" "}
-              <LinkWithQuery to="/results/upload/submit/guide">
+              <LinkWithQuery
+                to="/results/upload/submit/guide"
+                uploaderExperience={inUploadResultsApp}
+              >
                 <strong>Learn more about how it works</strong>
               </LinkWithQuery>
               .
@@ -213,7 +219,10 @@ const Uploads = () => {
               <li className="usa-process-list__item margin-bottom-1em">
                 <h2 className="usa-process-list__heading">
                   Visit the{" "}
-                  <LinkWithQuery to="/results/upload/submit/guide">
+                  <LinkWithQuery
+                    to="/results/upload/submit/guide"
+                    uploaderExperience={inUploadResultsApp}
+                  >
                     <strong>spreadsheet upload guide</strong>
                   </LinkWithQuery>
                 </h2>

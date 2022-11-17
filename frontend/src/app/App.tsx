@@ -73,7 +73,7 @@ const App = () => {
         <Page
           header={<MainHeader />}
           children={
-            // todo: talk about whether this is ok - could lead to flickering
+            // todo: talk about whether this is ok - could lead to flickering? but possibly not any more than we already do
             // don't return routes until user data loaded to redux store
             dataLoaded && (
               <Routes>
@@ -115,12 +115,16 @@ const App = () => {
                   }
                 />
                 <Route
-                  path="csv/codelookup"
+                  path="results/upload/submit/code-lookup"
                   element={
                     <ProtectedRoute
                       requiredPermissions={canViewResults}
                       userPermissions={permissions}
-                      element={<DeviceLookupContainer />}
+                      element={
+                        <ResultsNavWrapper>
+                          <DeviceLookupContainer />
+                        </ResultsNavWrapper>
+                      }
                     />
                   }
                 />
@@ -154,7 +158,7 @@ const App = () => {
                 />
 
                 <Route
-                  path="results/upload/submissions/submission/:id"
+                  path="results/upload/history/submission/:id"
                   element={
                     <ProtectedRoute
                       requiredPermissions={canViewResults}
@@ -168,7 +172,7 @@ const App = () => {
                   }
                 />
                 <Route
-                  path={"results/upload/submissions"}
+                  path={"results/upload/history"}
                   element={
                     <ProtectedRoute
                       requiredPermissions={canViewResults}
@@ -182,7 +186,7 @@ const App = () => {
                   }
                 />
                 <Route
-                  path={"results/upload/submissions/:pageNumber"}
+                  path={"results/upload/history/:pageNumber"}
                   element={
                     <ProtectedRoute
                       requiredPermissions={canViewResults}

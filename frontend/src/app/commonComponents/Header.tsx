@@ -22,6 +22,7 @@ interface MenuItem {
   displayText: string;
   displayPermissions: boolean;
   key: string;
+  end?: boolean;
 }
 
 interface HeaderProps {
@@ -111,6 +112,7 @@ const Header: React.FC<HeaderProps> = ({
               onClick={() => setMenuVisible(false)}
               className={getNavItemClassName}
               id={`${deviceType}-${item.key}`}
+              end={item.end}
             >
               {item.displayText}
             </LinkWithQuery>

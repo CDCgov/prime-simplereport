@@ -24,7 +24,7 @@ const ResultsNav = () => {
         </li>
         <li className="usa-nav__secondary-item">
           <LinkWithQuery
-            to={`/results/upload/submissions`}
+            to={`/results/upload/history`}
             className={classNameByActive}
           >
             View upload history

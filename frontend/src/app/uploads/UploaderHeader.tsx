@@ -18,6 +18,7 @@ const UploaderHeader: React.FC = () => {
       displayText: "Home",
       displayPermissions: canViewResults,
       key: "uploads-home-nav-link",
+      end: true,
     },
     {
       url: "/csv-uploads/history",
@@ -26,13 +27,13 @@ const UploaderHeader: React.FC = () => {
       key: "uploads-history-nav-link",
     },
     {
-      url: "/csv-uploads/guide",
+      url: "/csv-uploads/submit/guide",
       displayText: "Guide",
       displayPermissions: canViewResults,
       key: "uploads-guide-nav-link",
     },
     {
-      url: "/csv-uploads/code-lookup",
+      url: "/csv-uploads/submit/code-lookup",
       displayText: "Device code lookup",
       displayPermissions: canViewResults,
       key: "uploads-lookup-nav-link",

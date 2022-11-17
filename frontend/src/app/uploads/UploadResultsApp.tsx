@@ -55,7 +55,7 @@ const UploadResultsApp = () => {
                 }
               />
               <Route
-                path="code-lookup"
+                path="submit/code-lookup"
                 element={
                   <ProtectedRoute
                     requiredPermissions={canViewResults}
@@ -65,7 +65,7 @@ const UploadResultsApp = () => {
                 }
               />
               <Route
-                path="guide"
+                path="submit/guide"
                 element={
                   <ProtectedRoute
                     requiredPermissions={canViewResults}
@@ -85,7 +85,7 @@ const UploadResultsApp = () => {
                 }
               />
               <Route
-                path={"history"}
+                path="history"
                 element={
                   <ProtectedRoute
                     requiredPermissions={canViewResults}
@@ -95,7 +95,7 @@ const UploadResultsApp = () => {
                 }
               />
               <Route
-                path={"history/:pageNumber"}
+                path="history/:pageNumber"
                 element={
                   <ProtectedRoute
                     requiredPermissions={canViewResults}
