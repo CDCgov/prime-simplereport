@@ -55,7 +55,10 @@ class AzureStorageQueueTestEventReportingServiceTest
     when(client.sendMessage(any(String.class))).thenReturn(response);
 
     var sut = new AzureStorageQueueTestEventReportingService(new ObjectMapper(), client);
-    assertThrows(TestEventSerializationFailureException.class, () -> sut.report(new TestEvent()));
+    var invalidTestEventWithNoResults = new TestEvent();
+    assertThrows(
+        TestEventSerializationFailureException.class,
+        () -> sut.report(invalidTestEventWithNoResults));
   }
 
   @Test
