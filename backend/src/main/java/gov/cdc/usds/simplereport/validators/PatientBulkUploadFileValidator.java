@@ -59,7 +59,6 @@ public class PatientBulkUploadFileValidator {
 
       PatientUploadRow extractedData = new PatientUploadRow(row);
 
-      // todo: check if this needs to be an array list when being returned?
       currentRowErrors.addAll(extractedData.validateHeaders());
 
       // validate individual values
