@@ -219,6 +219,7 @@ const PendingOrganizations = ({
         <td>
           <button
             className="sr-pending-org-delete-button"
+            aria-label="delete organization"
             data-testid="delete-org-button"
             onClick={() => {
               setOrgToDelete(o);
@@ -255,9 +256,9 @@ const PendingOrganizations = ({
               />
             ) : null}
             <div className="usa-card__header">
-              <h2 data-cy="pending-orgs-title">
+              <h1 data-cy="pending-orgs-title">
                 Edit or verify organization identity
-              </h2>
+              </h1>
             </div>
             <div className="usa-card__body">
               <table className="usa-table usa-table--borderless width-full">
