@@ -25,6 +25,8 @@ import gov.cdc.usds.simplereport.api.model.errors.CsvProcessingException;
 import gov.cdc.usds.simplereport.service.model.reportstream.FeedbackMessage;
 import java.io.InputStream;
 import java.util.ArrayList;
+import java.util.Comparator;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import lombok.Getter;
@@ -36,7 +38,6 @@ import org.springframework.stereotype.Component;
 public class TestResultFileValidator {
 
   public List<FeedbackMessage> validate(InputStream csvStream) {
-    List<FeedbackMessage> errors = new ArrayList<>();
 
     final MappingIterator<Map<String, String>> valueIterator = getIteratorForCsv(csvStream);
 
@@ -44,70 +45,93 @@ public class TestResultFileValidator {
       throw new IllegalArgumentException("Empty or invalid CSV submitted");
     }
 
+    var mapOfErrors = new HashMap<String, FeedbackMessage>();
+    var currentRow = 1;
+
     while (valueIterator.hasNext()) {
       final Map<String, String> row;
       try {
         row = getNextRow(valueIterator);
       } catch (CsvProcessingException ex) {
         log.error("Unable to parse test result csv.", ex);
-        errors.add(
+        var feedback =
             new FeedbackMessage(
                 CsvValidatorUtils.REPORT_SCOPE,
                 "File has the incorrect number of columns or empty rows. Please make sure all columns match the data template, and delete any empty rows.",
-                List.of(ex.getLineNumber())));
-        return errors;
+                List.of(ex.getLineNumber()));
+        mapOfErrors.put(feedback.getMessage(), feedback);
+        break;
       }
+      var currentRowErrors = new ArrayList<FeedbackMessage>();
 
       TestResultRow extractedData = new TestResultRow(row);
 
       // validate headers
-      errors.addAll(extractedData.validateHeaders());
+      currentRowErrors.addAll(extractedData.validateHeaders());
 
       // validate individual values
-      errors.addAll(validateState(extractedData.getPatientState()));
-      errors.addAll(validateState(extractedData.getOrderingProviderState()));
-      errors.addAll(validateState(extractedData.getTestingLabState()));
-      errors.addAll(validateState(extractedData.getOrderingFacilityState()));
+      currentRowErrors.addAll(validateState(extractedData.getPatientState()));
+      currentRowErrors.addAll(validateState(extractedData.getOrderingProviderState()));
+      currentRowErrors.addAll(validateState(extractedData.getTestingLabState()));
+      currentRowErrors.addAll(validateState(extractedData.getOrderingFacilityState()));
 
-      errors.addAll(validateZipCode(extractedData.getPatientZipCode()));
-      errors.addAll(validateZipCode(extractedData.getOrderingProviderZipCode()));
-      errors.addAll(validateZipCode(extractedData.getTestingLabZipCode()));
-      errors.addAll(validateZipCode(extractedData.getOrderingFacilityZipCode()));
+      currentRowErrors.addAll(validateZipCode(extractedData.getPatientZipCode()));
+      currentRowErrors.addAll(validateZipCode(extractedData.getOrderingProviderZipCode()));
+      currentRowErrors.addAll(validateZipCode(extractedData.getTestingLabZipCode()));
+      currentRowErrors.addAll(validateZipCode(extractedData.getOrderingFacilityZipCode()));
 
-      errors.addAll(validatePhoneNumber(extractedData.getPatientPhoneNumber()));
-      errors.addAll(validatePhoneNumber(extractedData.getOrderingProviderPhoneNumber()));
-      errors.addAll(validatePhoneNumber(extractedData.getTestingLabPhoneNumber()));
-      errors.addAll(validatePhoneNumber(extractedData.getOrderingFacilityPhoneNumber()));
+      currentRowErrors.addAll(validatePhoneNumber(extractedData.getPatientPhoneNumber()));
+      currentRowErrors.addAll(validatePhoneNumber(extractedData.getOrderingProviderPhoneNumber()));
+      currentRowErrors.addAll(validatePhoneNumber(extractedData.getTestingLabPhoneNumber()));
+      currentRowErrors.addAll(validatePhoneNumber(extractedData.getOrderingFacilityPhoneNumber()));
 
-      errors.addAll(validateDate(extractedData.getPatientDob()));
-      errors.addAll(validateDate(extractedData.getIllnessOnsetDate()));
+      currentRowErrors.addAll(validateDate(extractedData.getPatientDob()));
+      currentRowErrors.addAll(validateDate(extractedData.getIllnessOnsetDate()));
 
-      errors.addAll(validateDateTime(extractedData.getOrderTestDate()));
-      errors.addAll(validateDateTime(extractedData.getSpecimenCollectionDate()));
-      errors.addAll(validateDateTime(extractedData.getTestingLabSpecimenReceivedDate()));
-      errors.addAll(validateDateTime(extractedData.getTestResultDate()));
-      errors.addAll(validateDateTime(extractedData.getDateResultReleased()));
+      currentRowErrors.addAll(validateDateTime(extractedData.getOrderTestDate()));
+      currentRowErrors.addAll(validateDateTime(extractedData.getSpecimenCollectionDate()));
+      currentRowErrors.addAll(validateDateTime(extractedData.getTestingLabSpecimenReceivedDate()));
+      currentRowErrors.addAll(validateDateTime(extractedData.getTestResultDate()));
+      currentRowErrors.addAll(validateDateTime(extractedData.getDateResultReleased()));
 
-      errors.addAll(validateEmail(extractedData.getPatientEmail()));
-      errors.addAll(validateRace(extractedData.getPatientRace()));
-      errors.addAll(validateBiologicalSex(extractedData.getPatientGender()));
-      errors.addAll(validateEthnicity(extractedData.getPatientEthnicity()));
+      currentRowErrors.addAll(validateEmail(extractedData.getPatientEmail()));
+      currentRowErrors.addAll(validateRace(extractedData.getPatientRace()));
+      currentRowErrors.addAll(validateBiologicalSex(extractedData.getPatientGender()));
+      currentRowErrors.addAll(validateEthnicity(extractedData.getPatientEthnicity()));
 
-      errors.addAll(validateYesNoAnswer(extractedData.getPregnant()));
-      errors.addAll(validateYesNoAnswer(extractedData.getEmployedInHealthcare()));
-      errors.addAll(validateYesNoAnswer(extractedData.getSymptomaticForDisease()));
-      errors.addAll(validateYesNoAnswer(extractedData.getResidentCongregateSetting()));
-      errors.addAll(validateYesNoAnswer(extractedData.getHospitalized()));
-      errors.addAll(validateYesNoAnswer(extractedData.getIcu()));
-      errors.addAll(validateResidence(extractedData.getResidenceType()));
+      currentRowErrors.addAll(validateYesNoAnswer(extractedData.getPregnant()));
+      currentRowErrors.addAll(validateYesNoAnswer(extractedData.getEmployedInHealthcare()));
+      currentRowErrors.addAll(validateYesNoAnswer(extractedData.getSymptomaticForDisease()));
+      currentRowErrors.addAll(validateYesNoAnswer(extractedData.getResidentCongregateSetting()));
+      currentRowErrors.addAll(validateYesNoAnswer(extractedData.getHospitalized()));
+      currentRowErrors.addAll(validateYesNoAnswer(extractedData.getIcu()));
+      currentRowErrors.addAll(validateResidence(extractedData.getResidenceType()));
 
-      errors.addAll(validateTestResult(extractedData.getTestResult()));
-      errors.addAll(validateTestResultStatus(extractedData.getTestResultStatus()));
-      errors.addAll(validateSpecimenType(extractedData.getSpecimenType()));
+      currentRowErrors.addAll(validateTestResult(extractedData.getTestResult()));
+      currentRowErrors.addAll(validateTestResultStatus(extractedData.getTestResultStatus()));
+      currentRowErrors.addAll(validateSpecimenType(extractedData.getSpecimenType()));
 
-      errors.addAll(validateClia(extractedData.getTestingLabClia()));
+      currentRowErrors.addAll(validateClia(extractedData.getTestingLabClia()));
+
+      final var finalCurrentRow = currentRow;
+      currentRowErrors.forEach(
+          error -> error.setIndices(new ArrayList<>(List.of(finalCurrentRow))));
+
+      currentRowErrors.forEach(
+          error ->
+              mapOfErrors.merge(
+                  error.getMessage(),
+                  error,
+                  (e1, e2) -> {
+                    e1.getIndices().addAll(e2.getIndices());
+                    return e1;
+                  }));
+
+      currentRow++;
     }
 
+    var errors = new ArrayList<>(mapOfErrors.values());
+    errors.sort(Comparator.comparingInt(e -> e.getIndices().get(0)));
     return errors;
   }
 

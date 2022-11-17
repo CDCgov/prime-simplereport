@@ -83,6 +83,8 @@ class TestResultFileValidatorTest {
 
     List<String> errorMessages =
         errors.stream().map(FeedbackMessage::getMessage).collect(Collectors.toList());
+    List<List<Integer>> indices =
+        errors.stream().map(FeedbackMessage::getIndices).collect(Collectors.toList());
     assertThat(errorMessages)
         .contains(
             "x is not an acceptable value for column patient_state",
@@ -119,6 +121,7 @@ class TestResultFileValidatorTest {
             "x is not an acceptable value for column test_result",
             "x is not an acceptable value for column test_result_status",
             "x is not an acceptable value for column specimen_type");
+    indices.forEach(i -> assertThat(i).isEqualTo(List.of(1)));
   }
 
   @Test
