@@ -53,7 +53,7 @@ public class TestResultFileValidator {
             new FeedbackMessage(
                 CsvValidatorUtils.REPORT_SCOPE,
                 "File has the incorrect number of columns or empty rows. Please make sure all columns match the data template, and delete any empty rows.",
-                new int[] {ex.getLineNumber()}));
+                List.of(ex.getLineNumber())));
         return errors;
       }
 

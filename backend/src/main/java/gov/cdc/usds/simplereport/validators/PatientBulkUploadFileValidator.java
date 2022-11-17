@@ -27,7 +27,6 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import lombok.Getter;
-import org.bouncycastle.util.Arrays;
 import org.springframework.stereotype.Component;
 
 @Component
@@ -44,7 +43,7 @@ public class PatientBulkUploadFileValidator {
     var currentRow = 1;
 
     while (valueIterator.hasNext()) {
-      Map<String, String> row = null;
+      Map<String, String> row;
       try {
         row = getNextRow(valueIterator);
       } catch (CsvProcessingException ex) {
@@ -52,7 +51,7 @@ public class PatientBulkUploadFileValidator {
             new FeedbackMessage(
                 CsvValidatorUtils.REPORT_SCOPE,
                 "File has the incorrect number of columns or empty rows. Please make sure all columns match the data template, and delete any empty rows.",
-                new int[] {ex.getLineNumber()});
+                List.of(ex.getLineNumber()));
         mapOfErrors.put(feedback.getMessage(), feedback);
         break;
       }
@@ -87,26 +86,23 @@ public class PatientBulkUploadFileValidator {
       currentRowErrors.addAll(validateEmail(extractedData.email));
 
       final var finalCurrentRow = currentRow;
-      currentRowErrors.forEach(error -> error.setIndices(new int[] {finalCurrentRow}));
+      currentRowErrors.forEach(
+          error -> error.setIndices(new ArrayList<>(List.of(finalCurrentRow))));
 
       currentRowErrors.forEach(
-          error -> {
-            mapOfErrors.merge(
-                error.getMessage(),
-                error,
-                (e1, e2) -> {
-                  // todo: convert indices to array list to avoid this crazy thing
-                  var rows = Arrays.concatenate(e1.getIndices(), e2.getIndices());
-                  e1.setIndices(rows);
-                  return e1;
-                });
-          });
+          error ->
+              mapOfErrors.merge(
+                  error.getMessage(),
+                  error,
+                  (e1, e2) -> {
+                    e1.getIndices().addAll(e2.getIndices());
+                    return e1;
+                  }));
 
       currentRow++;
     }
     var errors = new ArrayList<>(mapOfErrors.values());
-    errors.sort(
-        Comparator.comparingInt(e -> java.util.Arrays.stream(e.getIndices()).min().orElse(0)));
+    errors.sort(Comparator.comparingInt(e -> e.getIndices().get(0)));
     return errors;
   }
 

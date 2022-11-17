@@ -136,7 +136,7 @@ class TestResultFileValidatorTest {
         .contains(
             "File has the incorrect number of columns or empty rows. Please make sure all columns match the data template, and delete any empty rows.");
 
-    assertEquals(3, errors.get(0).getIndices()[0]);
+    assertEquals(3, errors.get(0).getIndices().get(0));
   }
 
   @Test
@@ -154,7 +154,7 @@ class TestResultFileValidatorTest {
         .contains(
             "File has the incorrect number of columns or empty rows. Please make sure all columns match the data template, and delete any empty rows.");
 
-    assertEquals(2, errors.get(0).getIndices()[0]);
+    assertEquals(2, errors.get(0).getIndices().get(0));
   }
 
   private InputStream loadCsv(String csvFile) {

@@ -122,7 +122,7 @@ class PatientBulkUploadFileValidatorTest {
     assertThat(errors.get(0).getScope()).isEqualTo("item");
     assertThat(errors.get(0).getMessage())
         .isEqualTo("african american is not an acceptable value for column race");
-    assertThat(errors.get(0).getIndices()).isEqualTo(new int[] {1, 2});
+    assertThat(errors.get(0).getIndices()).isEqualTo(List.of(1, 2));
   }
 
   @Test
@@ -137,13 +137,13 @@ class PatientBulkUploadFileValidatorTest {
     assertThat(errors.get(0).getScope()).isEqualTo("item");
     assertThat(errors.get(0).getMessage())
         .isEqualTo("african american is not an acceptable value for column race");
-    assertThat(errors.get(0).getIndices()).isEqualTo(new int[] {1, 2});
+    assertThat(errors.get(0).getIndices()).isEqualTo(List.of(1, 2));
     assertThat(errors.get(1).getScope()).isEqualTo("report");
     assertThat(errors.get(1).getMessage()).isEqualTo("ethnicity is a required column.");
-    assertThat(errors.get(1).getIndices()).isEqualTo(new int[] {3, 4});
+    assertThat(errors.get(1).getIndices()).isEqualTo(List.of(3, 4));
     assertThat(errors.get(2).getScope()).isEqualTo("report");
     assertThat(errors.get(2).getMessage()).isEqualTo("race is a required column.");
-    assertThat(errors.get(2).getIndices()).isEqualTo(new int[] {3, 4});
+    assertThat(errors.get(2).getIndices()).isEqualTo(List.of(3, 4));
   }
 
   @Test
@@ -179,10 +179,7 @@ class PatientBulkUploadFileValidatorTest {
     // WHEN
     Exception exception =
         assertThrows(
-            IllegalArgumentException.class,
-            () -> {
-              patientBulkUploadFileValidator.validate(input);
-            });
+            IllegalArgumentException.class, () -> patientBulkUploadFileValidator.validate(input));
     // THEN
     assertThat(exception).hasMessage("Empty or invalid CSV submitted");
   }
