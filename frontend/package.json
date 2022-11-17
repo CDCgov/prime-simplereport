@@ -4,7 +4,7 @@
   "version": "0.0.0",
   "type": "module",
   "scripts": {
-    "dev": "VITE_CURRENT_COMMIT=$(git rev-parse HEAD) vite",
+    "dev": "vite",
     "prebuild": "tsc",
     "build": "VITE_CURRENT_COMMIT=$(git rev-parse HEAD) vite build",
     "preview": "vite preview",
@@ -13,7 +13,7 @@
     "codegen": "graphql-codegen --config codegen.yml && prettier --write 'src/generated/graphql.tsx'",
     "codegen:watch": "yarn codegen --watch",
     "storybook": "start-storybook -p 6006 -s public",
-    "build-storybook": "build-storybook -s public",
+    "build-storybook": "VITE_BACKEND_URL=http://localhost:8080 build-storybook -s public",
     "lint": "npm-run-all -p lint:eslint lint:prettier lint:stylelint",
     "lint:write": "npm-run-all -p lint:eslint:write lint:prettier:write lint:stylelint:write",
     "lint:eslint": "eslint --quiet 'src/**/*.{js,ts,jsx,tsx}'",
@@ -21,7 +21,9 @@
     "lint:prettier": "prettier -c 'src/**/*.{js,ts,jsx,tsx}'",
     "lint:prettier:write": "prettier --write 'src/**/*.{js,ts,jsx,tsx}'",
     "lint:stylelint": "stylelint '**/*.scss'",
-    "lint:stylelint:write": "stylelint '**/*.scss' --fix"
+    "lint:stylelint:write": "stylelint '**/*.scss' --fix",
+    "maintenance:start": "[ -z \"$MAINTENANCE_MESSAGE\" ] && echo \"MAINTENANCE_MESSAGE must be set!\" || (echo $MAINTENANCE_MESSAGE > maintenance.json && yarn maintenance:deploy && rm maintenance.json)",
+    "maintenance:deploy": "[ -z \"$MAINTENANCE_ENV\" ] && echo \"MAINTENANCE_ENV must be set!\" || az storage blob upload -f maintenance.json -n maintenance.json -c '$web' --account-name simplereport${MAINTENANCE_ENV}app --overwrite"
   },
   "dependencies": {
     "@apollo/client": "3.4.17",
@@ -104,9 +106,10 @@
     "dayjs": "^1.10.7",
     "depcheck": "^1.4.3",
     "eslint": "^8.0.1",
+    "eslint-config-prettier": "^8.5.0",
     "eslint-config-standard-with-typescript": "^23.0.0",
     "eslint-plugin-graphql": "^4.0.0",
-    "eslint-plugin-import": "^2.25.2",
+    "eslint-plugin-import": "^2.26.0",
     "eslint-plugin-jest-dom": "^4.0.3",
     "eslint-plugin-jsx-a11y": "^6.6.1",
     "eslint-plugin-n": "^15.0.0",

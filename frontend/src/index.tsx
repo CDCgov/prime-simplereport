@@ -120,8 +120,6 @@ const client = new ApolloClient({
   link: logoutLink.concat(concat(apolloMiddleware, httpLink as any)),
 });
 
-console.log(import.meta.env);
-
 export const ReactApp = (
   <ApolloProvider client={client}>
     <React.StrictMode>

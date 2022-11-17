@@ -9,6 +9,7 @@ module.exports = {
     }
   },
   extends: [
+    'prettier',
     'plugin:react/recommended',
     'plugin:react-hooks/recommended',
     'standard-with-typescript'

@@ -6,7 +6,6 @@ import svgr from "vite-plugin-svgr";
 export default defineConfig(({ command, mode }) => {
   const env = loadEnv(mode, process.cwd(), "");
 
-  console.log(env);
   const contentSecurityPolicyTag = !env.DEV
     ? ""
     : `<meta
