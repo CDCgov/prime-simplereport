@@ -39,7 +39,9 @@ export default defineConfig(({ command, mode }) => {
     ],
     server: {
       port: 3000,
-      origin: "http://localhost:3000",
+    },
+    build: {
+      outDir: "build",
     },
   };
 });
