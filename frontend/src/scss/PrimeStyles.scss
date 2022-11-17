@@ -851,6 +851,11 @@ $results-dropdown-spacing: #{units(4)} - #{units(2)} - 22px - #{units(4)}; // he
   max-width: none;
 }
 
+.usa-select-narrow {
+  @extend .usa-select;
+  max-width: 197px;
+}
+
 .usa-combo-box__full-width {
   max-width: none !important;
 }
