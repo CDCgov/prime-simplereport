@@ -12,6 +12,7 @@ import gov.cdc.usds.simplereport.db.model.DeviceType;
 import gov.cdc.usds.simplereport.db.model.Facility;
 import gov.cdc.usds.simplereport.db.model.Organization;
 import gov.cdc.usds.simplereport.db.model.Person;
+import gov.cdc.usds.simplereport.db.model.SpecimenType;
 import gov.cdc.usds.simplereport.db.model.TestOrder;
 import gov.cdc.usds.simplereport.db.model.auxiliary.MultiplexResultInput;
 import gov.cdc.usds.simplereport.db.model.auxiliary.TestResult;
@@ -83,15 +84,18 @@ class QueueManagementTest extends BaseGraphqlTest {
     UUID orderId = o.getInternalId();
     DeviceType d = _dataFactory.getGenericDevice();
     String deviceId = d.getInternalId().toString();
+    SpecimenType specimen = _dataFactory.getGenericSpecimen();
+    String specimenId = specimen.getInternalId().toString();
     String dateTested = "2020-12-31T14:30:30Z";
     Map<String, Object> variables =
         Map.of(
             "id", orderId.toString(),
             "deviceId", deviceId,
+            "specimenId", specimenId,
             "results", positiveCovidResult,
             "dateTested", dateTested);
 
-    performQueueUpdateMultiplexMutation(variables, Optional.empty());
+    performQueueUpdateMutation(variables, Optional.empty());
 
     TestOrder updatedTestOrder = _testOrderService.getTestOrder(_org, orderId);
     assertEquals(
@@ -114,7 +118,9 @@ class QueueManagementTest extends BaseGraphqlTest {
     TestOrder o = _dataFactory.createTestOrder(p, _site);
     UUID orderId = o.getInternalId();
     DeviceType d = _dataFactory.getGenericDevice();
+    SpecimenType specimen = _dataFactory.getGenericSpecimen();
     String deviceId = d.getInternalId().toString();
+    String specimenId = specimen.getInternalId().toString();
     String dateTested = "2020-12-31T14:30:30Z";
     List<MultiplexResultInput> results = new ArrayList<>();
     results.add(new MultiplexResultInput(_diseaseService.covid().getName(), TestResult.POSITIVE));
@@ -124,10 +130,11 @@ class QueueManagementTest extends BaseGraphqlTest {
         Map.of(
             "id", orderId.toString(),
             "deviceId", deviceId,
+            "specimenId", specimenId,
             "results", results,
             "dateTested", dateTested);
 
-    performQueueUpdateMultiplexMutation(variables, Optional.empty());
+    performQueueUpdateMutation(variables, Optional.empty());
 
     TestOrder updatedTestOrder = _testOrderService.getTestOrder(_org, orderId);
     assertEquals(
@@ -167,7 +174,9 @@ class QueueManagementTest extends BaseGraphqlTest {
     Person p = _dataFactory.createMinimalPerson(_org, _site);
     UUID personId = p.getInternalId();
     DeviceType d = _dataFactory.getGenericDevice();
+    SpecimenType s = _dataFactory.getGenericSpecimen();
     UUID deviceId = d.getInternalId();
+    UUID specimenId = s.getInternalId();
     String dateTested = "2020-12-31T14:30:30Z";
 
     // The test default standard user is configured to access _site by default,
@@ -191,15 +200,17 @@ class QueueManagementTest extends BaseGraphqlTest {
             orderId.toString(),
             "deviceId",
             deviceId.toString(),
+            "specimenId",
+            specimenId.toString(),
             "results",
             positiveCovidResult,
             "dateTested",
             dateTested);
-    performQueueUpdateMultiplexMutation(updateVariables, Optional.of(ACCESS_ERROR));
+    performQueueUpdateMutation(updateVariables, Optional.of(ACCESS_ERROR));
     updateSelfPrivileges(Role.USER, false, Set.of(_site.getInternalId()));
-    performQueueUpdateMultiplexMutation(updateVariables, Optional.empty());
+    performQueueUpdateMutation(updateVariables, Optional.empty());
     updateSelfPrivileges(Role.USER, true, Set.of());
-    performQueueUpdateMultiplexMutation(updateVariables, Optional.empty());
+    performQueueUpdateMutation(updateVariables, Optional.empty());
 
     updateSelfPrivileges(Role.USER, false, Set.of());
     // updateTimeOfTestQuestions uses the exact same security restrictions
@@ -268,8 +279,8 @@ class QueueManagementTest extends BaseGraphqlTest {
     runQuery("remove-from-queue", variables, expectedError.orElse(null));
   }
 
-  private void performQueueUpdateMultiplexMutation(
+  private void performQueueUpdateMutation(
       Map<String, Object> variables, Optional<String> expectedError) throws IOException {
-    runQuery("edit-queue-item-multiplex", variables, expectedError.orElse(null));
+    runQuery("edit-queue-item", variables, expectedError.orElse(null));
   }
 }

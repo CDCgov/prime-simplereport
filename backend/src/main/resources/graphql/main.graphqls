@@ -401,7 +401,7 @@ type Query {
     birthDate: LocalDate!
     facilityId: ID
   ): Boolean
-  queue(facilityId: ID!): [TestOrder!]!
+  queue(facilityId: ID!): [TestOrder]
     @requiredPermissions(anyOf: ["START_TEST", "UPDATE_TEST", "SUBMIT_TEST"])
   specimenTypes: [SpecimenType!]!
   testResults(

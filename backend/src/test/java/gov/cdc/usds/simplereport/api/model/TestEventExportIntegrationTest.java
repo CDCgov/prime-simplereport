@@ -53,6 +53,7 @@ class TestEventExportIntegrationTest extends BaseGraphqlTest {
     Map<String, Object> variables =
         Map.of(
             "deviceId", facility.getDefaultDeviceType().getInternalId().toString(),
+            "specimenId", facility.getDefaultDeviceSpecimen().getInternalId().toString(),
             "patientId", patient.getInternalId().toString(),
             "results",
                 List.of(
@@ -365,6 +366,6 @@ class TestEventExportIntegrationTest extends BaseGraphqlTest {
   }
 
   private JsonNode submitTestResult(Map<String, Object> variables, Optional<String> expectedError) {
-    return runQuery("add-multiplex-result-mutation", variables, expectedError.orElse(null));
+    return runQuery("submit-queue-item", variables, expectedError.orElse(null));
   }
 }
