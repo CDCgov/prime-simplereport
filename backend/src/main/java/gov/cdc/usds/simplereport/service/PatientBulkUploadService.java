@@ -56,6 +56,7 @@ public class PatientBulkUploadService {
     }
 
     _patientBulkUploadServiceAsync.savePatients(content, facilityId);
+
     result.setStatus(UploadStatus.SUCCESS);
     return result;
   }

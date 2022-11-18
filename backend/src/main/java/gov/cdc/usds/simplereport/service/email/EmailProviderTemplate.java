@@ -15,5 +15,8 @@ public enum EmailProviderTemplate {
   ORGANIZATION_ID_VERIFICATION_REMINDER,
 
   // test results template
-  SIMPLE_REPORT_TEST_RESULT;
+  SIMPLE_REPORT_TEST_RESULT,
+
+  // patient upload complete notification template
+  SIMPLE_REPORT_PATIENT_UPLOAD;
 }

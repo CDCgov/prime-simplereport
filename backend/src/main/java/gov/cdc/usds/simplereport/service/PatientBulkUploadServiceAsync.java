@@ -15,9 +15,13 @@ import gov.cdc.usds.simplereport.db.model.Organization;
 import gov.cdc.usds.simplereport.db.model.Person;
 import gov.cdc.usds.simplereport.db.model.PhoneNumber;
 import gov.cdc.usds.simplereport.db.model.auxiliary.StreetAddress;
+import gov.cdc.usds.simplereport.properties.SendGridProperties;
+import gov.cdc.usds.simplereport.service.email.EmailProviderTemplate;
+import gov.cdc.usds.simplereport.service.email.EmailService;
 import gov.cdc.usds.simplereport.validators.CsvValidatorUtils;
 import gov.cdc.usds.simplereport.validators.PatientBulkUploadFileValidator.PatientUploadRow;
 import java.io.ByteArrayInputStream;
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.List;
@@ -37,13 +41,18 @@ import org.springframework.transaction.annotation.Transactional;
 public class PatientBulkUploadServiceAsync {
 
   private final PersonService _personService;
+  private final ApiUserService _userService;
   private final AddressValidationService _addressValidationService;
   private final OrganizationService _organizationService;
+  private EmailService _emailService;
+  private SendGridProperties sendGridProperties;
 
   @Async
   @Transactional
   @AuthorizationConfiguration.RequirePermissionCreatePatientAtFacility
   public void savePatients(byte[] content, UUID facilityId) {
+    String uploaderEmail = _userService.getCurrentApiUserInContainedTransaction().getLoginEmail();
+
     Organization currentOrganization = _organizationService.getCurrentOrganization();
 
     // Patients do not need to be assigned to a facility, but if an id is given it must be valid
@@ -141,7 +150,17 @@ public class PatientBulkUploadServiceAsync {
 
     _personService.addPatientsAndPhoneNumbers(patientsList, phoneNumbersList);
 
+    String patientsUrl = "https://simplereport.gov/app/patients?facility=${facilityId}";
+    try {
+      _emailService.sendWithDynamicTemplate(
+          List.of(uploaderEmail),
+          EmailProviderTemplate.ID_VERIFICATION_FAILED,
+          Map.of("patients_url", patientsUrl));
+    } catch (IOException e) {
+      log.info(
+          "CSV patient upload email failed to send for {}",
+          currentOrganization.getOrganizationName());
+    }
     log.info("CSV patient upload completed for {}", currentOrganization.getOrganizationName());
-    // eventually want to send an email here instead of return success
   }
 }
