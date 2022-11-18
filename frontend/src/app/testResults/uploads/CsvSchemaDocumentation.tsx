@@ -234,7 +234,7 @@ const CsvSchemaDocumentation = () => {
               </a>
             </li>
             <li>
-              <LinkWithQuery to={`/csv/codelookup`}>
+              <LinkWithQuery to={`/results/upload/submit/code-lookup`}>
                 Device code lookup tool
               </LinkWithQuery>
             </li>
