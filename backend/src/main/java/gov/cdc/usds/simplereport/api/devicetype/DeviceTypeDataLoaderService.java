@@ -58,7 +58,6 @@ public class DeviceTypeDataLoaderService {
 
     return found;
   }
-  ;
 
   Map<UUID, List<SpecimenType>> getSpecimenTypes(Set<UUID> deviceTypeIds) {
     // get all deviceType and specimenType to deviceType mapping from db

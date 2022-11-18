@@ -5,6 +5,7 @@ import gov.cdc.usds.simplereport.db.repository.SupportedDiseaseRepository;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Optional;
 import java.util.UUID;
 import javax.transaction.Transactional;
 import lombok.extern.slf4j.Slf4j;
@@ -32,15 +33,9 @@ public class DiseaseService {
     fluA = _supportedDiseaseRepo.findByName("Flu A").orElse(null);
     fluB = _supportedDiseaseRepo.findByName("Flu B").orElse(null);
 
-    if (covid != null) {
-      supportedDiseaseMap.put(covid.getInternalId(), covid);
-    }
-    if (fluA != null) {
-      supportedDiseaseMap.put(fluA.getInternalId(), fluA);
-    }
-    if (fluB != null) {
-      supportedDiseaseMap.put(fluB.getInternalId(), fluB);
-    }
+    Optional.ofNullable(covid).ifPresent(sd -> supportedDiseaseMap.put(sd.getInternalId(), sd));
+    Optional.ofNullable(fluA).ifPresent(sd -> supportedDiseaseMap.put(sd.getInternalId(), sd));
+    Optional.ofNullable(fluB).ifPresent(sd -> supportedDiseaseMap.put(sd.getInternalId(), sd));
   }
 
   public List<SupportedDisease> fetchSupportedDiseases() {
