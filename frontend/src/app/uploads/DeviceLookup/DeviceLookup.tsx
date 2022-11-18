@@ -16,12 +16,13 @@ import {
 } from "../../testQueue/constants";
 import { DeviceType } from "../../../generated/graphql";
 import { useOutsideClick } from "../../utils/hooks";
+import iconSprite from "../../../../node_modules/uswds/dist/img/sprite.svg";
+import { LinkWithQuery } from "../../commonComponents/LinkWithQuery";
 
 import DeviceSearchResults from "./DeviceSearchResults";
 import DeviceDetails from "./DeviceDetails";
 
 interface Props {
-  formTitle: string;
   deviceOptions: DeviceType[];
 }
 
@@ -93,7 +94,27 @@ const DeviceLookup = (props: Props) => {
       <div className="grid-container">
         <div className="prime-container card-container">
           <div className="usa-card__header">
-            <h1 className="font-sans-lg">Device code lookup</h1>
+            <div>
+              <div className="display-flex flex-align-center">
+                <svg
+                  className="usa-icon text-base margin-left-neg-2px"
+                  aria-hidden="true"
+                  focusable="false"
+                  role="img"
+                >
+                  <use xlinkHref={iconSprite + "#arrow_back"}></use>
+                </svg>
+                <LinkWithQuery
+                  to={`/results/upload/submit`}
+                  className="margin-left-05"
+                >
+                  Upload spreadsheet
+                </LinkWithQuery>
+              </div>
+              <div>
+                <h1 className="font-sans-lg">Bulk results upload guide</h1>
+              </div>
+            </div>
           </div>
           <div className="usa-card__body margin-top-1">
             <strong

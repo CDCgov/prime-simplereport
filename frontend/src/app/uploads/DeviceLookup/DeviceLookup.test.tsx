@@ -37,7 +37,7 @@ describe("Device lookup", () => {
   beforeEach(() => {
     render(
       <MemoryRouter>
-        <DeviceLookup formTitle={"title"} deviceOptions={devices} />
+        <DeviceLookup deviceOptions={devices} />
       </MemoryRouter>
     );
   });
