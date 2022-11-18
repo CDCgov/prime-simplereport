@@ -96,13 +96,14 @@ class AuditLoggingFailuresTest extends BaseGraphqlTest {
     useOrgUserAllFacilityAccess();
     HashMap<String, Object> args = patientArgs();
     args.put("deviceId", facility.getDefaultDeviceType().getInternalId().toString());
+    args.put("specimenId", facility.getDefaultSpecimenType().getInternalId().toString());
     MultiplexResultInput multiplexResultInput =
         new MultiplexResultInput(_diseaseService.covid().getName(), TestResult.NEGATIVE);
     args.put("results", List.of(multiplexResultInput));
     runQuery("submit-queue-item", args, "Something went wrong");
     verify(auditLoggerServiceSpy).logEvent(_eventCaptor.capture());
     ConsoleApiAuditEvent event = _eventCaptor.getValue();
-    assertEquals(List.of("addMultiplexResult"), event.getGraphqlErrorPaths());
+    assertEquals(List.of("submitQueueItem"), event.getGraphqlErrorPaths());
   }
 
   // I tweaked the behavior to not return the original error message in order to improve security

@@ -53,7 +53,7 @@ class TestEventExportIntegrationTest extends BaseGraphqlTest {
     Map<String, Object> variables =
         Map.of(
             "deviceId", facility.getDefaultDeviceType().getInternalId().toString(),
-            "specimenId", facility.getDefaultDeviceSpecimen().getInternalId().toString(),
+            "specimenId", facility.getDefaultSpecimenType().getInternalId().toString(),
             "patientId", patient.getInternalId().toString(),
             "results",
                 List.of(
