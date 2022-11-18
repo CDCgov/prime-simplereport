@@ -69,10 +69,11 @@ class QueueManagementTest extends BaseGraphqlTest {
     variables.put("symptomOnsetDate", "2020-11-30");
     performEnqueueMutation(variables, Optional.empty());
     ArrayNode queueData = fetchQueue();
+    ObjectNode facilityData = fetchActiveFacility();
     assertEquals(1, queueData.size());
     JsonNode queueEntry = queueData.get(0);
-    System.out.println(queueEntry);
 
+    // assert on queue data
     assertNotNull(queueEntry.get("internalId").asText());
     assertNotNull(queueEntry.get("dateAdded").asText());
     assertNotNull(queueEntry.get("symptoms").asText());
@@ -91,6 +92,23 @@ class QueueManagementTest extends BaseGraphqlTest {
 
     assertNotNull(queueEntry.get("patient").get("internalId").asText());
     assertEquals("1899-05-10", queueEntry.get("patient").get("birthDate").asText());
+
+    // assert on active facility data
+    assertNotNull(facilityData.get("id").asText());
+    assertEquals("Injection Site", facilityData.get("name").asText());
+    assertEquals(2, facilityData.get("deviceTypes").size());
+
+    JsonNode firstDevice = facilityData.get("deviceTypes").get(0);
+    JsonNode secondDevice = facilityData.get("deviceTypes").get(1);
+
+    JsonNode sofia =
+        firstDevice.get("name").asText().equals("Quidel Sofia 2") ? firstDevice : secondDevice;
+    JsonNode lumiraDX =
+        firstDevice.get("name").asText().equals("LumiraDX") ? firstDevice : secondDevice;
+    assertEquals("15", sofia.get("testLength").asText());
+    assertEquals("15", lumiraDX.get("testLength").asText());
+    assertNotNull(sofia.get("swabTypes"));
+    assertNotNull(lumiraDX.get("swabTypes"));
   }
 
   @Test
@@ -279,6 +297,10 @@ class QueueManagementTest extends BaseGraphqlTest {
 
   private ArrayNode fetchQueue() {
     return (ArrayNode) runQuery(QUERY, getFacilityScopedArguments()).get("queue");
+  }
+
+  private ObjectNode fetchActiveFacility() {
+    return (ObjectNode) runQuery(QUERY, getFacilityScopedArguments()).get("facility");
   }
 
   private void fetchQueueWithError(String expectedError) {

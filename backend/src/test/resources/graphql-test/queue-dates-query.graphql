@@ -44,4 +44,23 @@ query fetchFacilityQueue($facilityId: ID!) {
     correctionStatus
     reasonForCorrection
   }
+  facility(id: $facilityId) {
+    name
+    id
+    deviceTypes {
+      internalId
+      name
+      testLength
+      supportedDiseases {
+        internalId
+        name
+        loinc
+      }
+      swabTypes {
+        internalId
+        name
+        typeCode
+      }
+    }
+  }
 }
