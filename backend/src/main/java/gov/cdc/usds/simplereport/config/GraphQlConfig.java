@@ -64,7 +64,7 @@ public class GraphQlConfig {
 
       if (exception instanceof TestEventSerializationFailureException) {
         return Mono.just(
-            singletonList(new GenericGraphqlException("Error saving result", errorPath)));
+            singletonList(new GenericGraphqlException("Error submitting test", errorPath)));
       }
 
       return Mono.just(singletonList(new GenericGraphqlException((errorPath))));

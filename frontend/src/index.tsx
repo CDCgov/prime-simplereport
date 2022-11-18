@@ -111,7 +111,19 @@ const logoutLink = onError(({ networkError, graphQLErrors }: ErrorResponse) => {
       );
       return message;
     });
-    showError("Please check for errors and try again", messages.join(" "));
+    if (messages.includes("Error submitting test")) {
+      const content = (
+        <span>
+          Sorry, our system was unable to report your test result. Please try
+          again, or reach out to{" "}
+          <a href="mailto:support@simplereport.gov">support@simplereport.gov</a>{" "}
+          for help.
+        </span>
+      );
+      showError(content, messages.join(" "));
+    } else {
+      showError("Please check for errors and try again", messages.join(" "));
+    }
     console.error("graphql error", graphQLErrors);
   }
 });
