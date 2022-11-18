@@ -42,7 +42,7 @@ public class DeviceTypeDataResolver {
 
               // load cached supportedDisease
               Map<UUID, SupportedDisease> supportedDiseasesMap =
-                  diseaseService.getSupportedDiseasesMap();
+                  diseaseService.getCachedSupportedDiseasesMap();
 
               // load deviceType -> [supportedDisease]
               List<DeviceSupportedDisease> allByDeviceTypeIdIn =

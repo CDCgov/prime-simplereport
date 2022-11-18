@@ -32,16 +32,22 @@ public class DiseaseService {
     fluA = _supportedDiseaseRepo.findByName("Flu A").orElse(null);
     fluB = _supportedDiseaseRepo.findByName("Flu B").orElse(null);
 
-    supportedDiseaseMap.put(covid.getInternalId(), covid);
-    supportedDiseaseMap.put(fluA.getInternalId(), fluA);
-    supportedDiseaseMap.put(fluB.getInternalId(), fluB);
+    if (covid != null) {
+      supportedDiseaseMap.put(covid.getInternalId(), covid);
+    }
+    if (fluA != null) {
+      supportedDiseaseMap.put(fluA.getInternalId(), fluA);
+    }
+    if (fluB != null) {
+      supportedDiseaseMap.put(fluB.getInternalId(), fluB);
+    }
   }
 
   public List<SupportedDisease> fetchSupportedDiseases() {
-    return (List<SupportedDisease>) _supportedDiseaseRepo.findAll();
+    return _supportedDiseaseRepo.findAll();
   }
 
-  public Map<UUID, SupportedDisease> getSupportedDiseasesMap() {
+  public Map<UUID, SupportedDisease> getCachedSupportedDiseasesMap() {
     return supportedDiseaseMap;
   }
 
