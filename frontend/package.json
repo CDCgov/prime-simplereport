@@ -7,6 +7,7 @@
     "dev": "vite",
     "prebuild": "tsc",
     "build": "VITE_CURRENT_COMMIT=$(git rev-parse HEAD) vite build",
+    "postbuild": "echo 'pushstate: enabled' > build/Staticfile && echo $(git rev-parse HEAD) > build/static/commit.txt && cd build && mv *touchpoints*.* static/",
     "preview": "vite preview",
     "test": "jest",
     "test:ci": "CI=true yarn test --coverage",
@@ -63,7 +64,11 @@
     "yup": "^0.32.9"
   },
   "devDependencies": {
+    "@babel/core": "^7.20.2",
     "@babel/plugin-syntax-import-meta": "^7.10.4",
+    "@babel/preset-env": "^7.20.2",
+    "@babel/preset-react": "^7.18.6",
+    "@babel/preset-typescript": "^7.18.6",
     "@graphql-codegen/cli": "2.13.7",
     "@graphql-codegen/typescript": "2.4.2",
     "@graphql-codegen/typescript-operations": "2.2.2",
@@ -101,6 +106,7 @@
     "@typescript-eslint/eslint-plugin": "^5.0.0",
     "@vitejs/plugin-react": "^2.2.0",
     "autoprefixer": "^10.4.13",
+    "babel-plugin-inline-react-svg": "^2.0.1",
     "babel-plugin-transform-vite-meta-env": "^1.0.3",
     "chromatic": "^6.10.2",
     "dayjs": "^1.10.7",
