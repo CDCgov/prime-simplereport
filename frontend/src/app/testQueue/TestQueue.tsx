@@ -187,10 +187,11 @@ const TestQueue: React.FC<Props> = ({ activeFacilityId }) => {
     );
   };
 
-  const patientsInQueue: string[] =
-    data?.queue
-      .map((q) => q?.patient.internalId)
-      .filter((element): element is string => !!element) || [];
+  const patientsInQueue: string[] = data?.queue
+    ? data?.queue
+        .map((q) => q?.patient.internalId)
+        .filter((element): element is string => !!element)
+    : [];
 
   return (
     <div className="prime-home flex-1">

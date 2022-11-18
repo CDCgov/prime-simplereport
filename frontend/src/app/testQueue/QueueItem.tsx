@@ -91,7 +91,9 @@ export const findResultByDiseaseName = (
   results.find((r: MultiplexResultInput) => r.diseaseName === name)
     ?.testResult ?? null;
 
-export type QueriedTestOrder = GetFacilityQueueQuery["queue"][number];
+export type QueriedTestOrder = NonNullable<
+  NonNullable<GetFacilityQueueQuery["queue"]>[number]
+>;
 export type QueriedDeviceType = NonNullable<
   GetFacilityQueueQuery["facility"]
 >["deviceTypes"][number];

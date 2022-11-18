@@ -788,7 +788,7 @@ export type Query = {
   patients?: Maybe<Array<Maybe<Patient>>>;
   patientsCount?: Maybe<Scalars["Int"]>;
   pendingOrganizations: Array<PendingOrganization>;
-  queue: Array<TestOrder>;
+  queue?: Maybe<Array<Maybe<TestOrder>>>;
   specimenType?: Maybe<Array<Maybe<SpecimenType>>>;
   specimenTypes: Array<SpecimenType>;
   supportedDiseases: Array<SupportedDisease>;
@@ -2072,65 +2072,75 @@ export type GetFacilityQueueQueryVariables = Exact<{
 
 export type GetFacilityQueueQuery = {
   __typename?: "Query";
-  queue: Array<{
-    __typename?: "TestOrder";
-    internalId: string;
-    pregnancy?: string | null | undefined;
-    dateAdded: string;
-    symptoms?: string | null | undefined;
-    symptomOnset?: any | null | undefined;
-    noSymptoms?: boolean | null | undefined;
-    dateTested?: any | null | undefined;
-    correctionStatus?: string | null | undefined;
-    reasonForCorrection?: string | null | undefined;
-    deviceType: {
-      __typename?: "DeviceType";
-      internalId: string;
-      name: string;
-      model: string;
-      testLength: number;
-    };
-    specimenType: {
-      __typename?: "SpecimenType";
-      internalId: string;
-      name: string;
-      typeCode: string;
-    };
-    patient: {
-      __typename?: "Patient";
-      internalId: string;
-      telephone?: string | null | undefined;
-      birthDate?: any | null | undefined;
-      firstName?: string | null | undefined;
-      middleName?: string | null | undefined;
-      lastName?: string | null | undefined;
-      gender?: string | null | undefined;
-      testResultDelivery?: TestResultDeliveryPreference | null | undefined;
-      preferredLanguage?: string | null | undefined;
-      email?: string | null | undefined;
-      emails?: Array<string | null | undefined> | null | undefined;
-      phoneNumbers?:
-        | Array<
-            | {
-                __typename?: "PhoneNumber";
-                type?: PhoneType | null | undefined;
-                number?: string | null | undefined;
-              }
-            | null
-            | undefined
-          >
+  queue?:
+    | Array<
+        | {
+            __typename?: "TestOrder";
+            internalId: string;
+            pregnancy?: string | null | undefined;
+            dateAdded: string;
+            symptoms?: string | null | undefined;
+            symptomOnset?: any | null | undefined;
+            noSymptoms?: boolean | null | undefined;
+            dateTested?: any | null | undefined;
+            correctionStatus?: string | null | undefined;
+            reasonForCorrection?: string | null | undefined;
+            deviceType: {
+              __typename?: "DeviceType";
+              internalId: string;
+              name: string;
+              model: string;
+              testLength: number;
+            };
+            specimenType: {
+              __typename?: "SpecimenType";
+              internalId: string;
+              name: string;
+              typeCode: string;
+            };
+            patient: {
+              __typename?: "Patient";
+              internalId: string;
+              telephone?: string | null | undefined;
+              birthDate?: any | null | undefined;
+              firstName?: string | null | undefined;
+              middleName?: string | null | undefined;
+              lastName?: string | null | undefined;
+              gender?: string | null | undefined;
+              testResultDelivery?:
+                | TestResultDeliveryPreference
+                | null
+                | undefined;
+              preferredLanguage?: string | null | undefined;
+              email?: string | null | undefined;
+              emails?: Array<string | null | undefined> | null | undefined;
+              phoneNumbers?:
+                | Array<
+                    | {
+                        __typename?: "PhoneNumber";
+                        type?: PhoneType | null | undefined;
+                        number?: string | null | undefined;
+                      }
+                    | null
+                    | undefined
+                  >
+                | null
+                | undefined;
+            };
+            results: Array<{
+              __typename?: "MultiplexResult";
+              testResult?: string | null | undefined;
+              disease?:
+                | { __typename?: "SupportedDisease"; name: string }
+                | null
+                | undefined;
+            }>;
+          }
         | null
-        | undefined;
-    };
-    results: Array<{
-      __typename?: "MultiplexResult";
-      testResult?: string | null | undefined;
-      disease?:
-        | { __typename?: "SupportedDisease"; name: string }
-        | null
-        | undefined;
-    }>;
-  }>;
+        | undefined
+      >
+    | null
+    | undefined;
   facility?:
     | {
         __typename?: "Facility";
