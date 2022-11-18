@@ -1,6 +1,7 @@
 package gov.cdc.usds.simplereport.api.graphql;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.junit.jupiter.api.Assertions.assertNull;
 
 import com.fasterxml.jackson.databind.JsonNode;
@@ -70,10 +71,25 @@ class QueueManagementTest extends BaseGraphqlTest {
     ArrayNode queueData = fetchQueue();
     assertEquals(1, queueData.size());
     JsonNode queueEntry = queueData.get(0);
-    String symptomOnset = queueEntry.get("symptomOnset").asText();
-    assertEquals("2020-11-30", symptomOnset);
-    // this assertion is kind of extra, should be on a patient management
-    // test instead
+    System.out.println(queueEntry);
+
+    assertNotNull(queueEntry.get("internalId").asText());
+    assertNotNull(queueEntry.get("dateAdded").asText());
+    assertNotNull(queueEntry.get("symptoms").asText());
+    assertEquals("2020-11-30", queueEntry.get("symptomOnset").asText());
+    assertEquals("ORIGINAL", queueEntry.get("correctionStatus").asText());
+
+    assertNotNull(queueEntry.get("deviceType").get("internalId").asText());
+    assertEquals("LumiraDX", queueEntry.get("deviceType").get("name").asText());
+    assertEquals(
+        "LumiraDx SARS-CoV-2 Ag Test*", queueEntry.get("deviceType").get("model").asText());
+    assertEquals("15", queueEntry.get("deviceType").get("testLength").asText());
+
+    assertNotNull(queueEntry.get("specimenType").get("internalId").asText());
+    assertEquals("Swab of the Nose", queueEntry.get("specimenType").get("name").asText());
+    assertEquals("445297001", queueEntry.get("specimenType").get("typeCode").asText());
+
+    assertNotNull(queueEntry.get("patient").get("internalId").asText());
     assertEquals("1899-05-10", queueEntry.get("patient").get("birthDate").asText());
   }
 

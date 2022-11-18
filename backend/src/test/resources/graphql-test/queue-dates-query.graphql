@@ -1,11 +1,47 @@
- query fetchFacilityQueue($facilityId: ID!) {
-    queue(facilityId: $facilityId) {
+query fetchFacilityQueue($facilityId: ID!) {
+  queue(facilityId: $facilityId) {
+    internalId
+    pregnancy
+    dateAdded
+    symptoms
+    symptomOnset
+    noSymptoms
+    deviceType {
       internalId
-      patient {
-        internalId
-        birthDate
-      }
-      symptomOnset
-      dateTested
+      name
+      model
+      testLength
     }
+    specimenType {
+      internalId
+      name
+      typeCode
+    }
+    patient {
+      internalId
+      telephone
+      birthDate
+      firstName
+      middleName
+      lastName
+      gender
+      testResultDelivery
+      preferredLanguage
+      email
+      emails
+      phoneNumbers {
+        type
+        number
+      }
+    }
+    results {
+      disease {
+        name
+      }
+      testResult
+    }
+    dateTested
+    correctionStatus
+    reasonForCorrection
+  }
 }
