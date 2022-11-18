@@ -120,6 +120,9 @@ public class SliceTestConfiguration {
 
   @Bean
   public IdentitySupplier testIdentityProvider() {
+    //    DemoUserConfiguration.DemoAuthorization SecurityContextHolder = new
+    // DemoUserConfiguration.DemoAuthorization();
+    //    new DemoUser(SecurityContextHolder, TestUserIdentities.STANDARD_USER_ATTRIBUTES);
     List<DemoUser> sliceTestUsers =
         List.of(
             // these objects will be used only to resolve the user's identity, not their

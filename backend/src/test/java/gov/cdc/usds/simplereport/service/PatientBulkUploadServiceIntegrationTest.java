@@ -2,6 +2,7 @@ package gov.cdc.usds.simplereport.service;
 
 import static gov.cdc.usds.simplereport.api.Translators.parsePhoneType;
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.awaitility.Awaitility.*;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.when;
 
@@ -20,6 +21,7 @@ import java.io.InputStream;
 import java.time.LocalDate;
 import java.util.List;
 import java.util.UUID;
+import java.util.concurrent.Callable;
 import java.util.stream.Collectors;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -32,6 +34,7 @@ import org.springframework.test.context.TestPropertySource;
 @WithMockUser(
     username = TestUserIdentities.SITE_ADMIN_USER,
     authorities = {Role.SITE_ADMIN, Role.DEFAULT_ORG_ADMIN})
+// @WebAppConfiguration
 class PatientBulkUploadServiceIntegrationTest extends BaseServiceTest<PatientBulkUploadService> {
   public static final int PATIENT_PAGE_OFFSET = 0;
   public static final int PATIENT_PAGE_SIZE = 1000;
@@ -66,11 +69,17 @@ class PatientBulkUploadServiceIntegrationTest extends BaseServiceTest<PatientBul
   void validCsv_savesPatientToOrganization() {
     // GIVEN
     InputStream inputStream = loadCsv("patientBulkUpload/valid.csv");
+    TestUserIdentities.setFacilityAuthorities(
+        organizationService.getFacilityInCurrentOrg(firstFacilityId));
+    TestUserIdentities.setFacilityAuthorities(
+        organizationService.getFacilityInCurrentOrg(secondFacilityId));
 
     // WHEN
     PatientBulkUploadResponse response = this._service.processPersonCSV(inputStream, null);
 
     // THEN
+    // ugh need to figure out how to inject the security context into tests, too
+    await().until(patientsAddedToRepository());
     assertThat(response.getStatus()).isEqualTo(UploadStatus.SUCCESS);
 
     assertThat(getPatients()).hasSize(1);
@@ -215,5 +224,10 @@ class PatientBulkUploadServiceIntegrationTest extends BaseServiceTest<PatientBul
   private List<Person> getPatientsForFacility(UUID facilityId) {
     return this.personService.getPatients(
         facilityId, PATIENT_PAGE_OFFSET, PATIENT_PAGE_SIZE, false, null, false);
+  }
+
+  // Saving patients is now an asynchronous process - need to wait for it to complete
+  private Callable<Boolean> patientsAddedToRepository() {
+    return () -> getPatients().size() > 1;
   }
 }

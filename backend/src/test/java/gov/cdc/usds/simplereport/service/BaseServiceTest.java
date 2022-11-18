@@ -24,6 +24,7 @@ import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.context.annotation.Import;
 import org.springframework.security.access.AccessDeniedException;
+import org.springframework.security.core.context.SecurityContextHolder;
 
 /**
  * Base class for service-level integration. Avoids setting up servlet and web security, but sets up
@@ -59,6 +60,7 @@ public abstract class BaseServiceTest<T> {
 
   @BeforeEach
   protected void beforeEach() {
+    SecurityContextHolder.setStrategyName(SecurityContextHolder.MODE_INHERITABLETHREADLOCAL);
     clearDb();
     resetOkta();
     initCurrentUser();
