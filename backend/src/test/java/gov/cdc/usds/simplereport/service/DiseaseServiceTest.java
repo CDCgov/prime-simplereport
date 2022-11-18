@@ -36,11 +36,11 @@ class DiseaseServiceTest extends BaseServiceTest<DiseaseService> {
     assertNotNull(supportedDiseasesMap);
     assertThat(supportedDiseasesMap).hasSize(3);
 
-    assertThat(supportedDiseasesMap.get(_service.covid().getInternalId()))
-        .isEqualTo(_service.covid());
-    assertThat(supportedDiseasesMap.get(_service.fluA().getInternalId()))
-        .isEqualTo(_service.fluA());
-    assertThat(supportedDiseasesMap.get(_service.fluB().getInternalId()))
-        .isEqualTo(_service.fluB());
+    assertThat(supportedDiseasesMap)
+        .containsEntry(_service.covid().getInternalId(), _service.covid());
+    assertThat(supportedDiseasesMap)
+        .containsEntry(_service.fluA().getInternalId(), _service.fluA());
+    assertThat(supportedDiseasesMap)
+        .containsEntry(_service.fluB().getInternalId(), _service.fluB());
   }
 }
