@@ -33,14 +33,11 @@ class DiseaseServiceTest extends BaseServiceTest<DiseaseService> {
   void retrievesSupportedDiseasesMap_successful() {
     Map<UUID, SupportedDisease> supportedDiseasesMap = _service.getCachedSupportedDiseasesMap();
 
-    assertNotNull(supportedDiseasesMap);
-    assertThat(supportedDiseasesMap).hasSize(3);
-
     assertThat(supportedDiseasesMap)
-        .containsEntry(_service.covid().getInternalId(), _service.covid());
-    assertThat(supportedDiseasesMap)
-        .containsEntry(_service.fluA().getInternalId(), _service.fluA());
-    assertThat(supportedDiseasesMap)
+        .isNotNull()
+        .hasSize(3)
+        .containsEntry(_service.covid().getInternalId(), _service.covid())
+        .containsEntry(_service.fluA().getInternalId(), _service.fluA())
         .containsEntry(_service.fluB().getInternalId(), _service.fluB());
   }
 }
