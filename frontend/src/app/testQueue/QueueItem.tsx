@@ -422,7 +422,7 @@ const QueueItem = ({
     try {
       const result = await submitTestResult({
         variables: {
-          patientId: queueItem.patient?.internalId!,
+          patientId: queueItem.patient?.internalId,
           deviceTypeId: deviceId,
           specimenTypeId: specimenId,
           results: cacheTestResults,
