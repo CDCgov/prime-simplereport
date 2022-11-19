@@ -24,7 +24,7 @@ import lombok.NoArgsConstructor;
 
 @Getter
 @NoArgsConstructor
-public class PatientUploadRow extends FileRow {
+public class PatientUploadRow implements FileRow {
   private ValueOrError firstName;
   private ValueOrError lastName;
   private ValueOrError middleName;
@@ -51,8 +51,7 @@ public class PatientUploadRow extends FileRow {
     processRow(rawRow);
   }
 
-  @Override
-  void processRow(Map<String, String> rawRow) {
+  public void processRow(Map<String, String> rawRow) {
     firstName = getValue(rawRow, "first_name", true);
     lastName = getValue(rawRow, "last_name", true);
     middleName = getValue(rawRow, "middle_name", false);
@@ -76,7 +75,6 @@ public class PatientUploadRow extends FileRow {
     email = getValue(rawRow, "email", false);
   }
 
-  @Override
   public List<FeedbackMessage> validateHeaders() {
     List<ValueOrError> allFields =
         List.of(
@@ -107,8 +105,7 @@ public class PatientUploadRow extends FileRow {
     return rowErrors;
   }
 
-  @Override
-  List<FeedbackMessage> validateIndividualValues() {
+  public List<FeedbackMessage> validateIndividualValues() {
     var errors = new ArrayList<FeedbackMessage>();
     // demographics
     errors.addAll(validateFlexibleDate(dateOfBirth));

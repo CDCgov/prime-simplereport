@@ -25,7 +25,7 @@ import java.util.Map;
 import lombok.NoArgsConstructor;
 
 @NoArgsConstructor
-public class TestResultRow extends FileRow {
+public class TestResultRow implements FileRow {
   private ValueOrError patientId;
   private ValueOrError patientLastName;
   private ValueOrError patientFirstName;
@@ -89,8 +89,7 @@ public class TestResultRow extends FileRow {
   private ValueOrError comment;
   private ValueOrError testResultStatus;
 
-  @Override
-  void processRow(Map<String, String> rawRow) {
+  public void processRow(Map<String, String> rawRow) {
     patientId = getValue(rawRow, "patient_id", false);
     patientLastName = getValue(rawRow, "patient_last_name", true);
     patientFirstName = getValue(rawRow, "patient_first_name", true);
@@ -155,7 +154,6 @@ public class TestResultRow extends FileRow {
     testResultStatus = getValue(rawRow, "test_result_status", false);
   }
 
-  @Override
   public List<FeedbackMessage> validateHeaders() {
     List<ValueOrError> allFields =
         List.of(
@@ -226,7 +224,6 @@ public class TestResultRow extends FileRow {
     return rowErrors;
   }
 
-  @Override
   public List<FeedbackMessage> validateIndividualValues() {
     var errors = new ArrayList<FeedbackMessage>();
     errors.addAll(validateState(patientState));
