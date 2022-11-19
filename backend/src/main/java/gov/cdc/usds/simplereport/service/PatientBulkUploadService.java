@@ -20,8 +20,8 @@ import gov.cdc.usds.simplereport.db.model.auxiliary.StreetAddress;
 import gov.cdc.usds.simplereport.db.model.auxiliary.UploadStatus;
 import gov.cdc.usds.simplereport.service.model.reportstream.FeedbackMessage;
 import gov.cdc.usds.simplereport.validators.CsvValidatorUtils;
-import gov.cdc.usds.simplereport.validators.PatientBulkUploadFileValidator;
-import gov.cdc.usds.simplereport.validators.PatientBulkUploadFileValidator.PatientUploadRow;
+import gov.cdc.usds.simplereport.validators.FileValidator;
+import gov.cdc.usds.simplereport.validators.PatientUploadRow;
 import java.io.ByteArrayInputStream;
 import java.io.IOException;
 import java.io.InputStream;
@@ -52,7 +52,7 @@ public class PatientBulkUploadService {
   private final PersonService _personService;
   private final AddressValidationService _addressValidationService;
   private final OrganizationService _organizationService;
-  private final PatientBulkUploadFileValidator _patientBulkUploadFileValidator;
+  private final FileValidator<PatientUploadRow> fileValidator;
 
   // This authorization will change once we open the feature to end users
   @AuthorizationConfiguration.RequireGlobalAdminUser
@@ -79,8 +79,7 @@ public class PatientBulkUploadService {
       throw new CsvProcessingException("Unable to read csv");
     }
 
-    List<FeedbackMessage> errors =
-        _patientBulkUploadFileValidator.validate(new ByteArrayInputStream(content));
+    List<FeedbackMessage> errors = fileValidator.validate(new ByteArrayInputStream(content));
 
     if (!errors.isEmpty()) {
       result.setStatus(UploadStatus.FAILURE);

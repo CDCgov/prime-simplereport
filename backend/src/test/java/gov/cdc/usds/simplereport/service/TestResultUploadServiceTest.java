@@ -31,7 +31,8 @@ import gov.cdc.usds.simplereport.service.model.reportstream.UploadResponse;
 import gov.cdc.usds.simplereport.test_util.SliceTestConfiguration;
 import gov.cdc.usds.simplereport.test_util.TestDataFactory;
 import gov.cdc.usds.simplereport.utils.TokenAuthentication;
-import gov.cdc.usds.simplereport.validators.TestResultFileValidator;
+import gov.cdc.usds.simplereport.validators.FileValidator;
+import gov.cdc.usds.simplereport.validators.TestResultRow;
 import java.io.ByteArrayInputStream;
 import java.io.IOException;
 import java.io.InputStream;
@@ -70,7 +71,7 @@ class TestResultUploadServiceTest extends BaseServiceTest<TestResultUploadServic
   @Mock private TestResultUploadRepository repoMock;
   @Mock private OrganizationService orgServiceMock;
   @Mock private TokenAuthentication tokenAuthMock;
-  @Mock private TestResultFileValidator csvFileValidatorMock;
+  @Mock private FileValidator<TestResultRow> csvFileValidatorMock;
   @InjectMocks private TestResultUploadService sut;
 
   @BeforeEach()
@@ -150,7 +151,7 @@ class TestResultUploadServiceTest extends BaseServiceTest<TestResultUploadServic
   @Test
   @DirtiesContext
   @SliceTestConfiguration.WithSimpleReportStandardUser
-  void feignGeneralError_returnsFailureStatus() throws IOException {
+  void feignGeneralError_returnsFailureStatus() {
 
     stubFor(
         WireMock.post(WireMock.urlEqualTo("/api/reports?processing=async"))

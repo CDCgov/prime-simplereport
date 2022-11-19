@@ -18,7 +18,8 @@ import gov.cdc.usds.simplereport.service.model.reportstream.ReportStreamStatus;
 import gov.cdc.usds.simplereport.service.model.reportstream.TokenResponse;
 import gov.cdc.usds.simplereport.service.model.reportstream.UploadResponse;
 import gov.cdc.usds.simplereport.utils.TokenAuthentication;
-import gov.cdc.usds.simplereport.validators.TestResultFileValidator;
+import gov.cdc.usds.simplereport.validators.FileValidator;
+import gov.cdc.usds.simplereport.validators.TestResultRow;
 import java.io.ByteArrayInputStream;
 import java.io.IOException;
 import java.io.InputStream;
@@ -43,7 +44,7 @@ public class TestResultUploadService {
   private final DataHubClient _client;
   private final OrganizationService _orgService;
   private final TokenAuthentication _tokenAuth;
-  private final TestResultFileValidator testResultFileValidator;
+  private final FileValidator<TestResultRow> fileValidator;
 
   @Value("${data-hub.url}")
   private String dataHubUrl;
@@ -84,8 +85,7 @@ public class TestResultUploadService {
       throw new CsvProcessingException("Unable to read csv");
     }
 
-    List<FeedbackMessage> errors =
-        testResultFileValidator.validate(new ByteArrayInputStream(content));
+    List<FeedbackMessage> errors = fileValidator.validate(new ByteArrayInputStream(content));
     if (!errors.isEmpty()) {
       result.setErrors(errors.toArray(FeedbackMessage[]::new));
       return result;
