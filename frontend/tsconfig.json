@@ -15,9 +15,6 @@
     "noEmit": true,
     "jsx": "react-jsx",
     "noFallthroughCasesInSwitch": true,
-    "typeRoots": [
-      "./node_modules/@types",
-    ],
   },
   "include": ["src","node_modules/uswds/dist/scss"],
   "references": [{ "path": "./tsconfig.node.json" }]

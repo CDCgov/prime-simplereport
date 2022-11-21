@@ -7,7 +7,7 @@
     "dev": "vite",
     "prebuild": "tsc",
     "build": "VITE_CURRENT_COMMIT=$(git rev-parse HEAD) vite build",
-    "postbuild": "echo 'pushstate: enabled' > build/Staticfile && echo $(git rev-parse HEAD) > build/static/commit.txt && cd build && mv *touchpoints*.* static/",
+    "postbuild": "echo 'pushstate: enabled' > build/Staticfile && echo $(git rev-parse HEAD) > build/assets/commit.txt",
     "preview": "vite preview",
     "test": "jest",
     "test:ci": "CI=true yarn test --coverage",
