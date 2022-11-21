@@ -1,8 +1,10 @@
 {
   "name": "simple-report-client",
   "private": true,
-  "version": "0.0.0",
-  "type": "module",
+  "version": "0.1.0",
+  "engines": {
+    "node": "18"
+  },
   "scripts": {
     "dev": "VITE_CURRENT_COMMIT=$(git rev-parse HEAD) vite --host",
     "prebuild": "tsc",
@@ -146,7 +148,7 @@
     "vite-plugin-svgr": "^2.2.2"
   },
   "msw": {
-    "workerDirectory": "/storybook_public"
+    "workerDirectory": "/storybook-static"
   },
   "resolutions": {
     "trim": "0.0.3 ",
