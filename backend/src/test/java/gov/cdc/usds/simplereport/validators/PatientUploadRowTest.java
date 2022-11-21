@@ -11,8 +11,7 @@ import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
 public class PatientUploadRowTest {
-  PatientUploadRow patientUploadRow;
-  Map<String, String> rowMap;
+  Map<String, String> validRowMap;
   final List<String> requiredFields =
       List.of(
           "first_name",
@@ -46,64 +45,66 @@ public class PatientUploadRowTest {
 
   @BeforeEach
   public void init() {
-    patientUploadRow = new PatientUploadRow();
-    rowMap = new HashMap<>();
-    rowMap.put("last_name", "Doe");
-    rowMap.put("first_name", "Jane");
-    rowMap.put("middle_name", "Amanda");
-    rowMap.put("suffix", "");
-    rowMap.put("race", "black or african american");
-    rowMap.put("date_of_birth", "11/3/80");
-    rowMap.put("biological_sex", "Female");
-    rowMap.put("ethnicity", "not hispanic or latino");
-    rowMap.put("street", "1234 Main Street");
-    rowMap.put("street_2", "Apt 2");
-    rowMap.put("city", "Anchorage");
-    rowMap.put("county", "");
-    rowMap.put("state", "AK");
-    rowMap.put("zip_code", "99501");
-    rowMap.put("phone_number", "410-867-5309");
-    rowMap.put("phone_number_type", "mobile");
-    rowMap.put("employed_in_healthcare", "No");
-    rowMap.put("resident_congregate_setting", "No");
-    rowMap.put("role", "Staff");
-    rowMap.put("email", "jane@testingorg.com");
+    validRowMap = new HashMap<>();
+    validRowMap.put("last_name", "Doe");
+    validRowMap.put("first_name", "Jane");
+    validRowMap.put("middle_name", "Amanda");
+    validRowMap.put("suffix", "");
+    validRowMap.put("race", "black or african american");
+    validRowMap.put("date_of_birth", "11/3/80");
+    validRowMap.put("biological_sex", "Female");
+    validRowMap.put("ethnicity", "not hispanic or latino");
+    validRowMap.put("street", "1234 Main Street");
+    validRowMap.put("street_2", "Apt 2");
+    validRowMap.put("city", "Anchorage");
+    validRowMap.put("county", "");
+    validRowMap.put("state", "AK");
+    validRowMap.put("zip_code", "99501");
+    validRowMap.put("phone_number", "410-867-5309");
+    validRowMap.put("phone_number_type", "mobile");
+    validRowMap.put("employed_in_healthcare", "No");
+    validRowMap.put("resident_congregate_setting", "No");
+    validRowMap.put("role", "Staff");
+    validRowMap.put("email", "jane@testingorg.com");
   }
 
   @Test
   public void processRowSetsAllValues() {
-    patientUploadRow.processRow(rowMap);
+    var patientUploadRow = new PatientUploadRow(validRowMap);
 
-    assertThat(patientUploadRow.getFirstName().getValue()).isEqualTo(rowMap.get("first_name"));
-    assertThat(patientUploadRow.getLastName().getValue()).isEqualTo(rowMap.get("last_name"));
-    assertThat(patientUploadRow.getMiddleName().getValue()).isEqualTo(rowMap.get("middle_name"));
-    assertThat(patientUploadRow.getSuffix().getValue()).isEqualTo(rowMap.get("suffix"));
-    assertThat(patientUploadRow.getRace().getValue()).isEqualTo(rowMap.get("race"));
-    assertThat(patientUploadRow.getDateOfBirth().getValue()).isEqualTo(rowMap.get("date_of_birth"));
+    assertThat(patientUploadRow.getFirstName().getValue()).isEqualTo(validRowMap.get("first_name"));
+    assertThat(patientUploadRow.getLastName().getValue()).isEqualTo(validRowMap.get("last_name"));
+    assertThat(patientUploadRow.getMiddleName().getValue())
+        .isEqualTo(validRowMap.get("middle_name"));
+    assertThat(patientUploadRow.getSuffix().getValue()).isEqualTo(validRowMap.get("suffix"));
+    assertThat(patientUploadRow.getRace().getValue()).isEqualTo(validRowMap.get("race"));
+    assertThat(patientUploadRow.getDateOfBirth().getValue())
+        .isEqualTo(validRowMap.get("date_of_birth"));
     assertThat(patientUploadRow.getBiologicalSex().getValue())
-        .isEqualTo(rowMap.get("biological_sex"));
-    assertThat(patientUploadRow.getEthnicity().getValue()).isEqualTo(rowMap.get("ethnicity"));
-    assertThat(patientUploadRow.getStreet().getValue()).isEqualTo(rowMap.get("street"));
-    assertThat(patientUploadRow.getStreet2().getValue()).isEqualTo(rowMap.get("street_2"));
-    assertThat(patientUploadRow.getCity().getValue()).isEqualTo(rowMap.get("city"));
-    assertThat(patientUploadRow.getCounty().getValue()).isEqualTo(rowMap.get("county"));
-    assertThat(patientUploadRow.getState().getValue()).isEqualTo(rowMap.get("state"));
-    assertThat(patientUploadRow.getZipCode().getValue()).isEqualTo(rowMap.get("zip_code"));
-    assertThat(patientUploadRow.getCountry().getValue()).isEqualTo(rowMap.get("country"));
-    assertThat(patientUploadRow.getPhoneNumber().getValue()).isEqualTo(rowMap.get("phone_number"));
+        .isEqualTo(validRowMap.get("biological_sex"));
+    assertThat(patientUploadRow.getEthnicity().getValue()).isEqualTo(validRowMap.get("ethnicity"));
+    assertThat(patientUploadRow.getStreet().getValue()).isEqualTo(validRowMap.get("street"));
+    assertThat(patientUploadRow.getStreet2().getValue()).isEqualTo(validRowMap.get("street_2"));
+    assertThat(patientUploadRow.getCity().getValue()).isEqualTo(validRowMap.get("city"));
+    assertThat(patientUploadRow.getCounty().getValue()).isEqualTo(validRowMap.get("county"));
+    assertThat(patientUploadRow.getState().getValue()).isEqualTo(validRowMap.get("state"));
+    assertThat(patientUploadRow.getZipCode().getValue()).isEqualTo(validRowMap.get("zip_code"));
+    assertThat(patientUploadRow.getCountry().getValue()).isEqualTo(validRowMap.get("country"));
+    assertThat(patientUploadRow.getPhoneNumber().getValue())
+        .isEqualTo(validRowMap.get("phone_number"));
     assertThat(patientUploadRow.getPhoneNumberType().getValue())
-        .isEqualTo(rowMap.get("phone_number_type"));
+        .isEqualTo(validRowMap.get("phone_number_type"));
     assertThat(patientUploadRow.getEmployedInHealthcare().getValue())
-        .isEqualTo(rowMap.get("employed_in_healthcare"));
+        .isEqualTo(validRowMap.get("employed_in_healthcare"));
     assertThat(patientUploadRow.getResidentCongregateSetting().getValue())
-        .isEqualTo(rowMap.get("resident_congregate_setting"));
-    assertThat(patientUploadRow.getRole().getValue()).isEqualTo(rowMap.get("role"));
-    assertThat(patientUploadRow.getEmail().getValue()).isEqualTo(rowMap.get("email"));
+        .isEqualTo(validRowMap.get("resident_congregate_setting"));
+    assertThat(patientUploadRow.getRole().getValue()).isEqualTo(validRowMap.get("role"));
+    assertThat(patientUploadRow.getEmail().getValue()).isEqualTo(validRowMap.get("email"));
   }
 
   @Test
   public void validateHeadersReturnsErrorsForAllEmptyRequiredFields() {
-    patientUploadRow.processRow(new HashMap<>());
+    var patientUploadRow = new PatientUploadRow(new HashMap<>());
 
     var actual = patientUploadRow.validateHeaders();
 
@@ -115,20 +116,22 @@ public class PatientUploadRowTest {
 
   @Test
   public void validateIndividualFields() {
-    rowMap.put("date_of_birth", "0/00/0000");
-    rowMap.put("race", "black");
-    rowMap.put("biological_sex", "woman");
-    rowMap.put("ethnicity", "not hispanic");
-    rowMap.put("resident_congregate_setting", "nope");
-    rowMap.put("employed_in_healthcare", "nope");
-    rowMap.put("role", "Employee");
-    rowMap.put("state", "District of Colombia");
-    rowMap.put("zip_code", "205000");
-    rowMap.put("country", "America");
-    rowMap.put("phone_number", "1");
-    rowMap.put("phone_number_type", "cell");
-    rowMap.put("email", "email");
-    patientUploadRow.processRow(rowMap);
+    var invalidIndividualValues = validRowMap;
+    invalidIndividualValues.put("date_of_birth", "0/00/0000");
+    invalidIndividualValues.put("race", "black");
+    invalidIndividualValues.put("biological_sex", "woman");
+    invalidIndividualValues.put("ethnicity", "not hispanic");
+    invalidIndividualValues.put("resident_congregate_setting", "nope");
+    invalidIndividualValues.put("employed_in_healthcare", "nope");
+    invalidIndividualValues.put("role", "Employee");
+    invalidIndividualValues.put("state", "District of Colombia");
+    invalidIndividualValues.put("zip_code", "205000");
+    invalidIndividualValues.put("country", "America");
+    invalidIndividualValues.put("phone_number", "1");
+    invalidIndividualValues.put("phone_number_type", "cell");
+    invalidIndividualValues.put("email", "email");
+
+    var patientUploadRow = new PatientUploadRow(invalidIndividualValues);
 
     var actual = patientUploadRow.validateIndividualValues();
 

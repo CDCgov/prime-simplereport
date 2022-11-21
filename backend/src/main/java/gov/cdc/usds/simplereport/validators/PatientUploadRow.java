@@ -20,38 +20,32 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 import lombok.Getter;
-import lombok.NoArgsConstructor;
 
 @Getter
-@NoArgsConstructor
 public class PatientUploadRow implements FileRow {
-  private ValueOrError firstName;
-  private ValueOrError lastName;
-  private ValueOrError middleName;
-  private ValueOrError suffix;
-  private ValueOrError race;
-  private ValueOrError dateOfBirth;
-  private ValueOrError biologicalSex;
-  private ValueOrError ethnicity;
-  private ValueOrError street;
-  private ValueOrError street2;
-  private ValueOrError city;
-  private ValueOrError county;
-  private ValueOrError state;
-  private ValueOrError zipCode;
-  private ValueOrError country;
-  private ValueOrError phoneNumber;
-  private ValueOrError phoneNumberType;
-  private ValueOrError employedInHealthcare;
-  private ValueOrError residentCongregateSetting;
-  private ValueOrError role;
-  private ValueOrError email;
+  private final ValueOrError firstName;
+  private final ValueOrError lastName;
+  private final ValueOrError middleName;
+  private final ValueOrError suffix;
+  private final ValueOrError race;
+  private final ValueOrError dateOfBirth;
+  private final ValueOrError biologicalSex;
+  private final ValueOrError ethnicity;
+  private final ValueOrError street;
+  private final ValueOrError street2;
+  private final ValueOrError city;
+  private final ValueOrError county;
+  private final ValueOrError state;
+  private final ValueOrError zipCode;
+  private final ValueOrError country;
+  private final ValueOrError phoneNumber;
+  private final ValueOrError phoneNumberType;
+  private final ValueOrError employedInHealthcare;
+  private final ValueOrError residentCongregateSetting;
+  private final ValueOrError role;
+  private final ValueOrError email;
 
   public PatientUploadRow(Map<String, String> rawRow) {
-    processRow(rawRow);
-  }
-
-  public void processRow(Map<String, String> rawRow) {
     firstName = getValue(rawRow, "first_name", true);
     lastName = getValue(rawRow, "last_name", true);
     middleName = getValue(rawRow, "middle_name", false);
@@ -75,6 +69,7 @@ public class PatientUploadRow implements FileRow {
     email = getValue(rawRow, "email", false);
   }
 
+  @Override
   public List<FeedbackMessage> validateHeaders() {
     List<ValueOrError> allFields =
         List.of(
@@ -105,6 +100,7 @@ public class PatientUploadRow implements FileRow {
     return rowErrors;
   }
 
+  @Override
   public List<FeedbackMessage> validateIndividualValues() {
     var errors = new ArrayList<FeedbackMessage>();
     // demographics

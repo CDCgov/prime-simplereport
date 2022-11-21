@@ -12,15 +12,15 @@ import java.util.Comparator;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.function.Supplier;
+import java.util.function.Function;
 import lombok.extern.slf4j.Slf4j;
 
 @Slf4j
 public class FileValidator<T extends FileRow> {
-  private final Supplier<T> supplier;
+  private final Function<Map<String, String>, T> fileRowConstructor;
 
-  public FileValidator(Supplier<T> supplier) {
-    this.supplier = supplier;
+  public FileValidator(Function<Map<String, String>, T> fileRowConstructor) {
+    this.fileRowConstructor = fileRowConstructor;
   }
 
   public List<FeedbackMessage> validate(InputStream csvStream) {
@@ -50,8 +50,7 @@ public class FileValidator<T extends FileRow> {
       }
       var currentRowErrors = new ArrayList<FeedbackMessage>();
 
-      var fileRow = createRow();
-      fileRow.processRow(row);
+      var fileRow = fileRowConstructor.apply(row);
 
       currentRowErrors.addAll(fileRow.validateHeaders());
       currentRowErrors.addAll(fileRow.validateIndividualValues());
@@ -76,9 +75,5 @@ public class FileValidator<T extends FileRow> {
     var errors = new ArrayList<>(mapOfErrors.values());
     errors.sort(Comparator.comparingInt(e -> e.getIndices().get(0)));
     return errors;
-  }
-
-  private T createRow() {
-    return supplier.get();
   }
 }

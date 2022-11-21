@@ -23,75 +23,73 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 import lombok.Getter;
-import lombok.NoArgsConstructor;
 
-@NoArgsConstructor
 @Getter
 public class TestResultRow implements FileRow {
-  private ValueOrError patientId;
-  private ValueOrError patientLastName;
-  private ValueOrError patientFirstName;
-  private ValueOrError patientMiddleName;
-  private ValueOrError patientStreet;
-  private ValueOrError patientStreet2;
-  private ValueOrError patientCity;
-  private ValueOrError patientState;
-  private ValueOrError patientZipCode;
-  private ValueOrError patientCounty;
-  private ValueOrError patientPhoneNumber;
-  private ValueOrError patientDob;
-  private ValueOrError patientGender;
-  private ValueOrError patientRace;
-  private ValueOrError patientEthnicity;
-  private ValueOrError patientPreferredLanguage;
-  private ValueOrError patientEmail;
-  private ValueOrError accessionNumber;
-  private ValueOrError equipmentModelName;
-  private ValueOrError testPerformedCode;
-  private ValueOrError testResult;
-  private ValueOrError orderTestDate;
-  private ValueOrError specimenCollectionDate;
-  private ValueOrError testingLabSpecimenReceivedDate;
-  private ValueOrError testResultDate;
-  private ValueOrError dateResultReleased;
-  private ValueOrError specimenType;
-  private ValueOrError orderingProviderId;
-  private ValueOrError orderingProviderLastName;
-  private ValueOrError orderingProviderFirstName;
-  private ValueOrError orderingProviderMiddleName;
-  private ValueOrError orderingProviderStreet;
-  private ValueOrError orderingProviderStreet2;
-  private ValueOrError orderingProviderCity;
-  private ValueOrError orderingProviderState;
-  private ValueOrError orderingProviderZipCode;
-  private ValueOrError orderingProviderPhoneNumber;
-  private ValueOrError testingLabClia;
-  private ValueOrError testingLabName;
-  private ValueOrError testingLabStreet;
-  private ValueOrError testingLabStreet2;
-  private ValueOrError testingLabCity;
-  private ValueOrError testingLabState;
-  private ValueOrError testingLabZipCode;
-  private ValueOrError testingLabPhoneNumber;
-  private ValueOrError pregnant;
-  private ValueOrError employedInHealthcare;
-  private ValueOrError symptomaticForDisease;
-  private ValueOrError illnessOnsetDate;
-  private ValueOrError residentCongregateSetting;
-  private ValueOrError residenceType;
-  private ValueOrError hospitalized;
-  private ValueOrError icu;
-  private ValueOrError orderingFacilityName;
-  private ValueOrError orderingFacilityStreet;
-  private ValueOrError orderingFacilityStreet2;
-  private ValueOrError orderingFacilityCity;
-  private ValueOrError orderingFacilityState;
-  private ValueOrError orderingFacilityZipCode;
-  private ValueOrError orderingFacilityPhoneNumber;
-  private ValueOrError comment;
-  private ValueOrError testResultStatus;
+  private final ValueOrError patientId;
+  private final ValueOrError patientLastName;
+  private final ValueOrError patientFirstName;
+  private final ValueOrError patientMiddleName;
+  private final ValueOrError patientStreet;
+  private final ValueOrError patientStreet2;
+  private final ValueOrError patientCity;
+  private final ValueOrError patientState;
+  private final ValueOrError patientZipCode;
+  private final ValueOrError patientCounty;
+  private final ValueOrError patientPhoneNumber;
+  private final ValueOrError patientDob;
+  private final ValueOrError patientGender;
+  private final ValueOrError patientRace;
+  private final ValueOrError patientEthnicity;
+  private final ValueOrError patientPreferredLanguage;
+  private final ValueOrError patientEmail;
+  private final ValueOrError accessionNumber;
+  private final ValueOrError equipmentModelName;
+  private final ValueOrError testPerformedCode;
+  private final ValueOrError testResult;
+  private final ValueOrError orderTestDate;
+  private final ValueOrError specimenCollectionDate;
+  private final ValueOrError testingLabSpecimenReceivedDate;
+  private final ValueOrError testResultDate;
+  private final ValueOrError dateResultReleased;
+  private final ValueOrError specimenType;
+  private final ValueOrError orderingProviderId;
+  private final ValueOrError orderingProviderLastName;
+  private final ValueOrError orderingProviderFirstName;
+  private final ValueOrError orderingProviderMiddleName;
+  private final ValueOrError orderingProviderStreet;
+  private final ValueOrError orderingProviderStreet2;
+  private final ValueOrError orderingProviderCity;
+  private final ValueOrError orderingProviderState;
+  private final ValueOrError orderingProviderZipCode;
+  private final ValueOrError orderingProviderPhoneNumber;
+  private final ValueOrError testingLabClia;
+  private final ValueOrError testingLabName;
+  private final ValueOrError testingLabStreet;
+  private final ValueOrError testingLabStreet2;
+  private final ValueOrError testingLabCity;
+  private final ValueOrError testingLabState;
+  private final ValueOrError testingLabZipCode;
+  private final ValueOrError testingLabPhoneNumber;
+  private final ValueOrError pregnant;
+  private final ValueOrError employedInHealthcare;
+  private final ValueOrError symptomaticForDisease;
+  private final ValueOrError illnessOnsetDate;
+  private final ValueOrError residentCongregateSetting;
+  private final ValueOrError residenceType;
+  private final ValueOrError hospitalized;
+  private final ValueOrError icu;
+  private final ValueOrError orderingFacilityName;
+  private final ValueOrError orderingFacilityStreet;
+  private final ValueOrError orderingFacilityStreet2;
+  private final ValueOrError orderingFacilityCity;
+  private final ValueOrError orderingFacilityState;
+  private final ValueOrError orderingFacilityZipCode;
+  private final ValueOrError orderingFacilityPhoneNumber;
+  private final ValueOrError comment;
+  private final ValueOrError testResultStatus;
 
-  public void processRow(Map<String, String> rawRow) {
+  public TestResultRow(Map<String, String> rawRow) {
     patientId = getValue(rawRow, "patient_id", false);
     patientLastName = getValue(rawRow, "patient_last_name", true);
     patientFirstName = getValue(rawRow, "patient_first_name", true);
@@ -156,6 +154,7 @@ public class TestResultRow implements FileRow {
     testResultStatus = getValue(rawRow, "test_result_status", false);
   }
 
+  @Override
   public List<FeedbackMessage> validateHeaders() {
     List<ValueOrError> allFields =
         List.of(
@@ -226,6 +225,7 @@ public class TestResultRow implements FileRow {
     return errors;
   }
 
+  @Override
   public List<FeedbackMessage> validateIndividualValues() {
     var errors = new ArrayList<FeedbackMessage>();
     errors.addAll(validateState(patientState));
