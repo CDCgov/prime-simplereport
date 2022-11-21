@@ -4,6 +4,7 @@ import graphql.ErrorClassification;
 import graphql.ErrorType;
 import graphql.GraphQLError;
 import graphql.language.SourceLocation;
+import java.util.Collections;
 import java.util.List;
 import java.util.UUID;
 
@@ -22,7 +23,7 @@ public class TestEventSerializationFailureException extends RuntimeException
 
   @Override // should-be-defaulted unused interface method
   public List<SourceLocation> getLocations() {
-    return null;
+    return Collections.emptyList();
   }
 
   @Override
