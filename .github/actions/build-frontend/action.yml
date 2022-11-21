@@ -46,24 +46,24 @@ runs:
               -g prime-simple-report-$ENVLVL \
               -a prime-simple-report-${{inputs.deploy-env}}-insights \
             | jq -r '.connectionString')
-          echo "REACT_APP_APPLICATIONINSIGHTS_CONNECTION_STRING=${INSIGHTS_CONNECTION_STRING}" > .env.production.local
+          echo "VITE_APPLICATIONINSIGHTS_CONNECTION_STRING=${INSIGHTS_CONNECTION_STRING}" > .env.production.local
           if [[ -n "${{ inputs.base-domain-name }}" ]]
-            then echo "REACT_APP_BASE_URL=https://${{inputs.base-domain-name}}" >> .env.production.local
+            then echo "VITE_BASE_URL=https://${{inputs.base-domain-name}}" >> .env.production.local
           fi
           if [[ "true" == "${{ inputs.is-training-site }}" ]]
-            then echo "REACT_APP_IS_TRAINING_SITE=true" >> .env.production.local
+            then echo "VITE_IS_TRAINING_SITE=true" >> .env.production.local
           fi
           if [[ "true" == "${{ inputs.okta-enabled }}" ]]; then 
-            echo "REACT_APP_OKTA_ENABLED=true" >> .env.production.local
-            echo "REACT_APP_OKTA_URL=${{inputs.okta-url}}" >> .env.production.local
-            echo "REACT_APP_OKTA_CLIENT_ID=${{inputs.okta-client-id}}" >> .env.production.local
+            echo "VITE_OKTA_ENABLED=true" >> .env.production.local
+            echo "VITE_OKTA_URL=${{inputs.okta-url}}" >> .env.production.local
+            echo "VITE_OKTA_CLIENT_ID=${{inputs.okta-client-id}}" >> .env.production.local
           fi
           echo "::endgroup::"
     - name: Build deployable application
       shell: bash
       working-directory: ./frontend
       env:
-        REACT_APP_SMARTY_STREETS_KEY: ${{ inputs.smarty-streets-key }}
+        VITE_SMARTY_STREETS_KEY: ${{ inputs.smarty-streets-key }}
         DEPLOY_ENV: ${{ inputs.deploy-env }}
       run: |
         echo "::group::Build application"

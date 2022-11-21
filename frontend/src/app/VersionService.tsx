@@ -39,9 +39,7 @@ export class VersionService {
    */
   public static async getSHA(): Promise<string> {
     if (getNodeEnv() === "production") {
-      const result = await fetch(
-        `${import.meta.env.PUBLIC_URL}/static/commit.txt`
-      );
+      const result = await fetch(`${PUBLIC_URL}/static/commit.txt`);
       if (!result.ok) {
         throw result;
       }

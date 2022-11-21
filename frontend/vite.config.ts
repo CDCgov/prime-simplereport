@@ -21,6 +21,9 @@ export default defineConfig(({ command, mode }) => {
 
   return {
     base: env.VITE_BASE_URL, // only works for prod build... but in dev mode it stripes the domain piece and only leaves the path
+    define: {
+      PUBLIC_URL: JSON.stringify(new String(env.PUBLIC_URL)),
+    },
     plugins: [
       svgr(),
       react(),
@@ -30,7 +33,7 @@ export default defineConfig(({ command, mode }) => {
         inject: {
           data: {
             title: env.VITE_TITLE,
-            icon: `${env.VITE_PUBLIC_URL}/${env.VITE_ICON}`,
+            icon: `${env.PUBLIC_URL}/${env.VITE_ICON}`,
             description: env.VITE_DESCRIPTION,
             contentSecurityPolicy: contentSecurityPolicyTag,
           },

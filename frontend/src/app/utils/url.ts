@@ -22,8 +22,8 @@ export const getActivationTokenFromUrl = (): string | null =>
 export function getUrl(relative = false): string {
   if (import.meta.env.VITE_BASE_URL) {
     const url = relative
-      ? import.meta.env.VITE_PUBLIC_URL
-      : import.meta.env.VITE_BASE_URL + import.meta.env.VITE_PUBLIC_URL;
+      ? PUBLIC_URL
+      : import.meta.env.VITE_BASE_URL + PUBLIC_URL;
     return url.charAt(url.length - 1) === "/" ? url : url + "/";
   }
   return "http://localhost:3000/";

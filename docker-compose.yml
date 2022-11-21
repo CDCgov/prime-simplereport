@@ -55,11 +55,11 @@ services:
     image: ghcr.io/cdcgov/prime-simplereport/frontend:latest
     container_name: frontend
     environment:
-      REACT_APP_BASE_URL: https://localhost.simplereport.gov
-      REACT_APP_BACKEND_URL: https://localhost.simplereport.gov/api
+      VITE_BASE_URL: https://localhost.simplereport.gov
+      VITE_BACKEND_URL: https://localhost.simplereport.gov/api
       PUBLIC_URL: /app/
-      REACT_APP_OKTA_ENABLED: "true"
-      REACT_APP_DISABLE_MAINTENANCE_BANNER: "true"
+      VITE_OKTA_ENABLED: "true"
+      VITE_DISABLE_MAINTENANCE_BANNER: "true"
       GIT_DISCOVERY_ACROSS_FILESYSTEM: 1
     volumes:
       - ./.git:/app/.git

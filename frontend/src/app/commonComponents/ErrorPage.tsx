@@ -7,7 +7,7 @@ const ErrorPage = () => {
       <USAGovBanner />
       <header className="border-bottom border-base-lighter padding-y-1">
         <div className="grid-container">
-          <a href={import.meta.env.VITE_PUBLIC_URL || "/"}>
+          <a href={PUBLIC_URL || "/"}>
             <img
               className="maxh-4"
               src={siteLogo}

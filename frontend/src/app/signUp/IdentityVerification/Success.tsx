@@ -11,9 +11,7 @@ interface Props {
 
 const Success = ({ email, activationToken }: Props): JSX.Element => {
   const activationLink = activationToken
-    ? `${
-        import.meta.env.VITE_PUBLIC_URL
-      }/uac/?activationToken=${activationToken}`
+    ? `${PUBLIC_URL}/uac/?activationToken=${activationToken}`
     : null;
   useDocumentTitle("Sign up - success | SimpleReport");
 

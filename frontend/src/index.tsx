@@ -125,7 +125,7 @@ export const ReactApp = (
     <React.StrictMode>
       <Provider store={store}>
         <WithFeatureFlags>
-          <Router basename={import.meta.env.PUBLIC_URL}>
+          <Router basename={PUBLIC_URL}>
             <TelemetryProvider>
               <PrimeErrorBoundary>
                 <Routes>
