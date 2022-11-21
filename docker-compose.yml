@@ -80,7 +80,7 @@ services:
       - frontend
     volumes:
       - ./certs:/etc/nginx/certs
-      - ./frontend/public/index.html:/etc/nginx/html/index.html
+      - ./frontend/index.html:/etc/nginx/html/index.html
     ports:
       - "80:80"
       - "443:443"
