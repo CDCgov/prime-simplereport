@@ -44,7 +44,7 @@ public class TestResultUploadService {
   private final DataHubClient _client;
   private final OrganizationService _orgService;
   private final TokenAuthentication _tokenAuth;
-  private final FileValidator<TestResultRow> fileValidator;
+  private final FileValidator<TestResultRow> testResultFileValidator;
 
   @Value("${data-hub.url}")
   private String dataHubUrl;
@@ -85,7 +85,8 @@ public class TestResultUploadService {
       throw new CsvProcessingException("Unable to read csv");
     }
 
-    List<FeedbackMessage> errors = fileValidator.validate(new ByteArrayInputStream(content));
+    List<FeedbackMessage> errors =
+        testResultFileValidator.validate(new ByteArrayInputStream(content));
     if (!errors.isEmpty()) {
       result.setErrors(errors.toArray(FeedbackMessage[]::new));
       return result;
