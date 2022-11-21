@@ -14,6 +14,7 @@ class FileValidatorTest {
 
   FileValidator<PatientUploadRow> patientBulkUploadFileValidator =
       new FileValidator<>(PatientUploadRow::new);
+  FileValidator<TestResultRow> testResultFileValidator = new FileValidator<>(TestResultRow::new);
 
   @Test
   void emptyFile_returnsError() {
@@ -190,9 +191,6 @@ class FileValidatorTest {
   private InputStream loadCsv(String csvFile) {
     return FileValidatorTest.class.getClassLoader().getResourceAsStream(csvFile);
   }
-
-  // Test Result Tests
-  FileValidator<TestResultRow> testResultFileValidator = new FileValidator<>(TestResultRow::new);
 
   @Test
   void testValidFile() {
