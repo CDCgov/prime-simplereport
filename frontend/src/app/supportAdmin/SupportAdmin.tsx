@@ -8,7 +8,7 @@ const SupportAdmin = () => {
           <div className="prime-container card-container">
             <div className="usa-card__header">
               <div>
-                <h1 className="font-ui-lg margin-top-0 margin-bottom-0">
+                <h1 className="font-heading-lg margin-top-0 margin-bottom-0">
                   Support admin
                 </h1>
               </div>

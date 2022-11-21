@@ -258,7 +258,7 @@ const PendingOrganizations = ({
             <div className="usa-card__header">
               <h1
                 data-cy="pending-orgs-title"
-                className="font-ui-lg margin-top-0 margin-bottom-0"
+                className="font-heading-lg margin-top-0 margin-bottom-0"
               >
                 Edit or verify organization identity
               </h1>
