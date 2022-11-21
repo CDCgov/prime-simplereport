@@ -52,7 +52,7 @@ public class PatientBulkUploadService {
   private final PersonService _personService;
   private final AddressValidationService _addressValidationService;
   private final OrganizationService _organizationService;
-  private final FileValidator<PatientUploadRow> fileValidator;
+  private final FileValidator<PatientUploadRow> _patientBulkUploadFileValidator;
 
   // This authorization will change once we open the feature to end users
   @AuthorizationConfiguration.RequireGlobalAdminUser
@@ -79,7 +79,8 @@ public class PatientBulkUploadService {
       throw new CsvProcessingException("Unable to read csv");
     }
 
-    List<FeedbackMessage> errors = fileValidator.validate(new ByteArrayInputStream(content));
+    List<FeedbackMessage> errors =
+        _patientBulkUploadFileValidator.validate(new ByteArrayInputStream(content));
 
     if (!errors.isEmpty()) {
       result.setStatus(UploadStatus.FAILURE);
