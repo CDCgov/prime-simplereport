@@ -6,9 +6,9 @@ import svgr from "vite-plugin-svgr";
 export default defineConfig(({ command, mode }) => {
   const env = loadEnv(mode, process.cwd(), "");
 
-  const contentSecurityPolicyTag = !env.DEV
-    ? ""
-    : `<meta
+  const contentSecurityPolicyTag =
+    env.NODE_ENV !== "development"
+      ? `<meta
         http-equiv="Content-Security-Policy"
         content="
             ${env.VITE_CONTENT_SECURITY_POLICY_DEFAULT_SRC}
@@ -17,7 +17,8 @@ export default defineConfig(({ command, mode }) => {
             img-src 'self' https://touchpoints.app.cloud.gov https://hhs-prime.okta.com data:;
             connect-src 'self'  https://us-street.api.smartystreets.com https://us-zipcode.api.smartystreets.com www.google-analytics.com https://touchpoints.app.cloud.gov https://dc.services.visualstudio.com/v2/track https://*.applicationinsights.azure.com ${env.VITE_BACKEND_URL}/ ;
             frame-src 'self' https://www.youtube.com;
-        ">`;
+        ">`
+      : "";
 
   return {
     base: env.VITE_BASE_URL, // only works for prod build... but in dev mode it stripes the domain piece and only leaves the path
