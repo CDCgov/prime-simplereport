@@ -15,7 +15,6 @@ import gov.cdc.usds.simplereport.db.model.Organization;
 import gov.cdc.usds.simplereport.db.model.Person;
 import gov.cdc.usds.simplereport.db.model.PhoneNumber;
 import gov.cdc.usds.simplereport.db.model.auxiliary.StreetAddress;
-import gov.cdc.usds.simplereport.properties.SendGridProperties;
 import gov.cdc.usds.simplereport.service.email.EmailProviderTemplate;
 import gov.cdc.usds.simplereport.service.email.EmailService;
 import gov.cdc.usds.simplereport.validators.CsvValidatorUtils;
@@ -31,6 +30,7 @@ import java.util.Set;
 import java.util.UUID;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.scheduling.annotation.Async;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -44,8 +44,10 @@ public class PatientBulkUploadServiceAsync {
   private final ApiUserService _userService;
   private final AddressValidationService _addressValidationService;
   private final OrganizationService _organizationService;
-  private EmailService _emailService;
-  private SendGridProperties sendGridProperties;
+  private final EmailService _emailService;
+
+  @Value("${simple-report.patient-link-url:https://simplereport.gov/pxp?plid=}")
+  private String patientLinkUrl;
 
   @Async
   @Transactional
@@ -150,11 +152,15 @@ public class PatientBulkUploadServiceAsync {
 
     _personService.addPatientsAndPhoneNumbers(patientsList, phoneNumbersList);
 
-    String patientsUrl = "https://simplereport.gov/app/patients?facility=${facilityId}";
+    String patientsUrl =
+        patientLinkUrl.substring(0, patientLinkUrl.indexOf("pxp"))
+            + "patients?facility="
+            + facilityId;
+
     try {
       _emailService.sendWithDynamicTemplate(
           List.of(uploaderEmail),
-          EmailProviderTemplate.ID_VERIFICATION_FAILED,
+          EmailProviderTemplate.SIMPLE_REPORT_PATIENT_UPLOAD,
           Map.of("patients_url", patientsUrl));
     } catch (IOException e) {
       log.info(
