@@ -17,6 +17,34 @@ class FileValidatorTest {
       new FileValidator<>(PatientUploadRow::new);
 
   @Test
+  void emptyFile_returnsError() {
+    // GIVEN
+    InputStream input = loadCsv("patientBulkUpload/empty.csv");
+    // WHEN
+    Exception exception =
+        assertThrows(
+            IllegalArgumentException.class, () -> patientBulkUploadFileValidator.validate(input));
+    // THEN
+    assertThat(exception).hasMessage("Empty or invalid CSV submitted");
+  }
+
+  @Test
+  void malformedCsv_returnsError() {
+    // GIVEN
+    InputStream input = loadCsv("patientBulkUpload/malformed.csv");
+    // WHEN
+    List<FeedbackMessage> errors = patientBulkUploadFileValidator.validate(input);
+    // THEN
+    assertThat(errors).hasSize(1);
+    List<String> errorMessages =
+        errors.stream().map(FeedbackMessage::getMessage).collect(Collectors.toList());
+    assertThat(errorMessages)
+        .contains(
+            "File has the incorrect number of columns or empty rows. Please make sure all columns match the data template, and delete any empty rows.");
+    assertThat(errors.get(0).getIndices()).isEqualTo(List.of(2, 4));
+  }
+
+  @Test
   void validFile() {
     // GIVEN
     InputStream input = loadCsv("patientBulkUpload/valid.csv");
@@ -114,20 +142,6 @@ class FileValidatorTest {
   }
 
   @Test
-  void invalidValuesInMultipleRows_returnError() {
-    // GIVEN
-    InputStream input = loadCsv("patientBulkUpload/invalidValuesMultipleRows.csv");
-    // WHEN
-    List<FeedbackMessage> errors = patientBulkUploadFileValidator.validate(input);
-    // THEN
-    assertThat(errors.size()).isOne();
-    assertThat(errors.get(0).getScope()).isEqualTo("item");
-    assertThat(errors.get(0).getMessage())
-        .isEqualTo("african american is not an acceptable value for column race");
-    assertThat(errors.get(0).getIndices()).isEqualTo(List.of(1, 2));
-  }
-
-  @Test
   void invalidValuesAndMissingFieldsInMultipleRows_returnError() {
     // GIVEN
     InputStream input =
@@ -139,13 +153,13 @@ class FileValidatorTest {
     assertThat(errors.get(0).getScope()).isEqualTo("item");
     assertThat(errors.get(0).getMessage())
         .isEqualTo("african american is not an acceptable value for column race");
-    assertThat(errors.get(0).getIndices()).isEqualTo(List.of(1, 2));
+    assertThat(errors.get(0).getIndices()).isEqualTo(List.of(2, 3));
     assertThat(errors.get(1).getScope()).isEqualTo("report");
     assertThat(errors.get(1).getMessage()).isEqualTo("ethnicity is a required column.");
-    assertThat(errors.get(1).getIndices()).isEqualTo(List.of(3, 4));
+    assertThat(errors.get(1).getIndices()).isEqualTo(List.of(4, 5));
     assertThat(errors.get(2).getScope()).isEqualTo("report");
     assertThat(errors.get(2).getMessage()).isEqualTo("race is a required column.");
-    assertThat(errors.get(2).getIndices()).isEqualTo(List.of(3, 4));
+    assertThat(errors.get(2).getIndices()).isEqualTo(List.of(4, 5));
   }
 
   @Test
@@ -172,33 +186,6 @@ class FileValidatorTest {
             "phone_number is a required column.",
             "employed_in_healthcare is a required column.",
             "resident_congregate_setting is a required column.");
-  }
-
-  @Test
-  void emptyFile_returnsError() {
-    // GIVEN
-    InputStream input = loadCsv("patientBulkUpload/empty.csv");
-    // WHEN
-    Exception exception =
-        assertThrows(
-            IllegalArgumentException.class, () -> patientBulkUploadFileValidator.validate(input));
-    // THEN
-    assertThat(exception).hasMessage("Empty or invalid CSV submitted");
-  }
-
-  @Test
-  void malformedCsv_returnsError() {
-    // GIVEN
-    InputStream input = loadCsv("patientBulkUpload/malformed.csv");
-    // WHEN
-    List<FeedbackMessage> errors = patientBulkUploadFileValidator.validate(input);
-    // THEN
-    assertThat(errors).hasSize(1);
-    List<String> errorMessages =
-        errors.stream().map(FeedbackMessage::getMessage).collect(Collectors.toList());
-    assertThat(errorMessages)
-        .contains(
-            "File has the incorrect number of columns or empty rows. Please make sure all columns match the data template, and delete any empty rows.");
   }
 
   private InputStream loadCsv(String csvFile) {
@@ -315,7 +302,7 @@ class FileValidatorTest {
             "x is not an acceptable value for column test_result",
             "x is not an acceptable value for column test_result_status",
             "x is not an acceptable value for column specimen_type");
-    indices.forEach(i -> assertThat(i).isEqualTo(List.of(1)));
+    indices.forEach(i -> assertThat(i).isEqualTo(List.of(2)));
   }
 
   @Test

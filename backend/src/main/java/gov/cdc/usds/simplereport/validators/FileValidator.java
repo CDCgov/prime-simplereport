@@ -24,7 +24,6 @@ public class FileValidator<T extends FileRow> {
   }
 
   public List<FeedbackMessage> validate(InputStream csvStream) {
-
     final MappingIterator<Map<String, String>> valueIterator = getIteratorForCsv(csvStream);
 
     if (!valueIterator.hasNext()) {
@@ -32,10 +31,10 @@ public class FileValidator<T extends FileRow> {
     }
 
     var mapOfErrors = new HashMap<String, FeedbackMessage>();
-    var currentRow = 1;
 
     while (valueIterator.hasNext()) {
       final Map<String, String> row;
+      final var finalCurrentRow = valueIterator.getCurrentLocation().getLineNr();
       try {
         row = getNextRow(valueIterator);
       } catch (CsvProcessingException ex) {
@@ -44,9 +43,9 @@ public class FileValidator<T extends FileRow> {
             new FeedbackMessage(
                 CsvValidatorUtils.REPORT_SCOPE,
                 "File has the incorrect number of columns or empty rows. Please make sure all columns match the data template, and delete any empty rows.",
-                List.of(ex.getLineNumber()));
-        mapOfErrors.put(feedback.getMessage(), feedback);
-        break;
+                new ArrayList<>(List.of(ex.getLineNumber())));
+        mergeErrors(mapOfErrors, new ArrayList<>(List.of(feedback)));
+        continue;
       }
       var currentRowErrors = new ArrayList<FeedbackMessage>();
 
@@ -55,25 +54,27 @@ public class FileValidator<T extends FileRow> {
       currentRowErrors.addAll(fileRow.validateHeaders());
       currentRowErrors.addAll(fileRow.validateIndividualValues());
 
-      final var finalCurrentRow = currentRow;
       currentRowErrors.forEach(
           error -> error.setIndices(new ArrayList<>(List.of(finalCurrentRow))));
 
-      currentRowErrors.forEach(
-          error ->
-              mapOfErrors.merge(
-                  error.getMessage(),
-                  error,
-                  (e1, e2) -> {
-                    e1.getIndices().addAll(e2.getIndices());
-                    return e1;
-                  }));
-
-      currentRow++;
+      mergeErrors(mapOfErrors, currentRowErrors);
     }
 
     var errors = new ArrayList<>(mapOfErrors.values());
     errors.sort(Comparator.comparingInt(e -> e.getIndices().get(0)));
     return errors;
+  }
+
+  private void mergeErrors(
+      HashMap<String, FeedbackMessage> mapOfErrors, ArrayList<FeedbackMessage> currentRowErrors) {
+    currentRowErrors.forEach(
+        error ->
+            mapOfErrors.merge(
+                error.getMessage(),
+                error,
+                (e1, e2) -> {
+                  e1.getIndices().addAll(e2.getIndices());
+                  return e1;
+                }));
   }
 }
