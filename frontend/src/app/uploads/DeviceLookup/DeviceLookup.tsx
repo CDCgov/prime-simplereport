@@ -105,14 +105,14 @@ const DeviceLookup = (props: Props) => {
                   <use xlinkHref={iconSprite + "#arrow_back"}></use>
                 </svg>
                 <LinkWithQuery
-                  to={`/results/upload/submit`}
+                  to={`/results/upload/submit/guide`}
                   className="margin-left-05"
                 >
-                  Upload spreadsheet
+                  Bulk results upload guide
                 </LinkWithQuery>
               </div>
               <div>
-                <h1 className="font-sans-lg">Bulk results upload guide</h1>
+                <h1 className="font-sans-lg">Device code lookup</h1>
               </div>
             </div>
           </div>
