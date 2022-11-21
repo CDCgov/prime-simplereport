@@ -22,9 +22,11 @@ import gov.cdc.usds.simplereport.validators.CsvValidatorUtils.ValueOrError;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
+import lombok.Getter;
 import lombok.NoArgsConstructor;
 
 @NoArgsConstructor
+@Getter
 public class TestResultRow implements FileRow {
   private ValueOrError patientId;
   private ValueOrError patientLastName;
@@ -219,9 +221,9 @@ public class TestResultRow implements FileRow {
             orderingFacilityPhoneNumber,
             comment,
             testResultStatus);
-    List<FeedbackMessage> rowErrors = new ArrayList<>();
-    allFields.forEach(field -> rowErrors.addAll(field.getPossibleError()));
-    return rowErrors;
+    List<FeedbackMessage> errors = new ArrayList<>();
+    allFields.forEach(field -> errors.addAll(field.getPossibleError()));
+    return errors;
   }
 
   public List<FeedbackMessage> validateIndividualValues() {
