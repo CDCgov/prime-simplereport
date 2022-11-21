@@ -211,7 +211,7 @@ class FileValidatorTest {
   @Test
   void testValidFile() {
     // GIVEN
-    InputStream input = loadCsv("test-results-upload-valid.csv");
+    InputStream input = loadCsv("testResultUpload/test-results-upload-valid.csv");
     // WHEN
     List<FeedbackMessage> errors = testResultFileValidator.validate(input);
     // THEN
@@ -269,7 +269,7 @@ class FileValidatorTest {
   @Test
   void testResultsFile_InvalidValues() {
     // GIVEN
-    InputStream input = loadCsv("test-results-upload-invalid-values.csv");
+    InputStream input = loadCsv("testResultUpload/test-results-upload-invalid-values.csv");
     // WHEN
     List<FeedbackMessage> errors = testResultFileValidator.validate(input);
     // THEN
@@ -321,7 +321,7 @@ class FileValidatorTest {
   @Test
   void testResultsFile_InvalidFormat1() {
     // GIVEN
-    InputStream input = loadCsv("test-results-upload-invalid-format1.csv");
+    InputStream input = loadCsv("testResultUpload/test-results-upload-invalid-format1.csv");
     // WHEN
     List<FeedbackMessage> errors = testResultFileValidator.validate(input);
     // THEN
@@ -339,7 +339,7 @@ class FileValidatorTest {
   @Test
   void testResultsFile_InvalidFormat2() {
     // GIVEN
-    InputStream input = loadCsv("test-results-upload-invalid-format2.csv");
+    InputStream input = loadCsv("testResultUpload/test-results-upload-invalid-format2.csv");
     // WHEN
     List<FeedbackMessage> errors = testResultFileValidator.validate(input);
     // THEN

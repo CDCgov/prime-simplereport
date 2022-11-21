@@ -96,7 +96,7 @@ class TestResultUploadServiceTest extends BaseServiceTest<TestResultUploadServic
                     .withStatus(HttpStatus.OK.value())
                     .withHeader("Content-Type", MediaType.APPLICATION_JSON_VALUE)
                     .withBody(mockResponse)));
-    InputStream input = loadCsv("test-results-upload-valid.csv");
+    InputStream input = loadCsv("testResultUpload/test-results-upload-valid.csv");
 
     var output = this._service.processResultCSV(input);
     assertEquals(UploadStatus.PENDING, output.getStatus());
@@ -140,7 +140,7 @@ class TestResultUploadServiceTest extends BaseServiceTest<TestResultUploadServic
                       .withHeader("Content-Type", MediaType.APPLICATION_JSON_VALUE)
                       .withBody(x.readAllBytes())));
     }
-    InputStream input = loadCsv("test-results-upload-valid.csv");
+    InputStream input = loadCsv("testResultUpload/test-results-upload-valid.csv");
 
     var response = this._service.processResultCSV(input);
 
@@ -161,7 +161,7 @@ class TestResultUploadServiceTest extends BaseServiceTest<TestResultUploadServic
                     .withHeader("Content-Type", MediaType.APPLICATION_JSON_VALUE)
                     .withBody("you messed up")));
 
-    InputStream input = loadCsv("test-results-upload-valid.csv");
+    InputStream input = loadCsv("testResultUpload/test-results-upload-valid.csv");
 
     assertThrows(DependencyFailureException.class, () -> this._service.processResultCSV(input));
   }
