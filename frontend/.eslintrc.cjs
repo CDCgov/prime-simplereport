@@ -104,8 +104,6 @@ module.exports = {
     'import/newline-after-import': 1,
     'import/no-commonjs': 0,
     'import/no-named-as-default': 0,
-    'no-unused-vars': 'off',
-    '@typescript-eslint/no-unused-vars': 'off',
     'react/prop-types': 'off',
     '@typescript-eslint/prefer-nullish-coalescing': 'off',
     'multiline-ternary': 'off',

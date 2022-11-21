@@ -4,7 +4,6 @@ import React, { useEffect, useState } from "react";
 import { faCheck } from "@fortawesome/free-solid-svg-icons/faCheck";
 import { faCopy } from "@fortawesome/free-solid-svg-icons/faCopy";
 import { capitalize } from "lodash";
-import { IconLookup } from "@fortawesome/free-solid-svg-icons";
 import { IconProp } from "@fortawesome/fontawesome-svg-core";
 
 import Optional from "../../commonComponents/Optional";

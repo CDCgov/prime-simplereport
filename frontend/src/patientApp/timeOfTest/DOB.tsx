@@ -2,7 +2,7 @@ import React, { useEffect, useState, useRef } from "react";
 import { connect, useDispatch, useSelector } from "react-redux";
 import { Navigate } from "react-router-dom";
 import moment from "moment";
-import { ReactI18NextChild, Trans, useTranslation } from "react-i18next";
+import { Trans, useTranslation } from "react-i18next";
 import { validate as isValidUUID } from "uuid";
 
 import Button from "../../app/commonComponents/Button/Button";
