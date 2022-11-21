@@ -104,9 +104,8 @@ const experianStreetRegex = new RegExp(
 // this is the regex experian uses for zip validation
 const experianZipRegex = new RegExp("^([\\d]{5}([\\-]?[\\d]{4})?){1}$", "m");
 
-export const personalDetailsSchema: yup.SchemaOf<IdentityVerificationRequest> = yup
-  .object()
-  .shape({
+export const personalDetailsSchema: yup.SchemaOf<IdentityVerificationRequest> =
+  yup.object().shape({
     firstName: yup.string().required("First name is required"),
     middleName: yup.string().nullable(),
     lastName: yup.string().required("Last name is required"),

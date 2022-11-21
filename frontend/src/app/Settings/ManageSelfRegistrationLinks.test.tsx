@@ -33,7 +33,8 @@ const mocks = [
 
 const org = mocks[0].result.data.whoami.organization;
 const expectedOrgSlug = org.patientSelfRegistrationLink.toUpperCase();
-const expectedFacilitySlug = org.facilities[1].patientSelfRegistrationLink.toUpperCase();
+const expectedFacilitySlug =
+  org.facilities[1].patientSelfRegistrationLink.toUpperCase();
 const testBaseUrl = "https://example.com";
 
 describe("ManageSelfRegistrationLinks", () => {

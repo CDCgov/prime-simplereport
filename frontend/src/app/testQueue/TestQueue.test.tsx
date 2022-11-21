@@ -257,9 +257,11 @@ describe("TestQueue", () => {
       ).toBeTruthy();
 
       expect(
-        ((
-          await screen.findAllByText("Nasopharyngeal swab")
-        )[0] as HTMLOptionElement).selected
+        (
+          (
+            await screen.findAllByText("Nasopharyngeal swab")
+          )[0] as HTMLOptionElement
+        ).selected
       ).toBeTruthy();
     });
 

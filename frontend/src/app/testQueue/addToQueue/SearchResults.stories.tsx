@@ -32,16 +32,18 @@ export default {
   argTypes: {},
 } as Meta;
 
-const TestResultsTemplate = (): Story<TestResultsProps> => (args) => (
-  <RouterWithFacility>
-    <SearchResults {...args} />
-  </RouterWithFacility>
-);
-const QueueTemplate = (): Story<QueueProps> => (args) => (
-  <RouterWithFacility>
-    <SearchResults {...args} />
-  </RouterWithFacility>
-);
+const TestResultsTemplate = (): Story<TestResultsProps> => (args) =>
+  (
+    <RouterWithFacility>
+      <SearchResults {...args} />
+    </RouterWithFacility>
+  );
+const QueueTemplate = (): Story<QueueProps> => (args) =>
+  (
+    <RouterWithFacility>
+      <SearchResults {...args} />
+    </RouterWithFacility>
+  );
 
 export const NoResults = TestResultsTemplate();
 NoResults.args = {

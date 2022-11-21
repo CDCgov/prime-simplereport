@@ -56,11 +56,11 @@ const ConfirmOrgVerificationModal: React.FC<VerficationModalProps> = ({
   const getValidationStatus = (field: keyof PendingOrganizationFormValues) =>
     errors[field] ? "error" : undefined;
 
-  const onChange = (field: keyof PendingOrganization) => (
-    value: PendingOrganization[typeof field]
-  ) => {
-    setOrg({ ...org, [field]: value });
-  };
+  const onChange =
+    (field: keyof PendingOrganization) =>
+    (value: PendingOrganization[typeof field]) => {
+      setOrg({ ...org, [field]: value });
+    };
 
   const onSave = async () => {
     const validation = await isFormValid({

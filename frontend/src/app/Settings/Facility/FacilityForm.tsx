@@ -158,12 +158,8 @@ const FacilityForm: React.FC<Props> = (props) => {
     }));
   };
 
-  const {
-    errors,
-    clearError,
-    validateField,
-    validateFacility,
-  } = useFacilityValidation(facility);
+  const { errors, clearError, validateField, validateFacility } =
+    useFacilityValidation(facility);
 
   const getFacilityAddress = (f: Nullable<Facility>): AddressWithMetaData => {
     return {
@@ -228,9 +224,8 @@ const FacilityForm: React.FC<Props> = (props) => {
     );
     let providerCloseEnough = true;
     let suggestedOrderingProviderAddress: AddressWithMetaData | undefined;
-    const originalOrderingProviderAddress = getOrderingProviderAddress(
-      facility
-    );
+    const originalOrderingProviderAddress =
+      getOrderingProviderAddress(facility);
     if (originalOrderingProviderAddress) {
       suggestedOrderingProviderAddress = await getBestSuggestion(
         originalOrderingProviderAddress
