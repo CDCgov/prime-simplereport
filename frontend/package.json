@@ -4,7 +4,7 @@
   "version": "0.0.0",
   "type": "module",
   "scripts": {
-    "dev": "vite",
+    "dev": "VITE_CURRENT_COMMIT=$(git rev-parse HEAD) vite --host",
     "prebuild": "tsc",
     "build": "VITE_CURRENT_COMMIT=$(git rev-parse HEAD) vite build",
     "postbuild": "echo 'pushstate: enabled' > build/Staticfile && echo $(git rev-parse HEAD) > build/assets/commit.txt",
