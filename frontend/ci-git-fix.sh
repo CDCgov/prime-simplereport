@@ -3,4 +3,4 @@
 echo "git config --global --add safe.directory /app"
 git config --global --add safe.directory /app
 
-yarn start
+yarn dev
