@@ -29,12 +29,13 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.security.test.context.support.WithMockUser;
 import org.springframework.test.context.TestPropertySource;
+import org.springframework.test.context.web.WebAppConfiguration;
 
 @TestPropertySource(properties = "hibernate.query.interceptor.error-level=ERROR")
 @WithMockUser(
     username = TestUserIdentities.SITE_ADMIN_USER,
     authorities = {Role.SITE_ADMIN, Role.DEFAULT_ORG_ADMIN})
-// @WebAppConfiguration
+@WebAppConfiguration
 class PatientBulkUploadServiceIntegrationTest extends BaseServiceTest<PatientBulkUploadService> {
   public static final int PATIENT_PAGE_OFFSET = 0;
   public static final int PATIENT_PAGE_SIZE = 1000;

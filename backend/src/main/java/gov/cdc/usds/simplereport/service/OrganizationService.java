@@ -72,6 +72,9 @@ public class OrganizationService {
             .collect(Collectors.toList());
     List<Organization> validOrgs = organizationRepository.findAllByExternalId(candidateExternalIds);
     if (validOrgs == null || validOrgs.size() != 1) {
+      // this is where we have an issue
+      // because we have 0 organizations for the superuser
+      // but! At this point, we still *know* the user is Ruby Reynolds
       int numOrgs = (validOrgs == null) ? 0 : validOrgs.size();
       log.warn("Found {} organizations for user", numOrgs);
       return Optional.empty();

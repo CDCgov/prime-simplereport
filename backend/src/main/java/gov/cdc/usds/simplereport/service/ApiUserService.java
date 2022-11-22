@@ -524,6 +524,10 @@ public class ApiUserService {
   }
 
   private ApiUser getCurrentApiUserNoCache() {
+    // so far, in all test contexts, this _supplier.get() is null
+    // when running the app locally with Okta, it actually fetches the correct identity (i.e. Emma
+    // Stephenson)
+    // when running locally without Okta, we get Bob Bobberoo
     IdentityAttributes userIdentity = _supplier.get();
     Optional<ApiUser> nonOktaUser = getCurrentNonOktaUser(userIdentity);
     return nonOktaUser.orElseGet(() -> getCurrentApiUserFromIdentity(userIdentity));

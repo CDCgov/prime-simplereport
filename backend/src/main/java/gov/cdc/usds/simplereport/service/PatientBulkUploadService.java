@@ -32,6 +32,7 @@ public class PatientBulkUploadService {
   private final PatientBulkUploadServiceAsync _patientBulkUploadServiceAsync;
 
   // This authorization will change once we open the feature to end users
+  //  @AuthorizationConfiguration.RequirePermissionCreatePatientAtFacility
   @AuthorizationConfiguration.RequireGlobalAdminUser
   public PatientBulkUploadResponse processPersonCSV(InputStream csvStream, UUID facilityId)
       throws IllegalArgumentException {
