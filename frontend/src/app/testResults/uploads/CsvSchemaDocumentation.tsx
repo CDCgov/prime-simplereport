@@ -3,6 +3,7 @@ import { useDocumentTitle } from "../../utils/hooks";
 import iconSprite from "../../../../node_modules/uswds/dist/img/sprite.svg";
 import "./CsvSchemaDocumentation.scss";
 import { getAppInsights } from "../../TelemetryService";
+import ScrollToTopOnMount from "../../commonComponents/ScrollToTopOnMount";
 
 import schema from "./schema.json";
 
@@ -143,6 +144,7 @@ const CsvSchemaDocumentation = () => {
 
   return (
     <div className="prime-container card-container csv-guide-container">
+      <ScrollToTopOnMount />
       <div className="usa-card__header">
         <div>
           <div className="display-flex flex-align-center">

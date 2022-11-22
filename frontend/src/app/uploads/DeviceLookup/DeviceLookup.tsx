@@ -18,6 +18,7 @@ import { DeviceType } from "../../../generated/graphql";
 import { useOutsideClick } from "../../utils/hooks";
 import iconSprite from "../../../../node_modules/uswds/dist/img/sprite.svg";
 import { LinkWithQuery } from "../../commonComponents/LinkWithQuery";
+import ScrollToTopOnMount from "../../commonComponents/ScrollToTopOnMount";
 
 import DeviceSearchResults from "./DeviceSearchResults";
 import DeviceDetails from "./DeviceDetails";
@@ -91,6 +92,7 @@ const DeviceLookup = (props: Props) => {
 
   return (
     <div className="prime-home device-lookup-container flex-1">
+      <ScrollToTopOnMount />
       <div className="grid-container">
         <div className="prime-container card-container">
           <div className="usa-card__header">
