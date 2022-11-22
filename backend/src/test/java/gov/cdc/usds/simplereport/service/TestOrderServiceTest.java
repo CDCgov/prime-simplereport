@@ -1411,7 +1411,14 @@ class TestOrderServiceTest extends BaseServiceTest<TestOrderService> {
     DeviceSpecimenType device = _dataFactory.getGenericDeviceSpecimen();
     facility.addDefaultDeviceSpecimen(device);
     Person p = _dataFactory.createFullPerson(org);
-    TestEvent e = _dataFactory.createTestEvent(p, facility);
+    TestEvent e =
+        _dataFactory.createMultiplexTestEvent(
+            p,
+            facility,
+            TestResult.POSITIVE,
+            TestResult.UNDETERMINED,
+            TestResult.UNDETERMINED,
+            null);
 
     // Re-open the original test as a correction
     String reasonMsg = "Testing correction marking as error " + LocalDateTime.now();
@@ -1437,12 +1444,13 @@ class TestOrderServiceTest extends BaseServiceTest<TestOrderService> {
 
     // There should only be a single TestOrder, but three TestEvents - the original, the corrected,
     // and the removed
-    // There should also be exactly three Result objects for the order, one per TestEvent
+    // There should also be exactly 3 Result objects for the order, 1 per TestEvent
     assertEquals(
         3, _testEventRepository.findAllByPatientAndFacilities(p, List.of(facility)).size());
     assertEquals(1, _testOrderRepository.fetchPastResults(org, facility).size());
-    assertEquals(3, _resultRepository.findAllByTestOrder(response.getTestOrder()).size());
-    assertEquals(1, _resultRepository.findAllByTestEvent(deleteCorrectedEvent).size());
+
+    assertEquals(3, _resultRepository.findAllByTestEvent(deleteCorrectedEvent).size());
+    assertEquals(9, _resultRepository.findAllByTestOrder(response.getTestOrder()).size());
 
     TestOrder order = deleteCorrectedEvent.getTestOrder();
     assertEquals(TestCorrectionStatus.REMOVED, order.getCorrectionStatus());
