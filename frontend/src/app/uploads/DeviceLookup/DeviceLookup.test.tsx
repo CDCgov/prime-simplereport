@@ -10,6 +10,8 @@ import { MemoryRouter } from "react-router-dom";
 
 import DeviceLookup from "./DeviceLookup";
 
+window.scrollTo = jest.fn();
+
 const devices = [
   {
     internalId: "abc1",
@@ -40,6 +42,9 @@ describe("Device lookup", () => {
         <DeviceLookup deviceOptions={devices} />
       </MemoryRouter>
     );
+  });
+  afterAll(() => {
+    jest.resetAllMocks();
   });
 
   it("displays no results message if no matches found", async () => {

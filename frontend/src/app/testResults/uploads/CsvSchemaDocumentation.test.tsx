@@ -14,6 +14,7 @@ jest.mock("../../TelemetryService", () => ({
   ...jest.requireActual("../../TelemetryService"),
   getAppInsights: jest.fn(),
 }));
+window.scrollTo = jest.fn();
 
 const baseItem: CsvSchemaItem = {
   name: "Sample Item",
@@ -26,6 +27,9 @@ const baseItem: CsvSchemaItem = {
 };
 
 describe("CsvSchemaDocumentation tests", () => {
+  afterAll(() => {
+    jest.clearAllMocks();
+  });
   describe("CsvSchemaDocumentationItem", () => {
     it("renders a schema item", () => {
       const { container } = render(
@@ -132,7 +136,7 @@ describe("CsvSchemaDocumentation tests", () => {
     });
   });
 
-  describe("CsvSchemaDocumentaton", () => {
+  describe("CsvSchemaDocumentation", () => {
     it("matches snapshot", () => {
       const { container } = render(
         <MemoryRouter>
