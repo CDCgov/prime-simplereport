@@ -176,7 +176,7 @@ class EmailServiceTest extends BaseServiceTest<EmailService> {
   }
 
   @Test
-  void sendWithDynamicTemplateTest() throws IOException {
+  void sendWithDynamicTemplateTestResult() throws IOException {
     // GIVEN
     String toEmail = "test@foo.com";
     Map<String, Object> dynamicTemplateData =
@@ -195,6 +195,25 @@ class EmailServiceTest extends BaseServiceTest<EmailService> {
 
     assertThat(sentMail.getFrom().getEmail()).isEqualTo("me@example.com");
     assertThat(sentMail.getFrom().getName()).isEqualTo("My Display Name");
+    assertEquals(personalization.getTos().get(0).getEmail(), toEmail);
+    assertThat(personalization.getDynamicTemplateData()).isEqualTo(dynamicTemplateData);
+  }
+
+  @Test
+  void sendWithDynamicTemplatePatientUpload() throws IOException {
+    // GIVEN
+    String toEmail = "admin@org.com";
+    Map<String, Object> dynamicTemplateData = Map.of("patients_url", "http://localhost");
+    // WHEN
+    _service.sendWithDynamicTemplate(
+        List.of(toEmail), EmailProviderTemplate.SIMPLE_REPORT_PATIENT_UPLOAD, dynamicTemplateData);
+
+    // THEN
+    verify(mockSendGrid, times(1)).send(mail.capture());
+    Mail sentMail = mail.getValue();
+    Personalization personalization = sentMail.getPersonalization().get(0);
+
+    assertThat(sentMail.getFrom().getEmail()).isEqualTo("admin@org.com");
     assertEquals(personalization.getTos().get(0).getEmail(), toEmail);
     assertThat(personalization.getDynamicTemplateData()).isEqualTo(dynamicTemplateData);
   }
