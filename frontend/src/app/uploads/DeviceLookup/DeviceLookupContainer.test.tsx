@@ -42,6 +42,6 @@ describe("DeviceLookupContainer", () => {
   });
 
   it("should render device lookup container", async () => {
-    expect(screen.getByText("Device lookup")).toBeInTheDocument();
+    expect(screen.getByText("Device code lookup")).toBeInTheDocument();
   });
 });

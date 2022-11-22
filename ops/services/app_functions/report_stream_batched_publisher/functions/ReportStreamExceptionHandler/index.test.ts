@@ -16,10 +16,10 @@ jest.mock("../config", () => ({
 }));
 
 describe("main function export", () => {
-  const context: Context = {
+  const context = {
     log: jest.fn(),
     traceContext: { traceparent: "asdf" },
-  } as any;
+  } as jest.MockedObject<Context>;
   context.log.error = jest.fn();
 
   it("calls the SimpleReport webhook API", async () => {

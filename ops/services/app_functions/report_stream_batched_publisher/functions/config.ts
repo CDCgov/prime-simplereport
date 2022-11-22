@@ -20,14 +20,17 @@ export const ENV = (() => {
     AZ_STORAGE_ACCOUNT_NAME: "Azure Account Name",
     AZ_STORAGE_ACCOUNT_KEY: "Azure Account Key",
     TEST_EVENT_QUEUE_NAME: "storage queue resource name for Test Events",
-    REPORTING_EXCEPTION_QUEUE_NAME: "storage queue resource name for exceptions in publishing to ReportStream",
+    REPORTING_EXCEPTION_QUEUE_NAME:
+      "storage queue resource name for exceptions in publishing to ReportStream",
     REPORT_STREAM_URL: "ReportStream URL to which tests should be reported",
     REPORT_STREAM_TOKEN: "ReportStream API key",
     REPORT_STREAM_BATCH_MINIMUM: "minimum # of messages to read from the queue",
     REPORT_STREAM_BATCH_MAXIMUM:
       "maximum # of messages to send to ReportStream",
-    SIMPLE_REPORT_CB_URL: "SimpleReport webhook URL for ReportStream exceptions",
-    SIMPLE_REPORT_CB_TOKEN: "API token for the SimpleReport webhook for ReportStream exceptions"
+    SIMPLE_REPORT_CB_URL:
+      "SimpleReport webhook URL for ReportStream exceptions",
+    SIMPLE_REPORT_CB_TOKEN:
+      "API token for the SimpleReport webhook for ReportStream exceptions",
   };
   return Object.entries(CONFIG_VALUES).reduce((acc, cur) => {
     const [configName, description] = [
