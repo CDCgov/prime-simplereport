@@ -45,16 +45,6 @@ class FileValidatorTest {
   }
 
   @Test
-  void validFile() {
-    // GIVEN
-    InputStream input = loadCsv("patientBulkUpload/valid.csv");
-    // WHEN
-    List<FeedbackMessage> errors = patientBulkUploadFileValidator.validate(input);
-    // THEN
-    assertThat(errors).isEmpty();
-  }
-
-  @Test
   void missingHeaders_returnsErrors() {
     // GIVEN
     InputStream input = loadCsv("patientBulkUpload/missingHeaders.csv");
@@ -102,16 +92,6 @@ class FileValidatorTest {
         errors.stream().map(FeedbackMessage::getMessage).collect(Collectors.toList());
     assertThat(errorMessages)
         .contains("race is a required column.", "ethnicity is a required column.");
-  }
-
-  @Test
-  void extraColumns_isValid() {
-    // GIVEN
-    InputStream input = loadCsv("patientBulkUpload/extraColumns.csv");
-    // WHEN
-    List<FeedbackMessage> errors = patientBulkUploadFileValidator.validate(input);
-    // THEN
-    assertThat(errors).isEmpty();
   }
 
   @Test
@@ -188,12 +168,28 @@ class FileValidatorTest {
             "resident_congregate_setting is a required column.");
   }
 
-  private InputStream loadCsv(String csvFile) {
-    return FileValidatorTest.class.getClassLoader().getResourceAsStream(csvFile);
+  @Test
+  void extraColumns_isValid() {
+    // GIVEN
+    InputStream input = loadCsv("patientBulkUpload/extraColumns.csv");
+    // WHEN
+    List<FeedbackMessage> errors = patientBulkUploadFileValidator.validate(input);
+    // THEN
+    assertThat(errors).isEmpty();
   }
 
   @Test
-  void testValidFile() {
+  void patientUpload_validFile() {
+    // GIVEN
+    InputStream input = loadCsv("patientBulkUpload/valid.csv");
+    // WHEN
+    List<FeedbackMessage> errors = patientBulkUploadFileValidator.validate(input);
+    // THEN
+    assertThat(errors).isEmpty();
+  }
+
+  @Test
+  void testResults_validFile() {
     // GIVEN
     InputStream input = loadCsv("testResultUpload/test-results-upload-valid.csv");
     // WHEN
@@ -203,7 +199,7 @@ class FileValidatorTest {
   }
 
   @Test
-  void testResultsFile_InvalidHeaders() {
+  void testResultsFile_invalidHeaders() {
     // GIVEN
     InputStream input = new ByteArrayInputStream("invalid\nyes".getBytes());
     // WHEN
@@ -251,7 +247,7 @@ class FileValidatorTest {
   }
 
   @Test
-  void testResultsFile_InvalidValues() {
+  void testResultsFile_invalidValues() {
     // GIVEN
     InputStream input = loadCsv("testResultUpload/test-results-upload-invalid-values.csv");
     // WHEN
@@ -300,5 +296,9 @@ class FileValidatorTest {
             "x is not an acceptable value for column test_result_status",
             "x is not an acceptable value for column specimen_type");
     indices.forEach(i -> assertThat(i).isEqualTo(List.of(2)));
+  }
+
+  private InputStream loadCsv(String csvFile) {
+    return FileValidatorTest.class.getClassLoader().getResourceAsStream(csvFile);
   }
 }
