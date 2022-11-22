@@ -1403,52 +1403,53 @@ class TestOrderServiceTest extends BaseServiceTest<TestOrderService> {
     assertEquals(0, originalEvent.getTestOrder().getDateTestedBackdate().compareTo(dateTested));
   }
 
-  //   TODO: make this work
-  //   @Test
-  //   @WithSimpleReportOrgAdminUser
-  //   void removeACorrectedTest_success() {
-  //     Organization org = _organizationService.getCurrentOrganization();
-  //     Facility facility = _organizationService.getFacilities(org).get(0);
-  //     DeviceSpecimenType device = _dataFactory.getGenericDeviceSpecimen();
-  //     facility.addDefaultDeviceSpecimen(device);
-  //     Person p = _dataFactory.createFullPerson(org);
-  //     TestEvent e = _dataFactory.createTestEvent(p, facility);
+  @Test
+  @WithSimpleReportOrgAdminUser
+  void removeACorrectedTest_success() {
+    Organization org = _organizationService.getCurrentOrganization();
+    Facility facility = _organizationService.getFacilities(org).get(0);
+    DeviceSpecimenType device = _dataFactory.getGenericDeviceSpecimen();
+    facility.addDefaultDeviceSpecimen(device);
+    Person p = _dataFactory.createFullPerson(org);
+    TestEvent e = _dataFactory.createTestEvent(p, facility);
 
-  //     // Re-open the original test as a correction
-  //     String reasonMsg = "Testing correction marking as error " + LocalDateTime.now();
-  //     _service.markAsCorrection(e.getInternalId(), reasonMsg);
+    // Re-open the original test as a correction
+    String reasonMsg = "Testing correction marking as error " + LocalDateTime.now();
+    _service.markAsCorrection(e.getInternalId(), reasonMsg);
 
-  //     // Re-submit the corrected test
-  //     AddTestResultResponse response =
-  //         _service.addTestResult(
-  //             device.getInternalId(), TestResult.UNDETERMINED, p.getInternalId(), null);
-  //     TestEvent correctedEvent = response.getTestOrder().getTestEvent();
+    // Re-submit the corrected test
+    List<MultiplexResultInput> undeterminedTestResult =
+        makeMultiplexTestResult(
+            TestResult.UNDETERMINED, TestResult.UNDETERMINED, TestResult.UNDETERMINED);
+    AddTestResultResponse response =
+        _service.addMultiplexResult(
+            device.getInternalId(), undeterminedTestResult, p.getInternalId(), null);
+    TestEvent correctedEvent = response.getTestOrder().getTestEvent();
 
-  //     assertEquals(
-  //         2, _testEventRepository.findAllByPatientAndFacilities(p, List.of(facility)).size());
-  //     assertEquals(1, _testOrderRepository.fetchPastResults(org, facility).size());
+    assertEquals(
+        2, _testEventRepository.findAllByPatientAndFacilities(p, List.of(facility)).size());
+    assertEquals(1, _testOrderRepository.fetchPastResults(org, facility).size());
 
-  //     // Now mark the corrected test as an error
-  //     String removalMsg = "I changed my mind, remove this test " + LocalDateTime.now();
-  //     TestEvent deleteCorrectedEvent =
-  //         _service.markAsError(correctedEvent.getInternalId(), removalMsg);
+    // Now mark the corrected test as an error
+    String removalMsg = "I changed my mind, remove this test " + LocalDateTime.now();
+    TestEvent deleteCorrectedEvent =
+        _service.markAsError(correctedEvent.getInternalId(), removalMsg);
 
-  //     // There should only be a single TestOrder, but three TestEvents - the original, the
-  // corrected,
-  //     // and the removed
-  //     // There should also be exactly three Result objects for the order, one per TestEvent
-  //     assertEquals(
-  //         3, _testEventRepository.findAllByPatientAndFacilities(p, List.of(facility)).size());
-  //     assertEquals(1, _testOrderRepository.fetchPastResults(org, facility).size());
-  //     assertEquals(3, _resultRepository.findAllByTestOrder(response.getTestOrder()).size());
-  //     assertEquals(1, _resultRepository.findAllByTestEvent(deleteCorrectedEvent).size());
+    // There should only be a single TestOrder, but three TestEvents - the original, the corrected,
+    // and the removed
+    // There should also be exactly three Result objects for the order, one per TestEvent
+    assertEquals(
+        3, _testEventRepository.findAllByPatientAndFacilities(p, List.of(facility)).size());
+    assertEquals(1, _testOrderRepository.fetchPastResults(org, facility).size());
+    assertEquals(3, _resultRepository.findAllByTestOrder(response.getTestOrder()).size());
+    assertEquals(1, _resultRepository.findAllByTestEvent(deleteCorrectedEvent).size());
 
-  //     TestOrder order = deleteCorrectedEvent.getTestOrder();
-  //     assertEquals(TestCorrectionStatus.REMOVED, order.getCorrectionStatus());
-  //     assertEquals(removalMsg, order.getReasonForCorrection());
-  //     assertEquals(deleteCorrectedEvent.getInternalId(), order.getTestEvent().getInternalId());
-  //     assertEquals(OrderStatus.COMPLETED, order.getOrderStatus());
-  //   }
+    TestOrder order = deleteCorrectedEvent.getTestOrder();
+    assertEquals(TestCorrectionStatus.REMOVED, order.getCorrectionStatus());
+    assertEquals(removalMsg, order.getReasonForCorrection());
+    assertEquals(deleteCorrectedEvent.getInternalId(), order.getTestEvent().getInternalId());
+    assertEquals(OrderStatus.COMPLETED, order.getOrderStatus());
+  }
 
   @Test
   @WithSimpleReportOrgAdminUser
