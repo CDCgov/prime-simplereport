@@ -18,5 +18,10 @@ public enum EmailProviderTemplate {
   SIMPLE_REPORT_TEST_RESULT,
 
   // patient upload complete notification template
-  SIMPLE_REPORT_PATIENT_UPLOAD;
+  SIMPLE_REPORT_PATIENT_UPLOAD,
+
+  // patient upload error notification template
+  SIMPLE_REPORT_PATIENT_UPLOAD_ERROR;
+
+  //
 }

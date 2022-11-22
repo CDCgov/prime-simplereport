@@ -31,6 +31,7 @@ import java.util.UUID;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.dao.OptimisticLockingFailureException;
 import org.springframework.scheduling.annotation.Async;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -54,6 +55,8 @@ public class PatientBulkUploadServiceAsync {
   @AuthorizationConfiguration.RequirePermissionCreatePatientAtFacility
   public void savePatients(byte[] content, UUID facilityId) {
     String uploaderEmail = _userService.getCurrentApiUserInContainedTransaction().getLoginEmail();
+    String simplereportUrl = patientLinkUrl.substring(0, patientLinkUrl.indexOf("pxp"));
+    String patientsUrl = simplereportUrl + "patients?facility=" + facilityId;
 
     Organization currentOrganization = _organizationService.getCurrentOrganization();
 
@@ -139,6 +142,7 @@ public class PatientBulkUploadServiceAsync {
           patientsList.add(newPatient);
         }
       } catch (IllegalArgumentException e) {
+        sendErrorEmail(uploaderEmail, simplereportUrl, currentOrganization);
         String errorMessage = "Error uploading patient roster";
         log.error(
             errorMessage
@@ -150,13 +154,39 @@ public class PatientBulkUploadServiceAsync {
       }
     }
 
-    _personService.addPatientsAndPhoneNumbers(patientsList, phoneNumbersList);
+    try {
+      _personService.addPatientsAndPhoneNumbers(patientsList, phoneNumbersList);
+      log.info("CSV patient upload completed for {}", currentOrganization.getOrganizationName());
+      sendSuccessEmail(uploaderEmail, patientsUrl, currentOrganization);
+    } catch (IllegalArgumentException | OptimisticLockingFailureException e) {
+      sendErrorEmail(uploaderEmail, simplereportUrl, currentOrganization);
+      String errorMessage = "Error saving patient roster";
+      log.error(
+          errorMessage
+              + " for organization "
+              + currentOrganization.getExternalId()
+              + " and facility "
+              + facilityId);
+      throw new IllegalArgumentException(errorMessage);
+    }
+  }
 
-    String patientsUrl =
-        patientLinkUrl.substring(0, patientLinkUrl.indexOf("pxp"))
-            + "patients?facility="
-            + facilityId;
+  private void sendErrorEmail(
+      String uploaderEmail, String simplereportUrl, Organization currentOrganization) {
+    try {
+      _emailService.sendWithDynamicTemplate(
+          List.of(uploaderEmail),
+          EmailProviderTemplate.SIMPLE_REPORT_PATIENT_UPLOAD_ERROR,
+          Map.of("simplereport_url", simplereportUrl));
+    } catch (IOException exception) {
+      log.info(
+          "CSV patient upload email failed to send for {}",
+          currentOrganization.getOrganizationName());
+    }
+  }
 
+  private void sendSuccessEmail(
+      String uploaderEmail, String patientsUrl, Organization currentOrganization) {
     try {
       _emailService.sendWithDynamicTemplate(
           List.of(uploaderEmail),
@@ -167,6 +197,5 @@ public class PatientBulkUploadServiceAsync {
           "CSV patient upload email failed to send for {}",
           currentOrganization.getOrganizationName());
     }
-    log.info("CSV patient upload completed for {}", currentOrganization.getOrganizationName());
   }
 }
