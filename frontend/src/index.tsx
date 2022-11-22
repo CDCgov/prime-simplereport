@@ -1,5 +1,5 @@
 import React from "react";
-import { createRoot } from "react-dom/client";
+import ReactDOM from "react-dom";
 import { Provider } from "react-redux";
 import {
   ApolloClient,
@@ -152,5 +152,5 @@ export const ReactApp = (
 );
 
 export const rootElement = document.getElementById("root");
-const root = createRoot(rootElement as Element);
-root.render(ReactApp);
+
+ReactDOM.render(ReactApp, rootElement);
