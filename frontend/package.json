@@ -10,7 +10,7 @@
     "prebuild": "tsc",
     "build": "VITE_CURRENT_COMMIT=$(git rev-parse HEAD) vite build",
     "postbuild": "echo 'pushstate: enabled' > build/Staticfile && echo $(git rev-parse HEAD) > build/assets/commit.txt",
-    "build:preview": "VITE_BASE_URL=http://localhost:3000 PUBLIC_URL='' VITE_CURRENT_COMMIT=$(git rev-parse HEAD) vite build && yarn postbuild" ,
+    "build:preview": "VITE_BACKEND_URL='http://localhost:3000/api' PUBLIC_URL='' VITE_BASE_URL='http://localhost:3000' VITE_CURRENT_COMMIT=$(git rev-parse HEAD) vite build && yarn postbuild" ,
     "preview": "yarn build:preview && VITE_CURRENT_COMMIT=$(git rev-parse HEAD) vite preview",
     "test": "jest",
     "test:ci": "CI=true yarn test --coverage",
