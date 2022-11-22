@@ -177,6 +177,13 @@ const PendingOrganizations = ({
         </tr>
       );
     }
+    if (organizations.length === 0) {
+      return (
+        <tr>
+          <td colSpan={7}>No results</td>
+        </tr>
+      );
+    }
 
     const orgsSortedByNewest = [...organizations].sort(
       (a, b) => +new Date(b.createdAt) - +new Date(a.createdAt)
@@ -257,26 +264,20 @@ const PendingOrganizations = ({
               </h1>
             </div>
             <div className="usa-card__body">
-              {organizations.length === 0 ? (
-                <p className="margin-top-4 margin-bottom-4">
-                  No pending organizations found
-                </p>
-              ) : (
-                <table className="usa-table usa-table--borderless width-full">
-                  <thead>
-                    <tr>
-                      <th scope="col">Organization name</th>
-                      <th scope="row">Administrator</th>
-                      <th scope="row">Contact information</th>
-                      <th scope="row">Created</th>
-                      <th scope="col">External ID</th>
-                      <th scope="col" aria-hidden></th>
-                      <th scope="col" aria-hidden></th>
-                    </tr>
-                  </thead>
-                  <tbody>{orgRows()}</tbody>
-                </table>
-              )}
+              <table className="usa-table usa-table--borderless width-full">
+                <thead>
+                  <tr>
+                    <th scope="col">Organization name</th>
+                    <th scope="row">Administrator</th>
+                    <th scope="row">Contact information</th>
+                    <th scope="row">Created</th>
+                    <th scope="col">External ID</th>
+                    <th scope="col" aria-hidden></th>
+                    <th scope="col" aria-hidden></th>
+                  </tr>
+                </thead>
+                <tbody aria-live={"polite"}>{orgRows()}</tbody>
+              </table>
             </div>
           </div>
         </div>
