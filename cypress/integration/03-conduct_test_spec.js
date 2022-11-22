@@ -1,6 +1,6 @@
 import { loginHooks } from "../support";
 
-describe("Conducting a test", () => {
+describe("Conducting a COVID test", () => {
   let patientName, lastName, queueCard;
   loginHooks();
   before("retrieve the patient name", () => {
@@ -29,19 +29,8 @@ describe("Conducting a test", () => {
       "Are you experiencing any of the following symptoms?"
     );
 
-    // failing a11y test
     // Test a11y on the AoE modal
-    cy.checkA11y(
-        {
-          exclude: [],
-        },
-        {
-          rules: {
-            'label': { enabled: false },
-            'landmark-one-main': { enabled: false },
-          },
-        },
-    );
+    cy.checkA11y();
   });
   it("fills out the pretest questions and submits", () => {
     cy.get(".ReactModal__Content").within(() => {
@@ -67,21 +56,8 @@ describe("Conducting a test", () => {
     cy.get("#desktop-results-nav-link").click();
     cy.get(".usa-table").contains(patientName);
 
-    // failing a11y test
-    // error applies to the toast
-    // observe this by adding cy.wait(5000); to wait for the toasts to disappear
     // Test a11y on the Results page
-    cy.checkA11y(
-        {
-          exclude: [],
-        },
-        {
-          rules: {
-            // error applies to the toast
-            'landmark-unique': { enabled: false },
-          },
-        },
-    );
+    cy.checkA11y();
   });
   it("stores the patient link", () => {
     cy.get(".sr-test-result-row").then(($row) => {
