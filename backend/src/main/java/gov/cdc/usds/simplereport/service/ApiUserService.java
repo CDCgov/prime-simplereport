@@ -37,7 +37,6 @@ import java.util.function.Function;
 import java.util.stream.Collectors;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.beans.factory.support.ScopeNotActiveException;
 import org.springframework.security.access.AccessDeniedException;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Propagation;
@@ -510,17 +509,17 @@ public class ApiUserService {
       return getCurrentApiUserNoCache();
     }
 
-    try {
-      if (_apiUserContextHolder.hasBeenPopulated()) {
-        log.debug("Retrieving user from request context");
-        return _apiUserContextHolder.getCurrentApiUser();
-      }
-      ApiUser user = getCurrentApiUserNoCache();
-      _apiUserContextHolder.setCurrentApiUser(user);
-      return user;
-    } catch (ScopeNotActiveException e) {
-      return getCurrentApiUserNoCache();
+    //    try {
+    if (_apiUserContextHolder.hasBeenPopulated()) {
+      log.debug("Retrieving user from request context");
+      return _apiUserContextHolder.getCurrentApiUser();
     }
+    ApiUser user = getCurrentApiUserNoCache();
+    _apiUserContextHolder.setCurrentApiUser(user);
+    return user;
+    //    } catch (ScopeNotActiveException e) {
+    //      return getCurrentApiUserNoCache();
+    //    }
   }
 
   private ApiUser getCurrentApiUserNoCache() {

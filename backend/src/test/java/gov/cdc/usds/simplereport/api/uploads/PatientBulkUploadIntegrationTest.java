@@ -8,7 +8,6 @@ import static org.springframework.test.web.servlet.request.MockMvcRequestBuilder
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.content;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
-import gov.cdc.usds.simplereport.api.BaseFullStackTest;
 import gov.cdc.usds.simplereport.config.DataSourceConfiguration;
 import gov.cdc.usds.simplereport.db.model.Person;
 import gov.cdc.usds.simplereport.db.repository.PersonRepository;
@@ -33,7 +32,7 @@ import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.test.web.servlet.MockMvc;
 
 @Import({DataSourceConfiguration.class})
-public class PatientBulkUploadIntegrationTest extends BaseFullStackTest {
+public class PatientBulkUploadIntegrationTest extends BaseMultiThreadFullStackTest {
 
   @Autowired PatientBulkUploadServiceAsync _asyncService;
   @Autowired PatientBulkUploadService _patientBulkUploadService;

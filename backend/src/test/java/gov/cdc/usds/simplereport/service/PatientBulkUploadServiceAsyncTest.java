@@ -2,9 +2,12 @@ package gov.cdc.usds.simplereport.service;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.awaitility.Awaitility.await;
+import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.Mockito.when;
 
-import gov.cdc.usds.simplereport.api.BaseFullStackTest;
+import gov.cdc.usds.simplereport.api.uploads.BaseMultiThreadFullStackTest;
 import gov.cdc.usds.simplereport.db.model.Person;
+import gov.cdc.usds.simplereport.db.model.auxiliary.StreetAddress;
 import gov.cdc.usds.simplereport.test_util.SliceTestConfiguration;
 import java.io.IOException;
 import java.io.InputStream;
@@ -16,30 +19,25 @@ import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.security.core.context.SecurityContextHolder;
-import org.springframework.test.context.TestPropertySource;
 
-// @RunWith(SpringRunner.class)
-// @SpringBootTest(
-//    webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT,
-//    properties = {"simple-report.authorization.role-prefix=" +
-// TestUserIdentities.TEST_ROLE_PREFIX})
-// @Import({SliceTestConfiguration.class, DataSourceConfiguration.class})
-@TestPropertySource(
-    properties = {
-      //                "hibernate.query.interceptor.error-level=ERROR",
-      "spring.jpa.properties.hibernate.enable_lazy_load_no_trans=true"
-    })
-public class PatientBulkUploadServiceAsyncTest extends BaseFullStackTest {
+/*
+ * We can't use the standard BaseServiceTest here because this service is async and requires a request context to operate.
+ */
 
-  @Autowired OrganizationInitializingService _initService;
-  @Autowired PersonService _personService;
-  @Autowired AddressValidationService _addressValidationService;
-  @Autowired OrganizationService _organizationService;
+public class PatientBulkUploadServiceAsyncTest extends BaseMultiThreadFullStackTest {
+
+  //  @Autowired OrganizationInitializingService _initService;
+  //  @Autowired PersonService _personService;
+  //  @Autowired OrganizationService _organizationService;
   @Autowired PatientBulkUploadServiceAsync _service;
 
   public static final int PATIENT_PAGE_OFFSET = 0;
   public static final int PATIENT_PAGE_SIZE = 1000;
+
+  @MockBean protected AddressValidationService addressValidationService;
+  private StreetAddress address;
 
   @BeforeAll
   static void configuration() {
@@ -49,7 +47,10 @@ public class PatientBulkUploadServiceAsyncTest extends BaseFullStackTest {
 
   @BeforeEach
   void setup() {
-    _initService.initAll();
+    initSampleData();
+    address = new StreetAddress("123 Main Street", null, "Washington", "DC", "20008", null);
+    when(addressValidationService.getValidatedAddress(any(), any(), any(), any(), any(), any()))
+        .thenReturn(address);
   }
 
   @Test
