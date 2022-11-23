@@ -42,9 +42,10 @@ import org.springframework.test.web.servlet.request.MockHttpServletRequestBuilde
  * Base class for all tests that simulate fully-integrated API requests by either patients or
  * providers.
  */
-@SpringBootTest(
-    webEnvironment = WebEnvironment.RANDOM_PORT,
-    properties = {"hibernate.query.interceptor.error-level=EXCEPTION"})
+@SpringBootTest(webEnvironment = WebEnvironment.RANDOM_PORT)
+//    properties = { "spring.jpa.properties.hibernate.enable_lazy_load_no_trans=true" })
+//    "spring-hibernate-query-utils.n-plus-one-queries-detection.enabled=false",
+//    "spring-hibernate-query-utils.n-plus-one-queries-detection.error-level=INFO"})
 @AutoConfigureMockMvc
 public abstract class BaseFullStackTest {
 
@@ -57,6 +58,7 @@ public abstract class BaseFullStackTest {
   @Captor private ArgumentCaptor<ConsoleApiAuditEvent> auditLogCaptor;
   @Autowired protected DiseaseService _diseaseService;
   @Autowired private SupportedDiseaseRepository _diseaseRepo;
+  //  @Autowired protected HibernateQueryInterceptor _hibernateQueryInterceptor;
 
   protected Date _testStart;
 
@@ -65,7 +67,15 @@ public abstract class BaseFullStackTest {
     _testStart = new Date();
     reset(auditLoggerServiceSpy);
     _diseaseService.initDiseases();
+    //    _hibernateQueryInterceptor.startQueryCount(); // also resets count
   }
+
+  //  @AfterEach
+  //  protected void afterEach() {
+  //    // see output saved to backend/build/test-results/test
+  //    LoggerFactory.getLogger(BaseServiceTest.class)
+  //            .info("Hibernate Total queries: {}", _hibernateQueryInterceptor.getQueryCount());
+  //  }
 
   protected void truncateDb() {
     _truncator.truncateAll();

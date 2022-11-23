@@ -43,8 +43,6 @@ public class PatientBulkUploadIntegrationTest extends BaseFullStackTest {
   @Autowired PersonRepository _personRepo;
   @Autowired OrganizationService _orgService;
   @Autowired PersonService _personService;
-  //    @MockBean
-  //    FacilityRepository mockFacilityRepository;
 
   @Autowired OrganizationInitializingService _initService;
   @Autowired private MockMvc mockMvc;
