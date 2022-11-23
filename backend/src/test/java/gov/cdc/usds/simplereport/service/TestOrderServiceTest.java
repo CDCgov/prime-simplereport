@@ -151,13 +151,11 @@ class TestOrderServiceTest extends BaseServiceTest<TestOrderService> {
     List<TestOrder> queue = _service.getQueue(facility.getInternalId());
     assertEquals(1, queue.size());
 
-    List<MultiplexResultInput> testResultInput =
-        makeMultiplexTestResult(
-            TestResult.POSITIVE, TestResult.UNDETERMINED, TestResult.UNDETERMINED);
+    List<MultiplexResultInput> positiveCovidOnlyResult = makeCovidOnlyResult(TestResult.POSITIVE);
     ;
     // WHEN
     _service.addMultiplexResult(
-        devA.getInternalId(), testResultInput, patient.getInternalId(), null);
+        devA.getInternalId(), positiveCovidOnlyResult, patient.getInternalId(), null);
 
     // THEN
     queue = _service.getQueue(facility.getInternalId());
@@ -207,12 +205,10 @@ class TestOrderServiceTest extends BaseServiceTest<TestOrderService> {
     _service.addPatientToQueue(
         facility.getInternalId(), p, "", Collections.emptyMap(), LocalDate.of(1865, 12, 25), false);
 
-    List<MultiplexResultInput> testResultInput =
-        makeMultiplexTestResult(
-            TestResult.POSITIVE, TestResult.UNDETERMINED, TestResult.UNDETERMINED);
+    List<MultiplexResultInput> positiveCovidOnlyResult = makeCovidOnlyResult(TestResult.POSITIVE);
     _service.addMultiplexResult(
         _dataFactory.getGenericDeviceSpecimen().getInternalId(),
-        testResultInput,
+        positiveCovidOnlyResult,
         p.getInternalId(),
         null);
 
@@ -227,7 +223,7 @@ class TestOrderServiceTest extends BaseServiceTest<TestOrderService> {
         facility.getInternalId(), p, "", Collections.emptyMap(), LocalDate.of(1866, 12, 25), false);
     _service.addMultiplexResult(
         _dataFactory.getGenericDeviceSpecimen().getInternalId(),
-        testResultInput,
+        positiveCovidOnlyResult,
         p.getInternalId(),
         null);
 
@@ -370,12 +366,9 @@ class TestOrderServiceTest extends BaseServiceTest<TestOrderService> {
         facility.getInternalId(), p, "", Collections.emptyMap(), LocalDate.of(1865, 12, 25), false);
     DeviceSpecimenType devA = facility.getDefaultDeviceSpecimen();
 
-    List<MultiplexResultInput> testResultInput =
-        makeMultiplexTestResult(
-            TestResult.POSITIVE, TestResult.UNDETERMINED, TestResult.UNDETERMINED);
-    ;
+    List<MultiplexResultInput> positiveCovidResult = makeCovidOnlyResult(TestResult.POSITIVE);
 
-    _service.addMultiplexResult(devA.getInternalId(), testResultInput, p.getInternalId(), null);
+    _service.addMultiplexResult(devA.getInternalId(), positiveCovidResult, p.getInternalId(), null);
 
     verify(testResultsDeliveryService).smsTestResults(any(PatientLink.class));
 
@@ -415,12 +408,10 @@ class TestOrderServiceTest extends BaseServiceTest<TestOrderService> {
         facility.getInternalId(), p, "", Collections.emptyMap(), LocalDate.of(1865, 12, 25), false);
     DeviceSpecimenType devA = facility.getDefaultDeviceSpecimen();
 
-    List<MultiplexResultInput> testResultInput =
-        makeMultiplexTestResult(
-            TestResult.POSITIVE, TestResult.UNDETERMINED, TestResult.UNDETERMINED);
-    ;
+    List<MultiplexResultInput> positiveCovidOnlyResult = makeCovidOnlyResult(TestResult.POSITIVE);
 
-    _service.addMultiplexResult(devA.getInternalId(), testResultInput, p.getInternalId(), null);
+    _service.addMultiplexResult(
+        devA.getInternalId(), positiveCovidOnlyResult, p.getInternalId(), null);
 
     List<TestOrder> queue = _service.getQueue(facility.getInternalId());
     assertEquals(0, queue.size());
@@ -499,16 +490,13 @@ class TestOrderServiceTest extends BaseServiceTest<TestOrderService> {
     TestUserIdentities.setFacilityAuthorities();
 
     DeviceSpecimenType devA = _dataFactory.getGenericDeviceSpecimen();
-    List<MultiplexResultInput> testResultInput =
-        makeMultiplexTestResult(
-            TestResult.POSITIVE, TestResult.UNDETERMINED, TestResult.UNDETERMINED);
-    ;
+    List<MultiplexResultInput> positiveCovidOnlyResult = makeCovidOnlyResult(TestResult.POSITIVE);
 
     assertThrows(
         AccessDeniedException.class,
         () ->
             _service.addMultiplexResult(
-                devA.getInternalId(), testResultInput, p2.getInternalId(), null));
+                devA.getInternalId(), positiveCovidOnlyResult, p2.getInternalId(), null));
 
     // caller has access to the patient (whose facility is null)
     // but cannot modify the test order which was created at a non-accessible facility
@@ -516,25 +504,24 @@ class TestOrderServiceTest extends BaseServiceTest<TestOrderService> {
         AccessDeniedException.class,
         () ->
             _service.addMultiplexResult(
-                devA.getInternalId(), testResultInput, p1.getInternalId(), null));
+                devA.getInternalId(), positiveCovidOnlyResult, p1.getInternalId(), null));
 
     // make sure the nothing was sent to storage queue
     verifyNoInteractions(testEventReportingService);
 
     TestUserIdentities.setFacilityAuthorities(facility1);
-    _service.addMultiplexResult(devA.getInternalId(), testResultInput, p1.getInternalId(), null);
+    _service.addMultiplexResult(
+        devA.getInternalId(), positiveCovidOnlyResult, p1.getInternalId(), null);
     List<TestOrder> queue = _service.getQueue(facility1.getInternalId());
     assertEquals(1, queue.size());
 
     // make sure the corrected event is sent to storage queue
     verify(testEventReportingService).report(any());
 
-    List<MultiplexResultInput> testResultInputNegative =
-        makeMultiplexTestResult(
-            TestResult.NEGATIVE, TestResult.UNDETERMINED, TestResult.UNDETERMINED);
+    List<MultiplexResultInput> negativeCovidResult = makeCovidOnlyResult(TestResult.NEGATIVE);
 
     _service.addMultiplexResult(
-        devA.getInternalId(), testResultInputNegative, p2.getInternalId(), null);
+        devA.getInternalId(), negativeCovidResult, p2.getInternalId(), null);
 
     queue = _service.getQueue(facility1.getInternalId());
     assertEquals(0, queue.size());
@@ -555,10 +542,9 @@ class TestOrderServiceTest extends BaseServiceTest<TestOrderService> {
         facility.getInternalId(), p, "", Collections.emptyMap(), LocalDate.of(1865, 12, 25), false);
     DeviceSpecimenType devA = _dataFactory.getGenericDeviceSpecimen();
     facility.addDefaultDeviceSpecimen(devA);
-    List<MultiplexResultInput> testResultInput =
-        makeMultiplexTestResult(
-            TestResult.POSITIVE, TestResult.UNDETERMINED, TestResult.UNDETERMINED);
-    _service.addMultiplexResult(devA.getInternalId(), testResultInput, p.getInternalId(), null);
+    List<MultiplexResultInput> positiveCovidOnlyResult = makeCovidOnlyResult(TestResult.POSITIVE);
+    _service.addMultiplexResult(
+        devA.getInternalId(), positiveCovidOnlyResult, p.getInternalId(), null);
 
     verify(testResultsDeliveryService).smsTestResults(any(PatientLink.class));
 
@@ -579,15 +565,13 @@ class TestOrderServiceTest extends BaseServiceTest<TestOrderService> {
     DeviceSpecimenType devA = _dataFactory.getGenericDeviceSpecimen();
     facility.addDefaultDeviceSpecimen(devA);
 
-    List<MultiplexResultInput> testResultInput =
-        makeMultiplexTestResult(
-            TestResult.POSITIVE, TestResult.UNDETERMINED, TestResult.UNDETERMINED);
-    _service.addMultiplexResult(devA.getInternalId(), testResultInput, p.getInternalId(), null);
+    List<MultiplexResultInput> positiveCovidResult = makeCovidOnlyResult(TestResult.POSITIVE);
+    _service.addMultiplexResult(devA.getInternalId(), positiveCovidResult, p.getInternalId(), null);
     assertThrows(
         NonexistentQueueItemException.class,
         () ->
             _service.addMultiplexResult(
-                devA.getInternalId(), testResultInput, p.getInternalId(), null));
+                devA.getInternalId(), positiveCovidResult, p.getInternalId(), null));
   }
 
   @Test
@@ -602,10 +586,9 @@ class TestOrderServiceTest extends BaseServiceTest<TestOrderService> {
     facility.addDefaultDeviceSpecimen(devA);
 
     // Create test event for a later correction
-    List<MultiplexResultInput> testResultInput =
-        makeMultiplexTestResult(
-            TestResult.POSITIVE, TestResult.UNDETERMINED, TestResult.UNDETERMINED);
-    _service.addMultiplexResult(devA.getInternalId(), testResultInput, p.getInternalId(), null);
+    List<MultiplexResultInput> positiveCovidOnlyResult = makeCovidOnlyResult(TestResult.POSITIVE);
+    _service.addMultiplexResult(
+        devA.getInternalId(), positiveCovidOnlyResult, p.getInternalId(), null);
     List<TestEvent> testEvents =
         _testEventRepository.findAllByPatientAndFacilities(p, List.of(facility));
     assertEquals(1, testEvents.size());
@@ -615,12 +598,10 @@ class TestOrderServiceTest extends BaseServiceTest<TestOrderService> {
     _service.markAsCorrection(originalTestEvent.getInternalId(), "Cold feet");
 
     // Issue test correction
-    List<MultiplexResultInput> testResultInputNegative =
-        makeMultiplexTestResult(
-            TestResult.NEGATIVE, TestResult.UNDETERMINED, TestResult.UNDETERMINED);
+    List<MultiplexResultInput> negativeCovidOnlyResult = makeCovidOnlyResult(TestResult.NEGATIVE);
     AddTestResultResponse response =
         _service.addMultiplexResult(
-            devA.getInternalId(), testResultInputNegative, p.getInternalId(), null);
+            devA.getInternalId(), negativeCovidOnlyResult, p.getInternalId(), null);
 
     TestEvent correctionTestEvent = response.getTestOrder().getTestEvent();
 
@@ -634,9 +615,9 @@ class TestOrderServiceTest extends BaseServiceTest<TestOrderService> {
         LocalDate.of(1865, 12, 25),
         LocalDate.ofInstant(
             correctionTestEvent.getDateTested().toInstant(), ZoneId.systemDefault()));
-    assertEquals(6, _resultRepository.findAllByTestOrder(response.getTestOrder()).size());
-    assertEquals(3, _resultRepository.findAllByTestEvent(correctionTestEvent).size());
-    assertEquals(3, _resultRepository.findAllByTestEvent(originalTestEvent).size());
+    assertEquals(2, _resultRepository.findAllByTestOrder(response.getTestOrder()).size());
+    assertEquals(1, _resultRepository.findAllByTestEvent(correctionTestEvent).size());
+    assertEquals(1, _resultRepository.findAllByTestEvent(originalTestEvent).size());
   }
 
   @Test
@@ -663,12 +644,10 @@ class TestOrderServiceTest extends BaseServiceTest<TestOrderService> {
     when(testResultsDeliveryService.smsTestResults(any(UUID.class))).thenReturn(true);
 
     // WHEN
-    List<MultiplexResultInput> testResultInput =
-        makeMultiplexTestResult(
-            TestResult.POSITIVE, TestResult.UNDETERMINED, TestResult.UNDETERMINED);
+    List<MultiplexResultInput> positiveCovidOnlyResult = makeCovidOnlyResult(TestResult.POSITIVE);
     AddTestResultResponse res =
         _service.addMultiplexResult(
-            devA.getInternalId(), testResultInput, patient.getInternalId(), null);
+            devA.getInternalId(), positiveCovidOnlyResult, patient.getInternalId(), null);
 
     // THEN
     assertTrue(res.getDeliverySuccess());
@@ -703,12 +682,10 @@ class TestOrderServiceTest extends BaseServiceTest<TestOrderService> {
     when(testResultsDeliveryService.smsTestResults(any(UUID.class))).thenReturn(false);
 
     // WHEN
-    List<MultiplexResultInput> testResultInput =
-        makeMultiplexTestResult(
-            TestResult.POSITIVE, TestResult.UNDETERMINED, TestResult.UNDETERMINED);
+    List<MultiplexResultInput> positiveCovidOnlyResult = makeCovidOnlyResult(TestResult.POSITIVE);
     AddTestResultResponse res =
         _service.addMultiplexResult(
-            devA.getInternalId(), testResultInput, patient.getInternalId(), null);
+            devA.getInternalId(), positiveCovidOnlyResult, patient.getInternalId(), null);
 
     // THEN
     verify(testResultsDeliveryService).smsTestResults(any(PatientLink.class));
@@ -740,12 +717,10 @@ class TestOrderServiceTest extends BaseServiceTest<TestOrderService> {
     when(testResultsDeliveryService.emailTestResults(any(UUID.class))).thenReturn(true);
 
     // WHEN
-    List<MultiplexResultInput> testResultInput =
-        makeMultiplexTestResult(
-            TestResult.POSITIVE, TestResult.UNDETERMINED, TestResult.UNDETERMINED);
+    List<MultiplexResultInput> positiveCovidOnlyResult = makeCovidOnlyResult(TestResult.POSITIVE);
     AddTestResultResponse res =
         _service.addMultiplexResult(
-            devA.getInternalId(), testResultInput, patient.getInternalId(), null);
+            devA.getInternalId(), positiveCovidOnlyResult, patient.getInternalId(), null);
 
     // THEN
     assertTrue(res.getDeliverySuccess());
@@ -780,12 +755,10 @@ class TestOrderServiceTest extends BaseServiceTest<TestOrderService> {
     when(testResultsDeliveryService.emailTestResults(any(UUID.class))).thenReturn(false);
 
     // WHEN
-    List<MultiplexResultInput> testResultInput =
-        makeMultiplexTestResult(
-            TestResult.POSITIVE, TestResult.UNDETERMINED, TestResult.UNDETERMINED);
+    List<MultiplexResultInput> positiveCovidOnlyResult = makeCovidOnlyResult(TestResult.POSITIVE);
     AddTestResultResponse res =
         _service.addMultiplexResult(
-            devA.getInternalId(), testResultInput, patient.getInternalId(), null);
+            devA.getInternalId(), positiveCovidOnlyResult, patient.getInternalId(), null);
 
     // THEN
     verify(testResultsDeliveryService).emailTestResults(any(PatientLink.class));
@@ -816,13 +789,11 @@ class TestOrderServiceTest extends BaseServiceTest<TestOrderService> {
     when(testResultsDeliveryService.emailTestResults(any(UUID.class))).thenReturn(true);
 
     // WHEN
-    List<MultiplexResultInput> testResultInput =
-        makeMultiplexTestResult(
-            TestResult.POSITIVE, TestResult.UNDETERMINED, TestResult.UNDETERMINED);
+    List<MultiplexResultInput> positiveCovidOnlyResult = makeCovidOnlyResult(TestResult.POSITIVE);
 
     AddTestResultResponse res =
         _service.addMultiplexResult(
-            devA.getInternalId(), testResultInput, patient.getInternalId(), null);
+            devA.getInternalId(), positiveCovidOnlyResult, patient.getInternalId(), null);
 
     // THEN
     verify(testResultsDeliveryService).emailTestResults(any(PatientLink.class));
@@ -852,12 +823,10 @@ class TestOrderServiceTest extends BaseServiceTest<TestOrderService> {
     facility.addDefaultDeviceSpecimen(devA);
 
     // WHEN
-    List<MultiplexResultInput> testResultInput =
-        makeMultiplexTestResult(
-            TestResult.POSITIVE, TestResult.UNDETERMINED, TestResult.UNDETERMINED);
+    List<MultiplexResultInput> positiveCovidOnlyResult = makeCovidOnlyResult(TestResult.POSITIVE);
     AddTestResultResponse res =
         _service.addMultiplexResult(
-            devA.getInternalId(), testResultInput, patient.getInternalId(), null);
+            devA.getInternalId(), positiveCovidOnlyResult, patient.getInternalId(), null);
 
     // THEN
     assertTrue(res.getDeliverySuccess());
@@ -884,16 +853,14 @@ class TestOrderServiceTest extends BaseServiceTest<TestOrderService> {
     facility.addDefaultDeviceSpecimen(devA);
 
     // WHEN
-    List<MultiplexResultInput> testResultInput =
-        makeMultiplexTestResult(
-            TestResult.POSITIVE, TestResult.UNDETERMINED, TestResult.UNDETERMINED);
+    List<MultiplexResultInput> positiveCovidOnlyResult = makeCovidOnlyResult(TestResult.POSITIVE);
     AddTestResultResponse res =
         _service.addMultiplexResult(
-            devA.getInternalId(), testResultInput, patient.getInternalId(), null);
+            devA.getInternalId(), positiveCovidOnlyResult, patient.getInternalId(), null);
 
     // THEN
     List<Result> results = _resultRepository.findAllByTestOrder(res.getTestOrder());
-    assertEquals(3, results.size());
+    assertEquals(1, results.size());
 
     Result covidResult =
         _resultRepository.findResultByTestOrderAndDisease(
@@ -1446,26 +1413,17 @@ class TestOrderServiceTest extends BaseServiceTest<TestOrderService> {
     DeviceSpecimenType device = _dataFactory.getGenericDeviceSpecimen();
     facility.addDefaultDeviceSpecimen(device);
     Person p = _dataFactory.createFullPerson(org);
-    TestEvent e =
-        _dataFactory.createMultiplexTestEvent(
-            p,
-            facility,
-            TestResult.POSITIVE,
-            TestResult.UNDETERMINED,
-            TestResult.UNDETERMINED,
-            null);
+    TestEvent e = _dataFactory.createTestEvent(p, facility);
 
     // Re-open the original test as a correction
     String reasonMsg = "Testing correction marking as error " + LocalDateTime.now();
     _service.markAsCorrection(e.getInternalId(), reasonMsg);
 
     // Re-submit the corrected test
-    List<MultiplexResultInput> undeterminedTestResult =
-        makeMultiplexTestResult(
-            TestResult.UNDETERMINED, TestResult.UNDETERMINED, TestResult.UNDETERMINED);
+    List<MultiplexResultInput> correctedTestResult = makeCovidOnlyResult(TestResult.UNDETERMINED);
     AddTestResultResponse response =
         _service.addMultiplexResult(
-            device.getInternalId(), undeterminedTestResult, p.getInternalId(), null);
+            device.getInternalId(), correctedTestResult, p.getInternalId(), null);
     TestEvent correctedEvent = response.getTestOrder().getTestEvent();
 
     assertEquals(
@@ -1483,9 +1441,8 @@ class TestOrderServiceTest extends BaseServiceTest<TestOrderService> {
     assertEquals(
         3, _testEventRepository.findAllByPatientAndFacilities(p, List.of(facility)).size());
     assertEquals(1, _testOrderRepository.fetchPastResults(org, facility).size());
-
-    assertEquals(3, _resultRepository.findAllByTestEvent(deleteCorrectedEvent).size());
-    assertEquals(9, _resultRepository.findAllByTestOrder(response.getTestOrder()).size());
+    assertEquals(3, _resultRepository.findAllByTestOrder(response.getTestOrder()).size());
+    assertEquals(1, _resultRepository.findAllByTestEvent(deleteCorrectedEvent).size());
 
     TestOrder order = deleteCorrectedEvent.getTestOrder();
     assertEquals(TestCorrectionStatus.REMOVED, order.getCorrectionStatus());
@@ -1916,6 +1873,11 @@ class TestOrderServiceTest extends BaseServiceTest<TestOrderService> {
     _dataFactory.createTestEvent(
         _dataFactory.createMinimalPerson(org, _otherSite, BRAD), _otherSite, TestResult.NEGATIVE);
     return testEvents;
+  }
+
+  private List<MultiplexResultInput> makeCovidOnlyResult(TestResult covidTestResult) {
+    MultiplexResultInput covidResult = new MultiplexResultInput("COVID-19", covidTestResult);
+    return List.of(covidResult);
   }
 
   private List<MultiplexResultInput> makeMultiplexTestResult(
