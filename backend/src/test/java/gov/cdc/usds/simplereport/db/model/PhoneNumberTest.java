@@ -72,4 +72,18 @@ class PhoneNumberTest {
             ContactPointUse.HOME.toCode(),
             from(ContactPoint::getUse).andThen(ContactPoint.ContactPointUse::toCode));
   }
+
+  @Test
+  void invalidNumber_toFhir_doesNotFormatNumber() {
+    var phoneNumber = new PhoneNumber(PhoneType.LANDLINE, "12345678");
+
+    var actual = phoneNumber.toFhir();
+
+    assertThat(actual)
+        .returns(ContactPointSystem.PHONE, from(ContactPoint::getSystem))
+        .returns("12345678", from(ContactPoint::getValue))
+        .returns(
+            ContactPointUse.HOME.toCode(),
+            from(ContactPoint::getUse).andThen(ContactPoint.ContactPointUse::toCode));
+  }
 }

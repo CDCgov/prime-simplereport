@@ -124,15 +124,15 @@ public class PhoneNumber extends AuditedEntity {
 
     // converting string to phone format as recommended by the fhir format.
     // https://www.hl7.org/fhir/datatypes.html#ContactPoint
-    var phoneUtil = PhoneNumberUtil.getInstance();
-
     try {
+      var phoneUtil = PhoneNumberUtil.getInstance();
       var parsedNumber = phoneUtil.parse(number, "US");
       var formattedWithDash = phoneUtil.format(parsedNumber, PhoneNumberFormat.NATIONAL);
 
       // library formats the national number with - instead of white space
       contactPoint.setValue(formattedWithDash.replace("-", " "));
     } catch (NumberParseException e) {
+      // todo: Should this just return null instead of adding invalid number?
       contactPoint.setValue(number);
     }
 
