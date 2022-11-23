@@ -12,6 +12,7 @@ import java.util.Objects;
 import javax.persistence.Column;
 import javax.persistence.Embeddable;
 import org.hibernate.annotations.Type;
+import org.hl7.fhir.r4.model.Address;
 import org.springframework.boot.context.properties.ConstructorBinding;
 
 /** An embeddable address type for patients, facilities and providers. */
@@ -140,5 +141,15 @@ public class StreetAddress {
     String postal = parseString(address.getPostalCode());
     String county = parseString(address.getCounty());
     return new StreetAddress(streetOne, streetTwo, city, state, postal, county);
+  }
+
+  public Address toFhir() {
+    var address = new Address();
+    street.forEach(address::addLine);
+    address.setCity(city);
+    address.setDistrict(county);
+    address.setState(state);
+    address.setPostalCode(postalCode);
+    return address;
   }
 }
