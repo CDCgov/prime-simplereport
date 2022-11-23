@@ -16,8 +16,9 @@ class PersonNameTest {
     var actual = personName.toFHIR();
 
     assertThat(actual).returns(personName.getLastName(), from(HumanName::getFamily));
-    assertEquals(actual.getGiven(), List.of(personName.getFirstName(), personName.getMiddleName()));
-    assertEquals(actual.getSuffix(), List.of(personName.getSuffix()));
+    assertStringTypeListEqualsStringList(
+        List.of(personName.getFirstName(), personName.getMiddleName()), actual.getGiven());
+    assertStringTypeListEqualsStringList(List.of(personName.getSuffix()), actual.getSuffix());
   }
 
   @Test
@@ -26,7 +27,7 @@ class PersonNameTest {
 
     var actual = personName.toFHIR();
 
-    assertEquals(actual.getGiven(), List.of(personName.getFirstName()));
+    assertStringTypeListEqualsStringList(List.of(personName.getFirstName()), actual.getGiven());
   }
 
   @Test
@@ -40,8 +41,9 @@ class PersonNameTest {
     assertThat(actual.getFamily()).isNull();
   }
   // note: getGiven and getSuffix return array lists of StringType which are difficult to compare
-  void assertEquals(List<StringType> actual, List<String> expected) {
+  public static void assertStringTypeListEqualsStringList(
+      List<String> actual, List<StringType> expected) {
     assertThat(actual.size()).isEqualTo(expected.size());
-    actual.forEach(st -> assertThat(expected).contains(st.getValue()));
+    expected.forEach(st -> assertThat(actual).contains(st.getValue()));
   }
 }
