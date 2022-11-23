@@ -2027,7 +2027,7 @@ exports[`CsvSchemaDocumentation tests CsvSchemaDocumentation matches snapshot 1`
                   Find your device on the 
                   <a
                     class="usa-link"
-                    href="/results/upload/submit/code-lookup"
+                    href="/app/results/upload/submit/code-lookup"
                     rel="noreferrer noopener"
                     target="_blank"
                   >
@@ -2148,7 +2148,7 @@ exports[`CsvSchemaDocumentation tests CsvSchemaDocumentation matches snapshot 1`
                   Find your device on the 
                   <a
                     class="usa-link"
-                    href="/results/upload/submit/code-lookup"
+                    href="/app/results/upload/submit/code-lookup"
                     rel="noreferrer noopener"
                     target="_blank"
                   >
@@ -2291,7 +2291,7 @@ exports[`CsvSchemaDocumentation tests CsvSchemaDocumentation matches snapshot 1`
                   Use one of the common values below, or find your device on the 
                   <a
                     class="usa-link"
-                    href="/results/upload/submit/code-lookup"
+                    href="/app/results/upload/submit/code-lookup"
                     rel="noreferrer noopener"
                     target="_blank"
                   >
@@ -2958,7 +2958,7 @@ exports[`CsvSchemaDocumentation tests CsvSchemaDocumentation matches snapshot 1`
                   Use one of the common values below, or find your device on the 
                   <a
                     class="usa-link"
-                    href="/results/upload/submit/code-lookup"
+                    href="/app/results/upload/submit/code-lookup"
                     rel="noreferrer noopener"
                     target="_blank"
                   >
