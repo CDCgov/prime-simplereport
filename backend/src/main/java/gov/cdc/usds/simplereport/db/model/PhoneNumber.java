@@ -3,6 +3,7 @@ package gov.cdc.usds.simplereport.db.model;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.google.i18n.phonenumbers.NumberParseException;
 import com.google.i18n.phonenumbers.PhoneNumberUtil;
+import com.google.i18n.phonenumbers.PhoneNumberUtil.PhoneNumberFormat;
 import gov.cdc.usds.simplereport.db.model.auxiliary.PhoneType;
 import java.util.Objects;
 import java.util.UUID;
@@ -14,6 +15,9 @@ import javax.persistence.FetchType;
 import javax.persistence.JoinColumn;
 import javax.persistence.ManyToOne;
 import org.hibernate.annotations.Type;
+import org.hl7.fhir.r4.model.ContactPoint;
+import org.hl7.fhir.r4.model.ContactPoint.ContactPointSystem;
+import org.hl7.fhir.r4.model.ContactPoint.ContactPointUse;
 
 @Entity
 public class PhoneNumber extends AuditedEntity {
@@ -104,5 +108,29 @@ public class PhoneNumber extends AuditedEntity {
   @Override
   public int hashCode() {
     return Objects.hash(person, number, type);
+  }
+
+  public ContactPoint toFhir() {
+    var contactPoint = new ContactPoint();
+
+    // todo: figure out if system should be phone or sms for mobile phones?
+    contactPoint.setSystem(ContactPointSystem.PHONE);
+    contactPoint.setUse(ContactPointUse.MOBILE);
+
+    // converting string to phone format as recommended by the fhir format.
+    // https://www.hl7.org/fhir/datatypes.html#ContactPoint
+    var phoneUtil = PhoneNumberUtil.getInstance();
+
+    try {
+      var parsedNumber = phoneUtil.parse(number, "US");
+      var formattedWithDash = phoneUtil.format(parsedNumber, PhoneNumberFormat.NATIONAL);
+
+      // library formats the national number with - instead of white space
+      contactPoint.setValue(formattedWithDash.replace("-", " "));
+    } catch (NumberParseException e) {
+      contactPoint.setValue(number);
+    }
+
+    return contactPoint;
   }
 }
