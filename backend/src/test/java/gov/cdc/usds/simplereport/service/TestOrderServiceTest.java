@@ -152,7 +152,6 @@ class TestOrderServiceTest extends BaseServiceTest<TestOrderService> {
     assertEquals(1, queue.size());
 
     List<MultiplexResultInput> positiveCovidOnlyResult = makeCovidOnlyResult(TestResult.POSITIVE);
-    ;
     // WHEN
     _service.addMultiplexResult(
         devA.getInternalId(), positiveCovidOnlyResult, patient.getInternalId(), null);
