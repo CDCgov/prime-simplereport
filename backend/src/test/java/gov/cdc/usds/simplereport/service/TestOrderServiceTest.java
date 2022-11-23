@@ -151,7 +151,10 @@ class TestOrderServiceTest extends BaseServiceTest<TestOrderService> {
     List<TestOrder> queue = _service.getQueue(facility.getInternalId());
     assertEquals(1, queue.size());
 
-    List<MultiplexResultInput> testResultInput = makeMultiplexTestResult();
+    List<MultiplexResultInput> testResultInput =
+        makeMultiplexTestResult(
+            TestResult.POSITIVE, TestResult.UNDETERMINED, TestResult.UNDETERMINED);
+    ;
     // WHEN
     _service.addMultiplexResult(
         devA.getInternalId(), testResultInput, patient.getInternalId(), null);
@@ -204,7 +207,9 @@ class TestOrderServiceTest extends BaseServiceTest<TestOrderService> {
     _service.addPatientToQueue(
         facility.getInternalId(), p, "", Collections.emptyMap(), LocalDate.of(1865, 12, 25), false);
 
-    List<MultiplexResultInput> testResultInput = makeMultiplexTestResult();
+    List<MultiplexResultInput> testResultInput =
+        makeMultiplexTestResult(
+            TestResult.POSITIVE, TestResult.UNDETERMINED, TestResult.UNDETERMINED);
     _service.addMultiplexResult(
         _dataFactory.getGenericDeviceSpecimen().getInternalId(),
         testResultInput,
@@ -365,7 +370,10 @@ class TestOrderServiceTest extends BaseServiceTest<TestOrderService> {
         facility.getInternalId(), p, "", Collections.emptyMap(), LocalDate.of(1865, 12, 25), false);
     DeviceSpecimenType devA = facility.getDefaultDeviceSpecimen();
 
-    List<MultiplexResultInput> testResultInput = makeMultiplexTestResult();
+    List<MultiplexResultInput> testResultInput =
+        makeMultiplexTestResult(
+            TestResult.POSITIVE, TestResult.UNDETERMINED, TestResult.UNDETERMINED);
+    ;
 
     _service.addMultiplexResult(devA.getInternalId(), testResultInput, p.getInternalId(), null);
 
@@ -407,7 +415,10 @@ class TestOrderServiceTest extends BaseServiceTest<TestOrderService> {
         facility.getInternalId(), p, "", Collections.emptyMap(), LocalDate.of(1865, 12, 25), false);
     DeviceSpecimenType devA = facility.getDefaultDeviceSpecimen();
 
-    List<MultiplexResultInput> testResultInput = makeMultiplexTestResult();
+    List<MultiplexResultInput> testResultInput =
+        makeMultiplexTestResult(
+            TestResult.POSITIVE, TestResult.UNDETERMINED, TestResult.UNDETERMINED);
+    ;
 
     _service.addMultiplexResult(devA.getInternalId(), testResultInput, p.getInternalId(), null);
 
@@ -488,7 +499,10 @@ class TestOrderServiceTest extends BaseServiceTest<TestOrderService> {
     TestUserIdentities.setFacilityAuthorities();
 
     DeviceSpecimenType devA = _dataFactory.getGenericDeviceSpecimen();
-    List<MultiplexResultInput> testResultInput = makeMultiplexTestResult();
+    List<MultiplexResultInput> testResultInput =
+        makeMultiplexTestResult(
+            TestResult.POSITIVE, TestResult.UNDETERMINED, TestResult.UNDETERMINED);
+    ;
 
     assertThrows(
         AccessDeniedException.class,
@@ -541,7 +555,9 @@ class TestOrderServiceTest extends BaseServiceTest<TestOrderService> {
         facility.getInternalId(), p, "", Collections.emptyMap(), LocalDate.of(1865, 12, 25), false);
     DeviceSpecimenType devA = _dataFactory.getGenericDeviceSpecimen();
     facility.addDefaultDeviceSpecimen(devA);
-    List<MultiplexResultInput> testResultInput = makeMultiplexTestResult();
+    List<MultiplexResultInput> testResultInput =
+        makeMultiplexTestResult(
+            TestResult.POSITIVE, TestResult.UNDETERMINED, TestResult.UNDETERMINED);
     _service.addMultiplexResult(devA.getInternalId(), testResultInput, p.getInternalId(), null);
 
     verify(testResultsDeliveryService).smsTestResults(any(PatientLink.class));
@@ -563,7 +579,9 @@ class TestOrderServiceTest extends BaseServiceTest<TestOrderService> {
     DeviceSpecimenType devA = _dataFactory.getGenericDeviceSpecimen();
     facility.addDefaultDeviceSpecimen(devA);
 
-    List<MultiplexResultInput> testResultInput = makeMultiplexTestResult();
+    List<MultiplexResultInput> testResultInput =
+        makeMultiplexTestResult(
+            TestResult.POSITIVE, TestResult.UNDETERMINED, TestResult.UNDETERMINED);
     _service.addMultiplexResult(devA.getInternalId(), testResultInput, p.getInternalId(), null);
     assertThrows(
         NonexistentQueueItemException.class,
@@ -584,7 +602,9 @@ class TestOrderServiceTest extends BaseServiceTest<TestOrderService> {
     facility.addDefaultDeviceSpecimen(devA);
 
     // Create test event for a later correction
-    List<MultiplexResultInput> testResultInput = makeMultiplexTestResult();
+    List<MultiplexResultInput> testResultInput =
+        makeMultiplexTestResult(
+            TestResult.POSITIVE, TestResult.UNDETERMINED, TestResult.UNDETERMINED);
     _service.addMultiplexResult(devA.getInternalId(), testResultInput, p.getInternalId(), null);
     List<TestEvent> testEvents =
         _testEventRepository.findAllByPatientAndFacilities(p, List.of(facility));
@@ -643,7 +663,9 @@ class TestOrderServiceTest extends BaseServiceTest<TestOrderService> {
     when(testResultsDeliveryService.smsTestResults(any(UUID.class))).thenReturn(true);
 
     // WHEN
-    List<MultiplexResultInput> testResultInput = makeMultiplexTestResult();
+    List<MultiplexResultInput> testResultInput =
+        makeMultiplexTestResult(
+            TestResult.POSITIVE, TestResult.UNDETERMINED, TestResult.UNDETERMINED);
     AddTestResultResponse res =
         _service.addMultiplexResult(
             devA.getInternalId(), testResultInput, patient.getInternalId(), null);
@@ -681,7 +703,9 @@ class TestOrderServiceTest extends BaseServiceTest<TestOrderService> {
     when(testResultsDeliveryService.smsTestResults(any(UUID.class))).thenReturn(false);
 
     // WHEN
-    List<MultiplexResultInput> testResultInput = makeMultiplexTestResult();
+    List<MultiplexResultInput> testResultInput =
+        makeMultiplexTestResult(
+            TestResult.POSITIVE, TestResult.UNDETERMINED, TestResult.UNDETERMINED);
     AddTestResultResponse res =
         _service.addMultiplexResult(
             devA.getInternalId(), testResultInput, patient.getInternalId(), null);
@@ -716,7 +740,9 @@ class TestOrderServiceTest extends BaseServiceTest<TestOrderService> {
     when(testResultsDeliveryService.emailTestResults(any(UUID.class))).thenReturn(true);
 
     // WHEN
-    List<MultiplexResultInput> testResultInput = makeMultiplexTestResult();
+    List<MultiplexResultInput> testResultInput =
+        makeMultiplexTestResult(
+            TestResult.POSITIVE, TestResult.UNDETERMINED, TestResult.UNDETERMINED);
     AddTestResultResponse res =
         _service.addMultiplexResult(
             devA.getInternalId(), testResultInput, patient.getInternalId(), null);
@@ -754,7 +780,9 @@ class TestOrderServiceTest extends BaseServiceTest<TestOrderService> {
     when(testResultsDeliveryService.emailTestResults(any(UUID.class))).thenReturn(false);
 
     // WHEN
-    List<MultiplexResultInput> testResultInput = makeMultiplexTestResult();
+    List<MultiplexResultInput> testResultInput =
+        makeMultiplexTestResult(
+            TestResult.POSITIVE, TestResult.UNDETERMINED, TestResult.UNDETERMINED);
     AddTestResultResponse res =
         _service.addMultiplexResult(
             devA.getInternalId(), testResultInput, patient.getInternalId(), null);
@@ -788,7 +816,10 @@ class TestOrderServiceTest extends BaseServiceTest<TestOrderService> {
     when(testResultsDeliveryService.emailTestResults(any(UUID.class))).thenReturn(true);
 
     // WHEN
-    List<MultiplexResultInput> testResultInput = makeMultiplexTestResult();
+    List<MultiplexResultInput> testResultInput =
+        makeMultiplexTestResult(
+            TestResult.POSITIVE, TestResult.UNDETERMINED, TestResult.UNDETERMINED);
+
     AddTestResultResponse res =
         _service.addMultiplexResult(
             devA.getInternalId(), testResultInput, patient.getInternalId(), null);
@@ -821,7 +852,9 @@ class TestOrderServiceTest extends BaseServiceTest<TestOrderService> {
     facility.addDefaultDeviceSpecimen(devA);
 
     // WHEN
-    List<MultiplexResultInput> testResultInput = makeMultiplexTestResult();
+    List<MultiplexResultInput> testResultInput =
+        makeMultiplexTestResult(
+            TestResult.POSITIVE, TestResult.UNDETERMINED, TestResult.UNDETERMINED);
     AddTestResultResponse res =
         _service.addMultiplexResult(
             devA.getInternalId(), testResultInput, patient.getInternalId(), null);
@@ -851,7 +884,9 @@ class TestOrderServiceTest extends BaseServiceTest<TestOrderService> {
     facility.addDefaultDeviceSpecimen(devA);
 
     // WHEN
-    List<MultiplexResultInput> testResultInput = makeMultiplexTestResult();
+    List<MultiplexResultInput> testResultInput =
+        makeMultiplexTestResult(
+            TestResult.POSITIVE, TestResult.UNDETERMINED, TestResult.UNDETERMINED);
     AddTestResultResponse res =
         _service.addMultiplexResult(
             devA.getInternalId(), testResultInput, patient.getInternalId(), null);
@@ -1881,15 +1916,6 @@ class TestOrderServiceTest extends BaseServiceTest<TestOrderService> {
     _dataFactory.createTestEvent(
         _dataFactory.createMinimalPerson(org, _otherSite, BRAD), _otherSite, TestResult.NEGATIVE);
     return testEvents;
-  }
-
-  /**
-   * @return by default a positive COVID and undetermined Flu A / B multiplex result, with an
-   *     overload to specify result values for Flu A and B if needed.
-   */
-  private List<MultiplexResultInput> makeMultiplexTestResult() {
-    return makeMultiplexTestResult(
-        TestResult.POSITIVE, TestResult.UNDETERMINED, TestResult.UNDETERMINED);
   }
 
   private List<MultiplexResultInput> makeMultiplexTestResult(
