@@ -480,9 +480,15 @@ public class Person extends OrganizationScopedEternalEntity implements PersonEnt
             patient.addTelecom(emailTelecom);
           });
     }
+    // todo: double check if simple report only supports female & male genders. FHIR also supports
+    // OTHER.
     if (gender != null) {
       if (gender.equalsIgnoreCase("male")) {
         patient.setGender(AdministrativeGender.MALE);
+      } else if (gender.equalsIgnoreCase("female")) {
+        patient.setGender(AdministrativeGender.FEMALE);
+      } else {
+        patient.setGender(AdministrativeGender.UNKNOWN);
       }
     }
     // todo: check if this is the best way to do this

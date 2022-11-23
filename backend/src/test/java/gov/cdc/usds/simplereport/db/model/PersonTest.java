@@ -84,4 +84,28 @@ class PersonTest {
     assertThat(actual.getGender()).isNull();
     assertThat(actual.getBirthDate()).isNull();
   }
+
+  @Test
+  void femalePerson_toFhir() {
+    var realPerson =
+        new Person(
+            null, null, null, null, null, null, null, null, null, null, null, null, null, null,
+            null, "Female", false, false, null, null);
+
+    var actual = realPerson.toFhir();
+
+    assertThat(actual.getGender()).isEqualTo(AdministrativeGender.FEMALE);
+  }
+
+  @Test
+  void unknownGenderPerson_toFhir() {
+    var realPerson =
+        new Person(
+            null, null, null, null, null, null, null, null, null, null, null, null, null, null,
+            null, "UNK", false, false, null, null);
+
+    var actual = realPerson.toFhir();
+
+    assertThat(actual.getGender()).isEqualTo(AdministrativeGender.UNKNOWN);
+  }
 }
