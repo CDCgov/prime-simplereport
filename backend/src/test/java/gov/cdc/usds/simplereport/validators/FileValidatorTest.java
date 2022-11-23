@@ -9,6 +9,8 @@ import java.io.InputStream;
 import java.util.List;
 import java.util.stream.Collectors;
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.params.ParameterizedTest;
+import org.junit.jupiter.params.provider.ValueSource;
 
 class FileValidatorTest {
 
@@ -68,16 +70,6 @@ class FileValidatorTest {
             "phone_number is a required column.",
             "employed_in_healthcare is a required column.",
             "resident_congregate_setting is a required column.");
-  }
-
-  @Test
-  void missingOptionalFields_isValid() {
-    // GIVEN
-    InputStream input = loadCsv("patientBulkUpload/missingOptionalFields.csv");
-    // WHEN
-    List<FeedbackMessage> errors = patientBulkUploadFileValidator.validate(input);
-    // THEN
-    assertThat(errors).isEmpty();
   }
 
   @Test
@@ -168,20 +160,16 @@ class FileValidatorTest {
             "resident_congregate_setting is a required column.");
   }
 
-  @Test
-  void extraColumns_isValid() {
+  @ParameterizedTest
+  @ValueSource(
+      strings = {
+        "patientBulkUpload/missingOptionalFields.csv",
+        "patientBulkUpload/extraColumns.csv",
+        "patientBulkUpload/valid.csv"
+      })
+  void file_isValid(String csvFile) {
     // GIVEN
-    InputStream input = loadCsv("patientBulkUpload/extraColumns.csv");
-    // WHEN
-    List<FeedbackMessage> errors = patientBulkUploadFileValidator.validate(input);
-    // THEN
-    assertThat(errors).isEmpty();
-  }
-
-  @Test
-  void patientUpload_validFile() {
-    // GIVEN
-    InputStream input = loadCsv("patientBulkUpload/valid.csv");
+    InputStream input = loadCsv(csvFile);
     // WHEN
     List<FeedbackMessage> errors = patientBulkUploadFileValidator.validate(input);
     // THEN
