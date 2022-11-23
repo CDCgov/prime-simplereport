@@ -113,9 +113,14 @@ public class PhoneNumber extends AuditedEntity {
   public ContactPoint toFhir() {
     var contactPoint = new ContactPoint();
 
-    // todo: figure out if system should be phone or sms for mobile phones?
+    // todo: Should this be SMS for mobile phone numbers?
     contactPoint.setSystem(ContactPointSystem.PHONE);
-    contactPoint.setUse(ContactPointUse.MOBILE);
+
+    if (PhoneType.LANDLINE.equals(type)) {
+      contactPoint.setUse(ContactPointUse.HOME);
+    } else {
+      contactPoint.setUse(ContactPointUse.MOBILE);
+    }
 
     // converting string to phone format as recommended by the fhir format.
     // https://www.hl7.org/fhir/datatypes.html#ContactPoint

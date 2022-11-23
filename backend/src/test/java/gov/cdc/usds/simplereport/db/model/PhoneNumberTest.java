@@ -58,4 +58,18 @@ class PhoneNumberTest {
             ContactPointUse.MOBILE.toCode(),
             from(ContactPoint::getUse).andThen(ContactPoint.ContactPointUse::toCode));
   }
+
+  @Test
+  void validHome_toFhir() {
+    var phoneNumber = new PhoneNumber(PhoneType.LANDLINE, "2485551234");
+
+    var actual = phoneNumber.toFhir();
+
+    assertThat(actual)
+        .returns(ContactPointSystem.PHONE, from(ContactPoint::getSystem))
+        .returns("(248) 555 1234", from(ContactPoint::getValue))
+        .returns(
+            ContactPointUse.HOME.toCode(),
+            from(ContactPoint::getUse).andThen(ContactPoint.ContactPointUse::toCode));
+  }
 }
