@@ -9,8 +9,10 @@ import gov.cdc.usds.simplereport.db.model.auxiliary.RaceArrayConverter;
 import gov.cdc.usds.simplereport.db.model.auxiliary.StreetAddress;
 import gov.cdc.usds.simplereport.db.model.auxiliary.TestResultDeliveryPreference;
 import java.time.LocalDate;
+import java.time.ZoneId;
 import java.util.ArrayList;
 import java.util.Collections;
+import java.util.Date;
 import java.util.List;
 import java.util.Objects;
 import java.util.stream.Collectors;
@@ -25,6 +27,9 @@ import javax.persistence.ManyToOne;
 import javax.persistence.OneToMany;
 import javax.persistence.OneToOne;
 import org.hibernate.annotations.Type;
+import org.hl7.fhir.r4.model.ContactPoint;
+import org.hl7.fhir.r4.model.ContactPoint.ContactPointSystem;
+import org.hl7.fhir.r4.model.Enumerations.AdministrativeGender;
 import org.hl7.fhir.r4.model.Patient;
 
 /**
@@ -458,7 +463,24 @@ public class Person extends OrganizationScopedEternalEntity implements PersonEnt
   }
 
   @JsonIgnore
-  public Patient toFhirPatient() {
-    return null;
+  public Patient toFhir() {
+    var patient = new Patient();
+    patient.addName(nameInfo.toFHIR());
+    phoneNumbers.forEach(number -> patient.addTelecom(number.toFhir()));
+    emails.forEach(
+        email -> {
+          var emailTelecom = new ContactPoint();
+          emailTelecom.setSystem(ContactPointSystem.EMAIL);
+          emailTelecom.setValue(email);
+          patient.addTelecom(emailTelecom);
+        });
+    if (gender.equalsIgnoreCase("male")) {
+      patient.setGender(AdministrativeGender.MALE);
+    }
+    // todo: check if this is the best way to do this
+    patient.setBirthDate(Date.from(birthDate.atStartOfDay(ZoneId.systemDefault()).toInstant()));
+    patient.setAddress(List.of(address.toFhir()));
+
+    return patient;
   }
 }
