@@ -10,7 +10,7 @@ import static gov.cdc.usds.simplereport.validators.CsvValidatorUtils.convertSexT
 
 import com.fasterxml.jackson.databind.MappingIterator;
 import gov.cdc.usds.simplereport.api.model.errors.CsvProcessingException;
-import gov.cdc.usds.simplereport.api.model.fileRow.PatientUploadRow;
+import gov.cdc.usds.simplereport.api.model.filerow.PatientUploadRow;
 import gov.cdc.usds.simplereport.api.uploads.PatientBulkUploadResponse;
 import gov.cdc.usds.simplereport.config.AuthorizationConfiguration;
 import gov.cdc.usds.simplereport.db.model.Facility;

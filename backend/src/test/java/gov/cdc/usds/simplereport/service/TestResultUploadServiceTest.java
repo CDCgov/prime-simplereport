@@ -20,7 +20,7 @@ import feign.Request;
 import feign.RequestTemplate;
 import gov.cdc.usds.simplereport.api.model.errors.CsvProcessingException;
 import gov.cdc.usds.simplereport.api.model.errors.DependencyFailureException;
-import gov.cdc.usds.simplereport.api.model.fileRow.TestResultRow;
+import gov.cdc.usds.simplereport.api.model.filerow.TestResultRow;
 import gov.cdc.usds.simplereport.db.model.TestResultUpload;
 import gov.cdc.usds.simplereport.db.model.auxiliary.UploadStatus;
 import gov.cdc.usds.simplereport.db.repository.TestResultUploadRepository;

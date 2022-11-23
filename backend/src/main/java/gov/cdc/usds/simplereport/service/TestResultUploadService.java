@@ -6,7 +6,7 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import feign.FeignException;
 import gov.cdc.usds.simplereport.api.model.errors.CsvProcessingException;
 import gov.cdc.usds.simplereport.api.model.errors.DependencyFailureException;
-import gov.cdc.usds.simplereport.api.model.fileRow.TestResultRow;
+import gov.cdc.usds.simplereport.api.model.filerow.TestResultRow;
 import gov.cdc.usds.simplereport.config.AuthorizationConfiguration;
 import gov.cdc.usds.simplereport.db.model.Organization;
 import gov.cdc.usds.simplereport.db.model.TestResultUpload;

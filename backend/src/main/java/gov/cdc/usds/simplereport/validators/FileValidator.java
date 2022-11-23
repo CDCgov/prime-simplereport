@@ -5,7 +5,7 @@ import static gov.cdc.usds.simplereport.validators.CsvValidatorUtils.getNextRow;
 
 import com.fasterxml.jackson.databind.MappingIterator;
 import gov.cdc.usds.simplereport.api.model.errors.CsvProcessingException;
-import gov.cdc.usds.simplereport.api.model.fileRow.FileRow;
+import gov.cdc.usds.simplereport.api.model.filerow.FileRow;
 import gov.cdc.usds.simplereport.service.model.reportstream.FeedbackMessage;
 import java.io.InputStream;
 import java.util.ArrayList;

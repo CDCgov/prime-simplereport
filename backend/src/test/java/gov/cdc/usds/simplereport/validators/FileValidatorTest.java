@@ -3,8 +3,8 @@ package gov.cdc.usds.simplereport.validators;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 
-import gov.cdc.usds.simplereport.api.model.fileRow.PatientUploadRow;
-import gov.cdc.usds.simplereport.api.model.fileRow.TestResultRow;
+import gov.cdc.usds.simplereport.api.model.filerow.PatientUploadRow;
+import gov.cdc.usds.simplereport.api.model.filerow.TestResultRow;
 import gov.cdc.usds.simplereport.service.model.reportstream.FeedbackMessage;
 import java.io.ByteArrayInputStream;
 import java.io.InputStream;
