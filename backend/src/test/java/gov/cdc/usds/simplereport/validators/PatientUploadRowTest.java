@@ -2,6 +2,7 @@ package gov.cdc.usds.simplereport.validators;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
+import gov.cdc.usds.simplereport.api.model.fileRow.PatientUploadRow;
 import gov.cdc.usds.simplereport.service.model.reportstream.FeedbackMessage;
 import java.util.HashMap;
 import java.util.List;

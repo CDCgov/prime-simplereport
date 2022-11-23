@@ -3,6 +3,7 @@ package gov.cdc.usds.simplereport.validators;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.from;
 
+import gov.cdc.usds.simplereport.api.model.fileRow.TestResultRow;
 import gov.cdc.usds.simplereport.service.model.reportstream.FeedbackMessage;
 import gov.cdc.usds.simplereport.validators.CsvValidatorUtils.ValueOrError;
 import java.util.HashMap;

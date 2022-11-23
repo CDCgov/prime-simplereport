@@ -1,4 +1,4 @@
-package gov.cdc.usds.simplereport.validators;
+package gov.cdc.usds.simplereport.api.model.fileRow;
 
 import static gov.cdc.usds.simplereport.validators.CsvValidatorUtils.getValue;
 import static gov.cdc.usds.simplereport.validators.CsvValidatorUtils.validateBiologicalSex;
