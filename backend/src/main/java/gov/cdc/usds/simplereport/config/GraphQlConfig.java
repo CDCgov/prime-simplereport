@@ -30,6 +30,8 @@ public class GraphQlConfig {
   public static final String REQUIRED_PERMISSIONS_DIRECTIVE_NAME = "requiredPermissions";
   public static final int MAXIMUM_SIZE = 256;
 
+  private static final String defaultErrorBody = "body: Please check for errors and try again";
+
   // mask all exception by default
   // to customize errors returned, you have to manually throw it here
   @Bean
@@ -44,27 +46,33 @@ public class GraphQlConfig {
       }
 
       if (exception instanceof AccessDeniedException) {
-        return Mono.just(singletonList(new GenericGraphqlException("Unauthorized", errorPath)));
+        String errorMessage = String.format("header: Unauthorized; %s", defaultErrorBody);
+        return Mono.just(singletonList(new GenericGraphqlException(errorMessage, errorPath)));
       }
 
       if (exception instanceof NonexistentUserException) {
-        return Mono.just(
-            singletonList(new GenericGraphqlException("Cannot find user.", errorPath)));
+        String errorMessage = String.format("header: Cannot find user.; %s", defaultErrorBody);
+        return Mono.just(singletonList(new GenericGraphqlException(errorMessage, errorPath)));
       }
 
       if (exception instanceof IllegalGraphqlArgumentException) {
-        return Mono.just(
-            singletonList(new GenericGraphqlException(exception.getMessage(), errorPath)));
+        String errorMessage =
+            String.format("header: %s; %s", exception.getMessage(), defaultErrorBody);
+        return Mono.just(singletonList(new GenericGraphqlException(errorMessage, errorPath)));
       }
 
       if (exception instanceof IllegalGraphqlFieldAccessException) {
-        return Mono.just(
-            singletonList(new GenericGraphqlException(exception.getMessage(), errorPath)));
+        String errorMessage =
+            String.format("header: %s; %s", exception.getMessage(), defaultErrorBody);
+        return Mono.just(singletonList(new GenericGraphqlException(errorMessage, errorPath)));
       }
 
       if (exception instanceof TestEventSerializationFailureException) {
-        return Mono.just(
-            singletonList(new GenericGraphqlException("Error submitting test", errorPath)));
+        String errorBody =
+            "Sorry, our system was unable to report your test result. Please try"
+                + " again, or reach out to support@simplereport.gov for help.";
+        String errorMessage = String.format("header: Error submitting test; body: %s", errorBody);
+        return Mono.just(singletonList(new GenericGraphqlException(errorMessage, errorPath)));
       }
 
       return Mono.just(singletonList(new GenericGraphqlException((errorPath))));

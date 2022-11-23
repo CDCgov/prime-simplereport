@@ -42,6 +42,7 @@ import "./styles/App.css";
 import { getUrl } from "./app/utils/url";
 import SessionTimeout from "./app/accountCreation/SessionTimeout";
 import WithFeatureFlags from "./featureFlags/WithFeatureFlags";
+import { getBody, getHeader } from "./app/utils/srGraphQLErrorMessage";
 
 // Initialize telemetry early
 ai.initialize();
@@ -105,25 +106,13 @@ const logoutLink = onError(({ networkError, graphQLErrors }: ErrorResponse) => {
     }
   }
   if (graphQLErrors) {
-    const messages = graphQLErrors.map(({ message, locations, path }) => {
+    graphQLErrors.map(({ message, locations, path }) => {
       console.error(
         `[GraphQL error]: Message: ${message}, Location: ${locations}, Path: ${path}`
       );
+      showError(getBody(message), getHeader(message));
       return message;
     });
-    if (messages.includes("Error submitting test")) {
-      const content = (
-        <span>
-          Sorry, our system was unable to report your test result. Please try
-          again, or reach out to{" "}
-          <a href="mailto:support@simplereport.gov">support@simplereport.gov</a>{" "}
-          for help.
-        </span>
-      );
-      showError(content, messages.join(" "));
-    } else {
-      showError("Please check for errors and try again", messages.join(" "));
-    }
     console.error("graphql error", graphQLErrors);
   }
 });
