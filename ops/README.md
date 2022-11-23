@@ -52,7 +52,7 @@ To build the function app, run the following commands from the repository's root
 
 ```bash
 $ cd ./ops/services/app_functions/report_stream_batched_publisher/functions
-$ npm ci
+$ yarn
 $ yarn build:production
 ```
 

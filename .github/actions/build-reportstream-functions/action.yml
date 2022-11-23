@@ -12,7 +12,7 @@ runs:
       working-directory: ./ops/services/app_functions/report_stream_batched_publisher/functions
       run: |
         echo "::group::Install dependencies"
-        npm ci
+        yarn
         echo "::endgroup::"
     - name: Build function source bundle
       shell: bash
