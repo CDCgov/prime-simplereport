@@ -25,6 +25,7 @@ import javax.persistence.ManyToOne;
 import javax.persistence.OneToMany;
 import javax.persistence.OneToOne;
 import org.hibernate.annotations.Type;
+import org.hl7.fhir.r4.model.Patient;
 
 /**
  * The person record (generally, a patient getting a test).
@@ -454,5 +455,10 @@ public class Person extends OrganizationScopedEternalEntity implements PersonEnt
     public static final String POSTAL_CODE = "postalCode";
 
     private SpecField() {} // sonarcloud codesmell
+  }
+
+  @JsonIgnore
+  public Patient toFhirPatient() {
+    return null;
   }
 }
