@@ -465,21 +465,33 @@ public class Person extends OrganizationScopedEternalEntity implements PersonEnt
   @JsonIgnore
   public Patient toFhir() {
     var patient = new Patient();
-    patient.addName(nameInfo.toFHIR());
-    phoneNumbers.forEach(number -> patient.addTelecom(number.toFhir()));
-    emails.forEach(
-        email -> {
-          var emailTelecom = new ContactPoint();
-          emailTelecom.setSystem(ContactPointSystem.EMAIL);
-          emailTelecom.setValue(email);
-          patient.addTelecom(emailTelecom);
-        });
-    if (gender.equalsIgnoreCase("male")) {
-      patient.setGender(AdministrativeGender.MALE);
+    if (nameInfo != null) {
+      patient.addName(nameInfo.toFHIR());
+    }
+    if (phoneNumbers != null) {
+      phoneNumbers.forEach(number -> patient.addTelecom(number.toFhir()));
+    }
+    if (emails != null) {
+      emails.forEach(
+          email -> {
+            var emailTelecom = new ContactPoint();
+            emailTelecom.setSystem(ContactPointSystem.EMAIL);
+            emailTelecom.setValue(email);
+            patient.addTelecom(emailTelecom);
+          });
+    }
+    if (gender != null) {
+      if (gender.equalsIgnoreCase("male")) {
+        patient.setGender(AdministrativeGender.MALE);
+      }
     }
     // todo: check if this is the best way to do this
-    patient.setBirthDate(Date.from(birthDate.atStartOfDay(ZoneId.systemDefault()).toInstant()));
-    patient.setAddress(List.of(address.toFhir()));
+    if (birthDate != null) {
+      patient.setBirthDate(Date.from(birthDate.atStartOfDay(ZoneId.systemDefault()).toInstant()));
+    }
+    if (address != null) {
+      patient.setAddress(List.of(address.toFhir()));
+    }
 
     return patient;
   }

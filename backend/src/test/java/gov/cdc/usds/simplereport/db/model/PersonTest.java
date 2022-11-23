@@ -18,7 +18,7 @@ import org.springframework.test.util.ReflectionTestUtils;
 class PersonTest {
 
   @Test
-  void toFhirPatient() {
+  void validPerson_toFhir() {
     var birthDate = LocalDate.now();
     var realPerson =
         new Person(
@@ -71,5 +71,17 @@ class PersonTest {
     assertThat(actual.getGender()).isEqualTo(AdministrativeGender.MALE);
     assertThat(actual.getBirthDate())
         .isEqualTo(Date.from(birthDate.atStartOfDay(ZoneId.systemDefault()).toInstant()));
+  }
+
+  @Test
+  void emptyPerson_toFhir() {
+    var person = new Person();
+
+    var actual = person.toFhir();
+    assertThat(actual.getName()).isEmpty();
+    assertThat(actual.getTelecom()).isEmpty();
+    assertThat(actual.getAddress()).isEmpty();
+    assertThat(actual.getGender()).isNull();
+    assertThat(actual.getBirthDate()).isNull();
   }
 }
