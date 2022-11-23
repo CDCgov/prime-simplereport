@@ -56,6 +56,8 @@ class FileValidatorTest {
     assertThat(errors).hasSize(12);
     List<String> errorMessages =
         errors.stream().map(FeedbackMessage::getMessage).collect(Collectors.toList());
+    List<List<Integer>> indices =
+        errors.stream().map(FeedbackMessage::getIndices).collect(Collectors.toList());
     assertThat(errorMessages)
         .contains(
             "first_name is a required column.",
@@ -70,6 +72,7 @@ class FileValidatorTest {
             "phone_number is a required column.",
             "employed_in_healthcare is a required column.",
             "resident_congregate_setting is a required column.");
+    indices.forEach(i -> assertThat(i).isEqualTo(List.of(2)));
   }
 
   @Test
@@ -82,8 +85,11 @@ class FileValidatorTest {
     assertThat(errors).hasSize(2);
     List<String> errorMessages =
         errors.stream().map(FeedbackMessage::getMessage).collect(Collectors.toList());
+    List<List<Integer>> indices =
+        errors.stream().map(FeedbackMessage::getIndices).collect(Collectors.toList());
     assertThat(errorMessages)
         .contains("race is a required column.", "ethnicity is a required column.");
+    indices.forEach(i -> assertThat(i).isEqualTo(List.of(2)));
   }
 
   @Test
@@ -96,6 +102,8 @@ class FileValidatorTest {
     assertThat(errors).hasSize(13);
     List<String> errorMessages =
         errors.stream().map(FeedbackMessage::getMessage).collect(Collectors.toList());
+    List<List<Integer>> indices =
+        errors.stream().map(FeedbackMessage::getIndices).collect(Collectors.toList());
     assertThat(errorMessages)
         .contains(
             "11/3/8 is not an acceptable value for column date_of_birth",
@@ -111,6 +119,7 @@ class FileValidatorTest {
             "4108675309 is not a valid value for column phone_number",
             "cell is not an acceptable value for column phone_number_type",
             "janedoe.com is not a valid value for column email");
+    indices.forEach(i -> assertThat(i).isEqualTo(List.of(2)));
   }
 
   @Test
@@ -144,6 +153,8 @@ class FileValidatorTest {
     assertThat(errors).hasSize(12);
     List<String> errorMessages =
         errors.stream().map(FeedbackMessage::getMessage).collect(Collectors.toList());
+    List<List<Integer>> indices =
+        errors.stream().map(FeedbackMessage::getIndices).collect(Collectors.toList());
     assertThat(errorMessages)
         .contains(
             "first_name is a required column.",
@@ -158,6 +169,7 @@ class FileValidatorTest {
             "phone_number is a required column.",
             "employed_in_healthcare is a required column.",
             "resident_congregate_setting is a required column.");
+    indices.forEach(i -> assertThat(i).isEqualTo(List.of(4)));
   }
 
   @ParameterizedTest
@@ -197,6 +209,8 @@ class FileValidatorTest {
 
     List<String> errorMessages =
         errors.stream().map(FeedbackMessage::getMessage).collect(Collectors.toList());
+    List<List<Integer>> indices =
+        errors.stream().map(FeedbackMessage::getIndices).collect(Collectors.toList());
     assertThat(errorMessages)
         .contains(
             "patient_last_name is a required column.",
@@ -232,6 +246,7 @@ class FileValidatorTest {
             "testing_lab_city is a required column.",
             "testing_lab_state is a required column.",
             "testing_lab_zip_code is a required column.");
+    indices.forEach(i -> assertThat(i).isEqualTo(List.of(2)));
   }
 
   @Test
