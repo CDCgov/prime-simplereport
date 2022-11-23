@@ -1,7 +1,7 @@
 package gov.cdc.usds.simplereport.db.model.auxiliary;
 
 import static gov.cdc.usds.simplereport.db.model.auxiliary.PersonNameTest.assertStringTypeListEqualsStringList;
-import static org.junit.jupiter.api.Assertions.*;
+import static org.assertj.core.api.Assertions.assertThat;
 
 import java.util.List;
 import org.junit.jupiter.api.Test;
@@ -16,11 +16,11 @@ class StreetAddressTest {
     var actual = streetAddress.toFhir();
 
     assertStringTypeListEqualsStringList(streetAddress.getStreet(), actual.getLine());
-    assertEquals(streetAddress.getCity(), actual.getCity());
-    assertEquals(streetAddress.getCounty(), actual.getDistrict());
-    assertEquals(streetAddress.getState(), actual.getState());
-    assertEquals(streetAddress.getPostalCode(), actual.getPostalCode());
-    assertEquals(streetAddress.getState(), actual.getState());
+    assertThat(actual.getCity()).isEqualTo(streetAddress.getCity());
+    assertThat(actual.getDistrict()).isEqualTo(streetAddress.getCounty());
+    assertThat(actual.getState()).isEqualTo(streetAddress.getState());
+    assertThat(actual.getPostalCode()).isEqualTo(streetAddress.getPostalCode());
+    assertThat(actual.getState()).isEqualTo(streetAddress.getState());
   }
 
   @Test
@@ -30,10 +30,10 @@ class StreetAddressTest {
     var actual = streetAddress.toFhir();
 
     assertStringTypeListEqualsStringList(streetAddress.getStreet(), actual.getLine());
-    assertEquals(streetAddress.getCity(), actual.getCity());
-    assertEquals(streetAddress.getCounty(), actual.getDistrict());
-    assertEquals(streetAddress.getState(), actual.getState());
-    assertEquals(streetAddress.getPostalCode(), actual.getPostalCode());
-    assertEquals(streetAddress.getState(), actual.getState());
+    assertThat(actual.getCity()).isEqualTo(streetAddress.getCity());
+    assertThat(actual.getDistrict()).isEqualTo(streetAddress.getCounty());
+    assertThat(actual.getState()).isEqualTo(streetAddress.getState());
+    assertThat(actual.getPostalCode()).isEqualTo(streetAddress.getPostalCode());
+    assertThat(actual.getState()).isEqualTo(streetAddress.getState());
   }
 }
