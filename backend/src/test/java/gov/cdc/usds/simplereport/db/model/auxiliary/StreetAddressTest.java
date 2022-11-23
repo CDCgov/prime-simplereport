@@ -22,4 +22,18 @@ class StreetAddressTest {
     assertEquals(streetAddress.getPostalCode(), actual.getPostalCode());
     assertEquals(streetAddress.getState(), actual.getState());
   }
+
+  @Test
+  void null_toFhir() {
+    var streetAddress = new StreetAddress(null, null, null, null, null, null);
+
+    var actual = streetAddress.toFhir();
+
+    assertStringTypeListEqualsStringList(streetAddress.getStreet(), actual.getLine());
+    assertEquals(streetAddress.getCity(), actual.getCity());
+    assertEquals(streetAddress.getCounty(), actual.getDistrict());
+    assertEquals(streetAddress.getState(), actual.getState());
+    assertEquals(streetAddress.getPostalCode(), actual.getPostalCode());
+    assertEquals(streetAddress.getState(), actual.getState());
+  }
 }
