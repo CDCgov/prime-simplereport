@@ -10,7 +10,7 @@ import java.util.stream.Collectors;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
-public class TestResultRowTest {
+class TestResultRowTest {
   Map<String, String> validRowMap;
   final List<String> requiredFields =
       List.of(
@@ -152,7 +152,7 @@ public class TestResultRowTest {
   }
 
   @Test
-  public void processRowSetsAllValues() {
+  void processRowSetsAllValues() {
     var testResultRow = new TestResultRow(validRowMap);
 
     assertThat(testResultRow.getPatientId().getValue()).isEqualTo(validRowMap.get("patient_id"));
@@ -276,7 +276,7 @@ public class TestResultRowTest {
   }
 
   @Test
-  public void validateHeadersReturnsErrorsForAllEmptyRequiredFields() {
+  void validateHeadersReturnsErrorsForAllEmptyRequiredFields() {
     var testResultRow = new TestResultRow(new HashMap<>());
 
     var actual = testResultRow.validateHeaders();
@@ -288,7 +288,7 @@ public class TestResultRowTest {
   }
 
   @Test
-  public void validateIndividualFields() {
+  void validateIndividualFields() {
     var invalidIndividualFields = validRowMap;
     invalidIndividualFields.put("patient_state", "District of Columbia");
     invalidIndividualFields.put("ordering_provider_state", "District of Columbia");
