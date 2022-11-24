@@ -134,10 +134,7 @@ class ApiUserServiceTest extends BaseServiceTest<ApiUserService> {
 
     UserInfo newUserInfo =
         _service.createUserInCurrentOrg(
-            "newuser@example.com",
-            new PersonName("First", "Middle", "Last", "Jr"),
-            Role.USER,
-            true);
+            "newuser@example.com", new PersonName("First", "Middle", "Last", "Jr"), Role.USER);
 
     assertEquals("newuser@example.com", newUserInfo.getEmail());
 
@@ -161,7 +158,7 @@ class ApiUserServiceTest extends BaseServiceTest<ApiUserService> {
 
     UserInfo reprovisionedUserInfo =
         _service.createUserInCurrentOrg(
-            "nobody@example.com", new PersonName("First", "Middle", "Last", "Jr"), Role.USER, true);
+            "nobody@example.com", new PersonName("First", "Middle", "Last", "Jr"), Role.USER);
 
     // the user will be re-enabled and updated
     assertEquals("nobody@example.com", reprovisionedUserInfo.getEmail());
@@ -185,7 +182,7 @@ class ApiUserServiceTest extends BaseServiceTest<ApiUserService> {
             ConflictingUserException.class,
             () ->
                 _service.createUserInCurrentOrg(
-                    "allfacilities@example.com", personName, Role.USER, true));
+                    "allfacilities@example.com", personName, Role.USER));
 
     assertEquals("A user with this email address already exists.", caught.getMessage());
   }
@@ -206,8 +203,7 @@ class ApiUserServiceTest extends BaseServiceTest<ApiUserService> {
     AccessDeniedException caught =
         assertThrows(
             AccessDeniedException.class,
-            () ->
-                _service.createUserInCurrentOrg("captain@pirate.com", personName, Role.USER, true));
+            () -> _service.createUserInCurrentOrg("captain@pirate.com", personName, Role.USER));
 
     assertEquals("Unable to add user.", caught.getMessage());
   }
