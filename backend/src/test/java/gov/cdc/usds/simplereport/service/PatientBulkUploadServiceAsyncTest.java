@@ -53,9 +53,19 @@ public class PatientBulkUploadServiceAsyncTest extends BaseMultiThreadFullStackT
         .thenReturn(address);
   }
 
+  // two ways this test can fail:
+  // 1. when running as site admin user, don't have permission to getPatients()
+  // 2. When running as org admin user or all facility standard user, N+1 error on
+  // DeviceSpecimenType
+  // om.yannbriancon.exception.NPlusOneQueriesException: N+1 queries detected on a query for the
+  // entity gov.cdc.usds.simplereport.db.model.DeviceSpecimenType
+  //    at org.gradle.api.internal.tasks.testing.worker.TestWorker$3.run(TestWorker.java:193)
+  //    Hint: Missing Lazy fetching configuration on a field of one of the entities fetched in the
+  // query
+
   @Test
-  //  @SliceTestConfiguration.WithSimpleReportSiteAdminUser
-  @SliceTestConfiguration.WithSimpleReportStandardAllFacilitiesUser
+  @SliceTestConfiguration.WithSimpleReportOrgAdminUser
+  //  @SliceTestConfiguration.WithSimpleReportStandardAllFacilitiesUser
   void validPerson_savedToDatabase() throws IOException {
     InputStream inputStream = loadCsv("patientBulkUpload/valid.csv");
     byte[] content = inputStream.readAllBytes();
@@ -65,12 +75,95 @@ public class PatientBulkUploadServiceAsyncTest extends BaseMultiThreadFullStackT
     // this await call specifically thows the "no authentication token" exception
     // taking it out causes the test to fail in a slightly more normal way, because the assertion
     // size doesn't match
-    // specifically, getUsername in findAllOrganizationRoles() fails and throws an exception
-    //    "An Authentication object was not found in the SecurityContext"
+    // note: the above is only true outside the n+1 issues
     await().until(patientsAddedToRepository(1));
 
     assertThat(getPatients()).hasSize(1);
   }
+
+  /**
+   * @Test void duplicatePatient_isNotSaved() { // GIVEN personService.addPatient( firstFacilityId,
+   * "", "Jane", "", "Doe", "", LocalDate.of(1980, 11, 3), address, "USA", List.of(new
+   * PhoneNumber(parsePhoneType("mobile"), "410-867-5309")), PersonRole.STAFF,
+   * List.of("jane@testingorg.com"), "black", "not_hispanic", null, "female", false, false, "",
+   * null); assertThat(getPatients()).hasSize(1);
+   *
+   * <p>// WHEN InputStream inputStream = loadCsv("patientBulkUpload/valid.csv");
+   * PatientBulkUploadResponse response = this._service.processPersonCSV(inputStream, null);
+   *
+   * <p>// THEN assertThat(response.getStatus()).isEqualTo(UploadStatus.SUCCESS);
+   * assertThat(getPatients()).hasSize(1); } @Test void duplicatePatient_isNotAddedToBatch() { //
+   * WHEN InputStream inputStream = loadCsv("patientBulkUpload/duplicatePatients.csv");
+   * PatientBulkUploadResponse response = this._service.processPersonCSV(inputStream, null);
+   *
+   * <p>// THEN assertThat(response.getStatus()).isEqualTo(UploadStatus.SUCCESS);
+   * assertThat(getPatients()).hasSize(1); } @Test void patientSavedToSingleFacility_successful() {
+   * // GIVEN InputStream inputStream = loadCsv("patientBulkUpload/valid.csv");
+   *
+   * <p>// WHEN PatientBulkUploadResponse response = this._service.processPersonCSV(inputStream,
+   * firstFacilityId);
+   *
+   * <p>// THEN assertThat(response.getStatus()).isEqualTo(UploadStatus.SUCCESS);
+   *
+   * <p>assertThat(getPatientsForFacility(firstFacilityId)).hasSize(1);
+   * assertThat(getPatientsForFacility(secondFacilityId)).isEmpty(); }
+   *
+   * @param csvFile
+   * @return
+   */
+
+  //  @Test
+  //  void validCsv_savesPatientToOrganization() {
+  //    // GIVEN
+  //    InputStream inputStream = loadCsv("patientBulkUpload/valid.csv");
+  //    TestUserIdentities.setFacilityAuthorities(
+  //        organizationService.getFacilityInCurrentOrg(firstFacilityId));
+  //    TestUserIdentities.setFacilityAuthorities(
+  //        organizationService.getFacilityInCurrentOrg(secondFacilityId));
+  //
+  //    // WHEN
+  //    PatientBulkUploadResponse response = this._service.processPersonCSV(inputStream, null);
+  //
+  //    // THEN
+  //    // ugh need to figure out how to inject the security context into tests, too
+  //    await().until(patientsAddedToRepository());
+  //    assertThat(response.getStatus()).isEqualTo(UploadStatus.SUCCESS);
+  //
+  //    assertThat(getPatients()).hasSize(1);
+  //    Person patient = getPatients().get(0);
+  //
+  //    assertThat(patient.getLastName()).isEqualTo("Doe");
+  //    assertThat(patient.getRace()).isEqualTo("black");
+  //    assertThat(patient.getEthnicity()).isEqualTo("not_hispanic");
+  //    assertThat(patient.getBirthDate()).isEqualTo(LocalDate.of(1980, 11, 3));
+  //    assertThat(patient.getGender()).isEqualTo("female");
+  //    assertThat(patient.getRole()).isEqualTo(PersonRole.STAFF);
+  //
+  //    assertThat(patient.getAddress()).isEqualTo(address);
+  //    assertThat(patient.getCountry()).isEqualTo("USA");
+  //
+  //    List<PhoneNumber> phoneNumbers =
+  //        phoneNumberRepository.findAllByPersonInternalId(patient.getInternalId());
+  //    assertThat(phoneNumbers).hasSize(1);
+  //    PhoneNumber pn = phoneNumbers.get(0);
+  //    assertThat(pn.getNumber()).isEqualTo("410-867-5309");
+  //    assertThat(pn.getType()).isEqualTo(PhoneType.MOBILE);
+  //    assertThat(patient.getEmail()).isEqualTo("jane@testingorg.com");
+  //
+  //    assertThat(getPatientsForFacility(firstFacilityId))
+  //        .hasSameSizeAs(getPatientsForFacility(secondFacilityId));
+  //  }
+
+  //  @Test
+  //  void noPhoneNumberTypes_savesPatient() {
+  //    // WHEN
+  //    InputStream inputStream = loadCsv("patientBulkUpload/noPhoneNumberTypes.csv");
+  //    PatientBulkUploadResponse response = this._service.processPersonCSV(inputStream, null);
+  //
+  //    // THEN
+  //    assertThat(response.getStatus()).isEqualTo(UploadStatus.SUCCESS);
+  //    assertThat(getPatients()).hasSize(1);
+  //  }
 
   private InputStream loadCsv(String csvFile) {
     return PatientBulkUploadServiceAsyncTest.class.getClassLoader().getResourceAsStream(csvFile);

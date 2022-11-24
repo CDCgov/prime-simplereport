@@ -18,9 +18,9 @@ import org.springframework.transaction.annotation.Transactional;
 
 /**
  * Service to upload a roster of patient data given a CSV input. Formerly restricted to superusers
- * but now (almost) available to end users.
+ * but now available to end users.
  *
- * <p>Updated by emmastephenson on 10/24/2022
+ * <p>Updated by emmastephenson on 11/23/2022
  */
 @Service
 @Transactional
@@ -31,9 +31,7 @@ public class PatientBulkUploadService {
   private final PatientBulkUploadFileValidator _patientBulkUploadFileValidator;
   private final PatientBulkUploadServiceAsync _patientBulkUploadServiceAsync;
 
-  // This authorization will change once we open the feature to end users
-  //  @AuthorizationConfiguration.RequirePermissionCreatePatientAtFacility
-  @AuthorizationConfiguration.RequireGlobalAdminUser
+  @AuthorizationConfiguration.RequirePermissionCreatePatientAtFacility
   public PatientBulkUploadResponse processPersonCSV(InputStream csvStream, UUID facilityId)
       throws IllegalArgumentException {
 
