@@ -347,7 +347,7 @@ class TestResultRowTest {
   }
 
   @Test
-  void validateHeadersReturnsErrorsForAllEmptyRequiredFields() {
+  void validateRequiredFieldsReturnsErrorsForAllEmptyRequiredFields() {
     var testResultRow = new TestResultRow(new HashMap<>());
 
     var actual = testResultRow.validateRequiredFields();

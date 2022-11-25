@@ -104,7 +104,7 @@ class PatientUploadRowTest {
   }
 
   @Test
-  void validateHeadersReturnsErrorsForAllEmptyRequiredFields() {
+  void validateRequiredFieldsReturnsErrorsForAllEmptyRequiredFields() {
     var patientUploadRow = new PatientUploadRow(new HashMap<>());
 
     var actual = patientUploadRow.validateRequiredFields();
