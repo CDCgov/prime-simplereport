@@ -155,7 +155,7 @@ public class TestResultRow implements FileRow {
   }
 
   @Override
-  public List<FeedbackMessage> validateHeaders() {
+  public List<FeedbackMessage> validateRequiredFields() {
     List<ValueOrError> allFields =
         List.of(
             patientId,

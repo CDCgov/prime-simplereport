@@ -350,7 +350,7 @@ class TestResultRowTest {
   void validateHeadersReturnsErrorsForAllEmptyRequiredFields() {
     var testResultRow = new TestResultRow(new HashMap<>());
 
-    var actual = testResultRow.validateHeaders();
+    var actual = testResultRow.validateRequiredFields();
 
     var messages = actual.stream().map(FeedbackMessage::getMessage).collect(Collectors.toSet());
     assertThat(actual).hasSize(requiredFields.size());

@@ -107,7 +107,7 @@ class PatientUploadRowTest {
   void validateHeadersReturnsErrorsForAllEmptyRequiredFields() {
     var patientUploadRow = new PatientUploadRow(new HashMap<>());
 
-    var actual = patientUploadRow.validateHeaders();
+    var actual = patientUploadRow.validateRequiredFields();
 
     var messages = actual.stream().map(FeedbackMessage::getMessage).collect(Collectors.toSet());
     assertThat(actual).hasSize(requiredFields.size());

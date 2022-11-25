@@ -52,7 +52,7 @@ public class FileValidator<T extends FileRow> {
 
       var fileRow = fileRowConstructor.apply(row);
 
-      currentRowErrors.addAll(fileRow.validateHeaders());
+      currentRowErrors.addAll(fileRow.validateRequiredFields());
       currentRowErrors.addAll(fileRow.validateIndividualValues());
 
       currentRowErrors.forEach(

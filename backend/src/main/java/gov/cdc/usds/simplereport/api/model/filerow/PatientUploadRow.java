@@ -70,7 +70,7 @@ public class PatientUploadRow implements FileRow {
   }
 
   @Override
-  public List<FeedbackMessage> validateHeaders() {
+  public List<FeedbackMessage> validateRequiredFields() {
     List<ValueOrError> allFields =
         List.of(
             firstName,
