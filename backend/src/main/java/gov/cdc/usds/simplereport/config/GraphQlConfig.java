@@ -24,6 +24,11 @@ import org.springframework.graphql.execution.RuntimeWiringConfigurer;
 import org.springframework.security.access.AccessDeniedException;
 import reactor.core.publisher.Mono;
 
+/**
+ * User-facing error message should be a String with the format of "header: $header; body: $body"
+ * the `header:` and `body:` should be separated by a semicolon, which the frontend uses to split
+ * the message. If this format is not used, the frontend will use a default header and body message
+ */
 @Slf4j
 @Configuration
 public class GraphQlConfig {
