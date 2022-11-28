@@ -243,7 +243,7 @@ public class ApiUserService {
         apiUser.getInternalId(),
         getCurrentApiUser().getInternalId().toString());
 
-    return new UserInfo(apiUser, orgRoles, isAdmin(apiUser));
+    return new UserInfo(apiUser, orgRoles, isAdmin);
   }
 
   @AuthorizationConfiguration.RequirePermissionManageTargetUser
