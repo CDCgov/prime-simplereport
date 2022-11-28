@@ -16,13 +16,14 @@ import static gov.cdc.usds.simplereport.validators.CsvValidatorUtils.validateZip
 
 import gov.cdc.usds.simplereport.service.model.reportstream.FeedbackMessage;
 import gov.cdc.usds.simplereport.validators.CsvValidatorUtils.ValueOrError;
+import java.lang.reflect.Field;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 import lombok.Getter;
 
 @Getter
-public class PatientUploadRow implements FileRow {
+public class PatientUploadRow extends FileRow {
   private final ValueOrError firstName;
   private final ValueOrError lastName;
   private final ValueOrError middleName;
@@ -71,33 +72,8 @@ public class PatientUploadRow implements FileRow {
 
   @Override
   public List<FeedbackMessage> validateRequiredFields() {
-    List<ValueOrError> allFields =
-        List.of(
-            firstName,
-            lastName,
-            middleName,
-            suffix,
-            race,
-            dateOfBirth,
-            biologicalSex,
-            ethnicity,
-            street,
-            street2,
-            city,
-            county,
-            state,
-            zipCode,
-            country,
-            phoneNumber,
-            phoneNumberType,
-            employedInHealthcare,
-            residentCongregateSetting,
-            role,
-            email);
-
-    List<FeedbackMessage> rowErrors = new ArrayList<>();
-    allFields.forEach(field -> rowErrors.addAll(field.getPossibleError()));
-    return rowErrors;
+    Field[] arrayOfField = PatientUploadRow.class.getDeclaredFields();
+    return getPossibleErrorsFromFields(arrayOfField, this);
   }
 
   @Override

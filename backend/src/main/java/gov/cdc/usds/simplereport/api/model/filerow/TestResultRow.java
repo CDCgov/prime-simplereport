@@ -19,13 +19,14 @@ import static gov.cdc.usds.simplereport.validators.CsvValidatorUtils.validateZip
 
 import gov.cdc.usds.simplereport.service.model.reportstream.FeedbackMessage;
 import gov.cdc.usds.simplereport.validators.CsvValidatorUtils.ValueOrError;
+import java.lang.reflect.Field;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 import lombok.Getter;
 
 @Getter
-public class TestResultRow implements FileRow {
+public class TestResultRow extends FileRow {
   private final ValueOrError patientId;
   private final ValueOrError patientLastName;
   private final ValueOrError patientFirstName;
@@ -156,73 +157,8 @@ public class TestResultRow implements FileRow {
 
   @Override
   public List<FeedbackMessage> validateRequiredFields() {
-    List<ValueOrError> allFields =
-        List.of(
-            patientId,
-            patientLastName,
-            patientFirstName,
-            patientMiddleName,
-            patientStreet,
-            patientStreet2,
-            patientCity,
-            patientState,
-            patientZipCode,
-            patientCounty,
-            patientPhoneNumber,
-            patientDob,
-            patientGender,
-            patientRace,
-            patientEthnicity,
-            patientPreferredLanguage,
-            patientEmail,
-            accessionNumber,
-            equipmentModelName,
-            testPerformedCode,
-            testResult,
-            orderTestDate,
-            specimenCollectionDate,
-            testingLabSpecimenReceivedDate,
-            testResultDate,
-            dateResultReleased,
-            specimenType,
-            orderingProviderId,
-            orderingProviderLastName,
-            orderingProviderFirstName,
-            orderingProviderMiddleName,
-            orderingProviderStreet,
-            orderingProviderStreet2,
-            orderingProviderCity,
-            orderingProviderState,
-            orderingProviderZipCode,
-            orderingProviderPhoneNumber,
-            testingLabClia,
-            testingLabName,
-            testingLabStreet,
-            testingLabStreet2,
-            testingLabCity,
-            testingLabState,
-            testingLabZipCode,
-            testingLabPhoneNumber,
-            pregnant,
-            employedInHealthcare,
-            symptomaticForDisease,
-            illnessOnsetDate,
-            residentCongregateSetting,
-            residenceType,
-            hospitalized,
-            icu,
-            orderingFacilityName,
-            orderingFacilityStreet,
-            orderingFacilityStreet2,
-            orderingFacilityCity,
-            orderingFacilityState,
-            orderingFacilityZipCode,
-            orderingFacilityPhoneNumber,
-            comment,
-            testResultStatus);
-    List<FeedbackMessage> errors = new ArrayList<>();
-    allFields.forEach(field -> errors.addAll(field.getPossibleError()));
-    return errors;
+    Field[] arrayOfField = TestResultRow.class.getDeclaredFields();
+    return getPossibleErrorsFromFields(arrayOfField, this);
   }
 
   @Override
