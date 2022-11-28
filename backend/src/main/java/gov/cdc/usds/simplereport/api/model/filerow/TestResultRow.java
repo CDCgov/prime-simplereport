@@ -161,22 +161,6 @@ public class TestResultRow implements FileRow {
     return getPossibleErrorsFromFields(arrayOfField, this);
   }
 
-  //  List<FeedbackMessage> errors = new ArrayList<>();
-  //  Field[] arrayOfField = TestResultRow.class.getDeclaredFields();
-  //    Arrays.stream(arrayOfField).forEach(field -> {
-  //    if (field.getType().equals(ValueOrError.class)) {
-  //      try {
-  //        Object fieldValue = field.get(this);
-  //        Method getPossibleErrorMethod =
-  // ValueOrError.class.getDeclaredMethod("getPossibleError");
-  //        errors.addAll((List<FeedbackMessage>) getPossibleErrorMethod.invoke(fieldValue));
-  //      } catch (IllegalAccessException | NoSuchMethodException | InvocationTargetException e) {
-  //        throw new RuntimeException(e);
-  //      }
-  //    }
-  //  });
-  //    return errors;
-
   @Override
   public List<FeedbackMessage> validateIndividualValues() {
     var errors = new ArrayList<FeedbackMessage>();
