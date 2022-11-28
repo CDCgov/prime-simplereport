@@ -23,11 +23,11 @@ class FileRowTest {
     doThrow(new InvocationTargetException(new Exception()))
         .when(fileRow)
         .invokeGetPossibleError(any(), any());
+    var declaredFields = TestResultRow.class.getDeclaredFields();
 
     assertThrows(
         GenericGraphqlException.class,
-        () ->
-            fileRow.getPossibleErrorsFromFields(TestResultRow.class.getDeclaredFields(), fileRow));
+        () -> fileRow.getPossibleErrorsFromFields(declaredFields, fileRow));
   }
 
   @Test
@@ -36,11 +36,11 @@ class FileRowTest {
 
     var fileRow = Mockito.spy(new TestResultRow(Collections.emptyMap()));
     doThrow(new NoSuchMethodException()).when(fileRow).invokeGetPossibleError(any(), any());
+    var declaredFields = TestResultRow.class.getDeclaredFields();
 
     assertThrows(
         GenericGraphqlException.class,
-        () ->
-            fileRow.getPossibleErrorsFromFields(TestResultRow.class.getDeclaredFields(), fileRow));
+        () -> fileRow.getPossibleErrorsFromFields(declaredFields, fileRow));
   }
 
   @Test
@@ -49,19 +49,18 @@ class FileRowTest {
 
     var fileRow = Mockito.spy(new TestResultRow(Collections.emptyMap()));
     doThrow(new NoSuchMethodException()).when(fileRow).invokeGetPossibleError(any(), any());
-
+    var declaredFields = TestResultRow.class.getDeclaredFields();
     assertThrows(
         GenericGraphqlException.class,
-        () ->
-            fileRow.getPossibleErrorsFromFields(TestResultRow.class.getDeclaredFields(), fileRow));
+        () -> fileRow.getPossibleErrorsFromFields(declaredFields, fileRow));
   }
 
   @Test
   void invokeGetPossibleError_returnsErrorsFromGetPossibleError()
       throws InvocationTargetException, NoSuchMethodException, IllegalAccessException {
 
-    class TestFileRow extends FileRow {
-      private final ValueOrError val = new ValueOrError(new FeedbackMessage());
+    class TestFileRow implements FileRow {
+      final ValueOrError val = new ValueOrError(new FeedbackMessage());
 
       @Override
       public List<FeedbackMessage> validateRequiredFields() {
@@ -83,8 +82,8 @@ class FileRowTest {
   @Test
   void invokeGetPossibleError_returnsEmptyListFromGetPossibleError_whenGivenNotValueOrError()
       throws InvocationTargetException, NoSuchMethodException, IllegalAccessException {
-    class TestFileRow extends FileRow {
-      private String val;
+    class TestFileRow implements FileRow {
+      String val;
 
       @Override
       public List<FeedbackMessage> validateRequiredFields() {
@@ -106,8 +105,8 @@ class FileRowTest {
   @Test
   void invokeGetPossibleError_returnsEmptyListFromGetPossibleError_whenValueOrErrorIsNull()
       throws InvocationTargetException, NoSuchMethodException, IllegalAccessException {
-    class TestFileRow extends FileRow {
-      private ValueOrError val;
+    class TestFileRow implements FileRow {
+      ValueOrError val;
 
       @Override
       public List<FeedbackMessage> validateRequiredFields() {

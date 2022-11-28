@@ -26,69 +26,69 @@ import java.util.Map;
 import lombok.Getter;
 
 @Getter
-public class TestResultRow extends FileRow {
-  private final ValueOrError patientId;
-  private final ValueOrError patientLastName;
-  private final ValueOrError patientFirstName;
-  private final ValueOrError patientMiddleName;
-  private final ValueOrError patientStreet;
-  private final ValueOrError patientStreet2;
-  private final ValueOrError patientCity;
-  private final ValueOrError patientState;
-  private final ValueOrError patientZipCode;
-  private final ValueOrError patientCounty;
-  private final ValueOrError patientPhoneNumber;
-  private final ValueOrError patientDob;
-  private final ValueOrError patientGender;
-  private final ValueOrError patientRace;
-  private final ValueOrError patientEthnicity;
-  private final ValueOrError patientPreferredLanguage;
-  private final ValueOrError patientEmail;
-  private final ValueOrError accessionNumber;
-  private final ValueOrError equipmentModelName;
-  private final ValueOrError testPerformedCode;
-  private final ValueOrError testResult;
-  private final ValueOrError orderTestDate;
-  private final ValueOrError specimenCollectionDate;
-  private final ValueOrError testingLabSpecimenReceivedDate;
-  private final ValueOrError testResultDate;
-  private final ValueOrError dateResultReleased;
-  private final ValueOrError specimenType;
-  private final ValueOrError orderingProviderId;
-  private final ValueOrError orderingProviderLastName;
-  private final ValueOrError orderingProviderFirstName;
-  private final ValueOrError orderingProviderMiddleName;
-  private final ValueOrError orderingProviderStreet;
-  private final ValueOrError orderingProviderStreet2;
-  private final ValueOrError orderingProviderCity;
-  private final ValueOrError orderingProviderState;
-  private final ValueOrError orderingProviderZipCode;
-  private final ValueOrError orderingProviderPhoneNumber;
-  private final ValueOrError testingLabClia;
-  private final ValueOrError testingLabName;
-  private final ValueOrError testingLabStreet;
-  private final ValueOrError testingLabStreet2;
-  private final ValueOrError testingLabCity;
-  private final ValueOrError testingLabState;
-  private final ValueOrError testingLabZipCode;
-  private final ValueOrError testingLabPhoneNumber;
-  private final ValueOrError pregnant;
-  private final ValueOrError employedInHealthcare;
-  private final ValueOrError symptomaticForDisease;
-  private final ValueOrError illnessOnsetDate;
-  private final ValueOrError residentCongregateSetting;
-  private final ValueOrError residenceType;
-  private final ValueOrError hospitalized;
-  private final ValueOrError icu;
-  private final ValueOrError orderingFacilityName;
-  private final ValueOrError orderingFacilityStreet;
-  private final ValueOrError orderingFacilityStreet2;
-  private final ValueOrError orderingFacilityCity;
-  private final ValueOrError orderingFacilityState;
-  private final ValueOrError orderingFacilityZipCode;
-  private final ValueOrError orderingFacilityPhoneNumber;
-  private final ValueOrError comment;
-  private final ValueOrError testResultStatus;
+public class TestResultRow implements FileRow {
+  final ValueOrError patientId;
+  final ValueOrError patientLastName;
+  final ValueOrError patientFirstName;
+  final ValueOrError patientMiddleName;
+  final ValueOrError patientStreet;
+  final ValueOrError patientStreet2;
+  final ValueOrError patientCity;
+  final ValueOrError patientState;
+  final ValueOrError patientZipCode;
+  final ValueOrError patientCounty;
+  final ValueOrError patientPhoneNumber;
+  final ValueOrError patientDob;
+  final ValueOrError patientGender;
+  final ValueOrError patientRace;
+  final ValueOrError patientEthnicity;
+  final ValueOrError patientPreferredLanguage;
+  final ValueOrError patientEmail;
+  final ValueOrError accessionNumber;
+  final ValueOrError equipmentModelName;
+  final ValueOrError testPerformedCode;
+  final ValueOrError testResult;
+  final ValueOrError orderTestDate;
+  final ValueOrError specimenCollectionDate;
+  final ValueOrError testingLabSpecimenReceivedDate;
+  final ValueOrError testResultDate;
+  final ValueOrError dateResultReleased;
+  final ValueOrError specimenType;
+  final ValueOrError orderingProviderId;
+  final ValueOrError orderingProviderLastName;
+  final ValueOrError orderingProviderFirstName;
+  final ValueOrError orderingProviderMiddleName;
+  final ValueOrError orderingProviderStreet;
+  final ValueOrError orderingProviderStreet2;
+  final ValueOrError orderingProviderCity;
+  final ValueOrError orderingProviderState;
+  final ValueOrError orderingProviderZipCode;
+  final ValueOrError orderingProviderPhoneNumber;
+  final ValueOrError testingLabClia;
+  final ValueOrError testingLabName;
+  final ValueOrError testingLabStreet;
+  final ValueOrError testingLabStreet2;
+  final ValueOrError testingLabCity;
+  final ValueOrError testingLabState;
+  final ValueOrError testingLabZipCode;
+  final ValueOrError testingLabPhoneNumber;
+  final ValueOrError pregnant;
+  final ValueOrError employedInHealthcare;
+  final ValueOrError symptomaticForDisease;
+  final ValueOrError illnessOnsetDate;
+  final ValueOrError residentCongregateSetting;
+  final ValueOrError residenceType;
+  final ValueOrError hospitalized;
+  final ValueOrError icu;
+  final ValueOrError orderingFacilityName;
+  final ValueOrError orderingFacilityStreet;
+  final ValueOrError orderingFacilityStreet2;
+  final ValueOrError orderingFacilityCity;
+  final ValueOrError orderingFacilityState;
+  final ValueOrError orderingFacilityZipCode;
+  final ValueOrError orderingFacilityPhoneNumber;
+  final ValueOrError comment;
+  final ValueOrError testResultStatus;
 
   public TestResultRow(Map<String, String> rawRow) {
     patientId = getValue(rawRow, "patient_id", false);
@@ -160,6 +160,22 @@ public class TestResultRow extends FileRow {
     Field[] arrayOfField = TestResultRow.class.getDeclaredFields();
     return getPossibleErrorsFromFields(arrayOfField, this);
   }
+
+  //  List<FeedbackMessage> errors = new ArrayList<>();
+  //  Field[] arrayOfField = TestResultRow.class.getDeclaredFields();
+  //    Arrays.stream(arrayOfField).forEach(field -> {
+  //    if (field.getType().equals(ValueOrError.class)) {
+  //      try {
+  //        Object fieldValue = field.get(this);
+  //        Method getPossibleErrorMethod =
+  // ValueOrError.class.getDeclaredMethod("getPossibleError");
+  //        errors.addAll((List<FeedbackMessage>) getPossibleErrorMethod.invoke(fieldValue));
+  //      } catch (IllegalAccessException | NoSuchMethodException | InvocationTargetException e) {
+  //        throw new RuntimeException(e);
+  //      }
+  //    }
+  //  });
+  //    return errors;
 
   @Override
   public List<FeedbackMessage> validateIndividualValues() {
