@@ -12,7 +12,11 @@ const Submission = () => {
   const urlParams = useParams();
   const internalId = urlParams.id || "";
 
-  const { data: submission, loading, error } = useGetUploadSubmissionQuery({
+  const {
+    data: submission,
+    loading,
+    error,
+  } = useGetUploadSubmissionQuery({
     fetchPolicy: "no-cache",
     variables: {
       id: internalId,

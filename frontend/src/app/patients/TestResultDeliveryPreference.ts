@@ -5,4 +5,5 @@ export const TestResultDeliveryPreferences = {
   ALL: "ALL",
 } as const;
 
-export type TestResultDeliveryPreference = typeof TestResultDeliveryPreferences[keyof typeof TestResultDeliveryPreferences];
+export type TestResultDeliveryPreference =
+  typeof TestResultDeliveryPreferences[keyof typeof TestResultDeliveryPreferences];

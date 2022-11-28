@@ -162,31 +162,31 @@ const PersonForm = (props: Props) => {
     });
   }, [errors, schema, patient, getValidationError]);
 
-  const onPersonChange = <K extends keyof PersonFormData>(field: K) => (
-    value: PersonFormData[K]
-  ) => {
-    if (value === patient[field]) {
-      return;
-    }
-    // If a patient has an international address, use special values for state and zip code
-    if (field === "country") {
-      setFormChanged(true);
-
-      if (value !== "USA") {
-        setPatient({
-          ...patient,
-          [field]: value,
-          state: "NA",
-          zipCode: "00000",
-        });
-      } else {
-        setPatient({ ...patient, [field]: value, state: "", zipCode: "" });
+  const onPersonChange =
+    <K extends keyof PersonFormData>(field: K) =>
+    (value: PersonFormData[K]) => {
+      if (value === patient[field]) {
+        return;
       }
-      return;
-    }
-    setFormChanged(true);
-    setPatient({ ...patient, [field]: value });
-  };
+      // If a patient has an international address, use special values for state and zip code
+      if (field === "country") {
+        setFormChanged(true);
+
+        if (value !== "USA") {
+          setPatient({
+            ...patient,
+            [field]: value,
+            state: "NA",
+            zipCode: "00000",
+          });
+        } else {
+          setPatient({ ...patient, [field]: value, state: "", zipCode: "" });
+        }
+        return;
+      }
+      setFormChanged(true);
+      setPatient({ ...patient, [field]: value });
+    };
 
   /**
    * This function checks the current validation status of an input
