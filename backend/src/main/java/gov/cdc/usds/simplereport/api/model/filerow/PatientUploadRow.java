@@ -23,28 +23,28 @@ import java.util.Map;
 import lombok.Getter;
 
 @Getter
-public class PatientUploadRow extends FileRow {
-  private final ValueOrError firstName;
-  private final ValueOrError lastName;
-  private final ValueOrError middleName;
-  private final ValueOrError suffix;
-  private final ValueOrError race;
-  private final ValueOrError dateOfBirth;
-  private final ValueOrError biologicalSex;
-  private final ValueOrError ethnicity;
-  private final ValueOrError street;
-  private final ValueOrError street2;
-  private final ValueOrError city;
-  private final ValueOrError county;
-  private final ValueOrError state;
-  private final ValueOrError zipCode;
-  private final ValueOrError country;
-  private final ValueOrError phoneNumber;
-  private final ValueOrError phoneNumberType;
-  private final ValueOrError employedInHealthcare;
-  private final ValueOrError residentCongregateSetting;
-  private final ValueOrError role;
-  private final ValueOrError email;
+public class PatientUploadRow implements FileRow {
+  final ValueOrError firstName;
+  final ValueOrError lastName;
+  final ValueOrError middleName;
+  final ValueOrError suffix;
+  final ValueOrError race;
+  final ValueOrError dateOfBirth;
+  final ValueOrError biologicalSex;
+  final ValueOrError ethnicity;
+  final ValueOrError street;
+  final ValueOrError street2;
+  final ValueOrError city;
+  final ValueOrError county;
+  final ValueOrError state;
+  final ValueOrError zipCode;
+  final ValueOrError country;
+  final ValueOrError phoneNumber;
+  final ValueOrError phoneNumberType;
+  final ValueOrError employedInHealthcare;
+  final ValueOrError residentCongregateSetting;
+  final ValueOrError role;
+  final ValueOrError email;
 
   public PatientUploadRow(Map<String, String> rawRow) {
     firstName = getValue(rawRow, "first_name", true);

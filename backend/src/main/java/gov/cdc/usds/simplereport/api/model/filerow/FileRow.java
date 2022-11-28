@@ -10,15 +10,16 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
-import lombok.extern.slf4j.Slf4j;
+import org.slf4j.Logger;
 
-@Slf4j
-public abstract class FileRow {
-  public abstract List<FeedbackMessage> validateRequiredFields();
+public interface FileRow {
+  Logger log = org.slf4j.LoggerFactory.getLogger(FileRow.class);
 
-  public abstract List<FeedbackMessage> validateIndividualValues();
+  List<FeedbackMessage> validateRequiredFields();
 
-  List<FeedbackMessage> getPossibleErrorsFromFields(Field[] fields, FileRow fr) {
+  List<FeedbackMessage> validateIndividualValues();
+
+  default List<FeedbackMessage> getPossibleErrorsFromFields(Field[] fields, FileRow fr) {
     List<FeedbackMessage> errors = new ArrayList<>();
     Arrays.stream(fields)
         .forEach(
@@ -35,10 +36,9 @@ public abstract class FileRow {
     return errors;
   }
 
-  List<FeedbackMessage> invokeGetPossibleError(Field field, FileRow fr)
+  default List<FeedbackMessage> invokeGetPossibleError(Field field, FileRow fr)
       throws NoSuchMethodException, InvocationTargetException, IllegalAccessException {
     if (field.getType().equals(ValueOrError.class)) {
-      field.setAccessible(true);
       Object valueOrError = field.get(fr);
       if (valueOrError != null) {
         Method getPossibleErrorMethod = ValueOrError.class.getDeclaredMethod("getPossibleError");
