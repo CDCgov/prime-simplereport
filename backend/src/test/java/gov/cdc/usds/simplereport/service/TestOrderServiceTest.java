@@ -1175,12 +1175,8 @@ class TestOrderServiceTest extends BaseServiceTest<TestOrderService> {
 
     // count queries
     long startQueryCount = _hibernateQueryInterceptor.getQueryCount();
-    int firstQueryResults =
-        _service
-            .getFacilityTestEventsResults(
-                facility.getInternalId(), null, null, null, null, null, 0, 50)
-            .toList()
-            .size();
+    _service.getFacilityTestEventsResults(
+        facility.getInternalId(), null, null, null, null, null, 0, 50);
     long firstPassTotal = _hibernateQueryInterceptor.getQueryCount() - startQueryCount;
 
     // add more data
@@ -1192,12 +1188,8 @@ class TestOrderServiceTest extends BaseServiceTest<TestOrderService> {
 
     // count queries again and make sure queries made didn't increase
     startQueryCount = _hibernateQueryInterceptor.getQueryCount();
-    int secondQueryResults =
-        _service
-            .getFacilityTestEventsResults(
-                facility.getInternalId(), null, null, null, null, null, 0, 50)
-            .toList()
-            .size();
+    _service.getFacilityTestEventsResults(
+        facility.getInternalId(), null, null, null, null, null, 0, 50);
     long secondPassTotal = _hibernateQueryInterceptor.getQueryCount() - startQueryCount;
     assertEquals(firstPassTotal, secondPassTotal);
   }
@@ -1283,18 +1275,17 @@ class TestOrderServiceTest extends BaseServiceTest<TestOrderService> {
     Facility facility = _organizationService.getFacilities(org).get(0);
     DeviceSpecimenType device = _dataFactory.getGenericDeviceSpecimen();
     facility.addDefaultDeviceSpecimen(device);
-    Person p = _dataFactory.createFullPerson(org);
-    TestEvent _e = _dataFactory.createTestEvent(p, facility);
-    TestOrder _o = _e.getTestOrder();
+    Person person = _dataFactory.createFullPerson(org);
+    TestEvent testEvent = _dataFactory.createTestEvent(person, facility);
 
     String reasonMsg = "Testing correction marking as error " + LocalDateTime.now();
-    TestEvent deleteMarkerEvent = _service.markAsError(_e.getInternalId(), reasonMsg);
+    TestEvent deleteMarkerEvent = _service.markAsError(testEvent.getInternalId(), reasonMsg);
     assertNotNull(deleteMarkerEvent);
 
     assertEquals(TestCorrectionStatus.REMOVED, deleteMarkerEvent.getCorrectionStatus());
     assertEquals(reasonMsg, deleteMarkerEvent.getReasonForCorrection());
 
-    assertEquals(_e.getTestOrder().getInternalId(), _e.getTestOrderId());
+    assertEquals(testEvent.getTestOrder().getInternalId(), testEvent.getTestOrderId());
 
     List<TestEvent> events_before =
         _service
@@ -1304,7 +1295,7 @@ class TestOrderServiceTest extends BaseServiceTest<TestOrderService> {
     assertEquals(1, events_before.size());
 
     // verify the original order was updated
-    TestEvent refreshedTestResult = _service.getTestResult(_e.getInternalId());
+    TestEvent refreshedTestResult = _service.getTestResult(testEvent.getInternalId());
     TestOrder onlySavedOrder = refreshedTestResult.getTestOrder();
     TestEvent mostRecentEvent = onlySavedOrder.getTestEvent();
     assertEquals(reasonMsg, onlySavedOrder.getReasonForCorrection());
@@ -1701,6 +1692,7 @@ class TestOrderServiceTest extends BaseServiceTest<TestOrderService> {
     var actualInternalIds = res.stream().map(TestEvent::getInternalId).collect(Collectors.toList());
     assertTrue(actualInternalIds.containsAll(expected));
     assertEquals(expected.size(), actualInternalIds.size());
+    assertFalse(actualInternalIds.contains(notExpected_allPos.getInternalId()));
   }
 
   @Test

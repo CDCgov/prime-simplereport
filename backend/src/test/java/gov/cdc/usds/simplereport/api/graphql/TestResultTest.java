@@ -354,7 +354,6 @@ class TestResultTest extends BaseGraphqlTest {
             "organization-level-metrics", "GetOrganizationLevelDashboardMetrics", variables, null);
 
     JsonNode metrics = result.get("organizationLevelDashboardMetrics");
-    System.out.println(metrics);
     assertEquals(1L, metrics.get("organizationPositiveTestCount").asLong());
     assertEquals(3L, metrics.get("organizationNegativeTestCount").asLong());
     assertEquals(4L, metrics.get("organizationTotalTestCount").asLong());

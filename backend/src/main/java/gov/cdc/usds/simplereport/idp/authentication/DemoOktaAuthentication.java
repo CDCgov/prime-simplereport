@@ -9,6 +9,7 @@ import gov.cdc.usds.simplereport.api.model.useraccountcreation.FactorAndQrCode;
 import gov.cdc.usds.simplereport.api.model.useraccountcreation.UserAccountStatus;
 import gov.cdc.usds.simplereport.config.BeanProfiles;
 import java.util.HashMap;
+import java.util.Objects;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 import lombok.AllArgsConstructor;
@@ -250,7 +251,7 @@ public class DemoOktaAuthentication implements OktaAuthentication {
   public void validateFactor(String userId, String factorId)
       throws OktaAuthenticationFailureException {
     DemoMfa mfa = this.idToUserMap.get(userId).getMfa();
-    if (mfa == null || factorId != mfa.getFactorId()) {
+    if (mfa == null || !Objects.equals(factorId, mfa.getFactorId())) {
       throw new OktaAuthenticationFailureException("Could not retrieve factor.");
     }
   }
