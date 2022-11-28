@@ -9,6 +9,7 @@ import gov.cdc.usds.simplereport.api.model.errors.GenericGraphqlException;
 import gov.cdc.usds.simplereport.api.model.errors.IllegalGraphqlArgumentException;
 import gov.cdc.usds.simplereport.api.model.errors.IllegalGraphqlFieldAccessException;
 import gov.cdc.usds.simplereport.api.model.errors.NonexistentUserException;
+import gov.cdc.usds.simplereport.api.model.errors.TestEventSerializationFailureException;
 import gov.cdc.usds.simplereport.config.scalars.datetime.DateTimeScalar;
 import gov.cdc.usds.simplereport.config.scalars.localdate.LocalDateScalar;
 import graphql.GraphQLError;
@@ -23,11 +24,18 @@ import org.springframework.graphql.execution.RuntimeWiringConfigurer;
 import org.springframework.security.access.AccessDeniedException;
 import reactor.core.publisher.Mono;
 
+/**
+ * User-facing error message should be a String with the format of "header: $header; body: $body"
+ * the `header:` and `body:` should be separated by a semicolon, which the frontend uses to split
+ * the message. If this format is not used, the frontend will use a default header and body message
+ */
 @Slf4j
 @Configuration
 public class GraphQlConfig {
   public static final String REQUIRED_PERMISSIONS_DIRECTIVE_NAME = "requiredPermissions";
   public static final int MAXIMUM_SIZE = 256;
+
+  private static final String defaultErrorBody = "body: Please check for errors and try again";
 
   // mask all exception by default
   // to customize errors returned, you have to manually throw it here
@@ -43,22 +51,33 @@ public class GraphQlConfig {
       }
 
       if (exception instanceof AccessDeniedException) {
-        return Mono.just(singletonList(new GenericGraphqlException("Unauthorized", errorPath)));
+        String errorMessage = String.format("header: Unauthorized; %s", defaultErrorBody);
+        return Mono.just(singletonList(new GenericGraphqlException(errorMessage, errorPath)));
       }
 
       if (exception instanceof NonexistentUserException) {
-        return Mono.just(
-            singletonList(new GenericGraphqlException("Cannot find user.", errorPath)));
+        String errorMessage = String.format("header: Cannot find user.; %s", defaultErrorBody);
+        return Mono.just(singletonList(new GenericGraphqlException(errorMessage, errorPath)));
       }
 
       if (exception instanceof IllegalGraphqlArgumentException) {
-        return Mono.just(
-            singletonList(new GenericGraphqlException(exception.getMessage(), errorPath)));
+        String errorMessage =
+            String.format("header: %s; %s", exception.getMessage(), defaultErrorBody);
+        return Mono.just(singletonList(new GenericGraphqlException(errorMessage, errorPath)));
       }
 
       if (exception instanceof IllegalGraphqlFieldAccessException) {
-        return Mono.just(
-            singletonList(new GenericGraphqlException(exception.getMessage(), errorPath)));
+        String errorMessage =
+            String.format("header: %s; %s", exception.getMessage(), defaultErrorBody);
+        return Mono.just(singletonList(new GenericGraphqlException(errorMessage, errorPath)));
+      }
+
+      if (exception instanceof TestEventSerializationFailureException) {
+        String errorBody =
+            "Sorry, our system was unable to report your test result. Please try"
+                + " again, or reach out to support@simplereport.gov for help.";
+        String errorMessage = String.format("header: Error submitting test; body: %s", errorBody);
+        return Mono.just(singletonList(new GenericGraphqlException(errorMessage, errorPath)));
       }
 
       return Mono.just(singletonList(new GenericGraphqlException((errorPath))));

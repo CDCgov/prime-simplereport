@@ -44,7 +44,8 @@ import org.springframework.test.context.TestPropertySource;
 @TestPropertySource(properties = "hibernate.query.interceptor.error-level=ERROR")
 class ApiUserManagementTest extends BaseGraphqlTest {
 
-  private static final String NO_USER_ERROR = "Cannot find user.";
+  private static final String NO_USER_ERROR =
+      "header: Cannot find user.; body: Please check for errors and try again";
 
   private static final List<String> USERNAMES =
       List.of("rjj@gmail.com", "rjjones@gmail.com", "jaredholler@msn.com", "janicek90@yahoo.com");
