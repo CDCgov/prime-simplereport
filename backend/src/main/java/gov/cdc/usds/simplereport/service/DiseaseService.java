@@ -42,7 +42,7 @@ public class DiseaseService {
     return _supportedDiseaseRepo.findAll();
   }
 
-  public Map<UUID, SupportedDisease> getCachedSupportedDiseasesMap() {
+  public Map<UUID, SupportedDisease> getKnownSupportedDiseasesMap() {
     return supportedDiseaseMap;
   }
 

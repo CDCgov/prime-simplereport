@@ -43,13 +43,13 @@ class DeviceTypeDataLoaderHelperTest {
     UUID supportedDisease1Id = UUID.randomUUID();
     UUID supportedDisease2Id = UUID.randomUUID();
 
-    SupportedDisease supportedDisease2 = mock(SupportedDisease.class);
     SupportedDisease supportedDisease1 = mock(SupportedDisease.class);
+    SupportedDisease supportedDisease2 = mock(SupportedDisease.class);
 
     when(supportedDisease1.getInternalId()).thenReturn(supportedDisease1Id);
     when(supportedDisease2.getInternalId()).thenReturn(supportedDisease2Id);
 
-    when(diseaseService.getCachedSupportedDiseasesMap())
+    when(diseaseService.getKnownSupportedDiseasesMap())
         .thenReturn(
             Map.of(
                 supportedDisease1Id, supportedDisease1,

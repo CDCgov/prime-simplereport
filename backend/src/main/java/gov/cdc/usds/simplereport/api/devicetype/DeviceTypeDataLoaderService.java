@@ -31,7 +31,7 @@ public class DeviceTypeDataLoaderService {
   Map<UUID, List<SupportedDisease>> getSupportedDiseases(Set<UUID> deviceTypeIds) {
     // load cached supportedDisease
     Map<UUID, SupportedDisease> supportedDiseasesMap =
-        diseaseService.getCachedSupportedDiseasesMap();
+        diseaseService.getKnownSupportedDiseasesMap();
 
     // load deviceType -> [supportedDisease]
     List<DeviceSupportedDisease> allByDeviceTypeIdIn =

@@ -31,7 +31,7 @@ class DiseaseServiceTest extends BaseServiceTest<DiseaseService> {
 
   @Test
   void retrievesSupportedDiseasesMap_successful() {
-    Map<UUID, SupportedDisease> supportedDiseasesMap = _service.getCachedSupportedDiseasesMap();
+    Map<UUID, SupportedDisease> supportedDiseasesMap = _service.getKnownSupportedDiseasesMap();
 
     assertThat(supportedDiseasesMap)
         .isNotNull()
