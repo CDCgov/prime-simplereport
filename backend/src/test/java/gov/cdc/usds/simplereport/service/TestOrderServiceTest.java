@@ -1658,6 +1658,9 @@ class TestOrderServiceTest extends BaseServiceTest<TestOrderService> {
     Organization org = _organizationService.getCurrentOrganization();
     Facility facility = _dataFactory.createArchivedFacility(org, "deleted facility");
     Person p = _dataFactory.createMinimalPerson(org, facility);
+    var notExpected_allPos =
+        _dataFactory.createMultiplexTestEvent(
+            p, facility, TestResult.POSITIVE, TestResult.POSITIVE, TestResult.POSITIVE, false);
     var expected_allNeg =
         _dataFactory.createMultiplexTestEvent(
             p, facility, TestResult.NEGATIVE, TestResult.NEGATIVE, TestResult.NEGATIVE, true);
@@ -1673,6 +1676,7 @@ class TestOrderServiceTest extends BaseServiceTest<TestOrderService> {
     var actualInternalIds = res.stream().map(TestEvent::getInternalId).collect(Collectors.toList());
     assertTrue(actualInternalIds.containsAll(expected));
     assertEquals(expected.size(), actualInternalIds.size());
+    assertFalse(actualInternalIds.contains(notExpected_allPos.getInternalId()));
   }
 
   @Test
