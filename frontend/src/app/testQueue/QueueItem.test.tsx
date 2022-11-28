@@ -384,9 +384,11 @@ describe("QueueItem", () => {
 
     // swab on the queue item is auto selected
     expect(
-      ((await screen.findByText(
-        queueItemInfo.specimenType.name
-      )) as HTMLOptionElement).selected
+      (
+        (await screen.findByText(
+          queueItemInfo.specimenType.name
+        )) as HTMLOptionElement
+      ).selected
     ).toBeTruthy();
 
     userEvent.selectOptions(swabDropdown, "Nasopharyngeal swab");
