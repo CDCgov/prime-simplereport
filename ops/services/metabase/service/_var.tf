@@ -20,7 +20,7 @@ variable "resource_group_location" {
 
 variable "service_plan_id" {
   type        = string
-  description = "Service Plan ID"
+  description = "App Service Plan ID"
 }
 
 variable "webapp_subnet_id" {

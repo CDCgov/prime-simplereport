@@ -30,7 +30,7 @@ resource "azurerm_public_ip" "static_gateway" {
   location            = var.resource_group_location
   allocation_method   = "Static"
   sku                 = "Standard"
-  zones             = ["1","2","3"]
+  zones               = ["1", "2", "3"]
 
   tags = var.tags
 }

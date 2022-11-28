@@ -15,7 +15,7 @@ resource "azurerm_public_ip" "nat_outbound_static_ip" {
   allocation_method   = "Static"
   sku                 = "Standard"
   tags                = var.tags
-  zones               = ["1","2","3"]
+  zones               = ["1", "2", "3"]
 }
 
 resource "azurerm_nat_gateway" "outbound" {

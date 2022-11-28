@@ -28,7 +28,7 @@ resource "azurerm_storage_blob" "appcode" {
 }
 
 resource "azurerm_service_plan" "asp" {
-  name                = "${var.prefix}-linux-plan-${var.environment}"
+  name                = "${var.prefix}-plan-${var.environment}"
   resource_group_name = local.resource_group_name
   location            = var.location
   os_type             = "Linux"
@@ -54,10 +54,10 @@ resource "azurerm_linux_web_app" "functions" {
   service_plan_id     = azurerm_service_plan.asp.id
   https_only          = true
   site_config {
-    use_32_bit_worker         = false
-    scm_minimum_tls_version   = "1.0"
-    always_on                 = false
-    ftps_state                = "AllAllowed"
+    use_32_bit_worker       = false
+    scm_minimum_tls_version = "1.0"
+    always_on               = false
+    ftps_state              = "AllAllowed"
 
     // NOTE: If this code is removed, TF will not automatically delete it with the current provider version! It must be removed manually from the App Service -> Networking blade!
     ip_restriction {
@@ -96,6 +96,11 @@ resource "azurerm_linux_web_app" "functions" {
     REPORT_STREAM_BATCH_MAXIMUM         = var.report_stream_batch_maximum
     SIMPLE_REPORT_CB_URL                = local.simple_report_callback_url
     SIMPLE_REPORT_CB_TOKEN              = "@Microsoft.KeyVault(SecretUri=${data.azurerm_key_vault_secret.simple_report_callback_token.id})"
+  }
+  lifecycle {
+    replace_triggered_by = [
+      azurerm_service_plan.asp
+    ]
   }
 }
 

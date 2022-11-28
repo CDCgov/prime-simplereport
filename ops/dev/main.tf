@@ -12,16 +12,16 @@ locals {
 
 # Frontend React App
 resource "azurerm_storage_account" "app" {
-  account_replication_type  = "GRS" # Cross-regional redundancy
-  account_tier              = "Standard"
-  account_kind              = "StorageV2"
-  allow_nested_items_to_be_public = false
+  account_replication_type         = "GRS" # Cross-regional redundancy
+  account_tier                     = "Standard"
+  account_kind                     = "StorageV2"
+  allow_nested_items_to_be_public  = false
   cross_tenant_replication_enabled = false
-  name                      = "simplereport${local.env}app"
-  resource_group_name       = data.azurerm_resource_group.rg.name
-  location                  = data.azurerm_resource_group.rg.location
-  enable_https_traffic_only = true
-  min_tls_version           = "TLS1_2"
+  name                             = "simplereport${local.env}app"
+  resource_group_name              = data.azurerm_resource_group.rg.name
+  location                         = data.azurerm_resource_group.rg.location
+  enable_https_traffic_only        = true
+  min_tls_version                  = "TLS1_2"
 
   static_website {
     index_document     = "index.html"

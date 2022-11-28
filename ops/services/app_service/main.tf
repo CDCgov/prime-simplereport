@@ -13,90 +13,126 @@ locals {
   })
 }
 
-resource "azurerm_service_plan" "service_plan" {
-  name                = "${var.az_account}-linux-appserviceplan-${var.env}"
-  location            = var.resource_group_location
-  resource_group_name = var.resource_group_name
-  os_type  = "Linux"
-  sku_name = "P2v3"
-}
+# migrate this to azurerm_service_plan.service_plan to enable migration of api service
+# resource "azurerm_app_service_plan" "service_plan" {
+#   name                = "${var.az_account}-appserviceplan-${var.env}"
+#   location            = var.resource_group_location
+#   resource_group_name = var.resource_group_name
+#   kind                = "linux"
+#   reserved            = true
+#   sku {
+#     tier = "PremiumV3"
+#     size = "P1v3"
+#   }
+# }
 
-resource "azurerm_service_plan" "linux" {
+resource "azurerm_service_plan" "service_plan" {
   name                = "${var.az_account}-appserviceplan-${var.env}"
   location            = var.resource_group_location
+  os_type             = "Linux"
   resource_group_name = var.resource_group_name
-  os_type  = "Linux"
-  sku_name = "P2v3"
+  sku_name            = "P2v3"
 }
 
-resource "azurerm_linux_web_app" "service" {
-  name                = "${var.name}-linux-${var.env}"
-  location            = var.resource_group_location
-  resource_group_name = var.resource_group_name
-  service_plan_id     = azurerm_service_plan.service_plan.id
+# DO NOT DELETE THIS RESOURCE before migrating it to azurerm_linux_web_app.service
+# if this resource is deleted during this upgrade it will require additional DNS work
+# resource "azurerm_app_service" "service" {
+#   name                = "${var.name}-${var.env}"
+#   location            = var.resource_group_location
+#   resource_group_name = var.resource_group_name
+#   app_service_plan_id = azurerm_app_service_plan.service_plan.id
 
-  # virtual_network_subnet_id = var.webapp_subnet_id
+#   # Configure Docker Image to load on start
+#   site_config {
+#     linux_fx_version = var.docker_image
+#     always_on        = "true"
+#     min_tls_version  = "1.2"
+#     ftps_state       = "Disabled"
+
+#     // NOTE: If this code is removed, TF will not automatically delete it with the current provider version! It must be removed manually from the App Service -> Networking blade!
+#     ip_restriction {
+#       virtual_network_subnet_id = var.lb_subnet_id
+#       action                    = "Allow"
+#     }
+#   }
+
+#   app_settings = local.all_app_settings
+#   https_only   = var.https_only
+
+#   identity {
+#     type = "SystemAssigned"
+#   }
+
+#   logs {
+#     http_logs {
+#       file_system {
+#         retention_in_days = 7
+#         retention_in_mb   = 30
+#       }
+#     }
+#   }
+
+#   lifecycle {
+#     ignore_changes = [
+#       app_settings, site_config[0].linux_fx_version
+#     ]
+#   }
+# }
+
+resource "azurerm_linux_web_app" "service" {
+  name                      = "${var.name}-${var.env}"
+  app_settings              = local.all_app_settings
+  https_only                = var.https_only
+  location                  = var.resource_group_location
+  resource_group_name       = var.resource_group_name
+  service_plan_id           = azurerm_service_plan.service_plan.id
+  virtual_network_subnet_id = var.webapp_subnet_id
+
+  identity {
+    type = "SystemAssigned"
+  }
+
+  logs {
+    http_logs {
+      file_system {
+        retention_in_days = 7
+        retention_in_mb   = 30
+      }
+    }
+  }
 
   # Configure Docker Image to load on start
   site_config {
-    always_on = "true"
-    ftps_state = "Disabled"
-    vnet_route_all_enabled = false
+    always_on               = "true"
+    scm_minimum_tls_version = "1.0"
+    use_32_bit_worker       = false
+    ftps_state              = "Disabled"
+    vnet_route_all_enabled  = false
+
+    cors {
+      allowed_origins     = []
+      support_credentials = false
+    }
 
     application_stack {
       docker_image     = var.docker_image
       docker_image_tag = var.docker_image_tag
     }
-
-
+    
     // NOTE: If this code is removed, TF will not automatically delete it with the current provider version! It must be removed manually from the App Service -> Networking blade!
     ip_restriction {
       virtual_network_subnet_id = var.lb_subnet_id
       action                    = "Allow"
     }
   }
-
-  app_settings = local.all_app_settings
-  https_only   = var.https_only
-
-  identity {
-    type = "SystemAssigned"
-  }
-
-  logs {
-    http_logs {
-      file_system {
-        retention_in_days = 7
-        retention_in_mb   = 30
-      }
-    }
-  }
-
-  # lifecycle {
-  #   ignore_changes = [
-  #     app_settings
-  #   ]
-  # }
 }
 
 resource "azurerm_linux_web_app_slot" "staging" {
-  name           = "${var.name}-linux-${var.env}-staging"
-  app_service_id = azurerm_linux_web_app.service.id
-
-  app_settings = local.all_app_settings
-  https_only   = var.https_only
-
-  # virtual_network_subnet_id = var.webapp_subnet_id
-
-  site_config {
-    always_on = "true"
-    vnet_route_all_enabled = false
-
-    ip_restriction {
-      virtual_network_subnet_id = var.lb_subnet_id
-      action                    = "Allow"
-    }
-  }
+  name                      = "staging"
+  app_service_id            = azurerm_linux_web_app.service.id
+  app_settings              = local.all_app_settings
+  https_only                = var.https_only
+  virtual_network_subnet_id = var.webapp_subnet_id
 
   identity {
     type = "SystemAssigned"
@@ -108,6 +144,31 @@ resource "azurerm_linux_web_app_slot" "staging" {
         retention_in_days = 7
         retention_in_mb   = 30
       }
+    }
+  }
+
+  # Configure Docker Image to load on start
+  site_config {
+    always_on               = "true"
+    scm_minimum_tls_version = "1.0"
+    use_32_bit_worker       = false
+    ftps_state              = "Disabled"
+    vnet_route_all_enabled  = false
+
+    cors {
+      allowed_origins     = []
+      support_credentials = false
+    }
+
+    application_stack {
+      docker_image     = var.docker_image
+      docker_image_tag = var.docker_image_tag
+    }
+
+    // NOTE: If this code is removed, TF will not automatically delete it with the current provider version! It must be removed manually from the App Service -> Networking blade!
+    ip_restriction {
+      virtual_network_subnet_id = var.lb_subnet_id
+      action                    = "Allow"
     }
   }
 }
