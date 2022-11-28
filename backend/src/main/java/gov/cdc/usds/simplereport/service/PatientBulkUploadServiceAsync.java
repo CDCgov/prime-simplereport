@@ -149,12 +149,8 @@ public class PatientBulkUploadServiceAsync {
             Map.of("simplereport_url", simplereportUrl));
 
         String errorMessage = "Error uploading patient roster";
-        log.error(
-            errorMessage
-                + " for organization "
-                + currentOrganization.getExternalId()
-                + " and facility "
-                + facilityId);
+        logProcessingFailure(errorMessage, currentOrganization.getExternalId(), facilityId);
+
         throw new IllegalArgumentException(errorMessage);
       }
     }
@@ -177,12 +173,8 @@ public class PatientBulkUploadServiceAsync {
           Map.of("simplereport_url", simplereportUrl));
 
       String errorMessage = "Error saving patient roster";
-      log.error(
-          errorMessage
-              + " for organization "
-              + currentOrganization.getExternalId()
-              + " and facility "
-              + facilityId);
+      logProcessingFailure(errorMessage, currentOrganization.getExternalId(), facilityId);
+
       throw new IllegalArgumentException(errorMessage);
     }
   }
@@ -199,5 +191,9 @@ public class PatientBulkUploadServiceAsync {
           "CSV patient upload email failed to send for {}",
           currentOrganization.getOrganizationName());
     }
+  }
+
+  private void logProcessingFailure(String errorMessage, String externalId, UUID facilityId) {
+    log.error(errorMessage + " for organization " + externalId + " and facility " + facilityId);
   }
 }
