@@ -42,7 +42,7 @@ public class FileValidator<T extends FileRow> {
         log.error("Unable to parse csv.", ex);
         var feedback =
             new FeedbackMessage(
-                CsvValidatorUtils.REPORT_SCOPE,
+                CsvValidatorUtils.ITEM_SCOPE,
                 "File has the incorrect number of columns or empty rows. Please make sure all columns match the data template, and delete any empty rows.",
                 new ArrayList<>(List.of(ex.getLineNumber())));
         mergeErrors(mapOfErrors, new ArrayList<>(List.of(feedback)));
