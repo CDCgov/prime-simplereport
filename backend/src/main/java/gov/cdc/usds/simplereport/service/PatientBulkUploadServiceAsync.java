@@ -142,7 +142,12 @@ public class PatientBulkUploadServiceAsync {
           patientsList.add(newPatient);
         }
       } catch (IllegalArgumentException e) {
-        sendErrorEmail(uploaderEmail, simplereportUrl, currentOrganization);
+        sendEmail(
+            uploaderEmail,
+            currentOrganization,
+            EmailProviderTemplate.SIMPLE_REPORT_PATIENT_UPLOAD_ERROR,
+            Map.of("simplereport_url", simplereportUrl));
+
         String errorMessage = "Error uploading patient roster";
         log.error(
             errorMessage
@@ -156,10 +161,21 @@ public class PatientBulkUploadServiceAsync {
 
     try {
       _personService.addPatientsAndPhoneNumbers(patientsList, phoneNumbersList);
+
       log.info("CSV patient upload completed for {}", currentOrganization.getOrganizationName());
-      sendSuccessEmail(uploaderEmail, patientsUrl, currentOrganization);
+
+      sendEmail(
+          uploaderEmail,
+          currentOrganization,
+          EmailProviderTemplate.SIMPLE_REPORT_PATIENT_UPLOAD,
+          Map.of("patients_url", patientsUrl));
     } catch (IllegalArgumentException | OptimisticLockingFailureException e) {
-      sendErrorEmail(uploaderEmail, simplereportUrl, currentOrganization);
+      sendEmail(
+          uploaderEmail,
+          currentOrganization,
+          EmailProviderTemplate.SIMPLE_REPORT_PATIENT_UPLOAD_ERROR,
+          Map.of("simplereport_url", simplereportUrl));
+
       String errorMessage = "Error saving patient roster";
       log.error(
           errorMessage
@@ -171,28 +187,14 @@ public class PatientBulkUploadServiceAsync {
     }
   }
 
-  private void sendErrorEmail(
-      String uploaderEmail, String simplereportUrl, Organization currentOrganization) {
+  private void sendEmail(
+      String uploaderEmail,
+      Organization currentOrganization,
+      EmailProviderTemplate template,
+      Map<String, Object> templateVariables) {
     try {
-      _emailService.sendWithDynamicTemplate(
-          List.of(uploaderEmail),
-          EmailProviderTemplate.SIMPLE_REPORT_PATIENT_UPLOAD_ERROR,
-          Map.of("simplereport_url", simplereportUrl));
+      _emailService.sendWithDynamicTemplate(List.of(uploaderEmail), template, templateVariables);
     } catch (IOException exception) {
-      log.info(
-          "CSV patient upload email failed to send for {}",
-          currentOrganization.getOrganizationName());
-    }
-  }
-
-  private void sendSuccessEmail(
-      String uploaderEmail, String patientsUrl, Organization currentOrganization) {
-    try {
-      _emailService.sendWithDynamicTemplate(
-          List.of(uploaderEmail),
-          EmailProviderTemplate.SIMPLE_REPORT_PATIENT_UPLOAD,
-          Map.of("patients_url", patientsUrl));
-    } catch (IOException e) {
       log.info(
           "CSV patient upload email failed to send for {}",
           currentOrganization.getOrganizationName());
