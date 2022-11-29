@@ -20,6 +20,7 @@ import feign.Request;
 import feign.RequestTemplate;
 import gov.cdc.usds.simplereport.api.model.errors.CsvProcessingException;
 import gov.cdc.usds.simplereport.api.model.errors.DependencyFailureException;
+import gov.cdc.usds.simplereport.api.model.filerow.TestResultRow;
 import gov.cdc.usds.simplereport.db.model.TestResultUpload;
 import gov.cdc.usds.simplereport.db.model.auxiliary.UploadStatus;
 import gov.cdc.usds.simplereport.db.repository.TestResultUploadRepository;
@@ -31,7 +32,7 @@ import gov.cdc.usds.simplereport.service.model.reportstream.UploadResponse;
 import gov.cdc.usds.simplereport.test_util.SliceTestConfiguration;
 import gov.cdc.usds.simplereport.test_util.TestDataFactory;
 import gov.cdc.usds.simplereport.utils.TokenAuthentication;
-import gov.cdc.usds.simplereport.validators.TestResultFileValidator;
+import gov.cdc.usds.simplereport.validators.FileValidator;
 import java.io.ByteArrayInputStream;
 import java.io.IOException;
 import java.io.InputStream;
@@ -70,7 +71,7 @@ class TestResultUploadServiceTest extends BaseServiceTest<TestResultUploadServic
   @Mock private TestResultUploadRepository repoMock;
   @Mock private OrganizationService orgServiceMock;
   @Mock private TokenAuthentication tokenAuthMock;
-  @Mock private TestResultFileValidator csvFileValidatorMock;
+  @Mock private FileValidator<TestResultRow> csvFileValidatorMock;
   @InjectMocks private TestResultUploadService sut;
 
   @BeforeEach()
@@ -95,7 +96,7 @@ class TestResultUploadServiceTest extends BaseServiceTest<TestResultUploadServic
                     .withStatus(HttpStatus.OK.value())
                     .withHeader("Content-Type", MediaType.APPLICATION_JSON_VALUE)
                     .withBody(mockResponse)));
-    InputStream input = loadCsv("test-results-upload-valid.csv");
+    InputStream input = loadCsv("testResultUpload/test-results-upload-valid.csv");
 
     var output = this._service.processResultCSV(input);
     assertEquals(UploadStatus.PENDING, output.getStatus());
@@ -139,7 +140,7 @@ class TestResultUploadServiceTest extends BaseServiceTest<TestResultUploadServic
                       .withHeader("Content-Type", MediaType.APPLICATION_JSON_VALUE)
                       .withBody(x.readAllBytes())));
     }
-    InputStream input = loadCsv("test-results-upload-valid.csv");
+    InputStream input = loadCsv("testResultUpload/test-results-upload-valid.csv");
 
     var response = this._service.processResultCSV(input);
 
@@ -150,7 +151,7 @@ class TestResultUploadServiceTest extends BaseServiceTest<TestResultUploadServic
   @Test
   @DirtiesContext
   @SliceTestConfiguration.WithSimpleReportStandardUser
-  void feignGeneralError_returnsFailureStatus() throws IOException {
+  void feignGeneralError_returnsFailureStatus() {
 
     stubFor(
         WireMock.post(WireMock.urlEqualTo("/api/reports?processing=async"))
@@ -160,7 +161,7 @@ class TestResultUploadServiceTest extends BaseServiceTest<TestResultUploadServic
                     .withHeader("Content-Type", MediaType.APPLICATION_JSON_VALUE)
                     .withBody("you messed up")));
 
-    InputStream input = loadCsv("test-results-upload-valid.csv");
+    InputStream input = loadCsv("testResultUpload/test-results-upload-valid.csv");
 
     assertThrows(DependencyFailureException.class, () -> this._service.processResultCSV(input));
   }
