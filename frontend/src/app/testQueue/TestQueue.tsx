@@ -243,14 +243,17 @@ const TestQueue: React.FC<Props> = ({ activeFacilityId }) => {
           ...questions
         }) => {
           // Get possible device specimen types for this facility
-          const deviceSpecimenTypes: DeviceSpecimenType[] = data.deviceSpecimenTypes.filter(
-            (d: DeviceSpecimenType) =>
-              deviceIds.includes(d.deviceType.internalId) &&
-              // Facility may be configured with a device that does not have
-              // any associated swab types - remove them from the set of
-              // options
-              deviceIds.some((deviceId) => d.deviceType.internalId === deviceId)
-          );
+          const deviceSpecimenTypes: DeviceSpecimenType[] =
+            data.deviceSpecimenTypes.filter(
+              (d: DeviceSpecimenType) =>
+                deviceIds.includes(d.deviceType.internalId) &&
+                // Facility may be configured with a device that does not have
+                // any associated swab types - remove them from the set of
+                // options
+                deviceIds.some(
+                  (deviceId) => d.deviceType.internalId === deviceId
+                )
+            );
 
           // The `deviceSpecimenType` for a test queue entry does not carry full
           // device and swab data - if the device specimen no longer exists, we'll

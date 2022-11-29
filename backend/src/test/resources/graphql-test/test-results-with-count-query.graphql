@@ -1,7 +1,4 @@
-query GetFacilityResultsWithCount(
-  $facilityId: ID!
-  $nameType: String = "long"
-) {
+query GetFacilityResultsWithCount($facilityId: ID, $nameType: String = "long") {
   testResultsPage(facilityId: $facilityId) {
     content {
       internalId

@@ -24,7 +24,7 @@ services:
       - ./backend/db-setup/.pgpass/:/usr/local/lib/.pgpass
       - ./backend/db-setup/snapshots/:/usr/local/lib/snapshots/
       - ./backend/db-setup/generate_db_data.py:/usr/local/lib/generate_db_data.py
-    command: -p ${SR_DB_PORT:-5432}
+    command: -p ${SR_DB_PORT:-5432} -c log_statement=all
     expose:
       - "${SR_DB_PORT:-5432}"
     ports:

@@ -59,12 +59,12 @@ const OrganizationForm = () => {
   const [orgExternalId, setOrgExternalId] = useState("");
   useDocumentTitle("Sign up - organization information | SimpleReport");
 
-  const onDetailChange = (field: keyof OrganizationCreateRequest) => (
-    value: OrganizationCreateRequest[typeof field]
-  ) => {
-    setFormChanged(true);
-    setOrganization({ ...organization, [field]: value });
-  };
+  const onDetailChange =
+    (field: keyof OrganizationCreateRequest) =>
+    (value: OrganizationCreateRequest[typeof field]) => {
+      setFormChanged(true);
+      setOrganization({ ...organization, [field]: value });
+    };
 
   const validateField = async (field: keyof OrganizationCreateRequest) => {
     setErrors(
@@ -158,9 +158,9 @@ const OrganizationForm = () => {
             label={label}
             name="type"
             value={organization.type || ""}
-            options={Object.entries(
-              OrganizationTypeEnum
-            ).map(([key, value]) => ({ label: value, value: key }))}
+            options={Object.entries(OrganizationTypeEnum).map(
+              ([key, value]) => ({ label: value, value: key })
+            )}
             defaultSelect
             onChange={onDetailChange("type")}
             onBlur={() => {

@@ -90,10 +90,8 @@ const ManageUsers: React.FC<Props> = ({
   getUsers,
 }) => {
   const [activeUser, updateActiveUser] = useState<LimitedUser>();
-  const [
-    userWithPermissions,
-    updateUserWithPermissions,
-  ] = useState<SettingsUser | null>();
+  const [userWithPermissions, updateUserWithPermissions] =
+    useState<SettingsUser | null>();
   const [queryUserWithPermissions] = useGetUserLazyQuery({
     variables: { id: activeUser ? activeUser.id : loggedInUser.id },
     fetchPolicy: "no-cache",
@@ -106,14 +104,12 @@ const ManageUsers: React.FC<Props> = ({
   const [showAddUserModal, updateShowAddUserModal] = useState(false);
   const [showEditUserNameModal, updateEditUserNameModal] = useState(false);
   const [showEditUserEmailModal, updateEditUserEmailModal] = useState(false);
-  const [showResetPasswordModal, updateShowResetPasswordModal] = useState(
-    false
-  );
+  const [showResetPasswordModal, updateShowResetPasswordModal] =
+    useState(false);
   const [showResetMfaModal, updateShowResetMfaModal] = useState(false);
   const [showDeleteUserModal, updateShowDeleteUserModal] = useState(false);
-  const [showReactivateUserModal, updateShowReactivateUserModal] = useState(
-    false
-  );
+  const [showReactivateUserModal, updateShowReactivateUserModal] =
+    useState(false);
   const [
     showResendUserActivationEmailModal,
     updateShowResendUserActivationEmailModal,

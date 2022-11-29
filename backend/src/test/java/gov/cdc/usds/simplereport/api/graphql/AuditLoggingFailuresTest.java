@@ -119,7 +119,7 @@ class AuditLoggingFailuresTest extends BaseGraphqlTest {
         assertThrows(WebClientRequestException.class, () -> runQuery("update-time-of-test", args))
             .getMessage();
     assertEquals(
-        "Request processing failed; nested exception is Something went wrong; nested exception is org.springframework.web.util.NestedServletException: Request processing failed; nested exception is Something went wrong",
+        "Request processing failed; nested exception is header: Something went wrong; body: Please check for errors and try again; nested exception is org.springframework.web.util.NestedServletException: Request processing failed; nested exception is header: Something went wrong; body: Please check for errors and try again",
         clientErrorMessage);
   }
 

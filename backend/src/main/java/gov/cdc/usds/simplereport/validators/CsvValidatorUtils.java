@@ -1,6 +1,8 @@
 package gov.cdc.usds.simplereport.validators;
 
 import static gov.cdc.usds.simplereport.api.Translators.CANADIAN_STATE_CODES;
+import static gov.cdc.usds.simplereport.api.Translators.COUNTRY_CODES;
+import static gov.cdc.usds.simplereport.api.Translators.PAST_DATE_FLEXIBLE_FORMATTER;
 import static gov.cdc.usds.simplereport.api.Translators.STATE_CODES;
 
 import com.fasterxml.jackson.databind.MappingIterator;
@@ -8,12 +10,14 @@ import com.fasterxml.jackson.databind.RuntimeJsonMappingException;
 import com.fasterxml.jackson.dataformat.csv.CsvMapper;
 import com.fasterxml.jackson.dataformat.csv.CsvParser;
 import com.fasterxml.jackson.dataformat.csv.CsvSchema;
+import gov.cdc.usds.simplereport.api.model.errors.CsvProcessingException;
 import gov.cdc.usds.simplereport.service.model.reportstream.FeedbackMessage;
 import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.nio.charset.StandardCharsets;
+import java.time.format.DateTimeParseException;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
@@ -44,13 +48,21 @@ public class CsvValidatorUtils {
               STATE_CODES.stream().map(String::toLowerCase),
               CANADIAN_STATE_CODES.stream().map(String::toLowerCase))
           .collect(Collectors.toSet());
+  private static final Set<String> VALID_COUNTRY_CODES =
+      COUNTRY_CODES.stream().map(String::toLowerCase).collect(Collectors.toSet());
   private static final String UNKNOWN_LITERAL = "unknown";
+  private static final String OTHER_LITERAL = "other";
+  private static final String REFUSED_LITERAL = "refused";
+  private static final String FEMALE_LITERAL = "female";
+  private static final String MALE_LITERAL = "male";
+  private static final String ASIAN_LITERAL = "asian";
+  private static final String WHITE_LITERAL = "white";
 
   private static final Set<String> GENDER_VALUES =
       Set.of(
-          "m", "male",
-          "f", "female",
-          "o", "other",
+          "m", MALE_LITERAL,
+          "f", FEMALE_LITERAL,
+          "o", OTHER_LITERAL,
           "u", UNKNOWN_LITERAL,
           "a", "ambiguous",
           "n", "not applicable");
@@ -61,14 +73,22 @@ public class CsvValidatorUtils {
           "unk", UNKNOWN_LITERAL);
   private static final Set<String> RACE_VALUES =
       Set.of(
-          "1002-5", "american indian or alaska native",
-          "2028-9", "asian",
-          "2054-5", "black or african american",
-          "2076-8", "native hawaiian or other pacific islander",
-          "2106-3", "white",
-          "2131-1", "other",
-          "asku", "ask but unknown",
-          "unk", UNKNOWN_LITERAL);
+          "1002-5",
+          "american indian or alaska native",
+          "2028-9",
+          ASIAN_LITERAL,
+          "2054-5",
+          "black or african american",
+          "2076-8",
+          "native hawaiian or other pacific islander",
+          "2106-3",
+          WHITE_LITERAL,
+          "2131-1",
+          OTHER_LITERAL,
+          "asku",
+          "ask but unknown",
+          "unk",
+          UNKNOWN_LITERAL);
   private static final Set<String> YES_NO_VALUES =
       Set.of(
           "y", "yes",
@@ -110,8 +130,8 @@ public class CsvValidatorUtils {
       Set.of("staff", "resident", "student", "visitor", UNKNOWN_LITERAL);
   private static final Set<String> PHONE_NUMBER_TYPE_VALUES = Set.of("mobile", "landline");
   private static final Set<String> TEST_RESULT_STATUS_VALUES = Set.of("f", "c");
-  private static final String ITEM_SCOPE = "item";
-  private static final String REPORT_SCOPE = "report";
+  public static final String ITEM_SCOPE = "item";
+  public static final String REPORT_SCOPE = "report";
 
   private CsvValidatorUtils() {
     throw new IllegalStateException("CsvValidatorUtils is a utility class");
@@ -149,6 +169,10 @@ public class CsvValidatorUtils {
     return validateInSet(input, VALID_STATE_CODES);
   }
 
+  public static List<FeedbackMessage> validateCountry(ValueOrError input) {
+    return validateInSet(input, VALID_COUNTRY_CODES);
+  }
+
   public static List<FeedbackMessage> validateTestResultStatus(ValueOrError input) {
     return validateInSet(input, TEST_RESULT_STATUS_VALUES);
   }
@@ -173,7 +197,24 @@ public class CsvValidatorUtils {
     return validateRegex(input, CLIA_REGEX);
   }
 
-  public static List<FeedbackMessage> validateDate(ValueOrError input) {
+  public static List<FeedbackMessage> validateFlexibleDate(ValueOrError input) {
+    List<FeedbackMessage> errors = new ArrayList<>();
+    String value = parseString(input.getValue());
+    if (value == null) {
+      return errors;
+    }
+    try {
+      PAST_DATE_FLEXIBLE_FORMATTER.parse(input.getValue());
+    } catch (DateTimeParseException e) {
+      errors.add(
+          new FeedbackMessage(
+              ITEM_SCOPE,
+              input.getValue() + " is not an acceptable value for column " + input.getHeader()));
+    }
+    return errors;
+  }
+
+  public static List<FeedbackMessage> validateDateFormat(ValueOrError input) {
     return validateRegex(input, DATE_REGEX);
   }
 
@@ -186,11 +227,13 @@ public class CsvValidatorUtils {
   }
 
   public static Map<String, String> getNextRow(MappingIterator<Map<String, String>> valueIterator)
-      throws IllegalArgumentException {
+      throws CsvProcessingException {
     try {
       return valueIterator.next();
     } catch (RuntimeJsonMappingException e) {
-      throw new IllegalArgumentException(e.getMessage());
+      var location = valueIterator.getCurrentLocation();
+      throw new CsvProcessingException(
+          e.getMessage(), location.getLineNr(), location.getColumnNr());
     }
   }
 
@@ -216,6 +259,53 @@ public class CsvValidatorUtils {
     } catch (IOException e) {
       throw new IllegalArgumentException(e.getMessage());
     }
+  }
+
+  /* The acceptable values for race and ethnicity don't map to the values expected in our database. */
+  public static String convertEthnicityToDatabaseValue(String ethnicity) {
+    Map<String, String> displayValueToDatabaseValue =
+        Map.ofEntries(
+            Map.entry("hispanic or latino", "hispanic"),
+            Map.entry("not hispanic or latino", "not_hispanic"),
+            Map.entry("unk", UNKNOWN_LITERAL),
+            Map.entry(UNKNOWN_LITERAL, UNKNOWN_LITERAL));
+
+    return displayValueToDatabaseValue.get(ethnicity.toLowerCase());
+  }
+
+  public static String convertRaceToDatabaseValue(String race) {
+    Map<String, String> displayValueToDatabaseValue =
+        Map.ofEntries(
+            Map.entry("american indian or alaska native", "native"),
+            Map.entry(ASIAN_LITERAL, ASIAN_LITERAL),
+            Map.entry("black or african american", "black"),
+            Map.entry("native hawaiian or other pacific islander", "pacific"),
+            Map.entry(WHITE_LITERAL, WHITE_LITERAL),
+            Map.entry(OTHER_LITERAL, OTHER_LITERAL),
+            Map.entry("ask but unknown", REFUSED_LITERAL),
+            Map.entry(UNKNOWN_LITERAL, UNKNOWN_LITERAL));
+
+    return displayValueToDatabaseValue.get(race.toLowerCase());
+  }
+
+  public static String convertSexToDatabaseValue(String biologicalSex) {
+    // fun fact: Map.of() has a limit of 10 key/value pairs
+    Map<String, String> displayValueToDatabaseValue =
+        Map.ofEntries(
+            Map.entry("m", MALE_LITERAL),
+            Map.entry(MALE_LITERAL, MALE_LITERAL),
+            Map.entry("f", FEMALE_LITERAL),
+            Map.entry(FEMALE_LITERAL, FEMALE_LITERAL),
+            Map.entry("o", OTHER_LITERAL),
+            Map.entry(OTHER_LITERAL, OTHER_LITERAL),
+            Map.entry("u", REFUSED_LITERAL),
+            Map.entry(UNKNOWN_LITERAL, REFUSED_LITERAL),
+            Map.entry("a", OTHER_LITERAL),
+            Map.entry("ambiguous", OTHER_LITERAL),
+            Map.entry("n", OTHER_LITERAL),
+            Map.entry("not applicable", OTHER_LITERAL));
+
+    return displayValueToDatabaseValue.get(biologicalSex.toLowerCase());
   }
 
   private static List<FeedbackMessage> validateSpecificValueOrSNOMED(

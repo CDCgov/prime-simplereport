@@ -11,7 +11,9 @@ import gov.cdc.usds.simplereport.db.model.auxiliary.PhoneType;
 import gov.cdc.usds.simplereport.db.model.auxiliary.TestResult;
 import java.time.LocalDate;
 import java.time.format.DateTimeFormatter;
+import java.time.format.DateTimeFormatterBuilder;
 import java.time.format.DateTimeParseException;
+import java.time.temporal.ChronoField;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.Iterator;
@@ -30,19 +32,34 @@ import org.json.JSONObject;
  * ways.
  */
 public class Translators {
-  private static final DateTimeFormatter US_SLASHDATE_SHORT_FORMATTER =
-      DateTimeFormatter.ofPattern("M/d/yyyy");
+  private static final long LOOK_BACK_YEARS = 99;
+
+  // Accepts either two-digit or four-digit years.
+  // Two-digit years will always resolve to years past.
+  // (e.g., if today is Jan. 1, 2023, and the formatter is passed 11/4/24, it will resolve to Nov 4,
+  // 1924).
+  public static final DateTimeFormatter PAST_DATE_FLEXIBLE_FORMATTER =
+      new DateTimeFormatterBuilder()
+          .appendPattern("M/d/")
+          .optionalStart()
+          .appendPattern("uuuu")
+          .optionalEnd()
+          .optionalStart()
+          .appendValueReduced(ChronoField.YEAR, 2, 2, LocalDate.now().minusYears(LOOK_BACK_YEARS))
+          .optionalEnd()
+          .toFormatter();
+
   private static final int MAX_STRING_LENGTH = 500;
 
-  public static final LocalDate parseUserShortDate(String d) {
-    String date = parseString(d);
+  public static final LocalDate parseUserShortDate(String input) {
+    String date = parseString(input);
     if (date == null) {
       return null;
     }
     try {
-      return LocalDate.parse(date, US_SLASHDATE_SHORT_FORMATTER);
+      return LocalDate.parse(date, PAST_DATE_FLEXIBLE_FORMATTER);
     } catch (DateTimeParseException e) {
-      throw IllegalGraphqlArgumentException.invalidInput(d, "date");
+      throw IllegalGraphqlArgumentException.invalidInput(input, "date");
     }
   }
 
@@ -75,7 +92,7 @@ public class Translators {
         .collect(Collectors.toList());
   }
 
-  private static PhoneType parsePhoneType(String t) {
+  public static PhoneType parsePhoneType(String t) {
     String type = parseString(t);
     if (type == null) {
       // When we no longer require backwards compatibility with an old UI, we can parse this
@@ -283,6 +300,30 @@ public class Translators {
 
   public static final Set<String> CANADIAN_STATE_CODES =
       Set.of("AB", "BC", "MB", "NB", "NL", "NT", "NS", "NU", "ON", "PE", "QC", "SK", "YT");
+
+  public static final Set<String> COUNTRY_CODES =
+      Set.of(
+          "AFG", "ALB", "DZA", "AND", "AGO", "ATG", "ARG", "ARM", "AUS", "AUT", "AZE", "BHS", "BHR",
+          "BGD", "BRB", "BLR", "BEL", "BLZ", "BEN", "BTN", "BOL", "BIH", "BWA", "BRA", "BRN", "BGR",
+          "BFA", "MMR", "BDI", "CPV", "KHM", "CMR", "CAN", "CAF", "TCD", "CHL", "CHN", "COL", "COM",
+          "COG", "COD", "CRI", "CIV", "HRV", "CUB", "CYP", "CZE", "DNK", "DJI", "DOM", "DMA", "ECU",
+          "EGY", "SLV", "GNQ", "ERI", "EST", "SWZ", "ETH", "FJI", "FIN", "FRA", "GAB", "GMB", "GEO",
+          "DEU", "GHA", "GRC", "GRD", "GTM", "GIN", "GNB", "GUY", "HTI", "VAT", "HND", "HUN", "ISL",
+          "IND", "IDN", "IRN", "IRQ", "IRL", "ISR", "ITA", "JAM", "JPN", "JOR", "KAZ", "KEN", "KIR",
+          "PRK", "KOR", "XKS", "KWT", "KGZ", "LAO", "LVA", "LBN", "LSO", "LBR", "LBY", "LIE", "LTU",
+          "LUX", "MDG", "MWI", "MYS", "MDV", "MLI", "MLT", "MHL", "MRT", "MUS", "MEX", "FSM", "MDA",
+          "MCO", "MNG", "MNE", "MAR", "MOZ", "NAM", "NRU", "NPL", "NLD", "NZL", "NIC", "NER", "NGA",
+          "MKD", "NOR", "OMN", "PAK", "PLW", "PAN", "PNG", "PRY", "PER", "PHL", "POL", "PRT", "QAT",
+          "ROU", "RUS", "RWA", "KNA", "LCA", "VCT", "WSM", "SMR", "STP", "SAU", "SEN", "SRB", "SYC",
+          "SLE", "SGP", "SVK", "SVN", "SLB", "SOM", "ZAF", "SSD", "ESP", "LKA", "SDN", "SUR", "SWE",
+          "CHE", "SYR", "TJK", "TZA", "THA", "TLS", "TGO", "TON", "TTO", "TUN", "TUR", "TKM", "TUV",
+          "UGA", "UKR", "ARE", "GBR", "USA", "URY", "UZB", "VUT", "VEN", "VNM", "YEM", "ZMB", "ZWE",
+          "TWN", "XQZ", "ASM", "AIA", "ATA", "ABW", "XAC", "XBK", "BMU", "BVT", "IOT", "CYM", "CXR",
+          "CPT", "CCK", "COK", "XCS", "CUW", "XXD", "FLK", "FRO", "GUF", "PYF", "ATF", "GIB", "GRL",
+          "GLP", "GUM", "GGY", "HMD", "HKG", "XHO", "IMN", "XJM", "XJV", "JEY", "XJA", "XKR", "MAC",
+          "MTQ", "MYT", "XMW", "MSR", "XNV", "NCL", "NIU", "NFK", "MNP", "XPL", "XPR", "PCN", "PRI",
+          "REU", "BLM", "SHN", "MAF", "SPM", "SXM", "SGS", "XSP", "XSV", "TKL", "TCA", "VGB", "VIR",
+          "XWK", "WLF");
 
   public static String parseState(String s) {
     String state = parseString(s);

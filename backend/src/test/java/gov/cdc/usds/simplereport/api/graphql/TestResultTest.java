@@ -76,7 +76,6 @@ class TestResultTest extends BaseGraphqlTest {
     ArrayNode testResults = fetchTestResults(variables);
 
     assertEquals(3, testResults.size());
-
     assertEquals(
         "SARS-CoV+SARS-CoV-2 (COVID-19) Ag [Presence] in Respiratory specimen by Rapid immunoassay",
         testResults.get(0).get("testPerformed").get("name").asText());
@@ -88,6 +87,34 @@ class TestResultTest extends BaseGraphqlTest {
         "SARS-CoV+SARS-CoV-2 Ag Resp Ql IA.rapid",
         testResults.get(0).get("testPerformed").get("name").asText());
     assertNotNull(testResults.get(0).get("patientLink"));
+  }
+
+  @Test
+  void fetchOrganizationTestResults_adminUser() {
+    useOrgAdmin();
+
+    Person p = _dataFactory.createFullPerson(_org);
+    _dataFactory.createTestEvent(p, _site);
+    _dataFactory.createTestEvent(p, _site);
+    _dataFactory.createTestEvent(p, _site);
+
+    HashMap<String, Object> variables = getFacilityScopedArguments();
+    variables.put("facilityId", null);
+    ArrayNode testResults = fetchTestResults(variables);
+
+    testResults = fetchTestResults(variables);
+    assertEquals(3, testResults.size());
+
+    assertEquals(
+        "SARS-CoV+SARS-CoV-2 (COVID-19) Ag [Presence] in Respiratory specimen by Rapid immunoassay",
+        testResults.get(0).get("testPerformed").get("name").asText());
+  }
+
+  @Test
+  void fetchOrganizationTestResults__orgUser_failure() {
+    HashMap<String, Object> variables = getFacilityScopedArguments();
+    variables.put("facilityId", null);
+    fetchTestResultsWithError(variables, ACCESS_ERROR);
   }
 
   @Test
@@ -327,7 +354,6 @@ class TestResultTest extends BaseGraphqlTest {
             "organization-level-metrics", "GetOrganizationLevelDashboardMetrics", variables, null);
 
     JsonNode metrics = result.get("organizationLevelDashboardMetrics");
-    System.out.println(metrics);
     assertEquals(1L, metrics.get("organizationPositiveTestCount").asLong());
     assertEquals(3L, metrics.get("organizationNegativeTestCount").asLong());
     assertEquals(4L, metrics.get("organizationTotalTestCount").asLong());
@@ -443,7 +469,7 @@ class TestResultTest extends BaseGraphqlTest {
   }
 
   private void fetchTestResultsWithError(Map<String, Object> variables, String expectedError) {
-    runQuery("test-results-query", variables, expectedError);
+    runQuery("test-results-with-count-query", variables, expectedError);
   }
 
   private void fetchTestResult(Map<String, Object> variables, Optional<String> expectedError) {

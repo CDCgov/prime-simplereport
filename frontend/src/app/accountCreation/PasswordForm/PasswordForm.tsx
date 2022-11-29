@@ -23,9 +23,8 @@ export const PasswordForm = () => {
   const [strength, setStrength] = useState(0);
   const [strengthHint, setStrengthHint] = useState("");
   const [passwordError, setPasswordError] = useState("");
-  const [passwordConfirmationError, setPasswordConfirmationError] = useState(
-    ""
-  );
+  const [passwordConfirmationError, setPasswordConfirmationError] =
+    useState("");
   const [loading, setLoading] = useState(false);
   const [submitted, setSubmitted] = useState(false);
 

@@ -35,10 +35,8 @@ const ManagePhoneNumbers: React.FC<Props> = ({
   const { t } = useTranslation();
   const { phoneNumberUpdateSchema, getValidationError } = usePersonSchemata();
 
-  const {
-    PHONE_TYPE_VALUES,
-    TEST_RESULT_DELIVERY_PREFERENCE_VALUES_SMS,
-  } = useTranslatedConstants();
+  const { PHONE_TYPE_VALUES, TEST_RESULT_DELIVERY_PREFERENCE_VALUES_SMS } =
+    useTranslatedConstants();
 
   const phoneNumbersOrDefault = useMemo(
     () =>

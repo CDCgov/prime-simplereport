@@ -148,10 +148,8 @@ export const DetachedTestResultsList = ({
   const [markCorrectionId, setMarkCorrectionId] = useState(undefined);
   const [detailsModalId, setDetailsModalId] = useState<string>();
   const [textModalId, setTextModalId] = useState<string>();
-  const [
-    emailModalTestResultId,
-    setEmailModalTestResultId,
-  ] = useState<string>();
+  const [emailModalTestResultId, setEmailModalTestResultId] =
+    useState<string>();
   const [showSuggestion, setShowSuggestion] = useState(true);
   const [startDateError, setStartDateError] = useState<string | undefined>();
   const [endDateError, setEndDateError] = useState<string | undefined>();
@@ -170,21 +168,19 @@ export const DetachedTestResultsList = ({
     appPermissions.settings.canView
   );
 
-  const [
-    queryPatients,
-    { data: patientData, loading: patientLoading },
-  ] = useLazyQuery(QUERY_PATIENT, {
-    fetchPolicy: "no-cache",
-    variables: {
-      includeArchived: isOrgAdmin,
-      facilityId:
-        filterParams.filterFacilityId === ALL_FACILITIES_ID
-          ? null
-          : filterParams.filterFacilityId || activeFacilityId,
-      namePrefixMatch: queryString,
-      includeArchivedFacilities: isOrgAdmin,
-    },
-  });
+  const [queryPatients, { data: patientData, loading: patientLoading }] =
+    useLazyQuery(QUERY_PATIENT, {
+      fetchPolicy: "no-cache",
+      variables: {
+        includeArchived: isOrgAdmin,
+        facilityId:
+          filterParams.filterFacilityId === ALL_FACILITIES_ID
+            ? null
+            : filterParams.filterFacilityId || activeFacilityId,
+        namePrefixMatch: queryString,
+        includeArchivedFacilities: isOrgAdmin,
+      },
+    });
 
   const { data: facilitiesData } = useGetAllFacilitiesQuery({
     fetchPolicy: "no-cache",
@@ -253,10 +249,10 @@ export const DetachedTestResultsList = ({
   };
 
   const dropDownRef = useRef(null);
-  const showDropdown = useMemo(() => allowQuery && showSuggestion, [
-    allowQuery,
-    showSuggestion,
-  ]);
+  const showDropdown = useMemo(
+    () => allowQuery && showSuggestion,
+    [allowQuery, showSuggestion]
+  );
   const hideOnOutsideClick = useCallback(() => {
     setShowSuggestion(false);
   }, []);
@@ -370,14 +366,15 @@ export const DetachedTestResultsList = ({
     (e) => e != null
   );
 
-  const facilityOptions = (isOrgAdmin
-    ? [
-        {
-          label: "All facilities",
-          value: ALL_FACILITIES_ID,
-        },
-      ]
-    : []
+  const facilityOptions = (
+    isOrgAdmin
+      ? [
+          {
+            label: "All facilities",
+            value: ALL_FACILITIES_ID,
+          },
+        ]
+      : []
   ).concat(
     viewableFacilities
       .sort((a, b) => {
@@ -416,12 +413,12 @@ export const DetachedTestResultsList = ({
                 onClick={() => {
                   setDebounced("");
                   clearFilterParams();
-                  (document.getElementById(
-                    "start-date"
-                  ) as HTMLInputElement).value = "";
-                  (document.getElementById(
-                    "end-date"
-                  ) as HTMLInputElement).value = "";
+                  (
+                    document.getElementById("start-date") as HTMLInputElement
+                  ).value = "";
+                  (
+                    document.getElementById("end-date") as HTMLInputElement
+                  ).value = "";
                   setStartDateError("");
                   setEndDateError("");
                 }}

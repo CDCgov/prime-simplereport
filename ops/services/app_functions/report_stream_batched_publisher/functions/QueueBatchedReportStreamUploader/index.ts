@@ -54,7 +54,9 @@ const QueueBatchedTestEventPublisher: AzureFunction = async function (
   }
 
   if (parseSuccessCount < 1) {
-    context.log(`Successfully parsed message count of ${parseSuccessCount} is less than 1; aborting`);
+    context.log(
+      `Successfully parsed message count of ${parseSuccessCount} is less than 1; aborting`
+    );
     return;
   }
 
@@ -79,7 +81,8 @@ const QueueBatchedTestEventPublisher: AzureFunction = async function (
   });
 
   if (postResult.ok) {
-    const response: ReportStreamResponse = await postResult.json() as ReportStreamResponse;
+    const response: ReportStreamResponse =
+      (await postResult.json()) as ReportStreamResponse;
     context.log(`Report Stream response: ${JSON.stringify(response)}`);
     await reportExceptions(context, exceptionQueue, response);
 
