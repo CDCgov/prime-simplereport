@@ -17,13 +17,13 @@ public interface FileRow {
 
   List<FeedbackMessage> validateIndividualValues();
 
-  default List<FeedbackMessage> getPossibleErrorsFromFields(FileRow fr) {
+  default List<FeedbackMessage> getPossibleErrorsFromFields() {
     List<FeedbackMessage> errors = new ArrayList<>();
     Arrays.stream(this.getClass().getDeclaredFields())
         .forEach(
             field -> {
               try {
-                errors.addAll(invokeGetPossibleError(field, fr));
+                errors.addAll(invokeGetPossibleError(field));
               } catch (IllegalAccessException e) {
                 log.error("Error while invoking getPossibleError", e);
                 throw new GenericGraphqlException();
@@ -32,10 +32,9 @@ public interface FileRow {
     return errors;
   }
 
-  default List<FeedbackMessage> invokeGetPossibleError(Field field, FileRow fr)
-      throws IllegalAccessException {
+  default List<FeedbackMessage> invokeGetPossibleError(Field field) throws IllegalAccessException {
     if (field.getType().equals(ValueOrError.class)) {
-      ValueOrError valueOrError = (ValueOrError) field.get(fr);
+      ValueOrError valueOrError = (ValueOrError) field.get(this);
       if (valueOrError != null) {
         return valueOrError.getPossibleError();
       }

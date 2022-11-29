@@ -16,15 +16,13 @@ import org.mockito.Mockito;
 class FileRowTest {
   @Test
   void getPossibleErrorsFromFields_catchesIllegalAccessException() throws IllegalAccessException {
-
     var fileRow = Mockito.spy(new TestResultRow(Collections.emptyMap()));
-    doThrow(new IllegalAccessException()).when(fileRow).invokeGetPossibleError(any(), any());
-    assertThrows(GenericGraphqlException.class, () -> fileRow.getPossibleErrorsFromFields(fileRow));
+    doThrow(new IllegalAccessException()).when(fileRow).invokeGetPossibleError(any());
+    assertThrows(GenericGraphqlException.class, fileRow::getPossibleErrorsFromFields);
   }
 
   @Test
   void invokeGetPossibleError_returnsErrorsFromGetPossibleError() throws IllegalAccessException {
-
     class TestFileRow implements FileRow {
       final ValueOrError val = new ValueOrError(new FeedbackMessage());
 
@@ -40,7 +38,7 @@ class FileRowTest {
     }
     var fileRow = new TestFileRow();
 
-    var actual = fileRow.invokeGetPossibleError(TestFileRow.class.getDeclaredFields()[0], fileRow);
+    var actual = fileRow.invokeGetPossibleError(TestFileRow.class.getDeclaredFields()[0]);
 
     assertThat(actual).hasSize(1);
   }
@@ -63,7 +61,7 @@ class FileRowTest {
     }
     var fileRow = new TestFileRow();
 
-    var actual = fileRow.invokeGetPossibleError(TestFileRow.class.getDeclaredFields()[0], fileRow);
+    var actual = fileRow.invokeGetPossibleError(TestFileRow.class.getDeclaredFields()[0]);
 
     assertThat(actual).isEmpty();
   }
@@ -86,7 +84,7 @@ class FileRowTest {
     }
     var fileRow = new TestFileRow();
 
-    var actual = fileRow.invokeGetPossibleError(TestFileRow.class.getDeclaredFields()[0], fileRow);
+    var actual = fileRow.invokeGetPossibleError(TestFileRow.class.getDeclaredFields()[0]);
 
     assertThat(actual).isEmpty();
   }

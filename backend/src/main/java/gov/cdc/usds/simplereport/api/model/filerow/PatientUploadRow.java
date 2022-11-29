@@ -71,7 +71,7 @@ public class PatientUploadRow implements FileRow {
 
   @Override
   public List<FeedbackMessage> validateRequiredFields() {
-    return getPossibleErrorsFromFields(this);
+    return getPossibleErrorsFromFields();
   }
 
   @Override

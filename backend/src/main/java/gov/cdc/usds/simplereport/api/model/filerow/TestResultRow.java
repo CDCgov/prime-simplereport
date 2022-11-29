@@ -156,7 +156,7 @@ public class TestResultRow implements FileRow {
 
   @Override
   public List<FeedbackMessage> validateRequiredFields() {
-    return getPossibleErrorsFromFields(this);
+    return getPossibleErrorsFromFields();
   }
 
   @Override
