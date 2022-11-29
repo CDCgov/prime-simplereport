@@ -4,8 +4,6 @@ import gov.cdc.usds.simplereport.api.model.errors.GenericGraphqlException;
 import gov.cdc.usds.simplereport.service.model.reportstream.FeedbackMessage;
 import gov.cdc.usds.simplereport.validators.CsvValidatorUtils.ValueOrError;
 import java.lang.reflect.Field;
-import java.lang.reflect.InvocationTargetException;
-import java.lang.reflect.Method;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
@@ -26,9 +24,7 @@ public interface FileRow {
             field -> {
               try {
                 errors.addAll(invokeGetPossibleError(field, fr));
-              } catch (IllegalAccessException
-                  | NoSuchMethodException
-                  | InvocationTargetException e) {
+              } catch (IllegalAccessException e) {
                 log.error("Error while invoking getPossibleError", e);
                 throw new GenericGraphqlException();
               }
@@ -37,12 +33,11 @@ public interface FileRow {
   }
 
   default List<FeedbackMessage> invokeGetPossibleError(Field field, FileRow fr)
-      throws NoSuchMethodException, InvocationTargetException, IllegalAccessException {
+      throws IllegalAccessException {
     if (field.getType().equals(ValueOrError.class)) {
-      Object valueOrError = field.get(fr);
+      ValueOrError valueOrError = (ValueOrError) field.get(fr);
       if (valueOrError != null) {
-        Method getPossibleErrorMethod = ValueOrError.class.getDeclaredMethod("getPossibleError");
-        return (List<FeedbackMessage>) getPossibleErrorMethod.invoke(valueOrError);
+        return valueOrError.getPossibleError();
       }
     }
     return Collections.emptyList();

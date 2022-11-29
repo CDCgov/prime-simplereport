@@ -8,7 +8,6 @@ import static org.mockito.Mockito.doThrow;
 import gov.cdc.usds.simplereport.api.model.errors.GenericGraphqlException;
 import gov.cdc.usds.simplereport.service.model.reportstream.FeedbackMessage;
 import gov.cdc.usds.simplereport.validators.CsvValidatorUtils.ValueOrError;
-import java.lang.reflect.InvocationTargetException;
 import java.util.Collections;
 import java.util.List;
 import org.junit.jupiter.api.Test;
@@ -16,39 +15,10 @@ import org.mockito.Mockito;
 
 class FileRowTest {
   @Test
-  void getPossibleErrorsFromFields_catchesInvocationTargetException()
-      throws InvocationTargetException, NoSuchMethodException, IllegalAccessException {
+  void getPossibleErrorsFromFields_catchesIllegalAccessException() throws IllegalAccessException {
 
     var fileRow = Mockito.spy(new TestResultRow(Collections.emptyMap()));
-    doThrow(new InvocationTargetException(new Exception()))
-        .when(fileRow)
-        .invokeGetPossibleError(any(), any());
-    var declaredFields = TestResultRow.class.getDeclaredFields();
-
-    assertThrows(
-        GenericGraphqlException.class,
-        () -> fileRow.getPossibleErrorsFromFields(declaredFields, fileRow));
-  }
-
-  @Test
-  void getPossibleErrorsFromFields_catchesNoSuchMethodException()
-      throws InvocationTargetException, NoSuchMethodException, IllegalAccessException {
-
-    var fileRow = Mockito.spy(new TestResultRow(Collections.emptyMap()));
-    doThrow(new NoSuchMethodException()).when(fileRow).invokeGetPossibleError(any(), any());
-    var declaredFields = TestResultRow.class.getDeclaredFields();
-
-    assertThrows(
-        GenericGraphqlException.class,
-        () -> fileRow.getPossibleErrorsFromFields(declaredFields, fileRow));
-  }
-
-  @Test
-  void getPossibleErrorsFromFields_catchesIllegalAccessException()
-      throws InvocationTargetException, NoSuchMethodException, IllegalAccessException {
-
-    var fileRow = Mockito.spy(new TestResultRow(Collections.emptyMap()));
-    doThrow(new NoSuchMethodException()).when(fileRow).invokeGetPossibleError(any(), any());
+    doThrow(new IllegalAccessException()).when(fileRow).invokeGetPossibleError(any(), any());
     var declaredFields = TestResultRow.class.getDeclaredFields();
     assertThrows(
         GenericGraphqlException.class,
@@ -56,8 +26,7 @@ class FileRowTest {
   }
 
   @Test
-  void invokeGetPossibleError_returnsErrorsFromGetPossibleError()
-      throws InvocationTargetException, NoSuchMethodException, IllegalAccessException {
+  void invokeGetPossibleError_returnsErrorsFromGetPossibleError() throws IllegalAccessException {
 
     class TestFileRow implements FileRow {
       final ValueOrError val = new ValueOrError(new FeedbackMessage());
@@ -81,7 +50,7 @@ class FileRowTest {
 
   @Test
   void invokeGetPossibleError_returnsEmptyListFromGetPossibleError_whenGivenNotValueOrError()
-      throws InvocationTargetException, NoSuchMethodException, IllegalAccessException {
+      throws IllegalAccessException {
     class TestFileRow implements FileRow {
       String val;
 
@@ -104,7 +73,7 @@ class FileRowTest {
 
   @Test
   void invokeGetPossibleError_returnsEmptyListFromGetPossibleError_whenValueOrErrorIsNull()
-      throws InvocationTargetException, NoSuchMethodException, IllegalAccessException {
+      throws IllegalAccessException {
     class TestFileRow implements FileRow {
       ValueOrError val;
 
