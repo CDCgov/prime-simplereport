@@ -2472,7 +2472,7 @@ exports[`CsvSchemaDocumentation tests CsvSchemaDocumentaton matches snapshot 1`]
                 class="grid-col-8 prime-ul margin-top-0"
               >
                 <code>
-                  M/D/YYY HH:mm
+                  M/D/YYYY HH:mm
                 </code>
                  is preferred, but 
                 <code>
@@ -2584,7 +2584,7 @@ exports[`CsvSchemaDocumentation tests CsvSchemaDocumentaton matches snapshot 1`]
                 class="grid-col-8 prime-ul margin-top-0"
               >
                 <code>
-                  M/D/YYY HH:mm
+                  M/D/YYYY HH:mm
                 </code>
                  is preferred, but 
                 <code>
@@ -2696,7 +2696,7 @@ exports[`CsvSchemaDocumentation tests CsvSchemaDocumentaton matches snapshot 1`]
                 class="grid-col-8 prime-ul margin-top-0"
               >
                 <code>
-                  M/D/YYY HH:mm
+                  M/D/YYYY HH:mm
                 </code>
                  is preferred, but 
                 <code>
@@ -2784,7 +2784,7 @@ exports[`CsvSchemaDocumentation tests CsvSchemaDocumentaton matches snapshot 1`]
                 class="grid-col-8 prime-ul margin-top-0"
               >
                 <code>
-                  M/D/YYY HH:mm
+                  M/D/YYYY HH:mm
                 </code>
                  is preferred, but 
                 <code>
@@ -2896,7 +2896,7 @@ exports[`CsvSchemaDocumentation tests CsvSchemaDocumentaton matches snapshot 1`]
                 class="grid-col-8 prime-ul margin-top-0"
               >
                 <code>
-                  M/D/YYY HH:mm
+                  M/D/YYYY HH:mm
                 </code>
                  is preferred, but 
                 <code>
