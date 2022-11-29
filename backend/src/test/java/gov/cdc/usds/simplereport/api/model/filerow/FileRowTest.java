@@ -19,10 +19,7 @@ class FileRowTest {
 
     var fileRow = Mockito.spy(new TestResultRow(Collections.emptyMap()));
     doThrow(new IllegalAccessException()).when(fileRow).invokeGetPossibleError(any(), any());
-    var declaredFields = TestResultRow.class.getDeclaredFields();
-    assertThrows(
-        GenericGraphqlException.class,
-        () -> fileRow.getPossibleErrorsFromFields(declaredFields, fileRow));
+    assertThrows(GenericGraphqlException.class, () -> fileRow.getPossibleErrorsFromFields(fileRow));
   }
 
   @Test

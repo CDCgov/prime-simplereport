@@ -17,9 +17,9 @@ public interface FileRow {
 
   List<FeedbackMessage> validateIndividualValues();
 
-  default List<FeedbackMessage> getPossibleErrorsFromFields(Field[] fields, FileRow fr) {
+  default List<FeedbackMessage> getPossibleErrorsFromFields(FileRow fr) {
     List<FeedbackMessage> errors = new ArrayList<>();
-    Arrays.stream(fields)
+    Arrays.stream(this.getClass().getDeclaredFields())
         .forEach(
             field -> {
               try {

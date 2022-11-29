@@ -19,7 +19,6 @@ import static gov.cdc.usds.simplereport.validators.CsvValidatorUtils.validateZip
 
 import gov.cdc.usds.simplereport.service.model.reportstream.FeedbackMessage;
 import gov.cdc.usds.simplereport.validators.CsvValidatorUtils.ValueOrError;
-import java.lang.reflect.Field;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
@@ -157,8 +156,7 @@ public class TestResultRow implements FileRow {
 
   @Override
   public List<FeedbackMessage> validateRequiredFields() {
-    Field[] arrayOfField = TestResultRow.class.getDeclaredFields();
-    return getPossibleErrorsFromFields(arrayOfField, this);
+    return getPossibleErrorsFromFields(this);
   }
 
   @Override
