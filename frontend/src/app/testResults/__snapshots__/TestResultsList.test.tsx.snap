@@ -237,7 +237,7 @@ exports[`TestResultsList should render a list of tests 1`] = `
               </label>
               <select
                 aria-required="false"
-                class="usa-select"
+                class="usa-select-narrow"
                 id="3"
                 name="facility"
               >
