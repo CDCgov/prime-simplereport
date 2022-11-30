@@ -294,16 +294,10 @@ const QueueItem = ({
   useEffect(() => {
     if (deviceTypeIsInvalid()) {
       setDeviceTypeErrorMessage("Please select a device");
-
       setSaveState("error");
-      return;
-    }
-
-    if (specimenTypeIsInvalid()) {
+    } else if (specimenTypeIsInvalid()) {
       setSpecimenTypeErrorMessage("Please select a swab type");
-
       setSaveState("error");
-      return;
     }
     // eslint-disable-next-line
   }, [devicesMap, deviceId, specimenId]);
