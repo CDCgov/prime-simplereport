@@ -485,9 +485,6 @@ describe("QueueItem", () => {
 
     await renderQueueItem({ props, mocks });
 
-    expect(
-      screen.queryByText("Please select a device")
-    ).not.toBeInTheDocument();
     const deviceDropdown = await getDeciceTypeDropdown();
     expect(deviceDropdown.options.length).toEqual(5);
     expect(deviceDropdown.options[0].label).toEqual("");
@@ -501,14 +498,18 @@ describe("QueueItem", () => {
     expect(swabDropdown.options.length).toEqual(0);
     expect(swabDropdown).toBeDisabled();
 
-    // select results
-    userEvent.click(screen.getByLabelText("Positive", { exact: false }));
-    await new Promise((resolve) => setTimeout(resolve, 501));
+    // disables submitting results and changing date
+    const submitButton = screen.getByText("Submit") as HTMLInputElement;
+    const positiveResult = screen.getByLabelText("Positive", {
+      exact: false,
+    }) as HTMLInputElement;
+    const currentDateTimeButton = screen.getByLabelText("Current date/time", {
+      exact: false,
+    }) as HTMLInputElement;
 
-    //try to submit results
-    const submitButton = screen.getByText("Submit");
-    expect(submitButton).toBeEnabled();
-    userEvent.click(submitButton);
+    expect(submitButton).toBeDisabled();
+    expect(positiveResult).toBeDisabled();
+    expect(currentDateTimeButton).toBeDisabled();
 
     // notice the error message
     expect(screen.getByText("Please select a device")).toBeInTheDocument();
@@ -521,12 +522,14 @@ describe("QueueItem", () => {
       screen.queryByText("Please select a device")
     ).not.toBeInTheDocument();
 
-    await waitFor(
-      () => {
-        expect(submitButton).toBeEnabled();
-      },
-      { timeout: 1000 }
-    );
+    // enable selecting date/time and results
+    expect(positiveResult).toBeEnabled();
+    expect(currentDateTimeButton).toBeEnabled();
+
+    // enables submitting of results after selecting one
+    userEvent.click(positiveResult);
+    await new Promise((resolve) => setTimeout(resolve, 501));
+    expect(submitButton).toBeEnabled();
   });
 
   it("correctly handles when swab is deleted from device", async () => {
@@ -620,9 +623,6 @@ describe("QueueItem", () => {
 
     await renderQueueItem({ props, mocks });
 
-    expect(
-      screen.queryByText("Please select a swab type")
-    ).not.toBeInTheDocument();
     const deviceDropdown = await getDeciceTypeDropdown();
     expect(deviceDropdown.options.length).toEqual(4);
     expect(deviceDropdown.options[0].label).toEqual("Abbott BinaxNow");
@@ -636,14 +636,18 @@ describe("QueueItem", () => {
     expect(swabDropdown.options[0].label).toEqual("");
     expect(swabDropdown.options[1].label).toEqual("Swab of internal nose");
 
-    // select results
-    userEvent.click(screen.getByLabelText("Positive", { exact: false }));
-    await new Promise((resolve) => setTimeout(resolve, 501));
+    // disables submitting results and changing date
+    const currentDateTimeButton = screen.getByLabelText("Current date/time", {
+      exact: false,
+    }) as HTMLInputElement;
+    const positiveResult = screen.getByLabelText("Positive", {
+      exact: false,
+    }) as HTMLInputElement;
+    const submitButton = screen.getByText("Submit") as HTMLInputElement;
 
-    //try to submit results
-    const submitButton = screen.getByText("Submit");
-    expect(submitButton).toBeEnabled();
-    userEvent.click(submitButton);
+    expect(currentDateTimeButton).toBeDisabled();
+    expect(positiveResult).toBeDisabled();
+    expect(submitButton).toBeDisabled();
 
     // notice the error message
     expect(screen.getByText("Please select a swab type")).toBeInTheDocument();
@@ -655,6 +659,14 @@ describe("QueueItem", () => {
     expect(
       screen.queryByText("Please select a swab type")
     ).not.toBeInTheDocument();
+
+    // enable selecting date/time and results
+    expect(positiveResult).toBeEnabled();
+    expect(currentDateTimeButton).toBeEnabled();
+
+    // enables submitting of results after selecting one
+    userEvent.click(positiveResult);
+    await new Promise((resolve) => setTimeout(resolve, 501));
     expect(submitButton).toBeEnabled();
   });
 

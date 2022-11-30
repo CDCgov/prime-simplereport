@@ -292,6 +292,23 @@ const QueueItem = ({
   }, [deviceId]);
 
   useEffect(() => {
+    if (deviceTypeIsInvalid()) {
+      setDeviceTypeErrorMessage("Please select a device");
+
+      setSaveState("error");
+      return;
+    }
+
+    if (specimenTypeIsInvalid()) {
+      setSpecimenTypeErrorMessage("Please select a swab type");
+
+      setSaveState("error");
+      return;
+    }
+    // eslint-disable-next-line
+  }, [devicesMap, deviceId, specimenId]);
+
+  useEffect(() => {
     let debounceTimer: ReturnType<typeof setTimeout>;
     if (dirtyState) {
       setDirtyState(false);
@@ -375,6 +392,7 @@ const QueueItem = ({
     showSuccess(body, title);
   };
 
+  const deviceTypeIsInvalid = () => !devicesMap.has(deviceId);
   const specimenTypeIsInvalid = () =>
     devicesMap.has(deviceId) &&
     devicesMap
@@ -391,20 +409,6 @@ const QueueItem = ({
           : "Test date can't be in the future";
 
       showError(message, "Invalid test date");
-
-      setSaveState("error");
-      return;
-    }
-
-    if (!devicesMap.has(deviceId)) {
-      setDeviceTypeErrorMessage("Please select a device");
-
-      setSaveState("error");
-      return;
-    }
-
-    if (specimenTypeIsInvalid()) {
-      setSpecimenTypeErrorMessage("Please select a swab type");
 
       setSaveState("error");
       return;
@@ -791,6 +795,9 @@ const QueueItem = ({
                             onChange={(event) =>
                               handleDateChange(event.target.value)
                             }
+                            disabled={
+                              deviceTypeIsInvalid() || specimenTypeIsInvalid()
+                            }
                           />
                           <input
                             hidden={shouldUseCurrentDateTime}
@@ -806,6 +813,9 @@ const QueueItem = ({
                             step="60"
                             value={moment(dateTested).format("HH:mm")}
                             onChange={(e) => handleTimeChange(e.target.value)}
+                            disabled={
+                              deviceTypeIsInvalid() || specimenTypeIsInvalid()
+                            }
                           />
                         </>
                       )}
@@ -820,6 +830,9 @@ const QueueItem = ({
                               onUseCurrentDateChange(e.target.checked)
                             }
                             aria-label="Use current date and time"
+                            disabled={
+                              deviceTypeIsInvalid() || specimenTypeIsInvalid()
+                            }
                           />
                           <label
                             className="usa-checkbox__label margin-0 margin-right-05em"
@@ -936,7 +949,11 @@ const QueueItem = ({
                   queueItemId={queueItem.internalId}
                   testResults={cacheTestResults}
                   isSubmitDisabled={
-                    loading || saveState === "editing" || saveState === "saving"
+                    loading ||
+                    saveState === "editing" ||
+                    saveState === "saving" ||
+                    deviceTypeIsInvalid() ||
+                    specimenTypeIsInvalid()
                   }
                   onSubmit={onTestResultSubmit}
                   onChange={onTestResultChange}
@@ -946,7 +963,11 @@ const QueueItem = ({
                   queueItemId={queueItem.internalId}
                   testResults={cacheTestResults}
                   isSubmitDisabled={
-                    loading || saveState === "editing" || saveState === "saving"
+                    loading ||
+                    saveState === "editing" ||
+                    saveState === "saving" ||
+                    deviceTypeIsInvalid() ||
+                    specimenTypeIsInvalid()
                   }
                   onSubmit={onTestResultSubmit}
                   onChange={onTestResultChange}
