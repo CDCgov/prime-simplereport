@@ -99,8 +99,7 @@ public class DeviceTypeService {
             deviceTypeId, specimenTypeId)
         .orElseThrow(
             () ->
-                new IllegalGraphqlArgumentException(
-                    "Device is not configured with a specimen type"));
+                new IllegalGraphqlArgumentException("Not a valid device and specimen combination"));
   }
 
   @Transactional(readOnly = false)
