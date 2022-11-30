@@ -18,6 +18,7 @@ public class TestUserIdentities {
   public static final String TEST_ROLE_PREFIX = "SR-UNITTEST-TENANT:";
 
   public static final String DEFAULT_ORGANIZATION = "DIS_ORG";
+  public static final String CREATED_ORGANIZATION = "MALLRAT";
 
   public static final String TEST_FACILITY_1 = "Testing Site";
   public static final String TEST_FACILITY_2 = "Injection Site";
@@ -62,6 +63,25 @@ public class TestUserIdentities {
    */
   public static void withStandardUser(Runnable nested) {
     withUser(STANDARD_USER, nested);
+  }
+
+  public static void withStandardUserInOrganization(Facility facility, Runnable nested) {
+    SecurityContext context = SecurityContextHolder.getContext();
+    Authentication original = context.getAuthentication();
+    List<GrantedAuthority> authorities = new ArrayList<>();
+    // set the organization and role authority
+    // then set the facility auth
+    String rolePrefix = TEST_ROLE_PREFIX + CREATED_ORGANIZATION + ":";
+    authorities.add(new SimpleGrantedAuthority(rolePrefix + "USER"));
+    //    authorities.add(new SimpleGrantedAuthority(rolePrefix + "ALL_FACILITIES"));
+    authorities.add(new SimpleGrantedAuthority(rolePrefix + "NO_ACCESS"));
+    authorities.add(new SimpleGrantedAuthority(convertFacilityToAuthority(facility)));
+    try {
+      context.setAuthentication(new TestingAuthenticationToken(STANDARD_USER, null, authorities));
+      nested.run();
+    } finally {
+      context.setAuthentication(original);
+    }
   }
 
   /**

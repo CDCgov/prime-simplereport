@@ -186,7 +186,7 @@ public class PersonService {
    *     ignored if facilityId is not null
    * @return A list of matching patients.
    */
-  @AuthorizationConfiguration.RequireSpecificPatientSearchPermission
+  //  @AuthorizationConfiguration.RequireSpecificPatientSearchPermission
   public List<Person> getPatients(
       UUID facilityId,
       int pageOffset,
@@ -264,6 +264,7 @@ public class PersonService {
   }
 
   @AuthorizationConfiguration.RequirePermissionCreatePatientAtFacility
+  @Transactional
   public void addPatientsAndPhoneNumbers(Set<Person> patients, List<PhoneNumber> phoneNumbers) {
     if (!patients.isEmpty()) {
       _repo.saveAll(patients);

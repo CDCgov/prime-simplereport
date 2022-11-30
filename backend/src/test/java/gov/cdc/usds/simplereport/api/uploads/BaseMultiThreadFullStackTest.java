@@ -20,9 +20,8 @@ import org.springframework.test.context.TestPropertySource;
  * Base class for all tests that simulate full API requests with a dependency on @Async services.
  */
 @TestPropertySource(
-    properties = {
-      "hibernate.query.interceptor.error-level=EXCEPTION",
-      "spring.jpa.properties.hibernate.enable_lazy_load_no_trans=true"
+    properties = {"hibernate.query.interceptor.error-level=EXCEPTION"
+      //      "spring.jpa.properties.hibernate.enable_lazy_load_no_trans=true"
     })
 @SpringBootTest(webEnvironment = WebEnvironment.RANDOM_PORT)
 @AutoConfigureMockMvc
@@ -40,6 +39,7 @@ public abstract class BaseMultiThreadFullStackTest {
   //    @Captor private ArgumentCaptor<ConsoleApiAuditEvent> auditLogCaptor;
   @Autowired protected DiseaseService _diseaseService;
   @Autowired private SupportedDiseaseRepository _diseaseRepo;
+  //  @Autowired private FacilityRepository _facilityRepo;
 
   //    protected Date _testStart;
 

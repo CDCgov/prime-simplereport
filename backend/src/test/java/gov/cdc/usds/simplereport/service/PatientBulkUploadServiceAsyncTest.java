@@ -5,10 +5,12 @@ import static org.awaitility.Awaitility.await;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.when;
 
-import gov.cdc.usds.simplereport.api.uploads.BaseMultiThreadFullStackTest;
+import gov.cdc.usds.simplereport.api.BaseFullStackTest;
+import gov.cdc.usds.simplereport.db.model.Facility;
+import gov.cdc.usds.simplereport.db.model.Organization;
 import gov.cdc.usds.simplereport.db.model.Person;
 import gov.cdc.usds.simplereport.db.model.auxiliary.StreetAddress;
-import gov.cdc.usds.simplereport.test_util.SliceTestConfiguration;
+import gov.cdc.usds.simplereport.test_util.TestUserIdentities;
 import java.io.IOException;
 import java.io.InputStream;
 import java.time.Duration;
@@ -25,13 +27,15 @@ import org.springframework.security.core.context.SecurityContextHolder;
 /*
  * We can't use the standard BaseServiceTest here because this service is async and requires a request context to operate.
  */
+public class PatientBulkUploadServiceAsyncTest extends BaseFullStackTest {
 
-public class PatientBulkUploadServiceAsyncTest extends BaseMultiThreadFullStackTest {
-
-  //  @Autowired OrganizationInitializingService _initService;
-  //  @Autowired PersonService _personService;
-  //  @Autowired OrganizationService _organizationService;
   @Autowired PatientBulkUploadServiceAsync _service;
+  //  @SpyBean CurrentOrganizationRolesContextHolder _orgRolesContext;
+
+  @Autowired PersonService _personService;
+
+  private Organization org;
+  private Facility facility;
 
   public static final int PATIENT_PAGE_OFFSET = 0;
   public static final int PATIENT_PAGE_SIZE = 1000;
@@ -47,10 +51,26 @@ public class PatientBulkUploadServiceAsyncTest extends BaseMultiThreadFullStackT
 
   @BeforeEach
   void setup() {
-    initSampleData();
+    //    _initService.initAll();
+    //    truncateDb();
+    // the org we're creating with the data factory doesn't match the org specifed in the role
+    // claims
+    // (MALLRAT vs DIS_ORG)
+    TestUserIdentities.withStandardUser(
+        () -> {
+          org = _dataFactory.createValidOrg();
+          facility = _dataFactory.createValidFacility(org);
+        });
+
     address = new StreetAddress("123 Main Street", null, "Washington", "DC", "20008", null);
     when(addressValidationService.getValidatedAddress(any(), any(), any(), any(), any(), any()))
         .thenReturn(address);
+    // mock bean the org context holder fetch
+    //    when(_orgRolesContext.hasBeenPopulated()).thenReturn(false);
+    //    Optional<OrganizationRoles> roles =  _organizationService.getCurrentOrganizationRoles();
+    //    _orgRolesContext.setOrganizationRoles(roles);
+    //    when(_orgRolesContext.getOrganizationRoles()).thenReturn(roles);
+    //    when(_orgRolesContext.hasBeenPopulated()).thenReturn(true);
   }
 
   // two ways this test can fail:
@@ -63,22 +83,24 @@ public class PatientBulkUploadServiceAsyncTest extends BaseMultiThreadFullStackT
   //    Hint: Missing Lazy fetching configuration on a field of one of the entities fetched in the
   // query
 
+  // dont forget tenant data access
+
   @Test
-  @SliceTestConfiguration.WithSimpleReportOrgAdminUser
-  //  @SliceTestConfiguration.WithSimpleReportStandardAllFacilitiesUser
   void validPerson_savedToDatabase() throws IOException {
     InputStream inputStream = loadCsv("patientBulkUpload/valid.csv");
     byte[] content = inputStream.readAllBytes();
-
-    this._service.savePatients(content, null);
 
     // this await call specifically thows the "no authentication token" exception
     // taking it out causes the test to fail in a slightly more normal way, because the assertion
     // size doesn't match
     // note: the above is only true outside the n+1 issues
-    await().until(patientsAddedToRepository(1));
-
-    assertThat(getPatients()).hasSize(1);
+    TestUserIdentities.withStandardUserInOrganization(
+        facility,
+        () -> {
+          this._service.savePatients(content, null);
+          await().until(patientsAddedToRepository(1));
+          assertThat(getPatients()).hasSize(1);
+        });
   }
 
   /**

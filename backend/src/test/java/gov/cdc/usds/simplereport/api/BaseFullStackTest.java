@@ -11,6 +11,7 @@ import static org.mockito.Mockito.verifyNoInteractions;
 import gov.cdc.usds.simplereport.config.authorization.UserPermission;
 import gov.cdc.usds.simplereport.db.model.ConsoleApiAuditEvent;
 import gov.cdc.usds.simplereport.db.model.auxiliary.HttpRequestDetails;
+import gov.cdc.usds.simplereport.db.repository.FacilityRepository;
 import gov.cdc.usds.simplereport.db.repository.SupportedDiseaseRepository;
 import gov.cdc.usds.simplereport.idp.repository.DemoOktaRepository;
 import gov.cdc.usds.simplereport.logging.LoggingConstants;
@@ -57,6 +58,7 @@ public abstract class BaseFullStackTest {
   @Captor private ArgumentCaptor<ConsoleApiAuditEvent> auditLogCaptor;
   @Autowired protected DiseaseService _diseaseService;
   @Autowired private SupportedDiseaseRepository _diseaseRepo;
+  @Autowired private FacilityRepository _facilityRepo;
 
   protected Date _testStart;
 

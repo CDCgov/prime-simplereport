@@ -27,7 +27,6 @@ import java.util.UUID;
 import java.util.stream.Collectors;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.beans.factory.support.ScopeNotActiveException;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -48,20 +47,21 @@ public class OrganizationService {
   private final DeviceTypeRepository deviceTypeRepository;
 
   public void resetOrganizationRolesContext() {
-    organizationRolesContext.reset();
+    //    organizationRolesContext.reset();
   }
 
   public Optional<OrganizationRoles> getCurrentOrganizationRoles() {
-    try {
-      if (organizationRolesContext.hasBeenPopulated()) {
-        return organizationRolesContext.getOrganizationRoles();
-      }
-      var result = fetchCurrentOrganizationRoles();
-      organizationRolesContext.setOrganizationRoles(result);
-      return result;
-    } catch (ScopeNotActiveException e) {
-      return fetchCurrentOrganizationRoles();
-    }
+    return fetchCurrentOrganizationRoles();
+    //    try {
+    //      if (organizationRolesContext.hasBeenPopulated()) {
+    //        return organizationRolesContext.getOrganizationRoles();
+    //      }
+    //      var result = fetchCurrentOrganizationRoles();
+    //      organizationRolesContext.setOrganizationRoles(result);
+    //      return result;
+    //    } catch (ScopeNotActiveException e) {
+    //      return fetchCurrentOrganizationRoles();
+    //    }
   }
 
   private Optional<OrganizationRoles> fetchCurrentOrganizationRoles() {
@@ -145,6 +145,14 @@ public class OrganizationService {
     // If there are no facility restrictions, get all facilities in org; otherwise,
     // get specified
     // list.
+
+    // the real problem here seems to be that the facility repository isn't being injectected
+    // correctly
+    // organizationRepository is being injected and accessed fine, but facilityRepository123 isn't
+    // being injected
+    // correctly at all
+    // need to look through all the test contexts to see if there's a difference?
+    // maybe having org service as a spybean creates issues with the autowiring?
     return roleClaims.grantsAllFacilityAccess()
         ? facilityRepository.findAllByOrganization(org)
         : facilityRepository.findAllByOrganizationAndInternalId(org, roleClaims.getFacilities());

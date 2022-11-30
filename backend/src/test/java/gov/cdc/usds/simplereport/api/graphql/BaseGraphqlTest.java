@@ -195,7 +195,6 @@ public abstract class BaseGraphqlTest extends BaseFullStackTest {
             .headers(httpHeaders -> httpHeaders.addAll(_customHeaders))
             .build();
 
-    System.out.println(queryFileName);
     GraphQlTester.Request<?> request = webGraphQlTester.documentName(queryFileName);
 
     if (operationName != null) {
