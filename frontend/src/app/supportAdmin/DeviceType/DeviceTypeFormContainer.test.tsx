@@ -8,8 +8,8 @@ import DeviceTypeFormContainer from "./DeviceTypeFormContainer";
 
 const mockCreateDeviceType = jest.fn();
 
-const addValue = (name: string, value: string) => {
-  userEvent.type(screen.getByLabelText(name, { exact: false }), value);
+const addValue = async (name: string, value: string) => {
+  await userEvent.type(screen.getByLabelText(name, { exact: false }), value);
 };
 
 jest.mock("../../../generated/graphql", () => {
@@ -85,20 +85,20 @@ describe("DeviceTypeFormContainer", () => {
   });
 
   it("should save the new device", async () => {
-    addValue("Device name", "Accula");
-    addValue("Manufacturer", "Mesa Biotech");
-    addValue("Model", "Accula SARS-Cov-2 Test*");
-    addValue("LOINC code", "95409-9");
+    await addValue("Device name", "Accula");
+    await addValue("Manufacturer", "Mesa Biotech");
+    await addValue("Model", "Accula SARS-Cov-2 Test*");
+    await addValue("LOINC code", "95409-9");
 
-    userEvent.click(screen.getAllByTestId("multi-select-input")[0]);
+    await userEvent.click(screen.getAllByTestId("multi-select-input")[0]);
 
-    userEvent.click(screen.getByText("Cotton (5309)"));
+    await userEvent.click(screen.getByText("Cotton (5309)"));
 
-    userEvent.click(screen.getAllByTestId("multi-select-input")[1]);
+    await userEvent.click(screen.getAllByTestId("multi-select-input")[1]);
 
-    userEvent.click(screen.getByText("COVID-19"));
+    await userEvent.click(screen.getByText("COVID-19"));
 
-    userEvent.click(screen.getByText("Save changes"));
+    await userEvent.click(screen.getByText("Save changes"));
 
     await screen.findByText("Redirected to /admin?facility=12345");
 
@@ -123,11 +123,13 @@ describe("DeviceTypeFormContainer", () => {
   it("should display error on invalid test length", async () => {
     await new Promise((resolve) => setTimeout(resolve, 0));
 
-    addValue("Manufacturer", " LLC");
-    addValue("Model", "D");
-    userEvent.clear(screen.getByLabelText("Test length", { exact: false }));
+    await addValue("Manufacturer", " LLC");
+    await addValue("Model", "D");
+    await userEvent.clear(
+      screen.getByLabelText("Test length", { exact: false })
+    );
 
-    userEvent.click(screen.getByText("Save changes"));
+    await userEvent.click(screen.getByText("Save changes"));
 
     expect(mockCreateDeviceType).not.toHaveBeenCalled();
     expect(

@@ -423,7 +423,7 @@ Object {
                     >
                       <svg
                         aria-hidden="true"
-                        class="svg-inline--fa fa-plus fa-w-14 margin-right-1"
+                        class="svg-inline--fa fa-plus margin-right-1"
                         data-icon="plus"
                         data-prefix="fas"
                         focusable="false"
@@ -532,7 +532,7 @@ Object {
                       >
                         <svg
                           aria-hidden="true"
-                          class="svg-inline--fa fa-plus fa-w-14 margin-right-1"
+                          class="svg-inline--fa fa-plus margin-right-1"
                           data-icon="plus"
                           data-prefix="fas"
                           focusable="false"
@@ -3000,7 +3000,7 @@ Object {
                   >
                     <svg
                       aria-hidden="true"
-                      class="svg-inline--fa fa-plus fa-w-14 margin-right-1"
+                      class="svg-inline--fa fa-plus margin-right-1"
                       data-icon="plus"
                       data-prefix="fas"
                       focusable="false"
@@ -3109,7 +3109,7 @@ Object {
                     >
                       <svg
                         aria-hidden="true"
-                        class="svg-inline--fa fa-plus fa-w-14 margin-right-1"
+                        class="svg-inline--fa fa-plus margin-right-1"
                         data-icon="plus"
                         data-prefix="fas"
                         focusable="false"

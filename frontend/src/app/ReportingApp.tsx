@@ -54,7 +54,7 @@ export const WHOAMI_QUERY = gql`
   }
 `;
 
-const App = () => {
+const ReportingApp = () => {
   const appInsights = getAppInsights();
   const dispatch = useDispatch();
   const location = useLocation();
@@ -102,8 +102,7 @@ const App = () => {
         },
       })
     );
-    // eslint-disable-next-line
-  }, [data]);
+  }, [data, dispatch]);
 
   if (loading) {
     return <p>Loading account information...</p>;
@@ -364,4 +363,4 @@ const App = () => {
   );
 };
 
-export default connect()(App);
+export default connect()(ReportingApp);

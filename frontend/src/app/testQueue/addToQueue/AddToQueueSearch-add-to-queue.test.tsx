@@ -157,9 +157,12 @@ describe("AddToSearchQueue - add to queue", () => {
       srToast,
       "showAlertNotification"
     );
-    userEvent.type(screen.getByRole("searchbox", { exact: false }), "bar");
+    await userEvent.type(
+      screen.getByRole("searchbox", { exact: false }),
+      "bar"
+    );
 
-    userEvent.click(screen.getAllByRole("button")[1]);
+    await userEvent.click(screen.getAllByRole("button")[1]);
 
     expect(queryPatientMockIsDone).toBe(true);
     expect(addPatientMockIsDone).toBe(true);
@@ -173,9 +176,12 @@ describe("AddToSearchQueue - add to queue", () => {
   });
 
   it("tracks custom telemetry event", async () => {
-    userEvent.type(screen.getByRole("searchbox", { exact: false }), "bar");
+    await userEvent.type(
+      screen.getByRole("searchbox", { exact: false }),
+      "bar"
+    );
 
-    userEvent.click(screen.getAllByRole("button")[1]);
+    await userEvent.click(screen.getAllByRole("button")[1]);
 
     expect(trackEventMock).toBeCalledWith({ name: "Add Patient To Queue" });
   });

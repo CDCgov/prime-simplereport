@@ -38,16 +38,16 @@ describe("MfaSelect", () => {
     render(<MfaSelect />);
   });
 
-  it("can choose an mfa option", () => {
+  it("can choose an mfa option", async () => {
     const smsRadio = screen.getByLabelText("Text message (SMS)", {
       exact: false,
     });
-    userEvent.click(smsRadio);
+    await userEvent.click(smsRadio);
     expect(smsRadio).toBeChecked();
   });
 
-  it("requires an mfa option", () => {
-    userEvent.click(screen.getByText("Continue"));
+  it("requires an mfa option", async () => {
+    await userEvent.click(screen.getByText("Continue"));
     expect(
       screen.getByText("Select an authentication option")
     ).toBeInTheDocument();
@@ -91,13 +91,13 @@ describe("MfaSelect routing", () => {
     continueButton = screen.getByText("Continue");
   });
 
-  it("can route to the SMS page", () => {
+  it("can route to the SMS page", async () => {
     const smsRadio = screen.getByLabelText("Text message (SMS)", {
       exact: false,
     });
-    userEvent.click(smsRadio);
+    await userEvent.click(smsRadio);
     expect(smsRadio).toBeChecked();
-    userEvent.click(continueButton);
+    await userEvent.click(continueButton);
     expect(
       screen.getByText("Get your security code via text message (SMS).")
     ).toBeInTheDocument();
@@ -107,9 +107,9 @@ describe("MfaSelect routing", () => {
     const googleRadio = screen.getByLabelText("Google Authenticator", {
       exact: false,
     });
-    userEvent.click(googleRadio);
+    await userEvent.click(googleRadio);
     expect(googleRadio).toBeChecked();
-    userEvent.click(continueButton);
+    await userEvent.click(continueButton);
     expect(
       await screen.findByText(
         "Get your security code via the Google Authenticator application."
@@ -121,9 +121,9 @@ describe("MfaSelect routing", () => {
     const oktaRadio = screen.getByLabelText("Okta Verify", {
       exact: false,
     });
-    userEvent.click(oktaRadio);
+    await userEvent.click(oktaRadio);
     expect(oktaRadio).toBeChecked();
-    userEvent.click(continueButton);
+    await userEvent.click(continueButton);
     expect(
       await screen.findByText(
         "Get your security code via the Okta Verify application."
@@ -139,9 +139,9 @@ describe("MfaSelect routing", () => {
       }
     );
 
-    userEvent.click(securityKeyRadio);
+    await userEvent.click(securityKeyRadio);
     expect(securityKeyRadio).toBeChecked();
-    userEvent.click(continueButton);
+    await userEvent.click(continueButton);
 
     expect(
       screen.getByText(
@@ -150,13 +150,13 @@ describe("MfaSelect routing", () => {
     ).toBeInTheDocument();
   });
 
-  it("can route to the Email page", () => {
+  it("can route to the Email page", async () => {
     const emailRadio = screen.getByLabelText("Email", {
       exact: false,
     });
-    userEvent.click(emailRadio);
+    await userEvent.click(emailRadio);
     expect(emailRadio).toBeChecked();
-    userEvent.click(continueButton);
+    await userEvent.click(continueButton);
     expect(
       screen.getByText(
         "We’ve sent you an email with a one-time security code.",
@@ -165,13 +165,13 @@ describe("MfaSelect routing", () => {
     ).toBeInTheDocument();
   });
 
-  it("can route to the Phone call page", () => {
+  it("can route to the Phone call page", async () => {
     const phoneRadio = screen.getByLabelText("Phone call", {
       exact: false,
     });
-    userEvent.click(phoneRadio);
+    await userEvent.click(phoneRadio);
     expect(phoneRadio).toBeChecked();
-    userEvent.click(continueButton);
+    await userEvent.click(continueButton);
     expect(
       screen.getByText("Get your security code via a phone call")
     ).toBeInTheDocument();

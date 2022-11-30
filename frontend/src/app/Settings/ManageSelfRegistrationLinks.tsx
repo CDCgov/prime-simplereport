@@ -1,5 +1,6 @@
 import { faCheck, faCopy } from "@fortawesome/free-solid-svg-icons";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
+import { IconProp } from "@fortawesome/fontawesome-svg-core";
 import { useEffect, useMemo, useState } from "react";
 
 import "./ManageSelfRegistrationLinks.scss";
@@ -114,7 +115,7 @@ function OrganizationLink({ slug, copySlug, copied, baseUrl }: OrgLinkProps) {
         >
           <FontAwesomeIcon
             className="margin-right-1"
-            icon={copied ? faCheck : faCopy}
+            icon={copied ? (faCheck as IconProp) : (faCopy as IconProp)}
           />
           {copied ? "Copied!" : "Copy link"}
         </button>
@@ -173,7 +174,11 @@ function FacilityLinks({
                     }
                   >
                     <FontAwesomeIcon
-                      icon={copiedSlug === slug ? faCheck : faCopy}
+                      icon={
+                        copiedSlug === slug
+                          ? (faCheck as IconProp)
+                          : (faCopy as IconProp)
+                      }
                     />
                   </button>
                   {copiedSlug === slug && <CopyTooltip />}

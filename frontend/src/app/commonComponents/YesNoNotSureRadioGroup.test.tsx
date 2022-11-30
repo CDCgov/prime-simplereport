@@ -36,22 +36,22 @@ describe("Yes/No/Not Sure RadioGroup", () => {
     );
   });
 
-  it("calls function on change with correct value", () => {
+  it("calls function on change with correct value", async () => {
     render(<YesNoNotSureRadioGroup {...defaultArgs} />);
 
-    userEvent.click(screen.getByLabelText("Yes"));
+    await userEvent.click(screen.getByLabelText("Yes"));
     expect(onChangeFn).toHaveBeenCalledWith("YES");
-    userEvent.click(screen.getByLabelText("No"));
+    await userEvent.click(screen.getByLabelText("No"));
     expect(onChangeFn).toHaveBeenCalledWith("NO");
-    userEvent.click(screen.getByLabelText("Not sure"));
+    await userEvent.click(screen.getByLabelText("Not sure"));
     expect(onChangeFn).toHaveBeenCalledWith("NOT_SURE");
   });
 
-  it("calls function on blur", () => {
+  it("calls function on blur", async () => {
     render(<YesNoNotSureRadioGroup {...defaultArgs} />);
 
-    userEvent.click(screen.getByLabelText("Yes"));
-    userEvent.click(screen.getByLabelText("No"));
+    await userEvent.click(screen.getByLabelText("Yes"));
+    await userEvent.click(screen.getByLabelText("No"));
     expect(onBlurFn).toHaveBeenCalled();
   });
 

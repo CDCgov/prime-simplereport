@@ -20,9 +20,9 @@ jest.mock("../AccountCreationApiService", () => ({
     verifyActivationPasscode: (code: string) => {
       return new Promise((res, rej) => {
         if (code === "123456") {
-          res("success");
+          setTimeout(() => res("success"), 200); // adding delay so we can test loading state
         } else {
-          rej("incorrect code");
+          setTimeout(() => rej("incorrect code"), 200);
         }
       });
     },
@@ -52,14 +52,15 @@ describe("Verify Phone MFA", () => {
     expect(
       screen.getByText("530-867-5309", { exact: false })
     ).toBeInTheDocument();
-    userEvent.type(
+    await userEvent.type(
       screen.getByLabelText("One-time security code", { exact: false }),
       "123456"
     );
-    userEvent.click(screen.getByText("Submit"));
+    await userEvent.click(screen.getByText("Submit"));
     await waitForElementToBeRemoved(() =>
       screen.queryByText("Verifying security code …")
     );
+
     expect(
       screen.queryByText("Enter your security code")
     ).not.toBeInTheDocument();
@@ -74,11 +75,11 @@ describe("Verify Phone MFA", () => {
     expect(
       screen.getByText("530-867-5309", { exact: false })
     ).toBeInTheDocument();
-    userEvent.type(
+    await userEvent.type(
       screen.getByLabelText("One-time security code", { exact: false }),
       "999999"
     );
-    userEvent.click(screen.getByText("Submit"));
+    await userEvent.click(screen.getByText("Submit"));
     await waitForElementToBeRemoved(() =>
       screen.queryByText("Verifying security code …")
     );
@@ -90,8 +91,8 @@ describe("Verify Phone MFA", () => {
     ).not.toBeInTheDocument();
   });
 
-  it("requires a security code to be entered", () => {
-    userEvent.click(screen.getByText("Submit"));
+  it("requires a security code to be entered", async () => {
+    await userEvent.click(screen.getByText("Submit"));
     expect(screen.getByText("Enter your security code")).toBeInTheDocument();
     expect(
       screen.queryByText(

@@ -3,9 +3,11 @@ import { faInfoCircle } from "@fortawesome/free-solid-svg-icons";
 import { Tooltip } from "@trussworks/react-uswds";
 import React from "react";
 import "./TextWithTooltip.scss";
+import { IconProp } from "@fortawesome/fontawesome-svg-core";
 
 type CustomButtonProps = React.PropsWithChildren<{
   className?: string;
+  children: React.ReactNode;
 }> &
   JSX.IntrinsicElements["button"] &
   React.RefAttributes<HTMLButtonElement>;
@@ -25,18 +27,19 @@ export const TextWithTooltip = ({
   buttonLabel,
   className,
 }: Props) => {
-  const CustomButton: React.ForwardRefExoticComponent<CustomButtonProps> = React.forwardRef(
-    ({ className, children, ...tooltipProps }: CustomButtonProps, ref) => (
-      <button
-        className={`usa-button usa-button--unstyled ${className}`}
-        ref={ref}
-        aria-label={`${buttonLabel} tooltip`}
-        {...tooltipProps}
-      >
-        {children}
-      </button>
-    )
-  );
+  const CustomButton: React.ForwardRefExoticComponent<CustomButtonProps> =
+    React.forwardRef(
+      ({ className, children, ...tooltipProps }: CustomButtonProps, ref) => (
+        <button
+          className={`usa-button usa-button--unstyled ${className}`}
+          ref={ref}
+          aria-label={`${buttonLabel} tooltip`}
+          {...tooltipProps}
+        >
+          {children}
+        </button>
+      )
+    );
 
   CustomButton.displayName = "custom button";
 
@@ -52,7 +55,7 @@ export const TextWithTooltip = ({
       <FontAwesomeIcon
         alt-text="info"
         className="info-circle-icon"
-        icon={faInfoCircle}
+        icon={faInfoCircle as IconProp}
       />
     </Tooltip>
   );

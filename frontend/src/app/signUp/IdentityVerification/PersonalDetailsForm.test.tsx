@@ -32,8 +32,8 @@ describe("PersonalDetailsForm", () => {
   });
 
   describe("Filling out the form", () => {
-    beforeEach(() => {
-      userEvent.type(
+    beforeEach(async () => {
+      await userEvent.type(
         screen.getByLabelText("Email *", { exact: false }),
         "bob@bob.bob"
       );
@@ -53,11 +53,11 @@ describe("PersonalDetailsForm", () => {
     });
     describe("On submitting with an invalid phone number", () => {
       it("shows an error", async () => {
-        userEvent.type(
+        await userEvent.type(
           screen.getByLabelText("Phone number", { exact: false }),
           "123"
         );
-        userEvent.click(screen.getByText("Submit"));
+        await userEvent.click(screen.getByText("Submit"));
         expect(
           await screen.findByText("A valid phone number is required")
         ).toBeInTheDocument();
@@ -68,11 +68,11 @@ describe("PersonalDetailsForm", () => {
     });
     describe("On submitting an invalid street address 1", () => {
       it("shows an error", async () => {
-        userEvent.type(
+        await userEvent.type(
           screen.getByLabelText("Street address 1", { exact: false }),
           "111 greendale dr,"
         );
-        userEvent.click(screen.getByText("Submit"));
+        await userEvent.click(screen.getByText("Submit"));
         expect(
           await screen.findByText("A valid street address is required")
         ).toBeInTheDocument();
@@ -80,11 +80,11 @@ describe("PersonalDetailsForm", () => {
     });
     describe("On entering an invalid date of birth and submitting", () => {
       it("shows an error", async () => {
-        userEvent.type(
+        await userEvent.type(
           screen.getByLabelText("Date of birth", { exact: false }),
           "01/01/9999"
         );
-        userEvent.click(screen.getByText("Submit"));
+        await userEvent.click(screen.getByText("Submit"));
         expect(
           await screen.findByText("A valid date of birth is required")
         ).toBeInTheDocument();
@@ -92,11 +92,11 @@ describe("PersonalDetailsForm", () => {
     });
     describe("On clicking a valid date of birth and submitting", () => {
       it("shows an error", async () => {
-        userEvent.type(
+        await userEvent.type(
           screen.getByLabelText("Date of birth", { exact: false }),
           "09/15/2022"
         );
-        userEvent.click(screen.getByText("Submit"));
+        await userEvent.click(screen.getByText("Submit"));
         await waitFor(() => {
           expect(
             screen.queryByText("A valid date of birth is required")
@@ -106,11 +106,11 @@ describe("PersonalDetailsForm", () => {
     });
     describe("On submitting an invalid street address 2", () => {
       it("shows an error", async () => {
-        userEvent.type(
+        await userEvent.type(
           screen.getByLabelText("Street address 2", { exact: false }),
           "111 greendale dr,"
         );
-        userEvent.click(screen.getByText("Submit"));
+        await userEvent.click(screen.getByText("Submit"));
         expect(
           await screen.findByText("Street 2 contains invalid symbols")
         ).toBeInTheDocument();
@@ -118,11 +118,11 @@ describe("PersonalDetailsForm", () => {
     });
     describe("On submitting an invalid zip code", () => {
       it("shows an error", async () => {
-        userEvent.type(
+        await userEvent.type(
           screen.getByLabelText("ZIP code", { exact: false }),
           "1234"
         );
-        userEvent.click(screen.getByText("Submit"));
+        await userEvent.click(screen.getByText("Submit"));
         expect(
           await screen.findByText("A valid ZIP code is required")
         ).toBeInTheDocument();
@@ -131,7 +131,7 @@ describe("PersonalDetailsForm", () => {
     describe("On submitting an incomplete form", () => {
       it("shows an error", async () => {
         fillInText("Email", "bob@bob.bob");
-        userEvent.click(screen.getByText("Submit"));
+        await userEvent.click(screen.getByText("Submit"));
         await waitFor(() => {
           expect(
             screen.queryAllByText("is required", { exact: false }).length
@@ -154,7 +154,7 @@ describe("PersonalDetailsForm", () => {
 
     describe("On submit", () => {
       it("does not shows an error", async () => {
-        userEvent.click(screen.getByText("Submit"));
+        await userEvent.click(screen.getByText("Submit"));
         await waitFor(() => {
           expect(screen.queryAllByText("is required").length).toBe(0);
         });

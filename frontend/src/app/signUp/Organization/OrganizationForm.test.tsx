@@ -18,8 +18,8 @@ const getEmailInput = () => screen.getByLabelText("Work email *");
 const getPhoneInput = () => screen.getByLabelText("Work phone number *");
 const getSubmitButton = () => screen.getByText("Continue");
 
-const fillInDropDown = (input: any, text: string) =>
-  userEvent.selectOptions(input, [text]);
+const fillInDropDown = async (input: any, text: string) =>
+  await userEvent.selectOptions(input, [text]);
 
 jest.mock("../SignUpApi", () => ({
   SignUpApi: {
@@ -77,7 +77,7 @@ describe("OrganizationForm", () => {
   });
 
   it("displays form errors when submitting invalid input", async () => {
-    fillInDropDown(getOrgStateDropdown(), "VI");
+    await fillInDropDown(getOrgStateDropdown(), "VI");
     getSubmitButton().click();
 
     expect(
@@ -100,14 +100,14 @@ describe("OrganizationForm", () => {
   });
 
   it("redirects to identity verification when submitting valid input", async () => {
-    userEvent.type(getOrgNameInput(), "Drake");
-    fillInDropDown(getOrgStateDropdown(), "TX");
-    fillInDropDown(getOrgTypeDropdown(), "Employer");
-    userEvent.type(getFirstNameInput(), "Greatest");
-    userEvent.type(getMiddleNameInput(), "OG");
-    userEvent.type(getLastNameInput(), "Ever");
-    userEvent.type(getEmailInput(), "ever@greatest.com");
-    userEvent.type(getPhoneInput(), "8008675309");
+    await userEvent.type(getOrgNameInput(), "Drake");
+    await fillInDropDown(getOrgStateDropdown(), "TX");
+    await fillInDropDown(getOrgTypeDropdown(), "Employer");
+    await userEvent.type(getFirstNameInput(), "Greatest");
+    await userEvent.type(getMiddleNameInput(), "OG");
+    await userEvent.type(getLastNameInput(), "Ever");
+    await userEvent.type(getEmailInput(), "ever@greatest.com");
+    await userEvent.type(getPhoneInput(), "8008675309");
     getSubmitButton().click();
 
     expect(
@@ -116,14 +116,14 @@ describe("OrganizationForm", () => {
   });
 
   it("displays a duplicate org error when submitting a duplicate org", async () => {
-    userEvent.type(getOrgNameInput(), "Duplicate");
-    fillInDropDown(getOrgStateDropdown(), "TX");
-    fillInDropDown(getOrgTypeDropdown(), "Employer");
-    userEvent.type(getFirstNameInput(), "Greatest");
-    userEvent.type(getMiddleNameInput(), "OG");
-    userEvent.type(getLastNameInput(), "Ever");
-    userEvent.type(getEmailInput(), "ever@greatest.com");
-    userEvent.type(getPhoneInput(), "8008675309");
+    await userEvent.type(getOrgNameInput(), "Duplicate");
+    await fillInDropDown(getOrgStateDropdown(), "TX");
+    await fillInDropDown(getOrgTypeDropdown(), "Employer");
+    await userEvent.type(getFirstNameInput(), "Greatest");
+    await userEvent.type(getMiddleNameInput(), "OG");
+    await userEvent.type(getLastNameInput(), "Ever");
+    await userEvent.type(getEmailInput(), "ever@greatest.com");
+    await userEvent.type(getPhoneInput(), "8008675309");
     getSubmitButton().click();
 
     expect(
@@ -135,14 +135,14 @@ describe("OrganizationForm", () => {
   });
 
   it("displays a duplicate email error when submitting a duplicate email", async () => {
-    userEvent.type(getOrgNameInput(), "Foo");
-    fillInDropDown(getOrgStateDropdown(), "TX");
-    fillInDropDown(getOrgTypeDropdown(), "Employer");
-    userEvent.type(getFirstNameInput(), "Greatest");
-    userEvent.type(getMiddleNameInput(), "OG");
-    userEvent.type(getLastNameInput(), "Ever");
-    userEvent.type(getEmailInput(), "duplicate@test.com");
-    userEvent.type(getPhoneInput(), "8008675309");
+    await userEvent.type(getOrgNameInput(), "Foo");
+    await fillInDropDown(getOrgStateDropdown(), "TX");
+    await fillInDropDown(getOrgTypeDropdown(), "Employer");
+    await userEvent.type(getFirstNameInput(), "Greatest");
+    await userEvent.type(getMiddleNameInput(), "OG");
+    await userEvent.type(getLastNameInput(), "Ever");
+    await userEvent.type(getEmailInput(), "duplicate@test.com");
+    await userEvent.type(getPhoneInput(), "8008675309");
     getSubmitButton().click();
 
     expect(
@@ -154,14 +154,14 @@ describe("OrganizationForm", () => {
   });
 
   it("displays a duplicate org error and id verification link for an admin re-signing up", async () => {
-    userEvent.type(getOrgNameInput(), "DuplicateAdmin");
-    fillInDropDown(getOrgStateDropdown(), "TX");
-    fillInDropDown(getOrgTypeDropdown(), "Employer");
-    userEvent.type(getFirstNameInput(), "Greatest");
-    userEvent.type(getMiddleNameInput(), "OG");
-    userEvent.type(getLastNameInput(), "Ever");
-    userEvent.type(getEmailInput(), "admin@example.com");
-    userEvent.type(getPhoneInput(), "8008675309");
+    await userEvent.type(getOrgNameInput(), "DuplicateAdmin");
+    await fillInDropDown(getOrgStateDropdown(), "TX");
+    await fillInDropDown(getOrgTypeDropdown(), "Employer");
+    await userEvent.type(getFirstNameInput(), "Greatest");
+    await userEvent.type(getMiddleNameInput(), "OG");
+    await userEvent.type(getLastNameInput(), "Ever");
+    await userEvent.type(getEmailInput(), "admin@example.com");
+    await userEvent.type(getPhoneInput(), "8008675309");
     getSubmitButton().click();
 
     expect(
@@ -173,14 +173,14 @@ describe("OrganizationForm", () => {
   });
 
   it("displays a duplicate org error and instructions for admin user who has finished id verification", async () => {
-    userEvent.type(getOrgNameInput(), "IdentityVerificationComplete");
-    fillInDropDown(getOrgStateDropdown(), "TX");
-    fillInDropDown(getOrgTypeDropdown(), "Employer");
-    userEvent.type(getFirstNameInput(), "Greatest");
-    userEvent.type(getMiddleNameInput(), "OG");
-    userEvent.type(getLastNameInput(), "Ever");
-    userEvent.type(getEmailInput(), "admin@example.com");
-    userEvent.type(getPhoneInput(), "8008675309");
+    await userEvent.type(getOrgNameInput(), "IdentityVerificationComplete");
+    await fillInDropDown(getOrgStateDropdown(), "TX");
+    await fillInDropDown(getOrgTypeDropdown(), "Employer");
+    await userEvent.type(getFirstNameInput(), "Greatest");
+    await userEvent.type(getMiddleNameInput(), "OG");
+    await userEvent.type(getLastNameInput(), "Ever");
+    await userEvent.type(getEmailInput(), "admin@example.com");
+    await userEvent.type(getPhoneInput(), "8008675309");
     getSubmitButton().click();
 
     expect(
@@ -192,14 +192,14 @@ describe("OrganizationForm", () => {
   });
 
   it("displays a generic error message for Okta internal errors", async () => {
-    userEvent.type(getOrgNameInput(), "InternalError");
-    fillInDropDown(getOrgStateDropdown(), "TX");
-    fillInDropDown(getOrgTypeDropdown(), "Employer");
-    userEvent.type(getFirstNameInput(), "Greatest");
-    userEvent.type(getMiddleNameInput(), "OG");
-    userEvent.type(getLastNameInput(), "Ever");
-    userEvent.type(getEmailInput(), "admin@example.com");
-    userEvent.type(getPhoneInput(), "8008675309");
+    await userEvent.type(getOrgNameInput(), "InternalError");
+    await fillInDropDown(getOrgStateDropdown(), "TX");
+    await fillInDropDown(getOrgTypeDropdown(), "Employer");
+    await userEvent.type(getFirstNameInput(), "Greatest");
+    await userEvent.type(getMiddleNameInput(), "OG");
+    await userEvent.type(getLastNameInput(), "Ever");
+    await userEvent.type(getEmailInput(), "admin@example.com");
+    await userEvent.type(getPhoneInput(), "8008675309");
     getSubmitButton().click();
 
     expect(

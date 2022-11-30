@@ -11,6 +11,7 @@ import { LoadingCard } from "../../commonComponents/LoadingCard/LoadingCard";
 interface Props {
   enrollFunction: () => Promise<{ qrcode: string }>;
   totpType: string;
+  children?: React.ReactNode;
 }
 
 export const MfaTotp = ({ enrollFunction, totpType }: Props) => {

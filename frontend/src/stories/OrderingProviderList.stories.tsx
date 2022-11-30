@@ -11,15 +11,20 @@ export default {
   component: OrderingProviderList,
 } as Meta;
 
-const RouterWithFacility: React.FC = ({ children }) => (
-  <MemoryRouter>{children}</MemoryRouter>
-);
+type RouterWithFacilityProps = {
+  children: React.ReactNode;
+};
 
-const Template = (): Story<OrderingProviderListProps> => (args) => (
-  <RouterWithFacility>
-    <OrderingProviderList {...args} />
-  </RouterWithFacility>
-);
+const RouterWithFacility: React.FC<RouterWithFacilityProps> = ({
+  children,
+}) => <MemoryRouter>{children}</MemoryRouter>;
+
+const Template = (): Story<OrderingProviderListProps> => (args) =>
+  (
+    <RouterWithFacility>
+      <OrderingProviderList {...args} />
+    </RouterWithFacility>
+  );
 
 const providerOne = {
   firstName: "LeBron",

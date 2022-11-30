@@ -133,7 +133,7 @@ describe("QueueItem", () => {
     expect(scrollIntoViewMock).toBeCalled();
   });
 
-  it("navigates to edit the user when clicking their name", () => {
+  it("navigates to edit the user when clicking their name", async () => {
     render(
       <MockedProvider>
         <MemoryRouter>
@@ -163,7 +163,7 @@ describe("QueueItem", () => {
     );
     const patientName = screen.getByText("Potter, Harry James");
     expect(patientName).toBeInTheDocument();
-    userEvent.click(patientName);
+    await userEvent.click(patientName);
     expect(mockNavigate).toHaveBeenCalledWith({
       pathname: "/patient/f5c7658d-a0d5-4ec5-a1c9-eafc85fe7554",
       search: "?facility=Hogwarts+123&fromQueue=true",
@@ -199,7 +199,7 @@ describe("QueueItem", () => {
       </MemoryRouter>
     );
 
-    userEvent.type(
+    await userEvent.type(
       screen.getAllByLabelText("Device", { exact: false })[1],
       "lumira"
     );
@@ -240,7 +240,7 @@ describe("QueueItem", () => {
       await screen.findAllByLabelText("Device", { exact: false })
     )[1];
 
-    userEvent.selectOptions(deviceDropdown, "Access Bio CareStart");
+    await userEvent.selectOptions(deviceDropdown, "Access Bio CareStart");
 
     expect(
       ((await screen.findByText("Access Bio CareStart")) as HTMLOptionElement)
@@ -287,7 +287,7 @@ describe("QueueItem", () => {
         .selected
     ).toBeTruthy();
 
-    userEvent.selectOptions(swabDropdown, "specimen-1");
+    await userEvent.selectOptions(swabDropdown, "specimen-1");
 
     expect(
       ((await screen.findByText("Specimen 1")) as HTMLOptionElement).selected
@@ -423,8 +423,10 @@ describe("QueueItem", () => {
       )[1];
 
       // Change device type
-      userEvent.selectOptions(deviceDropdown, "LumiraDX");
-      userEvent.click(screen.getByLabelText("Positive", { exact: false }));
+      await userEvent.selectOptions(deviceDropdown, "LumiraDX");
+      await userEvent.click(
+        screen.getByLabelText("Positive", { exact: false })
+      );
 
       await waitFor(() => expect(editQueueMockIsDone).toBe(true));
     });
@@ -438,8 +440,8 @@ describe("QueueItem", () => {
       )[1];
 
       // Change device type
-      userEvent.selectOptions(deviceDropdown, "MultiplexMate");
-      userEvent.click(
+      await userEvent.selectOptions(deviceDropdown, "MultiplexMate");
+      await userEvent.click(
         screen.getAllByLabelText("Positive", { exact: false })[0]
       );
 
@@ -532,7 +534,7 @@ describe("QueueItem", () => {
       );
 
       // Select result
-      userEvent.click(
+      await userEvent.click(
         screen.getByLabelText("Inconclusive", {
           exact: false,
         })
@@ -542,9 +544,9 @@ describe("QueueItem", () => {
       await new Promise((resolve) => setTimeout(resolve, 1000));
 
       // Submit
-      userEvent.click(screen.getByText("Submit"));
+      await userEvent.click(screen.getByText("Submit"));
 
-      userEvent.click(
+      await userEvent.click(
         screen.getByText("Submit anyway", {
           exact: false,
         })
@@ -618,13 +620,13 @@ describe("QueueItem", () => {
       </MemoryRouter>
     );
     const toggle = await screen.findByLabelText("Current date/time");
-    userEvent.click(toggle);
+    await userEvent.click(toggle);
     const dateInput = screen.getByTestId("test-date");
     expect(dateInput).toBeInTheDocument();
     const timeInput = screen.getByTestId("test-time");
     expect(timeInput).toBeInTheDocument();
-    userEvent.type(dateInput, `${updatedDateString}T00:00`);
-    userEvent.type(timeInput, updatedTimeString);
+    await userEvent.type(dateInput, `${updatedDateString}T00:00`);
+    await userEvent.type(timeInput, updatedTimeString);
   });
   it("does not allow future date for test date", async () => {
     render(
@@ -661,14 +663,14 @@ describe("QueueItem", () => {
     );
 
     const toggle = await screen.findByLabelText("Current date/time");
-    userEvent.click(toggle);
+    await userEvent.click(toggle);
     const dateInput = screen.getByTestId("test-date");
     expect(dateInput).toBeInTheDocument();
     const timeInput = screen.getByTestId("test-time");
     expect(timeInput).toBeInTheDocument();
 
     // Select result
-    userEvent.click(
+    await userEvent.click(
       screen.getByLabelText("Inconclusive", {
         exact: false,
       })
@@ -678,19 +680,20 @@ describe("QueueItem", () => {
     await new Promise((resolve) => setTimeout(resolve, 501));
 
     // Input invalid (future date) - can't submit
-    userEvent.type(dateInput, moment().add(5, "days").format("YYYY-MM-DD"));
+    await userEvent.type(
+      dateInput,
+      moment().add(5, "days").format("YYYY-MM-DD")
+    );
     dateInput.blur();
 
     // 500ms debounce on queue item update operations
     await new Promise((resolve) => setTimeout(resolve, 501));
 
     // Submit test
-    userEvent.click(await screen.findByText("Submit"));
+    await userEvent.click(await screen.findByText("Submit"));
 
     // Toast alert should appear
-    await waitFor(async () => {
-      expect(await screen.findByText("Invalid test date")).toBeInTheDocument();
-    });
+    expect(await screen.findByText("Invalid test date"));
   });
 
   it("formats card with warning state if selected date input is more than six months ago", async () => {
@@ -724,7 +727,10 @@ describe("QueueItem", () => {
     const dateInput = screen.getByTestId("test-date");
     const timeInput = screen.getByTestId("test-time");
 
-    userEvent.type(dateInput, `${dateStringBeforeWarningThreshold}T00:00`);
+    await userEvent.type(
+      dateInput,
+      `${dateStringBeforeWarningThreshold}T00:00`
+    );
     const testCard = await screen.findByTestId(`test-card-${internalId}`);
 
     expect(testCard).toHaveClass("prime-queue-item__ready");
@@ -766,17 +772,20 @@ describe("QueueItem", () => {
 
     // Enter an invalid (future) date on the first test card
     const toggle = await screen.findByLabelText("Current date/time");
-    userEvent.click(toggle);
+    await userEvent.click(toggle);
     const dateInput = await screen.findByTestId("test-date");
     expect(dateInput).toBeInTheDocument();
-    userEvent.type(dateInput, moment().add(5, "days").format("YYYY-MM-DD"));
+    await userEvent.type(
+      dateInput,
+      moment().add(5, "days").format("YYYY-MM-DD")
+    );
     dateInput.blur();
 
     await waitFor(async () =>
       expect(await screen.findByText("Submit")).toBeEnabled()
     );
 
-    userEvent.click(await screen.findByText("Submit"));
+    await userEvent.click(await screen.findByText("Submit"));
 
     const updatedTestCard = await screen.findByTestId(
       `test-card-${internalId}`
@@ -858,7 +867,7 @@ describe("QueueItem", () => {
     );
 
     const questionnaire = await screen.findByText("Test questionnaire");
-    userEvent.click(questionnaire);
+    await userEvent.click(questionnaire);
     await screen.findByText("Required fields are marked", { exact: false });
     expect(
       screen.getByText(testProps.patient.phoneNumbers[0].number, {
@@ -903,13 +912,13 @@ describe("QueueItem", () => {
       );
     });
 
-    it("tracks removal of patient from queue as custom event", () => {
+    it("tracks removal of patient from queue as custom event", async () => {
       const button = screen.getByLabelText(
         `Close test for Potter, Harry James`
       );
-      userEvent.click(button);
+      await userEvent.click(button);
       const iAmSure = screen.getByText("Yes, I'm sure");
-      userEvent.click(iAmSure);
+      await userEvent.click(iAmSure);
       expect(trackEventMock).toHaveBeenCalledWith({
         name: "Remove Patient From Queue",
       });
@@ -917,7 +926,7 @@ describe("QueueItem", () => {
 
     it("tracks submitted test result as custom event", async () => {
       // Select result
-      userEvent.click(
+      await userEvent.click(
         screen.getByLabelText("Inconclusive", {
           exact: false,
         })
@@ -927,8 +936,8 @@ describe("QueueItem", () => {
       await new Promise((resolve) => setTimeout(resolve, 1000));
 
       // Submit
-      userEvent.click(screen.getByText("Submit"));
-      userEvent.click(screen.getByText(/Submit anyway/i));
+      await userEvent.click(screen.getByText("Submit"));
+      await userEvent.click(screen.getByText(/Submit anyway/i));
       expect(trackEventMock).toHaveBeenCalledWith({
         name: "Submit Test Result",
       });
@@ -937,15 +946,15 @@ describe("QueueItem", () => {
     it("tracks AoE form updates as custom event", async () => {
       // Update AoE questionnaire
       const questionnaire = await screen.findByText("Test questionnaire");
-      userEvent.click(questionnaire);
+      await userEvent.click(questionnaire);
       const symptomInput = await screen.findByText("No symptoms", {
         exact: false,
       });
-      userEvent.click(symptomInput);
+      await userEvent.click(symptomInput);
 
       // Save changes
       const continueButton = await screen.findByText("Continue");
-      userEvent.click(continueButton);
+      await userEvent.click(continueButton);
 
       expect(trackEventMock).toHaveBeenCalledWith({
         name: "Update AoE Response",
@@ -1163,7 +1172,7 @@ describe("QueueItem", () => {
 
     it("updates the result when a new radio is clicked", async () => {
       expect(screen.getAllByLabelText("Positive (+)")[1]).not.toBeChecked();
-      userEvent.click(screen.getAllByLabelText("Positive (+)")[1]);
+      await userEvent.click(screen.getAllByLabelText("Positive (+)")[1]);
 
       const editQueueSpy = jest.spyOn(
         generatedGraphql,

@@ -142,7 +142,7 @@ describe("Component ResultsTable", () => {
 
   describe("actions menu", () => {
     describe("text result action", () => {
-      it("includes `Text result` if patient has mobile number", () => {
+      it("includes `Text result` if patient has mobile number", async () => {
         const testResultPatientMobileNumber = [
           TEST_RESULTS_MULTIPLEX_CONTENT[1],
         ];
@@ -164,14 +164,14 @@ describe("Component ResultsTable", () => {
           "button"
         )[1];
 
-        userEvent.click(moreActions);
+        await userEvent.click(moreActions);
 
         // Action menu is open
         expect(screen.getByText("Print result")).toBeInTheDocument();
         expect(screen.getByText("Text result")).toBeInTheDocument();
       });
 
-      it("does not include `Text result` if no patient mobile number", () => {
+      it("does not include `Text result` if no patient mobile number", async () => {
         const testResultPatientNoMobileNumber = [
           TEST_RESULTS_MULTIPLEX_CONTENT[0],
         ];
@@ -193,7 +193,7 @@ describe("Component ResultsTable", () => {
           "button"
         )[1];
 
-        userEvent.click(moreActions);
+        await userEvent.click(moreActions);
 
         // Action menu is open
         expect(screen.getByText("Print result")).toBeInTheDocument();
@@ -201,7 +201,7 @@ describe("Component ResultsTable", () => {
       });
     });
     describe("email result action", () => {
-      it("includes `Email result` if patient email address", () => {
+      it("includes `Email result` if patient email address", async () => {
         const testResultPatientEmail = [TEST_RESULTS_MULTIPLEX_CONTENT[0]];
 
         render(
@@ -221,14 +221,14 @@ describe("Component ResultsTable", () => {
           "button"
         )[1];
 
-        userEvent.click(moreActions);
+        await userEvent.click(moreActions);
 
         // Action menu is open
         expect(screen.getByText("Print result")).toBeInTheDocument();
         expect(screen.getByText("Email result")).toBeInTheDocument();
       });
 
-      it("does not include `Email result` if no patient email address", () => {
+      it("does not include `Email result` if no patient email address", async () => {
         const testResultPatientNoEmail = [TEST_RESULTS_MULTIPLEX_CONTENT[1]];
 
         render(
@@ -248,7 +248,7 @@ describe("Component ResultsTable", () => {
           "button"
         )[1];
 
-        userEvent.click(moreActions);
+        await userEvent.click(moreActions);
 
         // Action menu is open
         expect(screen.getByText("Print result")).toBeInTheDocument();

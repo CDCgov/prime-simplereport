@@ -9,8 +9,12 @@ interface ErrorBoundaryState {
   redirectToOkta: boolean;
 }
 
+interface PrimeErrorBoundaryProps {
+  children?: React.ReactNode;
+}
+
 export default class PrimeErrorBoundary extends React.Component<
-  {},
+  PrimeErrorBoundaryProps,
   ErrorBoundaryState
 > {
   constructor(props: any) {

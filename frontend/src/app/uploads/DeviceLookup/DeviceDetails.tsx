@@ -3,6 +3,7 @@ import "./DeviceLookup.scss";
 import React, { useEffect, useState } from "react";
 import { faCheck } from "@fortawesome/free-solid-svg-icons/faCheck";
 import { faCopy } from "@fortawesome/free-solid-svg-icons/faCopy";
+import { IconProp } from "@fortawesome/fontawesome-svg-core";
 import { capitalize } from "lodash";
 
 import Optional from "../../commonComponents/Optional";
@@ -47,7 +48,11 @@ const DeviceDetails = (props: { device: DeviceType }) => {
           aria-label={`${label}`}
         >
           <FontAwesomeIcon
-            icon={copiedSlug === copiedAttribute ? faCheck : faCopy}
+            icon={
+              copiedSlug === copiedAttribute
+                ? (faCheck as IconProp)
+                : (faCopy as IconProp)
+            }
           />
         </button>
         {copiedSlug === copiedAttribute && <CopyTooltip />}

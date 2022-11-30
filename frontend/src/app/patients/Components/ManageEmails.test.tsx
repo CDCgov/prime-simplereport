@@ -74,16 +74,16 @@ describe("ManageEmails", () => {
     });
 
     // Enter bad info and blur
-    userEvent.type(primary, "invalid email");
-    userEvent.tab();
+    await userEvent.type(primary, "invalid email");
+    await userEvent.tab();
     expect(
       await screen.findByText("Email is missing or incorrectly formatted")
     ).toBeInTheDocument();
 
     // Enter good info and blur
-    userEvent.clear(primary);
-    userEvent.type(primary, "test@fake.com");
-    userEvent.tab();
+    await userEvent.clear(primary);
+    await userEvent.type(primary, "test@fake.com");
+    await userEvent.tab();
 
     await waitFor(() =>
       expect(
@@ -98,8 +98,8 @@ describe("ManageEmails", () => {
     });
 
     // Enter bad info and blur
-    userEvent.type(primary, "invalid email");
-    userEvent.tab();
+    await userEvent.type(primary, "invalid email");
+    await userEvent.tab();
 
     await waitFor(() => {
       i18n.changeLanguage("es");
@@ -115,15 +115,15 @@ describe("ManageEmails", () => {
       exact: false,
     });
 
-    userEvent.type(primary, "test@fake.com");
+    await userEvent.type(primary, "test@fake.com");
     const addButton = screen.getByText("Add another email address", {
       exact: false,
     });
-    userEvent.click(addButton);
+    await userEvent.click(addButton);
 
     const second = (await screen.findAllByText("Additional email address"))[1];
-    userEvent.type(second, "foo@bar.com");
-    userEvent.click(screen.getByTestId(`delete-email-1`));
+    await userEvent.type(second, "foo@bar.com");
+    await userEvent.click(screen.getByTestId(`delete-email-1`));
     expect(
       screen.queryByText("Additional email address")
     ).not.toBeInTheDocument();

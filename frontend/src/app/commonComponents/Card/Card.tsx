@@ -4,6 +4,7 @@ export type CardProps = {
   logo?: boolean;
   bodyKicker?: string;
   bodyKickerCentered?: boolean;
+  children?: React.ReactNode;
 };
 
 export const Card: React.FC<CardProps> = ({

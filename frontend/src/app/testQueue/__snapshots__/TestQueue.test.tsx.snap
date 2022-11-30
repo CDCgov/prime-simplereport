@@ -89,7 +89,7 @@ exports[`TestQueue should render the test queue 1`] = `
               <svg
                 alt-text="close-circle"
                 aria-hidden="true"
-                class="svg-inline--fa fa-circle fa-w-16 fa-inverse fa-2x "
+                class="svg-inline--fa fa-circle fa-inverse fa-2x "
                 data-icon="circle"
                 data-prefix="fas"
                 focusable="false"
@@ -105,7 +105,7 @@ exports[`TestQueue should render the test queue 1`] = `
               <svg
                 alt-text="close-x"
                 aria-hidden="true"
-                class="svg-inline--fa fa-times-circle fa-w-16 fa-2x "
+                class="svg-inline--fa fa-times-circle fa-2x "
                 data-icon="times-circle"
                 data-prefix="fas"
                 focusable="false"
@@ -167,7 +167,7 @@ exports[`TestQueue should render the test queue 1`] = `
                   <svg
                     alt-text="stopwatch"
                     aria-hidden="true"
-                    class="svg-inline--fa fa-stopwatch fa-w-14 "
+                    class="svg-inline--fa fa-stopwatch "
                     data-icon="stopwatch"
                     data-prefix="fas"
                     focusable="false"
@@ -298,7 +298,7 @@ exports[`TestQueue should render the test queue 1`] = `
                             <svg
                               alt-text="info"
                               aria-hidden="true"
-                              class="svg-inline--fa fa-info-circle fa-w-16 info-circle-icon"
+                              class="svg-inline--fa fa-info-circle info-circle-icon"
                               data-icon="info-circle"
                               data-prefix="fas"
                               focusable="false"
@@ -511,7 +511,7 @@ exports[`TestQueue should render the test queue 1`] = `
               <svg
                 alt-text="close-circle"
                 aria-hidden="true"
-                class="svg-inline--fa fa-circle fa-w-16 fa-inverse fa-2x "
+                class="svg-inline--fa fa-circle fa-inverse fa-2x "
                 data-icon="circle"
                 data-prefix="fas"
                 focusable="false"
@@ -527,7 +527,7 @@ exports[`TestQueue should render the test queue 1`] = `
               <svg
                 alt-text="close-x"
                 aria-hidden="true"
-                class="svg-inline--fa fa-times-circle fa-w-16 fa-2x "
+                class="svg-inline--fa fa-times-circle fa-2x "
                 data-icon="times-circle"
                 data-prefix="fas"
                 focusable="false"
@@ -589,7 +589,7 @@ exports[`TestQueue should render the test queue 1`] = `
                   <svg
                     alt-text="stopwatch"
                     aria-hidden="true"
-                    class="svg-inline--fa fa-stopwatch fa-w-14 "
+                    class="svg-inline--fa fa-stopwatch "
                     data-icon="stopwatch"
                     data-prefix="fas"
                     focusable="false"
@@ -720,7 +720,7 @@ exports[`TestQueue should render the test queue 1`] = `
                             <svg
                               alt-text="info"
                               aria-hidden="true"
-                              class="svg-inline--fa fa-info-circle fa-w-16 info-circle-icon"
+                              class="svg-inline--fa fa-info-circle info-circle-icon"
                               data-icon="info-circle"
                               data-prefix="fas"
                               focusable="false"

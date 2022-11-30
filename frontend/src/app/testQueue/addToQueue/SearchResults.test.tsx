@@ -51,7 +51,14 @@ const patients: Patient[] = [
 ];
 
 const mockFacilityID = "facility-id-101";
-const RouterWithFacility: React.FC = ({ children }) => (
+
+type RouterWithFacilityProps = {
+  children: React.ReactNode;
+};
+
+const RouterWithFacility: React.FC<RouterWithFacilityProps> = ({
+  children,
+}) => (
   <MemoryRouter initialEntries={[`/queue?facility=${mockFacilityID}`]}>
     <Routes>{children}</Routes>
   </MemoryRouter>
@@ -89,7 +96,7 @@ describe("SearchResults", () => {
       expect(screen.getByText("No results found.")).toBeInTheDocument();
     });
 
-    it("should show add patient button", () => {
+    it("should show add patient button", async () => {
       render(
         <RouterWithFacility>
           <Route
@@ -109,7 +116,7 @@ describe("SearchResults", () => {
       );
 
       expect(screen.getByText(`Add new ${PATIENT_TERM}`)).toBeInTheDocument();
-      userEvent.click(screen.getByText(`Add new ${PATIENT_TERM}`));
+      await userEvent.click(screen.getByText(`Add new ${PATIENT_TERM}`));
       expect(
         screen.getByText(
           `Redirected to /add-patient?facility=${mockFacilityID}`

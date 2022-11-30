@@ -16,7 +16,7 @@ exports[`Pagination should render Pagination cases: Pagination '2 pages' 1`] = `
         >
           <svg
             aria-hidden="true"
-            class="svg-inline--fa fa-angle-left fa-w-8 "
+            class="svg-inline--fa fa-angle-left "
             data-icon="angle-left"
             data-prefix="fas"
             focusable="false"
@@ -75,7 +75,7 @@ exports[`Pagination should render Pagination cases: Pagination '7 pages' 1`] = `
         >
           <svg
             aria-hidden="true"
-            class="svg-inline--fa fa-angle-left fa-w-8 "
+            class="svg-inline--fa fa-angle-left "
             data-icon="angle-left"
             data-prefix="fas"
             focusable="false"
@@ -177,7 +177,7 @@ exports[`Pagination should render Pagination cases: Pagination '7 pages' 1`] = `
           Next 
           <svg
             aria-hidden="true"
-            class="svg-inline--fa fa-angle-right fa-w-8 "
+            class="svg-inline--fa fa-angle-right "
             data-icon="angle-right"
             data-prefix="fas"
             focusable="false"
@@ -213,7 +213,7 @@ exports[`Pagination should render Pagination cases: Pagination '10 pages' 1`] = 
         >
           <svg
             aria-hidden="true"
-            class="svg-inline--fa fa-angle-left fa-w-8 "
+            class="svg-inline--fa fa-angle-left "
             data-icon="angle-left"
             data-prefix="fas"
             focusable="false"
@@ -309,7 +309,7 @@ exports[`Pagination should render Pagination cases: Pagination '10 pages' 1`] = 
           Next 
           <svg
             aria-hidden="true"
-            class="svg-inline--fa fa-angle-right fa-w-8 "
+            class="svg-inline--fa fa-angle-right "
             data-icon="angle-right"
             data-prefix="fas"
             focusable="false"

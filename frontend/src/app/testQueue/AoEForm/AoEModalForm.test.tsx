@@ -36,9 +36,9 @@ describe("AoEModalForm", () => {
       expect(component).toMatchSnapshot();
     });
 
-    it("closes on esc key", () => {
+    it("closes on esc key", async () => {
       expect(mockOnClose).not.toHaveBeenCalled();
-      userEvent.keyboard("{Escape}");
+      await userEvent.keyboard("{Escape}");
       expect(mockOnClose).toHaveBeenCalled();
     });
   });

@@ -1,4 +1,4 @@
-import { act, render, screen } from "@testing-library/react";
+import { render, screen } from "@testing-library/react";
 import { MockedProvider } from "@apollo/client/testing";
 import { Provider } from "react-redux";
 import { MemoryRouter, Route, Routes } from "react-router-dom";
@@ -148,12 +148,10 @@ describe("ManageFacilitiesContainer", () => {
   });
 
   it("displays facilities", async () => {
-    await act(async () => {
-      expect(await screen.findByText(mockFacility.name)).toBeInTheDocument();
-      expect(
-        await screen.findByText(mockFacility.cliaNumber)
-      ).toBeInTheDocument();
-      expect(await screen.findByText(mockFacility.name)).toBeInTheDocument();
-    });
+    expect(await screen.findByText(mockFacility.name)).toBeInTheDocument();
+    expect(
+      await screen.findByText(mockFacility.cliaNumber)
+    ).toBeInTheDocument();
+    expect(await screen.findByText(mockFacility.name)).toBeInTheDocument();
   });
 });

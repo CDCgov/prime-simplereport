@@ -24,7 +24,11 @@ const Submissions = () => {
   const [endDate, setEndDate] = useState<string | null>(null);
   const [resetCount, setResetCount] = useState<number>(0);
 
-  const { data: submissions, loading, error } = useGetUploadSubmissionsQuery({
+  const {
+    data: submissions,
+    loading,
+    error,
+  } = useGetUploadSubmissionsQuery({
     fetchPolicy: "no-cache",
     variables: {
       pageSize,

@@ -146,7 +146,7 @@ describe("TenantDataAccessFormContainer", () => {
     await waitForElementToBeRemoved(() =>
       screen.queryByText("Loading Organizations …")
     );
-    userEvent.click(screen.getByRole("button"));
+    await userEvent.click(screen.getByRole("button"));
     expect(await screen.findByText("Redirected")).toBeInTheDocument();
   });
 });

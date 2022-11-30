@@ -1,6 +1,7 @@
 import {
   render,
   screen,
+  waitFor,
   waitForElementToBeRemoved,
 } from "@testing-library/react";
 import userEvent from "@testing-library/user-event";
@@ -289,8 +290,8 @@ describe("PendingOrganizationsContainer", () => {
       ).toBeInTheDocument();
     });
 
-    it("shows disabled modal with copy text for nulled fields", () => {
-      userEvent.click(screen.getAllByText("Edit/Verify")[1]);
+    it("shows disabled modal with copy text for nulled fields", async () => {
+      await userEvent.click(screen.getAllByText("Edit/Verify")[1]);
       expect(
         screen.getByText("Organization details", { exact: true })
       ).toBeInTheDocument();
@@ -304,8 +305,8 @@ describe("PendingOrganizationsContainer", () => {
         screen.getByTestId("old-schema-explanation", { exact: false })
       ).toBeInTheDocument();
     });
-    it("shows disabled modal with copy text for old date org", () => {
-      userEvent.click(screen.getAllByText("Edit/Verify")[0]);
+    it("shows disabled modal with copy text for old date org", async () => {
+      await userEvent.click(screen.getAllByText("Edit/Verify")[0]);
       expect(
         screen.getByText("Organization details", { exact: true })
       ).toBeInTheDocument();
@@ -318,7 +319,7 @@ describe("PendingOrganizationsContainer", () => {
       expect(
         screen.getByTestId("old-schema-explanation", { exact: false })
       ).toBeInTheDocument();
-      userEvent.click(screen.getByTestId("close-modal"));
+      await userEvent.click(screen.getByTestId("close-modal"));
       expect(
         screen.queryByText("Organization details", { exact: false })
       ).not.toBeInTheDocument();
@@ -327,32 +328,26 @@ describe("PendingOrganizationsContainer", () => {
       ).toBeInTheDocument();
     });
     it("With nulls submitted", async () => {
-      expect(
-        await screen.findByText("An Old Schema Org with Nulls", {
-          exact: false,
-        })
-      ).toBeInTheDocument();
-      userEvent.click(Array.from(await screen.findAllByText("Edit/Verify"))[1]);
+      expect(await screen.findByText(/An Old Schema Org with Nulls/i));
+      await userEvent.click(
+        Array.from(await screen.findAllByText("Edit/Verify"))[1]
+      );
       expect(
         screen.getByLabelText("Organization name", { exact: false })
       ).toBeDisabled();
       expect(screen.getByText("Edit only", { exact: false })).toBeDisabled();
-      userEvent.click(screen.getByText("Verify", { exact: true }));
-      userEvent.click(screen.getByText("Yes, I'm sure"));
+      await userEvent.click(screen.getByText("Verify", { exact: true }));
+      await userEvent.click(screen.getByText("Yes, I'm sure"));
 
       await waitForElementToBeRemoved(
         screen.queryByText("Verify organization")
       );
-      expect(
-        await screen.findByText("An Old Schema Org with Date", {
-          exact: false,
-        })
-      ).toBeInTheDocument();
-      expect(
-        screen.queryByText("An Old Schema Org with Nulls", {
-          exact: false,
-        })
-      ).not.toBeInTheDocument();
+      expect(await screen.findByText(/An Old Schema Org with Date/i));
+      await waitFor(() =>
+        expect(
+          screen.queryByText(/An Old Schema Org with Nulls/i)
+        ).not.toBeInTheDocument()
+      );
     });
   });
   describe("organizations loaded", () => {
@@ -377,9 +372,7 @@ describe("PendingOrganizationsContainer", () => {
           </MockedProvider>
         </Page>
       );
-      expect(
-        await screen.findByText("Space Camp", { exact: false })
-      ).toBeInTheDocument();
+      expect(await screen.findByText("Space Camp")).toBeInTheDocument();
     });
 
     it("displays the organizations name", () => {
@@ -407,27 +400,27 @@ describe("PendingOrganizationsContainer", () => {
     });
 
     describe("confirm/edit modal acts correctly", () => {
-      beforeEach(() => {
-        userEvent.click(screen.getAllByText("Edit/Verify")[1]);
+      beforeEach(async () => {
+        await userEvent.click(screen.getAllByText("Edit/Verify")[1]);
       });
-      it("populates modal", () => {
+      it("populates modal", async () => {
         expect(
           screen.getByText("Organization details", { exact: true })
         ).toBeInTheDocument();
         expect(
           screen.getByText("Space Camp", { exact: false })
         ).toBeInTheDocument();
-        userEvent.click(screen.getByTestId("close-modal"));
+        await userEvent.click(screen.getByTestId("close-modal"));
         expect(
           screen.getByText("Space Camp", { exact: false })
         ).toBeInTheDocument();
       });
       describe("submitting an edit", () => {
         it("displays an error when org name is empty", async () => {
-          userEvent.clear(
+          await userEvent.clear(
             screen.getByLabelText("Organization name", { exact: false })
           );
-          userEvent.click(
+          await userEvent.click(
             screen.getByLabelText("Administrator email", { exact: false })
           );
           expect(
@@ -437,14 +430,14 @@ describe("PendingOrganizationsContainer", () => {
           ).toBeInTheDocument();
         });
         it("displays an error when email is invalid", async () => {
-          userEvent.clear(
+          await userEvent.clear(
             screen.getByLabelText("Administrator email", { exact: false })
           );
-          userEvent.type(
+          await userEvent.type(
             screen.getByLabelText("Administrator email", { exact: false }),
             "foo"
           );
-          userEvent.click(
+          await userEvent.click(
             screen.getByLabelText("Organization name", { exact: false })
           );
           expect(
@@ -454,16 +447,12 @@ describe("PendingOrganizationsContainer", () => {
           ).toBeInTheDocument();
         });
         it("displays an error when phone is invalid", async () => {
-          userEvent.clear(
-            screen.getByLabelText("Administrator phone", { exact: false })
-          );
-          userEvent.type(
-            screen.getByLabelText("Administrator phone", { exact: false }),
+          await userEvent.clear(screen.getByLabelText(/Administrator phone/i));
+          await userEvent.type(
+            screen.getByLabelText(/Administrator phone/i),
             "foo"
           );
-          userEvent.click(
-            screen.getByLabelText("Organization name", { exact: false })
-          );
+          await userEvent.click(screen.getByLabelText(/Organization name/i));
           expect(
             await screen.findByText("A valid phone number is required", {
               exact: false,
@@ -471,22 +460,20 @@ describe("PendingOrganizationsContainer", () => {
           ).toBeInTheDocument();
         });
         it("saves information on change", async () => {
-          userEvent.clear(
-            screen.getByLabelText("Organization name", { exact: false })
-          );
-          userEvent.type(
-            screen.getByLabelText("Organization name", { exact: false }),
+          await userEvent.clear(screen.getByLabelText(/Organization name/i));
+          await userEvent.type(
+            screen.getByLabelText(/Organization name/i),
             "DC Space Camp"
           );
-          expect(
-            screen.getByLabelText("Organization name", { exact: false })
-          ).toHaveValue("DC Space Camp");
-          userEvent.click(screen.getByText("Edit only", { exact: false }));
-          expect(
-            screen.getByLabelText("Organization name", { exact: false })
-          ).toHaveValue("DC Space Camp");
+          expect(screen.getByLabelText(/Organization name/i)).toHaveValue(
+            "DC Space Camp"
+          );
+          await userEvent.click(screen.getByText(/Edit only/i));
+          expect(screen.getByLabelText(/Organization name/i)).toHaveValue(
+            "DC Space Camp"
+          );
           await waitForElementToBeRemoved(
-            screen.queryByText("Organization details")
+            screen.queryByText(/Organization details/i)
           );
 
           expect(await screen.findByText("DC Space Camp")).toBeInTheDocument();
@@ -516,28 +503,26 @@ describe("PendingOrganizationsContainer", () => {
         );
       });
       it("Space Camp submitted", async () => {
-        expect(
-          await screen.findByText("Space Camp", { exact: false })
-        ).toBeInTheDocument();
-        userEvent.click(
+        expect(await screen.findByText("Space Camp")).toBeInTheDocument();
+        await userEvent.click(
           Array.from(await screen.findAllByText("Edit/Verify"))[1]
         );
-        userEvent.click(screen.getByText("Verify"));
-        userEvent.click(screen.getByText("Yes, I'm sure"));
+        await userEvent.click(screen.getByText("Verify"));
+        await userEvent.click(screen.getByText("Yes, I'm sure"));
 
         await waitForElementToBeRemoved(
           screen.queryByLabelText("Verify organization", {
             exact: false,
           })
         );
-        expect(
-          await screen.findByText("A Real Hospital", { exact: false })
-        ).toBeInTheDocument();
-        expect(
-          screen.queryByText(
-            "DC-Space-Camp-f34183c4-b4c5-449f-98b0-2e02abb7aae0"
-          )
-        ).not.toBeInTheDocument();
+        expect(await screen.findByText("A Real Hospital")).toBeInTheDocument();
+        await waitFor(() =>
+          expect(
+            screen.queryByText(
+              "DC-Space-Camp-f34183c4-b4c5-449f-98b0-2e02abb7aae0"
+            )
+          ).not.toBeInTheDocument()
+        );
       });
     });
   });
@@ -567,13 +552,15 @@ describe("PendingOrganizationsContainer", () => {
       expect(
         await screen.findByText("Space Camp", { exact: false })
       ).toBeInTheDocument();
-      userEvent.click(Array.from(await screen.findAllByText("Edit/Verify"))[1]);
-      userEvent.clear(
+      await userEvent.click(
+        Array.from(await screen.findAllByText("Edit/Verify"))[1]
+      );
+      await userEvent.clear(
         screen.getByLabelText("Organization name", {
           exact: false,
         })
       );
-      userEvent.type(
+      await userEvent.type(
         screen.getByLabelText("Organization name", {
           exact: false,
         }),
@@ -584,8 +571,8 @@ describe("PendingOrganizationsContainer", () => {
           exact: false,
         })
       ).toHaveValue("DC Space Camp");
-      userEvent.click(screen.getByText("Verify"));
-      userEvent.click(screen.getByText("Yes, I'm sure"));
+      await userEvent.click(screen.getByText("Verify"));
+      await userEvent.click(screen.getByText("Yes, I'm sure"));
 
       await waitForElementToBeRemoved(
         screen.queryByText("Verify organization")
@@ -614,7 +601,7 @@ describe("PendingOrganizationsContainer", () => {
       expect(
         await screen.findByText("Space Camp", { exact: false })
       ).toBeInTheDocument();
-      userEvent.click(
+      await userEvent.click(
         Array.from(await screen.findAllByTestId("delete-org-button"))[1]
       );
       expect(
@@ -629,7 +616,7 @@ describe("PendingOrganizationsContainer", () => {
       expect(
         await screen.findByText("Space Camp", { exact: false })
       ).toBeInTheDocument();
-      userEvent.click(
+      await userEvent.click(
         Array.from(await screen.findAllByTestId("delete-org-button"))[1]
       );
       expect(
@@ -638,7 +625,7 @@ describe("PendingOrganizationsContainer", () => {
         })
       ).toBeInTheDocument();
       expect(await screen.findByText("Delete", { exact: true })).toBeEnabled();
-      userEvent.click(await screen.findByText("Delete", { exact: true }));
+      await userEvent.click(await screen.findByText("Delete", { exact: true }));
       await waitForElementToBeRemoved(() =>
         screen.queryByText("DC-Space-Camp-f34183c4-b4c5-449f-98b0-2e02abb7aae0")
       );
