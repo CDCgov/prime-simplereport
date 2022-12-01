@@ -531,6 +531,7 @@ const PersonForm = (props: Props) => {
             {...commonInputProps}
             field="city"
             label={t("patient.form.contact.city")}
+            required
           />
           {view !== PersonFormView.SELF_REGISTRATION && (
             <Input
