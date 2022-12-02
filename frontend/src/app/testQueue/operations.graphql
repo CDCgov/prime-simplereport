@@ -3,61 +3,118 @@ mutation RemovePatientFromQueue($patientId: ID!) {
     removePatientFromQueue(patientId: $patientId)
   }
 
-mutation EditQueueItemMultiplexResult(
-    $id: ID!
-    $deviceId: String
-    $deviceSpecimenType: ID
-    $results: [MultiplexResultInput]
-    $dateTested: DateTime
+mutation EditQueueItem(
+  $id: ID!
+  $deviceTypeId: ID
+  $specimenTypeId: ID
+  $results: [MultiplexResultInput]
+  $dateTested: DateTime
+) {
+  editQueueItem(
+    id: $id
+    deviceTypeId: $deviceTypeId
+    specimenTypeId: $specimenTypeId
+    results: $results
+    dateTested: $dateTested
   ) {
-    editQueueItemMultiplexResult(
-      id: $id
-      deviceId: $deviceId
-      deviceSpecimenType: $deviceSpecimenType
-      results: $results
-      dateTested: $dateTested
-    ) {
-      results {
-        disease {
-          name
-        }
-        testResult
+    results {
+      disease {
+        name
       }
-      dateTested
-      deviceType {
-        internalId
-        testLength
-      }
-      deviceSpecimenType {
-        internalId
-        deviceType {
-          internalId
-          testLength
-        }
-        specimenType {
-          internalId
-        }
-      }
+      testResult
+    }
+    dateTested
+    deviceType {
+      internalId
+      testLength
     }
   }
+}
 
-mutation AddMultiplexResult(
-    $patientId: ID!
-    $deviceId: String!
-    $deviceSpecimenType: ID
-    $results: [MultiplexResultInput]!
-    $dateTested: DateTime
+mutation SubmitQueueItem(
+  $patientId: ID!
+  $deviceTypeId: ID!
+  $specimenTypeId: ID!
+  $results: [MultiplexResultInput]!
+  $dateTested: DateTime
+) {
+  submitQueueItem(
+    patientId: $patientId
+    deviceTypeId: $deviceTypeId
+    specimenTypeId: $specimenTypeId
+    results: $results
+    dateTested: $dateTested
   ) {
-    addMultiplexResult(
-      patientId: $patientId
-      deviceId: $deviceId
-      deviceSpecimenType: $deviceSpecimenType
-      results: $results
-      dateTested: $dateTested
-    ) {
-      testResult {
-        internalId
+    testResult {
+      internalId
+    }
+    deliverySuccess
+  }
+}
+
+query GetFacilityQueue($facilityId: ID!) {
+  queue(facilityId: $facilityId) {
+    internalId
+    pregnancy
+    dateAdded
+    symptoms
+    symptomOnset
+    noSymptoms
+    deviceType {
+      internalId
+      name
+      model
+      testLength
+    }
+    specimenType {
+      internalId
+      name
+      typeCode
+    }
+    patient {
+      internalId
+      telephone
+      birthDate
+      firstName
+      middleName
+      lastName
+      gender
+      testResultDelivery
+      preferredLanguage
+      email
+      emails
+      phoneNumbers {
+        type
+        number
       }
-      deliverySuccess
+    }
+    results {
+      disease {
+        name
+      }
+      testResult
+    }
+    dateTested
+    correctionStatus
+    reasonForCorrection
+  }
+  facility(id: $facilityId) {
+    name
+    id
+    deviceTypes {
+      internalId
+      name
+      testLength
+      supportedDiseases {
+        internalId
+        name
+        loinc
+      }
+      swabTypes {
+        internalId
+        name
+        typeCode
+      }
     }
   }
+}
