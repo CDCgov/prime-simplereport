@@ -256,18 +256,35 @@ CompletedIndicator.args = {
   },
 };
 
-export const FailOnSubmit = Template.bind({});
-FailOnSubmit.args = {
+export const InvalidDevice = Template.bind({});
+InvalidDevice.args = {
   ...defaultProps,
   queueItem: {
     ...queueItemInfo,
-    patient: {
-      ...queueItemInfo.patient,
-      internalId: "this-should-fail",
-    },
-    internalId: "completed-timer",
     noSymptoms: true,
     pregnancy: "no",
     results: [{ disease: { name: "COVID-19" }, testResult: "NEGATIVE" }],
+    deviceType: {
+      internalId: "invalid",
+      name: "invalid",
+      model: "invalid",
+      testLength: 15,
+    },
+  },
+};
+
+export const InvalidSpecimen = Template.bind({});
+InvalidSpecimen.args = {
+  ...defaultProps,
+  queueItem: {
+    ...queueItemInfo,
+    noSymptoms: true,
+    pregnancy: "no",
+    results: [{ disease: { name: "COVID-19" }, testResult: "NEGATIVE" }],
+    specimenType: {
+      internalId: "invalid",
+      name: "invalid",
+      typeCode: "invalid",
+    },
   },
 };
