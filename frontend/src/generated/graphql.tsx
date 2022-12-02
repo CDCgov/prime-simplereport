@@ -109,8 +109,6 @@ export type Facility = {
   city?: Maybe<Scalars["String"]>;
   cliaNumber?: Maybe<Scalars["String"]>;
   county?: Maybe<Scalars["String"]>;
-  /** @deprecated kept for compatibility */
-  defaultDeviceType?: Maybe<DeviceType>;
   deviceTypes: Array<DeviceType>;
   email?: Maybe<Scalars["String"]>;
   id: Scalars["ID"];
