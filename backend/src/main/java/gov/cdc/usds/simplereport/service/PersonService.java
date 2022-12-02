@@ -24,7 +24,6 @@ import java.util.Set;
 import java.util.UUID;
 import java.util.stream.Collectors;
 import javax.validation.constraints.Size;
-
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Sort;
