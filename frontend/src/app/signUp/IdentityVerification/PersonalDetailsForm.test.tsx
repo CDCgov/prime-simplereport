@@ -93,7 +93,7 @@ describe("PersonalDetailsForm", () => {
     describe("On clicking a valid date of birth and submitting", () => {
       it("shows an error", async () => {
         await userEvent.type(
-          screen.getByLabelText("Date of birth", { exact: false }),
+          screen.getByLabelText(/Date of birth/i),
           "09/15/2022"
         );
         await userEvent.click(screen.getByText("Submit"));

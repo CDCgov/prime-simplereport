@@ -1,4 +1,4 @@
-import { render, screen } from "@testing-library/react";
+import { fireEvent, render, screen } from "@testing-library/react";
 import userEvent from "@testing-library/user-event";
 import { MockedProvider } from "@apollo/client/testing";
 import createMockStore from "redux-mock-store";
@@ -287,11 +287,9 @@ describe("Analytics", () => {
     await screen.findByText("COVID-19 testing data");
     const startDate = screen.getByTestId("startDate") as HTMLInputElement;
     const endDate = screen.getByTestId("endDate") as HTMLInputElement;
-    console.log(startDate);
-    console.log(endDate);
 
-    await userEvent.type(startDate, "2021-07-01");
-    await userEvent.type(endDate, "2021-07-31");
+    fireEvent.change(startDate, { target: { value: "2021-07-01" } });
+    fireEvent.change(endDate, { target: { value: "2021-07-31" } });
 
     await screen.findByText(`All ${PATIENT_TERM_PLURAL} tested`);
 

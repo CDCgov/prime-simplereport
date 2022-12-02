@@ -31,7 +31,7 @@ exports[`TestResultsList should render a list of tests 1`] = `
             >
               <svg
                 aria-hidden="true"
-                class="svg-inline--fa fa-download fa-w-16 margin-right-1"
+                class="svg-inline--fa fa-download margin-right-1"
                 data-icon="download"
                 data-prefix="fas"
                 focusable="false"
@@ -54,7 +54,7 @@ exports[`TestResultsList should render a list of tests 1`] = `
             >
               <svg
                 aria-hidden="true"
-                class="svg-inline--fa fa-sliders-h fa-w-16 margin-right-1"
+                class="svg-inline--fa fa-sliders-h margin-right-1"
                 data-icon="sliders-h"
                 data-prefix="fas"
                 focusable="false"
@@ -414,7 +414,7 @@ exports[`TestResultsList should render a list of tests 1`] = `
                 >
                   <svg
                     aria-hidden="true"
-                    class="svg-inline--fa fa-ellipsis-h fa-w-16 fa-2x "
+                    class="svg-inline--fa fa-ellipsis-h fa-2x "
                     data-icon="ellipsis-h"
                     data-prefix="fas"
                     focusable="false"
@@ -435,7 +435,6 @@ exports[`TestResultsList should render a list of tests 1`] = `
                 </button>
                 <div
                   class="rc-menu-container"
-                  role="presentation"
                 />
               </td>
             </tr>
@@ -493,7 +492,7 @@ exports[`TestResultsList should render a list of tests 1`] = `
                 >
                   <svg
                     aria-hidden="true"
-                    class="svg-inline--fa fa-ellipsis-h fa-w-16 fa-2x "
+                    class="svg-inline--fa fa-ellipsis-h fa-2x "
                     data-icon="ellipsis-h"
                     data-prefix="fas"
                     focusable="false"
@@ -514,7 +513,6 @@ exports[`TestResultsList should render a list of tests 1`] = `
                 </button>
                 <div
                   class="rc-menu-container"
-                  role="presentation"
                 />
               </td>
             </tr>
@@ -572,7 +570,7 @@ exports[`TestResultsList should render a list of tests 1`] = `
                 >
                   <svg
                     aria-hidden="true"
-                    class="svg-inline--fa fa-ellipsis-h fa-w-16 fa-2x "
+                    class="svg-inline--fa fa-ellipsis-h fa-2x "
                     data-icon="ellipsis-h"
                     data-prefix="fas"
                     focusable="false"
@@ -593,7 +591,6 @@ exports[`TestResultsList should render a list of tests 1`] = `
                 </button>
                 <div
                   class="rc-menu-container"
-                  role="presentation"
                 />
               </td>
             </tr>

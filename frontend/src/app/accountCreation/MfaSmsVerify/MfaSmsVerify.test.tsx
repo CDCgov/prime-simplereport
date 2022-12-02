@@ -1,4 +1,9 @@
-import { render, screen, waitFor } from "@testing-library/react";
+import {
+  render,
+  screen,
+  waitFor,
+  waitForElementToBeRemoved,
+} from "@testing-library/react";
 import userEvent from "@testing-library/user-event";
 import { MemoryRouter, Route, Routes } from "react-router-dom";
 
@@ -57,11 +62,8 @@ describe("Verify SMS MFA", () => {
     expect(screen.getByText("Submit")).toBeEnabled();
 
     await userEvent.click(screen.getByText("Submit"));
-    expect(screen.getByText(/verifying security code …/i));
-    await waitFor(() =>
-      expect(
-        screen.queryByText(/verifying security code …/i)
-      ).not.toBeInTheDocument()
+    await waitForElementToBeRemoved(() =>
+      screen.queryByText("Verifying security code …", { exact: false })
     );
 
     expect(

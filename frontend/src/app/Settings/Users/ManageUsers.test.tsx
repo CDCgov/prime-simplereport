@@ -255,7 +255,9 @@ describe("ManageUsers", () => {
   });
 
   beforeEach(() => {
-    updateUserPrivileges = jest.fn(() => Promise.resolve());
+    updateUserPrivileges = jest.fn().mockImplementation(() => {
+      return new Promise((res) => setTimeout(() => res({}), 200));
+    });
     addUserToOrg = jest.fn(() =>
       Promise.resolve({
         data: { addUserToCurrentOrg: { id: "added-user-id" } },
@@ -452,7 +454,7 @@ describe("ManageUsers", () => {
       });
     });
 
-    it("adds adds a facility for a user", async () => {
+    it("adds a facility for a user", async () => {
       await userEvent.click(screen.getByText("Facility access"));
       await userEvent.click(screen.getAllByRole("checkbox")[1]);
       const saveButton = screen.getByText("Save changes");
@@ -515,19 +517,12 @@ describe("ManageUsers", () => {
       });
 
       it("successfully changes a user's name", async () => {
-        await Promise.allSettled(
-          [
-            { textbox: first, value: newUser.firstName },
-            { textbox: last, value: newUser.lastName },
-          ].map((t) => {
-            return async () => {
-              await userEvent.clear(t.textbox);
-              await userEvent.type(t.textbox, t.value);
-            };
-          })
-        );
-
+        await userEvent.clear(first);
+        await userEvent.type(first, newUser.firstName);
+        await userEvent.clear(last);
+        await userEvent.type(last, newUser.lastName);
         await userEvent.click(confirmButton);
+
         await waitFor(() => expect(updateUserName).toBeCalled());
         expect(updateUserName).toBeCalledWith({
           variables: {

@@ -748,14 +748,13 @@ describe("FacilityForm", () => {
       await userEvent.type(facilityName, "La Croix Facility");
       const saveButton = (await screen.findAllByText("Save changes"))[0];
       await userEvent.click(saveButton);
-
       // THEN
       // Toast alert appears
       expect(
         await screen.findByText("Invalid ZIP code for this state", {
           exact: false,
         })
-      ).toBeInTheDocument();
+      );
 
       expect(getIsValidZipForStateSpy).toBeCalledTimes(1);
 

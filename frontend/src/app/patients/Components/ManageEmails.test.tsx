@@ -116,13 +116,35 @@ describe("ManageEmails", () => {
     });
 
     await userEvent.type(primary, "test@fake.com");
-    const addButton = screen.getByText("Add another email address", {
-      exact: false,
+    const addButton = screen.getByRole("button", {
+      name: /add another email address/i,
     });
-    await userEvent.click(addButton);
 
-    const second = (await screen.findAllByText("Additional email address"))[1];
-    await userEvent.type(second, "foo@bar.com");
+    // adds more emails
+    await userEvent.click(addButton);
+    await waitFor(() =>
+      expect(
+        screen.queryAllByLabelText("Additional email address").length
+      ).toBe(1)
+    );
+    await userEvent.click(addButton);
+    await waitFor(() =>
+      expect(
+        screen.queryAllByLabelText("Additional email address").length
+      ).toBe(2)
+    );
+
+    //fills in the input
+    const seconds = await screen.findAllByLabelText("Additional email address");
+    await userEvent.type(seconds[1], "foo@bar.com");
+
+    // removes additional email input fields
+    await userEvent.click(screen.getByTestId(`delete-email-1`));
+    await waitFor(() =>
+      expect(
+        screen.queryAllByLabelText("Additional email address").length
+      ).toBe(1)
+    );
     await userEvent.click(screen.getByTestId(`delete-email-1`));
     expect(
       screen.queryByText("Additional email address")

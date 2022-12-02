@@ -119,7 +119,7 @@ const client = new ApolloClient({
   link: logoutLink.concat(concat(apolloMiddleware, httpLink as any)),
 });
 
-export const App = (
+export const App = () => (
   <ApolloProvider client={client}>
     <React.StrictMode>
       <Provider store={store}>

@@ -1,4 +1,4 @@
-import { render, screen } from "@testing-library/react";
+import { render, screen, waitFor } from "@testing-library/react";
 import userEvent from "@testing-library/user-event";
 
 import OrganizationForm, {
@@ -80,9 +80,7 @@ describe("OrganizationForm", () => {
     await fillInDropDown(getOrgStateDropdown(), "VI");
     getSubmitButton().click();
 
-    expect(
-      await screen.findByText("Organization name is required")
-    ).toBeInTheDocument();
+    expect(await screen.findByText("Organization name is required"));
 
     expect(
       screen.getByText("Organization type is required")
@@ -94,9 +92,11 @@ describe("OrganizationForm", () => {
       })
     ).toBeInTheDocument();
 
-    expect(
-      screen.getByRole("textbox", { name: "Organization name required" })
-    ).toHaveFocus();
+    await waitFor(() =>
+      expect(
+        screen.getByRole("textbox", { name: "Organization name required" })
+      ).toHaveFocus()
+    );
   });
 
   it("redirects to identity verification when submitting valid input", async () => {
@@ -112,7 +112,7 @@ describe("OrganizationForm", () => {
 
     expect(
       await screen.findByText("Redirected to /sign-up/identity-verification")
-    ).toBeInTheDocument();
+    );
   });
 
   it("displays a duplicate org error when submitting a duplicate org", async () => {
@@ -131,7 +131,7 @@ describe("OrganizationForm", () => {
         "This organization already has a SimpleReport account. Please contact your organization administrator to request access.",
         { exact: false }
       )
-    ).toBeInTheDocument();
+    );
   });
 
   it("displays a duplicate email error when submitting a duplicate email", async () => {
@@ -150,7 +150,7 @@ describe("OrganizationForm", () => {
         "This email address is already registered with SimpleReport.",
         { exact: false }
       )
-    ).toBeInTheDocument();
+    );
   });
 
   it("displays a duplicate org error and id verification link for an admin re-signing up", async () => {
@@ -169,7 +169,7 @@ describe("OrganizationForm", () => {
         "Your organization is already registered with SimpleReport. To begin using it, schedule a time",
         { exact: false }
       )
-    ).toBeInTheDocument();
+    );
   });
 
   it("displays a duplicate org error and instructions for admin user who has finished id verification", async () => {
@@ -188,7 +188,7 @@ describe("OrganizationForm", () => {
         "Your organization is already registered with SimpleReport. Check your email for instructions on setting up your account.",
         { exact: false }
       )
-    ).toBeInTheDocument();
+    );
   });
 
   it("displays a generic error message for Okta internal errors", async () => {
@@ -207,6 +207,6 @@ describe("OrganizationForm", () => {
         "An unexpected error occurred. Please resubmit this form",
         { exact: false }
       )
-    ).toBeInTheDocument();
+    );
   });
 });

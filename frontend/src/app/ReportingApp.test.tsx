@@ -1,8 +1,15 @@
-import { BrowserRouter as Router, Route, Routes } from "react-router-dom";
+import { MemoryRouter, Route, Routes } from "react-router-dom";
 import { Provider } from "react-redux";
 import createMockStore, { MockStoreEnhanced } from "redux-mock-store";
 import { MockedProvider, MockedResponse } from "@apollo/client/testing";
-import { render } from "@testing-library/react";
+import {
+  render,
+  screen,
+  waitForElementToBeRemoved,
+} from "@testing-library/react";
+import userEvent from "@testing-library/user-event";
+import { ApplicationInsights } from "@microsoft/applicationinsights-web";
+import jwtDecode from "jwt-decode";
 import MockDate from "mockdate";
 
 import {
@@ -12,10 +19,14 @@ import {
 
 import ReportingApp, { WHOAMI_QUERY } from "./ReportingApp";
 import PrimeErrorBoundary from "./PrimeErrorBoundary";
+import { TRAINING_PURPOSES_ONLY } from "./commonComponents/TrainingNotification";
 import {
   getEndDateFromDaysAgo,
   getStartDateFromDaysAgo,
 } from "./analytics/Analytics";
+import { getAppInsights } from "./TelemetryService";
+
+const mockDispatch = jest.fn();
 
 jest.mock("uuid");
 jest.mock("./VersionService", () => ({
@@ -36,10 +47,9 @@ jest.mock("./TelemetryService", () => ({
 jest.mock("jwt-decode", () => jest.fn());
 
 const mockStore = createMockStore([]);
-const mockDispatch = jest.fn();
 
 const store = {
-  dispatch: jest.fn(),
+  dispatch: mockDispatch,
   organization: {
     name: "Organization Name",
   },
@@ -192,6 +202,7 @@ const getAnalyticsQueryMock = () => ({
     },
   },
 });
+
 const renderApp = (
   newStore: MockStoreEnhanced<unknown, {}>,
   queryMocks: MockedResponse[]
@@ -200,11 +211,11 @@ const renderApp = (
     <PrimeErrorBoundary>
       <Provider store={newStore}>
         <MockedProvider mocks={queryMocks} addTypename={false}>
-          <Router>
+          <MemoryRouter>
             <Routes>
               <Route path="/*" element={<ReportingApp />} />
             </Routes>
-          </Router>
+          </MemoryRouter>
         </MockedProvider>
       </Provider>
     </PrimeErrorBoundary>
@@ -221,8 +232,8 @@ describe("App", () => {
   afterEach(() => {
     MockDate.reset();
   });
-  // ToDo class going in infinite loop
-  /*it("Render first loading screen", async () => {
+
+  it("Render first loading screen", async () => {
     const mockedStore = mockStore({});
     renderApp(mockedStore, [WhoAmIQueryMock]);
     await screen.findByText("Loading account information...");
@@ -241,20 +252,24 @@ describe("App", () => {
       facilityQueryMock,
       getAnalyticsQueryMock(),
     ]);
-    expect(await screen.findByText(/Loading account information/i));
-    await waitFor(()=> expect(screen.queryByText(/Loading account information/i)).not.toBeInTheDocument());
-
-    await userEvent.click(screen.getByRole('button', { name: /testing site/i }));
+    await waitForElementToBeRemoved(() =>
+      screen.queryByText("Loading account information...")
+    );
+    await userEvent.click(
+      screen.getAllByText("Testing Site", { exact: false })[0]
+    );
     expect(
       await screen.findByText("COVID-19 testing data")
-    );
+    ).toBeInTheDocument();
   });
+
   it("should show error UI", async () => {
     const mockedStore = mockStore({ ...store, dataLoaded: true });
     const { container } = renderApp(mockedStore, [WhoAmIErrorQueryMock]);
     await screen.findByText("error", { exact: false });
     expect(container).toMatchSnapshot();
   });
+
   it("displays the training header and modal and dismisses the modal", async () => {
     process.env.REACT_APP_IS_TRAINING_SITE = "true";
     const mockedStore = mockStore({ ...store, dataLoaded: true });
@@ -271,6 +286,7 @@ describe("App", () => {
     await userEvent.click(screen.getByText("Got it", { exact: false }));
     expect(trainingWelcome).not.toBeInTheDocument();
   });
+
   it("does not display training notifications outside the training environment", () => {
     process.env.REACT_APP_IS_TRAINING_SITE = "false";
     const mockedStore = mockStore({ ...store, dataLoaded: true });
@@ -278,6 +294,7 @@ describe("App", () => {
     expect(screen.queryByText(TRAINING_PURPOSES_ONLY)).not.toBeInTheDocument();
     expect(screen.queryByText(MODAL_TEXT)).not.toBeInTheDocument();
   });
+
   describe("logs to App Insights on WhoAmI error", () => {
     const oldTokenClaim = process.env.REACT_APP_OKTA_TOKEN_ROLE_CLAIM;
     const trackExceptionMock = jest.fn();
@@ -367,7 +384,7 @@ describe("App", () => {
   it("renders CleanTestResultsList when going to /results/", async () => {
     const mockedStore = mockStore({ ...store, dataLoaded: true });
 
-    await render(
+    render(
       <Provider store={mockedStore}>
         <MockedProvider mocks={[WhoAmIQueryMock]} addTypename={false}>
           <MemoryRouter
@@ -387,7 +404,7 @@ describe("App", () => {
   it("renders TestResultsList when going to /results/page_number ", async () => {
     const mockedStore = mockStore({ ...store, dataLoaded: true });
 
-    await render(
+    render(
       <Provider store={mockedStore}>
         <MockedProvider mocks={[WhoAmIQueryMock]} addTypename={false}>
           <MemoryRouter
@@ -400,7 +417,6 @@ describe("App", () => {
         </MockedProvider>
       </Provider>
     );
-
     expect(await screen.findByText("TestResultsList")).toBeInTheDocument();
-  });*/
+  });
 });

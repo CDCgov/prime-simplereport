@@ -1,4 +1,7 @@
-import { render, screen, waitFor } from "@testing-library/react";
+import { render, screen } from "@testing-library/react";
+import { MockedProvider } from "@apollo/client/testing";
+import createMockStore from "redux-mock-store";
+import { Provider } from "react-redux";
 
 import { App } from "./App";
 
@@ -8,12 +11,15 @@ jest.mock("./featureFlags/WithFeatureFlags", () => {
 
 describe("index.js", () => {
   it("renders without crashing", async () => {
-    render(App);
-    expect(await screen.findByText("Loading account information"));
-    await waitFor(() =>
-      expect(
-        screen.queryByText(/Loading account information/i)
-      ).not.toBeInTheDocument()
+    const mockStore = createMockStore([]);
+    const mockedStore = mockStore({});
+    render(
+      <Provider store={mockedStore}>
+        <MockedProvider mocks={[]} addTypename={false}>
+          <App />
+        </MockedProvider>
+      </Provider>
     );
+    expect(await screen.findByText(/loading/i));
   });
 });

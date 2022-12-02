@@ -54,7 +54,7 @@ export const WHOAMI_QUERY = gql`
   }
 `;
 
-const ReportingApp = () => {
+const App = () => {
   const appInsights = getAppInsights();
   const dispatch = useDispatch();
   const location = useLocation();
@@ -209,16 +209,6 @@ const ReportingApp = () => {
                 }
               />
               <Route
-                path="csv/codelookup"
-                element={
-                  <ProtectedRoute
-                    requiredPermissions={canViewResults}
-                    userPermissions={data.whoami.permissions}
-                    element={<DeviceLookupContainer />}
-                  />
-                }
-              />
-              <Route
                 path="results/upload/submit"
                 element={
                   <ProtectedRoute
@@ -246,7 +236,20 @@ const ReportingApp = () => {
                   />
                 }
               />
-
+              <Route
+                path="results/upload/submit/code-lookup"
+                element={
+                  <ProtectedRoute
+                    requiredPermissions={canViewResults}
+                    userPermissions={data.whoami.permissions}
+                    element={
+                      <ResultsNavWrapper>
+                        <DeviceLookupContainer />
+                      </ResultsNavWrapper>
+                    }
+                  />
+                }
+              />
               <Route
                 path="results/upload/submissions/submission/:id"
                 element={
@@ -363,4 +366,4 @@ const ReportingApp = () => {
   );
 };
 
-export default connect()(ReportingApp);
+export default connect()(App);

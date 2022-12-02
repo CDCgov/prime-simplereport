@@ -135,7 +135,7 @@ describe("unsuccessful form submission", () => {
   it("toggles the save button when selecting organization", async () => {
     renderView();
     await waitForOrgLoadReturnTitle();
-    selectOrg();
+    await selectOrg();
     expect(screen.getByText("Save Changes", { exact: false })).toBeEnabled();
     await userEvent.click(screen.getByTestId("combo-box-clear-button"));
     expect(screen.getByText("Save Changes", { exact: false })).toBeDisabled();
@@ -145,7 +145,7 @@ describe("unsuccessful form submission", () => {
     let alertSpy: jest.SpyInstance = jest.spyOn(srToast, "showError");
     renderView();
     await waitForOrgLoadReturnTitle();
-    selectOrg();
+    await selectOrg();
     await userEvent.click(screen.getByText("Save Changes"));
     await waitFor(() => {
       expect(alertSpy).toHaveBeenCalledWith(
@@ -161,7 +161,7 @@ describe("successful form submission", () => {
     let alertSpy: jest.SpyInstance = jest.spyOn(srToast, "showSuccess");
     renderView();
     await waitForOrgLoadReturnTitle();
-    selectOrg();
+    await selectOrg();
     await userEvent.type(
       screen.getByLabelText("First name", { exact: false }),
       "Flora"

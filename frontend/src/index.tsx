@@ -3,4 +3,4 @@ import { createRoot } from "react-dom/client";
 import { App } from "./App";
 
 export const rootElement = document.getElementById("root");
-createRoot(rootElement as Element).render(App);
+createRoot(rootElement as Element).render(<App />);
