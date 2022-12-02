@@ -19,7 +19,6 @@ import java.util.List;
 import java.util.Optional;
 import java.util.UUID;
 import java.util.stream.Collectors;
-import java.util.stream.StreamSupport;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -66,12 +65,6 @@ public class DeviceTypeService {
     return _repo
         .findById(internalId)
         .orElseThrow(() -> new IllegalGraphqlArgumentException("invalid device type ID"));
-  }
-
-  public List<DeviceSpecimenType> getDeviceSpecimenTypesByIds(List<UUID> deviceSpecimenTypeIds) {
-    return StreamSupport.stream(
-            _deviceSpecimenRepo.findAllById(deviceSpecimenTypeIds).spliterator(), false)
-        .collect(Collectors.toList());
   }
 
   public List<DeviceSpecimenType> getDeviceSpecimenTypes() {
