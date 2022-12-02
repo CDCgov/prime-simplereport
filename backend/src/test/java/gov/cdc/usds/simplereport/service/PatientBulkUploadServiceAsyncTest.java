@@ -1,38 +1,42 @@
 package gov.cdc.usds.simplereport.service;
 
 import static org.assertj.core.api.Assertions.assertThat;
-import static org.awaitility.Awaitility.await;
-import static org.mockito.ArgumentMatchers.any;
-import static org.mockito.Mockito.when;
 
-import gov.cdc.usds.simplereport.api.BaseFullStackTest;
+import gov.cdc.usds.simplereport.api.graphql.BaseGraphqlTest;
 import gov.cdc.usds.simplereport.db.model.Facility;
 import gov.cdc.usds.simplereport.db.model.Organization;
 import gov.cdc.usds.simplereport.db.model.Person;
-import gov.cdc.usds.simplereport.db.model.auxiliary.StreetAddress;
-import gov.cdc.usds.simplereport.test_util.TestUserIdentities;
+import gov.cdc.usds.simplereport.db.model.PhoneNumber;
+import gov.cdc.usds.simplereport.db.model.auxiliary.PersonRole;
+import gov.cdc.usds.simplereport.db.model.auxiliary.PhoneType;
+import gov.cdc.usds.simplereport.db.repository.PhoneNumberRepository;
+import gov.cdc.usds.simplereport.test_util.SliceTestConfiguration;
 import java.io.IOException;
 import java.io.InputStream;
 import java.time.Duration;
+import java.time.LocalDate;
 import java.util.List;
 import java.util.concurrent.Callable;
 import org.awaitility.Awaitility;
 import org.junit.jupiter.api.BeforeAll;
-import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.test.mock.mockito.MockBean;
-import org.springframework.security.core.context.SecurityContextHolder;
+import org.springframework.test.context.TestPropertySource;
 
 /*
  * We can't use the standard BaseServiceTest here because this service is async and requires a request context to operate.
  */
-public class PatientBulkUploadServiceAsyncTest extends BaseFullStackTest {
+@TestPropertySource(
+    properties = {
+      "hibernate.query.interceptor.error-level=ERROR",
+      "spring.jpa.properties.hibernate.enable_lazy_load_no_trans=true"
+    })
+public class PatientBulkUploadServiceAsyncTest extends BaseGraphqlTest {
 
   @Autowired PatientBulkUploadServiceAsync _service;
-  //  @SpyBean CurrentOrganizationRolesContextHolder _orgRolesContext;
 
   @Autowired PersonService _personService;
+  @Autowired PhoneNumberRepository phoneNumberRepository;
 
   private Organization org;
   private Facility facility;
@@ -40,19 +44,23 @@ public class PatientBulkUploadServiceAsyncTest extends BaseFullStackTest {
   public static final int PATIENT_PAGE_OFFSET = 0;
   public static final int PATIENT_PAGE_SIZE = 1000;
 
-  @MockBean protected AddressValidationService addressValidationService;
-  private StreetAddress address;
+  //  @MockBean protected AddressValidationService addressValidationService;
+  //  @SpyBean private OrganizationService organizationService;
+  //  private StreetAddress address;
+
+  // fetch directly from person repo, not person service
 
   @BeforeAll
   static void configuration() {
-    SecurityContextHolder.setStrategyName(SecurityContextHolder.MODE_INHERITABLETHREADLOCAL);
-    Awaitility.setDefaultTimeout(Duration.ofSeconds(60));
+    //    SecurityContextHolder.setStrategyName(SecurityContextHolder.MODE_INHERITABLETHREADLOCAL);
+    Awaitility.setDefaultTimeout(Duration.ofSeconds(10));
   }
 
+  /*
   @BeforeEach
   void setup() {
     //    _initService.initAll();
-    //    truncateDb();
+        truncateDb();
     // the org we're creating with the data factory doesn't match the org specifed in the role
     // claims
     // (MALLRAT vs DIS_ORG)
@@ -73,6 +81,8 @@ public class PatientBulkUploadServiceAsyncTest extends BaseFullStackTest {
     //    when(_orgRolesContext.hasBeenPopulated()).thenReturn(true);
   }
 
+   */
+
   // two ways this test can fail:
   // 1. when running as site admin user, don't have permission to getPatients()
   // 2. When running as org admin user or all facility standard user, N+1 error on
@@ -86,6 +96,7 @@ public class PatientBulkUploadServiceAsyncTest extends BaseFullStackTest {
   // dont forget tenant data access
 
   @Test
+  @SliceTestConfiguration.WithSimpleReportStandardUser
   void validPerson_savedToDatabase() throws IOException {
     InputStream inputStream = loadCsv("patientBulkUpload/valid.csv");
     byte[] content = inputStream.readAllBytes();
@@ -94,13 +105,47 @@ public class PatientBulkUploadServiceAsyncTest extends BaseFullStackTest {
     // taking it out causes the test to fail in a slightly more normal way, because the assertion
     // size doesn't match
     // note: the above is only true outside the n+1 issues
-    TestUserIdentities.withStandardUserInOrganization(
-        facility,
-        () -> {
-          this._service.savePatients(content, null);
-          await().until(patientsAddedToRepository(1));
-          assertThat(getPatients()).hasSize(1);
-        });
+    //    TestUserIdentities.withStandardUserInOrganization(() -> {
+    //      org = _orgService.getCurrentOrganizationNoCache();
+    //      facility = _orgService.getFacilities(org).get(0);
+    //    });
+
+    //    TestUserIdentities.withStandardUserInOrganizationAndFacility(
+    //        facility,
+    //        () -> {
+    _orgService.getCurrentOrganization();
+    //
+    // when(_orgService.getCurrentOrganization()).thenReturn(_orgService.getCurrentOrganizationNoCache());
+    this._service.savePatients(content, null);
+    try {
+      Thread.sleep(1000);
+    } catch (InterruptedException e) {
+      e.printStackTrace();
+    }
+    //          await().until(patientsAddedToRepository(1));
+    assertThat(getPatients()).hasSize(1);
+    Person patient = getPatients().get(0);
+
+    assertThat(patient.getLastName()).isEqualTo("Doe");
+    assertThat(patient.getRace()).isEqualTo("black");
+    assertThat(patient.getEthnicity()).isEqualTo("not_hispanic");
+    assertThat(patient.getBirthDate()).isEqualTo(LocalDate.of(1980, 11, 3));
+    assertThat(patient.getGender()).isEqualTo("female");
+    assertThat(patient.getRole()).isEqualTo(PersonRole.STAFF);
+
+    assertThat(patient.getCountry()).isEqualTo("USA");
+
+    List<PhoneNumber> phoneNumbers =
+        phoneNumberRepository.findAllByPersonInternalId(patient.getInternalId());
+    assertThat(phoneNumbers).hasSize(1);
+    PhoneNumber pn = phoneNumbers.get(0);
+    assertThat(pn.getNumber()).isEqualTo("410-867-5309");
+    assertThat(pn.getType()).isEqualTo(PhoneType.MOBILE);
+    assertThat(patient.getEmail()).isEqualTo("jane@testingorg.com");
+
+    //        assertThat(getPatientsForFacility(firstFacilityId))
+    //            .hasSameSizeAs(getPatientsForFacility(secondFacilityId));
+    //        });
   }
 
   /**

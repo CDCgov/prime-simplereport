@@ -65,13 +65,30 @@ public class TestUserIdentities {
     withUser(STANDARD_USER, nested);
   }
 
-  public static void withStandardUserInOrganization(Facility facility, Runnable nested) {
+  public static void withStandardUserInOrganization(Runnable nested) {
     SecurityContext context = SecurityContextHolder.getContext();
     Authentication original = context.getAuthentication();
     List<GrantedAuthority> authorities = new ArrayList<>();
     // set the organization and role authority
     // then set the facility auth
-    String rolePrefix = TEST_ROLE_PREFIX + CREATED_ORGANIZATION + ":";
+    String rolePrefix = TEST_ROLE_PREFIX + DEFAULT_ORGANIZATION + ":";
+    authorities.add(new SimpleGrantedAuthority(rolePrefix + "USER"));
+    authorities.add(new SimpleGrantedAuthority(rolePrefix + "NO_ACCESS"));
+    try {
+      context.setAuthentication(new TestingAuthenticationToken(STANDARD_USER, null, authorities));
+      nested.run();
+    } finally {
+      context.setAuthentication(original);
+    }
+  }
+
+  public static void withStandardUserInOrganizationAndFacility(Facility facility, Runnable nested) {
+    SecurityContext context = SecurityContextHolder.getContext();
+    Authentication original = context.getAuthentication();
+    List<GrantedAuthority> authorities = new ArrayList<>();
+    // set the organization and role authority
+    // then set the facility auth
+    String rolePrefix = TEST_ROLE_PREFIX + DEFAULT_ORGANIZATION + ":";
     authorities.add(new SimpleGrantedAuthority(rolePrefix + "USER"));
     //    authorities.add(new SimpleGrantedAuthority(rolePrefix + "ALL_FACILITIES"));
     authorities.add(new SimpleGrantedAuthority(rolePrefix + "NO_ACCESS"));

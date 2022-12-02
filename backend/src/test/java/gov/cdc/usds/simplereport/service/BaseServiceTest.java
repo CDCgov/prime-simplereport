@@ -59,7 +59,6 @@ public abstract class BaseServiceTest<T> {
 
   @BeforeEach
   protected void beforeEach() {
-    //    SecurityContextHolder.setStrategyName(SecurityContextHolder.MODE_INHERITABLETHREADLOCAL);
     clearDb();
     resetOkta();
     initCurrentUser();

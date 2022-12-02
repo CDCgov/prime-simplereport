@@ -9,6 +9,7 @@ import static gov.cdc.usds.simplereport.validators.CsvValidatorUtils.convertRace
 import static gov.cdc.usds.simplereport.validators.CsvValidatorUtils.convertSexToDatabaseValue;
 
 import com.fasterxml.jackson.databind.MappingIterator;
+import gov.cdc.usds.simplereport.config.AuthorizationConfiguration;
 import gov.cdc.usds.simplereport.db.model.Facility;
 import gov.cdc.usds.simplereport.db.model.Organization;
 import gov.cdc.usds.simplereport.db.model.Person;
@@ -28,6 +29,7 @@ import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.scheduling.annotation.Async;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 @Service
 @RequiredArgsConstructor
@@ -39,6 +41,8 @@ public class PatientBulkUploadServiceAsync {
   private final OrganizationService _organizationService;
 
   @Async
+  @Transactional
+  @AuthorizationConfiguration.RequirePermissionCreatePatientAtFacility
   public void savePatients(byte[] content, UUID facilityId) {
     Organization currentOrganization = _organizationService.getCurrentOrganization();
 

@@ -14,6 +14,7 @@ import gov.cdc.usds.simplereport.service.DiseaseService;
 import gov.cdc.usds.simplereport.service.OrganizationInitializingService;
 import gov.cdc.usds.simplereport.service.ScheduledTasksService;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.beans.factory.InitializingBean;
 import org.springframework.boot.CommandLineRunner;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
@@ -42,13 +43,18 @@ import org.springframework.security.core.context.SecurityContextHolder;
   CorsProperties.class,
   AzureStorageQueueReportingProperties.class
 })
+@EnableAsync
 @EnableScheduling
 @EnableFeignClients
-@EnableAsync
 public class SimpleReportApplication {
   public static void main(String[] args) {
-    SecurityContextHolder.setStrategyName(SecurityContextHolder.MODE_INHERITABLETHREADLOCAL);
     SpringApplication.run(SimpleReportApplication.class, args);
+  }
+
+  @Bean
+  public InitializingBean initializingBean() {
+    return () ->
+        SecurityContextHolder.setStrategyName(SecurityContextHolder.MODE_INHERITABLETHREADLOCAL);
   }
 
   @Bean
