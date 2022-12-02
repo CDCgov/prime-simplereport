@@ -53,7 +53,7 @@ describe("When successful patient upload", () => {
     const fileInput = screen.getByTestId("patient-file-input");
 
     //When
-    userEvent.upload(fileInput, csvFile);
+    await userEvent.upload(fileInput, csvFile);
 
     //Then
     expect(uploadSpy).toHaveBeenCalledWith(csvFile, "");
@@ -75,12 +75,12 @@ describe("When successful patient upload", () => {
     const fileInput = screen.getByTestId("patient-file-input");
 
     //When
-    userEvent.click(
+    await userEvent.click(
       screen.getByLabelText("Upload patients only to current facility", {
         exact: false,
       })
     );
-    userEvent.upload(fileInput, csvFile);
+    await userEvent.upload(fileInput, csvFile);
 
     // Then
     expect(uploadSpy).toHaveBeenCalledWith(csvFile, "1");
@@ -96,7 +96,7 @@ describe("When failed patient upload", () => {
     const fileInput = screen.getByTestId("patient-file-input");
 
     //When
-    userEvent.upload(fileInput, csvFile);
+    await userEvent.upload(fileInput, csvFile);
 
     //Then
     await waitFor(() => {
