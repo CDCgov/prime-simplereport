@@ -73,7 +73,6 @@ public class TestOrderService {
   private final TestEventRepository _testEventRepo;
   private final PatientLinkService _patientLinkService;
   private final TestEventReportingService _testEventReportingService;
-  private final FacilityDeviceTypeService _facilityDeviceTypeService;
   private final TestResultsDeliveryService testResultsDeliveryService;
   private final DiseaseService _diseaseService;
   private final ResultRepository _resultRepo;
