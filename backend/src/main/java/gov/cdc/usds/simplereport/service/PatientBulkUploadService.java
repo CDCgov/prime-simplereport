@@ -1,11 +1,12 @@
 package gov.cdc.usds.simplereport.service;
 
 import gov.cdc.usds.simplereport.api.model.errors.CsvProcessingException;
+import gov.cdc.usds.simplereport.api.model.filerow.PatientUploadRow;
 import gov.cdc.usds.simplereport.api.uploads.PatientBulkUploadResponse;
 import gov.cdc.usds.simplereport.config.AuthorizationConfiguration;
 import gov.cdc.usds.simplereport.db.model.auxiliary.UploadStatus;
 import gov.cdc.usds.simplereport.service.model.reportstream.FeedbackMessage;
-import gov.cdc.usds.simplereport.validators.PatientBulkUploadFileValidator;
+import gov.cdc.usds.simplereport.validators.FileValidator;
 import java.io.ByteArrayInputStream;
 import java.io.IOException;
 import java.io.InputStream;
@@ -26,7 +27,7 @@ import org.springframework.stereotype.Service;
 @Slf4j
 public class PatientBulkUploadService {
 
-  private final PatientBulkUploadFileValidator _patientBulkUploadFileValidator;
+  private final FileValidator<PatientUploadRow> _patientBulkUploadFileValidator;
   private final PatientBulkUploadServiceAsync _patientBulkUploadServiceAsync;
 
   @AuthorizationConfiguration.RequirePermissionCreatePatientAtFacility

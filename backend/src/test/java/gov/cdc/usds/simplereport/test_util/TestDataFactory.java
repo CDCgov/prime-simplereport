@@ -312,40 +312,6 @@ public class TestDataFactory {
     return _personRepo.save(p);
   }
 
-  @Transactional
-  public Person createFullPersonEmails(Organization org, List<String> emails) {
-    // consts are to keep style check happy othewise it complains about
-    // "magic numbers"
-    Person p =
-        new Person(
-            org,
-            "HELLOTHERE",
-            "Fred",
-            null,
-            "Astaire",
-            null,
-            DEFAULT_BDAY,
-            getAddress(),
-            "USA",
-            PersonRole.RESIDENT,
-            emails,
-            "white",
-            "not_hispanic",
-            null,
-            "male",
-            false,
-            false,
-            "English",
-            TestResultDeliveryPreference.SMS);
-    _personRepo.save(p);
-
-    if (emails != null) {
-      p.setPrimaryEmail(emails.get(0));
-    }
-
-    return _personRepo.save(p);
-  }
-
   private Specification<Person> personFilter(PersonName n) {
     return (root, query, cb) ->
         cb.and(
@@ -553,11 +519,6 @@ public class TestDataFactory {
     return _patientRegistrationLinkRepository.save(prl);
   }
 
-  @Transactional
-  public AskOnEntrySurvey getAoESurveyForTestOrder(UUID id) {
-    return _testOrderRepo.findById(id).orElseThrow().getAskOnEntrySurvey().getSurvey();
-  }
-
   public DeviceType createDeviceType(
       String name, String manufacturer, String model, String loincCode, String swabType) {
     return _deviceRepo.save(new DeviceType(name, manufacturer, model, loincCode, swabType, 15));
@@ -598,10 +559,6 @@ public class TestDataFactory {
 
   public DeviceSpecimenType createDeviceSpecimen(DeviceType device, SpecimenType specimen) {
     return _deviceSpecimenRepo.save(new DeviceSpecimenType(device, specimen));
-  }
-
-  public SupportedDisease createSupportedDisease(String name, String loinc) {
-    return _supportedDiseaseRepo.save(new SupportedDisease(name, loinc));
   }
 
   public StreetAddress getAddress() {

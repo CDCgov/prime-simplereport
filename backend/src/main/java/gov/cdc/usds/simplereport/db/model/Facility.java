@@ -115,6 +115,10 @@ public class Facility extends OrganizationScopedEternalEntity implements Located
     return this.defaultDeviceSpecimen == null ? null : this.defaultDeviceSpecimen.getDeviceType();
   }
 
+  public SpecimenType getDefaultSpecimenType() {
+    return defaultSpecimenType;
+  }
+
   public void addDeviceType(DeviceType device) {
     initializeDeviceTypesSet();
     configuredDeviceTypes.add(device);

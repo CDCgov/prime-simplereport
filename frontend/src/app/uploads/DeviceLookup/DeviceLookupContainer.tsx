@@ -18,7 +18,7 @@ const DeviceLookupContainer = () => {
       )
     );
 
-    return <DeviceLookup formTitle="Device lookup" deviceOptions={devices} />;
+    return <DeviceLookup deviceOptions={devices} />;
   } else {
     return <LoadingCard message="Loading" />;
   }

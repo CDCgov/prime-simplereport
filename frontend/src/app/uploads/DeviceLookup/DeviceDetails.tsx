@@ -74,7 +74,7 @@ const DeviceDetails = (props: { device: DeviceType }) => {
         <div className="tablet:grid-col">
           <div className="text-field">
             <p>You've selected:</p>
-            <h3>{device.name}</h3>
+            <h2 className="font-sans-md">{device.name}</h2>
             <TextInput
               label="Equipment model name"
               name="Equipment model name"

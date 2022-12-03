@@ -24,5 +24,9 @@ public interface DeviceSpecimenTypeRepository
   @EntityGraph(attributePaths = {"deviceType", "specimenType"})
   Optional<DeviceSpecimenType> findFirstByDeviceTypeInternalIdOrderByCreatedAt(UUID deviceTypeId);
 
+  @EntityGraph(attributePaths = {"deviceType", "specimenType"})
+  Optional<DeviceSpecimenType> findByDeviceTypeInternalIdAndSpecimenTypeInternalIdOrderByCreatedAt(
+      UUID deviceTypeId, UUID specimenTypeId);
+
   List<DeviceSpecimenType> findAllByDeviceType(DeviceType deviceType);
 }
