@@ -47,6 +47,7 @@ import org.springframework.util.MultiValueMap;
 @Slf4j
 @AutoConfigureHttpGraphQlTester
 public abstract class BaseGraphqlTest extends BaseFullStackTest {
+
   protected static final String ACCESS_ERROR = "Unauthorized";
 
   @Autowired private OrganizationInitializingService _initService;

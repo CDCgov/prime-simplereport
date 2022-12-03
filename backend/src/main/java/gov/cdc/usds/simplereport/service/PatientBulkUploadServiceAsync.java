@@ -25,6 +25,7 @@ import java.util.Map;
 import java.util.Optional;
 import java.util.Set;
 import java.util.UUID;
+import java.util.concurrent.CompletableFuture;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.scheduling.annotation.Async;
@@ -43,7 +44,7 @@ public class PatientBulkUploadServiceAsync {
   @Async
   @Transactional
   @AuthorizationConfiguration.RequirePermissionCreatePatientAtFacility
-  public void savePatients(byte[] content, UUID facilityId) {
+  public CompletableFuture<Set<Person>> savePatients(byte[] content, UUID facilityId) {
     Organization currentOrganization = _organizationService.getCurrentOrganization();
 
     // Patients do not need to be assigned to a facility, but if an id is given it must be valid
@@ -60,7 +61,6 @@ public class PatientBulkUploadServiceAsync {
       final Map<String, String> row = CsvValidatorUtils.getNextRow(valueIterator);
 
       try {
-
         PatientUploadRow extractedData = new PatientUploadRow(row);
 
         // Fetch address information
@@ -143,5 +143,7 @@ public class PatientBulkUploadServiceAsync {
 
     log.info("CSV patient upload completed for {}", currentOrganization.getOrganizationName());
     // eventually want to send an email here instead of return success
+
+    return CompletableFuture.completedFuture(patientsList);
   }
 }

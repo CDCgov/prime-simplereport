@@ -264,7 +264,6 @@ public class PersonService {
   }
 
   @AuthorizationConfiguration.RequirePermissionCreatePatientAtFacility
-  @Transactional
   public void addPatientsAndPhoneNumbers(Set<Person> patients, List<PhoneNumber> phoneNumbers) {
     if (!patients.isEmpty()) {
       _repo.saveAll(patients);

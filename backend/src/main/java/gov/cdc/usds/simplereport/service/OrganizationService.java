@@ -72,9 +72,6 @@ public class OrganizationService {
             .collect(Collectors.toList());
     List<Organization> validOrgs = organizationRepository.findAllByExternalId(candidateExternalIds);
     if (validOrgs == null || validOrgs.size() != 1) {
-      // this is where we have an issue
-      // because we have 0 organizations for the superuser
-      // but! At this point, we still *know* the user is Ruby Reynolds
       int numOrgs = (validOrgs == null) ? 0 : validOrgs.size();
       log.warn("Found {} organizations for user", numOrgs);
       return Optional.empty();
@@ -145,14 +142,6 @@ public class OrganizationService {
     // If there are no facility restrictions, get all facilities in org; otherwise,
     // get specified
     // list.
-
-    // the real problem here seems to be that the facility repository isn't being injectected
-    // correctly
-    // organizationRepository is being injected and accessed fine, but facilityRepository123 isn't
-    // being injected
-    // correctly at all
-    // need to look through all the test contexts to see if there's a difference?
-    // maybe having org service as a spybean creates issues with the autowiring?
     return roleClaims.grantsAllFacilityAccess()
         ? facilityRepository.findAllByOrganization(org)
         : facilityRepository.findAllByOrganizationAndInternalId(org, roleClaims.getFacilities());
