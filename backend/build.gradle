@@ -41,7 +41,7 @@ dependencies {
     implementation 'org.springframework.cloud:spring-cloud-starter-loadbalancer'
 
     // log4j vulnerability fixes (Dec 2021)
-    implementation 'org.apache.logging.log4j:log4j-api:2.17.0'
+    implementation 'org.apache.logging.log4j:log4j-api:2.19.0'
     implementation 'org.apache.logging.log4j:log4j-to-slf4j:2.17.0'
 
     // Security Pins (Sept 2022)
