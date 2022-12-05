@@ -21,6 +21,7 @@ jest.mock("../config", () => ({
     AZ_STORAGE_ACCOUNT_NAME: "hola",
     AZ_STORAGE_ACCOUNT_KEY: "bonjour",
     TEST_EVENT_QUEUE_NAME: "ciao",
+    FILE_ERROR_QUEUE_NAME: "cheese",
     REPORT_STREAM_URL: "https://nope.url/1234",
     REPORT_STREAM_TOKEN: "merhaba",
     REPORT_STREAM_BATCH_MINIMUM: "hallo",
@@ -77,7 +78,7 @@ describe("main function export", () => {
       await fn(context);
 
       // THEN
-      expect(getQueueClientMock).toHaveBeenCalledTimes(2);
+      expect(getQueueClientMock).toHaveBeenCalledTimes(3);
       expect(minimumMessagesAvailableMock).toHaveBeenCalled();
       expect(dequeueMessagesMock).not.toHaveBeenCalled();
     });
@@ -94,7 +95,7 @@ describe("main function export", () => {
     await fn(context);
 
     // THEN
-    expect(getQueueClientMock).toHaveBeenCalledTimes(2);
+    expect(getQueueClientMock).toHaveBeenCalledTimes(3);
     expect(minimumMessagesAvailableMock).toHaveBeenCalled();
     expect(dequeueMessagesMock).toHaveBeenCalled();
     expect(uploadResultMock).toHaveBeenCalled();
@@ -122,7 +123,7 @@ describe("main function export", () => {
     }
 
     // THEN
-    expect(getQueueClientMock).toHaveBeenCalledTimes(2);
+    expect(getQueueClientMock).toHaveBeenCalledTimes(3);
     expect(minimumMessagesAvailableMock).toHaveBeenCalled();
     expect(dequeueMessagesMock).toHaveBeenCalled();
     expect(uploadResultMock).toHaveBeenCalled();
@@ -139,7 +140,7 @@ describe("main function export", () => {
     await fn(context);
 
     // THEN
-    expect(getQueueClientMock).toHaveBeenCalledTimes(2);
+    expect(getQueueClientMock).toHaveBeenCalledTimes(3);
     expect(appInsights.defaultClient.trackEvent).toHaveBeenCalledWith(
       expect.objectContaining({ name: "Test Event Parse Failure" })
     );
