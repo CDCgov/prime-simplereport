@@ -467,9 +467,21 @@ public class Person extends OrganizationScopedEternalEntity implements PersonEnt
   public Patient toFhir() {
     var patient = new Patient();
     patient.addIdentifier().setValue(getInternalId().toString()).setUse(IdentifierUse.USUAL);
+    addFhirName(patient);
+    addFhirTelecom(patient);
+    setFhirGender(patient);
+    setFhirBirthDate(patient);
+    setFhirAddress(patient);
+    return patient;
+  }
+
+  private void addFhirName(Patient patient) {
     if (nameInfo != null) {
       patient.addName(nameInfo.toFhir());
     }
+  }
+
+  private void addFhirTelecom(Patient patient) {
     if (phoneNumbers != null) {
       phoneNumbers.forEach(number -> patient.addTelecom(number.toFhir()));
     }
@@ -481,17 +493,19 @@ public class Person extends OrganizationScopedEternalEntity implements PersonEnt
             patient.addTelecom(emailTelecom);
           });
     }
-    setFhirGender(patient);
+  }
 
+  private void setFhirBirthDate(Patient patient) {
     // todo: check if this is the best way to do this
     if (birthDate != null) {
       patient.setBirthDate(Date.from(birthDate.atStartOfDay(ZoneId.systemDefault()).toInstant()));
     }
+  }
+
+  private void setFhirAddress(Patient patient) {
     if (address != null) {
       patient.setAddress(List.of(address.toFhir()));
     }
-
-    return patient;
   }
 
   private void setFhirGender(Patient patient) {
