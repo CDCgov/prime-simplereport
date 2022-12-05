@@ -27,6 +27,7 @@ import org.awaitility.Awaitility;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.test.context.TestPropertySource;
 
 /*
@@ -40,7 +41,6 @@ import org.springframework.test.context.TestPropertySource;
 public class PatientBulkUploadServiceAsyncTest extends BaseGraphqlTest {
 
   @Autowired PatientBulkUploadServiceAsync _service;
-  @Autowired EmailService _emailService;
   @Autowired PersonService _personService;
   @Autowired PhoneNumberRepository phoneNumberRepository;
 
@@ -50,6 +50,7 @@ public class PatientBulkUploadServiceAsyncTest extends BaseGraphqlTest {
   public static final int PATIENT_PAGE_OFFSET = 0;
   public static final int PATIENT_PAGE_SIZE = 1000;
 
+  @MockBean private EmailService _emailService;
   //  @MockBean protected AddressValidationService addressValidationService;
   //  @SpyBean private OrganizationService organizationService;
   //  private StreetAddress address;
