@@ -1,6 +1,9 @@
 package gov.cdc.usds.simplereport.service;
 
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.mockito.ArgumentMatchers.eq;
+import static org.mockito.Mockito.times;
+import static org.mockito.Mockito.verify;
 
 import gov.cdc.usds.simplereport.api.graphql.BaseGraphqlTest;
 import gov.cdc.usds.simplereport.db.model.Facility;
@@ -10,12 +13,15 @@ import gov.cdc.usds.simplereport.db.model.PhoneNumber;
 import gov.cdc.usds.simplereport.db.model.auxiliary.PersonRole;
 import gov.cdc.usds.simplereport.db.model.auxiliary.PhoneType;
 import gov.cdc.usds.simplereport.db.repository.PhoneNumberRepository;
+import gov.cdc.usds.simplereport.service.email.EmailProviderTemplate;
+import gov.cdc.usds.simplereport.service.email.EmailService;
 import gov.cdc.usds.simplereport.test_util.SliceTestConfiguration;
 import java.io.IOException;
 import java.io.InputStream;
 import java.time.Duration;
 import java.time.LocalDate;
 import java.util.List;
+import java.util.Map;
 import java.util.concurrent.Callable;
 import org.awaitility.Awaitility;
 import org.junit.jupiter.api.BeforeAll;
@@ -34,7 +40,7 @@ import org.springframework.test.context.TestPropertySource;
 public class PatientBulkUploadServiceAsyncTest extends BaseGraphqlTest {
 
   @Autowired PatientBulkUploadServiceAsync _service;
-
+  @Autowired EmailService _emailService;
   @Autowired PersonService _personService;
   @Autowired PhoneNumberRepository phoneNumberRepository;
 
@@ -146,6 +152,12 @@ public class PatientBulkUploadServiceAsyncTest extends BaseGraphqlTest {
     //        assertThat(getPatientsForFacility(firstFacilityId))
     //            .hasSameSizeAs(getPatientsForFacility(secondFacilityId));
     //        });
+
+    verify(_emailService, times(1))
+        .sendWithDynamicTemplate(
+            eq(List.of("bobbity@example.com")),
+            eq(EmailProviderTemplate.SIMPLE_REPORT_PATIENT_UPLOAD),
+            eq(Map.of("patients_url", "https://simplereport.gov/patients?facility=null")));
   }
 
   /**
