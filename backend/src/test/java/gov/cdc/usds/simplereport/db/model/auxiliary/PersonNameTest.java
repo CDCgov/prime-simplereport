@@ -14,7 +14,7 @@ class PersonNameTest {
   void allFields_toFHIR() {
     var personName = new PersonName("first", "middle", "last", "jr");
 
-    var actual = personName.toFHIR();
+    var actual = personName.toFhir();
 
     assertThat(actual).returns(personName.getLastName(), from(HumanName::getFamily));
     assertStringTypeListEqualsStringList(
@@ -26,7 +26,7 @@ class PersonNameTest {
   void noMiddleName_toFHIR() {
     var personName = new PersonName("first", null, "last", "jr");
 
-    var actual = personName.toFHIR();
+    var actual = personName.toFhir();
 
     assertStringTypeListEqualsStringList(List.of(personName.getFirstName()), actual.getGiven());
   }
@@ -35,7 +35,7 @@ class PersonNameTest {
   void emptyPersonName_toFHIR() {
     var personName = new PersonName(null, null, null, null);
 
-    var actual = personName.toFHIR();
+    var actual = personName.toFhir();
 
     assertThat(actual.getGiven()).hasSize(0);
     assertThat(actual.getSuffix()).hasSize(0);

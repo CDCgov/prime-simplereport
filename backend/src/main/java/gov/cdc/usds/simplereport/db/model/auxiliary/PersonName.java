@@ -103,7 +103,7 @@ public class PersonName {
     return b.toString();
   }
 
-  public HumanName toFHIR() {
+  public HumanName toFhir() {
     return new HumanName()
         .addGiven(firstName)
         .setFamily(lastName)

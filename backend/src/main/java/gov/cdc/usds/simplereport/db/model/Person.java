@@ -30,6 +30,7 @@ import org.hibernate.annotations.Type;
 import org.hl7.fhir.r4.model.ContactPoint;
 import org.hl7.fhir.r4.model.ContactPoint.ContactPointSystem;
 import org.hl7.fhir.r4.model.Enumerations.AdministrativeGender;
+import org.hl7.fhir.r4.model.Identifier.IdentifierUse;
 import org.hl7.fhir.r4.model.Patient;
 
 /**
@@ -465,8 +466,9 @@ public class Person extends OrganizationScopedEternalEntity implements PersonEnt
   @JsonIgnore
   public Patient toFhir() {
     var patient = new Patient();
+    patient.addIdentifier().setValue(getInternalId().toString()).setUse(IdentifierUse.USUAL);
     if (nameInfo != null) {
-      patient.addName(nameInfo.toFHIR());
+      patient.addName(nameInfo.toFhir());
     }
     if (phoneNumbers != null) {
       phoneNumbers.forEach(number -> patient.addTelecom(number.toFhir()));
@@ -479,13 +481,7 @@ public class Person extends OrganizationScopedEternalEntity implements PersonEnt
             patient.addTelecom(emailTelecom);
           });
     }
-    if ("male".equalsIgnoreCase(gender)) {
-      patient.setGender(AdministrativeGender.MALE);
-    } else if ("female".equalsIgnoreCase(gender)) {
-      patient.setGender(AdministrativeGender.FEMALE);
-    } else {
-      patient.setGender(AdministrativeGender.UNKNOWN);
-    }
+    setFhirGender(patient);
 
     // todo: check if this is the best way to do this
     if (birthDate != null) {
@@ -496,5 +492,15 @@ public class Person extends OrganizationScopedEternalEntity implements PersonEnt
     }
 
     return patient;
+  }
+
+  private void setFhirGender(Patient patient) {
+    if ("male".equalsIgnoreCase(gender)) {
+      patient.setGender(AdministrativeGender.MALE);
+    } else if ("female".equalsIgnoreCase(gender)) {
+      patient.setGender(AdministrativeGender.FEMALE);
+    } else {
+      patient.setGender(AdministrativeGender.UNKNOWN);
+    }
   }
 }
