@@ -58,8 +58,6 @@ public class TestEventExport {
     this.deviceSpecimenType = Optional.ofNullable(testEvent.getDeviceSpecimen());
   }
 
-  public void toFhir() {}
-
   private String genderUnknown = "U";
   private String ethnicityUnknown = "U";
   private String raceUnknown = "UNK";
