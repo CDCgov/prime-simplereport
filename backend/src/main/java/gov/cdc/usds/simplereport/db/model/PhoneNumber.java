@@ -113,7 +113,6 @@ public class PhoneNumber extends AuditedEntity {
   public ContactPoint toFhir() {
     var contactPoint = new ContactPoint();
 
-    // todo: Should this be SMS for mobile phone numbers?
     contactPoint.setSystem(ContactPointSystem.PHONE);
 
     if (PhoneType.LANDLINE.equals(type)) {
@@ -129,10 +128,8 @@ public class PhoneNumber extends AuditedEntity {
       var parsedNumber = phoneUtil.parse(number, "US");
       var formattedWithDash = phoneUtil.format(parsedNumber, PhoneNumberFormat.NATIONAL);
 
-      // library formats the national number with - instead of white space
       contactPoint.setValue(formattedWithDash.replace("-", " "));
     } catch (NumberParseException e) {
-      // todo: Should this just return null instead of adding invalid number?
       contactPoint.setValue(number);
     }
 
