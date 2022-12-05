@@ -206,6 +206,14 @@ public class PatientBulkUploadServiceAsyncTest extends BaseGraphqlTest {
     // THEN
     assertThrows(ExecutionException.class, futurePatients::get);
     assertThat(fetchDatabasePatients()).isEmpty();
+
+    // should work but does not! email service never gets called
+    //    verify(_emailService, times(1))
+    //            .sendWithDynamicTemplate(
+    //                    eq(List.of("bobbity@example.com")),
+    //                    eq(EmailProviderTemplate.SIMPLE_REPORT_PATIENT_UPLOAD_ERROR),
+    //                    eq(Map.of("simplereport_url", "https://simplereport.gov")));
+
   }
 
   @Test
