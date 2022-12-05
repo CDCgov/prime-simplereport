@@ -53,7 +53,7 @@ public class UserMutationResolver {
       @Argument String email,
       @Argument Role role) {
     name = Translators.consolidateNameArguments(name, firstName, middleName, lastName, suffix);
-    UserInfo user = _us.createUserInCurrentOrg(email, name, role, true);
+    UserInfo user = _us.createUserInCurrentOrg(email, name, role);
     return new User(user);
   }
 

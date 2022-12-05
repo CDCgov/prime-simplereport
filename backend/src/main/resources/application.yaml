@@ -43,8 +43,6 @@ spring:
   jackson:
     serialization:
       FAIL_ON_EMPTY_BEANS: false
-  security:
-    strategy:
   session:
     store-type: jdbc
     timeout: 15m

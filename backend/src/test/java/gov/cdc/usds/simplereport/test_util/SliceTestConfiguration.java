@@ -120,9 +120,6 @@ public class SliceTestConfiguration {
 
   @Bean
   public IdentitySupplier testIdentityProvider() {
-    //    DemoUserConfiguration.DemoAuthorization SecurityContextHolder = new
-    // DemoUserConfiguration.DemoAuthorization();
-    //    new DemoUser(SecurityContextHolder, TestUserIdentities.STANDARD_USER_ATTRIBUTES);
     List<DemoUser> sliceTestUsers =
         List.of(
             // these objects will be used only to resolve the user's identity, not their
@@ -195,17 +192,4 @@ public class SliceTestConfiguration {
       authorities = {Role.SITE_ADMIN})
   @Inherited
   public @interface WithSimpleReportSiteAdminUser {}
-
-  @Retention(RetentionPolicy.RUNTIME)
-  @Target({ElementType.METHOD, ElementType.TYPE})
-  @WithMockUser(
-      username = TestUserIdentities.SITE_ADMIN_USER,
-      authorities = {
-        Role.SITE_ADMIN,
-        Role.DEFAULT_ORG_NO_ACCESS,
-        Role.DEFAULT_ORG_ENTRY,
-        Role.DEFAULT_ORG_ALL_FACILITIES
-      })
-  @Inherited
-  public @interface WithSimpleReportSiteAdminUserAndOrgAccess {}
 }

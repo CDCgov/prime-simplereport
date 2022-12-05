@@ -163,9 +163,6 @@ class PatientSelfRegistrationTest {
             null);
 
     HashSet<PatientSelfRegistration> hs = new HashSet<>();
-    System.out.println(a.hashCode());
-    System.out.println(a2.hashCode());
-    System.out.println(b.hashCode());
     hs.add(a);
     hs.add(a2);
     hs.add(b);

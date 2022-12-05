@@ -10,7 +10,8 @@ import java.util.List;
 /** A customizable error thrown by GraphqlQl for generic reasons */
 public class GenericGraphqlException extends RuntimeException implements GraphQLError {
 
-  public static final String GENERIC_ERROR_MESSAGE = "Something went wrong";
+  public static final String GENERIC_ERROR_MESSAGE =
+      "header: Something went wrong; body: Please check for errors and try again";
   private final String errorPath;
 
   public GenericGraphqlException() {

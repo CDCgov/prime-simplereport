@@ -217,7 +217,7 @@
                 "RightSign COVID-19 IgG/IgM Rapid Test Cassette*"
               ],
               "description": [
-                "Find your device on the <a href=\"/csv/codelookup\" class=\"usa-link\" target=\"_blank\" rel=\"noreferrer noopener\">device code lookup tool</a>, then copy the value for this field.",
+                "Find your device on the <a href=\"/app/results/upload/submit/code-lookup\" class=\"usa-link\" target=\"_blank\" rel=\"noreferrer noopener\">device code lookup tool</a>, then copy the value for this field.",
                 "<br/>",
                 "You can also search the LIVD SARS-CoV-2 Test Codes spreadsheet on the <a href=\"https://www.cdc.gov/csels/dls/sars-cov-2-livd-codes.html\" class=\"usa-link\" target=\"_blank\" rel=\"noreferrer noopener\">CDC website</a>. Download the spreadsheet, go to the \"LOINC Mapping\" tab, and find the value for your device in column B."
               ]
@@ -230,7 +230,7 @@
               "format": "00000-0",
               "examples": ["94534-5", "94558-4", "97097-0", "94507-1", "94508-9"],
               "description": [
-                "Find your device on the <a href=\"/csv/codelookup\" class=\"usa-link\" target=\"_blank\" rel=\"noreferrer noopener\">device code lookup tool</a>, then copy the value for this field.",
+                "Find your device on the <a href=\"/app/results/upload/submit/code-lookup\" class=\"usa-link\" target=\"_blank\" rel=\"noreferrer noopener\">device code lookup tool</a>, then copy the value for this field.",
                 "<br/>",
                 "You can also search the LIVD SARS-CoV-2 Test Codes spreadsheet on the <a href=\"https://www.cdc.gov/csels/dls/sars-cov-2-livd-codes.html\" class=\"usa-link\" target=\"_blank\" rel=\"noreferrer noopener\">CDC website</a>. Download the spreadsheet, go to the \"LOINC Mapping\" tab, and find the value for your device in column F."
               ]
@@ -249,7 +249,7 @@
                 "SNOMED code from lookup table, example: <em>260373001<em>"
               ],
              "description": [
-               "Use one of the comman values below, or find your device on the <a href=\"/csv/codelookup\" class=\"usa-link\" target=\"_blank\" rel=\"noreferrer noopener\">device code lookup tool</a>.",
+               "Use one of the common values below, or find your device on the <a href=\"/app/results/upload/submit/code-lookup\" class=\"usa-link\" target=\"_blank\" rel=\"noreferrer noopener\">device code lookup tool</a>.",
                "<br/>",
                "You can also search the LIVD SARS-CoV-2 Test Codes spreadsheet on the <a href=\"https://www.cdc.gov/csels/dls/sars-cov-2-livd-codes.html\" class=\"usa-link\" target=\"_blank\" rel=\"noreferrer noopener\">CDC website</a>. Download the spreadsheet, go to the \"LOINC Mapping\" tab, and find the value for your device in column E."
               ]
@@ -259,7 +259,7 @@
               "colHeader": "order_test_date",
               "required": true,
               "requested": false,
-              "format": "<code>M/D/YYY HH:mm</code> is preferred, but <code>M/D/YYYY</code> is acceptable",
+              "format": "<code>M/D/YYYY HH:mm</code> is preferred, but <code>M/D/YYYY</code> is acceptable",
               "examples": [
                 "11/2/2022 14:17",
                 "9/21/2022"
@@ -270,7 +270,7 @@
               "colHeader": "specimen_collection_date",
               "required": false,
               "requested": false,
-              "format": "<code>M/D/YYY HH:mm</code> is preferred, but <code>M/D/YYYY</code> is acceptable",
+              "format": "<code>M/D/YYYY HH:mm</code> is preferred, but <code>M/D/YYYY</code> is acceptable",
               "examples": [
                 "11/2/2022 14:17",
                 "9/21/2022"
@@ -284,7 +284,7 @@
               "colHeader": "testing_lab_specimen_received_date",
               "required": false,
               "requested": false,
-              "format": "<code>M/D/YYY HH:mm</code> is preferred, but <code>M/D/YYYY</code> is acceptable",
+              "format": "<code>M/D/YYYY HH:mm</code> is preferred, but <code>M/D/YYYY</code> is acceptable",
               "examples": [
                 "11/2/2022 14:17",
                 "9/21/2022"
@@ -298,7 +298,7 @@
               "colHeader": "test_result_date",
               "required": true,
               "requested": false,
-              "format": "<code>M/D/YYY HH:mm</code> is preferred, but <code>M/D/YYYY</code> is acceptable",
+              "format": "<code>M/D/YYYY HH:mm</code> is preferred, but <code>M/D/YYYY</code> is acceptable",
               "examples": [
                 "11/2/2022 14:17",
                 "9/21/2022"
@@ -309,7 +309,7 @@
               "colHeader": "date_result_released",
               "required": false,
               "requested": false,
-              "format": "<code>M/D/YYY HH:mm</code> is preferred, but <code>M/D/YYYY</code> is acceptable",
+              "format": "<code>M/D/YYYY HH:mm</code> is preferred, but <code>M/D/YYYY</code> is acceptable",
               "examples": [
                 "11/2/2022 14:17",
                 "9/21/2022"
@@ -341,7 +341,7 @@
                 "SNOMED code from lookup table, example: <em>697989009</em>"
               ],
               "description": [
-                "Use one of the comman values below, or find your device on the <a href=\"/csv/codelookup\" class=\"usa-link\" target=\"_blank\" rel=\"noreferrer noopener\">device code lookup tool</a>.",
+                "Use one of the common values below, or find your device on the <a href=\"/app/results/upload/submit/code-lookup\" class=\"usa-link\" target=\"_blank\" rel=\"noreferrer noopener\">device code lookup tool</a>.",
                 "<br/>",
                 "You can also search the LIVD SARS-CoV-2 Test Codes spreadsheet on the <a href=\"https://www.cdc.gov/csels/dls/sars-cov-2-livd-codes.html\" class=\"usa-link\" target=\"_blank\" rel=\"noreferrer noopener\">CDC website</a>. Download the spreadsheet, go to the \"LOINC Mapping\" tab, and copy either the SNOMED code or text value for your device from column D."
               ]

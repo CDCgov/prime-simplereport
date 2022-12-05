@@ -92,6 +92,7 @@ describe("update existing devices", () => {
             model: "Model A",
             manufacturer: "Celoxitin",
             loincCode: "1234-1",
+            testLength: 15,
             swabTypes: [{ internalId: "123", name: "nose", typeCode: "n123" }],
             supportedDiseases: [
               { internalId: "123", name: "COVID-19", loinc: "1234-1" },
@@ -103,6 +104,7 @@ describe("update existing devices", () => {
             model: "Model B",
             manufacturer: "Curentz",
             loincCode: "1234-2",
+            testLength: 15,
             swabTypes: [{ internalId: "456", name: "eye", typeCode: "e456" }],
             supportedDiseases: [
               { internalId: "123", name: "COVID-19", loinc: "1234-1" },
@@ -114,6 +116,7 @@ describe("update existing devices", () => {
             model: "Model C",
             manufacturer: "Vitamin Tox",
             loincCode: "1234-3",
+            testLength: 15,
             swabTypes: [{ internalId: "789", name: "mouth", typeCode: "m789" }],
             supportedDiseases: [
               { internalId: "123", name: "COVID-19", loinc: "1234-1" },

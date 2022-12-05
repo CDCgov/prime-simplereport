@@ -42,6 +42,7 @@ import "./styles/App.css";
 import { getUrl } from "./app/utils/url";
 import SessionTimeout from "./app/accountCreation/SessionTimeout";
 import WithFeatureFlags from "./featureFlags/WithFeatureFlags";
+import { getBody, getHeader } from "./app/utils/srGraphQLErrorMessage";
 
 // Initialize telemetry early
 ai.initialize();
@@ -105,13 +106,13 @@ const logoutLink = onError(({ networkError, graphQLErrors }: ErrorResponse) => {
     }
   }
   if (graphQLErrors) {
-    const messages = graphQLErrors.map(({ message, locations, path }) => {
+    graphQLErrors.map(({ message, locations, path }) => {
       console.error(
         `[GraphQL error]: Message: ${message}, Location: ${locations}, Path: ${path}`
       );
+      showError(getBody(message), getHeader(message));
       return message;
     });
-    showError("Please check for errors and try again", messages.join(" "));
     console.error("graphql error", graphQLErrors);
   }
 });

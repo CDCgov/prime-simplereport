@@ -210,16 +210,6 @@ const App = () => {
                 }
               />
               <Route
-                path="csv/codelookup"
-                element={
-                  <ProtectedRoute
-                    requiredPermissions={canViewResults}
-                    userPermissions={data.whoami.permissions}
-                    element={<DeviceLookupContainer />}
-                  />
-                }
-              />
-              <Route
                 path="results/upload/submit"
                 element={
                   <ProtectedRoute
@@ -247,7 +237,20 @@ const App = () => {
                   />
                 }
               />
-
+              <Route
+                path="results/upload/submit/code-lookup"
+                element={
+                  <ProtectedRoute
+                    requiredPermissions={canViewResults}
+                    userPermissions={data.whoami.permissions}
+                    element={
+                      <ResultsNavWrapper>
+                        <DeviceLookupContainer />
+                      </ResultsNavWrapper>
+                    }
+                  />
+                }
+              />
               <Route
                 path="results/upload/submissions/submission/:id"
                 element={

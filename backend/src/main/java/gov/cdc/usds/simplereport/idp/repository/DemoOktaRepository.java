@@ -325,7 +325,6 @@ public class DemoOktaRepository implements OktaRepository {
               .map(GrantedAuthority::getAuthority)
               .collect(Collectors.toSet());
       return getOrganizationRoleClaimsFromTenantDataAccess(authorities);
-      //      return Optional.ofNullable(usernameOrgRolesMap.get(username));
     }
   }
 

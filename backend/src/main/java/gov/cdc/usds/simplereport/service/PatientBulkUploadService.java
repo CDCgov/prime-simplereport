@@ -1,11 +1,12 @@
 package gov.cdc.usds.simplereport.service;
 
 import gov.cdc.usds.simplereport.api.model.errors.CsvProcessingException;
+import gov.cdc.usds.simplereport.api.model.filerow.PatientUploadRow;
 import gov.cdc.usds.simplereport.api.uploads.PatientBulkUploadResponse;
 import gov.cdc.usds.simplereport.config.AuthorizationConfiguration;
 import gov.cdc.usds.simplereport.db.model.auxiliary.UploadStatus;
 import gov.cdc.usds.simplereport.service.model.reportstream.FeedbackMessage;
-import gov.cdc.usds.simplereport.validators.PatientBulkUploadFileValidator;
+import gov.cdc.usds.simplereport.validators.FileValidator;
 import java.io.ByteArrayInputStream;
 import java.io.IOException;
 import java.io.InputStream;
@@ -14,21 +15,19 @@ import java.util.UUID;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
-import org.springframework.transaction.annotation.Transactional;
 
 /**
  * Service to upload a roster of patient data given a CSV input. Formerly restricted to superusers
  * but now available to end users.
  *
- * <p>Updated by emmastephenson on 11/23/2022
+ * <p>Updated by emmastephenson on 12/2/2022
  */
 @Service
-@Transactional
 @RequiredArgsConstructor
 @Slf4j
 public class PatientBulkUploadService {
 
-  private final PatientBulkUploadFileValidator _patientBulkUploadFileValidator;
+  private final FileValidator<PatientUploadRow> _patientBulkUploadFileValidator;
   private final PatientBulkUploadServiceAsync _patientBulkUploadServiceAsync;
 
   @AuthorizationConfiguration.RequirePermissionCreatePatientAtFacility

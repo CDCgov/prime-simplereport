@@ -110,8 +110,6 @@ public class DemoAuthenticationConfiguration {
    */
   public static IdentitySupplier getCurrentDemoUserSupplier(DemoUserConfiguration config) {
     return () -> {
-      // when running locally non-Okta, this is of type AnonymousAuthenticationToken
-      // when running tests, is null
       Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
       Authentication auth =
           authentication != null
