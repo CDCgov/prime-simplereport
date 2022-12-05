@@ -140,7 +140,7 @@ public class PatientBulkUploadServiceAsync {
 
           patientsList.add(newPatient);
         }
-      } catch (IllegalArgumentException e) {
+      } catch (IllegalArgumentException | NullPointerException e) {
         sendEmail(
             uploaderEmail,
             currentOrganization,

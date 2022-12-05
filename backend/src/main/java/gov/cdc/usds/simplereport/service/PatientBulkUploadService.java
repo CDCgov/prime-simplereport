@@ -7,9 +7,9 @@ import gov.cdc.usds.simplereport.config.AuthorizationConfiguration;
 import gov.cdc.usds.simplereport.db.model.auxiliary.UploadStatus;
 import gov.cdc.usds.simplereport.service.model.reportstream.FeedbackMessage;
 import gov.cdc.usds.simplereport.validators.FileValidator;
+import java.io.ByteArrayInputStream;
 import java.io.IOException;
 import java.io.InputStream;
-import java.util.Collections;
 import java.util.List;
 import java.util.UUID;
 import lombok.RequiredArgsConstructor;
@@ -45,8 +45,8 @@ public class PatientBulkUploadService {
       throw new CsvProcessingException("Unable to read csv");
     }
 
-    List<FeedbackMessage> errors = Collections.emptyList();
-    //        _patientBulkUploadFileValidator.validate(new ByteArrayInputStream(content));
+    List<FeedbackMessage> errors =
+        _patientBulkUploadFileValidator.validate(new ByteArrayInputStream(content));
 
     if (!errors.isEmpty()) {
       result.setStatus(UploadStatus.FAILURE);

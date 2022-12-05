@@ -194,7 +194,8 @@ public class PatientBulkUploadServiceAsyncTest extends BaseGraphqlTest {
   }
 
   @Test
-  void invalidData_throwsException() throws IOException, ExecutionException, InterruptedException {
+  void invalidData_throwsExceptionAndTriggersErrorEmail()
+      throws IOException, ExecutionException, InterruptedException {
     // GIVEN
     InputStream inputStream = loadCsv("patientBulkUpload/missingRequiredFields.csv");
     byte[] content = inputStream.readAllBytes();
@@ -207,13 +208,11 @@ public class PatientBulkUploadServiceAsyncTest extends BaseGraphqlTest {
     assertThrows(ExecutionException.class, futurePatients::get);
     assertThat(fetchDatabasePatients()).isEmpty();
 
-    // should work but does not! email service never gets called
-    //    verify(_emailService, times(1))
-    //            .sendWithDynamicTemplate(
-    //                    eq(List.of("bobbity@example.com")),
-    //                    eq(EmailProviderTemplate.SIMPLE_REPORT_PATIENT_UPLOAD_ERROR),
-    //                    eq(Map.of("simplereport_url", "https://simplereport.gov")));
-
+    verify(_emailService, times(1))
+        .sendWithDynamicTemplate(
+            eq(List.of("bobbity@example.com")),
+            eq(EmailProviderTemplate.SIMPLE_REPORT_PATIENT_UPLOAD_ERROR),
+            eq(Map.of("simplereport_url", "https://simplereport.gov/")));
   }
 
   @Test
