@@ -4,6 +4,7 @@ import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.from;
 
 import java.util.List;
+import java.util.stream.Collectors;
 import org.hl7.fhir.r4.model.HumanName;
 import org.hl7.fhir.r4.model.StringType;
 import org.junit.jupiter.api.Test;
@@ -43,7 +44,7 @@ class PersonNameTest {
   // note: getGiven and getSuffix return array lists of StringType which are difficult to compare
   public static void assertStringTypeListEqualsStringList(
       List<String> actual, List<StringType> expected) {
-    assertThat(actual.size()).isEqualTo(expected.size());
-    expected.forEach(st -> assertThat(actual).contains(st.getValue()));
+    var e = expected.stream().map(StringType::toString).collect(Collectors.toList());
+    assertThat(actual).isEqualTo(e);
   }
 }

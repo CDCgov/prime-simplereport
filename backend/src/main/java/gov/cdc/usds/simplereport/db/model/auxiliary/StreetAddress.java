@@ -144,12 +144,9 @@ public class StreetAddress {
   }
 
   public Address toFhir() {
-    var address = new Address();
+    var address =
+        new Address().setCity(city).setDistrict(county).setState(state).setPostalCode(postalCode);
     street.forEach(address::addLine);
-    address.setCity(city);
-    address.setDistrict(county);
-    address.setState(state);
-    address.setPostalCode(postalCode);
     return address;
   }
 }

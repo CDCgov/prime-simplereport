@@ -474,21 +474,19 @@ public class Person extends OrganizationScopedEternalEntity implements PersonEnt
     if (emails != null) {
       emails.forEach(
           email -> {
-            var emailTelecom = new ContactPoint();
-            emailTelecom.setSystem(ContactPointSystem.EMAIL);
-            emailTelecom.setValue(email);
+            var emailTelecom =
+                new ContactPoint().setSystem(ContactPointSystem.EMAIL).setValue(email);
             patient.addTelecom(emailTelecom);
           });
     }
-    if (gender != null) {
-      if (gender.equalsIgnoreCase("male")) {
-        patient.setGender(AdministrativeGender.MALE);
-      } else if (gender.equalsIgnoreCase("female")) {
-        patient.setGender(AdministrativeGender.FEMALE);
-      } else {
-        patient.setGender(AdministrativeGender.UNKNOWN);
-      }
+    if ("male".equalsIgnoreCase(gender)) {
+      patient.setGender(AdministrativeGender.MALE);
+    } else if ("female".equalsIgnoreCase(gender)) {
+      patient.setGender(AdministrativeGender.FEMALE);
+    } else {
+      patient.setGender(AdministrativeGender.UNKNOWN);
     }
+
     // todo: check if this is the best way to do this
     if (birthDate != null) {
       patient.setBirthDate(Date.from(birthDate.atStartOfDay(ZoneId.systemDefault()).toInstant()));
