@@ -100,8 +100,7 @@ export const es: LanguageConfig = {
       },
       pageNotFound: {
         heading: "Página no encontrada",
-        text:
-          "Lo lamentamos, no podemos encontrar la página que busca. Es posible que se haya eliminado, se haya cambiado de nombre o no esté disponible.",
+        text: "Lo lamentamos, no podemos encontrar la página que busca. Es posible que se haya eliminado, se haya cambiado de nombre o no esté disponible.",
         errorCode: "​​Código de error: 404",
       },
     },
@@ -203,8 +202,7 @@ export const es: LanguageConfig = {
           role: "Rol tiene un formato incorrecto",
           facilityId: "Se requiere centro de pruebas",
           birthDate: {
-            base:
-              "Se requiere la fecha de nacimiento, debe estar en formato MM/DD/AA, y en el pasado",
+            base: "Se requiere la fecha de nacimiento, debe estar en formato MM/DD/AA, y en el pasado",
             past: "La fecha de nacimiento está demasiado lejos en el pasado",
             future: "La fecha de nacimiento no puede ser futura",
           },
@@ -310,8 +308,7 @@ export const es: LanguageConfig = {
             "La mayoría de las personas que contraen COVID-19 pueden recuperarse en casa.  Asegúrese de seguir las directrices de los CDC para las personas que se están " +
             "recuperando en casa y sus cuidadores, por ejemplo:",
           guidelines: {
-            li0:
-              "Quédese en casa cuando esté enfermo, excepto para recibir atención médica.",
+            li0: "Quédese en casa cuando esté enfermo, excepto para recibir atención médica.",
             li1:
               "Quédate en casa durante 5 días. " +
               "Si no tiene síntomas o sus síntomas se resuelven después de 5 días, puede salir de su casa. " +
@@ -322,8 +319,7 @@ export const es: LanguageConfig = {
             li3:
               "Lávese las manos con frecuencia, con agua y jabón, durante al menos 20 segundos, especialmente después de sonarse la nariz, toser o estornudar; después de " +
               "ir al baño y antes de comer o preparar alimentos. ",
-            li4:
-              "Si no cuenta con agua y jabón, use un desinfectante de manos a base de alcohol que tenga, al menos, un 60 % de alcohol.",
+            li4: "Si no cuenta con agua y jabón, use un desinfectante de manos a base de alcohol que tenga, al menos, un 60 % de alcohol.",
             li5:
               "Tenga un suministro de mascarillas limpias y desechables. Todos, independientemente de su diagnóstico de COVID-19, deben usar mascarillas mientras estén en la " +
               "casa.",
@@ -340,12 +336,10 @@ export const es: LanguageConfig = {
             li3: "Incapacidad de despertarse o permanecer despierto",
             li4: "Labios o cara azulados",
           },
-          p3:
-            "Llame al 911 o llame primero a su sala de emergencias local: dígale al operador que necesita atención para alguien que tiene o podría tener COVID-19.",
+          p3: "Llame al 911 o llame primero a su sala de emergencias local: dígale al operador que necesita atención para alguien que tiene o podría tener COVID-19.",
         },
         negative: {
-          p0:
-            "Comuníquese con su proveedor de atención médica para determinar si es necesario realizar pruebas adicionales, especialmente si tiene alguno de estos síntomas.",
+          p0: "Comuníquese con su proveedor de atención médica para determinar si es necesario realizar pruebas adicionales, especialmente si tiene alguno de estos síntomas.",
           symptoms: {
             li0: "Fiebre o escalofríos",
             li1: "Tos",
@@ -386,8 +380,7 @@ export const es: LanguageConfig = {
             "<0>Las personas con un riesgo mayor de presentar complicaciones relacionadas con la influenza</0> " +
             "(https://espanol.cdc.gov/flu/highrisk/index.htm) deben contactar a un médico lo más pronto posible " +
             "para ver si se recomienda el tratamiento antiviral.",
-          p2:
-            "Para obtener más información, visita <0>Influenza: qué hacer en caso de enfermarse</0> (https://espanol.cdc.gov/flu/treatment/takingcare.htm).",
+          p2: "Para obtener más información, visita <0>Influenza: qué hacer en caso de enfermarse</0> (https://espanol.cdc.gov/flu/treatment/takingcare.htm).",
           highRiskLink: "https://espanol.cdc.gov/flu/highrisk/index.htm",
           treatmentLink: "https://espanol.cdc.gov/flu/treatment/takingcare.htm",
         },
@@ -402,13 +395,11 @@ export const es: LanguageConfig = {
         submit: "Acepto",
         document: {
           intro: {
-            p0:
-              "Como usuario que accede a SimpleReport o que utiliza esta aplicación proporcionada por los Centros para el Control y la Prevención de Enfermedades (CDC) y el Departamento de Salud y Servicios Humanos de los EE. UU. (HHS) en un espacio de la nube de los CDC (“Plataforma de los CDC”), usted reconoce y acepta que es exclusivamente responsable y que cumplirá con estos términos de servicio, así como con todas las secciones relevantes de las <0>políticas de privacidad de los CDC</0> (en su conjunto, los términos).",
+            p0: "Como usuario que accede a SimpleReport o que utiliza esta aplicación proporcionada por los Centros para el Control y la Prevención de Enfermedades (CDC) y el Departamento de Salud y Servicios Humanos de los EE. UU. (HHS) en un espacio de la nube de los CDC (“Plataforma de los CDC”), usted reconoce y acepta que es exclusivamente responsable y que cumplirá con estos términos de servicio, así como con todas las secciones relevantes de las <0>políticas de privacidad de los CDC</0> (en su conjunto, los términos).",
           },
           scope: {
             heading: "Alcance",
-            p0:
-              "SimpleReport es una herramienta gratuita que les facilita a los establecimientos como centros de atención médica o escuelas registrar y transmitir rápidamente datos de salud pública a los departamentos de salud pública. También les permite a esos establecimientos que habiliten a las personas o los tutores legales para acceder a los resultados relevantes de pruebas y análisis. El HHS y los CDC proporcionan esta aplicación para permitirle a una entidad que registre el flujo de trabajo del ingreso de datos, para mantener registros y para transmitir los datos relevantes y necesarios a las autoridades de salud pública estatales, locales, tribales y territoriales (agencias de salud pública STLT, por sus siglas en inglés) en apoyo a las actividades de vigilancia y respuesta de salud pública. También le permite a la entidad designar a ciertos usuarios de los datos, como se establece en estos términos. La aplicación por medio de la cual la entidad y cualquier usuario interactúe con datos relevantes de salud pública está sujeta a estos términos. El uso de la aplicación constituye la aceptación de estos términos.",
+            p0: "SimpleReport es una herramienta gratuita que les facilita a los establecimientos como centros de atención médica o escuelas registrar y transmitir rápidamente datos de salud pública a los departamentos de salud pública. También les permite a esos establecimientos que habiliten a las personas o los tutores legales para acceder a los resultados relevantes de pruebas y análisis. El HHS y los CDC proporcionan esta aplicación para permitirle a una entidad que registre el flujo de trabajo del ingreso de datos, para mantener registros y para transmitir los datos relevantes y necesarios a las autoridades de salud pública estatales, locales, tribales y territoriales (agencias de salud pública STLT, por sus siglas en inglés) en apoyo a las actividades de vigilancia y respuesta de salud pública. También le permite a la entidad designar a ciertos usuarios de los datos, como se establece en estos términos. La aplicación por medio de la cual la entidad y cualquier usuario interactúe con datos relevantes de salud pública está sujeta a estos términos. El uso de la aplicación constituye la aceptación de estos términos.",
           },
           definitions: {
             heading: "Definiciones",
@@ -427,110 +418,82 @@ export const es: LanguageConfig = {
             heading: "Derechos y uso de los datos",
             subheading: "Cuentas/inscripción",
             section0: "Para los usuarios de entidades",
-            p01:
-              "Si usted está usando la aplicación en nombre de una entidad, como administrador o como usuario, usted declara y garantiza que tiene la autoridad para hacer que esa entidad cumpla con los términos, y al aceptar los términos lo hace en nombre de esa entidad (y cada mención de “usted” en los términos se refiere a usted y esa entidad).",
-            p02:
-              "Para acceder a la aplicación, como parte del proceso de inscripción y para continuar usándola, es probable que se le pida que proporcione cierta información (como los detalles de identificación o contacto). Toda esa información que usted dé a los CDC o el HHS debe ser correcta y estar actualizada. Debe informarnos con prontitud sobre cualquier cambio y actualizar su información en la aplicación o escribir a <0>support@simplereport.gov</0>, para que podamos mantenerlo informado de cualquier cambio en la aplicación o en estos términos que podrían afectar su uso de la aplicación. Es probable que usemos la información de contacto que usted proporcione para comunicarnos con respecto a la facilidad de uso, a fin de mejorar el producto y el servicio. Después de la inscripción de la entidad y la creación de cuentas de usuarios de una entidad en la aplicación, el HHS o los CDC le proporcionarán credenciales (como contraseñas, claves, identificadores e identificaciones para la entidad y los usuarios de la identidad). Estas credenciales son para que solo usted las use y para identificar cualquier software o interfaz de programación (API, por sus siglas en inglés) que usted esté usando. Usted acepta mantener sus credenciales de manera confidencial y hacer lo razonablemente posible para prevenir y desalentar que otras personas usen sus credenciales.",
+            p01: "Si usted está usando la aplicación en nombre de una entidad, como administrador o como usuario, usted declara y garantiza que tiene la autoridad para hacer que esa entidad cumpla con los términos, y al aceptar los términos lo hace en nombre de esa entidad (y cada mención de “usted” en los términos se refiere a usted y esa entidad).",
+            p02: "Para acceder a la aplicación, como parte del proceso de inscripción y para continuar usándola, es probable que se le pida que proporcione cierta información (como los detalles de identificación o contacto). Toda esa información que usted dé a los CDC o el HHS debe ser correcta y estar actualizada. Debe informarnos con prontitud sobre cualquier cambio y actualizar su información en la aplicación o escribir a <0>support@simplereport.gov</0>, para que podamos mantenerlo informado de cualquier cambio en la aplicación o en estos términos que podrían afectar su uso de la aplicación. Es probable que usemos la información de contacto que usted proporcione para comunicarnos con respecto a la facilidad de uso, a fin de mejorar el producto y el servicio. Después de la inscripción de la entidad y la creación de cuentas de usuarios de una entidad en la aplicación, el HHS o los CDC le proporcionarán credenciales (como contraseñas, claves, identificadores e identificaciones para la entidad y los usuarios de la identidad). Estas credenciales son para que solo usted las use y para identificar cualquier software o interfaz de programación (API, por sus siglas en inglés) que usted esté usando. Usted acepta mantener sus credenciales de manera confidencial y hacer lo razonablemente posible para prevenir y desalentar que otras personas usen sus credenciales.",
             section1: "Para los administradores de entidades",
-            p1:
-              "El administrador de una entidad acepta verificar la identidad de otros usuarios de la entidad que sean agregados y desactivar las cuentas de otros usuarios de la entidad que ya no deberían tener acceso. El administrador también acepta establecer los permisos adecuadamente para determinar el acceso mínimo necesario para cada usuario de la entidad, a fin de que puedan cumplir con los deberes requeridos en su puesto de trabajo.",
+            p1: "El administrador de una entidad acepta verificar la identidad de otros usuarios de la entidad que sean agregados y desactivar las cuentas de otros usuarios de la entidad que ya no deberían tener acceso. El administrador también acepta establecer los permisos adecuadamente para determinar el acceso mínimo necesario para cada usuario de la entidad, a fin de que puedan cumplir con los deberes requeridos en su puesto de trabajo.",
             section2: "Para los usuarios individuales",
-            p2:
-              "Los administradores de la entidad les darán a los usuarios individuales acceso a la aplicación. Los usuarios individuales pueden usar la aplicación para acceder y revisar su propia información o la información de otras personas, según lo permitan las leyes vigentes (p. ej., en nombre de un menor o como tutor legal).  Como se ha mencionado, todos los usuarios deben aceptar y cumplir con estos términos una vez que se hayan inscrito y usen la aplicación.",
+            p2: "Los administradores de la entidad les darán a los usuarios individuales acceso a la aplicación. Los usuarios individuales pueden usar la aplicación para acceder y revisar su propia información o la información de otras personas, según lo permitan las leyes vigentes (p. ej., en nombre de un menor o como tutor legal).  Como se ha mencionado, todos los usuarios deben aceptar y cumplir con estos términos una vez que se hayan inscrito y usen la aplicación.",
           },
           privacy: {
             heading: "Privacidad",
-            p0:
-              "Usted puede usar la aplicación para buscar, exhibir, analizar, recuperar, visualizar u ‘obtener’ la información de los datos que esté enviando (o, para los usuarios individuales, de los datos que se les envíen) por medio de la aplicación y la plataforma. Note que los datos a los que usted acceda, registre o transmita por medio de la aplicación podrían estar sujetos a la Ley de Portabilidad y Responsabilidad del Seguro Médico de 1996 (HIPAA) y otras leyes y requiere protección especial. Al acceder a la aplicación y usarla, usted acepta obedecer estrictamente todas las leyes federales y estatales aplicables con respecto a la recolección, el uso, la protección y la divulgación de la información obtenida o enviada por medio de la aplicación. Debido a que podría haber usuarios individuales que acceden a la información en nombre de un menor o como tutores legales, los usuarios y administradores de una entidad se comprometen a asumir toda la responsabilidad de señalar la información de contacto correcta de los usuarios individuales en la aplicación, según las leyes correspondientes. Si desea más información sobre la aplicación de la Ley de Privacidad en los CDC, visite el <0>sitio web del Departamento de Salud y Servicios Humanos</0>.",
-            p1:
-              "A efectos del uso de esta aplicación, si su entidad está cubierta por la HIPAA, usted está actuando en nombre de una entidad de esas características como socio de negocios o usted mantiene los datos en un registro designado cubierto por la HIPAA, usted reconoce, asimismo, que cumplirá con las regulaciones de la HIPAA aplicables (45 CFR, partes 160 y 164), relacionadas con el almacenamiento, la transmisión, el uso y la divulgación adecuados de toda información de salud protegida.",
+            p0: "Usted puede usar la aplicación para buscar, exhibir, analizar, recuperar, visualizar u ‘obtener’ la información de los datos que esté enviando (o, para los usuarios individuales, de los datos que se les envíen) por medio de la aplicación y la plataforma. Note que los datos a los que usted acceda, registre o transmita por medio de la aplicación podrían estar sujetos a la Ley de Portabilidad y Responsabilidad del Seguro Médico de 1996 (HIPAA) y otras leyes y requiere protección especial. Al acceder a la aplicación y usarla, usted acepta obedecer estrictamente todas las leyes federales y estatales aplicables con respecto a la recolección, el uso, la protección y la divulgación de la información obtenida o enviada por medio de la aplicación. Debido a que podría haber usuarios individuales que acceden a la información en nombre de un menor o como tutores legales, los usuarios y administradores de una entidad se comprometen a asumir toda la responsabilidad de señalar la información de contacto correcta de los usuarios individuales en la aplicación, según las leyes correspondientes. Si desea más información sobre la aplicación de la Ley de Privacidad en los CDC, visite el <0>sitio web del Departamento de Salud y Servicios Humanos</0>.",
+            p1: "A efectos del uso de esta aplicación, si su entidad está cubierta por la HIPAA, usted está actuando en nombre de una entidad de esas características como socio de negocios o usted mantiene los datos en un registro designado cubierto por la HIPAA, usted reconoce, asimismo, que cumplirá con las regulaciones de la HIPAA aplicables (45 CFR, partes 160 y 164), relacionadas con el almacenamiento, la transmisión, el uso y la divulgación adecuados de toda información de salud protegida.",
           },
           useOfData: {
             heading: "Uso de los datos",
-            p0:
-              "Esta aplicación se proporciona para permitir el registro de los datos de la entidad, respaldar el flujo de trabajo de la entidad, mantener registros y transmitir datos relevantes a las agencias de salud pública STLT en apoyo a las actividades de vigilancia y respuesta de salud pública. El HHS y los CDC reconocen que, si bien los CDC proporcionan la plataforma, los CDC no pretenden acceder a los datos, ni revisarlos o analizarlos. De esta manera, los CDC no pretenden asumir la custodia ni el control de los datos enviados por medio de la aplicación. Los usuarios individuales y de una entidad reconocen y aceptan que los CDC y los usuarios administrativos pueden gestionar los datos enviados por medio de la aplicación a efectos de operar la plataforma de los CDC (lo que incluye verificar la identidad de los usuarios), transmitir los datos a las agencias de salud pública STLT y facilitarles su uso.  Con excepción de lo que requieran las leyes federales aplicables, los CDC no podrán divulgar los datos enviados por medio de la aplicación para fines que no sean los que se describen a continuación.",
+            p0: "Esta aplicación se proporciona para permitir el registro de los datos de la entidad, respaldar el flujo de trabajo de la entidad, mantener registros y transmitir datos relevantes a las agencias de salud pública STLT en apoyo a las actividades de vigilancia y respuesta de salud pública. El HHS y los CDC reconocen que, si bien los CDC proporcionan la plataforma, los CDC no pretenden acceder a los datos, ni revisarlos o analizarlos. De esta manera, los CDC no pretenden asumir la custodia ni el control de los datos enviados por medio de la aplicación. Los usuarios individuales y de una entidad reconocen y aceptan que los CDC y los usuarios administrativos pueden gestionar los datos enviados por medio de la aplicación a efectos de operar la plataforma de los CDC (lo que incluye verificar la identidad de los usuarios), transmitir los datos a las agencias de salud pública STLT y facilitarles su uso.  Con excepción de lo que requieran las leyes federales aplicables, los CDC no podrán divulgar los datos enviados por medio de la aplicación para fines que no sean los que se describen a continuación.",
           },
           sharingOfData: {
             heading: "Divulgación de los datos",
-            p0:
-              "Los datos que la entidad haya registrado y almacenado en la aplicación son para el uso de la entidad, según las necesidades del flujo de trabajo, el mantenimiento de registros y la notificación. Los datos que la entidad haya registrado y almacenado en la aplicación se transmitirán automáticamente a la agencia de salud pública STLT correspondiente, según el código postal de la entidad y del paciente, lo que incluye, para los resultados de las pruebas de detección de la enfermedad del coronavirus 2019, el contenido de todas las casillas relevantes, según la definición del <0>HHS con respecto a los requisitos de notificación de COVID-19 para los laboratorios.</0> Al ingresar los resultados que se estén transmitiendo a las agencias o a las agencias de salud pública STLT correspondientes, la entidad atestigua que está autorizada para reportar los datos por medio de la aplicación. Si bien los CDC no accederán a los datos ni los obtendrán activamente de la aplicación, la entidad, de forma directa o en coordinación con la agencia de salud pública STLT correspondiente, podría decidir usar la aplicación para enviar datos sin información de identificación personal o de otro tipo, según lo determine la entidad, a los CDC; esos datos enviados a los CDC se mantendrán según lo indiquen las leyes federales aplicables.",
+            p0: "Los datos que la entidad haya registrado y almacenado en la aplicación son para el uso de la entidad, según las necesidades del flujo de trabajo, el mantenimiento de registros y la notificación. Los datos que la entidad haya registrado y almacenado en la aplicación se transmitirán automáticamente a la agencia de salud pública STLT correspondiente, según el código postal de la entidad y del paciente, lo que incluye, para los resultados de las pruebas de detección de la enfermedad del coronavirus 2019, el contenido de todas las casillas relevantes, según la definición del <0>HHS con respecto a los requisitos de notificación de COVID-19 para los laboratorios.</0> Al ingresar los resultados que se estén transmitiendo a las agencias o a las agencias de salud pública STLT correspondientes, la entidad atestigua que está autorizada para reportar los datos por medio de la aplicación. Si bien los CDC no accederán a los datos ni los obtendrán activamente de la aplicación, la entidad, de forma directa o en coordinación con la agencia de salud pública STLT correspondiente, podría decidir usar la aplicación para enviar datos sin información de identificación personal o de otro tipo, según lo determine la entidad, a los CDC; esos datos enviados a los CDC se mantendrán según lo indiquen las leyes federales aplicables.",
           },
           otherResponsibilities: {
             heading: "Otras responsabilidades",
             ul: {
               preheading1: "Para todos los usuarios:",
-              li0:
-                "Usted será plenamente responsable de todos los datos que envíe y cooperará con los CDC o sus agentes en caso de que los CDC tengan una inquietud de seguridad con respecto a cualquier pedido, envío o recepción de datos hacia o desde los CDC.",
-              li1:
-                "Informará con prontitud a los CDC en caso de que detecten el uso indebido de información de salud identificable a nivel individual o información de salud protegida que usted envíe o a la que tenga acceso en la plataforma de los CDC.",
-              li2:
-                "Informará con prontitud a los CDC en caso de que ya no pueda cumplir con alguna de las disposiciones establecidas en estos términos.",
-              li3:
-                "Cesará inmediatamente el uso de la aplicación cuando ya no cumpla con alguno de los términos aquí establecidos.",
+              li0: "Usted será plenamente responsable de todos los datos que envíe y cooperará con los CDC o sus agentes en caso de que los CDC tengan una inquietud de seguridad con respecto a cualquier pedido, envío o recepción de datos hacia o desde los CDC.",
+              li1: "Informará con prontitud a los CDC en caso de que detecten el uso indebido de información de salud identificable a nivel individual o información de salud protegida que usted envíe o a la que tenga acceso en la plataforma de los CDC.",
+              li2: "Informará con prontitud a los CDC en caso de que ya no pueda cumplir con alguna de las disposiciones establecidas en estos términos.",
+              li3: "Cesará inmediatamente el uso de la aplicación cuando ya no cumpla con alguno de los términos aquí establecidos.",
               preheading2: "Para los administradores y usuarios de entidades:",
-              li4:
-                "Debe cumplir con las medidas básicas de seguridad en computación para garantizar la seguridad de toda información de identificación personal o información de salud protegida a la que tenga acceso en la aplicación.",
-              li5:
-                "Debido a que podrían requerirlo las leyes aplicables, usted está de acuerdo con obtener el consentimiento de las personas cuyos datos se ingresen a la aplicación y notificarlas de que su información personal será recolectada y usada para fines de salud pública.",
-              li6:
-                "Cuando se hagan grandes cambios a la aplicación o la plataforma (p. ej., cuando la divulgación o los usos de los datos hayan cambiado desde la notificación que se hizo en la recolección original), se lo notificará por correo electrónico y usted será responsable de notificar y obtener el consentimiento de las personas cuya información de identificación personal o información de salud protegida esté en la aplicación.",
-              li7:
-                "En la eventualidad poco probable de una intrusión, usted deberá notificar a las personas cuya información de identificación personal o información de salud protegida esté en la aplicación y hayan sido afectadas. Los CDC podrían ofrecer asistencia para ayudar en este proceso.",
-              li8:
-                "Se requiere que usted garantice que cualquier persona que use la aplicación haya sido capacitada en el manejo de información sensible y personal.",
+              li4: "Debe cumplir con las medidas básicas de seguridad en computación para garantizar la seguridad de toda información de identificación personal o información de salud protegida a la que tenga acceso en la aplicación.",
+              li5: "Debido a que podrían requerirlo las leyes aplicables, usted está de acuerdo con obtener el consentimiento de las personas cuyos datos se ingresen a la aplicación y notificarlas de que su información personal será recolectada y usada para fines de salud pública.",
+              li6: "Cuando se hagan grandes cambios a la aplicación o la plataforma (p. ej., cuando la divulgación o los usos de los datos hayan cambiado desde la notificación que se hizo en la recolección original), se lo notificará por correo electrónico y usted será responsable de notificar y obtener el consentimiento de las personas cuya información de identificación personal o información de salud protegida esté en la aplicación.",
+              li7: "En la eventualidad poco probable de una intrusión, usted deberá notificar a las personas cuya información de identificación personal o información de salud protegida esté en la aplicación y hayan sido afectadas. Los CDC podrían ofrecer asistencia para ayudar en este proceso.",
+              li8: "Se requiere que usted garantice que cualquier persona que use la aplicación haya sido capacitada en el manejo de información sensible y personal.",
             },
           },
           serviceManagement: {
             heading: "Administración del servicio",
             subheading: "Derecho a establecer límites",
-            p0:
-              "Su uso de la aplicación podría estar sujeto a ciertas limitaciones en el acceso o uso, según se establece en estos términos o estipulen los CDC. Estas limitaciones tienen como objetivo administrar la carga del sistema, fomentar el acceso equitativo y garantizar las protecciones de privacidad adecuadas, y podrían modificarse sin aviso, según los CDC consideren necesario. Si los CDC tienen la creencia razonable de que usted ha intentado exceder o eludir estos límites, su capacidad de usar la aplicación podría ser impedida de forma temporal o permanente. Los CDC podrían monitorear su uso de la aplicación, para mejorar el servicio o garantizar el cumplimiento de estos términos, y se reservan el derecho de negar a cualquier usuario el acceso a la aplicación, según un criterio razonable.",
+            p0: "Su uso de la aplicación podría estar sujeto a ciertas limitaciones en el acceso o uso, según se establece en estos términos o estipulen los CDC. Estas limitaciones tienen como objetivo administrar la carga del sistema, fomentar el acceso equitativo y garantizar las protecciones de privacidad adecuadas, y podrían modificarse sin aviso, según los CDC consideren necesario. Si los CDC tienen la creencia razonable de que usted ha intentado exceder o eludir estos límites, su capacidad de usar la aplicación podría ser impedida de forma temporal o permanente. Los CDC podrían monitorear su uso de la aplicación, para mejorar el servicio o garantizar el cumplimiento de estos términos, y se reservan el derecho de negar a cualquier usuario el acceso a la aplicación, según un criterio razonable.",
           },
           serviceTermination: {
             heading: "Cancelación del servicio",
-            p0:
-              "Si desea cancelar su acceso a la aplicación y su uso, puede hacerlo al desactivar su cuenta (por ejemplo, comunicándose con el administrador de su entidad) o al dejar de usar la aplicación.",
-            p1:
-              "Los CDC se reservan el derecho (pero no la obligación) de hacer lo siguiente: (1) negarse a proporcionarle a usted la aplicación, si en opinión de los CDC ese uso viola alguna ley federal o las políticas de los CDC; o (2) poner fin o negarle a usted el acceso y el uso de la aplicación como un todo o parte de ella, en cualquier momento y por cualquier motivo que, según su criterio exclusivo, los CDC consideren necesario, incluso para prevenir la violación de leyes federales o políticas de los CDC. Usted puede presentar una solicitud a los CDC para recuperar el acceso a la aplicación, usando la dirección de correo electrónico de apoyo que los CDC proporcionan para la aplicación. Si los CDC determinan, según su criterio exclusivo, que las circunstancias que llevaron a la negación de proporcionarle la aplicación o a la cancelación del acceso a la aplicación ya no existen, entonces los CDC podrían restaurar su acceso. Todas las disposiciones en estos términos que, por su naturaleza, deberían perdurar después de la cancelación del servicio, perdurarán después de la cancelación del servicio, incluso, sin limitación, los descargos de responsabilidad de garantías y las delimitaciones de responsabilidades.",
+            p0: "Si desea cancelar su acceso a la aplicación y su uso, puede hacerlo al desactivar su cuenta (por ejemplo, comunicándose con el administrador de su entidad) o al dejar de usar la aplicación.",
+            p1: "Los CDC se reservan el derecho (pero no la obligación) de hacer lo siguiente: (1) negarse a proporcionarle a usted la aplicación, si en opinión de los CDC ese uso viola alguna ley federal o las políticas de los CDC; o (2) poner fin o negarle a usted el acceso y el uso de la aplicación como un todo o parte de ella, en cualquier momento y por cualquier motivo que, según su criterio exclusivo, los CDC consideren necesario, incluso para prevenir la violación de leyes federales o políticas de los CDC. Usted puede presentar una solicitud a los CDC para recuperar el acceso a la aplicación, usando la dirección de correo electrónico de apoyo que los CDC proporcionan para la aplicación. Si los CDC determinan, según su criterio exclusivo, que las circunstancias que llevaron a la negación de proporcionarle la aplicación o a la cancelación del acceso a la aplicación ya no existen, entonces los CDC podrían restaurar su acceso. Todas las disposiciones en estos términos que, por su naturaleza, deberían perdurar después de la cancelación del servicio, perdurarán después de la cancelación del servicio, incluso, sin limitación, los descargos de responsabilidad de garantías y las delimitaciones de responsabilidades.",
           },
           intellectualProperty: {
             heading:
               "Propiedad intelectual. Otorgamiento de licencias y restricciones.",
-            p0:
-              "La aplicación que se le provee al usuario es para uso del usuario. El usuario no podrá modificar, copiar, distribuir, transmitir, exhibir, hacer funcionar, reproducir, publicar, autorizar con licencias, transferir ni vender información, software, productos o servicios obtenidos de los CDC ni crear obras derivadas de ellos. Los materiales proporcionados por los CDC son propiedad o están autorizados bajo licencia del Departamento de Salud y Servicios Humanos de los Estados Unidos (“HHS”) y los Centros para el Control y la Prevención de Enfermedades (CDC). El HHS y los CDC le otorgan a usted una licencia limitada, no exclusiva y no transferible para acceder a la aplicación en los Estados Unidos para los usos que se establecen en estos términos.",
+            p0: "La aplicación que se le provee al usuario es para uso del usuario. El usuario no podrá modificar, copiar, distribuir, transmitir, exhibir, hacer funcionar, reproducir, publicar, autorizar con licencias, transferir ni vender información, software, productos o servicios obtenidos de los CDC ni crear obras derivadas de ellos. Los materiales proporcionados por los CDC son propiedad o están autorizados bajo licencia del Departamento de Salud y Servicios Humanos de los Estados Unidos (“HHS”) y los Centros para el Control y la Prevención de Enfermedades (CDC). El HHS y los CDC le otorgan a usted una licencia limitada, no exclusiva y no transferible para acceder a la aplicación en los Estados Unidos para los usos que se establecen en estos términos.",
           },
           disclaimerOfWarranties: {
             heading: "Descargo de responsabilidad de garantías",
-            p0:
-              "La plataforma de la aplicación se proporciona “en su estado actual” y “con base en su disponibilidad”. Si bien los CDC harán todo lo posible para garantizar que el servicio esté disponible y en funcionamiento en todo momento, por medio del presente los CDC hacen un descargo de responsabilidad de garantías de cualquier tipo, expresas o implícitas, incluidas, sin limitación, las garantías de comerciabilidad, aptitud para un propósito específico y no infracción. Los CDC no dan ninguna garantía de que los datos estarán libres de errores o de que el acceso a ellos será continuo o ininterrumpido.",
+            p0: "La plataforma de la aplicación se proporciona “en su estado actual” y “con base en su disponibilidad”. Si bien los CDC harán todo lo posible para garantizar que el servicio esté disponible y en funcionamiento en todo momento, por medio del presente los CDC hacen un descargo de responsabilidad de garantías de cualquier tipo, expresas o implícitas, incluidas, sin limitación, las garantías de comerciabilidad, aptitud para un propósito específico y no infracción. Los CDC no dan ninguna garantía de que los datos estarán libres de errores o de que el acceso a ellos será continuo o ininterrumpido.",
           },
           limitationOfLiability: {
             heading: "Delimitaciones de la responsabilidad",
-            p0:
-              "En la medida que lo permita la ley, el HHS y los CDC no serán responsables con respecto a ninguno de los temas de estos términos o del uso que usted haga de la aplicación bajo ningún contrato, negligencia, responsabilidad estricta u otra teoría legal o equitativa, con respecto a lo siguiente: (1) cualquier lesión personal o cualquier daño especial, casual, indirecto o consiguiente; (2) el costo de la adquisición de productos o servicios de remplazo; (3) la pérdida de ganancias, la interrupción del uso o la pérdida o corrupción de datos, o cualquier otro daño o pérdida comercial.",
-            p1:
-              "El HHS y los CDC no son responsables de la confidencialidad o cualquier información que la entidad u otro usuario de la aplicación divulgue.",
+            p0: "En la medida que lo permita la ley, el HHS y los CDC no serán responsables con respecto a ninguno de los temas de estos términos o del uso que usted haga de la aplicación bajo ningún contrato, negligencia, responsabilidad estricta u otra teoría legal o equitativa, con respecto a lo siguiente: (1) cualquier lesión personal o cualquier daño especial, casual, indirecto o consiguiente; (2) el costo de la adquisición de productos o servicios de remplazo; (3) la pérdida de ganancias, la interrupción del uso o la pérdida o corrupción de datos, o cualquier otro daño o pérdida comercial.",
+            p1: "El HHS y los CDC no son responsables de la confidencialidad o cualquier información que la entidad u otro usuario de la aplicación divulgue.",
           },
           disputes: {
             heading:
               "Disputas, selección de jurisdicción y tribunales, y conflictos",
-            p0:
-              "Toda disputa que surja de estos términos y del acceso a la aplicación o su uso deberá ser dirimida según las leyes federales aplicables de los Estados Unidos. Asimismo, usted acepta y da su consentimiento con respecto a la jurisdicción de los tribunales federales en el Distrito de Columbia y los tribunales de apelación allí ubicados, y renuncia a todo reclamo de falta de jurisdicción o <em>forum non conveniens</em> (jurisdicción inapropiada).",
+            p0: "Toda disputa que surja de estos términos y del acceso a la aplicación o su uso deberá ser dirimida según las leyes federales aplicables de los Estados Unidos. Asimismo, usted acepta y da su consentimiento con respecto a la jurisdicción de los tribunales federales en el Distrito de Columbia y los tribunales de apelación allí ubicados, y renuncia a todo reclamo de falta de jurisdicción o <em>forum non conveniens</em> (jurisdicción inapropiada).",
           },
           indemnification: {
             heading: "Indemnización",
-            p0:
-              "Usted acepta indemnizar y eximir de toda responsabilidad al HHS, incluidos los CDC, sus contratistas, empleados, agentes y semejantes con respecto a todo reclamo y gasto, incluidos los honorarios de abogados, que surjan del uso que usted haga de la aplicación, incluida la violación de estos términos, pero sin limitarse a ello.",
+            p0: "Usted acepta indemnizar y eximir de toda responsabilidad al HHS, incluidos los CDC, sus contratistas, empleados, agentes y semejantes con respecto a todo reclamo y gasto, incluidos los honorarios de abogados, que surjan del uso que usted haga de la aplicación, incluida la violación de estos términos, pero sin limitarse a ello.",
           },
           noWaiverOfRights: {
             heading: "Ninguna renuncia de derechos",
-            p0:
-              "Que los CDC dejen de ejercer o hacer cumplir algún derecho o disposición incluido en estos términos no significará que renuncia a ese derecho o disposición.",
+            p0: "Que los CDC dejen de ejercer o hacer cumplir algún derecho o disposición incluido en estos términos no significará que renuncia a ese derecho o disposición.",
           },
           dataAnalytics: {
             heading: "Análisis de datos y métrica de monitoreo",
-            p0:
-              "Al usar la aplicación, se podrían recolectar y almacenar automáticamente ciertos análisis generales de datos sobre los patrones de uso y el funcionamiento de la aplicación, con el fin de ayudar en su diseño y desarrollo. Estos datos generales del uso no están vinculados a la identidad de una persona, pero se podrían incluir la dirección IP y la información del dispositivo. Las transacciones se auditan y almacenan para el monitoreo, funcionamiento y resolución de problemas del sitio, y podrían estar vinculadas a la persona que realiza la actividad. Todos los datos de ese tipo se mantendrán según lo indiquen las leyes federales aplicables.",
+            p0: "Al usar la aplicación, se podrían recolectar y almacenar automáticamente ciertos análisis generales de datos sobre los patrones de uso y el funcionamiento de la aplicación, con el fin de ayudar en su diseño y desarrollo. Estos datos generales del uso no están vinculados a la identidad de una persona, pero se podrían incluir la dirección IP y la información del dispositivo. Las transacciones se auditan y almacenan para el monitoreo, funcionamiento y resolución de problemas del sitio, y podrían estar vinculadas a la persona que realiza la actividad. Todos los datos de ese tipo se mantendrán según lo indiquen las leyes federales aplicables.",
           },
         },
       },

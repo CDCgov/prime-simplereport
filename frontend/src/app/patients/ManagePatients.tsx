@@ -352,17 +352,18 @@ const ManagePatients = (
 ) => {
   const [namePrefixMatch, setNamePrefixMatch] = useState<string | null>(null);
 
-  const { data: totalPatients, error, refetch: refetchCount } = useQuery(
-    patientsCountQuery,
-    {
-      variables: {
-        facilityId: props.activeFacilityId,
-        includeArchived: false,
-        namePrefixMatch,
-      },
-      fetchPolicy: "no-cache",
-    }
-  );
+  const {
+    data: totalPatients,
+    error,
+    refetch: refetchCount,
+  } = useQuery(patientsCountQuery, {
+    variables: {
+      facilityId: props.activeFacilityId,
+      includeArchived: false,
+      namePrefixMatch,
+    },
+    fetchPolicy: "no-cache",
+  });
 
   if (props.activeFacilityId.length < 1) {
     return <div>"No facility selected"</div>;

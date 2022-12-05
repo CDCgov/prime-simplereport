@@ -765,12 +765,10 @@ export const useTranslatedConstants = () => {
     ROLE_VALUES: roleValues(t),
     ETHNICITY_VALUES: ethnicityValues(t),
     GENDER_VALUES: genderValues(t),
-    TEST_RESULT_DELIVERY_PREFERENCE_VALUES_SMS: testResultDeliveryPreferenceValuesSms(
-      t
-    ),
-    TEST_RESULT_DELIVERY_PREFERENCE_VALUES_EMAIL: testResultDeliveryPreferenceValuesEmail(
-      t
-    ),
+    TEST_RESULT_DELIVERY_PREFERENCE_VALUES_SMS:
+      testResultDeliveryPreferenceValuesSms(t),
+    TEST_RESULT_DELIVERY_PREFERENCE_VALUES_EMAIL:
+      testResultDeliveryPreferenceValuesEmail(t),
     PHONE_TYPE_VALUES: phoneTypeValues(t),
     YES_NO_VALUES: yesNoValues(t),
     YES_NO_UNKNOWN_VALUES: yesNoUnkownValues(t),

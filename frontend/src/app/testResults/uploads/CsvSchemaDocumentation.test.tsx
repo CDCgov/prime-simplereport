@@ -159,8 +159,7 @@ describe("CsvSchemaDocumentation tests", () => {
       );
 
       const templateLink1 = screen.getByRole("link", {
-        name:
-          "SimpleReport spreadsheet template with example data [CSV download]",
+        name: "SimpleReport spreadsheet template with example data [CSV download]",
       });
       const templateLink2 = screen.getByRole("link", {
         name: "spreadsheet template",

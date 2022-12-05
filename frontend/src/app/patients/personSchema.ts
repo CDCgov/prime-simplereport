@@ -343,9 +343,9 @@ const translatePersonSchema: TranslatedSchema<RequiredPersonFields> = (t) =>
     ...updateFieldSchemata(t),
   });
 
-const translateSelfRegistrationSchema: TranslatedSchema<SelfRegistationFields> = (
-  t
-) =>
+const translateSelfRegistrationSchema: TranslatedSchema<
+  SelfRegistationFields
+> = (t) =>
   yup.object({
     firstName: yup
       .string()

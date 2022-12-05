@@ -15,11 +15,12 @@ const RouterWithFacility: React.FC = ({ children }) => (
   <MemoryRouter>{children}</MemoryRouter>
 );
 
-const Template = (): Story<OrderingProviderListProps> => (args) => (
-  <RouterWithFacility>
-    <OrderingProviderList {...args} />
-  </RouterWithFacility>
-);
+const Template = (): Story<OrderingProviderListProps> => (args) =>
+  (
+    <RouterWithFacility>
+      <OrderingProviderList {...args} />
+    </RouterWithFacility>
+  );
 
 const providerOne = {
   firstName: "LeBron",
