@@ -9,6 +9,7 @@ import static gov.cdc.usds.simplereport.validators.CsvValidatorUtils.convertRace
 import static gov.cdc.usds.simplereport.validators.CsvValidatorUtils.convertSexToDatabaseValue;
 
 import com.fasterxml.jackson.databind.MappingIterator;
+import gov.cdc.usds.simplereport.api.model.filerow.PatientUploadRow;
 import gov.cdc.usds.simplereport.config.AuthorizationConfiguration;
 import gov.cdc.usds.simplereport.db.model.Facility;
 import gov.cdc.usds.simplereport.db.model.Organization;
@@ -18,7 +19,6 @@ import gov.cdc.usds.simplereport.db.model.auxiliary.StreetAddress;
 import gov.cdc.usds.simplereport.service.email.EmailProviderTemplate;
 import gov.cdc.usds.simplereport.service.email.EmailService;
 import gov.cdc.usds.simplereport.validators.CsvValidatorUtils;
-import gov.cdc.usds.simplereport.validators.PatientBulkUploadFileValidator.PatientUploadRow;
 import java.io.ByteArrayInputStream;
 import java.io.IOException;
 import java.util.ArrayList;
@@ -160,13 +160,13 @@ public class PatientBulkUploadServiceAsync {
       log.info("CSV patient upload completed for {}", currentOrganization.getOrganizationName());
       // eventually want to send an email here instead of return success
 
-      return CompletableFuture.completedFuture(patientsList);
-
       sendEmail(
           uploaderEmail,
           currentOrganization,
           EmailProviderTemplate.SIMPLE_REPORT_PATIENT_UPLOAD,
           Map.of("patients_url", patientsUrl));
+
+      return CompletableFuture.completedFuture(patientsList);
     } catch (IllegalArgumentException | OptimisticLockingFailureException e) {
       sendEmail(
           uploaderEmail,
