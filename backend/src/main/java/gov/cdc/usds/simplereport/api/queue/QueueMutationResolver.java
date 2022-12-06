@@ -55,6 +55,19 @@ public class QueueMutationResolver {
   }
 
   @MutationMapping
+  public AddTestResultResponse submitQueueItem(
+      @Argument UUID deviceTypeId,
+      @Argument UUID specimenTypeId,
+      @Argument List<MultiplexResultInput> results,
+      @Argument UUID patientId,
+      @Argument Date dateTested) {
+    UUID deviceSpecimenTypeId =
+        _dts.getDeviceSpecimenType(deviceTypeId, specimenTypeId).getInternalId();
+
+    return _tos.addMultiplexResult(deviceSpecimenTypeId, results, patientId, dateTested);
+  }
+
+  @MutationMapping
   public ApiTestOrder editQueueItemMultiplexResult(
       @Argument UUID id,
       @Argument String deviceId,
@@ -64,6 +77,20 @@ public class QueueMutationResolver {
     UUID dst = getDeviceSpecimenTypeId(deviceId, deviceSpecimenType);
 
     return new ApiTestOrder(_tos.editQueueItemMultiplexResult(id, dst, results, dateTested));
+  }
+
+  @MutationMapping
+  public ApiTestOrder editQueueItem(
+      @Argument UUID id,
+      @Argument UUID deviceTypeId,
+      @Argument UUID specimenTypeId,
+      @Argument List<MultiplexResultInput> results,
+      @Argument Date dateTested) {
+    UUID deviceSpecimenTypeId =
+        _dts.getDeviceSpecimenType(deviceTypeId, specimenTypeId).getInternalId();
+
+    return new ApiTestOrder(
+        _tos.editQueueItemMultiplexResult(id, deviceSpecimenTypeId, results, dateTested));
   }
 
   @MutationMapping

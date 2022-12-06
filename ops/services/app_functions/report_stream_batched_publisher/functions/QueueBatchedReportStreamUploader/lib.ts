@@ -25,6 +25,7 @@ const {
   AZ_STORAGE_QUEUE_SVC_URL,
 } = ENV;
 const DEQUEUE_BATCH_SIZE = 32;
+const DEQUEUE_TIMEOUT = 60 * 60;  // length of time in seconds a message is invisible after being dequeued
 
 const getQueueServiceClient = (() => {
   let queueServiceClient: QueueServiceClient;
@@ -82,6 +83,7 @@ export async function dequeueMessages(
     try {
       const dequeueResponse = await queueClient.receiveMessages({
         numberOfMessages: DEQUEUE_BATCH_SIZE,
+        visibilityTimeout: DEQUEUE_TIMEOUT,
       });
       if (dequeueResponse?.receivedMessageItems.length) {
         messages.push(...dequeueResponse.receivedMessageItems);

@@ -93,6 +93,15 @@ public class DeviceTypeService {
                     "Device is not configured with a specimen type"));
   }
 
+  public DeviceSpecimenType getDeviceSpecimenType(UUID deviceTypeId, UUID specimenTypeId) {
+    return _deviceSpecimenRepo
+        .findByDeviceTypeInternalIdAndSpecimenTypeInternalIdOrderByCreatedAt(
+            deviceTypeId, specimenTypeId)
+        .orElseThrow(
+            () ->
+                new IllegalGraphqlArgumentException("Not a valid device and specimen combination"));
+  }
+
   @Transactional(readOnly = false)
   @AuthorizationConfiguration.RequireGlobalAdminUser
   public DeviceType updateDeviceType(UpdateDeviceType updateDevice) {

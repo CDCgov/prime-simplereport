@@ -1,6 +1,7 @@
 package gov.cdc.usds.simplereport.api.graphql;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.junit.jupiter.api.Assertions.assertNull;
 
 import com.fasterxml.jackson.databind.JsonNode;
@@ -12,6 +13,7 @@ import gov.cdc.usds.simplereport.db.model.DeviceType;
 import gov.cdc.usds.simplereport.db.model.Facility;
 import gov.cdc.usds.simplereport.db.model.Organization;
 import gov.cdc.usds.simplereport.db.model.Person;
+import gov.cdc.usds.simplereport.db.model.SpecimenType;
 import gov.cdc.usds.simplereport.db.model.TestOrder;
 import gov.cdc.usds.simplereport.db.model.auxiliary.MultiplexResultInput;
 import gov.cdc.usds.simplereport.db.model.auxiliary.TestResult;
@@ -67,13 +69,46 @@ class QueueManagementTest extends BaseGraphqlTest {
     variables.put("symptomOnsetDate", "2020-11-30");
     performEnqueueMutation(variables, Optional.empty());
     ArrayNode queueData = fetchQueue();
+    ObjectNode facilityData = fetchActiveFacility();
     assertEquals(1, queueData.size());
     JsonNode queueEntry = queueData.get(0);
-    String symptomOnset = queueEntry.get("symptomOnset").asText();
-    assertEquals("2020-11-30", symptomOnset);
-    // this assertion is kind of extra, should be on a patient management
-    // test instead
+
+    // assert on queue data
+    assertNotNull(queueEntry.get("internalId").asText());
+    assertNotNull(queueEntry.get("dateAdded").asText());
+    assertNotNull(queueEntry.get("symptoms").asText());
+    assertEquals("2020-11-30", queueEntry.get("symptomOnset").asText());
+    assertEquals("ORIGINAL", queueEntry.get("correctionStatus").asText());
+
+    assertNotNull(queueEntry.get("deviceType").get("internalId").asText());
+    assertEquals("LumiraDX", queueEntry.get("deviceType").get("name").asText());
+    assertEquals(
+        "LumiraDx SARS-CoV-2 Ag Test*", queueEntry.get("deviceType").get("model").asText());
+    assertEquals("15", queueEntry.get("deviceType").get("testLength").asText());
+
+    assertNotNull(queueEntry.get("specimenType").get("internalId").asText());
+    assertEquals("Swab of the Nose", queueEntry.get("specimenType").get("name").asText());
+    assertEquals("445297001", queueEntry.get("specimenType").get("typeCode").asText());
+
+    assertNotNull(queueEntry.get("patient").get("internalId").asText());
     assertEquals("1899-05-10", queueEntry.get("patient").get("birthDate").asText());
+
+    // assert on active facility data
+    assertNotNull(facilityData.get("id").asText());
+    assertEquals("Injection Site", facilityData.get("name").asText());
+    assertEquals(2, facilityData.get("deviceTypes").size());
+
+    JsonNode firstDevice = facilityData.get("deviceTypes").get(0);
+    JsonNode secondDevice = facilityData.get("deviceTypes").get(1);
+
+    JsonNode sofia =
+        firstDevice.get("name").asText().equals("Quidel Sofia 2") ? firstDevice : secondDevice;
+    JsonNode lumiraDX =
+        firstDevice.get("name").asText().equals("LumiraDX") ? firstDevice : secondDevice;
+    assertEquals("15", sofia.get("testLength").asText());
+    assertEquals("15", lumiraDX.get("testLength").asText());
+    assertNotNull(sofia.get("swabTypes"));
+    assertNotNull(lumiraDX.get("swabTypes"));
   }
 
   @Test
@@ -83,15 +118,18 @@ class QueueManagementTest extends BaseGraphqlTest {
     UUID orderId = o.getInternalId();
     DeviceType d = _dataFactory.getGenericDevice();
     String deviceId = d.getInternalId().toString();
+    SpecimenType specimen = _dataFactory.getGenericSpecimen();
+    String specimenId = specimen.getInternalId().toString();
     String dateTested = "2020-12-31T14:30:30Z";
     Map<String, Object> variables =
         Map.of(
             "id", orderId.toString(),
             "deviceId", deviceId,
+            "specimenId", specimenId,
             "results", positiveCovidResult,
             "dateTested", dateTested);
 
-    performQueueUpdateMultiplexMutation(variables, Optional.empty());
+    performQueueUpdateMutation(variables, Optional.empty());
 
     TestOrder updatedTestOrder = _testOrderService.getTestOrder(_org, orderId);
     assertEquals(
@@ -114,7 +152,9 @@ class QueueManagementTest extends BaseGraphqlTest {
     TestOrder o = _dataFactory.createTestOrder(p, _site);
     UUID orderId = o.getInternalId();
     DeviceType d = _dataFactory.getGenericDevice();
+    SpecimenType specimen = _dataFactory.getGenericSpecimen();
     String deviceId = d.getInternalId().toString();
+    String specimenId = specimen.getInternalId().toString();
     String dateTested = "2020-12-31T14:30:30Z";
     List<MultiplexResultInput> results = new ArrayList<>();
     results.add(new MultiplexResultInput(_diseaseService.covid().getName(), TestResult.POSITIVE));
@@ -124,10 +164,11 @@ class QueueManagementTest extends BaseGraphqlTest {
         Map.of(
             "id", orderId.toString(),
             "deviceId", deviceId,
+            "specimenId", specimenId,
             "results", results,
             "dateTested", dateTested);
 
-    performQueueUpdateMultiplexMutation(variables, Optional.empty());
+    performQueueUpdateMutation(variables, Optional.empty());
 
     TestOrder updatedTestOrder = _testOrderService.getTestOrder(_org, orderId);
     assertEquals(
@@ -167,7 +208,9 @@ class QueueManagementTest extends BaseGraphqlTest {
     Person p = _dataFactory.createMinimalPerson(_org, _site);
     UUID personId = p.getInternalId();
     DeviceType d = _dataFactory.getGenericDevice();
+    SpecimenType s = _dataFactory.getGenericSpecimen();
     UUID deviceId = d.getInternalId();
+    UUID specimenId = s.getInternalId();
     String dateTested = "2020-12-31T14:30:30Z";
 
     // The test default standard user is configured to access _site by default,
@@ -191,15 +234,17 @@ class QueueManagementTest extends BaseGraphqlTest {
             orderId.toString(),
             "deviceId",
             deviceId.toString(),
+            "specimenId",
+            specimenId.toString(),
             "results",
             positiveCovidResult,
             "dateTested",
             dateTested);
-    performQueueUpdateMultiplexMutation(updateVariables, Optional.of(ACCESS_ERROR));
+    performQueueUpdateMutation(updateVariables, Optional.of(ACCESS_ERROR));
     updateSelfPrivileges(Role.USER, false, Set.of(_site.getInternalId()));
-    performQueueUpdateMultiplexMutation(updateVariables, Optional.empty());
+    performQueueUpdateMutation(updateVariables, Optional.empty());
     updateSelfPrivileges(Role.USER, true, Set.of());
-    performQueueUpdateMultiplexMutation(updateVariables, Optional.empty());
+    performQueueUpdateMutation(updateVariables, Optional.empty());
 
     updateSelfPrivileges(Role.USER, false, Set.of());
     // updateTimeOfTestQuestions uses the exact same security restrictions
@@ -254,6 +299,10 @@ class QueueManagementTest extends BaseGraphqlTest {
     return (ArrayNode) runQuery(QUERY, getFacilityScopedArguments()).get("queue");
   }
 
+  private ObjectNode fetchActiveFacility() {
+    return (ObjectNode) runQuery(QUERY, getFacilityScopedArguments()).get("facility");
+  }
+
   private void fetchQueueWithError(String expectedError) {
     runQuery(QUERY, getFacilityScopedArguments(), expectedError);
   }
@@ -268,8 +317,8 @@ class QueueManagementTest extends BaseGraphqlTest {
     runQuery("remove-from-queue", variables, expectedError.orElse(null));
   }
 
-  private void performQueueUpdateMultiplexMutation(
+  private void performQueueUpdateMutation(
       Map<String, Object> variables, Optional<String> expectedError) throws IOException {
-    runQuery("edit-queue-item-multiplex", variables, expectedError.orElse(null));
+    runQuery("edit-queue-item", variables, expectedError.orElse(null));
   }
 }
