@@ -2,7 +2,10 @@ import fn from "./index";
 import * as lib from "./lib";
 import * as appInsights from "applicationinsights";
 import { Context } from "@azure/functions";
-import { DequeuedMessageItem, QueueClient } from "@azure/storage-queue";
+import {
+  DequeuedMessageItem,
+  QueueClient,
+} from "@azure/storage-queue";
 import { Response } from "node-fetch";
 
 jest.mock(
@@ -42,6 +45,7 @@ describe("main function export", () => {
   let uploadResultMock;
   let deleteMessagesMock;
   let reportExceptionsMock;
+  let fileFailureMock;
 
   function prepareQueue(items: Array<{ messageText: string }>): void {
     minimumMessagesAvailableMock = jest
@@ -62,6 +66,7 @@ describe("main function export", () => {
       .mockReturnValue({} as QueueClient);
     deleteMessagesMock = jest.spyOn(lib, "deleteSuccessfullyParsedMessages");
     reportExceptionsMock = jest.spyOn(lib, "reportExceptions");
+    fileFailureMock = jest.spyOn(lib, "publishToFileErrorQueue");
   });
 
   beforeEach(() => {
@@ -163,4 +168,34 @@ describe("main function export", () => {
     expect(reportExceptionsMock).not.toHaveBeenCalled();
     expect(deleteMessagesMock).not.toHaveBeenCalled();
   });
+
+  it("messages to failure queue response is 400", async () =>{
+    // GIVEN
+    prepareQueue([
+      { messageText: JSON.stringify({ a: "b" }) },
+      { messageText: JSON.stringify({ c: "d" }) },
+    ]);
+
+    uploadResultMock = jest.spyOn(lib, "uploadResult").mockResolvedValue({
+      ok: false,
+      status: 400,
+      json: () => Promise.resolve({ destinationCount: 4 }),
+      text: () => Promise.resolve("error"),
+    } as jest.Mocked<Response>);
+
+    // WHEN
+    try {
+      await fn(context);
+      expect(0).toBe(1);
+    } catch (e) {
+      expect(e).toBeDefined();
+    }
+
+    //THEN
+    expect(dequeueMessagesMock).toHaveBeenCalled();
+    expect(uploadResultMock).toHaveBeenCalled();
+    expect(reportExceptionsMock).not.toHaveBeenCalled();
+    expect(fileFailureMock).toHaveBeenCalled();
+    expect(deleteMessagesMock).toHaveBeenCalled();
+  })
 });
