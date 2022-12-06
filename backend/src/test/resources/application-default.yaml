@@ -6,11 +6,12 @@ spring:
         jdbc-url: jdbc:postgresql://${test-db-host:localhost}:${test-db-port:5444}/simple_report
         minimum-idle: 2
         idle-timeout: 10000
+        maximum-pool-size: 50
     metabase:
       hikari:
         jdbc-url: jdbc:postgresql://${test-db-host:localhost}:${test-db-port:5444}/metabase
         idle-timeout: 10000
-        maximum-pool-size: 2
+        maximum-pool-size: 10
   liquibase:
     simplereport:
       user: simple_report_migrations
