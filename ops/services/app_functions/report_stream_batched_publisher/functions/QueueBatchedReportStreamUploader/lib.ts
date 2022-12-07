@@ -100,7 +100,7 @@ export async function dequeueMessages(
   return messages;
 }
 
-export function convertToCsv(messages: DequeuedMessageItem[], context: Context) {
+export function convertToCsv(messages: DequeuedMessageItem[]) {
   const parseFailure: { [k: string]: boolean } = {};
   let parseFailureCount = 0;
   const messageTexts = messages
@@ -108,7 +108,6 @@ export function convertToCsv(messages: DequeuedMessageItem[], context: Context) 
       try {
         return JSON.parse(m.messageText);
       } catch (e) {
-        context.log(e.message);
         parseFailure[m.messageId] = true;
         parseFailureCount++;
         return undefined;
@@ -208,7 +207,7 @@ export async function reportExceptions(
 }
 
 export async function publishToFileErrorQueue( context: Context, queueClient: QueueClient,  messages: DequeuedMessageItem[]) {
-  return Promise.all(messages.map((m) => queueClient.sendMessage(Buffer.from(m.messageText).toString("base64"))));
+  return Promise.all(messages.map((m) => queueClient.sendMessage(Buffer.from(m.messageText).toString("utf-8"))));
 }
 
 const responsesFrom = function (

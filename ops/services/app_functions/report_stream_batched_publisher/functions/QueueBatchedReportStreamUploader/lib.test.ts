@@ -204,7 +204,7 @@ describe("lib", () => {
 
       // WHEN
       const { csvPayload, parseFailure, parseFailureCount, parseSuccessCount } =
-        convertToCsv(messages, context);
+        convertToCsv(messages);
 
       // THEN
       expect(parseSuccessCount).toBe(3);
