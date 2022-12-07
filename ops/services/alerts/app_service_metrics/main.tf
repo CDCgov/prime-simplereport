@@ -283,3 +283,32 @@ requests
     threshold = 0
   }
 }
+
+resource "azurerm_monitor_scheduled_query_rules_alert" "report_stream_uploader_400" {
+  name                = "${var.env}-report_stream_uploader_400"
+  description         = "${local.env_title} alert when the publish function results in a 400"
+  location            = data.azurerm_resource_group.app.location
+  resource_group_name = var.rg_name
+
+  action {
+    action_group = var.action_group_ids
+  }
+
+  data_source_id = var.app_insights_id
+  enabled        = contains(var.disabled_alerts, "report_stream_uploader_400") ? false : true
+
+  query = <<-QUERY
+customEvents
+| order by timestamp desc
+| extend httpStatus = toint(customDimensions["status"])
+| where httpStatus == 400
+  QUERY
+
+  severity    = 1
+  frequency   = 5
+  time_window = 6
+  trigger {
+    operator  = "GreaterThan"
+    threshold = 0
+  }
+}
