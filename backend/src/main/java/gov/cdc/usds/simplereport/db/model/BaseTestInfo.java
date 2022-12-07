@@ -28,10 +28,6 @@ public abstract class BaseTestInfo extends AuditedEntity implements Organization
   private Facility facility;
 
   @ManyToOne(optional = false, fetch = FetchType.LAZY)
-  @JoinColumn(name = "device_specimen_type_id")
-  private DeviceSpecimenType deviceSpecimen;
-
-  @ManyToOne(optional = false, fetch = FetchType.LAZY)
   @JoinColumn(name = "device_type_id")
   private DeviceType deviceType;
 
@@ -61,26 +57,16 @@ public abstract class BaseTestInfo extends AuditedEntity implements Organization
 
   protected BaseTestInfo(BaseTestInfo orig) {
     this(orig.getPatient(), orig.getFacility());
-    if (orig.getDeviceSpecimen() != null) {
-      this.setDeviceSpecimen(orig.getDeviceSpecimen());
-    } else {
-      this.setDeviceTypeAndSpecimenType(orig.getDeviceType(), orig.getSpecimenType());
-    }
   }
 
-  protected BaseTestInfo(Person patient, Facility facility, DeviceSpecimenType deviceSpecimen) {
+  protected BaseTestInfo(Person patient, Facility facility) {
     super();
     this.patient = patient;
     this.facility = facility;
     this.organization = facility.getOrganization();
-    this.deviceSpecimen = deviceSpecimen;
-    this.deviceType = deviceSpecimen.getDeviceType();
-    this.specimenType = deviceSpecimen.getSpecimenType();
+    this.deviceType = facility.getDefaultDeviceType();
+    this.specimenType = facility.getDefaultSpecimenType();
     this.correctionStatus = TestCorrectionStatus.ORIGINAL;
-  }
-
-  protected BaseTestInfo(Person patient, Facility facility) {
-    this(patient, facility, facility.getDefaultDeviceSpecimen());
   }
 
   protected BaseTestInfo(
@@ -111,10 +97,6 @@ public abstract class BaseTestInfo extends AuditedEntity implements Organization
     return specimenType;
   }
 
-  public DeviceSpecimenType getDeviceSpecimen() {
-    return deviceSpecimen;
-  }
-
   // FYI Setters shouldn't be allowed in TestEvent, so they are always *protected*
   // in this base class
   // and exposed only in TestOrder.
@@ -125,12 +107,6 @@ public abstract class BaseTestInfo extends AuditedEntity implements Organization
 
   protected void setDateTestedBackdate(Date dateTestedBackdate) {
     this.dateTestedBackdate = dateTestedBackdate;
-  }
-
-  protected void setDeviceSpecimen(DeviceSpecimenType deviceSpecimen) {
-    this.deviceSpecimen = deviceSpecimen;
-    this.deviceType = deviceSpecimen.getDeviceType();
-    this.specimenType = deviceSpecimen.getSpecimenType();
   }
 
   protected void setDeviceTypeAndSpecimenType(DeviceType device, SpecimenType specimen) {

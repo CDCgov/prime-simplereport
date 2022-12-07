@@ -7,7 +7,6 @@ import gov.cdc.usds.simplereport.api.model.ApiTestOrder;
 import gov.cdc.usds.simplereport.db.model.TestOrder;
 import gov.cdc.usds.simplereport.db.model.auxiliary.MultiplexResultInput;
 import gov.cdc.usds.simplereport.db.model.auxiliary.TestResultDeliveryPreference;
-import gov.cdc.usds.simplereport.service.DeviceTypeService;
 import gov.cdc.usds.simplereport.service.PersonService;
 import gov.cdc.usds.simplereport.service.TestOrderService;
 import java.time.LocalDate;
@@ -28,7 +27,6 @@ public class QueueMutationResolver {
 
   private final TestOrderService testOrderService;
   private final PersonService personService;
-  private final DeviceTypeService deviceTypeService;
 
   @MutationMapping
   public AddTestResultResponse submitQueueItem(
@@ -37,11 +35,8 @@ public class QueueMutationResolver {
       @Argument List<MultiplexResultInput> results,
       @Argument UUID patientId,
       @Argument Date dateTested) {
-    UUID deviceSpecimenTypeId =
-        deviceTypeService.getDeviceSpecimenType(deviceTypeId, specimenTypeId).getInternalId();
-
     return testOrderService.addMultiplexResult(
-        deviceSpecimenTypeId, results, patientId, dateTested);
+        deviceTypeId, specimenTypeId, results, patientId, dateTested);
   }
 
   @MutationMapping
@@ -51,12 +46,9 @@ public class QueueMutationResolver {
       @Argument UUID specimenTypeId,
       @Argument List<MultiplexResultInput> results,
       @Argument Date dateTested) {
-    UUID deviceSpecimenTypeId =
-        deviceTypeService.getDeviceSpecimenType(deviceTypeId, specimenTypeId).getInternalId();
-
     return new ApiTestOrder(
         testOrderService.editQueueItemMultiplexResult(
-            id, deviceSpecimenTypeId, results, dateTested));
+            id, deviceTypeId, specimenTypeId, results, dateTested));
   }
 
   @MutationMapping

@@ -72,7 +72,8 @@ public class OrganizationInitializingService {
         _props.getConfiguredDeviceTypeNames().stream()
             .map(dsByDeviceName::get)
             .collect(Collectors.toList());
-    DeviceSpecimenType defaultDeviceSpecimen = configuredDs.get(0);
+    DeviceType defaultDeviceType = configuredDs.get(0).getDeviceType();
+    SpecimenType defaultSpecimenType = configuredDs.get(0).getSpecimenType();
 
     List<Organization> emptyOrgs = _props.getOrganizations();
     Map<String, Organization> orgsByExternalId =
@@ -107,7 +108,8 @@ public class OrganizationInitializingService {
                         : f.makeRealFacility(
                             orgsByExternalId.get(f.getOrganizationExternalId()),
                             savedProvider,
-                            defaultDeviceSpecimen,
+                            defaultDeviceType,
+                            defaultSpecimenType,
                             configuredDs.stream()
                                 .map(DeviceSpecimenType::getDeviceType)
                                 .collect(Collectors.toList())))

@@ -10,7 +10,6 @@ import static org.mockito.Mockito.reset;
 import static org.mockito.Mockito.verify;
 
 import com.fasterxml.jackson.databind.JsonNode;
-import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.node.ArrayNode;
 import com.fasterxml.jackson.databind.node.ObjectNode;
 import gov.cdc.usds.simplereport.api.CurrentTenantDataAccessContextHolder;
@@ -25,7 +24,6 @@ import gov.cdc.usds.simplereport.test_util.TestUserIdentities;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.UUID;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -185,18 +183,7 @@ class OrganizationFacilityTest extends BaseGraphqlTest {
 
   private HashMap<String, Object> getDeviceArgs() {
     String someDeviceType = _deviceService.fetchDeviceTypes().get(0).getInternalId().toString();
-    List<UUID> someDeviceSpecimenTypes =
-        List.of(_deviceService.getDeviceSpecimenTypes().get(0).getInternalId());
-
-    final ObjectMapper mapper = new ObjectMapper();
-
-    Map<String, Object> variables =
-        Map.of(
-            "deviceId",
-            someDeviceType,
-            "deviceSpecimenTypes",
-            mapper.convertValue(someDeviceSpecimenTypes, JsonNode.class));
-
+    Map<String, Object> variables = Map.of("deviceId", someDeviceType);
     return new HashMap<>(variables);
   }
 }
