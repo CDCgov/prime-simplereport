@@ -8,7 +8,7 @@ import gov.cdc.usds.simplereport.api.model.errors.IllegalGraphqlArgumentExceptio
 import gov.cdc.usds.simplereport.config.AuthorizationConfiguration;
 import gov.cdc.usds.simplereport.db.model.AuditedEntity_;
 import gov.cdc.usds.simplereport.db.model.BaseTestInfo_;
-import gov.cdc.usds.simplereport.db.model.DeviceSpecimenType;
+import gov.cdc.usds.simplereport.db.model.DeviceType;
 import gov.cdc.usds.simplereport.db.model.Facility;
 import gov.cdc.usds.simplereport.db.model.Organization;
 import gov.cdc.usds.simplereport.db.model.PatientAnswers;
@@ -17,6 +17,7 @@ import gov.cdc.usds.simplereport.db.model.Person;
 import gov.cdc.usds.simplereport.db.model.Person_;
 import gov.cdc.usds.simplereport.db.model.Result;
 import gov.cdc.usds.simplereport.db.model.Result_;
+import gov.cdc.usds.simplereport.db.model.SpecimenType;
 import gov.cdc.usds.simplereport.db.model.SupportedDisease;
 import gov.cdc.usds.simplereport.db.model.TestEvent;
 import gov.cdc.usds.simplereport.db.model.TestEvent_;
@@ -245,24 +246,29 @@ public class TestOrderService {
   @AuthorizationConfiguration.RequirePermissionUpdateTestForTestOrder
   public TestOrder editQueueItemMultiplexResult(
       UUID testOrderId,
-      UUID deviceSpecimenTypeId,
+      UUID deviceTypeId,
+      UUID specimenTypeId,
       List<MultiplexResultInput> results,
       Date dateTested) {
-    lockOrder(testOrderId);
     try {
+      DeviceType deviceType = _deviceTypeService.getDeviceType(deviceTypeId);
+      SpecimenType specimenType =
+          deviceType.getSwabTypes().stream()
+              .filter(swab -> swab.getInternalId().equals(specimenTypeId))
+              .findFirst()
+              .orElseThrow(
+                  () ->
+                      new IllegalGraphqlArgumentException(
+                          "invalid device type and specimen type combination"));
+
+      lockOrder(testOrderId);
       TestOrder order = this.getTestOrder(testOrderId);
 
-      if (deviceSpecimenTypeId != null) {
-        DeviceSpecimenType deviceSpecimenType =
-            _deviceTypeService.getDeviceSpecimenType(deviceSpecimenTypeId);
+      order.setDeviceTypeAndSpecimenType(deviceType, specimenType);
+      // Set the most-recently configured device specimen for a facility's
+      // test as facility default
+      order.getFacility().setDefaultDeviceTypeSpecimenType(deviceType, specimenType);
 
-        if (deviceSpecimenType != null) {
-          order.setDeviceSpecimen(deviceSpecimenType);
-          // Set the most-recently configured device specimen for a facility's
-          // test as facility default
-          order.getFacility().addDefaultDeviceSpecimen(deviceSpecimenType);
-        }
-      }
       if (!results.isEmpty()) {
         editMultiplexResult(order, results);
       }
@@ -275,7 +281,8 @@ public class TestOrderService {
 
   @AuthorizationConfiguration.RequirePermissionSubmitTestForPatient
   public AddTestResultResponse addMultiplexResult(
-      UUID deviceSpecimenTypeId,
+      UUID deviceTypeId,
+      UUID specimenTypeId,
       List<MultiplexResultInput> results,
       UUID patientId,
       Date dateTested) {
@@ -284,15 +291,21 @@ public class TestOrderService {
     TestOrder order =
         _testOrderRepo.fetchQueueItem(org, person).orElseThrow(TestOrderService::noSuchOrderFound);
 
-    DeviceSpecimenType deviceSpecimenType =
-        _deviceTypeService.getDeviceSpecimenType(deviceSpecimenTypeId);
+    DeviceType deviceType = _deviceTypeService.getDeviceType(deviceTypeId);
+    SpecimenType specimenType =
+        deviceType.getSwabTypes().stream()
+            .filter(swab -> swab.getInternalId().equals(specimenTypeId))
+            .findFirst()
+            .orElseThrow(
+                () ->
+                    new IllegalGraphqlArgumentException(
+                        "invalid device type and specimen type combination"));
 
     lockOrder(order.getInternalId());
-
     TestOrder savedOrder = null;
 
     try {
-      order.setDeviceSpecimen(deviceSpecimenType);
+      order.setDeviceTypeAndSpecimenType(deviceType, specimenType);
       var resultSet = editMultiplexResult(order, results);
       order.setDateTestedBackdate(dateTested);
       order.markComplete();
@@ -418,10 +431,12 @@ public class TestOrderService {
               + "are incompatible with facility of queue");
     }
 
-    if (testFacility.getDefaultDeviceSpecimen() == null) {
-      testFacility.addDefaultDeviceSpecimen(
-          _deviceTypeService.getFirstDeviceSpecimenTypeForDeviceTypeId(
-              testFacility.getDeviceTypes().get(0).getInternalId()));
+    // if test facility doesnt have defaults, grab the first device on that facility
+    if (testFacility.getDefaultDeviceType() == null
+        || testFacility.getDefaultSpecimenType() == null) {
+      testFacility.setDefaultDeviceTypeSpecimenType(
+          testFacility.getDeviceTypes().get(0),
+          testFacility.getDeviceTypes().get(0).getSwabTypes().get(0));
     }
 
     TestOrder newOrder = new TestOrder(patient, testFacility);

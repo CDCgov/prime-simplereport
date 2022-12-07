@@ -11,6 +11,7 @@ import gov.cdc.usds.simplereport.db.model.Organization;
 import gov.cdc.usds.simplereport.db.model.Person;
 import gov.cdc.usds.simplereport.db.model.PersonUtils;
 import gov.cdc.usds.simplereport.db.model.Provider;
+import gov.cdc.usds.simplereport.db.model.SpecimenType;
 import gov.cdc.usds.simplereport.db.model.TestEvent;
 import gov.cdc.usds.simplereport.db.model.auxiliary.AskOnEntrySurvey;
 import gov.cdc.usds.simplereport.db.model.auxiliary.PersonName;
@@ -47,7 +48,8 @@ public class TestEventExport {
   private final Optional<Provider> provider;
   private final Optional<Facility> facility;
   private final Optional<Organization> organization;
-  private final Optional<DeviceSpecimenType> deviceSpecimenType;
+  private final Optional<DeviceType> deviceType;
+  private final Optional<SpecimenType> specimenType;
 
   public TestEventExport(TestEvent testEvent) {
     this.testEvent = testEvent;
@@ -57,15 +59,16 @@ public class TestEventExport {
     this.facility = Optional.ofNullable(testEvent.getFacility());
     this.organization = Optional.ofNullable(testEvent.getOrganization());
 
-    this.deviceSpecimenType = Optional.ofNullable(testEvent.getDeviceSpecimen());
+    this.deviceType = Optional.ofNullable(testEvent.getDeviceType());
+    this.specimenType = Optional.ofNullable(testEvent.getSpecimenType());
   }
 
-  private String genderUnknown = "U";
+  private static final String genderUnknown = "U";
   private static final String DEFAULT_LOCATION_CODE = "53342003"; // http://snomed.info/id/53342003
   // "Internal nose structure"
   // values pulled from
   // https://github.com/CDCgov/prime-data-hub/blob/master/prime-router/metadata/valuesets/common.valuesets
-  private Map<String, String> genderMap =
+  private final Map<String, String> genderMap =
       Map.of(
           "male", "M",
           "female", "F",
@@ -76,13 +79,13 @@ public class TestEventExport {
           "refused", genderUnknown,
           "notapplicable", "N");
 
-  private Map<String, String> ethnicityMap =
+  private final Map<String, String> ethnicityMap =
       Map.of(
           "hispanic", "H",
           "not_hispanic", "N",
           "refused", "U");
 
-  private Map<TestResult, String> testResultMap =
+  private final Map<TestResult, String> testResultMap =
       Map.of(
           TestResult.POSITIVE, "260373001",
           TestResult.NEGATIVE, "260415000",
@@ -406,10 +409,7 @@ public class TestEventExport {
   @JsonProperty("Specimen_collection_date_time")
   public String getSpecimenCollectionDateTime() {
     var testDuration =
-        deviceSpecimenType
-            .map(DeviceSpecimenType::getDeviceType)
-            .map(DeviceType::getTestLength)
-            .orElse(FALLBACK_DEFAULT_TEST_MINUTES);
+        deviceType.map(DeviceType::getTestLength).orElse(FALLBACK_DEFAULT_TEST_MINUTES);
     return dateToHealthCareString(
         convertToLocalDateTime(
             Date.from(
@@ -585,32 +585,27 @@ public class TestEventExport {
 
   @JsonProperty("Ordered_test_code")
   public String getOrderedTestCode() {
-    return deviceSpecimenType.map(dst -> dst.getDeviceType().getLoincCode()).orElse(null);
+    return deviceType.map(DeviceType::getLoincCode).orElse(null);
   }
 
   @JsonProperty("Specimen_source_site_code")
   public String getSpecimenSourceSiteCode() {
-    return deviceSpecimenType
-        .map(dst -> dst.getSpecimenType().getCollectionLocationCode())
-        .orElse(DEFAULT_LOCATION_CODE);
+    return specimenType.map(SpecimenType::getCollectionLocationCode).orElse(DEFAULT_LOCATION_CODE);
   }
 
   @JsonProperty("Specimen_type_code")
   public String getSpecimenTypeCode() {
-    return deviceSpecimenType.map(dst -> dst.getSpecimenType().getTypeCode()).orElse(null);
+    return specimenType.map(SpecimenType::getTypeCode).orElse(null);
   }
 
   @JsonProperty("Instrument_ID")
   public String getInstrumentID() {
-    return deviceSpecimenType
-        .map(dst -> dst.getDeviceType().getInternalId())
-        .map(UUID::toString)
-        .orElse(null);
+    return deviceType.map(d -> d.getInternalId().toString()).orElse(null);
   }
 
   @JsonProperty("Device_ID")
   public String getDeviceID() {
-    return deviceSpecimenType.map(dst -> dst.getDeviceType().getModel()).orElse(null);
+    return deviceType.map(DeviceType::getModel).orElse(null);
   }
 
   @JsonProperty("Test_date")

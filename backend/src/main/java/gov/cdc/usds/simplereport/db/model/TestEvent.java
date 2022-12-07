@@ -68,7 +68,7 @@ public class TestEvent extends BaseTestInfo {
   }
 
   private TestEvent(TestOrder order, Boolean hasPriorTests) {
-    super(order.getPatient(), order.getFacility(), order.getDeviceSpecimen());
+    super(order.getPatient(), order.getFacility());
     // store a link, and *also* store the object as JSON
     // force load the lazy-loaded phone numbers so values are available to the object mapper
     // when serializing `patientData` (phoneNumbers is default lazy-loaded because of `OneToMany`)
@@ -160,10 +160,6 @@ public class TestEvent extends BaseTestInfo {
 
   public UUID getPriorCorrectedTestEventId() {
     return priorCorrectedTestEventId;
-  }
-
-  public DeviceSpecimenType getDeviceSpecimenType() {
-    return order.getDeviceSpecimen();
   }
 
   public Optional<TestResult> getCovidTestResult() {

@@ -26,8 +26,7 @@ public interface TestOrderRepository
   String RESULT_RECENT_ORDER = " order by q.updatedAt desc ";
 
   @Query(FACILITY_QUERY + IS_PENDING + ORDER_CREATION_ORDER)
-  @EntityGraph(
-      attributePaths = {"patient", "deviceType", "specimenType", "results", "deviceSpecimen"})
+  @EntityGraph(attributePaths = {"patient", "deviceType", "specimenType", "results"})
   List<TestOrder> fetchQueue(Organization org, Facility facility);
 
   @Query(BASE_ORG_QUERY + IS_PENDING + " and q.patient = :patient")

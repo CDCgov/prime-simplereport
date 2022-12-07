@@ -1,8 +1,8 @@
 package gov.cdc.usds.simplereport.test_util;
 
 import gov.cdc.usds.simplereport.api.model.Role;
-import gov.cdc.usds.simplereport.db.model.DeviceSpecimenType;
 import gov.cdc.usds.simplereport.db.model.DeviceType;
+import gov.cdc.usds.simplereport.db.model.DeviceTypeSpecimenTypeMapping;
 import gov.cdc.usds.simplereport.db.model.Facility;
 import gov.cdc.usds.simplereport.db.model.Organization;
 import gov.cdc.usds.simplereport.db.model.OrganizationQueueItem;
@@ -30,7 +30,7 @@ import gov.cdc.usds.simplereport.db.model.auxiliary.TestCorrectionStatus;
 import gov.cdc.usds.simplereport.db.model.auxiliary.TestResult;
 import gov.cdc.usds.simplereport.db.model.auxiliary.TestResultDeliveryPreference;
 import gov.cdc.usds.simplereport.db.model.auxiliary.UploadStatus;
-import gov.cdc.usds.simplereport.db.repository.DeviceSpecimenTypeRepository;
+import gov.cdc.usds.simplereport.db.repository.DeviceSpecimenTypeNewRepository;
 import gov.cdc.usds.simplereport.db.repository.DeviceTypeRepository;
 import gov.cdc.usds.simplereport.db.repository.FacilityRepository;
 import gov.cdc.usds.simplereport.db.repository.OrganizationQueueRepository;
@@ -43,7 +43,6 @@ import gov.cdc.usds.simplereport.db.repository.PhoneNumberRepository;
 import gov.cdc.usds.simplereport.db.repository.ProviderRepository;
 import gov.cdc.usds.simplereport.db.repository.ResultRepository;
 import gov.cdc.usds.simplereport.db.repository.SpecimenTypeRepository;
-import gov.cdc.usds.simplereport.db.repository.SupportedDiseaseRepository;
 import gov.cdc.usds.simplereport.db.repository.TestEventRepository;
 import gov.cdc.usds.simplereport.db.repository.TestOrderRepository;
 import gov.cdc.usds.simplereport.db.repository.TestResultUploadRepository;
@@ -100,9 +99,35 @@ public class TestDataFactory {
   @Autowired private ResultRepository resultRepository;
   @Autowired private DemoOktaRepository oktaRepository;
   @Autowired private TestResultUploadRepository testResultUploadRepository;
+  @Autowired private DeviceSpecimenTypeNewRepository deviceSpecimenTypeNewRepository;
 
   @Autowired private ApiUserService apiUserService;
   @Autowired private DiseaseService diseaseService;
+
+  private DeviceType genericDeviceType;
+  private SpecimenType genericSpecimenType;
+
+  public void initGenericDeviceTypeAndSpecimenType() {
+    genericSpecimenType =
+        specimenTypeRepository.findAll().stream()
+            .filter(d -> d.getName().equals(DEFAULT_SPECIMEN_TYPE))
+            .findFirst()
+            .orElseGet(
+                () ->
+                    createSpecimenType(DEFAULT_SPECIMEN_TYPE, "000111222", "Da Nose", "986543321"));
+
+    genericDeviceType =
+        deviceSpecimenTypeRepository.findAll().stream()
+            .filter(d -> d.getName().equals(DEFAULT_DEVICE_TYPE))
+            .findFirst()
+            .orElseGet(
+                () -> createDeviceType(DEFAULT_DEVICE_TYPE, "Acme", "SFN", "54321-BOOM", "E"));
+
+    deviceSpecimenTypeNewRepository.save(
+        new DeviceTypeSpecimenTypeMapping(
+            genericDeviceType.getInternalId(), genericSpecimenType.getInternalId()));
+  }
+
 
   public Organization saveOrganization(Organization org) {
     Organization savedOrg = organizationRepository.save(org);
@@ -151,10 +176,11 @@ public class TestDataFactory {
   }
 
   public Facility createValidFacility(Organization org, String facilityName) {
-    DeviceSpecimenType dev = getGenericDeviceSpecimen();
+    DeviceType defaultDevice = getGenericDevice();
+    SpecimenType dwfaultSpecimen = getGenericSpecimen();
 
     List<DeviceType> configuredDevices = new ArrayList<>();
-    configuredDevices.add(dev.getDeviceType());
+    configuredDevices.add(defaultDevice);
     Provider doc =
         providerRepository.save(
             new Provider("Doctor", "", "Doom", "", "DOOOOOOM", getAddress(), "800-555-1212"));
@@ -167,7 +193,8 @@ public class TestDataFactory {
             "555-867-5309",
             "facility@test.com",
             doc,
-            dev,
+            defaultDevice,
+            dwfaultSpecimen,
             configuredDevices);
     Facility save = facilityRepository.save(facility);
     oktaRepository.createFacility(save);
@@ -368,7 +395,8 @@ public class TestDataFactory {
   public TestOrder createCompletedTestOrder(Person patient, Facility facility, TestResult result) {
     TestOrder order = new TestOrder(patient, facility);
     order.setAskOnEntrySurvey(savePatientAnswers(createEmptySurvey()));
-    order.setDeviceSpecimen(facility.getDefaultDeviceSpecimen());
+    order.setDeviceTypeAndSpecimenType(
+        facility.getDefaultDeviceType(), facility.getDefaultSpecimenType());
 
     order.markComplete();
     TestOrder savedOrder = testOrderRepository.save(order);
@@ -529,7 +557,8 @@ public class TestDataFactory {
   }
 
   public DeviceType getGenericDevice() {
-    return getGenericDeviceSpecimen().getDeviceType();
+    initGenericDeviceTypeAndSpecimenType();
+    return genericDeviceType;
   }
 
   public SpecimenType createSpecimenType(
@@ -539,30 +568,8 @@ public class TestDataFactory {
   }
 
   public SpecimenType getGenericSpecimen() {
-    return getGenericDeviceSpecimen().getSpecimenType();
-  }
-
-  public DeviceSpecimenType getGenericDeviceSpecimen() {
-    DeviceType dev =
-        deviceTypeRepository.findAll().stream()
-            .filter(d -> d.getName().equals(DEFAULT_DEVICE_TYPE))
-            .findFirst()
-            .orElseGet(
-                () -> createDeviceType(DEFAULT_DEVICE_TYPE, "Acme", "SFN", "54321-BOOM", "E"));
-    SpecimenType specType =
-        specimenTypeRepository.findAll().stream()
-            .filter(d -> d.getName().equals(DEFAULT_SPECIMEN_TYPE))
-            .findFirst()
-            .orElseGet(
-                () ->
-                    createSpecimenType(DEFAULT_SPECIMEN_TYPE, "000111222", "Da Nose", "986543321"));
-    return deviceSpecimenTypeRepository
-        .find(dev, specType)
-        .orElseGet(() -> createDeviceSpecimen(dev, specType));
-  }
-
-  public DeviceSpecimenType createDeviceSpecimen(DeviceType device, SpecimenType specimen) {
-    return deviceSpecimenTypeRepository.save(new DeviceSpecimenType(device, specimen));
+    initGenericDeviceTypeAndSpecimenType();
+    return genericSpecimenType;
   }
 
   public StreetAddress getAddress() {
