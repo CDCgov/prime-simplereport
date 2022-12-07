@@ -23,8 +23,7 @@ describe("PxpApi", () => {
     });
     it("calls fetch with the correct data", () => {
       expect(fetch).toHaveBeenCalledWith(`${backendUrl}/pxp/link/verify/v2`, {
-        body:
-          '{"patientLinkId":"9b831f0b-40f2-4389-87b0-2c90fcd56732","dateOfBirth":"1947-08-21"}',
+        body: '{"patientLinkId":"9b831f0b-40f2-4389-87b0-2c90fcd56732","dateOfBirth":"1947-08-21"}',
         headers: {
           Accept: "application/json, text/plain",
           "Content-Type": "application/json",
@@ -47,8 +46,7 @@ describe("PxpApi", () => {
     });
     it("calls fetch with the correct data", () => {
       expect(fetch).toHaveBeenCalledWith(`${backendUrl}/pxp/questions`, {
-        body:
-          '{"patientLinkId":"9b831f0b-40f2-4389-87b0-2c90fcd56732","dateOfBirth":"1947-08-21","data":{}}',
+        body: '{"patientLinkId":"9b831f0b-40f2-4389-87b0-2c90fcd56732","dateOfBirth":"1947-08-21","data":{}}',
         headers: {
           Accept: "application/json, text/plain",
           "Content-Type": "application/json",

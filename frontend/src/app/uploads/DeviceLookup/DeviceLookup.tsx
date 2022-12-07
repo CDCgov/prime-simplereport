@@ -59,10 +59,10 @@ const DeviceLookup = (props: Props) => {
   const [showSuggestion, setShowSuggestion] = useState(true);
 
   const allowQuery = debounced.length >= MIN_SEARCH_CHARACTER_COUNT;
-  const showDropdown = useMemo(() => allowQuery && showSuggestion, [
-    allowQuery,
-    showSuggestion,
-  ]);
+  const showDropdown = useMemo(
+    () => allowQuery && showSuggestion,
+    [allowQuery, showSuggestion]
+  );
   const dropDownRef = useRef(null);
   const hideOnOutsideClick = useCallback(() => {
     setShowSuggestion(false);

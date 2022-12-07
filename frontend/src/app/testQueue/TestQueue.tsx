@@ -64,19 +64,13 @@ interface Props {
 }
 
 const TestQueue: React.FC<Props> = ({ activeFacilityId }) => {
-  const {
-    data,
-    loading,
-    error,
-    refetch,
-    startPolling,
-    stopPolling,
-  } = useGetFacilityQueueQuery({
-    fetchPolicy: "no-cache",
-    variables: {
-      facilityId: activeFacilityId,
-    },
-  });
+  const { data, loading, error, refetch, startPolling, stopPolling } =
+    useGetFacilityQueueQuery({
+      fetchPolicy: "no-cache",
+      variables: {
+        facilityId: activeFacilityId,
+      },
+    });
 
   const location = useLocation();
   const [startTestPatientId, setStartTestPatientId] = useState<string | null>(

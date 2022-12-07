@@ -165,7 +165,8 @@ const QueueItem = ({
   };
 
   const isCorrection = queueItem.correctionStatus === "CORRECTED";
-  const reasonForCorrection = queueItem.reasonForCorrection as TestCorrectionReason;
+  const reasonForCorrection =
+    queueItem.reasonForCorrection as TestCorrectionReason;
   const selectedDeviceTestLength = queueItem.deviceType.testLength;
 
   const [removePatientFromQueue] = useRemovePatientFromQueueMutation();
@@ -198,9 +199,8 @@ const QueueItem = ({
   const [specimenTypeErrorMessage, setSpecimenTypeErrorMessage] = useState<
     string | null
   >(null);
-  const [supportsMultipleDiseases, updateSupportsMultipleDiseases] = useState(
-    false
-  );
+  const [supportsMultipleDiseases, updateSupportsMultipleDiseases] =
+    useState(false);
 
   const [cacheTestResults, setCacheTestResults] = useState(
     convertFromMultiplexResponse(queueItem.results)

@@ -8,12 +8,10 @@ const { SMS, EMAIL, ALL, NONE } = TestResultDeliveryPreferences;
 export const toggleDeliveryPreferenceSms = toggleDeliveryPreference(SMS);
 export const toggleDeliveryPreferenceEmail = toggleDeliveryPreference(EMAIL);
 
-export const getSelectedDeliveryPreferencesSms = getSelectedDeliveryPreference(
-  SMS
-);
-export const getSelectedDeliveryPreferencesEmail = getSelectedDeliveryPreference(
-  EMAIL
-);
+export const getSelectedDeliveryPreferencesSms =
+  getSelectedDeliveryPreference(SMS);
+export const getSelectedDeliveryPreferencesEmail =
+  getSelectedDeliveryPreference(EMAIL);
 
 function toggleDeliveryPreference(field: TestResultDeliveryPreference) {
   return (
