@@ -28,7 +28,6 @@ const QueueBatchedTestEventPublisher: AzureFunction = async function (
   const tagOverrides = { "ai.operation.id": context.traceContext.traceparent };
   const publishingQueue = getQueueClient(TEST_EVENT_QUEUE_NAME);
   const exceptionQueue = getQueueClient(REPORTING_EXCEPTION_QUEUE_NAME);
-  //todo figure out a better name for this queue
   const fileErrorQueue = getQueueClient(FILE_ERROR_QUEUE_NAME);
 
   if (!(await minimumMessagesAvailable(context, publishingQueue))) {
