@@ -538,6 +538,7 @@ export const DetachedTestResultsList = ({
                   value={filterParams.filterFacilityId || activeFacilityId}
                   options={facilityOptions}
                   onChange={setFilterParams("filterFacilityId")}
+                  selectClassName={"usa-select-narrow"}
                 />
               ) : null}
             </div>

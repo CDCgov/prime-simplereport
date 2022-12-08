@@ -320,60 +320,67 @@ const AddPatient = () => {
   );
 
   return (
-    <div className={"prime-edit-patient prime-home"}>
-      <div className={"grid-container margin-bottom-4"}>
-        <DuplicatePatientModal
-          showModal={
-            patientExistsResponse?.patientExistsWithoutZip && !preventModal
-          }
-          onDuplicate={() => setRedirect(personPath)}
-          entityName={
-            identifyingData.facilityId
-              ? facilities.find((f) => f.id === identifyingData.facilityId)
-                  ?.name
-              : organization.name
-          }
-          onClose={() => {
-            setPreventModal(true);
-          }}
-        />
-        <PersonForm
-          patient={EMPTY_PERSON}
-          savePerson={savePerson}
-          onBlur={onBlur}
-          getHeader={(_, onSave, formChanged) => (
-            <div className="display-flex flex-justify">
-              <div>
-                <div className="display-flex flex-align-center">
-                  <svg
-                    className="usa-icon text-base margin-left-neg-2px"
-                    aria-hidden="true"
-                    focusable="false"
-                    role="img"
-                  >
-                    <use xlinkHref={iconSprite + "#arrow_back"}></use>
-                  </svg>
-                  <LinkWithQuery to={`/patients`} className="margin-left-05">
-                    {PATIENT_TERM_PLURAL_CAP}
-                  </LinkWithQuery>
+    <div className="prime-home bg-base-lightest">
+      <div className="grid-container">
+        <div className="prime-edit-patient">
+          <div className={"margin-bottom-4"}>
+            <DuplicatePatientModal
+              showModal={
+                patientExistsResponse?.patientExistsWithoutZip && !preventModal
+              }
+              onDuplicate={() => setRedirect(personPath)}
+              entityName={
+                identifyingData.facilityId
+                  ? facilities.find((f) => f.id === identifyingData.facilityId)
+                      ?.name
+                  : organization.name
+              }
+              onClose={() => {
+                setPreventModal(true);
+              }}
+            />
+            <PersonForm
+              patient={EMPTY_PERSON}
+              savePerson={savePerson}
+              onBlur={onBlur}
+              getHeader={(_, onSave, formChanged) => (
+                <div className="display-flex flex-justify">
+                  <div>
+                    <div className="display-flex flex-align-center">
+                      <svg
+                        className="usa-icon text-base margin-left-neg-2px"
+                        aria-hidden="true"
+                        focusable="false"
+                        role="img"
+                      >
+                        <use xlinkHref={iconSprite + "#arrow_back"}></use>
+                      </svg>
+                      <LinkWithQuery
+                        to={`/patients`}
+                        className="margin-left-05"
+                      >
+                        {PATIENT_TERM_PLURAL_CAP}
+                      </LinkWithQuery>
+                    </div>
+                    <div className="prime-edit-patient-heading margin-y-0">
+                      <h1 className="font-heading-lg margin-top-1 margin-bottom-0">
+                        Add new {PATIENT_TERM}
+                      </h1>
+                    </div>
+                  </div>
+                  <div className="display-flex flex-align-center">
+                    {getSaveButtons(formChanged, onSave, "upper")}
+                  </div>
                 </div>
-                <div className="prime-edit-patient-heading margin-y-0">
-                  <h1 className="font-heading-lg margin-top-1 margin-bottom-0">
-                    Add new {PATIENT_TERM}
-                  </h1>
+              )}
+              getFooter={(onSave, formChanged) => (
+                <div className="prime-edit-patient-heading">
+                  {getSaveButtons(formChanged, onSave, "lower")}
                 </div>
-              </div>
-              <div className="display-flex flex-align-center">
-                {getSaveButtons(formChanged, onSave, "upper")}
-              </div>
-            </div>
-          )}
-          getFooter={(onSave, formChanged) => (
-            <div className="prime-edit-patient-heading">
-              {getSaveButtons(formChanged, onSave, "lower")}
-            </div>
-          )}
-        />
+              )}
+            />
+          </div>
+        </div>
       </div>
     </div>
   );
