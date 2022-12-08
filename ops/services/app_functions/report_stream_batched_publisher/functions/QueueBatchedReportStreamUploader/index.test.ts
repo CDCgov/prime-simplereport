@@ -186,7 +186,6 @@ describe("main function export", () => {
     // WHEN
     try {
       await fn(context);
-      expect(0).toBe(1);
     } catch (e) {
       expect(e).toBeDefined();
     }

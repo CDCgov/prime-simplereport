@@ -301,7 +301,7 @@ resource "azurerm_monitor_scheduled_query_rules_alert" "report_stream_uploader_4
 customEvents
 | order by timestamp desc
 | extend httpStatus = toint(customDimensions["status"])
-| where httpStatus == 400
+| where httpStatus == 400 and name == "ReportStream Upload Failed"
   QUERY
 
   severity    = 1

@@ -6,7 +6,8 @@ import {
   deleteSuccessfullyParsedMessages,
   dequeueMessages,
   getQueueClient,
-  minimumMessagesAvailable, publishToFileErrorQueue,
+  minimumMessagesAvailable,
+  publishToFileErrorQueue,
   reportExceptions,
   uploadResult,
 } from "./lib";
@@ -116,7 +117,7 @@ const QueueBatchedTestEventPublisher: AzureFunction = async function (
 
     if(postResult.status === 400) {
       //publish messages to file failure queue
-      await publishToFileErrorQueue(context, fileErrorQueue, messages);
+      const response = await publishToFileErrorQueue(fileErrorQueue, messages);
       //delete messages from the main queue
       await deleteSuccessfullyParsedMessages(context, publishingQueue, messages, parseFailure);
     }

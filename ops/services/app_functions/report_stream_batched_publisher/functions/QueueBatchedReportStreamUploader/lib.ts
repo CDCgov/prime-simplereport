@@ -206,7 +206,7 @@ export async function reportExceptions(
   );
 }
 
-export async function publishToFileErrorQueue( context: Context, queueClient: QueueClient,  messages: DequeuedMessageItem[]) {
+export async function publishToFileErrorQueue(queueClient: QueueClient,  messages: DequeuedMessageItem[]) {
   return Promise.all(messages.map((m) => queueClient.sendMessage(Buffer.from(m.messageText).toString("utf-8"))));
 }
 
