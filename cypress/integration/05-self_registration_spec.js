@@ -35,6 +35,7 @@ describe("Patient self registration", () => {
     cy.get('input[value="MOBILE"]+label').click();
     cy.get('input[value="female"]+label').click();
     cy.get('input[name="street"]').type(patient.address);
+    cy.get('input[name="city"]').type(patient.city);
     cy.get('select[name="state"]').select(patient.state);
     cy.get('input[name="zipCode"]').type(patient.zip);
     cy.get('select[name="role"]').select("Student");
@@ -48,9 +49,12 @@ describe("Patient self registration", () => {
   it("shows what fields are missing on submit", () => {
     cy.get(".self-registration-button").first().click();
     cy.get(".prime-formgroup").contains("Last name is missing");
+    cy.get(".prime-formgroup").contains("City is missing");
+
   });
   it("fills out the remaining fields and submits", () => {
     cy.get('input[name="lastName"]').type(patient.lastName);
+    cy.get('input[name="city"]').type(patient.city);
     cy.get(".self-registration-button").first().click();
     cy.get(
       '.modal__container input[name="addressSelect-person"][value="userAddress"]+label'

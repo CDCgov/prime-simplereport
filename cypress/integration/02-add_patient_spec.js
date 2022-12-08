@@ -26,6 +26,7 @@ describe("Adding a patient", () => {
     cy.get('input[value="MOBILE"]+label').click();
     cy.get('input[value="female"]+label').click();
     cy.get('input[name="street"]').type(patient.address);
+    cy.get('input[name="city"]').type(patient.city);
     cy.get('select[name="state"]').select(patient.state);
     cy.get('input[name="zipCode"]').type(patient.zip);
     cy.get('select[name="role"]').select("STUDENT");
@@ -41,9 +42,11 @@ describe("Adding a patient", () => {
 
     cy.get(".prime-edit-patient").contains("Last name is missing");
     cy.get(".prime-edit-patient").contains("Testing facility is missing");
+    cy.get(".prime-edit-patient").contains("City is missing");
   });
   it("fills out the remaining fields, submits and checks for the patient", () => {
     cy.get('input[name="lastName"]').type(patient.lastName);
+    cy.get('input[name="city"]').type(patient.city);
     cy.get('select[name="facilityId"]').select("All facilities");
     cy.get(".prime-save-patient-changes").first().click();
     cy.get(
