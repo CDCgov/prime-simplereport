@@ -156,17 +156,6 @@ public class PatientBulkUploadServiceAsync {
 
     try {
       _personService.addPatientsAndPhoneNumbers(patientsList, phoneNumbersList);
-
-      log.info("CSV patient upload completed for {}", currentOrganization.getOrganizationName());
-      // eventually want to send an email here instead of return success
-
-      sendEmail(
-          uploaderEmail,
-          currentOrganization,
-          EmailProviderTemplate.SIMPLE_REPORT_PATIENT_UPLOAD,
-          Map.of("patients_url", patientsUrl));
-
-      return CompletableFuture.completedFuture(patientsList);
     } catch (IllegalArgumentException | OptimisticLockingFailureException e) {
       sendEmail(
           uploaderEmail,
@@ -179,6 +168,16 @@ public class PatientBulkUploadServiceAsync {
 
       throw new IllegalArgumentException(errorMessage);
     }
+
+    log.info("CSV patient upload completed for {}", currentOrganization.getOrganizationName());
+
+    sendEmail(
+        uploaderEmail,
+        currentOrganization,
+        EmailProviderTemplate.SIMPLE_REPORT_PATIENT_UPLOAD,
+        Map.of("patients_url", patientsUrl));
+
+    return CompletableFuture.completedFuture(patientsList);
   }
 
   private void sendEmail(

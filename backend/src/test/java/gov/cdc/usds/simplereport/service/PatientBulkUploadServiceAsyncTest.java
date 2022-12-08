@@ -3,7 +3,10 @@ package gov.cdc.usds.simplereport.service;
 import static gov.cdc.usds.simplereport.api.Translators.parsePhoneType;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.junit.jupiter.api.Assertions.assertThrows;
+import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.eq;
+import static org.mockito.Mockito.doThrow;
+import static org.mockito.Mockito.reset;
 import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 
@@ -13,6 +16,7 @@ import gov.cdc.usds.simplereport.db.model.Person;
 import gov.cdc.usds.simplereport.db.model.PhoneNumber;
 import gov.cdc.usds.simplereport.db.model.auxiliary.PersonRole;
 import gov.cdc.usds.simplereport.db.model.auxiliary.PhoneType;
+import gov.cdc.usds.simplereport.db.repository.PersonRepository;
 import gov.cdc.usds.simplereport.db.repository.PhoneNumberRepository;
 import gov.cdc.usds.simplereport.service.email.EmailProviderTemplate;
 import gov.cdc.usds.simplereport.service.email.EmailService;
@@ -31,6 +35,7 @@ import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.mock.mockito.MockBean;
+import org.springframework.boot.test.mock.mockito.SpyBean;
 import org.springframework.security.access.AccessDeniedException;
 import org.springframework.test.context.TestPropertySource;
 
@@ -54,12 +59,14 @@ public class PatientBulkUploadServiceAsyncTest extends BaseGraphqlTest {
   public static final int PATIENT_PAGE_SIZE = 1000;
 
   @MockBean private EmailService _emailService;
+  @SpyBean private PersonRepository personRepository;
 
   private UUID firstFacilityId;
   private UUID secondFacilityId;
 
   @BeforeEach
   void setupData() {
+    reset(personRepository);
     List<UUID> facilityIds =
         _orgService.getFacilities(_orgService.getCurrentOrganization()).stream()
             .map(Facility::getInternalId)
@@ -207,6 +214,29 @@ public class PatientBulkUploadServiceAsyncTest extends BaseGraphqlTest {
     // THEN
     assertThrows(ExecutionException.class, futurePatients::get);
     assertThat(fetchDatabasePatients()).isEmpty();
+
+    verify(_emailService, times(1))
+        .sendWithDynamicTemplate(
+            eq(List.of("bobbity@example.com")),
+            eq(EmailProviderTemplate.SIMPLE_REPORT_PATIENT_UPLOAD_ERROR),
+            eq(Map.of("simplereport_url", "https://simplereport.gov/")));
+  }
+
+  @Test
+  void shouldSendErrorEmail_whenPersonSaveAllFails()
+      throws IOException, ExecutionException, InterruptedException {
+    // GIVEN
+    InputStream inputStream = loadCsv("patientBulkUpload/valid.csv");
+    byte[] content = inputStream.readAllBytes();
+
+    doThrow(IllegalArgumentException.class).when(personRepository).saveAll(any());
+
+    // WHEN
+    CompletableFuture<Set<Person>> futurePatients =
+        this._service.savePatients(content, firstFacilityId);
+
+    // THEN
+    assertThrows(ExecutionException.class, futurePatients::get);
 
     verify(_emailService, times(1))
         .sendWithDynamicTemplate(
