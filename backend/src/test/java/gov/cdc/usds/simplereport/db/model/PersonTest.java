@@ -27,7 +27,7 @@ import org.springframework.test.util.ReflectionTestUtils;
 class PersonTest {
 
   @Test
-  void validPerson_toFhir() {
+  void toFhir_ValidPerson_ReturnsValidPatient() {
     var birthDate = LocalDate.now();
     var person =
         Mockito.spy(
@@ -140,42 +140,57 @@ class PersonTest {
     return Stream.of(
         arguments("native", TestEventExport.raceMap.get("native"), "native"),
         arguments(null, "UNK", "unknown"),
-        arguments("amphibian", "UNK", "unknown"));
+        arguments("Fishmen", "UNK", "unknown"));
   }
 
   @Test
-  void emptyPerson_toFhir() {
+  void toFhir_EmptyPerson_EmptyPatient() {
     var person = new Person();
 
     var actual = person.toFhir();
+    assertThat(actual.getIdentifier()).isEmpty();
     assertThat(actual.getName()).isEmpty();
     assertThat(actual.getTelecom()).isEmpty();
-    assertThat(actual.getAddress()).isEmpty();
     assertThat(actual.getGender()).isEqualTo(AdministrativeGender.UNKNOWN);
     assertThat(actual.getBirthDate()).isNull();
+    assertThat(actual.getAddress()).isEmpty();
+    assertThat(actual.getExtension()).hasSize(1);
   }
 
-  @Test
-  void femalePerson_toFhir() {
+  @ParameterizedTest
+  @MethodSource("genderArgs")
+  void toFhir_Gender_SetsGender(String personGender, AdministrativeGender expected) {
     var realPerson =
         new Person(
-            null, null, null, null, null, null, null, null, null, null, null, null, null, null,
-            null, "Female", false, false, null, null);
+            null,
+            null,
+            null,
+            null,
+            null,
+            null,
+            null,
+            null,
+            null,
+            null,
+            null,
+            null,
+            null,
+            null,
+            null,
+            personGender,
+            false,
+            false,
+            null,
+            null);
 
     var actual = realPerson.toFhir();
 
-    assertThat(actual.getGender()).isEqualTo(AdministrativeGender.FEMALE);
+    assertThat(actual.getGender()).isEqualTo(expected);
   }
 
-  @Test
-  void unknownGenderPerson_toFhir() {
-    var realPerson =
-        new Person(
-            null, null, null, null, null, null, null, null, null, null, null, null, null, null,
-            null, "UNK", false, false, null, null);
-
-    var actual = realPerson.toFhir();
-
-    assertThat(actual.getGender()).isEqualTo(AdministrativeGender.UNKNOWN);
+  private static Stream<Arguments> genderArgs() {
+    return Stream.of(
+        arguments("Female", AdministrativeGender.FEMALE),
+        arguments("amphibian parts", AdministrativeGender.UNKNOWN));
   }
 }
