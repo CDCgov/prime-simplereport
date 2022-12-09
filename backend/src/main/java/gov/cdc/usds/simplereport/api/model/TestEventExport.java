@@ -60,7 +60,7 @@ public class TestEventExport {
 
   private String genderUnknown = "U";
   private String ethnicityUnknown = "U";
-  private String raceUnknown = "UNK";
+  public static String raceUnknown = "UNK";
   private static final String DEFAULT_LOCATION_CODE = "53342003"; // http://snomed.info/id/53342003
   // "Internal nose structure"
   // values pulled from
@@ -88,7 +88,7 @@ public class TestEventExport {
           TestResult.NEGATIVE, "260415000",
           TestResult.UNDETERMINED, "419984006");
 
-  private Map<String, String> raceMap =
+  public static Map<String, String> raceMap =
       Map.of(
           "native", "1002-5",
           "asian", "2028-9",

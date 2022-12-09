@@ -3,6 +3,7 @@ package gov.cdc.usds.simplereport.db.model;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonUnwrapped;
 import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
+import gov.cdc.usds.simplereport.api.model.TestEventExport;
 import gov.cdc.usds.simplereport.db.model.auxiliary.PersonName;
 import gov.cdc.usds.simplereport.db.model.auxiliary.PersonRole;
 import gov.cdc.usds.simplereport.db.model.auxiliary.RaceArrayConverter;
@@ -27,6 +28,7 @@ import javax.persistence.ManyToOne;
 import javax.persistence.OneToMany;
 import javax.persistence.OneToOne;
 import org.hibernate.annotations.Type;
+import org.hl7.fhir.r4.model.CodeableConcept;
 import org.hl7.fhir.r4.model.ContactPoint;
 import org.hl7.fhir.r4.model.ContactPoint.ContactPointSystem;
 import org.hl7.fhir.r4.model.Enumerations.AdministrativeGender;
@@ -466,13 +468,36 @@ public class Person extends OrganizationScopedEternalEntity implements PersonEnt
   @JsonIgnore
   public Patient toFhir() {
     var patient = new Patient();
-    patient.addIdentifier().setValue(getInternalId().toString()).setUse(IdentifierUse.USUAL);
+    addIdentifier(patient);
     addFhirName(patient);
     addFhirTelecom(patient);
     setFhirGender(patient);
     setFhirBirthDate(patient);
     setFhirAddress(patient);
+    addRaceExtension(patient);
     return patient;
+  }
+
+  private void addRaceExtension(Patient patient) {
+    var ext = patient.addExtension();
+    ext.setUrl("http://ibm.com/fhir/cdm/StructureDefinition/local-race-cd");
+    var codeable = new CodeableConcept();
+    var coding = codeable.addCoding();
+    coding.setSystem("http://terminology.hl7.org/CodeSystem/v3-Race");
+    if (race != null && TestEventExport.raceMap.containsKey(race)) {
+      coding.setCode(TestEventExport.raceMap.get(race));
+      codeable.setText(race);
+    } else {
+      coding.setCode(TestEventExport.raceUnknown);
+      codeable.setText("unknown");
+    }
+    ext.setValue(codeable);
+  }
+
+  private void addIdentifier(Patient patient) {
+    if (getInternalId() != null) {
+      patient.addIdentifier().setValue(getInternalId().toString()).setUse(IdentifierUse.USUAL);
+    }
   }
 
   private void addFhirName(Patient patient) {

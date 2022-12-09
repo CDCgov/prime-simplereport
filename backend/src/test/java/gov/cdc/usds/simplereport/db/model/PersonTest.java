@@ -2,12 +2,14 @@ package gov.cdc.usds.simplereport.db.model;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
+import gov.cdc.usds.simplereport.api.model.TestEventExport;
 import gov.cdc.usds.simplereport.db.model.auxiliary.PhoneType;
 import gov.cdc.usds.simplereport.db.model.auxiliary.StreetAddress;
 import java.time.LocalDate;
 import java.time.ZoneId;
 import java.util.Date;
 import java.util.List;
+import java.util.UUID;
 import org.hl7.fhir.r4.model.ContactPoint;
 import org.hl7.fhir.r4.model.ContactPoint.ContactPointSystem;
 import org.hl7.fhir.r4.model.Enumerations.AdministrativeGender;
@@ -52,8 +54,11 @@ class PersonTest {
         List.of(
             new PhoneNumber(PhoneType.MOBILE, "304-555-1234"),
             new PhoneNumber(PhoneType.LANDLINE, "3045551233")));
+    ReflectionTestUtils.setField(person, "internalId", UUID.randomUUID());
 
     var actual = person.toFhir();
+    var expectedIdentifier =
+        new Identifier().setValue(person.getInternalId().toString()).setUse(IdentifierUse.USUAL);
     assertThat(actual.getName()).hasSize(1);
     assertThat(actual.getTelecom()).hasSize(4);
     assertThat(actual.getAddress()).hasSize(1);
@@ -72,16 +77,31 @@ class PersonTest {
     assertThat(actual.getGender()).isEqualTo(AdministrativeGender.MALE);
     assertThat(actual.getBirthDate())
         .isEqualTo(Date.from(birthDate.atStartOfDay(ZoneId.systemDefault()).toInstant()));
+    assertThat(actual.getIdentifier()).hasSize(1);
+    assertThat(actual.getIdentifier().get(0).getSystem()).isEqualTo(expectedIdentifier.getSystem());
+    assertThat(actual.getIdentifier().get(0).getValue()).isEqualTo(expectedIdentifier.getValue());
+
+    assertThat(actual.getExtension()).hasSize(1);
   }
 
   @Test
-  void person_toFhir_includesIdentifier() {
-    var person = new Person();
-    var expectedIdentifier =
-        new Identifier().setValue(person.getInternalId().toString()).setUse(IdentifierUse.USUAL);
+  void toFhir_returnsRaceExtension_whenValueIsValid() {
+    var person =
+        new Person(
+            null, null, null, null, null, null, null, null, null, null, null, null, "native", null,
+            null, null, false, false, null, null);
 
     var actual = person.toFhir();
-    assertThat(actual.getIdentifier()).isEqualTo(List.of(expectedIdentifier));
+
+    assertThat(actual.getExtension().get(0).getUrl())
+        .isEqualTo("http://ibm.com/fhir/cdm/StructureDefinition/local-race-cd");
+    var raceExtension = actual.getExtension().get(0).getValue();
+    var codeableConcept = actual.castToCodeableConcept(raceExtension);
+    var code = codeableConcept.getCoding();
+    assertThat(code).hasSize(1);
+    assertThat(code.get(0).getSystem()).isEqualTo("http://terminology.hl7.org/CodeSystem/v3-Race");
+    assertThat(code.get(0).getCode()).isEqualTo(TestEventExport.raceMap.get("native"));
+    assertThat(codeableConcept.getText()).isEqualTo("native");
   }
 
   @Test
@@ -92,7 +112,7 @@ class PersonTest {
     assertThat(actual.getName()).isEmpty();
     assertThat(actual.getTelecom()).isEmpty();
     assertThat(actual.getAddress()).isEmpty();
-    assertThat(actual.getGender()).isNull();
+    assertThat(actual.getGender()).isEqualTo(AdministrativeGender.UNKNOWN);
     assertThat(actual.getBirthDate()).isNull();
   }
 
