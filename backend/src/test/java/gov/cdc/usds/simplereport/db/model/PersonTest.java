@@ -1,6 +1,7 @@
 package gov.cdc.usds.simplereport.db.model;
 
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.junit.jupiter.params.provider.Arguments.arguments;
 
 import gov.cdc.usds.simplereport.api.model.TestEventExport;
 import gov.cdc.usds.simplereport.db.model.auxiliary.PhoneType;
@@ -10,12 +11,16 @@ import java.time.ZoneId;
 import java.util.Date;
 import java.util.List;
 import java.util.UUID;
+import java.util.stream.Stream;
 import org.hl7.fhir.r4.model.ContactPoint;
 import org.hl7.fhir.r4.model.ContactPoint.ContactPointSystem;
 import org.hl7.fhir.r4.model.Enumerations.AdministrativeGender;
 import org.hl7.fhir.r4.model.Identifier;
 import org.hl7.fhir.r4.model.Identifier.IdentifierUse;
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.params.ParameterizedTest;
+import org.junit.jupiter.params.provider.Arguments;
+import org.junit.jupiter.params.provider.MethodSource;
 import org.mockito.Mockito;
 import org.springframework.test.util.ReflectionTestUtils;
 
@@ -84,24 +89,58 @@ class PersonTest {
     assertThat(actual.getExtension()).hasSize(1);
   }
 
-  @Test
-  void toFhir_returnsRaceExtension_whenValueIsValid() {
+  @ParameterizedTest
+  @MethodSource("raceArgs")
+  void toFhir_Race_ReturnsRaceExtension(
+      String personRaceValue, String expectedCode, String expectedText) {
     var person =
         new Person(
-            null, null, null, null, null, null, null, null, null, null, null, null, "native", null,
-            null, null, false, false, null, null);
+            null,
+            null,
+            null,
+            null,
+            null,
+            null,
+            null,
+            null,
+            null,
+            null,
+            null,
+            null,
+            personRaceValue,
+            null,
+            null,
+            null,
+            false,
+            false,
+            null,
+            null);
 
     var actual = person.toFhir();
-
-    assertThat(actual.getExtension().get(0).getUrl())
-        .isEqualTo("http://ibm.com/fhir/cdm/StructureDefinition/local-race-cd");
-    var raceExtension = actual.getExtension().get(0).getValue();
-    var codeableConcept = actual.castToCodeableConcept(raceExtension);
+    var raceExtension =
+        actual.getExtension().stream()
+            .filter(
+                ext ->
+                    "http://ibm.com/fhir/cdm/StructureDefinition/local-race-cd"
+                        .equals(ext.getUrl()))
+            .findFirst()
+            .orElseThrow(() -> new AssertionError("Unable to find extension based on URL"));
+    var codeableConcept = actual.castToCodeableConcept(raceExtension.getValue());
     var code = codeableConcept.getCoding();
+
+    assertThat(raceExtension.getUrl())
+        .isEqualTo("http://ibm.com/fhir/cdm/StructureDefinition/local-race-cd");
     assertThat(code).hasSize(1);
     assertThat(code.get(0).getSystem()).isEqualTo("http://terminology.hl7.org/CodeSystem/v3-Race");
-    assertThat(code.get(0).getCode()).isEqualTo(TestEventExport.raceMap.get("native"));
-    assertThat(codeableConcept.getText()).isEqualTo("native");
+    assertThat(code.get(0).getCode()).isEqualTo(expectedCode);
+    assertThat(codeableConcept.getText()).isEqualTo(expectedText);
+  }
+
+  private static Stream<Arguments> raceArgs() {
+    return Stream.of(
+        arguments("native", TestEventExport.raceMap.get("native"), "native"),
+        arguments(null, "UNK", "unknown"),
+        arguments("amphibian", "UNK", "unknown"));
   }
 
   @Test
