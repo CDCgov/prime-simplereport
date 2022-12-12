@@ -90,13 +90,9 @@ class PersonTest {
   }
 
   @ParameterizedTest
-  @MethodSource("extensionArgs")
-  void toFhir_NonStandardFhirFields_ReturnsExtension(
-      String extensionUrl,
-      String systemUrl,
-      String personRaceValue,
-      String expectedCode,
-      String expectedText) {
+  @MethodSource("raceArgs")
+  void toFhir_PersonRace_ReturnsRaceExtension(
+      String personRaceValue, String expectedCode, String expectedText) {
     var person =
         new Person(
             null,
