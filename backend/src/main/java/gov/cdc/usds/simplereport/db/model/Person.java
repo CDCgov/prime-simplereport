@@ -26,6 +26,7 @@ import javax.persistence.JoinColumn;
 import javax.persistence.ManyToOne;
 import javax.persistence.OneToMany;
 import javax.persistence.OneToOne;
+import javax.persistence.Transient;
 import org.hibernate.annotations.Type;
 import org.hl7.fhir.r4.model.CodeableConcept;
 import org.hl7.fhir.r4.model.Coding;
@@ -48,7 +49,7 @@ import org.hl7.fhir.r4.model.StringType;
 @Entity
 public class Person extends OrganizationScopedEternalEntity implements PersonEntity, LocatedEntity {
 
-  @JsonIgnore
+  @JsonIgnore @Transient
   private final String nullCodeSystem = "http://terminology.hl7.org/CodeSystem/v3-NullFlavor";
 
   // NOTE: facility==NULL means this person appears in ALL facilities for a given Organization.
