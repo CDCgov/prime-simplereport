@@ -29,6 +29,7 @@ import javax.persistence.OneToMany;
 import javax.persistence.OneToOne;
 import org.hibernate.annotations.Type;
 import org.hl7.fhir.r4.model.CodeableConcept;
+import org.hl7.fhir.r4.model.Coding;
 import org.hl7.fhir.r4.model.ContactPoint;
 import org.hl7.fhir.r4.model.ContactPoint.ContactPointSystem;
 import org.hl7.fhir.r4.model.Enumerations.AdministrativeGender;
@@ -477,7 +478,26 @@ public class Person extends OrganizationScopedEternalEntity implements PersonEnt
     setFhirAddress(patient);
     addRaceExtension(patient);
     addEthnicityExtension(patient);
+    addTribalAffiliationExtension(patient);
     return patient;
+  }
+
+  private void addTribalAffiliationExtension(Patient patient) {
+    if (tribalAffiliation != null
+        && !tribalAffiliation.isEmpty()
+        && TestEventExport.tribalMap().containsKey(tribalAffiliation.get(0))) {
+      var ext = patient.addExtension();
+      ext.setUrl("http://hl7.org/fhir/us/core/StructureDefinition/us-core-tribal-affiliation");
+      var tribeExtension = ext.addExtension();
+      tribeExtension.setUrl("tribalAffiliation");
+      var tribeCodeableConcept = new CodeableConcept();
+      var tribeCoding = tribeCodeableConcept.addCoding();
+      tribeCoding.setSystem("http://terminology.hl7.org/CodeSystem/v3-TribalEntityUS");
+      tribeCoding.setCode(tribalAffiliation.get(0));
+      tribeCoding.setDisplay(TestEventExport.tribalMap().get(tribalAffiliation.get(0)));
+      tribeCodeableConcept.setText(TestEventExport.tribalMap().get(tribalAffiliation.get(0)));
+      tribeExtension.setValue(tribeCodeableConcept);
+    }
   }
 
   private void addEthnicityExtension(Patient patient) {
@@ -486,8 +506,7 @@ public class Person extends OrganizationScopedEternalEntity implements PersonEnt
       ext.setUrl("http://hl7.org/fhir/us/core/StructureDefinition/us-core-ethnicity");
       var ombExtension = ext.addExtension();
       ombExtension.setUrl("ombCategory");
-      var ombCodeable = new CodeableConcept();
-      var ombCoding = ombCodeable.addCoding();
+      var ombCoding = new Coding();
       if (TestEventExport.ETHNICITY_MAP.containsKey(ethnicity)) {
         if ("refused".equalsIgnoreCase(ethnicity)) {
           ombCoding.setSystem("http://terminology.hl7.org/CodeSystem/v3-NullFlavor");

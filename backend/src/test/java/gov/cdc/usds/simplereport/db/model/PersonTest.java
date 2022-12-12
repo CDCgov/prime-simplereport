@@ -187,6 +187,80 @@ class PersonTest {
         arguments("shark", refusedSystem, "UNK", "unknown"));
   }
 
+  @Test
+  void toFhir_PersonTribalAffiliation_ReturnsTribalAffiliationExtension() {
+    var person =
+        new Person(
+            null,
+            null,
+            null,
+            null,
+            null,
+            null,
+            null,
+            null,
+            null,
+            null,
+            null,
+            null,
+            null,
+            null,
+            List.of("1"),
+            null,
+            false,
+            false,
+            null,
+            null);
+
+    var actual = person.toFhir();
+    var coreExtension =
+        actual.getExtensionByUrl(
+            "http://hl7.org/fhir/us/core/StructureDefinition/us-core-tribal-affiliation");
+    var tribalAffiliationExtension = coreExtension.getExtensionByUrl("tribalAffiliation");
+    var tribalCodeableConcept = actual.castToCodeableConcept(tribalAffiliationExtension.getValue());
+    var tribalCoding = tribalCodeableConcept.getCoding().get(0);
+
+    assertThat(coreExtension.getExtension()).hasSize(1);
+    assertThat(tribalCoding.getSystem())
+        .isEqualTo("http://terminology.hl7.org/CodeSystem/v3-TribalEntityUS");
+    assertThat(tribalCoding.getCode()).isEqualTo("1");
+    assertThat(tribalCoding.getDisplay())
+        .isEqualTo("Absentee-Shawnee Tribe of Indians of Oklahoma");
+  }
+
+  @Test
+  void toFhir_PersonTribalAffiliation_ReturnsNoExtension() {
+    var person =
+        new Person(
+            null,
+            null,
+            null,
+            null,
+            null,
+            null,
+            null,
+            null,
+            null,
+            null,
+            null,
+            null,
+            null,
+            null,
+            List.of("NotATribeCode"),
+            null,
+            false,
+            false,
+            null,
+            null);
+
+    var actual = person.toFhir();
+    var coreExtension =
+        actual.getExtensionByUrl(
+            "http://hl7.org/fhir/us/core/StructureDefinition/us-core-tribal-affiliation");
+
+    assertThat(coreExtension).isNull();
+  }
+
   @ParameterizedTest
   @MethodSource("genderArgs")
   void toFhir_Gender_SetsGender(String personGender, AdministrativeGender expected) {
