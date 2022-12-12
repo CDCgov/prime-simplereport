@@ -304,7 +304,7 @@ const FacilityForm: React.FC<Props> = (props) => {
     if ((await validateFacility()) === "error") {
       return;
     }
-    validateFacilityAddresses();
+    await validateFacilityAddresses();
   };
 
   return (

@@ -3,7 +3,7 @@ import { MockedProvider } from "@apollo/client/testing";
 import createMockStore from "redux-mock-store";
 import { Provider } from "react-redux";
 
-import { App } from "./App";
+import { ReactApp } from "./App";
 
 jest.mock("./featureFlags/WithFeatureFlags", () => {
   return ({ children }: any): JSX.Element => <>{children}</>;
@@ -16,7 +16,7 @@ describe("index.js", () => {
     render(
       <Provider store={mockedStore}>
         <MockedProvider mocks={[]} addTypename={false}>
-          <App />
+          <ReactApp />
         </MockedProvider>
       </Provider>
     );

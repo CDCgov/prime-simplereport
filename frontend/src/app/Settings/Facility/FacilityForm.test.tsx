@@ -676,93 +676,6 @@ describe("FacilityForm", () => {
     });
   });
 
-  describe("Address validation", () => {
-    it("uses suggested addresses", async () => {
-      const facility: Facility = {
-        ...validFacility,
-        ...addresses[0].bad,
-        orderingProvider: {
-          ...validFacility.orderingProvider,
-          ...addresses[1].bad,
-        },
-      };
-      render(
-        <MemoryRouter>
-          <FacilityForm
-            facility={facility}
-            deviceTypes={devices}
-            saveFacility={saveFacility}
-          />
-        </MemoryRouter>
-      );
-      const saveButton = screen.getAllByText("Save changes")[0];
-      const facilityName = screen.getByLabelText("Testing facility name", {
-        exact: false,
-      });
-      await userEvent.clear(facilityName);
-      await userEvent.type(facilityName, "La Croix Facility");
-      await userEvent.click(saveButton);
-      await validateAddress(saveFacility, "suggested address");
-      expect(getIsValidZipForStateSpy).toBeCalledTimes(1);
-      expect(saveFacility).toBeCalledWith({
-        ...validFacility,
-        name: "La Croix Facility",
-        ...addresses[0].good,
-        orderingProvider: {
-          ...validFacility.orderingProvider,
-          ...addresses[1].good,
-        },
-      });
-    });
-
-    it("blocks submission of facility on invalid ZIP code for state", async () => {
-      // GIVEN
-      getIsValidZipForStateSpy.mockRestore();
-      getIsValidZipForStateSpy = jest
-        .spyOn(smartyStreets, "isValidZipCodeForState")
-        .mockReturnValue(false);
-
-      const facility = validFacility;
-
-      // WHEN
-      render(
-        <>
-          <MemoryRouter>
-            <FacilityForm
-              facility={facility}
-              deviceTypes={devices}
-              saveFacility={saveFacility}
-            />
-          </MemoryRouter>
-          <SRToastContainer />
-        </>
-      );
-
-      const facilityName = await screen.findByLabelText(
-        "Testing facility name",
-        {
-          exact: false,
-        }
-      );
-      await userEvent.clear(facilityName);
-      await userEvent.type(facilityName, "La Croix Facility");
-      const saveButton = (await screen.findAllByText("Save changes"))[0];
-      await userEvent.click(saveButton);
-      // THEN
-      // Toast alert appears
-      expect(
-        await screen.findByText("Invalid ZIP code for this state", {
-          exact: false,
-        })
-      );
-
-      expect(getIsValidZipForStateSpy).toBeCalledTimes(1);
-
-      // Does not perform further address validation on invalid ZIP code for state
-      expect(getBestSuggestionSpy).not.toHaveBeenCalled();
-    });
-  });
-
   describe("Device validation", () => {
     beforeEach(() => {
       render(
@@ -820,6 +733,77 @@ describe("FacilityForm", () => {
           exact: false,
         })
       ).not.toBeInTheDocument();
+    });
+  });
+
+  describe("Address validation", () => {
+    it("uses suggested addresses", async () => {
+      const facility: Facility = {
+        ...validFacility,
+        ...addresses[0].bad,
+        orderingProvider: {
+          ...validFacility.orderingProvider,
+          ...addresses[1].bad,
+        },
+      };
+      render(
+        <MemoryRouter>
+          <FacilityForm
+            facility={facility}
+            deviceTypes={devices}
+            saveFacility={saveFacility}
+          />
+        </MemoryRouter>
+      );
+      const saveButton = screen.getAllByText("Save changes")[0];
+      const facilityName = screen.getByLabelText("Testing facility name", {
+        exact: false,
+      });
+      await userEvent.clear(facilityName);
+      await userEvent.type(facilityName, "La Croix Facility");
+      await userEvent.click(saveButton);
+      await validateAddress(saveFacility, "suggested address");
+      expect(getIsValidZipForStateSpy).toBeCalledTimes(1);
+      expect(saveFacility).toBeCalledWith({
+        ...validFacility,
+        name: "La Croix Facility",
+        ...addresses[0].good,
+        orderingProvider: {
+          ...validFacility.orderingProvider,
+          ...addresses[1].good,
+        },
+      });
+    });
+
+    it("blocks submission of facility on invalid ZIP code for state", async () => {
+      getIsValidZipForStateSpy.mockReturnValueOnce(false);
+
+      render(
+        <>
+          <MemoryRouter>
+            <FacilityForm
+              facility={validFacility}
+              deviceTypes={devices}
+              saveFacility={saveFacility}
+            />
+          </MemoryRouter>
+          <SRToastContainer />
+        </>
+      );
+      const saveButton = screen.getAllByText("Save changes")[0];
+      const facilityName = screen.getByLabelText("Testing facility name", {
+        exact: false,
+      });
+      await userEvent.clear(facilityName);
+      await userEvent.type(facilityName, "La Croix Facility");
+      await userEvent.click(saveButton);
+
+      await waitFor(() => expect(getIsValidZipForStateSpy).toBeCalledTimes(1));
+      // Does not perform further address validation on invalid ZIP code for state
+      expect(getBestSuggestionSpy).not.toHaveBeenCalled();
+      // Toast alert appears
+      expect(await screen.findByText(/Invalid ZIP code for this state/i));
+      getIsValidZipForStateSpy.mockRestore();
     });
   });
 });
