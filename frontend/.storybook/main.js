@@ -6,6 +6,14 @@ module.exports = {
     "@storybook/addon-interactions",
     "@storybook/preset-create-react-app",
   ],
+  webpackFinal: (config) => {
+    config.resolve.alias["@microsoft/applicationinsights-react-js"] =
+      require.resolve("../src/stories/__mocks__/appInsights.ts");
+    config.resolve.alias["./TestTimer"] = require.resolve(
+      "../src/stories/__mocks__/TestTimer.ts"
+    );
+    return config;
+  },
   framework: "@storybook/react",
   core: {
     builder: "@storybook/builder-webpack5",
