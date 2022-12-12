@@ -6,7 +6,6 @@ module.exports = {
     "@storybook/addon-interactions",
     "@storybook/preset-create-react-app",
   ],
-  // eslint-disable-next-line
   webpackFinal: async (config) => {
     config.resolve.alias["@microsoft/applicationinsights-react-js"] =
       require.resolve("../src/stories/__mocks__/appInsights.ts");
