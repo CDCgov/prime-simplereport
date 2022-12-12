@@ -1,4 +1,10 @@
-import { render, screen, waitFor, within } from "@testing-library/react";
+import {
+  render,
+  screen,
+  waitFor,
+  waitForElementToBeRemoved,
+  within,
+} from "@testing-library/react";
 import userEvent from "@testing-library/user-event";
 import { MockedProvider } from "@apollo/client/testing";
 import { MemoryRouter } from "react-router-dom";
@@ -65,8 +71,8 @@ describe("TestQueue", () => {
     await screen.findByLabelText(
       `Search for a ${PATIENT_TERM} to start their test`
     );
-    expect(await screen.findByText("Doe, John A")).toBeInTheDocument();
-    expect(await screen.findByText("Smith, Jane")).toBeInTheDocument();
+    expect(await screen.findByText("Doe, John A"));
+    expect(await screen.findByText("Smith, Jane"));
     expect(container).toMatchSnapshot();
     MockDate.reset();
   });
@@ -81,18 +87,18 @@ describe("TestQueue", () => {
         </MockedProvider>
       </MemoryRouter>
     );
-    expect(await screen.findByText("Doe, John A")).toBeInTheDocument();
+    expect(await screen.findByText("Doe, John A"));
     const removeButton = await screen.findByLabelText(
       "Close test for Doe, John A"
     );
     await userEvent.click(removeButton);
     const confirmButton = await screen.findByText("Yes", { exact: false });
     await userEvent.click(confirmButton);
-    expect(await screen.findByText(/Submitting test data for Doe, John A/i));
+    //expect(await screen.findByText(/Submitting test data for Doe, John A/i));
     // loading masks checks failing unless introducing delay. Pending to check how to introduce delay with apollo
-    /*await waitForElementToBeRemoved(
-              () => screen.queryByText("Submitting test data for Doe, John A...")
-    );*/
+    await waitForElementToBeRemoved(() =>
+      screen.queryByText(/Submitting test data for Doe, John A/i)
+    );
 
     await waitFor(() =>
       expect(screen.queryByText("Doe, John A")).not.toBeInTheDocument()
@@ -192,8 +198,8 @@ describe("TestQueue", () => {
       await screen.findByLabelText(
         `Search for a ${PATIENT_TERM} to start their test`
       );
-      expect(await screen.findByText("Doe, John A")).toBeInTheDocument();
-      expect(await screen.findByText("Smith, Jane")).toBeInTheDocument();
+      expect(await screen.findByText("Doe, John A"));
+      expect(await screen.findByText("Smith, Jane"));
 
       await userEvent.click(screen.getAllByText("Test questionnaire")[0]);
     });

@@ -9,9 +9,6 @@ import "jest-location-mock";
 import ReactModal from "react-modal";
 import moment from "moment";
 
-// eslint-Disable-Next-Line no-undef
-//globalThis.IS_REACT_ACT_ENVIRONMENT = true;
-
 fetchMock.enableMocks();
 
 jest.mock("@microsoft/applicationinsights-react-js", () => {
