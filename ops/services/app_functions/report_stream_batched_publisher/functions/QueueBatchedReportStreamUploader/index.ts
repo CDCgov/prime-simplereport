@@ -117,7 +117,7 @@ const QueueBatchedTestEventPublisher: AzureFunction = async function (
 
     if(postResult.status === 400) {
       //publish messages to file failure queue
-      const response = await publishToFileErrorQueue(fileErrorQueue, messages);
+      await publishToFileErrorQueue(fileErrorQueue, messages);
       //delete messages from the main queue
       await deleteSuccessfullyParsedMessages(context, publishingQueue, messages, parseFailure);
     }
