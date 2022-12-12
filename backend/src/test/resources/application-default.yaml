@@ -6,12 +6,11 @@ spring:
         jdbc-url: jdbc:postgresql://${test-db-host:localhost}:${test-db-port:5444}/simple_report
         minimum-idle: 2
         idle-timeout: 10000
-        maximum-pool-size: 50
     metabase:
       hikari:
         jdbc-url: jdbc:postgresql://${test-db-host:localhost}:${test-db-port:5444}/metabase
         idle-timeout: 10000
-        maximum-pool-size: 10
+        maximum-pool-size: 2
   liquibase:
     simplereport:
       user: simple_report_migrations
@@ -50,6 +49,8 @@ logging:
     # Other possibilities:
     # com.okta: DEBUG
     # org.springframework.security: DEBUG
+    # com.zaxxer.hikari: TRACE
+    # com.zaxxer.hikari.HikariConfig: DEBUG
     org.springframework.web.client.RestTemplate: DEBUG
 simple-report:
   authorization:
