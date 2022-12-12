@@ -3,19 +3,15 @@ package gov.cdc.usds.simplereport.db.model;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.junit.jupiter.params.provider.Arguments.arguments;
 
+import ca.uhn.fhir.context.FhirContext;
+import ca.uhn.fhir.parser.IParser;
 import gov.cdc.usds.simplereport.db.model.auxiliary.PhoneType;
 import gov.cdc.usds.simplereport.db.model.auxiliary.StreetAddress;
 import java.time.LocalDate;
-import java.time.ZoneId;
-import java.util.Date;
 import java.util.List;
 import java.util.UUID;
 import java.util.stream.Stream;
-import org.hl7.fhir.r4.model.ContactPoint;
-import org.hl7.fhir.r4.model.ContactPoint.ContactPointSystem;
 import org.hl7.fhir.r4.model.Enumerations.AdministrativeGender;
-import org.hl7.fhir.r4.model.Identifier;
-import org.hl7.fhir.r4.model.Identifier.IdentifierUse;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.Arguments;
@@ -49,47 +45,30 @@ class PersonTest {
                 List.of("email1", "email2"),
                 "black",
                 "hispanic",
-                List.of(),
+                List.of("123"),
                 "Male",
                 false,
                 false,
                 "English",
                 null));
+    var internalId = "3c9c7370-e2e3-49ad-bb7a-f6005f41cf29";
     ReflectionTestUtils.setField(
         person,
         "phoneNumbers",
         List.of(
             new PhoneNumber(PhoneType.MOBILE, "304-555-1234"),
             new PhoneNumber(PhoneType.LANDLINE, "3045551233")));
-    ReflectionTestUtils.setField(person, "internalId", UUID.randomUUID());
+    ReflectionTestUtils.setField(person, "internalId", UUID.fromString(internalId));
 
     var actual = person.toFhir();
-    var expectedIdentifier =
-        new Identifier().setValue(person.getInternalId().toString()).setUse(IdentifierUse.USUAL);
-    assertThat(actual.getName()).hasSize(1);
-    assertThat(actual.getTelecom()).hasSize(4);
-    assertThat(actual.getAddress()).hasSize(1);
 
-    assertThat(actual.getTelecom().stream().map(ContactPoint::getValue))
-        .containsAll(List.of("(304) 555 1234", "(304) 555 1233", "email1", "email2"));
-    actual
-        .getTelecom()
-        .forEach(
-            telecom -> {
-              if (telecom.getValue().contains("email")) {
-                assertThat(telecom.getSystem()).isEqualTo(ContactPointSystem.EMAIL);
-              }
-            });
+    FhirContext ctx = FhirContext.forR4();
+    IParser parser = ctx.newJsonParser();
 
-    assertThat(actual.getGender()).isEqualTo(AdministrativeGender.MALE);
-    assertThat(actual.getBirthDate())
-        .isEqualTo(Date.from(birthDate.atStartOfDay(ZoneId.systemDefault()).toInstant()));
-    assertThat(actual.getIdentifier()).hasSize(1);
-    assertThat(actual.getIdentifier().get(0).getSystem()).isEqualTo(expectedIdentifier.getSystem());
-    assertThat(actual.getIdentifier().get(0).getValue()).isEqualTo(expectedIdentifier.getValue());
-
-    assertThat(actual.getExtension()).hasSize(2);
-    // todo: compare expected json with actual
+    String actualSerialized = parser.encodeResourceToString(actual);
+    String expectedSerialized =
+        "{\"resourceType\":\"Patient\",\"extension\":[{\"url\":\"http://ibm.com/fhir/cdm/StructureDefinition/local-race-cd\",\"valueCodeableConcept\":{\"coding\":[{\"system\":\"http://terminology.hl7.org/CodeSystem/v3-Race\",\"code\":\"2054-5\"}],\"text\":\"black\"}},{\"url\":\"http://hl7.org/fhir/us/core/StructureDefinition/us-core-ethnicity\",\"extension\":[{\"url\":\"ombCategory\",\"valueCoding\":{\"system\":\"urn:oid:2.16.840.1.113883.6.238\",\"code\":\"2135-2\",\"display\":\"Hispanic or Latino\"}},{\"url\":\"text\",\"valueString\":\"Hispanic or Latino\"}]},{\"url\":\"http://hl7.org/fhir/us/core/StructureDefinition/us-core-tribal-affiliation\",\"extension\":[{\"url\":\"tribalAffiliation\",\"valueCodeableConcept\":{\"coding\":[{\"system\":\"http://terminology.hl7.org/CodeSystem/v3-TribalEntityUS\",\"code\":\"123\",\"display\":\"Keweenaw Bay Indian Community, Michigan\"}],\"text\":\"Keweenaw Bay Indian Community, Michigan\"}}]}],\"identifier\":[{\"use\":\"usual\",\"value\":\"3c9c7370-e2e3-49ad-bb7a-f6005f41cf29\"}],\"name\":[{\"family\":\"Curtis\",\"given\":[\"Austin\",\"Wingate\"],\"suffix\":[\"Jr\"]}],\"telecom\":[{\"system\":\"phone\",\"value\":\"(304) 555 1234\",\"use\":\"mobile\"},{\"system\":\"phone\",\"value\":\"(304) 555 1233\",\"use\":\"home\"},{\"system\":\"email\",\"value\":\"email1\"},{\"system\":\"email\",\"value\":\"email2\"}],\"gender\":\"male\",\"birthDate\":\"2022-12-12\",\"address\":[{\"line\":[\"501 Virginia St E\",\"#1\"],\"city\":\"Charleston\",\"district\":\"Kanawha\",\"state\":\"WV\",\"postalCode\":\"25301\"}]}";
+    assertThat(actualSerialized).isEqualTo(expectedSerialized);
   }
 
   @Test
