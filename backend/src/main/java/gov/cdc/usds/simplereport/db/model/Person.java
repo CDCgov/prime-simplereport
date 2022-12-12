@@ -3,7 +3,6 @@ package gov.cdc.usds.simplereport.db.model;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonUnwrapped;
 import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
-import gov.cdc.usds.simplereport.api.model.TestEventExport;
 import gov.cdc.usds.simplereport.db.model.auxiliary.PersonName;
 import gov.cdc.usds.simplereport.db.model.auxiliary.PersonRole;
 import gov.cdc.usds.simplereport.db.model.auxiliary.RaceArrayConverter;
@@ -486,7 +485,7 @@ public class Person extends OrganizationScopedEternalEntity implements PersonEnt
   private void addTribalAffiliationExtension(Patient patient) {
     if (tribalAffiliation != null
         && !tribalAffiliation.isEmpty()
-        && TestEventExport.tribalMap().containsKey(tribalAffiliation.get(0))) {
+        && PersonUtils.tribalMap().containsKey(tribalAffiliation.get(0))) {
       var ext = patient.addExtension();
       ext.setUrl("http://hl7.org/fhir/us/core/StructureDefinition/us-core-tribal-affiliation");
       var tribeExtension = ext.addExtension();
@@ -495,8 +494,8 @@ public class Person extends OrganizationScopedEternalEntity implements PersonEnt
       var tribeCoding = tribeCodeableConcept.addCoding();
       tribeCoding.setSystem("http://terminology.hl7.org/CodeSystem/v3-TribalEntityUS");
       tribeCoding.setCode(tribalAffiliation.get(0));
-      tribeCoding.setDisplay(TestEventExport.tribalMap().get(tribalAffiliation.get(0)));
-      tribeCodeableConcept.setText(TestEventExport.tribalMap().get(tribalAffiliation.get(0)));
+      tribeCoding.setDisplay(PersonUtils.tribalMap().get(tribalAffiliation.get(0)));
+      tribeCodeableConcept.setText(PersonUtils.tribalMap().get(tribalAffiliation.get(0)));
       tribeExtension.setValue(tribeCodeableConcept);
     }
   }
@@ -509,18 +508,18 @@ public class Person extends OrganizationScopedEternalEntity implements PersonEnt
       var ombExtension = ext.addExtension();
       ombExtension.setUrl("ombCategory");
       var ombCoding = new Coding();
-      if (TestEventExport.ETHNICITY_MAP.containsKey(ethnicity)) {
+      if (PersonUtils.ETHNICITY_MAP.containsKey(ethnicity)) {
         if ("refused".equalsIgnoreCase(ethnicity)) {
           ombCoding.setSystem("http://terminology.hl7.org/CodeSystem/v3-NullFlavor");
         } else {
           ombCoding.setSystem("urn:oid:2.16.840.1.113883.6.238");
         }
-        ombCoding.setCode(TestEventExport.ETHNICITY_MAP.get(ethnicity).get(0));
-        ombCoding.setDisplay(TestEventExport.ETHNICITY_MAP.get(ethnicity).get(1));
+        ombCoding.setCode(PersonUtils.ETHNICITY_MAP.get(ethnicity).get(0));
+        ombCoding.setDisplay(PersonUtils.ETHNICITY_MAP.get(ethnicity).get(1));
 
         var text = ext.addExtension();
         text.setUrl("text");
-        text.setValue(new StringType(TestEventExport.ETHNICITY_MAP.get(ethnicity).get(1)));
+        text.setValue(new StringType(PersonUtils.ETHNICITY_MAP.get(ethnicity).get(1)));
       } else {
         ombCoding.setSystem("http://terminology.hl7.org/CodeSystem/v3-NullFlavor");
         ombCoding.setCode("UNK");
@@ -541,11 +540,11 @@ public class Person extends OrganizationScopedEternalEntity implements PersonEnt
     var codeable = new CodeableConcept();
     var coding = codeable.addCoding();
     coding.setSystem("http://terminology.hl7.org/CodeSystem/v3-Race");
-    if (race != null && TestEventExport.raceMap.containsKey(race)) {
-      coding.setCode(TestEventExport.raceMap.get(race));
+    if (race != null && PersonUtils.raceMap.containsKey(race)) {
+      coding.setCode(PersonUtils.raceMap.get(race));
       codeable.setText(race);
     } else {
-      coding.setCode(TestEventExport.raceUnknown);
+      coding.setCode(PersonUtils.raceUnknown);
       codeable.setText("unknown");
     }
     ext.setValue(codeable);
