@@ -3,7 +3,6 @@ package gov.cdc.usds.simplereport.service;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.Mockito.when;
 
-import gov.cdc.usds.simplereport.db.model.Facility;
 import gov.cdc.usds.simplereport.db.model.Organization;
 import gov.cdc.usds.simplereport.db.model.TestResultUpload;
 import gov.cdc.usds.simplereport.db.model.auxiliary.UploadStatus;
@@ -44,7 +43,6 @@ class TestResultUploadServiceIntegrationTest extends BaseServiceTest<TestResultU
     mockCreationTime("2020-01-01 00:00");
     initSampleData();
     Organization currentOrganization = organizationService.getCurrentOrganization();
-    Facility facility = _dataFactory.createValidFacility(currentOrganization);
 
     mockCreationTime("2020-02-17 00:00");
     uploadRepository.save(

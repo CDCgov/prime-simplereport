@@ -40,12 +40,10 @@ const PersonalDetailsForm = ({
   middleName,
   lastName,
 }: PersonalDetailsFormProps) => {
-  const [
-    personalDetails,
-    setPersonalDetails,
-  ] = useState<IdentityVerificationRequest>(
-    initPersonalDetails(orgExternalId, firstName, middleName, lastName)
-  );
+  const [personalDetails, setPersonalDetails] =
+    useState<IdentityVerificationRequest>(
+      initPersonalDetails(orgExternalId, firstName, middleName, lastName)
+    );
   const [errors, setErrors] = useState<PersonalDetailsFormErrors>(
     initPersonalDetailsErrors()
   );
@@ -55,12 +53,12 @@ const PersonalDetailsForm = ({
   const [submitted, setSubmitted] = useState(false);
   useDocumentTitle("Sign up - personal details | SimpleReport");
 
-  const onDetailChange = (field: keyof IdentityVerificationRequest) => (
-    value: IdentityVerificationRequest[typeof field]
-  ) => {
-    setFormChanged(true);
-    setPersonalDetails({ ...personalDetails, [field]: value });
-  };
+  const onDetailChange =
+    (field: keyof IdentityVerificationRequest) =>
+    (value: IdentityVerificationRequest[typeof field]) => {
+      setFormChanged(true);
+      setPersonalDetails({ ...personalDetails, [field]: value });
+    };
 
   const validateField = async (field: keyof IdentityVerificationRequest) => {
     setErrors(
@@ -91,9 +89,11 @@ const PersonalDetailsForm = ({
     let elementsWithErrors = Array.from(
       document.querySelectorAll("[aria-invalid=true]")
     );
-    (elementsWithErrors.find(
-      (element) => element.getAttribute("aria-hidden") !== "true"
-    ) as HTMLElement | null)?.focus();
+    (
+      elementsWithErrors.find(
+        (element) => element.getAttribute("aria-hidden") !== "true"
+      ) as HTMLElement | null
+    )?.focus();
   };
 
   if (orgExternalId === null) {

@@ -119,7 +119,6 @@ class TestEventRepositoryTest extends BaseRepositoryTest {
     _repo.save(secondEvent);
 
     flush();
-    TestEvent found = _repo.findFirst1ByPatientOrderByCreatedAtDesc(patient);
     var savedSecondEvent = _repo.findById(secondEvent.getInternalId()).get();
     assertEquals(TestResult.UNDETERMINED, savedSecondEvent.getCovidTestResult().orElseThrow());
     List<TestEvent> foundTestReports2 =

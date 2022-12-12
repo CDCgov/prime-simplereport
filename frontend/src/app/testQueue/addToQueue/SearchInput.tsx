@@ -70,20 +70,19 @@ const SearchInput = ({
             onFocus={onInputChange}
             aria-labelledby={labeledBy}
           />
-          {showSubmitButton && (
-            <button
-              type="submit"
-              className="usa-button"
-              disabled={disabled}
-              onClick={onSearchClick}
-            >
-              <img
-                src={iconSearch}
-                className="usa-search__submit-icon"
-                alt="Search"
-              />
-            </button>
-          )}
+          <button
+            type="submit"
+            className="usa-button"
+            disabled={disabled}
+            onClick={onSearchClick}
+            style={!showSubmitButton ? { display: "none" } : undefined}
+          >
+            <img
+              src={iconSearch}
+              className="usa-search__submit-icon"
+              alt="Search"
+            />
+          </button>
         </div>
       </form>
     </div>

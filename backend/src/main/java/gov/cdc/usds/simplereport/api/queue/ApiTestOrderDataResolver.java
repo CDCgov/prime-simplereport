@@ -5,6 +5,7 @@ import gov.cdc.usds.simplereport.db.model.DeviceType;
 import gov.cdc.usds.simplereport.db.model.PatientAnswers;
 import gov.cdc.usds.simplereport.db.model.Person;
 import gov.cdc.usds.simplereport.db.model.Result;
+import gov.cdc.usds.simplereport.db.model.SpecimenType;
 import gov.cdc.usds.simplereport.db.repository.PatientAnswersRepository;
 import gov.cdc.usds.simplereport.db.repository.PersonRepository;
 import java.time.LocalDate;
@@ -90,6 +91,11 @@ public class ApiTestOrderDataResolver {
   @SchemaMapping(typeName = "TestOrder", field = "deviceType")
   public DeviceType deviceType(ApiTestOrder apiTestOrder) {
     return apiTestOrder.getWrapped().getDeviceType();
+  }
+
+  @SchemaMapping(typeName = "TestOrder", field = "specimenType")
+  public SpecimenType specimenType(ApiTestOrder apiTestOrder) {
+    return apiTestOrder.getWrapped().getSpecimenType();
   }
 
   @SchemaMapping(typeName = "TestOrder", field = "results")

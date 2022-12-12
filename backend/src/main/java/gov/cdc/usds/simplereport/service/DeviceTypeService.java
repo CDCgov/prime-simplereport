@@ -19,7 +19,6 @@ import java.util.List;
 import java.util.Optional;
 import java.util.UUID;
 import java.util.stream.Collectors;
-import java.util.stream.StreamSupport;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -68,12 +67,6 @@ public class DeviceTypeService {
         .orElseThrow(() -> new IllegalGraphqlArgumentException("invalid device type ID"));
   }
 
-  public List<DeviceSpecimenType> getDeviceSpecimenTypesByIds(List<UUID> deviceSpecimenTypeIds) {
-    return StreamSupport.stream(
-            _deviceSpecimenRepo.findAllById(deviceSpecimenTypeIds).spliterator(), false)
-        .collect(Collectors.toList());
-  }
-
   public List<DeviceSpecimenType> getDeviceSpecimenTypes() {
     return _deviceSpecimenRepo.findAll();
   }
@@ -91,6 +84,15 @@ public class DeviceTypeService {
             () ->
                 new IllegalGraphqlArgumentException(
                     "Device is not configured with a specimen type"));
+  }
+
+  public DeviceSpecimenType getDeviceSpecimenType(UUID deviceTypeId, UUID specimenTypeId) {
+    return _deviceSpecimenRepo
+        .findByDeviceTypeInternalIdAndSpecimenTypeInternalIdOrderByCreatedAt(
+            deviceTypeId, specimenTypeId)
+        .orElseThrow(
+            () ->
+                new IllegalGraphqlArgumentException("Not a valid device and specimen combination"));
   }
 
   @Transactional(readOnly = false)

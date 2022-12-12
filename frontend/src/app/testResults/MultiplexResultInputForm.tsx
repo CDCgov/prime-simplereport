@@ -95,9 +95,8 @@ const MultiplexResultInputForm: React.FC<Props> = ({
 }) => {
   //eslint-disable-next-line no-restricted-globals
   const isMobile = screen.width <= 600;
-  const resultsMultiplexFormat: MultiplexResultState = convertFromMultiplexResultInputs(
-    testResults
-  );
+  const resultsMultiplexFormat: MultiplexResultState =
+    convertFromMultiplexResultInputs(testResults);
   const inconclusiveCheck =
     resultsMultiplexFormat.covid === TEST_RESULTS.UNDETERMINED &&
     resultsMultiplexFormat.fluA === TEST_RESULTS.UNDETERMINED &&

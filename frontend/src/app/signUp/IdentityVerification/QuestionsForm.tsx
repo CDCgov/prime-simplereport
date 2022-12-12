@@ -66,12 +66,12 @@ const QuestionsForm: React.FC<Props> = ({
 
   const schema = buildSchema(questionSet);
 
-  const onAnswerChange = <K extends keyof Answers>(field: K) => (
-    value: Answers[K]
-  ) => {
-    setFormChanged(true);
-    setAnswers({ ...answers, [field]: value });
-  };
+  const onAnswerChange =
+    <K extends keyof Answers>(field: K) =>
+    (value: Answers[K]) => {
+      setFormChanged(true);
+      setAnswers({ ...answers, [field]: value });
+    };
 
   const validateField = async (field: keyof Answers) => {
     setErrors(await isFieldValid({ data: answers, schema, errors, field }));

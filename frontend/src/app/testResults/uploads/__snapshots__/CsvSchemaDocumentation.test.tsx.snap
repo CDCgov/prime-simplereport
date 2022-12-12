@@ -1,44 +1,6 @@
 // Jest Snapshot v1, https://goo.gl/fbAQLP
 
-exports[`CsvSchemaDocumentation tests CsvSchemaDocumentationItem renders a schema item 1`] = `
-<div>
-  <h5
-    class="margin-bottom-2"
-    data-testid="header"
-    id="sample_item"
-  >
-    Sample Item
-    <span
-      class="text-normal bg-white border-1px border-base font-body-3xs padding-x-1 padding-y-05 text-base margin-left-2 text-ttbottom"
-    >
-      Optional
-    </span>
-  </h5>
-  <div
-    class="margin-bottom-3"
-    data-testid="subheader"
-  />
-  <div
-    class="grid-row margin-bottom-05"
-    data-testid="column-header"
-  >
-    <div
-      class="grid-col-4 text-base"
-    >
-      Column header
-    </div>
-    <div
-      class="grid-col-auto"
-    >
-      <code>
-        sample_item
-      </code>
-    </div>
-  </div>
-</div>
-`;
-
-exports[`CsvSchemaDocumentation tests CsvSchemaDocumentaton matches snapshot 1`] = `
+exports[`CsvSchemaDocumentation tests CsvSchemaDocumentation matches snapshot 1`] = `
 <div>
   <div
     class="prime-container card-container csv-guide-container"
@@ -153,7 +115,7 @@ exports[`CsvSchemaDocumentation tests CsvSchemaDocumentaton matches snapshot 1`]
           <li>
             <a
               class=""
-              href="/csv/codelookup"
+              href="/results/upload/submit/code-lookup"
             >
               Device code lookup tool
             </a>
@@ -2065,7 +2027,7 @@ exports[`CsvSchemaDocumentation tests CsvSchemaDocumentaton matches snapshot 1`]
                   Find your device on the 
                   <a
                     class="usa-link"
-                    href="/csv/codelookup"
+                    href="/app/results/upload/submit/code-lookup"
                     rel="noreferrer noopener"
                     target="_blank"
                   >
@@ -2186,7 +2148,7 @@ exports[`CsvSchemaDocumentation tests CsvSchemaDocumentaton matches snapshot 1`]
                   Find your device on the 
                   <a
                     class="usa-link"
-                    href="/csv/codelookup"
+                    href="/app/results/upload/submit/code-lookup"
                     rel="noreferrer noopener"
                     target="_blank"
                   >
@@ -2326,10 +2288,10 @@ exports[`CsvSchemaDocumentation tests CsvSchemaDocumentaton matches snapshot 1`]
                 class="grid-col-8"
               >
                 <div>
-                  Use one of the comman values below, or find your device on the 
+                  Use one of the common values below, or find your device on the 
                   <a
                     class="usa-link"
-                    href="/csv/codelookup"
+                    href="/app/results/upload/submit/code-lookup"
                     rel="noreferrer noopener"
                     target="_blank"
                   >
@@ -2472,7 +2434,7 @@ exports[`CsvSchemaDocumentation tests CsvSchemaDocumentaton matches snapshot 1`]
                 class="grid-col-8 prime-ul margin-top-0"
               >
                 <code>
-                  M/D/YYY HH:mm
+                  M/D/YYYY HH:mm
                 </code>
                  is preferred, but 
                 <code>
@@ -2584,7 +2546,7 @@ exports[`CsvSchemaDocumentation tests CsvSchemaDocumentaton matches snapshot 1`]
                 class="grid-col-8 prime-ul margin-top-0"
               >
                 <code>
-                  M/D/YYY HH:mm
+                  M/D/YYYY HH:mm
                 </code>
                  is preferred, but 
                 <code>
@@ -2696,7 +2658,7 @@ exports[`CsvSchemaDocumentation tests CsvSchemaDocumentaton matches snapshot 1`]
                 class="grid-col-8 prime-ul margin-top-0"
               >
                 <code>
-                  M/D/YYY HH:mm
+                  M/D/YYYY HH:mm
                 </code>
                  is preferred, but 
                 <code>
@@ -2784,7 +2746,7 @@ exports[`CsvSchemaDocumentation tests CsvSchemaDocumentaton matches snapshot 1`]
                 class="grid-col-8 prime-ul margin-top-0"
               >
                 <code>
-                  M/D/YYY HH:mm
+                  M/D/YYYY HH:mm
                 </code>
                  is preferred, but 
                 <code>
@@ -2896,7 +2858,7 @@ exports[`CsvSchemaDocumentation tests CsvSchemaDocumentaton matches snapshot 1`]
                 class="grid-col-8 prime-ul margin-top-0"
               >
                 <code>
-                  M/D/YYY HH:mm
+                  M/D/YYYY HH:mm
                 </code>
                  is preferred, but 
                 <code>
@@ -2993,10 +2955,10 @@ exports[`CsvSchemaDocumentation tests CsvSchemaDocumentaton matches snapshot 1`]
                 class="grid-col-8"
               >
                 <div>
-                  Use one of the comman values below, or find your device on the 
+                  Use one of the common values below, or find your device on the 
                   <a
                     class="usa-link"
-                    href="/csv/codelookup"
+                    href="/app/results/upload/submit/code-lookup"
                     rel="noreferrer noopener"
                     target="_blank"
                   >
@@ -6382,6 +6344,44 @@ exports[`CsvSchemaDocumentation tests CsvSchemaDocumentaton matches snapshot 1`]
           Return to top
         </a>
       </p>
+    </div>
+  </div>
+</div>
+`;
+
+exports[`CsvSchemaDocumentation tests CsvSchemaDocumentationItem renders a schema item 1`] = `
+<div>
+  <h5
+    class="margin-bottom-2"
+    data-testid="header"
+    id="sample_item"
+  >
+    Sample Item
+    <span
+      class="text-normal bg-white border-1px border-base font-body-3xs padding-x-1 padding-y-05 text-base margin-left-2 text-ttbottom"
+    >
+      Optional
+    </span>
+  </h5>
+  <div
+    class="margin-bottom-3"
+    data-testid="subheader"
+  />
+  <div
+    class="grid-row margin-bottom-05"
+    data-testid="column-header"
+  >
+    <div
+      class="grid-col-4 text-base"
+    >
+      Column header
+    </div>
+    <div
+      class="grid-col-auto"
+    >
+      <code>
+        sample_item
+      </code>
     </div>
   </div>
 </div>

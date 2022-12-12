@@ -1,12 +1,12 @@
 plugins {
-    id 'org.springframework.boot' version '2.7.4'
+    id 'org.springframework.boot' version '2.7.6'
     id 'org.liquibase.gradle' version '2.0.4'
-    id 'io.spring.dependency-management' version '1.0.14.RELEASE'
+    id 'io.spring.dependency-management' version '1.0.15.RELEASE'
     id 'java'
     id 'checkstyle'
     id 'jacoco'
     id 'org.sonarqube' version '3.0'
-    id 'com.gorylenko.gradle-git-properties' version '2.4.0'
+    id 'com.gorylenko.gradle-git-properties' version '2.4.1'
     id "com.diffplug.spotless" version "5.14.0"
 }
 
@@ -77,7 +77,7 @@ dependencies {
     runtimeOnly 'org.springframework.session:spring-session-jdbc'
 
     // App insights instrumentation
-    implementation 'com.microsoft.azure:applicationinsights-core:2.6.3'
+    implementation 'com.microsoft.azure:applicationinsights-core:3.4.4'
 
     // Twilio for SMS
     implementation group: "com.twilio.sdk", name: "twilio", version: "8.7.0"

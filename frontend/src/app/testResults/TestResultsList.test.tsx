@@ -673,9 +673,8 @@ describe("TestResultsList", () => {
       // source of the React key prop warning
       const clickActionMenu = async () => {
         expect(await screen.findByText("Showing 1-3 of 3")).toBeInTheDocument();
-        const actionMenuButton = document.querySelectorAll(
-          ".rc-menu-button"
-        )[0];
+        const actionMenuButton =
+          document.querySelectorAll(".rc-menu-button")[0];
         userEvent.click(actionMenuButton as HTMLElement);
       };
       it.each([

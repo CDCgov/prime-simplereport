@@ -53,34 +53,13 @@ describe("Organization sign up", () => {
     cy.contains("Support admin");
 
     cy.injectAxe();
-    // failing a11y test - admin
-    cy.checkA11y(
-        {
-          exclude: [],
-        },
-        {
-          rules: {
-            'page-has-heading-one': { enabled: false },
-          },
-        },
-    );
+    cy.checkA11y();
 
     cy.contains("Organizations pending identify verification").click();
     cy.get("[data-cy=pending-orgs-title]").should("be.visible");
 
     cy.contains("td", `${organization.name}`);
-    // failing a11y test - admin
-    cy.checkA11y(
-        {
-          exclude: [],
-        },
-        {
-          rules: {
-            'button-name': { enabled: false },
-            'page-has-heading-one': { enabled: false },
-          },
-        },
-    );
+    cy.checkA11y();
 
     cy.contains("td", `${organization.name}`)
       .siblings()
@@ -103,20 +82,7 @@ describe("Organization sign up", () => {
     cy.get('input[name="justification"]').type("I am a test user").blur();
 
     cy.injectAxe();
-    // failing a11y test - admin
-    cy.checkA11y(
-        {
-          exclude: [],
-        },
-        {
-          rules: {
-            'label-title-only': { enabled: false },
-            'label': { enabled: false },
-            'page-has-heading-one': { enabled: false },
-
-          },
-        },
-    );
+    cy.checkA11y();
 
     cy.contains("Access data").click();
     cy.contains("Support admin");
@@ -128,35 +94,15 @@ describe("Organization sign up", () => {
     cy.contains("Manage facilities").click();
     cy.contains("CLIA number");
 
-    // failing a11y test
     // Test a11y on Manage Facilities tab
     cy.injectAxe();
-    cy.checkA11y(
-        {
-          exclude: [],
-        },
-        {
-          rules: {
-            'page-has-heading-one': { enabled: false },
-          },
-        },
-    );
+    cy.checkA11y();
 
     cy.contains("+ New facility").click();
     cy.contains("Testing facility information");
 
-    // failing a11y test
     // Test a11y on New Facility page
-    cy.checkA11y(
-        {
-          exclude: [],
-        },
-        {
-          rules: {
-            'empty-heading': { enabled: false },
-          },
-        },
-    );
+    cy.checkA11y();
   });
   it("fills out the form for a new facility", () => {
     cy.get('input[name="name"]').type(facility.name);

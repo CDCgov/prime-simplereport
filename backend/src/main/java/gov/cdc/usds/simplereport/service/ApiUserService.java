@@ -81,16 +81,13 @@ public class ApiUserService {
   }
 
   @AuthorizationConfiguration.RequirePermissionManageUsers
-  public UserInfo createUserInCurrentOrg(
-      String username, PersonName name, Role role, boolean active) {
+  public UserInfo createUserInCurrentOrg(String username, PersonName name, Role role) {
     Organization org = _orgService.getCurrentOrganization();
 
     Optional<ApiUser> found = _apiUserRepo.findByLoginEmailIncludeArchived(username.toLowerCase());
-    if (found.isPresent()) {
-      return reprovisionUser(found.get(), name, org, role);
-    }
-
-    return createUserHelper(username, name, org, role);
+    return found
+        .map(apiUser -> reprovisionUser(apiUser, name, org, role))
+        .orElseGet(() -> createUserHelper(username, name, org, role));
   }
 
   @AuthorizationConfiguration.RequireGlobalAdminUser
@@ -240,14 +237,13 @@ public class ApiUserService {
     Optional<OrganizationRoleClaims> roleClaims = _oktaRepo.updateUserEmail(userIdentity, email);
     Optional<OrganizationRoles> orgRoles = roleClaims.map(_orgService::getOrganizationRoles);
     boolean isAdmin = isAdmin(apiUser);
-    UserInfo user = new UserInfo(apiUser, orgRoles, isAdmin);
 
     log.info(
         "User with id={} updated by user with id={}",
         apiUser.getInternalId(),
         getCurrentApiUser().getInternalId().toString());
 
-    return new UserInfo(apiUser, orgRoles, isAdmin(apiUser));
+    return new UserInfo(apiUser, orgRoles, isAdmin);
   }
 
   @AuthorizationConfiguration.RequirePermissionManageTargetUser
