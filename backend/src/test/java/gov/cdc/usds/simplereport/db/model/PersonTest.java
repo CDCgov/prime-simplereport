@@ -118,18 +118,10 @@ class PersonTest {
 
     var actual = person.toFhir();
     var raceExtension =
-        actual.getExtension().stream()
-            .filter(
-                ext ->
-                    "http://ibm.com/fhir/cdm/StructureDefinition/local-race-cd"
-                        .equals(ext.getUrl()))
-            .findFirst()
-            .orElseThrow(() -> new AssertionError("Unable to find extension based on URL"));
+        actual.getExtensionByUrl("http://ibm.com/fhir/cdm/StructureDefinition/local-race-cd");
     var codeableConcept = actual.castToCodeableConcept(raceExtension.getValue());
     var code = codeableConcept.getCoding();
 
-    assertThat(raceExtension.getUrl())
-        .isEqualTo("http://ibm.com/fhir/cdm/StructureDefinition/local-race-cd");
     assertThat(code).hasSize(1);
     assertThat(code.get(0).getSystem()).isEqualTo("http://terminology.hl7.org/CodeSystem/v3-Race");
     assertThat(code.get(0).getCode()).isEqualTo(expectedCode);
