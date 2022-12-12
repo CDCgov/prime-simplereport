@@ -57,6 +57,7 @@ jobs:
           POSTGRES_USER: postgres
           POSTGRES_DB: postgres
           LIB_DIR: db-setup
+          PGOPTIONS: '-c max_connections=500'
         run: |
           chmod 0600 $PGPASSFILE
           db-setup/create-db.sh
