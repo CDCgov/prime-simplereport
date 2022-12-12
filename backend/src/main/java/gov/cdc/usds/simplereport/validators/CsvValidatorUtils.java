@@ -131,7 +131,6 @@ public class CsvValidatorUtils {
   private static final Set<String> PHONE_NUMBER_TYPE_VALUES = Set.of("mobile", "landline");
   private static final Set<String> TEST_RESULT_STATUS_VALUES = Set.of("f", "c");
   public static final String ITEM_SCOPE = "item";
-  public static final String REPORT_SCOPE = "report";
 
   private CsvValidatorUtils() {
     throw new IllegalStateException("CsvValidatorUtils is a utility class");
@@ -240,7 +239,7 @@ public class CsvValidatorUtils {
   public static ValueOrError getValue(Map<String, String> row, String name, boolean isRequired) {
     String value = row.get(name);
     if (isRequired && (value == null || value.trim().isEmpty())) {
-      return new ValueOrError(new FeedbackMessage(REPORT_SCOPE, name + " is a required column."));
+      return new ValueOrError(new FeedbackMessage(ITEM_SCOPE, name + " is a required column."));
     }
     return new ValueOrError(value, name);
   }

@@ -10,10 +10,9 @@ import { MockedProvider } from "@apollo/client/testing";
 import { MemoryRouter } from "react-router-dom";
 import { Provider } from "react-redux";
 import configureStore, { MockStoreEnhanced } from "redux-mock-store";
-import MockDate from "mockdate";
 
 import {
-  GetFacilityQueueMultiplexDocument,
+  GetFacilityQueueDocument,
   RemovePatientFromQueueDocument,
 } from "../../generated/graphql";
 import { appPermissions } from "../permissions";
@@ -57,8 +56,6 @@ describe("TestQueue", () => {
   });
 
   it("should render the test queue", async () => {
-    MockDate.set("2021-08-01 08:20");
-
     const { container } = render(
       <MemoryRouter>
         <MockedProvider mocks={mocks}>
@@ -68,13 +65,22 @@ describe("TestQueue", () => {
         </MockedProvider>
       </MemoryRouter>
     );
-    await screen.findByLabelText(
-      `Search for a ${PATIENT_TERM} to start their test`
+    await new Promise((resolve) => setTimeout(resolve, 501));
+
+    await waitFor(
+      async () => {
+        expect(
+          screen.getByLabelText(
+            `Search for a ${PATIENT_TERM} to start their test`
+          )
+        ).toBeInTheDocument();
+      },
+      { timeout: 1000 }
     );
+
     expect(await screen.findByText("Doe, John A"));
     expect(await screen.findByText("Smith, Jane"));
     expect(container).toMatchSnapshot();
-    MockDate.reset();
   });
 
   it("should remove items queue using the transition group", async () => {
@@ -94,15 +100,14 @@ describe("TestQueue", () => {
     await userEvent.click(removeButton);
     const confirmButton = await screen.findByText("Yes", { exact: false });
     await userEvent.click(confirmButton);
-    //expect(await screen.findByText(/Submitting test data for Doe, John A/i));
-    // loading masks checks failing unless introducing delay. Pending to check how to introduce delay with apollo
-    await waitForElementToBeRemoved(() =>
-      screen.queryByText(/Submitting test data for Doe, John A/i)
+    expect(
+      screen.getByText("Submitting test data for Doe, John A...")
+    ).toBeInTheDocument();
+    await waitForElementToBeRemoved(
+      () => screen.queryByText("Submitting test data for Doe, John A..."),
+      { timeout: 10000 }
     );
-
-    await waitFor(() =>
-      expect(screen.queryByText("Doe, John A")).not.toBeInTheDocument()
-    );
+    expect(screen.queryByText("Doe, John A")).not.toBeInTheDocument();
   });
 
   it("should render the empty queue message if no tests in the queue", async () => {
@@ -198,8 +203,8 @@ describe("TestQueue", () => {
       await screen.findByLabelText(
         `Search for a ${PATIENT_TERM} to start their test`
       );
-      expect(await screen.findByText("Doe, John A"));
-      expect(await screen.findByText("Smith, Jane"));
+      expect(await screen.findByText("Doe, John A")).toBeInTheDocument();
+      expect(await screen.findByText("Smith, Jane")).toBeInTheDocument();
 
       await userEvent.click(screen.getAllByText("Test questionnaire")[0]);
     });
@@ -224,97 +229,7 @@ describe("TestQueue", () => {
       expect(within(modal).getByText("8178675911")).toBeInTheDocument();
     });
   });
-
-  describe("device selection", () => {
-    it("should select another swab type for the selected device if configured swab not available", async () => {
-      const deviceSpecimenNotAvailableResult = { ...result };
-
-      // Default device specimen for facility is not a valid type in the `deviceSpecimenTypes` array
-      // returned by GraphQL. The component should select another of the facility's devices to
-      // populate the dropdown initially
-      deviceSpecimenNotAvailableResult.data.organization.testingFacility[0].defaultDeviceSpecimen =
-        "c0c7b042-9a4f-47cd-b280-46c0daa51c86";
-      deviceSpecimenNotAvailableResult.data.deviceSpecimenTypes.pop();
-
-      const mock = {
-        request: {
-          query: GetFacilityQueueMultiplexDocument,
-          variables: {
-            facilityId: "a1",
-          },
-        },
-        result: deviceSpecimenNotAvailableResult,
-      };
-
-      render(
-        <MemoryRouter>
-          <MockedProvider mocks={[mock]}>
-            <Provider store={store}>
-              <TestQueue activeFacilityId="a1" />
-            </Provider>
-          </MockedProvider>
-        </MemoryRouter>
-      );
-
-      expect(
-        ((await screen.findAllByText("Quidel Sofia 2"))[0] as HTMLOptionElement)
-          .selected
-      ).toBeTruthy();
-
-      expect(
-        (
-          (
-            await screen.findAllByText("Nasopharyngeal swab")
-          )[0] as HTMLOptionElement
-        ).selected
-      ).toBeTruthy();
-    });
-
-    it("should select another device if the configured device has no associated swab types", async () => {
-      const deviceNotAvailableResult = { ...result };
-
-      // The device configured as the facility default has no associated swab types - dropdown
-      // should be populated with another valid device+swab type combo
-      deviceNotAvailableResult.data.queue[0].deviceType = {
-        internalId: internalId,
-        model: "lumira",
-        name: "LumiraDx",
-        testLength: 15,
-        __typename: "DeviceType",
-      };
-
-      deviceNotAvailableResult.data.deviceSpecimenTypes.shift();
-
-      const mock = {
-        request: {
-          query: GetFacilityQueueMultiplexDocument,
-          variables: {
-            facilityId: "a1",
-          },
-        },
-        result: deviceNotAvailableResult,
-      };
-
-      render(
-        <MemoryRouter>
-          <MockedProvider mocks={[mock]}>
-            <Provider store={store}>
-              <TestQueue activeFacilityId="a1" />
-            </Provider>
-          </MockedProvider>
-        </MemoryRouter>
-      );
-
-      // The facility's default device is "LumiraDx", but that device has no associated swabs
-      expect(
-        ((await screen.findAllByText("Quidel Sofia 2"))[0] as HTMLOptionElement)
-          .selected
-      ).toBeTruthy();
-    });
-  });
 });
-
-const internalId = "f5c7658d-a0d5-4ec5-a1c9-eafc85fe7554";
 
 const symptoms = JSON.stringify({
   "64531003": "false",
@@ -377,25 +292,21 @@ const createPatient = ({
     gender: "female",
     testResultDelivery: "",
     preferredLanguage: [],
-    __typename: "Patient",
   },
   deviceType: {
-    internalId: "0f3d7426-3476-4800-97e7-3de8a93b090c",
-    model: "quidel",
-    name: "Quidel Sofia 2",
-    testLength: 10,
-    __typename: "DeviceType",
+    internalId: "ee4f40b7-ac32-4709-be0a-56dd77bb9609",
+    name: "LumiraDX",
+    model: "LumiraDx SARS-CoV-2 Ag Test*",
+    testLength: 15,
+    supportedDiseases: [],
   },
-  deviceSpecimenType: {
-    internalId,
+  specimenType: {
+    internalId: "8596682d-6053-4720-8a39-1f5d19ff4ed9",
+    name: "Swab of internal nose",
+    typeCode: "445297001",
   },
   results: [],
   dateTested: null,
-  patientLink: {
-    internalId: "7df95d14-c9ca-406e-bed7-85da05d5eea1",
-    __typename: "PatientLink",
-  },
-  __typename: "TestOrder",
 });
 
 // Mock data taken from network request tab in Chrome devtools
@@ -417,106 +328,120 @@ const result = {
         resultId: "def",
       }),
     ],
-    organization: {
-      testingFacility: [
+    facility: {
+      id: "f02cfff5-1921-4293-beff-e2a5d03e1fda",
+      name: "Testing Site",
+      deviceTypes: [
         {
-          id: "a1",
-          deviceTypes: [
+          internalId: "ee4f40b7-ac32-4709-be0a-56dd77bb9609",
+          name: "LumiraDX",
+          testLength: 15,
+          supportedDiseases: [
             {
-              internalId,
-              testLength: 15,
-              model: "lumira",
-              name: "LumiraDX",
-              __typename: "DeviceType",
-            },
-            {
-              internalId: "0f3d7426-3476-4800-97e7-3de8a93b090c",
-              testLength: 15,
-              model: "quidel",
-              name: "Quidel Sofia 2",
-              __typename: "DeviceType",
+              internalId: "6e67ea1c-f9e8-4b3f-8183-b65383ac1283",
+              loinc: "96741-4",
+              name: "COVID-19",
             },
           ],
-          defaultDeviceSpecimen: internalId,
-          __typename: "Facility",
+          swabTypes: [
+            {
+              name: "Swab of internal nose",
+              internalId: "8596682d-6053-4720-8a39-1f5d19ff4ed9",
+              typeCode: "445297001",
+            },
+            {
+              name: "Nasopharyngeal swab",
+              internalId: "f127ef55-4133-4556-9bca-33615d071e8d",
+              typeCode: "258500001",
+            },
+          ],
         },
         {
-          id: "a2",
-          deviceTypes: [
+          internalId: "5c711888-ba37-4b2e-b347-311ca364efdb",
+          name: "Abbott BinaxNow",
+          testLength: 15,
+          supportedDiseases: [
             {
-              internalId,
-              testLength: 15,
-              model: "lumira",
-              name: "LumiraDX",
-              __typename: "DeviceType",
+              internalId: "6e67ea1c-f9e8-4b3f-8183-b65383ac1283",
+              loinc: "96741-4",
+              name: "COVID-19",
             },
           ],
-          defaultDeviceSpecimen: internalId,
-          __typename: "Facility",
+          swabTypes: [
+            {
+              name: "Swab of internal nose",
+              internalId: "8596682d-6053-4720-8a39-1f5d19ff4ed9",
+              typeCode: "445297001",
+            },
+          ],
+        },
+        {
+          internalId: "32b2ca2a-75e6-4ebd-a8af-b50c7aea1d10",
+          name: "BD Veritor",
+          testLength: 15,
+          supportedDiseases: [
+            {
+              internalId: "6e67ea1c-f9e8-4b3f-8183-b65383ac1283",
+              loinc: "96741-4",
+              name: "COVID-19",
+            },
+          ],
+          swabTypes: [
+            {
+              name: "Swab of internal nose",
+              internalId: "8596682d-6053-4720-8a39-1f5d19ff4ed9",
+              typeCode: "445297001",
+            },
+            {
+              name: "Nasopharyngeal swab",
+              internalId: "f127ef55-4133-4556-9bca-33615d071e8d",
+              typeCode: "258500001",
+            },
+          ],
+        },
+        {
+          internalId: "67109f6f-eaee-49d3-b8ff-c61b79a9da8e",
+          name: "Multiplex",
+          testLength: 15,
+          supportedDiseases: [
+            {
+              internalId: "6e67ea1c-f9e8-4b3f-8183-b65383ac1283",
+              loinc: "96741-4",
+              name: "COVID-19",
+            },
+            {
+              internalId: "e286f2a8-38e2-445b-80a5-c16507a96b66",
+              loinc: "LP14239-5",
+              name: "Flu A",
+            },
+            {
+              internalId: "14924488-268f-47db-bea6-aa706971a098",
+              loinc: "LP14240-3",
+              name: "Flu B",
+            },
+          ],
+          swabTypes: [
+            {
+              name: "Swab of internal nose",
+              internalId: "8596682d-6053-4720-8a39-1f5d19ff4ed9",
+              typeCode: "445297001",
+            },
+            {
+              name: "Nasopharyngeal swab",
+              internalId: "f127ef55-4133-4556-9bca-33615d071e8d",
+              typeCode: "258500001",
+            },
+          ],
         },
       ],
-      __typename: "Organization",
     },
-    deviceSpecimenTypes: [
-      {
-        internalId: "3d5c0c67-cddb-4344-8037-18008d6fe809",
-        deviceType: {
-          internalId: internalId,
-          model: "lumira",
-          name: "LumiraDx",
-          testLength: 15,
-          supportedDiseases: [{ internalId: "1", name: "COVID-19" }],
-          __typename: "DeviceType",
-        },
-        specimenType: {
-          internalId: "6aa957dc-add2-4938-8788-935aec3276d4",
-          name: "Swab of internal nose",
-          __typename: "SpecimenType",
-        },
-        __typename: "DeviceSpecimenType",
-      },
-      {
-        internalId: "f8b9d9d6-c318-4c54-a516-76f0d9a25d32",
-        deviceType: {
-          internalId: "0f3d7426-3476-4800-97e7-3de8a93b090c",
-          model: "quidel",
-          name: "Quidel Sofia 2",
-          testLength: 10,
-          supportedDiseases: [{ internalId: "1", name: "COVID-19" }],
-          __typename: "DeviceType",
-        },
-        specimenType: {
-          internalId: "6e4ccb35-d177-4ea0-9226-653358f1e081",
-          name: "Nasopharyngeal swab",
-          __typename: "SpecimenType",
-        },
-        __typename: "DeviceSpecimenType",
-      },
-      {
-        internalId: "c0c7b042-9a4f-47cd-b280-46c0daa51c86",
-        deviceType: {
-          internalId: "0f3d7426-3476-4800-97e7-3de8a93b090c",
-          model: "quidel",
-          name: "Quidel Sofia 2",
-          testLength: 10,
-          supportedDiseases: [{ internalId: "1", name: "COVID-19" }],
-          __typename: "DeviceType",
-        },
-        specimenType: {
-          internalId: "6aa957dc-add2-4938-8788-935aec3276d4",
-          name: "Swab of internal nose",
-          __typename: "SpecimenType",
-        },
-        __typename: "DeviceSpecimenType",
-      },
-    ],
   },
 };
 
 const mocks = [
   {
     request: {
-      query: GetFacilityQueueMultiplexDocument,
+      query: GetFacilityQueueDocument,
       variables: {
         facilityId: "a1",
       },
@@ -546,7 +471,7 @@ const mocks = [
   },
   {
     request: {
-      query: GetFacilityQueueMultiplexDocument,
+      query: GetFacilityQueueDocument,
       variables: {
         facilityId: "a1",
       },
@@ -560,7 +485,7 @@ const mocks = [
   },
   {
     request: {
-      query: GetFacilityQueueMultiplexDocument,
+      query: GetFacilityQueueDocument,
       variables: {
         facilityId: "a2",
       },

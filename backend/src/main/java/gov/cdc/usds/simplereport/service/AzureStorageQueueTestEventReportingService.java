@@ -3,6 +3,7 @@ package gov.cdc.usds.simplereport.service;
 import com.azure.storage.queue.QueueAsyncClient;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import gov.cdc.usds.simplereport.api.model.TestEventExport;
+import gov.cdc.usds.simplereport.api.model.errors.TestEventSerializationFailureException;
 import gov.cdc.usds.simplereport.db.model.TestEvent;
 import java.io.IOException;
 import java.util.ArrayList;
@@ -80,7 +81,8 @@ public final class AzureStorageQueueTestEventReportingService implements TestEve
     try {
       return mapper.writeValueAsString(new TestEventExport(testEvent));
     } catch (IOException e) {
-      throw new IllegalArgumentException("Failed to serialize test event", e);
+      throw new TestEventSerializationFailureException(
+          testEvent.getInternalId(), e.getCause().getMessage());
     }
   }
 }

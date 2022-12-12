@@ -1,8 +1,12 @@
 package gov.cdc.usds.simplereport.service;
 
+import static org.assertj.core.api.Assertions.assertThat;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
 
+import gov.cdc.usds.simplereport.db.model.SupportedDisease;
+import java.util.Map;
+import java.util.UUID;
 import org.junit.jupiter.api.Test;
 
 class DiseaseServiceTest extends BaseServiceTest<DiseaseService> {
@@ -23,5 +27,17 @@ class DiseaseServiceTest extends BaseServiceTest<DiseaseService> {
   void retrievesFluB_successful() {
     assertNotNull(_service.fluB());
     assertEquals("Flu B", _service.fluB().getName());
+  }
+
+  @Test
+  void retrievesSupportedDiseasesMap_successful() {
+    Map<UUID, SupportedDisease> supportedDiseasesMap = _service.getKnownSupportedDiseasesMap();
+
+    assertThat(supportedDiseasesMap)
+        .isNotNull()
+        .hasSize(3)
+        .containsEntry(_service.covid().getInternalId(), _service.covid())
+        .containsEntry(_service.fluA().getInternalId(), _service.fluA())
+        .containsEntry(_service.fluB().getInternalId(), _service.fluB());
   }
 }

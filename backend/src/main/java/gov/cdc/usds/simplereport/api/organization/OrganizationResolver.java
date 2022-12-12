@@ -11,6 +11,7 @@ import gov.cdc.usds.simplereport.service.model.OrganizationRoles;
 import java.util.List;
 import java.util.Optional;
 import java.util.Set;
+import java.util.UUID;
 import java.util.stream.Collectors;
 import org.springframework.graphql.data.method.annotation.Argument;
 import org.springframework.graphql.data.method.annotation.QueryMapping;
@@ -87,5 +88,13 @@ public class OrganizationResolver {
       facilities.addAll(_organizationService.getArchivedFacilities());
     }
     return facilities.stream().map(ApiFacility::new).collect(Collectors.toSet());
+  }
+
+  @QueryMapping
+  public Optional<ApiFacility> facility(@Argument UUID id) {
+    Set<Facility> facilities = _organizationService.getAccessibleFacilities();
+    Optional<Facility> facility =
+        facilities.stream().filter(f -> f.getInternalId().equals(id)).findFirst();
+    return facility.map(ApiFacility::new);
   }
 }

@@ -13,7 +13,8 @@ import jwtDecode from "jwt-decode";
 import MockDate from "mockdate";
 
 import {
-  GetFacilityQueueMultiplexDocument,
+  GetFacilityQueueDocument,
+  GetFacilityQueueQuery,
   GetTopLevelDashboardMetricsNewDocument,
 } from "../generated/graphql";
 
@@ -138,7 +139,7 @@ const WhoAmIQueryMock = {
 };
 const facilityQueryMock = {
   request: {
-    query: GetFacilityQueueMultiplexDocument,
+    query: GetFacilityQueueDocument,
     fetchPolicy: "no-cache",
     variables: {
       facilityId: "fec4de56-f4cc-4c61-b3d5-76869ca71296",
@@ -147,34 +148,27 @@ const facilityQueryMock = {
   result: {
     data: {
       queue: [],
-      organization: {
-        testingFacility: [
+      facility: {
+        id: "fec4de56-f4cc-4c61-b3d5-76869ca71296",
+        name: "Testing site",
+        deviceTypes: [
           {
-            id: "fec4de56-f4cc-4c61-b3d5-76869ca71296",
-            deviceTypes: [
-              {
-                internalId: "d70bb3b8-96bd-40d9-a3ce-b266a7edb91d",
-                name: "Quidel Sofia 2",
-                model: "Sofia 2 SARS Antigen FIA",
-                testLength: 15,
-              },
-              {
-                internalId: "5e44dcef-8cc6-44f4-a200-a5b8169ab60a",
-                name: "LumiraDX",
-                model: "LumiraDx SARS-CoV-2 Ag Test*",
-                testLength: 15,
-              },
-            ],
-            defaultDeviceType: {
-              internalId: "5e44dcef-8cc6-44f4-a200-a5b8169ab60a",
-              name: "LumiraDX",
-              model: "LumiraDx SARS-CoV-2 Ag Test*",
-              testLength: 15,
-            },
+            internalId: "d70bb3b8-96bd-40d9-a3ce-b266a7edb91d",
+            name: "Quidel Sofia 2",
+            testLength: 15,
+            supportedDiseases: [],
+            swabTypes: [],
+          },
+          {
+            internalId: "5e44dcef-8cc6-44f4-a200-a5b8169ab60a",
+            name: "LumiraDX",
+            testLength: 15,
+            supportedDiseases: [],
+            swabTypes: [],
           },
         ],
       },
-    },
+    } as GetFacilityQueueQuery,
   },
 };
 const WhoAmIErrorQueryMock = {

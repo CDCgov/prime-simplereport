@@ -269,9 +269,9 @@ const EditPatient = (props: Props) => {
     displayFullName(person.firstName, person.middleName, person.lastName);
 
   return (
-    <div className="bg-base-lightest">
+    <div className="prime-home bg-base-lightest">
       <div className="grid-container">
-        <div className="prime-edit-patient prime-home">
+        <div className="prime-edit-patient">
           <div className={"margin-bottom-4"}>
             <PersonForm
               patient={{

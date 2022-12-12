@@ -103,6 +103,18 @@ exports[`TestResultsList should render a list of tests 1`] = `
                       type="search"
                       value=""
                     />
+                    <button
+                      class="usa-button"
+                      disabled=""
+                      style="display: none;"
+                      type="submit"
+                    >
+                      <img
+                        alt="Search"
+                        class="usa-search__submit-icon"
+                        src="search--white.svg"
+                      />
+                    </button>
                   </div>
                 </form>
               </div>
@@ -237,7 +249,7 @@ exports[`TestResultsList should render a list of tests 1`] = `
               </label>
               <select
                 aria-required="false"
-                class="usa-select"
+                class="usa-select-narrow usa-select"
                 id="3"
                 name="facility"
               >

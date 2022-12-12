@@ -16,19 +16,9 @@ interface DeviceType {
   testLength?: number | undefined;
 }
 
-interface DeviceTypes {
-  deviceType: [DeviceType];
-}
-
 interface SpecimenType {
   internalId: string;
   name: string;
-}
-
-interface DeviceSpecimenType {
-  internalId: ID;
-  deviceType: DeviceType;
-  specimenType: SpecimenType;
 }
 
 interface Address {

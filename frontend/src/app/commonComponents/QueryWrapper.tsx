@@ -16,11 +16,6 @@ const defaultQueryOptions: QueryHookOptions = {
   fetchPolicy: "cache-and-network",
 };
 
-// eslint-disable-next-line
-type PropsWithChildren = {
-  children: React.ReactNode;
-} & ComponentProps<any>;
-
 export function QueryWrapper<PropsWithChildren>({
   query,
   queryOptions,
@@ -70,6 +65,7 @@ export function QueryWrapper<PropsWithChildren>({
     startPolling,
     stopPolling,
   } as unknown as ComponentProps<any>;
+
   return (
     <>
       <Component {...props} />

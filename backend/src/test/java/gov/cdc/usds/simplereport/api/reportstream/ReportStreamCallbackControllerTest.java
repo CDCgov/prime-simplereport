@@ -25,8 +25,6 @@ import org.springframework.test.web.servlet.request.MockHttpServletRequestBuilde
 class ReportStreamCallbackControllerTest extends BaseFullStackTest {
   @Autowired private MockMvc mockMvc;
 
-  @Autowired private ReportStreamCallbackController reportStreamCallbackController;
-
   private Organization org;
   private Facility site;
   private Person person;

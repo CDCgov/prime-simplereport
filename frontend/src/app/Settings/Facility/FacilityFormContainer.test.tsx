@@ -77,9 +77,6 @@ const getFacilityRequest: any = {
             zipCode: "90000",
             phone: "(516) 432-1390",
             email: "testingsite@disorg.com",
-            defaultDeviceSpecimen: {
-              internalId: "bc0536ea-4564-4291-bbf3-0e7b0731f6e8",
-            },
             deviceTypes,
             orderingProvider: {
               firstName: "Fred",

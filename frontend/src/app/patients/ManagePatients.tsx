@@ -297,6 +297,7 @@ export const DetachedManagePatients = ({
                 queryString={debounced || ""}
                 className="display-inline-block"
                 focusOnMount
+                showSubmitButton={false}
               />
             </div>
             <div className="usa-card__body sr-patient-list">

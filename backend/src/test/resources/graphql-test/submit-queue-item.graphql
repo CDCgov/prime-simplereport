@@ -1,7 +1,8 @@
-mutation addMultiplexResult($deviceId: String!, $results: [MultiplexResultInput]!, $patientId: ID!, $dateTested: DateTime) {
-  addMultiplexResult(
+mutation submitQueueItem($deviceId: ID!, $specimenId: ID!, $results: [MultiplexResultInput]!, $patientId: ID!, $dateTested: DateTime) {
+  submitQueueItem(
     patientId: $patientId,
-    deviceId: $deviceId,
+    deviceTypeId: $deviceId,
+    specimenTypeId: $specimenId,
     results: $results,
     dateTested: $dateTested
   ) {

@@ -9,7 +9,6 @@ import {
   waitForElementToBeRemoved,
   within,
 } from "@testing-library/react";
-//import renderer from 'react-test-renderer';
 import { Provider } from "react-redux";
 import { MemoryRouter } from "react-router-dom";
 import configureStore from "redux-mock-store";
@@ -693,6 +692,7 @@ describe("TestResultsList", () => {
         expect(await screen.findByText("Showing 1-3 of 3")).toBeInTheDocument();
         const actionMenuButton =
           document.querySelectorAll(".rc-menu-button")[0];
+
         await userEvent.click(actionMenuButton as HTMLElement);
       };
       it.each([

@@ -18,7 +18,7 @@ import { ErrorResponse, onError } from "@apollo/client/link/error";
 import { ApplicationInsights } from "@microsoft/applicationinsights-web";
 import Modal from "react-modal";
 
-import ReportingApp from "./app/ReportingApp";
+import App from "./app/ReportingApp";
 import PatientApp from "./patientApp/PatientApp";
 import AccountCreationApp from "./app/accountCreation/AccountCreationApp";
 import SignUpApp from "./app/signUp/SignUpApp";
@@ -40,6 +40,7 @@ import "./styles/App.css";
 import { getUrl } from "./app/utils/url";
 import SessionTimeout from "./app/accountCreation/SessionTimeout";
 import WithFeatureFlags from "./featureFlags/WithFeatureFlags";
+import { getBody, getHeader } from "./app/utils/srGraphQLErrorMessage";
 
 // Initialize telemetry early
 ai.initialize();
@@ -103,13 +104,13 @@ const logoutLink = onError(({ networkError, graphQLErrors }: ErrorResponse) => {
     }
   }
   if (graphQLErrors) {
-    const messages = graphQLErrors.map(({ message, locations, path }) => {
+    graphQLErrors.map(({ message, locations, path }) => {
       console.error(
         `[GraphQL error]: Message: ${message}, Location: ${locations}, Path: ${path}`
       );
+      showError(getBody(message), getHeader(message));
       return message;
     });
-    showError("Please check for errors and try again", messages.join(" "));
     console.error("graphql error", graphQLErrors);
   }
 });
@@ -119,7 +120,7 @@ const client = new ApolloClient({
   link: logoutLink.concat(concat(apolloMiddleware, httpLink as any)),
 });
 
-export const App = () => (
+export const ReactApp = () => (
   <ApolloProvider client={client}>
     <React.StrictMode>
       <Provider store={store}>
@@ -138,7 +139,7 @@ export const App = () => (
                   />
                   <Route path="/session-timeout" element={<SessionTimeout />} />
                   <Route path="/reload-app" element={<Navigate to="/" />} />
-                  <Route path="/*" element={<ReportingApp />} />
+                  <Route path="/*" element={<App />} />
                   <Route element={<>Page not found</>} />
                 </Routes>
               </PrimeErrorBoundary>
