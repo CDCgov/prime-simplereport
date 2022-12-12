@@ -17,7 +17,7 @@ const {
   REPORT_STREAM_URL,
   TEST_EVENT_QUEUE_NAME,
   REPORTING_EXCEPTION_QUEUE_NAME,
-  FILE_ERROR_QUEUE_NAME,
+  PUBLISHING_ERROR_QUEUE_NAME,
 } = ENV;
 
 appInsights.setup();
@@ -29,7 +29,7 @@ const QueueBatchedTestEventPublisher: AzureFunction = async function (
   const tagOverrides = { "ai.operation.id": context.traceContext.traceparent };
   const publishingQueue = getQueueClient(TEST_EVENT_QUEUE_NAME);
   const exceptionQueue = getQueueClient(REPORTING_EXCEPTION_QUEUE_NAME);
-  const fileErrorQueue = getQueueClient(FILE_ERROR_QUEUE_NAME);
+  const fileErrorQueue = getQueueClient(PUBLISHING_ERROR_QUEUE_NAME);
 
   if (!(await minimumMessagesAvailable(context, publishingQueue))) {
     return;
