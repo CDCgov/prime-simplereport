@@ -48,6 +48,9 @@ import org.hl7.fhir.r4.model.StringType;
 @Entity
 public class Person extends OrganizationScopedEternalEntity implements PersonEntity, LocatedEntity {
 
+  @JsonIgnore
+  private final String nullCodeSystem = "http://terminology.hl7.org/CodeSystem/v3-NullFlavor";
+
   // NOTE: facility==NULL means this person appears in ALL facilities for a given Organization.
   // this is common for imported patients.
   @ManyToOne(optional = true, fetch = FetchType.LAZY)
@@ -510,7 +513,7 @@ public class Person extends OrganizationScopedEternalEntity implements PersonEnt
       var ombCoding = new Coding();
       if (PersonUtils.ETHNICITY_MAP.containsKey(ethnicity)) {
         if ("refused".equalsIgnoreCase(ethnicity)) {
-          ombCoding.setSystem("http://terminology.hl7.org/CodeSystem/v3-NullFlavor");
+          ombCoding.setSystem(nullCodeSystem);
         } else {
           ombCoding.setSystem("urn:oid:2.16.840.1.113883.6.238");
         }
@@ -521,7 +524,7 @@ public class Person extends OrganizationScopedEternalEntity implements PersonEnt
         text.setUrl("text");
         text.setValue(new StringType(PersonUtils.ETHNICITY_MAP.get(ethnicity).get(1)));
       } else {
-        ombCoding.setSystem("http://terminology.hl7.org/CodeSystem/v3-NullFlavor");
+        ombCoding.setSystem(nullCodeSystem);
         ombCoding.setCode("UNK");
         ombCoding.setDisplay("unknown");
 
@@ -539,11 +542,16 @@ public class Person extends OrganizationScopedEternalEntity implements PersonEnt
     ext.setUrl("http://ibm.com/fhir/cdm/StructureDefinition/local-race-cd");
     var codeable = new CodeableConcept();
     var coding = codeable.addCoding();
-    coding.setSystem("http://terminology.hl7.org/CodeSystem/v3-Race");
     if (race != null && PersonUtils.raceMap.containsKey(race)) {
+      if ("unknown".equalsIgnoreCase(race) || "refused".equalsIgnoreCase(race)) {
+        coding.setSystem(nullCodeSystem);
+      } else {
+        coding.setSystem("http://terminology.hl7.org/CodeSystem/v3-Race");
+      }
       coding.setCode(PersonUtils.raceMap.get(race));
       codeable.setText(race);
     } else {
+      coding.setSystem(nullCodeSystem);
       coding.setCode(PersonUtils.raceUnknown);
       codeable.setText("unknown");
     }

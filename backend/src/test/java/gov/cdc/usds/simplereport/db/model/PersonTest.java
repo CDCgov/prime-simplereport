@@ -22,7 +22,8 @@ import org.springframework.test.util.ReflectionTestUtils;
 class PersonTest {
 
   public static final String ethnicitySystem = "urn:oid:2.16.840.1.113883.6.238";
-  public static final String refusedSystem = "http://terminology.hl7.org/CodeSystem/v3-NullFlavor";
+  public static final String unknownSystem = "http://terminology.hl7.org/CodeSystem/v3-NullFlavor";
+  public static final String raceCodeSystem = "http://terminology.hl7.org/CodeSystem/v3-Race";
 
   @Test
   void toFhir_ValidPerson_ReturnsValidPatient() {
@@ -88,7 +89,7 @@ class PersonTest {
   @ParameterizedTest
   @MethodSource("raceArgs")
   void toFhir_PersonRace_ReturnsRaceExtension(
-      String personRaceValue, String expectedCode, String expectedText) {
+      String personRaceValue, String codeSystem, String expectedCode, String expectedText) {
     var person =
         new Person(
             null,
@@ -119,16 +120,17 @@ class PersonTest {
     var code = codeableConcept.getCoding();
 
     assertThat(code).hasSize(1);
-    assertThat(code.get(0).getSystem()).isEqualTo("http://terminology.hl7.org/CodeSystem/v3-Race");
+    assertThat(code.get(0).getSystem()).isEqualTo(codeSystem);
     assertThat(code.get(0).getCode()).isEqualTo(expectedCode);
     assertThat(codeableConcept.getText()).isEqualTo(expectedText);
   }
 
   private static Stream<Arguments> raceArgs() {
     return Stream.of(
-        arguments("native", "1002-5", "native"),
-        arguments(null, "UNK", "unknown"),
-        arguments("Fishpeople", "UNK", "unknown"));
+        arguments("native", raceCodeSystem, "1002-5", "native"),
+        arguments(null, unknownSystem, "UNK", "unknown"),
+        arguments("refused", unknownSystem, "ASKU", "refused"),
+        arguments("Fishpeople", unknownSystem, "UNK", "unknown"));
   }
 
   @ParameterizedTest
@@ -162,8 +164,8 @@ class PersonTest {
     return Stream.of(
         arguments("hispanic", ethnicitySystem, "2135-2", "Hispanic or Latino"),
         arguments("not_hispanic", ethnicitySystem, "2186-5", "Not Hispanic or Latino"),
-        arguments("refused", refusedSystem, "ASKU", "asked but unknown"),
-        arguments("shark", refusedSystem, "UNK", "unknown"));
+        arguments("refused", unknownSystem, "ASKU", "asked but unknown"),
+        arguments("shark", unknownSystem, "UNK", "unknown"));
   }
 
   @Test
