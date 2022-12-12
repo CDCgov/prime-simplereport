@@ -34,6 +34,7 @@ import org.hl7.fhir.r4.model.ContactPoint.ContactPointSystem;
 import org.hl7.fhir.r4.model.Enumerations.AdministrativeGender;
 import org.hl7.fhir.r4.model.Identifier.IdentifierUse;
 import org.hl7.fhir.r4.model.Patient;
+import org.hl7.fhir.r4.model.StringType;
 
 /**
  * The person record (generally, a patient getting a test).
@@ -475,7 +476,41 @@ public class Person extends OrganizationScopedEternalEntity implements PersonEnt
     setFhirBirthDate(patient);
     setFhirAddress(patient);
     addRaceExtension(patient);
+    addEthnicityExtension(patient);
     return patient;
+  }
+
+  private void addEthnicityExtension(Patient patient) {
+    if (ethnicity != null) {
+      var ext = patient.addExtension();
+      ext.setUrl("http://hl7.org/fhir/us/core/StructureDefinition/us-core-ethnicity");
+      var ombExtension = ext.addExtension();
+      ombExtension.setUrl("ombCategory");
+      var ombCodeable = new CodeableConcept();
+      var ombCoding = ombCodeable.addCoding();
+      if (TestEventExport.ETHNICITY_MAP.containsKey(ethnicity)) {
+        if ("refused".equalsIgnoreCase(ethnicity)) {
+          ombCoding.setSystem("http://terminology.hl7.org/CodeSystem/v3-NullFlavor");
+        } else {
+          ombCoding.setSystem("urn:oid:2.16.840.1.113883.6.238");
+        }
+        ombCoding.setCode(TestEventExport.ETHNICITY_MAP.get(ethnicity).get(0));
+        ombCoding.setDisplay(TestEventExport.ETHNICITY_MAP.get(ethnicity).get(1));
+
+        var text = ext.addExtension();
+        text.setUrl("text");
+        text.setValue(new StringType(TestEventExport.ETHNICITY_MAP.get(ethnicity).get(1)));
+      } else {
+        ombCoding.setSystem("http://terminology.hl7.org/CodeSystem/v3-NullFlavor");
+        ombCoding.setCode("UNK");
+        ombCoding.setDisplay("unknown");
+
+        var text = ext.addExtension();
+        text.setUrl("text");
+        text.setValue(new StringType("unknown"));
+      }
+      ombExtension.setValue(ombCoding);
+    }
   }
 
   private void addRaceExtension(Patient patient) {

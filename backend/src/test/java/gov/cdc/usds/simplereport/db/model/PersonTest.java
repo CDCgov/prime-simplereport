@@ -3,7 +3,6 @@ package gov.cdc.usds.simplereport.db.model;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.junit.jupiter.params.provider.Arguments.arguments;
 
-import gov.cdc.usds.simplereport.api.model.TestEventExport;
 import gov.cdc.usds.simplereport.db.model.auxiliary.PhoneType;
 import gov.cdc.usds.simplereport.db.model.auxiliary.StreetAddress;
 import java.time.LocalDate;
@@ -26,6 +25,9 @@ import org.springframework.test.util.ReflectionTestUtils;
 
 class PersonTest {
 
+  public static final String ethnicitySystem = "urn:oid:2.16.840.1.113883.6.238";
+  public static final String refusedSystem = "http://terminology.hl7.org/CodeSystem/v3-NullFlavor";
+
   @Test
   void toFhir_ValidPerson_ReturnsValidPatient() {
     var birthDate = LocalDate.now();
@@ -46,7 +48,7 @@ class PersonTest {
                 null,
                 List.of("email1", "email2"),
                 "black",
-                "not hispanic or latino",
+                "hispanic",
                 List.of(),
                 "Male",
                 false,
@@ -86,6 +88,21 @@ class PersonTest {
     assertThat(actual.getIdentifier().get(0).getSystem()).isEqualTo(expectedIdentifier.getSystem());
     assertThat(actual.getIdentifier().get(0).getValue()).isEqualTo(expectedIdentifier.getValue());
 
+    assertThat(actual.getExtension()).hasSize(2);
+    // todo: compare expected json with actual
+  }
+
+  @Test
+  void toFhir_EmptyPerson_EmptyPatient() {
+    var person = new Person();
+
+    var actual = person.toFhir();
+    assertThat(actual.getIdentifier()).isEmpty();
+    assertThat(actual.getName()).isEmpty();
+    assertThat(actual.getTelecom()).isEmpty();
+    assertThat(actual.getGender()).isEqualTo(AdministrativeGender.UNKNOWN);
+    assertThat(actual.getBirthDate()).isNull();
+    assertThat(actual.getAddress()).isEmpty();
     assertThat(actual.getExtension()).hasSize(1);
   }
 
@@ -130,23 +147,44 @@ class PersonTest {
 
   private static Stream<Arguments> raceArgs() {
     return Stream.of(
-        arguments("native", TestEventExport.raceMap.get("native"), "native"),
+        arguments("native", "1002-5", "native"),
         arguments(null, "UNK", "unknown"),
         arguments("Fishpeople", "UNK", "unknown"));
   }
 
-  @Test
-  void toFhir_EmptyPerson_EmptyPatient() {
-    var person = new Person();
+  @ParameterizedTest
+  @MethodSource("ethnicityArgs")
+  void toFhir_PersonEthnicity_ReturnsEthnicityExtension(
+      String ethnicity, String ombSystem, String raceCode, String raceDisplay) {
+    var person =
+        new Person(
+            null, null, null, null, null, null, null, null, null, null, null, null, null, ethnicity,
+            null, null, false, false, null, null);
 
     var actual = person.toFhir();
-    assertThat(actual.getIdentifier()).isEmpty();
-    assertThat(actual.getName()).isEmpty();
-    assertThat(actual.getTelecom()).isEmpty();
-    assertThat(actual.getGender()).isEqualTo(AdministrativeGender.UNKNOWN);
-    assertThat(actual.getBirthDate()).isNull();
-    assertThat(actual.getAddress()).isEmpty();
-    assertThat(actual.getExtension()).hasSize(1);
+    var raceExtension =
+        actual.getExtensionByUrl(
+            "http://hl7.org/fhir/us/core/StructureDefinition/us-core-ethnicity");
+    var ombExtension = raceExtension.getExtensionByUrl("ombCategory");
+    var textExtension = raceExtension.getExtensionByUrl("text");
+
+    var ombCoding = actual.castToCoding(ombExtension.getValue());
+    var textValueString = actual.castToString(textExtension.getValue());
+
+    assertThat(raceExtension.getExtension()).hasSize(2);
+    assertThat(ombCoding.getSystem()).isEqualTo(ombSystem);
+    assertThat(ombCoding.getCode()).isEqualTo(raceCode);
+    assertThat(ombCoding.getDisplay()).isEqualTo(raceDisplay);
+
+    assertThat(textValueString.getValue()).isEqualTo(raceDisplay);
+  }
+
+  private static Stream<Arguments> ethnicityArgs() {
+    return Stream.of(
+        arguments("hispanic", ethnicitySystem, "2135-2", "Hispanic or Latino"),
+        arguments("not_hispanic", ethnicitySystem, "2186-5", "Not Hispanic or Latino"),
+        arguments("refused", refusedSystem, "ASKU", "asked but unknown"),
+        arguments("shark", refusedSystem, "UNK", "unknown"));
   }
 
   @ParameterizedTest

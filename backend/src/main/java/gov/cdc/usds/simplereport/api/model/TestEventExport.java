@@ -23,6 +23,7 @@ import java.time.LocalDateTime;
 import java.time.ZoneId;
 import java.time.format.DateTimeFormatter;
 import java.util.Date;
+import java.util.List;
 import java.util.Map;
 import java.util.Objects;
 import java.util.Optional;
@@ -59,7 +60,7 @@ public class TestEventExport {
   }
 
   private String genderUnknown = "U";
-  private String ethnicityUnknown = "U";
+  public static String ethnicityUnknown = "U";
   public static String raceUnknown = "UNK";
   private static final String DEFAULT_LOCATION_CODE = "53342003"; // http://snomed.info/id/53342003
   // "Internal nose structure"
@@ -81,6 +82,12 @@ public class TestEventExport {
           "hispanic", "H",
           "not_hispanic", "N",
           "refused", "U");
+
+  public static final Map<String, List<String>> ETHNICITY_MAP =
+      Map.of(
+          "hispanic", List.of("2135-2", "Hispanic or Latino"),
+          "not_hispanic", List.of("2186-5", "Not Hispanic or Latino"),
+          "refused", List.of("ASKU", "asked but unknown"));
 
   private Map<TestResult, String> testResultMap =
       Map.of(
