@@ -90,9 +90,13 @@ class PersonTest {
   }
 
   @ParameterizedTest
-  @MethodSource("raceArgs")
-  void toFhir_Race_ReturnsRaceExtension(
-      String personRaceValue, String expectedCode, String expectedText) {
+  @MethodSource("extensionArgs")
+  void toFhir_NonStandardFhirFields_ReturnsExtension(
+      String extensionUrl,
+      String systemUrl,
+      String personRaceValue,
+      String expectedCode,
+      String expectedText) {
     var person =
         new Person(
             null,
@@ -140,7 +144,7 @@ class PersonTest {
     return Stream.of(
         arguments("native", TestEventExport.raceMap.get("native"), "native"),
         arguments(null, "UNK", "unknown"),
-        arguments("Fishmen", "UNK", "unknown"));
+        arguments("Fishpeople", "UNK", "unknown"));
   }
 
   @Test
