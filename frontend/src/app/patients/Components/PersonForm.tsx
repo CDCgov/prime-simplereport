@@ -202,7 +202,7 @@ const PersonForm = (props: Props) => {
     return {
       street: p.street || "",
       streetTwo: p.streetTwo,
-      city: p.city,
+      city: p.city || "",
       state: p.state || "",
       zipCode: p.zipCode || "",
       county: p.county || "",

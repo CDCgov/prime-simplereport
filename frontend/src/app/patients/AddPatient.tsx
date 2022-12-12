@@ -51,7 +51,7 @@ export const EMPTY_PERSON: Nullable<PersonFormData> = {
   emails: null,
   street: "",
   streetTwo: null,
-  city: null,
+  city: "",
   state: "",
   zipCode: "",
   country: "USA",
