@@ -39,7 +39,7 @@ resource "azurerm_key_vault_access_policy" "functions" {
   key_vault_id = data.azurerm_key_vault.sr_global.id
   tenant_id    = var.tenant_id
 
-  object_id = azurerm_linux_web_app.functions.identity.0.principal_id
+  object_id = azurerm_linux_function_app.functions.identity.0.principal_id
 
   secret_permissions = [
     "Get",
@@ -47,25 +47,27 @@ resource "azurerm_key_vault_access_policy" "functions" {
   ]
 }
 
-resource "azurerm_linux_web_app" "functions" {
-  name                = "${var.prefix}-${var.environment}"
-  location            = var.location
-  resource_group_name = local.resource_group_name
-  service_plan_id     = azurerm_service_plan.asp.id
-  https_only          = true
-  site_config {
-    use_32_bit_worker       = false
-    scm_minimum_tls_version = "1.0"
-    always_on               = false
-    ftps_state              = "AllAllowed"
+resource "azurerm_linux_function_app" "functions" {
+  name                       = "${var.prefix}-${var.environment}"
+  location                   = var.location
+  resource_group_name        = local.resource_group_name
+  service_plan_id            = azurerm_service_plan.asp.id
+  https_only                 = true
+  storage_account_name       = data.azurerm_storage_account.app.name
+  storage_account_access_key = data.azurerm_storage_account.app.primary_access_key
 
+  site_config {
+    use_32_bit_worker = false
+    # scm_minimum_tls_version = "1.0"
+    # always_on               = false
+    # ftps_state              = "AllAllowed"
     // NOTE: If this code is removed, TF will not automatically delete it with the current provider version! It must be removed manually from the App Service -> Networking blade!
     ip_restriction {
       virtual_network_subnet_id = var.lb_subnet_id
       action                    = "Allow"
     }
     application_stack {
-      node_version = "14-lts"
+      node_version = "14"
     }
   }
 

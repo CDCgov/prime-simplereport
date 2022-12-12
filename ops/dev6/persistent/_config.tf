@@ -5,17 +5,17 @@ terraform {
     container_name       = "sr-tfstate"
     key                  = "dev6/persistent-terraform.tfstate"
   }
-}
-
-terraform {
   required_providers {
     azurerm = {
       source  = "hashicorp/azurerm"
-      version = "~> 2.92.0"
+      version = "~> 3.34"
     }
     okta = {
       source  = "okta/okta"
-      version = "~> 3.19"
+      version = "~> 3.39"
+    }
+    random = {
+      version = "~> 3.4"
     }
   }
   required_version = "~> 1.3.3"

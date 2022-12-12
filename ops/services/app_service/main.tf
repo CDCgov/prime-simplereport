@@ -118,7 +118,7 @@ resource "azurerm_linux_web_app" "service" {
       docker_image     = var.docker_image
       docker_image_tag = var.docker_image_tag
     }
-    
+
     // NOTE: If this code is removed, TF will not automatically delete it with the current provider version! It must be removed manually from the App Service -> Networking blade!
     ip_restriction {
       virtual_network_subnet_id = var.lb_subnet_id

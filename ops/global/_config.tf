@@ -8,11 +8,11 @@ terraform {
   required_providers {
     azurerm = {
       source  = "hashicorp/azurerm"
-      version = "~> 3.29"
+      version = "~> 3.34"
     }
     okta = {
       source  = "okta/okta"
-      version = "~> 3.19"
+      version = "~> 3.39"
     }
     pagerduty = {
       source  = "pagerduty/pagerduty"

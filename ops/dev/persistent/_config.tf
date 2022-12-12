@@ -5,9 +5,6 @@ terraform {
     container_name       = "sr-tfstate"
     key                  = "dev/persistent-terraform.tfstate"
   }
-}
-
-terraform {
   required_providers {
     azurerm = {
       source  = "hashicorp/azurerm"
