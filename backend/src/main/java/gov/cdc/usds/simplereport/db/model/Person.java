@@ -482,6 +482,7 @@ public class Person extends OrganizationScopedEternalEntity implements PersonEnt
     return patient;
   }
 
+  @JsonIgnore
   private void addTribalAffiliationExtension(Patient patient) {
     if (tribalAffiliation != null
         && !tribalAffiliation.isEmpty()
@@ -500,6 +501,7 @@ public class Person extends OrganizationScopedEternalEntity implements PersonEnt
     }
   }
 
+  @JsonIgnore
   private void addEthnicityExtension(Patient patient) {
     if (ethnicity != null) {
       var ext = patient.addExtension();
@@ -532,6 +534,7 @@ public class Person extends OrganizationScopedEternalEntity implements PersonEnt
     }
   }
 
+  @JsonIgnore
   private void addRaceExtension(Patient patient) {
     var ext = patient.addExtension();
     ext.setUrl("http://ibm.com/fhir/cdm/StructureDefinition/local-race-cd");
@@ -548,18 +551,21 @@ public class Person extends OrganizationScopedEternalEntity implements PersonEnt
     ext.setValue(codeable);
   }
 
+  @JsonIgnore
   private void addIdentifier(Patient patient) {
     if (getInternalId() != null) {
       patient.addIdentifier().setValue(getInternalId().toString()).setUse(IdentifierUse.USUAL);
     }
   }
 
+  @JsonIgnore
   private void addFhirName(Patient patient) {
     if (nameInfo != null) {
       patient.addName(nameInfo.toFhir());
     }
   }
 
+  @JsonIgnore
   private void addFhirTelecom(Patient patient) {
     if (phoneNumbers != null) {
       phoneNumbers.forEach(number -> patient.addTelecom(number.toFhir()));
@@ -574,19 +580,21 @@ public class Person extends OrganizationScopedEternalEntity implements PersonEnt
     }
   }
 
+  @JsonIgnore
   private void setFhirBirthDate(Patient patient) {
-    // todo: check if this is the best way to do this
     if (birthDate != null) {
       patient.setBirthDate(Date.from(birthDate.atStartOfDay(ZoneId.systemDefault()).toInstant()));
     }
   }
 
+  @JsonIgnore
   private void setFhirAddress(Patient patient) {
     if (address != null) {
       patient.setAddress(List.of(address.toFhir()));
     }
   }
 
+  @JsonIgnore
   private void setFhirGender(Patient patient) {
     if ("male".equalsIgnoreCase(gender)) {
       patient.setGender(AdministrativeGender.MALE);
