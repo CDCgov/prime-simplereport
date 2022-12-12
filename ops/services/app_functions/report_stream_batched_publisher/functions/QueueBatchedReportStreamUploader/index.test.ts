@@ -66,7 +66,7 @@ describe("main function export", () => {
       .mockReturnValue({} as QueueClient);
     deleteMessagesMock = jest.spyOn(lib, "deleteSuccessfullyParsedMessages");
     reportExceptionsMock = jest.spyOn(lib, "reportExceptions");
-    fileFailureMock = jest.spyOn(lib, "publishToFileErrorQueue");
+    fileFailureMock = jest.spyOn(lib, "publishToQueue");
   });
 
   beforeEach(() => {

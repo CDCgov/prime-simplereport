@@ -7,7 +7,7 @@ import {
   dequeueMessages,
   getQueueClient,
   minimumMessagesAvailable,
-  publishToFileErrorQueue,
+  publishToQueue,
   reportExceptions,
   uploadResult,
 } from "./lib";
@@ -29,7 +29,7 @@ const QueueBatchedTestEventPublisher: AzureFunction = async function (
   const tagOverrides = { "ai.operation.id": context.traceContext.traceparent };
   const publishingQueue = getQueueClient(TEST_EVENT_QUEUE_NAME);
   const exceptionQueue = getQueueClient(REPORTING_EXCEPTION_QUEUE_NAME);
-  const fileErrorQueue = getQueueClient(PUBLISHING_ERROR_QUEUE_NAME);
+  const publishingErrorQueue = getQueueClient(PUBLISHING_ERROR_QUEUE_NAME);
 
   if (!(await minimumMessagesAvailable(context, publishingQueue))) {
     return;
@@ -117,7 +117,7 @@ const QueueBatchedTestEventPublisher: AzureFunction = async function (
 
     if(postResult.status === 400) {
       //publish messages to file failure queue
-      await publishToFileErrorQueue(fileErrorQueue, messages);
+      await publishToQueue(publishingErrorQueue, messages);
       //delete messages from the main queue
       await deleteSuccessfullyParsedMessages(context, publishingQueue, messages, parseFailure);
     }
