@@ -119,5 +119,6 @@ class ReminderServiceTest extends BaseServiceTest<ReminderService> {
     PreparedStatement statement = conn.prepareStatement(query);
     statement.setObject(1, queuedOrg.getInternalId());
     statement.execute();
+    conn.close();
   }
 }
