@@ -5,8 +5,9 @@ import java.util.List;
 import java.util.Map;
 
 public class PersonUtils {
-  public static String ethnicityUnknown = "U";
-  public static String raceUnknown = "UNK";
+  private PersonUtils() {
+    throw new IllegalStateException("Utility class");
+  }
 
   public static Map<String, String> tribalMap() {
     var tribeCodes = new HashMap<String, String>();
@@ -658,7 +659,7 @@ public class PersonUtils {
     return tribeCodes;
   }
 
-  public static Map<String, String> raceMap =
+  public static final Map<String, String> raceMap =
       Map.of(
           "native", "1002-5",
           "asian", "2028-9",
@@ -666,13 +667,13 @@ public class PersonUtils {
           "pacific", "2076-8",
           "white", "2106-3",
           "other", "2131-1",
-          "unknown", raceUnknown,
-          "refused", "ASKU" // Asked, but unknown
+          "unknown", FhirUtils.UNK_CODE,
+          "refused", FhirUtils.ASKED_BUT_UNKNOWN_CODE // Asked, but unknown
           );
 
   public static final Map<String, List<String>> ETHNICITY_MAP =
       Map.of(
           "hispanic", List.of("2135-2", "Hispanic or Latino"),
           "not_hispanic", List.of("2186-5", "Not Hispanic or Latino"),
-          "refused", List.of("ASKU", "asked but unknown"));
+          "refused", List.of(FhirUtils.ASKED_BUT_UNKNOWN_CODE, "asked but unknown"));
 }

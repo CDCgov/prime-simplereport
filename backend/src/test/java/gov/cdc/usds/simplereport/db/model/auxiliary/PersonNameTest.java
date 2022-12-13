@@ -37,8 +37,8 @@ class PersonNameTest {
 
     var actual = personName.toFhir();
 
-    assertThat(actual.getGiven()).hasSize(0);
-    assertThat(actual.getSuffix()).hasSize(0);
+    assertThat(actual.getGiven()).isEmpty();
+    assertThat(actual.getSuffix()).isEmpty();
     assertThat(actual.getFamily()).isNull();
   }
   // note: getGiven and getSuffix return array lists of StringType which are difficult to compare
