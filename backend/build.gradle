@@ -127,7 +127,7 @@ dependencies {
     testAnnotationProcessor 'org.projectlombok:lombok'
 
     // WireMock (only used for testing)
-    testImplementation "com.github.tomakehurst:wiremock-jre8:2.31.0"
+    testImplementation "com.github.tomakehurst:wiremock-jre8:2.35.0"
 
     runtimeOnly "io.zipkin.brave:brave-instrumentation-http:5.13.2"
     runtimeOnly "io.zipkin.brave:brave:5.13.2"
