@@ -88,6 +88,34 @@ class PersonTest {
     assertThat(actual.getExtension()).hasSize(1);
   }
 
+  @Test
+  void toFhir_EmptyTribalListPerson_EmptyPatient() {
+    var person =
+        new Person(
+            null,
+            null,
+            null,
+            null,
+            null,
+            null,
+            null,
+            null,
+            null,
+            null,
+            null,
+            null,
+            null,
+            null,
+            List.of(""),
+            null,
+            false,
+            false,
+            null,
+            null);
+    var actualPatient = person.toFhir();
+    assertThat(actualPatient.getExtension()).hasSize(1);
+  }
+
   @ParameterizedTest
   @MethodSource("raceArgs")
   void toFhir_PersonRace_ReturnsRaceExtension(
