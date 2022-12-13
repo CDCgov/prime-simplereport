@@ -23,14 +23,4 @@ public class ScheduledTasksService {
     scheduler.initialize();
     _scheduler = scheduler;
   }
-
-  public void scheduleAccountReminderEmails(String cronScheduleDefinition, String tzString) {
-    TimeZone tz = TimeZone.getTimeZone(tzString);
-    log.info(
-        "Scheduling account reminder emails to run on cron schedule '{}' in time zone {}",
-        cronScheduleDefinition,
-        tz.getID());
-    Trigger cronTrigger = new CronTrigger(cronScheduleDefinition, tz);
-    _scheduler.schedule(_reminderService::sendAccountReminderEmails, cronTrigger);
-  }
 }

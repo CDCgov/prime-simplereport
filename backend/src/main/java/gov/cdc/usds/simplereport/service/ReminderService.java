@@ -14,6 +14,8 @@ import java.util.List;
 import java.util.Map;
 import java.util.TimeZone;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
+import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -36,13 +38,15 @@ public class ReminderService {
    * Send reminder emails to complete identity verification to members of organizations that
    * were created and did not complete id verification
    */
-  public Map<String, OrganizationQueueItem> sendAccountReminderEmails() {
+  @Scheduled(cron = "0 0 1 * * *", zone = "America/New_York")
+  @ConditionalOnProperty("simple-report.id-verification-reminders.enabled") //is this valid?
+  public void sendAccountReminderEmails() {
     // take the advisory lock for this process. auto released after transaction
     if (_orgQueueRepo.tryOrgReminderLock()) {
       log.info("Reminder lock obtained: commencing email sending");
     } else {
       log.info("Reminders locked out by mutex: aborting");
-      return new HashMap<>();
+      return;
     }
 
     TimeZone tz = TimeZone.getTimeZone("America/New_York");
@@ -86,8 +90,6 @@ public class ReminderService {
       log.debug("sendAccountReminderEmails: sleep interrupted");
       Thread.currentThread().interrupt();
     }
-
-    return orgReminderMap;
   }
 
   private static Date localDateTimeToDate(ZoneId zoneId, LocalDateTime localDateTime) {
