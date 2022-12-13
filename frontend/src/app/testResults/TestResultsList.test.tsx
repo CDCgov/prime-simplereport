@@ -19,6 +19,7 @@ import {
   GetFacilityResultsMultiplexWithCountQuery,
 } from "../../generated/graphql";
 import { appPermissions } from "../permissions";
+import { SEARCH_DEBOUNCE_TIME } from "../testQueue/constants";
 
 import TestResultsList, {
   ALL_FACILITIES_ID,
@@ -322,19 +323,16 @@ describe("TestResultsList", () => {
       expect(await screen.findByText("Test Results", { exact: false }));
       expect(await screen.findByText("Cragell, Barb Whitaker"));
     });
-
-    /*it("should be able to filter by patient", async () => {
+    it("should be able to filter by patient", async () => {
       await screen.findByText("Test Results", { exact: false });
       expect(
         await screen.findByText("Cragell, Barb Whitaker")
       ).toBeInTheDocument();
-      expect(await screen.findByText("Colleer, Barde X"));
-      expect(await screen.findByLabelText(/Search by name/i));
-      await userEvent.type(screen.getByLabelText(/Search by name/i),"Cragell");
-      await waitForElementToBeRemoved(()=>screen.queryByText("Searching..."));
-      screen.logTestingPlaygroundURL();
-      //expect(await screen.findByText(/Filter/i));
-      await userEvent.click(screen.getByText(/Filter/i));
+      expect(await screen.findByText("Colleer, Barde X")).toBeInTheDocument();
+      expect(await screen.findByText("Search by name")).toBeInTheDocument();
+      await userEvent.type(screen.getByRole("searchbox"), "Cragell");
+      expect(await screen.findByText("Filter")).toBeInTheDocument();
+      await userEvent.click(screen.getByText("Filter"));
       expect(
         await screen.findByText("Cragell, Barb Whitaker")
       ).toBeInTheDocument();
@@ -342,7 +340,7 @@ describe("TestResultsList", () => {
       expect(screen.getByRole("searchbox")).toHaveValue(
         "Cragell, Barb Whitaker"
       );
-    });*/
+    });
     it("should be able to filter by result value", async () => {
       expect(
         await screen.findByText("Test Results", { exact: false })
@@ -790,8 +788,8 @@ describe("TestResultsList", () => {
       screen.queryByRole("option", { name: "All facilities" })
     ).not.toBeInTheDocument();
   });
-  // ToDo check why input fields are not getting populated
-  /*describe("end date error", () => {
+
+  describe("end date error", () => {
     beforeEach(() => {
       render(
         <WithRouter>
@@ -807,29 +805,33 @@ describe("TestResultsList", () => {
       startDate = "2021-03-17",
       endDate = "2021-03-18"
     ) => {
-
       // source of the last two "wrapped in act" warnings
-      fireEvent.change(screen.getByLabelText(/date range \(start\)/i),{target: {value:startDate}})
-
+      await userEvent.type(
+        await screen.findByText("Date range (start)"),
+        startDate
+      );
       await new Promise((r) => setTimeout(r, SEARCH_DEBOUNCE_TIME));
-      fireEvent.change(screen.getByLabelText(/date range \(end\)/i),{target: {value:endDate}})
-
-      await new Promise((r) => setTimeout(r, SEARCH_DEBOUNCE_TIME));
+      await userEvent.type(
+        await screen.findByText("Date range (end)"),
+        endDate
+      );
+      new Promise((r) => setTimeout(r, SEARCH_DEBOUNCE_TIME));
     };
     it("should display error if end date is before the start date", async () => {
-
-      await setDateRange("2021-03-18", "2021-03-17");
-      await waitFor(()=>expect(
-        screen.queryByText(/End date cannot be before start date/i)
-      ).toBeInTheDocument());
-    });
-    it("should clear error message when clear filters button is pressed", async () => {
       await setDateRange("2021-03-18", "2021-03-17");
       expect(
-        await screen.findByText(/End date cannot be before start date/i, {
+        screen.getByText("End date cannot be before start date", {
           exact: false,
         })
-      );
+      ).toBeInTheDocument();
+    });
+    it("should display clear error message when clear filters button is pressed", async () => {
+      await setDateRange("2021-03-18", "2021-03-17");
+      expect(
+        screen.getByText("End date cannot be before start date", {
+          exact: false,
+        })
+      ).toBeInTheDocument();
       await userEvent.click(screen.getByText("Clear filters"));
       expect(
         screen.queryByText("End date cannot be before start date", {
@@ -837,7 +839,7 @@ describe("TestResultsList", () => {
         })
       ).not.toBeInTheDocument();
     });
-  });*/
+  });
 
   describe("clear filter button", () => {
     const elementToTest = (filterParams: FilterParams) => (
