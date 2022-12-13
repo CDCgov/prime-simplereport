@@ -13,7 +13,6 @@ services:
       # Mount init scripts for first-run user/schema creation
       - ./backend/db-setup/create-db.sh:/docker-entrypoint-initdb.d/01-user-db-creation.sh
       - ./backend/db-setup/create-metabase-db.sh:/docker-entrypoint-initdb.d/02-metabase-db-creation.sh
-      - ./backend/db-setup/db-tuning.sql:/docker-entrypoint-initdb.d/03-db-tuning.sql
       - ./backend/db-setup/reset-db.sql:/usr/local/lib/reset-db.sql
       - ./backend/db-setup/anonymize-detect.sh:/usr/local/lib/anonymize-detect.sh
       - ./backend/db-setup/remove-anon.sh:/usr/local/lib/remove-anon.sh
