@@ -36,8 +36,8 @@ jobs:
           --health-retries 5
         ports:
           - 5432:5432
-        command:
-          - --max_connections=500
+        command: >-
+          --max_connections=500
     steps:
       - uses: actions/checkout@v3
       - name: Set up JDK ${{env.JAVA_VERSION}}
