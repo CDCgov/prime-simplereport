@@ -28,6 +28,7 @@ jobs:
         image: postgres:13-alpine3.16
         env:
           POSTGRES_PASSWORD: this_is_a_super_secure_admin_password
+          PGOPTIONS: '-c max_connections=500'
         # Set health checks to wait until postgres has started
         options: >-
           --health-cmd pg_isready
@@ -57,7 +58,6 @@ jobs:
           POSTGRES_USER: postgres
           POSTGRES_DB: postgres
           LIB_DIR: db-setup
-          PGOPTIONS: '-c max_connections=500'
         run: |
           chmod 0600 $PGPASSFILE
           db-setup/create-db.sh
