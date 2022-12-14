@@ -1,5 +1,6 @@
 package gov.cdc.usds.simplereport.db.model;
 
+import static gov.cdc.usds.simplereport.api.converter.FhirConverter.convertToContactPoint;
 import static gov.cdc.usds.simplereport.api.converter.FhirConverter.convertToIdentifier;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
@@ -32,7 +33,6 @@ import javax.persistence.OneToOne;
 import org.hibernate.annotations.Type;
 import org.hl7.fhir.r4.model.CodeableConcept;
 import org.hl7.fhir.r4.model.Coding;
-import org.hl7.fhir.r4.model.ContactPoint;
 import org.hl7.fhir.r4.model.ContactPoint.ContactPointSystem;
 import org.hl7.fhir.r4.model.Enumerations.AdministrativeGender;
 import org.hl7.fhir.r4.model.Patient;
@@ -566,8 +566,7 @@ public class Person extends OrganizationScopedEternalEntity implements PersonEnt
     if (emails != null) {
       emails.forEach(
           e -> {
-            var emailTelecom = new ContactPoint().setSystem(ContactPointSystem.EMAIL).setValue(e);
-            patient.addTelecom(emailTelecom);
+            patient.addTelecom(convertToContactPoint(null, ContactPointSystem.EMAIL, e));
           });
     }
   }

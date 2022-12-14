@@ -1,5 +1,6 @@
 package gov.cdc.usds.simplereport.api.converter;
 
+import static gov.cdc.usds.simplereport.api.converter.FhirConverter.convertToContactPoint;
 import static gov.cdc.usds.simplereport.api.converter.FhirConverter.convertToHumanName;
 import static gov.cdc.usds.simplereport.api.converter.FhirConverter.convertToIdentifier;
 import static gov.cdc.usds.simplereport.api.converter.FhirConverter.phoneNumberToContactPoint;
@@ -10,10 +11,10 @@ import java.util.List;
 import java.util.stream.Collectors;
 import org.hl7.fhir.r4.model.ContactPoint;
 import org.hl7.fhir.r4.model.ContactPoint.ContactPointSystem;
+import org.hl7.fhir.r4.model.ContactPoint.ContactPointUse;
 import org.hl7.fhir.r4.model.Identifier.IdentifierUse;
 import org.hl7.fhir.r4.model.PrimitiveType;
 import org.hl7.fhir.r4.model.StringType;
-import org.hl7.fhir.r4.model.codesystems.ContactPointUse;
 import org.junit.jupiter.api.Test;
 
 public class FhirConverterTest {
@@ -83,5 +84,19 @@ public class FhirConverterTest {
         .returns(
             ContactPointUse.HOME.toCode(),
             from(ContactPoint::getUse).andThen(ContactPoint.ContactPointUse::toCode));
+  }
+
+  @Test
+  void email_convertToContactPoint() {
+    var actual = convertToContactPoint(null, ContactPointSystem.EMAIL, "example@example.com");
+    assertThat(actual.getUse()).isNull();
+    assertThat(actual.getSystem()).isEqualTo(ContactPointSystem.EMAIL);
+    assertThat(actual.getValue()).isEqualTo("example@example.com");
+  }
+
+  @Test
+  void null_convertToContactPoint() {
+    assertThat(convertToContactPoint(ContactPointUse.HOME, ContactPointSystem.PHONE, null))
+        .isNull();
   }
 }

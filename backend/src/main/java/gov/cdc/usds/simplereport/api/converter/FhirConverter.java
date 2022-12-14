@@ -39,12 +39,6 @@ public class FhirConverter {
 
   public static ContactPoint phoneNumberToContactPoint(
       ContactPointUse contactPointUse, String number) {
-    var contactPoint = new ContactPoint();
-
-    contactPoint.setSystem(ContactPointSystem.PHONE);
-
-    contactPoint.setUse(contactPointUse);
-
     // converting string to phone format as recommended by the fhir format.
     // https://www.hl7.org/fhir/datatypes.html#ContactPoint
     try {
@@ -52,11 +46,18 @@ public class FhirConverter {
       var parsedNumber = phoneUtil.parse(number, "US");
       var formattedWithDash = phoneUtil.format(parsedNumber, PhoneNumberFormat.NATIONAL);
 
-      contactPoint.setValue(formattedWithDash.replace("-", " "));
-    } catch (NumberParseException e) {
-      contactPoint.setValue(number);
+      number = formattedWithDash.replace("-", " ");
+    } catch (NumberParseException ignored) {
     }
 
-    return contactPoint;
+    return convertToContactPoint(contactPointUse, ContactPointSystem.PHONE, number);
+  }
+
+  public static ContactPoint convertToContactPoint(
+      ContactPointUse use, ContactPointSystem system, String value) {
+    if (value != null) {
+      return new ContactPoint().setUse(use).setSystem(system).setValue(value);
+    }
+    return null;
   }
 }
