@@ -26,6 +26,10 @@ spring:
     properties:
       hibernate:
         default_schema: public # Using the public schema for now, so we don't have to add a manual step to the deploy process
+        # generate_statistics: true # for observing batching
+        jdbc:
+          batch_size: 100
+        order_inserts: true
   liquibase:
     simplereport:
       default-schema: ${spring.jpa.properties.hibernate.default_schema}
