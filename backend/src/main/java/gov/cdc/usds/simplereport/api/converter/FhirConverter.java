@@ -1,6 +1,5 @@
 package gov.cdc.usds.simplereport.api.converter;
 
-import gov.cdc.usds.simplereport.db.model.auxiliary.PersonName;
 import org.apache.commons.lang3.StringUtils;
 import org.hl7.fhir.r4.model.HumanName;
 import org.hl7.fhir.r4.model.Identifier;
@@ -14,23 +13,21 @@ public class FhirConverter {
     return null;
   }
 
-  public static HumanName convertToHumanName(PersonName name) {
-    if (name != null) {
-      var humanName = new HumanName();
-      if (StringUtils.isNotBlank(name.getFirstName())) {
-        humanName.addGiven(name.getFirstName());
-      }
-      if (StringUtils.isNotBlank(name.getMiddleName())) {
-        humanName.addGiven(name.getMiddleName());
-      }
-      if (StringUtils.isNotBlank(name.getLastName())) {
-        humanName.setFamily(name.getLastName());
-      }
-      if (StringUtils.isNotBlank(name.getSuffix())) {
-        humanName.addSuffix(name.getSuffix());
-      }
-      return humanName;
+  public static HumanName convertToHumanName(
+      String first, String middle, String last, String suffix) {
+    var humanName = new HumanName();
+    if (StringUtils.isNotBlank(first)) {
+      humanName.addGiven(first);
     }
-    return null;
+    if (StringUtils.isNotBlank(middle)) {
+      humanName.addGiven(middle);
+    }
+    if (StringUtils.isNotBlank(last)) {
+      humanName.setFamily(last);
+    }
+    if (StringUtils.isNotBlank(suffix)) {
+      humanName.addSuffix(suffix);
+    }
+    return humanName;
   }
 }

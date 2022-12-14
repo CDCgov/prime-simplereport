@@ -1,6 +1,5 @@
 package gov.cdc.usds.simplereport.db.model;
 
-import static gov.cdc.usds.simplereport.api.converter.FhirConverter.convertToHumanName;
 import static gov.cdc.usds.simplereport.api.converter.FhirConverter.convertToIdentifier;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
@@ -473,7 +472,7 @@ public class Person extends OrganizationScopedEternalEntity implements PersonEnt
   public Patient toFhir() {
     var patient = new Patient();
     patient.addIdentifier(convertToIdentifier(getInternalId().toString()));
-    patient.addName(convertToHumanName(nameInfo));
+    patient.addName(nameInfo.toFhir());
     addFhirTelecom(patient);
     setFhirGender(patient);
     setFhirBirthDate(patient);
