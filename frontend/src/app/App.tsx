@@ -30,6 +30,7 @@ import Submission from "./testResults/submissions/Submission";
 import Submissions from "./testResults/submissions/Submissions";
 import ResultsNavWrapper from "./testResults/ResultsNavWrapper";
 import DeviceLookupContainer from "./uploads/DeviceLookup/DeviceLookupContainer";
+import UploadPatients from "./patients/UploadPatients";
 
 export const WHOAMI_QUERY = gql`
   query WhoAmI {
@@ -332,6 +333,16 @@ const App = () => {
                     requiredPermissions={canEditPeople}
                     userPermissions={data.whoami.permissions}
                     element={<AddPatient />}
+                  />
+                }
+              />
+              <Route
+                path="upload-patients"
+                element={
+                  <ProtectedRoute
+                    requiredPermissions={canEditPeople}
+                    userPermissions={data.whoami.permissions}
+                    element={<UploadPatients />}
                   />
                 }
               />

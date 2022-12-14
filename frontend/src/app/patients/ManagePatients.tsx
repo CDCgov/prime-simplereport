@@ -2,14 +2,19 @@ import { gql, useQuery } from "@apollo/client";
 import React, { useEffect, useState } from "react";
 import moment from "moment";
 import classnames from "classnames";
-import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
-import { faSlidersH } from "@fortawesome/free-solid-svg-icons";
+import {
+  faCaretDown,
+  faIdCard,
+  faRightFromBracket,
+} from "@fortawesome/free-solid-svg-icons";
 import { NavigateOptions, useNavigate } from "react-router-dom";
+import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 
 import { displayFullName } from "../utils";
 import {
   PATIENT_TERM,
   PATIENT_TERM_CAP,
+  PATIENT_TERM_PLURAL,
   PATIENT_TERM_PLURAL_CAP,
 } from "../../config/constants";
 import { daysSince } from "../utils/date";
@@ -23,11 +28,11 @@ import {
 import Pagination from "../commonComponents/Pagination";
 import { useDebounce } from "../testQueue/addToQueue/useDebounce";
 import { SEARCH_DEBOUNCE_TIME } from "../testQueue/constants";
-import Button from "../commonComponents/Button/Button";
 import SearchInput from "../testQueue/addToQueue/SearchInput";
 import { StartTestProps } from "../testQueue/addToQueue/AddToQueueSearch";
+import { MenuButton } from "../commonComponents/MenuButton";
+import { IconLabel } from "../commonComponents/IconLabel";
 
-import PatientUpload from "./PatientUpload";
 import ArchivePersonModal from "./ArchivePersonModal";
 
 import "./ManagePatients.scss";
@@ -104,7 +109,6 @@ interface Props {
   data?: { patients: Patient[] };
   refetch: () => null;
   setNamePrefixMatch: (namePrefixMatch: string | null) => void;
-  isAdmin: boolean;
 }
 
 export const DetachedManagePatients = ({
@@ -115,7 +119,6 @@ export const DetachedManagePatients = ({
   totalEntries,
   refetch,
   setNamePrefixMatch,
-  isAdmin,
   activeFacilityId,
 }: Props) => {
   const [archivePerson, setArchivePerson] = useState<Patient | null>(null);
@@ -262,25 +265,52 @@ export const DetachedManagePatients = ({
                 </span>
               </h1>
               <div>
-                <Button
-                  className="sr-active-button"
-                  icon={faSlidersH}
-                  onClick={() => {
-                    setNamePrefixMatch(null);
-                    setDebounced(null);
-                  }}
-                >
-                  Clear filters
-                </Button>
                 {canEditUser ? (
-                  <LinkWithQuery
-                    className="usa-button usa-button--primary"
-                    to={`/add-patient`}
-                    id="add-patient-button"
-                  >
-                    <FontAwesomeIcon icon="plus" />
-                    {` Add ${PATIENT_TERM}`}
-                  </LinkWithQuery>
+                  <MenuButton
+                    id={"add-patient"}
+                    buttonContent={
+                      <>
+                        <span className={"margin-right-1"}>
+                          Add {PATIENT_TERM_PLURAL}
+                        </span>
+                        <FontAwesomeIcon icon={faCaretDown} />
+                      </>
+                    }
+                    items={[
+                      {
+                        name: "individual",
+                        content: (
+                          <IconLabel
+                            icon={faIdCard}
+                            primaryText={`Add individual ${PATIENT_TERM}`}
+                            secondaryText={"Fill out a form to add a patient"}
+                          />
+                        ),
+                        action: () => {
+                          setRedirect({
+                            pathname: "/add-patient",
+                            search: `?facility=${activeFacilityId}`,
+                          });
+                        },
+                      },
+                      {
+                        name: "upload patients",
+                        content: (
+                          <IconLabel
+                            icon={faRightFromBracket}
+                            primaryText={"Import from spreadsheet"}
+                            secondaryText={`Bulk upload ${PATIENT_TERM_PLURAL} with a CSV file`}
+                          />
+                        ),
+                        action: () => {
+                          setRedirect({
+                            pathname: "/upload-patients",
+                            search: `?facility=${activeFacilityId}`,
+                          });
+                        },
+                      },
+                    ]}
+                  />
                 ) : null}
               </div>
             </div>
@@ -334,7 +364,6 @@ export const DetachedManagePatients = ({
               </div>
             )}
           </div>
-          {isAdmin && <PatientUpload onSuccess={refetch} />}
         </div>
       </div>
     </div>

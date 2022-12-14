@@ -31,6 +31,7 @@ interface Props<T> {
   onChange: (value: T) => void;
   onClick?: (value: T) => void;
   onBlur?: (event: React.FocusEvent<HTMLInputElement>) => void;
+  inputClassName?: string;
 }
 
 const RadioGroup = <T extends string>({
@@ -50,10 +51,12 @@ const RadioGroup = <T extends string>({
   onBlur,
   onClick,
   disabled,
+  inputClassName,
 }: Props<T>): React.ReactElement => {
   const inputClass = classnames(
     "usa-radio__input",
-    variant === "tile" && "usa-radio__input--tile"
+    variant === "tile" && "usa-radio__input--tile",
+    inputClassName
   );
   const groupClass = classnames(
     "usa-radio",

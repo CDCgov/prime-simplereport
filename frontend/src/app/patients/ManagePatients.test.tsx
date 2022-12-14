@@ -39,7 +39,6 @@ const PageNumberContainer = () => {
       activeFacilityId="a1"
       canEditUser={true}
       canDeleteUser={true}
-      isAdmin={false}
     />
   );
 };
@@ -78,8 +77,6 @@ describe("ManagePatients", () => {
     jest.useFakeTimers();
     render(<TestContainer />);
     expect(await screen.findByText(patients[0].lastName, { exact: false }));
-    const btn = await screen.findByText("Filter", { exact: false });
-    userEvent.click(btn);
     const input = await screen.findByLabelText(PATIENT_TERM_CAP);
     userEvent.type(input, "Al");
     await waitForElementToBeRemoved(() =>
