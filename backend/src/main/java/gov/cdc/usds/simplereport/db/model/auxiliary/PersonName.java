@@ -3,8 +3,6 @@ package gov.cdc.usds.simplereport.db.model.auxiliary;
 import java.util.Objects;
 import javax.persistence.Column;
 import javax.persistence.Embeddable;
-import org.apache.commons.lang3.StringUtils;
-import org.hl7.fhir.r4.model.HumanName;
 
 @Embeddable
 public class PersonName {
@@ -102,22 +100,5 @@ public class PersonName {
       b.append(suffix);
     }
     return b.toString();
-  }
-
-  public HumanName toFhir() {
-    var humanName = new HumanName();
-    if (StringUtils.isNotBlank(firstName)) {
-      humanName.addGiven(firstName);
-    }
-    if (StringUtils.isNotBlank(middleName)) {
-      humanName.addGiven(middleName);
-    }
-    if (StringUtils.isNotBlank(lastName)) {
-      humanName.setFamily(lastName);
-    }
-    if (StringUtils.isNotBlank(suffix)) {
-      humanName.addSuffix(suffix);
-    }
-    return humanName;
   }
 }

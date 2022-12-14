@@ -1,5 +1,8 @@
 package gov.cdc.usds.simplereport.db.model;
 
+import static gov.cdc.usds.simplereport.api.converter.FhirConverter.convertToHumanName;
+import static gov.cdc.usds.simplereport.api.converter.FhirConverter.convertToIdentifier;
+
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonUnwrapped;
 import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
@@ -33,7 +36,6 @@ import org.hl7.fhir.r4.model.Coding;
 import org.hl7.fhir.r4.model.ContactPoint;
 import org.hl7.fhir.r4.model.ContactPoint.ContactPointSystem;
 import org.hl7.fhir.r4.model.Enumerations.AdministrativeGender;
-import org.hl7.fhir.r4.model.Identifier.IdentifierUse;
 import org.hl7.fhir.r4.model.Patient;
 import org.hl7.fhir.r4.model.StringType;
 
@@ -470,8 +472,8 @@ public class Person extends OrganizationScopedEternalEntity implements PersonEnt
   @JsonIgnore
   public Patient toFhir() {
     var patient = new Patient();
-    addIdentifier(patient);
-    addFhirName(patient);
+    patient.addIdentifier(convertToIdentifier(getInternalId().toString()));
+    patient.addName(convertToHumanName(nameInfo));
     addFhirTelecom(patient);
     setFhirGender(patient);
     setFhirBirthDate(patient);
@@ -555,20 +557,6 @@ public class Person extends OrganizationScopedEternalEntity implements PersonEnt
       codeable.setText(MappingConstants.UNKNOWN_STRING);
     }
     ext.setValue(codeable);
-  }
-
-  @JsonIgnore
-  private void addIdentifier(Patient patient) {
-    if (getInternalId() != null) {
-      patient.addIdentifier().setValue(getInternalId().toString()).setUse(IdentifierUse.USUAL);
-    }
-  }
-
-  @JsonIgnore
-  private void addFhirName(Patient patient) {
-    if (nameInfo != null) {
-      patient.addName(nameInfo.toFhir());
-    }
   }
 
   @JsonIgnore

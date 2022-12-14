@@ -1,6 +1,6 @@
 package gov.cdc.usds.simplereport.db.model.auxiliary;
 
-import static gov.cdc.usds.simplereport.db.model.auxiliary.PersonNameTest.assertStringTypeListEqualsStringList;
+import static gov.cdc.usds.simplereport.api.converter.FhirConverterTest.assertStringTypeListEqualsStringList;
 import static org.assertj.core.api.Assertions.assertThat;
 
 import java.util.List;
