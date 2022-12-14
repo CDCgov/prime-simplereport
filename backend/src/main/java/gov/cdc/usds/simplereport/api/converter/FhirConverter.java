@@ -7,6 +7,7 @@ import org.apache.commons.lang3.StringUtils;
 import org.hl7.fhir.r4.model.ContactPoint;
 import org.hl7.fhir.r4.model.ContactPoint.ContactPointSystem;
 import org.hl7.fhir.r4.model.ContactPoint.ContactPointUse;
+import org.hl7.fhir.r4.model.Enumerations.AdministrativeGender;
 import org.hl7.fhir.r4.model.HumanName;
 import org.hl7.fhir.r4.model.Identifier;
 import org.hl7.fhir.r4.model.Identifier.IdentifierUse;
@@ -59,5 +60,15 @@ public class FhirConverter {
       return new ContactPoint().setUse(use).setSystem(system).setValue(value);
     }
     return null;
+  }
+
+  public static AdministrativeGender convertToAdministrativeGender(String gender) {
+    if ("male".equalsIgnoreCase(gender) || "m".equalsIgnoreCase(gender)) {
+      return AdministrativeGender.MALE;
+    } else if ("female".equalsIgnoreCase(gender) || "f".equalsIgnoreCase(gender)) {
+      return AdministrativeGender.FEMALE;
+    } else {
+      return AdministrativeGender.UNKNOWN;
+    }
   }
 }

@@ -1,5 +1,6 @@
 package gov.cdc.usds.simplereport.api.converter;
 
+import static gov.cdc.usds.simplereport.api.converter.FhirConverter.convertToAdministrativeGender;
 import static gov.cdc.usds.simplereport.api.converter.FhirConverter.convertToContactPoint;
 import static gov.cdc.usds.simplereport.api.converter.FhirConverter.convertToHumanName;
 import static gov.cdc.usds.simplereport.api.converter.FhirConverter.convertToIdentifier;
@@ -12,6 +13,7 @@ import java.util.stream.Collectors;
 import org.hl7.fhir.r4.model.ContactPoint;
 import org.hl7.fhir.r4.model.ContactPoint.ContactPointSystem;
 import org.hl7.fhir.r4.model.ContactPoint.ContactPointUse;
+import org.hl7.fhir.r4.model.Enumerations.AdministrativeGender;
 import org.hl7.fhir.r4.model.Identifier.IdentifierUse;
 import org.hl7.fhir.r4.model.PrimitiveType;
 import org.hl7.fhir.r4.model.StringType;
@@ -98,5 +100,25 @@ public class FhirConverterTest {
   void null_convertToContactPoint() {
     assertThat(convertToContactPoint(ContactPointUse.HOME, ContactPointSystem.PHONE, null))
         .isNull();
+  }
+
+  @Test
+  void f_convertToAdministrativeGender_toFemale() {
+    assertThat(convertToAdministrativeGender("f")).isEqualTo(AdministrativeGender.FEMALE);
+  }
+
+  @Test
+  void female_convertToAdministrativeGender_toFemale() {
+    assertThat(convertToAdministrativeGender("FEMALE")).isEqualTo(AdministrativeGender.FEMALE);
+  }
+
+  @Test
+  void m_convertToAdministrativeGender_toMale() {
+    assertThat(convertToAdministrativeGender("M")).isEqualTo(AdministrativeGender.MALE);
+  }
+
+  @Test
+  void male_convertToAdministrativeGender_toMale() {
+    assertThat(convertToAdministrativeGender("MALE")).isEqualTo(AdministrativeGender.MALE);
   }
 }

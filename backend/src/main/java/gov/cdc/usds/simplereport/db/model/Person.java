@@ -1,5 +1,6 @@
 package gov.cdc.usds.simplereport.db.model;
 
+import static gov.cdc.usds.simplereport.api.converter.FhirConverter.convertToAdministrativeGender;
 import static gov.cdc.usds.simplereport.api.converter.FhirConverter.convertToContactPoint;
 import static gov.cdc.usds.simplereport.api.converter.FhirConverter.convertToIdentifier;
 
@@ -34,7 +35,6 @@ import org.hibernate.annotations.Type;
 import org.hl7.fhir.r4.model.CodeableConcept;
 import org.hl7.fhir.r4.model.Coding;
 import org.hl7.fhir.r4.model.ContactPoint.ContactPointSystem;
-import org.hl7.fhir.r4.model.Enumerations.AdministrativeGender;
 import org.hl7.fhir.r4.model.Patient;
 import org.hl7.fhir.r4.model.StringType;
 
@@ -474,7 +474,7 @@ public class Person extends OrganizationScopedEternalEntity implements PersonEnt
     patient.addIdentifier(convertToIdentifier(getInternalId().toString()));
     patient.addName(nameInfo.toFhir());
     addFhirTelecom(patient);
-    setFhirGender(patient);
+    patient.setGender(convertToAdministrativeGender(gender));
     setFhirBirthDate(patient);
     setFhirAddress(patient);
     addRaceExtension(patient);
@@ -565,9 +565,7 @@ public class Person extends OrganizationScopedEternalEntity implements PersonEnt
     }
     if (emails != null) {
       emails.forEach(
-          e -> {
-            patient.addTelecom(convertToContactPoint(null, ContactPointSystem.EMAIL, e));
-          });
+          e -> patient.addTelecom(convertToContactPoint(null, ContactPointSystem.EMAIL, e)));
     }
   }
 
@@ -582,17 +580,6 @@ public class Person extends OrganizationScopedEternalEntity implements PersonEnt
   private void setFhirAddress(Patient patient) {
     if (address != null) {
       patient.setAddress(List.of(address.toFhir()));
-    }
-  }
-
-  @JsonIgnore
-  private void setFhirGender(Patient patient) {
-    if ("male".equalsIgnoreCase(gender)) {
-      patient.setGender(AdministrativeGender.MALE);
-    } else if ("female".equalsIgnoreCase(gender)) {
-      patient.setGender(AdministrativeGender.FEMALE);
-    } else {
-      patient.setGender(AdministrativeGender.UNKNOWN);
     }
   }
 }
