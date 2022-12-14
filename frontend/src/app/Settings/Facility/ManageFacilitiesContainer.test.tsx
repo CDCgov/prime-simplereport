@@ -70,10 +70,8 @@ describe("ManageFacilitiesContainer", () => {
   });
 
   it("displays facilities", async () => {
-    expect(await screen.findByText(mockFacility.name)).toBeInTheDocument();
-    expect(
-      await screen.findByText(mockFacility.cliaNumber)
-    ).toBeInTheDocument();
-    expect(await screen.findByText(mockFacility.name)).toBeInTheDocument();
+    expect(await screen.findByText(mockFacility.name));
+    expect(await screen.findByText(mockFacility.cliaNumber));
+    expect(await screen.findByText(mockFacility.name));
   });
 });

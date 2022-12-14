@@ -4,7 +4,8 @@ describe("Updating organization settings", () => {
   loginHooks();
   it("navigates to the org settings page", () => {
     cy.visit("/settings/organization");
-    cy.get(".prime-container").contains("Manage organization");
+    cy.get(".prime-container").contains("Welcome");
+    cy.get(".prime-container.settings-tab").contains("Manage organization");
 
     // Test a11y on the Manage organization page
     cy.injectAxe();
