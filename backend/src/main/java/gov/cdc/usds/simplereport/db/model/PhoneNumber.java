@@ -1,9 +1,10 @@
 package gov.cdc.usds.simplereport.db.model;
 
+import static gov.cdc.usds.simplereport.api.converter.FhirConverter.phoneNumberToContactPoint;
+
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.google.i18n.phonenumbers.NumberParseException;
 import com.google.i18n.phonenumbers.PhoneNumberUtil;
-import com.google.i18n.phonenumbers.PhoneNumberUtil.PhoneNumberFormat;
 import gov.cdc.usds.simplereport.db.model.auxiliary.PhoneType;
 import java.util.Objects;
 import java.util.UUID;
@@ -16,7 +17,6 @@ import javax.persistence.JoinColumn;
 import javax.persistence.ManyToOne;
 import org.hibernate.annotations.Type;
 import org.hl7.fhir.r4.model.ContactPoint;
-import org.hl7.fhir.r4.model.ContactPoint.ContactPointSystem;
 import org.hl7.fhir.r4.model.ContactPoint.ContactPointUse;
 
 @Entity
@@ -111,28 +111,11 @@ public class PhoneNumber extends AuditedEntity {
   }
 
   public ContactPoint toFhir() {
-    var contactPoint = new ContactPoint();
-
-    contactPoint.setSystem(ContactPointSystem.PHONE);
-
-    if (PhoneType.LANDLINE.equals(type)) {
-      contactPoint.setUse(ContactPointUse.HOME);
-    } else {
-      contactPoint.setUse(ContactPointUse.MOBILE);
+    var contactPointUse = ContactPointUse.HOME;
+    if (PhoneType.MOBILE.equals(type)) {
+      contactPointUse = ContactPointUse.MOBILE;
     }
 
-    // converting string to phone format as recommended by the fhir format.
-    // https://www.hl7.org/fhir/datatypes.html#ContactPoint
-    try {
-      var phoneUtil = PhoneNumberUtil.getInstance();
-      var parsedNumber = phoneUtil.parse(number, "US");
-      var formattedWithDash = phoneUtil.format(parsedNumber, PhoneNumberFormat.NATIONAL);
-
-      contactPoint.setValue(formattedWithDash.replace("-", " "));
-    } catch (NumberParseException e) {
-      contactPoint.setValue(number);
-    }
-
-    return contactPoint;
+    return phoneNumberToContactPoint(contactPointUse, number);
   }
 }
