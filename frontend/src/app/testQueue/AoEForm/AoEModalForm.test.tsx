@@ -14,6 +14,7 @@ describe("AoEModalForm", () => {
     MockDate.set("2021-02-06");
     component = render(
       <AoEModalForm
+        isOpen={true}
         onClose={mockOnClose}
         patient={{
           internalId: "123",

@@ -47,6 +47,7 @@ import { UPDATE_AOE } from "./addToQueue/AddToQueueSearch";
 const EARLIEST_TEST_DATE = new Date("01/01/2020 12:00:00 AM");
 
 interface AreYouSureProps {
+  isOpen: boolean;
   cancelText: string;
   continueText: string;
   cancelHandler: () => void;
@@ -59,10 +60,11 @@ const AreYouSure: React.FC<AreYouSureProps> = ({
   cancelText,
   continueHandler,
   continueText,
+  isOpen,
   children,
 }) => (
   <Modal
-    isOpen={true}
+    isOpen={isOpen}
     style={{
       content: {
         maxHeight: "90vh",
@@ -112,10 +114,6 @@ const convertFromMultiplexResponse = (
   );
   return multiplexResultInputs;
 };
-
-if (process.env.NODE_ENV !== "test") {
-  Modal.setAppElement("#root");
-}
 
 export type DevicesMap = Map<string, QueriedDeviceType>;
 
@@ -744,14 +742,13 @@ const QueueItem = ({
                       onClick={openAoeModal}
                       className="test-questionnaire-btn"
                     />
-                    {isAoeModalOpen && (
-                      <AoEModalForm
-                        onClose={closeAoeModal}
-                        patient={queueItem.patient}
-                        loadState={aoeAnswers}
-                        saveCallback={saveAoeCallback}
-                      />
-                    )}
+                    <AoEModalForm
+                      isOpen={isAoeModalOpen}
+                      onClose={closeAoeModal}
+                      patient={queueItem.patient}
+                      loadState={aoeAnswers}
+                      saveCallback={saveAoeCallback}
+                    />
                     <div className="margin-bottom-1">
                       <AskOnEntryTag aoeAnswers={aoeAnswers} />
                     </div>
@@ -896,49 +893,48 @@ const QueueItem = ({
                   : "tablet:grid-col-3"
               }`}
             >
-              {confirmationType !== "none" && (
-                <AreYouSure
-                  cancelText="No, go back"
-                  continueText={
-                    confirmationType === "submitResult"
-                      ? "Submit anyway"
-                      : "Yes, I'm sure"
-                  }
-                  cancelHandler={() => setConfirmationType("none")}
-                  continueHandler={
-                    confirmationType === "submitResult"
-                      ? () => {
-                          onTestResultSubmit(true);
-                        }
-                      : removeFromQueue
-                  }
-                >
-                  {confirmationType === "submitResult" ? (
+              <AreYouSure
+                isOpen={confirmationType !== "none"}
+                cancelText="No, go back"
+                continueText={
+                  confirmationType === "submitResult"
+                    ? "Submit anyway"
+                    : "Yes, I'm sure"
+                }
+                cancelHandler={() => setConfirmationType("none")}
+                continueHandler={
+                  confirmationType === "submitResult"
+                    ? () => {
+                        onTestResultSubmit(true);
+                      }
+                    : removeFromQueue
+                }
+              >
+                {confirmationType === "submitResult" ? (
+                  <p className="usa-prose">
+                    The test questionnaire for <b> {` ${patientFullName} `} </b>{" "}
+                    has not been completed. Do you want to submit results
+                    anyway?
+                  </p>
+                ) : isCorrection ? (
+                  <p>
+                    Are you sure you want to cancel <b>{patientFullName}'s</b>{" "}
+                    test correction? The original test result won’t be changed.
+                  </p>
+                ) : (
+                  <>
                     <p className="usa-prose">
-                      The test questionnaire for{" "}
-                      <b> {` ${patientFullName} `} </b> has not been completed.
-                      Do you want to submit results anyway?
+                      Are you sure you want to stop <b>{patientFullName}'s</b>{" "}
+                      test?
                     </p>
-                  ) : isCorrection ? (
-                    <p>
-                      Are you sure you want to cancel <b>{patientFullName}'s</b>{" "}
-                      test correction? The original test result won’t be
-                      changed.
+                    <p className="usa-prose">
+                      Doing so will remove this person from the list. You can
+                      use the search bar to start their test again later.
                     </p>
-                  ) : (
-                    <>
-                      <p className="usa-prose">
-                        Are you sure you want to stop <b>{patientFullName}'s</b>{" "}
-                        test?
-                      </p>
-                      <p className="usa-prose">
-                        Doing so will remove this person from the list. You can
-                        use the search bar to start their test again later.
-                      </p>
-                    </>
-                  )}
-                </AreYouSure>
-              )}
+                  </>
+                )}
+              </AreYouSure>
+
               {supportsMultipleDiseases ? (
                 <MultiplexResultInputForm
                   queueItemId={queueItem.internalId}

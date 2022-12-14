@@ -150,21 +150,22 @@ const SearchResults = (props: QueueProps | TestResultsProps) => {
 
   return (
     <>
-      {props.page === "queue" && dialogPatient !== null && (
-        <AoEModalForm
-          patient={dialogPatient}
-          onClose={() => {
-            setDialogPatient(null);
-          }}
-          saveCallback={(a: any) =>
-            props.onAddToQueue(
-              dialogPatient,
-              a,
-              canAddToQueue ? "create" : "update"
-            )
-          }
-        />
-      )}
+      <AoEModalForm
+        isOpen={props.page === "queue" && dialogPatient !== null}
+        patient={dialogPatient}
+        onClose={() => {
+          setDialogPatient(null);
+        }}
+        saveCallback={(a: any) =>
+          props.page === "queue" && dialogPatient !== null
+            ? props.onAddToQueue(
+                dialogPatient,
+                a,
+                canAddToQueue ? "create" : "update"
+              )
+            : Promise.resolve()
+        }
+      />
       {shouldShowSuggestions && results}
     </>
   );
