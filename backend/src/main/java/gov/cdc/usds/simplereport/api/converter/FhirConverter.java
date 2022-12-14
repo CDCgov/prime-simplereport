@@ -3,6 +3,9 @@ package gov.cdc.usds.simplereport.api.converter;
 import com.google.i18n.phonenumbers.NumberParseException;
 import com.google.i18n.phonenumbers.PhoneNumberUtil;
 import com.google.i18n.phonenumbers.PhoneNumberUtil.PhoneNumberFormat;
+import java.time.LocalDate;
+import java.time.ZoneId;
+import java.util.Date;
 import org.apache.commons.lang3.StringUtils;
 import org.hl7.fhir.r4.model.ContactPoint;
 import org.hl7.fhir.r4.model.ContactPoint.ContactPointSystem;
@@ -70,5 +73,12 @@ public class FhirConverter {
     } else {
       return AdministrativeGender.UNKNOWN;
     }
+  }
+
+  public static Date convertToDate(LocalDate date) {
+    if (date != null) {
+      return Date.from(date.atStartOfDay(ZoneId.systemDefault()).toInstant());
+    }
+    return null;
   }
 }

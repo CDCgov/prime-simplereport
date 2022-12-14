@@ -2,6 +2,7 @@ package gov.cdc.usds.simplereport.db.model;
 
 import static gov.cdc.usds.simplereport.api.converter.FhirConverter.convertToAdministrativeGender;
 import static gov.cdc.usds.simplereport.api.converter.FhirConverter.convertToContactPoint;
+import static gov.cdc.usds.simplereport.api.converter.FhirConverter.convertToDate;
 import static gov.cdc.usds.simplereport.api.converter.FhirConverter.convertToIdentifier;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
@@ -14,10 +15,8 @@ import gov.cdc.usds.simplereport.db.model.auxiliary.RaceArrayConverter;
 import gov.cdc.usds.simplereport.db.model.auxiliary.StreetAddress;
 import gov.cdc.usds.simplereport.db.model.auxiliary.TestResultDeliveryPreference;
 import java.time.LocalDate;
-import java.time.ZoneId;
 import java.util.ArrayList;
 import java.util.Collections;
-import java.util.Date;
 import java.util.List;
 import java.util.Objects;
 import java.util.stream.Collectors;
@@ -475,7 +474,7 @@ public class Person extends OrganizationScopedEternalEntity implements PersonEnt
     patient.addName(nameInfo.toFhir());
     addFhirTelecom(patient);
     patient.setGender(convertToAdministrativeGender(gender));
-    setFhirBirthDate(patient);
+    patient.setBirthDate(convertToDate(birthDate));
     setFhirAddress(patient);
     addRaceExtension(patient);
     addEthnicityExtension(patient);
@@ -566,13 +565,6 @@ public class Person extends OrganizationScopedEternalEntity implements PersonEnt
     if (emails != null) {
       emails.forEach(
           e -> patient.addTelecom(convertToContactPoint(null, ContactPointSystem.EMAIL, e)));
-    }
-  }
-
-  @JsonIgnore
-  private void setFhirBirthDate(Patient patient) {
-    if (birthDate != null) {
-      patient.setBirthDate(Date.from(birthDate.atStartOfDay(ZoneId.systemDefault()).toInstant()));
     }
   }
 

@@ -2,6 +2,7 @@ package gov.cdc.usds.simplereport.api.converter;
 
 import static gov.cdc.usds.simplereport.api.converter.FhirConverter.convertToAdministrativeGender;
 import static gov.cdc.usds.simplereport.api.converter.FhirConverter.convertToContactPoint;
+import static gov.cdc.usds.simplereport.api.converter.FhirConverter.convertToDate;
 import static gov.cdc.usds.simplereport.api.converter.FhirConverter.convertToHumanName;
 import static gov.cdc.usds.simplereport.api.converter.FhirConverter.convertToIdentifier;
 import static gov.cdc.usds.simplereport.api.converter.FhirConverter.phoneNumberToContactPoint;
@@ -103,22 +104,32 @@ public class FhirConverterTest {
   }
 
   @Test
-  void f_convertToAdministrativeGender_toFemale() {
+  void f_convertToAdministrativeGender_returnsFemale() {
     assertThat(convertToAdministrativeGender("f")).isEqualTo(AdministrativeGender.FEMALE);
   }
 
   @Test
-  void female_convertToAdministrativeGender_toFemale() {
+  void female_convertToAdministrativeGender_returnsFemale() {
     assertThat(convertToAdministrativeGender("FEMALE")).isEqualTo(AdministrativeGender.FEMALE);
   }
 
   @Test
-  void m_convertToAdministrativeGender_toMale() {
+  void m_convertToAdministrativeGender_returnsMale() {
     assertThat(convertToAdministrativeGender("M")).isEqualTo(AdministrativeGender.MALE);
   }
 
   @Test
-  void male_convertToAdministrativeGender_toMale() {
+  void male_convertToAdministrativeGender_returnsMale() {
     assertThat(convertToAdministrativeGender("MALE")).isEqualTo(AdministrativeGender.MALE);
+  }
+
+  @Test
+  void unknownGender_convertToAdministrativeGender_returnsUnknown() {
+    assertThat(convertToAdministrativeGender("fishperson")).isEqualTo(AdministrativeGender.UNKNOWN);
+  }
+
+  @Test
+  void null_convertToDate() {
+    assertThat(convertToDate(null)).isNull();
   }
 }
