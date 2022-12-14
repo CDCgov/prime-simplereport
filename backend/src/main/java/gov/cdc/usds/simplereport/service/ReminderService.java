@@ -38,7 +38,7 @@ public class ReminderService {
    * Send reminder emails to complete identity verification to members of organizations that
    * were created and did not complete id verification
    */
-  @Scheduled(cron = "0 30 * * * *", zone = "America/New_York")
+  @Scheduled(cron = "0 0 1 * * *", zone = "America/New_York")
   @ConditionalOnProperty("simple-report.id-verification-reminders.enabled")
   public void sendAccountReminderEmails() {
     // take the advisory lock for this process. auto released after transaction
