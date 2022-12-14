@@ -54,8 +54,8 @@ const ManageOrganization: React.FC<Props> = (props) => {
     } else {
       const updatedErrors = {
         ...errors,
-        "name": nameError,
-        "type": typeError,
+        name: nameError,
+        type: typeError,
       };
       let ulAlertBody = (
         <ul>
@@ -94,7 +94,6 @@ const ManageOrganization: React.FC<Props> = (props) => {
               if you need to change it.
             </Alert>
           )}
-
           {props.canEditOrganizationName ? (
             <TextInput
               label="Organization name"
@@ -131,6 +130,7 @@ const ManageOrganization: React.FC<Props> = (props) => {
             validationStatus={errors["type"] ? "error" : "success"}
             required
           />
+          q
         </div>
       </div>
     </div>
