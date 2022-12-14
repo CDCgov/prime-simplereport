@@ -1,5 +1,6 @@
 package gov.cdc.usds.simplereport.db.model;
 
+import gov.cdc.usds.simplereport.api.MappingConstants;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -667,13 +668,13 @@ public class PersonUtils {
           "pacific", "2076-8",
           "white", "2106-3",
           "other", "2131-1",
-          "unknown", FhirUtils.UNK_CODE,
-          "refused", FhirUtils.ASKED_BUT_UNKNOWN_CODE // Asked, but unknown
+          "unknown", MappingConstants.UNK_CODE,
+          "refused", MappingConstants.ASKED_BUT_UNKNOWN_CODE // Asked, but unknown
           );
 
   public static final Map<String, List<String>> ETHNICITY_MAP =
       Map.of(
           "hispanic", List.of("2135-2", "Hispanic or Latino"),
           "not_hispanic", List.of("2186-5", "Not Hispanic or Latino"),
-          "refused", List.of(FhirUtils.ASKED_BUT_UNKNOWN_CODE, "asked but unknown"));
+          "refused", List.of(MappingConstants.ASKED_BUT_UNKNOWN_CODE, "asked but unknown"));
 }

@@ -3,10 +3,10 @@ package gov.cdc.usds.simplereport.api.model;
 import static java.lang.Boolean.TRUE;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
+import gov.cdc.usds.simplereport.api.MappingConstants;
 import gov.cdc.usds.simplereport.db.model.DeviceSpecimenType;
 import gov.cdc.usds.simplereport.db.model.DeviceType;
 import gov.cdc.usds.simplereport.db.model.Facility;
-import gov.cdc.usds.simplereport.db.model.FhirUtils;
 import gov.cdc.usds.simplereport.db.model.Organization;
 import gov.cdc.usds.simplereport.db.model.Person;
 import gov.cdc.usds.simplereport.db.model.PersonUtils;
@@ -220,7 +220,10 @@ public class TestEventExport {
 
   @JsonProperty("Patient_race")
   public String getPatientRace() {
-    return patient.map(Person::getRace).map(PersonUtils.raceMap::get).orElse(FhirUtils.UNK_CODE);
+    return patient
+        .map(Person::getRace)
+        .map(PersonUtils.raceMap::get)
+        .orElse(MappingConstants.UNK_CODE);
   }
 
   @JsonProperty("Patient_DOB")
@@ -235,7 +238,7 @@ public class TestEventExport {
 
   @JsonProperty("Patient_ethnicity")
   public String getPatientEthnicity() {
-    return patient.map(Person::getEthnicity).map(ethnicityMap::get).orElse(FhirUtils.U_CODE);
+    return patient.map(Person::getEthnicity).map(ethnicityMap::get).orElse(MappingConstants.U_CODE);
   }
 
   @JsonProperty("Patient_street")

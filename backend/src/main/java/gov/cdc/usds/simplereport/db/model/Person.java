@@ -3,6 +3,7 @@ package gov.cdc.usds.simplereport.db.model;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonUnwrapped;
 import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
+import gov.cdc.usds.simplereport.api.MappingConstants;
 import gov.cdc.usds.simplereport.db.model.auxiliary.PersonName;
 import gov.cdc.usds.simplereport.db.model.auxiliary.PersonRole;
 import gov.cdc.usds.simplereport.db.model.auxiliary.RaceArrayConverter;
@@ -510,7 +511,7 @@ public class Person extends OrganizationScopedEternalEntity implements PersonEnt
       var ombCoding = new Coding();
       if (PersonUtils.ETHNICITY_MAP.containsKey(ethnicity)) {
         if ("refused".equalsIgnoreCase(ethnicity)) {
-          ombCoding.setSystem(FhirUtils.NULL_CODE_SYSTEM);
+          ombCoding.setSystem(MappingConstants.NULL_CODE_SYSTEM);
         } else {
           ombCoding.setSystem("urn:oid:2.16.840.1.113883.6.238");
         }
@@ -521,13 +522,13 @@ public class Person extends OrganizationScopedEternalEntity implements PersonEnt
         text.setUrl("text");
         text.setValue(new StringType(PersonUtils.ETHNICITY_MAP.get(ethnicity).get(1)));
       } else {
-        ombCoding.setSystem(FhirUtils.NULL_CODE_SYSTEM);
-        ombCoding.setCode(FhirUtils.UNK_CODE);
-        ombCoding.setDisplay(FhirUtils.UNKNOWN_STRING);
+        ombCoding.setSystem(MappingConstants.NULL_CODE_SYSTEM);
+        ombCoding.setCode(MappingConstants.UNK_CODE);
+        ombCoding.setDisplay(MappingConstants.UNKNOWN_STRING);
 
         var text = ext.addExtension();
         text.setUrl("text");
-        text.setValue(new StringType(FhirUtils.UNKNOWN_STRING));
+        text.setValue(new StringType(MappingConstants.UNKNOWN_STRING));
       }
       ombExtension.setValue(ombCoding);
     }
@@ -540,17 +541,18 @@ public class Person extends OrganizationScopedEternalEntity implements PersonEnt
     var codeable = new CodeableConcept();
     var coding = codeable.addCoding();
     if (race != null && PersonUtils.raceMap.containsKey(race)) {
-      if (FhirUtils.UNKNOWN_STRING.equalsIgnoreCase(race) || "refused".equalsIgnoreCase(race)) {
-        coding.setSystem(FhirUtils.NULL_CODE_SYSTEM);
+      if (MappingConstants.UNKNOWN_STRING.equalsIgnoreCase(race)
+          || "refused".equalsIgnoreCase(race)) {
+        coding.setSystem(MappingConstants.NULL_CODE_SYSTEM);
       } else {
         coding.setSystem("http://terminology.hl7.org/CodeSystem/v3-Race");
       }
       coding.setCode(PersonUtils.raceMap.get(race));
       codeable.setText(race);
     } else {
-      coding.setSystem(FhirUtils.NULL_CODE_SYSTEM);
-      coding.setCode(FhirUtils.UNK_CODE);
-      codeable.setText(FhirUtils.UNKNOWN_STRING);
+      coding.setSystem(MappingConstants.NULL_CODE_SYSTEM);
+      coding.setCode(MappingConstants.UNK_CODE);
+      codeable.setText(MappingConstants.UNKNOWN_STRING);
     }
     ext.setValue(codeable);
   }
