@@ -69,7 +69,7 @@ interface GetPatientResponse {
     birthDate: string;
     street: string;
     streetTwo: string | null;
-    city: string | null;
+    city: string | "";
     state: string;
     zipCode: string;
     telephone: string;
@@ -295,6 +295,7 @@ const EditPatient = (props: Props) => {
                   data.patient.facility === null
                     ? null
                     : data.patient.facility?.id,
+                city: data.patient.city === null ? "" : data.patient.city,
               }}
               patientId={props.patientId}
               savePerson={savePerson}
