@@ -283,21 +283,21 @@ const UploadPatients = () => {
                             </tr>
                           </thead>
                           <tbody>
-                            {React.Children.toArray(
-                              errors.map((e) => {
-                                return (
-                                  <tr>
-                                    <td className={"border-bottom-0"}>
-                                      {e?.["message"]}{" "}
-                                    </td>
-                                    <td className={"border-bottom-0"}>
-                                      {e?.["indices"] &&
-                                        "Row(s): " + e?.["indices"]}
-                                    </td>
-                                  </tr>
-                                );
-                              })
-                            )}
+                            {errors.map((e) => {
+                              return (
+                                <tr
+                                  key={(e?.message || "") + (e?.indices || "")}
+                                >
+                                  <td className={"border-bottom-0"}>
+                                    {e?.["message"]}{" "}
+                                  </td>
+                                  <td className={"border-bottom-0"}>
+                                    {e?.["indices"] &&
+                                      "Row(s): " + e?.["indices"]}
+                                  </td>
+                                </tr>
+                              );
+                            })}
                           </tbody>
                         </table>
                       )}
