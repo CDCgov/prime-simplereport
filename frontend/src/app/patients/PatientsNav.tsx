@@ -4,8 +4,9 @@ import { LinkWithQuery } from "../commonComponents/LinkWithQuery";
 import { PATIENT_TERM } from "../../config/constants";
 
 const PatientsNav = () => {
-  const classNameByActive = ({ isActive }: { isActive: boolean }) =>
-    isActive ? "active" : "";
+  const classNameByActive = function ({ isActive }: { isActive: boolean }) {
+    return isActive ? "active" : "";
+  };
 
   return (
     <nav

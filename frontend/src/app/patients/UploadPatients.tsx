@@ -41,16 +41,16 @@ const UploadPatients = () => {
     facilities.find((f) => f.id === activeFacilityId) ||
     facilities[0] || { id: "", name: "" };
 
-  const onFacilitySelect = (e: React.ChangeEvent<HTMLSelectElement>) => {
+  const onFacilitySelect = function (e: React.ChangeEvent<HTMLSelectElement>) {
     const selected = facilities.find((f) => f.id === e.target.value);
     if (selected) {
       setSelectedFacility(selected);
     }
   };
 
-  const handleFileChange = async (
+  const handleFileChange = async function (
     event: React.ChangeEvent<HTMLInputElement>
-  ) => {
+  ) {
     try {
       if (!event?.currentTarget?.files?.length) {
         return; //no files
@@ -67,7 +67,9 @@ const UploadPatients = () => {
     }
   };
 
-  const handleSubmit = async (event: React.FormEvent<HTMLButtonElement>) => {
+  const handleSubmit = async function (
+    event: React.FormEvent<HTMLButtonElement>
+  ) {
     event.preventDefault();
 
     setStatus("submitting");
@@ -281,19 +283,21 @@ const UploadPatients = () => {
                             </tr>
                           </thead>
                           <tbody>
-                            {errors.map((e, i) => {
-                              return (
-                                <tr key={"error_" + i}>
-                                  <td className={"border-bottom-0"}>
-                                    {e?.["message"]}{" "}
-                                  </td>
-                                  <td className={"border-bottom-0"}>
-                                    {e?.["indices"] &&
-                                      "Row(s): " + e?.["indices"]}
-                                  </td>
-                                </tr>
-                              );
-                            })}
+                            {React.Children.toArray(
+                              errors.map((e) => {
+                                return (
+                                  <tr>
+                                    <td className={"border-bottom-0"}>
+                                      {e?.["message"]}{" "}
+                                    </td>
+                                    <td className={"border-bottom-0"}>
+                                      {e?.["indices"] &&
+                                        "Row(s): " + e?.["indices"]}
+                                    </td>
+                                  </tr>
+                                );
+                              })
+                            )}
                           </tbody>
                         </table>
                       )}

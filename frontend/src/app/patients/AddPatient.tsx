@@ -336,15 +336,15 @@ const AddPatient = () => {
           patient={EMPTY_PERSON}
           savePerson={savePerson}
           onBlur={onBlur}
-          getHeader={(_, onSave, formChanged) =>
-            AddPatientHeader({
+          getHeader={function (_, onSave, formChanged) {
+            return AddPatientHeader({
               additional: (
                 <div className="display-flex flex-align-center">
                   {getSaveButtons(formChanged, onSave, "upper")}
                 </div>
               ),
-            })
-          }
+            });
+          }}
           headerClassName={"padding-bottom-0"}
           getFooter={(onSave, formChanged) => (
             <div className="prime-edit-patient-heading">
