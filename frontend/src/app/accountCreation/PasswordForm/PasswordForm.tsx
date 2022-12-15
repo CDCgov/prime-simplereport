@@ -175,7 +175,9 @@ export const PasswordForm = () => {
   });
 
   if (loading) {
-    return <LoadingCard message="Validating password" />;
+    return (
+      <LoadingCard message={`Validating password: ${passwordInfo.password}`} />
+    );
   }
 
   if (submitted) {
@@ -225,6 +227,7 @@ export const PasswordForm = () => {
           label={"Continue"}
           type={"submit"}
           onClick={handleSubmit}
+          disabled={!passwordInfo.password}
           id={"continue"}
         />
       </Card>
