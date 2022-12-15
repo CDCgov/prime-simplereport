@@ -14,6 +14,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.TimeZone;
 import lombok.extern.slf4j.Slf4j;
+import net.javacrumbs.shedlock.spring.annotation.SchedulerLock;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
 import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Service;
@@ -23,8 +24,6 @@ import org.springframework.transaction.annotation.Transactional;
 @Transactional(readOnly = true)
 @Slf4j
 public class ReminderService {
-
-  private static final long LOCK_HOLD_MS = 1000L;
 
   private final OrganizationQueueRepository _orgQueueRepo;
   private final EmailService _emailService;
@@ -39,16 +38,9 @@ public class ReminderService {
    * were created and did not complete id verification
    */
   @Scheduled(cron = "0 0 1 * * *", zone = "America/New_York")
+  @SchedulerLock(name = "ReminderService_sendAccountReminderEmails", lockAtLeastFor = "PT1S", lockAtMostFor = "PT30M")
   @ConditionalOnProperty("simple-report.id-verification-reminders.enabled")
   public void sendAccountReminderEmails() {
-    // take the advisory lock for this process. auto released after transaction
-    if (_orgQueueRepo.tryOrgReminderLock()) {
-      log.info("Reminder lock obtained: commencing email sending");
-    } else {
-      log.info("Reminders locked out by mutex: aborting");
-      return;
-    }
-
     TimeZone tz = TimeZone.getTimeZone("America/New_York");
     LocalDate now = LocalDate.now(tz.toZoneId());
 
@@ -81,14 +73,6 @@ public class ReminderService {
       }
 
       orgReminderMap.put(orgAdminEmail, queueItem);
-    }
-
-    try {
-      // hold the lock a little extra so other instances have a chance to fail to acquire it
-      Thread.sleep(LOCK_HOLD_MS);
-    } catch (InterruptedException e) {
-      log.debug("sendAccountReminderEmails: sleep interrupted");
-      Thread.currentThread().interrupt();
     }
   }
 
