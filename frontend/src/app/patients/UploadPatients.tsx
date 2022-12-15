@@ -144,12 +144,16 @@ const UploadPatients = () => {
                     below.
                   </p>
                 </div>
-                <Button className={"margin-right-105"}>
-                  View patient bulk upload guide
-                </Button>
-                <Button variant={"outline"}>
-                  Download spreadsheet template
-                </Button>
+                <a href="/using-simplereport/manage-people-you-test/bulk-upload-patients/#preparing-your-spreadsheet-data">
+                  <Button className={"margin-right-105"}>
+                    View patient bulk upload guide
+                  </Button>
+                </a>
+                <a href="/assets/resources/patient_upload_example.csv">
+                  <Button variant={"outline"}>
+                    Download spreadsheet template
+                  </Button>
+                </a>
               </div>
             </li>
 

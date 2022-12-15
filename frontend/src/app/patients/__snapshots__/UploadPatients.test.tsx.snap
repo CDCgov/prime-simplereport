@@ -107,18 +107,26 @@ exports[`Upload Patient displays the upload patients page correctly 1`] = `
                   To upload patients in bulk, spreadsheets need to match SimpleReport data requirements. Follow the Patient bulk upload guide closely to format your CSV before uploading it below.
                 </p>
               </div>
-              <button
-                class="usa-button margin-right-105"
-                type="button"
+              <a
+                href="/using-simplereport/manage-people-you-test/bulk-upload-patients/#preparing-your-spreadsheet-data"
               >
-                View patient bulk upload guide
-              </button>
-              <button
-                class="usa-button usa-button--outline"
-                type="button"
+                <button
+                  class="usa-button margin-right-105"
+                  type="button"
+                >
+                  View patient bulk upload guide
+                </button>
+              </a>
+              <a
+                href="/assets/resources/patient_upload_example.csv"
               >
-                Download spreadsheet template
-              </button>
+                <button
+                  class="usa-button usa-button--outline"
+                  type="button"
+                >
+                  Download spreadsheet template
+                </button>
+              </a>
             </div>
           </li>
           <li>
