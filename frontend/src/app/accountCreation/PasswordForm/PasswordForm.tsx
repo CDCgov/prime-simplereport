@@ -16,11 +16,20 @@ import { CardBackground } from "../../commonComponents/CardBackground/CardBackgr
 import StepIndicator from "../../commonComponents/StepIndicator";
 import { accountCreationSteps } from "../../../config/constants";
 
+type PasswordInformation = {
+  password: string;
+  strength: number;
+};
+
 export const PasswordForm = () => {
   // State setup
-  const [password, setPassword] = useState("");
+  //const [password, setPassword] = useState("");
   const [passwordConfirmation, setPasswordConfirmation] = useState("");
-  const [strength, setStrength] = useState(0);
+  const [passwordInfo, setPasswordInfo] = useState<PasswordInformation>({
+    password: "",
+    strength: 0,
+  });
+  //const [strength, setStrength] = useState(0);
   const [strengthHint, setStrengthHint] = useState("");
   const [passwordError, setPasswordError] = useState("");
   const [passwordConfirmationError, setPasswordConfirmationError] =
@@ -30,12 +39,12 @@ export const PasswordForm = () => {
 
   const validatePasswordConfirmation = useCallback((): boolean => {
     let error = "";
-    if (password !== passwordConfirmation) {
+    if (passwordInfo.password !== passwordConfirmation) {
       error = "Passwords must match";
     }
     setPasswordConfirmationError(error);
     return error === "";
-  }, [password, passwordConfirmation]);
+  }, [passwordInfo.password, passwordConfirmation]);
 
   useEffect(() => {
     passwordConfirmation !== "" && validatePasswordConfirmation();
@@ -94,14 +103,16 @@ export const PasswordForm = () => {
   const handlePasswordChange = ({
     target: { value },
   }: ChangeEvent<HTMLInputElement>) => {
-    setPassword(value);
-    setStrength(calculateStrength(value));
+    setPasswordInfo({ password: value, strength: calculateStrength(value) });
+    /*setPassword(value);
+    setStrength(calculateStrength(value));*/
   };
 
   // Clears the hint and sets the error since this is validation on submit
   const validatePassword = (): boolean => {
     setStrengthHint("");
-    const hint = buildHint(password);
+    //const hint = buildHint(password);
+    const hint = buildHint(passwordInfo.password);
     setPasswordError(hint);
     return hint === "";
   };
@@ -111,7 +122,8 @@ export const PasswordForm = () => {
     if (validatePassword() && validatePasswordConfirmation()) {
       setLoading(true);
       try {
-        await AccountCreationApi.setPassword(password);
+        //await AccountCreationApi.setPassword(password);
+        await AccountCreationApi.setPassword(passwordInfo.password);
         setSubmitted(true);
       } catch (error: any) {
         setPasswordError(
@@ -126,7 +138,8 @@ export const PasswordForm = () => {
   // This switch sets both the label of the password strength
   // and the color class to use for the strength bars
   let strengthLabel, strengthColor: string;
-  switch (strength) {
+  //switch (strength) {
+  switch (passwordInfo.strength) {
     case 1:
       strengthLabel = "Weak";
       strengthColor = "bg-error";
@@ -151,7 +164,8 @@ export const PasswordForm = () => {
   // This builds the divs for the strength bars
   const strengthBars = [1, 2, 3, 4].map((score) => {
     const margin = score === 1 ? "" : "margin-left-1";
-    const color = strength >= score ? strengthColor : "bg-base-lighter";
+    const color =
+      passwordInfo.strength >= score ? strengthColor : "bg-base-lighter";
     return (
       <div
         key={score}
@@ -180,7 +194,7 @@ export const PasswordForm = () => {
           label={"Password"}
           name={"password"}
           type={"password"}
-          value={password}
+          value={passwordInfo.password}
           hintText="Your password must be at least 8 characters, include an uppercase and lowercase letter, and a number."
           errorMessage={passwordError}
           validationStatus={passwordError ? "error" : undefined}
