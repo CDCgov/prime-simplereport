@@ -3,11 +3,11 @@ import React from "react";
 import { LinkWithQuery } from "../commonComponents/LinkWithQuery";
 import { PATIENT_TERM } from "../../config/constants";
 
-function classNameByActive({ isActive }: { isActive: boolean }) {
-  return isActive ? "active" : "";
-}
-
 const PatientsNav = () => {
+  function classNameByActive({ isActive }: { isActive: boolean }) {
+    return isActive ? "active" : "";
+  }
+
   return (
     <nav
       className="prime-secondary-nav padding-top-2"

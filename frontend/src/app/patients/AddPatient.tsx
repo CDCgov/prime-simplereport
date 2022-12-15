@@ -232,6 +232,19 @@ const AddPatient = () => {
     return <div>No facility selected</div>;
   }
 
+  function getPatientHeader(
+    _: any,
+    onSave: (startTest?: boolean | undefined) => void,
+    formChanged: boolean
+  ) {
+    return AddPatientHeader({
+      additional: (
+        <div className="display-flex flex-align-center">
+          {getSaveButtons(formChanged, onSave, "upper")}
+        </div>
+      ),
+    });
+  }
   const savePerson = async (
     person: Nullable<PersonFormData>,
     startTest: boolean = false
@@ -336,15 +349,7 @@ const AddPatient = () => {
           patient={EMPTY_PERSON}
           savePerson={savePerson}
           onBlur={onBlur}
-          getHeader={function (_, onSave, formChanged) {
-            return AddPatientHeader({
-              additional: (
-                <div className="display-flex flex-align-center">
-                  {getSaveButtons(formChanged, onSave, "upper")}
-                </div>
-              ),
-            });
-          }}
+          getHeader={getPatientHeader}
           headerClassName={"padding-bottom-0"}
           getFooter={(onSave, formChanged) => (
             <div className="prime-edit-patient-heading">
