@@ -1,6 +1,8 @@
 spring:
   profiles.include: okta-dev5, server-debug
 simple-report:
+  id-verification-reminders:
+    enabled: true
   azure-reporting-queue:
     enabled: true
     exception-webhook-enabled: true

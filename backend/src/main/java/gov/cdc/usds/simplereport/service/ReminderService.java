@@ -37,8 +37,11 @@ public class ReminderService {
    * Send reminder emails to complete identity verification to members of organizations that
    * were created and did not complete id verification
    */
-  @Scheduled(cron = "0 0 1 * * *", zone = "America/New_York")
-  @SchedulerLock(name = "ReminderService_sendAccountReminderEmails", lockAtLeastFor = "PT1S", lockAtMostFor = "PT30M")
+//  @Scheduled(cron = "0 0 1 * * *", zone = "America/New_York")
+//  @SchedulerLock(name = "ReminderService_sendAccountReminderEmails", lockAtLeastFor = "PT1S", lockAtMostFor = "PT30M")
+  @Scheduled(fixedRate = 120000) // 2 min
+  // lock longer than schedule to test that lock prevents scheduled method from running again until lock expires
+  @SchedulerLock(name = "ReminderService_sendAccountReminderEmails", lockAtLeastFor = "PT3M", lockAtMostFor = "PT30M")
   @ConditionalOnProperty("simple-report.id-verification-reminders.enabled")
   public void sendAccountReminderEmails() {
     TimeZone tz = TimeZone.getTimeZone("America/New_York");
