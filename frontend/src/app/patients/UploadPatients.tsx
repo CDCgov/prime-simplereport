@@ -41,78 +41,82 @@ const UploadPatients = () => {
     facilities.find((f) => f.id === activeFacilityId) ||
     facilities[0] || { id: "", name: "" };
 
-  const onFacilitySelect = (e: React.ChangeEvent<HTMLSelectElement>) => {
-    const selected = facilities.find((f) => f.id === e.target.value);
-    if (selected) {
-      setSelectedFacility(selected);
-    }
-  };
-
-  const handleFileChange = async (
-    event: React.ChangeEvent<HTMLInputElement>
-  ) => {
-    try {
-      if (!event?.currentTarget?.files?.length) {
-        return; //no files
+  function onFacilitySelect() {
+    return (e: React.ChangeEvent<HTMLSelectElement>) => {
+      const selected = facilities.find((f) => f.id === e.target.value);
+      if (selected) {
+        setSelectedFacility(selected);
       }
-      const currentFile = event.currentTarget.files.item(0);
-      if (!currentFile) {
+    };
+  }
+
+  function handleFileChange() {
+    return async (event: React.ChangeEvent<HTMLInputElement>) => {
+      try {
+        if (!event?.currentTarget?.files?.length) {
+          return; //no files
+        }
+        const currentFile = event.currentTarget.files.item(0);
+        if (!currentFile) {
+          return;
+        }
+        setFile(currentFile);
+        setButtonIsDisabled(false);
+        setStatus("");
+      } catch (err: any) {
+        showError(`An unexpected error happened: '${err.toString()}'`);
+      }
+    };
+  }
+
+  function handleSubmit() {
+    return async (event: React.FormEvent<HTMLButtonElement>) => {
+      event.preventDefault();
+
+      setStatus("submitting");
+      setButtonIsDisabled(true);
+      setErrors([]);
+      setErrorMessageText("");
+
+      if (!file || file.size === 0) {
+        setStatus("fail");
+        setButtonIsDisabled(false);
+        setErrorMessageText("Invalid file");
         return;
       }
-      setFile(currentFile);
-      setButtonIsDisabled(false);
-      setStatus("");
-    } catch (err: any) {
-      showError(`An unexpected error happened: '${err.toString()}'`);
-    }
-  };
+      const facilityId = facilityAmount === "oneFacility" ? facility.id : "";
+      FileUploadService.uploadPatients(file, facilityId).then(async (res) => {
+        setStatus("complete");
+        setFile(undefined);
+        setButtonIsDisabled(true);
 
-  const handleSubmit = async (event: React.FormEvent<HTMLButtonElement>) => {
-    event.preventDefault();
-
-    setStatus("submitting");
-    setButtonIsDisabled(true);
-    setErrors([]);
-    setErrorMessageText("");
-
-    if (!file || file.size === 0) {
-      setStatus("fail");
-      setButtonIsDisabled(false);
-      setErrorMessageText("Invalid file");
-      return;
-    }
-    const facilityId = facilityAmount === "oneFacility" ? facility.id : "";
-    FileUploadService.uploadPatients(file, facilityId).then(async (res) => {
-      setStatus("complete");
-      setFile(undefined);
-      setButtonIsDisabled(true);
-
-      if (res.status !== 200) {
-        setStatus("fail");
-        setErrorMessageText(
-          "There was a server error. Your file has not been accepted."
-        );
-      } else {
-        const response = await res?.json();
-
-        if (response.status === "FAILURE") {
+        if (res.status !== 200) {
           setStatus("fail");
-          if (response?.errors?.length) {
-            setErrorMessageText(
-              "Please resolve the errors below and upload your edited file."
-            );
-            setErrors(response.errors);
-          } else {
-            setErrorMessageText(
-              "There was a server error. Your file has not been accepted."
-            );
-          }
+          setErrorMessageText(
+            "There was a server error. Your file has not been accepted."
+          );
         } else {
-          setStatus("success");
+          const response = await res?.json();
+
+          if (response.status === "FAILURE") {
+            setStatus("fail");
+            if (response?.errors?.length) {
+              setErrorMessageText(
+                "Please resolve the errors below and upload your edited file."
+              );
+              setErrors(response.errors);
+            } else {
+              setErrorMessageText(
+                "There was a server error. Your file has not been accepted."
+              );
+            }
+          } else {
+            setStatus("success");
+          }
         }
-      }
-    });
-  };
+      });
+    };
+  }
 
   return (
     <div className={"prime-edit-patient prime-home flex-1"}>
@@ -196,7 +200,7 @@ const UploadPatients = () => {
                     <Dropdown
                       aria-label={"Select facility"}
                       selectedValue={facility.id}
-                      onChange={onFacilitySelect}
+                      onChange={onFacilitySelect()}
                       className={"grid-col-4"}
                       options={facilities.map(({ name, id }) => ({
                         label: name,
@@ -329,7 +333,7 @@ const UploadPatients = () => {
                         name="upload-csv-input"
                         aria-label="Choose CSV file"
                         accept="text/csv, .csv"
-                        onChange={handleFileChange}
+                        onChange={handleFileChange()}
                         required
                       />
                     )}
@@ -338,7 +342,7 @@ const UploadPatients = () => {
                 <div>
                   <Button
                     disabled={buttonIsDisabled || facilityAmount === undefined}
-                    onClick={handleSubmit}
+                    onClick={handleSubmit()}
                   >
                     Upload CSV file
                   </Button>
