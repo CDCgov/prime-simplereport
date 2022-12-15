@@ -81,7 +81,7 @@ public final class AzureStorageQueueTestEventReportingService implements TestEve
     try {
       return mapper
           .writeValueAsString(new TestEventExport(testEvent))
-          .replaceAll("\\p{Zl}|\\p{Zp}", "");
+          .replaceAll("[\u2028\u2029]", "");
     } catch (IOException e) {
       throw new TestEventSerializationFailureException(
           testEvent.getInternalId(), e.getCause().getMessage());
