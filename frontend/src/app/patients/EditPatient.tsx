@@ -69,7 +69,7 @@ interface GetPatientResponse {
     birthDate: string;
     street: string;
     streetTwo: string | null;
-    city: string | "";
+    city: string;
     state: string;
     zipCode: string;
     telephone: string;
