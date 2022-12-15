@@ -314,6 +314,21 @@ const AddPatient = () => {
     </>
   );
 
+  function getHeader() {
+    return (
+      _: any,
+      onSave: (startTest?: boolean | undefined) => void,
+      formChanged: boolean
+    ) =>
+      AddPatientHeader({
+        additional: (
+          <div className="display-flex flex-align-center">
+            {getSaveButtons(formChanged, onSave, "upper")}
+          </div>
+        ),
+      });
+  }
+
   return (
     <div className={"prime-edit-patient prime-home"}>
       <div className={"grid-container margin-bottom-4 maxw-desktop-lg"}>
@@ -336,15 +351,7 @@ const AddPatient = () => {
           patient={EMPTY_PERSON}
           savePerson={savePerson}
           onBlur={onBlur}
-          getHeader={(_, onSave, formChanged) =>
-            AddPatientHeader({
-              additional: (
-                <div className="display-flex flex-align-center">
-                  {getSaveButtons(formChanged, onSave, "upper")}
-                </div>
-              ),
-            })
-          }
+          getHeader={getHeader()}
           headerClassName={"padding-bottom-0"}
           getFooter={(onSave, formChanged) => (
             <div className="prime-edit-patient-heading">
