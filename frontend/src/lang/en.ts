@@ -206,7 +206,7 @@ export const en = {
           zipCode: "ZIP code is missing",
           zipForState: "Invalid ZIP code for this state",
           state: "State is missing",
-          city: "City is incorrectly formatted",
+          city: "City is missing",
           county: "County is incorrectly formatted",
           country: "Country is incorrectly formatted",
           race: "Race is missing",
