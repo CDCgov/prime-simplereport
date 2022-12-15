@@ -49,7 +49,32 @@ const UploadPatients = () => {
       }
     };
   }
+  const handleResponseStatus = async (res: Response) => {
+    if (res.status !== 200) {
+      setStatus("fail");
+      setErrorMessageText(
+        "There was a server error. Your file has not been accepted."
+      );
+    } else {
+      const response = await res?.json();
 
+      if (response.status === "FAILURE") {
+        setStatus("fail");
+        if (response?.errors?.length) {
+          setErrorMessageText(
+            "Please resolve the errors below and upload your edited file."
+          );
+          setErrors(response.errors);
+        } else {
+          setErrorMessageText(
+            "There was a server error. Your file has not been accepted."
+          );
+        }
+      } else {
+        setStatus("success");
+      }
+    }
+  };
   function handleFileChange() {
     return async (event: React.ChangeEvent<HTMLInputElement>) => {
       try {
@@ -90,30 +115,7 @@ const UploadPatients = () => {
         setFile(undefined);
         setButtonIsDisabled(true);
 
-        if (res.status !== 200) {
-          setStatus("fail");
-          setErrorMessageText(
-            "There was a server error. Your file has not been accepted."
-          );
-        } else {
-          const response = await res?.json();
-
-          if (response.status === "FAILURE") {
-            setStatus("fail");
-            if (response?.errors?.length) {
-              setErrorMessageText(
-                "Please resolve the errors below and upload your edited file."
-              );
-              setErrors(response.errors);
-            } else {
-              setErrorMessageText(
-                "There was a server error. Your file has not been accepted."
-              );
-            }
-          } else {
-            setStatus("success");
-          }
-        }
+        await handleResponseStatus(res);
       });
     };
   }
