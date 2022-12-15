@@ -41,14 +41,16 @@ const UploadPatients = () => {
     facilities.find((f) => f.id === activeFacilityId) ||
     facilities[0] || { id: "", name: "" };
 
-  function onFacilitySelect(e: React.ChangeEvent<HTMLSelectElement>) {
+  const onFacilitySelect = (e: React.ChangeEvent<HTMLSelectElement>) => {
     const selected = facilities.find((f) => f.id === e.target.value);
     if (selected) {
       setSelectedFacility(selected);
     }
-  }
+  };
 
-  async function handleFileChange(event: React.ChangeEvent<HTMLInputElement>) {
+  const handleFileChange = async (
+    event: React.ChangeEvent<HTMLInputElement>
+  ) => {
     try {
       if (!event?.currentTarget?.files?.length) {
         return; //no files
@@ -63,9 +65,9 @@ const UploadPatients = () => {
     } catch (err: any) {
       showError(`An unexpected error happened: '${err.toString()}'`);
     }
-  }
+  };
 
-  async function handleSubmit(event: React.FormEvent<HTMLButtonElement>) {
+  const handleSubmit = async (event: React.FormEvent<HTMLButtonElement>) => {
     event.preventDefault();
 
     setStatus("submitting");
@@ -110,7 +112,7 @@ const UploadPatients = () => {
         }
       }
     });
-  }
+  };
 
   return (
     <div className={"prime-edit-patient prime-home flex-1"}>
