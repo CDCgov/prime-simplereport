@@ -216,7 +216,7 @@ export const es: LanguageConfig = {
           zipCode: "Falta el código postal o tiene un formato incorrecto",
           zipForState: "El código postal no es válido para este estado",
           state: "Falta el estado o tiene un formato incorrecto",
-          city: "La ciudad tiene un formato incorrecto",
+          city: "Falta la ciudad",
           county: "El formato del condado es incorrecto",
           country: "El formato del país es incorrecto",
           race: "La raza es obligatoria",

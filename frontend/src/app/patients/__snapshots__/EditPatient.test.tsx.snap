@@ -2004,9 +2004,16 @@ Object {
                         for="134"
                       >
                         City
+                        <abbr
+                          class="usa-hint usa-hint--required"
+                          title="required"
+                        >
+                           
+                          *
+                        </abbr>
                       </label>
                       <input
-                        aria-required="false"
+                        aria-required="true"
                         class="usa-input"
                         id="134"
                         name="city"
@@ -4581,9 +4588,16 @@ Object {
                       for="134"
                     >
                       City
+                      <abbr
+                        class="usa-hint usa-hint--required"
+                        title="required"
+                      >
+                         
+                        *
+                      </abbr>
                     </label>
                     <input
-                      aria-required="false"
+                      aria-required="true"
                       class="usa-input"
                       id="134"
                       name="city"
