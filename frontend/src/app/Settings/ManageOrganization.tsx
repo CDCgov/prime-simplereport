@@ -130,7 +130,6 @@ const ManageOrganization: React.FC<Props> = (props) => {
             validationStatus={errors["type"] ? "error" : "success"}
             required
           />
-          q
         </div>
       </div>
     </div>
