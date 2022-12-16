@@ -11,4 +11,9 @@ public class MappingConstants {
   public static final String UNKNOWN_STRING = "unknown";
   public static final String U_CODE = "U";
   public static final String ASKED_BUT_UNKNOWN_CODE = "ASKU";
+
+  public static final String RACE_EXTENSION_URL =
+      "http://ibm.com/fhir/cdm/StructureDefinition/local-race-cd";
+
+  public static final String RACE_CODING_SYSTEM = "http://terminology.hl7.org/CodeSystem/v3-Race";
 }

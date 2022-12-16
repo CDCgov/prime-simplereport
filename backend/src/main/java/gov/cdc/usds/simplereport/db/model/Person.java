@@ -3,7 +3,9 @@ package gov.cdc.usds.simplereport.db.model;
 import static gov.cdc.usds.simplereport.api.converter.FhirConverter.convertToAdministrativeGender;
 import static gov.cdc.usds.simplereport.api.converter.FhirConverter.convertToContactPoint;
 import static gov.cdc.usds.simplereport.api.converter.FhirConverter.convertToDate;
+import static gov.cdc.usds.simplereport.api.converter.FhirConverter.convertToHumanName;
 import static gov.cdc.usds.simplereport.api.converter.FhirConverter.convertToIdentifier;
+import static gov.cdc.usds.simplereport.api.converter.FhirConverter.convertToRaceExtension;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonUnwrapped;
@@ -470,13 +472,15 @@ public class Person extends OrganizationScopedEternalEntity implements PersonEnt
   @JsonIgnore
   public Patient toFhir() {
     var patient = new Patient();
-    patient.addIdentifier(convertToIdentifier(getInternalId().toString()));
-    patient.addName(nameInfo.toFhir());
+    patient.addIdentifier(convertToIdentifier(getInternalId()));
+    patient.addName(convertToHumanName(nameInfo));
     addFhirTelecom(patient);
     patient.setGender(convertToAdministrativeGender(gender));
     patient.setBirthDate(convertToDate(birthDate));
-    patient.addAddress(address.toFhir());
-    addRaceExtension(patient);
+    if (address != null) {
+      patient.addAddress(address.toFhir());
+    }
+    patient.addExtension(convertToRaceExtension(race));
     addEthnicityExtension(patient);
     addTribalAffiliationExtension(patient);
     return patient;
@@ -535,29 +539,6 @@ public class Person extends OrganizationScopedEternalEntity implements PersonEnt
   }
 
   @JsonIgnore
-  private void addRaceExtension(Patient patient) {
-    var ext = patient.addExtension();
-    ext.setUrl("http://ibm.com/fhir/cdm/StructureDefinition/local-race-cd");
-    var codeable = new CodeableConcept();
-    var coding = codeable.addCoding();
-    if (race != null && PersonUtils.raceMap.containsKey(race)) {
-      if (MappingConstants.UNKNOWN_STRING.equalsIgnoreCase(race)
-          || "refused".equalsIgnoreCase(race)) {
-        coding.setSystem(MappingConstants.NULL_CODE_SYSTEM);
-      } else {
-        coding.setSystem("http://terminology.hl7.org/CodeSystem/v3-Race");
-      }
-      coding.setCode(PersonUtils.raceMap.get(race));
-      codeable.setText(race);
-    } else {
-      coding.setSystem(MappingConstants.NULL_CODE_SYSTEM);
-      coding.setCode(MappingConstants.UNK_CODE);
-      codeable.setText(MappingConstants.UNKNOWN_STRING);
-    }
-    ext.setValue(codeable);
-  }
-
-  @JsonIgnore
   private void addFhirTelecom(Patient patient) {
     if (phoneNumbers != null) {
       phoneNumbers.forEach(number -> patient.addTelecom(number.toFhir()));
@@ -565,13 +546,6 @@ public class Person extends OrganizationScopedEternalEntity implements PersonEnt
     if (emails != null) {
       emails.forEach(
           e -> patient.addTelecom(convertToContactPoint(null, ContactPointSystem.EMAIL, e)));
-    }
-  }
-
-  @JsonIgnore
-  private void setFhirAddress(Patient patient) {
-    if (address != null) {
-      patient.setAddress(List.of(address.toFhir()));
     }
   }
 }

@@ -1,11 +1,8 @@
 package gov.cdc.usds.simplereport.db.model.auxiliary;
 
-import static gov.cdc.usds.simplereport.api.converter.FhirConverter.convertToHumanName;
-
 import java.util.Objects;
 import javax.persistence.Column;
 import javax.persistence.Embeddable;
-import org.hl7.fhir.r4.model.HumanName;
 
 @Embeddable
 public class PersonName {
@@ -103,9 +100,5 @@ public class PersonName {
       b.append(suffix);
     }
     return b.toString();
-  }
-
-  public HumanName toFhir() {
-    return convertToHumanName(firstName, middleName, lastName, suffix);
   }
 }

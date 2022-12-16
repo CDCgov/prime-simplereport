@@ -6,12 +6,17 @@ import static gov.cdc.usds.simplereport.api.converter.FhirConverter.convertToCon
 import static gov.cdc.usds.simplereport.api.converter.FhirConverter.convertToDate;
 import static gov.cdc.usds.simplereport.api.converter.FhirConverter.convertToHumanName;
 import static gov.cdc.usds.simplereport.api.converter.FhirConverter.convertToIdentifier;
+import static gov.cdc.usds.simplereport.api.converter.FhirConverter.convertToRaceExtension;
 import static gov.cdc.usds.simplereport.api.converter.FhirConverter.phoneNumberToContactPoint;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.from;
+import static org.junit.jupiter.params.provider.Arguments.arguments;
 
+import gov.cdc.usds.simplereport.db.model.Person;
 import java.util.List;
+import java.util.UUID;
 import java.util.stream.Collectors;
+import java.util.stream.Stream;
 import org.hl7.fhir.r4.model.ContactPoint;
 import org.hl7.fhir.r4.model.ContactPoint.ContactPointSystem;
 import org.hl7.fhir.r4.model.ContactPoint.ContactPointUse;
@@ -20,8 +25,14 @@ import org.hl7.fhir.r4.model.Identifier.IdentifierUse;
 import org.hl7.fhir.r4.model.PrimitiveType;
 import org.hl7.fhir.r4.model.StringType;
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.params.ParameterizedTest;
+import org.junit.jupiter.params.provider.Arguments;
+import org.junit.jupiter.params.provider.MethodSource;
 
 public class FhirConverterTest {
+  public static final String unknownSystem = "http://terminology.hl7.org/CodeSystem/v3-NullFlavor";
+  public static final String raceCodeSystem = "http://terminology.hl7.org/CodeSystem/v3-Race";
+
   @Test
   void allFields_convertToHumanName() {
     var actual = convertToHumanName("first", "middle", "last", "jr");
@@ -48,6 +59,20 @@ public class FhirConverterTest {
   }
 
   @Test
+  void null_convertToHumanName() {
+    assertThat(convertToHumanName(null)).isNull();
+  }
+
+  @Test
+  void uuid_convertToIdentifier() {
+    var uuid = UUID.randomUUID();
+    var actual = convertToIdentifier(uuid);
+
+    assertThat(actual.getUse()).isEqualTo(IdentifierUse.USUAL);
+    assertThat(actual.getValue()).isEqualTo(uuid.toString());
+  }
+
+  @Test
   void string_convertToIdentifier() {
     var actual = convertToIdentifier("someId");
 
@@ -57,7 +82,8 @@ public class FhirConverterTest {
 
   @Test
   void null_convertToIdentifier() {
-    assertThat(convertToIdentifier(null)).isNull();
+    assertThat(convertToIdentifier((String) null)).isNull();
+    assertThat(convertToIdentifier((UUID) null)).isNull();
   }
   // note: getGiven and getSuffix return array lists of StringType which are difficult to compare
   public static void assertStringTypeListEqualsStringList(
@@ -154,5 +180,56 @@ public class FhirConverterTest {
     assertThat(actual.getDistrict()).isNull();
     assertThat(actual.getState()).isNull();
     assertThat(actual.getPostalCode()).isNull();
+  }
+
+  @ParameterizedTest
+  @MethodSource("raceArgs")
+  void toFhir_PersonRace_ReturnsRaceExtension(
+      String personRaceValue, String codeSystem, String expectedCode, String expectedText) {
+    var person =
+        new Person(
+            null,
+            null,
+            null,
+            null,
+            null,
+            null,
+            null,
+            null,
+            null,
+            null,
+            null,
+            null,
+            personRaceValue,
+            null,
+            null,
+            null,
+            false,
+            false,
+            null,
+            null);
+
+    var actual = person.toFhir();
+    var raceExtension =
+        actual.getExtensionByUrl("http://ibm.com/fhir/cdm/StructureDefinition/local-race-cd");
+    var codeableConcept = actual.castToCodeableConcept(raceExtension.getValue());
+    var code = codeableConcept.getCoding();
+
+    assertThat(code).hasSize(1);
+    assertThat(code.get(0).getSystem()).isEqualTo(codeSystem);
+    assertThat(code.get(0).getCode()).isEqualTo(expectedCode);
+    assertThat(codeableConcept.getText()).isEqualTo(expectedText);
+  }
+
+  private static Stream<Arguments> raceArgs() {
+    return Stream.of(
+        arguments("native", raceCodeSystem, "1002-5", "native"),
+        arguments("refused", unknownSystem, "ASKU", "refused"),
+        arguments("Fishpeople", unknownSystem, "UNK", "unknown"));
+  }
+
+  @Test
+  void null_convertToRaceExtension() {
+    assertThat(convertToRaceExtension(null)).isNull();
   }
 }

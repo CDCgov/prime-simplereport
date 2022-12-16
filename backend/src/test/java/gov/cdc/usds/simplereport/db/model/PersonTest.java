@@ -1,5 +1,6 @@
 package gov.cdc.usds.simplereport.db.model;
 
+import static gov.cdc.usds.simplereport.api.converter.FhirConverterTest.unknownSystem;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.junit.jupiter.params.provider.Arguments.arguments;
 
@@ -25,10 +26,7 @@ import org.skyscreamer.jsonassert.JSONAssert;
 import org.springframework.test.util.ReflectionTestUtils;
 
 class PersonTest {
-
   public static final String ethnicitySystem = "urn:oid:2.16.840.1.113883.6.238";
-  public static final String unknownSystem = "http://terminology.hl7.org/CodeSystem/v3-NullFlavor";
-  public static final String raceCodeSystem = "http://terminology.hl7.org/CodeSystem/v3-Race";
 
   @Test
   void toFhir_ValidPerson_ReturnsValidPatient() throws IOException {
@@ -91,7 +89,7 @@ class PersonTest {
     assertThat(actual.getGender()).isEqualTo(AdministrativeGender.UNKNOWN);
     assertThat(actual.getBirthDate()).isNull();
     assertThat(actual.getAddress()).isEmpty();
-    assertThat(actual.getExtension()).hasSize(1);
+    assertThat(actual.getExtension()).isEmpty();
   }
 
   @Test
@@ -119,54 +117,7 @@ class PersonTest {
             null,
             null);
     var actualPatient = person.toFhir();
-    assertThat(actualPatient.getExtension()).hasSize(1);
-  }
-
-  @ParameterizedTest
-  @MethodSource("raceArgs")
-  void toFhir_PersonRace_ReturnsRaceExtension(
-      String personRaceValue, String codeSystem, String expectedCode, String expectedText) {
-    var person =
-        new Person(
-            null,
-            null,
-            null,
-            null,
-            null,
-            null,
-            null,
-            null,
-            null,
-            null,
-            null,
-            null,
-            personRaceValue,
-            null,
-            null,
-            null,
-            false,
-            false,
-            null,
-            null);
-
-    var actual = person.toFhir();
-    var raceExtension =
-        actual.getExtensionByUrl("http://ibm.com/fhir/cdm/StructureDefinition/local-race-cd");
-    var codeableConcept = actual.castToCodeableConcept(raceExtension.getValue());
-    var code = codeableConcept.getCoding();
-
-    assertThat(code).hasSize(1);
-    assertThat(code.get(0).getSystem()).isEqualTo(codeSystem);
-    assertThat(code.get(0).getCode()).isEqualTo(expectedCode);
-    assertThat(codeableConcept.getText()).isEqualTo(expectedText);
-  }
-
-  private static Stream<Arguments> raceArgs() {
-    return Stream.of(
-        arguments("native", raceCodeSystem, "1002-5", "native"),
-        arguments(null, unknownSystem, "UNK", "unknown"),
-        arguments("refused", unknownSystem, "ASKU", "refused"),
-        arguments("Fishpeople", unknownSystem, "UNK", "unknown"));
+    assertThat(actualPatient.getExtension()).isEmpty();
   }
 
   @ParameterizedTest
