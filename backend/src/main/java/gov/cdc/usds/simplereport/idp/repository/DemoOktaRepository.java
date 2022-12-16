@@ -328,7 +328,7 @@ public class DemoOktaRepository implements OktaRepository {
 
   // Dummy error for duplicate users.
   // Status, code, and message taken from a real Okta exception.
-  private class DuplicateUserError implements Error {
+  private static class DuplicateUserError implements Error {
 
     public int getStatus() {
       return HttpStatus.BAD_REQUEST.value();
