@@ -1,7 +1,6 @@
 package gov.cdc.usds.simplereport.db.model;
 
 import static org.assertj.core.api.Assertions.assertThat;
-import static org.junit.jupiter.params.provider.Arguments.arguments;
 
 import ca.uhn.fhir.context.FhirContext;
 import ca.uhn.fhir.parser.IParser;
@@ -13,13 +12,9 @@ import java.time.LocalDate;
 import java.util.List;
 import java.util.Objects;
 import java.util.UUID;
-import java.util.stream.Stream;
 import org.apache.commons.io.IOUtils;
 import org.hl7.fhir.r4.model.Enumerations.AdministrativeGender;
 import org.junit.jupiter.api.Test;
-import org.junit.jupiter.params.ParameterizedTest;
-import org.junit.jupiter.params.provider.Arguments;
-import org.junit.jupiter.params.provider.MethodSource;
 import org.mockito.Mockito;
 import org.skyscreamer.jsonassert.JSONAssert;
 import org.springframework.test.util.ReflectionTestUtils;
@@ -189,42 +184,5 @@ class PersonTest {
             "http://hl7.org/fhir/us/core/StructureDefinition/us-core-tribal-affiliation");
 
     assertThat(coreExtension).isNull();
-  }
-
-  @ParameterizedTest
-  @MethodSource("genderArgs")
-  void toFhir_Gender_SetsGender(String personGender, AdministrativeGender expected) {
-    var realPerson =
-        new Person(
-            null,
-            null,
-            null,
-            null,
-            null,
-            null,
-            null,
-            null,
-            null,
-            null,
-            null,
-            null,
-            null,
-            null,
-            null,
-            personGender,
-            false,
-            false,
-            null,
-            null);
-
-    var actual = realPerson.toFhir();
-
-    assertThat(actual.getGender()).isEqualTo(expected);
-  }
-
-  private static Stream<Arguments> genderArgs() {
-    return Stream.of(
-        arguments("Female", AdministrativeGender.FEMALE),
-        arguments("amphibian parts", AdministrativeGender.UNKNOWN));
   }
 }

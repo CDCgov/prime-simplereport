@@ -138,29 +138,22 @@ public class FhirConverterTest {
         .isNull();
   }
 
-  @Test
-  void f_convertToAdministrativeGender_returnsFemale() {
-    assertThat(convertToAdministrativeGender("f")).isEqualTo(AdministrativeGender.FEMALE);
+  @ParameterizedTest
+  @MethodSource("genderArgs")
+  void test_convertToAdministrativeGender(String personGender, AdministrativeGender expected) {
+    var actual = convertToAdministrativeGender(personGender);
+
+    assertThat(actual).isEqualTo(expected);
   }
 
-  @Test
-  void female_convertToAdministrativeGender_returnsFemale() {
-    assertThat(convertToAdministrativeGender("FEMALE")).isEqualTo(AdministrativeGender.FEMALE);
-  }
-
-  @Test
-  void m_convertToAdministrativeGender_returnsMale() {
-    assertThat(convertToAdministrativeGender("M")).isEqualTo(AdministrativeGender.MALE);
-  }
-
-  @Test
-  void male_convertToAdministrativeGender_returnsMale() {
-    assertThat(convertToAdministrativeGender("MALE")).isEqualTo(AdministrativeGender.MALE);
-  }
-
-  @Test
-  void unknownGender_convertToAdministrativeGender_returnsUnknown() {
-    assertThat(convertToAdministrativeGender("fishperson")).isEqualTo(AdministrativeGender.UNKNOWN);
+  private static Stream<Arguments> genderArgs() {
+    return Stream.of(
+        arguments("f", AdministrativeGender.FEMALE),
+        arguments("Female", AdministrativeGender.FEMALE),
+        arguments("MALE", AdministrativeGender.MALE),
+        arguments("M", AdministrativeGender.MALE),
+        arguments(null, AdministrativeGender.UNKNOWN),
+        arguments("fishperson", AdministrativeGender.UNKNOWN));
   }
 
   @Test
