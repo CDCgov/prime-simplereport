@@ -604,6 +604,14 @@ public class ApiUserService {
     return new UserInfo(apiUser, orgRoles, isAdmin);
   }
 
+  @AuthorizationConfiguration.RequireGlobalAdminUser
+  public List<ApiUser> getAllUsersByOrganization(Organization organization) {
+    Set<String> usernames = _oktaRepo.getAllUsersForOrganization(organization);
+    return usernames.stream()
+        .map(username -> _apiUserRepo.findByLoginEmailIncludeArchived(username).orElse(null))
+        .collect(Collectors.toList());
+  }
+
   private UserInfo cancelCurrentUserTenantDataAccess() {
     ApiUser apiUser = getCurrentApiUser();
     _tenantService.removeAllTenantDataAccess(apiUser);

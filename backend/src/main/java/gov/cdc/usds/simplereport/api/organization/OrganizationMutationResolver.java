@@ -12,6 +12,7 @@ import gov.cdc.usds.simplereport.api.model.ApiFacility;
 import gov.cdc.usds.simplereport.api.model.ApiOrganization;
 import gov.cdc.usds.simplereport.api.model.Role;
 import gov.cdc.usds.simplereport.config.AuthorizationConfiguration;
+import gov.cdc.usds.simplereport.db.model.ApiUser;
 import gov.cdc.usds.simplereport.db.model.Facility;
 import gov.cdc.usds.simplereport.db.model.Organization;
 import gov.cdc.usds.simplereport.db.model.OrganizationQueueItem;
@@ -24,8 +25,10 @@ import gov.cdc.usds.simplereport.service.OrganizationService;
 import java.util.Collections;
 import java.util.List;
 import java.util.Optional;
+import java.util.Set;
 import java.util.UUID;
 import java.util.stream.Collectors;
+import javax.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
 import org.springframework.graphql.data.method.annotation.Argument;
 import org.springframework.graphql.data.method.annotation.MutationMapping;
@@ -426,10 +429,20 @@ public class OrganizationMutationResolver {
   }
 
   /** Support-only mutation to mark an organization as deleted. This is a soft deletion only. */
+  @Transactional
   @MutationMapping
   public Organization markOrganizationAsDeleted(
       @Argument UUID organizationId, @Argument boolean deleted) {
-    return organizationService.markOrganizationAsDeleted(organizationId, deleted);
+    Organization orgToBeUpdated = organizationService.getOrganizationById(organizationId);
+    List<ApiUser> usersInOrgToBeUpdated = apiUserService.getAllUsersByOrganization(orgToBeUpdated);
+
+    usersInOrgToBeUpdated.forEach(
+        user -> apiUserService.setIsDeleted(user.getInternalId(), deleted));
+    Set<Facility> facilitiesToBeUpdated =
+        organizationService.getFacilitiesIncludeArchived(orgToBeUpdated, !deleted);
+    facilitiesToBeUpdated.forEach(
+        facility -> this.markFacilityAsDeleted(facility.getInternalId(), deleted));
+    return organizationService.markOrganizationAsDeleted(orgToBeUpdated.getInternalId(), deleted);
   }
 
   /** Support-only mutation to mark a facility as deleted. This is a soft deletion only. */

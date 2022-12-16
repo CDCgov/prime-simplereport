@@ -121,6 +121,14 @@ public class OrganizationService {
                 "An organization with external_id=" + externalId + " does not exist"));
   }
 
+  public Organization getOrganizationById(UUID internalId) {
+    Optional<Organization> found = organizationRepository.findById(internalId);
+    return found.orElseThrow(
+        () ->
+            new IllegalGraphqlArgumentException(
+                "An organization with internal_id=" + internalId + " does not exist"));
+  }
+
   public List<Organization> getOrganizationsByName(String name) {
     return organizationRepository.findAllByName(name);
   }
@@ -144,6 +152,11 @@ public class OrganizationService {
 
   public List<Facility> getFacilities(Organization org) {
     return facilityRepository.findByOrganizationOrderByFacilityName(org);
+  }
+
+  @AuthorizationConfiguration.RequireGlobalAdminUser
+  public Set<Facility> getFacilitiesIncludeArchived(Organization org, Boolean includeArchived) {
+    return facilityRepository.findAllByOrganizationAndDeleted(org, includeArchived);
   }
 
   public Set<Facility> getFacilities(Organization org, Collection<UUID> facilityIds) {

@@ -61,6 +61,24 @@ class OrganizationServiceTest extends BaseServiceTest<OrganizationService> {
   }
 
   @Test
+  void getOrganizationById_success() {
+    Organization createdOrg = _dataFactory.createValidOrg();
+    Organization foundOrg = _service.getOrganizationById(createdOrg.getInternalId());
+    assertNotNull(foundOrg);
+    assertEquals(createdOrg.getExternalId(), foundOrg.getExternalId());
+  }
+
+  @Test
+  void getOrganizationById_failure() {
+    UUID fakeUUID = UUID.randomUUID();
+    IllegalGraphqlArgumentException caught =
+        assertThrows(
+            IllegalGraphqlArgumentException.class, () -> _service.getOrganizationById(fakeUUID));
+    assertEquals(
+        "An organization with internal_id=" + fakeUUID + " does not exist", caught.getMessage());
+  }
+
+  @Test
   void createOrganizationAndFacility_success() {
     // GIVEN
     DeviceSpecimenType dst = getDeviceConfig();
@@ -165,6 +183,35 @@ class OrganizationServiceTest extends BaseServiceTest<OrganizationService> {
         unverifiedOrgs.stream().map(Organization::getExternalId).collect(Collectors.toSet());
     assertFalse(unverifiedOrgIds.contains(verifiedOrg.getExternalId()));
     assertTrue(unverifiedOrgIds.contains(unverifiedOrg.getExternalId()));
+  }
+
+  @Test
+  @WithSimpleReportSiteAdminUser
+  void getFacilitiesIncludeArchived_includeArchived_success() {
+    Organization org = testDataFactory.createValidOrg();
+    Facility deletedFacility = testDataFactory.createArchivedFacility(org, "Delete me");
+    testDataFactory.createValidFacility(org, "Not deleted");
+
+    Set<Facility> archivedFacilities = _service.getFacilitiesIncludeArchived(org, true);
+
+    assertTrue(
+        archivedFacilities.stream()
+            .anyMatch(f -> f.getInternalId().equals(deletedFacility.getInternalId())));
+  }
+
+  @Test
+  @WithSimpleReportSiteAdminUser
+  void getFacilitiesIncludeArchived_excludeArchived_success() {
+    Organization org = testDataFactory.createValidOrg();
+    testDataFactory.createArchivedFacility(org, "Delete me");
+    Facility activeFacility = testDataFactory.createValidFacility(org, "Not deleted");
+
+    Set<Facility> facilities = _service.getFacilitiesIncludeArchived(org, false);
+
+    assertEquals(1, facilities.size());
+    assertTrue(
+        facilities.stream()
+            .anyMatch(f -> f.getInternalId().equals(activeFacility.getInternalId())));
   }
 
   @Test
