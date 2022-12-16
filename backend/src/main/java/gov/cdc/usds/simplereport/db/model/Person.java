@@ -4,6 +4,7 @@ import static gov.cdc.usds.simplereport.api.converter.FhirConverter.convertToAdd
 import static gov.cdc.usds.simplereport.api.converter.FhirConverter.convertToAdministrativeGender;
 import static gov.cdc.usds.simplereport.api.converter.FhirConverter.convertToContactPoint;
 import static gov.cdc.usds.simplereport.api.converter.FhirConverter.convertToDate;
+import static gov.cdc.usds.simplereport.api.converter.FhirConverter.convertToEthnicityExtension;
 import static gov.cdc.usds.simplereport.api.converter.FhirConverter.convertToHumanName;
 import static gov.cdc.usds.simplereport.api.converter.FhirConverter.convertToIdentifier;
 import static gov.cdc.usds.simplereport.api.converter.FhirConverter.convertToRaceExtension;
@@ -12,7 +13,6 @@ import static gov.cdc.usds.simplereport.api.converter.FhirConverter.phoneNumberT
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonUnwrapped;
 import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
-import gov.cdc.usds.simplereport.api.MappingConstants;
 import gov.cdc.usds.simplereport.db.model.auxiliary.PersonName;
 import gov.cdc.usds.simplereport.db.model.auxiliary.PersonRole;
 import gov.cdc.usds.simplereport.db.model.auxiliary.RaceArrayConverter;
@@ -36,10 +36,8 @@ import javax.persistence.OneToMany;
 import javax.persistence.OneToOne;
 import org.hibernate.annotations.Type;
 import org.hl7.fhir.r4.model.CodeableConcept;
-import org.hl7.fhir.r4.model.Coding;
 import org.hl7.fhir.r4.model.ContactPoint.ContactPointSystem;
 import org.hl7.fhir.r4.model.Patient;
-import org.hl7.fhir.r4.model.StringType;
 
 /**
  * The person record (generally, a patient getting a test).
@@ -481,7 +479,7 @@ public class Person extends OrganizationScopedEternalEntity implements PersonEnt
     patient.setBirthDate(convertToDate(birthDate));
     patient.addAddress(convertToAddress(address));
     patient.addExtension(convertToRaceExtension(race));
-    addEthnicityExtension(patient);
+    patient.addExtension(convertToEthnicityExtension(ethnicity));
     addTribalAffiliationExtension(patient);
     return patient;
   }
@@ -502,39 +500,6 @@ public class Person extends OrganizationScopedEternalEntity implements PersonEnt
       tribeCoding.setDisplay(PersonUtils.tribalMap().get(tribalAffiliation.get(0)));
       tribeCodeableConcept.setText(PersonUtils.tribalMap().get(tribalAffiliation.get(0)));
       tribeExtension.setValue(tribeCodeableConcept);
-    }
-  }
-
-  @JsonIgnore
-  private void addEthnicityExtension(Patient patient) {
-    if (ethnicity != null) {
-      var ext = patient.addExtension();
-      ext.setUrl("http://hl7.org/fhir/us/core/StructureDefinition/us-core-ethnicity");
-      var ombExtension = ext.addExtension();
-      ombExtension.setUrl("ombCategory");
-      var ombCoding = new Coding();
-      if (PersonUtils.ETHNICITY_MAP.containsKey(ethnicity)) {
-        if ("refused".equalsIgnoreCase(ethnicity)) {
-          ombCoding.setSystem(MappingConstants.NULL_CODE_SYSTEM);
-        } else {
-          ombCoding.setSystem("urn:oid:2.16.840.1.113883.6.238");
-        }
-        ombCoding.setCode(PersonUtils.ETHNICITY_MAP.get(ethnicity).get(0));
-        ombCoding.setDisplay(PersonUtils.ETHNICITY_MAP.get(ethnicity).get(1));
-
-        var text = ext.addExtension();
-        text.setUrl("text");
-        text.setValue(new StringType(PersonUtils.ETHNICITY_MAP.get(ethnicity).get(1)));
-      } else {
-        ombCoding.setSystem(MappingConstants.NULL_CODE_SYSTEM);
-        ombCoding.setCode(MappingConstants.UNK_CODE);
-        ombCoding.setDisplay(MappingConstants.UNKNOWN_STRING);
-
-        var text = ext.addExtension();
-        text.setUrl("text");
-        text.setValue(new StringType(MappingConstants.UNKNOWN_STRING));
-      }
-      ombExtension.setValue(ombCoding);
     }
   }
 

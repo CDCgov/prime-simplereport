@@ -1,6 +1,5 @@
 package gov.cdc.usds.simplereport.db.model;
 
-import static gov.cdc.usds.simplereport.api.converter.FhirConverterTest.unknownSystem;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.junit.jupiter.params.provider.Arguments.arguments;
 
@@ -26,8 +25,6 @@ import org.skyscreamer.jsonassert.JSONAssert;
 import org.springframework.test.util.ReflectionTestUtils;
 
 class PersonTest {
-  public static final String ethnicitySystem = "urn:oid:2.16.840.1.113883.6.238";
-
   @Test
   void toFhir_ValidPerson_ReturnsValidPatient() throws IOException {
     var birthDate = LocalDate.of(2022, 12, 13);
@@ -118,41 +115,6 @@ class PersonTest {
             null);
     var actualPatient = person.toFhir();
     assertThat(actualPatient.getExtension()).isEmpty();
-  }
-
-  @ParameterizedTest
-  @MethodSource("ethnicityArgs")
-  void toFhir_PersonEthnicity_ReturnsEthnicityExtension(
-      String ethnicity, String ombSystem, String raceCode, String raceDisplay) {
-    var person =
-        new Person(
-            null, null, null, null, null, null, null, null, null, null, null, null, null, ethnicity,
-            null, null, false, false, null, null);
-
-    var actual = person.toFhir();
-    var raceExtension =
-        actual.getExtensionByUrl(
-            "http://hl7.org/fhir/us/core/StructureDefinition/us-core-ethnicity");
-    var ombExtension = raceExtension.getExtensionByUrl("ombCategory");
-    var textExtension = raceExtension.getExtensionByUrl("text");
-
-    var ombCoding = actual.castToCoding(ombExtension.getValue());
-    var textValueString = actual.castToString(textExtension.getValue());
-
-    assertThat(raceExtension.getExtension()).hasSize(2);
-    assertThat(ombCoding.getSystem()).isEqualTo(ombSystem);
-    assertThat(ombCoding.getCode()).isEqualTo(raceCode);
-    assertThat(ombCoding.getDisplay()).isEqualTo(raceDisplay);
-
-    assertThat(textValueString.getValue()).isEqualTo(raceDisplay);
-  }
-
-  private static Stream<Arguments> ethnicityArgs() {
-    return Stream.of(
-        arguments("hispanic", ethnicitySystem, "2135-2", "Hispanic or Latino"),
-        arguments("not_hispanic", ethnicitySystem, "2186-5", "Not Hispanic or Latino"),
-        arguments("refused", unknownSystem, "ASKU", "asked but unknown"),
-        arguments("shark", unknownSystem, "UNK", "unknown"));
   }
 
   @Test

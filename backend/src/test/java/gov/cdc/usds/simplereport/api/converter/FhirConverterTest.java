@@ -4,6 +4,7 @@ import static gov.cdc.usds.simplereport.api.converter.FhirConverter.convertToAdd
 import static gov.cdc.usds.simplereport.api.converter.FhirConverter.convertToAdministrativeGender;
 import static gov.cdc.usds.simplereport.api.converter.FhirConverter.convertToContactPoint;
 import static gov.cdc.usds.simplereport.api.converter.FhirConverter.convertToDate;
+import static gov.cdc.usds.simplereport.api.converter.FhirConverter.convertToEthnicityExtension;
 import static gov.cdc.usds.simplereport.api.converter.FhirConverter.convertToHumanName;
 import static gov.cdc.usds.simplereport.api.converter.FhirConverter.convertToIdentifier;
 import static gov.cdc.usds.simplereport.api.converter.FhirConverter.convertToRaceExtension;
@@ -12,7 +13,6 @@ import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.from;
 import static org.junit.jupiter.params.provider.Arguments.arguments;
 
-import gov.cdc.usds.simplereport.db.model.Person;
 import gov.cdc.usds.simplereport.db.model.PhoneNumber;
 import gov.cdc.usds.simplereport.db.model.auxiliary.PhoneType;
 import java.util.List;
@@ -32,6 +32,7 @@ import org.junit.jupiter.params.provider.MethodSource;
 public class FhirConverterTest {
   public static final String unknownSystem = "http://terminology.hl7.org/CodeSystem/v3-NullFlavor";
   public static final String raceCodeSystem = "http://terminology.hl7.org/CodeSystem/v3-Race";
+  public static final String ethnicitySystem = "urn:oid:2.16.840.1.113883.6.238";
 
   @Test
   void allFields_convertToHumanName() {
@@ -196,35 +197,11 @@ public class FhirConverterTest {
 
   @ParameterizedTest
   @MethodSource("raceArgs")
-  void toFhir_PersonRace_ReturnsRaceExtension(
+  void test_convertToRaceExtension(
       String personRaceValue, String codeSystem, String expectedCode, String expectedText) {
-    var person =
-        new Person(
-            null,
-            null,
-            null,
-            null,
-            null,
-            null,
-            null,
-            null,
-            null,
-            null,
-            null,
-            null,
-            personRaceValue,
-            null,
-            null,
-            null,
-            false,
-            false,
-            null,
-            null);
-
-    var actual = person.toFhir();
-    var raceExtension =
-        actual.getExtensionByUrl("http://ibm.com/fhir/cdm/StructureDefinition/local-race-cd");
-    var codeableConcept = actual.castToCodeableConcept(raceExtension.getValue());
+    var actual = convertToRaceExtension(personRaceValue);
+    assert actual != null;
+    var codeableConcept = actual.castToCodeableConcept(actual.getValue());
     var code = codeableConcept.getCoding();
 
     assertThat(code).hasSize(1);
@@ -243,5 +220,36 @@ public class FhirConverterTest {
   @Test
   void null_convertToRaceExtension() {
     assertThat(convertToRaceExtension(null)).isNull();
+  }
+
+  @ParameterizedTest
+  @MethodSource("ethnicityArgs")
+  void test_convertToEthnicityExtension(
+      String ethnicity, String ombSystem, String raceCode, String ethnicityDisplay) {
+    var actual = FhirConverter.convertToEthnicityExtension(ethnicity);
+    assert actual != null;
+    var ombExtension = actual.getExtensionByUrl("ombCategory");
+    var textExtension = actual.getExtensionByUrl("text");
+    var ombCoding = actual.castToCoding(ombExtension.getValue());
+    var textValueString = actual.castToString(textExtension.getValue());
+
+    assertThat(actual.getExtension()).hasSize(2);
+    assertThat(ombCoding.getSystem()).isEqualTo(ombSystem);
+    assertThat(ombCoding.getCode()).isEqualTo(raceCode);
+    assertThat(ombCoding.getDisplay()).isEqualTo(ethnicityDisplay);
+    assertThat(textValueString.getValue()).isEqualTo(ethnicityDisplay);
+  }
+
+  private static Stream<Arguments> ethnicityArgs() {
+    return Stream.of(
+        arguments("hispanic", ethnicitySystem, "2135-2", "Hispanic or Latino"),
+        arguments("not_hispanic", ethnicitySystem, "2186-5", "Not Hispanic or Latino"),
+        arguments("refused", unknownSystem, "ASKU", "asked but unknown"),
+        arguments("shark", unknownSystem, "UNK", "unknown"));
+  }
+
+  @Test
+  void null_convertToEthnicityExtension() {
+    assertThat(convertToEthnicityExtension(null)).isNull();
   }
 }
