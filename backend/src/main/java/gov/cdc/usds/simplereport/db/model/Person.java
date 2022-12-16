@@ -1,11 +1,13 @@
 package gov.cdc.usds.simplereport.db.model;
 
+import static gov.cdc.usds.simplereport.api.converter.FhirConverter.convertToAddress;
 import static gov.cdc.usds.simplereport.api.converter.FhirConverter.convertToAdministrativeGender;
 import static gov.cdc.usds.simplereport.api.converter.FhirConverter.convertToContactPoint;
 import static gov.cdc.usds.simplereport.api.converter.FhirConverter.convertToDate;
 import static gov.cdc.usds.simplereport.api.converter.FhirConverter.convertToHumanName;
 import static gov.cdc.usds.simplereport.api.converter.FhirConverter.convertToIdentifier;
 import static gov.cdc.usds.simplereport.api.converter.FhirConverter.convertToRaceExtension;
+import static gov.cdc.usds.simplereport.api.converter.FhirConverter.phoneNumberToContactPoint;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonUnwrapped;
@@ -477,9 +479,7 @@ public class Person extends OrganizationScopedEternalEntity implements PersonEnt
     addFhirTelecom(patient);
     patient.setGender(convertToAdministrativeGender(gender));
     patient.setBirthDate(convertToDate(birthDate));
-    if (address != null) {
-      patient.addAddress(address.toFhir());
-    }
+    patient.addAddress(convertToAddress(address));
     patient.addExtension(convertToRaceExtension(race));
     addEthnicityExtension(patient);
     addTribalAffiliationExtension(patient);
@@ -541,7 +541,7 @@ public class Person extends OrganizationScopedEternalEntity implements PersonEnt
   @JsonIgnore
   private void addFhirTelecom(Patient patient) {
     if (phoneNumbers != null) {
-      phoneNumbers.forEach(number -> patient.addTelecom(number.toFhir()));
+      phoneNumbers.forEach(number -> patient.addTelecom(phoneNumberToContactPoint(number)));
     }
     if (emails != null) {
       emails.forEach(

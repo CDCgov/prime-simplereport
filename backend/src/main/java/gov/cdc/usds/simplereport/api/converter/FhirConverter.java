@@ -8,7 +8,10 @@ import com.google.i18n.phonenumbers.PhoneNumberUtil;
 import com.google.i18n.phonenumbers.PhoneNumberUtil.PhoneNumberFormat;
 import gov.cdc.usds.simplereport.api.MappingConstants;
 import gov.cdc.usds.simplereport.db.model.PersonUtils;
+import gov.cdc.usds.simplereport.db.model.PhoneNumber;
 import gov.cdc.usds.simplereport.db.model.auxiliary.PersonName;
+import gov.cdc.usds.simplereport.db.model.auxiliary.PhoneType;
+import gov.cdc.usds.simplereport.db.model.auxiliary.StreetAddress;
 import java.time.LocalDate;
 import java.time.ZoneId;
 import java.util.Date;
@@ -70,6 +73,18 @@ public class FhirConverter {
     return humanName;
   }
 
+  public static ContactPoint phoneNumberToContactPoint(PhoneNumber phoneNumber) {
+    if (phoneNumber != null) {
+      var contactPointUse = ContactPointUse.HOME;
+      if (PhoneType.MOBILE.equals(phoneNumber.getType())) {
+        contactPointUse = ContactPointUse.MOBILE;
+      }
+
+      return phoneNumberToContactPoint(contactPointUse, phoneNumber.getNumber());
+    }
+    return null;
+  }
+
   public static ContactPoint phoneNumberToContactPoint(
       ContactPointUse contactPointUse, String number) {
     // converting string to phone format as recommended by the fhir format.
@@ -107,6 +122,18 @@ public class FhirConverter {
   public static Date convertToDate(LocalDate date) {
     if (date != null) {
       return Date.from(date.atStartOfDay(ZoneId.systemDefault()).toInstant());
+    }
+    return null;
+  }
+
+  public static Address convertToAddress(StreetAddress address) {
+    if (address != null) {
+      return convertToAddress(
+          address.getStreet(),
+          address.getCity(),
+          address.getCounty(),
+          address.getState(),
+          address.getPostalCode());
     }
     return null;
   }

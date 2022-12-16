@@ -13,9 +13,10 @@ import static org.assertj.core.api.Assertions.from;
 import static org.junit.jupiter.params.provider.Arguments.arguments;
 
 import gov.cdc.usds.simplereport.db.model.Person;
+import gov.cdc.usds.simplereport.db.model.PhoneNumber;
+import gov.cdc.usds.simplereport.db.model.auxiliary.PhoneType;
 import java.util.List;
 import java.util.UUID;
-import java.util.stream.Collectors;
 import java.util.stream.Stream;
 import org.hl7.fhir.r4.model.ContactPoint;
 import org.hl7.fhir.r4.model.ContactPoint.ContactPointSystem;
@@ -23,7 +24,6 @@ import org.hl7.fhir.r4.model.ContactPoint.ContactPointUse;
 import org.hl7.fhir.r4.model.Enumerations.AdministrativeGender;
 import org.hl7.fhir.r4.model.Identifier.IdentifierUse;
 import org.hl7.fhir.r4.model.PrimitiveType;
-import org.hl7.fhir.r4.model.StringType;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.Arguments;
@@ -85,23 +85,25 @@ public class FhirConverterTest {
     assertThat(convertToIdentifier((String) null)).isNull();
     assertThat(convertToIdentifier((UUID) null)).isNull();
   }
-  // note: getGiven and getSuffix return array lists of StringType which are difficult to compare
-  public static void assertStringTypeListEqualsStringList(
-      List<String> actual, List<StringType> expected) {
-    var e = expected.stream().map(StringType::toString).collect(Collectors.toList());
-    assertThat(actual).isEqualTo(e);
+
+  @Test
+  void phoneNumberModel_phoneNumberToContactPoint() {
+    var phoneNumber = new PhoneNumber(PhoneType.LANDLINE, "2485551234");
+
+    var actual = phoneNumberToContactPoint(phoneNumber);
+
+    assertThat(actual.getSystem()).isEqualTo(ContactPointSystem.PHONE);
+    assertThat(actual.getUse().toCode()).isEqualTo(ContactPointUse.HOME.toCode());
+    assertThat(actual.getValue()).isEqualTo("(248) 555 1234");
   }
 
   @Test
   void mobileNumber_phoneNumberToContactPoint() {
     var actual = phoneNumberToContactPoint(ContactPoint.ContactPointUse.MOBILE, "2485551234");
 
-    assertThat(actual)
-        .returns(ContactPointSystem.PHONE, from(ContactPoint::getSystem))
-        .returns("(248) 555 1234", from(ContactPoint::getValue))
-        .returns(
-            ContactPointUse.MOBILE.toCode(),
-            from(ContactPoint::getUse).andThen(ContactPoint.ContactPointUse::toCode));
+    assertThat(actual.getSystem()).isEqualTo(ContactPointSystem.PHONE);
+    assertThat(actual.getUse().toCode()).isEqualTo(ContactPointUse.MOBILE.toCode());
+    assertThat(actual.getValue()).isEqualTo("(248) 555 1234");
   }
 
   @Test
@@ -114,6 +116,11 @@ public class FhirConverterTest {
         .returns(
             ContactPointUse.HOME.toCode(),
             from(ContactPoint::getUse).andThen(ContactPoint.ContactPointUse::toCode));
+  }
+
+  @Test
+  void null_phoneNumberToContactPoint() {
+    assertThat(phoneNumberToContactPoint(null)).isNull();
   }
 
   @Test
@@ -173,13 +180,18 @@ public class FhirConverterTest {
   }
 
   @Test
-  void null_convertToAddress() {
+  void emptyAddress_convertToAddress() {
     var actual = convertToAddress(null, null, null, null, null);
     assertThat(actual.getLine()).isEmpty();
     assertThat(actual.getCity()).isNull();
     assertThat(actual.getDistrict()).isNull();
     assertThat(actual.getState()).isNull();
     assertThat(actual.getPostalCode()).isNull();
+  }
+
+  @Test
+  void null_convertToAddress() {
+    assertThat(convertToAddress(null)).isNull();
   }
 
   @ParameterizedTest

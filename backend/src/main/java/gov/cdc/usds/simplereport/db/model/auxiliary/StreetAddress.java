@@ -2,7 +2,6 @@ package gov.cdc.usds.simplereport.db.model.auxiliary;
 
 import static gov.cdc.usds.simplereport.api.Translators.parseState;
 import static gov.cdc.usds.simplereport.api.Translators.parseString;
-import static gov.cdc.usds.simplereport.api.converter.FhirConverter.convertToAddress;
 
 import com.fasterxml.jackson.annotation.JsonAlias;
 import com.fasterxml.jackson.annotation.JsonIgnore;
@@ -13,7 +12,6 @@ import java.util.Objects;
 import javax.persistence.Column;
 import javax.persistence.Embeddable;
 import org.hibernate.annotations.Type;
-import org.hl7.fhir.r4.model.Address;
 import org.springframework.boot.context.properties.ConstructorBinding;
 
 /** An embeddable address type for patients, facilities and providers. */
@@ -142,9 +140,5 @@ public class StreetAddress {
     String postal = parseString(address.getPostalCode());
     String county = parseString(address.getCounty());
     return new StreetAddress(streetOne, streetTwo, city, state, postal, county);
-  }
-
-  public Address toFhir() {
-    return convertToAddress(street, city, county, state, postalCode);
   }
 }

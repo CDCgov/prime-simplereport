@@ -1,14 +1,10 @@
 package gov.cdc.usds.simplereport.db.model;
 
-import static org.assertj.core.api.Assertions.assertThat;
-import static org.assertj.core.api.Assertions.from;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertNotEquals;
 
 import gov.cdc.usds.simplereport.db.model.auxiliary.PhoneType;
 import java.util.List;
-import org.hl7.fhir.r4.model.ContactPoint;
-import org.hl7.fhir.r4.model.codesystems.ContactPointUse;
 import org.junit.jupiter.api.Test;
 
 class PhoneNumberTest {
@@ -42,29 +38,5 @@ class PhoneNumberTest {
   @Test
   void equals_numberParseException_returnsFalse() {
     assertNotEquals(a, new PhoneNumber(PhoneType.MOBILE, "invalid"));
-  }
-
-  @Test
-  void validMobile_toFhir() {
-    var phoneNumber = new PhoneNumber(PhoneType.MOBILE, "2485551234");
-
-    var actual = phoneNumber.toFhir();
-
-    assertThat(actual)
-        .returns(
-            ContactPointUse.MOBILE.toCode(),
-            from(ContactPoint::getUse).andThen(ContactPoint.ContactPointUse::toCode));
-  }
-
-  @Test
-  void validHome_toFhir() {
-    var phoneNumber = new PhoneNumber(PhoneType.LANDLINE, "2485551234");
-
-    var actual = phoneNumber.toFhir();
-
-    assertThat(actual)
-        .returns(
-            ContactPointUse.HOME.toCode(),
-            from(ContactPoint::getUse).andThen(ContactPoint.ContactPointUse::toCode));
   }
 }

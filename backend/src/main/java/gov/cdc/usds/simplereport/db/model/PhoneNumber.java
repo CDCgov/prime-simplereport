@@ -1,7 +1,5 @@
 package gov.cdc.usds.simplereport.db.model;
 
-import static gov.cdc.usds.simplereport.api.converter.FhirConverter.phoneNumberToContactPoint;
-
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.google.i18n.phonenumbers.NumberParseException;
 import com.google.i18n.phonenumbers.PhoneNumberUtil;
@@ -16,8 +14,6 @@ import javax.persistence.FetchType;
 import javax.persistence.JoinColumn;
 import javax.persistence.ManyToOne;
 import org.hibernate.annotations.Type;
-import org.hl7.fhir.r4.model.ContactPoint;
-import org.hl7.fhir.r4.model.ContactPoint.ContactPointUse;
 
 @Entity
 public class PhoneNumber extends AuditedEntity {
@@ -108,14 +104,5 @@ public class PhoneNumber extends AuditedEntity {
   @Override
   public int hashCode() {
     return Objects.hash(person, number, type);
-  }
-
-  public ContactPoint toFhir() {
-    var contactPointUse = ContactPointUse.HOME;
-    if (PhoneType.MOBILE.equals(type)) {
-      contactPointUse = ContactPointUse.MOBILE;
-    }
-
-    return phoneNumberToContactPoint(contactPointUse, number);
   }
 }
