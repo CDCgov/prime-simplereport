@@ -8,6 +8,7 @@ import static gov.cdc.usds.simplereport.api.converter.FhirConverter.convertToEth
 import static gov.cdc.usds.simplereport.api.converter.FhirConverter.convertToHumanName;
 import static gov.cdc.usds.simplereport.api.converter.FhirConverter.convertToIdentifier;
 import static gov.cdc.usds.simplereport.api.converter.FhirConverter.convertToRaceExtension;
+import static gov.cdc.usds.simplereport.api.converter.FhirConverter.convertToTribalAffiliationExtension;
 import static gov.cdc.usds.simplereport.api.converter.FhirConverter.phoneNumberToContactPoint;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.from;
@@ -15,6 +16,7 @@ import static org.junit.jupiter.params.provider.Arguments.arguments;
 
 import gov.cdc.usds.simplereport.db.model.PhoneNumber;
 import gov.cdc.usds.simplereport.db.model.auxiliary.PhoneType;
+import java.util.Collections;
 import java.util.List;
 import java.util.UUID;
 import java.util.stream.Stream;
@@ -30,9 +32,11 @@ import org.junit.jupiter.params.provider.Arguments;
 import org.junit.jupiter.params.provider.MethodSource;
 
 public class FhirConverterTest {
-  public static final String unknownSystem = "http://terminology.hl7.org/CodeSystem/v3-NullFlavor";
-  public static final String raceCodeSystem = "http://terminology.hl7.org/CodeSystem/v3-Race";
-  public static final String ethnicitySystem = "urn:oid:2.16.840.1.113883.6.238";
+  private static final String unknownSystem = "http://terminology.hl7.org/CodeSystem/v3-NullFlavor";
+  private static final String raceCodeSystem = "http://terminology.hl7.org/CodeSystem/v3-Race";
+  private static final String ethnicitySystem = "urn:oid:2.16.840.1.113883.6.238";
+  private static final String tribalSystemUrl =
+      "http://terminology.hl7.org/CodeSystem/v3-TribalEntityUS";
 
   @Test
   void allFields_convertToHumanName() {
@@ -244,5 +248,32 @@ public class FhirConverterTest {
   @Test
   void null_convertToEthnicityExtension() {
     assertThat(convertToEthnicityExtension(null)).isNull();
+  }
+
+  @Test
+  void string_convertToTribalAffiliation() {
+    var actual = convertToTribalAffiliationExtension("1");
+    assert actual != null;
+    var tribalAffiliationExtension = actual.getExtensionByUrl("tribalAffiliation");
+    var tribalCodeableConcept = actual.castToCodeableConcept(tribalAffiliationExtension.getValue());
+    var tribalCoding = tribalCodeableConcept.getCoding().get(0);
+
+    assertThat(actual.getExtension()).hasSize(1);
+    assertThat(tribalCoding.getSystem()).isEqualTo(tribalSystemUrl);
+    assertThat(tribalCoding.getCode()).isEqualTo("1");
+    assertThat(tribalCoding.getDisplay())
+        .isEqualTo("Absentee-Shawnee Tribe of Indians of Oklahoma");
+  }
+
+  @Test
+  void emptyList_convertToTribalAffiliation() {
+    var actual = convertToTribalAffiliationExtension(Collections.emptyList());
+    assertThat(actual).isNull();
+  }
+
+  @Test
+  void null_convertToTribalAffiliation() {
+    assertThat(convertToTribalAffiliationExtension((String) null)).isNull();
+    assertThat(convertToTribalAffiliationExtension((List<String>) null)).isNull();
   }
 }

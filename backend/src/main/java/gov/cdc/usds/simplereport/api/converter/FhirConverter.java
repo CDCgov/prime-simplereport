@@ -5,6 +5,8 @@ import static gov.cdc.usds.simplereport.api.MappingConstants.ETHNICITY_EXTENSION
 import static gov.cdc.usds.simplereport.api.MappingConstants.NULL_CODE_SYSTEM;
 import static gov.cdc.usds.simplereport.api.MappingConstants.RACE_CODING_SYSTEM;
 import static gov.cdc.usds.simplereport.api.MappingConstants.RACE_EXTENSION_URL;
+import static gov.cdc.usds.simplereport.api.MappingConstants.TRIBAL_AFFILIATION_CODE_SYSTEM;
+import static gov.cdc.usds.simplereport.api.MappingConstants.TRIBAL_AFFILIATION_EXTENSION_URL;
 
 import com.google.i18n.phonenumbers.NumberParseException;
 import com.google.i18n.phonenumbers.PhoneNumberUtil;
@@ -208,6 +210,32 @@ public class FhirConverter {
         text.setValue(new StringType(MappingConstants.UNKNOWN_STRING));
       }
       ombExtension.setValue(ombCoding);
+      return ext;
+    }
+    return null;
+  }
+
+  public static Extension convertToTribalAffiliationExtension(List<String> tribalAffiliations) {
+    if (tribalAffiliations != null && !tribalAffiliations.isEmpty()) {
+      return convertToTribalAffiliationExtension(tribalAffiliations.get(0));
+    }
+    return null;
+  }
+
+  public static Extension convertToTribalAffiliationExtension(String tribalAffiliation) {
+    if (StringUtils.isNotBlank(tribalAffiliation)
+        && PersonUtils.tribalMap().containsKey(tribalAffiliation)) {
+      var ext = new Extension();
+      ext.setUrl(TRIBAL_AFFILIATION_EXTENSION_URL);
+      var tribeExtension = ext.addExtension();
+      tribeExtension.setUrl("tribalAffiliation");
+      var tribeCodeableConcept = new CodeableConcept();
+      var tribeCoding = tribeCodeableConcept.addCoding();
+      tribeCoding.setSystem(TRIBAL_AFFILIATION_CODE_SYSTEM);
+      tribeCoding.setCode(tribalAffiliation);
+      tribeCoding.setDisplay(PersonUtils.tribalMap().get(tribalAffiliation));
+      tribeCodeableConcept.setText(PersonUtils.tribalMap().get(tribalAffiliation));
+      tribeExtension.setValue(tribeCodeableConcept);
       return ext;
     }
     return null;

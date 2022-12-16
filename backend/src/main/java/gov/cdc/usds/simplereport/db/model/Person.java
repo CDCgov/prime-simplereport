@@ -8,6 +8,7 @@ import static gov.cdc.usds.simplereport.api.converter.FhirConverter.convertToEth
 import static gov.cdc.usds.simplereport.api.converter.FhirConverter.convertToHumanName;
 import static gov.cdc.usds.simplereport.api.converter.FhirConverter.convertToIdentifier;
 import static gov.cdc.usds.simplereport.api.converter.FhirConverter.convertToRaceExtension;
+import static gov.cdc.usds.simplereport.api.converter.FhirConverter.convertToTribalAffiliationExtension;
 import static gov.cdc.usds.simplereport.api.converter.FhirConverter.phoneNumberToContactPoint;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
@@ -35,7 +36,6 @@ import javax.persistence.ManyToOne;
 import javax.persistence.OneToMany;
 import javax.persistence.OneToOne;
 import org.hibernate.annotations.Type;
-import org.hl7.fhir.r4.model.CodeableConcept;
 import org.hl7.fhir.r4.model.ContactPoint.ContactPointSystem;
 import org.hl7.fhir.r4.model.Patient;
 
@@ -480,27 +480,8 @@ public class Person extends OrganizationScopedEternalEntity implements PersonEnt
     patient.addAddress(convertToAddress(address));
     patient.addExtension(convertToRaceExtension(race));
     patient.addExtension(convertToEthnicityExtension(ethnicity));
-    addTribalAffiliationExtension(patient);
+    patient.addExtension(convertToTribalAffiliationExtension(tribalAffiliation));
     return patient;
-  }
-
-  @JsonIgnore
-  private void addTribalAffiliationExtension(Patient patient) {
-    if (tribalAffiliation != null
-        && !tribalAffiliation.isEmpty()
-        && PersonUtils.tribalMap().containsKey(tribalAffiliation.get(0))) {
-      var ext = patient.addExtension();
-      ext.setUrl("http://hl7.org/fhir/us/core/StructureDefinition/us-core-tribal-affiliation");
-      var tribeExtension = ext.addExtension();
-      tribeExtension.setUrl("tribalAffiliation");
-      var tribeCodeableConcept = new CodeableConcept();
-      var tribeCoding = tribeCodeableConcept.addCoding();
-      tribeCoding.setSystem("http://terminology.hl7.org/CodeSystem/v3-TribalEntityUS");
-      tribeCoding.setCode(tribalAffiliation.get(0));
-      tribeCoding.setDisplay(PersonUtils.tribalMap().get(tribalAffiliation.get(0)));
-      tribeCodeableConcept.setText(PersonUtils.tribalMap().get(tribalAffiliation.get(0)));
-      tribeExtension.setValue(tribeCodeableConcept);
-    }
   }
 
   @JsonIgnore
