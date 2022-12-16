@@ -41,7 +41,7 @@ import org.springframework.test.context.TestPropertySource;
       "spring.jpa.properties.hibernate.enable_lazy_load_no_trans=true"
     })
 @SliceTestConfiguration.WithSimpleReportStandardAllFacilitiesUser
-public class PatientBulkUploadServiceAsyncTest extends BaseGraphqlTest {
+class PatientBulkUploadServiceAsyncTest extends BaseGraphqlTest {
 
   @Autowired PatientBulkUploadServiceAsync _service;
 
@@ -78,7 +78,7 @@ public class PatientBulkUploadServiceAsyncTest extends BaseGraphqlTest {
     Set<Person> savedPatients = futureSavedPatients.get();
 
     // THEN
-    assertThat(savedPatients.size()).isEqualTo(fetchDatabasePatients().size());
+    assertThat(savedPatients).hasSameSizeAs(fetchDatabasePatients());
     assertThat(fetchDatabasePatientsForFacility(firstFacilityId))
         .hasSameSizeAs(fetchDatabasePatientsForFacility(secondFacilityId));
     assertThat(fetchDatabasePatients()).hasSize(1);
@@ -196,7 +196,7 @@ public class PatientBulkUploadServiceAsyncTest extends BaseGraphqlTest {
 
     // THEN
     verify(_personService, times(2)).addPatientsAndPhoneNumbers(any(), any());
-    assertThat(fetchDatabasePatients().size()).isEqualTo(17);
+    assertThat(fetchDatabasePatients()).hasSize(17);
   }
 
   @Test
