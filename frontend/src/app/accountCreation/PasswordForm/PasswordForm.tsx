@@ -23,13 +23,11 @@ type PasswordInformation = {
 
 export const PasswordForm = () => {
   // State setup
-  //const [password, setPassword] = useState("");
   const [passwordConfirmation, setPasswordConfirmation] = useState("");
   const [passwordInfo, setPasswordInfo] = useState<PasswordInformation>({
     password: "",
     strength: 0,
   });
-  //const [strength, setStrength] = useState(0);
   const [strengthHint, setStrengthHint] = useState("");
   const [passwordError, setPasswordError] = useState("");
   const [passwordConfirmationError, setPasswordConfirmationError] =
@@ -104,14 +102,11 @@ export const PasswordForm = () => {
     target: { value },
   }: ChangeEvent<HTMLInputElement>) => {
     setPasswordInfo({ password: value, strength: calculateStrength(value) });
-    /*setPassword(value);
-    setStrength(calculateStrength(value));*/
   };
 
   // Clears the hint and sets the error since this is validation on submit
   const validatePassword = (): boolean => {
     setStrengthHint("");
-    //const hint = buildHint(password);
     const hint = buildHint(passwordInfo.password);
     setPasswordError(hint);
     return hint === "";
@@ -122,7 +117,6 @@ export const PasswordForm = () => {
     if (validatePassword() && validatePasswordConfirmation()) {
       setLoading(true);
       try {
-        //await AccountCreationApi.setPassword(password);
         await AccountCreationApi.setPassword(passwordInfo.password);
         setSubmitted(true);
       } catch (error: any) {
@@ -138,7 +132,6 @@ export const PasswordForm = () => {
   // This switch sets both the label of the password strength
   // and the color class to use for the strength bars
   let strengthLabel, strengthColor: string;
-  //switch (strength) {
   switch (passwordInfo.strength) {
     case 1:
       strengthLabel = "Weak";
