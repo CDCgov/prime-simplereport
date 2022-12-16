@@ -3,6 +3,9 @@ package gov.cdc.usds.simplereport.service;
 import static gov.cdc.usds.simplereport.api.Translators.parsePhoneType;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.junit.jupiter.api.Assertions.assertThrows;
+import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.Mockito.times;
+import static org.mockito.Mockito.verify;
 
 import gov.cdc.usds.simplereport.api.graphql.BaseGraphqlTest;
 import gov.cdc.usds.simplereport.db.model.Facility;
@@ -24,6 +27,7 @@ import java.util.stream.Collectors;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.boot.test.mock.mockito.SpyBean;
 import org.springframework.security.access.AccessDeniedException;
 import org.springframework.test.context.TestPropertySource;
 
@@ -41,7 +45,7 @@ public class PatientBulkUploadServiceAsyncTest extends BaseGraphqlTest {
 
   @Autowired PatientBulkUploadServiceAsync _service;
 
-  @Autowired PersonService _personService;
+  @SpyBean PersonService _personService;
   @Autowired PhoneNumberRepository phoneNumberRepository;
 
   public static final int PATIENT_PAGE_OFFSET = 0;
@@ -177,6 +181,22 @@ public class PatientBulkUploadServiceAsyncTest extends BaseGraphqlTest {
     // THEN
     assertThat(fetchDatabasePatientsForFacility(firstFacilityId)).hasSize(1);
     assertThat(fetchDatabasePatientsForFacility(secondFacilityId)).isEmpty();
+  }
+
+  @Test
+  void largeFile_isBatched() throws IOException, ExecutionException, InterruptedException {
+    // GIVEN
+    InputStream inputStream = loadCsv("patientBulkUpload/slightlyLargeFile.csv");
+    byte[] content = inputStream.readAllBytes();
+
+    // WHEN
+    CompletableFuture<Set<Person>> futurePatients =
+        this._service.savePatients(content, firstFacilityId);
+    futurePatients.get();
+
+    // THEN
+    verify(_personService, times(2)).addPatientsAndPhoneNumbers(any(), any());
+    assertThat(fetchDatabasePatients().size()).isEqualTo(17);
   }
 
   @Test
