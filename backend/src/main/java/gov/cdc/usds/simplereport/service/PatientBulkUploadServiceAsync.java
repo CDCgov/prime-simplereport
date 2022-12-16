@@ -58,6 +58,8 @@ public class PatientBulkUploadServiceAsync {
     Set<Person> patientsList = new HashSet<>();
     List<PhoneNumber> phoneNumbersList = new ArrayList<>();
 
+    Set<Person> allPatients = new HashSet<>();
+
     final MappingIterator<Map<String, String>> valueIterator =
         CsvValidatorUtils.getIteratorForCsv(new ByteArrayInputStream(content));
 
@@ -121,7 +123,10 @@ public class PatientBulkUploadServiceAsync {
         // only increment count after person record is created
         patientCount++;
 
-        if (!patientsList.contains(newPatient)) {
+        // UGH iI need to change this logic too, because patients could be batched in different
+        // segments
+        // check against MasterPatientList or w/e
+        if (!allPatients.contains(newPatient)) {
           // collect phone numbers and associate them with the patient
           // then add to phone numbers list and set primary phone, if exists
           List<PhoneNumber> newPhoneNumbers =
@@ -135,6 +140,7 @@ public class PatientBulkUploadServiceAsync {
           newPhoneNumbers.stream().findFirst().ifPresent(newPatient::setPrimaryPhone);
 
           patientsList.add(newPatient);
+          allPatients.add(newPatient);
         }
 
         if (patientCount >= batchSize) {
