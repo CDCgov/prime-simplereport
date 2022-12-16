@@ -475,7 +475,7 @@ public class Person extends OrganizationScopedEternalEntity implements PersonEnt
     addFhirTelecom(patient);
     patient.setGender(convertToAdministrativeGender(gender));
     patient.setBirthDate(convertToDate(birthDate));
-    setFhirAddress(patient);
+    patient.addAddress(address.toFhir());
     addRaceExtension(patient);
     addEthnicityExtension(patient);
     addTribalAffiliationExtension(patient);

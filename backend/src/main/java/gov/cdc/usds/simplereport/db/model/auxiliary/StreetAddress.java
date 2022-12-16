@@ -2,6 +2,7 @@ package gov.cdc.usds.simplereport.db.model.auxiliary;
 
 import static gov.cdc.usds.simplereport.api.Translators.parseState;
 import static gov.cdc.usds.simplereport.api.Translators.parseString;
+import static gov.cdc.usds.simplereport.api.converter.FhirConverter.convertToAddress;
 
 import com.fasterxml.jackson.annotation.JsonAlias;
 import com.fasterxml.jackson.annotation.JsonIgnore;
@@ -144,9 +145,6 @@ public class StreetAddress {
   }
 
   public Address toFhir() {
-    var address =
-        new Address().setCity(city).setDistrict(county).setState(state).setPostalCode(postalCode);
-    street.forEach(address::addLine);
-    return address;
+    return convertToAddress(street, city, county, state, postalCode);
   }
 }

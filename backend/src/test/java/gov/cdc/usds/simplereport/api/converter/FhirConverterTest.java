@@ -1,5 +1,6 @@
 package gov.cdc.usds.simplereport.api.converter;
 
+import static gov.cdc.usds.simplereport.api.converter.FhirConverter.convertToAddress;
 import static gov.cdc.usds.simplereport.api.converter.FhirConverter.convertToAdministrativeGender;
 import static gov.cdc.usds.simplereport.api.converter.FhirConverter.convertToContactPoint;
 import static gov.cdc.usds.simplereport.api.converter.FhirConverter.convertToDate;
@@ -131,5 +132,27 @@ public class FhirConverterTest {
   @Test
   void null_convertToDate() {
     assertThat(convertToDate(null)).isNull();
+  }
+
+  @Test
+  void address_convertToAddress() {
+    var actual =
+        convertToAddress(List.of("1234 Main", "Apartment #1"), "MyCity", "MyCounty", "PA", "15025");
+    assertThat(actual.getLine().stream().map(PrimitiveType::getValue))
+        .containsExactly("1234 Main", "Apartment #1");
+    assertThat(actual.getCity()).isEqualTo("MyCity");
+    assertThat(actual.getDistrict()).isEqualTo("MyCounty");
+    assertThat(actual.getState()).isEqualTo("PA");
+    assertThat(actual.getPostalCode()).isEqualTo("15025");
+  }
+
+  @Test
+  void null_convertToAddress() {
+    var actual = convertToAddress(null, null, null, null, null);
+    assertThat(actual.getLine()).isEmpty();
+    assertThat(actual.getCity()).isNull();
+    assertThat(actual.getDistrict()).isNull();
+    assertThat(actual.getState()).isNull();
+    assertThat(actual.getPostalCode()).isNull();
   }
 }

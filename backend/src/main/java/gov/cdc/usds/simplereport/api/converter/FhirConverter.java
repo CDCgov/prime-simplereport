@@ -6,7 +6,9 @@ import com.google.i18n.phonenumbers.PhoneNumberUtil.PhoneNumberFormat;
 import java.time.LocalDate;
 import java.time.ZoneId;
 import java.util.Date;
+import java.util.List;
 import org.apache.commons.lang3.StringUtils;
+import org.hl7.fhir.r4.model.Address;
 import org.hl7.fhir.r4.model.ContactPoint;
 import org.hl7.fhir.r4.model.ContactPoint.ContactPointSystem;
 import org.hl7.fhir.r4.model.ContactPoint.ContactPointUse;
@@ -80,5 +82,15 @@ public class FhirConverter {
       return Date.from(date.atStartOfDay(ZoneId.systemDefault()).toInstant());
     }
     return null;
+  }
+
+  public static Address convertToAddress(
+      List<String> street, String city, String county, String state, String postalCode) {
+    var address =
+        new Address().setCity(city).setDistrict(county).setState(state).setPostalCode(postalCode);
+    if (street != null) {
+      street.forEach(address::addLine);
+    }
+    return address;
   }
 }

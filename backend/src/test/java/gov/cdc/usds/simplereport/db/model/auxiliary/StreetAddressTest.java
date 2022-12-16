@@ -20,20 +20,5 @@ class StreetAddressTest {
     assertThat(actual.getDistrict()).isEqualTo(streetAddress.getCounty());
     assertThat(actual.getState()).isEqualTo(streetAddress.getState());
     assertThat(actual.getPostalCode()).isEqualTo(streetAddress.getPostalCode());
-    assertThat(actual.getState()).isEqualTo(streetAddress.getState());
-  }
-
-  @Test
-  void null_toFhir() {
-    var streetAddress = new StreetAddress(null, null, null, null, null, null);
-
-    var actual = streetAddress.toFhir();
-
-    assertStringTypeListEqualsStringList(streetAddress.getStreet(), actual.getLine());
-    assertThat(actual.getCity()).isEqualTo(streetAddress.getCity());
-    assertThat(actual.getDistrict()).isEqualTo(streetAddress.getCounty());
-    assertThat(actual.getState()).isEqualTo(streetAddress.getState());
-    assertThat(actual.getPostalCode()).isEqualTo(streetAddress.getPostalCode());
-    assertThat(actual.getState()).isEqualTo(streetAddress.getState());
   }
 }
