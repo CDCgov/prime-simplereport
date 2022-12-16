@@ -1,12 +1,13 @@
 package gov.cdc.usds.simplereport.api.converter;
 
-import static gov.cdc.usds.simplereport.api.MappingConstants.ETHNICITY_CODE_SYSTEM;
-import static gov.cdc.usds.simplereport.api.MappingConstants.ETHNICITY_EXTENSION_URL;
-import static gov.cdc.usds.simplereport.api.MappingConstants.NULL_CODE_SYSTEM;
-import static gov.cdc.usds.simplereport.api.MappingConstants.RACE_CODING_SYSTEM;
-import static gov.cdc.usds.simplereport.api.MappingConstants.RACE_EXTENSION_URL;
-import static gov.cdc.usds.simplereport.api.MappingConstants.TRIBAL_AFFILIATION_CODE_SYSTEM;
-import static gov.cdc.usds.simplereport.api.MappingConstants.TRIBAL_AFFILIATION_EXTENSION_URL;
+import static gov.cdc.usds.simplereport.api.converter.FhirConstants.ETHNICITY_CODE_SYSTEM;
+import static gov.cdc.usds.simplereport.api.converter.FhirConstants.ETHNICITY_EXTENSION_URL;
+import static gov.cdc.usds.simplereport.api.converter.FhirConstants.NULL_CODE_SYSTEM;
+import static gov.cdc.usds.simplereport.api.converter.FhirConstants.RACE_CODING_SYSTEM;
+import static gov.cdc.usds.simplereport.api.converter.FhirConstants.RACE_EXTENSION_URL;
+import static gov.cdc.usds.simplereport.api.converter.FhirConstants.TRIBAL_AFFILIATION_CODE_SYSTEM;
+import static gov.cdc.usds.simplereport.api.converter.FhirConstants.TRIBAL_AFFILIATION_EXTENSION_URL;
+import static gov.cdc.usds.simplereport.api.converter.FhirConstants.TRIBAL_AFFILIATION_STRING;
 
 import com.google.i18n.phonenumbers.NumberParseException;
 import com.google.i18n.phonenumbers.PhoneNumberUtil;
@@ -228,7 +229,7 @@ public class FhirConverter {
       var ext = new Extension();
       ext.setUrl(TRIBAL_AFFILIATION_EXTENSION_URL);
       var tribeExtension = ext.addExtension();
-      tribeExtension.setUrl("tribalAffiliation");
+      tribeExtension.setUrl(TRIBAL_AFFILIATION_STRING);
       var tribeCodeableConcept = new CodeableConcept();
       var tribeCoding = tribeCodeableConcept.addCoding();
       tribeCoding.setSystem(TRIBAL_AFFILIATION_CODE_SYSTEM);
