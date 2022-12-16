@@ -123,9 +123,6 @@ public class PatientBulkUploadServiceAsync {
         // only increment count after person record is created
         patientCount++;
 
-        // UGH iI need to change this logic too, because patients could be batched in different
-        // segments
-        // check against MasterPatientList or w/e
         if (!allPatients.contains(newPatient)) {
           // collect phone numbers and associate them with the patient
           // then add to phone numbers list and set primary phone, if exists
