@@ -1,5 +1,5 @@
-import { useEffect, useState } from "react";
-import { Navigate } from "react-router-dom";
+import { useEffect, useRef, useState } from "react";
+import { useNavigate } from "react-router-dom";
 
 import { Card } from "../../commonComponents/Card/Card";
 import { CardBackground } from "../../commonComponents/CardBackground/CardBackground";
@@ -15,23 +15,38 @@ interface Props {
 }
 
 export const MfaTotp = ({ enrollFunction, totpType }: Props) => {
+  /**
+   * QR retrieval and component initialization
+   */
+  const initialize = useRef(true);
   const [qrCode, setQrCode] = useState("");
-  const [submitted, setSubmitted] = useState(false);
+  //const [submitted, setSubmitted] = useState(false);
 
   useEffect(() => {
     const getQrCode = async () => {
       const { qrcode } = await enrollFunction();
       setQrCode(qrcode);
     };
-    getQrCode();
+    if (initialize.current) {
+      getQrCode();
+      initialize.current = false;
+    }
   }, [enrollFunction]);
+
+  /**
+   * handle continue to verify
+   */
+  const navigate = useNavigate();
+  const handleNavigate = () => {
+    navigate("/verify");
+  };
+
+  /* if (submitted) {
+   return <Navigate to="verify" />;
+ }*/
 
   if (!qrCode) {
     return <LoadingCard message="Retrieving QR code" />;
-  }
-
-  if (submitted) {
-    return <Navigate to="verify" />;
   }
 
   return (
@@ -55,7 +70,7 @@ export const MfaTotp = ({ enrollFunction, totpType }: Props) => {
           className="margin-top-3"
           label={"Continue"}
           type={"submit"}
-          onClick={() => setSubmitted(true)}
+          onClick={handleNavigate}
           id={"continue"}
         />
       </Card>
