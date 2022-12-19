@@ -36,9 +36,10 @@ export const MfaTotp = ({ enrollFunction, totpType }: Props) => {
    * handle continue to verify
    */
   const navigate = useNavigate();
-  const handleNavigate = () => {
+
+  function handleNavigate() {
     navigate("verify");
-  };
+  }
 
   if (!qrCode) {
     return <LoadingCard message="Retrieving QR code" />;

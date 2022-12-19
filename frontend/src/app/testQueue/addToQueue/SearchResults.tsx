@@ -55,6 +55,18 @@ const SearchResults = (props: QueueProps | TestResultsProps) => {
     }
   }, [selectedPatient]);
 
+  function handleSaveCallback(a: any) {
+    if (props.page === "queue" && dialogPatient !== null) {
+      return props.onAddToQueue(
+        dialogPatient,
+        a,
+        canAddToQueue ? "create" : "update"
+      );
+    }
+
+    return Promise.resolve();
+  }
+
   if (redirect) {
     return <Navigate to={redirect} />;
   }
@@ -156,15 +168,7 @@ const SearchResults = (props: QueueProps | TestResultsProps) => {
         onClose={() => {
           setDialogPatient(null);
         }}
-        saveCallback={(a: any) =>
-          props.page === "queue" && dialogPatient !== null
-            ? props.onAddToQueue(
-                dialogPatient,
-                a,
-                canAddToQueue ? "create" : "update"
-              )
-            : Promise.resolve()
-        }
+        saveCallback={handleSaveCallback}
       />
       {shouldShowSuggestions && results}
     </>
