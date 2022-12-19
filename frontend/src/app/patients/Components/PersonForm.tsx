@@ -203,7 +203,7 @@ const PersonForm = (props: Props) => {
     return {
       street: p.street || "",
       streetTwo: p.streetTwo,
-      city: p.city,
+      city: p.city || "",
       state: p.state || "",
       zipCode: p.zipCode || "",
       county: p.county || "",
@@ -532,6 +532,7 @@ const PersonForm = (props: Props) => {
             {...commonInputProps}
             field="city"
             label={t("patient.form.contact.city")}
+            required
           />
           {view !== PersonFormView.SELF_REGISTRATION && (
             <Input

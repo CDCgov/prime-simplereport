@@ -82,6 +82,7 @@ describe("add patient and save and start test", () => {
     cy.get('input[value="LANDLINE"]+label').click();
     cy.get('input[name="email-0"]').type(patient.email);
     cy.get('input[name="street"]').type(patient.address);
+    cy.get('input[name="city"]').type(patient.city);
     cy.get('select[name="state"]').select(patient.state);
     cy.get('input[name="zipCode"]').type(patient.zip);
     cy.get('input[name="race"][value="other"]+label').click();
