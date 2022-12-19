@@ -8,7 +8,8 @@ import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 
 import gov.cdc.usds.simplereport.db.model.OrganizationQueueItem;
-
+import gov.cdc.usds.simplereport.service.email.EmailProviderTemplate;
+import gov.cdc.usds.simplereport.service.email.EmailService;
 import java.io.IOException;
 import java.sql.Connection;
 import java.sql.PreparedStatement;
@@ -19,9 +20,6 @@ import java.util.concurrent.ArrayBlockingQueue;
 import java.util.concurrent.Future;
 import java.util.concurrent.ThreadPoolExecutor;
 import java.util.concurrent.TimeUnit;
-
-import gov.cdc.usds.simplereport.service.email.EmailProviderTemplate;
-import gov.cdc.usds.simplereport.service.email.EmailService;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.mock.mockito.MockBean;
@@ -53,13 +51,21 @@ class ReminderServiceTest extends BaseServiceTest<ReminderService> {
 
     _service.sendAccountReminderEmails();
     verify(_emailService, times(1)).sendWithDynamicTemplate(anyString(), any());
-    verify(_emailService, times(1)).sendWithDynamicTemplate(email, EmailProviderTemplate.ORGANIZATION_ID_VERIFICATION_REMINDER);
+    verify(_emailService, times(1))
+        .sendWithDynamicTemplate(
+            email, EmailProviderTemplate.ORGANIZATION_ID_VERIFICATION_REMINDER);
   }
 
   @Test
   void sendAccountReminderEmails_concurrencyLock_success()
       throws InterruptedException, SQLException, IOException {
+<<<<<<< HEAD
     OrganizationQueueItem unverifiedQueuedOrg = _dataFactory.saveOrganizationQueueItem();
+=======
+    String email = "fake@example.org";
+    OrganizationQueueItem unverifiedQueuedOrg =
+        _dataFactory.createOrganizationQueueItem("New Org Name", "NEW_ORG_NAME", email);
+>>>>>>> d4a569250 (run linter)
     initAndBackdateUnverifiedQueuedOrg(unverifiedQueuedOrg);
 
     int n = 3;
@@ -69,8 +75,7 @@ class ReminderServiceTest extends BaseServiceTest<ReminderService> {
         new ThreadPoolExecutor(n, n, 1, TimeUnit.MINUTES, new ArrayBlockingQueue<>(n));
 
     for (int i = 0; i < n; i++) {
-      Future<?> future =
-          executor.submit(() -> _service.scheduledSendAccountReminderEmails());
+      Future<?> future = executor.submit(() -> _service.scheduledSendAccountReminderEmails());
       futures.add(future);
     }
 
@@ -81,7 +86,9 @@ class ReminderServiceTest extends BaseServiceTest<ReminderService> {
 
     // verify only 1 email sent
     verify(_emailService, times(1)).sendWithDynamicTemplate(anyString(), any());
-    verify(_emailService, times(1)).sendWithDynamicTemplate("org.queue.admin@example.com", EmailProviderTemplate.ORGANIZATION_ID_VERIFICATION_REMINDER);
+    verify(_emailService, times(1))
+        .sendWithDynamicTemplate(
+                "org.queue.admin@example.com", EmailProviderTemplate.ORGANIZATION_ID_VERIFICATION_REMINDER);
   }
 
   void initAndBackdateUnverifiedQueuedOrg(OrganizationQueueItem unverifiedQueuedOrg)

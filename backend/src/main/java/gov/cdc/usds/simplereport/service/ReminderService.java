@@ -34,11 +34,14 @@ public class ReminderService {
   }
 
   /**
-   * Wrapper method for sending account reminder emails so automation can call the inner method without hitting the lock
-   * or conditions.
+   * Wrapper method for sending account reminder emails so automation can call the inner method
+   * without hitting the lock or conditions.
    */
   @Scheduled(cron = "0 0 1 * * *", zone = "America/New_York")
-  @SchedulerLock(name = "ReminderService_sendAccountReminderEmails", lockAtLeastFor = "PT1S", lockAtMostFor = "PT30M")
+  @SchedulerLock(
+      name = "ReminderService_sendAccountReminderEmails",
+      lockAtLeastFor = "PT1S",
+      lockAtMostFor = "PT30M")
   @ConditionalOnProperty("simple-report.id-verification-reminders.enabled")
   public void scheduledSendAccountReminderEmails() {
     sendAccountReminderEmails();

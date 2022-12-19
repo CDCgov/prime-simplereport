@@ -1,6 +1,5 @@
 package gov.cdc.usds.simplereport.db.repository;
 
-import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.jpa.repository.query.Procedure;
 
 /** A mix-in repository for entity repositories that manage processes that use advisory locks. */

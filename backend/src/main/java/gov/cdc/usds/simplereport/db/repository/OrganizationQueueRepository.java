@@ -8,7 +8,7 @@ import org.springframework.data.jpa.repository.Query;
 
 public interface OrganizationQueueRepository
     extends EternalAuditedEntityRepository<OrganizationQueueItem>, AdvisoryLockManager {
-  
+
   @Query(EternalAuditedEntityRepository.BASE_QUERY + " and e.verifiedOrganization IS NULL")
   List<OrganizationQueueItem> findAllNotIdentityVerified();
 
