@@ -175,7 +175,7 @@ resource "azurerm_app_service_slot_virtual_network_swift_connection" "staging" {
 
   WHAT'S HAPPENING HERE:
 
-  1) The wildcard-simplereport-gov cert is being imported from Key Vault into the App Service
+  1) The new-sr-wildcard cert is being imported from Key Vault into the App Service
     [NOTE: This only takes place if this is the first environment being created in this environment level. Cert ownership is bound to the index-less environment!]
   2) That cert is being bound to the custom domain created above, enabling HTTPS
 */
