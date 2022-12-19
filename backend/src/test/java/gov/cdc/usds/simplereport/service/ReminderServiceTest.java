@@ -70,7 +70,7 @@ class ReminderServiceTest extends BaseServiceTest<ReminderService> {
 
     for (int i = 0; i < n; i++) {
       Future<?> future =
-          executor.submit(() -> _service.sendAccountReminderEmails());
+          executor.submit(() -> _service.scheduledSendAccountReminderEmails());
       futures.add(future);
     }
 
