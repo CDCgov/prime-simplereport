@@ -53,6 +53,7 @@ Cypress.Commands.add("enterPhoneNumber", () => {
 
 Cypress.Commands.add("scanQrCode", () => {
   cy.contains("Get your security code via");
+  cy.contains("TOTP QR Code");
   cy.injectAxe();
   cy.checkA11y();
   cy.get(submitButton).click();
