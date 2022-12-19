@@ -38,7 +38,7 @@ export const MfaTotp = ({ enrollFunction, totpType }: Props) => {
    */
   const navigate = useNavigate();
   const handleNavigate = () => {
-    navigate("/verify");
+    navigate("verify");
   };
 
   /* if (submitted) {
