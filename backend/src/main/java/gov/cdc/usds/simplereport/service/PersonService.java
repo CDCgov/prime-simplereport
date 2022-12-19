@@ -1,6 +1,5 @@
 package gov.cdc.usds.simplereport.service;
 
-import com.microsoft.applicationinsights.core.dependencies.apachecommons.lang3.StringUtils;
 import gov.cdc.usds.simplereport.api.model.errors.IllegalGraphqlArgumentException;
 import gov.cdc.usds.simplereport.api.pxp.CurrentPatientContextHolder;
 import gov.cdc.usds.simplereport.config.AuthorizationConfiguration;
@@ -25,6 +24,7 @@ import java.util.Set;
 import java.util.UUID;
 import java.util.stream.Collectors;
 import javax.validation.constraints.Size;
+import org.apache.commons.lang3.StringUtils;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Sort;
 import org.springframework.data.jpa.domain.Specification;
@@ -264,6 +264,16 @@ public class PersonService {
   }
 
   @AuthorizationConfiguration.RequirePermissionCreatePatientAtFacility
+  public void addPatientsAndPhoneNumbers(Set<Person> patients, List<PhoneNumber> phoneNumbers) {
+    if (!patients.isEmpty()) {
+      _repo.saveAll(patients);
+    }
+    if (!phoneNumbers.isEmpty()) {
+      _phoneRepo.saveAll(phoneNumbers);
+    }
+  }
+
+  @AuthorizationConfiguration.RequirePermissionCreatePatientAtFacility
   public Person addPatient(
       UUID facilityId,
       String lookupId,
@@ -361,6 +371,16 @@ public class PersonService {
     return savedPerson;
   }
 
+  /** This method associates PhoneNumbers with a new patient and ensures there are no duplicates */
+  public List<PhoneNumber> assignPhoneNumbersToPatient(Person person, List<PhoneNumber> incoming) {
+    if (incoming == null) {
+      return List.of();
+    }
+
+    // we don't want to allow a patient to have any duplicate phone numbers
+    return deduplicatePhoneNumbers(person, incoming);
+  }
+
   /**
    * This method updates the PhoneNumbers provided by adding/deleting them from the
    * PhoneNumberRepository. It updates the PrimaryPhone on the Person, but does <em>not</em> save
@@ -372,6 +392,22 @@ public class PersonService {
     }
 
     // we don't want to allow a patient to have any duplicate phone numbers
+    List<PhoneNumber> deduplicatedPhoneNumbers = deduplicatePhoneNumbers(person, incoming);
+
+    var existingNumbers = person.getPhoneNumbers();
+
+    if (existingNumbers != null) {
+      _phoneRepo.deleteAll(existingNumbers);
+    }
+
+    _phoneRepo.saveAll(deduplicatedPhoneNumbers);
+
+    if (!deduplicatedPhoneNumbers.isEmpty()) {
+      person.setPrimaryPhone(deduplicatedPhoneNumbers.get(0));
+    }
+  }
+
+  private List<PhoneNumber> deduplicatePhoneNumbers(Person person, List<PhoneNumber> incoming) {
     Set<String> phoneNumbersSeen = new HashSet<>();
     incoming.forEach(
         phoneNumber -> {
@@ -381,18 +417,7 @@ public class PersonService {
           }
           phoneNumbersSeen.add(phoneNumber.getNumber());
         });
-
-    var existingNumbers = person.getPhoneNumbers();
-
-    if (existingNumbers != null) {
-      _phoneRepo.deleteAll(existingNumbers);
-    }
-
-    _phoneRepo.saveAll(incoming);
-
-    if (!incoming.isEmpty()) {
-      person.setPrimaryPhone(incoming.get(0));
-    }
+    return incoming;
   }
 
   @AuthorizationConfiguration.RequirePermissionStartTestForPatientById

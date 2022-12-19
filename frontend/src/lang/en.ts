@@ -94,8 +94,7 @@ export const en = {
       },
       pageNotFound: {
         heading: "Page not found",
-        text:
-          "We're sorry, we can't find the page you're looking for. It might have been removed, had its name changed, or is otherwise unavailable.",
+        text: "We're sorry, we can't find the page you're looking for. It might have been removed, had its name changed, or is otherwise unavailable.",
         errorCode: "Error code: 404",
       },
     },
@@ -293,8 +292,7 @@ export const en = {
           "social distancing and wearing a mask. Contact your health care provider to determine if additional " +
           "testing is needed especially if you experience any of these  symptoms.",
         positive: {
-          p1:
-            "Most people who get COVID-19 are able to recover at home. Make sure to follow CDC guidelines and local laws for people who are recovering at home and their caregivers, including:",
+          p1: "Most people who get COVID-19 are able to recover at home. Make sure to follow CDC guidelines and local laws for people who are recovering at home and their caregivers, including:",
           guidelines: {
             li0: "Stay home when you are sick, except to get medical care.",
             li1:
@@ -307,13 +305,10 @@ export const en = {
             li3:
               "Wash your hands often with soap and water for at least 20 seconds, especially after blowing your nose, coughing, or sneezing; " +
               "going to the bathroom; and before eating or preparing food.",
-            li4:
-              "If soap and water are not available, use an alcohol-based hand sanitizer with at least 60% alcohol.",
-            li5:
-              "Have a supply of clean, disposable face masks. Everyone, no matter their COVID-19 diagnosis, should wear face masks while in the home.",
+            li4: "If soap and water are not available, use an alcohol-based hand sanitizer with at least 60% alcohol.",
+            li5: "Have a supply of clean, disposable face masks. Everyone, no matter their COVID-19 diagnosis, should wear face masks while in the home.",
           },
-          p2:
-            "Watch for symptoms and learn when to seek emergency medical attention: <0>Symptoms of COVID-19</0> (cdc.gov/coronavirus/2019-ncov/symptoms-testing/symptoms.html). If someone is showing any of these signs, seek emergency medical care immediately:",
+          p2: "Watch for symptoms and learn when to seek emergency medical attention: <0>Symptoms of COVID-19</0> (cdc.gov/coronavirus/2019-ncov/symptoms-testing/symptoms.html). If someone is showing any of these signs, seek emergency medical care immediately:",
           symptomsLink:
             "https://www.cdc.gov/coronavirus/2019-ncov/symptoms-testing/symptoms.html",
           emergency: {
@@ -323,12 +318,10 @@ export const en = {
             li3: "Inability to wake or stay awake",
             li4: "Bluish lips or face",
           },
-          p3:
-            "Call 911 or call ahead to your local emergency room: Notify the operator that you are seeking care for someone who has or may have COVID-19.",
+          p3: "Call 911 or call ahead to your local emergency room: Notify the operator that you are seeking care for someone who has or may have COVID-19.",
         },
         negative: {
-          p0:
-            "Contact your health care provider to decide if additional testing is needed, especially if you experience any of these symptoms:",
+          p0: "Contact your health care provider to decide if additional testing is needed, especially if you experience any of these symptoms:",
           symptoms: {
             li0: "Fever or chills",
             li1: "Cough",
@@ -359,12 +352,9 @@ export const en = {
       fluNotes: {
         h1: "For flu A and B:",
         positive: {
-          p0:
-            "Most people with flu have mild illness and can recover at home. Stay at home and avoid contact with others until at least 24 hours after your fever is gone, except to get medical care or other necessities. Wear a face mask if you leave home, or cover coughs and sneezes with a tissue. Wash your hands often.",
-          p1:
-            "<0>People at Higher Risk of Developing Flu–Related Complications</0> (cdc.gov/flu/highrisk) should contact a doctor as soon as possible to see if antiviral treatment is recommended.",
-          p2:
-            "For more information, visit <0> Flu: What To Do If You Get Sick</0> (cdc.gov/flu/treatment/takingcare.htm).",
+          p0: "Most people with flu have mild illness and can recover at home. Stay at home and avoid contact with others until at least 24 hours after your fever is gone, except to get medical care or other necessities. Wear a face mask if you leave home, or cover coughs and sneezes with a tissue. Wash your hands often.",
+          p1: "<0>People at Higher Risk of Developing Flu–Related Complications</0> (cdc.gov/flu/highrisk) should contact a doctor as soon as possible to see if antiviral treatment is recommended.",
+          p2: "For more information, visit <0> Flu: What To Do If You Get Sick</0> (cdc.gov/flu/treatment/takingcare.htm).",
           highRiskLink: "https://www.cdc.gov/flu/highrisk",
           treatmentLink: "https://www.cdc.gov/flu/treatment/takingcare.htm",
         },
@@ -501,10 +491,8 @@ export const en = {
               li1:
                 "You will promptly inform CDC in the event you identify misuse of individually identifiable health information or " +
                 "protected health information you submit and/or access from the CDC Platform.",
-              li2:
-                "You will promptly inform CDC in the event that you can no longer comply with any of the provisions set out in these Terms.",
-              li3:
-                "You will immediately cease Application use when you no longer meet any of the terms of these Terms.",
+              li2: "You will promptly inform CDC in the event that you can no longer comply with any of the provisions set out in these Terms.",
+              li3: "You will immediately cease Application use when you no longer meet any of the terms of these Terms.",
               preheading2: "For entity administrators and entity users:",
               li4:
                 "You must adhere to the basic desktop security measures to ensure the security of any individually identifiable information " +
@@ -520,8 +508,7 @@ export const en = {
                 "In the unlikely event of a breach, you will be required to notify individuals whose individually identifiable or protected " +
                 "health information is in the Application and have been impacted by the breach. Assistance may be offered by CDC to aid in " +
                 "this process.",
-              li8:
-                "You are required to ensure that anyone using the Application has been trained on handling sensitive and personal information.",
+              li8: "You are required to ensure that anyone using the Application has been trained on handling sensitive and personal information.",
             },
           },
           serviceManagement: {
@@ -576,8 +563,7 @@ export const en = {
               "personal injury, or any special, incidental, indirect or consequential damages; (2) the cost of procurement of substitute " +
               "products or services; or (3) for loss of profits, interruption of use or loss or corruption of data or any other commercial " +
               "damages or losses.",
-            p1:
-              "HHS and CDC are not responsible for confidentiality or any information shared by the Entity or other User of the Application.",
+            p1: "HHS and CDC are not responsible for confidentiality or any information shared by the Entity or other User of the Application.",
           },
           disputes: {
             heading: "Disputes, choice of law, venue, and conflicts",
@@ -595,8 +581,7 @@ export const en = {
           },
           noWaiverOfRights: {
             heading: "No waiver of rights",
-            p0:
-              "CDC’s failure to exercise or enforce any right or provision of these Terms shall not constitute waiver of such right or provision.",
+            p0: "CDC’s failure to exercise or enforce any right or provision of these Terms shall not constitute waiver of such right or provision.",
           },
           dataAnalytics: {
             heading: "Data analytics and monitoring metrics",

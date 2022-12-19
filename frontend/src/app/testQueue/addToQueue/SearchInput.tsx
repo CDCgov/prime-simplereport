@@ -18,6 +18,7 @@ type Props = {
   placeholder?: string;
   focusOnMount?: boolean;
   showSubmitButton?: boolean;
+  labeledBy?: string;
 };
 
 const SearchInput = ({
@@ -30,6 +31,7 @@ const SearchInput = ({
   placeholder,
   focusOnMount,
   showSubmitButton = true,
+  labeledBy,
 }: Props) => {
   const classes = classnames(
     "usa-search",
@@ -66,21 +68,21 @@ const SearchInput = ({
             onChange={onInputChange}
             ref={inputRef}
             onFocus={onInputChange}
+            aria-labelledby={labeledBy}
           />
-          {showSubmitButton && (
-            <button
-              type="submit"
-              className="usa-button"
-              disabled={disabled}
-              onClick={onSearchClick}
-            >
-              <img
-                src={iconSearch}
-                className="usa-search__submit-icon"
-                alt="Search"
-              />
-            </button>
-          )}
+          <button
+            type="submit"
+            className="usa-button"
+            disabled={disabled}
+            onClick={onSearchClick}
+            style={!showSubmitButton ? { display: "none" } : undefined}
+          >
+            <img
+              src={iconSearch}
+              className="usa-search__submit-icon"
+              alt="Search"
+            />
+          </button>
         </div>
       </form>
     </div>

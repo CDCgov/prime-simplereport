@@ -10,23 +10,27 @@ import static gov.cdc.usds.simplereport.validators.CsvValidatorUtils.convertSexT
 
 import com.fasterxml.jackson.databind.MappingIterator;
 import gov.cdc.usds.simplereport.api.model.errors.CsvProcessingException;
+import gov.cdc.usds.simplereport.api.model.filerow.PatientUploadRow;
 import gov.cdc.usds.simplereport.api.uploads.PatientBulkUploadResponse;
 import gov.cdc.usds.simplereport.config.AuthorizationConfiguration;
 import gov.cdc.usds.simplereport.db.model.Facility;
 import gov.cdc.usds.simplereport.db.model.Organization;
+import gov.cdc.usds.simplereport.db.model.Person;
 import gov.cdc.usds.simplereport.db.model.PhoneNumber;
 import gov.cdc.usds.simplereport.db.model.auxiliary.StreetAddress;
 import gov.cdc.usds.simplereport.db.model.auxiliary.UploadStatus;
 import gov.cdc.usds.simplereport.service.model.reportstream.FeedbackMessage;
 import gov.cdc.usds.simplereport.validators.CsvValidatorUtils;
-import gov.cdc.usds.simplereport.validators.PatientBulkUploadFileValidator;
-import gov.cdc.usds.simplereport.validators.PatientBulkUploadFileValidator.PatientUploadRow;
+import gov.cdc.usds.simplereport.validators.FileValidator;
 import java.io.ByteArrayInputStream;
 import java.io.IOException;
 import java.io.InputStream;
+import java.util.ArrayList;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
+import java.util.Set;
 import java.util.UUID;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -48,7 +52,7 @@ public class PatientBulkUploadService {
   private final PersonService _personService;
   private final AddressValidationService _addressValidationService;
   private final OrganizationService _organizationService;
-  private final PatientBulkUploadFileValidator _patientBulkUploadFileValidator;
+  private final FileValidator<PatientUploadRow> _patientBulkUploadFileValidator;
 
   // This authorization will change once we open the feature to end users
   @AuthorizationConfiguration.RequireGlobalAdminUser
@@ -57,7 +61,14 @@ public class PatientBulkUploadService {
 
     PatientBulkUploadResponse result = new PatientBulkUploadResponse();
 
-    Organization org = _organizationService.getCurrentOrganization();
+    Organization currentOrganization = _organizationService.getCurrentOrganization();
+
+    // Patients do not need to be assigned to a facility, but if an id is given it must be valid
+    Optional<Facility> assignedFacility =
+        Optional.ofNullable(facilityId).map(_organizationService::getFacilityInCurrentOrg);
+
+    Set<Person> patientsList = new HashSet<>();
+    List<PhoneNumber> phoneNumbersList = new ArrayList<>();
 
     byte[] content;
 
@@ -85,9 +96,6 @@ public class PatientBulkUploadService {
     final MappingIterator<Map<String, String>> valueIterator =
         CsvValidatorUtils.getIteratorForCsv(new ByteArrayInputStream(content));
 
-    Optional<Facility> facility =
-        Optional.ofNullable(facilityId).map(_organizationService::getFacilityInCurrentOrg);
-
     while (valueIterator.hasNext()) {
       final Map<String, String> row = CsvValidatorUtils.getNextRow(valueIterator);
 
@@ -114,48 +122,66 @@ public class PatientBulkUploadService {
             extractedData.getFirstName().getValue(),
             extractedData.getLastName().getValue(),
             parseUserShortDate(extractedData.getDateOfBirth().getValue()),
-            org,
-            facility)) {
+            currentOrganization,
+            assignedFacility)) {
           continue;
         }
 
-        _personService.addPatient(
-            facilityId,
-            null, // lookupID
-            extractedData.getFirstName().getValue(),
-            extractedData.getMiddleName().getValue(),
-            extractedData.getLastName().getValue(),
-            extractedData.getSuffix().getValue(),
-            parseUserShortDate(extractedData.getDateOfBirth().getValue()),
-            address,
-            country,
-            List.of(
-                new PhoneNumber(
-                    parsePhoneType(extractedData.getPhoneNumberType().getValue()),
-                    extractedData.getPhoneNumber().getValue())),
-            parsePersonRole(extractedData.getRole().getValue(), false),
-            List.of(extractedData.getEmail().getValue()),
-            convertRaceToDatabaseValue(extractedData.getRace().getValue()),
-            convertEthnicityToDatabaseValue(extractedData.getEthnicity().getValue()),
-            null,
-            convertSexToDatabaseValue(extractedData.getBiologicalSex().getValue()),
-            parseYesNo(extractedData.getResidentCongregateSetting().getValue()),
-            parseYesNo(extractedData.getEmployedInHealthcare().getValue()),
-            null,
-            null);
+        // create new person with current organization, then add to new patients list
+        Person newPatient =
+            new Person(
+                currentOrganization,
+                assignedFacility.orElse(null),
+                null, // lookupid
+                extractedData.getFirstName().getValue(),
+                extractedData.getMiddleName().getValue(),
+                extractedData.getLastName().getValue(),
+                extractedData.getSuffix().getValue(),
+                parseUserShortDate(extractedData.getDateOfBirth().getValue()),
+                address,
+                country,
+                parsePersonRole(extractedData.getRole().getValue(), false),
+                List.of(extractedData.getEmail().getValue()),
+                convertRaceToDatabaseValue(extractedData.getRace().getValue()),
+                convertEthnicityToDatabaseValue(extractedData.getEthnicity().getValue()),
+                null, // tribalAffiliation
+                convertSexToDatabaseValue(extractedData.getBiologicalSex().getValue()),
+                parseYesNo(extractedData.getResidentCongregateSetting().getValue()),
+                parseYesNo(extractedData.getEmployedInHealthcare().getValue()),
+                null, // preferredLanguage
+                null // testResultDeliveryPreference
+                );
+
+        if (!patientsList.contains(newPatient)) {
+          // collect phone numbers and associate them with the patient
+          // then add to phone numbers list and set primary phone, if exists
+          List<PhoneNumber> newPhoneNumbers =
+              _personService.assignPhoneNumbersToPatient(
+                  newPatient,
+                  List.of(
+                      new PhoneNumber(
+                          parsePhoneType(extractedData.getPhoneNumberType().getValue()),
+                          extractedData.getPhoneNumber().getValue())));
+          phoneNumbersList.addAll(newPhoneNumbers);
+          newPhoneNumbers.stream().findFirst().ifPresent(newPatient::setPrimaryPhone);
+
+          patientsList.add(newPatient);
+        }
       } catch (IllegalArgumentException e) {
         String errorMessage = "Error uploading patient roster";
         log.error(
             errorMessage
                 + " for organization "
-                + org.getExternalId()
+                + currentOrganization.getExternalId()
                 + " and facility "
                 + facilityId);
         throw new IllegalArgumentException(errorMessage);
       }
     }
 
-    log.info("CSV patient upload completed for {}", org.getOrganizationName());
+    _personService.addPatientsAndPhoneNumbers(patientsList, phoneNumbersList);
+
+    log.info("CSV patient upload completed for {}", currentOrganization.getOrganizationName());
     result.setStatus(UploadStatus.SUCCESS);
     // eventually want to send an email here instead of return success
     return result;

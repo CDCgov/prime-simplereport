@@ -1,12 +1,12 @@
 plugins {
-    id 'org.springframework.boot' version '2.7.4'
+    id 'org.springframework.boot' version '2.7.6'
     id 'org.liquibase.gradle' version '2.0.4'
-    id 'io.spring.dependency-management' version '1.0.14.RELEASE'
+    id 'io.spring.dependency-management' version '1.0.15.RELEASE'
     id 'java'
     id 'checkstyle'
     id 'jacoco'
     id 'org.sonarqube' version '3.0'
-    id 'com.gorylenko.gradle-git-properties' version '2.4.0'
+    id 'com.gorylenko.gradle-git-properties' version '2.4.1'
     id "com.diffplug.spotless" version "5.14.0"
 }
 
@@ -68,6 +68,8 @@ dependencies {
     // Okta dependencies
     implementation 'com.okta.spring:okta-spring-boot-starter:2.1.6'
     implementation 'com.okta.sdk:okta-sdk-api:8.2.1'
+    implementation 'org.springframework.security:spring-security-web:5.7.5' //TODO: Remove when Okta's Spring Boot Starter version increases beyond 2.1.6.
+    implementation 'org.springframework.security:spring-security-oauth2-client:5.7.5' //TODO: Remove when Okta's Spring Boot Starter version increases beyond 2.1.6.
     runtimeOnly 'com.okta.sdk:okta-sdk-impl:8.2.1'
     runtimeOnly 'com.okta.sdk:okta-sdk-httpclient:8.2.1'
 
@@ -75,7 +77,7 @@ dependencies {
     runtimeOnly 'org.springframework.session:spring-session-jdbc'
 
     // App insights instrumentation
-    implementation 'com.microsoft.azure:applicationinsights-core:2.6.3'
+    implementation 'com.microsoft.azure:applicationinsights-core:3.4.4'
 
     // Twilio for SMS
     implementation group: "com.twilio.sdk", name: "twilio", version: "8.7.0"
@@ -119,10 +121,10 @@ dependencies {
     developmentOnly 'org.springframework.boot:spring-boot-devtools'
 
     // Lombok
-    compileOnly 'org.projectlombok:lombok:1.18.20'
-    annotationProcessor 'org.projectlombok:lombok:1.18.20'
-    testCompileOnly 'org.projectlombok:lombok:1.18.20'
-    testAnnotationProcessor 'org.projectlombok:lombok:1.18.20'
+    compileOnly 'org.projectlombok:lombok'
+    annotationProcessor 'org.projectlombok:lombok'
+    testCompileOnly 'org.projectlombok:lombok'
+    testAnnotationProcessor 'org.projectlombok:lombok'
 
     // WireMock (only used for testing)
     testImplementation "com.github.tomakehurst:wiremock-jre8:2.31.0"

@@ -14,6 +14,7 @@ import gov.cdc.usds.simplereport.db.model.DeviceType;
 import gov.cdc.usds.simplereport.db.model.Facility;
 import gov.cdc.usds.simplereport.db.model.Organization;
 import gov.cdc.usds.simplereport.db.model.Person;
+import gov.cdc.usds.simplereport.db.model.SpecimenType;
 import gov.cdc.usds.simplereport.db.model.auxiliary.AskOnEntrySurvey;
 import gov.cdc.usds.simplereport.db.model.auxiliary.MultiplexResultInput;
 import gov.cdc.usds.simplereport.db.model.auxiliary.TestResult;
@@ -76,7 +77,6 @@ class TestResultTest extends BaseGraphqlTest {
     ArrayNode testResults = fetchTestResults(variables);
 
     assertEquals(3, testResults.size());
-
     assertEquals(
         "SARS-CoV+SARS-CoV-2 (COVID-19) Ag [Presence] in Respiratory specimen by Rapid immunoassay",
         testResults.get(0).get("testPerformed").get("name").asText());
@@ -91,9 +91,38 @@ class TestResultTest extends BaseGraphqlTest {
   }
 
   @Test
+  void fetchOrganizationTestResults_adminUser() {
+    useOrgAdmin();
+
+    Person p = _dataFactory.createFullPerson(_org);
+    _dataFactory.createTestEvent(p, _site);
+    _dataFactory.createTestEvent(p, _site);
+    _dataFactory.createTestEvent(p, _site);
+
+    HashMap<String, Object> variables = getFacilityScopedArguments();
+    variables.put("facilityId", null);
+    ArrayNode testResults = fetchTestResults(variables);
+
+    testResults = fetchTestResults(variables);
+    assertEquals(3, testResults.size());
+
+    assertEquals(
+        "SARS-CoV+SARS-CoV-2 (COVID-19) Ag [Presence] in Respiratory specimen by Rapid immunoassay",
+        testResults.get(0).get("testPerformed").get("name").asText());
+  }
+
+  @Test
+  void fetchOrganizationTestResults__orgUser_failure() {
+    HashMap<String, Object> variables = getFacilityScopedArguments();
+    variables.put("facilityId", null);
+    fetchTestResultsWithError(variables, ACCESS_ERROR);
+  }
+
+  @Test
   void submitTestResult() {
     Person p = _dataFactory.createFullPerson(_org);
     DeviceType d = _site.getDefaultDeviceType();
+    SpecimenType s = _site.getDefaultSpecimenType();
     _dataFactory.createTestOrder(p, _site);
     String dateTested = "2020-12-31T14:30:30.001Z";
 
@@ -101,13 +130,15 @@ class TestResultTest extends BaseGraphqlTest {
         Map.of(
             "deviceId",
             d.getInternalId().toString(),
+            "specimenId",
+            s.getInternalId().toString(),
             "patientId",
             p.getInternalId().toString(),
             "results",
             negativeCovidResult,
             "dateTested",
             dateTested);
-    submitMultiplexResult(variables, Optional.empty());
+    submitQueueItem(variables, Optional.empty());
 
     ArrayNode testResults = fetchTestResults(getFacilityScopedArguments());
 
@@ -119,6 +150,7 @@ class TestResultTest extends BaseGraphqlTest {
   void submitAndFetchMultiplexResult() {
     Person p = _dataFactory.createFullPerson(_org);
     DeviceType d = _site.getDefaultDeviceType();
+    SpecimenType s = _site.getDefaultSpecimenType();
     Map<String, Boolean> symptoms = Map.of("25064002", true);
     LocalDate symptomOnsetDate = LocalDate.of(2020, 9, 15);
     _dataFactory.createTestOrder(
@@ -135,13 +167,15 @@ class TestResultTest extends BaseGraphqlTest {
         Map.of(
             "deviceId",
             d.getInternalId().toString(),
+            "specimenId",
+            s.getInternalId().toString(),
             "patientId",
             p.getInternalId().toString(),
             "results",
             results,
             "dateTested",
             dateTested);
-    submitMultiplexResult(variables, Optional.empty());
+    submitQueueItem(variables, Optional.empty());
 
     ArrayNode testResults = fetchTestResultsMultiplex(getFacilityScopedArguments());
 
@@ -178,6 +212,7 @@ class TestResultTest extends BaseGraphqlTest {
     Person p1 = _dataFactory.createFullPerson(_org);
     Person p2 = _dataFactory.createMinimalPerson(_org, _site);
     DeviceType d = _site.getDefaultDeviceType();
+    SpecimenType s = _site.getDefaultSpecimenType();
     _dataFactory.createTestOrder(p1, _site);
     _dataFactory.createTestOrder(p2, _site);
     String dateTested = "2020-12-31T14:30:30.001Z";
@@ -189,6 +224,8 @@ class TestResultTest extends BaseGraphqlTest {
         Map.of(
             "deviceId",
             d.getInternalId().toString(),
+            "specimenId",
+            s.getInternalId().toString(),
             "patientId",
             p1.getInternalId().toString(),
             "results",
@@ -199,6 +236,8 @@ class TestResultTest extends BaseGraphqlTest {
         Map.of(
             "deviceId",
             d.getInternalId().toString(),
+            "specimenId",
+            s.getInternalId().toString(),
             "patientId",
             p2.getInternalId().toString(),
             "results",
@@ -206,12 +245,12 @@ class TestResultTest extends BaseGraphqlTest {
             "dateTested",
             dateTested);
 
-    submitMultiplexResult(submitP1Variables, Optional.of(ACCESS_ERROR));
-    submitMultiplexResult(submitP2Variables, Optional.of(ACCESS_ERROR));
+    submitQueueItem(submitP1Variables, Optional.of(ACCESS_ERROR));
+    submitQueueItem(submitP2Variables, Optional.of(ACCESS_ERROR));
 
     updateSelfPrivileges(Role.USER, false, Set.of(_site.getInternalId()));
-    submitMultiplexResult(submitP1Variables, Optional.empty());
-    submitMultiplexResult(submitP2Variables, Optional.empty());
+    submitQueueItem(submitP1Variables, Optional.empty());
+    submitQueueItem(submitP2Variables, Optional.empty());
 
     updateSelfPrivileges(Role.USER, false, Set.of());
     Map<String, Object> fetchVariables = getFacilityScopedArguments();
@@ -261,7 +300,10 @@ class TestResultTest extends BaseGraphqlTest {
         _dataFactory.createMinimalPerson(_org, _secondSite, "Lindsay", "L", "Wasserman", "");
 
     DeviceType d = _site.getDefaultDeviceType();
+    SpecimenType s = _site.getDefaultSpecimenType();
+
     DeviceType secondSiteDevice = _secondSite.getDefaultDeviceType();
+    SpecimenType secondSiteSpecimen = _secondSite.getDefaultSpecimenType();
 
     _dataFactory.createTestOrder(p1, _site);
     _dataFactory.createTestOrder(p2, _site);
@@ -273,6 +315,8 @@ class TestResultTest extends BaseGraphqlTest {
         Map.of(
             "deviceId",
             d.getInternalId().toString(),
+            "specimenId",
+            s.getInternalId().toString(),
             "patientId",
             p1.getInternalId().toString(),
             "results",
@@ -283,6 +327,8 @@ class TestResultTest extends BaseGraphqlTest {
         Map.of(
             "deviceId",
             d.getInternalId().toString(),
+            "specimenId",
+            s.getInternalId().toString(),
             "patientId",
             p2.getInternalId().toString(),
             "results",
@@ -293,6 +339,8 @@ class TestResultTest extends BaseGraphqlTest {
         Map.of(
             "deviceId",
             secondSiteDevice.getInternalId().toString(),
+            "specimenId",
+            secondSiteSpecimen.getInternalId().toString(),
             "patientId",
             p3.getInternalId().toString(),
             "results",
@@ -303,16 +351,18 @@ class TestResultTest extends BaseGraphqlTest {
         Map.of(
             "deviceId",
             secondSiteDevice.getInternalId().toString(),
+            "specimenId",
+            secondSiteSpecimen.getInternalId().toString(),
             "patientId",
             p4.getInternalId().toString(),
             "results",
             negativeCovidResult,
             "dateTested",
             dateTested);
-    submitMultiplexResult(submitP1Variables, Optional.empty());
-    submitMultiplexResult(submitP2Variables, Optional.empty());
-    submitMultiplexResult(submitP3Variables, Optional.empty());
-    submitMultiplexResult(submitP4Variables, Optional.empty());
+    submitQueueItem(submitP1Variables, Optional.empty());
+    submitQueueItem(submitP2Variables, Optional.empty());
+    submitQueueItem(submitP3Variables, Optional.empty());
+    submitQueueItem(submitP4Variables, Optional.empty());
 
     String startDate = "2020-01-01";
     String endDate = new SimpleDateFormat("yyyy-MM-dd").format(Date.from(Instant.now()));
@@ -327,7 +377,6 @@ class TestResultTest extends BaseGraphqlTest {
             "organization-level-metrics", "GetOrganizationLevelDashboardMetrics", variables, null);
 
     JsonNode metrics = result.get("organizationLevelDashboardMetrics");
-    System.out.println(metrics);
     assertEquals(1L, metrics.get("organizationPositiveTestCount").asLong());
     assertEquals(3L, metrics.get("organizationNegativeTestCount").asLong());
     assertEquals(4L, metrics.get("organizationTotalTestCount").asLong());
@@ -357,6 +406,7 @@ class TestResultTest extends BaseGraphqlTest {
     Person p1 = _dataFactory.createFullPerson(_org);
     Person p2 = _dataFactory.createMinimalPerson(_org, _site);
     DeviceType d = _site.getDefaultDeviceType();
+    SpecimenType s = _site.getDefaultSpecimenType();
     _dataFactory.createTestOrder(p1, _site);
     _dataFactory.createTestOrder(p2, _site);
     String dateTested = "2020-12-31T14:30:30.001Z";
@@ -365,6 +415,8 @@ class TestResultTest extends BaseGraphqlTest {
         Map.of(
             "deviceId",
             d.getInternalId().toString(),
+            "specimenId",
+            s.getInternalId().toString(),
             "patientId",
             p1.getInternalId().toString(),
             "results",
@@ -375,14 +427,16 @@ class TestResultTest extends BaseGraphqlTest {
         Map.of(
             "deviceId",
             d.getInternalId().toString(),
+            "specimenId",
+            s.getInternalId().toString(),
             "patientId",
             p2.getInternalId().toString(),
             "results",
             negativeCovidResult,
             "dateTested",
             dateTested);
-    submitMultiplexResult(submitP1Variables, Optional.empty());
-    submitMultiplexResult(submitP2Variables, Optional.empty());
+    submitQueueItem(submitP1Variables, Optional.empty());
+    submitQueueItem(submitP2Variables, Optional.empty());
 
     String startDate = "2020-01-01";
     String endDate = new SimpleDateFormat("yyyy-MM-dd").format(Date.from(Instant.now()));
@@ -425,9 +479,9 @@ class TestResultTest extends BaseGraphqlTest {
     return new HashMap<>(Map.of("facilityId", _site.getInternalId().toString()));
   }
 
-  private ObjectNode submitMultiplexResult(
+  private ObjectNode submitQueueItem(
       Map<String, Object> variables, Optional<String> expectedError) {
-    return runQuery("add-multiplex-result-mutation", variables, expectedError.orElse(null));
+    return runQuery("submit-queue-item", variables, expectedError.orElse(null));
   }
 
   private ArrayNode fetchTestResults(Map<String, Object> variables) {
@@ -443,7 +497,7 @@ class TestResultTest extends BaseGraphqlTest {
   }
 
   private void fetchTestResultsWithError(Map<String, Object> variables, String expectedError) {
-    runQuery("test-results-query", variables, expectedError);
+    runQuery("test-results-with-count-query", variables, expectedError);
   }
 
   private void fetchTestResult(Map<String, Object> variables, Optional<String> expectedError) {

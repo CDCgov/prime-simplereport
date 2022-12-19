@@ -59,7 +59,7 @@ resource "azurerm_function_app" "functions" {
   storage_account_name       = data.azurerm_storage_account.app.name
   storage_account_access_key = data.azurerm_storage_account.app.primary_access_key
   https_only                 = true
-  version                    = "~3"
+  version                    = "~4"
   os_type                    = "linux"
   site_config {
     linux_fx_version          = "node|14"
@@ -91,6 +91,7 @@ resource "azurerm_function_app" "functions" {
     AZ_STORAGE_ACCOUNT_KEY         = data.azurerm_storage_account.app.primary_access_key
     AZ_STORAGE_QUEUE_CXN_STRING    = data.azurerm_storage_account.app.primary_connection_string
     TEST_EVENT_QUEUE_NAME          = var.test_event_queue_name
+    PUBLISHING_ERROR_QUEUE_NAME    = var.publishing_error_queue_name
     REPORTING_EXCEPTION_QUEUE_NAME = var.reporting_exception_queue_name
     REPORT_STREAM_URL              = local.report_stream_url
     REPORT_STREAM_TOKEN            = "@Microsoft.KeyVault(SecretUri=${data.azurerm_key_vault_secret.datahub_api_key.id})"

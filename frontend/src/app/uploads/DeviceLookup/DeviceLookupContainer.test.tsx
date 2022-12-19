@@ -1,9 +1,11 @@
 import { render, screen } from "@testing-library/react";
+import { MemoryRouter } from "react-router-dom";
 
 import SRToastContainer from "../../commonComponents/SRToastContainer";
 
 import DeviceLookupContainer from "./DeviceLookupContainer";
 
+window.scrollTo = jest.fn();
 jest.mock("../../../generated/graphql", () => {
   return {
     useGetDeviceTypesForLookupQuery: () => {
@@ -34,14 +36,17 @@ jest.mock("../../../generated/graphql", () => {
 describe("DeviceLookupContainer", () => {
   beforeEach(() => {
     render(
-      <>
+      <MemoryRouter>
         <DeviceLookupContainer />
         <SRToastContainer />
-      </>
+      </MemoryRouter>
     );
+  });
+  afterAll(() => {
+    jest.clearAllMocks();
   });
 
   it("should render device lookup container", async () => {
-    expect(screen.getByText("Device lookup")).toBeInTheDocument();
+    expect(screen.getByText("Device code lookup")).toBeInTheDocument();
   });
 });

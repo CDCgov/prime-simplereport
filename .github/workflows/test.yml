@@ -25,7 +25,7 @@ jobs:
     runs-on: ubuntu-latest
     services:
       test-db:
-        image: postgres:13-alpine
+        image: postgres:13-alpine3.16
         env:
           POSTGRES_PASSWORD: this_is_a_super_secure_admin_password
         # Set health checks to wait until postgres has started
@@ -107,12 +107,12 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v3
-      - name: "Function Apps: npm install"
+      - name: "Function Apps: yarn install"
         working-directory: ./ops/services/app_functions/report_stream_batched_publisher/functions
-        run: npm ci
+        run: yarn
       - name: "Function Apps: Test"
         working-directory: ./ops/services/app_functions/report_stream_batched_publisher/functions
-        run: npm run coverage
+        run: yarn coverage
       - name: Cache function coverage results
         uses: actions/cache@v3.0.11
         with:

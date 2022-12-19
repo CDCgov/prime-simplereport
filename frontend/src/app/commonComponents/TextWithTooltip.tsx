@@ -25,18 +25,19 @@ export const TextWithTooltip = ({
   buttonLabel,
   className,
 }: Props) => {
-  const CustomButton: React.ForwardRefExoticComponent<CustomButtonProps> = React.forwardRef(
-    ({ className, children, ...tooltipProps }: CustomButtonProps, ref) => (
-      <button
-        className={`usa-button usa-button--unstyled ${className}`}
-        ref={ref}
-        aria-label={`${buttonLabel} tooltip`}
-        {...tooltipProps}
-      >
-        {children}
-      </button>
-    )
-  );
+  const CustomButton: React.ForwardRefExoticComponent<CustomButtonProps> =
+    React.forwardRef(
+      ({ className, children, ...tooltipProps }: CustomButtonProps, ref) => (
+        <button
+          className={`usa-button usa-button--unstyled ${className}`}
+          ref={ref}
+          aria-label={`${buttonLabel} tooltip`}
+          {...tooltipProps}
+        >
+          {children}
+        </button>
+      )
+    );
 
   CustomButton.displayName = "custom button";
 

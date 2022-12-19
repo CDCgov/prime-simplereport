@@ -28,11 +28,12 @@ const store = mockStore({
   ],
 });
 
-const Template = (): Story<FacilitySelectProps> => (args) => (
-  <Provider store={store}>
-    <FacilitySelect {...args} />
-  </Provider>
-);
+const Template = (): Story<FacilitySelectProps> => (args) =>
+  (
+    <Provider store={store}>
+      <FacilitySelect {...args} />
+    </Provider>
+  );
 
 const createTestFacility = (name: string, id: string): Facility => ({
   id,

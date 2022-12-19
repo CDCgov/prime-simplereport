@@ -267,7 +267,7 @@ describe("Uploads", () => {
           screen.getByText("Error: File not accepted")
         ).toBeInTheDocument();
       });
-      expect(screen.getByText("Requested Edit")).toBeInTheDocument();
+      expect(screen.getByText("Error description")).toBeInTheDocument();
       expect(screen.getByText("missing required column")).toBeInTheDocument();
       expect(mockTrackEvent).toHaveBeenCalledWith({
         name: "Spreadsheet upload validation failure",

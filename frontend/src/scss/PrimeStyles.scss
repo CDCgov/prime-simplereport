@@ -2,6 +2,10 @@
   background-color: color("base-lightest");
   padding-top: units(2);
   padding-bottom: units(2);
+
+  .grid-container {
+    max-width: 1200px;
+  }
 }
 
 .prime-container {
@@ -850,6 +854,11 @@ $results-dropdown-spacing: #{units(4)} - #{units(2)} - 22px - #{units(4)}; // he
 .usa-combo-box__input,
 .usa-radio {
   max-width: none;
+}
+
+.usa-select-narrow {
+  @extend .usa-select;
+  max-width: 197px;
 }
 
 .usa-combo-box__full-width {

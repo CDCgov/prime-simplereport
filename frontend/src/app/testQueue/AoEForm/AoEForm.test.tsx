@@ -97,8 +97,7 @@ describe("AoEForm", () => {
           />
         );
         const smsDeliveryRadio = screen.getByRole("radio", {
-          name:
-            "Yes, text all mobile numbers on file. (There are no mobile phone numbers listed in your patient profile.)",
+          name: "Yes, text all mobile numbers on file. (There are no mobile phone numbers listed in your patient profile.)",
         });
 
         expect(smsDeliveryRadio).toBeInTheDocument();
@@ -186,8 +185,7 @@ describe("AoEForm", () => {
           />
         );
         const emailDeliveryRadio = screen.getByRole("radio", {
-          name:
-            "Yes (There are no email addresses listed in your patient profile.)",
+          name: "Yes (There are no email addresses listed in your patient profile.)",
         });
 
         expect(emailDeliveryRadio).toBeInTheDocument();
@@ -225,8 +223,7 @@ describe("AoEForm", () => {
         );
 
         const emailDeliveryRadio = screen.getByRole("radio", {
-          name:
-            "Yes Results will be sent to these email addresses: jon@bon.jovi",
+          name: "Yes Results will be sent to these email addresses: jon@bon.jovi",
         });
 
         expect(emailDeliveryRadio).toBeInTheDocument();

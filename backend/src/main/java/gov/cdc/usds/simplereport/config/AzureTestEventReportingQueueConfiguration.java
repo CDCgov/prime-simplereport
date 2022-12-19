@@ -5,6 +5,7 @@ import com.azure.storage.queue.QueueClientBuilder;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import gov.cdc.usds.simplereport.api.model.TestEventExport;
+import gov.cdc.usds.simplereport.api.model.errors.TestEventSerializationFailureException;
 import gov.cdc.usds.simplereport.db.model.TestEvent;
 import gov.cdc.usds.simplereport.properties.AzureStorageQueueReportingProperties;
 import gov.cdc.usds.simplereport.service.AzureStorageQueueTestEventReportingService;
@@ -70,7 +71,7 @@ class AzureTestEventReportingQueueConfiguration {
         ObjectMapper mapper = new ObjectMapper();
         return mapper.writeValueAsString(new TestEventExport(testEvent));
       } catch (JsonProcessingException e) {
-        throw new IllegalArgumentException("Failed to serialize test event", e);
+        throw new TestEventSerializationFailureException(testEvent.getInternalId(), e.getMessage());
       }
     }
   }

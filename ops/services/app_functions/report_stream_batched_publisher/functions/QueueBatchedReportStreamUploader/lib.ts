@@ -6,7 +6,7 @@ import {
   QueueServiceClient,
   StorageSharedKeyCredential,
 } from "@azure/storage-queue";
-import csvStringify from "csv-stringify/lib/sync"
+import csvStringify from "csv-stringify/lib/sync";
 import { ENV, uploaderVersion } from "../config";
 import fetch, { Headers } from "node-fetch";
 import {
@@ -25,6 +25,7 @@ const {
   AZ_STORAGE_QUEUE_SVC_URL,
 } = ENV;
 const DEQUEUE_BATCH_SIZE = 32;
+const DEQUEUE_TIMEOUT = 60 * 60;  // length of time in seconds a message is invisible after being dequeued
 
 const getQueueServiceClient = (() => {
   let queueServiceClient: QueueServiceClient;
@@ -82,6 +83,7 @@ export async function dequeueMessages(
     try {
       const dequeueResponse = await queueClient.receiveMessages({
         numberOfMessages: DEQUEUE_BATCH_SIZE,
+        visibilityTimeout: DEQUEUE_TIMEOUT,
       });
       if (dequeueResponse?.receivedMessageItems.length) {
         messages.push(...dequeueResponse.receivedMessageItems);
@@ -93,7 +95,7 @@ export async function dequeueMessages(
         context.log("Done receiving messages");
         break;
       }
-    } catch (e: any) {
+    } catch (e) {
       context.log("Failed to dequeue messages", e);
     }
   }
@@ -107,7 +109,7 @@ export function convertToCsv(messages: DequeuedMessageItem[]) {
     .map((m) => {
       try {
         return JSON.parse(m.messageText);
-      } catch (e: any) {
+      } catch (e) {
         parseFailure[m.messageId] = true;
         parseFailureCount++;
         return undefined;
@@ -142,9 +144,8 @@ export async function deleteSuccessfullyParsedMessages(
   messages: DequeuedMessageItem[],
   parseFailure: { [k: string]: boolean }
 ) {
-
-  const validMessages: DequeuedMessageItem[] = []
-  const deletionPromises: Promise<QueueDeleteMessageResponse>[] = []
+  const validMessages: DequeuedMessageItem[] = [];
+  const deletionPromises: Promise<QueueDeleteMessageResponse>[] = [];
 
   for (const message of messages) {
     if (parseFailure[message.messageId]) {
@@ -152,20 +153,19 @@ export async function deleteSuccessfullyParsedMessages(
         `Message ${message.messageId} failed to parse; skipping deletion`
       );
     } else {
-      validMessages.push(message)
+      validMessages.push(message);
     }
   }
 
   for (const message of validMessages) {
-    if(message.dequeueCount > 1){
+    if (message.dequeueCount > 1) {
       context.log(
         `Message has been dequeued ${message.dequeueCount} times, possibly sent more than once to RS`
       );
     }
-    deletionPromises.push(queueClient.deleteMessage(
-      message.messageId,
-      message.popReceipt
-    ));
+    deletionPromises.push(
+      queueClient.deleteMessage(message.messageId, message.popReceipt)
+    );
   }
 
   try {
@@ -175,18 +175,18 @@ export async function deleteSuccessfullyParsedMessages(
       const message = validMessages[i];
       if (promise.status == "fulfilled") {
         const deleteResponse = promise.value;
-        const testEventId = JSON.parse(message.messageText)['Result_ID'];
+        const testEventId = JSON.parse(message.messageText)["Result_ID"];
         context.log(
           `Message ${message.messageId} deleted with request id ${deleteResponse.requestId} and has TestEvent id ${testEventId}`
         );
       } else {
-        context.log(`Failed to delete message ${message.messageId} from the queue:`)
+        context.log(
+          `Failed to delete message ${message.messageId} from the queue:`
+        );
       }
     }
-  } catch (e){
-    context.log(
-      `The following error has occurred: ${e}`
-    );
+  } catch (e) {
+    context.log(`The following error has occurred: ${e}`);
   }
   context.log("Deletion complete");
 }
@@ -198,8 +198,9 @@ export async function reportExceptions(
 ) {
   context.log(`ReportStream response errors: ${response.errorCount}`);
   context.log(`ReportStream response warnings: ${response.warningCount}`);
-  const payloads: SimpleReportReportStreamResponse[] = response.warnings.flatMap(w => responsesFrom(context, w, false))
-      .concat(response.errors.flatMap(e => responsesFrom(context, e, true)));
+  const payloads: SimpleReportReportStreamResponse[] = response.warnings
+    .flatMap((w) => responsesFrom(context, w, false))
+    .concat(response.errors.flatMap((e) => responsesFrom(context, e, true)));
   return Promise.all(
     payloads.map((p) =>
       queueClient.sendMessage(Buffer.from(JSON.stringify(p)).toString("base64"))
@@ -207,15 +208,27 @@ export async function reportExceptions(
   );
 }
 
-const responsesFrom = function(context: Context, err: ReportStreamError, isError: boolean):SimpleReportReportStreamResponse[] {
+export async function publishToQueue(queueClient: QueueClient, messages: DequeuedMessageItem[]) {
+  return Promise.all(messages.map((m) => queueClient.sendMessage(Buffer.from(m.messageText).toString("utf-8"))));
+}
+
+const responsesFrom = function (
+  context: Context,
+  err: ReportStreamError,
+  isError: boolean
+): SimpleReportReportStreamResponse[] {
   if (err.trackingIds) {
-    return err.trackingIds.map(id => ({
+    return err.trackingIds.map((id) => ({
       testEventInternalId: id,
       isError,
-      details: err.message
+      details: err.message,
     }));
   } else {
-    context.log(`ReportStream response ${err.scope} ${isError ? "error" : "warning"}: ${err.message}`);
+    context.log(
+      `ReportStream response ${err.scope} ${isError ? "error" : "warning"}: ${
+        err.message
+      }`
+    );
     return [];
   }
 };

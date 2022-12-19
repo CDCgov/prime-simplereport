@@ -56,7 +56,6 @@ class ReminderServiceTest extends BaseServiceTest<ReminderService> {
   @Test
   void sendAccountReminderEmails_concurrencyLock_success()
       throws InterruptedException, ExecutionException, SQLException {
-    String email = "fake@example.org";
     OrganizationQueueItem unverifiedQueuedOrg = _dataFactory.createOrganizationQueueItem();
     initAndBackdateUnverifiedQueuedOrg(unverifiedQueuedOrg);
 
@@ -120,5 +119,6 @@ class ReminderServiceTest extends BaseServiceTest<ReminderService> {
     PreparedStatement statement = conn.prepareStatement(query);
     statement.setObject(1, queuedOrg.getInternalId());
     statement.execute();
+    conn.close();
   }
 }

@@ -1,6 +1,7 @@
 type Nullable<T> = { [P in keyof T]: T[P] | null };
 
-type ISODate = `${number}${number}${number}${number}-${number}${number}-${number}${number}`;
+type ISODate =
+  `${number}${number}${number}${number}-${number}${number}-${number}${number}`;
 
 type RequiredExceptFor<T, TOptional extends keyof T> = Pick<
   T,
@@ -15,19 +16,9 @@ interface DeviceType {
   testLength?: number | undefined;
 }
 
-interface DeviceTypes {
-  deviceType: [DeviceType];
-}
-
 interface SpecimenType {
   internalId: string;
   name: string;
-}
-
-interface DeviceSpecimenType {
-  internalId: ID;
-  deviceType: DeviceType;
-  specimenType: SpecimenType;
 }
 
 interface Address {
