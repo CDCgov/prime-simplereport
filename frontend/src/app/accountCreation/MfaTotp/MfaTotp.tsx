@@ -20,7 +20,6 @@ export const MfaTotp = ({ enrollFunction, totpType }: Props) => {
    */
   const initialize = useRef(true);
   const [qrCode, setQrCode] = useState("");
-  //const [submitted, setSubmitted] = useState(false);
 
   useEffect(() => {
     const getQrCode = async () => {
@@ -40,10 +39,6 @@ export const MfaTotp = ({ enrollFunction, totpType }: Props) => {
   const handleNavigate = () => {
     navigate("verify");
   };
-
-  /* if (submitted) {
-   return <Navigate to="verify" />;
- }*/
 
   if (!qrCode) {
     return <LoadingCard message="Retrieving QR code" />;

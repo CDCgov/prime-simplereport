@@ -1,4 +1,5 @@
 import { Story, Meta } from "@storybook/react";
+import { MemoryRouter } from "react-router-dom";
 
 import { getMocks } from "../../../stories/storyMocks";
 
@@ -13,7 +14,11 @@ export default {
   argTypes: {},
 } as Meta;
 
-const Template: Story = (args) => <MfaOkta {...args} />;
+const Template: Story = (args) => (
+  <MemoryRouter initialEntries={["/"]}>
+    <MfaOkta {...args} />
+  </MemoryRouter>
+);
 
 export const Default = Template.bind({});
 Default.args = {};

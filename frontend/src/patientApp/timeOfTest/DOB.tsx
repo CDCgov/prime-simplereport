@@ -24,20 +24,24 @@ const DOB = () => {
   useDocumentTitle(t("testResult.dob.title"));
 
   const plid = useSelector((state: any) => state.plid);
+  const requestResultsWithLink = useRef(true);
 
   useEffect(() => {
-    PxpApi.getTestResultUnauthenticated(plid)
-      .then((response) => {
-        setPatientObfuscatedName(
-          `${response.patient.firstName} ${response.patient.lastName}`
-        );
-        setFacility(response.facility);
-        setExpiresAt(response.expiresAt);
-        setIsLoading(false);
-      })
-      .catch(() => {
-        setLinkExpiredError(true);
-      });
+    if (requestResultsWithLink.current) {
+      requestResultsWithLink.current = false;
+      PxpApi.getTestResultUnauthenticated(plid)
+        .then((response) => {
+          setPatientObfuscatedName(
+            `${response.patient.firstName} ${response.patient.lastName}`
+          );
+          setFacility(response.facility);
+          setExpiresAt(response.expiresAt);
+          setIsLoading(false);
+        })
+        .catch(() => {
+          setLinkExpiredError(true);
+        });
+    }
   }, [plid]);
 
   const dispatch = useDispatch();
