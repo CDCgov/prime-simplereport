@@ -2,13 +2,13 @@ package gov.cdc.usds.simplereport.db.model;
 
 import static gov.cdc.usds.simplereport.api.converter.FhirConverter.convertToAddress;
 import static gov.cdc.usds.simplereport.api.converter.FhirConverter.convertToAdministrativeGender;
-import static gov.cdc.usds.simplereport.api.converter.FhirConverter.convertToContactPoint;
 import static gov.cdc.usds.simplereport.api.converter.FhirConverter.convertToDate;
 import static gov.cdc.usds.simplereport.api.converter.FhirConverter.convertToEthnicityExtension;
 import static gov.cdc.usds.simplereport.api.converter.FhirConverter.convertToHumanName;
 import static gov.cdc.usds.simplereport.api.converter.FhirConverter.convertToIdentifier;
 import static gov.cdc.usds.simplereport.api.converter.FhirConverter.convertToRaceExtension;
 import static gov.cdc.usds.simplereport.api.converter.FhirConverter.convertToTribalAffiliationExtension;
+import static gov.cdc.usds.simplereport.api.converter.FhirConverter.emailToContactPoint;
 import static gov.cdc.usds.simplereport.api.converter.FhirConverter.phoneNumberToContactPoint;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
@@ -36,7 +36,6 @@ import javax.persistence.ManyToOne;
 import javax.persistence.OneToMany;
 import javax.persistence.OneToOne;
 import org.hibernate.annotations.Type;
-import org.hl7.fhir.r4.model.ContactPoint.ContactPointSystem;
 import org.hl7.fhir.r4.model.Patient;
 
 /**
@@ -474,7 +473,8 @@ public class Person extends OrganizationScopedEternalEntity implements PersonEnt
     var patient = new Patient();
     patient.addIdentifier(convertToIdentifier(getInternalId()));
     patient.addName(convertToHumanName(nameInfo));
-    addFhirTelecom(patient);
+    phoneNumberToContactPoint(phoneNumbers).forEach(patient::addTelecom);
+    emailToContactPoint(emails).forEach(patient::addTelecom);
     patient.setGender(convertToAdministrativeGender(gender));
     patient.setBirthDate(convertToDate(birthDate));
     patient.addAddress(convertToAddress(address));
@@ -482,16 +482,5 @@ public class Person extends OrganizationScopedEternalEntity implements PersonEnt
     patient.addExtension(convertToEthnicityExtension(ethnicity));
     patient.addExtension(convertToTribalAffiliationExtension(tribalAffiliation));
     return patient;
-  }
-
-  @JsonIgnore
-  private void addFhirTelecom(Patient patient) {
-    if (phoneNumbers != null) {
-      phoneNumbers.forEach(number -> patient.addTelecom(phoneNumberToContactPoint(number)));
-    }
-    if (emails != null) {
-      emails.forEach(
-          e -> patient.addTelecom(convertToContactPoint(null, ContactPointSystem.EMAIL, e)));
-    }
   }
 }

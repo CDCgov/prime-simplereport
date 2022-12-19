@@ -9,6 +9,7 @@ import static gov.cdc.usds.simplereport.api.converter.FhirConverter.convertToHum
 import static gov.cdc.usds.simplereport.api.converter.FhirConverter.convertToIdentifier;
 import static gov.cdc.usds.simplereport.api.converter.FhirConverter.convertToRaceExtension;
 import static gov.cdc.usds.simplereport.api.converter.FhirConverter.convertToTribalAffiliationExtension;
+import static gov.cdc.usds.simplereport.api.converter.FhirConverter.emailToContactPoint;
 import static gov.cdc.usds.simplereport.api.converter.FhirConverter.phoneNumberToContactPoint;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.from;
@@ -92,6 +93,18 @@ public class FhirConverterTest {
   }
 
   @Test
+  void phoneNumberList_phoneNumberToContactPoint() {
+    var phoneNumber = new PhoneNumber(PhoneType.LANDLINE, "2485551234");
+    var phoneNumber2 = new PhoneNumber(PhoneType.LANDLINE, "2485551233");
+
+    var actual = phoneNumberToContactPoint(List.of(phoneNumber, phoneNumber2));
+    assertThat(actual).hasSize(2);
+
+    assertThat(actual.stream().map(ContactPoint::getValue))
+        .containsOnly("(248) 555 1234", "(248) 555 1233");
+  }
+
+  @Test
   void phoneNumberModel_phoneNumberToContactPoint() {
     var phoneNumber = new PhoneNumber(PhoneType.LANDLINE, "2485551234");
 
@@ -125,7 +138,22 @@ public class FhirConverterTest {
 
   @Test
   void null_phoneNumberToContactPoint() {
-    assertThat(phoneNumberToContactPoint(null)).isNull();
+    assertThat(phoneNumberToContactPoint((PhoneNumber) null)).isNull();
+    assertThat(phoneNumberToContactPoint((List<PhoneNumber>) null)).isEmpty();
+  }
+
+  @Test
+  void null_emailToContactPoint() {
+    assertThat(emailToContactPoint((String) null)).isNull();
+    assertThat(emailToContactPoint((List<String>) null)).isEmpty();
+  }
+
+  @Test
+  void string_emailToContactPoint() {
+    var actual = emailToContactPoint("example@example.com");
+    assertThat(actual.getUse()).isNull();
+    assertThat(actual.getSystem()).isEqualTo(ContactPointSystem.EMAIL);
+    assertThat(actual.getValue()).isEqualTo("example@example.com");
   }
 
   @Test

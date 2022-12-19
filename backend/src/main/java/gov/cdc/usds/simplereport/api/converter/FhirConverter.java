@@ -20,9 +20,11 @@ import gov.cdc.usds.simplereport.db.model.auxiliary.PhoneType;
 import gov.cdc.usds.simplereport.db.model.auxiliary.StreetAddress;
 import java.time.LocalDate;
 import java.time.ZoneId;
+import java.util.Collections;
 import java.util.Date;
 import java.util.List;
 import java.util.UUID;
+import java.util.stream.Collectors;
 import org.apache.commons.lang3.StringUtils;
 import org.hl7.fhir.r4.model.Address;
 import org.hl7.fhir.r4.model.CodeableConcept;
@@ -81,6 +83,15 @@ public class FhirConverter {
     return humanName;
   }
 
+  public static List<ContactPoint> phoneNumberToContactPoint(List<PhoneNumber> phoneNumber) {
+    if (phoneNumber != null && !phoneNumber.isEmpty()) {
+      return phoneNumber.stream()
+          .map(FhirConverter::phoneNumberToContactPoint)
+          .collect(Collectors.toList());
+    }
+    return Collections.emptyList();
+  }
+
   public static ContactPoint phoneNumberToContactPoint(PhoneNumber phoneNumber) {
     if (phoneNumber != null) {
       var contactPointUse = ContactPointUse.HOME;
@@ -107,6 +118,20 @@ public class FhirConverter {
     }
 
     return convertToContactPoint(contactPointUse, ContactPointSystem.PHONE, number);
+  }
+
+  public static List<ContactPoint> emailToContactPoint(List<String> emails) {
+    if (emails != null) {
+      return emails.stream().map(FhirConverter::emailToContactPoint).collect(Collectors.toList());
+    }
+    return Collections.emptyList();
+  }
+
+  public static ContactPoint emailToContactPoint(String email) {
+    if (email != null) {
+      return convertToContactPoint(null, ContactPointSystem.EMAIL, email);
+    }
+    return null;
   }
 
   public static ContactPoint convertToContactPoint(
