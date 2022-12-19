@@ -40,7 +40,7 @@ public class ReminderService {
   @Scheduled(cron = "0 0 1 * * *", zone = "America/New_York")
   @SchedulerLock(
       name = "ReminderService_sendAccountReminderEmails",
-      lockAtLeastFor = "PT1S",
+      lockAtLeastFor = "PT30S",
       lockAtMostFor = "PT30M")
   @ConditionalOnProperty("simple-report.id-verification-reminders.enabled")
   public void scheduledSendAccountReminderEmails() {
