@@ -93,7 +93,7 @@ dependencies {
     annotationProcessor 'org.hibernate:hibernate-jpamodelgen'
 
     // graphql-java-extended-validation schema directives
-    implementation 'com.graphql-java:graphql-java-extended-validation:18.1-hibernate-validator-6.2.0.Final'
+    implementation 'com.graphql-java:graphql-java-extended-validation:20.0-validator-6.2.0.Final'
     // graphql-java-extended-scalars
     implementation 'com.graphql-java:graphql-java-extended-scalars:18.1'
 
