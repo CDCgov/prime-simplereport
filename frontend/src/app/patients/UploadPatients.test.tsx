@@ -12,6 +12,9 @@ import UploadPatients from "./UploadPatients";
 
 const mockStore = createMockStore([]);
 const store = mockStore({
+  user: {
+    isAdmin: true,
+  },
   facilities: [
     { id: "1", name: "Lincoln Middle School" },
     { id: "2", name: "Rosa Parks High School" },
