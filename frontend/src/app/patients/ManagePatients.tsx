@@ -109,6 +109,7 @@ interface Props {
   data?: { patients: Patient[] };
   refetch: () => null;
   setNamePrefixMatch: (namePrefixMatch: string | null) => void;
+  isAdmin: boolean;
 }
 
 export const DetachedManagePatients = ({
@@ -120,6 +121,7 @@ export const DetachedManagePatients = ({
   refetch,
   setNamePrefixMatch,
   activeFacilityId,
+  isAdmin,
 }: Props) => {
   const [archivePerson, setArchivePerson] = useState<Patient | null>(null);
   const navigate = useNavigate();
@@ -266,51 +268,62 @@ export const DetachedManagePatients = ({
               </h1>
               <div>
                 {canEditUser ? (
-                  <MenuButton
-                    id={"add-patient"}
-                    buttonContent={
-                      <>
-                        <span className={"margin-right-1"}>
-                          Add {PATIENT_TERM_PLURAL}
-                        </span>
-                        <FontAwesomeIcon icon={faCaretDown} />
-                      </>
-                    }
-                    items={[
-                      {
-                        name: "individual",
-                        content: (
-                          <IconLabel
-                            icon={faIdCard}
-                            primaryText={`Add individual ${PATIENT_TERM}`}
-                            secondaryText={"Fill out a form to add a patient"}
-                          />
-                        ),
-                        action: () => {
-                          setRedirect({
-                            pathname: "/add-patient",
-                            search: `?facility=${activeFacilityId}`,
-                          });
+                  isAdmin ? (
+                    <MenuButton
+                      id={"add-patient"}
+                      buttonContent={
+                        <>
+                          <span className={"margin-right-1"}>
+                            Add {PATIENT_TERM_PLURAL}
+                          </span>
+                          <FontAwesomeIcon icon={faCaretDown} />
+                        </>
+                      }
+                      items={[
+                        {
+                          name: "individual",
+                          content: (
+                            <IconLabel
+                              icon={faIdCard}
+                              primaryText={`Add individual ${PATIENT_TERM}`}
+                              secondaryText={"Fill out a form to add a patient"}
+                            />
+                          ),
+                          action: () => {
+                            setRedirect({
+                              pathname: "/add-patient",
+                              search: `?facility=${activeFacilityId}`,
+                            });
+                          },
                         },
-                      },
-                      {
-                        name: "upload patients",
-                        content: (
-                          <IconLabel
-                            icon={faRightFromBracket}
-                            primaryText={"Import from spreadsheet"}
-                            secondaryText={`Bulk upload ${PATIENT_TERM_PLURAL} with a CSV file`}
-                          />
-                        ),
-                        action: () => {
-                          setRedirect({
-                            pathname: "/upload-patients",
-                            search: `?facility=${activeFacilityId}`,
-                          });
+                        {
+                          name: "upload patients",
+                          content: (
+                            <IconLabel
+                              icon={faRightFromBracket}
+                              primaryText={"Import from spreadsheet"}
+                              secondaryText={`Bulk upload ${PATIENT_TERM_PLURAL} with a CSV file`}
+                            />
+                          ),
+                          action: () => {
+                            setRedirect({
+                              pathname: "/upload-patients",
+                              search: `?facility=${activeFacilityId}`,
+                            });
+                          },
                         },
-                      },
-                    ]}
-                  />
+                      ]}
+                    />
+                  ) : (
+                    <LinkWithQuery
+                      className="usa-button usa-button--primary"
+                      to={`/add-patient`}
+                      id="add-patient-button"
+                    >
+                      <FontAwesomeIcon icon="plus" />
+                      {` Add ${PATIENT_TERM}`}
+                    </LinkWithQuery>
+                  )
                 ) : null}
               </div>
             </div>

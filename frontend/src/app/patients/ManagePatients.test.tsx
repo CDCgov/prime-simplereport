@@ -31,7 +31,7 @@ interface LocationOptions {
     patientId: string;
   };
 }
-const PageNumberContainer = () => {
+const PageNumberContainer = ({ isAdmin }: { isAdmin: boolean }) => {
   const { pageNumber } = useParams();
   return (
     <ManagePatients
@@ -39,6 +39,7 @@ const PageNumberContainer = () => {
       activeFacilityId="a1"
       canEditUser={true}
       canDeleteUser={true}
+      isAdmin={isAdmin}
     />
   );
 };
@@ -53,12 +54,15 @@ const Queue = () => {
   );
 };
 
-const TestContainer = () => (
+const TestContainer = ({ isAdmin = true }) => (
   <MockedProvider mocks={mocks}>
     <MemoryRouter initialEntries={["/patients/1"]}>
       <Routes>
         <Route path="/patients">
-          <Route path=":pageNumber" element={<PageNumberContainer />} />
+          <Route
+            path=":pageNumber"
+            element={<PageNumberContainer isAdmin={isAdmin} />}
+          />
         </Route>
         <Route path={"/queue"} element={<Queue />} />
       </Routes>
@@ -153,6 +157,18 @@ describe("ManagePatients", () => {
         await screen.findByText("No facility selected", { exact: false })
       ).toBeInTheDocument();
     });
+  });
+
+  it("non admin users can only see add individual patient", async () => {
+    render(<TestContainer isAdmin={false} />);
+    expect(await screen.findByText("Add patient")).toBeInTheDocument();
+    expect(screen.queryByText("Add patients")).not.toBeInTheDocument();
+  });
+
+  it("admin users can only see add individual patient", async () => {
+    render(<TestContainer isAdmin={true} />);
+    expect(await screen.findByText("Add patients")).toBeInTheDocument();
+    expect(screen.queryByText("Add patient")).not.toBeInTheDocument();
   });
 });
 
