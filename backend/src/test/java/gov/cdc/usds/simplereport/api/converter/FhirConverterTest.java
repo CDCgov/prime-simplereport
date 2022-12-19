@@ -32,7 +32,7 @@ import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.Arguments;
 import org.junit.jupiter.params.provider.MethodSource;
 
-public class FhirConverterTest {
+class FhirConverterTest {
   private static final String unknownSystem = "http://terminology.hl7.org/CodeSystem/v3-NullFlavor";
   private static final String raceCodeSystem = "http://terminology.hl7.org/CodeSystem/v3-Race";
   private static final String ethnicitySystem = "urn:oid:2.16.840.1.113883.6.238";

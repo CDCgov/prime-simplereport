@@ -25,6 +25,7 @@ import java.util.Date;
 import java.util.List;
 import java.util.UUID;
 import java.util.stream.Collectors;
+import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.StringUtils;
 import org.hl7.fhir.r4.model.Address;
 import org.hl7.fhir.r4.model.CodeableConcept;
@@ -39,7 +40,12 @@ import org.hl7.fhir.r4.model.Identifier;
 import org.hl7.fhir.r4.model.Identifier.IdentifierUse;
 import org.hl7.fhir.r4.model.StringType;
 
+@Slf4j
 public class FhirConverter {
+  private FhirConverter() {
+    throw new IllegalStateException("Utility class");
+  }
+
   public static Identifier convertToIdentifier(UUID id) {
     if (id != null) {
       return convertToIdentifier(id.toString());
@@ -114,7 +120,8 @@ public class FhirConverter {
       var formattedWithDash = phoneUtil.format(parsedNumber, PhoneNumberFormat.NATIONAL);
 
       number = formattedWithDash.replace("-", " ");
-    } catch (NumberParseException ignored) {
+    } catch (NumberParseException exception) {
+      log.debug("Error parsing number: " + exception);
     }
 
     return convertToContactPoint(contactPointUse, ContactPointSystem.PHONE, number);
