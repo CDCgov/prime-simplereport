@@ -124,7 +124,7 @@ const UploadPatients = ({ isAdmin }: { isAdmin: boolean }) => {
     if (!isAdmin) {
       navigate("/queue");
     }
-  }, [isAdmin]);
+  }, [navigate, isAdmin]);
 
   return (
     <div className={"prime-edit-patient prime-home flex-1"}>
