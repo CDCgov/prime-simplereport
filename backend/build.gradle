@@ -95,7 +95,7 @@ dependencies {
     // graphql-java-extended-validation schema directives
     implementation 'com.graphql-java:graphql-java-extended-validation:20.0-hibernate-validator-6.2.0.Final'
     // graphql-java-extended-scalars
-    implementation 'com.graphql-java:graphql-java-extended-scalars:18.1'
+    implementation 'com.graphql-java:graphql-java-extended-scalars:20.0'
 
     implementation 'com.azure:azure-storage-queue:12.15.+'
     implementation 'com.azure:azure-core-http-netty:1.11.9'
