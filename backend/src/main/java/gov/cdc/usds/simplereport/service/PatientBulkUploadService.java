@@ -19,16 +19,14 @@ import org.springframework.stereotype.Service;
 /**
  * Service to upload a roster of patient data given a CSV input. Formerly restricted to superusers
  * but now available to end users.
- *
- * <p>Updated by emmastephenson on 12/2/2022
  */
 @Service
 @RequiredArgsConstructor
 @Slf4j
 public class PatientBulkUploadService {
 
-  private final FileValidator<PatientUploadRow> _patientBulkUploadFileValidator;
-  private final PatientBulkUploadServiceAsync _patientBulkUploadServiceAsync;
+  private final FileValidator<PatientUploadRow> patientUploadRowFileValidator;
+  private final PatientBulkUploadServiceAsync patientBulkUploadServiceAsync;
 
   @AuthorizationConfiguration.RequirePermissionCreatePatientAtFacility
   public PatientBulkUploadResponse processPersonCSV(InputStream csvStream, UUID facilityId)
@@ -46,7 +44,7 @@ public class PatientBulkUploadService {
     }
 
     List<FeedbackMessage> errors =
-        _patientBulkUploadFileValidator.validate(new ByteArrayInputStream(content));
+        patientUploadRowFileValidator.validate(new ByteArrayInputStream(content));
 
     if (!errors.isEmpty()) {
       result.setStatus(UploadStatus.FAILURE);
@@ -54,7 +52,7 @@ public class PatientBulkUploadService {
       return result;
     }
 
-    _patientBulkUploadServiceAsync.savePatients(content, facilityId);
+    patientBulkUploadServiceAsync.savePatients(content, facilityId);
     result.setStatus(UploadStatus.SUCCESS);
     return result;
   }

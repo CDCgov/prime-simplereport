@@ -27,7 +27,7 @@ data "azurerm_subnet" "app_gateways" {
 
 data "azurerm_key_vault_certificate" "wildcard_simplereport_gov" {
   key_vault_id = data.azurerm_key_vault.global.id
-  name         = "wildcard-simplereport-gov"
+  name         = "new-sr-wildcard"
 }
 
 data "azurerm_key_vault_certificate" "simplereport_cdc_gov" {

@@ -20,7 +20,7 @@ on:
         required: true
         default: "prod"  
 
-ENV:
+env:
   NODE_VERSION: 18
 
 jobs:

@@ -32,7 +32,6 @@ type UpdateOptionalFields =
   | "role"
   | "emails"
   | "streetTwo"
-  | "city"
   | "county"
   | "race"
   | "ethnicity"
@@ -237,7 +236,7 @@ const updateFieldSchemata: (
   city: yup
     .string()
     .max(MAX_LENGTH, t("patient.form.errors.fieldLength", undefined))
-    .nullable(),
+    .required(t("patient.form.errors.city", undefined)),
   county: yup
     .string()
     .max(MAX_LENGTH, t("patient.form.errors.fieldLength", undefined))

@@ -49,11 +49,11 @@ import org.springframework.test.context.TestPropertySource;
       "spring.jpa.properties.hibernate.enable_lazy_load_no_trans=true"
     })
 @SliceTestConfiguration.WithSimpleReportStandardAllFacilitiesUser
-public class PatientBulkUploadServiceAsyncTest extends BaseGraphqlTest {
+class PatientBulkUploadServiceAsyncTest extends BaseGraphqlTest {
 
   @Autowired PatientBulkUploadServiceAsync _service;
 
-  @Autowired PersonService _personService;
+  @SpyBean PersonService _personService;
   @Autowired PhoneNumberRepository phoneNumberRepository;
 
   @MockBean private EmailService _emailService;
@@ -91,7 +91,7 @@ public class PatientBulkUploadServiceAsyncTest extends BaseGraphqlTest {
     Set<Person> savedPatients = futureSavedPatients.get();
 
     // THEN
-    assertThat(savedPatients.size()).isEqualTo(fetchDatabasePatients().size());
+    assertThat(savedPatients).hasSameSizeAs(fetchDatabasePatients());
     assertThat(fetchDatabasePatientsForFacility(firstFacilityId))
         .hasSameSizeAs(fetchDatabasePatientsForFacility(secondFacilityId));
     assertThat(fetchDatabasePatients()).hasSize(1);
@@ -200,6 +200,22 @@ public class PatientBulkUploadServiceAsyncTest extends BaseGraphqlTest {
     // THEN
     assertThat(fetchDatabasePatientsForFacility(firstFacilityId)).hasSize(1);
     assertThat(fetchDatabasePatientsForFacility(secondFacilityId)).isEmpty();
+  }
+
+  @Test
+  void largeFile_isBatched() throws IOException, ExecutionException, InterruptedException {
+    // GIVEN
+    InputStream inputStream = loadCsv("patientBulkUpload/slightlyLargeFile.csv");
+    byte[] content = inputStream.readAllBytes();
+
+    // WHEN
+    CompletableFuture<Set<Person>> futurePatients =
+        this._service.savePatients(content, firstFacilityId);
+    futurePatients.get();
+
+    // THEN
+    verify(_personService, times(2)).addPatientsAndPhoneNumbers(any(), any());
+    assertThat(fetchDatabasePatients()).hasSize(17);
   }
 
   @Test

@@ -43,10 +43,13 @@ import org.springframework.transaction.annotation.Transactional;
 public class PatientBulkUploadServiceAsync {
 
   private final ApiUserService _userService;
-  private final PersonService _personService;
-  private final AddressValidationService _addressValidationService;
-  private final OrganizationService _organizationService;
+  private final PersonService personService;
+  private final AddressValidationService addressValidationService;
+  private final OrganizationService organizationService;
   private final EmailService _emailService;
+
+  @Value("${simple-report.batch-size:1000}")
+  private int batchSize;
 
   @Value("${simple-report.patient-link-url:https://simplereport.gov/pxp?plid=}")
   private String patientLinkUrl;
@@ -60,14 +63,16 @@ public class PatientBulkUploadServiceAsync {
     String simplereportUrl = patientLinkUrl.substring(0, patientLinkUrl.indexOf("pxp"));
     String patientsUrl = simplereportUrl + "patients?facility=" + facilityId;
 
-    Organization currentOrganization = _organizationService.getCurrentOrganization();
+    Organization currentOrganization = organizationService.getCurrentOrganization();
 
     // Patients do not need to be assigned to a facility, but if an id is given it must be valid
     Optional<Facility> assignedFacility =
-        Optional.ofNullable(facilityId).map(_organizationService::getFacilityInCurrentOrg);
+        Optional.ofNullable(facilityId).map(organizationService::getFacilityInCurrentOrg);
 
     Set<Person> patientsList = new HashSet<>();
     List<PhoneNumber> phoneNumbersList = new ArrayList<>();
+
+    Set<Person> allPatients = new HashSet<>();
 
     final MappingIterator<Map<String, String>> valueIterator =
         CsvValidatorUtils.getIteratorForCsv(new ByteArrayInputStream(content));
@@ -80,7 +85,7 @@ public class PatientBulkUploadServiceAsync {
 
         // Fetch address information
         StreetAddress address =
-            _addressValidationService.getValidatedAddress(
+            addressValidationService.getValidatedAddress(
                 extractedData.getStreet().getValue(),
                 extractedData.getStreet2().getValue(),
                 extractedData.getCity().getValue(),
@@ -93,7 +98,7 @@ public class PatientBulkUploadServiceAsync {
                 ? "USA"
                 : extractedData.getCountry().getValue();
 
-        if (_personService.isDuplicatePatient(
+        if (personService.isDuplicatePatient(
             extractedData.getFirstName().getValue(),
             extractedData.getLastName().getValue(),
             parseUserShortDate(extractedData.getDateOfBirth().getValue()),
@@ -127,11 +132,11 @@ public class PatientBulkUploadServiceAsync {
                 null // testResultDeliveryPreference
                 );
 
-        if (!patientsList.contains(newPatient)) {
+        if (!allPatients.contains(newPatient)) {
           // collect phone numbers and associate them with the patient
           // then add to phone numbers list and set primary phone, if exists
           List<PhoneNumber> newPhoneNumbers =
-              _personService.assignPhoneNumbersToPatient(
+              personService.assignPhoneNumbersToPatient(
                   newPatient,
                   List.of(
                       new PhoneNumber(
@@ -141,6 +146,14 @@ public class PatientBulkUploadServiceAsync {
           newPhoneNumbers.stream().findFirst().ifPresent(newPatient::setPrimaryPhone);
 
           patientsList.add(newPatient);
+          allPatients.add(newPatient);
+        }
+
+        if (patientsList.size() >= batchSize) {
+          personService.addPatientsAndPhoneNumbers(patientsList, phoneNumbersList);
+          // clear lists after save, so we don't try to save duplicate records
+          patientsList.clear();
+          phoneNumbersList.clear();
         }
       } catch (IllegalArgumentException | NullPointerException e) {
         sendEmail(
@@ -157,7 +170,7 @@ public class PatientBulkUploadServiceAsync {
     }
 
     try {
-      _personService.addPatientsAndPhoneNumbers(patientsList, phoneNumbersList);
+      personService.addPatientsAndPhoneNumbers(patientsList, phoneNumbersList);
     } catch (IllegalArgumentException | OptimisticLockingFailureException e) {
       sendEmail(
           uploaderEmail,

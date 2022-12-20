@@ -65,6 +65,7 @@ simple-report:
   azure-reporting-queue:
     exception-webhook-enabled: true
     exception-webhook-token: WATERMELON
+  batch-size: 10
   demo-users:
     site-admin-emails:
       - ruby@example.com
