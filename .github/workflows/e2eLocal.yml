@@ -82,11 +82,11 @@ jobs:
         REACT_APP_OKTA_ENABLED: "true"
         REACT_APP_DISABLE_MAINTENANCE_BANNER: "true"
       shell: bash
+      # To build a new image add this before docker-compose up
+      # docker-compose -f docker-compose.yml -f docker-compose.cypress.yml build
       run: |
         echo "::group::Run Cypress locally"
         docker compose pull
-#        Uncomment to build a new image
-#        docker-compose -f docker-compose.yml -f docker-compose.cypress.yml build
         docker-compose -f docker-compose.yml -f docker-compose.cypress.yml up --abort-on-container-exit --exit-code-from cypress
         echo "::endgroup::"
     
