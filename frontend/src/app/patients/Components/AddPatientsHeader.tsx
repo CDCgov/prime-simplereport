@@ -11,7 +11,7 @@ import iconSprite from "../../../../node_modules/uswds/dist/img/sprite.svg";
 import { RootState } from "../../store";
 
 interface Props {
-  additional?: React.ReactElement;
+  additional?: React.ReactNode;
 }
 export const AddPatientHeader = (props: Props) => {
   const isAdmin = useSelector<RootState, boolean>(

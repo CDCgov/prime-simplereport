@@ -12,10 +12,10 @@ interface Props {
   id?: string;
   items: {
     name: string;
-    content?: React.ReactElement;
+    content?: React.ReactNode;
     action: () => void;
   }[];
-  buttonContent: React.ReactElement;
+  buttonContent: React.ReactNode;
 }
 
 export const MenuButton = (props: Props) => (
