@@ -1,9 +1,9 @@
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import { FileInput, FormGroup } from "@trussworks/react-uswds";
 import { useSelector } from "react-redux";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faXmark } from "@fortawesome/free-solid-svg-icons";
-import { useLocation } from "react-router-dom";
+import { useLocation, useNavigate } from "react-router-dom";
 
 import { useDocumentTitle } from "../utils/hooks";
 import Button from "../commonComponents/Button/Button";
@@ -19,7 +19,7 @@ import { AddPatientHeader } from "./Components/AddPatientsHeader";
 
 import "./UploadPatients.scss";
 
-const UploadPatients = () => {
+const UploadPatients = ({ isAdmin }: { isAdmin: boolean }) => {
   useDocumentTitle("Add Patient");
   const [facilityAmount, setFacilityAmount] = useState<string>();
   const [buttonIsDisabled, setButtonIsDisabled] = useState(true);
@@ -119,6 +119,12 @@ const UploadPatients = () => {
       });
     };
   }
+  const navigate = useNavigate();
+  useEffect(() => {
+    if (!isAdmin) {
+      navigate("/queue");
+    }
+  }, [isAdmin]);
 
   return (
     <div className={"prime-edit-patient prime-home flex-1"}>

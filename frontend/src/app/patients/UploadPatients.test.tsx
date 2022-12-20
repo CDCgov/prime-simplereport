@@ -21,11 +21,20 @@ const store = mockStore({
     { id: "3", name: "Empty School" },
   ],
 });
-const renderUploadPatients = () =>
+const mockNavigate = jest.fn();
+jest.mock("react-router-dom", () => {
+  const original = jest.requireActual("react-router-dom");
+  return {
+    ...original,
+    useNavigate: () => mockNavigate,
+  };
+});
+
+const renderUploadPatients = (isAdmin = true) =>
   render(
     <Provider store={store}>
       <MemoryRouter>
-        <UploadPatients />
+        <UploadPatients isAdmin={isAdmin} />
       </MemoryRouter>
     </Provider>
   );
@@ -263,5 +272,10 @@ describe("Upload Patient", () => {
       expect(screen.getByText("Selected file")).toBeInTheDocument();
       expect(screen.getByText("values.csv")).toBeInTheDocument();
     });
+  });
+  it("should redirect user if not admin", () => {
+    renderUploadPatients(false);
+    expect(mockNavigate).toHaveBeenCalledWith(`/queue`);
+    expect(mockNavigate).toHaveBeenCalledTimes(1);
   });
 });
