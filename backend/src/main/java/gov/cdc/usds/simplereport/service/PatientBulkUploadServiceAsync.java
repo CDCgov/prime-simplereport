@@ -42,11 +42,11 @@ import org.springframework.transaction.annotation.Transactional;
 @Slf4j
 public class PatientBulkUploadServiceAsync {
 
-  private final ApiUserService _userService;
+  private final ApiUserService userService;
   private final PersonService personService;
   private final AddressValidationService addressValidationService;
   private final OrganizationService organizationService;
-  private final EmailService _emailService;
+  private final EmailService emailService;
 
   @Value("${simple-report.batch-size:1000}")
   private int batchSize;
@@ -59,7 +59,7 @@ public class PatientBulkUploadServiceAsync {
   @AuthorizationConfiguration.RequirePermissionCreatePatientAtFacility
   public CompletableFuture<Set<Person>> savePatients(byte[] content, UUID facilityId) {
     // Create string components for notification emails
-    String uploaderEmail = _userService.getCurrentApiUserInContainedTransaction().getLoginEmail();
+    String uploaderEmail = userService.getCurrentApiUserInContainedTransaction().getLoginEmail();
     String simplereportUrl = patientLinkUrl.substring(0, patientLinkUrl.indexOf("pxp"));
     String patientsUrl = simplereportUrl + "patients?facility=" + facilityId;
 
@@ -201,7 +201,7 @@ public class PatientBulkUploadServiceAsync {
       EmailProviderTemplate template,
       Map<String, Object> templateVariables) {
     try {
-      _emailService.sendWithDynamicTemplate(List.of(uploaderEmail), template, templateVariables);
+      emailService.sendWithDynamicTemplate(List.of(uploaderEmail), template, templateVariables);
     } catch (IOException exception) {
       log.info(
           "CSV patient upload email failed to send for {}",

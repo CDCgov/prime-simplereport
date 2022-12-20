@@ -4,7 +4,6 @@ import static gov.cdc.usds.simplereport.api.Translators.parsePhoneType;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.mockito.ArgumentMatchers.any;
-import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.doThrow;
 import static org.mockito.Mockito.reset;
 import static org.mockito.Mockito.times;
@@ -117,9 +116,9 @@ class PatientBulkUploadServiceAsyncTest extends BaseGraphqlTest {
 
     verify(_emailService, times(1))
         .sendWithDynamicTemplate(
-            eq(List.of("bobbity@example.com")),
-            eq(EmailProviderTemplate.SIMPLE_REPORT_PATIENT_UPLOAD),
-            eq(Map.of("patients_url", "https://simplereport.gov/patients?facility=null")));
+            List.of("bobbity@example.com"),
+            EmailProviderTemplate.SIMPLE_REPORT_PATIENT_UPLOAD,
+            Map.of("patients_url", "https://simplereport.gov/patients?facility=null"));
   }
 
   @Test
@@ -235,9 +234,9 @@ class PatientBulkUploadServiceAsyncTest extends BaseGraphqlTest {
 
     verify(_emailService, times(1))
         .sendWithDynamicTemplate(
-            eq(List.of("bobbity@example.com")),
-            eq(EmailProviderTemplate.SIMPLE_REPORT_PATIENT_UPLOAD_ERROR),
-            eq(Map.of("simplereport_url", "https://simplereport.gov/")));
+            List.of("bobbity@example.com"),
+            EmailProviderTemplate.SIMPLE_REPORT_PATIENT_UPLOAD_ERROR,
+            Map.of("simplereport_url", "https://simplereport.gov/"));
   }
 
   @Test
@@ -258,9 +257,9 @@ class PatientBulkUploadServiceAsyncTest extends BaseGraphqlTest {
 
     verify(_emailService, times(1))
         .sendWithDynamicTemplate(
-            eq(List.of("bobbity@example.com")),
-            eq(EmailProviderTemplate.SIMPLE_REPORT_PATIENT_UPLOAD_ERROR),
-            eq(Map.of("simplereport_url", "https://simplereport.gov/")));
+            List.of("bobbity@example.com"),
+            EmailProviderTemplate.SIMPLE_REPORT_PATIENT_UPLOAD_ERROR,
+            Map.of("simplereport_url", "https://simplereport.gov/"));
   }
 
   @Test
