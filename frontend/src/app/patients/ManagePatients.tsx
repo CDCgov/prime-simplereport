@@ -246,6 +246,70 @@ export const DetachedManagePatients = ({
     });
   };
 
+  function showActionButtons() {
+    if (canEditUser && isAdmin) {
+      return (
+        <MenuButton
+          id={"add-patient"}
+          buttonContent={
+            <>
+              <span className={"margin-right-1"}>
+                Add {PATIENT_TERM_PLURAL}
+              </span>
+              <FontAwesomeIcon icon={faCaretDown} />
+            </>
+          }
+          items={[
+            {
+              name: "individual",
+              content: (
+                <IconLabel
+                  icon={faIdCard}
+                  primaryText={`Add individual ${PATIENT_TERM}`}
+                  secondaryText={"Fill out a form to add a patient"}
+                />
+              ),
+              action: () => {
+                setRedirect({
+                  pathname: "/add-patient",
+                  search: `?facility=${activeFacilityId}`,
+                });
+              },
+            },
+            {
+              name: "upload patients",
+              content: (
+                <IconLabel
+                  icon={faRightFromBracket}
+                  primaryText={"Import from spreadsheet"}
+                  secondaryText={`Bulk upload ${PATIENT_TERM_PLURAL} with a CSV file`}
+                />
+              ),
+              action: () => {
+                setRedirect({
+                  pathname: "/upload-patients",
+                  search: `?facility=${activeFacilityId}`,
+                });
+              },
+            },
+          ]}
+        />
+      );
+    } else if (canEditUser) {
+      return (
+        <LinkWithQuery
+          className="usa-button usa-button--primary"
+          to={`/add-patient`}
+          id="add-patient-button"
+        >
+          <FontAwesomeIcon icon="plus" />
+          {` Add ${PATIENT_TERM}`}
+        </LinkWithQuery>
+      );
+    }
+    return null;
+  }
+
   return (
     <div className="prime-home flex-1">
       <div className="grid-container">
@@ -266,66 +330,7 @@ export const DetachedManagePatients = ({
                   )}
                 </span>
               </h1>
-              <div>
-                {canEditUser ? (
-                  isAdmin ? (
-                    <MenuButton
-                      id={"add-patient"}
-                      buttonContent={
-                        <>
-                          <span className={"margin-right-1"}>
-                            Add {PATIENT_TERM_PLURAL}
-                          </span>
-                          <FontAwesomeIcon icon={faCaretDown} />
-                        </>
-                      }
-                      items={[
-                        {
-                          name: "individual",
-                          content: (
-                            <IconLabel
-                              icon={faIdCard}
-                              primaryText={`Add individual ${PATIENT_TERM}`}
-                              secondaryText={"Fill out a form to add a patient"}
-                            />
-                          ),
-                          action: () => {
-                            setRedirect({
-                              pathname: "/add-patient",
-                              search: `?facility=${activeFacilityId}`,
-                            });
-                          },
-                        },
-                        {
-                          name: "upload patients",
-                          content: (
-                            <IconLabel
-                              icon={faRightFromBracket}
-                              primaryText={"Import from spreadsheet"}
-                              secondaryText={`Bulk upload ${PATIENT_TERM_PLURAL} with a CSV file`}
-                            />
-                          ),
-                          action: () => {
-                            setRedirect({
-                              pathname: "/upload-patients",
-                              search: `?facility=${activeFacilityId}`,
-                            });
-                          },
-                        },
-                      ]}
-                    />
-                  ) : (
-                    <LinkWithQuery
-                      className="usa-button usa-button--primary"
-                      to={`/add-patient`}
-                      id="add-patient-button"
-                    >
-                      <FontAwesomeIcon icon="plus" />
-                      {` Add ${PATIENT_TERM}`}
-                    </LinkWithQuery>
-                  )
-                ) : null}
-              </div>
+              <div>{showActionButtons()}</div>
             </div>
             <div className="display-flex flex-row bg-base-lightest padding-x-3 padding-y-2">
               <SearchInput
