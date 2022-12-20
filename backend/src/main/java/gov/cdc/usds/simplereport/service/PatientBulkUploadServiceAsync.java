@@ -63,8 +63,6 @@ public class PatientBulkUploadServiceAsync {
     final MappingIterator<Map<String, String>> valueIterator =
         CsvValidatorUtils.getIteratorForCsv(new ByteArrayInputStream(content));
 
-    int patientCount = 0;
-
     while (valueIterator.hasNext()) {
       final Map<String, String> row = CsvValidatorUtils.getNextRow(valueIterator);
 
@@ -120,9 +118,6 @@ public class PatientBulkUploadServiceAsync {
                 null // testResultDeliveryPreference
                 );
 
-        // only increment count after person record is created
-        patientCount++;
-
         if (!allPatients.contains(newPatient)) {
           // collect phone numbers and associate them with the patient
           // then add to phone numbers list and set primary phone, if exists
@@ -140,12 +135,11 @@ public class PatientBulkUploadServiceAsync {
           allPatients.add(newPatient);
         }
 
-        if (patientCount >= batchSize) {
+        if (patientsList.size() >= batchSize) {
           personService.addPatientsAndPhoneNumbers(patientsList, phoneNumbersList);
           // clear lists after save, so we don't try to save duplicate records
           patientsList.clear();
           phoneNumbersList.clear();
-          patientCount = 0;
         }
 
       } catch (IllegalArgumentException e) {
