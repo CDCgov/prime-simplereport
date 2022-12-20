@@ -1,5 +1,16 @@
 package gov.cdc.usds.simplereport.db.model;
 
+import static gov.cdc.usds.simplereport.api.converter.FhirConverter.convertToAddress;
+import static gov.cdc.usds.simplereport.api.converter.FhirConverter.convertToAdministrativeGender;
+import static gov.cdc.usds.simplereport.api.converter.FhirConverter.convertToDate;
+import static gov.cdc.usds.simplereport.api.converter.FhirConverter.convertToEthnicityExtension;
+import static gov.cdc.usds.simplereport.api.converter.FhirConverter.convertToHumanName;
+import static gov.cdc.usds.simplereport.api.converter.FhirConverter.convertToIdentifier;
+import static gov.cdc.usds.simplereport.api.converter.FhirConverter.convertToRaceExtension;
+import static gov.cdc.usds.simplereport.api.converter.FhirConverter.convertToTribalAffiliationExtension;
+import static gov.cdc.usds.simplereport.api.converter.FhirConverter.emailToContactPoint;
+import static gov.cdc.usds.simplereport.api.converter.FhirConverter.phoneNumberToContactPoint;
+
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonUnwrapped;
 import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
@@ -25,6 +36,7 @@ import javax.persistence.ManyToOne;
 import javax.persistence.OneToMany;
 import javax.persistence.OneToOne;
 import org.hibernate.annotations.Type;
+import org.hl7.fhir.r4.model.Patient;
 
 /**
  * The person record (generally, a patient getting a test).
@@ -454,5 +466,21 @@ public class Person extends OrganizationScopedEternalEntity implements PersonEnt
     public static final String POSTAL_CODE = "postalCode";
 
     private SpecField() {} // sonarcloud codesmell
+  }
+
+  @JsonIgnore
+  public Patient toFhir() {
+    var patient = new Patient();
+    patient.addIdentifier(convertToIdentifier(getInternalId()));
+    patient.addName(convertToHumanName(nameInfo));
+    phoneNumberToContactPoint(phoneNumbers).forEach(patient::addTelecom);
+    emailToContactPoint(emails).forEach(patient::addTelecom);
+    patient.setGender(convertToAdministrativeGender(gender));
+    patient.setBirthDate(convertToDate(birthDate));
+    patient.addAddress(convertToAddress(address));
+    patient.addExtension(convertToRaceExtension(race));
+    patient.addExtension(convertToEthnicityExtension(ethnicity));
+    patient.addExtension(convertToTribalAffiliationExtension(tribalAffiliation));
+    return patient;
   }
 }
