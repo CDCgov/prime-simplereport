@@ -35,6 +35,11 @@ variable "test_event_queue_name" {
   default = "test-event-publishing"
 }
 
+variable "publishing_error_queue_name" {
+  type    = string
+  default = "test-event-publishing-error"
+}
+
 variable "reporting_exception_queue_name" {
   type    = string
   default = "test-event-publishing-exceptions"

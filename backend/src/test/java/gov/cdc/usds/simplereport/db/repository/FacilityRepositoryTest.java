@@ -1,6 +1,5 @@
 package gov.cdc.usds.simplereport.db.repository;
 
-import static org.assertj.core.api.Assertions.assertThat;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertNull;
 import static org.junit.jupiter.api.Assertions.assertTrue;
@@ -64,63 +63,5 @@ class FacilityRepositoryTest extends BaseRepositoryTest {
     found = _repo.findById(saved.getInternalId()).get();
     assertNull(found.getDefaultDeviceType());
     assertEquals(1, found.getDeviceTypes().size());
-  }
-
-  @Test
-  void facilityAddDeviceType_backwardCompatibleWithFacilityDeviceSpecimenType() {
-    // GIVEN
-    var facilityDeviceSpecimenType = _dataFactory.getGenericDeviceSpecimen();
-    var org = _dataFactory.createValidOrg();
-    var facility = _dataFactory.createValidFacility(org);
-    facility.getDeviceTypes().forEach(facility::removeDeviceType);
-    assertThat(facility.getDeviceTypes()).isEmpty();
-
-    // WHEN only a facility device specimen type is configured
-    facility.addDeviceSpecimenType(facilityDeviceSpecimenType);
-    _repo.save(facility);
-
-    // THEN
-    assertThat(facility.getDeviceTypes()).hasSize(1);
-    assertThat(facility.getDeviceTypes()).contains(facilityDeviceSpecimenType.getDeviceType());
-
-    // WHEN adding a new device
-    facility.addDeviceType(new DeviceType("New Shiny Device", "Nue Inc", "Shiny", "123", null, 15));
-
-    // THEN
-    assertThat(facility.getDeviceTypes()).hasSize(2);
-
-    // WHEN Deleting a device
-    facility.removeDeviceType(facilityDeviceSpecimenType.getDeviceType());
-
-    // THEN
-    assertThat(facility.getDeviceTypes()).hasSize(1);
-    DeviceType device = facility.getDeviceTypes().get(0);
-    assertThat(device.getName()).isEqualTo("New Shiny Device");
-    assertThat(device.getManufacturer()).isEqualTo("Nue Inc");
-    assertThat(device.getModel()).isEqualTo("Shiny");
-  }
-
-  @Test
-  void facilityRemoveDeviceType_backwardCompatibleWithFacilityDeviceSpecimenType() {
-    // GIVEN
-    var facilityDeviceSpecimenType = _dataFactory.getGenericDeviceSpecimen();
-    var org = _dataFactory.createValidOrg();
-    var facility = _dataFactory.createValidFacility(org);
-    facility.getDeviceTypes().forEach(facility::removeDeviceType);
-    assertThat(facility.getDeviceTypes()).isEmpty();
-
-    // WHEN only a facility device specimen type is configured
-    facility.addDeviceSpecimenType(facilityDeviceSpecimenType);
-    _repo.save(facility);
-
-    // THEN
-    assertThat(facility.getDeviceTypes()).hasSize(1);
-    assertThat(facility.getDeviceTypes()).contains(facilityDeviceSpecimenType.getDeviceType());
-
-    // WHEN Deleting a device
-    facility.removeDeviceType(facilityDeviceSpecimenType.getDeviceType());
-
-    // THEN
-    assertThat(facility.getDeviceTypes()).isEmpty();
   }
 }

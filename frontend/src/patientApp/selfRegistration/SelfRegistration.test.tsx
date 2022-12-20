@@ -155,6 +155,7 @@ const filledForm = {
   "Date of birth": "1970-09-22",
   "Primary phone number": "7038675309",
   "Street address 1": faker.address.streetAddress(),
+  City: "Rockville",
   State: "MD",
   "ZIP code": "12345",
 };

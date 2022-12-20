@@ -7,7 +7,7 @@ exports[`TestQueue should render the test queue 1`] = `
     style="padding-top: 80px;"
   >
     <div
-      class="grid-container queue-container-wide"
+      class="grid-container"
     >
       <h1
         class="font-sans-lg"
