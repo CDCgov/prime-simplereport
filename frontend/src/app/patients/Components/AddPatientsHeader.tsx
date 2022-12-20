@@ -32,7 +32,7 @@ export const AddPatientHeader = (props: Props) => {
                 <use xlinkHref={iconSprite + "#arrow_back"}></use>
               </svg>
               <LinkWithQuery to={`/patients`} className="margin-left-05">
-                People
+                {PATIENT_TERM_PLURAL_CAP}
               </LinkWithQuery>
             </div>
             <div className="prime-edit-patient-heading margin-y-0">

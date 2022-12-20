@@ -32,7 +32,7 @@ exports[`Upload Patient displays the upload patients page correctly 1`] = `
                 class="margin-left-05"
                 href="/patients"
               >
-                People
+                Patients
               </a>
             </div>
             <div
