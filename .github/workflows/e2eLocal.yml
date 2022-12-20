@@ -85,7 +85,8 @@ jobs:
       run: |
         echo "::group::Run Cypress locally"
         docker compose pull
-        docker-compose -f docker-compose.yml -f docker-compose.cypress.yml build
+#        Uncomment to build a new image
+#        docker-compose -f docker-compose.yml -f docker-compose.cypress.yml build
         docker-compose -f docker-compose.yml -f docker-compose.cypress.yml up --abort-on-container-exit --exit-code-from cypress
         echo "::endgroup::"
     
