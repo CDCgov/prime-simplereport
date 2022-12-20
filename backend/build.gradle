@@ -129,12 +129,6 @@ dependencies {
     // WireMock (only used for testing)
     testImplementation "com.github.tomakehurst:wiremock-jre8:2.35.0"
 
-    runtimeOnly "io.zipkin.brave:brave-instrumentation-http:5.14.1"
-    runtimeOnly "io.zipkin.brave:brave:5.13.2"
-    runtimeOnly "io.zipkin.reporter2:zipkin-reporter-brave:2.16.3"
-    runtimeOnly "io.zipkin.reporter2:zipkin-reporter:2.16.1"
-    runtimeOnly "io.zipkin.zipkin2:zipkin:2.23.0"
-
     implementation 'ca.uhn.hapi.fhir:hapi-fhir-structures-r4:6.2.1'
 }
 
