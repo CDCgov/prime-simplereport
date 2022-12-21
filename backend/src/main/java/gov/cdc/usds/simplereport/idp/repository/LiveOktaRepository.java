@@ -393,7 +393,7 @@ public class LiveOktaRepository implements OktaRepository {
   }
 
   public UserStatus getUserStatus(String username) {
-    String loginSearchTerm = "login eq \"" + username + "\"";
+    String loginSearchTerm = "profile.login eq \"" + username + "\"";
     UserList users = _client.listUsers(null, null, loginSearchTerm, null, null);
     throwErrorIfEmpty(
         users.stream(), "Cannot retrieve Okta user's status with unrecognized username");
