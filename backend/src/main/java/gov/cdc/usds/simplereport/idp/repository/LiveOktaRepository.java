@@ -530,13 +530,14 @@ public class LiveOktaRepository implements OktaRepository {
   public Optional<OrganizationRoleClaims> getOrganizationRoleClaimsForUser(String username) {
     // When a site admin is using tenant data access, bypass okta and get org from the altered
     // authorities.  If the site admin is getting the claims for another site admin who also has
-    // active tenant data access, the reflect what is in Okta, not the temporary claims.
+    // active tenant data access, then reflect what is in Okta, not the temporary claims.
     if (_tenantDataContextHolder.hasBeenPopulated()
         && username.equals(_tenantDataContextHolder.getUsername())) {
       return getOrganizationRoleClaimsFromAuthorities(_tenantDataContextHolder.getAuthorities());
     }
 
-    UserList users = _client.listUsers(username, null, null, null, null);
+    String loginSearchTerm = "profile.login eq \"" + username + "\"";
+    UserList users = _client.listUsers(null, null, loginSearchTerm, null, null);
     throwErrorIfEmpty(users.stream(), "Cannot get org external ID for nonexistent user");
     User user = users.single();
     return getOrganizationRoleClaimsForUser(user);
