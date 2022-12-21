@@ -204,7 +204,7 @@ public class LiveOktaRepository implements OktaRepository {
     Group orgDefaultOktaGroup = getDefaultOktaGroup(org);
 
     return orgDefaultOktaGroup.listUsers().stream()
-        .map(u -> u.getProfile().getEmail())
+        .map(u -> u.getProfile().getLogin())
         .collect(Collectors.toUnmodifiableSet());
   }
 
@@ -212,7 +212,7 @@ public class LiveOktaRepository implements OktaRepository {
     Group orgDefaultOktaGroup = getDefaultOktaGroup(org);
 
     return orgDefaultOktaGroup.listUsers().stream()
-        .collect(Collectors.toMap(u -> u.getProfile().getEmail(), User::getStatus));
+        .collect(Collectors.toMap(u -> u.getProfile().getLogin(), User::getStatus));
   }
 
   private Group getDefaultOktaGroup(Organization org) {
