@@ -49,6 +49,8 @@ logging:
     # Other possibilities:
     # com.okta: DEBUG
     # org.springframework.security: DEBUG
+    # com.zaxxer.hikari: TRACE
+    # com.zaxxer.hikari.HikariConfig: DEBUG
     org.springframework.web.client.RestTemplate: DEBUG
 simple-report:
   authorization:
@@ -63,6 +65,7 @@ simple-report:
   azure-reporting-queue:
     exception-webhook-enabled: true
     exception-webhook-token: WATERMELON
+  batch-size: 10
   demo-users:
     site-admin-emails:
       - ruby@example.com

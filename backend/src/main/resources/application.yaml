@@ -125,6 +125,7 @@ simple-report:
       - GET
       - HEAD
       - POST
+  batch-size: 1000
 twilio:
   messaging-service-sid: ${TWILIO_MESSAGING_SID}
 logging:
