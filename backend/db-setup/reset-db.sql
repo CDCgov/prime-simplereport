@@ -1,3 +1,5 @@
+ALTER SYSTEM SET max_connections = 500;
+
 DROP SCHEMA IF EXISTS simple_report CASCADE;
 
 CREATE SCHEMA IF NOT EXISTS simple_report;

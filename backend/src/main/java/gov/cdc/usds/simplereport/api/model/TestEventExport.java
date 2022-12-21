@@ -3,11 +3,13 @@ package gov.cdc.usds.simplereport.api.model;
 import static java.lang.Boolean.TRUE;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
+import gov.cdc.usds.simplereport.api.MappingConstants;
 import gov.cdc.usds.simplereport.db.model.DeviceSpecimenType;
 import gov.cdc.usds.simplereport.db.model.DeviceType;
 import gov.cdc.usds.simplereport.db.model.Facility;
 import gov.cdc.usds.simplereport.db.model.Organization;
 import gov.cdc.usds.simplereport.db.model.Person;
+import gov.cdc.usds.simplereport.db.model.PersonUtils;
 import gov.cdc.usds.simplereport.db.model.Provider;
 import gov.cdc.usds.simplereport.db.model.TestEvent;
 import gov.cdc.usds.simplereport.db.model.auxiliary.AskOnEntrySurvey;
@@ -59,8 +61,6 @@ public class TestEventExport {
   }
 
   private String genderUnknown = "U";
-  private String ethnicityUnknown = "U";
-  private String raceUnknown = "UNK";
   private static final String DEFAULT_LOCATION_CODE = "53342003"; // http://snomed.info/id/53342003
   // "Internal nose structure"
   // values pulled from
@@ -87,18 +87,6 @@ public class TestEventExport {
           TestResult.POSITIVE, "260373001",
           TestResult.NEGATIVE, "260415000",
           TestResult.UNDETERMINED, "419984006");
-
-  private Map<String, String> raceMap =
-      Map.of(
-          "native", "1002-5",
-          "asian", "2028-9",
-          "black", "2054-5",
-          "pacific", "2076-8",
-          "white", "2106-3",
-          "other", "2131-1",
-          "unknown", raceUnknown,
-          "refused", "ASKU" // Asked, but unknown
-          );
 
   private Map<String, String> preferredLanguageMap =
       ImmutableMap.<String, String>builder()
@@ -232,7 +220,10 @@ public class TestEventExport {
 
   @JsonProperty("Patient_race")
   public String getPatientRace() {
-    return patient.map(Person::getRace).map(raceMap::get).orElse(raceUnknown);
+    return patient
+        .map(Person::getRace)
+        .map(PersonUtils.raceMap::get)
+        .orElse(MappingConstants.UNK_CODE);
   }
 
   @JsonProperty("Patient_DOB")
@@ -247,7 +238,7 @@ public class TestEventExport {
 
   @JsonProperty("Patient_ethnicity")
   public String getPatientEthnicity() {
-    return patient.map(Person::getEthnicity).map(ethnicityMap::get).orElse(ethnicityUnknown);
+    return patient.map(Person::getEthnicity).map(ethnicityMap::get).orElse(MappingConstants.U_CODE);
   }
 
   @JsonProperty("Patient_street")

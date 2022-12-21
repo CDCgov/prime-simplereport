@@ -15,6 +15,7 @@ ci:
       - https://localhost.simplereport.gov/app/settings?facility=$FACILITY_ID
       - https://localhost.simplereport.gov/app/settings/facilities?facility=$FACILITY_ID
       - https://localhost.simplereport.gov/app/settings/add-facility/?facility=$FACILITY_ID
+      - https://localhost.simplereport.gov/app/upload-patients?facility=$FACILITY_ID
     settings:
       chromeFlags:
         - "--ignore-certificate-errors"
