@@ -1,0 +1,32 @@
+{
+  "resourceType": "Organization",
+  "identifier": [
+    {
+      "use": "usual",
+      "value": "3c9c7370-e2e3-49ad-bb7a-f6005f41cf29"
+    }
+  ],
+  "name": "Elron",
+  "telecom": [
+    {
+      "system": "phone",
+      "value": "(248) 555 1234",
+      "use": "work"
+    },
+    {
+      "system": "email",
+      "value": "email@example.com"
+    }
+  ],
+  "address": [
+    {
+      "line": [
+        "12 Main Street",
+        "Unit 4"
+      ],
+      "city": "Lakewood",
+      "state": "FL",
+      "postalCode": "21037"
+    }
+  ]
+}
