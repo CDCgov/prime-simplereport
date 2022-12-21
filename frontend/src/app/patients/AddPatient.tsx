@@ -5,16 +5,10 @@ import { useTranslation } from "react-i18next";
 import moment from "moment";
 import { useSelector } from "react-redux";
 
-import iconSprite from "../../../node_modules/uswds/dist/img/sprite.svg";
-import {
-  PATIENT_TERM,
-  PATIENT_TERM_CAP,
-  PATIENT_TERM_PLURAL_CAP,
-} from "../../config/constants";
+import { PATIENT_TERM_CAP } from "../../config/constants";
 import { dedupeAndCompactStrings } from "../utils";
 import { showSuccess } from "../utils/srToast";
 import Button from "../commonComponents/Button/Button";
-import { LinkWithQuery } from "../commonComponents/LinkWithQuery";
 import { useDocumentTitle } from "../utils/hooks";
 import { useSelectedFacility } from "../facilitySelect/useSelectedFacility";
 import { RootState } from "../store";
@@ -25,6 +19,7 @@ import {
   IdentifyingData,
 } from "./Components/DuplicatePatientModal";
 import PersonForm from "./Components/PersonForm";
+import { AddPatientHeader } from "./Components/AddPatientsHeader";
 
 export const EMPTY_PERSON: Nullable<PersonFormData> = {
   facilityId: "",
@@ -319,68 +314,51 @@ const AddPatient = () => {
     </>
   );
 
-  return (
-    <div className="prime-home bg-base-lightest">
-      <div className="grid-container">
-        <div className="prime-edit-patient">
-          <div className={"margin-bottom-4"}>
-            <DuplicatePatientModal
-              showModal={
-                patientExistsResponse?.patientExistsWithoutZip && !preventModal
-              }
-              onDuplicate={() => setRedirect(personPath)}
-              entityName={
-                identifyingData.facilityId
-                  ? facilities.find((f) => f.id === identifyingData.facilityId)
-                      ?.name
-                  : organization.name
-              }
-              onClose={() => {
-                setPreventModal(true);
-              }}
-            />
-            <PersonForm
-              patient={EMPTY_PERSON}
-              savePerson={savePerson}
-              onBlur={onBlur}
-              getHeader={(_, onSave, formChanged) => (
-                <div className="display-flex flex-justify">
-                  <div>
-                    <div className="display-flex flex-align-center">
-                      <svg
-                        className="usa-icon text-base margin-left-neg-2px"
-                        aria-hidden="true"
-                        focusable="false"
-                        role="img"
-                      >
-                        <use xlinkHref={iconSprite + "#arrow_back"}></use>
-                      </svg>
-                      <LinkWithQuery
-                        to={`/patients`}
-                        className="margin-left-05"
-                      >
-                        {PATIENT_TERM_PLURAL_CAP}
-                      </LinkWithQuery>
-                    </div>
-                    <div className="prime-edit-patient-heading margin-y-0">
-                      <h1 className="font-heading-lg margin-top-1 margin-bottom-0">
-                        Add new {PATIENT_TERM}
-                      </h1>
-                    </div>
-                  </div>
-                  <div className="display-flex flex-align-center">
-                    {getSaveButtons(formChanged, onSave, "upper")}
-                  </div>
-                </div>
-              )}
-              getFooter={(onSave, formChanged) => (
-                <div className="prime-edit-patient-heading">
-                  {getSaveButtons(formChanged, onSave, "lower")}
-                </div>
-              )}
-            />
+  function getHeader() {
+    return (
+      _: any,
+      onSave: (startTest?: boolean | undefined) => void,
+      formChanged: boolean
+    ) =>
+      AddPatientHeader({
+        additional: (
+          <div className="display-flex flex-align-center">
+            {getSaveButtons(formChanged, onSave, "upper")}
           </div>
-        </div>
+        ),
+      });
+  }
+
+  return (
+    <div className={"prime-edit-patient prime-home"}>
+      <div className={"grid-container margin-bottom-4 maxw-desktop-lg"}>
+        <DuplicatePatientModal
+          showModal={
+            patientExistsResponse?.patientExistsWithoutZip && !preventModal
+          }
+          onDuplicate={() => setRedirect(personPath)}
+          entityName={
+            identifyingData.facilityId
+              ? facilities.find((f) => f.id === identifyingData.facilityId)
+                  ?.name
+              : organization.name
+          }
+          onClose={() => {
+            setPreventModal(true);
+          }}
+        />
+        <PersonForm
+          patient={EMPTY_PERSON}
+          savePerson={savePerson}
+          onBlur={onBlur}
+          getHeader={getHeader()}
+          headerClassName={"padding-bottom-0"}
+          getFooter={(onSave, formChanged) => (
+            <div className="prime-edit-patient-heading">
+              {getSaveButtons(formChanged, onSave, "lower")}
+            </div>
+          )}
+        />
       </div>
     </div>
   );
