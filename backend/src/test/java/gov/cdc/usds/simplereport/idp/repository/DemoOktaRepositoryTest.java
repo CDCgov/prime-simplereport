@@ -339,10 +339,10 @@ class DemoOktaRepositoryTest {
         true);
     _repo.setUserIsActive(AMOS.getUsername(), false);
     assertEquals(
-        _repo.getAllUsersWithStatusForOrganization(ABC).get(AMOS.getUsername()),
-        UserStatus.DEPROVISIONED);
+        UserStatus.DEPROVISIONED,
+        _repo.getAllUsersWithStatusForOrganization(ABC).get(AMOS.getUsername()));
     assertEquals(
-        _repo.getAllUsersWithStatusForOrganization(ABC).get(BRAD.getUsername()), UserStatus.ACTIVE);
+        UserStatus.ACTIVE, _repo.getAllUsersWithStatusForOrganization(ABC).get(BRAD.getUsername()));
   }
 
   @Test

@@ -1,6 +1,5 @@
 package gov.cdc.usds.simplereport.service;
 
-import static org.assertj.core.api.AssertionsForClassTypes.assertThat;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 
@@ -238,7 +237,6 @@ class ApiUserServiceTest extends BaseServiceTest<ApiUserService> {
         activeUserEmails,
         List.of(
             "allfacilities@example.com", "nofacilities@example.com", "somefacilities@example.com"));
-    assertThat(activeUserEmails.contains("otherorgfacilities@example.com")).isFalse();
   }
 
   @Test
