@@ -85,7 +85,7 @@ class LiveOktaRepositoryTest {
     GroupProfile groupProfile3 = mock(GroupProfile.class);
     GroupProfile groupProfile4 = mock(GroupProfile.class);
 
-    when(_client.listUsers(username, null, null, null, null)).thenReturn(userList);
+    when(_client.listUsers(null, null, "profile.login eq \"" + username + "\"", null, null)).thenReturn(userList);
     when(userList.stream()).thenReturn(Stream.of(user));
     when(userList.single()).thenReturn(user);
     when(user.listGroups()).thenReturn(groupList);
@@ -153,7 +153,8 @@ class LiveOktaRepositoryTest {
     Group group1 = mock(Group.class);
     GroupProfile groupProfile1 = mock(GroupProfile.class);
 
-    when(_client.listUsers(username, null, null, null, null)).thenReturn(userList);
+    when(_client.listUsers(isNull(), isNull(), eq("profile.login eq \"" + username + "\""), isNull(), isNull()))
+            .thenReturn(userList);
     when(userList.stream()).thenReturn(Stream.of(user));
     when(userList.single()).thenReturn(user);
     when(user.getProfile()).thenReturn(userProfile);
@@ -186,7 +187,8 @@ class LiveOktaRepositoryTest {
     Group group1 = mock(Group.class);
     GroupProfile groupProfile1 = mock(GroupProfile.class);
 
-    when(_client.listUsers(username, null, null, null, null)).thenReturn(userList);
+    when(_client.listUsers(isNull(), isNull(), eq("profile.login eq \"" + username + "\""), isNull(), isNull()))
+            .thenReturn(userList);
     when(userList.stream()).thenReturn(Stream.of(user));
     when(userList.single()).thenReturn(user);
     when(user.getProfile()).thenReturn(userProfile);
@@ -210,7 +212,8 @@ class LiveOktaRepositoryTest {
 
     UserList userList = mock(UserList.class);
 
-    when(_client.listUsers(username, null, null, null, null)).thenReturn(userList);
+    when(_client.listUsers(isNull(), isNull(), eq("profile.login eq \"" + username + "\""), isNull(), isNull()))
+            .thenReturn(userList);
     when(userList.stream()).thenReturn(Stream.of());
 
     Throwable caught =
@@ -227,7 +230,8 @@ class LiveOktaRepositoryTest {
 
     UserList userList = mock(UserList.class);
 
-    when(_client.listUsers(username, null, null, null, null)).thenReturn(userList);
+    when(_client.listUsers(isNull(), isNull(), eq("profile.login eq \"" + username + "\""), isNull(), isNull()))
+            .thenReturn(userList);
     when(userList.stream()).thenReturn(Stream.of());
 
     Throwable caught =
@@ -247,7 +251,8 @@ class LiveOktaRepositoryTest {
     User user = mock(User.class);
     UserProfile userProfile = mock(UserProfile.class);
 
-    when(_client.listUsers(username, null, null, null, null)).thenReturn(userList);
+    when(_client.listUsers(isNull(), isNull(), eq("profile.login eq \"" + username + "\""), isNull(), isNull()))
+            .thenReturn(userList);
     when(userList.stream()).thenReturn(Stream.of(user));
     when(userList.single()).thenReturn(user);
     when(user.getStatus()).thenReturn(UserStatus.SUSPENDED);
@@ -270,7 +275,8 @@ class LiveOktaRepositoryTest {
     UserList userList = mock(UserList.class);
     User user = mock(User.class);
 
-    when(_client.listUsers(username, null, null, null, null)).thenReturn(userList);
+    when(_client.listUsers(isNull(), isNull(), eq("profile.login eq \"" + username + "\""), isNull(), isNull()))
+            .thenReturn(userList);
     when(userList.stream()).thenReturn(Stream.of(user));
     when(userList.single()).thenReturn(user);
     when(user.getStatus()).thenReturn(UserStatus.ACTIVE);
@@ -290,7 +296,8 @@ class LiveOktaRepositoryTest {
 
     UserList userList = mock(UserList.class);
 
-    when(_client.listUsers(username, null, null, null, null)).thenReturn(userList);
+    when(_client.listUsers(isNull(), isNull(), eq("profile.login eq \"" + username + "\""), isNull(), isNull()))
+            .thenReturn(userList);
     when(userList.stream()).thenReturn(Stream.of());
 
     IdentityAttributes identityAttributes = new IdentityAttributes(username, personName);
@@ -446,7 +453,7 @@ class LiveOktaRepositoryTest {
     when(mockGroup.listUsers()).thenReturn(mockUserList);
     when(mockUserList.stream()).then(i -> Stream.of(mockUser));
     when(mockUser.getProfile()).thenReturn(mockUserProfile);
-    when(mockUserProfile.getEmail()).thenReturn("email@example.com");
+    when(mockUserProfile.getLogin()).thenReturn("email@example.com");
 
     var actual = _repo.getAllUsersForOrganization(org);
     assertEquals(Set.of("email@example.com"), actual);
@@ -486,7 +493,7 @@ class LiveOktaRepositoryTest {
     when(mockGroup.listUsers()).thenReturn(mockUserList);
     when(mockUserList.stream()).then(i -> Stream.of(mockUser));
     when(mockUser.getProfile()).thenReturn(mockUserProfile);
-    when(mockUserProfile.getEmail()).thenReturn("email@example.com");
+    when(mockUserProfile.getLogin()).thenReturn("email@example.com");
     when(mockUser.getStatus()).thenReturn(UserStatus.ACTIVE);
 
     var actual = _repo.getAllUsersWithStatusForOrganization(org);
@@ -508,8 +515,8 @@ class LiveOktaRepositoryTest {
     var mockFullGroupList = mock(GroupList.class);
     var mockAdminGroup = mock(Group.class);
     var mockAdminGroupProfile = mock(GroupProfile.class);
-    when(_client.listUsers(eq(userName), isNull(), isNull(), isNull(), isNull()))
-        .thenReturn(mockUserList);
+    when(_client.listUsers(isNull(), isNull(), eq("profile.login eq \"" + userName + "\""), isNull(), isNull()))
+            .thenReturn(mockUserList);
     when(mockUserList.stream()).then(i -> Stream.of(mockUser));
     when(mockUserList.single()).thenReturn(mockUser);
     when(mockUser.listGroups()).thenReturn(mockGroupList);
@@ -539,8 +546,8 @@ class LiveOktaRepositoryTest {
     var org = new Organization("orgName", "orgType", "1", true);
     var mockUserList = mock(UserList.class);
 
-    when(_client.listUsers(eq(userName), isNull(), isNull(), isNull(), isNull()))
-        .thenReturn(mockUserList);
+    when(_client.listUsers(isNull(), isNull(), eq("profile.login eq \"" + userName + "\""), isNull(), isNull()))
+            .thenReturn(mockUserList);
     when(mockUserList.stream()).then(i -> Stream.of());
 
     Throwable caught =
@@ -560,7 +567,7 @@ class LiveOktaRepositoryTest {
     var mockGroupList = mock(GroupList.class);
     var mockGroup = mock(Group.class);
     var mockGroupProfile = mock(GroupProfile.class);
-    when(_client.listUsers(eq(userName), isNull(), isNull(), isNull(), isNull()))
+    when(_client.listUsers(isNull(), isNull(), eq("profile.login eq \"" + userName + "\""), isNull(), isNull()))
         .thenReturn(mockUserList);
     when(mockUserList.stream()).then(i -> Stream.of(mockUser));
     when(mockUserList.single()).thenReturn(mockUser);
@@ -593,8 +600,8 @@ class LiveOktaRepositoryTest {
     var mockGroupProfile = mock(GroupProfile.class);
     var mockEmptyGroupList = mock(GroupList.class);
 
-    when(_client.listUsers(eq(userName), isNull(), isNull(), isNull(), isNull()))
-        .thenReturn(mockUserList);
+    when(_client.listUsers(isNull(), isNull(), eq("profile.login eq \"" + userName + "\""), isNull(), isNull()))
+            .thenReturn(mockUserList);
     when(mockUserList.stream()).then(i -> Stream.of(mockUser));
     when(mockUserList.single()).thenReturn(mockUser);
     when(mockUser.listGroups()).thenReturn(mockGroupList);
@@ -629,8 +636,8 @@ class LiveOktaRepositoryTest {
     var mockGroupList = mock(GroupList.class);
     var mockGroup = mock(Group.class);
     var mockGroupProfile = mock(GroupProfile.class);
-    when(_client.listUsers(eq(userName), isNull(), isNull(), isNull(), isNull()))
-        .thenReturn(mockUserList);
+    when(_client.listUsers(isNull(), isNull(), eq("profile.login eq \"" + userName + "\""), isNull(), isNull()))
+            .thenReturn(mockUserList);
     when(mockUserList.stream()).then(i -> Stream.of(mockUser));
     when(mockUserList.single()).thenReturn(mockUser);
     when(mockUser.listGroups()).thenReturn(mockGroupList);
@@ -648,8 +655,8 @@ class LiveOktaRepositoryTest {
     var mockUserList = mock(UserList.class);
     var mockUser = mock(User.class);
 
-    when(_client.listUsers(eq(username), isNull(), isNull(), isNull(), isNull()))
-        .thenReturn(mockUserList);
+    when(_client.listUsers(isNull(), isNull(), eq("profile.login eq \"" + username + "\""), isNull(), isNull()))
+            .thenReturn(mockUserList);
     when(mockUserList.stream()).then(i -> Stream.of(mockUser));
     when(mockUserList.single()).thenReturn(mockUser);
 
@@ -662,8 +669,8 @@ class LiveOktaRepositoryTest {
     var username = "fraud@example.com";
     var mockUserList = mock(UserList.class);
 
-    when(_client.listUsers(eq(username), isNull(), isNull(), isNull(), isNull()))
-        .thenReturn(mockUserList);
+    when(_client.listUsers(isNull(), isNull(), eq("profile.login eq \"" + username + "\""), isNull(), isNull()))
+            .thenReturn(mockUserList);
     when(mockUserList.stream()).then(i -> Stream.of());
 
     Throwable caught =
@@ -679,8 +686,8 @@ class LiveOktaRepositoryTest {
     var mockUserList = mock(UserList.class);
     var mockUser = mock(User.class);
 
-    when(_client.listUsers(eq(username), isNull(), isNull(), isNull(), isNull()))
-        .thenReturn(mockUserList);
+    when(_client.listUsers(isNull(), isNull(), eq("profile.login eq \"" + username + "\""), isNull(), isNull()))
+            .thenReturn(mockUserList);
     when(mockUserList.stream()).then(i -> Stream.of(mockUser));
     when(mockUserList.single()).thenReturn(mockUser);
 
@@ -693,8 +700,8 @@ class LiveOktaRepositoryTest {
     var username = "fraud@example.com";
     var mockUserList = mock(UserList.class);
 
-    when(_client.listUsers(eq(username), isNull(), isNull(), isNull(), isNull()))
-        .thenReturn(mockUserList);
+    when(_client.listUsers(isNull(), isNull(), eq("profile.login eq \"" + username + "\""), isNull(), isNull()))
+            .thenReturn(mockUserList);
     when(mockUserList.stream()).then(i -> Stream.of());
 
     Throwable caught =
@@ -708,8 +715,8 @@ class LiveOktaRepositoryTest {
     var mockUserList = mock(UserList.class);
     var mockUser = mock(User.class);
 
-    when(_client.listUsers(eq(username), isNull(), isNull(), isNull(), isNull()))
-        .thenReturn(mockUserList);
+    when(_client.listUsers(isNull(), isNull(), eq("profile.login eq \"" + username + "\""), isNull(), isNull()))
+            .thenReturn(mockUserList);
     when(mockUserList.stream()).then(i -> Stream.of(mockUser));
     when(mockUserList.single()).thenReturn(mockUser);
     when(mockUser.getStatus()).thenReturn(UserStatus.ACTIVE);
@@ -725,8 +732,8 @@ class LiveOktaRepositoryTest {
     var mockUserList = mock(UserList.class);
     var mockUser = mock(User.class);
 
-    when(_client.listUsers(eq(username), isNull(), isNull(), isNull(), isNull()))
-        .thenReturn(mockUserList);
+    when(_client.listUsers(isNull(), isNull(), eq("profile.login eq \"" + username + "\""), isNull(), isNull()))
+            .thenReturn(mockUserList);
     when(mockUserList.stream()).then(i -> Stream.of(mockUser));
     when(mockUserList.single()).thenReturn(mockUser);
     when(mockUser.getStatus()).thenReturn(UserStatus.SUSPENDED);
@@ -742,8 +749,8 @@ class LiveOktaRepositoryTest {
     var mockUserList = mock(UserList.class);
     var mockUser = mock(User.class);
 
-    when(_client.listUsers(eq(username), isNull(), isNull(), isNull(), isNull()))
-        .thenReturn(mockUserList);
+    when(_client.listUsers(isNull(), isNull(), eq("profile.login eq \"" + username + "\""), isNull(), isNull()))
+            .thenReturn(mockUserList);
     when(mockUserList.stream()).then(i -> Stream.of(mockUser));
     when(mockUserList.single()).thenReturn(mockUser);
     when(mockUser.getStatus()).thenReturn(UserStatus.ACTIVE);
@@ -758,8 +765,8 @@ class LiveOktaRepositoryTest {
     var username = "fraud@example.com";
     var mockUserList = mock(UserList.class);
 
-    when(_client.listUsers(eq(username), isNull(), isNull(), isNull(), isNull()))
-        .thenReturn(mockUserList);
+    when(_client.listUsers(isNull(), isNull(), eq("profile.login eq \"" + username + "\""), isNull(), isNull()))
+            .thenReturn(mockUserList);
     when(mockUserList.stream()).then(i -> Stream.of());
 
     Throwable caught =
@@ -775,8 +782,8 @@ class LiveOktaRepositoryTest {
     var mockUserList = mock(UserList.class);
     var mockUser = mock(User.class);
 
-    when(_client.listUsers(eq(username), isNull(), isNull(), isNull(), isNull()))
-        .thenReturn(mockUserList);
+    when(_client.listUsers(isNull(), isNull(), eq("profile.login eq \"" + username + "\""), isNull(), isNull()))
+            .thenReturn(mockUserList);
     when(mockUserList.stream()).then(i -> Stream.of(mockUser));
     when(mockUserList.single()).thenReturn(mockUser);
     when(mockUser.getStatus()).thenReturn(UserStatus.ACTIVE);
@@ -789,8 +796,8 @@ class LiveOktaRepositoryTest {
     var username = "fraud@example.com";
     var mockUserList = mock(UserList.class);
 
-    when(_client.listUsers(eq(username), isNull(), isNull(), isNull(), isNull()))
-        .thenReturn(mockUserList);
+    when(_client.listUsers(isNull(), isNull(), eq("profile.login eq \"" + username + "\""), isNull(), isNull()))
+            .thenReturn(mockUserList);
     when(mockUserList.stream()).then(i -> Stream.of());
 
     Throwable caught =
@@ -805,8 +812,8 @@ class LiveOktaRepositoryTest {
     var mockUserList = mock(UserList.class);
     var mockUser = mock(User.class);
 
-    when(_client.listUsers(eq(username), isNull(), isNull(), isNull(), isNull()))
-        .thenReturn(mockUserList);
+    when(_client.listUsers(isNull(), isNull(), eq("profile.login eq \"" + username + "\""), isNull(), isNull()))
+            .thenReturn(mockUserList);
     when(mockUserList.stream()).then(i -> Stream.of(mockUser));
     when(mockUserList.single()).thenReturn(mockUser);
 
@@ -819,8 +826,8 @@ class LiveOktaRepositoryTest {
     var username = "fraud@example.com";
     var mockUserList = mock(UserList.class);
 
-    when(_client.listUsers(eq(username), isNull(), isNull(), isNull(), isNull()))
-        .thenReturn(mockUserList);
+    when(_client.listUsers(isNull(), isNull(), eq("profile.login eq \"" + username + "\""), isNull(), isNull()))
+            .thenReturn(mockUserList);
     when(mockUserList.stream()).then(i -> Stream.of());
 
     Throwable caught =
@@ -834,8 +841,8 @@ class LiveOktaRepositoryTest {
     var mockUserList = mock(UserList.class);
     var mockUser = mock(User.class);
 
-    when(_client.listUsers(eq(username), isNull(), isNull(), isNull(), isNull()))
-        .thenReturn(mockUserList);
+    when(_client.listUsers(isNull(), isNull(), eq("profile.login eq \"" + username + "\""), isNull(), isNull()))
+            .thenReturn(mockUserList);
     when(mockUserList.stream()).then(i -> Stream.of(mockUser));
     when(mockUserList.single()).thenReturn(mockUser);
     when(mockUser.getStatus()).thenReturn(UserStatus.PROVISIONED);
@@ -850,8 +857,8 @@ class LiveOktaRepositoryTest {
     var mockUserList = mock(UserList.class);
     var mockUser = mock(User.class);
 
-    when(_client.listUsers(eq(username), isNull(), isNull(), isNull(), isNull()))
-        .thenReturn(mockUserList);
+    when(_client.listUsers(isNull(), isNull(), eq("profile.login eq \"" + username + "\""), isNull(), isNull()))
+            .thenReturn(mockUserList);
     when(mockUserList.stream()).then(i -> Stream.of(mockUser));
     when(mockUserList.single()).thenReturn(mockUser);
     when(mockUser.getStatus()).thenReturn(UserStatus.STAGED);
@@ -865,8 +872,8 @@ class LiveOktaRepositoryTest {
     var username = "fraud@example.com";
     var mockUserList = mock(UserList.class);
 
-    when(_client.listUsers(eq(username), isNull(), isNull(), isNull(), isNull()))
-        .thenReturn(mockUserList);
+    when(_client.listUsers(isNull(), isNull(), eq("profile.login eq \"" + username + "\""), isNull(), isNull()))
+            .thenReturn(mockUserList);
     when(mockUserList.stream()).then(i -> Stream.of());
 
     Throwable caught =
@@ -882,8 +889,8 @@ class LiveOktaRepositoryTest {
     var mockUserList = mock(UserList.class);
     var mockUser = mock(User.class);
 
-    when(_client.listUsers(eq(username), isNull(), isNull(), isNull(), isNull()))
-        .thenReturn(mockUserList);
+    when(_client.listUsers(isNull(), isNull(), eq("profile.login eq \"" + username + "\""), isNull(), isNull()))
+            .thenReturn(mockUserList);
     when(mockUserList.stream()).then(i -> Stream.of(mockUser));
     when(mockUserList.single()).thenReturn(mockUser);
     when(mockUser.getStatus()).thenReturn(UserStatus.ACTIVE);
