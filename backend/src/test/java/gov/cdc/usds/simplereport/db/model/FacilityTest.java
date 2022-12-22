@@ -47,7 +47,7 @@ class FacilityTest {
             Objects.requireNonNull(
                 FacilityTest.class.getClassLoader().getResourceAsStream("fhir/organization.json")),
             StandardCharsets.UTF_8);
-    JSONAssert.assertEquals(actualSerialized, expectedSerialized, false);
+    JSONAssert.assertEquals(actualSerialized, expectedSerialized, true);
   }
 
   @Test
