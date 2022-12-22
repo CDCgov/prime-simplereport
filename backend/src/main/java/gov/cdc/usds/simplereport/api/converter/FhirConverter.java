@@ -5,6 +5,7 @@ import static gov.cdc.usds.simplereport.api.converter.FhirConstants.ETHNICITY_EX
 import static gov.cdc.usds.simplereport.api.converter.FhirConstants.NULL_CODE_SYSTEM;
 import static gov.cdc.usds.simplereport.api.converter.FhirConstants.RACE_CODING_SYSTEM;
 import static gov.cdc.usds.simplereport.api.converter.FhirConstants.RACE_EXTENSION_URL;
+import static gov.cdc.usds.simplereport.api.converter.FhirConstants.SNOMED_CODE_SYSTEM;
 import static gov.cdc.usds.simplereport.api.converter.FhirConstants.TRIBAL_AFFILIATION_CODE_SYSTEM;
 import static gov.cdc.usds.simplereport.api.converter.FhirConstants.TRIBAL_AFFILIATION_EXTENSION_URL;
 import static gov.cdc.usds.simplereport.api.converter.FhirConstants.TRIBAL_AFFILIATION_STRING;
@@ -33,6 +34,7 @@ import org.hl7.fhir.r4.model.Coding;
 import org.hl7.fhir.r4.model.ContactPoint;
 import org.hl7.fhir.r4.model.ContactPoint.ContactPointSystem;
 import org.hl7.fhir.r4.model.ContactPoint.ContactPointUse;
+import org.hl7.fhir.r4.model.Device;
 import org.hl7.fhir.r4.model.Enumerations.AdministrativeGender;
 import org.hl7.fhir.r4.model.Extension;
 import org.hl7.fhir.r4.model.HumanName;
@@ -272,5 +274,17 @@ public class FhirConverter {
       return ext;
     }
     return null;
+  }
+
+  public static Device convertToDevice(String manufacturer, String model, String specimenTypeCode) {
+    var device = new Device().setManufacturer(manufacturer).setModelNumber(model);
+    if (StringUtils.isNotBlank(specimenTypeCode)) {
+      var codeableConcept = new CodeableConcept();
+      var coding = codeableConcept.addCoding();
+      coding.setSystem(SNOMED_CODE_SYSTEM);
+      coding.setCode(specimenTypeCode);
+      device.setType(codeableConcept);
+    }
+    return device;
   }
 }

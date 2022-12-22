@@ -4,6 +4,7 @@ import static gov.cdc.usds.simplereport.api.converter.FhirConverter.convertToAdd
 import static gov.cdc.usds.simplereport.api.converter.FhirConverter.convertToAdministrativeGender;
 import static gov.cdc.usds.simplereport.api.converter.FhirConverter.convertToContactPoint;
 import static gov.cdc.usds.simplereport.api.converter.FhirConverter.convertToDate;
+import static gov.cdc.usds.simplereport.api.converter.FhirConverter.convertToDevice;
 import static gov.cdc.usds.simplereport.api.converter.FhirConverter.convertToEthnicityExtension;
 import static gov.cdc.usds.simplereport.api.converter.FhirConverter.convertToHumanName;
 import static gov.cdc.usds.simplereport.api.converter.FhirConverter.convertToIdentifier;
@@ -303,5 +304,16 @@ class FhirConverterTest {
   void null_convertToTribalAffiliation() {
     assertThat(convertToTribalAffiliationExtension((String) null)).isNull();
     assertThat(convertToTribalAffiliationExtension((List<String>) null)).isNull();
+  }
+
+  @Test
+  void string_convertToDevice() {
+    var actual = convertToDevice("DeviceLab", "bm-1k", "9999");
+
+    assertThat(actual.getManufacturer()).isEqualTo("DeviceLab");
+    assertThat(actual.getModelNumber()).isEqualTo("bm-1k");
+    assertThat(actual.getType().getCodingFirstRep().getSystem())
+        .isEqualTo("http://snomed.info/sct");
+    assertThat(actual.getType().getCodingFirstRep().getCode()).isEqualTo("9999");
   }
 }
