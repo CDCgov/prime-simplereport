@@ -1,5 +1,6 @@
 package gov.cdc.usds.simplereport.service;
 
+import static org.assertj.core.api.AssertionsForClassTypes.assertThat;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 
@@ -216,26 +217,28 @@ class ApiUserServiceTest extends BaseServiceTest<ApiUserService> {
 
   @Test
   @WithSimpleReportSiteAdminUser
-  void getAllActiveUsersByOrganization_success() {
+  void getAllUsersByOrganization_success() {
     Organization org = _dataFactory.createValidOrg();
     _dataFactory.createValidApiUser("allfacilities@example.com", org);
     _dataFactory.createValidApiUser("nofacilities@example.com", org);
     UserInfo userToBeDeleted = _dataFactory.createValidApiUser("somefacilities@example.com", org);
-    // delete a user
     _service.setIsDeleted(userToBeDeleted.getInternalId(), true);
-    // create another org with a user
+
     Organization differentOrg = _dataFactory.createValidOrg("other org", "k12", "OTHER_ORG", true);
     _dataFactory.createValidApiUser("otherorgfacilities@example.com", differentOrg);
 
     List<ApiUser> activeUsers = _service.getAllUsersByOrganization(org);
-    assertEquals(2, activeUsers.size());
+    assertEquals(3, activeUsers.size());
     List<String> activeUserEmails =
         activeUsers.stream()
             .map(activeUser -> activeUser.getLoginEmail())
             .sorted()
             .collect(Collectors.toList());
     assertEquals(
-        activeUserEmails, List.of("allfacilities@example.com", "nofacilities@example.com"));
+        activeUserEmails,
+        List.of(
+            "allfacilities@example.com", "nofacilities@example.com", "somefacilities@example.com"));
+    assertThat(activeUserEmails.contains("otherorgfacilities@example.com")).isFalse();
   }
 
   @Test

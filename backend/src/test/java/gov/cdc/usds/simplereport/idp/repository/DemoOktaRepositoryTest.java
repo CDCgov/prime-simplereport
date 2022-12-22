@@ -1,12 +1,14 @@
 package gov.cdc.usds.simplereport.idp.repository;
 
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 
+import com.okta.sdk.resource.user.UserStatus;
 import gov.cdc.usds.simplereport.api.CurrentTenantDataAccessContextHolder;
 import gov.cdc.usds.simplereport.api.model.errors.IllegalGraphqlArgumentException;
 import gov.cdc.usds.simplereport.config.AuthorizationProperties;
@@ -336,9 +338,11 @@ class DemoOktaRepositoryTest {
         Set.of(OrganizationRole.ENTRY_ONLY, OrganizationRole.ALL_FACILITIES),
         true);
     _repo.setUserIsActive(AMOS.getUsername(), false);
-
-    assertTrue(_repo.getAllUsersForOrganization(ABC).contains(BRAD.getUsername()));
-    assertFalse(_repo.getAllUsersForOrganization(ABC).contains(AMOS.getUsername()));
+    assertEquals(
+        _repo.getAllUsersWithStatusForOrganization(ABC).get(AMOS.getUsername()),
+        UserStatus.DEPROVISIONED);
+    assertEquals(
+        _repo.getAllUsersWithStatusForOrganization(ABC).get(BRAD.getUsername()), UserStatus.ACTIVE);
   }
 
   @Test

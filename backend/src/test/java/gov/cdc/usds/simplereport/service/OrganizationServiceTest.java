@@ -194,6 +194,7 @@ class OrganizationServiceTest extends BaseServiceTest<OrganizationService> {
 
     Set<Facility> archivedFacilities = _service.getFacilitiesIncludeArchived(org, true);
 
+    assertEquals(1, archivedFacilities.size());
     assertTrue(
         archivedFacilities.stream()
             .anyMatch(f -> f.getInternalId().equals(deletedFacility.getInternalId())));

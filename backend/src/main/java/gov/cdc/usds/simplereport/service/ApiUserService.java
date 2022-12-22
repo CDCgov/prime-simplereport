@@ -30,6 +30,7 @@ import java.util.EnumSet;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
+import java.util.Objects;
 import java.util.Optional;
 import java.util.Set;
 import java.util.UUID;
@@ -609,6 +610,7 @@ public class ApiUserService {
     Set<String> usernames = _oktaRepo.getAllUsersForOrganization(organization);
     return usernames.stream()
         .map(username -> _apiUserRepo.findByLoginEmailIncludeArchived(username).orElse(null))
+        .filter(Objects::nonNull)
         .collect(Collectors.toList());
   }
 
