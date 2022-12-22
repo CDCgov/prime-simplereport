@@ -227,8 +227,9 @@ public class LiveOktaRepository implements OktaRepository {
   }
 
   public Optional<OrganizationRoleClaims> updateUser(IdentityAttributes userIdentity) {
-    String loginSearchTerm = "profile.login eq \"" + userIdentity.getUsername() + "\"";
-    UserList users = _client.listUsers(null, null, loginSearchTerm, null, null);
+    UserList users =
+        _client.listUsers(
+            null, null, generateLoginSearchTerm(userIdentity.getUsername()), null, null);
     throwErrorIfEmpty(users.stream(), "Cannot update Okta user with unrecognized username");
     User user = users.single();
     updateUser(user, userIdentity);
@@ -248,8 +249,9 @@ public class LiveOktaRepository implements OktaRepository {
 
   public Optional<OrganizationRoleClaims> updateUserEmail(
       IdentityAttributes userIdentity, String email) {
-    String loginSearchTerm = "profile.login eq \"" + userIdentity.getUsername() + "\"";
-    UserList users = _client.listUsers(null, null, loginSearchTerm, null, null);
+    UserList users =
+        _client.listUsers(
+            null, null, generateLoginSearchTerm(userIdentity.getUsername()), null, null);
     throwErrorIfEmpty(
         users.stream(), "Cannot update email of Okta user with unrecognized username");
     User user = users.single();
@@ -263,8 +265,9 @@ public class LiveOktaRepository implements OktaRepository {
   }
 
   public void reprovisionUser(IdentityAttributes userIdentity) {
-    String loginSearchTerm = "profile.login eq \"" + userIdentity.getUsername() + "\"";
-    UserList users = _client.listUsers(null, null, loginSearchTerm, null, null);
+    UserList users =
+        _client.listUsers(
+            null, null, generateLoginSearchTerm(userIdentity.getUsername()), null, null);
     throwErrorIfEmpty(users.stream(), "Cannot reprovision Okta user with unrecognized username");
     User user = users.single();
     UserStatus userStatus = user.getStatus();
@@ -290,8 +293,7 @@ public class LiveOktaRepository implements OktaRepository {
 
   public Optional<OrganizationRoleClaims> updateUserPrivileges(
       String username, Organization org, Set<Facility> facilities, Set<OrganizationRole> roles) {
-    String loginSearchTerm = "profile.login eq \"" + username + "\"";
-    UserList users = _client.listUsers(null, null, loginSearchTerm, null, null);
+    UserList users = _client.listUsers(null, null, generateLoginSearchTerm(username), null, null);
     throwErrorIfEmpty(users.stream(), "Cannot update role of Okta user with unrecognized username");
     User user = users.single();
 
@@ -369,8 +371,7 @@ public class LiveOktaRepository implements OktaRepository {
   }
 
   public void resetUserPassword(String username) {
-    String loginSearchTerm = "profile.login eq \"" + username + "\"";
-    UserList users = _client.listUsers(null, null, loginSearchTerm, null, null);
+    UserList users = _client.listUsers(null, null, generateLoginSearchTerm(username), null, null);
     throwErrorIfEmpty(
         users.stream(), "Cannot reset password for Okta user with unrecognized username");
     User user = users.single();
@@ -378,16 +379,14 @@ public class LiveOktaRepository implements OktaRepository {
   }
 
   public void resetUserMfa(String username) {
-    String loginSearchTerm = "profile.login eq \"" + username + "\"";
-    UserList users = _client.listUsers(null, null, loginSearchTerm, null, null);
+    UserList users = _client.listUsers(null, null, generateLoginSearchTerm(username), null, null);
     throwErrorIfEmpty(users.stream(), "Cannot reset MFA for Okta user with unrecognized username");
     User user = users.single();
     user.resetFactors();
   }
 
   public void setUserIsActive(String username, Boolean active) {
-    String loginSearchTerm = "profile.login eq \"" + username + "\"";
-    UserList users = _client.listUsers(null, null, loginSearchTerm, null, null);
+    UserList users = _client.listUsers(null, null, generateLoginSearchTerm(username), null, null);
     throwErrorIfEmpty(
         users.stream(), "Cannot update active status of Okta user with unrecognized username");
     User user = users.single();
@@ -400,8 +399,7 @@ public class LiveOktaRepository implements OktaRepository {
   }
 
   public UserStatus getUserStatus(String username) {
-    String loginSearchTerm = "profile.login eq \"" + username + "\"";
-    UserList users = _client.listUsers(null, null, loginSearchTerm, null, null);
+    UserList users = _client.listUsers(null, null, generateLoginSearchTerm(username), null, null);
     throwErrorIfEmpty(
         users.stream(), "Cannot retrieve Okta user's status with unrecognized username");
     User user = users.single();
@@ -409,16 +407,14 @@ public class LiveOktaRepository implements OktaRepository {
   }
 
   public void reactivateUser(String username) {
-    String loginSearchTerm = "profile.login eq \"" + username + "\"";
-    UserList users = _client.listUsers(null, null, loginSearchTerm, null, null);
+    UserList users = _client.listUsers(null, null, generateLoginSearchTerm(username), null, null);
     throwErrorIfEmpty(users.stream(), "Cannot reactivate Okta user with unrecognized username");
     User user = users.single();
     user.unsuspend();
   }
 
   public void resendActivationEmail(String username) {
-    String loginSearchTerm = "profile.login eq \"" + username + "\"";
-    UserList users = _client.listUsers(null, null, loginSearchTerm, null, null);
+    UserList users = _client.listUsers(null, null, generateLoginSearchTerm(username), null, null);
     throwErrorIfEmpty(users.stream(), "Cannot reactivate Okta user with unrecognized username");
     User user = users.single();
     if (user.getStatus() == UserStatus.PROVISIONED) {
@@ -545,8 +541,7 @@ public class LiveOktaRepository implements OktaRepository {
       return getOrganizationRoleClaimsFromAuthorities(_tenantDataContextHolder.getAuthorities());
     }
 
-    String loginSearchTerm = "profile.login eq \"" + username + "\"";
-    UserList users = _client.listUsers(null, null, loginSearchTerm, null, null);
+    UserList users = _client.listUsers(null, null, generateLoginSearchTerm(username), null, null);
     throwErrorIfEmpty(users.stream(), "Cannot get org external ID for nonexistent user");
     User user = users.single();
     return getOrganizationRoleClaimsForUser(user);
@@ -605,6 +600,10 @@ public class LiveOktaRepository implements OktaRepository {
 
   private String generateFacilitySuffix(String facilityId) {
     return ":" + OrganizationExtractor.FACILITY_ACCESS_MARKER + ":" + facilityId;
+  }
+
+  private String generateLoginSearchTerm(String username) {
+    return "profile.login eq \"" + username + "\"";
   }
 
   private void throwErrorIfEmpty(Stream<?> stream, String errorMessage) {
