@@ -279,7 +279,9 @@ public class FhirConverter {
   }
 
   public static Device convertToDevice(DeviceType deviceType, SpecimenType specimenType) {
-    String manufacturer = null, model = null, specimenTypeCode = null;
+    String manufacturer = null;
+    String model = null;
+    String specimenTypeCode = null;
     if (deviceType != null) {
       manufacturer = deviceType.getManufacturer();
       model = deviceType.getModel();
