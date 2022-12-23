@@ -1,10 +1,13 @@
 package gov.cdc.usds.simplereport.db.model;
 
+import static gov.cdc.usds.simplereport.api.converter.FhirConverter.convertToDevice;
+
 import java.util.Objects;
 import javax.persistence.Entity;
 import javax.persistence.JoinColumn;
 import javax.persistence.ManyToOne;
 import org.hibernate.annotations.NaturalId;
+import org.hl7.fhir.r4.model.Device;
 
 /**
  * A valid combination of device and specimen types. Can be soft-deleted, but cannot be otherwise
@@ -54,5 +57,9 @@ public class DeviceSpecimenType extends EternalAuditedEntity {
   @Override
   public int hashCode() {
     return Objects.hash(deviceType, specimenType);
+  }
+
+  public Device toFhir() {
+    return convertToDevice(deviceType, specimenType);
   }
 }

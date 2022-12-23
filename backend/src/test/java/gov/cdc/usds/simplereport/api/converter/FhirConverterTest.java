@@ -16,7 +16,9 @@ import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.from;
 import static org.junit.jupiter.params.provider.Arguments.arguments;
 
+import gov.cdc.usds.simplereport.db.model.DeviceType;
 import gov.cdc.usds.simplereport.db.model.PhoneNumber;
+import gov.cdc.usds.simplereport.db.model.SpecimenType;
 import gov.cdc.usds.simplereport.db.model.auxiliary.PhoneType;
 import java.util.Collections;
 import java.util.List;
@@ -315,5 +317,37 @@ class FhirConverterTest {
     assertThat(actual.getType().getCodingFirstRep().getSystem())
         .isEqualTo("http://snomed.info/sct");
     assertThat(actual.getType().getCodingFirstRep().getCode()).isEqualTo("9999");
+  }
+
+  @Test
+  void nullStrings_convertToDevice() {
+    var actual = convertToDevice(null, null, null);
+
+    assertThat(actual.getManufacturer()).isEqualTo(null);
+    assertThat(actual.getModelNumber()).isEqualTo(null);
+    assertThat(actual.getType().getCoding()).isEmpty();
+  }
+
+  @Test
+  void deviceSpecimenType_convertToDevice() {
+    var deviceType = new DeviceType("name", "manufacturer", "model", "loinc", "swab type", 15);
+    var specimenType = new SpecimenType("nasal", "40001", "nose", "10101");
+
+    var actual = convertToDevice(deviceType, specimenType);
+
+    assertThat(actual.getManufacturer()).isEqualTo("manufacturer");
+    assertThat(actual.getModelNumber()).isEqualTo("model");
+    assertThat(actual.getType().getCodingFirstRep().getSystem())
+        .isEqualTo("http://snomed.info/sct");
+    assertThat(actual.getType().getCodingFirstRep().getCode()).isEqualTo("40001");
+  }
+
+  @Test
+  void nullDeviceType_convertToDevice() {
+    var actual = convertToDevice(null, null);
+
+    assertThat(actual.getManufacturer()).isEqualTo(null);
+    assertThat(actual.getModelNumber()).isEqualTo(null);
+    assertThat(actual.getType().getCoding()).isEmpty();
   }
 }

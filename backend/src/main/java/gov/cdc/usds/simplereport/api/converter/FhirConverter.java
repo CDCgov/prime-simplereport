@@ -14,8 +14,10 @@ import com.google.i18n.phonenumbers.NumberParseException;
 import com.google.i18n.phonenumbers.PhoneNumberUtil;
 import com.google.i18n.phonenumbers.PhoneNumberUtil.PhoneNumberFormat;
 import gov.cdc.usds.simplereport.api.MappingConstants;
+import gov.cdc.usds.simplereport.db.model.DeviceType;
 import gov.cdc.usds.simplereport.db.model.PersonUtils;
 import gov.cdc.usds.simplereport.db.model.PhoneNumber;
+import gov.cdc.usds.simplereport.db.model.SpecimenType;
 import gov.cdc.usds.simplereport.db.model.auxiliary.PersonName;
 import gov.cdc.usds.simplereport.db.model.auxiliary.PhoneType;
 import gov.cdc.usds.simplereport.db.model.auxiliary.StreetAddress;
@@ -274,6 +276,18 @@ public class FhirConverter {
       return ext;
     }
     return null;
+  }
+
+  public static Device convertToDevice(DeviceType deviceType, SpecimenType specimenType) {
+    String manufacturer = null, model = null, specimenTypeCode = null;
+    if (deviceType != null) {
+      manufacturer = deviceType.getManufacturer();
+      model = deviceType.getModel();
+    }
+    if (specimenType != null) {
+      specimenTypeCode = specimenType.getTypeCode();
+    }
+    return convertToDevice(manufacturer, model, specimenTypeCode);
   }
 
   public static Device convertToDevice(String manufacturer, String model, String specimenTypeCode) {
