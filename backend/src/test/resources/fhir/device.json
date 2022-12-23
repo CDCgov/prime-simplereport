@@ -1,13 +1,5 @@
 {
   "resourceType": "Device",
   "manufacturer": "biotech",
-  "modelNumber": "m9001",
-  "type": {
-    "coding": [
-      {
-        "system": "http://snomed.info/sct",
-        "code": "40001"
-      }
-    ]
-  }
+  "modelNumber": "m9001"
 }

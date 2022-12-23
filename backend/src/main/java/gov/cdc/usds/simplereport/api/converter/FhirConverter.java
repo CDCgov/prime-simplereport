@@ -5,7 +5,6 @@ import static gov.cdc.usds.simplereport.api.converter.FhirConstants.ETHNICITY_EX
 import static gov.cdc.usds.simplereport.api.converter.FhirConstants.NULL_CODE_SYSTEM;
 import static gov.cdc.usds.simplereport.api.converter.FhirConstants.RACE_CODING_SYSTEM;
 import static gov.cdc.usds.simplereport.api.converter.FhirConstants.RACE_EXTENSION_URL;
-import static gov.cdc.usds.simplereport.api.converter.FhirConstants.SNOMED_CODE_SYSTEM;
 import static gov.cdc.usds.simplereport.api.converter.FhirConstants.TRIBAL_AFFILIATION_CODE_SYSTEM;
 import static gov.cdc.usds.simplereport.api.converter.FhirConstants.TRIBAL_AFFILIATION_EXTENSION_URL;
 import static gov.cdc.usds.simplereport.api.converter.FhirConstants.TRIBAL_AFFILIATION_STRING;
@@ -286,18 +285,10 @@ public class FhirConverter {
     }
     // the type actually should be a SNOMED device as found on this list:
     // https://www.findacode.com/snomed/49062001--device.html
-    return convertToDevice(manufacturer, model, null);
+    return convertToDevice(manufacturer, model);
   }
 
-  public static Device convertToDevice(String manufacturer, String model, String deviceCode) {
-    var device = new Device().setManufacturer(manufacturer).setModelNumber(model);
-    if (StringUtils.isNotBlank(deviceCode)) {
-      var codeableConcept = new CodeableConcept();
-      var coding = codeableConcept.addCoding();
-      coding.setSystem(SNOMED_CODE_SYSTEM);
-      coding.setCode(deviceCode);
-      device.setType(codeableConcept);
-    }
-    return device;
+  public static Device convertToDevice(String manufacturer, String model) {
+    return new Device().setManufacturer(manufacturer).setModelNumber(model);
   }
 }

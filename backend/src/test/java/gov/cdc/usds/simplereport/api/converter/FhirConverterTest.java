@@ -309,22 +309,18 @@ class FhirConverterTest {
 
   @Test
   void string_convertToDevice() {
-    var actual = convertToDevice("DeviceLab", "bm-1k", "9999");
+    var actual = convertToDevice("DeviceLab", "bm-1k");
 
     assertThat(actual.getManufacturer()).isEqualTo("DeviceLab");
     assertThat(actual.getModelNumber()).isEqualTo("bm-1k");
-    assertThat(actual.getType().getCodingFirstRep().getSystem())
-        .isEqualTo("http://snomed.info/sct");
-    assertThat(actual.getType().getCodingFirstRep().getCode()).isEqualTo("9999");
   }
 
   @Test
   void nullStrings_convertToDevice() {
-    var actual = convertToDevice(null, null, null);
+    var actual = convertToDevice(null, null);
 
     assertThat(actual.getManufacturer()).isNull();
     assertThat(actual.getModelNumber()).isNull();
-    assertThat(actual.getType().getCoding()).isEmpty();
   }
 
   @Test
@@ -335,9 +331,6 @@ class FhirConverterTest {
 
     assertThat(actual.getManufacturer()).isEqualTo("manufacturer");
     assertThat(actual.getModelNumber()).isEqualTo("model");
-    assertThat(actual.getType().getCodingFirstRep().getSystem())
-        .isEqualTo("http://snomed.info/sct");
-    assertThat(actual.getType().getCodingFirstRep().getCode()).isEqualTo("40001");
   }
 
   @Test
@@ -346,6 +339,5 @@ class FhirConverterTest {
 
     assertThat(actual.getManufacturer()).isNull();
     assertThat(actual.getModelNumber()).isNull();
-    assertThat(actual.getType().getCoding()).isEmpty();
   }
 }
