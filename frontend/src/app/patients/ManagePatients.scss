@@ -13,6 +13,10 @@
     background: inherit;
   }
 
+  .sr-patient-row-header {
+    max-width: 300px;
+  }
+
   .sr-patient-row--removed {
     text-decoration: line-through;
   }
