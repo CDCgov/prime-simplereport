@@ -21,7 +21,7 @@ class DeviceSpecimenTypeTest {
                 new DeviceType("name", "biotech", "m9001", "loinc", "swab type", 15),
                 new SpecimenType("nasal", "40001", "nose", "10101")));
 
-    var actual = deviceSpecimenType.toFhir();
+    var actual = deviceSpecimenType.getFhirDevice();
 
     FhirContext ctx = FhirContext.forR4();
     IParser parser = ctx.newJsonParser();

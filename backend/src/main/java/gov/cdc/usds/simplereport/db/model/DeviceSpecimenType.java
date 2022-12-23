@@ -59,7 +59,7 @@ public class DeviceSpecimenType extends EternalAuditedEntity {
     return Objects.hash(deviceType, specimenType);
   }
 
-  public Device toFhir() {
+  public Device getFhirDevice() {
     return convertToDevice(deviceType, specimenType);
   }
 }
