@@ -46,7 +46,7 @@ class ProviderTest {
   }
 
   @Test
-  void emptyPractioner_toFhir() {
+  void emptyPractitioner_toFhir() {
     var provider = new Provider();
 
     var actual = provider.toFhir();
