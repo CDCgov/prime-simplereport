@@ -60,6 +60,6 @@ public class DeviceSpecimenType extends EternalAuditedEntity {
   }
 
   public Device getFhirDevice() {
-    return convertToDevice(deviceType, specimenType);
+    return convertToDevice(deviceType);
   }
 }

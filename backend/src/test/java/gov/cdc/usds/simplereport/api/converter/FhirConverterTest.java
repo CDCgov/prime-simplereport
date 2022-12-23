@@ -18,7 +18,6 @@ import static org.junit.jupiter.params.provider.Arguments.arguments;
 
 import gov.cdc.usds.simplereport.db.model.DeviceType;
 import gov.cdc.usds.simplereport.db.model.PhoneNumber;
-import gov.cdc.usds.simplereport.db.model.SpecimenType;
 import gov.cdc.usds.simplereport.db.model.auxiliary.PhoneType;
 import java.util.Collections;
 import java.util.List;
@@ -331,9 +330,8 @@ class FhirConverterTest {
   @Test
   void deviceSpecimenType_convertToDevice() {
     var deviceType = new DeviceType("name", "manufacturer", "model", "loinc", "swab type", 15);
-    var specimenType = new SpecimenType("nasal", "40001", "nose", "10101");
 
-    var actual = convertToDevice(deviceType, specimenType);
+    var actual = convertToDevice(deviceType);
 
     assertThat(actual.getManufacturer()).isEqualTo("manufacturer");
     assertThat(actual.getModelNumber()).isEqualTo("model");
@@ -344,7 +342,7 @@ class FhirConverterTest {
 
   @Test
   void nullDeviceType_convertToDevice() {
-    var actual = convertToDevice(null, null);
+    var actual = convertToDevice(null);
 
     assertThat(actual.getManufacturer()).isNull();
     assertThat(actual.getModelNumber()).isNull();

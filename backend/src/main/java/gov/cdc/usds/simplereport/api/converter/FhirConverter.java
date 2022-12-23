@@ -17,7 +17,6 @@ import gov.cdc.usds.simplereport.api.MappingConstants;
 import gov.cdc.usds.simplereport.db.model.DeviceType;
 import gov.cdc.usds.simplereport.db.model.PersonUtils;
 import gov.cdc.usds.simplereport.db.model.PhoneNumber;
-import gov.cdc.usds.simplereport.db.model.SpecimenType;
 import gov.cdc.usds.simplereport.db.model.auxiliary.PersonName;
 import gov.cdc.usds.simplereport.db.model.auxiliary.PhoneType;
 import gov.cdc.usds.simplereport.db.model.auxiliary.StreetAddress;
@@ -278,27 +277,25 @@ public class FhirConverter {
     return null;
   }
 
-  public static Device convertToDevice(DeviceType deviceType, SpecimenType specimenType) {
+  public static Device convertToDevice(DeviceType deviceType) {
     String manufacturer = null;
     String model = null;
-    String specimenTypeCode = null;
     if (deviceType != null) {
       manufacturer = deviceType.getManufacturer();
       model = deviceType.getModel();
     }
-    if (specimenType != null) {
-      specimenTypeCode = specimenType.getTypeCode();
-    }
-    return convertToDevice(manufacturer, model, specimenTypeCode);
+    // the type actually should be a SNOMED device as found on this list:
+    // https://www.findacode.com/snomed/49062001--device.html
+    return convertToDevice(manufacturer, model, null);
   }
 
-  public static Device convertToDevice(String manufacturer, String model, String specimenTypeCode) {
+  public static Device convertToDevice(String manufacturer, String model, String deviceCode) {
     var device = new Device().setManufacturer(manufacturer).setModelNumber(model);
-    if (StringUtils.isNotBlank(specimenTypeCode)) {
+    if (StringUtils.isNotBlank(deviceCode)) {
       var codeableConcept = new CodeableConcept();
       var coding = codeableConcept.addCoding();
       coding.setSystem(SNOMED_CODE_SYSTEM);
-      coding.setCode(specimenTypeCode);
+      coding.setCode(deviceCode);
       device.setType(codeableConcept);
     }
     return device;
