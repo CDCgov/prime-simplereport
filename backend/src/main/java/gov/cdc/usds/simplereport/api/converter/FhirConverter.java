@@ -279,19 +279,18 @@ public class FhirConverter {
   }
 
   public static Device convertToDevice(DeviceType deviceType) {
-    String manufacturer = null;
-    String model = null;
     if (deviceType != null) {
-      manufacturer = deviceType.getManufacturer();
-      model = deviceType.getModel();
+      return convertToDevice(deviceType.getManufacturer(), deviceType.getModel());
     }
-    // the type actually should be a SNOMED device as found on this list:
-    // https://www.findacode.com/snomed/49062001--device.html
-    return convertToDevice(manufacturer, model);
+    return null;
   }
 
   public static Device convertToDevice(String manufacturer, String model) {
-    return new Device().setManufacturer(manufacturer).setModelNumber(model);
+    if (StringUtils.isNotBlank(manufacturer) || StringUtils.isNotBlank(model)) {
+      return new Device().setManufacturer(manufacturer).setModelNumber(model);
+    }
+
+    return null;
   }
 
   public static Specimen convertToSpecimen(

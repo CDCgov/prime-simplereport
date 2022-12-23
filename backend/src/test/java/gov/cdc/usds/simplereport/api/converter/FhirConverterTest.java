@@ -314,16 +314,14 @@ class FhirConverterTest {
   void string_convertToDevice() {
     var actual = convertToDevice("DeviceLab", "bm-1k");
 
+    assert actual != null;
     assertThat(actual.getManufacturer()).isEqualTo("DeviceLab");
     assertThat(actual.getModelNumber()).isEqualTo("bm-1k");
   }
 
   @Test
-  void nullStrings_convertToDevice() {
-    var actual = convertToDevice(null, null);
-
-    assertThat(actual.getManufacturer()).isNull();
-    assertThat(actual.getModelNumber()).isNull();
+  void nullString_convertToDevice() {
+    assertThat(convertToDevice(null, null)).isNull();
   }
 
   @Test
@@ -338,10 +336,7 @@ class FhirConverterTest {
 
   @Test
   void nullDeviceType_convertToDevice() {
-    var actual = convertToDevice(null);
-
-    assertThat(actual.getManufacturer()).isNull();
-    assertThat(actual.getModelNumber()).isNull();
+    assertThat(convertToDevice(null)).isNull();
   }
 
   @Test
