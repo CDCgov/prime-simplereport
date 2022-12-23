@@ -5,6 +5,7 @@ import static gov.cdc.usds.simplereport.api.converter.FhirConstants.ETHNICITY_EX
 import static gov.cdc.usds.simplereport.api.converter.FhirConstants.NULL_CODE_SYSTEM;
 import static gov.cdc.usds.simplereport.api.converter.FhirConstants.RACE_CODING_SYSTEM;
 import static gov.cdc.usds.simplereport.api.converter.FhirConstants.RACE_EXTENSION_URL;
+import static gov.cdc.usds.simplereport.api.converter.FhirConstants.SNOMED_CODE_SYSTEM;
 import static gov.cdc.usds.simplereport.api.converter.FhirConstants.TRIBAL_AFFILIATION_CODE_SYSTEM;
 import static gov.cdc.usds.simplereport.api.converter.FhirConstants.TRIBAL_AFFILIATION_EXTENSION_URL;
 import static gov.cdc.usds.simplereport.api.converter.FhirConstants.TRIBAL_AFFILIATION_STRING;
@@ -40,6 +41,7 @@ import org.hl7.fhir.r4.model.Extension;
 import org.hl7.fhir.r4.model.HumanName;
 import org.hl7.fhir.r4.model.Identifier;
 import org.hl7.fhir.r4.model.Identifier.IdentifierUse;
+import org.hl7.fhir.r4.model.Specimen;
 import org.hl7.fhir.r4.model.StringType;
 
 @Slf4j
@@ -290,5 +292,27 @@ public class FhirConverter {
 
   public static Device convertToDevice(String manufacturer, String model) {
     return new Device().setManufacturer(manufacturer).setModelNumber(model);
+  }
+
+  public static Specimen convertToSpecimen(
+      String specimenCode, String specimenName, String collectionCode, String collectionName) {
+    var specimen = new Specimen();
+    if (StringUtils.isNotBlank(specimenCode)) {
+      var codeableConcept = specimen.getType();
+      var coding = codeableConcept.addCoding();
+      coding.setSystem(SNOMED_CODE_SYSTEM);
+      coding.setCode(specimenCode);
+      codeableConcept.setText(specimenName);
+    }
+    if (StringUtils.isNotBlank(collectionCode)) {
+      var collection = specimen.getCollection();
+      var codeableConcept = collection.getBodySite();
+      var coding = codeableConcept.addCoding();
+      coding.setSystem(SNOMED_CODE_SYSTEM);
+      coding.setCode(collectionCode);
+      codeableConcept.setText(collectionName);
+    }
+
+    return specimen;
   }
 }

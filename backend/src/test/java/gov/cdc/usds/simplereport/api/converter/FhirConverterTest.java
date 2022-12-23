@@ -9,6 +9,7 @@ import static gov.cdc.usds.simplereport.api.converter.FhirConverter.convertToEth
 import static gov.cdc.usds.simplereport.api.converter.FhirConverter.convertToHumanName;
 import static gov.cdc.usds.simplereport.api.converter.FhirConverter.convertToIdentifier;
 import static gov.cdc.usds.simplereport.api.converter.FhirConverter.convertToRaceExtension;
+import static gov.cdc.usds.simplereport.api.converter.FhirConverter.convertToSpecimen;
 import static gov.cdc.usds.simplereport.api.converter.FhirConverter.convertToTribalAffiliationExtension;
 import static gov.cdc.usds.simplereport.api.converter.FhirConverter.emailToContactPoint;
 import static gov.cdc.usds.simplereport.api.converter.FhirConverter.phoneNumberToContactPoint;
@@ -35,11 +36,13 @@ import org.junit.jupiter.params.provider.Arguments;
 import org.junit.jupiter.params.provider.MethodSource;
 
 class FhirConverterTest {
+
   private static final String unknownSystem = "http://terminology.hl7.org/CodeSystem/v3-NullFlavor";
   private static final String raceCodeSystem = "http://terminology.hl7.org/CodeSystem/v3-Race";
   private static final String ethnicitySystem = "urn:oid:2.16.840.1.113883.6.238";
   private static final String tribalSystemUrl =
       "http://terminology.hl7.org/CodeSystem/v3-TribalEntityUS";
+  public static final String snomedCode = "http://snomed.info/sct";
 
   @Test
   void allFields_convertToHumanName() {
@@ -339,5 +342,38 @@ class FhirConverterTest {
 
     assertThat(actual.getManufacturer()).isNull();
     assertThat(actual.getModelNumber()).isNull();
+  }
+
+  @Test
+  void string_convertToSpecimen() {
+    var actual =
+        convertToSpecimen(
+            "258500001",
+            "Nasopharyngeal swab",
+            "53342003",
+            "Internal nose structure (body structure)");
+
+    assertThat(actual.getType().getCoding()).hasSize(1);
+    assertThat(actual.getType().getCodingFirstRep().getSystem()).isEqualTo(snomedCode);
+    assertThat(actual.getType().getCodingFirstRep().getCode()).isEqualTo("258500001");
+    assertThat(actual.getType().getText()).isEqualTo("Nasopharyngeal swab");
+
+    assertThat(actual.getCollection().getBodySite().getCoding()).hasSize(1);
+    assertThat(actual.getCollection().getBodySite().getCodingFirstRep().getSystem())
+        .isEqualTo(snomedCode);
+    assertThat(actual.getCollection().getBodySite().getCodingFirstRep().getCode())
+        .isEqualTo("53342003");
+    assertThat(actual.getCollection().getBodySite().getText())
+        .isEqualTo("Internal nose structure (body structure)");
+  }
+
+  @Test
+  void null_convertToSpecimen() {
+    var actual = convertToSpecimen(null, null, null, null);
+
+    assertThat(actual.getType().getText()).isNull();
+    assertThat(actual.getType().getCoding()).isEmpty();
+    assertThat(actual.getCollection().getBodySite().getText()).isNull();
+    assertThat(actual.getCollection().getBodySite().getCoding()).isEmpty();
   }
 }
