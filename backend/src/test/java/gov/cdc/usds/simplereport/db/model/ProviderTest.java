@@ -42,7 +42,6 @@ class ProviderTest {
             Objects.requireNonNull(
                 ProviderTest.class.getClassLoader().getResourceAsStream("fhir/practitioner.json")),
             StandardCharsets.UTF_8);
-    System.out.println(actualSerialized);
     JSONAssert.assertEquals(actualSerialized, expectedSerialized, true);
   }
 
