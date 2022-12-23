@@ -64,7 +64,7 @@ describe("Uploads", () => {
 
     const emptyFile = file("");
     const input = screen.getByTestId("file-input-input");
-    userEvent.upload(input, emptyFile);
+    await userEvent.upload(input, emptyFile);
     expect(
       await screen.findByText(
         "The file 'values.csv' doesn't contain any valid data. File should have a header line and at least one line of data."
@@ -79,7 +79,7 @@ describe("Uploads", () => {
     const tooManyRows = file("\n".repeat(10001));
 
     const input = screen.getByTestId("file-input-input");
-    userEvent.upload(input, tooManyRows);
+    await userEvent.upload(input, tooManyRows);
 
     expect(
       await screen.findByText(
@@ -95,7 +95,7 @@ describe("Uploads", () => {
     const tooBig = file("0".repeat(50 * 1000 * 1000 + 1));
 
     const input = screen.getByTestId("file-input-input");
-    userEvent.upload(input, tooBig);
+    await userEvent.upload(input, tooBig);
 
     expect(
       await screen.findByText(
@@ -111,7 +111,7 @@ describe("Uploads", () => {
     const tooManyColumns = file("a, ".repeat(2001) + "\n");
 
     const input = screen.getByTestId("file-input-input");
-    userEvent.upload(input, tooManyColumns);
+    await userEvent.upload(input, tooManyColumns);
 
     expect(
       await screen.findByText(

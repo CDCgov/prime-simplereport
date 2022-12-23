@@ -53,7 +53,7 @@ const successResponseBody = {
 };
 
 async function userEventUpload(uploadFile: File, facility: string) {
-  const input = screen.getByTestId("file-input-input");
+  const input = screen.getByTestId("upload-patients-file-input");
   await userEvent.upload(input, uploadFile);
   await userEvent.click(screen.getByText(facility));
   await userEvent.click(screen.getByText("Upload CSV file"));
@@ -115,7 +115,7 @@ describe("Upload Patient", () => {
       await userEvent.click(screen.getByText("One facility"));
       expect(await screen.findByText("Upload CSV file")).toBeDisabled();
       const uploadFile = file("someText");
-      const input = screen.getByTestId("file-input-input");
+      const input = screen.getByTestId("upload-patients-file-input");
       await userEvent.upload(input, uploadFile);
 
       expect(await screen.findByText("Upload CSV file")).toBeEnabled();
@@ -125,7 +125,7 @@ describe("Upload Patient", () => {
       expect(await screen.findByText("Upload CSV file")).toBeDisabled();
 
       const uploadFile = file("someText");
-      const input = screen.getByTestId("file-input-input");
+      const input = screen.getByTestId("upload-patients-file-input");
       await userEvent.upload(input, uploadFile);
       expect(await screen.findByText("Upload CSV file")).toBeDisabled();
       await userEvent.click(screen.getByText("One facility"));
@@ -262,19 +262,28 @@ describe("Upload Patient", () => {
     it("should do nothing if no file was added", async () => {
       renderUploadPatients();
 
-      const input = screen.getByTestId("file-input-input");
+      const input = screen.getByTestId("upload-patients-file-input");
       await userEvent.upload(input, []);
-
-      expect(screen.getByText("Drag file here or")).toBeInTheDocument();
+      expect(
+        screen.getByRole("button", { name: /upload csv file/i })
+      ).toBeDisabled();
+      expect(
+        screen.getByText("Drag files here or choose from folder")
+      ).toBeInTheDocument();
+      expect(
+        screen.queryByText(
+          "Drag files here or choose from folder to change file"
+        )
+      ).not.toBeInTheDocument();
     });
     it("shows the file when selected", async () => {
       renderUploadPatients();
 
-      const input = screen.getByTestId("file-input-input");
+      const input = screen.getByTestId("upload-patients-file-input");
       await userEvent.upload(input, file("someText"));
-
-      expect(screen.getByText("Selected file")).toBeInTheDocument();
-      expect(screen.getByText("values.csv")).toBeInTheDocument();
+      expect(
+        screen.getByText("Drag files here or choose from folder to change file")
+      ).toBeInTheDocument();
     });
   });
   it("should redirect user if not admin", () => {

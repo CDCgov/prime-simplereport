@@ -220,44 +220,24 @@ exports[`Upload Patient displays the upload patients page correctly 1`] = `
                   data-testid="formGroup"
                 >
                   <div
-                    class="usa-file-input"
-                    data-testid="file-input"
+                    class="sr-single-file-input blank"
                   >
-                    <div
-                      class="usa-file-input__target"
-                      data-testid="file-input-droptarget"
+                    <input
+                      accept="text/csv, .csv"
+                      aria-describedby="file-input-specific-hint"
+                      aria-label="Choose CSV file"
+                      class="usa-file-input"
+                      data-testid="upload-patients-file-input"
+                      id="upload-patients-file-input"
+                      name="upload-patients-file-input"
+                      required=""
+                      type="file"
+                    />
+                    <span
+                      id="file-input-specific-hint"
                     >
-                      <div
-                        aria-hidden="true"
-                        class="usa-file-input__instructions"
-                        data-testid="file-input-instructions"
-                      >
-                        <span
-                          class="usa-file-input__drag-text"
-                        >
-                          Drag file here or 
-                        </span>
-                        <span
-                          class="usa-file-input__choose"
-                        >
-                          choose from folder
-                        </span>
-                      </div>
-                      <div
-                        class="usa-file-input__box"
-                        data-testid="file-input-box"
-                      />
-                      <input
-                        accept="text/csv, .csv"
-                        aria-label="Choose CSV file"
-                        class="usa-file-input__input"
-                        data-testid="file-input-input"
-                        id="upload-csv-input"
-                        name="upload-csv-input"
-                        required=""
-                        type="file"
-                      />
-                    </div>
+                      Drag files here or choose from folder
+                    </span>
                   </div>
                 </div>
               </div>

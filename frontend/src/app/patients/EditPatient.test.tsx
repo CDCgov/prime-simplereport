@@ -361,7 +361,6 @@ describe("EditPatient", () => {
     let component: any;
     beforeEach(async () => {
       MockDate.set("2021-08-01");
-      //jest.useFakeTimers().setSystemTime(new Date("2021-08-01").getTime());
       const mocks = [
         {
           request: {
