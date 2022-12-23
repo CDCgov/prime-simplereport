@@ -19,6 +19,7 @@ import static org.junit.jupiter.params.provider.Arguments.arguments;
 
 import gov.cdc.usds.simplereport.db.model.DeviceType;
 import gov.cdc.usds.simplereport.db.model.PhoneNumber;
+import gov.cdc.usds.simplereport.db.model.SpecimenType;
 import gov.cdc.usds.simplereport.db.model.auxiliary.PhoneType;
 import java.util.Collections;
 import java.util.List;
@@ -370,5 +371,34 @@ class FhirConverterTest {
     assertThat(actual.getType().getCoding()).isEmpty();
     assertThat(actual.getCollection().getBodySite().getText()).isNull();
     assertThat(actual.getCollection().getBodySite().getCoding()).isEmpty();
+  }
+
+  @Test
+  void specimenType_convertToSpecimen() {
+    var actual =
+        convertToSpecimen(
+            new SpecimenType(
+                "Nasopharyngeal swab",
+                "258500001",
+                "Internal nose structure (body structure)",
+                "53342003"));
+
+    assertThat(actual.getType().getCoding()).hasSize(1);
+    assertThat(actual.getType().getCodingFirstRep().getSystem()).isEqualTo(snomedCode);
+    assertThat(actual.getType().getCodingFirstRep().getCode()).isEqualTo("258500001");
+    assertThat(actual.getType().getText()).isEqualTo("Nasopharyngeal swab");
+
+    assertThat(actual.getCollection().getBodySite().getCoding()).hasSize(1);
+    assertThat(actual.getCollection().getBodySite().getCodingFirstRep().getSystem())
+        .isEqualTo(snomedCode);
+    assertThat(actual.getCollection().getBodySite().getCodingFirstRep().getCode())
+        .isEqualTo("53342003");
+    assertThat(actual.getCollection().getBodySite().getText())
+        .isEqualTo("Internal nose structure (body structure)");
+  }
+
+  @Test
+  void nullSpecimenType_convertToSpecimen() {
+    assertThat(convertToSpecimen(null)).isNull();
   }
 }

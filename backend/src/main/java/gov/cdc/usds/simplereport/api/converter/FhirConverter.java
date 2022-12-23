@@ -17,6 +17,7 @@ import gov.cdc.usds.simplereport.api.MappingConstants;
 import gov.cdc.usds.simplereport.db.model.DeviceType;
 import gov.cdc.usds.simplereport.db.model.PersonUtils;
 import gov.cdc.usds.simplereport.db.model.PhoneNumber;
+import gov.cdc.usds.simplereport.db.model.SpecimenType;
 import gov.cdc.usds.simplereport.db.model.auxiliary.PersonName;
 import gov.cdc.usds.simplereport.db.model.auxiliary.PhoneType;
 import gov.cdc.usds.simplereport.db.model.auxiliary.StreetAddress;
@@ -313,5 +314,16 @@ public class FhirConverter {
     }
 
     return specimen;
+  }
+
+  public static Specimen convertToSpecimen(SpecimenType specimenType) {
+    if (specimenType != null) {
+      return convertToSpecimen(
+          specimenType.getTypeCode(),
+          specimenType.getName(),
+          specimenType.getCollectionLocationCode(),
+          specimenType.getCollectionLocationName());
+    }
+    return null;
   }
 }
