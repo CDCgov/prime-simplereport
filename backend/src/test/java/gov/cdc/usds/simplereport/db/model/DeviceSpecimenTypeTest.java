@@ -14,7 +14,7 @@ import org.skyscreamer.jsonassert.JSONAssert;
 
 class DeviceSpecimenTypeTest {
   @Test
-  void validDeviceSpecimenType_toFhir() throws IOException {
+  void validDeviceSpecimenType_getFhirDevice() throws IOException {
     var deviceSpecimenType =
         Mockito.spy(
             new DeviceSpecimenType(
@@ -32,19 +32,40 @@ class DeviceSpecimenTypeTest {
             Objects.requireNonNull(
                 getClass().getClassLoader().getResourceAsStream("fhir/device.json")),
             StandardCharsets.UTF_8);
-    System.out.println(actualSerialized);
     JSONAssert.assertEquals(actualSerialized, expectedSerialized, true);
   }
 
   @Test
-  void empty_toFhir() {
-    var facility = new Facility();
+  void empty_getDeviceFhir() {
+    var deviceSpecimenType = new DeviceSpecimenType();
+    assertThat(deviceSpecimenType.getFhirDevice()).isNull();
+  }
 
-    var actual = facility.toFhir();
+  @Test
+  void validDeviceSpecimenType_getFhirSpecimen() throws IOException {
+    var deviceSpecimenType =
+        Mockito.spy(
+            new DeviceSpecimenType(
+                new DeviceType("name", "biotech", "m9001", "loinc", "swab type", 15),
+                new SpecimenType("nasal", "40001", "nose", "10101")));
 
-    assertThat(actual.getIdentifier()).isEmpty();
-    assertThat(actual.getName()).isNull();
-    assertThat(actual.getTelecom()).isEmpty();
-    assertThat(actual.getAddress()).isEmpty();
+    var actual = deviceSpecimenType.getFhirSpecimen();
+
+    FhirContext ctx = FhirContext.forR4();
+    IParser parser = ctx.newJsonParser();
+
+    String actualSerialized = parser.encodeResourceToString(actual);
+    var expectedSerialized =
+        IOUtils.toString(
+            Objects.requireNonNull(
+                getClass().getClassLoader().getResourceAsStream("fhir/specimen.json")),
+            StandardCharsets.UTF_8);
+    JSONAssert.assertEquals(actualSerialized, expectedSerialized, true);
+  }
+
+  @Test
+  void empty_getFhirSpecimen() {
+    var deviceSpecimenType = new DeviceSpecimenType();
+    assertThat(deviceSpecimenType.getFhirSpecimen()).isNull();
   }
 }
