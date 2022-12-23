@@ -33,7 +33,7 @@ class DeviceSpecimenTypeTest {
                 getClass().getClassLoader().getResourceAsStream("fhir/device.json")),
             StandardCharsets.UTF_8);
     System.out.println(actualSerialized);
-    JSONAssert.assertEquals(actualSerialized, expectedSerialized, false);
+    JSONAssert.assertEquals(actualSerialized, expectedSerialized, true);
   }
 
   @Test
