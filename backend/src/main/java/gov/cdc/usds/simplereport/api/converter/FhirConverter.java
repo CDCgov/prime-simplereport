@@ -282,36 +282,56 @@ public class FhirConverter {
   public static Observation convertToObservation(
       Result result, boolean corrected, String correctionReason) {
     if (result != null && result.getDisease() != null) {
-      var observation = new Observation();
-
-      var codeCodeableConcept = observation.getCode();
-      var codeCoding = codeCodeableConcept.addCoding();
-      codeCoding.setSystem(LOINC_CODE_SYSTEM);
-      codeCoding.setCode(result.getDisease().getLoinc());
-      codeCodeableConcept.setText(result.getDisease().getName());
-
-      var valueCodeableConcept = new CodeableConcept();
-      var valueCoding = valueCodeableConcept.addCoding();
-      valueCoding.setSystem(SNOMED_CODE_SYSTEM);
-      valueCoding.setCode(result.getResultLOINC());
-      // this would be valuable for readability if possible
-      //      valueCodeableConcept.setText();
-      observation.setValue(valueCodeableConcept);
-
-      if (corrected) {
-        observation.setStatus(ObservationStatus.CORRECTED);
-        var annotation = observation.addNote();
-        var correctedNote = "Corrected Result";
-        if (StringUtils.isNotBlank(correctionReason)) {
-          correctedNote += ": " + correctionReason;
-        }
-        annotation.setText(correctedNote);
-      } else {
-        observation.setStatus(ObservationStatus.FINAL);
-      }
-
-      return observation;
+      return convertToObservation(
+          result.getDisease().getLoinc(),
+          result.getDisease().getName(),
+          result.getResultLOINC(),
+          corrected,
+          correctionReason);
     }
     return null;
+  }
+
+  public static Observation convertToObservation(
+      String diseaseCode,
+      String diseaseName,
+      String resultCode,
+      boolean corrected,
+      String correctionReason) {
+    var observation = new Observation();
+    observation.setStatus(ObservationStatus.FINAL);
+    addCode(diseaseCode, diseaseName, observation);
+    addValue(resultCode, observation);
+    addCorrectionNote(corrected, correctionReason, observation);
+    return observation;
+  }
+
+  private static void addCorrectionNote(
+      boolean corrected, String correctionReason, Observation observation) {
+    if (corrected) {
+      observation.setStatus(ObservationStatus.CORRECTED);
+      var annotation = observation.addNote();
+      var correctedNote = "Corrected Result";
+      if (StringUtils.isNotBlank(correctionReason)) {
+        correctedNote += ": " + correctionReason;
+      }
+      annotation.setText(correctedNote);
+    }
+  }
+
+  private static void addValue(String resultCode, Observation observation) {
+    var valueCodeableConcept = new CodeableConcept();
+    var valueCoding = valueCodeableConcept.addCoding();
+    valueCoding.setSystem(SNOMED_CODE_SYSTEM);
+    valueCoding.setCode(resultCode);
+    observation.setValue(valueCodeableConcept);
+  }
+
+  private static void addCode(String diseaseCode, String diseaseName, Observation observation) {
+    var codeCodeableConcept = observation.getCode();
+    var codeCoding = codeCodeableConcept.addCoding();
+    codeCoding.setSystem(LOINC_CODE_SYSTEM);
+    codeCoding.setCode(diseaseCode);
+    codeCodeableConcept.setText(diseaseName);
   }
 }
