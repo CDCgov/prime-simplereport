@@ -353,4 +353,19 @@ class FhirConverterTest {
     assertThat(actual.getNote()).hasSize(1);
     assertThat(actual.getNoteFirstRep().getText()).isEqualTo("Corrected Result");
   }
+
+  @Test
+  void nullResult_convertToObservation() {
+    var actual = convertToObservation(null, false, null);
+
+    assertThat(actual).isNull();
+  }
+
+  @Test
+  void nullDisease_convertToObservation() {
+    var actual =
+        convertToObservation(new Result(null, null, null, TestResult.POSITIVE), false, null);
+
+    assertThat(actual).isNull();
+  }
 }

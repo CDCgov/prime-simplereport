@@ -281,7 +281,7 @@ public class FhirConverter {
 
   public static Observation convertToObservation(
       Result result, boolean corrected, String correctionReason) {
-    if (result != null) {
+    if (result != null && result.getDisease() != null) {
       var observation = new Observation();
 
       var codeCodeableConcept = observation.getCode();
