@@ -7,6 +7,7 @@ import static gov.cdc.usds.simplereport.api.converter.FhirConverter.convertToDat
 import static gov.cdc.usds.simplereport.api.converter.FhirConverter.convertToEthnicityExtension;
 import static gov.cdc.usds.simplereport.api.converter.FhirConverter.convertToHumanName;
 import static gov.cdc.usds.simplereport.api.converter.FhirConverter.convertToIdentifier;
+import static gov.cdc.usds.simplereport.api.converter.FhirConverter.convertToObservation;
 import static gov.cdc.usds.simplereport.api.converter.FhirConverter.convertToRaceExtension;
 import static gov.cdc.usds.simplereport.api.converter.FhirConverter.convertToTribalAffiliationExtension;
 import static gov.cdc.usds.simplereport.api.converter.FhirConverter.emailToContactPoint;
@@ -16,7 +17,10 @@ import static org.assertj.core.api.Assertions.from;
 import static org.junit.jupiter.params.provider.Arguments.arguments;
 
 import gov.cdc.usds.simplereport.db.model.PhoneNumber;
+import gov.cdc.usds.simplereport.db.model.Result;
+import gov.cdc.usds.simplereport.db.model.SupportedDisease;
 import gov.cdc.usds.simplereport.db.model.auxiliary.PhoneType;
+import gov.cdc.usds.simplereport.db.model.auxiliary.TestResult;
 import java.util.Collections;
 import java.util.List;
 import java.util.UUID;
@@ -27,6 +31,7 @@ import org.hl7.fhir.r4.model.ContactPoint.ContactPointUse;
 import org.hl7.fhir.r4.model.Enumerations.AdministrativeGender;
 import org.hl7.fhir.r4.model.Identifier.IdentifierUse;
 import org.hl7.fhir.r4.model.PrimitiveType;
+import org.hl7.fhir.r4.model.codesystems.ObservationStatus;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.Arguments;
@@ -303,5 +308,49 @@ class FhirConverterTest {
   void null_convertToTribalAffiliation() {
     assertThat(convertToTribalAffiliationExtension((String) null)).isNull();
     assertThat(convertToTribalAffiliationExtension((List<String>) null)).isNull();
+  }
+
+  @Test
+  void result_convertToObservation() {
+    var result =
+        new Result(null, null, new SupportedDisease("covid-19", "96741-4"), TestResult.POSITIVE);
+
+    var actual = convertToObservation(result, false, null);
+
+    assertThat(actual.getStatus().getDisplay()).isEqualTo(ObservationStatus.FINAL.getDisplay());
+    assertThat(actual.getCode().getText()).isEqualTo("covid-19");
+    assertThat(actual.getCode().getCoding()).hasSize(1);
+    assertThat(actual.getCode().getCodingFirstRep().getSystem()).isEqualTo("http://loinc.org");
+    assertThat(actual.getCode().getCodingFirstRep().getCode()).isEqualTo("96741-4");
+    assertThat(actual.getValueCodeableConcept().getCoding()).hasSize(1);
+    assertThat(actual.getValueCodeableConcept().getCodingFirstRep().getSystem())
+        .isEqualTo("http://snomed.info/sct");
+    assertThat(actual.getValueCodeableConcept().getCodingFirstRep().getCode())
+        .isEqualTo("260373001");
+    assertThat(actual.getNote()).isEmpty();
+  }
+
+  @Test
+  void correctedResult_convertToObservation() {
+    var result =
+        new Result(null, null, new SupportedDisease("covid-19", "96741-4"), TestResult.POSITIVE);
+
+    var actual = convertToObservation(result, true, "Oopsy Daisy");
+
+    assertThat(actual.getStatus().getDisplay()).isEqualTo(ObservationStatus.CORRECTED.getDisplay());
+    assertThat(actual.getNote()).hasSize(1);
+    assertThat(actual.getNoteFirstRep().getText()).isEqualTo("Corrected Result: Oopsy Daisy");
+  }
+
+  @Test
+  void correctedResultNoReason_convertToObservation() {
+    var result =
+        new Result(null, null, new SupportedDisease("covid-19", "96741-4"), TestResult.POSITIVE);
+
+    var actual = convertToObservation(result, true, null);
+
+    assertThat(actual.getStatus().getDisplay()).isEqualTo(ObservationStatus.CORRECTED.getDisplay());
+    assertThat(actual.getNote()).hasSize(1);
+    assertThat(actual.getNoteFirstRep().getText()).isEqualTo("Corrected Result");
   }
 }

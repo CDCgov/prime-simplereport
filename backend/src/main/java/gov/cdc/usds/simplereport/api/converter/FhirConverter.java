@@ -2,9 +2,11 @@ package gov.cdc.usds.simplereport.api.converter;
 
 import static gov.cdc.usds.simplereport.api.converter.FhirConstants.ETHNICITY_CODE_SYSTEM;
 import static gov.cdc.usds.simplereport.api.converter.FhirConstants.ETHNICITY_EXTENSION_URL;
+import static gov.cdc.usds.simplereport.api.converter.FhirConstants.LOINC_CODE_SYSTEM;
 import static gov.cdc.usds.simplereport.api.converter.FhirConstants.NULL_CODE_SYSTEM;
 import static gov.cdc.usds.simplereport.api.converter.FhirConstants.RACE_CODING_SYSTEM;
 import static gov.cdc.usds.simplereport.api.converter.FhirConstants.RACE_EXTENSION_URL;
+import static gov.cdc.usds.simplereport.api.converter.FhirConstants.SNOMED_CODE_SYSTEM;
 import static gov.cdc.usds.simplereport.api.converter.FhirConstants.TRIBAL_AFFILIATION_CODE_SYSTEM;
 import static gov.cdc.usds.simplereport.api.converter.FhirConstants.TRIBAL_AFFILIATION_EXTENSION_URL;
 import static gov.cdc.usds.simplereport.api.converter.FhirConstants.TRIBAL_AFFILIATION_STRING;
@@ -15,6 +17,7 @@ import com.google.i18n.phonenumbers.PhoneNumberUtil.PhoneNumberFormat;
 import gov.cdc.usds.simplereport.api.MappingConstants;
 import gov.cdc.usds.simplereport.db.model.PersonUtils;
 import gov.cdc.usds.simplereport.db.model.PhoneNumber;
+import gov.cdc.usds.simplereport.db.model.Result;
 import gov.cdc.usds.simplereport.db.model.auxiliary.PersonName;
 import gov.cdc.usds.simplereport.db.model.auxiliary.PhoneType;
 import gov.cdc.usds.simplereport.db.model.auxiliary.StreetAddress;
@@ -38,6 +41,8 @@ import org.hl7.fhir.r4.model.Extension;
 import org.hl7.fhir.r4.model.HumanName;
 import org.hl7.fhir.r4.model.Identifier;
 import org.hl7.fhir.r4.model.Identifier.IdentifierUse;
+import org.hl7.fhir.r4.model.Observation;
+import org.hl7.fhir.r4.model.Observation.ObservationStatus;
 import org.hl7.fhir.r4.model.StringType;
 
 @Slf4j
@@ -270,6 +275,42 @@ public class FhirConverter {
       tribeCodeableConcept.setText(PersonUtils.tribalMap().get(tribalAffiliation));
       tribeExtension.setValue(tribeCodeableConcept);
       return ext;
+    }
+    return null;
+  }
+
+  public static Observation convertToObservation(
+      Result result, boolean corrected, String correctionReason) {
+    if (result != null) {
+      var observation = new Observation();
+
+      var codeCodeableConcept = observation.getCode();
+      var codeCoding = codeCodeableConcept.addCoding();
+      codeCoding.setSystem(LOINC_CODE_SYSTEM);
+      codeCoding.setCode(result.getDisease().getLoinc());
+      codeCodeableConcept.setText(result.getDisease().getName());
+
+      var valueCodeableConcept = new CodeableConcept();
+      var valueCoding = valueCodeableConcept.addCoding();
+      valueCoding.setSystem(SNOMED_CODE_SYSTEM);
+      valueCoding.setCode(result.getResultLOINC());
+      // this would be valuable for readability if possible
+      //      valueCodeableConcept.setText();
+      observation.setValue(valueCodeableConcept);
+
+      if (corrected) {
+        observation.setStatus(ObservationStatus.CORRECTED);
+        var annotation = observation.addNote();
+        var correctedNote = "Corrected Result";
+        if (StringUtils.isNotBlank(correctionReason)) {
+          correctedNote += ": " + correctionReason;
+        }
+        annotation.setText(correctedNote);
+      } else {
+        observation.setStatus(ObservationStatus.FINAL);
+      }
+
+      return observation;
     }
     return null;
   }
