@@ -1,0 +1,21 @@
+{
+  "resourceType": "Observation",
+  "status": "final",
+  "code": {
+    "coding": [
+      {
+        "system": "http://loinc.org",
+        "code": "LP14239-5"
+      }
+    ],
+    "text": "FLU A"
+  },
+  "valueCodeableConcept": {
+    "coding": [
+      {
+        "system": "http://snomed.info/sct",
+        "code": "260415000"
+      }
+    ]
+  }
+}
