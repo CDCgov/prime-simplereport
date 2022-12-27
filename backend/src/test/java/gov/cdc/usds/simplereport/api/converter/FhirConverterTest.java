@@ -311,6 +311,23 @@ class FhirConverterTest {
   }
 
   @Test
+  void string_convertToObservation() {
+    var actual = convertToObservation("diseaseCode", "diseaseName", "resultCode", false, null);
+
+    assertThat(actual.getStatus().getDisplay()).isEqualTo(ObservationStatus.FINAL.getDisplay());
+    assertThat(actual.getCode().getText()).isEqualTo("diseaseName");
+    assertThat(actual.getCode().getCoding()).hasSize(1);
+    assertThat(actual.getCode().getCodingFirstRep().getSystem()).isEqualTo("http://loinc.org");
+    assertThat(actual.getCode().getCodingFirstRep().getCode()).isEqualTo("diseaseCode");
+    assertThat(actual.getValueCodeableConcept().getCoding()).hasSize(1);
+    assertThat(actual.getValueCodeableConcept().getCodingFirstRep().getSystem())
+        .isEqualTo("http://snomed.info/sct");
+    assertThat(actual.getValueCodeableConcept().getCodingFirstRep().getCode())
+        .isEqualTo("resultCode");
+    assertThat(actual.getNote()).isEmpty();
+  }
+
+  @Test
   void result_convertToObservation() {
     var result =
         new Result(null, null, new SupportedDisease("covid-19", "96741-4"), TestResult.POSITIVE);
