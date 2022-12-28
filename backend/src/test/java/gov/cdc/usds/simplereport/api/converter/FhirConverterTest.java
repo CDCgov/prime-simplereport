@@ -406,7 +406,7 @@ class FhirConverterTest {
   void nullTestOrder_convertToServiceRequest() {
     var actual = convertToServiceRequest(null);
 
-    assertThat(actual).isEqualTo(null);
+    assertThat(actual).isNull();
   }
 
   @Test
@@ -421,7 +421,7 @@ class FhirConverterTest {
   @Test
   void nullString_convertToServiceRequest() {
     var actual = convertToServiceRequest(null, null);
-    assertThat(actual.getStatus()).isEqualTo(null);
+    assertThat(actual.getStatus()).isNull();
     assertThat(actual.getCode().getCoding()).isEmpty();
   }
 }
