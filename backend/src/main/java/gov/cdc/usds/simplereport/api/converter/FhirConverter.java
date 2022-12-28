@@ -2,6 +2,7 @@ package gov.cdc.usds.simplereport.api.converter;
 
 import static gov.cdc.usds.simplereport.api.converter.FhirConstants.ETHNICITY_CODE_SYSTEM;
 import static gov.cdc.usds.simplereport.api.converter.FhirConstants.ETHNICITY_EXTENSION_URL;
+import static gov.cdc.usds.simplereport.api.converter.FhirConstants.LOINC_CODE_SYSTEM;
 import static gov.cdc.usds.simplereport.api.converter.FhirConstants.NULL_CODE_SYSTEM;
 import static gov.cdc.usds.simplereport.api.converter.FhirConstants.RACE_CODING_SYSTEM;
 import static gov.cdc.usds.simplereport.api.converter.FhirConstants.RACE_EXTENSION_URL;
@@ -15,6 +16,7 @@ import com.google.i18n.phonenumbers.PhoneNumberUtil.PhoneNumberFormat;
 import gov.cdc.usds.simplereport.api.MappingConstants;
 import gov.cdc.usds.simplereport.db.model.PersonUtils;
 import gov.cdc.usds.simplereport.db.model.PhoneNumber;
+import gov.cdc.usds.simplereport.db.model.TestEvent;
 import gov.cdc.usds.simplereport.db.model.auxiliary.PersonName;
 import gov.cdc.usds.simplereport.db.model.auxiliary.PhoneType;
 import gov.cdc.usds.simplereport.db.model.auxiliary.StreetAddress;
@@ -33,6 +35,8 @@ import org.hl7.fhir.r4.model.Coding;
 import org.hl7.fhir.r4.model.ContactPoint;
 import org.hl7.fhir.r4.model.ContactPoint.ContactPointSystem;
 import org.hl7.fhir.r4.model.ContactPoint.ContactPointUse;
+import org.hl7.fhir.r4.model.DiagnosticReport;
+import org.hl7.fhir.r4.model.DiagnosticReport.DiagnosticReportStatus;
 import org.hl7.fhir.r4.model.Enumerations.AdministrativeGender;
 import org.hl7.fhir.r4.model.Extension;
 import org.hl7.fhir.r4.model.HumanName;
@@ -270,6 +274,35 @@ public class FhirConverter {
       tribeCodeableConcept.setText(PersonUtils.tribalMap().get(tribalAffiliation));
       tribeExtension.setValue(tribeCodeableConcept);
       return ext;
+    }
+    return null;
+  }
+
+  public static DiagnosticReport convertToDiagnosticReport(TestEvent testEvent) {
+    if (testEvent != null) {
+      var diagnosticReport = new DiagnosticReport();
+
+      switch (testEvent.getCorrectionStatus()) {
+        case ORIGINAL:
+          diagnosticReport.setStatus(DiagnosticReportStatus.FINAL);
+          break;
+        case CORRECTED:
+          diagnosticReport.setStatus(DiagnosticReportStatus.CORRECTED);
+          break;
+        case REMOVED:
+          diagnosticReport.setStatus(DiagnosticReportStatus.CANCELLED);
+          break;
+      }
+
+      if (testEvent.getDeviceType() != null) {
+        var codeableConcept = diagnosticReport.getCode();
+        codeableConcept
+            .addCoding()
+            .setSystem(LOINC_CODE_SYSTEM)
+            .setCode(testEvent.getDeviceType().getLoincCode());
+      }
+
+      return diagnosticReport;
     }
     return null;
   }
