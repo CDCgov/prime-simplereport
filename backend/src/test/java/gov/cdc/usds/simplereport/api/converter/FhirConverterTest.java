@@ -382,6 +382,27 @@ class FhirConverterTest {
   }
 
   @Test
+  void testOrderNullDeviceType_convertToServiceRequest() {
+    var testOrder =
+        new TestOrder(
+            new Person(null, null, null, null, new Organization(null, null, null, true)),
+            new Facility(
+                null,
+                null,
+                null,
+                null,
+                null,
+                null,
+                null,
+                new DeviceSpecimenType(null, null),
+                Collections.emptyList()));
+    testOrder.cancelOrder();
+    var actual = convertToServiceRequest(testOrder);
+
+    assertThat(actual.getCode().getCoding()).isEmpty();
+  }
+
+  @Test
   void nullTestOrder_convertToServiceRequest() {
     var actual = convertToServiceRequest(null);
 
