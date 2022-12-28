@@ -280,30 +280,36 @@ public class FhirConverter {
 
   public static DiagnosticReport convertToDiagnosticReport(TestEvent testEvent) {
     if (testEvent != null) {
-      var diagnosticReport = new DiagnosticReport();
-
+      DiagnosticReportStatus status = null;
       switch (testEvent.getCorrectionStatus()) {
         case ORIGINAL:
-          diagnosticReport.setStatus(DiagnosticReportStatus.FINAL);
+          status = (DiagnosticReportStatus.FINAL);
           break;
         case CORRECTED:
-          diagnosticReport.setStatus(DiagnosticReportStatus.CORRECTED);
+          status = (DiagnosticReportStatus.CORRECTED);
           break;
         case REMOVED:
-          diagnosticReport.setStatus(DiagnosticReportStatus.CANCELLED);
+          status = (DiagnosticReportStatus.CANCELLED);
           break;
       }
-
+      String code = null;
       if (testEvent.getDeviceType() != null) {
-        var codeableConcept = diagnosticReport.getCode();
-        codeableConcept
-            .addCoding()
-            .setSystem(LOINC_CODE_SYSTEM)
-            .setCode(testEvent.getDeviceType().getLoincCode());
+        code = testEvent.getDeviceType().getLoincCode();
       }
 
-      return diagnosticReport;
+      return convertToDiagnosticReport(status, code);
     }
+
     return null;
+  }
+
+  public static DiagnosticReport convertToDiagnosticReport(
+      DiagnosticReportStatus status, String code) {
+    var diagnosticReport = new DiagnosticReport();
+    diagnosticReport.setStatus(status);
+    if (StringUtils.isNotBlank(code)) {
+      diagnosticReport.getCode().addCoding().setSystem(LOINC_CODE_SYSTEM).setCode(code);
+    }
+    return diagnosticReport;
   }
 }

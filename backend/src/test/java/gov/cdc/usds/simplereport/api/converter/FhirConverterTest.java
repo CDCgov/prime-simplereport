@@ -454,4 +454,22 @@ class FhirConverterTest {
 
     assertThat(actual).isNull();
   }
+
+  @Test
+  void string_convertToDiagnosticReport() {
+    var actual = convertToDiagnosticReport(DiagnosticReportStatus.FINAL, "95422-2");
+
+    assertThat(actual.getStatus()).isEqualTo(DiagnosticReportStatus.FINAL);
+    assertThat(actual.getCode().getCoding()).hasSize(1);
+    assertThat(actual.getCode().getCodingFirstRep().getSystem()).isEqualTo("http://loinc.org");
+    assertThat(actual.getCode().getCodingFirstRep().getCode()).isEqualTo("95422-2");
+  }
+
+  @Test
+  void nullString_convertToDiagnosticReport() {
+    var actual = convertToDiagnosticReport(null, null);
+
+    assertThat(actual.getStatus()).isEqualTo(null);
+    assertThat(actual.getCode().getCoding()).isEmpty();
+  }
 }
