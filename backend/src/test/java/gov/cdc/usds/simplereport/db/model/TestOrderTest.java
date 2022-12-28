@@ -28,7 +28,7 @@ class TestOrderTest {
             Objects.requireNonNull(
                 getClass().getClassLoader().getResourceAsStream("fhir/serviceRequest.json")),
             StandardCharsets.UTF_8);
-    System.out.println(actualSerialized);
+
     JSONAssert.assertEquals(actualSerialized, expectedSerialized, true);
   }
 }
