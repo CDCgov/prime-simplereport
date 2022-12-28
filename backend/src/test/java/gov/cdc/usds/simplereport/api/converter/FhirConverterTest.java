@@ -28,6 +28,7 @@ import java.util.stream.Stream;
 import org.hl7.fhir.r4.model.ContactPoint;
 import org.hl7.fhir.r4.model.ContactPoint.ContactPointSystem;
 import org.hl7.fhir.r4.model.ContactPoint.ContactPointUse;
+import org.hl7.fhir.r4.model.Device.DeviceNameType;
 import org.hl7.fhir.r4.model.Enumerations.AdministrativeGender;
 import org.hl7.fhir.r4.model.Identifier.IdentifierUse;
 import org.hl7.fhir.r4.model.PrimitiveType;
@@ -313,11 +314,16 @@ class FhirConverterTest {
 
   @Test
   void string_convertToDevice() {
-    var actual = convertToDevice("DeviceLab", "bm-1k");
+    var actual =
+        convertToDevice(
+            "PHASE Scientific International, Ltd.\n", "INDICAID COVID-19 Rapid Antigen Test*");
 
     assert actual != null;
-    assertThat(actual.getManufacturer()).isEqualTo("DeviceLab");
-    assertThat(actual.getModelNumber()).isEqualTo("bm-1k");
+    assertThat(actual.getManufacturer()).isEqualTo("PHASE Scientific International, Ltd.\n");
+    assertThat(actual.getDeviceName()).hasSize(1);
+    assertThat(actual.getDeviceNameFirstRep().getName())
+        .isEqualTo("INDICAID COVID-19 Rapid Antigen Test*");
+    assertThat(actual.getDeviceNameFirstRep().getType()).isEqualTo(DeviceNameType.MANUFACTURERNAME);
   }
 
   @Test
@@ -332,7 +338,9 @@ class FhirConverterTest {
     var actual = convertToDevice(deviceType);
 
     assertThat(actual.getManufacturer()).isEqualTo("manufacturer");
-    assertThat(actual.getModelNumber()).isEqualTo("model");
+    assertThat(actual.getDeviceName()).hasSize(1);
+    assertThat(actual.getDeviceNameFirstRep().getName()).isEqualTo("model");
+    assertThat(actual.getDeviceNameFirstRep().getType()).isEqualTo(DeviceNameType.MANUFACTURERNAME);
   }
 
   @Test

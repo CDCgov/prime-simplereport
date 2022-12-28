@@ -37,6 +37,8 @@ import org.hl7.fhir.r4.model.ContactPoint;
 import org.hl7.fhir.r4.model.ContactPoint.ContactPointSystem;
 import org.hl7.fhir.r4.model.ContactPoint.ContactPointUse;
 import org.hl7.fhir.r4.model.Device;
+import org.hl7.fhir.r4.model.Device.DeviceDeviceNameComponent;
+import org.hl7.fhir.r4.model.Device.DeviceNameType;
 import org.hl7.fhir.r4.model.Enumerations.AdministrativeGender;
 import org.hl7.fhir.r4.model.Extension;
 import org.hl7.fhir.r4.model.HumanName;
@@ -288,9 +290,13 @@ public class FhirConverter {
 
   public static Device convertToDevice(String manufacturer, String model) {
     if (StringUtils.isNotBlank(manufacturer) || StringUtils.isNotBlank(model)) {
-      return new Device().setManufacturer(manufacturer).setModelNumber(model);
+      return new Device()
+          .setManufacturer(manufacturer)
+          .addDeviceName(
+              new DeviceDeviceNameComponent()
+                  .setName(model)
+                  .setType(DeviceNameType.MANUFACTURERNAME));
     }
-
     return null;
   }
 

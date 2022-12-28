@@ -18,7 +18,13 @@ class DeviceSpecimenTypeTest {
     var deviceSpecimenType =
         Mockito.spy(
             new DeviceSpecimenType(
-                new DeviceType("name", "biotech", "m9001", "loinc", "swab type", 15),
+                new DeviceType(
+                    "name",
+                    "BioFire Diagnostics",
+                    "BioFire Respiratory Panel 2.1 (RP2.1)*@",
+                    "loinc",
+                    "swab type",
+                    15),
                 new SpecimenType("nasal", "40001", "nose", "10101")));
 
     var actual = deviceSpecimenType.getFhirDevice();

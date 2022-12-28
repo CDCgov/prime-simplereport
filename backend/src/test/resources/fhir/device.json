@@ -1,5 +1,10 @@
 {
   "resourceType": "Device",
-  "manufacturer": "biotech",
-  "modelNumber": "m9001"
+  "manufacturer": "BioFire Diagnostics",
+  "deviceName": [
+    {
+      "name": "BioFire Respiratory Panel 2.1 (RP2.1)*@",
+      "type": "manufacturer-name"
+    }
+  ]
 }
