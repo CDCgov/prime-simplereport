@@ -292,6 +292,7 @@ public class FhirConverter {
           status = (DiagnosticReportStatus.CANCELLED);
           break;
       }
+
       String code = null;
       if (testEvent.getDeviceType() != null) {
         code = testEvent.getDeviceType().getLoincCode();
@@ -299,7 +300,6 @@ public class FhirConverter {
 
       return convertToDiagnosticReport(status, code);
     }
-
     return null;
   }
 
