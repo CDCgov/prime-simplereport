@@ -469,7 +469,7 @@ class FhirConverterTest {
   void nullString_convertToDiagnosticReport() {
     var actual = convertToDiagnosticReport(null, null);
 
-    assertThat(actual.getStatus()).isEqualTo(null);
+    assertThat(actual.getStatus()).isNull();
     assertThat(actual.getCode().getCoding()).isEmpty();
   }
 }
