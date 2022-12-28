@@ -1,0 +1,13 @@
+{
+  "resourceType": "ServiceRequest",
+  "status": "completed",
+  "intent": "order",
+  "code": {
+    "coding": [
+      {
+        "system": "http://loinc.org",
+        "code": "94533-7"
+      }
+    ]
+  }
+}
