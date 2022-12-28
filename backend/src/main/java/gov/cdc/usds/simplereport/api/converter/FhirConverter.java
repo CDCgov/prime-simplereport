@@ -2,6 +2,7 @@ package gov.cdc.usds.simplereport.api.converter;
 
 import static gov.cdc.usds.simplereport.api.converter.FhirConstants.ETHNICITY_CODE_SYSTEM;
 import static gov.cdc.usds.simplereport.api.converter.FhirConstants.ETHNICITY_EXTENSION_URL;
+import static gov.cdc.usds.simplereport.api.converter.FhirConstants.LOINC_CODE_SYSTEM;
 import static gov.cdc.usds.simplereport.api.converter.FhirConstants.NULL_CODE_SYSTEM;
 import static gov.cdc.usds.simplereport.api.converter.FhirConstants.RACE_CODING_SYSTEM;
 import static gov.cdc.usds.simplereport.api.converter.FhirConstants.RACE_EXTENSION_URL;
@@ -15,6 +16,7 @@ import com.google.i18n.phonenumbers.PhoneNumberUtil.PhoneNumberFormat;
 import gov.cdc.usds.simplereport.api.MappingConstants;
 import gov.cdc.usds.simplereport.db.model.PersonUtils;
 import gov.cdc.usds.simplereport.db.model.PhoneNumber;
+import gov.cdc.usds.simplereport.db.model.TestOrder;
 import gov.cdc.usds.simplereport.db.model.auxiliary.PersonName;
 import gov.cdc.usds.simplereport.db.model.auxiliary.PhoneType;
 import gov.cdc.usds.simplereport.db.model.auxiliary.StreetAddress;
@@ -38,6 +40,9 @@ import org.hl7.fhir.r4.model.Extension;
 import org.hl7.fhir.r4.model.HumanName;
 import org.hl7.fhir.r4.model.Identifier;
 import org.hl7.fhir.r4.model.Identifier.IdentifierUse;
+import org.hl7.fhir.r4.model.ServiceRequest;
+import org.hl7.fhir.r4.model.ServiceRequest.ServiceRequestIntent;
+import org.hl7.fhir.r4.model.ServiceRequest.ServiceRequestStatus;
 import org.hl7.fhir.r4.model.StringType;
 
 @Slf4j
@@ -270,6 +275,35 @@ public class FhirConverter {
       tribeCodeableConcept.setText(PersonUtils.tribalMap().get(tribalAffiliation));
       tribeExtension.setValue(tribeCodeableConcept);
       return ext;
+    }
+    return null;
+  }
+
+  public static ServiceRequest convertToServiceRequest(TestOrder order) {
+    if (order != null) {
+      var serviceRequest = new ServiceRequest();
+      serviceRequest.setIntent(ServiceRequestIntent.ORDER);
+      switch (order.getOrderStatus()) {
+        case PENDING:
+          serviceRequest.setStatus(ServiceRequestStatus.ACTIVE);
+          break;
+        case COMPLETED:
+          serviceRequest.setStatus(ServiceRequestStatus.COMPLETED);
+          break;
+        case CANCELED:
+          serviceRequest.setStatus(ServiceRequestStatus.REVOKED);
+          break;
+      }
+
+      if (order.getDeviceType() != null) {
+        serviceRequest
+            .getCode()
+            .addCoding()
+            .setSystem(LOINC_CODE_SYSTEM)
+            .setCode(order.getDeviceType().getLoincCode());
+      }
+
+      return serviceRequest;
     }
     return null;
   }
