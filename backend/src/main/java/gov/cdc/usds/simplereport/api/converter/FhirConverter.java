@@ -281,30 +281,37 @@ public class FhirConverter {
 
   public static ServiceRequest convertToServiceRequest(TestOrder order) {
     if (order != null) {
-      var serviceRequest = new ServiceRequest();
-      serviceRequest.setIntent(ServiceRequestIntent.ORDER);
+      ServiceRequestStatus serviceRequestStatus = null;
       switch (order.getOrderStatus()) {
         case PENDING:
-          serviceRequest.setStatus(ServiceRequestStatus.ACTIVE);
+          serviceRequestStatus = ServiceRequestStatus.ACTIVE;
           break;
         case COMPLETED:
-          serviceRequest.setStatus(ServiceRequestStatus.COMPLETED);
+          serviceRequestStatus = ServiceRequestStatus.COMPLETED;
           break;
         case CANCELED:
-          serviceRequest.setStatus(ServiceRequestStatus.REVOKED);
+          serviceRequestStatus = (ServiceRequestStatus.REVOKED);
           break;
       }
 
+      String deviceLoincCode = null;
       if (order.getDeviceType() != null) {
-        serviceRequest
-            .getCode()
-            .addCoding()
-            .setSystem(LOINC_CODE_SYSTEM)
-            .setCode(order.getDeviceType().getLoincCode());
+        deviceLoincCode = order.getDeviceType().getLoincCode();
       }
-
-      return serviceRequest;
+      return convertToServiceRequest(serviceRequestStatus, deviceLoincCode);
     }
+
     return null;
+  }
+
+  public static ServiceRequest convertToServiceRequest(
+      ServiceRequestStatus status, String requestedCode) {
+    var serviceRequest = new ServiceRequest();
+    serviceRequest.setIntent(ServiceRequestIntent.ORDER);
+    serviceRequest.setStatus(status);
+    if (StringUtils.isNotBlank(requestedCode)) {
+      serviceRequest.getCode().addCoding().setSystem(LOINC_CODE_SYSTEM).setCode(requestedCode);
+    }
+    return serviceRequest;
   }
 }
