@@ -51,7 +51,7 @@ class ProviderTest {
 
     var actual = provider.toFhir();
 
-    assertThat(actual.getIdentifier()).isEmpty();
+    assertThat(actual.getId()).isNull();
     assertThat(actual.getName()).isEmpty();
     assertThat(actual.getTelecom()).isEmpty();
     assertThat(actual.getAddress()).isEmpty();

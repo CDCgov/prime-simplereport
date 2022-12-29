@@ -75,7 +75,7 @@ class PersonTest {
     var person = new Person();
 
     var actual = person.toFhir();
-    assertThat(actual.getIdentifier()).isEmpty();
+    assertThat(actual.getId()).isNull();
     assertThat(actual.getName()).isEmpty();
     assertThat(actual.getTelecom()).isEmpty();
     assertThat(actual.getGender()).isEqualTo(AdministrativeGender.UNKNOWN);

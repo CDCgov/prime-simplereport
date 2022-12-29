@@ -38,8 +38,6 @@ import org.hl7.fhir.r4.model.ContactPoint.ContactPointUse;
 import org.hl7.fhir.r4.model.Enumerations.AdministrativeGender;
 import org.hl7.fhir.r4.model.Extension;
 import org.hl7.fhir.r4.model.HumanName;
-import org.hl7.fhir.r4.model.Identifier;
-import org.hl7.fhir.r4.model.Identifier.IdentifierUse;
 import org.hl7.fhir.r4.model.MessageHeader;
 import org.hl7.fhir.r4.model.PractitionerRole;
 import org.hl7.fhir.r4.model.Reference;
@@ -49,20 +47,6 @@ import org.hl7.fhir.r4.model.StringType;
 public class FhirConverter {
   private FhirConverter() {
     throw new IllegalStateException("Utility class");
-  }
-
-  public static Identifier convertToIdentifier(UUID id) {
-    if (id != null) {
-      return convertToIdentifier(id.toString());
-    }
-    return null;
-  }
-
-  public static Identifier convertToIdentifier(String id) {
-    if (id != null) {
-      return new Identifier().setValue(id).setUse(IdentifierUse.USUAL);
-    }
-    return null;
   }
 
   public static HumanName convertToHumanName(PersonName personName) {

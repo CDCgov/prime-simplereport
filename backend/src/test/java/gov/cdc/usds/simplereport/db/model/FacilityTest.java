@@ -56,7 +56,7 @@ class FacilityTest {
 
     var actual = facility.toFhir();
 
-    assertThat(actual.getIdentifier()).isEmpty();
+    assertThat(actual.getId()).isNull();
     assertThat(actual.getName()).isNull();
     assertThat(actual.getTelecom()).isEmpty();
     assertThat(actual.getAddress()).isEmpty();

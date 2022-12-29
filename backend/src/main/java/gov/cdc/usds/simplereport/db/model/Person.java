@@ -5,7 +5,6 @@ import static gov.cdc.usds.simplereport.api.converter.FhirConverter.convertToAdm
 import static gov.cdc.usds.simplereport.api.converter.FhirConverter.convertToDate;
 import static gov.cdc.usds.simplereport.api.converter.FhirConverter.convertToEthnicityExtension;
 import static gov.cdc.usds.simplereport.api.converter.FhirConverter.convertToHumanName;
-import static gov.cdc.usds.simplereport.api.converter.FhirConverter.convertToIdentifier;
 import static gov.cdc.usds.simplereport.api.converter.FhirConverter.convertToRaceExtension;
 import static gov.cdc.usds.simplereport.api.converter.FhirConverter.convertToTribalAffiliationExtension;
 import static gov.cdc.usds.simplereport.api.converter.FhirConverter.emailToContactPoint;
@@ -471,7 +470,7 @@ public class Person extends OrganizationScopedEternalEntity implements PersonEnt
   @JsonIgnore
   public Patient toFhir() {
     var patient = new Patient();
-    patient.addIdentifier(convertToIdentifier(getInternalId()));
+    patient.setId(Objects.toString(getInternalId(), ""));
     patient.addName(convertToHumanName(nameInfo));
     phoneNumberToContactPoint(phoneNumbers).forEach(patient::addTelecom);
     emailToContactPoint(emails).forEach(patient::addTelecom);

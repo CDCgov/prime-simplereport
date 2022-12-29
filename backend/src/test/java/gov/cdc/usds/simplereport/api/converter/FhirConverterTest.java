@@ -6,7 +6,6 @@ import static gov.cdc.usds.simplereport.api.converter.FhirConverter.convertToCon
 import static gov.cdc.usds.simplereport.api.converter.FhirConverter.convertToDate;
 import static gov.cdc.usds.simplereport.api.converter.FhirConverter.convertToEthnicityExtension;
 import static gov.cdc.usds.simplereport.api.converter.FhirConverter.convertToHumanName;
-import static gov.cdc.usds.simplereport.api.converter.FhirConverter.convertToIdentifier;
 import static gov.cdc.usds.simplereport.api.converter.FhirConverter.convertToRaceExtension;
 import static gov.cdc.usds.simplereport.api.converter.FhirConverter.convertToTribalAffiliationExtension;
 import static gov.cdc.usds.simplereport.api.converter.FhirConverter.emailToContactPoint;
@@ -21,13 +20,11 @@ import gov.cdc.usds.simplereport.db.model.PhoneNumber;
 import gov.cdc.usds.simplereport.db.model.auxiliary.PhoneType;
 import java.util.Collections;
 import java.util.List;
-import java.util.UUID;
 import java.util.stream.Stream;
 import org.hl7.fhir.r4.model.ContactPoint;
 import org.hl7.fhir.r4.model.ContactPoint.ContactPointSystem;
 import org.hl7.fhir.r4.model.ContactPoint.ContactPointUse;
 import org.hl7.fhir.r4.model.Enumerations.AdministrativeGender;
-import org.hl7.fhir.r4.model.Identifier.IdentifierUse;
 import org.hl7.fhir.r4.model.PrimitiveType;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.params.ParameterizedTest;
@@ -69,29 +66,6 @@ class FhirConverterTest {
   @Test
   void null_convertToHumanName() {
     assertThat(convertToHumanName(null)).isNull();
-  }
-
-  @Test
-  void uuid_convertToIdentifier() {
-    var uuid = UUID.randomUUID();
-    var actual = convertToIdentifier(uuid);
-
-    assertThat(actual.getUse()).isEqualTo(IdentifierUse.USUAL);
-    assertThat(actual.getValue()).isEqualTo(uuid.toString());
-  }
-
-  @Test
-  void string_convertToIdentifier() {
-    var actual = convertToIdentifier("someId");
-
-    assertThat(actual.getUse()).isEqualTo(IdentifierUse.USUAL);
-    assertThat(actual.getValue()).isEqualTo("someId");
-  }
-
-  @Test
-  void null_convertToIdentifier() {
-    assertThat(convertToIdentifier((String) null)).isNull();
-    assertThat(convertToIdentifier((UUID) null)).isNull();
   }
 
   @Test

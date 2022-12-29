@@ -2,13 +2,13 @@ package gov.cdc.usds.simplereport.db.model;
 
 import static gov.cdc.usds.simplereport.api.converter.FhirConverter.convertToAddress;
 import static gov.cdc.usds.simplereport.api.converter.FhirConverter.convertToHumanName;
-import static gov.cdc.usds.simplereport.api.converter.FhirConverter.convertToIdentifier;
 import static gov.cdc.usds.simplereport.api.converter.FhirConverter.phoneNumberToContactPoint;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonUnwrapped;
 import gov.cdc.usds.simplereport.db.model.auxiliary.PersonName;
 import gov.cdc.usds.simplereport.db.model.auxiliary.StreetAddress;
+import java.util.Objects;
 import javax.persistence.Column;
 import javax.persistence.Embedded;
 import javax.persistence.Entity;
@@ -126,7 +126,7 @@ public class Provider extends EternalAuditedEntity implements PersonEntity, Loca
 
   public Practitioner toFhir() {
     var practioner = new Practitioner();
-    practioner.addIdentifier(convertToIdentifier(getInternalId()));
+    practioner.setId(Objects.toString(getInternalId(), ""));
     practioner.addName(convertToHumanName(nameInfo));
     practioner.addAddress(convertToAddress(address));
     practioner.addTelecom(phoneNumberToContactPoint(ContactPointUse.WORK, telephone));
