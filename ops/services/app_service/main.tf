@@ -79,6 +79,10 @@ resource "azurerm_service_plan" "service_plan" {
 #   }
 # }
 
+# The following code snippet creates a Linux App Service and configures it to run a Docker container. 
+# It also creates a firewall rule allowing the load balancer to route traffic to the App Service.
+# The docker_image variable is defined in the variables.tf file.
+# The docker_image_tag variable is defined in the variables.tf file.
 resource "azurerm_linux_web_app" "service" {
   name                      = "${var.name}-${var.env}"
   app_settings              = local.all_app_settings
@@ -126,6 +130,9 @@ resource "azurerm_linux_web_app" "service" {
     }
   }
 }
+
+# Creates a staging slot for the Linux Web App
+# This is used for staging the deployment of the new code
 
 resource "azurerm_linux_web_app_slot" "staging" {
   name                      = "staging"
@@ -251,7 +258,7 @@ resource "azurerm_app_service_certificate" "app" {
   name                = "new-sr-wildcard"
   resource_group_name = var.resource_group_name
   location            = var.resource_group_location
-  key_vault_secret_id = data.azurerm_key_vault_certificate.wildcard_simplereport_gov.id
+  # key_vault_secret_id = data.azurerm_key_vault_certificate.wildcard_simplereport_gov.id
 }
 
 resource "azurerm_app_service_certificate_binding" "app" {

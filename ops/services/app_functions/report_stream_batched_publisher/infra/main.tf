@@ -58,6 +58,7 @@ resource "azurerm_linux_function_app" "functions" {
 
   site_config {
     use_32_bit_worker = false
+    application_insights_key = data.azurerm_application_insights.app.instrumentation_key
     # scm_minimum_tls_version = "1.0"
     # always_on               = false
     # ftps_state              = "AllAllowed"
