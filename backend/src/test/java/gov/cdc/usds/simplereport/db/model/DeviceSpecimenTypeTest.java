@@ -7,25 +7,27 @@ import ca.uhn.fhir.parser.IParser;
 import java.io.IOException;
 import java.nio.charset.StandardCharsets;
 import java.util.Objects;
+import java.util.UUID;
 import org.apache.commons.io.IOUtils;
 import org.junit.jupiter.api.Test;
-import org.mockito.Mockito;
 import org.skyscreamer.jsonassert.JSONAssert;
+import org.springframework.test.util.ReflectionTestUtils;
 
 class DeviceSpecimenTypeTest {
   @Test
   void validDeviceSpecimenType_getFhirDevice() throws IOException {
+    var internalId = "3c9c7370-e2e3-49ad-bb7a-f6005f41cf29";
+    DeviceType deviceType =
+        new DeviceType(
+            "name",
+            "BioFire Diagnostics",
+            "BioFire Respiratory Panel 2.1 (RP2.1)*@",
+            "loinc",
+            "swab type",
+            15);
     var deviceSpecimenType =
-        Mockito.spy(
-            new DeviceSpecimenType(
-                new DeviceType(
-                    "name",
-                    "BioFire Diagnostics",
-                    "BioFire Respiratory Panel 2.1 (RP2.1)*@",
-                    "loinc",
-                    "swab type",
-                    15),
-                new SpecimenType("nasal", "40001", "nose", "10101")));
+        new DeviceSpecimenType(deviceType, new SpecimenType("nasal", "40001", "nose", "10101"));
+    ReflectionTestUtils.setField(deviceType, "internalId", UUID.fromString(internalId));
 
     var actual = deviceSpecimenType.getFhirDevice();
 
@@ -49,11 +51,12 @@ class DeviceSpecimenTypeTest {
 
   @Test
   void validDeviceSpecimenType_getFhirSpecimen() throws IOException {
+    var internalId = "3c9c7370-e2e3-49ad-bb7a-f6005f41cf29";
+    SpecimenType specimenType = new SpecimenType("nasal", "40001", "nose", "10101");
     var deviceSpecimenType =
-        Mockito.spy(
-            new DeviceSpecimenType(
-                new DeviceType("name", "biotech", "m9001", "loinc", "swab type", 15),
-                new SpecimenType("nasal", "40001", "nose", "10101")));
+        new DeviceSpecimenType(
+            new DeviceType("name", "biotech", "m9001", "loinc", "swab type", 15), specimenType);
+    ReflectionTestUtils.setField(specimenType, "internalId", UUID.fromString(internalId));
 
     var actual = deviceSpecimenType.getFhirSpecimen();
 

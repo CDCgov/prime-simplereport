@@ -316,9 +316,12 @@ class FhirConverterTest {
   void string_convertToDevice() {
     var actual =
         convertToDevice(
-            "PHASE Scientific International, Ltd.\n", "INDICAID COVID-19 Rapid Antigen Test*");
+            "PHASE Scientific International, Ltd.\n",
+            "INDICAID COVID-19 Rapid Antigen Test*",
+            "id-123");
 
     assert actual != null;
+    assertThat(actual.getId()).isEqualTo("id-123");
     assertThat(actual.getManufacturer()).isEqualTo("PHASE Scientific International, Ltd.\n");
     assertThat(actual.getDeviceName()).hasSize(1);
     assertThat(actual.getDeviceNameFirstRep().getName())
@@ -328,7 +331,7 @@ class FhirConverterTest {
 
   @Test
   void nullString_convertToDevice() {
-    assertThat(convertToDevice(null, null)).isNull();
+    assertThat(convertToDevice(null, null, null)).isNull();
   }
 
   @Test
@@ -355,8 +358,10 @@ class FhirConverterTest {
             "258500001",
             "Nasopharyngeal swab",
             "53342003",
-            "Internal nose structure (body structure)");
+            "Internal nose structure (body structure)",
+            "id-123");
 
+    assertThat(actual.getId()).isEqualTo("id-123");
     assertThat(actual.getType().getCoding()).hasSize(1);
     assertThat(actual.getType().getCodingFirstRep().getSystem()).isEqualTo(snomedCode);
     assertThat(actual.getType().getCodingFirstRep().getCode()).isEqualTo("258500001");
@@ -373,8 +378,9 @@ class FhirConverterTest {
 
   @Test
   void null_convertToSpecimen() {
-    var actual = convertToSpecimen(null, null, null, null);
+    var actual = convertToSpecimen(null, null, null, null, null);
 
+    assertThat(actual.getId()).isNull();
     assertThat(actual.getType().getText()).isNull();
     assertThat(actual.getType().getCoding()).isEmpty();
     assertThat(actual.getCollection().getBodySite().getText()).isNull();

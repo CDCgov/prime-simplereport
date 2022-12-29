@@ -26,6 +26,7 @@ import java.time.ZoneId;
 import java.util.Collections;
 import java.util.Date;
 import java.util.List;
+import java.util.Objects;
 import java.util.UUID;
 import java.util.stream.Collectors;
 import lombok.extern.slf4j.Slf4j;
@@ -283,24 +284,35 @@ public class FhirConverter {
 
   public static Device convertToDevice(DeviceType deviceType) {
     if (deviceType != null) {
-      return convertToDevice(deviceType.getManufacturer(), deviceType.getModel());
+      return convertToDevice(
+          deviceType.getManufacturer(),
+          deviceType.getModel(),
+          Objects.toString(deviceType.getInternalId(), ""));
     }
     return null;
   }
 
-  public static Device convertToDevice(String manufacturer, String model) {
+  public static Device convertToDevice(String manufacturer, String model, String id) {
     if (StringUtils.isNotBlank(manufacturer) || StringUtils.isNotBlank(model)) {
-      return new Device()
-          .setManufacturer(manufacturer)
-          .addDeviceName(
-              new DeviceDeviceNameComponent().setName(model).setType(DeviceNameType.MODELNAME));
+      var device =
+          new Device()
+              .setManufacturer(manufacturer)
+              .addDeviceName(
+                  new DeviceDeviceNameComponent().setName(model).setType(DeviceNameType.MODELNAME));
+      device.setId(id);
+      return device;
     }
     return null;
   }
 
   public static Specimen convertToSpecimen(
-      String specimenCode, String specimenName, String collectionCode, String collectionName) {
+      String specimenCode,
+      String specimenName,
+      String collectionCode,
+      String collectionName,
+      String id) {
     var specimen = new Specimen();
+    specimen.setId(id);
     if (StringUtils.isNotBlank(specimenCode)) {
       var codeableConcept = specimen.getType();
       var coding = codeableConcept.addCoding();
@@ -326,7 +338,8 @@ public class FhirConverter {
           specimenType.getTypeCode(),
           specimenType.getName(),
           specimenType.getCollectionLocationCode(),
-          specimenType.getCollectionLocationName());
+          specimenType.getCollectionLocationName(),
+          Objects.toString(specimenType.getInternalId(), ""));
     }
     return null;
   }
