@@ -25,6 +25,7 @@ import java.time.ZoneId;
 import java.util.Collections;
 import java.util.Date;
 import java.util.List;
+import java.util.Objects;
 import java.util.UUID;
 import java.util.stream.Collectors;
 import lombok.extern.slf4j.Slf4j;
@@ -298,15 +299,17 @@ public class FhirConverter {
       if (order.getDeviceType() != null) {
         deviceLoincCode = order.getDeviceType().getLoincCode();
       }
-      return convertToServiceRequest(serviceRequestStatus, deviceLoincCode);
+      return convertToServiceRequest(
+          serviceRequestStatus, deviceLoincCode, Objects.toString(order.getInternalId(), ""));
     }
 
     return null;
   }
 
   public static ServiceRequest convertToServiceRequest(
-      ServiceRequestStatus status, String requestedCode) {
+      ServiceRequestStatus status, String requestedCode, String id) {
     var serviceRequest = new ServiceRequest();
+    serviceRequest.setId(id);
     serviceRequest.setIntent(ServiceRequestIntent.ORDER);
     serviceRequest.setStatus(status);
     if (StringUtils.isNotBlank(requestedCode)) {

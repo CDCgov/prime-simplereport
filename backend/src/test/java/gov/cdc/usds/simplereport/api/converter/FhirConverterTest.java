@@ -411,7 +411,8 @@ class FhirConverterTest {
 
   @Test
   void string_convertToServiceRequest() {
-    var actual = convertToServiceRequest(ServiceRequestStatus.COMPLETED, "94533-7");
+    var actual = convertToServiceRequest(ServiceRequestStatus.COMPLETED, "94533-7", "id-123");
+    assertThat(actual.getId()).isEqualTo("id-123");
     assertThat(actual.getStatus()).isEqualTo(ServiceRequestStatus.COMPLETED);
     assertThat(actual.getCode().getCoding()).hasSize(1);
     assertThat(actual.getCode().getCodingFirstRep().getSystem()).isEqualTo("http://loinc.org");
@@ -420,7 +421,8 @@ class FhirConverterTest {
 
   @Test
   void nullString_convertToServiceRequest() {
-    var actual = convertToServiceRequest(null, null);
+    var actual = convertToServiceRequest(null, null, null);
+    assertThat(actual.getId()).isNull();
     assertThat(actual.getStatus()).isNull();
     assertThat(actual.getCode().getCoding()).isEmpty();
   }
