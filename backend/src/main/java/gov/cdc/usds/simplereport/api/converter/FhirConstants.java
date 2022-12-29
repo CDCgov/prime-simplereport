@@ -18,4 +18,9 @@ public class FhirConstants {
   public static final String TRIBAL_AFFILIATION_STRING = "tribalAffiliation";
   public static final String TRIBAL_AFFILIATION_CODE_SYSTEM =
       "http://terminology.hl7.org/CodeSystem/v3-TribalEntityUS";
+  public static final String PATIENT_URL = "Patient/";
+  public static final String MESSAGE_HEADER_URL = "MessageHeader/";
+  public static final String ORGANIZATION_URL = "Organization/";
+  public static final String PRACTITIONER_URL = "Practitioner/";
+  public static final String PRACTITIONER_ROLE_URL = "PractitionerRole/";
 }

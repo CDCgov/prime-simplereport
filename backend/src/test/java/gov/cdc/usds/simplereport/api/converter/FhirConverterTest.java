@@ -10,6 +10,8 @@ import static gov.cdc.usds.simplereport.api.converter.FhirConverter.convertToIde
 import static gov.cdc.usds.simplereport.api.converter.FhirConverter.convertToRaceExtension;
 import static gov.cdc.usds.simplereport.api.converter.FhirConverter.convertToTribalAffiliationExtension;
 import static gov.cdc.usds.simplereport.api.converter.FhirConverter.emailToContactPoint;
+import static gov.cdc.usds.simplereport.api.converter.FhirConverter.getMessageHeader;
+import static gov.cdc.usds.simplereport.api.converter.FhirConverter.getPractitionerRole;
 import static gov.cdc.usds.simplereport.api.converter.FhirConverter.phoneNumberToContactPoint;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.from;
@@ -303,5 +305,27 @@ class FhirConverterTest {
   void null_convertToTribalAffiliation() {
     assertThat(convertToTribalAffiliationExtension((String) null)).isNull();
     assertThat(convertToTribalAffiliationExtension((List<String>) null)).isNull();
+  }
+
+  @Test
+  void valid_getPractitionerRole() {
+    var practitionerRole = getPractitionerRole("org-id", "practitioner-id");
+
+    assertThat(practitionerRole.getOrganization().getReference()).isEqualTo("Organization/org-id");
+    assertThat(practitionerRole.getPractitioner().getReference())
+        .isEqualTo("Practitioner/practitioner-id");
+  }
+
+  @Test
+  void valid_getMessageHeader() {
+    var messageHeader = getMessageHeader("org-id");
+
+    assertThat(messageHeader.getEventCoding().getSystem())
+        .isEqualTo("http://terminology.hl7.org/CodeSystem/v2-0003");
+    assertThat(messageHeader.getEventCoding().getCode()).isEqualTo("R01");
+    assertThat(messageHeader.getEventCoding().getDisplay())
+        .isEqualTo("ORU/ACK - Unsolicited transmission of an observation message");
+    assertThat(messageHeader.getSource().getSoftware()).isEqualTo("PRIME SimpleReport");
+    assertThat(messageHeader.getSender().getReference()).isEqualTo("Organization/org-id");
   }
 }

@@ -3,6 +3,8 @@ package gov.cdc.usds.simplereport.api.converter;
 import static gov.cdc.usds.simplereport.api.converter.FhirConstants.ETHNICITY_CODE_SYSTEM;
 import static gov.cdc.usds.simplereport.api.converter.FhirConstants.ETHNICITY_EXTENSION_URL;
 import static gov.cdc.usds.simplereport.api.converter.FhirConstants.NULL_CODE_SYSTEM;
+import static gov.cdc.usds.simplereport.api.converter.FhirConstants.ORGANIZATION_URL;
+import static gov.cdc.usds.simplereport.api.converter.FhirConstants.PRACTITIONER_URL;
 import static gov.cdc.usds.simplereport.api.converter.FhirConstants.RACE_CODING_SYSTEM;
 import static gov.cdc.usds.simplereport.api.converter.FhirConstants.RACE_EXTENSION_URL;
 import static gov.cdc.usds.simplereport.api.converter.FhirConstants.TRIBAL_AFFILIATION_CODE_SYSTEM;
@@ -38,6 +40,9 @@ import org.hl7.fhir.r4.model.Extension;
 import org.hl7.fhir.r4.model.HumanName;
 import org.hl7.fhir.r4.model.Identifier;
 import org.hl7.fhir.r4.model.Identifier.IdentifierUse;
+import org.hl7.fhir.r4.model.MessageHeader;
+import org.hl7.fhir.r4.model.PractitionerRole;
+import org.hl7.fhir.r4.model.Reference;
 import org.hl7.fhir.r4.model.StringType;
 
 @Slf4j
@@ -272,5 +277,33 @@ public class FhirConverter {
       return ext;
     }
     return null;
+  }
+
+  public static PractitionerRole getPractitionerRole(String organizationId, String practitionerId) {
+    var practitionerRole = new PractitionerRole();
+    practitionerRole.setId(UUID.randomUUID().toString());
+    practitionerRole
+        .setPractitioner(new Reference().setReference(PRACTITIONER_URL + practitionerId))
+        .setOrganization(new Reference().setReference(ORGANIZATION_URL + organizationId));
+    return practitionerRole;
+  }
+
+  public static MessageHeader getMessageHeader(String organizationId) {
+    var messageHeader = new MessageHeader();
+    messageHeader.setId(UUID.randomUUID().toString());
+    messageHeader
+        .getEventCoding()
+        .setSystem("http://terminology.hl7.org/CodeSystem/v2-0003")
+        .setCode("R01")
+        .setDisplay("ORU/ACK - Unsolicited transmission of an observation message");
+    messageHeader.getSource().setSoftware("PRIME SimpleReport");
+    messageHeader
+        .addDestination()
+        .setName("PRIME ReportStream")
+        .setEndpoint("https://prime.cdc.gov/api/reports?option=SkipInvalidItems");
+    messageHeader
+        .getSender()
+        .setReferenceElement(new StringType(ORGANIZATION_URL + organizationId));
+    return messageHeader;
   }
 }
