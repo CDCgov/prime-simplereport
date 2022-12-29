@@ -323,7 +323,7 @@ class FhirConverterTest {
     assertThat(actual.getDeviceName()).hasSize(1);
     assertThat(actual.getDeviceNameFirstRep().getName())
         .isEqualTo("INDICAID COVID-19 Rapid Antigen Test*");
-    assertThat(actual.getDeviceNameFirstRep().getType()).isEqualTo(DeviceNameType.MANUFACTURERNAME);
+    assertThat(actual.getDeviceNameFirstRep().getType()).isEqualTo(DeviceNameType.MODELNAME);
   }
 
   @Test
@@ -340,7 +340,7 @@ class FhirConverterTest {
     assertThat(actual.getManufacturer()).isEqualTo("manufacturer");
     assertThat(actual.getDeviceName()).hasSize(1);
     assertThat(actual.getDeviceNameFirstRep().getName()).isEqualTo("model");
-    assertThat(actual.getDeviceNameFirstRep().getType()).isEqualTo(DeviceNameType.MANUFACTURERNAME);
+    assertThat(actual.getDeviceNameFirstRep().getType()).isEqualTo(DeviceNameType.MODELNAME);
   }
 
   @Test

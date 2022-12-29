@@ -293,9 +293,7 @@ public class FhirConverter {
       return new Device()
           .setManufacturer(manufacturer)
           .addDeviceName(
-              new DeviceDeviceNameComponent()
-                  .setName(model)
-                  .setType(DeviceNameType.MANUFACTURERNAME));
+              new DeviceDeviceNameComponent().setName(model).setType(DeviceNameType.MODELNAME));
     }
     return null;
   }
