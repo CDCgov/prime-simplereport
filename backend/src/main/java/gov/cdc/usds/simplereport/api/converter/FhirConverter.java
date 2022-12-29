@@ -25,6 +25,7 @@ import java.time.ZoneId;
 import java.util.Collections;
 import java.util.Date;
 import java.util.List;
+import java.util.Objects;
 import java.util.UUID;
 import java.util.stream.Collectors;
 import lombok.extern.slf4j.Slf4j;
@@ -298,14 +299,16 @@ public class FhirConverter {
         code = testEvent.getDeviceType().getLoincCode();
       }
 
-      return convertToDiagnosticReport(status, code);
+      return convertToDiagnosticReport(
+          status, code, Objects.toString(testEvent.getInternalId(), ""));
     }
     return null;
   }
 
   public static DiagnosticReport convertToDiagnosticReport(
-      DiagnosticReportStatus status, String code) {
+      DiagnosticReportStatus status, String code, String id) {
     var diagnosticReport = new DiagnosticReport();
+    diagnosticReport.setId(id);
     diagnosticReport.setStatus(status);
     if (StringUtils.isNotBlank(code)) {
       diagnosticReport.getCode().addCoding().setSystem(LOINC_CODE_SYSTEM).setCode(code);

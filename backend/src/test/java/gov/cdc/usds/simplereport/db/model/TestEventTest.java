@@ -6,14 +6,17 @@ import java.io.IOException;
 import java.nio.charset.StandardCharsets;
 import java.util.Collections;
 import java.util.Objects;
+import java.util.UUID;
 import org.apache.commons.io.IOUtils;
 import org.junit.jupiter.api.Test;
 import org.skyscreamer.jsonassert.JSONAssert;
+import org.springframework.test.util.ReflectionTestUtils;
 
 class TestEventTest {
 
   @Test
   void toFhirDiagnosticReport() throws IOException {
+    var internalId = "3c9c7370-e2e3-49ad-bb7a-f6005f41cf29";
     var testEvent =
         new TestEvent(
             new TestOrder(
@@ -31,6 +34,7 @@ class TestEventTest {
                     Collections.emptyList())),
             false,
             Collections.emptySet());
+    ReflectionTestUtils.setField(testEvent, "internalId", UUID.fromString(internalId));
 
     var actual = testEvent.toFhirDiagnosticReport();
 
