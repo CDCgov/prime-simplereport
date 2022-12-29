@@ -1,12 +1,20 @@
 package gov.cdc.usds.simplereport.api.converter;
 
+import static gov.cdc.usds.simplereport.api.converter.FhirConstants.DEVICE_DOMAIN;
+import static gov.cdc.usds.simplereport.api.converter.FhirConstants.DIAGNOSTIC_REPORT_DOMAIN;
 import static gov.cdc.usds.simplereport.api.converter.FhirConstants.ETHNICITY_CODE_SYSTEM;
 import static gov.cdc.usds.simplereport.api.converter.FhirConstants.ETHNICITY_EXTENSION_URL;
+import static gov.cdc.usds.simplereport.api.converter.FhirConstants.MESSAGE_HEADER_DOMAIN;
 import static gov.cdc.usds.simplereport.api.converter.FhirConstants.NULL_CODE_SYSTEM;
-import static gov.cdc.usds.simplereport.api.converter.FhirConstants.ORGANIZATION_URL;
-import static gov.cdc.usds.simplereport.api.converter.FhirConstants.PRACTITIONER_URL;
+import static gov.cdc.usds.simplereport.api.converter.FhirConstants.OBSERVATION_DOMAIN;
+import static gov.cdc.usds.simplereport.api.converter.FhirConstants.ORGANIZATION_DOMAIN;
+import static gov.cdc.usds.simplereport.api.converter.FhirConstants.PATIENT_DOMAIN;
+import static gov.cdc.usds.simplereport.api.converter.FhirConstants.PRACTITIONER_DOMAIN;
+import static gov.cdc.usds.simplereport.api.converter.FhirConstants.PRACTITIONER_ROLE_DOMAIN;
 import static gov.cdc.usds.simplereport.api.converter.FhirConstants.RACE_CODING_SYSTEM;
 import static gov.cdc.usds.simplereport.api.converter.FhirConstants.RACE_EXTENSION_URL;
+import static gov.cdc.usds.simplereport.api.converter.FhirConstants.SERVICE_REQUEST_DOMAIN;
+import static gov.cdc.usds.simplereport.api.converter.FhirConstants.SPECIMEN_DOMAIN;
 import static gov.cdc.usds.simplereport.api.converter.FhirConstants.TRIBAL_AFFILIATION_CODE_SYSTEM;
 import static gov.cdc.usds.simplereport.api.converter.FhirConstants.TRIBAL_AFFILIATION_EXTENSION_URL;
 import static gov.cdc.usds.simplereport.api.converter.FhirConstants.TRIBAL_AFFILIATION_STRING;
@@ -24,23 +32,36 @@ import java.time.LocalDate;
 import java.time.ZoneId;
 import java.util.Collections;
 import java.util.Date;
+import java.util.HashMap;
 import java.util.List;
 import java.util.UUID;
 import java.util.stream.Collectors;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.StringUtils;
 import org.hl7.fhir.r4.model.Address;
+import org.hl7.fhir.r4.model.Bundle;
+import org.hl7.fhir.r4.model.Bundle.BundleEntryComponent;
+import org.hl7.fhir.r4.model.Bundle.BundleType;
 import org.hl7.fhir.r4.model.CodeableConcept;
 import org.hl7.fhir.r4.model.Coding;
 import org.hl7.fhir.r4.model.ContactPoint;
 import org.hl7.fhir.r4.model.ContactPoint.ContactPointSystem;
 import org.hl7.fhir.r4.model.ContactPoint.ContactPointUse;
+import org.hl7.fhir.r4.model.Device;
+import org.hl7.fhir.r4.model.DiagnosticReport;
 import org.hl7.fhir.r4.model.Enumerations.AdministrativeGender;
 import org.hl7.fhir.r4.model.Extension;
 import org.hl7.fhir.r4.model.HumanName;
 import org.hl7.fhir.r4.model.MessageHeader;
+import org.hl7.fhir.r4.model.Observation;
+import org.hl7.fhir.r4.model.Organization;
+import org.hl7.fhir.r4.model.Patient;
+import org.hl7.fhir.r4.model.Practitioner;
 import org.hl7.fhir.r4.model.PractitionerRole;
 import org.hl7.fhir.r4.model.Reference;
+import org.hl7.fhir.r4.model.Resource;
+import org.hl7.fhir.r4.model.ServiceRequest;
+import org.hl7.fhir.r4.model.Specimen;
 import org.hl7.fhir.r4.model.StringType;
 
 @Slf4j
@@ -263,16 +284,73 @@ public class FhirConverter {
     return null;
   }
 
-  public static PractitionerRole getPractitionerRole(String organizationId, String practitionerId) {
+  public static Bundle toFhirBundle(
+      Patient patient,
+      Organization organization,
+      Practitioner practitioner,
+      Device device,
+      Specimen specimen,
+      Observation observation,
+      ServiceRequest serviceRequest,
+      DiagnosticReport diagnosticReport) {
+    var patientFullUrl = PATIENT_DOMAIN + patient.getId();
+    var organizationFullUrl = ORGANIZATION_DOMAIN + organization.getId();
+    var practitionerFullUrl = PRACTITIONER_DOMAIN + practitioner.getId();
+    var specimenFullUrl = SPECIMEN_DOMAIN + specimen.getId();
+    var observationFullUrl = OBSERVATION_DOMAIN + observation.getId();
+    var serviceRequestFullUrl = SERVICE_REQUEST_DOMAIN + serviceRequest.getId();
+    var diagnosticReportFullUrl = DIAGNOSTIC_REPORT_DOMAIN + diagnosticReport.getId();
+    var deviceFullUrl = DEVICE_DOMAIN + device.getId();
+
+    var practitionerRole = getPractitionerRole(organizationFullUrl, practitionerFullUrl);
+    var messageHeader = getMessageHeader(organizationFullUrl);
+    var practitionerRoleFullUrl = PRACTITIONER_ROLE_DOMAIN + practitionerRole.getId();
+    var messageHeaderFullUrl = MESSAGE_HEADER_DOMAIN + messageHeader.getId();
+
+    patient.setManagingOrganization(new Reference(organizationFullUrl));
+    specimen.setSubject(new Reference(patientFullUrl));
+    observation.setSubject(new Reference(patientFullUrl));
+    observation.addPerformer(new Reference(observationFullUrl));
+    observation.setSpecimen(new Reference(specimenFullUrl));
+    observation.setDevice(new Reference(deviceFullUrl));
+    serviceRequest.setSubject(new Reference(patientFullUrl));
+    serviceRequest.addPerformer(new Reference(organizationFullUrl));
+    diagnosticReport.addBasedOn(new Reference(serviceRequestFullUrl));
+    diagnosticReport.setSubject(new Reference(patientFullUrl));
+    diagnosticReport.addSpecimen(new Reference(specimenFullUrl));
+    diagnosticReport.addResult(new Reference(observation));
+
+    var entryMap = new HashMap<String, Resource>();
+    entryMap.put(patientFullUrl, patient);
+    entryMap.put(organizationFullUrl, organization);
+    entryMap.put(practitionerFullUrl, practitioner);
+    entryMap.put(specimenFullUrl, specimen);
+    entryMap.put(observationFullUrl, observation);
+    entryMap.put(serviceRequestFullUrl, serviceRequest);
+    entryMap.put(diagnosticReportFullUrl, diagnosticReport);
+    entryMap.put(deviceFullUrl, device);
+    entryMap.put(practitionerRoleFullUrl, practitionerRole);
+    entryMap.put(messageHeaderFullUrl, messageHeader);
+
+    var bundle = new Bundle().setType(BundleType.MESSAGE);
+    entryMap.forEach(
+        (url, resource) ->
+            bundle.addEntry(new BundleEntryComponent().setFullUrl(url).setResource(resource)));
+
+    return bundle;
+  }
+
+  public static PractitionerRole getPractitionerRole(
+      String organizationUrl, String practitionerUrl) {
     var practitionerRole = new PractitionerRole();
     practitionerRole.setId(UUID.randomUUID().toString());
     practitionerRole
-        .setPractitioner(new Reference().setReference(PRACTITIONER_URL + practitionerId))
-        .setOrganization(new Reference().setReference(ORGANIZATION_URL + organizationId));
+        .setPractitioner(new Reference().setReference(practitionerUrl))
+        .setOrganization(new Reference().setReference(organizationUrl));
     return practitionerRole;
   }
 
-  public static MessageHeader getMessageHeader(String organizationId) {
+  public static MessageHeader getMessageHeader(String organizationUrl) {
     var messageHeader = new MessageHeader();
     messageHeader.setId(UUID.randomUUID().toString());
     messageHeader
@@ -285,9 +363,7 @@ public class FhirConverter {
         .addDestination()
         .setName("PRIME ReportStream")
         .setEndpoint("https://prime.cdc.gov/api/reports?option=SkipInvalidItems");
-    messageHeader
-        .getSender()
-        .setReferenceElement(new StringType(ORGANIZATION_URL + organizationId));
+    messageHeader.getSender().setReferenceElement(new StringType(organizationUrl));
     return messageHeader;
   }
 }

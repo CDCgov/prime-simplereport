@@ -12,24 +12,48 @@ import static gov.cdc.usds.simplereport.api.converter.FhirConverter.emailToConta
 import static gov.cdc.usds.simplereport.api.converter.FhirConverter.getMessageHeader;
 import static gov.cdc.usds.simplereport.api.converter.FhirConverter.getPractitionerRole;
 import static gov.cdc.usds.simplereport.api.converter.FhirConverter.phoneNumberToContactPoint;
+import static gov.cdc.usds.simplereport.api.converter.FhirConverter.toFhirBundle;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.from;
 import static org.junit.jupiter.params.provider.Arguments.arguments;
 
+import gov.cdc.usds.simplereport.db.model.DeviceSpecimenType;
+import gov.cdc.usds.simplereport.db.model.DeviceType;
+import gov.cdc.usds.simplereport.db.model.Facility;
+import gov.cdc.usds.simplereport.db.model.Person;
 import gov.cdc.usds.simplereport.db.model.PhoneNumber;
+import gov.cdc.usds.simplereport.db.model.Provider;
+import gov.cdc.usds.simplereport.db.model.Result;
+import gov.cdc.usds.simplereport.db.model.SpecimenType;
+import gov.cdc.usds.simplereport.db.model.SupportedDisease;
+import gov.cdc.usds.simplereport.db.model.TestEvent;
+import gov.cdc.usds.simplereport.db.model.TestOrder;
 import gov.cdc.usds.simplereport.db.model.auxiliary.PhoneType;
+import gov.cdc.usds.simplereport.db.model.auxiliary.StreetAddress;
+import gov.cdc.usds.simplereport.db.model.auxiliary.TestResult;
 import java.util.Collections;
 import java.util.List;
+import java.util.Set;
+import java.util.UUID;
+import java.util.stream.Collectors;
 import java.util.stream.Stream;
+import org.hl7.fhir.r4.model.Bundle.BundleEntryComponent;
+import org.hl7.fhir.r4.model.Bundle.BundleType;
 import org.hl7.fhir.r4.model.ContactPoint;
 import org.hl7.fhir.r4.model.ContactPoint.ContactPointSystem;
 import org.hl7.fhir.r4.model.ContactPoint.ContactPointUse;
+import org.hl7.fhir.r4.model.DiagnosticReport;
 import org.hl7.fhir.r4.model.Enumerations.AdministrativeGender;
+import org.hl7.fhir.r4.model.Observation;
+import org.hl7.fhir.r4.model.PractitionerRole;
 import org.hl7.fhir.r4.model.PrimitiveType;
+import org.hl7.fhir.r4.model.ServiceRequest;
+import org.hl7.fhir.r4.model.Specimen;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.Arguments;
 import org.junit.jupiter.params.provider.MethodSource;
+import org.springframework.test.util.ReflectionTestUtils;
 
 class FhirConverterTest {
   private static final String unknownSystem = "http://terminology.hl7.org/CodeSystem/v3-NullFlavor";
@@ -283,7 +307,8 @@ class FhirConverterTest {
 
   @Test
   void valid_getPractitionerRole() {
-    var practitionerRole = getPractitionerRole("org-id", "practitioner-id");
+    var practitionerRole =
+        getPractitionerRole("Organization/org-id", "Practitioner/practitioner-id");
 
     assertThat(practitionerRole.getOrganization().getReference()).isEqualTo("Organization/org-id");
     assertThat(practitionerRole.getPractitioner().getReference())
@@ -292,7 +317,7 @@ class FhirConverterTest {
 
   @Test
   void valid_getMessageHeader() {
-    var messageHeader = getMessageHeader("org-id");
+    var messageHeader = getMessageHeader("Organization/org-id");
 
     assertThat(messageHeader.getEventCoding().getSystem())
         .isEqualTo("http://terminology.hl7.org/CodeSystem/v2-0003");
@@ -301,5 +326,161 @@ class FhirConverterTest {
         .isEqualTo("ORU/ACK - Unsolicited transmission of an observation message");
     assertThat(messageHeader.getSource().getSoftware()).isEqualTo("PRIME SimpleReport");
     assertThat(messageHeader.getSender().getReference()).isEqualTo("Organization/org-id");
+  }
+
+  @Test
+  void valid_toFhirBundle() {
+    var person =
+        new Person(
+            null, null, "Julia", "Fiona", "Roberts", null, null, null, null, null, null, null, null,
+            null, null, "female", null, null, null, null);
+    var deviceType = new DeviceType("", "", null, null, null, 0);
+    var specimenType = new SpecimenType(null, null);
+    var deviceSpecimenType = new DeviceSpecimenType(deviceType, specimenType);
+
+    var facility =
+        new Facility(
+            null,
+            "TAOS MIDDLE SCHOOL",
+            null,
+            new StreetAddress(List.of("235 Paseo Del Cañon E"), "Taos", "NM", "87571", null),
+            "5755551234",
+            "school@example.com",
+            null,
+            deviceSpecimenType,
+            Collections.emptyList());
+
+    var provider =
+        new Provider(
+            "Jean",
+            "M",
+            "Byington",
+            null,
+            "123",
+            new StreetAddress(List.of("236 Paseo Del Cañon E"), "Taos", "NM", "87571", null),
+            "5755551234");
+
+    var testOrder = new TestOrder(person, facility);
+    var result = new Result(testOrder, new SupportedDisease(), TestResult.POSITIVE);
+    var testEvent = new TestEvent(testOrder, false, Set.of(result));
+
+    var providerId = UUID.randomUUID();
+    var facilityId = UUID.randomUUID();
+    var personId = UUID.randomUUID();
+    var specimenTypeId = UUID.randomUUID();
+    var deviceTypeId = UUID.randomUUID();
+    var resultId = UUID.randomUUID();
+    var testOrderId = UUID.randomUUID();
+    var testEventId = UUID.randomUUID();
+    ReflectionTestUtils.setField(provider, "internalId", providerId);
+    ReflectionTestUtils.setField(facility, "internalId", facilityId);
+    ReflectionTestUtils.setField(person, "internalId", personId);
+    ReflectionTestUtils.setField(specimenType, "internalId", specimenTypeId);
+    ReflectionTestUtils.setField(deviceType, "internalId", deviceTypeId);
+    ReflectionTestUtils.setField(result, "internalId", resultId);
+    ReflectionTestUtils.setField(testOrder, "internalId", testOrderId);
+    ReflectionTestUtils.setField(testEvent, "internalId", testEventId);
+
+    var actual =
+        toFhirBundle(
+            person.toFhir(), facility.toFhir(), provider.toFhir(), null, null, null, null, null);
+
+    var resourceUrls =
+        actual.getEntry().stream()
+            .map(BundleEntryComponent::getFullUrl)
+            .collect(Collectors.toList());
+
+    assertThat(actual.getType()).isEqualTo(BundleType.MESSAGE);
+    assertThat(actual.getEntry()).hasSize(10);
+    assertThat(resourceUrls).hasSize(10);
+    assertThat(resourceUrls)
+        .contains(
+            "Patient/" + personId,
+            "Organization/" + facilityId,
+            "Practitioner/" + providerId,
+            "Specimen/" + specimenTypeId,
+            "Observation/" + resultId,
+            "ServiceRequest/" + testEventId,
+            "DiagnosticReport/" + testOrderId,
+            "Device/" + deviceTypeId);
+
+    var practitionerRoleEntry =
+        actual.getEntry().stream()
+            .filter(entry -> entry.getFullUrl().contains("PractitionerRole/"))
+            .findFirst()
+            .orElseThrow(
+                () -> new AssertionError("Expected to find Practitioner Role, but not found"));
+    assertThat(
+            ((PractitionerRole) practitionerRoleEntry.getResource())
+                .getPractitioner()
+                .getReference())
+        .isEqualTo("Practitioner/" + providerId);
+    assertThat(
+            ((PractitionerRole) practitionerRoleEntry.getResource())
+                .getOrganization()
+                .getReference())
+        .isEqualTo("Organization/" + facilityId);
+
+    var specimenEntry =
+        actual.getEntry().stream()
+            .filter(entry -> entry.getFullUrl().contains("Specimen/"))
+            .findFirst()
+            .orElseThrow(() -> new AssertionError("Expected to find Specimen, but not found"));
+    assertThat(((Specimen) specimenEntry.getResource()).getSubject().getReference())
+        .isEqualTo("Patient/" + personId);
+
+    var observationEntry =
+        actual.getEntry().stream()
+            .filter(entry -> entry.getFullUrl().contains("Observation/"))
+            .findFirst()
+            .orElseThrow(() -> new AssertionError("Expected to find Observation, but not found"));
+    assertThat(((Observation) observationEntry.getResource()).getSubject().getReference())
+        .isEqualTo("Patient/" + personId);
+    assertThat(((Observation) observationEntry.getResource()).getSpecimen().getReference())
+        .isEqualTo("Specimen/" + specimenTypeId);
+    assertThat(((Observation) observationEntry.getResource()).getDevice().getReference())
+        .isEqualTo("Device/" + deviceTypeId);
+
+    var serviceRequestEntry =
+        actual.getEntry().stream()
+            .filter(entry -> entry.getFullUrl().contains("ServiceRequest/"))
+            .findFirst()
+            .orElseThrow(
+                () -> new AssertionError("Expected to find ServiceRequest, but not found"));
+    assertThat(((ServiceRequest) serviceRequestEntry.getResource()).getSubject().getReference())
+        .isEqualTo("Patient/" + personId);
+    assertThat(((ServiceRequest) serviceRequestEntry.getResource()).getPerformer()).hasSize(1);
+    assertThat(
+            ((ServiceRequest) serviceRequestEntry.getResource())
+                .getPerformerFirstRep()
+                .getReference())
+        .isEqualTo("Organization/" + facilityId);
+
+    var diagnosticReportEntry =
+        actual.getEntry().stream()
+            .filter(entry -> entry.getFullUrl().contains("DiagnosticReport/"))
+            .findFirst()
+            .orElseThrow(
+                () -> new AssertionError("Expected to find DiagnosticReport, but not found"));
+    assertThat(((DiagnosticReport) diagnosticReportEntry.getResource()).getBasedOn()).hasSize(1);
+    assertThat(
+            ((DiagnosticReport) diagnosticReportEntry.getResource())
+                .getBasedOnFirstRep()
+                .getReference())
+        .isEqualTo("ServiceRequest/" + testOrderId);
+    assertThat(((DiagnosticReport) diagnosticReportEntry.getResource()).getSubject().getReference())
+        .isEqualTo("Patient/" + personId);
+    assertThat(((DiagnosticReport) diagnosticReportEntry.getResource()).getSpecimen()).hasSize(1);
+    assertThat(
+            ((DiagnosticReport) diagnosticReportEntry.getResource())
+                .getSpecimenFirstRep()
+                .getReference())
+        .isEqualTo("Specimen/" + specimenTypeId);
+    assertThat(((DiagnosticReport) diagnosticReportEntry.getResource()).getResult()).hasSize(1);
+    assertThat(
+            ((DiagnosticReport) diagnosticReportEntry.getResource())
+                .getResultFirstRep()
+                .getReference())
+        .isEqualTo("Result/" + resultId);
   }
 }
