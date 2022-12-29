@@ -312,8 +312,10 @@ class FhirConverterTest {
 
   @Test
   void string_convertToObservation() {
-    var actual = convertToObservation("diseaseCode", "diseaseName", "resultCode", false, null);
+    var actual =
+        convertToObservation("diseaseCode", "diseaseName", "resultCode", false, null, "id-123");
 
+    assertThat(actual.getId()).isEqualTo("id-123");
     assertThat(actual.getStatus().getDisplay()).isEqualTo(ObservationStatus.FINAL.getDisplay());
     assertThat(actual.getCode().getText()).isEqualTo("diseaseName");
     assertThat(actual.getCode().getCoding()).hasSize(1);

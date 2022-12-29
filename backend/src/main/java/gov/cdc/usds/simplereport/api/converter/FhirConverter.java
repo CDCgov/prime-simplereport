@@ -26,6 +26,7 @@ import java.time.ZoneId;
 import java.util.Collections;
 import java.util.Date;
 import java.util.List;
+import java.util.Objects;
 import java.util.UUID;
 import java.util.stream.Collectors;
 import lombok.extern.slf4j.Slf4j;
@@ -287,7 +288,8 @@ public class FhirConverter {
           result.getDisease().getName(),
           result.getResultLOINC(),
           corrected,
-          correctionReason);
+          correctionReason,
+          Objects.toString(result.getInternalId(), ""));
     }
     return null;
   }
@@ -297,8 +299,10 @@ public class FhirConverter {
       String diseaseName,
       String resultCode,
       boolean corrected,
-      String correctionReason) {
+      String correctionReason,
+      String id) {
     var observation = new Observation();
+    observation.setId(id);
     observation.setStatus(ObservationStatus.FINAL);
     addCode(diseaseCode, diseaseName, observation);
     addValue(resultCode, observation);
