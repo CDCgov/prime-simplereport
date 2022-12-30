@@ -8,11 +8,11 @@ import static gov.cdc.usds.simplereport.api.converter.FhirConverter.convertToEth
 import static gov.cdc.usds.simplereport.api.converter.FhirConverter.convertToHumanName;
 import static gov.cdc.usds.simplereport.api.converter.FhirConverter.convertToRaceExtension;
 import static gov.cdc.usds.simplereport.api.converter.FhirConverter.convertToTribalAffiliationExtension;
+import static gov.cdc.usds.simplereport.api.converter.FhirConverter.createFhirBundle;
 import static gov.cdc.usds.simplereport.api.converter.FhirConverter.emailToContactPoint;
 import static gov.cdc.usds.simplereport.api.converter.FhirConverter.getMessageHeader;
 import static gov.cdc.usds.simplereport.api.converter.FhirConverter.getPractitionerRole;
 import static gov.cdc.usds.simplereport.api.converter.FhirConverter.phoneNumberToContactPoint;
-import static gov.cdc.usds.simplereport.api.converter.FhirConverter.toFhirBundle;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.from;
 import static org.junit.jupiter.params.provider.Arguments.arguments;
@@ -382,7 +382,7 @@ class FhirConverterTest {
     ReflectionTestUtils.setField(testEvent, "internalId", testEventId);
 
     var actual =
-        toFhirBundle(
+        createFhirBundle(
             person.toFhir(), facility.toFhir(), provider.toFhir(), null, null, null, null, null);
 
     var resourceUrls =

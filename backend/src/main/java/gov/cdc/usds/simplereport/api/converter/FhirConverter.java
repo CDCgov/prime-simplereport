@@ -1,20 +1,10 @@
 package gov.cdc.usds.simplereport.api.converter;
 
-import static gov.cdc.usds.simplereport.api.converter.FhirConstants.DEVICE_DOMAIN;
-import static gov.cdc.usds.simplereport.api.converter.FhirConstants.DIAGNOSTIC_REPORT_DOMAIN;
 import static gov.cdc.usds.simplereport.api.converter.FhirConstants.ETHNICITY_CODE_SYSTEM;
 import static gov.cdc.usds.simplereport.api.converter.FhirConstants.ETHNICITY_EXTENSION_URL;
-import static gov.cdc.usds.simplereport.api.converter.FhirConstants.MESSAGE_HEADER_DOMAIN;
 import static gov.cdc.usds.simplereport.api.converter.FhirConstants.NULL_CODE_SYSTEM;
-import static gov.cdc.usds.simplereport.api.converter.FhirConstants.OBSERVATION_DOMAIN;
-import static gov.cdc.usds.simplereport.api.converter.FhirConstants.ORGANIZATION_DOMAIN;
-import static gov.cdc.usds.simplereport.api.converter.FhirConstants.PATIENT_DOMAIN;
-import static gov.cdc.usds.simplereport.api.converter.FhirConstants.PRACTITIONER_DOMAIN;
-import static gov.cdc.usds.simplereport.api.converter.FhirConstants.PRACTITIONER_ROLE_DOMAIN;
 import static gov.cdc.usds.simplereport.api.converter.FhirConstants.RACE_CODING_SYSTEM;
 import static gov.cdc.usds.simplereport.api.converter.FhirConstants.RACE_EXTENSION_URL;
-import static gov.cdc.usds.simplereport.api.converter.FhirConstants.SERVICE_REQUEST_DOMAIN;
-import static gov.cdc.usds.simplereport.api.converter.FhirConstants.SPECIMEN_DOMAIN;
 import static gov.cdc.usds.simplereport.api.converter.FhirConstants.TRIBAL_AFFILIATION_CODE_SYSTEM;
 import static gov.cdc.usds.simplereport.api.converter.FhirConstants.TRIBAL_AFFILIATION_EXTENSION_URL;
 import static gov.cdc.usds.simplereport.api.converter.FhirConstants.TRIBAL_AFFILIATION_STRING;
@@ -60,6 +50,7 @@ import org.hl7.fhir.r4.model.Practitioner;
 import org.hl7.fhir.r4.model.PractitionerRole;
 import org.hl7.fhir.r4.model.Reference;
 import org.hl7.fhir.r4.model.Resource;
+import org.hl7.fhir.r4.model.ResourceType;
 import org.hl7.fhir.r4.model.ServiceRequest;
 import org.hl7.fhir.r4.model.Specimen;
 import org.hl7.fhir.r4.model.StringType;
@@ -284,7 +275,7 @@ public class FhirConverter {
     return null;
   }
 
-  public static Bundle toFhirBundle(
+  public static Bundle createFhirBundle(
       Patient patient,
       Organization organization,
       Practitioner practitioner,
@@ -293,19 +284,19 @@ public class FhirConverter {
       Observation observation,
       ServiceRequest serviceRequest,
       DiagnosticReport diagnosticReport) {
-    var patientFullUrl = PATIENT_DOMAIN + patient.getId();
-    var organizationFullUrl = ORGANIZATION_DOMAIN + organization.getId();
-    var practitionerFullUrl = PRACTITIONER_DOMAIN + practitioner.getId();
-    var specimenFullUrl = SPECIMEN_DOMAIN + specimen.getId();
-    var observationFullUrl = OBSERVATION_DOMAIN + observation.getId();
-    var serviceRequestFullUrl = SERVICE_REQUEST_DOMAIN + serviceRequest.getId();
-    var diagnosticReportFullUrl = DIAGNOSTIC_REPORT_DOMAIN + diagnosticReport.getId();
-    var deviceFullUrl = DEVICE_DOMAIN + device.getId();
+    var patientFullUrl = ResourceType.Patient + "/" + patient.getId();
+    var organizationFullUrl = ResourceType.Organization + "/" + organization.getId();
+    var practitionerFullUrl = ResourceType.Practitioner + "/" + practitioner.getId();
+    var specimenFullUrl = ResourceType.Specimen + "/" + specimen.getId();
+    var observationFullUrl = ResourceType.Observation + "/" + observation.getId();
+    var serviceRequestFullUrl = ResourceType.ServiceRequest + "/" + serviceRequest.getId();
+    var diagnosticReportFullUrl = ResourceType.DiagnosticReport + "/" + diagnosticReport.getId();
+    var deviceFullUrl = ResourceType.Device + "/" + device.getId();
 
     var practitionerRole = getPractitionerRole(organizationFullUrl, practitionerFullUrl);
     var messageHeader = getMessageHeader(organizationFullUrl);
-    var practitionerRoleFullUrl = PRACTITIONER_ROLE_DOMAIN + practitionerRole.getId();
-    var messageHeaderFullUrl = MESSAGE_HEADER_DOMAIN + messageHeader.getId();
+    var practitionerRoleFullUrl = ResourceType.PractitionerRole + "/" + practitionerRole.getId();
+    var messageHeaderFullUrl = ResourceType.MessageHeader + "/" + messageHeader.getId();
 
     patient.setManagingOrganization(new Reference(organizationFullUrl));
     specimen.setSubject(new Reference(patientFullUrl));

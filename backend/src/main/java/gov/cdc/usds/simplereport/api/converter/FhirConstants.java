@@ -18,14 +18,4 @@ public class FhirConstants {
   public static final String TRIBAL_AFFILIATION_STRING = "tribalAffiliation";
   public static final String TRIBAL_AFFILIATION_CODE_SYSTEM =
       "http://terminology.hl7.org/CodeSystem/v3-TribalEntityUS";
-  public static final String PATIENT_DOMAIN = "Patient/";
-  public static final String MESSAGE_HEADER_DOMAIN = "MessageHeader/";
-  public static final String ORGANIZATION_DOMAIN = "Organization/";
-  public static final String PRACTITIONER_DOMAIN = "Practitioner/";
-  public static final String PRACTITIONER_ROLE_DOMAIN = "PractitionerRole/";
-  public static final String SPECIMEN_DOMAIN = "Specimen/";
-  public static final String OBSERVATION_DOMAIN = "Observation/";
-  public static final String SERVICE_REQUEST_DOMAIN = "ServiceRequest/";
-  public static final String DIAGNOSTIC_REPORT_DOMAIN = "DiagnosticReport/";
-  public static final String DEVICE_DOMAIN = "Device/";
 }
