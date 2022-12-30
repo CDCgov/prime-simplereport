@@ -65,7 +65,7 @@ class PersonTest {
     var expectedSerialized =
         IOUtils.toString(
             Objects.requireNonNull(
-                PersonTest.class.getClassLoader().getResourceAsStream("fhir/patient.json")),
+                getClass().getClassLoader().getResourceAsStream("fhir/patient.json")),
             StandardCharsets.UTF_8);
     JSONAssert.assertEquals(actualSerialized, expectedSerialized, true);
   }

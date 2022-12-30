@@ -40,7 +40,7 @@ class ProviderTest {
     var expectedSerialized =
         IOUtils.toString(
             Objects.requireNonNull(
-                ProviderTest.class.getClassLoader().getResourceAsStream("fhir/practitioner.json")),
+                getClass().getClassLoader().getResourceAsStream("fhir/practitioner.json")),
             StandardCharsets.UTF_8);
     JSONAssert.assertEquals(actualSerialized, expectedSerialized, true);
   }
