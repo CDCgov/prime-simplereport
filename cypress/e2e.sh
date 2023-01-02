@@ -72,7 +72,7 @@ echo
 [[ -n $TEST_ENV ]] && echo "Testing against URL------$TEST_ENV"
 [[ -n $BACKEND_URL_PATH ]] && echo "Backend health route-----$BACKEND_URL_PATH"
 [[ -n $PUBLIC_URL ]] && echo "Public url---------------$PUBLIC_URL"
-[[ -n $FRONTEND_URL_PATH ]] && echo "Frontent health route----$FRONTEND_URL_PATH"
+[[ -n $FRONTEND_URL_PATH ]] && echo "Frontend health route----$FRONTEND_URL_PATH"
 [[ -n $RUN_OPEN ]] && echo "Run as interactive-------$RUN_OPEN"
 echo 
 
