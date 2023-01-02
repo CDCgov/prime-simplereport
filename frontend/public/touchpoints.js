@@ -19,7 +19,7 @@ function FBAform(d) {
     activatedButton: null, // tracks a reference to the button that was clicked to open the modal
 
     // enable Javascript experience
-    javscriptIsEnabled: function () {
+    javascriptIsEnabled: function () {
       var javascriptDisabledMessage = document.getElementsByClassName(
         "javascript-disabled-message"
       )[0];
@@ -33,7 +33,7 @@ function FBAform(d) {
       }
     },
     init: function (options) {
-      this.javscriptIsEnabled();
+      this.javascriptIsEnabled();
       this.options = options;
       this.loadCss();
       this.loadHtml();
@@ -421,9 +421,9 @@ function FBAform(d) {
       this.buttonEl.innerHTML = this.options.modalButtonText;
       d.body.appendChild(this.buttonEl);
 
-      this.loadFeebackSkipLink();
+      this.loadFeedbackSkipLink();
     },
-    loadFeebackSkipLink: function () {
+    loadFeedbackSkipLink: function () {
       this.skipLink = document.createElement("a");
       this.skipLink.setAttribute("class", "usa-skipnav touchpoints-skipnav");
       this.skipLink.setAttribute("href", "#fba-button");
@@ -591,7 +591,7 @@ function FBAform(d) {
       };
 
       // Combine Referrer and Pathname with Form-specific params
-      params["referer"] = d.referrer;
+      params["referrer"] = d.referrer;
       params["page"] = window.location.pathname;
       params["location_code"] = form.querySelector("#fba_location_code")
         ? form.querySelector("#fba_location_code").value
