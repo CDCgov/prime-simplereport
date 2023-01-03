@@ -210,13 +210,13 @@ public class DemoOktaRepository implements OktaRepository {
     }
   }
 
+  // returns ALL users including inactive ones
   public Set<String> getAllUsersForOrganization(Organization org) {
     if (!orgUsernamesMap.containsKey(org.getExternalId())) {
       throw new IllegalGraphqlArgumentException(
           "Cannot get Okta users from nonexistent organization.");
     }
     return orgUsernamesMap.get(org.getExternalId()).stream()
-        .filter(u -> !inactiveUsernames.contains(u))
         .collect(Collectors.toUnmodifiableSet());
   }
 
