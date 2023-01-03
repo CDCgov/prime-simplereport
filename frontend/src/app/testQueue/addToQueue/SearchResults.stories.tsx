@@ -21,9 +21,6 @@ const patient = {
     deviceTypeName: "MegaTester2000 (PCR)",
   },
 };
-type RouterWithFacilityProps = {
-  children: React.ReactNode;
-};
 
 const RouterWithFacility: React.FC<RouterWithFacilityProps> = ({
   children,

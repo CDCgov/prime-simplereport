@@ -11,10 +11,6 @@ export default {
   component: OrderingProviderList,
 } as Meta;
 
-type RouterWithFacilityProps = {
-  children: React.ReactNode;
-};
-
 const RouterWithFacility: React.FC<RouterWithFacilityProps> = ({
   children,
 }) => <MemoryRouter>{children}</MemoryRouter>;

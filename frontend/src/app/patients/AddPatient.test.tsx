@@ -32,10 +32,6 @@ const store = mockStore({
   organization: { name: "Test Organization" },
 });
 
-type RouterWithFacilityProps = {
-  children: React.ReactNode;
-};
-
 const RouterWithFacility: React.FC<RouterWithFacilityProps> = ({
   children,
 }) => (

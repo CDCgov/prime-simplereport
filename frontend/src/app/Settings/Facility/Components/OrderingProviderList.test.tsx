@@ -4,10 +4,6 @@ import { MemoryRouter } from "react-router-dom";
 
 import OrderingProviderList from "./OrderingProviderList";
 
-type RouterWithFacilityProps = {
-  children: React.ReactNode;
-};
-
 const RouterWithFacility: React.FC<RouterWithFacilityProps> = ({
   children,
 }) => <MemoryRouter>{children}</MemoryRouter>;

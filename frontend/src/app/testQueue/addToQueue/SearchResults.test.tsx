@@ -52,10 +52,6 @@ const patients: Patient[] = [
 
 const mockFacilityID = "facility-id-101";
 
-type RouterWithFacilityProps = {
-  children: React.ReactNode;
-};
-
 const RouterWithFacility: React.FC<RouterWithFacilityProps> = ({
   children,
 }) => (
