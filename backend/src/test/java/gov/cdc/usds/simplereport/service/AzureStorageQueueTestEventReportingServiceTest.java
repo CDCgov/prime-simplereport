@@ -14,6 +14,7 @@ import com.azure.core.http.rest.PagedFlux;
 import com.azure.storage.queue.QueueAsyncClient;
 import com.azure.storage.queue.models.QueueMessageItem;
 import com.azure.storage.queue.models.SendMessageResult;
+import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import gov.cdc.usds.simplereport.api.model.TestEventExport;
 import gov.cdc.usds.simplereport.api.model.errors.TestEventSerializationFailureException;
@@ -48,20 +49,24 @@ class AzureStorageQueueTestEventReportingServiceTest
   }
 
   @Test
-  void throws_custom_test_event_serialization_failure_exception() {
+  void throws_custom_test_event_serialization_failure_exception() throws JsonProcessingException {
     var client = mock(QueueAsyncClient.class);
+    var objectMapper = mock(ObjectMapper.class);
     Mono<SendMessageResult> response = mock(Mono.class);
     when(response.toFuture())
         .thenReturn(CompletableFuture.completedFuture(new SendMessageResult()));
     when(client.sendMessage(any(String.class))).thenReturn(response);
+    when(objectMapper.writeValueAsString(any()))
+        .thenThrow(new JsonProcessingException("ignored", new Throwable("thrown message")) {});
 
-    var sut = new AzureStorageQueueTestEventReportingService(new ObjectMapper(), client);
+    var sut = new AzureStorageQueueTestEventReportingService(objectMapper, client);
     var invalidTestEventWithNoResults = new TestEvent();
     Throwable caught =
         assertThrows(
             TestEventSerializationFailureException.class,
             () -> sut.report(invalidTestEventWithNoResults));
-    assertEquals("TestEvent failed to serialize with UUID null: null", caught.getMessage());
+    assertEquals(
+        "TestEvent failed to serialize with UUID null: thrown message", caught.getMessage());
   }
 
   @Test
