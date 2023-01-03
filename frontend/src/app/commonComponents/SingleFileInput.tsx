@@ -30,17 +30,12 @@ const SingleFileInput = ({
     } else {
       const file = e?.currentTarget?.files?.item(0);
 
-      if (
-        accept &&
-        file?.type &&
-        accept.search(new RegExp(file?.type)) === -1
-      ) {
+      if (accept && file?.type && isInvalidFile(file?.type, accept)) {
         setFileState("invalid");
       } else {
         setFileState("selected");
       }
     }
-
     onChange(e);
   }
 
@@ -54,7 +49,7 @@ const SingleFileInput = ({
         return "Drag file here or choose from folder";
     }
   }
-  // ToDo maybe be more flexible and allow to pass down all the props
+
   return (
     <div className={classnames(["sr-single-file-input", fileState])}>
       <input
@@ -73,5 +68,18 @@ const SingleFileInput = ({
     </div>
   );
 };
+
+function isInvalidFile(type: string, accept: string): boolean {
+  const trimmedAcceptProp = accept.replace(/^\./, "").replace(/\/\*$/, "");
+
+  if (
+    type.search(new RegExp(trimmedAcceptProp)) !== -1 ||
+    trimmedAcceptProp.search(new RegExp(type)) !== -1
+  ) {
+    return false;
+  }
+
+  return true;
+}
 
 export default SingleFileInput;
