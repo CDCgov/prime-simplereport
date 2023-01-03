@@ -105,6 +105,7 @@ export const useFacilityValidation = (facility: Facility) => {
         errors.zipCode ||
         errors.state ||
         errors.cliaNumber ||
+        errors.deviceTypes ||
         errors["orderingProvider.firstName"] ||
         errors["orderingProvider.lastName"] ||
         errors["orderingProvider.NPI"] ||
