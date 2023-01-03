@@ -4,8 +4,8 @@
 
   input[type="file"] {
     cursor: pointer;
-    border: 1px dashed #a9aeb1;
-    padding: 3.5rem 1rem 2rem 7rem;
+    border: 0.06rem dashed #a9aeb1;
+    padding: 3.5rem 1rem 2rem 7.2rem;
     z-index: 2;
     position: relative;
     display: block;
@@ -39,7 +39,7 @@
 
   input[type="file"] {
     font-weight: bold;
-    padding-left: 4.2rem;
+    padding-left: 4.4rem;
 
     &::after {
       content: "\2611";

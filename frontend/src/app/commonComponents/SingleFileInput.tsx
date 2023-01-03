@@ -30,7 +30,11 @@ const SingleFileInput = ({
     } else {
       const file = e?.currentTarget?.files?.item(0);
 
-      if (file?.type.search(/csv/i) === -1) {
+      if (
+        accept &&
+        file?.type &&
+        accept.search(new RegExp(file?.type)) === -1
+      ) {
         setFileState("invalid");
       } else {
         setFileState("selected");
@@ -45,9 +49,9 @@ const SingleFileInput = ({
       case "invalid":
         return "This is not a valid file type";
       case "selected":
-        return "Drag files here or choose from folder to change file";
+        return "Drag file here or choose from folder to change file";
       default:
-        return "Drag files here or choose from folder";
+        return "Drag file here or choose from folder";
     }
   }
   // ToDo maybe be more flexible and allow to pass down all the props
