@@ -53,7 +53,7 @@ describe("Uploads", () => {
     render(<TestContainer />);
 
     expect(await screen.findByText("Upload your CSV")).toBeInTheDocument();
-    expect(await screen.findByText("Drag file here or")).toBeInTheDocument();
+    expect(await screen.findByText(/Drag file here or/i)).toBeInTheDocument();
     expect(
       screen.queryByText("Your file has not been accepted.")
     ).not.toBeInTheDocument();
@@ -63,7 +63,7 @@ describe("Uploads", () => {
     render(<TestContainer />);
 
     const emptyFile = file("");
-    const input = screen.getByTestId("file-input-input");
+    const input = screen.getByTestId("upload-csv-input");
     await userEvent.upload(input, emptyFile);
     expect(
       await screen.findByText(
@@ -78,7 +78,7 @@ describe("Uploads", () => {
     render(<TestContainer />);
     const tooManyRows = file("\n".repeat(10001));
 
-    const input = screen.getByTestId("file-input-input");
+    const input = screen.getByTestId("upload-csv-input");
     await userEvent.upload(input, tooManyRows);
 
     expect(
@@ -94,7 +94,7 @@ describe("Uploads", () => {
     render(<TestContainer />);
     const tooBig = file("0".repeat(50 * 1000 * 1000 + 1));
 
-    const input = screen.getByTestId("file-input-input");
+    const input = screen.getByTestId("upload-csv-input");
     await userEvent.upload(input, tooBig);
 
     expect(
@@ -110,7 +110,7 @@ describe("Uploads", () => {
     render(<TestContainer />);
     const tooManyColumns = file("a, ".repeat(2001) + "\n");
 
-    const input = screen.getByTestId("file-input-input");
+    const input = screen.getByTestId("upload-csv-input");
     await userEvent.upload(input, tooManyColumns);
 
     expect(
@@ -161,14 +161,17 @@ describe("Uploads", () => {
 
         render(<TestContainer />);
 
-        const fileInput = screen.getByTestId("file-input-input");
-        userEvent.upload(fileInput, file);
-        await waitFor(() => {
-          screen.getByText("values.csv");
-        });
+        const fileInput = screen.getByTestId("upload-csv-input");
+        await userEvent.upload(fileInput, file);
+
+        expect(
+          screen.getByText(
+            "Drag file here or choose from folder to change file"
+          )
+        ).toBeInTheDocument();
 
         const submitButton = screen.getByTestId("button");
-        userEvent.click(submitButton);
+        await userEvent.click(submitButton);
         await waitFor(() => {
           expect(
             screen.getByText("Success: File Accepted")
@@ -204,14 +207,15 @@ describe("Uploads", () => {
 
       render(<TestContainer />);
 
-      const fileInput = screen.getByTestId("file-input-input");
-      userEvent.upload(fileInput, validFile());
-      await waitFor(() => {
-        screen.getByText("values.csv");
-      });
+      const fileInput = screen.getByTestId("upload-csv-input");
+      await userEvent.upload(fileInput, validFile());
+
+      expect(
+        screen.getByText("Drag file here or choose from folder to change file")
+      ).toBeInTheDocument();
 
       const submitButton = screen.getByTestId("button");
-      userEvent.click(submitButton);
+      await userEvent.click(submitButton);
 
       await waitFor(() => {
         expect(
@@ -251,16 +255,16 @@ describe("Uploads", () => {
         );
       });
 
-      render(<TestContainer />);
+      await render(<TestContainer />);
 
-      const fileInput = screen.getByTestId("file-input-input");
-      userEvent.upload(fileInput, validFile());
-      await waitFor(() => {
-        screen.getByText("values.csv");
-      });
+      const fileInput = screen.getByTestId("upload-csv-input");
+      await userEvent.upload(fileInput, validFile());
+      expect(
+        screen.getByText("Drag file here or choose from folder to change file")
+      ).toBeInTheDocument();
 
       const submitButton = screen.getByTestId("button");
-      userEvent.click(submitButton);
+      await userEvent.click(submitButton);
 
       await waitFor(() => {
         expect(

@@ -268,11 +268,11 @@ describe("Upload Patient", () => {
         screen.getByRole("button", { name: /upload csv file/i })
       ).toBeDisabled();
       expect(
-        screen.getByText("Drag files here or choose from folder")
+        screen.getByText("Drag file here or choose from folder")
       ).toBeInTheDocument();
       expect(
         screen.queryByText(
-          "Drag files here or choose from folder to change file"
+          "Drag file here or choose from folder to change file"
         )
       ).not.toBeInTheDocument();
     });
@@ -282,7 +282,7 @@ describe("Upload Patient", () => {
       const input = screen.getByTestId("upload-patients-file-input");
       await userEvent.upload(input, file("someText"));
       expect(
-        screen.getByText("Drag files here or choose from folder to change file")
+        screen.getByText("Drag file here or choose from folder to change file")
       ).toBeInTheDocument();
     });
   });

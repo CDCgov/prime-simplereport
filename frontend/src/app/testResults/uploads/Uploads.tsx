@@ -1,6 +1,6 @@
 import React, { useState } from "react";
 import { useSelector } from "react-redux";
-import { Button, FormGroup, FileInput } from "@trussworks/react-uswds";
+import { Button, FormGroup } from "@trussworks/react-uswds";
 
 import { showError } from "../../utils/srToast";
 import { FeedbackMessage } from "../../../generated/graphql";
@@ -10,6 +10,7 @@ import { FileUploadService } from "../../../fileUploadService/FileUploadService"
 import "../HeaderSizeFix.scss";
 import { getAppInsights } from "../../TelemetryService";
 import { RootState } from "../../store";
+import SingleFileInput from "../../commonComponents/SingleFileInput";
 
 const PAYLOAD_MAX_BYTES = 50 * 1000 * 1000;
 const REPORT_MAX_ITEMS = 10000;
@@ -305,11 +306,11 @@ const Uploads = () => {
             </div>
           )}
           <FormGroup className="margin-bottom-3">
-            <FileInput
+            <SingleFileInput
               key={fileInputResetValue}
               id="upload-csv-input"
               name="upload-csv-input"
-              aria-label="Choose CSV file"
+              ariaLabel="Choose CSV file"
               accept="text/csv, .csv"
               onChange={(e) => handleFileChange(e)}
               required

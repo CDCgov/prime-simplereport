@@ -236,7 +236,7 @@ exports[`Upload Patient displays the upload patients page correctly 1`] = `
                     <span
                       id="file-input-specific-hint"
                     >
-                      Drag files here or choose from folder
+                      Drag file here or choose from folder
                     </span>
                   </div>
                 </div>
