@@ -144,7 +144,7 @@ describe("Upload Patient", () => {
 
     expect(uploadSpy).toHaveBeenCalledWith(uploadFile, "1");
     expect(
-      await screen.findByText("Success: File Accepted")
+      await screen.findByText("Success: Data confirmed")
     ).toBeInTheDocument();
   });
   it("should show success message if upload is successful", async () => {
@@ -158,7 +158,7 @@ describe("Upload Patient", () => {
 
     expect(uploadSpy).toHaveBeenCalledWith(uploadFile, "");
     expect(
-      await screen.findByText("Success: File Accepted")
+      await screen.findByText("Success: Data confirmed")
     ).toBeInTheDocument();
   });
   it("should show error message and list errors if error occurs", async () => {
@@ -202,13 +202,13 @@ describe("Upload Patient", () => {
     uploadPatientsSpy(mockResponse);
     submitCSVFile(mockResponse);
     expect(
-      await screen.findByText("Success: File Accepted")
+      await screen.findByText("Success: Data confirmed")
     ).toBeInTheDocument();
 
     userEvent.click(screen.getByLabelText("close"));
 
     expect(
-      screen.queryByText("Success: File Accepted")
+      screen.queryByText("Success: Data confirmed")
     ).not.toBeInTheDocument();
   });
   it("should remove error message and table when close is clicked", async () => {

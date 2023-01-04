@@ -212,7 +212,7 @@ exports[`Upload Patient displays the upload patients page correctly 1`] = `
               <div
                 class="maxw-710 line-height-sans-4"
               >
-                The spreadsheet may take 10 or more minutes to upload. You do not need to stay on this page. We'll email you if you need to fix any errors or when the upload is complete.
+                The system will check the data for errors before adding your patients to SimpleReport.
               </div>
               <div>
                 <div

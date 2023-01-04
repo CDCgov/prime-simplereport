@@ -230,16 +230,15 @@ const UploadPatients = ({ isAdmin }: { isAdmin: boolean }) => {
               </div>
               <div className={"margin-left-3"}>
                 <div className={"maxw-710 line-height-sans-4"}>
-                  The spreadsheet may take 10 or more minutes to upload. You do
-                  not need to stay on this page. We'll email you if you need to
-                  fix any errors or when the upload is complete.
+                  The system will check the data for errors before adding your
+                  patients to SimpleReport.
                 </div>
                 <div>
                   {status === "success" && (
                     <div className="usa-alert usa-alert--success maxw-560 margin-top-3 outline-0">
                       <div className="usa-alert__body">
                         <span className="usa-alert__heading text-bold">
-                          Success: File Accepted
+                          Success: Data confirmed
                         </span>
                         <button
                           className="Toastify__close-button Toastify__close-button--default position-absolute top-0 right-0"
@@ -250,7 +249,10 @@ const UploadPatients = ({ isAdmin }: { isAdmin: boolean }) => {
                           <FontAwesomeIcon icon={faXmark} />
                         </button>
                         <p className="usa-alert__text">
-                          Patients in your file have been successfully uploaded.
+                          We're now adding your patients to SimpleReport. You
+                          can leave this page, as the process can take up to 10
+                          minutes or more. We'll email you when the upload is
+                          complete.
                         </p>
                       </div>
                     </div>
