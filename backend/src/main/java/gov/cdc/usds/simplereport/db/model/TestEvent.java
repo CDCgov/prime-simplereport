@@ -1,18 +1,14 @@
 package gov.cdc.usds.simplereport.db.model;
 
-import static gov.cdc.usds.simplereport.api.converter.FhirConverter.convertToObservation;
-
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import gov.cdc.usds.simplereport.db.model.auxiliary.AskOnEntrySurvey;
 import gov.cdc.usds.simplereport.db.model.auxiliary.TestCorrectionStatus;
 import gov.cdc.usds.simplereport.db.model.auxiliary.TestResult;
 import java.util.Date;
 import java.util.HashSet;
-import java.util.List;
 import java.util.Optional;
 import java.util.Set;
 import java.util.UUID;
-import java.util.stream.Collectors;
 import javax.persistence.AttributeOverride;
 import javax.persistence.CascadeType;
 import javax.persistence.Column;
@@ -26,7 +22,6 @@ import lombok.extern.slf4j.Slf4j;
 import org.hibernate.Hibernate;
 import org.hibernate.annotations.Immutable;
 import org.hibernate.annotations.Type;
-import org.hl7.fhir.r4.model.Observation;
 
 @Getter
 @Entity
@@ -178,12 +173,5 @@ public class TestEvent extends BaseTestInfo {
             .filter(result -> COVID_LOINC.equals(result.getDisease().getLoinc()))
             .findFirst();
     return resultObject.map(Result::getTestResult);
-  }
-
-  public List<Observation> toFhirObservation() {
-    return results.stream()
-        .map(
-            result -> convertToObservation(result, getCorrectionStatus(), getReasonForCorrection()))
-        .collect(Collectors.toList());
   }
 }

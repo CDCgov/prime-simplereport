@@ -27,6 +27,7 @@ import java.time.ZoneId;
 import java.util.Collections;
 import java.util.Date;
 import java.util.List;
+import java.util.Set;
 import java.util.UUID;
 import java.util.stream.Collectors;
 import lombok.extern.slf4j.Slf4j;
@@ -278,6 +279,13 @@ public class FhirConverter {
       return ext;
     }
     return null;
+  }
+
+  public static List<Observation> convertToObservation(
+      Set<Result> results, TestCorrectionStatus correctionStatus, String correctionReason) {
+    return results.stream()
+        .map(result -> convertToObservation(result, correctionStatus, correctionReason))
+        .collect(Collectors.toList());
   }
 
   public static Observation convertToObservation(
