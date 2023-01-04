@@ -17,14 +17,20 @@ import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.from;
 import static org.junit.jupiter.params.provider.Arguments.arguments;
 
+import ca.uhn.fhir.context.FhirContext;
+import ca.uhn.fhir.parser.IParser;
 import gov.cdc.usds.simplereport.db.model.DeviceType;
 import gov.cdc.usds.simplereport.db.model.PhoneNumber;
 import gov.cdc.usds.simplereport.db.model.SpecimenType;
 import gov.cdc.usds.simplereport.db.model.auxiliary.PhoneType;
+import java.io.IOException;
+import java.nio.charset.StandardCharsets;
 import java.util.Collections;
 import java.util.List;
+import java.util.Objects;
 import java.util.UUID;
 import java.util.stream.Stream;
+import org.apache.commons.io.IOUtils;
 import org.hl7.fhir.r4.model.ContactPoint;
 import org.hl7.fhir.r4.model.ContactPoint.ContactPointSystem;
 import org.hl7.fhir.r4.model.ContactPoint.ContactPointUse;
@@ -36,6 +42,7 @@ import org.junit.jupiter.api.Test;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.Arguments;
 import org.junit.jupiter.params.provider.MethodSource;
+import org.skyscreamer.jsonassert.JSONAssert;
 import org.springframework.test.util.ReflectionTestUtils;
 
 class FhirConverterTest {
@@ -356,6 +363,33 @@ class FhirConverterTest {
   }
 
   @Test
+  void validDeviceType_convertToDevice_matchesJson() throws IOException {
+    var internalId = "3c9c7370-e2e3-49ad-bb7a-f6005f41cf29";
+    DeviceType deviceType =
+        new DeviceType(
+            "name",
+            "BioFire Diagnostics",
+            "BioFire Respiratory Panel 2.1 (RP2.1)*@",
+            "loinc",
+            "swab type",
+            15);
+    ReflectionTestUtils.setField(deviceType, "internalId", UUID.fromString(internalId));
+
+    var actual = convertToDevice(deviceType);
+
+    FhirContext ctx = FhirContext.forR4();
+    IParser parser = ctx.newJsonParser();
+
+    String actualSerialized = parser.encodeResourceToString(actual);
+    var expectedSerialized =
+        IOUtils.toString(
+            Objects.requireNonNull(
+                getClass().getClassLoader().getResourceAsStream("fhir/device.json")),
+            StandardCharsets.UTF_8);
+    JSONAssert.assertEquals(actualSerialized, expectedSerialized, true);
+  }
+
+  @Test
   void string_convertToSpecimen() {
     var actual =
         convertToSpecimen(
@@ -422,5 +456,25 @@ class FhirConverterTest {
   @Test
   void nullSpecimenType_convertToSpecimen() {
     assertThat(convertToSpecimen(null)).isNull();
+  }
+
+  @Test
+  void validSpecimenType_convertToSpecimen_matchesJson() throws IOException {
+    var internalId = "3c9c7370-e2e3-49ad-bb7a-f6005f41cf29";
+    SpecimenType specimenType = new SpecimenType("nasal", "40001", "nose", "10101");
+    ReflectionTestUtils.setField(specimenType, "internalId", UUID.fromString(internalId));
+
+    var actual = convertToSpecimen(specimenType);
+
+    FhirContext ctx = FhirContext.forR4();
+    IParser parser = ctx.newJsonParser();
+
+    String actualSerialized = parser.encodeResourceToString(actual);
+    var expectedSerialized =
+        IOUtils.toString(
+            Objects.requireNonNull(
+                getClass().getClassLoader().getResourceAsStream("fhir/specimen.json")),
+            StandardCharsets.UTF_8);
+    JSONAssert.assertEquals(actualSerialized, expectedSerialized, true);
   }
 }
