@@ -303,17 +303,24 @@ public class FhirConverter {
       String id) {
     var observation = new Observation();
     observation.setId(id);
-    observation.setStatus(ObservationStatus.FINAL);
+    setStatus(observation, corrected);
     addCode(diseaseCode, diseaseName, observation);
     addValue(resultCode, observation);
     addCorrectionNote(corrected, correctionReason, observation);
     return observation;
   }
 
+  private static void setStatus(Observation observation, boolean corrected) {
+    if (corrected) {
+      observation.setStatus(ObservationStatus.CORRECTED);
+    } else {
+      observation.setStatus(ObservationStatus.FINAL);
+    }
+  }
+
   private static void addCorrectionNote(
       boolean corrected, String correctionReason, Observation observation) {
     if (corrected) {
-      observation.setStatus(ObservationStatus.CORRECTED);
       var annotation = observation.addNote();
       var correctedNote = "Corrected Result";
       if (StringUtils.isNotBlank(correctionReason)) {
