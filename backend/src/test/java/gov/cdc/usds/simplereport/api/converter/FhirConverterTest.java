@@ -36,6 +36,7 @@ import org.junit.jupiter.api.Test;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.Arguments;
 import org.junit.jupiter.params.provider.MethodSource;
+import org.springframework.test.util.ReflectionTestUtils;
 
 class FhirConverterTest {
   private static final String unknownSystem = "http://terminology.hl7.org/CodeSystem/v3-NullFlavor";
@@ -333,9 +334,12 @@ class FhirConverterTest {
   void result_convertToObservation() {
     var result =
         new Result(null, null, new SupportedDisease("covid-19", "96741-4"), TestResult.POSITIVE);
+    var internalId = UUID.randomUUID();
+    ReflectionTestUtils.setField(result, "internalId", internalId);
 
     var actual = convertToObservation(result, false, null);
 
+    assertThat(actual.getId()).isEqualTo(internalId.toString());
     assertThat(actual.getStatus().getDisplay()).isEqualTo(ObservationStatus.FINAL.getDisplay());
     assertThat(actual.getCode().getText()).isEqualTo("covid-19");
     assertThat(actual.getCode().getCoding()).hasSize(1);
@@ -353,9 +357,12 @@ class FhirConverterTest {
   void correctedResult_convertToObservation() {
     var result =
         new Result(null, null, new SupportedDisease("covid-19", "96741-4"), TestResult.POSITIVE);
+    var internalId = UUID.randomUUID();
+    ReflectionTestUtils.setField(result, "internalId", internalId);
 
     var actual = convertToObservation(result, true, "Oopsy Daisy");
 
+    assertThat(actual.getId()).isEqualTo(internalId.toString());
     assertThat(actual.getStatus().getDisplay()).isEqualTo(ObservationStatus.CORRECTED.getDisplay());
     assertThat(actual.getNote()).hasSize(1);
     assertThat(actual.getNoteFirstRep().getText()).isEqualTo("Corrected Result: Oopsy Daisy");
@@ -365,9 +372,12 @@ class FhirConverterTest {
   void correctedResultNoReason_convertToObservation() {
     var result =
         new Result(null, null, new SupportedDisease("covid-19", "96741-4"), TestResult.POSITIVE);
+    var internalId = UUID.randomUUID();
+    ReflectionTestUtils.setField(result, "internalId", internalId);
 
     var actual = convertToObservation(result, true, null);
 
+    assertThat(actual.getId()).isEqualTo(internalId.toString());
     assertThat(actual.getStatus().getDisplay()).isEqualTo(ObservationStatus.CORRECTED.getDisplay());
     assertThat(actual.getNote()).hasSize(1);
     assertThat(actual.getNoteFirstRep().getText()).isEqualTo("Corrected Result");

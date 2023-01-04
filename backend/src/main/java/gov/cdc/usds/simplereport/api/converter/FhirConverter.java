@@ -26,7 +26,6 @@ import java.time.ZoneId;
 import java.util.Collections;
 import java.util.Date;
 import java.util.List;
-import java.util.Objects;
 import java.util.UUID;
 import java.util.stream.Collectors;
 import lombok.extern.slf4j.Slf4j;
@@ -289,7 +288,7 @@ public class FhirConverter {
           result.getResultLOINC(),
           corrected,
           correctionReason,
-          Objects.toString(result.getInternalId(), ""));
+          result.getInternalId().toString());
     }
     return null;
   }
