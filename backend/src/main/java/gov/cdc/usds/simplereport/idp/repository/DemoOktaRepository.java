@@ -320,6 +320,9 @@ public class DemoOktaRepository implements OktaRepository {
       }
       return Optional.ofNullable(usernameOrgRolesMap.get(username));
     } catch (ScopeNotActiveException e) {
+      if (usernameOrgRolesMap.get(username) != null) {
+        return Optional.of(usernameOrgRolesMap.get(username));
+      }
       Set<String> authorities =
           SecurityContextHolder.getContext().getAuthentication().getAuthorities().stream()
               .map(GrantedAuthority::getAuthority)
