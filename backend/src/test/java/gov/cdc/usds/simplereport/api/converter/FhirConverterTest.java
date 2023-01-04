@@ -36,6 +36,7 @@ import org.junit.jupiter.api.Test;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.Arguments;
 import org.junit.jupiter.params.provider.MethodSource;
+import org.springframework.test.util.ReflectionTestUtils;
 
 class FhirConverterTest {
 
@@ -336,10 +337,13 @@ class FhirConverterTest {
 
   @Test
   void deviceSpecimenType_convertToDevice() {
+    var internalId = UUID.randomUUID();
     var deviceType = new DeviceType("name", "manufacturer", "model", "loinc", "swab type", 15);
+    ReflectionTestUtils.setField(deviceType, "internalId", internalId);
 
     var actual = convertToDevice(deviceType);
 
+    assertThat(actual.getId()).isEqualTo(internalId.toString());
     assertThat(actual.getManufacturer()).isEqualTo("manufacturer");
     assertThat(actual.getDeviceName()).hasSize(1);
     assertThat(actual.getDeviceNameFirstRep().getName()).isEqualTo("model");
@@ -389,14 +393,18 @@ class FhirConverterTest {
 
   @Test
   void specimenType_convertToSpecimen() {
-    var actual =
-        convertToSpecimen(
-            new SpecimenType(
-                "Nasopharyngeal swab",
-                "258500001",
-                "Internal nose structure (body structure)",
-                "53342003"));
+    var specimenType =
+        new SpecimenType(
+            "Nasopharyngeal swab",
+            "258500001",
+            "Internal nose structure (body structure)",
+            "53342003");
+    var internalId = UUID.randomUUID();
+    ReflectionTestUtils.setField(specimenType, "internalId", internalId);
 
+    var actual = convertToSpecimen(specimenType);
+
+    assertThat(actual.getId()).isEqualTo(internalId.toString());
     assertThat(actual.getType().getCoding()).hasSize(1);
     assertThat(actual.getType().getCodingFirstRep().getSystem()).isEqualTo(snomedCode);
     assertThat(actual.getType().getCodingFirstRep().getCode()).isEqualTo("258500001");

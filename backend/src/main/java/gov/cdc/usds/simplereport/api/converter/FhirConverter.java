@@ -26,7 +26,6 @@ import java.time.ZoneId;
 import java.util.Collections;
 import java.util.Date;
 import java.util.List;
-import java.util.Objects;
 import java.util.UUID;
 import java.util.stream.Collectors;
 import lombok.extern.slf4j.Slf4j;
@@ -287,7 +286,7 @@ public class FhirConverter {
       return convertToDevice(
           deviceType.getManufacturer(),
           deviceType.getModel(),
-          Objects.toString(deviceType.getInternalId(), ""));
+          deviceType.getInternalId().toString());
     }
     return null;
   }
@@ -339,7 +338,7 @@ public class FhirConverter {
           specimenType.getName(),
           specimenType.getCollectionLocationCode(),
           specimenType.getCollectionLocationName(),
-          Objects.toString(specimenType.getInternalId(), ""));
+          specimenType.getInternalId().toString());
     }
     return null;
   }
