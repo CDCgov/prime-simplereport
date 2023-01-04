@@ -271,9 +271,9 @@ class QueueManagementTest extends BaseGraphqlTest {
     performEnqueueMutation(variables, Optional.empty());
 
     // get the first query count
-    long startQueryCount = _hibernateQueryInterceptor.getQueryCount();
+    long startQueryCount = hibernateQueryInterceptor.getQueryCount();
     fetchQueue();
-    long firstRunCount = _hibernateQueryInterceptor.getQueryCount() - startQueryCount;
+    long firstRunCount = hibernateQueryInterceptor.getQueryCount() - startQueryCount;
 
     for (int ii = 0; ii < 10; ii++) {
       // add more tests to the queue. (which needs more patients)
@@ -285,9 +285,9 @@ class QueueManagementTest extends BaseGraphqlTest {
       performEnqueueMutation(variables, Optional.empty());
     }
 
-    startQueryCount = _hibernateQueryInterceptor.getQueryCount();
+    startQueryCount = hibernateQueryInterceptor.getQueryCount();
     fetchQueue();
-    long secondRunCount = _hibernateQueryInterceptor.getQueryCount() - startQueryCount;
+    long secondRunCount = hibernateQueryInterceptor.getQueryCount() - startQueryCount;
     assertEquals(firstRunCount, secondRunCount);
   }
 
