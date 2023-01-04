@@ -154,15 +154,17 @@ const UploadPatients = ({ isAdmin }: { isAdmin: boolean }) => {
                     below.
                   </p>
                 </div>
-                <a href="/using-simplereport/manage-people-you-test/bulk-upload-patients/#preparing-your-spreadsheet-data">
-                  <Button className={"margin-right-105"}>
-                    View patient bulk upload guide
-                  </Button>
+                <a
+                  href="/using-simplereport/manage-people-you-test/bulk-upload-patients/#preparing-your-spreadsheet-data"
+                  className={"usa-button margin-right-105"}
+                >
+                  View patient bulk upload guide
                 </a>
-                <a href="/assets/resources/patient_upload_example.csv">
-                  <Button variant={"outline"}>
-                    Download spreadsheet template
-                  </Button>
+                <a
+                  href="/assets/resources/patient_upload_example.csv"
+                  className={"usa-button usa-button--outline"}
+                >
+                  Download spreadsheet template
                 </a>
               </div>
             </li>
