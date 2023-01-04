@@ -33,8 +33,8 @@ data "azurerm_storage_account" "app" {
 data "azurerm_storage_account_sas" "sas" {
   connection_string = data.azurerm_storage_account.app.primary_connection_string
   https_only        = true
-  start             = "2021-09-01"
-  expiry            = "2022-12-31"
+  start             = "2023-01-01"
+  expiry            = "2023-12-31"
   resource_types {
     object    = true
     container = false
