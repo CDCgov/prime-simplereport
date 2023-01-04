@@ -20,6 +20,7 @@ import gov.cdc.usds.simplereport.db.model.PhoneNumber;
 import gov.cdc.usds.simplereport.db.model.Result;
 import gov.cdc.usds.simplereport.db.model.SupportedDisease;
 import gov.cdc.usds.simplereport.db.model.auxiliary.PhoneType;
+import gov.cdc.usds.simplereport.db.model.auxiliary.TestCorrectionStatus;
 import gov.cdc.usds.simplereport.db.model.auxiliary.TestResult;
 import java.util.Collections;
 import java.util.List;
@@ -314,7 +315,13 @@ class FhirConverterTest {
   @Test
   void string_convertToObservation() {
     var actual =
-        convertToObservation("diseaseCode", "diseaseName", "resultCode", false, null, "id-123");
+        convertToObservation(
+            "diseaseCode",
+            "diseaseName",
+            "resultCode",
+            TestCorrectionStatus.ORIGINAL,
+            null,
+            "id-123");
 
     assertThat(actual.getId()).isEqualTo("id-123");
     assertThat(actual.getStatus().getDisplay()).isEqualTo(ObservationStatus.FINAL.getDisplay());
@@ -337,7 +344,7 @@ class FhirConverterTest {
     var internalId = UUID.randomUUID();
     ReflectionTestUtils.setField(result, "internalId", internalId);
 
-    var actual = convertToObservation(result, false, null);
+    var actual = convertToObservation(result, TestCorrectionStatus.ORIGINAL, null);
 
     assertThat(actual.getId()).isEqualTo(internalId.toString());
     assertThat(actual.getStatus().getDisplay()).isEqualTo(ObservationStatus.FINAL.getDisplay());
@@ -360,7 +367,7 @@ class FhirConverterTest {
     var internalId = UUID.randomUUID();
     ReflectionTestUtils.setField(result, "internalId", internalId);
 
-    var actual = convertToObservation(result, true, "Oopsy Daisy");
+    var actual = convertToObservation(result, TestCorrectionStatus.CORRECTED, "Oopsy Daisy");
 
     assertThat(actual.getId()).isEqualTo(internalId.toString());
     assertThat(actual.getStatus().getDisplay()).isEqualTo(ObservationStatus.CORRECTED.getDisplay());
@@ -369,23 +376,24 @@ class FhirConverterTest {
   }
 
   @Test
-  void correctedResultNoReason_convertToObservation() {
+  void removedResultNoReason_convertToObservation() {
     var result =
         new Result(null, null, new SupportedDisease("covid-19", "96741-4"), TestResult.POSITIVE);
     var internalId = UUID.randomUUID();
     ReflectionTestUtils.setField(result, "internalId", internalId);
 
-    var actual = convertToObservation(result, true, null);
+    var actual = convertToObservation(result, TestCorrectionStatus.REMOVED, null);
 
     assertThat(actual.getId()).isEqualTo(internalId.toString());
-    assertThat(actual.getStatus().getDisplay()).isEqualTo(ObservationStatus.CORRECTED.getDisplay());
+    assertThat(actual.getStatus().getDisplay())
+        .isEqualTo(ObservationStatus.ENTEREDINERROR.getDisplay());
     assertThat(actual.getNote()).hasSize(1);
     assertThat(actual.getNoteFirstRep().getText()).isEqualTo("Corrected Result");
   }
 
   @Test
   void nullResult_convertToObservation() {
-    var actual = convertToObservation(null, false, null);
+    var actual = convertToObservation(null, TestCorrectionStatus.ORIGINAL, null);
 
     assertThat(actual).isNull();
   }
@@ -393,7 +401,8 @@ class FhirConverterTest {
   @Test
   void nullDisease_convertToObservation() {
     var actual =
-        convertToObservation(new Result(null, null, null, TestResult.POSITIVE), false, null);
+        convertToObservation(
+            new Result(null, null, null, TestResult.POSITIVE), TestCorrectionStatus.ORIGINAL, null);
 
     assertThat(actual).isNull();
   }

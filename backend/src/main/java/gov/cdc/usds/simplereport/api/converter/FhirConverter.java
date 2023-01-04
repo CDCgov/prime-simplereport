@@ -21,6 +21,7 @@ import gov.cdc.usds.simplereport.db.model.Result;
 import gov.cdc.usds.simplereport.db.model.auxiliary.PersonName;
 import gov.cdc.usds.simplereport.db.model.auxiliary.PhoneType;
 import gov.cdc.usds.simplereport.db.model.auxiliary.StreetAddress;
+import gov.cdc.usds.simplereport.db.model.auxiliary.TestCorrectionStatus;
 import java.time.LocalDate;
 import java.time.ZoneId;
 import java.util.Collections;
@@ -280,13 +281,13 @@ public class FhirConverter {
   }
 
   public static Observation convertToObservation(
-      Result result, boolean corrected, String correctionReason) {
+      Result result, TestCorrectionStatus correctionStatus, String correctionReason) {
     if (result != null && result.getDisease() != null) {
       return convertToObservation(
           result.getDisease().getLoinc(),
           result.getDisease().getName(),
           result.getResultLOINC(),
-          corrected,
+          correctionStatus,
           correctionReason,
           result.getInternalId().toString());
     }
@@ -297,23 +298,30 @@ public class FhirConverter {
       String diseaseCode,
       String diseaseName,
       String resultCode,
-      boolean corrected,
+      TestCorrectionStatus correctionStatus,
       String correctionReason,
       String id) {
     var observation = new Observation();
     observation.setId(id);
-    setStatus(observation, corrected);
+    setStatus(observation, correctionStatus);
     addCode(diseaseCode, diseaseName, observation);
     addValue(resultCode, observation);
-    addCorrectionNote(corrected, correctionReason, observation);
+    addCorrectionNote(
+        correctionStatus != TestCorrectionStatus.ORIGINAL, correctionReason, observation);
     return observation;
   }
 
-  private static void setStatus(Observation observation, boolean corrected) {
-    if (corrected) {
-      observation.setStatus(ObservationStatus.CORRECTED);
-    } else {
-      observation.setStatus(ObservationStatus.FINAL);
+  private static void setStatus(Observation observation, TestCorrectionStatus correctionStatus) {
+    switch (correctionStatus) {
+      case ORIGINAL:
+        observation.setStatus(ObservationStatus.FINAL);
+        break;
+      case CORRECTED:
+        observation.setStatus(ObservationStatus.CORRECTED);
+        break;
+      case REMOVED:
+        observation.setStatus(ObservationStatus.ENTEREDINERROR);
+        break;
     }
   }
 

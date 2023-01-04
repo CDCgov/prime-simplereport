@@ -183,11 +183,7 @@ public class TestEvent extends BaseTestInfo {
   public List<Observation> toFhirObservation() {
     return results.stream()
         .map(
-            result ->
-                convertToObservation(
-                    result,
-                    getCorrectionStatus() != TestCorrectionStatus.ORIGINAL,
-                    getReasonForCorrection()))
+            result -> convertToObservation(result, getCorrectionStatus(), getReasonForCorrection()))
         .collect(Collectors.toList());
   }
 }
