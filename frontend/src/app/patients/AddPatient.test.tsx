@@ -358,8 +358,6 @@ describe("AddPatient", () => {
             exact: false,
           })
         );
-        // ToDo Loading mask updates cannot be checked unless we introduce a delay in the api mocks
-        //await waitForElementToBeRemoved(()=>screen.queryByText(/Saving/i));
         expect(await screen.findByText("Patients!"));
       });
       it("surfaces an error if invalid zip code for state", async () => {
@@ -617,8 +615,6 @@ describe("AddPatient", () => {
             exact: false,
           })
         );
-        // ToDo Loading mask updates cannot be checked unless we introduce a delay in the api mocks
-        //await waitForElementToBeRemoved(()=>screen.queryByText(/Saving/i));
 
         expect(
           await screen.findByText("Testing Queue!", { exact: false })
