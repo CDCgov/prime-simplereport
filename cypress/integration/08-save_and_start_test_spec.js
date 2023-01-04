@@ -66,7 +66,8 @@ describe("add patient and save and start test", () => {
     cy.visit("/");
     cy.get(".usa-nav-container");
     cy.get("#desktop-patient-nav-link").click();
-    cy.get("#add-patient-button").click();
+    cy.get("#add-patient").click();
+    cy.get("#individual_add-patient").click();
     cy.get(".prime-edit-patient").contains("Add new patient");
 
     cy.injectAxe();
@@ -81,6 +82,7 @@ describe("add patient and save and start test", () => {
     cy.get('input[value="LANDLINE"]+label').click();
     cy.get('input[name="email-0"]').type(patient.email);
     cy.get('input[name="street"]').type(patient.address);
+    cy.get('input[name="city"]').type(patient.city);
     cy.get('select[name="state"]').select(patient.state);
     cy.get('input[name="zipCode"]').type(patient.zip);
     cy.get('input[name="race"][value="other"]+label').click();

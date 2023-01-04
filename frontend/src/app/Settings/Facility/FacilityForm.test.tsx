@@ -65,7 +65,7 @@ const addresses = [
     bad: {
       street: "123 Main St",
       streetTwo: "Unit 05",
-      city: "Wasington",
+      city: "Washington",
       state: "AZ",
       zipCode: "13345",
       county: "",

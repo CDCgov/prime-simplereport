@@ -7,19 +7,24 @@ import static org.mockito.Mockito.doNothing;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
+import gov.cdc.usds.simplereport.db.model.ApiUser;
 import gov.cdc.usds.simplereport.db.model.Facility;
 import gov.cdc.usds.simplereport.db.model.Organization;
 import gov.cdc.usds.simplereport.db.model.OrganizationQueueItem;
 import gov.cdc.usds.simplereport.db.model.auxiliary.StreetAddress;
+import gov.cdc.usds.simplereport.db.repository.ApiUserRepository;
 import gov.cdc.usds.simplereport.service.AddressValidationService;
 import gov.cdc.usds.simplereport.service.ApiUserService;
 import gov.cdc.usds.simplereport.service.BaseServiceTest;
 import gov.cdc.usds.simplereport.service.OrganizationQueueService;
 import gov.cdc.usds.simplereport.service.OrganizationService;
 import gov.cdc.usds.simplereport.service.PersonService;
+import gov.cdc.usds.simplereport.service.model.UserInfo;
 import gov.cdc.usds.simplereport.test_util.SliceTestConfiguration.WithSimpleReportStandardUser;
 import gov.cdc.usds.simplereport.test_util.TestDataFactory;
+import java.util.HashSet;
 import java.util.List;
+import java.util.Set;
 import java.util.UUID;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -35,6 +40,7 @@ import org.springframework.test.context.junit.jupiter.SpringExtension;
 @WithSimpleReportStandardUser
 class OrganizationMutationResolverTest extends BaseServiceTest<PersonService> {
   @Autowired private TestDataFactory _dataFactory;
+  @Autowired private ApiUserRepository _apiUserRepository;
   @Captor private ArgumentCaptor<List<UUID>> deviceIdTypeCaptor;
 
   @Mock AddressValidationService mockedAddressValidationService;
@@ -49,6 +55,7 @@ class OrganizationMutationResolverTest extends BaseServiceTest<PersonService> {
 
   private OrganizationQueueItem pendingOrg;
   private final UUID deviceId = UUID.randomUUID();
+  private UserInfo orgUserInfo;
 
   @BeforeEach
   void setup() {
@@ -57,6 +64,7 @@ class OrganizationMutationResolverTest extends BaseServiceTest<PersonService> {
     facility = _dataFactory.createValidFacility(org);
     pendingOrg = _dataFactory.createOrganizationQueueItem();
     address = facility.getAddress();
+    orgUserInfo = _dataFactory.createValidApiUser("demo@example.com", org);
   }
 
   @Test
@@ -309,21 +317,47 @@ class OrganizationMutationResolverTest extends BaseServiceTest<PersonService> {
 
   @Test
   void markOrganizationAsDeleted_true() {
+    Boolean deleted = true;
+    Set<Facility> facilities = new HashSet<>();
+    facilities.add(facility);
+    ApiUser user = _apiUserRepository.findByLoginEmail(orgUserInfo.getEmail()).orElse(null);
+
     // WHEN
-    organizationMutationResolver.markOrganizationAsDeleted(organization.getInternalId(), true);
+    when(mockedOrganizationService.getOrganizationById(organization.getInternalId()))
+        .thenReturn(organization);
+    when(mockedApiUserService.getAllUsersByOrganization(organization)).thenReturn(List.of(user));
+    when(mockedOrganizationService.getFacilitiesIncludeArchived(organization, !deleted))
+        .thenReturn(facilities);
+
+    organizationMutationResolver.markOrganizationAsDeleted(organization.getInternalId(), deleted);
 
     // THEN
-    verify(mockedOrganizationService).markOrganizationAsDeleted(organization.getInternalId(), true);
+    verify(mockedOrganizationService)
+        .markOrganizationAsDeleted(organization.getInternalId(), deleted);
+    verify(mockedOrganizationService).markFacilityAsDeleted(facility.getInternalId(), deleted);
+    verify(mockedApiUserService).getAllUsersByOrganization(organization);
+    verify(mockedApiUserService).setIsDeleted(orgUserInfo.getInternalId(), deleted);
   }
 
   @Test
   void markOrganizationAsDeleted_false() {
+    Boolean deleted = false;
+    Set<Facility> facilities = new HashSet<>();
+    facilities.add(facility);
+    ApiUser user = _apiUserRepository.findByLoginEmail(orgUserInfo.getEmail()).orElse(null);
     // WHEN
-    organizationMutationResolver.markOrganizationAsDeleted(organization.getInternalId(), false);
+    when(mockedOrganizationService.getOrganizationById(organization.getInternalId()))
+        .thenReturn(organization);
+    when(mockedApiUserService.getAllUsersByOrganization(organization)).thenReturn(List.of(user));
+    when(mockedOrganizationService.getFacilitiesIncludeArchived(organization, !deleted))
+        .thenReturn(facilities);
+    organizationMutationResolver.markOrganizationAsDeleted(organization.getInternalId(), deleted);
 
     // THEN
     verify(mockedOrganizationService)
-        .markOrganizationAsDeleted(organization.getInternalId(), false);
+        .markOrganizationAsDeleted(organization.getInternalId(), deleted);
+    verify(mockedOrganizationService).markFacilityAsDeleted(facility.getInternalId(), deleted);
+    verify(mockedApiUserService).setIsDeleted(orgUserInfo.getInternalId(), deleted);
   }
 
   @Test

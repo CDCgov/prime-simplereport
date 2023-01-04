@@ -23,9 +23,8 @@ function FBAform(d) {
       var javascriptDisabledMessage = document.getElementsByClassName(
         "javascript-disabled-message"
       )[0];
-      var touchpointForm = document.getElementsByClassName(
-        "touchpoint-form"
-      )[0];
+      var touchpointForm =
+        document.getElementsByClassName("touchpoint-form")[0];
       if (javascriptDisabledMessage) {
         javascriptDisabledMessage.classList.add("hide");
       }
@@ -143,16 +142,13 @@ function FBAform(d) {
     resetErrors: function () {
       var formComponent = this.formComponent();
       var alertElement = formComponent.querySelector(".fba-alert");
-      var alertElementHeading = formComponent.getElementsByClassName(
-        "usa-alert__heading"
-      )[0];
-      var alertElementBody = formComponent.getElementsByClassName(
-        "usa-alert__text"
-      )[0];
+      var alertElementHeading =
+        formComponent.getElementsByClassName("usa-alert__heading")[0];
+      var alertElementBody =
+        formComponent.getElementsByClassName("usa-alert__text")[0];
       var alertErrorElement = formComponent.querySelector(".fba-alert-error");
-      var alertErrorElementBody = alertErrorElement.getElementsByClassName(
-        "usa-alert__text"
-      )[0];
+      var alertErrorElementBody =
+        alertErrorElement.getElementsByClassName("usa-alert__text")[0];
       alertElement.setAttribute("hidden", true);
       alertElementHeading.innerHTML = "";
       alertElementBody.innerHTML = "";
@@ -195,7 +191,8 @@ function FBAform(d) {
       e.srcElement.value = number;
     },
     handleEmailInput: function (e) {
-      var EmailRegex = /^([a-zA-Z0-9_.+-])+\@(([a-zA-Z0-9-])+\.)+([a-zA-Z0-9]{2,4})+$/;
+      var EmailRegex =
+        /^([a-zA-Z0-9_.+-])+\@(([a-zA-Z0-9-])+\.)+([a-zA-Z0-9]{2,4})+$/;
       var email = e.srcElement.value.trim();
       if (email.length === 0) {
         return;
@@ -315,7 +312,8 @@ function FBAform(d) {
         if (item.value.length === 0) {
           delete questions[item.name];
         } else {
-          var EmailRegex = /^([a-zA-Z0-9_.+-])+\@(([a-zA-Z0-9-])+\.)+([a-zA-Z0-9]{2,4})+$/;
+          var EmailRegex =
+            /^([a-zA-Z0-9_.+-])+\@(([a-zA-Z0-9-])+\.)+([a-zA-Z0-9]{2,4})+$/;
           if (EmailRegex.test(item.value)) delete questions[item.name];
         }
       });
@@ -523,13 +521,11 @@ function FBAform(d) {
     formSuccess: function (e) {
       // Clear the alert box
       var formComponent = this.formComponent();
-      var alertElementBody = formComponent.getElementsByClassName(
-        "usa-alert__text"
-      )[0];
+      var alertElementBody =
+        formComponent.getElementsByClassName("usa-alert__text")[0];
       var alertErrorElement = formComponent.querySelector(".fba-alert-error");
-      var alertErrorElementBody = alertErrorElement.getElementsByClassName(
-        "usa-alert__text"
-      )[0];
+      var alertErrorElementBody =
+        alertErrorElement.getElementsByClassName("usa-alert__text")[0];
       alertElementBody.innerHTML = "";
       alertErrorElementBody.innerHTML = "";
 
@@ -656,169 +652,127 @@ var formOptions = {
   modalButtonText: "How can we improve this site?",
 };
 
+// Note: When updating Touchpoints you need to update this HTML
 // To whoever has to maintain this, I'm sorry this is so gross.
-const touchpointsFormHtmlString = `<div id="fba-modal-dialog" class="fba-modal-dialog">
-  <div
-    class="touchpoints-form-wrapper"
-    id="touchpoints-form-5b1efe87"
-    data-touchpoints-form-id="5b1efe87"
-    tabindex="-1"
-  >
-    <div class="wrapper">
-      <h1 id="fba-modal-title">SimpleReport feedback</h1>
-      <a class="fba-modal-close" type="button" href="#">×</a>
-      <div class="fba-alert usa-alert usa-alert--success" hidden>
-        <div class="usa-alert__body">
-          <h3 class="usa-alert__heading">Success</h3>
-          <p class="usa-alert__text">Thanks for your feedback!</p>
-        </div>
-      </div>
-      <div class="fba-alert-error usa-alert usa-alert--error" hidden>
-        <div class="usa-alert__body">
-          <h3 class="usa-alert__heading">Error</h3>
-          <p class="usa-alert__text">alert message</p>
-        </div>
-      </div>
-      <form
-        action="https://touchpoints.app.cloud.gov/touchpoints/5b1efe87/submissions.json"
-        method="POST"
-      >
-        <div class="touchpoints-form-body">
-          <input
-            type="hidden"
-            name="fba_location_code"
-            id="fba_location_code"
-            autocomplete="off"
-          />
-          <input
-            type="text"
-            name="fba_directive"
-            id="fba_directive"
-            title="this field can be skipped"
-            style="display: none !important"
-            tabindex="-1"
-            autocomplete="off"
-          />
-          <div class="section visible">
-            <div class="questions">
-              <div class="question white-bg">
-                <div role="group">
-                  <label class="usa-label " for="answer_01">
-                    What do you think about SimpleReport? Please share feedback
-                    on anything you like, or how we can improve.
-                    <p>
-                      <small>
-                        (Looking for help or SimpleReport resources? Visit our
-                        support page instead.)
-                      </small>
-                    </p></label
-                  >
-                  <textarea
-                    name="answer_01"
-                    id="answer_01"
-                    class="usa-textarea"
-                    required="required"
-                    maxlength="100000"
-                    placeholder=""
-                  ></textarea>
-                </div>
-              </div>
-              <div class="question white-bg">
-                <fieldset class="usa-fieldset" role="group">
-                  <legend class="usa-sr-only"></legend>
-                  <div class="usa-label"></div>
-                  <div class="question-options" id="answer_02">
-                    <div
-                      class="usa-checkbox"
-                      id="question_option_10594"
-                      data-id="10594"
-                    >
-                      <input
-                        type="checkbox"
-                        name="answer_02"
-                        id="answer_02_1"
-                        value="I’m interested in providing more feedback about SimpleReport (usually via a video call)."
-                        multiple="multiple"
-                        class="usa-checkbox__input usa-checklist__item"
-                      />
-                      <label for="answer_02_1" class="usa-checkbox__label "
-                        >I’m interested in providing more feedback about
-                        SimpleReport (usually via a video call).</label
-                      >
+const touchpointsFormHtmlString = `
+  <div class="fba-modal">
+    <div id="fba-modal-dialog" class="fba-modal-dialog" role="dialog" aria-modal="true">
+      <div class="touchpoints-form-wrapper" id="touchpoints-form-5b1efe87" data-touchpoints-form-id="5b1efe87" tabindex="-1">
+        <div class="wrapper">
+          <h2 class="justify-vertical word-break fba-modal-title">
+            Help improve SimpleReport
+          </h2>
+          <a class="fba-modal-close" type="button" href="#">×</a>
+          <p class="fba-instructions">
+            If you need immediate help with an issue, please contact 
+            <a href="mailto:support@simplereport.gov">
+            support@simplereport.gov</a> or visit our 
+            <a href="https://www.simplereport.gov/support/">
+            Support page</a>.
+          </p>
+          <div class="fba-alert usa-alert usa-alert--success" role="status" hidden="">
+            <div class="usa-alert__body">
+              <h3 class="usa-alert__heading">
+                Success
+              </h3>
+              <p class="usa-alert__text">
+                Thanks for your feedback!
+              </p>
+            </div>
+          </div>
+          <div class="fba-alert-error usa-alert usa-alert--error" role="alert" hidden="">
+            <div class="usa-alert__body">
+              <h3 class="usa-alert__heading">
+                Error
+              </h3>
+              <p class="usa-alert__text">
+                alert message
+              </p>
+            </div>
+          </div>
+          <form action="https://touchpoints.app.cloud.gov/touchpoints/5b1efe87/submissions.json" method="POST">
+            <div class="touchpoints-form-body">
+              <input type="hidden" name="fba_location_code" id="fba_location_code" autocomplete="off">
+              <input type="text" name="fba_directive" id="fba_directive" style="display:none !important" tabindex="-1" autocomplete="off">
+                <div class="section visible">
+                  <div class="questions">
+                    <div class="question white-bg">
+                      <div class="touchpoints-form-text-display" id="answer_04">
+                        <h3>Provide feedback on SimpleReport</h3>
+                      </div>
+                    </div>
+                    <div class="question white-bg">
+                      <div role="group">
+                        <label class="usa-label" for="answer_01">
+                          What do you think about SimpleReport? Please share feedback on anything you like, or how we can improve.
+                        </label>
+                        <textarea name="answer_01" id="answer_01" class="usa-textarea" required="required" maxlength="100000"></textarea>
+                      </div>
+                    </div>
+                    <div class="question white-bg">
+                      <fieldset class="usa-fieldset" role="group">
+                        <legend class="usa-sr-only"></legend>
+                        <div class="usa-label">
+                        </div>
+                        <div class="question-options" id="answer_02">
+                          <div class="usa-checkbox" id="question_option_10594" data-id="10594">
+                            <input type="checkbox" name="answer_02" id="answer_02_1" value="I’m interested in providing more feedback about SimpleReport (usually via a video call)." multiple="multiple" class="usa-checkbox__input usa-checkbox__input--tile">
+                            <label for="answer_02_1" class="usa-checkbox__label">I’m interested in providing more feedback about SimpleReport (usually via a video call).</label>
+                          </div>
+                        </div>
+                      </fieldset>
+                    </div>
+                    <div class="question white-bg">      
+                      <div role="group">
+                        <label class="usa-label" for="answer_03">
+                          Email
+                        </label>
+                        <input type="email" name="answer_03" id="answer_03" class="usa-input">
+                      </div>
                     </div>
                   </div>
-                </fieldset>
-              </div>
-              <div class="question white-bg">
-                <div role="group">
-                  <label class="usa-label" for="answer_03"> Email</label>
-                  <input
-                    type="email"
-                    name="answer_03"
-                    id="answer_03"
-                    class="usa-input"
-                  />
+                  <p class="submit-button">
+                    <button type="submit" class="usa-button submit_form_button">Submit</button>
+                  </p>
                 </div>
               </div>
-            </div>
-            <p class="submit-button">
-              <button type="submit" class="usa-button submit_form_button">
-                Submit
-              </button>
-            </p>
+            </form>
           </div>
-        </div>
-      </form>
-    </div>
-    <div class="touchpoints-form-disclaimer">
-      <hr style="border: none; border-top: 1px solid #e5e5e5" />
-      <div class="grid-container">
-        <div class="grid-row">
-          <div class="grid-col-12">
-            <small id="fba-dialog-privacy">
-              <a
-                href="https://www.gsa.gov/reference/gsa-privacy-program/privacy-act-statement-for-design-research"
-                target="_blank"
-                rel="noopener"
-                >Privacy Act Statement for Design Research</a
-              >|<a href="https://www.simplereport.gov/support/"
-                >SimpleReport support</a
-              >|
-              <a href="https://www.simplereport.gov/terms-of-service/"
-                >SimpleReport terms of service</a
-              >
-            </small>
+          <div class="touchpoints-form-disclaimer">
+            <hr style="border: none; border-top: 1px solid #E5E5E5;">
+            <div class="grid-container">
+              <div class="grid-row">
+                <div class="grid-col-12">
+                  <small id="fba-dialog-privacy">
+                    <a href="https://www.gsa.gov/reference/gsa-privacy-program/privacy-act-statement-for-design-research" target="_blank" rel="noopener">Privacy Act Statement for Design Research</a>
+                      |
+                    <a href="https://www.simplereport.gov/support/">SimpleReport support</a>
+                      | 
+                    <a href="https://www.simplereport.gov/terms-of-service/">SimpleReport terms of service</a>
+                   </small>
+                 </div>
+               </div>
+            </div>
+          </div>
+          <div class="usa-banner">
+            <header class="usa-banner__header touchpoints-footer-banner">
+              <div class="usa-banner__inner">
+                <div class="grid-col-auto">
+                  <img class="usa-banner__header-flag" src="https://touchpoints.app.cloud.gov/assets/us_flag_small-9c507b1ff21f65c4b8f0c45d0e0d0a10bb5c9864c1a76e07aa3293da574968a1.png" alt="U.S. flag">
+                </div>
+                <div class="grid-col-fill tablet:grid-col-auto">
+                  <p class="usa-banner__header-text">
+                    An official form of the United States government.
+                    Provided by
+                    <a href="https://touchpoints.app.cloud.gov/" target="_blank" rel="noopener">Touchpoints</a>
+                    <br>
+                  </p>
+                </div>
+              </div>
+            </header>
           </div>
         </div>
       </div>
-    </div>
-    <div class="usa-banner">
-      <header class="usa-banner__header touchpoints-footer-banner">
-        <div class="usa-banner__inner">
-          <div class="grid-col-auto">
-            <img
-              class="usa-banner__header-flag"
-              src="https://touchpoints.app.cloud.gov/assets/us_flag_small-9c507b1ff21f65c4b8f0c45d0e0d0a10bb5c9864c1a76e07aa3293da574968a1.png"
-              alt="U.S. flag"
-            />
-          </div>
-          <div class="grid-col-fill tablet:grid-col-auto">
-            <p class="usa-banner__header-text">
-              An official form of the United States government. Provided by
-              <a
-                href="https://touchpoints.app.cloud.gov/"
-                target="_blank"
-                rel="noopener"
-                >Touchpoints</a
-              >
-              <br />
-            </p>
-          </div>
-        </div>
-      </header>
-    </div>
-  </div>
-</div>
-`;
+    </div>`;
 
 new FBAform(document).init(formOptions);

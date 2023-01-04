@@ -3,6 +3,7 @@ import React, { useEffect } from "react";
 import { getUrl } from "../../utils/url";
 import USAGovBanner from "../USAGovBanner";
 import SRToastContainer from "../SRToastContainer";
+import TouchpointsButton from "../../analytics/TouchpointsButton";
 
 declare global {
   interface Window {
@@ -53,8 +54,7 @@ const Page: React.FC<Props> = ({ header, children, isPatientApp }) => {
         <SRToastContainer />
       </main>
       <footer>
-        {/*  Disabling Touchpoints until we have designs that specify how to contact Support */}
-        {/*<TouchpointsButton />*/}
+        <TouchpointsButton />
       </footer>
     </div>
   );

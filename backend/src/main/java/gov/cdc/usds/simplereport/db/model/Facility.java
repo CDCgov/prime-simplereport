@@ -1,5 +1,10 @@
 package gov.cdc.usds.simplereport.db.model;
 
+import static gov.cdc.usds.simplereport.api.converter.FhirConverter.convertToAddress;
+import static gov.cdc.usds.simplereport.api.converter.FhirConverter.convertToIdentifier;
+import static gov.cdc.usds.simplereport.api.converter.FhirConverter.emailToContactPoint;
+import static gov.cdc.usds.simplereport.api.converter.FhirConverter.phoneNumberToContactPoint;
+
 import gov.cdc.usds.simplereport.db.model.auxiliary.StreetAddress;
 import java.util.HashSet;
 import java.util.List;
@@ -14,6 +19,7 @@ import javax.persistence.JoinColumn;
 import javax.persistence.JoinTable;
 import javax.persistence.ManyToMany;
 import javax.persistence.ManyToOne;
+import org.hl7.fhir.r4.model.ContactPoint.ContactPointUse;
 
 @Entity
 public class Facility extends OrganizationScopedEternalEntity implements LocatedEntity {
@@ -44,13 +50,6 @@ public class Facility extends OrganizationScopedEternalEntity implements Located
   @ManyToOne(optional = true, fetch = FetchType.EAGER)
   @JoinColumn(name = "default_specimen_type_id")
   private SpecimenType defaultSpecimenType;
-
-  @ManyToMany(fetch = FetchType.EAGER)
-  @JoinTable(
-      name = "facility_device_specimen_type",
-      joinColumns = @JoinColumn(name = "facility_id"),
-      inverseJoinColumns = @JoinColumn(name = "device_specimen_type_id"))
-  private Set<DeviceSpecimenType> configuredDeviceSpecimenTypes = new HashSet<>();
 
   @ManyToMany(fetch = FetchType.EAGER)
   @JoinTable(
@@ -120,41 +119,11 @@ public class Facility extends OrganizationScopedEternalEntity implements Located
   }
 
   public void addDeviceType(DeviceType device) {
-    initializeDeviceTypesSet();
     configuredDeviceTypes.add(device);
   }
 
   public List<DeviceType> getDeviceTypes() {
-    initializeDeviceTypesSet();
     return configuredDeviceTypes.stream().filter(e -> !e.isDeleted()).collect(Collectors.toList());
-  }
-
-  public List<DeviceSpecimenType> getDeviceSpecimenTypes() {
-    return configuredDeviceSpecimenTypes.stream()
-        .filter(
-            e ->
-                !(e.isDeleted()
-                    || e.getSpecimenType().isDeleted()
-                    || e.getDeviceType().isDeleted()))
-        .collect(Collectors.toList());
-  }
-
-  private void initializeDeviceTypesSet() {
-    if (this.configuredDeviceTypes.isEmpty()) {
-      Set<DeviceType> deviceTypesFromFacilityDeviceSpecimenTypes =
-          this.configuredDeviceSpecimenTypes.stream()
-              .map(DeviceSpecimenType::getDeviceType)
-              .filter(e -> !e.isDeleted())
-              .collect(Collectors.toSet());
-      if (!deviceTypesFromFacilityDeviceSpecimenTypes.isEmpty()) {
-        this.configuredDeviceTypes = deviceTypesFromFacilityDeviceSpecimenTypes;
-        this.configuredDeviceSpecimenTypes.clear();
-      }
-    }
-  }
-
-  public void addDeviceSpecimenType(DeviceSpecimenType ds) {
-    configuredDeviceSpecimenTypes.add(ds);
   }
 
   public DeviceSpecimenType getDefaultDeviceSpecimen() {
@@ -176,7 +145,6 @@ public class Facility extends OrganizationScopedEternalEntity implements Located
   }
 
   public void removeDeviceType(DeviceType deletedDevice) {
-    initializeDeviceTypesSet();
     this.configuredDeviceTypes.remove(deletedDevice);
 
     // If the corresponding device to a facility's default device swab type is removed,
@@ -227,5 +195,15 @@ public class Facility extends OrganizationScopedEternalEntity implements Located
 
   public void setEmail(String email) {
     this.email = email;
+  }
+
+  public org.hl7.fhir.r4.model.Organization toFhir() {
+    var org = new org.hl7.fhir.r4.model.Organization();
+    org.addIdentifier(convertToIdentifier(getInternalId()));
+    org.setName(facilityName);
+    org.addTelecom(phoneNumberToContactPoint(ContactPointUse.WORK, telephone));
+    org.addTelecom(emailToContactPoint(email));
+    org.addAddress(convertToAddress(address));
+    return org;
   }
 }

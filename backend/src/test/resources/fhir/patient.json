@@ -1,0 +1,104 @@
+{
+  "resourceType": "Patient",
+  "extension": [
+    {
+      "url": "http://ibm.com/fhir/cdm/StructureDefinition/local-race-cd",
+      "valueCodeableConcept": {
+        "coding": [
+          {
+            "system": "http://terminology.hl7.org/CodeSystem/v3-Race",
+            "code": "2054-5"
+          }
+        ],
+        "text": "black"
+      }
+    },
+    {
+      "url": "http://hl7.org/fhir/us/core/StructureDefinition/us-core-ethnicity",
+      "extension": [
+        {
+          "url": "ombCategory",
+          "valueCoding": {
+            "system": "urn:oid:2.16.840.1.113883.6.238",
+            "code": "2135-2",
+            "display": "Hispanic or Latino"
+          }
+        },
+        {
+          "url": "text",
+          "valueString": "Hispanic or Latino"
+        }
+      ]
+    },
+    {
+      "url": "http://hl7.org/fhir/us/core/StructureDefinition/us-core-tribal-affiliation",
+      "extension": [
+        {
+          "url": "tribalAffiliation",
+          "valueCodeableConcept": {
+            "coding": [
+              {
+                "system": "http://terminology.hl7.org/CodeSystem/v3-TribalEntityUS",
+                "code": "123",
+                "display": "Keweenaw Bay Indian Community, Michigan"
+              }
+            ],
+            "text": "Keweenaw Bay Indian Community, Michigan"
+          }
+        }
+      ]
+    }
+  ],
+  "identifier": [
+    {
+      "use": "usual",
+      "value": "3c9c7370-e2e3-49ad-bb7a-f6005f41cf29"
+    }
+  ],
+  "name": [
+    {
+      "family": "Curtis",
+      "given": [
+        "Austin",
+        "Wingate"
+      ],
+      "suffix": [
+        "Jr"
+      ]
+    }
+  ],
+  "telecom": [
+    {
+      "system": "phone",
+      "value": "(304) 555 1234",
+      "use": "mobile"
+    },
+    {
+      "system": "phone",
+      "value": "(304) 555 1233",
+      "use": "home"
+    },
+    {
+      "system": "email",
+      "value": "email1"
+    },
+    {
+      "system": "email",
+      "value": "email2"
+    }
+  ],
+  "gender": "male",
+  "birthDate": "2022-12-13",
+  "address": [
+    {
+      "line": [
+        "501 Virginia St E",
+        "#1"
+      ],
+      "city": "Charleston",
+      "district": "Kanawha",
+      "state": "WV",
+      "postalCode": "25301"
+    }
+  ]
+}

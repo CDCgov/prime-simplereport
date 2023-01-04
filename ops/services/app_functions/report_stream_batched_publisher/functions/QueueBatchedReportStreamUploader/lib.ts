@@ -208,6 +208,10 @@ export async function reportExceptions(
   );
 }
 
+export async function publishToQueue(queueClient: QueueClient, messages: DequeuedMessageItem[]) {
+  return Promise.all(messages.map((m) => queueClient.sendMessage(Buffer.from(m.messageText).toString("utf-8"))));
+}
+
 const responsesFrom = function (
   context: Context,
   err: ReportStreamError,

@@ -1,5 +1,6 @@
 package gov.cdc.usds.simplereport.test_util;
 
+import gov.cdc.usds.simplereport.api.model.Role;
 import gov.cdc.usds.simplereport.api.model.accountrequest.OrganizationAccountRequest;
 import gov.cdc.usds.simplereport.db.model.DeviceSpecimenType;
 import gov.cdc.usds.simplereport.db.model.DeviceType;
@@ -48,7 +49,9 @@ import gov.cdc.usds.simplereport.db.repository.TestEventRepository;
 import gov.cdc.usds.simplereport.db.repository.TestOrderRepository;
 import gov.cdc.usds.simplereport.db.repository.TestResultUploadRepository;
 import gov.cdc.usds.simplereport.idp.repository.DemoOktaRepository;
+import gov.cdc.usds.simplereport.service.ApiUserService;
 import gov.cdc.usds.simplereport.service.DiseaseService;
+import gov.cdc.usds.simplereport.service.model.UserInfo;
 import gov.cdc.usds.simplereport.service.model.reportstream.FeedbackMessage;
 import java.lang.reflect.Array;
 import java.time.LocalDate;
@@ -98,6 +101,8 @@ public class TestDataFactory {
   @Autowired private ResultRepository _resultRepository;
   @Autowired private DemoOktaRepository _oktaRepo;
   @Autowired private TestResultUploadRepository _testResultUploadRepo;
+
+  @Autowired private ApiUserService _apiUserService;
   @Autowired private DiseaseService _diseaseService;
 
   public Organization createValidOrg(
@@ -113,6 +118,11 @@ public class TestDataFactory {
 
   public Organization createUnverifiedOrg() {
     return createValidOrg("The Plaza", "k12", ALT_ORG_ID, false);
+  }
+
+  public UserInfo createValidApiUser(String username, Organization org) {
+    PersonName name = new PersonName("John", null, "June", null);
+    return _apiUserService.createUser(username, name, org.getExternalId(), Role.USER);
   }
 
   public OrganizationQueueItem createOrganizationQueueItem(

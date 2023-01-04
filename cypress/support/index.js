@@ -42,6 +42,7 @@ export const generatePatient = () => {
   patient.dobForPatientLink = patient.dob.format("MM/DD/YYYY");
   patient.phone = "(800) 232-4636";
   patient.address = "736 Jackson PI NW";
+  patient.city = "Definitely not Washington"
   patient.state = "DC";
   patient.zip = "20503";
   patient.studentId = faker.datatype.uuid();

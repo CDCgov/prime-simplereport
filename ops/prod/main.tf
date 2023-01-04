@@ -38,6 +38,11 @@ resource "azurerm_storage_queue" "test_event_exceptions_queue" {
   storage_account_name = azurerm_storage_account.app.name
 }
 
+resource "azurerm_storage_queue" "test-event-publishing-error" {
+  name                 = "test-event-publishing-error"
+  storage_account_name = azurerm_storage_account.app.name
+}
+
 resource "azurerm_storage_queue" "fhir_data_queue" {
   name                 = "fhir-data-publishing"
   storage_account_name = azurerm_storage_account.app.name

@@ -16,8 +16,11 @@ import gov.cdc.usds.simplereport.db.model.Organization;
 import gov.cdc.usds.simplereport.db.model.Person;
 import gov.cdc.usds.simplereport.db.model.PhoneNumber;
 import gov.cdc.usds.simplereport.db.model.auxiliary.StreetAddress;
+import gov.cdc.usds.simplereport.service.email.EmailProviderTemplate;
+import gov.cdc.usds.simplereport.service.email.EmailService;
 import gov.cdc.usds.simplereport.validators.CsvValidatorUtils;
 import java.io.ByteArrayInputStream;
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.List;
@@ -29,6 +32,7 @@ import java.util.concurrent.CompletableFuture;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.dao.OptimisticLockingFailureException;
 import org.springframework.scheduling.annotation.Async;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -38,17 +42,27 @@ import org.springframework.transaction.annotation.Transactional;
 @Slf4j
 public class PatientBulkUploadServiceAsync {
 
+  private final ApiUserService userService;
   private final PersonService personService;
   private final AddressValidationService addressValidationService;
   private final OrganizationService organizationService;
+  private final EmailService emailService;
 
   @Value("${simple-report.batch-size:1000}")
   private int batchSize;
+
+  @Value("${simple-report.patient-link-url:https://simplereport.gov/pxp?plid=}")
+  private String patientLinkUrl;
 
   @Async
   @Transactional
   @AuthorizationConfiguration.RequirePermissionCreatePatientAtFacility
   public CompletableFuture<Set<Person>> savePatients(byte[] content, UUID facilityId) {
+    // Create string components for notification emails
+    String uploaderEmail = userService.getCurrentApiUserInContainedTransaction().getLoginEmail();
+    String simplereportUrl = patientLinkUrl.substring(0, patientLinkUrl.indexOf("pxp"));
+    String patientsUrl = simplereportUrl + "patients?facility=" + facilityId;
+
     Organization currentOrganization = organizationService.getCurrentOrganization();
 
     // Patients do not need to be assigned to a facility, but if an id is given it must be valid
@@ -147,24 +161,61 @@ public class PatientBulkUploadServiceAsync {
           phoneNumbersList.clear();
           patientCount = 0;
         }
+      } catch (IllegalArgumentException | NullPointerException e) {
+        sendEmail(
+            uploaderEmail,
+            currentOrganization,
+            EmailProviderTemplate.SIMPLE_REPORT_PATIENT_UPLOAD_ERROR,
+            Map.of("simplereport_url", simplereportUrl));
 
-      } catch (IllegalArgumentException e) {
         String errorMessage = "Error uploading patient roster";
-        log.error(
-            errorMessage
-                + " for organization "
-                + currentOrganization.getExternalId()
-                + " and facility "
-                + facilityId);
+        logProcessingFailure(errorMessage, currentOrganization.getExternalId(), facilityId);
+
         throw new IllegalArgumentException(errorMessage);
       }
     }
 
-    personService.addPatientsAndPhoneNumbers(patientsList, phoneNumbersList);
+    try {
+      personService.addPatientsAndPhoneNumbers(patientsList, phoneNumbersList);
+    } catch (IllegalArgumentException | OptimisticLockingFailureException e) {
+      sendEmail(
+          uploaderEmail,
+          currentOrganization,
+          EmailProviderTemplate.SIMPLE_REPORT_PATIENT_UPLOAD_ERROR,
+          Map.of("simplereport_url", simplereportUrl));
+
+      String errorMessage = "Error saving patient roster";
+      logProcessingFailure(errorMessage, currentOrganization.getExternalId(), facilityId);
+
+      throw new IllegalArgumentException(errorMessage);
+    }
 
     log.info("CSV patient upload completed for {}", currentOrganization.getOrganizationName());
-    // eventually want to send an email here instead of return success
+
+    sendEmail(
+        uploaderEmail,
+        currentOrganization,
+        EmailProviderTemplate.SIMPLE_REPORT_PATIENT_UPLOAD,
+        Map.of("patients_url", patientsUrl));
 
     return CompletableFuture.completedFuture(patientsList);
+  }
+
+  private void sendEmail(
+      String uploaderEmail,
+      Organization currentOrganization,
+      EmailProviderTemplate template,
+      Map<String, Object> templateVariables) {
+    try {
+      emailService.sendWithDynamicTemplate(List.of(uploaderEmail), template, templateVariables);
+    } catch (IOException exception) {
+      log.info(
+          "CSV patient upload email failed to send for {}",
+          currentOrganization.getOrganizationName());
+    }
+  }
+
+  private void logProcessingFailure(String errorMessage, String externalId, UUID facilityId) {
+    log.error(errorMessage + " for organization " + externalId + " and facility " + facilityId);
   }
 }

@@ -69,7 +69,7 @@ interface GetPatientResponse {
     birthDate: string;
     street: string;
     streetTwo: string | null;
-    city: string | null;
+    city: string;
     state: string;
     zipCode: string;
     telephone: string;
@@ -269,9 +269,9 @@ const EditPatient = (props: Props) => {
     displayFullName(person.firstName, person.middleName, person.lastName);
 
   return (
-    <div className="bg-base-lightest">
+    <div className="prime-home bg-base-lightest">
       <div className="grid-container">
-        <div className="prime-edit-patient prime-home">
+        <div className="prime-edit-patient">
           <div className={"margin-bottom-4"}>
             <PersonForm
               patient={{
@@ -295,6 +295,7 @@ const EditPatient = (props: Props) => {
                   data.patient.facility === null
                     ? null
                     : data.patient.facility?.id,
+                city: data.patient.city === null ? "" : data.patient.city,
               }}
               patientId={props.patientId}
               savePerson={savePerson}

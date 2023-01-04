@@ -90,13 +90,6 @@ export type CreateSpecimenType = {
   typeCode: Scalars["String"];
 };
 
-export type DeviceSpecimenType = {
-  __typename?: "DeviceSpecimenType";
-  deviceType: DeviceType;
-  internalId: Scalars["ID"];
-  specimenType: SpecimenType;
-};
-
 export type DeviceType = {
   __typename?: "DeviceType";
   internalId: Scalars["ID"];
@@ -116,11 +109,6 @@ export type Facility = {
   city?: Maybe<Scalars["String"]>;
   cliaNumber?: Maybe<Scalars["String"]>;
   county?: Maybe<Scalars["String"]>;
-  defaultDeviceSpecimen?: Maybe<Scalars["ID"]>;
-  /** @deprecated kept for compatibility */
-  defaultDeviceType?: Maybe<DeviceType>;
-  /** @deprecated kept for compatibility */
-  deviceSpecimenTypes?: Maybe<Array<Maybe<DeviceSpecimenType>>>;
   deviceTypes: Array<DeviceType>;
   email?: Maybe<Scalars["String"]>;
   id: Scalars["ID"];
@@ -157,7 +145,6 @@ export type Mutation = {
   __typename?: "Mutation";
   addFacility?: Maybe<Facility>;
   addFacilityNew?: Maybe<Scalars["String"]>;
-  addMultiplexResult?: Maybe<AddTestResultResponse>;
   addPatient?: Maybe<Patient>;
   addPatientToQueue?: Maybe<Scalars["String"]>;
   addUser?: Maybe<User>;
@@ -173,7 +160,6 @@ export type Mutation = {
   createSpecimenType?: Maybe<SpecimenType>;
   editPendingOrganization?: Maybe<Scalars["String"]>;
   editQueueItem?: Maybe<TestOrder>;
-  editQueueItemMultiplexResult?: Maybe<TestOrder>;
   markFacilityAsDeleted?: Maybe<Scalars["String"]>;
   markOrganizationAsDeleted?: Maybe<Scalars["String"]>;
   markPendingOrganizationAsDeleted?: Maybe<Scalars["String"]>;
@@ -253,14 +239,6 @@ export type MutationAddFacilityNewArgs = {
   streetTwo?: InputMaybe<Scalars["String"]>;
   testingFacilityName: Scalars["String"];
   zipCode: Scalars["String"];
-};
-
-export type MutationAddMultiplexResultArgs = {
-  dateTested?: InputMaybe<Scalars["DateTime"]>;
-  deviceId: Scalars["String"];
-  deviceSpecimenType?: InputMaybe<Scalars["ID"]>;
-  patientId: Scalars["ID"];
-  results: Array<InputMaybe<MultiplexResultInput>>;
 };
 
 export type MutationAddPatientArgs = {
@@ -419,14 +397,6 @@ export type MutationEditQueueItemArgs = {
   id: Scalars["ID"];
   results?: InputMaybe<Array<InputMaybe<MultiplexResultInput>>>;
   specimenTypeId?: InputMaybe<Scalars["ID"]>;
-};
-
-export type MutationEditQueueItemMultiplexResultArgs = {
-  dateTested?: InputMaybe<Scalars["DateTime"]>;
-  deviceId?: InputMaybe<Scalars["String"]>;
-  deviceSpecimenType?: InputMaybe<Scalars["ID"]>;
-  id: Scalars["ID"];
-  results?: InputMaybe<Array<InputMaybe<MultiplexResultInput>>>;
 };
 
 export type MutationMarkFacilityAsDeletedArgs = {
@@ -774,7 +744,6 @@ export type Provider = {
 
 export type Query = {
   __typename?: "Query";
-  deviceSpecimenTypes?: Maybe<Array<Maybe<DeviceSpecimenType>>>;
   /** @deprecated use the pluralized form to reduce confusion */
   deviceType: Array<DeviceType>;
   deviceTypes: Array<DeviceType>;
@@ -968,7 +937,6 @@ export type TestOrder = {
   correctionStatus?: Maybe<Scalars["String"]>;
   dateAdded: Scalars["String"];
   dateTested?: Maybe<Scalars["DateTime"]>;
-  deviceSpecimenType: DeviceSpecimenType;
   deviceType: DeviceType;
   id: Scalars["ID"];
   /** @deprecated alias for 'id' */
