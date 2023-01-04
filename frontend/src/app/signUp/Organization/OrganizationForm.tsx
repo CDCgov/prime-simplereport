@@ -7,6 +7,7 @@ import Button from "../../commonComponents/Button/Button";
 import { showError } from "../../utils/srToast";
 import { useDocumentTitle } from "../../utils/hooks";
 import { isFormValid, isFieldValid } from "../../utils/yupHelpers";
+import { focusOnFirstInputWithError } from "../../utils/formValidation";
 import Input from "../../commonComponents/Input";
 import {
   organizationCreationSteps,
@@ -118,8 +119,7 @@ const OrganizationForm = () => {
         errors.email ||
         errors.workPhoneNumber)
     ) {
-      let firstError = document.querySelector("[aria-invalid='true']");
-      (firstError as HTMLElement)?.focus();
+      focusOnFirstInputWithError();
       focusOnce.current = false;
     }
   }, [

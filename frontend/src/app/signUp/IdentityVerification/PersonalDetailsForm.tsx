@@ -14,6 +14,7 @@ import Select from "../../commonComponents/Select";
 import StepIndicator from "../../commonComponents/StepIndicator";
 import { useDocumentTitle } from "../../utils/hooks";
 import { formatDate } from "../../utils/date";
+import { focusOnFirstInputWithError } from "../../utils/formValidation";
 
 import {
   initPersonalDetails,
@@ -88,14 +89,6 @@ const PersonalDetailsForm = ({
       "Form Errors"
     );
     setSaving(false);
-    let elementsWithErrors = Array.from(
-      document.querySelectorAll("[aria-invalid=true]")
-    );
-    (
-      elementsWithErrors.find(
-        (element) => element.getAttribute("aria-hidden") !== "true"
-      ) as HTMLElement | null
-    )?.focus();
   };
 
   /**
@@ -112,14 +105,7 @@ const PersonalDetailsForm = ({
         errors.state ||
         errors.zip)
     ) {
-      let elementsWithErrors = Array.from(
-        document.querySelectorAll("[aria-invalid=true]")
-      );
-      (
-        elementsWithErrors.find(
-          (element) => element.getAttribute("aria-hidden") !== "true"
-        ) as HTMLElement | null
-      )?.focus();
+      focusOnFirstInputWithError(true);
       focusOnce.current = false;
     }
   }, [errors]);

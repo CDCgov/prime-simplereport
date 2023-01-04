@@ -9,7 +9,7 @@ jest.mock("./featureFlags/WithFeatureFlags", () => {
   return ({ children }: any): JSX.Element => <>{children}</>;
 });
 
-describe("index.js", () => {
+describe("App Component", () => {
   it("renders without crashing", async () => {
     const mockStore = createMockStore([]);
     const mockedStore = mockStore({});

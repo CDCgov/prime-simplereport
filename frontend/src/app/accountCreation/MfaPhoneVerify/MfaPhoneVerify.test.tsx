@@ -66,7 +66,7 @@ describe("Verify Phone MFA", () => {
     ).not.toBeInTheDocument();
     expect(
       screen.getByText(
-        "To start using SimpleReport, visit the website to log in to your account."
+        /To start using SimpleReport, visit the website to log in to your account./i
       )
     ).toBeInTheDocument();
   });

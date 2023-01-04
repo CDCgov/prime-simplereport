@@ -18,6 +18,7 @@ import {
   AddressSuggestionConfig,
 } from "../../commonComponents/AddressConfirmationModal";
 import Prompt from "../../utils/Prompt";
+import { focusOnFirstInputWithError } from "../../utils/formValidation";
 
 import ManageDevices from "./Components/ManageDevices";
 import OrderingProviderSettings from "./Components/OrderingProvider";
@@ -111,8 +112,7 @@ export const useFacilityValidation = (facility: Facility) => {
         errors["orderingProvider.NPI"] ||
         errors["orderingProvider.phone"])
     ) {
-      let firstError = document.querySelector("[aria-invalid=true]");
-      (firstError as HTMLElement)?.focus();
+      focusOnFirstInputWithError();
       focusOnce.current = false;
     }
   }, [errors]);
