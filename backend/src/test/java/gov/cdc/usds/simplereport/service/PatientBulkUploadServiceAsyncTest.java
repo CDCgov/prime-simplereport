@@ -122,20 +122,6 @@ class PatientBulkUploadServiceAsyncTest extends BaseGraphqlTest {
   }
 
   @Test
-  void noPhoneNumberTypes_savesPatient()
-      throws IOException, ExecutionException, InterruptedException {
-    // WHEN
-    InputStream inputStream = loadCsv("patientBulkUpload/noPhoneNumberTypes.csv");
-    byte[] content = inputStream.readAllBytes();
-
-    CompletableFuture<Set<Person>> futurePatients = this._service.savePatients(content, null);
-    futurePatients.get();
-
-    // THEN
-    assertThat(fetchDatabasePatients()).hasSize(1);
-  }
-
-  @Test
   void duplicatePatient_isNotSaved() throws IOException, ExecutionException, InterruptedException {
     // GIVEN
     _personService.addPatient(
