@@ -25,6 +25,7 @@ class PatientUploadRowTest {
           "state",
           "zip_code",
           "phone_number",
+          "phone_number_type",
           "employed_in_healthcare",
           "resident_congregate_setting");
 
