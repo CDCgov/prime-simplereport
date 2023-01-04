@@ -5,6 +5,7 @@ import static gov.cdc.usds.simplereport.api.converter.FhirConverter.convertToAdm
 import static gov.cdc.usds.simplereport.api.converter.FhirConverter.convertToContactPoint;
 import static gov.cdc.usds.simplereport.api.converter.FhirConverter.convertToDate;
 import static gov.cdc.usds.simplereport.api.converter.FhirConverter.convertToDevice;
+import static gov.cdc.usds.simplereport.api.converter.FhirConverter.convertToDiagnosticReport;
 import static gov.cdc.usds.simplereport.api.converter.FhirConverter.convertToEthnicityExtension;
 import static gov.cdc.usds.simplereport.api.converter.FhirConverter.convertToHumanName;
 import static gov.cdc.usds.simplereport.api.converter.FhirConverter.convertToIdentifier;
@@ -19,10 +20,16 @@ import static org.junit.jupiter.params.provider.Arguments.arguments;
 
 import ca.uhn.fhir.context.FhirContext;
 import ca.uhn.fhir.parser.IParser;
+import gov.cdc.usds.simplereport.db.model.DeviceSpecimenType;
 import gov.cdc.usds.simplereport.db.model.DeviceType;
+import gov.cdc.usds.simplereport.db.model.Facility;
+import gov.cdc.usds.simplereport.db.model.Person;
 import gov.cdc.usds.simplereport.db.model.PhoneNumber;
 import gov.cdc.usds.simplereport.db.model.SpecimenType;
+import gov.cdc.usds.simplereport.db.model.TestEvent;
+import gov.cdc.usds.simplereport.db.model.TestOrder;
 import gov.cdc.usds.simplereport.db.model.auxiliary.PhoneType;
+import gov.cdc.usds.simplereport.db.model.auxiliary.TestCorrectionStatus;
 import java.io.IOException;
 import java.nio.charset.StandardCharsets;
 import java.util.Collections;
@@ -35,6 +42,7 @@ import org.hl7.fhir.r4.model.ContactPoint;
 import org.hl7.fhir.r4.model.ContactPoint.ContactPointSystem;
 import org.hl7.fhir.r4.model.ContactPoint.ContactPointUse;
 import org.hl7.fhir.r4.model.Device.DeviceNameType;
+import org.hl7.fhir.r4.model.DiagnosticReport.DiagnosticReportStatus;
 import org.hl7.fhir.r4.model.Enumerations.AdministrativeGender;
 import org.hl7.fhir.r4.model.Identifier.IdentifierUse;
 import org.hl7.fhir.r4.model.PrimitiveType;
@@ -476,5 +484,166 @@ class FhirConverterTest {
                 getClass().getClassLoader().getResourceAsStream("fhir/specimen.json")),
             StandardCharsets.UTF_8);
     JSONAssert.assertEquals(actualSerialized, expectedSerialized, true);
+  }
+
+  @Test
+  void testEvent_convertToDiagnosticReport() {
+    var testEvent =
+        new TestEvent(
+            new TestOrder(
+                new Person(null, null, null, null, null),
+                new Facility(
+                    null,
+                    null,
+                    null,
+                    null,
+                    null,
+                    null,
+                    null,
+                    new DeviceSpecimenType(
+                        new DeviceType(null, null, null, "95422-2", null, 0), null),
+                    Collections.emptyList())),
+            false,
+            Collections.emptySet());
+
+    var actual = convertToDiagnosticReport(testEvent);
+
+    assertThat(actual.getStatus()).isEqualTo(DiagnosticReportStatus.FINAL);
+    assertThat(actual.getCode().getCoding()).hasSize(1);
+    assertThat(actual.getCode().getCodingFirstRep().getSystem()).isEqualTo("http://loinc.org");
+    assertThat(actual.getCode().getCodingFirstRep().getCode()).isEqualTo("95422-2");
+  }
+
+  @Test
+  void testEventOriginal_convertToDiagnosticReport() {
+    var testEvent =
+        new TestEvent(
+            new TestOrder(
+                new Person(null, null, null, null, null),
+                new Facility(
+                    null,
+                    null,
+                    null,
+                    null,
+                    null,
+                    null,
+                    null,
+                    new DeviceSpecimenType(
+                        new DeviceType(null, null, null, "95422-2", null, 0), null),
+                    Collections.emptyList())),
+            false,
+            Collections.emptySet());
+    var actual = convertToDiagnosticReport(testEvent);
+
+    assertThat(actual.getStatus()).isEqualTo(DiagnosticReportStatus.FINAL);
+    assertThat(actual.getCode().getCoding()).hasSize(1);
+    assertThat(actual.getCode().getCodingFirstRep().getSystem()).isEqualTo("http://loinc.org");
+    assertThat(actual.getCode().getCodingFirstRep().getCode()).isEqualTo("95422-2");
+  }
+
+  @Test
+  void testEventCorrected_convertToDiagnosticReport() {
+    var invalidTestEvent =
+        new TestEvent(
+            new TestOrder(
+                new Person(null, null, null, null, null),
+                new Facility(
+                    null,
+                    null,
+                    null,
+                    null,
+                    null,
+                    null,
+                    null,
+                    new DeviceSpecimenType(null, null),
+                    Collections.emptyList())),
+            false,
+            Collections.emptySet());
+    var correctedTestEvent =
+        new TestEvent(
+            invalidTestEvent, TestCorrectionStatus.CORRECTED, "typo", Collections.emptySet());
+
+    var actual = convertToDiagnosticReport(correctedTestEvent);
+
+    assertThat(actual.getStatus()).isEqualTo(DiagnosticReportStatus.CORRECTED);
+  }
+
+  @Test
+  void testEventRemoved_convertToDiagnosticReport() {
+    var invalidTestEvent =
+        new TestEvent(
+            new TestOrder(
+                new Person(null, null, null, null, null),
+                new Facility(
+                    null,
+                    null,
+                    null,
+                    null,
+                    null,
+                    null,
+                    null,
+                    new DeviceSpecimenType(null, null),
+                    Collections.emptyList())),
+            false,
+            Collections.emptySet());
+    var correctedTestEvent =
+        new TestEvent(
+            invalidTestEvent, TestCorrectionStatus.REMOVED, "wrong person", Collections.emptySet());
+
+    var actual = convertToDiagnosticReport(correctedTestEvent);
+
+    assertThat(actual.getStatus()).isEqualTo(DiagnosticReportStatus.CANCELLED);
+  }
+
+  @Test
+  void testEventNullDeviceType_convertToDiagnosticReport() {
+    var testEvent =
+        new TestEvent(
+            new TestOrder(
+                new Person(null, null, null, null, null),
+                new Facility(
+                    null,
+                    null,
+                    null,
+                    null,
+                    null,
+                    null,
+                    null,
+                    new DeviceSpecimenType(null, null),
+                    Collections.emptyList())),
+            false,
+            Collections.emptySet());
+
+    var actual = convertToDiagnosticReport(testEvent);
+
+    assertThat(actual.getStatus()).isEqualTo(DiagnosticReportStatus.FINAL);
+    assertThat(actual.getCode().getCoding()).isEmpty();
+  }
+
+  @Test
+  void nullTestEvent_convertToDiagnosticReport() {
+    var actual = convertToDiagnosticReport(null);
+
+    assertThat(actual).isNull();
+  }
+
+  @Test
+  void string_convertToDiagnosticReport() {
+    var actual = convertToDiagnosticReport(DiagnosticReportStatus.FINAL, "95422-2", "id-123");
+
+    assertThat(actual.getId()).isEqualTo("id-123");
+    assertThat(actual.getStatus()).isEqualTo(DiagnosticReportStatus.FINAL);
+    assertThat(actual.getCode().getCoding()).hasSize(1);
+    assertThat(actual.getCode().getCodingFirstRep().getSystem()).isEqualTo("http://loinc.org");
+    assertThat(actual.getCode().getCodingFirstRep().getCode()).isEqualTo("95422-2");
+  }
+
+  @Test
+  void nullString_convertToDiagnosticReport() {
+    var actual = convertToDiagnosticReport(null, null, null);
+
+    assertThat(actual.getId()).isNull();
+    assertThat(actual.getStatus()).isNull();
+    assertThat(actual.getCode().getCoding()).isEmpty();
   }
 }

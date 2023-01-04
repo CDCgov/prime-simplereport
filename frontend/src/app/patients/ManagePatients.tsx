@@ -210,7 +210,9 @@ export const DetachedManagePatients = ({
             patient.isDeleted && "sr-patient-row--removed"
           )}
         >
-          <th scope="row">{editUserLink}</th>
+          <th scope="row" className="sr-patient-row-header">
+            {editUserLink}
+          </th>
           <td>{moment(patient.birthDate).format("MM/DD/yyyy")}</td>
           <td>{capitalizeText(patient.role)}</td>
           <td>

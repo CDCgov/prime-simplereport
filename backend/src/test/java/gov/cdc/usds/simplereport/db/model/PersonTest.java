@@ -67,7 +67,7 @@ class PersonTest {
             Objects.requireNonNull(
                 PersonTest.class.getClassLoader().getResourceAsStream("fhir/patient.json")),
             StandardCharsets.UTF_8);
-    JSONAssert.assertEquals(actualSerialized, expectedSerialized, false);
+    JSONAssert.assertEquals(actualSerialized, expectedSerialized, true);
   }
 
   @Test
