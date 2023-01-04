@@ -4,10 +4,10 @@ import static org.assertj.core.api.Assertions.assertThat;
 
 import ca.uhn.fhir.context.FhirContext;
 import ca.uhn.fhir.parser.IParser;
+import gov.cdc.usds.simplereport.db.model.auxiliary.PersonName;
 import gov.cdc.usds.simplereport.db.model.auxiliary.StreetAddress;
 import java.io.IOException;
 import java.nio.charset.StandardCharsets;
-import java.util.Collections;
 import java.util.List;
 import java.util.Objects;
 import java.util.UUID;
@@ -17,26 +17,21 @@ import org.mockito.Mockito;
 import org.skyscreamer.jsonassert.JSONAssert;
 import org.springframework.test.util.ReflectionTestUtils;
 
-class FacilityTest {
+class ProviderTest {
 
   @Test
-  void validFacility_toFhir() throws IOException {
+  void toFhir() throws IOException {
     var internalId = "3c9c7370-e2e3-49ad-bb7a-f6005f41cf29";
-    var facility =
+    var provider =
         Mockito.spy(
-            new Facility(
+            new Provider(
+                new PersonName("Amelia", "Mary", "Earhart", null),
                 null,
-                "Elron",
-                null,
-                new StreetAddress(
-                    List.of("12 Main Street", "Unit 4"), "Lakewood", "FL", "21037", null),
-                "248 555 1234",
-                "email@example.com",
-                null,
-                Collections.emptyList()));
-    ReflectionTestUtils.setField(facility, "internalId", UUID.fromString(internalId));
+                new StreetAddress(List.of("223 N Terrace St"), "Atchison", "KS", "66002", null),
+                "248 555 1234"));
+    ReflectionTestUtils.setField(provider, "internalId", UUID.fromString(internalId));
 
-    var actual = facility.toFhir();
+    var actual = provider.toFhir();
 
     FhirContext ctx = FhirContext.forR4();
     IParser parser = ctx.newJsonParser();
@@ -45,19 +40,19 @@ class FacilityTest {
     var expectedSerialized =
         IOUtils.toString(
             Objects.requireNonNull(
-                FacilityTest.class.getClassLoader().getResourceAsStream("fhir/organization.json")),
+                ProviderTest.class.getClassLoader().getResourceAsStream("fhir/practitioner.json")),
             StandardCharsets.UTF_8);
     JSONAssert.assertEquals(actualSerialized, expectedSerialized, true);
   }
 
   @Test
-  void emptyFacility_toFhir() {
-    var facility = new Facility();
+  void emptyPractitioner_toFhir() {
+    var provider = new Provider();
 
-    var actual = facility.toFhir();
+    var actual = provider.toFhir();
 
     assertThat(actual.getIdentifier()).isEmpty();
-    assertThat(actual.getName()).isNull();
+    assertThat(actual.getName()).isEmpty();
     assertThat(actual.getTelecom()).isEmpty();
     assertThat(actual.getAddress()).isEmpty();
   }

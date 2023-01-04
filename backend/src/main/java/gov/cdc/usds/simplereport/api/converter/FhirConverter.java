@@ -16,6 +16,7 @@ import com.google.i18n.phonenumbers.PhoneNumberUtil.PhoneNumberFormat;
 import gov.cdc.usds.simplereport.api.MappingConstants;
 import gov.cdc.usds.simplereport.db.model.PersonUtils;
 import gov.cdc.usds.simplereport.db.model.PhoneNumber;
+import gov.cdc.usds.simplereport.db.model.TestEvent;
 import gov.cdc.usds.simplereport.db.model.TestOrder;
 import gov.cdc.usds.simplereport.db.model.auxiliary.PersonName;
 import gov.cdc.usds.simplereport.db.model.auxiliary.PhoneType;
@@ -36,6 +37,8 @@ import org.hl7.fhir.r4.model.Coding;
 import org.hl7.fhir.r4.model.ContactPoint;
 import org.hl7.fhir.r4.model.ContactPoint.ContactPointSystem;
 import org.hl7.fhir.r4.model.ContactPoint.ContactPointUse;
+import org.hl7.fhir.r4.model.DiagnosticReport;
+import org.hl7.fhir.r4.model.DiagnosticReport.DiagnosticReportStatus;
 import org.hl7.fhir.r4.model.Enumerations.AdministrativeGender;
 import org.hl7.fhir.r4.model.Extension;
 import org.hl7.fhir.r4.model.HumanName;
@@ -316,5 +319,42 @@ public class FhirConverter {
       serviceRequest.getCode().addCoding().setSystem(LOINC_CODE_SYSTEM).setCode(requestedCode);
     }
     return serviceRequest;
+  }
+
+  public static DiagnosticReport convertToDiagnosticReport(TestEvent testEvent) {
+    if (testEvent != null) {
+      DiagnosticReportStatus status = null;
+      switch (testEvent.getCorrectionStatus()) {
+        case ORIGINAL:
+          status = (DiagnosticReportStatus.FINAL);
+          break;
+        case CORRECTED:
+          status = (DiagnosticReportStatus.CORRECTED);
+          break;
+        case REMOVED:
+          status = (DiagnosticReportStatus.CANCELLED);
+          break;
+      }
+
+      String code = null;
+      if (testEvent.getDeviceType() != null) {
+        code = testEvent.getDeviceType().getLoincCode();
+      }
+
+      return convertToDiagnosticReport(
+          status, code, Objects.toString(testEvent.getInternalId(), ""));
+    }
+    return null;
+  }
+
+  public static DiagnosticReport convertToDiagnosticReport(
+      DiagnosticReportStatus status, String code, String id) {
+    var diagnosticReport = new DiagnosticReport();
+    diagnosticReport.setId(id);
+    diagnosticReport.setStatus(status);
+    if (StringUtils.isNotBlank(code)) {
+      diagnosticReport.getCode().addCoding().setSystem(LOINC_CODE_SYSTEM).setCode(code);
+    }
+    return diagnosticReport;
   }
 }
