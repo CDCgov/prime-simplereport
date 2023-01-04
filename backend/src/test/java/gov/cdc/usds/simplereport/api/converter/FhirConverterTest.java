@@ -10,6 +10,7 @@ import static gov.cdc.usds.simplereport.api.converter.FhirConverter.convertToHum
 import static gov.cdc.usds.simplereport.api.converter.FhirConverter.convertToIdentifier;
 import static gov.cdc.usds.simplereport.api.converter.FhirConverter.convertToObservation;
 import static gov.cdc.usds.simplereport.api.converter.FhirConverter.convertToRaceExtension;
+import static gov.cdc.usds.simplereport.api.converter.FhirConverter.convertToServiceRequest;
 import static gov.cdc.usds.simplereport.api.converter.FhirConverter.convertToTribalAffiliationExtension;
 import static gov.cdc.usds.simplereport.api.converter.FhirConverter.emailToContactPoint;
 import static gov.cdc.usds.simplereport.api.converter.FhirConverter.phoneNumberToContactPoint;
@@ -22,6 +23,7 @@ import ca.uhn.fhir.parser.IParser;
 import gov.cdc.usds.simplereport.db.model.DeviceSpecimenType;
 import gov.cdc.usds.simplereport.db.model.DeviceType;
 import gov.cdc.usds.simplereport.db.model.Facility;
+import gov.cdc.usds.simplereport.db.model.Organization;
 import gov.cdc.usds.simplereport.db.model.Person;
 import gov.cdc.usds.simplereport.db.model.PhoneNumber;
 import gov.cdc.usds.simplereport.db.model.Result;
@@ -47,6 +49,8 @@ import org.hl7.fhir.r4.model.DiagnosticReport.DiagnosticReportStatus;
 import org.hl7.fhir.r4.model.Enumerations.AdministrativeGender;
 import org.hl7.fhir.r4.model.Identifier.IdentifierUse;
 import org.hl7.fhir.r4.model.PrimitiveType;
+import org.hl7.fhir.r4.model.ServiceRequest.ServiceRequestIntent;
+import org.hl7.fhir.r4.model.ServiceRequest.ServiceRequestStatus;
 import org.hl7.fhir.r4.model.codesystems.ObservationStatus;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.params.ParameterizedTest;
@@ -650,6 +654,119 @@ class FhirConverterTest {
   void nullString_convertToDiagnosticReport() {
     var actual = convertToDiagnosticReport(null, null, null);
 
+    assertThat(actual.getId()).isNull();
+    assertThat(actual.getStatus()).isNull();
+    assertThat(actual.getCode().getCoding()).isEmpty();
+  }
+
+  @Test
+  void testOrder_convertToServiceRequest() {
+    var testOrder =
+        new TestOrder(
+            new Person(null, null, null, null, new Organization(null, null, null, true)),
+            new Facility(
+                null,
+                null,
+                null,
+                null,
+                null,
+                null,
+                null,
+                new DeviceSpecimenType(new DeviceType(null, null, null, "95422-2", null, 0), null),
+                Collections.emptyList()));
+
+    var actual = convertToServiceRequest(testOrder);
+
+    assertThat(actual.getStatus()).isEqualTo(ServiceRequestStatus.ACTIVE);
+    assertThat(actual.getIntent()).isEqualTo(ServiceRequestIntent.ORDER);
+    assertThat(actual.getCode().getCoding()).hasSize(1);
+    assertThat(actual.getCode().getCodingFirstRep().getSystem()).isEqualTo("http://loinc.org");
+    assertThat(actual.getCode().getCodingFirstRep().getCode()).isEqualTo("95422-2");
+  }
+
+  @Test
+  void testOrderComplete_convertToServiceRequest() {
+    var testOrder =
+        new TestOrder(
+            new Person(null, null, null, null, new Organization(null, null, null, true)),
+            new Facility(
+                null,
+                null,
+                null,
+                null,
+                null,
+                null,
+                null,
+                new DeviceSpecimenType(new DeviceType(null, null, null, "95422-2", null, 0), null),
+                Collections.emptyList()));
+    testOrder.markComplete();
+    var actual = convertToServiceRequest(testOrder);
+
+    assertThat(actual.getStatus()).isEqualTo(ServiceRequestStatus.COMPLETED);
+  }
+
+  @Test
+  void testOrderCancelled_convertToServiceRequest() {
+    var testOrder =
+        new TestOrder(
+            new Person(null, null, null, null, new Organization(null, null, null, true)),
+            new Facility(
+                null,
+                null,
+                null,
+                null,
+                null,
+                null,
+                null,
+                new DeviceSpecimenType(new DeviceType(null, null, null, "95422-2", null, 0), null),
+                Collections.emptyList()));
+    testOrder.cancelOrder();
+    var actual = convertToServiceRequest(testOrder);
+
+    assertThat(actual.getStatus()).isEqualTo(ServiceRequestStatus.REVOKED);
+  }
+
+  @Test
+  void testOrderNullDeviceType_convertToServiceRequest() {
+    var testOrder =
+        new TestOrder(
+            new Person(null, null, null, null, new Organization(null, null, null, true)),
+            new Facility(
+                null,
+                null,
+                null,
+                null,
+                null,
+                null,
+                null,
+                new DeviceSpecimenType(null, null),
+                Collections.emptyList()));
+    testOrder.cancelOrder();
+    var actual = convertToServiceRequest(testOrder);
+
+    assertThat(actual.getCode().getCoding()).isEmpty();
+  }
+
+  @Test
+  void nullTestOrder_convertToServiceRequest() {
+    var actual = convertToServiceRequest(null);
+
+    assertThat(actual).isNull();
+  }
+
+  @Test
+  void string_convertToServiceRequest() {
+    var actual = convertToServiceRequest(ServiceRequestStatus.COMPLETED, "94533-7", "id-123");
+    assertThat(actual.getId()).isEqualTo("id-123");
+    assertThat(actual.getStatus()).isEqualTo(ServiceRequestStatus.COMPLETED);
+    assertThat(actual.getCode().getCoding()).hasSize(1);
+    assertThat(actual.getCode().getCodingFirstRep().getSystem()).isEqualTo("http://loinc.org");
+    assertThat(actual.getCode().getCodingFirstRep().getCode()).isEqualTo("94533-7");
+  }
+
+  @Test
+  void nullString_convertToServiceRequest() {
+    var actual = convertToServiceRequest(null, null, null);
     assertThat(actual.getId()).isNull();
     assertThat(actual.getStatus()).isNull();
     assertThat(actual.getCode().getCoding()).isEmpty();

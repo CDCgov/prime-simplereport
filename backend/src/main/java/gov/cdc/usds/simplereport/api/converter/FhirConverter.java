@@ -19,6 +19,7 @@ import gov.cdc.usds.simplereport.db.model.PersonUtils;
 import gov.cdc.usds.simplereport.db.model.PhoneNumber;
 import gov.cdc.usds.simplereport.db.model.Result;
 import gov.cdc.usds.simplereport.db.model.TestEvent;
+import gov.cdc.usds.simplereport.db.model.TestOrder;
 import gov.cdc.usds.simplereport.db.model.auxiliary.PersonName;
 import gov.cdc.usds.simplereport.db.model.auxiliary.PhoneType;
 import gov.cdc.usds.simplereport.db.model.auxiliary.StreetAddress;
@@ -49,6 +50,9 @@ import org.hl7.fhir.r4.model.Identifier;
 import org.hl7.fhir.r4.model.Identifier.IdentifierUse;
 import org.hl7.fhir.r4.model.Observation;
 import org.hl7.fhir.r4.model.Observation.ObservationStatus;
+import org.hl7.fhir.r4.model.ServiceRequest;
+import org.hl7.fhir.r4.model.ServiceRequest.ServiceRequestIntent;
+import org.hl7.fhir.r4.model.ServiceRequest.ServiceRequestStatus;
 import org.hl7.fhir.r4.model.StringType;
 
 @Slf4j
@@ -363,6 +367,44 @@ public class FhirConverter {
     codeCoding.setSystem(LOINC_CODE_SYSTEM);
     codeCoding.setCode(diseaseCode);
     codeCodeableConcept.setText(diseaseName);
+  }
+
+  public static ServiceRequest convertToServiceRequest(TestOrder order) {
+    if (order != null) {
+      ServiceRequestStatus serviceRequestStatus = null;
+      switch (order.getOrderStatus()) {
+        case PENDING:
+          serviceRequestStatus = ServiceRequestStatus.ACTIVE;
+          break;
+        case COMPLETED:
+          serviceRequestStatus = ServiceRequestStatus.COMPLETED;
+          break;
+        case CANCELED:
+          serviceRequestStatus = (ServiceRequestStatus.REVOKED);
+          break;
+      }
+
+      String deviceLoincCode = null;
+      if (order.getDeviceType() != null) {
+        deviceLoincCode = order.getDeviceType().getLoincCode();
+      }
+      return convertToServiceRequest(
+          serviceRequestStatus, deviceLoincCode, Objects.toString(order.getInternalId(), ""));
+    }
+
+    return null;
+  }
+
+  public static ServiceRequest convertToServiceRequest(
+      ServiceRequestStatus status, String requestedCode, String id) {
+    var serviceRequest = new ServiceRequest();
+    serviceRequest.setId(id);
+    serviceRequest.setIntent(ServiceRequestIntent.ORDER);
+    serviceRequest.setStatus(status);
+    if (StringUtils.isNotBlank(requestedCode)) {
+      serviceRequest.getCode().addCoding().setSystem(LOINC_CODE_SYSTEM).setCode(requestedCode);
+    }
+    return serviceRequest;
   }
 
   public static DiagnosticReport convertToDiagnosticReport(TestEvent testEvent) {
