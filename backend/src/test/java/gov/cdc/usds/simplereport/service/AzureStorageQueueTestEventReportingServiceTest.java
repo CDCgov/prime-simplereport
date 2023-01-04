@@ -75,6 +75,25 @@ class AzureStorageQueueTestEventReportingServiceTest
   }
 
   @Test
+  void strips_whitespace_separator_characters() {
+    var client = mock(QueueAsyncClient.class);
+    Mono<SendMessageResult> response = mock(Mono.class);
+    when(response.toFuture())
+        .thenReturn(CompletableFuture.completedFuture(new SendMessageResult()));
+    when(client.sendMessage(any(String.class))).thenReturn(response);
+
+    var sut = new AzureStorageQueueTestEventReportingService(new ObjectMapper(), client);
+    var testEvent = createTestEvent();
+
+    // Line separator and paragraph separator characters should be filtered out
+    // after serialization
+    testEvent.getPatient().getAddress().setCity("Washington\u2029\u2028");
+    sut.report(testEvent);
+
+    verify(client, times(1)).sendMessage(argThat(matcherForTest(testEvent)));
+  }
+
+  @Test
   void culls_enqueued_test_events_when_those_are_marked_as_completed() {
     var testEvents = createTestEvents(3);
 
@@ -135,7 +154,17 @@ class AzureStorageQueueTestEventReportingServiceTest
     return message -> {
       try {
         var decoded = mapper.readTree(message);
-        return decoded.get("Result_ID").asText().equals(testEvent.getInternalId().toString());
+
+        var internalIdMatches =
+            decoded.get("Result_ID").asText().equals(testEvent.getInternalId().toString());
+
+        // Confirm that conventional spaces are not removed when stripping other whitespace
+        // characters
+        var spacesPreserved = decoded.get("Patient_street").asText().equals("736 Jackson PI NW");
+
+        var separatorStripped = decoded.get("Patient_city").asText().equals("Washington");
+
+        return internalIdMatches && separatorStripped && spacesPreserved;
       } catch (IOException e) {
         throw new RuntimeException(e);
       }
