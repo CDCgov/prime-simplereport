@@ -1,0 +1,13 @@
+{
+  "resourceType": "DiagnosticReport",
+  "id": "3c9c7370-e2e3-49ad-bb7a-f6005f41cf29",
+  "status": "final",
+  "code": {
+    "coding": [
+      {
+        "system": "http://loinc.org",
+        "code": "95422-2"
+      }
+    ]
+  }
+}
