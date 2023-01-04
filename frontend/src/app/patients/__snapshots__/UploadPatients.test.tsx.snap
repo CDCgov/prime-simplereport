@@ -108,24 +108,16 @@ exports[`Upload Patient displays the upload patients page correctly 1`] = `
                 </p>
               </div>
               <a
+                class="usa-button margin-right-105"
                 href="/using-simplereport/manage-people-you-test/bulk-upload-patients/#preparing-your-spreadsheet-data"
               >
-                <button
-                  class="usa-button margin-right-105"
-                  type="button"
-                >
-                  View patient bulk upload guide
-                </button>
+                View patient bulk upload guide
               </a>
               <a
+                class="usa-button usa-button--outline"
                 href="/assets/resources/patient_upload_example.csv"
               >
-                <button
-                  class="usa-button usa-button--outline"
-                  type="button"
-                >
-                  Download spreadsheet template
-                </button>
+                Download spreadsheet template
               </a>
             </div>
           </li>
