@@ -87,8 +87,11 @@ requests
 ${local.skip_on_weekends}
 | where toint(resultCode) between (200 .. 299) and timestamp >= ago(5m)
 | sort by timestamp asc
-| summarize alert = iff((todouble(sumif(1, success == false)) * 100 / todouble(count()) >= ${var.http_2xx_failure_rate_threshold}), 1, 0)
-| where alert == 1
+| summarize alert = iff((todouble(sumif(1, success == false)) * 100 / todouble(count()) >= ${var.http_2xx_failure_rate_threshold} and sumif(1, success == false) > ${var.http_2xx_failed_threshold}), sumif(1, success == false), 0)
+//
+// requests
+// | where toint(resultCode) between (200 .. 299) and timestamp >= ago(60m) and success == false
+// | sort by timestamp asc
   QUERY
 
   trigger {
