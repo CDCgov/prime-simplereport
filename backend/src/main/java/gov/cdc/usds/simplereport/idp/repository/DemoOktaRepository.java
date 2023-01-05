@@ -26,6 +26,7 @@ import java.util.Set;
 import java.util.UUID;
 import java.util.stream.Collectors;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.beans.factory.support.ScopeNotActiveException;
 import org.springframework.context.annotation.Profile;
 import org.springframework.http.HttpStatus;
@@ -38,6 +39,9 @@ import org.springframework.stereotype.Service;
 @Service
 @Slf4j
 public class DemoOktaRepository implements OktaRepository {
+
+  @Value("${simple-report.authorization.environment-name:DEV}")
+  private String environment;
 
   private final OrganizationExtractor organizationExtractor;
   private final CurrentTenantDataAccessContextHolder tenantDataContextHolder;
@@ -320,7 +324,9 @@ public class DemoOktaRepository implements OktaRepository {
       }
       return Optional.ofNullable(usernameOrgRolesMap.get(username));
     } catch (ScopeNotActiveException e) {
-      if (usernameOrgRolesMap.containsKey(username)) {
+      // Tests are set up with a full SecurityContextHolder and should not rely on
+      // usernameOrgRolesMap as the source of truth.
+      if (!environment.equals("UNITTEST") && usernameOrgRolesMap.containsKey(username)) {
         return Optional.of(usernameOrgRolesMap.get(username));
       }
       Set<String> authorities =
