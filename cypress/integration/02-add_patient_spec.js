@@ -96,7 +96,7 @@ describe("Adding Patients", () => {
         action: 'drag-drop'
       });
       cy.get(".usa-button").contains("Upload CSV file").click();
-      cy.get(".prime-edit-patient").contains("Success: File Accepted");
+      cy.get(".prime-edit-patient").contains("Success: Data confirmed");
     })
     it("patients should appear in the patients list", () => {
       cy.visit("/");
