@@ -1,5 +1,6 @@
 package gov.cdc.usds.simplereport.config;
 
+import ca.uhn.fhir.context.FhirContext;
 import com.azure.storage.queue.QueueAsyncClient;
 import com.azure.storage.queue.QueueClientBuilder;
 import com.fasterxml.jackson.core.JsonProcessingException;
@@ -8,11 +9,13 @@ import gov.cdc.usds.simplereport.api.model.TestEventExport;
 import gov.cdc.usds.simplereport.api.model.errors.TestEventSerializationFailureException;
 import gov.cdc.usds.simplereport.db.model.TestEvent;
 import gov.cdc.usds.simplereport.properties.AzureStorageQueueReportingProperties;
+import gov.cdc.usds.simplereport.service.AzureStorageQueueFhirReportingService;
 import gov.cdc.usds.simplereport.service.AzureStorageQueueTestEventReportingService;
 import gov.cdc.usds.simplereport.service.TestEventReportingService;
 import java.util.Set;
 import java.util.concurrent.CompletableFuture;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
 import org.springframework.context.annotation.Bean;
@@ -28,9 +31,24 @@ class AzureTestEventReportingQueueConfiguration {
       value = "simple-report.azure-reporting-queue.enabled",
       havingValue = "true")
   TestEventReportingService storageQueueReportingService(
-      ObjectMapper mapper, QueueAsyncClient queueClient) {
+      ObjectMapper mapper, @Qualifier("csvQueue") QueueAsyncClient queueClient) {
     log.info("Configured for queue={}", queueClient.getQueueName());
     return new AzureStorageQueueTestEventReportingService(mapper, queueClient);
+  }
+
+  @Bean("fhirQueueReportingService")
+  @ConditionalOnProperty(
+      value = "simple-report.azure-reporting-queue.enabled",
+      havingValue = "true")
+  TestEventReportingService fhirQueueReportingService(
+      FhirContext context, @Qualifier("fhirQueueClient") QueueAsyncClient queueClient) {
+    log.info("Configured for queue={}", queueClient.getQueueName());
+    return new AzureStorageQueueFhirReportingService(context, queueClient);
+  }
+
+  @Bean
+  FhirContext fhirContext() {
+    return FhirContext.forR4();
   }
 
   @Bean
@@ -39,7 +57,7 @@ class AzureTestEventReportingQueueConfiguration {
     return new NoOpReportingService();
   }
 
-  @Bean
+  @Bean("csvQueue")
   @ConditionalOnProperty(
       value = "simple-report.azure-reporting-queue.enabled",
       havingValue = "true")
@@ -47,6 +65,17 @@ class AzureTestEventReportingQueueConfiguration {
     return new QueueClientBuilder()
         .connectionString(properties.getConnectionString())
         .queueName(properties.getName())
+        .buildAsyncClient();
+  }
+
+  @Bean("fhirQueueClient")
+  @ConditionalOnProperty(
+      value = "simple-report.azure-reporting-queue.fhirQueueEnabled",
+      havingValue = "true")
+  QueueAsyncClient fhirQueueServiceAsyncClient(AzureStorageQueueReportingProperties properties) {
+    return new QueueClientBuilder()
+        .connectionString(properties.getConnectionString())
+        .queueName(properties.getFhirQueueName())
         .buildAsyncClient();
   }
 

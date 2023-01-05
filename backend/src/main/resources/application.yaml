@@ -121,6 +121,7 @@ simple-report:
     exception-webhook-enabled: false
     exception-webhook-token: ${RS_QUEUE_CALLBACK_TOKEN}
     name: ${AZ_REPORTING_QUEUE_NAME:test-event-publishing}
+    fhir-queue-name: ${AZ_FHIR_REPORTING_QUEUE_NAME:fhir-data-publishing}
     connection-string: ${AZ_REPORTING_QUEUE_CXN_STRING}
   cors:
     allowed-methods:
