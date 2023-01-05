@@ -326,7 +326,7 @@ public class DemoOktaRepository implements OktaRepository {
     } catch (ScopeNotActiveException e) {
       // Tests are set up with a full SecurityContextHolder and should not rely on
       // usernameOrgRolesMap as the source of truth.
-      if (!environment.equals("UNITTEST") && usernameOrgRolesMap.containsKey(username)) {
+      if (!("UNITTEST".equals(environment)) && usernameOrgRolesMap.containsKey(username)) {
         return Optional.of(usernameOrgRolesMap.get(username));
       }
       Set<String> authorities =
