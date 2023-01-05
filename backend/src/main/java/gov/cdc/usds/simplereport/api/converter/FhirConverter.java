@@ -17,6 +17,7 @@ import com.google.i18n.phonenumbers.PhoneNumberUtil.PhoneNumberFormat;
 import gov.cdc.usds.simplereport.api.MappingConstants;
 import gov.cdc.usds.simplereport.db.model.DeviceType;
 import gov.cdc.usds.simplereport.db.model.Facility;
+import gov.cdc.usds.simplereport.db.model.Person;
 import gov.cdc.usds.simplereport.db.model.PersonUtils;
 import gov.cdc.usds.simplereport.db.model.PhoneNumber;
 import gov.cdc.usds.simplereport.db.model.Provider;
@@ -311,6 +312,21 @@ public class FhirConverter {
     org.addTelecom(emailToContactPoint(facility.getEmail()));
     org.addAddress(convertToAddress(facility.getAddress()));
     return org;
+  }
+
+  public static Patient convertToPatient(Person person) {
+    var patient = new Patient();
+    patient.setId(person.getInternalId().toString());
+    patient.addName(convertToHumanName(person.getNameInfo()));
+    phoneNumberToContactPoint(person.getPhoneNumbers()).forEach(patient::addTelecom);
+    emailToContactPoint(person.getEmails()).forEach(patient::addTelecom);
+    patient.setGender(convertToAdministrativeGender(person.getGender()));
+    patient.setBirthDate(convertToDate(person.getBirthDate()));
+    patient.addAddress(convertToAddress(person.getAddress()));
+    patient.addExtension(convertToRaceExtension(person.getRace()));
+    patient.addExtension(convertToEthnicityExtension(person.getEthnicity()));
+    patient.addExtension(convertToTribalAffiliationExtension(person.getTribalAffiliation()));
+    return patient;
   }
 
   public static Device convertToDevice(DeviceType deviceType) {

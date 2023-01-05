@@ -10,6 +10,7 @@ import static gov.cdc.usds.simplereport.api.converter.FhirConverter.convertToEth
 import static gov.cdc.usds.simplereport.api.converter.FhirConverter.convertToHumanName;
 import static gov.cdc.usds.simplereport.api.converter.FhirConverter.convertToObservation;
 import static gov.cdc.usds.simplereport.api.converter.FhirConverter.convertToOrganization;
+import static gov.cdc.usds.simplereport.api.converter.FhirConverter.convertToPatient;
 import static gov.cdc.usds.simplereport.api.converter.FhirConverter.convertToPractitioner;
 import static gov.cdc.usds.simplereport.api.converter.FhirConverter.convertToRaceExtension;
 import static gov.cdc.usds.simplereport.api.converter.FhirConverter.convertToServiceRequest;
@@ -76,6 +77,7 @@ import org.junit.jupiter.api.Test;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.Arguments;
 import org.junit.jupiter.params.provider.MethodSource;
+import org.mockito.Mockito;
 import org.skyscreamer.jsonassert.JSONAssert;
 import org.springframework.test.util.ReflectionTestUtils;
 
@@ -381,6 +383,56 @@ class FhirConverterTest {
         IOUtils.toString(
             Objects.requireNonNull(
                 getClass().getClassLoader().getResourceAsStream("fhir/organization.json")),
+            StandardCharsets.UTF_8);
+    JSONAssert.assertEquals(actualSerialized, expectedSerialized, true);
+  }
+
+  @Test
+  void toFhir_ValidPerson_ReturnsValidPatient() throws IOException {
+    var birthDate = LocalDate.of(2022, 12, 13);
+    var internalId = "3c9c7370-e2e3-49ad-bb7a-f6005f41cf29";
+    var person =
+        Mockito.spy(
+            new Person(
+                null,
+                null,
+                null,
+                "Austin",
+                "Wingate",
+                "Curtis",
+                "Jr",
+                birthDate,
+                new StreetAddress(
+                    List.of("501 Virginia St E", "#1"), "Charleston", "WV", "25301", "Kanawha"),
+                "USA",
+                null,
+                List.of("email1", "email2"),
+                "black",
+                "hispanic",
+                List.of("123"),
+                "Male",
+                false,
+                false,
+                "English",
+                null));
+    ReflectionTestUtils.setField(
+        person,
+        "phoneNumbers",
+        List.of(
+            new PhoneNumber(PhoneType.MOBILE, "304-555-1234"),
+            new PhoneNumber(PhoneType.LANDLINE, "3045551233")));
+    ReflectionTestUtils.setField(person, "internalId", UUID.fromString(internalId));
+
+    var actual = convertToPatient(person);
+
+    FhirContext ctx = FhirContext.forR4();
+    IParser parser = ctx.newJsonParser();
+
+    String actualSerialized = parser.encodeResourceToString(actual);
+    var expectedSerialized =
+        IOUtils.toString(
+            Objects.requireNonNull(
+                getClass().getClassLoader().getResourceAsStream("fhir/patient.json")),
             StandardCharsets.UTF_8);
     JSONAssert.assertEquals(actualSerialized, expectedSerialized, true);
   }
@@ -1134,7 +1186,7 @@ class FhirConverterTest {
 
     var actual =
         createFhirBundle(
-            person.toFhir(),
+            convertToPatient(person),
             convertToOrganization(facility),
             convertToPractitioner(provider),
             null,
