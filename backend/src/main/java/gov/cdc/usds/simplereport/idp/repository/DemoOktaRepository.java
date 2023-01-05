@@ -26,8 +26,11 @@ import java.util.Set;
 import java.util.UUID;
 import java.util.stream.Collectors;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.beans.factory.support.ScopeNotActiveException;
 import org.springframework.context.annotation.Profile;
 import org.springframework.http.HttpStatus;
+import org.springframework.security.core.GrantedAuthority;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
 
 /** Handles all user/organization management in Okta */
@@ -207,13 +210,13 @@ public class DemoOktaRepository implements OktaRepository {
     }
   }
 
+  // returns ALL users including inactive ones
   public Set<String> getAllUsersForOrganization(Organization org) {
     if (!orgUsernamesMap.containsKey(org.getExternalId())) {
       throw new IllegalGraphqlArgumentException(
           "Cannot get Okta users from nonexistent organization.");
     }
     return orgUsernamesMap.get(org.getExternalId()).stream()
-        .filter(u -> !inactiveUsernames.contains(u))
         .collect(Collectors.toUnmodifiableSet());
   }
 
@@ -309,13 +312,20 @@ public class DemoOktaRepository implements OktaRepository {
 
   public Optional<OrganizationRoleClaims> getOrganizationRoleClaimsForUser(String username) {
     // when accessing tenant data, bypass okta and get org from the altered authorities
-    if (tenantDataContextHolder.hasBeenPopulated()
-        && username.equals(tenantDataContextHolder.getUsername())) {
-      return getOrganizationRoleClaimsFromTenantDataAccess(
-          tenantDataContextHolder.getAuthorities());
+    try {
+      if (tenantDataContextHolder.hasBeenPopulated()
+          && username.equals(tenantDataContextHolder.getUsername())) {
+        return getOrganizationRoleClaimsFromTenantDataAccess(
+            tenantDataContextHolder.getAuthorities());
+      }
+      return Optional.ofNullable(usernameOrgRolesMap.get(username));
+    } catch (ScopeNotActiveException e) {
+      Set<String> authorities =
+          SecurityContextHolder.getContext().getAuthentication().getAuthorities().stream()
+              .map(GrantedAuthority::getAuthority)
+              .collect(Collectors.toSet());
+      return getOrganizationRoleClaimsFromTenantDataAccess(authorities);
     }
-
-    return Optional.ofNullable(usernameOrgRolesMap.get(username));
   }
 
   public void reset() {

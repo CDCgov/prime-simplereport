@@ -4,7 +4,9 @@
   }
 
   .users-sidenav {
-    border-right: 1px solid #dfe1e2; // color("text-base-lighter");
+    border-right: 1px solid #dfe1e2;
+    max-width: 25%;
+
     .users-sidenav-header {
       font-style: normal;
       font-weight: bold;

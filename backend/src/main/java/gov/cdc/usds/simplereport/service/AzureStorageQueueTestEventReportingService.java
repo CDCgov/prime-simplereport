@@ -79,7 +79,9 @@ public final class AzureStorageQueueTestEventReportingService implements TestEve
 
   private String toBuffer(TestEvent testEvent) {
     try {
-      return mapper.writeValueAsString(new TestEventExport(testEvent));
+      return mapper
+          .writeValueAsString(new TestEventExport(testEvent))
+          .replaceAll("[\u2028\u2029]", "");
     } catch (IOException e) {
       throw new TestEventSerializationFailureException(
           testEvent.getInternalId(), e.getCause().getMessage());

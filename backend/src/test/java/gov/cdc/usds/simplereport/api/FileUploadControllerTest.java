@@ -1,4 +1,4 @@
-package gov.cdc.usds.simplereport.api.uploads;
+package gov.cdc.usds.simplereport.api;
 
 import static gov.cdc.usds.simplereport.api.uploads.FileUploadController.TEXT_CSV_CONTENT_TYPE;
 import static gov.cdc.usds.simplereport.config.WebConfiguration.PATIENT_UPLOAD;
@@ -13,9 +13,9 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
-import gov.cdc.usds.simplereport.api.BaseFullStackTest;
 import gov.cdc.usds.simplereport.api.model.errors.BadRequestException;
 import gov.cdc.usds.simplereport.api.model.errors.CsvProcessingException;
+import gov.cdc.usds.simplereport.api.uploads.PatientBulkUploadResponse;
 import gov.cdc.usds.simplereport.db.model.Organization;
 import gov.cdc.usds.simplereport.db.model.TestResultUpload;
 import gov.cdc.usds.simplereport.db.model.auxiliary.UploadStatus;
