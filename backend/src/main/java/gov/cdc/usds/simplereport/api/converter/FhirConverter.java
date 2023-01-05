@@ -18,6 +18,7 @@ import gov.cdc.usds.simplereport.api.MappingConstants;
 import gov.cdc.usds.simplereport.db.model.DeviceType;
 import gov.cdc.usds.simplereport.db.model.PersonUtils;
 import gov.cdc.usds.simplereport.db.model.PhoneNumber;
+import gov.cdc.usds.simplereport.db.model.Provider;
 import gov.cdc.usds.simplereport.db.model.Result;
 import gov.cdc.usds.simplereport.db.model.SpecimenType;
 import gov.cdc.usds.simplereport.db.model.TestEvent;
@@ -289,6 +290,16 @@ public class FhirConverter {
       return ext;
     }
     return null;
+  }
+
+  public static Practitioner convertToPractitioner(Provider provider) {
+    var practitioner = new Practitioner();
+    practitioner.setId(provider.getInternalId().toString());
+    practitioner.addName(convertToHumanName(provider.getNameInfo()));
+    practitioner.addAddress(convertToAddress(provider.getAddress()));
+    practitioner.addTelecom(
+        phoneNumberToContactPoint(ContactPointUse.WORK, provider.getTelephone()));
+    return practitioner;
   }
 
   public static Device convertToDevice(DeviceType deviceType) {

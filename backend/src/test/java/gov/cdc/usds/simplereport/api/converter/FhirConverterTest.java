@@ -9,6 +9,7 @@ import static gov.cdc.usds.simplereport.api.converter.FhirConverter.convertToDia
 import static gov.cdc.usds.simplereport.api.converter.FhirConverter.convertToEthnicityExtension;
 import static gov.cdc.usds.simplereport.api.converter.FhirConverter.convertToHumanName;
 import static gov.cdc.usds.simplereport.api.converter.FhirConverter.convertToObservation;
+import static gov.cdc.usds.simplereport.api.converter.FhirConverter.convertToPractitioner;
 import static gov.cdc.usds.simplereport.api.converter.FhirConverter.convertToRaceExtension;
 import static gov.cdc.usds.simplereport.api.converter.FhirConverter.convertToServiceRequest;
 import static gov.cdc.usds.simplereport.api.converter.FhirConverter.convertToSpecimen;
@@ -327,6 +328,31 @@ class FhirConverterTest {
   void null_convertToTribalAffiliation() {
     assertThat(convertToTribalAffiliationExtension((String) null)).isNull();
     assertThat(convertToTribalAffiliationExtension((List<String>) null)).isNull();
+  }
+
+  @Test
+  void provider_convertToPractitioner_matchesJson() throws IOException {
+    var internalId = "3c9c7370-e2e3-49ad-bb7a-f6005f41cf29";
+    var provider =
+        new Provider(
+            new PersonName("Amelia", "Mary", "Earhart", null),
+            null,
+            new StreetAddress(List.of("223 N Terrace St"), "Atchison", "KS", "66002", null),
+            "248 555 1234");
+    ReflectionTestUtils.setField(provider, "internalId", UUID.fromString(internalId));
+
+    var actual = convertToPractitioner(provider);
+
+    FhirContext ctx = FhirContext.forR4();
+    IParser parser = ctx.newJsonParser();
+
+    String actualSerialized = parser.encodeResourceToString(actual);
+    var expectedSerialized =
+        IOUtils.toString(
+            Objects.requireNonNull(
+                getClass().getClassLoader().getResourceAsStream("fhir/practitioner.json")),
+            StandardCharsets.UTF_8);
+    JSONAssert.assertEquals(actualSerialized, expectedSerialized, true);
   }
 
   @Test
