@@ -16,6 +16,7 @@ import com.google.i18n.phonenumbers.PhoneNumberUtil;
 import com.google.i18n.phonenumbers.PhoneNumberUtil.PhoneNumberFormat;
 import gov.cdc.usds.simplereport.api.MappingConstants;
 import gov.cdc.usds.simplereport.db.model.DeviceType;
+import gov.cdc.usds.simplereport.db.model.Facility;
 import gov.cdc.usds.simplereport.db.model.PersonUtils;
 import gov.cdc.usds.simplereport.db.model.PhoneNumber;
 import gov.cdc.usds.simplereport.db.model.Provider;
@@ -300,6 +301,16 @@ public class FhirConverter {
     practitioner.addTelecom(
         phoneNumberToContactPoint(ContactPointUse.WORK, provider.getTelephone()));
     return practitioner;
+  }
+
+  public static Organization convertToOrganization(Facility facility) {
+    var org = new Organization();
+    org.setId(facility.getInternalId().toString());
+    org.setName(facility.getFacilityName());
+    org.addTelecom(phoneNumberToContactPoint(ContactPointUse.WORK, facility.getTelephone()));
+    org.addTelecom(emailToContactPoint(facility.getEmail()));
+    org.addAddress(convertToAddress(facility.getAddress()));
+    return org;
   }
 
   public static Device convertToDevice(DeviceType deviceType) {

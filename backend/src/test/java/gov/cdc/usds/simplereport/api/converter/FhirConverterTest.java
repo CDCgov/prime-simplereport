@@ -9,6 +9,7 @@ import static gov.cdc.usds.simplereport.api.converter.FhirConverter.convertToDia
 import static gov.cdc.usds.simplereport.api.converter.FhirConverter.convertToEthnicityExtension;
 import static gov.cdc.usds.simplereport.api.converter.FhirConverter.convertToHumanName;
 import static gov.cdc.usds.simplereport.api.converter.FhirConverter.convertToObservation;
+import static gov.cdc.usds.simplereport.api.converter.FhirConverter.convertToOrganization;
 import static gov.cdc.usds.simplereport.api.converter.FhirConverter.convertToPractitioner;
 import static gov.cdc.usds.simplereport.api.converter.FhirConverter.convertToRaceExtension;
 import static gov.cdc.usds.simplereport.api.converter.FhirConverter.convertToServiceRequest;
@@ -351,6 +352,35 @@ class FhirConverterTest {
         IOUtils.toString(
             Objects.requireNonNull(
                 getClass().getClassLoader().getResourceAsStream("fhir/practitioner.json")),
+            StandardCharsets.UTF_8);
+    JSONAssert.assertEquals(actualSerialized, expectedSerialized, true);
+  }
+
+  @Test
+  void validFacility_toFhir() throws IOException {
+    var internalId = "3c9c7370-e2e3-49ad-bb7a-f6005f41cf29";
+    var facility =
+        new Facility(
+            null,
+            "Elron",
+            null,
+            new StreetAddress(List.of("12 Main Street", "Unit 4"), "Lakewood", "FL", "21037", null),
+            "248 555 1234",
+            "email@example.com",
+            null,
+            Collections.emptyList());
+    ReflectionTestUtils.setField(facility, "internalId", UUID.fromString(internalId));
+
+    var actual = convertToOrganization(facility);
+
+    FhirContext ctx = FhirContext.forR4();
+    IParser parser = ctx.newJsonParser();
+
+    String actualSerialized = parser.encodeResourceToString(actual);
+    var expectedSerialized =
+        IOUtils.toString(
+            Objects.requireNonNull(
+                getClass().getClassLoader().getResourceAsStream("fhir/organization.json")),
             StandardCharsets.UTF_8);
     JSONAssert.assertEquals(actualSerialized, expectedSerialized, true);
   }
@@ -1104,7 +1134,14 @@ class FhirConverterTest {
 
     var actual =
         createFhirBundle(
-            person.toFhir(), facility.toFhir(), provider.toFhir(), null, null, null, null, null);
+            person.toFhir(),
+            convertToOrganization(facility),
+            convertToPractitioner(provider),
+            null,
+            null,
+            null,
+            null,
+            null);
 
     var resourceUrls =
         actual.getEntry().stream()
