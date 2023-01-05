@@ -925,6 +925,42 @@ class FhirConverterTest {
   }
 
   @Test
+  void testOrder_convertToServiceRequest_matchesJson() throws IOException {
+    var internalId = "3c9c7370-e2e3-49ad-bb7a-f6005f41cf29";
+    var testOrder =
+        new TestOrder(
+            null,
+            new Facility(
+                null,
+                null,
+                null,
+                null,
+                null,
+                null,
+                null,
+                new DeviceSpecimenType(null, null),
+                Collections.emptyList()));
+    testOrder.markComplete();
+    testOrder.setDeviceSpecimen(
+        new DeviceSpecimenType(new DeviceType(null, null, null, "94533-7", null, 0), null));
+    ReflectionTestUtils.setField(testOrder, "internalId", UUID.fromString(internalId));
+
+    var actual = convertToServiceRequest(testOrder);
+
+    FhirContext ctx = FhirContext.forR4();
+    IParser parser = ctx.newJsonParser();
+
+    String actualSerialized = parser.encodeResourceToString(actual);
+    var expectedSerialized =
+        IOUtils.toString(
+            Objects.requireNonNull(
+                getClass().getClassLoader().getResourceAsStream("fhir/serviceRequest.json")),
+            StandardCharsets.UTF_8);
+
+    JSONAssert.assertEquals(actualSerialized, expectedSerialized, true);
+  }
+
+  @Test
   void valid_getPractitionerRole() {
     var practitionerRole =
         getPractitionerRole("Organization/org-id", "Practitioner/practitioner-id");
