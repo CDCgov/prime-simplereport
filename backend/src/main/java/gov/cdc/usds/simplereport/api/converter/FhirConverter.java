@@ -18,17 +18,21 @@ import gov.cdc.usds.simplereport.api.MappingConstants;
 import gov.cdc.usds.simplereport.db.model.DeviceType;
 import gov.cdc.usds.simplereport.db.model.PersonUtils;
 import gov.cdc.usds.simplereport.db.model.PhoneNumber;
+import gov.cdc.usds.simplereport.db.model.Result;
 import gov.cdc.usds.simplereport.db.model.SpecimenType;
 import gov.cdc.usds.simplereport.db.model.TestEvent;
+import gov.cdc.usds.simplereport.db.model.TestOrder;
 import gov.cdc.usds.simplereport.db.model.auxiliary.PersonName;
 import gov.cdc.usds.simplereport.db.model.auxiliary.PhoneType;
 import gov.cdc.usds.simplereport.db.model.auxiliary.StreetAddress;
+import gov.cdc.usds.simplereport.db.model.auxiliary.TestCorrectionStatus;
 import java.time.LocalDate;
 import java.time.ZoneId;
 import java.util.Collections;
 import java.util.Date;
 import java.util.List;
 import java.util.Objects;
+import java.util.Set;
 import java.util.UUID;
 import java.util.stream.Collectors;
 import lombok.extern.slf4j.Slf4j;
@@ -49,6 +53,11 @@ import org.hl7.fhir.r4.model.Extension;
 import org.hl7.fhir.r4.model.HumanName;
 import org.hl7.fhir.r4.model.Identifier;
 import org.hl7.fhir.r4.model.Identifier.IdentifierUse;
+import org.hl7.fhir.r4.model.Observation;
+import org.hl7.fhir.r4.model.Observation.ObservationStatus;
+import org.hl7.fhir.r4.model.ServiceRequest;
+import org.hl7.fhir.r4.model.ServiceRequest.ServiceRequestIntent;
+import org.hl7.fhir.r4.model.ServiceRequest.ServiceRequestStatus;
 import org.hl7.fhir.r4.model.Specimen;
 import org.hl7.fhir.r4.model.StringType;
 
@@ -346,6 +355,124 @@ public class FhirConverter {
           specimenType.getInternalId().toString());
     }
     return null;
+  }
+
+  public static List<Observation> convertToObservation(
+      Set<Result> results, TestCorrectionStatus correctionStatus, String correctionReason) {
+    return results.stream()
+        .map(result -> convertToObservation(result, correctionStatus, correctionReason))
+        .collect(Collectors.toList());
+  }
+
+  public static Observation convertToObservation(
+      Result result, TestCorrectionStatus correctionStatus, String correctionReason) {
+    if (result != null && result.getDisease() != null) {
+      return convertToObservation(
+          result.getDisease().getLoinc(),
+          result.getDisease().getName(),
+          result.getResultLOINC(),
+          correctionStatus,
+          correctionReason,
+          result.getInternalId().toString());
+    }
+    return null;
+  }
+
+  public static Observation convertToObservation(
+      String diseaseCode,
+      String diseaseName,
+      String resultCode,
+      TestCorrectionStatus correctionStatus,
+      String correctionReason,
+      String id) {
+    var observation = new Observation();
+    observation.setId(id);
+    setStatus(observation, correctionStatus);
+    addCode(diseaseCode, diseaseName, observation);
+    addValue(resultCode, observation);
+    addCorrectionNote(
+        correctionStatus != TestCorrectionStatus.ORIGINAL, correctionReason, observation);
+    return observation;
+  }
+
+  private static void setStatus(Observation observation, TestCorrectionStatus correctionStatus) {
+    switch (correctionStatus) {
+      case ORIGINAL:
+        observation.setStatus(ObservationStatus.FINAL);
+        break;
+      case CORRECTED:
+        observation.setStatus(ObservationStatus.CORRECTED);
+        break;
+      case REMOVED:
+        observation.setStatus(ObservationStatus.ENTEREDINERROR);
+        break;
+    }
+  }
+
+  private static void addCorrectionNote(
+      boolean corrected, String correctionReason, Observation observation) {
+    if (corrected) {
+      var annotation = observation.addNote();
+      var correctedNote = "Corrected Result";
+      if (StringUtils.isNotBlank(correctionReason)) {
+        correctedNote += ": " + correctionReason;
+      }
+      annotation.setText(correctedNote);
+    }
+  }
+
+  private static void addValue(String resultCode, Observation observation) {
+    var valueCodeableConcept = new CodeableConcept();
+    var valueCoding = valueCodeableConcept.addCoding();
+    valueCoding.setSystem(SNOMED_CODE_SYSTEM);
+    valueCoding.setCode(resultCode);
+    observation.setValue(valueCodeableConcept);
+  }
+
+  private static void addCode(String diseaseCode, String diseaseName, Observation observation) {
+    var codeCodeableConcept = observation.getCode();
+    var codeCoding = codeCodeableConcept.addCoding();
+    codeCoding.setSystem(LOINC_CODE_SYSTEM);
+    codeCoding.setCode(diseaseCode);
+    codeCodeableConcept.setText(diseaseName);
+  }
+
+  public static ServiceRequest convertToServiceRequest(TestOrder order) {
+    if (order != null) {
+      ServiceRequestStatus serviceRequestStatus = null;
+      switch (order.getOrderStatus()) {
+        case PENDING:
+          serviceRequestStatus = ServiceRequestStatus.ACTIVE;
+          break;
+        case COMPLETED:
+          serviceRequestStatus = ServiceRequestStatus.COMPLETED;
+          break;
+        case CANCELED:
+          serviceRequestStatus = (ServiceRequestStatus.REVOKED);
+          break;
+      }
+
+      String deviceLoincCode = null;
+      if (order.getDeviceType() != null) {
+        deviceLoincCode = order.getDeviceType().getLoincCode();
+      }
+      return convertToServiceRequest(
+          serviceRequestStatus, deviceLoincCode, Objects.toString(order.getInternalId(), ""));
+    }
+
+    return null;
+  }
+
+  public static ServiceRequest convertToServiceRequest(
+      ServiceRequestStatus status, String requestedCode, String id) {
+    var serviceRequest = new ServiceRequest();
+    serviceRequest.setId(id);
+    serviceRequest.setIntent(ServiceRequestIntent.ORDER);
+    serviceRequest.setStatus(status);
+    if (StringUtils.isNotBlank(requestedCode)) {
+      serviceRequest.getCode().addCoding().setSystem(LOINC_CODE_SYSTEM).setCode(requestedCode);
+    }
+    return serviceRequest;
   }
 
   public static DiagnosticReport convertToDiagnosticReport(TestEvent testEvent) {

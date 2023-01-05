@@ -9,7 +9,9 @@ import static gov.cdc.usds.simplereport.api.converter.FhirConverter.convertToDia
 import static gov.cdc.usds.simplereport.api.converter.FhirConverter.convertToEthnicityExtension;
 import static gov.cdc.usds.simplereport.api.converter.FhirConverter.convertToHumanName;
 import static gov.cdc.usds.simplereport.api.converter.FhirConverter.convertToIdentifier;
+import static gov.cdc.usds.simplereport.api.converter.FhirConverter.convertToObservation;
 import static gov.cdc.usds.simplereport.api.converter.FhirConverter.convertToRaceExtension;
+import static gov.cdc.usds.simplereport.api.converter.FhirConverter.convertToServiceRequest;
 import static gov.cdc.usds.simplereport.api.converter.FhirConverter.convertToSpecimen;
 import static gov.cdc.usds.simplereport.api.converter.FhirConverter.convertToTribalAffiliationExtension;
 import static gov.cdc.usds.simplereport.api.converter.FhirConverter.emailToContactPoint;
@@ -23,18 +25,23 @@ import ca.uhn.fhir.parser.IParser;
 import gov.cdc.usds.simplereport.db.model.DeviceSpecimenType;
 import gov.cdc.usds.simplereport.db.model.DeviceType;
 import gov.cdc.usds.simplereport.db.model.Facility;
+import gov.cdc.usds.simplereport.db.model.Organization;
 import gov.cdc.usds.simplereport.db.model.Person;
 import gov.cdc.usds.simplereport.db.model.PhoneNumber;
+import gov.cdc.usds.simplereport.db.model.Result;
 import gov.cdc.usds.simplereport.db.model.SpecimenType;
+import gov.cdc.usds.simplereport.db.model.SupportedDisease;
 import gov.cdc.usds.simplereport.db.model.TestEvent;
 import gov.cdc.usds.simplereport.db.model.TestOrder;
 import gov.cdc.usds.simplereport.db.model.auxiliary.PhoneType;
 import gov.cdc.usds.simplereport.db.model.auxiliary.TestCorrectionStatus;
+import gov.cdc.usds.simplereport.db.model.auxiliary.TestResult;
 import java.io.IOException;
 import java.nio.charset.StandardCharsets;
 import java.util.Collections;
 import java.util.List;
 import java.util.Objects;
+import java.util.Set;
 import java.util.UUID;
 import java.util.stream.Stream;
 import org.apache.commons.io.IOUtils;
@@ -46,6 +53,9 @@ import org.hl7.fhir.r4.model.DiagnosticReport.DiagnosticReportStatus;
 import org.hl7.fhir.r4.model.Enumerations.AdministrativeGender;
 import org.hl7.fhir.r4.model.Identifier.IdentifierUse;
 import org.hl7.fhir.r4.model.PrimitiveType;
+import org.hl7.fhir.r4.model.ServiceRequest.ServiceRequestIntent;
+import org.hl7.fhir.r4.model.ServiceRequest.ServiceRequestStatus;
+import org.hl7.fhir.r4.model.codesystems.ObservationStatus;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.Arguments;
@@ -487,6 +497,172 @@ class FhirConverterTest {
   }
 
   @Test
+  void string_convertToObservation() {
+    var actual =
+        convertToObservation(
+            "diseaseCode",
+            "diseaseName",
+            "resultCode",
+            TestCorrectionStatus.ORIGINAL,
+            null,
+            "id-123");
+
+    assertThat(actual.getId()).isEqualTo("id-123");
+    assertThat(actual.getStatus().getDisplay()).isEqualTo(ObservationStatus.FINAL.getDisplay());
+    assertThat(actual.getCode().getText()).isEqualTo("diseaseName");
+    assertThat(actual.getCode().getCoding()).hasSize(1);
+    assertThat(actual.getCode().getCodingFirstRep().getSystem()).isEqualTo("http://loinc.org");
+    assertThat(actual.getCode().getCodingFirstRep().getCode()).isEqualTo("diseaseCode");
+    assertThat(actual.getValueCodeableConcept().getCoding()).hasSize(1);
+    assertThat(actual.getValueCodeableConcept().getCodingFirstRep().getSystem())
+        .isEqualTo("http://snomed.info/sct");
+    assertThat(actual.getValueCodeableConcept().getCodingFirstRep().getCode())
+        .isEqualTo("resultCode");
+    assertThat(actual.getNote()).isEmpty();
+  }
+
+  @Test
+  void result_convertToObservation() {
+    var result =
+        new Result(null, null, new SupportedDisease("covid-19", "96741-4"), TestResult.POSITIVE);
+    var internalId = UUID.randomUUID();
+    ReflectionTestUtils.setField(result, "internalId", internalId);
+
+    var actual = convertToObservation(result, TestCorrectionStatus.ORIGINAL, null);
+
+    assertThat(actual.getId()).isEqualTo(internalId.toString());
+    assertThat(actual.getStatus().getDisplay()).isEqualTo(ObservationStatus.FINAL.getDisplay());
+    assertThat(actual.getCode().getText()).isEqualTo("covid-19");
+    assertThat(actual.getCode().getCoding()).hasSize(1);
+    assertThat(actual.getCode().getCodingFirstRep().getSystem()).isEqualTo("http://loinc.org");
+    assertThat(actual.getCode().getCodingFirstRep().getCode()).isEqualTo("96741-4");
+    assertThat(actual.getValueCodeableConcept().getCoding()).hasSize(1);
+    assertThat(actual.getValueCodeableConcept().getCodingFirstRep().getSystem())
+        .isEqualTo("http://snomed.info/sct");
+    assertThat(actual.getValueCodeableConcept().getCodingFirstRep().getCode())
+        .isEqualTo("260373001");
+    assertThat(actual.getNote()).isEmpty();
+  }
+
+  @Test
+  void correctedResult_convertToObservation() {
+    var result =
+        new Result(null, null, new SupportedDisease("covid-19", "96741-4"), TestResult.POSITIVE);
+    var internalId = UUID.randomUUID();
+    ReflectionTestUtils.setField(result, "internalId", internalId);
+
+    var actual = convertToObservation(result, TestCorrectionStatus.CORRECTED, "Oopsy Daisy");
+
+    assertThat(actual.getId()).isEqualTo(internalId.toString());
+    assertThat(actual.getStatus().getDisplay()).isEqualTo(ObservationStatus.CORRECTED.getDisplay());
+    assertThat(actual.getNote()).hasSize(1);
+    assertThat(actual.getNoteFirstRep().getText()).isEqualTo("Corrected Result: Oopsy Daisy");
+  }
+
+  @Test
+  void removedResultNoReason_convertToObservation() {
+    var result =
+        new Result(null, null, new SupportedDisease("covid-19", "96741-4"), TestResult.POSITIVE);
+    var internalId = UUID.randomUUID();
+    ReflectionTestUtils.setField(result, "internalId", internalId);
+
+    var actual = convertToObservation(result, TestCorrectionStatus.REMOVED, null);
+
+    assertThat(actual.getId()).isEqualTo(internalId.toString());
+    assertThat(actual.getStatus().getDisplay())
+        .isEqualTo(ObservationStatus.ENTEREDINERROR.getDisplay());
+    assertThat(actual.getNote()).hasSize(1);
+    assertThat(actual.getNoteFirstRep().getText()).isEqualTo("Corrected Result");
+  }
+
+  @Test
+  void nullResult_convertToObservation() {
+    var actual = convertToObservation((Result) null, TestCorrectionStatus.ORIGINAL, null);
+
+    assertThat(actual).isNull();
+  }
+
+  @Test
+  void nullDisease_convertToObservation() {
+    var actual =
+        convertToObservation(
+            new Result(null, null, null, TestResult.POSITIVE), TestCorrectionStatus.ORIGINAL, null);
+
+    assertThat(actual).isNull();
+  }
+
+  @Test
+  void multipleResults_toFhirObservation() throws IOException {
+    var covidId = "3c9c7370-e2e3-49ad-bb7a-f6005f41cf29";
+    var fluId = "302a7919-b699-4e0d-95ca-5fd2e3fcaf7a";
+    var covidResult =
+        new Result(null, new SupportedDisease("COVID-19", "96741-4"), TestResult.POSITIVE);
+    var fluResult =
+        new Result(null, new SupportedDisease("FLU A", "LP14239-5"), TestResult.NEGATIVE);
+    ReflectionTestUtils.setField(covidResult, "internalId", UUID.fromString(covidId));
+    ReflectionTestUtils.setField(fluResult, "internalId", UUID.fromString(fluId));
+
+    var actual =
+        convertToObservation(Set.of(covidResult, fluResult), TestCorrectionStatus.ORIGINAL, null);
+
+    FhirContext ctx = FhirContext.forR4();
+    IParser parser = ctx.newJsonParser();
+
+    assertThat(actual).hasSize(2);
+    String covidSerialized =
+        parser.encodeResourceToString(
+            actual.stream()
+                .filter(
+                    observation ->
+                        observation.getCode().getCodingFirstRep().is("http://loinc.org", "96741-4"))
+                .findFirst()
+                .orElse(null));
+    String fluSerialized =
+        parser.encodeResourceToString(
+            actual.stream()
+                .filter(
+                    observation ->
+                        observation
+                            .getCode()
+                            .getCodingFirstRep()
+                            .is("http://loinc.org", "LP14239-5"))
+                .findFirst()
+                .orElse(null));
+    var expectedSerialized1 =
+        IOUtils.toString(
+            Objects.requireNonNull(
+                getClass().getClassLoader().getResourceAsStream("fhir/observationCovid.json")),
+            StandardCharsets.UTF_8);
+    var expectedSerialized2 =
+        IOUtils.toString(
+            Objects.requireNonNull(
+                getClass().getClassLoader().getResourceAsStream("fhir/observationFlu.json")),
+            StandardCharsets.UTF_8);
+    JSONAssert.assertEquals(covidSerialized, expectedSerialized1, true);
+    JSONAssert.assertEquals(fluSerialized, expectedSerialized2, true);
+  }
+
+  @Test
+  void correction_toFhirObservation() throws IOException {
+    var id = "3c9c7370-e2e3-49ad-bb7a-f6005f41cf29";
+    var result = new Result(null, new SupportedDisease("COVID-19", "96741-4"), TestResult.NEGATIVE);
+    ReflectionTestUtils.setField(result, "internalId", UUID.fromString(id));
+
+    var actual = convertToObservation(Set.of(result), TestCorrectionStatus.CORRECTED, "woops");
+
+    FhirContext ctx = FhirContext.forR4();
+    IParser parser = ctx.newJsonParser();
+
+    String actualSerialized = parser.encodeResourceToString(actual.get(0));
+    var expectedSerialized1 =
+        IOUtils.toString(
+            Objects.requireNonNull(
+                getClass().getClassLoader().getResourceAsStream("fhir/observationCorrection.json")),
+            StandardCharsets.UTF_8);
+    JSONAssert.assertEquals(actualSerialized, expectedSerialized1, true);
+  }
+
+  @Test
   void testEvent_convertToDiagnosticReport() {
     var testEvent =
         new TestEvent(
@@ -642,6 +818,119 @@ class FhirConverterTest {
   void nullString_convertToDiagnosticReport() {
     var actual = convertToDiagnosticReport(null, null, null);
 
+    assertThat(actual.getId()).isNull();
+    assertThat(actual.getStatus()).isNull();
+    assertThat(actual.getCode().getCoding()).isEmpty();
+  }
+
+  @Test
+  void testOrder_convertToServiceRequest() {
+    var testOrder =
+        new TestOrder(
+            new Person(null, null, null, null, new Organization(null, null, null, true)),
+            new Facility(
+                null,
+                null,
+                null,
+                null,
+                null,
+                null,
+                null,
+                new DeviceSpecimenType(new DeviceType(null, null, null, "95422-2", null, 0), null),
+                Collections.emptyList()));
+
+    var actual = convertToServiceRequest(testOrder);
+
+    assertThat(actual.getStatus()).isEqualTo(ServiceRequestStatus.ACTIVE);
+    assertThat(actual.getIntent()).isEqualTo(ServiceRequestIntent.ORDER);
+    assertThat(actual.getCode().getCoding()).hasSize(1);
+    assertThat(actual.getCode().getCodingFirstRep().getSystem()).isEqualTo("http://loinc.org");
+    assertThat(actual.getCode().getCodingFirstRep().getCode()).isEqualTo("95422-2");
+  }
+
+  @Test
+  void testOrderComplete_convertToServiceRequest() {
+    var testOrder =
+        new TestOrder(
+            new Person(null, null, null, null, new Organization(null, null, null, true)),
+            new Facility(
+                null,
+                null,
+                null,
+                null,
+                null,
+                null,
+                null,
+                new DeviceSpecimenType(new DeviceType(null, null, null, "95422-2", null, 0), null),
+                Collections.emptyList()));
+    testOrder.markComplete();
+    var actual = convertToServiceRequest(testOrder);
+
+    assertThat(actual.getStatus()).isEqualTo(ServiceRequestStatus.COMPLETED);
+  }
+
+  @Test
+  void testOrderCancelled_convertToServiceRequest() {
+    var testOrder =
+        new TestOrder(
+            new Person(null, null, null, null, new Organization(null, null, null, true)),
+            new Facility(
+                null,
+                null,
+                null,
+                null,
+                null,
+                null,
+                null,
+                new DeviceSpecimenType(new DeviceType(null, null, null, "95422-2", null, 0), null),
+                Collections.emptyList()));
+    testOrder.cancelOrder();
+    var actual = convertToServiceRequest(testOrder);
+
+    assertThat(actual.getStatus()).isEqualTo(ServiceRequestStatus.REVOKED);
+  }
+
+  @Test
+  void testOrderNullDeviceType_convertToServiceRequest() {
+    var testOrder =
+        new TestOrder(
+            new Person(null, null, null, null, new Organization(null, null, null, true)),
+            new Facility(
+                null,
+                null,
+                null,
+                null,
+                null,
+                null,
+                null,
+                new DeviceSpecimenType(null, null),
+                Collections.emptyList()));
+    testOrder.cancelOrder();
+    var actual = convertToServiceRequest(testOrder);
+
+    assertThat(actual.getCode().getCoding()).isEmpty();
+  }
+
+  @Test
+  void nullTestOrder_convertToServiceRequest() {
+    var actual = convertToServiceRequest(null);
+
+    assertThat(actual).isNull();
+  }
+
+  @Test
+  void string_convertToServiceRequest() {
+    var actual = convertToServiceRequest(ServiceRequestStatus.COMPLETED, "94533-7", "id-123");
+    assertThat(actual.getId()).isEqualTo("id-123");
+    assertThat(actual.getStatus()).isEqualTo(ServiceRequestStatus.COMPLETED);
+    assertThat(actual.getCode().getCoding()).hasSize(1);
+    assertThat(actual.getCode().getCodingFirstRep().getSystem()).isEqualTo("http://loinc.org");
+    assertThat(actual.getCode().getCodingFirstRep().getCode()).isEqualTo("94533-7");
+  }
+
+  @Test
+  void nullString_convertToServiceRequest() {
+    var actual = convertToServiceRequest(null, null, null);
     assertThat(actual.getId()).isNull();
     assertThat(actual.getStatus()).isNull();
     assertThat(actual.getCode().getCoding()).isEmpty();

@@ -55,7 +55,7 @@ class FileValidatorTest {
     // WHEN
     List<FeedbackMessage> errors = patientBulkUploadFileValidator.validate(input);
     // THEN
-    assertThat(errors).hasSize(12);
+    assertThat(errors).hasSize(13);
     List<String> errorMessages =
         errors.stream().map(FeedbackMessage::getMessage).collect(Collectors.toList());
     List<List<Integer>> indices =
@@ -72,6 +72,7 @@ class FileValidatorTest {
             "state is a required column.",
             "zip_code is a required column.",
             "phone_number is a required column.",
+            "phone_number_type is a required column.",
             "employed_in_healthcare is a required column.",
             "resident_congregate_setting is a required column.");
     indices.forEach(i -> assertThat(i).isEqualTo(List.of(2)));
@@ -152,7 +153,7 @@ class FileValidatorTest {
     // WHEN
     List<FeedbackMessage> errors = patientBulkUploadFileValidator.validate(input);
     // THEN
-    assertThat(errors).hasSize(12);
+    assertThat(errors).hasSize(13);
     List<String> errorMessages =
         errors.stream().map(FeedbackMessage::getMessage).collect(Collectors.toList());
     List<List<Integer>> indices =
@@ -169,6 +170,7 @@ class FileValidatorTest {
             "state is a required column.",
             "zip_code is a required column.",
             "phone_number is a required column.",
+            "phone_number_type is a required column.",
             "employed_in_healthcare is a required column.",
             "resident_congregate_setting is a required column.");
     indices.forEach(i -> assertThat(i).isEqualTo(List.of(4)));
