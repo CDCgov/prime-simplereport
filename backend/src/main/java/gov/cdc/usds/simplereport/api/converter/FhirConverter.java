@@ -15,9 +15,11 @@ import com.google.i18n.phonenumbers.NumberParseException;
 import com.google.i18n.phonenumbers.PhoneNumberUtil;
 import com.google.i18n.phonenumbers.PhoneNumberUtil.PhoneNumberFormat;
 import gov.cdc.usds.simplereport.api.MappingConstants;
+import gov.cdc.usds.simplereport.db.model.DeviceType;
 import gov.cdc.usds.simplereport.db.model.PersonUtils;
 import gov.cdc.usds.simplereport.db.model.PhoneNumber;
 import gov.cdc.usds.simplereport.db.model.Result;
+import gov.cdc.usds.simplereport.db.model.SpecimenType;
 import gov.cdc.usds.simplereport.db.model.TestEvent;
 import gov.cdc.usds.simplereport.db.model.TestOrder;
 import gov.cdc.usds.simplereport.db.model.auxiliary.PersonName;
@@ -41,6 +43,9 @@ import org.hl7.fhir.r4.model.Coding;
 import org.hl7.fhir.r4.model.ContactPoint;
 import org.hl7.fhir.r4.model.ContactPoint.ContactPointSystem;
 import org.hl7.fhir.r4.model.ContactPoint.ContactPointUse;
+import org.hl7.fhir.r4.model.Device;
+import org.hl7.fhir.r4.model.Device.DeviceDeviceNameComponent;
+import org.hl7.fhir.r4.model.Device.DeviceNameType;
 import org.hl7.fhir.r4.model.DiagnosticReport;
 import org.hl7.fhir.r4.model.DiagnosticReport.DiagnosticReportStatus;
 import org.hl7.fhir.r4.model.Enumerations.AdministrativeGender;
@@ -53,6 +58,7 @@ import org.hl7.fhir.r4.model.Observation.ObservationStatus;
 import org.hl7.fhir.r4.model.ServiceRequest;
 import org.hl7.fhir.r4.model.ServiceRequest.ServiceRequestIntent;
 import org.hl7.fhir.r4.model.ServiceRequest.ServiceRequestStatus;
+import org.hl7.fhir.r4.model.Specimen;
 import org.hl7.fhir.r4.model.StringType;
 
 @Slf4j
@@ -285,6 +291,68 @@ public class FhirConverter {
       tribeCodeableConcept.setText(PersonUtils.tribalMap().get(tribalAffiliation));
       tribeExtension.setValue(tribeCodeableConcept);
       return ext;
+    }
+    return null;
+  }
+
+  public static Device convertToDevice(DeviceType deviceType) {
+    if (deviceType != null) {
+      return convertToDevice(
+          deviceType.getManufacturer(),
+          deviceType.getModel(),
+          deviceType.getInternalId().toString());
+    }
+    return null;
+  }
+
+  public static Device convertToDevice(String manufacturer, String model, String id) {
+    if (StringUtils.isNotBlank(manufacturer) || StringUtils.isNotBlank(model)) {
+      var device =
+          new Device()
+              .setManufacturer(manufacturer)
+              .addDeviceName(
+                  new DeviceDeviceNameComponent().setName(model).setType(DeviceNameType.MODELNAME));
+      device.setId(id);
+      return device;
+    }
+    return null;
+  }
+
+  public static Specimen convertToSpecimen(
+      String specimenCode,
+      String specimenName,
+      String collectionCode,
+      String collectionName,
+      String id) {
+    var specimen = new Specimen();
+    specimen.setId(id);
+    if (StringUtils.isNotBlank(specimenCode)) {
+      var codeableConcept = specimen.getType();
+      var coding = codeableConcept.addCoding();
+      coding.setSystem(SNOMED_CODE_SYSTEM);
+      coding.setCode(specimenCode);
+      codeableConcept.setText(specimenName);
+    }
+    if (StringUtils.isNotBlank(collectionCode)) {
+      var collection = specimen.getCollection();
+      var codeableConcept = collection.getBodySite();
+      var coding = codeableConcept.addCoding();
+      coding.setSystem(SNOMED_CODE_SYSTEM);
+      coding.setCode(collectionCode);
+      codeableConcept.setText(collectionName);
+    }
+
+    return specimen;
+  }
+
+  public static Specimen convertToSpecimen(SpecimenType specimenType) {
+    if (specimenType != null) {
+      return convertToSpecimen(
+          specimenType.getTypeCode(),
+          specimenType.getName(),
+          specimenType.getCollectionLocationCode(),
+          specimenType.getCollectionLocationName(),
+          specimenType.getInternalId().toString());
     }
     return null;
   }
