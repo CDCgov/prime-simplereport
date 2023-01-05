@@ -1,25 +1,16 @@
 package gov.cdc.usds.simplereport.api.graphql;
 
 import static org.assertj.core.api.Assertions.assertThat;
-import static org.junit.jupiter.api.Assertions.assertNull;
 import static org.junit.jupiter.api.Assertions.fail;
-import static org.mockito.ArgumentMatchers.any;
-import static org.mockito.Mockito.when;
 
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.node.JsonNodeFactory;
 import com.fasterxml.jackson.databind.node.ObjectNode;
 import com.yannbriancon.interceptor.HibernateQueryInterceptor;
-import gov.cdc.usds.simplereport.api.BaseFullStackTest;
+import gov.cdc.usds.simplereport.api.BaseAuthenticatedFullStackTest;
 import gov.cdc.usds.simplereport.api.model.Role;
-import gov.cdc.usds.simplereport.config.authorization.DemoAuthenticationConfiguration;
-import gov.cdc.usds.simplereport.config.simplereport.DemoUserConfiguration;
-import gov.cdc.usds.simplereport.config.simplereport.DemoUserConfiguration.DemoUser;
 import gov.cdc.usds.simplereport.db.model.auxiliary.PhoneNumberInput;
-import gov.cdc.usds.simplereport.idp.repository.DemoOktaRepository;
-import gov.cdc.usds.simplereport.service.AddressValidationService;
-import gov.cdc.usds.simplereport.service.OrganizationInitializingService;
 import gov.cdc.usds.simplereport.test_util.TestUserIdentities;
 import java.io.IOException;
 import java.util.HashMap;
@@ -36,7 +27,6 @@ import org.junit.jupiter.api.BeforeEach;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.graphql.tester.AutoConfigureHttpGraphQlTester;
-import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.graphql.test.tester.GraphQlTester;
 import org.springframework.graphql.test.tester.WebGraphQlTester;
 import org.springframework.http.HttpHeaders;
@@ -46,107 +36,36 @@ import org.springframework.util.MultiValueMap;
 /** Base class for GraphQL API full-stack tests. */
 @Slf4j
 @AutoConfigureHttpGraphQlTester
-public abstract class BaseGraphqlTest extends BaseFullStackTest {
+public abstract class BaseGraphqlTest extends BaseAuthenticatedFullStackTest {
 
-  protected static final String ACCESS_ERROR = "Unauthorized";
+  @Autowired protected HibernateQueryInterceptor hibernateQueryInterceptor;
 
-  @Autowired private OrganizationInitializingService _initService;
-  @Autowired private DemoOktaRepository _oktaRepo;
-  @Autowired private DemoUserConfiguration _users;
-  @Autowired protected HibernateQueryInterceptor _hibernateQueryInterceptor;
-  @MockBean private AddressValidationService _addressValidation;
-
-  private String _userName = null;
-  private MultiValueMap<String, String> _customHeaders;
+  private MultiValueMap<String, String> customHeaders;
 
   @Autowired private WebGraphQlTester graphQlTester;
 
-  protected void useOrgUser() {
-    _userName = TestUserIdentities.STANDARD_USER;
-  }
-
-  protected void useOutsideOrgUser() {
-    _userName = TestUserIdentities.OTHER_ORG_USER;
-  }
-
-  protected void useOrgAdmin() {
-    _userName = TestUserIdentities.ORG_ADMIN_USER;
-  }
-
-  protected void useOutsideOrgAdmin() {
-    _userName = TestUserIdentities.OTHER_ORG_ADMIN;
-  }
-
-  protected void useOrgEntryOnly() {
-    _userName = TestUserIdentities.ENTRY_ONLY_USER;
-  }
-
-  protected void useOrgUserAllFacilityAccess() {
-    _userName = TestUserIdentities.ALL_FACILITIES_USER;
-  }
-
-  protected void useSuperUser() {
-    _userName = TestUserIdentities.SITE_ADMIN_USER;
-  }
-
-  protected void useSuperUserWithOrg() {
-    _userName = TestUserIdentities.SITE_ADMIN_USER_WITH_ORG;
-  }
-
-  protected void useBrokenUser() {
-    _userName = TestUserIdentities.BROKEN_USER;
-  }
-
   /**
-   * Add a custom header to a <b>single request</b> to be performed using {@link #runQuery}.
+   * Add a custom header to a <b>single request</b> to be performed.
    *
    * @param name the HTTP header name (potentially subject to weird transformations--check your
    *     work!)
    * @param value the header value to be sent.
    */
   protected void addHeader(String name, String value) {
-    _customHeaders.add(name, value);
+    customHeaders.add(name, value);
   }
 
   @BeforeEach
   public void setup() {
-    truncateDb();
-    _oktaRepo.reset();
-    when(_addressValidation.getValidatedAddress(any(), any()))
-        .thenReturn(_dataFactory.getAddress());
-    when(_addressValidation.getValidatedAddress(any(), any(), any(), any(), any(), any()))
-        .thenReturn(_dataFactory.getAddress());
-    TestUserIdentities.withStandardUser(_initService::initAll);
-    useOrgUser();
-    _customHeaders = new LinkedMultiValueMap<String, String>();
-    assertNull(
-        // Dear future reader: this is not negotiable. If you set a default user, then patients will
-        // show up as being the default user instead of themselves. This would be bad.
-        _users.getDefaultUser(), "default user should never be set in this application context");
-    log.trace(
-        "Usernames configured: {}",
-        _users.getAllUsers().stream().map(DemoUser::getUsername).collect(Collectors.toList()));
-
-    _hibernateQueryInterceptor.startQueryCount(); // also resets count
+    customHeaders = new LinkedMultiValueMap<>();
+    hibernateQueryInterceptor.startQueryCount(); // also resets count
   }
 
   @AfterEach
   public void cleanup() {
-    truncateDb();
-    _userName = null;
-    _oktaRepo.reset();
-
     // see output saved to backend/build/test-results/test
     LoggerFactory.getLogger(BaseGraphqlTest.class)
-        .info("Hibernate Total queries: {}", _hibernateQueryInterceptor.getQueryCount());
-  }
-
-  private String getBearerAuth() {
-    return DemoAuthenticationConfiguration.DEMO_AUTHORIZATION_FLAG + _userName;
-  }
-
-  protected ObjectNode runMultipart(LinkedMultiValueMap<String, Object> parts) {
-    return null;
+        .info("Hibernate Total queries: {}", hibernateQueryInterceptor.getQueryCount());
   }
 
   /** See {@link #runQuery(String, String, Map, String)}. */
@@ -192,7 +111,7 @@ public abstract class BaseGraphqlTest extends BaseFullStackTest {
             .mutate()
             .headers(HttpHeaders::clear)
             .headers(headers -> headers.setBearerAuth(getBearerAuth()))
-            .headers(httpHeaders -> httpHeaders.addAll(_customHeaders))
+            .headers(httpHeaders -> httpHeaders.addAll(customHeaders))
             .build();
 
     GraphQlTester.Request<?> request = webGraphQlTester.documentName(queryFileName);
@@ -289,7 +208,7 @@ public abstract class BaseGraphqlTest extends BaseFullStackTest {
 
   protected void updateSelfPrivileges(
       Role role, boolean accessAllFacilities, Set<UUID> facilities) {
-    String originalUsername = _userName;
+    String originalUsername = this.getUsername();
 
     ObjectNode who = (ObjectNode) runQuery("current-user-query").get("whoami");
     String id = who.get("id").asText();
@@ -305,7 +224,7 @@ public abstract class BaseGraphqlTest extends BaseFullStackTest {
         getUpdateUserPrivilegesVariables(id, role, accessAllFacilities, facilities);
     runQuery("update-user-privileges", updatePrivilegesVariables);
 
-    _userName = originalUsername;
+    setUsername(originalUsername);
   }
 
   protected Map<String, Object> getUpdateUserPrivilegesVariables(
@@ -326,7 +245,7 @@ public abstract class BaseGraphqlTest extends BaseFullStackTest {
 
   // map from each facility's name to its UUID; includes all facilities in organization
   protected Map<String, UUID> extractAllFacilitiesInOrg() {
-    String originalUsername = _userName;
+    String originalUsername = getUsername();
     useOrgAdmin();
     Iterator<JsonNode> facilitiesIter =
         runQuery("org-settings-query").get("organization").get("testingFacility").elements();
@@ -335,7 +254,7 @@ public abstract class BaseGraphqlTest extends BaseFullStackTest {
       JsonNode facility = facilitiesIter.next();
       facilities.put(facility.get("name").asText(), UUID.fromString(facility.get("id").asText()));
     }
-    _userName = originalUsername;
+    setUsername(originalUsername);
     return facilities;
   }
 }

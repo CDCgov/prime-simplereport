@@ -1,5 +1,6 @@
 package gov.cdc.usds.simplereport.db.model;
 
+import static gov.cdc.usds.simplereport.api.converter.FhirConverter.convertToDiagnosticReport;
 import static gov.cdc.usds.simplereport.api.converter.FhirConverter.createFhirBundle;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
@@ -25,6 +26,7 @@ import org.hibernate.Hibernate;
 import org.hibernate.annotations.Immutable;
 import org.hibernate.annotations.Type;
 import org.hl7.fhir.r4.model.Bundle;
+import org.hl7.fhir.r4.model.DiagnosticReport;
 
 @Getter
 @Entity
@@ -189,5 +191,9 @@ public class TestEvent extends BaseTestInfo {
         null, // toServiceRequest(this)
         null // getTestOrder().toFhir()
         );
+  }
+
+  public DiagnosticReport toFhirDiagnosticReport() {
+    return convertToDiagnosticReport(this);
   }
 }
