@@ -44,7 +44,7 @@ const uploadPatientsSpy = (response: Response) =>
   });
 const errorResponseBody = {
   status: "FAILURE",
-  errors: [{ indices: [0], message: "bad zipcode" }],
+  errors: [{ indices: [0, 1, 2], message: "bad zipcode" }],
 };
 
 const successResponseBody = {
@@ -178,7 +178,7 @@ describe("Upload Patient", () => {
       )
     ).toBeInTheDocument();
     expect(await screen.findByText("bad zipcode")).toBeInTheDocument();
-    expect(await screen.findByText("Row(s): 0")).toBeInTheDocument();
+    expect(await screen.findByText("Row(s): 0, 1, 2")).toBeInTheDocument();
   });
   it("should show error message if 500 is returned", async () => {
     renderUploadPatients();
