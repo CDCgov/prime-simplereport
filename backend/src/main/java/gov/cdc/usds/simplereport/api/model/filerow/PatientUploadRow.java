@@ -45,33 +45,70 @@ public class PatientUploadRow implements FileRow {
   final ValueOrError role;
   final ValueOrError email;
 
+  static final String FIRST_NAME = "first_name";
+  static final String LAST_NAME = "last_name";
+  static final String RACE_FIELD = "race";
+  static final String DATE_OF_BIRTH = "date_of_birth";
+  static final String BIOLOGICAL_SEX = "biological_sex";
+  static final String ETHNICITY_FIELD = "ethnicity";
+  static final String STREET_FIELD = "street";
+  static final String STATE_FIELD = "state";
+  static final String ZIP_CODE = "zip_code";
+  static final String PHONE_NUMBER = "phone_number";
+  static final String PHONE_NUMBER_TYPE = "phone_number_type";
+  static final String EMPLOYED_IN_HEALTHCARE = "employed_in_healthcare";
+  static final String RESIDENT_CONGREGATE_SETTING = "resident_congregate_setting";
+
+  public static final List<String> requiredFields =
+      List.of(
+          FIRST_NAME,
+          LAST_NAME,
+          RACE_FIELD,
+          DATE_OF_BIRTH,
+          BIOLOGICAL_SEX,
+          ETHNICITY_FIELD,
+          STREET_FIELD,
+          STATE_FIELD,
+          ZIP_CODE,
+          PHONE_NUMBER,
+          PHONE_NUMBER_TYPE,
+          EMPLOYED_IN_HEALTHCARE,
+          RESIDENT_CONGREGATE_SETTING);
+
   public PatientUploadRow(Map<String, String> rawRow) {
-    firstName = getValue(rawRow, "first_name", true);
-    lastName = getValue(rawRow, "last_name", true);
-    middleName = getValue(rawRow, "middle_name", false);
-    suffix = getValue(rawRow, "suffix", false);
-    race = getValue(rawRow, "race", true);
-    dateOfBirth = getValue(rawRow, "date_of_birth", true);
-    biologicalSex = getValue(rawRow, "biological_sex", true);
-    ethnicity = getValue(rawRow, "ethnicity", true);
-    street = getValue(rawRow, "street", true);
-    street2 = getValue(rawRow, "street_2", false);
-    city = getValue(rawRow, "city", false);
-    county = getValue(rawRow, "county", false);
-    state = getValue(rawRow, "state", true);
-    zipCode = getValue(rawRow, "zip_code", true);
-    country = getValue(rawRow, "country", false);
-    phoneNumber = getValue(rawRow, "phone_number", true);
-    phoneNumberType = getValue(rawRow, "phone_number_type", true);
-    employedInHealthcare = getValue(rawRow, "employed_in_healthcare", true);
-    residentCongregateSetting = getValue(rawRow, "resident_congregate_setting", true);
-    role = getValue(rawRow, "role", false);
-    email = getValue(rawRow, "email", false);
+    firstName = getValue(rawRow, FIRST_NAME, isRequired(FIRST_NAME));
+    lastName = getValue(rawRow, LAST_NAME, isRequired(LAST_NAME));
+    middleName = getValue(rawRow, "middle_name", isRequired("middle_name"));
+    suffix = getValue(rawRow, "suffix", isRequired("suffix"));
+    race = getValue(rawRow, RACE_FIELD, isRequired(RACE_FIELD));
+    dateOfBirth = getValue(rawRow, DATE_OF_BIRTH, isRequired(DATE_OF_BIRTH));
+    biologicalSex = getValue(rawRow, BIOLOGICAL_SEX, isRequired(BIOLOGICAL_SEX));
+    ethnicity = getValue(rawRow, ETHNICITY_FIELD, isRequired(ETHNICITY_FIELD));
+    street = getValue(rawRow, STREET_FIELD, isRequired(STREET_FIELD));
+    street2 = getValue(rawRow, "street_2", isRequired("street_2"));
+    city = getValue(rawRow, "city", isRequired("city"));
+    county = getValue(rawRow, "county", isRequired("county"));
+    state = getValue(rawRow, STATE_FIELD, isRequired(STATE_FIELD));
+    zipCode = getValue(rawRow, ZIP_CODE, isRequired(ZIP_CODE));
+    country = getValue(rawRow, "country", isRequired("country"));
+    phoneNumber = getValue(rawRow, PHONE_NUMBER, isRequired(PHONE_NUMBER));
+    phoneNumberType = getValue(rawRow, PHONE_NUMBER_TYPE, isRequired(PHONE_NUMBER_TYPE));
+    employedInHealthcare =
+        getValue(rawRow, EMPLOYED_IN_HEALTHCARE, isRequired(EMPLOYED_IN_HEALTHCARE));
+    residentCongregateSetting =
+        getValue(rawRow, RESIDENT_CONGREGATE_SETTING, isRequired(RESIDENT_CONGREGATE_SETTING));
+    role = getValue(rawRow, "role", isRequired("role"));
+    email = getValue(rawRow, "email", isRequired("email"));
   }
 
   @Override
   public List<FeedbackMessage> validateRequiredFields() {
     return getPossibleErrorsFromFields();
+  }
+
+  @Override
+  public List<String> getRequiredFields() {
+    return requiredFields;
   }
 
   @Override

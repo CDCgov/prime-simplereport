@@ -11,6 +11,7 @@ import com.fasterxml.jackson.dataformat.csv.CsvMapper;
 import com.fasterxml.jackson.dataformat.csv.CsvParser;
 import com.fasterxml.jackson.dataformat.csv.CsvSchema;
 import gov.cdc.usds.simplereport.api.model.errors.CsvProcessingException;
+import gov.cdc.usds.simplereport.api.model.filerow.FileRow;
 import gov.cdc.usds.simplereport.service.model.reportstream.FeedbackMessage;
 import java.io.BufferedReader;
 import java.io.IOException;
@@ -136,6 +137,14 @@ public class CsvValidatorUtils {
     throw new IllegalStateException("CsvValidatorUtils is a utility class");
   }
 
+  private static String getInValidValueErrorMessage(String rowValue, String columnName) {
+    return rowValue + " is not an acceptable value for the " + columnName + " column.";
+  }
+
+  private static String getRequiredValueErrorMessage(String columnName) {
+    return "File is missing data in the " + columnName + " column.";
+  }
+
   public static List<FeedbackMessage> validateTestResult(ValueOrError input) {
     return validateSpecificValueOrSNOMED(input, TEST_RESULT_VALUES);
   }
@@ -207,8 +216,7 @@ public class CsvValidatorUtils {
     } catch (DateTimeParseException e) {
       errors.add(
           new FeedbackMessage(
-              ITEM_SCOPE,
-              input.getValue() + " is not an acceptable value for column " + input.getHeader()));
+              ITEM_SCOPE, getInValidValueErrorMessage(input.getValue(), input.getHeader())));
     }
     return errors;
   }
@@ -239,9 +247,29 @@ public class CsvValidatorUtils {
   public static ValueOrError getValue(Map<String, String> row, String name, boolean isRequired) {
     String value = row.get(name);
     if (isRequired && (value == null || value.trim().isEmpty())) {
-      return new ValueOrError(new FeedbackMessage(ITEM_SCOPE, name + " is a required column."));
+      return new ValueOrError(new FeedbackMessage(ITEM_SCOPE, getRequiredValueErrorMessage(name)));
     }
     return new ValueOrError(value, name);
+  }
+
+  public static List<FeedbackMessage> hasMissingRequiredHeaders(
+      Map<String, String> row, FileRow fileRow) {
+    List<FeedbackMessage> errors = new ArrayList<>();
+    Set<String> columns = row.keySet();
+    fileRow
+        .getRequiredFields()
+        .forEach(
+            requiredField -> {
+              if (!columns.contains(requiredField)) {
+                var feedback =
+                    new FeedbackMessage(
+                        CsvValidatorUtils.ITEM_SCOPE,
+                        "The header for column " + requiredField + " is missing or invalid.",
+                        List.of(1));
+                errors.add(feedback);
+              }
+            });
+    return errors;
   }
 
   public static MappingIterator<Map<String, String>> getIteratorForCsv(InputStream csvStream)
@@ -330,8 +358,7 @@ public class CsvValidatorUtils {
     if (!value.matches(regex)) {
       errors.add(
           new FeedbackMessage(
-              ITEM_SCOPE,
-              input.getValue() + " is not a valid value for column " + input.getHeader()));
+              ITEM_SCOPE, getInValidValueErrorMessage(input.getValue(), input.getHeader())));
     }
     return errors;
   }
@@ -346,8 +373,7 @@ public class CsvValidatorUtils {
     if (!acceptableValues.contains(value.toLowerCase())) {
       errors.add(
           new FeedbackMessage(
-              ITEM_SCOPE,
-              input.getValue() + " is not an acceptable value for column " + input.getHeader()));
+              ITEM_SCOPE, getInValidValueErrorMessage(input.getValue(), input.getHeader())));
     }
     return errors;
   }
