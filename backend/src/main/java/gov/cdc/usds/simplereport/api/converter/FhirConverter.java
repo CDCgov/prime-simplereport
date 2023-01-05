@@ -508,6 +508,19 @@ public class FhirConverter {
     return diagnosticReport;
   }
 
+  public static Bundle createFhirBundle(TestEvent testEvent) {
+    return createFhirBundle(
+        null, //        patientData.toFhir(),
+        null, //        getFacility().toFhir(),
+        null, //        providerData.toFhir(),
+        null, // getDeviceSpecimenType(),
+        null, // getDeviceSpecimenType(),
+        null, // results.toFhir(),
+        null, // toServiceRequest(this)
+        null // getTestOrder().toFhir()
+        );
+  }
+
   public static Bundle createFhirBundle(
       Patient patient,
       Organization organization,

@@ -36,12 +36,15 @@ import gov.cdc.usds.simplereport.db.model.SpecimenType;
 import gov.cdc.usds.simplereport.db.model.SupportedDisease;
 import gov.cdc.usds.simplereport.db.model.TestEvent;
 import gov.cdc.usds.simplereport.db.model.TestOrder;
+import gov.cdc.usds.simplereport.db.model.auxiliary.PersonName;
+import gov.cdc.usds.simplereport.db.model.auxiliary.PersonRole;
 import gov.cdc.usds.simplereport.db.model.auxiliary.PhoneType;
 import gov.cdc.usds.simplereport.db.model.auxiliary.StreetAddress;
 import gov.cdc.usds.simplereport.db.model.auxiliary.TestCorrectionStatus;
 import gov.cdc.usds.simplereport.db.model.auxiliary.TestResult;
 import java.io.IOException;
 import java.nio.charset.StandardCharsets;
+import java.time.LocalDate;
 import java.util.Collections;
 import java.util.List;
 import java.util.Objects;
@@ -792,7 +795,7 @@ class FhirConverterTest {
   }
 
   @Test
-  void testEvent_toFhirDiagnosticReport_matchesJson() throws IOException {
+  void testEvent_convertToDiagnosticReport_matchesJson() throws IOException {
     var internalId = "3c9c7370-e2e3-49ad-bb7a-f6005f41cf29";
     var testEvent =
         new TestEvent(
@@ -1174,5 +1177,67 @@ class FhirConverterTest {
                 .getResultFirstRep()
                 .getReference())
         .isEqualTo("Result/" + resultId);
+  }
+
+  @Test
+  void testEvent_createFhirBundle_matchesJson() throws IOException {
+    var address = new StreetAddress(List.of("1 Main St"), "Chicago", "IL", "60614", "");
+    var deviceType = new DeviceType("name", "manufacturer", "model", "loinc", "nasal", 0);
+    var specimenType = new SpecimenType("name", "typeCode");
+    var deviceSpecimenType = new DeviceSpecimenType(deviceType, specimenType);
+    var provider =
+        new Provider(new PersonName("Michaela", null, "Quinn", ""), "1", address, "7735551235");
+    var organization = new Organization("District", "school", "1", true);
+    var facility =
+        new Facility(
+            organization,
+            "School",
+            "1",
+            address,
+            "7735551234",
+            "school@example.com",
+            provider,
+            deviceSpecimenType,
+            Collections.emptyList());
+    var patient =
+        new Person(
+            organization,
+            null,
+            "Tracy",
+            null,
+            "Jordan",
+            null,
+            LocalDate.MIN,
+            address,
+            "USA",
+            PersonRole.STUDENT,
+            List.of("tj@example.com"),
+            "black",
+            "not hispanic",
+            Collections.emptyList(),
+            "male",
+            false,
+            false,
+            "",
+            null);
+    var testOrder = new TestOrder(patient, facility);
+    var covidResult = new Result(testOrder, new SupportedDisease(), TestResult.POSITIVE);
+    var fluAResult = new Result(testOrder, new SupportedDisease(), TestResult.NEGATIVE);
+    var fluBResult = new Result(testOrder, new SupportedDisease(), TestResult.UNDETERMINED);
+    var testEvent = new TestEvent(testOrder, false, Set.of(covidResult, fluAResult, fluBResult));
+    //    ReflectionTestUtils.setField(provider, "internalId", providerId);
+
+    var actual = createFhirBundle(testEvent);
+
+    FhirContext ctx = FhirContext.forR4();
+    IParser parser = ctx.newJsonParser();
+
+    String actualSerialized = parser.encodeResourceToString(actual);
+    var expectedSerialized =
+        IOUtils.toString(
+            Objects.requireNonNull(
+                getClass().getClassLoader().getResourceAsStream("fhir/bundle.json")),
+            StandardCharsets.UTF_8);
+    JSONAssert.assertEquals(actualSerialized, expectedSerialized, true);
   }
 }
