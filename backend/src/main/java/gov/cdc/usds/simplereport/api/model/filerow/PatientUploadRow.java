@@ -62,7 +62,7 @@ public class PatientUploadRow implements FileRow {
     zipCode = getValue(rawRow, "zip_code", true);
     country = getValue(rawRow, "country", false);
     phoneNumber = getValue(rawRow, "phone_number", true);
-    phoneNumberType = getValue(rawRow, "phone_number_type", false);
+    phoneNumberType = getValue(rawRow, "phone_number_type", true);
     employedInHealthcare = getValue(rawRow, "employed_in_healthcare", true);
     residentCongregateSetting = getValue(rawRow, "resident_congregate_setting", true);
     role = getValue(rawRow, "role", false);

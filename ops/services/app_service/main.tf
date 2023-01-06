@@ -175,14 +175,14 @@ resource "azurerm_app_service_slot_virtual_network_swift_connection" "staging" {
 
   WHAT'S HAPPENING HERE:
 
-  1) The wildcard-simplereport-gov cert is being imported from Key Vault into the App Service
+  1) The new-sr-wildcard cert is being imported from Key Vault into the App Service
     [NOTE: This only takes place if this is the first environment being created in this environment level. Cert ownership is bound to the index-less environment!]
   2) That cert is being bound to the custom domain created above, enabling HTTPS
 */
 
 resource "azurerm_app_service_certificate" "app" {
   count               = var.env_index == 1 ? 1 : 0
-  name                = "wildcard-simplereport-gov"
+  name                = "new-sr-wildcard"
   resource_group_name = var.resource_group_name
   location            = var.resource_group_location
   key_vault_secret_id = data.azurerm_key_vault_certificate.wildcard_simplereport_gov.id
@@ -197,6 +197,6 @@ resource "azurerm_app_service_certificate_binding" "app" {
   # in resource groups with multiple environments, we have to work around this by using this
   # prescribed value for certificate_id. 
   hostname_binding_id = "${azurerm_app_service.service.id}/hostNameBindings/api-${var.env}.simplereport.gov"
-  certificate_id      = "${data.azurerm_subscription.primary.id}/resourceGroups/${var.resource_group_name}/providers/Microsoft.Web/certificates/wildcard-simplereport-gov"
+  certificate_id      = "${data.azurerm_subscription.primary.id}/resourceGroups/${var.resource_group_name}/providers/Microsoft.Web/certificates/new-sr-wildcard"
   ssl_state           = "SniEnabled"
 }

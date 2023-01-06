@@ -9,15 +9,18 @@ import gov.cdc.usds.simplereport.api.model.Role;
 import gov.cdc.usds.simplereport.api.model.errors.ConflictingUserException;
 import gov.cdc.usds.simplereport.config.authorization.OrganizationRole;
 import gov.cdc.usds.simplereport.db.model.ApiUser;
+import gov.cdc.usds.simplereport.db.model.Organization;
 import gov.cdc.usds.simplereport.db.model.auxiliary.PersonName;
 import gov.cdc.usds.simplereport.db.repository.ApiUserRepository;
 import gov.cdc.usds.simplereport.idp.repository.OktaRepository;
 import gov.cdc.usds.simplereport.service.model.UserInfo;
 import gov.cdc.usds.simplereport.test_util.SliceTestConfiguration.WithSimpleReportOrgAdminUser;
 import gov.cdc.usds.simplereport.test_util.SliceTestConfiguration.WithSimpleReportSiteAdminUser;
+import gov.cdc.usds.simplereport.test_util.TestDataFactory;
 import java.util.EnumSet;
 import java.util.List;
 import java.util.Set;
+import java.util.stream.Collectors;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.access.AccessDeniedException;
@@ -28,6 +31,9 @@ class ApiUserServiceTest extends BaseServiceTest<ApiUserService> {
 
   @Autowired ApiUserRepository _apiUserRepo;
   @Autowired OktaRepository _oktaRepo;
+
+  @Autowired OrganizationService _organizationService;
+  @Autowired private TestDataFactory _dataFactory;
 
   // The next several retrieval tests expect the demo users as they are defined in the
   // no-security and no-okta-mgmt profiles
@@ -206,6 +212,31 @@ class ApiUserServiceTest extends BaseServiceTest<ApiUserService> {
             () -> _service.createUserInCurrentOrg("captain@pirate.com", personName, Role.USER));
 
     assertEquals("Unable to add user.", caught.getMessage());
+  }
+
+  @Test
+  @WithSimpleReportSiteAdminUser
+  void getAllUsersByOrganization_success() {
+    Organization org = _dataFactory.createValidOrg();
+    _dataFactory.createValidApiUser("allfacilities@example.com", org);
+    _dataFactory.createValidApiUser("nofacilities@example.com", org);
+    UserInfo userToBeDeleted = _dataFactory.createValidApiUser("somefacilities@example.com", org);
+    _service.setIsDeleted(userToBeDeleted.getInternalId(), true);
+
+    Organization differentOrg = _dataFactory.createValidOrg("other org", "k12", "OTHER_ORG", true);
+    _dataFactory.createValidApiUser("otherorgfacilities@example.com", differentOrg);
+
+    List<ApiUser> activeUsers = _service.getAllUsersByOrganization(org);
+    assertEquals(3, activeUsers.size());
+    List<String> activeUserEmails =
+        activeUsers.stream()
+            .map(activeUser -> activeUser.getLoginEmail())
+            .sorted()
+            .collect(Collectors.toList());
+    assertEquals(
+        activeUserEmails,
+        List.of(
+            "allfacilities@example.com", "nofacilities@example.com", "somefacilities@example.com"));
   }
 
   @Test

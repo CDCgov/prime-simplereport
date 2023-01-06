@@ -40,10 +40,6 @@ dependencies {
     implementation 'org.springframework.cloud:spring-cloud-starter-openfeign'
     implementation 'org.springframework.cloud:spring-cloud-starter-loadbalancer'
 
-    // log4j vulnerability fixes (Dec 2021)
-    implementation 'org.apache.logging.log4j:log4j-api:2.17.0'
-    implementation 'org.apache.logging.log4j:log4j-to-slf4j:2.17.0'
-
     // Security Pins (Sept 2022)
     implementation 'org.yaml:snakeyaml:1.31'
 
@@ -127,7 +123,7 @@ dependencies {
     testAnnotationProcessor 'org.projectlombok:lombok'
 
     // WireMock (only used for testing)
-    testImplementation "com.github.tomakehurst:wiremock-jre8:2.31.0"
+    testImplementation "com.github.tomakehurst:wiremock-jre8:2.35.0"
 
     runtimeOnly "io.zipkin.brave:brave-instrumentation-http:5.13.2"
     runtimeOnly "io.zipkin.brave:brave:5.13.2"
@@ -135,6 +131,7 @@ dependencies {
     runtimeOnly "io.zipkin.reporter2:zipkin-reporter:2.16.1"
     runtimeOnly "io.zipkin.zipkin2:zipkin:2.23.0"
 
+    implementation 'ca.uhn.hapi.fhir:hapi-fhir-structures-r4:6.2.1'
 }
 
 dependencyManagement {

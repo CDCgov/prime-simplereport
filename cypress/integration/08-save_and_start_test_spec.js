@@ -66,7 +66,8 @@ describe("add patient and save and start test", () => {
     cy.visit("/");
     cy.get(".usa-nav-container");
     cy.get("#desktop-patient-nav-link").click();
-    cy.get("#add-patient-button").click();
+    cy.get("#add-patient").click();
+    cy.get("#individual_add-patient").click();
     cy.get(".prime-edit-patient").contains("Add new patient");
 
     cy.injectAxe();

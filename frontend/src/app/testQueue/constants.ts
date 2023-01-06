@@ -25,12 +25,12 @@ export const ALERT_CONTENT = {
   ): AlertContent => {
     return {
       type: "success",
-      title: `Result was saved and reported for ${displayFullName(
+      title: `Result for ${displayFullName(
         patient.firstName,
         patient.middleName,
         patient.lastName
-      )}.`,
-      body: "See results to review past test results",
+      )} was saved and reported.`,
+      body: "See Results to view all test submissions",
     };
   },
 };
