@@ -1,5 +1,6 @@
 package gov.cdc.usds.simplereport.service;
 
+import static gov.cdc.usds.simplereport.test_util.TestDataBuilder.buildAddress;
 import static graphql.Assert.assertNull;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.junit.jupiter.api.Assertions.assertEquals;
@@ -92,12 +93,12 @@ class OrganizationServiceTest extends BaseServiceTest<OrganizationService> {
             "d6b3951b-6698-4ee7-9d63-aaadee85bac0",
             "Facility 1",
             "12345",
-            testDataFactory.getAddress(),
+            buildAddress(),
             "123-456-7890",
             "test@foo.com",
             List.of(dst.getDeviceType().getInternalId()),
             orderingProviderName,
-            testDataFactory.getAddress(),
+            buildAddress(),
             "123-456-7890",
             "547329472");
     // THEN
@@ -142,12 +143,12 @@ class OrganizationServiceTest extends BaseServiceTest<OrganizationService> {
               "d6b3951b-6698-4ee7-9d63-aaadee85bac0",
               "Facility 1",
               "12345",
-              _dataFactory.getAddress(),
+              buildAddress(),
               "123-456-7890",
               "test@foo.com",
               List.of(dst.getDeviceType().getInternalId()),
               orderProviderName,
-              _dataFactory.getAddress(),
+              buildAddress(),
               null,
               null);
         });

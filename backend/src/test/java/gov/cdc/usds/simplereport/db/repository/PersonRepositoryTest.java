@@ -1,5 +1,6 @@
 package gov.cdc.usds.simplereport.db.repository;
 
+import static gov.cdc.usds.simplereport.test_util.TestDataBuilder.buildAddress;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
@@ -44,7 +45,7 @@ class PersonRepositoryTest extends BaseRepositoryTest {
             "Schmoe",
             null,
             LocalDate.now(),
-            _dataFactory.getAddress(),
+            buildAddress(),
             "USA",
             PersonRole.VISITOR,
             List.of("joe@shmoe.com"),

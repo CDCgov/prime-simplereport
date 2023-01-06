@@ -1,5 +1,6 @@
 package gov.cdc.usds.simplereport.db.repository;
 
+import static gov.cdc.usds.simplereport.test_util.TestDataBuilder.buildAddress;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertNull;
 import static org.junit.jupiter.api.Assertions.assertTrue;
@@ -10,7 +11,6 @@ import gov.cdc.usds.simplereport.db.model.Facility;
 import gov.cdc.usds.simplereport.db.model.Organization;
 import gov.cdc.usds.simplereport.db.model.Provider;
 import gov.cdc.usds.simplereport.db.model.SpecimenType;
-import gov.cdc.usds.simplereport.test_util.TestDataFactory;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
@@ -25,7 +25,6 @@ class FacilityRepositoryTest extends BaseRepositoryTest {
   @Autowired private ProviderRepository _providers;
   @Autowired private OrganizationRepository _orgs;
   @Autowired private FacilityRepository _repo;
-  @Autowired private TestDataFactory _dataFactory;
 
   @Test
   void smokeTestDeviceOperations() {
@@ -45,7 +44,7 @@ class FacilityRepositoryTest extends BaseRepositoryTest {
                 org,
                 "Third Floor",
                 "123456",
-                _dataFactory.getAddress(),
+                buildAddress(),
                 "555-867-5309",
                 "facility@test.com",
                 mccoy,

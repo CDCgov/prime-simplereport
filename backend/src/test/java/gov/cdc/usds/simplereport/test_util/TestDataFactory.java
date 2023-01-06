@@ -1,5 +1,11 @@
 package gov.cdc.usds.simplereport.test_util;
 
+import static gov.cdc.usds.simplereport.test_util.TestDataBuilder.buildAddress;
+import static gov.cdc.usds.simplereport.test_util.TestDataBuilder.buildUnverifiedOrg;
+import static gov.cdc.usds.simplereport.test_util.TestDataBuilder.buildValidOrg;
+import static gov.cdc.usds.simplereport.test_util.TestDataBuilder.buildValidProvider;
+import static gov.cdc.usds.simplereport.test_util.TestDataBuilder.buildVerifiedOrg;
+
 import gov.cdc.usds.simplereport.api.model.Role;
 import gov.cdc.usds.simplereport.api.model.accountrequest.OrganizationAccountRequest;
 import gov.cdc.usds.simplereport.db.model.DeviceSpecimenType;
@@ -107,17 +113,23 @@ public class TestDataFactory {
 
   public Organization createValidOrg(
       String name, String type, String externalId, boolean identityVerified) {
-    Organization org = _orgRepo.save(new Organization(name, type, externalId, identityVerified));
+    Organization org = _orgRepo.save(buildValidOrg(name, type, externalId, identityVerified));
+    _oktaRepo.createOrganization(org);
+    return org;
+  }
+
+  public Organization createValidOrg(Organization organization) {
+    Organization org = _orgRepo.save(organization);
     _oktaRepo.createOrganization(org);
     return org;
   }
 
   public Organization createValidOrg() {
-    return createValidOrg("The Mall", "k12", DEFAULT_ORG_ID, true);
+    return createValidOrg(buildVerifiedOrg());
   }
 
   public Organization createUnverifiedOrg() {
-    return createValidOrg("The Plaza", "k12", ALT_ORG_ID, false);
+    return createValidOrg(buildUnverifiedOrg());
   }
 
   public UserInfo createValidApiUser(String username, Organization org) {
@@ -162,15 +174,13 @@ public class TestDataFactory {
 
     List<DeviceType> configuredDevices = new ArrayList<>();
     configuredDevices.add(dev.getDeviceType());
-    Provider doc =
-        _providerRepo.save(
-            new Provider("Doctor", "", "Doom", "", "DOOOOOOM", getAddress(), "800-555-1212"));
+    Provider doc = _providerRepo.save(buildValidProvider());
     Facility facility =
         new Facility(
             org,
             facilityName,
             "123456",
-            getAddress(),
+            buildAddress(),
             "555-867-5309",
             "facility@test.com",
             doc,
@@ -569,10 +579,6 @@ public class TestDataFactory {
 
   public DeviceSpecimenType createDeviceSpecimen(DeviceType device, SpecimenType specimen) {
     return _deviceSpecimenRepo.save(new DeviceSpecimenType(device, specimen));
-  }
-
-  public StreetAddress getAddress() {
-    return new StreetAddress("736 Jackson PI NW", null, "Washington", "DC", "20503", "Washington");
   }
 
   public StreetAddress getFullAddress() {
