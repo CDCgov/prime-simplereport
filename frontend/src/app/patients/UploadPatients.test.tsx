@@ -184,6 +184,44 @@ describe("Upload Patient", () => {
     expect(await screen.findByText("bad zipcode")).toBeInTheDocument();
     expect(await screen.findByText("Row(s): 0, 1, 2")).toBeInTheDocument();
   });
+
+  it("should show error message and list errors even if error info is incomplete", async () => {
+    const incompleteResponseBody = {
+      status: "FAILURE",
+      errors: [
+        { indices: [0, 1, 2], message: "properly formed error" },
+        { indices: [0, 1, 2, 3] },
+        { message: "error with no indices" },
+        {},
+      ],
+    };
+
+    renderUploadPatients();
+
+    let mockResponse = new Response(JSON.stringify(incompleteResponseBody), {
+      status: 200,
+    });
+
+    submitCSVFile(mockResponse);
+
+    expect(
+      await screen.findByText("Error: File not accepted")
+    ).toBeInTheDocument();
+
+    expect(
+      await screen.findByText(
+        "Please resolve the errors below and upload your edited file."
+      )
+    ).toBeInTheDocument();
+    expect(
+      await screen.findByText("properly formed error")
+    ).toBeInTheDocument();
+    expect(
+      await screen.findByText("error with no indices")
+    ).toBeInTheDocument();
+    expect(await screen.findByText("Row(s): 0, 1, 2")).toBeInTheDocument();
+    expect(await screen.findByText("Row(s): 0, 1, 2, 3")).toBeInTheDocument();
+  });
   it("should show error message if 500 is returned", async () => {
     renderUploadPatients();
     let mockResponse = new Response(null, {
