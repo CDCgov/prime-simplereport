@@ -1,0 +1,24 @@
+{
+  "resourceType": "Specimen",
+  "id": "3c9c7370-e2e3-49ad-bb7a-f6005f41cf29",
+  "type": {
+    "coding": [
+      {
+        "system": "http://snomed.info/sct",
+        "code": "40001"
+      }
+    ],
+    "text": "nasal"
+  },
+  "collection": {
+    "bodySite": {
+      "coding": [
+        {
+          "system": "http://snomed.info/sct",
+          "code": "10101"
+        }
+      ],
+      "text": "nose"
+    }
+  }
+}

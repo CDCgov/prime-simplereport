@@ -6,6 +6,7 @@ import static gov.cdc.usds.simplereport.api.converter.FhirConstants.LOINC_CODE_S
 import static gov.cdc.usds.simplereport.api.converter.FhirConstants.NULL_CODE_SYSTEM;
 import static gov.cdc.usds.simplereport.api.converter.FhirConstants.RACE_CODING_SYSTEM;
 import static gov.cdc.usds.simplereport.api.converter.FhirConstants.RACE_EXTENSION_URL;
+import static gov.cdc.usds.simplereport.api.converter.FhirConstants.SNOMED_CODE_SYSTEM;
 import static gov.cdc.usds.simplereport.api.converter.FhirConstants.TRIBAL_AFFILIATION_CODE_SYSTEM;
 import static gov.cdc.usds.simplereport.api.converter.FhirConstants.TRIBAL_AFFILIATION_EXTENSION_URL;
 import static gov.cdc.usds.simplereport.api.converter.FhirConstants.TRIBAL_AFFILIATION_STRING;
@@ -14,19 +15,24 @@ import com.google.i18n.phonenumbers.NumberParseException;
 import com.google.i18n.phonenumbers.PhoneNumberUtil;
 import com.google.i18n.phonenumbers.PhoneNumberUtil.PhoneNumberFormat;
 import gov.cdc.usds.simplereport.api.MappingConstants;
+import gov.cdc.usds.simplereport.db.model.DeviceType;
 import gov.cdc.usds.simplereport.db.model.PersonUtils;
 import gov.cdc.usds.simplereport.db.model.PhoneNumber;
+import gov.cdc.usds.simplereport.db.model.Result;
+import gov.cdc.usds.simplereport.db.model.SpecimenType;
 import gov.cdc.usds.simplereport.db.model.TestEvent;
 import gov.cdc.usds.simplereport.db.model.TestOrder;
 import gov.cdc.usds.simplereport.db.model.auxiliary.PersonName;
 import gov.cdc.usds.simplereport.db.model.auxiliary.PhoneType;
 import gov.cdc.usds.simplereport.db.model.auxiliary.StreetAddress;
+import gov.cdc.usds.simplereport.db.model.auxiliary.TestCorrectionStatus;
 import java.time.LocalDate;
 import java.time.ZoneId;
 import java.util.Collections;
 import java.util.Date;
 import java.util.List;
 import java.util.Objects;
+import java.util.Set;
 import java.util.UUID;
 import java.util.stream.Collectors;
 import lombok.extern.slf4j.Slf4j;
@@ -37,6 +43,9 @@ import org.hl7.fhir.r4.model.Coding;
 import org.hl7.fhir.r4.model.ContactPoint;
 import org.hl7.fhir.r4.model.ContactPoint.ContactPointSystem;
 import org.hl7.fhir.r4.model.ContactPoint.ContactPointUse;
+import org.hl7.fhir.r4.model.Device;
+import org.hl7.fhir.r4.model.Device.DeviceDeviceNameComponent;
+import org.hl7.fhir.r4.model.Device.DeviceNameType;
 import org.hl7.fhir.r4.model.DiagnosticReport;
 import org.hl7.fhir.r4.model.DiagnosticReport.DiagnosticReportStatus;
 import org.hl7.fhir.r4.model.Enumerations.AdministrativeGender;
@@ -44,9 +53,12 @@ import org.hl7.fhir.r4.model.Extension;
 import org.hl7.fhir.r4.model.HumanName;
 import org.hl7.fhir.r4.model.Identifier;
 import org.hl7.fhir.r4.model.Identifier.IdentifierUse;
+import org.hl7.fhir.r4.model.Observation;
+import org.hl7.fhir.r4.model.Observation.ObservationStatus;
 import org.hl7.fhir.r4.model.ServiceRequest;
 import org.hl7.fhir.r4.model.ServiceRequest.ServiceRequestIntent;
 import org.hl7.fhir.r4.model.ServiceRequest.ServiceRequestStatus;
+import org.hl7.fhir.r4.model.Specimen;
 import org.hl7.fhir.r4.model.StringType;
 
 @Slf4j
@@ -281,6 +293,148 @@ public class FhirConverter {
       return ext;
     }
     return null;
+  }
+
+  public static Device convertToDevice(DeviceType deviceType) {
+    if (deviceType != null) {
+      return convertToDevice(
+          deviceType.getManufacturer(),
+          deviceType.getModel(),
+          deviceType.getInternalId().toString());
+    }
+    return null;
+  }
+
+  public static Device convertToDevice(String manufacturer, String model, String id) {
+    if (StringUtils.isNotBlank(manufacturer) || StringUtils.isNotBlank(model)) {
+      var device =
+          new Device()
+              .setManufacturer(manufacturer)
+              .addDeviceName(
+                  new DeviceDeviceNameComponent().setName(model).setType(DeviceNameType.MODELNAME));
+      device.setId(id);
+      return device;
+    }
+    return null;
+  }
+
+  public static Specimen convertToSpecimen(
+      String specimenCode,
+      String specimenName,
+      String collectionCode,
+      String collectionName,
+      String id) {
+    var specimen = new Specimen();
+    specimen.setId(id);
+    if (StringUtils.isNotBlank(specimenCode)) {
+      var codeableConcept = specimen.getType();
+      var coding = codeableConcept.addCoding();
+      coding.setSystem(SNOMED_CODE_SYSTEM);
+      coding.setCode(specimenCode);
+      codeableConcept.setText(specimenName);
+    }
+    if (StringUtils.isNotBlank(collectionCode)) {
+      var collection = specimen.getCollection();
+      var codeableConcept = collection.getBodySite();
+      var coding = codeableConcept.addCoding();
+      coding.setSystem(SNOMED_CODE_SYSTEM);
+      coding.setCode(collectionCode);
+      codeableConcept.setText(collectionName);
+    }
+
+    return specimen;
+  }
+
+  public static Specimen convertToSpecimen(SpecimenType specimenType) {
+    if (specimenType != null) {
+      return convertToSpecimen(
+          specimenType.getTypeCode(),
+          specimenType.getName(),
+          specimenType.getCollectionLocationCode(),
+          specimenType.getCollectionLocationName(),
+          specimenType.getInternalId().toString());
+    }
+    return null;
+  }
+
+  public static List<Observation> convertToObservation(
+      Set<Result> results, TestCorrectionStatus correctionStatus, String correctionReason) {
+    return results.stream()
+        .map(result -> convertToObservation(result, correctionStatus, correctionReason))
+        .collect(Collectors.toList());
+  }
+
+  public static Observation convertToObservation(
+      Result result, TestCorrectionStatus correctionStatus, String correctionReason) {
+    if (result != null && result.getDisease() != null) {
+      return convertToObservation(
+          result.getDisease().getLoinc(),
+          result.getDisease().getName(),
+          result.getResultLOINC(),
+          correctionStatus,
+          correctionReason,
+          result.getInternalId().toString());
+    }
+    return null;
+  }
+
+  public static Observation convertToObservation(
+      String diseaseCode,
+      String diseaseName,
+      String resultCode,
+      TestCorrectionStatus correctionStatus,
+      String correctionReason,
+      String id) {
+    var observation = new Observation();
+    observation.setId(id);
+    setStatus(observation, correctionStatus);
+    addCode(diseaseCode, diseaseName, observation);
+    addValue(resultCode, observation);
+    addCorrectionNote(
+        correctionStatus != TestCorrectionStatus.ORIGINAL, correctionReason, observation);
+    return observation;
+  }
+
+  private static void setStatus(Observation observation, TestCorrectionStatus correctionStatus) {
+    switch (correctionStatus) {
+      case ORIGINAL:
+        observation.setStatus(ObservationStatus.FINAL);
+        break;
+      case CORRECTED:
+        observation.setStatus(ObservationStatus.CORRECTED);
+        break;
+      case REMOVED:
+        observation.setStatus(ObservationStatus.ENTEREDINERROR);
+        break;
+    }
+  }
+
+  private static void addCorrectionNote(
+      boolean corrected, String correctionReason, Observation observation) {
+    if (corrected) {
+      var annotation = observation.addNote();
+      var correctedNote = "Corrected Result";
+      if (StringUtils.isNotBlank(correctionReason)) {
+        correctedNote += ": " + correctionReason;
+      }
+      annotation.setText(correctedNote);
+    }
+  }
+
+  private static void addValue(String resultCode, Observation observation) {
+    var valueCodeableConcept = new CodeableConcept();
+    var valueCoding = valueCodeableConcept.addCoding();
+    valueCoding.setSystem(SNOMED_CODE_SYSTEM);
+    valueCoding.setCode(resultCode);
+    observation.setValue(valueCodeableConcept);
+  }
+
+  private static void addCode(String diseaseCode, String diseaseName, Observation observation) {
+    var codeCodeableConcept = observation.getCode();
+    var codeCoding = codeCodeableConcept.addCoding();
+    codeCoding.setSystem(LOINC_CODE_SYSTEM);
+    codeCoding.setCode(diseaseCode);
+    codeCodeableConcept.setText(diseaseName);
   }
 
   public static ServiceRequest convertToServiceRequest(TestOrder order) {

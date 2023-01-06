@@ -4,12 +4,15 @@ import static gov.cdc.usds.simplereport.api.converter.FhirConverter.convertToAdd
 import static gov.cdc.usds.simplereport.api.converter.FhirConverter.convertToAdministrativeGender;
 import static gov.cdc.usds.simplereport.api.converter.FhirConverter.convertToContactPoint;
 import static gov.cdc.usds.simplereport.api.converter.FhirConverter.convertToDate;
+import static gov.cdc.usds.simplereport.api.converter.FhirConverter.convertToDevice;
 import static gov.cdc.usds.simplereport.api.converter.FhirConverter.convertToDiagnosticReport;
 import static gov.cdc.usds.simplereport.api.converter.FhirConverter.convertToEthnicityExtension;
 import static gov.cdc.usds.simplereport.api.converter.FhirConverter.convertToHumanName;
 import static gov.cdc.usds.simplereport.api.converter.FhirConverter.convertToIdentifier;
+import static gov.cdc.usds.simplereport.api.converter.FhirConverter.convertToObservation;
 import static gov.cdc.usds.simplereport.api.converter.FhirConverter.convertToRaceExtension;
 import static gov.cdc.usds.simplereport.api.converter.FhirConverter.convertToServiceRequest;
+import static gov.cdc.usds.simplereport.api.converter.FhirConverter.convertToSpecimen;
 import static gov.cdc.usds.simplereport.api.converter.FhirConverter.convertToTribalAffiliationExtension;
 import static gov.cdc.usds.simplereport.api.converter.FhirConverter.emailToContactPoint;
 import static gov.cdc.usds.simplereport.api.converter.FhirConverter.phoneNumberToContactPoint;
@@ -17,40 +20,57 @@ import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.from;
 import static org.junit.jupiter.params.provider.Arguments.arguments;
 
+import ca.uhn.fhir.context.FhirContext;
+import ca.uhn.fhir.parser.IParser;
 import gov.cdc.usds.simplereport.db.model.DeviceSpecimenType;
 import gov.cdc.usds.simplereport.db.model.DeviceType;
 import gov.cdc.usds.simplereport.db.model.Facility;
 import gov.cdc.usds.simplereport.db.model.Organization;
 import gov.cdc.usds.simplereport.db.model.Person;
 import gov.cdc.usds.simplereport.db.model.PhoneNumber;
+import gov.cdc.usds.simplereport.db.model.Result;
+import gov.cdc.usds.simplereport.db.model.SpecimenType;
+import gov.cdc.usds.simplereport.db.model.SupportedDisease;
 import gov.cdc.usds.simplereport.db.model.TestEvent;
 import gov.cdc.usds.simplereport.db.model.TestOrder;
 import gov.cdc.usds.simplereport.db.model.auxiliary.PhoneType;
 import gov.cdc.usds.simplereport.db.model.auxiliary.TestCorrectionStatus;
+import gov.cdc.usds.simplereport.db.model.auxiliary.TestResult;
+import java.io.IOException;
+import java.nio.charset.StandardCharsets;
 import java.util.Collections;
 import java.util.List;
+import java.util.Objects;
+import java.util.Set;
 import java.util.UUID;
 import java.util.stream.Stream;
+import org.apache.commons.io.IOUtils;
 import org.hl7.fhir.r4.model.ContactPoint;
 import org.hl7.fhir.r4.model.ContactPoint.ContactPointSystem;
 import org.hl7.fhir.r4.model.ContactPoint.ContactPointUse;
+import org.hl7.fhir.r4.model.Device.DeviceNameType;
 import org.hl7.fhir.r4.model.DiagnosticReport.DiagnosticReportStatus;
 import org.hl7.fhir.r4.model.Enumerations.AdministrativeGender;
 import org.hl7.fhir.r4.model.Identifier.IdentifierUse;
 import org.hl7.fhir.r4.model.PrimitiveType;
 import org.hl7.fhir.r4.model.ServiceRequest.ServiceRequestIntent;
 import org.hl7.fhir.r4.model.ServiceRequest.ServiceRequestStatus;
+import org.hl7.fhir.r4.model.codesystems.ObservationStatus;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.Arguments;
 import org.junit.jupiter.params.provider.MethodSource;
+import org.skyscreamer.jsonassert.JSONAssert;
+import org.springframework.test.util.ReflectionTestUtils;
 
 class FhirConverterTest {
+
   private static final String unknownSystem = "http://terminology.hl7.org/CodeSystem/v3-NullFlavor";
   private static final String raceCodeSystem = "http://terminology.hl7.org/CodeSystem/v3-Race";
   private static final String ethnicitySystem = "urn:oid:2.16.840.1.113883.6.238";
   private static final String tribalSystemUrl =
       "http://terminology.hl7.org/CodeSystem/v3-TribalEntityUS";
+  public static final String snomedCode = "http://snomed.info/sct";
 
   @Test
   void allFields_convertToHumanName() {
@@ -316,6 +336,330 @@ class FhirConverterTest {
   void null_convertToTribalAffiliation() {
     assertThat(convertToTribalAffiliationExtension((String) null)).isNull();
     assertThat(convertToTribalAffiliationExtension((List<String>) null)).isNull();
+  }
+
+  @Test
+  void string_convertToDevice() {
+    var actual =
+        convertToDevice(
+            "PHASE Scientific International, Ltd.\n",
+            "INDICAID COVID-19 Rapid Antigen Test*",
+            "id-123");
+
+    assert actual != null;
+    assertThat(actual.getId()).isEqualTo("id-123");
+    assertThat(actual.getManufacturer()).isEqualTo("PHASE Scientific International, Ltd.\n");
+    assertThat(actual.getDeviceName()).hasSize(1);
+    assertThat(actual.getDeviceNameFirstRep().getName())
+        .isEqualTo("INDICAID COVID-19 Rapid Antigen Test*");
+    assertThat(actual.getDeviceNameFirstRep().getType()).isEqualTo(DeviceNameType.MODELNAME);
+  }
+
+  @Test
+  void nullString_convertToDevice() {
+    assertThat(convertToDevice(null, null, null)).isNull();
+  }
+
+  @Test
+  void deviceSpecimenType_convertToDevice() {
+    var internalId = UUID.randomUUID();
+    var deviceType = new DeviceType("name", "manufacturer", "model", "loinc", "swab type", 15);
+    ReflectionTestUtils.setField(deviceType, "internalId", internalId);
+
+    var actual = convertToDevice(deviceType);
+
+    assertThat(actual.getId()).isEqualTo(internalId.toString());
+    assertThat(actual.getManufacturer()).isEqualTo("manufacturer");
+    assertThat(actual.getDeviceName()).hasSize(1);
+    assertThat(actual.getDeviceNameFirstRep().getName()).isEqualTo("model");
+    assertThat(actual.getDeviceNameFirstRep().getType()).isEqualTo(DeviceNameType.MODELNAME);
+  }
+
+  @Test
+  void nullDeviceType_convertToDevice() {
+    assertThat(convertToDevice(null)).isNull();
+  }
+
+  @Test
+  void validDeviceType_convertToDevice_matchesJson() throws IOException {
+    var internalId = "3c9c7370-e2e3-49ad-bb7a-f6005f41cf29";
+    DeviceType deviceType =
+        new DeviceType(
+            "name",
+            "BioFire Diagnostics",
+            "BioFire Respiratory Panel 2.1 (RP2.1)*@",
+            "loinc",
+            "swab type",
+            15);
+    ReflectionTestUtils.setField(deviceType, "internalId", UUID.fromString(internalId));
+
+    var actual = convertToDevice(deviceType);
+
+    FhirContext ctx = FhirContext.forR4();
+    IParser parser = ctx.newJsonParser();
+
+    String actualSerialized = parser.encodeResourceToString(actual);
+    var expectedSerialized =
+        IOUtils.toString(
+            Objects.requireNonNull(
+                getClass().getClassLoader().getResourceAsStream("fhir/device.json")),
+            StandardCharsets.UTF_8);
+    JSONAssert.assertEquals(actualSerialized, expectedSerialized, true);
+  }
+
+  @Test
+  void string_convertToSpecimen() {
+    var actual =
+        convertToSpecimen(
+            "258500001",
+            "Nasopharyngeal swab",
+            "53342003",
+            "Internal nose structure (body structure)",
+            "id-123");
+
+    assertThat(actual.getId()).isEqualTo("id-123");
+    assertThat(actual.getType().getCoding()).hasSize(1);
+    assertThat(actual.getType().getCodingFirstRep().getSystem()).isEqualTo(snomedCode);
+    assertThat(actual.getType().getCodingFirstRep().getCode()).isEqualTo("258500001");
+    assertThat(actual.getType().getText()).isEqualTo("Nasopharyngeal swab");
+
+    assertThat(actual.getCollection().getBodySite().getCoding()).hasSize(1);
+    assertThat(actual.getCollection().getBodySite().getCodingFirstRep().getSystem())
+        .isEqualTo(snomedCode);
+    assertThat(actual.getCollection().getBodySite().getCodingFirstRep().getCode())
+        .isEqualTo("53342003");
+    assertThat(actual.getCollection().getBodySite().getText())
+        .isEqualTo("Internal nose structure (body structure)");
+  }
+
+  @Test
+  void null_convertToSpecimen() {
+    var actual = convertToSpecimen(null, null, null, null, null);
+
+    assertThat(actual.getId()).isNull();
+    assertThat(actual.getType().getText()).isNull();
+    assertThat(actual.getType().getCoding()).isEmpty();
+    assertThat(actual.getCollection().getBodySite().getText()).isNull();
+    assertThat(actual.getCollection().getBodySite().getCoding()).isEmpty();
+  }
+
+  @Test
+  void specimenType_convertToSpecimen() {
+    var specimenType =
+        new SpecimenType(
+            "Nasopharyngeal swab",
+            "258500001",
+            "Internal nose structure (body structure)",
+            "53342003");
+    var internalId = UUID.randomUUID();
+    ReflectionTestUtils.setField(specimenType, "internalId", internalId);
+
+    var actual = convertToSpecimen(specimenType);
+
+    assertThat(actual.getId()).isEqualTo(internalId.toString());
+    assertThat(actual.getType().getCoding()).hasSize(1);
+    assertThat(actual.getType().getCodingFirstRep().getSystem()).isEqualTo(snomedCode);
+    assertThat(actual.getType().getCodingFirstRep().getCode()).isEqualTo("258500001");
+    assertThat(actual.getType().getText()).isEqualTo("Nasopharyngeal swab");
+
+    assertThat(actual.getCollection().getBodySite().getCoding()).hasSize(1);
+    assertThat(actual.getCollection().getBodySite().getCodingFirstRep().getSystem())
+        .isEqualTo(snomedCode);
+    assertThat(actual.getCollection().getBodySite().getCodingFirstRep().getCode())
+        .isEqualTo("53342003");
+    assertThat(actual.getCollection().getBodySite().getText())
+        .isEqualTo("Internal nose structure (body structure)");
+  }
+
+  @Test
+  void nullSpecimenType_convertToSpecimen() {
+    assertThat(convertToSpecimen(null)).isNull();
+  }
+
+  @Test
+  void validSpecimenType_convertToSpecimen_matchesJson() throws IOException {
+    var internalId = "3c9c7370-e2e3-49ad-bb7a-f6005f41cf29";
+    SpecimenType specimenType = new SpecimenType("nasal", "40001", "nose", "10101");
+    ReflectionTestUtils.setField(specimenType, "internalId", UUID.fromString(internalId));
+
+    var actual = convertToSpecimen(specimenType);
+
+    FhirContext ctx = FhirContext.forR4();
+    IParser parser = ctx.newJsonParser();
+
+    String actualSerialized = parser.encodeResourceToString(actual);
+    var expectedSerialized =
+        IOUtils.toString(
+            Objects.requireNonNull(
+                getClass().getClassLoader().getResourceAsStream("fhir/specimen.json")),
+            StandardCharsets.UTF_8);
+    JSONAssert.assertEquals(actualSerialized, expectedSerialized, true);
+  }
+
+  @Test
+  void string_convertToObservation() {
+    var actual =
+        convertToObservation(
+            "diseaseCode",
+            "diseaseName",
+            "resultCode",
+            TestCorrectionStatus.ORIGINAL,
+            null,
+            "id-123");
+
+    assertThat(actual.getId()).isEqualTo("id-123");
+    assertThat(actual.getStatus().getDisplay()).isEqualTo(ObservationStatus.FINAL.getDisplay());
+    assertThat(actual.getCode().getText()).isEqualTo("diseaseName");
+    assertThat(actual.getCode().getCoding()).hasSize(1);
+    assertThat(actual.getCode().getCodingFirstRep().getSystem()).isEqualTo("http://loinc.org");
+    assertThat(actual.getCode().getCodingFirstRep().getCode()).isEqualTo("diseaseCode");
+    assertThat(actual.getValueCodeableConcept().getCoding()).hasSize(1);
+    assertThat(actual.getValueCodeableConcept().getCodingFirstRep().getSystem())
+        .isEqualTo("http://snomed.info/sct");
+    assertThat(actual.getValueCodeableConcept().getCodingFirstRep().getCode())
+        .isEqualTo("resultCode");
+    assertThat(actual.getNote()).isEmpty();
+  }
+
+  @Test
+  void result_convertToObservation() {
+    var result =
+        new Result(null, null, new SupportedDisease("covid-19", "96741-4"), TestResult.POSITIVE);
+    var internalId = UUID.randomUUID();
+    ReflectionTestUtils.setField(result, "internalId", internalId);
+
+    var actual = convertToObservation(result, TestCorrectionStatus.ORIGINAL, null);
+
+    assertThat(actual.getId()).isEqualTo(internalId.toString());
+    assertThat(actual.getStatus().getDisplay()).isEqualTo(ObservationStatus.FINAL.getDisplay());
+    assertThat(actual.getCode().getText()).isEqualTo("covid-19");
+    assertThat(actual.getCode().getCoding()).hasSize(1);
+    assertThat(actual.getCode().getCodingFirstRep().getSystem()).isEqualTo("http://loinc.org");
+    assertThat(actual.getCode().getCodingFirstRep().getCode()).isEqualTo("96741-4");
+    assertThat(actual.getValueCodeableConcept().getCoding()).hasSize(1);
+    assertThat(actual.getValueCodeableConcept().getCodingFirstRep().getSystem())
+        .isEqualTo("http://snomed.info/sct");
+    assertThat(actual.getValueCodeableConcept().getCodingFirstRep().getCode())
+        .isEqualTo("260373001");
+    assertThat(actual.getNote()).isEmpty();
+  }
+
+  @Test
+  void correctedResult_convertToObservation() {
+    var result =
+        new Result(null, null, new SupportedDisease("covid-19", "96741-4"), TestResult.POSITIVE);
+    var internalId = UUID.randomUUID();
+    ReflectionTestUtils.setField(result, "internalId", internalId);
+
+    var actual = convertToObservation(result, TestCorrectionStatus.CORRECTED, "Oopsy Daisy");
+
+    assertThat(actual.getId()).isEqualTo(internalId.toString());
+    assertThat(actual.getStatus().getDisplay()).isEqualTo(ObservationStatus.CORRECTED.getDisplay());
+    assertThat(actual.getNote()).hasSize(1);
+    assertThat(actual.getNoteFirstRep().getText()).isEqualTo("Corrected Result: Oopsy Daisy");
+  }
+
+  @Test
+  void removedResultNoReason_convertToObservation() {
+    var result =
+        new Result(null, null, new SupportedDisease("covid-19", "96741-4"), TestResult.POSITIVE);
+    var internalId = UUID.randomUUID();
+    ReflectionTestUtils.setField(result, "internalId", internalId);
+
+    var actual = convertToObservation(result, TestCorrectionStatus.REMOVED, null);
+
+    assertThat(actual.getId()).isEqualTo(internalId.toString());
+    assertThat(actual.getStatus().getDisplay())
+        .isEqualTo(ObservationStatus.ENTEREDINERROR.getDisplay());
+    assertThat(actual.getNote()).hasSize(1);
+    assertThat(actual.getNoteFirstRep().getText()).isEqualTo("Corrected Result");
+  }
+
+  @Test
+  void nullResult_convertToObservation() {
+    var actual = convertToObservation((Result) null, TestCorrectionStatus.ORIGINAL, null);
+
+    assertThat(actual).isNull();
+  }
+
+  @Test
+  void nullDisease_convertToObservation() {
+    var actual =
+        convertToObservation(
+            new Result(null, null, null, TestResult.POSITIVE), TestCorrectionStatus.ORIGINAL, null);
+
+    assertThat(actual).isNull();
+  }
+
+  @Test
+  void multipleResults_toFhirObservation() throws IOException {
+    var covidId = "3c9c7370-e2e3-49ad-bb7a-f6005f41cf29";
+    var fluId = "302a7919-b699-4e0d-95ca-5fd2e3fcaf7a";
+    var covidResult =
+        new Result(null, new SupportedDisease("COVID-19", "96741-4"), TestResult.POSITIVE);
+    var fluResult =
+        new Result(null, new SupportedDisease("FLU A", "LP14239-5"), TestResult.NEGATIVE);
+    ReflectionTestUtils.setField(covidResult, "internalId", UUID.fromString(covidId));
+    ReflectionTestUtils.setField(fluResult, "internalId", UUID.fromString(fluId));
+
+    var actual =
+        convertToObservation(Set.of(covidResult, fluResult), TestCorrectionStatus.ORIGINAL, null);
+
+    FhirContext ctx = FhirContext.forR4();
+    IParser parser = ctx.newJsonParser();
+
+    assertThat(actual).hasSize(2);
+    String covidSerialized =
+        parser.encodeResourceToString(
+            actual.stream()
+                .filter(
+                    observation ->
+                        observation.getCode().getCodingFirstRep().is("http://loinc.org", "96741-4"))
+                .findFirst()
+                .orElse(null));
+    String fluSerialized =
+        parser.encodeResourceToString(
+            actual.stream()
+                .filter(
+                    observation ->
+                        observation
+                            .getCode()
+                            .getCodingFirstRep()
+                            .is("http://loinc.org", "LP14239-5"))
+                .findFirst()
+                .orElse(null));
+    var expectedSerialized1 =
+        IOUtils.toString(
+            Objects.requireNonNull(
+                getClass().getClassLoader().getResourceAsStream("fhir/observationCovid.json")),
+            StandardCharsets.UTF_8);
+    var expectedSerialized2 =
+        IOUtils.toString(
+            Objects.requireNonNull(
+                getClass().getClassLoader().getResourceAsStream("fhir/observationFlu.json")),
+            StandardCharsets.UTF_8);
+    JSONAssert.assertEquals(covidSerialized, expectedSerialized1, true);
+    JSONAssert.assertEquals(fluSerialized, expectedSerialized2, true);
+  }
+
+  @Test
+  void correction_toFhirObservation() throws IOException {
+    var id = "3c9c7370-e2e3-49ad-bb7a-f6005f41cf29";
+    var result = new Result(null, new SupportedDisease("COVID-19", "96741-4"), TestResult.NEGATIVE);
+    ReflectionTestUtils.setField(result, "internalId", UUID.fromString(id));
+
+    var actual = convertToObservation(Set.of(result), TestCorrectionStatus.CORRECTED, "woops");
+
+    FhirContext ctx = FhirContext.forR4();
+    IParser parser = ctx.newJsonParser();
+
+    String actualSerialized = parser.encodeResourceToString(actual.get(0));
+    var expectedSerialized1 =
+        IOUtils.toString(
+            Objects.requireNonNull(
+                getClass().getClassLoader().getResourceAsStream("fhir/observationCorrection.json")),
+            StandardCharsets.UTF_8);
+    JSONAssert.assertEquals(actualSerialized, expectedSerialized1, true);
   }
 
   @Test

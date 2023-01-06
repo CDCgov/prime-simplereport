@@ -49,7 +49,7 @@ describe("Conducting a COVID test", () => {
       cy.get('.prime-radios input[value="NEGATIVE"]+label').click();
       cy.get(".prime-test-result-submit button").click();
     });
-    cy.contains(`Result was saved and reported for ${patientName}`);
+    cy.contains(`Result for ${patientName} was saved and reported.`);
     cy.get(".prime-home .grid-container").should("not.have.text", patientName);
   });
   it("shows the result on the results table", () => {
