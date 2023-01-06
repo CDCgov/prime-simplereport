@@ -88,9 +88,13 @@ describe("Upload Patient", () => {
       userEvent.click(screen.getByText("One facility"));
 
       expect(await screen.findByText("Which facility?")).toBeInTheDocument();
+      await userEvent.selectOptions(
+        screen.getByRole("combobox", { name: /select facility/i }),
+        "2"
+      );
       expect(
         await screen.findByText(
-          "3. Upload your spreadsheet for Lincoln Middle School."
+          "3. Upload your spreadsheet for Rosa Parks High School."
         )
       );
     });
@@ -185,6 +189,26 @@ describe("Upload Patient", () => {
     let mockResponse = new Response(null, {
       status: 500,
     });
+    const uploadFile = file("someText");
+
+    const uploadSpy = submitCSVFile(mockResponse, uploadFile);
+
+    expect(uploadSpy).toHaveBeenCalledWith(uploadFile, "");
+    expect(
+      await screen.findByText("Error: File not accepted")
+    ).toBeInTheDocument();
+  });
+  it("should show error message if 200 but is a failure with no message", async () => {
+    renderUploadPatients();
+
+    let mockResponse = new Response(
+      JSON.stringify({
+        status: "FAILURE",
+      }),
+      {
+        status: 200,
+      }
+    );
     const uploadFile = file("someText");
 
     const uploadSpy = submitCSVFile(mockResponse, uploadFile);
