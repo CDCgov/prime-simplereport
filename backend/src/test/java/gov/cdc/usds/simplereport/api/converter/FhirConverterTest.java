@@ -1,5 +1,6 @@
 package gov.cdc.usds.simplereport.api.converter;
 
+import static gov.cdc.usds.simplereport.api.converter.FhirConverter.convertEmailsToContactPoint;
 import static gov.cdc.usds.simplereport.api.converter.FhirConverter.convertToAddress;
 import static gov.cdc.usds.simplereport.api.converter.FhirConverter.convertToAdministrativeGender;
 import static gov.cdc.usds.simplereport.api.converter.FhirConverter.convertToContactPoint;
@@ -17,10 +18,8 @@ import static gov.cdc.usds.simplereport.api.converter.FhirConverter.convertToSer
 import static gov.cdc.usds.simplereport.api.converter.FhirConverter.convertToSpecimen;
 import static gov.cdc.usds.simplereport.api.converter.FhirConverter.convertToTribalAffiliationExtension;
 import static gov.cdc.usds.simplereport.api.converter.FhirConverter.createFhirBundle;
-import static gov.cdc.usds.simplereport.api.converter.FhirConverter.emailToContactPoint;
 import static gov.cdc.usds.simplereport.api.converter.FhirConverter.getMessageHeader;
 import static gov.cdc.usds.simplereport.api.converter.FhirConverter.getPractitionerRole;
-import static gov.cdc.usds.simplereport.api.converter.FhirConverter.phoneNumberToContactPoint;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.from;
 import static org.junit.jupiter.params.provider.Arguments.arguments;
@@ -77,7 +76,6 @@ import org.junit.jupiter.api.Test;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.Arguments;
 import org.junit.jupiter.params.provider.MethodSource;
-import org.mockito.Mockito;
 import org.skyscreamer.jsonassert.JSONAssert;
 import org.springframework.test.util.ReflectionTestUtils;
 
@@ -91,7 +89,7 @@ class FhirConverterTest {
   public static final String snomedCode = "http://snomed.info/sct";
 
   @Test
-  void allFields_convertToHumanName() {
+  void convertToHumanName_String_allFields() {
     var actual = convertToHumanName("first", "middle", "last", "jr");
     assertThat(actual.getGiven().stream().map(PrimitiveType::getValue))
         .containsExactly("first", "middle");
@@ -100,14 +98,14 @@ class FhirConverterTest {
   }
 
   @Test
-  void noMiddleName_convertToHumanName() {
+  void convertToHumanName_Strings_nullMiddleName() {
     var actual = convertToHumanName("first", null, "last", "jr");
 
     assertThat(actual.getGiven().stream().map(PrimitiveType::getValue)).containsExactly("first");
   }
 
   @Test
-  void emptyPersonName_convertToHumanName() {
+  void convertToHumanName_Strings_null() {
     var actual = convertToHumanName(null, null, null, null);
 
     assertThat(actual.getGiven()).isEmpty();
@@ -116,16 +114,17 @@ class FhirConverterTest {
   }
 
   @Test
-  void null_convertToHumanName() {
+  void convertToHumanName_PersonName_null() {
     assertThat(convertToHumanName(null)).isNull();
   }
 
   @Test
-  void phoneNumberList_phoneNumberToContactPoint() {
+  void convertPhoneNumbersToContactPoint_ListPhoneNumbers_validList() {
     var phoneNumber = new PhoneNumber(PhoneType.LANDLINE, "2485551234");
     var phoneNumber2 = new PhoneNumber(PhoneType.LANDLINE, "2485551233");
 
-    var actual = phoneNumberToContactPoint(List.of(phoneNumber, phoneNumber2));
+    var actual =
+        FhirConverter.convertPhoneNumbersToContactPoint(List.of(phoneNumber, phoneNumber2));
     assertThat(actual).hasSize(2);
 
     assertThat(actual.stream().map(ContactPoint::getValue))
@@ -133,10 +132,15 @@ class FhirConverterTest {
   }
 
   @Test
-  void phoneNumberModel_phoneNumberToContactPoint() {
+  void convertPhoneNumbersToContactPoint_null() {
+    assertThat(FhirConverter.convertPhoneNumbersToContactPoint(null)).isEmpty();
+  }
+
+  @Test
+  void convertToContactPoint_PhoneNumber_validLandline() {
     var phoneNumber = new PhoneNumber(PhoneType.LANDLINE, "2485551234");
 
-    var actual = phoneNumberToContactPoint(phoneNumber);
+    var actual = convertToContactPoint(phoneNumber);
 
     assertThat(actual.getSystem()).isEqualTo(ContactPointSystem.PHONE);
     assertThat(actual.getUse().toCode()).isEqualTo(ContactPointUse.HOME.toCode());
@@ -144,8 +148,8 @@ class FhirConverterTest {
   }
 
   @Test
-  void mobileNumber_phoneNumberToContactPoint() {
-    var actual = phoneNumberToContactPoint(ContactPoint.ContactPointUse.MOBILE, "2485551234");
+  void convertToContactPoint_PhoneNumber_validMobile() {
+    var actual = convertToContactPoint(ContactPoint.ContactPointUse.MOBILE, "2485551234");
 
     assertThat(actual.getSystem()).isEqualTo(ContactPointSystem.PHONE);
     assertThat(actual.getUse().toCode()).isEqualTo(ContactPointUse.MOBILE.toCode());
@@ -153,8 +157,13 @@ class FhirConverterTest {
   }
 
   @Test
-  void invalidNumber_phoneNumberToContactPoint() {
-    var actual = phoneNumberToContactPoint(ContactPoint.ContactPointUse.HOME, "+0333");
+  void convertToContactPoint_PhoneNumber_null() {
+    assertThat(convertToContactPoint((PhoneNumber) null)).isNull();
+  }
+
+  @Test
+  void convertToContactPoint_ContactPointAndString_invalidNumber() {
+    var actual = convertToContactPoint(ContactPoint.ContactPointUse.HOME, "+0333");
 
     assertThat(actual)
         .returns(ContactPointSystem.PHONE, from(ContactPoint::getSystem))
@@ -165,42 +174,50 @@ class FhirConverterTest {
   }
 
   @Test
-  void null_phoneNumberToContactPoint() {
-    assertThat(phoneNumberToContactPoint((PhoneNumber) null)).isNull();
-    assertThat(phoneNumberToContactPoint((List<PhoneNumber>) null)).isEmpty();
+  void convertToContactPoint_ContactPointAndNumber_null() {
+    assertThat(convertToContactPoint(ContactPointUse.HOME, ContactPointSystem.PHONE, null))
+        .isNull();
   }
 
   @Test
-  void null_emailToContactPoint() {
-    assertThat(emailToContactPoint((String) null)).isNull();
-    assertThat(emailToContactPoint((List<String>) null)).isEmpty();
+  void convertEmailsToContactPoint_valid() {
+    var actual = convertEmailsToContactPoint(List.of("email1@example.com", "email2@example.com"));
+
+    assertThat(actual).hasSize(2);
+    assertThat(
+            actual.stream()
+                .filter(contactPoint -> "email1@example.com".equals(contactPoint.getValue())))
+        .hasSize(1);
+    assertThat(
+            actual.stream()
+                .filter(contactPoint -> "email2@example.com".equals(contactPoint.getValue())))
+        .hasSize(1);
   }
 
   @Test
-  void string_emailToContactPoint() {
-    var actual = emailToContactPoint("example@example.com");
+  void convertEmailsToContactPoint_null() {
+    assertThat(convertEmailsToContactPoint(null)).isEmpty();
+  }
+
+  @Test
+  void convertEmailToContactPoint_valid() {
+    var actual = FhirConverter.convertEmailToContactPoint("example@example.com");
     assertThat(actual.getUse()).isNull();
     assertThat(actual.getSystem()).isEqualTo(ContactPointSystem.EMAIL);
     assertThat(actual.getValue()).isEqualTo("example@example.com");
   }
 
   @Test
-  void email_convertToContactPoint() {
+  void convertToContactPoint_CodePointUseAndCodePointSystemAndString_valid() {
     var actual = convertToContactPoint(null, ContactPointSystem.EMAIL, "example@example.com");
     assertThat(actual.getUse()).isNull();
     assertThat(actual.getSystem()).isEqualTo(ContactPointSystem.EMAIL);
     assertThat(actual.getValue()).isEqualTo("example@example.com");
   }
 
-  @Test
-  void null_convertToContactPoint() {
-    assertThat(convertToContactPoint(ContactPointUse.HOME, ContactPointSystem.PHONE, null))
-        .isNull();
-  }
-
   @ParameterizedTest
   @MethodSource("genderArgs")
-  void test_convertToAdministrativeGender(String personGender, AdministrativeGender expected) {
+  void convertToAdministrativeGender_matches(String personGender, AdministrativeGender expected) {
     var actual = convertToAdministrativeGender(personGender);
 
     assertThat(actual).isEqualTo(expected);
@@ -217,12 +234,31 @@ class FhirConverterTest {
   }
 
   @Test
-  void null_convertToDate() {
+  void convertToDate_null() {
     assertThat(convertToDate(null)).isNull();
   }
 
   @Test
-  void address_convertToAddress() {
+  void convertToAddress_Address_valid() {
+    var address =
+        new StreetAddress(
+            List.of("1234 Main", "Apartment #1"), "MyCity", "MyCounty", "PA", "15025");
+    var actual = convertToAddress(address);
+    assertThat(actual.getLine().stream().map(PrimitiveType::getValue))
+        .containsExactly("1234 Main", "Apartment #1");
+    assertThat(actual.getCity()).isEqualTo(address.getCity());
+    assertThat(actual.getDistrict()).isEqualTo(address.getCounty());
+    assertThat(actual.getState()).isEqualTo(address.getState());
+    assertThat(actual.getPostalCode()).isEqualTo(address.getPostalCode());
+  }
+
+  @Test
+  void convertToAddress_Address_null() {
+    assertThat(convertToAddress(null)).isNull();
+  }
+
+  @Test
+  void convertToAddress_Strings_valid() {
     var actual =
         convertToAddress(List.of("1234 Main", "Apartment #1"), "MyCity", "MyCounty", "PA", "15025");
     assertThat(actual.getLine().stream().map(PrimitiveType::getValue))
@@ -234,7 +270,7 @@ class FhirConverterTest {
   }
 
   @Test
-  void emptyAddress_convertToAddress() {
+  void convertToAddress_Strings_null() {
     var actual = convertToAddress(null, null, null, null, null);
     assertThat(actual.getLine()).isEmpty();
     assertThat(actual.getCity()).isNull();
@@ -243,14 +279,9 @@ class FhirConverterTest {
     assertThat(actual.getPostalCode()).isNull();
   }
 
-  @Test
-  void null_convertToAddress() {
-    assertThat(convertToAddress(null)).isNull();
-  }
-
   @ParameterizedTest
   @MethodSource("raceArgs")
-  void test_convertToRaceExtension(
+  void convertToRaceArgs_matches(
       String personRaceValue, String codeSystem, String expectedCode, String expectedText) {
     var actual = convertToRaceExtension(personRaceValue);
     assert actual != null;
@@ -271,15 +302,15 @@ class FhirConverterTest {
   }
 
   @Test
-  void null_convertToRaceExtension() {
+  void convertToRaceExtension_null() {
     assertThat(convertToRaceExtension(null)).isNull();
   }
 
   @ParameterizedTest
   @MethodSource("ethnicityArgs")
-  void test_convertToEthnicityExtension(
+  void convertToEthnicityExtension_matches(
       String ethnicity, String ombSystem, String raceCode, String ethnicityDisplay) {
-    var actual = FhirConverter.convertToEthnicityExtension(ethnicity);
+    var actual = convertToEthnicityExtension(ethnicity);
     assert actual != null;
     var ombExtension = actual.getExtensionByUrl("ombCategory");
     var textExtension = actual.getExtensionByUrl("text");
@@ -302,12 +333,12 @@ class FhirConverterTest {
   }
 
   @Test
-  void null_convertToEthnicityExtension() {
+  void convertToEthnicityExtension_null() {
     assertThat(convertToEthnicityExtension(null)).isNull();
   }
 
   @Test
-  void string_convertToTribalAffiliation() {
+  void convertToTribalAffiliation_String() {
     var actual = convertToTribalAffiliationExtension("1");
     assert actual != null;
     var tribalAffiliationExtension = actual.getExtensionByUrl("tribalAffiliation");
@@ -322,19 +353,23 @@ class FhirConverterTest {
   }
 
   @Test
-  void emptyList_convertToTribalAffiliation() {
+  void convertToTribalAffiliation_List_empty() {
     var actual = convertToTribalAffiliationExtension(Collections.emptyList());
     assertThat(actual).isNull();
   }
 
   @Test
-  void null_convertToTribalAffiliation() {
+  void convertToTribalAffiliation_String_null() {
     assertThat(convertToTribalAffiliationExtension((String) null)).isNull();
+  }
+
+  @Test
+  void convertToTribalAffiliation_List_null() {
     assertThat(convertToTribalAffiliationExtension((List<String>) null)).isNull();
   }
 
   @Test
-  void provider_convertToPractitioner_matchesJson() throws IOException {
+  void convertToPractitioner_Provider_matchesJson() throws IOException {
     var internalId = "3c9c7370-e2e3-49ad-bb7a-f6005f41cf29";
     var provider =
         new Provider(
@@ -359,7 +394,7 @@ class FhirConverterTest {
   }
 
   @Test
-  void validFacility_toFhir() throws IOException {
+  void convertToOrganiziation_Facility_matchesJson() throws IOException {
     var internalId = "3c9c7370-e2e3-49ad-bb7a-f6005f41cf29";
     var facility =
         new Facility(
@@ -388,33 +423,32 @@ class FhirConverterTest {
   }
 
   @Test
-  void toFhir_ValidPerson_ReturnsValidPatient() throws IOException {
+  void convertToPatient_Person_matchesJson() throws IOException {
     var birthDate = LocalDate.of(2022, 12, 13);
     var internalId = "3c9c7370-e2e3-49ad-bb7a-f6005f41cf29";
     var person =
-        Mockito.spy(
-            new Person(
-                null,
-                null,
-                null,
-                "Austin",
-                "Wingate",
-                "Curtis",
-                "Jr",
-                birthDate,
-                new StreetAddress(
-                    List.of("501 Virginia St E", "#1"), "Charleston", "WV", "25301", "Kanawha"),
-                "USA",
-                null,
-                List.of("email1", "email2"),
-                "black",
-                "hispanic",
-                List.of("123"),
-                "Male",
-                false,
-                false,
-                "English",
-                null));
+        new Person(
+            null,
+            null,
+            null,
+            "Austin",
+            "Wingate",
+            "Curtis",
+            "Jr",
+            birthDate,
+            new StreetAddress(
+                List.of("501 Virginia St E", "#1"), "Charleston", "WV", "25301", "Kanawha"),
+            "USA",
+            null,
+            List.of("email1", "email2"),
+            "black",
+            "hispanic",
+            List.of("123"),
+            "Male",
+            false,
+            false,
+            "English",
+            null);
     ReflectionTestUtils.setField(
         person,
         "phoneNumbers",
@@ -438,7 +472,7 @@ class FhirConverterTest {
   }
 
   @Test
-  void string_convertToDevice() {
+  void convertToDevice_Strings_valid() {
     var actual =
         convertToDevice(
             "PHASE Scientific International, Ltd.\n",
@@ -455,12 +489,12 @@ class FhirConverterTest {
   }
 
   @Test
-  void nullString_convertToDevice() {
+  void convertToDevice_Strings_null() {
     assertThat(convertToDevice(null, null, null)).isNull();
   }
 
   @Test
-  void deviceSpecimenType_convertToDevice() {
+  void convertToDevice_DeviceType_valid() {
     var internalId = UUID.randomUUID();
     var deviceType = new DeviceType("name", "manufacturer", "model", "loinc", "swab type", 15);
     ReflectionTestUtils.setField(deviceType, "internalId", internalId);
@@ -475,12 +509,12 @@ class FhirConverterTest {
   }
 
   @Test
-  void nullDeviceType_convertToDevice() {
+  void convertToDevice_DeviceType_null() {
     assertThat(convertToDevice(null)).isNull();
   }
 
   @Test
-  void validDeviceType_convertToDevice_matchesJson() throws IOException {
+  void convertToDevice_DeviceType_matchesJson() throws IOException {
     var internalId = "3c9c7370-e2e3-49ad-bb7a-f6005f41cf29";
     DeviceType deviceType =
         new DeviceType(
@@ -507,7 +541,7 @@ class FhirConverterTest {
   }
 
   @Test
-  void string_convertToSpecimen() {
+  void convertToSpecimen_Strings_valid() {
     var actual =
         convertToSpecimen(
             "258500001",
@@ -532,7 +566,7 @@ class FhirConverterTest {
   }
 
   @Test
-  void null_convertToSpecimen() {
+  void convertToSpecimen_Strings_null() {
     var actual = convertToSpecimen(null, null, null, null, null);
 
     assertThat(actual.getId()).isNull();
@@ -543,7 +577,7 @@ class FhirConverterTest {
   }
 
   @Test
-  void specimenType_convertToSpecimen() {
+  void convertToSpecimen_SpecimenType_valid() {
     var specimenType =
         new SpecimenType(
             "Nasopharyngeal swab",
@@ -571,12 +605,12 @@ class FhirConverterTest {
   }
 
   @Test
-  void nullSpecimenType_convertToSpecimen() {
+  void convertToSpecimen_SpecimenType_null() {
     assertThat(convertToSpecimen(null)).isNull();
   }
 
   @Test
-  void validSpecimenType_convertToSpecimen_matchesJson() throws IOException {
+  void convertToSpecimen_SpecimenType_matchesJson() throws IOException {
     var internalId = "3c9c7370-e2e3-49ad-bb7a-f6005f41cf29";
     SpecimenType specimenType = new SpecimenType("nasal", "40001", "nose", "10101");
     ReflectionTestUtils.setField(specimenType, "internalId", UUID.fromString(internalId));
@@ -596,7 +630,7 @@ class FhirConverterTest {
   }
 
   @Test
-  void string_convertToObservation() {
+  void convertToObservation_Strings_valid() {
     var actual =
         convertToObservation(
             "diseaseCode",
@@ -621,7 +655,7 @@ class FhirConverterTest {
   }
 
   @Test
-  void result_convertToObservation() {
+  void convertToObservation_Result_valid() {
     var result =
         new Result(null, null, new SupportedDisease("covid-19", "96741-4"), TestResult.POSITIVE);
     var internalId = UUID.randomUUID();
@@ -644,7 +678,7 @@ class FhirConverterTest {
   }
 
   @Test
-  void correctedResult_convertToObservation() {
+  void convertToObservation_Result_correction() {
     var result =
         new Result(null, null, new SupportedDisease("covid-19", "96741-4"), TestResult.POSITIVE);
     var internalId = UUID.randomUUID();
@@ -659,7 +693,7 @@ class FhirConverterTest {
   }
 
   @Test
-  void removedResultNoReason_convertToObservation() {
+  void convertToObservation_Result_removeWithoutReason() {
     var result =
         new Result(null, null, new SupportedDisease("covid-19", "96741-4"), TestResult.POSITIVE);
     var internalId = UUID.randomUUID();
@@ -675,14 +709,14 @@ class FhirConverterTest {
   }
 
   @Test
-  void nullResult_convertToObservation() {
+  void convertToObservation_Result_null() {
     var actual = convertToObservation((Result) null, TestCorrectionStatus.ORIGINAL, null);
 
     assertThat(actual).isNull();
   }
 
   @Test
-  void nullDisease_convertToObservation() {
+  void convertToObservation_Result_nullDisease() {
     var actual =
         convertToObservation(
             new Result(null, null, null, TestResult.POSITIVE), TestCorrectionStatus.ORIGINAL, null);
@@ -691,7 +725,7 @@ class FhirConverterTest {
   }
 
   @Test
-  void multipleResults_toFhirObservation() throws IOException {
+  void convertToObservation_Result_matchesJson() throws IOException {
     var covidId = "3c9c7370-e2e3-49ad-bb7a-f6005f41cf29";
     var fluId = "302a7919-b699-4e0d-95ca-5fd2e3fcaf7a";
     var covidResult =
@@ -742,7 +776,7 @@ class FhirConverterTest {
   }
 
   @Test
-  void correction_toFhirObservation() throws IOException {
+  void convertToObservation_Result_correctionMatchesJson() throws IOException {
     var id = "3c9c7370-e2e3-49ad-bb7a-f6005f41cf29";
     var result = new Result(null, new SupportedDisease("COVID-19", "96741-4"), TestResult.NEGATIVE);
     ReflectionTestUtils.setField(result, "internalId", UUID.fromString(id));
@@ -762,7 +796,7 @@ class FhirConverterTest {
   }
 
   @Test
-  void testEvent_convertToDiagnosticReport() {
+  void convertToDiagnosticReport_TestEvent_valid() {
     var testEvent =
         new TestEvent(
             new TestOrder(
@@ -790,34 +824,7 @@ class FhirConverterTest {
   }
 
   @Test
-  void testEventOriginal_convertToDiagnosticReport() {
-    var testEvent =
-        new TestEvent(
-            new TestOrder(
-                new Person(null, null, null, null, null),
-                new Facility(
-                    null,
-                    null,
-                    null,
-                    null,
-                    null,
-                    null,
-                    null,
-                    new DeviceSpecimenType(
-                        new DeviceType(null, null, null, "95422-2", null, 0), null),
-                    Collections.emptyList())),
-            false,
-            Collections.emptySet());
-    var actual = convertToDiagnosticReport(testEvent);
-
-    assertThat(actual.getStatus()).isEqualTo(DiagnosticReportStatus.FINAL);
-    assertThat(actual.getCode().getCoding()).hasSize(1);
-    assertThat(actual.getCode().getCodingFirstRep().getSystem()).isEqualTo("http://loinc.org");
-    assertThat(actual.getCode().getCodingFirstRep().getCode()).isEqualTo("95422-2");
-  }
-
-  @Test
-  void testEventCorrected_convertToDiagnosticReport() {
+  void convertToDiagnosticReport_TestEvent_correctedTestEvent() {
     var invalidTestEvent =
         new TestEvent(
             new TestOrder(
@@ -844,7 +851,7 @@ class FhirConverterTest {
   }
 
   @Test
-  void testEventRemoved_convertToDiagnosticReport() {
+  void convertToDiagnosticReport_TestEvent_removedTestEvent() {
     var invalidTestEvent =
         new TestEvent(
             new TestOrder(
@@ -871,39 +878,12 @@ class FhirConverterTest {
   }
 
   @Test
-  void testEventNullDeviceType_convertToDiagnosticReport() {
-    var testEvent =
-        new TestEvent(
-            new TestOrder(
-                new Person(null, null, null, null, null),
-                new Facility(
-                    null,
-                    null,
-                    null,
-                    null,
-                    null,
-                    null,
-                    null,
-                    new DeviceSpecimenType(null, null),
-                    Collections.emptyList())),
-            false,
-            Collections.emptySet());
-
-    var actual = convertToDiagnosticReport(testEvent);
-
-    assertThat(actual.getStatus()).isEqualTo(DiagnosticReportStatus.FINAL);
-    assertThat(actual.getCode().getCoding()).isEmpty();
+  void convertToDiagnosticReport_TestEvent_null() {
+    assertThat(convertToDiagnosticReport(null)).isNull();
   }
 
   @Test
-  void nullTestEvent_convertToDiagnosticReport() {
-    var actual = convertToDiagnosticReport(null);
-
-    assertThat(actual).isNull();
-  }
-
-  @Test
-  void testEvent_convertToDiagnosticReport_matchesJson() throws IOException {
+  void convertToDiagnosticReport_TestEvent_matchesJson() throws IOException {
     var internalId = "3c9c7370-e2e3-49ad-bb7a-f6005f41cf29";
     var testEvent =
         new TestEvent(
@@ -940,7 +920,7 @@ class FhirConverterTest {
   }
 
   @Test
-  void string_convertToDiagnosticReport() {
+  void convertToDiagnosticReport_Strings_valid() {
     var actual = convertToDiagnosticReport(DiagnosticReportStatus.FINAL, "95422-2", "id-123");
 
     assertThat(actual.getId()).isEqualTo("id-123");
@@ -951,7 +931,7 @@ class FhirConverterTest {
   }
 
   @Test
-  void nullString_convertToDiagnosticReport() {
+  void convertToDiagnosticReport_Strings_null() {
     var actual = convertToDiagnosticReport(null, null, null);
 
     assertThat(actual.getId()).isNull();
@@ -960,7 +940,7 @@ class FhirConverterTest {
   }
 
   @Test
-  void testOrder_convertToServiceRequest() {
+  void convertToServiceRequest_TestOrder_valid() {
     var testOrder =
         new TestOrder(
             new Person(null, null, null, null, new Organization(null, null, null, true)),
@@ -985,7 +965,7 @@ class FhirConverterTest {
   }
 
   @Test
-  void testOrderComplete_convertToServiceRequest() {
+  void convertToServiceRequest_TestOrder_complete() {
     var testOrder =
         new TestOrder(
             new Person(null, null, null, null, new Organization(null, null, null, true)),
@@ -1006,7 +986,7 @@ class FhirConverterTest {
   }
 
   @Test
-  void testOrderCancelled_convertToServiceRequest() {
+  void convertToServiceRequest_TestOrder_cancelled() {
     var testOrder =
         new TestOrder(
             new Person(null, null, null, null, new Organization(null, null, null, true)),
@@ -1027,7 +1007,7 @@ class FhirConverterTest {
   }
 
   @Test
-  void testOrderNullDeviceType_convertToServiceRequest() {
+  void convertToServiceRequest_TestOrder_nullDeviceType() {
     var testOrder =
         new TestOrder(
             new Person(null, null, null, null, new Organization(null, null, null, true)),
@@ -1048,14 +1028,14 @@ class FhirConverterTest {
   }
 
   @Test
-  void nullTestOrder_convertToServiceRequest() {
+  void convertToServiceRequest_TestOrder_null() {
     var actual = convertToServiceRequest(null);
 
     assertThat(actual).isNull();
   }
 
   @Test
-  void string_convertToServiceRequest() {
+  void convertToServiceRequest_Strings_valid() {
     var actual = convertToServiceRequest(ServiceRequestStatus.COMPLETED, "94533-7", "id-123");
     assertThat(actual.getId()).isEqualTo("id-123");
     assertThat(actual.getStatus()).isEqualTo(ServiceRequestStatus.COMPLETED);
@@ -1065,7 +1045,7 @@ class FhirConverterTest {
   }
 
   @Test
-  void nullString_convertToServiceRequest() {
+  void convertToServiceRequest_Strings_null() {
     var actual = convertToServiceRequest(null, null, null);
     assertThat(actual.getId()).isNull();
     assertThat(actual.getStatus()).isNull();
@@ -1073,7 +1053,7 @@ class FhirConverterTest {
   }
 
   @Test
-  void testOrder_convertToServiceRequest_matchesJson() throws IOException {
+  void convertToServiceRequest_TestOrder_matchesJson() throws IOException {
     var internalId = "3c9c7370-e2e3-49ad-bb7a-f6005f41cf29";
     var testOrder =
         new TestOrder(
@@ -1109,7 +1089,7 @@ class FhirConverterTest {
   }
 
   @Test
-  void valid_getPractitionerRole() {
+  void getPractitionerRole_valid() {
     var practitionerRole =
         getPractitionerRole("Organization/org-id", "Practitioner/practitioner-id");
 
@@ -1119,7 +1099,7 @@ class FhirConverterTest {
   }
 
   @Test
-  void valid_getMessageHeader() {
+  void getMessageHeader_valid() {
     var messageHeader = getMessageHeader("Organization/org-id");
 
     assertThat(messageHeader.getEventCoding().getSystem())
@@ -1132,7 +1112,7 @@ class FhirConverterTest {
   }
 
   @Test
-  void valid_toFhirBundle() {
+  void toFhirBundle_TestEvent_valid() {
     var deviceType = new DeviceType("device", "manufacturer", "model", null, null, 0);
     var specimenType = new SpecimenType(null, null);
     var deviceSpecimenType = new DeviceSpecimenType(deviceType, specimenType);
@@ -1299,7 +1279,7 @@ class FhirConverterTest {
   }
 
   @Test
-  void testEvent_createFhirBundle_matchesJson() throws IOException {
+  void createFhirBundle_TestEvent_matchesJson() throws IOException {
     var address = new StreetAddress(List.of("1 Main St"), "Chicago", "IL", "60614", "");
     var deviceType = new DeviceType("name", "manufacturer", "model", "loinc", "nasal", 0);
     var specimenType = new SpecimenType("name", "typeCode");

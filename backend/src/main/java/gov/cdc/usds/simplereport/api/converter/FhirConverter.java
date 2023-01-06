@@ -109,29 +109,29 @@ public class FhirConverter {
     return humanName;
   }
 
-  public static List<ContactPoint> phoneNumberToContactPoint(List<PhoneNumber> phoneNumber) {
+  public static List<ContactPoint> convertPhoneNumbersToContactPoint(
+      List<PhoneNumber> phoneNumber) {
     if (phoneNumber != null && !phoneNumber.isEmpty()) {
       return phoneNumber.stream()
-          .map(FhirConverter::phoneNumberToContactPoint)
+          .map(FhirConverter::convertToContactPoint)
           .collect(Collectors.toList());
     }
     return Collections.emptyList();
   }
 
-  public static ContactPoint phoneNumberToContactPoint(PhoneNumber phoneNumber) {
+  public static ContactPoint convertToContactPoint(PhoneNumber phoneNumber) {
     if (phoneNumber != null) {
       var contactPointUse = ContactPointUse.HOME;
       if (PhoneType.MOBILE.equals(phoneNumber.getType())) {
         contactPointUse = ContactPointUse.MOBILE;
       }
 
-      return phoneNumberToContactPoint(contactPointUse, phoneNumber.getNumber());
+      return convertToContactPoint(contactPointUse, phoneNumber.getNumber());
     }
     return null;
   }
 
-  public static ContactPoint phoneNumberToContactPoint(
-      ContactPointUse contactPointUse, String number) {
+  public static ContactPoint convertToContactPoint(ContactPointUse contactPointUse, String number) {
     // converting string to phone format as recommended by the fhir format.
     // https://www.hl7.org/fhir/datatypes.html#ContactPoint
     try {
@@ -147,14 +147,16 @@ public class FhirConverter {
     return convertToContactPoint(contactPointUse, ContactPointSystem.PHONE, number);
   }
 
-  public static List<ContactPoint> emailToContactPoint(List<String> emails) {
+  public static List<ContactPoint> convertEmailsToContactPoint(List<String> emails) {
     if (emails != null) {
-      return emails.stream().map(FhirConverter::emailToContactPoint).collect(Collectors.toList());
+      return emails.stream()
+          .map(FhirConverter::convertEmailToContactPoint)
+          .collect(Collectors.toList());
     }
     return Collections.emptyList();
   }
 
-  public static ContactPoint emailToContactPoint(String email) {
+  public static ContactPoint convertEmailToContactPoint(String email) {
     if (email != null) {
       return convertToContactPoint(null, ContactPointSystem.EMAIL, email);
     }
@@ -299,8 +301,7 @@ public class FhirConverter {
     practitioner.setId(provider.getInternalId().toString());
     practitioner.addName(convertToHumanName(provider.getNameInfo()));
     practitioner.addAddress(convertToAddress(provider.getAddress()));
-    practitioner.addTelecom(
-        phoneNumberToContactPoint(ContactPointUse.WORK, provider.getTelephone()));
+    practitioner.addTelecom(convertToContactPoint(ContactPointUse.WORK, provider.getTelephone()));
     return practitioner;
   }
 
@@ -308,8 +309,8 @@ public class FhirConverter {
     var org = new Organization();
     org.setId(facility.getInternalId().toString());
     org.setName(facility.getFacilityName());
-    org.addTelecom(phoneNumberToContactPoint(ContactPointUse.WORK, facility.getTelephone()));
-    org.addTelecom(emailToContactPoint(facility.getEmail()));
+    org.addTelecom(convertToContactPoint(ContactPointUse.WORK, facility.getTelephone()));
+    org.addTelecom(convertEmailToContactPoint(facility.getEmail()));
     org.addAddress(convertToAddress(facility.getAddress()));
     return org;
   }
@@ -318,8 +319,8 @@ public class FhirConverter {
     var patient = new Patient();
     patient.setId(person.getInternalId().toString());
     patient.addName(convertToHumanName(person.getNameInfo()));
-    phoneNumberToContactPoint(person.getPhoneNumbers()).forEach(patient::addTelecom);
-    emailToContactPoint(person.getEmails()).forEach(patient::addTelecom);
+    convertPhoneNumbersToContactPoint(person.getPhoneNumbers()).forEach(patient::addTelecom);
+    convertEmailsToContactPoint(person.getEmails()).forEach(patient::addTelecom);
     patient.setGender(convertToAdministrativeGender(person.getGender()));
     patient.setBirthDate(convertToDate(person.getBirthDate()));
     patient.addAddress(convertToAddress(person.getAddress()));
