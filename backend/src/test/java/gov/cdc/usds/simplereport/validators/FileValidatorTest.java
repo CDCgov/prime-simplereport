@@ -15,8 +15,56 @@ import org.junit.jupiter.params.provider.ValueSource;
 
 class FileValidatorTest {
 
-  List<String> patientBulkUploadRequiredFields = PatientUploadRow.requiredFields;
-  List<String> testResultsUploadRequiredFields = TestResultRow.requiredFields;
+  List<String> patientBulkUploadRequiredFields =
+      List.of(
+          "first_name",
+          "last_name",
+          "race",
+          "date_of_birth",
+          "biological_sex",
+          "ethnicity",
+          "street",
+          "state",
+          "zip_code",
+          "phone_number",
+          "phone_number_type",
+          "employed_in_healthcare",
+          "resident_congregate_setting");
+  List<String> testResultsUploadRequiredFields =
+      List.of(
+          "patient_last_name",
+          "patient_first_name",
+          "patient_street",
+          "patient_city",
+          "patient_state",
+          "patient_zip_code",
+          "patient_county",
+          "patient_phone_number",
+          "patient_dob",
+          "patient_gender",
+          "patient_race",
+          "patient_ethnicity",
+          "accession_number",
+          "equipment_model_name",
+          "test_performed_code",
+          "test_result",
+          "order_test_date",
+          "test_result_date",
+          "specimen_type",
+          "ordering_provider_id",
+          "ordering_provider_last_name",
+          "ordering_provider_first_name",
+          "ordering_provider_street",
+          "ordering_provider_city",
+          "ordering_provider_state",
+          "ordering_provider_zip_code",
+          "ordering_provider_phone_number",
+          "testing_lab_clia",
+          "testing_lab_name",
+          "testing_lab_street",
+          "testing_lab_city",
+          "testing_lab_state",
+          "testing_lab_zip_code");
   FileValidator<PatientUploadRow> patientBulkUploadFileValidator =
       new FileValidator<>(PatientUploadRow::new);
   FileValidator<TestResultRow> testResultFileValidator = new FileValidator<>(TestResultRow::new);
