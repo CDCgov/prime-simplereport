@@ -1,6 +1,5 @@
 package gov.cdc.usds.simplereport.api;
 
-import static gov.cdc.usds.simplereport.test_util.TestDataBuilder.buildAddress;
 import static org.junit.jupiter.api.Assertions.assertNull;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.when;
@@ -73,9 +72,10 @@ public abstract class BaseAuthenticatedFullStackTest extends BaseFullStackTest {
   public void baseAuthenticatedFullStackTestSetup() {
     truncateDb();
     oktaRepository.reset();
-    when(addressValidationService.getValidatedAddress(any(), any())).thenReturn(buildAddress());
+    when(addressValidationService.getValidatedAddress(any(), any()))
+        .thenReturn(_dataFactory.getAddress());
     when(addressValidationService.getValidatedAddress(any(), any(), any(), any(), any(), any()))
-        .thenReturn(buildAddress());
+        .thenReturn(_dataFactory.getAddress());
     TestUserIdentities.withStandardUser(organizationInitializingService::initAll);
     useOrgUser();
     assertNull(

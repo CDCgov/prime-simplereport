@@ -1,7 +1,6 @@
 package gov.cdc.usds.simplereport.service;
 
 import static gov.cdc.usds.simplereport.api.Translators.parsePhoneType;
-import static gov.cdc.usds.simplereport.test_util.TestDataBuilder.buildAddress;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.mockito.ArgumentMatchers.any;
@@ -133,7 +132,7 @@ class PatientBulkUploadServiceAsyncTest extends BaseAuthenticatedFullStackTest {
         "Doe",
         "",
         LocalDate.of(1980, 11, 3),
-        buildAddress(),
+        _dataFactory.getAddress(),
         "USA",
         List.of(new PhoneNumber(parsePhoneType("mobile"), "410-867-5309")),
         PersonRole.STAFF,
