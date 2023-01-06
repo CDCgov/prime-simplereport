@@ -85,11 +85,11 @@ exports[`Upload Patient displays the upload patients page correctly 1`] = `
           class="prime-ul margin-0"
         >
           <li>
-            <span
-              class="font-sans-lg text-light line-height-225"
+            <h2
+              class="margin-0 font-sans-lg text-light line-height-225"
             >
               1. Setup your spreadsheet
-            </span>
+            </h2>
             <div
               class="margin-left-3"
             >
@@ -122,19 +122,19 @@ exports[`Upload Patient displays the upload patients page correctly 1`] = `
             </div>
           </li>
           <li>
-            <div
+            <h2
               class="margin-top-7 margin-bottom-1 font-sans-lg text-light line-height-225"
             >
               2. Would you like to import these patients to one facility OR all facilities?
-            </div>
+            </h2>
             <div
               class="margin-left-3"
             >
-              <div
+              <p
                 class="maxw-710 line-height-sans-4"
               >
                 If you plan to test patients at more than one facility, we recommend adding them to all facilities. You can't select multiple facilities individually.
-              </div>
+              </p>
               <div
                 class="usa-form-group margin-top-2"
               >
@@ -192,77 +192,73 @@ exports[`Upload Patient displays the upload patients page correctly 1`] = `
             </div>
           </li>
           <li>
-            <div
+            <h2
               class="margin-top-7 margin-bottom-1 font-sans-lg text-light line-height-225"
             >
               3. Upload your spreadsheet
               .
-            </div>
+            </h2>
             <div
               class="margin-left-3"
             >
-              <div
+              <p
                 class="maxw-710 line-height-sans-4"
               >
                 The system will check the data for errors before adding your patients to SimpleReport.
-              </div>
-              <div>
+              </p>
+              <div
+                class="usa-form-group margin-bottom-3"
+                data-testid="formGroup"
+              >
                 <div
-                  class="usa-form-group margin-bottom-3"
-                  data-testid="formGroup"
+                  class="usa-file-input"
+                  data-testid="file-input"
                 >
                   <div
-                    class="usa-file-input"
-                    data-testid="file-input"
+                    class="usa-file-input__target"
+                    data-testid="file-input-droptarget"
                   >
                     <div
-                      class="usa-file-input__target"
-                      data-testid="file-input-droptarget"
+                      aria-hidden="true"
+                      class="usa-file-input__instructions"
+                      data-testid="file-input-instructions"
                     >
-                      <div
-                        aria-hidden="true"
-                        class="usa-file-input__instructions"
-                        data-testid="file-input-instructions"
+                      <span
+                        class="usa-file-input__drag-text"
                       >
-                        <span
-                          class="usa-file-input__drag-text"
-                        >
-                          Drag file here or 
-                        </span>
-                        <span
-                          class="usa-file-input__choose"
-                        >
-                          choose from folder
-                        </span>
-                      </div>
-                      <div
-                        class="usa-file-input__box"
-                        data-testid="file-input-box"
-                      />
-                      <input
-                        accept="text/csv, .csv"
-                        aria-label="Choose CSV file"
-                        class="usa-file-input__input"
-                        data-testid="file-input-input"
-                        id="upload-csv-input"
-                        name="upload-csv-input"
-                        required=""
-                        type="file"
-                      />
+                        Drag file here or 
+                      </span>
+                      <span
+                        class="usa-file-input__choose"
+                      >
+                        choose from folder
+                      </span>
                     </div>
+                    <div
+                      class="usa-file-input__box"
+                      data-testid="file-input-box"
+                    />
+                    <input
+                      accept="text/csv, .csv"
+                      aria-label="Choose CSV file"
+                      class="usa-file-input__input"
+                      data-testid="file-input-input"
+                      id="upload-csv-input"
+                      name="upload-csv-input"
+                      required=""
+                      type="file"
+                    />
                   </div>
                 </div>
               </div>
-              <div>
-                <button
-                  aria-disabled="true"
-                  class="usa-button usa-button-disabled"
-                  disabled=""
-                  type="button"
-                >
-                  Upload CSV file
-                </button>
-              </div>
+              <button
+                aria-disabled="true"
+                class="usa-button usa-button-disabled"
+                disabled=""
+                type="button"
+              >
+                Upload CSV file
+              </button>
             </div>
           </li>
         </ol>
