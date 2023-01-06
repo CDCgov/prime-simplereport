@@ -67,7 +67,7 @@ class FileValidatorTest {
           if (errorMessage.contains("File is missing data in the")) {
             assertThat(error.getIndices()).isEqualTo(List.of(2));
           } else if (errorMessage.contains("The header for column")) {
-            assertThat(error.getIndices()).isEqualTo(List.of(1));
+            assertThat(error.getIndices()).isNull();
           }
         });
     patientBulkUploadRequiredFields.forEach(
@@ -213,7 +213,7 @@ class FileValidatorTest {
           if (errorMessage.contains("File is missing data in the")) {
             assertThat(error.getIndices()).isEqualTo(List.of(2));
           } else if (errorMessage.contains("The header for column")) {
-            assertThat(error.getIndices()).isEqualTo(List.of(1));
+            assertThat(error.getIndices()).isNull();
           }
         });
     testResultsUploadRequiredFields.forEach(

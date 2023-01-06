@@ -265,7 +265,7 @@ public class CsvValidatorUtils {
                     new FeedbackMessage(
                         CsvValidatorUtils.ITEM_SCOPE,
                         "The header for column " + requiredField + " is missing or invalid.",
-                        List.of(1));
+                        null);
                 errors.add(feedback);
               }
             });

@@ -73,7 +73,15 @@ public class FileValidator<T extends FileRow> {
     }
 
     var errors = new ArrayList<>(mapOfErrors.values());
-    errors.sort(Comparator.comparingInt(e -> e.getIndices().get(0)));
+    errors.sort(
+        Comparator.comparingInt(
+            e -> {
+              int index = 0;
+              if (e.getIndices() != null) {
+                index = e.getIndices().get(0);
+              }
+              return index;
+            }));
     return errors;
   }
 
