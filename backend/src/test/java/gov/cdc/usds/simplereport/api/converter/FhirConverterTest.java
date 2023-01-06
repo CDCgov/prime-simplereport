@@ -1133,11 +1133,7 @@ class FhirConverterTest {
 
   @Test
   void valid_toFhirBundle() {
-    var person =
-        new Person(
-            null, null, "Julia", "Fiona", "Roberts", null, null, null, null, null, null, null, null,
-            null, null, "female", null, null, null, null);
-    var deviceType = new DeviceType("", "", null, null, null, 0);
+    var deviceType = new DeviceType("device", "manufacturer", "model", null, null, 0);
     var specimenType = new SpecimenType(null, null);
     var deviceSpecimenType = new DeviceSpecimenType(deviceType, specimenType);
 
@@ -1152,6 +1148,11 @@ class FhirConverterTest {
             null,
             deviceSpecimenType,
             Collections.emptyList());
+
+    var person =
+        new Person(
+            null, facility, null, "Shrek", "The", "Ogre", null, null, null, null, null, null, null,
+            null, null, "female", null, null, null, null);
 
     var provider =
         new Provider(
@@ -1189,11 +1190,11 @@ class FhirConverterTest {
             convertToPatient(person),
             convertToOrganization(facility),
             convertToPractitioner(provider),
-            null,
-            null,
-            null,
-            null,
-            null);
+            convertToDevice(deviceType),
+            convertToSpecimen(specimenType),
+            convertToObservation(Set.of(result), TestCorrectionStatus.ORIGINAL, null),
+            convertToServiceRequest(testOrder),
+            convertToDiagnosticReport(testEvent));
 
     var resourceUrls =
         actual.getEntry().stream()
@@ -1210,8 +1211,8 @@ class FhirConverterTest {
             "Practitioner/" + providerId,
             "Specimen/" + specimenTypeId,
             "Observation/" + resultId,
-            "ServiceRequest/" + testEventId,
-            "DiagnosticReport/" + testOrderId,
+            "ServiceRequest/" + testOrderId,
+            "DiagnosticReport/" + testEventId,
             "Device/" + deviceTypeId);
 
     var practitionerRoleEntry =
@@ -1246,6 +1247,9 @@ class FhirConverterTest {
             .orElseThrow(() -> new AssertionError("Expected to find Observation, but not found"));
     assertThat(((Observation) observationEntry.getResource()).getSubject().getReference())
         .isEqualTo("Patient/" + personId);
+    assertThat(((Observation) observationEntry.getResource()).getPerformer()).hasSize(1);
+    assertThat(((Observation) observationEntry.getResource()).getPerformerFirstRep().getReference())
+        .isEqualTo("Organization/" + facilityId);
     assertThat(((Observation) observationEntry.getResource()).getSpecimen().getReference())
         .isEqualTo("Specimen/" + specimenTypeId);
     assertThat(((Observation) observationEntry.getResource()).getDevice().getReference())
@@ -1291,7 +1295,7 @@ class FhirConverterTest {
             ((DiagnosticReport) diagnosticReportEntry.getResource())
                 .getResultFirstRep()
                 .getReference())
-        .isEqualTo("Result/" + resultId);
+        .isEqualTo("Observation/" + resultId);
   }
 
   @Test
@@ -1322,7 +1326,7 @@ class FhirConverterTest {
             null,
             "Jordan",
             null,
-            LocalDate.MIN,
+            LocalDate.of(2022, 12, 13),
             address,
             "USA",
             PersonRole.STUDENT,
@@ -1340,7 +1344,28 @@ class FhirConverterTest {
     var fluAResult = new Result(testOrder, new SupportedDisease(), TestResult.NEGATIVE);
     var fluBResult = new Result(testOrder, new SupportedDisease(), TestResult.UNDETERMINED);
     var testEvent = new TestEvent(testOrder, false, Set.of(covidResult, fluAResult, fluBResult));
-    //    ReflectionTestUtils.setField(provider, "internalId", providerId);
+
+    var providerId = UUID.fromString("ffc07f31-f2af-4728-a247-8cb3aa05ccd0");
+    var facilityId = UUID.fromString("1c3d14b9-e222-4a16-9fb2-d9f173034a6a");
+    var personId = UUID.fromString("55c53ed2-add5-47fb-884e-b4542ee64589");
+    var specimenTypeId = UUID.fromString("725252ea-50ef-46bd-ae79-c70e1d04b949");
+    var deviceTypeId = UUID.fromString("48aabd5f-a591-4e0e-9fa2-301d3d5a6df4");
+    var covidResultId = UUID.fromString("4163abc1-0a54-4aff-badb-87bb96a89470");
+    var fluAResultId = UUID.fromString("f7184a68-c54e-4209-8cc6-5bf5b253e4bd");
+    var fluBResultId = UUID.fromString("6db25889-09cb-4127-9330-cc7e7459c1cd");
+    var testOrderId = UUID.fromString("cae01b8c-37dc-4c09-a6d4-ae7bcafc9720");
+    var testEventId = UUID.fromString("45e9539f-c9a4-4c86-b79d-4ba2c43f9ee0");
+
+    ReflectionTestUtils.setField(provider, "internalId", providerId);
+    ReflectionTestUtils.setField(facility, "internalId", facilityId);
+    ReflectionTestUtils.setField(patient, "internalId", personId);
+    ReflectionTestUtils.setField(specimenType, "internalId", specimenTypeId);
+    ReflectionTestUtils.setField(deviceType, "internalId", deviceTypeId);
+    ReflectionTestUtils.setField(covidResult, "internalId", covidResultId);
+    ReflectionTestUtils.setField(fluAResult, "internalId", fluAResultId);
+    ReflectionTestUtils.setField(fluBResult, "internalId", fluBResultId);
+    ReflectionTestUtils.setField(testOrder, "internalId", testOrderId);
+    ReflectionTestUtils.setField(testEvent, "internalId", testEventId);
 
     var actual = createFhirBundle(testEvent);
 
@@ -1348,11 +1373,22 @@ class FhirConverterTest {
     IParser parser = ctx.newJsonParser();
 
     String actualSerialized = parser.encodeResourceToString(actual);
+
+    var messageHeaderStart = actualSerialized.indexOf("MessageHeader/") + 14;
+    var practitionerRoleStart = actualSerialized.indexOf("PractitionerRole/") + 17;
+    var messageHeaderId = actualSerialized.substring(messageHeaderStart, messageHeaderStart + 36);
+    var practitionerRoleId =
+        actualSerialized.substring(practitionerRoleStart, practitionerRoleStart + 36);
+
     var expectedSerialized =
         IOUtils.toString(
             Objects.requireNonNull(
                 getClass().getClassLoader().getResourceAsStream("fhir/bundle.json")),
             StandardCharsets.UTF_8);
-    JSONAssert.assertEquals(actualSerialized, expectedSerialized, true);
+
+    expectedSerialized = expectedSerialized.replace("$MESSAGE_HEADER_ID", messageHeaderId);
+    expectedSerialized = expectedSerialized.replace("$PRACTITIONER_ROLE_ID", practitionerRoleId);
+
+    JSONAssert.assertEquals(actualSerialized, expectedSerialized, false);
   }
 }

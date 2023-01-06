@@ -548,15 +548,17 @@ public class FhirConverter {
 
   public static Bundle createFhirBundle(TestEvent testEvent) {
     return createFhirBundle(
-        null, //        patientData.toFhir(),
-        null, //        getFacility().toFhir(),
-        null, //        providerData.toFhir(),
-        null, // getDeviceSpecimenType(),
-        null, // getDeviceSpecimenType(),
-        null, // results.toFhir(),
-        null, // toServiceRequest(this)
-        null // getTestOrder().toFhir()
-        );
+        convertToPatient(testEvent.getPatient()),
+        convertToOrganization(testEvent.getFacility()),
+        convertToPractitioner(testEvent.getProviderData()),
+        convertToDevice(testEvent.getDeviceType()),
+        convertToSpecimen(testEvent.getSpecimenType()),
+        convertToObservation(
+            testEvent.getResults(),
+            testEvent.getCorrectionStatus(),
+            testEvent.getReasonForCorrection()),
+        convertToServiceRequest(testEvent.getOrder()),
+        convertToDiagnosticReport(testEvent));
   }
 
   public static Bundle createFhirBundle(
@@ -565,14 +567,13 @@ public class FhirConverter {
       Practitioner practitioner,
       Device device,
       Specimen specimen,
-      Observation observation,
+      List<Observation> observations,
       ServiceRequest serviceRequest,
       DiagnosticReport diagnosticReport) {
     var patientFullUrl = ResourceType.Patient + "/" + patient.getId();
     var organizationFullUrl = ResourceType.Organization + "/" + organization.getId();
     var practitionerFullUrl = ResourceType.Practitioner + "/" + practitioner.getId();
     var specimenFullUrl = ResourceType.Specimen + "/" + specimen.getId();
-    var observationFullUrl = ResourceType.Observation + "/" + observation.getId();
     var serviceRequestFullUrl = ResourceType.ServiceRequest + "/" + serviceRequest.getId();
     var diagnosticReportFullUrl = ResourceType.DiagnosticReport + "/" + diagnosticReport.getId();
     var deviceFullUrl = ResourceType.Device + "/" + device.getId();
@@ -584,28 +585,36 @@ public class FhirConverter {
 
     patient.setManagingOrganization(new Reference(organizationFullUrl));
     specimen.setSubject(new Reference(patientFullUrl));
-    observation.setSubject(new Reference(patientFullUrl));
-    observation.addPerformer(new Reference(observationFullUrl));
-    observation.setSpecimen(new Reference(specimenFullUrl));
-    observation.setDevice(new Reference(deviceFullUrl));
+
     serviceRequest.setSubject(new Reference(patientFullUrl));
     serviceRequest.addPerformer(new Reference(organizationFullUrl));
     diagnosticReport.addBasedOn(new Reference(serviceRequestFullUrl));
     diagnosticReport.setSubject(new Reference(patientFullUrl));
     diagnosticReport.addSpecimen(new Reference(specimenFullUrl));
-    diagnosticReport.addResult(new Reference(observation));
 
     var entryMap = new HashMap<String, Resource>();
     entryMap.put(patientFullUrl, patient);
     entryMap.put(organizationFullUrl, organization);
     entryMap.put(practitionerFullUrl, practitioner);
     entryMap.put(specimenFullUrl, specimen);
-    entryMap.put(observationFullUrl, observation);
     entryMap.put(serviceRequestFullUrl, serviceRequest);
     entryMap.put(diagnosticReportFullUrl, diagnosticReport);
     entryMap.put(deviceFullUrl, device);
     entryMap.put(practitionerRoleFullUrl, practitionerRole);
     entryMap.put(messageHeaderFullUrl, messageHeader);
+
+    observations.forEach(
+        observation -> {
+          var observationFullUrl = ResourceType.Observation + "/" + observation.getId();
+
+          observation.setSubject(new Reference(patientFullUrl));
+          observation.addPerformer(new Reference(organizationFullUrl));
+          observation.setSpecimen(new Reference(specimenFullUrl));
+          observation.setDevice(new Reference(deviceFullUrl));
+
+          diagnosticReport.addResult(new Reference(observationFullUrl));
+          entryMap.put(observationFullUrl, observation);
+        });
 
     var bundle = new Bundle().setType(BundleType.MESSAGE);
     entryMap.forEach(
