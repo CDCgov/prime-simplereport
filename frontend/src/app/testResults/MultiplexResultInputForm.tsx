@@ -1,4 +1,5 @@
 import React from "react";
+import classNames from "classnames";
 
 import RadioGroup from "../commonComponents/RadioGroup";
 import Button from "../commonComponents/Button/Button";
@@ -272,7 +273,9 @@ const MultiplexResultInputForm: React.FC<Props> = ({
           />
         </div>
         <Button
-          className="grid-col-auto prime-multiplex-btn"
+          className={classNames("grid-col-auto", "prime-multiplex-btn", {
+            "no-hover-state-when-disabled": !validateForm() || isSubmitDisabled,
+          })}
           onClick={onResultSubmit}
           type="submit"
           disabled={!validateForm() || isSubmitDisabled}
