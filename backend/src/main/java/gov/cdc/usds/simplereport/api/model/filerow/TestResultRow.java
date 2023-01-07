@@ -123,7 +123,7 @@ public class TestResultRow implements FileRow {
   static final String TESTING_LAB_STATE = "testing_lab_state";
   static final String TESTING_LAB_ZIP_CODE_FIELD = "testing_lab_zip_code";
 
-  public static final List<String> requiredFields =
+  private static final List<String> requiredFields =
       List.of(
           PATIENT_LAST_NAME,
           PATIENT_FIRST_NAME,
@@ -263,6 +263,11 @@ public class TestResultRow implements FileRow {
   @Override
   public List<FeedbackMessage> validateRequiredFields() {
     return getPossibleErrorsFromFields();
+  }
+
+  @Override
+  public Boolean isRequired(String rowName) {
+    return requiredFields.contains(rowName);
   }
 
   @Override

@@ -38,7 +38,12 @@ class FileRowTest {
 
       @Override
       public List<String> getRequiredFields() {
-        return getRequiredFields();
+        return List.of(null);
+      }
+
+      @Override
+      public Boolean isRequired(String rowName) {
+        return false;
       }
     }
     var fileRow = new TestFileRow();
@@ -66,7 +71,12 @@ class FileRowTest {
 
       @Override
       public List<String> getRequiredFields() {
-        return getRequiredFields();
+        return List.of(null);
+      }
+
+      @Override
+      public Boolean isRequired(String rowName) {
+        return false;
       }
     }
     var fileRow = new TestFileRow();
@@ -94,7 +104,12 @@ class FileRowTest {
 
       @Override
       public List<String> getRequiredFields() {
-        return getRequiredFields();
+        return List.of(null);
+      }
+
+      @Override
+      public Boolean isRequired(String rowName) {
+        return false;
       }
     }
     var fileRow = new TestFileRow();

@@ -59,7 +59,7 @@ public class PatientUploadRow implements FileRow {
   static final String EMPLOYED_IN_HEALTHCARE = "employed_in_healthcare";
   static final String RESIDENT_CONGREGATE_SETTING = "resident_congregate_setting";
 
-  public static final List<String> requiredFields =
+  private static final List<String> requiredFields =
       List.of(
           FIRST_NAME,
           LAST_NAME,
@@ -102,13 +102,18 @@ public class PatientUploadRow implements FileRow {
   }
 
   @Override
+  public List<String> getRequiredFields() {
+    return requiredFields;
+  }
+
+  @Override
   public List<FeedbackMessage> validateRequiredFields() {
     return getPossibleErrorsFromFields();
   }
 
   @Override
-  public List<String> getRequiredFields() {
-    return requiredFields;
+  public Boolean isRequired(String rowName) {
+    return requiredFields.contains(rowName);
   }
 
   @Override

@@ -13,15 +13,13 @@ import org.slf4j.Logger;
 public interface FileRow {
   Logger log = org.slf4j.LoggerFactory.getLogger(FileRow.class);
 
+  Boolean isRequired(String rowName);
+
   List<FeedbackMessage> validateRequiredFields();
 
   List<FeedbackMessage> validateIndividualValues();
 
   List<String> getRequiredFields();
-
-  default Boolean isRequired(String rowName) {
-    return getRequiredFields().contains(rowName);
-  }
 
   default List<FeedbackMessage> getPossibleErrorsFromFields() {
     List<FeedbackMessage> errors = new ArrayList<>();
