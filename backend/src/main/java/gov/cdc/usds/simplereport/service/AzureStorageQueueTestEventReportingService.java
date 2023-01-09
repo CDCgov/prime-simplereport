@@ -30,7 +30,6 @@ public final class AzureStorageQueueTestEventReportingService implements TestEve
   @Override
   public CompletableFuture<Void> reportAsync(TestEvent testEvent) {
     log.trace("Dispatching TestEvent [{}] to Azure storage queue", testEvent.getInternalId());
-    System.out.println("in regular storage queue reporting service");
     return queueClient.sendMessage(toBuffer(testEvent)).toFuture().thenApply(result -> null);
   }
 
