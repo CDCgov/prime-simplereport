@@ -1071,8 +1071,8 @@ class FhirConverterTest {
 
     assertThat(actual.getType()).isEqualTo(BundleType.MESSAGE);
     assertThat(actual.getEntry()).hasSize(10);
-    assertThat(resourceUrls).hasSize(10);
     assertThat(resourceUrls)
+        .hasSize(10)
         .contains(
             "Patient/" + patient.getId(),
             "Organization/" + organization.getId(),

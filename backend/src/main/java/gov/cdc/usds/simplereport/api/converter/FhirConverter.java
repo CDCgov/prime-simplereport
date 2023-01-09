@@ -517,7 +517,7 @@ public class FhirConverter {
   }
 
   public static Bundle createFhirBundle(
-      @NotNull Patient patient,
+      Patient patient,
       Organization organization,
       Practitioner practitioner,
       Device device,
