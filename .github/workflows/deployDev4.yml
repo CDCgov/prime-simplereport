@@ -65,7 +65,7 @@ jobs:
         with:
           node-version: ${{env.NODE_VERSION}}
       - name: Use cache for node_modules
-        uses: actions/cache@v3.2.2
+        uses: actions/cache@v3.2.3
         with:
           path: |
             ./frontend/node_modules
