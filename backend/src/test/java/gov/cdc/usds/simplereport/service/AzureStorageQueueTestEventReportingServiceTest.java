@@ -1,7 +1,6 @@
 package gov.cdc.usds.simplereport.service;
 
-import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertThrows;
+import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyInt;
 import static org.mockito.ArgumentMatchers.argThat;
@@ -31,6 +30,11 @@ import reactor.core.publisher.Mono;
 class AzureStorageQueueTestEventReportingServiceTest
     extends BaseServiceTest<TestEventReportingService> {
   private final ObjectMapper mapper = new ObjectMapper().findAndRegisterModules();
+
+  @Test
+  void this_should_fail() {
+    assertTrue(false);
+  }
 
   @Test
   void dispatches_supplied_event_to_queue_client() {
