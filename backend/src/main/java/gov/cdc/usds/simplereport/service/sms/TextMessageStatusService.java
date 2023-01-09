@@ -29,7 +29,7 @@ import org.springframework.transaction.annotation.Transactional;
 @Transactional
 public class TextMessageStatusService {
 
-  private PhoneNumberRepository _phoneRepo;
+  private PhoneNumberRepository phoneRepo;
   private final RequestValidator validator;
   private TextMessageSentRepository sentRepo;
   private TextMessageStatusRepository statusRepo;
@@ -45,7 +45,7 @@ public class TextMessageStatusService {
     this.validator = new RequestValidator(authToken);
     this.sentRepo = sentRepo;
     this.statusRepo = statusRepo;
-    this._phoneRepo = phoneRepo;
+    this.phoneRepo = phoneRepo;
   }
 
   public void saveTextMessageStatus(String messageId, String status) {
@@ -89,8 +89,8 @@ public class TextMessageStatusService {
   }
 
   private Optional<String> getNumberByMessageId(String messageId, String twilioNumber) {
-    final Integer PREFIX_START = 0;
-    final Integer PREFIX_END = 8;
+    final int PREFIX_START = 0;
+    final int PREFIX_END = 8;
     var phoneUtil = PhoneNumberUtil.getInstance();
     String numberPrefix = twilioNumber.substring(PREFIX_START, PREFIX_END);
     TextMessageSent txtMsg = sentRepo.findByTwilioMessageId(messageId);
@@ -121,11 +121,11 @@ public class TextMessageStatusService {
     Optional<String> landlineNumber = getNumberByMessageId(messageId, twilioNumber);
     if (!landlineNumber.isEmpty()) {
       List<PhoneNumber> phoneNumbers =
-          _phoneRepo.findAllByNumberAndType(
+          phoneRepo.findAllByNumberAndType(
               parsePhoneNumber(landlineNumber.get()), PhoneType.MOBILE);
 
       phoneNumbers.forEach(phoneNumber -> phoneNumber.setType(PhoneType.LANDLINE));
-      _phoneRepo.saveAll(phoneNumbers);
+      phoneRepo.saveAll(phoneNumbers);
     }
   }
 }

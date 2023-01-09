@@ -1,4 +1,5 @@
 import React from "react";
+import classNames from "classnames";
 
 import RadioGroup from "../commonComponents/RadioGroup";
 import Button from "../commonComponents/Button/Button";
@@ -97,6 +98,9 @@ const CovidResultInputForm: React.FC<Props> = ({
       />
       <div className="prime-test-result-submit">
         <Button
+          className={classNames({
+            "no-hover-state-when-disabled": !allowSubmit,
+          })}
           onClick={onResultSubmit}
           type="submit"
           disabled={!allowSubmit}

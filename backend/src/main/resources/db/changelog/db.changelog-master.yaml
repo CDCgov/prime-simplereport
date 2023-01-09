@@ -4132,3 +4132,32 @@ databaseChangeLog:
       rollback:
         - dropIndex:
             indexName: ix__patient_link__created_at
+  - changeSet:
+      id: drop-facility_device_specimen_type-table
+      author: zedd@skylight.digital
+      changes:
+        - tagDatabase:
+            tag: drop-facility_device_specimen_type-table
+        - dropTable:
+            tableName: facility_device_specimen_type
+      rollback:
+        - createTable:
+            tableName: facility_device_specimen_type
+            remarks: Many-to-many table for device/specimen configuration at a facility.
+            columns:
+              - column:
+                  name: facility_id
+                  remarks: A facility at which this device/specimen combination is used.
+                  type: uuid
+                  constraints:
+                    nullable: false
+                    foreignKeyName: fk__facility_device_specimen_type__facility
+                    references: facility
+              - column:
+                  name: device_specimen_type_id
+                  remarks: A device/specimen combination that is allowed to be used at the facility.
+                  type: uuid
+                  constraints:
+                    nullable: false
+                    foreignKeyName: fk__facility_device_specimen_type__device_specimen_type
+                    references: device_specimen_type

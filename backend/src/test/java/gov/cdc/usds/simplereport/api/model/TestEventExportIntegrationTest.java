@@ -14,7 +14,6 @@ import gov.cdc.usds.simplereport.db.model.auxiliary.TestResult;
 import gov.cdc.usds.simplereport.service.OrganizationService;
 import gov.cdc.usds.simplereport.service.TestEventService;
 import gov.cdc.usds.simplereport.test_util.SliceTestConfiguration.WithSimpleReportStandardUser;
-import gov.cdc.usds.simplereport.test_util.TestDataFactory;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
@@ -34,7 +33,6 @@ import org.springframework.test.context.TestPropertySource;
     })
 @WithSimpleReportStandardUser
 class TestEventExportIntegrationTest extends BaseGraphqlTest {
-  @Autowired protected TestDataFactory _dataFactory;
   @Autowired private TestEventService _testEventService;
   @Autowired private OrganizationService _orgService;
   @MockBean private CurrentTenantDataAccessContextHolder _tenantDataAccessContextHolder;

@@ -454,7 +454,7 @@ exports[`TestQueue should render the test queue 1`] = `
                 >
                   <button
                     aria-disabled="true"
-                    class="usa-button usa-button--outline usa-button-disabled"
+                    class="usa-button usa-button--outline usa-button-disabled no-hover-state-when-disabled"
                     disabled=""
                     type="submit"
                   >
@@ -865,7 +865,7 @@ exports[`TestQueue should render the test queue 1`] = `
                 >
                   <button
                     aria-disabled="true"
-                    class="usa-button usa-button--outline usa-button-disabled"
+                    class="usa-button usa-button--outline usa-button-disabled no-hover-state-when-disabled"
                     disabled=""
                     type="submit"
                   >
