@@ -26,7 +26,7 @@ class TextMessageSentRepositoryTest extends BaseRepositoryTest {
 
   @BeforeEach
   public void init() {
-    Organization org = _dataFactory.createValidOrg();
+    Organization org = _dataFactory.saveValidOrganization();
     Person p1 = _dataFactory.createFullPerson(org);
     Person p2 = _dataFactory.createFullPerson(org);
     Facility f = _dataFactory.createValidFacility(org);

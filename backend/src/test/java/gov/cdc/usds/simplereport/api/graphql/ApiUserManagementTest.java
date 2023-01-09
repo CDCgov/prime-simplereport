@@ -275,7 +275,7 @@ class ApiUserManagementTest extends BaseGraphqlTest {
     TestUserIdentities.withUser(
         TestUserIdentities.SITE_ADMIN_USER,
         () -> {
-          Organization org = _dataFactory.createUnverifiedOrg();
+          Organization org = _dataFactory.saveUnverifiedOrganization();
 
           useSuperUser();
 
@@ -1193,7 +1193,7 @@ class ApiUserManagementTest extends BaseGraphqlTest {
         TestUserIdentities.SITE_ADMIN_USER,
         () -> {
           useSuperUser();
-          _dataFactory.createValidOrg("The Mall", "k12", "dc-with-trailing-space ", true);
+          _dataFactory.saveOrganization("The Mall", "k12", "dc-with-trailing-space ", true);
 
           Map<String, Object> variables =
               Map.of(

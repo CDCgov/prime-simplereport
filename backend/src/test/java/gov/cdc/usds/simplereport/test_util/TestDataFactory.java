@@ -1,7 +1,6 @@
 package gov.cdc.usds.simplereport.test_util;
 
 import gov.cdc.usds.simplereport.api.model.Role;
-import gov.cdc.usds.simplereport.api.model.accountrequest.OrganizationAccountRequest;
 import gov.cdc.usds.simplereport.db.model.DeviceSpecimenType;
 import gov.cdc.usds.simplereport.db.model.DeviceType;
 import gov.cdc.usds.simplereport.db.model.Facility;
@@ -105,20 +104,25 @@ public class TestDataFactory {
   @Autowired private ApiUserService apiUserService;
   @Autowired private DiseaseService diseaseService;
 
-  public Organization createValidOrg(
+  //  @Autowired private TestDataBuilder dataBuilder;
+
+  public Organization saveOrganization(Organization org) {
+    Organization savedOrg = organizationRepository.save(org);
+    oktaRepository.createOrganization(savedOrg);
+    return savedOrg;
+  }
+
+  public Organization saveOrganization(
       String name, String type, String externalId, boolean identityVerified) {
-    Organization org =
-        organizationRepository.save(new Organization(name, type, externalId, identityVerified));
-    oktaRepository.createOrganization(org);
-    return org;
+    return saveOrganization(TestDataBuilder.buildOrg(name, type, externalId, identityVerified));
   }
 
-  public Organization createValidOrg() {
-    return createValidOrg("The Mall", "k12", DEFAULT_ORG_ID, true);
+  public Organization saveValidOrganization() {
+    return saveOrganization(TestDataBuilder.createValidOrganization());
   }
 
-  public Organization createUnverifiedOrg() {
-    return createValidOrg("The Plaza", "k12", ALT_ORG_ID, false);
+  public Organization saveUnverifiedOrganization() {
+    return saveOrganization(TestDataBuilder.createUnverifiedOrganization());
   }
 
   public UserInfo createValidApiUser(String username, Organization org) {
@@ -126,30 +130,20 @@ public class TestDataFactory {
     return apiUserService.createUser(username, name, org.getExternalId(), Role.USER);
   }
 
-  public OrganizationQueueItem createOrganizationQueueItem(
+  public OrganizationQueueItem saveOrganizationQueueItem(
       String orgName, String orgExternalId, String adminEmail) {
     return organizationQueueRepository.save(
-        new OrganizationQueueItem(
-            orgName,
-            orgExternalId,
-            new OrganizationAccountRequest(
-                "First", "Last", adminEmail, "800-555-1212", "CA", null, null)));
+        TestDataBuilder.buildOrganizationQueueItem(orgName, orgExternalId, adminEmail));
   }
 
-  public OrganizationQueueItem createOrganizationQueueItem() {
-    return createOrganizationQueueItem(
-        "New Org Queue Name", "CA-New-Org-Queue-Name-12345", "org.queue.admin@example.com");
+  public OrganizationQueueItem saveOrganizationQueueItem() {
+    return organizationQueueRepository.save(TestDataBuilder.createOrganizationQueueItem());
   }
 
   public OrganizationQueueItem createVerifiedOrganizationQueueItem(
       String orgName, String orgExternalId, String adminEmail) {
-    Organization org = createValidOrg(orgName, "k12", orgExternalId, true);
-    OrganizationQueueItem queueItem =
-        new OrganizationQueueItem(
-            orgName,
-            orgExternalId,
-            new OrganizationAccountRequest(
-                "First", "Last", adminEmail, "800-555-1212", "CA", null, null));
+    Organization org = saveOrganization(orgName, "k12", orgExternalId, true);
+    OrganizationQueueItem queueItem = saveOrganizationQueueItem(orgName, orgExternalId, adminEmail);
     queueItem.setVerifiedOrganization(org);
     return organizationQueueRepository.save(queueItem);
   }

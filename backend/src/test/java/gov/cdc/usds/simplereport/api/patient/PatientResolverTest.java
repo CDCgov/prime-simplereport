@@ -7,6 +7,7 @@ import static org.mockito.Mockito.when;
 import gov.cdc.usds.simplereport.service.BaseServiceTest;
 import gov.cdc.usds.simplereport.service.OrganizationService;
 import gov.cdc.usds.simplereport.service.PersonService;
+import gov.cdc.usds.simplereport.test_util.TestDataBuilder;
 import gov.cdc.usds.simplereport.test_util.TestDataFactory;
 import java.time.LocalDate;
 import java.util.Optional;
@@ -20,7 +21,7 @@ class PatientResolverTest extends BaseServiceTest<PersonService> {
   void patientExists_hasFacilityId_callsServiceWithFacility() {
     var personService = mock(PersonService.class);
     var orgService = mock(OrganizationService.class);
-    var org = _dataFactory.createValidOrg();
+    var org = _dataFactory.saveValidOrganization();
     var facility = _dataFactory.createValidFacility(org);
 
     when(orgService.getCurrentOrganization()).thenReturn(org);
@@ -40,7 +41,7 @@ class PatientResolverTest extends BaseServiceTest<PersonService> {
   void patientExists_hasNoFacilityId_callsServiceWithNoFacility() {
     var personService = mock(PersonService.class);
     var orgService = mock(OrganizationService.class);
-    var org = _dataFactory.createValidOrg();
+    var org = TestDataBuilder.createValidOrganization();
 
     when(orgService.getCurrentOrganization()).thenReturn(org);
 

@@ -238,7 +238,7 @@ class TestResultUploadServiceTest extends BaseServiceTest<TestResultUploadServic
 
     // GIVEN
     when(csvFileValidatorMock.validate(any())).thenReturn(Collections.emptyList());
-    when(orgServiceMock.getCurrentOrganization()).thenReturn(factory.createValidOrg());
+    when(orgServiceMock.getCurrentOrganization()).thenReturn(factory.saveValidOrganization());
     var testResultUpload =
         factory.createTestResultUpload(
             reportId, UploadStatus.PENDING, orgServiceMock.getCurrentOrganization());
@@ -281,7 +281,7 @@ class TestResultUploadServiceTest extends BaseServiceTest<TestResultUploadServic
     InputStream invalidInput = new ByteArrayInputStream("invalid".getBytes());
     when(csvFileValidatorMock.validate(any()))
         .thenReturn(List.of(new FeedbackMessage("error", "my lovely error message")));
-    when(orgServiceMock.getCurrentOrganization()).thenReturn(factory.createValidOrg());
+    when(orgServiceMock.getCurrentOrganization()).thenReturn(factory.saveValidOrganization());
 
     // WHEN
     TestResultUpload result = sut.processResultCSV(invalidInput);
