@@ -31,14 +31,15 @@ import gov.cdc.usds.simplereport.db.model.auxiliary.StreetAddress;
 import gov.cdc.usds.simplereport.db.model.auxiliary.TestCorrectionStatus;
 import java.time.LocalDate;
 import java.time.ZoneId;
-import java.util.Collections;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Objects;
+import java.util.Optional;
 import java.util.Set;
 import java.util.UUID;
 import java.util.stream.Collectors;
+import javax.validation.constraints.NotNull;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.StringUtils;
 import org.hl7.fhir.r4.model.Address;
@@ -80,15 +81,12 @@ public class FhirConverter {
     throw new IllegalStateException("Utility class");
   }
 
-  public static HumanName convertToHumanName(PersonName personName) {
-    if (personName != null) {
-      return convertToHumanName(
-          personName.getFirstName(),
-          personName.getMiddleName(),
-          personName.getLastName(),
-          personName.getSuffix());
-    }
-    return null;
+  public static HumanName convertToHumanName(@NotNull PersonName personName) {
+    return convertToHumanName(
+        personName.getFirstName(),
+        personName.getMiddleName(),
+        personName.getLastName(),
+        personName.getSuffix());
   }
 
   public static HumanName convertToHumanName(
@@ -110,25 +108,19 @@ public class FhirConverter {
   }
 
   public static List<ContactPoint> convertPhoneNumbersToContactPoint(
-      List<PhoneNumber> phoneNumber) {
-    if (phoneNumber != null && !phoneNumber.isEmpty()) {
-      return phoneNumber.stream()
-          .map(FhirConverter::convertToContactPoint)
-          .collect(Collectors.toList());
-    }
-    return Collections.emptyList();
+      @NotNull List<PhoneNumber> phoneNumber) {
+    return phoneNumber.stream()
+        .map(FhirConverter::convertToContactPoint)
+        .collect(Collectors.toList());
   }
 
-  public static ContactPoint convertToContactPoint(PhoneNumber phoneNumber) {
-    if (phoneNumber != null) {
-      var contactPointUse = ContactPointUse.HOME;
-      if (PhoneType.MOBILE.equals(phoneNumber.getType())) {
-        contactPointUse = ContactPointUse.MOBILE;
-      }
-
-      return convertToContactPoint(contactPointUse, phoneNumber.getNumber());
+  public static ContactPoint convertToContactPoint(@NotNull PhoneNumber phoneNumber) {
+    var contactPointUse = ContactPointUse.HOME;
+    if (PhoneType.MOBILE.equals(phoneNumber.getType())) {
+      contactPointUse = ContactPointUse.MOBILE;
     }
-    return null;
+
+    return convertToContactPoint(contactPointUse, phoneNumber.getNumber());
   }
 
   public static ContactPoint convertToContactPoint(ContactPointUse contactPointUse, String number) {
@@ -148,56 +140,44 @@ public class FhirConverter {
   }
 
   public static List<ContactPoint> convertEmailsToContactPoint(List<String> emails) {
-    if (emails != null) {
-      return emails.stream()
-          .map(FhirConverter::convertEmailToContactPoint)
-          .collect(Collectors.toList());
-    }
-    return Collections.emptyList();
+    return emails.stream()
+        .map(FhirConverter::convertEmailToContactPoint)
+        .collect(Collectors.toList());
   }
 
-  public static ContactPoint convertEmailToContactPoint(String email) {
-    if (email != null) {
-      return convertToContactPoint(null, ContactPointSystem.EMAIL, email);
-    }
-    return null;
+  public static ContactPoint convertEmailToContactPoint(@NotNull String email) {
+    return convertToContactPoint(null, ContactPointSystem.EMAIL, email);
   }
 
   public static ContactPoint convertToContactPoint(
       ContactPointUse use, ContactPointSystem system, String value) {
-    if (value != null) {
-      return new ContactPoint().setUse(use).setSystem(system).setValue(value);
-    }
-    return null;
+    return new ContactPoint().setUse(use).setSystem(system).setValue(value);
   }
 
-  public static AdministrativeGender convertToAdministrativeGender(String gender) {
-    if ("male".equalsIgnoreCase(gender) || "m".equalsIgnoreCase(gender)) {
-      return AdministrativeGender.MALE;
-    } else if ("female".equalsIgnoreCase(gender) || "f".equalsIgnoreCase(gender)) {
-      return AdministrativeGender.FEMALE;
-    } else {
-      return AdministrativeGender.UNKNOWN;
+  public static AdministrativeGender convertToAdministrativeGender(@NotNull String gender) {
+    switch (gender.toLowerCase()) {
+      case "male":
+      case "m":
+        return AdministrativeGender.MALE;
+      case "female":
+      case "f":
+        return AdministrativeGender.FEMALE;
+      default:
+        return AdministrativeGender.UNKNOWN;
     }
   }
 
-  public static Date convertToDate(LocalDate date) {
-    if (date != null) {
-      return Date.from(date.atStartOfDay(ZoneId.systemDefault()).toInstant());
-    }
-    return null;
+  public static Date convertToDate(@NotNull LocalDate date) {
+    return Date.from(date.atStartOfDay(ZoneId.systemDefault()).toInstant());
   }
 
-  public static Address convertToAddress(StreetAddress address) {
-    if (address != null) {
-      return convertToAddress(
-          address.getStreet(),
-          address.getCity(),
-          address.getCounty(),
-          address.getState(),
-          address.getPostalCode());
-    }
-    return null;
+  public static Address convertToAddress(@NotNull StreetAddress address) {
+    return convertToAddress(
+        address.getStreet(),
+        address.getCity(),
+        address.getCounty(),
+        address.getState(),
+        address.getPostalCode());
   }
 
   public static Address convertToAddress(
@@ -210,90 +190,81 @@ public class FhirConverter {
     return address;
   }
 
-  public static Extension convertToRaceExtension(String race) {
-    if (StringUtils.isNotBlank(race)) {
-      var ext = new Extension();
-      ext.setUrl(RACE_EXTENSION_URL);
-      var codeable = new CodeableConcept();
-      var coding = codeable.addCoding();
-      if (PersonUtils.raceMap.containsKey(race)) {
-        if (MappingConstants.UNKNOWN_STRING.equalsIgnoreCase(race)
-            || "refused".equalsIgnoreCase(race)) {
-          coding.setSystem(NULL_CODE_SYSTEM);
-        } else {
-          coding.setSystem(RACE_CODING_SYSTEM);
-        }
-        coding.setCode(PersonUtils.raceMap.get(race));
-        codeable.setText(race);
-      } else {
+  public static Extension convertToRaceExtension(@NotNull String race) {
+    var ext = new Extension();
+    ext.setUrl(RACE_EXTENSION_URL);
+    var codeable = new CodeableConcept();
+    var coding = codeable.addCoding();
+    if (PersonUtils.raceMap.containsKey(race)) {
+      if (MappingConstants.UNKNOWN_STRING.equalsIgnoreCase(race)
+          || "refused".equalsIgnoreCase(race)) {
         coding.setSystem(NULL_CODE_SYSTEM);
-        coding.setCode(MappingConstants.UNK_CODE);
-        codeable.setText(MappingConstants.UNKNOWN_STRING);
-      }
-      ext.setValue(codeable);
-      return ext;
-    }
-    return null;
-  }
-
-  public static Extension convertToEthnicityExtension(String ethnicity) {
-    if (StringUtils.isNotBlank(ethnicity)) {
-      var ext = new Extension();
-      ext.setUrl(ETHNICITY_EXTENSION_URL);
-      var ombExtension = ext.addExtension();
-      ombExtension.setUrl("ombCategory");
-      var ombCoding = new Coding();
-      if (PersonUtils.ETHNICITY_MAP.containsKey(ethnicity)) {
-        if ("refused".equalsIgnoreCase(ethnicity)) {
-          ombCoding.setSystem(NULL_CODE_SYSTEM);
-        } else {
-          ombCoding.setSystem(ETHNICITY_CODE_SYSTEM);
-        }
-        ombCoding.setCode(PersonUtils.ETHNICITY_MAP.get(ethnicity).get(0));
-        ombCoding.setDisplay(PersonUtils.ETHNICITY_MAP.get(ethnicity).get(1));
-
-        var text = ext.addExtension();
-        text.setUrl("text");
-        text.setValue(new StringType(PersonUtils.ETHNICITY_MAP.get(ethnicity).get(1)));
       } else {
-        ombCoding.setSystem(NULL_CODE_SYSTEM);
-        ombCoding.setCode(MappingConstants.UNK_CODE);
-        ombCoding.setDisplay(MappingConstants.UNKNOWN_STRING);
-
-        var text = ext.addExtension();
-        text.setUrl("text");
-        text.setValue(new StringType(MappingConstants.UNKNOWN_STRING));
+        coding.setSystem(RACE_CODING_SYSTEM);
       }
-      ombExtension.setValue(ombCoding);
-      return ext;
+      coding.setCode(PersonUtils.raceMap.get(race));
+      codeable.setText(race);
+    } else {
+      coding.setSystem(NULL_CODE_SYSTEM);
+      coding.setCode(MappingConstants.UNK_CODE);
+      codeable.setText(MappingConstants.UNKNOWN_STRING);
     }
-    return null;
+    ext.setValue(codeable);
+    return ext;
   }
 
-  public static Extension convertToTribalAffiliationExtension(List<String> tribalAffiliations) {
+  public static Extension convertToEthnicityExtension(@NotNull String ethnicity) {
+    var ext = new Extension();
+    ext.setUrl(ETHNICITY_EXTENSION_URL);
+    var ombExtension = ext.addExtension();
+    ombExtension.setUrl("ombCategory");
+    var ombCoding = new Coding();
+    if (PersonUtils.ETHNICITY_MAP.containsKey(ethnicity)) {
+      if ("refused".equalsIgnoreCase(ethnicity)) {
+        ombCoding.setSystem(NULL_CODE_SYSTEM);
+      } else {
+        ombCoding.setSystem(ETHNICITY_CODE_SYSTEM);
+      }
+      ombCoding.setCode(PersonUtils.ETHNICITY_MAP.get(ethnicity).get(0));
+      ombCoding.setDisplay(PersonUtils.ETHNICITY_MAP.get(ethnicity).get(1));
+
+      var text = ext.addExtension();
+      text.setUrl("text");
+      text.setValue(new StringType(PersonUtils.ETHNICITY_MAP.get(ethnicity).get(1)));
+    } else {
+      ombCoding.setSystem(NULL_CODE_SYSTEM);
+      ombCoding.setCode(MappingConstants.UNK_CODE);
+      ombCoding.setDisplay(MappingConstants.UNKNOWN_STRING);
+
+      var text = ext.addExtension();
+      text.setUrl("text");
+      text.setValue(new StringType(MappingConstants.UNKNOWN_STRING));
+    }
+    ombExtension.setValue(ombCoding);
+    return ext;
+  }
+
+  public static Optional<Extension> convertToTribalAffiliationExtension(
+      List<String> tribalAffiliations) {
     if (tribalAffiliations != null && !tribalAffiliations.isEmpty()) {
-      return convertToTribalAffiliationExtension(tribalAffiliations.get(0));
+      return Optional.of(convertToTribalAffiliationExtension(tribalAffiliations.get(0)));
     }
-    return null;
+    return Optional.empty();
   }
 
-  public static Extension convertToTribalAffiliationExtension(String tribalAffiliation) {
-    if (StringUtils.isNotBlank(tribalAffiliation)
-        && PersonUtils.tribalMap().containsKey(tribalAffiliation)) {
-      var ext = new Extension();
-      ext.setUrl(TRIBAL_AFFILIATION_EXTENSION_URL);
-      var tribeExtension = ext.addExtension();
-      tribeExtension.setUrl(TRIBAL_AFFILIATION_STRING);
-      var tribeCodeableConcept = new CodeableConcept();
-      var tribeCoding = tribeCodeableConcept.addCoding();
-      tribeCoding.setSystem(TRIBAL_AFFILIATION_CODE_SYSTEM);
-      tribeCoding.setCode(tribalAffiliation);
-      tribeCoding.setDisplay(PersonUtils.tribalMap().get(tribalAffiliation));
-      tribeCodeableConcept.setText(PersonUtils.tribalMap().get(tribalAffiliation));
-      tribeExtension.setValue(tribeCodeableConcept);
-      return ext;
-    }
-    return null;
+  public static Extension convertToTribalAffiliationExtension(@NotNull String tribalAffiliation) {
+    var ext = new Extension();
+    ext.setUrl(TRIBAL_AFFILIATION_EXTENSION_URL);
+    var tribeExtension = ext.addExtension();
+    tribeExtension.setUrl(TRIBAL_AFFILIATION_STRING);
+    var tribeCodeableConcept = new CodeableConcept();
+    var tribeCoding = tribeCodeableConcept.addCoding();
+    tribeCoding.setSystem(TRIBAL_AFFILIATION_CODE_SYSTEM);
+    tribeCoding.setCode(tribalAffiliation);
+    tribeCoding.setDisplay(PersonUtils.tribalMap().get(tribalAffiliation));
+    tribeCodeableConcept.setText(PersonUtils.tribalMap().get(tribalAffiliation));
+    tribeExtension.setValue(tribeCodeableConcept);
+    return ext;
   }
 
   public static Practitioner convertToPractitioner(Provider provider) {
@@ -326,31 +297,25 @@ public class FhirConverter {
     patient.addAddress(convertToAddress(person.getAddress()));
     patient.addExtension(convertToRaceExtension(person.getRace()));
     patient.addExtension(convertToEthnicityExtension(person.getEthnicity()));
-    patient.addExtension(convertToTribalAffiliationExtension(person.getTribalAffiliation()));
+    patient.addExtension(
+        convertToTribalAffiliationExtension(person.getTribalAffiliation()).orElse(null));
     return patient;
   }
 
-  public static Device convertToDevice(DeviceType deviceType) {
-    if (deviceType != null) {
-      return convertToDevice(
-          deviceType.getManufacturer(),
-          deviceType.getModel(),
-          deviceType.getInternalId().toString());
-    }
-    return null;
+  public static Device convertToDevice(@NotNull DeviceType deviceType) {
+    return convertToDevice(
+        deviceType.getManufacturer(), deviceType.getModel(), deviceType.getInternalId().toString());
   }
 
-  public static Device convertToDevice(String manufacturer, String model, String id) {
-    if (StringUtils.isNotBlank(manufacturer) || StringUtils.isNotBlank(model)) {
-      var device =
-          new Device()
-              .setManufacturer(manufacturer)
-              .addDeviceName(
-                  new DeviceDeviceNameComponent().setName(model).setType(DeviceNameType.MODELNAME));
-      device.setId(id);
-      return device;
-    }
-    return null;
+  public static Device convertToDevice(
+      @NotNull String manufacturer, @NotNull String model, String id) {
+    var device =
+        new Device()
+            .setManufacturer(manufacturer)
+            .addDeviceName(
+                new DeviceDeviceNameComponent().setName(model).setType(DeviceNameType.MODELNAME));
+    device.setId(id);
+    return device;
   }
 
   public static Specimen convertToSpecimen(
@@ -380,16 +345,13 @@ public class FhirConverter {
     return specimen;
   }
 
-  public static Specimen convertToSpecimen(SpecimenType specimenType) {
-    if (specimenType != null) {
-      return convertToSpecimen(
-          specimenType.getTypeCode(),
-          specimenType.getName(),
-          specimenType.getCollectionLocationCode(),
-          specimenType.getCollectionLocationName(),
-          specimenType.getInternalId().toString());
-    }
-    return null;
+  public static Specimen convertToSpecimen(@NotNull SpecimenType specimenType) {
+    return convertToSpecimen(
+        specimenType.getTypeCode(),
+        specimenType.getName(),
+        specimenType.getCollectionLocationCode(),
+        specimenType.getCollectionLocationName(),
+        specimenType.getInternalId().toString());
   }
 
   public static List<Observation> convertToObservation(
@@ -472,30 +434,26 @@ public class FhirConverter {
     codeCodeableConcept.setText(diseaseName);
   }
 
-  public static ServiceRequest convertToServiceRequest(TestOrder order) {
-    if (order != null) {
-      ServiceRequestStatus serviceRequestStatus = null;
-      switch (order.getOrderStatus()) {
-        case PENDING:
-          serviceRequestStatus = ServiceRequestStatus.ACTIVE;
-          break;
-        case COMPLETED:
-          serviceRequestStatus = ServiceRequestStatus.COMPLETED;
-          break;
-        case CANCELED:
-          serviceRequestStatus = (ServiceRequestStatus.REVOKED);
-          break;
-      }
-
-      String deviceLoincCode = null;
-      if (order.getDeviceType() != null) {
-        deviceLoincCode = order.getDeviceType().getLoincCode();
-      }
-      return convertToServiceRequest(
-          serviceRequestStatus, deviceLoincCode, Objects.toString(order.getInternalId(), ""));
+  public static ServiceRequest convertToServiceRequest(@NotNull TestOrder order) {
+    ServiceRequestStatus serviceRequestStatus = null;
+    switch (order.getOrderStatus()) {
+      case PENDING:
+        serviceRequestStatus = ServiceRequestStatus.ACTIVE;
+        break;
+      case COMPLETED:
+        serviceRequestStatus = ServiceRequestStatus.COMPLETED;
+        break;
+      case CANCELED:
+        serviceRequestStatus = ServiceRequestStatus.REVOKED;
+        break;
     }
 
-    return null;
+    String deviceLoincCode = null;
+    if (order.getDeviceType() != null) {
+      deviceLoincCode = order.getDeviceType().getLoincCode();
+    }
+    return convertToServiceRequest(
+        serviceRequestStatus, deviceLoincCode, Objects.toString(order.getInternalId(), ""));
   }
 
   public static ServiceRequest convertToServiceRequest(
@@ -511,29 +469,25 @@ public class FhirConverter {
   }
 
   public static DiagnosticReport convertToDiagnosticReport(TestEvent testEvent) {
-    if (testEvent != null) {
-      DiagnosticReportStatus status = null;
-      switch (testEvent.getCorrectionStatus()) {
-        case ORIGINAL:
-          status = (DiagnosticReportStatus.FINAL);
-          break;
-        case CORRECTED:
-          status = (DiagnosticReportStatus.CORRECTED);
-          break;
-        case REMOVED:
-          status = (DiagnosticReportStatus.CANCELLED);
-          break;
-      }
-
-      String code = null;
-      if (testEvent.getDeviceType() != null) {
-        code = testEvent.getDeviceType().getLoincCode();
-      }
-
-      return convertToDiagnosticReport(
-          status, code, Objects.toString(testEvent.getInternalId(), ""));
+    DiagnosticReportStatus status = null;
+    switch (testEvent.getCorrectionStatus()) {
+      case ORIGINAL:
+        status = (DiagnosticReportStatus.FINAL);
+        break;
+      case CORRECTED:
+        status = (DiagnosticReportStatus.CORRECTED);
+        break;
+      case REMOVED:
+        status = (DiagnosticReportStatus.ENTEREDINERROR);
+        break;
     }
-    return null;
+
+    String code = null;
+    if (testEvent.getDeviceType() != null) {
+      code = testEvent.getDeviceType().getLoincCode();
+    }
+
+    return convertToDiagnosticReport(status, code, Objects.toString(testEvent.getInternalId(), ""));
   }
 
   public static DiagnosticReport convertToDiagnosticReport(
@@ -547,7 +501,7 @@ public class FhirConverter {
     return diagnosticReport;
   }
 
-  public static Bundle createFhirBundle(TestEvent testEvent) {
+  public static Bundle createFhirBundle(@NotNull TestEvent testEvent) {
     return createFhirBundle(
         convertToPatient(testEvent.getPatient()),
         convertToOrganization(testEvent.getFacility()),
@@ -563,7 +517,7 @@ public class FhirConverter {
   }
 
   public static Bundle createFhirBundle(
-      Patient patient,
+      @NotNull Patient patient,
       Organization organization,
       Practitioner practitioner,
       Device device,

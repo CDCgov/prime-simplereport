@@ -48,6 +48,7 @@ import java.io.IOException;
 import java.nio.charset.StandardCharsets;
 import java.time.LocalDate;
 import java.util.Collections;
+import java.util.Date;
 import java.util.List;
 import java.util.Objects;
 import java.util.Set;
@@ -60,11 +61,14 @@ import org.hl7.fhir.r4.model.Bundle.BundleType;
 import org.hl7.fhir.r4.model.ContactPoint;
 import org.hl7.fhir.r4.model.ContactPoint.ContactPointSystem;
 import org.hl7.fhir.r4.model.ContactPoint.ContactPointUse;
+import org.hl7.fhir.r4.model.Device;
 import org.hl7.fhir.r4.model.Device.DeviceNameType;
 import org.hl7.fhir.r4.model.DiagnosticReport;
 import org.hl7.fhir.r4.model.DiagnosticReport.DiagnosticReportStatus;
 import org.hl7.fhir.r4.model.Enumerations.AdministrativeGender;
 import org.hl7.fhir.r4.model.Observation;
+import org.hl7.fhir.r4.model.Patient;
+import org.hl7.fhir.r4.model.Practitioner;
 import org.hl7.fhir.r4.model.PractitionerRole;
 import org.hl7.fhir.r4.model.PrimitiveType;
 import org.hl7.fhir.r4.model.ServiceRequest;
@@ -114,11 +118,6 @@ class FhirConverterTest {
   }
 
   @Test
-  void convertToHumanName_PersonName_null() {
-    assertThat(convertToHumanName(null)).isNull();
-  }
-
-  @Test
   void convertPhoneNumbersToContactPoint_ListPhoneNumbers_validList() {
     var phoneNumber = new PhoneNumber(PhoneType.LANDLINE, "2485551234");
     var phoneNumber2 = new PhoneNumber(PhoneType.LANDLINE, "2485551233");
@@ -129,11 +128,6 @@ class FhirConverterTest {
 
     assertThat(actual.stream().map(ContactPoint::getValue))
         .containsOnly("(248) 555 1234", "(248) 555 1233");
-  }
-
-  @Test
-  void convertPhoneNumbersToContactPoint_null() {
-    assertThat(FhirConverter.convertPhoneNumbersToContactPoint(null)).isEmpty();
   }
 
   @Test
@@ -157,11 +151,6 @@ class FhirConverterTest {
   }
 
   @Test
-  void convertToContactPoint_PhoneNumber_null() {
-    assertThat(convertToContactPoint((PhoneNumber) null)).isNull();
-  }
-
-  @Test
   void convertToContactPoint_ContactPointAndString_invalidNumber() {
     var actual = convertToContactPoint(ContactPoint.ContactPointUse.HOME, "+0333");
 
@@ -171,12 +160,6 @@ class FhirConverterTest {
         .returns(
             ContactPointUse.HOME.toCode(),
             from(ContactPoint::getUse).andThen(ContactPoint.ContactPointUse::toCode));
-  }
-
-  @Test
-  void convertToContactPoint_ContactPointAndNumber_null() {
-    assertThat(convertToContactPoint(ContactPointUse.HOME, ContactPointSystem.PHONE, null))
-        .isNull();
   }
 
   @Test
@@ -192,11 +175,6 @@ class FhirConverterTest {
             actual.stream()
                 .filter(contactPoint -> "email2@example.com".equals(contactPoint.getValue())))
         .hasSize(1);
-  }
-
-  @Test
-  void convertEmailsToContactPoint_null() {
-    assertThat(convertEmailsToContactPoint(null)).isEmpty();
   }
 
   @Test
@@ -229,13 +207,7 @@ class FhirConverterTest {
         arguments("Female", AdministrativeGender.FEMALE),
         arguments("MALE", AdministrativeGender.MALE),
         arguments("M", AdministrativeGender.MALE),
-        arguments(null, AdministrativeGender.UNKNOWN),
         arguments("fishperson", AdministrativeGender.UNKNOWN));
-  }
-
-  @Test
-  void convertToDate_null() {
-    assertThat(convertToDate(null)).isNull();
   }
 
   @Test
@@ -250,11 +222,6 @@ class FhirConverterTest {
     assertThat(actual.getDistrict()).isEqualTo(address.getCounty());
     assertThat(actual.getState()).isEqualTo(address.getState());
     assertThat(actual.getPostalCode()).isEqualTo(address.getPostalCode());
-  }
-
-  @Test
-  void convertToAddress_Address_null() {
-    assertThat(convertToAddress(null)).isNull();
   }
 
   @Test
@@ -279,12 +246,18 @@ class FhirConverterTest {
     assertThat(actual.getPostalCode()).isNull();
   }
 
+  @Test
+  void convertToDate_valid() {
+    var actual = convertToDate(LocalDate.of(2022, 12, 13));
+
+    assertThat(actual).isEqualToIgnoringHours(new Date(1670936400000L));
+  }
+
   @ParameterizedTest
   @MethodSource("raceArgs")
   void convertToRaceArgs_matches(
       String personRaceValue, String codeSystem, String expectedCode, String expectedText) {
     var actual = convertToRaceExtension(personRaceValue);
-    assert actual != null;
     var codeableConcept = actual.castToCodeableConcept(actual.getValue());
     var code = codeableConcept.getCoding();
 
@@ -301,17 +274,11 @@ class FhirConverterTest {
         arguments("Fishpeople", unknownSystem, "UNK", "unknown"));
   }
 
-  @Test
-  void convertToRaceExtension_null() {
-    assertThat(convertToRaceExtension(null)).isNull();
-  }
-
   @ParameterizedTest
   @MethodSource("ethnicityArgs")
   void convertToEthnicityExtension_matches(
       String ethnicity, String ombSystem, String raceCode, String ethnicityDisplay) {
     var actual = convertToEthnicityExtension(ethnicity);
-    assert actual != null;
     var ombExtension = actual.getExtensionByUrl("ombCategory");
     var textExtension = actual.getExtensionByUrl("text");
     var ombCoding = actual.castToCoding(ombExtension.getValue());
@@ -333,14 +300,8 @@ class FhirConverterTest {
   }
 
   @Test
-  void convertToEthnicityExtension_null() {
-    assertThat(convertToEthnicityExtension(null)).isNull();
-  }
-
-  @Test
   void convertToTribalAffiliation_String() {
     var actual = convertToTribalAffiliationExtension("1");
-    assert actual != null;
     var tribalAffiliationExtension = actual.getExtensionByUrl("tribalAffiliation");
     var tribalCodeableConcept = actual.castToCodeableConcept(tribalAffiliationExtension.getValue());
     var tribalCoding = tribalCodeableConcept.getCoding().get(0);
@@ -355,17 +316,7 @@ class FhirConverterTest {
   @Test
   void convertToTribalAffiliation_List_empty() {
     var actual = convertToTribalAffiliationExtension(Collections.emptyList());
-    assertThat(actual).isNull();
-  }
-
-  @Test
-  void convertToTribalAffiliation_String_null() {
-    assertThat(convertToTribalAffiliationExtension((String) null)).isNull();
-  }
-
-  @Test
-  void convertToTribalAffiliation_List_null() {
-    assertThat(convertToTribalAffiliationExtension((List<String>) null)).isNull();
+    assertThat(actual).isEmpty();
   }
 
   @Test
@@ -479,18 +430,12 @@ class FhirConverterTest {
             "INDICAID COVID-19 Rapid Antigen Test*",
             "id-123");
 
-    assert actual != null;
     assertThat(actual.getId()).isEqualTo("id-123");
     assertThat(actual.getManufacturer()).isEqualTo("PHASE Scientific International, Ltd.\n");
     assertThat(actual.getDeviceName()).hasSize(1);
     assertThat(actual.getDeviceNameFirstRep().getName())
         .isEqualTo("INDICAID COVID-19 Rapid Antigen Test*");
     assertThat(actual.getDeviceNameFirstRep().getType()).isEqualTo(DeviceNameType.MODELNAME);
-  }
-
-  @Test
-  void convertToDevice_Strings_null() {
-    assertThat(convertToDevice(null, null, null)).isNull();
   }
 
   @Test
@@ -506,11 +451,6 @@ class FhirConverterTest {
     assertThat(actual.getDeviceName()).hasSize(1);
     assertThat(actual.getDeviceNameFirstRep().getName()).isEqualTo("model");
     assertThat(actual.getDeviceNameFirstRep().getType()).isEqualTo(DeviceNameType.MODELNAME);
-  }
-
-  @Test
-  void convertToDevice_DeviceType_null() {
-    assertThat(convertToDevice(null)).isNull();
   }
 
   @Test
@@ -602,11 +542,6 @@ class FhirConverterTest {
         .isEqualTo("53342003");
     assertThat(actual.getCollection().getBodySite().getText())
         .isEqualTo("Internal nose structure (body structure)");
-  }
-
-  @Test
-  void convertToSpecimen_SpecimenType_null() {
-    assertThat(convertToSpecimen(null)).isNull();
   }
 
   @Test
@@ -874,12 +809,7 @@ class FhirConverterTest {
 
     var actual = convertToDiagnosticReport(correctedTestEvent);
 
-    assertThat(actual.getStatus()).isEqualTo(DiagnosticReportStatus.CANCELLED);
-  }
-
-  @Test
-  void convertToDiagnosticReport_TestEvent_null() {
-    assertThat(convertToDiagnosticReport(null)).isNull();
+    assertThat(actual.getStatus()).isEqualTo(DiagnosticReportStatus.ENTEREDINERROR);
   }
 
   @Test
@@ -1028,13 +958,6 @@ class FhirConverterTest {
   }
 
   @Test
-  void convertToServiceRequest_TestOrder_null() {
-    var actual = convertToServiceRequest(null);
-
-    assertThat(actual).isNull();
-  }
-
-  @Test
   void convertToServiceRequest_Strings_valid() {
     var actual = convertToServiceRequest(ServiceRequestStatus.COMPLETED, "94533-7", "id-123");
     assertThat(actual.getId()).isEqualTo("id-123");
@@ -1112,69 +1035,34 @@ class FhirConverterTest {
   }
 
   @Test
-  void toFhirBundle_TestEvent_valid() {
-    var deviceType = new DeviceType("device", "manufacturer", "model", null, null, 0);
-    var specimenType = new SpecimenType(null, null);
-    var deviceSpecimenType = new DeviceSpecimenType(deviceType, specimenType);
-
-    var facility =
-        new Facility(
-            null,
-            "TAOS MIDDLE SCHOOL",
-            null,
-            new StreetAddress(List.of("235 Paseo Del Cañon E"), "Taos", "NM", "87571", null),
-            "5755551234",
-            "school@example.com",
-            null,
-            deviceSpecimenType,
-            Collections.emptyList());
-
-    var person =
-        new Person(
-            null, facility, null, "Shrek", "The", "Ogre", null, null, null, null, null, null, null,
-            null, null, "female", null, null, null, null);
-
-    var provider =
-        new Provider(
-            "Jean",
-            "M",
-            "Byington",
-            null,
-            "123",
-            new StreetAddress(List.of("236 Paseo Del Cañon E"), "Taos", "NM", "87571", null),
-            "5755551234");
-
-    var testOrder = new TestOrder(person, facility);
-    var result = new Result(testOrder, new SupportedDisease(), TestResult.POSITIVE);
-    var testEvent = new TestEvent(testOrder, false, Set.of(result));
-
-    var providerId = UUID.randomUUID();
-    var facilityId = UUID.randomUUID();
-    var personId = UUID.randomUUID();
-    var specimenTypeId = UUID.randomUUID();
-    var deviceTypeId = UUID.randomUUID();
-    var resultId = UUID.randomUUID();
-    var testOrderId = UUID.randomUUID();
-    var testEventId = UUID.randomUUID();
-    ReflectionTestUtils.setField(provider, "internalId", providerId);
-    ReflectionTestUtils.setField(facility, "internalId", facilityId);
-    ReflectionTestUtils.setField(person, "internalId", personId);
-    ReflectionTestUtils.setField(specimenType, "internalId", specimenTypeId);
-    ReflectionTestUtils.setField(deviceType, "internalId", deviceTypeId);
-    ReflectionTestUtils.setField(result, "internalId", resultId);
-    ReflectionTestUtils.setField(testOrder, "internalId", testOrderId);
-    ReflectionTestUtils.setField(testEvent, "internalId", testEventId);
+  void createFhirBundle_TestEvent_valid() {
+    var patient = new Patient();
+    var organization = new org.hl7.fhir.r4.model.Organization();
+    var practitioner = new Practitioner();
+    var device = new Device();
+    var specimen = new Specimen();
+    var observation = new Observation();
+    var serviceRequest = new ServiceRequest();
+    var diagnosticReport = new DiagnosticReport();
+    patient.setId(UUID.randomUUID().toString());
+    organization.setId(UUID.randomUUID().toString());
+    practitioner.setId(UUID.randomUUID().toString());
+    device.setId(UUID.randomUUID().toString());
+    specimen.setId(UUID.randomUUID().toString());
+    observation.setId(UUID.randomUUID().toString());
+    serviceRequest.setId(UUID.randomUUID().toString());
+    diagnosticReport.setId(UUID.randomUUID().toString());
 
     var actual =
         createFhirBundle(
-            convertToPatient(person),
-            convertToOrganization(facility),
-            convertToPractitioner(provider),
-            convertToDevice(deviceType),
-            convertToSpecimen(specimenType),
-            convertToObservation(Set.of(result), TestCorrectionStatus.ORIGINAL, null),
-            convertToServiceRequest(testOrder),
-            convertToDiagnosticReport(testEvent));
+            patient,
+            organization,
+            practitioner,
+            device,
+            specimen,
+            List.of(observation),
+            serviceRequest,
+            diagnosticReport);
 
     var resourceUrls =
         actual.getEntry().stream()
@@ -1186,14 +1074,14 @@ class FhirConverterTest {
     assertThat(resourceUrls).hasSize(10);
     assertThat(resourceUrls)
         .contains(
-            "Patient/" + personId,
-            "Organization/" + facilityId,
-            "Practitioner/" + providerId,
-            "Specimen/" + specimenTypeId,
-            "Observation/" + resultId,
-            "ServiceRequest/" + testOrderId,
-            "DiagnosticReport/" + testEventId,
-            "Device/" + deviceTypeId);
+            "Patient/" + patient.getId(),
+            "Organization/" + organization.getId(),
+            "Practitioner/" + practitioner.getId(),
+            "Specimen/" + specimen.getId(),
+            "Observation/" + observation.getId(),
+            "ServiceRequest/" + serviceRequest.getId(),
+            "DiagnosticReport/" + diagnosticReport.getId(),
+            "Device/" + device.getId());
 
     var practitionerRoleEntry =
         actual.getEntry().stream()
@@ -1205,12 +1093,12 @@ class FhirConverterTest {
             ((PractitionerRole) practitionerRoleEntry.getResource())
                 .getPractitioner()
                 .getReference())
-        .isEqualTo("Practitioner/" + providerId);
+        .isEqualTo("Practitioner/" + practitioner.getId());
     assertThat(
             ((PractitionerRole) practitionerRoleEntry.getResource())
                 .getOrganization()
                 .getReference())
-        .isEqualTo("Organization/" + facilityId);
+        .isEqualTo("Organization/" + organization.getId());
 
     var specimenEntry =
         actual.getEntry().stream()
@@ -1218,7 +1106,7 @@ class FhirConverterTest {
             .findFirst()
             .orElseThrow(() -> new AssertionError("Expected to find Specimen, but not found"));
     assertThat(((Specimen) specimenEntry.getResource()).getSubject().getReference())
-        .isEqualTo("Patient/" + personId);
+        .isEqualTo("Patient/" + patient.getId());
 
     var observationEntry =
         actual.getEntry().stream()
@@ -1226,14 +1114,14 @@ class FhirConverterTest {
             .findFirst()
             .orElseThrow(() -> new AssertionError("Expected to find Observation, but not found"));
     assertThat(((Observation) observationEntry.getResource()).getSubject().getReference())
-        .isEqualTo("Patient/" + personId);
+        .isEqualTo("Patient/" + patient.getId());
     assertThat(((Observation) observationEntry.getResource()).getPerformer()).hasSize(1);
     assertThat(((Observation) observationEntry.getResource()).getPerformerFirstRep().getReference())
-        .isEqualTo("Organization/" + facilityId);
+        .isEqualTo("Organization/" + organization.getId());
     assertThat(((Observation) observationEntry.getResource()).getSpecimen().getReference())
-        .isEqualTo("Specimen/" + specimenTypeId);
+        .isEqualTo("Specimen/" + specimen.getId());
     assertThat(((Observation) observationEntry.getResource()).getDevice().getReference())
-        .isEqualTo("Device/" + deviceTypeId);
+        .isEqualTo("Device/" + device.getId());
 
     var serviceRequestEntry =
         actual.getEntry().stream()
@@ -1242,13 +1130,13 @@ class FhirConverterTest {
             .orElseThrow(
                 () -> new AssertionError("Expected to find ServiceRequest, but not found"));
     assertThat(((ServiceRequest) serviceRequestEntry.getResource()).getSubject().getReference())
-        .isEqualTo("Patient/" + personId);
+        .isEqualTo("Patient/" + patient.getId());
     assertThat(((ServiceRequest) serviceRequestEntry.getResource()).getPerformer()).hasSize(1);
     assertThat(
             ((ServiceRequest) serviceRequestEntry.getResource())
                 .getPerformerFirstRep()
                 .getReference())
-        .isEqualTo("Organization/" + facilityId);
+        .isEqualTo("Organization/" + organization.getId());
 
     var diagnosticReportEntry =
         actual.getEntry().stream()
@@ -1261,21 +1149,21 @@ class FhirConverterTest {
             ((DiagnosticReport) diagnosticReportEntry.getResource())
                 .getBasedOnFirstRep()
                 .getReference())
-        .isEqualTo("ServiceRequest/" + testOrderId);
+        .isEqualTo("ServiceRequest/" + serviceRequest.getId());
     assertThat(((DiagnosticReport) diagnosticReportEntry.getResource()).getSubject().getReference())
-        .isEqualTo("Patient/" + personId);
+        .isEqualTo("Patient/" + patient.getId());
     assertThat(((DiagnosticReport) diagnosticReportEntry.getResource()).getSpecimen()).hasSize(1);
     assertThat(
             ((DiagnosticReport) diagnosticReportEntry.getResource())
                 .getSpecimenFirstRep()
                 .getReference())
-        .isEqualTo("Specimen/" + specimenTypeId);
+        .isEqualTo("Specimen/" + specimen.getId());
     assertThat(((DiagnosticReport) diagnosticReportEntry.getResource()).getResult()).hasSize(1);
     assertThat(
             ((DiagnosticReport) diagnosticReportEntry.getResource())
                 .getResultFirstRep()
                 .getReference())
-        .isEqualTo("Observation/" + resultId);
+        .isEqualTo("Observation/" + observation.getId());
   }
 
   @Test
@@ -1298,7 +1186,7 @@ class FhirConverterTest {
             provider,
             deviceSpecimenType,
             Collections.emptyList());
-    var patient =
+    var person =
         new Person(
             organization,
             null,
@@ -1319,7 +1207,7 @@ class FhirConverterTest {
             false,
             "",
             null);
-    var testOrder = new TestOrder(patient, facility);
+    var testOrder = new TestOrder(person, facility);
     var covidResult = new Result(testOrder, new SupportedDisease(), TestResult.POSITIVE);
     var fluAResult = new Result(testOrder, new SupportedDisease(), TestResult.NEGATIVE);
     var fluBResult = new Result(testOrder, new SupportedDisease(), TestResult.UNDETERMINED);
@@ -1338,7 +1226,7 @@ class FhirConverterTest {
 
     ReflectionTestUtils.setField(provider, "internalId", providerId);
     ReflectionTestUtils.setField(facility, "internalId", facilityId);
-    ReflectionTestUtils.setField(patient, "internalId", personId);
+    ReflectionTestUtils.setField(person, "internalId", personId);
     ReflectionTestUtils.setField(specimenType, "internalId", specimenTypeId);
     ReflectionTestUtils.setField(deviceType, "internalId", deviceTypeId);
     ReflectionTestUtils.setField(covidResult, "internalId", covidResultId);
@@ -1346,6 +1234,9 @@ class FhirConverterTest {
     ReflectionTestUtils.setField(fluBResult, "internalId", fluBResultId);
     ReflectionTestUtils.setField(testOrder, "internalId", testOrderId);
     ReflectionTestUtils.setField(testEvent, "internalId", testEventId);
+
+    ReflectionTestUtils.setField(
+        person, "phoneNumbers", List.of(new PhoneNumber(PhoneType.LANDLINE, "7735551234")));
 
     var actual = createFhirBundle(testEvent);
 

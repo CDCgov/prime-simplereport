@@ -299,6 +299,11 @@
         ],
         "telecom": [
           {
+            "system": "phone",
+            "value": "(773) 555 1234",
+            "use": "home"
+          },
+          {
             "system": "email",
             "value": "tj@example.com"
           }
