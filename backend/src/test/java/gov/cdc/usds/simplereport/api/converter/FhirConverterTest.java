@@ -76,6 +76,7 @@ import org.hl7.fhir.r4.model.ServiceRequest.ServiceRequestIntent;
 import org.hl7.fhir.r4.model.ServiceRequest.ServiceRequestStatus;
 import org.hl7.fhir.r4.model.Specimen;
 import org.hl7.fhir.r4.model.codesystems.ObservationStatus;
+import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.Arguments;
@@ -91,6 +92,19 @@ class FhirConverterTest {
   private static final String tribalSystemUrl =
       "http://terminology.hl7.org/CodeSystem/v3-TribalEntityUS";
   public static final String snomedCode = "http://snomed.info/sct";
+  private static final Provider provider =
+      new Provider(
+          new PersonName("Amelia", "Mary", "Earhart", null),
+          null,
+          new StreetAddress(List.of("223 N Terrace St"), "Atchison", "KS", "66002", null),
+          "248 555 1234");
+
+  private static final String providerId = "655b3fed-57f9-41d0-93bc-6642c8ea6fb8";
+
+  @BeforeAll
+  static void setup() {
+    ReflectionTestUtils.setField(provider, "internalId", UUID.fromString(providerId));
+  }
 
   @Test
   void convertToHumanName_String_allFields() {
@@ -321,15 +335,6 @@ class FhirConverterTest {
 
   @Test
   void convertToPractitioner_Provider_matchesJson() throws IOException {
-    var internalId = "3c9c7370-e2e3-49ad-bb7a-f6005f41cf29";
-    var provider =
-        new Provider(
-            new PersonName("Amelia", "Mary", "Earhart", null),
-            null,
-            new StreetAddress(List.of("223 N Terrace St"), "Atchison", "KS", "66002", null),
-            "248 555 1234");
-    ReflectionTestUtils.setField(provider, "internalId", UUID.fromString(internalId));
-
     var actual = convertToPractitioner(provider);
 
     FhirContext ctx = FhirContext.forR4();
@@ -1172,8 +1177,6 @@ class FhirConverterTest {
     var deviceType = new DeviceType("name", "manufacturer", "model", "loinc", "nasal", 0);
     var specimenType = new SpecimenType("name", "typeCode");
     var deviceSpecimenType = new DeviceSpecimenType(deviceType, specimenType);
-    var provider =
-        new Provider(new PersonName("Michaela", null, "Quinn", ""), "1", address, "7735551235");
     var organization = new Organization("District", "school", "1", true);
     var facility =
         new Facility(
@@ -1213,7 +1216,6 @@ class FhirConverterTest {
     var fluBResult = new Result(testOrder, new SupportedDisease(), TestResult.UNDETERMINED);
     var testEvent = new TestEvent(testOrder, false, Set.of(covidResult, fluAResult, fluBResult));
 
-    var providerId = UUID.fromString("ffc07f31-f2af-4728-a247-8cb3aa05ccd0");
     var facilityId = UUID.fromString("1c3d14b9-e222-4a16-9fb2-d9f173034a6a");
     var personId = UUID.fromString("55c53ed2-add5-47fb-884e-b4542ee64589");
     var specimenTypeId = UUID.fromString("725252ea-50ef-46bd-ae79-c70e1d04b949");
@@ -1224,7 +1226,6 @@ class FhirConverterTest {
     var testOrderId = UUID.fromString("cae01b8c-37dc-4c09-a6d4-ae7bcafc9720");
     var testEventId = UUID.fromString("45e9539f-c9a4-4c86-b79d-4ba2c43f9ee0");
 
-    ReflectionTestUtils.setField(provider, "internalId", providerId);
     ReflectionTestUtils.setField(facility, "internalId", facilityId);
     ReflectionTestUtils.setField(person, "internalId", personId);
     ReflectionTestUtils.setField(specimenType, "internalId", specimenTypeId);
