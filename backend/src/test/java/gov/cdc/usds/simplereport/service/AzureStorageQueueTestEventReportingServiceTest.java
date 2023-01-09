@@ -32,11 +32,6 @@ class AzureStorageQueueTestEventReportingServiceTest
   private final ObjectMapper mapper = new ObjectMapper().findAndRegisterModules();
 
   @Test
-  void this_should_fail() {
-    assertTrue(false);
-  }
-
-  @Test
   void dispatches_supplied_event_to_queue_client() {
     var client = mock(QueueAsyncClient.class);
     Mono<SendMessageResult> response = mock(Mono.class);
