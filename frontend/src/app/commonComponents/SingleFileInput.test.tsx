@@ -1,4 +1,4 @@
-import { render, screen } from "@testing-library/react";
+import { fireEvent, render, screen } from "@testing-library/react";
 import userEvent from "@testing-library/user-event";
 
 import SingleFileInput from "./SingleFileInput";
@@ -6,7 +6,6 @@ import SingleFileInput from "./SingleFileInput";
 const file = (text: BlobPart) => {
   const blob = new Blob([text]);
   const file = new File([blob], "values.csv", { type: "text/csv" });
-  File.prototype.text = jest.fn().mockResolvedValueOnce(text);
   return file;
 };
 
@@ -72,7 +71,7 @@ describe("Single File Input", () => {
       />
     );
     const fileInput = screen.getByTestId("testId");
-    await userEvent.upload(fileInput, []);
+    fireEvent.change(fileInput, { target: { files: { length: 0 } } });
     expect(await screen.findByText("Drag file here or choose from folder"));
   });
 
@@ -94,5 +93,25 @@ describe("Single File Input", () => {
         "Drag file here or choose from folder to change file"
       )
     );
+  });
+  it("checks component state when file type is not valid", async () => {
+    render(
+      <SingleFileInput
+        id="testId"
+        name="testId"
+        ariaLabel="upload a file"
+        onChange={handleOnChange}
+        required={false}
+        accept=".csv, text/csv"
+      />
+    );
+    const fileInput = screen.getByTestId("testId");
+
+    let file = new File(["(⌐□_□)"], "chucknorris.png", { type: "image/png" });
+
+    fireEvent.change(fileInput, {
+      target: { files: { item: jest.fn().mockReturnValue(file), length: 1 } },
+    });
+    expect(await screen.findByText(/This is not a valid file type/i));
   });
 });
