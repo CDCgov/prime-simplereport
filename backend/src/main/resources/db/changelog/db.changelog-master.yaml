@@ -4161,3 +4161,22 @@ databaseChangeLog:
                     nullable: false
                     foreignKeyName: fk__facility_device_specimen_type__device_specimen_type
                     references: device_specimen_type
+  - changeSet:
+      id: drop-not-null-constraints_device_specimen_type_id
+      author: zedd@skylight.digital
+      changes:
+        - tagDatabase:
+            tag: drop-not-null-constraints_device_specimen_type_id
+        - dropNotNullConstraint:
+            tableName: test_event
+            columnName: device_specimen_type_id
+        - dropNotNullConstraint:
+            tableName: test_order
+            columnName: device_specimen_type_id
+      rollback:
+        - addNotNullConstraint:
+            tableName: test_event
+            columnName: device_specimen_type_id
+        - addNotNullConstraint:
+            tableName: test_order
+            columnName: device_specimen_type_id
