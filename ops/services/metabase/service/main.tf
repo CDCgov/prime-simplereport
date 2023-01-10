@@ -11,7 +11,13 @@ locals {
   }
 }
 
+# Create a null_resource to store the service plan ID in state. This is needed
+# to pass the service plan ID to the service instance.
 resource "null_resource" "service_plan_id" {
+  # Use the service_plan_id variable as a trigger for the null_resource. This
+  # will cause the null_resource to update whenever the service_plan_id
+  # variable is updated. This is rare but is needed because the metabase service 
+  # instance is dependent on our service plan.
   triggers = {
     service_plan_id = var.service_plan_id
   }
@@ -57,6 +63,7 @@ resource "azurerm_linux_web_app" "metabase" {
       }
     }
   }
+
   lifecycle {
     replace_triggered_by = [
       null_resource.service_plan_id

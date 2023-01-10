@@ -258,7 +258,7 @@ resource "azurerm_app_service_certificate" "app" {
   name                = "new-sr-wildcard"
   resource_group_name = var.resource_group_name
   location            = var.resource_group_location
-  # key_vault_secret_id = data.azurerm_key_vault_certificate.wildcard_simplereport_gov.id
+  key_vault_secret_id = data.azurerm_key_vault_certificate.wildcard_simplereport_gov.id
 }
 
 resource "azurerm_app_service_certificate_binding" "app" {

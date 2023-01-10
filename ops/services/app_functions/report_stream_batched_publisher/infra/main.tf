@@ -57,7 +57,7 @@ resource "azurerm_linux_function_app" "functions" {
   storage_account_access_key = data.azurerm_storage_account.app.primary_access_key
 
   site_config {
-    use_32_bit_worker = false
+    use_32_bit_worker        = false
     application_insights_key = data.azurerm_application_insights.app.instrumentation_key
     # scm_minimum_tls_version = "1.0"
     # always_on               = false
