@@ -24,5 +24,10 @@ public class DeviceSupportedDisease {
   @Column(name = "supported_disease_id", nullable = false)
   private UUID supportedDiseaseId;
 
+  public DeviceSupportedDisease(UUID deviceTypeId, UUID supportedDiseaseId) {
+    this.deviceTypeId = deviceTypeId;
+    this.supportedDiseaseId = supportedDiseaseId;
+  }
+
   @Column private String testPerformedCode;
 }
