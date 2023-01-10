@@ -88,9 +88,13 @@ ${local.skip_on_weekends}
 | where toint(resultCode) between (200 .. 299) and timestamp >= ago(5m)
 | sort by timestamp asc
 | summarize alert = iff((todouble(sumif(1, success == false)) * 100 / todouble(count()) >= ${var.http_2xx_failure_rate_threshold} and sumif(1, success == false) > ${var.http_2xx_failed_threshold}), sumif(1, success == false), 0)
+| where alert > 0
+//
+// You can use the following query to see all the requests that triggered this alert.
+// These comments are ignored but the timestamp is updated correctly and should match the timestamp used in the above query.
 //
 // requests
-// | where toint(resultCode) between (200 .. 299) and timestamp >= ago(60m) and success == false
+// | where toint(resultCode) between (200 .. 299) and timestamp >= ago(5m) and success == false
 // | sort by timestamp asc
   QUERY
 
