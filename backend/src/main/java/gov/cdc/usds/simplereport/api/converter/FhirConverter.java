@@ -31,8 +31,8 @@ import gov.cdc.usds.simplereport.db.model.auxiliary.StreetAddress;
 import gov.cdc.usds.simplereport.db.model.auxiliary.TestCorrectionStatus;
 import java.time.LocalDate;
 import java.time.ZoneId;
+import java.util.ArrayList;
 import java.util.Date;
-import java.util.HashMap;
 import java.util.List;
 import java.util.Objects;
 import java.util.Optional;
@@ -74,6 +74,7 @@ import org.hl7.fhir.r4.model.ServiceRequest.ServiceRequestIntent;
 import org.hl7.fhir.r4.model.ServiceRequest.ServiceRequestStatus;
 import org.hl7.fhir.r4.model.Specimen;
 import org.hl7.fhir.r4.model.StringType;
+import org.springframework.data.util.Pair;
 
 @Slf4j
 public class FhirConverter {
@@ -534,7 +535,7 @@ public class FhirConverter {
     var deviceFullUrl = ResourceType.Device + "/" + device.getId();
 
     var practitionerRole = getPractitionerRole(organizationFullUrl, practitionerFullUrl);
-    var messageHeader = getMessageHeader(organizationFullUrl);
+    var messageHeader = getMessageHeader(organizationFullUrl, diagnosticReportFullUrl);
     var practitionerRoleFullUrl = ResourceType.PractitionerRole + "/" + practitionerRole.getId();
     var messageHeaderFullUrl = ResourceType.MessageHeader + "/" + messageHeader.getId();
 
@@ -543,20 +544,22 @@ public class FhirConverter {
 
     serviceRequest.setSubject(new Reference(patientFullUrl));
     serviceRequest.addPerformer(new Reference(organizationFullUrl));
+    serviceRequest.setRequester(new Reference(practitionerRoleFullUrl));
     diagnosticReport.addBasedOn(new Reference(serviceRequestFullUrl));
     diagnosticReport.setSubject(new Reference(patientFullUrl));
     diagnosticReport.addSpecimen(new Reference(specimenFullUrl));
 
-    var entryMap = new HashMap<String, Resource>();
-    entryMap.put(patientFullUrl, patient);
-    entryMap.put(organizationFullUrl, organization);
-    entryMap.put(practitionerFullUrl, practitioner);
-    entryMap.put(specimenFullUrl, specimen);
-    entryMap.put(serviceRequestFullUrl, serviceRequest);
-    entryMap.put(diagnosticReportFullUrl, diagnosticReport);
-    entryMap.put(deviceFullUrl, device);
-    entryMap.put(practitionerRoleFullUrl, practitionerRole);
-    entryMap.put(messageHeaderFullUrl, messageHeader);
+    var entryList = new ArrayList<Pair<String, Resource>>();
+    entryList.add(Pair.of(messageHeaderFullUrl, messageHeader));
+    entryList.add(Pair.of(diagnosticReportFullUrl, diagnosticReport));
+
+    entryList.add(Pair.of(patientFullUrl, patient));
+    entryList.add(Pair.of(organizationFullUrl, organization));
+    entryList.add(Pair.of(practitionerFullUrl, practitioner));
+    entryList.add(Pair.of(specimenFullUrl, specimen));
+    entryList.add(Pair.of(serviceRequestFullUrl, serviceRequest));
+    entryList.add(Pair.of(deviceFullUrl, device));
+    entryList.add(Pair.of(practitionerRoleFullUrl, practitionerRole));
 
     observations.forEach(
         observation -> {
@@ -568,13 +571,16 @@ public class FhirConverter {
           observation.setDevice(new Reference(deviceFullUrl));
 
           diagnosticReport.addResult(new Reference(observationFullUrl));
-          entryMap.put(observationFullUrl, observation);
+          entryList.add(Pair.of(observationFullUrl, observation));
         });
 
     var bundle = new Bundle().setType(BundleType.MESSAGE);
-    entryMap.forEach(
-        (url, resource) ->
-            bundle.addEntry(new BundleEntryComponent().setFullUrl(url).setResource(resource)));
+    entryList.forEach(
+        pair ->
+            bundle.addEntry(
+                new BundleEntryComponent()
+                    .setFullUrl(pair.getFirst())
+                    .setResource(pair.getSecond())));
 
     return bundle;
   }
@@ -589,7 +595,7 @@ public class FhirConverter {
     return practitionerRole;
   }
 
-  public static MessageHeader getMessageHeader(String organizationUrl) {
+  public static MessageHeader getMessageHeader(String organizationUrl, String mainResourceUrl) {
     var messageHeader = new MessageHeader();
     messageHeader.setId(UUID.randomUUID().toString());
     messageHeader
@@ -597,12 +603,16 @@ public class FhirConverter {
         .setSystem("http://terminology.hl7.org/CodeSystem/v2-0003")
         .setCode("R01")
         .setDisplay("ORU/ACK - Unsolicited transmission of an observation message");
-    messageHeader.getSource().setSoftware("PRIME SimpleReport");
+    messageHeader
+        .getSource()
+        .setSoftware("PRIME SimpleReport")
+        .setEndpoint("https://simplereport.gov");
     messageHeader
         .addDestination()
         .setName("PRIME ReportStream")
         .setEndpoint("https://prime.cdc.gov/api/reports?option=SkipInvalidItems");
     messageHeader.getSender().setReferenceElement(new StringType(organizationUrl));
+    messageHeader.addFocus(new Reference(mainResourceUrl));
     return messageHeader;
   }
 }

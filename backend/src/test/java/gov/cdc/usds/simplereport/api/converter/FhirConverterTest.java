@@ -1023,7 +1023,7 @@ class FhirConverterTest {
 
   @Test
   void getMessageHeader_valid() {
-    var messageHeader = getMessageHeader("Organization/org-id");
+    var messageHeader = getMessageHeader("Organization/org-id", "mainResource");
 
     assertThat(messageHeader.getEventCoding().getSystem())
         .isEqualTo("http://terminology.hl7.org/CodeSystem/v2-0003");
@@ -1031,7 +1031,10 @@ class FhirConverterTest {
     assertThat(messageHeader.getEventCoding().getDisplay())
         .isEqualTo("ORU/ACK - Unsolicited transmission of an observation message");
     assertThat(messageHeader.getSource().getSoftware()).isEqualTo("PRIME SimpleReport");
+    assertThat(messageHeader.getSource().getEndpoint()).isEqualTo("https://simplereport.gov");
     assertThat(messageHeader.getSender().getReference()).isEqualTo("Organization/org-id");
+    assertThat(messageHeader.getFocus()).hasSize(1);
+    assertThat(messageHeader.getFocusFirstRep().getReference()).isEqualTo("mainResource");
   }
 
   @Test
@@ -1137,6 +1140,8 @@ class FhirConverterTest {
                 .getPerformerFirstRep()
                 .getReference())
         .isEqualTo("Organization/" + organization.getId());
+    assertThat(((ServiceRequest) serviceRequestEntry.getResource()).getRequester().getReference())
+        .contains("PractitionerRole/");
 
     var diagnosticReportEntry =
         actual.getEntry().stream()
@@ -1260,6 +1265,6 @@ class FhirConverterTest {
     expectedSerialized = expectedSerialized.replace("$MESSAGE_HEADER_ID", messageHeaderId);
     expectedSerialized = expectedSerialized.replace("$PRACTITIONER_ROLE_ID", practitionerRoleId);
 
-    JSONAssert.assertEquals(actualSerialized, expectedSerialized, false);
+    JSONAssert.assertEquals(actualSerialized, expectedSerialized, true);
   }
 }
