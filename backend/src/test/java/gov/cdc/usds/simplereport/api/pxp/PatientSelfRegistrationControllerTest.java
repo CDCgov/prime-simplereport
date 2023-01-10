@@ -39,7 +39,7 @@ class PatientSelfRegistrationControllerTest extends BaseFullStackTest {
     truncateDb();
     TestUserIdentities.withStandardUser(
         () -> {
-          _org = _dataFactory.createValidOrg();
+          _org = _dataFactory.saveValidOrganization();
           _site = _dataFactory.createValidFacility(_org);
           _orgRegistrationLink = _dataFactory.createPatientRegistrationLink(_org);
           _facilityRegistrationLink = _dataFactory.createPatientRegistrationLink(_site);

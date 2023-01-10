@@ -111,7 +111,7 @@ class SmsCallbackControllerTest extends BaseFullStackTest {
     String messageId = "some-message-id";
     String messageStatus = "delivered";
 
-    Organization org = _dataFactory.createValidOrg();
+    Organization org = _dataFactory.saveValidOrganization();
     Facility f = _dataFactory.createValidFacility(org);
     Person p = _dataFactory.createFullPerson(org);
     TestOrder to = _dataFactory.createTestOrder(p, f);

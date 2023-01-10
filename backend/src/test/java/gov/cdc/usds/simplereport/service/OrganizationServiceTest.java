@@ -62,7 +62,7 @@ class OrganizationServiceTest extends BaseServiceTest<OrganizationService> {
 
   @Test
   void getOrganizationById_success() {
-    Organization createdOrg = _dataFactory.createValidOrg();
+    Organization createdOrg = _dataFactory.saveValidOrganization();
     Organization foundOrg = _service.getOrganizationById(createdOrg.getInternalId());
     assertNotNull(foundOrg);
     assertEquals(createdOrg.getExternalId(), foundOrg.getExternalId());
@@ -157,8 +157,8 @@ class OrganizationServiceTest extends BaseServiceTest<OrganizationService> {
   @WithSimpleReportSiteAdminUser
   void getOrganizationsAndFacility_filterByIdentityVerified_success() {
     // GIVEN
-    Organization verifiedOrg = testDataFactory.createValidOrg();
-    Organization unverifiedOrg = testDataFactory.createUnverifiedOrg();
+    Organization verifiedOrg = testDataFactory.saveValidOrganization();
+    Organization unverifiedOrg = testDataFactory.saveUnverifiedOrganization();
 
     // WHEN
     List<Organization> allOrgs = _service.getOrganizations(null);
@@ -188,7 +188,7 @@ class OrganizationServiceTest extends BaseServiceTest<OrganizationService> {
   @Test
   @WithSimpleReportSiteAdminUser
   void getFacilitiesIncludeArchived_includeArchived_success() {
-    Organization org = testDataFactory.createValidOrg();
+    Organization org = testDataFactory.saveValidOrganization();
     Facility deletedFacility = testDataFactory.createArchivedFacility(org, "Delete me");
     testDataFactory.createValidFacility(org, "Not deleted");
 
@@ -203,7 +203,7 @@ class OrganizationServiceTest extends BaseServiceTest<OrganizationService> {
   @Test
   @WithSimpleReportSiteAdminUser
   void getFacilitiesIncludeArchived_excludeArchived_success() {
-    Organization org = testDataFactory.createValidOrg();
+    Organization org = testDataFactory.saveValidOrganization();
     testDataFactory.createArchivedFacility(org, "Delete me");
     Facility activeFacility = testDataFactory.createValidFacility(org, "Not deleted");
 
@@ -218,7 +218,7 @@ class OrganizationServiceTest extends BaseServiceTest<OrganizationService> {
   @Test
   @WithSimpleReportOrgAdminUser
   void viewArchivedFacilities_success() {
-    Organization org = testDataFactory.createValidOrg();
+    Organization org = testDataFactory.saveValidOrganization();
     Facility deletedFacility = testDataFactory.createArchivedFacility(org, "Delete me");
 
     Set<Facility> archivedFacilities = _service.getArchivedFacilities(org);
@@ -231,7 +231,7 @@ class OrganizationServiceTest extends BaseServiceTest<OrganizationService> {
   @Test
   @WithSimpleReportStandardUser
   void viewArchivedFacilities_standardUser_failure() {
-    Organization org = testDataFactory.createValidOrg();
+    Organization org = testDataFactory.saveValidOrganization();
     Facility deletedFacility = testDataFactory.createArchivedFacility(org, "Delete me");
 
     assertThrows(AccessDeniedException.class, () -> _service.getArchivedFacilities());
@@ -242,7 +242,7 @@ class OrganizationServiceTest extends BaseServiceTest<OrganizationService> {
   @WithSimpleReportSiteAdminUser
   void deleteFacilityTest_successful() {
     // GIVEN
-    Organization verifiedOrg = testDataFactory.createValidOrg();
+    Organization verifiedOrg = testDataFactory.saveValidOrganization();
     Facility mistakeFacility =
         testDataFactory.createValidFacility(verifiedOrg, "This facility is a mistake");
     // WHEN
@@ -269,7 +269,7 @@ class OrganizationServiceTest extends BaseServiceTest<OrganizationService> {
   @WithSimpleReportSiteAdminUser
   void deleteOrganizationTest_successful() {
     // GIVEN
-    Organization verifiedOrg = testDataFactory.createValidOrg();
+    Organization verifiedOrg = testDataFactory.saveValidOrganization();
     // WHEN
     Organization deletedOrganization =
         _service.markOrganizationAsDeleted(verifiedOrg.getInternalId(), true);
@@ -300,7 +300,7 @@ class OrganizationServiceTest extends BaseServiceTest<OrganizationService> {
 
   @Test
   void verifyOrganizationNoPermissions_noUser_success() {
-    Organization org = testDataFactory.createUnverifiedOrg();
+    Organization org = testDataFactory.saveUnverifiedOrganization();
     _service.verifyOrganizationNoPermissions(org.getExternalId());
 
     org = _service.getOrganization(org.getExternalId());
@@ -309,7 +309,7 @@ class OrganizationServiceTest extends BaseServiceTest<OrganizationService> {
 
   @Test
   void verifyOrganizationNoPermissions_orgAlreadyVerified_failure() {
-    Organization org = testDataFactory.createValidOrg();
+    Organization org = testDataFactory.saveValidOrganization();
     String orgExternalId = org.getExternalId();
     IllegalStateException e =
         assertThrows(

@@ -176,7 +176,7 @@ class AzureStorageQueueTestEventReportingServiceTest
   }
 
   private Set<TestEvent> createTestEvents(int count) {
-    var org = _dataFactory.createValidOrg();
+    var org = _dataFactory.saveValidOrganization();
     var facility = _dataFactory.createValidFacility(org);
     var patient = _dataFactory.createFullPerson(org);
 
