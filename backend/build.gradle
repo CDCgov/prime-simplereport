@@ -64,8 +64,6 @@ dependencies {
     // Okta dependencies
     implementation 'com.okta.spring:okta-spring-boot-starter:2.1.6'
     implementation 'com.okta.sdk:okta-sdk-api:8.2.1'
-    implementation 'org.springframework.security:spring-security-web:5.7.5' //TODO: Remove when Okta's Spring Boot Starter version increases beyond 2.1.6.
-    implementation 'org.springframework.security:spring-security-oauth2-client:5.7.5' //TODO: Remove when Okta's Spring Boot Starter version increases beyond 2.1.6.
     runtimeOnly 'com.okta.sdk:okta-sdk-impl:8.2.1'
     runtimeOnly 'com.okta.sdk:okta-sdk-httpclient:8.2.1'
 
