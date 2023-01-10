@@ -4180,3 +4180,17 @@ databaseChangeLog:
         - addNotNullConstraint:
             tableName: test_order
             columnName: device_specimen_type_id
+  - changeSet:
+      id: add-test-performed-code-column-to-device-supported-disease-table
+      author: boban@skylight.digital
+      comment: Add a test performed code column to store the specific LOINC code between a device and disease.
+      changes:
+        - tagDatabase:
+            tag: add-test-performed-code-column-to-device-supported-disease-table
+        - addColumn:
+            tableName: device_supported_disease
+            columns:
+              - column:
+                  name: test_performed_code
+                  type: text
+                  remarks: The code that identifies which disease was tested.
