@@ -22,11 +22,7 @@ import static org.junit.jupiter.params.provider.Arguments.arguments;
 
 import ca.uhn.fhir.context.FhirContext;
 import ca.uhn.fhir.parser.IParser;
-import gov.cdc.usds.simplereport.db.model.DeviceSpecimenType;
 import gov.cdc.usds.simplereport.db.model.DeviceType;
-import gov.cdc.usds.simplereport.db.model.Facility;
-import gov.cdc.usds.simplereport.db.model.Organization;
-import gov.cdc.usds.simplereport.db.model.Person;
 import gov.cdc.usds.simplereport.db.model.PhoneNumber;
 import gov.cdc.usds.simplereport.db.model.Result;
 import gov.cdc.usds.simplereport.db.model.SpecimenType;
@@ -36,6 +32,7 @@ import gov.cdc.usds.simplereport.db.model.TestOrder;
 import gov.cdc.usds.simplereport.db.model.auxiliary.PhoneType;
 import gov.cdc.usds.simplereport.db.model.auxiliary.TestCorrectionStatus;
 import gov.cdc.usds.simplereport.db.model.auxiliary.TestResult;
+import gov.cdc.usds.simplereport.test_util.TestDataBuilder;
 import java.io.IOException;
 import java.nio.charset.StandardCharsets;
 import java.util.Collections;
@@ -664,24 +661,7 @@ class FhirConverterTest {
 
   @Test
   void testEvent_convertToDiagnosticReport() {
-    var testEvent =
-        new TestEvent(
-            new TestOrder(
-                new Person(null, null, null, null, null),
-                new Facility(
-                    null,
-                    null,
-                    null,
-                    null,
-                    null,
-                    null,
-                    null,
-                    new DeviceSpecimenType(
-                        new DeviceType(null, null, null, "95422-2", null, 0), null),
-                    Collections.emptyList())),
-            false,
-            Collections.emptySet());
-
+    var testEvent = TestDataBuilder.createEmptyTestEventWithValidDevice();
     var actual = convertToDiagnosticReport(testEvent);
 
     assertThat(actual.getStatus()).isEqualTo(DiagnosticReportStatus.FINAL);
@@ -692,23 +672,7 @@ class FhirConverterTest {
 
   @Test
   void testEventOriginal_convertToDiagnosticReport() {
-    var testEvent =
-        new TestEvent(
-            new TestOrder(
-                new Person(null, null, null, null, null),
-                new Facility(
-                    null,
-                    null,
-                    null,
-                    null,
-                    null,
-                    null,
-                    null,
-                    new DeviceSpecimenType(
-                        new DeviceType(null, null, null, "95422-2", null, 0), null),
-                    Collections.emptyList())),
-            false,
-            Collections.emptySet());
+    var testEvent = TestDataBuilder.createEmptyTestEventWithValidDevice();
     var actual = convertToDiagnosticReport(testEvent);
 
     assertThat(actual.getStatus()).isEqualTo(DiagnosticReportStatus.FINAL);
@@ -719,22 +683,7 @@ class FhirConverterTest {
 
   @Test
   void testEventCorrected_convertToDiagnosticReport() {
-    var invalidTestEvent =
-        new TestEvent(
-            new TestOrder(
-                new Person(null, null, null, null, null),
-                new Facility(
-                    null,
-                    null,
-                    null,
-                    null,
-                    null,
-                    null,
-                    null,
-                    new DeviceSpecimenType(null, null),
-                    Collections.emptyList())),
-            false,
-            Collections.emptySet());
+    var invalidTestEvent = TestDataBuilder.createEmptyTestEvent();
     var correctedTestEvent =
         new TestEvent(
             invalidTestEvent, TestCorrectionStatus.CORRECTED, "typo", Collections.emptySet());
@@ -746,22 +695,7 @@ class FhirConverterTest {
 
   @Test
   void testEventRemoved_convertToDiagnosticReport() {
-    var invalidTestEvent =
-        new TestEvent(
-            new TestOrder(
-                new Person(null, null, null, null, null),
-                new Facility(
-                    null,
-                    null,
-                    null,
-                    null,
-                    null,
-                    null,
-                    null,
-                    new DeviceSpecimenType(null, null),
-                    Collections.emptyList())),
-            false,
-            Collections.emptySet());
+    var invalidTestEvent = TestDataBuilder.createEmptyTestEvent();
     var correctedTestEvent =
         new TestEvent(
             invalidTestEvent, TestCorrectionStatus.REMOVED, "wrong person", Collections.emptySet());
@@ -773,23 +707,7 @@ class FhirConverterTest {
 
   @Test
   void testEventNullDeviceType_convertToDiagnosticReport() {
-    var testEvent =
-        new TestEvent(
-            new TestOrder(
-                new Person(null, null, null, null, null),
-                new Facility(
-                    null,
-                    null,
-                    null,
-                    null,
-                    null,
-                    null,
-                    null,
-                    new DeviceSpecimenType(null, null),
-                    Collections.emptyList())),
-            false,
-            Collections.emptySet());
-
+    var testEvent = TestDataBuilder.createEmptyTestEvent();
     var actual = convertToDiagnosticReport(testEvent);
 
     assertThat(actual.getStatus()).isEqualTo(DiagnosticReportStatus.FINAL);
@@ -827,17 +745,7 @@ class FhirConverterTest {
   void testOrder_convertToServiceRequest() {
     var testOrder =
         new TestOrder(
-            new Person(null, null, null, null, new Organization(null, null, null, true)),
-            new Facility(
-                null,
-                null,
-                null,
-                null,
-                null,
-                null,
-                null,
-                new DeviceSpecimenType(new DeviceType(null, null, null, "95422-2", null, 0), null),
-                Collections.emptyList()));
+            TestDataBuilder.createEmptyPerson(true), TestDataBuilder.createEmptyFacility(true));
 
     var actual = convertToServiceRequest(testOrder);
 
@@ -852,17 +760,7 @@ class FhirConverterTest {
   void testOrderComplete_convertToServiceRequest() {
     var testOrder =
         new TestOrder(
-            new Person(null, null, null, null, new Organization(null, null, null, true)),
-            new Facility(
-                null,
-                null,
-                null,
-                null,
-                null,
-                null,
-                null,
-                new DeviceSpecimenType(new DeviceType(null, null, null, "95422-2", null, 0), null),
-                Collections.emptyList()));
+            TestDataBuilder.createEmptyPerson(true), TestDataBuilder.createEmptyFacility(true));
     testOrder.markComplete();
     var actual = convertToServiceRequest(testOrder);
 
@@ -873,17 +771,7 @@ class FhirConverterTest {
   void testOrderCancelled_convertToServiceRequest() {
     var testOrder =
         new TestOrder(
-            new Person(null, null, null, null, new Organization(null, null, null, true)),
-            new Facility(
-                null,
-                null,
-                null,
-                null,
-                null,
-                null,
-                null,
-                new DeviceSpecimenType(new DeviceType(null, null, null, "95422-2", null, 0), null),
-                Collections.emptyList()));
+            TestDataBuilder.createEmptyPerson(true), TestDataBuilder.createEmptyFacility(true));
     testOrder.cancelOrder();
     var actual = convertToServiceRequest(testOrder);
 
@@ -894,17 +782,7 @@ class FhirConverterTest {
   void testOrderNullDeviceType_convertToServiceRequest() {
     var testOrder =
         new TestOrder(
-            new Person(null, null, null, null, new Organization(null, null, null, true)),
-            new Facility(
-                null,
-                null,
-                null,
-                null,
-                null,
-                null,
-                null,
-                new DeviceSpecimenType(null, null),
-                Collections.emptyList()));
+            TestDataBuilder.createEmptyPerson(true), TestDataBuilder.createEmptyFacility(false));
     testOrder.cancelOrder();
     var actual = convertToServiceRequest(testOrder);
 
