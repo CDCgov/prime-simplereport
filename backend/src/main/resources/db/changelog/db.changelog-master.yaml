@@ -4270,6 +4270,8 @@ databaseChangeLog:
                   type: text
                   constraints:
                     nullable: false
+        - sql:
+            sql: GRANT SELECT ON ${database.defaultSchemaName}.shedlock TO ${noPhiUsername};
       rollback:
         dropTable:
           tableName: shedlock
