@@ -65,7 +65,7 @@ resource "azurerm_key_vault_access_policy" "www_redirect" {
   object_id    = azurerm_user_assigned_identity.www_redirect.principal_id
   tenant_id    = data.azurerm_client_config.current.tenant_id
 
-  secret_permissions = ["get"]
+  secret_permissions = ["Get"]
 }
 
 resource "azurerm_application_gateway" "www_redirect" {
@@ -246,7 +246,7 @@ resource "azurerm_key_vault_access_policy" "cdc_gov_redirect" {
   object_id    = azurerm_user_assigned_identity.cdc_gov_redirect.principal_id
   tenant_id    = data.azurerm_client_config.current.tenant_id
 
-  secret_permissions = ["get"]
+  secret_permissions = ["Get"]
 }
 
 resource "azurerm_application_gateway" "cdc_gov_redirect" {

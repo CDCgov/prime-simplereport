@@ -41,7 +41,7 @@ resource "okta_policy_signon" "mfa_require" {
   groups_included = [var.all_users_group_id]
 }
 
-# terraform import module.okta.okta_policy_rule_signon.app_mfa 00p5a443kcwt33k6R4h6/0pr1rywgmm0V0T2LX4h7
+# We recieve and error when attempting to import this resource.
 resource "okta_policy_rule_signon" "app_mfa" {
   policy_id          = okta_policy_signon.mfa_require.id
   name               = "simple-report-mfa-require"
