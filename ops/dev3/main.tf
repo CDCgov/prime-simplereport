@@ -112,7 +112,7 @@ module "app_service_autoscale" {
   env                     = local.env
   resource_group_location = data.azurerm_resource_group.rg.location
   resource_group_name     = data.azurerm_resource_group.rg.name
-  target_resource_id      = module.simple_report_api.app_service_plan_id
+  target_resource_id      = module.simple_report_api.service_plan_id
 
   tags = local.management_tags
 }
