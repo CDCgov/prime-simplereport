@@ -101,7 +101,7 @@ describe("Single File Input", () => {
         name="testId"
         ariaLabel="upload a file"
         onChange={handleOnChange}
-        required={false}
+        required={true}
         accept=".csv, text/csv"
       />
     );
