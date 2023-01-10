@@ -50,7 +50,7 @@ export const TextWithTooltip = ({
       position={position || "top"}
       className={className}
       wrapperclasses="usa-text-with-tooltip"
-      onClick={(e) => preventPageReload(e)}
+      onClick={preventPageReload}
     >
       {text}
       <FontAwesomeIcon
