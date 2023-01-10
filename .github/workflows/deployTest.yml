@@ -7,7 +7,6 @@ on:
 
 concurrency:
   group: test-deploy
-  cancel-in-progress: false
 env:
   DEPLOY_ENV: test
   NODE_VERSION: 18
