@@ -38,7 +38,9 @@ export const TextWithTooltip = ({
         </button>
       )
     );
-
+  function preventPageReload(e: React.MouseEvent) {
+    e.preventDefault();
+  }
   CustomButton.displayName = "custom button";
 
   return (
@@ -48,6 +50,7 @@ export const TextWithTooltip = ({
       position={position || "top"}
       className={className}
       wrapperclasses="usa-text-with-tooltip"
+      onClick={preventPageReload}
     >
       {text}
       <FontAwesomeIcon
