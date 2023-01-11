@@ -1,6 +1,26 @@
 package gov.cdc.usds.simplereport.api.converter;
 
-import static gov.cdc.usds.simplereport.api.converter.FhirConverter.*;
+import static gov.cdc.usds.simplereport.api.converter.FhirConverter.convertEmailsToContactPoint;
+import static gov.cdc.usds.simplereport.api.converter.FhirConverter.convertToAddress;
+import static gov.cdc.usds.simplereport.api.converter.FhirConverter.convertToAdministrativeGender;
+import static gov.cdc.usds.simplereport.api.converter.FhirConverter.convertToContactPoint;
+import static gov.cdc.usds.simplereport.api.converter.FhirConverter.convertToDate;
+import static gov.cdc.usds.simplereport.api.converter.FhirConverter.convertToDevice;
+import static gov.cdc.usds.simplereport.api.converter.FhirConverter.convertToDiagnosticReport;
+import static gov.cdc.usds.simplereport.api.converter.FhirConverter.convertToEthnicityExtension;
+import static gov.cdc.usds.simplereport.api.converter.FhirConverter.convertToHumanName;
+import static gov.cdc.usds.simplereport.api.converter.FhirConverter.convertToObservation;
+import static gov.cdc.usds.simplereport.api.converter.FhirConverter.convertToOrganization;
+import static gov.cdc.usds.simplereport.api.converter.FhirConverter.convertToPatient;
+import static gov.cdc.usds.simplereport.api.converter.FhirConverter.convertToPractitioner;
+import static gov.cdc.usds.simplereport.api.converter.FhirConverter.convertToRaceExtension;
+import static gov.cdc.usds.simplereport.api.converter.FhirConverter.convertToServiceRequest;
+import static gov.cdc.usds.simplereport.api.converter.FhirConverter.convertToSpecimen;
+import static gov.cdc.usds.simplereport.api.converter.FhirConverter.convertToTribalAffiliationExtension;
+import static gov.cdc.usds.simplereport.api.converter.FhirConverter.createFhirBundle;
+import static gov.cdc.usds.simplereport.api.converter.FhirConverter.createMessageHeader;
+import static gov.cdc.usds.simplereport.api.converter.FhirConverter.createPractitionerRole;
+import static gov.cdc.usds.simplereport.api.converter.FhirConverter.createProvenance;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.from;
 import static org.junit.jupiter.params.provider.Arguments.arguments;
