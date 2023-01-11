@@ -4252,3 +4252,9 @@ databaseChangeLog:
                   name: test_performed_code
                   type: text
                   remarks: The code that identifies which disease was tested.
+      rollback:
+        - dropColumn:
+            tableName: device_supported_disease
+            columns:
+              - column:
+                  name: test_performed_code
