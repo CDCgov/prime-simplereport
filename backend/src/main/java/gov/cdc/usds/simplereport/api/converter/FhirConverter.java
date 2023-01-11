@@ -505,11 +505,11 @@ public class FhirConverter {
     var diagnosticReportFullUrl = ResourceType.DiagnosticReport + "/" + diagnosticReport.getId();
     var deviceFullUrl = ResourceType.Device + "/" + device.getId();
 
-    var practitionerRole = getPractitionerRole(organizationFullUrl, practitionerFullUrl);
+    var practitionerRole = createPractitionerRole(organizationFullUrl, practitionerFullUrl);
     var provenance = createProvenance(organizationFullUrl, deviceFullUrl);
     var provenanceFullUrl = ResourceType.Provenance + "/" + provenance.getId();
     var messageHeader =
-        getMessageHeader(organizationFullUrl, diagnosticReportFullUrl, provenanceFullUrl);
+        createMessageHeader(organizationFullUrl, diagnosticReportFullUrl, provenanceFullUrl);
     var practitionerRoleFullUrl = ResourceType.PractitionerRole + "/" + practitionerRole.getId();
     var messageHeaderFullUrl = ResourceType.MessageHeader + "/" + messageHeader.getId();
 
@@ -574,7 +574,7 @@ public class FhirConverter {
     return provenance;
   }
 
-  public static PractitionerRole getPractitionerRole(
+  public static PractitionerRole createPractitionerRole(
       String organizationUrl, String practitionerUrl) {
     var practitionerRole = new PractitionerRole();
     practitionerRole.setId(UUID.randomUUID().toString());
@@ -584,7 +584,7 @@ public class FhirConverter {
     return practitionerRole;
   }
 
-  public static MessageHeader getMessageHeader(
+  public static MessageHeader createMessageHeader(
       String organizationUrl, String mainResourceUrl, String provenanceFullUrl) {
     var messageHeader = new MessageHeader();
     messageHeader.setId(UUID.randomUUID().toString());

@@ -959,9 +959,9 @@ class FhirConverterTest {
   }
 
   @Test
-  void getPractitionerRole_valid() {
+  void createPractitionerRole_valid() {
     var practitionerRole =
-        getPractitionerRole("Organization/org-id", "Practitioner/practitioner-id");
+        createPractitionerRole("Organization/org-id", "Practitioner/practitioner-id");
 
     assertThat(practitionerRole.getOrganization().getReference()).isEqualTo("Organization/org-id");
     assertThat(practitionerRole.getPractitioner().getReference())
@@ -969,8 +969,8 @@ class FhirConverterTest {
   }
 
   @Test
-  void getMessageHeader_valid() {
-    var messageHeader = getMessageHeader("Organization/org-id", "mainResource", "provenance");
+  void createMessageHeader_valid() {
+    var messageHeader = createMessageHeader("Organization/org-id", "mainResource", "provenance");
 
     assertThat(messageHeader.getEventCoding().getSystem())
         .isEqualTo("http://terminology.hl7.org/CodeSystem/v2-0003");
