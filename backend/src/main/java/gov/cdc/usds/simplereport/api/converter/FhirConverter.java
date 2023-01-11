@@ -1,15 +1,6 @@
 package gov.cdc.usds.simplereport.api.converter;
 
-import static gov.cdc.usds.simplereport.api.converter.FhirConstants.ETHNICITY_CODE_SYSTEM;
-import static gov.cdc.usds.simplereport.api.converter.FhirConstants.ETHNICITY_EXTENSION_URL;
-import static gov.cdc.usds.simplereport.api.converter.FhirConstants.LOINC_CODE_SYSTEM;
-import static gov.cdc.usds.simplereport.api.converter.FhirConstants.NULL_CODE_SYSTEM;
-import static gov.cdc.usds.simplereport.api.converter.FhirConstants.RACE_CODING_SYSTEM;
-import static gov.cdc.usds.simplereport.api.converter.FhirConstants.RACE_EXTENSION_URL;
-import static gov.cdc.usds.simplereport.api.converter.FhirConstants.SNOMED_CODE_SYSTEM;
-import static gov.cdc.usds.simplereport.api.converter.FhirConstants.TRIBAL_AFFILIATION_CODE_SYSTEM;
-import static gov.cdc.usds.simplereport.api.converter.FhirConstants.TRIBAL_AFFILIATION_EXTENSION_URL;
-import static gov.cdc.usds.simplereport.api.converter.FhirConstants.TRIBAL_AFFILIATION_STRING;
+import static gov.cdc.usds.simplereport.api.converter.FhirConstants.*;
 
 import com.google.i18n.phonenumbers.NumberParseException;
 import com.google.i18n.phonenumbers.PhoneNumberUtil;
@@ -42,38 +33,18 @@ import java.util.stream.Collectors;
 import javax.validation.constraints.NotNull;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.StringUtils;
-import org.hl7.fhir.r4.model.Address;
-import org.hl7.fhir.r4.model.Bundle;
+import org.hl7.fhir.r4.model.*;
 import org.hl7.fhir.r4.model.Bundle.BundleEntryComponent;
 import org.hl7.fhir.r4.model.Bundle.BundleType;
-import org.hl7.fhir.r4.model.CodeableConcept;
-import org.hl7.fhir.r4.model.Coding;
-import org.hl7.fhir.r4.model.ContactPoint;
 import org.hl7.fhir.r4.model.ContactPoint.ContactPointSystem;
 import org.hl7.fhir.r4.model.ContactPoint.ContactPointUse;
-import org.hl7.fhir.r4.model.Device;
 import org.hl7.fhir.r4.model.Device.DeviceDeviceNameComponent;
 import org.hl7.fhir.r4.model.Device.DeviceNameType;
-import org.hl7.fhir.r4.model.DiagnosticReport;
 import org.hl7.fhir.r4.model.DiagnosticReport.DiagnosticReportStatus;
 import org.hl7.fhir.r4.model.Enumerations.AdministrativeGender;
-import org.hl7.fhir.r4.model.Extension;
-import org.hl7.fhir.r4.model.HumanName;
-import org.hl7.fhir.r4.model.MessageHeader;
-import org.hl7.fhir.r4.model.Observation;
 import org.hl7.fhir.r4.model.Observation.ObservationStatus;
-import org.hl7.fhir.r4.model.Organization;
-import org.hl7.fhir.r4.model.Patient;
-import org.hl7.fhir.r4.model.Practitioner;
-import org.hl7.fhir.r4.model.PractitionerRole;
-import org.hl7.fhir.r4.model.Reference;
-import org.hl7.fhir.r4.model.Resource;
-import org.hl7.fhir.r4.model.ResourceType;
-import org.hl7.fhir.r4.model.ServiceRequest;
 import org.hl7.fhir.r4.model.ServiceRequest.ServiceRequestIntent;
 import org.hl7.fhir.r4.model.ServiceRequest.ServiceRequestStatus;
-import org.hl7.fhir.r4.model.Specimen;
-import org.hl7.fhir.r4.model.StringType;
 import org.springframework.data.util.Pair;
 
 @Slf4j
@@ -535,7 +506,10 @@ public class FhirConverter {
     var deviceFullUrl = ResourceType.Device + "/" + device.getId();
 
     var practitionerRole = getPractitionerRole(organizationFullUrl, practitionerFullUrl);
-    var messageHeader = getMessageHeader(organizationFullUrl, diagnosticReportFullUrl);
+    var provenance = createProvenance(organizationFullUrl, deviceFullUrl);
+    var provenanceFullUrl = ResourceType.Provenance + "/" + provenance.getId();
+    var messageHeader =
+        getMessageHeader(organizationFullUrl, diagnosticReportFullUrl, provenanceFullUrl);
     var practitionerRoleFullUrl = ResourceType.PractitionerRole + "/" + practitionerRole.getId();
     var messageHeaderFullUrl = ResourceType.MessageHeader + "/" + messageHeader.getId();
 
@@ -551,6 +525,7 @@ public class FhirConverter {
 
     var entryList = new ArrayList<Pair<String, Resource>>();
     entryList.add(Pair.of(messageHeaderFullUrl, messageHeader));
+    entryList.add(Pair.of(provenanceFullUrl, provenance));
     entryList.add(Pair.of(diagnosticReportFullUrl, diagnosticReport));
 
     entryList.add(Pair.of(patientFullUrl, patient));
@@ -585,6 +560,20 @@ public class FhirConverter {
     return bundle;
   }
 
+  public static Provenance createProvenance(String organizationFullUrl, String deviceFullUrl) {
+    var provenance = new Provenance();
+    provenance.setId(UUID.randomUUID().toString());
+    provenance
+        .getActivity()
+        .addCoding()
+        .setSystem(EVENT_TYPE_CODE_SYSTEM)
+        .setCode(EVENT_TYPE_CODE)
+        .setDisplay(EVENT_TYPE_DISPLAY);
+    provenance.addAgent().setWho(new Reference().setReference(organizationFullUrl));
+    provenance.addTarget(new Reference(deviceFullUrl));
+    return provenance;
+  }
+
   public static PractitionerRole getPractitionerRole(
       String organizationUrl, String practitionerUrl) {
     var practitionerRole = new PractitionerRole();
@@ -595,14 +584,15 @@ public class FhirConverter {
     return practitionerRole;
   }
 
-  public static MessageHeader getMessageHeader(String organizationUrl, String mainResourceUrl) {
+  public static MessageHeader getMessageHeader(
+      String organizationUrl, String mainResourceUrl, String provenanceFullUrl) {
     var messageHeader = new MessageHeader();
     messageHeader.setId(UUID.randomUUID().toString());
     messageHeader
         .getEventCoding()
-        .setSystem("http://terminology.hl7.org/CodeSystem/v2-0003")
-        .setCode("R01")
-        .setDisplay("ORU/ACK - Unsolicited transmission of an observation message");
+        .setSystem(EVENT_TYPE_CODE_SYSTEM)
+        .setCode(EVENT_TYPE_CODE)
+        .setDisplay(EVENT_TYPE_DISPLAY);
     messageHeader
         .getSource()
         .setSoftware("PRIME SimpleReport")
@@ -612,6 +602,7 @@ public class FhirConverter {
         .setName("PRIME ReportStream")
         .setEndpoint("https://prime.cdc.gov/api/reports?option=SkipInvalidItems");
     messageHeader.getSender().setReferenceElement(new StringType(organizationUrl));
+    messageHeader.addFocus(new Reference(provenanceFullUrl));
     messageHeader.addFocus(new Reference(mainResourceUrl));
     return messageHeader;
   }

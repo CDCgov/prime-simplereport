@@ -27,7 +27,38 @@
         },
         "focus":[
           {
+            "reference": "Provenance/$PROVENANCE_ID"
+          },
+          {
             "reference":"DiagnosticReport/45e9539f-c9a4-4c86-b79d-4ba2c43f9ee0"
+          }
+        ]
+      }
+    },
+    {
+      "fullUrl": "Provenance/$PROVENANCE_ID",
+      "resource": {
+        "resourceType": "Provenance",
+        "id": "$PROVENANCE_ID",
+        "target": [
+          {
+            "reference": "Device/48aabd5f-a591-4e0e-9fa2-301d3d5a6df4"
+          }
+        ],
+        "activity": {
+          "coding": [
+            {
+              "system": "http://terminology.hl7.org/CodeSystem/v2-0003",
+              "code": "R01",
+              "display": "ORU/ACK - Unsolicited transmission of an observation message"
+            }
+          ]
+        },
+        "agent": [
+          {
+            "who": {
+              "reference": "Organization/1c3d14b9-e222-4a16-9fb2-d9f173034a6a"
+            }
           }
         ]
       }

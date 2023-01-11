@@ -1,25 +1,6 @@
 package gov.cdc.usds.simplereport.api.converter;
 
-import static gov.cdc.usds.simplereport.api.converter.FhirConverter.convertEmailsToContactPoint;
-import static gov.cdc.usds.simplereport.api.converter.FhirConverter.convertToAddress;
-import static gov.cdc.usds.simplereport.api.converter.FhirConverter.convertToAdministrativeGender;
-import static gov.cdc.usds.simplereport.api.converter.FhirConverter.convertToContactPoint;
-import static gov.cdc.usds.simplereport.api.converter.FhirConverter.convertToDate;
-import static gov.cdc.usds.simplereport.api.converter.FhirConverter.convertToDevice;
-import static gov.cdc.usds.simplereport.api.converter.FhirConverter.convertToDiagnosticReport;
-import static gov.cdc.usds.simplereport.api.converter.FhirConverter.convertToEthnicityExtension;
-import static gov.cdc.usds.simplereport.api.converter.FhirConverter.convertToHumanName;
-import static gov.cdc.usds.simplereport.api.converter.FhirConverter.convertToObservation;
-import static gov.cdc.usds.simplereport.api.converter.FhirConverter.convertToOrganization;
-import static gov.cdc.usds.simplereport.api.converter.FhirConverter.convertToPatient;
-import static gov.cdc.usds.simplereport.api.converter.FhirConverter.convertToPractitioner;
-import static gov.cdc.usds.simplereport.api.converter.FhirConverter.convertToRaceExtension;
-import static gov.cdc.usds.simplereport.api.converter.FhirConverter.convertToServiceRequest;
-import static gov.cdc.usds.simplereport.api.converter.FhirConverter.convertToSpecimen;
-import static gov.cdc.usds.simplereport.api.converter.FhirConverter.convertToTribalAffiliationExtension;
-import static gov.cdc.usds.simplereport.api.converter.FhirConverter.createFhirBundle;
-import static gov.cdc.usds.simplereport.api.converter.FhirConverter.getMessageHeader;
-import static gov.cdc.usds.simplereport.api.converter.FhirConverter.getPractitionerRole;
+import static gov.cdc.usds.simplereport.api.converter.FhirConverter.*;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.from;
 import static org.junit.jupiter.params.provider.Arguments.arguments;
@@ -56,25 +37,16 @@ import java.util.UUID;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 import org.apache.commons.io.IOUtils;
+import org.hl7.fhir.r4.model.*;
 import org.hl7.fhir.r4.model.Bundle.BundleEntryComponent;
 import org.hl7.fhir.r4.model.Bundle.BundleType;
-import org.hl7.fhir.r4.model.ContactPoint;
 import org.hl7.fhir.r4.model.ContactPoint.ContactPointSystem;
 import org.hl7.fhir.r4.model.ContactPoint.ContactPointUse;
-import org.hl7.fhir.r4.model.Device;
 import org.hl7.fhir.r4.model.Device.DeviceNameType;
-import org.hl7.fhir.r4.model.DiagnosticReport;
 import org.hl7.fhir.r4.model.DiagnosticReport.DiagnosticReportStatus;
 import org.hl7.fhir.r4.model.Enumerations.AdministrativeGender;
-import org.hl7.fhir.r4.model.Observation;
-import org.hl7.fhir.r4.model.Patient;
-import org.hl7.fhir.r4.model.Practitioner;
-import org.hl7.fhir.r4.model.PractitionerRole;
-import org.hl7.fhir.r4.model.PrimitiveType;
-import org.hl7.fhir.r4.model.ServiceRequest;
 import org.hl7.fhir.r4.model.ServiceRequest.ServiceRequestIntent;
 import org.hl7.fhir.r4.model.ServiceRequest.ServiceRequestStatus;
-import org.hl7.fhir.r4.model.Specimen;
 import org.hl7.fhir.r4.model.codesystems.ObservationStatus;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.params.ParameterizedTest;
@@ -998,7 +970,7 @@ class FhirConverterTest {
 
   @Test
   void getMessageHeader_valid() {
-    var messageHeader = getMessageHeader("Organization/org-id", "mainResource");
+    var messageHeader = getMessageHeader("Organization/org-id", "mainResource", "provenance");
 
     assertThat(messageHeader.getEventCoding().getSystem())
         .isEqualTo("http://terminology.hl7.org/CodeSystem/v2-0003");
@@ -1008,8 +980,26 @@ class FhirConverterTest {
     assertThat(messageHeader.getSource().getSoftware()).isEqualTo("PRIME SimpleReport");
     assertThat(messageHeader.getSource().getEndpoint()).isEqualTo("https://simplereport.gov");
     assertThat(messageHeader.getSender().getReference()).isEqualTo("Organization/org-id");
-    assertThat(messageHeader.getFocus()).hasSize(1);
-    assertThat(messageHeader.getFocusFirstRep().getReference()).isEqualTo("mainResource");
+    assertThat(messageHeader.getFocus()).hasSize(2);
+    assertThat(messageHeader.getFocus().stream().map(Reference::getReference))
+        .contains("mainResource", "provenance");
+  }
+
+  @Test
+  void createProvenance_valid() {
+    var provenance = createProvenance("Organization/org-id", "Device/device-id");
+
+    assertThat(provenance.getActivity().getCoding()).hasSize(1);
+    assertThat(provenance.getActivity().getCodingFirstRep().getCode()).isEqualTo("R01");
+    assertThat(provenance.getActivity().getCodingFirstRep().getSystem())
+        .isEqualTo("http://terminology.hl7.org/CodeSystem/v2-0003");
+    assertThat(provenance.getActivity().getCodingFirstRep().getDisplay())
+        .isEqualTo("ORU/ACK - Unsolicited transmission of an observation message");
+
+    assertThat(provenance.getAgentFirstRep().getWho().getReference())
+        .isEqualTo("Organization/org-id");
+
+    assertThat(provenance.getTargetFirstRep().getReference()).isEqualTo("Device/device-id");
   }
 
   @Test
@@ -1048,9 +1038,9 @@ class FhirConverterTest {
             .collect(Collectors.toList());
 
     assertThat(actual.getType()).isEqualTo(BundleType.MESSAGE);
-    assertThat(actual.getEntry()).hasSize(10);
+    assertThat(actual.getEntry()).hasSize(11);
     assertThat(resourceUrls)
-        .hasSize(10)
+        .hasSize(11)
         .contains(
             "Patient/" + patient.getId(),
             "Organization/" + organization.getId(),
@@ -1224,9 +1214,11 @@ class FhirConverterTest {
 
     var messageHeaderStart = actualSerialized.indexOf("MessageHeader/") + 14;
     var practitionerRoleStart = actualSerialized.indexOf("PractitionerRole/") + 17;
+    var provenanceStart = actualSerialized.indexOf("Provenance/") + 11;
     var messageHeaderId = actualSerialized.substring(messageHeaderStart, messageHeaderStart + 36);
     var practitionerRoleId =
         actualSerialized.substring(practitionerRoleStart, practitionerRoleStart + 36);
+    var provenanceId = actualSerialized.substring(provenanceStart, provenanceStart + 36);
 
     var expectedSerialized =
         IOUtils.toString(
@@ -1236,7 +1228,8 @@ class FhirConverterTest {
 
     expectedSerialized = expectedSerialized.replace("$MESSAGE_HEADER_ID", messageHeaderId);
     expectedSerialized = expectedSerialized.replace("$PRACTITIONER_ROLE_ID", practitionerRoleId);
+    expectedSerialized = expectedSerialized.replace("$PROVENANCE_ID", provenanceId);
 
-    JSONAssert.assertEquals(actualSerialized, expectedSerialized, true);
+    JSONAssert.assertEquals(actualSerialized, expectedSerialized, false);
   }
 }
