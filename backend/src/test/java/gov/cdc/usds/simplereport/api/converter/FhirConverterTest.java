@@ -91,6 +91,8 @@ class FhirConverterTest {
   private static final String tribalSystemUrl =
       "http://terminology.hl7.org/CodeSystem/v3-TribalEntityUS";
   public static final String snomedCode = "http://snomed.info/sct";
+  final FhirContext ctx = FhirContext.forR4();
+  final IParser parser = ctx.newJsonParser();
 
   @Test
   void convertToHumanName_String_allFields() {
@@ -332,9 +334,6 @@ class FhirConverterTest {
 
     var actual = convertToPractitioner(provider);
 
-    FhirContext ctx = FhirContext.forR4();
-    IParser parser = ctx.newJsonParser();
-
     String actualSerialized = parser.encodeResourceToString(actual);
     var expectedSerialized =
         IOUtils.toString(
@@ -360,9 +359,6 @@ class FhirConverterTest {
     ReflectionTestUtils.setField(facility, "internalId", UUID.fromString(internalId));
 
     var actual = convertToOrganization(facility);
-
-    FhirContext ctx = FhirContext.forR4();
-    IParser parser = ctx.newJsonParser();
 
     String actualSerialized = parser.encodeResourceToString(actual);
     var expectedSerialized =
@@ -409,9 +405,6 @@ class FhirConverterTest {
     ReflectionTestUtils.setField(person, "internalId", UUID.fromString(internalId));
 
     var actual = convertToPatient(person);
-
-    FhirContext ctx = FhirContext.forR4();
-    IParser parser = ctx.newJsonParser();
 
     String actualSerialized = parser.encodeResourceToString(actual);
     var expectedSerialized =
@@ -467,9 +460,6 @@ class FhirConverterTest {
     ReflectionTestUtils.setField(deviceType, "internalId", UUID.fromString(internalId));
 
     var actual = convertToDevice(deviceType);
-
-    FhirContext ctx = FhirContext.forR4();
-    IParser parser = ctx.newJsonParser();
 
     String actualSerialized = parser.encodeResourceToString(actual);
     var expectedSerialized =
@@ -551,9 +541,6 @@ class FhirConverterTest {
     ReflectionTestUtils.setField(specimenType, "internalId", UUID.fromString(internalId));
 
     var actual = convertToSpecimen(specimenType);
-
-    FhirContext ctx = FhirContext.forR4();
-    IParser parser = ctx.newJsonParser();
 
     String actualSerialized = parser.encodeResourceToString(actual);
     var expectedSerialized =
@@ -673,9 +660,6 @@ class FhirConverterTest {
     var actual =
         convertToObservation(Set.of(covidResult, fluResult), TestCorrectionStatus.ORIGINAL, null);
 
-    FhirContext ctx = FhirContext.forR4();
-    IParser parser = ctx.newJsonParser();
-
     assertThat(actual).hasSize(2);
     String covidSerialized =
         parser.encodeResourceToString(
@@ -717,9 +701,6 @@ class FhirConverterTest {
     ReflectionTestUtils.setField(result, "internalId", UUID.fromString(id));
 
     var actual = convertToObservation(Set.of(result), TestCorrectionStatus.CORRECTED, "woops");
-
-    FhirContext ctx = FhirContext.forR4();
-    IParser parser = ctx.newJsonParser();
 
     String actualSerialized = parser.encodeResourceToString(actual.get(0));
     var expectedSerialized1 =
@@ -835,9 +816,6 @@ class FhirConverterTest {
     ReflectionTestUtils.setField(testEvent, "internalId", UUID.fromString(internalId));
 
     var actual = convertToDiagnosticReport(testEvent);
-
-    FhirContext ctx = FhirContext.forR4();
-    IParser parser = ctx.newJsonParser();
 
     String actualSerialized = parser.encodeResourceToString(actual);
     var expectedSerialized =
@@ -997,9 +975,6 @@ class FhirConverterTest {
     ReflectionTestUtils.setField(testOrder, "internalId", UUID.fromString(internalId));
 
     var actual = convertToServiceRequest(testOrder);
-
-    FhirContext ctx = FhirContext.forR4();
-    IParser parser = ctx.newJsonParser();
 
     String actualSerialized = parser.encodeResourceToString(actual);
     var expectedSerialized =
@@ -1244,9 +1219,6 @@ class FhirConverterTest {
         person, "phoneNumbers", List.of(new PhoneNumber(PhoneType.LANDLINE, "7735551234")));
 
     var actual = createFhirBundle(testEvent);
-
-    FhirContext ctx = FhirContext.forR4();
-    IParser parser = ctx.newJsonParser();
 
     String actualSerialized = parser.encodeResourceToString(actual);
 
