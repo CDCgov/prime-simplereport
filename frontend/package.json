@@ -212,7 +212,7 @@
     "@types/uuid": "^8.3.4",
     "@typescript-eslint/eslint-plugin": "^5.9.1",
     "@typescript-eslint/parser": "^5.46.1",
-    "babel-loader": "8.1.0",
+    "babel-loader": "9.1.2",
     "babel-plugin-named-exports-order": "^0.0.2",
     "babel-preset-react-app": "^10.0.1",
     "chromatic": "^6.10.2",
