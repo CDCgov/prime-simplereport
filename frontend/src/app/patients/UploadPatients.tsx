@@ -20,6 +20,9 @@ import { AddPatientHeader } from "./Components/AddPatientsHeader";
 
 import "./UploadPatients.scss";
 
+const PAYLOAD_MAX_BYTES = 50 * 1000 * 1000;
+const MAX_ROW_COUNT = 10000;
+
 const UploadPatients = ({ isAdmin }: { isAdmin: boolean }) => {
   useDocumentTitle("Add Patient");
   const [facilityAmount, setFacilityAmount] = useState<string>();
@@ -30,6 +33,8 @@ const UploadPatients = ({ isAdmin }: { isAdmin: boolean }) => {
     Array<FeedbackMessage | undefined | null>
   >([]);
   const [errorMessageText, setErrorMessageText] = useState("");
+  const [includeGuideInErrorMessage, setIncludeGuideInErrorMessage] =
+    useState(true);
   const [status, setStatus] = useState<
     "submitting" | "complete" | "success" | "fail" | ""
   >("");
@@ -65,11 +70,13 @@ const UploadPatients = ({ isAdmin }: { isAdmin: boolean }) => {
           setErrorMessageText(
             "Please resolve the errors below and upload your edited file."
           );
+          setIncludeGuideInErrorMessage(true);
           setErrors(response.errors);
         } else {
           setErrorMessageText(
             "There was a server error. Your file has not been accepted."
           );
+          setIncludeGuideInErrorMessage(true);
         }
       } else {
         setStatus("success");
@@ -86,6 +93,28 @@ const UploadPatients = ({ isAdmin }: { isAdmin: boolean }) => {
         if (!currentFile) {
           return;
         }
+        if (currentFile.size > PAYLOAD_MAX_BYTES) {
+          setStatus("fail");
+          setErrorMessageText(
+            `"${currentFile.name}" is too large for SimpleReport to process. Please limit each upload to 50 MB.`
+          );
+          setIncludeGuideInErrorMessage(false);
+          return;
+        }
+
+        const fileText = await currentFile.text();
+        const lineCount = (fileText.match(/\n/g) || []).length + 1;
+        if (lineCount > MAX_ROW_COUNT) {
+          setStatus("fail");
+          setErrorMessageText(
+            `“${
+              currentFile.name
+            }” has too many rows for SimpleReport to process. Please limit each upload to ${MAX_ROW_COUNT.toLocaleString()} rows.`
+          );
+          setIncludeGuideInErrorMessage(false);
+          return;
+        }
+
         setFile(currentFile);
         setButtonIsDisabled(false);
         setStatus("");
@@ -108,6 +137,7 @@ const UploadPatients = ({ isAdmin }: { isAdmin: boolean }) => {
         setStatus("fail");
         setButtonIsDisabled(false);
         setErrorMessageText("Invalid file");
+        setIncludeGuideInErrorMessage(true);
         return;
       }
       const facilityId = facilityAmount === "oneFacility" ? facility.id : "";
@@ -281,14 +311,19 @@ const UploadPatients = ({ isAdmin }: { isAdmin: boolean }) => {
                             <FontAwesomeIcon icon={faXmark} />
                           </button>
                           <p className="usa-alert__text">
-                            {errorMessageText} See the{" "}
-                            <a
-                              target="_blank"
-                              href="/using-simplereport/manage-people-you-test/bulk-upload-patients/#preparing-your-spreadsheet-data"
-                            >
-                              patient bulk upload guide
-                            </a>{" "}
-                            for details about accepted values.
+                            {errorMessageText}
+                            {includeGuideInErrorMessage && (
+                              <div>
+                                See the{" "}
+                                <a
+                                  target="_blank"
+                                  href="/using-simplereport/manage-people-you-test/bulk-upload-patients/#preparing-your-spreadsheet-data"
+                                >
+                                  patient bulk upload guide
+                                </a>{" "}
+                                for details about accepted values.
+                              </div>
+                            )}
                           </p>
                         </div>
                       </div>
