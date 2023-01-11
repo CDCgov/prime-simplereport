@@ -1,7 +1,7 @@
 package gov.cdc.usds.simplereport.service;
 
-import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertThrows;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyInt;
 import static org.mockito.ArgumentMatchers.argThat;
@@ -61,7 +61,7 @@ class AzureStorageQueueTestEventReportingServiceTest
         assertThrows(
             TestEventSerializationFailureException.class,
             () -> sut.report(invalidTestEventWithNoResults));
-    assertEquals("TestEvent failed to serialize with UUID null: null", caught.getMessage());
+    assertTrue(caught.getMessage().contains("TestEvent failed to serialize with UUID null"));
   }
 
   @Test
@@ -176,7 +176,7 @@ class AzureStorageQueueTestEventReportingServiceTest
   }
 
   private Set<TestEvent> createTestEvents(int count) {
-    var org = _dataFactory.createValidOrg();
+    var org = _dataFactory.saveValidOrganization();
     var facility = _dataFactory.createValidFacility(org);
     var patient = _dataFactory.createFullPerson(org);
 

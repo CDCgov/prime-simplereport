@@ -93,7 +93,7 @@ const OrderingProvider: React.FC<Props> = ({
           onChange={onChange}
         />
         <TextInput
-          label="NPI"
+          label="National Provider Identifier (NPI)"
           hintText={
             <a
               href="https://npiregistry.cms.hhs.gov/"

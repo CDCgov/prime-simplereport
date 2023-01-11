@@ -22,7 +22,7 @@ class TenantDataAccessServiceTest extends BaseServiceTest<TenantDataAccessServic
   @Test
   void addTenantDataAccess_success() {
     ApiUser apiUser = _userService.getCurrentApiUserInContainedTransaction();
-    Organization org = _dataFactory.createValidOrg();
+    Organization org = _dataFactory.saveValidOrganization();
     String justification = "Test justification";
 
     Optional<OrganizationRoleClaims> claimsOpt =
@@ -38,7 +38,7 @@ class TenantDataAccessServiceTest extends BaseServiceTest<TenantDataAccessServic
   @Test
   void addAndRemoveDataAccess_success() {
     ApiUser apiUser = _userService.getCurrentApiUserInContainedTransaction();
-    Organization org = _dataFactory.createValidOrg();
+    Organization org = _dataFactory.saveValidOrganization();
     String justification = "Test justification";
 
     // set access for a user to an org

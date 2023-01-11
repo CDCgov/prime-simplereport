@@ -48,7 +48,7 @@ class OrganizationQueueServiceTest extends BaseServiceTest<OrganizationQueueServ
 
   @Test
   void getUnverifiedQueuedOrganizationByExternalId_newOrg_success() {
-    OrganizationQueueItem createdQueueItem = _dataFactory.createOrganizationQueueItem();
+    OrganizationQueueItem createdQueueItem = _dataFactory.saveOrganizationQueueItem();
 
     Optional<OrganizationQueueItem> optFetchedQueueItem =
         _service.getUnverifiedQueuedOrganizationByExternalId(createdQueueItem.getExternalId());
@@ -60,7 +60,7 @@ class OrganizationQueueServiceTest extends BaseServiceTest<OrganizationQueueServ
 
   @Test
   void editQueueItem_newOrgName_success() {
-    OrganizationQueueItem createdQueueItem = _dataFactory.createOrganizationQueueItem();
+    OrganizationQueueItem createdQueueItem = _dataFactory.saveOrganizationQueueItem();
 
     OrganizationQueueItem editedItem =
         _service.editQueueItem(
@@ -81,7 +81,7 @@ class OrganizationQueueServiceTest extends BaseServiceTest<OrganizationQueueServ
 
   @Test
   void editQueueItem_newAdminName_success() {
-    OrganizationQueueItem createdQueueItem = _dataFactory.createOrganizationQueueItem();
+    OrganizationQueueItem createdQueueItem = _dataFactory.saveOrganizationQueueItem();
 
     _service.editQueueItem(
         createdQueueItem.getExternalId(),
@@ -100,7 +100,7 @@ class OrganizationQueueServiceTest extends BaseServiceTest<OrganizationQueueServ
 
   @Test
   void editQueueItem_newContactInfo_success() {
-    OrganizationQueueItem createdQueueItem = _dataFactory.createOrganizationQueueItem();
+    OrganizationQueueItem createdQueueItem = _dataFactory.saveOrganizationQueueItem();
 
     _service.editQueueItem(
         createdQueueItem.getExternalId(),
@@ -137,7 +137,7 @@ class OrganizationQueueServiceTest extends BaseServiceTest<OrganizationQueueServ
 
   @Test
   void getUnverifiedQueuedOrganizations_success() {
-    OrganizationQueueItem createdQueueItem = _dataFactory.createOrganizationQueueItem();
+    OrganizationQueueItem createdQueueItem = _dataFactory.saveOrganizationQueueItem();
 
     List<OrganizationQueueItem> unverifiedOrgs = _service.getUnverifiedQueuedOrganizations();
 
@@ -147,7 +147,7 @@ class OrganizationQueueServiceTest extends BaseServiceTest<OrganizationQueueServ
 
   @Test
   void createAndActivateQueuedOrganization_newOrg_success() {
-    OrganizationQueueItem queueItem = _dataFactory.createOrganizationQueueItem();
+    OrganizationQueueItem queueItem = _dataFactory.saveOrganizationQueueItem();
 
     String activationToken = _service.createAndActivateQueuedOrganization(queueItem);
     assertTrue(activationToken.length() > 0);
@@ -167,7 +167,7 @@ class OrganizationQueueServiceTest extends BaseServiceTest<OrganizationQueueServ
 
   @Test
   void deleteQueuedOrg_sucessful() {
-    OrganizationQueueItem createdQueueItem = _dataFactory.createOrganizationQueueItem();
+    OrganizationQueueItem createdQueueItem = _dataFactory.saveOrganizationQueueItem();
     OrganizationQueueItem deletedQueueItem =
         _service.markPendingOrganizationAsDeleted(createdQueueItem.getExternalId(), true);
 
@@ -176,7 +176,7 @@ class OrganizationQueueServiceTest extends BaseServiceTest<OrganizationQueueServ
 
   @Test
   void undeletionQueuedOrg_sucessful() {
-    OrganizationQueueItem createdQueueItem = _dataFactory.createOrganizationQueueItem();
+    OrganizationQueueItem createdQueueItem = _dataFactory.saveOrganizationQueueItem();
     createdQueueItem.setIsDeleted(true);
     assertThat(createdQueueItem.isDeleted()).isTrue();
     OrganizationQueueItem undeletedItem =

@@ -585,7 +585,8 @@ describe("FacilityForm", () => {
         await userEvent.clear(npiInput);
         await userEvent.tab();
 
-        const expectedError = "Ordering provider NPI is incorrectly formatted";
+        const expectedError =
+          "NPI should be a 10-digit numerical value (##########)";
 
         // The mock function was called at least once
         expect(spy.mock.calls.length).toBeGreaterThan(0);
@@ -620,7 +621,8 @@ describe("FacilityForm", () => {
         await userEvent.type(npiInput, "Facility name");
         await userEvent.tab();
 
-        const expectedError = "Ordering provider NPI is incorrectly formatted";
+        const expectedError =
+          "NPI should be a 10-digit numerical value (##########)";
         // The mock function was called at least once
         expect(spy.mock.calls.length).toBeGreaterThan(0);
         expect(

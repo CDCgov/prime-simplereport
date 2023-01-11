@@ -42,9 +42,9 @@ class PatientSelfRegistrationLinkServiceTest
 
   @BeforeEach
   void setupData() {
-    _org = _dataFactory.createValidOrg();
+    _org = _dataFactory.saveValidOrganization();
     _fac = _dataFactory.createValidFacility(_org);
-    _unverifiedOrg = _dataFactory.createUnverifiedOrg();
+    _unverifiedOrg = _dataFactory.saveUnverifiedOrganization();
     _unverifiedFac = _dataFactory.createValidFacility(_unverifiedOrg);
   }
 

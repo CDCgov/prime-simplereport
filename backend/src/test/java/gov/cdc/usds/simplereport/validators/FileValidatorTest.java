@@ -1,7 +1,6 @@
 package gov.cdc.usds.simplereport.validators;
 
 import static org.assertj.core.api.Assertions.assertThat;
-import static org.junit.jupiter.api.Assertions.assertThrows;
 
 import gov.cdc.usds.simplereport.api.model.filerow.PatientUploadRow;
 import gov.cdc.usds.simplereport.api.model.filerow.TestResultRow;
@@ -16,24 +15,76 @@ import org.junit.jupiter.params.provider.ValueSource;
 
 class FileValidatorTest {
 
+  List<String> patientBulkUploadRequiredFields =
+      List.of(
+          "first_name",
+          "last_name",
+          "race",
+          "date_of_birth",
+          "biological_sex",
+          "ethnicity",
+          "street",
+          "state",
+          "zip_code",
+          "phone_number",
+          "phone_number_type",
+          "employed_in_healthcare",
+          "resident_congregate_setting");
+  List<String> testResultsUploadRequiredFields =
+      List.of(
+          "patient_last_name",
+          "patient_first_name",
+          "patient_street",
+          "patient_city",
+          "patient_state",
+          "patient_zip_code",
+          "patient_county",
+          "patient_phone_number",
+          "patient_dob",
+          "patient_gender",
+          "patient_race",
+          "patient_ethnicity",
+          "accession_number",
+          "equipment_model_name",
+          "test_performed_code",
+          "test_result",
+          "order_test_date",
+          "test_result_date",
+          "specimen_type",
+          "ordering_provider_id",
+          "ordering_provider_last_name",
+          "ordering_provider_first_name",
+          "ordering_provider_street",
+          "ordering_provider_city",
+          "ordering_provider_state",
+          "ordering_provider_zip_code",
+          "ordering_provider_phone_number",
+          "testing_lab_clia",
+          "testing_lab_name",
+          "testing_lab_street",
+          "testing_lab_city",
+          "testing_lab_state",
+          "testing_lab_zip_code");
   FileValidator<PatientUploadRow> patientBulkUploadFileValidator =
       new FileValidator<>(PatientUploadRow::new);
   FileValidator<TestResultRow> testResultFileValidator = new FileValidator<>(TestResultRow::new);
 
   @Test
-  void emptyFile_returnsError() {
+  void patientBulkUpload_emptyFile_returnsError() {
     // GIVEN
     InputStream input = loadCsv("patientBulkUpload/empty.csv");
     // WHEN
-    Exception exception =
-        assertThrows(
-            IllegalArgumentException.class, () -> patientBulkUploadFileValidator.validate(input));
+    List<FeedbackMessage> errors = patientBulkUploadFileValidator.validate(input);
     // THEN
-    assertThat(exception).hasMessage("Empty or invalid CSV submitted");
+    assertThat(errors).hasSize(1);
+    List<String> errorMessages =
+        errors.stream().map(FeedbackMessage::getMessage).collect(Collectors.toList());
+    assertThat(errorMessages).contains("File is missing headers and other required data");
+    assertThat(errors.get(0).getIndices()).isNull();
   }
 
   @Test
-  void malformedCsv_returnsError() {
+  void patientBulkUpload_malformedCsv_returnsError() {
     // GIVEN
     InputStream input = loadCsv("patientBulkUpload/malformed.csv");
     // WHEN
@@ -49,33 +100,32 @@ class FileValidatorTest {
   }
 
   @Test
-  void missingHeaders_returnsErrors() {
+  void patientBulkUpload_missingHeaders_returnsErrors() {
     // GIVEN
     InputStream input = loadCsv("patientBulkUpload/missingHeaders.csv");
     // WHEN
     List<FeedbackMessage> errors = patientBulkUploadFileValidator.validate(input);
     // THEN
-    assertThat(errors).hasSize(13);
+    assertThat(errors).hasSize(26);
     List<String> errorMessages =
         errors.stream().map(FeedbackMessage::getMessage).collect(Collectors.toList());
-    List<List<Integer>> indices =
-        errors.stream().map(FeedbackMessage::getIndices).collect(Collectors.toList());
-    assertThat(errorMessages)
-        .contains(
-            "first_name is a required column.",
-            "last_name is a required column.",
-            "race is a required column.",
-            "date_of_birth is a required column.",
-            "biological_sex is a required column.",
-            "ethnicity is a required column.",
-            "street is a required column.",
-            "state is a required column.",
-            "zip_code is a required column.",
-            "phone_number is a required column.",
-            "phone_number_type is a required column.",
-            "employed_in_healthcare is a required column.",
-            "resident_congregate_setting is a required column.");
-    indices.forEach(i -> assertThat(i).isEqualTo(List.of(2)));
+    errors.forEach(
+        error -> {
+          String errorMessage = error.getMessage();
+          if (errorMessage.contains("File is missing data in the")) {
+            assertThat(error.getIndices()).isEqualTo(List.of(2));
+          } else if (errorMessage.contains("The header for column")) {
+            assertThat(error.getIndices()).isNull();
+          }
+        });
+    patientBulkUploadRequiredFields.forEach(
+        fieldName ->
+            assertThat(errorMessages)
+                .contains("File is missing data in the " + fieldName + " column."));
+    patientBulkUploadRequiredFields.forEach(
+        fieldName ->
+            assertThat(errorMessages)
+                .contains("The header for column " + fieldName + " is missing or invalid."));
   }
 
   @Test
@@ -91,7 +141,9 @@ class FileValidatorTest {
     List<List<Integer>> indices =
         errors.stream().map(FeedbackMessage::getIndices).collect(Collectors.toList());
     assertThat(errorMessages)
-        .contains("race is a required column.", "ethnicity is a required column.");
+        .contains(
+            "File is missing data in the race column.",
+            "File is missing data in the ethnicity column.");
     indices.forEach(i -> assertThat(i).isEqualTo(List.of(2)));
   }
 
@@ -109,19 +161,19 @@ class FileValidatorTest {
         errors.stream().map(FeedbackMessage::getIndices).collect(Collectors.toList());
     assertThat(errorMessages)
         .contains(
-            "11/3/8 is not an acceptable value for column date_of_birth",
-            "african american is not an acceptable value for column race",
-            "androgynous is not an acceptable value for column biological_sex",
-            "latinx is not an acceptable value for column ethnicity",
-            "group home is not an acceptable value for column resident_congregate_setting",
-            "n/a is not an acceptable value for column employed_in_healthcare",
-            "doctor is not an acceptable value for column role",
-            "Alaska is not an acceptable value for column state",
-            "1234 is not a valid value for column zip_code",
-            "America is not an acceptable value for column country",
-            "4108675309 is not a valid value for column phone_number",
-            "cell is not an acceptable value for column phone_number_type",
-            "janedoe.com is not a valid value for column email");
+            "11/3/8 is not an acceptable value for the date_of_birth column.",
+            "african american is not an acceptable value for the race column.",
+            "androgynous is not an acceptable value for the biological_sex column.",
+            "latinx is not an acceptable value for the ethnicity column.",
+            "group home is not an acceptable value for the resident_congregate_setting column.",
+            "n/a is not an acceptable value for the employed_in_healthcare column.",
+            "doctor is not an acceptable value for the role column.",
+            "Alaska is not an acceptable value for the state column.",
+            "1234 is not an acceptable value for the zip_code column.",
+            "America is not an acceptable value for the country column.",
+            "4108675309 is not an acceptable value for the phone_number column.",
+            "cell is not an acceptable value for the phone_number_type column.",
+            "janedoe.com is not an acceptable value for the email column.");
     indices.forEach(i -> assertThat(i).isEqualTo(List.of(2)));
   }
 
@@ -136,18 +188,19 @@ class FileValidatorTest {
     assertThat(errors).hasSize(3);
     assertThat(errors.get(0).getScope()).isEqualTo("item");
     assertThat(errors.get(0).getMessage())
-        .isEqualTo("african american is not an acceptable value for column race");
+        .isEqualTo("african american is not an acceptable value for the race column.");
     assertThat(errors.get(0).getIndices()).isEqualTo(List.of(2, 3));
     assertThat(errors.get(1).getScope()).isEqualTo("item");
-    assertThat(errors.get(1).getMessage()).isEqualTo("ethnicity is a required column.");
+    assertThat(errors.get(1).getMessage()).isEqualTo("File is missing data in the race column.");
     assertThat(errors.get(1).getIndices()).isEqualTo(List.of(4, 5));
     assertThat(errors.get(2).getScope()).isEqualTo("item");
-    assertThat(errors.get(2).getMessage()).isEqualTo("race is a required column.");
+    assertThat(errors.get(2).getMessage())
+        .isEqualTo("File is missing data in the ethnicity column.");
     assertThat(errors.get(2).getIndices()).isEqualTo(List.of(4, 5));
   }
 
   @Test
-  void emptyRow_returnsError() {
+  void patientBulkUpload_emptyRow_returnsError() {
     // GIVEN
     InputStream input = loadCsv("patientBulkUpload/emptyRow.csv");
     // WHEN
@@ -158,21 +211,11 @@ class FileValidatorTest {
         errors.stream().map(FeedbackMessage::getMessage).collect(Collectors.toList());
     List<List<Integer>> indices =
         errors.stream().map(FeedbackMessage::getIndices).collect(Collectors.toList());
-    assertThat(errorMessages)
-        .contains(
-            "first_name is a required column.",
-            "last_name is a required column.",
-            "race is a required column.",
-            "date_of_birth is a required column.",
-            "biological_sex is a required column.",
-            "ethnicity is a required column.",
-            "street is a required column.",
-            "state is a required column.",
-            "zip_code is a required column.",
-            "phone_number is a required column.",
-            "phone_number_type is a required column.",
-            "employed_in_healthcare is a required column.",
-            "resident_congregate_setting is a required column.");
+    patientBulkUploadRequiredFields.forEach(
+        fieldName ->
+            assertThat(errorMessages)
+                .contains("File is missing data in the " + fieldName + " column."));
+    assertThat(errorMessages).hasSameSizeAs(patientBulkUploadRequiredFields);
     indices.forEach(i -> assertThat(i).isEqualTo(List.of(4)));
   }
 
@@ -209,48 +252,26 @@ class FileValidatorTest {
     // WHEN
     List<FeedbackMessage> errors = testResultFileValidator.validate(input);
     // THEN
-    assertThat(errors).hasSize(33);
-
     List<String> errorMessages =
         errors.stream().map(FeedbackMessage::getMessage).collect(Collectors.toList());
-    List<List<Integer>> indices =
-        errors.stream().map(FeedbackMessage::getIndices).collect(Collectors.toList());
-    assertThat(errorMessages)
-        .contains(
-            "patient_last_name is a required column.",
-            "patient_first_name is a required column.",
-            "patient_street is a required column.",
-            "patient_city is a required column.",
-            "patient_state is a required column.",
-            "patient_zip_code is a required column.",
-            "patient_county is a required column.",
-            "patient_phone_number is a required column.",
-            "patient_dob is a required column.",
-            "patient_gender is a required column.",
-            "patient_race is a required column.",
-            "patient_ethnicity is a required column.",
-            "accession_number is a required column.",
-            "equipment_model_name is a required column.",
-            "test_performed_code is a required column.",
-            "test_result is a required column.",
-            "order_test_date is a required column.",
-            "test_result_date is a required column.",
-            "specimen_type is a required column.",
-            "ordering_provider_id is a required column.",
-            "ordering_provider_last_name is a required column.",
-            "ordering_provider_first_name is a required column.",
-            "ordering_provider_street is a required column.",
-            "ordering_provider_city is a required column.",
-            "ordering_provider_state is a required column.",
-            "ordering_provider_zip_code is a required column.",
-            "ordering_provider_phone_number is a required column.",
-            "testing_lab_clia is a required column.",
-            "testing_lab_name is a required column.",
-            "testing_lab_street is a required column.",
-            "testing_lab_city is a required column.",
-            "testing_lab_state is a required column.",
-            "testing_lab_zip_code is a required column.");
-    indices.forEach(i -> assertThat(i).isEqualTo(List.of(2)));
+    assertThat(errors).hasSize(66);
+    errors.forEach(
+        error -> {
+          String errorMessage = error.getMessage();
+          if (errorMessage.contains("File is missing data in the")) {
+            assertThat(error.getIndices()).isEqualTo(List.of(2));
+          } else if (errorMessage.contains("The header for column")) {
+            assertThat(error.getIndices()).isNull();
+          }
+        });
+    testResultsUploadRequiredFields.forEach(
+        fieldName ->
+            assertThat(errorMessages)
+                .contains("File is missing data in the " + fieldName + " column."));
+    testResultsUploadRequiredFields.forEach(
+        fieldName ->
+            assertThat(errorMessages)
+                .contains("The header for column " + fieldName + " is missing or invalid."));
   }
 
   @Test
@@ -268,40 +289,40 @@ class FileValidatorTest {
         errors.stream().map(FeedbackMessage::getIndices).collect(Collectors.toList());
     assertThat(errorMessages)
         .contains(
-            "x is not an acceptable value for column patient_state",
-            "x is not an acceptable value for column ordering_provider_state",
-            "x is not an acceptable value for column testing_lab_state",
-            "x is not an acceptable value for column ordering_facility_state",
-            "x is not a valid value for column patient_zip_code",
-            "x is not a valid value for column ordering_provider_zip_code",
-            "x is not a valid value for column testing_lab_zip_code",
-            "x is not a valid value for column ordering_facility_zip_code",
-            "x is not a valid value for column patient_phone_number",
-            "x is not a valid value for column ordering_provider_phone_number",
-            "x is not a valid value for column testing_lab_phone_number",
-            "x is not a valid value for column ordering_facility_phone_number",
-            "x is not a valid value for column patient_dob",
-            "x is not a valid value for column illness_onset_date",
-            "x is not a valid value for column order_test_date",
-            "x is not a valid value for column specimen_collection_date",
-            "x is not a valid value for column testing_lab_specimen_received_date",
-            "x is not a valid value for column test_result_date",
-            "x is not a valid value for column date_result_released",
-            "x is not a valid value for column patient_email",
-            "x is not a valid value for column testing_lab_clia",
-            "x is not an acceptable value for column patient_race",
-            "x is not an acceptable value for column patient_gender",
-            "x is not an acceptable value for column patient_ethnicity",
-            "x is not an acceptable value for column pregnant",
-            "x is not an acceptable value for column employed_in_healthcare",
-            "x is not an acceptable value for column symptomatic_for_disease",
-            "x is not an acceptable value for column resident_congregate_setting",
-            "x is not an acceptable value for column hospitalized",
-            "x is not an acceptable value for column icu",
-            "x is not an acceptable value for column residence_type",
-            "x is not an acceptable value for column test_result",
-            "x is not an acceptable value for column test_result_status",
-            "x is not an acceptable value for column specimen_type");
+            "x is not an acceptable value for the patient_state column.",
+            "x is not an acceptable value for the ordering_provider_state column.",
+            "x is not an acceptable value for the testing_lab_state column.",
+            "x is not an acceptable value for the ordering_facility_state column.",
+            "x is not an acceptable value for the patient_zip_code column.",
+            "x is not an acceptable value for the ordering_provider_zip_code column.",
+            "x is not an acceptable value for the testing_lab_zip_code column.",
+            "x is not an acceptable value for the ordering_facility_zip_code column.",
+            "x is not an acceptable value for the patient_phone_number column.",
+            "x is not an acceptable value for the ordering_provider_phone_number column.",
+            "x is not an acceptable value for the testing_lab_phone_number column.",
+            "x is not an acceptable value for the ordering_facility_phone_number column.",
+            "x is not an acceptable value for the patient_dob column.",
+            "x is not an acceptable value for the illness_onset_date column.",
+            "x is not an acceptable value for the order_test_date column.",
+            "x is not an acceptable value for the specimen_collection_date column.",
+            "x is not an acceptable value for the testing_lab_specimen_received_date column.",
+            "x is not an acceptable value for the test_result_date column.",
+            "x is not an acceptable value for the date_result_released column.",
+            "x is not an acceptable value for the patient_email column.",
+            "x is not an acceptable value for the testing_lab_clia column.",
+            "x is not an acceptable value for the patient_race column.",
+            "x is not an acceptable value for the patient_gender column.",
+            "x is not an acceptable value for the patient_ethnicity column.",
+            "x is not an acceptable value for the pregnant column.",
+            "x is not an acceptable value for the employed_in_healthcare column.",
+            "x is not an acceptable value for the symptomatic_for_disease column.",
+            "x is not an acceptable value for the resident_congregate_setting column.",
+            "x is not an acceptable value for the hospitalized column.",
+            "x is not an acceptable value for the icu column.",
+            "x is not an acceptable value for the residence_type column.",
+            "x is not an acceptable value for the test_result column.",
+            "x is not an acceptable value for the test_result_status column.",
+            "x is not an acceptable value for the specimen_type column.");
     indices.forEach(i -> assertThat(i).isEqualTo(List.of(2)));
   }
 
