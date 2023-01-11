@@ -279,7 +279,16 @@ const UploadPatients = ({ isAdmin }: { isAdmin: boolean }) => {
                           >
                             <FontAwesomeIcon icon={faXmark} />
                           </button>
-                          <p className="usa-alert__text">{errorMessageText}</p>
+                          <p className="usa-alert__text">
+                            {errorMessageText} See the{" "}
+                            <a
+                              target="_blank"
+                              href="/using-simplereport/manage-people-you-test/bulk-upload-patients/#preparing-your-spreadsheet-data"
+                            >
+                              patient bulk upload guide
+                            </a>{" "}
+                            for details about accepted values.
+                          </p>
                         </div>
                       </div>
                     )}

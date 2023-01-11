@@ -165,7 +165,7 @@ describe("Upload Patient", () => {
       await screen.findByText("Success: Data confirmed")
     ).toBeInTheDocument();
   });
-  it("should show error message and list errors if error occurs", async () => {
+  it("should show error message with a link to the patient bulk upload guide and list errors if error occurs", async () => {
     renderUploadPatients();
     let mockResponse = new Response(JSON.stringify(errorResponseBody), {
       status: 200,
@@ -178,7 +178,8 @@ describe("Upload Patient", () => {
     ).toBeInTheDocument();
     expect(
       await screen.findByText(
-        "Please resolve the errors below and upload your edited file."
+        "Please resolve the errors below and upload your edited file.",
+        { exact: false }
       )
     ).toBeInTheDocument();
     expect(await screen.findByText("bad zipcode")).toBeInTheDocument();
@@ -210,7 +211,8 @@ describe("Upload Patient", () => {
 
     expect(
       await screen.findByText(
-        "Please resolve the errors below and upload your edited file."
+        "Please resolve the errors below and upload your edited file.",
+        { exact: false }
       )
     ).toBeInTheDocument();
     expect(
@@ -221,6 +223,15 @@ describe("Upload Patient", () => {
     ).toBeInTheDocument();
     expect(await screen.findByText("Row(s): 0, 1, 2")).toBeInTheDocument();
     expect(await screen.findByText("Row(s): 0, 1, 2, 3")).toBeInTheDocument();
+
+    const supportLinkText = "patient bulk upload guide";
+    const supportLink = screen.getByText(supportLinkText).closest("a");
+    if (supportLink === null) {
+      throw Error(`Unable to find ${supportLink} link`);
+    }
+    expect(supportLink.href).toContain(
+      "/using-simplereport/manage-people-you-test/bulk-upload-patients/#preparing-your-spreadsheet-data"
+    );
   });
   it("should show error message if 500 is returned", async () => {
     renderUploadPatients();
@@ -308,10 +319,34 @@ describe("Upload Patient", () => {
   });
   it("should show error if empty file is provided", async () => {
     renderUploadPatients();
-
-    userEventUpload(file(""), "All facilities");
-
-    expect(screen.getByText("Invalid file")).toBeInTheDocument();
+    const errorResponseBody = {
+      status: "FAILURE",
+      errors: [
+        {
+          indices: [],
+          message: "File is missing headers and other required data",
+        },
+      ],
+    };
+    let mockResponse = new Response(JSON.stringify(errorResponseBody), {
+      status: 200,
+    });
+    submitCSVFile(mockResponse);
+    expect(
+      await screen.findByText("Error: File not accepted")
+    ).toBeInTheDocument();
+    expect(
+      await screen.findByText(
+        "Please resolve the errors below and upload your edited file.",
+        { exact: false }
+      )
+    ).toBeInTheDocument();
+    expect(
+      await screen.findByText(
+        "File is missing headers and other required data",
+        { exact: false }
+      )
+    ).toBeInTheDocument();
     expect(
       screen.queryByText("Uploading patient information...")
     ).not.toBeInTheDocument();
