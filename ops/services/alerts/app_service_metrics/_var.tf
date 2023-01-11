@@ -72,6 +72,11 @@ variable "http_2xx_failure_rate_threshold" {
   default = 1
 }
 
+variable "http_2xx_failed_threshold" {
+  // The resource that uses this value doesn't have a >= check, so we need n - 1 here
+  default = 24
+}
+
 variable "skip_on_weekends" {
   default = false
 }
