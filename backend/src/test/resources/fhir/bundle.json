@@ -1,6 +1,9 @@
 {
   "resourceType":"Bundle",
   "type":"message",
+  "identifier": {
+    "value": "45e9539f-c9a4-4c86-b79d-4ba2c43f9ee0"
+  },
   "entry":[
     {
       "fullUrl":"MessageHeader/$MESSAGE_HEADER_ID",

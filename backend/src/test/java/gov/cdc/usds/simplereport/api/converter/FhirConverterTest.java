@@ -1038,6 +1038,7 @@ class FhirConverterTest {
             .collect(Collectors.toList());
 
     assertThat(actual.getType()).isEqualTo(BundleType.MESSAGE);
+    assertThat(actual.getIdentifier().getValue()).isEqualTo(diagnosticReport.getId());
     assertThat(actual.getEntry()).hasSize(11);
     assertThat(resourceUrls)
         .hasSize(11)

@@ -582,7 +582,10 @@ public class FhirConverter {
           entryList.add(Pair.of(observationFullUrl, observation));
         });
 
-    var bundle = new Bundle().setType(BundleType.MESSAGE);
+    var bundle =
+        new Bundle()
+            .setType(BundleType.MESSAGE)
+            .setIdentifier(new Identifier().setValue(diagnosticReport.getId()));
     entryList.forEach(
         pair ->
             bundle.addEntry(
