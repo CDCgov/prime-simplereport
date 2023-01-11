@@ -4181,6 +4181,64 @@ databaseChangeLog:
             tableName: test_order
             columnName: device_specimen_type_id
   - changeSet:
+      id: drop-primary-key-device_specimen_type
+      author: zedd@skylight.digital
+      changes:
+        - tagDatabase:
+            tag: drop-primary-key-device_specimen_type
+        - dropPrimaryKey:
+            tableName: device_specimen_type
+            constraintName: device_specimen_type_pkey
+            dropIndex: true
+      rollback:
+        - addPrimaryKey:
+            tableName: device_specimen_type
+            constraintName: device_specimen_type_pkey
+            columnNames: internal_id
+  - changeSet:
+      id: drop-not-null-constraints-device_specimen_type
+      author: zedd@skylight.digital
+      changes:
+        - tagDatabase:
+            tag: drop-not-null-constraints-device_specimen_type
+        - dropNotNullConstraint:
+            tableName: device_specimen_type
+            columnName: internal_id
+        - dropNotNullConstraint:
+            tableName: device_specimen_type
+            columnName: created_at
+        - dropNotNullConstraint:
+            tableName: device_specimen_type
+            columnName: created_by
+        - dropNotNullConstraint:
+            tableName: device_specimen_type
+            columnName: updated_at
+        - dropNotNullConstraint:
+            tableName: device_specimen_type
+            columnName: updated_by
+        - dropNotNullConstraint:
+            tableName: device_specimen_type
+            columnName: is_deleted
+      rollback:
+        - addNotNullConstraint:
+            tableName: device_specimen_type
+            columnName: internal_id
+        - addNotNullConstraint:
+            tableName: device_specimen_type
+            columnName: created_at
+        - addNotNullConstraint:
+            tableName: device_specimen_type
+            columnName: created_by
+        - addNotNullConstraint:
+            tableName: device_specimen_type
+            columnName: updated_at
+        - addNotNullConstraint:
+            tableName: device_specimen_type
+            columnName: updated_by
+        - addNotNullConstraint:
+            tableName: device_specimen_type
+            columnName: is_deleted
+  - changeSet:
       id: add-test-performed-code-column-to-device-supported-disease-table
       author: boban@skylight.digital
       comment: Add a test performed code column to store the specific LOINC code between a device and disease.

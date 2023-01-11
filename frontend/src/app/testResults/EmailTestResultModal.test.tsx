@@ -84,7 +84,7 @@ describe("EmailTestResultModal", () => {
         />
       );
 
-      userEvent.click(screen.getByText("Send result"));
+      await userEvent.click(screen.getByText("Send result"));
 
       expect(mockResendTestResultsEmail).toHaveBeenCalledWith({
         variables: { testEventId: "super-fancy-id" },
@@ -104,7 +104,7 @@ describe("EmailTestResultModal", () => {
         />
       );
 
-      userEvent.click(screen.getByText("Send result"));
+      await userEvent.click(screen.getByText("Send result"));
 
       expect(mockResendTestResultsEmail).toHaveBeenCalledWith({
         variables: { testEventId: "super-fancy-id" },

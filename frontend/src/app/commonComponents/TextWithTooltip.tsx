@@ -3,9 +3,11 @@ import { faInfoCircle } from "@fortawesome/free-solid-svg-icons";
 import { Tooltip } from "@trussworks/react-uswds";
 import React from "react";
 import "./TextWithTooltip.scss";
+import { IconProp } from "@fortawesome/fontawesome-svg-core";
 
 type CustomButtonProps = React.PropsWithChildren<{
   className?: string;
+  children: React.ReactNode;
 }> &
   JSX.IntrinsicElements["button"] &
   React.RefAttributes<HTMLButtonElement>;
@@ -38,7 +40,9 @@ export const TextWithTooltip = ({
         </button>
       )
     );
-
+  function preventPageReload(e: React.MouseEvent) {
+    e.preventDefault();
+  }
   CustomButton.displayName = "custom button";
 
   return (
@@ -48,12 +52,13 @@ export const TextWithTooltip = ({
       position={position || "top"}
       className={className}
       wrapperclasses="usa-text-with-tooltip"
+      onClick={preventPageReload}
     >
       {text}
       <FontAwesomeIcon
         alt-text="info"
         className="info-circle-icon"
-        icon={faInfoCircle}
+        icon={faInfoCircle as IconProp}
       />
     </Tooltip>
   );

@@ -14,6 +14,7 @@ describe("AoEModalForm", () => {
     MockDate.set("2021-02-06");
     component = render(
       <AoEModalForm
+        isOpen={true}
         onClose={mockOnClose}
         patient={{
           internalId: "123",
@@ -36,9 +37,9 @@ describe("AoEModalForm", () => {
       expect(component).toMatchSnapshot();
     });
 
-    it("closes on esc key", () => {
+    it("closes on esc key", async () => {
       expect(mockOnClose).not.toHaveBeenCalled();
-      userEvent.keyboard("{Escape}");
+      await userEvent.keyboard("{Escape}");
       expect(mockOnClose).toHaveBeenCalled();
     });
   });

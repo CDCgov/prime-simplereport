@@ -78,8 +78,8 @@ describe("TestQueue", () => {
       { timeout: 1000 }
     );
 
-    expect(await screen.findByText("Doe, John A")).toBeInTheDocument();
-    expect(await screen.findByText("Smith, Jane")).toBeInTheDocument();
+    expect(await screen.findByText("Doe, John A"));
+    expect(await screen.findByText("Smith, Jane"));
     expect(container).toMatchSnapshot();
   });
 
@@ -93,13 +93,13 @@ describe("TestQueue", () => {
         </MockedProvider>
       </MemoryRouter>
     );
-    expect(await screen.findByText("Doe, John A")).toBeInTheDocument();
+    expect(await screen.findByText("Doe, John A"));
     const removeButton = await screen.findByLabelText(
       "Close test for Doe, John A"
     );
-    userEvent.click(removeButton);
+    await userEvent.click(removeButton);
     const confirmButton = await screen.findByText("Yes", { exact: false });
-    userEvent.click(confirmButton);
+    await userEvent.click(confirmButton);
     expect(
       screen.getByText("Submitting test data for Doe, John A...")
     ).toBeInTheDocument();
@@ -206,7 +206,7 @@ describe("TestQueue", () => {
       expect(await screen.findByText("Doe, John A")).toBeInTheDocument();
       expect(await screen.findByText("Smith, Jane")).toBeInTheDocument();
 
-      userEvent.click(screen.getAllByText("Test questionnaire")[0]);
+      await userEvent.click(screen.getAllByText("Test questionnaire")[0]);
     });
 
     it("should open test questionnaire and display emails and phone numbers correctly", () => {

@@ -227,7 +227,7 @@ describe("AoEForm", () => {
         });
 
         expect(emailDeliveryRadio).toBeInTheDocument();
-        userEvent.click(emailDeliveryRadio);
+        await userEvent.click(emailDeliveryRadio);
         expect(emailDeliveryRadio).toBeChecked();
       });
     });

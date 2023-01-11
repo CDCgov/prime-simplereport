@@ -59,10 +59,10 @@ class OrganizationMutationResolverTest extends BaseServiceTest<PersonService> {
 
   @BeforeEach
   void setup() {
-    Organization org = _dataFactory.createValidOrg();
+    Organization org = _dataFactory.saveValidOrganization();
     organization = org;
     facility = _dataFactory.createValidFacility(org);
-    pendingOrg = _dataFactory.createOrganizationQueueItem();
+    pendingOrg = _dataFactory.saveOrganizationQueueItem();
     address = facility.getAddress();
     orgUserInfo = _dataFactory.createValidApiUser("demo@example.com", org);
   }

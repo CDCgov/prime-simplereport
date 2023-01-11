@@ -72,7 +72,7 @@ class CsvValidatorUtilsTest {
   void requiredValueMissing() {
     Map<String, String> row = Map.of("first_name", "Bobby", "last_name", "Tables");
     ValueOrError actual = getValue(row, "biological_sex", true);
-    String expectedMessage = "biological_sex is a required column.";
+    String expectedMessage = "File is missing data in the biological_sex column.";
     assertThat(actual.getError().get(0).getMessage()).isEqualTo(expectedMessage);
   }
 

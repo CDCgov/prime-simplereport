@@ -35,7 +35,7 @@ class ReportStreamCallbackControllerTest extends BaseFullStackTest {
     truncateDb();
     TestUserIdentities.withStandardUser(
         () -> {
-          org = _dataFactory.createValidOrg();
+          org = _dataFactory.saveValidOrganization();
           site = _dataFactory.createValidFacility(org);
           person = _dataFactory.createFullPerson(org);
           testEvent = _dataFactory.createTestEvent(person, site);

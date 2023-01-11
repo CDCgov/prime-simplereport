@@ -1,5 +1,11 @@
 import { useState } from "react";
-import { fireEvent, render, screen, within } from "@testing-library/react";
+import {
+  fireEvent,
+  render,
+  screen,
+  waitFor,
+  within,
+} from "@testing-library/react";
 import userEvent from "@testing-library/user-event";
 
 import ManageDevices from "./ManageDevices";
@@ -45,7 +51,8 @@ describe("ManageDevices", () => {
 
     it("renders a message if no devices are present in the list", async () => {
       const expected = await screen.findByText(
-        "There are currently no devices"
+        "There are currently no devices",
+        { exact: false }
       );
 
       expect(expected).toBeInTheDocument();
@@ -90,20 +97,26 @@ describe("ManageDevices", () => {
 
       within(pillContainer).getByText("Device A");
       within(pillContainer).getByText("Device B");
-      expect(
-        within(pillContainer).queryByText("Device C")
-      ).not.toBeInTheDocument();
+      await waitFor(() =>
+        expect(
+          within(pillContainer).queryByText("Device C")
+        ).not.toBeInTheDocument()
+      );
     });
 
     it("allows user to add a device type to the existing list of devices", async () => {
       const deviceInput = screen.getByTestId("multi-select-toggle");
       const deviceList = screen.getByTestId("multi-select-option-list");
 
-      userEvent.click(deviceInput);
-      userEvent.click(within(deviceList).getByText("Device C"));
+      await userEvent.click(deviceInput);
+      await userEvent.click(within(deviceList).getByText("Device C"));
 
-      const pillContainer = screen.getByTestId("pill-container");
-      within(pillContainer).getByText("Device C");
+      expect(await screen.findByTestId("pill-container"));
+      expect(
+        await within(screen.getByTestId("pill-container")).findByText(
+          "Device C"
+        )
+      );
     });
 
     it("removes a device from the list", async () => {
@@ -113,9 +126,11 @@ describe("ManageDevices", () => {
       within(pillContainer).getByText("Device A");
       fireEvent.click(deleteIcon);
 
-      expect(
-        within(pillContainer).queryByText("Device A")
-      ).not.toBeInTheDocument();
+      await waitFor(() =>
+        expect(
+          within(pillContainer).queryByText("Device A")
+        ).not.toBeInTheDocument()
+      );
     });
   });
 });

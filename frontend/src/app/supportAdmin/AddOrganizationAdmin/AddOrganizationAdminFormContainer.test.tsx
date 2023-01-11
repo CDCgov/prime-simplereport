@@ -83,10 +83,10 @@ const waitForOrgLoadReturnTitle = async () => {
   });
 };
 
-const selectOrg = () => {
+const selectOrg = async () => {
   // using the default test id that comes with the trusswork component
-  userEvent.click(screen.getByTestId("combo-box-select"));
-  userEvent.click(
+  await userEvent.click(screen.getByTestId("combo-box-select"));
+  await userEvent.click(
     screen.getByTestId(
       "combo-box-option-DC-Space-Camp-f34183c4-b4c5-449f-98b0-2e02abb7aae0"
     )
@@ -123,8 +123,8 @@ describe("form validation", () => {
     const firstName = screen.getByLabelText("First name", {
       exact: false,
     });
-    userEvent.clear(firstName);
-    userEvent.tab();
+    await userEvent.clear(firstName);
+    await userEvent.tab();
     expect(
       await screen.findByText("First name is missing", { exact: false })
     ).toBeInTheDocument();
@@ -135,9 +135,9 @@ describe("unsuccessful form submission", () => {
   it("toggles the save button when selecting organization", async () => {
     renderView();
     await waitForOrgLoadReturnTitle();
-    selectOrg();
+    await selectOrg();
     expect(screen.getByText("Save Changes", { exact: false })).toBeEnabled();
-    userEvent.click(screen.getByTestId("combo-box-clear-button"));
+    await userEvent.click(screen.getByTestId("combo-box-clear-button"));
     expect(screen.getByText("Save Changes", { exact: false })).toBeDisabled();
   });
 
@@ -145,8 +145,8 @@ describe("unsuccessful form submission", () => {
     let alertSpy: jest.SpyInstance = jest.spyOn(srToast, "showError");
     renderView();
     await waitForOrgLoadReturnTitle();
-    selectOrg();
-    userEvent.click(screen.getByText("Save Changes"));
+    await selectOrg();
+    await userEvent.click(screen.getByText("Save Changes"));
     await waitFor(() => {
       expect(alertSpy).toHaveBeenCalledWith(
         "Please check the form to make sure you complete all of the required fields.",
@@ -161,22 +161,22 @@ describe("successful form submission", () => {
     let alertSpy: jest.SpyInstance = jest.spyOn(srToast, "showSuccess");
     renderView();
     await waitForOrgLoadReturnTitle();
-    selectOrg();
-    userEvent.type(
+    await selectOrg();
+    await userEvent.type(
       screen.getByLabelText("First name", { exact: false }),
       "Flora"
     );
-    userEvent.type(
+    await userEvent.type(
       screen.getByLabelText("Last name", { exact: false }),
       "Murray"
     );
-    userEvent.type(
+    await userEvent.type(
       screen.getByLabelText("Email", { exact: false }),
       "Flora.Murray@example.com"
     );
     expect(screen.getByText("Save Changes", { exact: false })).toBeEnabled();
     expect(screen.getByTestId("combo-box-input")).toHaveValue("Space Camp");
-    userEvent.click(screen.getByText("Save Changes"));
+    await userEvent.click(screen.getByText("Save Changes"));
     await waitFor(() => {
       expect(alertSpy).toHaveBeenCalledWith(
         "The organization admin has been added",

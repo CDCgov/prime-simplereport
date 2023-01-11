@@ -1,0 +1,24 @@
+// Jest Snapshot v1, https://goo.gl/fbAQLP
+
+exports[`Single File Input checks component with initial state 1`] = `
+<div>
+  <div
+    class="sr-single-file-input blank"
+  >
+    <input
+      aria-describedby="file-input-specific-hint"
+      aria-label="upload a file"
+      class="usa-file-input"
+      data-testid="testId"
+      id="testId"
+      name="testId"
+      type="file"
+    />
+    <span
+      id="file-input-specific-hint"
+    >
+      Drag file here or choose from folder
+    </span>
+  </div>
+</div>
+`;

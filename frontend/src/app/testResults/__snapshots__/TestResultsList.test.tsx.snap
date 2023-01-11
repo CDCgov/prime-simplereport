@@ -100,6 +100,7 @@ exports[`TestResultsList should render a list of tests 1`] = `
                       class="usa-input"
                       id="search-field-small"
                       name="search"
+                      style="border-right: 1px solid;"
                       type="search"
                       value=""
                     />
@@ -447,7 +448,6 @@ exports[`TestResultsList should render a list of tests 1`] = `
                 </button>
                 <div
                   class="rc-menu-container"
-                  role="presentation"
                 />
               </td>
             </tr>
@@ -526,7 +526,6 @@ exports[`TestResultsList should render a list of tests 1`] = `
                 </button>
                 <div
                   class="rc-menu-container"
-                  role="presentation"
                 />
               </td>
             </tr>
@@ -605,7 +604,6 @@ exports[`TestResultsList should render a list of tests 1`] = `
                 </button>
                 <div
                   class="rc-menu-container"
-                  role="presentation"
                 />
               </td>
             </tr>

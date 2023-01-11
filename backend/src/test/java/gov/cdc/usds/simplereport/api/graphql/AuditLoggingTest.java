@@ -151,7 +151,7 @@ class AuditLoggingTest extends BaseGraphqlTest {
     MutableObject<PatientLink> linkHolder = new MutableObject<>();
     TestUserIdentities.withStandardUser(
         () -> {
-          Organization org = _dataFactory.createValidOrg();
+          Organization org = _dataFactory.saveValidOrganization();
           Facility site = _dataFactory.createValidFacility(org);
           Person person = _dataFactory.createFullPerson(org);
           TestEvent testEvent = _dataFactory.createTestEvent(person, site);

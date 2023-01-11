@@ -205,13 +205,13 @@ describe("FacilityFormContainer", () => {
 
   it("redirects on successful facility update", async () => {
     await waitForElementToBeRemoved(() => screen.queryByText("Loading..."));
-    userEvent.click(screen.getByRole("button"));
+    await userEvent.click(screen.getByRole("button"));
     expect(await screen.findByText("Redirected")).toBeInTheDocument();
   });
 
   it("tracks custom telemetry event on successful facility update", async () => {
     await waitForElementToBeRemoved(() => screen.queryByText("Loading..."));
-    userEvent.click(screen.getByRole("button"));
+    await userEvent.click(screen.getByRole("button"));
     expect(trackEventMock).toBeCalledWith({ name: "Save Settings" });
   });
 });

@@ -59,7 +59,7 @@ class PatientExperienceControllerTest extends BaseFullStackTest {
     truncateDb();
     TestUserIdentities.withStandardUser(
         () -> {
-          org = _dataFactory.createValidOrg();
+          org = _dataFactory.saveValidOrganization();
           facility = _dataFactory.createValidFacility(org);
           person = _dataFactory.createFullPerson(org);
           testEvent = _dataFactory.createTestEvent(person, facility, TestResult.NEGATIVE);

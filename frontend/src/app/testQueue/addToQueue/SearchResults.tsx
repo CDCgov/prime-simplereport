@@ -55,6 +55,18 @@ const SearchResults = (props: QueueProps | TestResultsProps) => {
     }
   }, [selectedPatient]);
 
+  function handleSaveCallback(a: any) {
+    if (props.page === "queue" && dialogPatient !== null) {
+      return props.onAddToQueue(
+        dialogPatient,
+        a,
+        canAddToQueue ? "create" : "update"
+      );
+    }
+
+    return Promise.resolve();
+  }
+
   if (redirect) {
     return <Navigate to={redirect} />;
   }
@@ -150,21 +162,14 @@ const SearchResults = (props: QueueProps | TestResultsProps) => {
 
   return (
     <>
-      {props.page === "queue" && dialogPatient !== null && (
-        <AoEModalForm
-          patient={dialogPatient}
-          onClose={() => {
-            setDialogPatient(null);
-          }}
-          saveCallback={(a: any) =>
-            props.onAddToQueue(
-              dialogPatient,
-              a,
-              canAddToQueue ? "create" : "update"
-            )
-          }
-        />
-      )}
+      <AoEModalForm
+        isOpen={props.page === "queue" && dialogPatient !== null}
+        patient={dialogPatient}
+        onClose={() => {
+          setDialogPatient(null);
+        }}
+        saveCallback={handleSaveCallback}
+      />
       {shouldShowSuggestions && results}
     </>
   );

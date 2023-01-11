@@ -24,20 +24,24 @@ const DOB = () => {
   useDocumentTitle(t("testResult.dob.title"));
 
   const plid = useSelector((state: any) => state.plid);
+  const requestResultsWithLink = useRef(true);
 
   useEffect(() => {
-    PxpApi.getTestResultUnauthenticated(plid)
-      .then((response) => {
-        setPatientObfuscatedName(
-          `${response.patient.firstName} ${response.patient.lastName}`
-        );
-        setFacility(response.facility);
-        setExpiresAt(response.expiresAt);
-        setIsLoading(false);
-      })
-      .catch(() => {
-        setLinkExpiredError(true);
-      });
+    if (requestResultsWithLink.current) {
+      requestResultsWithLink.current = false;
+      PxpApi.getTestResultUnauthenticated(plid)
+        .then((response) => {
+          setPatientObfuscatedName(
+            `${response.patient.firstName} ${response.patient.lastName}`
+          );
+          setFacility(response.facility);
+          setExpiresAt(response.expiresAt);
+          setIsLoading(false);
+        })
+        .catch(() => {
+          setLinkExpiredError(true);
+        });
+    }
   }, [plid]);
 
   const dispatch = useDispatch();
@@ -175,7 +179,7 @@ const DOB = () => {
             <div className="prime-container padding-3">
               <Trans t={t} parent="p" i18nKey="testResult.dob.enterDOB2">
                 <span className="text-bold">
-                  {{ personName: patientObfuscatedName }}
+                  {{ personName: patientObfuscatedName } as any}
                 </span>
               </Trans>
               <p className="usa-hint font-ui-2xs">
@@ -192,11 +196,15 @@ const DOB = () => {
                     {{ facilityName: facility?.name }}
                     {facility?.phone && (
                       <span style={{ whiteSpace: "nowrap" }}>
-                        {{
-                          facilityPhone:
-                            "at " +
-                            formatPhoneNumberParens(facility?.phone as string),
-                        }}
+                        {
+                          {
+                            facilityPhone:
+                              "at " +
+                              formatPhoneNumberParens(
+                                facility?.phone as string
+                              ),
+                          } as any
+                        }
                       </span>
                     )}
                   </Trans>
