@@ -3,9 +3,11 @@ import { faInfoCircle } from "@fortawesome/free-solid-svg-icons";
 import { Tooltip } from "@trussworks/react-uswds";
 import React from "react";
 import "./TextWithTooltip.scss";
+import { IconProp } from "@fortawesome/fontawesome-svg-core";
 
 type CustomButtonProps = React.PropsWithChildren<{
   className?: string;
+  children: React.ReactNode;
 }> &
   JSX.IntrinsicElements["button"] &
   React.RefAttributes<HTMLButtonElement>;
@@ -56,7 +58,7 @@ export const TextWithTooltip = ({
       <FontAwesomeIcon
         alt-text="info"
         className="info-circle-icon"
-        icon={faInfoCircle}
+        icon={faInfoCircle as IconProp}
       />
     </Tooltip>
   );

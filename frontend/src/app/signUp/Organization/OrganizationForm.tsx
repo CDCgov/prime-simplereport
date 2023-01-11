@@ -1,4 +1,4 @@
-import { ReactElement, useState } from "react";
+import { ReactElement, useEffect, useRef, useState } from "react";
 import { Navigate } from "react-router-dom";
 
 import { Card } from "../../commonComponents/Card/Card";
@@ -7,6 +7,7 @@ import Button from "../../commonComponents/Button/Button";
 import { showError } from "../../utils/srToast";
 import { useDocumentTitle } from "../../utils/hooks";
 import { isFormValid, isFieldValid } from "../../utils/yupHelpers";
+import { focusOnFirstInputWithError } from "../../utils/formValidation";
 import Input from "../../commonComponents/Input";
 import {
   organizationCreationSteps,
@@ -52,6 +53,7 @@ const OrganizationForm = () => {
     initOrg()
   );
   const [errors, setErrors] = useState<OrganizationFormErrors>(initOrgErrors());
+  const focusOnce = useRef(false);
   const [backendError, setBackendError] = useState<ReactElement>();
 
   const [loading, setLoading] = useState(false);
@@ -96,14 +98,39 @@ const OrganizationForm = () => {
       return;
     }
     setErrors(validation.errors);
+    focusOnce.current = true;
     showError(
       "Please check the form to make sure you complete all of the required fields.",
       "Form Errors"
     );
     setLoading(false);
-    let firstError = document.querySelector("[aria-invalid=true]");
-    (firstError as HTMLElement)?.focus();
   };
+  /**
+   * Place focus after errors are displayed
+   */
+  useEffect(() => {
+    if (
+      focusOnce.current &&
+      (errors.name ||
+        errors.state ||
+        errors.type ||
+        errors.firstName ||
+        errors.lastName ||
+        errors.email ||
+        errors.workPhoneNumber)
+    ) {
+      focusOnFirstInputWithError();
+      focusOnce.current = false;
+    }
+  }, [
+    errors.name,
+    errors.state,
+    errors.type,
+    errors.firstName,
+    errors.lastName,
+    errors.email,
+    errors.workPhoneNumber,
+  ]);
 
   if (orgExternalId) {
     return (
@@ -261,6 +288,7 @@ const OrganizationForm = () => {
           {backendError ? backendError : null}
           {/* By mapping over organizationFields (found in utils.tsx), we reduce */}
           {/* duplication of input fields in JSX */}
+
           {Object.entries(organizationFields).map(
             ([key, { label, required, hintText }]) => {
               const field = key as keyof OrganizationCreateRequest;

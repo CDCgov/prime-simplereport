@@ -1,13 +1,3 @@
-.usa-file-input,
-.usa-file-input__target {
-  display: flex !important;
-  flex-direction: column;
-}
-
-.usa-file-input__preview {
-  flex: auto;
-}
-
 .thick-bottom-border {
   border-bottom-width: 4px !important;
   width: 300px;
@@ -23,10 +13,6 @@
 
 .prime-radio--horizontal__container {
   margin-right: 0.75rem !important;
-}
-
-.usa-file-input__target {
-  margin-top: 0 !important;
 }
 
 .line-height-225 {

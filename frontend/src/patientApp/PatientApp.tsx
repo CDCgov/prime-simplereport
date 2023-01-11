@@ -18,6 +18,7 @@ import GuardedRoute from "./GuardedRoute";
 
 interface WrapperProps {
   plid: string;
+  children: React.ReactNode;
 }
 const PatientLinkURL404Wrapper: FunctionComponent<WrapperProps> = ({
   plid,

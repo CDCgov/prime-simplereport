@@ -37,14 +37,14 @@ describe("ManagePhoneNumbers", () => {
       exact: false,
     });
     // Enter bad info and blur
-    userEvent.type(primary, "not a number");
-    userEvent.tab();
+    await userEvent.type(primary, "not a number");
+    await userEvent.tab();
     expect(
       await screen.findByText("Phone number is missing or invalid")
     ).toBeInTheDocument();
     // Enter good info and blur
-    userEvent.type(primary, "202-867-5309");
-    userEvent.tab();
+    await userEvent.type(primary, "202-867-5309");
+    await userEvent.tab();
     await waitFor(() =>
       expect(
         screen.queryByText("Phone number is missing or invalid")
@@ -56,23 +56,23 @@ describe("ManagePhoneNumbers", () => {
       exact: false,
     });
     // Show two errors
-    userEvent.clear(primary);
-    userEvent.tab();
+    await userEvent.clear(primary);
+    await userEvent.tab();
     const addButton = screen.getByText("Add another number", { exact: false });
-    userEvent.click(addButton);
+    await userEvent.click(addButton);
     const second = await screen.findByLabelText("Additional phone", {
       exact: false,
     });
-    userEvent.clear(second);
-    userEvent.tab();
+    await userEvent.clear(second);
+    await userEvent.tab();
     await waitFor(() => {
       expect(
         screen.getAllByText("Phone number is missing or invalid").length
       ).toBe(2);
     });
     // Fix one of the errors
-    userEvent.type(primary, "3018675309");
-    userEvent.tab();
+    await userEvent.type(primary, "3018675309");
+    await userEvent.tab();
     await waitFor(() => {
       expect(
         screen.getAllByText("Phone number is missing or invalid").length
@@ -84,8 +84,8 @@ describe("ManagePhoneNumbers", () => {
       exact: false,
     });
     // Show two errors
-    userEvent.clear(primary);
-    userEvent.tab();
+    await userEvent.clear(primary);
+    await userEvent.tab();
 
     await waitFor(() => {
       i18n.changeLanguage("es");
@@ -98,14 +98,14 @@ describe("ManagePhoneNumbers", () => {
     const primary = await screen.findByLabelText("Primary phone", {
       exact: false,
     });
-    userEvent.type(primary, "202-867-5309");
+    await userEvent.type(primary, "202-867-5309");
     const addButton = screen.getByText("Add another number", { exact: false });
-    userEvent.click(addButton);
+    await userEvent.click(addButton);
     const second = await screen.findByLabelText("Additional phone", {
       exact: false,
     });
-    userEvent.type(second, "404-867-5309");
-    userEvent.click(
+    await userEvent.type(second, "404-867-5309");
+    await userEvent.click(
       await screen.findByLabelText("Delete phone number 404-867-5309")
     );
     await waitFor(() => {

@@ -6,13 +6,13 @@ import {
   fireEvent,
   within,
   waitFor,
-  waitForElementToBeRemoved,
 } from "@testing-library/react";
 import userEvent from "@testing-library/user-event";
 import { MockedProvider } from "@apollo/client/testing";
 import { Provider } from "react-redux";
 import configureStore from "redux-mock-store";
 import { MemoryRouter, Route, Routes, useLocation } from "react-router-dom";
+import MockDate from "mockdate";
 
 import SRToastContainer from "../commonComponents/SRToastContainer";
 import { PATIENT_TERM_CAP } from "../../config/constants";
@@ -31,7 +31,9 @@ const store = mockStore({
   facilities: [{ id: mockFacilityID, name: "123" }],
 });
 
-const RouterWithFacility: React.FC = ({ children }) => (
+const RouterWithFacility: React.FC<RouterWithFacilityProps> = ({
+  children,
+}) => (
   <MemoryRouter initialEntries={[`/patient?facility=${mockFacilityID}`]}>
     <Routes>{children}</Routes>
   </MemoryRouter>
@@ -189,9 +191,11 @@ describe("EditPatient", () => {
 
     it("can redirect to the new test form upon save", async () => {
       renderWithRoutes(mockFacilityID, mockPatientID, false);
-      await waitForElementToBeRemoved(() =>
-        screen.queryAllByText("Loading...")
+      expect(await screen.findByText(/Loading/i));
+      await waitFor(() =>
+        expect(screen.queryByText(/Loading/i)).not.toBeInTheDocument()
       );
+
       // Make an arbitrary change on the form to allow submission
       const name = await screen.findByLabelText("First name", { exact: false });
       // Error message on bad value
@@ -204,7 +208,7 @@ describe("EditPatient", () => {
 
       expect(saveAndStartButton).toBeEnabled();
 
-      userEvent.click(saveAndStartButton);
+      await userEvent.click(saveAndStartButton);
 
       await waitFor(() => {
         expect(
@@ -214,9 +218,11 @@ describe("EditPatient", () => {
     });
     it("redirects to test queue on save when coming from Conduct tests page", async () => {
       renderWithRoutes(mockFacilityID, mockPatientID, true);
-      await waitForElementToBeRemoved(() =>
-        screen.queryAllByText("Loading...")
+      expect(await screen.findByText(/Loading/i));
+      await waitFor(() =>
+        expect(screen.queryByText(/Loading/i)).not.toBeInTheDocument()
       );
+
       // Make an arbitrary change on the form to allow submission
       const name = await screen.findByLabelText("First name", { exact: false });
 
@@ -229,7 +235,7 @@ describe("EditPatient", () => {
 
       expect(saveButton).toBeEnabled();
 
-      userEvent.click(saveButton);
+      await userEvent.click(saveButton);
 
       await waitFor(() => {
         expect(
@@ -327,14 +333,17 @@ describe("EditPatient", () => {
     });
 
     it("displays a validation failure alert if phone type not entered", async () => {
-      userEvent.click(
+      await userEvent.click(
         screen.queryAllByText("Add another number", {
           exact: false,
         })[0]
       );
       // Do not enter phone type for additional number
-      userEvent.type(await screen.findByTestId("phoneInput-2"), "6378908987");
-      userEvent.click((await screen.findAllByText("Save changes"))[0]);
+      await userEvent.type(
+        await screen.findByTestId("phoneInput-2"),
+        "6378908987"
+      );
+      await userEvent.click((await screen.findAllByText("Save changes"))[0]);
 
       expect(
         await screen.findByText("Phone type is required", {
@@ -347,7 +356,7 @@ describe("EditPatient", () => {
   describe("facility select input", () => {
     let component: any;
     beforeEach(async () => {
-      jest.useFakeTimers().setSystemTime(new Date("2021-08-01").getTime());
+      MockDate.set("2021-08-01");
       const mocks = [
         {
           request: {
@@ -407,6 +416,10 @@ describe("EditPatient", () => {
       expect(
         (await screen.findAllByText("Franecki, Eugenia", { exact: false }))[0]
       ).toBeInTheDocument();
+    });
+
+    afterEach(() => {
+      MockDate.reset();
     });
 
     it("shows the form title", () => {

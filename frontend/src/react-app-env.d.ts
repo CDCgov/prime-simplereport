@@ -11,3 +11,7 @@ interface User {
   permissions?: UserPermission[]; // TODO: remove optional prop
   roleDescription: RoleDescription;
 }
+
+type RouterWithFacilityProps = {
+  children: React.ReactNode;
+};

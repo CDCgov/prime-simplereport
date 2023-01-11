@@ -179,6 +179,11 @@ const client = new ApolloClient({
   cache,
   link,
 });
-export const StoryGraphQLProvider: React.FC = ({ children }) => (
-  <ApolloProvider client={client}>{children}</ApolloProvider>
-);
+
+type StoryGraphQLProviderProps = {
+  children: React.ReactNode;
+};
+
+export const StoryGraphQLProvider: React.FC<StoryGraphQLProviderProps> = ({
+  children,
+}) => <ApolloProvider client={client}>{children}</ApolloProvider>;

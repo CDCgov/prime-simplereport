@@ -59,7 +59,7 @@ describe("TestResultInputForm", () => {
       />
     );
 
-    userEvent.click(screen.getByLabelText("Negative (-)"));
+    await userEvent.click(screen.getByLabelText("Negative (-)"));
     expect(onChangeFn).toBeCalledWith([
       {
         diseaseName: MULTIPLEX_DISEASES.COVID_19,
@@ -68,7 +68,7 @@ describe("TestResultInputForm", () => {
     ]);
   });
 
-  it("should not submit when there is no value", () => {
+  it("should not submit when there is no value", async () => {
     render(
       <CovidResultInputForm
         queueItemId={"5d315d18-82f8-4025-a051-1a509e15c880"}
@@ -78,11 +78,11 @@ describe("TestResultInputForm", () => {
       />
     );
     expect(screen.getByText("Submit")).toBeDisabled();
-    userEvent.click(screen.getByText("Submit"));
+    await userEvent.click(screen.getByText("Submit"));
     expect(onSubmitFn).toHaveBeenCalledTimes(0);
   });
 
-  it("should not submit when there is a value but isSubmit is disabled", () => {
+  it("should not submit when there is a value but isSubmit is disabled", async () => {
     render(
       <CovidResultInputForm
         queueItemId={"5d315d18-82f8-4025-a051-1a509e15c880"}
@@ -93,11 +93,11 @@ describe("TestResultInputForm", () => {
       />
     );
     expect(screen.getByText("Submit")).toBeDisabled();
-    userEvent.click(screen.getByText("Submit"));
+    await userEvent.click(screen.getByText("Submit"));
     expect(onSubmitFn).toHaveBeenCalledTimes(0);
   });
 
-  it("should submit when there is a value but isSubmit is enabled", () => {
+  it("should submit when there is a value but isSubmit is enabled", async () => {
     render(
       <CovidResultInputForm
         queueItemId={"5d315d18-82f8-4025-a051-1a509e15c880"}
@@ -108,11 +108,11 @@ describe("TestResultInputForm", () => {
       />
     );
     expect(screen.getByText("Submit")).toBeEnabled();
-    userEvent.click(screen.getByText("Submit"));
+    await userEvent.click(screen.getByText("Submit"));
     expect(onSubmitFn).toHaveBeenCalledTimes(1);
   });
 
-  it("should submit when isSubmitDisabled is not passed as prop", () => {
+  it("should submit when isSubmitDisabled is not passed as prop", async () => {
     render(
       <CovidResultInputForm
         queueItemId={"5d315d18-82f8-4025-a051-1a509e15c880"}
@@ -122,7 +122,7 @@ describe("TestResultInputForm", () => {
       />
     );
     expect(screen.getByText("Submit")).toBeEnabled();
-    userEvent.click(screen.getByText("Submit"));
+    await userEvent.click(screen.getByText("Submit"));
     expect(onSubmitFn).toHaveBeenCalledTimes(1);
   });
 });

@@ -3,7 +3,7 @@ import {
   fireEvent,
   render,
   screen,
-  waitForElementToBeRemoved,
+  waitFor,
 } from "@testing-library/react";
 import userEvent from "@testing-library/user-event";
 
@@ -49,8 +49,11 @@ describe("QuestionsFormContainer", () => {
         orgExternalId="foo"
       />
     );
-    await waitForElementToBeRemoved(() =>
-      screen.queryByText("Submitting ID verification details …")
+    expect(await screen.findByText(/Submitting ID verification details/i));
+    await waitFor(() =>
+      expect(
+        screen.queryByText(/Submitting ID verification details/i)
+      ).not.toBeInTheDocument()
     );
   });
   it("show the user that the page is loading", () => {
@@ -115,7 +118,7 @@ describe("QuestionsFormContainer", () => {
         const submitButton = screen.queryAllByText("Submit", {
           exact: false,
         })[0];
-        userEvent.click(submitButton);
+        await userEvent.click(submitButton);
         expect(
           await screen.findByText(
             "Congratulations, your identity has been verified successfully",
@@ -126,10 +129,10 @@ describe("QuestionsFormContainer", () => {
         ).toBeInTheDocument();
       });
       it("shows the failure page if submitted with incorrect responses", async () => {
-        await fireEvent.click(screen.getByLabelText("2004", { exact: false }), {
+        fireEvent.click(screen.getByLabelText("2004", { exact: false }), {
           target: { value: "3" },
         });
-        userEvent.click(
+        await userEvent.click(
           screen.queryAllByText("Submit", {
             exact: false,
           })[0]
@@ -152,6 +155,7 @@ describe("QuestionsFormContainer countdown", () => {
   beforeEach(() => {
     jest.useFakeTimers();
   });
+
   it("redirects to failure page when countdown runs out", async () => {
     personalDetails = initPersonalDetails("foo", "Bob", "Bill", "Martínez");
     personalDetails.phoneNumber = "530/867/5309 ext. 222";

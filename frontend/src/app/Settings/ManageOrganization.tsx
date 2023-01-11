@@ -29,38 +29,37 @@ const ManageOrganization: React.FC<Props> = (props) => {
       setFormChanged(true);
     };
 
-  const validateField = (field: keyof EditableOrganization): boolean => {
+  const validateField = (
+    field: keyof EditableOrganization
+  ): string | undefined => {
     if (field === "name") {
       if (organization[field].trim().length === 0) {
-        setErrors({
-          ...errors,
-          [field]: "The organization's name cannot be blank",
-        });
-        return false;
+        return "The organization's name cannot be blank";
       }
     }
     if (field === "type") {
       if (!Object.keys(OrganizationTypeEnum).includes(organization[field])) {
-        setErrors({
-          ...errors,
-          [field]: "An organization type must be selected",
-        });
-        return false;
+        return "An organization type must be selected";
       }
     }
-    setErrors({ ...errors, [field]: undefined });
-    return true;
+    return undefined;
   };
 
   const validateAndSave = () => {
-    const validName = validateField("name");
-    const validType = validateField("type");
-    if (validName && validType) {
+    const nameError = validateField("name");
+    const typeError = validateField("type");
+
+    if (!nameError && !typeError) {
       props.onSave(organization);
     } else {
+      const updatedErrors = {
+        ...errors,
+        name: nameError,
+        type: typeError,
+      };
       let ulAlertBody = (
         <ul>
-          {[errors["name"], errors["type"]]
+          {[nameError, typeError]
             .filter((msg) => !!msg)
             .map((msg) => (
               <li key={msg}>{msg}</li>
@@ -68,6 +67,7 @@ const ManageOrganization: React.FC<Props> = (props) => {
         </ul>
       );
       showError(ulAlertBody, "Information missing");
+      setErrors(updatedErrors);
     }
   };
 
@@ -94,7 +94,6 @@ const ManageOrganization: React.FC<Props> = (props) => {
               if you need to change it.
             </Alert>
           )}
-
           {props.canEditOrganizationName ? (
             <TextInput
               label="Organization name"

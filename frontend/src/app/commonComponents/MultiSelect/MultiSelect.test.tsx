@@ -88,11 +88,11 @@ describe("Multi Select", () => {
       renderWithoutInitialOptions();
     });
     describe("when selecting an item", () => {
-      beforeEach(() => {
-        userEvent.click(screen.getByTestId("multi-select-input"));
+      beforeEach(async () => {
+        await userEvent.click(screen.getByTestId("multi-select-input"));
         const optionList = screen.getByTestId("multi-select-option-list");
-        userEvent.click(within(optionList).getByText("Apples"));
-        userEvent.click(within(optionList).getByText("Oranges"));
+        await userEvent.click(within(optionList).getByText("Apples"));
+        await userEvent.click(within(optionList).getByText("Oranges"));
       });
 
       it("should show the pill with the selected item's label", () => {
@@ -117,11 +117,13 @@ describe("Multi Select", () => {
       });
 
       describe("when deleting a selected item", () => {
-        beforeEach(() => {
+        beforeEach(async () => {
           const pillContainer = screen.getByTestId("pill-container");
           expect(pillContainer).toBeInTheDocument();
-          userEvent.click(within(pillContainer).getAllByRole("button")[0]);
-          userEvent.click(screen.getByTestId("multi-select-input"));
+          await userEvent.click(
+            within(pillContainer).getAllByRole("button")[0]
+          );
+          await userEvent.click(screen.getByTestId("multi-select-input"));
         });
 
         it("should remove the pill ", () => {

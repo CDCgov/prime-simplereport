@@ -2,6 +2,7 @@ import qs from "querystring";
 
 import { MockedProvider } from "@apollo/client/testing";
 import {
+  fireEvent,
   render,
   screen,
   waitFor,
@@ -57,7 +58,11 @@ jest.mock("@microsoft/applicationinsights-react-js", () => ({
   useTrackEvent: jest.fn(),
 }));
 
-const WithRouter: React.FC = ({ children }) => (
+type WithRouterProps = {
+  children: React.ReactNode;
+};
+
+const WithRouter: React.FC<WithRouterProps> = ({ children }) => (
   <MemoryRouter initialEntries={[{ search: "?facility=1" }]}>
     {children}
   </MemoryRouter>
@@ -94,8 +99,8 @@ describe("TestResultsList", () => {
     expect(
       await screen.findByText("Cragell, Barb Whitaker")
     ).toBeInTheDocument();
-    expect(await screen.findByText("Showing 1-3 of 3")).toBeInTheDocument();
-
+    expect(await screen.findByText("Showing 1-3 of 3"));
+    expect(await screen.findByText(/Testing facility/i));
     expect(container).toMatchSnapshot();
   });
   it("should be able to load filter params from url", async () => {
@@ -122,16 +127,12 @@ describe("TestResultsList", () => {
       </MemoryRouter>
     );
 
-    expect(await screen.findByText("Showing 1-1 of 1")).toBeInTheDocument();
-    expect(
-      await screen.findByLabelText("Date range (start)")
-    ).toBeInTheDocument();
-    expect(await screen.findByDisplayValue("2021-03-18")).toBeInTheDocument();
+    expect(await screen.findByText("Showing 1-1 of 1"));
+    expect(await screen.findByLabelText("Date range (start)"));
+    expect(await screen.findByDisplayValue("2021-03-18"));
 
-    expect(
-      await screen.findByLabelText("Date range (end)")
-    ).toBeInTheDocument();
-    expect(await screen.findByDisplayValue("2021-03-19")).toBeInTheDocument();
+    expect(await screen.findByLabelText("Date range (end)"));
+    expect(await screen.findByDisplayValue("2021-03-19"));
 
     const roleSelect = (await screen.findByLabelText(
       "Role"
@@ -143,26 +144,26 @@ describe("TestResultsList", () => {
       "Test result"
     )) as HTMLSelectElement;
     expect(resultSelect).toBeInTheDocument();
-    expect(resultSelect.value).toEqual("NEGATIVE");
+    expect(resultSelect).toHaveValue("NEGATIVE");
 
     const facilitySelect = (await screen.findByLabelText(
       "Testing facility"
     )) as HTMLSelectElement;
     expect(facilitySelect).toBeInTheDocument();
-    expect(facilitySelect.value).toEqual("1");
+    expect(facilitySelect).toHaveValue("1");
 
-    const searchBox = screen.getByLabelText(
-      "Search by name"
-    ) as HTMLInputElement;
-    expect(searchBox.value).toEqual("Colleer, Barde X");
+    const searchBox = screen.getByRole("searchbox", {
+      name: /search by name/i,
+    }) as HTMLInputElement;
+    await waitFor(() => expect(searchBox).toHaveValue("Colleer, Barde X"));
 
     const row = within(await screen.findByTitle("filtered-result"));
-    expect(await row.findByText("Colleer, Barde X")).toBeInTheDocument();
-    expect(await row.findByText("DOB: 11/07/1960")).toBeInTheDocument();
-    expect(await row.findByText("Negative")).toBeInTheDocument();
+    expect(await row.findByText("Colleer, Barde X"));
+    expect(await row.findByText("DOB: 11/07/1960"));
+    expect(await row.findByText("Negative"));
     expect(row.queryByText("Facility 1")).not.toBeInTheDocument();
-    expect(await row.findByText("Abbott IDNow")).toBeInTheDocument();
-    expect(await row.findByText("User, Ursula")).toBeInTheDocument();
+    expect(await row.findByText("Abbott IDNow"));
+    expect(await row.findByText("User, Ursula"));
   });
 
   it("should display facility column when all facilities are selected in the filter", async () => {
@@ -212,7 +213,7 @@ describe("TestResultsList", () => {
       </MemoryRouter>
     );
 
-    expect(await screen.findByText("Showing 1-3 of 3")).toBeInTheDocument();
+    expect(await screen.findByText("Showing 1-3 of 3"));
     expect(
       screen.getByRole("columnheader", { name: /covid-19/i })
     ).toBeInTheDocument();
@@ -250,7 +251,7 @@ describe("TestResultsList", () => {
       </MemoryRouter>
     );
 
-    expect(await screen.findByText("Showing 1-2 of 2")).toBeInTheDocument();
+    expect(await screen.findByText("Showing 1-2 of 2"));
     expect(
       screen.getByRole("columnheader", { name: /covid-19/i })
     ).toBeInTheDocument();
@@ -286,7 +287,7 @@ describe("TestResultsList", () => {
       </MemoryRouter>
     );
 
-    expect(await screen.findByText("Showing 1-3 of 3")).toBeInTheDocument();
+    expect(await screen.findByText("Showing 1-3 of 3"));
 
     expect(
       screen.getByRole("columnheader", { name: /covid-19/i })
@@ -319,14 +320,9 @@ describe("TestResultsList", () => {
     });
 
     it("should call appropriate gql endpoints for pagination", async () => {
-      expect(
-        await screen.findByText("Test Results", { exact: false })
-      ).toBeInTheDocument();
-      expect(
-        await screen.findByText("Cragell, Barb Whitaker")
-      ).toBeInTheDocument();
+      expect(await screen.findByText("Test Results", { exact: false }));
+      expect(await screen.findByText("Cragell, Barb Whitaker"));
     });
-
     it("should be able to filter by patient", async () => {
       await screen.findByText("Test Results", { exact: false });
       expect(
@@ -334,9 +330,9 @@ describe("TestResultsList", () => {
       ).toBeInTheDocument();
       expect(await screen.findByText("Colleer, Barde X")).toBeInTheDocument();
       expect(await screen.findByText("Search by name")).toBeInTheDocument();
-      userEvent.type(screen.getByRole("searchbox"), "Cragell");
+      await userEvent.type(screen.getByRole("searchbox"), "Cragell");
       expect(await screen.findByText("Filter")).toBeInTheDocument();
-      userEvent.click(screen.getByText("Filter"));
+      await userEvent.click(screen.getByText("Filter"));
       expect(
         await screen.findByText("Cragell, Barb Whitaker")
       ).toBeInTheDocument();
@@ -352,11 +348,11 @@ describe("TestResultsList", () => {
       expect(
         await screen.findByText("Cragell, Barb Whitaker")
       ).toBeInTheDocument();
-      expect(await screen.findByText("Gerard, Sam G")).toBeInTheDocument();
+      expect(await screen.findByText("Gerard, Sam G"));
       expect(
         await screen.findByRole("option", { name: "Negative" })
       ).toBeInTheDocument();
-      userEvent.selectOptions(screen.getByLabelText("Test result"), [
+      await userEvent.selectOptions(screen.getByLabelText("Test result"), [
         "NEGATIVE",
       ]);
       expect(
@@ -371,11 +367,13 @@ describe("TestResultsList", () => {
       expect(
         await screen.findByText("Cragell, Barb Whitaker")
       ).toBeInTheDocument();
-      expect(await screen.findByText("Colleer, Barde X")).toBeInTheDocument();
+      expect(await screen.findByText("Colleer, Barde X"));
       expect(
         await screen.findByRole("option", { name: "Resident" })
       ).toBeInTheDocument();
-      userEvent.selectOptions(screen.getByLabelText("Role"), ["RESIDENT"]);
+      await userEvent.selectOptions(screen.getByLabelText("Role"), [
+        "RESIDENT",
+      ]);
       expect(
         await screen.findByText("Cragell, Barb Whitaker")
       ).toBeInTheDocument();
@@ -388,12 +386,14 @@ describe("TestResultsList", () => {
       expect(
         await screen.findByText("Cragell, Barb Whitaker")
       ).toBeInTheDocument();
-      expect(await screen.findByText("Colleer, Barde X")).toBeInTheDocument();
+      expect(await screen.findByText("Colleer, Barde X"));
       expect(
         await screen.findByRole("option", { name: "Facility 2" })
       ).toBeInTheDocument();
-      userEvent.selectOptions(screen.getByLabelText("Testing facility"), ["2"]);
-      expect(await screen.findByText("Clarkson, Lewis")).toBeInTheDocument();
+      await userEvent.selectOptions(screen.getByLabelText("Testing facility"), [
+        "2",
+      ]);
+      expect(await screen.findByText("Clarkson, Lewis"));
       expect(
         screen.queryByText("Cragell, Barb Whitaker")
       ).not.toBeInTheDocument();
@@ -410,29 +410,29 @@ describe("TestResultsList", () => {
       expect(
         await screen.findByRole("option", { name: "All facilities" })
       ).toBeInTheDocument();
-      userEvent.selectOptions(
+      await userEvent.selectOptions(
         screen.getByLabelText("Testing facility"),
         ALL_FACILITIES_ID
       );
-      expect(await screen.findByText("Clarkson, Lewis")).toBeInTheDocument();
+      expect(await screen.findByText("Clarkson, Lewis"));
       expect(
         await screen.findByText("Cragell, Barb Whitaker")
       ).toBeInTheDocument();
     });
 
     it("should be able to filter by date", async () => {
-      expect(
-        await screen.findByText("Test Results", { exact: false })
-      ).toBeInTheDocument();
-      expect(
-        await screen.findByText("Cragell, Barb Whitaker")
-      ).toBeInTheDocument();
-      expect(await screen.findByText("Colleer, Barde X")).toBeInTheDocument();
-      expect(await screen.findByText("Gerard, Sam G")).toBeInTheDocument();
-      expect(await screen.findByText("Date range (start)")).toBeInTheDocument();
-      expect(await screen.findByText("Date range (end)")).toBeInTheDocument();
-      userEvent.type(screen.getByText("Date range (start)"), "2021-03-18");
-      userEvent.tab();
+      expect(await screen.findByText("Test Results", { exact: false }));
+      expect(await screen.findByText("Cragell, Barb Whitaker"));
+      expect(await screen.findByText("Colleer, Barde X"));
+      expect(await screen.findByText("Gerard, Sam G"));
+      expect(await screen.findByText("Date range (start)"));
+      expect(await screen.findByText("Date range (end)"));
+
+      fireEvent.change(screen.getByLabelText(/date range \(start\)/i), {
+        target: { value: "2021-03-18" },
+      });
+
+      await userEvent.tab();
       screen.getByText("Colleer, Barde X");
       screen.getByText("Gerard, Sam G");
       await waitFor(() =>
@@ -440,8 +440,11 @@ describe("TestResultsList", () => {
           screen.queryByText("Cragell, Barb Whitaker")
         ).not.toBeInTheDocument()
       );
-      userEvent.type(screen.getByText("Date range (end)"), "2021-03-18");
-      userEvent.tab();
+      fireEvent.change(screen.getByLabelText(/date range \(end\)/i), {
+        target: { value: "2021-03-18" },
+      });
+
+      await userEvent.tab();
       expect(await screen.findByText("Colleer, Barde X")).toBeInTheDocument();
       await waitFor(() =>
         expect(screen.queryByText("Gerard, Sam G")).not.toBeInTheDocument()
@@ -457,24 +460,30 @@ describe("TestResultsList", () => {
 
       // Apply filter
       expect(await screen.findByText("Search by name")).toBeInTheDocument();
-      userEvent.type(screen.getByRole("searchbox"), "Cragell");
-      expect(await screen.findByText("Filter")).toBeInTheDocument();
-      userEvent.click(screen.getByText("Filter"));
+      fireEvent.change(
+        screen.getByRole("searchbox", { name: /search by name/i }),
+        { target: { value: "Cragell" } }
+      );
+
+      await waitForElementToBeRemoved(() => screen.queryByText(/Searching/i));
+
+      expect(await screen.findByText(/Filter/i));
+      await userEvent.click(screen.getByText(/Filter/i));
 
       // Clear filter
       expect(await screen.findByText("Clear filters")).toBeInTheDocument();
-      userEvent.click(screen.getByText("Clear filters"));
+      await userEvent.click(screen.getByText("Clear filters"));
 
       // All results, filter no longer applied
-      expect(
-        await screen.findByText("Cragell, Barb Whitaker")
-      ).toBeInTheDocument();
-      expect(await screen.findByText("Colleer, Barde X")).toBeInTheDocument();
+      expect(await screen.findByText("Cragell, Barb Whitaker"));
+      expect(await screen.findByText("Colleer, Barde X"));
     });
 
     it("should be able to clear date filters", async () => {
       // Apply filter
-      userEvent.type(screen.getByLabelText("Date range (start)"), "2021-03-18");
+      fireEvent.change(screen.getByLabelText(/date range \(start\)/i), {
+        target: { value: "2021-03-18" },
+      });
 
       // Filter applied
       expect(await screen.findByText("Colleer, Barde X")).toBeInTheDocument();
@@ -490,7 +499,7 @@ describe("TestResultsList", () => {
       );
       // Clear filter
       expect(await screen.findByText("Clear filters")).toBeInTheDocument();
-      userEvent.click(screen.getByText("Clear filters"));
+      await userEvent.click(screen.getByText("Clear filters"));
 
       // Filter no longer applied
       await waitFor(() => {
@@ -506,7 +515,7 @@ describe("TestResultsList", () => {
         await screen.findByText("Cragell, Barb Whitaker")
       ).toBeInTheDocument();
       const patientNameLink = await screen.findByText("Cragell, Barb Whitaker");
-      userEvent.click(patientNameLink);
+      await userEvent.click(patientNameLink);
       screen.getByText("Result details");
       screen.getByText("Test information");
       expect(
@@ -522,36 +531,36 @@ describe("TestResultsList", () => {
       const moreActions = within(screen.getByRole("table")).getAllByRole(
         "button"
       )[1];
-      userEvent.click(moreActions);
+      await userEvent.click(moreActions);
       const viewDetails = await screen.findByText("View details");
-      userEvent.click(viewDetails);
+      await userEvent.click(viewDetails);
       screen.getByText("Result details");
       screen.getByText("Test information");
     });
 
     it("opens the email test results modal", async () => {
-      expect(await screen.findByText("Showing 1-3 of 3")).toBeInTheDocument();
+      expect(await screen.findByText("Showing 1-3 of 3"));
       expect(
         screen.getByText("Test Results", { exact: false })
       ).toBeInTheDocument();
       const moreActions = within(screen.getByRole("table")).getAllByRole(
         "button"
       )[1];
-      userEvent.click(moreActions);
+      await userEvent.click(moreActions);
       const emailResult = screen.getByText("Email result");
-      userEvent.click(emailResult);
+      await userEvent.click(emailResult);
       await screen.findByText("Email result?");
     });
 
     it("opens the download test results modal and shows how many rows the csv will have", async () => {
-      expect(await screen.findByText("Showing 1-3 of 3")).toBeInTheDocument();
+      expect(await screen.findByText("Showing 1-3 of 3"));
       expect(
         screen.getByText("Test Results", { exact: false })
       ).toBeInTheDocument();
       const downloadButton = screen.getByText("Download results", {
         exact: false,
       });
-      userEvent.click(downloadButton);
+      await userEvent.click(downloadButton);
       expect(
         screen.getByText("Download results without any search filters", {
           exact: false,
@@ -564,14 +573,14 @@ describe("TestResultsList", () => {
 
     it("closes the download test results modal after downloading", async () => {
       // source of "navigation not implemented" error
-      expect(await screen.findByText("Showing 1-3 of 3")).toBeInTheDocument();
+      expect(await screen.findByText("Showing 1-3 of 3"));
       expect(
         screen.getByText("Test Results", { exact: false })
       ).toBeInTheDocument();
       const downloadButton = screen.getByText("Download results", {
         exact: false,
       });
-      userEvent.click(downloadButton);
+      await userEvent.click(downloadButton);
       expect(
         screen.getByText("Download results without any search filters", {
           exact: false,
@@ -587,7 +596,7 @@ describe("TestResultsList", () => {
           exact: false,
         }
       );
-      userEvent.click(downloadButton2);
+      await userEvent.click(downloadButton2);
       expect(
         screen.getByText("Loading...", {
           exact: false,
@@ -601,18 +610,18 @@ describe("TestResultsList", () => {
     });
 
     it("opens the download test results modal after applying filters and shows how many rows the csv will have", async () => {
-      expect(await screen.findByText("Showing 1-3 of 3")).toBeInTheDocument();
+      expect(await screen.findByText("Showing 1-3 of 3"));
       expect(
         screen.getByText("Test Results", { exact: false })
       ).toBeInTheDocument();
-      userEvent.selectOptions(screen.getByLabelText("Test result"), [
+      await userEvent.selectOptions(screen.getByLabelText("Test result"), [
         "NEGATIVE",
       ]);
-      expect(await screen.findByText("Showing 1-2 of 2")).toBeInTheDocument();
+      expect(await screen.findByText("Showing 1-2 of 2"));
       const downloadButton = screen.getByText("Download results", {
         exact: false,
       });
-      userEvent.click(downloadButton);
+      await userEvent.click(downloadButton);
       expect(
         await screen.findByText(
           "Download results with current search filters applied",
@@ -628,14 +637,14 @@ describe("TestResultsList", () => {
 
     describe("patient has no email", () => {
       it("doesnt show the button to print results", async () => {
-        expect(await screen.findByText("Showing 1-3 of 3")).toBeInTheDocument();
+        expect(await screen.findByText("Showing 1-3 of 3"));
         expect(
           screen.getByText("Test Results", { exact: false })
         ).toBeInTheDocument();
         const moreActions = within(screen.getByRole("table")).getAllByRole(
           "button"
         )[0];
-        userEvent.click(moreActions);
+        await userEvent.click(moreActions);
         expect(screen.queryByText("Email result")).not.toBeInTheDocument();
       });
     });
@@ -650,14 +659,12 @@ describe("TestResultsList", () => {
           </Provider>
         </MemoryRouter>
       );
-      expect(
-        await screen.findByText("No facility selected", { exact: false })
-      ).toBeInTheDocument();
+      expect(await screen.findByText("No facility selected", { exact: false }));
     });
 
     it("should not display Flu result columns if all rows with multiplex results are filtered", async () => {
       // facility 1 has no multiplex results
-      expect(await screen.findByText("Gerard, Sam G")).toBeInTheDocument();
+      expect(await screen.findByText("Gerard, Sam G"));
       expect(screen.queryByText("Flu A")).not.toBeInTheDocument();
     });
 
@@ -665,17 +672,20 @@ describe("TestResultsList", () => {
       expect(
         await screen.findByRole("option", { name: "Facility 1" })
       ).toBeInTheDocument();
-      userEvent.selectOptions(screen.getByLabelText("Testing facility"), ["3"]);
-      expect((await screen.findAllByText("Flu A"))[0]).toBeInTheDocument();
+      await userEvent.selectOptions(screen.getByLabelText("Testing facility"), [
+        "3",
+      ]);
+      expect((await screen.findAllByText("Flu A"))[0]);
     });
 
     describe("return focus after modal close", () => {
       // source of the React key prop warning
       const clickActionMenu = async () => {
-        expect(await screen.findByText("Showing 1-3 of 3")).toBeInTheDocument();
+        expect(await screen.findByText("Showing 1-3 of 3"));
         const actionMenuButton =
           document.querySelectorAll(".rc-menu-button")[0];
-        userEvent.click(actionMenuButton as HTMLElement);
+
+        await userEvent.click(actionMenuButton as HTMLElement);
       };
       it.each([
         ["Print result", "Close"],
@@ -684,18 +694,18 @@ describe("TestResultsList", () => {
         ["Correct result", "No, go back"],
       ])("should set focus on %p", async (menuButtonText, closeButtonText) => {
         await clickActionMenu();
-        userEvent.click(screen.getByText(menuButtonText));
+        await userEvent.click(screen.getByText(menuButtonText));
         await screen.findAllByText(closeButtonText);
-        userEvent.click(screen.getAllByText(closeButtonText)[0]);
+        await userEvent.click(screen.getAllByText(closeButtonText)[0]);
         await waitFor(() =>
           expect(screen.getByText(menuButtonText)).toHaveFocus()
         );
       });
       it("should set focus on the view details button", async () => {
         await clickActionMenu();
-        userEvent.click(screen.getByText("View details"));
+        await userEvent.click(screen.getByText("View details"));
         await screen.findByAltText("Close");
-        userEvent.click(screen.getByAltText("Close"));
+        await userEvent.click(screen.getByAltText("Close"));
         await waitFor(() =>
           expect(screen.getByText("View details")).toHaveFocus()
         );
@@ -796,9 +806,15 @@ describe("TestResultsList", () => {
       endDate = "2021-03-18"
     ) => {
       // source of the last two "wrapped in act" warnings
-      userEvent.type(await screen.findByText("Date range (start)"), startDate);
+      await userEvent.type(
+        await screen.findByText("Date range (start)"),
+        startDate
+      );
       await new Promise((r) => setTimeout(r, SEARCH_DEBOUNCE_TIME));
-      userEvent.type(await screen.findByText("Date range (end)"), endDate);
+      await userEvent.type(
+        await screen.findByText("Date range (end)"),
+        endDate
+      );
       new Promise((r) => setTimeout(r, SEARCH_DEBOUNCE_TIME));
     };
     it("should display error if end date is before the start date", async () => {
@@ -816,7 +832,7 @@ describe("TestResultsList", () => {
           exact: false,
         })
       ).toBeInTheDocument();
-      userEvent.click(screen.getByText("Clear filters"));
+      await userEvent.click(screen.getByText("Clear filters"));
       expect(
         screen.queryByText("End date cannot be before start date", {
           exact: false,

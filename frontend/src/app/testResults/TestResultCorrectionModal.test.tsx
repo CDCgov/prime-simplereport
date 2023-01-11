@@ -156,7 +156,7 @@ describe("TestResultCorrectionModal", () => {
     });
 
     it("sends a GraphQL request to perform the removal", async () => {
-      userEvent.click(await screen.findByText("Yes, I'm sure"));
+      await userEvent.click(await screen.findByText("Yes, I'm sure"));
 
       await waitFor(() => {
         expect(markAsErrorMockDidComplete).toBe(true);
@@ -209,10 +209,13 @@ describe("TestResultCorrectionModal", () => {
       const dropdown = await screen.findByLabelText(
         "Please select a reason for correcting this test result."
       );
-      userEvent.selectOptions(dropdown, TestCorrectionReasons.INCORRECT_RESULT);
+      await userEvent.selectOptions(
+        dropdown,
+        TestCorrectionReasons.INCORRECT_RESULT
+      );
 
       const submitButton = await screen.findByText("Yes, I'm sure");
-      userEvent.click(submitButton);
+      await userEvent.click(submitButton);
       await waitFor(() => {
         expect(markAsCorrectMockDidComplete).toBe(true);
       });
@@ -283,7 +286,7 @@ describe("TestResultCorrectionModal", () => {
       const dropdown = await screen.findByLabelText(
         "Please select a reason for correcting this test result."
       );
-      userEvent.selectOptions(dropdown, TestCorrectionReasons.OTHER);
+      await userEvent.selectOptions(dropdown, TestCorrectionReasons.OTHER);
 
       expect(
         await screen.findByText("Additional information", { exact: false })
@@ -315,7 +318,7 @@ describe("TestResultCorrectionModal", () => {
       const correctionActionOption = screen.getByLabelText(
         TestCorrectionActions.CORRECT_RESULT
       );
-      userEvent.click(correctionActionOption);
+      await userEvent.click(correctionActionOption);
 
       const submitButton = await screen.findByText("Yes, I'm sure");
       expect(submitButton).toBeDisabled();
@@ -325,12 +328,12 @@ describe("TestResultCorrectionModal", () => {
       const additionalDetails = await screen.findByTestId(
         "additionalInformation"
       );
-      userEvent.type(additionalDetails, "no");
+      await userEvent.type(additionalDetails, "no");
 
       const correctionActionOption = screen.getByLabelText(
         TestCorrectionActions.CORRECT_RESULT
       );
-      userEvent.click(correctionActionOption);
+      await userEvent.click(correctionActionOption);
 
       const submitButton = await screen.findByText("Yes, I'm sure");
       expect(submitButton).toBeDisabled();
@@ -340,7 +343,7 @@ describe("TestResultCorrectionModal", () => {
       const additionalDetails = await screen.findByTestId(
         "additionalInformation"
       );
-      userEvent.type(additionalDetails, "Some good reason");
+      await userEvent.type(additionalDetails, "Some good reason");
 
       const submitButton = await screen.findByText("Yes, I'm sure");
       expect(submitButton).toBeDisabled();
@@ -351,15 +354,15 @@ describe("TestResultCorrectionModal", () => {
         const additionalDetails = await screen.findByTestId(
           "additionalInformation"
         );
-        userEvent.type(additionalDetails, "Some good reason");
+        await userEvent.type(additionalDetails, "Some good reason");
         const correctionActionOption = screen.getByLabelText(
           TestCorrectionActions.MARK_AS_ERROR,
           { exact: false }
         );
-        userEvent.click(correctionActionOption);
+        await userEvent.click(correctionActionOption);
 
         const submitButton = await screen.findByText("Yes, I'm sure");
-        userEvent.click(submitButton);
+        await userEvent.click(submitButton);
         await waitFor(() => {
           expect(markAsErrorMockDidComplete).toBe(true);
         });
@@ -369,16 +372,16 @@ describe("TestResultCorrectionModal", () => {
         const additionalDetails = await screen.findByTestId(
           "additionalInformation"
         );
-        userEvent.type(additionalDetails, "Some good reason");
+        await userEvent.type(additionalDetails, "Some good reason");
 
         const correctionActionOption = screen.getAllByLabelText(
           TestCorrectionActions.CORRECT_RESULT,
           { exact: false }
         )[0];
 
-        userEvent.click(correctionActionOption);
+        await userEvent.click(correctionActionOption);
         const submitButton = await screen.findByText("Yes, I'm sure");
-        userEvent.click(submitButton);
+        await userEvent.click(submitButton);
         await waitFor(() => expect(markAsCorrectionMockDidComplete).toBe(true));
       });
     });

@@ -2,6 +2,7 @@ import React from "react";
 import classnames from "classnames";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faAngleLeft, faAngleRight } from "@fortawesome/free-solid-svg-icons";
+import { IconProp } from "@fortawesome/fontawesome-svg-core";
 
 import "./Pagination.scss";
 import { LinkWithQuery } from "../commonComponents/LinkWithQuery";
@@ -91,7 +92,7 @@ const Pagination = ({
         {currentPage > 1 && (
           <li key="prevpage">
             <Link to={`${currentPage - 1}`} label="Previous Page">
-              <FontAwesomeIcon icon={faAngleLeft} /> Prev
+              <FontAwesomeIcon icon={faAngleLeft as IconProp} /> Prev
             </Link>
           </li>
         )}
@@ -111,7 +112,7 @@ const Pagination = ({
         {currentPage < totalPages && (
           <li key="nextpage">
             <Link to={`${currentPage + 1}`} label="Next Page">
-              Next <FontAwesomeIcon icon={faAngleRight} />
+              Next <FontAwesomeIcon icon={faAngleRight as IconProp} />
             </Link>
           </li>
         )}

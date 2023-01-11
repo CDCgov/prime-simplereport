@@ -51,10 +51,10 @@ describe("ManageOrganization", () => {
     });
     const saveButton = screen.getByText("Save settings");
     expect(orgNameInput).toBeEnabled();
-    userEvent.type(orgNameInput, "Penny Lane");
-    userEvent.selectOptions(orgTypeInput, "other");
+    await userEvent.type(orgNameInput, "Penny Lane");
+    await userEvent.selectOptions(orgTypeInput, "other");
     expect(saveButton).toBeEnabled();
-    userEvent.click(saveButton);
+    await userEvent.click(saveButton);
   });
 
   it("allows org type change for regular admins", async () => {
@@ -70,9 +70,9 @@ describe("ManageOrganization", () => {
       exact: false,
     });
     const saveButton = screen.getByText("Save settings");
-    userEvent.selectOptions(orgTypeInput, "hospice");
+    await userEvent.selectOptions(orgTypeInput, "hospice");
     expect(saveButton).toBeEnabled();
-    userEvent.click(saveButton);
+    await userEvent.click(saveButton);
   });
 });
 

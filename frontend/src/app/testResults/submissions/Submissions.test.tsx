@@ -1,9 +1,10 @@
-import { render, screen } from "@testing-library/react";
+import { fireEvent, render, screen, waitFor } from "@testing-library/react";
 import createMockStore from "redux-mock-store";
 import { MockedProvider } from "@apollo/client/testing";
 import { Provider } from "react-redux";
 import { MemoryRouter } from "react-router-dom";
 import userEvent from "@testing-library/user-event";
+import { forEach } from "lodash";
 
 import {
   GetUploadSubmissionsDocument,
@@ -142,7 +143,7 @@ describe("Submissions", () => {
       </MockedProvider>
     );
     await new Promise((resolve) => setTimeout(resolve, 0));
-    expect(await screen.findByText("No results")).toBeInTheDocument();
+    expect(await screen.findByText("No results"));
   });
 
   it("should render submission results", async () => {
@@ -157,9 +158,9 @@ describe("Submissions", () => {
     );
     await new Promise((resolve) => setTimeout(resolve, 0));
 
-    expect(await screen.findByText("reportId_1")).toBeInTheDocument();
-    expect(await screen.findByText("reportId_2")).toBeInTheDocument();
-    expect(await screen.findByText("reportId_3")).toBeInTheDocument();
+    expect(await screen.findByText("reportId_1"));
+    expect(await screen.findByText("reportId_2"));
+    expect(await screen.findByText("reportId_3"));
   });
 
   it("should filter results when start date specified", async () => {
@@ -173,19 +174,19 @@ describe("Submissions", () => {
       </Provider>
     );
 
-    expect(await screen.findByText("reportId_1")).toBeInTheDocument();
-    expect(await screen.findByText("reportId_2")).toBeInTheDocument();
-    expect(await screen.findByText("reportId_3")).toBeInTheDocument();
+    expect(await screen.findByText("reportId_1"));
+    expect(await screen.findByText("reportId_2"));
+    expect(await screen.findByText("reportId_3"));
 
     const startDateInput = screen.getByTestId("start-date");
-
-    userEvent.type(startDateInput, "2021-01-01");
-    userEvent.tab();
+    fireEvent.change(startDateInput, { target: { value: "2021-01-01" } });
+    await waitFor(() => expect(startDateInput).toHaveValue("2021-01-01"));
+    await userEvent.tab();
 
     await new Promise((resolve) => setTimeout(resolve, 0));
 
-    expect(screen.getByText("reportId_2")).toBeInTheDocument();
-    expect(screen.getByText("reportId_3")).toBeInTheDocument();
+    expect(await screen.findByText("reportId_2"));
+    expect(await screen.findByText("reportId_3"));
     expect(screen.queryByText("reportId_1")).not.toBeInTheDocument();
   });
 
@@ -200,18 +201,22 @@ describe("Submissions", () => {
       </Provider>
     );
 
-    expect(await screen.findByText("reportId_1")).toBeInTheDocument();
-    expect(await screen.findByText("reportId_2")).toBeInTheDocument();
-    expect(await screen.findByText("reportId_3")).toBeInTheDocument();
+    expect(await screen.findByText("reportId_1"));
+    expect(await screen.findByText("reportId_2"));
+    expect(await screen.findByText("reportId_3"));
 
     const endDateInput = screen.getByTestId("end-date");
 
-    userEvent.type(endDateInput, "2022-01-01");
+    fireEvent.change(endDateInput, { target: { value: "2022-01-01" } });
     await new Promise((resolve) => setTimeout(resolve, 0));
 
-    expect(screen.queryByText("reportId_1")).not.toBeInTheDocument();
-    expect(screen.getByText("reportId_2")).toBeInTheDocument();
-    expect(screen.queryByText("reportId_3")).not.toBeInTheDocument();
+    await waitFor(() =>
+      expect(screen.queryByText("reportId_1")).not.toBeInTheDocument()
+    );
+    expect(await screen.findByText("reportId_2"));
+    await waitFor(() =>
+      expect(screen.queryByText("reportId_3")).not.toBeInTheDocument()
+    );
   });
 
   it("links to submission detail view", async () => {
@@ -227,10 +232,12 @@ describe("Submissions", () => {
 
     await new Promise((resolve) => setTimeout(resolve, 0));
 
-    [result_1, result_2, result_3].forEach((result) => {
-      expect(screen.getByText(result.reportId).closest("a")).toHaveAttribute(
-        "href",
-        `/results/upload/submissions/submission/${result.internalId}`
+    await forEach([result_1, result_2, result_3], async (result) => {
+      await waitFor(() =>
+        expect(screen.getByText(result.reportId).closest("a")).toHaveAttribute(
+          "href",
+          `/results/upload/submissions/submission/${result.internalId}`
+        )
       );
     });
   });

@@ -11,9 +11,9 @@ export default {
   component: OrderingProviderList,
 } as Meta;
 
-const RouterWithFacility: React.FC = ({ children }) => (
-  <MemoryRouter>{children}</MemoryRouter>
-);
+const RouterWithFacility: React.FC<RouterWithFacilityProps> = ({
+  children,
+}) => <MemoryRouter>{children}</MemoryRouter>;
 
 const Template = (): Story<OrderingProviderListProps> => (args) =>
   (
