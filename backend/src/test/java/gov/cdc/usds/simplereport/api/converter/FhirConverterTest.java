@@ -940,18 +940,10 @@ class FhirConverterTest {
         new TestOrder(
             null,
             new Facility(
-                null,
-                null,
-                null,
-                null,
-                null,
-                null,
-                null,
-                null,
-                null,
-                Collections.emptyList()));
+                null, null, null, null, null, null, null, null, null, Collections.emptyList()));
     testOrder.markComplete();
-    testOrder.setDeviceTypeAndSpecimenType(new DeviceType(null, null, null, "94533-7", null, 0), null);
+    testOrder.setDeviceTypeAndSpecimenType(
+        new DeviceType(null, null, null, "94533-7", null, 0), null);
     ReflectionTestUtils.setField(testOrder, "internalId", UUID.fromString(internalId));
 
     var actual = convertToServiceRequest(testOrder);
@@ -1149,7 +1141,8 @@ class FhirConverterTest {
   void createFhirBundle_TestEvent_matchesJson() throws IOException {
     var address = new StreetAddress(List.of("1 Main St"), "Chicago", "IL", "60614", "");
     var deviceType = new DeviceType("name", "manufacturer", "model", "loinc", "nasal", 0);
-    var specimenType = new SpecimenType("name", "typeCode");var provider =
+    var specimenType = new SpecimenType("name", "typeCode");
+    var provider =
         new Provider(new PersonName("Michaela", null, "Quinn", ""), "1", address, "7735551235");
     var organization = new Organization("District", "school", "1", true);
     var facility =
