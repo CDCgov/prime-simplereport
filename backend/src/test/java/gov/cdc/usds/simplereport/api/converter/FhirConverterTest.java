@@ -27,7 +27,6 @@ import static org.junit.jupiter.params.provider.Arguments.arguments;
 
 import ca.uhn.fhir.context.FhirContext;
 import ca.uhn.fhir.parser.IParser;
-import gov.cdc.usds.simplereport.db.model.DeviceSpecimenType;
 import gov.cdc.usds.simplereport.db.model.DeviceType;
 import gov.cdc.usds.simplereport.db.model.Facility;
 import gov.cdc.usds.simplereport.db.model.Organization;
@@ -727,8 +726,8 @@ class FhirConverterTest {
                     null,
                     null,
                     null,
-                    new DeviceSpecimenType(
-                        new DeviceType(null, null, null, "95422-2", null, 0), null),
+                    new DeviceType(null, null, null, "95422-2", null, 0),
+                    null,
                     Collections.emptyList())),
             false,
             Collections.emptySet());
@@ -748,15 +747,7 @@ class FhirConverterTest {
             new TestOrder(
                 new Person(null, null, null, null, null),
                 new Facility(
-                    null,
-                    null,
-                    null,
-                    null,
-                    null,
-                    null,
-                    null,
-                    new DeviceSpecimenType(null, null),
-                    Collections.emptyList())),
+                    null, null, null, null, null, null, null, null, null, Collections.emptyList())),
             false,
             Collections.emptySet());
     var correctedTestEvent =
@@ -775,15 +766,7 @@ class FhirConverterTest {
             new TestOrder(
                 new Person(null, null, null, null, null),
                 new Facility(
-                    null,
-                    null,
-                    null,
-                    null,
-                    null,
-                    null,
-                    null,
-                    new DeviceSpecimenType(null, null),
-                    Collections.emptyList())),
+                    null, null, null, null, null, null, null, null, null, Collections.emptyList())),
             false,
             Collections.emptySet());
     var correctedTestEvent =
@@ -810,8 +793,8 @@ class FhirConverterTest {
                     null,
                     null,
                     null,
-                    new DeviceSpecimenType(
-                        new DeviceType(null, null, null, "95422-2", null, 0), null),
+                    new DeviceType(null, null, null, "95422-2", null, 0),
+                    null,
                     Collections.emptyList())),
             false,
             Collections.emptySet());
@@ -862,7 +845,8 @@ class FhirConverterTest {
                 null,
                 null,
                 null,
-                new DeviceSpecimenType(new DeviceType(null, null, null, "95422-2", null, 0), null),
+                new DeviceType(null, null, null, "95422-2", null, 0),
+                null,
                 Collections.emptyList()));
 
     var actual = convertToServiceRequest(testOrder);
@@ -887,7 +871,8 @@ class FhirConverterTest {
                 null,
                 null,
                 null,
-                new DeviceSpecimenType(new DeviceType(null, null, null, "95422-2", null, 0), null),
+                new DeviceType(null, null, null, "95422-2", null, 0),
+                null,
                 Collections.emptyList()));
     testOrder.markComplete();
     var actual = convertToServiceRequest(testOrder);
@@ -908,7 +893,8 @@ class FhirConverterTest {
                 null,
                 null,
                 null,
-                new DeviceSpecimenType(new DeviceType(null, null, null, "95422-2", null, 0), null),
+                new DeviceType(null, null, null, "95422-2", null, 0),
+                null,
                 Collections.emptyList()));
     testOrder.cancelOrder();
     var actual = convertToServiceRequest(testOrder);
@@ -922,15 +908,7 @@ class FhirConverterTest {
         new TestOrder(
             new Person(null, null, null, null, new Organization(null, null, null, true)),
             new Facility(
-                null,
-                null,
-                null,
-                null,
-                null,
-                null,
-                null,
-                new DeviceSpecimenType(null, null),
-                Collections.emptyList()));
+                null, null, null, null, null, null, null, null, null, Collections.emptyList()));
     testOrder.cancelOrder();
     var actual = convertToServiceRequest(testOrder);
 
@@ -969,11 +947,11 @@ class FhirConverterTest {
                 null,
                 null,
                 null,
-                new DeviceSpecimenType(null, null),
+                null,
+                null,
                 Collections.emptyList()));
     testOrder.markComplete();
-    testOrder.setDeviceSpecimen(
-        new DeviceSpecimenType(new DeviceType(null, null, null, "94533-7", null, 0), null));
+    testOrder.setDeviceTypeAndSpecimenType(new DeviceType(null, null, null, "94533-7", null, 0), null);
     ReflectionTestUtils.setField(testOrder, "internalId", UUID.fromString(internalId));
 
     var actual = convertToServiceRequest(testOrder);
@@ -1171,9 +1149,7 @@ class FhirConverterTest {
   void createFhirBundle_TestEvent_matchesJson() throws IOException {
     var address = new StreetAddress(List.of("1 Main St"), "Chicago", "IL", "60614", "");
     var deviceType = new DeviceType("name", "manufacturer", "model", "loinc", "nasal", 0);
-    var specimenType = new SpecimenType("name", "typeCode");
-    var deviceSpecimenType = new DeviceSpecimenType(deviceType, specimenType);
-    var provider =
+    var specimenType = new SpecimenType("name", "typeCode");var provider =
         new Provider(new PersonName("Michaela", null, "Quinn", ""), "1", address, "7735551235");
     var organization = new Organization("District", "school", "1", true);
     var facility =
@@ -1185,7 +1161,8 @@ class FhirConverterTest {
             "7735551234",
             "school@example.com",
             provider,
-            deviceSpecimenType,
+            deviceType,
+            specimenType,
             Collections.emptyList());
     var person =
         new Person(
