@@ -73,7 +73,8 @@ public class TestDataBuilder {
         null,
         null,
         null,
-        new DeviceSpecimenType(device, null),
+        device,
+        null,
         Collections.emptyList());
   }
 

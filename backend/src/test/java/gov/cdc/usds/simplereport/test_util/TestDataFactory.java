@@ -96,8 +96,6 @@ public class TestDataFactory {
   @Autowired private PatientLinkRepository patientLinkRepository;
   @Autowired private PatientRegistrationLinkRepository patientRegistrationLinkRepository;
   @Autowired private SpecimenTypeRepository specimenTypeRepository;
-  @Autowired private DeviceSpecimenTypeRepository deviceSpecimenTypeRepository;
-  @Autowired private SupportedDiseaseRepository supportedDiseaseRepository;
   @Autowired private ResultRepository resultRepository;
   @Autowired private DemoOktaRepository oktaRepository;
   @Autowired private TestResultUploadRepository testResultUploadRepository;
@@ -119,7 +117,7 @@ public class TestDataFactory {
                     createSpecimenType(DEFAULT_SPECIMEN_TYPE, "000111222", "Da Nose", "986543321"));
 
     genericDeviceType =
-        deviceSpecimenTypeRepository.findAll().stream()
+        deviceTypeRepository.findAll().stream()
             .filter(d -> d.getName().equals(DEFAULT_DEVICE_TYPE))
             .findFirst()
             .orElseGet(
@@ -129,7 +127,6 @@ public class TestDataFactory {
         new DeviceTypeSpecimenTypeMapping(
             genericDeviceType.getInternalId(), genericSpecimenType.getInternalId()));
   }
-
 
   public Organization saveOrganization(Organization org) {
     Organization savedOrg = organizationRepository.save(org);
