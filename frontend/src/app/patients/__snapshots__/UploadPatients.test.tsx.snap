@@ -88,7 +88,7 @@ exports[`Upload Patient displays the upload patients page correctly 1`] = `
             <h2
               class="margin-0 font-sans-lg text-light line-height-225"
             >
-              1. Setup your spreadsheet
+              1. Set up your spreadsheet
             </h2>
             <div
               class="margin-left-3"

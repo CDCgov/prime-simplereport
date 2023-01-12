@@ -79,7 +79,7 @@ describe("Adding Patients", () => {
       cy.get(".prime-container");
       cy.get("#add-patient").click();
       cy.get("#upload_add-patient").click();
-      cy.get(".prime-edit-patient").contains("Setup your spreadsheet");
+      cy.get(".prime-edit-patient").contains("Set up your spreadsheet");
       cy.injectAxe();
       cy.checkA11y(); // Bulk upload patient form
     });
