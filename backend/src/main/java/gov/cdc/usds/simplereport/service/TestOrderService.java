@@ -439,7 +439,7 @@ public class TestOrderService {
               + "are incompatible with facility of queue");
     }
 
-    // if test facility doesnt have defaults, grab the first device on that facility
+    // if test facility doesn't have defaults, grab the first device on that facility
     if (testFacility.getDefaultDeviceType() == null
         || testFacility.getDefaultSpecimenType() == null) {
       testFacility.setDefaultDeviceTypeSpecimenType(

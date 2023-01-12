@@ -62,7 +62,7 @@ public class TestEventExport {
     this.specimenType = Optional.ofNullable(testEvent.getSpecimenType());
   }
 
-  private static final String genderUnknown = "U";
+  private String genderUnknown = "U";
   private static final String DEFAULT_LOCATION_CODE = "53342003"; // http://snomed.info/id/53342003
   // "Internal nose structure"
   // values pulled from

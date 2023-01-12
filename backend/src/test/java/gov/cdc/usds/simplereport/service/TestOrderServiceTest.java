@@ -382,9 +382,6 @@ class TestOrderServiceTest extends BaseServiceTest<TestOrderService> {
     _service.addPatientToQueue(
         facility.getInternalId(), p, "", Collections.emptyMap(), LocalDate.of(1865, 12, 25), false);
 
-    // get updated facility
-    facility = _organizationService.getFacilities(org).get(0);
-
     UUID defaultDeviceType = facility.getDefaultDeviceType().getInternalId();
     UUID defaultSpecimenType = facility.getDefaultSpecimenType().getInternalId();
 
@@ -430,9 +427,6 @@ class TestOrderServiceTest extends BaseServiceTest<TestOrderService> {
             null);
     _service.addPatientToQueue(
         facility.getInternalId(), p, "", Collections.emptyMap(), LocalDate.of(1865, 12, 25), false);
-
-    // get updated facility
-    facility = _organizationService.getFacilities(org).get(0);
 
     UUID defaultDeviceType = facility.getDefaultDeviceType().getInternalId();
     UUID defaultSpecimenType = facility.getDefaultSpecimenType().getInternalId();

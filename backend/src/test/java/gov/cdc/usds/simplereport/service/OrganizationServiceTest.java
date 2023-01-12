@@ -120,8 +120,6 @@ class OrganizationServiceTest extends BaseServiceTest<OrganizationService> {
 
   private DeviceType getDeviceConfig() {
     return testDataFactory.createDeviceType("Abbott ID Now", "Abbott", "1", "12345-6", "E");
-    //    SpecimenType specimen = testDataFactory.getGenericSpecimen();
-    //    return testDataFactory.createDeviceSpecimen(device, specimen);
   }
 
   @Test

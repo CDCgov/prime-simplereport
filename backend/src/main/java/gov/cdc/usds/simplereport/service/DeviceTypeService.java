@@ -104,16 +104,6 @@ public class DeviceTypeService {
       ArrayList<DeviceSpecimenType> toBeDeletedDeviceSpecimenTypes =
           new ArrayList<>(exitingDeviceSpecimenTypes);
       toBeDeletedDeviceSpecimenTypes.removeAll(newDeviceSpecimenTypes);
-
-      /* todo deal with this case
-      // Null out facilities' default device specimen if it was deleted
-      List<Facility> facilitiesToRemoveDefaultDeviceSpecimen =
-          facilityRepository.findAllByDefaultDeviceSpecimenIn(toBeDeletedDeviceSpecimenTypes);
-
-      facilitiesToRemoveDefaultDeviceSpecimen.forEach(
-          Facility::removeDefaultDeviceTypeSpecimenType);
-      */
-
       deviceSpecimenTypeRepository.deleteAll(toBeDeletedDeviceSpecimenTypes);
 
       // create new ones
