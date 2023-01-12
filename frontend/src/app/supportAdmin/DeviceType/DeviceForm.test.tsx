@@ -3,8 +3,8 @@ import userEvent from "@testing-library/user-event";
 
 import DeviceForm from "./DeviceForm";
 
-const addValue = (name: string, value: string) => {
-  userEvent.type(screen.getByLabelText(name, { exact: false }), value);
+const addValue = async (name: string, value: string) => {
+  await userEvent.type(screen.getByLabelText(name, { exact: false }), value);
 };
 
 describe("create new device", () => {
@@ -36,22 +36,26 @@ describe("create new device", () => {
   });
 
   describe("All fields completed", () => {
-    beforeEach(() => {
-      addValue("Device name", "Accula");
-      addValue("Manufacturer", "Mesa Biotech");
-      addValue("Model", "Accula SARS-Cov-2 Test*");
-      addValue("LOINC code", "95409-9");
-      userEvent.clear(screen.getByLabelText("Test length", { exact: false }));
-      addValue("Test length", "10");
-      userEvent.click(screen.getByText("Swab (445297001)", { exact: false }));
+    beforeEach(async () => {
+      await addValue("Device name", "Accula");
+      await addValue("Manufacturer", "Mesa Biotech");
+      await addValue("Model", "Accula SARS-Cov-2 Test*");
+      await addValue("LOINC code", "95409-9");
+      await userEvent.clear(
+        screen.getByLabelText("Test length", { exact: false })
+      );
+      await addValue("Test length", "10");
+      await userEvent.click(
+        screen.getByText("Swab (445297001)", { exact: false })
+      );
     });
 
     it("enables the save button", async () => {
       expect(screen.getByText("Save changes")).toBeEnabled();
     });
     describe("on form submission", () => {
-      beforeEach(() => {
-        userEvent.click(screen.getByText("Save changes"));
+      beforeEach(async () => {
+        await userEvent.click(screen.getByText("Save changes"));
       });
 
       it("calls the save callback once", async () => {
@@ -152,17 +156,17 @@ describe("update existing devices", () => {
     expect(screen.getAllByTestId("multi-select-toggle")[0]).toBeDisabled();
   });
 
-  it("shows a list of devices to select from", () => {
-    userEvent.click(screen.getByTestId("combo-box-select"));
+  it("shows a list of devices to select from", async () => {
+    await userEvent.click(screen.getByTestId("combo-box-select"));
     expect(screen.getAllByText("Tesla Emitter")[1]).toBeInTheDocument();
     expect(screen.getAllByText("Fission Energizer")[1]).toBeInTheDocument();
     expect(screen.getAllByText("Covalent Observer")[1]).toBeInTheDocument();
   });
 
   describe("When selecting a device", () => {
-    it("enables input fields and prefills them with current values", () => {
-      userEvent.click(screen.getByTestId("combo-box-select"));
-      userEvent.click(screen.getAllByText("Tesla Emitter")[1]);
+    it("enables input fields and prefills them with current values", async () => {
+      await userEvent.click(screen.getByTestId("combo-box-select"));
+      await userEvent.click(screen.getAllByText("Tesla Emitter")[1]);
 
       const manufacturerInput = screen.getByLabelText("Manufacturer", {
         exact: false,
@@ -194,9 +198,9 @@ describe("update existing devices", () => {
     });
 
     describe("selecting another device", () => {
-      it("prefills input fields with new values", () => {
-        userEvent.click(screen.getByTestId("combo-box-select"));
-        userEvent.click(screen.getAllByText("Fission Energizer")[1]);
+      it("prefills input fields with new values", async () => {
+        await userEvent.click(screen.getByTestId("combo-box-select"));
+        await userEvent.click(screen.getAllByText("Fission Energizer")[1]);
 
         const manufacturerInput = screen.getByLabelText("Manufacturer", {
           exact: false,
@@ -217,19 +221,19 @@ describe("update existing devices", () => {
     });
 
     describe("updating a device", () => {
-      it("calls update device with the current values", () => {
-        userEvent.click(screen.getByTestId("combo-box-select"));
-        userEvent.click(screen.getAllByText("Tesla Emitter")[1]);
+      it("calls update device with the current values", async () => {
+        await userEvent.click(screen.getByTestId("combo-box-select"));
+        await userEvent.click(screen.getAllByText("Tesla Emitter")[1]);
 
         const snomedInput = screen.getAllByTestId("multi-select-toggle")[0];
         const snomedList = screen.getAllByTestId("multi-select-option-list")[0];
 
-        addValue("Manufacturer", " LLC");
-        addValue("Model", "X");
-        addValue("LOINC code", "234");
-        userEvent.click(snomedInput);
-        userEvent.click(within(snomedList).getByText("eye"));
-        userEvent.click(screen.getByText("Save changes"));
+        await addValue("Manufacturer", " LLC");
+        await addValue("Model", "X");
+        await addValue("LOINC code", "234");
+        await userEvent.click(snomedInput);
+        await userEvent.click(within(snomedList).getByText("eye"));
+        await userEvent.click(screen.getByText("Save changes"));
 
         expect(saveDeviceType).toHaveBeenNthCalledWith(1, {
           internalId: "abc1",

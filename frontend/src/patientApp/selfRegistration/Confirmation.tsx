@@ -1,5 +1,6 @@
 import { faCheckCircle } from "@fortawesome/free-solid-svg-icons";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
+import { IconProp } from "@fortawesome/fontawesome-svg-core";
 import { Trans, useTranslation } from "react-i18next";
 
 import { useDocumentTitle } from "../../app/utils/hooks";
@@ -20,12 +21,12 @@ export const Confirmation = ({ personName, entityName }: Props) => {
         <div className="grid-row flex-no-wrap flex-align-center">
           <FontAwesomeIcon
             className="text-green font-ui-3xl"
-            icon={faCheckCircle}
+            icon={faCheckCircle as IconProp}
           />
           <p className="padding-left-2">
             <Trans t={t} i18nKey="selfRegistration.confirmation.registered">
-              <span className="text-bold">{{ personName }}</span>, thanks for
-              completing your patient profile at {{ entityName }}.
+              <span className="text-bold">{{ personName } as any}</span>, thanks
+              for completing your patient profile at {{ entityName }}.
             </Trans>
           </p>
         </div>

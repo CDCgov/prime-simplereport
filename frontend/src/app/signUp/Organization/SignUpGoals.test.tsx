@@ -10,36 +10,39 @@ describe("SignUpGoals", () => {
     expect(screen.getByText("Continue")).toBeEnabled();
   });
 
-  it("requires a selection", () => {
-    screen.getByText("Continue").click();
-    expect(screen.getByText("Please select an option")).toBeInTheDocument();
-  });
-
-  it("redirects to request access page when first option is selected", () => {
-    screen.getByText("My organization is already using SimpleReport").click();
+  it("requires a selection", async () => {
     screen.getByText("Continue").click();
     expect(
-      screen.getByText("Request access to SimpleReport")
+      await screen.findByText(/Please select an option/i)
     ).toBeInTheDocument();
   });
 
-  it("redirects to org sign-up page when second option is selected", () => {
+  it("redirects to request access page when first option is selected", async () => {
+    screen.getByText("My organization is already using SimpleReport").click();
+    screen.getByText("Continue").click();
+    expect(await screen.findByText("Request access to SimpleReport"));
+  });
+
+  it("redirects to org sign-up page when second option is selected", async () => {
     screen.getByText("My organization is new to SimpleReport").click();
     screen.getByText("Continue").click();
     expect(
-      screen.getByText("Sign up for SimpleReport in three steps", {
+      await screen.findByText("Sign up for SimpleReport in three steps", {
         exact: false,
       })
-    ).toBeInTheDocument();
+    );
   });
 
-  it("redirects to request test result page when third option is selected", () => {
+  it("redirects to request test result page when third option is selected", async () => {
     screen.getByText("I’m trying to get my COVID-19 test results").click();
     screen.getByText("Continue").click();
     expect(
-      screen.getByText("COVID-19 test results are sent via email or SMS", {
-        exact: false,
-      })
-    ).toBeInTheDocument();
+      await screen.findByText(
+        "COVID-19 test results are sent via email or SMS",
+        {
+          exact: false,
+        }
+      )
+    );
   });
 });

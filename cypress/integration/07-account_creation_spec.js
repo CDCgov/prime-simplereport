@@ -60,6 +60,7 @@ Cypress.Commands.add("scanQrCode", () => {
 
 Cypress.Commands.add("verifySecurityCode", (code) => {
   cy.contains("Verify your security code.");
+  cy.contains('One-time security code');
   cy.injectAxe();
   cy.checkA11y();
   cy.get('input[name="security-code"]').type(code);

@@ -4,6 +4,7 @@ import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faEllipsisH } from "@fortawesome/free-solid-svg-icons";
 import "@szhsin/react-menu/dist/index.css";
 import "./ActionsMenu.scss";
+import { IconProp } from "@fortawesome/fontawesome-svg-core";
 
 interface Props {
   title?: string;
@@ -21,7 +22,7 @@ export const ActionsMenu = (props: Props) => (
         className="sr-actions-menu"
         id={props.id ? `action_${props.id}` : undefined}
       >
-        <FontAwesomeIcon icon={faEllipsisH} size="2x" />
+        <FontAwesomeIcon icon={faEllipsisH as IconProp} size="2x" />
         <span className="usa-sr-only">{props.title ?? "More actions"}</span>
       </MenuButton>
     }

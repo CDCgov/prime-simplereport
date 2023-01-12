@@ -69,6 +69,7 @@ const SearchInput = ({
             ref={inputRef}
             onFocus={onInputChange}
             aria-labelledby={labeledBy}
+            style={!showSubmitButton ? { borderRight: "solid 1px" } : undefined}
           />
           <button
             type="submit"

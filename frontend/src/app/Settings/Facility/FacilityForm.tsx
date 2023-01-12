@@ -1,4 +1,4 @@
-import React, { useCallback, useState } from "react";
+import React, { useCallback, useEffect, useRef, useState } from "react";
 
 import iconSprite from "../../../../node_modules/uswds/dist/img/sprite.svg";
 import Button from "../../commonComponents/Button/Button";
@@ -18,6 +18,7 @@ import {
   AddressSuggestionConfig,
 } from "../../commonComponents/AddressConfirmationModal";
 import Prompt from "../../utils/Prompt";
+import { focusOnFirstInputWithError } from "../../utils/formValidation";
 
 import ManageDevices from "./Components/ManageDevices";
 import OrderingProviderSettings from "./Components/OrderingProvider";
@@ -28,6 +29,7 @@ export type ValidateField = (field: keyof FacilityErrors) => Promise<void>;
 
 export const useFacilityValidation = (facility: Facility) => {
   const [errors, setErrors] = useState<FacilityErrors>({});
+  const focusOnce = useRef(false);
 
   const clearError = useCallback(
     (field: keyof FacilityErrors) => {
@@ -83,15 +85,37 @@ export const useFacilityValidation = (facility: Facility) => {
         {} as FacilityErrors
       );
       setErrors(errors);
+      focusOnce.current = true;
       showError(
         "Please check the form to make sure you complete all of the required fields.",
         "Form Errors"
       );
-      let firstError = document.querySelector("[aria-invalid=true]");
-      (firstError as HTMLElement)?.focus();
       return "error";
     }
   };
+
+  /**
+   * Focus on fields with errors
+   */
+  useEffect(() => {
+    if (
+      focusOnce.current &&
+      (errors.name ||
+        errors.phone ||
+        errors.street ||
+        errors.zipCode ||
+        errors.state ||
+        errors.cliaNumber ||
+        errors.deviceTypes ||
+        errors["orderingProvider.firstName"] ||
+        errors["orderingProvider.lastName"] ||
+        errors["orderingProvider.NPI"] ||
+        errors["orderingProvider.phone"])
+    ) {
+      focusOnFirstInputWithError();
+      focusOnce.current = false;
+    }
+  }, [errors]);
 
   return { errors, clearError, validateField, validateFacility };
 };
@@ -281,7 +305,7 @@ const FacilityForm: React.FC<Props> = (props) => {
     if ((await validateFacility()) === "error") {
       return;
     }
-    validateFacilityAddresses();
+    await validateFacilityAddresses();
   };
 
   return (

@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from "react";
-import { FileInput, FormGroup } from "@trussworks/react-uswds";
+import { FormGroup } from "@trussworks/react-uswds";
 import { useSelector } from "react-redux";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faXmark } from "@fortawesome/free-solid-svg-icons";
@@ -9,6 +9,7 @@ import { useDocumentTitle } from "../utils/hooks";
 import Button from "../commonComponents/Button/Button";
 import RadioGroup from "../commonComponents/RadioGroup";
 import Dropdown from "../commonComponents/Dropdown";
+import SingleFileInput from "../commonComponents/SingleFileInput";
 import { Facility, FeedbackMessage } from "../../generated/graphql";
 import { showError } from "../utils/srToast";
 import { FileUploadService } from "../../fileUploadService/FileUploadService";
@@ -279,7 +280,16 @@ const UploadPatients = ({ isAdmin }: { isAdmin: boolean }) => {
                           >
                             <FontAwesomeIcon icon={faXmark} />
                           </button>
-                          <p className="usa-alert__text">{errorMessageText}</p>
+                          <p className="usa-alert__text">
+                            {errorMessageText} See the{" "}
+                            <a
+                              target="_blank"
+                              href="/using-simplereport/manage-people-you-test/bulk-upload-patients/#preparing-your-spreadsheet-data"
+                            >
+                              patient bulk upload guide
+                            </a>{" "}
+                            for details about accepted values.
+                          </p>
                         </div>
                       </div>
                     )}
@@ -337,13 +347,13 @@ const UploadPatients = ({ isAdmin }: { isAdmin: boolean }) => {
                       </div>
                     </div>
                   ) : (
-                    <FileInput
-                      id="upload-csv-input"
-                      name="upload-csv-input"
-                      aria-label="Choose CSV file"
+                    <SingleFileInput
+                      id="upload-patients-file-input"
+                      name="upload-patients-file-input"
+                      ariaLabel="Choose CSV file"
                       accept="text/csv, .csv"
-                      onChange={handleFileChange()}
                       required
+                      onChange={handleFileChange()}
                     />
                   )}
                 </FormGroup>

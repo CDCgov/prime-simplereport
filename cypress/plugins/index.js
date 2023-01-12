@@ -13,6 +13,7 @@
 // the project's config changing)
 
 const { execSync, spawn } = require("child_process");
+const path = require("path");
 
 /**
  * @type {Cypress.PluginConfig}
@@ -60,23 +61,34 @@ module.exports = (on, _config) => {
     },
     // These tasks are used to set up and run Wiremock
     downloadWiremock: () =>
-      execSync("./cypress/support/wiremock/download-wiremock.sh"),
+      execSync(
+        path.resolve(__dirname, "..", "support/wiremock/download-wiremock.sh")
+      ),
     startWiremock: ({ stubDir }) => {
-      const wm = spawn("./cypress/support/wiremock/start-wiremock.sh", [
-        stubDir,
-      ]);
-      execSync("./cypress/support/wiremock/ping-wiremock.sh");
+      const wm = spawn(
+        path.resolve(__dirname, "..", "support/wiremock/start-wiremock.sh"),
+        [stubDir]
+      );
+      execSync(
+        path.resolve(__dirname, "..", "support/wiremock/ping-wiremock.sh")
+      );
       global.wm = wm;
       return null;
     },
     startOktaProxy: () => {
-      const wm = spawn("./cypress/support/wiremock/start-okta-proxy.sh");
-      execSync("./cypress/support/wiremock/ping-wiremock.sh");
+      const wm = spawn(
+        path.resolve(__dirname, "..", "support/wiremock/start-okta-proxy.sh")
+      );
+      execSync(
+        path.resolve(__dirname, "", "support/wiremock/ping-wiremock.sh")
+      );
       global.wm = wm;
       return null;
     },
     stopWiremock: () => {
-      execSync("./cypress/support/wiremock/stop-wiremock.sh");
+      execSync(
+        path.resolve(__dirname, "..", "support/wiremock/stop-wiremock.sh")
+      );
       if (global.wm) {
         global.wm.kill();
       }
@@ -84,7 +96,9 @@ module.exports = (on, _config) => {
     },
   });
   on("before:browser:launch", (browser, launchOptions) => {
-    launchOptions.args = launchOptions.args.filter(item => item !== "--disable-dev-shm-usage")
+    launchOptions.args = launchOptions.args.filter(
+      (item) => item !== "--disable-dev-shm-usage"
+    );
     if (browser.name === "chrome" && browser.isHeadless) {
       launchOptions.args.push("--window-size=1200,800");
       launchOptions.args.push("--force-device-scale-factor=1");

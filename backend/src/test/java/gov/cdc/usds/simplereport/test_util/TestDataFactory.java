@@ -104,8 +104,6 @@ public class TestDataFactory {
   @Autowired private ApiUserService apiUserService;
   @Autowired private DiseaseService diseaseService;
 
-  //  @Autowired private TestDataBuilder dataBuilder;
-
   public Organization saveOrganization(Organization org) {
     Organization savedOrg = organizationRepository.save(org);
     oktaRepository.createOrganization(savedOrg);

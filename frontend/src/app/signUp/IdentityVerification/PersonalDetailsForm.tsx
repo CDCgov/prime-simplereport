@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useEffect, useRef, useState } from "react";
 
 import { Card } from "../../commonComponents/Card/Card";
 import { CardBackground } from "../../commonComponents/CardBackground/CardBackground";
@@ -14,6 +14,7 @@ import Select from "../../commonComponents/Select";
 import StepIndicator from "../../commonComponents/StepIndicator";
 import { useDocumentTitle } from "../../utils/hooks";
 import { formatDate } from "../../utils/date";
+import { focusOnFirstInputWithError } from "../../utils/formValidation";
 
 import {
   initPersonalDetails,
@@ -47,6 +48,7 @@ const PersonalDetailsForm = ({
   const [errors, setErrors] = useState<PersonalDetailsFormErrors>(
     initPersonalDetailsErrors()
   );
+  const focusOnce = useRef(false);
 
   const [saving, setSaving] = useState(false);
   const [formChanged, setFormChanged] = useState(false);
@@ -81,20 +83,32 @@ const PersonalDetailsForm = ({
       return;
     }
     setErrors(validation.errors);
+    focusOnce.current = true;
     showError(
       "Please check the form to make sure you complete all of the required fields.",
       "Form Errors"
     );
     setSaving(false);
-    let elementsWithErrors = Array.from(
-      document.querySelectorAll("[aria-invalid=true]")
-    );
-    (
-      elementsWithErrors.find(
-        (element) => element.getAttribute("aria-hidden") !== "true"
-      ) as HTMLElement | null
-    )?.focus();
   };
+
+  /**
+   * Focus on the first input with errors
+   */
+  useEffect(() => {
+    if (
+      focusOnce.current &&
+      (errors.dateOfBirth ||
+        errors.email ||
+        errors.phoneNumber ||
+        errors.streetAddress1 ||
+        errors.city ||
+        errors.state ||
+        errors.zip)
+    ) {
+      focusOnFirstInputWithError(true);
+      focusOnce.current = false;
+    }
+  }, [errors]);
 
   if (orgExternalId === null) {
     return (

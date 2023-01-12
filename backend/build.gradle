@@ -1,5 +1,5 @@
 plugins {
-    id 'org.springframework.boot' version '2.7.6'
+    id 'org.springframework.boot' version '2.7.7'
     id 'org.liquibase.gradle' version '2.0.4'
     id 'io.spring.dependency-management' version '1.0.15.RELEASE'
     id 'java'
@@ -48,7 +48,7 @@ dependencies {
     implementation 'org.springframework.boot:spring-boot-starter-validation'
     implementation 'com.vladmihalcea:hibernate-types-55:2.19.2'
     implementation 'org.liquibase:liquibase-core'
-    runtimeOnly 'org.postgresql:postgresql:42.4.1'
+    runtimeOnly 'org.postgresql:postgresql'
 
     // data validation
     implementation 'com.googlecode.libphonenumber:libphonenumber:8.12.57'
@@ -56,7 +56,7 @@ dependencies {
     implementation 'com.google.code.findbugs:jsr305:3.0.2'
 
     // UI layer dependencies
-    implementation 'org.json:json:20201115'
+    implementation 'org.json:json:20220924'
     implementation 'com.fasterxml.jackson.dataformat:jackson-dataformat-csv'
     implementation 'com.fasterxml.jackson.datatype:jackson-datatype-hibernate5'
     implementation 'org.springframework.boot:spring-boot-starter-thymeleaf'
@@ -64,8 +64,6 @@ dependencies {
     // Okta dependencies
     implementation 'com.okta.spring:okta-spring-boot-starter:2.1.6'
     implementation 'com.okta.sdk:okta-sdk-api:8.2.1'
-    implementation 'org.springframework.security:spring-security-web:5.7.5' //TODO: Remove when Okta's Spring Boot Starter version increases beyond 2.1.6.
-    implementation 'org.springframework.security:spring-security-oauth2-client:5.7.5' //TODO: Remove when Okta's Spring Boot Starter version increases beyond 2.1.6.
     runtimeOnly 'com.okta.sdk:okta-sdk-impl:8.2.1'
     runtimeOnly 'com.okta.sdk:okta-sdk-httpclient:8.2.1'
 
@@ -124,12 +122,6 @@ dependencies {
 
     // WireMock (only used for testing)
     testImplementation "com.github.tomakehurst:wiremock-jre8:2.35.0"
-
-    runtimeOnly "io.zipkin.brave:brave-instrumentation-http:5.13.2"
-    runtimeOnly "io.zipkin.brave:brave:5.13.2"
-    runtimeOnly "io.zipkin.reporter2:zipkin-reporter-brave:2.16.3"
-    runtimeOnly "io.zipkin.reporter2:zipkin-reporter:2.16.1"
-    runtimeOnly "io.zipkin.zipkin2:zipkin:2.23.0"
 
     implementation 'ca.uhn.hapi.fhir:hapi-fhir-structures-r4:6.2.1'
 }
@@ -196,7 +188,7 @@ sonarqube {
         // In order to get both the frontend and backend code to report, we need to set the sonar project to the root directory.
         property "sonar.sources", "backend/src/main/java,frontend/src,ops/services/app_functions/"
         property "sonar.exclusions", "backend/src/**/*Config*.java,frontend/src/**/*.test.*,frontend/src/stories/**/*,frontend/src/**/*.stories.tsx,frontend/src/**/*.mock.tsx,frontend/src/generated/*.tsx,ops/services/app_functions/**/*.test.*,ops/services/app_functions/**/*config*"
-        property "sonar.coverage.exclusions", "frontend/src/setupTests.js"
+        property "sonar.coverage.exclusions", "frontend/src/setupTests.js,frontend/src/index.tsx"
         property "sonar.cpd.exclusions", "frontend/src/lang/*.ts"
         property "sonar.javascript.lcov.reportPaths", "frontend/coverage/lcov.info,ops/services/app_functions/report_stream_batched_publisher/functions/coverage/lcov.info"
     }

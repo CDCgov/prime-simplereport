@@ -1,0 +1,76 @@
+.sr-single-file-input {
+  position: relative;
+  max-width: 30rem;
+
+  input[type="file"] {
+    cursor: pointer;
+    border: 0.06rem dashed #a9aeb1;
+    padding: 3.5rem 1rem 2rem 7.2rem;
+    z-index: 2;
+    position: relative;
+    display: block;
+    width: 100%;
+    margin: 0;
+    font-size: 0.88rem;
+  }
+
+  input::file-selector-button {
+    border: none;
+    cursor: pointer;
+    background: transparent;
+    text-decoration: underline;
+    color: #005ea2;
+    font-weight: normal;
+  }
+
+  span {
+    position: absolute;
+    top: 0;
+    z-index: 1;
+    width: 100%;
+    font-size: 0.88rem;
+    text-align: center;
+    padding: 2rem 1rem 2rem 1rem;
+  }
+}
+
+.sr-single-file-input.selected {
+  background-color: #d9e8f6;
+
+  input[type="file"] {
+    font-weight: bold;
+    padding-left: 4.4rem;
+
+    &::after {
+      content: "\2611";
+      margin-left: 0.25rem;
+    }
+  }
+}
+
+.sr-single-file-input.invalid {
+  background-color: transparent;
+
+  span {
+    font-weight: bold;
+    color: #b50909;
+  }
+
+  input[type="file"] {
+    padding-left: 9.1rem;
+
+    &::after {
+      content: "\2612";
+      margin-left: 0.25rem;
+      color: #b50909;
+    }
+  }
+}
+
+@media screen and (max-width: 457px) {
+  .sr-single-file-input input[type="file"],
+  .sr-single-file-input.invalid input[type="file"],
+  .sr-single-file-input.selected input[type="file"] {
+    padding-left: 2rem;
+  }
+}

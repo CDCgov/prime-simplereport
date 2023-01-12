@@ -6,6 +6,7 @@ import { PxpApi } from "../PxpApiService";
 type Props = {
   registrationLink: string | undefined;
   setEntityName: (name: string) => void;
+  children: React.ReactNode;
 };
 
 export const RegistrationContainer: React.FC<Props> = ({

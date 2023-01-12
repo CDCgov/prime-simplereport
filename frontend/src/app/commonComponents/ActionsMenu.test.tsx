@@ -12,7 +12,7 @@ describe("action menu", () => {
       "id"
     );
   });
-  it("should have the id on the menu and menu items", () => {
+  it("should have the id on the menu and menu items", async () => {
     render(
       <ActionsMenu
         id={"1234"}
@@ -24,7 +24,7 @@ describe("action menu", () => {
       "action_1234"
     );
 
-    userEvent.click(screen.getByText("More actions"));
+    await userEvent.click(screen.getByText("More actions"));
     expect(screen.getByText("Print action")).toHaveAttribute(
       "id",
       "print_1234"

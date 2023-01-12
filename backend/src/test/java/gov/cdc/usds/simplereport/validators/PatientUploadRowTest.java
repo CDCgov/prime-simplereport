@@ -4,6 +4,7 @@ import static org.assertj.core.api.Assertions.assertThat;
 
 import gov.cdc.usds.simplereport.api.model.filerow.PatientUploadRow;
 import gov.cdc.usds.simplereport.service.model.reportstream.FeedbackMessage;
+import gov.cdc.usds.simplereport.test_util.TestErrorMessageUtil;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -113,7 +114,8 @@ class PatientUploadRowTest {
     var messages = actual.stream().map(FeedbackMessage::getMessage).collect(Collectors.toSet());
     assertThat(actual).hasSize(requiredFields.size());
     requiredFields.forEach(
-        fieldName -> assertThat(messages).contains(fieldName + " is a required column."));
+        fieldName ->
+            assertThat(messages).contains("File is missing data in the " + fieldName + " column."));
   }
 
   @Test
@@ -141,7 +143,7 @@ class PatientUploadRowTest {
         actual.stream()
             .map(
                 message ->
-                    message.getMessage().substring(message.getMessage().lastIndexOf(" ") + 1))
+                    TestErrorMessageUtil.getColumnNameFromInvalidErrorMessage(message.getMessage()))
             .collect(Collectors.toSet());
     assertThat(actual).hasSize(individualFields.size());
     individualFields.forEach(fieldName -> assertThat(messages).contains(fieldName));

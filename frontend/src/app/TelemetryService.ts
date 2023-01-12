@@ -111,5 +111,5 @@ export function getAppInsightsHeaders(): { [key: string]: string } {
 }
 
 function getAppInsightsSessionId(): string {
-  return appInsights?.context.sessionManager.automaticSession.id ?? "";
+  return appInsights?.context.getSessionId() ?? "";
 }
