@@ -123,7 +123,7 @@ class OrganizationFacilityTest extends BaseGraphqlTest {
     TestUserIdentities.withUser(
         TestUserIdentities.SITE_ADMIN_USER,
         () -> {
-          Organization org = _dataFactory.createValidOrg();
+          Organization org = _dataFactory.saveValidOrganization();
           useSuperUser();
           Map<String, Object> variables =
               Map.of("externalId", org.getExternalId(), "verified", false);
@@ -142,7 +142,7 @@ class OrganizationFacilityTest extends BaseGraphqlTest {
     TestUserIdentities.withUser(
         TestUserIdentities.SITE_ADMIN_USER,
         () -> {
-          OrganizationQueueItem orgQueueItem = _dataFactory.createOrganizationQueueItem();
+          OrganizationQueueItem orgQueueItem = _dataFactory.saveOrganizationQueueItem();
           useSuperUser();
           Map<String, Object> variables =
               Map.of("externalId", orgQueueItem.getExternalId(), "verified", true);
@@ -156,8 +156,8 @@ class OrganizationFacilityTest extends BaseGraphqlTest {
     TestUserIdentities.withUser(
         TestUserIdentities.SITE_ADMIN_USER,
         () -> {
-          _dataFactory.createUnverifiedOrg();
-          OrganizationQueueItem orgQueueItem = _dataFactory.createOrganizationQueueItem();
+          _dataFactory.saveUnverifiedOrganization();
+          OrganizationQueueItem orgQueueItem = _dataFactory.saveOrganizationQueueItem();
           useSuperUser();
 
           // Get all queue items

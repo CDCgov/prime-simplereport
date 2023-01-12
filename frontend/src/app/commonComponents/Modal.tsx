@@ -3,6 +3,7 @@ import ReactModal from "react-modal";
 import classnames from "classnames";
 import { faExclamationCircle } from "@fortawesome/free-solid-svg-icons";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
+import { IconProp } from "@fortawesome/fontawesome-svg-core";
 
 import iconClose from "../../img/close.svg";
 
@@ -16,10 +17,7 @@ interface Props {
   containerClassName?: string;
   variant?: "warning";
   title?: string;
-}
-interface SubComponents {
-  Header: typeof Header;
-  Footer: typeof Footer;
+  children?: React.ReactNode;
 }
 
 type IconDefinition = typeof faExclamationCircle;
@@ -28,15 +26,24 @@ const variantIcons: Record<ModalVariant, IconDefinition> = {
   warning: faExclamationCircle,
 };
 
-const Header: React.FC<{ styleClassNames?: string }> = ({
-  children,
-  styleClassNames,
-}) => <h1 className={"modal__heading " + styleClassNames}>{children}</h1>;
-const Footer: React.FC<{}> = ({ children }) => (
+type HeaderProps = {
+  children?: React.ReactNode;
+  styleClassNames?: string;
+};
+
+const Header: React.FC<HeaderProps> = ({ children, styleClassNames }) => (
+  <h1 className={"modal__heading " + styleClassNames}>{children}</h1>
+);
+
+type FooterProps = {
+  children?: React.ReactNode;
+};
+
+const Footer: React.FC<FooterProps> = ({ children }) => (
   <div className="modal__footer">{children}</div>
 );
 
-const Modal: React.FC<Props> & SubComponents = ({
+const Modal = ({
   onClose,
   showModal,
   children,
@@ -44,7 +51,7 @@ const Modal: React.FC<Props> & SubComponents = ({
   containerClassName,
   variant,
   contentLabel,
-}) => {
+}: Props): JSX.Element => {
   const containerClasses = classnames(
     containerClassName,
     "modal__container",
@@ -89,7 +96,10 @@ const Modal: React.FC<Props> & SubComponents = ({
           <div className="modal__content grid-row">
             {variant && (
               <div className="grid-col flex-auto margin-right-2">
-                <FontAwesomeIcon icon={variantIcons[variant]} size="2x" />
+                <FontAwesomeIcon
+                  icon={variantIcons[variant] as IconProp}
+                  size="2x"
+                />
               </div>
             )}
             <div className="grid-col">{children}</div>

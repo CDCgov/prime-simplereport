@@ -25,7 +25,6 @@ import gov.cdc.usds.simplereport.db.repository.PhoneNumberRepository;
 import gov.cdc.usds.simplereport.db.repository.TextMessageSentRepository;
 import gov.cdc.usds.simplereport.db.repository.TextMessageStatusRepository;
 import gov.cdc.usds.simplereport.service.BaseServiceTest;
-import gov.cdc.usds.simplereport.test_util.TestDataFactory;
 import java.util.ArrayList;
 import java.util.List;
 import org.junit.jupiter.api.BeforeEach;
@@ -37,10 +36,8 @@ import org.springframework.test.util.ReflectionTestUtils;
 
 class TextMessageStatusServiceTest extends BaseServiceTest<TextMessageStatusService> {
 
-  @Autowired TextMessageStatusService _service;
   @Autowired TextMessageSentRepository _textMessageSentRepo;
   @Autowired TextMessageStatusRepository _textMessageStatusRepo;
-  @Autowired TestDataFactory _dataFactory;
 
   @Mock private PhoneNumberRepository _phoneRepo;
   @Mock private RequestValidator validator;
@@ -70,7 +67,7 @@ class TextMessageStatusServiceTest extends BaseServiceTest<TextMessageStatusServ
     String messageId = "some-message-id";
     String messageStatus = "delivered";
 
-    Organization org = _dataFactory.createValidOrg();
+    Organization org = _dataFactory.saveValidOrganization();
     Facility f = _dataFactory.createValidFacility(org);
     Person p = _dataFactory.createFullPerson(org);
     TestOrder to = _dataFactory.createTestOrder(p, f);

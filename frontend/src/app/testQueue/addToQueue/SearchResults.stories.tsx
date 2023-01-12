@@ -22,9 +22,9 @@ const patient = {
   },
 };
 
-const RouterWithFacility: React.FC = ({ children }) => (
-  <MemoryRouter>{children}</MemoryRouter>
-);
+const RouterWithFacility: React.FC<RouterWithFacilityProps> = ({
+  children,
+}) => <MemoryRouter>{children}</MemoryRouter>;
 
 export default {
   title: "Search Results",

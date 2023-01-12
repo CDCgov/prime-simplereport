@@ -22,21 +22,9 @@ import org.springframework.data.jpa.repository.Query;
  */
 public interface TestEventRepository
     extends AuditedEntityRepository<TestEvent>, JpaSpecificationExecutor<TestEvent> {
-  @Deprecated
-  /** @deprecated (for sonar) */
   @Query("FROM #{#entityName} e WHERE e.patient = :p and e.facility in :facilities")
   List<TestEvent> findAllByPatientAndFacilities(Person p, Collection<Facility> facilities);
 
-  @Deprecated
-  /** @deprecated (for sonar) */
-  List<TestEvent> findAllByOrganizationOrderByCreatedAtDesc(Organization o);
-
-  @Deprecated
-  /** @deprecated (for sonar) */
-  List<TestEvent> findAllByOrganizationAndFacility(Organization o, Facility f);
-
-  @Deprecated
-  /** @deprecated (for sonar) */
   TestEvent findFirst1ByPatientOrderByCreatedAtDesc(Person p);
 
   @Query(
@@ -47,13 +35,18 @@ public interface TestEventRepository
       nativeQuery = true)
   List<TestEvent> findLastTestsByPatient(Collection<UUID> patientIds);
 
-  @Deprecated
-  /** @deprecated (for sonar) */
   @EntityGraph(attributePaths = {"patient", "order"})
   TestEvent findByOrganizationAndInternalId(Organization o, UUID id);
 
-  @Deprecated
-  /** @deprecated (for sonar) */
+  /**
+   * This query seems to only be used it unit tests - and based on comments we should not use it
+   * outside of that context
+   *
+   * @param begin
+   * @param end
+   * @param p
+   * @return TestEvents
+   */
   // Need to control how this query is built. "between" is too vague.
   // This is across all Orgs/facilities because datahub uploader users
   @Query(

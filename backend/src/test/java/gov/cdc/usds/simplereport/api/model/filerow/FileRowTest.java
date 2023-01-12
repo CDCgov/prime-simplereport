@@ -35,6 +35,16 @@ class FileRowTest {
       public List<FeedbackMessage> validateIndividualValues() {
         return null;
       }
+
+      @Override
+      public List<String> getRequiredFields() {
+        return List.of(null);
+      }
+
+      @Override
+      public Boolean isRequired(String rowName) {
+        return false;
+      }
     }
     var fileRow = new TestFileRow();
 
@@ -58,6 +68,16 @@ class FileRowTest {
       public List<FeedbackMessage> validateIndividualValues() {
         return null;
       }
+
+      @Override
+      public List<String> getRequiredFields() {
+        return List.of(null);
+      }
+
+      @Override
+      public Boolean isRequired(String rowName) {
+        return false;
+      }
     }
     var fileRow = new TestFileRow();
 
@@ -80,6 +100,16 @@ class FileRowTest {
       @Override
       public List<FeedbackMessage> validateIndividualValues() {
         return null;
+      }
+
+      @Override
+      public List<String> getRequiredFields() {
+        return List.of(null);
+      }
+
+      @Override
+      public Boolean isRequired(String rowName) {
+        return false;
       }
     }
     var fileRow = new TestFileRow();

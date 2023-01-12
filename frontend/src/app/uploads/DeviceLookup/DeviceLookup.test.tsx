@@ -50,7 +50,7 @@ describe("Device lookup", () => {
   });
 
   it("displays no results message if no matches found", async () => {
-    userEvent.type(screen.getByLabelText("Select device"), "noresults");
+    await userEvent.type(screen.getByLabelText("Select device"), "noresults");
     await waitFor(() => {
       expect(
         screen.getByText("No device found matching", { exact: false })
@@ -59,7 +59,7 @@ describe("Device lookup", () => {
   });
 
   it("dropdown displays devices", async () => {
-    userEvent.type(screen.getByLabelText("Select device"), "model");
+    await userEvent.type(screen.getByLabelText("Select device"), "model");
 
     await waitForElementToBeRemoved(() => screen.queryByText("Searching..."));
 
@@ -69,9 +69,9 @@ describe("Device lookup", () => {
   });
 
   it("selected device displays device info", async () => {
-    userEvent.type(screen.getByLabelText("Select device"), "model");
+    await userEvent.type(screen.getByLabelText("Select device"), "model");
     await waitForElementToBeRemoved(() => screen.queryByText("Searching..."));
-    userEvent.click(screen.getByText("Select"));
+    await userEvent.click(screen.getByText("Select"));
 
     expect(screen.getByText("Acme Emitter (RT-PCR)")).toBeInTheDocument();
 
@@ -104,15 +104,15 @@ describe("Device lookup", () => {
     jest.spyOn(navigator.clipboard, "writeText");
 
     //todo console error complaining about wrapping things in `act`
-    userEvent.type(screen.getByLabelText("Select device"), "model");
+    await userEvent.type(screen.getByLabelText("Select device"), "model");
     await waitForElementToBeRemoved(() => screen.queryByText("Searching..."));
-    userEvent.click(screen.getByText("Select"));
+    await userEvent.click(screen.getByText("Select"));
 
     const button = screen.getByLabelText(
       "Copy equipment model name for Acme Emitter (RT-PCR)"
     );
 
-    userEvent.click(button);
+    await userEvent.click(button);
 
     expect(navigator.clipboard.writeText).toHaveBeenCalledWith("Model A");
   });

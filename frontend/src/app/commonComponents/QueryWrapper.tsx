@@ -1,4 +1,4 @@
-import React from "react";
+import React, { ComponentProps } from "react";
 import { gql, QueryHookOptions, useQuery } from "@apollo/client";
 
 import { getAppInsights } from "../TelemetryService";
@@ -16,7 +16,7 @@ const defaultQueryOptions: QueryHookOptions = {
   fetchPolicy: "cache-and-network",
 };
 
-export function QueryWrapper<ComponentProps>({
+export function QueryWrapper<PropsWithChildren>({
   query,
   queryOptions,
   onRefetch,
@@ -30,8 +30,8 @@ export function QueryWrapper<ComponentProps>({
   onRefetch?: () => void;
   displayLoadingIndicator?: boolean;
   children?: React.ReactNode;
-  Component: React.ComponentType<ComponentProps>;
-  componentProps: Omit<ComponentProps, InjectedQueryWrapperProps>;
+  Component: React.ComponentType<PropsWithChildren>;
+  componentProps: Omit<PropsWithChildren, InjectedQueryWrapperProps>;
 }): React.ReactElement {
   const appInsights = getAppInsights();
 
@@ -64,7 +64,8 @@ export function QueryWrapper<ComponentProps>({
     refetch: passOnRefetch,
     startPolling,
     stopPolling,
-  } as unknown as ComponentProps;
+  } as unknown as ComponentProps<any>;
+
   return (
     <>
       <Component {...props} />

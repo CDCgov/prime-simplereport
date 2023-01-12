@@ -2,8 +2,10 @@
 // allows you to do things like:
 // expect(element).toHaveTextContent(/react/i)
 // learn more: https://github.com/testing-library/jest-dom
-import "@testing-library/jest-dom/extend-expect";
+import React from "react";
+import "@testing-library/jest-dom";
 import fetchMock from "jest-fetch-mock";
+import "jest-location-mock";
 import ReactModal from "react-modal";
 import moment from "moment";
 
@@ -13,7 +15,9 @@ jest.mock("@microsoft/applicationinsights-react-js", () => {
   return {
     useAppInsightsContext: jest.fn(),
     useTrackEvent: () => jest.fn(),
-    withAITracking: (reactPlugin, Component) => <Component />,
+    withAITracking: jest
+      .fn()
+      .mockImplementation((reactPlugin, Component) => <Component />),
     ReactPlugin: Object,
   };
 });

@@ -1,6 +1,7 @@
 import { useEffect, useState } from "react";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faStopwatch } from "@fortawesome/free-solid-svg-icons";
+import { IconProp } from "@fortawesome/fontawesome-svg-core";
 
 import { Card } from "../../commonComponents/Card/Card";
 import { CardBackground } from "../../commonComponents/CardBackground/CardBackground";
@@ -51,6 +52,7 @@ const QuestionsForm: React.FC<Props> = ({
   const [timeLeft, setTimeLeft] = useState(timeToComplete || 300);
   useEffect(() => {
     let isCounting = true;
+
     if (timeLeft === 0) {
       onFail();
     }
@@ -103,7 +105,8 @@ const QuestionsForm: React.FC<Props> = ({
         >
           <h4 className="margin-left-0">Sign up for SimpleReport</h4>
           <button className="timer-button timer-running" data-testid="timer">
-            <span>{mmss(timeLeft)}</span> <FontAwesomeIcon icon={faStopwatch} />
+            <span>{mmss(timeLeft)}</span>{" "}
+            <FontAwesomeIcon icon={faStopwatch as IconProp} />
           </button>
         </div>
         <StepIndicator

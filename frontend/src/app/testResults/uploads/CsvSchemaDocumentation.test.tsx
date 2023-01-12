@@ -146,7 +146,7 @@ describe("CsvSchemaDocumentation tests", () => {
 
       expect(container).toMatchSnapshot();
     });
-    it("logs to App Insights on template download", () => {
+    it("logs to App Insights on template download", async () => {
       const mockTrackEvent = jest.fn();
       (getAppInsights as jest.Mock).mockImplementation(() => {
         const ai = Object.create(ApplicationInsights.prototype);
@@ -164,8 +164,8 @@ describe("CsvSchemaDocumentation tests", () => {
       const templateLink2 = screen.getByRole("link", {
         name: "spreadsheet template",
       });
-      userEvent.click(templateLink1);
-      userEvent.click(templateLink2);
+      await userEvent.click(templateLink1);
+      await userEvent.click(templateLink2);
 
       expect(mockTrackEvent).toHaveBeenCalledTimes(2);
       expect(mockTrackEvent).toHaveBeenNthCalledWith(1, {

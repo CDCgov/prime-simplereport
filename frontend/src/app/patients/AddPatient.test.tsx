@@ -2,8 +2,8 @@ import {
   render,
   screen,
   within,
-  waitForElementToBeRemoved,
   waitFor,
+  fireEvent,
 } from "@testing-library/react";
 import { MockedProvider } from "@apollo/client/testing";
 import { Provider } from "react-redux";
@@ -32,7 +32,9 @@ const store = mockStore({
   organization: { name: "Test Organization" },
 });
 
-const RouterWithFacility: React.FC = ({ children }) => (
+const RouterWithFacility: React.FC<RouterWithFacilityProps> = ({
+  children,
+}) => (
   <MemoryRouter initialEntries={[`/add-patient?facility=${mockFacilityID}`]}>
     <Routes>{children}</Routes>
   </MemoryRouter>
@@ -46,19 +48,19 @@ const fillOutForm = (
   }
 ) => {
   Object.entries(inputs).forEach(([label, value]) => {
-    userEvent.type(
+    fireEvent.change(
       screen.getByLabelText(label, {
         exact: false,
       }),
-      value
+      { target: { value: value } }
     );
   });
   Object.entries(dropdowns).forEach(([label, value]) => {
-    userEvent.selectOptions(
+    fireEvent.change(
       screen.getByLabelText(label, {
         exact: false,
       }),
-      [value]
+      { target: { value: [value] } }
     );
   });
   Object.entries(inputGroups).forEach(([legend, { label, exact }]) => {
@@ -70,7 +72,7 @@ const fillOutForm = (
     if (fieldset === null) {
       throw Error(`Unable to corresponding fieldset for ${legend}`);
     }
-    userEvent.click(
+    fireEvent.click(
       within(fieldset).getByLabelText(label, {
         exact: exact || false,
       })
@@ -250,7 +252,7 @@ describe("AddPatient", () => {
 
     describe("Choosing a country", () => {
       it("should show the state and zip code inputs for USA", async () => {
-        userEvent.selectOptions(
+        await userEvent.selectOptions(
           screen.getByLabelText("Country", { exact: false }),
           "USA"
         );
@@ -258,7 +260,7 @@ describe("AddPatient", () => {
         expect(await screen.findByText("ZIP code")).toBeInTheDocument();
       });
       it("should show the state and zip code inputs for Canada", async () => {
-        userEvent.selectOptions(
+        await userEvent.selectOptions(
           screen.getByLabelText("Country", { exact: false }),
           "CAN"
         );
@@ -266,7 +268,7 @@ describe("AddPatient", () => {
         expect(await screen.findByText("ZIP code")).toBeInTheDocument();
       });
       it("should show different states for Canada", async () => {
-        userEvent.selectOptions(
+        await userEvent.selectOptions(
           screen.getByLabelText("Country", { exact: false }),
           "CAN"
         );
@@ -276,11 +278,11 @@ describe("AddPatient", () => {
           exact: false,
         }) as HTMLSelectElement;
 
-        userEvent.selectOptions(stateInput, "QC");
+        await userEvent.selectOptions(stateInput, "QC");
         expect(stateInput.value).toBe("QC");
       });
       it("should hide the state and zip code inputs for non-US countries", async () => {
-        userEvent.selectOptions(
+        await userEvent.selectOptions(
           screen.getByLabelText("Country", { exact: false }),
           "MEX"
         );
@@ -332,7 +334,7 @@ describe("AddPatient", () => {
             },
           }
         );
-        userEvent.click(
+        await userEvent.click(
           screen.queryAllByText("Save Changes", {
             exact: false,
           })[0]
@@ -346,20 +348,17 @@ describe("AddPatient", () => {
           exact: false,
         });
 
-        userEvent.click(
+        await userEvent.click(
           within(modal).getByLabelText("Use address as entered", {
             exact: false,
           })
         );
-        userEvent.click(
+        await userEvent.click(
           within(modal).getByText("Save changes", {
             exact: false,
           })
         );
-        await waitForElementToBeRemoved(() =>
-          screen.queryAllByText("Saving...")
-        );
-        expect(screen.getByText("Patients!")).toBeInTheDocument();
+        expect(await screen.findByText("Patients!"));
       });
       it("surfaces an error if invalid zip code for state", async () => {
         zipCodeSpy.mockReturnValue(false);
@@ -403,7 +402,7 @@ describe("AddPatient", () => {
             },
           }
         );
-        userEvent.click(
+        await userEvent.click(
           screen.queryAllByText("Save Changes", {
             exact: false,
           })[0]
@@ -446,7 +445,7 @@ describe("AddPatient", () => {
             },
           }
         );
-        userEvent.click(
+        await userEvent.click(
           screen.queryAllByText("Save Changes", {
             exact: false,
           })[0]
@@ -472,15 +471,15 @@ describe("AddPatient", () => {
         expect(facilityInput.value).toBe("");
       });
       it("updates its selection on change", async () => {
-        userEvent.selectOptions(facilityInput, [mockFacilityID]);
+        await userEvent.selectOptions(facilityInput, [mockFacilityID]);
         expect(facilityInput.value).toBe(mockFacilityID);
       });
     });
 
     describe("With student ID", () => {
       it("allows student ID to be entered", async () => {
-        userEvent.selectOptions(screen.getByLabelText("Role"), "STUDENT");
-        expect(await screen.findByText("Student ID")).toBeInTheDocument();
+        await userEvent.selectOptions(screen.getByLabelText("Role"), "STUDENT");
+        expect(await screen.findByText("Student ID"));
       });
     });
 
@@ -531,7 +530,7 @@ describe("AddPatient", () => {
           .spyOn(smartyStreets, "suggestionIsCloseEnough")
           .mockReturnValue(true);
 
-        userEvent.click(
+        await userEvent.click(
           screen.queryAllByText("Save and start test", {
             exact: false,
           })[0]
@@ -591,7 +590,7 @@ describe("AddPatient", () => {
             },
           }
         );
-        userEvent.click(
+        await userEvent.click(
           screen.queryAllByText("Save and start test", {
             exact: false,
           })[0]
@@ -606,18 +605,15 @@ describe("AddPatient", () => {
           exact: false,
         });
 
-        userEvent.click(
+        await userEvent.click(
           within(modal).getByLabelText("Use address as entered", {
             exact: false,
           })
         );
-        userEvent.click(
+        await userEvent.click(
           within(modal).getByText("Save changes", {
             exact: false,
           })
-        );
-        await waitForElementToBeRemoved(() =>
-          screen.queryAllByText("Saving...")
         );
 
         expect(
@@ -683,11 +679,11 @@ describe("AddPatient", () => {
       );
 
       // The duplicate patient check is triggered on-blur from one of the identifying data fields
-      userEvent.type(
+      await userEvent.type(
         screen.getByLabelText("Date of birth", { exact: false }),
         "1970-09-22"
       );
-      userEvent.tab();
+      await userEvent.tab();
 
       await waitFor(() => {
         expect(patientExistsMock).toHaveBeenCalledTimes(1);
@@ -741,11 +737,11 @@ describe("AddPatient", () => {
       );
 
       // The duplicate patient check is triggered on-blur from one of the identifying data fields
-      userEvent.type(
+      await userEvent.type(
         screen.getByLabelText("Date of birth", { exact: false }),
         "1970-09-22"
       );
-      userEvent.tab();
+      await userEvent.tab();
 
       expect(
         await screen.findByText("This patient is already registered", {

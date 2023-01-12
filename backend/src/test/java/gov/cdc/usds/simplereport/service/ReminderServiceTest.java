@@ -35,12 +35,12 @@ class ReminderServiceTest extends BaseServiceTest<ReminderService> {
   void sendAccountReminderEmails_sendEmails_success() throws SQLException {
     String email = "fake@example.org";
     OrganizationQueueItem unverifiedQueuedOrg =
-        _dataFactory.createOrganizationQueueItem("New Org Name", "NEW_ORG_NAME", email);
+        _dataFactory.saveOrganizationQueueItem("New Org Name", "NEW_ORG_NAME", email);
     initAndBackdateUnverifiedQueuedOrg(unverifiedQueuedOrg);
 
     // person submitted a second time (still only 1 email sent)
     OrganizationQueueItem unverifiedQueuedOrg2 =
-        _dataFactory.createOrganizationQueueItem("New Org Name", "NEW_ORG_NAME_AGAIN", email);
+        _dataFactory.saveOrganizationQueueItem("New Org Name", "NEW_ORG_NAME_AGAIN", email);
     backdateQueuedOrgCreatedAt(unverifiedQueuedOrg2);
 
     Map<String, OrganizationQueueItem> orgEmailsSentMap = _service.sendAccountReminderEmails();
@@ -56,7 +56,7 @@ class ReminderServiceTest extends BaseServiceTest<ReminderService> {
   @Test
   void sendAccountReminderEmails_concurrencyLock_success()
       throws InterruptedException, ExecutionException, SQLException {
-    OrganizationQueueItem unverifiedQueuedOrg = _dataFactory.createOrganizationQueueItem();
+    OrganizationQueueItem unverifiedQueuedOrg = _dataFactory.saveOrganizationQueueItem();
     initAndBackdateUnverifiedQueuedOrg(unverifiedQueuedOrg);
 
     int n = 3;
@@ -101,7 +101,7 @@ class ReminderServiceTest extends BaseServiceTest<ReminderService> {
     backdateQueuedOrgCreatedAt(unverifiedQueuedOrg);
 
     // another unverified org, too new to be reminded
-    _dataFactory.createOrganizationQueueItem(
+    _dataFactory.saveOrganizationQueueItem(
         "Second Org Name", "SECOND_ORG_NAME", "second.org.email@example.com");
     // verified org should not be reminded
     _dataFactory.createVerifiedOrganizationQueueItem(
@@ -115,10 +115,10 @@ class ReminderServiceTest extends BaseServiceTest<ReminderService> {
     // verification reminder email will be sent to.
     String query =
         "UPDATE simple_report.organization_queue SET created_at = (NOW() + AGE(NOW() AT TIME ZONE 'America/New_York', NOW()) - INTERVAL '1 DAY')::date + INTERVAL '12 hour' WHERE internal_id = ?";
-    Connection conn = _jdbc.getDataSource().getConnection();
-    PreparedStatement statement = conn.prepareStatement(query);
-    statement.setObject(1, queuedOrg.getInternalId());
-    statement.execute();
-    conn.close();
+    try (Connection conn = _jdbc.getDataSource().getConnection()) {
+      PreparedStatement statement = conn.prepareStatement(query);
+      statement.setObject(1, queuedOrg.getInternalId());
+      statement.execute();
+    }
   }
 }

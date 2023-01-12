@@ -1,0 +1,22 @@
+{
+  "resourceType": "Observation",
+  "id": "3c9c7370-e2e3-49ad-bb7a-f6005f41cf29",
+  "status": "final",
+  "code": {
+    "coding": [
+      {
+        "system": "http://loinc.org",
+        "code": "96741-4"
+      }
+    ],
+    "text": "COVID-19"
+  },
+  "valueCodeableConcept": {
+    "coding": [
+      {
+        "system": "http://snomed.info/sct",
+        "code": "260373001"
+      }
+    ]
+  }
+}

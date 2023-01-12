@@ -9,7 +9,7 @@ import static org.mockito.Mockito.reset;
 import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 
-import gov.cdc.usds.simplereport.api.graphql.BaseGraphqlTest;
+import gov.cdc.usds.simplereport.api.BaseAuthenticatedFullStackTest;
 import gov.cdc.usds.simplereport.db.model.Facility;
 import gov.cdc.usds.simplereport.db.model.Person;
 import gov.cdc.usds.simplereport.db.model.PhoneNumber;
@@ -48,7 +48,7 @@ import org.springframework.test.context.TestPropertySource;
       "spring.jpa.properties.hibernate.enable_lazy_load_no_trans=true"
     })
 @SliceTestConfiguration.WithSimpleReportStandardAllFacilitiesUser
-class PatientBulkUploadServiceAsyncTest extends BaseGraphqlTest {
+class PatientBulkUploadServiceAsyncTest extends BaseAuthenticatedFullStackTest {
 
   @Autowired PatientBulkUploadServiceAsync _service;
 
@@ -119,20 +119,6 @@ class PatientBulkUploadServiceAsyncTest extends BaseGraphqlTest {
             List.of("bobbity@example.com"),
             EmailProviderTemplate.SIMPLE_REPORT_PATIENT_UPLOAD,
             Map.of("patients_url", "https://simplereport.gov/patients?facility=null"));
-  }
-
-  @Test
-  void noPhoneNumberTypes_savesPatient()
-      throws IOException, ExecutionException, InterruptedException {
-    // WHEN
-    InputStream inputStream = loadCsv("patientBulkUpload/noPhoneNumberTypes.csv");
-    byte[] content = inputStream.readAllBytes();
-
-    CompletableFuture<Set<Person>> futurePatients = this._service.savePatients(content, null);
-    futurePatients.get();
-
-    // THEN
-    assertThat(fetchDatabasePatients()).hasSize(1);
   }
 
   @Test

@@ -103,8 +103,7 @@ const App = () => {
         },
       })
     );
-    // eslint-disable-next-line
-  }, [data]);
+  }, [data, dispatch]);
 
   if (loading) {
     return <p>Loading account information...</p>;

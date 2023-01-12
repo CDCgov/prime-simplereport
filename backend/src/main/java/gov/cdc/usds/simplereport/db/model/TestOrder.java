@@ -1,7 +1,5 @@
 package gov.cdc.usds.simplereport.db.model;
 
-import static gov.cdc.usds.simplereport.api.converter.FhirConverter.convertToServiceRequest;
-
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import gov.cdc.usds.simplereport.db.model.auxiliary.OrderStatus;
 import gov.cdc.usds.simplereport.db.model.auxiliary.TestCorrectionStatus;
@@ -25,7 +23,6 @@ import javax.persistence.OneToOne;
 import lombok.Getter;
 import lombok.Setter;
 import org.hibernate.annotations.Type;
-import org.hl7.fhir.r4.model.ServiceRequest;
 
 @Entity
 public class TestOrder extends BaseTestInfo {
@@ -176,9 +173,5 @@ public class TestOrder extends BaseTestInfo {
 
   public void addResult(Result result) {
     this.results.add(result);
-  }
-
-  public ServiceRequest toFhir() {
-    return convertToServiceRequest(this);
   }
 }

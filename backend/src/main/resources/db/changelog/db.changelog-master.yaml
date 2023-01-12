@@ -4132,3 +4132,123 @@ databaseChangeLog:
       rollback:
         - dropIndex:
             indexName: ix__patient_link__created_at
+  - changeSet:
+      id: drop-facility_device_specimen_type-table
+      author: zedd@skylight.digital
+      changes:
+        - tagDatabase:
+            tag: drop-facility_device_specimen_type-table
+        - dropTable:
+            tableName: facility_device_specimen_type
+      rollback:
+        - createTable:
+            tableName: facility_device_specimen_type
+            remarks: Many-to-many table for device/specimen configuration at a facility.
+            columns:
+              - column:
+                  name: facility_id
+                  remarks: A facility at which this device/specimen combination is used.
+                  type: uuid
+                  constraints:
+                    nullable: false
+                    foreignKeyName: fk__facility_device_specimen_type__facility
+                    references: facility
+              - column:
+                  name: device_specimen_type_id
+                  remarks: A device/specimen combination that is allowed to be used at the facility.
+                  type: uuid
+                  constraints:
+                    nullable: false
+                    foreignKeyName: fk__facility_device_specimen_type__device_specimen_type
+                    references: device_specimen_type
+  - changeSet:
+      id: drop-not-null-constraints_device_specimen_type_id
+      author: zedd@skylight.digital
+      changes:
+        - tagDatabase:
+            tag: drop-not-null-constraints_device_specimen_type_id
+        - dropNotNullConstraint:
+            tableName: test_event
+            columnName: device_specimen_type_id
+        - dropNotNullConstraint:
+            tableName: test_order
+            columnName: device_specimen_type_id
+      rollback:
+        - addNotNullConstraint:
+            tableName: test_event
+            columnName: device_specimen_type_id
+        - addNotNullConstraint:
+            tableName: test_order
+            columnName: device_specimen_type_id
+  - changeSet:
+      id: drop-primary-key-device_specimen_type
+      author: zedd@skylight.digital
+      changes:
+        - tagDatabase:
+            tag: drop-primary-key-device_specimen_type
+        - dropPrimaryKey:
+            tableName: device_specimen_type
+            constraintName: device_specimen_type_pkey
+            dropIndex: true
+      rollback:
+        - addPrimaryKey:
+            tableName: device_specimen_type
+            constraintName: device_specimen_type_pkey
+            columnNames: internal_id
+  - changeSet:
+      id: drop-not-null-constraints-device_specimen_type
+      author: zedd@skylight.digital
+      changes:
+        - tagDatabase:
+            tag: drop-not-null-constraints-device_specimen_type
+        - dropNotNullConstraint:
+            tableName: device_specimen_type
+            columnName: internal_id
+        - dropNotNullConstraint:
+            tableName: device_specimen_type
+            columnName: created_at
+        - dropNotNullConstraint:
+            tableName: device_specimen_type
+            columnName: created_by
+        - dropNotNullConstraint:
+            tableName: device_specimen_type
+            columnName: updated_at
+        - dropNotNullConstraint:
+            tableName: device_specimen_type
+            columnName: updated_by
+        - dropNotNullConstraint:
+            tableName: device_specimen_type
+            columnName: is_deleted
+      rollback:
+        - addNotNullConstraint:
+            tableName: device_specimen_type
+            columnName: internal_id
+        - addNotNullConstraint:
+            tableName: device_specimen_type
+            columnName: created_at
+        - addNotNullConstraint:
+            tableName: device_specimen_type
+            columnName: created_by
+        - addNotNullConstraint:
+            tableName: device_specimen_type
+            columnName: updated_at
+        - addNotNullConstraint:
+            tableName: device_specimen_type
+            columnName: updated_by
+        - addNotNullConstraint:
+            tableName: device_specimen_type
+            columnName: is_deleted
+  - changeSet:
+      id: add-test-performed-code-column-to-device-supported-disease-table
+      author: boban@skylight.digital
+      comment: Add a test performed code column to store the specific LOINC code between a device and disease.
+      changes:
+        - tagDatabase:
+            tag: add-test-performed-code-column-to-device-supported-disease-table
+        - addColumn:
+            tableName: device_supported_disease
+            columns:
+              - column:
+                  name: test_performed_code
+                  type: text
+                  remarks: The code that identifies which disease was tested.

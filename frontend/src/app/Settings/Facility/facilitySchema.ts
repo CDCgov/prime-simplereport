@@ -41,7 +41,9 @@ function isValidNpi(
 type RequiredProviderFields = Nullable<Partial<Provider>>;
 
 const orderingProviderFormatError = (field: string) =>
-  `Ordering provider ${field} is incorrectly formatted`;
+  field === "NPI"
+    ? "NPI should be a 10-digit numerical value (##########)"
+    : `Ordering provider ${field} is incorrectly formatted`;
 
 const providerSchema: yup.SchemaOf<RequiredProviderFields> = yup.object({
   firstName: yup

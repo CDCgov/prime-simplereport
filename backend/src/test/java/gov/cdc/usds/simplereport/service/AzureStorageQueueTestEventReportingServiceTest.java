@@ -1,7 +1,7 @@
 package gov.cdc.usds.simplereport.service;
 
-import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertThrows;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyInt;
 import static org.mockito.ArgumentMatchers.argThat;
@@ -14,7 +14,6 @@ import com.azure.core.http.rest.PagedFlux;
 import com.azure.storage.queue.QueueAsyncClient;
 import com.azure.storage.queue.models.QueueMessageItem;
 import com.azure.storage.queue.models.SendMessageResult;
-import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import gov.cdc.usds.simplereport.api.model.TestEventExport;
 import gov.cdc.usds.simplereport.api.model.errors.TestEventSerializationFailureException;
@@ -49,24 +48,20 @@ class AzureStorageQueueTestEventReportingServiceTest
   }
 
   @Test
-  void throws_custom_test_event_serialization_failure_exception() throws JsonProcessingException {
+  void throws_custom_test_event_serialization_failure_exception() {
     var client = mock(QueueAsyncClient.class);
-    var objectMapper = mock(ObjectMapper.class);
     Mono<SendMessageResult> response = mock(Mono.class);
     when(response.toFuture())
         .thenReturn(CompletableFuture.completedFuture(new SendMessageResult()));
     when(client.sendMessage(any(String.class))).thenReturn(response);
-    when(objectMapper.writeValueAsString(any()))
-        .thenThrow(new JsonProcessingException("ignored", new Throwable("thrown message")) {});
 
-    var sut = new AzureStorageQueueTestEventReportingService(objectMapper, client);
+    var sut = new AzureStorageQueueTestEventReportingService(new ObjectMapper(), client);
     var invalidTestEventWithNoResults = new TestEvent();
     Throwable caught =
         assertThrows(
             TestEventSerializationFailureException.class,
             () -> sut.report(invalidTestEventWithNoResults));
-    assertEquals(
-        "TestEvent failed to serialize with UUID null: thrown message", caught.getMessage());
+    assertTrue(caught.getMessage().contains("TestEvent failed to serialize with UUID null"));
   }
 
   @Test
@@ -181,7 +176,7 @@ class AzureStorageQueueTestEventReportingServiceTest
   }
 
   private Set<TestEvent> createTestEvents(int count) {
-    var org = _dataFactory.createValidOrg();
+    var org = _dataFactory.saveValidOrganization();
     var facility = _dataFactory.createValidFacility(org);
     var patient = _dataFactory.createFullPerson(org);
 

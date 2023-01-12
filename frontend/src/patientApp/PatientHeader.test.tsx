@@ -45,7 +45,7 @@ describe("PatientHeader", () => {
 
       expect(screen.getByText("Español")).toBeInTheDocument();
 
-      userEvent.click(screen.getByRole("button"));
+      await userEvent.click(screen.getByRole("button"));
 
       expect(screen.queryByText("Español")).not.toBeInTheDocument();
       expect(screen.getByText("English")).toBeInTheDocument();

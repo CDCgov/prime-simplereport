@@ -217,13 +217,14 @@ class ApiUserServiceTest extends BaseServiceTest<ApiUserService> {
   @Test
   @WithSimpleReportSiteAdminUser
   void getAllUsersByOrganization_success() {
-    Organization org = _dataFactory.createValidOrg();
+    Organization org = _dataFactory.saveValidOrganization();
     _dataFactory.createValidApiUser("allfacilities@example.com", org);
     _dataFactory.createValidApiUser("nofacilities@example.com", org);
     UserInfo userToBeDeleted = _dataFactory.createValidApiUser("somefacilities@example.com", org);
     _service.setIsDeleted(userToBeDeleted.getInternalId(), true);
 
-    Organization differentOrg = _dataFactory.createValidOrg("other org", "k12", "OTHER_ORG", true);
+    Organization differentOrg =
+        _dataFactory.saveOrganization("other org", "k12", "OTHER_ORG", true);
     _dataFactory.createValidApiUser("otherorgfacilities@example.com", differentOrg);
 
     List<ApiUser> activeUsers = _service.getAllUsersByOrganization(org);

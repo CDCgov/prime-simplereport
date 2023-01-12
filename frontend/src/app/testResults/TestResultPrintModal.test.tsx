@@ -78,7 +78,7 @@ describe("TestResultPrintModal with only COVID results", () => {
   });
 
   it("should render the test result print view", async () => {
-    userEvent.click(screen.getAllByText("Print")[1]);
+    await userEvent.click(screen.getAllByText("Print")[1]);
 
     expect(printSpy).toBeCalled();
   });

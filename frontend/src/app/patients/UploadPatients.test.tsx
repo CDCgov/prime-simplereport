@@ -44,7 +44,7 @@ const uploadPatientsSpy = (response: Response) =>
   });
 const errorResponseBody = {
   status: "FAILURE",
-  errors: [{ indices: [0], message: "bad zipcode" }],
+  errors: [{ indices: [0, 1, 2], message: "bad zipcode" }],
 };
 
 const successResponseBody = {
@@ -52,20 +52,20 @@ const successResponseBody = {
   errors: null,
 };
 
-function userEventUpload(uploadFile: File, facility: string) {
-  const input = screen.getByTestId("file-input-input");
-  userEvent.upload(input, uploadFile);
-  userEvent.click(screen.getByText(facility));
-  userEvent.click(screen.getByText("Upload CSV file"));
+async function userEventUpload(uploadFile: File, facility: string) {
+  const input = screen.getByTestId("upload-patients-file-input");
+  await userEvent.upload(input, uploadFile);
+  await userEvent.click(screen.getByText(facility));
+  await userEvent.click(screen.getByText("Upload CSV file"));
 }
 
-const submitCSVFile = (
+const submitCSVFile = async (
   mockResponse: Response,
   uploadFile = file("someText"),
   facility = "All facilities"
 ) => {
   let spy = uploadPatientsSpy(mockResponse);
-  userEventUpload(uploadFile, facility);
+  await userEventUpload(uploadFile, facility);
   return spy;
 };
 
@@ -85,12 +85,16 @@ describe("Upload Patient", () => {
         await screen.findByText("3. Upload your spreadsheet.")
       ).toBeInTheDocument();
 
-      userEvent.click(screen.getByText("One facility"));
+      await userEvent.click(screen.getByText("One facility"));
 
       expect(await screen.findByText("Which facility?")).toBeInTheDocument();
+      await userEvent.selectOptions(
+        screen.getByRole("combobox", { name: /select facility/i }),
+        "2"
+      );
       expect(
         await screen.findByText(
-          "3. Upload your spreadsheet for Lincoln Middle School."
+          "3. Upload your spreadsheet for Rosa Parks High School."
         )
       );
     });
@@ -99,9 +103,9 @@ describe("Upload Patient", () => {
       expect(
         await screen.findByText("3. Upload your spreadsheet.")
       ).toBeInTheDocument();
-      userEvent.click(screen.getByText("One facility"));
+      await userEvent.click(screen.getByText("One facility"));
 
-      userEvent.click(screen.getByText("All facilities"));
+      await userEvent.click(screen.getByText("All facilities"));
       expect(
         await screen.findByText("3. Upload your spreadsheet.")
       ).toBeInTheDocument();
@@ -112,11 +116,11 @@ describe("Upload Patient", () => {
       renderUploadPatients();
       expect(await screen.findByText("Upload CSV file")).toBeDisabled();
 
-      userEvent.click(screen.getByText("One facility"));
+      await userEvent.click(screen.getByText("One facility"));
       expect(await screen.findByText("Upload CSV file")).toBeDisabled();
       const uploadFile = file("someText");
-      const input = screen.getByTestId("file-input-input");
-      userEvent.upload(input, uploadFile);
+      const input = screen.getByTestId("upload-patients-file-input");
+      await userEvent.upload(input, uploadFile);
 
       expect(await screen.findByText("Upload CSV file")).toBeEnabled();
     });
@@ -125,10 +129,10 @@ describe("Upload Patient", () => {
       expect(await screen.findByText("Upload CSV file")).toBeDisabled();
 
       const uploadFile = file("someText");
-      const input = screen.getByTestId("file-input-input");
-      userEvent.upload(input, uploadFile);
+      const input = screen.getByTestId("upload-patients-file-input");
+      await userEvent.upload(input, uploadFile);
       expect(await screen.findByText("Upload CSV file")).toBeDisabled();
-      userEvent.click(screen.getByText("One facility"));
+      await userEvent.click(screen.getByText("One facility"));
 
       expect(await screen.findByText("Upload CSV file")).toBeEnabled();
     });
@@ -140,11 +144,15 @@ describe("Upload Patient", () => {
     });
     const uploadFile = file("someText");
 
-    const uploadSpy = submitCSVFile(mockResponse, uploadFile, "One facility");
+    const uploadSpy = await submitCSVFile(
+      mockResponse,
+      uploadFile,
+      "One facility"
+    );
 
     expect(uploadSpy).toHaveBeenCalledWith(uploadFile, "1");
     expect(
-      await screen.findByText("Success: File Accepted")
+      await screen.findByText("Success: Data confirmed")
     ).toBeInTheDocument();
   });
   it("should show success message if upload is successful", async () => {
@@ -154,16 +162,48 @@ describe("Upload Patient", () => {
     });
     const uploadFile = file("someText");
 
-    const uploadSpy = submitCSVFile(mockResponse, uploadFile);
+    const uploadSpy = await submitCSVFile(mockResponse, uploadFile);
 
     expect(uploadSpy).toHaveBeenCalledWith(uploadFile, "");
     expect(
-      await screen.findByText("Success: File Accepted")
+      await screen.findByText("Success: Data confirmed")
     ).toBeInTheDocument();
   });
-  it("should show error message and list errors if error occurs", async () => {
+  it("should show error message with a link to the patient bulk upload guide and list errors if error occurs", async () => {
     renderUploadPatients();
     let mockResponse = new Response(JSON.stringify(errorResponseBody), {
+      status: 200,
+    });
+
+    await submitCSVFile(mockResponse);
+
+    expect(
+      await screen.findByText("Error: File not accepted")
+    ).toBeInTheDocument();
+    expect(
+      await screen.findByText(
+        "Please resolve the errors below and upload your edited file.",
+        { exact: false }
+      )
+    ).toBeInTheDocument();
+    expect(await screen.findByText("bad zipcode")).toBeInTheDocument();
+    expect(await screen.findByText("Row(s): 0, 1, 2")).toBeInTheDocument();
+  });
+
+  it("should show error message and list errors even if error info is incomplete", async () => {
+    const incompleteResponseBody = {
+      status: "FAILURE",
+      errors: [
+        { indices: [0, 1, 2], message: "properly formed error" },
+        { indices: [0, 1, 2, 3] },
+        { message: "error with no indices" },
+        {},
+      ],
+    };
+
+    renderUploadPatients();
+
+    let mockResponse = new Response(JSON.stringify(incompleteResponseBody), {
       status: 200,
     });
 
@@ -172,13 +212,30 @@ describe("Upload Patient", () => {
     expect(
       await screen.findByText("Error: File not accepted")
     ).toBeInTheDocument();
+
     expect(
       await screen.findByText(
-        "Please resolve the errors below and upload your edited file."
+        "Please resolve the errors below and upload your edited file.",
+        { exact: false }
       )
     ).toBeInTheDocument();
-    expect(await screen.findByText("bad zipcode")).toBeInTheDocument();
-    expect(await screen.findByText("Row(s): 0")).toBeInTheDocument();
+    expect(
+      await screen.findByText("properly formed error")
+    ).toBeInTheDocument();
+    expect(
+      await screen.findByText("error with no indices")
+    ).toBeInTheDocument();
+    expect(await screen.findByText("Row(s): 0, 1, 2")).toBeInTheDocument();
+    expect(await screen.findByText("Row(s): 0, 1, 2, 3")).toBeInTheDocument();
+
+    const supportLinkText = "patient bulk upload guide";
+    const supportLink = screen.getByText(supportLinkText).closest("a");
+    if (supportLink === null) {
+      throw Error(`Unable to find ${supportLink} link`);
+    }
+    expect(supportLink.href).toContain(
+      "/using-simplereport/manage-people-you-test/bulk-upload-patients/#preparing-your-spreadsheet-data"
+    );
   });
   it("should show error message if 500 is returned", async () => {
     renderUploadPatients();
@@ -187,7 +244,27 @@ describe("Upload Patient", () => {
     });
     const uploadFile = file("someText");
 
-    const uploadSpy = submitCSVFile(mockResponse, uploadFile);
+    const uploadSpy = await submitCSVFile(mockResponse, uploadFile);
+
+    expect(uploadSpy).toHaveBeenCalledWith(uploadFile, "");
+    expect(
+      await screen.findByText("Error: File not accepted")
+    ).toBeInTheDocument();
+  });
+  it("should show error message if 200 but is a failure with no message", async () => {
+    renderUploadPatients();
+
+    let mockResponse = new Response(
+      JSON.stringify({
+        status: "FAILURE",
+      }),
+      {
+        status: 200,
+      }
+    );
+    const uploadFile = file("someText");
+
+    const uploadSpy = await submitCSVFile(mockResponse, uploadFile);
 
     expect(uploadSpy).toHaveBeenCalledWith(uploadFile, "");
     expect(
@@ -200,15 +277,15 @@ describe("Upload Patient", () => {
       status: 200,
     });
     uploadPatientsSpy(mockResponse);
-    submitCSVFile(mockResponse);
+    await submitCSVFile(mockResponse);
     expect(
-      await screen.findByText("Success: File Accepted")
+      await screen.findByText("Success: Data confirmed")
     ).toBeInTheDocument();
 
-    userEvent.click(screen.getByLabelText("close"));
+    await userEvent.click(screen.getByLabelText("close"));
 
     expect(
-      screen.queryByText("Success: File Accepted")
+      screen.queryByText("Success: Data confirmed")
     ).not.toBeInTheDocument();
   });
   it("should remove error message and table when close is clicked", async () => {
@@ -217,13 +294,13 @@ describe("Upload Patient", () => {
       status: 200,
     });
 
-    submitCSVFile(mockResponse);
+    await submitCSVFile(mockResponse);
     expect(
       await screen.findByText("Error: File not accepted")
     ).toBeInTheDocument();
     expect(await screen.findByText("bad zipcode")).toBeInTheDocument();
 
-    userEvent.click(screen.getByLabelText("close"));
+    await userEvent.click(screen.getByLabelText("close"));
     expect(
       screen.queryByText("Error: File not accepted")
     ).not.toBeInTheDocument();
@@ -238,7 +315,7 @@ describe("Upload Patient", () => {
         return Promise.resolve(new Response());
       });
 
-    userEventUpload(file("abc"), "All facilities");
+    await userEventUpload(file("abc"), "All facilities");
 
     expect(
       await screen.findByText("Uploading patient information...")
@@ -247,30 +324,65 @@ describe("Upload Patient", () => {
   it("should show error if empty file is provided", async () => {
     renderUploadPatients();
 
-    userEventUpload(file(""), "All facilities");
+    const errorResponseBody = {
+      status: "FAILURE",
+      errors: [
+        {
+          indices: [],
+          message: "File is missing headers and other required data",
+        },
+      ],
+    };
+    let mockResponse = new Response(JSON.stringify(errorResponseBody), {
+      status: 200,
+    });
+    await submitCSVFile(mockResponse);
+    expect(
+      await screen.findByText("Error: File not accepted")
+    ).toBeInTheDocument();
+    expect(
+      await screen.findByText(
+        "Please resolve the errors below and upload your edited file.",
+        { exact: false }
+      )
+    ).toBeInTheDocument();
+    expect(
+      await screen.findByText(
+        "File is missing headers and other required data",
+        { exact: false }
+      )
+    ).toBeInTheDocument();
 
-    expect(screen.getByText("Invalid file")).toBeInTheDocument();
     expect(
       screen.queryByText("Uploading patient information...")
     ).not.toBeInTheDocument();
   });
   describe("handle file change", () => {
-    it("should do nothing if no file was added", () => {
+    it("should do nothing if no file was added", async () => {
       renderUploadPatients();
 
-      const input = screen.getByTestId("file-input-input");
-      userEvent.upload(input, []);
-
-      expect(screen.getByText("Drag file here or")).toBeInTheDocument();
+      const input = screen.getByTestId("upload-patients-file-input");
+      await userEvent.upload(input, []);
+      expect(
+        screen.getByRole("button", { name: /upload csv file/i })
+      ).toBeDisabled();
+      expect(
+        screen.getByText("Drag file here or choose from folder")
+      ).toBeInTheDocument();
+      expect(
+        screen.queryByText(
+          "Drag file here or choose from folder to change file"
+        )
+      ).not.toBeInTheDocument();
     });
-    it("shows the file when selected", () => {
+    it("shows the file when selected", async () => {
       renderUploadPatients();
 
-      const input = screen.getByTestId("file-input-input");
-      userEvent.upload(input, file("someText"));
-
-      expect(screen.getByText("Selected file")).toBeInTheDocument();
-      expect(screen.getByText("values.csv")).toBeInTheDocument();
+      const input = screen.getByTestId("upload-patients-file-input");
+      await userEvent.upload(input, file("someText"));
+      expect(
+        screen.getByText("Drag file here or choose from folder to change file")
+      ).toBeInTheDocument();
     });
   });
   it("should redirect user if not admin", () => {

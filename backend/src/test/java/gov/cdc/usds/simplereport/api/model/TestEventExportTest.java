@@ -21,14 +21,14 @@ import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 
 class TestEventExportTest extends BaseRepositoryTest {
-  @Autowired protected TestDataFactory _dataFactory;
+  @Autowired protected TestDataFactory dataFactory;
 
   @Test
   void json_property_gender_mapping() {
-    Organization o = _dataFactory.createValidOrg();
-    Facility f = _dataFactory.createValidFacility(o);
-    Person p = _dataFactory.createFullPerson(o);
-    TestEvent te = _dataFactory.createTestEvent(p, f);
+    Organization o = dataFactory.saveValidOrganization();
+    Facility f = dataFactory.createValidFacility(o);
+    Person p = dataFactory.createFullPerson(o);
+    TestEvent te = dataFactory.createTestEvent(p, f);
 
     assertEquals("male", p.getGender());
 
@@ -38,10 +38,10 @@ class TestEventExportTest extends BaseRepositoryTest {
 
   @Test
   void json_property_preferredLang_mapping() {
-    Organization o = _dataFactory.createValidOrg();
-    Facility f = _dataFactory.createValidFacility(o);
-    Person p = _dataFactory.createFullPersonWithPreferredLanguage(o, "will-be-default-value");
-    TestEvent te = _dataFactory.createTestEvent(p, f);
+    Organization o = dataFactory.saveValidOrganization();
+    Facility f = dataFactory.createValidFacility(o);
+    Person p = dataFactory.createFullPersonWithPreferredLanguage(o, "will-be-default-value");
+    TestEvent te = dataFactory.createTestEvent(p, f);
 
     TestEventExport sut = new TestEventExport(te);
     assertEquals("will-be-default-value", sut.getPatientPreferredLanguage());
@@ -49,10 +49,10 @@ class TestEventExportTest extends BaseRepositoryTest {
 
   @Test
   void json_property_ethnicity_mapping() {
-    Organization o = _dataFactory.createValidOrg();
-    Facility f = _dataFactory.createValidFacility(o);
-    Person p = _dataFactory.createFullPerson(o);
-    TestEvent te = _dataFactory.createTestEvent(p, f);
+    Organization o = dataFactory.saveValidOrganization();
+    Facility f = dataFactory.createValidFacility(o);
+    Person p = dataFactory.createFullPerson(o);
+    TestEvent te = dataFactory.createTestEvent(p, f);
 
     assertEquals("not_hispanic", p.getEthnicity());
 
@@ -63,10 +63,10 @@ class TestEventExportTest extends BaseRepositoryTest {
 
   @Test
   void json_property_test_result_mapping() {
-    Organization o = _dataFactory.createValidOrg();
-    Facility f = _dataFactory.createValidFacility(o);
-    Person p = _dataFactory.createFullPerson(o);
-    TestEvent te = _dataFactory.createTestEvent(p, f);
+    Organization o = dataFactory.saveValidOrganization();
+    Facility f = dataFactory.createValidFacility(o);
+    Person p = dataFactory.createFullPerson(o);
+    TestEvent te = dataFactory.createTestEvent(p, f);
 
     assertEquals(TestResult.NEGATIVE, te.getCovidTestResult().get());
 
@@ -77,10 +77,10 @@ class TestEventExportTest extends BaseRepositoryTest {
 
   @Test
   void json_property_race_mapping() {
-    Organization o = _dataFactory.createValidOrg();
-    Facility f = _dataFactory.createValidFacility(o);
-    Person p = _dataFactory.createFullPerson(o);
-    TestEvent te = _dataFactory.createTestEvent(p, f);
+    Organization o = dataFactory.saveValidOrganization();
+    Facility f = dataFactory.createValidFacility(o);
+    Person p = dataFactory.createFullPerson(o);
+    TestEvent te = dataFactory.createTestEvent(p, f);
 
     assertEquals("white", p.getRace());
 
@@ -91,10 +91,10 @@ class TestEventExportTest extends BaseRepositoryTest {
 
   @Test
   void json_property_site_of_care_reporting() {
-    Organization o = _dataFactory.createValidOrg();
-    Facility f = _dataFactory.createValidFacility(o);
-    Person p = _dataFactory.createFullPerson(o);
-    TestEvent te = _dataFactory.createTestEvent(p, f);
+    Organization o = dataFactory.saveValidOrganization();
+    Facility f = dataFactory.createValidFacility(o);
+    Person p = dataFactory.createFullPerson(o);
+    TestEvent te = dataFactory.createTestEvent(p, f);
 
     TestEventExport sut = new TestEventExport(te);
 
@@ -103,10 +103,10 @@ class TestEventExportTest extends BaseRepositoryTest {
 
   @Test
   void certainDateFieldsIncludeTime() {
-    Organization o = _dataFactory.createValidOrg();
-    Facility f = _dataFactory.createValidFacility(o);
-    Person p = _dataFactory.createFullPerson(o);
-    TestEvent te = _dataFactory.createTestEvent(p, f);
+    Organization o = dataFactory.saveValidOrganization();
+    Facility f = dataFactory.createValidFacility(o);
+    Person p = dataFactory.createFullPerson(o);
+    TestEvent te = dataFactory.createTestEvent(p, f);
 
     TestEventExport sut = new TestEventExport(te);
 
@@ -121,10 +121,10 @@ class TestEventExportTest extends BaseRepositoryTest {
 
   @Test
   void determinesFirstTestFromTestEvent_hasPriorTest_false() {
-    Organization o = _dataFactory.createValidOrg();
-    Facility f = _dataFactory.createValidFacility(o);
-    Person p = _dataFactory.createFullPerson(o);
-    TestEvent te = _dataFactory.createTestEvent(p, f, TestResult.NEGATIVE, false);
+    Organization o = dataFactory.saveValidOrganization();
+    Facility f = dataFactory.createValidFacility(o);
+    Person p = dataFactory.createFullPerson(o);
+    TestEvent te = dataFactory.createTestEvent(p, f, TestResult.NEGATIVE, false);
 
     TestEventExport sut = new TestEventExport(te);
 
@@ -133,10 +133,10 @@ class TestEventExportTest extends BaseRepositoryTest {
 
   @Test
   void determinesFirstTestFromTestEvent_hasPriorTest_true() {
-    Organization o = _dataFactory.createValidOrg();
-    Facility f = _dataFactory.createValidFacility(o);
-    Person p = _dataFactory.createFullPerson(o);
-    TestEvent te = _dataFactory.createTestEvent(p, f, TestResult.NEGATIVE, true);
+    Organization o = dataFactory.saveValidOrganization();
+    Facility f = dataFactory.createValidFacility(o);
+    Person p = dataFactory.createFullPerson(o);
+    TestEvent te = dataFactory.createTestEvent(p, f, TestResult.NEGATIVE, true);
 
     TestEventExport sut = new TestEventExport(te);
 
@@ -145,10 +145,10 @@ class TestEventExportTest extends BaseRepositoryTest {
 
   @Test
   void determinesFirstTestFromTestEvent_hasPriorTest_null() {
-    Organization o = _dataFactory.createValidOrg();
-    Facility f = _dataFactory.createValidFacility(o);
-    Person p = _dataFactory.createFullPerson(o);
-    TestEvent te = _dataFactory.createTestEvent(p, f, TestResult.NEGATIVE, null);
+    Organization o = dataFactory.saveValidOrganization();
+    Facility f = dataFactory.createValidFacility(o);
+    Person p = dataFactory.createFullPerson(o);
+    TestEvent te = dataFactory.createTestEvent(p, f, TestResult.NEGATIVE, null);
 
     TestEventExport sut = new TestEventExport(te);
 
@@ -157,12 +157,12 @@ class TestEventExportTest extends BaseRepositoryTest {
 
   @Test
   void specimenCollectionSubtractsDeviceOffset() throws ParseException {
-    Organization o = _dataFactory.createValidOrg();
-    Facility f = _dataFactory.createValidFacility(o);
-    Person p = _dataFactory.createFullPerson(o);
+    Organization o = dataFactory.saveValidOrganization();
+    Facility f = dataFactory.createValidFacility(o);
+    Person p = dataFactory.createFullPerson(o);
 
     TestEvent te =
-        _dataFactory.createTestEvent(
+        dataFactory.createTestEvent(
             p,
             f,
             AskOnEntrySurvey.builder().symptoms(Collections.emptyMap()).build(),
@@ -177,17 +177,17 @@ class TestEventExportTest extends BaseRepositoryTest {
   @Test
   void sendCorrectionReason() {
     // GIVEN
-    Organization org = _dataFactory.createValidOrg();
-    Facility facility = _dataFactory.createValidFacility(org);
-    Person person = _dataFactory.createFullPerson(org);
+    Organization org = dataFactory.saveValidOrganization();
+    Facility facility = dataFactory.createValidFacility(org);
+    Person person = dataFactory.createFullPerson(org);
 
     LocalDate localDate = LocalDate.of(2020, 7, 23);
     Date backTestedDate = Date.from(localDate.atStartOfDay(ZoneId.systemDefault()).toInstant());
     TestEvent originalTestEvent =
-        _dataFactory.createTestEvent(person, facility, null, TestResult.NEGATIVE, backTestedDate);
+        dataFactory.createTestEvent(person, facility, null, TestResult.NEGATIVE, backTestedDate);
     String originalEventId = originalTestEvent.getInternalId().toString();
     TestEvent testEvent =
-        _dataFactory.createTestEventCorrection(originalTestEvent, TestCorrectionStatus.REMOVED);
+        dataFactory.createTestEventCorrection(originalTestEvent, TestCorrectionStatus.REMOVED);
 
     // WHEN
     TestEventExport exportedEvent = new TestEventExport(testEvent);
@@ -201,11 +201,10 @@ class TestEventExportTest extends BaseRepositoryTest {
   @Test
   void sendPatientInfo() {
     // GIVEN
-    Organization org = _dataFactory.createValidOrg();
-    Facility facility = _dataFactory.createValidFacility(org);
-    Person person = _dataFactory.createFullPerson(org);
-    TestEvent testEvent =
-        _dataFactory.createTestEvent(person, facility, TestResult.NEGATIVE, false);
+    Organization org = dataFactory.saveValidOrganization();
+    Facility facility = dataFactory.createValidFacility(org);
+    Person person = dataFactory.createFullPerson(org);
+    TestEvent testEvent = dataFactory.createTestEvent(person, facility, TestResult.NEGATIVE, false);
 
     // WHEN
     TestEventExport exportedEvent = new TestEventExport(testEvent);
@@ -227,11 +226,10 @@ class TestEventExportTest extends BaseRepositoryTest {
   @Test
   void sendPatientInfoWithCountryNull() {
     // GIVEN
-    Organization org = _dataFactory.createValidOrg();
-    Facility facility = _dataFactory.createValidFacility(org);
-    Person person = _dataFactory.createFullPersonWithSpecificCountry(org, null);
-    TestEvent testEvent =
-        _dataFactory.createTestEvent(person, facility, TestResult.NEGATIVE, false);
+    Organization org = dataFactory.saveValidOrganization();
+    Facility facility = dataFactory.createValidFacility(org);
+    Person person = dataFactory.createFullPersonWithSpecificCountry(org, null);
+    TestEvent testEvent = dataFactory.createTestEvent(person, facility, TestResult.NEGATIVE, false);
 
     // WHEN
     TestEventExport exportedEvent = new TestEventExport(testEvent);
@@ -243,11 +241,10 @@ class TestEventExportTest extends BaseRepositoryTest {
   @Test
   void sendPatientInfoWithNonUSACountry() {
     // GIVEN
-    Organization org = _dataFactory.createValidOrg();
-    Facility facility = _dataFactory.createValidFacility(org);
-    Person person = _dataFactory.createFullPersonWithSpecificCountry(org, "CAN");
-    TestEvent testEvent =
-        _dataFactory.createTestEvent(person, facility, TestResult.NEGATIVE, false);
+    Organization org = dataFactory.saveValidOrganization();
+    Facility facility = dataFactory.createValidFacility(org);
+    Person person = dataFactory.createFullPersonWithSpecificCountry(org, "CAN");
+    TestEvent testEvent = dataFactory.createTestEvent(person, facility, TestResult.NEGATIVE, false);
 
     // WHEN
     TestEventExport exportedEvent = new TestEventExport(testEvent);

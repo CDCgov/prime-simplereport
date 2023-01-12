@@ -8,8 +8,8 @@ import ManageDeviceTypeFormContainer from "./ManageDeviceTypeFormContainer";
 
 const mockUpdateDeviceType = jest.fn();
 
-const addValue = (name: string, value: string) => {
-  userEvent.type(screen.getByLabelText(name, { exact: false }), value);
+const addValue = async (name: string, value: string) => {
+  await userEvent.type(screen.getByLabelText(name, { exact: false }), value);
 };
 
 jest.mock("../../../generated/graphql", () => {
@@ -147,16 +147,16 @@ describe("ManageDeviceTypeFormContainer", () => {
   it("should update the selected device", async () => {
     await new Promise((resolve) => setTimeout(resolve, 0));
 
-    userEvent.click(screen.getByTestId("combo-box-select"));
-    userEvent.click(screen.getAllByText("Covalent Observer")[1]);
+    await userEvent.click(screen.getByTestId("combo-box-select"));
+    await userEvent.click(screen.getAllByText("Covalent Observer")[1]);
 
     await new Promise((resolve) => setTimeout(resolve, 0));
 
-    addValue("Manufacturer", " LLC");
+    await addValue("Manufacturer", " LLC");
 
-    addValue("Model", "D");
+    await addValue("Model", "D");
 
-    userEvent.click(screen.getByText("Save changes"));
+    await userEvent.click(screen.getByText("Save changes"));
 
     expect(mockUpdateDeviceType).toBeCalledTimes(1);
     expect(mockUpdateDeviceType).toHaveBeenCalledWith({
@@ -181,16 +181,16 @@ describe("ManageDeviceTypeFormContainer", () => {
   it("should display error when update fails", async () => {
     await new Promise((resolve) => setTimeout(resolve, 0));
 
-    userEvent.click(screen.getByTestId("combo-box-select"));
-    userEvent.click(screen.getAllByText("Covalent Observer")[1]);
+    await userEvent.click(screen.getByTestId("combo-box-select"));
+    await userEvent.click(screen.getAllByText("Covalent Observer")[1]);
 
     await new Promise((resolve) => setTimeout(resolve, 0));
 
-    addValue("Manufacturer", " LLC");
-    addValue("Model", "D");
-    addValue("Test length", "invalid value");
+    await addValue("Manufacturer", " LLC");
+    await addValue("Model", "D");
+    await addValue("Test length", "invalid value");
 
-    userEvent.click(screen.getByText("Save changes"));
+    await userEvent.click(screen.getByText("Save changes"));
 
     expect(mockUpdateDeviceType).toBeCalledTimes(0);
     expect(

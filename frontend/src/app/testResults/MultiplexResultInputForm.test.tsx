@@ -104,7 +104,7 @@ describe("TestResultInputForm", () => {
       />
     );
 
-    userEvent.click(screen.getAllByLabelText("Negative (-)")[0]);
+    await userEvent.click(screen.getAllByLabelText("Negative (-)")[0]);
     expect(onChangeFn).toBeCalledWith([
       {
         diseaseName: MULTIPLEX_DISEASES.COVID_19,
@@ -122,7 +122,7 @@ describe("TestResultInputForm", () => {
       />
     );
 
-    userEvent.click(screen.getAllByLabelText("Negative (-)")[1]);
+    await userEvent.click(screen.getAllByLabelText("Negative (-)")[1]);
     expect(onChangeFn).toBeCalledWith([
       {
         diseaseName: MULTIPLEX_DISEASES.FLU_A,
@@ -140,7 +140,7 @@ describe("TestResultInputForm", () => {
       />
     );
 
-    userEvent.click(screen.getAllByLabelText("Negative (-)")[2]);
+    await userEvent.click(screen.getAllByLabelText("Negative (-)")[2]);
     expect(onChangeFn).toBeCalledWith([
       {
         diseaseName: MULTIPLEX_DISEASES.FLU_B,
@@ -184,7 +184,7 @@ describe("TestResultInputForm", () => {
     expect(screen.getByText("Submit")).toBeEnabled();
   });
 
-  it("should display submit button as disabled when diseases have unset values", () => {
+  it("should display submit button as disabled when diseases have unset values", async () => {
     render(
       <MultiplexResultInputForm
         queueItemId={"5d315d18-82f8-4025-a051-1a509e15c880"}
@@ -199,10 +199,10 @@ describe("TestResultInputForm", () => {
       />
     );
     expect(screen.getByText("Submit")).toBeDisabled();
-    userEvent.click(screen.getByText("Submit"));
+    await userEvent.click(screen.getByText("Submit"));
     expect(onSubmitFn).toHaveBeenCalledTimes(0);
   });
-  it("should display submit button as disabled when diseases have a weird mix of UNDETERMINED an set values", () => {
+  it("should display submit button as disabled when diseases have a weird mix of UNDETERMINED an set values", async () => {
     render(
       <MultiplexResultInputForm
         queueItemId={"5d315d18-82f8-4025-a051-1a509e15c880"}
@@ -225,7 +225,7 @@ describe("TestResultInputForm", () => {
       />
     );
     expect(screen.getByText("Submit")).toBeDisabled();
-    userEvent.click(screen.getByText("Submit"));
+    await userEvent.click(screen.getByText("Submit"));
     expect(onSubmitFn).toHaveBeenCalledTimes(0);
   });
   it("should send results marked as inconclusive when checkbox is checked", async () => {
@@ -253,7 +253,9 @@ describe("TestResultInputForm", () => {
     expect(screen.getAllByLabelText("Positive (+)")[0]).toBeChecked();
     expect(screen.getAllByLabelText("Negative (-)")[1]).toBeChecked();
     expect(screen.getAllByLabelText("Negative (-)")[2]).toBeChecked();
-    userEvent.click(screen.getByLabelText("inconclusive", { exact: false }));
+    await userEvent.click(
+      screen.getByLabelText("inconclusive", { exact: false })
+    );
     expect(onChangeFn).toHaveBeenCalledWith([
       {
         diseaseName: MULTIPLEX_DISEASES.COVID_19,
@@ -301,7 +303,7 @@ describe("TestResultInputForm", () => {
     expect(screen.getAllByLabelText("Negative (-)")[0]).not.toBeChecked();
     expect(screen.getAllByLabelText("Negative (-)")[1]).not.toBeChecked();
     expect(screen.getAllByLabelText("Negative (-)")[2]).not.toBeChecked();
-    userEvent.click(
+    await userEvent.click(
       screen.getAllByRole("radio", { name: /positive \(\+\)/i })[0]
     );
 
@@ -352,5 +354,41 @@ describe("TestResultInputForm", () => {
     fireEvent(screen.getByRole("button", { name: /submit/i }), clickEvent);
     expect(preventDefaultSpy).toHaveBeenCalled();
     expect(onSubmitFn).toHaveBeenCalled();
+  });
+  it("makes sure that clicking the tooltip doesn't reload the page", () => {
+    render(
+      <MultiplexResultInputForm
+        queueItemId={"5d315d18-82f8-4025-a051-1a509e15c880"}
+        testResults={[
+          {
+            diseaseName: MULTIPLEX_DISEASES.COVID_19,
+            testResult: TEST_RESULTS.POSITIVE,
+          },
+          {
+            diseaseName: MULTIPLEX_DISEASES.FLU_A,
+            testResult: TEST_RESULTS.POSITIVE,
+          },
+          {
+            diseaseName: MULTIPLEX_DISEASES.FLU_B,
+            testResult: TEST_RESULTS.POSITIVE,
+          },
+        ]}
+        onChange={onChangeFn}
+        onSubmit={onSubmitFn}
+      />
+    );
+
+    const clickEvent = new MouseEvent("click", {
+      bubbles: true,
+      cancelable: true,
+    });
+
+    const preventDefaultSpy = spyOn(clickEvent, "preventDefault");
+    fireEvent(
+      screen.getByRole("button", { name: /Results info tooltip/i }),
+      clickEvent
+    );
+    expect(preventDefaultSpy).toHaveBeenCalled();
+    jest.restoreAllMocks();
   });
 });

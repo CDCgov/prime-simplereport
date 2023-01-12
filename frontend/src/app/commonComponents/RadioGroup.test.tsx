@@ -15,8 +15,8 @@ describe("RadioGroup", () => {
     render(<RadioGroup onChange={onChange} buttons={buttons} />);
   });
 
-  it("selects the correct value from the props", () => {
-    userEvent.click(screen.getByLabelText("Option 1"));
+  it("selects the correct value from the props", async () => {
+    await userEvent.click(screen.getByLabelText("Option 1"));
     expect(onChange).toBeCalledWith("1");
   });
 

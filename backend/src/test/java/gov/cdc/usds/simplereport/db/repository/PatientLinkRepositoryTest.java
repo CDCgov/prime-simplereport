@@ -33,7 +33,7 @@ class PatientLinkRepositoryTest extends BaseRepositoryTest {
   void findMostRecentByTestOrderIdInTest() {
     // GIVEN
     mockCreationTime("2020-01-01 00:00");
-    Organization org = testDataFactory.createValidOrg();
+    Organization org = testDataFactory.saveValidOrganization();
     Facility facility = testDataFactory.createValidFacility(org, "PatientLinkTest Facility");
     Person patient = testDataFactory.createFullPerson(org);
     Person patient2 = testDataFactory.createFullPerson(org);

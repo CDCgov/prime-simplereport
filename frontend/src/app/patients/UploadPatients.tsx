@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from "react";
-import { FileInput, FormGroup } from "@trussworks/react-uswds";
+import { FormGroup } from "@trussworks/react-uswds";
 import { useSelector } from "react-redux";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faXmark } from "@fortawesome/free-solid-svg-icons";
@@ -9,6 +9,7 @@ import { useDocumentTitle } from "../utils/hooks";
 import Button from "../commonComponents/Button/Button";
 import RadioGroup from "../commonComponents/RadioGroup";
 import Dropdown from "../commonComponents/Dropdown";
+import SingleFileInput from "../commonComponents/SingleFileInput";
 import { Facility, FeedbackMessage } from "../../generated/graphql";
 import { showError } from "../utils/srToast";
 import { FileUploadService } from "../../fileUploadService/FileUploadService";
@@ -135,9 +136,11 @@ const UploadPatients = ({ isAdmin }: { isAdmin: boolean }) => {
         <div className={"card padding-top-5 padding-bottom-7"}>
           <ol className={"prime-ul margin-0"}>
             <li>
-              <span className={"font-sans-lg text-light line-height-225"}>
+              <h2
+                className={"margin-0 font-sans-lg text-light line-height-225"}
+              >
                 1. Setup your spreadsheet
-              </span>
+              </h2>
               <div className={"margin-left-3"}>
                 <div
                   className={
@@ -154,34 +157,36 @@ const UploadPatients = ({ isAdmin }: { isAdmin: boolean }) => {
                     below.
                   </p>
                 </div>
-                <a href="/using-simplereport/manage-people-you-test/bulk-upload-patients/#preparing-your-spreadsheet-data">
-                  <Button className={"margin-right-105"}>
-                    View patient bulk upload guide
-                  </Button>
+                <a
+                  href="/using-simplereport/manage-people-you-test/bulk-upload-patients/#preparing-your-spreadsheet-data"
+                  className={"usa-button margin-right-105"}
+                >
+                  View patient bulk upload guide
                 </a>
-                <a href="/assets/resources/patient_upload_example.csv">
-                  <Button variant={"outline"}>
-                    Download spreadsheet template
-                  </Button>
+                <a
+                  href="/assets/resources/patient_upload_example.csv"
+                  className={"usa-button usa-button--outline"}
+                >
+                  Download spreadsheet template
                 </a>
               </div>
             </li>
 
             <li>
-              <div
+              <h2
                 className={
                   "margin-top-7 margin-bottom-1 font-sans-lg text-light line-height-225"
                 }
               >
                 2. Would you like to import these patients to one facility OR
                 all facilities?
-              </div>
+              </h2>
               <div className={"margin-left-3"}>
-                <div className={"maxw-710 line-height-sans-4"}>
+                <p className={"maxw-710 line-height-sans-4"}>
                   If you plan to test patients at more than one facility, we
                   recommend adding them to all facilities. You can't select
                   multiple facilities individually.
-                </div>
+                </p>
                 <RadioGroup
                   wrapperClassName="margin-top-2"
                   inputClassName={"usa-radio__input--tile"}
@@ -203,8 +208,8 @@ const UploadPatients = ({ isAdmin }: { isAdmin: boolean }) => {
                   variant="horizontal"
                 />
                 {facilityAmount === "oneFacility" && (
-                  <div className={"margin-top-205"}>
-                    <div>Which facility?</div>
+                  <>
+                    <div className={"margin-top-205"}>Which facility?</div>
                     <Dropdown
                       aria-label={"Select facility"}
                       selectedValue={facility.id}
@@ -215,146 +220,149 @@ const UploadPatients = ({ isAdmin }: { isAdmin: boolean }) => {
                         value: id,
                       }))}
                     />
-                  </div>
+                  </>
                 )}
               </div>
             </li>
             <li>
-              <div
+              <h2
                 className={
                   "margin-top-7 margin-bottom-1 font-sans-lg text-light line-height-225"
                 }
               >
                 3. Upload your spreadsheet
                 {facilityAmount === "oneFacility" && " for " + facility.name}.
-              </div>
+              </h2>
               <div className={"margin-left-3"}>
-                <div className={"maxw-710 line-height-sans-4"}>
-                  The spreadsheet may take 10 or more minutes to upload. You do
-                  not need to stay on this page. We'll email you if you need to
-                  fix any errors or when the upload is complete.
-                </div>
-                <div>
-                  {status === "success" && (
-                    <div className="usa-alert usa-alert--success maxw-560 margin-top-3 outline-0">
-                      <div className="usa-alert__body">
-                        <span className="usa-alert__heading text-bold">
-                          Success: File Accepted
-                        </span>
-                        <button
-                          className="Toastify__close-button Toastify__close-button--default position-absolute top-0 right-0"
-                          type="button"
-                          aria-label="close"
-                          onClick={() => setStatus("")}
-                        >
-                          <FontAwesomeIcon icon={faXmark} />
-                        </button>
-                        <p className="usa-alert__text">
-                          Patients in your file have been successfully uploaded.
-                        </p>
-                      </div>
+                <p className={"maxw-710 line-height-sans-4"}>
+                  The system will check the data for errors before adding your
+                  patients to SimpleReport.
+                </p>
+                {status === "success" && (
+                  <div className="usa-alert usa-alert--success maxw-560 margin-top-3 outline-0">
+                    <div className="usa-alert__body">
+                      <span className="usa-alert__heading text-bold">
+                        Success: Data confirmed
+                      </span>
+                      <button
+                        className="Toastify__close-button Toastify__close-button--default position-absolute top-0 right-0"
+                        type="button"
+                        aria-label="close"
+                        onClick={() => setStatus("")}
+                      >
+                        <FontAwesomeIcon icon={faXmark} />
+                      </button>
+                      <p className="usa-alert__text">
+                        We're now adding your patients to SimpleReport. You can
+                        leave this page, as the process can take up to 10
+                        minutes or more. We'll email you when the upload is
+                        complete.
+                      </p>
                     </div>
-                  )}
-                  {status === "fail" && (
-                    <div className={"margin-top-3"}>
-                      {errorMessageText && (
-                        <div className="usa-alert usa-alert--error maxw-560">
-                          <div className="usa-alert__body">
-                            <span className="usa-alert__heading text-bold">
-                              Error: File not accepted
-                            </span>
-                            <button
-                              className="Toastify__close-button Toastify__close-button--default position-absolute top-0 right-0"
-                              type="button"
-                              aria-label="close"
-                              onClick={() => {
-                                setErrorMessageText("");
-                                setErrors([]);
-                              }}
+                  </div>
+                )}
+                {status === "fail" && (
+                  <div className={"margin-top-3"}>
+                    {errorMessageText && (
+                      <div className="usa-alert usa-alert--error maxw-560">
+                        <div className="usa-alert__body">
+                          <span className="usa-alert__heading text-bold">
+                            Error: File not accepted
+                          </span>
+                          <button
+                            className="Toastify__close-button Toastify__close-button--default position-absolute top-0 right-0"
+                            type="button"
+                            aria-label="close"
+                            onClick={() => {
+                              setErrorMessageText("");
+                              setErrors([]);
+                            }}
+                          >
+                            <FontAwesomeIcon icon={faXmark} />
+                          </button>
+                          <p className="usa-alert__text">
+                            {errorMessageText} See the{" "}
+                            <a
+                              target="_blank"
+                              href="/using-simplereport/manage-people-you-test/bulk-upload-patients/#preparing-your-spreadsheet-data"
                             >
-                              <FontAwesomeIcon icon={faXmark} />
-                            </button>
-                            <p className="usa-alert__text">
-                              {errorMessageText}
-                            </p>
-                          </div>
+                              patient bulk upload guide
+                            </a>{" "}
+                            for details about accepted values.
+                          </p>
                         </div>
-                      )}
-                      {errors.length > 0 && (
-                        <table className="usa-table usa-table--borderless">
-                          <thead>
-                            <tr>
-                              <th
-                                className={"thick-bottom-border padding-left-0"}
-                              >
-                                Edits needed
-                              </th>
-                              <th
-                                className={"thick-bottom-border padding-left-0"}
-                              >
-                                Areas requiring edits
-                              </th>
-                            </tr>
-                          </thead>
-                          <tbody>
-                            {errors.map((e) => {
-                              return (
-                                <tr
-                                  key={(e?.message || "") + (e?.indices || "")}
-                                >
-                                  <td className={"border-bottom-0"}>
-                                    {e?.["message"]}{" "}
-                                  </td>
-                                  <td className={"border-bottom-0"}>
-                                    {e?.["indices"] &&
-                                      "Row(s): " + e?.["indices"]}
-                                  </td>
-                                </tr>
-                              );
-                            })}
-                          </tbody>
-                        </table>
-                      )}
-                    </div>
-                  )}
-                  <FormGroup className="margin-bottom-3">
-                    {status === "submitting" ? (
-                      <div className={"usa-file-input"}>
-                        <div className={"usa-file-input__target"}>
+                      </div>
+                    )}
+                    {errors.length > 0 && (
+                      <table className="usa-table usa-table--borderless">
+                        <thead>
+                          <tr>
+                            <th
+                              className={"thick-bottom-border padding-left-0"}
+                            >
+                              Edits needed
+                            </th>
+                            <th
+                              className={"thick-bottom-border padding-left-0"}
+                            >
+                              Areas requiring edits
+                            </th>
+                          </tr>
+                        </thead>
+                        <tbody>
+                          {errors.map((e) => {
+                            return (
+                              <tr key={(e?.message || "") + (e?.indices || "")}>
+                                <td className={"border-bottom-0"}>
+                                  {e?.["message"]}{" "}
+                                </td>
+                                <td className={"border-bottom-0"}>
+                                  {e?.["indices"] &&
+                                    "Row(s): " + e?.["indices"]?.join(", ")}
+                                </td>
+                              </tr>
+                            );
+                          })}
+                        </tbody>
+                      </table>
+                    )}
+                  </div>
+                )}
+                <FormGroup className="margin-bottom-3">
+                  {status === "submitting" ? (
+                    <div className={"usa-file-input"}>
+                      <div className={"usa-file-input__target"}>
+                        <div className={"margin-top-1"}>
+                          <span className="usa-file-input__drag-text font-sans-xs text-bold">
+                            Uploading patient information...
+                          </span>
                           <div className={"margin-top-1"}>
-                            <span className="usa-file-input__drag-text font-sans-xs text-bold">
-                              Uploading patient information...
-                            </span>
-                            <div className={"margin-top-1"}>
-                              <img
-                                src={iconLoader}
-                                alt="submitting"
-                                className={"square-5"}
-                              />
-                            </div>
+                            <img
+                              src={iconLoader}
+                              alt="submitting"
+                              className={"square-5"}
+                            />
                           </div>
                         </div>
                       </div>
-                    ) : (
-                      <FileInput
-                        id="upload-csv-input"
-                        name="upload-csv-input"
-                        aria-label="Choose CSV file"
-                        accept="text/csv, .csv"
-                        onChange={handleFileChange()}
-                        required
-                      />
-                    )}
-                  </FormGroup>
-                </div>
-                <div>
-                  <Button
-                    disabled={buttonIsDisabled || facilityAmount === undefined}
-                    onClick={handleSubmit()}
-                  >
-                    Upload CSV file
-                  </Button>
-                </div>
+                    </div>
+                  ) : (
+                    <SingleFileInput
+                      id="upload-patients-file-input"
+                      name="upload-patients-file-input"
+                      ariaLabel="Choose CSV file"
+                      accept="text/csv, .csv"
+                      required
+                      onChange={handleFileChange()}
+                    />
+                  )}
+                </FormGroup>
+                <Button
+                  disabled={buttonIsDisabled || facilityAmount === undefined}
+                  onClick={handleSubmit()}
+                >
+                  Upload CSV file
+                </Button>
               </div>
             </li>
           </ol>
