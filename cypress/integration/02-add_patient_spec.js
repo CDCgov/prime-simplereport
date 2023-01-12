@@ -72,7 +72,7 @@ describe("Adding Patients", () => {
     const patientToCsv = (patient) => {
       return `${patient.lastName},${patient.firstName},,,unknown,5/11/1933,unknown,unknown,123 Main Street,,Washington,,DC,20008,USA,565-666-7777,MOBILE,No,No,VISITOR,foo@example.com`;
     }
-    it("navigates to the bulk upload page", ({default}) => {
+    it("navigates to the bulk upload page", () => {
       cy.visit("/");
       cy.get(".usa-nav-container");
       cy.get("#desktop-patient-nav-link").click();
