@@ -82,6 +82,12 @@ const App = () => {
   useEffect(() => {
     if (!data) return;
 
+    appInsights?.setAuthenticatedUserContext(
+      data.whoami.id,
+      data.whoami.organization?.name,
+      false
+    );
+
     dispatch(
       setInitialState({
         dataLoaded: true,
