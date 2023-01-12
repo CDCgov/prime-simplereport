@@ -36,7 +36,9 @@ const createTelemetryService = () => {
     appInsights.addTelemetryInitializer(function (envelope) {
       if (envelope.name === "Ms.Web.PageView") {
         // @ts-ignore
-        envelope?.data.baseData.url = `${window.location.origin}${window.location.pathname}`;
+        envelope["data"]["baseData"][
+          "url"
+        ] = `${window.location.origin}${window.location.pathname}`;
       }
     });
     // end of insertion
