@@ -67,11 +67,14 @@ describe("Adding Patients", () => {
   });
 
   describe("Bulk upload patients", () => {
-    const patients = [generatePatient(), generatePatient()];
+    let patients = [];
 
     const patientToCsv = (patient) => {
       return `${patient.lastName},${patient.firstName},,,unknown,5/11/1933,unknown,unknown,123 Main Street,,Washington,,DC,20008,USA,565-666-7777,MOBILE,No,No,VISITOR,foo@example.com`;
     }
+    before(() => {
+      patient.push(generatePatient(), generatePatient());
+    })
     it("navigates to the bulk upload page", () => {
       cy.log("start navigation")
       cy.visit("/");
