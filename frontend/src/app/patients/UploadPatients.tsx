@@ -169,7 +169,7 @@ const UploadPatients = ({ isAdmin }: { isAdmin: boolean }) => {
               <h2
                 className={"margin-0 font-sans-lg text-light line-height-225"}
               >
-                1. Setup your spreadsheet
+                1. Set up your spreadsheet
               </h2>
               <div className={"margin-left-3"}>
                 <div
