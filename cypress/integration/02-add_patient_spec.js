@@ -73,6 +73,7 @@ describe("Adding Patients", () => {
       return `${patient.lastName},${patient.firstName},,,unknown,5/11/1933,unknown,unknown,123 Main Street,,Washington,,DC,20008,USA,565-666-7777,MOBILE,No,No,VISITOR,foo@example.com`;
     }
     it("navigates to the bulk upload page", () => {
+      cy.log("start navigation")
       cy.visit("/");
       cy.get(".usa-nav-container");
       cy.get("#desktop-patient-nav-link").click();
@@ -82,6 +83,7 @@ describe("Adding Patients", () => {
       cy.get(".prime-edit-patient").contains("Setup your spreadsheet");
       cy.injectAxe();
       cy.checkA11y(); // Bulk upload patient form
+      cy.log("end navigation")
     });
     it("uploads csv file of patients", () => {
       const csvFileContent = "last_name,first_name,middle_name,suffix,race,date_of_birth,biological_sex,ethnicity,street,street2,city,county,state,zip_code,country,phone_number,phone_number_type,employed_in_healthcare,resident_congregate_setting,role,email\n"
