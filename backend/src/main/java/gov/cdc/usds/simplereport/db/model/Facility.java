@@ -1,10 +1,5 @@
 package gov.cdc.usds.simplereport.db.model;
 
-import static gov.cdc.usds.simplereport.api.converter.FhirConverter.convertToAddress;
-import static gov.cdc.usds.simplereport.api.converter.FhirConverter.convertToIdentifier;
-import static gov.cdc.usds.simplereport.api.converter.FhirConverter.emailToContactPoint;
-import static gov.cdc.usds.simplereport.api.converter.FhirConverter.phoneNumberToContactPoint;
-
 import gov.cdc.usds.simplereport.db.model.auxiliary.StreetAddress;
 import java.util.HashSet;
 import java.util.List;
@@ -19,7 +14,6 @@ import javax.persistence.JoinColumn;
 import javax.persistence.JoinTable;
 import javax.persistence.ManyToMany;
 import javax.persistence.ManyToOne;
-import org.hl7.fhir.r4.model.ContactPoint.ContactPointUse;
 
 @Entity
 public class Facility extends OrganizationScopedEternalEntity implements LocatedEntity {
@@ -195,15 +189,5 @@ public class Facility extends OrganizationScopedEternalEntity implements Located
 
   public void setEmail(String email) {
     this.email = email;
-  }
-
-  public org.hl7.fhir.r4.model.Organization toFhir() {
-    var org = new org.hl7.fhir.r4.model.Organization();
-    org.addIdentifier(convertToIdentifier(getInternalId()));
-    org.setName(facilityName);
-    org.addTelecom(phoneNumberToContactPoint(ContactPointUse.WORK, telephone));
-    org.addTelecom(emailToContactPoint(email));
-    org.addAddress(convertToAddress(address));
-    return org;
   }
 }
