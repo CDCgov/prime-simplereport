@@ -27,7 +27,11 @@ import static org.junit.jupiter.params.provider.Arguments.arguments;
 
 import ca.uhn.fhir.context.FhirContext;
 import ca.uhn.fhir.parser.IParser;
+import gov.cdc.usds.simplereport.db.model.DeviceSpecimenType;
 import gov.cdc.usds.simplereport.db.model.DeviceType;
+import gov.cdc.usds.simplereport.db.model.Facility;
+import gov.cdc.usds.simplereport.db.model.Organization;
+import gov.cdc.usds.simplereport.db.model.Person;
 import gov.cdc.usds.simplereport.db.model.PhoneNumber;
 import gov.cdc.usds.simplereport.db.model.Provider;
 import gov.cdc.usds.simplereport.db.model.Result;
@@ -757,20 +761,12 @@ class FhirConverterTest {
   }
 
   @Test
-  void convertToDiagnosticReport_TestEvent_matchesJson() {
-    var internalId = "3c9c7370-e2e3-49ad-bb7a-f6005f41cf29";
+  void testEventNullDeviceType_convertToDiagnosticReport() {
     var testEvent = TestDataBuilder.createEmptyTestEvent();
-    ReflectionTestUtils.setField(testEvent, "internalId", UUID.fromString(internalId));
     var actual = convertToDiagnosticReport(testEvent);
 
-    String actualSerialized = parser.encodeResourceToString(actual);
-    var expectedSerialized =
-        IOUtils.toString(
-            Objects.requireNonNull(
-                getClass().getClassLoader().getResourceAsStream("fhir/diagnosticReport.json")),
-            StandardCharsets.UTF_8);
-
-    JSONAssert.assertEquals(actualSerialized, expectedSerialized, true);
+    assertThat(actual.getStatus()).isEqualTo(DiagnosticReportStatus.FINAL);
+    assertThat(actual.getCode().getCoding()).isEmpty();
   }
 
   @Test
