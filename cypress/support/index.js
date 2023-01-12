@@ -34,6 +34,7 @@ const getDobFormat = () => {
 // Generate a random patient
 export const generatePatient = () => {
   const patient = {};
+  console.log("Generating patient");
   patient.firstName = faker.name.firstName();
   patient.lastName = faker.name.lastName();
   patient.fullName = `${patient.lastName}, ${patient.firstName}`;
@@ -46,6 +47,7 @@ export const generatePatient = () => {
   patient.state = "DC";
   patient.zip = "20503";
   patient.studentId = faker.datatype.uuid();
+  console.log("done generating");
   return patient;
 };
 
