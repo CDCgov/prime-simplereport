@@ -105,7 +105,7 @@ const App = () => {
         },
       })
     );
-  }, [data, dispatch]);
+  }, [data, dispatch, appInsights]);
 
   if (loading) {
     return <p>Loading account information...</p>;
