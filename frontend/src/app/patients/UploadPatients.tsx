@@ -141,7 +141,7 @@ const UploadPatients = ({ isAdmin }: { isAdmin: boolean }) => {
         return;
       }
 
-      console.log("MAX_CSV_UPLOAD_BYTES is", MAX_CSV_UPLOAD_BYTES);
+      const fileText = await file.text();
       if (file.size > MAX_CSV_UPLOAD_BYTES) {
         setStatus("fail");
         createErrorToast(
@@ -152,8 +152,6 @@ const UploadPatients = ({ isAdmin }: { isAdmin: boolean }) => {
         return;
       }
 
-      console.log("MAX_CSV_UPLOAD_ROW_COUNT is", MAX_CSV_UPLOAD_ROW_COUNT);
-      const fileText = await file.text();
       const lineCount = (fileText.match(/\n/g) || []).length + 1;
       if (lineCount > MAX_CSV_UPLOAD_ROW_COUNT) {
         setStatus("fail");
