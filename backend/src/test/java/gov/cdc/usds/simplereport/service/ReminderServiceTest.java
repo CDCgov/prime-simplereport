@@ -59,13 +59,7 @@ class ReminderServiceTest extends BaseServiceTest<ReminderService> {
   @Test
   void sendAccountReminderEmails_concurrencyLock_success()
       throws InterruptedException, SQLException, IOException {
-<<<<<<< HEAD
     OrganizationQueueItem unverifiedQueuedOrg = _dataFactory.saveOrganizationQueueItem();
-=======
-    String email = "fake@example.org";
-    OrganizationQueueItem unverifiedQueuedOrg =
-        _dataFactory.createOrganizationQueueItem("New Org Name", "NEW_ORG_NAME", email);
->>>>>>> d4a569250 (run linter)
     initAndBackdateUnverifiedQueuedOrg(unverifiedQueuedOrg);
 
     int n = 3;
@@ -88,7 +82,8 @@ class ReminderServiceTest extends BaseServiceTest<ReminderService> {
     verify(_emailService, times(1)).sendWithDynamicTemplate(anyString(), any());
     verify(_emailService, times(1))
         .sendWithDynamicTemplate(
-                "org.queue.admin@example.com", EmailProviderTemplate.ORGANIZATION_ID_VERIFICATION_REMINDER);
+            "org.queue.admin@example.com",
+            EmailProviderTemplate.ORGANIZATION_ID_VERIFICATION_REMINDER);
   }
 
   void initAndBackdateUnverifiedQueuedOrg(OrganizationQueueItem unverifiedQueuedOrg)
