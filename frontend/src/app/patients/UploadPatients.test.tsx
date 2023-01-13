@@ -30,20 +30,6 @@ jest.mock("react-router-dom", () => {
   };
 });
 
-const mock_MAX_CSV_UPLOAD_BYTES = jest.fn();
-jest.mock("../../config/constants", () => ({
-  get MAX_CSV_UPLOAD_BYTES() {
-    return mock_MAX_CSV_UPLOAD_BYTES();
-  },
-}));
-
-const mock_MAX_CSV_UPLOAD_ROW_COUNT = jest.fn();
-jest.mock("../../config/constants", () => ({
-  get MAX_CSV_UPLOAD_ROW_COUNT() {
-    return mock_MAX_CSV_UPLOAD_ROW_COUNT();
-  },
-}));
-
 const renderUploadPatients = (isAdmin = true) =>
   render(
     <Provider store={store}>
@@ -287,22 +273,18 @@ describe("Upload Patient", () => {
   });
   it("should show size error for large files", async () => {
     renderUploadPatients();
+    const tooBig = file("0".repeat(50 * 1000 * 1000 + 1));
 
-    mock_MAX_CSV_UPLOAD_BYTES.mockReturnValue(2);
-    const uploadFile = file("someText");
-
-    await userEventUpload(uploadFile, "One facility");
+    await userEventUpload(tooBig, "One facility");
     expect(
       await screen.findByText("Error: File too large")
     ).toBeInTheDocument();
   });
   it("should show size error for file with too many rows", async () => {
     renderUploadPatients();
+    const tooManyRows = file("\n".repeat(10001));
 
-    mock_MAX_CSV_UPLOAD_ROW_COUNT.mockReturnValue(1);
-    const uploadFile = file("abc\ndef\nghi");
-
-    await userEventUpload(uploadFile, "One facility");
+    await userEventUpload(tooManyRows, "One facility");
     expect(
       await screen.findByText("Error: File too large")
     ).toBeInTheDocument();
