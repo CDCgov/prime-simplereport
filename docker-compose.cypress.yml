@@ -68,3 +68,6 @@ services:
       driver: none
     profiles:
       - donotstart
+  db:
+    logging:
+      driver: none
