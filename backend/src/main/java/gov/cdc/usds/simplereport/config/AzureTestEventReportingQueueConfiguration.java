@@ -70,7 +70,7 @@ class AzureTestEventReportingQueueConfiguration {
 
   @Bean("fhirQueueClient")
   @ConditionalOnProperty(
-      value = "simple-report.azure-reporting-queue.fhirQueueEnabled",
+      value = "simple-report.azure-reporting-queue.fhir-queue-enabled",
       havingValue = "true")
   QueueAsyncClient fhirQueueServiceAsyncClient(AzureStorageQueueReportingProperties properties) {
     return new QueueClientBuilder()

@@ -118,6 +118,7 @@ simple-report:
     preciseid-password: ${EXPERIAN_PID_PASSWORD}
   azure-reporting-queue:
     enabled: false
+    fhir-queue-enabled: false
     exception-webhook-enabled: false
     exception-webhook-token: ${RS_QUEUE_CALLBACK_TOKEN}
     name: ${AZ_REPORTING_QUEUE_NAME:test-event-publishing}
