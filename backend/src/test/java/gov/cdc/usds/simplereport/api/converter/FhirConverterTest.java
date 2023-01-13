@@ -761,6 +761,24 @@ class FhirConverterTest {
   }
 
   @Test
+  void convertToDiagnosticReport_TestEvent_matchesJson() throws IOException {
+    var internalId = "3c9c7370-e2e3-49ad-bb7a-f6005f41cf29";
+    var testEvent = TestDataBuilder.createEmptyTestEventWithValidDevice();
+    ReflectionTestUtils.setField(testEvent, "internalId", UUID.fromString(internalId));
+
+    var actual = convertToDiagnosticReport(testEvent);
+
+    String actualSerialized = parser.encodeResourceToString(actual);
+    var expectedSerialized =
+        IOUtils.toString(
+            Objects.requireNonNull(
+                getClass().getClassLoader().getResourceAsStream("fhir/diagnosticReport.json")),
+            StandardCharsets.UTF_8);
+
+    JSONAssert.assertEquals(actualSerialized, expectedSerialized, true);
+  }
+
+  @Test
   void testEventNullDeviceType_convertToDiagnosticReport() {
     var testEvent = TestDataBuilder.createEmptyTestEvent();
     var actual = convertToDiagnosticReport(testEvent);
