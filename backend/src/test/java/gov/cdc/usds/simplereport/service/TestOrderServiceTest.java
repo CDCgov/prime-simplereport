@@ -83,7 +83,13 @@ class TestOrderServiceTest extends BaseServiceTest<TestOrderService> {
   @Autowired private TestDataFactory _dataFactory;
   @SpyBean private PatientLinkService patientLinkService;
   @MockBean private TestResultsDeliveryService testResultsDeliveryService;
-  @MockBean TestEventReportingService testEventReportingService;
+
+  @MockBean(name = "csvQueueReportingService")
+  TestEventReportingService testEventReportingService;
+
+  @MockBean(name = "fhirQueueReportingService")
+  TestEventReportingService fhirQueueReportingService;
+
   @Captor ArgumentCaptor<TestEvent> testEventArgumentCaptor;
 
   private static final PersonName AMOS = new PersonName("Amos", null, "Quint", null);
@@ -168,6 +174,7 @@ class TestOrderServiceTest extends BaseServiceTest<TestOrderService> {
 
     // make sure the corrected event is sent to storage queue
     verify(testEventReportingService).report(testEventArgumentCaptor.capture());
+    verify(fhirQueueReportingService).report(testEventArgumentCaptor.capture());
     TestEvent sentEvent = testEventArgumentCaptor.getValue();
     assertThat(sentEvent.getPatient().getInternalId()).isEqualTo(patient.getInternalId());
     assertThat(sentEvent.getCovidTestResult().get()).isEqualTo(TestResult.POSITIVE);
@@ -211,7 +218,8 @@ class TestOrderServiceTest extends BaseServiceTest<TestOrderService> {
         p.getInternalId(),
         null);
 
-    verify(testEventReportingService, times(1)).report(any());
+    verify(testEventReportingService).report(any());
+    verify(fhirQueueReportingService).report(any());
 
     List<TestEvent> testEvents =
         _testEventRepository.findAllByPatientAndFacilities(p, List.of(facility));
@@ -231,6 +239,7 @@ class TestOrderServiceTest extends BaseServiceTest<TestOrderService> {
     assertThat(testEvents.get(0).getPatientHasPriorTests()).isFalse();
     assertThat(testEvents.get(1).getPatientHasPriorTests()).isTrue();
     verify(testEventReportingService, times(2)).report(any());
+    verify(fhirQueueReportingService, times(2)).report(any());
   }
 
   @Test
@@ -374,6 +383,7 @@ class TestOrderServiceTest extends BaseServiceTest<TestOrderService> {
     List<TestOrder> queue = _service.getQueue(facility.getInternalId());
     assertEquals(0, queue.size());
     verify(testEventReportingService).report(any());
+    verify(fhirQueueReportingService).report(any());
   }
 
   @Test
@@ -415,6 +425,7 @@ class TestOrderServiceTest extends BaseServiceTest<TestOrderService> {
     List<TestOrder> queue = _service.getQueue(facility.getInternalId());
     assertEquals(0, queue.size());
     verify(testEventReportingService).report(any());
+    verify(fhirQueueReportingService).report(any());
   }
 
   @Test
@@ -516,6 +527,7 @@ class TestOrderServiceTest extends BaseServiceTest<TestOrderService> {
 
     // make sure the corrected event is sent to storage queue
     verify(testEventReportingService).report(any());
+    verify(fhirQueueReportingService).report(any());
 
     List<MultiplexResultInput> negativeCovidResult = makeCovidOnlyResult(TestResult.NEGATIVE);
 
@@ -527,6 +539,7 @@ class TestOrderServiceTest extends BaseServiceTest<TestOrderService> {
 
     // make sure the second event is sent to storage queue
     verify(testEventReportingService, times(2)).report(any());
+    verify(fhirQueueReportingService, times(2)).report(any());
   }
 
   @Test
@@ -831,6 +844,7 @@ class TestOrderServiceTest extends BaseServiceTest<TestOrderService> {
     assertTrue(res.getDeliverySuccess());
     verifyNoInteractions(testResultsDeliveryService);
     verify(testEventReportingService).report(any());
+    verify(fhirQueueReportingService).report(any());
   }
 
   @Test
@@ -1322,6 +1336,7 @@ class TestOrderServiceTest extends BaseServiceTest<TestOrderService> {
     // make sure the corrected event is sent to storage queue, which gets picked up to be delivered
     // to report stream
     verify(testEventReportingService).report(deleteMarkerEvent);
+    verify(fhirQueueReportingService).report(deleteMarkerEvent);
   }
 
   @Test
@@ -1780,6 +1795,7 @@ class TestOrderServiceTest extends BaseServiceTest<TestOrderService> {
 
     // make sure the corrected event is not sent to storage queue
     verifyNoInteractions(testEventReportingService);
+    verifyNoInteractions(fhirQueueReportingService);
 
     TestUserIdentities.setFacilityAuthorities(facility);
     TestEvent correctedTestEvent = _service.markAsError(_e.getInternalId(), reasonMsg);
@@ -1788,6 +1804,7 @@ class TestOrderServiceTest extends BaseServiceTest<TestOrderService> {
     _service.getTestResult(_e.getInternalId()).getTestOrder();
     // make sure the corrected event is sent to storage queue
     verify(testEventReportingService).report(correctedTestEvent);
+    verify(fhirQueueReportingService).report(correctedTestEvent);
   }
 
   private List<TestEvent> makedata() {

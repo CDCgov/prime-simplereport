@@ -20,13 +20,11 @@ import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean
 import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
-import org.springframework.context.annotation.Primary;
 
 @Slf4j
 @Configuration
 class AzureTestEventReportingQueueConfiguration {
-  @Bean
-  @Primary
+  @Bean("csvQueueReportingService")
   @ConditionalOnProperty(
       value = "simple-report.azure-reporting-queue.enabled",
       havingValue = "true")

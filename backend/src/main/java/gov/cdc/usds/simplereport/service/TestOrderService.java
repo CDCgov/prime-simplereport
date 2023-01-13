@@ -49,6 +49,7 @@ import javax.persistence.criteria.Predicate;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.hibernate.Hibernate;
+import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Sort;
@@ -72,7 +73,13 @@ public class TestOrderService {
   private final PatientAnswersRepository _patientAnswersRepo;
   private final TestEventRepository _testEventRepo;
   private final PatientLinkService _patientLinkService;
+
+  @Qualifier("csvQueueReportingService")
   private final TestEventReportingService _testEventReportingService;
+
+  @Qualifier("fhirQueueReportingService")
+  private final TestEventReportingService _fhirQueueReportingService;
+
   private final TestResultsDeliveryService testResultsDeliveryService;
   private final DiseaseService _diseaseService;
   private final ResultRepository _resultRepo;
@@ -317,6 +324,7 @@ public class TestOrderService {
       order.setTestEventRef(savedEvent);
       savedOrder = _testOrderRepo.save(order);
       _testEventReportingService.report(savedEvent);
+      _fhirQueueReportingService.report(testEvent);
     } finally {
       unlockOrder(order.getInternalId());
     }
@@ -559,6 +567,7 @@ public class TestOrderService {
         });
     _resultRepo.saveAll(results);
     _testEventReportingService.report(newRemoveEvent);
+    _fhirQueueReportingService.report(newRemoveEvent);
 
     order.setReasonForCorrection(reasonForCorrection);
     order.setTestEventRef(newRemoveEvent);
