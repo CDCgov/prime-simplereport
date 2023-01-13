@@ -60,7 +60,12 @@ public abstract class BaseTestInfo extends AuditedEntity implements Organization
   }
 
   protected BaseTestInfo(BaseTestInfo orig) {
-    this(orig.getPatient(), orig.getFacility(), orig.getDeviceSpecimen());
+    this(orig.getPatient(), orig.getFacility());
+    if (orig.getDeviceSpecimen() != null) {
+      this.setDeviceSpecimen(orig.getDeviceSpecimen());
+    } else {
+      this.setDeviceTypeAndSpecimenType(orig.getDeviceType(), orig.getSpecimenType());
+    }
   }
 
   protected BaseTestInfo(Person patient, Facility facility, DeviceSpecimenType deviceSpecimen) {
@@ -126,6 +131,11 @@ public abstract class BaseTestInfo extends AuditedEntity implements Organization
     this.deviceSpecimen = deviceSpecimen;
     this.deviceType = deviceSpecimen.getDeviceType();
     this.specimenType = deviceSpecimen.getSpecimenType();
+  }
+
+  protected void setDeviceTypeAndSpecimenType(DeviceType device, SpecimenType specimen) {
+    this.deviceType = device;
+    this.specimenType = specimen;
   }
 
   public TestCorrectionStatus getCorrectionStatus() {
