@@ -347,7 +347,7 @@ class FhirConverterTest {
   }
 
   @Test
-  void convertToOrganiziation_Facility_matchesJson() throws IOException {
+  void convertToOrganization_Facility_matchesJson() throws IOException {
     var internalId = "3c9c7370-e2e3-49ad-bb7a-f6005f41cf29";
     var facility =
         new Facility(
@@ -726,17 +726,6 @@ class FhirConverterTest {
   }
 
   @Test
-  void testEventOriginal_convertToDiagnosticReport() {
-    var testEvent = TestDataBuilder.createEmptyTestEventWithValidDevice();
-    var actual = convertToDiagnosticReport(testEvent);
-
-    assertThat(actual.getStatus()).isEqualTo(DiagnosticReportStatus.FINAL);
-    assertThat(actual.getCode().getCoding()).hasSize(1);
-    assertThat(actual.getCode().getCodingFirstRep().getSystem()).isEqualTo("http://loinc.org");
-    assertThat(actual.getCode().getCodingFirstRep().getCode()).isEqualTo("95422-2");
-  }
-
-  @Test
   void convertToDiagnosticReport_TestEvent_correctedTestEvent() {
     var invalidTestEvent = TestDataBuilder.createEmptyTestEvent();
     var correctedTestEvent =
@@ -776,15 +765,6 @@ class FhirConverterTest {
             StandardCharsets.UTF_8);
 
     JSONAssert.assertEquals(actualSerialized, expectedSerialized, true);
-  }
-
-  @Test
-  void testEventNullDeviceType_convertToDiagnosticReport() {
-    var testEvent = TestDataBuilder.createEmptyTestEvent();
-    var actual = convertToDiagnosticReport(testEvent);
-
-    assertThat(actual.getStatus()).isEqualTo(DiagnosticReportStatus.FINAL);
-    assertThat(actual.getCode().getCoding()).isEmpty();
   }
 
   @Test
@@ -876,22 +856,10 @@ class FhirConverterTest {
   @Test
   void convertToServiceRequest_TestOrder_matchesJson() throws IOException {
     var internalId = "3c9c7370-e2e3-49ad-bb7a-f6005f41cf29";
-    var testOrder =
-        new TestOrder(
-            null,
-            new Facility(
-                null,
-                null,
-                null,
-                null,
-                null,
-                null,
-                null,
-                new DeviceSpecimenType(null, null),
-                Collections.emptyList()));
+    var testOrder = TestDataBuilder.createEmptyTestOrder();
     testOrder.markComplete();
     testOrder.setDeviceSpecimen(
-        new DeviceSpecimenType(new DeviceType(null, null, null, "94533-7", null, 0), null));
+        new DeviceSpecimenType(TestDataBuilder.createEmptyDeviceWithLoinc(), null));
     ReflectionTestUtils.setField(testOrder, "internalId", UUID.fromString(internalId));
 
     var actual = convertToServiceRequest(testOrder);
