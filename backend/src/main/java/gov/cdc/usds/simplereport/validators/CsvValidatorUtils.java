@@ -42,6 +42,7 @@ public class CsvValidatorUtils {
       "^\\d{1,2}\\/\\d{1,2}\\/\\d{4}( ([0-1]?[0-9]|2[0-3]):[0-5][0-9])?$";
   private static final String EMAIL_REGEX = "^[\\w-\\.]+@([\\w-]+\\.)+[\\w-]{2,4}$";
   private static final String CLIA_REGEX = "^[A-Za-z0-9]{2}[Dd][A-Za-z0-9]{7}$";
+  private static final String NUMERICAL_REGEX = "^[0-9]+$";
   private static final String ALPHABET_REGEX = "^[a-zA-Z]+$";
   private static final Set<String> VALID_STATE_CODES =
       Stream.concat(
@@ -319,6 +320,19 @@ public class CsvValidatorUtils {
       return validateInSet(input, acceptableValues);
     }
     return errors;
+  }
+
+  private static List<FeedbackMessage> validateSNOMED(ValueOrError input) {
+    List<FeedbackMessage> errors = new ArrayList<>();
+    String value = parseString(input.getValue());
+    if (value == null) {
+      return errors;
+    }
+    boolean nonSNOMEDValue = value.matches(ALPHABET_REGEX);
+
+    if (nonSNOMEDValue) {
+      return errors;
+    }
   }
 
   private static List<FeedbackMessage> validateRegex(ValueOrError input, String regex) {
