@@ -50,17 +50,16 @@ const createTelemetryService = () => {
 
         if (
           regexRemoteDependency.test(envelope.name) &&
-          staticFilesToIgnore.includes((envelope as any).data.baseData.name)
+          staticFilesToIgnore.includes((envelope as any).baseData.name)
         ) {
           return false;
         } else if (
           regexPageView.test(envelope.name) ||
-          (envelope as any).data.baseType === "PageViewData"
+          (envelope as any).baseType === "PageViewData"
         ) {
-          console.log("page view envelope:", envelope);
           (
             envelope as any
-          ).data.baseData.url = `${window.location.origin}${window.location.pathname}`;
+          ).baseData.uri = `${window.location.origin}${window.location.pathname}`;
         }
       } catch (e) {
         /* do nothing and don't disrupt logging*/
