@@ -34,14 +34,24 @@ const createTelemetryService = () => {
     });
 
     appInsights.addTelemetryInitializer(function (envelope) {
-      if (envelope.name === "Ms.Web.PageView") {
-        // @ts-ignore
-        envelope["data"]["baseData"][
-          "url"
-        ] = `${window.location.origin}${window.location.pathname}`;
+      try {
+        const regex = new RegExp("Microsoft.ApplicationInsights.(.*).Pageview");
+
+        if (
+          regex.test(envelope.name) ||
+          // @ts-ignore access to fields
+          envelope["data"]["baseType"] === "PageViewData"
+        ) {
+          // @ts-ignore access to fields
+          envelope["data"]["baseData"][
+            "url"
+          ] = `${window.location.origin}${window.location.pathname}`;
+        }
+      } catch (e) {
+        /* do nothing and don't disrupt logging*/
       }
     });
-    // end of insertion
+
     appInsights.loadAppInsights();
   };
 
