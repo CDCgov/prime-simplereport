@@ -59,14 +59,6 @@ const UploadPatients = ({ isAdmin }: { isAdmin: boolean }) => {
     };
   }
 
-  function clearErrors() {
-    setStatus("");
-    setErrorMessageText("");
-    setErrorMessageHeader("Error: File not accepted");
-    setErrors([]);
-    setIncludeGuideInErrorMessage(true);
-  }
-
   function createErrorToast(
     header: string,
     body: string,
@@ -119,7 +111,6 @@ const UploadPatients = ({ isAdmin }: { isAdmin: boolean }) => {
         if (!currentFile) {
           return;
         }
-
         setFile(currentFile);
         setButtonIsDisabled(false);
         setStatus("");
@@ -150,7 +141,6 @@ const UploadPatients = ({ isAdmin }: { isAdmin: boolean }) => {
       }
 
       if (file.size > PAYLOAD_MAX_BYTES) {
-        clearErrors();
         setStatus("fail");
         createErrorToast(
           "Error: File too large",
@@ -163,7 +153,6 @@ const UploadPatients = ({ isAdmin }: { isAdmin: boolean }) => {
       const fileText = await file.text();
       const lineCount = (fileText.match(/\n/g) || []).length + 1;
       if (lineCount > MAX_ROW_COUNT) {
-        clearErrors();
         setStatus("fail");
         createErrorToast(
           "Error: File too large",
