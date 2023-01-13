@@ -176,7 +176,7 @@ public class TestDataFactory {
 
   public Facility createValidFacility(Organization org, String facilityName) {
     DeviceType defaultDevice = getGenericDevice();
-    SpecimenType dwfaultSpecimen = getGenericSpecimen();
+    SpecimenType defaultSpecimen = getGenericSpecimen();
 
     List<DeviceType> configuredDevices = new ArrayList<>();
     configuredDevices.add(defaultDevice);
@@ -193,7 +193,7 @@ public class TestDataFactory {
             "facility@test.com",
             doc,
             defaultDevice,
-            dwfaultSpecimen,
+            defaultSpecimen,
             configuredDevices);
     Facility save = facilityRepository.save(facility);
     oktaRepository.createFacility(save);
