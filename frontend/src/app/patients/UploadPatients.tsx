@@ -35,6 +35,9 @@ const UploadPatients = ({ isAdmin }: { isAdmin: boolean }) => {
   const [errorMessageText, setErrorMessageText] = useState("");
   const [includeGuideInErrorMessage, setIncludeGuideInErrorMessage] =
     useState(true);
+  const [errorMessageHeader, setErrorMessageHeader] = useState(
+    "Error: File not accepted"
+  );
   const [status, setStatus] = useState<
     "submitting" | "complete" | "success" | "fail" | ""
   >("");
@@ -55,11 +58,32 @@ const UploadPatients = ({ isAdmin }: { isAdmin: boolean }) => {
       }
     };
   }
+
+  function clearErrors() {
+    setStatus("");
+    setErrorMessageText("");
+    setErrorMessageHeader("Error: File not accepted");
+    setErrors([]);
+    setIncludeGuideInErrorMessage(true);
+  }
+
+  function createErrorToast(
+    header: string,
+    body: string,
+    includeGuide: boolean
+  ) {
+    setErrorMessageHeader(header);
+    setErrorMessageText(body);
+    setIncludeGuideInErrorMessage(includeGuide);
+  }
+
   const handleResponseStatus = async (res: Response) => {
     if (res.status !== 200) {
       setStatus("fail");
-      setErrorMessageText(
-        "There was a server error. Your file has not been accepted."
+      createErrorToast(
+        "Error: File not accepted",
+        "There was a server error. Your file has not been accepted.",
+        true
       );
     } else {
       const response = await res?.json();
@@ -67,16 +91,18 @@ const UploadPatients = ({ isAdmin }: { isAdmin: boolean }) => {
       if (response.status === "FAILURE") {
         setStatus("fail");
         if (response?.errors?.length) {
-          setErrorMessageText(
-            "Please resolve the errors below and upload your edited file."
+          createErrorToast(
+            "Error: File not accepted",
+            "Please resolve the errors below and upload your edited file.",
+            true
           );
-          setIncludeGuideInErrorMessage(true);
           setErrors(response.errors);
         } else {
-          setErrorMessageText(
-            "There was a server error. Your file has not been accepted."
+          createErrorToast(
+            "Error: File not accepted",
+            "There was a server error. Your file has not been accepted.",
+            true
           );
-          setIncludeGuideInErrorMessage(true);
         }
       } else {
         setStatus("success");
@@ -91,27 +117,6 @@ const UploadPatients = ({ isAdmin }: { isAdmin: boolean }) => {
         }
         const currentFile = event.currentTarget.files.item(0);
         if (!currentFile) {
-          return;
-        }
-        if (currentFile.size > PAYLOAD_MAX_BYTES) {
-          setStatus("fail");
-          setErrorMessageText(
-            `"${currentFile.name}" is too large for SimpleReport to process. Please limit each upload to 50 MB.`
-          );
-          setIncludeGuideInErrorMessage(false);
-          return;
-        }
-
-        const fileText = await currentFile.text();
-        const lineCount = (fileText.match(/\n/g) || []).length + 1;
-        if (lineCount > MAX_ROW_COUNT) {
-          setStatus("fail");
-          setErrorMessageText(
-            `“${
-              currentFile.name
-            }” has too many rows for SimpleReport to process. Please limit each upload to ${MAX_ROW_COUNT.toLocaleString()} rows.`
-          );
-          setIncludeGuideInErrorMessage(false);
           return;
         }
 
@@ -136,10 +141,40 @@ const UploadPatients = ({ isAdmin }: { isAdmin: boolean }) => {
       if (!file || file.size === 0) {
         setStatus("fail");
         setButtonIsDisabled(false);
-        setErrorMessageText("Invalid file");
-        setIncludeGuideInErrorMessage(true);
+        createErrorToast(
+          "Error: Invalid file",
+          "File is missing or empty.",
+          true
+        );
         return;
       }
+
+      if (file.size > PAYLOAD_MAX_BYTES) {
+        clearErrors();
+        setStatus("fail");
+        createErrorToast(
+          "Error: File too large",
+          `"${file.name}" is too large for SimpleReport to process. Please limit each upload to 50 MB.`,
+          false
+        );
+        return;
+      }
+
+      const fileText = await file.text();
+      const lineCount = (fileText.match(/\n/g) || []).length + 1;
+      if (lineCount > MAX_ROW_COUNT) {
+        clearErrors();
+        setStatus("fail");
+        createErrorToast(
+          "Error: File too large",
+          `“${
+            file.name
+          }” has too many rows for SimpleReport to process. Please limit each upload to ${MAX_ROW_COUNT.toLocaleString()} rows.`,
+          false
+        );
+        return;
+      }
+
       const facilityId = facilityAmount === "oneFacility" ? facility.id : "";
       FileUploadService.uploadPatients(file, facilityId).then(async (res) => {
         setStatus("complete");
@@ -297,7 +332,7 @@ const UploadPatients = ({ isAdmin }: { isAdmin: boolean }) => {
                       <div className="usa-alert usa-alert--error maxw-560">
                         <div className="usa-alert__body">
                           <span className="usa-alert__heading text-bold">
-                            Error: File not accepted
+                            {errorMessageHeader}
                           </span>
                           <button
                             className="Toastify__close-button Toastify__close-button--default position-absolute top-0 right-0"
