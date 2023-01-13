@@ -1,10 +1,5 @@
 package gov.cdc.usds.simplereport.db.model;
 
-import static gov.cdc.usds.simplereport.api.converter.FhirConverter.convertToAddress;
-import static gov.cdc.usds.simplereport.api.converter.FhirConverter.convertToHumanName;
-import static gov.cdc.usds.simplereport.api.converter.FhirConverter.convertToIdentifier;
-import static gov.cdc.usds.simplereport.api.converter.FhirConverter.phoneNumberToContactPoint;
-
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonUnwrapped;
 import gov.cdc.usds.simplereport.db.model.auxiliary.PersonName;
@@ -12,8 +7,6 @@ import gov.cdc.usds.simplereport.db.model.auxiliary.StreetAddress;
 import javax.persistence.Column;
 import javax.persistence.Embedded;
 import javax.persistence.Entity;
-import org.hl7.fhir.r4.model.ContactPoint.ContactPointUse;
-import org.hl7.fhir.r4.model.Practitioner;
 import org.springframework.boot.context.properties.ConstructorBinding;
 
 @Entity
@@ -122,14 +115,5 @@ public class Provider extends EternalAuditedEntity implements PersonEntity, Loca
 
   public void setTelephone(String telephone) {
     this.telephone = telephone;
-  }
-
-  public Practitioner toFhir() {
-    var practioner = new Practitioner();
-    practioner.addIdentifier(convertToIdentifier(getInternalId()));
-    practioner.addName(convertToHumanName(nameInfo));
-    practioner.addAddress(convertToAddress(address));
-    practioner.addTelecom(phoneNumberToContactPoint(ContactPointUse.WORK, telephone));
-    return practioner;
   }
 }
