@@ -1,5 +1,6 @@
 import {
   ApplicationInsights,
+  ITelemetryItem,
   SeverityLevel,
 } from "@microsoft/applicationinsights-web";
 import { ReactPlugin } from "@microsoft/applicationinsights-react-js";
@@ -31,6 +32,39 @@ const createTelemetryService = () => {
         loggingLevelTelemetry: 2,
         maxBatchInterval: 0,
       },
+    });
+
+    appInsights.addTelemetryInitializer(function (envelope: ITelemetryItem) {
+      try {
+        const regexPageView = new RegExp(
+          "Microsoft.ApplicationInsights.(.*).Pageview"
+        );
+        const regexRemoteDependency = new RegExp(
+          "Microsoft.ApplicationInsights.(.*).RemoteDependency"
+        );
+
+        const staticFilesToIgnore = [
+          "GET /maintenance.json",
+          "GET /app/static/commit.txt",
+        ];
+
+        if (
+          regexRemoteDependency.test(envelope.name) &&
+          staticFilesToIgnore.includes((envelope as any).data.baseData.name)
+        ) {
+          return false;
+        } else if (
+          regexPageView.test(envelope.name) ||
+          (envelope as any).data.baseType === "PageViewData"
+        ) {
+          console.log("page view envelope:", envelope);
+          (
+            envelope as any
+          ).data.baseData.url = `${window.location.origin}${window.location.pathname}`;
+        }
+      } catch (e) {
+        /* do nothing and don't disrupt logging*/
+      }
     });
 
     appInsights.loadAppInsights();
