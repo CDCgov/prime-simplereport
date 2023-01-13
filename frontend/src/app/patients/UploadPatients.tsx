@@ -15,13 +15,14 @@ import { showError } from "../utils/srToast";
 import { FileUploadService } from "../../fileUploadService/FileUploadService";
 import iconLoader from "../../img/loader.svg";
 import { getFacilityIdFromUrl } from "../utils/url";
+import {
+  MAX_CSV_UPLOAD_BYTES,
+  MAX_CSV_UPLOAD_ROW_COUNT,
+} from "../../config/constants";
 
 import { AddPatientHeader } from "./Components/AddPatientsHeader";
 
 import "./UploadPatients.scss";
-
-const PAYLOAD_MAX_BYTES = 50 * 1000 * 1000;
-const MAX_ROW_COUNT = 10000;
 
 const UploadPatients = ({ isAdmin }: { isAdmin: boolean }) => {
   useDocumentTitle("Add Patient");
@@ -140,7 +141,8 @@ const UploadPatients = ({ isAdmin }: { isAdmin: boolean }) => {
         return;
       }
 
-      if (file.size > PAYLOAD_MAX_BYTES) {
+      console.log("MAX_CSV_UPLOAD_BYTES is", MAX_CSV_UPLOAD_BYTES);
+      if (file.size > MAX_CSV_UPLOAD_BYTES) {
         setStatus("fail");
         createErrorToast(
           "Error: File too large",
@@ -150,15 +152,16 @@ const UploadPatients = ({ isAdmin }: { isAdmin: boolean }) => {
         return;
       }
 
+      console.log("MAX_CSV_UPLOAD_ROW_COUNT is", MAX_CSV_UPLOAD_ROW_COUNT);
       const fileText = await file.text();
       const lineCount = (fileText.match(/\n/g) || []).length + 1;
-      if (lineCount > MAX_ROW_COUNT) {
+      if (lineCount > MAX_CSV_UPLOAD_ROW_COUNT) {
         setStatus("fail");
         createErrorToast(
           "Error: File too large",
           `“${
             file.name
-          }” has too many rows for SimpleReport to process. Please limit each upload to ${MAX_ROW_COUNT.toLocaleString()} rows.`,
+          }” has too many rows for SimpleReport to process. Please limit each upload to ${MAX_CSV_UPLOAD_ROW_COUNT.toLocaleString()} rows.`,
           false
         );
         return;
