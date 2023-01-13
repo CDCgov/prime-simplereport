@@ -38,7 +38,7 @@ class FileRowTest {
 
       @Override
       public List<String> getRequiredFields() {
-        return List.of(null);
+        return Collections.emptyList();
       }
 
       @Override
@@ -71,7 +71,7 @@ class FileRowTest {
 
       @Override
       public List<String> getRequiredFields() {
-        return List.of(null);
+        return Collections.emptyList();
       }
 
       @Override
@@ -104,7 +104,7 @@ class FileRowTest {
 
       @Override
       public List<String> getRequiredFields() {
-        return List.of(null);
+        return Collections.emptyList();
       }
 
       @Override
