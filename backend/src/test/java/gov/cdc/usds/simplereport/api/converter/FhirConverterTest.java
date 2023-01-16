@@ -281,18 +281,18 @@ class FhirConverterTest {
   @ParameterizedTest
   @MethodSource("ethnicityArgs")
   void convertToEthnicityExtension_matches(
-      String ethnicity, String ombSystem, String raceCode, String ethnicityDisplay) {
-    var actual = convertToEthnicityExtension(ethnicity);
-    var ombExtension = actual.getExtensionByUrl("ombCategory");
-    var textExtension = actual.getExtensionByUrl("text");
-    var ombCoding = actual.castToCoding(ombExtension.getValue());
-    var textValueString = actual.castToString(textExtension.getValue());
+      String ethnicity, String system, String ethnicityCode, String ethnicityDisplay) {
 
-    assertThat(actual.getExtension()).hasSize(2);
-    assertThat(ombCoding.getSystem()).isEqualTo(ombSystem);
-    assertThat(ombCoding.getCode()).isEqualTo(raceCode);
-    assertThat(ombCoding.getDisplay()).isEqualTo(ethnicityDisplay);
-    assertThat(textValueString.getValue()).isEqualTo(ethnicityDisplay);
+    var actual = convertToEthnicityExtension(ethnicity);
+    var codeableConcept = actual.castToCodeableConcept(actual.getValue());
+    var coding = codeableConcept.getCoding();
+    var text = codeableConcept.getText();
+
+    assertThat(coding).hasSize(1);
+    assertThat(coding.get(0).getSystem()).isEqualTo(system);
+    assertThat(coding.get(0).getCode()).isEqualTo(ethnicityCode);
+    assertThat(coding.get(0).getDisplay()).isEqualTo(ethnicityDisplay);
+    assertThat(text).isEqualTo(ethnicityDisplay);
   }
 
   private static Stream<Arguments> ethnicityArgs() {

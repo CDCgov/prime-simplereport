@@ -221,9 +221,7 @@ public class FhirConverter {
   public static Extension convertToEthnicityExtension(@NotNull String ethnicity) {
     var ext = new Extension();
     ext.setUrl(ETHNICITY_EXTENSION_URL);
-    var codeableConcept =
-        new CodeableConcept(); // not sure why this is getting set as a valueCoding instead of
-    // valueCodeableConcept
+    var codeableConcept = new CodeableConcept();
     var coding = codeableConcept.addCoding();
     if (PersonUtils.ETHNICITY_MAP.containsKey(ethnicity)) {
       if ("refused".equalsIgnoreCase(ethnicity)) {
@@ -240,9 +238,9 @@ public class FhirConverter {
       coding.setCode(MappingConstants.U_CODE);
       coding.setDisplay(MappingConstants.UNKNOWN_STRING);
 
-      codeableConcept.setText(MappingConstants.UNKNOWN_STRING);
+      codeableConcept.setText(MappingConstants.UNKNOWN_STRING); // is this case-sensitive?
     }
-    ext.setValue(coding);
+    ext.setValue(codeableConcept);
     return ext;
   }
 
