@@ -89,7 +89,7 @@ class FhirConverterTest {
 
   private static final String unknownSystem = "http://terminology.hl7.org/CodeSystem/v3-NullFlavor";
   private static final String raceCodeSystem = "http://terminology.hl7.org/CodeSystem/v3-Race";
-  private static final String ethnicitySystem = "urn:oid:2.16.840.1.113883.6.238";
+  private static final String ethnicitySystem = "http://terminology.hl7.org/CodeSystem/v2-0189";
   private static final String tribalSystemUrl =
       "http://terminology.hl7.org/CodeSystem/v3-TribalEntityUS";
   public static final String snomedCode = "http://snomed.info/sct";
@@ -297,10 +297,10 @@ class FhirConverterTest {
 
   private static Stream<Arguments> ethnicityArgs() {
     return Stream.of(
-        arguments("hispanic", ethnicitySystem, "2135-2", "Hispanic or Latino"),
-        arguments("not_hispanic", ethnicitySystem, "2186-5", "Not Hispanic or Latino"),
-        arguments("refused", unknownSystem, "ASKU", "asked but unknown"),
-        arguments("shark", unknownSystem, "UNK", "unknown"));
+        arguments("hispanic", ethnicitySystem, "H", "Hispanic or Latino"),
+        arguments("not_hispanic", ethnicitySystem, "N", "Not Hispanic or Latino"),
+        arguments("refused", unknownSystem, "U", "Unknown"),
+        arguments("shark", unknownSystem, "U", "unknown"));
   }
 
   @Test

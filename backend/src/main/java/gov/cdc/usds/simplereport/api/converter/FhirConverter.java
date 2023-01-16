@@ -223,7 +223,7 @@ public class FhirConverter {
     var ext = new Extension();
     ext.setUrl(ETHNICITY_EXTENSION_URL);
     var ombExtension = ext.addExtension();
-    ombExtension.setUrl("ombCategory");
+    ombExtension.setUrl("ombCategory"); // todo does this need to change?
     var ombCoding = new Coding();
     if (PersonUtils.ETHNICITY_MAP.containsKey(ethnicity)) {
       if ("refused".equalsIgnoreCase(ethnicity)) {
@@ -239,7 +239,7 @@ public class FhirConverter {
       text.setValue(new StringType(PersonUtils.ETHNICITY_MAP.get(ethnicity).get(1)));
     } else {
       ombCoding.setSystem(NULL_CODE_SYSTEM);
-      ombCoding.setCode(MappingConstants.UNK_CODE);
+      ombCoding.setCode(MappingConstants.U_CODE);
       ombCoding.setDisplay(MappingConstants.UNKNOWN_STRING);
 
       var text = ext.addExtension();
