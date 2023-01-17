@@ -2,10 +2,9 @@ resource "azurerm_container_group" "db_rollback" {
   name                = "${var.name}-${var.env}-db-rollback"
   location            = var.resource_group_location
   resource_group_name = var.resource_group_name
-  ip_address_type     = "Private"
+  ip_address_type     = "None"
   os_type             = "Linux"
   restart_policy      = "Never"
-  network_profile_id  = var.network_profile_id
 
   image_registry_credential {
     username = var.acr_username
