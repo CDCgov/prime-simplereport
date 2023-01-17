@@ -43,7 +43,7 @@ public class CsvValidatorUtils {
   private static final String EMAIL_REGEX = "^[\\w-\\.]+@([\\w-]+\\.)+[\\w-]{2,4}$";
   private static final String CLIA_REGEX = "^[A-Za-z0-9]{2}[Dd][A-Za-z0-9]{7}$";
   private static final String SNOMED_REGEX = "^[0-9]{9}$";
-  private static final String ALPHABET_REGEX = "^[a-zA-Z]+$";
+  private static final String ALPHABET_REGEX = "^[a-zA-Z ]+$";
   private static final Set<String> VALID_STATE_CODES =
       Stream.concat(
               STATE_CODES.stream().map(String::toLowerCase),
