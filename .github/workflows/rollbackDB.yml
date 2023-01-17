@@ -63,4 +63,7 @@ jobs:
         run: terraform -chdir=$DEPLOY_ENV apply -var acr_image_tag=dummy -var liquibase_rollback_tag=$LIQUIBASE_ROLLBACK_TAG -target module.db_rollback[0] --auto-approve
       - name: Display logs
         if: always()
-        run: az container logs --follow -g prime-simple-report-$DEPLOY_ENV --name simple-report-$DEPLOY_ENV-db-rollback
+        run: |
+          RESOURCE_GROUP=$DEPLOY_ENV
+          if [[ "$DEPLOY_ENV" == *"dev"* ]]; then RESOURCE_GROUP="dev"; fi;
+          az container logs --follow -g prime-simple-report-$RESOURCE_GROUP --name simple-report-$DEPLOY_ENV-db-rollback
