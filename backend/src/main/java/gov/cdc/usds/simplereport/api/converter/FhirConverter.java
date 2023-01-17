@@ -238,7 +238,7 @@ public class FhirConverter {
       coding.setCode(MappingConstants.U_CODE);
       coding.setDisplay(MappingConstants.UNKNOWN_STRING);
 
-      codeableConcept.setText(MappingConstants.UNKNOWN_STRING); // is this case-sensitive?
+      codeableConcept.setText(MappingConstants.UNKNOWN_STRING);
     }
     ext.setValue(codeableConcept);
     return ext;
