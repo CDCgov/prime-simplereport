@@ -25,6 +25,12 @@ import { AddPatientHeader } from "./Components/AddPatientsHeader";
 import "./UploadPatients.scss";
 
 const UploadPatients = ({ isAdmin }: { isAdmin: boolean }) => {
+  type ErrorMessage = {
+    header: string;
+    body: string;
+    includeGuide: boolean;
+  };
+
   useDocumentTitle("Add Patient");
   const [facilityAmount, setFacilityAmount] = useState<string>();
   const [buttonIsDisabled, setButtonIsDisabled] = useState(true);
@@ -33,12 +39,11 @@ const UploadPatients = ({ isAdmin }: { isAdmin: boolean }) => {
   const [errors, setErrors] = useState<
     Array<FeedbackMessage | undefined | null>
   >([]);
-  const [errorMessageText, setErrorMessageText] = useState("");
-  const [includeGuideInErrorMessage, setIncludeGuideInErrorMessage] =
-    useState(true);
-  const [errorMessageHeader, setErrorMessageHeader] = useState(
-    "Error: File not accepted"
-  );
+  const [errorMessage, setErrorMessage] = useState<ErrorMessage>({
+    header: "",
+    body: "",
+    includeGuide: true,
+  });
   const [status, setStatus] = useState<
     "submitting" | "complete" | "success" | "fail" | ""
   >("");
@@ -60,42 +65,32 @@ const UploadPatients = ({ isAdmin }: { isAdmin: boolean }) => {
     };
   }
 
-  function createErrorToast(
-    header: string,
-    body: string,
-    includeGuide: boolean
-  ) {
-    setErrorMessageHeader(header);
-    setErrorMessageText(body);
-    setIncludeGuideInErrorMessage(includeGuide);
-  }
-
   const handleResponseStatus = async (res: Response) => {
     if (res.status !== 200) {
       setStatus("fail");
-      createErrorToast(
-        "Error: File not accepted",
-        "There was a server error. Your file has not been accepted.",
-        true
-      );
+      setErrorMessage({
+        header: "Error: File not accepted",
+        body: "There was a server error. Your file has not been accepted.",
+        includeGuide: true,
+      });
     } else {
       const response = await res?.json();
 
       if (response.status === "FAILURE") {
         setStatus("fail");
         if (response?.errors?.length) {
-          createErrorToast(
-            "Error: File not accepted",
-            "Please resolve the errors below and upload your edited file.",
-            true
-          );
+          setErrorMessage({
+            header: "Error: File not accepted",
+            body: "Please resolve the errors below and upload your edited file.",
+            includeGuide: true,
+          });
           setErrors(response.errors);
         } else {
-          createErrorToast(
-            "Error: File not accepted",
-            "There was a server error. Your file has not been accepted.",
-            true
-          );
+          setErrorMessage({
+            header: "Error: File not accepted",
+            body: "There was a server error. Your file has not been accepted.",
+            includeGuide: true,
+          });
         }
       } else {
         setStatus("success");
@@ -128,40 +123,44 @@ const UploadPatients = ({ isAdmin }: { isAdmin: boolean }) => {
       setStatus("submitting");
       setButtonIsDisabled(true);
       setErrors([]);
-      setErrorMessageText("");
+      setErrorMessage({
+        header: "",
+        body: "",
+        includeGuide: false,
+      });
 
       if (!file || file.size === 0) {
         setStatus("fail");
         setButtonIsDisabled(false);
-        createErrorToast(
-          "Error: Invalid file",
-          "File is missing or empty.",
-          true
-        );
+        setErrorMessage({
+          header: "Error: Invalid file",
+          body: "File is missing or empty.",
+          includeGuide: true,
+        });
         return;
       }
 
       const fileText = await file.text();
       if (file.size > MAX_CSV_UPLOAD_BYTES) {
         setStatus("fail");
-        createErrorToast(
-          "Error: File too large",
-          `"${file.name}" is too large for SimpleReport to process. Please limit each upload to less than 50 MB.`,
-          false
-        );
+        setErrorMessage({
+          header: "Error: File too large",
+          body: `"${file.name}" is too large for SimpleReport to process. Please limit each upload to less than 50 MB.`,
+          includeGuide: false,
+        });
         return;
       }
 
       const lineCount = (fileText.match(/\n/g) || []).length + 1;
       if (lineCount > MAX_CSV_UPLOAD_ROW_COUNT) {
         setStatus("fail");
-        createErrorToast(
-          "Error: File too large",
-          `“${
+        setErrorMessage({
+          header: "Error: File too large",
+          body: `“${
             file.name
           }” has too many rows for SimpleReport to process. Please limit each upload to less than ${MAX_CSV_UPLOAD_ROW_COUNT.toLocaleString()} rows.`,
-          false
-        );
+          includeGuide: false,
+        });
         return;
       }
 
@@ -181,6 +180,52 @@ const UploadPatients = ({ isAdmin }: { isAdmin: boolean }) => {
       navigate("/queue");
     }
   }, [navigate, isAdmin]);
+
+  function renderErrorToast() {
+    return (
+      <div>
+        {errorMessage.body && (
+          <div className="usa-alert usa-alert--error maxw-560">
+            <div className="usa-alert__body">
+              <span className="usa-alert__heading text-bold">
+                {errorMessage.header}
+              </span>
+              <button
+                className="Toastify__close-button Toastify__close-button--default position-absolute top-0 right-0"
+                type="button"
+                aria-label="close"
+                onClick={() => {
+                  setErrorMessage({
+                    header: "",
+                    body: "",
+                    includeGuide: false,
+                  });
+                  setErrors([]);
+                }}
+              >
+                <FontAwesomeIcon icon={faXmark} />
+              </button>
+              <p className="usa-alert__text">
+                {errorMessage.body}
+                {errorMessage.includeGuide && (
+                  <span className="display-block">
+                    See the{" "}
+                    <a
+                      target="_blank"
+                      href="/using-simplereport/manage-people-you-test/bulk-upload-patients/#preparing-your-spreadsheet-data"
+                    >
+                      patient bulk upload guide
+                    </a>{" "}
+                    for details about accepted values.
+                  </span>
+                )}
+              </p>
+            </div>
+          </div>
+        )}
+      </div>
+    );
+  }
 
   return (
     <div className={"prime-edit-patient prime-home flex-1"}>
@@ -318,41 +363,7 @@ const UploadPatients = ({ isAdmin }: { isAdmin: boolean }) => {
                 )}
                 {status === "fail" && (
                   <div className={"margin-top-3"}>
-                    {errorMessageText && (
-                      <div className="usa-alert usa-alert--error maxw-560">
-                        <div className="usa-alert__body">
-                          <span className="usa-alert__heading text-bold">
-                            {errorMessageHeader}
-                          </span>
-                          <button
-                            className="Toastify__close-button Toastify__close-button--default position-absolute top-0 right-0"
-                            type="button"
-                            aria-label="close"
-                            onClick={() => {
-                              setErrorMessageText("");
-                              setErrors([]);
-                            }}
-                          >
-                            <FontAwesomeIcon icon={faXmark} />
-                          </button>
-                          <p className="usa-alert__text">
-                            {errorMessageText}
-                            {includeGuideInErrorMessage && (
-                              <div>
-                                See the{" "}
-                                <a
-                                  target="_blank"
-                                  href="/using-simplereport/manage-people-you-test/bulk-upload-patients/#preparing-your-spreadsheet-data"
-                                >
-                                  patient bulk upload guide
-                                </a>{" "}
-                                for details about accepted values.
-                              </div>
-                            )}
-                          </p>
-                        </div>
-                      </div>
-                    )}
+                    {renderErrorToast()}
                     {errors.length > 0 && (
                       <table className="usa-table usa-table--borderless">
                         <thead>
