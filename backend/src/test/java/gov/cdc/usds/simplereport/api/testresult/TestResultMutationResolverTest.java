@@ -24,14 +24,12 @@ class TestResultMutationResolverTest {
 
     when(mockTestEventRepository.findAllByInternalIdIn(any()))
         .thenReturn(List.of(new TestEvent(), new TestEvent()));
-
     var testResultMutationResolver =
         new TestResultMutationResolver(mockTestEventRepository, mockCsvReporter, mockFhirReporter);
 
-    var expectedUUID1 = UUID.randomUUID();
-    var expectedUUID2 = UUID.randomUUID();
     var actual =
-        testResultMutationResolver.resendToReportStream(List.of(expectedUUID1, expectedUUID2));
+        testResultMutationResolver.resendToReportStream(
+            List.of(UUID.randomUUID(), UUID.randomUUID()));
 
     verify(mockCsvReporter, times(2)).report(any());
     verify(mockFhirReporter, times(2)).report(any());
