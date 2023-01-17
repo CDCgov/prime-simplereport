@@ -146,7 +146,7 @@ const UploadPatients = ({ isAdmin }: { isAdmin: boolean }) => {
         setStatus("fail");
         createErrorToast(
           "Error: File too large",
-          `"${file.name}" is too large for SimpleReport to process. Please limit each upload to 50 MB.`,
+          `"${file.name}" is too large for SimpleReport to process. Please limit each upload to less than 50 MB.`,
           false
         );
         return;
@@ -159,7 +159,7 @@ const UploadPatients = ({ isAdmin }: { isAdmin: boolean }) => {
           "Error: File too large",
           `“${
             file.name
-          }” has too many rows for SimpleReport to process. Please limit each upload to ${MAX_CSV_UPLOAD_ROW_COUNT.toLocaleString()} rows.`,
+          }” has too many rows for SimpleReport to process. Please limit each upload to less than ${MAX_CSV_UPLOAD_ROW_COUNT.toLocaleString()} rows.`,
           false
         );
         return;
