@@ -168,7 +168,9 @@ class FhirConverterTest {
 
   @Test
   void convertEmailsToContactPoint_valid() {
-    var actual = convertEmailsToContactPoint(List.of("email1@example.com", "email2@example.com"));
+    var actual =
+        convertEmailsToContactPoint(
+            ContactPointUse.HOME, List.of("email1@example.com", "email2@example.com"));
 
     assertThat(actual).hasSize(2);
     assertThat(
@@ -183,10 +185,11 @@ class FhirConverterTest {
 
   @Test
   void convertEmailToContactPoint_valid() {
-    var actual = FhirConverter.convertEmailToContactPoint("example@example.com");
-    assertThat(actual.getUse()).isNull();
+    var actual =
+        FhirConverter.convertEmailToContactPoint(ContactPointUse.WORK, "example@example.com");
     assertThat(actual.getSystem()).isEqualTo(ContactPointSystem.EMAIL);
     assertThat(actual.getValue()).isEqualTo("example@example.com");
+    assertThat(actual.getUse()).isEqualTo(ContactPointUse.WORK);
   }
 
   @Test

@@ -145,14 +145,16 @@ public class FhirConverter {
     return convertToContactPoint(contactPointUse, ContactPointSystem.PHONE, number);
   }
 
-  public static List<ContactPoint> convertEmailsToContactPoint(List<String> emails) {
+  public static List<ContactPoint> convertEmailsToContactPoint(
+      ContactPointUse use, List<String> emails) {
     return emails.stream()
-        .map(FhirConverter::convertEmailToContactPoint)
+        .map(s -> convertEmailToContactPoint(use, s))
         .collect(Collectors.toList());
   }
 
-  public static ContactPoint convertEmailToContactPoint(@NotNull String email) {
-    return convertToContactPoint(null, ContactPointSystem.EMAIL, email);
+  public static ContactPoint convertEmailToContactPoint(
+      ContactPointUse use, @NotNull String email) {
+    return convertToContactPoint(use, ContactPointSystem.EMAIL, email);
   }
 
   public static ContactPoint convertToContactPoint(
@@ -287,7 +289,7 @@ public class FhirConverter {
     org.setId(facility.getInternalId().toString());
     org.setName(facility.getFacilityName());
     org.addTelecom(convertToContactPoint(ContactPointUse.WORK, facility.getTelephone()));
-    org.addTelecom(convertEmailToContactPoint(facility.getEmail()));
+    org.addTelecom(convertEmailToContactPoint(ContactPointUse.WORK, facility.getEmail()));
     org.addAddress(convertToAddress(facility.getAddress()));
     return org;
   }
@@ -297,7 +299,8 @@ public class FhirConverter {
     patient.setId(person.getInternalId().toString());
     patient.addName(convertToHumanName(person.getNameInfo()));
     convertPhoneNumbersToContactPoint(person.getPhoneNumbers()).forEach(patient::addTelecom);
-    convertEmailsToContactPoint(person.getEmails()).forEach(patient::addTelecom);
+    convertEmailsToContactPoint(ContactPointUse.HOME, person.getEmails())
+        .forEach(patient::addTelecom);
     patient.setGender(convertToAdministrativeGender(person.getGender()));
     patient.setBirthDate(convertToDate(person.getBirthDate()));
     patient.addAddress(convertToAddress(person.getAddress()));
@@ -552,7 +555,7 @@ public class FhirConverter {
 
     serviceRequest.setSubject(new Reference(patientFullUrl));
     serviceRequest.addPerformer(new Reference(organizationFullUrl));
-    serviceRequest.setRequester(new Reference(practitionerRoleFullUrl));
+    serviceRequest.setRequester(new Reference(organizationFullUrl));
     diagnosticReport.addBasedOn(new Reference(serviceRequestFullUrl));
     diagnosticReport.setSubject(new Reference(patientFullUrl));
     diagnosticReport.addSpecimen(new Reference(specimenFullUrl));
