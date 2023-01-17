@@ -676,5 +676,5 @@ public class PersonUtils {
       Map.of(
           "hispanic", List.of("H", "Hispanic or Latino"),
           "not_hispanic", List.of("N", "Not Hispanic or Latino"),
-          "refused", List.of("U", "Unknown"));
+          "refused", List.of("U", "unknown"));
 }

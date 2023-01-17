@@ -299,8 +299,8 @@ class FhirConverterTest {
     return Stream.of(
         arguments("hispanic", ethnicitySystem, "H", "Hispanic or Latino"),
         arguments("not_hispanic", ethnicitySystem, "N", "Not Hispanic or Latino"),
-        arguments("refused", unknownSystem, "U", "Unknown"),
-        arguments("shark", unknownSystem, "U", "Unknown"));
+        arguments("refused", unknownSystem, "U", "unknown"),
+        arguments("shark", unknownSystem, "U", "unknown"));
   }
 
   @Test
