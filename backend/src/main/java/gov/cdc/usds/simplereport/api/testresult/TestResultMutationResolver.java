@@ -20,11 +20,19 @@ public class TestResultMutationResolver {
   @Qualifier("csvQueueReportingService")
   private final TestEventReportingService testEventReportingService;
 
+  @Qualifier("fhirQueueReportingService")
+  private final TestEventReportingService fhirReportingService;
+
   @MutationMapping
   public boolean resendToReportStream(@Argument List<UUID> testEventIds) {
     testEventRepository
         .findAllByInternalIdIn(testEventIds)
-        .forEach(testEventReportingService::report);
+        .forEach(
+            testEvent -> {
+              testEventReportingService.report(testEvent);
+              fhirReportingService.report(testEvent);
+            });
+
     return true;
   }
 }
