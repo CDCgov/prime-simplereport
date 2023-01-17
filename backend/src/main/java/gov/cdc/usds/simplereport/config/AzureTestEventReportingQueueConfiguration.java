@@ -12,7 +12,6 @@ import gov.cdc.usds.simplereport.properties.AzureStorageQueueReportingProperties
 import gov.cdc.usds.simplereport.service.AzureStorageQueueFhirReportingService;
 import gov.cdc.usds.simplereport.service.AzureStorageQueueTestEventReportingService;
 import gov.cdc.usds.simplereport.service.TestEventReportingService;
-import java.util.Set;
 import java.util.concurrent.CompletableFuture;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Qualifier;
@@ -92,11 +91,6 @@ class AzureTestEventReportingQueueConfiguration {
       String buffer = toBuffer(testEvent);
       log.info("TestEvent serializes as: {}", buffer);
       return CompletableFuture.completedFuture(null);
-    }
-
-    @Override
-    public void markTestEventsAsReported(Set<TestEvent> testEvents) {
-      log.warn("No TestEventReportingService configured; defaulting to no-op reporting");
     }
 
     private String toBuffer(TestEvent testEvent) {

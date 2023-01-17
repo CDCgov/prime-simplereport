@@ -5,7 +5,6 @@ import static gov.cdc.usds.simplereport.api.converter.FhirConverter.createFhirBu
 import ca.uhn.fhir.context.FhirContext;
 import com.azure.storage.queue.QueueAsyncClient;
 import gov.cdc.usds.simplereport.db.model.TestEvent;
-import java.util.Set;
 import java.util.concurrent.CompletableFuture;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -30,8 +29,4 @@ public final class AzureStorageQueueFhirReportingService implements TestEventRep
         .toFuture()
         .thenApply(result -> null);
   }
-
-  // do we really need this method anymore?
-  @Override
-  public void markTestEventsAsReported(Set<TestEvent> testEvents) {}
 }
