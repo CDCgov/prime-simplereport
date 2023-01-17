@@ -1,12 +1,6 @@
 package gov.cdc.usds.simplereport.validators;
 
-import static gov.cdc.usds.simplereport.validators.CsvValidatorUtils.ValueOrError;
-import static gov.cdc.usds.simplereport.validators.CsvValidatorUtils.getValue;
-import static gov.cdc.usds.simplereport.validators.CsvValidatorUtils.validateCountry;
-import static gov.cdc.usds.simplereport.validators.CsvValidatorUtils.validateEthnicity;
-import static gov.cdc.usds.simplereport.validators.CsvValidatorUtils.validateFlexibleDate;
-import static gov.cdc.usds.simplereport.validators.CsvValidatorUtils.validatePhoneNumber;
-import static gov.cdc.usds.simplereport.validators.CsvValidatorUtils.validateZipCode;
+import static gov.cdc.usds.simplereport.validators.CsvValidatorUtils.*;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertThrows;
@@ -111,5 +105,24 @@ class CsvValidatorUtilsTest {
   void validCountryCode() {
     var countryCode = new ValueOrError("USA", "country");
     assertThat(validateCountry(countryCode)).isEmpty();
+  }
+
+  @Test
+  void validSpecimenName() {
+    var specimenType = new ValueOrError("saliva", "specimen_type");
+    assertThat(validateSpecimenType(specimenType)).isEmpty();
+  }
+
+  @Test
+  void validSpecimenSNOMED() {
+    var specimenType = new ValueOrError("012345678", "specimen_type");
+    assertThat(validateSpecimenType(specimenType)).isEmpty();
+  }
+
+  @Test
+  void invalidSpecimenSNOMED() {
+    // too many characters
+    var specimenType = new ValueOrError("0123456789", "specimen_type");
+    assertThat(validateEthnicity(specimenType)).hasSize(1);
   }
 }

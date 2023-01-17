@@ -42,7 +42,7 @@ public class CsvValidatorUtils {
       "^\\d{1,2}\\/\\d{1,2}\\/\\d{4}( ([0-1]?[0-9]|2[0-3]):[0-5][0-9])?$";
   private static final String EMAIL_REGEX = "^[\\w-\\.]+@([\\w-]+\\.)+[\\w-]{2,4}$";
   private static final String CLIA_REGEX = "^[A-Za-z0-9]{2}[Dd][A-Za-z0-9]{7}$";
-  private static final String NUMERICAL_REGEX = "^[0-9]+$";
+  private static final String SNOMED_REGEX = "^[0-9]{9}$";
   private static final String ALPHABET_REGEX = "^[a-zA-Z]+$";
   private static final Set<String> VALID_STATE_CODES =
       Stream.concat(
@@ -97,16 +97,6 @@ public class CsvValidatorUtils {
           "u", "unk");
   private static final Set<String> TEST_RESULT_VALUES =
       Set.of("positive", "negative", "not detected", "detected", "invalid result");
-  private static final Set<String> SPECIMEN_TYPE_VALUES =
-      Set.of(
-          "nasal swab",
-          "nasopharyngeal swab",
-          "anterior nares swab",
-          "throat swab",
-          "oropharyngeal swab",
-          "whole blood",
-          "plasma",
-          "serum");
   private static final Set<String> RESIDENCE_VALUES =
       Set.of(
           "22232009", "hospital",
@@ -142,7 +132,7 @@ public class CsvValidatorUtils {
   }
 
   public static List<FeedbackMessage> validateSpecimenType(ValueOrError input) {
-    return validateSpecificValueOrSNOMED(input, SPECIMEN_TYPE_VALUES);
+    return validateSpecimenNameOrSNOMED(input);
   }
 
   public static List<FeedbackMessage> validateResidence(ValueOrError input) {
@@ -322,17 +312,27 @@ public class CsvValidatorUtils {
     return errors;
   }
 
-  private static List<FeedbackMessage> validateSNOMED(ValueOrError input) {
+  private static List<FeedbackMessage> validateSpecimenNameOrSNOMED(ValueOrError input) {
     List<FeedbackMessage> errors = new ArrayList<>();
     String value = parseString(input.getValue());
     if (value == null) {
       return errors;
     }
+
     boolean nonSNOMEDValue = value.matches(ALPHABET_REGEX);
 
     if (nonSNOMEDValue) {
       return errors;
     }
+
+    if (!value.matches(SNOMED_REGEX)) {
+      errors.add(
+          new FeedbackMessage(
+              ITEM_SCOPE,
+              input.getValue() + " is not a valid value for column " + input.getHeader()));
+    }
+
+    return errors;
   }
 
   private static List<FeedbackMessage> validateRegex(ValueOrError input, String regex) {
