@@ -222,7 +222,7 @@ class FhirConverterTest {
     var address =
         new StreetAddress(
             List.of("1234 Main", "Apartment #1"), "MyCity", "MyCounty", "PA", "15025");
-    var actual = convertToAddress(address);
+    var actual = convertToAddress(address, "USA");
     assertThat(actual.getLine().stream().map(PrimitiveType::getValue))
         .containsExactly("1234 Main", "Apartment #1");
     assertThat(actual.getCity()).isEqualTo(address.getCity());
@@ -234,7 +234,8 @@ class FhirConverterTest {
   @Test
   void convertToAddress_Strings_valid() {
     var actual =
-        convertToAddress(List.of("1234 Main", "Apartment #1"), "MyCity", "MyCounty", "PA", "15025");
+        convertToAddress(
+            List.of("1234 Main", "Apartment #1"), "MyCity", "MyCounty", "PA", "15025", "Canada");
     assertThat(actual.getLine().stream().map(PrimitiveType::getValue))
         .containsExactly("1234 Main", "Apartment #1");
     assertThat(actual.getCity()).isEqualTo("MyCity");
@@ -245,7 +246,7 @@ class FhirConverterTest {
 
   @Test
   void convertToAddress_Strings_null() {
-    var actual = convertToAddress(null, null, null, null, null);
+    var actual = convertToAddress(null, null, null, null, null, null);
     assertThat(actual.getLine()).isEmpty();
     assertThat(actual.getCity()).isNull();
     assertThat(actual.getDistrict()).isNull();
@@ -1140,7 +1141,7 @@ class FhirConverterTest {
                 .getReference())
         .isEqualTo("Organization/" + organization.getId());
     assertThat(((ServiceRequest) serviceRequestEntry.getResource()).getRequester().getReference())
-        .contains("PractitionerRole/");
+        .contains("Organization/");
 
     var diagnosticReportEntry =
         actual.getEntry().stream()

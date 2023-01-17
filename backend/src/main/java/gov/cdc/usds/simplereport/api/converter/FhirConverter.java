@@ -179,19 +179,30 @@ public class FhirConverter {
     return Date.from(date.atStartOfDay(ZoneId.systemDefault()).toInstant());
   }
 
-  public static Address convertToAddress(@NotNull StreetAddress address) {
+  public static Address convertToAddress(@NotNull StreetAddress address, String country) {
     return convertToAddress(
         address.getStreet(),
         address.getCity(),
         address.getCounty(),
         address.getState(),
-        address.getPostalCode());
+        address.getPostalCode(),
+        country);
   }
 
   public static Address convertToAddress(
-      List<String> street, String city, String county, String state, String postalCode) {
+      List<String> street,
+      String city,
+      String county,
+      String state,
+      String postalCode,
+      String country) {
     var address =
-        new Address().setCity(city).setDistrict(county).setState(state).setPostalCode(postalCode);
+        new Address()
+            .setCity(city)
+            .setDistrict(county)
+            .setState(state)
+            .setPostalCode(postalCode)
+            .setCountry(country);
     if (street != null) {
       street.forEach(address::addLine);
     }
@@ -279,7 +290,7 @@ public class FhirConverter {
     var practitioner = new Practitioner();
     practitioner.setId(provider.getInternalId().toString());
     practitioner.addName(convertToHumanName(provider.getNameInfo()));
-    practitioner.addAddress(convertToAddress(provider.getAddress()));
+    practitioner.addAddress(convertToAddress(provider.getAddress(), "USA"));
     practitioner.addTelecom(convertToContactPoint(ContactPointUse.WORK, provider.getTelephone()));
     return practitioner;
   }
@@ -290,7 +301,7 @@ public class FhirConverter {
     org.setName(facility.getFacilityName());
     org.addTelecom(convertToContactPoint(ContactPointUse.WORK, facility.getTelephone()));
     org.addTelecom(convertEmailToContactPoint(ContactPointUse.WORK, facility.getEmail()));
-    org.addAddress(convertToAddress(facility.getAddress()));
+    org.addAddress(convertToAddress(facility.getAddress(), "USA"));
     return org;
   }
 
@@ -303,7 +314,7 @@ public class FhirConverter {
         .forEach(patient::addTelecom);
     patient.setGender(convertToAdministrativeGender(person.getGender()));
     patient.setBirthDate(convertToDate(person.getBirthDate()));
-    patient.addAddress(convertToAddress(person.getAddress()));
+    patient.addAddress(convertToAddress(person.getAddress(), "USA"));
     patient.addExtension(convertToRaceExtension(person.getRace()));
     patient.addExtension(convertToEthnicityExtension(person.getEthnicity()));
     patient.addExtension(
