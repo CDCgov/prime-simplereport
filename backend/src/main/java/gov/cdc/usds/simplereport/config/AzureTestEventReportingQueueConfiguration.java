@@ -49,9 +49,15 @@ class AzureTestEventReportingQueueConfiguration {
     return FhirContext.forR4();
   }
 
-  @Bean(name = {"csvQueueReportingService", "fhirQueueReportingService"})
+  @Bean(name = {"csvQueueReportingService"})
   @ConditionalOnMissingBean
-  TestEventReportingService noOpReportingService() {
+  TestEventReportingService noOpCSVReportingService() {
+    return new NoOpReportingService();
+  }
+
+  @Bean(name = {"fhirQueueReportingService"})
+  @ConditionalOnMissingBean
+  TestEventReportingService noOpFhirReportingService() {
     return new NoOpReportingService();
   }
 
