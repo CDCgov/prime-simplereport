@@ -308,7 +308,7 @@ public class FhirConverter {
         .forEach(patient::addTelecom);
     patient.setGender(convertToAdministrativeGender(person.getGender()));
     patient.setBirthDate(convertToDate(person.getBirthDate()));
-    patient.addAddress(convertToAddress(person.getAddress(), "USA"));
+    patient.addAddress(convertToAddress(person.getAddress(), person.getCountry()));
     patient.addExtension(convertToRaceExtension(person.getRace()));
     patient.addExtension(convertToEthnicityExtension(person.getEthnicity()));
     patient.addExtension(
