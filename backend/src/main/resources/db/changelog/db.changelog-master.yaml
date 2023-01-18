@@ -4252,3 +4252,40 @@ databaseChangeLog:
                   name: test_performed_code
                   type: text
                   remarks: The code that identifies which disease was tested.
+  - changeSet:
+      id: create-shedlock-table
+      author: merethe@skylight.digital
+      comment: creates a table to be used by shedlock library
+      changes:
+        - tagDatabase:
+            tag: create-shedlock-table
+        - createTable:
+            tableName: shedlock
+            remarks: stores information about scheduler locks
+            columns:
+              - column:
+                  name: name
+                  type: text
+                  constraints:
+                    primaryKey: true
+                    nullable: false
+              - column:
+                  name: lock_until
+                  type: DATETIME
+                  constraints:
+                    nullable: false
+              - column:
+                  name: locked_at
+                  type: DATETIME
+                  constraints:
+                    nullable: false
+              - column:
+                  name: locked_by
+                  type: text
+                  constraints:
+                    nullable: false
+        - sql:
+            sql: GRANT SELECT ON ${database.defaultSchemaName}.shedlock TO ${noPhiUsername};
+      rollback:
+        dropTable:
+          tableName: shedlock
