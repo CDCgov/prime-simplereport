@@ -19,6 +19,7 @@ import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean
 import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.context.annotation.Primary;
 
 @Slf4j
 @Configuration
@@ -48,6 +49,7 @@ class AzureTestEventReportingQueueConfiguration {
     return FhirContext.forR4();
   }
 
+  @Primary
   @Bean(name = "csvQueueReportingService")
   @ConditionalOnMissingBean(name = "csvQueueReportingService")
   TestEventReportingService noOpCSVReportingService() {
