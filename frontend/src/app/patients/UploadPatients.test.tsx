@@ -271,6 +271,24 @@ describe("Upload Patient", () => {
       await screen.findByText("Error: File not accepted")
     ).toBeInTheDocument();
   });
+  it("should show size error for large files", async () => {
+    renderUploadPatients();
+    const tooBig = file("0".repeat(50 * 1000 * 1000 + 1));
+
+    await userEventUpload(tooBig, "One facility");
+    expect(
+      await screen.findByText("Error: File too large")
+    ).toBeInTheDocument();
+  });
+  it("should show size error for file with too many rows", async () => {
+    renderUploadPatients();
+    const tooManyRows = file("\n".repeat(10001));
+
+    await userEventUpload(tooManyRows, "One facility");
+    expect(
+      await screen.findByText("Error: File too large")
+    ).toBeInTheDocument();
+  });
   it("should close success message when close is clicked", async () => {
     renderUploadPatients();
     let mockResponse = new Response(JSON.stringify(successResponseBody), {

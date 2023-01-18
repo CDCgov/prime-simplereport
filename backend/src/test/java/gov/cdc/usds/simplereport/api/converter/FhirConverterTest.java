@@ -89,7 +89,7 @@ class FhirConverterTest {
 
   private static final String unknownSystem = "http://terminology.hl7.org/CodeSystem/v3-NullFlavor";
   private static final String raceCodeSystem = "http://terminology.hl7.org/CodeSystem/v3-Race";
-  private static final String ethnicitySystem = "urn:oid:2.16.840.1.113883.6.238";
+  private static final String ethnicitySystem = "http://terminology.hl7.org/CodeSystem/v2-0189";
   private static final String tribalSystemUrl =
       "http://terminology.hl7.org/CodeSystem/v3-TribalEntityUS";
   public static final String snomedCode = "http://snomed.info/sct";
@@ -285,26 +285,26 @@ class FhirConverterTest {
   @ParameterizedTest
   @MethodSource("ethnicityArgs")
   void convertToEthnicityExtension_matches(
-      String ethnicity, String ombSystem, String raceCode, String ethnicityDisplay) {
-    var actual = convertToEthnicityExtension(ethnicity);
-    var ombExtension = actual.getExtensionByUrl("ombCategory");
-    var textExtension = actual.getExtensionByUrl("text");
-    var ombCoding = actual.castToCoding(ombExtension.getValue());
-    var textValueString = actual.castToString(textExtension.getValue());
+      String ethnicity, String system, String ethnicityCode, String ethnicityDisplay) {
 
-    assertThat(actual.getExtension()).hasSize(2);
-    assertThat(ombCoding.getSystem()).isEqualTo(ombSystem);
-    assertThat(ombCoding.getCode()).isEqualTo(raceCode);
-    assertThat(ombCoding.getDisplay()).isEqualTo(ethnicityDisplay);
-    assertThat(textValueString.getValue()).isEqualTo(ethnicityDisplay);
+    var actual = convertToEthnicityExtension(ethnicity);
+    var codeableConcept = actual.castToCodeableConcept(actual.getValue());
+    var coding = codeableConcept.getCoding();
+    var text = codeableConcept.getText();
+
+    assertThat(coding).hasSize(1);
+    assertThat(coding.get(0).getSystem()).isEqualTo(system);
+    assertThat(coding.get(0).getCode()).isEqualTo(ethnicityCode);
+    assertThat(coding.get(0).getDisplay()).isEqualTo(ethnicityDisplay);
+    assertThat(text).isEqualTo(ethnicityDisplay);
   }
 
   private static Stream<Arguments> ethnicityArgs() {
     return Stream.of(
-        arguments("hispanic", ethnicitySystem, "2135-2", "Hispanic or Latino"),
-        arguments("not_hispanic", ethnicitySystem, "2186-5", "Not Hispanic or Latino"),
-        arguments("refused", unknownSystem, "ASKU", "asked but unknown"),
-        arguments("shark", unknownSystem, "UNK", "unknown"));
+        arguments("hispanic", ethnicitySystem, "H", "Hispanic or Latino"),
+        arguments("not_hispanic", ethnicitySystem, "N", "Not Hispanic or Latino"),
+        arguments("refused", unknownSystem, "U", "unknown"),
+        arguments("shark", unknownSystem, "U", "unknown"));
   }
 
   @Test

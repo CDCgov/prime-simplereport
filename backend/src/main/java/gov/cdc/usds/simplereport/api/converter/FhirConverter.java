@@ -50,7 +50,6 @@ import org.hl7.fhir.r4.model.Bundle;
 import org.hl7.fhir.r4.model.Bundle.BundleEntryComponent;
 import org.hl7.fhir.r4.model.Bundle.BundleType;
 import org.hl7.fhir.r4.model.CodeableConcept;
-import org.hl7.fhir.r4.model.Coding;
 import org.hl7.fhir.r4.model.ContactPoint;
 import org.hl7.fhir.r4.model.ContactPoint.ContactPointSystem;
 import org.hl7.fhir.r4.model.ContactPoint.ContactPointUse;
@@ -235,31 +234,26 @@ public class FhirConverter {
   public static Extension convertToEthnicityExtension(@NotNull String ethnicity) {
     var ext = new Extension();
     ext.setUrl(ETHNICITY_EXTENSION_URL);
-    var ombExtension = ext.addExtension();
-    ombExtension.setUrl("ombCategory");
-    var ombCoding = new Coding();
+    var codeableConcept = new CodeableConcept();
+    var coding = codeableConcept.addCoding();
     if (PersonUtils.ETHNICITY_MAP.containsKey(ethnicity)) {
       if ("refused".equalsIgnoreCase(ethnicity)) {
-        ombCoding.setSystem(NULL_CODE_SYSTEM);
+        coding.setSystem(NULL_CODE_SYSTEM);
       } else {
-        ombCoding.setSystem(ETHNICITY_CODE_SYSTEM);
+        coding.setSystem(ETHNICITY_CODE_SYSTEM);
       }
-      ombCoding.setCode(PersonUtils.ETHNICITY_MAP.get(ethnicity).get(0));
-      ombCoding.setDisplay(PersonUtils.ETHNICITY_MAP.get(ethnicity).get(1));
+      coding.setCode(PersonUtils.ETHNICITY_MAP.get(ethnicity).get(0));
+      coding.setDisplay(PersonUtils.ETHNICITY_MAP.get(ethnicity).get(1));
 
-      var text = ext.addExtension();
-      text.setUrl("text");
-      text.setValue(new StringType(PersonUtils.ETHNICITY_MAP.get(ethnicity).get(1)));
+      codeableConcept.setText(PersonUtils.ETHNICITY_MAP.get(ethnicity).get(1));
     } else {
-      ombCoding.setSystem(NULL_CODE_SYSTEM);
-      ombCoding.setCode(MappingConstants.UNK_CODE);
-      ombCoding.setDisplay(MappingConstants.UNKNOWN_STRING);
+      coding.setSystem(NULL_CODE_SYSTEM);
+      coding.setCode(MappingConstants.U_CODE);
+      coding.setDisplay(MappingConstants.UNKNOWN_STRING);
 
-      var text = ext.addExtension();
-      text.setUrl("text");
-      text.setValue(new StringType(MappingConstants.UNKNOWN_STRING));
+      codeableConcept.setText(MappingConstants.UNKNOWN_STRING);
     }
-    ombExtension.setValue(ombCoding);
+    ext.setValue(codeableConcept);
     return ext;
   }
 

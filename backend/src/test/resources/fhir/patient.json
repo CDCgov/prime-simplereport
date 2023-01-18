@@ -14,21 +14,17 @@
       }
     },
     {
-      "url": "http://hl7.org/fhir/us/core/StructureDefinition/us-core-ethnicity",
-      "extension": [
-        {
-          "url": "ombCategory",
-          "valueCoding": {
-            "system": "urn:oid:2.16.840.1.113883.6.238",
-            "code": "2135-2",
+      "url": "https://reportstream.cdc.gov/fhir/StructureDefinition/ethnic-group",
+      "valueCodeableConcept": {
+        "coding": [
+          {
+            "system": "http://terminology.hl7.org/CodeSystem/v2-0189",
+            "code": "H",
             "display": "Hispanic or Latino"
           }
-        },
-        {
-          "url": "text",
-          "valueString": "Hispanic or Latino"
-        }
-      ]
+        ],
+        "text": "Hispanic or Latino"
+      }
     },
     {
       "url": "http://hl7.org/fhir/us/core/StructureDefinition/us-core-tribal-affiliation",
