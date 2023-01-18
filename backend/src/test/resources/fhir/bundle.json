@@ -339,7 +339,8 @@
           "coding":[
             {
               "system":"http://snomed.info/sct",
-              "code":"455371000124106"
+              "code":"455371000124106",
+              "display": "UNDETERMINED"
             }
           ]
         },
@@ -376,7 +377,8 @@
           "coding":[
             {
               "system":"http://snomed.info/sct",
-              "code":"260373001"
+              "code":"260373001",
+              "display": "POSITIVE"
             }
           ]
         },
@@ -413,7 +415,8 @@
           "coding":[
             {
               "system":"http://snomed.info/sct",
-              "code":"260415000"
+              "code":"260415000",
+              "display": "NEGATIVE"
             }
           ]
         },

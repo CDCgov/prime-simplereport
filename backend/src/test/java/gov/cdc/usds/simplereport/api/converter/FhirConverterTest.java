@@ -566,7 +566,8 @@ class FhirConverterTest {
             "resultCode",
             TestCorrectionStatus.ORIGINAL,
             null,
-            "id-123");
+            "id-123",
+            TestResult.POSITIVE.toString());
 
     assertThat(actual.getId()).isEqualTo("id-123");
     assertThat(actual.getStatus().getDisplay()).isEqualTo(ObservationStatus.FINAL.getDisplay());

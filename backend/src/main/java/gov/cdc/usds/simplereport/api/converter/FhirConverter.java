@@ -384,7 +384,8 @@ public class FhirConverter {
           result.getResultLOINC(),
           correctionStatus,
           correctionReason,
-          result.getInternalId().toString());
+          result.getInternalId().toString(),
+          result.getTestResult().toString());
     }
     return null;
   }
@@ -395,12 +396,13 @@ public class FhirConverter {
       String resultCode,
       TestCorrectionStatus correctionStatus,
       String correctionReason,
-      String id) {
+      String id,
+      String resultDescription) {
     var observation = new Observation();
     observation.setId(id);
     setStatus(observation, correctionStatus);
     addCode(diseaseCode, diseaseName, observation);
-    addValue(resultCode, observation);
+    addValue(resultCode, observation, resultDescription);
     addCorrectionNote(
         correctionStatus != TestCorrectionStatus.ORIGINAL, correctionReason, observation);
     return observation;
@@ -432,11 +434,12 @@ public class FhirConverter {
     }
   }
 
-  private static void addValue(String resultCode, Observation observation) {
+  private static void addValue(String resultCode, Observation observation, String resultDisplay) {
     var valueCodeableConcept = new CodeableConcept();
     var valueCoding = valueCodeableConcept.addCoding();
     valueCoding.setSystem(SNOMED_CODE_SYSTEM);
     valueCoding.setCode(resultCode);
+    valueCoding.setDisplay(resultDisplay);
     observation.setValue(valueCodeableConcept);
   }
 
