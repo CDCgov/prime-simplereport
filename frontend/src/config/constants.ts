@@ -526,3 +526,6 @@ export const organizationCreationSteps = [
   { label: "Personal details", value: "1", order: 1 },
   { label: "Experian identity verification", value: "2", order: 2 },
 ];
+
+export const MAX_CSV_UPLOAD_BYTES = 50 * 1000 * 1000;
+export const MAX_CSV_UPLOAD_ROW_COUNT = 10000;

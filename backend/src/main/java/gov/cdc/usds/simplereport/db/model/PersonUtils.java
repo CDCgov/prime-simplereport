@@ -674,7 +674,7 @@ public class PersonUtils {
 
   public static final Map<String, List<String>> ETHNICITY_MAP =
       Map.of(
-          "hispanic", List.of("2135-2", "Hispanic or Latino"),
-          "not_hispanic", List.of("2186-5", "Not Hispanic or Latino"),
-          "refused", List.of(MappingConstants.ASKED_BUT_UNKNOWN_CODE, "asked but unknown"));
+          "hispanic", List.of("H", "Hispanic or Latino"),
+          "not_hispanic", List.of("N", "Not Hispanic or Latino"),
+          "refused", List.of("U", "unknown"));
 }
