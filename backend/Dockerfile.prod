@@ -17,6 +17,7 @@ RUN wget https://github.com/microsoft/ApplicationInsights-Java/releases/download
 COPY --chown=gradle:gradle ./backend/config ./config
 COPY --chown=gradle:gradle ./backend/src ./src
 COPY --chown=gradle:gradle ./backend/gradle.properties gradle.properties
+COPY --chown=gradle:gradle ./backend/lombok.config lombok.config
 
 RUN gradle --no-daemon assemble
 
