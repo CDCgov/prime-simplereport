@@ -11,8 +11,9 @@ public class FhirConstants {
       "http://ibm.com/fhir/cdm/StructureDefinition/local-race-cd";
   public static final String RACE_CODING_SYSTEM = "http://terminology.hl7.org/CodeSystem/v3-Race";
   public static final String ETHNICITY_EXTENSION_URL =
-      "http://hl7.org/fhir/us/core/StructureDefinition/us-core-ethnicity";
-  public static final String ETHNICITY_CODE_SYSTEM = "urn:oid:2.16.840.1.113883.6.238";
+      "https://reportstream.cdc.gov/fhir/StructureDefinition/ethnic-group";
+  public static final String ETHNICITY_CODE_SYSTEM =
+      "http://terminology.hl7.org/CodeSystem/v2-0189";
   public static final String TRIBAL_AFFILIATION_EXTENSION_URL =
       "http://hl7.org/fhir/us/core/StructureDefinition/us-core-tribal-affiliation";
   public static final String TRIBAL_AFFILIATION_STRING = "tribalAffiliation";

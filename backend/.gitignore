@@ -45,3 +45,4 @@ out/
 
 ### VS Code ###
 .vscode/
+/*.log
