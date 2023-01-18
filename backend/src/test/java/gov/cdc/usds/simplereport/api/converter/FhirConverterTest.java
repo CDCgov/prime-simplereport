@@ -1022,7 +1022,7 @@ class FhirConverterTest {
 
   @Test
   void createProvenance_valid() {
-    var provenance = createProvenance("Organization/org-id", "Device/device-id");
+    var provenance = createProvenance("Organization/org-id", "Device/device-id", new Date());
 
     assertThat(provenance.getActivity().getCoding()).hasSize(1);
     assertThat(provenance.getActivity().getCodingFirstRep().getCode()).isEqualTo("R01");
@@ -1065,7 +1065,8 @@ class FhirConverterTest {
             specimen,
             List.of(observation),
             serviceRequest,
-            diagnosticReport);
+            diagnosticReport,
+            new Date());
 
     var resourceUrls =
         actual.getEntry().stream()

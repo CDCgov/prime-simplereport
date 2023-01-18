@@ -531,7 +531,8 @@ public class FhirConverter {
             testEvent.getCorrectionStatus(),
             testEvent.getReasonForCorrection()),
         convertToServiceRequest(testEvent.getOrder()),
-        convertToDiagnosticReport(testEvent));
+        convertToDiagnosticReport(testEvent),
+        testEvent.getDateTested());
   }
 
   public static Bundle createFhirBundle(
@@ -542,7 +543,8 @@ public class FhirConverter {
       Specimen specimen,
       List<Observation> observations,
       ServiceRequest serviceRequest,
-      DiagnosticReport diagnosticReport) {
+      DiagnosticReport diagnosticReport,
+      Date dateTested) {
     var patientFullUrl = ResourceType.Patient + "/" + patient.getId();
     var organizationFullUrl = ResourceType.Organization + "/" + organization.getId();
     var practitionerFullUrl = ResourceType.Practitioner + "/" + practitioner.getId();
@@ -552,7 +554,7 @@ public class FhirConverter {
     var deviceFullUrl = ResourceType.Device + "/" + device.getId();
 
     var practitionerRole = createPractitionerRole(organizationFullUrl, practitionerFullUrl);
-    var provenance = createProvenance(organizationFullUrl, deviceFullUrl);
+    var provenance = createProvenance(organizationFullUrl, deviceFullUrl, dateTested);
     var provenanceFullUrl = ResourceType.Provenance + "/" + provenance.getId();
     var messageHeader =
         createMessageHeader(organizationFullUrl, diagnosticReportFullUrl, provenanceFullUrl);
@@ -609,7 +611,8 @@ public class FhirConverter {
     return bundle;
   }
 
-  public static Provenance createProvenance(String organizationFullUrl, String deviceFullUrl) {
+  public static Provenance createProvenance(
+      String organizationFullUrl, String deviceFullUrl, Date dateTested) {
     var provenance = new Provenance();
     provenance.setId(UUID.randomUUID().toString());
     provenance
@@ -620,6 +623,7 @@ public class FhirConverter {
         .setDisplay(EVENT_TYPE_DISPLAY);
     provenance.addAgent().setWho(new Reference().setReference(organizationFullUrl));
     provenance.addTarget(new Reference(deviceFullUrl));
+    provenance.setRecorded(dateTested);
     return provenance;
   }
 
