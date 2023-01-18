@@ -1,5 +1,6 @@
 package gov.cdc.usds.simplereport.api.converter;
 
+import static gov.cdc.usds.simplereport.api.converter.FhirConstants.DEFAULT_COUNTRY;
 import static gov.cdc.usds.simplereport.api.converter.FhirConstants.ETHNICITY_CODE_SYSTEM;
 import static gov.cdc.usds.simplereport.api.converter.FhirConstants.ETHNICITY_EXTENSION_URL;
 import static gov.cdc.usds.simplereport.api.converter.FhirConstants.EVENT_TYPE_CODE;
@@ -284,7 +285,7 @@ public class FhirConverter {
     var practitioner = new Practitioner();
     practitioner.setId(provider.getInternalId().toString());
     practitioner.addName(convertToHumanName(provider.getNameInfo()));
-    practitioner.addAddress(convertToAddress(provider.getAddress(), "USA"));
+    practitioner.addAddress(convertToAddress(provider.getAddress(), DEFAULT_COUNTRY));
     practitioner.addTelecom(convertToContactPoint(ContactPointUse.WORK, provider.getTelephone()));
     return practitioner;
   }
@@ -295,7 +296,7 @@ public class FhirConverter {
     org.setName(facility.getFacilityName());
     org.addTelecom(convertToContactPoint(ContactPointUse.WORK, facility.getTelephone()));
     org.addTelecom(convertEmailToContactPoint(ContactPointUse.WORK, facility.getEmail()));
-    org.addAddress(convertToAddress(facility.getAddress(), "USA"));
+    org.addAddress(convertToAddress(facility.getAddress(), DEFAULT_COUNTRY));
     return org;
   }
 
