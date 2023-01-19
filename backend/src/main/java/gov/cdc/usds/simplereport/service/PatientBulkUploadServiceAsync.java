@@ -73,6 +73,7 @@ public class PatientBulkUploadServiceAsync {
     List<PhoneNumber> phoneNumbersList = new ArrayList<>();
 
     Set<Person> allPatients = new HashSet<>();
+    int totalPatientCount = 0;
 
     final MappingIterator<Map<String, String>> valueIterator =
         CsvValidatorUtils.getIteratorForCsv(new ByteArrayInputStream(content));
@@ -147,6 +148,7 @@ public class PatientBulkUploadServiceAsync {
 
           patientsList.add(newPatient);
           allPatients.add(newPatient);
+          totalPatientCount += 1;
         }
 
         if (patientsList.size() >= batchSize) {
@@ -184,7 +186,10 @@ public class PatientBulkUploadServiceAsync {
       throw new IllegalArgumentException(errorMessage);
     }
 
-    log.info("CSV patient upload completed for {}", currentOrganization.getOrganizationName());
+    log.info(
+        "CSV patient upload completed for {}. {} total patients uploaded",
+        currentOrganization.getOrganizationName(),
+        totalPatientCount);
 
     sendEmail(
         uploaderEmail,
