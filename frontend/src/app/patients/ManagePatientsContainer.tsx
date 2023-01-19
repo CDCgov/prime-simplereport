@@ -16,9 +16,6 @@ const ManagePatientsContainer = () => {
   const [facility] = useSelectedFacility();
   const activeFacilityId = facility?.id || "";
   const user = useSelector<RootState, User>((state) => state.user);
-  const isAdmin = useSelector<RootState, boolean>(
-    (state) => state.user.isAdmin
-  );
 
   const canEditUser = hasPermission(
     user.permissions,
@@ -37,7 +34,6 @@ const ManagePatientsContainer = () => {
       canEditUser={canEditUser}
       canDeleteUser={canDeleteUser}
       currentPage={currentPage}
-      isAdmin={isAdmin}
     />
   );
 };
