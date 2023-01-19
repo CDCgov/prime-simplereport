@@ -295,17 +295,6 @@ export const DetachedManagePatients = ({
           ]}
         />
       );
-    } else if (canEditUser) {
-      return (
-        <LinkWithQuery
-          className="usa-button usa-button--primary"
-          to={`/add-patient`}
-          id="add-patient-button"
-        >
-          <FontAwesomeIcon icon="plus" />
-          {` Add ${PATIENT_TERM}`}
-        </LinkWithQuery>
-      );
     }
     return null;
   }
