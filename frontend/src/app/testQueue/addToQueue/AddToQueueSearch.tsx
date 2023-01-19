@@ -150,10 +150,13 @@ const AddToQueueSearchBox = ({
     runIf: (q) => q.length >= MIN_SEARCH_CHARACTER_COUNT,
   });
 
-  const [queryPatients, { data, error }] = useLazyQuery(QUERY_PATIENT, {
-    fetchPolicy: "no-cache",
-    variables: { facilityId, namePrefixMatch: queryString },
-  });
+  const [queryPatients, { data, error, loading }] = useLazyQuery(
+    QUERY_PATIENT,
+    {
+      fetchPolicy: "no-cache",
+      variables: { facilityId, namePrefixMatch: queryString },
+    }
+  );
 
   const [mutationError, updateMutationError] = useState(null);
   const [showSuggestion, setShowSuggestion] = useState(true);
@@ -272,7 +275,7 @@ const AddToQueueSearchBox = ({
         onAddToQueue={onAddToQueue}
         patientsInQueue={patientsInQueue}
         shouldShowSuggestions={showDropdown}
-        loading={debounced !== queryString}
+        loading={debounced !== queryString || loading}
         dropDownRef={dropDownRef}
       />
     </React.Fragment>
