@@ -6,27 +6,26 @@ import ca.uhn.fhir.context.FhirContext;
 import com.azure.storage.queue.QueueAsyncClient;
 import gov.cdc.usds.simplereport.db.model.TestEvent;
 import java.util.concurrent.CompletableFuture;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
+import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 
+@Slf4j
+@RequiredArgsConstructor
 public final class AzureStorageQueueFhirReportingService implements TestEventReportingService {
-  private static final Logger log =
-      LoggerFactory.getLogger(AzureStorageQueueFhirReportingService.class);
-  private final QueueAsyncClient queueClient;
   private final FhirContext context;
-
-  public AzureStorageQueueFhirReportingService(FhirContext context, QueueAsyncClient queueClient) {
-    this.context = context;
-    this.queueClient = queueClient;
-  }
+  private final QueueAsyncClient queueClient;
 
   @Override
   public CompletableFuture<Void> reportAsync(TestEvent testEvent) {
-    log.trace("Dispatching TestEvent [{}] to Azure storage queue", testEvent.getInternalId());
-    var parser = context.newJsonParser();
-    return queueClient
-        .sendMessage(parser.encodeResourceToString(createFhirBundle(testEvent)))
-        .toFuture()
-        .thenApply(result -> null);
+    if (testEvent.getResults().stream()
+        .anyMatch(result -> !"96741-4".equals(result.getDisease().getLoinc()))) {
+      log.trace("Dispatching TestEvent [{}] to Azure storage queue", testEvent.getInternalId());
+      var parser = context.newJsonParser();
+      return queueClient
+          .sendMessage(parser.encodeResourceToString(createFhirBundle(testEvent)))
+          .toFuture()
+          .thenApply(result -> null);
+    }
+    return CompletableFuture.completedFuture(null);
   }
 }

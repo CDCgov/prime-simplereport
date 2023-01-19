@@ -7,20 +7,14 @@ import gov.cdc.usds.simplereport.api.model.errors.TestEventSerializationFailureE
 import gov.cdc.usds.simplereport.db.model.TestEvent;
 import java.io.IOException;
 import java.util.concurrent.CompletableFuture;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
+import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 
+@Slf4j
+@RequiredArgsConstructor
 public final class AzureStorageQueueTestEventReportingService implements TestEventReportingService {
-  private static final Logger log =
-      LoggerFactory.getLogger(AzureStorageQueueTestEventReportingService.class);
   private final ObjectMapper mapper;
   private final QueueAsyncClient queueClient;
-
-  public AzureStorageQueueTestEventReportingService(
-      ObjectMapper mapper, QueueAsyncClient queueClient) {
-    this.mapper = mapper;
-    this.queueClient = queueClient;
-  }
 
   @Override
   public CompletableFuture<Void> reportAsync(TestEvent testEvent) {
