@@ -148,7 +148,7 @@ public class FhirConverter {
   public static List<ContactPoint> convertEmailsToContactPoint(
       ContactPointUse use, List<String> emails) {
     return emails.stream()
-        .map(s -> convertEmailToContactPoint(use, s))
+        .map(email -> convertEmailToContactPoint(use, email))
         .collect(Collectors.toList());
   }
 
