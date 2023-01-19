@@ -341,7 +341,7 @@ const App = () => {
                   <ProtectedRoute
                     requiredPermissions={canEditPeople}
                     userPermissions={data.whoami.permissions}
-                    element={<UploadPatients isAdmin={isSupportAdmin} />}
+                    element={<UploadPatients />}
                   />
                 }
               />

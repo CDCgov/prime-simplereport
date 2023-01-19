@@ -109,7 +109,6 @@ interface Props {
   data?: { patients: Patient[] };
   refetch: () => null;
   setNamePrefixMatch: (namePrefixMatch: string | null) => void;
-  isAdmin: boolean;
 }
 
 export const DetachedManagePatients = ({
@@ -121,7 +120,6 @@ export const DetachedManagePatients = ({
   refetch,
   setNamePrefixMatch,
   activeFacilityId,
-  isAdmin,
 }: Props) => {
   const [archivePerson, setArchivePerson] = useState<Patient | null>(null);
   const navigate = useNavigate();
@@ -249,7 +247,7 @@ export const DetachedManagePatients = ({
   };
 
   function showActionButtons() {
-    if (canEditUser && isAdmin) {
+    if (canEditUser) {
       return (
         <MenuButton
           id={"add-patient"}

@@ -30,7 +30,7 @@ interface LocationOptions {
     patientId: string;
   };
 }
-const PageNumberContainer = ({ isAdmin }: { isAdmin: boolean }) => {
+const PageNumberContainer = () => {
   const { pageNumber } = useParams();
   return (
     <ManagePatients
@@ -38,7 +38,6 @@ const PageNumberContainer = ({ isAdmin }: { isAdmin: boolean }) => {
       activeFacilityId="a1"
       canEditUser={true}
       canDeleteUser={true}
-      isAdmin={isAdmin}
     />
   );
 };
@@ -53,15 +52,12 @@ const Queue = () => {
   );
 };
 
-const TestContainer = ({ isAdmin = true }) => (
+const TestContainer = () => (
   <MockedProvider mocks={mocks}>
     <MemoryRouter initialEntries={["/patients/1"]}>
       <Routes>
         <Route path="/patients">
-          <Route
-            path=":pageNumber"
-            element={<PageNumberContainer isAdmin={isAdmin} />}
-          />
+          <Route path=":pageNumber" element={<PageNumberContainer />} />
         </Route>
         <Route path={"/queue"} element={<Queue />} />
       </Routes>
@@ -145,16 +141,15 @@ describe("ManagePatients", () => {
     });
   });
 
-  it("non admin users can only see add individual patient", async () => {
-    render(<TestContainer isAdmin={false} />);
-    expect(await screen.findByText("Add patient")).toBeInTheDocument();
-    expect(screen.queryByText("Add patients")).not.toBeInTheDocument();
-  });
+  it("standard users can see bulk upload option", async () => {
+    render(<TestContainer />);
+    const addPatientsButton = await screen.findByText("Add patients");
+    expect(addPatientsButton).toBeInTheDocument();
 
-  it("admin users can only see add individual patient", async () => {
-    render(<TestContainer isAdmin={true} />);
-    expect(await screen.findByText("Add patients")).toBeInTheDocument();
-    expect(screen.queryByText("Add patient")).not.toBeInTheDocument();
+    await userEvent.click(addPatientsButton);
+    expect(
+      await screen.findByText("Import from spreadsheet")
+    ).toBeInTheDocument();
   });
 });
 

@@ -1,9 +1,9 @@
-import React, { useEffect, useState } from "react";
+import React, { useState } from "react";
 import { FormGroup } from "@trussworks/react-uswds";
 import { useSelector } from "react-redux";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faXmark } from "@fortawesome/free-solid-svg-icons";
-import { useLocation, useNavigate } from "react-router-dom";
+import { useLocation } from "react-router-dom";
 
 import { useDocumentTitle } from "../utils/hooks";
 import Button from "../commonComponents/Button/Button";
@@ -24,7 +24,7 @@ import { AddPatientHeader } from "./Components/AddPatientsHeader";
 
 import "./UploadPatients.scss";
 
-const UploadPatients = ({ isAdmin }: { isAdmin: boolean }) => {
+const UploadPatients = () => {
   type ErrorMessage = {
     header: string;
     body: string;
@@ -174,13 +174,6 @@ const UploadPatients = ({ isAdmin }: { isAdmin: boolean }) => {
       });
     };
   }
-  const navigate = useNavigate();
-  useEffect(() => {
-    if (!isAdmin) {
-      navigate("/queue");
-    }
-  }, [navigate, isAdmin]);
-
   function renderErrorToast() {
     return (
       <div>
