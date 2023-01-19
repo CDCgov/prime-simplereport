@@ -25,7 +25,8 @@
 // Cypress.Commands.overwrite('visit', (originalFn, url, options) => { ... })
 
 import "cypress-localstorage-commands";
-import { authenticator } from "otplib";
+import {authenticator} from "otplib";
+import {graphqlURL} from "../utils/request-utils";
 
 // read environment variables
 
@@ -116,3 +117,18 @@ Cypress.Commands.add("removeOrganizationAccess", () => {
   cy.contains("Cancel access").click();
   cy.wait(5);
 });
+
+
+Cypress.Commands.add("makePOSTRequest", (requestBody) => {
+  return cy.getLocalStorage('access_token').then(token => (cy.request(
+      {
+        method: 'POST',
+        url: graphqlURL,
+        headers: {
+          Authorization: `Bearer ${token}`,
+        },
+        body: requestBody
+      }
+    ))
+  )
+})

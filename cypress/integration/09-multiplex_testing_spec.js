@@ -1,37 +1,28 @@
 import {aliasMutation, aliasQuery} from "../utils/graphql-test-utils";
 import {loginHooks} from "../support";
+import {getPOSTRequest, graphqlURL} from "../utils/request-utils";
 
 describe("Testing with multiplex devices", () => {
   let patient, facility;
   const deviceName = `multiplexDevice-${Date.now()}`;
-
-  const graphqlURL = `${Cypress.env('BACKEND_URL') || 'https://localhost.simplereport.gov/api'}/graphql`;
-
   loginHooks();
-  before(() => {
 
-    cy.request('POST', graphqlURL, {
+  before(() => {
+    cy.makePOSTRequest({
       "operationName": "GetManagedFacilities",
       "variables": {},
       "query": "query GetManagedFacilities {\n  organization {\n    facilities {\n      id\n      name\n      __typename\n    }\n    __typename\n  }\n}"
     }).then(res => {
       facility = res.body.data.organization.facilities[0];
-      cy.request({
-        method: 'POST',
-        url: graphqlURL,
-        headers: {
-          authorization: `Bearer ${cy.getLocalStorage('access_token')}`,
+      cy.makePOSTRequest({
+        "operationName": "GetPatientsByFacility",
+        "variables": {
+          "facilityId": facility.id,
+          "pageNumber": 0,
+          "pageSize": 1,
+          "includeArchived": false,
         },
-        body: {
-          "operationName": "GetPatientsByFacility",
-          "variables": {
-            "facilityId": facility.id,
-            "pageNumber": 0,
-            "pageSize": 1,
-            "includeArchived": false,
-          },
-          "query": "query GetPatientsByFacility($facilityId: ID!, $pageNumber: Int!, $pageSize: Int!, $includeArchived: Boolean, $namePrefixMatch: String) {\n  patients(\n    facilityId: $facilityId\n    pageNumber: $pageNumber\n    pageSize: $pageSize\n    includeArchived: $includeArchived\n    namePrefixMatch: $namePrefixMatch\n  ) {\n    internalId\n    firstName\n    lastName\n    middleName\n    birthDate\n    isDeleted\n    role\n    lastTest {\n      dateAdded\n      __typename\n    }\n    __typename\n  }\n}"
-        }
+        "query": "query GetPatientsByFacility($facilityId: ID!, $pageNumber: Int!, $pageSize: Int!, $includeArchived: Boolean, $namePrefixMatch: String) {\n  patients(\n    facilityId: $facilityId\n    pageNumber: $pageNumber\n    pageSize: $pageSize\n    includeArchived: $includeArchived\n    namePrefixMatch: $namePrefixMatch\n  ) {\n    internalId\n    firstName\n    lastName\n    middleName\n    birthDate\n    isDeleted\n    role\n    lastTest {\n      dateAdded\n      __typename\n    }\n    __typename\n  }\n}"
       }).then(res => {
         patient = res.body.data.patients[0];
       });
@@ -40,19 +31,12 @@ describe("Testing with multiplex devices", () => {
 
   after(()=> {
     //delete the device if it exists
-    cy.request({
-        method: 'POST',
-        url: graphqlURL,
-        headers: {
-          authorization: `Bearer ${cy.getLocalStorage('access_token')}`,
-        },
-        body: {
-          "operationName": "MarkDeviceTypeAsDeleted",
-          "variables": {"deviceName": deviceName},
-          "query": "mutation MarkDeviceTypeAsDeleted($deviceName: String){\n  markDeviceTypeAsDeleted(deviceId: null, deviceName: $deviceName)\n{name}}"
-        }
-      }
-    )
+    cy.makePOSTRequest({
+      "operationName": "MarkDeviceTypeAsDeleted",
+      "variables": {"deviceName": deviceName},
+      "query": "mutation MarkDeviceTypeAsDeleted($deviceName: String){\n  markDeviceTypeAsDeleted(deviceId: null, deviceName: $deviceName)\n{name}}"
+    })
+
   });
 
   context('Manage device', () => {
@@ -165,12 +149,12 @@ describe("Testing with multiplex devices", () => {
       })
 
       // remove a test for the patient if it exists
-      cy.request('POST', graphqlURL, {
-          "operationName": "RemovePatientFromQueue",
-          "variables": {"patientId": patient.internalId},
-          "query": "mutation RemovePatientFromQueue($patientId: ID!) {\n  removePatientFromQueue(patientId: $patientId)\n}"
-        }
-      )
+      cy.makePOSTRequest({
+        "operationName": "RemovePatientFromQueue",
+        "variables": {"patientId": patient.internalId},
+        "query": "mutation RemovePatientFromQueue($patientId: ID!) {\n  removePatientFromQueue(patientId: $patientId)\n}"
+      })
+
     });
 
     it('test patient', () => {

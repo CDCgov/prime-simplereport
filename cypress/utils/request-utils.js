@@ -1,0 +1,1 @@
+export const graphqlURL = `${Cypress.env('BACKEND_URL') || 'https://localhost.simplereport.gov/api'}/graphql`;
