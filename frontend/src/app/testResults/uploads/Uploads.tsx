@@ -11,9 +11,11 @@ import "../HeaderSizeFix.scss";
 import { getAppInsights } from "../../TelemetryService";
 import { RootState } from "../../store";
 import SingleFileInput from "../../commonComponents/SingleFileInput";
+import {
+  MAX_CSV_UPLOAD_BYTES,
+  MAX_CSV_UPLOAD_ROW_COUNT,
+} from "../../../config/constants";
 
-const PAYLOAD_MAX_BYTES = 50 * 1000 * 1000;
-const REPORT_MAX_ITEMS = 10000;
 const REPORT_MAX_ITEM_COLUMNS = 2000;
 
 const Uploads = () => {
@@ -52,11 +54,14 @@ const Uploads = () => {
         return;
       }
 
-      if (currentFile.size > PAYLOAD_MAX_BYTES) {
-        const maxKBytes = (PAYLOAD_MAX_BYTES / 1024).toLocaleString("en-US", {
-          maximumFractionDigits: 2,
-          minimumFractionDigits: 2,
-        });
+      if (currentFile.size > MAX_CSV_UPLOAD_BYTES) {
+        const maxKBytes = (MAX_CSV_UPLOAD_BYTES / 1024).toLocaleString(
+          "en-US",
+          {
+            maximumFractionDigits: 2,
+            minimumFractionDigits: 2,
+          }
+        );
         showError(
           `The file '${currentFile.name}' is too large.  The maximum file size is ${maxKBytes}k`,
           "Invalid file"
@@ -66,9 +71,9 @@ const Uploads = () => {
 
       const fileText = await currentFile.text();
       const lineCount = (fileText.match(/\n/g) || []).length + 1;
-      if (lineCount > REPORT_MAX_ITEMS) {
+      if (lineCount > MAX_CSV_UPLOAD_ROW_COUNT) {
         showError(
-          `The file '${currentFile.name}' has too many rows. The maximum number of rows is ${REPORT_MAX_ITEMS}.`,
+          `The file '${currentFile.name}' has too many rows. The maximum number of rows is ${MAX_CSV_UPLOAD_ROW_COUNT}.`,
           "Invalid file"
         );
         return;
