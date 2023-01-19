@@ -20,7 +20,7 @@ describe("Testing with multiplex devices", () => {
         method: 'POST',
         url: graphqlURL,
         headers: {
-          authorization: `bearer ${cy.getLocalStorage('access_token')}`,
+          authorization: `Bearer ${cy.getLocalStorage('access_token')}`,
         },
         body: {
           "operationName": "GetPatientsByFacility",
@@ -44,7 +44,7 @@ describe("Testing with multiplex devices", () => {
         method: 'POST',
         url: graphqlURL,
         headers: {
-          authorization: `bearer ${cy.getLocalStorage('access_token')}`,
+          authorization: `Bearer ${cy.getLocalStorage('access_token')}`,
         },
         body: {
           "operationName": "MarkDeviceTypeAsDeleted",
