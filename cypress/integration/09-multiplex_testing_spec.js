@@ -1,6 +1,6 @@
 import {aliasMutation, aliasQuery} from "../utils/graphql-test-utils";
 import {loginHooks} from "../support";
-import {getPOSTRequest, graphqlURL} from "../utils/request-utils";
+import {graphqlURL} from "../utils/request-utils";
 
 describe("Testing with multiplex devices", () => {
   let patient, facility;
@@ -131,7 +131,7 @@ describe("Testing with multiplex devices", () => {
       cy.get('li[id="multi-select-deviceTypes-list--option-0"]').click()
       cy.contains('Save changes').click()
       cy.get('input[name="addressSelect-facility"]').first().click({force: true});
-      cy.get('input[name="addressSelect-provider"]').first().click({force: true});
+      cy.get('input[name="addressSelect-provider"]').first().click({force: true});// this is failing
       cy.get('button[id="save-confirmed-address"]').click()
       cy.wait('@gqlUpdateFacilityMutation')
       cy.get(".Toastify").contains("Updated Facility");
