@@ -1,5 +1,8 @@
 package gov.cdc.usds.simplereport.config;
 
+import static gov.cdc.usds.simplereport.config.BeanProfiles.NOT;
+import static gov.cdc.usds.simplereport.config.BeanProfiles.PROD;
+
 import ca.uhn.fhir.context.FhirContext;
 import com.azure.storage.queue.QueueAsyncClient;
 import com.azure.storage.queue.QueueClientBuilder;
@@ -20,6 +23,7 @@ import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.Primary;
+import org.springframework.context.annotation.Profile;
 
 @Slf4j
 @Configuration
@@ -49,6 +53,7 @@ class AzureTestEventReportingQueueConfiguration {
     return FhirContext.forR4();
   }
 
+  @Profile(PROD)
   @Primary
   @Bean(name = "csvQueueReportingService")
   @ConditionalOnMissingBean(name = "csvQueueReportingService")
@@ -56,10 +61,26 @@ class AzureTestEventReportingQueueConfiguration {
     return new NoOpReportingService();
   }
 
+  @Profile(PROD)
   @Bean(name = "fhirQueueReportingService")
   @ConditionalOnMissingBean(name = "fhirQueueReportingService")
   TestEventReportingService noOpFhirReportingService() {
     return new NoOpReportingService();
+  }
+
+  @Profile(NOT + PROD)
+  @Primary
+  @Bean(name = "csvQueueReportingService")
+  @ConditionalOnMissingBean(name = "csvQueueReportingService")
+  TestEventReportingService noOpDebugCSVReportingService() {
+    return new NoOpDebugReportingService();
+  }
+
+  @Profile(NOT + PROD)
+  @Bean(name = "fhirQueueReportingService")
+  @ConditionalOnMissingBean(name = "fhirQueueReportingService")
+  TestEventReportingService noOpDebugFhirReportingService() {
+    return new NoOpDebugReportingService();
   }
 
   @Bean("csvQueue")
@@ -84,14 +105,13 @@ class AzureTestEventReportingQueueConfiguration {
         .buildAsyncClient();
   }
 
-  private static class NoOpReportingService implements TestEventReportingService {
+  private static class NoOpDebugReportingService implements TestEventReportingService {
     @Override
     public CompletableFuture<Void> reportAsync(TestEvent testEvent) {
       log.warn(
           "No TestEventReportingService configured; defaulting to no-op reporting for TestEvent [{}]",
           testEvent.getInternalId());
-      String buffer = toBuffer(testEvent);
-      log.info("TestEvent serializes as: {}", buffer);
+      log.info("TestEvent serializes as: {}", toBuffer(testEvent));
       return CompletableFuture.completedFuture(null);
     }
 
@@ -102,6 +122,16 @@ class AzureTestEventReportingQueueConfiguration {
       } catch (JsonProcessingException e) {
         throw new TestEventSerializationFailureException(testEvent.getInternalId(), e.getMessage());
       }
+    }
+  }
+
+  private static class NoOpReportingService implements TestEventReportingService {
+    @Override
+    public CompletableFuture<Void> reportAsync(TestEvent testEvent) {
+      log.warn(
+          "No TestEventReportingService configured; defaulting to no-op reporting for TestEvent [{}]",
+          testEvent.getInternalId());
+      return CompletableFuture.completedFuture(null);
     }
   }
 }
