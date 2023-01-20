@@ -33,7 +33,7 @@ class TestResultMutationResolverTest {
             List.of(UUID.randomUUID(), UUID.randomUUID()));
 
     verify(mockCsvReporter, times(2)).report(any());
-    verify(mockFhirReporter, times(1)).report(any());
+    verify(mockFhirReporter, times(2)).report(any());
     assertThat(actual).isTrue();
   }
 }
