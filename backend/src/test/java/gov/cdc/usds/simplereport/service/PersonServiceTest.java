@@ -1,5 +1,6 @@
 package gov.cdc.usds.simplereport.service;
 
+import static gov.cdc.usds.simplereport.test_util.TestDataBuilder.getAddress;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertThrows;
@@ -88,7 +89,7 @@ class PersonServiceTest extends BaseServiceTest<PersonService> {
         "Fosbury",
         "Sr.",
         LocalDate.of(1865, 12, 25),
-        _dataFactory.getAddress(),
+        getAddress(),
         "USA",
         TestDataFactory.getListOfOnePhoneNumber(),
         PersonRole.STAFF,
@@ -109,7 +110,7 @@ class PersonServiceTest extends BaseServiceTest<PersonService> {
         "Barnacle",
         "4th",
         LocalDate.of(1865, 12, 25),
-        _dataFactory.getAddress(),
+        getAddress(),
         "USA",
         TestDataFactory.getListOfOnePhoneNumber(),
         PersonRole.STAFF,
@@ -130,7 +131,7 @@ class PersonServiceTest extends BaseServiceTest<PersonService> {
         "Pizzazz",
         null,
         LocalDate.of(1865, 12, 25),
-        _dataFactory.getAddress(),
+        getAddress(),
         "USA",
         TestDataFactory.getListOfOnePhoneNumber(),
         PersonRole.STAFF,
@@ -168,7 +169,7 @@ class PersonServiceTest extends BaseServiceTest<PersonService> {
         "Flintstone",
         "Sr.",
         LocalDate.of(1990, 1, 1),
-        _dataFactory.getAddress(),
+        getAddress(),
         "USA",
         null,
         PersonRole.RESIDENT,
@@ -193,7 +194,7 @@ class PersonServiceTest extends BaseServiceTest<PersonService> {
                 "Flintstone",
                 "Jr.",
                 LocalDate.of(1950, 1, 1),
-                _dataFactory.getAddress(),
+                getAddress(),
                 "USA",
                 null,
                 PersonRole.RESIDENT,
@@ -216,7 +217,7 @@ class PersonServiceTest extends BaseServiceTest<PersonService> {
         "Flintstone",
         "Jr.",
         LocalDate.of(1950, 1, 1),
-        _dataFactory.getAddress(),
+        getAddress(),
         "USA",
         null,
         PersonRole.RESIDENT,
@@ -244,7 +245,7 @@ class PersonServiceTest extends BaseServiceTest<PersonService> {
                 "Flintstone",
                 "Jr.",
                 LocalDate.of(1950, 1, 1),
-                _dataFactory.getAddress(),
+                getAddress(),
                 "USA",
                 null,
                 PersonRole.RESIDENT,
@@ -269,7 +270,7 @@ class PersonServiceTest extends BaseServiceTest<PersonService> {
     phoneNumbers.add(new PhoneNumber(PhoneType.LANDLINE, "2342342344"));
 
     LocalDate birthDate = LocalDate.of(1865, 12, 25);
-    StreetAddress address = _dataFactory.getAddress();
+    StreetAddress address = getAddress();
 
     IllegalGraphqlArgumentException e =
         assertThrows(
@@ -313,8 +314,8 @@ class PersonServiceTest extends BaseServiceTest<PersonService> {
             null,
             "Doe",
             null,
-            LocalDate.of(1990, 01, 01),
-            _dataFactory.getAddress(),
+            LocalDate.of(1990, 1, 1),
+            getAddress(),
             "USA",
             null,
             PersonRole.STAFF,
@@ -356,8 +357,8 @@ class PersonServiceTest extends BaseServiceTest<PersonService> {
             null,
             "Doe",
             null,
-            LocalDate.of(1990, 01, 01),
-            _dataFactory.getAddress(),
+            LocalDate.of(1990, 1, 1),
+            getAddress(),
             "USA",
             null,
             PersonRole.STAFF,
@@ -395,7 +396,7 @@ class PersonServiceTest extends BaseServiceTest<PersonService> {
             "Fosbury",
             "Sr.",
             LocalDate.of(1865, 12, 25),
-            _dataFactory.getAddress(),
+            getAddress(),
             "USA",
             TestDataFactory.getListOfOnePhoneNumber(),
             PersonRole.STAFF,
@@ -436,7 +437,7 @@ class PersonServiceTest extends BaseServiceTest<PersonService> {
             "Fosbury",
             "Sr.",
             LocalDate.of(1865, 12, 25),
-            _dataFactory.getAddress(),
+            getAddress(),
             "USA",
             TestDataFactory.getListOfOnePhoneNumber(),
             PersonRole.STAFF,
@@ -488,7 +489,7 @@ class PersonServiceTest extends BaseServiceTest<PersonService> {
             "Fosbury",
             "Sr.",
             LocalDate.of(1865, 12, 25),
-            _dataFactory.getAddress(),
+            getAddress(),
             "USA",
             TestDataFactory.getListOfOnePhoneNumber(),
             PersonRole.STAFF,
@@ -548,7 +549,7 @@ class PersonServiceTest extends BaseServiceTest<PersonService> {
             "Fosbury",
             "Sr.",
             LocalDate.of(1865, 12, 25),
-            _dataFactory.getAddress(),
+            getAddress(),
             "USA",
             TestDataFactory.getListOfOnePhoneNumber(),
             PersonRole.STAFF,
@@ -844,7 +845,7 @@ class PersonServiceTest extends BaseServiceTest<PersonService> {
 
     var result =
         _service.isDuplicatePatient(
-            "John", "Doe", LocalDate.parse("1990-01-01"), org, Optional.ofNullable(null));
+            "John", "Doe", LocalDate.parse("1990-1-1"), org, Optional.empty());
 
     assertFalse(result);
   }
@@ -864,8 +865,8 @@ class PersonServiceTest extends BaseServiceTest<PersonService> {
             null,
             "Doe",
             null,
-            LocalDate.of(1990, 01, 01),
-            _dataFactory.getAddress(),
+            LocalDate.of(1990, 1, 1),
+            getAddress(),
             "USA",
             TestDataFactory.getListOfOnePhoneNumber(),
             PersonRole.STAFF,
@@ -885,7 +886,7 @@ class PersonServiceTest extends BaseServiceTest<PersonService> {
             person.getLastName(),
             person.getBirthDate(),
             org,
-            Optional.ofNullable(null));
+            Optional.empty());
 
     assertTrue(result);
   }
@@ -906,8 +907,8 @@ class PersonServiceTest extends BaseServiceTest<PersonService> {
             null,
             "Doe",
             null,
-            LocalDate.of(1990, 01, 01),
-            _dataFactory.getAddress(),
+            LocalDate.of(1990, 1, 1),
+            getAddress(),
             "USA",
             TestDataFactory.getListOfOnePhoneNumber(),
             PersonRole.STAFF,
@@ -927,7 +928,7 @@ class PersonServiceTest extends BaseServiceTest<PersonService> {
             person.getLastName(),
             person.getBirthDate(),
             org,
-            Optional.ofNullable(null));
+            Optional.empty());
 
     assertTrue(result);
   }
@@ -941,7 +942,7 @@ class PersonServiceTest extends BaseServiceTest<PersonService> {
         _service.isDuplicatePatient(
             "John",
             "Doe",
-            LocalDate.parse("1990-01-01"),
+            LocalDate.parse("1990-1-1"),
             facility.getOrganization(),
             Optional.of(facility));
 
@@ -963,8 +964,8 @@ class PersonServiceTest extends BaseServiceTest<PersonService> {
             null,
             "Doe",
             null,
-            LocalDate.of(1990, 01, 01),
-            _dataFactory.getAddress(),
+            LocalDate.of(1990, 1, 1),
+            getAddress(),
             "USA",
             TestDataFactory.getListOfOnePhoneNumber(),
             PersonRole.STAFF,
@@ -1008,8 +1009,8 @@ class PersonServiceTest extends BaseServiceTest<PersonService> {
             null,
             "Doe",
             null,
-            LocalDate.of(1990, 01, 01),
-            _dataFactory.getAddress(),
+            LocalDate.of(1990, 1, 1),
+            getAddress(),
             "USA",
             TestDataFactory.getListOfOnePhoneNumber(),
             PersonRole.STAFF,
@@ -1053,8 +1054,8 @@ class PersonServiceTest extends BaseServiceTest<PersonService> {
             null,
             "Doe",
             null,
-            LocalDate.of(1990, 01, 01),
-            _dataFactory.getAddress(),
+            LocalDate.of(1990, 1, 1),
+            getAddress(),
             "USA",
             TestDataFactory.getListOfOnePhoneNumber(),
             PersonRole.STAFF,

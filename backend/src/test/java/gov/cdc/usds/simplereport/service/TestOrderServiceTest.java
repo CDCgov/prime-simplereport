@@ -1,5 +1,6 @@
 package gov.cdc.usds.simplereport.service;
 
+import static gov.cdc.usds.simplereport.test_util.TestDataBuilder.getAddress;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertFalse;
@@ -108,7 +109,6 @@ class TestOrderServiceTest extends BaseServiceTest<TestOrderService> {
 
   private DeviceSpecimenType DEVICE_A = null;
   private Facility _site;
-  private Facility _otherSite;
 
   @BeforeEach
   void setupData() {
@@ -131,7 +131,7 @@ class TestOrderServiceTest extends BaseServiceTest<TestOrderService> {
             "",
             "Sr.",
             LocalDate.of(1865, 12, 25),
-            _dataFactory.getAddress(),
+            getAddress(),
             "USA",
             TestDataFactory.getListOfOnePhoneNumber(),
             PersonRole.STAFF,
@@ -194,7 +194,7 @@ class TestOrderServiceTest extends BaseServiceTest<TestOrderService> {
             "",
             "Sr.",
             LocalDate.of(1865, 12, 25),
-            _dataFactory.getAddress(),
+            getAddress(),
             "USA",
             TestDataFactory.getListOfOnePhoneNumber(),
             PersonRole.STAFF,
@@ -269,7 +269,7 @@ class TestOrderServiceTest extends BaseServiceTest<TestOrderService> {
             "",
             "Sr.",
             LocalDate.of(1865, 12, 25),
-            _dataFactory.getAddress(),
+            getAddress(),
             "USA",
             TestDataFactory.getListOfOnePhoneNumber(),
             PersonRole.STAFF,
@@ -304,7 +304,7 @@ class TestOrderServiceTest extends BaseServiceTest<TestOrderService> {
             "",
             "Sr.",
             LocalDate.of(1865, 12, 25),
-            _dataFactory.getAddress(),
+            getAddress(),
             "USA",
             TestDataFactory.getListOfOnePhoneNumber(),
             PersonRole.STAFF,
@@ -355,7 +355,7 @@ class TestOrderServiceTest extends BaseServiceTest<TestOrderService> {
             "",
             "Sr.",
             LocalDate.of(1865, 12, 25),
-            _dataFactory.getAddress(),
+            getAddress(),
             "USA",
             TestDataFactory.getListOfOnePhoneNumber(),
             PersonRole.STAFF,
@@ -400,7 +400,7 @@ class TestOrderServiceTest extends BaseServiceTest<TestOrderService> {
             "",
             "Sr.",
             LocalDate.of(1865, 12, 25),
-            _dataFactory.getAddress(),
+            getAddress(),
             "USA",
             TestDataFactory.getListOfOnePhoneNumber(),
             PersonRole.STAFF,
@@ -446,7 +446,7 @@ class TestOrderServiceTest extends BaseServiceTest<TestOrderService> {
             "",
             "Sr.",
             LocalDate.of(1865, 12, 25),
-            _dataFactory.getAddress(),
+            getAddress(),
             "USA",
             TestDataFactory.getListOfOnePhoneNumber(),
             PersonRole.STAFF,
@@ -468,7 +468,7 @@ class TestOrderServiceTest extends BaseServiceTest<TestOrderService> {
             "",
             "Jr.",
             LocalDate.of(1900, 1, 25),
-            _dataFactory.getAddress(),
+            getAddress(),
             "USA",
             TestDataFactory.getListOfOnePhoneNumber(),
             PersonRole.STUDENT,
@@ -1225,7 +1225,7 @@ class TestOrderServiceTest extends BaseServiceTest<TestOrderService> {
             "",
             "Sr.",
             LocalDate.of(1865, 12, 25),
-            _dataFactory.getAddress(),
+            getAddress(),
             "USA",
             TestDataFactory.getListOfOnePhoneNumber(),
             PersonRole.STAFF,
@@ -1258,7 +1258,7 @@ class TestOrderServiceTest extends BaseServiceTest<TestOrderService> {
               "",
               "Sr.",
               LocalDate.of(1865, 12, 25),
-              _dataFactory.getAddress(),
+              getAddress(),
               "USA",
               TestDataFactory.getListOfOnePhoneNumber(),
               PersonRole.STAFF,
@@ -1742,9 +1742,7 @@ class TestOrderServiceTest extends BaseServiceTest<TestOrderService> {
 
     assertThrows(
         AccessDeniedException.class,
-        () -> {
-          _service.getOrganizationLevelDashboardMetrics(startDate, endDate);
-        });
+        () -> _service.getOrganizationLevelDashboardMetrics(startDate, endDate));
   }
 
   @Test
@@ -1769,9 +1767,7 @@ class TestOrderServiceTest extends BaseServiceTest<TestOrderService> {
 
     assertThrows(
         AccessDeniedException.class,
-        () -> {
-          _service.getTopLevelDashboardMetrics(null, startDate, endDate);
-        });
+        () -> _service.getTopLevelDashboardMetrics(null, startDate, endDate));
   }
 
   @Test
@@ -1866,18 +1862,17 @@ class TestOrderServiceTest extends BaseServiceTest<TestOrderService> {
         patientsToResults.keySet().stream()
             .map(
                 n -> {
-                  PersonName p = n;
                   TestResult t = patientsToResults.get(n);
                   PersonRole r = patientsToRoles.get(n);
                   AskOnEntrySurvey s = patientsToSurveys.get(n);
                   Date d = patientsToDates.get(n);
 
-                  Person person = _dataFactory.createMinimalPerson(org, _site, p, r);
+                  Person person = _dataFactory.createMinimalPerson(org, _site, n, r);
                   return _dataFactory.createTestEvent(person, _site, s, t, d);
                 })
             .collect(Collectors.toList());
     // Make one result in another facility
-    _otherSite = _dataFactory.createValidFacility(org, "The Other Facility");
+    Facility _otherSite = _dataFactory.createValidFacility(org, "The Other Facility");
     _dataFactory.createTestEvent(
         _dataFactory.createMinimalPerson(org, _otherSite, BRAD), _otherSite, TestResult.NEGATIVE);
     return testEvents;
@@ -1893,8 +1888,7 @@ class TestOrderServiceTest extends BaseServiceTest<TestOrderService> {
     MultiplexResultInput covidResult = new MultiplexResultInput("COVID-19", covidTestResult);
     MultiplexResultInput fluAResult = new MultiplexResultInput("Flu A", fluATestResult);
     MultiplexResultInput fluBResult = new MultiplexResultInput("Flu B", fluBTestResult);
-    List<MultiplexResultInput> generatedTestResult = List.of(covidResult, fluAResult, fluBResult);
-    return generatedTestResult;
+    return List.of(covidResult, fluAResult, fluBResult);
   }
 
   private static void assertTestResultsList(List<TestEvent> found, List<TestEvent> expected) {
@@ -1929,7 +1923,7 @@ class TestOrderServiceTest extends BaseServiceTest<TestOrderService> {
             patient,
             "",
             Collections.emptyMap(),
-            LocalDate.of(2022, 06, 05),
+            LocalDate.of(2022, 6, 5),
             false);
 
     facility.addDefaultDeviceSpecimen(DEVICE_A);
