@@ -70,6 +70,7 @@ jobs:
         CYPRESS_OKTA_USERNAME: ${{ secrets.CYPRESS_OKTA_USERNAME }}
         CYPRESS_OKTA_PASSWORD: ${{ secrets.CYPRESS_OKTA_PASSWORD }}
         CYPRESS_OKTA_SECRET: ${{ secrets.CYPRESS_OKTA_SECRET }}
+        CYPRESS_BACKEND_URL: "https://localhost.simplereport.gov/api"
         WIREMOCK_URL: "http://cypress:8088"
         SPEC_PATH: "cypress/integration/*"
         TEST_ENV: "https://localhost.simplereport.gov"

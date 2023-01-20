@@ -127,3 +127,4 @@ jobs:
   #     cypress_okta_username: ${{ secrets.CYPRESS_OKTA_USERNAME }}
   #     cypress_okta_password: ${{ secrets.CYPRESS_OKTA_PASSWORD }}
   #     cypress_okta_secret: ${{ secrets.CYPRESS_OKTA_SECRET }}
+  #     cypress_backend_url: "https://localhost.simplereport.gov/api"

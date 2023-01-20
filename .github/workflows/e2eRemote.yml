@@ -83,6 +83,7 @@ jobs:
         CYPRESS_OKTA_REDIRECT_URI: ${{ inputs.cypress_okta_redirect_uri }}
         CYPRESS_OKTA_SCOPE: ${{ inputs.cypress_okta_scope }}
         CYPRESS_OKTA_CLIENT_ID: ${{ inputs.cypress_okta_client_id }}
+        CYPRESS_BACKEND_URL: "https://localhost.simplereport.gov/api"
         SPEC_PATH: ${{ inputs.spec_path }}
         TEST_ENV: ${{ inputs.test_env }}
       shell: bash
