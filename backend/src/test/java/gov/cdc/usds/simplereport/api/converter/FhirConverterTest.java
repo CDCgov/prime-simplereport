@@ -862,8 +862,7 @@ class FhirConverterTest {
     var internalId = "3c9c7370-e2e3-49ad-bb7a-f6005f41cf29";
     var testOrder = TestDataBuilder.createEmptyTestOrder();
     testOrder.markComplete();
-    testOrder.setDeviceTypeAndSpecimenType(
-        TestDataBuilder.createEmptyDeviceWithLoinc(), null);
+    testOrder.setDeviceTypeAndSpecimenType(TestDataBuilder.createEmptyDeviceWithLoinc(), null);
     ReflectionTestUtils.setField(testOrder, "internalId", UUID.fromString(internalId));
 
     var actual = convertToServiceRequest(testOrder);

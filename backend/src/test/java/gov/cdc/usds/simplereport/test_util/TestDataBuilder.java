@@ -4,7 +4,6 @@ import static gov.cdc.usds.simplereport.db.model.Facility_.DEFAULT_DEVICE_TYPE;
 import static gov.cdc.usds.simplereport.db.model.Facility_.DEFAULT_SPECIMEN_TYPE;
 
 import gov.cdc.usds.simplereport.api.model.accountrequest.OrganizationAccountRequest;
-import gov.cdc.usds.simplereport.db.model.DeviceSpecimenType;
 import gov.cdc.usds.simplereport.db.model.DeviceType;
 import gov.cdc.usds.simplereport.db.model.Facility;
 import gov.cdc.usds.simplereport.db.model.Organization;
@@ -66,16 +65,7 @@ public class TestDataBuilder {
   public static Facility createEmptyFacility(boolean includeValidDevice) {
     DeviceType device = includeValidDevice ? createEmptyDeviceWithLoinc() : null;
     return new Facility(
-        null,
-        null,
-        null,
-        null,
-        null,
-        null,
-        null,
-        device,
-        null,
-        Collections.emptyList());
+        null, null, null, null, null, null, null, device, null, Collections.emptyList());
   }
 
   public static DeviceType createEmptyDeviceWithLoinc() {
