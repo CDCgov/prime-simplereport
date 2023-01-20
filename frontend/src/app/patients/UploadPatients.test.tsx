@@ -13,7 +13,7 @@ import UploadPatients from "./UploadPatients";
 const mockStore = createMockStore([]);
 const store = mockStore({
   user: {
-    isAdmin: true,
+    isAdmin: false,
   },
   facilities: [
     { id: "1", name: "Lincoln Middle School" },
@@ -30,11 +30,11 @@ jest.mock("react-router-dom", () => {
   };
 });
 
-const renderUploadPatients = (isAdmin = true) =>
+const renderUploadPatients = () =>
   render(
     <Provider store={store}>
       <MemoryRouter>
-        <UploadPatients isAdmin={isAdmin} />
+        <UploadPatients />
       </MemoryRouter>
     </Provider>
   );
@@ -402,10 +402,5 @@ describe("Upload Patient", () => {
         screen.getByText("Drag file here or choose from folder to change file")
       ).toBeInTheDocument();
     });
-  });
-  it("should redirect user if not admin", () => {
-    renderUploadPatients(false);
-    expect(mockNavigate).toHaveBeenCalledWith(`/queue`);
-    expect(mockNavigate).toHaveBeenCalledTimes(1);
   });
 });

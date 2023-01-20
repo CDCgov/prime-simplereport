@@ -20,6 +20,7 @@ import gov.cdc.usds.simplereport.db.model.auxiliary.StreetAddress;
 import gov.cdc.usds.simplereport.db.model.auxiliary.TestResult;
 import java.time.LocalDate;
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 import java.util.Set;
 
@@ -55,6 +56,44 @@ public class TestDataBuilder {
   public static OrganizationQueueItem createOrganizationQueueItem() {
     return buildOrganizationQueueItem(
         "New Org Queue Name", "CA-New-Org-Queue-Name-12345", "org.queue.admin@example.com");
+  }
+
+  public static Person createEmptyPerson(boolean withOrganizationObject) {
+    Organization org = withOrganizationObject ? new Organization(null, null, null, true) : null;
+    return new Person(null, null, null, null, org);
+  }
+
+  public static Facility createEmptyFacility(boolean includeValidDevice) {
+    DeviceType device = includeValidDevice ? createEmptyDeviceWithLoinc() : null;
+    return new Facility(
+        null,
+        null,
+        null,
+        null,
+        null,
+        null,
+        null,
+        new DeviceSpecimenType(device, null),
+        Collections.emptyList());
+  }
+
+  public static DeviceType createEmptyDeviceWithLoinc() {
+    return new DeviceType(null, null, null, "95422-2", null, 0);
+  }
+
+  public static TestOrder createEmptyTestOrder() {
+    return new TestOrder(createEmptyPerson(false), createEmptyFacility(false));
+  }
+
+  public static TestEvent createEmptyTestEvent() {
+    return new TestEvent(createEmptyTestOrder(), false, Collections.emptySet());
+  }
+
+  public static TestEvent createEmptyTestEventWithValidDevice() {
+    return new TestEvent(
+        new TestOrder(createEmptyPerson(false), createEmptyFacility(true)),
+        false,
+        Collections.emptySet());
   }
 
   public static Person createPerson() {

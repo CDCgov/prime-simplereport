@@ -45,6 +45,7 @@ import gov.cdc.usds.simplereport.db.model.auxiliary.PhoneType;
 import gov.cdc.usds.simplereport.db.model.auxiliary.StreetAddress;
 import gov.cdc.usds.simplereport.db.model.auxiliary.TestCorrectionStatus;
 import gov.cdc.usds.simplereport.db.model.auxiliary.TestResult;
+import gov.cdc.usds.simplereport.test_util.TestDataBuilder;
 import java.io.IOException;
 import java.nio.charset.StandardCharsets;
 import java.time.LocalDate;
@@ -346,7 +347,7 @@ class FhirConverterTest {
   }
 
   @Test
-  void convertToOrganiziation_Facility_matchesJson() throws IOException {
+  void convertToOrganization_Facility_matchesJson() throws IOException {
     var internalId = "3c9c7370-e2e3-49ad-bb7a-f6005f41cf29";
     var facility =
         new Facility(
@@ -715,24 +716,7 @@ class FhirConverterTest {
 
   @Test
   void convertToDiagnosticReport_TestEvent_valid() {
-    var testEvent =
-        new TestEvent(
-            new TestOrder(
-                new Person(null, null, null, null, null),
-                new Facility(
-                    null,
-                    null,
-                    null,
-                    null,
-                    null,
-                    null,
-                    null,
-                    new DeviceSpecimenType(
-                        new DeviceType(null, null, null, "95422-2", null, 0), null),
-                    Collections.emptyList())),
-            false,
-            Collections.emptySet());
-
+    var testEvent = TestDataBuilder.createEmptyTestEventWithValidDevice();
     var actual = convertToDiagnosticReport(testEvent);
 
     assertThat(actual.getStatus()).isEqualTo(DiagnosticReportStatus.FINAL);
@@ -743,22 +727,7 @@ class FhirConverterTest {
 
   @Test
   void convertToDiagnosticReport_TestEvent_correctedTestEvent() {
-    var invalidTestEvent =
-        new TestEvent(
-            new TestOrder(
-                new Person(null, null, null, null, null),
-                new Facility(
-                    null,
-                    null,
-                    null,
-                    null,
-                    null,
-                    null,
-                    null,
-                    new DeviceSpecimenType(null, null),
-                    Collections.emptyList())),
-            false,
-            Collections.emptySet());
+    var invalidTestEvent = TestDataBuilder.createEmptyTestEvent();
     var correctedTestEvent =
         new TestEvent(
             invalidTestEvent, TestCorrectionStatus.CORRECTED, "typo", Collections.emptySet());
@@ -770,22 +739,7 @@ class FhirConverterTest {
 
   @Test
   void convertToDiagnosticReport_TestEvent_removedTestEvent() {
-    var invalidTestEvent =
-        new TestEvent(
-            new TestOrder(
-                new Person(null, null, null, null, null),
-                new Facility(
-                    null,
-                    null,
-                    null,
-                    null,
-                    null,
-                    null,
-                    null,
-                    new DeviceSpecimenType(null, null),
-                    Collections.emptyList())),
-            false,
-            Collections.emptySet());
+    var invalidTestEvent = TestDataBuilder.createEmptyTestEvent();
     var correctedTestEvent =
         new TestEvent(
             invalidTestEvent, TestCorrectionStatus.REMOVED, "wrong person", Collections.emptySet());
@@ -798,23 +752,7 @@ class FhirConverterTest {
   @Test
   void convertToDiagnosticReport_TestEvent_matchesJson() throws IOException {
     var internalId = "3c9c7370-e2e3-49ad-bb7a-f6005f41cf29";
-    var testEvent =
-        new TestEvent(
-            new TestOrder(
-                new Person(null, null, null, null, null),
-                new Facility(
-                    null,
-                    null,
-                    null,
-                    null,
-                    null,
-                    null,
-                    null,
-                    new DeviceSpecimenType(
-                        new DeviceType(null, null, null, "95422-2", null, 0), null),
-                    Collections.emptyList())),
-            false,
-            Collections.emptySet());
+    var testEvent = TestDataBuilder.createEmptyTestEventWithValidDevice();
     ReflectionTestUtils.setField(testEvent, "internalId", UUID.fromString(internalId));
 
     var actual = convertToDiagnosticReport(testEvent);
@@ -853,17 +791,7 @@ class FhirConverterTest {
   void convertToServiceRequest_TestOrder_valid() {
     var testOrder =
         new TestOrder(
-            new Person(null, null, null, null, new Organization(null, null, null, true)),
-            new Facility(
-                null,
-                null,
-                null,
-                null,
-                null,
-                null,
-                null,
-                new DeviceSpecimenType(new DeviceType(null, null, null, "95422-2", null, 0), null),
-                Collections.emptyList()));
+            TestDataBuilder.createEmptyPerson(true), TestDataBuilder.createEmptyFacility(true));
 
     var actual = convertToServiceRequest(testOrder);
 
@@ -878,17 +806,7 @@ class FhirConverterTest {
   void convertToServiceRequest_TestOrder_complete() {
     var testOrder =
         new TestOrder(
-            new Person(null, null, null, null, new Organization(null, null, null, true)),
-            new Facility(
-                null,
-                null,
-                null,
-                null,
-                null,
-                null,
-                null,
-                new DeviceSpecimenType(new DeviceType(null, null, null, "95422-2", null, 0), null),
-                Collections.emptyList()));
+            TestDataBuilder.createEmptyPerson(true), TestDataBuilder.createEmptyFacility(true));
     testOrder.markComplete();
     var actual = convertToServiceRequest(testOrder);
 
@@ -899,17 +817,7 @@ class FhirConverterTest {
   void convertToServiceRequest_TestOrder_cancelled() {
     var testOrder =
         new TestOrder(
-            new Person(null, null, null, null, new Organization(null, null, null, true)),
-            new Facility(
-                null,
-                null,
-                null,
-                null,
-                null,
-                null,
-                null,
-                new DeviceSpecimenType(new DeviceType(null, null, null, "95422-2", null, 0), null),
-                Collections.emptyList()));
+            TestDataBuilder.createEmptyPerson(true), TestDataBuilder.createEmptyFacility(true));
     testOrder.cancelOrder();
     var actual = convertToServiceRequest(testOrder);
 
@@ -920,17 +828,7 @@ class FhirConverterTest {
   void convertToServiceRequest_TestOrder_nullDeviceType() {
     var testOrder =
         new TestOrder(
-            new Person(null, null, null, null, new Organization(null, null, null, true)),
-            new Facility(
-                null,
-                null,
-                null,
-                null,
-                null,
-                null,
-                null,
-                new DeviceSpecimenType(null, null),
-                Collections.emptyList()));
+            TestDataBuilder.createEmptyPerson(true), TestDataBuilder.createEmptyFacility(false));
     testOrder.cancelOrder();
     var actual = convertToServiceRequest(testOrder);
 
@@ -958,22 +856,10 @@ class FhirConverterTest {
   @Test
   void convertToServiceRequest_TestOrder_matchesJson() throws IOException {
     var internalId = "3c9c7370-e2e3-49ad-bb7a-f6005f41cf29";
-    var testOrder =
-        new TestOrder(
-            null,
-            new Facility(
-                null,
-                null,
-                null,
-                null,
-                null,
-                null,
-                null,
-                new DeviceSpecimenType(null, null),
-                Collections.emptyList()));
+    var testOrder = TestDataBuilder.createEmptyTestOrder();
     testOrder.markComplete();
     testOrder.setDeviceSpecimen(
-        new DeviceSpecimenType(new DeviceType(null, null, null, "94533-7", null, 0), null));
+        new DeviceSpecimenType(TestDataBuilder.createEmptyDeviceWithLoinc(), null));
     ReflectionTestUtils.setField(testOrder, "internalId", UUID.fromString(internalId));
 
     var actual = convertToServiceRequest(testOrder);

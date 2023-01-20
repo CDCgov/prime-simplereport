@@ -27,7 +27,7 @@ describe("patient header", () => {
       await screen.findByText("Additional Properties would be here")
     ).toBeInTheDocument();
   });
-  it("doesn't include link to bulk patient upload if not an admin", async () => {
+  it("includes link to bulk upload for standard users", async () => {
     render(
       <MemoryRouter>
         <Provider store={mockedStore}>
@@ -39,24 +39,6 @@ describe("patient header", () => {
         </Provider>
       </MemoryRouter>
     );
-
-    expect(
-      screen.queryByText("Import from spreadsheet")
-    ).not.toBeInTheDocument();
-  });
-  it("includes link to bulk patient upload if user is an admin", async () => {
-    render(
-      <MemoryRouter>
-        <Provider store={mockStore({ user: { isAdmin: true } })}>
-          <MockedProvider mocks={[]} addTypename={false}>
-            <AddPatientHeader
-              additional={<div>Additional Properties would be here</div>}
-            />
-          </MockedProvider>
-        </Provider>
-      </MemoryRouter>
-    );
-
     expect(
       await screen.findByText("Import from spreadsheet")
     ).toBeInTheDocument();
