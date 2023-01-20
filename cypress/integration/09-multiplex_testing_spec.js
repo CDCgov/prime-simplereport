@@ -36,7 +36,6 @@ describe("Testing with multiplex devices", () => {
       "variables": {"deviceName": deviceName},
       "query": "mutation MarkDeviceTypeAsDeleted($deviceName: String){\n  markDeviceTypeAsDeleted(deviceId: null, deviceName: $deviceName)\n{name}}"
     })
-
   });
 
   context('Manage device', () => {
@@ -130,8 +129,9 @@ describe("Testing with multiplex devices", () => {
       cy.get('input[role="combobox"]').first().type(deviceName)
       cy.get('li[id="multi-select-deviceTypes-list--option-0"]').click()
       cy.contains('Save changes').click()
-      cy.get('input[name="addressSelect-facility"]').first().click({force: true});
-      cy.get('input[name="addressSelect-provider"]').first().click({force: true});// this is failing
+      cy.get('.modal__content').find('fieldset').each((fieldset)=>{
+        fieldset.find('label').first().trigger('click');
+      });
       cy.get('button[id="save-confirmed-address"]').click()
       cy.wait('@gqlUpdateFacilityMutation')
       cy.get(".Toastify").contains("Updated Facility");
@@ -171,13 +171,13 @@ describe("Testing with multiplex devices", () => {
       cy.checkA11y();
       cy.get('select[name="testDevice"]').select(deviceName)
       cy.get('.prime-queue-item').find('button[type="submit"]').as('submitBtn')
-
+      cy.wait('@gqlEditQueueItemQuery')
       cy.get('@submitBtn').should('be.disabled')
       cy.get('.multiplex-result-form').contains('COVID-19')
       cy.get('.multiplex-result-form').contains('Flu A')
       cy.get('.multiplex-result-form').contains('Flu B')
       cy.get('.multiplex-result-form').contains('Mark test as inconclusive')
-      cy.get('input[name="inconclusive-tests"]').should('not.be.checked').check({force: true})
+      cy.get('input[name="inconclusive-tests"]').should('not.be.checked').siblings('label').click()
       cy.wait('@gqlEditQueueItemQuery')
       cy.get('@submitBtn').should('be.enabled').click()
       cy.contains('Submit anyway').click()
