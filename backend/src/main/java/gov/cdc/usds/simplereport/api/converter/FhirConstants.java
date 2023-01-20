@@ -29,4 +29,6 @@ public class FhirConstants {
 
   public static final String EVENT_TYPE_DISPLAY =
       "ORU/ACK - Unsolicited transmission of an observation message";
+
+  public static final String DEFAULT_COUNTRY = "USA";
 }

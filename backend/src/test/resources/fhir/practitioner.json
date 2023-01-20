@@ -14,6 +14,7 @@
     "line" : [ "223 N Terrace St" ],
     "city" : "Atchison",
     "state" : "KS",
-    "postalCode" : "66002"
+    "postalCode" : "66002",
+    "country": "USA"
   } ]
 }

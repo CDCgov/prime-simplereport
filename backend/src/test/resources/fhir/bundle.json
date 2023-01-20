@@ -154,7 +154,8 @@
           },
           {
             "system":"email",
-            "value":"tj@example.com"
+            "value":"tj@example.com",
+            "use": "home"
           }
         ],
         "gender":"male",
@@ -166,7 +167,8 @@
             ],
             "city":"Chicago",
             "state":"IL",
-            "postalCode":"60614"
+            "postalCode":"60614",
+            "country": "USA"
           }
         ],
         "managingOrganization":{
@@ -188,7 +190,8 @@
           },
           {
             "system":"email",
-            "value":"school@example.com"
+            "value":"school@example.com",
+            "use": "work"
           }
         ],
         "address":[
@@ -198,7 +201,8 @@
             ],
             "city":"Chicago",
             "state":"IL",
-            "postalCode":"60614"
+            "postalCode":"60614",
+            "country": "USA"
           }
         ]
       }
@@ -230,7 +234,8 @@
             ],
             "city":"Chicago",
             "state":"IL",
-            "postalCode":"60614"
+            "postalCode":"60614",
+            "country": "USA"
           }
         ]
       }
@@ -273,7 +278,7 @@
           "reference":"Patient/55c53ed2-add5-47fb-884e-b4542ee64589"
         },
         "requester":{
-          "reference":"PractitionerRole/$PRACTITIONER_ROLE_ID"
+          "reference":"Organization/1c3d14b9-e222-4a16-9fb2-d9f173034a6a"
         },
         "performer":[
           {
@@ -334,7 +339,8 @@
           "coding":[
             {
               "system":"http://snomed.info/sct",
-              "code":"455371000124106"
+              "code":"455371000124106",
+              "display": "UNDETERMINED"
             }
           ]
         },
@@ -371,7 +377,8 @@
           "coding":[
             {
               "system":"http://snomed.info/sct",
-              "code":"260373001"
+              "code":"260373001",
+              "display": "POSITIVE"
             }
           ]
         },
@@ -408,7 +415,8 @@
           "coding":[
             {
               "system":"http://snomed.info/sct",
-              "code":"260415000"
+              "code":"260415000",
+              "display": "NEGATIVE"
             }
           ]
         },

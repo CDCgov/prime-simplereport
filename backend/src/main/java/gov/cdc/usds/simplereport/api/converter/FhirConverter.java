@@ -1,5 +1,6 @@
 package gov.cdc.usds.simplereport.api.converter;
 
+import static gov.cdc.usds.simplereport.api.converter.FhirConstants.DEFAULT_COUNTRY;
 import static gov.cdc.usds.simplereport.api.converter.FhirConstants.ETHNICITY_CODE_SYSTEM;
 import static gov.cdc.usds.simplereport.api.converter.FhirConstants.ETHNICITY_EXTENSION_URL;
 import static gov.cdc.usds.simplereport.api.converter.FhirConstants.EVENT_TYPE_CODE;
@@ -144,14 +145,16 @@ public class FhirConverter {
     return convertToContactPoint(contactPointUse, ContactPointSystem.PHONE, number);
   }
 
-  public static List<ContactPoint> convertEmailsToContactPoint(List<String> emails) {
+  public static List<ContactPoint> convertEmailsToContactPoint(
+      ContactPointUse use, List<String> emails) {
     return emails.stream()
-        .map(FhirConverter::convertEmailToContactPoint)
+        .map(email -> convertEmailToContactPoint(use, email))
         .collect(Collectors.toList());
   }
 
-  public static ContactPoint convertEmailToContactPoint(@NotNull String email) {
-    return convertToContactPoint(null, ContactPointSystem.EMAIL, email);
+  public static ContactPoint convertEmailToContactPoint(
+      ContactPointUse use, @NotNull String email) {
+    return convertToContactPoint(use, ContactPointSystem.EMAIL, email);
   }
 
   public static ContactPoint convertToContactPoint(
@@ -176,19 +179,30 @@ public class FhirConverter {
     return Date.from(date.atStartOfDay(ZoneId.systemDefault()).toInstant());
   }
 
-  public static Address convertToAddress(@NotNull StreetAddress address) {
+  public static Address convertToAddress(@NotNull StreetAddress address, String country) {
     return convertToAddress(
         address.getStreet(),
         address.getCity(),
         address.getCounty(),
         address.getState(),
-        address.getPostalCode());
+        address.getPostalCode(),
+        country);
   }
 
   public static Address convertToAddress(
-      List<String> street, String city, String county, String state, String postalCode) {
+      List<String> street,
+      String city,
+      String county,
+      String state,
+      String postalCode,
+      String country) {
     var address =
-        new Address().setCity(city).setDistrict(county).setState(state).setPostalCode(postalCode);
+        new Address()
+            .setCity(city)
+            .setDistrict(county)
+            .setState(state)
+            .setPostalCode(postalCode)
+            .setCountry(country);
     if (street != null) {
       street.forEach(address::addLine);
     }
@@ -271,7 +285,7 @@ public class FhirConverter {
     var practitioner = new Practitioner();
     practitioner.setId(provider.getInternalId().toString());
     practitioner.addName(convertToHumanName(provider.getNameInfo()));
-    practitioner.addAddress(convertToAddress(provider.getAddress()));
+    practitioner.addAddress(convertToAddress(provider.getAddress(), DEFAULT_COUNTRY));
     practitioner.addTelecom(convertToContactPoint(ContactPointUse.WORK, provider.getTelephone()));
     return practitioner;
   }
@@ -281,8 +295,8 @@ public class FhirConverter {
     org.setId(facility.getInternalId().toString());
     org.setName(facility.getFacilityName());
     org.addTelecom(convertToContactPoint(ContactPointUse.WORK, facility.getTelephone()));
-    org.addTelecom(convertEmailToContactPoint(facility.getEmail()));
-    org.addAddress(convertToAddress(facility.getAddress()));
+    org.addTelecom(convertEmailToContactPoint(ContactPointUse.WORK, facility.getEmail()));
+    org.addAddress(convertToAddress(facility.getAddress(), DEFAULT_COUNTRY));
     return org;
   }
 
@@ -291,10 +305,11 @@ public class FhirConverter {
     patient.setId(person.getInternalId().toString());
     patient.addName(convertToHumanName(person.getNameInfo()));
     convertPhoneNumbersToContactPoint(person.getPhoneNumbers()).forEach(patient::addTelecom);
-    convertEmailsToContactPoint(person.getEmails()).forEach(patient::addTelecom);
+    convertEmailsToContactPoint(ContactPointUse.HOME, person.getEmails())
+        .forEach(patient::addTelecom);
     patient.setGender(convertToAdministrativeGender(person.getGender()));
     patient.setBirthDate(convertToDate(person.getBirthDate()));
-    patient.addAddress(convertToAddress(person.getAddress()));
+    patient.addAddress(convertToAddress(person.getAddress(), person.getCountry()));
     patient.addExtension(convertToRaceExtension(person.getRace()));
     patient.addExtension(convertToEthnicityExtension(person.getEthnicity()));
     patient.addExtension(
@@ -370,7 +385,8 @@ public class FhirConverter {
           result.getResultLOINC(),
           correctionStatus,
           correctionReason,
-          result.getInternalId().toString());
+          result.getInternalId().toString(),
+          result.getTestResult().toString());
     }
     return null;
   }
@@ -381,12 +397,13 @@ public class FhirConverter {
       String resultCode,
       TestCorrectionStatus correctionStatus,
       String correctionReason,
-      String id) {
+      String id,
+      String resultDescription) {
     var observation = new Observation();
     observation.setId(id);
     setStatus(observation, correctionStatus);
     addCode(diseaseCode, diseaseName, observation);
-    addValue(resultCode, observation);
+    addValue(resultCode, observation, resultDescription);
     addCorrectionNote(
         correctionStatus != TestCorrectionStatus.ORIGINAL, correctionReason, observation);
     return observation;
@@ -418,11 +435,12 @@ public class FhirConverter {
     }
   }
 
-  private static void addValue(String resultCode, Observation observation) {
+  private static void addValue(String resultCode, Observation observation, String resultDisplay) {
     var valueCodeableConcept = new CodeableConcept();
     var valueCoding = valueCodeableConcept.addCoding();
     valueCoding.setSystem(SNOMED_CODE_SYSTEM);
     valueCoding.setCode(resultCode);
+    valueCoding.setDisplay(resultDisplay);
     observation.setValue(valueCodeableConcept);
   }
 
@@ -513,7 +531,8 @@ public class FhirConverter {
             testEvent.getCorrectionStatus(),
             testEvent.getReasonForCorrection()),
         convertToServiceRequest(testEvent.getOrder()),
-        convertToDiagnosticReport(testEvent));
+        convertToDiagnosticReport(testEvent),
+        testEvent.getDateTested());
   }
 
   public static Bundle createFhirBundle(
@@ -524,7 +543,8 @@ public class FhirConverter {
       Specimen specimen,
       List<Observation> observations,
       ServiceRequest serviceRequest,
-      DiagnosticReport diagnosticReport) {
+      DiagnosticReport diagnosticReport,
+      Date dateTested) {
     var patientFullUrl = ResourceType.Patient + "/" + patient.getId();
     var organizationFullUrl = ResourceType.Organization + "/" + organization.getId();
     var practitionerFullUrl = ResourceType.Practitioner + "/" + practitioner.getId();
@@ -534,7 +554,7 @@ public class FhirConverter {
     var deviceFullUrl = ResourceType.Device + "/" + device.getId();
 
     var practitionerRole = createPractitionerRole(organizationFullUrl, practitionerFullUrl);
-    var provenance = createProvenance(organizationFullUrl, deviceFullUrl);
+    var provenance = createProvenance(organizationFullUrl, deviceFullUrl, dateTested);
     var provenanceFullUrl = ResourceType.Provenance + "/" + provenance.getId();
     var messageHeader =
         createMessageHeader(organizationFullUrl, diagnosticReportFullUrl, provenanceFullUrl);
@@ -546,7 +566,7 @@ public class FhirConverter {
 
     serviceRequest.setSubject(new Reference(patientFullUrl));
     serviceRequest.addPerformer(new Reference(organizationFullUrl));
-    serviceRequest.setRequester(new Reference(practitionerRoleFullUrl));
+    serviceRequest.setRequester(new Reference(organizationFullUrl));
     diagnosticReport.addBasedOn(new Reference(serviceRequestFullUrl));
     diagnosticReport.setSubject(new Reference(patientFullUrl));
     diagnosticReport.addSpecimen(new Reference(specimenFullUrl));
@@ -591,7 +611,8 @@ public class FhirConverter {
     return bundle;
   }
 
-  public static Provenance createProvenance(String organizationFullUrl, String deviceFullUrl) {
+  public static Provenance createProvenance(
+      String organizationFullUrl, String deviceFullUrl, Date dateTested) {
     var provenance = new Provenance();
     provenance.setId(UUID.randomUUID().toString());
     provenance
@@ -602,6 +623,7 @@ public class FhirConverter {
         .setDisplay(EVENT_TYPE_DISPLAY);
     provenance.addAgent().setWho(new Reference().setReference(organizationFullUrl));
     provenance.addTarget(new Reference(deviceFullUrl));
+    provenance.setRecorded(dateTested);
     return provenance;
   }
 

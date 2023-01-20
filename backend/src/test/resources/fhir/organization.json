@@ -10,7 +10,8 @@
     },
     {
       "system": "email",
-      "value": "email@example.com"
+      "value": "email@example.com",
+      "use": "work"
     }
   ],
   "address": [
@@ -21,7 +22,8 @@
       ],
       "city": "Lakewood",
       "state": "FL",
-      "postalCode": "21037"
+      "postalCode": "21037",
+      "country": "USA"
     }
   ]
 }
