@@ -845,7 +845,7 @@ class PersonServiceTest extends BaseServiceTest<PersonService> {
 
     var result =
         _service.isDuplicatePatient(
-            "John", "Doe", LocalDate.parse("1990-1-1"), org, Optional.empty());
+            "John", "Doe", LocalDate.parse("1990-01-01"), org, Optional.empty());
 
     assertFalse(result);
   }
@@ -942,7 +942,7 @@ class PersonServiceTest extends BaseServiceTest<PersonService> {
         _service.isDuplicatePatient(
             "John",
             "Doe",
-            LocalDate.parse("1990-1-1"),
+            LocalDate.parse("1990-01-01"),
             facility.getOrganization(),
             Optional.of(facility));
 
