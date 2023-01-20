@@ -49,6 +49,7 @@ public class PatientBulkUploadService {
     if (!errors.isEmpty()) {
       result.setStatus(UploadStatus.FAILURE);
       result.setErrors(errors.toArray(FeedbackMessage[]::new));
+      log.debug("CSV patient bulk upload rejected with the following errors: {}", errors);
       return result;
     }
 
