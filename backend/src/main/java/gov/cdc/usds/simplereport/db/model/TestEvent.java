@@ -70,7 +70,7 @@ public class TestEvent extends BaseTestInfo {
   }
 
   private TestEvent(TestOrder order, Boolean hasPriorTests) {
-    super(order.getPatient(), order.getFacility());
+    super(order.getPatient(), order.getFacility(), order.getDeviceType(), order.getSpecimenType());
     // store a link, and *also* store the object as JSON
     // force load the lazy-loaded phone numbers so values are available to the object mapper
     // when serializing `patientData` (phoneNumbers is default lazy-loaded because of `OneToMany`)

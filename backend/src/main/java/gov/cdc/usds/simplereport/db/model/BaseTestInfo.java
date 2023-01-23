@@ -60,12 +60,17 @@ public abstract class BaseTestInfo extends AuditedEntity implements Organization
   }
 
   protected BaseTestInfo(Person patient, Facility facility) {
+    this(patient, facility, facility.getDefaultDeviceType(), facility.getDefaultSpecimenType());
+  }
+
+  protected BaseTestInfo(
+      Person patient, Facility facility, DeviceType deviceType, SpecimenType specimenType) {
     super();
     this.patient = patient;
     this.facility = facility;
     this.organization = facility.getOrganization();
-    this.deviceType = facility.getDefaultDeviceType();
-    this.specimenType = facility.getDefaultSpecimenType();
+    this.deviceType = deviceType;
+    this.specimenType = specimenType;
     this.correctionStatus = TestCorrectionStatus.ORIGINAL;
   }
 
