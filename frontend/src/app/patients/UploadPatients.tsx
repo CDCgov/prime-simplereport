@@ -3,7 +3,6 @@ import { FormGroup } from "@trussworks/react-uswds";
 import { useSelector } from "react-redux";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faXmark } from "@fortawesome/free-solid-svg-icons";
-import { useAppInsightsContext } from "@microsoft/applicationinsights-react-js";
 import { useLocation } from "react-router-dom";
 
 import { useDocumentTitle } from "../utils/hooks";
@@ -11,6 +10,7 @@ import Button from "../commonComponents/Button/Button";
 import RadioGroup from "../commonComponents/RadioGroup";
 import Dropdown from "../commonComponents/Dropdown";
 import SingleFileInput from "../commonComponents/SingleFileInput";
+import { getAppInsights } from "../TelemetryService";
 import { Facility, FeedbackMessage } from "../../generated/graphql";
 import { showError } from "../utils/srToast";
 import { FileUploadService } from "../../fileUploadService/FileUploadService";
@@ -41,7 +41,7 @@ const UploadPatients = () => {
     Array<FeedbackMessage | undefined | null>
   >([]);
 
-  const appInsights = useAppInsightsContext();
+  const appInsights = getAppInsights();
 
   const [errorMessage, setErrorMessage] = useState<ErrorMessage>({
     header: "",
