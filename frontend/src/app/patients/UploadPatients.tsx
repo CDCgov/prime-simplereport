@@ -1,8 +1,9 @@
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import { FormGroup } from "@trussworks/react-uswds";
 import { useSelector } from "react-redux";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faXmark } from "@fortawesome/free-solid-svg-icons";
+import { useAppInsightsContext } from "@microsoft/applicationinsights-react-js";
 import { useLocation } from "react-router-dom";
 
 import { useDocumentTitle } from "../utils/hooks";
@@ -39,6 +40,9 @@ const UploadPatients = () => {
   const [errors, setErrors] = useState<
     Array<FeedbackMessage | undefined | null>
   >([]);
+
+  const appInsights = useAppInsightsContext();
+
   const [errorMessage, setErrorMessage] = useState<ErrorMessage>({
     header: "",
     body: "",
@@ -55,6 +59,16 @@ const UploadPatients = () => {
   const facility = selectedFacility ||
     facilities.find((f) => f.id === activeFacilityId) ||
     facilities[0] || { id: "", name: "" };
+
+  useEffect(() => {
+    performance.mark("patientUpload_pageLanding");
+
+    return () => {
+      performance.clearMarks("patientUpload_pageLanding");
+      performance.clearMarks("patientUpload_successfulUpload");
+      performance.clearMeasures("patientUpload_timeToUpload");
+    };
+  }, []);
 
   function onFacilitySelect() {
     return (e: React.ChangeEvent<HTMLSelectElement>) => {
@@ -93,6 +107,23 @@ const UploadPatients = () => {
           });
         }
       } else {
+        performance.clearMarks("patientUpload_successfulUpload");
+        performance.clearMeasures("patientUpload_timeToUpload");
+        performance.mark("patientUpload_successfulUpload");
+        performance.measure(
+          "patientUpload_timeToUpload",
+          "patientUpload_pageLanding",
+          "patientUpload_successfulUpload"
+        );
+        appInsights?.trackMetric(
+          {
+            name: "patientUpload_timeToUpload",
+            average: performance.getEntriesByName(
+              "patientUpload_timeToUpload"
+            )?.[0]?.duration,
+          },
+          { srFeature: "patientUpload" }
+        );
         setStatus("success");
       }
     }
