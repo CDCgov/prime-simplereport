@@ -128,7 +128,7 @@ dependencies {
     // WireMock (only used for testing)
     testImplementation "com.github.tomakehurst:wiremock-jre8:2.35.0"
 
-    implementation 'ca.uhn.hapi.fhir:hapi-fhir-structures-r4:6.2.1'
+    implementation 'ca.uhn.hapi.fhir:hapi-fhir-structures-r4:6.2.4'
 }
 
 dependencyManagement {
