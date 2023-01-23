@@ -100,7 +100,7 @@ dependencies {
     implementation 'org.apache.commons:commons-lang3:3.12.0'
 
     // Shedlock for scheduler synchronization
-    implementation 'net.javacrumbs.shedlock:shedlock-core:4.42.0'
+    implementation 'net.javacrumbs.shedlock:shedlock-core:5.1.0'
     implementation 'net.javacrumbs.shedlock:shedlock-spring:4.42.0'
     implementation 'net.javacrumbs.shedlock:shedlock-provider-jdbc-template:4.42.0'
 
