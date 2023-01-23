@@ -7,6 +7,7 @@ updates:
     open-pull-requests-limit: 2
     schedule:
       interval: "weekly"
+      day: "sunday"
     reviewers:
       - "alismx"
       - "DanielSass"
@@ -17,6 +18,7 @@ updates:
     open-pull-requests-limit: 2
     schedule:
       interval: "weekly"
+      day: "sunday"
     reviewers:
       - "alismx"
       - "DanielSass"
@@ -27,6 +29,7 @@ updates:
     open-pull-requests-limit: 2
     schedule:
       interval: "weekly"
+      day: "sunday"
     reviewers:
       - "alismx"
       - "DanielSass"
@@ -37,6 +40,7 @@ updates:
     open-pull-requests-limit: 2
     schedule:
       interval: "weekly"
+      day: "sunday"
     reviewers:
       - "alismx"
       - "DanielSass"
@@ -49,6 +53,7 @@ updates:
     open-pull-requests-limit: 2
     schedule:
       interval: "weekly"
+      day: "sunday"
     reviewers:
       - "alismx"
       - "rin-skylight"
@@ -59,6 +64,7 @@ updates:
     open-pull-requests-limit: 2
     schedule:
       interval: "weekly"
+      day: "sunday"
     reviewers:
       - "alixmx"
       - "rin-skylight"
@@ -69,6 +75,7 @@ updates:
     open-pull-requests-limit: 2
     schedule:
       interval: "weekly"
+      day: "sunday"
     reviewers:
       - "alismx"
       - "rin-skylight"
@@ -79,6 +86,7 @@ updates:
     open-pull-requests-limit: 2
     schedule:
       interval: "weekly"
+      day: "sunday"
     reviewers:
       - "alismx"
       - "rin-skylight"
@@ -89,6 +97,7 @@ updates:
   #   open-pull-requests-limit: 2
   #   schedule:
   #     interval: "weekly"
+  #     day: "sunday"
   #   reviewers:
       # - "alismx"
       # - "BobanL"
@@ -102,6 +111,7 @@ updates:
   #   open-pull-requests-limit: 2
   #   schedule:
   #     interval: "weekly"
+  #     day: "sunday"
   #   reviewers:
       # - "alismx"
       # - "rin-skylight"
@@ -111,6 +121,7 @@ updates:
   #   open-pull-requests-limit: 2
   #   schedule:
   #     interval: "weekly"
+  #     day: "sunday"
   #   reviewers:
       # - "alismx"
       # - "rin-skylight"
@@ -120,6 +131,7 @@ updates:
   #   open-pull-requests-limit: 2
   #   schedule:
   #     interval: "weekly"
+  #     day: "sunday"
   #   reviewers:
       # - "alismx"
       # - "rin-skylight"
@@ -129,6 +141,7 @@ updates:
   #   open-pull-requests-limit: 2
   #   schedule:
   #     interval: "weekly"
+  #     day: "sunday"
   #   reviewers:
       # - "alismx"
       # - "rin-skylight"
@@ -138,6 +151,7 @@ updates:
   #   open-pull-requests-limit: 2
   #   schedule:
   #     interval: "weekly"
+  #     day: "sunday"
   #   reviewers:
       # - "alismx"
       # - "rin-skylight"
@@ -147,6 +161,7 @@ updates:
   #   open-pull-requests-limit: 2
   #   schedule:
   #     interval: "weekly"
+  #     day: "sunday"
   #   reviewers:
       # - "alismx"
       # - "rin-skylight"
@@ -156,6 +171,7 @@ updates:
   #   open-pull-requests-limit: 2
   #   schedule:
   #     interval: "weekly"
+  #     day: "sunday"
   #   reviewers:
       # - "alismx"
       # - "rin-skylight"
@@ -165,6 +181,7 @@ updates:
   #   open-pull-requests-limit: 2
   #   schedule:
   #     interval: "weekly"
+  #     day: "sunday"
   #   reviewers:
       # - "alismx"
       # - "rin-skylight"
@@ -174,6 +191,7 @@ updates:
   #   open-pull-requests-limit: 2
   #   schedule:
   #     interval: "weekly"
+  #     day: "sunday"
   #   reviewers:
       # - "alismx"
       # - "rin-skylight"
@@ -183,6 +201,7 @@ updates:
   #   open-pull-requests-limit: 2
   #   schedule:
   #     interval: "weekly"
+  #     day: "sunday"
   #   reviewers:
       # - "alismx"
       # - "rin-skylight"
@@ -191,6 +210,7 @@ updates:
     directory: "/ops/global"
     schedule:
       interval: "weekly"
+      day: "sunday"
     reviewers:
       - "alismx"
       - "rin-skylight"
@@ -200,6 +220,7 @@ updates:
   #   open-pull-requests-limit: 2
   #   schedule:
   #     interval: "weekly"
+  #     day: "sunday"
   #   reviewers:
       # - "alismx"
       # - "rin-skylight"
@@ -209,6 +230,7 @@ updates:
   #   open-pull-requests-limit: 2
   #   schedule:
   #     interval: "weekly"
+  #     day: "sunday"
   #   reviewers:
       # - "alismx"
       # - "rin-skylight"
@@ -218,6 +240,7 @@ updates:
   #   open-pull-requests-limit: 2
   #   schedule:
   #     interval: "weekly"
+  #     day: "sunday"
   #   reviewers:
       # - "alismx"
       # - "rin-skylight"
@@ -227,6 +250,7 @@ updates:
   #   open-pull-requests-limit: 2
   #   schedule:
   #     interval: "weekly"
+  #     day: "sunday"
   #   reviewers:
       # - "alismx"
       # - "rin-skylight"
@@ -236,6 +260,7 @@ updates:
   #   open-pull-requests-limit: 2
   #   schedule:
   #     interval: "weekly"
+  #     day: "sunday"
   #   reviewers:
       # - "alismx"
       # - "rin-skylight"
@@ -244,6 +269,7 @@ updates:
     directory: "/ops/services/okta-global"
     schedule:
       interval: "weekly"
+      day: "sunday"
     reviewers:
       - "alismx"
       - "rin-skylight"
@@ -253,6 +279,7 @@ updates:
   #   open-pull-requests-limit: 2
   #   schedule:
   #     interval: "weekly"
+  #     day: "sunday"
   #   reviewers:
       # - "alismx"
       # - "rin-skylight"
@@ -262,6 +289,7 @@ updates:
   #   open-pull-requests-limit: 2
   #   schedule:
   #     interval: "weekly"
+  #     day: "sunday"
   #   reviewers:
       # - "alismx"
       # - "rin-skylight"
@@ -271,6 +299,7 @@ updates:
   #   open-pull-requests-limit: 2
   #   schedule:
   #     interval: "weekly"
+  #     day: "sunday"
   #   reviewers:
       # - "alismx"
       # - "rin-skylight"
@@ -280,6 +309,7 @@ updates:
     open-pull-requests-limit: 2
     schedule:
       interval: "weekly"
+      day: "sunday"
     reviewers:
       - "alismx"
       - "rin-skylight"
@@ -289,6 +319,7 @@ updates:
     open-pull-requests-limit: 2
     schedule:
       interval: "weekly"
+      day: "sunday"
     reviewers:
       - "alismx"
       - "rin-skylight"
@@ -298,6 +329,7 @@ updates:
   #   open-pull-requests-limit: 2
   #   schedule:
   #     interval: "weekly"
+  #     day: "sunday"
   #   reviewers:
       # - "alismx"
       # - "rin-skylight"
@@ -307,6 +339,7 @@ updates:
   #   open-pull-requests-limit: 2
   #   schedule:
   #     interval: "weekly"
+  #     day: "sunday"
   #   reviewers:
       # - "alismx"
       # - "rin-skylight"
