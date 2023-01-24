@@ -12,13 +12,15 @@ import lombok.extern.slf4j.Slf4j;
 @Slf4j
 @RequiredArgsConstructor
 public final class AzureStorageQueueFhirReportingService implements TestEventReportingService {
+
+  public static final String COVID_LOINC = "96741-4";
   private final FhirContext context;
   private final QueueAsyncClient queueClient;
 
   @Override
   public CompletableFuture<Void> reportAsync(TestEvent testEvent) {
     if (testEvent.getResults().stream()
-        .anyMatch(result -> !"96741-4".equals(result.getDisease().getLoinc()))) {
+        .anyMatch(result -> !COVID_LOINC.equals(result.getDisease().getLoinc()))) {
       log.trace("Dispatching TestEvent [{}] to Azure storage queue", testEvent.getInternalId());
       var parser = context.newJsonParser();
       return queueClient
