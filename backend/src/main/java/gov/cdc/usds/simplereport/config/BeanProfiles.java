@@ -23,7 +23,6 @@ public final class BeanProfiles {
   public static final String CREATE_SAMPLE_DEVICES = "create-sample-devices";
 
   public static final String PROD = "azure-prod";
-  public static final String NOT = "!";
 
   private BeanProfiles() {
     /* no instances! */

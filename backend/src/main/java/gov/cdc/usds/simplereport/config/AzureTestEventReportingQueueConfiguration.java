@@ -1,6 +1,5 @@
 package gov.cdc.usds.simplereport.config;
 
-import static gov.cdc.usds.simplereport.config.BeanProfiles.NOT;
 import static gov.cdc.usds.simplereport.config.BeanProfiles.PROD;
 
 import ca.uhn.fhir.context.FhirContext;
@@ -68,7 +67,7 @@ class AzureTestEventReportingQueueConfiguration {
     return new NoOpReportingService();
   }
 
-  @Profile(NOT + PROD)
+  @Profile("!" + PROD)
   @Primary
   @Bean(name = "csvQueueReportingService")
   @ConditionalOnMissingBean(name = "csvQueueReportingService")
@@ -76,7 +75,7 @@ class AzureTestEventReportingQueueConfiguration {
     return new NoOpDebugReportingService();
   }
 
-  @Profile(NOT + PROD)
+  @Profile("!" + PROD)
   @Bean(name = "fhirQueueReportingService")
   @ConditionalOnMissingBean(name = "fhirQueueReportingService")
   TestEventReportingService noOpDebugFhirReportingService() {
