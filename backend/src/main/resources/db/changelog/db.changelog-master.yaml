@@ -4355,3 +4355,6 @@ databaseChangeLog:
                   remarks: The code that identifies which disease was tested.
         - sql:
             sql: GRANT SELECT ON ${database.defaultSchemaName}.test_performed TO ${noPhiUsername};
+      rollback:
+        dropTable:
+          tableName: test_performed
