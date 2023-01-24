@@ -4326,3 +4326,10 @@ databaseChangeLog:
         - dropColumn:
             tableName: device_supported_disease
             columnName: test_performed_code
+      rollback:
+        - addColumn:
+            tableName: device_supported_disease
+            columns:
+              - column:
+                  name: test_performed_code
+                  type: text
