@@ -37,10 +37,6 @@ public class DeviceTypeMutationResolver {
             ? deviceTypeService.getDeviceType(deviceId)
             : deviceTypeService.getDeviceType(deviceName);
 
-    if (device == null) {
-      return null;
-    }
-
     deviceTypeService.removeDeviceType(device);
     return device;
   }

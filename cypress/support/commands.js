@@ -131,4 +131,4 @@ Cypress.Commands.add("makePOSTRequest", (requestBody) => {
       }
     ))
   )
-})
+});

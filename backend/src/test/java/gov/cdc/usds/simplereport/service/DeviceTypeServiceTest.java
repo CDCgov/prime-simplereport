@@ -22,12 +22,14 @@ import gov.cdc.usds.simplereport.db.repository.SpecimenTypeRepository;
 import gov.cdc.usds.simplereport.db.repository.SupportedDiseaseRepository;
 import gov.cdc.usds.simplereport.test_util.SliceTestConfiguration.WithSimpleReportSiteAdminUser;
 import java.util.List;
-import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.TestInstance;
 import org.mockito.Mock;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.test.context.TestPropertySource;
 
+@TestInstance(TestInstance.Lifecycle.PER_CLASS)
 @TestPropertySource(
     properties = {
       "hibernate.query.interceptor.error-level=ERROR",
@@ -44,7 +46,7 @@ class DeviceTypeServiceTest extends BaseServiceTest<DeviceTypeService> {
 
   private DeviceTypeService deviceTypeServiceWithMock;
 
-  @BeforeEach
+  @BeforeAll
   void setup() {
     this.deviceTypeServiceWithMock =
         new DeviceTypeService(
